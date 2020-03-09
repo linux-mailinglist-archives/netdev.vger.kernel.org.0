@@ -2,69 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 861FB17EC34
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 23:38:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C702D17EC36
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 23:40:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727191AbgCIWiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 18:38:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33880 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726536AbgCIWiU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Mar 2020 18:38:20 -0400
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727097AbgCIWkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 18:40:17 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:49628 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726656AbgCIWkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 18:40:16 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8BAA32253D;
-        Mon,  9 Mar 2020 22:38:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583793500;
-        bh=frXXcmIpTDko2faNTmY0WkCxJjwj8UHhxbfx7OYtnBA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=0DdSsTtfT1pfp18DWeJqgqtRSWl0zWtm511ybY2iC78Ik9UiBebDEXnH/oH6Y+l52
-         ouhxVOrXK1Etv07Mefok7NLYxTP1zckuTU7nmxcZMLVVyAyLKfoIbdoxdLwQLfkKHK
-         MSN1etz99X8VP8RKB+vWySGzByE/1x0fors1M/JI=
-Date:   Mon, 9 Mar 2020 15:38:17 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <saeedm@mellanox.com>, <leon@kernel.org>,
-        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
-        <jeffrey.t.kirsher@intel.com>, <idosch@mellanox.com>,
-        <aelior@marvell.com>, <peppe.cavallaro@st.com>,
-        <alexandre.torgue@st.com>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <pablo@netfilter.org>,
-        <mlxsw@mellanox.com>
-Subject: Re: [patch net-next v4 01/10] flow_offload: Introduce offload of HW
- stats type
-Message-ID: <20200309153817.47c97707@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <75b7e941-9a94-9939-f212-03aaed856088@solarflare.com>
-References: <20200307114020.8664-1-jiri@resnulli.us>
-        <20200307114020.8664-2-jiri@resnulli.us>
-        <1b7ddf97-5626-e58c-0468-eae83ad020b3@solarflare.com>
-        <20200309143630.2f83476f@kicinski-fedora-PC1C0HJN>
-        <75b7e941-9a94-9939-f212-03aaed856088@solarflare.com>
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 53FA4B00064;
+        Mon,  9 Mar 2020 22:40:15 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 9 Mar 2020
+ 22:40:08 +0000
+Subject: Re: [PATCH net-next ct-offload v2 05/13] net/sched: act_ct: Enable
+ hardware offload of flow table entires
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Paul Blakey <paulb@mellanox.com>
+CC:     Saeed Mahameed <saeedm@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
+References: <1583676662-15180-1-git-send-email-paulb@mellanox.com>
+ <1583676662-15180-6-git-send-email-paulb@mellanox.com>
+ <62d6cfde-5749-b2d6-ee04-d0a49b566d1a@solarflare.com>
+ <20200309221953.GJ2546@localhost.localdomain>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <a6817bc6-17bf-ee29-4910-9c287bbc6646@solarflare.com>
+Date:   Mon, 9 Mar 2020 22:40:05 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200309221953.GJ2546@localhost.localdomain>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25278.003
+X-TM-AS-Result: No-5.696800-8.000000-10
+X-TMASE-MatchedRID: scwq2vQP8OEf2uG5NUkiu/ZvT2zYoYOwC/ExpXrHizw/hcT28SJs8qDS
+        FbNSvOcncSBIJeE8AJSr/+Gm/JK2uueiDxJcK5MJY1bQMCMvmn6MeFePU0tuMOFjQ62VhP8bS8X
+        QUmo7QNh1C0eA/+ELkI0pfouzkP9TlML+266Ikxokp7iSXiinhC/6pa9YxNkxvPwQoyIZS6c0Vl
+        Fe0MnlXqPcX3xJIWl8vZOz5ptwyPpD/MGHLum03p4CIKY/Hg3AcmfM3DjaQLHZs3HUcS/scCq2r
+        l3dzGQ1LKRDQhtaB1iTBPEehRpVL5LZaKBQPBJ0/quB0ltwFDbcebm8SUe7c8C+ksT6a9fy
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--5.696800-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25278.003
+X-MDID: 1583793616-Tg3RTdCX9RTF
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 Mar 2020 22:27:59 +0000 Edward Cree wrote:
-> > Driver author can understandably try to simply handle all the values=20
-> > in a switch statement and be unpleasantly surprised. =20
-> In my experience, unenumerated enum values of this kind are fully
-> =C2=A0idiomatic C; and a driver author looking at the header file to see
-> =C2=A0what enumeration constants are defined will necessarily see all the
-> =C2=A0calls to BIT() and the bitwise-or construction of _ANY.
-> I'm not sure I believe a na=C3=AFve switch() implementation is an
-> =C2=A0"understandable" error.
+On 09/03/2020 22:19, Marcelo Ricardo Leitner wrote:
+> On Mon, Mar 09, 2020 at 09:25:49PM +0000, Edward Cree wrote:
+>> This doesn't seem to apply to net-next (34a568a244be); the label after
+>>  the __module_get() is 'out_unlock', not 'take_ref'.  Is there a missing
+>>  prerequisite patch?  Or am I just failing to drive 'git am' correctly?
+> That's a mid-air collision with Eric's
+> [PATCH net-next] net/sched: act_ct: fix lockdep splat in tcf_ct_flow_table_get
+> That went in in between v1 and v2 here.
+>
+>   Marcelo
+Thanks.
+Unfortunately, although going back to that commit's parentmakes this
+ patch apply, #6 still doesn't, and I don't particularly feel like
+ playing whack-a-mole.  Paul, could you either specify the base from
+ which you generated this series, or stick the branch somewhere that
+ can be pulled from, please?  I'd like to build it so that I can
+ start experimenting with driver code to interface with it.
 
-Could be my slight exposure to HDLs that makes me strongly averse to
-encoding state outside of a enumeration into a value of that type :)
-
-> How about if we also rename the field "hw_stats_types", or squeeze
-> =C2=A0the word "mask" in there somewhere?
-
-That'd make things slightly better.
+TiA,
+-ed
