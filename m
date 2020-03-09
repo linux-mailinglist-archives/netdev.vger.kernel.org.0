@@ -2,34 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CF1617E5DF
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 18:37:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AF6117E5F0
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 18:44:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727359AbgCIRh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 13:37:57 -0400
-Received: from mga18.intel.com ([134.134.136.126]:29746 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727254AbgCIRh5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Mar 2020 13:37:57 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Mar 2020 10:37:56 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,534,1574150400"; 
-   d="scan'208";a="414882336"
-Received: from vcostago-desk1.jf.intel.com ([10.54.70.26])
-  by orsmga005.jf.intel.com with ESMTP; 09 Mar 2020 10:37:56 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+        id S1726115AbgCIRoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 13:44:54 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:56134 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725904AbgCIRox (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 13:44:53 -0400
+Received: by mail-wm1-f68.google.com with SMTP id 6so442915wmi.5
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 10:44:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Bk3B15wUtiDLARdP73Erc3+882jZVxE5x6sxzBChR+U=;
+        b=cmTIv7tekQb1JLluCtXKE8DF2+ql9jIPi2REpgNG6NWDqzM3kHfiALBGUFipuMqMOI
+         n0e72lWgHhEqzDQdkOPt4lkOBNzsPmEMR6UICsuPs0fTnQJb6CXvdQTEJQgAEeyRJSEj
+         Dtx8ihkxH1CrjfDZofm6X4O/Q2eIPkOKRbiNB9YMJzx8tyUo2zrXOrPLIJ5Hm6VBzQD8
+         961htRtC37eLo4v5F0zKTpjsGtbrQ7Ss8fHhLUnX15nyc9Qes57l0qpk78dZmRJ375NX
+         J/4e4IZNiu2+OmKCFiDgyw45MPW5A0sc0WK4tr9Y5WlYhMxqYS8iXtA0aqdVCtGHW0F9
+         DLwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Bk3B15wUtiDLARdP73Erc3+882jZVxE5x6sxzBChR+U=;
+        b=PogpcgGdlg8odw2q+FV5anhIZOkzeV4yqs/H6VsICPNF32QS091tTInHuHqap3c3C6
+         Xcv9zSfTFlgdXebx551BMAu3XnMjl+2/2YRoW9QAAxyQVip0/6Efzux3ZAuc/bvY8edL
+         9oCiQcoUasNNGipBKCxLTuO0ZtbqU9nVwPBOkOTm+lfyvw2LJo8AeiGY/Ik6rNIFAWvk
+         VFLP6RKVLQnX18brqWszYOlykfcCLrJnwP5iBiYdH7omEBpjYiDL8MIW9bXI15sjMv8U
+         jl9W/bM/LzxFNLPzmt3AXo1oDJ9jhroe2VgQKMLIC59iNGmcH/ji8V2IX/pgeo54wVak
+         A7hQ==
+X-Gm-Message-State: ANhLgQ0MF2CNYIJMtAAMXbbeS4yvmtU4pGfSY+GllvTpOhTvm/25A3nd
+        ilMw3wkbK5yOvoUxIEys363jlB2hpJ8=
+X-Google-Smtp-Source: ADFU+vua2yKRrpm3s5HODFDpyQDJYCYyRsAZXvdjp0FihHFCc31zZxUGcpBSWkqLpl9gMhmeoOVp3g==
+X-Received: by 2002:a1c:6541:: with SMTP id z62mr385681wmb.21.1583775889541;
+        Mon, 09 Mar 2020 10:44:49 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id f2sm2414686wrv.48.2020.03.09.10.44.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Mar 2020 10:44:48 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        aaron.f.brown@intel.com, sasha.neftin@intel.com,
-        Michael Schmidt <michael.schmidt@eti.uni-siegen.de>
-Subject: [PATCH net v1] taprio: Fix sending packets without dequeueing them
-Date:   Mon,  9 Mar 2020 10:39:53 -0700
-Message-Id: <20200309173953.2822360-1-vinicius.gomes@intel.com>
-X-Mailer: git-send-email 2.25.1
+Cc:     davem@davemloft.net, kuba@kernel.org, pablo@netfilter.org,
+        ecree@solarflare.com, mlxsw@mellanox.com
+Subject: [patch net-next] flow_offload: use flow_action_for_each in flow_action_mixed_hw_stats_types_check()
+Date:   Mon,  9 Mar 2020 18:44:47 +0100
+Message-Id: <20200309174447.6352-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -37,187 +59,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There was a bug that was causing packets to be sent to the driver
-without first calling dequeue() on the "child" qdisc. And the KASAN
-report below shows that sending a packet without calling dequeue()
-leads to bad results.
+Instead of manually iterating over entries, use flow_action_for_each
+helper. Move the helper and wrap it to fit to 80 cols on the way.
 
-The problem is that when checking the last qdisc "child" we do not set
-the returned skb to NULL, which can cause it to be sent to the driver,
-and so after the skb is sent, it may be freed, and in some situations a
-reference to it may still be in the child qdisc, because it was never
-dequeued.
-
-The crash log looks like this:
-
-[   19.937538] ==================================================================
-[   19.938300] BUG: KASAN: use-after-free in taprio_dequeue_soft+0x620/0x780
-[   19.938968] Read of size 4 at addr ffff8881128628cc by task swapper/1/0
-[   19.939612]
-[   19.939772] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.6.0-rc3+ #97
-[   19.940397] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qe4
-[   19.941523] Call Trace:
-[   19.941774]  <IRQ>
-[   19.941985]  dump_stack+0x97/0xe0
-[   19.942323]  print_address_description.constprop.0+0x3b/0x60
-[   19.942884]  ? taprio_dequeue_soft+0x620/0x780
-[   19.943325]  ? taprio_dequeue_soft+0x620/0x780
-[   19.943767]  __kasan_report.cold+0x1a/0x32
-[   19.944173]  ? taprio_dequeue_soft+0x620/0x780
-[   19.944612]  kasan_report+0xe/0x20
-[   19.944954]  taprio_dequeue_soft+0x620/0x780
-[   19.945380]  __qdisc_run+0x164/0x18d0
-[   19.945749]  net_tx_action+0x2c4/0x730
-[   19.946124]  __do_softirq+0x268/0x7bc
-[   19.946491]  irq_exit+0x17d/0x1b0
-[   19.946824]  smp_apic_timer_interrupt+0xeb/0x380
-[   19.947280]  apic_timer_interrupt+0xf/0x20
-[   19.947687]  </IRQ>
-[   19.947912] RIP: 0010:default_idle+0x2d/0x2d0
-[   19.948345] Code: 00 00 41 56 41 55 65 44 8b 2d 3f 8d 7c 7c 41 54 55 53 0f 1f 44 00 00 e8 b1 b2 c5 fd e9 07 00 3
-[   19.950166] RSP: 0018:ffff88811a3efda0 EFLAGS: 00000282 ORIG_RAX: ffffffffffffff13
-[   19.950909] RAX: 0000000080000000 RBX: ffff88811a3a9600 RCX: ffffffff8385327e
-[   19.951608] RDX: 1ffff110234752c0 RSI: 0000000000000000 RDI: ffffffff8385262f
-[   19.952309] RBP: ffffed10234752c0 R08: 0000000000000001 R09: ffffed10234752c1
-[   19.953009] R10: ffffed10234752c0 R11: ffff88811a3a9607 R12: 0000000000000001
-[   19.953709] R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000000
-[   19.954408]  ? default_idle_call+0x2e/0x70
-[   19.954816]  ? default_idle+0x1f/0x2d0
-[   19.955192]  default_idle_call+0x5e/0x70
-[   19.955584]  do_idle+0x3d4/0x500
-[   19.955909]  ? arch_cpu_idle_exit+0x40/0x40
-[   19.956325]  ? _raw_spin_unlock_irqrestore+0x23/0x30
-[   19.956829]  ? trace_hardirqs_on+0x30/0x160
-[   19.957242]  cpu_startup_entry+0x19/0x20
-[   19.957633]  start_secondary+0x2a6/0x380
-[   19.958026]  ? set_cpu_sibling_map+0x18b0/0x18b0
-[   19.958486]  secondary_startup_64+0xa4/0xb0
-[   19.958921]
-[   19.959078] Allocated by task 33:
-[   19.959412]  save_stack+0x1b/0x80
-[   19.959747]  __kasan_kmalloc.constprop.0+0xc2/0xd0
-[   19.960222]  kmem_cache_alloc+0xe4/0x230
-[   19.960617]  __alloc_skb+0x91/0x510
-[   19.960967]  ndisc_alloc_skb+0x133/0x330
-[   19.961358]  ndisc_send_ns+0x134/0x810
-[   19.961735]  addrconf_dad_work+0xad5/0xf80
-[   19.962144]  process_one_work+0x78e/0x13a0
-[   19.962551]  worker_thread+0x8f/0xfa0
-[   19.962919]  kthread+0x2ba/0x3b0
-[   19.963242]  ret_from_fork+0x3a/0x50
-[   19.963596]
-[   19.963753] Freed by task 33:
-[   19.964055]  save_stack+0x1b/0x80
-[   19.964386]  __kasan_slab_free+0x12f/0x180
-[   19.964830]  kmem_cache_free+0x80/0x290
-[   19.965231]  ip6_mc_input+0x38a/0x4d0
-[   19.965617]  ipv6_rcv+0x1a4/0x1d0
-[   19.965948]  __netif_receive_skb_one_core+0xf2/0x180
-[   19.966437]  netif_receive_skb+0x8c/0x3c0
-[   19.966846]  br_handle_frame_finish+0x779/0x1310
-[   19.967302]  br_handle_frame+0x42a/0x830
-[   19.967694]  __netif_receive_skb_core+0xf0e/0x2a90
-[   19.968167]  __netif_receive_skb_one_core+0x96/0x180
-[   19.968658]  process_backlog+0x198/0x650
-[   19.969047]  net_rx_action+0x2fa/0xaa0
-[   19.969420]  __do_softirq+0x268/0x7bc
-[   19.969785]
-[   19.969940] The buggy address belongs to the object at ffff888112862840
-[   19.969940]  which belongs to the cache skbuff_head_cache of size 224
-[   19.971202] The buggy address is located 140 bytes inside of
-[   19.971202]  224-byte region [ffff888112862840, ffff888112862920)
-[   19.972344] The buggy address belongs to the page:
-[   19.972820] page:ffffea00044a1800 refcount:1 mapcount:0 mapping:ffff88811a2bd1c0 index:0xffff8881128625c0 compo0
-[   19.973930] flags: 0x8000000000010200(slab|head)
-[   19.974388] raw: 8000000000010200 ffff88811a2ed650 ffff88811a2ed650 ffff88811a2bd1c0
-[   19.975151] raw: ffff8881128625c0 0000000000190013 00000001ffffffff 0000000000000000
-[   19.975915] page dumped because: kasan: bad access detected
-[   19.976461] page_owner tracks the page as allocated
-[   19.976946] page last allocated via order 2, migratetype Unmovable, gfp_mask 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NO)
-[   19.978332]  prep_new_page+0x24b/0x330
-[   19.978707]  get_page_from_freelist+0x2057/0x2c90
-[   19.979170]  __alloc_pages_nodemask+0x218/0x590
-[   19.979619]  new_slab+0x9d/0x300
-[   19.979948]  ___slab_alloc.constprop.0+0x2f9/0x6f0
-[   19.980421]  __slab_alloc.constprop.0+0x30/0x60
-[   19.980870]  kmem_cache_alloc+0x201/0x230
-[   19.981269]  __alloc_skb+0x91/0x510
-[   19.981620]  alloc_skb_with_frags+0x78/0x4a0
-[   19.982043]  sock_alloc_send_pskb+0x5eb/0x750
-[   19.982476]  unix_stream_sendmsg+0x399/0x7f0
-[   19.982904]  sock_sendmsg+0xe2/0x110
-[   19.983262]  ____sys_sendmsg+0x4de/0x6d0
-[   19.983660]  ___sys_sendmsg+0xe4/0x160
-[   19.984032]  __sys_sendmsg+0xab/0x130
-[   19.984396]  do_syscall_64+0xe7/0xae0
-[   19.984761] page last free stack trace:
-[   19.985142]  __free_pages_ok+0x432/0xbc0
-[   19.985533]  qlist_free_all+0x56/0xc0
-[   19.985907]  quarantine_reduce+0x149/0x170
-[   19.986315]  __kasan_kmalloc.constprop.0+0x9e/0xd0
-[   19.986791]  kmem_cache_alloc+0xe4/0x230
-[   19.987182]  prepare_creds+0x24/0x440
-[   19.987548]  do_faccessat+0x80/0x590
-[   19.987906]  do_syscall_64+0xe7/0xae0
-[   19.988276]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[   19.988775]
-[   19.988930] Memory state around the buggy address:
-[   19.989402]  ffff888112862780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-[   19.990111]  ffff888112862800: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
-[   19.990822] >ffff888112862880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[   19.991529]                                               ^
-[   19.992081]  ffff888112862900: fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc
-[   19.992796]  ffff888112862980: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
-
-Fixes: 5a781ccbd19e ("tc: Add support for configuring the taprio scheduler")
-Reported-by: Michael Schmidt <michael.schmidt@eti.uni-siegen.de>
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Signed-off-by: Jiri Pirko <jiri@resnulli.us>
 ---
+ include/net/flow_offload.h | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-One open question is why I can only reproduce this crash when using
-the igc driver or when using veth interfaces. I can't reproduce this
-using igb, which is the reason that this bug was hidden for so long.
-
-
- net/sched/sch_taprio.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
-
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index ee717e05372b..b1eb12d33b9a 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -564,8 +564,10 @@ static struct sk_buff *taprio_dequeue_soft(struct Qdisc *sch)
- 		prio = skb->priority;
- 		tc = netdev_get_prio_tc_map(dev, prio);
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 64807aa03cee..7b7bd9215156 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -256,6 +256,11 @@ static inline bool flow_offload_has_one_action(const struct flow_action *action)
+ 	return action->num_entries == 1;
+ }
  
--		if (!(gate_mask & BIT(tc)))
-+		if (!(gate_mask & BIT(tc))) {
-+			skb = NULL;
- 			continue;
-+		}
++#define flow_action_for_each(__i, __act, __actions)			\
++        for (__i = 0, __act = &(__actions)->entries[0];			\
++	     __i < (__actions)->num_entries;				\
++	     __act = &(__actions)->entries[++__i])
++
+ static inline bool
+ flow_action_mixed_hw_stats_types_check(const struct flow_action *action,
+ 				       struct netlink_ext_ack *extack)
+@@ -267,7 +272,7 @@ flow_action_mixed_hw_stats_types_check(const struct flow_action *action,
+ 	if (flow_offload_has_one_action(action))
+ 		return true;
  
- 		len = qdisc_pkt_len(skb);
- 		guard = ktime_add_ns(taprio_get_time(q),
-@@ -575,13 +577,17 @@ static struct sk_buff *taprio_dequeue_soft(struct Qdisc *sch)
- 		 * guard band ...
- 		 */
- 		if (gate_mask != TAPRIO_ALL_GATES_OPEN &&
--		    ktime_after(guard, entry->close_time))
-+		    ktime_after(guard, entry->close_time)) {
-+			skb = NULL;
- 			continue;
-+		}
+-	for (i = 0; i < action->num_entries; i++) {
++	flow_action_for_each(i, action_entry, action) {
+ 		action_entry = &action->entries[i];
+ 		if (i && action_entry->hw_stats_type != last_hw_stats_type) {
+ 			NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
+@@ -316,9 +321,6 @@ flow_action_basic_hw_stats_types_check(const struct flow_action *action,
+ 	return flow_action_hw_stats_types_check(action, extack, 0);
+ }
  
- 		/* ... and no budget. */
- 		if (gate_mask != TAPRIO_ALL_GATES_OPEN &&
--		    atomic_sub_return(len, &entry->budget) < 0)
-+		    atomic_sub_return(len, &entry->budget) < 0) {
-+			skb = NULL;
- 			continue;
-+		}
- 
- 		skb = child->ops->dequeue(child);
- 		if (unlikely(!skb))
+-#define flow_action_for_each(__i, __act, __actions)			\
+-        for (__i = 0, __act = &(__actions)->entries[0]; __i < (__actions)->num_entries; __act = &(__actions)->entries[++__i])
+-
+ struct flow_rule {
+ 	struct flow_match	match;
+ 	struct flow_action	action;
 -- 
-2.25.1
+2.21.1
 
