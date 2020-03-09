@@ -2,85 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36DB917D835
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 03:49:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFB1117D83D
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 04:09:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726841AbgCICtG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 22:49:06 -0400
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:38379 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726810AbgCICtG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 22:49:06 -0400
-Received: by mail-qv1-f65.google.com with SMTP id p60so1714274qva.5
-        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 19:49:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aumzn3JCsVacS0kLF1lF7fhe5Q2GmsWbctVm5BMWdcI=;
-        b=Tjsq41XlR5M0VDyKxIvh6farkcRbiXA+lhyOiW94qFhwNrrvZ32k+2WAz9Y3xBitvg
-         fQWE+aEtE6eXuMQvXtxtrRGOHsoHxPfTqgC7c524OCOBighJwEtAnI2QCcls3BxRNlLw
-         cO4hlpI4MJh5jcU036m8zKLm9DBqkO1Hhy+ZevadI7vAC8kQwvV4R08BGUvh334NdEvB
-         7wpgnOEXv72KJnlioDj2zpVRMlKSBTqEnXrnIpQfRTV8EiFFQcu5gmwMoc9CcvrealeY
-         N04kCj6l1lIJEy9+N2Zdn+enhr5c85AK3f7pRMKNlQOwfgusgm77Lzlpt1EJAbKrh8aw
-         w1gQ==
+        id S1726464AbgCIDJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 23:09:03 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:56939 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726352AbgCIDJC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 23:09:02 -0400
+Received: by mail-il1-f198.google.com with SMTP id b17so6434565iln.23
+        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 20:09:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aumzn3JCsVacS0kLF1lF7fhe5Q2GmsWbctVm5BMWdcI=;
-        b=Mz+klLcHJBZM6LH/2iXAB2AU565gMKQpH4N+KFpnmrTeyQy5JnOAvpoImS208Za/oj
-         zil1SiXHFjl7iCYZXzU2o7PgYNhis1pjL0lB8nBEq8WPShjzvkCxWHZhB8BBkhIo4qQu
-         U6knIcMJl19c/mCUR41yOFTJibWtu/RaSP5aUancaYW62xbMCfRAFd25ghPil4xgckoa
-         RwWHJuVijJcwBS16t87uRL3eVPh6MyAAiXc4tMwANbcDh+kGoT82l7kaSqPWN4XwHgpu
-         teHff+SUESe95QTsBYvWX5hnmq5YzfUXI5Yw4wmh7jpxZFH9x3akOb23l+QftWQX7ijY
-         PRaA==
-X-Gm-Message-State: ANhLgQ3vZn/ZooglaDwq8QSWcPvBhxBifDZFK5QdI2kCKNCw8qCJbruC
-        3AqSztJByBnUEB+abE3Ao0A=
-X-Google-Smtp-Source: ADFU+vtht6UINHvM6WHHeVfuD+gq4gH3Z8OgwnLo3cqAuLWT0RfLr0Lfmbq9hupFCC2L8VGzoPSP0w==
-X-Received: by 2002:a05:6214:6f0:: with SMTP id bk16mr12942810qvb.23.1583722145257;
-        Sun, 08 Mar 2020 19:49:05 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:54d7:a956:162c:3e8? ([2601:282:803:7700:54d7:a956:162c:3e8])
-        by smtp.googlemail.com with ESMTPSA id c191sm6850915qkg.49.2020.03.08.19.49.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 Mar 2020 19:49:04 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next] tc: pie: change maximum integer value of
- tc_pie_xstats->prob
-To:     Leslie Monis <lesliemonis@gmail.com>,
-        Linux NetDev <netdev@vger.kernel.org>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
-        Gautam Ramakrishnan <gautamramk@gmail.com>
-References: <20200305162540.4363-1-lesliemonis@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <37e346e2-beb6-5fcd-6b24-9cb1f001f273@gmail.com>
-Date:   Sun, 8 Mar 2020 20:49:03 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=WbPwkzgEPrAuJzlxX3CcbeuVGuo6guJ+1bROjxY+tqA=;
+        b=nATJ4ujphQwOg0TJrRv18kuyVdEoZ7ZDak8XXWFISFCEo3xvz9PaSjpdevc3r127Nd
+         gqfwP6n1cQqI6tsaYzK/Ye1PWnE9ofeD8BOI2C0xw4euIwID2JAYYVsvHz9e+yUjMGHt
+         xNGQywY96g3S1dBWZ+PotnyNlv/WHelaDwmCB8XL2mqYdnU8E+6f+nbhAgXku1afDKeG
+         UsOAgtFT0WSPbLo+UXXrTVCwkvSDQKmHPv4Sevna9ocjn4PYuzTLBReokZ+T9yjqR6ii
+         vE/tuz9xcZaxzugdKAhlXcq9KAN+wPrhmZoKTA0sYJmWabrv2qp1Nh5d/lMceoaOGtrF
+         e+4Q==
+X-Gm-Message-State: ANhLgQ2hp2v2HhGIavldaawbk7QoKUKHbNh3CwUYcMMQmt6j/Wa2bqa0
+        ww/4uZnJVxb8A2GFRSgWzOI0J00bW1DNrofMKlxW+xzpaSYX
+X-Google-Smtp-Source: ADFU+vuLUQs3pQJgI40e0FlWP1Od+6cgMq10RNWRdC+c5ejp2eHk5Lw4iP8+qGXXffXMdih3mGWzBhI08RLSfGUmhMETIsJUodno
 MIME-Version: 1.0
-In-Reply-To: <20200305162540.4363-1-lesliemonis@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6602:1786:: with SMTP id y6mr2447173iox.62.1583723342108;
+ Sun, 08 Mar 2020 20:09:02 -0700 (PDT)
+Date:   Sun, 08 Mar 2020 20:09:02 -0700
+In-Reply-To: <0000000000006f20e205a01ef5e1@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003a9d4f05a063536a@google.com>
+Subject: Re: possible deadlock in __static_key_slow_dec
+From:   syzbot <syzbot+61ffbb75d30176841f76@syzkaller.appspotmail.com>
+To:     arvid.brodin@alten.se, bristot@redhat.com, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org, mingo@kernel.org,
+        netdev@vger.kernel.org, peterz@infradead.org,
+        simon.horman@netronome.com, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/5/20 9:25 AM, Leslie Monis wrote:
-> Kernel commit 105e808c1da2 ("pie: remove pie_vars->accu_prob_overflows"),
-> changes the maximum value of tc_pie_xstats->prob from (2^64 - 1) to
-> (2^56 - 1).
-> 
-> Signed-off-by: Mohit P. Tahiliani <tahiliani@nitk.edu.in>
-> Signed-off-by: Gautam Ramakrishnan <gautamramk@gmail.com>
-> Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
-> ---
->  tc/q_pie.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
+syzbot has bisected this bug to:
 
-applied to iproute2-next. Thanks
+commit b9a1e627405d68d475a3c1f35e685ccfb5bbe668
+Author: Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu Jul 4 00:21:13 2019 +0000
 
+    hsr: implement dellink to clean up resources
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1449a0b1e00000
+start commit:   63623fd4 Merge tag 'for-linus' of git://git.kernel.org/pub..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1649a0b1e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1249a0b1e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5d2e033af114153f
+dashboard link: https://syzkaller.appspot.com/bug?extid=61ffbb75d30176841f76
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14f0efa1e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=119cf3b5e00000
+
+Reported-by: syzbot+61ffbb75d30176841f76@syzkaller.appspotmail.com
+Fixes: b9a1e627405d ("hsr: implement dellink to clean up resources")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
