@@ -2,88 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F28E517E5C5
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 18:32:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EBBEE17E5BC
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 18:32:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727357AbgCIRci (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 13:32:38 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:49524 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727313AbgCIRci (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 13:32:38 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 029HP2YD032288
-        for <netdev@vger.kernel.org>; Mon, 9 Mar 2020 10:32:37 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=gdFmlJTRxcq7QMjYODJoYXA513BFSRyf4af8ShgSyRA=;
- b=BALtzGVFwJQukqbxwgwiTy5A5GRkZrHcgetQ5NUQ9PV0ojHS0hHyIMQtiWWzleNeWHGI
- u3L/sqC3fTuHFgTP1ziolqG4/6WrpiixjHsWAHLBHmvZHpaE8yP+d2Rf5pFMZu8JWDcf
- OfU6mEBcMb4sBint8cOzMQD7t0uEXxKpyjA= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2ymaaq0an0-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 10:32:37 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Mon, 9 Mar 2020 10:32:36 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 3176762E27FD; Mon,  9 Mar 2020 10:32:34 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Song Liu <songliubraving@fb.com>
-Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     <quentin@isovalent.com>, <kernel-team@fb.com>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <arnaldo.melo@gmail.com>,
-        <jolsa@kernel.org>, Song Liu <songliubraving@fb.com>,
-        Paul Chaignon <paul.chaignon@orange.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v6 bpf-next 4/4] bpftool: fix typo in bash-completion
-Date:   Mon, 9 Mar 2020 10:32:18 -0700
-Message-ID: <20200309173218.2739965-5-songliubraving@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200309173218.2739965-1-songliubraving@fb.com>
-References: <20200309173218.2739965-1-songliubraving@fb.com>
-X-FB-Internal: Safe
+        id S1727258AbgCIRcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 13:32:25 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:36415 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727225AbgCIRcZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 13:32:25 -0400
+Received: by mail-wr1-f68.google.com with SMTP id s5so8395898wrg.3
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 10:32:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WxYmRRZdpw9v1+Q9NWUdyW6ICQYn82ZKemq9b2/7Xeo=;
+        b=ri+IT8j9PdLQ9s6qx9m8Pw2Qbu5jPi5Qwbjlb2JDV+ThpahVCn/qcXXT2nD8PiIMwY
+         snPayNDElyEVSFD886YHhzAXOtUbQ/8K6cKHGAuKcaIRjXj3lfRJRbG0B+MzVe3PEpab
+         SJL5vkk6iptLPnELglIGBrk0aTVYGKnhx1kOBPYk3noyh3wqyXp521KHQtWf2lUEtW+l
+         aF9VS4tYP+rycXjP9yUrEVbVhiUt8BkxXSDhXwD6rOludllfsAInrK+642NbXRA0Aql5
+         y8vMJ5QV3V0xpfoDApxSvjNzjurVkCMS+hPEcFsdJ2XdB0EPe4cDyhfDlZNEcEIv0Kmc
+         Prrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WxYmRRZdpw9v1+Q9NWUdyW6ICQYn82ZKemq9b2/7Xeo=;
+        b=JjLNOE5HmSw1plc3TkuaI0r5o1Vl4QdS79Nrw7FoQEFs0Ua2xPltfiYBH8D+8cuwpU
+         /mC2qmdAueRI9gbMRdXYRcQDM54FANmf5iLojX21pNyVQyqYdXOLErqVmAYBAVoLib14
+         W/TpI1xyNajG7bwaDa2NxMdMlpst1zknmT/zsfcbNiH0OVoSQV3yEXRkLtklSlKvsZGp
+         W7s8KsZJLtv3BsmnQdmdeuuM9Lakysk/KvotAMtXkg42ok/vpJh85gc1eRq6LxwjaVA+
+         Px+B0lNOH9BXwmNdAO6E26GJ5zjoGT4HlzVyOWPUzLd+aKLdMXV5m8/5x1pbOVG13rUV
+         KKuA==
+X-Gm-Message-State: ANhLgQ2USOTwLe/yPT9ah4N3HkOgECVKKtUdG2mjypYzXD1uPXHBStOv
+        IKhPTHF179LR9Fdgu0cRcf3mKQ==
+X-Google-Smtp-Source: ADFU+vtbLjBCXX20WjuvtcuRm14WS90PUHl59cKVr+SLBLGH33UWbel2Yn9YlnH+esjhkHmHvls0MQ==
+X-Received: by 2002:a05:6000:1187:: with SMTP id g7mr21428078wrx.382.1583775143025;
+        Mon, 09 Mar 2020 10:32:23 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id i1sm43834066wrs.18.2020.03.09.10.32.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Mar 2020 10:32:22 -0700 (PDT)
+Date:   Mon, 9 Mar 2020 18:32:21 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        saeedm@mellanox.com, leon@kernel.org, michael.chan@broadcom.com,
+        vishal@chelsio.com, jeffrey.t.kirsher@intel.com,
+        idosch@mellanox.com, aelior@marvell.com, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, pablo@netfilter.org, mlxsw@mellanox.com
+Subject: Re: [patch net-next v4 03/10] flow_offload: check for basic action
+ hw stats type
+Message-ID: <20200309173221.GE13968@nanopsycho.orion>
+References: <20200307114020.8664-1-jiri@resnulli.us>
+ <20200307114020.8664-4-jiri@resnulli.us>
+ <180ffa93-943c-95ba-437b-a9d15db2a955@solarflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-09_06:2020-03-09,2020-03-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 suspectscore=0
- bulkscore=0 clxscore=1015 adultscore=0 impostorscore=0 spamscore=0
- phishscore=0 lowpriorityscore=0 malwarescore=0 priorityscore=1501
- mlxlogscore=678 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2003090110
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <180ffa93-943c-95ba-437b-a9d15db2a955@solarflare.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-_bpftool_get_map_names => _bpftool_get_prog_names for prog-attach|detach.
+Mon, Mar 09, 2020 at 05:52:47PM CET, ecree@solarflare.com wrote:
+>On 07/03/2020 11:40, Jiri Pirko wrote:
+>> From: Jiri Pirko <jiri@mellanox.com>
+>>
+>> Introduce flow_action_basic_hw_stats_types_check() helper and use it
+>> in drivers. That sanitizes the drivers which do not have support
+>> for action HW stats types.
+>>
+>> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+>> ---
+>> v3->v4:
+>> - fixed entries iteration in check (s/0/i/)
+>> - compare allowed type explicitly to 0 to avoid confusion
+>> v2->v3:
+>> - added flow_action_hw_stats_types_check() to pass allowed types
+>> - "mixed" bool got remove, iterate entries in check
+>> - added mlx5 checking instead of separate patches (will be changed by
+>>   later patch to flow_action_hw_stats_types_check()
+>> v1->v2:
+>> - new patch
+>> ---
+>> <snip>
+>> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+>> index 93d17f37e980..8b40f612a565 100644
+>> --- a/include/net/flow_offload.h
+>> +++ b/include/net/flow_offload.h
+>> @@ -3,6 +3,7 @@
+>>  
+>>  #include <linux/kernel.h>
+>>  #include <linux/list.h>
+>> +#include <linux/netlink.h>
+>>  #include <net/flow_dissector.h>
+>>  #include <linux/rhashtable.h>
+>>  
+>> @@ -251,6 +252,66 @@ static inline bool flow_offload_has_one_action(const struct flow_action *action)
+>>  	return action->num_entries == 1;
+>>  }
+>>  
+>> +static inline bool
+>> +flow_action_mixed_hw_stats_types_check(const struct flow_action *action,
+>> +				       struct netlink_ext_ack *extack)
+>> +{
+>> +	const struct flow_action_entry *action_entry;
+>> +	u8 uninitialized_var(last_hw_stats_type);
+>> +	int i;
+>> +
+>> +	if (flow_offload_has_one_action(action))
+>> +		return true;
+>> +
+>> +	for (i = 0; i < action->num_entries; i++) {
+>Any reason you didn't use flow_action_for_each() here?
 
-Fixes: 99f9863a0c45 ("bpftool: Match maps by name")
-Cc: Paul Chaignon <paul.chaignon@orange.com>
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- tools/bpf/bpftool/bash-completion/bpftool | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Nope. Will send a follow-up to change this.
 
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index 49f4ab2f67e3..a9cce9d3745a 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -389,7 +389,7 @@ _bpftool()
-                                     _bpftool_get_prog_ids
-                                     ;;
-                                 name)
--                                    _bpftool_get_map_names
-+                                    _bpftool_get_prog_names
-                                     ;;
-                                 pinned)
-                                     _filedir
--- 
-2.17.1
 
+>-ed
+>
+>> +		action_entry = &action->entries[i];
+>> +		if (i && action_entry->hw_stats_type != last_hw_stats_type) {
+>> +			NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
+>> +			return false;
+>> +		}
+>> +		last_hw_stats_type = action_entry->hw_stats_type;
+>> +	}
+>> +	return true;
+>> +}
+>> +
+>> +static inline const struct flow_action_entry *
+>> +flow_action_first_entry_get(const struct flow_action *action)
+>> +{
+>> +	WARN_ON(!flow_action_has_entries(action));
+>> +	return &action->entries[0];
+>> +}
+>> +
+>> +static inline bool
+>> +flow_action_hw_stats_types_check(const struct flow_action *action,
+>> +				 struct netlink_ext_ack *extack,
+>> +				 u8 allowed_hw_stats_type)
+>> +{
+>> +	const struct flow_action_entry *action_entry;
+>> +
+>> +	if (!flow_action_has_entries(action))
+>> +		return true;
+>> +	if (!flow_action_mixed_hw_stats_types_check(action, extack))
+>> +		return false;
+>> +	action_entry = flow_action_first_entry_get(action);
+>> +	if (allowed_hw_stats_type == 0 &&
+>> +	    action_entry->hw_stats_type != FLOW_ACTION_HW_STATS_TYPE_ANY) {
+>> +		NL_SET_ERR_MSG_MOD(extack, "Driver supports only default HW stats type \"any\"");
+>> +		return false;
+>> +	} else if (allowed_hw_stats_type != 0 &&
+>> +		   action_entry->hw_stats_type != allowed_hw_stats_type) {
+>> +		NL_SET_ERR_MSG_MOD(extack, "Driver does not support selected HW stats type");
+>> +		return false;
+>> +	}
+>> +	return true;
+>> +}
+>> +
+>> +static inline bool
+>> +flow_action_basic_hw_stats_types_check(const struct flow_action *action,
+>> +				       struct netlink_ext_ack *extack)
+>> +{
+>> +	return flow_action_hw_stats_types_check(action, extack, 0);
+>> +}
+>> +
+>>  #define flow_action_for_each(__i, __act, __actions)			\
+>>          for (__i = 0, __act = &(__actions)->entries[0]; __i < (__actions)->num_entries; __act = &(__actions)->entries[++__i])
+>>  
+>> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+>> index 79d9b4384d7b..fca9bfa8437e 100644
+>> --- a/net/dsa/slave.c
+>> +++ b/net/dsa/slave.c
+>> @@ -865,6 +865,10 @@ static int dsa_slave_add_cls_matchall(struct net_device *dev,
+>>  	if (!flow_offload_has_one_action(&cls->rule->action))
+>>  		return err;
+>>  
+>> +	if (!flow_action_basic_hw_stats_types_check(&cls->rule->action,
+>> +						    cls->common.extack))
+>> +		return err;
+>> +
+>>  	act = &cls->rule->action.entries[0];
+>>  
+>>  	if (act->id == FLOW_ACTION_MIRRED && protocol == htons(ETH_P_ALL)) {
+>
