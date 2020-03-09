@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C434317E746
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 19:35:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E80D817E747
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 19:35:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727484AbgCISfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 14:35:50 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:34181 "EHLO
+        id S1727491AbgCISfw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 14:35:52 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:53411 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727323AbgCISft (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 14:35:49 -0400
+        by vger.kernel.org with ESMTP id S1727323AbgCISfw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 14:35:52 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 8951E21B0E;
-        Mon,  9 Mar 2020 14:35:48 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 3A4CE220F1;
+        Mon,  9 Mar 2020 14:35:51 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 09 Mar 2020 14:35:48 -0400
+  by compute4.internal (MEProxy); Mon, 09 Mar 2020 14:35:51 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=iDjMnq0wm+jbhZr/QaVKxyaAMqkq8dVCZ598dtJW4T4=; b=QY5p5qHv
-        TTVWbO2YeDlU5iM5W+BYdZzLaHmqPuJqazfywF8Rbi6ZOUHhMjh/5qY7v+lh30Dq
-        mDRrVRpddJj6PrvlLQI3yIEiSGxxVYvdUuRsYqFDHHc1H6dlpsXARCpg8NMZCcxo
-        sWnC4jAfCEfsYKnTxLFqtSuuEjW1ZktGGnGPSC93C3cMSxZywp1kQzKUY8RFt8DC
-        tKTZHJeJsWnWYkNs7jrh5zgx22N7WcCZ5Kh2U80ED6y8BQkgUotgwwiwXBXLnOwJ
-        OcOuc9HdqrSwIar7v4ntg+jxIMcOV7bl+OGxqKZxhQEloktgJryHkYTAsAWQ5jDB
-        J6rMyyReKSH7NA==
-X-ME-Sender: <xms:hIxmXsTcUe2M5TVZTI_5sdCczQBTuEjykWY7hk-EWJkIogcolS7W2g>
+        fm2; bh=LWc7MpU2TU1b9aDswT2UBDnMlQzfL/4hn38RQDbiA+A=; b=AvJunZHC
+        +HhjpsLleulinVXudsMwndP9GyjjQ4ImDcBiw6zu/8xBncvluprvTsqn3tSE7AFk
+        oR/t3jyja27+TOe/IG/dx5L6/OubCwaztrIQ0wLIMCVShqKQlLyWET1E4FTEJi/M
+        X3IiCU0kMLuyw1FuCkb5IFtD+QA32X7Q2srBOOMTC+CaYuAS6VTIHtN2IFFoNgMZ
+        YonVu5L1M7AKYk1VflgJ9XoSUvB+Eu7UBZphUYX9SzU9h1o8rY5DohYW+mL45GMK
+        Q8Q1Whn0Q8jX3iAXAfwqdQeK5qClpVBdA5q+2MlXnL9AW4tu1h/xvrlumld0s2qR
+        UUXbXnn31Ijcdg==
+X-ME-Sender: <xms:h4xmXh3SU8sbhDw8n4gl1qhi3mX077I95TBJdZ93gVOiY2lBm7-Lfw>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedruddukedgudduhecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
     ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucfkphepjeejrddufeekrddvgeelrddvtdelnecuvehluhhsth
-    gvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiugho
-    shgthhdrohhrgh
-X-ME-Proxy: <xmx:hIxmXnbSgmL6MrV1AE0-6z6QVEda9pNLeeJ0k59_eXF8tdBiMMjEjA>
-    <xmx:hIxmXhMyyqLj8JyRerFtKXrxWzj3TmMB7x35--XkDPDP4x3_gb6dDA>
-    <xmx:hIxmXoMwwG5NcC1JU00J6CHsTPQjreLbVF745vfsJKUeFSDi-MWM0A>
-    <xmx:hIxmXqC2juX_wBx6dBqd54XyHQTU0PxbBoylV4BvbXXC0A7jIK13nQ>
+    ohhstghhrdhorhhgqeenucffohhmrghinhepshgvthdrihhsnecukfhppeejjedrudefke
+    drvdegledrvddtleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhl
+    fhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:h4xmXsV5V1tMig07XJwombXUEt1jTh-MtXL0SPu0OwaM4KREWGkzfA>
+    <xmx:h4xmXs7D7FQkNhTn9c5FYcasgPZv3d-gIF80Jayl-Xky5V7EuYENEQ>
+    <xmx:h4xmXjJ8oRVMqu84DhaTrOmlXl0o-zZRUBwne5t4rw87McrGgmiKPQ>
+    <xmx:h4xmXjEwb0Vjdrxdi8pIalhKo7_y1AfsU28EVkt8A01cAvYuwzPnEQ>
 Received: from splinter.mtl.com (unknown [77.138.249.209])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 19C6230614FA;
-        Mon,  9 Mar 2020 14:35:45 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id BD39D3060F09;
+        Mon,  9 Mar 2020 14:35:48 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
         jhs@mojatatu.com, xiyou.wangcong@gmail.com, kuba@kernel.org,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 2/6] net: sched: Add centralized RED flag checking
-Date:   Mon,  9 Mar 2020 20:34:59 +0200
-Message-Id: <20200309183503.173802-3-idosch@idosch.org>
+Subject: [PATCH net-next 3/6] net: sched: RED: Introduce an ECN tail-dropping mode
+Date:   Mon,  9 Mar 2020 20:35:00 +0200
+Message-Id: <20200309183503.173802-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200309183503.173802-1-idosch@idosch.org>
 References: <20200309183503.173802-1-idosch@idosch.org>
@@ -62,159 +62,144 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@mellanox.com>
 
-The qdiscs RED, GRED, SFQ and CHOKE use different subsets of the same pool
-of global RED flags. Add a common function for all of these to validate
-that only supported flags are passed. In later patches this function will
-be extended with a check for flag compatibility / meaningfulness.
+When the RED Qdisc is currently configured to enable ECN, the RED algorithm
+is used to decide whether a certain SKB should be marked. If that SKB is
+not ECN-capable, it is early-dropped.
+
+It is also possible to keep all traffic in the queue, and just mark the
+ECN-capable subset of it, as appropriate under the RED algorithm. Some
+switches support this mode, and some installations make use of it.
+
+To that end, add a new RED flag, TC_RED_TAILDROP. When the Qdisc is
+configured with this flag, non-ECT traffic is enqueued (and tail-dropped
+when the queue size is exhausted) instead of being early-dropped.
 
 Signed-off-by: Petr Machata <petrm@mellanox.com>
 Acked-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- include/net/red.h     | 12 ++++++++++++
- net/sched/sch_choke.c |  5 +++++
- net/sched/sch_gred.c  |  7 +++----
- net/sched/sch_red.c   |  5 +++++
- net/sched/sch_sfq.c   | 10 ++++++++--
- 5 files changed, 33 insertions(+), 6 deletions(-)
+ include/net/pkt_cls.h          |  1 +
+ include/net/red.h              |  5 +++++
+ include/uapi/linux/pkt_sched.h |  1 +
+ net/sched/sch_red.c            | 32 ++++++++++++++++++++++++++------
+ 4 files changed, 33 insertions(+), 6 deletions(-)
 
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index 341a66af8d59..9ad369aba678 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -727,6 +727,7 @@ struct tc_red_qopt_offload_params {
+ 	u32 limit;
+ 	bool is_ecn;
+ 	bool is_harddrop;
++	bool is_taildrop;
+ 	struct gnet_stats_queue *qstats;
+ };
+ 
 diff --git a/include/net/red.h b/include/net/red.h
-index 9665582c4687..bb7bac52c365 100644
+index bb7bac52c365..5f018205e57a 100644
 --- a/include/net/red.h
 +++ b/include/net/red.h
-@@ -179,6 +179,18 @@ static inline bool red_check_params(u32 qth_min, u32 qth_max, u8 Wlog)
- 	return true;
- }
+@@ -188,6 +188,11 @@ static inline bool red_check_flags(unsigned int flags,
+ 		return false;
+ 	}
  
-+static inline bool red_check_flags(unsigned int flags,
-+				   unsigned int supported_flags,
-+				   struct netlink_ext_ack *extack)
-+{
-+	if (flags & ~supported_flags) {
-+		NL_SET_ERR_MSG_MOD(extack, "unsupported RED flags specified");
++	if ((flags & TC_RED_TAILDROP) && !(flags & TC_RED_ECN)) {
++		NL_SET_ERR_MSG_MOD(extack, "taildrop mode is only meaningful with ECN");
 +		return false;
 +	}
 +
-+	return true;
-+}
-+
- static inline void red_set_parms(struct red_parms *p,
- 				 u32 qth_min, u32 qth_max, u8 Wlog, u8 Plog,
- 				 u8 Scell_log, u8 *stab, u32 max_P)
-diff --git a/net/sched/sch_choke.c b/net/sched/sch_choke.c
-index a36974e9c601..c0e0c9f1ace3 100644
---- a/net/sched/sch_choke.c
-+++ b/net/sched/sch_choke.c
-@@ -78,6 +78,8 @@ static unsigned int choke_len(const struct choke_sched_data *q)
- 	return (q->tail - q->head) & q->tab_mask;
+ 	return true;
  }
  
-+#define CHOKE_SUPPORTED_FLAGS (TC_RED_ECN | TC_RED_HARDDROP)
-+
- /* Is ECN parameter configured */
- static int use_ecn(const struct choke_sched_data *q)
- {
-@@ -370,6 +372,9 @@ static int choke_change(struct Qdisc *sch, struct nlattr *opt,
- 	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
- 		return -EINVAL;
+diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+index bbe791b24168..7293085ff157 100644
+--- a/include/uapi/linux/pkt_sched.h
++++ b/include/uapi/linux/pkt_sched.h
+@@ -272,6 +272,7 @@ struct tc_red_qopt {
+ #define TC_RED_ECN		1
+ #define TC_RED_HARDDROP		2
+ #define TC_RED_ADAPTATIVE	4
++#define TC_RED_TAILDROP		8
+ };
  
-+	if (!red_check_flags(ctl->flags, CHOKE_SUPPORTED_FLAGS, extack))
-+		return -EINVAL;
-+
- 	if (ctl->limit > CHOKE_MAX_QUEUE)
- 		return -EINVAL;
- 
-diff --git a/net/sched/sch_gred.c b/net/sched/sch_gred.c
-index 8599c6f31b05..5e1cb4b243ce 100644
---- a/net/sched/sch_gred.c
-+++ b/net/sched/sch_gred.c
-@@ -428,6 +428,8 @@ static int gred_change_table_def(struct Qdisc *sch, struct nlattr *dps,
- 		NL_SET_ERR_MSG_MOD(extack, "can't set per-Qdisc RED flags when per-virtual queue flags are used");
- 		return -EINVAL;
- 	}
-+	if (!red_check_flags(sopt->flags, GRED_VQ_RED_FLAGS, extack))
-+		return -EINVAL;
- 
- 	sch_tree_lock(sch);
- 	table->DPs = sopt->DPs;
-@@ -590,11 +592,8 @@ static int gred_vq_validate(struct gred_sched *table, u32 cdp,
- 			NL_SET_ERR_MSG_MOD(extack, "can't change per-virtual queue RED flags when per-Qdisc flags are used");
- 			return -EINVAL;
- 		}
--		if (red_flags & ~GRED_VQ_RED_FLAGS) {
--			NL_SET_ERR_MSG_MOD(extack,
--					   "invalid RED flags specified");
-+		if (!red_check_flags(red_flags, GRED_VQ_RED_FLAGS, extack))
- 			return -EINVAL;
--		}
- 	}
- 
- 	return 0;
+ struct tc_red_xstats {
 diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
-index 1695421333e3..f9839d68b811 100644
+index f9839d68b811..d72db7643a37 100644
 --- a/net/sched/sch_red.c
 +++ b/net/sched/sch_red.c
-@@ -44,6 +44,8 @@ struct red_sched_data {
+@@ -44,7 +44,8 @@ struct red_sched_data {
  	struct Qdisc		*qdisc;
  };
  
-+#define RED_SUPPORTED_FLAGS (TC_RED_ECN | TC_RED_HARDDROP | TC_RED_ADAPTATIVE)
-+
+-#define RED_SUPPORTED_FLAGS (TC_RED_ECN | TC_RED_HARDDROP | TC_RED_ADAPTATIVE)
++#define RED_SUPPORTED_FLAGS (TC_RED_ECN | TC_RED_HARDDROP | \
++			     TC_RED_ADAPTATIVE | TC_RED_TAILDROP)
+ 
  static inline int red_use_ecn(struct red_sched_data *q)
  {
- 	return q->flags & TC_RED_ECN;
-@@ -216,6 +218,9 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt,
- 	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
- 		return -EINVAL;
- 
-+	if (!red_check_flags(ctl->flags, RED_SUPPORTED_FLAGS, extack))
-+		return -EINVAL;
-+
- 	if (ctl->limit > 0) {
- 		child = fifo_create_dflt(sch, &bfifo_qdisc_ops, ctl->limit,
- 					 extack);
-diff --git a/net/sched/sch_sfq.c b/net/sched/sch_sfq.c
-index c787d4d46017..28949e0ec075 100644
---- a/net/sched/sch_sfq.c
-+++ b/net/sched/sch_sfq.c
-@@ -325,6 +325,8 @@ static unsigned int sfq_drop(struct Qdisc *sch, struct sk_buff **to_free)
- 	return 0;
+@@ -56,6 +57,11 @@ static inline int red_use_harddrop(struct red_sched_data *q)
+ 	return q->flags & TC_RED_HARDDROP;
  }
  
-+#define SFQ_SUPPORTED_FLAGS (TC_RED_ECN | TC_RED_HARDDROP)
++static inline int red_use_taildrop(struct red_sched_data *q)
++{
++	return q->flags & TC_RED_TAILDROP;
++}
 +
- /* Is ECN parameter configured */
- static int sfq_prob_mark(const struct sfq_sched_data *q)
+ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 		       struct sk_buff **to_free)
  {
-@@ -620,7 +622,8 @@ static void sfq_perturbation(struct timer_list *t)
- 		mod_timer(&q->perturb_timer, jiffies + q->perturb_period);
- }
+@@ -76,23 +82,36 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch,
  
--static int sfq_change(struct Qdisc *sch, struct nlattr *opt)
-+static int sfq_change(struct Qdisc *sch, struct nlattr *opt,
-+		      struct netlink_ext_ack *extack)
- {
- 	struct sfq_sched_data *q = qdisc_priv(sch);
- 	struct tc_sfq_qopt *ctl = nla_data(opt);
-@@ -640,6 +643,9 @@ static int sfq_change(struct Qdisc *sch, struct nlattr *opt)
- 	if (ctl_v1 && !red_check_params(ctl_v1->qth_min, ctl_v1->qth_max,
- 					ctl_v1->Wlog))
- 		return -EINVAL;
-+	if (ctl_v1 && !red_check_flags(ctl_v1->flags, SFQ_SUPPORTED_FLAGS,
-+				       extack))
-+		return -EINVAL;
- 	if (ctl_v1 && ctl_v1->qth_min) {
- 		p = kmalloc(sizeof(*p), GFP_KERNEL);
- 		if (!p)
-@@ -750,7 +756,7 @@ static int sfq_init(struct Qdisc *sch, struct nlattr *opt,
- 	get_random_bytes(&q->perturbation, sizeof(q->perturbation));
+ 	case RED_PROB_MARK:
+ 		qdisc_qstats_overlimit(sch);
+-		if (!red_use_ecn(q) || !INET_ECN_set_ce(skb)) {
++		if (!red_use_ecn(q)) {
+ 			q->stats.prob_drop++;
+ 			goto congestion_drop;
+ 		}
  
- 	if (opt) {
--		int err = sfq_change(sch, opt);
-+		int err = sfq_change(sch, opt, extack);
- 		if (err)
- 			return err;
+-		q->stats.prob_mark++;
++		if (INET_ECN_set_ce(skb)) {
++			q->stats.prob_mark++;
++		} else if (red_use_taildrop(q)) {
++			q->stats.prob_drop++;
++			goto congestion_drop;
++		}
++
++		/* Non-ECT packet in ECN taildrop mode: queue it. */
+ 		break;
+ 
+ 	case RED_HARD_MARK:
+ 		qdisc_qstats_overlimit(sch);
+-		if (red_use_harddrop(q) || !red_use_ecn(q) ||
+-		    !INET_ECN_set_ce(skb)) {
++		if (red_use_harddrop(q) || !red_use_ecn(q)) {
++			q->stats.forced_drop++;
++			goto congestion_drop;
++		}
++
++		if (INET_ECN_set_ce(skb)) {
++			q->stats.forced_mark++;
++		} else if (!red_use_taildrop(q)) {
+ 			q->stats.forced_drop++;
+ 			goto congestion_drop;
+ 		}
+ 
+-		q->stats.forced_mark++;
++		/* Non-ECT packet in ECN taildrop mode: queue it. */
+ 		break;
  	}
+ 
+@@ -167,6 +186,7 @@ static int red_offload(struct Qdisc *sch, bool enable)
+ 		opt.set.limit = q->limit;
+ 		opt.set.is_ecn = red_use_ecn(q);
+ 		opt.set.is_harddrop = red_use_harddrop(q);
++		opt.set.is_taildrop = red_use_taildrop(q);
+ 		opt.set.qstats = &sch->qstats;
+ 	} else {
+ 		opt.command = TC_RED_DESTROY;
 -- 
 2.24.1
 
