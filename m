@@ -2,62 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64CFD17D79A
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 01:54:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A6E517D811
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 03:15:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726558AbgCIAyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 Mar 2020 20:54:35 -0400
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:38822 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726352AbgCIAyf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 20:54:35 -0400
-Received: by mail-pj1-f66.google.com with SMTP id a16so3637577pju.3
-        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 17:54:35 -0700 (PDT)
+        id S1726847AbgCICPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 Mar 2020 22:15:17 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:38381 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726449AbgCICPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 Mar 2020 22:15:17 -0400
+Received: by mail-io1-f65.google.com with SMTP id s24so7630113iog.5
+        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 19:15:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=w0fE2a/vw1aDIO+pDwVksZGqPKExtjbmYx3VCYkHt0Q=;
-        b=AgNydnEN9+vXGav5asqTHG5iQ8VfNhn76AMU1+OGEUuL21bO2XJmmHIbRuRQK8f4xU
-         fQl98ba6YHeT2Zx1BkVU4p9PBU7DFYG+/0lfupF2vOXyCaXOuaQ2x22Nntcv2K+3hNJX
-         d27X6IsJD21780veFCDLmHmHwcDioF55jTrFcNmCYBGp/flNEXpn1ZzR6ZMHMAHdIHPe
-         bg37+f70ZB0+V2Pi33/xnD4Xf996rPJAt6psOQ88swWC6ktqkHUoe5iKYtbucHZvDadX
-         1z0NDXeHkUsWqq+WrBB03JNm4jRzkuiBaXqRawb14DOtd9239pez6/JIErsRm5Oqkjsx
-         yNig==
+        bh=3AxSsH8NRlgJC5rPI+WaVRJCZenfHMUSGrIbXmfEZJk=;
+        b=RHgKIWJLAtoPTb0SAGBl5nVCbXidEoBCxscRW6ENOyiO+mgPx/rQP+lGxLPp1WlhDG
+         fg5/VbqPAS6HVnCKvQaCW30+6829VTstWqmBChw97/ZLvUT2z3tw8GpGIcCfcoMk3uls
+         SvqC5NapTFMuMK+ijh3EV6r1OXBMelNTPFcKhmBhgERdjPr7KQs2hZ41eLGrmiDFdSdr
+         N6EM/hMHK5dVsSKQZKT31OBDgQDJU7nwu4WzLEPsrvX8C/s1jPOz5yCmbwI5IIDaW+ty
+         qNgLMEMEbJl6i4jSzmjo7l8yGJEEPAOr0NNV34ViH2LxCfXjHFEv/lATHNnAAnCmQTBf
+         pYww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=w0fE2a/vw1aDIO+pDwVksZGqPKExtjbmYx3VCYkHt0Q=;
-        b=tPd92SVSWE4d7FJQzYtc3sewSwnqjBvGECT4zHKNBJrzuIEpi6dNQsTaE9yT3l4tek
-         UWsn2h1V/w326FeU+/afFS0M5N5eFE7uC04nQ2zZdJL55tTbJdUfA0DmzM7rjA2p1NtY
-         3BjrlUmLVN6KuQ8K+fKZqCaG3KvFDgDpT1ColFoIrzXvgc5umSWFigohX62lujH87/o0
-         9s5IXmNVWu4TzmHB6ZilzJTOZXyg7sHw8QMmBvN3vSVkdyqry0JBLQdcIhoxlJXXNe52
-         0RCc1vD6wWNqbYk9fS9uR3pFEssVTpTGbq7GlO9XBHSavimhQ2WMmJb8Djhxgz0ekUlv
-         o0cQ==
-X-Gm-Message-State: ANhLgQ1qMy9W+muFiwKlZfMeVdXS2lZXoVsifrg7I44oPYCqiJF5IXy/
-        Lnf5qNbw11l7cPjnIIwRpcmQUNwM
-X-Google-Smtp-Source: ADFU+vvs/tt9FvT1T2RvQMGkc6PCIBiPYkjY3JY3XZHYLrEdcdBlvKMmYy6C6LD6c+W6C3hxO0WUgw==
-X-Received: by 2002:a17:90b:3692:: with SMTP id mj18mr542161pjb.170.1583715274339;
-        Sun, 08 Mar 2020 17:54:34 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id f19sm34576648pgf.33.2020.03.08.17.54.33
+        bh=3AxSsH8NRlgJC5rPI+WaVRJCZenfHMUSGrIbXmfEZJk=;
+        b=ULNUMaW5DK/eKChF6TXEUt0m9bPZHVK7pzRoW77oBVxu0XBMdrhbAlKVR01Lt5RJ1q
+         b/1eNtSpWfEDNOM/Huyap8TRZTIDkdvDFCTRBUlslh5sMusZUG9DPh3zm+8njMBHjCwl
+         dmLLycCYXG8HkB36+e4N5uezoILo2ZdK9t/QRW68MbdpP2Vfm0aiFxNpvWySSMcIoNgh
+         Gaz8NT/y1O9NU1NbJy+6tnFMo2Fxyt5WWLeDDbtdOb46XK8XbeZT6OV23w21fKLMh0QG
+         LLF0RNOFIzH+tnNCzCvQDLE/XPZ3tMnT/pIu9inCcuM+r42A7tuoMM/3kzbxtOU2o24d
+         ozRw==
+X-Gm-Message-State: ANhLgQ0ZlCN3G+MZcTaz9zQr5JxOfusGxCTJ9sx2UkftUsnmpSLnX0+l
+        4IvZQkKGcWLm3rLKxXV53nQ=
+X-Google-Smtp-Source: ADFU+vs9mRGWuVIsWbPQgjzNXTc3lPOl/k79RJQplzFhHnThFIXogEFK1HjC8X9MC2hVAKgOeL4CcQ==
+X-Received: by 2002:a6b:f913:: with SMTP id j19mr11548730iog.124.1583720116737;
+        Sun, 08 Mar 2020 19:15:16 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:54d7:a956:162c:3e8? ([2601:282:803:7700:54d7:a956:162c:3e8])
+        by smtp.googlemail.com with ESMTPSA id p189sm1717117iof.17.2020.03.08.19.15.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 Mar 2020 17:54:33 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: rmnet: set NETIF_F_LLTX flag
-To:     subashab@codeaurora.org, Taehee Yoo <ap420073@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, stranche@codeaurora.org,
-        netdev@vger.kernel.org
-References: <20200308134706.18727-1-ap420073@gmail.com>
- <c3ae604f1bd130b3c753578aa89087cb@codeaurora.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <5c28fd8f-c814-7af6-56f9-8c5f70658e22@gmail.com>
-Date:   Sun, 8 Mar 2020 17:54:32 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        Sun, 08 Mar 2020 19:15:15 -0700 (PDT)
+Subject: Re: IPv6 regression introduced by commit
+ 3b6761d18bc11f2af2a6fc494e9026d39593f22c
+To:     Alarig Le Lay <alarig@swordarmor.fr>
+Cc:     netdev@vger.kernel.org, jack@basilfillan.uk,
+        Vincent Bernat <bernat@debian.org>
+References: <20200305081747.tullbdlj66yf3w2w@mew.swordarmor.fr>
+ <d8a0069a-b387-c470-8599-d892e4a35881@gmail.com>
+ <20200308105729.72pbglywnahbl7hs@mew.swordarmor.fr>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <27457094-b62a-f029-e259-f7a274fee49d@gmail.com>
+Date:   Sun, 8 Mar 2020 20:15:14 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <c3ae604f1bd130b3c753578aa89087cb@codeaurora.org>
+In-Reply-To: <20200308105729.72pbglywnahbl7hs@mew.swordarmor.fr>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -66,44 +68,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 3/8/20 5:28 PM, subashab@codeaurora.org wrote:
-> On 2020-03-08 07:47, Taehee Yoo wrote:
->> The rmnet_vnd_setup(), which is the callback of ->ndo_start_xmit() is
->> allowed to call concurrently because it uses RCU protected data.
->> So, it doesn't need tx lock.
->>
->> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
->> ---
->>  drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
->> b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
->> index d7c52e398e4a..d58b51d277f1 100644
->> --- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
->> +++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_vnd.c
->> @@ -212,6 +212,8 @@ void rmnet_vnd_setup(struct net_device *rmnet_dev)
->>      rmnet_dev->needs_free_netdev = true;
->>      rmnet_dev->ethtool_ops = &rmnet_ethtool_ops;
->>
->> +    rmnet_dev->features |= NETIF_F_LLTX;
->> +
->>      /* This perm addr will be used as interface identifier by IPv6 */
->>      rmnet_dev->addr_assign_type = NET_ADDR_RANDOM;
->>      eth_random_addr(rmnet_dev->perm_addr);
+On 3/8/20 4:57 AM, Alarig Le Lay wrote:
+> On sam.  7 mars 17:52:10 2020, David Ahern wrote:
+>> On 3/5/20 1:17 AM, Alarig Le Lay wrote:
+>> Kernel version?
 > 
-> Hi Taehee
+> I’ve seen this from 4.19 on my experience, it works at least until 4.15.
 > 
-> It seems the flag is deprecated per documentation.
+>> you are monitoring neighbor states with 'ip monitor' or something else?
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/Documentation/networking/netdevices.txt#n73
+> Yes, 'ip -ts monitor neigh' to be exact.
+> 
+>> The above does not reproduce for me on 5.6 or 4.19, and I would have
+>> been really surprised if it had, so I have to question the git bisect
+>> result.
+> 
+> My personal experience is that, while routing is activated (and having a
+> full-view, I don’t have any soft router without it), the neighbors are
+> flapping, thus causing a blackhole.
+> It doesn’t happen with a limit traffic processing. The limit is around
+> 20 Mbps from what I can see.
+
+If you are using x86 based CPU you can do this:
+    perf probe ip6_dst_alloc%return ret=%ax
+
+    perf record -e probe:* -a -g -- sleep 10
+    --> run this during the flapping
+
+    perf script
+
+this will show if the flapping is due to dst alloc failures.
+
+Other things to try:
+    perf probe ip6_dst_gc
+    perf stat -e probe:* -a -I 1000
+    --> will show calls/sec to running dst gc
 
 
-This does not count for virtual drivers, like macvlan, bonding, tunnels...
+    perf probe __ip6_rt_update_pmtu
+    perf stat -e probe:* -a -I 1000
+    --> will show calls/sec to mtu updating
 
-If your ndo_start_xmit() calls dev_queue_xmit() after switching skb->dev to another device,
-you do not need a lock.
 
+    perf probe rt6_insert_exception
+    perf state -e probe:* -a -I 1000
+    --> shows calls/sec to inserting exceptions
 
+(in each you can remove the previous probe using 'perf probe -d <name>'
+or use -e <exact name> to only see data for the one event).
+
+> I have the problem with 5.3 (proxmox 6), so unless FIB handling has been
+> changed since then, I doubt that it will works, but I will try on
+> Monday.
+> 
+
+a fair amount of changes went in through 5.4 including improvements to
+neighbor handling. 5.4 (I think) also had changes around dumping the
+route cache.
