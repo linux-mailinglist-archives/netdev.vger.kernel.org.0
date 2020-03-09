@@ -2,223 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FCD417E74A
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 19:36:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93DF317E768
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 19:43:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727518AbgCISgA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 14:36:00 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:56429 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727323AbgCISgA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 14:36:00 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id B2BCA21B0E;
-        Mon,  9 Mar 2020 14:35:58 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Mon, 09 Mar 2020 14:35:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=Ms7zrN5MaLO0vQesxO/HeyQ0tm123y6RwWWzgZGxpu0=; b=DWKaiRms
-        cJWkproNilZE+d/TohEkfmLn2RSzz4fO7vcwjlIWhRUWCXP3OYTwAd2MvBqshb5+
-        psbWKx05pNS+Yln3dMPP4IF4tprnAWM0UtjhmhVMbawxFeQbdzJ++/zYnUCyU/vr
-        jLLNlrBTaqRpd6H3CzgoXjwMQC5f5tGMQnuoNTyowkC7JXHESoriyAYLdLS+d3ni
-        qkkpvDlW+nWl/biCPa7SVI6MyY6RmW+t+vUfJrh1skk2QLC/Nh3quMK3ik9cXskY
-        fO4n4XLvH3Mks7vOYfNDdi3+EtjWeS/9B59PjiHNM4YzT8u1bInBlezsMo7tKbaU
-        gHAz+6h2i1slSQ==
-X-ME-Sender: <xms:joxmXr_tv3PZEy-H_BUoz5U9REz5cY4xertw6smZT3P0g-pdjO8Dmw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedruddukedgudduhecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
-    ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucfkphepjeejrddufeekrddvgeelrddvtdelnecuvehluhhsth
-    gvrhfuihiivgepvdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiugho
-    shgthhdrohhrgh
-X-ME-Proxy: <xmx:joxmXsABVDBz_5mli-9ffj0k8GUAE_6qGI2uo3NHK-xbZpVmbAo07Q>
-    <xmx:joxmXj5BunuJYAWSPrSl51Hlm29FCexhoeJRi5zfsZNt2J-diBPFgw>
-    <xmx:joxmXioTXo06ONmx5iV5cgHMQVQKz3Jm0sUFvr1CQjaIyqLpTOZUng>
-    <xmx:joxmXkHctY7qOnHjwZjAJDpRs2beA54jMXnJdlmNkwnwm49GAEJLxw>
-Received: from splinter.mtl.com (unknown [77.138.249.209])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 533763060F09;
-        Mon,  9 Mar 2020 14:35:56 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, kuba@kernel.org,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 6/6] selftests: mlxsw: RED: Test RED ECN taildrop offload
-Date:   Mon,  9 Mar 2020 20:35:03 +0200
-Message-Id: <20200309183503.173802-7-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200309183503.173802-1-idosch@idosch.org>
-References: <20200309183503.173802-1-idosch@idosch.org>
+        id S1727417AbgCISnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 14:43:08 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:34626 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727334AbgCISnH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 14:43:07 -0400
+Received: by mail-wr1-f67.google.com with SMTP id z15so12583989wrl.1
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 11:43:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8XtaVbFU1vysQJVWrzugNCIKJ6cHKyzWu9LZ5IvRCfk=;
+        b=bOd0jfTwX2VyPqrdtSfBhD3BIfT815ilin2W2tTt6S4iB7p0fnIXIeiLA0d20CmIMX
+         +P14v+dBs+iUIKf+CdKMfcj9in+WTNDLZF288gx3KOattW9S0zyyyojacQ7XXUKCMibN
+         jyNvZB4TBEos+r5Gf4y8v4i2QOI1bWSBTwqJXrCAWEDouxWOQmMpNxBBDa9hk+RJFl2g
+         F/JRHNIrRCsC6LEI/fYy0MVmXeBBxEuy2vVgdDYX6b7FmRHTNBJhMp+yMfNOhYMgXxwm
+         LLqu4/GAemFVeksDRAnjJhdDDTs8bzs8H2uwpU+gIrdxAPOGG1VCPnXBBv8LP1XlqHHk
+         W9vQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8XtaVbFU1vysQJVWrzugNCIKJ6cHKyzWu9LZ5IvRCfk=;
+        b=uF4z9WMtGNpHErl7/rNPB1A5Ei1niUXv2yblUGEJfiKNUkKWpAR7rm3Htx7N+dpJZD
+         2EHjLG/lXqwRNUu1ilE1IGpiFnuogrcpyiodEKSRjn0JmpH5ROWYgbDt3vNWtZBtPNsD
+         8YUaDOzPact95tj7loDWJiBZ5J7iP394EiAdaLDpyFIBYRN+zIWOFEzOBGa2skeTwJ2Q
+         ESb5XYHQNf7c4X43Jnz6S2exY388gdVy7hsgoycZzs1dyaB7TZOahRcyD3znQOWk7e8E
+         mFsGrD79rGsKu5wqHeHpsgjy5DBtvwKiLqh0AzMTZJk7/GLff/b2nDI0Hu+fK8iz59ks
+         EIAw==
+X-Gm-Message-State: ANhLgQ0bp8exU/GXdH5BIapalRIB3rsYqL4GLlGaOP3k/n+06pPe+hmR
+        0tC8d8jm3+CrmpqVX7Eu9ToQRuM+oDe5g/t88cP7Vk/2
+X-Google-Smtp-Source: ADFU+vuumjGpfaytEnqnXEaiD/sBRAi2s/H+Zq2FGsD8W5X2SiEAQZPlzeoY+Ff16pYtVv2Wsid31+BUE+2uRAJtwF0=
+X-Received: by 2002:adf:fb01:: with SMTP id c1mr15365618wrr.357.1583779383982;
+ Mon, 09 Mar 2020 11:43:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200305162540.4363-1-lesliemonis@gmail.com> <37e346e2-beb6-5fcd-6b24-9cb1f001f273@gmail.com>
+ <773f285c-f9f2-2253-6878-215a11ea2e67@gmail.com> <e1ad29bb-7766-7c9d-3191-47a5e866e07e@gmail.com>
+In-Reply-To: <e1ad29bb-7766-7c9d-3191-47a5e866e07e@gmail.com>
+From:   Leslie Monis <lesliemonis@gmail.com>
+Date:   Tue, 10 Mar 2020 00:12:27 +0530
+Message-ID: <CAHv+uoE_Q37jCY3=_k_hEoiOrD0Mm67qEd-ALO-E9QjQRkSxBA@mail.gmail.com>
+Subject: Re: [PATCH iproute2-next] tc: pie: change maximum integer value of tc_pie_xstats->prob
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
+        Gautam Ramakrishnan <gautamramk@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@mellanox.com>
+On Mon, Mar 9, 2020 at 11:24 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> On 3/9/20 10:48 AM, Eric Dumazet wrote:
+> >
+> > This means that iproute2 is incompatible with old kernels.
+> >
+> > commit 105e808c1da2 ("pie: remove pie_vars->accu_prob_overflows") was wrong,
+> > it should not have changed user ABI.
+> >
+> > The rule is : iproute2 v-X should work with linux-<whatever-version>
+> >
 
-Extend RED testsuite to cover the new "taildropping" mode of RED-ECN. This
-test is really similar to ECN test, diverging only in the last step, where
-UDP traffic should go to backlog instead of being dropped. Thus extract a
-common helper, ecn_test_common(), make do_ecn_test() into a relatively
-simple wrapper, and add another one, do_ecn_taildrop_test().
+I'm apologize. I wasn't aware of this rule.
 
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- .../drivers/net/mlxsw/sch_red_core.sh         | 50 ++++++++++++++++---
- .../drivers/net/mlxsw/sch_red_ets.sh          | 11 ++++
- .../drivers/net/mlxsw/sch_red_root.sh         |  8 +++
- 3 files changed, 61 insertions(+), 8 deletions(-)
+> > Since pie MAX_PROB was implicitly in the user ABI, it can not be changed,
+> > at least from user point of view.
+> >
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-index 8f833678ac4d..fc7986db3fe0 100644
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-@@ -389,17 +389,14 @@ check_marking()
- 	((pct $cond))
- }
- 
--do_ecn_test()
-+ecn_test_common()
- {
-+	local name=$1; shift
- 	local vlan=$1; shift
- 	local limit=$1; shift
- 	local backlog
- 	local pct
- 
--	# Main stream.
--	start_tcp_traffic $h1.$vlan $(ipaddr 1 $vlan) $(ipaddr 3 $vlan) \
--			  $h3_mac tos=0x01
--
- 	# Build the below-the-limit backlog using UDP. We could use TCP just
- 	# fine, but this way we get a proof that UDP is accepted when queue
- 	# length is below the limit. The main stream is using TCP, and if the
-@@ -409,7 +406,7 @@ do_ecn_test()
- 	check_err $? "Could not build the requested backlog"
- 	pct=$(check_marking $vlan "== 0")
- 	check_err $? "backlog $backlog / $limit Got $pct% marked packets, expected == 0."
--	log_test "TC $((vlan - 10)): ECN backlog < limit"
-+	log_test "TC $((vlan - 10)): $name backlog < limit"
- 
- 	# Now push TCP, because non-TCP traffic would be early-dropped after the
- 	# backlog crosses the limit, and we want to make sure that the backlog
-@@ -419,7 +416,20 @@ do_ecn_test()
- 	check_err $? "Could not build the requested backlog"
- 	pct=$(check_marking $vlan ">= 95")
- 	check_err $? "backlog $backlog / $limit Got $pct% marked packets, expected >= 95."
--	log_test "TC $((vlan - 10)): ECN backlog > limit"
-+	log_test "TC $((vlan - 10)): $name backlog > limit"
-+}
-+
-+do_ecn_test()
-+{
-+	local vlan=$1; shift
-+	local limit=$1; shift
-+	local name=ECN
-+
-+	start_tcp_traffic $h1.$vlan $(ipaddr 1 $vlan) $(ipaddr 3 $vlan) \
-+			  $h3_mac tos=0x01
-+	sleep 1
-+
-+	ecn_test_common "$name" $vlan $limit
- 
- 	# Up there we saw that UDP gets accepted when backlog is below the
- 	# limit. Now that it is above, it should all get dropped, and backlog
-@@ -427,7 +437,31 @@ do_ecn_test()
- 	RET=0
- 	build_backlog $vlan $((2 * limit)) udp >/dev/null
- 	check_fail $? "UDP traffic went into backlog instead of being early-dropped"
--	log_test "TC $((vlan - 10)): ECN backlog > limit: UDP early-dropped"
-+	log_test "TC $((vlan - 10)): $name backlog > limit: UDP early-dropped"
-+
-+	stop_traffic
-+	sleep 1
-+}
-+
-+do_ecn_taildrop_test()
-+{
-+	local vlan=$1; shift
-+	local limit=$1; shift
-+	local name="ECN taildrop"
-+
-+	start_tcp_traffic $h1.$vlan $(ipaddr 1 $vlan) $(ipaddr 3 $vlan) \
-+			  $h3_mac tos=0x01
-+	sleep 1
-+
-+	ecn_test_common "$name" $vlan $limit
-+
-+	# Up there we saw that UDP gets accepted when backlog is below the
-+	# limit. Now that it is above, in taildrop mode, make sure it goes to
-+	# backlog as well.
-+	RET=0
-+	build_backlog $vlan $((2 * limit)) udp >/dev/null
-+	check_err $? "UDP traffic was early-dropped instead of getting into backlog"
-+	log_test "TC $((vlan - 10)): $name backlog > limit: UDP tail-dropped"
- 
- 	stop_traffic
- 	sleep 1
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-index af83efe9ccf1..042a33cc13f4 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-@@ -4,6 +4,7 @@
- ALL_TESTS="
- 	ping_ipv4
- 	ecn_test
-+	ecn_taildrop_test
- 	red_test
- 	mc_backlog_test
- "
-@@ -50,6 +51,16 @@ ecn_test()
- 	uninstall_qdisc
- }
- 
-+ecn_taildrop_test()
-+{
-+	install_qdisc ecn taildrop
-+
-+	do_ecn_taildrop_test 10 $BACKLOG1
-+	do_ecn_taildrop_test 11 $BACKLOG2
-+
-+	uninstall_qdisc
-+}
-+
- red_test()
- {
- 	install_qdisc
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh
-index b2217493a88e..af55672dc335 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_root.sh
-@@ -4,6 +4,7 @@
- ALL_TESTS="
- 	ping_ipv4
- 	ecn_test
-+	ecn_taildrop_test
- 	red_test
- 	mc_backlog_test
- "
-@@ -33,6 +34,13 @@ ecn_test()
- 	uninstall_qdisc
- }
- 
-+ecn_taildrop_test()
-+{
-+	install_qdisc ecn taildrop
-+	do_ecn_taildrop_test 10 $BACKLOG
-+	uninstall_qdisc
-+}
-+
- red_test()
- {
- 	install_qdisc
--- 
-2.24.1
+You're right. It shouldn't have affected user space.
+But I'm afraid the value of MAX_PROB in the kernel did change in v5.1.
+commit 3f7ae5f3dc52 ("net: sched: pie: add more cases to auto-tune
+alpha and beta")
+introduced that change. I'm not sure what to do about this. How can I fix it?
 
+>
+> So this kernel patch might be needed :
+>
+> diff --git a/net/sched/sch_pie.c b/net/sched/sch_pie.c
+> index f52442d39bf57a7cf7af2595638a277e9c1ecf60..c65077f0c0f39832ee97f4e89f25639306b19281 100644
+> --- a/net/sched/sch_pie.c
+> +++ b/net/sched/sch_pie.c
+> @@ -493,7 +493,7 @@ static int pie_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
+>  {
+>         struct pie_sched_data *q = qdisc_priv(sch);
+>         struct tc_pie_xstats st = {
+> -               .prob           = q->vars.prob,
+> +               .prob           = q->vars.prob << BITS_PER_BYTE,
+>                 .delay          = ((u32)PSCHED_TICKS2NS(q->vars.qdelay)) /
+>                                    NSEC_PER_USEC,
+>                 .packets_in     = q->stats.packets_in,
+
+Thanks. This is a much better solution.
+Should I go ahead and submit this to net-next?
+I guess the applied patch (topic of this thread) has to be reverted.
