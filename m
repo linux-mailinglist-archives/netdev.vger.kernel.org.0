@@ -2,78 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59FB317DCA0
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 10:48:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9917C17DCBA
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 10:54:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726071AbgCIJsl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 05:48:41 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:46130 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725942AbgCIJsl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 05:48:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=nSJNGXFyVDQ2itUaKXiFjGJN5YfrTxvZ56JJEF7tJy4=; b=rJ9lPRs6LbaOJ2ZVQZKOZTGeB
-        hwBpBnUKLaueLCDHaZAR3tv1sm8W9dd+cZVGkWBZmQHn7/GJhv2A9RXam7qlkoLFQzCVM6XqjYksk
-        fVV8Z7Duj8pPyT6MECIUcLeKWIgvlufmu6frwxNQLjCFLX7jSTBlM0nMh3VRQNF1YyskG1b/OutYJ
-        P+q9pNERxvnBn44SLiMm62i78YC0f4fhxJrEsasBtSZH5MbQ5vVVQph3K6zfVkMTB8RbbL4WZTco8
-        Ys33kCxiwYQ2auGlM22AoIb8DWyd1ITZKhMOPoCIvbMtk3opNozpB5loGMTL6mNAknsUdNnf5y3u4
-        Iy1JJUJfA==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:50664)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jBF1U-0005ju-7p; Mon, 09 Mar 2020 09:48:32 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jBF1Q-0003Hs-Uk; Mon, 09 Mar 2020 09:48:28 +0000
-Date:   Mon, 9 Mar 2020 09:48:28 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     David Miller <davem@davemloft.net>
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org, vivien.didelot@gmail.com
-Subject: Re: [PATCH net-next 0/10] net: dsa: improve serdes integration
-Message-ID: <20200309094828.GJ25745@shell.armlinux.org.uk>
-References: <20200305124139.GB25745@shell.armlinux.org.uk>
- <20200308.220447.1610295462041711848.davem@davemloft.net>
+        id S1726723AbgCIJyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 05:54:21 -0400
+Received: from esa1.hc3370-68.iphmx.com ([216.71.145.142]:26457 "EHLO
+        esa1.hc3370-68.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726692AbgCIJyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 05:54:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=citrix.com; s=securemail; t=1583747657;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=zNNy4OU4z799DFnGrpM43KDZz+dFPqGX2kfMxUq+JC4=;
+  b=a2U6IkVKlgzZQeI6bAG58NAgwPUmz/xvCmc2INJPLS9UORxO3QzZDiBG
+   KLP7WfyJgOmS66F3vi6G/gqoMZnZKlwHodzzE+yPIIOEdv8D72JoewyEo
+   8i6ZnSn/POJvtcsdu5/lpLwucrzK/k9tdP1RtDxpcXKQybT7df0qLASaT
+   U=;
+Authentication-Results: esa1.hc3370-68.iphmx.com; dkim=none (message not signed) header.i=none; spf=None smtp.pra=roger.pau@citrix.com; spf=Pass smtp.mailfrom=roger.pau@citrix.com; spf=None smtp.helo=postmaster@mail.citrix.com
+Received-SPF: None (esa1.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  roger.pau@citrix.com) identity=pra; client-ip=162.221.158.21;
+  receiver=esa1.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="roger.pau@citrix.com";
+  x-conformance=sidf_compatible
+Received-SPF: Pass (esa1.hc3370-68.iphmx.com: domain of
+  roger.pau@citrix.com designates 162.221.158.21 as permitted
+  sender) identity=mailfrom; client-ip=162.221.158.21;
+  receiver=esa1.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="roger.pau@citrix.com";
+  x-conformance=sidf_compatible; x-record-type="v=spf1";
+  x-record-text="v=spf1 ip4:209.167.231.154 ip4:178.63.86.133
+  ip4:195.66.111.40/30 ip4:85.115.9.32/28 ip4:199.102.83.4
+  ip4:192.28.146.160 ip4:192.28.146.107 ip4:216.52.6.88
+  ip4:216.52.6.188 ip4:162.221.158.21 ip4:162.221.156.83
+  ip4:168.245.78.127 ~all"
+Received-SPF: None (esa1.hc3370-68.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@mail.citrix.com) identity=helo;
+  client-ip=162.221.158.21; receiver=esa1.hc3370-68.iphmx.com;
+  envelope-from="roger.pau@citrix.com";
+  x-sender="postmaster@mail.citrix.com";
+  x-conformance=sidf_compatible
+IronPort-SDR: do3ZdpTCHyvaP5/SysNyQ6OvX1Aj0Ge4f7a/KYeItfaoREnOoclQ+3UyK3UmAERmfHfgoT/FiQ
+ LR9MObLUIfhV2BPRhBPXshsMWzuwO3v4tN81Aoi937geQXN+15Jjn0MKQSjxZacs9yopW4nPAZ
+ uDUMrTz2AwTvII9JUzZilZZKcERwlF4UumWQAdnHNAvCe+/bSVdDDablLPGbDI7n3on4l9R4+J
+ +es1+SHgHi13FosRMxuLOY1+8VoFhR3maY5sz1tdbvfoZ26Su//Y7lr5QmSGj1zs92DuWGF43J
+ BJY=
+X-SBRS: 2.7
+X-MesageID: 13805261
+X-Ironport-Server: esa1.hc3370-68.iphmx.com
+X-Remote-IP: 162.221.158.21
+X-Policy: $RELAYED
+X-IronPort-AV: E=Sophos;i="5.70,532,1574139600"; 
+   d="scan'208";a="13805261"
+Date:   Mon, 9 Mar 2020 10:54:07 +0100
+From:   Roger Pau =?utf-8?B?TW9ubsOp?= <roger.pau@citrix.com>
+To:     Anchal Agarwal <anchalag@amazon.com>
+CC:     <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <hpa@zytor.com>, <x86@kernel.org>, <boris.ostrovsky@oracle.com>,
+        <jgross@suse.com>, <linux-pm@vger.kernel.org>,
+        <linux-mm@kvack.org>, <kamatam@amazon.com>,
+        <sstabellini@kernel.org>, <konrad.wilk@oracle.com>,
+        <axboe@kernel.dk>, <davem@davemloft.net>, <rjw@rjwysocki.net>,
+        <len.brown@intel.com>, <pavel@ucw.cz>, <peterz@infradead.org>,
+        <eduval@amazon.com>, <sblbir@amazon.com>,
+        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <dwmw@amazon.co.uk>, <fllinden@amaozn.com>,
+        <benh@kernel.crashing.org>
+Subject: Re: [RFC PATCH v3 06/12] xen-blkfront: add callbacks for PM suspend
+ and hibernation
+Message-ID: <20200309095245.GY24458@Air-de-Roger.citrite.net>
+References: <cover.1581721799.git.anchalag@amazon.com>
+ <890c404c585d7790514527f0c021056a7be6e748.1581721799.git.anchalag@amazon.com>
+ <20200221142445.GZ4679@Air-de-Roger>
+ <20200306184033.GA25358@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20200308.220447.1610295462041711848.davem@davemloft.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200306184033.GA25358@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
+X-ClientProxiedBy: AMSPEX02CAS02.citrite.net (10.69.22.113) To
+ AMSPEX02CL01.citrite.net (10.69.22.125)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 08, 2020 at 10:04:47PM -0700, David Miller wrote:
-> From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-> Date: Thu, 5 Mar 2020 12:41:39 +0000
-> 
-> > Andrew Lunn mentioned that the Serdes PCS found in Marvell DSA switches
-> > does not automatically update the switch MACs with the link parameters.
-> > Currently, the DSA code implements a work-around for this.
+On Fri, Mar 06, 2020 at 06:40:33PM +0000, Anchal Agarwal wrote:
+> On Fri, Feb 21, 2020 at 03:24:45PM +0100, Roger Pau Monné wrote:
+> > On Fri, Feb 14, 2020 at 11:25:34PM +0000, Anchal Agarwal wrote:
+> > >  	blkfront_gather_backend_features(info);
+> > >  	/* Reset limits changed by blk_mq_update_nr_hw_queues(). */
+> > >  	blkif_set_queue_limits(info);
+> > > @@ -2046,6 +2063,9 @@ static int blkif_recover(struct blkfront_info *info)
+> > >  		kick_pending_request_queues(rinfo);
+> > >  	}
+> > >  
+> > > +	if (frozen)
+> > > +		return 0;
 > > 
-> > This series improves the Serdes integration, making use of the recent
-> > phylink changes to support split MAC/PCS setups.  One noticable
-> > improvement for userspace is that ethtool can now report the link
-> > partner's advertisement.
-> 
-> It looks like Andrew's regression has to be sorted out, so I'm deferring
-> this.
+> > I have to admit my memory is fuzzy here, but don't you need to
+> > re-queue requests in case the backend has different limits of indirect
+> > descriptors per request for example?
+> > 
+> > Or do we expect that the frontend is always going to be resumed on the
+> > same backend, and thus features won't change?
+> > 
+> So to understand your question better here, AFAIU the  maximum number of indirect 
+> grefs is fixed by the backend, but the frontend can issue requests with any 
+> number of indirect segments as long as it's less than the number provided by 
+> the backend. So by your question you mean this max number of MAX_INDIRECT_SEGMENTS 
+> 256 on backend can change ?
 
-Yep - it comes from the poor integration of phylink into DSA for CPU
-and inter-DSA ports which is already causing regressions in today's
-kernels. That needs resolving somehow before this patch series can
-be merged, but it isn't something that can be fixed from the phylink
-side of things.
+Yes, number of indirect descriptors supported by the backend can
+change, because you moved to a different backend, or because the
+maximum supported by the backend has changed. It's also possible to
+resume on a backend that has no indirect descriptors support at all.
 
-I'll postpone these patches until that issue is resolved.
+> > > @@ -2625,6 +2671,62 @@ static void blkif_release(struct gendisk *disk, fmode_t mode)
+> > >  	mutex_unlock(&blkfront_mutex);
+> > >  }
+> > >  
+> > > +static int blkfront_freeze(struct xenbus_device *dev)
+> > > +{
+> > > +	unsigned int i;
+> > > +	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
+> > > +	struct blkfront_ring_info *rinfo;
+> > > +	/* This would be reasonable timeout as used in xenbus_dev_shutdown() */
+> > > +	unsigned int timeout = 5 * HZ;
+> > > +	int err = 0;
+> > > +
+> > > +	info->connected = BLKIF_STATE_FREEZING;
+> > > +
+> > > +	blk_mq_freeze_queue(info->rq);
+> > > +	blk_mq_quiesce_queue(info->rq);
+> > 
+> > Don't you need to also drain the queue and make sure it's empty?
+> > 
+> blk_mq_freeze_queue and blk_mq_quiesce_queue should take care of running HW queues synchronously
+> and making sure all the ongoing dispatches have finished. Did I understand your question right?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+Can you please add some check to that end? (ie: that there are no
+pending requests on any queue?)
+
+Thanks, Roger.
