@@ -2,81 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A6E9D17E3C4
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 16:38:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DF7A17E3DA
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 16:43:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726982AbgCIPim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 11:38:42 -0400
-Received: from mail-qv1-f42.google.com ([209.85.219.42]:38903 "EHLO
-        mail-qv1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726776AbgCIPim (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 11:38:42 -0400
-Received: by mail-qv1-f42.google.com with SMTP id p60so2538864qva.5
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 08:38:41 -0700 (PDT)
+        id S1727030AbgCIPnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 11:43:19 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:45061 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726804AbgCIPnT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 11:43:19 -0400
+Received: by mail-yw1-f65.google.com with SMTP id d206so10504666ywa.12
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 08:43:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0/x8EgKhU0TCapZ+xqwkvCuRMzxILoYRTHqpfSMhQZ4=;
-        b=K7uujQOqcc49KC6R19cyCqyxe6PShxocaGlJ54QAvyz8wHi2SssgzN2a0zAVTvhNyM
-         ll55KSi6uRbv/toB0nRYtgWOT4sfrgmaK7xTOcayGwEy6RVZo2yxGpShu2CCwM3IiFRn
-         GyJlrl4FX+xfWiZW5PpgLDcaRDksCcq/qNkauqPeboFCi5Xkl5pZrdmkbN1577WQ9pEU
-         DXFKoG0qORD9CHZzRl4FIFMVcjKxSEWb4VNM/IfXUbDnEEEUPUfLD7WNpzsI4Tt7d/xy
-         HtoTvvAAatoq+PYcpNyXn7Npz5vlBjxoHenflYxMZoQezPrRWZ1beHkXOSH3azkTrFIB
-         qYrQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=485SssXkW+H0mLX40BLOHwY75nYIzJ98vMhLiSaXO4E=;
+        b=TBWHDZVh/IUXDpbMbnC7qBGK2AoV46NiJVIUG8NalFrPzyBaDXYRWFiu/DRt5hG+Re
+         32F0L+WA0ZHWaBgH52CTC6j6sJ19EoYnz+6YhDdvEuACK8N+wFxsz9qAwEsD3UCayTiC
+         mOfIIkNmBGLq2Dzj2bsR0a6Aap6wYvn6hD6yLgdkJiiyVHWIJC4aohuPjxKFFRiuwWxU
+         MliMMKqLH3CkirCWO+PyjLZW+xm70PJZUNVgYjUiaAgt0cN/JYXaYDPfjo1yjfsMFA1+
+         Jcb3GHMK/9kIK1XribTStEi5aBSlgd76yUR78RgWXplIf1YbgAuHDseD+FdGCQrgXZMv
+         7ijQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0/x8EgKhU0TCapZ+xqwkvCuRMzxILoYRTHqpfSMhQZ4=;
-        b=C01HIt36Ww1QJfIwX9Pe7qjgpq9+Yojk9LpcITmxkNuxo2UCRcAOj264r5V70v78l/
-         /6lZk+9De/NsW9wPQ78hif3N+UYThVbi99Vk56Zsg1ujZ++DU2zI3JSCmhKZKZlTxD6J
-         9Durr9QU0JJya5sCOlLI/To53XLsrdQXLR7qlCZDcSdxRG8ZGA/655btACoEzTXYL9Ra
-         Kv/hjLBcOrJo94iTvpEKLyBd54Wul4YLXygi0H+/fXH75FMyqdgsIXFTcH6LgJNZDPBj
-         Ji1frps+TMtHE0FaqAyxUrXlOkHU0+u25hRfcFhltET/Ll1wiQr24IuCqnCkI5Iy1rb+
-         IQUA==
-X-Gm-Message-State: ANhLgQ0wC4iXaRR9JBwjGxMkpFFYA0DEYzVKJLPWDF1byQkq6Js+Qteb
-        3BPeXdCyBGqhB3p4ZP6c1+c=
-X-Google-Smtp-Source: ADFU+vtn+y/sCw2Zz3pEKMyBKajc9g1a289qgVVta43d1/EAxz2CHivEXs0pn5SRJtS8qYwKiZAKqQ==
-X-Received: by 2002:ad4:588e:: with SMTP id dz14mr12787821qvb.103.1583768321310;
-        Mon, 09 Mar 2020 08:38:41 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:c8c4:d4d8:cd2d:6f68? ([2601:282:803:7700:c8c4:d4d8:cd2d:6f68])
-        by smtp.googlemail.com with ESMTPSA id j1sm19581584qtd.66.2020.03.09.08.38.40
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=485SssXkW+H0mLX40BLOHwY75nYIzJ98vMhLiSaXO4E=;
+        b=VG0/McU7WWFXvY3CR8TCEkTySocr8h9Vj37A2/Wgxpsf/LDQ58yrT2IWKXBspwLAz3
+         pOXj6/iP6B4xnnkFinbtZuiA0k/AG2fY21Bhv4YX2RHNyHI8CxK8w0TZp9wFD9OvuAo1
+         1/Saryabjf8qXavRPe90ehU/UwRo6y7cPa9X4P6EJe7mSGoU8QuYqfKSxig5EfbBOklV
+         GyDR1NuDE9KWn8vCtpjLScEYVB7S7uKyx/dIXydSn8E/CwEw2LB1ERXsEf3CInEm5/qi
+         gfWMXlLbmQjbMU9+9fbNkdayPteFuXulVkiSJz1z8wYNnTrNvKeNAspAUS4EYF7BpSP7
+         ygxA==
+X-Gm-Message-State: ANhLgQ2ZcKvWqylPsrdA/3vBCzIL+PtehjxCxsAI6d/Z2fPYZCKV3TIZ
+        vQTBe/octfG26HRP7OQGZLbOfLjR
+X-Google-Smtp-Source: ADFU+vv1C9CgLORRnNaaAodoxDdax/M8c0Q1dR+pTORDrfF5v24K66W6zDi9KG9tLGuGN8YmitvGBg==
+X-Received: by 2002:a5b:c8d:: with SMTP id i13mr17281654ybq.480.1583768597827;
+        Mon, 09 Mar 2020 08:43:17 -0700 (PDT)
+Received: from mail-yw1-f53.google.com (mail-yw1-f53.google.com. [209.85.161.53])
+        by smtp.gmail.com with ESMTPSA id o127sm18107413ywf.43.2020.03.09.08.43.17
+        for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Mar 2020 08:38:40 -0700 (PDT)
-Subject: Re: [patch iproute2/net-next] tc: m_action: introduce support for hw
- stats type
-To:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, mlxsw@mellanox.com
-References: <20200309152743.32599-1-jiri@resnulli.us>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <39815e7d-7dd5-c5b4-54b7-90f6852a3d08@gmail.com>
-Date:   Mon, 9 Mar 2020 09:38:39 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        Mon, 09 Mar 2020 08:43:17 -0700 (PDT)
+Received: by mail-yw1-f53.google.com with SMTP id d206so10504576ywa.12
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 08:43:17 -0700 (PDT)
+X-Received: by 2002:a25:cc8a:: with SMTP id l132mr18224208ybf.178.1583768596496;
+ Mon, 09 Mar 2020 08:43:16 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200309152743.32599-1-jiri@resnulli.us>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200309153435.32109-1-willemdebruijn.kernel@gmail.com>
+In-Reply-To: <20200309153435.32109-1-willemdebruijn.kernel@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 9 Mar 2020 11:42:40 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfTac=Ut43nFJdB_z605Y-NO7En8AqKT3X8q8=SjFHe6Q@mail.gmail.com>
+Message-ID: <CA+FuTSfTac=Ut43nFJdB_z605Y-NO7En8AqKT3X8q8=SjFHe6Q@mail.gmail.com>
+Subject: Re: [PATCH net] net/packet: tpacket_rcv: do not increment ring index
+ on drop
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/9/20 9:27 AM, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> introduce support for per-action hw stats type config.
+On Mon, Mar 9, 2020 at 11:34 AM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> From: Willem de Bruijn <willemb@google.com>
+>
+> In one error case, tpacket_rcv drops packets after incrementing the
+> ring producer index.
+>
+> If this happens, it does not update tp_status to TP_STATUS_USER and
+> thus the reader is stalled for an iteration of the ring, causing out
+> of order arrival.
+>
+> The only such error path is when virtio_net_hdr_from_skb fails due
+> to encountering an unknown GSO type.
+>
+> Signed-off-by: Willem de Bruijn <willemb@google.com>
 
-You need to add more here - explaining what this feature is and giving
-an example.
 
-> 
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
-> ---
->  include/uapi/linux/pkt_cls.h | 22 +++++++++++++
->  man/man8/tc-actions.8        | 31 ++++++++++++++++++
->  tc/m_action.c                | 61 ++++++++++++++++++++++++++++++++++++
->  3 files changed, 114 insertions(+)
+Fixes: bfd5f4a3d605 ("packet: Add GSO/csum offload support.")
+
+I forgot to add the Fixes tag, sorry. This goes back to the
+introduction of GSO support for virtio_net.
+
+The discussion then explicitly arrived at deciding to fail on an
+unknown type (SKB_GSO_FCOE). Which is why I asked the question here
+whether we want to revisit that choice or leave as is.
