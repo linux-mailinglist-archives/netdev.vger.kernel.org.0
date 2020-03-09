@@ -2,159 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14BB917EC31
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 23:37:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 861FB17EC34
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 23:38:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727262AbgCIWhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 18:37:23 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:15790 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726536AbgCIWhX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 18:37:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1583793442; x=1615329442;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nm/K+hs17EKcRVzHSvMbu0ne+AtNnO2mJL12xgMBEqU=;
-  b=M1BvI8m/KpYo1UUyoqj2zpbeLR31a2EWnp8puAlgmUTUwsPyi3R+LQmq
-   l/4dGTVquB+ed3eWGPWyUFPld5UxroxCobwDiOzRucs4v7Ki2f1iioOeo
-   T42/FP9oG1CtqKWwH2a7auLc9n2MQ8KMBsObXIwsAo3IRX1bildxeyFnL
-   E=;
-IronPort-SDR: NHag6RFlU2mvRcJeDLBg74Cs4Z7ht0ObfH2JR56T3a1uxhtCZDsJ8DmJX73OAE6jYthefr21k9
- 1hhjxqoVWmpQ==
-X-IronPort-AV: E=Sophos;i="5.70,534,1574121600"; 
-   d="scan'208";a="31596269"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-53356bf6.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 09 Mar 2020 22:37:20 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
-        by email-inbound-relay-2a-53356bf6.us-west-2.amazon.com (Postfix) with ESMTPS id 72D19A2582;
-        Mon,  9 Mar 2020 22:37:18 +0000 (UTC)
-Received: from EX13D08UEE003.ant.amazon.com (10.43.62.118) by
- EX13MTAUEE002.ant.amazon.com (10.43.62.24) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Mon, 9 Mar 2020 22:37:03 +0000
-Received: from EX13MTAUEE002.ant.amazon.com (10.43.62.24) by
- EX13D08UEE003.ant.amazon.com (10.43.62.118) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 9 Mar 2020 22:37:03 +0000
-Received: from dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com
- (172.22.96.68) by mail-relay.amazon.com (10.43.62.224) with Microsoft SMTP
- Server id 15.0.1367.3 via Frontend Transport; Mon, 9 Mar 2020 22:37:02 +0000
-Received: by dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com (Postfix, from userid 4335130)
-        id CBD26408BA; Mon,  9 Mar 2020 22:37:02 +0000 (UTC)
-Date:   Mon, 9 Mar 2020 22:37:02 +0000
-From:   Anchal Agarwal <anchalag@amazon.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-CC:     <mingo@redhat.com>, <bp@alien8.de>, <hpa@zytor.com>,
-        <x86@kernel.org>, <boris.ostrovsky@oracle.com>, <jgross@suse.com>,
-        <linux-pm@vger.kernel.org>, <linux-mm@kvack.org>,
-        <kamatam@amazon.com>, <sstabellini@kernel.org>,
-        <konrad.wilk@oracle.com>, <roger.pau@citrix.com>,
-        <axboe@kernel.dk>, <davem@davemloft.net>, <rjw@rjwysocki.net>,
-        <len.brown@intel.com>, <pavel@ucw.cz>, <peterz@infradead.org>,
-        <eduval@amazon.com>, <sblbir@amazon.com>,
-        <xen-devel@lists.xenproject.org>, <vkuznets@redhat.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <dwmw@amazon.co.uk>, <fllinden@amaozn.com>,
-        <benh@kernel.crashing.org>
-Subject: Re: [EXTERNAL][RFC PATCH v3 07/12] genirq: Shutdown irq chips in
- suspend/resume during hibernation
-Message-ID: <20200309223702.GA8513@dev-dsk-anchalag-2a-9c2d1d96.us-west-2.amazon.com>
-References: <e782c510916c8c05dc95ace151aba4eced207b31.1581721799.git.anchalag@amazon.com>
- <87ftelaxwn.fsf@nanos.tec.linutronix.de>
+        id S1727191AbgCIWiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 18:38:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33880 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726536AbgCIWiU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 18:38:20 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8BAA32253D;
+        Mon,  9 Mar 2020 22:38:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583793500;
+        bh=frXXcmIpTDko2faNTmY0WkCxJjwj8UHhxbfx7OYtnBA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=0DdSsTtfT1pfp18DWeJqgqtRSWl0zWtm511ybY2iC78Ik9UiBebDEXnH/oH6Y+l52
+         ouhxVOrXK1Etv07Mefok7NLYxTP1zckuTU7nmxcZMLVVyAyLKfoIbdoxdLwQLfkKHK
+         MSN1etz99X8VP8RKB+vWySGzByE/1x0fors1M/JI=
+Date:   Mon, 9 Mar 2020 15:38:17 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <saeedm@mellanox.com>, <leon@kernel.org>,
+        <michael.chan@broadcom.com>, <vishal@chelsio.com>,
+        <jeffrey.t.kirsher@intel.com>, <idosch@mellanox.com>,
+        <aelior@marvell.com>, <peppe.cavallaro@st.com>,
+        <alexandre.torgue@st.com>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <pablo@netfilter.org>,
+        <mlxsw@mellanox.com>
+Subject: Re: [patch net-next v4 01/10] flow_offload: Introduce offload of HW
+ stats type
+Message-ID: <20200309153817.47c97707@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <75b7e941-9a94-9939-f212-03aaed856088@solarflare.com>
+References: <20200307114020.8664-1-jiri@resnulli.us>
+        <20200307114020.8664-2-jiri@resnulli.us>
+        <1b7ddf97-5626-e58c-0468-eae83ad020b3@solarflare.com>
+        <20200309143630.2f83476f@kicinski-fedora-PC1C0HJN>
+        <75b7e941-9a94-9939-f212-03aaed856088@solarflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <87ftelaxwn.fsf@nanos.tec.linutronix.de>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 07, 2020 at 12:03:52AM +0100, Thomas Gleixner wrote:
-> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you can confirm the sender and know the content is safe.
-> 
-> 
-> 
-> Anchal Agarwal <anchalag@amazon.com> writes:
-> 
-> > There are no pm handlers for the legacy devices, so during tear down
-> > stale event channel <> IRQ mapping may still remain in the image and
-> > resume may fail. To avoid adding much code by implementing handlers for
-> > legacy devices, add a new irq_chip flag IRQCHIP_SHUTDOWN_ON_SUSPEND which
-> > when enabled on an irq-chip e.g xen-pirq, it will let core suspend/resume
-> > irq code to shutdown and restart the active irqs. PM suspend/hibernation
-> > code will rely on this.
-> > Without this, in PM hibernation, information about the event channel
-> > remains in hibernation image, but there is no guarantee that the same
-> > event channel numbers are assigned to the devices when restoring the
-> > system. This may cause conflict like the following and prevent some
-> > devices from being restored correctly.
-> 
-> The above is just an agglomeration of words and acronyms and some of
-> these sentences do not even make sense. Anyone who is not aware of event
-> channels and whatever XENisms you talk about will be entirely
-> confused. Changelogs really need to be understandable for mere mortals
-> and there is no space restriction so acronyms can be written out.
-> 
-I don't understand what does not makes sense here. Of course the one you
-described is more elaborate and explanatory and I agree I just wrote a short 
-one from perspective of PM hibernation related to Xen domU. 
-All I explained was why teardown is needed, what is the solution and 
-what will happen if we do not clear those mappings. 
-> Something like this:
-> 
->   Many legacy device drivers do not implement power management (PM)
->   functions which means that interrupts requested by these drivers stay
->   in active state when the kernel is hibernated.
-> 
->   This does not matter on bare metal and on most hypervisors because the
->   interrupt is restored on resume without any noticable side effects as
->   it stays connected to the same physical or virtual interrupt line.
-> 
->   The XEN interrupt mechanism is different as it maintains a mapping
->   between the Linux interrupt number and a XEN event channel. If the
->   interrupt stays active on hibernation this mapping is preserved but
->   there is unfortunately no guarantee that on resume the same event
->   channels are reassigned to these devices. This can result in event
->   channel conflicts which prevent the affected devices from being
->   restored correctly.
-> 
->   One way to solve this would be to add the necessary power management
->   functions to all affected legacy device drivers, but that's a
->   questionable effort which does not provide any benefits on non-XEN
->   environments.
-> 
->   The least intrusive and most efficient solution is to provide a
->   mechanism which allows the core interrupt code to tear down these
->   interrupts on hibernation and bring them back up again on resume. This
->   allows the XEN event channel mechanism to assign an arbitrary event
->   channel on resume without affecting the functionality of these
->   devices.
-> 
->   Fortunately all these device interrupts are handled by a dedicated XEN
->   interrupt chip so the chip can be marked that all interrupts connected
->   to it are handled this way. This is pretty much in line with the other
->   interrupt chip specific quirks, e.g. IRQCHIP_MASK_ON_SUSPEND.
-> 
->   Add a new quirk flag IRQCHIP_SHUTDOWN_ON_SUSPEND and add support for
->   it the core interrupt suspend/resume paths.
-> 
-> Hmm?
-> 
-Sure.
-> > Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
-> > Suggested-by: Thomas Gleixner <tglx@linutronix.de>
-> 
-> Not that I care much, but now that I've written both the patch and the
-> changelog you might change that attribution slightly. For completeness
-> sake:
-> 
-Why not. That's mandated now :)
->  Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> 
-> Thanks,
-> 
->         tglx
-Thanks,
-Anchal
+On Mon, 9 Mar 2020 22:27:59 +0000 Edward Cree wrote:
+> > Driver author can understandably try to simply handle all the values=20
+> > in a switch statement and be unpleasantly surprised. =20
+> In my experience, unenumerated enum values of this kind are fully
+> =C2=A0idiomatic C; and a driver author looking at the header file to see
+> =C2=A0what enumeration constants are defined will necessarily see all the
+> =C2=A0calls to BIT() and the bitwise-or construction of _ANY.
+> I'm not sure I believe a na=C3=AFve switch() implementation is an
+> =C2=A0"understandable" error.
+
+Could be my slight exposure to HDLs that makes me strongly averse to
+encoding state outside of a enumeration into a value of that type :)
+
+> How about if we also rename the field "hw_stats_types", or squeeze
+> =C2=A0the word "mask" in there somewhere?
+
+That'd make things slightly better.
