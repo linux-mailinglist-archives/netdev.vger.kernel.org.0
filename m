@@ -2,92 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27F9617D92F
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 07:03:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DAB917D933
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 07:20:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726248AbgCIGDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 02:03:09 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:43477 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725796AbgCIGDJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 02:03:09 -0400
-Received: by mail-pg1-f193.google.com with SMTP id u12so4204656pgb.10
-        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 23:03:08 -0700 (PDT)
+        id S1726002AbgCIGSY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 02:18:24 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:33412 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725796AbgCIGSY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 02:18:24 -0400
+Received: by mail-pf1-f196.google.com with SMTP id n7so4357038pfn.0
+        for <netdev@vger.kernel.org>; Sun, 08 Mar 2020 23:18:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zCA4L8/UOJ0Aaa+ZC6yuG7ZDi/cQWNvO5SeMmEnXmtU=;
-        b=HBVrIfnojGaUZIpEAp6pfMgt78f/GwFjYCDdX8t7p9yE4O6iMjuPKGvssSfVtgXF2V
-         0hqqWeH4EusqzaaXr0NEL/EvzzncWteAns1g8M7tn1E0JYltmERTJCuIU9a/6kedOP8y
-         Uui+zjkMNAw2WZh5QGWDPPcVva3isqtmFWnMZEo2MZc2I1+rUizsbITd+7EmfSi+BhTd
-         WrlZS+4Mgo4MjXVr9S1HKnR3VRDt7JkOjnpkevXNk4Mfs+A1RZYQOKy/GPw8UDJWGAM+
-         4JEhqTXN42FujPJX+XLm36dPXkY1EDYBAgBWP8Q2fVnMiePPcfxCSeprS38AFon9vIr3
-         D3eQ==
+         :content-disposition:in-reply-to;
+        bh=faQgft+xi22Xd4EC1l6GP40WmOyk5PxPX4e9jzqia9U=;
+        b=mv9l3wYRYJI/sB1AywOLvMDxvAwBXPXSchCj5lKT/5MEoFhx3vwor6hQF4ZP82lUEC
+         16coWVl0VdCwtYSlixLv0h84zM/vqBQKyjRN74ys5OMhesWUqvFSz2SkJsCvQ3rkM1nS
+         xKxt0iYc1F/t/pOKRf0nlrntPJlIIHhHSrURNF6ZTeI7bfyd9yIwTkFXaZxtIwekhASj
+         xhRmscJuGqUNtsYwt5O6Sw8kQc5NwxJsu3ED+cXQcw8fwJeGE7xRzgOYHom4Y/3PZkPU
+         xupi0Odi4ejDHsjyPOUO6JoPtoW+9WZM96VJHb1GFhMPwBgk5vPvNw92RkzP3hGB8Oau
+         xfTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zCA4L8/UOJ0Aaa+ZC6yuG7ZDi/cQWNvO5SeMmEnXmtU=;
-        b=s3lAX3giBrR406+nWEx5LGQJ6XlgzGvqwxBa8bQdqGF8s2p9NZh6mkeK94Jo7oizgT
-         fGODuXQxl/DOF9ViSK6ZFjYIWfZlc7VxpomlfWB/4k8e4LUTYNhMO+l5G5wJ0zybOEgE
-         RWECyUtn3qOFej/d9aZUXMZ5sxJfdjtv6Jm2QRiXrYbvBE+WTbeoDPXekrabsd0NDKlE
-         ngBohKXM8C2kMgPNtuyDOfW/UXJCm+QLxfuxX8nvUTF6kzzSJ9XVRoTlUW6Os6EDDJtm
-         khvehcZ3ShmlAaYB7XygtvanFhPtvAIo/6CdjYwkl2d3EoqtzGyQLZSUfdcNhi9Y6mJO
-         49cA==
-X-Gm-Message-State: ANhLgQ1t8lrr/o0uBcwbB+UexZJRiLV7EkQNVhR2qmV9JQctC9uxdsYO
-        uBSeuBVfeKisM8a/eoR/WXcrJvrPR0o=
-X-Google-Smtp-Source: ADFU+vu8DJQVSO4tiHkYe1BQAAcN0yG/u1tpErkWIbKac9dDtLvzwNH2uygBAqKVTmrVwre/xv8hxw==
-X-Received: by 2002:a62:be0d:: with SMTP id l13mr15399329pff.217.1583733787864;
-        Sun, 08 Mar 2020 23:03:07 -0700 (PDT)
-Received: from martin-VirtualBox ([122.178.219.138])
-        by smtp.gmail.com with ESMTPSA id m9sm9888980pga.92.2020.03.08.23.03.06
-        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sun, 08 Mar 2020 23:03:07 -0700 (PDT)
-Date:   Mon, 9 Mar 2020 11:33:04 +0530
-From:   Martin Varghese <martinvarghesenokia@gmail.com>
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 3/3] bareudp: remove unnecessary
- udp_encap_enable() in bareudp_socket_create()
-Message-ID: <20200309060304.GA16103@martin-VirtualBox>
-References: <20200308011930.6923-1-ap420073@gmail.com>
+         :mime-version:content-disposition:in-reply-to;
+        bh=faQgft+xi22Xd4EC1l6GP40WmOyk5PxPX4e9jzqia9U=;
+        b=ZQkJcysr2+dlBNJbeCo8XlKrNlrcGBC8hagocpHzHUD86ane2OGxDr8P/1wtCgFdC5
+         dpV3XjldJyR5rl55sFF6A/jaGrh4BSmVCrruygJ3aZVt78G0VcvkrmIepg+B3J1YJkgZ
+         oWrduqCDhZk7CNG02PA7UhS6sJgZOOoti707PeJRky/pQRwzRqnYy154J/1DDX4C51jB
+         pXLC7FLFYZtsNDl+cdlTOrylQuR0qulmfxikV/JmmfmX7WcDFukjr70O9kJlYzJY4fS8
+         +k/DIuEhXaSu1+k6rctrFMRKHZdBQTep1WaCWb9YMUCyR+V47ISAk+cidGlVWlzFcKV8
+         8uOQ==
+X-Gm-Message-State: ANhLgQ3a49zmLVasSMjh3Bk4AwTFGhd8hl1IugzXynyW7jnYUwKxCJJ2
+        dcjcNvdL3+lB/daTg3Z17Rc=
+X-Google-Smtp-Source: ADFU+vt1OK3qJSrxveYKl8FXzx9irDQxxWTifh1K4KwO3lccSaljOy4GSYDvx3REegwGM/A2C5nOZA==
+X-Received: by 2002:a63:34c8:: with SMTP id b191mr15581157pga.220.1583734703308;
+        Sun, 08 Mar 2020 23:18:23 -0700 (PDT)
+Received: from f3 (ag119225.dynamic.ppp.asahi-net.or.jp. [157.107.119.225])
+        by smtp.gmail.com with ESMTPSA id q20sm630006pfh.89.2020.03.08.23.18.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Mar 2020 23:18:22 -0700 (PDT)
+Date:   Mon, 9 Mar 2020 15:18:18 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Jarrett Knauer <jrtknauer@gmail.com>
+Cc:     manishc@marvell.com, GR-Linux-NIC-Dev@marvell.com,
+        gregkh@linuxfoundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 00/10] qlge.h cleanup - first pass
+Message-ID: <20200309061818.GB24692@f3>
+References: <cover.1583647891.git.jrtknauer@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200308011930.6923-1-ap420073@gmail.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+In-Reply-To: <cover.1583647891.git.jrtknauer@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 08, 2020 at 01:19:30AM +0000, Taehee Yoo wrote:
-> In the current code, udp_encap_enable() is called in
-> bareudp_socket_create().
-> But, setup_udp_tunnel_sock() internally calls udp_encap_enable().
-> So, udp_encap_enable() is unnecessary.
+On 2020-03-07 23:23 -0700, Jarrett Knauer wrote:
+> This patchset cleans up some warnings and checks issued by checkpatch.pl
+> for staging: qlge: qlge.h as an effort to eventually bring the qlge TODO
+> count to zero.
 > 
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-> ---
->  drivers/net/bareudp.c | 3 ---
->  1 file changed, 3 deletions(-)
+> There are still many CHECKs and WARNINGs for qlge.h, of which some are
+> false-positives or odd instances which I plan on returning to after
+> getting some more experience with the driver.
 > 
-> diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-> index c9d0d68467f7..71a2f480f70e 100644
-> --- a/drivers/net/bareudp.c
-> +++ b/drivers/net/bareudp.c
-> @@ -250,9 +250,6 @@ static int bareudp_socket_create(struct bareudp_dev *bareudp, __be16 port)
->  	tunnel_cfg.encap_destroy = NULL;
->  	setup_udp_tunnel_sock(bareudp->net, sock, &tunnel_cfg);
->  
-> -	if (sock->sk->sk_family == AF_INET6)
-> -		udp_encap_enable();
-> -
-udp_encap_enable is not called for V6 sockets so we need to have the above lines of code 
->  	rcu_assign_pointer(bareudp->sock, sock);
->  	return 0;
->  }
-> -- 
-> 2.17.1
+> Jarrett Knauer (10):
+>   staging: qlge: removed leading spaces identified by checkpatch.pl
+>   staging: qlge: checkpatch.pl CHECK - removed unecessary blank line
+>   staging: qlge: checkpatch.pl WARNING - removed spaces before tabs
+>   staging: qlge: checkpatch.pl CHECK - added spaces around /
+>   staging: qlge: checkpatch.pl WARNING - removed spaces before tabs
+>   staging: qlge: checkpatch.pl CHECK - added spaces around %
+>   staging: qlge: checkpatch.pl CHECK - removed blank line following
+>     brace
+>   staging: qlge: checkpatch.pl CHECK - removed blank line after brace
+>   staging: qlge: checkpatch.pl WARNING - removed function pointer space
+>   staging: qlge: checkpatch.pl WARNING - missing blank line
+
+It seems like this cover letter made it to the netdev mailing list but
+not the actual patches. Please double check and resend.
+
 > 
+>  drivers/staging/qlge/qlge.h | 42 ++++++++++++++++++-------------------
+>  1 file changed, 20 insertions(+), 22 deletions(-)
+
+Also, as discussed earlier and looking at the diffstat now, a single
+patch would be fine I think.
