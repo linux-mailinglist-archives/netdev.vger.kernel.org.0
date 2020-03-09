@@ -2,154 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC2BC17DEDA
-	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 12:41:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B82E17DF76
+	for <lists+netdev@lfdr.de>; Mon,  9 Mar 2020 13:02:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726488AbgCILlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 07:41:22 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:48425 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725796AbgCILlW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 07:41:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583754080;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I2w+VmJgG5BBUTy1bolGQ0hlYPr2KMXXVP5PZpIcBd0=;
-        b=gPT0+DWsrWYShXneYavgAyvcCB80dHqTsXZOl1U1WGTJGsvWi1NwIjnJl5bw/3/XLnTnCk
-        wyLgVCP3zs2NUMBcM9MpIwTJtu/LX0H+cLHMFrBsTOku6MoMU/QxcfKARXIyRgtgAZLT1A
-        cw0x2IdJzxyP17bZnWR1H4Osr+SmZ9g=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-162-epAVEwSWMbWNP-R6k9cmOw-1; Mon, 09 Mar 2020 07:41:19 -0400
-X-MC-Unique: epAVEwSWMbWNP-R6k9cmOw-1
-Received: by mail-wr1-f72.google.com with SMTP id u8so5068851wrq.13
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 04:41:18 -0700 (PDT)
+        id S1726415AbgCIMCs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 08:02:48 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:35425 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726217AbgCIMCs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 08:02:48 -0400
+Received: by mail-ed1-f66.google.com with SMTP id a20so5757528edj.2
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 05:02:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=wAXZGMSjoijy/QP9ViAqi1UYH5oCWChzX0al4oQEe2I=;
+        b=QO3rVkjKMzytHe/KlOMrQ3vB8x4XaDtvo1yoq+4oVo99Ui6QkXHdPA36ToG2C49zOn
+         II8LFYHKlr6TFsZG/0Y3Jpi6he6BZX1xQfIErAHKhUlsIMSqrgYFaVbT+tk5bcDyYIYg
+         JHkLBl6SjGHkNhm0dJlOaXkuWcabAbGzL2wkfV/p1vNg9jonoqYe9uVahk3hhW/OuhpQ
+         oSYhKdCn/C710UMmh2rnr2xXb2Fp8S+8FQ55HLjlXyjiDVPg4HIAt0Iw80yZo/dMkubh
+         5Hr6f3om3ye4OmJmE4W6ZWYf/GZ8Oh+ScFaeIiJ82mtgaOMqD29A+HP+C1XKE0eVH/P+
+         w/rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=I2w+VmJgG5BBUTy1bolGQ0hlYPr2KMXXVP5PZpIcBd0=;
-        b=XcYKm6QLpjGcCHqilfdEMSSIkqvLO2CzK0J9iMM2KLXoNF6+3XFmYE5Nvg3ESCNGFa
-         obLjHsXBzFmLcMvotQqRvaxV8U1P14xxQFxokSxrvmrqpZV3JY17aZJpCAJg1Xvhptqy
-         Z5pIRWfkjy8dceICFKP1+kaJ9VjWn5gRLarAufJSLG8ngGGaTVae2Jyj/wHQgvUJxUCP
-         a5FwXf9VJcmhKJnFP5DNyuC5Ka/092IlRSYABgYb7batbCd72IBCbr87nl/3bwCzwnEJ
-         eJkea8B2rD/sN/Sy0+oQTQ0IR5gb+YPdcMgXM4oUhs12KiqrWrA2FcuBSuQ2BUdSdFB6
-         R0Jg==
-X-Gm-Message-State: ANhLgQ0Wr1ZMGvzxRFNGF5uTnb4dmAhuWAstLnQdsKt7GwBVXjGB1m3Z
-        5YZTAAIH0weDrb4ncCAsSFhXJUKgLPStUHfmVEa70iN96NmZyaVEOiMx1c5GjuNbkNOUQiPOk9D
-        yV9/cAz4hEtujerwX
-X-Received: by 2002:a1c:f606:: with SMTP id w6mr19664820wmc.109.1583754077755;
-        Mon, 09 Mar 2020 04:41:17 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vsMUF0WKSS6DKKy5bdX0wrEuSWa78iFzLLPion/xNQnUsEXa8wViujbea5nsBVkSdJzl0i1ZQ==
-X-Received: by 2002:a1c:f606:: with SMTP id w6mr19664806wmc.109.1583754077536;
-        Mon, 09 Mar 2020 04:41:17 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id 61sm11265856wrd.58.2020.03.09.04.41.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2020 04:41:16 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 0739318033D; Mon,  9 Mar 2020 12:41:15 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 0/3] Introduce pinnable bpf_link kernel abstraction
-In-Reply-To: <20200305101342.01427a2a@kicinski-fedora-PC1C0HJN>
-References: <8083c916-ac2c-8ce0-2286-4ea40578c47f@iogearbox.net> <CAEf4BzbokCJN33Nw_kg82sO=xppXnKWEncGTWCTB9vGCmLB6pw@mail.gmail.com> <87pndt4268.fsf@toke.dk> <ab2f98f6-c712-d8a2-1fd3-b39abbaa9f64@iogearbox.net> <ccbc1e49-45c1-858b-1ad5-ee503e0497f2@fb.com> <87k1413whq.fsf@toke.dk> <20200304043643.nqd2kzvabkrzlolh@ast-mbp> <20200304114000.56888dac@kicinski-fedora-PC1C0HJN> <20200304204506.wli3enu5w25b35h7@ast-mbp> <20200304132439.6abadbe3@kicinski-fedora-PC1C0HJN> <20200305010706.dk7zedpyj5pb5jcv@ast-mbp> <20200305001620.204c292e@cakuba.hsd1.ca.comcast.net> <87tv332hak.fsf@toke.dk> <20200305101342.01427a2a@kicinski-fedora-PC1C0HJN>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 09 Mar 2020 12:41:14 +0100
-Message-ID: <87d09l21t1.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=wAXZGMSjoijy/QP9ViAqi1UYH5oCWChzX0al4oQEe2I=;
+        b=iRtOnX76M29vlW2NYcsDSxcpAJgjUVBMBN73gTTORxjEwhXyOLWZ5mVCR9rIUe8Mgq
+         tV57XeB9qHzlv225X7/4WgtCDAuGcMwCCfsy2objV/FzAcHvynW6qHfvJuIuKYqHIxjl
+         +A9xlfWq4KsdxcnSC1a8K7VN8LYpolS9V949tOEvrWSaWqqGlJD4sAIcqou6W+HWMaUw
+         kxJtDDaDAIp/IdGUW6rTjAuRv4/tSQGOUIZmY8tKzBL9AXWv+YGH4gcyI5Loxzrw9xf0
+         mgB+IkzgXll0T5fh/G7g1/7ZpJ7JA7qDXLlPpOyI9no2bBwXkJmabaB+XUZJjYb9H6RM
+         Ljaw==
+X-Gm-Message-State: ANhLgQ2/mVlfmB6q5IZsD5nblCCENA9tSxn3AreZlpdrnLkSCLDxLwgM
+        Umul3tLkGb/oa/Te2sYL2eyNNI2bNCvL9CALaeY=
+X-Google-Smtp-Source: ADFU+vv8Qun0NQ9C+Sct8X1klMtnBr99ELv+mohrakbEwv5UbZbfHK1WKXvN5kmCJxwXwWn+KEmCO6YckSHIuEfwIDA=
+X-Received: by 2002:a50:af46:: with SMTP id g64mr16796379edd.265.1583755366734;
+ Mon, 09 Mar 2020 05:02:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Received: by 2002:a17:906:748d:0:0:0:0 with HTTP; Mon, 9 Mar 2020 05:02:46
+ -0700 (PDT)
+Reply-To: joybrown7192@gmail.com
+From:   DR OKWU JOSEPH NNANNAOFFICE <drnnannaokwujoseph1942@gmail.com>
+Date:   Mon, 9 Mar 2020 13:02:46 +0100
+Message-ID: <CAATm4HjQoW-diqJa6d6iLDDzJH5x5_3gvwS5GGZNmW1GhnJLCQ@mail.gmail.com>
+Subject: hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> writes:
+ Estimado propietario del correo electr=C3=B3nico / beneficiario del fondo,
 
-> On Thu, 05 Mar 2020 12:05:23 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Jakub Kicinski <kuba@kernel.org> writes:
->> > On Wed, 4 Mar 2020 17:07:08 -0800, Alexei Starovoitov wrote:=20=20
->> >> > Maybe also the thief should not have CAP_ADMIN in the first place?
->> >> > And ask a daemon to perform its actions..=20=20=20=20
->> >>=20
->> >> a daemon idea keeps coming back in circles.
->> >> With FD-based kprobe/uprobe/tracepoint/fexit/fentry that problem is g=
-one,
->> >> but xdp, tc, cgroup still don't have the owner concept.
->> >> Some people argued that these three need three separate daemons.
->> >> Especially since cgroups are mainly managed by systemd plus container
->> >> manager it's quite different from networking (xdp, tc) where something
->> >> like 'networkd' might makes sense.
->> >> But if you take this line of thought all the ways systemd should be t=
-hat
->> >> single daemon to coordinate attaching to xdp, tc, cgroup because
->> >> in many cases cgroup and tc progs have to coordinate the work.=20=20
->> >
->> > The feature creep could happen, but Toke's proposal has a fairly simple
->> > feature set, which should be easy to cover by a stand alone daemon.
->> >
->> > Toke, I saw that in the library discussion there was no mention of=20
->> > a daemon, what makes a daemon solution unsuitable?=20=20
->>=20
->> Quoting from the last discussion[0]:
->>=20
->> > - Introducing a new, separate code base that we'll have to write, supp=
-ort
->> >   and manage updates to.
->> >
->> > - Add a new dependency to using XDP (now you not only need the kernel
->> >   and libraries, you'll also need the daemon).
->> >
->> > - Have to duplicate or wrap functionality currently found in the kerne=
-l;
->> >   at least:
->> >=20=20=20
->> >     - Keeping track of which XDP programs are loaded and attached to
->> >       each interface (as well as the "new state" of their attachment
->> >       order).
->> >
->> >     - Some kind of interface with the verifier; if an app does
->> >       xdpd_rpc_load(prog), how is the verifier result going to get back
->> >       to the caller?
->> >
->> > - Have to deal with state synchronisation issues (how does xdpd handle
->> >   kernel state changing from underneath it?).
->> >=20
->> > While these are issues that are (probably) all solvable, I think the
->> > cost of solving them is far higher than putting the support into the
->> > kernel. Which is why I think kernel support is the best solution :)=20=
-=20
->>=20
->> The context was slightly different, since this was before we had
->> freplace support in the kernel. But apart from the point about the
->> verifier, I think the arguments still stand. In fact, now that we have
->> that, we don't even need userspace linking, so basically a daemon's only
->> task would be to arbitrate access to the XDP hook? In my book,
->> arbitrating access to resources is what the kernel is all about...
->
-> You said that like the library doesn't arbitrate access and manage
-> resources.. It does exactly the same work the daemon would do.
+Le envi=C3=A9 esta carta hace un mes, pero no supe nada de usted, no estoy
+seguro de si la recibi=C3=B3, y es por eso que la repito. Primero, soy la
+Sra. Kristalina Georgieva, Gerente actual Directora y Presidenta del
+Fondo Monetario Internacional.
 
-Sure, the logic is in the library, but the state (which programs are
-loaded) and synchronisation primitives (atomic replace of attached
-program) are provided by the kernel.=20
+De hecho, hemos revisado todos los obst=C3=A1culos y problemas que rodearon
+su transacci=C3=B3n incompleta y su incapacidad para cumplir con los cargos
+de transferencia recaudados, en su contra, por las opciones de
+transferencia anteriores, visite nuestro sitio para su confirmaci=C3=B3n 38
+=C2=B0 53=E2=80=B256 =E2=80=B3 N 77 =C2=B0 2 =E2=80=B239 =E2=80=B3 W Nosotr=
+os, la Junta de Directores, el Banco
+Mundial y el Fondo Monetario Internacional (FMI) Washington, DC, en
+conjunto con el Departamento del Tesoro de los Estados Unidos y
+algunas otras agencias de investigaci=C3=B3n relevantes aqu=C3=AD en los Es=
+tados
+Unidos de Am=C3=A9rica. Ha ordenado nuestro pago en el extranjero
+Remittance Unit, United Bank of Africa, Lome Togo, para emitirle una
+tarjeta VISA, donde se cargar=C3=A1 su fondo de $ 1.500.000.00, para un
+mayor retiro de su fondo.
 
-> Daemon just trades off the complexity of making calls for the
-> complexity of the system and serializing/de-serializing the state.
+Durante el curso de nuestra investigaci=C3=B3n, descubrimos con
+consternaci=C3=B3n que su pago ha sido retrasado innecesariamente por
+funcionarios corruptos del Banco que intentan desviar sus fondos a sus
+cuentas privadas. Y hoy le notificamos que su fondo ha sido acreditado
+en la tarjeta VISA por UBA Bank y tambi=C3=A9n listo para ser entregado,
+ahora comun=C3=ADquese con la secretaria de UBA Bank que se llama
+Mrs.JoyBrown, env=C3=ADe un correo electr=C3=B3nico a joybrown7192@gmail.co=
+m,
+env=C3=ADele la siguiente informaci=C3=B3n para la entrega de su tarjeta VI=
+SA
+ATM acreditada a su direcci=C3=B3n.
 
-What state are we serialising? I'm not sure I would consider just
-pinning things in bpffs as "state serialisation"?
-
--Toke
-
+Su nombre completo =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Su pa=C3=ADs de origen =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D
+Su direcci=C3=B3n de casa =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Direcci=C3=B3n de correo electr=C3=B3nico =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Su n=C3=BAmero de tel=C3=A9fono =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Sinceramente, Sra. Kristalina Georgieva
