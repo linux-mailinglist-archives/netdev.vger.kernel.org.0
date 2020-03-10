@@ -2,141 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5842517F1D9
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 09:23:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E71717F1FB
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 09:34:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726514AbgCJIXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 04:23:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44798 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725919AbgCJIXL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Mar 2020 04:23:11 -0400
-Received: from localhost (unknown [193.47.165.251])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5F4662467D;
-        Tue, 10 Mar 2020 08:23:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583828590;
-        bh=f3RW8JQ3TBsAVo4v1BkqMBDNqR/3LDXAY26Fyo/+8cI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JgugW1D/iiDhCx7THb1DclLTv08WrhJ22zQhHOcgANOI0n7oKpvzN2fOMGPdsqxuX
-         JwwIOiyCl4tonPFCkuQeozBW7zk6ciQOtcr832+7tE0SLhGIqKhUBAa5y4EHHR+rjA
-         jrPYiuSMI7y6O7RasfpHdJHj8IoR52K9F6BBSJQc=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Michael Guralnik <michaelgur@mellanox.com>,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [PATCH mlx5-next v1 04/12] {IB,net}/mlx5: Move asynchronous mkey creation to mlx5_ib
-Date:   Tue, 10 Mar 2020 10:22:30 +0200
-Message-Id: <20200310082238.239865-5-leon@kernel.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200310082238.239865-1-leon@kernel.org>
-References: <20200310082238.239865-1-leon@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726467AbgCJIeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 04:34:01 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:12992 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726389AbgCJIeB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 04:34:01 -0400
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02A8OWLP016201
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 04:34:00 -0400
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2ym8g49hny-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 04:33:59 -0400
+Received: from localhost
+        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
+        Tue, 10 Mar 2020 08:33:52 -0000
+Received: from b06avi18878370.portsmouth.uk.ibm.com (9.149.26.194)
+        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Tue, 10 Mar 2020 08:33:49 -0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 02A8XmCl36569460
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 10 Mar 2020 08:33:48 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3D58A52059;
+        Tue, 10 Mar 2020 08:33:48 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id E8DE052050;
+        Tue, 10 Mar 2020 08:33:47 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     leon@kernel.org, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, heiko.carstens@de.ibm.com,
+        raspl@linux.ibm.com, ubraun@linux.ibm.com
+Subject: [PATCH v2 net] net/smc: cancel event worker during device removal
+Date:   Tue, 10 Mar 2020 09:33:30 +0100
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 20031008-0012-0000-0000-0000038EE7E9
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20031008-0013-0000-0000-000021CBB241
+Message-Id: <20200310083330.90427-1-kgraul@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-10_04:2020-03-09,2020-03-10 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
+ suspectscore=1 priorityscore=1501 lowpriorityscore=0 clxscore=1015
+ impostorscore=0 mlxlogscore=999 spamscore=0 malwarescore=0 bulkscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003100057
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Guralnik <michaelgur@mellanox.com>
+During IB device removal, cancel the event worker before the device
+structure is freed.
 
-As mlx5_ib is the only user of the mlx5_core_create_mkey_cb, move the
-logic inside mlx5_ib and cleanup the code in mlx5_core.
-
-Signed-off-by: Michael Guralnik <michaelgur@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+Fixes: a4cf0443c414 ("smc: introduce SMC as an IB-client")
+Reported-by: syzbot+b297c6825752e7a07272@syzkaller.appspotmail.com
+Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
 ---
- drivers/infiniband/hw/mlx5/mr.c              |  6 +++---
- drivers/net/ethernet/mellanox/mlx5/core/mr.c | 22 +++-----------------
- include/linux/mlx5/driver.h                  |  6 ------
- 3 files changed, 6 insertions(+), 28 deletions(-)
+ net/smc/smc_ib.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/infiniband/hw/mlx5/mr.c b/drivers/infiniband/hw/mlx5/mr.c
-index 70ae3372411a..a1e6ab9b0bed 100644
---- a/drivers/infiniband/hw/mlx5/mr.c
-+++ b/drivers/infiniband/hw/mlx5/mr.c
-@@ -77,10 +77,10 @@ mlx5_ib_create_mkey_cb(struct mlx5_ib_dev *dev,
- 		       u32 *in, int inlen, u32 *out, int outlen,
- 		       struct mlx5_async_work *context)
- {
-+	MLX5_SET(create_mkey_in, in, opcode, MLX5_CMD_OP_CREATE_MKEY);
- 	assign_mkey_variant(dev, mkey, in);
--	return mlx5_core_create_mkey_cb(dev->mdev, mkey, async_ctx,
--					in, inlen, out, outlen,
--					create_mkey_callback, context);
-+	return mlx5_cmd_exec_cb(async_ctx, in, inlen, out, outlen,
-+				create_mkey_callback, context);
+diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
+index d6ba186f67e2..05b825b3cfa4 100644
+--- a/net/smc/smc_ib.c
++++ b/net/smc/smc_ib.c
+@@ -582,6 +582,7 @@ static void smc_ib_remove_dev(struct ib_device *ibdev, void *client_data)
+ 	smc_smcr_terminate_all(smcibdev);
+ 	smc_ib_cleanup_per_ibdev(smcibdev);
+ 	ib_unregister_event_handler(&smcibdev->event_handler);
++	cancel_work_sync(&smcibdev->port_event_work);
+ 	kfree(smcibdev);
  }
  
- static void clean_mr(struct mlx5_ib_dev *dev, struct mlx5_ib_mr *mr);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mr.c b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-index 51814d023efb..fd3e6d217c3b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-@@ -36,12 +36,9 @@
- #include <linux/mlx5/cmd.h>
- #include "mlx5_core.h"
- 
--int mlx5_core_create_mkey_cb(struct mlx5_core_dev *dev,
--			     struct mlx5_core_mkey *mkey,
--			     struct mlx5_async_ctx *async_ctx, u32 *in,
--			     int inlen, u32 *out, int outlen,
--			     mlx5_async_cbk_t callback,
--			     struct mlx5_async_work *context)
-+int mlx5_core_create_mkey(struct mlx5_core_dev *dev,
-+			  struct mlx5_core_mkey *mkey,
-+			  u32 *in, int inlen)
- {
- 	u32 lout[MLX5_ST_SZ_DW(create_mkey_out)] = {0};
- 	u32 mkey_index;
-@@ -51,10 +48,6 @@ int mlx5_core_create_mkey_cb(struct mlx5_core_dev *dev,
- 
- 	MLX5_SET(create_mkey_in, in, opcode, MLX5_CMD_OP_CREATE_MKEY);
- 
--	if (callback)
--		return mlx5_cmd_exec_cb(async_ctx, in, inlen, out, outlen,
--					callback, context);
--
- 	err = mlx5_cmd_exec(dev, in, inlen, lout, sizeof(lout));
- 	if (err)
- 		return err;
-@@ -70,15 +63,6 @@ int mlx5_core_create_mkey_cb(struct mlx5_core_dev *dev,
- 		      mkey_index, key, mkey->key);
- 	return 0;
- }
--EXPORT_SYMBOL(mlx5_core_create_mkey_cb);
--
--int mlx5_core_create_mkey(struct mlx5_core_dev *dev,
--			  struct mlx5_core_mkey *mkey,
--			  u32 *in, int inlen)
--{
--	return mlx5_core_create_mkey_cb(dev, mkey, NULL, in, inlen,
--					NULL, 0, NULL, NULL);
--}
- EXPORT_SYMBOL(mlx5_core_create_mkey);
- 
- int mlx5_core_destroy_mkey(struct mlx5_core_dev *dev,
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index cdae66a0c021..3f10a9633012 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -943,12 +943,6 @@ struct mlx5_cmd_mailbox *mlx5_alloc_cmd_mailbox_chain(struct mlx5_core_dev *dev,
- 						      gfp_t flags, int npages);
- void mlx5_free_cmd_mailbox_chain(struct mlx5_core_dev *dev,
- 				 struct mlx5_cmd_mailbox *head);
--int mlx5_core_create_mkey_cb(struct mlx5_core_dev *dev,
--			     struct mlx5_core_mkey *mkey,
--			     struct mlx5_async_ctx *async_ctx, u32 *in,
--			     int inlen, u32 *out, int outlen,
--			     mlx5_async_cbk_t callback,
--			     struct mlx5_async_work *context);
- int mlx5_core_create_mkey(struct mlx5_core_dev *dev,
- 			  struct mlx5_core_mkey *mkey,
- 			  u32 *in, int inlen);
 -- 
-2.24.1
+2.17.1
 
