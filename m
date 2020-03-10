@@ -2,200 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14095180B63
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 23:21:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2AF4180B6B
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 23:23:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727642AbgCJWVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 18:21:55 -0400
-Received: from gateway34.websitewelcome.com ([192.185.148.104]:35999 "EHLO
-        gateway34.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726293AbgCJWVy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 18:21:54 -0400
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway34.websitewelcome.com (Postfix) with ESMTP id A41F388C06
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 17:21:53 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id BnG5jY7vwSl8qBnG5j952m; Tue, 10 Mar 2020 17:21:53 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=41Tj2XlH5TbhpR/J2ek3eO22cPzrnxQN6EC+pTU4jo8=; b=ZYOZodowhuXUL05dCUtPBabCzD
-        frvvp4OKMasqUSsP2bqLfMpg9Uuz44WTPpvYoLsMozl1UO7pzpWUlKKwh605aAEoO2IG5gqOGoce/
-        SImBR3osnAKnYqzEk6kRScpZA+s9naxCpyJkcGYLTFIIK8I6X3sLjDBIMo/lhl09S6DHdhxZ0mPeS
-        MBTgYKSE+FsEmDffVc+t8AGpufWw+I1iJCt88SCfdYsyd5Onaveke1OjC/aO0/cF60mh3krh2YtbT
-        jmp0rPX9Vwf3XfCc6WfngI3yDoo0U1hvYPdx60ron+nO9G85tmyRNb2uOnDypvr5lEW7VJUndcJ/i
-        4aSqxNSw==;
-Received: from 187-162-252-62.static.axtel.net ([187.162.252.62]:46884 helo=[192.168.0.140])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1jBnG5-002TYx-4r; Tue, 10 Mar 2020 17:21:53 -0500
-Subject: Re: [PATCH][next] zd1211rw/zd_usb.h: Replace zero-length array with
- flexible-array member
-To:     Joe Perches <joe@perches.com>,
-        Jes Sorensen <jes.sorensen@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>
-Cc:     Daniel Drake <dsd@gentoo.org>, Ulrich Kunitz <kune@deine-taler.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200305111216.GA24982@embeddedor>
- <87k13yq2jo.fsf@kamboji.qca.qualcomm.com>
- <256881484c5db07e47c611a56550642a6f6bd8e9.camel@perches.com>
- <87blpapyu5.fsf@kamboji.qca.qualcomm.com>
- <1bb7270f-545b-23ca-aa27-5b3c52fba1be@embeddedor.com>
- <87r1y0nwip.fsf@kamboji.qca.qualcomm.com>
- <48ff1333-0a14-36d8-9565-a7f13a06c974@embeddedor.com>
- <021d1125-3ffd-39ef-395a-b796c527bde4@gmail.com>
- <fb3395d7-e932-10ac-1feb-ab2ceb63424e@embeddedor.com>
- <937b0b529509ec1641453ef7c13f38e2d7cc813e.camel@perches.com>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <c2aa4d8d-1c39-1903-2b49-382f2143e181@embeddedor.com>
-Date:   Tue, 10 Mar 2020 17:21:52 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727685AbgCJWXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 18:23:32 -0400
+Received: from mail-eopbgr70079.outbound.protection.outlook.com ([40.107.7.79]:55005
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726293AbgCJWXb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Mar 2020 18:23:31 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GfufGvI4KzBF9uxWp3eG6Q/1vNk3ohD2LG4CzktckRYsXC0CVAFUdp6/q7SFL9fbINaTCKIoyEqHbISbgyDIpHtjcq0k5RiQUQgXtF100GDrdsMPjs4QJOiptBUEoGFiniZGTYiHdLNB+Qb03nC1vSzS4S5ihBmS3mCx0wlScBvHtWddiOKoyaUuRtnYYbK5WA8KWwGPx2e+MM2p5wjU6ohDsRVoan6AQdnZOMnCYOeJEoP9w01flcWu6GWA9i18oEvY+iOCwt0Yt+4I+Awwn/7nTensDnacNBLUMRfokcE7BaR5Hn+P5/zXAcTKNspWld6Mpv9SeuXOq0WiD3ZV0Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Bdq8pBaJ7fKthYu6SdeyfNaxAtjl3XgKBR6olsHsx90=;
+ b=EVsq+XBboUCq5/5HpsjcaPTDHqGfdFxQvVasXREnCY1/kT2tEuDWQfddSHCNbjLBAhJkjuDIRa5eOua83rAQ51w1YljyDm0p2t6hkEmXafY24c5eTel7sN0WsIR4q1HSyt2W/H47UWXxwjOEtEHJ6Qfrgq2gw9SpW9OF9f/VRLIr53ehEftafh18XMAwW5z5bkNOsxanRm0vLbGpxYklWahLz2kqLqkfIVBN3LY3Ws6euRv93l3X0fJgCNa1ogApTs5C2ftpXhNpJJSpos9EkDGXsSXQTNVPdAl2+HR8Ki8xgIfuMVSePtggeYifOqYC7453oPK89AXMkKqotWRJAw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Bdq8pBaJ7fKthYu6SdeyfNaxAtjl3XgKBR6olsHsx90=;
+ b=HsM0b8DidRk1EAAxiy2hpbhWRPH8RRw8UTHpKg63frd9aM7/xrloAZE3+YmxIeyP/LmqXCbfW03HMLqhLZciW1OQm0mKO1Y9gEQk8/X3ZtK5IL+t1ey2j/FI25h7nSs1LgGBSV6DFNuWVwS9SepELgJKP+eIxboIhZdzEXPqNps=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=petrm@mellanox.com; 
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (20.176.168.150) by
+ HE1PR05MB3452.eurprd05.prod.outlook.com (10.170.244.30) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2793.17; Tue, 10 Mar 2020 22:23:25 +0000
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::c146:9acd:f4dc:4e32]) by HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::c146:9acd:f4dc:4e32%7]) with mapi id 15.20.2793.013; Tue, 10 Mar 2020
+ 22:23:25 +0000
+References: <20200309183503.173802-1-idosch@idosch.org> <20200309183503.173802-3-idosch@idosch.org> <20200309151818.4350fae6@kicinski-fedora-PC1C0HJN> <87sgigy1zr.fsf@mellanox.com> <20200310125321.699b36bc@kicinski-fedora-PC1C0HJN>
+User-agent: mu4e 1.3.3; emacs 26.3
+From:   Petr Machata <petrm@mellanox.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, jiri@mellanox.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 2/6] net: sched: Add centralized RED flag checking
+In-reply-to: <20200310125321.699b36bc@kicinski-fedora-PC1C0HJN>
+Date:   Tue, 10 Mar 2020 23:23:23 +0100
+Message-ID: <87mu8nyhlw.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: FR2P281CA0003.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a::13) To HE1PR05MB4746.eurprd05.prod.outlook.com
+ (2603:10a6:7:a3::22)
 MIME-Version: 1.0
-In-Reply-To: <937b0b529509ec1641453ef7c13f38e2d7cc813e.camel@perches.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.252.62
-X-Source-L: No
-X-Exim-ID: 1jBnG5-002TYx-4r
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-252-62.static.axtel.net ([192.168.0.140]) [187.162.252.62]:46884
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 17
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from yaviefel (89.176.246.183) by FR2P281CA0003.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d10:a::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.17 via Frontend Transport; Tue, 10 Mar 2020 22:23:25 +0000
+X-Originating-IP: [89.176.246.183]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: abd7d762-e2f0-4b30-d62b-08d7c541a6aa
+X-MS-TrafficTypeDiagnostic: HE1PR05MB3452:|HE1PR05MB3452:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR05MB34529D63B74C77DCA523896FDBFF0@HE1PR05MB3452.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Forefront-PRVS: 033857D0BD
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(136003)(346002)(376002)(396003)(189003)(199004)(316002)(6916009)(66946007)(6496006)(2906002)(52116002)(5660300002)(6486002)(16526019)(4326008)(66476007)(36756003)(54906003)(107886003)(86362001)(478600001)(66556008)(81156014)(186003)(8936002)(81166006)(2616005)(8676002)(26005)(956004);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR05MB3452;H:HE1PR05MB4746.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ngAUjRyNqU0RSiSGrnXpxGPyaWfRWOv813aG5wJhP5nfWKGV4A/kiiFARw8ZL3CgZuZNzLbJpQZUeEMUpZ/Bs0weYlYkP42rgqyEizrGY6S6X4cCe0pAKVWA6FvmpWHpR7xbO9ddrxBEF50o+0VMdvQ6AEJmwcDTZU94Lvk4msqHk50rs83xlnAjviSQNlViGPhvQpvCrdYDQvicsr7vMVpnwmBanRjMk+3lEeuDNiOtctt7shmbN3p+aKz8OiFd6k+o9eU4bSyZuRpsMavQ6RIPq8njjmOApL6EAe6ktLn+YCvjDeutoRxW1Y3yAM0ZO4GIHfh34KT1YEiOw92sp09HpOPuRPJUULyfy5rmE7wGxRbijVNicHsselOBHYfvhqmydgbz9Lv63WI/dHK+tRZwTqVBq9GaRo9Q/lLbhzH5iMv+Q/S2GKYS5ZH0cc/d
+X-MS-Exchange-AntiSpam-MessageData: 4iht4+vUj7alA/1G9MEm2wXn/L5pZWsloRLYrrDn3tOLIuhDO/EnpfcRtGOSqLa1At4/nBPpTtqtGuiHum5MH5JfQLy8VYvq4NF7X/+FV9pope81Pg344oo5YhR2u6V1NiaSIGR2vnTd5V1oQvbeVg==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: abd7d762-e2f0-4b30-d62b-08d7c541a6aa
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2020 22:23:25.9012
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DWX/UcrgBgVCbKDF1hH9udUuoci3gLTxLs6IebDktRQwAU84GFOsZdiRugaeTGH8nyM/tYsw1mDE1mbFCDvvhQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3452
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+Jakub Kicinski <kuba@kernel.org> writes:
 
-On 3/10/20 5:15 PM, Joe Perches wrote:
-> On Tue, 2020-03-10 at 17:13 -0500, Gustavo A. R. Silva wrote:
+> On Tue, 10 Mar 2020 10:48:24 +0100 Petr Machata wrote:
+>> > The only flags which are validated today are the gRED per-vq ones, which
+>> > are a recent addition and were validated from day one.
 >>
->> On 3/10/20 5:07 PM, Jes Sorensen wrote:
->>> On 3/10/20 5:52 PM, Gustavo A. R. Silva wrote:
->>>>
->>>> On 3/10/20 8:56 AM, Kalle Valo wrote:
->>>>> + jes
->>>>>
->>>>> "Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
->>>>>>> I wrote in a confusing way, my question above was about the actual patch
->>>>>>> and not the the title. For example, Jes didn't like this style change:
->>>>>>>
->>>>>>> https://patchwork.kernel.org/patch/11402315/
->>>>>>>
->>>>>>
->>>>>> It doesn't seem that that comment adds a lot to the conversation. The only
->>>>>> thing that it says is literally "fix the compiler". By the way, more than
->>>>>> a hundred patches have already been applied to linux-next[1] and he seems
->>>>>> to be the only person that has commented such a thing.
->>>>>
->>>>> But I also asked who prefers this format in that thread, you should not
->>>>> ignore questions from two maintainers (me and Jes).
->>>>>
->>>>
->>>> I'm sorry. I thought the changelog text had already the proper information.
->>>> In the changelog text I'm quoting the GCC documentation below:
->>>>
->>>> "The preferred mechanism to declare variable-length types like struct line
->>>> above is the ISO C99 flexible array member..." [1]
->>>>
->>>> I'm also including a link to the following KSPP open issue:
->>>>
->>>> https://github.com/KSPP/linux/issues/21
->>>>
->>>> The issue above mentions the following:
->>>>
->>>> "Both cases (0-byte and 1-byte arrays) pose confusion for things like sizeof(),
->>>> CONFIG_FORTIFY_SOURCE."
->>>>
->>>> sizeof(flexible-array-member) triggers a warning because flexible array members have
->>>> incomplete type[1]. There are some instances of code in which the sizeof operator
->>>> is being incorrectly/erroneously applied to zero-length arrays and the result is zero.
->>>> Such instances may be hiding some bugs. So, the idea is also to get completely rid
->>>> of those sorts of issues.
->>>
->>> As I stated in my previous answer, this seems more code churn than an
->>> actual fix. If this is a real problem, shouldn't the work be put into
->>> fixing the compiler to handle foo[0] instead? It seems that is where the
->>> real value would be.
->>>
->>
->> Yeah. But, unfortunately, I'm not a compiler guy, so I'm not able to fix the
->> compiler as you suggest. And I honestly don't see what is so annoying/disturbing
->> about applying a patch that removes the 0 from foo[0] when it brings benefit
->> to the whole codebase.
-> 
-> As far as I can tell, it doesn't actually make a difference as
-> all the compilers produce the same object code with either form.
-> 
+>> Do you consider the validation as such to be a problem? Because that
+>> would mean that the qdiscs that have not validated flags this way
+>> basically cannot be extended ever ("a buggy userspace used to get a
+>> quiet slicing of flags, and now they mean something").
+>
+> I just remember leaving it as is when I was working on GRED, because
+> of the potential breakage. The uAPI policy is what it is, then again
+> we probably lose more by making the code of these ancient Qdiscs ugly
+> than we win :(
+>
+> I don't feel like I can ack it with clear conscience tho.
 
-That's precisely why we can implement these changes, cleanly(the fact
-that the compiler produces the same object code). So, the resulting
-object code is not the point here.
-
---
-Gustavo
+Just to make sure -- are you opposed to adding a new flag, or to
+validation? At least the adaptative flag was added years after the
+others in 2011. I wasn't paying much attention to kernel back then, but
+I think the ABI rules are older than that.
