@@ -2,127 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA58917F2BE
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 10:07:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 807A317F3A8
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 10:31:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbgCJJHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 05:07:35 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:44565 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726677AbgCJJHd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 05:07:33 -0400
-X-Originating-IP: 90.89.41.158
-Received: from localhost (lfbn-tou-1-1473-158.w90-89.abo.wanadoo.fr [90.89.41.158])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id B6E7B1BF217;
-        Tue, 10 Mar 2020 09:07:31 +0000 (UTC)
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/3] net: phy: mscc: fix header defines and descriptions
-Date:   Tue, 10 Mar 2020 10:07:20 +0100
-Message-Id: <20200310090720.521745-4-antoine.tenart@bootlin.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200310090720.521745-1-antoine.tenart@bootlin.com>
-References: <20200310090720.521745-1-antoine.tenart@bootlin.com>
+        id S1726539AbgCJJb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 05:31:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33716 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726202AbgCJJbZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Mar 2020 05:31:25 -0400
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B78D1222D9;
+        Tue, 10 Mar 2020 09:31:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583832685;
+        bh=t25UkHsdqiAmL5id5DkT/0S/zMYlUz0ykPXLC+61pg0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=yUZ85uBSAFi3j5w2Rir325Zpi9SfGpmo8dWuTCosUlYzNeAclJYILqFT6xDX8OKBo
+         MgUYWzmDOGAkKoqbTUdQDdLvJTMhFQROuDADvJQlpUkVdrBN+1ZYblGSwq9zAO3j6K
+         AU0P3ATnHvyHOaEvOGMTC5FDQW104QiP3GL+LYk4=
+Date:   Tue, 10 Mar 2020 11:31:22 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Karsten Graul <kgraul@linux.ibm.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, heiko.carstens@de.ibm.com,
+        raspl@linux.ibm.com, ubraun@linux.ibm.com
+Subject: Re: [PATCH v2 net] net/smc: cancel event worker during device removal
+Message-ID: <20200310093122.GC242734@unreal>
+References: <20200310083330.90427-1-kgraul@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200310083330.90427-1-kgraul@linux.ibm.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Cosmetic commit fixing the MSCC PHY header defines and descriptions,
-which were referring the to MSCC Ocelot MAC driver (see
-drivers/net/ethernet/mscc/).
+On Tue, Mar 10, 2020 at 09:33:30AM +0100, Karsten Graul wrote:
+> During IB device removal, cancel the event worker before the device
+> structure is freed.
+>
+> Fixes: a4cf0443c414 ("smc: introduce SMC as an IB-client")
+> Reported-by: syzbot+b297c6825752e7a07272@syzkaller.appspotmail.com
+> Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
+> Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
+> ---
+>  net/smc/smc_ib.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
 
-Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
----
- drivers/net/phy/mscc/mscc_fc_buffer.h | 8 ++++----
- drivers/net/phy/mscc/mscc_mac.h       | 8 ++++----
- drivers/net/phy/mscc/mscc_macsec.h    | 8 ++++----
- 3 files changed, 12 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/phy/mscc/mscc_fc_buffer.h b/drivers/net/phy/mscc/mscc_fc_buffer.h
-index 7e9c0e877895..3803e826c37d 100644
---- a/drivers/net/phy/mscc/mscc_fc_buffer.h
-+++ b/drivers/net/phy/mscc/mscc_fc_buffer.h
-@@ -1,12 +1,12 @@
- /* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
- /*
-- * Microsemi Ocelot Switch driver
-+ * Driver for Microsemi VSC85xx PHYs
-  *
-  * Copyright (C) 2019 Microsemi Corporation
-  */
- 
--#ifndef _MSCC_OCELOT_FC_BUFFER_H_
--#define _MSCC_OCELOT_FC_BUFFER_H_
-+#ifndef _MSCC_PHY_FC_BUFFER_H_
-+#define _MSCC_PHY_FC_BUFFER_H_
- 
- #define MSCC_FCBUF_ENA_CFG					0x00
- #define MSCC_FCBUF_MODE_CFG					0x01
-@@ -61,4 +61,4 @@
- #define MSCC_FCBUF_FC_READ_THRESH_CFG_RX_THRESH(x)		((x) << 16)
- #define MSCC_FCBUF_FC_READ_THRESH_CFG_RX_THRESH_M		GENMASK(31, 16)
- 
--#endif
-+#endif /* _MSCC_PHY_FC_BUFFER_H_ */
-diff --git a/drivers/net/phy/mscc/mscc_mac.h b/drivers/net/phy/mscc/mscc_mac.h
-index 9420ee5175a6..fcb5ba5e5d03 100644
---- a/drivers/net/phy/mscc/mscc_mac.h
-+++ b/drivers/net/phy/mscc/mscc_mac.h
-@@ -1,12 +1,12 @@
- /* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
- /*
-- * Microsemi Ocelot Switch driver
-+ * Driver for Microsemi VSC85xx PHYs
-  *
-  * Copyright (c) 2017 Microsemi Corporation
-  */
- 
--#ifndef _MSCC_OCELOT_LINE_MAC_H_
--#define _MSCC_OCELOT_LINE_MAC_H_
-+#ifndef _MSCC_PHY_LINE_MAC_H_
-+#define _MSCC_PHY_LINE_MAC_H_
- 
- #define MSCC_MAC_CFG_ENA_CFG					0x00
- #define MSCC_MAC_CFG_MODE_CFG					0x01
-@@ -156,4 +156,4 @@
- #define MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE(x)	(x)
- #define MSCC_PROC_0_IP_1588_TOP_CFG_STAT_MODE_CTL_PROTOCOL_MODE_M	GENMASK(2, 0)
- 
--#endif /* _MSCC_OCELOT_LINE_MAC_H_ */
-+#endif /* _MSCC_PHY_LINE_MAC_H_ */
-diff --git a/drivers/net/phy/mscc/mscc_macsec.h b/drivers/net/phy/mscc/mscc_macsec.h
-index d9ab6aba7482..29735f32f2e1 100644
---- a/drivers/net/phy/mscc/mscc_macsec.h
-+++ b/drivers/net/phy/mscc/mscc_macsec.h
-@@ -1,12 +1,12 @@
- /* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
- /*
-- * Microsemi Ocelot Switch driver
-+ * Driver for Microsemi VSC85xx PHYs
-  *
-  * Copyright (c) 2018 Microsemi Corporation
-  */
- 
--#ifndef _MSCC_OCELOT_MACSEC_H_
--#define _MSCC_OCELOT_MACSEC_H_
-+#ifndef _MSCC_PHY_MACSEC_H_
-+#define _MSCC_PHY_MACSEC_H_
- 
- #define MSCC_MS_MAX_FLOWS		16
- 
-@@ -263,4 +263,4 @@ enum mscc_macsec_validate_levels {
- #define MSCC_MS_INTR_CTRL_STATUS_INTR_ENABLE_M		GENMASK(31, 16)
- #define MACSEC_INTR_CTRL_STATUS_ROLLOVER		BIT(5)
- 
--#endif
-+#endif /* _MSCC_PHY_MACSEC_H_ */
--- 
-2.24.1
-
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
