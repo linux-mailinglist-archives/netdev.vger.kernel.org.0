@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C4AD180B48
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 23:15:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C41F6180B47
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 23:15:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727834AbgCJWPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 18:15:22 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:34712 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727816AbgCJWPT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 18:15:19 -0400
-Received: by mail-il1-f199.google.com with SMTP id l13so524ils.1
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 15:15:17 -0700 (PDT)
+        id S1727822AbgCJWPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 18:15:19 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:41018 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727802AbgCJWPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 18:15:18 -0400
+Received: by mail-io1-f72.google.com with SMTP id n15so81735iog.8
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 15:15:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=kPM91QY7Ml+jxCuO6ZR8UApkRRn2EWFumZ9mWiN6s9w=;
-        b=TfM0i1fo5t3axBzIliweVA9z22bwpA2cPU17qcUAVoSjfuOLuMHJ+iVKVAGp12zBEh
-         h9x2TGeKsTzUnIAWN5x9t7KzVvKGiYagC0CCqSvhz8wwdXSVCbIb9ir75irhdlEpF0NT
-         RNQ23jXLad12gDeSJ3mMBDbpZyzuSoQ6ug2FqNiJg+2jTyT7UUFvjOiMRCu2Z9Dicoip
-         o+qS0GgDjmzMJwfu9g2OMNZQrnGD8z3IJQtblklUYbmL6xEqN0LzVifNFLA5R/cWIBcB
-         BcV3xmXMsnHpjwfZdoiPwnjrNljV+WQcvzgtgte24jFSTtTqSSZGf5mO5pmtZRcwh39k
-         RcLw==
-X-Gm-Message-State: ANhLgQ1nB5mBe25WvTVVqoiEG+C4PCN+spg6jErta3VpGIl3GUNwn144
-        MmWeXNOumyx19FoLzJrZIh3XXBLQlHCXEIchfEU/aukksN2+
-X-Google-Smtp-Source: ADFU+vsxJYEZJVjoKeIB4IF+GP5IxL8I7rEUnCKgf/6E3e8cHb3NNhVPY3HP9q19+l9Eo+ZMEsEnAhij8GzZ6r0xZA64s9X/Epuk
+        bh=XwSC3MbibdHjebc+VGMl0nkJts274Y/XDwLyneFu6mk=;
+        b=jyYykkaAFYalL6q6aM3ZemTFjwz9ofIwjugh2ab0qYb+RCOqKn1/eiGQpdJ5PsDDHx
+         oNR8g+37p545WG/fQ8MgI1O7FsBLMT+II5AhCfuB24HQIbLITjlajMUKezdzmb4CIDbA
+         ibLxwAQfJ9qU1Z9nybVkzIFwYydLeJqVAi5rshxZWyhyfMreee+y9Bh/o9I3ohRKmP00
+         Av16cj5419AbiiFArw/UZ7qppWtvdE8e0nQK4Nl4yRisT6BUpSX8Fh46ZtnV1wAfMD5q
+         C348ru0yuMoMW2l3L8Qh5GRKQfLAfA8yTQfBLJsL/O6VnmhGZYB5BtaTMcWl+DT11yq2
+         gmMw==
+X-Gm-Message-State: ANhLgQ2QQnZkO5Xj0JtsD8YDIs95f5q0BL7rNOIkAFlzZIxGwvtIp2pC
+        lFiDkOfWFaUA8JPTqOJl7qRRmxIvYjFX97axXhfLlvXQvuHm
+X-Google-Smtp-Source: ADFU+vv6ZN70tvOfUP0eFBlVowXEeuFKOydoGdOxRek97JbwclNxOPEVBmLDt9gXhEuXMZuirstirK6k/Vpilcm/t5m7h8FCiOtu
 MIME-Version: 1.0
-X-Received: by 2002:a5e:8c0d:: with SMTP id n13mr203569ioj.138.1583878517423;
+X-Received: by 2002:a92:589a:: with SMTP id z26mr228050ilf.19.1583878517647;
  Tue, 10 Mar 2020 15:15:17 -0700 (PDT)
 Date:   Tue, 10 Mar 2020 15:15:17 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006601b005a08774fd@google.com>
-Subject: general protection fault in tcf_action_destroy (2)
-From:   syzbot <syzbot+92a80fff3b3af6c4464e@syzkaller.appspotmail.com>
+Message-ID: <000000000000696eaf05a0877436@google.com>
+Subject: WARNING: refcount bug in __tcf_action_put
+From:   syzbot <syzbot+91aff155f11242aeafbe@syzkaller.appspotmail.com>
 To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
         kuba@kernel.org, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
@@ -49,38 +49,50 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    30bb5572 Merge tag 'ktest-v5.6' of git://git.kernel.org/pu..
+HEAD commit:    2c523b34 Linux 5.6-rc5
 git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=16849c39e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17ae6ee3e00000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=c2e311dba9a02ba9
-dashboard link: https://syzkaller.appspot.com/bug?extid=92a80fff3b3af6c4464e
+dashboard link: https://syzkaller.appspot.com/bug?extid=91aff155f11242aeafbe
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 userspace arch: i386
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13faf439e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16956ddde00000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12220af9e00000
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+92a80fff3b3af6c4464e@syzkaller.appspotmail.com
+Reported-by: syzbot+91aff155f11242aeafbe@syzkaller.appspotmail.com
 
-batman_adv: batadv0: Interface activated: batadv_slave_1
-general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
-CPU: 1 PID: 9664 Comm: syz-executor420 Not tainted 5.6.0-rc5-syzkaller #0
+------------[ cut here ]------------
+refcount_t: underflow; use-after-free.
+WARNING: CPU: 0 PID: 9857 at lib/refcount.c:87 refcount_dec_not_one lib/refcount.c:87 [inline]
+WARNING: CPU: 0 PID: 9857 at lib/refcount.c:87 refcount_dec_not_one+0x1be/0x1e0 lib/refcount.c:74
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 9857 Comm: syz-executor.0 Not tainted 5.6.0-rc5-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:tcf_action_destroy+0x6a/0x150 net/sched/act_api.c:720
-Code: 47 fb 83 c5 01 bf 20 00 00 00 48 83 c3 08 89 ee e8 8b 95 47 fb 83 fd 20 0f 84 ae 00 00 00 e8 0d 94 47 fb 48 89 d8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 ae 00 00 00 4c 8b 3b 4d 85 ff 0f 84 8b 00 00
-RSP: 0018:ffffc90001d37018 EFLAGS: 00010247
-RAX: 0000000000000000 RBX: 0000000000000004 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff862a7f63 RDI: 0000000000000004
-RBP: 0000000000000000 R08: ffff8880a66c6080 R09: ffffed1015ce7074
-R10: ffffed1015ce7073 R11: ffff8880ae73839b R12: 0000000000000000
-R13: dffffc0000000000 R14: 0000000000000001 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8880ae700000(0063) knlGS:0000000008c74840
-CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-CR2: 0000000020000280 CR3: 000000009a35b000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:221
+ __warn.cold+0x2f/0x35 kernel/panic.c:582
+ report_bug+0x27b/0x2f0 lib/bug.c:195
+ fixup_bug arch/x86/kernel/traps.c:174 [inline]
+ fixup_bug arch/x86/kernel/traps.c:169 [inline]
+ do_error_trap+0x12b/0x220 arch/x86/kernel/traps.c:267
+ do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
+ invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+RIP: 0010:refcount_dec_not_one lib/refcount.c:87 [inline]
+RIP: 0010:refcount_dec_not_one+0x1be/0x1e0 lib/refcount.c:74
+Code: 1d d5 68 d2 06 31 ff 89 de e8 2e 52 e3 fd 84 db 75 82 e8 f5 50 e3 fd 48 c7 c7 00 aa 51 88 c6 05 b5 68 d2 06 01 e8 8a 63 b5 fd <0f> 0b e9 63 ff ff ff 48 89 ef e8 93 0e 20 fe e9 be fe ff ff e8 b9
+RSP: 0018:ffffc90002346f08 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815bf4f1 RDI: fffff52000468dd3
+RBP: ffff88809722641c R08: ffff8880989e4040 R09: ffffed1015cc6659
+R10: ffffed1015cc6658 R11: ffff8880ae6332c7 R12: 00000000ffffffff
+R13: ffffc90002346f30 R14: 1ffff92000468de2 R15: ffff888097226400
+ refcount_dec_and_mutex_lock+0x1c/0xe0 lib/refcount.c:115
+ __tcf_action_put+0x3f/0x130 net/sched/act_api.c:129
+ __tcf_idr_release net/sched/act_api.c:165 [inline]
+ __tcf_idr_release+0x52/0xe0 net/sched/act_api.c:145
+ tcf_action_destroy+0xc6/0x150 net/sched/act_api.c:724
  tcf_exts_destroy+0x42/0xc0 net/sched/cls_api.c:3001
  tcf_exts_change+0xf4/0x150 net/sched/cls_api.c:3059
  tcindex_set_parms+0xed8/0x1a00 net/sched/cls_tcindex.c:456
@@ -99,21 +111,8 @@ Call Trace:
  do_syscall_32_irqs_on arch/x86/entry/common.c:337 [inline]
  do_fast_syscall_32+0x270/0xe8f arch/x86/entry/common.c:408
  entry_SYSENTER_compat+0x70/0x7f arch/x86/entry/entry_64_compat.S:139
-Modules linked in:
----[ end trace fac06a3fde273f0e ]---
-RIP: 0010:tcf_action_destroy+0x6a/0x150 net/sched/act_api.c:720
-Code: 47 fb 83 c5 01 bf 20 00 00 00 48 83 c3 08 89 ee e8 8b 95 47 fb 83 fd 20 0f 84 ae 00 00 00 e8 0d 94 47 fb 48 89 d8 48 c1 e8 03 <42> 80 3c 28 00 0f 85 ae 00 00 00 4c 8b 3b 4d 85 ff 0f 84 8b 00 00
-RSP: 0018:ffffc90001d37018 EFLAGS: 00010247
-RAX: 0000000000000000 RBX: 0000000000000004 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff862a7f63 RDI: 0000000000000004
-RBP: 0000000000000000 R08: ffff8880a66c6080 R09: ffffed1015ce7074
-R10: ffffed1015ce7073 R11: ffff8880ae73839b R12: 0000000000000000
-R13: dffffc0000000000 R14: 0000000000000001 R15: 0000000000000000
-FS:  0000000000000000(0000) GS:ffff8880ae700000(0063) knlGS:0000000008c74840
-CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-CR2: 0000000020000280 CR3: 000000009a35b000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
 
 ---
