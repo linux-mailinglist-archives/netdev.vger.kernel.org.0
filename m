@@ -2,146 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8123817FFFD
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 15:17:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DD33180000
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 15:18:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727387AbgCJORi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 10:17:38 -0400
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:38719 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726380AbgCJORi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 10:17:38 -0400
-Received: by mail-yw1-f67.google.com with SMTP id 10so13743549ywv.5
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 07:17:36 -0700 (PDT)
+        id S1726622AbgCJOSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 10:18:11 -0400
+Received: from mail-vs1-f53.google.com ([209.85.217.53]:45293 "EHLO
+        mail-vs1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727408AbgCJOSJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 10:18:09 -0400
+Received: by mail-vs1-f53.google.com with SMTP id x82so1205260vsc.12
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 07:18:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=hackerdom.ru; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H0xK+cQLB44L8vtNb0p8dGjF64Se24hVcL6djYOD4zo=;
-        b=M0eRY5JDjmCdQrBgyjEKijH+yAvz5LEcy71dxdlEre6pARYZNGWsVpAzvxoJUTNc6W
-         /D6ppjaAYYUvHZDxqx/PjnlhTt3ZyHsydhWVGpcZhLYn7UhcPVV3/ImiL9teqXK2sYNm
-         Oassy2XAEqvraYX0yO5rVyuM5mWeyjDIN4tGKyS2FhvqxhGC70mleSmBy7HbUGz2ObO+
-         HjE73JNl5prAcNFa8izcapdnSSlvru3OlL+WVcN2DDpWHqLXvvdCFQnus091ksYHVsmx
-         fPFdfSPGEz2DeVSpjBZuODU40HMsBBrwMvW4K75B8+PIJp0ICjgO3pkoZLXsGDwRrq2W
-         ahwg==
+         :cc:content-transfer-encoding;
+        bh=/gHw4kLrEIsmI95qZ6nhMGzekL5ir6AYQAFylshVC6Q=;
+        b=A8T824hjR5N/p3t3GhfyJAVPoTfJqcp3OKdDgsbiK4SGctpaKlRRUyHCbbGcv75bXL
+         NXldU72tYY2nGR+YAXp2X2rq2Lr36BCeFqvZ2fOj5xB+/8i1GGsXNYRJXkuLK8k1cPg5
+         ca15KLiVc/ILC9E0Br8QiADrxu7F4lAJojt4Q=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H0xK+cQLB44L8vtNb0p8dGjF64Se24hVcL6djYOD4zo=;
-        b=Sad6ikGTQUrxAPDMbmBeivx959jGUdUn4TbU4ryT1v5NXZD9yEJZxCC8E8MTghgkJu
-         TWXlQqQbciVw5mTvvrZVncF8yzXgIHiakPWJtOp9ugcsUz4gVJyvtoMKTHqkI/rSG4a0
-         a6JQpD1YpTkZK714PJsVVAn898EiKcPOFhw77TIIfQ0oqLfmg+DCKh7qokqqKa1R4YK/
-         205t4LokZMsbJod7WT6luwxPd1XlnrnOuh/eO6qgxSopIOxuHuPjWo0Z89ahs4LuoZ2m
-         9wO+8cgPPFVmaRalUwSR7+VW3TD2CYU5nT25SnxfQyaSiL2UD2Ib6U9/mTiaa/gyceJS
-         LUug==
-X-Gm-Message-State: ANhLgQ0psy5aqOmN/oq11qoNZPFmS4c/ZIC50cgUklHfOsn+8UKhrN7n
-        r79ATR065jTTW6ufcArCbyYmDG8C
-X-Google-Smtp-Source: ADFU+vtZTqD8WxXbF3MGhW9WU73D738N3WhegXfKxL1YYhjR9Y709tUVdkYBjJE9G5XPuILfVOwPmg==
-X-Received: by 2002:a25:260a:: with SMTP id m10mr2035184ybm.514.1583849855065;
-        Tue, 10 Mar 2020 07:17:35 -0700 (PDT)
-Received: from mail-yw1-f45.google.com (mail-yw1-f45.google.com. [209.85.161.45])
-        by smtp.gmail.com with ESMTPSA id u127sm18944248ywb.68.2020.03.10.07.17.34
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Mar 2020 07:17:34 -0700 (PDT)
-Received: by mail-yw1-f45.google.com with SMTP id o186so13791004ywc.1
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 07:17:34 -0700 (PDT)
-X-Received: by 2002:a5b:7ce:: with SMTP id t14mr23700611ybq.492.1583849853437;
- Tue, 10 Mar 2020 07:17:33 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/gHw4kLrEIsmI95qZ6nhMGzekL5ir6AYQAFylshVC6Q=;
+        b=Ch5/oltDzxWLopUW4es8am4c4OUCnvwJbbOdvkVstH3sQygURseHE11mfERD2c3Wba
+         mtGJh1qNKgZghmCWXVLUgUIF9LRVWXBrft8Prbot5p0ZpKclN69edJzq6w61x0VIoWCn
+         q3ZKWQNiol+qHYIww4ocWqDxRNTWnN/Rzm71RETrd+3dCvUhYcrw5qfCbmv72eA7YFo1
+         ssfWWYF7XiMN5KkdfPfFb52zEkTqvkhz3zOXT8uxBYwCBgjmOiWGl4STeqQ/ZDniZKvy
+         pXxGeWNCwoo69KXgeadxZCIoDm86rEmuLXYOA+6+OIJ0XPMLnsBUVFt5Io6fasJM9ep2
+         JZCQ==
+X-Gm-Message-State: ANhLgQ2iTRgp1ebtwQ/eZINgpfylsAD6wFoQrFURK6ka4yNX0+qoeoji
+        guxso6e99HrttaEQzAya6CT2Ug37cl/Q35CDiGXQHQ==
+X-Google-Smtp-Source: ADFU+vtR88LV/enaz2iag4FQ7W9pTjOZgnAktbD8Rui8bQZ5npBa0m5hMK9XEutirT+AOzXBAgzHv2IzCTOYkN8h0t4=
+X-Received: by 2002:a67:88c8:: with SMTP id k191mr1432889vsd.110.1583849886533;
+ Tue, 10 Mar 2020 07:18:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200309153435.32109-1-willemdebruijn.kernel@gmail.com>
- <20200310023528-mutt-send-email-mst@kernel.org> <CA+FuTSd=oLQhtKet-n5r++3HHmHR+5rMkDqSMyjArOBfF4vsKw@mail.gmail.com>
- <20200310085437-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20200310085437-mutt-send-email-mst@kernel.org>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 10 Mar 2020 10:16:56 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSe+mxUwHMTccO7QO+GVi1TUgxbwZoAktGTD+15yMZf5Vw@mail.gmail.com>
-Message-ID: <CA+FuTSe+mxUwHMTccO7QO+GVi1TUgxbwZoAktGTD+15yMZf5Vw@mail.gmail.com>
-Subject: Re: [PATCH net] net/packet: tpacket_rcv: do not increment ring index
- on drop
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
+References: <20200305203318.8980-1-bay@hackerdom.ru> <1583749022.17100.5.camel@suse.com>
+ <CAPomEdycThBH5D3Eo3dNCPRrEg0W2fQ9JS9j6TbANTDVChVcog@mail.gmail.com>
+In-Reply-To: <CAPomEdycThBH5D3Eo3dNCPRrEg0W2fQ9JS9j6TbANTDVChVcog@mail.gmail.com>
+From:   =?UTF-8?B?0JDQu9C10LrRgdCw0L3QtNGAINCR0LXRgNGB0LXQvdC10LI=?= 
+        <bay@hackerdom.ru>
+Date:   Tue, 10 Mar 2020 19:17:55 +0500
+Message-ID: <CAPomEdxg0aD=DgGVwFH4Zd1=0fao32mOL6nU=cL00jHJAuoTwA@mail.gmail.com>
+Subject: Fwd: [PATCH] cdc_ncm: Implement the 32-bit version of NCM Transfer Block
+To:     linux-usb@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 8:59 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+=D0=BF=D0=BD, 9 =D0=BC=D0=B0=D1=80. 2020 =D0=B3. =D0=B2 15:17, Oliver Neuku=
+m <oneukum@suse.com>:
 >
-> On Tue, Mar 10, 2020 at 08:49:23AM -0400, Willem de Bruijn wrote:
-> > On Tue, Mar 10, 2020 at 2:43 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Mon, Mar 09, 2020 at 11:34:35AM -0400, Willem de Bruijn wrote:
-> > > > From: Willem de Bruijn <willemb@google.com>
-> > > >
-> > > > In one error case, tpacket_rcv drops packets after incrementing the
-> > > > ring producer index.
-> > > >
-> > > > If this happens, it does not update tp_status to TP_STATUS_USER and
-> > > > thus the reader is stalled for an iteration of the ring, causing out
-> > > > of order arrival.
-> > > >
-> > > > The only such error path is when virtio_net_hdr_from_skb fails due
-> > > > to encountering an unknown GSO type.
-> > > >
-> > > > Signed-off-by: Willem de Bruijn <willemb@google.com>
-> > > >
-> > > > ---
-> > > >
-> > > > I wonder whether it should drop packets with unknown GSO types at all.
-> > > > This consistently blinds the reader to certain packets, including
-> > > > recent UDP and SCTP GSO types.
-> > >
-> > > Ugh it looks like you have found a bug.  Consider a legacy userspace -
-> > > it was actually broken by adding USD and SCTP GSO.  I suspect the right
-> > > thing to do here is actually to split these packets up, not drop them.
+> Am Freitag, den 06.03.2020, 01:33 +0500 schrieb Alexander Bersenev:
+> > The NCM specification defines two formats of transfer blocks: with 16-b=
+it
+> > fields (NTB-16) and with 32-bit fields (NTB-32). Currently only NTB-16 =
+is
+> > implemented.
 > >
-> > In the main virtio users, virtio_net/tun/tap, the packets will always
-> > arrive segmented, due to these devices not advertising hardware
-> > segmentation for these protocols.
+> > This patch adds the support of NTB-32. The motivation behind this is th=
+at
+> > some devices such as E5785 or E5885 from the current generation of Huaw=
+ei
+> > LTE routers do not support NTB-16. The previous generations of Huawei
+> > devices are also use NTB-32 by default.
+> >
+> > Also this patch enables NTB-32 by default for Huawei devices
 >
-> Oh right. That's good then, sorry about the noise.
-
-Not at all. Thanks for taking a look!
-
-> > So the issue is limited to users of tpacket_rcv, which is relatively
-> > new. There too it is limited on egress to devices that do advertise
-> > h/w offload. And on r/x to GRO.
-> >
-> > The UDP GSO issue precedes the fraglist GRO patch, by the way, and
-> > goes back to my (argh!) introduction of the feature on the egress
-> > path.
-> >
-> > >
-> > > > The peer function virtio_net_hdr_to_skb already drops any packets with
-> > > > unknown types, so it should be fine to add an SKB_GSO_UNKNOWN type and
-> > > > let the peer at least be aware of failure.
-> > > >
-> > > > And possibly add SKB_GSO_UDP_L4 and SKB_GSO_SCTP types to virtio too.
-> > >
-> > > This last one is possible for sure, but for virtio_net_hdr_from_skb
-> > > we'll need more flags to know whether it's safe to pass
-> > > these types to userspace.
-> >
-> > Can you elaborate? Since virtio_net_hdr_to_skb users already returns
-> > -EINVAL on unknown GSO types and its callers just drop these packets,
-> > it looks to me that the infra is future proof wrt adding new GSO
-> > types.
+> Hi,
 >
-> Oh I mean if we do want to add new types and want to pass them to
-> users, then virtio_net_hdr_from_skb will need to flag so it
-> knows whether that will or won't confuse userspace.
+> do you really see no other option but to make the choice with yet
+> anothet flag? The rest of the code looks good to me.
+>
 
-I'm not sure how that would work. Ignoring other tun/tap/virtio for
-now, just looking at tpacket, a new variant of socket option for
-PACKET_VNET_HDR, for every new GSO type?
+Hi,
 
-In practice the userspace I'm aware of, and any sane implementation,
-will be future proof to drop and account packets whose type it cannot
-process. So I think we can just add new types.
+The reason of yet another flag is that some Huawei devices, E5785 and E5885=
+,
+are incorrectly reporting that they support NTB-16. In fact they support on=
+ly
+NTB-32.
 
-In the worst case, arrival of these packets is under admin control with ethtool.
+Historically the Huawei devices used NTB-32 by default and there
+was a flag CDC_NCM_FLAG_RESET_NTB16 to work around the bug that
+some Huawei E3372H devices come out of reset in NTB-32 mode even if
+NTB-16 mode was set. This commit removes the
+CDC_NCM_FLAG_RESET_NTB16 flag, that was specific to Huawei devices
+and introduces the CDC_NCM_FLAG_PREFER_NTB32 flag.
+
+The NTB-16 has lower, protocol overhead, but NTB-32 allows to transfer more
+data per transfer block, up to 4GB, supporting both High Speed and
+SuperSpeed data rates. So NTB-32 can be faster on devices with big buffers
+and slower on devices with small buffers.
+
+Anyway, for 4g modem devices there should not be much difference between
+NDP-16 and NDP-32 because the 4g speeds are lower than the USB speed.
+But also there may be the devices, that, vice versa,
+buggy with NTB-32 and work well with NTB-16.
+
+So having a flag to choose the preferred implementation is probably the bes=
+t
+option - it allows to keep older device to work as before, but if it
+is found out that
+the device works with NTB-32 better, the flag can be enabled for that devic=
+e
+or vendor.
+
+Best,
+Alexander Bersenev
