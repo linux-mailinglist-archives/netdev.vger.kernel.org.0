@@ -2,119 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD3ED180662
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 19:31:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB35818066C
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 19:31:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727506AbgCJSbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 14:31:21 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:42311 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726998AbgCJSbV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 14:31:21 -0400
-Received: by mail-ot1-f67.google.com with SMTP id 66so14145050otd.9;
-        Tue, 10 Mar 2020 11:31:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7jfISf3OEyvEx0oLvSI1273sxi5HaeHIy5eXl6CUYSk=;
-        b=UentoJdJ5VZTR83/ZDu/HfKaS1HpoOPI7RSJ5ng4nDGd6z+It18K+I5lb69vMdjwZB
-         RAlTIyIAqPckJXVCAcHAWLsYR18MRy/aeNKfIDm2nWuBxTwmxlTjBytrqu1q6vdccnX4
-         3ZqnwYu1DBkRUI0vM7MVfVJSAPlNI7Z1QHc1VLCuUFeYfo5/ePMR/LO3bbpn0X6DS6WT
-         CloXkMQVj47l8Bbl2rY57GwdvhxrHWHSzyAf0sF08hC0yHqlD7s9EKtqOSnnzGsgb6Wo
-         h66sSAyU4R9se6wV+0bGaqba/HhjK24MiN/HTcWHgeDxPZI44/ep+ktlyI2PG6ewb/I7
-         wXWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7jfISf3OEyvEx0oLvSI1273sxi5HaeHIy5eXl6CUYSk=;
-        b=mzhMJftzzb7qx7tRLQYspSXC9UpDVbwh/DkEQpsWfite5jqa6Z1lySamGg69DZrx3e
-         XrJl4p0HQ4kZLZ1vvwKsYh/osW/LFg3XTLspYwCDHIZRDvgE7ny70px6026c0hhjRQjo
-         peJ6FcTbXb07oVV0pN9rlAY7xvfGtg4piZVNzZwRc6/j7YQgNwXywutElm9M5CqdVA9N
-         8CrIJAef6w7CHe875IZQhnPSs7WXCpSf89C4rroxeFIKpISw+4mLNgrMU5nRXwn/S8VV
-         J9oKYiVa97NmYu/cU+QkpVEgZtM4MEaeiCZxxvJqoTPzr8+JATPuUY3546evMLLbbjDr
-         oEcA==
-X-Gm-Message-State: ANhLgQ0y1Ve8/KQFaS4WSnnREVgMM6vJD/SFFiP86tO9vJG7wA5aJ3aZ
-        7S+qPhXA6Vn/2kxKji4RJFVutoqh4IuTdRRgmuc=
-X-Google-Smtp-Source: ADFU+vtLCDX3KJyCLZbj2vhkUc2Ppo+C8h1OD95k0wYeGtls5yyv4Hrsbmya39rogJUAvqAiID5smIyai2nRPF5neOw=
-X-Received: by 2002:a9d:4702:: with SMTP id a2mr17569197otf.319.1583865079547;
- Tue, 10 Mar 2020 11:31:19 -0700 (PDT)
+        id S1727314AbgCJSbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 14:31:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34994 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727179AbgCJSbw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Mar 2020 14:31:52 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A0661208C3;
+        Tue, 10 Mar 2020 18:31:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583865111;
+        bh=P7jRn5rc6Vlr0wI8BHcgP80c/+R4LVaPHB4rCxyrb9c=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WC0OQx4IVu0ZXrEOxj+xaAgx/kk8P27AZKB8m+Jl40NArw1s1GEnlVezJK8bvPow4
+         YFswb+zvFXv7xsnWpZCHlVAj3sfgY2cb5SMPFgtK6Ns00M8L/ShO1FrrX7TUljbvUy
+         w/gqLaY3JeI1ybEFXHgVrqvDT4rjVVSb84/cwmps=
+Date:   Tue, 10 Mar 2020 20:31:47 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "Kiyanovski, Arthur" <akiyano@amazon.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Belgazal, Netanel" <netanel@amazon.com>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "irusskikh@marvell.com" <irusskikh@marvell.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "rmody@marvell.com" <rmody@marvell.com>,
+        "GR-Linux-NIC-Dev@marvell.com" <GR-Linux-NIC-Dev@marvell.com>,
+        "aelior@marvell.com" <aelior@marvell.com>,
+        "skalluru@marvell.com" <skalluru@marvell.com>,
+        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
+        "opendmb@gmail.com" <opendmb@gmail.com>,
+        "siva.kallam@broadcom.com" <siva.kallam@broadcom.com>,
+        "prashant@broadcom.com" <prashant@broadcom.com>,
+        "mchan@broadcom.com" <mchan@broadcom.com>,
+        "dchickles@marvell.com" <dchickles@marvell.com>,
+        "sburla@marvell.com" <sburla@marvell.com>,
+        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
+        "tariqt@mellanox.com" <tariqt@mellanox.com>,
+        "vishal@chelsio.com" <vishal@chelsio.com>,
+        "leedom@chelsio.com" <leedom@chelsio.com>,
+        "ulli.kroll@googlemail.com" <ulli.kroll@googlemail.com>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>
+Subject: Re: [PATCH net-next 01/15] net: ena: reject unsupported coalescing
+ params
+Message-ID: <20200310183147.GM242734@unreal>
+References: <20200310021512.1861626-1-kuba@kernel.org>
+ <20200310021512.1861626-2-kuba@kernel.org>
+ <ba82e88dd3ac45a5a8e4527531d385c0@EX13D22EUA004.ant.amazon.com>
 MIME-Version: 1.0
-References: <000000000000490abd05a05fa060@google.com>
-In-Reply-To: <000000000000490abd05a05fa060@google.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 10 Mar 2020 11:31:06 -0700
-Message-ID: <CAM_iQpXrLCmQGXr8C9iw0+QxsP6DtQqoRqG18aegPhpjcpXdhQ@mail.gmail.com>
-Subject: Re: KASAN: slab-out-of-bounds Write in tcindex_set_parms
-To:     syzbot <syzbot+c72da7b9ed57cde6fca2@syzkaller.appspotmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ba82e88dd3ac45a5a8e4527531d385c0@EX13D22EUA004.ant.amazon.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 8, 2020 at 3:44 PM syzbot
-<syzbot+c72da7b9ed57cde6fca2@syzkaller.appspotmail.com> wrote:
+On Tue, Mar 10, 2020 at 02:16:03PM +0000, Kiyanovski, Arthur wrote:
+> > -----Original Message-----
+> > From: Jakub Kicinski <kuba@kernel.org>
+> > Sent: Tuesday, March 10, 2020 4:15 AM
+> > To: davem@davemloft.net
+> > Cc: netdev@vger.kernel.org; Kiyanovski, Arthur <akiyano@amazon.com>;
+> > Belgazal, Netanel <netanel@amazon.com>; Tzalik, Guy <gtzalik@amazon.com>;
+> > irusskikh@marvell.com; f.fainelli@gmail.com; bcm-kernel-feedback-
+> > list@broadcom.com; rmody@marvell.com; GR-Linux-NIC-Dev@marvell.com;
+> > aelior@marvell.com; skalluru@marvell.com; GR-everest-linux-l2@marvell.com;
+> > opendmb@gmail.com; siva.kallam@broadcom.com; prashant@broadcom.com;
+> > mchan@broadcom.com; dchickles@marvell.com; sburla@marvell.com;
+> > fmanlunas@marvell.com; tariqt@mellanox.com; vishal@chelsio.com;
+> > leedom@chelsio.com; ulli.kroll@googlemail.com; linus.walleij@linaro.org;
+> > Jakub Kicinski <kuba@kernel.org>
+> > Subject: [EXTERNAL][PATCH net-next 01/15] net: ena: reject unsupported
+> > coalescing params
+> >
+> > CAUTION: This email originated from outside of the organization. Do not click
+> > links or open attachments unless you can confirm the sender and know the
+> > content is safe.
+> >
+> >
+> >
+> > Set ethtool_ops->supported_coalesce_params to let the core reject
+> > unsupported coalescing parameters.
+> >
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > ---
+> >  drivers/net/ethernet/amazon/ena/ena_ethtool.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> >
+> > diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> > b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> > index 868265a2ec00..552d4cbf6dbd 100644
+> > --- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> > +++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
+> > @@ -826,6 +826,8 @@ static int ena_set_tunable(struct net_device *netdev,  }
+> >
+> >  static const struct ethtool_ops ena_ethtool_ops = {
+> > +       .supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+> > +                                    ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
+> >         .get_link_ksettings     = ena_get_link_ksettings,
+> >         .get_drvinfo            = ena_get_drvinfo,
+> >         .get_msglevel           = ena_get_msglevel,
+> > --
+> > 2.24.1
 >
-> Hello,
 >
-> syzbot found the following crash on:
->
-> HEAD commit:    425c075d Merge branch 'tun-debug'
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=134d2ae3e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=598678fc6e800071
-> dashboard link: https://syzkaller.appspot.com/bug?extid=c72da7b9ed57cde6fca2
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=122ed70de00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=116689fde00000
->
-> The bug was bisected to:
->
-> commit 599be01ee567b61f4471ee8078870847d0a11e8e
-> Author: Cong Wang <xiyou.wangcong@gmail.com>
-> Date:   Mon Feb 3 05:14:35 2020 +0000
->
->     net_sched: fix an OOB access in cls_tcindex
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=150a7d53e00000
-> final crash:    https://syzkaller.appspot.com/x/report.txt?x=170a7d53e00000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=130a7d53e00000
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+c72da7b9ed57cde6fca2@syzkaller.appspotmail.com
-> Fixes: 599be01ee567 ("net_sched: fix an OOB access in cls_tcindex")
->
-> IPVS: ftp: loaded support on port[0] = 21
-> ==================================================================
-> BUG: KASAN: slab-out-of-bounds in tcindex_set_parms+0x17fd/0x1a00 net/sched/cls_tcindex.c:455
-> Write of size 16 at addr ffff8880a219e6b8 by task syz-executor508/9705
->
-> CPU: 1 PID: 9705 Comm: syz-executor508 Not tainted 5.6.0-rc3-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x188/0x20d lib/dump_stack.c:118
->  print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:374
->  __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:506
->  kasan_report+0xe/0x20 mm/kasan/common.c:641
->  tcindex_set_parms+0x17fd/0x1a00 net/sched/cls_tcindex.c:455
+> Acked-by: Sameeh Jubran <sameehj@amazon.com>
 
+FROM author of this reply and Acked-by doesn't look the same.
+Which one is correct?
 
-I think we probably don't check the boundary of 'handle' properly.
-
-397         if (cp->perfect || valid_perfect_hash(cp))
-398                 if (handle >= cp->alloc_hash)
-399                         goto errout_alloc;
-
-I will think more about it.
-
-Thanks.
+Thanks
