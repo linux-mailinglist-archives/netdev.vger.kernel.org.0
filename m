@@ -2,93 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14C921804C4
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 18:28:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F4871804C6
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 18:28:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726546AbgCJR21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 13:28:27 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:34855 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726271AbgCJR21 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 13:28:27 -0400
-Received: by mail-qk1-f195.google.com with SMTP id d8so9089697qka.2
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 10:28:25 -0700 (PDT)
+        id S1726610AbgCJR2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 13:28:44 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:45985 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726545AbgCJR2o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 13:28:44 -0400
+Received: by mail-pf1-f195.google.com with SMTP id 2so6792439pfg.12
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 10:28:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:references:date:in-reply-to:message-id
-         :user-agent:mime-version;
-        bh=gBFNrsj5knZ4jtQ+IEQLi+hvVOEWPuH2XL5hztNfikM=;
-        b=xfaYDUiq/YkaohZ2wnWnwnMCO16V/PC4zlILgxkRY+KRWADjk8dq2xGbtcq1xo+P0T
-         QTtC1bKDLPYWMwB8+gd1QeJyCMMCIEYzEZVnlA9RuuMjEIw4pfNCeai40xZNCbmoSobu
-         VNz/XUI6JxssQD3a6NZCFA+aWBxEnnlWHoYuUKqrFMCcsWOwKXXJ78kY7mjDHFeaUgdQ
-         RRIrGVAyn5ZVTsVyI5aleq5NmnOutRpfzQQ9ZmN5OZ02hpLkdAlwjeoxTbIfyeekr7a0
-         Vs5qchQWq1z/P7DIvPyYLt4nIBed9A3+0IDioX8YbKQ8uH2amVT5Y+C67geYnpDxpwE+
-         VXaw==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=85mpITor3DBfZO34mZpSb2mMG7zPN3sobejB0UlFOfs=;
+        b=IswQGGT5AU9t0xhUGG1dWBNaAKNuNwzBFWN8qbMZAPjfXf6TQvZBPb1PxqpHFcQKS3
+         ZBr6wO7VXJaL5AfORuuGc05Z9nFf4CnbiocpBCtDk5OqZ3U3SEgRWbivLgKHNtackR1L
+         sfAumzLMaSXTL+mGuI+20bxcbf7+ZAZ7UWO+VpFJHDs8SUC+iDm6wLjZRW1+UeeYgMz3
+         NeGh0ehoIFG7kzQBIJO8ScupQ8AuSqSPcXi5fPSXnsDxY2s7jqbWlb4EaoHf/autZw+D
+         xOmcsvG7MlwjOiuuIPuQN7Jv8Z5eVOSisnxwYIT1Po7WQafBU4/FVEIT2+qFcziCP5nn
+         QpBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
-         :message-id:user-agent:mime-version;
-        bh=gBFNrsj5knZ4jtQ+IEQLi+hvVOEWPuH2XL5hztNfikM=;
-        b=GYq0xSoyFcVw+mDCuCigQs4T8P9byzIjUseY0LUmTNlEyJYB9QhAAUpYs89UonNoAH
-         G1pFof17Pk4xxzVyDLxq2XINjHcNMjwjHyBQiUPqGbuclZt3qEeWyfyJXZCLOrnjUvWB
-         yGhwQQ+4Ke+wI88VrMFyOCvokMCgOWk5bQBusiWaA+tqkrns2uJspnr5Fv7ibj9dtynS
-         pfitClT6o4QylpG5mWu7UIxQyGbsGDNJV/ASVpgcjWbEz0bgdnq4DSGxtcMo+5jQ3624
-         59ToxunjKX0uHtMi1USgLPHExKY+RJpfvUZaz1Wmw4Zuq3yCulVRVUH6dDxMCWSAV222
-         +2Tw==
-X-Gm-Message-State: ANhLgQ1TUvX+lvvJDcowv8k/5PA0yVRflYxRyJWc2AD9JWp4/A0EWzqQ
-        LfwYne4CUr9Ls0xVzhhyOGrLJgDMgSM=
-X-Google-Smtp-Source: ADFU+vtQ41OhAqSW5+h+CU0vRacvx+3ocUZDzp4RJBhdZK9mafahoRx69UJhKxbBV3fx/ffUqFUY/g==
-X-Received: by 2002:a37:2cc6:: with SMTP id s189mr21127217qkh.223.1583861304580;
-        Tue, 10 Mar 2020 10:28:24 -0700 (PDT)
-Received: from sevai (69-196-152-194.dsl.teksavvy.com. [69.196.152.194])
-        by smtp.gmail.com with ESMTPSA id p191sm7613023qke.6.2020.03.10.10.28.23
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 Mar 2020 10:28:24 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, jiri@mellanox.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, kuba@kernel.org, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 1/6] selftests: qdiscs: Add TDC test for RED
-References: <20200309183503.173802-1-idosch@idosch.org>
-        <20200309183503.173802-2-idosch@idosch.org>
-        <85a74o5icv.fsf@mojatatu.com> <87pndkxi64.fsf@mellanox.com>
-Date:   Tue, 10 Mar 2020 13:28:22 -0400
-In-Reply-To: <87pndkxi64.fsf@mellanox.com> (Petr Machata's message of "Tue, 10
-        Mar 2020 17:56:35 +0100")
-Message-ID: <855zfc5dc9.fsf@mojatatu.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=85mpITor3DBfZO34mZpSb2mMG7zPN3sobejB0UlFOfs=;
+        b=ZQxejr/SRqnJKOu2amIMQcWdxixd95m/LHfR2Xd4mSNKdSyyY9Qpyxn1HSIK4wvQW6
+         X2G3NC8AdjX4AdiPcUVwRS0By696HaXq+nRGOeSX7eRXFbiPw9qlFv+NiUv84CxPhBVG
+         4nG4vipLI5YkIk8VUwPK1rjneQKwjf0yJSqrXLqOo6ol0PJz4C6h6ghMBGBfEVXaauGf
+         d3RCWJ6421gsWsSgnvTo+3lHz5J+vkhKmLoHXlsGR0qiDiP0Ff2b4V0IGXRwXKh+4Axp
+         WpdX5uFn7eqERIkpDOlrARgjlHdaaUmFccUpQOrx1SEGLwOD47HnG6P5rH8nlrsQhCDL
+         ojYQ==
+X-Gm-Message-State: ANhLgQ1Z8R0f34Lc1S5ezc3b+Aoat2eF1uuzwgw2T+kUL2vYaJYBvaiE
+        4BkFaW3E/TWDe+0yzlLc9RaI1VlU
+X-Google-Smtp-Source: ADFU+vtWSkGfWNXKUvsx0m65nbJSUOhaE/P7ujEohKGteiqWhPsLBkRKh96dzr2VDx2tNQEKohqKJA==
+X-Received: by 2002:a63:6907:: with SMTP id e7mr21999518pgc.445.1583861323027;
+        Tue, 10 Mar 2020 10:28:43 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id k1sm44913752pgt.70.2020.03.10.10.28.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Mar 2020 10:28:42 -0700 (PDT)
+Subject: Re: [PATCH net-next] bareudp: Fixed bareudp receive handling
+To:     Martin Varghese <martinvarghesenokia@gmail.com>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        martin.varghese@nokia.com, Taehee Yoo <ap420073@gmail.com>
+References: <1583859760-18364-1-git-send-email-martinvarghesenokia@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <89faace0-7c11-b338-282b-b9e409677ba4@gmail.com>
+Date:   Tue, 10 Mar 2020 10:28:40 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1583859760-18364-1-git-send-email-martinvarghesenokia@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Petr Machata <petrm@mellanox.com> writes:
 
-> Roman Mashak <mrv@mojatatu.com> writes:
->
->> Ido Schimmel <idosch@idosch.org> writes:
->>
->>> From: Petr Machata <petrm@mellanox.com>
->>>
->>> Add a handful of tests for creating RED with different flags.
->>>
->>
->> Thanks for adding new tests in TDC.
->>
->> Could you give more descriptive names for tests? (Look at
->> tc-tests/qdiscs/fifo.json or tc-tests/qdiscs/ets.json as examples)
->
-> Yep.
->
->> Did you try running this with nsPlugin enabled? I think you would need
->> to add the following for every test:
->
-> Is there a flag that I need to use to enable nsPlugin? I put in the the
-> "plugins" stanza that you cite below and didn't observe any changes.
-> That either means that it works or that it has no effect :)
 
-Look at plugin-lib/README-PLUGINS how to enable the plugin.
+On 3/10/20 10:02 AM, Martin Varghese wrote:
+> From: Martin Varghese <martin.varghese@nokia.com>
+> 
+> Reverted commit "2baecda bareudp: remove unnecessary udp_encap_enable() in
+> bareudp_socket_create()"
+> 
+> An explicit call to udp_encap_enable is needed as the setup_udp_tunnel_sock
+> does not call udp_encap_enable if the if the socket is of type v6.
+> 
+> Bareudp device uses v6 socket to receive v4 & v6 traffic
+> 
+> Signed-off-by: Martin Varghese <martin.varghese@nokia.com>
+> Fixes: 2baecda37f4e ("bareudp: remove unnecessary udp_encap_enable() in bareudp_socket_create()")
+
+Please CC the author of recent patches, do not hide,
+and to be clear, it is not about blaming, just information.
+
+> ---
+>  drivers/net/bareudp.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
+> index 71a2f48..c9d0d68 100644
+> --- a/drivers/net/bareudp.c
+> +++ b/drivers/net/bareudp.c
+> @@ -250,6 +250,9 @@ static int bareudp_socket_create(struct bareudp_dev *bareudp, __be16 port)
+>  	tunnel_cfg.encap_destroy = NULL;
+>  	setup_udp_tunnel_sock(bareudp->net, sock, &tunnel_cfg);
+>  
+
+This might need a comment. 
+
+Can this condition be false ?
+
+According to your changelog, it seems not.
+
+Give to reviewers more chance to avoid future mistakes.
+
+Thanks.
+
+> +	if (sock->sk->sk_family == AF_INET6)
+> +		udp_encap_enable();
+> +
+>  	rcu_assign_pointer(bareudp->sock, sock);
+>  	return 0;
+>  }
+> 
