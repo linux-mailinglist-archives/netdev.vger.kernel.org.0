@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC83717EE77
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 03:15:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE66717EE73
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 03:15:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726716AbgCJCPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 22:15:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35546 "EHLO mail.kernel.org"
+        id S1726772AbgCJCP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 22:15:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35596 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726692AbgCJCPU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Mar 2020 22:15:20 -0400
+        id S1726643AbgCJCPV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 22:15:21 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.128])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2E9C124677;
-        Tue, 10 Mar 2020 02:15:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7381924676;
+        Tue, 10 Mar 2020 02:15:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583806519;
-        bh=cJoOQNDhsYa/lr962lA1vHSjvWEC02LRZp4LODa2ZZ0=;
+        s=default; t=1583806520;
+        bh=zF94QLxW4m8csMdnIN9U+WLinBfOUFO91FDuzOcdbQM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n9Ho95GNrZhp/sPrjiSKDRl6tmEC+Sxobe+jCTDcyD4+tj+Tf7u3iOzCGbeY1mpcn
-         5iaV125BwTzOSKLbyN4aC9GnlmJVE4AdOxKjPWQg9VFnKdk9shLoJK2mRpnF72AGFI
-         ebOPW8Cg4REZCaHY4ncynQzJbYSsf8FnZBpGMWWo=
+        b=lZ3TgEaLKtLYDJF8PXu1MnzLHDTYXuCvneJxSAI0EvXNsWElwyagr0t/WMRm5ccQz
+         SmHCYrptzmMcShtEUoSh5JKL5bhlYVJd+lVhEae2ULU+YI26SYReM0YUjsvsk99xns
+         QXWD0LWxmkelS9FhieMK4IWWycqqHgMjjlnrAGvk=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, akiyano@amazon.com, netanel@amazon.com,
@@ -35,9 +35,9 @@ Cc:     netdev@vger.kernel.org, akiyano@amazon.com, netanel@amazon.com,
         fmanlunas@marvell.com, tariqt@mellanox.com, vishal@chelsio.com,
         leedom@chelsio.com, ulli.kroll@googlemail.com,
         linus.walleij@linaro.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 03/15] net: systemport: reject unsupported coalescing params
-Date:   Mon,  9 Mar 2020 19:15:00 -0700
-Message-Id: <20200310021512.1861626-4-kuba@kernel.org>
+Subject: [PATCH net-next 04/15] net: bnx2: reject unsupported coalescing params
+Date:   Mon,  9 Mar 2020 19:15:01 -0700
+Message-Id: <20200310021512.1861626-5-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200310021512.1861626-1-kuba@kernel.org>
 References: <20200310021512.1861626-1-kuba@kernel.org>
@@ -51,38 +51,29 @@ X-Mailing-List: netdev@vger.kernel.org
 Set ethtool_ops->supported_coalesce_params to let
 the core reject unsupported coalescing parameters.
 
-This driver did not previously reject most of unsupported
-parameters.
+This driver did not previously reject unsupported parameters.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bcmsysport.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnx2.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bcmsysport.c b/drivers/net/ethernet/broadcom/bcmsysport.c
-index a2cf2ed8d278..bea2dbc0e469 100644
---- a/drivers/net/ethernet/broadcom/bcmsysport.c
-+++ b/drivers/net/ethernet/broadcom/bcmsysport.c
-@@ -623,8 +623,7 @@ static int bcm_sysport_set_coalesce(struct net_device *dev,
- 		return -EINVAL;
- 
- 	if ((ec->tx_coalesce_usecs == 0 && ec->tx_max_coalesced_frames == 0) ||
--	    (ec->rx_coalesce_usecs == 0 && ec->rx_max_coalesced_frames == 0) ||
--	    ec->use_adaptive_tx_coalesce)
-+	    (ec->rx_coalesce_usecs == 0 && ec->rx_max_coalesced_frames == 0))
- 		return -EINVAL;
- 
- 	for (i = 0; i < dev->num_tx_queues; i++)
-@@ -2209,6 +2208,9 @@ static int bcm_sysport_set_rxnfc(struct net_device *dev,
+diff --git a/drivers/net/ethernet/broadcom/bnx2.c b/drivers/net/ethernet/broadcom/bnx2.c
+index 62e44f52580d..e1c236cab2a7 100644
+--- a/drivers/net/ethernet/broadcom/bnx2.c
++++ b/drivers/net/ethernet/broadcom/bnx2.c
+@@ -7812,6 +7812,11 @@ static int bnx2_set_channels(struct net_device *dev,
  }
  
- static const struct ethtool_ops bcm_sysport_ethtool_ops = {
+ static const struct ethtool_ops bnx2_ethtool_ops = {
 +	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
 +				     ETHTOOL_COALESCE_MAX_FRAMES |
-+				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
- 	.get_drvinfo		= bcm_sysport_get_drvinfo,
- 	.get_msglevel		= bcm_sysport_get_msglvl,
- 	.set_msglevel		= bcm_sysport_set_msglvl,
++				     ETHTOOL_COALESCE_USECS_IRQ |
++				     ETHTOOL_COALESCE_MAX_FRAMES_IRQ |
++				     ETHTOOL_COALESCE_STATS_BLOCK_USECS,
+ 	.get_drvinfo		= bnx2_get_drvinfo,
+ 	.get_regs_len		= bnx2_get_regs_len,
+ 	.get_regs		= bnx2_get_regs,
 -- 
 2.24.1
 
