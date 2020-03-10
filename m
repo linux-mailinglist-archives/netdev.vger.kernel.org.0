@@ -2,68 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 945031802A7
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 17:00:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3012B1802AD
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 17:01:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726569AbgCJQAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 12:00:53 -0400
-Received: from wtarreau.pck.nerim.net ([62.212.114.60]:32438 "EHLO 1wt.eu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726467AbgCJQAx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Mar 2020 12:00:53 -0400
-Received: (from willy@localhost)
-        by pcw.home.local (8.15.2/8.15.2/Submit) id 02AG0dwt018546;
-        Tue, 10 Mar 2020 17:00:39 +0100
-Date:   Tue, 10 Mar 2020 17:00:39 +0100
-From:   Willy Tarreau <w@1wt.eu>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     David Woodhouse <dwmw2@infradead.org>, netdev@vger.kernel.org,
-        Martin Pohlack <mpohlack@amazon.de>
-Subject: Re: TCP receive failure
-Message-ID: <20200310160039.GA18520@1wt.eu>
-References: <3748be15d31f71c6534f344b0c78f48fc4e3db21.camel@infradead.org>
- <20200310103928.GB18192@1wt.eu>
- <dbbd0ba6d602b5106b484f7d9df7126e40c9b5e0.camel@infradead.org>
- <20200310082625.4d9d070a@hermes.lan>
+        id S1726775AbgCJQBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 12:01:22 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:36662 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726674AbgCJQBV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 12:01:21 -0400
+Received: by mail-pl1-f195.google.com with SMTP id g12so5604326plo.3
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 09:01:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=5PprlbqoqI+8cqH5y1+LaXm/Lh1O+UbpqxwQEoE+kVQ=;
+        b=QYDxC/nug0FPO0R2YDDHDpINh+3k13f/K2ZFHSvhTtDb+xxhNyCFtyrpCsUQy1dWvN
+         GCiI4tkRZEnq/U0iMzpS8zQEPBFV0kTt0Cmo90IelMR3bgcbMzIow1xlr6OhlTUMgYEd
+         ZfMxcAxoXjw/IMN7D8O9LQ2cZRfgF/iSJRu4g=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=5PprlbqoqI+8cqH5y1+LaXm/Lh1O+UbpqxwQEoE+kVQ=;
+        b=eIe+5C3dFcWR82gukrn0cFn8Ho8sMmZ9BlB23KF3+0ljeYOx4vIE+1AMdd3LGY1BAO
+         NVuJ5MOdIcfyaxLNdTuYThZw+EIaJXOlXqow0+lVM6+TGUu2drJrbswu3F3VZo1EGEg5
+         c/f0lED2IZmGvHXteDBIG3nybGj9v/MeBGFmKIKPO1PASHK50fwzBsQ9UYRbImOua75P
+         DoOsgj4TgxGrKsyTfQbukIlszDgHlHZ9LIGvsF1H3AWJh/AAtUfe7tCUSLX2HraP1MYi
+         RMEX7DXSekwDUZ01ho6DOkJ2iWA7/T0xXp94W2lCvHRY9Z3dvwEtKjXPOs/aANejHIoF
+         HpIw==
+X-Gm-Message-State: ANhLgQ3IORScKImXV/5cbM4M/+PrV+IneF0rDC3KbfzzuiVd9mzeYgMk
+        th+yskKqh2GvAHZC0JsohlwKeQ==
+X-Google-Smtp-Source: ADFU+vtmM+D+yGWVPf1IZeuUEbx/otAbFEt5GhAZoqGWcLN6EsWZZ4nPx3ClLaNnJpKVk5Q1kJWBww==
+X-Received: by 2002:a17:902:b903:: with SMTP id bf3mr21622900plb.144.1583856080398;
+        Tue, 10 Mar 2020 09:01:20 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 6sm7318987pfx.69.2020.03.10.09.01.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Mar 2020 09:01:19 -0700 (PDT)
+Date:   Tue, 10 Mar 2020 09:01:18 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>
+Cc:     ardb@kernel.org, davem@davemloft.net, guohanjun@huawei.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        mingo@kernel.org, netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com,
+        will@kernel.org
+Subject: Re: WARNING: refcount bug in sctp_wfree
+Message-ID: <202003100900.1E2E399@keescook>
+References: <00000000000088452f05a07621d2@google.com>
+ <000000000000cc985b05a07ce36f@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200310082625.4d9d070a@hermes.lan>
-User-Agent: Mutt/1.6.1 (2016-04-27)
+In-Reply-To: <000000000000cc985b05a07ce36f@google.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 08:26:25AM -0700, Stephen Hemminger wrote:
-> > Yeah, spot on. Thanks. Will stare accusingly at nf_conntrack, and
-> > perhaps also at the server side which is sending the later sequence
-> > numbers and presumably confusing it.
-> > 
+On Tue, Mar 10, 2020 at 02:39:01AM -0700, syzbot wrote:
+> syzbot has bisected this bug to:
 > 
-> There were cases in the past of busted middle boxes that ignored TCP window scaling.
+> commit fb041bb7c0a918b95c6889fc965cdc4a75b4c0ca
+> Author: Will Deacon <will@kernel.org>
+> Date:   Thu Nov 21 11:59:00 2019 +0000
 > 
-> These were boxes based on old (buggy) version of FreeBSD firewall code that did
-> not remember the window scaling from the handshake and would then see packets as
-> out of window.
+>     locking/refcount: Consolidate implementations of refcount_t
 
-I've seen quite a bunch of these for a long time, and using various
-stacks. And even when this got fixed, many still had issues with PAWS,
-and a number of others used to randomize sequence numbers "for your
-safety" except that they would do this with random values which could
-actually make your ISN go backwards from the previous connection if
-they forgot it in the mean time, resulting in failures to establish new
-connections from the same port. Bah, I hate products which break end to
-end transparency.
+I suspect this is just bisecting to here because it made the refcount
+checks more strict?
 
-> You could try turning TCP window scaling off to see if that changes it.
+-Kees
 
-The thing is that it's different here as the trace was taken on the
-receiving side so the packets were dropped between tcpdump and the
-TCP stack, hence my suspicion that some packets were considered as
-invalid for whatever reason. And apparently David found them in the
-local logs, which does fuel the suspicion over conntrack. Note that
-it might also be caused by too short a timeout on the client's
-conntrack!
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=117e9e91e00000
+> start commit:   2c523b34 Linux 5.6-rc5
+> git tree:       upstream
+> final crash:    https://syzkaller.appspot.com/x/report.txt?x=137e9e91e00000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=157e9e91e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=a5295e161cd85b82
+> dashboard link: https://syzkaller.appspot.com/bug?extid=cea71eec5d6de256d54d
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=164b5181e00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=166dd70de00000
+> 
+> Reported-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
+> Fixes: fb041bb7c0a9 ("locking/refcount: Consolidate implementations of refcount_t")
+> 
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
-Willy
+-- 
+Kees Cook
