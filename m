@@ -2,122 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F95B180211
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 16:40:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C0E3D18020F
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 16:40:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726520AbgCJPkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 11:40:12 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:35743 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725965AbgCJPkM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 11:40:12 -0400
-Received: by mail-io1-f68.google.com with SMTP id h8so13233490iob.2;
-        Tue, 10 Mar 2020 08:40:10 -0700 (PDT)
+        id S1726463AbgCJPkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 11:40:04 -0400
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:34112 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725965AbgCJPkE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 11:40:04 -0400
+Received: by mail-qv1-f65.google.com with SMTP id o18so6308333qvf.1
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 08:40:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/2Nc7EO5K8qowxgiDrjJZXV6Z7Z9/191yVE6G6w18cE=;
-        b=PQf3SBsQNP1oB6jtzPQiiK7TDcfsUrs/F407VPm1MnNVt7Y4krhvssfjrRV1ipo5TA
-         gIMwBoLuT2kIgmaUzYKz916Up/N8PoaeZaI1LY04foLSZ/kHE9yccVWiCHcv7Y9+WZxy
-         G+218WPcguwcBtI6mRsUj47EiL+zkbULRt53bJrAxFTwo2/vV0Ih+kAHP9Je1RMcb/X6
-         F6dMkivS90gQwRJX18UujKdUlDIqo7H4reKFNfwLh4ZJIvLrMOG1piI2ixWT+a1Gd8d8
-         L+ait9nelBbGTW+Z7RMTk4cIqWCW0h2CFfMi1/F2IuOoS3A6TZUfja9Kk6q9MdTr+iMz
-         r/hg==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=zt2Mb0x4NfkJXwv4nmSJ1xYOR2BfFcegw+aNZXjspnU=;
+        b=JS3sPgZ0oWQXz0TftbB4Do3j9yu05dmE5TS4z1wXlv0fuwtf8pq0X68DEKLZDJSwIc
+         AF5LnC4LfTPyjcRDtUrjrv9JuIA+rCbASz4Ot28D4SjipDUt1p4nig6CVGwtD+MYaqDB
+         J84h7QjuFbIMhOR5suiMoPYK4Kq94bMoq15I6awRwaGYS6X17qlv1hrUG1eyA5buljuh
+         Pajl/benPZWM3g4Cpn3vuHx88+CeOh4wWHAl3oWKtAb5AfppL7IssrMSkw6rRzyQucw6
+         Sg/dI0c3UzMFJiV+cUcYGI1DBJEtxKPCn6bQyoNXZyappuCRmUeyWsGqJMMbmqm/trWJ
+         /Mig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/2Nc7EO5K8qowxgiDrjJZXV6Z7Z9/191yVE6G6w18cE=;
-        b=CeNuQzAyxaMbreqiqE9QPkvClC8kclS77LzvNy3nolmRohL+oy4crUZa49mNPw9VoT
-         xpp4bd4jt/AsGyOOx+FT078gNN8a7S1iXeXzqOtsRkwIVkzbRLKyTI1XpCMVqIUrdFeO
-         z1+0ura6Ahx7gTY8MgJ3FI6waSUvi4+Dl5m1SToGtfxjnHT7xlkIJ94X1uAAHVjmZ4Cy
-         VP2zPvwgKzeAdvDXL30bSVjCo0v3DXg9L0C5bDILRwlMbUeeCT4aMMynbVec3MALtkO1
-         rwnH/m5VurRz72O0MNwJizD0qmdVYD9u83cFSaA7RQXMjZGKtArqbBJ0BOCP5zouJMfr
-         jmbA==
-X-Gm-Message-State: ANhLgQ2dquUShYE7mAGAvGztIt64kjFf++nEDapib5LV/jXnUa+vX+pF
-        CFEZDQ95eFtAsIiLxbMafEnX28HPL0QseppLg9A=
-X-Google-Smtp-Source: ADFU+vtZDKlQ+VnzgcTE5iOycELBoO27ZmSqMCAEeQrTNoeNdxJpQr+T1u4KtJrnH3x06Ce3sJyeVbxvM9YJ61iJ9Uc=
-X-Received: by 2002:a6b:dd14:: with SMTP id f20mr5740184ioc.32.1583854809734;
- Tue, 10 Mar 2020 08:40:09 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=zt2Mb0x4NfkJXwv4nmSJ1xYOR2BfFcegw+aNZXjspnU=;
+        b=twKXHV91fid7gKGWANf/9P9kwluGCcefa+bB61t250qGCgfZbWgIh1K63Z/paOXuW2
+         hPcFhwljWSrZk2z+E1SKqjFpEwlK3FVU+mPZ6m5lAqYbldqlDZzpwjRaWFUa49KQ9DHI
+         t0F9AiEoFiKnO7OWaAMHTWA171mCce/Ai2M7fWAeX+IGRqNXYct+uUlm4rUvRSmZagY9
+         5qY1NA35Hdu9H8RRt/jero4IKagehKtAzYM3UEX6QBawXC9JjcQUeYJj8PO/zYCa+/wR
+         qdQ/e2AMAq1LA62Sr6OiaK6lcg4ubH/39Tk+p7dMCAJAoQSr/Tv1HrT7lbozOy83L3Q8
+         +p+A==
+X-Gm-Message-State: ANhLgQ2pHLsw4zDkkGE56d88O5Wzb1O5dAkkNeVuoyN5T54SUT3avjaj
+        Iery1NAWMRjk2gDFvVmIOEtqEQ==
+X-Google-Smtp-Source: ADFU+vt6o8MOJacxbnYA5BjH2EYIAvyOgrYN2d7DLVHPWdubgq9jrUKAuRLhYDDo1XI9422sbXVlsQ==
+X-Received: by 2002:a0c:ea50:: with SMTP id u16mr19545372qvp.30.1583854802923;
+        Tue, 10 Mar 2020 08:40:02 -0700 (PDT)
+Received: from sevai (69-196-152-194.dsl.teksavvy.com. [69.196.152.194])
+        by smtp.gmail.com with ESMTPSA id r10sm23604904qkm.23.2020.03.10.08.40.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 10 Mar 2020 08:40:02 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        petrm@mellanox.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        kuba@kernel.org, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 1/6] selftests: qdiscs: Add TDC test for RED
+References: <20200309183503.173802-1-idosch@idosch.org>
+        <20200309183503.173802-2-idosch@idosch.org>
+Date:   Tue, 10 Mar 2020 11:40:00 -0400
+In-Reply-To: <20200309183503.173802-2-idosch@idosch.org> (Ido Schimmel's
+        message of "Mon, 9 Mar 2020 20:34:58 +0200")
+Message-ID: <85a74o5icv.fsf@mojatatu.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-References: <1583825550-18606-1-git-send-email-komachi.yoshiki@gmail.com>
-In-Reply-To: <1583825550-18606-1-git-send-email-komachi.yoshiki@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 10 Mar 2020 08:39:58 -0700
-Message-ID: <CAEf4BzYnuaeZ7s-yo7kAtHczcO5Ryc8ZGKYxWYWoFU-+WE0BRw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf 0/2] Fix BTF verification of enum members with a selftest
-To:     Yoshiki Komachi <komachi.yoshiki@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 12:32 AM Yoshiki Komachi
-<komachi.yoshiki@gmail.com> wrote:
+Ido Schimmel <idosch@idosch.org> writes:
+
+> From: Petr Machata <petrm@mellanox.com>
 >
-> btf_enum_check_member() checked if the size of "enum" as a struct
-> member exceeded struct_size or not. Then, the function compared it
-> with the size of "int". Although the size of "enum" is 4-byte by
-> default (i.e., equivalent to "int"), the packing feature enables
-> us to reduce it, as illustrated by the following example:
->
-> struct A {
->         char m;
->         enum { E0, E1 } __attribute__((packed)) n;
-> };
->
-> With such a setup above, the bpf loader gave an error attempting
-> to load it:
->
-> ------------------------------------------------------------------
-> ...
->
-> [3] ENUM (anon) size=1 vlen=2
->         E0 val=0
->         E1 val=1
-> [4] STRUCT A size=2 vlen=2
->         m type_id=2 bits_offset=0
->         n type_id=3 bits_offset=8
->
-> [4] STRUCT A size=2 vlen=2
->         n type_id=3 bits_offset=8 Member exceeds struct_size
->
-> libbpf: Error loading .BTF into kernel: -22.
->
-> ------------------------------------------------------------------
->
-> The related issue was previously fixed by the commit 9eea98497951 ("bpf:
-> fix BTF verification of enums"). On the other hand, this series fixes
-> this issue as well, and adds a selftest program for it.
->
-> Changes in v2:
-> - change an example in commit message based on Andrii's review
-> - add a selftest program for packed "enum" type members in struct/union
->
-> Yoshiki Komachi (2):
->   bpf/btf: Fix BTF verification of enum members in struct/union
->   selftests/bpf: Add test for the packed enum member in struct/union
->
->  kernel/bpf/btf.c                       |  2 +-
->  tools/testing/selftests/bpf/test_btf.c | 42 ++++++++++++++++++++++++++++++++++
->  2 files changed, 43 insertions(+), 1 deletion(-)
->
-> --
-> 1.8.3.1
+> Add a handful of tests for creating RED with different flags.
 >
 
-You should have updated patch prefix for patch #1 and #2 to [PATCH v2
-bpf] as well, please do it next time,
+Thanks for adding new tests in TDC.
 
-For the series:
+Could you give more descriptive names for tests? (Look at
+tc-tests/qdiscs/fifo.json or tc-tests/qdiscs/ets.json as examples)
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Did you try running this with nsPlugin enabled? I think you would need
+to add the following for every test:
+
+"plugins": {
+        "requires": "nsPlugin"
+}
+
+> Signed-off-by: Petr Machata <petrm@mellanox.com>
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> ---
+>  .../tc-testing/tc-tests/qdiscs/red.json       | 102 ++++++++++++++++++
+>  1 file changed, 102 insertions(+)
+>  create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/red.json
+>
+> diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/red.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/red.json
+> new file mode 100644
+> index 000000000000..6c5a4c4e0a45
+> --- /dev/null
+> +++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/red.json
+> @@ -0,0 +1,102 @@
+> +[
+> +    {
+> +        "id": "8b6e",
+> +        "name": "RED",
+> +        "category": [
+> +            "qdisc",
+> +            "red"
+> +        ],
+> +        "setup": [
+> +            "$IP link add dev $DUMMY type dummy || /bin/true"
+> +        ],
+> +        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root red limit 1M avpkt 1500 min 100K max 300K",
+> +        "expExitCode": "0",
+> +        "verifyCmd": "$TC qdisc show dev $DUMMY",
+> +        "matchPattern": "qdisc red 1: root .* limit 1Mb min 100Kb max 300Kb",
+> +        "matchCount": "1",
+> +        "teardown": [
+> +            "$TC qdisc del dev $DUMMY handle 1: root",
+> +            "$IP link del dev $DUMMY type dummy"
+> +        ]
+> +    },
+
+[...]
+
