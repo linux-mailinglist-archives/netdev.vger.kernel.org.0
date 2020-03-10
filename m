@@ -2,108 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 991E9180B2E
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 23:07:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED90F180B30
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 23:07:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727710AbgCJWHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 18:07:06 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:43475 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726273AbgCJWHF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 18:07:05 -0400
-Received: by mail-ot1-f67.google.com with SMTP id a6so6895544otb.10;
-        Tue, 10 Mar 2020 15:07:05 -0700 (PDT)
+        id S1727591AbgCJWHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 18:07:39 -0400
+Received: from mail-qv1-f67.google.com ([209.85.219.67]:44692 "EHLO
+        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726273AbgCJWHi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 18:07:38 -0400
+Received: by mail-qv1-f67.google.com with SMTP id w5so1314833qvp.11;
+        Tue, 10 Mar 2020 15:07:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y38QgXkGtAvFVzU6lmPevVw9h1a8jj9S/o6E0neojR0=;
-        b=Vuq4Ru/chaBTV5bK5P9R6PTUUPO5c1Y4m16RmeyU8np+PbJx+gCZqNJWn2AxRzxyER
-         Rfyyx7Gi9fvGV/18TiBrakd3ULy4I+JSkmgPXhotljFq5uwdeBqhbr61mc/RKciXTKlR
-         +/BbWJmlTNrtUmlgbrsFAPJBAyzZLXL823MAMqBHIi3yAUQ+jxYZ+1vJYOx/ZJOgl7te
-         rMli4wtsR5MVpZUUDozqZqeq11Qi+SuBRqvFCqI2YOV88wNrJBMwhpWPjizubRDHIvgE
-         e5l64jjHxRXs2cJkhui+3NyviK++wVnF77rzttuFkNP48NONDjCdR6Gh9OYeDwYWweat
-         Bkag==
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DVX/NygDH+L6gcoYYDbAxrFSNvPL5oh81CBY3wqWTvU=;
+        b=NYz2UQu7XSvjxa52nRTYafXoRz+xN747R7QOyzmZwXbPnLCzq6MKvdkiu6hqi1fzDi
+         tvyYqrYM/4riC0jDsKR1YCRifnxGVwMYD00AgfpLe0iY507NJVM5FsRpB1BkLz/NPP+h
+         KeT5fEcdsjb840KJS24l5/FG2zsTZXcB+6FnptljfW/2+tDhUPRbqMUHDPsCWDBEN/b/
+         GgwyEWAHjgMdNKPUsj6ZdF94F1AL84aXxYvHmpaSzm3RJn00h/Fw5uL21oH1SOnG9hsP
+         3uu1xTzUBDsD5ZHn5ebpqqc6CsHprNRXBYcopPkkn4Q0OdsV60fsvqAsaoVSSdCdws6/
+         7ihA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=Y38QgXkGtAvFVzU6lmPevVw9h1a8jj9S/o6E0neojR0=;
-        b=TulU7jqwLWB/C5LtmT4QvgIEQiXrJxzEklRq80EKavrCdlwR5JkD0TpMZNYT1n6aTo
-         hOOnUrWRCB84pQfMYrkG7IKHHy6lfewa5pnUKgbQM8tNzwj81lcnHxj4H3Texo9FXjY6
-         +WCrCP4igB+Dy7StS2IJblC+2QI7Z1JxG8av1kEVaS0H4PBbNWprUTp/DwrWsxzifIO0
-         edKL79peWNKd2ZSm14lAy+LWi4/ToHWXWpTCudmX5t/GDxoSrcZSgCeyxLjNgwVpp2sO
-         +O4tCmSS/SqeGko/I7RqXcYeETCHEASoEwsQutoiwZdVR0LfFXMNneC0ZyHzq7fVqQXy
-         9eQg==
-X-Gm-Message-State: ANhLgQ0zv0GSR4B9JLTrC1/V/1gEvHdjq0qRMy1yMI4V05uesk5jXoOv
-        G9+HYCw3ZmcHnC7biTfwh3g=
-X-Google-Smtp-Source: ADFU+vtgsOmS2yywudR+6sQc6SY06BcWaxpEyL9aLg300DTDPxUYArvV/9MuDr8Hwc2RAwrOyxCozQ==
-X-Received: by 2002:a05:6830:23a3:: with SMTP id m3mr7323386ots.265.1583878025091;
-        Tue, 10 Mar 2020 15:07:05 -0700 (PDT)
-Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id c12sm4733153oic.27.2020.03.10.15.07.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Mar 2020 15:07:04 -0700 (PDT)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Madalin Bucur <madalin.bucur@nxp.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH] dpaa_eth: Remove unnecessary boolean expression in dpaa_get_headroom
-Date:   Tue, 10 Mar 2020 15:06:54 -0700
-Message-Id: <20200310220654.1987-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.26.0.rc1
+        bh=DVX/NygDH+L6gcoYYDbAxrFSNvPL5oh81CBY3wqWTvU=;
+        b=XHSGfo78RMVuBCe/WwPeXzT6Vv6g6KA0bxbtXsjFW1uLsBOvH3FIP00XaaXpEbFWY0
+         CGOlifdVMx4iHFOJp5hBBpZn6m8UFx4Qy5MvrJ6iYr1y4S1NBlBmkNO9NnZWdtrKFykO
+         zvhBJtxsM1LIyQqYv4cMtOJz9+rgBehkLjVcGJQPRls7du65QoOS+AS56SmKFmMfTCJ1
+         BYt9LkIrGD3VTpYX4K1t1CqciOef25h8uxDQMaO5tTMy4E33aaR2FMbWHlmQbiucpFUy
+         JKc29bvNlXJJsMC+2RtdGoz0SIqZmDv14Mw2i5OwPgudrp1efSxp+4aUHy6Q4e47niCl
+         Jh4Q==
+X-Gm-Message-State: ANhLgQ0EDDGrPZX1BI5lOnNpBgEJk6ClFiMRDMDR0MqfcVDoajwUmma2
+        nPH2gJqVgGiVgjFitUblLYLa4uflKfU=
+X-Google-Smtp-Source: ADFU+vt7apntLrzSGvfPOuxqlPE1O4KvoiwDtAPiJmId4Yt+EuTbP0KVifGWS+Wp9+OaUrvib1f8YA==
+X-Received: by 2002:ad4:4f01:: with SMTP id fb1mr283987qvb.225.1583878057153;
+        Tue, 10 Mar 2020 15:07:37 -0700 (PDT)
+Received: from ?IPv6:2620:10d:c0a8:11d1::111b? ([2620:10d:c091:480::fee])
+        by smtp.gmail.com with ESMTPSA id x127sm3021341qke.135.2020.03.10.15.07.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Mar 2020 15:07:36 -0700 (PDT)
+From:   Jes Sorensen <jes.sorensen@gmail.com>
+X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
+Subject: Re: [PATCH][next] zd1211rw/zd_usb.h: Replace zero-length array with
+ flexible-array member
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Kalle Valo <kvalo@codeaurora.org>
+Cc:     Joe Perches <joe@perches.com>, Daniel Drake <dsd@gentoo.org>,
+        Ulrich Kunitz <kune@deine-taler.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20200305111216.GA24982@embeddedor>
+ <87k13yq2jo.fsf@kamboji.qca.qualcomm.com>
+ <256881484c5db07e47c611a56550642a6f6bd8e9.camel@perches.com>
+ <87blpapyu5.fsf@kamboji.qca.qualcomm.com>
+ <1bb7270f-545b-23ca-aa27-5b3c52fba1be@embeddedor.com>
+ <87r1y0nwip.fsf@kamboji.qca.qualcomm.com>
+ <48ff1333-0a14-36d8-9565-a7f13a06c974@embeddedor.com>
+Message-ID: <021d1125-3ffd-39ef-395a-b796c527bde4@gmail.com>
+Date:   Tue, 10 Mar 2020 18:07:35 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <48ff1333-0a14-36d8-9565-a7f13a06c974@embeddedor.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns:
+On 3/10/20 5:52 PM, Gustavo A. R. Silva wrote:
+> 
+> 
+> On 3/10/20 8:56 AM, Kalle Valo wrote:
+>> + jes
+>>
+>> "Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
+>>>> I wrote in a confusing way, my question above was about the actual patch
+>>>> and not the the title. For example, Jes didn't like this style change:
+>>>>
+>>>> https://patchwork.kernel.org/patch/11402315/
+>>>>
+>>>
+>>> It doesn't seem that that comment adds a lot to the conversation. The only
+>>> thing that it says is literally "fix the compiler". By the way, more than
+>>> a hundred patches have already been applied to linux-next[1] and he seems
+>>> to be the only person that has commented such a thing.
+>>
+>> But I also asked who prefers this format in that thread, you should not
+>> ignore questions from two maintainers (me and Jes).
+>>
+> 
+> I'm sorry. I thought the changelog text had already the proper information.
+> In the changelog text I'm quoting the GCC documentation below:
+> 
+> "The preferred mechanism to declare variable-length types like struct line
+> above is the ISO C99 flexible array member..." [1]
+> 
+> I'm also including a link to the following KSPP open issue:
+> 
+> https://github.com/KSPP/linux/issues/21
+> 
+> The issue above mentions the following:
+> 
+> "Both cases (0-byte and 1-byte arrays) pose confusion for things like sizeof(),
+> CONFIG_FORTIFY_SOURCE."
+> 
+> sizeof(flexible-array-member) triggers a warning because flexible array members have
+> incomplete type[1]. There are some instances of code in which the sizeof operator
+> is being incorrectly/erroneously applied to zero-length arrays and the result is zero.
+> Such instances may be hiding some bugs. So, the idea is also to get completely rid
+> of those sorts of issues.
 
-drivers/net/ethernet/freescale/dpaa/dpaa_eth.c:2860:9: warning:
-converting the result of '?:' with integer constants to a boolean always
-evaluates to 'true' [-Wtautological-constant-compare]
-        return DPAA_FD_DATA_ALIGNMENT ? ALIGN(headroom,
-               ^
-drivers/net/ethernet/freescale/dpaa/dpaa_eth.c:131:34: note: expanded
-from macro 'DPAA_FD_DATA_ALIGNMENT'
-\#define DPAA_FD_DATA_ALIGNMENT  (fman_has_errata_a050385() ? 64 : 16)
-                                 ^
-1 warning generated.
+As I stated in my previous answer, this seems more code churn than an
+actual fix. If this is a real problem, shouldn't the work be put into
+fixing the compiler to handle foo[0] instead? It seems that is where the
+real value would be.
 
-This was exposed by commit 3c68b8fffb48 ("dpaa_eth: FMan erratum A050385
-workaround") even though it appears to have been an issue since the
-introductory commit 9ad1a3749333 ("dpaa_eth: add support for DPAA
-Ethernet") since DPAA_FD_DATA_ALIGNMENT has never been able to be zero.
-
-Just replace the whole boolean expression with the true branch, as it is
-always been true.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/928
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index 190e4478128a..46039d80bb43 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2857,9 +2857,7 @@ static inline u16 dpaa_get_headroom(struct dpaa_buffer_layout *bl)
- 	headroom = (u16)(bl->priv_data_size + DPAA_PARSE_RESULTS_SIZE +
- 		DPAA_TIME_STAMP_SIZE + DPAA_HASH_RESULTS_SIZE);
- 
--	return DPAA_FD_DATA_ALIGNMENT ? ALIGN(headroom,
--					      DPAA_FD_DATA_ALIGNMENT) :
--					headroom;
-+	return ALIGN(headroom, DPAA_FD_DATA_ALIGNMENT);
- }
- 
- static int dpaa_eth_probe(struct platform_device *pdev)
--- 
-2.26.0.rc1
+Thanks,
+Jes
 
