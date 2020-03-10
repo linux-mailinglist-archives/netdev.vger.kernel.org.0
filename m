@@ -2,135 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CDAD17F9B1
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 13:59:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ADFA17FAF9
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 14:09:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726488AbgCJM7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 08:59:14 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:45732 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730002AbgCJM7N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 08:59:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583845151;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tnrkAMOENOWY5xddwTYBxc9Ezl4zlwF0QTGbSKE8c58=;
-        b=hax0i8NnzINSTi+P9R5srPUNG+MM4r0oJ0Hm19w3XFlthQPSPgubJYEr3NvjTuuFopAURu
-        0GK2CJ52TixJpqtMx/DIqPeR9/Sef1+soGLHtepi2Lyp8uW0eHDdMpjNPctQ5oNNqFPUmF
-        ukkb4m++sCW7JadsvidhLta1m7YMv6Y=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-414-Mx2fN4d3MRqCunb9dowGyA-1; Tue, 10 Mar 2020 08:59:07 -0400
-X-MC-Unique: Mx2fN4d3MRqCunb9dowGyA-1
-Received: by mail-qk1-f200.google.com with SMTP id d14so4823367qkj.5
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 05:59:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tnrkAMOENOWY5xddwTYBxc9Ezl4zlwF0QTGbSKE8c58=;
-        b=NSy9ptBqUgPTFXnp1oL804f0colasb0CeXUFgmEgRCFQnhIW4KDxTRwhtYleOs1D34
-         pnlO8dGlmsMHvSMa7oPSPb1RPx0jKAP4b2qAZ8DPRdQgIJXxwI/jFPSPQ4Dh2wCO3B4O
-         uSgnosCqxbWbpHJytUYFdSH0OmjkmMqjCf5tQ3ELO1PM4LiqyK0kNlmJraVrUVbXmx1/
-         uMvvKCl5KT6a0Ogvj5ykaKk6Gvo6U6yMKS6/HlLbn+io51ItCPaoESgrXcZjBD72TGVO
-         LR4cD9+Wyy/3/MRTeGd7T8At0wBhJuG2rI9V5Fu5UVo+MAhmKXnoZeteshNI3Twp8cuZ
-         sIcA==
-X-Gm-Message-State: ANhLgQ2tkeBGj7oAs7tExJo/bOhdXWuhcW/YehqhvV9bTNYlYIGVgOSN
-        YOxaJ8fhXb9B8ooA903mByfvPcgBhP5yLswKB9A5wbfUfKh7paYgHWosMLC4UWL+0cufgtAEog7
-        MzZIwt2OkxWDFWx/p
-X-Received: by 2002:ad4:4baf:: with SMTP id i15mr18557416qvw.148.1583845146677;
-        Tue, 10 Mar 2020 05:59:06 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vvxwVL7APpO7JUc8XcEYpUCmqp/lw+LwPwhzANKeuRgHJeyXoj5QrWt+o1SIK/AfNBhAwF4Rw==
-X-Received: by 2002:ad4:4baf:: with SMTP id i15mr18557396qvw.148.1583845146437;
-        Tue, 10 Mar 2020 05:59:06 -0700 (PDT)
-Received: from redhat.com (bzq-79-178-2-19.red.bezeqint.net. [79.178.2.19])
-        by smtp.gmail.com with ESMTPSA id 199sm5537521qkm.7.2020.03.10.05.59.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Mar 2020 05:59:05 -0700 (PDT)
-Date:   Tue, 10 Mar 2020 08:59:01 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH net] net/packet: tpacket_rcv: do not increment ring index
- on drop
-Message-ID: <20200310085437-mutt-send-email-mst@kernel.org>
-References: <20200309153435.32109-1-willemdebruijn.kernel@gmail.com>
- <20200310023528-mutt-send-email-mst@kernel.org>
- <CA+FuTSd=oLQhtKet-n5r++3HHmHR+5rMkDqSMyjArOBfF4vsKw@mail.gmail.com>
+        id S1731285AbgCJNJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 09:09:49 -0400
+Received: from mail.11d01.mspz7.gob.ec ([190.152.145.91]:50716 "EHLO
+        mail.11d01.mspz7.gob.ec" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729711AbgCJNJs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 09:09:48 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.11d01.mspz7.gob.ec (Postfix) with ESMTP id EC0E92F6D7B4;
+        Tue, 10 Mar 2020 04:42:48 -0500 (-05)
+Received: from mail.11d01.mspz7.gob.ec ([127.0.0.1])
+        by localhost (mail.11d01.mspz7.gob.ec [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id 4BBZ_aB5gU5i; Tue, 10 Mar 2020 04:42:48 -0500 (-05)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.11d01.mspz7.gob.ec (Postfix) with ESMTP id 93AAF2F72B30;
+        Tue, 10 Mar 2020 04:10:40 -0500 (-05)
+DKIM-Filter: OpenDKIM Filter v2.9.2 mail.11d01.mspz7.gob.ec 93AAF2F72B30
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=11d01.mspz7.gob.ec;
+        s=50CBC7E4-8BED-11E9-AF6C-F1A741A224D3; t=1583831441;
+        bh=o+H3O7n1+zJcXo0FhJs7spyf8HmE4ClnBa/Y2Gk0DL0=;
+        h=Content-Type:MIME-Version:Content-Transfer-Encoding:Subject:To:
+         From:Date:Reply-To:Message-Id;
+        b=AXUHZBB1SdrcSBZGNTDsVkfXP9JnuE+GrCW24/cVb2delAH7xvHrdOpBl/vL3SoYr
+         7Vl+aZI4pkC4l0aUdt1/NAtbSEXFkBoDvy2Kzu8d/jjJmw/D4i3864C74O2/ffwxQE
+         USnCdcf4w+sgVK3FmipiBkz8GEeaKAJiMVYWgPcY=
+X-Virus-Scanned: amavisd-new at 11d01.mspz7.gob.ec
+Received: from mail.11d01.mspz7.gob.ec ([127.0.0.1])
+        by localhost (mail.11d01.mspz7.gob.ec [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id stCG7NGdft8h; Tue, 10 Mar 2020 04:10:40 -0500 (-05)
+Received: from [10.19.167.32] (unknown [105.0.4.171])
+        by mail.11d01.mspz7.gob.ec (Postfix) with ESMTPSA id 85BB12F6AD8C;
+        Tue, 10 Mar 2020 03:19:34 -0500 (-05)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSd=oLQhtKet-n5r++3HHmHR+5rMkDqSMyjArOBfF4vsKw@mail.gmail.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Description: Mail message body
+Subject: =?utf-8?q?Wohlt=C3=A4tigkeitsspende_von_2=2E000=2E000_Millionen_Euro?=
+To:     Recipients <ronald.pena@11d01.mspz7.gob.ec>
+From:   ''Michael weirsky'' <ronald.pena@11d01.mspz7.gob.ec>
+Date:   Tue, 10 Mar 2020 10:49:02 +0200
+Reply-To: mikeweirskyspende@gmail.com
+Message-Id: <20200310081934.85BB12F6AD8C@mail.11d01.mspz7.gob.ec>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 08:49:23AM -0400, Willem de Bruijn wrote:
-> On Tue, Mar 10, 2020 at 2:43 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Mon, Mar 09, 2020 at 11:34:35AM -0400, Willem de Bruijn wrote:
-> > > From: Willem de Bruijn <willemb@google.com>
-> > >
-> > > In one error case, tpacket_rcv drops packets after incrementing the
-> > > ring producer index.
-> > >
-> > > If this happens, it does not update tp_status to TP_STATUS_USER and
-> > > thus the reader is stalled for an iteration of the ring, causing out
-> > > of order arrival.
-> > >
-> > > The only such error path is when virtio_net_hdr_from_skb fails due
-> > > to encountering an unknown GSO type.
-> > >
-> > > Signed-off-by: Willem de Bruijn <willemb@google.com>
-> > >
-> > > ---
-> > >
-> > > I wonder whether it should drop packets with unknown GSO types at all.
-> > > This consistently blinds the reader to certain packets, including
-> > > recent UDP and SCTP GSO types.
-> >
-> > Ugh it looks like you have found a bug.  Consider a legacy userspace -
-> > it was actually broken by adding USD and SCTP GSO.  I suspect the right
-> > thing to do here is actually to split these packets up, not drop them.
-> 
-> In the main virtio users, virtio_net/tun/tap, the packets will always
-> arrive segmented, due to these devices not advertising hardware
-> segmentation for these protocols.
+Lieber Freund,
 
-Oh right. That's good then, sorry about the noise.
+Ich bin Herr Mike Weirsky, New Jersey, Vereinigte Staaten von Amerika, der =
+Mega-Gewinner von $ 273million In Mega Millions Jackpot, spende ich an 5 zu=
+f=C3=A4llige Personen, wenn Sie diese E-Mail erhalten, dann wurde Ihre E-Ma=
+il nach einem Spinball ausgew=C3=A4hlt.Ich habe den gr=C3=B6=C3=9Ften Teil =
+meines Verm=C3=B6gens auf eine Reihe von Wohlt=C3=A4tigkeitsorganisationen =
+und Organisationen verteilt.Ich habe mich freiwillig dazu entschieden, die =
+Summe von =E2=82=AC 2.000.000,00 an Sie als eine der ausgew=C3=A4hlten 5 zu=
+ spenden, um meine Gewinne zu =C3=BCberpr=C3=BCfen.
+Das ist dein Spendencode: [MW530342019]
+www.youtube.com/watch?v=3Dun8yRTmrYMY
 
-> So the issue is limited to users of tpacket_rcv, which is relatively
-> new. There too it is limited on egress to devices that do advertise
-> h/w offload. And on r/x to GRO.
-> 
-> The UDP GSO issue precedes the fraglist GRO patch, by the way, and
-> goes back to my (argh!) introduction of the feature on the egress
-> path.
-> 
-> >
-> > > The peer function virtio_net_hdr_to_skb already drops any packets with
-> > > unknown types, so it should be fine to add an SKB_GSO_UNKNOWN type and
-> > > let the peer at least be aware of failure.
-> > >
-> > > And possibly add SKB_GSO_UDP_L4 and SKB_GSO_SCTP types to virtio too.
-> >
-> > This last one is possible for sure, but for virtio_net_hdr_from_skb
-> > we'll need more flags to know whether it's safe to pass
-> > these types to userspace.
-> 
-> Can you elaborate? Since virtio_net_hdr_to_skb users already returns
-> -EINVAL on unknown GSO types and its callers just drop these packets,
-> it looks to me that the infra is future proof wrt adding new GSO
-> types.
+Antworten Sie mit dem SPENDE-CODE an diese =
 
-Oh I mean if we do want to add new types and want to pass them to
-users, then virtio_net_hdr_from_skb will need to flag so it
-knows whether that will or won't confuse userspace.
 
--- 
-MST
+E-Mail:mikeweirskyspende@gmail.com
 
+Ich hoffe, Sie und Ihre Familie gl=C3=BCcklich zu machen.
+
+Gr=C3=BC=C3=9Fe
+Herr Mike Weirsky
