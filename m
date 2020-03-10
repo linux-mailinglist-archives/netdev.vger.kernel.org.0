@@ -2,135 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B154180942
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 21:36:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9A7D18097B
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 21:45:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726380AbgCJUgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 16:36:08 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:46502 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726265AbgCJUgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 16:36:07 -0400
-Received: by mail-pf1-f193.google.com with SMTP id c19so4744072pfo.13;
-        Tue, 10 Mar 2020 13:36:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fV5+RiKGHa+0tysZC6eRzTKR3e7KC+kQ8EcrhIyapM4=;
-        b=VQBmIGLVfJEfJVQJSU078Gto/o5LJlmAF9oHI5o4vgeCX2gK3rjNvsQ1G9T2Z1A0fJ
-         44UNjuBSDZjCBlp4WNS0wZSWBvvB3xV8Dfwlzruf9cSSohEWhRHmyY6Aw5o+XLtZVKDJ
-         4jMU//lqJQSW/Nsb1mwVLk0XWPx5Ev0INwttHJ6yMmjMsLXGdFPussXrjMtIywAvG7ta
-         Kfd37IYbD+1pbG4fDXTtblgcm6QfzHcZo9/K4NPBeYkPix8hTzLdlYA/8b3Mu78hlWcQ
-         uINtxglfZKNMO0SVDVI0Bg5EO26lf6dqW7I7zA0N7Pu9EwPd/2ipCagrcIMqb45VcXsY
-         ZggQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fV5+RiKGHa+0tysZC6eRzTKR3e7KC+kQ8EcrhIyapM4=;
-        b=Ib1VEIcWzSfyj6Dix0C8JdVtDkaQOSWfBflGdQSmogfAPw0C+xVxDwjWmKb0hPnFwO
-         364DVoOpbBRX5ynZpZ+DiBuAwNgpofdwr0eSeeeupDNq/1yg/arMydS1Fl5OVqrnKBrB
-         KP2nNvcRweT4QKZiy/SOpHWyOlkLEueLaGHw8RnrVfoPy0k0AVxqD6/xJ9rCYvCFUj0/
-         QRIjcYih01iTYbMHQuCy0nARvWqjWbcXx80YtR47oARIg1EBzeK7Fdzp9qWDh10DTtTk
-         UtvsATjOERTytVAdhQI5DFxUsQKqhPclZDx6OqAmkGkxGEFbMNGgg+QZg0LObHupydWz
-         nlVQ==
-X-Gm-Message-State: ANhLgQ1jrHgL65iU8xcSRZiFDO8H/sl/RqBJkr7JiBnVLCDKEYVZ9M/N
-        Q9lm/psUNYGBYahZp4UJq8Y=
-X-Google-Smtp-Source: ADFU+vteDYFDTXUuR514tIcr2qrQXOj/kIC1OkMBZwy0pVRATabXWRso4IHATHfKlZU5qbO2kbRpXg==
-X-Received: by 2002:a62:760e:: with SMTP id r14mr16229814pfc.51.1583872565275;
-        Tue, 10 Mar 2020 13:36:05 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id m128sm49687689pfm.183.2020.03.10.13.36.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Mar 2020 13:36:04 -0700 (PDT)
-Subject: Re: KASAN: invalid-free in tcf_exts_destroy
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot <syzbot+dcc34d54d68ef7d2d53d@syzkaller.appspotmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-References: <00000000000034513e05a05cfc23@google.com>
- <CAM_iQpVgQ+Mc16CVds-ywp6YHEbwbGtJwqoQXBFbrMTOUZS0YQ@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <635ab023-d180-7ddf-a280-78080040512c@gmail.com>
-Date:   Tue, 10 Mar 2020 13:36:02 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1727528AbgCJUpm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 16:45:42 -0400
+Received: from mga18.intel.com ([134.134.136.126]:3490 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726100AbgCJUpi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Mar 2020 16:45:38 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 10 Mar 2020 13:45:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,538,1574150400"; 
+   d="scan'208";a="441430973"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by fmsmga005.fm.intel.com with ESMTP; 10 Mar 2020 13:45:36 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next v2 00/15][pull request] 100GbE Intel Wired LAN Driver Updates 2020-03-10
+Date:   Tue, 10 Mar 2020 13:45:19 -0700
+Message-Id: <20200310204534.2071912-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <CAM_iQpVgQ+Mc16CVds-ywp6YHEbwbGtJwqoQXBFbrMTOUZS0YQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series contains updates to ice and iavf drivers.
 
+Cleaned up unnecessary parenthesis, which was pointed out by Sergei
+Shtylyov.
 
-On 3/10/20 11:33 AM, Cong Wang wrote:
-> On Sun, Mar 8, 2020 at 12:35 PM syzbot
-> <syzbot+dcc34d54d68ef7d2d53d@syzkaller.appspotmail.com> wrote:
->>
->> Hello,
->>
->> syzbot found the following crash on:
->>
->> HEAD commit:    c2003765 Merge tag 'io_uring-5.6-2020-03-07' of git://git...
->> git tree:       upstream
->> console output: https://syzkaller.appspot.com/x/log.txt?x=10cd2ae3e00000
->> kernel config:  https://syzkaller.appspot.com/x/.config?x=4527d1e2fb19fd5c
->> dashboard link: https://syzkaller.appspot.com/bug?extid=dcc34d54d68ef7d2d53d
->> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
->> userspace arch: i386
->> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1561b01de00000
->> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15aad2f9e00000
->>
->> The bug was bisected to:
->>
->> commit 599be01ee567b61f4471ee8078870847d0a11e8e
->> Author: Cong Wang <xiyou.wangcong@gmail.com>
->> Date:   Mon Feb 3 05:14:35 2020 +0000
->>
->>     net_sched: fix an OOB access in cls_tcindex
->>
->> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10a275fde00000
->> final crash:    https://syzkaller.appspot.com/x/report.txt?x=12a275fde00000
->> console output: https://syzkaller.appspot.com/x/log.txt?x=14a275fde00000
->>
->> IMPORTANT: if you fix the bug, please add the following tag to the commit:
->> Reported-by: syzbot+dcc34d54d68ef7d2d53d@syzkaller.appspotmail.com
->> Fixes: 599be01ee567 ("net_sched: fix an OOB access in cls_tcindex")
->>
->> IPVS: ftp: loaded support on port[0] = 21
->> ==================================================================
->> BUG: KASAN: double-free or invalid-free in tcf_exts_destroy+0x62/0xc0 net/sched/cls_api.c:3002
->>
->> CPU: 1 PID: 9507 Comm: syz-executor467 Not tainted 5.6.0-rc4-syzkaller #0
->> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->> Call Trace:
->>  __dump_stack lib/dump_stack.c:77 [inline]
->>  dump_stack+0x188/0x20d lib/dump_stack.c:118
->>  print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:374
->>  kasan_report_invalid_free+0x61/0xa0 mm/kasan/report.c:468
->>  __kasan_slab_free+0x129/0x140 mm/kasan/common.c:455
->>  __cache_free mm/slab.c:3426 [inline]
->>  kfree+0x109/0x2b0 mm/slab.c:3757
->>  tcf_exts_destroy+0x62/0xc0 net/sched/cls_api.c:3002
->>  tcf_exts_change+0xf4/0x150 net/sched/cls_api.c:3059
->>  tcindex_set_parms+0xed8/0x1a00 net/sched/cls_tcindex.c:456
-> 
-> Looks like a consequence of "slab-out-of-bounds Write in tcindex_set_parms".
-> 
-> Thanks.
-> 
+Mitch updates the iavf and ice drivers to expand the limitation on the
+number of queues that the driver can support to account for the newer
+800-series capabilities.
 
-I have a dozen more syzbot reports involving net/sched code, do you want
-me to release them right now ?
+Brett cleans up the error messages for both SR-IOV and non SR-IOV use
+cases.  Fixed the logic when the ice driver is removed and a bare-metal
+VF is passing traffic, which was causing a transmit hang on the VF.
+Updated the ice driver to display "Link detected" field via ethtool,
+when the driver is in safe mode.  Updated ice driver to properly set
+VLAN pruning when transmit anti-spoof is off.
+
+Avinash fixed a corner case in DCB, when switching from IEEE to CEE
+mode, the DCBX mode does not get properly updated.
+
+Dave updates the logic when switching from software DCB to firmware DCB
+to renegotiate DCBX to ensure the firmware agent has up to date
+information about the DCB settings of the link partner.
+
+Lukasz increases the PF's mailbox receive queue size to the maximum to
+prevent potential bottleneck or slow down occurring from the PF's
+mailbox receive queue being full.
+
+Bruce updates the ice driver to use strscpy() instead of strlcpy().
+Cleaned up variable names that were not very descriptive with names that
+had more meaning.
+
+Anirudh replaces the use of ENOTSUPP with EOPNOTSUPP in the ice driver.
+
+Jake fixed up a function header comment to properly reflect the variable
+size and use.
+
+v2: Dropped patch 5 of the original series, where Tony added tunnel
+    offload support.  Based on community feedback, the patch needed
+    changes, so giving Tony additional time to work on those changes and
+    not hold up the remaining changes in the series.
+
+The following are changes since commit 6c9ee3069380d2dd98fbb410616d776c172ee64f:
+  Merge tag 'mlx5-updates-2020-03-09' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+
+Anirudh Venkataramanan (1):
+  ice: Use EOPNOTSUPP instead of ENOTSUPP
+
+Avinash JD (1):
+  ice: Fix corner case when switching from IEEE to CEE
+
+Brett Creeley (4):
+  ice: Improve clarity of prints and variables
+  ice: Fix removing driver while bare-metal VFs pass traffic
+  ice: Display Link detected via Ethtool in safe mode
+  ice: Correct setting VLAN pruning
+
+Bruce Allan (2):
+  ice: fix use of deprecated strlcpy()
+  ice: use variable name more descriptive than type
+
+Dave Ertman (1):
+  ice: renegotiate link after FW DCB on
+
+Jacob Keller (1):
+  ice: fix incorrect size description of ice_get_nvm_version
+
+Jeff Kirsher (1):
+  ice: Cleanup unneeded parenthesis
+
+Lukasz Czapnik (1):
+  ice: Increase mailbox receive queue length to maximum
+
+Mitch Williams (2):
+  iavf: Enable support for up to 16 queues
+  ice: allow bigger VFs
+
+Tony Nguyen (1):
+  ice: Fix format specifier
+
+ drivers/net/ethernet/intel/iavf/iavf.h        |   2 +-
+ .../net/ethernet/intel/iavf/iavf_ethtool.c    |  20 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c   |   2 +-
+ .../net/ethernet/intel/iavf/iavf_virtchnl.c   |  27 --
+ drivers/net/ethernet/intel/ice/ice.h          |   7 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |   4 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |  23 +-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  60 ++--
+ drivers/net/ethernet/intel/ice/ice_flow.c     |   8 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c      | 243 ++++++-------
+ drivers/net/ethernet/intel/ice/ice_lib.h      |   4 +-
+ drivers/net/ethernet/intel/ice/ice_main.c     |  25 +-
+ drivers/net/ethernet/intel/ice/ice_switch.c   |  20 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 330 +++++++++---------
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.h  |  15 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.h      |   4 +-
+ 16 files changed, 396 insertions(+), 398 deletions(-)
+
+-- 
+2.24.1
 
