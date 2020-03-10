@@ -2,49 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F1B317EEC5
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 03:41:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E766317EEC6
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 03:43:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726824AbgCJClP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 22:41:15 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:35046 "EHLO
+        id S1726464AbgCJCnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 22:43:16 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:35064 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725845AbgCJClP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 22:41:15 -0400
+        with ESMTP id S1725845AbgCJCnP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 22:43:15 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id BEACC120F52BC;
-        Mon,  9 Mar 2020 19:41:14 -0700 (PDT)
-Date:   Mon, 09 Mar 2020 19:41:14 -0700 (PDT)
-Message-Id: <20200309.194114.2134558915591441970.davem@davemloft.net>
-To:     saeedm@mellanox.com
-Cc:     kuba@kernel.org, netdev@vger.kernel.org
-Subject: Re: [pull request][net-next 00/11] Mellanox, mlx5 updates
- 2020-03-09
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 26BE5120F5DE6;
+        Mon,  9 Mar 2020 19:43:14 -0700 (PDT)
+Date:   Mon, 09 Mar 2020 19:43:13 -0700 (PDT)
+Message-Id: <20200309.194313.585990109584018645.davem@davemloft.net>
+To:     kuba@kernel.org
+Cc:     netdev@vger.kernel.org, akiyano@amazon.com, netanel@amazon.com,
+        gtzalik@amazon.com, irusskikh@marvell.com, f.fainelli@gmail.com,
+        bcm-kernel-feedback-list@broadcom.com, rmody@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, aelior@marvell.com,
+        skalluru@marvell.com, GR-everest-linux-l2@marvell.com,
+        opendmb@gmail.com, siva.kallam@broadcom.com, prashant@broadcom.com,
+        mchan@broadcom.com, dchickles@marvell.com, sburla@marvell.com,
+        fmanlunas@marvell.com, tariqt@mellanox.com, vishal@chelsio.com,
+        leedom@chelsio.com, ulli.kroll@googlemail.com,
+        linus.walleij@linaro.org
+Subject: Re: [PATCH net-next 00/15] ethtool: consolidate irq coalescing -
+ part 3
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200310014246.30830-1-saeedm@mellanox.com>
-References: <20200310014246.30830-1-saeedm@mellanox.com>
+In-Reply-To: <20200310021512.1861626-1-kuba@kernel.org>
+References: <20200310021512.1861626-1-kuba@kernel.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 09 Mar 2020 19:41:14 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 09 Mar 2020 19:43:15 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@mellanox.com>
-Date: Mon,  9 Mar 2020 18:42:35 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Mon,  9 Mar 2020 19:14:57 -0700
 
-> This series adds misc updates and cleanups to mlx5 drivers.
-> For more information please see tag log below.
+> Convert more drivers following the groundwork laid in a recent
+> patch set [1] and continued in [2]. The aim of the effort is to
+> consolidate irq coalescing parameter validation in the core.
 > 
-> Please pull and let me know if there is any problem.
+> This set converts 15 drivers in drivers/net/ethernet.
+> 3 more conversion sets to come.
 > 
-> Please note that the series starts with a merge of mlx5-next branch,
-> to resolve and avoid dependency with rdma tree.
+> None of the drivers here checked all unsupported parameters.
+> 
+> [1] https://lore.kernel.org/netdev/20200305051542.991898-1-kuba@kernel.org/
+> [2] https://lore.kernel.org/netdev/20200306010602.1620354-1-kuba@kernel.org/
 
-Looks all pretty straightforward to me, pulled, thanks Saeed.
+I'll let this sit for a day for review(s).
