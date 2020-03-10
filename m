@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9E0717EE16
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 02:43:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 93D9817EE19
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 02:43:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726444AbgCJBnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 21:43:09 -0400
-Received: from mail-eopbgr70041.outbound.protection.outlook.com ([40.107.7.41]:6078
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        id S1726557AbgCJBnW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 21:43:22 -0400
+Received: from mail-vi1eur05on2057.outbound.protection.outlook.com ([40.107.21.57]:6098
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726284AbgCJBnI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Mar 2020 21:43:08 -0400
+        id S1726368AbgCJBnV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 21:43:21 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FVfbJ1RhJ0rPVgGz4UiFPrnG3svpI7QK3WCRqquXl3UT+0W9SgejKGtWf77xtHpyzhxvXqYyT1dcKUtez6rtlR0uztnVNvZO9FbakhIzt3a0QCGhiwEkgFVcJBslGB/FbPhuu8KM9Wi49oDsVfKGoxlkizUwY03RmgZhLOHN6aeBV0vqmuG48QjqfR0eZwJ1e7kAmX7TQFufDvhV3N7tLTkwboClcukc6g89DOmafhzMQ+C3T8kKYjcl6fwstUcl7scAZnQTuY+7/GFyFPQZK3YEu5pktNHU3Cul++UuaZ/YlPYK5Qv19peq9YRxygZCYP80Ht6mRjGK5BxQozzAGg==
+ b=jH91NqAFBbBU+UsS8rweSaXQodr7tHcvNgZc1slXs7C1rKHytUvWYAB487vrtLmwdmY4JfI1JPUmezUJIsE3i94UoVVfGMP9SFWdnwkwQBLba5rq80RgPR8j6XvaYbxx275/iTg35Zxn5iHWxpBdCrYpQh+PByREL2a+l2JANdFc6vuR05aRlPWHchRXymro2Ue4r3HjG4xCROIoSQNAuFbMW0WOwZBJgOCaqpjBTI5rHOqXt2TSA1XLd0S4DUoTe5N+63P3susPfnF8IfZ5JEaAI2jGsqt7+qBIeODy7Fs3OlF0vKIDlMhZs4G1+IHMAaAaf2wMaROXykCZTuqqeg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FKmFpx4LNLb5p9Ko+7gWghMQqXZcAOHX6hK+/90G06U=;
- b=Yd1N2LrxyJS/TlHYKGZe4J4EuP50K2IWh4EYsGMeY+fKNyCdVvVKP+Ak03GWuMWz4Sc75OvG0Uy9lex9xYBgSvG88vPzlM+m6UsUiEVJye8FXzKJLgo2H8z2b+k2z8KsYC3It60ZH5lMl8/Yf7ecS4X9MbfcT8zvb8WFciqxi8YHgoM1WMRgv/wFcDs8xMNYjxm/sM47kVIjrdbJbCaq+B0/lk42z+5i6Dvg0xwUVgPf1AtqYYJ4jsByRUVn3MQtGrgtnE6gN7ViJ4V5pHhdS4bSRot8t2S5v09P2mV2C86nZhDJjTS/GB+vuNgSghvOM2kfjuT27FAI3aNV6ffonw==
+ bh=MZRYnpyndJTtxjbmX2cBgf0E9a3N++uIPVuuZEYGB+g=;
+ b=MGdWb9ePU3HqeHwvLidu9oq6gPRRk17YOmqoKo1Sow8V6j1CquQWIcAE+H2CC9MYFz/1zVt24mmacM51d8JnpY/wWZA5GeoWJpDOZAEYemR7HsQhxcHaDgHUbA5mC9VXY5Vz2h5bD7LaGQhtOsosZBKaUQirBwXMseP3XYd5YS9rwj6tme09nyvzMmFIBJZzsl/vCGxiKFHqLyHu85S+MWIK94xDmIBmo+VgBDr+8H8EKfHY2qk63szyjk3+7W6l6McwODN7Q718D+zSbo+5BcCUsNknosQ3sIQqAcMXyYgT032ILGJNdWbJ6xKH2lk7gjNCNGRGylANmaijV3ZBfw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FKmFpx4LNLb5p9Ko+7gWghMQqXZcAOHX6hK+/90G06U=;
- b=sK0q6Iuf1B55cfYUFKyDiAHMj38XU7IpEZChgSRkdu2a5j4edyP7efi98wY89WQ9Te/AU6LQ4CO6BmGm6L2rcds4WkBHR7ZZ+zWL4T7yzK+HxdUqziwTuU7d4iXiNhoghguVeCSrEIMZKBa0fsAZu3ikb2A1m/gdt1EMhGIqrrI=
+ bh=MZRYnpyndJTtxjbmX2cBgf0E9a3N++uIPVuuZEYGB+g=;
+ b=Y10e6QgnLTTN0iwVNA5FbEEs/GF13O+JKx/4XT1kqhOgJP+KfgKhEYkeHI5w85x1VwMFXih7LKowaCPm9gThr6vCczYFv4a0mbcu8ppX1SMxMSx1TBt6MP/tNSFwuaTiyUbErsnW5VlB6TKNN9qna+YuAQW1Nzckxqf9MaWFjjM=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1SPR01MB333.eurprd05.prod.outlook.com (52.134.27.161) with Microsoft SMTP
+ VI1PR05MB5533.eurprd05.prod.outlook.com (20.177.201.157) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2793.16; Tue, 10 Mar 2020 01:43:04 +0000
+ 15.20.2793.17; Tue, 10 Mar 2020 01:43:06 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2793.013; Tue, 10 Mar 2020
- 01:43:04 +0000
+ 01:43:06 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
-Subject: [pull request][net-next 00/11] Mellanox, mlx5 updates 2020-03-09
-Date:   Mon,  9 Mar 2020 18:42:35 -0700
-Message-Id: <20200310014246.30830-1-saeedm@mellanox.com>
+Cc:     netdev@vger.kernel.org, Mark Bloch <markb@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [net-next 01/11] net/mlx5: Expose port speed when possible
+Date:   Mon,  9 Mar 2020 18:42:36 -0700
+Message-Id: <20200310014246.30830-2-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200310014246.30830-1-saeedm@mellanox.com>
+References: <20200310014246.30830-1-saeedm@mellanox.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: BYAPR08CA0068.namprd08.prod.outlook.com
@@ -51,110 +54,99 @@ X-ClientProxiedBy: BYAPR08CA0068.namprd08.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR08CA0068.namprd08.prod.outlook.com (2603:10b6:a03:117::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.15 via Frontend Transport; Tue, 10 Mar 2020 01:43:02 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR08CA0068.namprd08.prod.outlook.com (2603:10b6:a03:117::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.15 via Frontend Transport; Tue, 10 Mar 2020 01:43:04 +0000
 X-Mailer: git-send-email 2.24.1
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 12251011-20b9-48e9-ceea-08d7c4945fcb
-X-MS-TrafficTypeDiagnostic: VI1SPR01MB333:|VI1SPR01MB333:
+X-MS-Office365-Filtering-Correlation-Id: 549b5779-aae5-4b41-0deb-08d7c49460e1
+X-MS-TrafficTypeDiagnostic: VI1PR05MB5533:|VI1PR05MB5533:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1SPR01MB333692A76C18588F65CAAE6BEFF0@VI1SPR01MB333.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB55330554940E9AB938113016BEFF0@VI1PR05MB5533.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1122;
 X-Forefront-PRVS: 033857D0BD
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(136003)(376002)(366004)(346002)(199004)(189003)(86362001)(316002)(8676002)(956004)(5660300002)(2616005)(6506007)(81156014)(52116002)(8936002)(26005)(478600001)(81166006)(2906002)(16526019)(186003)(66556008)(66476007)(66946007)(107886003)(1076003)(4326008)(36756003)(6486002)(6512007)(15650500001)(6666004)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1SPR01MB333;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(346002)(396003)(136003)(366004)(39860400002)(199004)(189003)(66476007)(16526019)(316002)(1076003)(66946007)(66556008)(8676002)(86362001)(6506007)(478600001)(107886003)(5660300002)(81166006)(81156014)(6486002)(956004)(36756003)(2906002)(6512007)(4326008)(54906003)(8936002)(26005)(2616005)(52116002)(6666004)(186003)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5533;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Hd2ipMHEqLgYOBiZl6FMWdwK7N4TAW/sQVP03K9gDC3b/1SGW+XstXeiEDBm8rceFltx+Grhvp1Y3XfNnSbABoKCcUZBDzmqsBYhptHbtrB8ZIbdxcLXlsq8eexT94cyY+KXw1lJpxhxEGBeSIm0MCrsyWjVkLDcESflXlY44LjrMmSEDD56tNhsxWBXFVkv6bmEOM09BugrERfQU4IQSV0rnEVCP1Uy+IVrnULIJKZIfYVQxdEMNNAcsZ/zLkRG1HR1J8VM49Fy/v7gpE6QuZZo0nfvt/27BkLuF2WwMUJQDGfhz4XHsTSGr/aN/gMIEQL6grW7Q9tLllEVaGDrkXladPNCzvaG2BON5EcYDf5wVtsqQ0dUAWv6X9gw0X2252mi8zCuz9No62FiFqqqKiCwi7FT1jlhEzsD7b7AXqU7RwwRQFXjxZlz00avc6p+kzoXBxeIBnEz6/dcSLOYZBpdXwPzYUWo32So3PHufRKgaHShpYvxnuyxWRkZJFT2epzu1tsferfhy386ZN+Y4yr0seZCxyqun6L1qeAfK+0=
-X-MS-Exchange-AntiSpam-MessageData: Xsa27ipDkLOdkQ52eSTjWHe+WNGlXS076/jyyMCodRiOBefgUhJgVEzwGwIV9NfZUoM12NGz35VKA2XzoerxOcFp9VZaDpTw8d54K3HGl0r9q9C5CG3SLbELUc0LXeCStbCj7BRz/vW/4D4+wJndXw==
+X-Microsoft-Antispam-Message-Info: 2sEZaVzk5KlcAg7mVIMaQ11tJjE2uigSTR4gFY9zjnt2v8B3VKQmVx8unDZMBHZD8eEsesVCZChrddF9AitRGH14Cwdmh+f9B9LQuaxziQnIzOvIY5JUWs08usMy3upj2tciR/rZXogyZ8h6FaVRlw+U2l3Z9BoaEKBe4HDlNlkilzMsTXoC0DTwaySPdopsJD8D7MUfUhD4sF6ejFIn7eWw+jNaDGjvZAOhVphLJ2D/IGYeO/IHU6HwbPQj9W0+NcRhYi0l46vX7Qc6MbdOMwQkw5zsPAUm35TwMNPusmn8hg8LS/bCjFIdlxpPpp9+8l9h1hyKvtLaaTNNVhV8GdZE5j7a3f5C8PxV/76Duk8uHJunXrVowlM0AvMmX/7KTM9omigpwizZlPkTp8ZeQt2ZyH2sP8aX60xbimSasidQFtC1YYM+2p33Abz4j+x/LNxcHYgMiM4o27orMuJF/wtfJnT/F880GpsxbRPmyNzMgwa7mxDq1wdQsU5m6hop5+4lfgA34MiQ5p4fVAQBhTJ4bxWXyRD20MMq5a9E3bM=
+X-MS-Exchange-AntiSpam-MessageData: 4BVjb5Y0mPJR/ICI7orB8YA54tzCLEakRHjyKprbxbaTITQiIaTsBRia+87QJPJ75Lq+KY/ZTIALzIy2NWL3y07BQ7LxjTR/JHmM9fHhy+KW+Cajku1PprYSL7QzTIJQbOyXsSbJ5KMfvTgpCMavxA==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 12251011-20b9-48e9-ceea-08d7c4945fcb
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2020 01:43:03.9749
+X-MS-Exchange-CrossTenant-Network-Message-Id: 549b5779-aae5-4b41-0deb-08d7c49460e1
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2020 01:43:05.9907
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SvmOggSK6YMFrDmoULtm2TWzgSkaCc4EER/uH/WpuXZ1/hpeY/0zk+oRC1YVen7AMAp0yOqSiFEf588ZLCrYIQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1SPR01MB333
+X-MS-Exchange-CrossTenant-UserPrincipalName: +P8nPP+J3Daxz6FOO4PYV9vq7bWItgU+ZhkM+7ZBiVD9xyWjdZWuzilkj1qFLHPuX6Y6s0EECWqfq0FQV67ShA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5533
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+From: Mark Bloch <markb@mellanox.com>
 
-This series adds misc updates and cleanups to mlx5 drivers.
-For more information please see tag log below.
+When port speed can't be reported based on ext_eth_proto_capability
+or eth_proto_capability instead of reporting speed as unknown check
+if the port's speed can be inferred based on the data_rate_oper field.
 
-Please pull and let me know if there is any problem.
-
-Please note that the series starts with a merge of mlx5-next branch,
-to resolve and avoid dependency with rdma tree.
-
-Thanks,
-Saeed.
-
+Signed-off-by: Mark Bloch <markb@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
+ drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-The following changes since commit a70ed9d8ecf395ca7d15c2d13782cc0055398ed5:
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+index 01539b874b5e..f4491fba14a0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_ethtool.c
+@@ -773,6 +773,7 @@ static void ptys2ethtool_supported_advertised_port(struct ethtool_link_ksettings
+ 
+ static void get_speed_duplex(struct net_device *netdev,
+ 			     u32 eth_proto_oper, bool force_legacy,
++			     u16 data_rate_oper,
+ 			     struct ethtool_link_ksettings *link_ksettings)
+ {
+ 	struct mlx5e_priv *priv = netdev_priv(netdev);
+@@ -784,7 +785,10 @@ static void get_speed_duplex(struct net_device *netdev,
+ 
+ 	speed = mlx5e_port_ptys2speed(priv->mdev, eth_proto_oper, force_legacy);
+ 	if (!speed) {
+-		speed = SPEED_UNKNOWN;
++		if (data_rate_oper)
++			speed = 100 * data_rate_oper;
++		else
++			speed = SPEED_UNKNOWN;
+ 		goto out;
+ 	}
+ 
+@@ -874,6 +878,7 @@ int mlx5e_ethtool_get_link_ksettings(struct mlx5e_priv *priv,
+ {
+ 	struct mlx5_core_dev *mdev = priv->mdev;
+ 	u32 out[MLX5_ST_SZ_DW(ptys_reg)] = {0};
++	u16 data_rate_oper;
+ 	u32 rx_pause = 0;
+ 	u32 tx_pause = 0;
+ 	u32 eth_proto_cap;
+@@ -917,6 +922,7 @@ int mlx5e_ethtool_get_link_ksettings(struct mlx5e_priv *priv,
+ 	an_disable_admin    = MLX5_GET(ptys_reg, out, an_disable_admin);
+ 	an_status	    = MLX5_GET(ptys_reg, out, an_status);
+ 	connector_type	    = MLX5_GET(ptys_reg, out, connector_type);
++	data_rate_oper	    = MLX5_GET(ptys_reg, out, data_rate_oper);
+ 
+ 	mlx5_query_port_pause(mdev, &rx_pause, &tx_pause);
+ 
+@@ -927,7 +933,7 @@ int mlx5e_ethtool_get_link_ksettings(struct mlx5e_priv *priv,
+ 	get_advertising(eth_proto_admin, tx_pause, rx_pause, link_ksettings,
+ 			admin_ext);
+ 	get_speed_duplex(priv->netdev, eth_proto_oper, !admin_ext,
+-			 link_ksettings);
++			 data_rate_oper, link_ksettings);
+ 
+ 	eth_proto_oper = eth_proto_oper ? eth_proto_oper : eth_proto_cap;
+ 
+-- 
+2.24.1
 
-  Merge branch 'mlx5-next' of git://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux (2020-03-09 16:58:26 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-03-09
-
-for you to fetch changes up to b63293e759a1dd1d105f4c6c32d7ed150b6af8d2:
-
-  net/mlx5e: Show/set Rx network flow classification rules on ul rep (2020-03-09 16:58:49 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2020-03-09
-
-This series provides updates to mlx5 driver:
-
-1) Use vport metadata matching only when mandatory
-2) Introduce root flow table and ethtool steering for uplink representors
-3) Expose port speed via FW when link modes are not available
-3) Misc cleanups
-
-----------------------------------------------------------------
-Dan Carpenter (1):
-      net/mlx5e: Fix an IS_ERR() vs NULL check
-
-Eli Cohen (1):
-      net/mlx5: Verify goto chain offload support
-
-Majd Dibbiny (1):
-      net/mlx5: E-Switch, Use vport metadata matching only when mandatory
-
-Mark Bloch (2):
-      net/mlx5: Expose port speed when possible
-      net/mlx5: Tidy up and fix reverse christmas ordring
-
-Parav Pandit (1):
-      net/mlx5: E-switch, make query inline mode a static function
-
-Paul Blakey (1):
-      net/mlx5: Allocate smaller size tables for ft offload
-
-Saeed Mahameed (1):
-      net/mlx5e: Introduce root ft concept for representors netdevs
-
-Vlad Buslov (3):
-      net/mlx5e: Show/set Rx flow indir table and RSS hash key on ul rep
-      net/mlx5e: Init ethtool steering for representors
-      net/mlx5e: Show/set Rx network flow classification rules on ul rep
-
- drivers/net/ethernet/mellanox/mlx5/core/en.h       |   6 +
- .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  37 ++++---
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   | 122 ++++++++++++---------
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   1 +
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  65 +++++++----
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   1 -
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  90 ++++++++-------
- .../mellanox/mlx5/core/eswitch_offloads_chains.c   |   5 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   4 +-
- 9 files changed, 202 insertions(+), 129 deletions(-)
