@@ -2,89 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A73F17EE7A
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 03:18:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8871F17EE80
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 03:21:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726488AbgCJCSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 22:18:21 -0400
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:42321 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726156AbgCJCSV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 22:18:21 -0400
-Received: by mail-qv1-f65.google.com with SMTP id ca9so2281702qvb.9
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 19:18:20 -0700 (PDT)
+        id S1726492AbgCJCVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 22:21:40 -0400
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:35389 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725845AbgCJCVk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 22:21:40 -0400
+Received: by mail-yw1-f66.google.com with SMTP id d79so11233163ywd.2
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 19:21:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lJwQTcPBEWiKs5Cf6q3pYBQhE6eqMXLnZ0CSfrjwWiU=;
-        b=Up8W45Hk80GNFledDwONZ7Dmxi4bFp8t6aRT2xw7bidsmenPIGX+pPignJ61WNDjZ+
-         1gg2ND93/30FhiQaajcfypGSxZo3xfmVI99BdVSUGb9M7LpnBImy1Dmbj1aMsqYccBGc
-         fHkyPv+QPjdxnsKvX9WUxluL9MIkzMG3xU3h4I4gzrpDkRfl3Gi9OtXZbWxSC/s2rQ/d
-         ljawqk/tcUTwu3WQKPYa8T0e1uffCPwvC8LWhOxic9OSiB7g0KuJPR1NKTdxpRrLjbZw
-         rtB1em7BUuWIyzjraJH2PiGQo24Lx+PueYtKIUfBPPwcKtTOZp2J1koaiPLwM3DZAV8X
-         u3HQ==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Wq7rIgcxJYUmMsHvdyxC0lAaZEg2UPI4DtUZCghoc2M=;
+        b=W+6/tOaVxGiLqLqS/wU0x6rTJBxgY4clEdAUMXUNl6rTrVYNzmMTadvRvDzYQdIUSx
+         DJOAMc16JxbKdF8odCYM4fB0hvKfxQAmKMIV0bB0s6ENkdCdQn4AZ1/re4oUS8ypNdXI
+         3cgRifr5c/DAoniYHWfI4DFYmbCQRq6N97snT2nYH1UpQnxXkWmkFAz3hpzeAQ9HIknx
+         QHcg7jRpAxW5CQTyuyJC7LlQ+f58ksIO2eF28q0Z3gO6PuRpViKJbjiz5/Ctg9dFK3f1
+         z7ehibolWyxpm7y8TajktrZelIftSeOwITRDrQcjGx156F3tb9aicfOA94WeDINGYVPp
+         s4GA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lJwQTcPBEWiKs5Cf6q3pYBQhE6eqMXLnZ0CSfrjwWiU=;
-        b=K8O5tCtRIrAhDtCyi6Yd1XENcXIWjBCAp7OSGdnShhovICU7wcKRrlXKrXWxUo42iG
-         Tt9ZCsHPCcC2R0B2+W8oNR5dbYqvUCZFgHHp7mIP0yi5hv6OiCZ8qTqV4eZMZ1lp+326
-         OJga8HgiNbbnQMLcmNGmfmndDBk9uQChgJBMe/CuuNqABr9IzM90w365eknpe//ZiUBo
-         ROMu+RQ1MT00Jo07fzSs3aY2K34wAAfLx2dmtLWgeFd3DZFC4BQSISscGsxuIqA0SlNu
-         f1gl5+GYmWgpfaoDM81cU3XwcgCwqC6fPQjxlTD2CXvzymxPiFcRyvy0qV1lhWZvAGNt
-         31IQ==
-X-Gm-Message-State: ANhLgQ0pzm7eU72Q1VFp9ELma6W8IDYEakQlVl2kmpewp788TKWDq/CH
-        8fINlvqV3PCqg0yT0VxeaZg=
-X-Google-Smtp-Source: ADFU+vunR+tejFymEL9bGdpP8AN+6IVgL7z53jG+9wGyL2OpFBBcUt3IJZlcSm4jVdQLpjwEe+KqxQ==
-X-Received: by 2002:a0c:ef4f:: with SMTP id t15mr17139990qvs.137.1583806700398;
-        Mon, 09 Mar 2020 19:18:20 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:b876:5d04:c7e4:4480? ([2601:282:803:7700:b876:5d04:c7e4:4480])
-        by smtp.googlemail.com with ESMTPSA id a27sm10277644qto.38.2020.03.09.19.18.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Mar 2020 19:18:18 -0700 (PDT)
-Subject: Re: [PATCH RFC v4 bpf-next 07/11] tun: set egress XDP program
-To:     Jason Wang <jasowang@redhat.com>, David Ahern <dsahern@kernel.org>,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        prashantbhole.linux@gmail.com, brouer@redhat.com, toke@redhat.com,
-        mst@redhat.com, toshiaki.makita1@gmail.com, daniel@iogearbox.net,
-        john.fastabend@gmail.com, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        David Ahern <dahern@digitalocean.com>
-References: <20200227032013.12385-1-dsahern@kernel.org>
- <20200227032013.12385-8-dsahern@kernel.org>
- <25d0253e-d1b8-ca6c-4e2f-3e5c35d6d661@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <b70fd32f-3b72-ea31-a33f-137b1ad1741d@gmail.com>
-Date:   Mon, 9 Mar 2020 20:18:16 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Wq7rIgcxJYUmMsHvdyxC0lAaZEg2UPI4DtUZCghoc2M=;
+        b=uhrG4L8YBD+HOgJ11gF2v3AAMGgXgWpraj1gOm6OLllJ5qeEMqbNHp3SrJA5keG+K9
+         JyQ+YJxJVeoGc/ZKNBMVEQLnsxBzqWDR5RdovIaJ21GCxsEouk0mtwDgp7D5zoexr9PN
+         gp4VPN8WbFFNx7uHZsBAemGz3wLuKgSERUDYTa7q1AlDDaabw/snMrLTx1wgsrKve4xR
+         oxqZvOj8mu0GqjoeTb7RpQepcf4ELmTd3+l5W39iJzHNAzaNg6+BHDabT9o5yGlcXX9v
+         rpr8/rgwAYWFI7spa1RlYsYMSvZuBUD6c9GdmWUFXgvvKIlwhk5XRAGY1UYq1+yZAYOH
+         ePZw==
+X-Gm-Message-State: ANhLgQ2XzFncAMM1NMf7n4tNL9gZlEsQseJLPqxQ74riRqylW44oecNV
+        diGkx2t7OKWf19KKAQl0cSZUdToxPqQWNBkdMRgzgsMB
+X-Google-Smtp-Source: ADFU+vuaQg9cfjPCGtb0sumAFYqu+fHrEy1l4pBYJ4DqpyTraRphiOKeFMHA+TNfLGgLxc2wdSu4w7IouxkkswMule8=
+X-Received: by 2002:a25:68c1:: with SMTP id d184mr20798858ybc.335.1583806899071;
+ Mon, 09 Mar 2020 19:21:39 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <25d0253e-d1b8-ca6c-4e2f-3e5c35d6d661@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200309225702.63695-1-maheshb@google.com> <eff143b1-1c88-4ed7-ff59-b25ac0dfd42f@gmail.com>
+In-Reply-To: <eff143b1-1c88-4ed7-ff59-b25ac0dfd42f@gmail.com>
+From:   =?UTF-8?B?TWFoZXNoIEJhbmRld2FyICjgpK7gpLngpYfgpLYg4KSs4KSC4KSh4KWH4KS14KS+4KSwKQ==?= 
+        <maheshb@google.com>
+Date:   Mon, 9 Mar 2020 19:21:22 -0700
+Message-ID: <CAF2d9jiRovyHkASL=BO2q3TF1CAfoa_yN9jckF8oS1Czx+x47w@mail.gmail.com>
+Subject: Re: [PATCH net] ipvlan: add cond_resched_rcu() while processing
+ muticast backlog
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Mahesh Bandewar <mahesh@bandewar.net>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/1/20 8:32 PM, Jason Wang wrote:
->> @@ -1189,15 +1190,21 @@ tun_net_get_stats64(struct net_device *dev,
->> struct rtnl_link_stats64 *stats)
->>   }
->>     static int tun_xdp_set(struct net_device *dev, struct bpf_prog *prog,
->> -               struct netlink_ext_ack *extack)
-> 
-> 
-> How about accept a bpf_prog ** here, then there's no need to check
-> egress when deferencing the pointer?
-> 
-> 
+On Mon, Mar 9, 2020 at 6:07 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 3/9/20 3:57 PM, Mahesh Bandewar wrote:
+> > If there are substantial number of slaves created as simulated by
+> > Syzbot, the backlog processing could take much longer and result
+> > into the issue found in the Syzbot report.
+> >
+>
+> ...
+>
+> >
+> > Fixes: ba35f8588f47 (=E2=80=9Cipvlan: Defer multicast / broadcast proce=
+ssing to a work-queue=E2=80=9D)
+> > Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+> > Reported-by: syzbot <syzkaller@googlegroups.com>
+> > ---
+> >  drivers/net/ipvlan/ipvlan_core.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/net/ipvlan/ipvlan_core.c b/drivers/net/ipvlan/ipvl=
+an_core.c
+> > index 53dac397db37..5759e91dec71 100644
+> > --- a/drivers/net/ipvlan/ipvlan_core.c
+> > +++ b/drivers/net/ipvlan/ipvlan_core.c
+> > @@ -277,6 +277,7 @@ void ipvlan_process_multicast(struct work_struct *w=
+ork)
+> >                       }
+> >                       ipvlan_count_rx(ipvlan, len, ret =3D=3D NET_RX_SU=
+CCESS, true);
+> >                       local_bh_enable();
+> > +                     cond_resched_rcu();
+>
+> This does not work : If you release rcu_read_lock() here,
+> then the surrounding loop can not be continued without risking use-after-=
+free
+>
+.. but cond_resched_rcu() is nothing but
+      rcu_read_unlock(); cond_resched(); rcu_read_lock();
 
-The egress arg is better. xdp_prog vs xdp_egress_prog is an element of
-'struct tun'. tun is currently not needed in tun_xdp and is part of
-tun_xdp_set already.
+isn't that sufficient?
+
+> rcu_read_lock();
+> list_for_each_entry_rcu(ipvlan, &port->ipvlans, pnode) {
+>     ...
+>     cond_resched_rcu();
+>     // after this point bad things can happen
+> }
+>
+>
+> You probably should do instead :
+>
+> diff --git a/drivers/net/ipvlan/ipvlan_core.c b/drivers/net/ipvlan/ipvlan=
+_core.c
+> index 30cd0c4f0be0b4d1dea2c0a4d68d0e33d1931ebc..57617ff5565fb87035c13dcf1=
+de9fa5431d04e10 100644
+> --- a/drivers/net/ipvlan/ipvlan_core.c
+> +++ b/drivers/net/ipvlan/ipvlan_core.c
+> @@ -293,6 +293,7 @@ void ipvlan_process_multicast(struct work_struct *wor=
+k)
+>                 }
+>                 if (dev)
+>                         dev_put(dev);
+> +               cond_resched();
+>         }
+
+reason this may not work is because the inner loop is for slaves for a
+single packet and if there are 1k slaves, then skb_clone() will be
+called 1k times before doing cond_reched() and the problem may not
+even get mitigated.
+
+>  }
+>
