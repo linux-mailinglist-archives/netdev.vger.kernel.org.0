@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E489217EF7E
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 04:58:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 956D517EF7F
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 04:58:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726353AbgCJD6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 23:58:36 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:35111 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725845AbgCJD6d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 23:58:33 -0400
-Received: by mail-pl1-f195.google.com with SMTP id g6so4894775plt.2
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 20:58:31 -0700 (PDT)
+        id S1726389AbgCJD6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 23:58:50 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:37903 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725845AbgCJD6u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 23:58:50 -0400
+Received: by mail-pf1-f193.google.com with SMTP id z5so961055pfn.5
+        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 20:58:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9XM1GeVsPPMBZfAH0ZpKmLv7FX8kqsz+RfQkZewcdPY=;
-        b=rZdGG3a/to2g0pd6dO6aJw2zeQzDVO9roaq63zkhdr/zzkl1ClUrNcKFKU8baRZ9MG
-         erzEJsuyGXg8vpUK8y7H30WQPtWBJBLa+BefTSEbXG8aiuLx9MIewhEY7KFkmcu7y6OF
-         jh/8vU8MKA4uxtvSxJld5XWZy1jyUu5Ri0h5F5ovFfi4aU7wff652w4+qyJaWftsnyF2
-         reRehdoQYLW3TjTbtG5g4feCvVmp4azJKdi2fAcMBqpcp27NSQzsPCrPknmPyWSnW7n+
-         asGM6zPc3dOI46sXh2x77WJ43ncqhLIV1uoqEf19ENbT1f6Pz2YwR+ws7y862Z9yRz8E
-         Mmvg==
+        bh=nTgIVgAP+J01GzPQ4oQwc4xP7oKRvCk/frTbEeoO/H8=;
+        b=Cdqfoc01salapRq8NKS0UTJYNLmf+/MGhoJlLWFsOASDFjqL0IS4Erk/crXl1jmq6y
+         dUwMKLwnj3C7t2h1ppQ2ly+XBiCn4s474J9OsUFBxZL1BQfyzbMXhr/HUeGpJ2V3PJWu
+         UpqvyuXvUH4PFOjMNh7piUari/TiyYp2m6ejoa5BCWjkKun3KeNC5tX4iDBVDg5ond/Q
+         ZHW/pKUgZBsDTK3/Vs61qr2kavXKtN+Ji8hiYG0lTNUrR0urZ6/ZTQTW/Ho3kVJqD4fU
+         F4RVNYpkuljTnZTuJco5Dfop8u4TC/XPDMG/WgFRRZzJHRm/W+Gbrqgc6W0OwFZQ1b9N
+         6p5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=9XM1GeVsPPMBZfAH0ZpKmLv7FX8kqsz+RfQkZewcdPY=;
-        b=ITuuwstF2flHGw1i60zD260bHM/ynXudU1XcGYg6jgTaVlK+tVntvGMkvVooPpv/s/
-         5OPUoqkPbrAUHKMKN5483eb/k/4NQ4s8G09X0LS6PAhKV28M/Se7T/p1V89o1fzVO0dh
-         MLkLcfqurGqMhsTxob5+3ia8m1NuPDihfSBd9YUmtPPK0w65tepNXwY53e2z0szXly5Y
-         nCjBo5BzTImxiS9OJ9UnjSP1XXccegDOpzjklikXubbBza+U5Cw0b8wcTkoAskt29Sth
-         P2b5q2X79I7XNlfzUVGslKPfVZ1I0kqI1dOqebBdR0hq7eHLgiGgmcFassQuKzBh+3oJ
-         uz/g==
-X-Gm-Message-State: ANhLgQ2cuUuvpS5FBcvxK2aXAxra7OVCEFkJ/iwUb7YwHRXgo5pLOGqm
-        1rQug4mMbrjesoEh5G5xbgo=
-X-Google-Smtp-Source: ADFU+vv4yyChW7IB+pzOBD9xju+sM/W+PEc0TXk+S9Kx1kO0RMxZTeTIIbIcey/xziayisa0Dr7ylQ==
-X-Received: by 2002:a17:902:b40f:: with SMTP id x15mr19481812plr.82.1583812710502;
-        Mon, 09 Mar 2020 20:58:30 -0700 (PDT)
+        bh=nTgIVgAP+J01GzPQ4oQwc4xP7oKRvCk/frTbEeoO/H8=;
+        b=qxjDQgXROQCsB3BLyO8i7Nr/DY2GEVUAxrwHFpr10OyqGB1xgPsHFhLvSj3tlR0A0S
+         g8JOTBNhzCfF2H5naawo5ltjz18EFfeR1ZZbkouKn5dP72sC5Iqu4pKjGISXz4hSwJGY
+         Io2sqecz80EdtbvPhZk1A/Wc+2ax5nKb2U+Pmmw36u4HjaF217GuA4zJKayKHkRmit6T
+         yrdpKy52D2yoH3Km4rLGfTfJgILiRrT3BAQeRVR8VaPkXECYhgF30h3WTPJNlTHPcmWZ
+         TE56fwjhhJrUDiQmM/qRGWdnoPVVhmo/SQ2q3peky72ltd9Z7IXwR3kzo8K5ugda79oE
+         qAmg==
+X-Gm-Message-State: ANhLgQ1LHTiIg5HN+tjM+Zkb5eWX88bCZwTWRFjAZ42+vhwClOFIWyQv
+        V5l+/2lHjhjurCyGrKYsQzU=
+X-Google-Smtp-Source: ADFU+vthYGjSYSfMrx4/OhDtzI3Ccdtr3Hc+50deMU8oXkwj8ANqleHqaKGi+2CvQMVU5lmBwuZSTA==
+X-Received: by 2002:a63:7311:: with SMTP id o17mr18653445pgc.377.1583812729255;
+        Mon, 09 Mar 2020 20:58:49 -0700 (PDT)
 Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id d10sm927579pjc.34.2020.03.09.20.58.27
+        by smtp.gmail.com with ESMTPSA id i24sm28233837pfo.92.2020.03.09.20.58.47
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Mar 2020 20:58:28 -0700 (PDT)
-Subject: Re: [PATCH net-next 03/15] net: systemport: reject unsupported
+        Mon, 09 Mar 2020 20:58:48 -0700 (PDT)
+Subject: Re: [PATCH net-next 06/15] net: bcmgenet: reject unsupported
  coalescing params
 To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, akiyano@amazon.com, netanel@amazon.com,
@@ -59,7 +59,7 @@ Cc:     netdev@vger.kernel.org, akiyano@amazon.com, netanel@amazon.com,
         leedom@chelsio.com, ulli.kroll@googlemail.com,
         linus.walleij@linaro.org
 References: <20200310021512.1861626-1-kuba@kernel.org>
- <20200310021512.1861626-4-kuba@kernel.org>
+ <20200310021512.1861626-7-kuba@kernel.org>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -115,12 +115,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <3551df8a-31ce-2571-9547-c8b568e489e4@gmail.com>
-Date:   Mon, 9 Mar 2020 20:58:27 -0700
+Message-ID: <a8e88269-7237-030c-c0af-d665658f7ba6@gmail.com>
+Date:   Mon, 9 Mar 2020 20:58:47 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200310021512.1861626-4-kuba@kernel.org>
+In-Reply-To: <20200310021512.1861626-7-kuba@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -135,8 +135,7 @@ On 3/9/2020 7:15 PM, Jakub Kicinski wrote:
 > Set ethtool_ops->supported_coalesce_params to let
 > the core reject unsupported coalescing parameters.
 > 
-> This driver did not previously reject most of unsupported
-> parameters.
+> This driver did not previously reject all unsupported parameters.
 > 
 > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
