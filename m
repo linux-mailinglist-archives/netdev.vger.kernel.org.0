@@ -2,109 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2C9A17F54B
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 11:45:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C08917F52F
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 11:40:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726307AbgCJKpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 06:45:18 -0400
-Received: from edrik.securmail.fr ([45.91.125.3]:62815 "EHLO
-        edrik.securmail.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726170AbgCJKpS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 06:45:18 -0400
-X-Greylist: delayed 528 seconds by postgrey-1.27 at vger.kernel.org; Tue, 10 Mar 2020 06:45:17 EDT
-Received: by edrik.securmail.fr (Postfix, from userid 58)
-        id A5C7BB0E7A; Tue, 10 Mar 2020 11:36:27 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=swordarmor.fr;
-        s=swordarmor; t=1583836587;
-        bh=pLJ4A856/V4dGBCFqbnahLZhpanWRvW4sPEXds3wuBE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=dHD9okYBTKEW92Rh3XuewhvttA+sTz8SSDVLP8aG5+9XsD1gMYCpnLHDCxmuqOW5k
-         beCr1SlYa3riw5DM0F9Jw5wnbnll7rsSOnbeCbAAPpmb1weZ8uRBDdKXAvI2pIvqiQ
-         2M0B9lOJu/GH0e9Pmo9xKJ1HzbY4eShxqdKX+3F4=
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on edrik.securmail.fr
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU autolearn=unavailable
-        autolearn_force=no version=3.4.2
-Received: from mew.swordarmor.fr (mew.swordarmor.fr [IPv6:2a00:5884:102:1::4])
-        (using TLSv1.2 with cipher DHE-RSA-CHACHA20-POLY1305 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: alarig@swordarmor.fr)
-        by edrik.securmail.fr (Postfix) with ESMTPSA id E6928B0E70;
-        Tue, 10 Mar 2020 11:35:44 +0100 (CET)
-Authentication-Results: edrik.securmail.fr/E6928B0E70; dmarc=none (p=none dis=none) header.from=swordarmor.fr
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=swordarmor.fr;
-        s=swordarmor; t=1583836545;
-        bh=pLJ4A856/V4dGBCFqbnahLZhpanWRvW4sPEXds3wuBE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=i7Wj34fxAMWjnGf5+Wozixy6kMFh1qd6yeJK9P9kAtPwsfn/Wny4IChGRqaqO0QSX
-         EFSwucysrW9z27ziFnuvAjI86J+aIUNMNtuaZW9gAV+6y2uG2uxuA0INFgptNvnlDO
-         Dv9UStFbMiP7906Hu3GO6b4+QKwPAkZ3r+ZSNo2U=
-Date:   Tue, 10 Mar 2020 11:35:41 +0100
-From:   Alarig Le Lay <alarig@swordarmor.fr>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, jack@basilfillan.uk,
-        Vincent Bernat <bernat@debian.org>
-Subject: Re: IPv6 regression introduced by commit
- 3b6761d18bc11f2af2a6fc494e9026d39593f22c
-Message-ID: <20200310103541.aplhwhfsvcflczhp@mew.swordarmor.fr>
-References: <20200305081747.tullbdlj66yf3w2w@mew.swordarmor.fr>
- <d8a0069a-b387-c470-8599-d892e4a35881@gmail.com>
- <20200308105729.72pbglywnahbl7hs@mew.swordarmor.fr>
- <27457094-b62a-f029-e259-f7a274fee49d@gmail.com>
+        id S1726316AbgCJKk3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 06:40:29 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:32432 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725845AbgCJKk3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Mar 2020 06:40:29 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 02AAdS3X018431;
+        Tue, 10 Mar 2020 11:39:28 +0100
+Date:   Tue, 10 Mar 2020 11:39:28 +0100
+From:   Willy Tarreau <w@1wt.eu>
+To:     David Woodhouse <dwmw2@infradead.org>
+Cc:     netdev@vger.kernel.org, Martin Pohlack <mpohlack@amazon.de>
+Subject: Re: TCP receive failure
+Message-ID: <20200310103928.GB18192@1wt.eu>
+References: <3748be15d31f71c6534f344b0c78f48fc4e3db21.camel@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <27457094-b62a-f029-e259-f7a274fee49d@gmail.com>
+In-Reply-To: <3748be15d31f71c6534f344b0c78f48fc4e3db21.camel@infradead.org>
+User-Agent: Mutt/1.6.1 (2016-04-27)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On dim.  8 mars 20:15:14 2020, David Ahern wrote:
-> If you are using x86 based CPU you can do this:
->     perf probe ip6_dst_alloc%return ret=%ax
+Hi David,
+
+On Tue, Mar 10, 2020 at 09:40:04AM +0000, David Woodhouse wrote:
+> I'm chasing a problem which was reported to me as an OpenConnect packet
+> loss, with downloads stalling until curl times out and aborts.
 > 
->     perf record -e probe:* -a -g -- sleep 10
->     --> run this during the flapping
+> I can't see a transport problem though; I think I see TCP on the
+> receive side misbehaving. This is an Ubuntu 5.3.x client kernel
+> (5.3.0-40-generic #32~18.04.1-Ubuntu) which I think is 5.3.18?
 > 
->     perf script
+> The test is just downloading a large file full of zeroes. The problem
+> starts with a bit of packet loss and a 40ms time warp:
 
-For this probe I see that: https://paste.swordarmor.fr/raw/pt9b
+So just to clear up a few points, it seems that the trace was taken on
+the client, right ?
 
-> this will show if the flapping is due to dst alloc failures.
+(...)
+> 19:14:03.040870 IP 192.168.0.195.53754 > 10.28.82.105.80: Flags [.], ack 1735803185, win 24171, options [nop,nop,TS val 2290572281 ecr 653279937,nop,nop,sack 1 {1735831937:1735884649}], length 0
 > 
-> Other things to try:
->     perf probe ip6_dst_gc
->     perf stat -e probe:* -a -I 1000
->     --> will show calls/sec to running dst gc
-
-https://paste.swordarmor.fr/raw/uBnm
-
->     perf probe __ip6_rt_update_pmtu
->     perf stat -e probe:* -a -I 1000
->     --> will show calls/sec to mtu updating
-
-This probe always stays at 0 even when the NDP is failing.
- 
->     perf probe rt6_insert_exception
->     perf state -e probe:* -a -I 1000
->     --> shows calls/sec to inserting exceptions
-
-Same as the last one.
-
-> (in each you can remove the previous probe using 'perf probe -d <name>'
-> or use -e <exact name> to only see data for the one event).
+> Looks sane enough so far...
 > 
-> > I have the problem with 5.3 (proxmox 6), so unless FIB handling has been
-> > changed since then, I doubt that it will works, but I will try on
-> > Monday.
-> > 
+> 19:14:03.041903 IP 10.28.82.105.80 > 192.168.0.195.53754: Flags [.], seq 1735950539:1735951737, ack 366489597, win 235, options [nop,nop,TS val 653279937 ecr 2290572254], length 1198: HTTP
 > 
-> a fair amount of changes went in through 5.4 including improvements to
-> neighbor handling. 5.4 (I think) also had changes around dumping the
-> route cache.
+> WTF? The server has never sent us anything past 1735884649 and now it's
+> suddenly sending 1735950539? But OK, despite some confusing future
+> packets which apparently get ignored (and make me wonder if I really
+> understand what's going on here), the client is making progress because
+> the server is *also* sending sensible packets, and the originally
+> dropped segments are being recovered...
+> 
+> 19:14:03.068337 IP 10.28.82.105.80 > 192.168.0.195.53754: Flags [.], seq 1735803185:1735804383, ack 366489597, win 235, options [nop,nop,TS val 653279944 ecr 2290572281], length 1198: HTTP
+> 19:14:03.068363 IP 192.168.0.195.53754 > 10.28.82.105.80: Flags [.], ack 1735804383, win 24171, options [nop,nop,TS val 2290572309 ecr 653279944,nop,nop,sack 1 {1735831937:1735884649}], length 0
+(...)
+> 19:14:03.211316 IP 192.168.0.195.53754 > 10.28.82.105.80: Flags [.], ack 1735884649, win 24171, options [nop,nop,TS val 2290572452 ecr 653279980], length 0
+> 
+> OK, now it's caught up. Client continues to ignore bogus future packets
+> from the server, and doesn't even SACK them.
 
-Regards,
--- 
-Alarig
+That's what caught my eyes as well.
+
+> 19:14:03.211629 IP 10.28.82.105.80 > 192.168.0.195.53754: Flags [.], seq 1735967311:1735968509, ack 366489597, win 235, options [nop,nop,TS val 653279980 ecr 2290572422], length 1198: HTTP
+(... no ack here ...)
+> 19:14:03.251516 IP 10.28.82.105.80 > 192.168.0.195.53754: Flags [.], seq 1736028409:1736029607, ack 366489597, win 235, options [nop,nop,TS val 653279989 ecr 2290572452], length 1198: HTTP
+> 
+> Server finally comes to its senses and actually sends the packet that
+> the client wants. Repeatedly.
+
+This makes me think that there's very likely nf_conntrack on the client
+machine and the TCP packets you're seeing reach tcpdump but not the TCP
+layer. For some reason they're very likely considered out of window and
+are silently dropped. Since we don't have the SYN we don't know the
+window size, but we can try to guess. There was 82662 unacked bytes in
+flight at the peak when the server went crazy, for an apparent window of
+24171, making me think the window scaling was at least 4, or that the
+server wrongly assumed so. But earlier when the client was sending SACKs
+I found bytes in flight as high as 137770 for an advertised window of
+24567 (5.6 times more), thus the window scaling is at least 8. So this
+indicates that the 82kB above are well within the window and the client
+should ACK them. But maybe they were dropped as invalid at the conntrack
+layer for another obscure reason.
+
+Just my two cents,
+Willy
