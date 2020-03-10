@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DF2418074B
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 19:47:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A50AC18074D
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 19:47:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727303AbgCJSro (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 14:47:44 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:38123 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727265AbgCJSro (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 14:47:44 -0400
-Received: by mail-pl1-f196.google.com with SMTP id w3so5799466plz.5
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 11:47:42 -0700 (PDT)
+        id S1727314AbgCJSrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 14:47:48 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45075 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727228AbgCJSrr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 14:47:47 -0400
+Received: by mail-pf1-f196.google.com with SMTP id 2so6889847pfg.12
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 11:47:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=+tenvmPQwO4NQKigmubHHBkdsR4fnA7ZEXJsJ1biyz4=;
-        b=QJQtu38ZnB2S6oT/qJFUejK93aXeB6w13hUHP1Os0W+oXikQ+YQM0aSBk8b7h/gR1l
-         HJXpHo614nVbxQRt+RN5VZ6RYXQcnuKsqqsKhShZ/uYgWYkrugNWNp+mbxGxzovloZVY
-         lTT8JMJrtYZdj5vuP1l+rgvG+iIjsb2daPHBfeiPdz0GoIuV4agJw0nRmYotef5lkPud
-         ifbvjvxPvAcGtqhfkDXRiFJghK9fndZQf5IAwy/DkZtNEAo5FQ29lcbPpAG+z4xG66Bf
-         G1Og3qsHqql+MCa9ZmVS8AU1DYbOPwF+TDwomosE77aDXZkZENfO/pPitgZS5rAzTj/w
-         NBEw==
+        bh=6Tradw7t6qYDE9FQt4Bc6BC44FFA4/fQ+KEvmr5bKO4=;
+        b=XWPyXnKR2YPFRSJ+doqnUT6Xl2HXigIn64/ZZPYoFjC49iNSq4aLjYgQythrdwp7KZ
+         gdWJ9NqSSRQSjajemrFlWkQx4es3QnvymxVV1yx4ekL1yicqQjTozw5IY9AHmUOCqntO
+         4JNJ+dr5aN70XQ/XKVufWgaAmmLN4UQUP9vpfSiBIaWFutXU6I9NveCHWKl1EYm33h4C
+         /86F+bu2S1lY0CBQMzI2/M2gBRNRmSq89XOudSfAh+/cQIyy0Mx0gmgwzcgdzhubEi8T
+         ikT9c/vNjyYWG5kOQyiHJU3vgMT3rDy6Z/9Px6gHXd26xUbVJJII4MgRG+LKY2yRBHbk
+         QH0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=+tenvmPQwO4NQKigmubHHBkdsR4fnA7ZEXJsJ1biyz4=;
-        b=G+h9BAnwrCk6d7TWypzc2/zekXwae/GU70TsSev99+s81U7BpWQQh6v2fWJxhZPmig
-         GFCqnp+oZ18lqvzwn3nphOOTs0dFB3fUycTc2S+/ywE/bMuxq/0/PXi1RXO1yHyn+E7d
-         VsmXV0b20Hct/V1qfoyr6JruOhnhMK2+FGw5/BgRS/cXY2z1+Qlc7+AIokvd+PcUXDg5
-         nP8cJ3iM0ARf3y6C0VIbGRYgD2s4LZD9WWp7NbX35QM1QvsvEbsESNsF28ImvqhwH4TG
-         KXxF48/kbEBU7sfbprsqzI8pHp69cVGik9mPcZYrp/fuEf6xfWDzwcdePmnfnLrg3xJ1
-         Rk0Q==
-X-Gm-Message-State: ANhLgQ0WJR+eUxax1an0omsRwyBOB73aYi5mdU2z0S6OH+ZJc1Gv4cnG
-        q7bzQBdWbrQEZHFuWN4kLra746e9KBg=
-X-Google-Smtp-Source: ADFU+vuBKJkGlpED3uxbck0U+3ZtmR+S7CrH2AXrH9ja2UdwQMihFrskkwvUXWATybBWYgn5066CJQ==
-X-Received: by 2002:a17:902:7c0d:: with SMTP id x13mr21642511pll.93.1583866061191;
-        Tue, 10 Mar 2020 11:47:41 -0700 (PDT)
+        bh=6Tradw7t6qYDE9FQt4Bc6BC44FFA4/fQ+KEvmr5bKO4=;
+        b=LD1Z8802lO+kbXWKD3wlyulIA61swaW947TBReoOF9D7kEdYbS2f7Xt1ahd2pGxtw8
+         QucBapevL97qROpDmqCZcjm3W7Z3qKU6eh64xyJo6MkIOqYAQ/W5tpuKg5Fjpt58bxfJ
+         JVsM6NHrbqRKOP9mgeJnj6wDtift4HdVtqKE134f/XUqgPyj7yry05OHuzxK5Fx1A+/B
+         +dudEl1NMpLTq4mAm+Msf6K8qdbSRnr1U7WpjhyDzbdc+12yTunk4eJoBrq6wyM4upyB
+         dUKpeDi76ZFT8R5sITG8LNksTUG7EstSM7d3DvPY2i8w4DCL951QecRTJ7s1xh/AK39t
+         bZIA==
+X-Gm-Message-State: ANhLgQ1M763gxBfyXPKG1l46TrEfBvKIAlVm6QtX+U5drW9/8loS807P
+        DUKlhwsWfxkEgkgN1XqcQB2aneWBAuU=
+X-Google-Smtp-Source: ADFU+vtAAR3h5Rq7uC/qNtN9b/FWgYyxLTkwPO3OTLj0jasGa3sZzcUTLgG0Jy7MUN960GhZlUOQVA==
+X-Received: by 2002:a63:5c4:: with SMTP id 187mr23086930pgf.348.1583866064169;
+        Tue, 10 Mar 2020 11:47:44 -0700 (PDT)
 Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id v67sm4240490pfc.120.2020.03.10.11.47.39
+        by smtp.googlemail.com with ESMTPSA id v67sm4240490pfc.120.2020.03.10.11.47.41
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 10 Mar 2020 11:47:40 -0700 (PDT)
+        Tue, 10 Mar 2020 11:47:43 -0700 (PDT)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Geetha sowjanya <gakula@marvell.com>,
+Cc:     davem@davemloft.net, Tomasz Duszynski <tduszynski@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
         Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH net-next 2/6] octeontx2-pf: Handle VF function level reset
-Date:   Wed, 11 Mar 2020 00:17:21 +0530
-Message-Id: <1583866045-7129-3-git-send-email-sunil.kovvuri@gmail.com>
+Subject: [PATCH net-next 3/6] octeontx2-vf: Virtual function driver dupport
+Date:   Wed, 11 Mar 2020 00:17:22 +0530
+Message-Id: <1583866045-7129-4-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1583866045-7129-1-git-send-email-sunil.kovvuri@gmail.com>
 References: <1583866045-7129-1-git-send-email-sunil.kovvuri@gmail.com>
@@ -58,311 +60,965 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geetha sowjanya <gakula@marvell.com>
+From: Tomasz Duszynski <tduszynski@marvell.com>
 
-When FLR is initiated for a VF (PCI function level reset),
-the parent PF gets a interrupt. PF then sends a message to
-admin function (AF), which then cleanups all resources attached
-to that VF.
+On OcteonTx2 silicon there two two types VFs, VFs that share the
+physical link with their parent SR-IOV PF and the VFs which work
+in pairs using internal HW loopback channels (LBK). Except for the
+underlying Rx/Tx channel mapping from netdev functionality perspective
+they are almost identical. This patch adds netdev driver support
+for these VFs.
 
-Also handled IRQs triggered when master enable bit is cleared
-or set for VFs. This handler just clears the transaction pending
-ie TRPEND bit.
+Unlike it's parent PF a VF cannot directly communicate with admin
+function (AF) and it has to go through PF for the same. The mailbox
+communication with AF works like 'VF <=> PF <=> AF'.
 
+Also functionality wise VF and PF are identical, hence to avoid code
+duplication PF driver's APIs are resued here for HW initialization,
+packet handling etc etc ie almost everything. For VF driver to compile
+as module exported few of the existing PF driver APIs.
+
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+Signed-off-by: Tomasz Duszynski <tduszynski@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   7 +
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 233 ++++++++++++++++++++-
- 2 files changed, 239 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/octeontx2/Kconfig     |   6 +
+ .../net/ethernet/marvell/octeontx2/nic/Makefile    |   2 +
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  14 +
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   9 +
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |  10 +
+ .../net/ethernet/marvell/octeontx2/nic/otx2_reg.h  |  13 +
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |   1 +
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   | 670 +++++++++++++++++++++
+ 8 files changed, 725 insertions(+)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
 
+diff --git a/drivers/net/ethernet/marvell/octeontx2/Kconfig b/drivers/net/ethernet/marvell/octeontx2/Kconfig
+index ced514c..d9dfb61 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/Kconfig
++++ b/drivers/net/ethernet/marvell/octeontx2/Kconfig
+@@ -33,3 +33,9 @@ config OCTEONTX2_PF
+ 	depends on PCI
+ 	help
+ 	  This driver supports Marvell's OcteonTX2 NIC physical function.
++
++config OCTEONTX2_VF
++	tristate "Marvell OcteonTX2 NIC Virtual Function driver"
++	depends on OCTEONTX2_PF
++	help
++	  This driver supports Marvell's OcteonTX2 NIC virtual function.
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
+index 41bf00c..778df33 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/Makefile
+@@ -4,7 +4,9 @@
+ #
+ 
+ obj-$(CONFIG_OCTEONTX2_PF) += octeontx2_nicpf.o
++obj-$(CONFIG_OCTEONTX2_VF) += octeontx2_nicvf.o
+ 
+ octeontx2_nicpf-y := otx2_pf.o otx2_common.o otx2_txrx.o otx2_ethtool.o
++octeontx2_nicvf-y := otx2_vf.o
+ 
+ ccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index af4437d..3d95dbc 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -128,6 +128,7 @@ void otx2_get_stats64(struct net_device *netdev,
+ 	stats->tx_packets = dev_stats->tx_frames;
+ 	stats->tx_dropped = dev_stats->tx_drops;
+ }
++EXPORT_SYMBOL(otx2_get_stats64);
+ 
+ /* Sync MAC address with RVU AF */
+ static int otx2_hw_set_mac_addr(struct otx2_nic *pfvf, u8 *mac)
+@@ -197,6 +198,7 @@ int otx2_set_mac_address(struct net_device *netdev, void *p)
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL(otx2_set_mac_address);
+ 
+ int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
+ {
+@@ -225,6 +227,9 @@ int otx2_config_pause_frm(struct otx2_nic *pfvf)
+ 	struct cgx_pause_frm_cfg *req;
+ 	int err;
+ 
++	if (is_otx2_lbkvf(pfvf->pdev))
++		return 0;
++
+ 	otx2_mbox_lock(&pfvf->mbox);
+ 	req = otx2_mbox_alloc_msg_cgx_cfg_pause_frm(&pfvf->mbox);
+ 	if (!req)
+@@ -413,6 +418,7 @@ void otx2_tx_timeout(struct net_device *netdev, unsigned int txq)
+ 
+ 	schedule_work(&pfvf->reset_task);
+ }
++EXPORT_SYMBOL(otx2_tx_timeout);
+ 
+ void otx2_get_mac_from_af(struct net_device *netdev)
+ {
+@@ -427,6 +433,7 @@ void otx2_get_mac_from_af(struct net_device *netdev)
+ 	if (!is_valid_ether_addr(netdev->dev_addr))
+ 		eth_hw_addr_random(netdev);
+ }
++EXPORT_SYMBOL(otx2_get_mac_from_af);
+ 
+ static int otx2_get_link(struct otx2_nic *pfvf)
+ {
+@@ -1260,6 +1267,7 @@ int otx2_detach_resources(struct mbox *mbox)
+ 	otx2_mbox_unlock(mbox);
+ 	return 0;
+ }
++EXPORT_SYMBOL(otx2_detach_resources);
+ 
+ int otx2_attach_npa_nix(struct otx2_nic *pfvf)
+ {
+@@ -1316,6 +1324,7 @@ int otx2_attach_npa_nix(struct otx2_nic *pfvf)
+ 
+ 	return 0;
+ }
++EXPORT_SYMBOL(otx2_attach_npa_nix);
+ 
+ void otx2_ctx_disable(struct mbox *mbox, int type, bool npa)
+ {
+@@ -1384,6 +1393,7 @@ void mbox_handler_nix_txsch_alloc(struct otx2_nic *pf,
+ 			pf->hw.txschq_list[lvl][schq] =
+ 				rsp->schq_list[lvl][schq];
+ }
++EXPORT_SYMBOL(mbox_handler_nix_txsch_alloc);
+ 
+ void mbox_handler_npa_lf_alloc(struct otx2_nic *pfvf,
+ 			       struct npa_lf_alloc_rsp *rsp)
+@@ -1391,6 +1401,7 @@ void mbox_handler_npa_lf_alloc(struct otx2_nic *pfvf,
+ 	pfvf->hw.stack_pg_ptrs = rsp->stack_pg_ptrs;
+ 	pfvf->hw.stack_pg_bytes = rsp->stack_pg_bytes;
+ }
++EXPORT_SYMBOL(mbox_handler_npa_lf_alloc);
+ 
+ void mbox_handler_nix_lf_alloc(struct otx2_nic *pfvf,
+ 			       struct nix_lf_alloc_rsp *rsp)
+@@ -1401,6 +1412,7 @@ void mbox_handler_nix_lf_alloc(struct otx2_nic *pfvf,
+ 	pfvf->hw.lso_tsov4_idx = rsp->lso_tsov4_idx;
+ 	pfvf->hw.lso_tsov6_idx = rsp->lso_tsov6_idx;
+ }
++EXPORT_SYMBOL(mbox_handler_nix_lf_alloc);
+ 
+ void mbox_handler_msix_offset(struct otx2_nic *pfvf,
+ 			      struct msix_offset_rsp *rsp)
+@@ -1408,6 +1420,7 @@ void mbox_handler_msix_offset(struct otx2_nic *pfvf,
+ 	pfvf->hw.npa_msixoff = rsp->npa_msixoff;
+ 	pfvf->hw.nix_msixoff = rsp->nix_msixoff;
+ }
++EXPORT_SYMBOL(mbox_handler_msix_offset);
+ 
+ void mbox_handler_nix_bp_enable(struct otx2_nic *pfvf,
+ 				struct nix_bp_cfg_rsp *rsp)
+@@ -1419,6 +1432,7 @@ void mbox_handler_nix_bp_enable(struct otx2_nic *pfvf,
+ 		pfvf->bpid[chan_id] = rsp->chan_bpid[chan] & 0x3FF;
+ 	}
+ }
++EXPORT_SYMBOL(mbox_handler_nix_bp_enable);
+ 
+ void otx2_free_cints(struct otx2_nic *pfvf, int n)
+ {
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 74439e1..c0a9693 100644
+index c0a9693..ca757b2 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -191,6 +191,11 @@ struct otx2_hw {
- 	u64			cgx_tx_stats[CGX_TX_STATS_COUNT];
+@@ -20,6 +20,8 @@
+ 
+ /* PCI device IDs */
+ #define PCI_DEVID_OCTEONTX2_RVU_PF              0xA063
++#define PCI_DEVID_OCTEONTX2_RVU_VF		0xA064
++#define PCI_DEVID_OCTEONTX2_RVU_AFVF		0xA0F8
+ 
+ #define PCI_SUBSYS_DEVID_96XX_RVU_PFVF		0xB200
+ 
+@@ -242,6 +244,11 @@ struct otx2_nic {
+ 	int			nix_blkaddr;
  };
  
-+struct flr_work {
-+	struct work_struct work;
-+	struct otx2_nic *pf;
-+};
++static inline bool is_otx2_lbkvf(struct pci_dev *pdev)
++{
++	return pdev->device == PCI_DEVID_OCTEONTX2_RVU_AFVF;
++}
 +
- struct refill_work {
- 	struct delayed_work pool_refill_work;
- 	struct otx2_nic *pf;
-@@ -226,6 +231,8 @@ struct otx2_nic {
+ static inline bool is_96xx_A0(struct pci_dev *pdev)
+ {
+ 	return (pdev->revision == 0x00) &&
+@@ -627,6 +634,8 @@ void otx2_set_ethtool_ops(struct net_device *netdev);
  
- 	u64			reset_count;
- 	struct work_struct	reset_task;
-+	struct workqueue_struct	*flr_wq;
-+	struct flr_work		*flr_wrk;
- 	struct refill_work	*refill_wrk;
- 
- 	/* Ethtool stuff */
+ int otx2_open(struct net_device *netdev);
+ int otx2_stop(struct net_device *netdev);
++int otx2vf_open(struct net_device *netdev);
++int otx2vf_stop(struct net_device *netdev);
+ int otx2_set_real_num_queues(struct net_device *netdev,
+ 			     int tx_queues, int rx_queues);
+ #endif /* OTX2_COMMON_H */
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index fba8f38..cb3c834 100644
+index cb3c834..a70a50a 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -61,6 +61,223 @@ static int otx2_change_mtu(struct net_device *netdev, int new_mtu)
+@@ -1087,6 +1087,7 @@ int otx2_set_real_num_queues(struct net_device *netdev,
+ 			   "Failed to set no of Rx queues: %d\n", rx_queues);
  	return err;
  }
++EXPORT_SYMBOL(otx2_set_real_num_queues);
  
-+static void otx2_disable_flr_me_intr(struct otx2_nic *pf)
-+{
-+	int irq, vfs = pf->total_vfs;
-+
-+	/* Disable VFs ME interrupts */
-+	otx2_write64(pf, RVU_PF_VFME_INT_ENA_W1CX(0), INTR_MASK(vfs));
-+	irq = pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFME0);
-+	free_irq(irq, pf);
-+
-+	/* Disable VFs FLR interrupts */
-+	otx2_write64(pf, RVU_PF_VFFLR_INT_ENA_W1CX(0), INTR_MASK(vfs));
-+	irq = pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFFLR0);
-+	free_irq(irq, pf);
-+
-+	if (vfs <= 64)
-+		return;
-+
-+	otx2_write64(pf, RVU_PF_VFME_INT_ENA_W1CX(1), INTR_MASK(vfs - 64));
-+	irq = pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFME1);
-+	free_irq(irq, pf);
-+
-+	otx2_write64(pf, RVU_PF_VFFLR_INT_ENA_W1CX(1), INTR_MASK(vfs - 64));
-+	irq = pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFFLR1);
-+	free_irq(irq, pf);
-+}
-+
-+static void otx2_flr_wq_destroy(struct otx2_nic *pf)
-+{
-+	if (!pf->flr_wq)
-+		return;
-+	flush_workqueue(pf->flr_wq);
-+	destroy_workqueue(pf->flr_wq);
-+	pf->flr_wq = NULL;
-+}
-+
-+static void otx2_flr_handler(struct work_struct *work)
-+{
-+	struct flr_work *flrwork = container_of(work, struct flr_work, work);
-+	struct otx2_nic *pf = flrwork->pf;
-+	struct msg_req *req;
-+	int vf, reg = 0;
-+
-+	vf = flrwork - pf->flr_wrk;
-+
-+	otx2_mbox_lock(&pf->mbox);
-+	req = otx2_mbox_alloc_msg_vf_flr(&pf->mbox);
-+	if (!req) {
-+		otx2_mbox_unlock(&pf->mbox);
-+		return;
-+	}
-+	req->hdr.pcifunc &= RVU_PFVF_FUNC_MASK;
-+	req->hdr.pcifunc |= (vf + 1) & RVU_PFVF_FUNC_MASK;
-+
-+	if (!otx2_sync_mbox_msg(&pf->mbox)) {
-+		if (vf >= 64) {
-+			reg = 1;
-+			vf = vf - 64;
-+		}
-+		/* clear transcation pending bit */
-+		otx2_write64(pf, RVU_PF_VFTRPENDX(reg), BIT_ULL(vf));
-+		otx2_write64(pf, RVU_PF_VFFLR_INT_ENA_W1SX(reg), BIT_ULL(vf));
-+	}
-+
-+	otx2_mbox_unlock(&pf->mbox);
-+}
-+
-+static irqreturn_t otx2_pf_flr_intr_handler(int irq, void *pf_irq)
-+{
-+	struct otx2_nic *pf = (struct otx2_nic *)pf_irq;
-+	int reg, dev, vf, start_vf, num_reg = 1;
-+	u64 intr;
-+
-+	if (pf->total_vfs > 64)
-+		num_reg = 2;
-+
-+	for (reg = 0; reg < num_reg; reg++) {
-+		intr = otx2_read64(pf, RVU_PF_VFFLR_INTX(reg));
-+		if (!intr)
-+			continue;
-+		start_vf = 64 * reg;
-+		for (vf = 0; vf < 64; vf++) {
-+			if (!(intr & BIT_ULL(vf)))
-+				continue;
-+			dev = vf + start_vf;
-+			queue_work(pf->flr_wq, &pf->flr_wrk[dev].work);
-+			/* Clear interrupt */
-+			otx2_write64(pf, RVU_PF_VFFLR_INTX(reg), BIT_ULL(vf));
-+			/* Disable the interrupt */
-+			otx2_write64(pf, RVU_PF_VFFLR_INT_ENA_W1CX(reg),
-+				     BIT_ULL(vf));
-+		}
-+	}
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t otx2_pf_me_intr_handler(int irq, void *pf_irq)
-+{
-+	struct otx2_nic *pf = (struct otx2_nic *)pf_irq;
-+	int vf, reg, num_reg = 1;
-+	u64 intr;
-+
-+	if (pf->total_vfs > 64)
-+		num_reg = 2;
-+
-+	for (reg = 0; reg < num_reg; reg++) {
-+		intr = otx2_read64(pf, RVU_PF_VFME_INTX(reg));
-+		if (!intr)
-+			continue;
-+		for (vf = 0; vf < 64; vf++) {
-+			if (!(intr & BIT_ULL(vf)))
-+				continue;
-+			/* clear trpend bit */
-+			otx2_write64(pf, RVU_PF_VFTRPENDX(reg), BIT_ULL(vf));
-+			/* clear interrupt */
-+			otx2_write64(pf, RVU_PF_VFME_INTX(reg), BIT_ULL(vf));
-+		}
-+	}
-+	return IRQ_HANDLED;
-+}
-+
-+static int otx2_register_flr_me_intr(struct otx2_nic *pf, int numvfs)
-+{
-+	struct otx2_hw *hw = &pf->hw;
-+	char *irq_name;
-+	int ret;
-+
-+	/* Register ME interrupt handler*/
-+	irq_name = &hw->irq_name[RVU_PF_INT_VEC_VFME0 * NAME_SIZE];
-+	snprintf(irq_name, NAME_SIZE, "RVUPF%d_ME0", rvu_get_pf(pf->pcifunc));
-+	ret = request_irq(pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFME0),
-+			  otx2_pf_me_intr_handler, 0, irq_name, pf);
-+	if (ret) {
-+		dev_err(pf->dev,
-+			"RVUPF: IRQ registration failed for ME0\n");
-+	}
-+
-+	/* Register FLR interrupt handler */
-+	irq_name = &hw->irq_name[RVU_PF_INT_VEC_VFFLR0 * NAME_SIZE];
-+	snprintf(irq_name, NAME_SIZE, "RVUPF%d_FLR0", rvu_get_pf(pf->pcifunc));
-+	ret = request_irq(pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFFLR0),
-+			  otx2_pf_flr_intr_handler, 0, irq_name, pf);
-+	if (ret) {
-+		dev_err(pf->dev,
-+			"RVUPF: IRQ registration failed for FLR0\n");
-+		return ret;
-+	}
-+
-+	if (numvfs > 64) {
-+		irq_name = &hw->irq_name[RVU_PF_INT_VEC_VFME1 * NAME_SIZE];
-+		snprintf(irq_name, NAME_SIZE, "RVUPF%d_ME1",
-+			 rvu_get_pf(pf->pcifunc));
-+		ret = request_irq(pci_irq_vector
-+				  (pf->pdev, RVU_PF_INT_VEC_VFME1),
-+				  otx2_pf_me_intr_handler, 0, irq_name, pf);
-+		if (ret) {
-+			dev_err(pf->dev,
-+				"RVUPF: IRQ registration failed for ME1\n");
-+		}
-+		irq_name = &hw->irq_name[RVU_PF_INT_VEC_VFFLR1 * NAME_SIZE];
-+		snprintf(irq_name, NAME_SIZE, "RVUPF%d_FLR1",
-+			 rvu_get_pf(pf->pcifunc));
-+		ret = request_irq(pci_irq_vector
-+				  (pf->pdev, RVU_PF_INT_VEC_VFFLR1),
-+				  otx2_pf_flr_intr_handler, 0, irq_name, pf);
-+		if (ret) {
-+			dev_err(pf->dev,
-+				"RVUPF: IRQ registration failed for FLR1\n");
-+			return ret;
-+		}
-+	}
-+
-+	/* Enable ME interrupt for all VFs*/
-+	otx2_write64(pf, RVU_PF_VFME_INTX(0), INTR_MASK(numvfs));
-+	otx2_write64(pf, RVU_PF_VFME_INT_ENA_W1SX(0), INTR_MASK(numvfs));
-+
-+	/* Enable FLR interrupt for all VFs*/
-+	otx2_write64(pf, RVU_PF_VFFLR_INTX(0), INTR_MASK(numvfs));
-+	otx2_write64(pf, RVU_PF_VFFLR_INT_ENA_W1SX(0), INTR_MASK(numvfs));
-+
-+	if (numvfs > 64) {
-+		numvfs -= 64;
-+
-+		otx2_write64(pf, RVU_PF_VFME_INTX(1), INTR_MASK(numvfs));
-+		otx2_write64(pf, RVU_PF_VFME_INT_ENA_W1SX(1),
-+			     INTR_MASK(numvfs));
-+
-+		otx2_write64(pf, RVU_PF_VFFLR_INTX(1), INTR_MASK(numvfs));
-+		otx2_write64(pf, RVU_PF_VFFLR_INT_ENA_W1SX(1),
-+			     INTR_MASK(numvfs));
-+	}
-+	return 0;
-+}
-+
-+static int otx2_pf_flr_init(struct otx2_nic *pf, int num_vfs)
-+{
-+	int vf;
-+
-+	pf->flr_wq = alloc_workqueue("otx2_pf_flr_wq", WQ_UNBOUND | WQ_HIGHPRI
-+				     | WQ_MEM_RECLAIM, 1);
-+	if (!pf->flr_wq)
-+		return -ENOMEM;
-+
-+	pf->flr_wrk = devm_kcalloc(pf->dev, num_vfs,
-+				   sizeof(struct flr_work), GFP_KERNEL);
-+	if (!pf->flr_wrk) {
-+		destroy_workqueue(pf->flr_wq);
-+		return -ENOMEM;
-+	}
-+
-+	for (vf = 0; vf < num_vfs; vf++) {
-+		pf->flr_wrk[vf].pf = pf;
-+		INIT_WORK(&pf->flr_wrk[vf].work, otx2_flr_handler);
-+	}
-+
-+	return 0;
-+}
-+
- static void otx2_queue_work(struct mbox *mw, struct workqueue_struct *mbox_wq,
- 			    int first, int mdevs, u64 intr, int type)
+ static irqreturn_t otx2_q_intr_handler(int irq, void *data)
  {
-@@ -1719,11 +1936,23 @@ static int otx2_sriov_enable(struct pci_dev *pdev, int numvfs)
- 	if (ret)
- 		goto free_mbox;
+@@ -1522,6 +1523,9 @@ int otx2_open(struct net_device *netdev)
+ 	if (pf->linfo.link_up && !(pf->pcifunc & RVU_PFVF_FUNC_MASK))
+ 		otx2_handle_link_event(pf);
  
--	ret = pci_enable_sriov(pdev, numvfs);
-+	ret = otx2_pf_flr_init(pf, numvfs);
- 	if (ret)
- 		goto free_intr;
- 
-+	ret = otx2_register_flr_me_intr(pf, numvfs);
-+	if (ret)
-+		goto free_flr;
++	/* Restore pause frame settings */
++	otx2_config_pause_frm(pf);
 +
-+	ret = pci_enable_sriov(pdev, numvfs);
-+	if (ret)
-+		goto free_flr_intr;
+ 	err = otx2_rxtx_enable(pf, true);
+ 	if (err)
+ 		goto err_free_cints;
+@@ -1545,6 +1549,7 @@ int otx2_open(struct net_device *netdev)
+ 	kfree(qset->napi);
+ 	return err;
+ }
++EXPORT_SYMBOL(otx2_open);
+ 
+ int otx2_stop(struct net_device *netdev)
+ {
+@@ -1605,6 +1610,7 @@ int otx2_stop(struct net_device *netdev)
+ 	       sizeof(*qset) - offsetof(struct otx2_qset, sqe_cnt));
+ 	return 0;
+ }
++EXPORT_SYMBOL(otx2_stop);
+ 
+ static netdev_tx_t otx2_xmit(struct sk_buff *skb, struct net_device *netdev)
+ {
+@@ -1900,6 +1906,10 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	/* Enable link notifications */
+ 	otx2_cgx_config_linkevents(pf, true);
+ 
++	/* Enable pause frames by default */
++	pf->flags |= OTX2_FLAG_RX_PAUSE_ENABLED;
++	pf->flags |= OTX2_FLAG_TX_PAUSE_ENABLED;
 +
- 	return numvfs;
-+free_flr_intr:
-+	otx2_disable_flr_me_intr(pf);
-+free_flr:
-+	otx2_flr_wq_destroy(pf);
- free_intr:
- 	otx2_disable_pfvf_mbox_intr(pf, numvfs);
- free_mbox:
-@@ -1742,6 +1971,8 @@ static int otx2_sriov_disable(struct pci_dev *pdev)
+ 	return 0;
  
- 	pci_disable_sriov(pdev);
+ err_detach_rsrc:
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
+index 7963d41..867f646 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_reg.h
+@@ -45,6 +45,19 @@
+ #define RVU_PF_MSIX_VECX_CTL(a)             (0x008 | (a) << 4)
+ #define RVU_PF_MSIX_PBAX(a)                 (0xF0000 | (a) << 3)
  
-+	otx2_disable_flr_me_intr(pf);
-+	otx2_flr_wq_destroy(pf);
- 	otx2_disable_pfvf_mbox_intr(pf, numvfs);
- 	otx2_pfvf_mbox_destroy(pf);
++/* RVU VF registers */
++#define	RVU_VF_VFPF_MBOX0		    (0x00000)
++#define	RVU_VF_VFPF_MBOX1		    (0x00008)
++#define	RVU_VF_VFPF_MBOXX(a)		    (0x00 | (a) << 3)
++#define	RVU_VF_INT			    (0x20)
++#define	RVU_VF_INT_W1S			    (0x28)
++#define	RVU_VF_INT_ENA_W1S		    (0x30)
++#define	RVU_VF_INT_ENA_W1C		    (0x38)
++#define	RVU_VF_BLOCK_ADDRX_DISC(a)	    (0x200 | (a) << 3)
++#define	RVU_VF_MSIX_VECX_ADDR(a)	    (0x000 | (a) << 4)
++#define	RVU_VF_MSIX_VECX_CTL(a)		    (0x008 | (a) << 4)
++#define	RVU_VF_MSIX_PBAX(a)		    (0xF0000 | (a) << 3)
++
+ #define RVU_FUNC_BLKADDR_SHIFT		20
+ #define RVU_FUNC_BLKADDR_MASK		0x1FULL
  
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index bef4c20..1865f16 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -778,6 +778,7 @@ bool otx2_sq_append_skb(struct net_device *netdev, struct otx2_snd_queue *sq,
+ 
+ 	return true;
+ }
++EXPORT_SYMBOL(otx2_sq_append_skb);
+ 
+ void otx2_cleanup_rx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq)
+ {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+new file mode 100644
+index 0000000..6ca958d
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+@@ -0,0 +1,670 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Marvell OcteonTx2 RVU Virtual Function ethernet driver
++ *
++ * Copyright (C) 2020 Marvell International Ltd.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/etherdevice.h>
++#include <linux/module.h>
++#include <linux/pci.h>
++
++#include "otx2_common.h"
++#include "otx2_reg.h"
++
++#define DRV_NAME	"octeontx2-nicvf"
++#define DRV_STRING	"Marvell OcteonTX2 NIC Virtual Function Driver"
++#define DRV_VERSION	"1.0"
++
++static const struct pci_device_id otx2_vf_id_table[] = {
++	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, PCI_DEVID_OCTEONTX2_RVU_AFVF) },
++	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, PCI_DEVID_OCTEONTX2_RVU_VF) },
++	{ }
++};
++
++MODULE_AUTHOR("Marvell International Ltd.");
++MODULE_DESCRIPTION(DRV_STRING);
++MODULE_LICENSE("GPL v2");
++MODULE_VERSION(DRV_VERSION);
++MODULE_DEVICE_TABLE(pci, otx2_vf_id_table);
++
++/* RVU VF Interrupt Vector Enumeration */
++enum {
++	RVU_VF_INT_VEC_MBOX = 0x0,
++};
++
++static int otx2vf_change_mtu(struct net_device *netdev, int new_mtu)
++{
++	bool if_up = netif_running(netdev);
++	int err = 0;
++
++	if (if_up)
++		otx2vf_stop(netdev);
++
++	netdev_info(netdev, "Changing MTU from %d to %d\n",
++		    netdev->mtu, new_mtu);
++	netdev->mtu = new_mtu;
++
++	if (if_up)
++		err = otx2vf_open(netdev);
++
++	return err;
++}
++
++static void otx2vf_process_vfaf_mbox_msg(struct otx2_nic *vf,
++					 struct mbox_msghdr *msg)
++{
++	if (msg->id >= MBOX_MSG_MAX) {
++		dev_err(vf->dev,
++			"Mbox msg with unknown ID %d\n", msg->id);
++		return;
++	}
++
++	if (msg->sig != OTX2_MBOX_RSP_SIG) {
++		dev_err(vf->dev,
++			"Mbox msg with wrong signature %x, ID %d\n",
++			msg->sig, msg->id);
++		return;
++	}
++
++	if (msg->rc == MBOX_MSG_INVALID) {
++		dev_err(vf->dev,
++			"PF/AF says the sent msg(s) %d were invalid\n",
++			msg->id);
++		return;
++	}
++
++	switch (msg->id) {
++	case MBOX_MSG_READY:
++		vf->pcifunc = msg->pcifunc;
++		break;
++	case MBOX_MSG_MSIX_OFFSET:
++		mbox_handler_msix_offset(vf, (struct msix_offset_rsp *)msg);
++		break;
++	case MBOX_MSG_NPA_LF_ALLOC:
++		mbox_handler_npa_lf_alloc(vf, (struct npa_lf_alloc_rsp *)msg);
++		break;
++	case MBOX_MSG_NIX_LF_ALLOC:
++		mbox_handler_nix_lf_alloc(vf, (struct nix_lf_alloc_rsp *)msg);
++		break;
++	case MBOX_MSG_NIX_TXSCH_ALLOC:
++		mbox_handler_nix_txsch_alloc(vf,
++					     (struct nix_txsch_alloc_rsp *)msg);
++		break;
++	case MBOX_MSG_NIX_BP_ENABLE:
++		mbox_handler_nix_bp_enable(vf, (struct nix_bp_cfg_rsp *)msg);
++		break;
++	default:
++		if (msg->rc)
++			dev_err(vf->dev,
++				"Mbox msg response has err %d, ID %d\n",
++				msg->rc, msg->id);
++	}
++}
++
++static void otx2vf_vfaf_mbox_handler(struct work_struct *work)
++{
++	struct otx2_mbox_dev *mdev;
++	struct mbox_hdr *rsp_hdr;
++	struct mbox_msghdr *msg;
++	struct otx2_mbox *mbox;
++	struct mbox *af_mbox;
++	int offset, id;
++
++	af_mbox = container_of(work, struct mbox, mbox_wrk);
++	mbox = &af_mbox->mbox;
++	mdev = &mbox->dev[0];
++	rsp_hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);
++	if (af_mbox->num_msgs == 0)
++		return;
++	offset = mbox->rx_start + ALIGN(sizeof(*rsp_hdr), MBOX_MSG_ALIGN);
++
++	for (id = 0; id < af_mbox->num_msgs; id++) {
++		msg = (struct mbox_msghdr *)(mdev->mbase + offset);
++		otx2vf_process_vfaf_mbox_msg(af_mbox->pfvf, msg);
++		offset = mbox->rx_start + msg->next_msgoff;
++		mdev->msgs_acked++;
++	}
++
++	otx2_mbox_reset(mbox, 0);
++}
++
++static int otx2vf_process_mbox_msg_up(struct otx2_nic *vf,
++				      struct mbox_msghdr *req)
++{
++	/* Check if valid, if not reply with a invalid msg */
++	if (req->sig != OTX2_MBOX_REQ_SIG) {
++		otx2_reply_invalid_msg(&vf->mbox.mbox_up, 0, 0, req->id);
++		return -ENODEV;
++	}
++
++	switch (req->id) {
++#define M(_name, _id, _fn_name, _req_type, _rsp_type)			\
++	case _id: {							\
++		struct _rsp_type *rsp;					\
++		int err;						\
++									\
++		rsp = (struct _rsp_type *)otx2_mbox_alloc_msg(		\
++			&vf->mbox.mbox_up, 0,				\
++			sizeof(struct _rsp_type));			\
++		if (!rsp)						\
++			return -ENOMEM;					\
++									\
++		rsp->hdr.id = _id;					\
++		rsp->hdr.sig = OTX2_MBOX_RSP_SIG;			\
++		rsp->hdr.pcifunc = 0;					\
++		rsp->hdr.rc = 0;					\
++									\
++		err = otx2_mbox_up_handler_ ## _fn_name(		\
++			vf, (struct _req_type *)req, rsp);		\
++		return err;						\
++	}
++MBOX_UP_CGX_MESSAGES
++#undef M
++		break;
++	default:
++		otx2_reply_invalid_msg(&vf->mbox.mbox_up, 0, 0, req->id);
++		return -ENODEV;
++	}
++	return 0;
++}
++
++static void otx2vf_vfaf_mbox_up_handler(struct work_struct *work)
++{
++	struct otx2_mbox_dev *mdev;
++	struct mbox_hdr *rsp_hdr;
++	struct mbox_msghdr *msg;
++	struct otx2_mbox *mbox;
++	struct mbox *vf_mbox;
++	struct otx2_nic *vf;
++	int offset, id;
++
++	vf_mbox = container_of(work, struct mbox, mbox_up_wrk);
++	vf = vf_mbox->pfvf;
++	mbox = &vf_mbox->mbox_up;
++	mdev = &mbox->dev[0];
++
++	rsp_hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);
++	if (vf_mbox->up_num_msgs == 0)
++		return;
++
++	offset = mbox->rx_start + ALIGN(sizeof(*rsp_hdr), MBOX_MSG_ALIGN);
++
++	for (id = 0; id < vf_mbox->up_num_msgs; id++) {
++		msg = (struct mbox_msghdr *)(mdev->mbase + offset);
++		otx2vf_process_mbox_msg_up(vf, msg);
++		offset = mbox->rx_start + msg->next_msgoff;
++	}
++
++	otx2_mbox_msg_send(mbox, 0);
++}
++
++static irqreturn_t otx2vf_vfaf_mbox_intr_handler(int irq, void *vf_irq)
++{
++	struct otx2_nic *vf = (struct otx2_nic *)vf_irq;
++	struct otx2_mbox_dev *mdev;
++	struct otx2_mbox *mbox;
++	struct mbox_hdr *hdr;
++
++	/* Clear the IRQ */
++	otx2_write64(vf, RVU_VF_INT, BIT_ULL(0));
++
++	/* Read latest mbox data */
++	smp_rmb();
++
++	/* Check for PF => VF response messages */
++	mbox = &vf->mbox.mbox;
++	mdev = &mbox->dev[0];
++	otx2_sync_mbox_bbuf(mbox, 0);
++
++	hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);
++	if (hdr->num_msgs) {
++		vf->mbox.num_msgs = hdr->num_msgs;
++		hdr->num_msgs = 0;
++		memset(mbox->hwbase + mbox->rx_start, 0,
++		       ALIGN(sizeof(struct mbox_hdr), sizeof(u64)));
++		queue_work(vf->mbox_wq, &vf->mbox.mbox_wrk);
++	}
++	/* Check for PF => VF notification messages */
++	mbox = &vf->mbox.mbox_up;
++	mdev = &mbox->dev[0];
++	otx2_sync_mbox_bbuf(mbox, 0);
++
++	hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);
++	if (hdr->num_msgs) {
++		vf->mbox.up_num_msgs = hdr->num_msgs;
++		hdr->num_msgs = 0;
++		memset(mbox->hwbase + mbox->rx_start, 0,
++		       ALIGN(sizeof(struct mbox_hdr), sizeof(u64)));
++		queue_work(vf->mbox_wq, &vf->mbox.mbox_up_wrk);
++	}
++
++	return IRQ_HANDLED;
++}
++
++static void otx2vf_disable_mbox_intr(struct otx2_nic *vf)
++{
++	int vector = pci_irq_vector(vf->pdev, RVU_VF_INT_VEC_MBOX);
++
++	/* Disable VF => PF mailbox IRQ */
++	otx2_write64(vf, RVU_VF_INT_ENA_W1C, BIT_ULL(0));
++	free_irq(vector, vf);
++}
++
++static int otx2vf_register_mbox_intr(struct otx2_nic *vf, bool probe_pf)
++{
++	struct otx2_hw *hw = &vf->hw;
++	struct msg_req *req;
++	char *irq_name;
++	int err;
++
++	/* Register mailbox interrupt handler */
++	irq_name = &hw->irq_name[RVU_VF_INT_VEC_MBOX * NAME_SIZE];
++	snprintf(irq_name, NAME_SIZE, "RVUVFAF Mbox");
++	err = request_irq(pci_irq_vector(vf->pdev, RVU_VF_INT_VEC_MBOX),
++			  otx2vf_vfaf_mbox_intr_handler, 0, irq_name, vf);
++	if (err) {
++		dev_err(vf->dev,
++			"RVUPF: IRQ registration failed for VFAF mbox irq\n");
++		return err;
++	}
++
++	/* Enable mailbox interrupt for msgs coming from PF.
++	 * First clear to avoid spurious interrupts, if any.
++	 */
++	otx2_write64(vf, RVU_VF_INT, BIT_ULL(0));
++	otx2_write64(vf, RVU_VF_INT_ENA_W1S, BIT_ULL(0));
++
++	if (!probe_pf)
++		return 0;
++
++	/* Check mailbox communication with PF */
++	req = otx2_mbox_alloc_msg_ready(&vf->mbox);
++	if (!req) {
++		otx2vf_disable_mbox_intr(vf);
++		return -ENOMEM;
++	}
++
++	err = otx2_sync_mbox_msg(&vf->mbox);
++	if (err) {
++		dev_warn(vf->dev,
++			 "AF not responding to mailbox, deferring probe\n");
++		otx2vf_disable_mbox_intr(vf);
++		return -EPROBE_DEFER;
++	}
++	return 0;
++}
++
++static void otx2vf_vfaf_mbox_destroy(struct otx2_nic *vf)
++{
++	struct mbox *mbox = &vf->mbox;
++
++	if (vf->mbox_wq) {
++		flush_workqueue(vf->mbox_wq);
++		destroy_workqueue(vf->mbox_wq);
++		vf->mbox_wq = NULL;
++	}
++
++	if (mbox->mbox.hwbase)
++		iounmap((void __iomem *)mbox->mbox.hwbase);
++
++	otx2_mbox_destroy(&mbox->mbox);
++	otx2_mbox_destroy(&mbox->mbox_up);
++}
++
++static int otx2vf_vfaf_mbox_init(struct otx2_nic *vf)
++{
++	struct mbox *mbox = &vf->mbox;
++	void __iomem *hwbase;
++	int err;
++
++	mbox->pfvf = vf;
++	vf->mbox_wq = alloc_workqueue("otx2_vfaf_mailbox",
++				      WQ_UNBOUND | WQ_HIGHPRI |
++				      WQ_MEM_RECLAIM, 1);
++	if (!vf->mbox_wq)
++		return -ENOMEM;
++
++	/* Mailbox is a reserved memory (in RAM) region shared between
++	 * admin function (i.e PF0) and this VF, shouldn't be mapped as
++	 * device memory to allow unaligned accesses.
++	 */
++	hwbase = ioremap_wc(pci_resource_start(vf->pdev, PCI_MBOX_BAR_NUM),
++			    pci_resource_len(vf->pdev, PCI_MBOX_BAR_NUM));
++	if (!hwbase) {
++		dev_err(vf->dev, "Unable to map VFAF mailbox region\n");
++		err = -ENOMEM;
++		goto exit;
++	}
++
++	err = otx2_mbox_init(&mbox->mbox, hwbase, vf->pdev, vf->reg_base,
++			     MBOX_DIR_VFPF, 1);
++	if (err)
++		goto exit;
++
++	err = otx2_mbox_init(&mbox->mbox_up, hwbase, vf->pdev, vf->reg_base,
++			     MBOX_DIR_VFPF_UP, 1);
++	if (err)
++		goto exit;
++
++	err = otx2_mbox_bbuf_init(mbox, vf->pdev);
++	if (err)
++		goto exit;
++
++	INIT_WORK(&mbox->mbox_wrk, otx2vf_vfaf_mbox_handler);
++	INIT_WORK(&mbox->mbox_up_wrk, otx2vf_vfaf_mbox_up_handler);
++	otx2_mbox_lock_init(&vf->mbox);
++
++	return 0;
++exit:
++	destroy_workqueue(vf->mbox_wq);
++	return err;
++}
++
++int otx2vf_open(struct net_device *netdev)
++{
++	struct otx2_nic *vf;
++	int err;
++
++	err = otx2_open(netdev);
++	if (err)
++		return err;
++
++	/* LBKs do not receive link events so tell everyone we are up here */
++	vf = netdev_priv(netdev);
++	if (is_otx2_lbkvf(vf->pdev)) {
++		pr_info("%s NIC Link is UP\n", netdev->name);
++		netif_carrier_on(netdev);
++		netif_tx_start_all_queues(netdev);
++	}
++
++	return 0;
++}
++
++int otx2vf_stop(struct net_device *netdev)
++{
++	return otx2_stop(netdev);
++}
++
++static netdev_tx_t otx2vf_xmit(struct sk_buff *skb, struct net_device *netdev)
++{
++	struct otx2_nic *vf = netdev_priv(netdev);
++	int qidx = skb_get_queue_mapping(skb);
++	struct otx2_snd_queue *sq;
++	struct netdev_queue *txq;
++
++	/* Check for minimum and maximum packet length */
++	if (skb->len <= ETH_HLEN ||
++	    (!skb_shinfo(skb)->gso_size && skb->len > vf->max_frs)) {
++		dev_kfree_skb(skb);
++		return NETDEV_TX_OK;
++	}
++
++	sq = &vf->qset.sq[qidx];
++	txq = netdev_get_tx_queue(netdev, qidx);
++
++	if (!otx2_sq_append_skb(netdev, sq, skb, qidx)) {
++		netif_tx_stop_queue(txq);
++
++		/* Check again, incase SQBs got freed up */
++		smp_mb();
++		if (((sq->num_sqbs - *sq->aura_fc_addr) * sq->sqe_per_sqb)
++							> sq->sqe_thresh)
++			netif_tx_wake_queue(txq);
++
++		return NETDEV_TX_BUSY;
++	}
++
++	return NETDEV_TX_OK;
++}
++
++static void otx2vf_reset_task(struct work_struct *work)
++{
++	struct otx2_nic *vf = container_of(work, struct otx2_nic, reset_task);
++
++	if (!netif_running(vf->netdev))
++		return;
++
++	otx2vf_stop(vf->netdev);
++	vf->reset_count++;
++	otx2vf_open(vf->netdev);
++	netif_trans_update(vf->netdev);
++}
++
++static const struct net_device_ops otx2vf_netdev_ops = {
++	.ndo_open = otx2vf_open,
++	.ndo_stop = otx2vf_stop,
++	.ndo_start_xmit = otx2vf_xmit,
++	.ndo_set_mac_address = otx2_set_mac_address,
++	.ndo_change_mtu = otx2vf_change_mtu,
++	.ndo_get_stats64 = otx2_get_stats64,
++	.ndo_tx_timeout = otx2_tx_timeout,
++};
++
++static int otx2vf_realloc_msix_vectors(struct otx2_nic *vf)
++{
++	struct otx2_hw *hw = &vf->hw;
++	int num_vec, err;
++
++	num_vec = hw->nix_msixoff;
++	num_vec += NIX_LF_CINT_VEC_START + hw->max_queues;
++
++	otx2vf_disable_mbox_intr(vf);
++	pci_free_irq_vectors(hw->pdev);
++	pci_free_irq_vectors(hw->pdev);
++	err = pci_alloc_irq_vectors(hw->pdev, num_vec, num_vec, PCI_IRQ_MSIX);
++	if (err < 0) {
++		dev_err(vf->dev, "%s: Failed to realloc %d IRQ vectors\n",
++			__func__, num_vec);
++		return err;
++	}
++
++	err = otx2vf_register_mbox_intr(vf, false);
++	if (err)
++		return err;
++	return 0;
++}
++
++static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
++{
++	int num_vec = pci_msix_vec_count(pdev);
++	struct device *dev = &pdev->dev;
++	struct net_device *netdev;
++	struct otx2_nic *vf;
++	struct otx2_hw *hw;
++	int err, qcount;
++
++	err = pcim_enable_device(pdev);
++	if (err) {
++		dev_err(dev, "Failed to enable PCI device\n");
++		return err;
++	}
++
++	err = pci_request_regions(pdev, DRV_NAME);
++	if (err) {
++		dev_err(dev, "PCI request regions failed 0x%x\n", err);
++		return err;
++	}
++
++	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(48));
++	if (err) {
++		dev_err(dev, "DMA mask config failed, abort\n");
++		goto err_release_regions;
++	}
++
++	pci_set_master(pdev);
++
++	qcount = num_online_cpus();
++	netdev = alloc_etherdev_mqs(sizeof(*vf), qcount, qcount);
++	if (!netdev) {
++		err = -ENOMEM;
++		goto err_release_regions;
++	}
++
++	pci_set_drvdata(pdev, netdev);
++	SET_NETDEV_DEV(netdev, &pdev->dev);
++	vf = netdev_priv(netdev);
++	vf->netdev = netdev;
++	vf->pdev = pdev;
++	vf->dev = dev;
++	vf->iommu_domain = iommu_get_domain_for_dev(dev);
++
++	vf->flags |= OTX2_FLAG_INTF_DOWN;
++	hw = &vf->hw;
++	hw->pdev = vf->pdev;
++	hw->rx_queues = qcount;
++	hw->tx_queues = qcount;
++	hw->max_queues = qcount;
++
++	hw->irq_name = devm_kmalloc_array(&hw->pdev->dev, num_vec, NAME_SIZE,
++					  GFP_KERNEL);
++	if (!hw->irq_name)
++		goto err_free_netdev;
++
++	hw->affinity_mask = devm_kcalloc(&hw->pdev->dev, num_vec,
++					 sizeof(cpumask_var_t), GFP_KERNEL);
++	if (!hw->affinity_mask)
++		goto err_free_netdev;
++
++	err = pci_alloc_irq_vectors(hw->pdev, num_vec, num_vec, PCI_IRQ_MSIX);
++	if (err < 0) {
++		dev_err(dev, "%s: Failed to alloc %d IRQ vectors\n",
++			__func__, num_vec);
++		goto err_free_netdev;
++	}
++
++	vf->reg_base = pcim_iomap(pdev, PCI_CFG_REG_BAR_NUM, 0);
++	if (!vf->reg_base) {
++		dev_err(dev, "Unable to map physical function CSRs, aborting\n");
++		err = -ENOMEM;
++		goto err_free_irq_vectors;
++	}
++
++	/* Init VF <=> PF mailbox stuff */
++	err = otx2vf_vfaf_mbox_init(vf);
++	if (err)
++		goto err_free_irq_vectors;
++
++	/* Register mailbox interrupt */
++	err = otx2vf_register_mbox_intr(vf, true);
++	if (err)
++		goto err_mbox_destroy;
++
++	/* Request AF to attach NPA and LIX LFs to this AF */
++	err = otx2_attach_npa_nix(vf);
++	if (err)
++		goto err_disable_mbox_intr;
++
++	err = otx2vf_realloc_msix_vectors(vf);
++	if (err)
++		goto err_mbox_destroy;
++
++	err = otx2_set_real_num_queues(netdev, qcount, qcount);
++	if (err)
++		goto err_detach_rsrc;
++
++	otx2_setup_dev_hw_settings(vf);
++
++	/* Assign default mac address */
++	otx2_get_mac_from_af(netdev);
++
++	netdev->hw_features = NETIF_F_RXCSUM | NETIF_F_IP_CSUM |
++			      NETIF_F_IPV6_CSUM | NETIF_F_RXHASH |
++			      NETIF_F_SG | NETIF_F_TSO | NETIF_F_TSO6;
++	netdev->features = netdev->hw_features;
++
++	netdev->gso_max_segs = OTX2_MAX_GSO_SEGS;
++	netdev->watchdog_timeo = OTX2_TX_TIMEOUT;
++
++	netdev->netdev_ops = &otx2vf_netdev_ops;
++
++	/* MTU range: 68 - 9190 */
++	netdev->min_mtu = OTX2_MIN_MTU;
++	netdev->max_mtu = OTX2_MAX_MTU;
++
++	INIT_WORK(&vf->reset_task, otx2vf_reset_task);
++
++	/* To distinguish, for LBK VFs set netdev name explicitly */
++	if (is_otx2_lbkvf(vf->pdev)) {
++		int n;
++
++		n = (vf->pcifunc >> RVU_PFVF_FUNC_SHIFT) & RVU_PFVF_FUNC_MASK;
++		/* Need to subtract 1 to get proper VF number */
++		n -= 1;
++		snprintf(netdev->name, sizeof(netdev->name), "lbk%d", n);
++	}
++
++	err = register_netdev(netdev);
++	if (err) {
++		dev_err(dev, "Failed to register netdevice\n");
++		goto err_detach_rsrc;
++	}
++
++	/* Enable pause frames by default */
++	vf->flags |= OTX2_FLAG_RX_PAUSE_ENABLED;
++	vf->flags |= OTX2_FLAG_TX_PAUSE_ENABLED;
++
++	return 0;
++
++err_detach_rsrc:
++	otx2_detach_resources(&vf->mbox);
++err_disable_mbox_intr:
++	otx2vf_disable_mbox_intr(vf);
++err_mbox_destroy:
++	otx2vf_vfaf_mbox_destroy(vf);
++err_free_irq_vectors:
++	pci_free_irq_vectors(hw->pdev);
++err_free_netdev:
++	pci_set_drvdata(pdev, NULL);
++	free_netdev(netdev);
++err_release_regions:
++	pci_release_regions(pdev);
++	return err;
++}
++
++static void otx2vf_remove(struct pci_dev *pdev)
++{
++	struct net_device *netdev = pci_get_drvdata(pdev);
++	struct otx2_nic *vf;
++
++	if (!netdev)
++		return;
++
++	vf = netdev_priv(netdev);
++
++	otx2vf_disable_mbox_intr(vf);
++
++	otx2_detach_resources(&vf->mbox);
++	otx2vf_vfaf_mbox_destroy(vf);
++	pci_free_irq_vectors(vf->pdev);
++	pci_set_drvdata(pdev, NULL);
++	free_netdev(netdev);
++
++	pci_release_regions(pdev);
++}
++
++static struct pci_driver otx2vf_driver = {
++	.name = DRV_NAME,
++	.id_table = otx2_vf_id_table,
++	.probe = otx2vf_probe,
++	.remove = otx2vf_remove,
++	.shutdown = otx2vf_remove,
++};
++
++static int __init otx2vf_init_module(void)
++{
++	pr_info("%s: %s\n", DRV_NAME, DRV_STRING);
++
++	return pci_register_driver(&otx2vf_driver);
++}
++
++static void __exit otx2vf_cleanup_module(void)
++{
++	pci_unregister_driver(&otx2vf_driver);
++}
++
++module_init(otx2vf_init_module);
++module_exit(otx2vf_cleanup_module);
 -- 
 2.7.4
 
