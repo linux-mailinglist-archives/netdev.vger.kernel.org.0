@@ -2,74 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 841B1180569
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 18:48:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3BCF180574
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 18:50:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727435AbgCJRsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 13:48:07 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:58918 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726526AbgCJRsF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 13:48:05 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        id S1726497AbgCJRuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 13:50:14 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:56191 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726283AbgCJRuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 13:50:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583862613;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fLv6D1QjBvxFfuGZu92WqllciGihMVguSN11W75RFVw=;
+        b=VKLXMt6k11lJXUiooraf2l/m6K0KjIWtEoOHEGEG9ShA2dGgUhv5KQZU8Q6Cs4iAVTKe6f
+        FyQny9iiATyXwONObBlFchrkguppv/Rbu9xR772Lyz/yKN3AARkqgIrBmab5dMuvbqO9y8
+        XYQmjJavWrRFwzKWU6+7uoNk4SKWrTQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-321-yA0Ibyq2OwSgjkuMcUcAvg-1; Tue, 10 Mar 2020 13:50:09 -0400
+X-MC-Unique: yA0Ibyq2OwSgjkuMcUcAvg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id EC5988008D;
-        Tue, 10 Mar 2020 17:48:03 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 10 Mar
- 2020 17:47:59 +0000
-Subject: Re: [patch net-next 0/3] flow_offload: follow-ups to HW stats type
- patchset
-To:     Jiri Pirko <jiri@resnulli.us>, <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <saeedm@mellanox.com>,
-        <pablo@netfilter.org>
-References: <20200310154909.3970-1-jiri@resnulli.us>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <e932060b-6a5d-57f7-3e11-51a437b9e23f@solarflare.com>
-Date:   Tue, 10 Mar 2020 17:47:55 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D7BC08010E3;
+        Tue, 10 Mar 2020 17:50:07 +0000 (UTC)
+Received: from krava (ovpn-204-223.brq.redhat.com [10.40.204.223])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 079848D56A;
+        Tue, 10 Mar 2020 17:49:52 +0000 (UTC)
+Date:   Tue, 10 Mar 2020 18:49:38 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Julia Kartseva <hex@fb.com>
+Cc:     Alexei Starovoitov <ast@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        "labbott@redhat.com" <labbott@redhat.com>,
+        "acme@kernel.org" <acme@kernel.org>,
+        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrey Ignatov <rdna@fb.com>, Yonghong Song <yhs@fb.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "md@linux.it" <md@linux.it>, Cestmir Kalina <ckalina@redhat.com>
+Subject: Re: libbpf distro packaging
+Message-ID: <20200310174938.GC167617@krava>
+References: <040A8497-C388-4B65-9562-6DB95D72BE0F@fb.com>
+ <20191008073958.GA10009@krava>
+ <AAB8D5C3-807A-4EE3-B57C-C7D53F7E057D@fb.com>
+ <20191016100145.GA15580@krava>
+ <824912a1-048e-9e95-f6be-fd2b481a8cfc@fb.com>
+ <20191220135811.GF17348@krava>
+ <c1b6a5b1-bbc8-2186-edcf-4c4780c6f836@fb.com>
+ <20200305141812.GH168640@krava>
+ <20200310145717.GB167617@krava>
+ <8552eef5-5bb8-5298-d0ab-f3c05c73c448@fb.com>
 MIME-Version: 1.0
-In-Reply-To: <20200310154909.3970-1-jiri@resnulli.us>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25280.003
-X-TM-AS-Result: No-3.439000-8.000000-10
-X-TMASE-MatchedRID: 7ySqCuYCpfjGgvXRQfjH9PZvT2zYoYOwC/ExpXrHizzlfy382QpXGUYj
-        NK+Q6GZAEIp3psuvfKhEKy+CDOrUrZzNs/5KQtdlSHCU59h5KrHkY10aGY0Q4d9RlPzeVuQQCh5
-        FGEJlYgGe8FYbkZPwlyqrdhRtfw3QTX7PJ/OU3vKDGx/OQ1GV8mMVPzx/r2cb+gtHj7OwNO2Ohz
-        Oa6g8KrUaNByScOb99C+K2EMhCdFFvxJ1Tlg/lHxLVe/AV7kzip2ydyDig2gH0NrSi46pN5iDz4
-        QXADArdtlLrlqDjGXOCPZcbkTcNs+L59MzH0po2K2yzo9Rrj9wPoYC35RuihKPUI7hfQSp5eCBc
-        UCG1aJiUTGVAhB5EbQ==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--3.439000-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25280.003
-X-MDID: 1583862485-MNT1I5C-xN8U
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <8552eef5-5bb8-5298-d0ab-f3c05c73c448@fb.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/03/2020 15:49, Jiri Pirko wrote:
-> This patchset includes couple of patches in reaction to the discussions
-> to the original HW stats patchset. The first patch is a fix,
-> the other two patches are basically cosmetics.
->
-> Jiri Pirko (3):
->   flow_offload: fix allowed types check
->   flow_offload: turn hw_stats_type into dedicated enum
->   flow_offload: restrict driver to pass one allowed bit to
->     flow_action_hw_stats_types_check()
->
->  .../net/ethernet/mellanox/mlx5/core/en_tc.c   |  4 +-
->  include/net/flow_offload.h                    | 46 +++++++++++++------
->  2 files changed, 35 insertions(+), 15 deletions(-)
->
-Acked-by: Edward Cree <ecree@solarflare.com>
+On Tue, Mar 10, 2020 at 10:18:12AM -0700, Julia Kartseva wrote:
+>=20
+>=20
+> On 3/10/20 7:57 AM, Jiri Olsa wrote:
+> > On Thu, Mar 05, 2020 at 03:18:12PM +0100, Jiri Olsa wrote:
+> >=20
+> > so I did some more checking and libbpf is automatically pulled into
+> > centos 8, it's just at the moment there's some bug preventing that..=20
+> > it is going to be fixed shortly ;-)
+> >=20
+> > as for centos 7, what is the target user there? which version of libb=
+pf
+> > would you need in there?
+> >=20
+> > jirka
+> >
+> Hi, that's great news!
+> Nothing prevents us from having the latest v0.0.7 [1] in CentOS 7 :)
+
+that's just half true.. while libbpf is ok, libbpf-devel needs uapi
+headers to define all the stuff that's used in libbpf's headers
+
+  Example:
+	$ echo "#include <bpf/xsk.h>" | gcc -x c -=20
+	In file included from <stdin>:1:
+	/usr/include/bpf/xsk.h: In function =E2=80=98xsk_ring_prod__needs_wakeup=
+=E2=80=99:
+	/usr/include/bpf/xsk.h:82:21: error: =E2=80=98XDP_RING_NEED_WAKEUP=E2=80=
+=99 undeclared (first use in this function)
+	   82 |  return *r->flags & XDP_RING_NEED_WAKEUP;
+	      |                     ^~~~~~~~~~~~~~~~~~~~
+	/usr/include/bpf/xsk.h:82:21: note: each undeclared identifier is report=
+ed only once for each function it appears in
+	/usr/include/bpf/xsk.h: In function =E2=80=98xsk_umem__extract_addr=E2=80=
+=99:
+	/usr/include/bpf/xsk.h:173:16: error: =E2=80=98XSK_UNALIGNED_BUF_ADDR_MA=
+SK=E2=80=99 undeclared (first use in this function)
+	  173 |  return addr & XSK_UNALIGNED_BUF_ADDR_MASK;
+	      |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+	/usr/include/bpf/xsk.h: In function =E2=80=98xsk_umem__extract_offset=E2=
+=80=99:
+	/usr/include/bpf/xsk.h:178:17: error: =E2=80=98XSK_UNALIGNED_BUF_OFFSET_=
+SHIFT=E2=80=99 undeclared (first use in this function)
+	  178 |  return addr >> XSK_UNALIGNED_BUF_OFFSET_SHIFT;
+	      |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+I'll need to check the state of rhel7 kernel headers, but that was
+very early backport and I think headers are far behind
+
+jirka
+
+> Can updates for CentOS 7 and 8 be synced so the have the same libbpf ve=
+rsion?
+>=20
+> [1] https://github.com/libbpf/libbpf/releases/tag/v0.0.7
+>=20
+
