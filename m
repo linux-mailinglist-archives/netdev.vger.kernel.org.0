@@ -2,116 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DD33180000
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 15:18:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCF3E180020
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 15:29:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726622AbgCJOSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 10:18:11 -0400
-Received: from mail-vs1-f53.google.com ([209.85.217.53]:45293 "EHLO
-        mail-vs1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727408AbgCJOSJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 10:18:09 -0400
-Received: by mail-vs1-f53.google.com with SMTP id x82so1205260vsc.12
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 07:18:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=hackerdom.ru; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=/gHw4kLrEIsmI95qZ6nhMGzekL5ir6AYQAFylshVC6Q=;
-        b=A8T824hjR5N/p3t3GhfyJAVPoTfJqcp3OKdDgsbiK4SGctpaKlRRUyHCbbGcv75bXL
-         NXldU72tYY2nGR+YAXp2X2rq2Lr36BCeFqvZ2fOj5xB+/8i1GGsXNYRJXkuLK8k1cPg5
-         ca15KLiVc/ILC9E0Br8QiADrxu7F4lAJojt4Q=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=/gHw4kLrEIsmI95qZ6nhMGzekL5ir6AYQAFylshVC6Q=;
-        b=Ch5/oltDzxWLopUW4es8am4c4OUCnvwJbbOdvkVstH3sQygURseHE11mfERD2c3Wba
-         mtGJh1qNKgZghmCWXVLUgUIF9LRVWXBrft8Prbot5p0ZpKclN69edJzq6w61x0VIoWCn
-         q3ZKWQNiol+qHYIww4ocWqDxRNTWnN/Rzm71RETrd+3dCvUhYcrw5qfCbmv72eA7YFo1
-         ssfWWYF7XiMN5KkdfPfFb52zEkTqvkhz3zOXT8uxBYwCBgjmOiWGl4STeqQ/ZDniZKvy
-         pXxGeWNCwoo69KXgeadxZCIoDm86rEmuLXYOA+6+OIJ0XPMLnsBUVFt5Io6fasJM9ep2
-         JZCQ==
-X-Gm-Message-State: ANhLgQ2iTRgp1ebtwQ/eZINgpfylsAD6wFoQrFURK6ka4yNX0+qoeoji
-        guxso6e99HrttaEQzAya6CT2Ug37cl/Q35CDiGXQHQ==
-X-Google-Smtp-Source: ADFU+vtR88LV/enaz2iag4FQ7W9pTjOZgnAktbD8Rui8bQZ5npBa0m5hMK9XEutirT+AOzXBAgzHv2IzCTOYkN8h0t4=
-X-Received: by 2002:a67:88c8:: with SMTP id k191mr1432889vsd.110.1583849886533;
- Tue, 10 Mar 2020 07:18:06 -0700 (PDT)
+        id S1726463AbgCJO3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 10:29:36 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:58468 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726273AbgCJO3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 10:29:35 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02AEMSHj001388;
+        Tue, 10 Mar 2020 10:29:18 -0400
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2ym8cap9g5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 10 Mar 2020 10:29:18 -0400
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 02AESnQk007625;
+        Tue, 10 Mar 2020 14:29:18 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma05wdc.us.ibm.com with ESMTP id 2ym386ka9u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 10 Mar 2020 14:29:18 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 02AETHnk37159180
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 10 Mar 2020 14:29:17 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8E74428059;
+        Tue, 10 Mar 2020 14:29:17 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3B9F628058;
+        Tue, 10 Mar 2020 14:29:17 +0000 (GMT)
+Received: from ltcalpine2-lp14.aus.stglabs.ibm.com (unknown [9.40.195.197])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+        Tue, 10 Mar 2020 14:29:17 +0000 (GMT)
+From:   Juliet Kim <julietk@linux.vnet.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     linuxppc-dev@lists.ozlabs.org, julietk@linux.vnet.ibm.com,
+        tlfalcon@linux.vnet.ibm.com
+Subject: [PATCH net v2] ibmvnic: Do not process device remove during device reset
+Date:   Tue, 10 Mar 2020 09:23:58 -0500
+Message-Id: <20200310142358.61392-1-julietk@linux.vnet.ibm.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-References: <20200305203318.8980-1-bay@hackerdom.ru> <1583749022.17100.5.camel@suse.com>
- <CAPomEdycThBH5D3Eo3dNCPRrEg0W2fQ9JS9j6TbANTDVChVcog@mail.gmail.com>
-In-Reply-To: <CAPomEdycThBH5D3Eo3dNCPRrEg0W2fQ9JS9j6TbANTDVChVcog@mail.gmail.com>
-From:   =?UTF-8?B?0JDQu9C10LrRgdCw0L3QtNGAINCR0LXRgNGB0LXQvdC10LI=?= 
-        <bay@hackerdom.ru>
-Date:   Tue, 10 Mar 2020 19:17:55 +0500
-Message-ID: <CAPomEdxg0aD=DgGVwFH4Zd1=0fao32mOL6nU=cL00jHJAuoTwA@mail.gmail.com>
-Subject: Fwd: [PATCH] cdc_ncm: Implement the 32-bit version of NCM Transfer Block
-To:     linux-usb@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-10_08:2020-03-10,2020-03-10 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ lowpriorityscore=0 priorityscore=1501 phishscore=0 suspectscore=3
+ impostorscore=0 spamscore=0 adultscore=0 mlxlogscore=999 malwarescore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003100097
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=D0=BF=D0=BD, 9 =D0=BC=D0=B0=D1=80. 2020 =D0=B3. =D0=B2 15:17, Oliver Neuku=
-m <oneukum@suse.com>:
->
-> Am Freitag, den 06.03.2020, 01:33 +0500 schrieb Alexander Bersenev:
-> > The NCM specification defines two formats of transfer blocks: with 16-b=
-it
-> > fields (NTB-16) and with 32-bit fields (NTB-32). Currently only NTB-16 =
-is
-> > implemented.
-> >
-> > This patch adds the support of NTB-32. The motivation behind this is th=
-at
-> > some devices such as E5785 or E5885 from the current generation of Huaw=
-ei
-> > LTE routers do not support NTB-16. The previous generations of Huawei
-> > devices are also use NTB-32 by default.
-> >
-> > Also this patch enables NTB-32 by default for Huawei devices
->
-> Hi,
->
-> do you really see no other option but to make the choice with yet
-> anothet flag? The rest of the code looks good to me.
->
+The ibmvnic driver does not check the device state when the device
+is removed. If the device is removed while a device reset is being
+processed, the remove may free structures needed by the reset,
+causing an oops.
 
-Hi,
+Fix this by checking the device state before processing device remove.
 
-The reason of yet another flag is that some Huawei devices, E5785 and E5885=
-,
-are incorrectly reporting that they support NTB-16. In fact they support on=
-ly
-NTB-32.
+Signed-off-by: Juliet Kim <julietk@linux.vnet.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 24 ++++++++++++++++++++++--
+ drivers/net/ethernet/ibm/ibmvnic.h |  6 +++++-
+ 2 files changed, 27 insertions(+), 3 deletions(-)
 
-Historically the Huawei devices used NTB-32 by default and there
-was a flag CDC_NCM_FLAG_RESET_NTB16 to work around the bug that
-some Huawei E3372H devices come out of reset in NTB-32 mode even if
-NTB-16 mode was set. This commit removes the
-CDC_NCM_FLAG_RESET_NTB16 flag, that was specific to Huawei devices
-and introduces the CDC_NCM_FLAG_PREFER_NTB32 flag.
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index c75239d8820f..4bd33245bad6 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -2142,6 +2142,8 @@ static void __ibmvnic_reset(struct work_struct *work)
+ {
+ 	struct ibmvnic_rwi *rwi;
+ 	struct ibmvnic_adapter *adapter;
++	bool saved_state = false;
++	unsigned long flags;
+ 	u32 reset_state;
+ 	int rc = 0;
+ 
+@@ -2153,17 +2155,25 @@ static void __ibmvnic_reset(struct work_struct *work)
+ 		return;
+ 	}
+ 
+-	reset_state = adapter->state;
+-
+ 	rwi = get_next_rwi(adapter);
+ 	while (rwi) {
++		spin_lock_irqsave(&adapter->state_lock, flags);
++
+ 		if (adapter->state == VNIC_REMOVING ||
+ 		    adapter->state == VNIC_REMOVED) {
++			spin_unlock_irqrestore(&adapter->state_lock, flags);
+ 			kfree(rwi);
+ 			rc = EBUSY;
+ 			break;
+ 		}
+ 
++		if (!saved_state) {
++			reset_state = adapter->state;
++			adapter->state = VNIC_RESETTING;
++			saved_state = true;
++		}
++		spin_unlock_irqrestore(&adapter->state_lock, flags);
++
+ 		if (rwi->reset_reason == VNIC_RESET_CHANGE_PARAM) {
+ 			/* CHANGE_PARAM requestor holds rtnl_lock */
+ 			rc = do_change_param_reset(adapter, rwi, reset_state);
+@@ -5091,6 +5101,7 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 			  __ibmvnic_delayed_reset);
+ 	INIT_LIST_HEAD(&adapter->rwi_list);
+ 	spin_lock_init(&adapter->rwi_lock);
++	spin_lock_init(&adapter->state_lock);
+ 	mutex_init(&adapter->fw_lock);
+ 	init_completion(&adapter->init_done);
+ 	init_completion(&adapter->fw_done);
+@@ -5163,8 +5174,17 @@ static int ibmvnic_remove(struct vio_dev *dev)
+ {
+ 	struct net_device *netdev = dev_get_drvdata(&dev->dev);
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
++	unsigned long flags;
++
++	spin_lock_irqsave(&adapter->state_lock, flags);
++	if (adapter->state == VNIC_RESETTING) {
++		spin_unlock_irqrestore(&adapter->state_lock, flags);
++		return -EBUSY;
++	}
+ 
+ 	adapter->state = VNIC_REMOVING;
++	spin_unlock_irqrestore(&adapter->state_lock, flags);
++
+ 	rtnl_lock();
+ 	unregister_netdevice(netdev);
+ 
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
+index 60eccaf91b12..f8416e1d4cf0 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.h
++++ b/drivers/net/ethernet/ibm/ibmvnic.h
+@@ -941,7 +941,8 @@ enum vnic_state {VNIC_PROBING = 1,
+ 		 VNIC_CLOSING,
+ 		 VNIC_CLOSED,
+ 		 VNIC_REMOVING,
+-		 VNIC_REMOVED};
++		 VNIC_REMOVED,
++		 VNIC_RESETTING};
+ 
+ enum ibmvnic_reset_reason {VNIC_RESET_FAILOVER = 1,
+ 			   VNIC_RESET_MOBILITY,
+@@ -1090,4 +1091,7 @@ struct ibmvnic_adapter {
+ 
+ 	struct ibmvnic_tunables desired;
+ 	struct ibmvnic_tunables fallback;
++
++	/* Used for serializatin of state field */
++	spinlock_t state_lock;
+ };
+-- 
+2.25.0
 
-The NTB-16 has lower, protocol overhead, but NTB-32 allows to transfer more
-data per transfer block, up to 4GB, supporting both High Speed and
-SuperSpeed data rates. So NTB-32 can be faster on devices with big buffers
-and slower on devices with small buffers.
-
-Anyway, for 4g modem devices there should not be much difference between
-NDP-16 and NDP-32 because the 4g speeds are lower than the USB speed.
-But also there may be the devices, that, vice versa,
-buggy with NTB-32 and work well with NTB-16.
-
-So having a flag to choose the preferred implementation is probably the bes=
-t
-option - it allows to keep older device to work as before, but if it
-is found out that
-the device works with NTB-32 better, the flag can be enabled for that devic=
-e
-or vendor.
-
-Best,
-Alexander Bersenev
