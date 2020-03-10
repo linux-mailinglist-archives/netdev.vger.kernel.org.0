@@ -2,95 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E786B1805E1
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 19:10:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EF53180605
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 19:16:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726414AbgCJSKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 14:10:03 -0400
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:36569 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726283AbgCJSKD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 14:10:03 -0400
-Received: by mail-qv1-f66.google.com with SMTP id r15so6544224qve.3
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 11:10:02 -0700 (PDT)
+        id S1726545AbgCJSP7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 14:15:59 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:44767 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726271AbgCJSP7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 14:15:59 -0400
+Received: by mail-pg1-f193.google.com with SMTP id 37so2502213pgm.11
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 11:15:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XB3JmSWgoBFZrd2LuQSCBQTp1UW7odwacKL0wQvjGjQ=;
-        b=AyWsvBH0MZh2Qwyeu6lAMROUHI1059iIdVdbxEaaQcLHCcwQZJKSuymCAtf3fbVqx/
-         B1vm25vVIkNBVcGNFc4MiiYREDdvd6vqSQV3C1TVJ0ajFFh6mJ9COY6LqJPYPShB4U2s
-         T8z+dV0lmWamiqSk74vKhkkZg/NAUhqOAZIT9mOoTiCc+eA+ZbcdETWnTwtdIZGvPCPG
-         k+UQ50gk0CAGmBs4wEaJzP2l9/MhXO8jD+E6mlNGYTea30BRMhvgjxOBfUQkVrozt+GQ
-         cfO/zLPs5olQyB8ipeJqg4HPoETryeAS41WPA5TIwS/1eesG2jADtSOYOkHnjaSKwrCy
-         1AdQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=KZvT3kH0mroKpXQcA8D8NsOKv4Th3ymAm6/qGmz6yIM=;
+        b=S11Pnnfp1mkxIJSSiECPv5cotfvB8SKzsVkE/Fp/zr+wyaAm/D+9ldMwotQTvWi9A1
+         4ERGppuc0v+CjM3M6/84BLWYIUyYeXp1pbOSEz1nE0M0GTFBDLxY8s86dux5QOITh5tw
+         JhqDTNhD9zNWQylEfTLMKIk7LsTqTFaUyIE6XcSFGUHf0d6wI4FvZLOmFXK4Qau9XOs7
+         3PBKTLzefH2gOAMEIyxIOFOyhX/6x4F4FPEa3PE31JLqzfEdmBHlpfhahN68IivQxhY0
+         4B5xbJQCpu42LhnEnwF0JN48aGn5fgTtn36pKH829/Y6zURVYxfylbIaj74cOFGCTUCd
+         suMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XB3JmSWgoBFZrd2LuQSCBQTp1UW7odwacKL0wQvjGjQ=;
-        b=DbSM/3NGNHyg3OLHF5vEBO31yQr8D1tm9UIZM92jc+V1B71LycObWdbKT4vYw38Tqp
-         mgNTTxLzqoQ5o281MaeO5VRZ+VmUgLusYeU/EG7d9uY4UWoVUCe6WhXJTcUvIviPADkM
-         YzvBEHsBtRE9G1vUTjROVtRhB16WdR+2r9omC1kdK6vzuBhetR4y3xed1FG5QlZ8UUxx
-         Rz/0wVu1v8TuamLAcBt9G2HlZSXEW95Je/U5DClPVypm9aEsaKhyURX6SONV4Ni1CuH6
-         WMT3cR/nfRccDsqSbk/ZXojdwvYBMlIIivy0sedxpXP+yVsHJBMKCj5CgRJNtWA6y5Vb
-         z7KA==
-X-Gm-Message-State: ANhLgQ1Q9Tq0AJ7giHy4/1BVPv1yTHSWSNd8SXSZv/uzd63Uh/JAjsX3
-        q1bjisfS1eG81v4CUkQsjOAxSg==
-X-Google-Smtp-Source: ADFU+vufB++3xQG2vw1OGFQecZRBxO7tuTl8C0f5wZM/yAuJm+3CMPp1PFD/wBdct5rDvOXBf0v2Zw==
-X-Received: by 2002:a0c:fa03:: with SMTP id q3mr3420204qvn.228.1583863801932;
-        Tue, 10 Mar 2020 11:10:01 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id g9sm11191298qkl.39.2020.03.10.11.10.01
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 10 Mar 2020 11:10:01 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jBjKL-00023H-37; Tue, 10 Mar 2020 15:10:01 -0300
-Date:   Tue, 10 Mar 2020 15:10:01 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Alex Vesker <valex@mellanox.com>,
-        Ariel Levkovich <lariel@mellanox.com>,
-        linux-rdma@vger.kernel.org, Mark Bloch <markb@mellanox.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH rdma-rc] IB/mlx5: Replace tunnel mpls capability bits for
- tunnel_offloads
-Message-ID: <20200310181001.GA7735@ziepe.ca>
-References: <20200305123841.196086-1-leon@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200305123841.196086-1-leon@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=KZvT3kH0mroKpXQcA8D8NsOKv4Th3ymAm6/qGmz6yIM=;
+        b=t96MZTgOgkqrFYyZ5h1IzIueqFhM73UUAcwT0h7loLZkmW8BOWtwIVc81LQEotFPCl
+         NSphFiKdHbflwqfhCCtfx9MPPtNBIxVWY5yfwPPrzXrZeoaCGb95qLmBmwYv3r1F478/
+         6zjFXgKWR24MTh13FLyZRPX3wEx+wMA6n7iiMjg80Z6pnYYKIhLUCx2CAOVE5c/74boi
+         qAVRsaRjubsrqMw9XBSJhwfDOyCcVrPt6D7tdMTlfrhBreUIbrB4CPil262oAFyHhbV8
+         2SKCdXk4aAoL2Zp0icUFWsL7jRof9GPOUmtBIsmoPMPr4kL0iZb//9c451PtD2belVGG
+         v2nA==
+X-Gm-Message-State: ANhLgQ1tVeb6CHGqAgMlGPfsmOM8DKf9Gqk7zaZjw3CHJSvZBDKrOjAW
+        LOhAZl/UMRf2kSZW8wdwHon18CBOl7U=
+X-Google-Smtp-Source: ADFU+vueAEWvfu8WjBup5GpuNFwAN1BNk/UQjf5xalCbUD4ClMx8PONqWA3LL1IvECcpSvUKiI7sOQ==
+X-Received: by 2002:aa7:8f38:: with SMTP id y24mr3891491pfr.226.1583864157503;
+        Tue, 10 Mar 2020 11:15:57 -0700 (PDT)
+Received: from localhost.localdomain ([103.89.232.186])
+        by smtp.gmail.com with ESMTPSA id z63sm47539445pgd.12.2020.03.10.11.15.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Mar 2020 11:15:56 -0700 (PDT)
+From:   Leslie Monis <lesliemonis@gmail.com>
+To:     Linux NetDev <netdev@vger.kernel.org>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "Mohit P . Tahiliani" <tahiliani@nitk.edu.in>,
+        Gautam Ramakrishnan <gautamramk@gmail.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH iproute2-next] Revert "tc: pie: change maximum integer value of tc_pie_xstats->prob"
+Date:   Tue, 10 Mar 2020 23:45:49 +0530
+Message-Id: <20200310181549.2689-1-lesliemonis@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 05, 2020 at 02:38:41PM +0200, Leon Romanovsky wrote:
-> From: Alex Vesker <valex@mellanox.com>
-> 
-> Until now flex parser was used in ib_query_device to indicate
-> tunnel_offloads_caps support for mpls_over_gre/mpls_over_udp.
-> These inaccurate capability bits will not work on newer devices.
-> 
-> This should not brake backward compatibility since tunnel_stateless
-> caps and flex_parser_protocols caps were added together.
-> 
-> Cc: <stable@vger.kernel.org> # 4.17
-> Fixes: e818e255a58d ("IB/mlx5: Expose MPLS related tunneling offloads")
-> Signed-off-by: Alex Vesker <valex@mellanox.com>
-> Reviewed-by: Ariel Levkovich <lariel@mellanox.com>
-> Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-> ---
->  drivers/infiniband/hw/mlx5/main.c | 6 ++----
->  include/linux/mlx5/mlx5_ifc.h     | 6 +++++-
->  2 files changed, 7 insertions(+), 5 deletions(-)
+This reverts commit 92cfe3260e9110c3d33627847b6eaa153664c79c.
 
-Compatability with future devices is not really a -rc thing
+Kernel commit 3f95f55eb55d ("net: sched: pie: change tc_pie_xstats->prob")
+removes the need to change the maximum integer value of
+tc_pie_stats->prob here.
 
-Applied to for-next, thanks
+Suggested-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
+---
+ tc/q_pie.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Jason
+diff --git a/tc/q_pie.c b/tc/q_pie.c
+index e6939652..709a78b4 100644
+--- a/tc/q_pie.c
++++ b/tc/q_pie.c
+@@ -223,9 +223,9 @@ static int pie_print_xstats(struct qdisc_util *qu, FILE *f,
+ 
+ 	st = RTA_DATA(xstats);
+ 
+-	/* prob is returned as a fracion of (2^56 - 1) */
++	/* prob is returned as a fracion of maximum integer value */
+ 	print_float(PRINT_ANY, "prob", "  prob %lg",
+-		    (double)st->prob / (double)(UINT64_MAX >> 8));
++		    (double)st->prob / (double)UINT64_MAX);
+ 	print_uint(PRINT_JSON, "delay", NULL, st->delay);
+ 	print_string(PRINT_FP, NULL, " delay %s", sprint_time(st->delay, b1));
+ 
+-- 
+2.17.1
+
