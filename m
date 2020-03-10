@@ -2,99 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D07917EDB6
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 02:09:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C425817EDC5
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 02:10:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726199AbgCJBJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 21:09:22 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:35052 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbgCJBJW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 21:09:22 -0400
-Received: by mail-pl1-f195.google.com with SMTP id g6so4735786plt.2
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 18:09:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UjYHIwz6Li64uSXmirMlk5+8qBQUYFW70oHAHMGXYRU=;
-        b=J19QAjG/Pv7rz6REIeWOSE80EismZmGkStEhWcY7aVMeDlVMKXXboUOOCCJj2rZR+F
-         RaW2UInEUA1htk2Uc503Td1AprbL089/K9aZXSXpuLlCxFp1YLviWtKsSSvT5l2mWrth
-         QF54m+MRXyKGQKr9Cd5v3xlfaFdnUFS1p+DwqrHCuM8ievsGESvjKJmx32RhwJpGZhdU
-         x9ve6pDlp8m8q7ELDaFYr0ztOlUucXnwg0zp72LUXE4UdRpnn1Gq53e+ovCWJeYDUBx1
-         vh+CoiJOAjVV5sdPLRk8nAbYmKXhHJraom8Ku2tr8Q2wiQylXTJtQ9kP2WYcJrNFHANQ
-         4VhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UjYHIwz6Li64uSXmirMlk5+8qBQUYFW70oHAHMGXYRU=;
-        b=EA0+dIt7CBI7DWl2BIpSD0ISaJwFHbxF10e2EhyA6WmGrtWRS2dT8wCzUonUC4fo1J
-         2cRmrAvnJfbb+sygXF1P1F8NNkFIRwckMSedid/hHvz63j/w8tcXJnos97msx5fotwVN
-         ukgdUpBAD7CdvmgqP9p6nfGzlvV4mTQ+KpmvEC1HzndMwz3uaLEU7fJvEUk+v9Mku9/H
-         wjIiuUB9/u5BCyhCNbVOcLTR8nzXgDh+uCrKc7eW7D4HC0Htq9Upje7U6jpHiWfiomcs
-         sag1zSiHRiZiZnxjyU+EIs99Lg1AOkCINnFgxamifFzwdoLXsmKoqWnU4XvDcJQvikwn
-         /P+A==
-X-Gm-Message-State: ANhLgQ1t6bR4ELGKJGdoKbSBDUy8zXGNYY21VLzQaW6AzwR2zgquyYL1
-        0cpHP0z44zQ2pxfyMZ8kEyQ=
-X-Google-Smtp-Source: ADFU+vs4AIUFfbEvScFhnXsuy/yMmGg6fCgL5brbLI4Pw728YJv3C75nIvXsriDI25bCovRPaA6sbw==
-X-Received: by 2002:a17:90a:fb52:: with SMTP id iq18mr1219846pjb.32.1583802560003;
-        Mon, 09 Mar 2020 18:09:20 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id q13sm45373364pgh.30.2020.03.09.18.09.18
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 Mar 2020 18:09:19 -0700 (PDT)
-Subject: Re: [PATCH net] macvlan: add cond_resched() during multicast
- processing
-To:     Mahesh Bandewar <maheshb@google.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Mahesh Bandewar <mahesh@bandewar.net>
-References: <20200309225707.65351-1-maheshb@google.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <7bf02268-f324-2cde-da35-44649afad2ac@gmail.com>
-Date:   Mon, 9 Mar 2020 18:09:18 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <20200309225707.65351-1-maheshb@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S1726514AbgCJBJv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 21:09:51 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:34438 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726445AbgCJBJu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 21:09:50 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D649815A04B10;
+        Mon,  9 Mar 2020 18:09:49 -0700 (PDT)
+Date:   Mon, 09 Mar 2020 18:09:49 -0700 (PDT)
+Message-Id: <20200309.180949.633904935953558472.davem@davemloft.net>
+To:     lucien.xin@gmail.com
+Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
+        marcelo.leitner@gmail.com, nhorman@tuxdriver.com,
+        jere.leppanen@nokia.com, michael.tuexen@lurchi.franken.de
+Subject: Re: [PATCH net] sctp: return a one-to-one type socket when doing
+ peeloff
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <b3091c0764023bbbb17a26a71e124d0f81349f20.1583132235.git.lucien.xin@gmail.com>
+References: <b3091c0764023bbbb17a26a71e124d0f81349f20.1583132235.git.lucien.xin@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 09 Mar 2020 18:09:50 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Xin Long <lucien.xin@gmail.com>
+Date: Mon,  2 Mar 2020 14:57:15 +0800
 
-
-On 3/9/20 3:57 PM, Mahesh Bandewar wrote:
-> The Rx bound multicast packets are deferred to a workqueue and
-> macvlan can also suffer from the same attack that was discovered
-> by Syzbot for IPvlan. This solution is not as effective as in
-> IPvlan. IPvlan defers all (Tx and Rx) multicast packet processing
-> to a workqueue while macvlan does this way only for the Rx. This
-> fix should address the Rx codition to certain extent.
-
-condition
-
+> As it says in rfc6458#section-9.2:
 > 
-> Tx is still suseptible.
-
-susceptible ? Not sure what you want to say here.
-
- Tx multicast processing happens when
-> .ndo_start_xmit is called, hence we cannot add cond_resched().
-> However, it's not that severe since the user which is generating
->  / flooding will be affected the most.
+>   The application uses the sctp_peeloff() call to branch off an
+>   association into a separate socket.  (Note that the semantics are
+>   somewhat changed from the traditional one-to-one style accept()
+>   call.)  Note also that the new socket is a one-to-one style socket.
+>   Thus, it will be confined to operations allowed for a one-to-one
+>   style socket.
 > 
-> Fixes: 412ca1550cbe ("macvlan: Move broadcasts into a work queue")
-> Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+> Prior to this patch, sctp_peeloff() returned a one-to-many type socket,
+> on which some operations are not allowed, like shutdown, as Jere
+> reported.
 > 
+> This patch is to change it to return a one-to-one type socket instead.
+> 
+> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+> Reported-by: Leppanen, Jere (Nokia - FI/Espoo) <jere.leppanen@nokia.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
+I don't know what to do with this patch.
 
+There seems to be some discussion about a potential alternative approach
+to the fix, but there were problems with that suggestion.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-
+Please advise, thank you.
