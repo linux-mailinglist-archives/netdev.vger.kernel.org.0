@@ -2,185 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 756FB1809AD
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 21:56:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C7471809EA
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 22:07:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727647AbgCJU4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 16:56:08 -0400
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:63184 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726273AbgCJU4I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 16:56:08 -0400
+        id S1726315AbgCJVHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 17:07:36 -0400
+Received: from mail-pl1-f181.google.com ([209.85.214.181]:41371 "EHLO
+        mail-pl1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726271AbgCJVHg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 17:07:36 -0400
+Received: by mail-pl1-f181.google.com with SMTP id t14so11547plr.8
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 14:07:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1583873768; x=1615409768;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version:subject;
-  bh=RKnMNlE5nfmudJ40zeWUr4jwVwuiaoylo19hCICa0A0=;
-  b=AI9zUSgimM6dufRwyue0MeDf6dczOR5qwk2J0GEAf+mJqbLfRcclVqwW
-   MdFTejuPUonZZl91LjAjK0Gt9d8xWq0LbyvQ+c+yHK6BgW2vLNByq25py
-   PY6QKPhTiaRYGw5OuBngLmsisP8vCrPannjvCyi5r8/oCS/xaXFaAhYVe
-   s=;
-IronPort-SDR: nqSe9MFog2u7JFK7v6CD/uFnLs35Of1gKEA5mH/cRKtulpQwR9UTYR0Q10JYxOMl86aMHbkCqB
- YKgR2NBFIL0g==
-X-IronPort-AV: E=Sophos;i="5.70,538,1574121600"; 
-   d="scan'208";a="31816133"
-Thread-Topic: [PATCH net-next 01/15] net: ena: reject unsupported coalescing params
-Subject: RE: [PATCH net-next 01/15] net: ena: reject unsupported coalescing params
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1e-27fb8269.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 10 Mar 2020 20:56:04 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1e-27fb8269.us-east-1.amazon.com (Postfix) with ESMTPS id A4378A1F8C;
-        Tue, 10 Mar 2020 20:55:55 +0000 (UTC)
-Received: from EX13D06EUA003.ant.amazon.com (10.43.165.206) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1236.3; Tue, 10 Mar 2020 20:55:54 +0000
-Received: from EX13D22EUA004.ant.amazon.com (10.43.165.129) by
- EX13D06EUA003.ant.amazon.com (10.43.165.206) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 10 Mar 2020 20:55:53 +0000
-Received: from EX13D22EUA004.ant.amazon.com ([10.43.165.129]) by
- EX13D22EUA004.ant.amazon.com ([10.43.165.129]) with mapi id 15.00.1497.006;
- Tue, 10 Mar 2020 20:55:53 +0000
-From:   "Kiyanovski, Arthur" <akiyano@amazon.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Jakub Kicinski <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "irusskikh@marvell.com" <irusskikh@marvell.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "rmody@marvell.com" <rmody@marvell.com>,
-        "GR-Linux-NIC-Dev@marvell.com" <GR-Linux-NIC-Dev@marvell.com>,
-        "aelior@marvell.com" <aelior@marvell.com>,
-        "skalluru@marvell.com" <skalluru@marvell.com>,
-        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
-        "opendmb@gmail.com" <opendmb@gmail.com>,
-        "siva.kallam@broadcom.com" <siva.kallam@broadcom.com>,
-        "prashant@broadcom.com" <prashant@broadcom.com>,
-        "mchan@broadcom.com" <mchan@broadcom.com>,
-        "dchickles@marvell.com" <dchickles@marvell.com>,
-        "sburla@marvell.com" <sburla@marvell.com>,
-        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
-        "tariqt@mellanox.com" <tariqt@mellanox.com>,
-        "vishal@chelsio.com" <vishal@chelsio.com>,
-        "leedom@chelsio.com" <leedom@chelsio.com>,
-        "ulli.kroll@googlemail.com" <ulli.kroll@googlemail.com>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>
-Thread-Index: AQHV9oHdmKiU/eXD5kC766/hLjvYXKhB3f9ggABJTYCAACdL8A==
-Date:   Tue, 10 Mar 2020 20:55:33 +0000
-Deferred-Delivery: Tue, 10 Mar 2020 20:55:15 +0000
-Message-ID: <4d4d26f2e1994d4bb22a8ab9d5f49491@EX13D22EUA004.ant.amazon.com>
-References: <20200310021512.1861626-1-kuba@kernel.org>
- <20200310021512.1861626-2-kuba@kernel.org>
- <ba82e88dd3ac45a5a8e4527531d385c0@EX13D22EUA004.ant.amazon.com>
- <20200310183147.GM242734@unreal>
-In-Reply-To: <20200310183147.GM242734@unreal>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.165.119]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
+        d=gmail.com; s=20161025;
+        h=message-id:subject:from:to:date:mime-version
+         :content-transfer-encoding;
+        bh=59B0oTF6VX/A3nMabRxoAwwidqs9Qvg3mH256/t678Y=;
+        b=YKe+RcI3KMxzrIaHbkAcl8c2dAX2bxwTkiRNFiM7eEPJ0DU+J3cRK9aY+bP3QwFICW
+         hImdUP0bznxSDAfImfpUkKmOLTjAx7VI5S9P6oYxYg6JEvmZi99ZhrTEK1ZjTFJiCgV6
+         I2wSak4+ZIsTWoKFxUKiyX0AxCggEU+mnwRl8Q3Ms1mIX8RbfMucFHz0iaDLhbh075Ug
+         42bzAQg9dJTs63fLdg1BGZL/X0ksyvh4N+wfaFNtrXvpUMY2nSgGjcWxOBg2V0S8U7f8
+         iaoHUIwba0fA7dzYfSeLw7ArHQen6q2qDbuAGZBGfL9RzxigWpqGknjs+5CseptWNYhN
+         xStw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:date:mime-version
+         :content-transfer-encoding;
+        bh=59B0oTF6VX/A3nMabRxoAwwidqs9Qvg3mH256/t678Y=;
+        b=D1BV5IXaGAic0tkfHB2ESxjLsXPeV56P60BQ/NRwKgG8XRcafiJO/wuI6ZRxCrdLKE
+         2HYTh8/reMeCgvqP6nzkEXBWzPJh5oP22JKs5+3SqDpGabbBmoe8oX9N1F1waTzwY3/z
+         ixt2MDSqAgoZcmKW8Xagp7YqTVxuYiNBtqjjhFU1e4XJNTYsSq5G9oAO920oIET1B6x2
+         66QwyQc9C3NNMtfpFimqJAvBo6KMBTu02WwrFo70B6KR7rP2jc4XZJZCGUYbUP2pHn23
+         R1I/t+1tOqYexxisvKEg0M/xU46xTICsbbTB3QVWyua55ZtYtdx8oj+S2IzdNTvUr66T
+         KL6g==
+X-Gm-Message-State: ANhLgQ1rA2VBk+Gf13i/7MjJmk1rM0hbSANj+rKXGXUfXlpCm7HEGK1j
+        1bSQdtmWvS5MIPMe0mvF3XbZc/sTfsI=
+X-Google-Smtp-Source: ADFU+vuve0I+YcV7fpQm7kz1b/Itso/tm8xeolwCdP2zc6rghacHh+qYi/FCyKwUh4CwIws/nMFLuA==
+X-Received: by 2002:a17:902:ab98:: with SMTP id f24mr21843762plr.338.1583874455234;
+        Tue, 10 Mar 2020 14:07:35 -0700 (PDT)
+Received: from jprestwo-test.jf.intel.com (jfdmzpr04-ext.jf.intel.com. [134.134.137.73])
+        by smtp.googlemail.com with ESMTPSA id dw19sm3127332pjb.16.2020.03.10.14.07.34
+        for <netdev@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 10 Mar 2020 14:07:34 -0700 (PDT)
+Message-ID: <ed7b025e63df2913f8605cbd492d86dacd35e1f0.camel@gmail.com>
+Subject: Solving RTNL race conditions
+From:   James Prestwood <prestwoj@gmail.com>
+To:     netdev@vger.kernel.org
+Date:   Tue, 10 Mar 2020 14:02:56 -0700
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+I am adding support for MAC randomization to our wireless daemon (IWD)
+and noticed the potential for race conditions with doing so using
+RTNL. 
 
-> -----Original Message-----
-> From: Leon Romanovsky <leon@kernel.org>
-> Sent: Tuesday, March 10, 2020 8:32 PM
-> To: Kiyanovski, Arthur <akiyano@amazon.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>; davem@davemloft.net;
-> netdev@vger.kernel.org; Belgazal, Netanel <netanel@amazon.com>; Tzalik,
-> Guy <gtzalik@amazon.com>; irusskikh@marvell.com; f.fainelli@gmail.com;
-> bcm-kernel-feedback-list@broadcom.com; rmody@marvell.com; GR-Linux-NIC-
-> Dev@marvell.com; aelior@marvell.com; skalluru@marvell.com; GR-everest-
-> linux-l2@marvell.com; opendmb@gmail.com; siva.kallam@broadcom.com;
-> prashant@broadcom.com; mchan@broadcom.com; dchickles@marvell.com;
-> sburla@marvell.com; fmanlunas@marvell.com; tariqt@mellanox.com;
-> vishal@chelsio.com; leedom@chelsio.com; ulli.kroll@googlemail.com;
-> linus.walleij@linaro.org
-> Subject: RE: [EXTERNAL][PATCH net-next 01/15] net: ena: reject unsupporte=
-d
-> coalescing params
->=20
-> CAUTION: This email originated from outside of the organization. Do not c=
-lick
-> links or open attachments unless you can confirm the sender and know the
-> content is safe.
->=20
->=20
->=20
-> On Tue, Mar 10, 2020 at 02:16:03PM +0000, Kiyanovski, Arthur wrote:
-> > > -----Original Message-----
-> > > From: Jakub Kicinski <kuba@kernel.org>
-> > > Sent: Tuesday, March 10, 2020 4:15 AM
-> > > To: davem@davemloft.net
-> > > Cc: netdev@vger.kernel.org; Kiyanovski, Arthur <akiyano@amazon.com>;
-> > > Belgazal, Netanel <netanel@amazon.com>; Tzalik, Guy
-> > > <gtzalik@amazon.com>; irusskikh@marvell.com; f.fainelli@gmail.com;
-> > > bcm-kernel-feedback- list@broadcom.com; rmody@marvell.com;
-> > > GR-Linux-NIC-Dev@marvell.com; aelior@marvell.com;
-> > > skalluru@marvell.com; GR-everest-linux-l2@marvell.com;
-> > > opendmb@gmail.com; siva.kallam@broadcom.com;
-> prashant@broadcom.com;
-> > > mchan@broadcom.com; dchickles@marvell.com; sburla@marvell.com;
-> > > fmanlunas@marvell.com; tariqt@mellanox.com; vishal@chelsio.com;
-> > > leedom@chelsio.com; ulli.kroll@googlemail.com;
-> > > linus.walleij@linaro.org; Jakub Kicinski <kuba@kernel.org>
-> > > Subject: [EXTERNAL][PATCH net-next 01/15] net: ena: reject
-> > > unsupported coalescing params
-> > >
-> > > CAUTION: This email originated from outside of the organization. Do
-> > > not click links or open attachments unless you can confirm the
-> > > sender and know the content is safe.
-> > >
-> > >
-> > >
-> > > Set ethtool_ops->supported_coalesce_params to let the core reject
-> > > unsupported coalescing parameters.
-> > >
-> > > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> > > ---
-> > >  drivers/net/ethernet/amazon/ena/ena_ethtool.c | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > >
-> > > diff --git a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-> > > b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-> > > index 868265a2ec00..552d4cbf6dbd 100644
-> > > --- a/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-> > > +++ b/drivers/net/ethernet/amazon/ena/ena_ethtool.c
-> > > @@ -826,6 +826,8 @@ static int ena_set_tunable(struct net_device
-> > > *netdev,  }
-> > >
-> > >  static const struct ethtool_ops ena_ethtool_ops =3D {
-> > > +       .supported_coalesce_params =3D ETHTOOL_COALESCE_USECS |
-> > > +
-> > > + ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
-> > >         .get_link_ksettings     =3D ena_get_link_ksettings,
-> > >         .get_drvinfo            =3D ena_get_drvinfo,
-> > >         .get_msglevel           =3D ena_get_msglevel,
-> > > --
-> > > 2.24.1
-> >
-> >
-> > Acked-by: Sameeh Jubran <sameehj@amazon.com>
->=20
-> FROM author of this reply and Acked-by doesn't look the same.
-> Which one is correct?
->=20
-> Thanks
+In order to change the MAC on an interface you must first power down,
+change the MAC, then power up. These operations are done asynchronously
+in IWD since it is completely event driven. During this procedure RTNL
+emits a NEWLINK event. IWD already handles this event for interface
+management, but in the case of changing the MAC IWD would ignore this
+event since we initiated the power down and will power the adapter back
+up later.
 
-Sameeh did the check, I sent the email.
-So the correct one is the one written in the email:
-Acked-by: Sameeh Jubran <sameehj@amazon.com>
+The issue I see is that something external could come along and power
+down/up the adapter during the middle of this exchange. IWD has no way
+of knowing where the NEWLINK event came from. Was it because of us? or
+was it external?
 
-Sorry for the confusion.
+I am not intimately familiar with RTNL, but several NL80211 commands
+provide a cookie which is included in the success response and also
+included in any future events relating to the original command. This
+allows the daemon to check that the cookies match, and knowing that the
+event was a result of something it did, vs something external. Is
+something like this feasible to do in RTNL? 
+
+As sort of a back story: we tried going the linux-wireless route and
+adding a flag to allow changing the MAC without a power cycle but
+ultimately that was not accepted. IIRC the issue here was with the
+NL80211 flag which told userspace if the adapter supported this
+feature. As a userspace application we needed some way of knowing if
+the adapter supported this feature, but the maintainer did not want it
+in NL80211.
+
+Thanks,
+James
+
