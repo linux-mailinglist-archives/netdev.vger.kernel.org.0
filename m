@@ -2,171 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 936281803DA
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 17:45:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6795D1803E4
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 17:46:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgCJQpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 12:45:22 -0400
-Received: from mail-vk1-f195.google.com ([209.85.221.195]:40919 "EHLO
-        mail-vk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726269AbgCJQpW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 12:45:22 -0400
-Received: by mail-vk1-f195.google.com with SMTP id k63so1613859vka.7;
-        Tue, 10 Mar 2020 09:45:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Id7nxzKDmSxI0cxB6yaElDPLzg27V9lnZyiHS/FO3cA=;
-        b=OLgxZaW6bKNkMqqk5xI+ZQZ5koSwhOU2O2YajGrqtFX0SGrvSFA9HmS/gCiiWJw8G/
-         Asl8ogHEcdLsWX8yltDot3pYdZGeoA3rT7NfPPqvrk1mYkJ7A31cY43vYOamEzs9SwXP
-         JcosmGuuSgns7PgnY2K1/NO2xPkuw29r9EZUa2ie2FQ+PZGF8bRwPwKbAKRZz1H+g73v
-         Oivk+VjqvgZ31Rx2ZbTPnVy7H/MQdjdr98cb5WzHBD94PJNx0tDJf7tkxjYIiXhGirO2
-         F0S4i/g0nTnmcM8ID3R5XfUXFMqneDfyw4Bgl9hNo/MNMJUU8aFxZJD/tx8yHNmj8vud
-         jcJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Id7nxzKDmSxI0cxB6yaElDPLzg27V9lnZyiHS/FO3cA=;
-        b=jLFFZMcdNHpnnf/qzXshaC4vxS+xrTOwN5gXZmfWL0bRpVwBCrxh7QA/ADOj2O2+GU
-         s/hvJXPjv6wYew5IUjLlzbR9tPTBZ/UvoPc5gPm3JAZLS4Sd1wIZ+uUONGee3MnExtk8
-         w1se1fkhPKalUw/NqjDiSFzC3F1DYD4ZcOK70/5chZ70TqVtrWh4VHPA4W2kabUcIPLk
-         Ha1minHqWfxvCN6IITCUGJjjRQzIB5/wHrUML4gKgaeLVniV0LybJYC80wH8MZL8JXsC
-         XKI+49Tahh3U+H94SeDhPwjlTQ7p79Onq/1u6HYYTDbtmxSCC+BfdXAPh49IfTT1rzj1
-         DGFw==
-X-Gm-Message-State: ANhLgQ0iayZ1s2KQVDjLWxSKsPCiB+b3kRS90afZytKJZYc1qtnXcRYb
-        4Pz8w4xPgoo58qfXXvVLZ3Pz1Ln3r3rCywY4rMA=
-X-Google-Smtp-Source: ADFU+vsFnMZOJyX+JnMLr2gSOiucHUxAptJ2co35Xt2ai8onMy2NXP9Q6zK4kHPGL3XY4vYMadgXzXQO5GJyc3DfNHA=
-X-Received: by 2002:a1f:b401:: with SMTP id d1mr11868133vkf.26.1583858719158;
- Tue, 10 Mar 2020 09:45:19 -0700 (PDT)
+        id S1726917AbgCJQqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 12:46:55 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:54908 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726269AbgCJQqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 12:46:55 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02AGYMLi019795;
+        Tue, 10 Mar 2020 09:46:37 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=tcqK5Eq2wAzx4dmg19YSjpdRFPwAQK4BVtIoIkii7Zk=;
+ b=nJlyvKvmTRQQj21WY+J/skBBDpG70nBdRZFbGJwANK9p7ti8q+6PnwC7rNRVRDCUBwkK
+ Xzv5c2fYgORrGcYYv87cYtxFBirNHvvVSBhczejxtI9fwAOWbcqLu2UEa8kQWQB1J5Oa
+ zsg+wZ7QaYCxeR6wbaOJcZqa8h7MBVoGIOc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yntmuddk4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 10 Mar 2020 09:46:37 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 10 Mar 2020 09:46:36 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FosTndJtC+lCZKrGZOrKDd4vCv9G2IM7PjOsz9jMY9Qnm+4P0Oi6Wvp+U0TRkWrrgjXbXHnoK9Tj2LyXYDJfFkZpdKON5SgKEmcW3PuRDgSJzkrPNKeT/NWqGSeDFzGZtkQl/FbWs+4xXUT47UjZZxJNx3KYtfXiGwchhV0578AAeXmAjXZosUVDQrSjFVyuoNU1wI81J+9ISzLhwSDpO5gqIP43bjnZNPdvho3uMxrqdfh6CnduUOp2cBFCmQg0V/DEg3+h7+49GjUqpNpS+TpfTPFn5TwFhMLIOydXjFbj6u15C56QqjYcSD7k+WNd2IdT5vu40EBZ73OLFofrDw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tcqK5Eq2wAzx4dmg19YSjpdRFPwAQK4BVtIoIkii7Zk=;
+ b=k4Acx73i2yynI+Sd0Xzb4RQRAfwbaHgjKdAFIq8sqVcWcJS/afZqyxYr3WHGfSgyDA+SCX59x9Pij21YeqpF+YLLJDvsvV94kdPTKsXGTXCsnxl9hglo57AcJjHqkM1CWZTxpZ13EBavB4yhlPkeFU4W7XiuY0pE0yYFRNDCIdgfSnpxndL6dlwt+6UAkANzbOLynUG10VwLrArRux3n4Ww+tzdYiyIeObnKpHzpus2dub16A4oH92uxU1SbdFb7RKngFjEbA140jxo4SI5FUeS2m8rhgtSWvkp50i1GdmxaDHIBR0Hc7QLFFdmaVsiD8mYM+9qP7ZmC/nNikWyvCA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tcqK5Eq2wAzx4dmg19YSjpdRFPwAQK4BVtIoIkii7Zk=;
+ b=AIe820trcXUfEvsTOFFZtJFGgYTd0OxDRHNc/UjFKQA7HycqCXxapTyQJzJW++a4yRkhyQHU3eJQWQQK4LGFTLFd8LgLZm4BfX22uVSyuvAAdjZtSmhU5ILlMi9OPxXJAmswmP3CahJHj07F9puMO0NfWZXvsadpQTPHG4icu2Q=
+Received: from BYAPR15MB2278.namprd15.prod.outlook.com (2603:10b6:a02:8e::17)
+ by BYAPR15MB3429.namprd15.prod.outlook.com (2603:10b6:a03:10c::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.17; Tue, 10 Mar
+ 2020 16:46:35 +0000
+Received: from BYAPR15MB2278.namprd15.prod.outlook.com
+ ([fe80::4d5a:6517:802b:5f47]) by BYAPR15MB2278.namprd15.prod.outlook.com
+ ([fe80::4d5a:6517:802b:5f47%4]) with mapi id 15.20.2793.018; Tue, 10 Mar 2020
+ 16:46:35 +0000
+Date:   Tue, 10 Mar 2020 09:46:27 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Yoshiki Komachi <komachi.yoshiki@gmail.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>
+Subject: Re: [PATCH v2 bpf 0/2] Fix BTF verification of enum members with a
+ selftest
+Message-ID: <20200310164627.zb3pponhlsweqk45@kafai-mbp>
+References: <1583825550-18606-1-git-send-email-komachi.yoshiki@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1583825550-18606-1-git-send-email-komachi.yoshiki@gmail.com>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: CO2PR06CA0062.namprd06.prod.outlook.com
+ (2603:10b6:104:3::20) To BYAPR15MB2278.namprd15.prod.outlook.com
+ (2603:10b6:a02:8e::17)
 MIME-Version: 1.0
-References: <00000000000088452f05a07621d2@google.com>
-In-Reply-To: <00000000000088452f05a07621d2@google.com>
-From:   =?UTF-8?B?6buE56eL6ZKn?= <anenbupt@gmail.com>
-Date:   Wed, 11 Mar 2020 00:45:08 +0800
-Message-ID: <CADG63jBA42RVg_GGDHhMP0iL0VP2FTm8N7684wdOccATO_TrzA@mail.gmail.com>
-Subject: Re: WARNING: refcount bug in sctp_wfree
-To:     syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com,
-        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp (2620:10d:c090:400::5:f2f3) by CO2PR06CA0062.namprd06.prod.outlook.com (2603:10b6:104:3::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.14 via Frontend Transport; Tue, 10 Mar 2020 16:46:34 +0000
+X-Originating-IP: [2620:10d:c090:400::5:f2f3]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f4767a69-f074-48ea-16aa-08d7c5129866
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3429:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB342929C806D4C809D7934977D5FF0@BYAPR15MB3429.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:3383;
+X-Forefront-PRVS: 033857D0BD
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(346002)(366004)(136003)(39860400002)(376002)(396003)(199004)(189003)(9686003)(1076003)(16526019)(478600001)(33716001)(86362001)(15650500001)(2906002)(55016002)(6496006)(5660300002)(52116002)(8936002)(186003)(66556008)(66946007)(6916009)(54906003)(81156014)(6666004)(81166006)(4326008)(8676002)(66476007)(316002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3429;H:BYAPR15MB2278.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /uvJdqALQyKT5bLT7IcqsIUIypaiOA01slljSwBGKZ732m7S08SYtsaQPY2ZTyuLMFSW7Lpy41g/icQRoUz4GAoaOg0afrvi8WXYtNcEUGh0LyEZVUCRHvw4fzEcqBYHpaZREd5+u/7JVG0DIh5YBpV2rP5qnW38jf31ugRkJw10/N7Pa1Fb2X6WaPePUsHvXKJDFnz8ElOCs38embOwrUs0aFCqujbshBFPdeL+zWve5n5l2awcqyaN24NYXUwg1DB9Od+jVMBN37D5bDOgARfFVyRQVlj77N7qdvp9nj2jC/YcQ7ym4JRci9uEOE7jIIkhCc6V7IRzpt6uwKRDOFd4sau07sN1DOA5DBS+dcV1/hFt0ClaiDvp0eNCsm46ys7P4NZuAGX7xkMutcQxEQK+XJeve8M0ys5jjRGrhgdYNa0pQyQ7GLjdj4n+6ano
+X-MS-Exchange-AntiSpam-MessageData: /MikHsI9XmYcPoN49cp8fWyZbGX9RpG5QBOklt9jiv06/muizC4hlkY3I/6KWHY6gr0DMk+OE0l9Evf5hpJqOugH5fkfrCb5KTnJ66MNBbcIesoeoqPwqRy9MmIV034A6d7ho5NgUNDsKyz7a3hGthUEPoo9R0aMz3fVRH7bQ/nHhpkyeXy0pV9m+LNYLumd
+X-MS-Exchange-CrossTenant-Network-Message-Id: f4767a69-f074-48ea-16aa-08d7c5129866
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2020 16:46:35.5123
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BiSlNCbMvFuRu3q8GAJix5tEh9DVR1b1PqJW6n2K9INHIGId7W82WLoKZwr6UiXC
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3429
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-10_11:2020-03-10,2020-03-10 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ phishscore=0 mlxscore=0 clxscore=1011 suspectscore=0 priorityscore=1501
+ adultscore=0 malwarescore=0 impostorscore=0 spamscore=0 mlxlogscore=999
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003100103
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sctp_wfree
-    ->refcount_sub_and_test(sizeof(struct sctp_chunk),
-                                      &sk->sk_wmem_alloc)
-sctp_wfree will sub sizeof(struct sctp_chunk) for every skb. So could
-we add the extra size for gso segment ?
-
-
-
---- a/net/sctp/output.c
-+++ b/net/sctp/output.c
-@@ -398,7 +398,8 @@ static void sctp_packet_gso_append(struct sk_buff
-*head, struct sk_buff *skb)
-        head->truesize += skb->truesize;
-        head->data_len += skb->len;
-        head->len += skb->len;
--       refcount_add(skb->truesize, &head->sk->sk_wmem_alloc);
-+       refcount_add(skb->truesize + sizeof(struct sctp_chunk),
-+                               &head->sk->sk_wmem_alloc);
-
-        __skb_header_release(skb);
-
-On Tue, Mar 10, 2020 at 9:36 AM syzbot
-<syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following crash on:
->
-> HEAD commit:    2c523b34 Linux 5.6-rc5
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=155a5f29e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=a5295e161cd85b82
-> dashboard link: https://syzkaller.appspot.com/bug?extid=cea71eec5d6de256d54d
-> compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=164b5181e00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=166dd70de00000
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
->
-> ------------[ cut here ]------------
-> refcount_t: underflow; use-after-free.
-> WARNING: CPU: 1 PID: 8668 at lib/refcount.c:28 refcount_warn_saturate+0x15b/0x1a0 lib/refcount.c:28
-> Kernel panic - not syncing: panic_on_warn set ...
-> CPU: 1 PID: 8668 Comm: syz-executor779 Not tainted 5.6.0-rc5-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x1e9/0x30e lib/dump_stack.c:118
->  panic+0x264/0x7a0 kernel/panic.c:221
->  __warn+0x209/0x210 kernel/panic.c:582
->  report_bug+0x1ac/0x2d0 lib/bug.c:195
->  fixup_bug arch/x86/kernel/traps.c:174 [inline]
->  do_error_trap+0xca/0x1c0 arch/x86/kernel/traps.c:267
->  do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
->  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-> RIP: 0010:refcount_warn_saturate+0x15b/0x1a0 lib/refcount.c:28
-> Code: c7 e4 ff d0 88 31 c0 e8 23 20 b3 fd 0f 0b eb 85 e8 8a 4a e0 fd c6 05 ff 70 b1 05 01 48 c7 c7 10 00 d1 88 31 c0 e8 05 20 b3 fd <0f> 0b e9 64 ff ff ff e8 69 4a e0 fd c6 05 df 70 b1 05 01 48 c7 c7
-> RSP: 0018:ffffc90001f577d0 EFLAGS: 00010246
-> RAX: 8c9c9070bbb4e500 RBX: 0000000000000003 RCX: ffff8880938a63c0
-> RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
-> RBP: 0000000000000003 R08: ffffffff815e16e6 R09: fffffbfff15db92a
-> R10: fffffbfff15db92a R11: 0000000000000000 R12: dffffc0000000000
-> R13: ffff88809de82000 R14: ffff8880a89237c0 R15: 1ffff11013be52b0
->  sctp_wfree+0x3b1/0x710 net/sctp/socket.c:9111
->  skb_release_head_state+0xfb/0x210 net/core/skbuff.c:651
->  skb_release_all net/core/skbuff.c:662 [inline]
->  __kfree_skb+0x22/0x1c0 net/core/skbuff.c:678
->  sctp_chunk_destroy net/sctp/sm_make_chunk.c:1454 [inline]
->  sctp_chunk_put+0x17b/0x200 net/sctp/sm_make_chunk.c:1481
->  __sctp_outq_teardown+0x80a/0x9d0 net/sctp/outqueue.c:257
->  sctp_association_free+0x21e/0x7c0 net/sctp/associola.c:339
->  sctp_cmd_delete_tcb net/sctp/sm_sideeffect.c:930 [inline]
->  sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1318 [inline]
->  sctp_side_effects net/sctp/sm_sideeffect.c:1185 [inline]
->  sctp_do_sm+0x3c01/0x5560 net/sctp/sm_sideeffect.c:1156
->  sctp_primitive_ABORT+0x93/0xc0 net/sctp/primitive.c:104
->  sctp_close+0x231/0x770 net/sctp/socket.c:1512
->  inet_release+0x135/0x180 net/ipv4/af_inet.c:427
->  __sock_release net/socket.c:605 [inline]
->  sock_close+0xd8/0x260 net/socket.c:1283
->  __fput+0x2d8/0x730 fs/file_table.c:280
->  task_work_run+0x176/0x1b0 kernel/task_work.c:113
->  exit_task_work include/linux/task_work.h:22 [inline]
->  do_exit+0x5ef/0x1f80 kernel/exit.c:801
->  do_group_exit+0x15e/0x2c0 kernel/exit.c:899
->  __do_sys_exit_group+0x13/0x20 kernel/exit.c:910
->  __se_sys_exit_group+0x10/0x10 kernel/exit.c:908
->  __x64_sys_exit_group+0x37/0x40 kernel/exit.c:908
->  do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:294
->  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> RIP: 0033:0x43ef98
-> Code: Bad RIP value.
-> RSP: 002b:00007ffcc7e7c398 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000043ef98
-> RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
-> RBP: 00000000004be7a8 R08: 00000000000000e7 R09: ffffffffffffffd0
-> R10: 000000002059aff8 R11: 0000000000000246 R12: 0000000000000001
-> R13: 00000000006d01a0 R14: 0000000000000000 R15: 0000000000000000
-> Kernel Offset: disabled
-> Rebooting in 86400 seconds..
->
->
-> ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> syzbot can test patches for this bug, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
+On Tue, Mar 10, 2020 at 04:32:28PM +0900, Yoshiki Komachi wrote:
+> btf_enum_check_member() checked if the size of "enum" as a struct
+> member exceeded struct_size or not. Then, the function compared it
+> with the size of "int". Although the size of "enum" is 4-byte by
+> default (i.e., equivalent to "int"), the packing feature enables
+> us to reduce it, as illustrated by the following example:
+> 
+> struct A {
+>         char m;
+>         enum { E0, E1 } __attribute__((packed)) n;
+> };
+> 
+> With such a setup above, the bpf loader gave an error attempting
+> to load it:
+> 
+> ------------------------------------------------------------------
+> ...
+> 
+> [3] ENUM (anon) size=1 vlen=2
+>         E0 val=0
+>         E1 val=1
+> [4] STRUCT A size=2 vlen=2
+>         m type_id=2 bits_offset=0
+>         n type_id=3 bits_offset=8
+> 
+> [4] STRUCT A size=2 vlen=2
+>         n type_id=3 bits_offset=8 Member exceeds struct_size
+> 
+> libbpf: Error loading .BTF into kernel: -22.
+> 
+> ------------------------------------------------------------------
+> 
+> The related issue was previously fixed by the commit 9eea98497951 ("bpf:
+> fix BTF verification of enums"). On the other hand, this series fixes
+> this issue as well, and adds a selftest program for it.
+> 
+> Changes in v2:
+> - change an example in commit message based on Andrii's review
+> - add a selftest program for packed "enum" type members in struct/union
+Acked-by: Martin KaFai Lau <kafai@fb.com>
