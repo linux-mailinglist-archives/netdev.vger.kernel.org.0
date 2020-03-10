@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BB7718074F
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 19:47:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9389B180750
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 19:47:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727360AbgCJSrx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 14:47:53 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:34460 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727320AbgCJSrv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 14:47:51 -0400
-Received: by mail-pg1-f194.google.com with SMTP id t3so6712372pgn.1
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 11:47:50 -0700 (PDT)
+        id S1727368AbgCJSrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 14:47:55 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:34304 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727228AbgCJSrx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 14:47:53 -0400
+Received: by mail-pf1-f195.google.com with SMTP id 23so5115780pfj.1
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 11:47:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=18p8x0IZpTSlUlxihtqYXzJzypL8qp2u7toMXERn78Q=;
-        b=H99qoHgf1Sqp1RfvK9Ec2o1R/4bUmNMKCBe7bCAJMZBg5nsk34JVkif6S3oegMgr8i
-         NdpCwonYXcdF9Hgz4Pi3UPyWzz9+zFjGOGzoZXOWX/Ix80qKsbwaMPcs+0svVWU+tJrN
-         eFE2HeoNJgzetDwcHOUgMS2rCQnK7DMdRdqhkKJqg52hym2NCx2fQxDuokntN6G/9GiU
-         LWZu0HfdIZQ1C4PePFus00zZGRHGOfwqaHRW/5wHJs2ANnkdjP8ApRnSVgMEsDDKjiNY
-         CBwK3VEK7fTY2tOrVeHYlPonZOawfVPVf6TnQNCq0XlDvxxQR/h0O4OJ9NaNGhUqyRmO
-         X6iQ==
+        bh=karau37/iVbbQdOh1uB66piGE1r4/7zvhFgkICK6jT4=;
+        b=eEULKDgHAc5aLMLsTKiTWtlF323vKTYvJnWsSubgDNjzdvt3BH8Lk8adxzC1BpX32N
+         HAsfxOZ3HWnr6e1+ERsO0YOSqUSQx81nKBgvO5tx6afo2TimdGoS/YVSD2Ik14E2a3dA
+         oyblojXREU71L9r5S5ao8ywbfkJrpUoTlQhHc+0lGdy63QGDm+rgnerhxVYU8l7Ij6ue
+         KIsy7QzXPE+NUygIHJq4dY9hXqGLGWUcKO5ei9Tm6ErHfZt4JWB8Gi7GGqn4Cs8f4xef
+         Wq4oDDHssZjBnHWkTun0koQZsJKgzSzmD2eTFwCpvVpMyKPBo3opcG68uQy360PyCXsY
+         Pi0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=18p8x0IZpTSlUlxihtqYXzJzypL8qp2u7toMXERn78Q=;
-        b=JQVUCgSBlCQ9sIrf42tXbv3qQvbMtB1kFE+iJT5HQ9MNHXp5JDi6W8KlC7UWr9gPbb
-         kfjsPOXpfDyS3Rg+6CJnTjqJkWfDUzKgosD4ANwSUBVGqJctn6Jx113Brk4JvaHdGRcV
-         x3axFBJ8H6QvOuNbUuqQaalp+4fuQRumCDPtGqTvELdcqzI6/2ZVd8raKsqts7R9X1Hz
-         8Ksa0wx+wNdYW8DbrdFnIeL57Dvk6heIlmk96b6gXrp0abwuP4q7gm7ppoG0SnpZJRg5
-         8HlRYqNoO+uqGsacT2sJ6EfqJGd8KCu6yMl4t0hv+jDzuvIpObAU+Mf3ltYj+Agck/Lg
-         zsrA==
-X-Gm-Message-State: ANhLgQ3NDUe7Bb3ejkPFZDwMYCjmbAAW4lnDQ/0GFT5iY3pCXRkomWTU
-        HBv6mHMtGzQJ96JdR67MzuKAn17/d7k=
-X-Google-Smtp-Source: ADFU+vtp6Pz4Ier0jZJ94G1mZ5ZwXabRoM8f+04NE5pBnnbNxvewk9+HSk2Wg2zRkysPEr3fKd/g+w==
-X-Received: by 2002:a63:b515:: with SMTP id y21mr22348628pge.148.1583866069184;
-        Tue, 10 Mar 2020 11:47:49 -0700 (PDT)
+        bh=karau37/iVbbQdOh1uB66piGE1r4/7zvhFgkICK6jT4=;
+        b=owPgPBTIGM1TGN5JmogoV7qjmy8zroqZp/1++fNgtc0mptgRxu0TiuVMmpbegQCdrW
+         N1dlp3is+RiNI8yT/oLgO8mDAArMi7LZUryuczBQoYH7+ZmDCRTsmB7Vm00LQR/k7yH3
+         YHAiA3nRPay9s82wj4JnHvHuXZUNXJoIyCMocJvYenk+WZDL5VRjnHMntDJi57dg3tSK
+         GCPNlMEyd4WbAtugn9yHpxcR+z3HRCBc+r2ReoZvU7jzDHaWuLsep5VGTOV+TA3dnH7+
+         IrT6HWEIE48+UWODLl92/cWk7WiKmCIylHGtDHUp1E22Yn4gzDmtPv9tZVpmWzod8VMX
+         hwpw==
+X-Gm-Message-State: ANhLgQ2wNCXSGp7oi+o2hgRuwb1Y8hizkp44J25UcP+mLb8wWBZNfRfq
+        p/AzlxApM3xpvppRrmBNd4xqs2tnr2E=
+X-Google-Smtp-Source: ADFU+vvvpEpLIcXYCkcIygL3dAlLdsh4pHWuujTVNoGRHpITOHY7LNyVZUAEzZGZGG/FedU3ouOIkA==
+X-Received: by 2002:a63:309:: with SMTP id 9mr22119337pgd.193.1583866071537;
+        Tue, 10 Mar 2020 11:47:51 -0700 (PDT)
 Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id v67sm4240490pfc.120.2020.03.10.11.47.47
+        by smtp.googlemail.com with ESMTPSA id v67sm4240490pfc.120.2020.03.10.11.47.49
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 10 Mar 2020 11:47:48 -0700 (PDT)
+        Tue, 10 Mar 2020 11:47:50 -0700 (PDT)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Tomasz Duszynski <tduszynski@marvell.com>,
+Cc:     davem@davemloft.net, Geetha sowjanya <gakula@marvell.com>,
         Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH net-next 5/6] octeontx2-vf: Link event notification support
-Date:   Wed, 11 Mar 2020 00:17:24 +0530
-Message-Id: <1583866045-7129-6-git-send-email-sunil.kovvuri@gmail.com>
+Subject: [PATCH net-next 6/6] octeontx2-pf: Cleanup all receive buffers in SG descriptor
+Date:   Wed, 11 Mar 2020 00:17:25 +0530
+Message-Id: <1583866045-7129-7-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1583866045-7129-1-git-send-email-sunil.kovvuri@gmail.com>
 References: <1583866045-7129-1-git-send-email-sunil.kovvuri@gmail.com>
@@ -58,203 +58,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tomasz Duszynski <tduszynski@marvell.com>
+From: Geetha sowjanya <gakula@marvell.com>
 
-VF shares physical link with PF. Admin function (AF) sends
-notification to PF whenever a link change event happens. PF
-has to forward the same notification to each of the enabled VF.
+With MTU sized receive buffers it is not expected to have CQE_RX
+with multiple receive buffer pointers. But since same physcial link
+is shared by PF and it's VFs, the max receive packet configured
+at link could be morethan MTU. Hence there is a chance of receiving
+plts morethan MTU which then gets DMA'ed into multiple buffers
+and notified in a single CQE_RX. This patch treats such pkts as errors
+and frees up receive buffers pointers back to hardware.
 
-PF traps START/STOP_RX messages sent by VF to AF to keep track of
-VF's enabled/disabled state.
+Also on the transmit side this patch sets SMQ MAXLEN to max value to avoid
+HW length errors for the packets whose size > MTU, eg due to path MTU.
 
-Signed-off-by: Tomasz Duszynski <tduszynski@marvell.com>
+Signed-off-by: Geetha sowjanya <gakula@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  7 ++
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 88 +++++++++++++++++++++-
- 2 files changed, 93 insertions(+), 2 deletions(-)
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  9 +++---
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c | 34 ++++++++++++++++++----
+ 2 files changed, 34 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index 95b8f1e..5c96fee 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -193,6 +193,12 @@ struct otx2_hw {
- 	u64			cgx_tx_stats[CGX_TX_STATS_COUNT];
- };
- 
-+struct otx2_vf_config {
-+	struct otx2_nic *pf;
-+	struct delayed_work link_event_work;
-+	bool intf_down; /* interface was either configured or not */
-+};
-+
- struct flr_work {
- 	struct work_struct work;
- 	struct otx2_nic *pf;
-@@ -229,6 +235,7 @@ struct otx2_nic {
- 	u8			total_vfs;
- 	u16			pcifunc; /* RVU PF_FUNC */
- 	u16			bpid[NIX_MAX_BPID_CHAN];
-+	struct otx2_vf_config	*vf_configs;
- 	struct cgx_link_user_info linfo;
- 
- 	u64			reset_count;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index a70a50a..5d5929a 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -716,6 +716,8 @@ static int otx2_register_pfvf_mbox_intr(struct otx2_nic *pf, int numvfs)
- static void otx2_process_pfaf_mbox_msg(struct otx2_nic *pf,
- 				       struct mbox_msghdr *msg)
- {
-+	int devid;
-+
- 	if (msg->id >= MBOX_MSG_MAX) {
- 		dev_err(pf->dev,
- 			"Mbox msg with unknown ID 0x%x\n", msg->id);
-@@ -729,6 +731,26 @@ static void otx2_process_pfaf_mbox_msg(struct otx2_nic *pf,
- 		return;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index 3d95dbc..475d9ea 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -212,8 +212,6 @@ int otx2_hw_set_mtu(struct otx2_nic *pfvf, int mtu)
+ 		return -ENOMEM;
  	}
  
-+	/* message response heading VF */
-+	devid = msg->pcifunc & RVU_PFVF_FUNC_MASK;
-+	if (devid) {
-+		struct otx2_vf_config *config = &pf->vf_configs[devid - 1];
-+		struct delayed_work *dwork;
-+
-+		switch (msg->id) {
-+		case MBOX_MSG_NIX_LF_START_RX:
-+			config->intf_down = false;
-+			dwork = &config->link_event_work;
-+			schedule_delayed_work(dwork, msecs_to_jiffies(100));
-+			break;
-+		case MBOX_MSG_NIX_LF_STOP_RX:
-+			config->intf_down = true;
-+			break;
-+		}
-+
-+		return;
-+	}
-+
- 	switch (msg->id) {
- 	case MBOX_MSG_READY:
- 		pf->pcifunc = msg->pcifunc;
-@@ -810,9 +832,22 @@ int otx2_mbox_up_handler_cgx_link_event(struct otx2_nic *pf,
- 					struct cgx_link_info_msg *msg,
- 					struct msg_rsp *rsp)
- {
-+	int i;
-+
- 	/* Copy the link info sent by AF */
- 	pf->linfo = msg->link_info;
+-	/* SMQ config limits maximum pkt size that can be transmitted */
+-	req->update_smq = true;
+ 	pfvf->max_frs = mtu +  OTX2_ETH_HLEN;
+ 	req->maxlen = pfvf->max_frs;
  
-+	/* notify VFs about link event */
-+	for (i = 0; i < pci_num_vf(pf->pdev); i++) {
-+		struct otx2_vf_config *config = &pf->vf_configs[i];
-+		struct delayed_work *dwork = &config->link_event_work;
-+
-+		if (config->intf_down)
-+			continue;
-+
-+		schedule_delayed_work(dwork, msecs_to_jiffies(100));
-+	}
-+
- 	/* interface has not been fully configured yet */
- 	if (pf->flags & OTX2_FLAG_INTF_DOWN)
- 		return 0;
-@@ -1928,11 +1963,39 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	return err;
+@@ -469,7 +467,7 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
+ 	/* Set topology e.t.c configuration */
+ 	if (lvl == NIX_TXSCH_LVL_SMQ) {
+ 		req->reg[0] = NIX_AF_SMQX_CFG(schq);
+-		req->regval[0] = ((pfvf->netdev->mtu  + OTX2_ETH_HLEN) << 8) |
++		req->regval[0] = ((OTX2_MAX_MTU + OTX2_ETH_HLEN) << 8) |
+ 				   OTX2_MIN_MTU;
+ 
+ 		req->regval[0] |= (0x20ULL << 51) | (0x80ULL << 39) |
+@@ -579,17 +577,19 @@ void otx2_sqb_flush(struct otx2_nic *pfvf)
+ {
+ 	int qidx, sqe_tail, sqe_head;
+ 	u64 incr, *ptr, val;
++	int timeout = 1000;
+ 
+ 	ptr = (u64 *)otx2_get_regaddr(pfvf, NIX_LF_SQ_OP_STATUS);
+ 	for (qidx = 0; qidx < pfvf->hw.tx_queues; qidx++) {
+ 		incr = (u64)qidx << 32;
+-		while (1) {
++		while (timeout) {
+ 			val = otx2_atomic64_add(incr, ptr);
+ 			sqe_head = (val >> 20) & 0x3F;
+ 			sqe_tail = (val >> 28) & 0x3F;
+ 			if (sqe_head == sqe_tail)
+ 				break;
+ 			usleep_range(1, 3);
++			timeout--;
+ 		}
+ 	}
+ }
+@@ -985,6 +985,7 @@ void otx2_aura_pool_free(struct otx2_nic *pfvf)
+ 		qmem_free(pfvf->dev, pool->fc_addr);
+ 	}
+ 	devm_kfree(pfvf->dev, pfvf->qset.pool);
++	pfvf->qset.pool = NULL;
  }
  
-+static void otx2_vf_link_event_task(struct work_struct *work)
+ static int otx2_aura_init(struct otx2_nic *pfvf, int aura_id,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index 1865f16..b4d523a 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -138,6 +138,25 @@ static void otx2_set_rxhash(struct otx2_nic *pfvf,
+ 	skb_set_hash(skb, hash, hash_type);
+ }
+ 
++static void otx2_free_rcv_seg(struct otx2_nic *pfvf, struct nix_cqe_rx_s *cqe,
++			      int qidx)
 +{
-+	struct otx2_vf_config *config;
-+	struct cgx_link_info_msg *req;
-+	struct mbox_msghdr *msghdr;
-+	struct otx2_nic *pf;
-+	int vf_idx;
++	struct nix_rx_sg_s *sg = &cqe->sg;
++	void *end, *start;
++	u64 *seg_addr;
++	int seg;
 +
-+	config = container_of(work, struct otx2_vf_config,
-+			      link_event_work.work);
-+	vf_idx = config - config->pf->vf_configs;
-+	pf = config->pf;
-+
-+	msghdr = otx2_mbox_alloc_msg_rsp(&pf->mbox_pfvf[0].mbox_up, vf_idx,
-+					 sizeof(*req), sizeof(struct msg_rsp));
-+	if (!msghdr) {
-+		dev_err(pf->dev, "Failed to create VF%d link event\n", vf_idx);
-+		return;
++	start = (void *)sg;
++	end = start + ((cqe->parse.desc_sizem1 + 1) * 16);
++	while (start < end) {
++		sg = (struct nix_rx_sg_s *)start;
++		seg_addr = &sg->seg_addr;
++		for (seg = 0; seg < sg->segs; seg++, seg_addr++)
++			otx2_aura_freeptr(pfvf, qidx, *seg_addr & ~0x07ULL);
++		start += sizeof(*sg);
 +	}
-+
-+	req = (struct cgx_link_info_msg *)msghdr;
-+	req->hdr.id = MBOX_MSG_CGX_LINK_EVENT;
-+	req->hdr.sig = OTX2_MBOX_REQ_SIG;
-+	memcpy(&req->link_info, &pf->linfo, sizeof(req->link_info));
-+
-+	otx2_sync_mbox_up_msg(&pf->mbox_pfvf[0], vf_idx);
 +}
 +
- static int otx2_sriov_enable(struct pci_dev *pdev, int numvfs)
+ static bool otx2_check_rcv_errors(struct otx2_nic *pfvf,
+ 				  struct nix_cqe_rx_s *cqe, int qidx)
  {
- 	struct net_device *netdev = pci_get_drvdata(pdev);
- 	struct otx2_nic *pf = netdev_priv(netdev);
--	int ret;
-+	int ret, i;
+@@ -189,16 +208,17 @@ static bool otx2_check_rcv_errors(struct otx2_nic *pfvf,
+ 		/* For now ignore all the NPC parser errors and
+ 		 * pass the packets to stack.
+ 		 */
+-		return false;
++		if (cqe->sg.segs == 1)
++			return false;
+ 	}
  
- 	if (numvfs > pf->total_vfs)
- 		numvfs = pf->total_vfs;
-@@ -1946,9 +2009,23 @@ static int otx2_sriov_enable(struct pci_dev *pdev, int numvfs)
- 	if (ret)
- 		goto free_mbox;
+ 	/* If RXALL is enabled pass on packets to stack. */
+-	if (cqe->sg.segs && (pfvf->netdev->features & NETIF_F_RXALL))
++	if (cqe->sg.segs == 1 && (pfvf->netdev->features & NETIF_F_RXALL))
+ 		return false;
  
-+	pf->vf_configs = kcalloc(numvfs, sizeof(struct otx2_vf_config),
-+				 GFP_KERNEL);
-+	if (!pf->vf_configs) {
-+		ret = -ENOMEM;
-+		goto free_intr;
-+	}
-+
-+	for (i = 0; i < numvfs; i++) {
-+		pf->vf_configs[i].pf = pf;
-+		pf->vf_configs[i].intf_down = true;
-+		INIT_DELAYED_WORK(&pf->vf_configs[i].link_event_work,
-+				  otx2_vf_link_event_task);
-+	}
-+
- 	ret = otx2_pf_flr_init(pf, numvfs);
- 	if (ret)
--		goto free_intr;
-+		goto free_configs;
+ 	/* Free buffer back to pool */
+ 	if (cqe->sg.segs)
+-		otx2_aura_freeptr(pfvf, qidx, cqe->sg.seg_addr & ~0x07ULL);
++		otx2_free_rcv_seg(pfvf, cqe, qidx);
+ 	return true;
+ }
  
- 	ret = otx2_register_flr_me_intr(pf, numvfs);
- 	if (ret)
-@@ -1963,6 +2040,8 @@ static int otx2_sriov_enable(struct pci_dev *pdev, int numvfs)
- 	otx2_disable_flr_me_intr(pf);
- free_flr:
- 	otx2_flr_wq_destroy(pf);
-+free_configs:
-+	kfree(pf->vf_configs);
- free_intr:
- 	otx2_disable_pfvf_mbox_intr(pf, numvfs);
- free_mbox:
-@@ -1975,12 +2054,17 @@ static int otx2_sriov_disable(struct pci_dev *pdev)
- 	struct net_device *netdev = pci_get_drvdata(pdev);
- 	struct otx2_nic *pf = netdev_priv(netdev);
- 	int numvfs = pci_num_vf(pdev);
-+	int i;
+@@ -210,7 +230,7 @@ static void otx2_rcv_pkt_handler(struct otx2_nic *pfvf,
+ 	struct nix_rx_parse_s *parse = &cqe->parse;
+ 	struct sk_buff *skb = NULL;
  
- 	if (!numvfs)
- 		return 0;
+-	if (unlikely(parse->errlev || parse->errcode)) {
++	if (unlikely(parse->errlev || parse->errcode || cqe->sg.segs > 1)) {
+ 		if (otx2_check_rcv_errors(pfvf, cqe, cq->cq_idx))
+ 			return;
+ 	}
+@@ -789,11 +809,15 @@ void otx2_cleanup_rx_cqes(struct otx2_nic *pfvf, struct otx2_cq_queue *cq)
+ 	while ((cqe = (struct nix_cqe_rx_s *)otx2_get_next_cqe(cq))) {
+ 		if (!cqe->sg.subdc)
+ 			continue;
++		processed_cqe++;
++		if (cqe->sg.segs > 1) {
++			otx2_free_rcv_seg(pfvf, cqe, cq->cq_idx);
++			continue;
++		}
+ 		iova = cqe->sg.seg_addr - OTX2_HEAD_ROOM;
+ 		pa = otx2_iova_to_phys(pfvf->iommu_domain, iova);
+ 		otx2_dma_unmap_page(pfvf, iova, pfvf->rbsize, DMA_FROM_DEVICE);
+ 		put_page(virt_to_page(phys_to_virt(pa)));
+-		processed_cqe++;
+ 	}
  
- 	pci_disable_sriov(pdev);
- 
-+	for (i = 0; i < pci_num_vf(pdev); i++)
-+		cancel_delayed_work_sync(&pf->vf_configs[i].link_event_work);
-+	kfree(pf->vf_configs);
-+
- 	otx2_disable_flr_me_intr(pf);
- 	otx2_flr_wq_destroy(pf);
- 	otx2_disable_pfvf_mbox_intr(pf, numvfs);
+ 	/* Free CQEs to HW */
 -- 
 2.7.4
 
