@@ -2,189 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0261F180AFC
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 22:58:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B547180B07
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 23:00:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727582AbgCJV6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 17:58:05 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:47510 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727311AbgCJV6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 17:58:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583877483;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rFoH7Ve/QOaTfyLMyBzdHWsF+mknAGjgw0uOM54z3Ts=;
-        b=ZFpwpoyc83jUAMXj+2GM69O7bvy9P/tZSCYFEeQzwmW5CO5eSK3rvVEWHbuI54RjgA8jLp
-        DNtM5MVcEuIgx4OY+q3a13NCQtlkVuKe/w4rLruCZSULTZmkjg8m4AO/o1QSwFwFYXvtev
-        jixdYq6relAsJgVq0jcRYTZcvHY3zqc=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-200-IYSdyxyEM3Cd7Zez8UFL9Q-1; Tue, 10 Mar 2020 17:58:01 -0400
-X-MC-Unique: IYSdyxyEM3Cd7Zez8UFL9Q-1
-Received: by mail-qk1-f198.google.com with SMTP id 22so108871qkc.7
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 14:58:01 -0700 (PDT)
+        id S1726402AbgCJWAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 18:00:50 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:35728 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726271AbgCJWAu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 18:00:50 -0400
+Received: by mail-pl1-f194.google.com with SMTP id g6so79213plt.2;
+        Tue, 10 Mar 2020 15:00:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=Ajqcsyyjo9Nu5o9/ld/JF2Oi7jupD5+flWV0QzEfiQw=;
+        b=cObZ80srtLkhcHp4rJar8SidBKfjS4nEh3obKVnOrXHfOw3/a99Ko6KzViUIi0RKWj
+         +M+JC//Qnu0WKlg+b33KxBzHQaFcX0bi4ctHenyZ4Cem9k9LHIXG9LKqx5cAO5zsSjl6
+         5jqaLYUBRY7G7xzred+udqDBUS2PSOEuV1+XAsMsxhzPejcE4SywqfYf+vxqea7oHL6m
+         9Ui0crtd3gWeVc7pwyqEa0bok1P20cXd1He+dqvJdgv41pMLfTfaF92SYVRjxzIOZQgK
+         DQoPDIryry/cM/g+CojuPwAMdg0m/3wIUrFWVDzJG132b7jwrmKQ5jt4SuePcf9H6FUy
+         +cQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rFoH7Ve/QOaTfyLMyBzdHWsF+mknAGjgw0uOM54z3Ts=;
-        b=rAzhm66wqFDbghZx2yDFdVrquTEzrVCzqMGH7gGISAxXHcVclfpHEA8dXtiPh8enhO
-         QATRqzqZIBYTAOH2IWyyIb5/y58ylrke6ILxHv90UxmAJPKFPvUExQYjnppbv8yvO7y/
-         lucHYh69EKdiKvFfc9XwlyCuoDVvJy/p05cZqSxOtcGDMClXTXDWqxTMn/rr/Qwcd22E
-         WW0ppW21S3b5QP10tW6DPlp9yQT5+1CeSMRESP9wAdNy3PHqILRAy67jR/1CugUJWEpa
-         AH2AQhf6WHge6VGXnE6shmNp2Ink4mrb78GQPMCDnm/joJn7+oEqmGiI/QoIaCiFBh8u
-         afDQ==
-X-Gm-Message-State: ANhLgQ0vsTUH6bEbo1+7eMor6mReEBRR59IPA6D6mH46exGzU/mPIjGj
-        ClxLJbL/fx1kg3N/JEC5T3RuCwYOuoL/mbbAJa8QsaHq1ZFbG4/yfQTDh+yJazSJrmDifSAF7bn
-        685R1nxfPny+c9QjZ
-X-Received: by 2002:ac8:366d:: with SMTP id n42mr77895qtb.180.1583877480967;
-        Tue, 10 Mar 2020 14:58:00 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vsDBRq6UMElOACGpfbm+5PX3Fxg2rRfH89/pZvbT5wKDzqiq8TmlkpMtJKKgkT7YapygMqtFw==
-X-Received: by 2002:ac8:366d:: with SMTP id n42mr77881qtb.180.1583877480642;
-        Tue, 10 Mar 2020 14:58:00 -0700 (PDT)
-Received: from redhat.com (bzq-79-178-2-19.red.bezeqint.net. [79.178.2.19])
-        by smtp.gmail.com with ESMTPSA id v126sm7543776qkb.107.2020.03.10.14.57.58
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=Ajqcsyyjo9Nu5o9/ld/JF2Oi7jupD5+flWV0QzEfiQw=;
+        b=JhxKHXi00N3YoME/glwFk/JmED8WnHBYLmNXUtia2f2mB0dHTEmAeYuScU9YsqpXqA
+         TK+D+mEFaflnTpHa1NPXs1EpsfeN6Vs2nrSf0sM56RF1G0CQs680YIW8W2rp2UKuyilY
+         HbX1Y1U4usJBLd5foChIkgqjjK/kBHuvmTA6obSw9AoFnCj2Hi8X0lnbGCmlXieR1y1d
+         XbYUZUcARNFt7YbI6c59yc+8Byvg3CTMFTvtj0Lihk1vppCEXTBlq9H9tYcrFKwsOqEK
+         L+5YJ+o56I5XirJcyikfplRN/FTwPB/EV2i+kOj/N+FhvOv2rfsBkggcOq9NQzvOER9W
+         5p5A==
+X-Gm-Message-State: ANhLgQ33XMyr/zBMKiHq/HIK6/+NYsec+8ylsQL01oz78HyX3vTBAcRH
+        VaRF9ZDuxJKU2n7/bj+ASSQ=
+X-Google-Smtp-Source: ADFU+vvsfgNFKJx9vPTpUiP9R8YpQ01vzx8WuvcVDVSseRHrtqYBTIotuo4dXVKTXAtOaWxSV1uitA==
+X-Received: by 2002:a17:902:8303:: with SMTP id bd3mr28189plb.171.1583877648097;
+        Tue, 10 Mar 2020 15:00:48 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id o19sm3763311pjr.2.2020.03.10.15.00.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Mar 2020 14:57:59 -0700 (PDT)
-Date:   Tue, 10 Mar 2020 17:57:55 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH net] net/packet: tpacket_rcv: do not increment ring index
- on drop
-Message-ID: <20200310175627-mutt-send-email-mst@kernel.org>
-References: <20200309153435.32109-1-willemdebruijn.kernel@gmail.com>
- <20200310023528-mutt-send-email-mst@kernel.org>
- <CA+FuTSd=oLQhtKet-n5r++3HHmHR+5rMkDqSMyjArOBfF4vsKw@mail.gmail.com>
- <20200310085437-mutt-send-email-mst@kernel.org>
- <CA+FuTSe+mxUwHMTccO7QO+GVi1TUgxbwZoAktGTD+15yMZf5Vw@mail.gmail.com>
- <20200310104024-mutt-send-email-mst@kernel.org>
- <CA+FuTSeZFTUShADA0STcHjSt88JsSGWQ0nnc5Sr-oQAvRH+-3A@mail.gmail.com>
- <20200310172833-mutt-send-email-mst@kernel.org>
- <CA+FuTSfrjThis9UchhiKE2ibMKVgCvfTdbeB0Q33XiTDLBEX8w@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSfrjThis9UchhiKE2ibMKVgCvfTdbeB0Q33XiTDLBEX8w@mail.gmail.com>
+        Tue, 10 Mar 2020 15:00:47 -0700 (PDT)
+Date:   Tue, 10 Mar 2020 15:00:37 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     quentin@isovalent.com, kernel-team@fb.com, ast@kernel.org,
+        daniel@iogearbox.net, arnaldo.melo@gmail.com, jolsa@kernel.org,
+        Song Liu <songliubraving@fb.com>
+Message-ID: <5e680e05a8667_74702b1610cf25b4b4@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200310183624.441788-1-songliubraving@fb.com>
+References: <20200310183624.441788-1-songliubraving@fb.com>
+Subject: RE: [PATCH bpf-next 0/2] Fixes for bpftool-prog-profile
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 05:35:55PM -0400, Willem de Bruijn wrote:
-> On Tue, Mar 10, 2020 at 5:30 PM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > On Tue, Mar 10, 2020 at 11:38:16AM -0400, Willem de Bruijn wrote:
-> > > On Tue, Mar 10, 2020 at 10:44 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > >
-> > > > On Tue, Mar 10, 2020 at 10:16:56AM -0400, Willem de Bruijn wrote:
-> > > > > On Tue, Mar 10, 2020 at 8:59 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > >
-> > > > > > On Tue, Mar 10, 2020 at 08:49:23AM -0400, Willem de Bruijn wrote:
-> > > > > > > On Tue, Mar 10, 2020 at 2:43 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > > >
-> > > > > > > > On Mon, Mar 09, 2020 at 11:34:35AM -0400, Willem de Bruijn wrote:
-> > > > > > > > > From: Willem de Bruijn <willemb@google.com>
-> > > > > > > > >
-> > > > > > > > > In one error case, tpacket_rcv drops packets after incrementing the
-> > > > > > > > > ring producer index.
-> > > > > > > > >
-> > > > > > > > > If this happens, it does not update tp_status to TP_STATUS_USER and
-> > > > > > > > > thus the reader is stalled for an iteration of the ring, causing out
-> > > > > > > > > of order arrival.
-> > > > > > > > >
-> > > > > > > > > The only such error path is when virtio_net_hdr_from_skb fails due
-> > > > > > > > > to encountering an unknown GSO type.
-> > > > > > > > >
-> > > > > > > > > Signed-off-by: Willem de Bruijn <willemb@google.com>
-> > > > > > > > >
-> > > > > > > > > ---
-> > > > > > > > >
-> > > > > > > > > I wonder whether it should drop packets with unknown GSO types at all.
-> > > > > > > > > This consistently blinds the reader to certain packets, including
-> > > > > > > > > recent UDP and SCTP GSO types.
-> > > > > > > >
-> > > > > > > > Ugh it looks like you have found a bug.  Consider a legacy userspace -
-> > > > > > > > it was actually broken by adding USD and SCTP GSO.  I suspect the right
-> > > > > > > > thing to do here is actually to split these packets up, not drop them.
-> > > > > > >
-> > > > > > > In the main virtio users, virtio_net/tun/tap, the packets will always
-> > > > > > > arrive segmented, due to these devices not advertising hardware
-> > > > > > > segmentation for these protocols.
-> > > > > >
-> > > > > > Oh right. That's good then, sorry about the noise.
-> > > > >
-> > > > > Not at all. Thanks for taking a look!
-> > > > >
-> > > > > > > So the issue is limited to users of tpacket_rcv, which is relatively
-> > > > > > > new. There too it is limited on egress to devices that do advertise
-> > > > > > > h/w offload. And on r/x to GRO.
-> > > > > > >
-> > > > > > > The UDP GSO issue precedes the fraglist GRO patch, by the way, and
-> > > > > > > goes back to my (argh!) introduction of the feature on the egress
-> > > > > > > path.
-> > > > > > >
-> > > > > > > >
-> > > > > > > > > The peer function virtio_net_hdr_to_skb already drops any packets with
-> > > > > > > > > unknown types, so it should be fine to add an SKB_GSO_UNKNOWN type and
-> > > > > > > > > let the peer at least be aware of failure.
-> > > > > > > > >
-> > > > > > > > > And possibly add SKB_GSO_UDP_L4 and SKB_GSO_SCTP types to virtio too.
-> > > > > > > >
-> > > > > > > > This last one is possible for sure, but for virtio_net_hdr_from_skb
-> > > > > > > > we'll need more flags to know whether it's safe to pass
-> > > > > > > > these types to userspace.
-> > > > > > >
-> > > > > > > Can you elaborate? Since virtio_net_hdr_to_skb users already returns
-> > > > > > > -EINVAL on unknown GSO types and its callers just drop these packets,
-> > > > > > > it looks to me that the infra is future proof wrt adding new GSO
-> > > > > > > types.
-> > > > > >
-> > > > > > Oh I mean if we do want to add new types and want to pass them to
-> > > > > > users, then virtio_net_hdr_from_skb will need to flag so it
-> > > > > > knows whether that will or won't confuse userspace.
-> > > > >
-> > > > > I'm not sure how that would work. Ignoring other tun/tap/virtio for
-> > > > > now, just looking at tpacket, a new variant of socket option for
-> > > > > PACKET_VNET_HDR, for every new GSO type?
-> > > >
-> > > > Maybe a single one with a bitmap of legal types?
-> > > >
-> > > > > In practice the userspace I'm aware of, and any sane implementation,
-> > > > > will be future proof to drop and account packets whose type it cannot
-> > > > > process. So I think we can just add new types.
-> > > >
-> > > > Well if packets are just dropped then userspace breaks right?
-> > >
-> > > It is an improvement over the current silent discard in the kernel.
-> > >
-> > > If it can count these packets, userspace becomes notified that it
-> > > should perhaps upgrade or use ethtool to stop the kernel from
-> > > generating certain packets.
-> > >
-> > > Specifically for packet sockets, it wants to receive packets as they
-> > > appear "on the wire". It does not have to drop these today even, but
-> > > can easily parse the headers.
-> > >
-> > > For packet sockets at least, I don't think that we want transparent
-> > > segmentation.
-> >
-> > Well it's GSO is in the way then it's no longer "on the wire", right?
-> > Whether we split these back to individual skbs or we don't
-> > it's individual packets that are on the wire. GSO just allows
-> > passing them to the application in a more efficient way.
+Song Liu wrote:
+> 1. Fix build for older clang;
+> 2. Fix skeleton's dependency on libbpf.
 > 
-> Not entirely. With TSO enabled, packet sockets will show the TCP TSO
-> packets, not the individual segment on the wire.
+> Song Liu (2):
+>   bpftool: only build bpftool-prog-profile with clang >= v11
+>   bpftool: skeleton should depend on libbpf
+> 
+>  tools/bpf/bpftool/Makefile | 15 ++++++++++++---
+>  tools/bpf/bpftool/prog.c   |  2 ++
+>  2 files changed, 14 insertions(+), 3 deletions(-)
+> 
+> --
+> 2.17.1
 
-But nothing breaks if it shows a segment on the wire while linux
-processes packets in batches, right? It's just some extra info that
-an app can't handle, so we hide it from the app...
+Maybe instead of "Please recompile" -> "Please build" sounds a bit better
+to me but that is probably a matter of preference and doesn't matter much.
 
--- 
-MST
+Anyways for the series,
 
+Acked-by: John Fastabend <john.fastabend@gmail.com>
