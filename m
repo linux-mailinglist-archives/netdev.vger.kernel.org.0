@@ -2,72 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFE5817EEEB
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 04:02:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95EF917EEF2
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 04:05:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726520AbgCJDCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 23:02:35 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:47042 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726378AbgCJDCe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 23:02:34 -0400
-Received: by mail-lj1-f195.google.com with SMTP id d23so1820530ljg.13;
-        Mon, 09 Mar 2020 20:02:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FMyz+6HzHs6glLgbt0Jv4MeqzMaEFKI1LE36Rw0dJGI=;
-        b=foI0znYkmoi+qK4idW5rxtdg/ccI7me39I/hMgD/eikfI00wX8Vp8yYRCh3BGaxrNv
-         cc7aAMras0N5hnVv6aEWObSf10ZEmY4UHtc7lkYi6j+zmRgWPp8mwdCjGDkr5BUoEKkp
-         Bue4XzeSNHzD8rMglxABS8oVF2L7I9gLv5juXeOpg20vfStYFqGnZJ3E3Tn0cNYJGtp4
-         m1uaWH+cXDjeCH9Sgt+mvuUksPj55Xmx+HkXB0tU2eqmk8+X1tJsU+By6jszoULhTJGA
-         rrvPtI1wjwXxXgOzT6ydMbMhO0OV/WmoHh7mZEVPG4e+l/qKIfFhieWavIPWwWz08Png
-         X4mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FMyz+6HzHs6glLgbt0Jv4MeqzMaEFKI1LE36Rw0dJGI=;
-        b=SqYHJQVIfK8I7Yd/cUI8c67VFQXvSEItO8+JZzfLqwjWghLvA/oSfJxJbgRwVHn90k
-         MYbr+Sggb4XZdhd+p1k92sKw8eGuINxZ/7G2p0+0GlqJCVZ2JsmtCR5ZD9xVcfcbJrCp
-         ISdJx4zcPBsH/1xZ/+Mjlip0S7WTZX3e/iDVU5AoyBHfCH2+nFNhHIzkurGhjW0IRVGs
-         EASxVxyQVkA84sTYi3gNdLhAA2B546qFhRrg9SDDsjQe9Bnob6azcfwywKw0ybEOAIPG
-         Am2XnNnDBmIittk5vfs2fnNoYWs6XHofzlXbfCiiMKXYti9vvRVPLktA9Dh6huDDcL3t
-         nC1g==
-X-Gm-Message-State: ANhLgQ0zAwDAxK09kz6B0b6+zZsSrRgaM2d3Omkc9EmNOoankVcY0ae4
-        SjT3ofniGN8Hk3g0By+rExZ7GQ6uAwqEU4D/HvfqvA==
-X-Google-Smtp-Source: ADFU+vvAaCpGnKFc+0m2LTzG3jNEwQYY909pJys96V+IUoU1xoCLm+cQSfN0V7mkCBi51aKt7Dt7rU74J88WPUtM0MQ=
-X-Received: by 2002:a2e:5ce:: with SMTP id 197mr2753318ljf.234.1583809351150;
- Mon, 09 Mar 2020 20:02:31 -0700 (PDT)
+        id S1725845AbgCJDF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 23:05:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47230 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726170AbgCJDF5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 23:05:57 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A97B1205F4;
+        Tue, 10 Mar 2020 03:05:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583809556;
+        bh=41sVyPq8m8AjlbaGmToeD4KjKX8nRokDDrSUSYDzBq4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=emGpi/edgnUjEFjilMsx0hNkCzKCZowdNcQEFGfV9dlQ9Q6Y+OA4XK5mbpfgOdA8D
+         fRW/HC4iU8RKxt9c9Zho5VFEGdRSjqRqM5NQzYAKfv7/oO6g/5VKUW/SffRO+a0e/G
+         dWhc75NqK0IgGyS9ubbYOBCPqtTBpKXmspur6h44=
+Date:   Mon, 9 Mar 2020 20:05:53 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, akiyano@amazon.com, netanel@amazon.com,
+        gtzalik@amazon.com, irusskikh@marvell.com, f.fainelli@gmail.com,
+        bcm-kernel-feedback-list@broadcom.com, rmody@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, aelior@marvell.com,
+        skalluru@marvell.com, GR-everest-linux-l2@marvell.com,
+        opendmb@gmail.com, siva.kallam@broadcom.com, prashant@broadcom.com,
+        mchan@broadcom.com, dchickles@marvell.com, sburla@marvell.com,
+        fmanlunas@marvell.com, tariqt@mellanox.com, vishal@chelsio.com,
+        ulli.kroll@googlemail.com, linus.walleij@linaro.org
+Subject: Re: [PATCH net-next 00/15] ethtool: consolidate irq coalescing -
+ part 3
+Message-ID: <20200309200553.770819bc@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200309.194313.585990109584018645.davem@davemloft.net>
+References: <20200310021512.1861626-1-kuba@kernel.org>
+        <20200309.194313.585990109584018645.davem@davemloft.net>
 MIME-Version: 1.0
-References: <20200309224017.1063297-1-andriin@fb.com>
-In-Reply-To: <20200309224017.1063297-1-andriin@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 9 Mar 2020 20:02:19 -0700
-Message-ID: <CAADnVQKQTsjJmYM1Gi-UAnQCS8PChXzwMiSuhY5Ev0HjyX=+Dg@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: fix cgroup ref leak in cgroup_bpf_inherit on out-of-memory
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Roman Gushchin <guro@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 9, 2020 at 3:41 PM Andrii Nakryiko <andriin@fb.com> wrote:
->
-> There is no compensating cgroup_bpf_put() for each ancestor cgroup in
-> cgroup_bpf_inherit(). If compute_effective_progs returns error, those cgroups
-> won't be freed ever. Fix it by putting them in cleanup code path.
->
-> Fixes: e10360f815ca ("bpf: cgroup: prevent out-of-order release of cgroup bpf")
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+On Mon, 09 Mar 2020 19:43:13 -0700 (PDT) David Miller wrote:
+> From: Jakub Kicinski <kuba@kernel.org>
+> Date: Mon,  9 Mar 2020 19:14:57 -0700
+> 
+> > Convert more drivers following the groundwork laid in a recent
+> > patch set [1] and continued in [2]. The aim of the effort is to
+> > consolidate irq coalescing parameter validation in the core.
+> > 
+> > This set converts 15 drivers in drivers/net/ethernet.
+> > 3 more conversion sets to come.
+> > 
+> > None of the drivers here checked all unsupported parameters.
+> > 
+> > [1] https://lore.kernel.org/netdev/20200305051542.991898-1-kuba@kernel.org/
+> > [2] https://lore.kernel.org/netdev/20200306010602.1620354-1-kuba@kernel.org/  
+> 
+> I'll let this sit for a day for review(s).
 
-Applied. Thanks
+Makes sense, this is partially manual work, good to have it double
+checked by folks.
