@@ -2,55 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D6F6617ED94
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 02:04:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A298A17ED98
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 02:05:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727539AbgCJBEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 21:04:31 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:34378 "EHLO
+        id S1726195AbgCJBFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 21:05:06 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:34388 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727441AbgCJBEb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 21:04:31 -0400
+        with ESMTP id S1726115AbgCJBFF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 21:05:05 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 75AE215A01A79;
-        Mon,  9 Mar 2020 18:04:30 -0700 (PDT)
-Date:   Mon, 09 Mar 2020 18:04:30 -0700 (PDT)
-Message-Id: <20200309.180430.1182071186379257002.davem@davemloft.net>
-To:     julietk@linux.vnet.ibm.com
-Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        tlfalcon@linux.vnet.ibm.com
-Subject: Re: [PATCH net] ibmvnic: Do not process device remove during
- device reset
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 18EA615A01A9C;
+        Mon,  9 Mar 2020 18:05:05 -0700 (PDT)
+Date:   Mon, 09 Mar 2020 18:05:04 -0700 (PDT)
+Message-Id: <20200309.180504.1416144561494778143.davem@davemloft.net>
+To:     martin.varghese@nokia.com
+Cc:     ap420073@gmail.com, netdev@vger.kernel.org,
+        martinvarghesenokia@gmail.com
+Subject: Re: 2baecda bareudp: remove unnecessary udp_encap_enable() in
+ bareudp_socket_create()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200310000204.58596-1-julietk@linux.vnet.ibm.com>
-References: <20200310000204.58596-1-julietk@linux.vnet.ibm.com>
+In-Reply-To: <DB6PR07MB44089E7D737DE2A76C7EEBEDEDFF0@DB6PR07MB4408.eurprd07.prod.outlook.com>
+References: <DB6PR07MB44089E7D737DE2A76C7EEBEDEDFF0@DB6PR07MB4408.eurprd07.prod.outlook.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 09 Mar 2020 18:04:30 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 09 Mar 2020 18:05:05 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Juliet Kim <julietk@linux.vnet.ibm.com>
-Date: Mon,  9 Mar 2020 19:02:04 -0500
+From: "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
+Date: Tue, 10 Mar 2020 01:03:49 +0000
 
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-> index c75239d8820f..7ef1ae0d49bc 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -2144,6 +2144,8 @@ static void __ibmvnic_reset(struct work_struct *work)
->  	struct ibmvnic_adapter *adapter;
->  	u32 reset_state;
->  	int rc = 0;
-> +	unsigned long flags;
-> +	bool saved_state = false;
+> HI Taehee Yoo & David,
+> 
+> The commit "2baecda bareudp: remove unnecessary udp_encap_enable() in bareudp_socket_create()" breaks the receive handler  of  bareudp device.
+> setup_udp_tunnel_sock does not call udp_encap_enable() if the socket is ipv6. In bareudp v6 socket is used to receive v4 traffic also.
+> Please let me know if I need to submit a patch again to put back the below lines
+> 
+> if (sock->sk->sk_family == AF_INET6)
+>              udp_encap_enable();
 
-Please preserve the reverse christmas tree ordering of local variables.
-
-Thank you.
+So submit a fix.
