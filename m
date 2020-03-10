@@ -2,123 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BA0F17FDEE
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 14:31:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE91717FF96
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 14:57:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728934AbgCJNbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 09:31:19 -0400
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:35146 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728175AbgCJMuD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 08:50:03 -0400
-Received: by mail-yw1-f67.google.com with SMTP id d79so12405898ywd.2
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 05:50:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lneMI4/memVWIRrQHffx6BbrjwoYtiBD02PIh1IZOlg=;
-        b=JAvESyQxMSmfC1VGFcxQey6J1iNvq7HkazvyK9PPQg2KQixdfa2o9s5nTxJ4eN5pDH
-         uKqkjRCVSpbPTpDlOigF4MsBpbLNLmQrTUqgUshSZeQoh40TUiqWYgKJ30XgikEcmdYN
-         Bs9o3b8PVJ2SuK4gluXIgafoM7SpE/3AujP0DFBhxPJyFp5DIAixvZY6XuhYOK6N2iRh
-         86clcX345I7NXOnKNArC+azZa7sIlBqaXtFnTAebU6eQTnuXvZDdcRhK13gb3Qgl0Ru3
-         BVQBW91sJJyy1nwetOKGubyNEwycOgGM+g8MqlpLQCV+PYTahVszHmOb9fHs3qe9KlEV
-         xXag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lneMI4/memVWIRrQHffx6BbrjwoYtiBD02PIh1IZOlg=;
-        b=FFHfJqvliRH7/N0IAcKXvycKxaEMsOOsVZ9e+Nili+fcEs9RQgVL1FPIAFcDT4PXBh
-         vXwNlHwLZ4AkD0Qb4ihK1NjM88CPy8RmqMQQ7FoZcFe6NjwK2jnfbB1FQ7XyssX2Y20q
-         Usfuo2HjfE1VVcpaVQJaNTlr1/RIyrpJjlJlpanzP4UtKkK2gSjjTgiL3nvGCCONb9i/
-         L148rgUYehihlfPuuIFCK9UCqypaNHsAq4yEzWL502f6/U9wDw5QRr0x9fbRKsHuScp7
-         ejTQz5B6W//xLp6ASYV/Intum44G+E2YDCDMCVfUgT8VUf1WTLD/rwVIhg1b7uHNIv3O
-         subg==
-X-Gm-Message-State: ANhLgQ05Vhv5oDBzpXRUYEGU+UVBoezJGYtXlIQ4u54/4jT7rMyEh6Bt
-        EYbUidY88oXQJdQoL47Xilblr/Kv
-X-Google-Smtp-Source: ADFU+vvtpjeWCntmTSElA4axT9THVK92pW8UNPGbj/6qoctpJWLpuOZjmH9TRx3bxbOLYQ0jZrku3g==
-X-Received: by 2002:a25:820a:: with SMTP id q10mr21531845ybk.53.1583844602072;
-        Tue, 10 Mar 2020 05:50:02 -0700 (PDT)
-Received: from mail-yw1-f43.google.com (mail-yw1-f43.google.com. [209.85.161.43])
-        by smtp.gmail.com with ESMTPSA id r192sm351056ywg.48.2020.03.10.05.50.00
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Mar 2020 05:50:01 -0700 (PDT)
-Received: by mail-yw1-f43.google.com with SMTP id d79so12405791ywd.2
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 05:50:00 -0700 (PDT)
-X-Received: by 2002:a81:844f:: with SMTP id u76mr21041826ywf.322.1583844600061;
- Tue, 10 Mar 2020 05:50:00 -0700 (PDT)
+        id S1726708AbgCJN5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 09:57:00 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:39581 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726380AbgCJN47 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 09:56:59 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1583848619; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=7SNDskvdVEd15DtsrwRPuJkE2EW0gXby/GtBo14LN2E=; b=PZHOd/jACQ9ptzYzViRdIY8fdGTHKELbl1CSxluB8Dg3v6N/JYqN/aQdaT+1eZQ4tBP1O11f
+ +nmwvhTGndOMMy7VO8HKskhs5PBjjyav9qRRtsmBlycQ/jeCh+jHQO+2wmUOwUm/OVLmHc/c
+ xC20n8xoKy38vvzpOSYQJ/xVkmY=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e679ca5.7fd1a5e56378-smtp-out-n01;
+ Tue, 10 Mar 2020 13:56:53 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 16700C43637; Tue, 10 Mar 2020 13:56:52 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id DAF9AC433CB;
+        Tue, 10 Mar 2020 13:56:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DAF9AC433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     Joe Perches <joe@perches.com>, Daniel Drake <dsd@gentoo.org>,
+        Ulrich Kunitz <kune@deine-taler.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jes.Sorensen@gmail.com
+Subject: Re: [PATCH][next] zd1211rw/zd_usb.h: Replace zero-length array with flexible-array member
+References: <20200305111216.GA24982@embeddedor>
+        <87k13yq2jo.fsf@kamboji.qca.qualcomm.com>
+        <256881484c5db07e47c611a56550642a6f6bd8e9.camel@perches.com>
+        <87blpapyu5.fsf@kamboji.qca.qualcomm.com>
+        <1bb7270f-545b-23ca-aa27-5b3c52fba1be@embeddedor.com>
+Date:   Tue, 10 Mar 2020 15:56:46 +0200
+In-Reply-To: <1bb7270f-545b-23ca-aa27-5b3c52fba1be@embeddedor.com> (Gustavo A.
+        R. Silva's message of "Thu, 5 Mar 2020 12:28:27 -0600")
+Message-ID: <87r1y0nwip.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-References: <20200309153435.32109-1-willemdebruijn.kernel@gmail.com> <20200310023528-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20200310023528-mutt-send-email-mst@kernel.org>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 10 Mar 2020 08:49:23 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSd=oLQhtKet-n5r++3HHmHR+5rMkDqSMyjArOBfF4vsKw@mail.gmail.com>
-Message-ID: <CA+FuTSd=oLQhtKet-n5r++3HHmHR+5rMkDqSMyjArOBfF4vsKw@mail.gmail.com>
-Subject: Re: [PATCH net] net/packet: tpacket_rcv: do not increment ring index
- on drop
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 2:43 AM Michael S. Tsirkin <mst@redhat.com> wrote:
++ jes
+
+"Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
+
+> Hi,
 >
-> On Mon, Mar 09, 2020 at 11:34:35AM -0400, Willem de Bruijn wrote:
-> > From: Willem de Bruijn <willemb@google.com>
-> >
-> > In one error case, tpacket_rcv drops packets after incrementing the
-> > ring producer index.
-> >
-> > If this happens, it does not update tp_status to TP_STATUS_USER and
-> > thus the reader is stalled for an iteration of the ring, causing out
-> > of order arrival.
-> >
-> > The only such error path is when virtio_net_hdr_from_skb fails due
-> > to encountering an unknown GSO type.
-> >
-> > Signed-off-by: Willem de Bruijn <willemb@google.com>
-> >
-> > ---
-> >
-> > I wonder whether it should drop packets with unknown GSO types at all.
-> > This consistently blinds the reader to certain packets, including
-> > recent UDP and SCTP GSO types.
+> On 3/5/20 10:10, Kalle Valo wrote:
+>> Joe Perches <joe@perches.com> writes:
+>> 
+>>> On Thu, 2020-03-05 at 16:50 +0200, Kalle Valo wrote:
+>>>> "Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
+>>> []
+>>>>>  drivers/net/wireless/zydas/zd1211rw/zd_usb.h | 8 ++++----
+>>>>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>>>>
+>>>> "zd1211rw: " is enough, no need to have the filename in the title.
+>> 
+>>>> But I asked this already in an earlier patch, who prefers this format?
+>>>> It already got opposition so I'm not sure what to do.
+>>>
+>>> I think it doesn't matter.
+>>>
+>>> Trivial inconsistencies in patch subject and word choice
+>>> don't have much overall impact.
+>> 
+>> I wrote in a confusing way, my question above was about the actual patch
+>> and not the the title. For example, Jes didn't like this style change:
+>> 
+>> https://patchwork.kernel.org/patch/11402315/
+>> 
 >
-> Ugh it looks like you have found a bug.  Consider a legacy userspace -
-> it was actually broken by adding USD and SCTP GSO.  I suspect the right
-> thing to do here is actually to split these packets up, not drop them.
+> It doesn't seem that that comment adds a lot to the conversation. The only
+> thing that it says is literally "fix the compiler". By the way, more than
+> a hundred patches have already been applied to linux-next[1] and he seems
+> to be the only person that has commented such a thing.
 
-In the main virtio users, virtio_net/tun/tap, the packets will always
-arrive segmented, due to these devices not advertising hardware
-segmentation for these protocols.
+But I also asked who prefers this format in that thread, you should not
+ignore questions from two maintainers (me and Jes).
 
-So the issue is limited to users of tpacket_rcv, which is relatively
-new. There too it is limited on egress to devices that do advertise
-h/w offload. And on r/x to GRO.
-
-The UDP GSO issue precedes the fraglist GRO patch, by the way, and
-goes back to my (argh!) introduction of the feature on the egress
-path.
-
+> Qemu guys are adopting this format, too[2][3].
 >
-> > The peer function virtio_net_hdr_to_skb already drops any packets with
-> > unknown types, so it should be fine to add an SKB_GSO_UNKNOWN type and
-> > let the peer at least be aware of failure.
-> >
-> > And possibly add SKB_GSO_UDP_L4 and SKB_GSO_SCTP types to virtio too.
+> On the other hand, the changelog text explains the reasons why we are
+> implementing this change all across the kernel tree. :)
 >
-> This last one is possible for sure, but for virtio_net_hdr_from_skb
-> we'll need more flags to know whether it's safe to pass
-> these types to userspace.
+> [1]
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/?qt=grep&q=flexible-array
+> [2] https://lists.nongnu.org/archive/html/qemu-s390x/2020-03/msg00019.html
+> [3] https://lists.nongnu.org/archive/html/qemu-s390x/2020-03/msg00020.html
 
-Can you elaborate? Since virtio_net_hdr_to_skb users already returns
--EINVAL on unknown GSO types and its callers just drop these packets,
-it looks to me that the infra is future proof wrt adding new GSO
-types.
+TBH I was leaning more on Jes side on this, but I guess these patches
+are ok if they are so widely accepted. Unless anyone objects?
+
+-- 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
