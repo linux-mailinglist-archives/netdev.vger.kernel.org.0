@@ -2,130 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58CDC180B4F
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 23:17:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43246180B5F
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 23:20:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727659AbgCJWRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 18:17:30 -0400
-Received: from smtprelay0079.hostedemail.com ([216.40.44.79]:35170 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726283AbgCJWR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 18:17:29 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 6609018224D99;
-        Tue, 10 Mar 2020 22:17:28 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:967:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1605:1711:1730:1747:1777:1792:2198:2199:2393:2525:2553:2561:2564:2682:2685:2828:2859:2892:2902:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:5007:6117:6119:7903:9025:10004:10400:10848:11026:11232:11473:11658:11914:12043:12295:12297:12438:12555:12663:12740:12760:12895:12986:13161:13229:13255:13439:14040:14181:14659:14721:21080:21094:21324:21433:21451:21627:21740:21939:21972:21990:30006:30012:30041:30054:30070:30075:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:5,LUA_SUMMARY:none
-X-HE-Tag: event05_5e115b0cde81b
-X-Filterd-Recvd-Size: 4412
-Received: from XPS-9350.home (unknown [47.151.143.254])
-        (Authenticated sender: joe@perches.com)
-        by omf02.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 10 Mar 2020 22:17:26 +0000 (UTC)
-Message-ID: <937b0b529509ec1641453ef7c13f38e2d7cc813e.camel@perches.com>
+        id S1727829AbgCJWUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 18:20:24 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:35253 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726283AbgCJWUY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 18:20:24 -0400
+Received: by mail-qk1-f194.google.com with SMTP id d8so232985qka.2;
+        Tue, 10 Mar 2020 15:20:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NEpWOdVoi/iDtTT5Bsmm6f/B1M2omplWiBwyNHZRkjI=;
+        b=Jf/Q/zMHy+/L1gSUu+KICKyM/xmYJDxJ/IbQ320PnkWOU0159X1Aky8hQAVWPT5Iag
+         lNxYCngL3V54655yZwv5ANH+Ye+upLo5I/HO/d2S4OoqS+I21E01Aw0z9vydNtwJcrUd
+         2n63OYFANiT3HNOVGC7Bc+n52vQCG64gBoomIGidOz8seOO5IVKTwt+mk0IenaszTApg
+         WdbNM22CJhIhvLJnfvmgJeDWQ6DjU3H+2q2MeSzo/kBWAWj/j2TQMkRfTcf/s25hfOL2
+         gBgEJ3icckH86dBWOa/CGyaKUijdtO0i6feJs/s7ppZebqRSKiFJsmdjjDQU9Uxf0WwX
+         sBCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NEpWOdVoi/iDtTT5Bsmm6f/B1M2omplWiBwyNHZRkjI=;
+        b=Ipoohm0V4YfqU4UonYykrRgipm68y04JrubxVQoe3bnQio7s62kH4+JC6T2VCxMaYd
+         lnptPRhR86XJcbn66rXJAdQflh8VtjYUWFkA77coiZYPkSmK7oOXJgrKi7WETnmS/5n6
+         ABVefWdbEqOomOh4axA/Y8fQGtMIxdkIqfAXuwVYixuBheiGNOwuX/Hp21co6fgspXiP
+         FXc0lkhkpZIYfyZ983MOB7OuBDHFW8i7IkU7Jvy2z7f4qYkmxIOlXpb78ncQrfBdD4Oq
+         YZMxnUySyz7CzQmYMsNT6y4fIk3yJn5lpJwewXJjkPdWurZnMn85gXiNAFfejCJqDcNk
+         Tgng==
+X-Gm-Message-State: ANhLgQ2X7OPFkXnTqXS3UQVjihthoCD4Zr3InsS3tJEikOfPOhaRXMtH
+        gC7N11vmp/AfjLQxvQ4vGgUrka4g6Is=
+X-Google-Smtp-Source: ADFU+vu5osNvBMkK/6mmAyOzwJOslfa0QZFZDJ9P4Ra92MuBL0vU9KuWTYyPACu33MxlkJH9/IY2gw==
+X-Received: by 2002:a37:66c9:: with SMTP id a192mr109147qkc.10.1583878822402;
+        Tue, 10 Mar 2020 15:20:22 -0700 (PDT)
+Received: from ?IPv6:2620:10d:c0a8:11d1::111b? ([2620:10d:c091:480::fee])
+        by smtp.gmail.com with ESMTPSA id g3sm9305059qke.89.2020.03.10.15.20.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Mar 2020 15:20:21 -0700 (PDT)
+From:   Jes Sorensen <jes.sorensen@gmail.com>
+X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
 Subject: Re: [PATCH][next] zd1211rw/zd_usb.h: Replace zero-length array with
  flexible-array member
-From:   Joe Perches <joe@perches.com>
 To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Jes Sorensen <jes.sorensen@gmail.com>,
         Kalle Valo <kvalo@codeaurora.org>
-Cc:     Daniel Drake <dsd@gentoo.org>, Ulrich Kunitz <kune@deine-taler.de>,
+Cc:     Joe Perches <joe@perches.com>, Daniel Drake <dsd@gentoo.org>,
+        Ulrich Kunitz <kune@deine-taler.de>,
         "David S. Miller" <davem@davemloft.net>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Date:   Tue, 10 Mar 2020 15:15:44 -0700
-In-Reply-To: <fb3395d7-e932-10ac-1feb-ab2ceb63424e@embeddedor.com>
 References: <20200305111216.GA24982@embeddedor>
-         <87k13yq2jo.fsf@kamboji.qca.qualcomm.com>
-         <256881484c5db07e47c611a56550642a6f6bd8e9.camel@perches.com>
-         <87blpapyu5.fsf@kamboji.qca.qualcomm.com>
-         <1bb7270f-545b-23ca-aa27-5b3c52fba1be@embeddedor.com>
-         <87r1y0nwip.fsf@kamboji.qca.qualcomm.com>
-         <48ff1333-0a14-36d8-9565-a7f13a06c974@embeddedor.com>
-         <021d1125-3ffd-39ef-395a-b796c527bde4@gmail.com>
-         <fb3395d7-e932-10ac-1feb-ab2ceb63424e@embeddedor.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
+ <87k13yq2jo.fsf@kamboji.qca.qualcomm.com>
+ <256881484c5db07e47c611a56550642a6f6bd8e9.camel@perches.com>
+ <87blpapyu5.fsf@kamboji.qca.qualcomm.com>
+ <1bb7270f-545b-23ca-aa27-5b3c52fba1be@embeddedor.com>
+ <87r1y0nwip.fsf@kamboji.qca.qualcomm.com>
+ <48ff1333-0a14-36d8-9565-a7f13a06c974@embeddedor.com>
+ <021d1125-3ffd-39ef-395a-b796c527bde4@gmail.com>
+ <fb3395d7-e932-10ac-1feb-ab2ceb63424e@embeddedor.com>
+Message-ID: <361da904-5adf-eb0c-e937-c5d2f69ac8be@gmail.com>
+Date:   Tue, 10 Mar 2020 18:20:20 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
+In-Reply-To: <fb3395d7-e932-10ac-1feb-ab2ceb63424e@embeddedor.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-03-10 at 17:13 -0500, Gustavo A. R. Silva wrote:
+On 3/10/20 6:13 PM, Gustavo A. R. Silva wrote:
+> 
 > 
 > On 3/10/20 5:07 PM, Jes Sorensen wrote:
-> > On 3/10/20 5:52 PM, Gustavo A. R. Silva wrote:
-> > > 
-> > > On 3/10/20 8:56 AM, Kalle Valo wrote:
-> > > > + jes
-> > > > 
-> > > > "Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
-> > > > > > I wrote in a confusing way, my question above was about the actual patch
-> > > > > > and not the the title. For example, Jes didn't like this style change:
-> > > > > > 
-> > > > > > https://patchwork.kernel.org/patch/11402315/
-> > > > > > 
-> > > > > 
-> > > > > It doesn't seem that that comment adds a lot to the conversation. The only
-> > > > > thing that it says is literally "fix the compiler". By the way, more than
-> > > > > a hundred patches have already been applied to linux-next[1] and he seems
-> > > > > to be the only person that has commented such a thing.
-> > > > 
-> > > > But I also asked who prefers this format in that thread, you should not
-> > > > ignore questions from two maintainers (me and Jes).
-> > > > 
-> > > 
-> > > I'm sorry. I thought the changelog text had already the proper information.
-> > > In the changelog text I'm quoting the GCC documentation below:
-> > > 
-> > > "The preferred mechanism to declare variable-length types like struct line
-> > > above is the ISO C99 flexible array member..." [1]
-> > > 
-> > > I'm also including a link to the following KSPP open issue:
-> > > 
-> > > https://github.com/KSPP/linux/issues/21
-> > > 
-> > > The issue above mentions the following:
-> > > 
-> > > "Both cases (0-byte and 1-byte arrays) pose confusion for things like sizeof(),
-> > > CONFIG_FORTIFY_SOURCE."
-> > > 
-> > > sizeof(flexible-array-member) triggers a warning because flexible array members have
-> > > incomplete type[1]. There are some instances of code in which the sizeof operator
-> > > is being incorrectly/erroneously applied to zero-length arrays and the result is zero.
-> > > Such instances may be hiding some bugs. So, the idea is also to get completely rid
-> > > of those sorts of issues.
-> > 
-> > As I stated in my previous answer, this seems more code churn than an
-> > actual fix. If this is a real problem, shouldn't the work be put into
-> > fixing the compiler to handle foo[0] instead? It seems that is where the
-> > real value would be.
-> > 
+>> As I stated in my previous answer, this seems more code churn than an
+>> actual fix. If this is a real problem, shouldn't the work be put into
+>> fixing the compiler to handle foo[0] instead? It seems that is where the
+>> real value would be.
 > 
 > Yeah. But, unfortunately, I'm not a compiler guy, so I'm not able to fix the
 > compiler as you suggest. And I honestly don't see what is so annoying/disturbing
 > about applying a patch that removes the 0 from foo[0] when it brings benefit
 > to the whole codebase.
 
-As far as I can tell, it doesn't actually make a difference as
-all the compilers produce the same object code with either form.
+My point is that it adds what seems like unnecessary churn, which is not
+a benefit, and it doesn't improve the generated code.
 
-There may be some compiler warning by clang through.
-
-Does any version of gcc produce a warning on 
-
-	struct foo {
-		...
-		type bar[0];
-	};
-
-but not
-
-	struct foo {
-		...
-		type bar[];
-	};
-
-
+Best regards,
+Jes
