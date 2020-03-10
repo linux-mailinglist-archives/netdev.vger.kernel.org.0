@@ -2,98 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 001C4180514
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 18:43:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39FED180524
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 18:45:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726567AbgCJRnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 13:43:10 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:45075 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726290AbgCJRnK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 13:43:10 -0400
-Received: by mail-qk1-f193.google.com with SMTP id c145so7762670qke.12
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 10:43:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pe3/JvHbo7Zx1xKecHG7ANdwmDduLLxjtXBzh6H6Tqc=;
-        b=YGqwDo2KOrOV6oFw6zwV+QCDD51r1/LmR53jZ5pDgBoSlyptLr/KNgCZgujh8B0xMt
-         ExLeZWaj15Mz1LDE9CrtN/lBS6mMedAJFbhJzCgGUyB5JQ5SYxMaQRtHv01tPbDSMF0t
-         QucX65b/i40jdsRLXgxHtHSThK7HAzqGHo/C+gYMrXTPB8W9b+O1hde6zsaBGjCun9SX
-         l3oRNSZFE2B8SiXJKdywzhY9SIXFqx64UfOhd8WLiOGsREljsg1JN6ETMCGoSeG9SYSm
-         SwKYy6TNEoIHgBAzsAyIAfUEEXf2Tim0RKrhj02bKxGCdbXpvBWzvgg/GH39ZkQVPREl
-         2AXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pe3/JvHbo7Zx1xKecHG7ANdwmDduLLxjtXBzh6H6Tqc=;
-        b=BB52VAn4e9VFJEcGYQiXlj6ldoYcOvYHeoO4C58sRzZ5M/bVt4FQoHumll+ND5AXUn
-         nvw/aCYGi8sEniFa0AWdc0EBGimtXIxy+2EPIWrkNaKBP5FmVr2ZGLu1sgB9hPHcq7C7
-         EdWAJm7H13aqaJPWKornkk/mnf/22/N1rwXkRqjywFzDLdPmuPayl6m34b4Cd9joD2b7
-         gNQOsrbx+n5xiw2B/hWPuOWNRTHaJ5y/Tv+9g5zVbY0v5rGOHfA5H2R9+Ww2g64rc6RK
-         H3SQp+zjPEScclpwMqohuGYPnXagicF+g0tkNE+T978bQaL6L29HwX4+PIdK053x3vi5
-         BKgg==
-X-Gm-Message-State: ANhLgQ0uprqkft/Zmc2bxXNNg+QKAVqdmOCfF+f2uuAI1hFRf/jXx3wf
-        u7Ta4JEkER7z5a6WNZDfC7Kh6LJQ
-X-Google-Smtp-Source: ADFU+vvKMklmg4ZB2Kapx84fXZXMOFqFA6AQeBkxgGtRvKixPkvrJqOQD0tmhqbVsjYfgLhg9wtrFQ==
-X-Received: by 2002:a37:a68e:: with SMTP id p136mr21188010qke.7.1583862189417;
-        Tue, 10 Mar 2020 10:43:09 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:b876:5d04:c7e4:4480? ([2601:282:803:7700:b876:5d04:c7e4:4480])
-        by smtp.googlemail.com with ESMTPSA id z18sm200034qtz.77.2020.03.10.10.43.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Mar 2020 10:43:08 -0700 (PDT)
-Subject: Re: [PATCH iproute2] nexthop: fix error reporting in filter dump
-To:     Andrea Claudi <aclaudi@redhat.com>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org
-References: <07545342394d8a8477f81ecbc1909079bfeeb78e.1583842365.git.aclaudi@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <1865ee5b-2339-da2a-7c33-7cf3cac98213@gmail.com>
-Date:   Tue, 10 Mar 2020 11:43:06 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        id S1726526AbgCJRo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 13:44:58 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:52710 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726466AbgCJRo6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 13:44:58 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E2552A80061;
+        Tue, 10 Mar 2020 17:44:55 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 10 Mar
+ 2020 17:44:50 +0000
+Subject: Re: [patch net-next v2] flow_offload: use flow_action_for_each in
+ flow_action_mixed_hw_stats_types_check()
+To:     Jiri Pirko <jiri@resnulli.us>, <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <pablo@netfilter.org>,
+        <mlxsw@mellanox.com>
+References: <20200310101157.5567-1-jiri@resnulli.us>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <cf6e79eb-c68a-d063-a6e4-3795e30f3543@solarflare.com>
+Date:   Tue, 10 Mar 2020 17:44:47 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <07545342394d8a8477f81ecbc1909079bfeeb78e.1583842365.git.aclaudi@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <20200310101157.5567-1-jiri@resnulli.us>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25280.003
+X-TM-AS-Result: No-2.743800-8.000000-10
+X-TMASE-MatchedRID: nVQUmLJJeya8rRvefcjeTfZvT2zYoYOwt3aeg7g/usBUjspoiX02FxQt
+        LIUOz+UCBTL3N8yyT9ePQi9XuOWoOHI/MxNRI7Uk/NOUkr6ADzfdhJoeWdkvzRQTXyPPP3faUkj
+        MOacb5HuESVL06fzYOw3Pu1JZ6TRWVWK5eX+o89tlpwNsTvdlKX0tCKdnhB58vqq8s2MNhPCy5/
+        tFZu9S3Ku6xVHLhqfxWBd6ltyXuvvXqYkKVufEnIWoLRfach/Dwoj8Mx4ZogtuIsKVRY1TTlh46
+        bAfzB50VlLRH305DQMXaIliuehFa98wCpXKg/URA4GxPA3ZGSrwHX5+Q8jjw1wuriZ3P6dErIJZ
+        JbQfMXRqaM5LmpUkwzunJXJz8X1QftwZ3X11IV0=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--2.743800-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25280.003
+X-MDID: 1583862296-D6JAdvivFZDJ
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/10/20 6:15 AM, Andrea Claudi wrote:
-> nh_dump_filter is missing a return value check in two cases.
-> Fix this simply adding an assignment to the proper variable.
-> 
-> Fixes: 63df8e8543b03 ("Add support for nexthop objects")
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+On 10/03/2020 10:11, Jiri Pirko wrote:
+> Instead of manually iterating over entries, use flow_action_for_each
+> helper. Move the helper and wrap it to fit to 80 cols on the way.
+>
+> Signed-off-by: Jiri Pirko <jiri@resnulli.us>
+Acked-by: Edward Cree <ecree@solarflare.com>
 > ---
->  ip/ipnexthop.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
-> index 9f860c8cea251..99f89630ed189 100644
-> --- a/ip/ipnexthop.c
-> +++ b/ip/ipnexthop.c
-> @@ -59,13 +59,13 @@ static int nh_dump_filter(struct nlmsghdr *nlh, int reqlen)
->  	}
+> v1->v2:
+> - removed action_entry init in loop
+> ---
+>  include/net/flow_offload.h | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+>
+> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+> index 64807aa03cee..891e15055708 100644
+> --- a/include/net/flow_offload.h
+> +++ b/include/net/flow_offload.h
+> @@ -256,6 +256,11 @@ static inline bool flow_offload_has_one_action(const struct flow_action *action)
+>  	return action->num_entries == 1;
+>  }
 >  
->  	if (filter.groups) {
-> -		addattr_l(nlh, reqlen, NHA_GROUPS, NULL, 0);
-> +		err = addattr_l(nlh, reqlen, NHA_GROUPS, NULL, 0);
->  		if (err)
->  			return err;
->  	}
+> +#define flow_action_for_each(__i, __act, __actions)			\
+> +        for (__i = 0, __act = &(__actions)->entries[0];			\
+> +	     __i < (__actions)->num_entries;				\
+> +	     __act = &(__actions)->entries[++__i])
+> +
+>  static inline bool
+>  flow_action_mixed_hw_stats_types_check(const struct flow_action *action,
+>  				       struct netlink_ext_ack *extack)
+> @@ -267,8 +272,7 @@ flow_action_mixed_hw_stats_types_check(const struct flow_action *action,
+>  	if (flow_offload_has_one_action(action))
+>  		return true;
 >  
->  	if (filter.master) {
-> -		addattr32(nlh, reqlen, NHA_MASTER, filter.master);
-> +		err = addattr32(nlh, reqlen, NHA_MASTER, filter.master);
->  		if (err)
->  			return err;
->  	}
-> 
+> -	for (i = 0; i < action->num_entries; i++) {
+> -		action_entry = &action->entries[i];
+> +	flow_action_for_each(i, action_entry, action) {
+>  		if (i && action_entry->hw_stats_type != last_hw_stats_type) {
+>  			NL_SET_ERR_MSG_MOD(extack, "Mixing HW stats types for actions is not supported");
+>  			return false;
+> @@ -316,9 +320,6 @@ flow_action_basic_hw_stats_types_check(const struct flow_action *action,
+>  	return flow_action_hw_stats_types_check(action, extack, 0);
+>  }
+>  
+> -#define flow_action_for_each(__i, __act, __actions)			\
+> -        for (__i = 0, __act = &(__actions)->entries[0]; __i < (__actions)->num_entries; __act = &(__actions)->entries[++__i])
+> -
+>  struct flow_rule {
+>  	struct flow_match	match;
+>  	struct flow_action	action;
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
