@@ -2,144 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC9431804A0
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 18:18:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FE391804A3
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 18:19:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726395AbgCJRSu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 13:18:50 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:48760 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726283AbgCJRSt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 13:18:49 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02AH1MJb013481;
-        Tue, 10 Mar 2020 10:18:18 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=/TCGgFrGY32uS5Slae0Dl0gxIaZCpjbyWpvn7vU2oQI=;
- b=hBUODJJKx++VzFE9uQ736ZSkstLGsO047mpGDyqUetKMW3ToPi9bWnio1Ree09np/Ihb
- n4gauOAoOBuf4ghXBbYbuBnEsp0u5hAg9JcFpuKFzrDXJRjrGFE+p+v/irM25kaJ0mAI
- Rzol+DE/0+hGgy77PRIYOGuOhj7B6+6StaE= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yp8rdt1j7-17
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 10 Mar 2020 10:18:18 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Tue, 10 Mar 2020 10:18:15 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kdDBS+qAMS95tBvfbZ9cFP8X0HeMtTbEXssuP3UrqMtWq5LTcACrA1Tp0nuh25O68CVXBatJLuuQhQCFily72cLe+vPvtXMukuV2FbyEO9H52ljwvBIzsKhYvpRvoR+QEAuxZJtUdi4J2jMAlQDLNTh5vOM4ohA03tMdo40rcBOV4YBHt/zmeTlAl9ga5sXOq0m3ZNiQb0fIkWAEaAdDIEnDo/uRu7PyrmsR7eSLcnLAZBwUtVf0gRDNceJ+WLh0YXaWwuTzjk4Iq/dmkOgE13mHuw6EDh30/T3ojr+kzxmXVcbXWlGhWXswDYdxG+wUvPo6LiZ1nNEEd79biiPLSA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/TCGgFrGY32uS5Slae0Dl0gxIaZCpjbyWpvn7vU2oQI=;
- b=A//lEwcfT0Jr3rK7qIP9mwHHa9EcjFHrZYU0w7lynYgDbwZ1VBheJu3wcHMi5tqCxppUHDJj1Ja43y0Qm6kqEjfWMqVlp/XJmVK1XCHDC3ze9EILIbZIXBzQbMiQrdDcqunBG/IDS8feb2p/dampP555Aw6vTKfhCF4mY1plpoGcfTcFDxLkhrVhg7n3lTx6RxIMgJZGAG145ZX+SD3Ta9FL1dCXCElqGckeADLV7LsjoojCeOnJzjc/jHnhHIkjJMd2cD+850VYnsXBowoSu5NwaB6Nx9fEfY24DeBtH4G6klc+f9pAkQJZYupMnGA9UfHNktzXKVXIWNpxRKvNZQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/TCGgFrGY32uS5Slae0Dl0gxIaZCpjbyWpvn7vU2oQI=;
- b=d8vlt8GrpqILgxCUtSf7F7i//Pxt6mN8C+t7GjeWcT+SB0vaMJkm0BEwUOsfJwJWF+GHJ1Qx/qo/Ogg0Q22HhvfT2qgfmhXs5zduZec6TU3xfxPa8x3sXYmS9NYQ+cNNZ1Kk42jWfN6euL4au/KZujiceyuW/GLzqZnTzZVBqrI=
-Received: from MW2PR1501MB2059.namprd15.prod.outlook.com (2603:10b6:302:e::24)
- by MW2PR1501MB2188.namprd15.prod.outlook.com (2603:10b6:302:d::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.17; Tue, 10 Mar
- 2020 17:18:14 +0000
-Received: from MW2PR1501MB2059.namprd15.prod.outlook.com
- ([fe80::25db:776d:5e82:7962]) by MW2PR1501MB2059.namprd15.prod.outlook.com
- ([fe80::25db:776d:5e82:7962%3]) with mapi id 15.20.2793.013; Tue, 10 Mar 2020
- 17:18:14 +0000
-Subject: Re: libbpf distro packaging
-To:     Jiri Olsa <jolsa@redhat.com>
-CC:     Alexei Starovoitov <ast@fb.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        "labbott@redhat.com" <labbott@redhat.com>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrey Ignatov <rdna@fb.com>, Yonghong Song <yhs@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "md@linux.it" <md@linux.it>, Cestmir Kalina <ckalina@redhat.com>
-References: <20190828071237.GA31023@krava> <20190930111305.GE602@krava>
- <040A8497-C388-4B65-9562-6DB95D72BE0F@fb.com> <20191008073958.GA10009@krava>
- <AAB8D5C3-807A-4EE3-B57C-C7D53F7E057D@fb.com> <20191016100145.GA15580@krava>
- <824912a1-048e-9e95-f6be-fd2b481a8cfc@fb.com> <20191220135811.GF17348@krava>
- <c1b6a5b1-bbc8-2186-edcf-4c4780c6f836@fb.com> <20200305141812.GH168640@krava>
- <20200310145717.GB167617@krava>
-From:   Julia Kartseva <hex@fb.com>
-Message-ID: <8552eef5-5bb8-5298-d0ab-f3c05c73c448@fb.com>
-Date:   Tue, 10 Mar 2020 10:18:12 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
-In-Reply-To: <20200310145717.GB167617@krava>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MWHPR15CA0041.namprd15.prod.outlook.com
- (2603:10b6:300:ad::27) To MW2PR1501MB2059.namprd15.prod.outlook.com
- (2603:10b6:302:e::24)
+        id S1726380AbgCJRTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 13:19:37 -0400
+Received: from mail-il1-f182.google.com ([209.85.166.182]:41091 "EHLO
+        mail-il1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726290AbgCJRTg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 13:19:36 -0400
+Received: by mail-il1-f182.google.com with SMTP id l14so6863870ilj.8
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 10:19:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FCcIWv3vdGhCDB7Fx4WoX0Pzsosk07tk1IQ/8aVdXvQ=;
+        b=plc5vvq2LV5e7n2mzDRlznqVfsfaTxITY1zs+LIAiDhVjKUIGUKmrHzZyV4CjwmNj9
+         f05F4M6v2sGoMf3yY3eQTPW1FHyKevg0p9ALUUJ+D1mfPr2MHAIeOK5HDeYgtE4LrUKZ
+         GgRUOTjmJJDlykh7cviz5D2Fbw96K7GXjbW7fheuSjWc3v3E8jhs3bZjX+Tn45+YJxA2
+         JxmUaiUexygG7X9BmxMX0JinlHA83zN676SVHoS4pbK3patSRsg9WnBkOBy5Y7ufdU18
+         nG75pKbCwFtCZJl8W9j4WeUL+It7A/OjXd1fHa9n3dpNCIvPRJNk0dxQ0/0G0LVsS83J
+         A+cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FCcIWv3vdGhCDB7Fx4WoX0Pzsosk07tk1IQ/8aVdXvQ=;
+        b=TV7vHy1pO5WtpGDPmpoAzuswfoKEFrv65wp6LurVhzo5osynS121xpvGaf37PCZdNP
+         9KG+yhQlzfIPoegfZlB29xPMscragt+RDx6h02JtKAjCnD2qZkVrphvE4aCLJRNriCAf
+         +WAIblQgqUIfhPLHpcKgzySA2c1swB2Zb+dJwg1AAdV0g4KCN1D1+l9wQ6oaA6gBtiuv
+         gyFOphV0NQ1XMdswFh9w7cawUzJ4hAX/u6QA88887ppCZuLEK+5Uv7WI/o6zuE7OYzDp
+         YYGTMPPle7NI5ZfRyZTgS2To+xGqUmWGb4S1919NOd0AiVnZk71J7R5RN49XHLvLa3Ij
+         t7CQ==
+X-Gm-Message-State: ANhLgQ2lv7duf17eNDBuR3Frl6/5P/qjSm+fnpPNdjItZmUSmSt6+uYM
+        34VY9jjfCvXk2a1DgTf/R6rjG48l0i60hZHrio0=
+X-Google-Smtp-Source: ADFU+vv6fI9eIdE3EACuO/xJfdRyAaRRGhwDwPw6UMJQxwRtHYJkOkspnCoac7uJEb7soA8yC2Sfj1zpdFRrXu0kaZs=
+X-Received: by 2002:a92:d30b:: with SMTP id x11mr20198838ila.64.1583860775935;
+ Tue, 10 Mar 2020 10:19:35 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c082:1055:817:11ed:82a6:c24a] (2620:10d:c090:500::5:3a0f) by MWHPR15CA0041.namprd15.prod.outlook.com (2603:10b6:300:ad::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.14 via Frontend Transport; Tue, 10 Mar 2020 17:18:13 +0000
-X-Originating-IP: [2620:10d:c090:500::5:3a0f]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c9e4ec4e-7942-4735-0290-08d7c517044b
-X-MS-TrafficTypeDiagnostic: MW2PR1501MB2188:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MW2PR1501MB2188AECB2F3EF17A18E5522CC4FF0@MW2PR1501MB2188.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-Forefront-PRVS: 033857D0BD
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10001)(10019020)(136003)(39860400002)(376002)(366004)(346002)(396003)(199004)(189003)(7416002)(8936002)(86362001)(31696002)(2906002)(7116003)(36756003)(53546011)(54906003)(5660300002)(966005)(6486002)(4744005)(2616005)(81156014)(66476007)(81166006)(66556008)(4326008)(31686004)(6916009)(52116002)(316002)(66946007)(3480700007)(8676002)(16526019)(478600001)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:MW2PR1501MB2188;H:MW2PR1501MB2059.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-Received-SPF: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PRV3+KTON5JFibIrNUXsB9elxE10e7wyJdoh/YA5Bf4PngEimcdxGrNkKqGZ6PJaq2s7siM4hF33OVoCx4azT/S01avROwmY2dtniUxcW0eJ3uIrNAa5ERTEwzBRco3jaTIIjaJ2pxYJljX9TPztgbn4avmVX88WwZpso52W+SLZ7vmOVvPZcB2rkfoojjCa9uPJ2Z3kqJcf+Jn8XIN9Hdc3wXAdtYaDyylkuozFHyHm3ipViuAXjBQmNsbsK9sYSOjQopkjB53bEQObVHqbf2mvemgkjYNtgYyhYgXPiLBBPHzoUOSDLvpywW665XsY5n0Bkc97uS2OLs2/vbzJS295XxW/zr4MgkaGM4qxPqVddYOIH8WLpCCk/9QIKsta50+yNgukG0lYUl5BbBK6RWSUwCjqvBdh2HJg9zqTlTH247dJkqtuJRtYah1Q/lE8MsYyD59C1PySZT/NBMKWjVtBSffv2x+/dcRoOyB591lKdc1eAOaXYnkjsa/2jy4wGFcGXZFGDAKLHfGJJrm1GeuaBQm20olDCGGfjjaQW01QrjMFIyjywoUE0fsatBir7ExuQ157jzD/oT60Be/5nQ==
-X-MS-Exchange-AntiSpam-MessageData: pJGEjejx1HMwlp2Kh7dY7e4W3Ml8y0gjEhbWl4FsfHAGzU9b7iGAmG+M3QBg5TKPRZPoybhPhpdxRK9ACVT32AbXi6bfdpYIW4m4aozi4jNvHcKaxi88o9JZmfuOEdeF7uR05Rj8rZrNbNsm5947g/gS9ZCGmnUjtkGIrB+KjssrS9zf1Ghc4X7gYV8V9Gc0
-X-MS-Exchange-CrossTenant-Network-Message-Id: c9e4ec4e-7942-4735-0290-08d7c517044b
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2020 17:18:14.6656
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +AraNFv3DtXZZ54wi/2iGNkmzuIQIUe/nQ4L3gz7cA4MJNrPDfGFgSptBi5J/4Up
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR1501MB2188
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-10_12:2020-03-10,2020-03-10 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- priorityscore=1501 impostorscore=0 spamscore=0 bulkscore=0 suspectscore=0
- clxscore=1011 malwarescore=0 lowpriorityscore=0 mlxscore=0 mlxlogscore=869
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2003100104
-X-FB-Internal: deliver
+References: <CADvbK_evghCnfNkePFkkLbaamXPaCOu-mSsSDKXuGSt65DSivw@mail.gmail.com>
+ <1441d64c-c334-8c54-39e8-7a06a530089d@gmail.com> <CAKgT0UcbycqgrfviqUmvS9S7+F6q-gMzrz-KKQuEb77ruZZLRQ@mail.gmail.com>
+ <20200310155630.GA7102@pc-3.home> <20200310160133.GA7670@pc-3.home>
+In-Reply-To: <20200310160133.GA7670@pc-3.home>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Tue, 10 Mar 2020 10:19:24 -0700
+Message-ID: <CAKgT0Ucc2gHxR0TZUZN7LmzFg9xfeA+kC_jQcwVOTY8sUnaijA@mail.gmail.com>
+Subject: Re: route: an issue caused by local and main table's merge
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     David Ahern <dsahern@gmail.com>, Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        davem <davem@davemloft.net>, mmhatre@redhat.com,
+        "alexander.h.duyck@intel.com" <alexander.h.duyck@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 3/10/20 7:57 AM, Jiri Olsa wrote:
-> On Thu, Mar 05, 2020 at 03:18:12PM +0100, Jiri Olsa wrote:
-> 
-> so I did some more checking and libbpf is automatically pulled into
-> centos 8, it's just at the moment there's some bug preventing that.. 
-> it is going to be fixed shortly ;-)
-> 
-> as for centos 7, what is the target user there? which version of libbpf
-> would you need in there?
-> 
-> jirka
+On Tue, Mar 10, 2020 at 9:01 AM Guillaume Nault <gnault@redhat.com> wrote:
 >
-Hi, that's great news!
-Nothing prevents us from having the latest v0.0.7 [1] in CentOS 7 :)
-Can updates for CentOS 7 and 8 be synced so the have the same libbpf version?
+> On Tue, Mar 10, 2020 at 04:56:32PM +0100, Guillaume Nault wrote:
+> > On Mon, Mar 09, 2020 at 08:53:53AM -0700, Alexander Duyck wrote:
+> > > Also, is it really a valid configuration to have the same address
+> > > configured as both a broadcast and unicast address? I couldn't find
+> > > anything that said it wasn't, but at the same time I haven't found
+> > > anything saying it is an acceptable practice to configure an IP
+> > > address as both a broadcast and unicast destination. Everything I saw
+> > > seemed to imply that a subnet should be at least a /30 to guarantee a
+> > > pair of IPs and support for broadcast addresses with all 1's and 0 for
+> > > the host identifier. As such 192.168.122.1 would never really be a
+> > > valid broadcast address since it implies a /31 subnet mask.
+> > >
+> > RFC 3031 explicitly allows /31 subnets for point to point links.
+> That RFC 3021, sorry :/
+>
 
-[1] https://github.com/libbpf/libbpf/releases/tag/v0.0.7
+So from what I can tell the configuration as provided doesn't apply to
+RFC 3021. Specifically RFC 3021 calls out that you are not supposed to
+use the { <network-prefix>, -1 } which is what is being done here. In
+addition the prefix is technically a /24 as configured here since a
+prefix length wasn't specified so it defaults to a class C.
+
+Looking over the Linux kernel code it normally doesn't add such a
+broadcast if using a /31 address:
+https://elixir.bootlin.com/linux/v5.6-rc5/source/net/ipv4/fib_frontend.c#L1122
+
+- Alex
