@@ -2,169 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A64B117ED1E
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 01:07:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA39317ED11
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 01:06:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727512AbgCJAHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 20:07:30 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:34106 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727380AbgCJAHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 20:07:30 -0400
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02A06GHD116339;
-        Mon, 9 Mar 2020 20:07:25 -0400
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2ym8g3wbd1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 09 Mar 2020 20:07:25 -0400
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 02A02W2W003100;
-        Tue, 10 Mar 2020 00:07:24 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma04dal.us.ibm.com with ESMTP id 2ym386kx4a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 10 Mar 2020 00:07:24 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 02A07NlP53346812
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 10 Mar 2020 00:07:24 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DDA3528059;
-        Tue, 10 Mar 2020 00:07:23 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8C8102805A;
-        Tue, 10 Mar 2020 00:07:23 +0000 (GMT)
-Received: from ltcalpine2-lp14.aus.stglabs.ibm.com (unknown [9.40.195.197])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 10 Mar 2020 00:07:23 +0000 (GMT)
-From:   Juliet Kim <julietk@linux.vnet.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     linuxppc-dev@lists.ozlabs.org, julietk@linux.vnet.ibm.com,
-        tlfalcon@linux.vnet.ibm.com
-Subject: [PATCH net] ibmvnic: Do not process device remove during device reset
-Date:   Mon,  9 Mar 2020 19:02:04 -0500
-Message-Id: <20200310000204.58596-1-julietk@linux.vnet.ibm.com>
-X-Mailer: git-send-email 2.25.0
+        id S1727493AbgCJAGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 20:06:18 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:59487 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727242AbgCJAGR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 20:06:17 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 48bwNk5B2wz9sRR;
+        Tue, 10 Mar 2020 11:06:14 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1583798774;
+        bh=7lQ8pI0XYE2KiKCl/kYDNDDZgptti74pekITiXXL/J4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=qlovkNo+ecl805wgOZLkxTq3lDnuiYfJU7lYf6AbpXwQmTVPlBu4i32Nzze2BZIn2
+         5A6NXjCJS2bK+Vm78cXyz224iXG2POPHTfG232Lfvefp9iefGY4rK+hL0aiVxI8dvF
+         6cdZxLrNL+yyyR5v1TyY9QGLX5Q/9OV1HB/sq20fAelfx8jWcZQHhsah747qb11KHs
+         uv5aJ4iEqxOF2WTRlbTMa0cav4fjHTc+XG/FqFFDdlBG2Dx33fEUmh76Tmgrn+vWzN
+         Zf6rV+mHQt2qlC3h4ttpclRImktidvF9smUBab8JZNVirG62zGXJCm5pvFOMJpkpFG
+         QgEfu5WD/pc5w==
+Date:   Tue, 10 Mar 2020 11:06:12 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Dmitry Yakunin <zeil@yandex-team.ru>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20200310110612.611ab9ad@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-09_13:2020-03-09,2020-03-09 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
- suspectscore=3 priorityscore=1501 lowpriorityscore=0 clxscore=1015
- impostorscore=0 mlxlogscore=999 spamscore=0 malwarescore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2003090146
+Content-Type: multipart/signed; boundary="Sig_/7r9Ijk1oPrdyyqujRJR6XhL";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ibmvnic driver does not check the device state when the device
-is removed. If the device is removed while a device reset is being 
-processed, the remove may free structures needed by the reset, 
-causing an oops.
+--Sig_/7r9Ijk1oPrdyyqujRJR6XhL
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Fix this by checking the device state before processing device remove.
+Hi all,
 
-Signed-off-by: Juliet Kim <julietk@linux.vnet.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 24 ++++++++++++++++++++++--
- drivers/net/ethernet/ibm/ibmvnic.h |  6 +++++-
- 2 files changed, 27 insertions(+), 3 deletions(-)
+Today's linux-next merge of the net-next tree got a conflict in:
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index c75239d8820f..7ef1ae0d49bc 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2144,6 +2144,8 @@ static void __ibmvnic_reset(struct work_struct *work)
- 	struct ibmvnic_adapter *adapter;
- 	u32 reset_state;
- 	int rc = 0;
-+	unsigned long flags;
-+	bool saved_state = false;
- 
- 	adapter = container_of(work, struct ibmvnic_adapter, ibmvnic_reset);
- 
-@@ -2153,17 +2155,25 @@ static void __ibmvnic_reset(struct work_struct *work)
- 		return;
- 	}
- 
--	reset_state = adapter->state;
--
- 	rwi = get_next_rwi(adapter);
- 	while (rwi) {
-+		spin_lock_irqsave(&adapter->state_lock, flags);
-+
- 		if (adapter->state == VNIC_REMOVING ||
- 		    adapter->state == VNIC_REMOVED) {
-+			spin_unlock_irqrestore(&adapter->state_lock, flags);
- 			kfree(rwi);
- 			rc = EBUSY;
- 			break;
- 		}
- 
-+		if (!saved_state) {
-+			reset_state = adapter->state;
-+			adapter->state = VNIC_RESETTING;
-+			saved_state = true;
-+		}
-+		spin_unlock_irqrestore(&adapter->state_lock, flags);
-+
- 		if (rwi->reset_reason == VNIC_RESET_CHANGE_PARAM) {
- 			/* CHANGE_PARAM requestor holds rtnl_lock */
- 			rc = do_change_param_reset(adapter, rwi, reset_state);
-@@ -5091,6 +5101,7 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 			  __ibmvnic_delayed_reset);
- 	INIT_LIST_HEAD(&adapter->rwi_list);
- 	spin_lock_init(&adapter->rwi_lock);
-+	spin_lock_init(&adapter->state_lock);
- 	mutex_init(&adapter->fw_lock);
- 	init_completion(&adapter->init_done);
- 	init_completion(&adapter->fw_done);
-@@ -5161,10 +5172,19 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 
- static int ibmvnic_remove(struct vio_dev *dev)
- {
-+	unsigned long flags;
- 	struct net_device *netdev = dev_get_drvdata(&dev->dev);
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 
-+	spin_lock_irqsave(&adapter->state_lock, flags);
-+	if (adapter->state == VNIC_RESETTING) {
-+		spin_unlock_irqrestore(&adapter->state_lock, flags);
-+		return -EBUSY;
-+	}
-+
- 	adapter->state = VNIC_REMOVING;
-+	spin_unlock_irqrestore(&adapter->state_lock, flags);
-+
- 	rtnl_lock();
- 	unregister_netdevice(netdev);
- 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
-index 60eccaf91b12..971505e4cc52 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.h
-+++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@ -941,7 +941,8 @@ enum vnic_state {VNIC_PROBING = 1,
- 		 VNIC_CLOSING,
- 		 VNIC_CLOSED,
- 		 VNIC_REMOVING,
--		 VNIC_REMOVED};
-+		 VNIC_REMOVED,
-+		 VNIC_RESETTING};
- 
- enum ibmvnic_reset_reason {VNIC_RESET_FAILOVER = 1,
- 			   VNIC_RESET_MOBILITY,
-@@ -1090,4 +1091,7 @@ struct ibmvnic_adapter {
- 
- 	struct ibmvnic_tunables desired;
- 	struct ibmvnic_tunables fallback;
-+
-+	/* lock to protect state field */
-+	spinlock_t state_lock;
- };
--- 
-2.25.0
+  net/ipv4/inet_diag.c
 
+between commit:
+
+  83f73c5bb7b9 ("inet_diag: return classid for all socket types")
+
+from the net tree and commit:
+
+  085c20cacf2b ("bpf: inet_diag: Dump bpf_sk_storages in inet_diag_dump()")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/ipv4/inet_diag.c
+index 8c8377568a78,e1cad25909df..000000000000
+--- a/net/ipv4/inet_diag.c
++++ b/net/ipv4/inet_diag.c
+@@@ -298,6 -289,66 +303,48 @@@ int inet_sk_diag_fill(struct sock *sk,=20
+  			goto errout;
+  	}
+ =20
+ -	if (ext & (1 << (INET_DIAG_CLASS_ID - 1)) ||
+ -	    ext & (1 << (INET_DIAG_TCLASS - 1))) {
+ -		u32 classid =3D 0;
+ -
+ -#ifdef CONFIG_SOCK_CGROUP_DATA
+ -		classid =3D sock_cgroup_classid(&sk->sk_cgrp_data);
+ -#endif
+ -		/* Fallback to socket priority if class id isn't set.
+ -		 * Classful qdiscs use it as direct reference to class.
+ -		 * For cgroup2 classid is always zero.
+ -		 */
+ -		if (!classid)
+ -			classid =3D sk->sk_priority;
+ -
+ -		if (nla_put_u32(skb, INET_DIAG_CLASS_ID, classid))
+ -			goto errout;
+ -	}
+ -
++ 	/* Keep it at the end for potential retry with a larger skb,
++ 	 * or else do best-effort fitting, which is only done for the
++ 	 * first_nlmsg.
++ 	 */
++ 	if (cb_data->bpf_stg_diag) {
++ 		bool first_nlmsg =3D ((unsigned char *)nlh =3D=3D skb->data);
++ 		unsigned int prev_min_dump_alloc;
++ 		unsigned int total_nla_size =3D 0;
++ 		unsigned int msg_len;
++ 		int err;
++=20
++ 		msg_len =3D skb_tail_pointer(skb) - (unsigned char *)nlh;
++ 		err =3D bpf_sk_storage_diag_put(cb_data->bpf_stg_diag, sk, skb,
++ 					      INET_DIAG_SK_BPF_STORAGES,
++ 					      &total_nla_size);
++=20
++ 		if (!err)
++ 			goto out;
++=20
++ 		total_nla_size +=3D msg_len;
++ 		prev_min_dump_alloc =3D cb->min_dump_alloc;
++ 		if (total_nla_size > prev_min_dump_alloc)
++ 			cb->min_dump_alloc =3D min_t(u32, total_nla_size,
++ 						   MAX_DUMP_ALLOC_SIZE);
++=20
++ 		if (!first_nlmsg)
++ 			goto errout;
++=20
++ 		if (cb->min_dump_alloc > prev_min_dump_alloc)
++ 			/* Retry with pskb_expand_head() with
++ 			 * __GFP_DIRECT_RECLAIM
++ 			 */
++ 			goto errout;
++=20
++ 		WARN_ON_ONCE(total_nla_size <=3D prev_min_dump_alloc);
++=20
++ 		/* Send what we have for this sk
++ 		 * and move on to the next sk in the following
++ 		 * dump()
++ 		 */
++ 	}
++=20
+  out:
+  	nlmsg_end(skb, nlh);
+  	return 0;
+
+--Sig_/7r9Ijk1oPrdyyqujRJR6XhL
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5m2fQACgkQAVBC80lX
+0GwjnQgAhFFX8PDORAxjYrJAEHqRPBUIQhcpfE5KhtzuJur5SaOmFlsjVTwN41CM
+TVHs6u5kJAL/stdMAFPca4YXEE66+N7PDs81uYDmqZL8/ogkDeDd2blw0brWq/uE
+f5RG7pD+oADLfuA9gLr+aUXrctXvDopKwaEvDOu3FG6qH8yGkfiX2GcwCjPTGOPm
+hQJn/z2iv/murAVsNC9X39F/W/kTCOuSLAxL2pVmyBkCI1CaGYGpbD5iJzO/MG19
+6bvfuwNOYWfWjC77I0zbQs6BCvMejSwJDe95b9pQ1BA1BhZd5lWhcBbX0z1KVoRF
+hjCNg1YxZReN9kC8Bc0l/t3wh/eCyQ==
+=uQDe
+-----END PGP SIGNATURE-----
+
+--Sig_/7r9Ijk1oPrdyyqujRJR6XhL--
