@@ -2,81 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6361B17EEE4
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 03:57:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3478817EEE8
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 03:58:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726533AbgCJC5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 22:57:41 -0400
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:36893 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725845AbgCJC5k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 22:57:40 -0400
-Received: by mail-pj1-f65.google.com with SMTP id ca13so800309pjb.2;
-        Mon, 09 Mar 2020 19:57:40 -0700 (PDT)
+        id S1726760AbgCJC6j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 22:58:39 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:45181 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725845AbgCJC6i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 22:58:38 -0400
+Received: by mail-lj1-f196.google.com with SMTP id e18so12393389ljn.12;
+        Mon, 09 Mar 2020 19:58:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=2M6O5OzI+IU6v1/jeWA3Iv6zMngQ6Hoh4arHeMtChQg=;
-        b=bjzmyPcG1cW+j8xHUhHoI/M2wBgQIKJz8qFuFz7kW/QIfEM83liwFjsus37E3VcopA
-         bRGsFrCUQRCao2KdQI7jgWYfRjtNI75EyFRl2zkk0bGZcMcABZnux3C8LFpUHNQvn8+G
-         qapx3IbWlz5Woo8+6gyMrKiYoi4CtdvK5mO4VxG5e16me0vCa7c1sRsy/MAE+HIzmYwj
-         2Z6xPpLgI9UjUNqkLvO29vt0AMJMtYO15H1lwBi74OgBQsTQ23265+NiMtaVODP5JTM7
-         Ov5JggDIK7ZnOnT/7W3xeevCclwvc+d3qLEIrP2nTQaC4UUbt2KUY9ghXjqaW+CCsfmo
-         uBMA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8w1avlyjommOVYhWkXy7kWGzZEnGy6jEhoPqNTesssg=;
+        b=WbOdnKvAC2us7JRQc/4FjvUZdNbJJt4E5xfxRGzD3HXeasP6KOXJCCNDISopOIWnbX
+         +jar2Bb+Mx/DzIjdl2dWPEPQc5c6O5/R3+YSWVCs5Ne98iIVTe/vV1bekpfdWKKdQuZ2
+         bV1FNXMAW6jIH872YIq7U/07hl5d9Bw/qyBOezofs5caftNWqeEJCOPr4YdmqKqd1suu
+         0NCyuywWL/wVDtkhSGFg9DewQ/7/TwQwgRVJht0wutAcEmkbIPg2UCk1lsC44eZu1/kL
+         CZvNdPrJ4K36WHHdZrs3CxxEjnHXX/j98IF2QAqnPXMD9XYelHzjBdth74efVF8fDxsd
+         XmMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=2M6O5OzI+IU6v1/jeWA3Iv6zMngQ6Hoh4arHeMtChQg=;
-        b=R4qznNQ6jcm3upOzbQ/BmjaeIgfg6XGuOv1cFV0nnc43XBioOznGvLX5QyLQ1MDgE2
-         8iRbI62GqOkoTQ6Gg717MT+GyCnLbzVONpnx9N0BpVdalh1clxL76Si/vhgn757JeAAd
-         B0KsMB/zWCoZIBgZCc9ALr8nLX+nlXa+jJTEmBz+B9Q7r44DwYomg9L1jImy6vO2I5XO
-         zIafujDs+cn9Rb5FMnIMReJ2lXnh52EDL/TIlRSgioLLfOuvWTv1NMZJ+CaTn5fV5YdA
-         grCzTgyixM4q0PkUCIvv3fQG/liADln3jQYQH7DNHLyg/ruNBVn+WehE17exG/qtqYEV
-         vHzA==
-X-Gm-Message-State: ANhLgQ2Z26sTnCeMsIhKrotYn/VuZw3oz8d/7e+TnCqN4DqBZAT6ngJP
-        nLnkmWPv9fODGyboynid3Ms=
-X-Google-Smtp-Source: ADFU+vsCSStYPD9DkpF+XOPXs3X2QtTr9kOUYFeHggNhd8RoSiKV7NW2rT5nDpIuVlf7Ohcvla1a9g==
-X-Received: by 2002:a17:90a:3a8f:: with SMTP id b15mr635022pjc.178.1583809059836;
-        Mon, 09 Mar 2020 19:57:39 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id r64sm826600pjb.15.2020.03.09.19.57.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2020 19:57:39 -0700 (PDT)
-Date:   Mon, 9 Mar 2020 19:57:37 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Andrea Righi <andrea.righi@canonical.com>
-Cc:     Vladis Dronov <vdronov@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] ptp: free ptp clock properly
-Message-ID: <20200310025737.GB1679@localhost>
-References: <20200309172238.GJ267906@xps-13>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8w1avlyjommOVYhWkXy7kWGzZEnGy6jEhoPqNTesssg=;
+        b=if5OyaVAnkJow7kAooNHcBMUTWgFulx0lEQIsx51ksd23A4PfnovHOiAzNS0JySoDo
+         7qIonyuRcYDiXhlcNtNGLgSMX7vWokkgHapXnuddutiwWZho2hTX+ATkbqX/MFgAeRo+
+         LZlHsprtibNe6isUB1LAG0yHMdG86ChRcMEo/CodVjeWt7ZF1Uw5j6/Uc9HrlJ5/vkSi
+         in8295QFCJFVnQVYjXUASkWuSg2MhrWA8ypMv3EEyC7A3Zhg37J8XqoMvZw320h7hb7m
+         av8gyYfb34oR7nKTyxjg4kesp+jZPMuVrsL7119FQ1iEWXVK6/RU4Eu4XBNREep8UcnI
+         Kj0w==
+X-Gm-Message-State: ANhLgQ04M+HoEw0jm4UzmpmVwPfvqjTyPQLT1AGSa4tD3IleaO8S8KiC
+        /TTqKg2AUgXejDEkmjTHFVO2m/mLMAOXtLb1ab0=
+X-Google-Smtp-Source: ADFU+vsnhdv4550HiroV2JUaNciFZVJrfOjPvjJs0PQaj8yivJLJVh1Sbp/VdU+dkG9jDbGq30rJN/UP3t0Ud3zHLYg=
+X-Received: by 2002:a2e:3c06:: with SMTP id j6mr11331442lja.138.1583809116430;
+ Mon, 09 Mar 2020 19:58:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200309172238.GJ267906@xps-13>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200309222756.1018737-1-andriin@fb.com>
+In-Reply-To: <20200309222756.1018737-1-andriin@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 9 Mar 2020 19:58:24 -0700
+Message-ID: <CAADnVQ+1tDeyMAS=XwvF58fCAUN0929QGE-NNj-i4m6jjLUw3g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: initialize storage pointers to NULL to
+ prevent freeing garbage pointer
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 09, 2020 at 06:22:38PM +0100, Andrea Righi wrote:
-> There is a bug in ptp_clock_unregister() where pps_unregister_source()
-> can free up resources needed by posix_clock_unregister() to properly
-> destroy a related sysfs device.
+On Mon, Mar 9, 2020 at 3:28 PM Andrii Nakryiko <andriin@fb.com> wrote:
+>
+> Local storage array isn't initialized, so if cgroup storage allocation fails
+> for BPF_CGROUP_STORAGE_SHARED, error handling code will attempt to free
+> uninitialized pointer for BPF_CGROUP_STORAGE_PERCPI storage type. Avoid this
+> by always initializing storage pointers to NULLs.
+>
+> Fixes: 8bad74f9840f ("bpf: extend cgroup bpf core to allow multiple cgroup storage types")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 
-This text is inadequate.  It does not identify the problem.  What
-resources?  Which related device?
-
-> Fix this by calling pps_unregister_source() in ptp_clock_release().
-
-This statement is redundant, as we can see that from the patch itself.
-Instead of saying WHAT the patch does, please explain WHY that fixes
-the issue (which, as I said, you still need to identify).
-
-Thanks,
-Richard
-
+Applied to bpf tree and fixed typo in commit log.
