@@ -2,51 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 547C5180BF2
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 23:58:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9781180BF8
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 00:00:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726380AbgCJW6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 18:58:22 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:43614 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726411AbgCJW6W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 18:58:22 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id D3C0214CCC984;
-        Tue, 10 Mar 2020 15:58:21 -0700 (PDT)
-Date:   Tue, 10 Mar 2020 15:58:21 -0700 (PDT)
-Message-Id: <20200310.155821.931371329682717281.davem@davemloft.net>
-To:     julietk@linux.vnet.ibm.com
-Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        tlfalcon@linux.vnet.ibm.com
-Subject: Re: [PATCH net v2] ibmvnic: Do not process device remove during
- device reset
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200310142358.61392-1-julietk@linux.vnet.ibm.com>
-References: <20200310142358.61392-1-julietk@linux.vnet.ibm.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727782AbgCJXA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 19:00:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41016 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726325AbgCJXAz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Mar 2020 19:00:55 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B78E920848;
+        Tue, 10 Mar 2020 23:00:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583881255;
+        bh=jICcTeAZ/88yat28mUQ80hZvPSH7sfI3nv+hsN92gbc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=oQlVSxYPixgQLqMiV2zhJlHjIz+qQ5aQLIaM/a7X11L8JwnUPIpfk0aBoBj0i/HTN
+         FRKwcF8WS0jHrBm4Hw12Bf1aNPEMRGNHYcO2qBC+7M6X7zA9d0mlKQaJ0p0wmJsUAb
+         arxCjoKZtpA9nO0oLvOD5eutgBB1XFe0V2d0+1a8=
+Date:   Tue, 10 Mar 2020 16:00:52 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, jiri@mellanox.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 2/6] net: sched: Add centralized RED flag
+ checking
+Message-ID: <20200310160052.72e7e09b@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <87mu8nyhlw.fsf@mellanox.com>
+References: <20200309183503.173802-1-idosch@idosch.org>
+        <20200309183503.173802-3-idosch@idosch.org>
+        <20200309151818.4350fae6@kicinski-fedora-PC1C0HJN>
+        <87sgigy1zr.fsf@mellanox.com>
+        <20200310125321.699b36bc@kicinski-fedora-PC1C0HJN>
+        <87mu8nyhlw.fsf@mellanox.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 10 Mar 2020 15:58:22 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Juliet Kim <julietk@linux.vnet.ibm.com>
-Date: Tue, 10 Mar 2020 09:23:58 -0500
-
-> The ibmvnic driver does not check the device state when the device
-> is removed. If the device is removed while a device reset is being
-> processed, the remove may free structures needed by the reset,
-> causing an oops.
+On Tue, 10 Mar 2020 23:23:23 +0100 Petr Machata wrote:
+> Jakub Kicinski <kuba@kernel.org> writes:
 > 
-> Fix this by checking the device state before processing device remove.
+> > On Tue, 10 Mar 2020 10:48:24 +0100 Petr Machata wrote:  
+> >> > The only flags which are validated today are the gRED per-vq ones, which
+> >> > are a recent addition and were validated from day one.  
+> >>
+> >> Do you consider the validation as such to be a problem? Because that
+> >> would mean that the qdiscs that have not validated flags this way
+> >> basically cannot be extended ever ("a buggy userspace used to get a
+> >> quiet slicing of flags, and now they mean something").  
+> >
+> > I just remember leaving it as is when I was working on GRED, because
+> > of the potential breakage. The uAPI policy is what it is, then again
+> > we probably lose more by making the code of these ancient Qdiscs ugly
+> > than we win :(
+> >
+> > I don't feel like I can ack it with clear conscience tho.  
 > 
-> Signed-off-by: Juliet Kim <julietk@linux.vnet.ibm.com>
+> Just to make sure -- are you opposed to adding a new flag, or to
+> validation? 
 
-Applied, thank you.
+They are both uABI changes, so both.
+
+> At least the adaptative flag was added years after the
+> others in 2011. I wasn't paying much attention to kernel back then, but
+> I think the ABI rules are older than that.
+
+Yes, but some (e.g. TC subsystem) didn't really care much about those
+rules until more recently.
+
+The alternative to validation/adding flag in place is obviously to add 
+a new netlink attribute which would be validated from the start. Can you
+give it a try and see how ugly it gets?
