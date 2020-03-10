@@ -2,134 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53B7217EE0B
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 02:35:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9E0717EE16
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 02:43:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726449AbgCJBfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 21:35:17 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:38245 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726156AbgCJBfP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 21:35:15 -0400
-Received: by mail-io1-f71.google.com with SMTP id x2so7923424iog.5
-        for <netdev@vger.kernel.org>; Mon, 09 Mar 2020 18:35:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=YbdjrwDCgk53GF6B/fIGmBRFT7qdRjvQ1XyLJmA9zlM=;
-        b=LGNlsmgoEU7agaJxsnI0g/k3CWA5QzpOjNpJwh3DxCoSEYIcCm4XcxOkUfk4SyiuLg
-         p4GE/Urv8ckvMjRAqRpzeqPdmE4wRRLW5iNuMJxNjPMwcJdnF6LvNqA0/lJ/COcY61xI
-         /vuGGgdEbf37iFh3OQirJRi5DB3A3RGHlUqYrNPy2AaSWC60ZD+y37Ecyd41qkDj/MVa
-         nYldrU728jr7TxXI4M35pHa6cEylO3QFi6u18KvRI7+K8iwHxF43M/4lnbj/WFx9Yczo
-         s7Ie7B62cvUVCgS/EaxaRaOV/SJHq/el4vvOoAGSTSdlAht9ME+8tcRk08zKv2V/8pll
-         2AhQ==
-X-Gm-Message-State: ANhLgQ3UXv8quTL3a9PeFO2oSasj5Tt8pbKt37Pw6IzDsj7DTaBC+H5x
-        Vza2y7r7PLxTTNLgpTO4ouqgXnDrefzwat/6TkINEHqAXBQg
-X-Google-Smtp-Source: ADFU+vs2NfPe8HgdoqLcPm7y21aSZKycW2Q8MnPSd9Dq7l/yXHwoA8ohZAMEQzlecYslSFgzlOrhJezIjuW3LmuZHx4bRdw/rvS6
+        id S1726444AbgCJBnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 21:43:09 -0400
+Received: from mail-eopbgr70041.outbound.protection.outlook.com ([40.107.7.41]:6078
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726284AbgCJBnI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 21:43:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FVfbJ1RhJ0rPVgGz4UiFPrnG3svpI7QK3WCRqquXl3UT+0W9SgejKGtWf77xtHpyzhxvXqYyT1dcKUtez6rtlR0uztnVNvZO9FbakhIzt3a0QCGhiwEkgFVcJBslGB/FbPhuu8KM9Wi49oDsVfKGoxlkizUwY03RmgZhLOHN6aeBV0vqmuG48QjqfR0eZwJ1e7kAmX7TQFufDvhV3N7tLTkwboClcukc6g89DOmafhzMQ+C3T8kKYjcl6fwstUcl7scAZnQTuY+7/GFyFPQZK3YEu5pktNHU3Cul++UuaZ/YlPYK5Qv19peq9YRxygZCYP80Ht6mRjGK5BxQozzAGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FKmFpx4LNLb5p9Ko+7gWghMQqXZcAOHX6hK+/90G06U=;
+ b=Yd1N2LrxyJS/TlHYKGZe4J4EuP50K2IWh4EYsGMeY+fKNyCdVvVKP+Ak03GWuMWz4Sc75OvG0Uy9lex9xYBgSvG88vPzlM+m6UsUiEVJye8FXzKJLgo2H8z2b+k2z8KsYC3It60ZH5lMl8/Yf7ecS4X9MbfcT8zvb8WFciqxi8YHgoM1WMRgv/wFcDs8xMNYjxm/sM47kVIjrdbJbCaq+B0/lk42z+5i6Dvg0xwUVgPf1AtqYYJ4jsByRUVn3MQtGrgtnE6gN7ViJ4V5pHhdS4bSRot8t2S5v09P2mV2C86nZhDJjTS/GB+vuNgSghvOM2kfjuT27FAI3aNV6ffonw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FKmFpx4LNLb5p9Ko+7gWghMQqXZcAOHX6hK+/90G06U=;
+ b=sK0q6Iuf1B55cfYUFKyDiAHMj38XU7IpEZChgSRkdu2a5j4edyP7efi98wY89WQ9Te/AU6LQ4CO6BmGm6L2rcds4WkBHR7ZZ+zWL4T7yzK+HxdUqziwTuU7d4iXiNhoghguVeCSrEIMZKBa0fsAZu3ikb2A1m/gdt1EMhGIqrrI=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1SPR01MB333.eurprd05.prod.outlook.com (52.134.27.161) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2793.16; Tue, 10 Mar 2020 01:43:04 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2793.013; Tue, 10 Mar 2020
+ 01:43:04 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next 00/11] Mellanox, mlx5 updates 2020-03-09
+Date:   Mon,  9 Mar 2020 18:42:35 -0700
+Message-Id: <20200310014246.30830-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.24.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR08CA0068.namprd08.prod.outlook.com
+ (2603:10b6:a03:117::45) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
 MIME-Version: 1.0
-X-Received: by 2002:a92:4e:: with SMTP id 75mr17624906ila.276.1583804112714;
- Mon, 09 Mar 2020 18:35:12 -0700 (PDT)
-Date:   Mon, 09 Mar 2020 18:35:12 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000088452f05a07621d2@google.com>
-Subject: WARNING: refcount bug in sctp_wfree
-From:   syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com,
-        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BYAPR08CA0068.namprd08.prod.outlook.com (2603:10b6:a03:117::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.15 via Frontend Transport; Tue, 10 Mar 2020 01:43:02 +0000
+X-Mailer: git-send-email 2.24.1
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 12251011-20b9-48e9-ceea-08d7c4945fcb
+X-MS-TrafficTypeDiagnostic: VI1SPR01MB333:|VI1SPR01MB333:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1SPR01MB333692A76C18588F65CAAE6BEFF0@VI1SPR01MB333.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 033857D0BD
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(136003)(376002)(366004)(346002)(199004)(189003)(86362001)(316002)(8676002)(956004)(5660300002)(2616005)(6506007)(81156014)(52116002)(8936002)(26005)(478600001)(81166006)(2906002)(16526019)(186003)(66556008)(66476007)(66946007)(107886003)(1076003)(4326008)(36756003)(6486002)(6512007)(15650500001)(6666004)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1SPR01MB333;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Hd2ipMHEqLgYOBiZl6FMWdwK7N4TAW/sQVP03K9gDC3b/1SGW+XstXeiEDBm8rceFltx+Grhvp1Y3XfNnSbABoKCcUZBDzmqsBYhptHbtrB8ZIbdxcLXlsq8eexT94cyY+KXw1lJpxhxEGBeSIm0MCrsyWjVkLDcESflXlY44LjrMmSEDD56tNhsxWBXFVkv6bmEOM09BugrERfQU4IQSV0rnEVCP1Uy+IVrnULIJKZIfYVQxdEMNNAcsZ/zLkRG1HR1J8VM49Fy/v7gpE6QuZZo0nfvt/27BkLuF2WwMUJQDGfhz4XHsTSGr/aN/gMIEQL6grW7Q9tLllEVaGDrkXladPNCzvaG2BON5EcYDf5wVtsqQ0dUAWv6X9gw0X2252mi8zCuz9No62FiFqqqKiCwi7FT1jlhEzsD7b7AXqU7RwwRQFXjxZlz00avc6p+kzoXBxeIBnEz6/dcSLOYZBpdXwPzYUWo32So3PHufRKgaHShpYvxnuyxWRkZJFT2epzu1tsferfhy386ZN+Y4yr0seZCxyqun6L1qeAfK+0=
+X-MS-Exchange-AntiSpam-MessageData: Xsa27ipDkLOdkQ52eSTjWHe+WNGlXS076/jyyMCodRiOBefgUhJgVEzwGwIV9NfZUoM12NGz35VKA2XzoerxOcFp9VZaDpTw8d54K3HGl0r9q9C5CG3SLbELUc0LXeCStbCj7BRz/vW/4D4+wJndXw==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12251011-20b9-48e9-ceea-08d7c4945fcb
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2020 01:43:03.9749
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SvmOggSK6YMFrDmoULtm2TWzgSkaCc4EER/uH/WpuXZ1/hpeY/0zk+oRC1YVen7AMAp0yOqSiFEf588ZLCrYIQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1SPR01MB333
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Dave,
 
-syzbot found the following crash on:
+This series adds misc updates and cleanups to mlx5 drivers.
+For more information please see tag log below.
 
-HEAD commit:    2c523b34 Linux 5.6-rc5
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=155a5f29e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a5295e161cd85b82
-dashboard link: https://syzkaller.appspot.com/bug?extid=cea71eec5d6de256d54d
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=164b5181e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=166dd70de00000
+Please pull and let me know if there is any problem.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
+Please note that the series starts with a merge of mlx5-next branch,
+to resolve and avoid dependency with rdma tree.
 
-------------[ cut here ]------------
-refcount_t: underflow; use-after-free.
-WARNING: CPU: 1 PID: 8668 at lib/refcount.c:28 refcount_warn_saturate+0x15b/0x1a0 lib/refcount.c:28
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 8668 Comm: syz-executor779 Not tainted 5.6.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1e9/0x30e lib/dump_stack.c:118
- panic+0x264/0x7a0 kernel/panic.c:221
- __warn+0x209/0x210 kernel/panic.c:582
- report_bug+0x1ac/0x2d0 lib/bug.c:195
- fixup_bug arch/x86/kernel/traps.c:174 [inline]
- do_error_trap+0xca/0x1c0 arch/x86/kernel/traps.c:267
- do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
- invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
-RIP: 0010:refcount_warn_saturate+0x15b/0x1a0 lib/refcount.c:28
-Code: c7 e4 ff d0 88 31 c0 e8 23 20 b3 fd 0f 0b eb 85 e8 8a 4a e0 fd c6 05 ff 70 b1 05 01 48 c7 c7 10 00 d1 88 31 c0 e8 05 20 b3 fd <0f> 0b e9 64 ff ff ff e8 69 4a e0 fd c6 05 df 70 b1 05 01 48 c7 c7
-RSP: 0018:ffffc90001f577d0 EFLAGS: 00010246
-RAX: 8c9c9070bbb4e500 RBX: 0000000000000003 RCX: ffff8880938a63c0
-RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
-RBP: 0000000000000003 R08: ffffffff815e16e6 R09: fffffbfff15db92a
-R10: fffffbfff15db92a R11: 0000000000000000 R12: dffffc0000000000
-R13: ffff88809de82000 R14: ffff8880a89237c0 R15: 1ffff11013be52b0
- sctp_wfree+0x3b1/0x710 net/sctp/socket.c:9111
- skb_release_head_state+0xfb/0x210 net/core/skbuff.c:651
- skb_release_all net/core/skbuff.c:662 [inline]
- __kfree_skb+0x22/0x1c0 net/core/skbuff.c:678
- sctp_chunk_destroy net/sctp/sm_make_chunk.c:1454 [inline]
- sctp_chunk_put+0x17b/0x200 net/sctp/sm_make_chunk.c:1481
- __sctp_outq_teardown+0x80a/0x9d0 net/sctp/outqueue.c:257
- sctp_association_free+0x21e/0x7c0 net/sctp/associola.c:339
- sctp_cmd_delete_tcb net/sctp/sm_sideeffect.c:930 [inline]
- sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1318 [inline]
- sctp_side_effects net/sctp/sm_sideeffect.c:1185 [inline]
- sctp_do_sm+0x3c01/0x5560 net/sctp/sm_sideeffect.c:1156
- sctp_primitive_ABORT+0x93/0xc0 net/sctp/primitive.c:104
- sctp_close+0x231/0x770 net/sctp/socket.c:1512
- inet_release+0x135/0x180 net/ipv4/af_inet.c:427
- __sock_release net/socket.c:605 [inline]
- sock_close+0xd8/0x260 net/socket.c:1283
- __fput+0x2d8/0x730 fs/file_table.c:280
- task_work_run+0x176/0x1b0 kernel/task_work.c:113
- exit_task_work include/linux/task_work.h:22 [inline]
- do_exit+0x5ef/0x1f80 kernel/exit.c:801
- do_group_exit+0x15e/0x2c0 kernel/exit.c:899
- __do_sys_exit_group+0x13/0x20 kernel/exit.c:910
- __se_sys_exit_group+0x10/0x10 kernel/exit.c:908
- __x64_sys_exit_group+0x37/0x40 kernel/exit.c:908
- do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x43ef98
-Code: Bad RIP value.
-RSP: 002b:00007ffcc7e7c398 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000043ef98
-RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
-RBP: 00000000004be7a8 R08: 00000000000000e7 R09: ffffffffffffffd0
-R10: 000000002059aff8 R11: 0000000000000246 R12: 0000000000000001
-R13: 00000000006d01a0 R14: 0000000000000000 R15: 0000000000000000
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
+Thanks,
+Saeed.
 
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+The following changes since commit a70ed9d8ecf395ca7d15c2d13782cc0055398ed5:
+
+  Merge branch 'mlx5-next' of git://git.kernel.org/pub/scm/linux/kernel/git/mellanox/linux (2020-03-09 16:58:26 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-03-09
+
+for you to fetch changes up to b63293e759a1dd1d105f4c6c32d7ed150b6af8d2:
+
+  net/mlx5e: Show/set Rx network flow classification rules on ul rep (2020-03-09 16:58:49 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2020-03-09
+
+This series provides updates to mlx5 driver:
+
+1) Use vport metadata matching only when mandatory
+2) Introduce root flow table and ethtool steering for uplink representors
+3) Expose port speed via FW when link modes are not available
+3) Misc cleanups
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      net/mlx5e: Fix an IS_ERR() vs NULL check
+
+Eli Cohen (1):
+      net/mlx5: Verify goto chain offload support
+
+Majd Dibbiny (1):
+      net/mlx5: E-Switch, Use vport metadata matching only when mandatory
+
+Mark Bloch (2):
+      net/mlx5: Expose port speed when possible
+      net/mlx5: Tidy up and fix reverse christmas ordring
+
+Parav Pandit (1):
+      net/mlx5: E-switch, make query inline mode a static function
+
+Paul Blakey (1):
+      net/mlx5: Allocate smaller size tables for ft offload
+
+Saeed Mahameed (1):
+      net/mlx5e: Introduce root ft concept for representors netdevs
+
+Vlad Buslov (3):
+      net/mlx5e: Show/set Rx flow indir table and RSS hash key on ul rep
+      net/mlx5e: Init ethtool steering for representors
+      net/mlx5e: Show/set Rx network flow classification rules on ul rep
+
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   6 +
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   |  37 ++++---
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   | 122 ++++++++++++---------
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.h   |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  65 +++++++----
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   1 -
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  90 ++++++++-------
+ .../mellanox/mlx5/core/eswitch_offloads_chains.c   |   5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   4 +-
+ 9 files changed, 202 insertions(+), 129 deletions(-)
