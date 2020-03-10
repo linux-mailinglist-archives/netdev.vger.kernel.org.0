@@ -2,126 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12E2E180CA1
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 00:54:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65591180CA0
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 00:53:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727769AbgCJXyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 19:54:16 -0400
-Received: from mail-eopbgr70054.outbound.protection.outlook.com ([40.107.7.54]:36051
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        id S1727729AbgCJXxg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 19:53:36 -0400
+Received: from mail-eopbgr80042.outbound.protection.outlook.com ([40.107.8.42]:63319
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726380AbgCJXyQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 10 Mar 2020 19:54:16 -0400
+        id S1727591AbgCJXxg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 10 Mar 2020 19:53:36 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XBuCxbFpjBHUoOhZQZip5Jjx3fe26gEseTF7rg7A2r99AUEyWsF7bbJl5Eg2UGVcQHzXz83k2kMLlIGhXW1sPBbz4cGrBtrh4EbZNJFxGd0600sIFqZZQH80cfrnpNy9+avxwE7D7YeVrqymIZGOH9LSp9FFqh4YYQC+7K9gaPKMP/U/zgraQ65eBlfOs2f+zmbNAncGG/79ZtEwlPO0/UaJ+LECKi6oPZIj3UXkQZ11UabkfatFvItdn8MEpukuAmDyU5wKmSxge3Del+tfSQjDRsw5zrGJPur6nQsKRaeHODhezQBop/0YIH7C482HVGUB28E590/K1Tg8cKWTkQ==
+ b=kN+oTW1Z229f3Y0Uis0+1C8PaMgrreZXyqTg37mDKjKUYrtNQjTX0AuprUEy0a2nMz8sizABhUADLCtd3jbecsf4PxdrnRJhK9WpIuqlzQ7g35T+wQ2GU8GVuI8p2N7s6U2cG0uLNJ7LMCzyMqiz88+2415OzVCsJVPZ+Ju2gNpAQlpelYicMLdl2NYr1+obmRNq3qoGSw5gZlcPyBUaWgnIHKnNhsy/OSeRM2Vg/z3PILiIiC5JUTV9iN4Ldh0DB5Y6GehXsTv3iFj9hv51IWEtlx1Y3iIFSbUnx5r1gqB2jHiqxRueUdADYIbFHZN9FFeIUsU76Kkq4ttEWgFNdg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9jc6eOumFZA8AZlvywpCFkCZsvC22GCSCDoNqUDa+dc=;
- b=e4gNovCZTxdaziAeITm+wCVDeCdL+ba4l8I+nRjo+wtLuHjxo6y2VdIP/TG09Mr1ean234Moyl1X3PE4I3GJVuKq3BucTJ89JnOC4THim6aNPqgABcExr0sVPYOFKosBX+VigkkyTCL+d0SLmNE9qMRXXeiGjB+hRwFK5bEofuzZmcn6fdv1H6pumknGu7crmOm0zCpZrLE/DIQKb1RhP0UeC74gpERUJ7vctulBcEib7UyRDooVUoqPj3WblOkwthtssplwITFv5NjMnHb0yVJNdiRiM+8xrikxaKMo6xDgutfENT5oNC92mSfih8FZqs1tvYMhiX+jjzjY7VYbrA==
+ bh=oWi5Gh8gsjbrRPqjTiBUwBP8jBI6IsVAYAuaBSooPtY=;
+ b=IackcMiXsCvGBtz7TZJ13DeHSg7Amrope8fiT7Ga9aAh4gR7i9voKeAQr64wGjAbFi9kPhT53S2FX5SQNKgFF7fmed+lVxOCe0OH4WJZda+ZWQfW7Fh1qkYpEy+YOJ1BEdgtvlij70aMiDsCodCyC67u5EtFCcM8XwSX8LqaVNi2UI8FaVS9u+Je1+UiPYYX1PhX++TPMTuXJr3hlAbC4256Yp6rPHgXSx+hZgXJgw+0HP5hq7cUImKJ0Aa93/NkXBC4BRAlMagS9p/oNmJS6KLGx4uz+Y3mmQ4qKtWvL0Pz2eJV05fF9+BL5mQzD9+grlyYkUYymFsabCJ2VV/hEg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9jc6eOumFZA8AZlvywpCFkCZsvC22GCSCDoNqUDa+dc=;
- b=ZH7/Ygx04BC8qN6EHTrowyB02Lk9qCUdjYMaQSEzul51CPUxTBOvHglnPCHQ4dUZvHrUtm72PfacRkMN2jtvqyjEEzSzZkhiFVwlB2UL8xg1/YPVPMKemV30pjwoeWRM4cAQvnU1/dvnBZUU6O0+C5SQfeUL1UWy1m9xaB1uH/s=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB6560.eurprd05.prod.outlook.com (20.179.26.83) with Microsoft SMTP
+ bh=oWi5Gh8gsjbrRPqjTiBUwBP8jBI6IsVAYAuaBSooPtY=;
+ b=liQp1f8cpYUUAoNQs4JANUrUlPEZeR/9qR5Nxz79Uc9f57NyAJW+on+UG5mGY+5fZ92UgzVR920rhM7F+LdM+3UuQgIzcGngZoy1OlASwUk2ChSNEHPuGpYd7T4+SMFS1vsG9Kds3Hg2Z3MQslcK9kW1J7n5v7GpIIsH9Dr8Jbk=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=petrm@mellanox.com; 
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (20.176.168.150) by
+ HE1PR05MB4587.eurprd05.prod.outlook.com (20.176.166.20) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2793.17; Tue, 10 Mar 2020 23:53:29 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2793.013; Tue, 10 Mar 2020
- 23:53:29 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "kuba@kernel.org" <kuba@kernel.org>,
-        "brouer@redhat.com" <brouer@redhat.com>
-CC:     "kernel-team@fb.com" <kernel-team@fb.com>,
-        Li Rongqing <lirongqing@baidu.com>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ilias.apalodimas@linaro.org" <ilias.apalodimas@linaro.org>
-Subject: Re: [PATCH] page_pool: use irqsave/irqrestore to protect ring access.
-Thread-Topic: [PATCH] page_pool: use irqsave/irqrestore to protect ring
- access.
-Thread-Index: AQHV9kvf9xbvvfqL9UebbKngICNOR6hBAJ0AgAAaiICAAH7CAIAAufuAgAAttAA=
-Date:   Tue, 10 Mar 2020 23:53:28 +0000
-Message-ID: <fb256e1ec90dc72893a76e6b85fb2ef340829aff.camel@mellanox.com>
-References: <20200309194929.3889255-1-jonathan.lemon@gmail.com>
-         <20200309.175534.1029399234531592179.davem@davemloft.net>
-         <9b09170da05fb59bde7b003be282dfa63edd969e.camel@mellanox.com>
-         <20200310110412.66b60677@carbon>
-         <20200310140951.64a3a7dc@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200310140951.64a3a7dc@kicinski-fedora-PC1C0HJN>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 59e6b4c8-8bf4-4936-eaf6-08d7c54e3b58
-x-ms-traffictypediagnostic: VI1PR05MB6560:
-x-ld-processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
-x-microsoft-antispam-prvs: <VI1PR05MB656026C78F086E61B1BB2E17BEFF0@VI1PR05MB6560.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 033857D0BD
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(39860400002)(376002)(396003)(136003)(199004)(189003)(66476007)(26005)(54906003)(478600001)(316002)(6512007)(91956017)(76116006)(64756008)(186003)(110136005)(6506007)(66946007)(71200400001)(4326008)(66446008)(5660300002)(66556008)(2906002)(81166006)(86362001)(36756003)(6486002)(8936002)(2616005)(81156014)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6560;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lxI0VtW17M5d3XXqdqCrHfZ7E3+ftAN+NwUycH4e8mhRxb6nMB/pYVSPEIcSbPhOwsKrTuJbNOtPVbsm8qKjaxn87dKO2cRzI7wPvgW4HIdzAzVC71Kyxf8NhF1i+MfX7jfNKnhyMLWG/3JHoG7d/121E7K+sqmAA+T1iyLE1vmYIcHIMqs3RfchSIbYnKUuUOHLYKQJ1VpsdDBj68b68KznQeIERN3JI8J+VJMUPRBQGKZo8znT6my3KVml+39qb9YzOjfT4jcW5pOWkVqJJBATcSxy19tJDRm7zNUNgN9tKVqC/RFW//TqlzC6Ts2kHQZA1j1Xmh9n/iC33RSa7GrKDQ2cKI0z8Md100qX188QYf2c6BZjVxCmfYyI4T4c4KcTX8S92jWRdQEdSD8vEB3fDGvGH5UvjlxTleV247EsNqektIOwCkR8gBHBiMyl
-x-ms-exchange-antispam-messagedata: Z6syrECieza/QzpxIp+n/hm5BqcwEEvP81G/zJTFYNfmKO/X1vyac6lVv3kQCHNwNlHqm6gM/unVjbOj3A+kZESvpNkAg5kIwOUadB0KPL5r2shLVoCiP8WYytG0O05mGO2H29OzydlZ7xrtZVeYag==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <EFA169E7FA8DAF45B6ACF6159F0897FA@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ 15.20.2793.15; Tue, 10 Mar 2020 23:53:33 +0000
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::c146:9acd:f4dc:4e32]) by HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::c146:9acd:f4dc:4e32%7]) with mapi id 15.20.2793.013; Tue, 10 Mar 2020
+ 23:53:33 +0000
+References: <20200309183503.173802-1-idosch@idosch.org> <20200309183503.173802-3-idosch@idosch.org> <20200309151818.4350fae6@kicinski-fedora-PC1C0HJN> <87sgigy1zr.fsf@mellanox.com> <20200310125321.699b36bc@kicinski-fedora-PC1C0HJN> <87mu8nyhlw.fsf@mellanox.com> <20200310160052.72e7e09b@kicinski-fedora-PC1C0HJN>
+User-agent: mu4e 1.3.3; emacs 26.3
+From:   Petr Machata <petrm@mellanox.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, jiri@mellanox.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 2/6] net: sched: Add centralized RED flag checking
+In-reply-to: <20200310160052.72e7e09b@kicinski-fedora-PC1C0HJN>
+Date:   Wed, 11 Mar 2020 00:53:29 +0100
+Message-ID: <87lfo7ydfq.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: ZR0P278CA0026.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:1c::13) To HE1PR05MB4746.eurprd05.prod.outlook.com
+ (2603:10a6:7:a3::22)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from yaviefel (89.176.246.183) by ZR0P278CA0026.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:1c::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.15 via Frontend Transport; Tue, 10 Mar 2020 23:53:32 +0000
+X-Originating-IP: [89.176.246.183]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: aa566bca-702e-4cdf-aecf-08d7c54e3d8e
+X-MS-TrafficTypeDiagnostic: HE1PR05MB4587:|HE1PR05MB4587:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR05MB45878ABA0653914CDA0C6598DBFF0@HE1PR05MB4587.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Forefront-PRVS: 033857D0BD
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(346002)(396003)(136003)(39860400002)(366004)(189003)(199004)(186003)(36756003)(6496006)(6916009)(478600001)(107886003)(8936002)(66556008)(2616005)(66476007)(5660300002)(66946007)(26005)(4326008)(316002)(956004)(86362001)(6486002)(81156014)(2906002)(81166006)(8676002)(16526019)(54906003)(6666004)(52116002);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR05MB4587;H:HE1PR05MB4746.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XNClAwy7o3pIwtrd6H2K+hoNuvOUJHyEoUA5ogICQNubXhIDM4J0vM3qJ5/jXvBOScyhUL/IhptVZ0PJQfPfCCGIKiIlr6MWlaskAdlHnJEMIP57Y+mpSWW27oLSHKlaSBW4+ygyeLEwO8q60HexpQwcjjw5nDcgo+RN/2dR1LedETOcSId4hIjainTlpwVDLL5hl+jaMAXHcl+lUt5WBniSg/Fyj+rqSaZssd+jQbpUtW2omMTWwAPWAUGG0W3kWewdywvVicRoFEO01OQ/Q78QL5lRShnFq6q7ETuJ9105gn/DIr4hOk6Rwf35d74Qlxh7tqih1yqR3l4BlD4m9M3Qxp4XX4kg0JddT5FUVxm7z+UW5VFgmzxBwkKmTxeUtS7HgMy/y8xAF8x99pBcFwPDptOm+j32CFrWRr/Vh17IRio2T0mPxpCZsNbogVlG
+X-MS-Exchange-AntiSpam-MessageData: V4uIYmy8xZGub6yBv9qxvi/dxWaHt5v/TvCEKVxns3gnLpGtfNvb17AzjSAPnEAxFN6sjNvOZAOuBJXlD5ttbd84O77pBcG9fbdD6Zmsp/+UXWGxuG2DLBq2eMz6yXt704UxJqmVYdaHLNA2uaF6zA==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59e6b4c8-8bf4-4936-eaf6-08d7c54e3b58
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Mar 2020 23:53:28.8959
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa566bca-702e-4cdf-aecf-08d7c54e3d8e
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2020 23:53:32.9335
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YbwnQJzxpbF5pNKbLAVVuVt3aJD+ouOw+PdFRGObaYsSOLbn0oLbhv3RIpWqgHkN/ZnYlgPfTWUxCzFtCsu20Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6560
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IjGsWYmd6xqFodBYmiS119PgDJ+3TShWH3m+tlypDmaS47Df2juaVgQTuJB+X/jBNf9mtMY0ke5dz2r5qy0pIg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB4587
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDIwLTAzLTEwIGF0IDE0OjA5IC0wNzAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
-Cj4gT24gVHVlLCAxMCBNYXIgMjAyMCAxMTowNDoxMiArMDEwMCBKZXNwZXIgRGFuZ2FhcmQgQnJv
-dWVyIHdyb3RlOg0KPiA+IE9uIFR1ZSwgMTAgTWFyIDIwMjAgMDI6MzA6MzQgKzAwMDANCj4gPiBT
-YWVlZCBNYWhhbWVlZCA8c2FlZWRtQG1lbGxhbm94LmNvbT4gd3JvdGU6DQo+ID4gPiBPbiBNb24s
-IDIwMjAtMDMtMDkgYXQgMTc6NTUgLTA3MDAsIERhdmlkIE1pbGxlciB3cm90ZTogIA0KPiA+ID4g
-PiBGcm9tOiBKb25hdGhhbiBMZW1vbiA8am9uYXRoYW4ubGVtb25AZ21haWwuY29tPg0KPiA+ID4g
-PiBEYXRlOiBNb24sIDkgTWFyIDIwMjAgMTI6NDk6MjkgLTA3MDANCj4gPiA+ID4gICAgIA0KPiA+
-ID4gPiA+IG5ldHBvbGwgbWF5IGJlIGNhbGxlZCBmcm9tIElSUSBjb250ZXh0LCB3aGljaCBtYXkg
-YWNjZXNzIHRoZQ0KPiA+ID4gPiA+IHBhZ2UgcG9vbCByaW5nLiAgVGhlIGN1cnJlbnQgX2JoIHZh
-cmlhbnRzIGRvIG5vdCBwcm92aWRlDQo+ID4gPiA+ID4gc3VmZmljaWVudA0KPiA+ID4gPiA+IHBy
-b3RlY3Rpb24sIHNvIHVzZSBpcnFzYXZlL3Jlc3RvcmUgaW5zdGVhZC4NCj4gPiA+ID4gPiANCj4g
-PiA+ID4gPiBFcnJvciBvYnNlcnZlZCBvbiBhIG1vZGlmaWVkIG1seDQgZHJpdmVyLCBidXQgdGhl
-IGNvZGUgcGF0aA0KPiA+ID4gPiA+IGV4aXN0cw0KPiA+ID4gPiA+IGZvciBhbnkgZHJpdmVyIHdo
-aWNoIGNhbGxzIHBhZ2VfcG9vbF9yZWN5Y2xlIGZyb20gbmFwaQ0KPiA+ID4gPiA+IHBvbGwuICAN
-Cj4gPiANCj4gPiBOZXRwb2xsIGNhbGxzIGludG8gZHJpdmVycyBhcmUgcHJvYmxlbWF0aWMsIG5h
-c3R5IGFuZCBhbm5veWluZy4NCj4gPiBEcml2ZXJzDQo+ID4gdXN1YWxseSBjYXRjaCBuZXRwb2xs
-IGNhbGxzIHZpYSBzZWVpbmcgTkFQSSBidWRnZXQgaXMgemVybywgYW5kDQo+ID4gaGFuZGxlDQo+
-ID4gdGhlIHNpdHVhdGlvbiBpbnNpZGUgdGhlIGRyaXZlciBlLmcuWzFdWzJdLiAoZXZlbiBuYXBp
-X2NvbnN1bWVfc2tiDQo+ID4gY2F0Y2ggaXQgdGhpcyB3YXkpLg0KPiANCj4gSSdtIHByb2JhYmx5
-IGp1c3QgcmVwZWF0aW5nIHdoYXQgeW91IHNhaWQsIGJ1dCB3b3VsZCBpdCBiZSByZWFzb25hYmxl
-DQo+IHRvIGV4cGVjdCBwYWdlX3Bvb2wgdXNlcnMgdG8gc3BlY2lhbC1jYXNlIFhEUCByaW5ncyB0
-byBub3QgYmUNCj4gY2xlYW5lZD8NCj4gbmV0cG9sbCBoYXMgbm8gdXNlIGZvciB0aGVtLg0KPiAN
-Cg0Kc291bmRzIGxpa2UgYSBiZXR0ZXIgYmFuZC1haWQNCg0KPiBQZXJoYXBzIHRoYXQgd291bGQg
-bm90IHNvbHZlIHRoZSBpc3N1ZSBmb3IgdGhvc2UgZnVua3kgZHJpdmVycyB3aGljaA0KPiB1c2Ug
-dGhlIHNhbWUgcmluZ3MgZm9yIGJvdGggWERQIGFuZCB0aGUgc3RhY2suIFNpZ2guIERvIHdlIGNh
-cmUgYWJvdXQNCj4gdGhlbT8NCg0KVGhleSBjYW4gc3BlY2lhbCBjYXNlIHBlci1wYWdlLCBpZiBp
-dCBpcyBhbiBYRFAgdHggcGFnZSwgZG9uJ3QgcmVjeWNsZQ0KdG8gcHRyIHJpbmcgLi4gDQo=
+
+Jakub Kicinski <kuba@kernel.org> writes:
+
+> On Tue, 10 Mar 2020 23:23:23 +0100 Petr Machata wrote:
+>> Jakub Kicinski <kuba@kernel.org> writes:
+>> 
+>> > On Tue, 10 Mar 2020 10:48:24 +0100 Petr Machata wrote:  
+>> >> > The only flags which are validated today are the gRED per-vq ones, which
+>> >> > are a recent addition and were validated from day one.  
+>> >>
+>> >> Do you consider the validation as such to be a problem? Because that
+>> >> would mean that the qdiscs that have not validated flags this way
+>> >> basically cannot be extended ever ("a buggy userspace used to get a
+>> >> quiet slicing of flags, and now they mean something").  
+>> >
+>> > I just remember leaving it as is when I was working on GRED, because
+>> > of the potential breakage. The uAPI policy is what it is, then again
+>> > we probably lose more by making the code of these ancient Qdiscs ugly
+>> > than we win :(
+>> >
+>> > I don't feel like I can ack it with clear conscience tho.  
+>> 
+>> Just to make sure -- are you opposed to adding a new flag, or to
+>> validation? 
+>
+> They are both uABI changes, so both.
+>
+>> At least the adaptative flag was added years after the
+>> others in 2011. I wasn't paying much attention to kernel back then, but
+>> I think the ABI rules are older than that.
+>
+> Yes, but some (e.g. TC subsystem) didn't really care much about those
+> rules until more recently.
+>
+> The alternative to validation/adding flag in place is obviously to add 
+> a new netlink attribute which would be validated from the start. Can you
+> give it a try and see how ugly it gets?
+
+Yeah, I'll give it a stab tomorrow.
