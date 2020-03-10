@@ -2,102 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89CA6180B44
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 23:15:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ED5A180B4C
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 23:15:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727775AbgCJWPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 18:15:11 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:36512 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726293AbgCJWPL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 18:15:11 -0400
-Received: by mail-wr1-f67.google.com with SMTP id s5so62260wrg.3
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 15:15:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=IMGMWD1SzEVhpre/VzcHA4hjobDm1dY17JddbcTPIWg=;
-        b=toLPULWYKJnW5LGF6XxK8j8Ab+RzO2C3sRwkec0i0a3Y0mM0xOP7ofZbbaQOIs2Uwz
-         FQmzDBbWusUj1MJv2C9UY8Cgt5t9TP7hDQks4UWE22okDS2W/LEdivK5+5QLSMiUesIL
-         cgjtosRCODUOgm6J2OPpqtcGFe51HHHE05jayOQlPxerjrYqp+ciPyZ5Kls4/a3Qs41w
-         +c2UHHdKOUupVK6jHcJ/mJiQG6H8BMS7DMEsiKWGkBBhnNZOQHKDaxI56vPPcJHZ+VFN
-         RkIIfC3UFsRosmZ7bGie/w6SoeZvhxCvJ2Fgh2enl0L+dzMoUyGKLmEVps/xKWGM0t8S
-         PQsQ==
+        id S1727789AbgCJWPR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 18:15:17 -0400
+Received: from mail-il1-f200.google.com ([209.85.166.200]:52641 "EHLO
+        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726293AbgCJWPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 18:15:17 -0400
+Received: by mail-il1-f200.google.com with SMTP id d2so10910156ilf.19
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 15:15:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=IMGMWD1SzEVhpre/VzcHA4hjobDm1dY17JddbcTPIWg=;
-        b=aZ/13/oP3dR5Ars8Ki7cSA5A0pDxMn0o4FAIzFelv1UYd57O6eH0u2TognhJ+wgzB1
-         kIaPWCmfCIlPYLZZygSrRYYsxX/qZWTS8+l9eLRc/Vd5v6eTvcLTEHaprQMLChVUIhYG
-         AqbJLu/TJLOyGlf6FRYdv7ITgVUaMPTec8NuWeZfrsbE7KgTi0NE9ZLPhZUfyBRoe2cz
-         zLGw5wM9FLIh48N6J8CFzrjakrtqgkSB0d+JjXQcgoRMZU1H1YdpFG5IMdefUbycI9Nk
-         m+lPgJSij5Znoof58WocDlcb8/Ck2xP4hMCNLaoED/ufxpcHJLyjX3tw0VFwnKH1uQe1
-         9eHQ==
-X-Gm-Message-State: ANhLgQ2YR0+m3Zl1/70UH7gvf6BZk4EhgDJaWLjoLMDUiSfZqiHJj+3q
-        rvRseGzRwgsaWrHnhYtkTj75WU6B
-X-Google-Smtp-Source: ADFU+vsRbrZyEdAWeEAV9stcPmYaV7ePhm9Cl/xEEm+2td7H5pmJFSEhhjLzT8IlJ90GNMuU/6srLQ==
-X-Received: by 2002:adf:e789:: with SMTP id n9mr35244wrm.140.1583878509271;
-        Tue, 10 Mar 2020 15:15:09 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:6583:5434:4ad:491c? (p200300EA8F2960006583543404AD491C.dip0.t-ipconnect.de. [2003:ea:8f29:6000:6583:5434:4ad:491c])
-        by smtp.googlemail.com with ESMTPSA id c4sm5989078wml.7.2020.03.10.15.15.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Mar 2020 15:15:08 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: simplify getting stats by using
- netdev_stats_to_stats64
-Message-ID: <5b4bf717-934b-b0c6-0f66-585dbe3f774d@gmail.com>
-Date:   Tue, 10 Mar 2020 23:15:00 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=84Qll/dlvjLD8CKSDBpk24SgnTCJ2Jz6eCDGbYrKR6M=;
+        b=qmy0HEHfyBig95MhM1gMFobTM/wzTtgCCSHPMl7VVF1qssyfTGzvU30iLg/llZ5MDK
+         EyidLqShgm2XuXW5to+L/7EA7jGf3RKlFhjamrF8JXDkRe+JgaCTybPQ7ctc175l5oqw
+         mS57e5DHsIr4GQuTosUD1jr8vHXjVYk9AP90WeoD6iJGpkWyeXWWlCYBwSTjSCndDb82
+         ij9HwxO7k72SglFnmXvic3zK7oO59g6dAU3te2rP7nz9dCJyz4Dj6TxOURx5OPkEDGSo
+         4wBzddhFcBfGb2HLYbXI8G+AQRUVm8g2/+E/HvVtKRVQaVN+hT0nRCJemOZKcRfzvdZZ
+         HKFQ==
+X-Gm-Message-State: ANhLgQ3PWB+irJSjIcFctaAp3923fsK5gDPwaMa+dMFrBq0WH2PQQmTl
+        +KELJnh0LEkmaxJuq3hyCShNP+guGqx3f1y9fe52+ZpSp/WU
+X-Google-Smtp-Source: ADFU+vuYOs9m+t/8m6YXsqaahK0LT1iDnXctxC8s0+uVCmTvZEB7HBEuRmjFGwYUuu3HdpWapyz+TgHH1fAI8lMe09pqO20GxIVP
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6e02:ea8:: with SMTP id u8mr264198ilj.0.1583878516849;
+ Tue, 10 Mar 2020 15:15:16 -0700 (PDT)
+Date:   Tue, 10 Mar 2020 15:15:16 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005d435905a0877414@google.com>
+Subject: KASAN: use-after-free Write in tcindex_set_parms
+From:   syzbot <syzbot+e5db00b3987d59130da5@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let netdev_stats_to_stats64() do the copy work for us.
+Hello,
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+syzbot found the following crash on:
+
+HEAD commit:    30bb5572 Merge tag 'ktest-v5.6' of git://git.kernel.org/pu..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=15bae581e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c2e311dba9a02ba9
+dashboard link: https://syzkaller.appspot.com/bug?extid=e5db00b3987d59130da5
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11fe8219e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=129e5439e00000
+
+The bug was bisected to:
+
+commit 599be01ee567b61f4471ee8078870847d0a11e8e
+Author: Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon Feb 3 05:14:35 2020 +0000
+
+    net_sched: fix an OOB access in cls_tcindex
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=141c1dfde00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=161c1dfde00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=121c1dfde00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+e5db00b3987d59130da5@syzkaller.appspotmail.com
+Fixes: 599be01ee567 ("net_sched: fix an OOB access in cls_tcindex")
+
+IPVS: ftp: loaded support on port[0] = 21
+==================================================================
+BUG: KASAN: use-after-free in tcindex_set_parms+0x17fd/0x1a00 net/sched/cls_tcindex.c:455
+Write of size 16 at addr ffff8880a86d28b8 by task syz-executor352/9506
+
+CPU: 0 PID: 9506 Comm: syz-executor352 Not tainted 5.6.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:374
+ __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:506
+ kasan_report+0xe/0x20 mm/kasan/common.c:641
+ tcindex_set_parms+0x17fd/0x1a00 net/sched/cls_tcindex.c:455
+ tcindex_change+0x203/0x2e0 net/sched/cls_tcindex.c:518
+ tc_new_tfilter+0xa59/0x20b0 net/sched/cls_api.c:2103
+ rtnetlink_rcv_msg+0x810/0xad0 net/core/rtnetlink.c:5427
+ netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+ __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x440eb9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 10 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffc66658278 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004a2690 RCX: 0000000000440eb9
+RDX: 0000000000000000 RSI: 00000000200001c0 RDI: 0000000000000003
+RBP: 00000000004a2690 R08: 0000000120080522 R09: 0000000120080522
+R10: 0000000120080522 R11: 0000000000000246 R12: 00000000004023c0
+R13: 0000000000402450 R14: 0000000000000000 R15: 0000000000000000
+
+Allocated by task 1:
+ save_stack+0x1b/0x80 mm/kasan/common.c:72
+ set_track mm/kasan/common.c:80 [inline]
+ __kasan_kmalloc mm/kasan/common.c:515 [inline]
+ __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:488
+ kmem_cache_alloc_trace+0x153/0x7d0 mm/slab.c:3551
+ kmalloc include/linux/slab.h:555 [inline]
+ kzalloc include/linux/slab.h:669 [inline]
+ call_usermodehelper_setup+0x98/0x300 kernel/umh.c:386
+ kobject_uevent_env+0xcfb/0x11f0 lib/kobject_uevent.c:613
+ kernel_add_sysfs_param kernel/params.c:797 [inline]
+ param_sysfs_builtin kernel/params.c:832 [inline]
+ param_sysfs_init+0x3c5/0x430 kernel/params.c:953
+ do_one_initcall+0x10a/0x7d0 init/main.c:1152
+ do_initcall_level init/main.c:1225 [inline]
+ do_initcalls init/main.c:1241 [inline]
+ do_basic_setup init/main.c:1261 [inline]
+ kernel_init_freeable+0x501/0x5ae init/main.c:1445
+ kernel_init+0xd/0x1bb init/main.c:1352
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+Freed by task 562:
+ save_stack+0x1b/0x80 mm/kasan/common.c:72
+ set_track mm/kasan/common.c:80 [inline]
+ kasan_set_free_info mm/kasan/common.c:337 [inline]
+ __kasan_slab_free+0xf7/0x140 mm/kasan/common.c:476
+ __cache_free mm/slab.c:3426 [inline]
+ kfree+0x109/0x2b0 mm/slab.c:3757
+ call_usermodehelper_freeinfo kernel/umh.c:48 [inline]
+ umh_complete kernel/umh.c:62 [inline]
+ umh_complete+0x81/0x90 kernel/umh.c:51
+ call_usermodehelper_exec_async+0x459/0x710 kernel/umh.c:122
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+The buggy address belongs to the object at ffff8880a86d2800
+ which belongs to the cache kmalloc-192 of size 192
+The buggy address is located 184 bytes inside of
+ 192-byte region [ffff8880a86d2800, ffff8880a86d28c0)
+The buggy address belongs to the page:
+page:ffffea0002a1b480 refcount:1 mapcount:0 mapping:ffff8880aa000000 index:0x0
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea00028da348 ffff8880aa001148 ffff8880aa000000
+raw: 0000000000000000 ffff8880a86d2000 0000000100000010 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8880a86d2780: 00 fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff8880a86d2800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff8880a86d2880: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+                                        ^
+ ffff8880a86d2900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8880a86d2980: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+==================================================================
+
+
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 10 ++--------
- 1 file changed, 2 insertions(+), 8 deletions(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index c0731c33c..ce030e093 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4827,6 +4827,8 @@ rtl8169_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
- 
- 	pm_runtime_get_noresume(&pdev->dev);
- 
-+	netdev_stats_to_stats64(stats, &dev->stats);
-+
- 	do {
- 		start = u64_stats_fetch_begin_irq(&tp->rx_stats.syncp);
- 		stats->rx_packets = tp->rx_stats.packets;
-@@ -4839,14 +4841,6 @@ rtl8169_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
- 		stats->tx_bytes	= tp->tx_stats.bytes;
- 	} while (u64_stats_fetch_retry_irq(&tp->tx_stats.syncp, start));
- 
--	stats->rx_dropped	= dev->stats.rx_dropped;
--	stats->tx_dropped	= dev->stats.tx_dropped;
--	stats->rx_length_errors = dev->stats.rx_length_errors;
--	stats->rx_errors	= dev->stats.rx_errors;
--	stats->rx_crc_errors	= dev->stats.rx_crc_errors;
--	stats->rx_fifo_errors	= dev->stats.rx_fifo_errors;
--	stats->multicast	= dev->stats.multicast;
--
- 	/*
- 	 * Fetch additional counter values missing in stats collected by driver
- 	 * from tally counters.
--- 
-2.25.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
