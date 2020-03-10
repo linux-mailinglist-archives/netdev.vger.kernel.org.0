@@ -2,116 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE5B018069E
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 19:34:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D93D1806E3
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 19:36:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727572AbgCJSeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 14:34:09 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:44442 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726520AbgCJSeI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 14:34:08 -0400
-Received: by mail-ot1-f68.google.com with SMTP id v22so14137022otq.11;
-        Tue, 10 Mar 2020 11:34:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kvx5AFxHMm/WOEF5HnQnZ+LRGkXEqn0izG5OxI9yOg4=;
-        b=JBmTqLsv0jhi4ox/CpoU1wliDYVO29WUH0s8N/o7dlV+K2cRy4Xu8cEdvRRA6Unzob
-         1zulcFPcd3+CDqdCZTx5hajX5Hbv/FzZvgbVOGMbbkYtpt8a9ZnlBre3LqNPexEkoU4H
-         AHKiwiXftUPHnBFog3rBAOqq1N0sNQJv1fCWRcMkTMYaa73j4O5DfXr/DOlewNItFi04
-         /2bmuSfcBQy19XLEg5ggOhU0UB0dhcSZWYZLdvqG/qSB8yK1XF7zFxrVcJHVLCE8Bsm+
-         Q4tfN7V9sxkp7Uz4V3QE5khO4zJI+0Gm76aipfR5iJ3pUTfFbANd98+/LTXpgV2oHUFf
-         d3sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kvx5AFxHMm/WOEF5HnQnZ+LRGkXEqn0izG5OxI9yOg4=;
-        b=F6rD8yHYmKJhTod0i5USAXKROFTaZ/TdVnNxxpu5fZrmClM93wMkOJ4GTkHXr8Eg48
-         U61XrtEME54yGN0ZC/XKkPkD07g5yOaXnHCJ3I0vZ++PJ9ldITU9hbinaa51N4ZRxeJS
-         zwJFTjgrnNJyQG/w156wFAH77vZTJtodLXdWddmlVNnPpYF8d6vLK2iA25hB3LW41Y6M
-         J4bHgGDBajXiZ5TwnQMFgPikwRYrgIYXMC+i0LdyeVvLeEAusLtDNw0KyEBWhQkIASuS
-         M0DMmDYYdsYTmJ0fH3VyCdWWcsNlSEx9BcfVbwCaNCFjhhD1JwcpeFmeA8NXq/VRpXZ7
-         Q5rg==
-X-Gm-Message-State: ANhLgQ1fuMvKEL5R2eYz9NxoSzQo0N6TEDe8UTmy7FK0xL3cn6VtMQJ8
-        qBbsFJ5/SsMNWqMeHv29ZF7EZDLFhmlipUSICjo=
-X-Google-Smtp-Source: ADFU+vsqEbDH7uuRIoc6YR/QXBvYof8HLvKsAKFpP1UL5Omu5tROekHDpSgX/VrnYxXURqUFS3TNvPSlunitMwojpaE=
-X-Received: by 2002:a9d:2f44:: with SMTP id h62mr1475234otb.189.1583865247915;
- Tue, 10 Mar 2020 11:34:07 -0700 (PDT)
+        id S1726918AbgCJSgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 14:36:33 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:56366 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726315AbgCJSgd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 14:36:33 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02AIWrEQ024706
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 11:36:32 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=CghPHU0EWW/X1MFI/B2AHyo+oWelZVD3Y8Uuidhhfps=;
+ b=dEpaDcHQBzF7xNhbg5UKDzy8afdJycgWkCngDIbp4DudmE7IFFv4Sjca9OUyFYi8Vv1l
+ oo7HdOuDjn0xP136sJLn4QmmEwxeG41+euRY5SNw52XZ9ruo1kqz/dihtg6jHeBMvMmS
+ cOZOaD6rIrA54fPuZNoFtQ+8BgRTFMnp9dI= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yp25fm4n0-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 11:36:32 -0700
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 10 Mar 2020 11:36:29 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id BF5A262E28D2; Tue, 10 Mar 2020 11:36:25 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Song Liu <songliubraving@fb.com>
+Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <quentin@isovalent.com>, <kernel-team@fb.com>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <arnaldo.melo@gmail.com>,
+        <jolsa@kernel.org>, Song Liu <songliubraving@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next 0/2] Fixes for bpftool-prog-profile
+Date:   Tue, 10 Mar 2020 11:36:21 -0700
+Message-ID: <20200310183624.441788-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <00000000000034513e05a05cfc23@google.com>
-In-Reply-To: <00000000000034513e05a05cfc23@google.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 10 Mar 2020 11:33:56 -0700
-Message-ID: <CAM_iQpVgQ+Mc16CVds-ywp6YHEbwbGtJwqoQXBFbrMTOUZS0YQ@mail.gmail.com>
-Subject: Re: KASAN: invalid-free in tcf_exts_destroy
-To:     syzbot <syzbot+dcc34d54d68ef7d2d53d@syzkaller.appspotmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-10_12:2020-03-10,2020-03-10 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ phishscore=0 malwarescore=0 suspectscore=0 clxscore=1015 spamscore=0
+ mlxscore=0 lowpriorityscore=0 impostorscore=0 bulkscore=0 mlxlogscore=722
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003100110
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 8, 2020 at 12:35 PM syzbot
-<syzbot+dcc34d54d68ef7d2d53d@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following crash on:
->
-> HEAD commit:    c2003765 Merge tag 'io_uring-5.6-2020-03-07' of git://git...
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10cd2ae3e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=4527d1e2fb19fd5c
-> dashboard link: https://syzkaller.appspot.com/bug?extid=dcc34d54d68ef7d2d53d
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> userspace arch: i386
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1561b01de00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=15aad2f9e00000
->
-> The bug was bisected to:
->
-> commit 599be01ee567b61f4471ee8078870847d0a11e8e
-> Author: Cong Wang <xiyou.wangcong@gmail.com>
-> Date:   Mon Feb 3 05:14:35 2020 +0000
->
->     net_sched: fix an OOB access in cls_tcindex
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10a275fde00000
-> final crash:    https://syzkaller.appspot.com/x/report.txt?x=12a275fde00000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=14a275fde00000
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+dcc34d54d68ef7d2d53d@syzkaller.appspotmail.com
-> Fixes: 599be01ee567 ("net_sched: fix an OOB access in cls_tcindex")
->
-> IPVS: ftp: loaded support on port[0] = 21
-> ==================================================================
-> BUG: KASAN: double-free or invalid-free in tcf_exts_destroy+0x62/0xc0 net/sched/cls_api.c:3002
->
-> CPU: 1 PID: 9507 Comm: syz-executor467 Not tainted 5.6.0-rc4-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  __dump_stack lib/dump_stack.c:77 [inline]
->  dump_stack+0x188/0x20d lib/dump_stack.c:118
->  print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:374
->  kasan_report_invalid_free+0x61/0xa0 mm/kasan/report.c:468
->  __kasan_slab_free+0x129/0x140 mm/kasan/common.c:455
->  __cache_free mm/slab.c:3426 [inline]
->  kfree+0x109/0x2b0 mm/slab.c:3757
->  tcf_exts_destroy+0x62/0xc0 net/sched/cls_api.c:3002
->  tcf_exts_change+0xf4/0x150 net/sched/cls_api.c:3059
->  tcindex_set_parms+0xed8/0x1a00 net/sched/cls_tcindex.c:456
+1. Fix build for older clang;
+2. Fix skeleton's dependency on libbpf.
 
-Looks like a consequence of "slab-out-of-bounds Write in tcindex_set_parms".
+Song Liu (2):
+  bpftool: only build bpftool-prog-profile with clang >= v11
+  bpftool: skeleton should depend on libbpf
 
-Thanks.
+ tools/bpf/bpftool/Makefile | 15 ++++++++++++---
+ tools/bpf/bpftool/prog.c   |  2 ++
+ 2 files changed, 14 insertions(+), 3 deletions(-)
+
+--
+2.17.1
