@@ -2,177 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E468180A96
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 22:36:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D348180AA0
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 22:39:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727506AbgCJVgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 17:36:38 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:42785 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726307AbgCJVgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 17:36:38 -0400
-Received: by mail-yw1-f65.google.com with SMTP id v138so4585ywa.9
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 14:36:36 -0700 (PDT)
+        id S1727141AbgCJVjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 17:39:37 -0400
+Received: from mail-ua1-f68.google.com ([209.85.222.68]:38915 "EHLO
+        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726899AbgCJVjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 17:39:36 -0400
+Received: by mail-ua1-f68.google.com with SMTP id o16so2456795uap.6
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 14:39:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=UwAZ6MWeOOg83hHixSHvw3Opzj/vsfMy5lzi9+KmKJI=;
-        b=ZUaWjJblD8shHWgfrp1Cd6KayaP6GupdMo5rwZLwz6/uiNHQ8fKBcZP34nYcT3yl4e
-         o/dKgibZshmT4mOUcpV59m1C/YRd+csYqZMRucs4DjGTEEaJ2x+tX1DNELkZjkycQqiI
-         1KlfgCDsdZ7FThRwDZWbXxFkK9nfNjFTs6iSoRzJvY8g3+Qpm//Fp2fCAP3co7loNGyL
-         scf6AL6WbewJc36L/8YYY2gZ44vPhdZnIfhx5W/0n+6i+BsNsapc97z5YV3Ca85zWn5D
-         XA/j+fyNx73lNhfY4H760ZnxzwGYl2RljL8mVCMPKQmzxAH4MM3OF+mapsHdgwey6fis
-         JvnQ==
+        bh=GdlXGBu011eILr6E7BKeOR6UiLq6Vdo/qhWhU5E0PbY=;
+        b=qow1Yly0Eo6wNCVCAXCutaqv7CgN7WaQcfi68e6dnzv9swNvIzu6OER4ZCvTlqsND0
+         v/wSUS0v8kJvwGnHBDvYrjU3aL1TVqj1p8lgA60b+qp0HENgTLb+f9Kd0py+Z1tnFnPu
+         4oj7QZuEgxniGPxwYyBRmG/Asfmc41HbYw9i+H5IuuLAVAcNxQN0lZE/LiC3uw6+w6SC
+         VytsXj/SMfOm5I3i8dxSxO3ukRTE9VzrnqduCBzKbYwFatcJezX15OG0D0I5/L6bBnoO
+         uaRDM/xM6Y1p1fLIouawRKNZadIjdXjfmkxW2UYmlOg5Y7++zGD7F/xYSx+5wsKlVUUr
+         GiFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=UwAZ6MWeOOg83hHixSHvw3Opzj/vsfMy5lzi9+KmKJI=;
-        b=rEiToj4qSCm7lNA52z+o+dNv15VfrB0OFKgr08kn/zZ9h18Ma1XbthVCKI6myUGeKV
-         wHg1VXr4DaTfron8Mw6KjqIh5eG67Vhxtc0baeQGmlmf8Apq6VZNDavhnMrwlPb5MwsO
-         dPWlZP58Ek2R+J5Zxp5WM4qujxruXegl7Q5+1C2JMnQvCYboh0WIQidt5Nn7WWStYoQW
-         KZiYu9NhfPRU1pXE2MYF+yHT32gLQVkagPqYfv7y89CsOUyT79QGbj/2jKMjdcMQQIhI
-         deFYZXnxzFbvfFLOoV5mxgXMXeAQ5KkMoFxTIQD2gzT3wpYJ5kWQ4+g9euzXi8LSU3dd
-         X9SQ==
-X-Gm-Message-State: ANhLgQ3HEXM7qM4bGvjlEOLUY35RFRhjPVT3InGmyYB3KwGtP+FgywhN
-        HS2j2nMDcMQWvtYpfktqqezmddEs
-X-Google-Smtp-Source: ADFU+vvlsMECEgeyRT2ArSfOwNezZULPcleu4vnl5dgsZFwPUD3kQ98T3i+ozqov42ESorg8dCAD2A==
-X-Received: by 2002:a81:85c1:: with SMTP id v184mr21665951ywf.53.1583876195331;
-        Tue, 10 Mar 2020 14:36:35 -0700 (PDT)
-Received: from mail-yw1-f51.google.com (mail-yw1-f51.google.com. [209.85.161.51])
-        by smtp.gmail.com with ESMTPSA id l20sm4178107ywc.36.2020.03.10.14.36.34
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Mar 2020 14:36:34 -0700 (PDT)
-Received: by mail-yw1-f51.google.com with SMTP id j186so55760ywe.0
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 14:36:34 -0700 (PDT)
-X-Received: by 2002:a5b:7ce:: with SMTP id t14mr25764327ybq.492.1583876193982;
- Tue, 10 Mar 2020 14:36:33 -0700 (PDT)
+        bh=GdlXGBu011eILr6E7BKeOR6UiLq6Vdo/qhWhU5E0PbY=;
+        b=JNF4XUwpc9WZBE12MUjHN92hHpdA5daSMBCCXEPEFQxU7TPh11pEfkggbaFQ7JyKk0
+         BIaCxnwoFfO6wOohrYqy406lXzuGNTevAxw/6Rekt1VtV5V55qp+QeXore2H6NcMcfYo
+         qzEGBKSZm50QZRR+0AWcUi4HE2kHXjIdldygRMupX07jGCJjURfFuS9EnqOt01Ikfpy2
+         ZqbAIx2JEtA6yv4uEq4V2xJDl8FDsAKMXtMErRdR2CCtLjLzngGFMwa/tvJVLR36NIo4
+         c1/86u+t79kvODTYDr4tKobaRk4yFecCVt/noVFB6DGhgovkOiW/qjEfaF32BzeA6rZo
+         rEdQ==
+X-Gm-Message-State: ANhLgQ3RtNM9Qs9MLZ8UUh1tuLQGYfoDtS4KmkH1l0MqpU3CVluzMMBo
+        6J7PXBKaD9ekhgKDApk7QjinIllc2euIx2sIF2m6Rg==
+X-Google-Smtp-Source: ADFU+vvrCP8710FwovNQiq3TRDaasFyzXucpbPikePRLc6w5tbh734JpqREX6WUJxdQfuVbpX+V0ftICxermILFQWdA=
+X-Received: by 2002:ab0:2851:: with SMTP id c17mr13587156uaq.63.1583876374973;
+ Tue, 10 Mar 2020 14:39:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200309153435.32109-1-willemdebruijn.kernel@gmail.com>
- <20200310023528-mutt-send-email-mst@kernel.org> <CA+FuTSd=oLQhtKet-n5r++3HHmHR+5rMkDqSMyjArOBfF4vsKw@mail.gmail.com>
- <20200310085437-mutt-send-email-mst@kernel.org> <CA+FuTSe+mxUwHMTccO7QO+GVi1TUgxbwZoAktGTD+15yMZf5Vw@mail.gmail.com>
- <20200310104024-mutt-send-email-mst@kernel.org> <CA+FuTSeZFTUShADA0STcHjSt88JsSGWQ0nnc5Sr-oQAvRH+-3A@mail.gmail.com>
- <20200310172833-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20200310172833-mutt-send-email-mst@kernel.org>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 10 Mar 2020 17:35:55 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfrjThis9UchhiKE2ibMKVgCvfTdbeB0Q33XiTDLBEX8w@mail.gmail.com>
-Message-ID: <CA+FuTSfrjThis9UchhiKE2ibMKVgCvfTdbeB0Q33XiTDLBEX8w@mail.gmail.com>
-Subject: Re: [PATCH net] net/packet: tpacket_rcv: do not increment ring index
- on drop
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>
+References: <20200310185003.57344-1-irogers@google.com> <20200310195915.GA1676879@tassilo.jf.intel.com>
+In-Reply-To: <20200310195915.GA1676879@tassilo.jf.intel.com>
+From:   Stephane Eranian <eranian@google.com>
+Date:   Tue, 10 Mar 2020 14:39:23 -0700
+Message-ID: <CABPqkBRQo=bEOiCFGFjwcM8TZaXMFyaL7o1hcFd6Bc3w+LhJQA@mail.gmail.com>
+Subject: Re: [PATCH] perf tools: add support for lipfm4
+To:     Andi Kleen <ak@linux.intel.com>
+Cc:     Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Igor Lubashev <ilubashe@akamai.com>,
+        Alexey Budankov <alexey.budankov@linux.intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Jiwei Sun <jiwei.sun@windriver.com>,
+        yuzhoujian <yuzhoujian@didichuxing.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 5:30 PM Michael S. Tsirkin <mst@redhat.com> wrote:
+On Tue, Mar 10, 2020 at 12:59 PM Andi Kleen <ak@linux.intel.com> wrote:
 >
-> On Tue, Mar 10, 2020 at 11:38:16AM -0400, Willem de Bruijn wrote:
-> > On Tue, Mar 10, 2020 at 10:44 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > >
-> > > On Tue, Mar 10, 2020 at 10:16:56AM -0400, Willem de Bruijn wrote:
-> > > > On Tue, Mar 10, 2020 at 8:59 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > >
-> > > > > On Tue, Mar 10, 2020 at 08:49:23AM -0400, Willem de Bruijn wrote:
-> > > > > > On Tue, Mar 10, 2020 at 2:43 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> > > > > > >
-> > > > > > > On Mon, Mar 09, 2020 at 11:34:35AM -0400, Willem de Bruijn wrote:
-> > > > > > > > From: Willem de Bruijn <willemb@google.com>
-> > > > > > > >
-> > > > > > > > In one error case, tpacket_rcv drops packets after incrementing the
-> > > > > > > > ring producer index.
-> > > > > > > >
-> > > > > > > > If this happens, it does not update tp_status to TP_STATUS_USER and
-> > > > > > > > thus the reader is stalled for an iteration of the ring, causing out
-> > > > > > > > of order arrival.
-> > > > > > > >
-> > > > > > > > The only such error path is when virtio_net_hdr_from_skb fails due
-> > > > > > > > to encountering an unknown GSO type.
-> > > > > > > >
-> > > > > > > > Signed-off-by: Willem de Bruijn <willemb@google.com>
-> > > > > > > >
-> > > > > > > > ---
-> > > > > > > >
-> > > > > > > > I wonder whether it should drop packets with unknown GSO types at all.
-> > > > > > > > This consistently blinds the reader to certain packets, including
-> > > > > > > > recent UDP and SCTP GSO types.
-> > > > > > >
-> > > > > > > Ugh it looks like you have found a bug.  Consider a legacy userspace -
-> > > > > > > it was actually broken by adding USD and SCTP GSO.  I suspect the right
-> > > > > > > thing to do here is actually to split these packets up, not drop them.
-> > > > > >
-> > > > > > In the main virtio users, virtio_net/tun/tap, the packets will always
-> > > > > > arrive segmented, due to these devices not advertising hardware
-> > > > > > segmentation for these protocols.
-> > > > >
-> > > > > Oh right. That's good then, sorry about the noise.
-> > > >
-> > > > Not at all. Thanks for taking a look!
-> > > >
-> > > > > > So the issue is limited to users of tpacket_rcv, which is relatively
-> > > > > > new. There too it is limited on egress to devices that do advertise
-> > > > > > h/w offload. And on r/x to GRO.
-> > > > > >
-> > > > > > The UDP GSO issue precedes the fraglist GRO patch, by the way, and
-> > > > > > goes back to my (argh!) introduction of the feature on the egress
-> > > > > > path.
-> > > > > >
-> > > > > > >
-> > > > > > > > The peer function virtio_net_hdr_to_skb already drops any packets with
-> > > > > > > > unknown types, so it should be fine to add an SKB_GSO_UNKNOWN type and
-> > > > > > > > let the peer at least be aware of failure.
-> > > > > > > >
-> > > > > > > > And possibly add SKB_GSO_UDP_L4 and SKB_GSO_SCTP types to virtio too.
-> > > > > > >
-> > > > > > > This last one is possible for sure, but for virtio_net_hdr_from_skb
-> > > > > > > we'll need more flags to know whether it's safe to pass
-> > > > > > > these types to userspace.
-> > > > > >
-> > > > > > Can you elaborate? Since virtio_net_hdr_to_skb users already returns
-> > > > > > -EINVAL on unknown GSO types and its callers just drop these packets,
-> > > > > > it looks to me that the infra is future proof wrt adding new GSO
-> > > > > > types.
-> > > > >
-> > > > > Oh I mean if we do want to add new types and want to pass them to
-> > > > > users, then virtio_net_hdr_from_skb will need to flag so it
-> > > > > knows whether that will or won't confuse userspace.
-> > > >
-> > > > I'm not sure how that would work. Ignoring other tun/tap/virtio for
-> > > > now, just looking at tpacket, a new variant of socket option for
-> > > > PACKET_VNET_HDR, for every new GSO type?
-> > >
-> > > Maybe a single one with a bitmap of legal types?
-> > >
-> > > > In practice the userspace I'm aware of, and any sane implementation,
-> > > > will be future proof to drop and account packets whose type it cannot
-> > > > process. So I think we can just add new types.
-> > >
-> > > Well if packets are just dropped then userspace breaks right?
-> >
-> > It is an improvement over the current silent discard in the kernel.
-> >
-> > If it can count these packets, userspace becomes notified that it
-> > should perhaps upgrade or use ethtool to stop the kernel from
-> > generating certain packets.
-> >
-> > Specifically for packet sockets, it wants to receive packets as they
-> > appear "on the wire". It does not have to drop these today even, but
-> > can easily parse the headers.
-> >
-> > For packet sockets at least, I don't think that we want transparent
-> > segmentation.
+> On Tue, Mar 10, 2020 at 11:50:03AM -0700, Ian Rogers wrote:
+> > This patch links perf with the libpfm4 library.
+> > This library contains all the hardware event tables for all
+> > processors supported by perf_events. This is a helper library
+> > that help convert from a symbolic event name to the event
+> > encoding required by the underlying kernel interface. This
+> > library is open-source and available from: http://perfmon2.sf.net.
 >
-> Well it's GSO is in the way then it's no longer "on the wire", right?
-> Whether we split these back to individual skbs or we don't
-> it's individual packets that are on the wire. GSO just allows
-> passing them to the application in a more efficient way.
+> For most CPUs the builtin perf JSON event support should make
+> this redundant.
+>
+We decided to post this patch to propose an alternative to the JSON
+file approach. It could be an option during the build.
+The libpfm4 library has been around for 15 years now. Therefore, it
+supports a lot of processors core and uncore and it  is very portable.
+The key value add I see is that this is a library that can be, and has
+been, used by tool developers directly in their apps. It can
+work with more than Linux perf_events interface. It is not tied to the
+interface. It has well defined and documented entry points.
+We do use libpfm4 extensively at Google in both the perf tool and
+applications. The PAPI toolkit also relies on this library.
 
-Not entirely. With TSO enabled, packet sockets will show the TCP TSO
-packets, not the individual segment on the wire.
+I don't see this as competing with the JSON approach. It is just an
+option I'd like to offer to users especially those familiar
+with it in their apps.
+
+> Perhaps you could list what CPUs it actually supports over
+> the existing JSON tables.
+>
+> If it's only a few it would be likely better to add
+> appropiate json files.
+>
+> If it's a massive number it might be useful, although
+> JSON support would be better for those too.
+>
+> -Andi
