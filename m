@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6198617EE72
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 03:15:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 564E717EE6C
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 03:15:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726960AbgCJCPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 22:15:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35784 "EHLO mail.kernel.org"
+        id S1726749AbgCJCPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 22:15:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35812 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726803AbgCJCPa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 9 Mar 2020 22:15:30 -0400
+        id S1726863AbgCJCPb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 9 Mar 2020 22:15:31 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.128])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 806E22467C;
-        Tue, 10 Mar 2020 02:15:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D871224676;
+        Tue, 10 Mar 2020 02:15:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583806529;
-        bh=GH/BO2MWQ+OZ5PVmpQhmEuYW6Rf8RLgujj8fZUWiI34=;
+        s=default; t=1583806531;
+        bh=kbIoKnRDyP65vvilLjBl2HCOGwR8oKdO9H1PGax9gf0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=geR4aYhtDGSmHuRGPHJ0hgPbLEJc2c04UhWM9RNeunDB/N/MHJKfNUolkoPhSu42L
-         6QlhUJ+0hMNcg6BJDO5yTBtKt8UnuRM8elXnGJncFn1e1C67kb3U8zGg76x/yDLpkN
-         KlHpxg8QOsN7In9c1zL2YM/1gtlzPtQC1s1sOgv8=
+        b=B5wgbnR0Zo+TpU7ai7X+pi930yX8sHI8yFZUuH277YGoSzssQa25H9+mJkUo/IeWe
+         ixYLK0eSp/GZZXXkpkHf8LdwJ8PLDk3eOepukHrm2cJNrUpkDeApQyzkRGKOCYvT6F
+         bD/lPcYHG/OPYd3gZohPPPUhfCcaJR4hGiaRv20Y=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, akiyano@amazon.com, netanel@amazon.com,
@@ -35,9 +35,9 @@ Cc:     netdev@vger.kernel.org, akiyano@amazon.com, netanel@amazon.com,
         fmanlunas@marvell.com, tariqt@mellanox.com, vishal@chelsio.com,
         leedom@chelsio.com, ulli.kroll@googlemail.com,
         linus.walleij@linaro.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 11/15] net: cxgb2: reject unsupported coalescing params
-Date:   Mon,  9 Mar 2020 19:15:08 -0700
-Message-Id: <20200310021512.1861626-12-kuba@kernel.org>
+Subject: [PATCH net-next 12/15] net: cxgb3: reject unsupported coalescing params
+Date:   Mon,  9 Mar 2020 19:15:09 -0700
+Message-Id: <20200310021512.1861626-13-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200310021512.1861626-1-kuba@kernel.org>
 References: <20200310021512.1861626-1-kuba@kernel.org>
@@ -55,23 +55,21 @@ This driver did not previously reject unsupported parameters.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/chelsio/cxgb/cxgb2.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb/cxgb2.c b/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
-index 4b8461103dda..99736796e1a0 100644
---- a/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
-+++ b/drivers/net/ethernet/chelsio/cxgb/cxgb2.c
-@@ -793,6 +793,9 @@ static int get_eeprom(struct net_device *dev, struct ethtool_eeprom *e,
+diff --git a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
+index ba3631f8cfe8..42c6e9379882 100644
+--- a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
+@@ -2104,6 +2104,7 @@ static void get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
  }
  
- static const struct ethtool_ops t1_ethtool_ops = {
-+	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS |
-+				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX |
-+				     ETHTOOL_COALESCE_RATE_SAMPLE_INTERVAL,
- 	.get_drvinfo       = get_drvinfo,
- 	.get_msglevel      = get_msglevel,
- 	.set_msglevel      = set_msglevel,
+ static const struct ethtool_ops cxgb_ethtool_ops = {
++	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS,
+ 	.get_drvinfo = get_drvinfo,
+ 	.get_msglevel = get_msglevel,
+ 	.set_msglevel = set_msglevel,
 -- 
 2.24.1
 
