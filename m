@@ -2,88 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E71717F1FB
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 09:34:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 064C217F2A5
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 10:03:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726467AbgCJIeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 04:34:01 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:12992 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726389AbgCJIeB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 04:34:01 -0400
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02A8OWLP016201
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 04:34:00 -0400
-Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2ym8g49hny-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 04:33:59 -0400
-Received: from localhost
-        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <kgraul@linux.ibm.com>;
-        Tue, 10 Mar 2020 08:33:52 -0000
-Received: from b06avi18878370.portsmouth.uk.ibm.com (9.149.26.194)
-        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Tue, 10 Mar 2020 08:33:49 -0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 02A8XmCl36569460
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 10 Mar 2020 08:33:48 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3D58A52059;
-        Tue, 10 Mar 2020 08:33:48 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id E8DE052050;
-        Tue, 10 Mar 2020 08:33:47 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     leon@kernel.org, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, heiko.carstens@de.ibm.com,
-        raspl@linux.ibm.com, ubraun@linux.ibm.com
-Subject: [PATCH v2 net] net/smc: cancel event worker during device removal
-Date:   Tue, 10 Mar 2020 09:33:30 +0100
-X-Mailer: git-send-email 2.17.1
-X-TM-AS-GCONF: 00
-x-cbid: 20031008-0012-0000-0000-0000038EE7E9
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 20031008-0013-0000-0000-000021CBB241
-Message-Id: <20200310083330.90427-1-kgraul@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-10_04:2020-03-09,2020-03-10 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
- suspectscore=1 priorityscore=1501 lowpriorityscore=0 clxscore=1015
- impostorscore=0 mlxlogscore=999 spamscore=0 malwarescore=0 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2003100057
+        id S1726669AbgCJJDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 05:03:45 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:37377 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726389AbgCJJDp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 05:03:45 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583831024;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=w0AJeNx929FoMZPLqF2hB7+GO57h4OKuoB3HnKBr8qc=;
+        b=DvHezEJytnMBsWE5Rxe38LTknMN7jylK4Ic4e3pIh6jwdY7of3hTgtJSrHvpwdtfhtXCmr
+        5FbZsT3ktWSsvOzTsdc2PFRI5ammmnzO1fbVmxjwrshjAF+HQIlKEYZ4JtzGaX9J9mr295
+        Xh1W5UTU430KgMLR57QY7pIhBTgc9RU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-211-QkEtExp8P8qftf0UM7j44g-1; Tue, 10 Mar 2020 05:03:41 -0400
+X-MC-Unique: QkEtExp8P8qftf0UM7j44g-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C6138DB60;
+        Tue, 10 Mar 2020 09:03:38 +0000 (UTC)
+Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 85C9C5C28E;
+        Tue, 10 Mar 2020 09:03:25 +0000 (UTC)
+Date:   Tue, 10 Mar 2020 10:03:23 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     David Ahern <dahern@digitalocean.com>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org,
+        prashantbhole.linux@gmail.com, jasowang@redhat.com,
+        toke@redhat.com, mst@redhat.com, toshiaki.makita1@gmail.com,
+        daniel@iogearbox.net, john.fastabend@gmail.com, ast@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        dsahern@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH RFC v4 bpf-next 09/11] tun: Support xdp in the Tx path
+ for xdp_frames
+Message-ID: <20200310100323.14a2a011@carbon>
+In-Reply-To: <942c9efd-67e2-65d3-d311-bb4eba9fb747@digitalocean.com>
+References: <20200227032013.12385-1-dsahern@kernel.org>
+        <20200227032013.12385-10-dsahern@kernel.org>
+        <20200303114044.2c7482d5@carbon>
+        <14ef34c2-2fa6-f58c-6d63-e924d07e613f@digitalocean.com>
+        <942c9efd-67e2-65d3-d311-bb4eba9fb747@digitalocean.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During IB device removal, cancel the event worker before the device
-structure is freed.
+On Mon, 9 Mar 2020 21:44:22 -0600
+David Ahern <dahern@digitalocean.com> wrote:
 
-Fixes: a4cf0443c414 ("smc: introduce SMC as an IB-client")
-Reported-by: syzbot+b297c6825752e7a07272@syzkaller.appspotmail.com
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
-Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
----
- net/smc/smc_ib.c | 1 +
- 1 file changed, 1 insertion(+)
+> On 3/9/20 9:06 PM, David Ahern wrote:
+> > Why do I need to make any adjustments beyond what is done by
+> > bpf_xdp_adjust_head and bpf_xdp_adjust_tail?  
+> 
+> never mind. forgot the switch from xdp_frame to xdp_buff there so need
+> to go back to frame.
 
-diff --git a/net/smc/smc_ib.c b/net/smc/smc_ib.c
-index d6ba186f67e2..05b825b3cfa4 100644
---- a/net/smc/smc_ib.c
-+++ b/net/smc/smc_ib.c
-@@ -582,6 +582,7 @@ static void smc_ib_remove_dev(struct ib_device *ibdev, void *client_data)
- 	smc_smcr_terminate_all(smcibdev);
- 	smc_ib_cleanup_per_ibdev(smcibdev);
- 	ib_unregister_event_handler(&smcibdev->event_handler);
-+	cancel_work_sync(&smcibdev->port_event_work);
- 	kfree(smcibdev);
- }
- 
+Yes exactly, glad you realized this yourself ;-)
+
 -- 
-2.17.1
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
