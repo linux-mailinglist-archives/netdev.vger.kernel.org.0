@@ -2,148 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D3FD1803D6
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 17:44:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 936281803DA
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 17:45:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727001AbgCJQof (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 12:44:35 -0400
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:39310 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726437AbgCJQof (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 12:44:35 -0400
-Received: by mail-pj1-f68.google.com with SMTP id d8so662943pje.4;
-        Tue, 10 Mar 2020 09:44:33 -0700 (PDT)
+        id S1726752AbgCJQpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 12:45:22 -0400
+Received: from mail-vk1-f195.google.com ([209.85.221.195]:40919 "EHLO
+        mail-vk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726269AbgCJQpW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 12:45:22 -0400
+Received: by mail-vk1-f195.google.com with SMTP id k63so1613859vka.7;
+        Tue, 10 Mar 2020 09:45:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=0p2YVHGL6lp61uxRv5NLn1qmIWDP6yCfI2xh2i2Pm1Y=;
-        b=MhtgLRAuKpplE/whqcWb0A+tJmDYwcN+T0MomFscn4nogXG70v6ONNEJkWAoFg9cxs
-         y927uwFcvheWjnhF0lso+saMMxrxoIp/ARhJIftlWAN+Wtu+nWh4Ji4aQvuRON3U49kU
-         hp04Pjjy78GE8WGlJsieGR5r4LoH5PtxzoQ5ZGhAAdNhXBRPCLAnVw+Nr033kY32ttiZ
-         Xb9wMQLNdxn9hFGfPhhXeOBbivFEdGwbxbyzTTY4aIbqfZ8QESGtfDkrxIOzfJ9rWJV4
-         EVwxJ2gtosyBTKq6QqwrsMzRcTbrOf8qLjblVNvWYq37BUGe21mTsjD3laSWYLxybtEl
-         Dbkw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Id7nxzKDmSxI0cxB6yaElDPLzg27V9lnZyiHS/FO3cA=;
+        b=OLgxZaW6bKNkMqqk5xI+ZQZ5koSwhOU2O2YajGrqtFX0SGrvSFA9HmS/gCiiWJw8G/
+         Asl8ogHEcdLsWX8yltDot3pYdZGeoA3rT7NfPPqvrk1mYkJ7A31cY43vYOamEzs9SwXP
+         JcosmGuuSgns7PgnY2K1/NO2xPkuw29r9EZUa2ie2FQ+PZGF8bRwPwKbAKRZz1H+g73v
+         Oivk+VjqvgZ31Rx2ZbTPnVy7H/MQdjdr98cb5WzHBD94PJNx0tDJf7tkxjYIiXhGirO2
+         F0S4i/g0nTnmcM8ID3R5XfUXFMqneDfyw4Bgl9hNo/MNMJUU8aFxZJD/tx8yHNmj8vud
+         jcJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=0p2YVHGL6lp61uxRv5NLn1qmIWDP6yCfI2xh2i2Pm1Y=;
-        b=nrP2DrO05a4eJ5KfItJTWdLkgKtgSm+/VkJ6OXLpYHfs0EnBqdtaHvW3ZUMJdxZvuc
-         GKT+jRAxWLy31THfV224zcLJ35uZwm59YNs3BYPX3UN4TGFelZoHFrU+hmCX4wVrmjJh
-         WvimnZpgcvBSt8IYX9/IhUnGySbHm9Oz8/2OvuIS82/AdaGVTIrR2MU18Hx5Y16AuckT
-         NW3U5vJd+/iaimhj7bGkMVICfDvSSGUn6vP3CtAPUzYS63ucMw8jL3phIkZZ6FAn/0RZ
-         c1i9RKiEbdYlq+FfMX3YgD9UYGnrveu40hvJjjvK7RqOrpOkj1kju4q0mr9R4mon7XK0
-         k4Pw==
-X-Gm-Message-State: ANhLgQ2axQDvUMwT9DOLNAtPSj1GlAduFYIkBisuPrviHIcX72XfPJ+9
-        sEbb0b9Z2g99KItkJefqV0g=
-X-Google-Smtp-Source: ADFU+vt4mBe5DFPGkaJimj5kiEB7fPJIEIY3ZiotNS6jos3AKvEiYYYFgihfBZgWgbhy91+ZzDTY/w==
-X-Received: by 2002:a17:902:74cc:: with SMTP id f12mr13133943plt.232.1583858672512;
-        Tue, 10 Mar 2020 09:44:32 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id 8sm8579106pfp.67.2020.03.10.09.44.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Mar 2020 09:44:31 -0700 (PDT)
-Date:   Tue, 10 Mar 2020 09:44:24 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com
-Message-ID: <5e67c3e83fb25_1e8a2b0e88e0a5bc84@john-XPS-13-9370.notmuch>
-In-Reply-To: <87zhdun0ay.fsf@cloudflare.com>
-References: <20200206111652.694507-1-jakub@cloudflare.com>
- <5e3c6c7f8730e_22ad2af2cbd0a5b4a4@john-XPS-13-9370.notmuch>
- <87zhdun0ay.fsf@cloudflare.com>
-Subject: Re: [PATCH bpf 0/3] Fix locking order and synchronization on
- sockmap/sockhash tear-down
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Id7nxzKDmSxI0cxB6yaElDPLzg27V9lnZyiHS/FO3cA=;
+        b=jLFFZMcdNHpnnf/qzXshaC4vxS+xrTOwN5gXZmfWL0bRpVwBCrxh7QA/ADOj2O2+GU
+         s/hvJXPjv6wYew5IUjLlzbR9tPTBZ/UvoPc5gPm3JAZLS4Sd1wIZ+uUONGee3MnExtk8
+         w1se1fkhPKalUw/NqjDiSFzC3F1DYD4ZcOK70/5chZ70TqVtrWh4VHPA4W2kabUcIPLk
+         Ha1minHqWfxvCN6IITCUGJjjRQzIB5/wHrUML4gKgaeLVniV0LybJYC80wH8MZL8JXsC
+         XKI+49Tahh3U+H94SeDhPwjlTQ7p79Onq/1u6HYYTDbtmxSCC+BfdXAPh49IfTT1rzj1
+         DGFw==
+X-Gm-Message-State: ANhLgQ0iayZ1s2KQVDjLWxSKsPCiB+b3kRS90afZytKJZYc1qtnXcRYb
+        4Pz8w4xPgoo58qfXXvVLZ3Pz1Ln3r3rCywY4rMA=
+X-Google-Smtp-Source: ADFU+vsFnMZOJyX+JnMLr2gSOiucHUxAptJ2co35Xt2ai8onMy2NXP9Q6zK4kHPGL3XY4vYMadgXzXQO5GJyc3DfNHA=
+X-Received: by 2002:a1f:b401:: with SMTP id d1mr11868133vkf.26.1583858719158;
+ Tue, 10 Mar 2020 09:45:19 -0700 (PDT)
+MIME-Version: 1.0
+References: <00000000000088452f05a07621d2@google.com>
+In-Reply-To: <00000000000088452f05a07621d2@google.com>
+From:   =?UTF-8?B?6buE56eL6ZKn?= <anenbupt@gmail.com>
+Date:   Wed, 11 Mar 2020 00:45:08 +0800
+Message-ID: <CADG63jBA42RVg_GGDHhMP0iL0VP2FTm8N7684wdOccATO_TrzA@mail.gmail.com>
+Subject: Re: WARNING: refcount bug in sctp_wfree
+To:     syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> On Thu, Feb 06, 2020 at 08:43 PM CET, John Fastabend wrote:
-> > Jakub Sitnicki wrote:
-> >> Couple of fixes that came from recent discussion [0] on commit
-> >> 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during tear down").
-> >>
-> >> This series doesn't address the sleeping while holding a spinlock
-> >> problem. We're still trying to decide how to fix that [1].
-> >>
-> >> Until then sockmap users might see the following warnings:
-> >>
-> >> | BUG: sleeping function called from invalid context at net/core/sock.c:2935
-> 
+sctp_wfree
+    ->refcount_sub_and_test(sizeof(struct sctp_chunk),
+                                      &sk->sk_wmem_alloc)
+sctp_wfree will sub sizeof(struct sctp_chunk) for every skb. So could
+we add the extra size for gso segment ?
 
-[...]
 
-> Hey John,
 
-Patch sent.
+--- a/net/sctp/output.c
++++ b/net/sctp/output.c
+@@ -398,7 +398,8 @@ static void sctp_packet_gso_append(struct sk_buff
+*head, struct sk_buff *skb)
+        head->truesize += skb->truesize;
+        head->data_len += skb->len;
+        head->len += skb->len;
+-       refcount_add(skb->truesize, &head->sk->sk_wmem_alloc);
++       refcount_add(skb->truesize + sizeof(struct sctp_chunk),
++                               &head->sk->sk_wmem_alloc);
 
-> 
-> > Untested at the moment, but this should also be fine per your suggestion
-> > (if I read it correctly).  The reason we have stab->lock and bucket->locks
-> > here is to handle checking EEXIST in update/delete cases. We need to
-> > be careful that when an update happens and we check for EEXIST that the
-> > socket is added/removed during this check. So both map_update_common and
-> > sock_map_delete need to guard from being run together potentially deleting
-> > an entry we are checking, etc.
-> 
-> Okay, thanks for explanation. IOW, we're serializing map writers.
-> 
-> > But by the time we get here we just did a synchronize_rcu() in the
-> > line above so no updates/deletes should be in flight. So it seems safe
-> > to drop these locks because of the condition no updates in flight.
-> 
-> This part is not clear to me. I might be missing something.
-> 
-> Here's my thinking - for any map writes (update/delete) to start,
-> map->refcnt needs to be > 0, and the ref is not dropped until the write
-> operation has finished.
-> 
-> Map FDs hold a ref to map until the FD gets released. And BPF progs hold
-> refs to maps until the prog gets unloaded.
-> 
-> This would mean that map_free will get scheduled from __bpf_map_put only
-> when no one is holding a map ref, and could start a write that would be
-> happening concurrently with sock_{map,hash}_free:
+        __skb_header_release(skb);
 
-Sorry bringing back this old thread I'm not sure I followed the couple
-paragraphs here. Is this with regards to the lock or the rcu? II didn't
-want to just drop this thanks.
-
-We can't have new updates/lookups/deletes happening while we are free'ing
-a map that would cause all sorts of problems, use after free's, etc.
-
-> 
-> /* decrement map refcnt and schedule it for freeing via workqueue
->  * (unrelying map implementation ops->map_free() might sleep)
->  */
-> static void __bpf_map_put(struct bpf_map *map, bool do_idr_lock)
-> {
-> 	if (atomic64_dec_and_test(&map->refcnt)) {
-> 		/* bpf_map_free_id() must be called first */
-> 		bpf_map_free_id(map, do_idr_lock);
-> 		btf_put(map->btf);
-> 		INIT_WORK(&map->work, bpf_map_free_deferred);
-> 		schedule_work(&map->work);
-> 	}
-> }
-> 
-> > So with patch below we keep the sync rcu but that is fine IMO these
-> > map free's are rare. Take a look and make sure it seems sane to you
-> > as well.
-> 
-> I can't vouch for the need to keep synchronize_rcu here because I don't
-> understand that part, but otherwise the change LGTM.
-> 
-> -jkbs
+On Tue, Mar 10, 2020 at 9:36 AM syzbot
+<syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com> wrote:
 >
-
-[...]
+> Hello,
+>
+> syzbot found the following crash on:
+>
+> HEAD commit:    2c523b34 Linux 5.6-rc5
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=155a5f29e00000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=a5295e161cd85b82
+> dashboard link: https://syzkaller.appspot.com/bug?extid=cea71eec5d6de256d54d
+> compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=164b5181e00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=166dd70de00000
+>
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
+>
+> ------------[ cut here ]------------
+> refcount_t: underflow; use-after-free.
+> WARNING: CPU: 1 PID: 8668 at lib/refcount.c:28 refcount_warn_saturate+0x15b/0x1a0 lib/refcount.c:28
+> Kernel panic - not syncing: panic_on_warn set ...
+> CPU: 1 PID: 8668 Comm: syz-executor779 Not tainted 5.6.0-rc5-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> Call Trace:
+>  __dump_stack lib/dump_stack.c:77 [inline]
+>  dump_stack+0x1e9/0x30e lib/dump_stack.c:118
+>  panic+0x264/0x7a0 kernel/panic.c:221
+>  __warn+0x209/0x210 kernel/panic.c:582
+>  report_bug+0x1ac/0x2d0 lib/bug.c:195
+>  fixup_bug arch/x86/kernel/traps.c:174 [inline]
+>  do_error_trap+0xca/0x1c0 arch/x86/kernel/traps.c:267
+>  do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
+>  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+> RIP: 0010:refcount_warn_saturate+0x15b/0x1a0 lib/refcount.c:28
+> Code: c7 e4 ff d0 88 31 c0 e8 23 20 b3 fd 0f 0b eb 85 e8 8a 4a e0 fd c6 05 ff 70 b1 05 01 48 c7 c7 10 00 d1 88 31 c0 e8 05 20 b3 fd <0f> 0b e9 64 ff ff ff e8 69 4a e0 fd c6 05 df 70 b1 05 01 48 c7 c7
+> RSP: 0018:ffffc90001f577d0 EFLAGS: 00010246
+> RAX: 8c9c9070bbb4e500 RBX: 0000000000000003 RCX: ffff8880938a63c0
+> RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
+> RBP: 0000000000000003 R08: ffffffff815e16e6 R09: fffffbfff15db92a
+> R10: fffffbfff15db92a R11: 0000000000000000 R12: dffffc0000000000
+> R13: ffff88809de82000 R14: ffff8880a89237c0 R15: 1ffff11013be52b0
+>  sctp_wfree+0x3b1/0x710 net/sctp/socket.c:9111
+>  skb_release_head_state+0xfb/0x210 net/core/skbuff.c:651
+>  skb_release_all net/core/skbuff.c:662 [inline]
+>  __kfree_skb+0x22/0x1c0 net/core/skbuff.c:678
+>  sctp_chunk_destroy net/sctp/sm_make_chunk.c:1454 [inline]
+>  sctp_chunk_put+0x17b/0x200 net/sctp/sm_make_chunk.c:1481
+>  __sctp_outq_teardown+0x80a/0x9d0 net/sctp/outqueue.c:257
+>  sctp_association_free+0x21e/0x7c0 net/sctp/associola.c:339
+>  sctp_cmd_delete_tcb net/sctp/sm_sideeffect.c:930 [inline]
+>  sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1318 [inline]
+>  sctp_side_effects net/sctp/sm_sideeffect.c:1185 [inline]
+>  sctp_do_sm+0x3c01/0x5560 net/sctp/sm_sideeffect.c:1156
+>  sctp_primitive_ABORT+0x93/0xc0 net/sctp/primitive.c:104
+>  sctp_close+0x231/0x770 net/sctp/socket.c:1512
+>  inet_release+0x135/0x180 net/ipv4/af_inet.c:427
+>  __sock_release net/socket.c:605 [inline]
+>  sock_close+0xd8/0x260 net/socket.c:1283
+>  __fput+0x2d8/0x730 fs/file_table.c:280
+>  task_work_run+0x176/0x1b0 kernel/task_work.c:113
+>  exit_task_work include/linux/task_work.h:22 [inline]
+>  do_exit+0x5ef/0x1f80 kernel/exit.c:801
+>  do_group_exit+0x15e/0x2c0 kernel/exit.c:899
+>  __do_sys_exit_group+0x13/0x20 kernel/exit.c:910
+>  __se_sys_exit_group+0x10/0x10 kernel/exit.c:908
+>  __x64_sys_exit_group+0x37/0x40 kernel/exit.c:908
+>  do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:294
+>  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> RIP: 0033:0x43ef98
+> Code: Bad RIP value.
+> RSP: 002b:00007ffcc7e7c398 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000043ef98
+> RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
+> RBP: 00000000004be7a8 R08: 00000000000000e7 R09: ffffffffffffffd0
+> R10: 000000002059aff8 R11: 0000000000000246 R12: 0000000000000001
+> R13: 00000000006d01a0 R14: 0000000000000000 R15: 0000000000000000
+> Kernel Offset: disabled
+> Rebooting in 86400 seconds..
+>
+>
+> ---
+> This bug is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+>
+> syzbot will keep track of this bug report. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> syzbot can test patches for this bug, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
