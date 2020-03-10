@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FD2B17F16A
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 09:05:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 835E917F16B
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 09:05:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726342AbgCJIFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 04:05:43 -0400
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:58753 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725919AbgCJIFn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 04:05:43 -0400
+        id S1726390AbgCJIFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 04:05:52 -0400
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:11531 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725919AbgCJIFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 04:05:52 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1583827542; x=1615363542;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=ytHGqiibIS7fWIevAbDphFoAyu3lEuW4JF4/3ENjfxU=;
-  b=jfoWgsHA4rolPIwagb4XT6aLtuw7etbAk9rYSkIwRfJxLQXLG8r2nsGs
-   jBXuYIg0ZbjVMNabcQmWYobFh530jnV09fUIRE8vTY/jl+CncElGLXNKV
-   mrs1JpcI+dnFv4l6YliZ4JWcTdOg3a3RzzSKC1l0mA+jHM1hkjMsrv5b3
-   g=;
-IronPort-SDR: SO/pCaoVa9j92EXsvFdD8EZxkEUt07Hiwwc20iJVxVT9SdCm5A0Xadg+8iyfQqjS26qcJl5+9M
- PBrPa1G8WH6w==
+  s=amazon201209; t=1583827552; x=1615363552;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=NDL7Y5QfL6R3BNF4LFwU01epelfSlp5iae0i4eSC7iU=;
+  b=Y9TmdTIjKUgckWNBG3NFY/MWNPxyn9K08lKNKEd/11VepEA4ja8SmCaN
+   qm3EpmMrP9z5owSnGTWs49ZbgMZ0RIheQAytxB1oD9pprPLKIK/nCbOK0
+   MWUYn2Z6LjWrdsD3qmURm3kOpray0WOWeXLwef+HLb091OOcQY7NkuYXX
+   c=;
+IronPort-SDR: 7OjCZYy2cL/W3hN5KE4CKaUvTD7IV1+7UUZQ/qblUIFq5AXjsscCbZXMpieAl9fVN6F8rAf7Sw
+ wg/c7DJeDJRQ==
 X-IronPort-AV: E=Sophos;i="5.70,535,1574121600"; 
-   d="scan'208";a="21907546"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 10 Mar 2020 08:05:41 +0000
+   d="scan'208";a="21802750"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 10 Mar 2020 08:05:51 +0000
 Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
-        by email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com (Postfix) with ESMTPS id 96565A2942;
-        Tue, 10 Mar 2020 08:05:39 +0000 (UTC)
+        by email-inbound-relay-1d-474bcd9f.us-east-1.amazon.com (Postfix) with ESMTPS id DF95EA2945;
+        Tue, 10 Mar 2020 08:05:48 +0000 (UTC)
 Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
  EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
- id 15.0.1367.3; Tue, 10 Mar 2020 08:05:38 +0000
+ id 15.0.1367.3; Tue, 10 Mar 2020 08:05:48 +0000
 Received: from 38f9d3582de7.ant.amazon.com.com (10.43.160.16) by
  EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 10 Mar 2020 08:05:35 +0000
+ id 15.0.1497.2; Tue, 10 Mar 2020 08:05:44 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 To:     <davem@davemloft.net>, <kuznet@ms2.inr.ac.ru>,
         <yoshfuji@linux-ipv6.org>, <edumazet@google.com>
 CC:     <kuniyu@amazon.co.jp>, <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <osa-contribution-log@amazon.com>
-Subject: [PATCH v5 net-next 0/4] Improve bind(addr, 0) behaviour.
-Date:   Tue, 10 Mar 2020 17:05:23 +0900
-Message-ID: <20200310080527.70180-1-kuniyu@amazon.co.jp>
+Subject: [PATCH v5 net-next 1/4] tcp: Remove unnecessary conditions in inet_csk_bind_conflict().
+Date:   Tue, 10 Mar 2020 17:05:24 +0900
+Message-ID: <20200310080527.70180-2-kuniyu@amazon.co.jp>
 X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <20200310080527.70180-1-kuniyu@amazon.co.jp>
+References: <20200310080527.70180-1-kuniyu@amazon.co.jp>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.43.160.16]
@@ -54,59 +57,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently we fail to bind sockets to ephemeral ports when all of the ports
-are exhausted even if all sockets have SO_REUSEADDR enabled. In this case,
-we still have a chance to connect to the different remote hosts.
+When we get an ephemeral port, the relax is false, so the SO_REUSEADDR
+conditions may be evaluated twice. We do not need to check the conditions
+again.
 
-These patches add net.ipv4.ip_autobind_reuse option and fix the behaviour
-to fully utilize all space of the local (addr, port) tuples.
-
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 ---
-Changes in v5:
-  - Add more description to documents.
-  - Fix sysctl option to use proc_dointvec_minmax.
-  - Remove the Fixes: tag and squash two commits.
+ net/ipv4/inet_connection_sock.c | 18 ++++++++----------
+ 1 file changed, 8 insertions(+), 10 deletions(-)
 
-Changes in v4:
-  - Add net.ipv4.ip_autobind_reuse option to not change the current behaviour.
-  - Modify .gitignore for test.
-  https://lore.kernel.org/netdev/20200308181615.90135-1-kuniyu@amazon.co.jp/
-
-Changes in v3:
-  - Change the title and write more specific description of the 3rd patch.
-  - Add a test in tools/testing/selftests/net/ as the 4th patch.
-  https://lore.kernel.org/netdev/20200229113554.78338-1-kuniyu@amazon.co.jp/
-
-Changes in v2:
-  - Change the description of the 2nd patch ('localhost' -> 'address').
-  - Correct the description and the if statement of the 3rd patch.
-  https://lore.kernel.org/netdev/20200226074631.67688-1-kuniyu@amazon.co.jp/
-
-v1 with tests:
-  https://lore.kernel.org/netdev/20200220152020.13056-1-kuniyu@amazon.co.jp/
----
-
-Kuniyuki Iwashima (4):
-  tcp: Remove unnecessary conditions in inet_csk_bind_conflict().
-  tcp: bind(0) remove the SO_REUSEADDR restriction when ephemeral ports
-    are exhausted.
-  tcp: Forbid to bind more than one sockets haveing SO_REUSEADDR and
-    SO_REUSEPORT per EUID.
-  selftests: net: Add SO_REUSEADDR test to check if 4-tuples are fully
-    utilized.
-
- Documentation/networking/ip-sysctl.txt        |   9 +
- include/net/netns/ipv4.h                      |   1 +
- net/ipv4/inet_connection_sock.c               |  36 ++--
- net/ipv4/sysctl_net_ipv4.c                    |   9 +
- tools/testing/selftests/net/.gitignore        |   1 +
- tools/testing/selftests/net/Makefile          |   2 +
- .../selftests/net/reuseaddr_ports_exhausted.c | 162 ++++++++++++++++++
- .../net/reuseaddr_ports_exhausted.sh          |  35 ++++
- 8 files changed, 243 insertions(+), 12 deletions(-)
- create mode 100644 tools/testing/selftests/net/reuseaddr_ports_exhausted.c
- create mode 100755 tools/testing/selftests/net/reuseaddr_ports_exhausted.sh
-
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index a4db79b1b643..2e9549f49a82 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -146,17 +146,15 @@ static int inet_csk_bind_conflict(const struct sock *sk,
+ 		    (!sk->sk_bound_dev_if ||
+ 		     !sk2->sk_bound_dev_if ||
+ 		     sk->sk_bound_dev_if == sk2->sk_bound_dev_if)) {
+-			if ((!reuse || !sk2->sk_reuse ||
+-			    sk2->sk_state == TCP_LISTEN) &&
+-			    (!reuseport || !sk2->sk_reuseport ||
+-			     rcu_access_pointer(sk->sk_reuseport_cb) ||
+-			     (sk2->sk_state != TCP_TIME_WAIT &&
+-			     !uid_eq(uid, sock_i_uid(sk2))))) {
+-				if (inet_rcv_saddr_equal(sk, sk2, true))
+-					break;
+-			}
+-			if (!relax && reuse && sk2->sk_reuse &&
++			if (reuse && sk2->sk_reuse &&
+ 			    sk2->sk_state != TCP_LISTEN) {
++				if (!relax &&
++				    inet_rcv_saddr_equal(sk, sk2, true))
++					break;
++			} else if (!reuseport || !sk2->sk_reuseport ||
++				   rcu_access_pointer(sk->sk_reuseport_cb) ||
++				   (sk2->sk_state != TCP_TIME_WAIT &&
++				    !uid_eq(uid, sock_i_uid(sk2)))) {
+ 				if (inet_rcv_saddr_equal(sk, sk2, true))
+ 					break;
+ 			}
 -- 
 2.17.2 (Apple Git-113)
 
