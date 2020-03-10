@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A298A17ED98
-	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 02:05:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBE3417EDA0
+	for <lists+netdev@lfdr.de>; Tue, 10 Mar 2020 02:06:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726195AbgCJBFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 Mar 2020 21:05:06 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:34388 "EHLO
+        id S1726442AbgCJBGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 Mar 2020 21:06:54 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:34400 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbgCJBFF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 21:05:05 -0400
+        with ESMTP id S1726403AbgCJBGy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 Mar 2020 21:06:54 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 18EA615A01A9C;
-        Mon,  9 Mar 2020 18:05:05 -0700 (PDT)
-Date:   Mon, 09 Mar 2020 18:05:04 -0700 (PDT)
-Message-Id: <20200309.180504.1416144561494778143.davem@davemloft.net>
-To:     martin.varghese@nokia.com
-Cc:     ap420073@gmail.com, netdev@vger.kernel.org,
-        martinvarghesenokia@gmail.com
-Subject: Re: 2baecda bareudp: remove unnecessary udp_encap_enable() in
- bareudp_socket_create()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id CDB9315A043F0;
+        Mon,  9 Mar 2020 18:06:53 -0700 (PDT)
+Date:   Mon, 09 Mar 2020 18:06:53 -0700 (PDT)
+Message-Id: <20200309.180653.1902093153472006658.davem@davemloft.net>
+To:     lesliemonis@gmail.com
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, tahiliani@nitk.edu.in,
+        gautamramk@gmail.com, edumazet@google.com
+Subject: Re: [PATCH net-next] net: sched: pie: change tc_pie_xstats->prob
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <DB6PR07MB44089E7D737DE2A76C7EEBEDEDFF0@DB6PR07MB4408.eurprd07.prod.outlook.com>
-References: <DB6PR07MB44089E7D737DE2A76C7EEBEDEDFF0@DB6PR07MB4408.eurprd07.prod.outlook.com>
+In-Reply-To: <20200309191033.2975-1-lesliemonis@gmail.com>
+References: <20200309191033.2975-1-lesliemonis@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 09 Mar 2020 18:05:05 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 09 Mar 2020 18:06:54 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Varghese, Martin (Nokia - IN/Bangalore)" <martin.varghese@nokia.com>
-Date: Tue, 10 Mar 2020 01:03:49 +0000
+From: Leslie Monis <lesliemonis@gmail.com>
+Date: Tue, 10 Mar 2020 00:40:33 +0530
 
-> HI Taehee Yoo & David,
+> Commit 105e808c1da2 ("pie: remove pie_vars->accu_prob_overflows")
+> changes the scale of probability values in PIE from (2^64 - 1) to
+> (2^56 - 1). This affects the precision of tc_pie_xstats->prob in
+> user space.
 > 
-> The commit "2baecda bareudp: remove unnecessary udp_encap_enable() in bareudp_socket_create()" breaks the receive handler  of  bareudp device.
-> setup_udp_tunnel_sock does not call udp_encap_enable() if the socket is ipv6. In bareudp v6 socket is used to receive v4 traffic also.
-> Please let me know if I need to submit a patch again to put back the below lines
+> This patch ensures user space is unaffected.
 > 
-> if (sock->sk->sk_family == AF_INET6)
->              udp_encap_enable();
+> Suggested-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Leslie Monis <lesliemonis@gmail.com>
 
-So submit a fix.
+Applied, thanks.
