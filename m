@@ -2,98 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EEA81824C3
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 23:24:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D86161824D0
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 23:25:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731136AbgCKWYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 18:24:22 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:36037 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729506AbgCKWYV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 18:24:21 -0400
-Received: by mail-qt1-f196.google.com with SMTP id m33so2879522qtb.3;
-        Wed, 11 Mar 2020 15:24:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bX2IVROdPZk+Lpen2b1LMA6hCikzQ/+KSNMeEM/lemU=;
-        b=mjViEJFGfgqzw2ET4ZjoC3GUK5vU9lPehFAEPTK4bGaxgWcYn1kBeUtXxH7ShTFbKa
-         VQHUM+KScwjH3T6mTdI3UvSz/FKpsxxCiiHHigMKGGt0gJcfrwkrzE1/6Q25PWDuKYNd
-         xNBHiy93uLjZvcUWMK6Fz6hIjYYnBigsChgl9OY5WA0O8QySgeGFu3cYgWOE62r89RlN
-         8vgMMnBa6XGqjThoByFGyX/n8mgHAWSRY9OefKgRn0DAY2VQWCiGVwwewdD7yhj4BRTN
-         hl2uUSNdo95XucRp4xtnLdoh41YueUt5hXeSZ7tnoKNq5C4OOB8J/aHJ+6R+/kByD8hy
-         SpZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bX2IVROdPZk+Lpen2b1LMA6hCikzQ/+KSNMeEM/lemU=;
-        b=n8xRDoOZ8XSCz/DrzS/AQjaMUO6tGr6kg7LhtZhpULCT1ZAS7WxJe9F+evuVfj1g+B
-         Cepu1Hzhivifuq7ErmrVbnCGpJDmzMpi+VBZW8b+novwvvcwdWrPThW2B6I2uUEw1Z9x
-         IqMvqm8+HcvVSyPm06ktT5GbUWNOmVjTwFKnPNPcjw42kLQzaLSUV563TqfkeezBplt4
-         kwsZdYdeDvfeXzLh7YQRqr7H5Uix1yxfWlDRJlxhpbyAZ/kpVcqfQQZppWL7b/dG0bCs
-         qGvEA5pqa4mslYEzlirr0RASpN9KNvNJMhYlW/049oLPirDnykXWK1U7xY4DhxQD4A6A
-         RFfQ==
-X-Gm-Message-State: ANhLgQ0ZH8151TNULlyGnilhhC17KMTzfUiNlg0PC6/CWDw6RuViInhR
-        8AKrmpb9+JxI31pWqum0KvuqzQdhO+m/RkCOTzU=
-X-Google-Smtp-Source: ADFU+vu3ISkN7+C3jkjPbaNNxvSE8GVRyX8L0IJ7Q7VkYTDfRiHcYaWwCcFw/lFdwzaYf7UFy/YQ+5uIylxnNslAs04=
-X-Received: by 2002:ac8:1865:: with SMTP id n34mr4488618qtk.93.1583965460396;
- Wed, 11 Mar 2020 15:24:20 -0700 (PDT)
+        id S2387409AbgCKWZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 18:25:19 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:60702 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729506AbgCKWZS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 18:25:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=zoMKw5hBPldeyDV/XzXql3f4Lza+9rVoslLVy16220o=; b=GCcEDNkZskVRuwHHJOQG38em4
+        g7Wnk0AmCQRIWFIHPA1hzTQS95YOIFMHg3YV91HiNnTs0h3m7QAcSTShfYWl1wW1BA3Z232uHqvM5
+        IKpvzimU7SleKBszGsRqb03YXxUM+AGR9tm14C8g+jk+H617Jz+z+8JQXkUPpvpuXRAp/Y8tgOJ+W
+        M2raVSlLovoyUflLscqlUemEtm4z1fpZlR0Y0nJ1YW7WG1fLaC5Wmm9qvn7zHiYqCIGDNQ3JPjmvf
+        Ando/vA+MradyuetoL69KzX3Sui7APWzbQg1P+qFLCFYLQFChvCGAInif7Vne3HztuuEMrnzaxdhv
+        4r3Z9fJhw==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:59268)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jC9mr-0005r6-SK; Wed, 11 Mar 2020 22:25:14 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jC9mq-0005h0-J8; Wed, 11 Mar 2020 22:25:12 +0000
+Date:   Wed, 11 Mar 2020 22:25:12 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Peter Lister <peter@bikeshed.quignogs.org.uk>
+Cc:     linux-doc@vger.kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] Reformat return value descriptions as ReST lists.
+Message-ID: <20200311222512.GV25745@shell.armlinux.org.uk>
+References: <20200311192823.16213-1-peter@bikeshed.quignogs.org.uk>
+ <20200311192823.16213-2-peter@bikeshed.quignogs.org.uk>
+ <20200311203817.GT25745@shell.armlinux.org.uk>
+ <db5f6d8f-beb0-b9bd-e47d-2a8e3dd513a2@bikeshed.quignogs.org.uk>
 MIME-Version: 1.0
-References: <20200311191513.3954203-1-andriin@fb.com> <20200311204106.GA2125642@mini-arch.hsd1.ca.comcast.net>
- <CAEf4BzZpL83aAhDWTyNoXtJp5W8S4Q_=+2_0UNeY=eb14hS8aQ@mail.gmail.com> <20200311221424.GB2125642@mini-arch.hsd1.ca.comcast.net>
-In-Reply-To: <20200311221424.GB2125642@mini-arch.hsd1.ca.comcast.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 11 Mar 2020 15:24:09 -0700
-Message-ID: <CAEf4BzbniQyBw2W=SR9gVh+7KHb9p6f6=45GUDBUXoP=59kxLw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: make tcp_rtt test more robust to failures
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <db5f6d8f-beb0-b9bd-e47d-2a8e3dd513a2@bikeshed.quignogs.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 3:14 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
->
-> On 03/11, Andrii Nakryiko wrote:
-> > On Wed, Mar 11, 2020 at 1:41 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
-> > >
-> > > On 03/11, Andrii Nakryiko wrote:
-> > > [..]
-> > > > +     pthread_join(tid, &server_res);
-> > > > +     CHECK_FAIL(IS_ERR(server_res));
-> > >
-> > > I wonder if we add (move) close(server_fd) before pthread_join(), can we
-> > > fix this issue without using non-blocking socket? The accept() should
-> > > return as soon as server_fd is closed so it's essentially your
-> > > 'server_done'.
-> >
-> > That was my first attempt. Amazingly, closing listening socket FD
-> > doesn't unblock accept()...
-> Ugh :-(
->
-> In this case, feel free to slap:
-> Reviewed-by: Stanislav Fomichev <sdf@google.com>
->
-> My only other (minor) suggestion was to add a small delay in the first
-> loop:
->
->         while (!server_done) {
->                 accept()
->                 if (!err) {
->                         udelay(50) <--
->                         continue
->                 }
->         }
->
-> But I suppose that shouldn't be that big of a deal..
+On Wed, Mar 11, 2020 at 10:21:41PM +0000, Peter Lister wrote:
+> Hello Russell,
+> 
+> > Is this really necessary?  This seems to be rather OTT, and makes the
+> > comment way too big IMHO.
+> 
+> The existing form definitely gets the formatted output wrong (I'll send you
+> a screen grab if you like) and causes doc build warnings. So, yes, it needs
+> fixing.
+> 
+> ReST makes free with blank lines round blocks and list entries, and I agree
+> this makes for inelegant source annotation. I tried to retain the wording
+> unchanged and present the description as just "whitespace" changes to make a
+> list in the formatted output - as close as I could to what the author
+> appears to intend.
+> 
+> If you're OK with a mild rewrite of the return value description, e.g. as
+> two sentences (On success: p; q. On failure: x; y; z.), then we can fix the
+> doc build and have terser source comments and a happier kerneldoc.
 
-It's actually bad, I'll fix it. Not sure how I missed that one... Thanks!
+I think it's more important that the documentation interferes to a
+minimal degree with the code in the file, so please rewrite if it
+improves it.  (btw, I'm the author.)
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
