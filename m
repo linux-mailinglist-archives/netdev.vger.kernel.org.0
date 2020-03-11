@@ -2,58 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1F6D181A5F
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 14:52:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07CC2181A82
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 14:56:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729825AbgCKNwn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 09:52:43 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:40847 "EHLO
+        id S1729764AbgCKNzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 09:55:55 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:51907 "EHLO
         mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729521AbgCKNwn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 09:52:43 -0400
-Received: by mail-wm1-f65.google.com with SMTP id e26so2213833wme.5
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 06:52:41 -0700 (PDT)
+        with ESMTP id S1729745AbgCKNzw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 09:55:52 -0400
+Received: by mail-wm1-f65.google.com with SMTP id a132so2205761wme.1
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 06:55:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=references:user-agent:from:to:cc:subject:in-reply-to:date
          :message-id:mime-version;
-        bh=rxH11306lWeDbP7QaiW9KYqcGSQz8G6vvv/cRVSV/WM=;
-        b=Fv5Iqnyn1gdF978L/4cLKCAkNKGWgjBiwOreoEv3QaRNWO/9DU7Xs2ybmv7z3AGE1u
-         nZ1rX5+bKy8apT8M5SzmjL7GBXPTR24m4NqPPubcDE8cFOq+FabTGxkPWqW6xOteisLR
-         bTZx34JTds4l88bNzgi6++PQ+lhHGZw6spHno=
+        bh=HYy1iFsw5dP0llgymR9IjcBgXqRO6QhQTbXUDxRyBJk=;
+        b=m9CiBff2BLh9SMcStjsXltKajFKQt2VixB8u/t1gwstGN5Pt3OpG6DqsKVB+QbUDyH
+         N1wI0SakZqWAHWSnU/dUk7tk1Ve6Y6QXl24KzsJLnylhdyWmsQ1UZCIjbOXh7cGCOiHU
+         ODLYh2oCDbagEPvMA/o+VXcmzqm9HZjSn4uG8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:references:user-agent:from:to:cc:subject
          :in-reply-to:date:message-id:mime-version;
-        bh=rxH11306lWeDbP7QaiW9KYqcGSQz8G6vvv/cRVSV/WM=;
-        b=hGl6DpoJyfjxHZlZRpTOgZEJrnAZt0SkgstKTmWmSloc3+YhekomxYGKxn1NhnK2q/
-         AP60CYmhHg/zFZ4iiUcwD4UIzlb6qGBocOiqrcTpXUx6Zepdb6xeJEDM8rMTpL/1EY6W
-         sAnIrLnf1CGAYJvevXe4GjCkEG7XAoiKficwCuVNn11uW0HzimQaHN0yuXxDrbYy7DoZ
-         pq1S2Os0r2kXy8CgChiK+e5faRYr039eR5Jf2tFMzu07PgZFJleRtdDnvM3cEk6MeSqF
-         oHkCq35XrPAIwyCbg6tjQeSl4YaikCs5dAvV1CyxOCiREplcvuOqfS01PkPjJluMrsmN
-         70FA==
-X-Gm-Message-State: ANhLgQ1kfYIt9VhH8gTvR51ZYFWyJCfyGkAus+lXFrB0M8ZVoJDePywH
-        /Yel6JyojDLirYaGiGKJlp0IEw==
-X-Google-Smtp-Source: ADFU+vuo+4xqkMzJGeG6/6DyfbLS3Y3jsPMS2HMgekvRv41TjxsVjFE/ARVg3j+ncuoQDcnGNjCfmQ==
-X-Received: by 2002:a7b:ce0d:: with SMTP id m13mr3766203wmc.135.1583934761107;
-        Wed, 11 Mar 2020 06:52:41 -0700 (PDT)
+        bh=HYy1iFsw5dP0llgymR9IjcBgXqRO6QhQTbXUDxRyBJk=;
+        b=I34B7enWgdyrTjFUecHOAT3Ujn3ztdhaWS+qWWjDcbL3G2ipw30w4MY23nPVg3IebR
+         4yZTg6eNYEsQo/uuEHvg5Vmq+zkNSjoelZdKvOtbr+KgoVqHOezukbwTXpHnoGoPv6rD
+         1Pj2Bf5zGPGMyl7pD4KhZxZWjnrWtWWZSE+tnwFnTB3d/NXyQ6XLJHDefN4P1UYnl/6j
+         H2CckRG9sLkXBKBpf0CyTl1EEyIxSIB/JNXMHOhQD/naJAx4AmrtOPRGYXPNN/v/ypA6
+         QjJKxLbQm9AfsUH43UGEBQHfzvnRJz36gJCCi8kdhl3ejQQ7LO+DvprYlJj2wZKjG3CG
+         xcQQ==
+X-Gm-Message-State: ANhLgQ1OvCra1CL/2TftFU0EgdFm0LcSvfneC6n/LRsYVR/Sk9/4K5Mk
+        hyy6DRL1wJcO2qTtEGII5anFmg==
+X-Google-Smtp-Source: ADFU+vvtCO4yJX7EcoGaYZf1s6nhDdZr4yLmSwU6WJ3x1R9fSf6pkAMO1ChjkcygEpbVqNBBcpqvXA==
+X-Received: by 2002:a1c:c906:: with SMTP id f6mr4056966wmb.16.1583934949066;
+        Wed, 11 Mar 2020 06:55:49 -0700 (PDT)
 Received: from cloudflare.com ([176.221.114.230])
-        by smtp.gmail.com with ESMTPSA id w1sm7920404wmc.11.2020.03.11.06.52.40
+        by smtp.gmail.com with ESMTPSA id x13sm8401596wmj.5.2020.03.11.06.55.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Mar 2020 06:52:40 -0700 (PDT)
-References: <20200310174711.7490-1-lmb@cloudflare.com> <20200310174711.7490-6-lmb@cloudflare.com>
+        Wed, 11 Mar 2020 06:55:48 -0700 (PDT)
+References: <20200310174711.7490-1-lmb@cloudflare.com> <20200310174711.7490-4-lmb@cloudflare.com>
 User-agent: mu4e 1.1.0; emacs 26.3
 From:   Jakub Sitnicki <jakub@cloudflare.com>
 To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+Cc:     John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        kernel-team@cloudflare.com, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/5] bpf: sockmap, sockhash: test looking up fds
-In-reply-to: <20200310174711.7490-6-lmb@cloudflare.com>
-Date:   Wed, 11 Mar 2020 14:52:39 +0100
-Message-ID: <87wo7rxal4.fsf@cloudflare.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        kernel-team@cloudflare.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/5] bpf: convert sock map and hash to map_copy_value
+In-reply-to: <20200310174711.7490-4-lmb@cloudflare.com>
+Date:   Wed, 11 Mar 2020 14:55:47 +0100
+Message-ID: <87v9nbxafw.fsf@cloudflare.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
@@ -61,83 +63,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+
 On Tue, Mar 10, 2020 at 06:47 PM CET, Lorenz Bauer wrote:
-> Make sure that looking up an element from the map succeeds,
-> and that the fd is valid by using it an fcntl call.
+> Migrate sockmap and sockhash to use map_copy_value instead of
+> map_lookup_elem_sys_only.
 >
 > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
 > ---
->  .../selftests/bpf/prog_tests/sockmap_listen.c | 26 ++++++++++++++-----
->  1 file changed, 20 insertions(+), 6 deletions(-)
+>  net/core/sock_map.c | 48 ++++++++++++++++++++++++++++++---------------
+>  1 file changed, 32 insertions(+), 16 deletions(-)
 >
-> diff --git a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-> index 52aa468bdccd..929e1e77ecc6 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
-> @@ -453,7 +453,7 @@ static void test_lookup_after_delete(int family, int sotype, int mapfd)
->  	xclose(s);
+> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+> index a7075b3b4489..03e04426cd21 100644
+> --- a/net/core/sock_map.c
+> +++ b/net/core/sock_map.c
+> @@ -344,19 +344,34 @@ static void *sock_map_lookup(struct bpf_map *map, void *key)
+>  	return __sock_map_lookup_elem(map, *(u32 *)key);
 >  }
 >
-> -static void test_lookup_32_bit_value(int family, int sotype, int mapfd)
-> +static void test_lookup_fd(int family, int sotype, int mapfd)
+> -static void *sock_map_lookup_sys(struct bpf_map *map, void *key)
+> +static int __sock_map_copy_value(struct bpf_map *map, struct sock *sk,
+> +				 void *value)
+> +{
+> +	switch (map->value_size) {
+> +	case sizeof(u64):
+> +		sock_gen_cookie(sk);
+> +		*(u64 *)value = atomic64_read(&sk->sk_cookie);
+
+You could use sock_gen_cookie return value to merge the two above
+statements into one. sock_gen_cookie also reads out the value.
+
+> +		return 0;
+> +
+> +	default:
+> +		return -ENOSPC;
+> +	}
+> +}
+> +
+> +static int sock_map_copy_value(struct bpf_map *map, void *key, void *value)
 >  {
->  	u32 key, value32;
->  	int err, s;
-> @@ -466,7 +466,7 @@ static void test_lookup_32_bit_value(int family, int sotype, int mapfd)
->  			       sizeof(value32), 1, 0);
->  	if (mapfd < 0) {
->  		FAIL_ERRNO("map_create");
-> -		goto close;
-> +		goto close_sock;
->  	}
+>  	struct sock *sk;
+> +	int ret = -ENOENT;
 >
->  	key = 0;
-> @@ -475,11 +475,25 @@ static void test_lookup_32_bit_value(int family, int sotype, int mapfd)
+> -	if (map->value_size != sizeof(u64))
+> -		return ERR_PTR(-ENOSPC);
+> -
+> +	rcu_read_lock();
+>  	sk = __sock_map_lookup_elem(map, *(u32 *)key);
+>  	if (!sk)
+> -		return ERR_PTR(-ENOENT);
+> +		goto out;
 >
->  	errno = 0;
->  	err = bpf_map_lookup_elem(mapfd, &key, &value32);
-> -	if (!err || errno != ENOSPC)
-> -		FAIL_ERRNO("map_lookup: expected ENOSPC");
-> +	if (err) {
-> +		FAIL_ERRNO("map_lookup");
-> +		goto close_map;
-> +	}
->
-> +	if ((int)value32 == s) {
-> +		FAIL("return value is identical");
-> +		goto close;
-> +	}
-> +
-> +	err = fcntl(value32, F_GETFD);
-> +	if (err == -1)
-> +		FAIL_ERRNO("fcntl");
-
-I would call getsockopt()/getsockname() to assert that the FD lookup
-succeeded.  We want to know not only that it's an FD (-EBADFD case), but
-also that it's associated with a socket (-ENOTSOCK).
-
-We can go even further, and compare socket cookies to ensure we got an
-FD for the expected socket.
-
-Also, I'm wondering if we could keep the -ENOSPC case test-covered by
-temporarily dropping NET_ADMIN capability.
-
-> +
-> +close:
-> +	xclose(value32);
-> +close_map:
->  	xclose(mapfd);
-> -close:
-> +close_sock:
->  	xclose(s);
+> -	sock_gen_cookie(sk);
+> -	return &sk->sk_cookie;
+> +	ret = __sock_map_copy_value(map, sk, value);
+> +out:
+> +	rcu_read_unlock();
+> +	return ret;
 >  }
 >
-> @@ -1456,7 +1470,7 @@ static void test_ops(struct test_sockmap_listen *skel, struct bpf_map *map,
->  		/* lookup */
->  		TEST(test_lookup_after_insert),
->  		TEST(test_lookup_after_delete),
-> -		TEST(test_lookup_32_bit_value),
-> +		TEST(test_lookup_fd),
->  		/* update */
->  		TEST(test_update_existing),
->  		/* races with insert/delete */
+>  static int __sock_map_delete(struct bpf_stab *stab, struct sock *sk_test,
+> @@ -636,7 +651,7 @@ const struct bpf_map_ops sock_map_ops = {
+>  	.map_alloc		= sock_map_alloc,
+>  	.map_free		= sock_map_free,
+>  	.map_get_next_key	= sock_map_get_next_key,
+> -	.map_lookup_elem_sys_only = sock_map_lookup_sys,
+> +	.map_copy_value		= sock_map_copy_value,
+>  	.map_update_elem	= sock_map_update_elem,
+>  	.map_delete_elem	= sock_map_delete_elem,
+>  	.map_lookup_elem	= sock_map_lookup,
+> @@ -1030,19 +1045,20 @@ static void sock_hash_free(struct bpf_map *map)
+>  	kfree(htab);
+>  }
+>
+> -static void *sock_hash_lookup_sys(struct bpf_map *map, void *key)
+> +static int sock_hash_copy_value(struct bpf_map *map, void *key, void *value)
+>  {
+>  	struct sock *sk;
+> +	int ret = -ENOENT;
+>
+> -	if (map->value_size != sizeof(u64))
+> -		return ERR_PTR(-ENOSPC);
+> -
+> +	rcu_read_lock();
+>  	sk = __sock_hash_lookup_elem(map, key);
+>  	if (!sk)
+> -		return ERR_PTR(-ENOENT);
+> +		goto out;
+>
+> -	sock_gen_cookie(sk);
+> -	return &sk->sk_cookie;
+> +	ret = __sock_map_copy_value(map, sk, value);
+> +out:
+> +	rcu_read_unlock();
+> +	return ret;
+>  }
+>
+>  static void *sock_hash_lookup(struct bpf_map *map, void *key)
+> @@ -1139,7 +1155,7 @@ const struct bpf_map_ops sock_hash_ops = {
+>  	.map_update_elem	= sock_hash_update_elem,
+>  	.map_delete_elem	= sock_hash_delete_elem,
+>  	.map_lookup_elem	= sock_hash_lookup,
+> -	.map_lookup_elem_sys_only = sock_hash_lookup_sys,
+> +	.map_copy_value		= sock_hash_copy_value,
+>  	.map_release_uref	= sock_hash_release_progs,
+>  	.map_check_btf		= map_check_no_btf,
+>  };
