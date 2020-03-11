@@ -2,135 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18FEE18225A
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 20:32:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BF081822AF
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 20:42:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731216AbgCKTcj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 15:32:39 -0400
-Received: from mail-yw1-f65.google.com ([209.85.161.65]:44317 "EHLO
-        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731085AbgCKTcj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 15:32:39 -0400
-Received: by mail-yw1-f65.google.com with SMTP id t141so3146059ywc.11
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 12:32:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LKraGJ30l6Da9gHXvZPSp4wo2q6s17TXGOTZwSnizRM=;
-        b=ZRa0WWvzWQ7vbhoCUSCiE+Xpnyn0r9X4j+VOZY5z0moAgoqNi7XrIrbvdOGZLoPStZ
-         t73/+8vK2zz/7Sh+YYuj8fHZZ3FvfEkXr6S9rYt7Ocx5uwZ/jttu0ZmY6lDF4hBC0sXu
-         RTFy9i9geyhj4B0j0J1TMco4guXl0g6ScFtbUdddNz65nOwp+Tj4KuGah5rZn7yD5Rip
-         nEJhat4np3znLve8DajoGUAaFw8E/zVSfQ8ONil21IEam4PVvzEjr7iYRP+6KxiOUnLs
-         Khqge9cA25XyxZdxn421HLHv3XL3BJR/eI7EJ1GdIvQIWL5pL6/nNTdMvucoFOejfkzH
-         yvNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LKraGJ30l6Da9gHXvZPSp4wo2q6s17TXGOTZwSnizRM=;
-        b=pIbacyCcky0DZYGGAVv1tA97ufpoqhX+ZXZ/Z8y/gH9j72w0byW8XMxsJxM7MQios7
-         RVRjijIaNA2XPlRJ0Oc8U3Tsnf5k5dj2tjMpO9hh1ulJ6ESAv3rHSY3qRNdhfozgqWDo
-         0Bx1E/w3edwPyOFy7uuZaiuHaQ4GPSNt2sVJHOu4EMWLVjpnzqyRIgbEE609MA6X2CLD
-         I7RlhEmgx7pm2DJn6tf848YtKqjr1cukcKgPZr3JN2DnPWQrJ0l1IeCsYPGe8W/iEdG5
-         yDpSwAihfoip/mbQlzZU5pFxmwn+DWfWwpwKxIFXbK6udzAwb3PL+BR5Xj9fYHrE1Aty
-         rBaw==
-X-Gm-Message-State: ANhLgQ1iEprlMq0i0o/cUn59WXXOhadr0ZSKEZH8w2/KxB0KWZXhRAUV
-        ujCf7wlzDFMY7OZ1my1An+pMxvLghpWcvBV+y5+mkg==
-X-Google-Smtp-Source: ADFU+vuV0D3QIjqPpw7rA21p5bLAVNUkr3pTXiahSyMXLJ3IuwPm7ousgUlGjlBoJJ8eQPNDhN9e5l4QTnhzSuuZwbw=
-X-Received: by 2002:a25:c482:: with SMTP id u124mr4859412ybf.286.1583955157918;
- Wed, 11 Mar 2020 12:32:37 -0700 (PDT)
+        id S1731216AbgCKTmC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 15:42:02 -0400
+Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:33063 "EHLO
+        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730913AbgCKTmA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 15:42:00 -0400
+Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id A3FA0891AF;
+        Thu, 12 Mar 2020 08:41:57 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1583955717;
+        bh=g98wG8WC2CahiRzoVUwtQdsdYBgfJpe+m0ZeRfNV880=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To;
+        b=DaPQKPvIYiwp6jZS6MdbCk1WeermGpFB1l62YuDeoJO9VtHnCR3xzFt2QqjScmxbc
+         MmXw/09XjhNzkzwdZhARirBh1KEujbKxxJ09z+fNM9pI7a5iumyAUtbAjQ2+9PQO52
+         6WngUURNSOfevKYlyTlFw/cqmaZHG4ZsVDPAHEy58YRKHq/pwlejeBYRvJCUzdve5E
+         ZTeWZWPP4wumFeMc5FFnyZYQ0IWH+17LFcZsiwHn6EvtHxgCAA+bTmPkrdNtzsWjI9
+         /dj/wv3bgRFyHa3j+T6TnLB57j3KDwOGCOn/kyY2srqYmxwRYbWN+gq1W/KMKhB77o
+         +2afZ6G/Z5bFA==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
+        id <B5e693f030001>; Thu, 12 Mar 2020 08:41:55 +1300
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
+ svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.2; Thu, 12 Mar 2020 08:41:57 +1300
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.006; Thu, 12 Mar 2020 08:41:57 +1300
+From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+To:     "andrew@lunn.ch" <andrew@lunn.ch>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "josua@solid-run.com" <josua@solid-run.com>
+Subject: Re: [PATCH] net: mvmdio: avoid error message for optional IRQ
+Thread-Topic: [PATCH] net: mvmdio: avoid error message for optional IRQ
+Thread-Index: AQHV906TQEy52yaMuUeP8DHX6vlJ/qhCc4WAgAB+LgA=
+Date:   Wed, 11 Mar 2020 19:41:56 +0000
+Message-ID: <c99160a5fea2ac3c9e5be5093a3635bfd94710ca.camel@alliedtelesis.co.nz>
+References: <20200311024131.1289-1-chris.packham@alliedtelesis.co.nz>
+         <20200311121019.GH5932@lunn.ch>
+In-Reply-To: <20200311121019.GH5932@lunn.ch>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [2001:df5:b000:22:d0d:cc28:ebac:1152]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2CD552B9960E0241B58E9FF096CDE41A@atlnz.lc>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20200310185003.57344-1-irogers@google.com> <20200310195915.GA1676879@tassilo.jf.intel.com>
- <CABPqkBRQo=bEOiCFGFjwcM8TZaXMFyaL7o1hcFd6Bc3w+LhJQA@mail.gmail.com> <20200311161320.GA254105@krava>
-In-Reply-To: <20200311161320.GA254105@krava>
-From:   Ian Rogers <irogers@google.com>
-Date:   Wed, 11 Mar 2020 12:32:26 -0700
-Message-ID: <CAP-5=fXYMTT7-iiaacO1VF0rRSO6t9W0a5edkiEwdZMYBcrtpQ@mail.gmail.com>
-Subject: Re: [PATCH] perf tools: add support for lipfm4
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Stephane Eranian <eranian@google.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Igor Lubashev <ilubashe@akamai.com>,
-        Alexey Budankov <alexey.budankov@linux.intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Jiwei Sun <jiwei.sun@windriver.com>,
-        yuzhoujian <yuzhoujian@didichuxing.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Leo Yan <leo.yan@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 9:13 AM Jiri Olsa <jolsa@redhat.com> wrote:
->
-> On Tue, Mar 10, 2020 at 02:39:23PM -0700, Stephane Eranian wrote:
-> > On Tue, Mar 10, 2020 at 12:59 PM Andi Kleen <ak@linux.intel.com> wrote:
-> > >
-> > > On Tue, Mar 10, 2020 at 11:50:03AM -0700, Ian Rogers wrote:
-> > > > This patch links perf with the libpfm4 library.
-> > > > This library contains all the hardware event tables for all
-> > > > processors supported by perf_events. This is a helper library
-> > > > that help convert from a symbolic event name to the event
-> > > > encoding required by the underlying kernel interface. This
-> > > > library is open-source and available from: http://perfmon2.sf.net.
-> > >
-> > > For most CPUs the builtin perf JSON event support should make
-> > > this redundant.
-> > >
-> > We decided to post this patch to propose an alternative to the JSON
-> > file approach. It could be an option during the build.
-> > The libpfm4 library has been around for 15 years now. Therefore, it
-> > supports a lot of processors core and uncore and it  is very portable.
-> > The key value add I see is that this is a library that can be, and has
-> > been, used by tool developers directly in their apps. It can
-> > work with more than Linux perf_events interface. It is not tied to the
-> > interface. It has well defined and documented entry points.
-> > We do use libpfm4 extensively at Google in both the perf tool and
-> > applications. The PAPI toolkit also relies on this library.
-> >
-> > I don't see this as competing with the JSON approach. It is just an
-> > option I'd like to offer to users especially those familiar
-> > with it in their apps.
->
-> I dont mind having it, in fact I found really old email where I'm
-> asking Peter about that ;-) and he wasn't very keen about that:
->   https://lore.kernel.org/lkml/1312806326.10488.30.camel@twins/
->
-> not sure what was the actual reason at that time and if anything
-> changed since.. Peter?
->
-> btw I can't apply even that v2 on latest Arnaldo's branch
->
-> jirka
-
-Thanks Jiri,
-
-the patches were done on tip.git/master, perhaps there is a conflict
-with the Documents Makefile due to adding better man page dates? I'll
-try to repro building on
-https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/ on the
-perf/core branch unless you  have a different suggestion? I also
-noticed a warning crept into the Makefile.config in the v2 patch set
-that should be removed.
-
-Ian
+T24gV2VkLCAyMDIwLTAzLTExIGF0IDEzOjEwICswMTAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
+T24gV2VkLCBNYXIgMTEsIDIwMjAgYXQgMDM6NDE6MzBQTSArMTMwMCwgQ2hyaXMgUGFja2hhbSB3
+cm90ZToNCj4gPiBQZXIgdGhlIGR0LWJpbmRpbmcgdGhlIGludGVycnVwdCBpcyBvcHRpb25hbCBz
+byB1c2UNCj4gPiBwbGF0Zm9ybV9nZXRfaXJxX29wdGlvbmFsKCkgaW5zdGVhZCBvZiBwbGF0Zm9y
+bV9nZXRfaXJxKCkuIFNpbmNlDQo+ID4gY29tbWl0IDc3MjNmNGM1ZWNkYiAoImRyaXZlciBjb3Jl
+OiBwbGF0Zm9ybTogQWRkIGFuIGVycm9yIG1lc3NhZ2UgdG8NCj4gPiBwbGF0Zm9ybV9nZXRfaXJx
+KigpIikgcGxhdGZvcm1fZ2V0X2lycSgpIHByb2R1Y2VzIGFuIGVycm9yIG1lc3NhZ2UNCj4gPiAN
+Cj4gPiAgIG9yaW9uLW1kaW8gZjEwNzIwMDQubWRpbzogSVJRIGluZGV4IDAgbm90IGZvdW5kDQo+
+ID4gDQo+ID4gd2hpY2ggaXMgcGVyZmVjdGx5IG5vcm1hbCBpZiBvbmUgaGFzbid0IHNwZWNpZmll
+ZCB0aGUgb3B0aW9uYWwgcHJvcGVydHkNCj4gPiBpbiB0aGUgZGV2aWNlIHRyZWUuDQo+ID4gDQo+
+ID4gU2lnbmVkLW9mZi1ieTogQ2hyaXMgUGFja2hhbSA8Y2hyaXMucGFja2hhbUBhbGxpZWR0ZWxl
+c2lzLmNvLm56Pg0KPiA+IC0tLQ0KPiA+ICBkcml2ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxsL212
+bWRpby5jIHwgMiArLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVs
+ZXRpb24oLSkNCj4gPiANCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFy
+dmVsbC9tdm1kaW8uYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21hcnZlbGwvbXZtZGlvLmMNCj4g
+PiBpbmRleCAwYjllODUxZjNkYTQuLmQxNDc2MmQ5MzY0MCAxMDA2NDQNCj4gPiAtLS0gYS9kcml2
+ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxsL212bWRpby5jDQo+ID4gKysrIGIvZHJpdmVycy9uZXQv
+ZXRoZXJuZXQvbWFydmVsbC9tdm1kaW8uYw0KPiA+IEBAIC0zNDcsNyArMzQ3LDcgQEAgc3RhdGlj
+IGludCBvcmlvbl9tZGlvX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ID4g
+IAl9DQo+ID4gIA0KPiA+ICANCj4gPiAtCWRldi0+ZXJyX2ludGVycnVwdCA9IHBsYXRmb3JtX2dl
+dF9pcnEocGRldiwgMCk7DQo+ID4gKwlkZXYtPmVycl9pbnRlcnJ1cHQgPSBwbGF0Zm9ybV9nZXRf
+aXJxX29wdGlvbmFsKHBkZXYsIDApOw0KPiA+ICAJaWYgKGRldi0+ZXJyX2ludGVycnVwdCA+IDAg
+JiYNCj4gPiAgCSAgICByZXNvdXJjZV9zaXplKHIpIDwgTVZNRElPX0VSUl9JTlRfTUFTSyArIDQp
+IHsNCj4gPiAgCQlkZXZfZXJyKCZwZGV2LT5kZXYsDQo+IA0KPiBIaSBDaHJpcw0KPiANCj4gVGhp
+cyBpcyB0aGUgbWluaW11bSBmaXguIFNvOg0KPiANCj4gUmV2aWV3ZWQtYnk6IEFuZHJldyBMdW5u
+IDxhbmRyZXdAbHVubi5jaD4NCj4gDQo+IEhvd2V2ZXIsIHlvdSBjb3VsZCBhbHNvIHNpbXBsaWZ5
+DQo+IA0KPiAgICAgICAgIH0gZWxzZSBpZiAoZGV2LT5lcnJfaW50ZXJydXB0ID09IC1FUFJPQkVf
+REVGRVIpIHsNCj4gICAgICAgICAgICAgICAgIHJldCA9IC1FUFJPQkVfREVGRVI7DQo+ICAgICAg
+ICAgICAgICAgICBnb3RvIG91dF9tZGlvOw0KPiAgICAgICAgIH0NCj4gDQo+IA0KPiB0byBqdXN0
+DQo+IA0KPiAgICAgICAgIH0gZWxzZSB7DQo+ICAgICAgICAgICAgICAgICByZXQgPSBkZXYtPmVy
+cl9pbnRlcnJ1cHQ7DQo+ICAgICAgICAgICAgICAgICBnb3RvIG91dF9tZGlvOw0KPiAgICAgICAg
+IH0NCg0KTWFrZXMgc2Vuc2UuIE1heSBhcyB3ZWxsIGluY2x1ZGUgdGhhdCB3aGlsZSBJJ20gaGVy
+ZS4NCg0KPiANCj4gICAgIEFuZHJldw0K
