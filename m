@@ -2,145 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF4701824E9
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 23:31:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 927621824EC
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 23:33:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731040AbgCKWbw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 18:31:52 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:39787 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729846AbgCKWbw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 18:31:52 -0400
-Received: by mail-pf1-f196.google.com with SMTP id w65so2159737pfb.6;
-        Wed, 11 Mar 2020 15:31:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=Xn6MB1heFARkj47MUS06hvpuiFejBHCyNyM2A97lp38=;
-        b=ME3qlUCpD+uZx5CzsmmCxJfA/nvhO4/f9xMrBhdy3dp4MjyJOjz/UENZ5xyhNWMM4q
-         PZGeUpaTYRQE3N+tI7fWhk81ohPXh1BUPxESzvfzVAk6GakE/g9n550Qzape34j8tR+e
-         HTLgR2/FHy6Twde0CC2cQBy/TJsaXEBiUKo0C78sQTLiFqmE0hPYAUFW6HMU/vcaOV5w
-         5YZd0CJXN4MCbhZ7ENaheI3DFFNVf81IEcASx/s1lBgvjvMlCl0IQ+QdkdrwdM6cWvks
-         FjTaFeL+rcR7vFJt0tNsFZi2AyKo/5aunben7fepygk0itxUNmqOZzzDLECMgR6aASqm
-         KxCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=Xn6MB1heFARkj47MUS06hvpuiFejBHCyNyM2A97lp38=;
-        b=E2VA15L6qzynSIBLPq62voWQzuUMufV9SPZqhkO19bZ1pHhy/tUmw//slDRBDJPj84
-         g9mupwMtByGPPHaz9nnvna7QP09qJT3Gdngzh8t1FPXpiArwn8uHHw1BnA2KvqEFDl2F
-         OLBBbMmSsYCY5wHZDmTRPfPo/Sjh5+u/kU7U46k0CMfYqoMc6+rsmhksfUzVHVWIdhE3
-         8QlvV1yX9Vb9/4dAlRPD1GW7uaa4WwHY93o98DHzIHciHp05OB57IFO9Crr+v9VZNDC0
-         QDeYVl1wsB19LNrY1nSiwmh+Hzj63ripweBwKXg8jKPAs6yFN+U99UpfIgJS4MRK2/4F
-         vIsg==
-X-Gm-Message-State: ANhLgQ2VDYKuegIASgJRATLpG98IiIJkEH0UbatzwvurcUDx8R73zhoB
-        LWQKSFcdc09yoGT6IRr6DYioZjN3
-X-Google-Smtp-Source: ADFU+vuIbFFAEy+voWHZZAmTAvV46ApiZefWEqyqOwI+8KhN5D0sWieVI8wn5IC/voI+dw2wUNR9Cw==
-X-Received: by 2002:a62:6490:: with SMTP id y138mr4911265pfb.96.1583965911346;
-        Wed, 11 Mar 2020 15:31:51 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id s21sm44195782pfm.186.2020.03.11.15.31.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Mar 2020 15:31:50 -0700 (PDT)
-Date:   Wed, 11 Mar 2020 15:31:41 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        kernel-team@cloudflare.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <5e6966cdf1f27_20552ab9153405b4bf@john-XPS-13-9370.notmuch>
-In-Reply-To: <87tv2vxa7a.fsf@cloudflare.com>
-References: <20200310174711.7490-1-lmb@cloudflare.com>
- <20200310174711.7490-3-lmb@cloudflare.com>
- <87tv2vxa7a.fsf@cloudflare.com>
-Subject: Re: [PATCH 2/5] bpf: convert queue and stack map to map_copy_value
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1730199AbgCKWdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 18:33:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37640 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729799AbgCKWdK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Mar 2020 18:33:10 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 98AFA20739;
+        Wed, 11 Mar 2020 22:33:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583965990;
+        bh=FuUkCquS4t6XrBlpoBFCfOoz7fzFNICKUH8nqVH4pdo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rQMo0a4nNVwrAaaPbo0KtSchbprRVmhLDiGWtB1U8M+9vEoPu/WaBsKmkw+ztbUmK
+         bb080VYc9WNgjuhDy55sF3QDHgBlwIQjy3m/6HxHGhpEBCj7qOMQ14tGUyUXZgDoFo
+         VFtNwQdFjkSrAVLDkVXnfP1HlI8nGe1bH1w0idHM=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, mkubecek@suse.cz,
+        sathya.perla@broadcom.com, ajit.khaparde@broadcom.com,
+        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
+        madalin.bucur@nxp.com, fugang.duan@nxp.com, claudiu.manoil@nxp.com,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
+        alexander.h.duyck@linux.intel.com, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 00/15] ethtool: consolidate irq coalescing - part 4
+Date:   Wed, 11 Mar 2020 15:32:47 -0700
+Message-Id: <20200311223302.2171564-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.24.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> On Tue, Mar 10, 2020 at 06:47 PM CET, Lorenz Bauer wrote:
-> > Migrate BPF_MAP_TYPE_QUEUE and BPF_MAP_TYPE_STACK to map_copy_value,
-> > by introducing small wrappers that discard the (unused) key argument.
-> >
-> > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> > ---
-> >  kernel/bpf/queue_stack_maps.c | 18 ++++++++++++++++++
-> >  kernel/bpf/syscall.c          |  5 +----
-> >  2 files changed, 19 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/kernel/bpf/queue_stack_maps.c b/kernel/bpf/queue_stack_maps.c
-> > index f697647ceb54..5c89b7583cd2 100644
-> > --- a/kernel/bpf/queue_stack_maps.c
-> > +++ b/kernel/bpf/queue_stack_maps.c
-> > @@ -262,11 +262,28 @@ static int queue_stack_map_get_next_key(struct bpf_map *map, void *key,
-> >  	return -EINVAL;
-> >  }
-> >
-> > +/* Called from syscall */
-> > +static int queue_map_copy_value(struct bpf_map *map, void *key, void *value)
-> > +{
-> > +	(void)key;
-> 
-> Alternatively, there's is the __always_unused compiler attribute from
-> include/linux/compiler_attributes.h that seems to be in wide use.
-> 
+Hi!
 
-+1 use the attribute its much nicer imo.
+Convert more drivers following the groundwork laid in a recent
+patch set [1] and continued in [2], [3]. The aim of the effort
+is to consolidate irq coalescing parameter validation in the core.
 
-> > +
-> > +	return queue_map_peek_elem(map, value);
-> > +}
-> > +
-> > +/* Called from syscall */
-> > +static int stack_map_copy_value(struct bpf_map *map, void *key, void *value)
-> > +{
-> > +	(void)key;
-> > +
-> > +	return stack_map_peek_elem(map, value);
-> > +}
-> > +
-> >  const struct bpf_map_ops queue_map_ops = {
-> >  	.map_alloc_check = queue_stack_map_alloc_check,
-> >  	.map_alloc = queue_stack_map_alloc,
-> >  	.map_free = queue_stack_map_free,
-> >  	.map_lookup_elem = queue_stack_map_lookup_elem,
-> > +	.map_copy_value = queue_map_copy_value,
-> >  	.map_update_elem = queue_stack_map_update_elem,
-> >  	.map_delete_elem = queue_stack_map_delete_elem,
-> >  	.map_push_elem = queue_stack_map_push_elem,
-> > @@ -280,6 +297,7 @@ const struct bpf_map_ops stack_map_ops = {
-> >  	.map_alloc = queue_stack_map_alloc,
-> >  	.map_free = queue_stack_map_free,
-> >  	.map_lookup_elem = queue_stack_map_lookup_elem,
-> > +	.map_copy_value = stack_map_copy_value,
-> >  	.map_update_elem = queue_stack_map_update_elem,
-> >  	.map_delete_elem = queue_stack_map_delete_elem,
-> >  	.map_push_elem = queue_stack_map_push_elem,
-> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > index 6503824e81e9..20c6cdace275 100644
-> > --- a/kernel/bpf/syscall.c
-> > +++ b/kernel/bpf/syscall.c
-> > @@ -218,10 +218,7 @@ static int bpf_map_copy_value(struct bpf_map *map, void *key, void *value,
-> >  		return bpf_map_offload_lookup_elem(map, key, value);
-> >
-> >  	bpf_disable_instrumentation();
-> > -	if (map->map_type == BPF_MAP_TYPE_QUEUE ||
-> > -	    map->map_type == BPF_MAP_TYPE_STACK) {
-> > -		err = map->ops->map_peek_elem(map, value);
-> > -	} else if (map->ops->map_copy_value) {
-> > +	if (map->ops->map_copy_value) {
-> >  		err = map->ops->map_copy_value(map, key, value);
-> >  	} else {
-> >  		rcu_read_lock();
+This set converts 15 drivers in drivers/net/ethernet - remaining
+Intel drivers, Freescale/NXP, and others.
+2 more conversion sets to come.
 
+[1] https://lore.kernel.org/netdev/20200305051542.991898-1-kuba@kernel.org/
+[2] https://lore.kernel.org/netdev/20200306010602.1620354-1-kuba@kernel.org/
+[3] https://lore.kernel.org/netdev/20200310021512.1861626-1-kuba@kernel.org/
+
+Jakub Kicinski (15):
+  net: be2net: reject unsupported coalescing params
+  net: dpaa: reject unsupported coalescing params
+  net: fec: reject unsupported coalescing params
+  net: gianfar: reject unsupported coalescing params
+  net: hns: reject unsupported coalescing params
+  net: hns3: reject unsupported coalescing params
+  net: e1000: reject unsupported coalescing params
+  net: fm10k: reject unsupported coalescing params
+  net: i40e: reject unsupported coalescing params
+  net: iavf: reject unsupported coalescing params
+  net: igb: let core reject the unsupported coalescing parameters
+  net: igbvf: reject unsupported coalescing params
+  net: igc: let core reject the unsupported coalescing parameters
+  net: ixgbe: reject unsupported coalescing params
+  net: ixgbevf: reject unsupported coalescing params
+
+ .../net/ethernet/emulex/benet/be_ethtool.c    |  3 +++
+ .../ethernet/freescale/dpaa/dpaa_ethtool.c    |  6 ++---
+ drivers/net/ethernet/freescale/fec_main.c     |  2 ++
+ .../net/ethernet/freescale/gianfar_ethtool.c  |  2 ++
+ .../net/ethernet/hisilicon/hns/hns_ethtool.c  |  5 +++++
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    |  7 ++++++
+ .../net/ethernet/intel/e1000/e1000_ethtool.c  |  1 +
+ .../net/ethernet/intel/fm10k/fm10k_ethtool.c  |  2 ++
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    |  5 +++++
+ .../net/ethernet/intel/iavf/iavf_ethtool.c    |  4 ++++
+ drivers/net/ethernet/intel/igb/igb_ethtool.c  | 22 +------------------
+ drivers/net/ethernet/intel/igbvf/ethtool.c    |  1 +
+ drivers/net/ethernet/intel/igc/igc_ethtool.c  | 22 +------------------
+ .../net/ethernet/intel/ixgbe/ixgbe_ethtool.c  |  1 +
+ drivers/net/ethernet/intel/ixgbevf/ethtool.c  |  1 +
+ include/linux/ethtool.h                       |  8 +++++++
+ 16 files changed, 46 insertions(+), 46 deletions(-)
+
+-- 
+2.24.1
 
