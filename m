@@ -2,108 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A88A918251F
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 23:40:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72C1B182520
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 23:41:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387404AbgCKWky (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 18:40:54 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:47026 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729956AbgCKWky (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 18:40:54 -0400
-Received: by mail-pg1-f196.google.com with SMTP id y30so1969924pga.13;
-        Wed, 11 Mar 2020 15:40:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=9SRTk6Qjjk1tP01EZ8totvHB8j0f9Ncy1D8Goqn/0Y4=;
-        b=m9xOawrqvlJHFzsBp6vzwIzlaeE/ayvB8eHf6iDbhwErGvNLbDqj2OmmFgSNi9ceB4
-         72HT+gHZL95NE7E9KZS/QygKbWdK+Js5hLbZtQmV/8OiK5x/YlnyoWwvU/JK4W4yrrkZ
-         rIHulPL/meujfaqlej+fj4dIdeLVs0QEw/snHuwkIscDMXn8kudxQf0kqarqd2vuqSzw
-         lRsUDARxs5ENKq8GEkH7FEWf7tHdkxGMTILoiDhHr8phgtusLFgqFv0GXXl2Ay+3htCo
-         McW8/iouPDg86ebQCwfO6flhktLwjNA5EnE1H9OWd+V7aIy507N+0w02Wf6pI+m1y/RP
-         SXBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=9SRTk6Qjjk1tP01EZ8totvHB8j0f9Ncy1D8Goqn/0Y4=;
-        b=auU7oKe1pB7IWN9xlqny0Qy8qQyfMpG9Geugr+FtJ6G9msqLbaI1kJ7B4VmfaT5ES3
-         9/YyXUcI1HL1T4f9KliFyYKndl1xzwqnkp+8/TLYlCPIONcIX3/GzbPEcEvpz8R2Mg7Q
-         OlurUNehRwdYOrIOtnXHK1Aept1RpuVeJhNtYayorDkA9JcrzQtwDZT95KmUBKzoYEZ/
-         BzySbBPnMQD0PDd/cEo0QG62AHdpEXIOABHS4IWQ0xV4xXDknVVAnBbkHapYkEv+bGLz
-         ATrYVO2dMxihSzIDuJ8EOQt1zpKeCXCDA67SSNGjcrynuog/iS3+k2oQPlMtIk/XsnXH
-         mfCQ==
-X-Gm-Message-State: ANhLgQ2jO76X5doUQZaMcR5NWQSOFh3X51sSs3yl8rpbu6FJMfGi7v1X
-        nUcaE+JFTGZrRXxFn17oTekGbI8Y
-X-Google-Smtp-Source: ADFU+vvpHWFqeJUKUlvQTkEOJHFRg8TclUxUyMK06u67ywTIf7wefljUep7uXke4/z51voptdbSxDQ==
-X-Received: by 2002:aa7:8f36:: with SMTP id y22mr5064328pfr.162.1583966451153;
-        Wed, 11 Mar 2020 15:40:51 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id n5sm170747pfq.35.2020.03.11.15.40.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Mar 2020 15:40:50 -0700 (PDT)
-Date:   Wed, 11 Mar 2020 15:40:43 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Lorenz Bauer <lmb@cloudflare.com>, kernel-team@cloudflare.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Message-ID: <5e6968eb5c09c_20552ab9153405b419@john-XPS-13-9370.notmuch>
-In-Reply-To: <87y2s7xayn.fsf@cloudflare.com>
-References: <20200310174711.7490-1-lmb@cloudflare.com>
- <87y2s7xayn.fsf@cloudflare.com>
-Subject: Re: [PATCH 0/5] Return fds from privileged sockhash/sockmap lookup
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S2387418AbgCKWlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 18:41:36 -0400
+Received: from mga14.intel.com ([192.55.52.115]:32338 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387410AbgCKWlg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Mar 2020 18:41:36 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 11 Mar 2020 15:41:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,542,1574150400"; 
+   d="scan'208";a="389411759"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [134.134.177.106]) ([134.134.177.106])
+  by orsmga004.jf.intel.com with ESMTP; 11 Mar 2020 15:41:35 -0700
+Subject: Re: [PATCH net-next 08/15] net: fm10k: reject unsupported coalescing
+ params
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, mkubecek@suse.cz,
+        sathya.perla@broadcom.com, ajit.khaparde@broadcom.com,
+        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
+        madalin.bucur@nxp.com, fugang.duan@nxp.com, claudiu.manoil@nxp.com,
+        yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        jeffrey.t.kirsher@intel.com, alexander.h.duyck@linux.intel.com
+References: <20200311223302.2171564-1-kuba@kernel.org>
+ <20200311223302.2171564-9-kuba@kernel.org>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <6d74fc75-a0c8-2d9c-5ecc-c37c5da4c2ef@intel.com>
+Date:   Wed, 11 Mar 2020 15:41:35 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
+MIME-Version: 1.0
+In-Reply-To: <20200311223302.2171564-9-kuba@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Sitnicki wrote:
-> On Tue, Mar 10, 2020 at 06:47 PM CET, Lorenz Bauer wrote:
-> > We want to use sockhash and sockmap to build the control plane for
-> > our upcoming BPF socket dispatch work. We realised that it's
-> > difficult to resize or otherwise rebuild these maps if needed,
-> > because there is no way to get at their contents. This patch set
-> > allows a privileged user to retrieve fds from these map types,
-> > which removes this obstacle.
+On 3/11/2020 3:32 PM, Jakub Kicinski wrote:
+> Set ethtool_ops->supported_coalesce_params to let
+> the core reject unsupported coalescing parameters.
 > 
-> Since it takes just a few lines of code to get an FD for a sock:
+> This driver did not previously reject unsupported parameters.
 > 
-> 	fd = get_unused_fd_flags(O_CLOEXEC);
-> 	if (unlikely(fd < 0))
-> 		return fd;
->         fd_install(fd, get_file(sk->sk_socket->file));
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+Acked-by: Jacob Keller <jacob.e.keller@intel.com>
+
+> ---
+>  drivers/net/ethernet/intel/fm10k/fm10k_ethtool.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> ... I can't help but wonder where's the catch?
+> diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_ethtool.c b/drivers/net/ethernet/intel/fm10k/fm10k_ethtool.c
+> index 68edf55ac906..37fbc646deb9 100644
+> --- a/drivers/net/ethernet/intel/fm10k/fm10k_ethtool.c
+> +++ b/drivers/net/ethernet/intel/fm10k/fm10k_ethtool.c
+> @@ -1151,6 +1151,8 @@ static int fm10k_set_channels(struct net_device *dev,
+>  }
+>  
+>  static const struct ethtool_ops fm10k_ethtool_ops = {
+> +	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+> +				     ETHTOOL_COALESCE_USE_ADAPTIVE,
+>  	.get_strings		= fm10k_get_strings,
+>  	.get_sset_count		= fm10k_get_sset_count,
+>  	.get_ethtool_stats      = fm10k_get_ethtool_stats,
 > 
-> IOW, why wasn't this needed so far?
-> How does Cilium avoid resizing & rebuilding sockmaps?
-
-I build a map at init time and pin it for the lifetime of the daemon.
-If we overrun the sockmap we can always fall back to the normal case
-so there has never been a reason to resize.
-
-I guess being able to change the map size at runtime would be a nice
-to have but we don't do this with any other maps, e.g. connection
-tracking, load balancing, etc. We expect good-sizing upfront. 
-
-@Lorenz, Would it be possible to provide some more details where a
-resize would be used? I guess if the map is nearly full you could
-rebuild a bigger one and migrate? One thing I explored at one point
-is to just create a new map and use multiple maps in the datapath
-but that required extra lookups and for hashing might not be ideal.
-
-> 
-> Just asking out of curiosity.
-> 
-> [...]
-
-
