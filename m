@@ -2,105 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 990D918231F
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 21:06:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8694182331
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 21:17:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387471AbgCKUGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 16:06:38 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:36889 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387448AbgCKUGh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 16:06:37 -0400
-Received: by mail-pl1-f196.google.com with SMTP id f16so1595485plj.4
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 13:06:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=++5B0kFRrjAGwY1Pe388z5375HPFD4iEhCYSO75vU9k=;
-        b=d7K69vo1bhwMw4HUPNraxkxEDAvA63FgjV5gB6GbslC680eWufo5K6jlOXYSNUy5w/
-         E9tlsJ0ehHvi6PE7Niu4XjXz9RFah90G7btm8mbFIiRNJD7x8jHwKTo2zT5whrDZ0X5T
-         dELIHgYrIolfYS/CXnML26PUrUSP+338rgp6k=
+        id S2387410AbgCKURE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 16:17:04 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:36446 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731057AbgCKURE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 16:17:04 -0400
+Received: by mail-il1-f198.google.com with SMTP id v14so2265587ilq.3
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 13:17:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=++5B0kFRrjAGwY1Pe388z5375HPFD4iEhCYSO75vU9k=;
-        b=oF6l6Nbr+YKEXG5X/Xj0tWa+gMhJRIimoJyzJKm9cRoJBGPkQMdPheNnR5OUmKl4oh
-         r16RO+0vMz+6aKS370bIygEr8OBJo+g5wnIDZmYPw4udN8saBmLYf1k/FN0RNxpDy7cZ
-         w0dVB9we7vhi/teVtDcxiJjaPpxMV0HTgBoLhNbz6GewSxckYgcwtHj6MlUqSigdpTpT
-         iy7ju12UnEWybfocfy15DksfLBWjVQkTkRvvQ5sfg2/AIUsOdawVErtw9AuHix8SDS74
-         Jacm7trZBYHg3HcmDiF+zFt7KbrzmfpGxamPquPvc85vWbH+Du7zhK7Q9ZgRkNKDocRW
-         MmuA==
-X-Gm-Message-State: ANhLgQ0GPG/44xQjPn5YTZEF+MvxfP3tY90kN8SlZlAMCj+55UZaylv+
-        tL5a8fDQSAZax7Owi0ggf1o7YA==
-X-Google-Smtp-Source: ADFU+vsd+Vncz158ZMcxoxWjS4PIk1+al05cPYka23A9zMuWMmHh26nb2njwtfyNobXmcY9VjFFhVQ==
-X-Received: by 2002:a17:902:7618:: with SMTP id k24mr4601393pll.320.1583957195759;
-        Wed, 11 Mar 2020 13:06:35 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id m12sm6440567pjf.25.2020.03.11.13.06.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Mar 2020 13:06:34 -0700 (PDT)
-Date:   Wed, 11 Mar 2020 13:06:33 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Sven Schnelle <svens@linux.ibm.com>
-Cc:     Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] seccomp: add compat_ioctl for seccomp notify
-Message-ID: <202003111305.87B2A84A@keescook>
-References: <20200310123332.42255-1-svens@linux.ibm.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Hk8leBLQn5EO2E5GYez0a5lDH0bgTVJ9Yjc9wD197GA=;
+        b=WlBKOwDBrDWj0rSsk/2OINjIB5t7m+2tvlbl/40Whs/zGjqKKYXEkjNZvTQy9KAu7W
+         FWCHbW3Wum/m2FOluipOEvID5JtqFkLVSEe09bg8Cy/J3kghx18Jm0qoKKkiyoxgELVC
+         9gv/y+BPOJYlDMnm7hT+osHtK1kclgrdifthRPcpYnEe7TC1aSjmdDr13ef1UT6X3uSw
+         +9bqHpiBeSPFOLvKaOIJIEKAe1uTwyByywKFLWYjO9kxuFrfjGV81MOkySqdT4banKHh
+         5KZcnVmfRcuHM5nVvrt5044X8swlssAtmmj/zmHN5AMOElNRHmg0VPdxUoiPrfikGzkq
+         i42g==
+X-Gm-Message-State: ANhLgQ10Tva5hZfyZcBGBpmtAZ1buI1MRwJa4hal7RO/yjSwTNeV+6th
+        e28FLVFq+qTrFVuvX43NAdFyUPa81BzOPdu5eTSmLWFy7f4f
+X-Google-Smtp-Source: ADFU+vuCk0oLjsQRK1OQUGd8tOfOULwTEpr37d1F6UYTw6+1J+u2VViJHjd/h7gGWV9DvDuMYhL3fUTIAi3lVakXW/slGPEJZJ+Y
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200310123332.42255-1-svens@linux.ibm.com>
+X-Received: by 2002:a02:962e:: with SMTP id c43mr4679555jai.26.1583957823254;
+ Wed, 11 Mar 2020 13:17:03 -0700 (PDT)
+Date:   Wed, 11 Mar 2020 13:17:03 -0700
+In-Reply-To: <00000000000030395e059f6aaa09@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000064f9a805a099eb8a@google.com>
+Subject: Re: general protection fault in j1939_netdev_start
+From:   syzbot <syzbot+f03d384f3455d28833eb@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, jiri@mellanox.com, jiri@resnulli.us,
+        kernel@pengutronix.de, kuba@kernel.org, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@rempel-privat.de,
+        mareklindner@neomailbox.ch, mkl@pengutronix.de,
+        netdev@vger.kernel.org, robin@protonic.nl, socketcan@hartkopp.net,
+        sven@narfation.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 01:33:32PM +0100, Sven Schnelle wrote:
-> Hi,
-> 
-> executing the seccomp_bpf testsuite with 32 bit userland (both s390 and x86)
-> doesn't work because there's no compat_ioctl handler defined. Is that something
-> that is supposed to work? Disclaimer: I don't know enough about seccomp to judge
-> whether there would be some adjustments required in the compat ioctl handler.
-> Just setting it to seccomp_notify_ioctl() makes the testsuite pass, but i'm not
-> sure whether that's correct.
-> 
-> Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
+syzbot has bisected this bug to:
 
-Whoops! Yes, running a mixed environment (64-bit kernel and 32-bit
-userspace) shows this as broken. I'll tweak the commit log a bit and
-apply it. Thanks!
+commit 8330f73fe9742f201f467639f8356cf58756fb9f
+Author: Jiri Pirko <jiri@mellanox.com>
+Date:   Wed Sep 4 07:40:47 2019 +0000
 
--Kees
+    rocker: add missing init_net check in FIB notifier
 
-> ---
->  kernel/seccomp.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/kernel/seccomp.c b/kernel/seccomp.c
-> index b6ea3dcb57bf..683c81e4861e 100644
-> --- a/kernel/seccomp.c
-> +++ b/kernel/seccomp.c
-> @@ -1221,6 +1221,7 @@ static const struct file_operations seccomp_notify_ops = {
->  	.poll = seccomp_notify_poll,
->  	.release = seccomp_notify_release,
->  	.unlocked_ioctl = seccomp_notify_ioctl,
-> +	.compat_ioctl = seccomp_notify_ioctl,
->  };
->  
->  static struct file *init_listener(struct seccomp_filter *filter)
-> -- 
-> 2.17.1
-> 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=165cdcb1e00000
+start commit:   63623fd4 Merge tag 'for-linus' of git://git.kernel.org/pub..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=155cdcb1e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=115cdcb1e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9833e26bab355358
+dashboard link: https://syzkaller.appspot.com/bug?extid=f03d384f3455d28833eb
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=162b8331e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10f10a2de00000
 
--- 
-Kees Cook
+Reported-by: syzbot+f03d384f3455d28833eb@syzkaller.appspotmail.com
+Fixes: 8330f73fe974 ("rocker: add missing init_net check in FIB notifier")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
