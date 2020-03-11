@@ -2,129 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D65EC181E33
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 17:45:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D983A181E4A
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 17:52:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729675AbgCKQpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 12:45:25 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:37386 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729809AbgCKQpZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 12:45:25 -0400
-Received: by mail-pf1-f193.google.com with SMTP id p14so1650062pfn.4
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 09:45:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=JtWCa/vxMOZhzXhtRsuYP1P9rUW4iKHdUbE1rBXcLto=;
-        b=q8fFVuJrua53YGXo9stI6aD8d3mh8YKjkKPBVgpChUhVe+zHzC5I0DJEdegYpCQ61Q
-         +xC+Ta2XSggkg3xas7wCQodpI2uVizauX3ZVsRbkOQhucr4Na4Okp85R3YzVfu/FdhZX
-         B8+jDjlDNFh7uiTSd0yR7YICltjqu62yZ/DPXUDDwUG/K1kIf3yU3I/jT0LFcx3xQDgZ
-         iVcUC2mRVrzWU7stDF0QutnHOYrRJuuYE64aLW/wisfvuByaPmpoTLUNDhPSnMEZWFLG
-         n8IYIhT1wwoV/7TvvOQH9O6TXQj6F5xQt+OHnUNQ06M8LHTm9UsttMfkZwrT4BsyjtSc
-         iqkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=JtWCa/vxMOZhzXhtRsuYP1P9rUW4iKHdUbE1rBXcLto=;
-        b=MhIhuLznI8pSo8J2cxszl5sToAqp4nNvSCElY+7z8e819P5t8k8njJZcQEmlFbxC68
-         EVD5FfCdD9yTRcEH6AVwoqef9vSgdyCVZGphEO9s3lZUF5mS5j7TR284sItJe55J2z3g
-         Z6eUORV4UvIEn6KmvTiTnVi4Z0FRvXUt/d+FvsaWb3ez0WOad7Jh4xh2EmmJM8uq+dff
-         DK3kPZwfM/IZLBYRpV0dD4sqBxBCq2WOFbToTFU6CKw7XoBV3/1vNGaWBJNiuKnjKlnU
-         Y9zECFt0yNmxxJDeeQWFBJhA5uhWvuerK9Sk/Fk6aYt9kdZiIbqioFuiyiBJVrYkwfXT
-         fwyA==
-X-Gm-Message-State: ANhLgQ0IwimKq7ORnhLpyOg2MIxce1WBWvLM/AQuXKsHUd4hDHYKdUO4
-        XiOUYCHznsf9yTtdm+dTpPXra7L1DkQ=
-X-Google-Smtp-Source: ADFU+vsXXeTxirEDSSltSjmd6TkQnozaBNjQKPhhad6g8T0PteTYpgr+YTfZV+AJpf0BRrESNS97DQ==
-X-Received: by 2002:a63:6841:: with SMTP id d62mr3567949pgc.86.1583945123984;
-        Wed, 11 Mar 2020 09:45:23 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id x14sm1095852pfn.191.2020.03.11.09.45.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Mar 2020 09:45:23 -0700 (PDT)
-Subject: Re: [PATCH 5/7] ionic: Use scnprintf() for avoiding potential buffer
- overflow
-To:     Takashi Iwai <tiwai@suse.de>, netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, oss-drivers@netronome.com
-References: <20200311083745.17328-1-tiwai@suse.de>
- <20200311083745.17328-6-tiwai@suse.de>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <46dd9e87-d34c-9adc-62f0-55c1074d0835@pensando.io>
-Date:   Wed, 11 Mar 2020 09:45:22 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        id S1730237AbgCKQw0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 12:52:26 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:46259 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730175AbgCKQwZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 12:52:25 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1583945545; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=13ER7EC6tNsem5IUYhvbU5i7rUU+ucV6ONkTZXwQszY=;
+ b=bb8MHUqODHAdKnV3MLwXrFf9400G0ea9K66iLFUF9ZYn/pmv6sD9Xpi7Ck9XrVfaq/tZ0rmO
+ /Uk95jV24K8Y2hO+JRhTqnSzS8/wMQaxHp33rXMocMt00Ve9pRFCb5t2R1pBi6Bs7+2eZm5t
+ SW3bYRQP+7L8djn/vopjBLBj/88=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e69173f.7fa8321f8340-smtp-out-n02;
+ Wed, 11 Mar 2020 16:52:15 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 4AE34C433CB; Wed, 11 Mar 2020 16:52:15 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D0E1FC433CB;
+        Wed, 11 Mar 2020 16:52:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D0E1FC433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20200311083745.17328-6-tiwai@suse.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Subject: Re: [PATCH] ath5k: Add proper dependency for ATH5K_AHB
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200224182447.4054-1-krzk@kernel.org>
+References: <20200224182447.4054-1-krzk@kernel.org>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Jiri Slaby <jirislaby@gmail.com>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20200311165215.4AE34C433CB@smtp.codeaurora.org>
+Date:   Wed, 11 Mar 2020 16:52:15 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/11/20 1:37 AM, Takashi Iwai wrote:
-> Since snprintf() returns the would-be-output size instead of the
-> actual output size, the succeeding calls may go beyond the given
-> buffer limit.  Fix it by replacing with scnprintf().
->
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: oss-drivers@netronome.com
-> Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Krzysztof Kozlowski <krzk@kernel.org> wrote:
 
-For ionic:
-Acked-by: Shannon Nelson <snelson@pensando.io>
+> The CONFIG_ATH5K_AHB could be enabled on ATH25 system without enabling
+> ATH5K driver itself.  This does not make sense because CONFIG_ATH5K_AHB
+> controls object build within drivers/net/wireless/ath/ath5k/ so enabling
+> it without CONFIG_ATH5K brings nothing.
+> 
+> Add proper dependency to CONFIG_ATH5K_AHB.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
+Patch applied to ath-next branch of ath.git, thanks.
 
-> ---
->   drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c |  2 +-
->   drivers/net/ethernet/pensando/ionic/ionic_lif.c           | 12 ++++++------
->   2 files changed, 7 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c
-> index cc311989e3d7..7d518999250d 100644
-> --- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c
-> +++ b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000_pcie.c
-> @@ -616,7 +616,7 @@ static int enable_bars(struct nfp6000_pcie *nfp, u16 interface)
->   	if (bar->iomem) {
->   		int pf;
->   
-> -		msg += scnprintf(msg, end - msg,	"0.0: General/MSI-X SRAM, ");
-> +		msg += scnprintf(msg, end - msg, "0.0: General/MSI-X SRAM, ");
->   		atomic_inc(&bar->refcnt);
->   		bars_free--;
->   
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> index c2f5b691e0fa..09c776191edd 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-> @@ -948,18 +948,18 @@ static void ionic_lif_rx_mode(struct ionic_lif *lif, unsigned int rx_mode)
->   	int i;
->   #define REMAIN(__x) (sizeof(buf) - (__x))
->   
-> -	i = snprintf(buf, sizeof(buf), "rx_mode 0x%04x -> 0x%04x:",
-> +	i = scnprintf(buf, sizeof(buf), "rx_mode 0x%04x -> 0x%04x:",
->   		     lif->rx_mode, rx_mode);
->   	if (rx_mode & IONIC_RX_MODE_F_UNICAST)
-> -		i += snprintf(&buf[i], REMAIN(i), " RX_MODE_F_UNICAST");
-> +		i += scnprintf(&buf[i], REMAIN(i), " RX_MODE_F_UNICAST");
->   	if (rx_mode & IONIC_RX_MODE_F_MULTICAST)
-> -		i += snprintf(&buf[i], REMAIN(i), " RX_MODE_F_MULTICAST");
-> +		i += scnprintf(&buf[i], REMAIN(i), " RX_MODE_F_MULTICAST");
->   	if (rx_mode & IONIC_RX_MODE_F_BROADCAST)
-> -		i += snprintf(&buf[i], REMAIN(i), " RX_MODE_F_BROADCAST");
-> +		i += scnprintf(&buf[i], REMAIN(i), " RX_MODE_F_BROADCAST");
->   	if (rx_mode & IONIC_RX_MODE_F_PROMISC)
-> -		i += snprintf(&buf[i], REMAIN(i), " RX_MODE_F_PROMISC");
-> +		i += scnprintf(&buf[i], REMAIN(i), " RX_MODE_F_PROMISC");
->   	if (rx_mode & IONIC_RX_MODE_F_ALLMULTI)
-> -		i += snprintf(&buf[i], REMAIN(i), " RX_MODE_F_ALLMULTI");
-> +		i += scnprintf(&buf[i], REMAIN(i), " RX_MODE_F_ALLMULTI");
->   	netdev_dbg(lif->netdev, "lif%d %s\n", lif->index, buf);
->   
->   	err = ionic_adminq_post_wait(lif, &ctx);
+c98cdaef931c ath5k: Add proper dependency for ATH5K_AHB
 
+-- 
+https://patchwork.kernel.org/patch/11401313/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
