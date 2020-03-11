@@ -2,124 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 743C31816D4
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 12:28:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F14818171C
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 12:51:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729016AbgCKL2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 07:28:40 -0400
-Received: from mail-eopbgr40070.outbound.protection.outlook.com ([40.107.4.70]:53987
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726672AbgCKL2j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Mar 2020 07:28:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hfUPBQ3YDh0GHbex+430nhADcTjFlTucrpAqCfaw1CiaERLmTsJR2BwSOCQEdfioBMVh9VsYVeKUoGsrDy19LKJCyXwBaHTRQWqq7Vi1CtTW1NyzBiBPl5g9BFC0ZJrm1KmYT6pfKqvki0I8Bhr4IlLDAP3NrwebOo9ZP30SPmQz+CEnks1dSuaIldgncYOWPjSb5xEe4IaSSNXiDA7HC5FxxqPrJRudEWLjyzZ49D1PHztBFeyljBjMKw1r0VIvTI9WJRJxpZRhS+r91rsiazV2NIAkCmqNhL8LfIPcMSoqJiW762DB57iuQLVmNAp4GIlhvNkoRQA3hceqMqDSkQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1FDCgK9QntRL0SGWTjUNlfiKCR6JSZKdt+pMYACSGPQ=;
- b=AyyrIVhTyCfEukIoqtgpKMZu5seNin9etvAUfBsF5gzGW83FazLtP80HNg84IusfrXHVEn+QeNeo3Us24G356tQO914uAML2SkXryQb1hsathnDawATq7TfCq3cCLZbUig3n3N9iI0TWSUQiz21GsQyb9fomDGmGedopyYkx/F7WfDRGMZLvsTSXzWFBLtcIxxHc+klF7ayEEt6JniMe7okEdScml+Dn4496bY3MvAoM7ZvLYkXTBXv1xN1pOjF7Eu4nvpjy777H2BTuPbbMrGfRU35JuL+vdRACT7Iz9/f6QIRQLjO3p4hdpguvie1r9/TxO/Q9j8gofZgNmosmUg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1FDCgK9QntRL0SGWTjUNlfiKCR6JSZKdt+pMYACSGPQ=;
- b=J6Jl8guIvUo/2cXK8aNRskPBSf62bpGVhOrQbO/RAo7UWNl0wmGIP0vyXjKAIxkIy8WFLMX3TG8OHP2bDlU7epv7q0mI0kCB4/od8H/fl+A6lbeDs+ZYwbw2ubQe3bbJixb9n8ieDjAvu/3dhQj0Rzgh4fM6nXTgTwHlF7TFdNE=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=idosch@mellanox.com; 
-Received: from AM0PR05MB6754.eurprd05.prod.outlook.com (10.186.174.71) by
- AM0PR05MB4258.eurprd05.prod.outlook.com (52.134.125.14) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2793.17; Wed, 11 Mar 2020 11:28:36 +0000
-Received: from AM0PR05MB6754.eurprd05.prod.outlook.com
- ([fe80::6923:aafd:c994:bfa5]) by AM0PR05MB6754.eurprd05.prod.outlook.com
- ([fe80::6923:aafd:c994:bfa5%7]) with mapi id 15.20.2793.018; Wed, 11 Mar 2020
- 11:28:35 +0000
-Date:   Wed, 11 Mar 2020 13:28:33 +0200
-From:   Ido Schimmel <idosch@mellanox.com>
-To:     Neil Horman <nhorman@tuxdriver.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>, jiri@mellanox.com,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Nicolas Pitre <nico@fluxnic.net>, linux-kbuild@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: drop_monitor: use IS_REACHABLE() to guard
- net_dm_hw_report()
-Message-ID: <20200311112833.GA284417@splinter>
-References: <20200311062925.5163-1-masahiroy@kernel.org>
- <20200311093143.GB279080@splinter>
- <20200311104756.GA1972672@hmswarspite.think-freely.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200311104756.GA1972672@hmswarspite.think-freely.org>
-X-ClientProxiedBy: AM3PR05CA0140.eurprd05.prod.outlook.com
- (2603:10a6:207:3::18) To AM0PR05MB6754.eurprd05.prod.outlook.com
- (2603:10a6:20b:15a::7)
+        id S1729235AbgCKLvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 07:51:36 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:36114 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729016AbgCKLvg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 07:51:36 -0400
+Received: by mail-wr1-f65.google.com with SMTP id s5so2237359wrg.3
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 04:51:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=F9YqyxkpsJZqxm08epCGraQiOdpbKiUajj+F4VREnH0=;
+        b=d145IYBz4FxbCwYvbej+jvQ3tfnL1WDas1nB+gt9/SVMpSOdgrcOl/hTRDDwrvyqIb
+         jQOW1t9VWK1sDtuKDxT8WY4JPiKYEUnL8/ZW1KVLE0uSeTM7O7wpPhCQf62/VqsAOSji
+         1EWleqohld93k0BmJlQbywowIoa/vSssvqVGA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=F9YqyxkpsJZqxm08epCGraQiOdpbKiUajj+F4VREnH0=;
+        b=OTJ5IhqILZ26UYH8xP7PGJ5Klyxy4adme072/x1QMdRRD2w26Dypart6r5XKbd1/C1
+         HM9ufHwkf/QND7k/7Oya6qv2LIE6zL6p2z6ZaAUPNJn+I/rExiPaupBj/nED+crK09QV
+         vLvxqJSAj3gaZ0fXyNFzm8oQt3ghWps7oxP2a1UqKqmnVxOZLPIF6W0T3GOwK2IDbuUV
+         JExV/tk+opz+n5caZ2ashkaQfpMZ8s2wX+YpA10Iy2oNr6JaUTa7Lls7OpbhmBzZkb61
+         5WCnGFCWforTHFbV9PBTCgomr2Cvm1BCJYK40j/Tftrmne+l5XkiPTwS9zUwTYGxJG9A
+         46Rw==
+X-Gm-Message-State: ANhLgQ0SS8G+exj7hkKNOJUSbmxseOTe7keHz/FkhzhwnqJSdwYTQFG0
+        BBNJwdPZV1nK0GkEVndylhV2Bw==
+X-Google-Smtp-Source: ADFU+vs5OpDO1A9pI5Vah3xDK5puctyg29o2llanncn4GpklrkFlvpOjILPdWbbYnwgqbo1eShv1Lg==
+X-Received: by 2002:adf:ed06:: with SMTP id a6mr4135797wro.346.1583927494211;
+        Wed, 11 Mar 2020 04:51:34 -0700 (PDT)
+Received: from cloudflare.com ([176.221.114.230])
+        by smtp.gmail.com with ESMTPSA id t193sm8429892wmt.14.2020.03.11.04.51.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Mar 2020 04:51:33 -0700 (PDT)
+References: <20200206111652.694507-1-jakub@cloudflare.com> <5e3c6c7f8730e_22ad2af2cbd0a5b4a4@john-XPS-13-9370.notmuch> <87zhdun0ay.fsf@cloudflare.com> <5e67c3e83fb25_1e8a2b0e88e0a5bc84@john-XPS-13-9370.notmuch>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com
+Subject: Re: [PATCH bpf 0/3] Fix locking order and synchronization on sockmap/sockhash tear-down
+In-reply-to: <5e67c3e83fb25_1e8a2b0e88e0a5bc84@john-XPS-13-9370.notmuch>
+Date:   Wed, 11 Mar 2020 12:51:32 +0100
+Message-ID: <87zhcnxg6z.fsf@cloudflare.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost (193.47.165.251) by AM3PR05CA0140.eurprd05.prod.outlook.com (2603:10a6:207:3::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.17 via Frontend Transport; Wed, 11 Mar 2020 11:28:35 +0000
-X-Originating-IP: [193.47.165.251]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 6dd838ad-a7ea-446f-e6c4-08d7c5af565f
-X-MS-TrafficTypeDiagnostic: AM0PR05MB4258:|AM0PR05MB4258:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR05MB4258BF77C91A5A2119F6E810BFFC0@AM0PR05MB4258.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-Forefront-PRVS: 0339F89554
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(7916004)(4636009)(366004)(346002)(39860400002)(396003)(376002)(136003)(199004)(86362001)(186003)(478600001)(33656002)(54906003)(2906002)(8676002)(8936002)(26005)(81156014)(16526019)(956004)(81166006)(6916009)(66476007)(52116002)(66946007)(33716001)(316002)(5660300002)(66556008)(1076003)(6486002)(6496006)(9686003)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4258;H:AM0PR05MB6754.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vaueLhaj1plfy+nMW5Gp7MkOdRFME94v7D48RYsF7QD7Ilgzr7gdnKuaCeVOi6XOhZRYif2qUXxMiyYzcipFeHYD7hFqI8bsvlHAQzYgZDAQZmpv4VmHLGEBUGadw4Q9a/mVKd/9D6ozyFVtVmoVLFHkxUGDQAv7ffTD0SzYi2Ily5VM+8iY3KqqIlyE/vLYRiOQQfX02/cyONxMt1w4oXRVXH10Yz1bDa3Smoo6ho7Gh7jT1uJbk+6cKQ0Jo+E4aqf3PzKma4HMTDIFEyFT8Lq69noaYBQgoQbVWV6ikez4bAagD7seYmRFxM7aezaQzPv1c+Lo0Tu5ZMfwfnO/ZenaozaZ5kBTfz0Iy5cVIPIqNp/AU+StTFN98VV89V/FbXPFeTOeQYDmUE6qRTzvmMkmLSQK5ntdqco0FBTFIoOKVmi9g0oMECSK5NFOAVRV
-X-MS-Exchange-AntiSpam-MessageData: c9Kqqo4I9tr1EXUaDaZak2baA8ol2rIRP5DMykQFFtD1wAxxM1FLZW8mtqYxY/MM710CD4f+e96qBTtWmdcvFismNIM6RqlE7yn1wP7+f6v+gOG2hAr9Gm64mvFF2mJV3ngPR23NZivMT13J0xDjnA==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6dd838ad-a7ea-446f-e6c4-08d7c5af565f
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2020 11:28:35.7927
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KobMHe5wkS4FS2umfT1FTH1r82EvGJ8OdHgtXQZ4Zv7U6wn8wxWMGfbx/bDQQ2wmGAPDwP1G+1cEnYBQN8oCjg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4258
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 06:47:56AM -0400, Neil Horman wrote:
-> On Wed, Mar 11, 2020 at 11:31:43AM +0200, Ido Schimmel wrote:
-> > On Wed, Mar 11, 2020 at 03:29:25PM +0900, Masahiro Yamada wrote:
-> > > In net/Kconfig, NET_DEVLINK implies NET_DROP_MONITOR.
-> > > 
-> > > The original behavior of the 'imply' keyword prevents NET_DROP_MONITOR
-> > > from being 'm' when NET_DEVLINK=y.
-> > > 
-> > > With the planned Kconfig change that relaxes the 'imply', the
-> > > combination of NET_DEVLINK=y and NET_DROP_MONITOR=m would be allowed.
-> > > 
-> > > Use IS_REACHABLE() to avoid the vmlinux link error for this case.
-> > > 
-> > > Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> > > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > 
-> > Thanks, Masahiro.
-> > 
-> > Neil, Jiri, another option (long term) is to add a raw tracepoint (not
-> > part of ABI) in devlink and have drop monitor register its probe on it
-> > when monitoring.
-> > 
-> > Two advantages:
-> > 1. Consistent with what drop monitor is already doing with kfree_skb()
-> > tracepoint
-> > 2. We can remove 'imply NET_DROP_MONITOR' altogether
-> > 
-> > What do you think?
-> > 
-> Agreed, I think I like this implementation better.
+On Tue, Mar 10, 2020 at 05:44 PM CET, John Fastabend wrote:
+> Jakub Sitnicki wrote:
+>> On Thu, Feb 06, 2020 at 08:43 PM CET, John Fastabend wrote:
+>> > Jakub Sitnicki wrote:
+>> >> Couple of fixes that came from recent discussion [0] on commit
+>> >> 7e81a3530206 ("bpf: Sockmap, ensure sock lock held during tear down").
+>> >>
+>> >> This series doesn't address the sleeping while holding a spinlock
+>> >> problem. We're still trying to decide how to fix that [1].
+>> >>
+>> >> Until then sockmap users might see the following warnings:
+>> >>
+>> >> | BUG: sleeping function called from invalid context at net/core/sock.c:2935
+>>
+>
+> [...]
+>
+>> Hey John,
+>
+> Patch sent.
 
-OK, but I don't want to block Masahiro. I think we can go with his patch
-and then I'll add the raw tracepoint in the next release.
+Thanks!
+
+>
+>>
+>> > Untested at the moment, but this should also be fine per your suggestion
+>> > (if I read it correctly).  The reason we have stab->lock and bucket->locks
+>> > here is to handle checking EEXIST in update/delete cases. We need to
+>> > be careful that when an update happens and we check for EEXIST that the
+>> > socket is added/removed during this check. So both map_update_common and
+>> > sock_map_delete need to guard from being run together potentially deleting
+>> > an entry we are checking, etc.
+>>
+>> Okay, thanks for explanation. IOW, we're serializing map writers.
+>>
+>> > But by the time we get here we just did a synchronize_rcu() in the
+>> > line above so no updates/deletes should be in flight. So it seems safe
+>> > to drop these locks because of the condition no updates in flight.
+>>
+>> This part is not clear to me. I might be missing something.
+>>
+>> Here's my thinking - for any map writes (update/delete) to start,
+>> map->refcnt needs to be > 0, and the ref is not dropped until the write
+>> operation has finished.
+>>
+>> Map FDs hold a ref to map until the FD gets released. And BPF progs hold
+>> refs to maps until the prog gets unloaded.
+>>
+>> This would mean that map_free will get scheduled from __bpf_map_put only
+>> when no one is holding a map ref, and could start a write that would be
+>> happening concurrently with sock_{map,hash}_free:
+>
+> Sorry bringing back this old thread I'm not sure I followed the couple
+> paragraphs here. Is this with regards to the lock or the rcu? II didn't
+> want to just drop this thanks.
+>
+> We can't have new updates/lookups/deletes happening while we are free'ing
+> a map that would cause all sorts of problems, use after free's, etc.
+
+Happy to pick up the discussion back up.
+
+Sorry for the delay in my reply. I wanted to take another hard look at
+the code and make sure I'm not getting ahead of myself here.
+
+Let me back up a little and try to organize the access paths to sockmap
+we have, and when they happen in relation to sock_map_free.
+
+A) Access via bpf_map_ops
+
+When bpf_map, and its backing object - bpf_stab, is accessed via map ops
+(map_update_elem, map_delete_elem, map_lookup_elem), either (i) a
+process has an FD for the map, or (ii) a loaded BPF prog holds a map
+reference. Also, we always grab a map ref when creating an FD for it.
+
+This means that map->refcnt is > 0 while a call to one of the map_ops is
+in progress.
+
+Hence, bpf_map_free_deferred -> sock_map_free won't get called during
+these operations. This fact allowed us to get rid of locking the stab in
+sock_map_free.
+
+B) Access via bpf_{sk|msg}_redirect_map
+
+Similar to previous case. BPF prog invoking these helpers must hold a
+map reference, so we know that map->refcnt is > 0, and sock_map_free
+can't be in progress the same time.
+
+C) Access via sk_psock_link
+
+sk_psock_link has a pointer to bpf_map (link->map) and to an entry in
+stab->sks (link->link_raw), but doesn't hold a ref to the map.
+
+We need to ensure bpf_stab doesn't go away, while tcp_bpf_remove ->
+sk_psock_unlink -> sock_{map|hash}_delete_from_link call chain is in
+progress.
+
+That explains why in sock_map_free, after walking the map and destroying
+all links, we wait for the RCU grace period to end with a call to
+synchronize_rcu before freeing the map:
+
+	/* wait for psock readers accessing its map link */
+	synchronize_rcu();
+
+	bpf_map_area_free(stab->sks);
+	kfree(stab);
+
+
+What is tripping me up, however, is that we also have another call to
+synchronize_rcu before walking the map:
+
+	/* After the sync no updates or deletes will be in-flight so it
+	 * is safe to walk map and remove entries without risking a race
+	 * in EEXIST update case.
+	 */
+	synchronize_rcu(); // <-- Is it needed?
+	for (i = 0; i < stab->map.max_entries; i++) {
+		// ...
+	}
+
+	/* wait for psock readers accessing its map link */
+	synchronize_rcu();
+
+
+I'm not grasping what purpose the 1st synchronize_rcu call serves.
+
+New readers can start accessing the map after the 1st synchronize_rcu,
+and this seems fine since the map will not be freed until after the 2nd
+synchronize_rcu call.
+
+
+Okay, so we can have deletes in-flight, which the explanatory comment
+for the 1st synchronize_rcu mentions. What about updates in-flight?
+
+I don't think they can happen with (A) being the only case I know of
+when we update the map.
+
+Sorry this was a bit long. So the question is what am I missing?
+Can updates happen despite no refs to the map being held?
+
+Thanks,
+-jkbs
+
+>
+>>
+>> /* decrement map refcnt and schedule it for freeing via workqueue
+>>  * (unrelying map implementation ops->map_free() might sleep)
+>>  */
+>> static void __bpf_map_put(struct bpf_map *map, bool do_idr_lock)
+>> {
+>> 	if (atomic64_dec_and_test(&map->refcnt)) {
+>> 		/* bpf_map_free_id() must be called first */
+>> 		bpf_map_free_id(map, do_idr_lock);
+>> 		btf_put(map->btf);
+>> 		INIT_WORK(&map->work, bpf_map_free_deferred);
+>> 		schedule_work(&map->work);
+>> 	}
+>> }
+>>
+>> > So with patch below we keep the sync rcu but that is fine IMO these
+>> > map free's are rare. Take a look and make sure it seems sane to you
+>> > as well.
+>>
+>> I can't vouch for the need to keep synchronize_rcu here because I don't
+>> understand that part, but otherwise the change LGTM.
+>>
+>> -jkbs
+>>
+>
+> [...]
