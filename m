@@ -2,110 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75AD018234F
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 21:32:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57C1018235B
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 21:38:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729180AbgCKUc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 16:32:56 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:59360 "EHLO
+        id S1729093AbgCKUi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 16:38:29 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:59420 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725834AbgCKUcz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 16:32:55 -0400
+        with ESMTP id S1726684AbgCKUi3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 16:38:29 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=filNL41M+8g9UDlvxvVFpr8uUIgTsbcC+lpBeiHu+tE=; b=JF1RwxipL5nAiAvy+I24l3ouO
-        wNrp5aktsNXJqVIUvMQH1wG4wFsM6H9cEUR+CJR3FJ1J1I01y6a2/earo/qoGheMYGlOPWJulZ3Nq
-        BnVFHKFnJ82eONVBsyiZN3hTSTYya//NmxqNcNTVG+PpV+iJ7D03Y7whupiXBLv1C1936+tBm8ZRr
-        C2E1j+NgFtKhVJNRDJBMfVi6p+CM/juuU5/byFIJtPYX/7qJuZHk8H0UWWz1HV9Yz7xE9Wxgri70w
-        H65W5Z4aeeAfjOcr+//vL6D9l9ZsR8njKlDP3CINMhHucoH+3g/QPj57c6XpYOhfAe4YjJA23LSUL
-        w2tAKkn/Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35138)
+         bh=3hYQEX/tomyIOsSexIuldCUpSADhNxZ8eQYnaEcFn18=; b=IfAh+L8ZczZRtFfoWmsl9z/ye
+        XcfBseejrsr3l1sZrmLXzEBAfftLamurehbQuN625BX+V+gsTLyAK2pcZbI+BkVMsr0tzka7O0ClM
+        kfg60MDbLmQQpQu1gtlJPVWK6xGkExmPKhH23r1GblU6JZL+oImiRRDzmmZBhdM72jIPF7nUzuf6f
+        37UhPl9ek5oMESkdqvvCiawQCtNIXjP4+9M6nBveQ4MWzS6KedxOzb73EIqlHhUUKJudj49csc/Y6
+        VXBhVIdgylGq/uei+lT3PJ6dp5U0QM+A5GQUqP29qoLaT65VkEy1/QSkCDF7kNKeNbkU4mU1BvbNr
+        CkD7H8ZOA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35140)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1jC823-0005Nu-QR; Wed, 11 Mar 2020 20:32:47 +0000
+        id 1jC87P-0005PG-LZ; Wed, 11 Mar 2020 20:38:24 +0000
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jC821-0005cW-La; Wed, 11 Mar 2020 20:32:45 +0000
-Date:   Wed, 11 Mar 2020 20:32:45 +0000
+        id 1jC87O-0005ce-3f; Wed, 11 Mar 2020 20:38:18 +0000
+Date:   Wed, 11 Mar 2020 20:38:18 +0000
 From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+To:     peter@bikeshed.quignogs.org.uk
+Cc:     linux-doc@vger.kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 4/5] net: phylink: pcs: add 802.3 clause 22
- helpers
-Message-ID: <20200311203245.GS25745@shell.armlinux.org.uk>
-References: <20200311120643.GN25745@shell.armlinux.org.uk>
- <E1jC099-0001cZ-U2@rmk-PC.armlinux.org.uk>
- <CA+h21ho9eWTCJp2+hD0id_e3mfVXw_KRJziACJQMDXxmCnE5xA@mail.gmail.com>
- <20200311170918.GQ25745@shell.armlinux.org.uk>
- <CA+h21hooqWCqPT2gWtjx2hadXga9e4fAjf4xwavvzyzmdqGNfg@mail.gmail.com>
- <20200311193223.GR25745@shell.armlinux.org.uk>
- <CA+h21hqnQd=SdQXiNVW5UPuZug8zcM64DUMRvjojZVgMs-tmBQ@mail.gmail.com>
+        Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] Reformat return value descriptions as ReST lists.
+Message-ID: <20200311203817.GT25745@shell.armlinux.org.uk>
+References: <20200311192823.16213-1-peter@bikeshed.quignogs.org.uk>
+ <20200311192823.16213-2-peter@bikeshed.quignogs.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+h21hqnQd=SdQXiNVW5UPuZug8zcM64DUMRvjojZVgMs-tmBQ@mail.gmail.com>
+In-Reply-To: <20200311192823.16213-2-peter@bikeshed.quignogs.org.uk>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 09:59:18PM +0200, Vladimir Oltean wrote:
-> On Wed, 11 Mar 2020 at 21:32, Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> > So, why abuse some other subsystem's datastructure for something that
-> > is entirely separate, potentially making the maintanence of that
-> > subsystem more difficult for the maintainers?  I don't get why one
-> > would think this is an acceptable approach.
-> >
-> > What you've said is that you want to use struct phy_device, but you
-> > don't want to publish it into the device model, you don't want to
-> > use mdio accesses, you don't want to use phylib helpers.  So, what's
-> > the point of using struct phy_device?  I don't see _any_ reason to
-> > do that and make things unnecessarily more difficult for the phylib
-> > maintainers.
-> >
+On Wed, Mar 11, 2020 at 07:28:23PM +0000, peter@bikeshed.quignogs.org.uk wrote:
+> From: Peter Lister <peter@bikeshed.quignogs.org.uk>
 > 
-> So if it's such a big mistake...
+> Added line breaks and blank lines to separate list items and escaped end-of-line
+> colons.
 > 
-> > > > Sorry, but you need to explain better what you would like to see here.
-> > > > The additions I'm adding are to the SGMII specification; I find your
-> > > > existing definitions to be obscure because they conflate two different
-> > > > bit fields together to produce something for the ethtool linkmodes
-> > > > (which I think is a big mistake.)
-> > >
-> > > I'm saying that there were already LPA_SGMII definitions in there.
-> > > There are 2 "generic" solutions proposed now and yet they cannot agree
-> > > on config_reg definitions. Omitting the fact that you did have a
-> > > chance to point out that big mistake before it got merged, I'm
-> > > wondering why you didn't remove them and add your new ones instead.
-> > > The code rework is minimal. Is it because the definitions are in UAPI?
-> > > If so, isn't it an even bigger mistake to put more stuff in UAPI? Why
-> > > would user space care about the SGMII config_reg? There's no user even
-> > > of the previous SGMII definitions as far as I can tell.
-> >
-> > I don't see it as a big deal - certainly not the kind of fuss you're
-> > making over it.
-> >
+> This removes these warnings from doc build...
 > 
-> ...why keep it?
-> I'm all for creating a common interface for configuring this. It just
-> makes me wonder how common it is going to be, if there's already a
-> driver in-tree, from the same PCS hardware vendor, which after the
-> patchset you're proposing is still going to use a different
-> infrastructure.
+> ./drivers/net/phy/sfp-bus.c:579: WARNING: Unexpected indentation.
+> ./drivers/net/phy/sfp-bus.c:619: WARNING: Unexpected indentation.
+> 
+> Signed-off-by: Peter Lister <peter@bikeshed.quignogs.org.uk>
+> ---
+>  drivers/net/phy/sfp-bus.c | 16 ++++++++++++++--
+>  1 file changed, 14 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+> index d949ea7b4f8c..df1c66df830f 100644
+> --- a/drivers/net/phy/sfp-bus.c
+> +++ b/drivers/net/phy/sfp-bus.c
+> @@ -572,12 +572,18 @@ static void sfp_upstream_clear(struct sfp_bus *bus)
+>   * the sfp_bus structure, incrementing its reference count.  This must
+>   * be put via sfp_bus_put() when done.
+>   *
+> - * Returns: on success, a pointer to the sfp_bus structure,
+> + * Returns\:
+> + *
+> + *          on success, a pointer to the sfp_bus structure,
+>   *	    %NULL if no SFP is specified,
+> + *
+>   * 	    on failure, an error pointer value:
+> + *
+>   * 		corresponding to the errors detailed for
+>   * 		fwnode_property_get_reference_args().
+> + *
+>   * 	        %-ENOMEM if we failed to allocate the bus.
+> + *
+>   *		an error from the upstream's connect_phy() method.
 
-Do you see any reason why felix_vsc9959 couldn't make use of the code
-I'm proposing?
+Is this really necessary?  This seems to be rather OTT, and makes the
+comment way too big IMHO.
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
