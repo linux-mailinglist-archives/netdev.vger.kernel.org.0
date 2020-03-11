@@ -2,165 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 407041823A4
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 22:01:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2F3F1823A6
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 22:03:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729232AbgCKVBv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 17:01:51 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:34719 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726672AbgCKVBu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 17:01:50 -0400
-Received: by mail-qk1-f196.google.com with SMTP id f3so3597308qkh.1;
-        Wed, 11 Mar 2020 14:01:50 -0700 (PDT)
+        id S1729302AbgCKVDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 17:03:01 -0400
+Received: from mail-qv1-f68.google.com ([209.85.219.68]:43843 "EHLO
+        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726672AbgCKVDB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 17:03:01 -0400
+Received: by mail-qv1-f68.google.com with SMTP id c28so1572857qvb.10;
+        Wed, 11 Mar 2020 14:02:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lnRB7SIfRHvZE+4Ks0PAluwnDpGBF1Z7OiZTfn5ojcQ=;
-        b=ElMXR6l+g+4NQFfUygU3d/SecgrAXGECxyMSfN4axVwgoVXcVCuvxHQkI2R/2CoT5P
-         HKNHSXF4JSDENpc3YebPHPBGnMI0at+78Cbkijf7ElE/4hro4AFECqq4YYkPBFkc3VVy
-         U+0pmmaCMAkoRC6VVJJmV0wGMEvxXriag54h+ggnMzfeKD5WemsqkyaB68ByjOtQ2A0K
-         /Ive9pLQyN/8BCOBCRYzkDZKpFT7gASfoOSaRer3ogKWJj+b98Rn19iXLuR2/HLwmOuP
-         MISaTJMIcyBPkrSxLawWq6WX40k0lHDKSoP08yxxhJ9QdUivkEKtU3DynLfU16xifGFY
-         hicw==
+        bh=t/D1HizcxL3d98BRAkRQRNugcsYRa+ck1qR5swC+n6o=;
+        b=mxV6LXTw8GKgMbagZSV6wHQkalDWq3qSeuObUUCUtyb3AMY5VzOsr4OmkLbEY+4MKb
+         EzhVeuyZ6/WtVD+1UO84IvdjTdZxEcUlGhX/mcYaEUmVswzGQfHDHFhwL7ZqTf/7JV+n
+         1wS+cefmaa9t/fXB47tlblU09opLP1toyWeHViMOiuqZnovCTQJTTq6/1uWUb2DNsaQu
+         /JWDCxuecYM9PKfv8pVJveaCRwf/zF7XDESFfFSSikZxLZWndy7Uawps2/pvjWWHVBM6
+         F+7Xy8CVPJCg0jZI57ekH/mssM0zhy28jfMSw3pdTMrK/sbqVzeSrMc84D5DmtAHrzRR
+         kA3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lnRB7SIfRHvZE+4Ks0PAluwnDpGBF1Z7OiZTfn5ojcQ=;
-        b=Gcp+nN2K15DIBE2iRDRx31EIBzNQT1ELwAeNpjoBBdaPgID4nK6gNub6051MDpJjM9
-         ooVox7lOftHIVo593KpHxqWxSbZXdWyBn7mwi2lBxjoSDgN8FgnB3ufbryrGymegdKGZ
-         FJ5VzlgDgYJT8a5zg4cWUpZxSFLmoLGEGYaujoIiLQim71lIlW7QSyldDCKdqtF3ohju
-         2Wy8zOOCVyiB+M+9oRFm5P/m8YHhs3CSC8TmIKz12iL+tpXFX8hpNi3bVI+uvJem7Jl+
-         V1gv81/iHPzvufDkps1pLrNUgfh61lxgixOlmRD5ywEeK6G1WzWdTvEKjLlIobqjSmWV
-         pMGA==
-X-Gm-Message-State: ANhLgQ1+OYIJLE8lMt9GcjGrGZZ80jiTzX+cWxbYE9/HI9xa4eCVWh1G
-        nIxxmsAFJW+RDclvwilDe4mKU/duc7twweR3w20NOJHd
-X-Google-Smtp-Source: ADFU+vu/ThZrgH2H21ey1eveM15qmrff8AUBaMGynMK0V3qv5hm3rKfLrpYcbQF5koz5/y42hAf/2bzBwj9ETG53UDM=
-X-Received: by 2002:a37:e40d:: with SMTP id y13mr4653608qkf.39.1583960509614;
- Wed, 11 Mar 2020 14:01:49 -0700 (PDT)
+        bh=t/D1HizcxL3d98BRAkRQRNugcsYRa+ck1qR5swC+n6o=;
+        b=ttCFzamfHjNOcByJKpSmyRsHgaCTddozsq3VRh+E2YahP1ACeNF/LwyD8K5fMLtZeF
+         XZTPw3BU5mBN8h8hsdWzHPKpc7eEITmBotU/XIgaIFGSBH+J7PA17biJe+hntazU49s1
+         risyZ5zRsc3Uc4/kgnyM4L4NFlYtqI7TgaW4GM00bQwgFtqgjaithc6mf8XRVJqZMHnC
+         dhmtyojYEmBIHLd+gJmvQ8sg5zTvzzvGdB1ofBaH3AVg5r9CzhKMP9pTfVHqgr8pjZuK
+         +DqCAsxBhLwxOtIMETH1vZXNzvp3KTENqUUKpjhK5JfMDDV5ywrjKWYk/Y1Pl+ypp5E9
+         N1YA==
+X-Gm-Message-State: ANhLgQ3pYjLPHDqgjkG4Q1XY6glTzGzjkyzA7vfIk+QKhGbPlFXgWHcJ
+        IpMVp6B+Z+uDoJRUrap0D4xL5RAqB12N6SqipwNKdzoPOt8=
+X-Google-Smtp-Source: ADFU+vuDpbFyNsoec8MklDj/XpXxaRPeruP7GgHcDdXdEgw9Q20qcK+1dG3MG3tWd9FD7nuW4D1wVnWudCQP0Gqa/W8=
+X-Received: by 2002:a05:6214:11af:: with SMTP id u15mr4464442qvv.247.1583960578921;
+ Wed, 11 Mar 2020 14:02:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200311191513.3954203-1-andriin@fb.com> <20200311204106.GA2125642@mini-arch.hsd1.ca.comcast.net>
-In-Reply-To: <20200311204106.GA2125642@mini-arch.hsd1.ca.comcast.net>
+References: <20200127125534.137492-1-jakub@cloudflare.com> <20200127125534.137492-13-jakub@cloudflare.com>
+ <CAEf4Bzadh2T43bYbLO0EuKceUKr3SkfXK8Tj_fXFNj8BWtot1Q@mail.gmail.com> <87sgiey8mc.fsf@cloudflare.com>
+In-Reply-To: <87sgiey8mc.fsf@cloudflare.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 11 Mar 2020 14:01:38 -0700
-Message-ID: <CAEf4BzZpL83aAhDWTyNoXtJp5W8S4Q_=+2_0UNeY=eb14hS8aQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: make tcp_rtt test more robust to failures
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        Kernel Team <kernel-team@fb.com>
+Date:   Wed, 11 Mar 2020 14:02:47 -0700
+Message-ID: <CAEf4BzbSrnwq7ZC1j5YrqdJGO9bhgw=gpBmuTNP1UQFnDKABgA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 12/12] selftests/bpf: Tests for SOCKMAP
+ holding listening sockets
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        kernel-team@cloudflare.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 1:41 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+On Wed, Mar 11, 2020 at 12:49 PM Jakub Sitnicki <jakub@cloudflare.com> wrote:
 >
-> On 03/11, Andrii Nakryiko wrote:
-> > Switch to non-blocking accept and wait for server thread to exit before
-> > proceeding. I noticed that sometimes tcp_rtt server thread failure would
-> > "spill over" into other tests (that would run after tcp_rtt), probably just
-> > because server thread exits much later and tcp_rtt doesn't wait for it.
+> On Wed, Mar 11, 2020 at 07:48 PM CET, Andrii Nakryiko wrote:
+> > On Mon, Jan 27, 2020 at 4:58 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+> >>
+> >> Now that SOCKMAP can store listening sockets, user-space and BPF API is
+> >> open to a new set of potential pitfalls. Exercise the map operations (with
+> >> extra attention to code paths susceptible to races between map ops and
+> >> socket cloning), and BPF helpers that work with SOCKMAP to gain confidence
+> >> that all works as expected.
+> >>
+> >> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+> >> ---
+> >>  .../selftests/bpf/prog_tests/sockmap_listen.c | 1455 +++++++++++++++++
+> >>  .../selftests/bpf/progs/test_sockmap_listen.c |   77 +
+> >>  2 files changed, 1532 insertions(+)
+> >>  create mode 100644 tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
+> >>  create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_listen.c
+> >>
 > >
-> > Fixes: 8a03222f508b ("selftests/bpf: test_progs: fix client/server race in tcp_rtt")
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  .../selftests/bpf/prog_tests/tcp_rtt.c        | 30 +++++++++++--------
-> >  1 file changed, 18 insertions(+), 12 deletions(-)
+> > Hey Jakub!
 > >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
-> > index f4cd60d6fba2..d235eea0de27 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
-> > @@ -188,7 +188,7 @@ static int start_server(void)
-> >       };
-> >       int fd;
+> > I'm frequently getting spurious failures for sockmap_listen selftest.
+> > We also see that in libbpf's Github CI testing as well. Do you mind
+> > taking a look? Usually it's the following kinds of error:
 > >
-> > -     fd = socket(AF_INET, SOCK_STREAM, 0);
-> > +     fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
-> >       if (fd < 0) {
-> >               log_err("Failed to create server socket");
-> >               return -1;
-> > @@ -205,6 +205,7 @@ static int start_server(void)
-> >
-> >  static pthread_mutex_t server_started_mtx = PTHREAD_MUTEX_INITIALIZER;
-> >  static pthread_cond_t server_started = PTHREAD_COND_INITIALIZER;
-> > +static volatile bool server_done = false;
-> >
-> >  static void *server_thread(void *arg)
-> >  {
-> > @@ -222,23 +223,22 @@ static void *server_thread(void *arg)
-> >
-> >       if (CHECK_FAIL(err < 0)) {
-> >               perror("Failed to listed on socket");
-> > -             return NULL;
-> > +             return ERR_PTR(err);
-> >       }
-> >
-> > -     client_fd = accept(fd, (struct sockaddr *)&addr, &len);
-> > +     while (!server_done) {
-> > +             client_fd = accept(fd, (struct sockaddr *)&addr, &len);
-> > +             if (client_fd == -1 && errno == EAGAIN)
-> > +                     continue;
-> > +             break;
-> > +     }
-> >       if (CHECK_FAIL(client_fd < 0)) {
-> >               perror("Failed to accept client");
-> > -             return NULL;
-> > +             return ERR_PTR(err);
-> >       }
-> >
-> > -     /* Wait for the next connection (that never arrives)
-> > -      * to keep this thread alive to prevent calling
-> > -      * close() on client_fd.
-> > -      */
-> > -     if (CHECK_FAIL(accept(fd, (struct sockaddr *)&addr, &len) >= 0)) {
-> > -             perror("Unexpected success in second accept");
-> > -             return NULL;
-> > -     }
-> > +     while (!server_done)
-> > +             usleep(50);
-> >
-> >       close(client_fd);
-> >
-> > @@ -249,6 +249,7 @@ void test_tcp_rtt(void)
-> >  {
-> >       int server_fd, cgroup_fd;
-> >       pthread_t tid;
-> > +     void *server_res;
-> >
-> >       cgroup_fd = test__join_cgroup("/tcp_rtt");
-> >       if (CHECK_FAIL(cgroup_fd < 0))
-> > @@ -267,6 +268,11 @@ void test_tcp_rtt(void)
-> >       pthread_mutex_unlock(&server_started_mtx);
-> >
-> >       CHECK_FAIL(run_test(cgroup_fd, server_fd));
-> > +
-> > +     server_done = true;
+> > ./test_progs:connect_accept_thread:733: accept: Resource temporarily unavailable
+> > connect_accept_thread:FAIL:733
 >
-> [..]
-> > +     pthread_join(tid, &server_res);
-> > +     CHECK_FAIL(IS_ERR(server_res));
+> Hey Andrii,
 >
-> I wonder if we add (move) close(server_fd) before pthread_join(), can we
-> fix this issue without using non-blocking socket? The accept() should
-> return as soon as server_fd is closed so it's essentially your
-> 'server_done'.
+> Sorry about that. Will investigate why this is happening.
+>
+> Can't say I've seen those. Any additional details about the test
+> enviroment would be helpful. Like the kernel build config and qemu
+> params (e.g. 1 vCPU vs more).
 
-That was my first attempt. Amazingly, closing listening socket FD
-doesn't unblock accept()...
+It happens quite regularly for me, once every few runs locally. You
+can take a kernel config we use for Travis CI at [0].
+
+  [0] https://github.com/libbpf/libbpf/blob/master/travis-ci/vmtest/configs/latest.config
 
 >
-> > +
-> >  close_server_fd:
-> >       close(server_fd);
-> >  close_cgroup_fd:
-> > --
-> > 2.17.1
-> >
+> I've taken a quick look at Github CI [0] to see if I can find a sample
+> failure report and fish out the kernel config & VM setup from the test
+> job spec, but didn't succeed. Will dig more later, unless you have a
+> link handy?
+
+We are blacklisting sockmap_listen test right now, so you won't find
+anything recent on Travis.
+
+>
+> Thanks,
+> -jkbs
+>
+> [0] https://travis-ci.org/github/libbpf/libbpf
