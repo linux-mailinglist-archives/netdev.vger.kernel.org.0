@@ -2,66 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7858181900
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 14:01:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FAB2181945
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 14:10:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729506AbgCKNB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 09:01:27 -0400
-Received: from sonic313-20.consmr.mail.ir2.yahoo.com ([77.238.179.187]:45086
-        "EHLO sonic313-20.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729358AbgCKNB1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 09:01:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1583931684; bh=fS/zxrHouko99SjSRCxizGsNzMnjKizx90/Fj98ATts=; h=Date:From:Reply-To:Subject:References:From:Subject; b=jWakx0tUO/jgyRyso8D/IYMlzN1/YGvKASbhcje9V+Qi1eElpMbmpOzfThB0HbOHjbBqsqKNTcF+uSkVK3XaUaNi5el3m4yUnrlKCMkHrte08oEFRSR9rAxesV/Gqy3liJTHRfAP/elbfR/Sayc9WyBgnnDbosh+A2qWbhPhspwxk7hFJQpFNBsuMjaWhd7JPMCN4T5s/r5VVxeeU6VBIc03fesrItwJ9JPHEcRBA+NBmbghtOmZAu1kBpBmg1+lNMyXk+YCW8Zp6mv0CB3RbaYvBtae7VLro3sO59333+gyTBTZZEqXDc/jPvyO0nTbpQ2jeeZHRUMFrDuqVdEgjw==
-X-YMail-OSG: OoSwBE0VM1neE4MoZGFdkOu7a_T6h9yYYTprAglEPoPjaqJeYzN0cH5nCK255fZ
- baqsxDBIrlHT64zjrxXIH3KZOuU7EKAz1wNmOEHTeyegsiH6ugENU1SKSA0P7gVwxx037oHTlkKD
- VOOFvOJ.TfWAcD87ORlqAbiqNpQvJd1Qbo9GA0kAU_IJASSZXZuyZ5XHAImghOKuPSXECHrMPc1t
- CJDjrqyUyYwXNg6ZVXMPaUf23OCvbhw211gdDVwB0SQRdSr0.ZVVRsxVqArEojEySqlxeJd3WbBr
- qkbmTIyL1tEVfkU4Lk3bCkCd6kB5mMD2C6r3IHKdj5.xnZWgVCDapoDMv52KWtjxPpIEpcWU6rHQ
- mhGQwqIMrE0jR3vtvDj9JaoWo9bBdcEIkl_nQ0VPgzhBRbjcmx4uKL9PHdcNs51cvRGlGXX7Y1Xn
- .lvrPYYVnr6XTzeBI9L8VO_DaA9nB9j88tvOGaaGF1sI2121A8L.sgrFdpUhW99pEGaP5DXDp5Le
- 9LKq1PmS.yi_t8PyI4mOPN2zzyhO5eHw0asntBhIsVn069MFbrx2GZzCVXIYGJMXwnu6ZfGIZwVS
- mS.xqeZGBfSfSleNT5e6zly3_E5Y8zCJxbV.Y7bNGcfKrzPw324dfgwx5bxJYgq6xzACsIbftC5l
- idvoOIRu9BFRBHzRWwbI86LSiZBupvtIuro4k51Nl31JDg4XNrT596XrQ.utIkdpG3dMYGrH8e5b
- Gej03NNuI1Tr.obHhSpd20.9JVlI3iY_A8wZ5CBspJLi8EYxSwykcWI20IEAgN6Es4Z3Kk.G.m4d
- SzaXvQ0_vx7lU_VubG8f7gA1XKwupGcKabEatMCuGiM21PfmTEX3_m4_qX0R3PIDm4qesyfu7zpX
- NgpWIt.tebXWNfONle8SLgt6WN5.7sfXRdQYR_RH8bqd53FJDZX51UEfxHzk9dyJ.63dLLgXlnPN
- lX5AIvGGW34.HsNmNn3QEsHIP3KYlvEWurUW38ht9CtQSzJ1HrBR5SZaKd6Cx8EP8m6Upqa_DXgQ
- Ax1pdNnLFnCZVVt_b42T01j01jYGEn2LGDngiljBcTY1z2UulQc5qGu6VjuiF1ooo1sWXgJkvQep
- C8ttsznHQ1Q5GGMBKsz8AOQSx1cblw0J5nTTRENlBq.77EX1KBLzRBIT1gdnI1Ov05U4eAOCSFLj
- .i2JbYISYFk.YXGnvunNgg0_sTBKj6Meer_NfFIGJzEmiBWB6OuS88SFGDywd1FygNSjInx013ls
- GotJSqia0gp1rlrKCWGCx6yE9Bi1I.Yti_hugGfO40rNKicDo4RFnEzp_URTUxrkD.VKwuSBMY54
- 2IDQgrpvAS5EsPOLs6ine4d9c7Lk8
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic313.consmr.mail.ir2.yahoo.com with HTTP; Wed, 11 Mar 2020 13:01:24 +0000
-Date:   Wed, 11 Mar 2020 13:01:22 +0000 (UTC)
-From:   Dr Delight Haji <drdelighthaji@gmail.com>
-Reply-To: drhajidelight@gmail.com
-Message-ID: <81383165.421864.1583931682618@mail.yahoo.com>
-Subject: With Due Respect.
+        id S1729499AbgCKNKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 09:10:47 -0400
+Received: from www62.your-server.de ([213.133.104.62]:49500 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729320AbgCKNKr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 09:10:47 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jC18H-0001Dz-Cq; Wed, 11 Mar 2020 14:10:45 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jC18G-0009xv-J1; Wed, 11 Mar 2020 14:10:45 +0100
+Subject: Re: [bpf PATCH] bpf: sockmap, remove bucket->lock from
+ sock_{hash|map}_free
+To:     John Fastabend <john.fastabend@gmail.com>, jakub@cloudflare.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <158385850787.30597.8346421465837046618.stgit@john-Precision-5820-Tower>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <337666f6-b6b3-4b01-a62e-783486bcb404@iogearbox.net>
+Date:   Wed, 11 Mar 2020 14:10:39 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <158385850787.30597.8346421465837046618.stgit@john-Precision-5820-Tower>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-References: <81383165.421864.1583931682618.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.15342 YMailNodin Mozilla/5.0 (Windows NT 5.1; rv:43.0) Gecko/20100101 Firefox/43.0
-To:     unlisted-recipients:; (no To-header on input)
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25748/Wed Mar 11 12:08:41 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi friend I am a banker in ADB BANK. I want to transfer an abandoned
-$18.5Million to your Bank account. 40/percent will be your share.
-No risk involved but keep it as secret. Contact me for more details.
+On 3/10/20 5:41 PM, John Fastabend wrote:
+> The bucket->lock is not needed in the sock_hash_free and sock_map_free
+> calls, in fact it is causing a splat due to being inside rcu block.
+> 
+> 
+> | BUG: sleeping function called from invalid context at net/core/sock.c:2935
+> | in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 62, name: kworker/0:1
+> | 3 locks held by kworker/0:1/62:
+> |  #0: ffff88813b019748 ((wq_completion)events){+.+.}, at: process_one_work+0x1d7/0x5e0
+> |  #1: ffffc900000abe50 ((work_completion)(&map->work)){+.+.}, at: process_one_work+0x1d7/0x5e0
+> |  #2: ffff8881381f6df8 (&stab->lock){+...}, at: sock_map_free+0x26/0x180
+> | CPU: 0 PID: 62 Comm: kworker/0:1 Not tainted 5.5.0-04008-g7b083332376e #454
+> | Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
+> | Workqueue: events bpf_map_free_deferred
+> | Call Trace:
+> |  dump_stack+0x71/0xa0
+> |  ___might_sleep.cold+0xa6/0xb6
+> |  lock_sock_nested+0x28/0x90
+> |  sock_map_free+0x5f/0x180
+> |  bpf_map_free_deferred+0x58/0x80
+> |  process_one_work+0x260/0x5e0
+> |  worker_thread+0x4d/0x3e0
+> |  kthread+0x108/0x140
+> |  ? process_one_work+0x5e0/0x5e0
+> |  ? kthread_park+0x90/0x90
+> |  ret_from_fork+0x3a/0x50
+> 
+> The reason we have stab->lock and bucket->locks in sockmap code is to
+> handle checking EEXIST in update/delete cases. We need to be careful during
+> an update operation that we check for EEXIST and we need to ensure that the
+> psock object is not in some partial state of removal/insertion while we do
+> this. So both map_update_common and sock_map_delete need to guard from being
+> run together potentially deleting an entry we are checking, etc. But by the
+> time we get to the tear-down code in sock_{ma[|hash}_free we have already
+> disconnected the map and we just did synchronize_rcu() in the line above so
+> no updates/deletes should be in flight. Because of this we can drop the
+> bucket locks from the map free'ing code, noting no update/deletes can be
+> in-flight.
+> 
+> Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+> Reported-by: Jakub Sitnicki <jakub@cloudflare.com>
+> Suggested-by: Jakub Sitnicki <jakub@cloudflare.com>
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 
-And also acknowledge receipt of this message in acceptance of my mutual
-business endeavor by furnishing me with the following:
-
-1. Your Full Names and Address.
-
-2. Direct Telephone and Fax numbers
-
-Please reply in my private email address (drdelighthj@gmail.com) for
-security and confidential reasons.
-
-Yours
-
-Dr Delight Haji.
+Applied, thanks!
