@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B11C71824F0
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 23:33:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4395F1824FC
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 23:33:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731371AbgCKWdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 18:33:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37858 "EHLO mail.kernel.org"
+        id S2387527AbgCKWde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 18:33:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37898 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731249AbgCKWdO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Mar 2020 18:33:14 -0400
+        id S1731364AbgCKWdP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Mar 2020 18:33:15 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.128])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C38B220754;
-        Wed, 11 Mar 2020 22:33:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9976720749;
+        Wed, 11 Mar 2020 22:33:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583965994;
-        bh=VKi8UoBUI8w1b/UV+pMJ68ce2qfx1EuYk7fHciB2ZbU=;
+        s=default; t=1583965995;
+        bh=g2SriYnAS21u7zm1RLNEUQ0AkgFJvyOpK+X54vIlHdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T+J7Gh3YGwLDUH8DKKBuUE3gAHGajIUJ5j0LUeWRVbWkyp5G3Wp7fBL7LvccP+FKs
-         jtI7uHw4F3YFYIOrx6p343VDXAod4hkpsWYCMnwDtgD5Ald3O8XQ+83rjsuUAkG+2I
-         kkVwIQmRMEgI0gog7QJHHMgYY8WAbOO0FqhY/hFU=
+        b=F3snNr6C79WCRppA9bF+NhLhpoP1jvG0vBk84ootO8anuAj3XMK2103Agd2dISZWY
+         xAPRhtgc6s+BgYKNfxTz4niSrG8mB45xoDONssz52nUkRAHFcxNAMrDqsy8NeEF92h
+         yrXDQPIAfGOHF1/BOOxu86Xk8qRNyd8ZV62dKDt0=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, mkubecek@suse.cz,
@@ -32,9 +32,9 @@ Cc:     netdev@vger.kernel.org, mkubecek@suse.cz,
         yisen.zhuang@huawei.com, salil.mehta@huawei.com,
         jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
         alexander.h.duyck@linux.intel.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 05/15] net: hns: reject unsupported coalescing params
-Date:   Wed, 11 Mar 2020 15:32:52 -0700
-Message-Id: <20200311223302.2171564-6-kuba@kernel.org>
+Subject: [PATCH net-next 06/15] net: hns3: reject unsupported coalescing params
+Date:   Wed, 11 Mar 2020 15:32:53 -0700
+Message-Id: <20200311223302.2171564-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200311223302.2171564-1-kuba@kernel.org>
 References: <20200311223302.2171564-1-kuba@kernel.org>
@@ -52,42 +52,35 @@ This driver did not previously reject unsupported parameters.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hns/hns_ethtool.c | 5 +++++
- include/linux/ethtool.h                          | 5 +++++
- 2 files changed, 10 insertions(+)
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c b/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c
-index 717fccc2efba..49624acf2473 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_ethtool.c
-@@ -1264,6 +1264,11 @@ static int hns_get_rxnfc(struct net_device *netdev,
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 3f59a1924390..28b81f24afa1 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -1390,7 +1390,13 @@ static int hns3_set_fecparam(struct net_device *netdev,
+ 	return ops->set_fec(handle, fec_mode);
  }
  
- static const struct ethtool_ops hns_ethtool_ops = {
-+	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
-+				     ETHTOOL_COALESCE_MAX_FRAMES |
-+				     ETHTOOL_COALESCE_USE_ADAPTIVE |
-+				     ETHTOOL_COALESCE_USECS_LOW_HIGH |
-+				     ETHTOOL_COALESCE_MAX_FRAMES_LOW_HIGH,
- 	.get_drvinfo = hns_nic_get_drvinfo,
- 	.get_link  = hns_nic_get_link,
- 	.get_ringparam = hns_get_ringparam,
-diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-index acfce915a02b..be355f37337d 100644
---- a/include/linux/ethtool.h
-+++ b/include/linux/ethtool.h
-@@ -214,6 +214,11 @@ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
- #define ETHTOOL_COALESCE_USECS_LOW_HIGH					\
- 	(ETHTOOL_COALESCE_RX_USECS_LOW | ETHTOOL_COALESCE_TX_USECS_LOW | \
- 	 ETHTOOL_COALESCE_RX_USECS_HIGH | ETHTOOL_COALESCE_TX_USECS_HIGH)
-+#define ETHTOOL_COALESCE_MAX_FRAMES_LOW_HIGH	\
-+	(ETHTOOL_COALESCE_RX_MAX_FRAMES_LOW |	\
-+	 ETHTOOL_COALESCE_TX_MAX_FRAMES_LOW |	\
-+	 ETHTOOL_COALESCE_RX_MAX_FRAMES_HIGH |	\
-+	 ETHTOOL_COALESCE_TX_MAX_FRAMES_HIGH)
- #define ETHTOOL_COALESCE_PKT_RATE_RX_USECS				\
- 	(ETHTOOL_COALESCE_USE_ADAPTIVE_RX |				\
- 	 ETHTOOL_COALESCE_RX_USECS_LOW | ETHTOOL_COALESCE_RX_USECS_HIGH | \
++#define HNS3_ETHTOOL_COALESCE	(ETHTOOL_COALESCE_USECS |		\
++				 ETHTOOL_COALESCE_USE_ADAPTIVE |	\
++				 ETHTOOL_COALESCE_RX_USECS_HIGH |	\
++				 ETHTOOL_COALESCE_TX_USECS_HIGH)
++
+ static const struct ethtool_ops hns3vf_ethtool_ops = {
++	.supported_coalesce_params = HNS3_ETHTOOL_COALESCE,
+ 	.get_drvinfo = hns3_get_drvinfo,
+ 	.get_ringparam = hns3_get_ringparam,
+ 	.set_ringparam = hns3_set_ringparam,
+@@ -1416,6 +1422,7 @@ static const struct ethtool_ops hns3vf_ethtool_ops = {
+ };
+ 
+ static const struct ethtool_ops hns3_ethtool_ops = {
++	.supported_coalesce_params = HNS3_ETHTOOL_COALESCE,
+ 	.self_test = hns3_self_test,
+ 	.get_drvinfo = hns3_get_drvinfo,
+ 	.get_link = hns3_get_link,
 -- 
 2.24.1
 
