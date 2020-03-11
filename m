@@ -2,92 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBAC01811C0
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 08:21:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF3B21811C6
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 08:21:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728532AbgCKHT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 03:19:58 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:37161 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728339AbgCKHT6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 03:19:58 -0400
-Received: by mail-wm1-f67.google.com with SMTP id a141so879921wme.2
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 00:19:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Sj+Q0FXYLUB28UcOdYb15cqSESHfjSIpGDsJGxI33DM=;
-        b=skMGr8WjVA4dNqLkGCS9uae7/AoyznI2UiYiFGpz9BS9BwwoAApM2JIw56bxboPbv7
-         a1y+zOs3pm57VRLzgFUMS+bxMiI+dbxUCmaPTnugOvl7oriLdqjsMMhsQdaPg+lkbTC2
-         9PEq1nQF4A9u+Oo09Y93KAKFVQoJN812nqQaFqcGZuixBAZtpe5BmkyGrNC/aPi60mt7
-         eecKumFIqEPbPRhyOg2Tw5DkkKdz7/fMYWj4xflzG2NQrqBaa6o3TfAV1coISqHQVD7p
-         Mbl+3dYVcm72T/Xaevi24wbu38y5RoPwnlMcxbHwuL3U5/3t0+jW0RSfm0p+vo4NDkqp
-         BT+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Sj+Q0FXYLUB28UcOdYb15cqSESHfjSIpGDsJGxI33DM=;
-        b=MhsDjce15MQXPgJ0sQox+7DkaU5B1K9zRMhGzVcBm92kKKyBK9YVK+32Yg3jkUgN9V
-         /M88aQdrZsB5nuVqohxCDTDpg3okTkElYURjCzzCU0i8St6BLkYRpvzewYx6R89CFbwt
-         LAM9NYzuBNVb3KPCJ22g2MIFjJgdoiKMJfzSS5cgM5rckadH4RSk+ThrvWySC2M1i1Ne
-         oOgwlmOkF0DtD1//jUIh25470JYFYkXs5mZ8sjz0qZzB+bbcCZqOfWoVEbP6upThelgz
-         Zj06sv8D8Zg9REatQGSRXJC91vc4QalhXzBUfSciUzGJiOFFLVkzFYhTPVviBAClNQWl
-         HxBg==
-X-Gm-Message-State: ANhLgQ2WTGhPCcD5Wwot9NRmqVGuK4W5dfygHUpOmb1hyIuG7Zzt2kEV
-        Q66N9Jov6LcAOHd5+c8BZZIFmw==
-X-Google-Smtp-Source: ADFU+vtEC5BbPBDK8EVIXfGXlozLcQ7ny85MWyvct7owheXneRN/rG98Ahe7XRE+u5N2w7x63YsiQA==
-X-Received: by 2002:a1c:7901:: with SMTP id l1mr2110418wme.188.1583911196762;
-        Wed, 11 Mar 2020 00:19:56 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id p10sm5336021wru.4.2020.03.11.00.19.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Mar 2020 00:19:56 -0700 (PDT)
-Date:   Wed, 11 Mar 2020 08:19:55 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
-        pablo@netfilter.org, ecree@solarflare.com
-Subject: Re: [patch net-next 0/3] flow_offload: follow-ups to HW stats type
- patchset
-Message-ID: <20200311071955.GA2258@nanopsycho.orion>
-References: <20200310154909.3970-1-jiri@resnulli.us>
- <20200310120519.10bffbfe@kicinski-fedora-PC1C0HJN>
+        id S1728352AbgCKHVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 03:21:14 -0400
+Received: from mx2.suse.de ([195.135.220.15]:40098 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728242AbgCKHVO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Mar 2020 03:21:14 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id EC2FDAF4E;
+        Wed, 11 Mar 2020 07:21:12 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 855EFE0C0A; Wed, 11 Mar 2020 08:21:12 +0100 (CET)
+Date:   Wed, 11 Mar 2020 08:21:12 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Andrej Ras <kermitthekoder@gmail.com>
+Subject: Re: What does this code do
+Message-ID: <20200311072112.GF8012@unicorn.suse.cz>
+References: <CAHfguVw9unGL-_ETLzRSVCFqHH5_etafbj1MLaMB+FywLpZjTA@mail.gmail.com>
+ <20200310221221.GD8012@unicorn.suse.cz>
+ <CAHfguVy4=Gtm0cmToswashVSwmS+kOk57qg+H+jspaHrH8tJkg@mail.gmail.com>
+ <20200311055343.GE8012@unicorn.suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200310120519.10bffbfe@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200311055343.GE8012@unicorn.suse.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Mar 10, 2020 at 08:05:19PM CET, kuba@kernel.org wrote:
->On Tue, 10 Mar 2020 16:49:06 +0100 Jiri Pirko wrote:
->> This patchset includes couple of patches in reaction to the discussions
->> to the original HW stats patchset. The first patch is a fix,
->> the other two patches are basically cosmetics.
->
->Reviewed-by: Jakub Kicinski <kuba@kernel.org>
->
->This problem already exists, but writing a patch for nfp I noticed that
->there is no way for this:
->
->	if (!flow_action_hw_stats_types_check(flow_action, extack,
->					      FLOW_ACTION_HW_STATS_TYPE_DELAYED_BIT))
->		return -EOPNOTSUPP;
->
->to fit on a line for either bit, which kind of sucks.
+On Wed, Mar 11, 2020 at 06:53:43AM +0100, Michal Kubecek wrote:
+> On Tue, Mar 10, 2020 at 09:11:06PM -0700, Andrej Ras wrote:
+> > On Tue, Mar 10, 2020 at 3:12 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+> > >
+> > > On Tue, Mar 10, 2020 at 02:42:11PM -0700, Andrej Ras wrote:
+> > > > While browsing the Linux networking code I came across these two lines
+> > > > in __ip_append_data() which I do not understand.
+> > > >
+> > > >                 /* Check if the remaining data fits into current packet. */
+> > > >                 copy = mtu - skb->len;
+> > > >                 if (copy < length)
+> > > >                         copy = maxfraglen - skb->len;
+> > > >                 if (copy <= 0) {
+> > > >
+> > > > Why not just use maxfraglen.
+> > > >
+> > > > Perhaps someone can explain why this is needed.
+> > >
+> > > This function appends more data to an skb which can already contain some
+> > > payload. Therefore you need to take current length (from earlier) into
+> > > account, not only newly appended data.
+> > >
+> > > This can be easily enforced e.g. with TCP_CORK or UDP_CORK socket option
+> > > or MSG_MORE flag.
+> > >
+> > I understand that the code is appending data, what I do not understand
+> > is why is it first calculating the remaining space by taking the
+> > difference using the size of mtu and if the difference is <= 0 it
+> > recalculates the difference using maxfraglen. Why not just use
+> > maxfraglen -- All we need to know is how much more data can be added
+> > to the skb.
+> 
+> Ah, I see. The first test checks if we can fit into an unfragmented
+> packet so that we check against mtu.
 
-Yeah, I was thinking about having flow_action_hw_stats_types_check as a
-macro and then just simply have:
+Thinking about it again, it would be more precise to say "unfragmented
+packet or last fragment" here as it also covers the case when we already
+have some fragments and test if we can send the rest (including current
+chunk) as last fragment whose length does not need to be a multiple of 8.
 
-	if (!flow_action_hw_stats_types_check(flow_action, extack, DELAYED))
-		return -EOPNOTSUPP;
+Michal Kubecek
 
-WDYT?
+>                                      If we don't fit, fragmentation will
+> be needed so that maxfraglen is the limit (maxfraglen can be shorter
+> than mtu due to the rounding down to a multiple of 8).
 
 
->
->I may send a rename...
