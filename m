@@ -2,88 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84CAC181E68
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 17:54:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3315181EA6
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 18:06:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730406AbgCKQyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 12:54:09 -0400
-Received: from mail-pl1-f177.google.com ([209.85.214.177]:37944 "EHLO
-        mail-pl1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729584AbgCKQyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 12:54:09 -0400
-Received: by mail-pl1-f177.google.com with SMTP id w3so1366066plz.5
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 09:54:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=reply-to:to:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=Db1MOk0psvgUimQ474KGdQlzYUKvJro1MKKIH+YlDug=;
-        b=GuWerCJFGx7PQQX1jBUUXMX5u90Obty/Qe3Q87DnuYfNRlQGqmqmpqI+JjHx4ateXQ
-         s30enhYnfkWmQWfRqwE3zKai0CYwQN1QX5E72emeex1HZfWAoo1/uLIOGb8rHlz6hC1J
-         mvLbAelcighw6PZyiE1Grtczcf/mWdev2HrKVBXxBffGvJT+/4Lq9Q7VDUp86TrrQZaS
-         76cRmb6Fkf6oxste+5g/waRJSPh8vKILf70KHx5vmwYc09nUZ17O9pQ6gChWVnIqAjS4
-         v7gxOPVhXeOrt7ccx+o2pU7PFsaTOjGXdCABpxbk7ijRBEdhH2TEcQ7TaeSlhT3cAinV
-         EoHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:to:from:subject:message-id:date
-         :user-agent:mime-version:content-language:content-transfer-encoding;
-        bh=Db1MOk0psvgUimQ474KGdQlzYUKvJro1MKKIH+YlDug=;
-        b=Z9sYz1mPNEc1RamPGVnmdQzh2okYym06Zlct39w5zU4hPAfX3ZcrFlRl9QcOGYbtNd
-         G+vb6V0FjHJ7+43Va1xsmUkl8BG2phJ7wXajfqNsoDyMff/nIxlR04wd5EvYiWBFuBKj
-         gvUJxqlQrIR8Vc9PIdNDjjW+f57/aZiZ/uA4UP3m4bLKzk2CyHfLRbxrnXr6mAyrSCXk
-         w5R+oSJdoLpMFoM3wtQqT1zCxubom+z7L/KjLp6O4PSwZJ7GOQedZDne+b+gmCtGu9bV
-         TgvLkMvrqkWBTUVJ88LXJcZBv5+aXrQ+spcTXI4hi4iv4FQ+/HM5rp4BMPOfUEBhJDwO
-         87kg==
-X-Gm-Message-State: ANhLgQ3mikeYolGruSJUhFGkZ866mcJVv3fdgoGSrlStKpWuePFXUe4Z
-        omj2lzaMAfObhzvSegE/CWEEt24d
-X-Google-Smtp-Source: ADFU+vu+klXw3nFP89rG0gi4i8ilDZAg4Oe9cLSx2g1jn5hv465/7j451ABB17Bl4MXP7rJeopTRsg==
-X-Received: by 2002:a17:90b:3645:: with SMTP id nh5mr4443016pjb.150.1583945647656;
-        Wed, 11 Mar 2020 09:54:07 -0700 (PDT)
-Received: from mua.localhost (99-7-172-215.lightspeed.snmtca.sbcglobal.net. [99.7.172.215])
-        by smtp.gmail.com with ESMTPSA id y125sm1161498pfy.195.2020.03.11.09.54.07
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Mar 2020 09:54:07 -0700 (PDT)
-Reply-To: pgnet.dev@gmail.com
-To:     netdev@vger.kernel.org
-From:   PGNet Dev <pgnet.dev@gmail.com>
-Subject: iproute -> "Error: ipv4: FIB table does not exist."; unresolved,
- regression, or new issue?
-Message-ID: <61d6802a-083a-82db-9a16-46728366bbf0@gmail.com>
-Date:   Wed, 11 Mar 2020 09:54:06 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1730394AbgCKRFo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 13:05:44 -0400
+Received: from smtp.uniroma2.it ([160.80.6.16]:33681 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726099AbgCKRFn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Mar 2020 13:05:43 -0400
+X-Greylist: delayed 633 seconds by postgrey-1.27 at vger.kernel.org; Wed, 11 Mar 2020 13:05:42 EDT
+Received: from localhost.localdomain ([160.80.103.126])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 02BGsSfk025391
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 11 Mar 2020 17:54:29 +0100
+From:   Paolo Lungaroni <paolo.lungaroni@cnit.it>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Paolo Lungaroni <paolo.lungaroni@cnit.it>,
+        Andrea Mayer <andrea.mayer@uniroma2.it>,
+        Ahmed Abdelsalam <ahmed.abdelsalam@gssi.it>
+Subject: [net] seg6: fix SRv6 L2 tunnels to use IANA-assigned protocol number
+Date:   Wed, 11 Mar 2020 17:54:06 +0100
+Message-Id: <20200311165406.22044-1-paolo.lungaroni@cnit.it>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-with
+The Internet Assigned Numbers Authority (IANA) has recently assigned
+a protocol number value of 143 for Ethernet [1].
 
-	rpm -qa iproute*
-		iproute2-5.5.0-197.8.x86_64
+Before this assignment, encapsulation mechanisms such as Segment Routing
+used the IPv6-NoNxt protocol number (59) to indicate that the encapsulated
+payload is an Ethernet frame.
 
-	uname -rm
-		5.5.8-25.g1e5a090-default x86_64
+In this patch, we add the definition of the Ethernet protocol number to the
+kernel headers and update the SRv6 L2 tunnels to use it.
 
-on exec
+[1] https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml
 
-	ip route show table default
-		Error: ipv4: FIB table does not exist.
-		Dump terminated
+Signed-off-by: Paolo Lungaroni <paolo.lungaroni@cnit.it>
+Reviewed-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+Acked-by: Ahmed Abdelsalam <ahmed.abdelsalam@gssi.it>
+---
+ include/uapi/linux/in.h  | 2 ++
+ net/ipv6/seg6_iptunnel.c | 2 +-
+ net/ipv6/seg6_local.c    | 2 +-
+ 3 files changed, 4 insertions(+), 2 deletions(-)
 
-last i've managed to find on this is in an exchange between dsahern@ & emersonbernier@
+diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+index 1521073b6348..8533bf07450f 100644
+--- a/include/uapi/linux/in.h
++++ b/include/uapi/linux/in.h
+@@ -74,6 +74,8 @@ enum {
+ #define IPPROTO_UDPLITE		IPPROTO_UDPLITE
+   IPPROTO_MPLS = 137,		/* MPLS in IP (RFC 4023)		*/
+ #define IPPROTO_MPLS		IPPROTO_MPLS
++  IPPROTO_ETHERNET = 143,	/* Ethernet-within-IPv6 Encapsulation	*/
++#define IPPROTO_ETHERNET	IPPROTO_ETHERNET
+   IPPROTO_RAW = 255,		/* Raw IP packets			*/
+ #define IPPROTO_RAW		IPPROTO_RAW
+   IPPROTO_MPTCP = 262,		/* Multipath TCP connection		*/
+diff --git a/net/ipv6/seg6_iptunnel.c b/net/ipv6/seg6_iptunnel.c
+index ab7f124ff5d7..8c52efe299cc 100644
+--- a/net/ipv6/seg6_iptunnel.c
++++ b/net/ipv6/seg6_iptunnel.c
+@@ -268,7 +268,7 @@ static int seg6_do_srh(struct sk_buff *skb)
+ 		skb_mac_header_rebuild(skb);
+ 		skb_push(skb, skb->mac_len);
+ 
+-		err = seg6_do_srh_encap(skb, tinfo->srh, NEXTHDR_NONE);
++		err = seg6_do_srh_encap(skb, tinfo->srh, IPPROTO_ETHERNET);
+ 		if (err)
+ 			return err;
+ 
+diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
+index 7cbc19731997..8165802d8e05 100644
+--- a/net/ipv6/seg6_local.c
++++ b/net/ipv6/seg6_local.c
+@@ -282,7 +282,7 @@ static int input_action_end_dx2(struct sk_buff *skb,
+ 	struct net_device *odev;
+ 	struct ethhdr *eth;
+ 
+-	if (!decap_and_validate(skb, NEXTHDR_NONE))
++	if (!decap_and_validate(skb, IPPROTO_ETHERNET))
+ 		goto drop;
+ 
+ 	if (!pskb_may_pull(skb, ETH_HLEN))
+-- 
+2.20.1
 
-	Re: [BUG][iproute2][5.0] ip route show table default: "Error: ipv4: FIB table does not exist."
-	 https://www.spinics.net/lists/netdev/msg569682.html
-
-then I lost the thread ...
-
-had this issue moved elsewhere, and been dealt with already -- & this is a regression?
-
-or, just still a pending issue?
