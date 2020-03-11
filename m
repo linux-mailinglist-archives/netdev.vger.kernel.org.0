@@ -2,97 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 222F71810BB
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 07:32:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 339921810DF
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 07:40:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728269AbgCKGbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 02:31:18 -0400
-Received: from conssluserg-03.nifty.com ([210.131.2.82]:43085 "EHLO
-        conssluserg-03.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726160AbgCKGbR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 02:31:17 -0400
-Received: from mail-vk1-f177.google.com (mail-vk1-f177.google.com [209.85.221.177]) (authenticated)
-        by conssluserg-03.nifty.com with ESMTP id 02B6VBSc001049;
-        Wed, 11 Mar 2020 15:31:11 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-03.nifty.com 02B6VBSc001049
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1583908272;
-        bh=mEEjYZ+g7SPfvBGbp0usmZazwZG/pK4cfo+e69Wz/94=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=0xE1L4gZVa5pQf1L/jmE+y6SYbQRHBoZlnSMVpcmhKCNdl5F9TMc5izykQAUefqUd
-         cn2tJwt/9aQKZLeJA42BwUSyKid9pAjK0yzeDOx9NvOThSCrkjTaesO2i6ql2pVcot
-         QeiQtN3CdsuS0/U09n+GieuDqOO/5krQ4jgElJ+VNAGF1L2G1lAwm2Xz3sZD0AdJyr
-         LHl21K6eHdvlzZO5qinZZCNT+Ws4jDqHu5f7M6N+WujoPy0HAdRVmnjytl24myyF3x
-         suJl3SgDKzVkZWIpxWYXdIVGvSyMMnoXiOVLhBB+ZcXR4iiqS2bqA1ZjIOlmdWl+Ab
-         658g2WQGX7fvQ==
-X-Nifty-SrcIP: [209.85.221.177]
-Received: by mail-vk1-f177.google.com with SMTP id w4so221452vkd.5;
-        Tue, 10 Mar 2020 23:31:11 -0700 (PDT)
-X-Gm-Message-State: ANhLgQ1PfxFuXUyMfPH688801o/YzSkAETofcrITB8R4LCY1q6U6IaFa
-        du4+Wmg8UaCGmagiksXlAOaCIDZNgtrUKajhqB4=
-X-Google-Smtp-Source: ADFU+vvCKPRQjwdCvZHOCpGvXimbsrP/K82eSLJbFxeu+mB/zqXzXNLtC4QloHRtdNmpy6tI6qPFP0ZLoVxoTslt+JM=
-X-Received: by 2002:a1f:cbc1:: with SMTP id b184mr1007267vkg.73.1583908270440;
- Tue, 10 Mar 2020 23:31:10 -0700 (PDT)
+        id S1728241AbgCKGkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 02:40:00 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:42604 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725976AbgCKGkA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 02:40:00 -0400
+Received: by mail-wr1-f67.google.com with SMTP id v11so1050017wrm.9
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 23:39:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fyS/g7I2VOj0AwsGJjVLeF+gFSd8vbdest2kZu3k210=;
+        b=nlCjxCshWjXLTvzwR7tGXhMUnBbgMCVgzVZxuHT/4kBBmDr5e8EkOUHCjtQ69ppivd
+         Kte4QmqqqzPI0cZc+de9UpnGYbTTwWC9xITdTViGg7ZWVpjSP4YAvYqZvakL4+hfBOC+
+         FDvMO/DipTg+MmZtSG6hlv0pe6Lh++fBhQRqHi3TmvkxcUQp0+9mv6T/ltncdOARIcBE
+         x4LBf+PfnH00QZ5Ni2I6Mo/uckRFkfm0pmSbLdMn6/qSth9VVwzyiUx2di4KpVzUvBE/
+         RuPWXpDvDcXpAMJ0PdwR2CkRiaE54tpb3NXWZx2K4igi4o2LsjBrVJTH7uBK4vjCfPzP
+         4oiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fyS/g7I2VOj0AwsGJjVLeF+gFSd8vbdest2kZu3k210=;
+        b=d6UGL5hPXb1JhtbW/t0q3/szZsZTXyU5OfD80S5H0IREPcx1saMV/SG+RGz5n6BzMF
+         5vnrbvz7AnbSRewMIAYaTZzZxk8dCH0zA6UE865/ZH4xo9bZcHPzLkFIMnXAyjUcBtRw
+         PNMcJu6ibXZNz8TjsKMuVzOixf3TvcTy12NKt0VDQNP5zNDjmrDlXGG2mMqG2KMR8+CG
+         jBnWC6XxoIcOReeNOul++OcgVeIcx76liDS8CXlMLul1GO08qGnIQE4AS88wqCp2l63n
+         X8rj6HmzvOn4tfNCQ8OR8oqVSv/5Ge6w7JDOjx9sdysP9MrUbXq2a+OrHqtnVhmJ8AWh
+         pdtg==
+X-Gm-Message-State: ANhLgQ1QM9P66EKfkArCJ8NIHfJlbMmZ1L1PmCtNo+PK1OVoLhX6QWEH
+        MqDciTFP9rBR7n1ENQtZvJ6fZY1fV3hiGni+6rc=
+X-Google-Smtp-Source: ADFU+vsOPJzXIbGz5BWvsNjriUaBRtOZO+QkAKpG6gE2eLILP98GeghVYkzPiAcxLPtqG8eGStsJSKjF/ixhOdFbZV0=
+X-Received: by 2002:adf:80af:: with SMTP id 44mr2480611wrl.241.1583908796727;
+ Tue, 10 Mar 2020 23:39:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200311054953.11956-1-masahiroy@kernel.org>
-In-Reply-To: <20200311054953.11956-1-masahiroy@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 11 Mar 2020 15:30:34 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAQsitL-j0Z5mBC=QWUCxG2uhv1b2oaNh1daFSRwC38A=w@mail.gmail.com>
-Message-ID: <CAK7LNAQsitL-j0Z5mBC=QWUCxG2uhv1b2oaNh1daFSRwC38A=w@mail.gmail.com>
-Subject: Re: [PATCH] net: drop_monitor: make drop_monitor built-in
-To:     Neil Horman <nhorman@tuxdriver.com>,
-        Networking <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Ido Schimmel <idosch@mellanox.com>, Jiri Pirko <jiri@mellanox.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Nicolas Pitre <nico@fluxnic.net>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <1583866045-7129-1-git-send-email-sunil.kovvuri@gmail.com>
+ <1583866045-7129-5-git-send-email-sunil.kovvuri@gmail.com> <20200310192111.GC11247@lunn.ch>
+In-Reply-To: <20200310192111.GC11247@lunn.ch>
+From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Date:   Wed, 11 Mar 2020 12:09:45 +0530
+Message-ID: <CA+sq2CeTFZdH60MS1fPhfTJjSJFCn2wY6iPH+VvuLSHzkApB-w@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/6] octeontx2-vf: Ethtool support
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Tomasz Duszynski <tduszynski@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 2:50 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+On Wed, Mar 11, 2020 at 12:51 AM Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> In net/Kconfig, NET_DEVLINK implies NET_DROP_MONITOR.
+> On Wed, Mar 11, 2020 at 12:17:23AM +0530, sunil.kovvuri@gmail.com wrote:
+> > +int __weak otx2vf_open(struct net_device *netdev)
+> > +{
+> > +     return 0;
+> > +}
+> > +
+> > +int __weak otx2vf_stop(struct net_device *netdev)
+> > +{
+> > +     return 0;
+> > +}
 >
-> The original behavior of the 'imply' keyword prevents NET_DROP_MONITOR
-> from being 'm' when NET_DEVLINK=y.
+> Hi Sunil
 >
-> With the planned Kconfig change that relaxes the 'imply', the
-> combination of NET_DEVLINK=y and NET_DROP_MONITOR=m would be allowed,
-> causing a link error of vmlinux.
+> weak symbols are very unusual in a driver. Why are they required?
 >
-> As far as I see the mainline code, NET_DROP_MONITOR=m does not provide
-> any useful case.
->
-> The call-site of net_dm_hw_report() only exists in net/core/devlink.c,
-> which is always built-in since NET_DEVLINK is a bool type option.
->
-> So, NET_DROP_MONITOR=m causes a build error, or creates an unused
-> module at best.
->
-> Make NET_DROP_MONITOR a bool option, and remove the module exit code.
-> I also unexported net_dm_hw_report because I see no other call-site
-> in upstream.
->
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> Thanks
+>         Andrew
 
+For ethtool configs which need interface reinitialization of interface
+we need to either call PF or VF open/close fn()s.
+If VF driver is not compiled in, then PF driver compilation will fail
+without these weak symbols.
+They are there just for compilation purpose, no other use.
 
-Sorry, I take this back.
-This is probably not the right fix.
-
-
-
-I just sent an alternative patch.
-( Replace IS_ENABLE with IS_REACHABLE )
-
-
--- 
-Best Regards
-Masahiro Yamada
+Thanks,
+Sunil.
