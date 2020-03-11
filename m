@@ -2,81 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59C91181777
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 13:07:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27803181778
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 13:07:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729255AbgCKMHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 08:07:01 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:53078 "EHLO
+        id S1729268AbgCKMH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 08:07:27 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:53094 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729215AbgCKMHB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 08:07:01 -0400
+        with ESMTP id S1728996AbgCKMH1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 08:07:27 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=wCE9C59qwMQQJwLE+jwDwqtyX2iDMrO6Wk2xbZTZ2vw=; b=aPddCsPUU8JUifExOuLawFAKc
-        INnTMzAduDIbeBMFsF6tTRKDura8mvb5KpP0bCeqJAITYEJPrmANFNgwTFMatg08ZdTrOnXuswWGx
-        86PrtoTcAxvDYGPtoDEdXZpUEO21dOWoatL50xAXeTi+OYC4r44KQpqZpzTA8QFiqf81AG3z76dwy
-        mlRzLCI8chIW9i9wdN0vYPCJmJTH09DuGeTcA4KVkSAhnZ1+LLuatQs8RUyATFfchdxO4JuzvRoH0
-        m3dqdMM8HN9KsMCeUl1G7FmY1wdoZ4htKAJn4bCENaAysqIhVEjSfF+vemndPPr5lPL4+v4DEBwOa
-        GpOLMq0hw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:34984)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=oD4RdXMjENC2iaiU1dWg4bSv1ayAAhXvLaAZ52LSrxA=; b=BIrtPhuzzB9JMKK3txd52UW6wo
+        hGlL+5rp5cAnBPxgLNhDLSQM6SWiStBNmTm5mkKpVw4mLJX21F84g5J5SOHeFLfBL7+A+I2GtEE9g
+        Sz8uyw0imGH2UKhKCH2ovuijRzlCzfmmpRKhDQb0ndQ13ssxasMMLb6/tV9rnRtrUDz2z5R5n5b/0
+        5ysnI45kKAAQm0FqnFgWwCwjVN8wY1iDnFkv2EdeZaB9pFcjq8qv3r7tUVvEtziG5ENGbVvgcVSfG
+        y6USUthxozWdjNQKrIDOidOYtvWo/gAClmPyKaMRq/9vQfACoRvxmvzzbwOtg0FvfuwL9IKQIBPLL
+        dNnnwcEg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:44512 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jC08N-00036o-S6; Wed, 11 Mar 2020 12:06:47 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jC08J-0005IV-UJ; Wed, 11 Mar 2020 12:06:43 +0000
-Date:   Wed, 11 Mar 2020 12:06:43 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jC08v-00037A-8k; Wed, 11 Mar 2020 12:07:21 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jC08u-0001cD-I6; Wed, 11 Mar 2020 12:07:20 +0000
+In-Reply-To: <20200311120643.GN25745@shell.armlinux.org.uk>
+References: <20200311120643.GN25745@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 0/5] add phylink support for PCS
-Message-ID: <20200311120643.GN25745@shell.armlinux.org.uk>
+Subject: [PATCH net-next 1/5] net: mii: convert mii_lpa_to_ethtool_lpa_x() to
+ linkmode variant
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1jC08u-0001cD-I6@rmk-PC.armlinux.org.uk>
+Date:   Wed, 11 Mar 2020 12:07:20 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Add a LPA to linkmode decoder for 1000BASE-X protocols; this decoder
+only provides the modify semantics similar to other such decoders.
+This replaces the unused mii_lpa_to_ethtool_lpa_x() helper.
 
-This series adds support for IEEE 802.3 register set compliant PCS
-for phylink.  In order to do this, we:
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ include/linux/mii.h | 37 +++++++++++++++++++------------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
 
-1. convert the existing (unused) mii_lpa_to_ethtool_lpa_x() function
-   to a linkmode variant.
-2. add a helper for clause 37 advertisements, supporting both the
-   1000baseX and defacto 2500baseX variants. Note that ethtool does
-   not support half duplex for either of these, and we make no effort
-   to do so.
-3. add accessors for modifying a MDIO device register, and use them in
-   phylib, rather than duplicating the code from phylib.
-4. add support for decoding the advertisement from clause 22 compatible
-   register sets for clause 37 advertisements and SGMII advertisements.
-5. add support for clause 45 register sets for 10GBASE-R PCS.
-
-These have been tested on the LX2160A Clearfog-CX platform.
-
- drivers/net/phy/mdio_bus.c |  55 +++++++++++
- drivers/net/phy/phy-core.c |  31 ------
- drivers/net/phy/phylink.c  | 236 +++++++++++++++++++++++++++++++++++++++++++++
- include/linux/mdio.h       |   4 +
- include/linux/mii.h        |  57 +++++++----
- include/linux/phy.h        |  19 ++++
- include/linux/phylink.h    |   8 ++
- include/uapi/linux/mii.h   |   5 +
- 8 files changed, 366 insertions(+), 49 deletions(-)
-
+diff --git a/include/linux/mii.h b/include/linux/mii.h
+index 18c6208f56fc..309de4a3e6e7 100644
+--- a/include/linux/mii.h
++++ b/include/linux/mii.h
+@@ -354,24 +354,6 @@ static inline u32 mii_adv_to_ethtool_adv_x(u32 adv)
+ 	return result;
+ }
+ 
+-/**
+- * mii_lpa_to_ethtool_lpa_x
+- * @adv: value of the MII_LPA register
+- *
+- * A small helper function that translates MII_LPA
+- * bits, when in 1000Base-X mode, to ethtool
+- * LP advertisement settings.
+- */
+-static inline u32 mii_lpa_to_ethtool_lpa_x(u32 lpa)
+-{
+-	u32 result = 0;
+-
+-	if (lpa & LPA_LPACK)
+-		result |= ADVERTISED_Autoneg;
+-
+-	return result | mii_adv_to_ethtool_adv_x(lpa);
+-}
+-
+ /**
+  * mii_lpa_mod_linkmode_adv_sgmii
+  * @lp_advertising: pointer to destination link mode.
+@@ -535,6 +517,25 @@ static inline u32 linkmode_adv_to_lcl_adv_t(unsigned long *advertising)
+ 	return lcl_adv;
+ }
+ 
++/**
++ * mii_lpa_mod_linkmode_x - decode the link partner's config_reg to linkmodes
++ * @linkmodes: link modes array
++ * @lpa: config_reg word from link partner
++ * @fd_bit: link mode for 1000XFULL bit
++ */
++static inline void mii_lpa_mod_linkmode_x(unsigned long *linkmodes, u16 lpa,
++					 int fd_bit)
++{
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, linkmodes,
++			 lpa & LPA_LPACK);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Pause_BIT, linkmodes,
++			 lpa & LPA_1000XPAUSE);
++	linkmode_mod_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, linkmodes,
++			 lpa & LPA_1000XPAUSE_ASYM);
++	linkmode_mod_bit(fd_bit, linkmodes,
++			 lpa & LPA_1000XFULL);
++}
++
+ /**
+  * mii_advertise_flowctrl - get flow control advertisement flags
+  * @cap: Flow control capabilities (FLOW_CTRL_RX, FLOW_CTRL_TX or both)
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+2.20.1
+
