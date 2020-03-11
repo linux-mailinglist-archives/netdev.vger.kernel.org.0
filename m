@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 525D518113B
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 07:57:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 463FB18113D
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 07:57:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728330AbgCKG4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 02:56:46 -0400
-Received: from mx2.suse.de ([195.135.220.15]:56596 "EHLO mx2.suse.de"
+        id S1728357AbgCKG44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 02:56:56 -0400
+Received: from mx2.suse.de ([195.135.220.15]:56638 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726160AbgCKG4p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Mar 2020 02:56:45 -0400
+        id S1728146AbgCKG44 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Mar 2020 02:56:56 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 8C41FAE39;
-        Wed, 11 Mar 2020 06:56:43 +0000 (UTC)
-Date:   Wed, 11 Mar 2020 07:56:42 +0100
-Message-ID: <s5hmu8n9y6t.wl-tiwai@suse.de>
+        by mx2.suse.de (Postfix) with ESMTP id 6D952AECE;
+        Wed, 11 Mar 2020 06:56:54 +0000 (UTC)
+Date:   Wed, 11 Mar 2020 07:56:54 +0100
+Message-ID: <s5hlfo79y6h.wl-tiwai@suse.de>
 From:   Takashi Iwai <tiwai@suse.de>
 To:     Jules Irenge <jbi.octave@gmail.com>
 Cc:     boqun.feng@gmail.com, linux-kernel@vger.kernel.org,
@@ -27,15 +27,15 @@ Cc:     boqun.feng@gmail.com, linux-kernel@vger.kernel.org,
         Takashi Iwai <tiwai@suse.com>,
         Alexios Zavras <alexios.zavras@intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
         Allison Randal <allison@lohutok.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
         alsa-devel@alsa-project.org (moderated list:FIREWIRE AUDIO DRIVERS and
         IEC 61883-1/6 PACKET...)
-Subject: Re: [PATCH 8/8] ALSA: firewire-tascam: Add missing annotation for tscm_hwdep_read_locked()
-In-Reply-To: <20200311010908.42366-9-jbi.octave@gmail.com>
+Subject: Re: [PATCH 7/8] ALSA: firewire-tascam: Add missing annotation for tscm_hwdep_read_queue()
+In-Reply-To: <20200311010908.42366-8-jbi.octave@gmail.com>
 References: <0/8>
         <20200311010908.42366-1-jbi.octave@gmail.com>
-        <20200311010908.42366-9-jbi.octave@gmail.com>
+        <20200311010908.42366-8-jbi.octave@gmail.com>
 User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
  FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
  (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
@@ -46,14 +46,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Mar 2020 02:09:08 +0100,
+On Wed, 11 Mar 2020 02:09:07 +0100,
 Jules Irenge wrote:
 > 
-> Sparse reports a warning at tscm_hwdep_read_locked()
+> Sparse reports a warning at tscm_hwdep_read_queue()
 > 
-> warning: context imbalance in tscm_hwdep_read_locked() - unexpected unlock
+> warning: context imbalance in tscm_hwdep_read_queue() - unexpected unlock
 > 
-> The root cause is the missing annotation at tscm_hwdep_read_locked()
+> The root cause is the missing annotation at tscm_hwdep_read_queue()
 > Add the missing __releases(&tscm->lock) annotation
 > 
 > Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
