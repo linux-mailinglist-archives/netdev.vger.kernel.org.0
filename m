@@ -2,102 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0353F18231A
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 21:05:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 990D918231F
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 21:06:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731241AbgCKUFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 16:05:53 -0400
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:33172 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730960AbgCKUFx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 16:05:53 -0400
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 1F815891AE;
-        Thu, 12 Mar 2020 09:05:51 +1300 (NZDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1583957151;
-        bh=uTFPuggRCHvi5DImcHCu3FYQUMyH3o+lq3v6bIA18Qs=;
-        h=From:To:Cc:Subject:Date;
-        b=nkyMc3zrMU6gsHPNQSuVh889rxdhpJJjI116tVwIXULzmb/WtJp9iUu3HPY8vAnph
-         rtJwlqRjQPxUmFEitlAQN+iWO6Bivy28sR37vRKMBXOsySOZ7CDQHwiFcdEYB3lsTs
-         9v7658Iny6KCrDv5Gmh/s3AYj8AB/RAtmAiA1WcXFGptlFxD8tWYZAh1P33eRZQTpc
-         Y95YZRK23NcRDezg0CqOZsI6O/wp/k/kx4L+VxGOzHoy3i4Skt/9L3vwLaIJagsYWe
-         o0xB17nr79Bl5aEyjV4cy7nGrCCWMp7YmpFLFYvemfry1ysndW10AvOLEk6xZbZ4jx
-         FXY1DgDACPZHg==
-Received: from smtp (Not Verified[10.32.16.33]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5e69449d0000>; Thu, 12 Mar 2020 09:05:49 +1300
-Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.20])
-        by smtp (Postfix) with ESMTP id B788913EEB7;
-        Thu, 12 Mar 2020 09:05:50 +1300 (NZDT)
-Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
-        id CB94B28006C; Thu, 12 Mar 2020 09:05:50 +1300 (NZDT)
-From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
-To:     davem@davemloft.net, andrew@lunn.ch, josua@solid-run.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>
-Subject: [PATCH v2] net: mvmdio: avoid error message for optional IRQ
-Date:   Thu, 12 Mar 2020 09:05:46 +1300
-Message-Id: <20200311200546.9936-1-chris.packham@alliedtelesis.co.nz>
-X-Mailer: git-send-email 2.25.1
+        id S2387471AbgCKUGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 16:06:38 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:36889 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387448AbgCKUGh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 16:06:37 -0400
+Received: by mail-pl1-f196.google.com with SMTP id f16so1595485plj.4
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 13:06:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=++5B0kFRrjAGwY1Pe388z5375HPFD4iEhCYSO75vU9k=;
+        b=d7K69vo1bhwMw4HUPNraxkxEDAvA63FgjV5gB6GbslC680eWufo5K6jlOXYSNUy5w/
+         E9tlsJ0ehHvi6PE7Niu4XjXz9RFah90G7btm8mbFIiRNJD7x8jHwKTo2zT5whrDZ0X5T
+         dELIHgYrIolfYS/CXnML26PUrUSP+338rgp6k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=++5B0kFRrjAGwY1Pe388z5375HPFD4iEhCYSO75vU9k=;
+        b=oF6l6Nbr+YKEXG5X/Xj0tWa+gMhJRIimoJyzJKm9cRoJBGPkQMdPheNnR5OUmKl4oh
+         r16RO+0vMz+6aKS370bIygEr8OBJo+g5wnIDZmYPw4udN8saBmLYf1k/FN0RNxpDy7cZ
+         w0dVB9we7vhi/teVtDcxiJjaPpxMV0HTgBoLhNbz6GewSxckYgcwtHj6MlUqSigdpTpT
+         iy7ju12UnEWybfocfy15DksfLBWjVQkTkRvvQ5sfg2/AIUsOdawVErtw9AuHix8SDS74
+         Jacm7trZBYHg3HcmDiF+zFt7KbrzmfpGxamPquPvc85vWbH+Du7zhK7Q9ZgRkNKDocRW
+         MmuA==
+X-Gm-Message-State: ANhLgQ0GPG/44xQjPn5YTZEF+MvxfP3tY90kN8SlZlAMCj+55UZaylv+
+        tL5a8fDQSAZax7Owi0ggf1o7YA==
+X-Google-Smtp-Source: ADFU+vsd+Vncz158ZMcxoxWjS4PIk1+al05cPYka23A9zMuWMmHh26nb2njwtfyNobXmcY9VjFFhVQ==
+X-Received: by 2002:a17:902:7618:: with SMTP id k24mr4601393pll.320.1583957195759;
+        Wed, 11 Mar 2020 13:06:35 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id m12sm6440567pjf.25.2020.03.11.13.06.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Mar 2020 13:06:34 -0700 (PDT)
+Date:   Wed, 11 Mar 2020 13:06:33 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Sven Schnelle <svens@linux.ibm.com>
+Cc:     Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] seccomp: add compat_ioctl for seccomp notify
+Message-ID: <202003111305.87B2A84A@keescook>
+References: <20200310123332.42255-1-svens@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-x-atlnz-ls: pat
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200310123332.42255-1-svens@linux.ibm.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Per the dt-binding the interrupt is optional so use
-platform_get_irq_optional() instead of platform_get_irq(). Since
-commit 7723f4c5ecdb ("driver core: platform: Add an error message to
-platform_get_irq*()") platform_get_irq() produces an error message
+On Tue, Mar 10, 2020 at 01:33:32PM +0100, Sven Schnelle wrote:
+> Hi,
+> 
+> executing the seccomp_bpf testsuite with 32 bit userland (both s390 and x86)
+> doesn't work because there's no compat_ioctl handler defined. Is that something
+> that is supposed to work? Disclaimer: I don't know enough about seccomp to judge
+> whether there would be some adjustments required in the compat ioctl handler.
+> Just setting it to seccomp_notify_ioctl() makes the testsuite pass, but i'm not
+> sure whether that's correct.
+> 
+> Signed-off-by: Sven Schnelle <svens@linux.ibm.com>
 
-  orion-mdio f1072004.mdio: IRQ index 0 not found
+Whoops! Yes, running a mixed environment (64-bit kernel and 32-bit
+userspace) shows this as broken. I'll tweak the commit log a bit and
+apply it. Thanks!
 
-which is perfectly normal if one hasn't specified the optional property
-in the device tree.
+-Kees
 
-Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
+> ---
+>  kernel/seccomp.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/kernel/seccomp.c b/kernel/seccomp.c
+> index b6ea3dcb57bf..683c81e4861e 100644
+> --- a/kernel/seccomp.c
+> +++ b/kernel/seccomp.c
+> @@ -1221,6 +1221,7 @@ static const struct file_operations seccomp_notify_ops = {
+>  	.poll = seccomp_notify_poll,
+>  	.release = seccomp_notify_release,
+>  	.unlocked_ioctl = seccomp_notify_ioctl,
+> +	.compat_ioctl = seccomp_notify_ioctl,
+>  };
+>  
+>  static struct file *init_listener(struct seccomp_filter *filter)
+> -- 
+> 2.17.1
+> 
 
-Notes:
-    Changes in v2:
-    - Add review from Andrew
-    - Clean up error handling case
-
- drivers/net/ethernet/marvell/mvmdio.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/mvmdio.c b/drivers/net/ethernet=
-/marvell/mvmdio.c
-index 0b9e851f3da4..d2e2dc538428 100644
---- a/drivers/net/ethernet/marvell/mvmdio.c
-+++ b/drivers/net/ethernet/marvell/mvmdio.c
-@@ -347,7 +347,7 @@ static int orion_mdio_probe(struct platform_device *p=
-dev)
- 	}
-=20
-=20
--	dev->err_interrupt =3D platform_get_irq(pdev, 0);
-+	dev->err_interrupt =3D platform_get_irq_optional(pdev, 0);
- 	if (dev->err_interrupt > 0 &&
- 	    resource_size(r) < MVMDIO_ERR_INT_MASK + 4) {
- 		dev_err(&pdev->dev,
-@@ -364,8 +364,8 @@ static int orion_mdio_probe(struct platform_device *p=
-dev)
- 		writel(MVMDIO_ERR_INT_SMI_DONE,
- 			dev->regs + MVMDIO_ERR_INT_MASK);
-=20
--	} else if (dev->err_interrupt =3D=3D -EPROBE_DEFER) {
--		ret =3D -EPROBE_DEFER;
-+	} else if (dev->err_interrupt < 0) {
-+		ret =3D dev->err_interrupt;
- 		goto out_mdio;
- 	}
-=20
---=20
-2.25.1
-
+-- 
+Kees Cook
