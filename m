@@ -2,128 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8F4C180E7B
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 04:27:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADDF5180E82
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 04:31:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727984AbgCKD0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 23:26:54 -0400
-Received: from wnew2-smtp.messagingengine.com ([64.147.123.27]:35191 "EHLO
-        wnew2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727506AbgCKD0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 23:26:53 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailnew.west.internal (Postfix) with ESMTP id C08D56C5;
-        Tue, 10 Mar 2020 23:19:43 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Tue, 10 Mar 2020 23:19:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sakamocchi.jp;
-         h=date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm1; bh=b+Ma1H6/IShcWZqpJAo1sroDdFj
-        4Te1+J3eJjPIM5JU=; b=ECHIVNCT6Daf9QX6h78auESsTvlreFKUsOl7YL/deIR
-        DSKjlSxqc0pUdQDeWk9m8j0x/fp9VJlYhyjt0nByJumbzTGfu/0Wj3vplgfdTi6M
-        4uRr9S1kVxp4FZSRI95dmyGMUbp1QFYVdaEUBasiPg9Hjd3X91tGEvRBxpfKcvtB
-        oe8HGZePb7sitte8q9RvjRHSIe5FEbb6QlhOejhRNbDXZRNDPgRw9g53IoPnJC0t
-        vs//S60QIOOJyXid7kyy4QOkQdBCg8bYTkzImzN7XLz3wbz3VWP3F54jLS0iekb6
-        0O7rV8hwBawPi/wuvfQ8VXHedcSIy1a7Mo9gyfzBhqw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=b+Ma1H
-        6/IShcWZqpJAo1sroDdFj4Te1+J3eJjPIM5JU=; b=rr04A5h7BMT9Yj65iF6YDE
-        ECW6/MTrQ27G7qS9nzLXGSzUhxsev/OnnstAVSVWRkGBZkzJTUNJMhGCMiIbFPa1
-        t8oLSlqv9MT5IV1+qyfPZdniPIWxc6DGovX/mRPCIXQbyUySOHfmA9bcItA64CNu
-        ZglX+MDj09GgJhS2qTfgmtc6WJY4QCEUrdNSahqFmD2NIujb4iWAUI19B2aiMF4b
-        weI+pancvkoiZGslUBJEjf2spiHkfEw2skOlfYswPD6hZq4yCalNey0R31ecO8Pr
-        oBZk5Tkj+ZeA/WK+3NRYkNepwOIn1J90G+kr3W3mglvmI/XJpENb6rb6x3mdlxJA
-        ==
-X-ME-Sender: <xms:z1hoXmytAzEOi46fVw3GFhW_14BvvQR1Y1vWrMnMPUK4DGjvBo2RSA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedruddvuddgheekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepvfgrkhgr
-    shhhihcuufgrkhgrmhhothhouceoohdqthgrkhgrshhhihesshgrkhgrmhhotggthhhird
-    hjpheqnecukfhppedugedrfedrjeegrdduieeknecuvehluhhsthgvrhfuihiivgepuden
-    ucfrrghrrghmpehmrghilhhfrhhomhepohdqthgrkhgrshhhihesshgrkhgrmhhotggthh
-    hirdhjph
-X-ME-Proxy: <xmx:z1hoXiiUkX573jKbV_tcMGplJyH-eTvnmffAW08TYCowKgGJZ43ZvQ>
-    <xmx:z1hoXhO4Jm58TYxyrN5zn6entPRWUgacm00qBpgIiP8xHiW2q59qiQ>
-    <xmx:z1hoXgZXzw0UOQ9ISWNUI8F-0ZTWyBlm3ZZ489HaxtrKPs-w7c4QMQ>
-    <xmx:z1hoXjgGQP4vx36n0nQxZ9hGyM4-mPXoxwDnyYiOPkxeFxAyk-yhQQOwuNw>
-Received: from workstation (ae074168.dynamic.ppp.asahi-net.or.jp [14.3.74.168])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8B70A3060F09;
-        Tue, 10 Mar 2020 23:19:40 -0400 (EDT)
-Date:   Wed, 11 Mar 2020 12:19:38 +0900
-From:   Takashi Sakamoto <o-takashi@sakamocchi.jp>
-To:     Jules Irenge <jbi.octave@gmail.com>
-Cc:     boqun.feng@gmail.com, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Clemens Ladisch <clemens@ladisch.de>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Alexios Zavras <alexios.zavras@intel.com>,
+        id S1728104AbgCKDbA convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 10 Mar 2020 23:31:00 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:37131 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727659AbgCKDbA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 23:31:00 -0400
+Received: from mail-pf1-f197.google.com ([209.85.210.197])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <kai.heng.feng@canonical.com>)
+        id 1jBs5B-0007lF-FR
+        for netdev@vger.kernel.org; Wed, 11 Mar 2020 03:30:57 +0000
+Received: by mail-pf1-f197.google.com with SMTP id c17so425063pfi.20
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 20:30:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=JAj39y4cSkPD8V1E4/a4ReHRXvM9rblHsG5Ml1/Bwlg=;
+        b=Z7Hi+N/6E/AtZozhwX/KzaFvwCnYy62d4E3f+M36p/pWST3WtaFpbveexrVs23oQNV
+         M8bzh6zM+xtP7gzNcQIEOlsSFJqtmSsV95y5t7wMEhtjPWEixbGnhs5PO5dLbccWA/BU
+         ouGqVbIrngfB6srAeua7mRO5XnjO7eO/Os/UjE1ldN651IyH5SS3sfkPopRwR+9x26qH
+         Iz/14pWUSxm7pPr11ki5Y+pICN1SyQCtoNk8A7XEe++gWHEpT1G604y4EsqGLwOFe8IN
+         O9qED72BGvrdrP6nsjWOYImldlwjHrq8SXbFOV9jAEmWBdyxmO5HtucfaVlBsZD/4hIc
+         s4Aw==
+X-Gm-Message-State: ANhLgQ2oMuJhYQQ3w3ovhPo73tx9tJyA69wDimPw4LRrPAtFVbFviEtj
+        P2rUV0KKAzupyf70WkZaHr0Hv0h+GCbPyyTJCR85P3JfDgjdq8Lrp2cARyTj/loQiC1JhY/qLUx
+        GNdY9BMH2H0W466Brxha4nOPgD1ZhEJqPww==
+X-Received: by 2002:a63:1c4a:: with SMTP id c10mr911365pgm.252.1583897455932;
+        Tue, 10 Mar 2020 20:30:55 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vsEErfC0z0HElIsPQwHJRDDdA2hHxEBoyTBij97kd4MeYBIaxapOby5p099widGMm2WCiMq9w==
+X-Received: by 2002:a63:1c4a:: with SMTP id c10mr911334pgm.252.1583897455506;
+        Tue, 10 Mar 2020 20:30:55 -0700 (PDT)
+Received: from [192.168.1.208] (220-133-187-190.HINET-IP.hinet.net. [220.133.187.190])
+        by smtp.gmail.com with ESMTPSA id u3sm3623345pjv.32.2020.03.10.20.30.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 10 Mar 2020 20:30:54 -0700 (PDT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: [PATCH v3 2/2] net-sysfs: Ensure begin/complete are called in
+ speed_show() and duplex_show()
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+In-Reply-To: <425AF2D4-1FEE-437B-8520-452F818F7DEE@canonical.com>
+Date:   Wed, 11 Mar 2020 11:30:49 +0800
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jouni Hogander <jouni.hogander@unikie.com>,
+        Eric Dumazet <edumazet@google.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Allison Randal <allison@lohutok.net>,
+        Wang Hai <wanghai26@huawei.com>,
+        YueHaibing <yuehaibing@huawei.com>,
+        Kimberly Brown <kimbrownkd@gmail.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        "moderated list:FIREWIRE AUDIO DRIVERS and IEC 61883-1/6 PACKET..." 
-        <alsa-devel@alsa-project.org>
-Subject: Re: [PATCH 7/8] ALSA: firewire-tascam: Add missing annotation for
- tscm_hwdep_read_queue()
-Message-ID: <20200311031937.GB8197@workstation>
-Mail-Followup-To: Jules Irenge <jbi.octave@gmail.com>, boqun.feng@gmail.com,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Clemens Ladisch <clemens@ladisch.de>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Allison Randal <allison@lohutok.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "moderated list:FIREWIRE AUDIO DRIVERS and IEC 61883-1/6 PACKET..." <alsa-devel@alsa-project.org>
-References: <0/8>
- <20200311010908.42366-1-jbi.octave@gmail.com>
- <20200311010908.42366-8-jbi.octave@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200311010908.42366-8-jbi.octave@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, Andrew Lunn <andrew@lunn.ch>,
+        Li RongQing <lirongqing@baidu.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <BEFADD90-2EC7-4B46-8AF4-F1D1CCD81993@canonical.com>
+References: <20200207101005.4454-1-kai.heng.feng@canonical.com>
+ <20200207101005.4454-2-kai.heng.feng@canonical.com>
+ <425AF2D4-1FEE-437B-8520-452F818F7DEE@canonical.com>
+To:     David Miller <davem@davemloft.net>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 01:09:07AM +0000, Jules Irenge wrote:
-> Sparse reports a warning at tscm_hwdep_read_queue()
+
+
+> On Feb 20, 2020, at 13:45, Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
 > 
-> warning: context imbalance in tscm_hwdep_read_queue() - unexpected unlock
+>> 
+>> On Feb 7, 2020, at 18:10, Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
+>> 
+>> Device like igb gets runtime suspended when there's no link partner. We
+>> can't get correct speed under that state:
+>> $ cat /sys/class/net/enp3s0/speed
+>> 1000
+>> 
+>> In addition to that, an error can also be spotted in dmesg:
+>> [  385.991957] igb 0000:03:00.0 enp3s0: PCIe link lost
+>> 
+>> It's because the igb device doesn't get runtime resumed before calling
+>> get_link_ksettings().
+>> 
+>> So let's use a new helper to call begin() and complete() like what
+>> dev_ethtool() does, to runtime resume/suspend or power up/down the
+>> device properly.
+>> 
+>> Once this fix is in place, igb can show the speed correctly without link
+>> partner:
+>> $ cat /sys/class/net/enp3s0/speed
+>> -1
+>> 
+>> -1 here means SPEED_UNKNOWN, which is the correct value when igb is
+>> runtime suspended.
+>> 
+>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 > 
-> The root cause is the missing annotation at tscm_hwdep_read_queue()
-> Add the missing __releases(&tscm->lock) annotation
+> A gentle ping...
+
+Another gentle ping...
+
 > 
-> Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
-> ---
->  sound/firewire/tascam/tascam-hwdep.c | 1 +
->  1 file changed, 1 insertion(+)
- 
-This looks good.
+> Kai-Heng
+> 
+>> ---
+>> v3:
+>> - Specify -1 means SPEED_UNKNOWN.
+>> v2:
+>> - Add a new helper with begin/complete and use it in net-sysfs.
+>> 
+>> include/linux/ethtool.h |  4 ++++
+>> net/core/net-sysfs.c    |  4 ++--
+>> net/ethtool/ioctl.c     | 33 ++++++++++++++++++++++++++++++++-
+>> 3 files changed, 38 insertions(+), 3 deletions(-)
+>> 
+>> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
+>> index 95991e4300bf..785ec1921417 100644
+>> --- a/include/linux/ethtool.h
+>> +++ b/include/linux/ethtool.h
+>> @@ -160,6 +160,10 @@ extern int
+>> __ethtool_get_link_ksettings(struct net_device *dev,
+>> 			     struct ethtool_link_ksettings *link_ksettings);
+>> 
+>> +extern int
+>> +__ethtool_get_link_ksettings_full(struct net_device *dev,
+>> +				  struct ethtool_link_ksettings *link_ksettings);
+>> +
+>> /**
+>> * ethtool_intersect_link_masks - Given two link masks, AND them together
+>> * @dst: first mask and where result is stored
+>> diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+>> index 4c826b8bf9b1..a199e15a080f 100644
+>> --- a/net/core/net-sysfs.c
+>> +++ b/net/core/net-sysfs.c
+>> @@ -201,7 +201,7 @@ static ssize_t speed_show(struct device *dev,
+>> 	if (netif_running(netdev)) {
+>> 		struct ethtool_link_ksettings cmd;
+>> 
+>> -		if (!__ethtool_get_link_ksettings(netdev, &cmd))
+>> +		if (!__ethtool_get_link_ksettings_full(netdev, &cmd))
+>> 			ret = sprintf(buf, fmt_dec, cmd.base.speed);
+>> 	}
+>> 	rtnl_unlock();
+>> @@ -221,7 +221,7 @@ static ssize_t duplex_show(struct device *dev,
+>> 	if (netif_running(netdev)) {
+>> 		struct ethtool_link_ksettings cmd;
+>> 
+>> -		if (!__ethtool_get_link_ksettings(netdev, &cmd)) {
+>> +		if (!__ethtool_get_link_ksettings_full(netdev, &cmd)) {
+>> 			const char *duplex;
+>> 
+>> 			switch (cmd.base.duplex) {
+>> diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+>> index b987052d91ef..faeba247c1fb 100644
+>> --- a/net/ethtool/ioctl.c
+>> +++ b/net/ethtool/ioctl.c
+>> @@ -420,7 +420,9 @@ struct ethtool_link_usettings {
+>> 	} link_modes;
+>> };
+>> 
+>> -/* Internal kernel helper to query a device ethtool_link_settings. */
+>> +/* Internal kernel helper to query a device ethtool_link_settings. To be called
+>> + * inside begin/complete block.
+>> + */
+>> int __ethtool_get_link_ksettings(struct net_device *dev,
+>> 				 struct ethtool_link_ksettings *link_ksettings)
+>> {
+>> @@ -434,6 +436,35 @@ int __ethtool_get_link_ksettings(struct net_device *dev,
+>> }
+>> EXPORT_SYMBOL(__ethtool_get_link_ksettings);
+>> 
+>> +/* Internal kernel helper to query a device ethtool_link_settings. To be called
+>> + * outside of begin/complete block.
+>> + */
+>> +int __ethtool_get_link_ksettings_full(struct net_device *dev,
+>> +				      struct ethtool_link_ksettings *link_ksettings)
+>> +{
+>> +	int rc;
+>> +
+>> +	ASSERT_RTNL();
+>> +
+>> +	if (!dev->ethtool_ops->get_link_ksettings)
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	if (dev->ethtool_ops->begin) {
+>> +		rc = dev->ethtool_ops->begin(dev);
+>> +		if (rc  < 0)
+>> +			return rc;
+>> +	}
+>> +
+>> +	memset(link_ksettings, 0, sizeof(*link_ksettings));
+>> +	rc = dev->ethtool_ops->get_link_ksettings(dev, link_ksettings);
+>> +
+>> +	if (dev->ethtool_ops->complete)
+>> +		dev->ethtool_ops->complete(dev);
+>> +
+>> +	return rc;
+>> +}
+>> +EXPORT_SYMBOL(__ethtool_get_link_ksettings_full);
+>> +
+>> /* convert ethtool_link_usettings in user space to a kernel internal
+>> * ethtool_link_ksettings. return 0 on success, errno on error.
+>> */
+>> -- 
+>> 2.17.1
 
-Acked-by: Takashi Sakamoto <o-takashi@sakamocchi.jp>
-
-> diff --git a/sound/firewire/tascam/tascam-hwdep.c b/sound/firewire/tascam/tascam-hwdep.c
-> index c29a97f6f638..9801e33e7f2a 100644
-> --- a/sound/firewire/tascam/tascam-hwdep.c
-> +++ b/sound/firewire/tascam/tascam-hwdep.c
-> @@ -36,6 +36,7 @@ static long tscm_hwdep_read_locked(struct snd_tscm *tscm, char __user *buf,
->  
->  static long tscm_hwdep_read_queue(struct snd_tscm *tscm, char __user *buf,
->  				  long remained, loff_t *offset)
-> +	__releases(&tscm->lock)
->  {
->  	char __user *pos = buf;
->  	unsigned int type = SNDRV_FIREWIRE_EVENT_TASCAM_CONTROL;
-> -- 
-> 2.24.1
-
-
-Regards
-
-Takashi Sakamoto
