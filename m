@@ -2,160 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D740181C37
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 16:22:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A721181C3F
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 16:24:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729921AbgCKPWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 11:22:11 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:43941 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729408AbgCKPWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 11:22:10 -0400
-Received: by mail-qt1-f195.google.com with SMTP id l13so1812144qtv.10;
-        Wed, 11 Mar 2020 08:22:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+XuEC6YpsVyHyILAIOZV81/k0zuEtXi/W/9shV+FDZY=;
-        b=vcRq3YncvaNTTHaCYdaeDDF6B21k5AKx6Wpud88znCXg9psVExItvQwg03Stw0APZ9
-         e5ZrYywvWM1N91b7Nb8oULMndqhBMBNTBAqFYFGg4OYJXa6ykFuKsvfnF7tTwgBjrsAO
-         RUTnsNuuGCfJtj9Oco376etvq6vhCcPtaX5q11CJWX3g6AfkWO5i355ub5Ty9S5bolIm
-         mjpQzus9eurc6HIqJxmNHmAKnje2muhP7w7KG61+FJv3YZG+vZZNp/VfJojc1p1Ls9wv
-         KEwHq3WfJINq2QCn/OgYl28QzbBAYee6zF2kYSNTHOaaqIB6wf02d7oKdztbX2ka8lOu
-         lPWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+XuEC6YpsVyHyILAIOZV81/k0zuEtXi/W/9shV+FDZY=;
-        b=F9G3GSdpVLE3NtAuEqmtxFXEvaYGk7D9OwmsBWj6jXuWatSrBeD5aRiobTw9OrouwM
-         d6eIiYuygkp0Rq6e9J50NBgJyy9C6M8Er48AtEsjZlJnu5T9X0eeFoZkzl+MhFPMxFc9
-         EAn+d4+EbBomvdKPtWYxVWE9ZY0J5hUE/N3Q3Nh0AGgu4hkKU0y/y8nlqXkEoMxG19MF
-         08V9JC2XrHguyqycjSDdRME+ZtHtLzmMmBj1066184GFV7eaNTjr1xiUTWQJnfc+BxFX
-         RK4CKyoVPyzEXAdHiTrhv+gXxzPsvLzIZ10RQWvkSsbgdVPYrrb4G0m1EYFw7DF2r6S7
-         +lIA==
-X-Gm-Message-State: ANhLgQ2hLtOxc7XfKUGlxItge19mSAS49bTxY4mpDIqzvAlqQQYV4KXo
-        z32ZJV0Q+z+OjQNecajpSBUBskEQbtlynsZ49w0=
-X-Google-Smtp-Source: ADFU+vu5PjyZshowGTeFR0/IH2JAKGr6iZLxo5cTaZMf7pWDqBLv3ZhuaDcIVYbDW3g9u1AJFaLwc6ChU1vH8VZTzqk=
-X-Received: by 2002:ac8:1865:: with SMTP id n34mr2982890qtk.93.1583940127817;
- Wed, 11 Mar 2020 08:22:07 -0700 (PDT)
+        id S1729716AbgCKPYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 11:24:35 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57510 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729473AbgCKPYf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Mar 2020 11:24:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=Yu0aXcnXKd1/eSZvsEtqez/Tx/+0ZZbHQYLe/0GvBmw=; b=zrdy1jk03S78lp3aH/44+a5KZn
+        KRfSE0nbbHV0A2CuxEgSnVR46IdEeaFk0C+SfZJ/QLD4iJrm04hAlbVuSHpelNrkKJJYzzRNkBxOu
+        pZ6jiYvN3DD6sO9lv/UbcWECv4hg3UNUYOZq3LksDj9q6S5n3CD5kV19f2LsXOBeLL8k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jC3Dk-0004i9-SJ; Wed, 11 Mar 2020 16:24:32 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <rmk+kernel@arm.linux.org.uk>,
+        ioana.ciornei@nxp.com, olteanv@gmail.com,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net] net: dsa: Don't instantiate phylink for CPU/DSA ports unless needed
+Date:   Wed, 11 Mar 2020 16:24:24 +0100
+Message-Id: <20200311152424.18067-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200309231051.1270337-1-andriin@fb.com> <7467529c-b712-5314-ebbe-13f73ac01bdb@iogearbox.net>
-In-Reply-To: <7467529c-b712-5314-ebbe-13f73ac01bdb@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 11 Mar 2020 08:21:56 -0700
-Message-ID: <CAEf4BzaKF17LeV8jaFJ74vS4v4vJ3ri1Pv_d48Umvr3bXN+vew@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: add bpf_link_new_file that doesn't install FD
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 6:22 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 3/10/20 12:10 AM, Andrii Nakryiko wrote:
-> > Add bpf_link_new_file() API for cases when we need to ensure anon_inode is
-> > successfully created before we proceed with expensive BPF program attachment
-> > procedure, which will require equally (if not more so) expensive and
-> > potentially failing compensation detachment procedure just because anon_inode
-> > creation failed. This API allows to simplify code by ensuring first that
-> > anon_inode is created and after BPF program is attached proceed with
-> > fd_install() that can't fail.
-> >
-> > After anon_inode file is created, link can't be just kfree()'d anymore,
-> > because its destruction will be performed by deferred file_operations->release
-> > call. For this, bpf_link API required specifying two separate operations:
-> > release() and dealloc(), former performing detachment only, while the latter
-> > frees memory used by bpf_link itself. dealloc() needs to be specified, because
-> > struct bpf_link is frequently embedded into link type-specific container
-> > struct (e.g., struct bpf_raw_tp_link), so bpf_link itself doesn't know how to
-> > properly free the memory. In case when anon_inode file was successfully
-> > created, but subsequent BPF attachment failed, bpf_link needs to be marked as
-> > "defunct", so that file's release() callback will perform only memory
-> > deallocation, but no detachment.
-> >
-> > Convert raw tracepoint and tracing attachment to new API and eliminate
-> > detachment from error handling path.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->
-> Applied, but ...
->
-> [...]
-> > @@ -2337,20 +2374,24 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog)
-> >       }
-> >       bpf_link_init(&link->link, &bpf_tracing_link_lops, prog);
-> >
-> > -     err = bpf_trampoline_link_prog(prog);
-> > -     if (err)
-> > -             goto out_free_link;
-> > +     link_file = bpf_link_new_file(&link->link, &link_fd);
-> > +     if (IS_ERR(link_file)) {
-> > +             kfree(link);
-> > +             err = PTR_ERR(link_file);
-> > +             goto out_put_prog;
-> > +     }
-> >
-> > -     link_fd = bpf_link_new_fd(&link->link);
-> > -     if (link_fd < 0) {
-> > -             WARN_ON_ONCE(bpf_trampoline_unlink_prog(prog));
-> > -             err = link_fd;
-> > -             goto out_free_link;
-> > +     err = bpf_trampoline_link_prog(prog);
-> > +     if (err) {
-> > +             bpf_link_defunct(&link->link);
-> > +             fput(link_file);
-> > +             put_unused_fd(link_fd);
->
-> Given the tear-down in error case requires 3 manual steps here, I think this begs
-> for a small helper.
+By default, DSA drivers should configure CPU and DSA ports to their
+maximum speed. In many configurations this is sufficient to make the
+link work.
 
-Sounds good, will follow up. Thanks for applying!
+In some cases it is necessary to configure the link to run slower,
+e.g. because of limitations of the SoC it is connected to. Or back to
+back PHYs are used and the PHY needs to be driven in order to
+establish link. In this case, phylink is used.
 
->
-> > +             goto out_put_prog;
-> >       }
-> > +
-> > +     fd_install(link_fd, link_file);
-> >       return link_fd;
-> >
-> [...]
-> > @@ -2431,28 +2481,32 @@ static int bpf_raw_tracepoint_open(const union bpf_attr *attr)
-> >               goto out_put_prog;
-> >       }
-> >
-> [...]
-> >
-> > -     link_fd = bpf_link_new_fd(&raw_tp->link);
-> > -     if (link_fd < 0) {
-> > -             bpf_probe_unregister(raw_tp->btp, prog);
-> > -             err = link_fd;
-> > -             goto out_free_tp;
-> > +     err = bpf_probe_register(link->btp, prog);
-> > +     if (err) {
-> > +             bpf_link_defunct(&link->link);
-> > +             fput(link_file);
-> > +             put_unused_fd(link_fd);
->
-> Especially since you need it in multiple places; please follow-up.
->
-> > +             goto out_put_btp;
-> >       }
-> > +
-> > +     fd_install(link_fd, link_file);
-> >       return link_fd;
-> >
-> > -out_free_tp:
-> > -     kfree(raw_tp);
-> >   out_put_btp:
-> >       bpf_put_raw_tracepoint(btp);
-> >   out_put_prog:
-> >
->
+Only instantiate phylink if it is required. If there is no PHY, or no
+fixed link properties, phylink can upset a link which works in the
+default configuration.
+
+Fixes: 0e27921816ad ("net: dsa: Use PHYLINK for the CPU/DSA ports")
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+---
+ net/dsa/port.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index ed7dabb57985..ec13dc666788 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -648,9 +648,14 @@ static int dsa_port_phylink_register(struct dsa_port *dp)
+ int dsa_port_link_register_of(struct dsa_port *dp)
+ {
+ 	struct dsa_switch *ds = dp->ds;
++	struct device_node *phy_np;
+ 
+-	if (!ds->ops->adjust_link)
+-		return dsa_port_phylink_register(dp);
++	if (!ds->ops->adjust_link) {
++		phy_np = of_parse_phandle(dp->dn, "phy-handle", 0);
++		if (of_phy_is_fixed_link(dp->dn) || phy_np)
++			return dsa_port_phylink_register(dp);
++		return 0;
++	}
+ 
+ 	dev_warn(ds->dev,
+ 		 "Using legacy PHYLIB callbacks. Please migrate to PHYLINK!\n");
+@@ -665,11 +670,12 @@ void dsa_port_link_unregister_of(struct dsa_port *dp)
+ {
+ 	struct dsa_switch *ds = dp->ds;
+ 
+-	if (!ds->ops->adjust_link) {
++	if (!ds->ops->adjust_link && dp->pl) {
+ 		rtnl_lock();
+ 		phylink_disconnect_phy(dp->pl);
+ 		rtnl_unlock();
+ 		phylink_destroy(dp->pl);
++		dp->pl = NULL;
+ 		return;
+ 	}
+ 
+-- 
+2.25.1
+
