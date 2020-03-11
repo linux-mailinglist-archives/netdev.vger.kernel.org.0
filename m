@@ -2,114 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEBBB18177E
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 13:07:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C38418178A
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 13:10:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729334AbgCKMHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 08:07:51 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:53138 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728996AbgCKMHu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 08:07:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=bhQKSytNrMlamgQSZm2FJOEtPfmRbr1yTNiT+96ZmJA=; b=yweo+TmpFl6mBOKzHgPQnq6Ir3
-        rondYXYQRVfa33r/19vvW6Jbts1IOcniKf3VFz9Q6amiE/J62V3cag8TbV7bz/JQMYmsl+AzvQU7z
-        IOuKe5enRoSuBOVXymwSvejfh2cHRBPbx9W0LB4/ezjYh0cwFuHvFw4kSP2vOtaeIpp6UUB7ke28G
-        fLNZup+41XUjpir5JMWVCcvHPwecESqkBZt4TE/mOxd5xbRLNqlr959umwLHITQXjjgeWKquODhUq
-        /8xyafhofCkFUGRFNtYFi85FB0+/in2C0K1WQrCAVxxQJBsswwKNqe7CdKu/LhVC8Yj+cE3d3UX2r
-        lBxVKUuw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:56984 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jC09G-00037i-OC; Wed, 11 Mar 2020 12:07:42 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jC09F-0001cg-0l; Wed, 11 Mar 2020 12:07:41 +0000
-In-Reply-To: <20200311120643.GN25745@shell.armlinux.org.uk>
-References: <20200311120643.GN25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 5/5] net: phylink: pcs: add 802.3 clause 45 helpers
+        id S1729273AbgCKMKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 08:10:35 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57152 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729130AbgCKMKf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Mar 2020 08:10:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=RGRedE7yQEY4gTaGAIkq3EmD+XbZElrK80vPnapDIPI=; b=UrOQhSD3l9KySCzVTkWXrGdcRz
+        a6RfvhjpNNPjVDknvXKKbvacnMmqncrxAY4cHQhY8b3rB4mk9ienutLmQP8IJPUoa/w9qtcwnorUK
+        p1KgCJnn5t52ntkvc/7QMCEfLhst1xqljxpTsx/gPnFr2IUVkMmjAlttWmlaylxi3+kQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jC0Bo-0003L7-0F; Wed, 11 Mar 2020 13:10:20 +0100
+Date:   Wed, 11 Mar 2020 13:10:19 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc:     davem@davemloft.net, josua@solid-run.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: mvmdio: avoid error message for optional IRQ
+Message-ID: <20200311121019.GH5932@lunn.ch>
+References: <20200311024131.1289-1-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jC09F-0001cg-0l@rmk-PC.armlinux.org.uk>
-Date:   Wed, 11 Mar 2020 12:07:41 +0000
+In-Reply-To: <20200311024131.1289-1-chris.packham@alliedtelesis.co.nz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement helpers for PCS accessed via the MII bus using 802.3 clause
-45 cycles for 10GBASE-R. Only link up/down is supported, 10G full
-duplex is assumed.
+On Wed, Mar 11, 2020 at 03:41:30PM +1300, Chris Packham wrote:
+> Per the dt-binding the interrupt is optional so use
+> platform_get_irq_optional() instead of platform_get_irq(). Since
+> commit 7723f4c5ecdb ("driver core: platform: Add an error message to
+> platform_get_irq*()") platform_get_irq() produces an error message
+> 
+>   orion-mdio f1072004.mdio: IRQ index 0 not found
+> 
+> which is perfectly normal if one hasn't specified the optional property
+> in the device tree.
+> 
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> ---
+>  drivers/net/ethernet/marvell/mvmdio.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/mvmdio.c b/drivers/net/ethernet/marvell/mvmdio.c
+> index 0b9e851f3da4..d14762d93640 100644
+> --- a/drivers/net/ethernet/marvell/mvmdio.c
+> +++ b/drivers/net/ethernet/marvell/mvmdio.c
+> @@ -347,7 +347,7 @@ static int orion_mdio_probe(struct platform_device *pdev)
+>  	}
+>  
+>  
+> -	dev->err_interrupt = platform_get_irq(pdev, 0);
+> +	dev->err_interrupt = platform_get_irq_optional(pdev, 0);
+>  	if (dev->err_interrupt > 0 &&
+>  	    resource_size(r) < MVMDIO_ERR_INT_MASK + 4) {
+>  		dev_err(&pdev->dev,
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/phylink.c | 30 ++++++++++++++++++++++++++++++
- include/linux/phylink.h   |  2 ++
- 2 files changed, 32 insertions(+)
+Hi Chris
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 3ef20b34f5d6..b83236b4d10a 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -2241,4 +2241,34 @@ void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs)
- }
- EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_an_restart);
- 
-+#define C45_ADDR(d,a)	(MII_ADDR_C45 | (d) << 16 | (a))
-+void phylink_mii_c45_pcs_get_state(struct mdio_device *pcs,
-+				   struct phylink_link_state *state)
-+{
-+	struct mii_bus *bus = pcs->bus;
-+	int addr = pcs->addr;
-+	int stat;
-+
-+	stat = mdiobus_read(bus, addr, C45_ADDR(MDIO_MMD_PCS, MDIO_STAT1));
-+	if (stat < 0) {
-+		state->link = false;
-+		return;
-+	}
-+
-+	state->link = !!(stat & MDIO_STAT1_LSTATUS);
-+	if (!state->link)
-+		return;
-+
-+	switch (state->interface) {
-+	case PHY_INTERFACE_MODE_10GBASER:
-+		state->speed = SPEED_10000;
-+		state->duplex = DUPLEX_FULL;
-+		break;
-+
-+	default:
-+		break;
-+	}
-+}
-+EXPORT_SYMBOL_GPL(phylink_mii_c45_pcs_get_state);
-+
- MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index de591c2fb37e..8fa6df3b881b 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -323,4 +323,6 @@ int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
- 					const struct phylink_link_state *state);
- void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs);
- 
-+void phylink_mii_c45_pcs_get_state(struct mdio_device *pcs,
-+				   struct phylink_link_state *state);
- #endif
--- 
-2.20.1
+This is the minimum fix. So:
 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+However, you could also simplify
+
+        } else if (dev->err_interrupt == -EPROBE_DEFER) {
+                ret = -EPROBE_DEFER;
+                goto out_mdio;
+        }
+
+
+to just
+
+        } else {
+                ret = dev->err_interrupt;
+                goto out_mdio;
+        }
+
+    Andrew
