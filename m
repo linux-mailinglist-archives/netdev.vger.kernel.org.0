@@ -2,97 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D7081821A5
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 20:14:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE5A61821E2
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 20:15:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731067AbgCKTN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 15:13:57 -0400
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:43298 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730705AbgCKTN5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 15:13:57 -0400
-Received: by mail-qv1-f68.google.com with SMTP id c28so1407413qvb.10
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 12:13:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0BQ/obTVvYsf4e7ZrMtIjLfwdEhA7tlNVvd8b+igaj0=;
-        b=A2AMebl8U3Bh6z22mtRrPVJCZdel0mZZbu3dJ7QRd5IxlzbsjXx1ApIdjI3XWuNyuu
-         KCxkrtwQ/xImk6OQ6B92uBti2YH0gcAa5CZyFeuqBJmysa9QLsbzLDrojG1dyCJWyJSN
-         +D8xUIrweKe4T6EIKhNgo8pRZJ11ioyhB4Ol80UB9uSkPaCyB/BCMOQHNlCrTC6Yx9sz
-         AnE9yJr0XKkB7jp/IBMfY+RVm/mvSoSOTuAlUeWx88/xX2NgxUP7mhP5klsrYKVA9iZb
-         plJwQW2NsXB553WIL6NdTY7hqzu4s9tbE0LvnN01iwR9+fryGkb7pqgisaHUfvrWYRbV
-         SZHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0BQ/obTVvYsf4e7ZrMtIjLfwdEhA7tlNVvd8b+igaj0=;
-        b=VLJKAXTNwdTN0+jlSYNJBgd3Ms2wqsjnd69yOCIDBYN6rNggYmmpyWp2yj+B085tdF
-         Mjp8RRKFMl6E/v/lpW06XzxY254tPBVwi+Quu2rcS72F0CjeqVC1zzX/a/IysYBMExsR
-         oW8zy2BFU5nNK7xhTboijShGkn2GXiOIpYqBdrkR0kajNr0MRTzk/iX+gfyev9ASsgP5
-         hHODbmXF33luebIedVpCNHwuNlTK0V0G8vItYqWlp50Qh0At5rs4jnxRssqrAa18hdJY
-         fZVi876SCf4jVKmWjH+1rNqxaUbNeLo3kQNymxkSBKDK+ySxRDGt2Z5lDdro1q8v/QM1
-         obAQ==
-X-Gm-Message-State: ANhLgQ1GxmTJR4DqorA99ObrDEM/4Wkp9LOW0Vo6+ZlSzzxr7aDLn9SJ
-        mXHVKrTWzI4Ax5uh3JCPDGC49uW2QrdJww==
-X-Google-Smtp-Source: ADFU+vvaYRfaoTg6ygK4D4MGBgxlXD7urSScfQZb3YMZCr2VggzCGq0JUwUU7GTDTBFw3X516UzpZQ==
-X-Received: by 2002:ad4:4026:: with SMTP id q6mr2288224qvp.118.1583954036302;
-        Wed, 11 Mar 2020 12:13:56 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:29fb:61fe:d751:d9c1:d6c1])
-        by smtp.gmail.com with ESMTPSA id a1sm25682091qkd.126.2020.03.11.12.13.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Mar 2020 12:13:55 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 19A69C3C60; Wed, 11 Mar 2020 16:13:53 -0300 (-03)
-Date:   Wed, 11 Mar 2020 16:13:53 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Paul Blakey <paulb@mellanox.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: Re: [PATCH net-next ct-offload v3 00/15] Introduce connection
- tracking offload
-Message-ID: <20200311191353.GL2546@localhost.localdomain>
-References: <1583937238-21511-1-git-send-email-paulb@mellanox.com>
+        id S1731305AbgCKTPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 15:15:23 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:47018 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731059AbgCKTPV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 15:15:21 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 02BJAr2I016924
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 12:15:20 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=32dYBsbl45icJAcX80thj3Nctm0A1BOQtbVtD6yyyCw=;
+ b=biYf21h7Ul5H4mY8JHeIXdu9hXlLKU/zGzbd0//bgZKT/mcOpNMgFk+LDwBsdMIcxBCY
+ Ej6tmnkdJX0hsvrc2s3YfpSIsjeJnniLzItAJ/XjOA2V242LSvA9OV7QTQYlmNarCPiE
+ h0QlS1Og5twoQbymEwxU+UBxz9WgfRmwx8M= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2yp6uw8tcr-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 12:15:20 -0700
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Wed, 11 Mar 2020 12:15:18 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 9E6D82EC2EE5; Wed, 11 Mar 2020 12:15:16 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <sdf@google.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf-next] selftests/bpf: make tcp_rtt test more robust to failures
+Date:   Wed, 11 Mar 2020 12:15:13 -0700
+Message-ID: <20200311191513.3954203-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1583937238-21511-1-git-send-email-paulb@mellanox.com>
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-11_09:2020-03-11,2020-03-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
+ mlxlogscore=999 bulkscore=0 suspectscore=8 clxscore=1015
+ priorityscore=1501 impostorscore=0 spamscore=0 phishscore=0 adultscore=0
+ lowpriorityscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2001150001 definitions=main-2003110107
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 04:33:43PM +0200, Paul Blakey wrote:
-> Applying this patchset
-> --------------------------
-> 
-> On top of current net-next ("r8169: simplify getting stats by using netdev_stats_to_stats64"),
-> pull Saeed's ct-offload branch, from git git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git
-> and fix the following non trivial conflict in fs_core.c as follows:
-> #define OFFLOADS_MAX_FT 2
-> #define OFFLOADS_NUM_PRIOS 2
-> #define OFFLOADS_MIN_LEVEL (ANCHOR_MIN_LEVEL + OFFLOADS_NUM_PRIOS)
-> 
-> Then apply this patchset.
+Switch to non-blocking accept and wait for server thread to exit before
+proceeding. I noticed that sometimes tcp_rtt server thread failure would
+"spill over" into other tests (that would run after tcp_rtt), probably just
+because server thread exits much later and tcp_rtt doesn't wait for it.
 
-I did this and I couldn't get tc offloading (not ct) to work anymore.
-Then I moved to current net-next (the commit you mentioned above), and
-got the same thing.
+Fixes: 8a03222f508b ("selftests/bpf: test_progs: fix client/server race in tcp_rtt")
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ .../selftests/bpf/prog_tests/tcp_rtt.c        | 30 +++++++++++--------
+ 1 file changed, 18 insertions(+), 12 deletions(-)
 
-What I can tell so far is that 
-perf script | head
-       handler11  4415 [009]  1263.438424: probe:mlx5e_configure_flower__return: (ffffffffc094fa80 <- ffffffff93dc510a) arg1=0xffffffffffffffa1
+diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
+index f4cd60d6fba2..d235eea0de27 100644
+--- a/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
++++ b/tools/testing/selftests/bpf/prog_tests/tcp_rtt.c
+@@ -188,7 +188,7 @@ static int start_server(void)
+ 	};
+ 	int fd;
+ 
+-	fd = socket(AF_INET, SOCK_STREAM, 0);
++	fd = socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0);
+ 	if (fd < 0) {
+ 		log_err("Failed to create server socket");
+ 		return -1;
+@@ -205,6 +205,7 @@ static int start_server(void)
+ 
+ static pthread_mutex_t server_started_mtx = PTHREAD_MUTEX_INITIALIZER;
+ static pthread_cond_t server_started = PTHREAD_COND_INITIALIZER;
++static volatile bool server_done = false;
+ 
+ static void *server_thread(void *arg)
+ {
+@@ -222,23 +223,22 @@ static void *server_thread(void *arg)
+ 
+ 	if (CHECK_FAIL(err < 0)) {
+ 		perror("Failed to listed on socket");
+-		return NULL;
++		return ERR_PTR(err);
+ 	}
+ 
+-	client_fd = accept(fd, (struct sockaddr *)&addr, &len);
++	while (!server_done) {
++		client_fd = accept(fd, (struct sockaddr *)&addr, &len);
++		if (client_fd == -1 && errno == EAGAIN)
++			continue;
++		break;
++	}
+ 	if (CHECK_FAIL(client_fd < 0)) {
+ 		perror("Failed to accept client");
+-		return NULL;
++		return ERR_PTR(err);
+ 	}
+ 
+-	/* Wait for the next connection (that never arrives)
+-	 * to keep this thread alive to prevent calling
+-	 * close() on client_fd.
+-	 */
+-	if (CHECK_FAIL(accept(fd, (struct sockaddr *)&addr, &len) >= 0)) {
+-		perror("Unexpected success in second accept");
+-		return NULL;
+-	}
++	while (!server_done)
++		usleep(50);
+ 
+ 	close(client_fd);
+ 
+@@ -249,6 +249,7 @@ void test_tcp_rtt(void)
+ {
+ 	int server_fd, cgroup_fd;
+ 	pthread_t tid;
++	void *server_res;
+ 
+ 	cgroup_fd = test__join_cgroup("/tcp_rtt");
+ 	if (CHECK_FAIL(cgroup_fd < 0))
+@@ -267,6 +268,11 @@ void test_tcp_rtt(void)
+ 	pthread_mutex_unlock(&server_started_mtx);
+ 
+ 	CHECK_FAIL(run_test(cgroup_fd, server_fd));
++
++	server_done = true;
++	pthread_join(tid, &server_res);
++	CHECK_FAIL(IS_ERR(server_res));
++
+ close_server_fd:
+ 	close(server_fd);
+ close_cgroup_fd:
+-- 
+2.17.1
 
-and that's EOPNOTSUPP. Not sure yet where that is coming from.
-
-
-Btw, it's prooving to be a nice exercise to find out why it is failing
-to offload. Perhaps some netdev_err_once() is welcomed.
-
-  Marcelo
