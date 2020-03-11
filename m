@@ -2,73 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD609181D08
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 16:54:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E85FB181D80
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 17:13:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730195AbgCKPyy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 11:54:54 -0400
-Received: from bmailout2.hostsharing.net ([83.223.78.240]:58981 "EHLO
-        bmailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730053AbgCKPyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 11:54:54 -0400
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id C40B128008AFC;
-        Wed, 11 Mar 2020 16:54:51 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 8B36DB1FCF; Wed, 11 Mar 2020 16:54:51 +0100 (CET)
-Date:   Wed, 11 Mar 2020 16:54:51 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Martin Mares <mj@ucw.cz>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Thomas Graf <tgraf@suug.ch>,
+        id S1730267AbgCKQNz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 12:13:55 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:34164 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730265AbgCKQNz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 12:13:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1583943234;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=C2dn7dDfcp/5qsKW13nLYAsv37ZI1/+LekwqWkQ/smk=;
+        b=I9JKLmSF1R3Z6P3yNFBr+t4ohbGFCb2ZpG5W2xAd+JFwnSqydyo9fCzsDuMMtAyPvM0rbh
+        gbqXHJxbFPqBvnSzztln52ZYlkE34uB+UpVUIaE8ae+NMDaEKu46kJzH8kB1DQ44LaztS8
+        pEHAfxWId0WwvFpfHWzxzZVMsdgIBQ4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-152-31R9xhpePXm_8X4A4fDqgQ-1; Wed, 11 Mar 2020 12:13:45 -0400
+X-MC-Unique: 31R9xhpePXm_8X4A4fDqgQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 37D8CDB21;
+        Wed, 11 Mar 2020 16:13:42 +0000 (UTC)
+Received: from krava (ovpn-204-40.brq.redhat.com [10.40.204.40])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 06C818F354;
+        Wed, 11 Mar 2020 16:13:34 +0000 (UTC)
+Date:   Wed, 11 Mar 2020 17:13:20 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Stephane Eranian <eranian@google.com>
+Cc:     Andi Kleen <ak@linux.intel.com>, Ian Rogers <irogers@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH nf-next 3/3] netfilter: Introduce egress hook
-Message-ID: <20200311155451.e3mtgrdvuiujgvs6@wunner.de>
-References: <cover.1583927267.git.lukas@wunner.de>
- <14ab7e5af20124a34a50426fd570da7d3b0369ce.1583927267.git.lukas@wunner.de>
- <a57687ae-2da6-ca2a-1c84-e4332a5e4556@iogearbox.net>
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Igor Lubashev <ilubashe@akamai.com>,
+        Alexey Budankov <alexey.budankov@linux.intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Jiwei Sun <jiwei.sun@windriver.com>,
+        yuzhoujian <yuzhoujian@didichuxing.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH] perf tools: add support for lipfm4
+Message-ID: <20200311161320.GA254105@krava>
+References: <20200310185003.57344-1-irogers@google.com>
+ <20200310195915.GA1676879@tassilo.jf.intel.com>
+ <CABPqkBRQo=bEOiCFGFjwcM8TZaXMFyaL7o1hcFd6Bc3w+LhJQA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a57687ae-2da6-ca2a-1c84-e4332a5e4556@iogearbox.net>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <CABPqkBRQo=bEOiCFGFjwcM8TZaXMFyaL7o1hcFd6Bc3w+LhJQA@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 03:05:16PM +0100, Daniel Borkmann wrote:
-> no need to make the fast-path slower for exotic protocols
-> which can be solved through other means.
-
-As said the fast-path gets faster, not slower.
-
-> > * Without this commit:
-> >    Result: OK: 34240933(c34238375+d2558) usec, 100000000 (60byte,0frags)
-> >    2920481pps 1401Mb/sec (1401830880bps) errors: 0
-> > 
-> > * With this commit:
-> >    Result: OK: 33997299(c33994193+d3106) usec, 100000000 (60byte,0frags)
-> >    2941410pps 1411Mb/sec (1411876800bps) errors: 0
+On Tue, Mar 10, 2020 at 02:39:23PM -0700, Stephane Eranian wrote:
+> On Tue, Mar 10, 2020 at 12:59 PM Andi Kleen <ak@linux.intel.com> wrote:
+> >
+> > On Tue, Mar 10, 2020 at 11:50:03AM -0700, Ian Rogers wrote:
+> > > This patch links perf with the libpfm4 library.
+> > > This library contains all the hardware event tables for all
+> > > processors supported by perf_events. This is a helper library
+> > > that help convert from a symbolic event name to the event
+> > > encoding required by the underlying kernel interface. This
+> > > library is open-source and available from: http://perfmon2.sf.net.
+> >
+> > For most CPUs the builtin perf JSON event support should make
+> > this redundant.
+> >
+> We decided to post this patch to propose an alternative to the JSON
+> file approach. It could be an option during the build.
+> The libpfm4 library has been around for 15 years now. Therefore, it
+> supports a lot of processors core and uncore and it  is very portable.
+> The key value add I see is that this is a library that can be, and has
+> been, used by tool developers directly in their apps. It can
+> work with more than Linux perf_events interface. It is not tied to the
+> interface. It has well defined and documented entry points.
+> We do use libpfm4 extensively at Google in both the perf tool and
+> applications. The PAPI toolkit also relies on this library.
 > 
-> So you are suggesting that we've just optimized the stack by adding more
-> hooks to it ...?
+> I don't see this as competing with the JSON approach. It is just an
+> option I'd like to offer to users especially those familiar
+> with it in their apps.
 
-Since I've provided numbers to disprove your allegation, I think the
-onus is now on you to prove that your allegation holds any water.
-Please reproduce the measurements and let's go from there.
+I dont mind having it, in fact I found really old email where I'm
+asking Peter about that ;-) and he wasn't very keen about that:
+  https://lore.kernel.org/lkml/1312806326.10488.30.camel@twins/
 
-This isn't much work, I've made it really easy by providing all the
-steps necessary in the commit message.
+not sure what was the actual reason at that time and if anything
+changed since.. Peter?
 
-Thanks,
+btw I can't apply even that v2 on latest Arnaldo's branch
 
-Lukas
+jirka
+
