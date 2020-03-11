@@ -2,138 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1140C181E0C
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 17:36:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0B0F181E31
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 17:45:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730172AbgCKQgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 12:36:03 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:44004 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729631AbgCKQgD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 12:36:03 -0400
-Received: by mail-ed1-f65.google.com with SMTP id dc19so3609257edb.10;
-        Wed, 11 Mar 2020 09:36:01 -0700 (PDT)
+        id S1730341AbgCKQpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 12:45:12 -0400
+Received: from mail-wr1-f53.google.com ([209.85.221.53]:40718 "EHLO
+        mail-wr1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729809AbgCKQpM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 12:45:12 -0400
+Received: by mail-wr1-f53.google.com with SMTP id p2so3524124wrw.7
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 09:45:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ALDnh6/CiSndTdMaMbzSmsCEBXICNVByiI58zX8By/I=;
-        b=QWJpHsi+FrCvfO7t8tcTBagtzonzmYs7D0NsTuKBNsIBiAvI1+lnlkze93dfKJ8d8C
-         YFliSCZ1GPyjyA809zaN6Q9W2yQ702WCB5QJmqHvIRqUz+OGzOZzuAnCD7uax0PWFkIW
-         tbnHPkKDZa5O64roVmsiaWFe7d7RumzCZStk9dOaUEL8ggy+KE4NWLEt1v4ZQyuWLJ6g
-         vfrEUlSM9sMCcR968B/LrPbp5qx00iHoPc0eaiTImDv6WOduOYT32j9yE2LaxorMZF3H
-         NsqU9AygX6zFUYnb16rOLsMxWRh1ZN455ze0cD/QGMAiWs/V67FEayNKbyw+R3QN/i+P
-         MUFA==
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=2FyLM1glfWEEIL1y2h67Mbi0dhz3fT8aZIsT6NQjYo4=;
+        b=rK+m5l6+C6/SIzA5E029VlZk6kxv1FZRPkwid/zoC5Uzp6HgHaUpz7f9XB8QJyZzLf
+         g97VBKOUmyij6uTQRqBPkBlZiGIol0VygV43JN5lDBFYIvjKkr6HViRUZDRvM0a65ij/
+         GKR1AapqP1BhTTQro7BK3yssJpoGQtkZoUpgGcmB32ouNiQ9S8bVrk1AwT4AK7bvRzJQ
+         jgwd3b2N2SmrbkirXMyNctOYmg2dUOUvCxnTHvOVgIJww7YFQj6zwZrSjh2G1t9RC22F
+         uIBDa4triVNNFLc/h37J5UoZwicO6PWQ++o2Ot8v580a7D/iDkETDJ8fz3wq9HX/s2z1
+         fxfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=ALDnh6/CiSndTdMaMbzSmsCEBXICNVByiI58zX8By/I=;
-        b=GikLRHBvWyb4cXjfLU3h/jLLdivQoYWRpM5V6IFu9MvfdDsxBmFWsIyCMNvgNXyjlw
-         vOklvhY+v1jUDZBFi3VZ/LivHRRb/v0j9CvwazRIjZgo3D8F3yJdslYlN/hqOGzL65BW
-         6qwhCiZMDTBFQadM7um8LPhnq29SEXZ6U3e5eSV7Fk5q1xFJlXlZiByfoUtpZy6wqiuJ
-         I5dUaClKRZ4R/eFZd/agWtt43sCRC9FhkQxWUGYbQkxyWPJbEeZnY5jcz7JTSSC94pkg
-         AMm5/VHiskx/u0R/vWo0gpYzrJW48S6QR2xEnuRHXOp8g3P8rENmkc9hq0MdcOa5OwC5
-         EiKQ==
-X-Gm-Message-State: ANhLgQ171P2QquzFwvHtPjBSBrdqxIIvqyXmrPd+O/a6Ec+vZeW1cjjE
-        NZNPaN33/mF1HSXKOaZdTyqVf/4p
-X-Google-Smtp-Source: ADFU+vvlHudoRMVXJNn72RmqLiDxqatxcxOaA+o2Z5ntcmI8xTGB941mzo4D3OrqCLW8mTFID9KQBg==
-X-Received: by 2002:a50:b043:: with SMTP id i61mr3639227edd.194.1583944560108;
-        Wed, 11 Mar 2020 09:36:00 -0700 (PDT)
-Received: from [10.67.48.239] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g31sm4438951edd.53.2020.03.11.09.35.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Mar 2020 09:35:59 -0700 (PDT)
-Subject: Re: [PATCH -next 030/491] BROADCOM GENET ETHERNET DRIVER: Use
- fallthrough;
-To:     Joe Perches <joe@perches.com>, Doug Berger <opendmb@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <cover.1583896344.git.joe@perches.com>
- <e78fb08d1dcf0d95175fc2866c344fbef2ff7065.1583896349.git.joe@perches.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <a61c388f-bb42-e6e6-7381-5e99c8dad95e@gmail.com>
-Date:   Wed, 11 Mar 2020 09:35:54 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=2FyLM1glfWEEIL1y2h67Mbi0dhz3fT8aZIsT6NQjYo4=;
+        b=eAJRV9tw3DZ+Wbx7qnK/CaOyigJG2mQb9xElpR+KGjuvgzyVKnuJpX2Adb8tByMhrK
+         6eQJ64mATPtYfrzVSQrrd1kZ4XtWI/+1rgc/Coc3NFF7SfyxsW8fuarkqActebG2ZF5o
+         R3MRCEuu1BW5UDGiC3mozlf0nAf/y64Tcfl88EwUkzky5h15k8qiwRrH7H6aRtzEPX6V
+         lY0v66EJQSCUyGAPr7Ak49ugzwWZCctCyBCEwYWCs4MFYsQGrwdyK3j3JOlUZathyQZk
+         iNxlOesrrzVlSnX0cjDeBkUfnbFyA/L4tOyhtmwnXf/i8AnB02l0XTEbQGRs6yCMuBq5
+         xrdA==
+X-Gm-Message-State: ANhLgQ1CqpS/7wyK+tkCLSKkAJmz9AAZp4s37/7Muins1UHa2ZGSkP8e
+        BY0fXfB+baoZmjoDeqGtozX6/IO67nirhRri6YtiT+GD
+X-Google-Smtp-Source: ADFU+vskgipGsBpSWwqRewmiAzmAPBe5gSanH4yBWH2n9wJfOjJTgE+gizLRQG2F6KNBRSYoEC9VAeg9Dgm3loFi+74=
+X-Received: by 2002:a5d:4a49:: with SMTP id v9mr5375482wrs.343.1583945109184;
+ Wed, 11 Mar 2020 09:45:09 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <e78fb08d1dcf0d95175fc2866c344fbef2ff7065.1583896349.git.joe@perches.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From:   Chris Preimesberger <ccpisme@gmail.com>
+Date:   Wed, 11 Mar 2020 11:44:33 -0500
+Message-ID: <CAM0+VB8HvLR-KRPZZ643djhGzVPbECm_-ffh5vxp+80mxeANBg@mail.gmail.com>
+Subject: ethtool -m bug: transceiver made for fiber is misreported as
+ supporting copper
+To:     linville@tuxdriver.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/10/20 9:51 PM, Joe Perches wrote:
-> Convert the various uses of fallthrough comments to fallthrough;
-> 
-> Done via script
-> Link: https://lore.kernel.org/lkml/b56602fcf79f849e733e7b521bb0e17895d390fa.1582230379.git.joe.com/
-> 
-> Signed-off-by: Joe Perches <joe@perches.com>
+Hello,
 
-Please fix the subject to be:
 
-net: bcmgenet: Use fallthrough;
+I noticed a problem of fiber optic transceiver OM4 distance ratings
+being mis-reported as copper distance when using ethtool v5.4, and I
+thing the root cause is an ethtool bug. Can this be fixed so that
+ethtool reports "Length (OM4)" in meters while fiber optic
+transceivers are installed, and "Length (Copper)" in meters while
+copper transceivers are installed?  Thank you.
 
-to match commits done to this file.
--- 
-Florian
+Here's more info:
+
+According to SFF-8472 rev 12.3, Table 4-1:
+A0h 18, Byte 1 is dedicated to indicating the supported length of
+either 50=C2=B5m OM4 fiber cable, or copper cable, with this description:
+=E2=80=9C
+Link length supported for 50um OM4 fiber, units of 10m.
+Alternatively copper or direct attach cable, units of m
+=E2=80=9C
+
+Below is a CLI transcript showing the problem; ethtool incorrectly
+indicates that a fiber optic transceiver rated for up to 100m of OM4
+fiber is made for up to 10m of copper:
+
+tech1@E13:~$ ethtool --version
+ethtool version 5.4
+tech1@E13:~$ sudo ethtool -m enp3s0f1
+                Identifier                                : 0x03 (SFP)
+                Extended identifier                       : 0x04
+(GBIC/SFP defined by 2-wire interface ID)
+                Connector                                 : 0x07 (LC)
+                Transceiver codes                         : 0x00 0x00
+0x00 0x00 0x00 0x00 0x00 0x00 0x02
+                Transceiver type                          : Extended:
+100G Base-SR4 or 25GBase-SR
+                Encoding                                  : 0x06 (64B/66B)
+                BR, Nominal                               : 26000MBd
+                Rate identifier                           : 0x00 (unspecifi=
+ed)
+                Length (SMF,km)                           : 0km
+                Length (SMF)                              : 0m
+                Length (50um)                             : 100m
+                Length (62.5um)                           : 100m
+                Length (Copper)                           : 10m
+                Length (OM3)                              : 70m
+                Laser wavelength                          : 850nm
+                Vendor name                               : FS
+                Vendor OUI                                : 00:17:6a
+                Vendor PN                                 : SFP28-25GSR-85
+                Vendor rev                                : 01
+                Option values                             : 0x08 0x1a
+                Option                                    : RX_LOS implemen=
+ted
+                Option                                    : TX_FAULT implem=
+ented
+                Option                                    : TX_DISABLE
+implemented
+                Option                                    : Retimer or
+CDR implemented
+                BR margin, max                            : 0%
+                BR margin, min                            : 0%
+                Vendor SN                                 : G1907043057
+                Date code                                 : 190922
+                Optical diagnostics support               : Yes
+                Laser bias current                        : 6.104 mA
+                Laser output power                        : 1.5198 mW / 1.8=
+2 dBm
+                Receiver signal average optical power     : 1.4392 mW / 1.5=
+8 dBm
+                Module temperature                        : 41.52
+degrees C / 106.74 degrees F
+                Module voltage                            : 3.3840 V
+                Alarm/warning flags implemented           : Yes
+                Laser bias current high alarm             : Off
+                Laser bias current low alarm              : Off
+                Laser bias current high warning           : Off
+                Laser bias current low warning            : Off
+                Laser output power high alarm             : Off
+                Laser output power low alarm              : Off
+                Laser output power high warning           : Off
+                Laser output power low warning            : Off
+                Module temperature high alarm             : Off
+                Module temperature low alarm              : Off
+                Module temperature high warning           : Off
+                Module temperature low warning            : Off
+                Module voltage high alarm                 : Off
+                Module voltage low alarm                  : Off
+                Module voltage high warning               : Off
+                Module voltage low warning                : Off
+                Laser rx power high alarm                 : Off
+                Laser rx power low alarm                  : Off
+                Laser rx power high warning               : Off
+                Laser rx power low warning                : Off
+                Laser bias current high alarm threshold   : 11.000 mA
+                Laser bias current low alarm threshold    : 2.000 mA
+                Laser bias current high warning threshold : 10.000 mA
+                Laser bias current low warning threshold  : 3.000 mA
+                Laser output power high alarm threshold   : 2.2387 mW / 3.5=
+0 dBm
+                Laser output power low alarm threshold    : 0.1258 mW
+/ -9.00 dBm
+                Laser output power high warning threshold : 2.0000 mW / 3.0=
+1 dBm
+                Laser output power low warning threshold  : 0.1737 mW
+/ -7.60 dBm
+                Module temperature high alarm threshold   : 80.00
+degrees C / 176.00 degrees F
+                Module temperature low alarm threshold    : -10.00
+degrees C / 14.00 degrees F
+                Module temperature high warning threshold : 70.00
+degrees C / 158.00 degrees F
+                Module temperature low warning threshold  : 0.00
+degrees C / 32.00 degrees F
+                Module voltage high alarm threshold       : 3.6000 V
+                Module voltage low alarm threshold        : 3.0000 V
+                Module voltage high warning threshold     : 3.5000 V
+                Module voltage low warning threshold      : 3.1000 V
+                Laser rx power high alarm threshold       : 2.2387 mW / 3.5=
+0 dBm
+                Laser rx power low alarm threshold        : 0.0630 mW
+/ -12.01 dBm
+                Laser rx power high warning threshold     : 2.0000 mW / 3.0=
+1 dBm
+                Laser rx power low warning threshold      : 0.0870 mW
+/ -10.60 dBm
+tech1@E13:~$ sudo ethtool -m enp3s0f1 hex on
+Offset                   Values
+------                      ------
+0x0000:                 03 04 07 00 00 00 00 00 00 00 00 06 ff 00 00 00
+0x0010:                 0a 0a 0a 07 46 53 20 20 20 20 20 20 20 20 20 20
+0x0020:                 20 20 20 20 02 00 17 6a 53 46 50 32 38 2d 32 35
+0x0030:                 47 53 52 2d 38 35 20 20 30 31 20 20 03 52 00 b7
+0x0040:                 08 1a 68 00 47 31 39 30 37 30 34 33 30 35 37 20
+0x0050:                 20 20 20 20 31 39 30 39 32 32 20 20 68 fa 08 56
+0x0060:                 00 00 11 cc 89 48 9f a4 5a 30 d2 72 a0 2d 5c fe
+0x0070:                 4d b0 fe 00 00 00 00 00 00 00 00 00 09 18 d7 8f
+0x0080:                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x0090:                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x00a0:                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x00b0:                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x00c0:                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x00d0:                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x00e0:                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x00f0:                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x0100:                 50 00 f6 00 46 00 00 00 8c a0 75 30 88 b8 79 18
+0x0110:                 15 7c 03 e8 13 88 05 dc 57 73 04 ea 4e 20 06 c9
+0x0120:                 57 73 02 76 4e 20 03 66 00 00 00 00 00 00 00 00
+0x0130:                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x0140:                 00 00 00 00 3f 80 00 00 00 00 00 00 01 00 00 00
+0x0150:                 01 00 00 00 01 00 00 00 01 00 00 00 00 00 00 f7
+0x0160:                 29 64 84 30 0b ec 3a ee 38 38 00 00 00 00 30 00
+0x0170:                 00 00 82 25 00 00 00 00 00 00 00 00 00 00 00 00
+0x0180:                 43 4d 55 49 41 52 41 43 41 41 31 30 2d 33 32 32
+0x0190:                 37 2d 30 31 56 30 31 20 01 00 46 00 00 00 00 cf
+0x01a0:                 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x01b0:                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x01c0:                 53 46 50 2d 32 35 47 2d 53 52 2d 53 20 20 20 20
+0x01d0:                20 20 20 20 30 34 00 00 00 00 00 00 00 00 00 7a
+0x01e0:                00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+0x01f0:                 00 00 00 00 00 00 00 00 ff ff ff ff 00 00 00 00
+tech1@E13:~$
+
+
+If you have any questions, or need more info, please ask. Thank you!!
+
+--=20
+Best regards,
+Chris Preimesberger
+Otsego, MN
