@@ -2,85 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF3B21811C6
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 08:21:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B9F7181249
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 08:47:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728352AbgCKHVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 03:21:14 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40098 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728242AbgCKHVO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Mar 2020 03:21:14 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id EC2FDAF4E;
-        Wed, 11 Mar 2020 07:21:12 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 855EFE0C0A; Wed, 11 Mar 2020 08:21:12 +0100 (CET)
-Date:   Wed, 11 Mar 2020 08:21:12 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Andrej Ras <kermitthekoder@gmail.com>
-Subject: Re: What does this code do
-Message-ID: <20200311072112.GF8012@unicorn.suse.cz>
-References: <CAHfguVw9unGL-_ETLzRSVCFqHH5_etafbj1MLaMB+FywLpZjTA@mail.gmail.com>
- <20200310221221.GD8012@unicorn.suse.cz>
- <CAHfguVy4=Gtm0cmToswashVSwmS+kOk57qg+H+jspaHrH8tJkg@mail.gmail.com>
- <20200311055343.GE8012@unicorn.suse.cz>
+        id S1728408AbgCKHrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 03:47:11 -0400
+Received: from mail-wm1-f45.google.com ([209.85.128.45]:53358 "EHLO
+        mail-wm1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726160AbgCKHrL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 03:47:11 -0400
+Received: by mail-wm1-f45.google.com with SMTP id 25so933729wmk.3
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 00:47:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cVIeeWX2Dn8ox2taKL8D7lPhN2yGhac8uborQquV7Vs=;
+        b=t3qm6R4zv7lVkZBaAwkiFxtEqQHukNV0wbOlee7r6pIbTMLwxLWMhgH6nSiIeF1vva
+         r8trSIlp9Wjh7TulcnSMY41IVcL7PQW2Bh2fVYj/rVlx4pEd8iVuHZHWWkfgoP9pYXbA
+         xPak5DmunNhNhxl70SH9v3fOOLtu52pIWBCtXzJETiQysAYr+jtcIVfEXzhVM2AJsxqf
+         9W38/wi0D4r0ND0W5rjexrYfvGLNWpJeIcn003lYuy2AlAR3SZUZ3UxBJtia2YZrZLO3
+         vouPy7QYAkcV4YLecDn/vKQXP5zAQyXizOzca3qf5gecfZrB7SvOTnADkvV/3hZx6CZi
+         vG8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cVIeeWX2Dn8ox2taKL8D7lPhN2yGhac8uborQquV7Vs=;
+        b=Wf3hvz0xUQFMhGjlfAaNe7BLH7riC+Of2VILGDjT2PXmgTSg3aB1SVjqXUynIZtlTc
+         XDjEXwOu4N0yZzvqKgolavihLO0M0DG7JNXDUNLm0JT00xFdYRBsQVzuAgwl7RaigoSp
+         +MOAX++HHcpRqCXMe6za5p1qEt2Lu1WxzK1CjSaPSEvu5Q33OFLROelqOC71iBs0oSe3
+         FrZDtgn3Pb2T96YAYARRsixbWoCTPHyhmND8Yxl3jegA2f9FSNxP08tKcGg/7XOme9JE
+         SS+BanvNkP1IWtVHpww610TZyybxnYT56hmUve4W1A9UcweLSTAgW6cJbiwx+C3VkVAF
+         SpTA==
+X-Gm-Message-State: ANhLgQ0rJ+td60KXLzAjh3v3W7LiVya7QQwO+GVQrA17R92woa5/uaXo
+        TpWFvt9JkDUMRb1SP1S1jTbIVfDJaP8=
+X-Google-Smtp-Source: ADFU+vtcDtjlTIB1mU307cNhKw2nftdiqXtfnl5BzypYgagvlGox0Eaxlqv+PpB57fU/D/pHj7Kzvw==
+X-Received: by 2002:a1c:5443:: with SMTP id p3mr2147653wmi.149.1583912829563;
+        Wed, 11 Mar 2020 00:47:09 -0700 (PDT)
+Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
+        by smtp.gmail.com with ESMTPSA id q72sm7673310wme.31.2020.03.11.00.47.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Mar 2020 00:47:09 -0700 (PDT)
+Date:   Wed, 11 Mar 2020 08:47:08 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        mlxsw@mellanox.com
+Subject: Re: [patch iproute2/net-next v2] tc: m_action: introduce support for
+ hw stats type
+Message-ID: <20200311074708.GA2209@nanopsycho>
+References: <20200309155402.1561-1-jiri@resnulli.us>
+ <1a44786f-bffd-213f-fe13-ca43845c5420@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200311055343.GE8012@unicorn.suse.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <1a44786f-bffd-213f-fe13-ca43845c5420@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 06:53:43AM +0100, Michal Kubecek wrote:
-> On Tue, Mar 10, 2020 at 09:11:06PM -0700, Andrej Ras wrote:
-> > On Tue, Mar 10, 2020 at 3:12 PM Michal Kubecek <mkubecek@suse.cz> wrote:
-> > >
-> > > On Tue, Mar 10, 2020 at 02:42:11PM -0700, Andrej Ras wrote:
-> > > > While browsing the Linux networking code I came across these two lines
-> > > > in __ip_append_data() which I do not understand.
-> > > >
-> > > >                 /* Check if the remaining data fits into current packet. */
-> > > >                 copy = mtu - skb->len;
-> > > >                 if (copy < length)
-> > > >                         copy = maxfraglen - skb->len;
-> > > >                 if (copy <= 0) {
-> > > >
-> > > > Why not just use maxfraglen.
-> > > >
-> > > > Perhaps someone can explain why this is needed.
-> > >
-> > > This function appends more data to an skb which can already contain some
-> > > payload. Therefore you need to take current length (from earlier) into
-> > > account, not only newly appended data.
-> > >
-> > > This can be easily enforced e.g. with TCP_CORK or UDP_CORK socket option
-> > > or MSG_MORE flag.
-> > >
-> > I understand that the code is appending data, what I do not understand
-> > is why is it first calculating the remaining space by taking the
-> > difference using the size of mtu and if the difference is <= 0 it
-> > recalculates the difference using maxfraglen. Why not just use
-> > maxfraglen -- All we need to know is how much more data can be added
-> > to the skb.
-> 
-> Ah, I see. The first test checks if we can fit into an unfragmented
-> packet so that we check against mtu.
+Wed, Mar 11, 2020 at 12:44:42AM CET, dsahern@gmail.com wrote:
+>On 3/9/20 9:54 AM, Jiri Pirko wrote:
+>> @@ -24,6 +25,27 @@ enum {
+>>  					 * actions stats.
+>>  					 */
+>>  
+>> +/* tca HW stats type
+>> + * When user does not pass the attribute, he does not care.
+>> + * It is the same as if he would pass the attribute with
+>> + * all supported bits set.
+>> + * In case no bits are set, user is not interested in getting any HW statistics.
+>> + */
+>> +#define TCA_ACT_HW_STATS_TYPE_IMMEDIATE (1 << 0) /* Means that in dump, user
+>> +						  * gets the current HW stats
+>> +						  * state from the device
+>> +						  * queried at the dump time.
+>> +						  */
+>> +#define TCA_ACT_HW_STATS_TYPE_DELAYED (1 << 1) /* Means that in dump, user gets
+>
+>really long names for attributes.
+>
+>
+>> +static void print_hw_stats(const struct rtattr *arg)
+>> +{
+>> +	struct nla_bitfield32 *hw_stats_type_bf = RTA_DATA(arg);
+>> +	__u8 hw_stats_type;
+>> +	int i;
+>> +
+>> +	hw_stats_type = hw_stats_type_bf->value & hw_stats_type_bf->selector;
+>> +	print_string(PRINT_FP, NULL, "\t", NULL);
+>> +	open_json_array(PRINT_ANY, "hw_stats");
+>> +
+>> +	for (i = 0; i < ARRAY_SIZE(hw_stats_type_items); i++) {
+>> +		const struct hw_stats_type_item *item;
+>> +
+>> +		item = &hw_stats_type_items[i];
+>> +		if ((!hw_stats_type && !item->type) ||
+>> +		    hw_stats_type & item->type)
+>> +			print_string(PRINT_ANY, NULL, " %s", item->str);
+>
+>the stats type can be both delayed and immediate?
 
-Thinking about it again, it would be more precise to say "unfragmented
-packet or last fragment" here as it also covers the case when we already
-have some fragments and test if we can send the rest (including current
-chunk) as last fragment whose length does not need to be a multiple of 8.
+Yes, if offloaded to 2 drivers, each supporting different stats.
 
-Michal Kubecek
 
->                                      If we don't fit, fragmentation will
-> be needed so that maxfraglen is the limit (maxfraglen can be shorter
-> than mtu due to the rounding down to a multiple of 8).
+>
+>> +	}
+>> +	close_json_array(PRINT_JSON, NULL);
+>> +}
+>> +
+>> +static int parse_hw_stats(const char *str, struct nlmsghdr *n)
+>> +{
+>> +	int i;
+>> +
+>> +	for (i = 0; i < ARRAY_SIZE(hw_stats_type_items); i++) {
+>> +		const struct hw_stats_type_item *item;
+>> +
+>> +		item = &hw_stats_type_items[i];
+>> +		if (matches(str, item->str) == 0) {
+>> +			struct nla_bitfield32 hw_stats_type_bf =
+>> +					{ item->type,
+>> +					  item->type };
+>> +			addattr_l(n, MAX_MSG, TCA_ACT_HW_STATS_TYPE,
+>> +				  &hw_stats_type_bf, sizeof(hw_stats_type_bf));
+>
+>that is not human friendly. how about something like:
+>
+>                        struct nla_bitfield32 hw_stats_type_bf = {
+>                                .value    = item->type,
+>                                .selector = item->type
+>                        };
 
+Okay.
+
+
+
+>
+>with a line between the declaration and code.
+>
+>and "disabled" corresponds to 0 which does not align with a
+>TCA_ACT_HW_STATS_TYPE_  so why send it
+
+It is a bitfield. So 0 means no bit is set, therefore disabled.
 
