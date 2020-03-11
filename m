@@ -2,361 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A799181ECA
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 18:09:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43D15181F1C
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 18:20:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730349AbgCKRJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 13:09:26 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:56898 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730055AbgCKRJZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 13:09:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=FdqYsRLX3KRQepa3NHoXRaYEUO7/0pjL+LXeaI4+P1Y=; b=jOXlvP8jbvUQZLd0Uh7JEwKA9
-        1nJi6YrSDIoAJUKuj851lGT8MlDmThPQ4JviGaqOnKb+cMXYDtywpX4xqep8iADE32xRQYpY5bj/4
-        yiXI8E6mYIxa0LMvEp6PdWJNj0JnaxiteROSVcU3nzWi09vlT1a3sXaDpeXq3IXfcbTXlQNdKppyI
-        65M0MkPrpgec9SK9Xmo3N/nzCPg/BYNVNqBFvkUUaGMGA74/LV91gYwGABtxka146srkKilDI5WMq
-        DlhwTRqfGyqjwF8yWP4BQQuf4F7hLtyxoauYMzbcuK6I8aLgJrs8xImuBqU9Y8p2MaIHpvF3dJneA
-        usi0ifDxw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:59166)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jC4r9-0004Tz-0w; Wed, 11 Mar 2020 17:09:19 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jC4r8-0005UP-FJ; Wed, 11 Mar 2020 17:09:18 +0000
-Date:   Wed, 11 Mar 2020 17:09:18 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 4/5] net: phylink: pcs: add 802.3 clause 22
- helpers
-Message-ID: <20200311170918.GQ25745@shell.armlinux.org.uk>
-References: <20200311120643.GN25745@shell.armlinux.org.uk>
- <E1jC099-0001cZ-U2@rmk-PC.armlinux.org.uk>
- <CA+h21ho9eWTCJp2+hD0id_e3mfVXw_KRJziACJQMDXxmCnE5xA@mail.gmail.com>
+        id S1730470AbgCKRU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 13:20:28 -0400
+Received: from mail-vs1-f67.google.com ([209.85.217.67]:33646 "EHLO
+        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730322AbgCKRU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 13:20:27 -0400
+Received: by mail-vs1-f67.google.com with SMTP id n27so1878253vsa.0
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 10:20:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MEkaiHQZMx1UJA9RPgEM4Gg2VNhyN6paaXR7j/Fo1Hs=;
+        b=DxkJwdYB2pE55yk2uohYiCIxvUd2RfSY0xgbwxZSRdlVNQXspPc65ZzAEqaVwDUvvw
+         HQvs8uHNlP3u+/LIioDnxGa26S8ZMPqF/OJv3pA2r5z5GqhGONIrzSHeT5rt/OumVHTY
+         efB2XSO4fgf1K5Rft2dfoGNnenwPrk5roFVOE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MEkaiHQZMx1UJA9RPgEM4Gg2VNhyN6paaXR7j/Fo1Hs=;
+        b=qoO0JqKgTS2G8IJlzwpONWIqmeSEIUFg4+7rPbhBe/FszvqssGSfDzXxb/feA1UomB
+         E7h83KSoM8PqDESMczY7Fr7s7PE724VEafqCkyCQG0I6aqaq7g2mFj9KRvEQfUR+Kcmk
+         YkuEp+95lPNeR4v8Lbx7MiOzQoykocm7Zyg8O+H1z4OT1A0rJW+BCScnWdMi5A8qMVgj
+         K+5IgvtXTlAG2JLHk73tH/4ism3oOkYbtc2ELlvukg0KofIUI0Y4G88RCn2VnRo02f7L
+         VVPqOxLM8QGkPA6vLPgf7YPQ5I3Kehqpc1glar11zsYlVlKuTcHBUjxnHhmT52Li94vA
+         tFMg==
+X-Gm-Message-State: ANhLgQ2s2U5UQBpw/EGpJvex8YwM/5K8F5JWaZmxPeYgwXfWbmkKUt9q
+        x5cRPhxl1f5tGxVPcOuf0B+HoBdrc2APgE4J6wlV5g==
+X-Google-Smtp-Source: ADFU+vsm48zQXYAH+XHZSsly3C3Iz0YrevywINbpKGf7IJNsROsnavS2KVQwpDvPZmQWsJ2sHnsknN2/rlM5sI4a2dk=
+X-Received: by 2002:a67:f641:: with SMTP id u1mr2714335vso.86.1583947226874;
+ Wed, 11 Mar 2020 10:20:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21ho9eWTCJp2+hD0id_e3mfVXw_KRJziACJQMDXxmCnE5xA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200311155404.209990-1-abhishekpandit@chromium.org> <99C097F2-FD84-49B8-B3D7-F03C34C4F563@holtmann.org>
+In-Reply-To: <99C097F2-FD84-49B8-B3D7-F03C34C4F563@holtmann.org>
+From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+Date:   Wed, 11 Mar 2020 10:20:16 -0700
+Message-ID: <CANFp7mV-0HjEzYwh4LacMPOJCqgF1=1zwQ66e+8Hd6pODa3dMQ@mail.gmail.com>
+Subject: Re: [RFC PATCH v6 0/5] Bluetooth: Handle system suspend gracefully
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Alain Michaud <alainm@chromium.org>,
+        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 04:06:52PM +0200, Vladimir Oltean wrote:
-> On Wed, 11 Mar 2020 at 14:08, Russell King <rmk+kernel@armlinux.org.uk> wrote:
+Let's continue the discussion on the bluez list.
+
+I will update the patch series so that the "set_wake_capable"
+management change is last in the series there as well and send out an
+update today.
+
+Thanks
+Abhishek
+
+On Wed, Mar 11, 2020 at 10:05 AM Marcel Holtmann <marcel@holtmann.org> wrote:
+>
+> Hi Abhishek,
+>
+> > This patch series prepares the Bluetooth controller for system suspend
+> > by disconnecting all devices and preparing the event filter and LE
+> > whitelist with devices that can wake the system from suspend.
 > >
-> > Implement helpers for PCS accessed via the MII bus using 802.3 clause
-> > 22 cycles, conforming to 802.3 clause 37 and Cisco SGMII specifications
-> > for the advertisement word.
+> > The main motivation for doing this is so we can enable Bluetooth as
+> > a wake up source during suspend without it being noisy. Bluetooth should
+> > wake the system when a HID device receives user input but otherwise not
+> > send any events to the host.
 > >
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > ---
-> >  drivers/net/phy/phylink.c | 206 ++++++++++++++++++++++++++++++++++++++
-> >  include/linux/phylink.h   |   6 ++
-> >  include/uapi/linux/mii.h  |   5 +
-> >  3 files changed, 217 insertions(+)
+> > This patch series was tested on several Chromebooks with both btusb and
+> > hci_serdev on kernel 4.19. The set of tests was basically the following:
+> > * Reconnects after suspend succeed
+> > * HID devices can wake the system from suspend (needs some related bluez
+> >  changes to call the Set Wake Capable management command)
+> > * System properly pauses and unpauses discovery + advertising around
+> >  suspend
+> > * System does not wake from any events from non wakeable devices
 > >
-> > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-> > index 19db68d74cb4..3ef20b34f5d6 100644
-> > --- a/drivers/net/phy/phylink.c
-> > +++ b/drivers/net/phy/phylink.c
-> > @@ -2035,4 +2035,210 @@ void phylink_helper_basex_speed(struct phylink_link_state *state)
-> >  }
-> >  EXPORT_SYMBOL_GPL(phylink_helper_basex_speed);
+> > Series 2 has refactored the change into multiple smaller commits as
+> > requested. I tried to simplify some of the whitelist filtering edge
+> > cases but unfortunately it remains quite complex.
 > >
-> > +static void phylink_decode_c37_word(struct phylink_link_state *state,
-> > +                                   uint16_t config_reg, int speed)
-> > +{
-> > +       bool tx_pause, rx_pause;
-> > +       int fd_bit;
-> > +
-> > +       if (speed == SPEED_2500)
-> > +               fd_bit = ETHTOOL_LINK_MODE_2500baseX_Full_BIT;
-> > +       else
-> > +               fd_bit = ETHTOOL_LINK_MODE_1000baseX_Full_BIT;
-> > +
-> > +       mii_lpa_mod_linkmode_x(state->lp_advertising, config_reg, fd_bit);
-> > +
-> > +       if (linkmode_test_bit(fd_bit, state->advertising) &&
-> > +           linkmode_test_bit(fd_bit, state->lp_advertising)) {
-> > +               state->speed = speed;
-> > +               state->duplex = DUPLEX_FULL;
-> > +       } else {
-> > +               /* negotiation failure */
-> > +               state->link = false;
-> > +       }
-> > +
-> > +       linkmode_resolve_pause(state->advertising, state->lp_advertising,
-> > +                              &tx_pause, &rx_pause);
-> > +
-> > +       if (tx_pause)
-> > +               state->pause |= MLO_PAUSE_TX;
-> > +       if (rx_pause)
-> > +               state->pause |= MLO_PAUSE_RX;
-> > +}
-> > +
-> > +static void phylink_decode_sgmii_word(struct phylink_link_state *state,
-> > +                                     uint16_t config_reg)
-> > +{
-> > +       if (!(config_reg & LPA_SGMII_LINK)) {
-> > +               state->link = false;
-> > +               return;
-> > +       }
-> > +
-> > +       switch (config_reg & LPA_SGMII_SPD_MASK) {
-> 
-> Did you consider using or adapting the mii_lpa_mod_linkmode_adv_sgmii helper?
-
-Yes, and we _do not_ want to be touching state->lp_advertising here.
-The link partner advertisement comes from the attached PHY, not from
-this information.
-
-The config_reg information is not an advertisement - it is a
-_configuration word_ coming from the PHY to tell the MAC what speed
-and duplex to operate at.  It conveys nothing about whether it's
-1000baseT or 1000baseX, so link modes mean nothing as far as a SGMII
-configuration word is concerned.
-
-Hence, _this_ is a more correct implementation than
-mii_lpa_mod_linkmode_adv_sgmii().
-
-> > +       case LPA_SGMII_10:
-> > +               state->speed = SPEED_10;
-> > +               break;
-> > +       case LPA_SGMII_100:
-> > +               state->speed = SPEED_100;
-> > +               break;
-> > +       case LPA_SGMII_1000:
-> > +               state->speed = SPEED_1000;
-> > +               break;
-> > +       default:
-> > +               state->link = false;
-> > +               return;
-> > +       }
-> > +       if (config_reg & LPA_SGMII_FULL_DUPLEX)
-> > +               state->duplex = DUPLEX_FULL;
-> > +       else
-> > +               state->duplex = DUPLEX_HALF;
-> > +}
-> > +
-> > +/**
-> > + * phylink_mii_c22_pcs_get_state() - read the MAC PCS state
-> > + * @pcs: a pointer to a &struct mdio_device.
-> > + * @state: a pointer to a &struct phylink_link_state.
-> > + *
-> > + * Helper for MAC PCS supporting the 802.3 clause 22 register set for
-> > + * clause 37 negotiation and/or SGMII control.
-> > + *
-> > + * Read the MAC PCS state from the MII device configured in @config and
-> > + * parse the Clause 37 or Cisco SGMII link partner negotiation word into
-> > + * the phylink @state structure. This is suitable to be directly plugged
-> > + * into the mac_pcs_get_state() member of the struct phylink_mac_ops
-> > + * structure.
-> > + */
-> > +void phylink_mii_c22_pcs_get_state(struct mdio_device *pcs,
-> > +                                  struct phylink_link_state *state)
-> > +{
-> > +       struct mii_bus *bus = pcs->bus;
-> > +       int addr = pcs->addr;
-> > +       int bmsr, lpa;
-> > +
-> > +       bmsr = mdiobus_read(bus, addr, MII_BMSR);
-> > +       lpa = mdiobus_read(bus, addr, MII_LPA);
-> > +       if (bmsr < 0 || lpa < 0) {
-> > +               state->link = false;
-> > +               return;
-> > +       }
-> > +
-> > +       state->link = !!(bmsr & BMSR_LSTATUS);
-> > +       state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
-> > +       if (!state->link)
-> > +               return;
-> > +
-> > +       switch (state->interface) {
-> > +       case PHY_INTERFACE_MODE_1000BASEX:
-> > +               phylink_decode_c37_word(state, lpa, SPEED_1000);
-> > +               break;
-> > +
-> > +       case PHY_INTERFACE_MODE_2500BASEX:
-> > +               phylink_decode_c37_word(state, lpa, SPEED_2500);
-> > +               break;
-> > +
-> > +       case PHY_INTERFACE_MODE_SGMII:
-> > +               phylink_decode_sgmii_word(state, lpa);
-> > +               break;
-> > +
-> > +       default:
-> > +               state->link = false;
-> > +               break;
-> > +       }
-> > +}
-> > +EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_get_state);
-> > +
-> > +/**
-> > + * phylink_mii_c22_pcs_set_advertisement() - configure the clause 37 PCS
-> > + *     advertisement
-> > + * @pcs: a pointer to a &struct mdio_device.
-> > + * @state: a pointer to the state being configured.
-> > + *
-> > + * Helper for MAC PCS supporting the 802.3 clause 22 register set for
-> > + * clause 37 negotiation and/or SGMII control.
-> > + *
-> > + * Configure the clause 37 PCS advertisement as specified by @state. This
-> > + * does not trigger a renegotiation; phylink will do that via the
-> > + * mac_an_restart() method of the struct phylink_mac_ops structure.
-> > + *
-> > + * Returns negative error code on failure to configure the advertisement,
-> > + * zero if no change has been made, or one if the advertisement has changed.
-> > + */
-> > +int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
-> > +                                       const struct phylink_link_state *state)
-> > +{
-> > +       struct mii_bus *bus = pcs->bus;
-> > +       int addr = pcs->addr;
-> > +       int val, ret;
-> > +       u16 adv;
-> > +
-> > +       switch (state->interface) {
-> > +       case PHY_INTERFACE_MODE_1000BASEX:
-> > +       case PHY_INTERFACE_MODE_2500BASEX:
-> > +               adv = ADVERTISE_1000XFULL;
-> > +               if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
-> > +                                     state->advertising))
-> > +                       adv |= ADVERTISE_1000XPAUSE;
-> > +               if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
-> > +                                     state->advertising))
-> > +                       adv |= ADVERTISE_1000XPSE_ASYM;
-> > +
-> > +               val = mdiobus_read(bus, addr, MII_ADVERTISE);
-> > +               if (val < 0)
-> > +                       return val;
-> > +
-> > +               if (val == adv)
-> > +                       return 0;
-> > +
-> > +               ret = mdiobus_write(bus, addr, MII_ADVERTISE, adv);
-> > +               if (ret < 0)
-> > +                       return ret;
-> > +
-> > +               return 1;
-> > +
-> > +       case PHY_INTERFACE_MODE_SGMII:
-> > +               val = mdiobus_read(bus, addr, MII_ADVERTISE);
-> > +               if (val < 0)
-> > +                       return val;
-> > +
-> > +               if (val == 0x0001)
-> > +                       return 0;
-> > +
-> > +               ret = mdiobus_write(bus, addr, MII_ADVERTISE, 0x0001);
-> > +               if (ret < 0)
-> > +                       return ret;
-> > +
-> > +               return 1;
-> > +
-> > +       default:
-> > +               /* Nothing to do for other modes */
-> > +               return 0;
-> > +       }
-> > +}
-> > +EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_set_advertisement);
-> > +
-> > +/**
-> > + * phylink_mii_c22_pcs_an_restart() - restart 802.3z autonegotiation
-> > + * @pcs: a pointer to a &struct mdio_device.
-> > + *
-> > + * Helper for MAC PCS supporting the 802.3 clause 22 register set for
-> > + * clause 37 negotiation.
-> > + *
-> > + * Restart the clause 37 negotiation with the link partner. This is
-> > + * suitable to be directly plugged into the mac_pcs_get_state() member
-> > + * of the struct phylink_mac_ops structure.
-> > + */
-> > +void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs)
-> > +{
-> > +       struct mii_bus *bus = pcs->bus;
-> > +       int val, addr = pcs->addr;
-> > +
-> > +       val = mdiobus_read(bus, addr, MII_BMCR);
-> > +       if (val >= 0) {
-> > +               val |= BMCR_ANRESTART;
-> > +
-> > +               mdiobus_write(bus, addr, MII_BMCR, val);
-> > +       }
-> > +}
-> > +EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_an_restart);
-> > +
-> >  MODULE_LICENSE("GPL v2");
-> > diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-> > index 2180eb1aa254..de591c2fb37e 100644
-> > --- a/include/linux/phylink.h
-> > +++ b/include/linux/phylink.h
-> > @@ -317,4 +317,10 @@ int phylink_mii_ioctl(struct phylink *, struct ifreq *, int);
-> >  void phylink_set_port_modes(unsigned long *bits);
-> >  void phylink_helper_basex_speed(struct phylink_link_state *state);
+> > Series 3 has refactored it further and should have resolved the
+> > whitelisting complexity in series 2.
 > >
-> > +void phylink_mii_c22_pcs_get_state(struct mdio_device *pcs,
-> > +                                  struct phylink_link_state *state);
-> > +int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
-> > +                                       const struct phylink_link_state *state);
-> > +void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs);
-> > +
-> >  #endif
-> > diff --git a/include/uapi/linux/mii.h b/include/uapi/linux/mii.h
-> > index 0b9c3beda345..90f9b4e1ba27 100644
-> > --- a/include/uapi/linux/mii.h
-> > +++ b/include/uapi/linux/mii.h
-> > @@ -134,11 +134,16 @@
-> >  /* MAC and PHY tx_config_Reg[15:0] for SGMII in-band auto-negotiation.*/
-> >  #define ADVERTISE_SGMII                0x0001  /* MAC can do SGMII            */
-> >  #define LPA_SGMII              0x0001  /* PHY can do SGMII            */
-> > +#define LPA_SGMII_SPD_MASK     0x0c00  /* SGMII speed mask            */
-> > +#define LPA_SGMII_FULL_DUPLEX  0x1000  /* SGMII full duplex           */
-> >  #define LPA_SGMII_DPX_SPD_MASK 0x1C00  /* SGMII duplex and speed bits */
-> > +#define LPA_SGMII_10           0x0000  /* 10Mbps                      */
-> >  #define LPA_SGMII_10HALF       0x0000  /* Can do 10mbps half-duplex   */
-> >  #define LPA_SGMII_10FULL       0x1000  /* Can do 10mbps full-duplex   */
-> > +#define LPA_SGMII_100          0x0400  /* 100Mbps                     */
-> >  #define LPA_SGMII_100HALF      0x0400  /* Can do 100mbps half-duplex  */
-> >  #define LPA_SGMII_100FULL      0x1400  /* Can do 100mbps full-duplex  */
-> > +#define LPA_SGMII_1000         0x0800  /* 1000Mbps                    */
-> 
-> These seem a bit mixed up to say the least.
-> If you're not going to use the (minimal) existing infrastructure could
-> you also refactor the one existing user? I think it would be better
-> than just keeping adding conflicting definitions.
-
-Sorry, but you need to explain better what you would like to see here.
-The additions I'm adding are to the SGMII specification; I find your
-existing definitions to be obscure because they conflate two different
-bit fields together to produce something for the ethtool linkmodes
-(which I think is a big mistake.)
-
-> 
-> >  #define LPA_SGMII_1000HALF     0x0800  /* Can do 1000mbps half-duplex */
-> >  #define LPA_SGMII_1000FULL     0x1800  /* Can do 1000mbps full-duplex */
-> >  #define LPA_SGMII_LINK         0x8000  /* PHY link with copper-side partner */
-> > --
-> > 2.20.1
+> > Series 4 adds a fix to check for powered down and powering down adapters.
 > >
-> 
-> Regards,
-> -Vladimir
-> 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+> > Series 5 moves set_wake_capable to the last patch in the series and
+> > changes BT_DBG to bt_dev_dbg.
+> >
+> > Please review and provide any feedback.
+> >
+> > Thanks
+> > Abhishek
+> >
+> >
+> > Changes in v6:
+> > * Removed unused variables in hci_req_prepare_suspend
+> > * Add int old_state to this patch
+> >
+> > Changes in v5:
+> > * Convert BT_DBG to bt_dev_dbg
+> > * Added wakeable list and changed BT_DBG to bt_dev_dbg
+> > * Add wakeable to hci_conn_params and change BT_DBG to bt_dev_dbg
+> > * Changed BT_DBG to bt_dev_dbg
+> > * Wakeable entries moved to other commits
+> > * Patch moved to end of series
+> >
+> > Changes in v4:
+> > * Added check for mgmt_powering_down and hdev_is_powered in notifier
+> >
+> > Changes in v3:
+> > * Refactored to only handle BR/EDR devices
+> > * Split LE changes into its own commit
+> > * Added wakeable property to le_conn_param
+> > * Use wakeable list for BR/EDR and wakeable property for LE
+> >
+> > Changes in v2:
+> > * Moved pm notifier registration into its own patch and moved params out
+> >  of separate suspend_state
+> > * Refactored filters and whitelist settings to its own patch
+> > * Refactored update_white_list to have clearer edge cases
+> > * Add connected devices to whitelist (previously missing corner case)
+> > * Refactored pause discovery + advertising into its own patch
+> >
+> > Abhishek Pandit-Subedi (5):
+> >  Bluetooth: Handle PM_SUSPEND_PREPARE and PM_POST_SUSPEND
+> >  Bluetooth: Handle BR/EDR devices during suspend
+> >  Bluetooth: Handle LE devices during suspend
+> >  Bluetooth: Pause discovery and advertising during suspend
+> >  Bluetooth: Add mgmt op set_wake_capable
+> >
+> > include/net/bluetooth/hci.h      |  17 +-
+> > include/net/bluetooth/hci_core.h |  43 ++++
+> > include/net/bluetooth/mgmt.h     |   7 +
+> > net/bluetooth/hci_core.c         | 102 ++++++++++
+> > net/bluetooth/hci_event.c        |  24 +++
+> > net/bluetooth/hci_request.c      | 331 ++++++++++++++++++++++++++-----
+> > net/bluetooth/hci_request.h      |   2 +
+> > net/bluetooth/mgmt.c             |  92 +++++++++
+> > 8 files changed, 558 insertions(+), 60 deletions(-)
+>
+> patches 1-4 have been applied to bluetooth-next tree.
+>
+> I skipped patch 5 since now we have to discuss how best the API for setting the wakeable devices will be. Care to start up a discussion thread for that?
+>
+> Regards
+>
+> Marcel
+>
