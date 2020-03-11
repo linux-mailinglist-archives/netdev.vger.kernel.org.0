@@ -2,187 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A714181B6F
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 15:36:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72A9B181B72
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 15:36:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729896AbgCKOgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 10:36:02 -0400
-Received: from correo.us.es ([193.147.175.20]:43730 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729541AbgCKOgB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Mar 2020 10:36:01 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id D7F17FB36C
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 15:35:37 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id C7DEBDA3A4
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 15:35:37 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id BDA60DA3A1; Wed, 11 Mar 2020 15:35:37 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E6D97DA736;
-        Wed, 11 Mar 2020 15:35:35 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 11 Mar 2020 15:35:35 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id C3E0442EF42B;
-        Wed, 11 Mar 2020 15:35:35 +0100 (CET)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH nft 2/2] src: support for restoring element counters
-Date:   Wed, 11 Mar 2020 15:35:53 +0100
-Message-Id: <20200311143553.4698-2-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20200311143553.4698-1-pablo@netfilter.org>
-References: <20200311143553.4698-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1729903AbgCKOgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 10:36:03 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:45706 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729309AbgCKOgB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 10:36:01 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02BEWq5E162890;
+        Wed, 11 Mar 2020 14:36:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=7oDmjhNiC55YU6iZrb3bKn3r9UG+93Yy3XlSaDUipFE=;
+ b=nc5j35BudsPbeI64DiBG+CYnaTzjY+8A/JXN6aStyZ+vb3udFhYyT52i9b44tZxBw6lg
+ cKLhz4YBKXqWOfVCD1WVNs/UQvfS+3Ku5Y7v3RbJvb5pt4bvHFtXWdxFqECjCZUf4zqN
+ F8fqgkHg7eW8TfX14XLFtQkUTudsAjeKomn6bcZJraAedMvpE/gS9/Q19yGopZ3MkRqz
+ 8wrs9b6lfLJbqM4W4s72omqI3k2KKwmJzLMY8lzKWvnMfCdqt0sHT3XUOc3WQh+UeMYL
+ SBGYDJO4jWJ21vZZjRFjE30FLDiwwiecs0aBA2BGB6tzDQpqJupvbf4Z82+NNbYQwbal JQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 2yp9v6749s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 11 Mar 2020 14:35:59 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02BEWp0J140078;
+        Wed, 11 Mar 2020 14:35:59 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3020.oracle.com with ESMTP id 2yp8p3cbh1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 11 Mar 2020 14:35:58 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 02BEZv3E006453;
+        Wed, 11 Mar 2020 14:35:57 GMT
+Received: from [10.11.0.40] (/10.11.0.40)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 11 Mar 2020 07:35:57 -0700
+Subject: Re: Maybe a race condition in net/rds/rdma.c?
+To:     zerons <sironhide0null@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        OFED mailing list <linux-rdma@vger.kernel.org>,
+        haakon.bugge@oracle.com
+References: <afd9225d-5c43-8cc7-0eed-455837b53e10@gmail.com>
+ <D8EB4A77-77D7-41EB-9021-EA7BB8C3FA5B@oracle.com>
+ <94b20d30-1d7d-7a66-b943-d75a05bcb46e@oracle.com>
+ <e525ec74-b62f-6e7c-e6bc-aad93d349f65@gmail.com>
+ <54d1140d-3347-a2b1-1b20-9a3959d3b451@oracle.com>
+ <603ec723-842c-f6e1-01ee-6889c3925a63@gmail.com>
+From:   santosh.shilimkar@oracle.com
+Organization: Oracle Corporation
+Message-ID: <d9004325-2a97-c711-3abc-eb2550e047b1@oracle.com>
+Date:   Wed, 11 Mar 2020 07:35:56 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <603ec723-842c-f6e1-01ee-6889c3925a63@gmail.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9556 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxscore=0 phishscore=0
+ spamscore=0 malwarescore=0 adultscore=0 suspectscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
+ definitions=main-2003110093
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9556 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0 mlxscore=0
+ priorityscore=1501 lowpriorityscore=0 bulkscore=0 mlxlogscore=999
+ phishscore=0 adultscore=0 clxscore=1015 impostorscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
+ definitions=main-2003110093
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allows you to restore counters in dynamic sets:
+On 3/10/20 9:48 PM, zerons wrote:
+> 
+> 
+> On 3/11/20 01:53, santosh.shilimkar@oracle.com wrote:
+>> On 3/6/20 4:11 AM, zerons wrote:
+>>>
+>>>
+>>> On 2/28/20 02:10, santosh.shilimkar@oracle.com wrote:
+>>>>
+>>>>>> On 18 Feb 2020, at 14:13, zerons <sironhide0null@gmail.com> wrote:
+>>>>>>
+>>>>>> Hi, all
+>>>>>>
+>>>>>> In net/rds/rdma.c
+>>>>>> (https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/net/rds/rdma.c?h=v5.5.3*n419__;Iw!!GqivPVa7Brio!OwwQCLtjDsKmhaIz0sfaOVSuC4ai5t5_FgB7yqNExGOCBtACtIGLF61NNJyqSDtIAcGoPg$ ),
+>>>>>> there may be a race condition between rds_rdma_unuse() and rds_free_mr().
+>>>>>>
+>>>> Hmmm.. I didn't see email before in my inbox. Please post questions/patches on netdev in future which is the correct mailing list.
+>>>>
+>>>>>> It seems that this one need some specific devices to run test,
+>>>>>> unfortunately, I don't have any of these.
+>>>>>> I've already sent two emails to the maintainer for help, no response yet,
+>>>>>> (the email address may not be in use).
+>>>>>>
+>>>>>> 0) in rds_recv_incoming_exthdrs(), it calls rds_rdma_unuse() when receive an
+>>>>>> extension header with force=0, if the victim mr does not have RDS_RDMA_USE_ONCE
+>>>>>> flag set, then the mr would stay in the rbtree. Without any lock, it tries to
+>>>>>> call mr->r_trans->sync_mr().
+>>>>>>
+>> MR won't stay in the rbtree with force flag. If the MR is used or
+>> use_once is set in both cases its removed from the tree.
+>> See "if (mr->r_use_once || force)"
+>>
+> 
+> Sorry, I may misunderstand. Did you mean that if the MR is *used*,
+> it is removed from the tree with or without the force flag in
+> rds_rdma_unuse(), even when r_use_once is not set?
+> 
+Once the MR is being used with use_once semantics it gets removed with 
+or without remote side indicating it via extended header. use_once
+optimization was added later. The base behavior is once the MR is
+used by remote and same information is sent via extended header,
+it gets cleaned up with force flag. Force flag ignores whether
+its marked as used_once or not.
 
- table ip test {
-        set test {
-                type ipv4_addr
-                size 65535
-                flags dynamic,timeout
-                timeout 30d
-                gc-interval 1d
-                elements = { 192.168.10.13 expires 19d23h52m27s576ms counter packets 51 bytes 17265 }
-        }
-        chain output {
-                type filter hook output priority 0;
-                update @test { ip saddr }
-        }
- }
-
-You can also add counters to elements from the control place, ie.
-
- table ip test {
-        set test {
-                type ipv4_addr
-                size 65535
-                elements = { 192.168.2.1 counter packets 75 bytes 19043 }
-        }
-
-        chain output {
-                type filter hook output priority filter; policy accept;
-                ip daddr @test
-        }
- }
-
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/netlink.h       |  1 +
- src/netlink.c           |  3 +++
- src/netlink_linearize.c |  2 +-
- src/parser_bison.y      | 36 +++++++++++++++++++++++++++++++++++-
- 4 files changed, 40 insertions(+), 2 deletions(-)
-
-diff --git a/include/netlink.h b/include/netlink.h
-index c2eb89498d72..0a5fde3cf08c 100644
---- a/include/netlink.h
-+++ b/include/netlink.h
-@@ -113,6 +113,7 @@ extern void netlink_gen_data(const struct expr *expr,
- extern void netlink_gen_raw_data(const mpz_t value, enum byteorder byteorder,
- 				 unsigned int len,
- 				 struct nft_data_linearize *data);
-+extern struct nftnl_expr *netlink_gen_stmt_stateful(const struct stmt *stmt);
- 
- extern struct expr *netlink_alloc_value(const struct location *loc,
- 				        const struct nft_data_delinearize *nld);
-diff --git a/src/netlink.c b/src/netlink.c
-index 671923f3eeba..e10af564bcac 100644
---- a/src/netlink.c
-+++ b/src/netlink.c
-@@ -138,6 +138,9 @@ static struct nftnl_set_elem *alloc_nftnl_setelem(const struct expr *set,
- 	if (elem->expiration)
- 		nftnl_set_elem_set_u64(nlse, NFTNL_SET_ELEM_EXPIRATION,
- 				       elem->expiration);
-+	if (elem->stmt)
-+		nftnl_set_elem_set(nlse, NFTNL_SET_ELEM_EXPR,
-+				   netlink_gen_stmt_stateful(elem->stmt), 0);
- 	if (elem->comment || expr->elem_flags) {
- 		udbuf = nftnl_udata_buf_alloc(NFT_USERDATA_MAXLEN);
- 		if (!udbuf)
-diff --git a/src/netlink_linearize.c b/src/netlink_linearize.c
-index 5b3c43c6c641..e70e63b336cd 100644
---- a/src/netlink_linearize.c
-+++ b/src/netlink_linearize.c
-@@ -880,7 +880,7 @@ static struct nftnl_expr *netlink_gen_quota_stmt(const struct stmt *stmt)
- 	return nle;
- }
- 
--static struct nftnl_expr *netlink_gen_stmt_stateful(const struct stmt *stmt)
-+struct nftnl_expr *netlink_gen_stmt_stateful(const struct stmt *stmt)
- {
- 	switch (stmt->ops->type) {
- 	case STMT_CONNLIMIT:
-diff --git a/src/parser_bison.y b/src/parser_bison.y
-index 26ce4e089e1e..3d65d20816d6 100644
---- a/src/parser_bison.y
-+++ b/src/parser_bison.y
-@@ -3671,7 +3671,7 @@ meter_key_expr_alloc	:	concat_expr
- 			;
- 
- set_elem_expr		:	set_elem_expr_alloc
--			|	set_elem_expr_alloc		set_elem_options
-+			|	set_elem_expr_alloc		set_elem_expr_options
- 			;
- 
- set_elem_expr_alloc	:	set_lhs_expr
-@@ -3701,6 +3701,40 @@ set_elem_option		:	TIMEOUT			time_spec
- 			}
- 			;
- 
-+set_elem_expr_options	:	set_elem_expr_option
-+			{
-+				$<expr>$	= $<expr>0;
-+			}
-+			|	set_elem_expr_options	set_elem_expr_option
-+			;
-+
-+set_elem_expr_option	:	TIMEOUT			time_spec
-+			{
-+				$<expr>0->timeout = $2;
-+			}
-+			|	EXPIRES		time_spec
-+			{
-+				$<expr>0->expiration = $2;
-+			}
-+			|	COUNTER
-+			{
-+				$<expr>0->stmt = counter_stmt_alloc(&@$);
-+			}
-+			|	COUNTER	PACKETS	NUM	BYTES	NUM
-+			{
-+				struct stmt *stmt;
-+
-+				stmt = counter_stmt_alloc(&@$);
-+				stmt->counter.packets = $3;
-+				stmt->counter.bytes = $5;
-+				$<expr>0->stmt = stmt;
-+			}
-+			|	comment_spec
-+			{
-+				$<expr>0->comment = $1;
-+			}
-+			;
-+
- set_lhs_expr		:	concat_rhs_expr
- 			|	wildcard_expr
- 			;
--- 
-2.11.0
+Regards,
+Santosh
 
