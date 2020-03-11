@@ -2,182 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E37C4181485
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 10:18:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 527C51814ED
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 10:34:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728952AbgCKJR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 05:17:27 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:38286 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728726AbgCKJRW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 05:17:22 -0400
-Received: by mail-ot1-f66.google.com with SMTP id i14so1184850otp.5;
-        Wed, 11 Mar 2020 02:17:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Rvu2wq6L7cDE7hL6tvDHxFsplTLAIH45fU5iEHgqS2M=;
-        b=lWyQGedIWMaOGzC3Brn452zcK7eTgOikP24wnD8heLs4RtcesajvqFYLdmMTP8h+Lp
-         ighuIVGcuHU/Q4e/9ngAtIUMhTVTJL6pLGy//AKwDfp+e48Huf7DkKdYGG6Dua7F4nOE
-         YO+6zSpH0geuvk78++C0JXlYXGPGESE5z6K1Re7f3roFh8QkVqvV2ExZwBovz/pULtIq
-         yre1SUUqxw7spzDvuCopgmhqXmVJGUHdv5YhZBwfqJk61wGe/UcRkNe8g/suPooggEzY
-         Fj31GglWbsRGHJ7IkIXMDmUGdtkYFgZCY3aYq7DOCo5X2zDwEbCPSwF6K3/Io6vjWjWi
-         ZRhQ==
-X-Gm-Message-State: ANhLgQ3kxuJ6IqbUHBE8VjPeF3oLqTMTqAVfea3/+a3M7rxbf+JsW/QJ
-        frUSRWMoiRKH8YFPAFVUS7fHUq0IZPPMmfWrmQo=
-X-Google-Smtp-Source: ADFU+vurMX1TBb2LbwR48anEMdh/Z0UhZIiQ6sBsCWyzWJOmgi1sbQq+hHLjY+kkZy2egeaHRHSwDAbZI1I2oMtjzk4=
-X-Received: by 2002:a9d:1708:: with SMTP id i8mr1589448ota.250.1583918240450;
- Wed, 11 Mar 2020 02:17:20 -0700 (PDT)
+        id S1728950AbgCKJbu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 05:31:50 -0400
+Received: from mail-vi1eur05on2062.outbound.protection.outlook.com ([40.107.21.62]:62625
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728932AbgCKJbs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Mar 2020 05:31:48 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n7WQSbWrWsGkadN1PTiHBOxmlcPouBmjVG3sbmwvmXIBJh7lAy/o28yyH8HZRmiPLL2/wcvi/dZZSBxcOG7Xtaq1tvYSWDPHpPawCHCVBWBp31m3NM50aOAaWcrPXn8VT/waawebk6No6Bn8/Wq+fEHuk10A7s5DXHrzOn4Lhgx+LYBX6BsQl8ltVowdBFdjuJIuK2LXapNwvSx8hw5G47hYChT2CTWxzOvqqwjU1QGD1pA8wPPQa0rZMjqvTRQKfiZKfmAoS9nl7l5FKpBWSecbP9Ui2sHwY5TX4J9UP7qq3Oc5G9NBbmvGOZB2XRHSYRlYzttk1OTKexiynyjQoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y9/wpP3YFizt+2x6g5MAtAGm1D7DxR+cruxzmnUJXAI=;
+ b=mD9Os24dch4UlFsafmHkyTBuik56u8DftqBhqH567Gvrvm2Wv/qvCNYqdro91nO8DNre8YsuSMFnowX7iKxs9psmGAsCTOqGRtvQ6Y+/1MytLMCEC5k+5fx1GUUG3WqAxJBKNnstetujXLvQ8nTS7QZjPatg7xnklZc6ztPm6hzgJpbdpiCR9ArGuITVEjQQC1DowxTwMvl1ChXP7CegNraD88UQy8NayvRHLCVvtEtXt0DfE6k5X1VrkJ5MVb4l2MjyvZisDbwzqgvMPhigw8ca2/XHSM2HZ64BWXGo99BtpSRi0GPTSIP/qvaYv8Jyoqys7J1ab37543jgBIP8Rg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Y9/wpP3YFizt+2x6g5MAtAGm1D7DxR+cruxzmnUJXAI=;
+ b=sDw8T31wQ8NuA/QOxxoMmwMYVYbGeC0Bz3zNtWsyhXmllI+2z1gYezhE15EQtbGO/lJy/YiF3a555QrGyx+BT49nknjgZqiH4Lnpp18wB9lWl4n49gR4GGrsroOk8FvcKlUiPYRhu+QI98n1B2gqNwcjZNhvdkbH2y5FxCQf3DY=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=idosch@mellanox.com; 
+Received: from AM0PR05MB6754.eurprd05.prod.outlook.com (10.186.174.71) by
+ AM0PR05MB4689.eurprd05.prod.outlook.com (52.133.55.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2793.17; Wed, 11 Mar 2020 09:31:45 +0000
+Received: from AM0PR05MB6754.eurprd05.prod.outlook.com
+ ([fe80::6923:aafd:c994:bfa5]) by AM0PR05MB6754.eurprd05.prod.outlook.com
+ ([fe80::6923:aafd:c994:bfa5%7]) with mapi id 15.20.2793.018; Wed, 11 Mar 2020
+ 09:31:45 +0000
+Date:   Wed, 11 Mar 2020 11:31:43 +0200
+From:   Ido Schimmel <idosch@mellanox.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>, nhorman@tuxdriver.com,
+        jiri@mellanox.com
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Nicolas Pitre <nico@fluxnic.net>, linux-kbuild@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: drop_monitor: use IS_REACHABLE() to guard
+ net_dm_hw_report()
+Message-ID: <20200311093143.GB279080@splinter>
+References: <20200311062925.5163-1-masahiroy@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200311062925.5163-1-masahiroy@kernel.org>
+X-ClientProxiedBy: AM0PR10CA0054.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::34) To AM0PR05MB6754.eurprd05.prod.outlook.com
+ (2603:10a6:20b:15a::7)
 MIME-Version: 1.0
-References: <20200220233454.31514-1-f.fainelli@gmail.com> <20200223.205911.1667092059432885700.davem@davemloft.net>
- <CAMuHMdWuP1_3vqOpf7KEimLLTKiWpWku9fUAdP3CCR6WbHyQdg@mail.gmail.com> <c2a4edcb-dbf9-bc60-4399-3eaec9a20fe7@gmail.com>
-In-Reply-To: <c2a4edcb-dbf9-bc60-4399-3eaec9a20fe7@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 11 Mar 2020 10:17:09 +0100
-Message-ID: <CAMuHMdUMM0Q6W7A0mVgSf7XmF8yROZb3uzHPU1ETbMAfvTtfow@mail.gmail.com>
-Subject: Re: [PATCH net] net: phy: Avoid multiple suspends
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost (193.47.165.251) by AM0PR10CA0054.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.15 via Frontend Transport; Wed, 11 Mar 2020 09:31:45 +0000
+X-Originating-IP: [193.47.165.251]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 1d45942c-5260-46a9-b382-08d7c59f03e4
+X-MS-TrafficTypeDiagnostic: AM0PR05MB4689:|AM0PR05MB4689:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM0PR05MB4689CE5161EAA058E8F1D69CBFFC0@AM0PR05MB4689.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Forefront-PRVS: 0339F89554
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(7916004)(4636009)(366004)(346002)(376002)(136003)(396003)(39860400002)(199004)(81166006)(81156014)(33656002)(33716001)(4326008)(66946007)(1076003)(6636002)(8676002)(956004)(66556008)(66476007)(9686003)(26005)(54906003)(316002)(4744005)(6496006)(6486002)(86362001)(5660300002)(16526019)(186003)(52116002)(478600001)(2906002)(8936002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB4689;H:AM0PR05MB6754.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hHguJD3c6oAbFBYOmZi3mrAn2S8WRwiBpmoxqydOjxGBDk/BuLFAxAAoUT9x2N+19mM42FiqLDT/WRCI42rI2NJVcvDFbNCZW5Tzbn7p6g4dBU95y00hyC8RCKtVybDCjBW4b6vNMZUQyEaE0V3bpGZrsZbT+ZbhxdZKuMU4c3gL5Bl3Ks/Y+fda3xuqX9Wmj26GZpRPYlIygvUNaysYiSOedUoBu8Joa47ECmo+0WFfRZmuFEoHm1R0bGMONwh7Rm31T9Y0x5vrauMgmtxQtPLlSj+DwgUTyxKDJCyc2dU/g7cjG4cZH09W4l0k59kwyc5QgDcyTphZD+t2fjYRbEZ0amQdEV9eudvBwm7eMqqY0YNP+Y4a+01gRwrrULevjMFICiOCw08SV/++wf876iis8h6AylKzH53gDDKrJPDwtqLFRMfHUKXlJkkJb24u
+X-MS-Exchange-AntiSpam-MessageData: nEYCmgcBcMMVv8AhyWBpGBHWDFQvvnbLFVRH2ly6566hIZQ6G00JoJBTcgXgQsXBDR7Nwcb3dgx4ffNmzy+eTuSfL5pPq6oVWRPIz6IxGtBswjw80wVJuVGmJy2p2bhi1M+bANgQRxeNq88JfTyDtg==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1d45942c-5260-46a9-b382-08d7c59f03e4
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2020 09:31:45.3579
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XVRJDoWXBruj/jhNnQSCTVV4FGCjw88ltfr5XUxednIm9XIAukZZ+p9a66s6bkKPILpucFi8gbSi1zOVmteASw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4689
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 5:47 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
->
-> On 3/10/20 7:16 AM, Geert Uytterhoeven wrote:
-> > Hi Florian, David,
-> >
-> > On Mon, Feb 24, 2020 at 5:59 AM David Miller <davem@davemloft.net> wrote:
-> >> From: Florian Fainelli <f.fainelli@gmail.com>
-> >> Date: Thu, 20 Feb 2020 15:34:53 -0800
-> >>
-> >>> It is currently possible for a PHY device to be suspended as part of a
-> >>> network device driver's suspend call while it is still being attached to
-> >>> that net_device, either via phy_suspend() or implicitly via phy_stop().
-> >>>
-> >>> Later on, when the MDIO bus controller get suspended, we would attempt
-> >>> to suspend again the PHY because it is still attached to a network
-> >>> device.
-> >>>
-> >>> This is both a waste of time and creates an opportunity for improper
-> >>> clock/power management bugs to creep in.
-> >>>
-> >>> Fixes: 803dd9c77ac3 ("net: phy: avoid suspending twice a PHY")
-> >>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> >>
-> >> Applied, and queued up for -stable, thanks Florian.
-> >
-> > This patch causes a regression on r8a73a4/ape6evm and sh73a0/kzm9g.
-> > After resume from s2ram, Ethernet no longer works:
-> >
-> >         PM: suspend exit
-> >         nfs: server aaa.bbb.ccc.ddd not responding, still trying
-> >         ...
-> >
-> > Reverting commit 503ba7c6961034ff ("net: phy: Avoid multiple suspends")
-> > fixes the issue.
-> >
-> > On both boards, an SMSC LAN9220 is connected to a power-managed local
-> > bus.
-> >
-> > I added some debug code to check when the clock driving the local bus
-> > is stopped and started, but I see no difference before/after.  Hence I
-> > suspect the Ethernet chip is no longer reinitialized after resume.
->
-> Can you provide a complete log?
+On Wed, Mar 11, 2020 at 03:29:25PM +0900, Masahiro Yamada wrote:
+> In net/Kconfig, NET_DEVLINK implies NET_DROP_MONITOR.
+> 
+> The original behavior of the 'imply' keyword prevents NET_DROP_MONITOR
+> from being 'm' when NET_DEVLINK=y.
+> 
+> With the planned Kconfig change that relaxes the 'imply', the
+> combination of NET_DEVLINK=y and NET_DROP_MONITOR=m would be allowed.
+> 
+> Use IS_REACHABLE() to avoid the vmlinux link error for this case.
+> 
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-With some debug info:
+Thanks, Masahiro.
 
-    SDHI0 Vcc: disabling
-    PM: suspend entry (deep)
-    Filesystems sync: 0.002 seconds
-    Freezing user space processes ... (elapsed 0.001 seconds) done.
-    OOM killer disabled.
-    Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
-    PM: ==== a3sp/ee120000.sd: stop
-    PM: ==== a3sp/ee100000.sd: stop
-    smsc911x 8000000.ethernet: smsc911x_suspend:2577
-    smsc911x 8000000.ethernet: smsc911x_suspend:2579 running
-    smsc911x 8000000.ethernet: smsc911x_suspend:2584
-    PM: ==== a3sp/ee200000.mmc: stop
-    PM: ==== c4/fec10000.bus: stop
-    PM: ==== a3sp/e6c40000.serial: stop
-    PM: ==== c5/e61f0000.thermal: stop
-    PM: ==== c4/e61c0200.interrupt-controller: stop
-    PM: == a3sp: power off
-    rmobile_pd_power_down: a3sp
-    Disabling non-boot CPUs ...
-    PM: ==== c4/e61c0200.interrupt-controller: start
-    PM: ==== c5/e61f0000.thermal: start
-    PM: ==== a3sp/e6c40000.serial: start
-    PM: ==== c4/fec10000.bus: start
-    PM: ==== a3sp/ee200000.mmc: start
-    smsc911x 8000000.ethernet: smsc911x_resume:2606
-    smsc911x 8000000.ethernet: smsc911x_resume:2625 running
-    PM: ==== a3sp/ee100000.sd: start
-    OOM killer enabled.
-    Restarting tasks ... done.
-    PM: ==== a3sp/ee120000.sd: start
-    PM: suspend exit
-    nfs: server aaa.bbb.ccc.ddd not responding, still trying
-    ...
+Neil, Jiri, another option (long term) is to add a raw tracepoint (not
+part of ABI) in devlink and have drop monitor register its probe on it
+when monitoring.
 
-But no difference between the good and the bad case, except for the nfs
-failures.
+Two advantages:
+1. Consistent with what drop monitor is already doing with kfree_skb()
+tracepoint
+2. We can remove 'imply NET_DROP_MONITOR' altogether
 
-> Do you use the Generic PHY driver or a
-> specialized one?
-
-CONFIG_FIXED_PHY=y
-CONFIG_SMSC_PHY=y
-
-Just the smsc,lan9115 node, cfr. arch/arm/boot/dts/r8a73a4-ape6evm.dts
-
-> Do you have a way to dump the registers at the time of
-> failure and see if BMCR.PDOWN is still set somehow?
-
-Added a hook into "nfs: server not responding", which prints:
-
-    MII_BMCR = 0x1900
-
-i.e. BMCR_PDOWN = 0x0800 is still set.
-
-> Does the following help:
->
-> diff --git a/drivers/net/ethernet/smsc/smsc911x.c
-> b/drivers/net/ethernet/smsc/smsc911x.c
-> index 49a6a9167af4..df17190c76c0 100644
-> --- a/drivers/net/ethernet/smsc/smsc911x.c
-> +++ b/drivers/net/ethernet/smsc/smsc911x.c
-> @@ -2618,6 +2618,7 @@ static int smsc911x_resume(struct device *dev)
->         if (netif_running(ndev)) {
->                 netif_device_attach(ndev);
->                 netif_start_queue(ndev);
-> +               phy_resume(dev->phydev);
->         }
->
-
-Yes i does, after s/dev->/ndev->/.
-Thanks!
-
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+What do you think?
