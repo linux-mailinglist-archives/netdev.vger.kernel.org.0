@@ -2,79 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56BE3180EF3
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 05:34:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23BA5180EF5
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 05:36:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726196AbgCKEeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 00:34:05 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:44532 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725958AbgCKEeF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 00:34:05 -0400
-Received: by mail-qk1-f194.google.com with SMTP id f198so857441qke.11;
-        Tue, 10 Mar 2020 21:34:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gjw0KBoYU5LrMVELwtpGDmwUO/+u5X+lxTfCA5ZMfT0=;
-        b=lQLaby6twMdGKIQ7eMg/iHvYcoEVlAaeIBsyhp/nMf2GoH9TIcpib8RBJKmO8wopYt
-         psPX98g15BnmkOEoGzFHANVSX1maKHBWDqXYpAs52sKqXMhKm5PSMVpyRzeN4ntIRsRj
-         /7VoLnXshVk5cxmjzTUosHGrMmjLPppF1zdIaHOYyRyTesqgs3A2TZHEA9O8FcIu7xU4
-         miRkjSOa28puAaU7r024mVXmOdOH5ZSUkcVXl04RPA2zRjYDVd5rsZxDQbJ8p5JMnzij
-         prgcME5P9dwIrfsOr8UVoJe0vgxx6GVbQlCwsOuK33DdphckMBSLVEZbk4qKn2WSPByS
-         U0Bg==
+        id S1726198AbgCKEgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 00:36:03 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:40175 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725834AbgCKEgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 00:36:03 -0400
+Received: by mail-il1-f198.google.com with SMTP id g79so525441ild.7
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 21:36:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gjw0KBoYU5LrMVELwtpGDmwUO/+u5X+lxTfCA5ZMfT0=;
-        b=ZDrYiiJ652qeGAAha8QS8BhNFzJjKlH7M3K0q7sJxk8Z1DMCtwfJ7N4+Fogqfgr5gT
-         k37tzF+OvTD47MK2mOkl5v2P/0gV8R1hsusEe5Tul/3vgySDBE3a7GwcgwxrN77/GnKg
-         RxaJ6kdzqAZ5r3RFsYoi+wzT3Hg5DuPTBsXDrLCLFmWxy9HzCf40jNfqOf6YANWQo13I
-         mv4ZhFKIi0M1vlS1nWDzykduQ8NLFVkUooncL/9sdJWaiZSE0nKl712Z9TOczpesUtOn
-         ZfBqMeE4fOpxb7tWIFYMi0Jwym4YhdSSXqi1GaRI8f4FubgjoQZFcA/4pamqpSX5KwGG
-         XrzA==
-X-Gm-Message-State: ANhLgQ0U3PgwbtQrOyNC/l0ax1yhAjlV27xRsAAZDAmqVGPFHCdvz/KX
-        AUvv3+ZpnguIxl6Azw64Lj+w0geAaumNLpxcckk=
-X-Google-Smtp-Source: ADFU+vsZGFlX051SaRcye9d2hnx6KoUZA1UwcqWpgtlK3sZwBwC2du8AS+ApnY3TM4ARVhfAaGFC4llosNT6iQYwIDE=
-X-Received: by 2002:a37:9104:: with SMTP id t4mr1089155qkd.449.1583901244048;
- Tue, 10 Mar 2020 21:34:04 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=TOW6EyRWWRmr0XeVGg68EU3oaAG/uTESSlfkqLc+cAM=;
+        b=li7qTTymSESOtpdaVq4xJ1eUHCPHHt4xFnffPQmAdELUy8a521O/vsNe3ahn1ZqrDA
+         4uqVXYsQrnLvZcTtGtxoxRxbdi7qZzvoH0dOpDACHxu2tU9cHZLH35zz38Zhv4WEUjr3
+         MZSsrrbusSODGP2d8GVpVE7gzL+hnXRpZAE0V3j6M1dm87YIrQpJKEUWQpu+FBq2cReP
+         4rBJI4UKMCNjBqokprOuxH3P6gZyrGT+IoafkB8GxUQnxt36DU+NfURMoiJGS3YTcbvK
+         30Kp8sST4XeXyLsHVm/uefNtLxM3QRh3CnLFucF73Tpt8TXdp7mYBiTt03k6//ZhUlEp
+         +C6Q==
+X-Gm-Message-State: ANhLgQ2aTNruqAOUHlF7d/xtvwpK5YEu4oLujSwS3q52oXasK2v2UG+Z
+        HftD2x1YX4H7zjsPhC6R9QRtney1J+SByM7MeyWySeJgw1uf
+X-Google-Smtp-Source: ADFU+vux2t/xaiujvf8Y0YWq1KqzivojgudC+oOlyt8deIl3lhzOJSMIuuTOmRBd2XaXjPCRM7y5g8S9EcYG/6ABJbFkK9akhOZH
 MIME-Version: 1.0
-References: <20200310183624.441788-1-songliubraving@fb.com>
-In-Reply-To: <20200310183624.441788-1-songliubraving@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 10 Mar 2020 21:33:52 -0700
-Message-ID: <CAEf4BzY2AuYgsxjMtFCfjReFqCkwde0ffy+4B16x-sz6gxmWoA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/2] Fixes for bpftool-prog-profile
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        quentin@isovalent.com, Kernel Team <kernel-team@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>
+X-Received: by 2002:a92:7b10:: with SMTP id w16mr1278071ilc.93.1583901362950;
+ Tue, 10 Mar 2020 21:36:02 -0700 (PDT)
+Date:   Tue, 10 Mar 2020 21:36:02 -0700
+In-Reply-To: <0000000000002e20b9059fee8a94@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000019196205a08cc67d@google.com>
+Subject: Re: WARNING in idr_destroy
+From:   syzbot <syzbot+05835159fe322770fe3d@syzkaller.appspotmail.com>
+To:     a@unstable.cc, airlied@linux.ie, airlied@redhat.com,
+        alexander.deucher@amd.com, b.a.t.m.a.n@lists.open-mesh.org,
+        christian.koenig@amd.com, daniel@ffwll.ch, davem@davemloft.net,
+        dri-devel@lists.freedesktop.org, gregkh@linuxfoundation.org,
+        hdegoede@redhat.com, kraxel@redhat.com,
+        linux-kernel@vger.kernel.org, maarten.lankhorst@linux.intel.com,
+        mareklindner@neomailbox.ch, mripard@kernel.org,
+        netdev@vger.kernel.org, noralf@tronnes.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
+        tzimmermann@suse.de
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 11:36 AM Song Liu <songliubraving@fb.com> wrote:
->
-> 1. Fix build for older clang;
-> 2. Fix skeleton's dependency on libbpf.
->
+syzbot has bisected this bug to:
 
-Can you please also add tools/bpf/bpftool/profiler.skel.h to .gitignore?
+commit 5b3709793d151e6e12eb6a38a5da3f7fc2923d3a
+Author: Thomas Zimmermann <tzimmermann@suse.de>
+Date:   Wed May 8 08:26:19 2019 +0000
 
-> Song Liu (2):
->   bpftool: only build bpftool-prog-profile with clang >= v11
->   bpftool: skeleton should depend on libbpf
->
->  tools/bpf/bpftool/Makefile | 15 ++++++++++++---
->  tools/bpf/bpftool/prog.c   |  2 ++
->  2 files changed, 14 insertions(+), 3 deletions(-)
->
-> --
-> 2.17.1
+    drm/ast: Convert AST driver to |struct drm_gem_vram_object|
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=15a66fb5e00000
+start commit:   63623fd4 Merge tag 'for-linus' of git://git.kernel.org/pub..
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=17a66fb5e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=13a66fb5e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5d2e033af114153f
+dashboard link: https://syzkaller.appspot.com/bug?extid=05835159fe322770fe3d
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14e978e3e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10b1a819e00000
+
+Reported-by: syzbot+05835159fe322770fe3d@syzkaller.appspotmail.com
+Fixes: 5b3709793d15 ("drm/ast: Convert AST driver to |struct drm_gem_vram_object|")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
