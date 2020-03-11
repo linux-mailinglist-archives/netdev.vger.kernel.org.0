@@ -2,174 +2,395 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 462C4182115
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 19:44:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AA25182118
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 19:45:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730780AbgCKSob (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 14:44:31 -0400
-Received: from mail-pl1-f202.google.com ([209.85.214.202]:48182 "EHLO
-        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730730AbgCKSob (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 14:44:31 -0400
-Received: by mail-pl1-f202.google.com with SMTP id w3so1730445plz.15
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 11:44:30 -0700 (PDT)
+        id S1730784AbgCKSpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 14:45:08 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:37976 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730691AbgCKSpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 14:45:07 -0400
+Received: by mail-ed1-f68.google.com with SMTP id h5so4161662edn.5
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 11:45:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=V5utLIEDzwq7LeSAtItzmD1JbNLw+JdXcL3i+r4+PIw=;
-        b=kU90F5eAQz5fez5zWVccHoOVyWRnW4KOO3uLCP2ubjkPTUyL2PBnucXVpLyVEi0hCc
-         q3Z2zIEUyTTUqFMsvoYYWMCkkKrC7bvpON6KLcIedhYnYTo9dMkFGryBjFxS1izqjxsV
-         yA4ePJj3b58lDzmXQo9UUUcVeXJJ4+sPfve0Mb7ZvjnpXQprDdPoKlOZ/Mc+HRCghi79
-         JfBsLJmU/YfWy7wxZPoxhNU/juL+FD8pbgZCKajS4rjstIBl2UTKAzSORjfcmqMnfOZK
-         X8tDs9KiEUbGoBbH/ZOLmgjgAlZIgVLzR/xp18Y1u0s7wpu+2fyfW3PB37dqadSoeZ+h
-         LMEA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dRlnwXWMAPmIaUgKt52LuaocF5ofK2dRFgnYtCVjwAo=;
+        b=bWaVAAvDDIVJCM4tl2MYR+XyG8O7FGJgJul2HjjxzOcrF44C3XYKd/yywxjLbt647p
+         r7lOWsQcvr2fMvLtfc4qAqcdlz4BDUOVlst9zI0BOKn7iYPJbAaMWWLbsO4JkXnZHCdq
+         P67mjJNnMNQyFmLU/MbXe0auHSXXjnkTGraoMonyX8DfUN2CxllEzlFVsSwcrqkkjorF
+         Ax2bud+SJtDZLldFrZYQxtepPYlBMNPws1KT2fiXFpKr48deJN/jcFaAhuf32Ekfrp7K
+         +Dcs2k1+nnJN7kFjPVGrX8XyVahfHOYKEfvNo0cM8DvVrvOWkRINfMS+DG5DT6Gfu9/r
+         P+EQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=V5utLIEDzwq7LeSAtItzmD1JbNLw+JdXcL3i+r4+PIw=;
-        b=t0viqPRf4xPzJ1UIT+Qt9U2MP3kgKrXfKxmPywh8jCBxKmiKWvw+n9iFs8DD/6cUGh
-         si+XP4DZedrDAalQtVOAxPgT5Hlafn0hEfiBoRCyjaUq1LsICpeNt1I2AePPfv3qWcyH
-         undQ9dD4H8rYyDDTWU2UAQ7e9pZHS2nbtJQFW+K5Ehg0Gpshn6T6kEXDlQFfGQV8H/TM
-         imSo5JP+RS9pqIUrjiA6B+0rQzeKEzmZ+nTklDH4Lw6Kb5swiySLB/05eAQV7fCDzKjd
-         c2xM7VhNHcQExxzSv/mKEhiGTU2fhLfgeUdw4RcC1FA/GRxSVcZIssOHTQy8fhWoKSKc
-         U6oA==
-X-Gm-Message-State: ANhLgQ1TIjUUnqwJYWuLMSC/dqACG1lzy1haHsDWoGHXN1OkLqtVroY4
-        /K9vvJT3WyuYcxYaz4jvQZbpp46pkjiXXQ==
-X-Google-Smtp-Source: ADFU+vu7mFtXHGnHrfHjHWq7ncN2EOE1bJAFRqyVmZvUuhZ2Q3h84j4bS177C8CIjeJoq8QbNuGSRJWa2x/5xg==
-X-Received: by 2002:a17:90a:37ea:: with SMTP id v97mr155200pjb.26.1583952269664;
- Wed, 11 Mar 2020 11:44:29 -0700 (PDT)
-Date:   Wed, 11 Mar 2020 11:44:26 -0700
-Message-Id: <20200311184426.39253-1-edumazet@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
-Subject: [PATCH net] net: memcg: fix lockdep splat in inet_csk_accept()
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        syzbot <syzkaller@googlegroups.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dRlnwXWMAPmIaUgKt52LuaocF5ofK2dRFgnYtCVjwAo=;
+        b=o2RKxMkweoXfciYeyEoY4l3FW60ux74XK7vBHGBjeAKFqXvJ8ntyObUB9N2WIj2Hqi
+         WAAREjI1PPndO4pucgastly6i6HDGP5j9IkBABS/0XvLRQ3xMf5mP0YlqvdZbSQkXM67
+         ADHSTcNOBzekO4yyUpORVLKH9vyH9pk/Bk7TSL8VS+k3iaAoZohUt8ap1ie+ikDnUTNN
+         P5OxkS6TNdP3abfjPkHTZ9xsdzERHP9I5BEDyNU4M4OgIDiaozNJ+mXABwlKzOS0fp1E
+         DwxSMPbiJDqOHBVrPgUgcrrVnCFk4hNtVtC6yZTRq1vGUjk3tbJPyN6HzrGEV6bXtf+2
+         D6hA==
+X-Gm-Message-State: ANhLgQ2+6rWeDS/QGik17vQXO0tnLz7/2O14onKWdL/rJi8gPtt693an
+        T+PdtTAEX0x4SQV6y2n5Ix9vQTaVmZODVVdQTq4=
+X-Google-Smtp-Source: ADFU+vs99TPvOnVxxYmv2US1ZtvxptsoVdjyDnOfnA9LBjuWmCbbGe4v5InFfi2P9Bd/Z2CxNZIfZSCV3mPaTIDJvGs=
+X-Received: by 2002:a05:6402:c:: with SMTP id d12mr4279455edu.337.1583952305814;
+ Wed, 11 Mar 2020 11:45:05 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200311120643.GN25745@shell.armlinux.org.uk> <E1jC099-0001cZ-U2@rmk-PC.armlinux.org.uk>
+ <CA+h21ho9eWTCJp2+hD0id_e3mfVXw_KRJziACJQMDXxmCnE5xA@mail.gmail.com> <20200311170918.GQ25745@shell.armlinux.org.uk>
+In-Reply-To: <20200311170918.GQ25745@shell.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 11 Mar 2020 20:44:54 +0200
+Message-ID: <CA+h21hooqWCqPT2gWtjx2hadXga9e4fAjf4xwavvzyzmdqGNfg@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/5] net: phylink: pcs: add 802.3 clause 22 helpers
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Locking newsk while still holding the listener lock triggered
-a lockdep splat [1]
+On Wed, 11 Mar 2020 at 19:09, Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> On Wed, Mar 11, 2020 at 04:06:52PM +0200, Vladimir Oltean wrote:
+> > On Wed, 11 Mar 2020 at 14:08, Russell King <rmk+kernel@armlinux.org.uk> wrote:
+> > >
+> > > Implement helpers for PCS accessed via the MII bus using 802.3 clause
+> > > 22 cycles, conforming to 802.3 clause 37 and Cisco SGMII specifications
+> > > for the advertisement word.
+> > >
+> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > > ---
+> > >  drivers/net/phy/phylink.c | 206 ++++++++++++++++++++++++++++++++++++++
+> > >  include/linux/phylink.h   |   6 ++
+> > >  include/uapi/linux/mii.h  |   5 +
+> > >  3 files changed, 217 insertions(+)
+> > >
+> > > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> > > index 19db68d74cb4..3ef20b34f5d6 100644
+> > > --- a/drivers/net/phy/phylink.c
+> > > +++ b/drivers/net/phy/phylink.c
+> > > @@ -2035,4 +2035,210 @@ void phylink_helper_basex_speed(struct phylink_link_state *state)
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(phylink_helper_basex_speed);
+> > >
+> > > +static void phylink_decode_c37_word(struct phylink_link_state *state,
+> > > +                                   uint16_t config_reg, int speed)
+> > > +{
+> > > +       bool tx_pause, rx_pause;
+> > > +       int fd_bit;
+> > > +
+> > > +       if (speed == SPEED_2500)
+> > > +               fd_bit = ETHTOOL_LINK_MODE_2500baseX_Full_BIT;
+> > > +       else
+> > > +               fd_bit = ETHTOOL_LINK_MODE_1000baseX_Full_BIT;
+> > > +
+> > > +       mii_lpa_mod_linkmode_x(state->lp_advertising, config_reg, fd_bit);
+> > > +
+> > > +       if (linkmode_test_bit(fd_bit, state->advertising) &&
+> > > +           linkmode_test_bit(fd_bit, state->lp_advertising)) {
+> > > +               state->speed = speed;
+> > > +               state->duplex = DUPLEX_FULL;
+> > > +       } else {
+> > > +               /* negotiation failure */
+> > > +               state->link = false;
+> > > +       }
+> > > +
+> > > +       linkmode_resolve_pause(state->advertising, state->lp_advertising,
+> > > +                              &tx_pause, &rx_pause);
+> > > +
+> > > +       if (tx_pause)
+> > > +               state->pause |= MLO_PAUSE_TX;
+> > > +       if (rx_pause)
+> > > +               state->pause |= MLO_PAUSE_RX;
+> > > +}
+> > > +
+> > > +static void phylink_decode_sgmii_word(struct phylink_link_state *state,
+> > > +                                     uint16_t config_reg)
+> > > +{
+> > > +       if (!(config_reg & LPA_SGMII_LINK)) {
+> > > +               state->link = false;
+> > > +               return;
+> > > +       }
+> > > +
+> > > +       switch (config_reg & LPA_SGMII_SPD_MASK) {
+> >
+> > Did you consider using or adapting the mii_lpa_mod_linkmode_adv_sgmii helper?
+>
+> Yes, and we _do not_ want to be touching state->lp_advertising here.
+> The link partner advertisement comes from the attached PHY, not from
+> this information.
+>
 
-We can simply move the memcg code after we release the listener lock,
-as this can also help if multiple threads are sharing a common listener.
+Understood, and I never suggested to touch state->lp_advertising, but
+rather pcs->lp_advertising.
 
-Also fix a typo while reading socket sk_rmem_alloc.
+> The config_reg information is not an advertisement - it is a
+> _configuration word_ coming from the PHY to tell the MAC what speed
+> and duplex to operate at.
 
-[1]
-WARNING: possible recursive locking detected
-5.6.0-rc3-syzkaller #0 Not tainted
---------------------------------------------
-syz-executor598/9524 is trying to acquire lock:
-ffff88808b5b8b90 (sk_lock-AF_INET6){+.+.}, at: lock_sock include/net/sock.h:1541 [inline]
-ffff88808b5b8b90 (sk_lock-AF_INET6){+.+.}, at: inet_csk_accept+0x69f/0xd30 net/ipv4/inet_connection_sock.c:492
+Arguably the abuse here is Cisco's, since config_reg _was_ supposed to
+be an auto-neg advertisement as per clause 37. It is just the SGMII
+spec that makes it asymmetrical.
 
-but task is already holding lock:
-ffff88808b5b9590 (sk_lock-AF_INET6){+.+.}, at: lock_sock include/net/sock.h:1541 [inline]
-ffff88808b5b9590 (sk_lock-AF_INET6){+.+.}, at: inet_csk_accept+0x8d/0xd30 net/ipv4/inet_connection_sock.c:445
+> It conveys nothing about whether it's
+> 1000baseT or 1000baseX, so link modes mean nothing as far as a SGMII
+> configuration word is concerned.
 
-other info that might help us debug this:
- Possible unsafe locking scenario:
+My initial point was that _for this pcs device_, the link partner _is_
+the PHY if it's SGMII. Otherwise you wouldn't find the config_reg in
+register 5.
 
-       CPU0
-       ----
-  lock(sk_lock-AF_INET6);
-  lock(sk_lock-AF_INET6);
+>
+> Hence, _this_ is a more correct implementation than
+> mii_lpa_mod_linkmode_adv_sgmii().
+>
+> > > +       case LPA_SGMII_10:
+> > > +               state->speed = SPEED_10;
+> > > +               break;
+> > > +       case LPA_SGMII_100:
+> > > +               state->speed = SPEED_100;
+> > > +               break;
+> > > +       case LPA_SGMII_1000:
+> > > +               state->speed = SPEED_1000;
+> > > +               break;
+> > > +       default:
+> > > +               state->link = false;
+> > > +               return;
+> > > +       }
+> > > +       if (config_reg & LPA_SGMII_FULL_DUPLEX)
+> > > +               state->duplex = DUPLEX_FULL;
+> > > +       else
+> > > +               state->duplex = DUPLEX_HALF;
+> > > +}
+> > > +
+> > > +/**
+> > > + * phylink_mii_c22_pcs_get_state() - read the MAC PCS state
+> > > + * @pcs: a pointer to a &struct mdio_device.
+> > > + * @state: a pointer to a &struct phylink_link_state.
+> > > + *
+> > > + * Helper for MAC PCS supporting the 802.3 clause 22 register set for
+> > > + * clause 37 negotiation and/or SGMII control.
+> > > + *
+> > > + * Read the MAC PCS state from the MII device configured in @config and
+> > > + * parse the Clause 37 or Cisco SGMII link partner negotiation word into
+> > > + * the phylink @state structure. This is suitable to be directly plugged
+> > > + * into the mac_pcs_get_state() member of the struct phylink_mac_ops
+> > > + * structure.
+> > > + */
+> > > +void phylink_mii_c22_pcs_get_state(struct mdio_device *pcs,
+> > > +                                  struct phylink_link_state *state)
+> > > +{
+> > > +       struct mii_bus *bus = pcs->bus;
+> > > +       int addr = pcs->addr;
+> > > +       int bmsr, lpa;
+> > > +
+> > > +       bmsr = mdiobus_read(bus, addr, MII_BMSR);
+> > > +       lpa = mdiobus_read(bus, addr, MII_LPA);
+> > > +       if (bmsr < 0 || lpa < 0) {
+> > > +               state->link = false;
+> > > +               return;
+> > > +       }
+> > > +
+> > > +       state->link = !!(bmsr & BMSR_LSTATUS);
+> > > +       state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
+> > > +       if (!state->link)
+> > > +               return;
+> > > +
+> > > +       switch (state->interface) {
+> > > +       case PHY_INTERFACE_MODE_1000BASEX:
+> > > +               phylink_decode_c37_word(state, lpa, SPEED_1000);
+> > > +               break;
+> > > +
+> > > +       case PHY_INTERFACE_MODE_2500BASEX:
+> > > +               phylink_decode_c37_word(state, lpa, SPEED_2500);
+> > > +               break;
+> > > +
+> > > +       case PHY_INTERFACE_MODE_SGMII:
+> > > +               phylink_decode_sgmii_word(state, lpa);
+> > > +               break;
+> > > +
+> > > +       default:
+> > > +               state->link = false;
+> > > +               break;
+> > > +       }
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_get_state);
+> > > +
+> > > +/**
+> > > + * phylink_mii_c22_pcs_set_advertisement() - configure the clause 37 PCS
+> > > + *     advertisement
+> > > + * @pcs: a pointer to a &struct mdio_device.
+> > > + * @state: a pointer to the state being configured.
+> > > + *
+> > > + * Helper for MAC PCS supporting the 802.3 clause 22 register set for
+> > > + * clause 37 negotiation and/or SGMII control.
+> > > + *
+> > > + * Configure the clause 37 PCS advertisement as specified by @state. This
+> > > + * does not trigger a renegotiation; phylink will do that via the
+> > > + * mac_an_restart() method of the struct phylink_mac_ops structure.
+> > > + *
+> > > + * Returns negative error code on failure to configure the advertisement,
+> > > + * zero if no change has been made, or one if the advertisement has changed.
+> > > + */
+> > > +int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
+> > > +                                       const struct phylink_link_state *state)
+> > > +{
+> > > +       struct mii_bus *bus = pcs->bus;
+> > > +       int addr = pcs->addr;
+> > > +       int val, ret;
+> > > +       u16 adv;
+> > > +
+> > > +       switch (state->interface) {
+> > > +       case PHY_INTERFACE_MODE_1000BASEX:
+> > > +       case PHY_INTERFACE_MODE_2500BASEX:
+> > > +               adv = ADVERTISE_1000XFULL;
+> > > +               if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
+> > > +                                     state->advertising))
+> > > +                       adv |= ADVERTISE_1000XPAUSE;
+> > > +               if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
+> > > +                                     state->advertising))
+> > > +                       adv |= ADVERTISE_1000XPSE_ASYM;
+> > > +
+> > > +               val = mdiobus_read(bus, addr, MII_ADVERTISE);
+> > > +               if (val < 0)
+> > > +                       return val;
+> > > +
+> > > +               if (val == adv)
+> > > +                       return 0;
+> > > +
+> > > +               ret = mdiobus_write(bus, addr, MII_ADVERTISE, adv);
+> > > +               if (ret < 0)
+> > > +                       return ret;
+> > > +
+> > > +               return 1;
+> > > +
+> > > +       case PHY_INTERFACE_MODE_SGMII:
+> > > +               val = mdiobus_read(bus, addr, MII_ADVERTISE);
+> > > +               if (val < 0)
+> > > +                       return val;
+> > > +
+> > > +               if (val == 0x0001)
+> > > +                       return 0;
+> > > +
+> > > +               ret = mdiobus_write(bus, addr, MII_ADVERTISE, 0x0001);
+> > > +               if (ret < 0)
+> > > +                       return ret;
+> > > +
+> > > +               return 1;
+> > > +
+> > > +       default:
+> > > +               /* Nothing to do for other modes */
+> > > +               return 0;
+> > > +       }
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_set_advertisement);
+> > > +
+> > > +/**
+> > > + * phylink_mii_c22_pcs_an_restart() - restart 802.3z autonegotiation
+> > > + * @pcs: a pointer to a &struct mdio_device.
+> > > + *
+> > > + * Helper for MAC PCS supporting the 802.3 clause 22 register set for
+> > > + * clause 37 negotiation.
+> > > + *
+> > > + * Restart the clause 37 negotiation with the link partner. This is
+> > > + * suitable to be directly plugged into the mac_pcs_get_state() member
+> > > + * of the struct phylink_mac_ops structure.
+> > > + */
+> > > +void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs)
+> > > +{
+> > > +       struct mii_bus *bus = pcs->bus;
+> > > +       int val, addr = pcs->addr;
+> > > +
+> > > +       val = mdiobus_read(bus, addr, MII_BMCR);
+> > > +       if (val >= 0) {
+> > > +               val |= BMCR_ANRESTART;
+> > > +
+> > > +               mdiobus_write(bus, addr, MII_BMCR, val);
+> > > +       }
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_an_restart);
+> > > +
+> > >  MODULE_LICENSE("GPL v2");
+> > > diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+> > > index 2180eb1aa254..de591c2fb37e 100644
+> > > --- a/include/linux/phylink.h
+> > > +++ b/include/linux/phylink.h
+> > > @@ -317,4 +317,10 @@ int phylink_mii_ioctl(struct phylink *, struct ifreq *, int);
+> > >  void phylink_set_port_modes(unsigned long *bits);
+> > >  void phylink_helper_basex_speed(struct phylink_link_state *state);
+> > >
+> > > +void phylink_mii_c22_pcs_get_state(struct mdio_device *pcs,
+> > > +                                  struct phylink_link_state *state);
+> > > +int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
+> > > +                                       const struct phylink_link_state *state);
+> > > +void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs);
+> > > +
+> > >  #endif
+> > > diff --git a/include/uapi/linux/mii.h b/include/uapi/linux/mii.h
+> > > index 0b9c3beda345..90f9b4e1ba27 100644
+> > > --- a/include/uapi/linux/mii.h
+> > > +++ b/include/uapi/linux/mii.h
+> > > @@ -134,11 +134,16 @@
+> > >  /* MAC and PHY tx_config_Reg[15:0] for SGMII in-band auto-negotiation.*/
+> > >  #define ADVERTISE_SGMII                0x0001  /* MAC can do SGMII            */
+> > >  #define LPA_SGMII              0x0001  /* PHY can do SGMII            */
+> > > +#define LPA_SGMII_SPD_MASK     0x0c00  /* SGMII speed mask            */
+> > > +#define LPA_SGMII_FULL_DUPLEX  0x1000  /* SGMII full duplex           */
+> > >  #define LPA_SGMII_DPX_SPD_MASK 0x1C00  /* SGMII duplex and speed bits */
+> > > +#define LPA_SGMII_10           0x0000  /* 10Mbps                      */
+> > >  #define LPA_SGMII_10HALF       0x0000  /* Can do 10mbps half-duplex   */
+> > >  #define LPA_SGMII_10FULL       0x1000  /* Can do 10mbps full-duplex   */
+> > > +#define LPA_SGMII_100          0x0400  /* 100Mbps                     */
+> > >  #define LPA_SGMII_100HALF      0x0400  /* Can do 100mbps half-duplex  */
+> > >  #define LPA_SGMII_100FULL      0x1400  /* Can do 100mbps full-duplex  */
+> > > +#define LPA_SGMII_1000         0x0800  /* 1000Mbps                    */
+> >
+> > These seem a bit mixed up to say the least.
+> > If you're not going to use the (minimal) existing infrastructure could
+> > you also refactor the one existing user? I think it would be better
+> > than just keeping adding conflicting definitions.
+>
+> Sorry, but you need to explain better what you would like to see here.
+> The additions I'm adding are to the SGMII specification; I find your
+> existing definitions to be obscure because they conflate two different
+> bit fields together to produce something for the ethtool linkmodes
+> (which I think is a big mistake.)
+>
 
- *** DEADLOCK ***
+I'm saying that there were already LPA_SGMII definitions in there.
+There are 2 "generic" solutions proposed now and yet they cannot agree
+on config_reg definitions. Omitting the fact that you did have a
+chance to point out that big mistake before it got merged, I'm
+wondering why you didn't remove them and add your new ones instead.
+The code rework is minimal. Is it because the definitions are in UAPI?
+If so, isn't it an even bigger mistake to put more stuff in UAPI? Why
+would user space care about the SGMII config_reg? There's no user even
+of the previous SGMII definitions as far as I can tell.
 
- May be due to missing lock nesting notation
-
-1 lock held by syz-executor598/9524:
- #0: ffff88808b5b9590 (sk_lock-AF_INET6){+.+.}, at: lock_sock include/net/sock.h:1541 [inline]
- #0: ffff88808b5b9590 (sk_lock-AF_INET6){+.+.}, at: inet_csk_accept+0x8d/0xd30 net/ipv4/inet_connection_sock.c:445
-
-stack backtrace:
-CPU: 0 PID: 9524 Comm: syz-executor598 Not tainted 5.6.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- print_deadlock_bug kernel/locking/lockdep.c:2370 [inline]
- check_deadlock kernel/locking/lockdep.c:2411 [inline]
- validate_chain kernel/locking/lockdep.c:2954 [inline]
- __lock_acquire.cold+0x114/0x288 kernel/locking/lockdep.c:3954
- lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
- lock_sock_nested+0xc5/0x110 net/core/sock.c:2947
- lock_sock include/net/sock.h:1541 [inline]
- inet_csk_accept+0x69f/0xd30 net/ipv4/inet_connection_sock.c:492
- inet_accept+0xe9/0x7c0 net/ipv4/af_inet.c:734
- __sys_accept4_file+0x3ac/0x5b0 net/socket.c:1758
- __sys_accept4+0x53/0x90 net/socket.c:1809
- __do_sys_accept4 net/socket.c:1821 [inline]
- __se_sys_accept4 net/socket.c:1818 [inline]
- __x64_sys_accept4+0x93/0xf0 net/socket.c:1818
- do_syscall_64+0xf6/0x790 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4445c9
-Code: e8 0c 0d 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 eb 08 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffc35b37608 EFLAGS: 00000246 ORIG_RAX: 0000000000000120
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000004445c9
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 0000000000306777 R09: 0000000000306777
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00000000004053d0 R14: 0000000000000000 R15: 0000000000000000
-
-Fixes: d752a4986532 ("net: memcg: late association of sock to memcg")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Shakeel Butt <shakeelb@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/ipv4/inet_connection_sock.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 65a3b2565102622e9c87fb4342dcb6f583c1c37e..d545fb99a8a1c84153c4a42226d15754c1f52ca0 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -483,27 +483,27 @@ struct sock *inet_csk_accept(struct sock *sk, int flags, int *err, bool kern)
- 		spin_unlock_bh(&queue->fastopenq.lock);
- 	}
- 
--	if (mem_cgroup_sockets_enabled) {
-+out:
-+	release_sock(sk);
-+	if (newsk && mem_cgroup_sockets_enabled) {
- 		int amt;
- 
- 		/* atomically get the memory usage, set and charge the
--		 * sk->sk_memcg.
-+		 * newsk->sk_memcg.
- 		 */
- 		lock_sock(newsk);
- 
--		/* The sk has not been accepted yet, no need to look at
--		 * sk->sk_wmem_queued.
-+		/* The socket has not been accepted yet, no need to look at
-+		 * newsk->sk_wmem_queued.
- 		 */
- 		amt = sk_mem_pages(newsk->sk_forward_alloc +
--				   atomic_read(&sk->sk_rmem_alloc));
-+				   atomic_read(&newsk->sk_rmem_alloc));
- 		mem_cgroup_sk_alloc(newsk);
- 		if (newsk->sk_memcg && amt)
- 			mem_cgroup_charge_skmem(newsk->sk_memcg, amt);
- 
- 		release_sock(newsk);
- 	}
--out:
--	release_sock(sk);
- 	if (req)
- 		reqsk_put(req);
- 	return newsk;
--- 
-2.25.1.481.gfbce0eb801-goog
-
+> >
+> > >  #define LPA_SGMII_1000HALF     0x0800  /* Can do 1000mbps half-duplex */
+> > >  #define LPA_SGMII_1000FULL     0x1800  /* Can do 1000mbps full-duplex */
+> > >  #define LPA_SGMII_LINK         0x8000  /* PHY link with copper-side partner */
+> > > --
+> > > 2.20.1
+> > >
+> >
+> > Regards,
+> > -Vladimir
+> >
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
