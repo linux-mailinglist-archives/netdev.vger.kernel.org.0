@@ -2,113 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61822181DCC
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 17:28:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1140C181E0C
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 17:36:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730157AbgCKQ2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 12:28:31 -0400
-Received: from us-smtp-1.mimecast.com ([207.211.31.81]:57335 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729511AbgCKQ2b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 12:28:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1583944110;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=+AcFPUKurIpTmOv61uuE6lYoV6IMLnSbJD63dh/c1Wo=;
-        b=O/kiFPPwLfAAlqKeLAZW5nCjyjc4H4REavlr7NCPuLTlS6GfHD0eX3ZfIgz3KUPG+7HAeJ
-        6oPuENEfyFsMXcYPQ/D556Wc1oy6e1R0MlaRW5nn0LyNozXEN6HrkfE/C1QoMfT3uXkPQs
-        BLtapKChQRyyofg7AjlGTVsknwSKUHo=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-365-q8qWk2BRNKqCw3-rwGVrJg-1; Wed, 11 Mar 2020 12:28:24 -0400
-X-MC-Unique: q8qWk2BRNKqCw3-rwGVrJg-1
-Received: by mail-wr1-f71.google.com with SMTP id h14so487860wrv.12
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 09:28:24 -0700 (PDT)
+        id S1730172AbgCKQgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 12:36:03 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:44004 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729631AbgCKQgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 12:36:03 -0400
+Received: by mail-ed1-f65.google.com with SMTP id dc19so3609257edb.10;
+        Wed, 11 Mar 2020 09:36:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ALDnh6/CiSndTdMaMbzSmsCEBXICNVByiI58zX8By/I=;
+        b=QWJpHsi+FrCvfO7t8tcTBagtzonzmYs7D0NsTuKBNsIBiAvI1+lnlkze93dfKJ8d8C
+         YFliSCZ1GPyjyA809zaN6Q9W2yQ702WCB5QJmqHvIRqUz+OGzOZzuAnCD7uax0PWFkIW
+         tbnHPkKDZa5O64roVmsiaWFe7d7RumzCZStk9dOaUEL8ggy+KE4NWLEt1v4ZQyuWLJ6g
+         vfrEUlSM9sMCcR968B/LrPbp5qx00iHoPc0eaiTImDv6WOduOYT32j9yE2LaxorMZF3H
+         NsqU9AygX6zFUYnb16rOLsMxWRh1ZN455ze0cD/QGMAiWs/V67FEayNKbyw+R3QN/i+P
+         MUFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+AcFPUKurIpTmOv61uuE6lYoV6IMLnSbJD63dh/c1Wo=;
-        b=NzrHTR0QyXrYutX3Ka2IdDkL7G1GHL4k9nW6cbA6uzwA7owOMm7Lpjof3okJbJiKP6
-         Ip+jEp9OmZzUnQ6NLx8T7c78eXlzKK4qRfT8y6cNT11zjPKBCzEF8x1czZVq6YMUIyyI
-         +B6TLBENtjt54S6xtNjyytlEil5A+G2AyPfUMW5eWn2m+ycb6aPRdTgOdjaNPDGUzfEU
-         cfu3R48XPDZ0ZC9Ql3A+XEJ7nbiq4dYk1G4M6zLTkXnRLXu7yp7hW7YfHp/6EYvIQuXn
-         6pwaTUueArmVXFCv1rqWzq/hJcB4fGjGOL59Eu/poo9uTWQ38F/n1VH6SZLdKksrGacD
-         /ECQ==
-X-Gm-Message-State: ANhLgQ1tBLt5op/9moD83BSPimb4BvR2PzO0yJNAO4HLosKKs5IEYlmh
-        8+O7zKRi2JJKTNQ5wFSQRd5oF0jix70Wm8x0sFz5THVg7CTs0QHiw9ZaRYclm61RNAp2HcowvtI
-        uPIzPqEbwKo7s+ojL
-X-Received: by 2002:a5d:6245:: with SMTP id m5mr5337303wrv.154.1583944103770;
-        Wed, 11 Mar 2020 09:28:23 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vsNyw4//2jmv5fSmgb97mVc7AZNgYS+Ev98sGUQ6uHKJBfwNYIX9hyAf6V9x/yMUk/dtzoPjQ==
-X-Received: by 2002:a5d:6245:: with SMTP id m5mr5337281wrv.154.1583944103497;
-        Wed, 11 Mar 2020 09:28:23 -0700 (PDT)
-Received: from pc-3.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
-        by smtp.gmail.com with ESMTPSA id h15sm4791241wrw.97.2020.03.11.09.28.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Mar 2020 09:28:22 -0700 (PDT)
-Date:   Wed, 11 Mar 2020 17:28:21 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>, Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        davem <davem@davemloft.net>, mmhatre@redhat.com,
-        "alexander.h.duyck@intel.com" <alexander.h.duyck@intel.com>
-Subject: Re: route: an issue caused by local and main table's merge
-Message-ID: <20200311162821.GA31531@pc-3.home>
-References: <CADvbK_evghCnfNkePFkkLbaamXPaCOu-mSsSDKXuGSt65DSivw@mail.gmail.com>
- <1441d64c-c334-8c54-39e8-7a06a530089d@gmail.com>
- <CAKgT0UcbycqgrfviqUmvS9S7+F6q-gMzrz-KKQuEb77ruZZLRQ@mail.gmail.com>
- <20200310155630.GA7102@pc-3.home>
- <20200310160133.GA7670@pc-3.home>
- <CAKgT0Ucc2gHxR0TZUZN7LmzFg9xfeA+kC_jQcwVOTY8sUnaijA@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=ALDnh6/CiSndTdMaMbzSmsCEBXICNVByiI58zX8By/I=;
+        b=GikLRHBvWyb4cXjfLU3h/jLLdivQoYWRpM5V6IFu9MvfdDsxBmFWsIyCMNvgNXyjlw
+         vOklvhY+v1jUDZBFi3VZ/LivHRRb/v0j9CvwazRIjZgo3D8F3yJdslYlN/hqOGzL65BW
+         6qwhCiZMDTBFQadM7um8LPhnq29SEXZ6U3e5eSV7Fk5q1xFJlXlZiByfoUtpZy6wqiuJ
+         I5dUaClKRZ4R/eFZd/agWtt43sCRC9FhkQxWUGYbQkxyWPJbEeZnY5jcz7JTSSC94pkg
+         AMm5/VHiskx/u0R/vWo0gpYzrJW48S6QR2xEnuRHXOp8g3P8rENmkc9hq0MdcOa5OwC5
+         EiKQ==
+X-Gm-Message-State: ANhLgQ171P2QquzFwvHtPjBSBrdqxIIvqyXmrPd+O/a6Ec+vZeW1cjjE
+        NZNPaN33/mF1HSXKOaZdTyqVf/4p
+X-Google-Smtp-Source: ADFU+vvlHudoRMVXJNn72RmqLiDxqatxcxOaA+o2Z5ntcmI8xTGB941mzo4D3OrqCLW8mTFID9KQBg==
+X-Received: by 2002:a50:b043:: with SMTP id i61mr3639227edd.194.1583944560108;
+        Wed, 11 Mar 2020 09:36:00 -0700 (PDT)
+Received: from [10.67.48.239] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id g31sm4438951edd.53.2020.03.11.09.35.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Mar 2020 09:35:59 -0700 (PDT)
+Subject: Re: [PATCH -next 030/491] BROADCOM GENET ETHERNET DRIVER: Use
+ fallthrough;
+To:     Joe Perches <joe@perches.com>, Doug Berger <opendmb@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <cover.1583896344.git.joe@perches.com>
+ <e78fb08d1dcf0d95175fc2866c344fbef2ff7065.1583896349.git.joe@perches.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
+Message-ID: <a61c388f-bb42-e6e6-7381-5e99c8dad95e@gmail.com>
+Date:   Wed, 11 Mar 2020 09:35:54 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0Ucc2gHxR0TZUZN7LmzFg9xfeA+kC_jQcwVOTY8sUnaijA@mail.gmail.com>
+In-Reply-To: <e78fb08d1dcf0d95175fc2866c344fbef2ff7065.1583896349.git.joe@perches.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 10:19:24AM -0700, Alexander Duyck wrote:
-> On Tue, Mar 10, 2020 at 9:01 AM Guillaume Nault <gnault@redhat.com> wrote:
-> >
-> > On Tue, Mar 10, 2020 at 04:56:32PM +0100, Guillaume Nault wrote:
-> > > On Mon, Mar 09, 2020 at 08:53:53AM -0700, Alexander Duyck wrote:
-> > > > Also, is it really a valid configuration to have the same address
-> > > > configured as both a broadcast and unicast address? I couldn't find
-> > > > anything that said it wasn't, but at the same time I haven't found
-> > > > anything saying it is an acceptable practice to configure an IP
-> > > > address as both a broadcast and unicast destination. Everything I saw
-> > > > seemed to imply that a subnet should be at least a /30 to guarantee a
-> > > > pair of IPs and support for broadcast addresses with all 1's and 0 for
-> > > > the host identifier. As such 192.168.122.1 would never really be a
-> > > > valid broadcast address since it implies a /31 subnet mask.
-> > > >
-> > > RFC 3031 explicitly allows /31 subnets for point to point links.
-> > That RFC 3021, sorry :/
-> >
+On 3/10/20 9:51 PM, Joe Perches wrote:
+> Convert the various uses of fallthrough comments to fallthrough;
 > 
-> So from what I can tell the configuration as provided doesn't apply to
-> RFC 3021. Specifically RFC 3021 calls out that you are not supposed to
-> use the { <network-prefix>, -1 } which is what is being done here. In
-> addition the prefix is technically a /24 as configured here since a
-> prefix length wasn't specified so it defaults to a class C.
+> Done via script
+> Link: https://lore.kernel.org/lkml/b56602fcf79f849e733e7b521bb0e17895d390fa.1582230379.git.joe.com/
 > 
-Yes, I was just replying on the use of /31 subnets. I agree that this
-case is different.
+> Signed-off-by: Joe Perches <joe@perches.com>
 
-> Looking over the Linux kernel code it normally doesn't add such a
-> broadcast if using a /31 address:
-> https://elixir.bootlin.com/linux/v5.6-rc5/source/net/ipv4/fib_frontend.c#L1122
-> 
-Yes, and that's the right thing to do IMHO.
+Please fix the subject to be:
 
-I think the original problem is that the command is accepted when it's
-run after "ip rule add from 2.2.2.2". It should continue to be rejected
-instead, as the ip-rule command has no action and is not supposed to
-interfere in this case.
+net: bcmgenet: Use fallthrough;
 
+to match commits done to this file.
+-- 
+Florian
