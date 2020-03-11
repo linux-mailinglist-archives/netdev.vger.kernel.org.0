@@ -2,74 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8694182331
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 21:17:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A920E182348
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 21:30:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387410AbgCKURE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 16:17:04 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:36446 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731057AbgCKURE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 16:17:04 -0400
-Received: by mail-il1-f198.google.com with SMTP id v14so2265587ilq.3
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 13:17:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=Hk8leBLQn5EO2E5GYez0a5lDH0bgTVJ9Yjc9wD197GA=;
-        b=WlBKOwDBrDWj0rSsk/2OINjIB5t7m+2tvlbl/40Whs/zGjqKKYXEkjNZvTQy9KAu7W
-         FWCHbW3Wum/m2FOluipOEvID5JtqFkLVSEe09bg8Cy/J3kghx18Jm0qoKKkiyoxgELVC
-         9gv/y+BPOJYlDMnm7hT+osHtK1kclgrdifthRPcpYnEe7TC1aSjmdDr13ef1UT6X3uSw
-         +9bqHpiBeSPFOLvKaOIJIEKAe1uTwyByywKFLWYjO9kxuFrfjGV81MOkySqdT4banKHh
-         5KZcnVmfRcuHM5nVvrt5044X8swlssAtmmj/zmHN5AMOElNRHmg0VPdxUoiPrfikGzkq
-         i42g==
-X-Gm-Message-State: ANhLgQ10Tva5hZfyZcBGBpmtAZ1buI1MRwJa4hal7RO/yjSwTNeV+6th
-        e28FLVFq+qTrFVuvX43NAdFyUPa81BzOPdu5eTSmLWFy7f4f
-X-Google-Smtp-Source: ADFU+vuCk0oLjsQRK1OQUGd8tOfOULwTEpr37d1F6UYTw6+1J+u2VViJHjd/h7gGWV9DvDuMYhL3fUTIAi3lVakXW/slGPEJZJ+Y
+        id S1726947AbgCKUac (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 16:30:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51986 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726310AbgCKUab (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Mar 2020 16:30:31 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 70E2D2073E;
+        Wed, 11 Mar 2020 20:30:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1583958632;
+        bh=DxYnVTJp+B2Vx0uly/eYT8LCAU6XKWIauJtUwlVZ2NE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iEZhYqaKz6E3QBJ6l7BlEvPkgNCzpTYov54QKFgqBS66xCM2RSLvuY4ZVdYz/qM5q
+         D4dQ3xPg7D7OdU+kDdzhhj1xxz70Lru2GiFxSzTtSohdFWsaK9VD/zoVDwL6sAkr1S
+         PCFg0/fKp8qGawCwuMa7CSJW6UER5JN28NnY3n5g=
+Date:   Wed, 11 Mar 2020 13:30:28 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, saeedm@mellanox.com,
+        pablo@netfilter.org, ecree@solarflare.com
+Subject: Re: [patch net-next 0/3] flow_offload: follow-ups to HW stats type
+ patchset
+Message-ID: <20200311133028.7327abb5@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200311071955.GA2258@nanopsycho.orion>
+References: <20200310154909.3970-1-jiri@resnulli.us>
+        <20200310120519.10bffbfe@kicinski-fedora-PC1C0HJN>
+        <20200311071955.GA2258@nanopsycho.orion>
 MIME-Version: 1.0
-X-Received: by 2002:a02:962e:: with SMTP id c43mr4679555jai.26.1583957823254;
- Wed, 11 Mar 2020 13:17:03 -0700 (PDT)
-Date:   Wed, 11 Mar 2020 13:17:03 -0700
-In-Reply-To: <00000000000030395e059f6aaa09@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000064f9a805a099eb8a@google.com>
-Subject: Re: general protection fault in j1939_netdev_start
-From:   syzbot <syzbot+f03d384f3455d28833eb@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, jiri@mellanox.com, jiri@resnulli.us,
-        kernel@pengutronix.de, kuba@kernel.org, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@rempel-privat.de,
-        mareklindner@neomailbox.ch, mkl@pengutronix.de,
-        netdev@vger.kernel.org, robin@protonic.nl, socketcan@hartkopp.net,
-        sven@narfation.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this bug to:
+On Wed, 11 Mar 2020 08:19:55 +0100 Jiri Pirko wrote:
+> Tue, Mar 10, 2020 at 08:05:19PM CET, kuba@kernel.org wrote:
+> >On Tue, 10 Mar 2020 16:49:06 +0100 Jiri Pirko wrote:  
+> >> This patchset includes couple of patches in reaction to the discussions
+> >> to the original HW stats patchset. The first patch is a fix,
+> >> the other two patches are basically cosmetics.  
+> >
+> >Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+> >
+> >This problem already exists, but writing a patch for nfp I noticed that
+> >there is no way for this:
+> >
+> >	if (!flow_action_hw_stats_types_check(flow_action, extack,
+> >					      FLOW_ACTION_HW_STATS_TYPE_DELAYED_BIT))
+> >		return -EOPNOTSUPP;
+> >
+> >to fit on a line for either bit, which kind of sucks.  
+> 
+> Yeah, I was thinking about having flow_action_hw_stats_types_check as a
+> macro and then just simply have:
+> 
+> 	if (!flow_action_hw_stats_types_check(flow_action, extack, DELAYED))
+> 		return -EOPNOTSUPP;
+> 
+> WDYT?
 
-commit 8330f73fe9742f201f467639f8356cf58756fb9f
-Author: Jiri Pirko <jiri@mellanox.com>
-Date:   Wed Sep 4 07:40:47 2019 +0000
+I'd rather have the 80+ lines than not be able to grep for it :(
 
-    rocker: add missing init_net check in FIB notifier
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=165cdcb1e00000
-start commit:   63623fd4 Merge tag 'for-linus' of git://git.kernel.org/pub..
-git tree:       upstream
-final crash:    https://syzkaller.appspot.com/x/report.txt?x=155cdcb1e00000
-console output: https://syzkaller.appspot.com/x/log.txt?x=115cdcb1e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=9833e26bab355358
-dashboard link: https://syzkaller.appspot.com/bug?extid=f03d384f3455d28833eb
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=162b8331e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10f10a2de00000
-
-Reported-by: syzbot+f03d384f3455d28833eb@syzkaller.appspotmail.com
-Fixes: 8330f73fe974 ("rocker: add missing init_net check in FIB notifier")
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+What's wrong with flow_action_stats_ok()? Also perhaps, flow_act 
+as a prefix?
