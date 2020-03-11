@@ -2,99 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1152B180D2E
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 02:09:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8807F180D59
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 02:14:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728026AbgCKBJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 21:09:47 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:45182 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbgCKBJq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 21:09:46 -0400
-Received: by mail-wr1-f65.google.com with SMTP id m9so396106wro.12;
-        Tue, 10 Mar 2020 18:09:44 -0700 (PDT)
+        id S1727880AbgCKBOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 21:14:14 -0400
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:33815 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727833AbgCKBON (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 21:14:13 -0400
+Received: by mail-yw1-f67.google.com with SMTP id o186so518233ywc.1
+        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 18:14:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=00GSpkojnx3B4GB0fFMAKFnU+tANLaiUGZgbkObBjO4=;
-        b=rXZlxFI9JSzCtp81Ib7ST1kaLR/Xl1OrJ2z46XZY4sBTtm3lREyA9akpIS9lcjwiML
-         VYoYR8hLGI5Z+wOOBt7p7W2aTJ/5M/pBoYe0rKUn5gWv3HYP1PSqQSypbszvwaNvmdCz
-         kjTqHgsAfKVBgXFea9cHKcd2aURr8Atn5b94jRSfR4IeSgt6yHXxFVCPCcZVmw1K9fz9
-         6PLIlVupVklKgjKMLnCPRmPcB5j/UPiF1BKPcq66GPMWM3UkRkJzNucYPExpORpw+xwM
-         miIaPGjeP93ijikHj9Hs7ilF5w2j99rKV3ps+Lp+KmYG9JJjxyFyOcYRjXFKw24fYfoH
-         XE3A==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X9RdD7dG4OSnH/ITM7CpyzLcUBxqAje79nHZ8XeIV6g=;
+        b=FY7/W01wzvgaIOdYQmMKo/yPAcX5tUr8fyE9PXSm5dg0lBfJjqqut+QRmbH6fe8sDo
+         aCsNgyAJXvIs87SGiKHBGxPe0yoCGIjRZ9Z12r5bTKc+q2KRl6a/g3QW3TGXh48i8JBH
+         VFdU1bEVxp5m4XEXuxBNsaem5cxDyuVEzaxpJ/F00Q/3fbqOEIRtuuk0Kh5Gevldzk3Y
+         a04u9tzfasIpXemR3KyUivgq8HCj4lF9GQkPCCTrh4TpSEPkWBUoOQ96UtqGCU81SJOS
+         p3bzk+ugjtyM0uaaWFkwForh3BEqmXWA42Z086x6RTMO1ChvbkKWSXcRGT+K5gw3ZGHR
+         Y4gQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=00GSpkojnx3B4GB0fFMAKFnU+tANLaiUGZgbkObBjO4=;
-        b=TkSe/WYdYPHl/TTg5BL+7F0Hk4FXh1Qr3ledJqM6WLLzBVmZ0NKmcY76nn89i9Hr41
-         zcQLa8OhTqvQ/beZ68PBwX9w0Ju8fkjnNHkC9kTUrv5qCxLXSKYSRlOFBKvCNVHBrf+9
-         k1/OyzqKXhdrCuplFYFilONjKNPwSc0hGxNeuhHyyRaiunohjlwGoMgRJtjDVaukovbL
-         s4dcq06CyqRavYfb9cUvStnMF37xhv57nJWfbSVbzz28ynzDTEkOW7L74Ip62Gf113Z2
-         6sMi6bQmKUv1KQmsxgmld5hlT46BMmPJEPoK9vOUckZ7gdIOV8vFRcmkgreVFZ6Dj4G1
-         XGDA==
-X-Gm-Message-State: ANhLgQ0AMnJ+XXiy6KvgREU1Q06Er8XdrUYST4wGKqa5/OkKM7ox6LnC
-        p1AEF7OAW74tvZ8EC5ghSA==
-X-Google-Smtp-Source: ADFU+vuPZB+qEvJlgMjAKNaONJg23VSoTdeJapUHrDxw8mfccmCzR4CYmGDU2ygM1wMZnnyCmheYRQ==
-X-Received: by 2002:a5d:6902:: with SMTP id t2mr720116wru.135.1583888983726;
-        Tue, 10 Mar 2020 18:09:43 -0700 (PDT)
-Received: from ninjahost.lan (host-2-102-15-144.as13285.net. [2.102.15.144])
-        by smtp.googlemail.com with ESMTPSA id i6sm36658097wra.42.2020.03.10.18.09.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Mar 2020 18:09:43 -0700 (PDT)
-From:   Jules Irenge <jbi.octave@gmail.com>
-To:     boqun.feng@gmail.com
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Clemens Ladisch <clemens@ladisch.de>,
-        Takashi Sakamoto <o-takashi@sakamocchi.jp>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Allison Randal <allison@lohutok.net>,
-        alsa-devel@alsa-project.org (moderated list:FIREWIRE AUDIO DRIVERS and
-        IEC 61883-1/6 PACKET...)
-Subject: [PATCH 8/8] ALSA: firewire-tascam: Add missing annotation for tscm_hwdep_read_locked()
-Date:   Wed, 11 Mar 2020 01:09:08 +0000
-Message-Id: <20200311010908.42366-9-jbi.octave@gmail.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200311010908.42366-1-jbi.octave@gmail.com>
-References: <0/8>
- <20200311010908.42366-1-jbi.octave@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X9RdD7dG4OSnH/ITM7CpyzLcUBxqAje79nHZ8XeIV6g=;
+        b=Lz6L4fSGOfp3Fhg+r5BrlGOWJTrZrLbLrMsp8gvM3UT3LG/cvbtJlXXaucPgpqQ/Bo
+         YCbZ1QIqh7tFQKeC6HTqH7yvi/+lGdoBV0zUARY+0riU79I85TnXbVQ9jqq+8Rr+ZOn6
+         hz4oQplXtgXnzv6ofhoV5B7fOhl5RJuUpyL+zemRGt2PHVmx58jY9QNxoV8+4gi27lWd
+         PEyYfIQDzF5pEITQ1Po3NAEvcAACrv2+pFijDZ0jcBkm6QZUi8Q8mni4QbdgOFkD0h+e
+         eYrUhSP81Yzs5anM14e+nPZaXYY41aXp9kW0qvMYe7t6Ivbz/PeArsPMAH3fnT7FfC1i
+         vdww==
+X-Gm-Message-State: ANhLgQ1DGb4DGpeDZtlMc1fSUdxaAy72ofyFI+wt2TExElBwu3oe/cda
+        eWlSHuW9X7FhljgkYX3ccUqBpwNqoOlx8hl0Bcx2Tg==
+X-Google-Smtp-Source: ADFU+vvorRI9Lt+4KrjNb6NV3EAfKk8c6LXgbMK5EVVCsuMdZYDpBAx98uZ8ZL0CtLeEszNLo+LdzSzOGYj+SmY7B34=
+X-Received: by 2002:a25:2688:: with SMTP id m130mr524689ybm.408.1583889251315;
+ Tue, 10 Mar 2020 18:14:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200311010908.42366-1-jbi.octave@gmail.com> <20200311010908.42366-4-jbi.octave@gmail.com>
+In-Reply-To: <20200311010908.42366-4-jbi.octave@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 10 Mar 2020 18:14:00 -0700
+Message-ID: <CANn89iJc9e5fQEWerHgDM1g2vp_1EEj0EntbCvccCzAyusHtdg@mail.gmail.com>
+Subject: Re: [PATCH 3/8] tcp: Add missing annotation for tcp_child_process()
+To:     Jules Irenge <jbi.octave@gmail.com>
+Cc:     boqun.feng@gmail.com, LKML <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sparse reports a warning at tscm_hwdep_read_locked()
+On Tue, Mar 10, 2020 at 6:09 PM Jules Irenge <jbi.octave@gmail.com> wrote:
+>
+> Sparse reports warning at tcp_child_process()
+> warning: context imbalance in tcp_child_process() - unexpected unlock
+> The root cause is the missing annotation at tcp_child_process()
+>
+> Add the missing __releases(&((child)->sk_lock.slock)) annotation
+>
+> Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
+> ---
+>  net/ipv4/tcp_minisocks.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+> index ad3b56d9fa71..0e8a5b6e477c 100644
+> --- a/net/ipv4/tcp_minisocks.c
+> +++ b/net/ipv4/tcp_minisocks.c
+> @@ -817,6 +817,7 @@ EXPORT_SYMBOL(tcp_check_req);
+>
+>  int tcp_child_process(struct sock *parent, struct sock *child,
+>                       struct sk_buff *skb)
+> +       __releases(&((child)->sk_lock.slock))
+>  {
+>         int ret = 0;
+>         int state = child->sk_state;
 
-warning: context imbalance in tscm_hwdep_read_locked() - unexpected unlock
 
-The root cause is the missing annotation at tscm_hwdep_read_locked()
-Add the missing __releases(&tscm->lock) annotation
+Yeah, although we prefer to use lockdep these days ;)
 
-Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
----
- sound/firewire/tascam/tascam-hwdep.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/sound/firewire/tascam/tascam-hwdep.c b/sound/firewire/tascam/tascam-hwdep.c
-index 9801e33e7f2a..6f38335fe10b 100644
---- a/sound/firewire/tascam/tascam-hwdep.c
-+++ b/sound/firewire/tascam/tascam-hwdep.c
-@@ -17,6 +17,7 @@
- 
- static long tscm_hwdep_read_locked(struct snd_tscm *tscm, char __user *buf,
- 				   long count, loff_t *offset)
-+	__releases(&tscm->lock)
- {
- 	struct snd_firewire_event_lock_status event = {
- 		.type = SNDRV_FIREWIRE_EVENT_LOCK_STATUS,
--- 
-2.24.1
-
+Reviewed-by: Eric Dumazet <edumazet@google.com>
