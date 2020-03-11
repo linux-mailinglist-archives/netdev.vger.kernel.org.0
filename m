@@ -2,158 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 879D6182470
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 23:09:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DA3F18248B
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 23:14:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729649AbgCKWJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 18:09:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43514 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729513AbgCKWJX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Mar 2020 18:09:23 -0400
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.128])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 88168206E7;
-        Wed, 11 Mar 2020 22:09:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583964562;
-        bh=NyvXVozLYcI0YL52ap2vKHzLgBCJIUrC8FHyEzc5sTo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pyMtX8QrL2xBPRe8dnPN6SyxXAXW93fzd630pd/wg5svjMvJeyqmNm4h0dU7b3+vV
-         Ne7/XtydAPo1nEpxu2ZkXu4Urg3jv/g+PJZxN1CGFcyamTxJUW9I/cdpwPHgvJskcs
-         K1vKamWvbJ7btmUG/S1hYKKyQ094HxFIqoFsgV1g=
-Date:   Wed, 11 Mar 2020 15:09:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     netdev@vger.kernel.org, Roman Mashak <mrv@mojatatu.com>,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, davem@davemloft.net,
-        jiri@mellanox.com, mlxsw@mellanox.com
-Subject: Re: [PATCH net-next v2 2/6] net: sched: Allow extending set of
- supported RED flags
-Message-ID: <20200311150920.306de7c6@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200311173356.38181-3-petrm@mellanox.com>
-References: <20200311173356.38181-1-petrm@mellanox.com>
-        <20200311173356.38181-3-petrm@mellanox.com>
+        id S1730094AbgCKWO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 18:14:27 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:39380 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729590AbgCKWO1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 18:14:27 -0400
+Received: by mail-pf1-f196.google.com with SMTP id w65so2134012pfb.6
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 15:14:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=TRMbc2MT59fcHMzxfJmkV+RwRUiISDxKXrIl7C0tzJ8=;
+        b=l6iSu1+QIjuheIWrgAg7mrwXqXl4LzW6ZTeMnsYUqW03Pd6q9qM1pVhqqIALR+rOPT
+         7zVVFhKtL5CVS8e8dXYeyjEhvdQ3KFFaHY7mCAcnyi+KtqTVaFj8UAPfl0ftPKwf6C3P
+         k0mqhnv01geSKL4uUnr3aOXOU6FKSrq6GznHHbMfav9qTnoGBT94VsY8iKyDL0g2NZEv
+         h/VhhM+cTRmhrp+RZxhHKx+uODfewUFx7G8ueKdDL1NXLTf1zVRytgn4DILI9FzIWKRy
+         vg42kxErzDyh1fzCAMTG2NW5FI1qc8LlfySoXMxArOFcw7NQd1PSuKNlJSGp4HtkdBom
+         plSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=TRMbc2MT59fcHMzxfJmkV+RwRUiISDxKXrIl7C0tzJ8=;
+        b=ntQz3l7QSWUip5r6Tq0pvVRP3gyQeqRqzkPyKjDrlbAEBzGZhNJx4qJnKKkxD/hV2L
+         VPJMHvIRdHuKuQvZYxpNGHfdypfI2exNcAuUYLGBeoM52Wbw7KOwE9XGEyV2KQ3QdIg3
+         CoS5+FUf0nbZoE/J4KhOIMBE12+G4mum9YaKhruxRJPoEdoV8oOVurhU76JPssXfmTWG
+         +LLUvr5zrrd9VbCdfozqLOh/sd+PTdY5sAjsb87EhTM5dfDYWYLfobizLeAQzW834ogk
+         EqsQA6MkoO+vCCbPJVG00FIIDuS5rGabQ1acjmgkrxJQlOMrKGVAhPDYOYs4mRQks/s5
+         fkKw==
+X-Gm-Message-State: ANhLgQ0ROZx1BhJVOuYlSEDWP1M9Fw9qBxD7W9vt93L99Rd9UJbPZwmq
+        JDqf24mZ9a4Khz6aANX7Ro+GHg==
+X-Google-Smtp-Source: ADFU+vvxWT/FHdVxFcVplZDdwO7f6/ZRxvRLLxHD0gNMNuvrQ2bmwbRKmm0zyI3X9jqYYREwWoXAYg==
+X-Received: by 2002:a63:be09:: with SMTP id l9mr4659363pgf.439.1583964865600;
+        Wed, 11 Mar 2020 15:14:25 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id v16sm6504587pjr.11.2020.03.11.15.14.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Mar 2020 15:14:25 -0700 (PDT)
+Date:   Wed, 11 Mar 2020 15:14:24 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Stanislav Fomichev <sdf@google.com>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: make tcp_rtt test more robust to
+ failures
+Message-ID: <20200311221424.GB2125642@mini-arch.hsd1.ca.comcast.net>
+References: <20200311191513.3954203-1-andriin@fb.com>
+ <20200311204106.GA2125642@mini-arch.hsd1.ca.comcast.net>
+ <CAEf4BzZpL83aAhDWTyNoXtJp5W8S4Q_=+2_0UNeY=eb14hS8aQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZpL83aAhDWTyNoXtJp5W8S4Q_=+2_0UNeY=eb14hS8aQ@mail.gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Mar 2020 19:33:52 +0200 Petr Machata wrote:
-> diff --git a/include/net/red.h b/include/net/red.h
-> index 9665582c4687..5718d2b25637 100644
-> --- a/include/net/red.h
-> +++ b/include/net/red.h
-> @@ -179,6 +179,31 @@ static inline bool red_check_params(u32 qth_min, u32 qth_max, u8 Wlog)
->  	return true;
->  }
->  
-> +static inline bool red_get_flags(unsigned char flags,
-> +				 unsigned char historic_mask,
-> +				 struct nlattr *flags_attr,
-> +				 unsigned int supported_mask,
-> +				 unsigned int *p_flags, unsigned char *p_userbits,
-> +				 struct netlink_ext_ack *extack)
-> +{
-> +	if (flags && flags_attr) {
-> +		NL_SET_ERR_MSG_MOD(extack, "flags should be passed either through qopt, or through a dedicated attribute");
-> +		return false;
-> +	}
-> +
-> +	*p_flags = flags & historic_mask;
-> +	if (flags_attr)
-> +		*p_flags |= nla_get_u32(flags_attr);
+On 03/11, Andrii Nakryiko wrote:
+> On Wed, Mar 11, 2020 at 1:41 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> >
+> > On 03/11, Andrii Nakryiko wrote:
+> > [..]
+> > > +     pthread_join(tid, &server_res);
+> > > +     CHECK_FAIL(IS_ERR(server_res));
+> >
+> > I wonder if we add (move) close(server_fd) before pthread_join(), can we
+> > fix this issue without using non-blocking socket? The accept() should
+> > return as soon as server_fd is closed so it's essentially your
+> > 'server_done'.
+> 
+> That was my first attempt. Amazingly, closing listening socket FD
+> doesn't unblock accept()...
+Ugh :-(
 
-It's less error prone for callers not to modify the output parameters
-until we're sure the call won't fail.
+In this case, feel free to slap:
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
 
-> +	if (*p_flags & ~supported_mask) {
-> +		NL_SET_ERR_MSG_MOD(extack, "unsupported RED flags specified");
-> +		return false;
-> +	}
-> +
-> +	*p_userbits = flags & ~historic_mask;
-> +	return true;
-> +}
-> +
+My only other (minor) suggestion was to add a small delay in the first
+loop:
 
-> +#define TC_RED_HISTORIC_FLAGS (TC_RED_ECN | TC_RED_HARDDROP | TC_RED_ADAPTATIVE)
-> +
->  struct tc_red_xstats {
->  	__u32           early;          /* Early drops */
->  	__u32           pdrop;          /* Drops due to queue limits */
-> diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
-> index 1695421333e3..61d7c5a61279 100644
-> --- a/net/sched/sch_red.c
-> +++ b/net/sched/sch_red.c
-> @@ -35,7 +35,11 @@
->  
->  struct red_sched_data {
->  	u32			limit;		/* HARD maximal queue length */
-> -	unsigned char		flags;
-> +
-> +	u32			flags;
+	while (!server_done) {
+		accept()
+		if (!err) {
+			udelay(50) <--
+			continue
+		}
+	}
 
-Can we stick to uchar until the number of flags grows?
-
-> +	/* Non-flags in tc_red_qopt.flags. */
-> +	unsigned char		userbits;
-> +
->  	struct timer_list	adapt_timer;
->  	struct Qdisc		*sch;
->  	struct red_parms	parms;
-> @@ -44,6 +48,8 @@ struct red_sched_data {
->  	struct Qdisc		*qdisc;
->  };
->  
-> +#define RED_SUPPORTED_FLAGS TC_RED_HISTORIC_FLAGS
-> +
->  static inline int red_use_ecn(struct red_sched_data *q)
->  {
->  	return q->flags & TC_RED_ECN;
-> @@ -186,6 +192,7 @@ static const struct nla_policy red_policy[TCA_RED_MAX + 1] = {
->  	[TCA_RED_PARMS]	= { .len = sizeof(struct tc_red_qopt) },
->  	[TCA_RED_STAB]	= { .len = RED_STAB_SIZE },
->  	[TCA_RED_MAX_P] = { .type = NLA_U32 },
-> +	[TCA_RED_FLAGS] = { .type = NLA_U32 },
-
-BITFIELD32? And then perhaps turn the define into a const validation
-data?
-
-Also policy needs a .strict_start_type now.
-
->  };
->  
->  static int red_change(struct Qdisc *sch, struct nlattr *opt,
-
-> @@ -302,7 +317,8 @@ static int red_dump(struct Qdisc *sch, struct sk_buff *skb)
->  	struct nlattr *opts = NULL;
->  	struct tc_red_qopt opt = {
->  		.limit		= q->limit,
-> -		.flags		= q->flags,
-> +		.flags		= ((q->flags & TC_RED_HISTORIC_FLAGS) |
-> +				   q->userbits),
-
-nit: parens unnecessary
-
->  		.qth_min	= q->parms.qth_min >> q->parms.Wlog,
->  		.qth_max	= q->parms.qth_max >> q->parms.Wlog,
->  		.Wlog		= q->parms.Wlog,
-> @@ -321,6 +337,8 @@ static int red_dump(struct Qdisc *sch, struct sk_buff *skb)
->  	if (nla_put(skb, TCA_RED_PARMS, sizeof(opt), &opt) ||
->  	    nla_put_u32(skb, TCA_RED_MAX_P, q->parms.max_P))
->  		goto nla_put_failure;
-> +	if (q->flags & ~TC_RED_HISTORIC_FLAGS)
-> +		nla_put_u32(skb, TCA_RED_FLAGS, q->flags);
-
-Not 100% sure if conditional is needed, but please check the return
-code.
-
->  	return nla_nest_end(skb, opts);
->  
->  nla_put_failure:
-
+But I suppose that shouldn't be that big of a deal..
