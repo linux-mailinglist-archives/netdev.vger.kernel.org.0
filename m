@@ -2,307 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EA1E181865
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 13:45:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C747418186F
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 13:46:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729410AbgCKMp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 08:45:29 -0400
-Received: from mail-wm1-f50.google.com ([209.85.128.50]:53732 "EHLO
-        mail-wm1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729331AbgCKMp2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 08:45:28 -0400
-Received: by mail-wm1-f50.google.com with SMTP id 25so1927815wmk.3
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 05:45:27 -0700 (PDT)
+        id S1729354AbgCKMqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 08:46:48 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:36956 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729279AbgCKMqs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 08:46:48 -0400
+Received: by mail-ed1-f68.google.com with SMTP id b23so2713761edx.4
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 05:46:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ORvjNWY65dY23S4IlIKQ1x+V9LNSiumvEQa3h+r1vCs=;
-        b=PJZz653teYqqjIJEnD+4+o3+/fzf4iFZwa/DOW3Y13tpfNIxPREXvXURZ63oEy9SoS
-         sZPU7RPTuk9cLan/Y/q9snn7jJxBYopjIMtqfH6NM3g0WLIm2xCG0uBj4f9q7OKWZ0Hu
-         9Bx96PK6hYRXKm9vC+rIcG4MCzFdNrWmyp75CxP5EgXCCKWxRmmgEX7br2ihvHBtwdoB
-         Pjc6Es0piX0/8ulwxamIra/dauu1QOeXWWfwJz1aPYuwm4opBnO23XYMV/KVSD+yFfUT
-         WVcWN8veH7pgE339hdU7Op88HXLBCmcLFbMCnNCXJY20i/lhpIegctTFU2jmv1K9tcFy
-         ceMw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VRvosfgrT7qtZwn4vI1JG0A7hp4tCm3RZoUHP6ng3h4=;
+        b=JUG5v9raeUDoXJnCZALV8f6q8M8bhM+vuwBbDUF4Gsy8xfskgh++TJ6frwGWe+OuEb
+         MTFaCHduSU/csT8zZ4x+WaQjFLyAyv6edICQqwO04RUni1+pDk3n1ImWtY8W3+u+mYQx
+         /U8nwXbDvhZBzwCcB70kqrU9WPSWupXyjDKGitJ4EGX1FKDk6ZstdqXpAspCogOVBNRI
+         ScqSSq3rhwLnk6WNBfu4RscbuqbT1n/gTrY3Jyndw5vtMoPWUHAtpksi0CrmCzg5NQj+
+         k/rorqIv7kTswWzraoqeF5fS5eTBC3+C/xqAaRxCjPUH2BHxbxSZttaptavqlP1Hx6Ru
+         wjmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ORvjNWY65dY23S4IlIKQ1x+V9LNSiumvEQa3h+r1vCs=;
-        b=oyxMYHIdnzdZii1lFn6Qo6CFSdLPTN2nWjIRqEEVmW/xV6D9ZDb7GD/GPviDnX5Ysi
-         1XZn40Q3yfIdCesHsw7AwTn+od8Ws+41vhHfCar3OTQt+3/gepFfXSlys5UvzH/ZsOnz
-         vI4bchf8TMbbjx6htvNeBCqNnnNiOVBaj6BUYT1WxyWhUxglPELVwUreBg4g2aO3vfSK
-         EroYYnayaqRucOHT2Awowa6FnOQzZZ7n2sr5MEKLJeu7APUSiZashDh2cuLQ8vU/1Xzd
-         MaOPUD44ZW4CJBgFm0DcFHdEji6ZUG9WRPBBHQTvq4DCM7fM06w1MzvScPeGtj5Aoj7a
-         uMFQ==
-X-Gm-Message-State: ANhLgQ03owDzKEx1iOGbV0R+9UitHBhJspbgc6OluYhBFYjfleO2on/J
-        Yo5zUEU/rvCsGG4DJwZKO0irKPrInrc=
-X-Google-Smtp-Source: ADFU+vv5pav2ex7MAlWMf+p6mr6l7nus+cZSTs7PPdc2xTg6LHlageeZvA4DtJK/U9CpAgz8j5zIEA==
-X-Received: by 2002:a1c:4b18:: with SMTP id y24mr3689025wma.149.1583930726007;
-        Wed, 11 Mar 2020 05:45:26 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id n1sm25514306wrj.77.2020.03.11.05.45.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Mar 2020 05:45:24 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, stephen@networkplumber.org, mlxsw@mellanox.com
-Subject: [patch iproute2/net-next v3] tc: m_action: introduce support for hw stats type
-Date:   Wed, 11 Mar 2020 13:45:24 +0100
-Message-Id: <20200311124524.4777-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VRvosfgrT7qtZwn4vI1JG0A7hp4tCm3RZoUHP6ng3h4=;
+        b=kAh+d5cKmiSqiFUDWM7Jjqs6Wf3X71RwRupGo7NEEY48I1qo0FEIlyjV+oAs4QrFGs
+         bkhbVzCmdesc/xjohCcJYaLxb1jNDtWSMMXxQZfxtnNAG9PW6wYzxmSBtjfupL5J8HhN
+         a7MXCJItXqiXaMQHT/z3La55j8vYqyCXNx3FKbgrkmURkAjH2qwWrzkToqGj4C692yXa
+         QLgg6kHJ2r7gq1Qxdz4jr49GQGfAswUUWpy4gSX72zacG8tcSPMEH1d9YfjvmguVJ4dB
+         h6Ir5Q0nvZOpmB2B9uf1bCDsKZdV2kG6OI6zjgaFJv15igVMwATyXL1Qn6ZMEw1/2uAo
+         Jt9w==
+X-Gm-Message-State: ANhLgQ3DChUqMGY2tizOZ4OJqp2BKn9bN1P3TN4X7nUR+U7osqkp1VZ+
+        PZa0Ub3ekGjplXZAY7W0urYpvUG2KO0OPSMsVbI=
+X-Google-Smtp-Source: ADFU+vva6L4gj1E6xdt/CbY5EH9PoDo0fQFWdHu8OVFIhHsXyZzL6Les6dMa6RP5EhnUilj3+RJlZ42uLF7iIq8URWU=
+X-Received: by 2002:a05:6402:c:: with SMTP id d12mr2673222edu.337.1583930804625;
+ Wed, 11 Mar 2020 05:46:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200311120643.GN25745@shell.armlinux.org.uk>
+In-Reply-To: <20200311120643.GN25745@shell.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 11 Mar 2020 14:46:33 +0200
+Message-ID: <CA+h21hoq2qkmxDFEb2QgLfrbC0PYRBHsca=0cDcGOr3txy9hsg@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/5] add phylink support for PCS
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+Hi Russell,
 
-Introduce support for per-action hw stats type config.
+On Wed, 11 Mar 2020 at 14:09, Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> Hi,
+>
+> This series adds support for IEEE 802.3 register set compliant PCS
+> for phylink.  In order to do this, we:
+>
+> 1. convert the existing (unused) mii_lpa_to_ethtool_lpa_x() function
+>    to a linkmode variant.
+> 2. add a helper for clause 37 advertisements, supporting both the
+>    1000baseX and defacto 2500baseX variants. Note that ethtool does
+>    not support half duplex for either of these, and we make no effort
+>    to do so.
+> 3. add accessors for modifying a MDIO device register, and use them in
+>    phylib, rather than duplicating the code from phylib.
 
-This patch allows user to specify one of the following types of HW
-stats for added action:
-immediate - queried during dump time
-delayed - polled from HW periodically or sent by HW in async manner
-disabled - no stats needed
+Have you considered accessing the PCS as a phy_device structure, a la
+drivers/net/dsa/ocelot/felix_vsc9959.c?
 
-Note that if "hw_stats" option is not passed, user does not care about
-the type, just expects any type of stats.
+> 4. add support for decoding the advertisement from clause 22 compatible
+>    register sets for clause 37 advertisements and SGMII advertisements.
+> 5. add support for clause 45 register sets for 10GBASE-R PCS.
+>
+> These have been tested on the LX2160A Clearfog-CX platform.
+>
+>  drivers/net/phy/mdio_bus.c |  55 +++++++++++
+>  drivers/net/phy/phy-core.c |  31 ------
+>  drivers/net/phy/phylink.c  | 236 +++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/mdio.h       |   4 +
+>  include/linux/mii.h        |  57 +++++++----
+>  include/linux/phy.h        |  19 ++++
+>  include/linux/phylink.h    |   8 ++
+>  include/uapi/linux/mii.h   |   5 +
+>  8 files changed, 366 insertions(+), 49 deletions(-)
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
 
-Examples:
-$ tc filter add dev enp0s16np28 ingress proto ip handle 1 pref 1 flower skip_sw dst_ip 192.168.1.1 action drop hw_stats disabled
-$ tc -s filter show dev enp0s16np28 ingress
-filter protocol ip pref 1 flower chain 0
-filter protocol ip pref 1 flower chain 0 handle 0x1
-  eth_type ipv4
-  dst_ip 192.168.1.1
-  skip_sw
-  in_hw in_hw_count 2
-        action order 1: gact action drop
-         random type none pass val 0
-         index 1 ref 1 bind 1 installed 7 sec used 2 sec
-        Action statistics:
-        Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
-        backlog 0b 0p requeues 0
-        hw_stats disabled
-
-$ tc filter add dev enp0s16np28 ingress proto ip handle 1 pref 1 flower skip_sw dst_ip 192.168.1.1 action drop hw_stats immediate
-$ tc -s filter show dev enp0s16np28 ingress
-filter protocol ip pref 1 flower chain 0
-filter protocol ip pref 1 flower chain 0 handle 0x1
-  eth_type ipv4
-  dst_ip 192.168.1.1
-  skip_sw
-  in_hw in_hw_count 2
-        action order 1: gact action drop
-         random type none pass val 0
-         index 1 ref 1 bind 1 installed 11 sec used 4 sec
-        Action statistics:
-        Sent 102 bytes 1 pkt (dropped 1, overlimits 0 requeues 0)
-        Sent software 0 bytes 0 pkt
-        Sent hardware 102 bytes 1 pkt
-        backlog 0b 0p requeues 0
-        hw_stats immediate
-
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
-v2->v3:
-- adjusted hw_stats_type_bf struct initialization
-- added comment to "disable"
-v1->v2:
-- added more description and examples
----
- include/uapi/linux/pkt_cls.h | 22 +++++++++++++
- man/man8/tc-actions.8        | 31 ++++++++++++++++++
- tc/m_action.c                | 63 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 116 insertions(+)
-
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index 449a63971451..81cc1a869588 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -17,6 +17,7 @@ enum {
- 	TCA_ACT_PAD,
- 	TCA_ACT_COOKIE,
- 	TCA_ACT_FLAGS,
-+	TCA_ACT_HW_STATS_TYPE,
- 	__TCA_ACT_MAX
- };
- 
-@@ -24,6 +25,27 @@ enum {
- 					 * actions stats.
- 					 */
- 
-+/* tca HW stats type
-+ * When user does not pass the attribute, he does not care.
-+ * It is the same as if he would pass the attribute with
-+ * all supported bits set.
-+ * In case no bits are set, user is not interested in getting any HW statistics.
-+ */
-+#define TCA_ACT_HW_STATS_TYPE_IMMEDIATE (1 << 0) /* Means that in dump, user
-+						  * gets the current HW stats
-+						  * state from the device
-+						  * queried at the dump time.
-+						  */
-+#define TCA_ACT_HW_STATS_TYPE_DELAYED (1 << 1) /* Means that in dump, user gets
-+						* HW stats that might be out
-+						* of date for some time, maybe
-+						* couple of seconds. This is
-+						* the case when driver polls
-+						* stats updates periodically
-+						* or when it gets async stats update
-+						* from the device.
-+						*/
-+
- #define TCA_ACT_MAX __TCA_ACT_MAX
- #define TCA_OLD_COMPAT (TCA_ACT_MAX+1)
- #define TCA_ACT_MAX_PRIO 32
-diff --git a/man/man8/tc-actions.8 b/man/man8/tc-actions.8
-index bee59f7247fa..7d7df00013c6 100644
---- a/man/man8/tc-actions.8
-+++ b/man/man8/tc-actions.8
-@@ -49,6 +49,8 @@ actions \- independently defined actions in tc
- ] [
- .I FLAGS
- ] [
-+.I HWSTATSSPEC
-+] [
- .I CONTROL
- ]
- 
-@@ -77,6 +79,12 @@ ACTNAME
- :=
- .I no_percpu
- 
-+.I HWSTATSSPEC
-+:=
-+.BR hw_stats " {"
-+.IR immediate " | " delayed " | " disabled
-+.R }
-+
- .I ACTDETAIL
- :=
- .I ACTNAME ACTPARAMS
-@@ -200,6 +208,29 @@ which indicates that action is expected to have minimal software data-path
- traffic and doesn't need to allocate stat counters with percpu allocator.
- This option is intended to be used by hardware-offloaded actions.
- 
-+.TP
-+.BI hw_stats " HW_STATS"
-+Speficies the type of HW stats of new action. If omitted, any stats counter type
-+is going to be used, according to driver and its resources.
-+The
-+.I HW_STATS
-+indicates the type. Any of the following are valid:
-+.RS
-+.TP
-+.B immediate
-+Means that in dump, user gets the current HW stats state from the device
-+queried at the dump time.
-+.TP
-+.B delayed
-+Means that in dump, user gets HW stats that might be out of date for
-+some time, maybe couple of seconds. This is the case when driver polls
-+stats updates periodically or when it gets async stats update
-+from the device.
-+.TP
-+.B disabled
-+No HW stats are going to be available in dump.
-+.RE
-+
- .TP
- .BI since " MSTIME"
- When dumping large number of actions, a millisecond time-filter can be
-diff --git a/tc/m_action.c b/tc/m_action.c
-index 4da810c8c0aa..849a3de4aa4d 100644
---- a/tc/m_action.c
-+++ b/tc/m_action.c
-@@ -149,6 +149,59 @@ new_cmd(char **argv)
- 		(matches(*argv, "add") == 0);
- }
- 
-+static const struct hw_stats_type_item {
-+	const char *str;
-+	__u8 type;
-+} hw_stats_type_items[] = {
-+	{ "immediate", TCA_ACT_HW_STATS_TYPE_IMMEDIATE },
-+	{ "delayed", TCA_ACT_HW_STATS_TYPE_DELAYED },
-+	{ "disabled", 0 }, /* no bit set */
-+};
-+
-+static void print_hw_stats(const struct rtattr *arg)
-+{
-+	struct nla_bitfield32 *hw_stats_type_bf = RTA_DATA(arg);
-+	__u8 hw_stats_type;
-+	int i;
-+
-+	hw_stats_type = hw_stats_type_bf->value & hw_stats_type_bf->selector;
-+	print_string(PRINT_FP, NULL, "\t", NULL);
-+	open_json_array(PRINT_ANY, "hw_stats");
-+
-+	for (i = 0; i < ARRAY_SIZE(hw_stats_type_items); i++) {
-+		const struct hw_stats_type_item *item;
-+
-+		item = &hw_stats_type_items[i];
-+		if ((!hw_stats_type && !item->type) ||
-+		    hw_stats_type & item->type)
-+			print_string(PRINT_ANY, NULL, " %s", item->str);
-+	}
-+	close_json_array(PRINT_JSON, NULL);
-+}
-+
-+static int parse_hw_stats(const char *str, struct nlmsghdr *n)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(hw_stats_type_items); i++) {
-+		const struct hw_stats_type_item *item;
-+
-+		item = &hw_stats_type_items[i];
-+		if (matches(str, item->str) == 0) {
-+			struct nla_bitfield32 hw_stats_type_bf = {
-+				.value = item->type,
-+				.selector = item->type
-+			};
-+
-+			addattr_l(n, MAX_MSG, TCA_ACT_HW_STATS_TYPE,
-+				  &hw_stats_type_bf, sizeof(hw_stats_type_bf));
-+			return 0;
-+		}
-+
-+	}
-+	return -1;
-+}
-+
- int parse_action(int *argc_p, char ***argv_p, int tca_id, struct nlmsghdr *n)
- {
- 	int argc = *argc_p;
-@@ -250,6 +303,14 @@ done0:
- 				addattr_l(n, MAX_MSG, TCA_ACT_COOKIE,
- 					  &act_ck, act_ck_len);
- 
-+			if (*argv && matches(*argv, "hw_stats") == 0) {
-+				NEXT_ARG();
-+				ret = parse_hw_stats(*argv, n);
-+				if (ret < 0)
-+					invarg("value is invalid\n", *argv);
-+				NEXT_ARG_FWD();
-+			}
-+
- 			if (*argv && strcmp(*argv, "no_percpu") == 0) {
- 				struct nla_bitfield32 flags =
- 					{ TCA_ACT_FLAGS_NO_PERCPU_STATS,
-@@ -337,6 +398,8 @@ static int tc_print_one_action(FILE *f, struct rtattr *arg)
- 				   TCA_ACT_FLAGS_NO_PERCPU_STATS);
- 		print_string(PRINT_FP, NULL, "%s", _SL_);
- 	}
-+	if (tb[TCA_ACT_HW_STATS_TYPE])
-+		print_hw_stats(tb[TCA_ACT_HW_STATS_TYPE]);
- 
- 	return 0;
- }
--- 
-2.21.1
-
+Regards,
+-Vladimir
