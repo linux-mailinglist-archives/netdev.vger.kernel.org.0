@@ -2,91 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8807F180D59
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 02:14:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63CC8180D5E
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 02:15:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727880AbgCKBOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 Mar 2020 21:14:14 -0400
-Received: from mail-yw1-f67.google.com ([209.85.161.67]:33815 "EHLO
-        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727833AbgCKBON (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 21:14:13 -0400
-Received: by mail-yw1-f67.google.com with SMTP id o186so518233ywc.1
-        for <netdev@vger.kernel.org>; Tue, 10 Mar 2020 18:14:12 -0700 (PDT)
+        id S1727909AbgCKBPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 Mar 2020 21:15:18 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:38600 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727484AbgCKBPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 Mar 2020 21:15:17 -0400
+Received: by mail-pg1-f196.google.com with SMTP id x7so243896pgh.5;
+        Tue, 10 Mar 2020 18:15:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=X9RdD7dG4OSnH/ITM7CpyzLcUBxqAje79nHZ8XeIV6g=;
-        b=FY7/W01wzvgaIOdYQmMKo/yPAcX5tUr8fyE9PXSm5dg0lBfJjqqut+QRmbH6fe8sDo
-         aCsNgyAJXvIs87SGiKHBGxPe0yoCGIjRZ9Z12r5bTKc+q2KRl6a/g3QW3TGXh48i8JBH
-         VFdU1bEVxp5m4XEXuxBNsaem5cxDyuVEzaxpJ/F00Q/3fbqOEIRtuuk0Kh5Gevldzk3Y
-         a04u9tzfasIpXemR3KyUivgq8HCj4lF9GQkPCCTrh4TpSEPkWBUoOQ96UtqGCU81SJOS
-         p3bzk+ugjtyM0uaaWFkwForh3BEqmXWA42Z086x6RTMO1ChvbkKWSXcRGT+K5gw3ZGHR
-         Y4gQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=A15QzXUJHdqLavarexM8lDiWIzTL32zBjxHi4bfoIu8=;
+        b=HHPHEWnasrSuhZ8msIcJIPDRSICT44TWWhYK8cJGNTRWWBf94u/wtX38qcyBqutfS5
+         WOdog+lPUs1WJDgz0SmMdX3AQEH4RLcwgw/NUq01wuxZ4TOrP49hHqeL9cPp4/958eKP
+         i4whc2JJiXiUve3HK2luPZqgs4l7tuuvXYljmQaB60rrBaRgp8o6MkaB44mQUzCZXPLa
+         JXJFtd7FLhSnBjqqfaRtp2KKO/LW8NwHr3me7RDfa9fw71KE90sNXE93P22GiMTq03Re
+         9FHDvboOofWP8NCTVJ+1ypUcfyNpO33eLQwz7GVtHNBhhFo7ytBibyoG6XppN6z4Atsc
+         IJEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X9RdD7dG4OSnH/ITM7CpyzLcUBxqAje79nHZ8XeIV6g=;
-        b=Lz6L4fSGOfp3Fhg+r5BrlGOWJTrZrLbLrMsp8gvM3UT3LG/cvbtJlXXaucPgpqQ/Bo
-         YCbZ1QIqh7tFQKeC6HTqH7yvi/+lGdoBV0zUARY+0riU79I85TnXbVQ9jqq+8Rr+ZOn6
-         hz4oQplXtgXnzv6ofhoV5B7fOhl5RJuUpyL+zemRGt2PHVmx58jY9QNxoV8+4gi27lWd
-         PEyYfIQDzF5pEITQ1Po3NAEvcAACrv2+pFijDZ0jcBkm6QZUi8Q8mni4QbdgOFkD0h+e
-         eYrUhSP81Yzs5anM14e+nPZaXYY41aXp9kW0qvMYe7t6Ivbz/PeArsPMAH3fnT7FfC1i
-         vdww==
-X-Gm-Message-State: ANhLgQ1DGb4DGpeDZtlMc1fSUdxaAy72ofyFI+wt2TExElBwu3oe/cda
-        eWlSHuW9X7FhljgkYX3ccUqBpwNqoOlx8hl0Bcx2Tg==
-X-Google-Smtp-Source: ADFU+vvorRI9Lt+4KrjNb6NV3EAfKk8c6LXgbMK5EVVCsuMdZYDpBAx98uZ8ZL0CtLeEszNLo+LdzSzOGYj+SmY7B34=
-X-Received: by 2002:a25:2688:: with SMTP id m130mr524689ybm.408.1583889251315;
- Tue, 10 Mar 2020 18:14:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200311010908.42366-1-jbi.octave@gmail.com> <20200311010908.42366-4-jbi.octave@gmail.com>
-In-Reply-To: <20200311010908.42366-4-jbi.octave@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 10 Mar 2020 18:14:00 -0700
-Message-ID: <CANn89iJc9e5fQEWerHgDM1g2vp_1EEj0EntbCvccCzAyusHtdg@mail.gmail.com>
-Subject: Re: [PATCH 3/8] tcp: Add missing annotation for tcp_child_process()
-To:     Jules Irenge <jbi.octave@gmail.com>
-Cc:     boqun.feng@gmail.com, LKML <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=A15QzXUJHdqLavarexM8lDiWIzTL32zBjxHi4bfoIu8=;
+        b=eCl7aAi4TRsTIeMIIbeGbUe0scYWYN/IamT/QyeTSqF4pq2hD2XvMZvctDPNjTj5b4
+         muYYu5vZ2nZFXyWadclD/J1gGd4bl9o65EWtyZwFqob5SWLZDSEBDNZjv4Mu8XdCvzUI
+         /gblZMLnrbULdyslxt5n3GBHKYnAhSK4kVdTEehfGshBhThNMEsM/t575cD/S7cJ0+NQ
+         1+GJ2khSjyH+WOv0Ki/DA9XI0mSfuniQ2oOz9BvL+4jngYaoYcMX2VsewRw3NL3Lwwxl
+         9V+HRdOonx92uf05UTAZo50wDRHPEjSEorLkV5P5sOm5OZGNtX36kGmWEyZ4scJgL0ym
+         YHTA==
+X-Gm-Message-State: ANhLgQ1xPXzwoYKFo+WiO4qalfACYQh81dTv4CdbeR5Y/UHfmOsV7mA8
+        UPc8QfgJS8cemfRz7EKRtAs=
+X-Google-Smtp-Source: ADFU+vvTiR+oyqn7Ggieg9DuI8wHNgO3nLYJEnq5YcGX1uIe8op9GCGagh/UxDFE4jYVmUoXH/8ozQ==
+X-Received: by 2002:aa7:87ca:: with SMTP id i10mr315625pfo.169.1583889315740;
+        Tue, 10 Mar 2020 18:15:15 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id k24sm46896103pgf.59.2020.03.10.18.15.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Mar 2020 18:15:14 -0700 (PDT)
+Subject: Re: [PATCH 2/8] raw: Add missing annotations to raw_seq_start() and
+ raw_seq_stop()
+To:     Jules Irenge <jbi.octave@gmail.com>, boqun.feng@gmail.com
+Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+References: <0/8> <20200311010908.42366-1-jbi.octave@gmail.com>
+ <20200311010908.42366-3-jbi.octave@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <af9016d1-c224-ea61-3290-330ed0fe8d60@gmail.com>
+Date:   Tue, 10 Mar 2020 18:15:12 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+MIME-Version: 1.0
+In-Reply-To: <20200311010908.42366-3-jbi.octave@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 6:09 PM Jules Irenge <jbi.octave@gmail.com> wrote:
->
-> Sparse reports warning at tcp_child_process()
-> warning: context imbalance in tcp_child_process() - unexpected unlock
-> The root cause is the missing annotation at tcp_child_process()
->
-> Add the missing __releases(&((child)->sk_lock.slock)) annotation
->
+
+
+On 3/10/20 6:09 PM, Jules Irenge wrote:
+> Sparse reports warnings at raw_seq_start() and raw_seq_stop()
+> 
+> warning: context imbalance in raw_seq_start() - wrong count at exit
+> warning: context imbalance in raw_seq_stop() - unexpected unlock
+> 
+> The root cause is the missing annotations at raw_seq_start()
+> 	and raw_seq_stop()
+> Add the missing __acquires(&h->lock) annotation
+> Add the missing __releases(&h->lock) annotation
+> 
 > Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
 > ---
->  net/ipv4/tcp_minisocks.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-> index ad3b56d9fa71..0e8a5b6e477c 100644
-> --- a/net/ipv4/tcp_minisocks.c
-> +++ b/net/ipv4/tcp_minisocks.c
-> @@ -817,6 +817,7 @@ EXPORT_SYMBOL(tcp_check_req);
->
->  int tcp_child_process(struct sock *parent, struct sock *child,
->                       struct sk_buff *skb)
-> +       __releases(&((child)->sk_lock.slock))
+>  net/ipv4/raw.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/ipv4/raw.c b/net/ipv4/raw.c
+> index 3183413ebc6c..47665919048f 100644
+> --- a/net/ipv4/raw.c
+> +++ b/net/ipv4/raw.c
+> @@ -1034,6 +1034,7 @@ static struct sock *raw_get_idx(struct seq_file *seq, loff_t pos)
+>  }
+>  
+>  void *raw_seq_start(struct seq_file *seq, loff_t *pos)
+> +	__acquires(&h->lock)
+
+I dunno, h variable is not yet defined/declared at this point,
+this looks weird.
+
 >  {
->         int ret = 0;
->         int state = child->sk_state;
-
-
-Yeah, although we prefer to use lockdep these days ;)
-
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+>  	struct raw_hashinfo *h = PDE_DATA(file_inode(seq->file));
+>  
+> @@ -1056,6 +1057,7 @@ void *raw_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+>  EXPORT_SYMBOL_GPL(raw_seq_next);
+>  
+>  void raw_seq_stop(struct seq_file *seq, void *v)
+> +	__releases(&h->lock)
+>  {
+>  	struct raw_hashinfo *h = PDE_DATA(file_inode(seq->file));
+>  
+> 
