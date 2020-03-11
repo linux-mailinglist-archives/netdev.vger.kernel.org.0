@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE1281824F2
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 23:33:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37D3F1824F3
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 23:33:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387404AbgCKWdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 18:33:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37976 "EHLO mail.kernel.org"
+        id S2387420AbgCKWdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 18:33:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38014 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731349AbgCKWdR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 11 Mar 2020 18:33:17 -0400
+        id S1731382AbgCKWdS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Mar 2020 18:33:18 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.128])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 43A0A20752;
-        Wed, 11 Mar 2020 22:33:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 16E8C20753;
+        Wed, 11 Mar 2020 22:33:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1583965996;
-        bh=DrOJj7FblmzHCyeU8OeiFNaGZbNA6NVAq1m6hU7iBH8=;
+        s=default; t=1583965997;
+        bh=HZNkoQMRhkW1C3Eelne01SBthQtgg3PK0B8b8/mY/tY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HeGu7rj4YUUJGZCL+bsE/oyRqQiCDKJD4fCsjbixVXoeYf3etnsIdviP6Z1FIXd22
-         VzdqV/ZhV7CfhZDmG/zX8JNeT6P+3F79OhsihfD40Oh65XlR/HoMsjsggckBkwvXko
-         x/3RxU5acAgXb/L9kNyDyt2ve90AYR83TUKXOA0g=
+        b=oN0SjkHH92Cs0vQ3etHruqjzLdTutwXaD4Fp+E9m62QS+S3LquxuSxyLiCePhxJCb
+         dF+ODkBvMKQtpByzV9mcdpP1dM8wZmKD6sRaNzGCzW6PCou+N5VM1fOL38z1kPbAEO
+         GII3BdcgeQQ+e5Ma5kvVlUtkMw6qJvCo6W1RmB24=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, mkubecek@suse.cz,
@@ -32,9 +32,9 @@ Cc:     netdev@vger.kernel.org, mkubecek@suse.cz,
         yisen.zhuang@huawei.com, salil.mehta@huawei.com,
         jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
         alexander.h.duyck@linux.intel.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 08/15] net: fm10k: reject unsupported coalescing params
-Date:   Wed, 11 Mar 2020 15:32:55 -0700
-Message-Id: <20200311223302.2171564-9-kuba@kernel.org>
+Subject: [PATCH net-next 09/15] net: i40e: reject unsupported coalescing params
+Date:   Wed, 11 Mar 2020 15:32:56 -0700
+Message-Id: <20200311223302.2171564-10-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200311223302.2171564-1-kuba@kernel.org>
 References: <20200311223302.2171564-1-kuba@kernel.org>
@@ -52,22 +52,25 @@ This driver did not previously reject unsupported parameters.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/intel/fm10k/fm10k_ethtool.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/intel/i40e/i40e_ethtool.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_ethtool.c b/drivers/net/ethernet/intel/fm10k/fm10k_ethtool.c
-index 68edf55ac906..37fbc646deb9 100644
---- a/drivers/net/ethernet/intel/fm10k/fm10k_ethtool.c
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k_ethtool.c
-@@ -1151,6 +1151,8 @@ static int fm10k_set_channels(struct net_device *dev,
- }
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+index 317f3f1458db..aa8026b1eb81 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
+@@ -5249,6 +5249,11 @@ static const struct ethtool_ops i40e_ethtool_recovery_mode_ops = {
+ };
  
- static const struct ethtool_ops fm10k_ethtool_ops = {
+ static const struct ethtool_ops i40e_ethtool_ops = {
 +	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
-+				     ETHTOOL_COALESCE_USE_ADAPTIVE,
- 	.get_strings		= fm10k_get_strings,
- 	.get_sset_count		= fm10k_get_sset_count,
- 	.get_ethtool_stats      = fm10k_get_ethtool_stats,
++				     ETHTOOL_COALESCE_MAX_FRAMES_IRQ |
++				     ETHTOOL_COALESCE_USE_ADAPTIVE |
++				     ETHTOOL_COALESCE_RX_USECS_HIGH |
++				     ETHTOOL_COALESCE_TX_USECS_HIGH,
+ 	.get_drvinfo		= i40e_get_drvinfo,
+ 	.get_regs_len		= i40e_get_regs_len,
+ 	.get_regs		= i40e_get_regs,
 -- 
 2.24.1
 
