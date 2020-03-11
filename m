@@ -2,30 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DE0D18174A
-	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 12:59:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 850B8181751
+	for <lists+netdev@lfdr.de>; Wed, 11 Mar 2020 13:00:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729233AbgCKL7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 07:59:17 -0400
-Received: from mailout2.hostsharing.net ([83.223.78.233]:58525 "EHLO
+        id S1729238AbgCKMAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 08:00:09 -0400
+Received: from mailout2.hostsharing.net ([83.223.78.233]:37513 "EHLO
         mailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728996AbgCKL7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 07:59:17 -0400
+        with ESMTP id S1729095AbgCKMAJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 08:00:09 -0400
 Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by mailout2.hostsharing.net (Postfix) with ESMTPS id F0F3E101684AD;
-        Wed, 11 Mar 2020 12:59:14 +0100 (CET)
+        by mailout2.hostsharing.net (Postfix) with ESMTPS id 519C7100898B3;
+        Wed, 11 Mar 2020 13:00:07 +0100 (CET)
 Received: from localhost (unknown [87.130.102.138])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id AE0476005A67;
-        Wed, 11 Mar 2020 12:59:14 +0100 (CET)
-X-Mailbox-Line: From 14ab7e5af20124a34a50426fd570da7d3b0369ce Mon Sep 17 00:00:00 2001
-Message-Id: <cover.1583927267.git.lukas@wunner.de>
+        by h08.hostsharing.net (Postfix) with ESMTPSA id 13A1E6005A67;
+        Wed, 11 Mar 2020 13:00:07 +0100 (CET)
+X-Mailbox-Line: From 661bb976e6cc40fa391ad72dce86dae6a5898400 Mon Sep 17 00:00:00 2001
+Message-Id: <661bb976e6cc40fa391ad72dce86dae6a5898400.1583927267.git.lukas@wunner.de>
+In-Reply-To: <cover.1583927267.git.lukas@wunner.de>
+References: <cover.1583927267.git.lukas@wunner.de>
 From:   Lukas Wunner <lukas@wunner.de>
-Date:   Wed, 11 Mar 2020 12:59:00 +0100
-Subject: [PATCH nf-next 0/3] Netfilter egress hook
+Date:   Wed, 11 Mar 2020 12:59:01 +0100
+Subject: [PATCH nf-next 1/3] netfilter: Rename ingress hook include file
 To:     "Pablo Neira Ayuso" <pablo@netfilter.org>,
         Jozsef Kadlecsik <kadlec@netfilter.org>,
         Florian Westphal <fw@strlen.de>
@@ -40,41 +42,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce a netfilter egress hook to complement the existing ingress hook.
+Prepare for addition of a netfilter egress hook by renaming
+<linux/netfilter_ingress.h> to <linux/netfilter_netdev.h>.
 
-User space support for nft will be submitted separately in a minute.
+The egress hook also necessitates a refactoring of the include file,
+but that is done in a separate commit to ease reviewing.
 
-I'm re-submitting this as non-RFC per Pablo's request.  Compared to the
-RFC, I've changed the order in patch [3/3] to perform netfilter first,
-then tc (instead of the other way round).  The rationale is provided in
-the commit message.  I've also extended the commit message with performance
-measurements.
+No functional change intended.
 
-To reproduce the performance measurements in patch [3/3], you'll need
-net-next commit 1e09e5818b3a ("pktgen: Allow on loopback device").
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+---
+ include/linux/{netfilter_ingress.h => netfilter_netdev.h} | 0
+ net/core/dev.c                                            | 2 +-
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+ rename include/linux/{netfilter_ingress.h => netfilter_netdev.h} (100%)
 
-Link to the RFC version:
-https://lore.kernel.org/netdev/cover.1572528496.git.lukas@wunner.de/
-
-Thanks!
-
-Lukas Wunner (3):
-  netfilter: Rename ingress hook include file
-  netfilter: Generalize ingress hook
-  netfilter: Introduce egress hook
-
- include/linux/netdevice.h         |   4 ++
- include/linux/netfilter_ingress.h |  58 -----------------
- include/linux/netfilter_netdev.h  | 102 ++++++++++++++++++++++++++++++
- include/uapi/linux/netfilter.h    |   1 +
- net/core/dev.c                    |  27 ++++++--
- net/netfilter/Kconfig             |   8 +++
- net/netfilter/core.c              |  24 +++++--
- net/netfilter/nft_chain_filter.c  |   4 +-
- 8 files changed, 160 insertions(+), 68 deletions(-)
- delete mode 100644 include/linux/netfilter_ingress.h
- create mode 100644 include/linux/netfilter_netdev.h
-
+diff --git a/include/linux/netfilter_ingress.h b/include/linux/netfilter_netdev.h
+similarity index 100%
+rename from include/linux/netfilter_ingress.h
+rename to include/linux/netfilter_netdev.h
+diff --git a/net/core/dev.c b/net/core/dev.c
+index e10bd680dc03..b378b669a8ab 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -135,7 +135,7 @@
+ #include <linux/if_macvlan.h>
+ #include <linux/errqueue.h>
+ #include <linux/hrtimer.h>
+-#include <linux/netfilter_ingress.h>
++#include <linux/netfilter_netdev.h>
+ #include <linux/crash_dump.h>
+ #include <linux/sctp.h>
+ #include <net/udp_tunnel.h>
 -- 
 2.25.0
 
