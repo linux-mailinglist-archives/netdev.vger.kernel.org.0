@@ -2,185 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DFB1183D71
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 00:37:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C156183D74
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 00:39:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727061AbgCLXhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 19:37:08 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:42051 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726949AbgCLXhB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 19:37:01 -0400
-Received: by mail-pf1-f193.google.com with SMTP id x2so3683882pfn.9;
-        Thu, 12 Mar 2020 16:37:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZqvU3iR8LseT5SJn9pOSnOH26FC08L++zPQlCj0mZhE=;
-        b=KkQpsqI0ByNlzedPjWpqlbvlKpXCMI+p9Ya8LD7CrXWFWTQ+sYKB2lv3toEc3HCWV7
-         NLHUUExT62YgAEeWJYEMFGnTr52O1zTSolM03c4lNDMZ0VnCQdyq+523XgiqAWiLTb5h
-         XOTIlGTOkahdAXFk8z8iULslIs4ErrNgjIt2zTLevOglfVnHlPiOeive2Jdrm4Wn540K
-         SfLXi1OpHy3RmxvobpepMfQA4FIJoSA+kSHqBdt5uM69P89yJkbhu2EnoWiGLJjEZ/TF
-         BCtpjFNCvf8bHVV2AHHDt1CjpUTrukobkie+iEmoitTWy0qTALAKIpE8r7By1cZWFtbz
-         iu7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=ZqvU3iR8LseT5SJn9pOSnOH26FC08L++zPQlCj0mZhE=;
-        b=pmvQwGv7rw20bf7pUN98GKpUzCBHiPrFvaGv2Lu/4jmxXl+Y6sY8xjEHKzMjlgLNRK
-         nXGWdeB4OItevC+cKp2Kc7anRBikak/TvYZxWPY7b+b3UOcsU7PfOyB15umZJ0B3RZx/
-         A+m9hCwngluzBfwsjFhKaXcAqUjge0Iz7Xlye5e0+TTwC7/aWpBQr1mFyev5xQxZuWi9
-         83eNAxKz4BHy1BI1ou+JZy8mgdJAOuA7WvHstM5Qx1GxrBrIt/wO3drGxhGwSuvSiXvk
-         KYVYDOkWRp2YkQMhh3Ap9Qd9eNSw5v7/XAfw6MVX9HwjS/36WaIQbb80oDHHx3BZouo4
-         SFww==
-X-Gm-Message-State: ANhLgQ2bkRUGn5JVJ6EzgSrvVMj5mEhii3/VWpkE3/GLdL6xTef6foa/
-        gZM3xzSZAVCUyd2yLPMfZ0xDvVWo
-X-Google-Smtp-Source: ADFU+vtyVhzFNrqzRpKPYuG9qDnpkjaysGRu1LlD6QE3W5NfQeW2bRX6TCaNWgNtBf5v2elgDm7dxA==
-X-Received: by 2002:a63:9c4:: with SMTP id 187mr9905794pgj.389.1584056219920;
-        Thu, 12 Mar 2020 16:36:59 -0700 (PDT)
-Received: from localhost.localdomain (c-73-93-5-123.hsd1.ca.comcast.net. [73.93.5.123])
-        by smtp.gmail.com with ESMTPSA id d6sm5075225pfn.214.2020.03.12.16.36.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Mar 2020 16:36:59 -0700 (PDT)
-From:   Joe Stringer <joe@wand.net.nz>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        eric.dumazet@gmail.com, lmb@cloudflare.com
-Subject: [PATCH bpf-next 7/7] selftests: bpf: Improve debuggability of sk_assign
-Date:   Thu, 12 Mar 2020 16:36:48 -0700
-Message-Id: <20200312233648.1767-8-joe@wand.net.nz>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200312233648.1767-1-joe@wand.net.nz>
-References: <20200312233648.1767-1-joe@wand.net.nz>
+        id S1726882AbgCLXjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 19:39:04 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:18778 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726608AbgCLXjE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 19:39:04 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02CNaoku014777;
+        Thu, 12 Mar 2020 16:38:50 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=8hufbajWR+SCjfQbqkT45Kp088fZgG2VzsRCQYrq+EE=;
+ b=OQkirP7OspfOyN1AefpdKxO5ervTjb8Fl2ajaOxtUicOO0GtDufM3DOFigtPWXkSH3fi
+ DSpqqammcqsGKNMa2ONsXkUE7AV5bwMuSBe1VqMsKuyI4hfoTkYM+6x7uLrztne84BSc
+ fa2FCDlY8rA0KWLO63Aexcw/5zlhA+APNYg= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yqt80sdxq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 12 Mar 2020 16:38:50 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Thu, 12 Mar 2020 16:38:50 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=g2z4ShF7UNekPaiVQc4uam8VCwwzdcr32vEyd1UOM9+YwMLr9HdopGfO/cdP7fyzLn2bUD9AMcaMmqTGPGDQYEtWDiZB5bHZLkEFfb0uXpdQdGaz0Mab7t1gZe2zIUSaCJRQ6R2buua71TQEHcmlzGTKoXCpB3V5o3J4R7mCwTSXe6axmj56ACMWDeOqSj3wAdkcIU2haM3cCIUiip8MsYdGfgh36APB1lSr6/PHpuzghbnvGKxcYxsWE5n3WjBpTsXaTWhu9WTGW2dRbuBW3414LYojCs46OkV2XiFjnJJcZLcoSOXIeDw+3sjmxHeqE4mq7jK9osugunM+xUOUtQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8hufbajWR+SCjfQbqkT45Kp088fZgG2VzsRCQYrq+EE=;
+ b=CJcvdipstU6TXgVvVlY/nbkZ0RSs0IM22TiMNHQlI2k2x1SkHNKyqDZw/VMM4WQmec55Hg8qvNgYddkW8I1E5dN3SAHubb3T6t10sLmEqKLwQlHr+AKEhdyv8ZKp+iLX7iVVerRo1ndmerD05l/icmBrfa45mccjxVfMDMju7/r1ZYwLsYvGxC2mIfE4hlrbsaGWUhCVDiUosYdlOfTfXr7Z7xGwSGF65afo1zetjPFdNzQXnG+gEUnZWrPWmWvtvBQyXFpbQVziWMEhlNMCV39lfZgxcwTWnS+ku0htEIGzIxgQkzmWbmQPrXaaPcUOJHeaQLE5qDEgqkwNnyqPCQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8hufbajWR+SCjfQbqkT45Kp088fZgG2VzsRCQYrq+EE=;
+ b=QhiVpRZtYWlWegnqJI6Pr+3H49kb/8kDnB20v4xHgGO4LdyrFlObbNsDMQ4Et4DzHuSdO2bhepqoDR6Hogq/vNYFabxy27OmpeTt+IEQ2yxAJ+zz7qYGQnBFrROENzj2/l+Dj+qOamO1sT5eebkqxGgu+suAzMPULa/uGPH6pCQ=
+Received: from BYAPR15MB2278.namprd15.prod.outlook.com (2603:10b6:a02:8e::17)
+ by BYAPR15MB2439.namprd15.prod.outlook.com (2603:10b6:a02:8e::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.17; Thu, 12 Mar
+ 2020 23:38:47 +0000
+Received: from BYAPR15MB2278.namprd15.prod.outlook.com
+ ([fe80::4d5a:6517:802b:5f47]) by BYAPR15MB2278.namprd15.prod.outlook.com
+ ([fe80::4d5a:6517:802b:5f47%4]) with mapi id 15.20.2793.018; Thu, 12 Mar 2020
+ 23:38:47 +0000
+Date:   Thu, 12 Mar 2020 16:38:45 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <andrii.nakryiko@gmail.com>,
+        <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next] bpf: abstract away entire bpf_link clean up
+ procedure
+Message-ID: <20200312233845.oehxavap4aapofst@kafai-mbp>
+References: <20200312203914.1195762-1-andriin@fb.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200312203914.1195762-1-andriin@fb.com>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: MWHPR13CA0044.namprd13.prod.outlook.com
+ (2603:10b6:300:95::30) To BYAPR15MB2278.namprd15.prod.outlook.com
+ (2603:10b6:a02:8e::17)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp (2620:10d:c090:400::5:fd85) by MWHPR13CA0044.namprd13.prod.outlook.com (2603:10b6:300:95::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.7 via Frontend Transport; Thu, 12 Mar 2020 23:38:46 +0000
+X-Originating-IP: [2620:10d:c090:400::5:fd85]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7ca3d863-f924-488b-361c-08d7c6de82bf
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2439:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2439F93B002A3CEC2F7FF843D5FD0@BYAPR15MB2439.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-Forefront-PRVS: 0340850FCD
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(396003)(39860400002)(376002)(366004)(346002)(136003)(199004)(4744005)(8936002)(316002)(6496006)(52116002)(478600001)(5660300002)(1076003)(55016002)(9686003)(33716001)(2906002)(6862004)(6636002)(66476007)(66946007)(8676002)(66556008)(81156014)(81166006)(186003)(16526019)(86362001)(4326008);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2439;H:BYAPR15MB2278.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+Received-SPF: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: EiOaNE7bu2ZqHqnnHbchp19faDumhd+ayJTLvzRLhEpq6gSLUrJWXm5QA6zpQu6t4PtrMFMq1dHR+ZnB27sGGbxW08ruRTtKDJT1xc+a3TDxNerfHNdCewVEz6CTXXWiZ+T/PWs6Xu5YovC4SpyXFsosZl2pFQdyBTGEVqXiGBBYXPWHkd4zKK2lgver3x7mYX/YCTv3o4Y+Dtm0NxBI8J7hOec0XKcN+8qT3AyoZaxJlog8uioif0bh8qgnIkOqEkO7LKQ/v7zFAHzSl8tzWkY5ZbY3/otlaQQw/AkkjylH8LLhW632BKKFEpXdQcAEXENK9CSClT9AnZiSMXNL1UatQGdvBSsld654f5NySxYljSu8vYIxfCEXe4YL2XuQtfPzAm1K0F17sE9ZwYlWEoNla78tuTwDeVVHd3YM9+DfmeQVKDhmWJdO+NoevzIW
+X-MS-Exchange-AntiSpam-MessageData: 4igX+qSGVIeYXZSbeIqt7q0tbujA2wgXaUSOJslOErHQXG7Bsissfo7NpvaES++MbbxOIvRy2w0ldtksXNJdyoCt7EGvoJwkTc0DyeL4idnokf+QBEs1EZXMJDrkd55hCbqQ3bF9jS1UIfdHcnNruAIHEdyktJyDX7G7Q/guWHVO0X6nIOskn/+5AtNT7cQC
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ca3d863-f924-488b-361c-08d7c6de82bf
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2020 23:38:47.7271
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NNv/l4/p2gzUFDMHMXr3Dz3RvqP6oRoB8sW7Yz4xgFcgNm/lCkGfpUoa3kooyCeE
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2439
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-12_18:2020-03-11,2020-03-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ malwarescore=0 clxscore=1015 adultscore=0 priorityscore=1501
+ lowpriorityscore=0 impostorscore=0 phishscore=0 mlxlogscore=493 mlxscore=0
+ bulkscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003120117
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test was a bit obtuse before, add a shorter timeout when
-connectivity doesn't work and a '-d' debug flag for extra output.
-
-Signed-off-by: Joe Stringer <joe@wand.net.nz>
----
- tools/testing/selftests/bpf/test_sk_assign.c  | 42 +++++++++++++++++++
- tools/testing/selftests/bpf/test_sk_assign.sh |  2 +-
- 2 files changed, 43 insertions(+), 1 deletion(-)
-
-diff --git a/tools/testing/selftests/bpf/test_sk_assign.c b/tools/testing/selftests/bpf/test_sk_assign.c
-index 4b7b9bbe7859..51d3d01d5476 100644
---- a/tools/testing/selftests/bpf/test_sk_assign.c
-+++ b/tools/testing/selftests/bpf/test_sk_assign.c
-@@ -3,6 +3,8 @@
- // Copyright (c) 2019 Cloudflare
- // Copyright (c) 2020 Isovalent. Inc.
- 
-+#include <fcntl.h>
-+#include <signal.h>
- #include <string.h>
- #include <stdlib.h>
- #include <unistd.h>
-@@ -20,6 +22,14 @@
- 
- #define TEST_DADDR (0xC0A80203)
- 
-+static bool debug;
-+
-+#define debugf(format, ...)				\
-+do {							\
-+	if (debug)					\
-+		printf(format, ##__VA_ARGS__);		\
-+} while (0)
-+
- static int start_server(const struct sockaddr *addr, socklen_t len)
- {
- 	int fd;
-@@ -49,6 +59,17 @@ static int start_server(const struct sockaddr *addr, socklen_t len)
- 	return fd;
- }
- 
-+static void handle_timeout(int signum)
-+{
-+	if (signum == SIGALRM)
-+		log_err("Timed out while connecting to server");
-+	kill(0, SIGKILL);
-+}
-+
-+static struct sigaction timeout_action = {
-+	.sa_handler = handle_timeout,
-+};
-+
- static int connect_to_server(const struct sockaddr *addr, socklen_t len)
- {
- 	int fd = -1;
-@@ -59,6 +80,12 @@ static int connect_to_server(const struct sockaddr *addr, socklen_t len)
- 		goto out;
- 	}
- 
-+	if (sigaction(SIGALRM, &timeout_action, NULL)) {
-+		log_err("Failed to configure timeout signal");
-+		goto out;
-+	}
-+
-+	alarm(3);
- 	if (connect(fd, addr, len) == -1) {
- 		log_err("Fail to connect to server");
- 		goto close_out;
-@@ -141,6 +168,17 @@ int main(int argc, char **argv)
- 	int server_v6 = -1;
- 	int err = 1;
- 
-+	if (argc > 1) {
-+		if (!memcmp(argv[1], "-h", 2)) {
-+			printf("usage: %s.sh [FLAGS]\n", argv[0]);
-+			printf("  -d\tEnable debug logs\n");
-+			printf("  -h\tPrint help message\n");
-+			exit(1);
-+		}
-+		if (!memcmp(argv[1], "-d", 2))
-+			debug = true;
-+	}
-+
- 	memset(&addr4, 0, sizeof(addr4));
- 	addr4.sin_family = AF_INET;
- 	addr4.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-@@ -166,9 +204,11 @@ int main(int argc, char **argv)
- 
- 	if (run_test(server, (const struct sockaddr *)&addr4, sizeof(addr4)))
- 		goto out;
-+	debugf("ipv4 port: ok\n");
- 
- 	if (run_test(server_v6, (const struct sockaddr *)&addr6, sizeof(addr6)))
- 		goto out;
-+	debugf("ipv6 port: ok\n");
- 
- 	/* Connect to unbound addresses */
- 	addr4.sin_addr.s_addr = htonl(TEST_DADDR);
-@@ -176,9 +216,11 @@ int main(int argc, char **argv)
- 
- 	if (run_test(server, (const struct sockaddr *)&addr4, sizeof(addr4)))
- 		goto out;
-+	debugf("ipv4 addr: ok\n");
- 
- 	if (run_test(server_v6, (const struct sockaddr *)&addr6, sizeof(addr6)))
- 		goto out;
-+	debugf("ipv6 addr: ok\n");
- 
- 	printf("ok\n");
- 	err = 0;
-diff --git a/tools/testing/selftests/bpf/test_sk_assign.sh b/tools/testing/selftests/bpf/test_sk_assign.sh
-index de1df4e438de..5a84ad18f85a 100755
---- a/tools/testing/selftests/bpf/test_sk_assign.sh
-+++ b/tools/testing/selftests/bpf/test_sk_assign.sh
-@@ -19,4 +19,4 @@ tc qdisc add dev lo clsact
- tc filter add dev lo ingress bpf direct-action object-file ./test_sk_assign.o \
- 	section "sk_assign_test"
- 
--exec ./test_sk_assign
-+exec ./test_sk_assign "$@"
--- 
-2.20.1
-
+On Thu, Mar 12, 2020 at 01:39:14PM -0700, Andrii Nakryiko wrote:
+> Instead of requiring users to do three steps for cleaning up bpf_link, its
+> anon_inode file, and unused fd, abstract that away into bpf_link_cleanup()
+> helper. bpf_link_defunct() is removed, as it shouldn't be needed as an
+> individual operation anymore.
+> 
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  include/linux/bpf.h  |  3 ++-
+>  kernel/bpf/syscall.c | 18 +++++++++++-------
+Changes are only in syscall.c.  Should bpf_link_cleanup() be static?
