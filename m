@@ -2,134 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B33ED183A58
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 21:09:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20B12183A6A
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 21:13:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727014AbgCLUIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 16:08:52 -0400
-Received: from mx2.suse.de ([195.135.220.15]:45692 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727165AbgCLUIv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Mar 2020 16:08:51 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 22AB6AEC5;
-        Thu, 12 Mar 2020 20:08:49 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id CB423E0C79; Thu, 12 Mar 2020 21:08:48 +0100 (CET)
-Message-Id: <884def7dd88186adee725d0348f5779a63763703.1584043144.git.mkubecek@suse.cz>
-In-Reply-To: <cover.1584043144.git.mkubecek@suse.cz>
-References: <cover.1584043144.git.mkubecek@suse.cz>
-From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next v2 15/15] ethtool: add CHANNELS_NTF notification
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 12 Mar 2020 21:08:48 +0100 (CET)
+        id S1726984AbgCLUM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 16:12:57 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:40565 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726824AbgCLUMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 16:12:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584043972;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=oFtA5foZqJcNjK+k5pElAYPfBCovM+fS0F+WtgscESA=;
+        b=PDmku7CcJ/E6F8AWBdA38RTR8Gd0/VlzcLMzGjma1t8I3anp4q12qolrKrQuILt4sueN5j
+        lazacH9A748UTVOg301gtbwk6oV9377mT6sZLLZOZ7OlMufBkZGw25ErAQYqR9yYwLrr/Z
+        nxCPSBuO8tfDmJEiGL3NIYMibmzshZA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-437-G3yM9eTeOEa5m1elEuDA0g-1; Thu, 12 Mar 2020 16:12:50 -0400
+X-MC-Unique: G3yM9eTeOEa5m1elEuDA0g-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E1736801E66;
+        Thu, 12 Mar 2020 20:12:46 +0000 (UTC)
+Received: from localhost (ovpn-121-102.rdu2.redhat.com [10.10.121.102])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 92C8073880;
+        Thu, 12 Mar 2020 20:12:43 +0000 (UTC)
+From:   Bruno Meneguele <bmeneg@redhat.com>
+To:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     GLin@suse.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, Bruno Meneguele <bmeneg@redhat.com>
+Subject: [PATCH] net/bpfilter: fix dprintf usage for logging into /dev/kmsg
+Date:   Thu, 12 Mar 2020 17:12:40 -0300
+Message-Id: <20200312201240.1960367-1-bmeneg@redhat.com>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Send ETHTOOL_MSG_CHANNELS_NTF notification whenever channel counts of
-a network device are modified using ETHTOOL_MSG_CHANNELS_SET netlink
-message or ETHTOOL_SCHANNELS ioctl request.
+The bpfilter UMH code was recently changed to log its informative message=
+s to
+/dev/kmsg, however this interface doesn't support SEEK_CUR yet, used by
+dprintf(). As result dprintf() returns -EINVAL and doesn't log anything.
 
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+Although there already had some discussions about supporting SEEK_CUR int=
+o
+/dev/kmsg in the past, it wasn't concluded. Considering the only
+user of that interface from userspace perspective inside the kernel is th=
+e
+bpfilter UMH (userspace) module it's better to correct it here instead of
+waiting a conclusion on the interface changes.
+
+Signed-off-by: Bruno Meneguele <bmeneg@redhat.com>
 ---
- Documentation/networking/ethtool-netlink.rst | 1 +
- include/uapi/linux/ethtool_netlink.h         | 1 +
- net/ethtool/channels.c                       | 3 +++
- net/ethtool/ioctl.c                          | 6 +++++-
- net/ethtool/netlink.c                        | 2 ++
- 5 files changed, 12 insertions(+), 1 deletion(-)
+ net/bpfilter/main.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index 7df7476cf310..31a601cafa3f 100644
---- a/Documentation/networking/ethtool-netlink.rst
-+++ b/Documentation/networking/ethtool-netlink.rst
-@@ -220,6 +220,7 @@ Kernel to userspace:
-   ``ETHTOOL_MSG_RINGS_GET_REPLY``       ring sizes
-   ``ETHTOOL_MSG_RINGS_NTF``             ring sizes
-   ``ETHTOOL_MSG_CHANNELS_GET_REPLY``    channel counts
-+  ``ETHTOOL_MSG_CHANNELS_NTF``          channel counts
-   ===================================== =================================
- 
- ``GET`` requests are sent by userspace applications to retrieve device
-diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index f1384a8f3534..c7c7a1a550af 100644
---- a/include/uapi/linux/ethtool_netlink.h
-+++ b/include/uapi/linux/ethtool_netlink.h
-@@ -59,6 +59,7 @@ enum {
- 	ETHTOOL_MSG_RINGS_GET_REPLY,
- 	ETHTOOL_MSG_RINGS_NTF,
- 	ETHTOOL_MSG_CHANNELS_GET_REPLY,
-+	ETHTOOL_MSG_CHANNELS_NTF,
- 
- 	/* add new constants above here */
- 	__ETHTOOL_MSG_KERNEL_CNT,
-diff --git a/net/ethtool/channels.c b/net/ethtool/channels.c
-index ee232c11acae..8dc5485333a4 100644
---- a/net/ethtool/channels.c
-+++ b/net/ethtool/channels.c
-@@ -213,6 +213,9 @@ int ethnl_set_channels(struct sk_buff *skb, struct genl_info *info)
+diff --git a/net/bpfilter/main.c b/net/bpfilter/main.c
+index 77396a098fbe..efea4874743e 100644
+--- a/net/bpfilter/main.c
++++ b/net/bpfilter/main.c
+@@ -10,7 +10,7 @@
+ #include <asm/unistd.h>
+ #include "msgfmt.h"
+=20
+-int debug_fd;
++FILE *debug_f;
+=20
+ static int handle_get_cmd(struct mbox_request *cmd)
+ {
+@@ -35,9 +35,10 @@ static void loop(void)
+ 		struct mbox_reply reply;
+ 		int n;
+=20
++		fprintf(debug_f, "testing the buffer\n");
+ 		n =3D read(0, &req, sizeof(req));
+ 		if (n !=3D sizeof(req)) {
+-			dprintf(debug_fd, "invalid request %d\n", n);
++			fprintf(debug_f, "invalid request %d\n", n);
+ 			return;
  		}
- 
- 	ret = dev->ethtool_ops->set_channels(dev, &channels);
-+	if (ret < 0)
-+		goto out_ops;
-+	ethtool_notify(dev, ETHTOOL_MSG_CHANNELS_NTF, NULL);
- 
- out_ops:
- 	ethnl_ops_complete(dev);
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 06224a03139e..258840b19fb5 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -1649,6 +1649,7 @@ static noinline_for_stack int ethtool_set_channels(struct net_device *dev,
- 	u16 from_channel, to_channel;
- 	u32 max_rx_in_use = 0;
- 	unsigned int i;
-+	int ret;
- 
- 	if (!dev->ethtool_ops->set_channels || !dev->ethtool_ops->get_channels)
- 		return -EOPNOTSUPP;
-@@ -1680,7 +1681,10 @@ static noinline_for_stack int ethtool_set_channels(struct net_device *dev,
- 		if (xdp_get_umem_from_qid(dev, i))
- 			return -EINVAL;
- 
--	return dev->ethtool_ops->set_channels(dev, &channels);
-+	ret = dev->ethtool_ops->set_channels(dev, &channels);
-+	if (!ret)
-+		ethtool_notify(dev, ETHTOOL_MSG_CHANNELS_NTF, NULL);
-+	return ret;
+=20
+@@ -47,7 +48,7 @@ static void loop(void)
+=20
+ 		n =3D write(1, &reply, sizeof(reply));
+ 		if (n !=3D sizeof(reply)) {
+-			dprintf(debug_fd, "reply failed %d\n", n);
++			fprintf(debug_f, "reply failed %d\n", n);
+ 			return;
+ 		}
+ 	}
+@@ -55,9 +56,10 @@ static void loop(void)
+=20
+ int main(void)
+ {
+-	debug_fd =3D open("/dev/kmsg", 00000002);
+-	dprintf(debug_fd, "Started bpfilter\n");
++	debug_f =3D fopen("/dev/kmsg", "w");
++	setvbuf(debug_f, 0, _IOLBF, 0);
++	fprintf(debug_f, "Started bpfilter\n");
+ 	loop();
+-	close(debug_fd);
++	fclose(debug_f);
+ 	return 0;
  }
- 
- static int ethtool_get_pauseparam(struct net_device *dev, void __user *useraddr)
-diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index f61654b8f210..55c8ce4019d9 100644
---- a/net/ethtool/netlink.c
-+++ b/net/ethtool/netlink.c
-@@ -534,6 +534,7 @@ ethnl_default_notify_ops[ETHTOOL_MSG_KERNEL_MAX + 1] = {
- 	[ETHTOOL_MSG_FEATURES_NTF]	= &ethnl_features_request_ops,
- 	[ETHTOOL_MSG_PRIVFLAGS_NTF]	= &ethnl_privflags_request_ops,
- 	[ETHTOOL_MSG_RINGS_NTF]		= &ethnl_rings_request_ops,
-+	[ETHTOOL_MSG_CHANNELS_NTF]	= &ethnl_channels_request_ops,
- };
- 
- /* default notification handler */
-@@ -622,6 +623,7 @@ static const ethnl_notify_handler_t ethnl_notify_handlers[] = {
- 	[ETHTOOL_MSG_FEATURES_NTF]	= ethnl_default_notify,
- 	[ETHTOOL_MSG_PRIVFLAGS_NTF]	= ethnl_default_notify,
- 	[ETHTOOL_MSG_RINGS_NTF]		= ethnl_default_notify,
-+	[ETHTOOL_MSG_CHANNELS_NTF]	= ethnl_default_notify,
- };
- 
- void ethtool_notify(struct net_device *dev, unsigned int cmd, const void *data)
--- 
-2.25.1
+--=20
+2.24.1
 
