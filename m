@@ -2,150 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F55A183B6F
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 22:35:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E996183B78
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 22:37:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726559AbgCLVf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 17:35:29 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:42596 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726491AbgCLVf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 17:35:29 -0400
-Received: by mail-ed1-f65.google.com with SMTP id n18so9344678edw.9;
-        Thu, 12 Mar 2020 14:35:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w1zcQ0pwsk6Sv5HkuPglXPmgpcyE2cmpz+kIS0DS4nw=;
-        b=Ns03hq698c5nJGC7j/6c5N9u3dyz/UKqOCtYtrfKIIrjDDTWfxUyd2jEas6KNqlSmI
-         Ld+BKVByi4vsTqlmcAENsFHkbaraOdhSfotILQOcUREF4Wr8Gvch7+9HK/pW48ygG9N9
-         zP9ub4iFy6Oq+NeRdx1ceKEDkdlpyrLpL5HSY0AnNqDioQDmFwlSC2FFeWVTCSlsGPg9
-         hiLLtO0NsC0jVvy2RP1EaRwB9D4U4lGYVFxmN05EKPV76oRZ4r36Ttk73BzYsg7uy3vC
-         ph8W4hF6XzQSy8FczqEZ8QyVw3G/uExf9L8sYjfjKS8wzdZz224ncurQFa6PKElVa6D1
-         C+hA==
+        id S1726678AbgCLVhN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 17:37:13 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:57327 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726632AbgCLVhM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 17:37:12 -0400
+Received: by mail-io1-f69.google.com with SMTP id d13so4857941ioo.23
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 14:37:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w1zcQ0pwsk6Sv5HkuPglXPmgpcyE2cmpz+kIS0DS4nw=;
-        b=szMqfQiWsShxXw4Gbif1FedP+rhR1a2GfUT81T7DYX1taUkJzGsZqDpoSnj81JApm8
-         jZORb92zT7ps3Yd9+xTQj4J/11KHVV+45fqfmWhNEmtqA2QZzBIfP19KcI6IPJpJIdap
-         NHlhOMBUdycFj2v5/zHlGBdOx3KI9gMgqMf9FD9YHEdABpTY/O8ttrHh67zwX8+y1Anp
-         bBzGVO8ywP7/345dsbWdGSVS9A5SHQW/UNbOSQHU+KhWNQP9j81NGZkVjeo/WGMZ6rJF
-         X86VgJnyLZueRjy/NyHuAcb/RQt0tnm3lYh8Kqsz4TnxwO6aufeyma1+ObmV9Fi52/nT
-         /5Iw==
-X-Gm-Message-State: ANhLgQ15xqXzA/YqGzuGN0S2hfcCs4E9TiAjwLFkBNEtrVhCAbP800X7
-        0C81YUuc5x5vhSZ/X6GV2lkwMLvHrS/0+ybFVnE=
-X-Google-Smtp-Source: ADFU+vsiyvjYIkOLbK9gTV05LGSSgyCx7Z0cDMbSZLbMQjbrdyinTU8gUMl1VUDmDLUkNlpuLq769IWuinYNYh/M5kg=
-X-Received: by 2002:a05:6402:1c0c:: with SMTP id ck12mr10249138edb.145.1584048926737;
- Thu, 12 Mar 2020 14:35:26 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=otDTyif1JxNxdhkmFkrhZBBAigUQx1pxkqJwd5II138=;
+        b=WYkCHMEUO8tHSusdXKO/H8hc2jbXfpNf6WHh9wyYCQwsXEOJjHsIdBm5mXeT11v46J
+         /ptk/TZdZFajAG8+IK2eKUSfrNI+50RNhwlH3Kd9sRIaADLqLrQESghAZvHJBDbJ+y4X
+         AUQyLrVm3LNATKBzqrFh5+DylCcwIof0qEFPrqkTGDZgGwQeP4T0gG/YS8iCu3swEtmX
+         Es4fCXu7I+uiIBJDN1aKbRj0r6oco5mn7OH4nkvi/dQRTKGuFBWYXdza9d9EMoM5mXUC
+         Hd6U1yfy0cweTCzgrh2mUCMMpYwdBryea9RxUALKVzGrlqgE7wulLZVQD//WrONZWftB
+         42gA==
+X-Gm-Message-State: ANhLgQ37Tz1sWSMGPefgysTR46Adec+HiYKGkM1kGj7u1YZVYpjpu3Jy
+        BdxbUNEdeH6zW6xdURfFpgIFae5oyi7Ip5aqVnb0/7t7sZyK
+X-Google-Smtp-Source: ADFU+vvqMDGrrjUv2iUkYwJaB5U6vfSQvaKwU93+Tw2aJqefc794DfGTD3jwIErkI2rFXjwv1VXusTuBATT4bD+0PhjI6HGU4hCI
 MIME-Version: 1.0
-References: <20200312164320.22349-1-michael@walle.cc>
-In-Reply-To: <20200312164320.22349-1-michael@walle.cc>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 12 Mar 2020 23:35:15 +0200
-Message-ID: <CA+h21hoHMxtxUjHthx2ta9CzQbkF_08Svi7wLU99NqJmoEr36Q@mail.gmail.com>
-Subject: Re: [PATCH 1/2] net: dsa: felix: allow the device to be disabled
-To:     Michael Walle <michael@walle.cc>
-Cc:     "moderated list:ARM/Mediatek SoC support" 
-        <linux-arm-kernel@lists.infradead.org>, devicetree@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>
+X-Received: by 2002:a92:5b56:: with SMTP id p83mr10329254ilb.70.1584049032035;
+ Thu, 12 Mar 2020 14:37:12 -0700 (PDT)
+Date:   Thu, 12 Mar 2020 14:37:12 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000dc81b705a0af279c@google.com>
+Subject: WARNING in bpf_check (3)
+From:   syzbot <syzbot+245129539c27fecf099a@syzkaller.appspotmail.com>
+To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, daniel@iogearbox.net,
+        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
+        kafai@fb.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 Mar 2020 at 18:44, Michael Walle <michael@walle.cc> wrote:
->
-> If there is no specific configuration of the felix switch in the device
-> tree, but only the default configuration (ie. given by the SoCs dtsi
-> file), the probe fails because no CPU port has been set. On the other
-> hand you cannot set a default CPU port because that depends on the
-> actual board using the switch.
->
-> [    2.701300] DSA: tree 0 has no CPU port
-> [    2.705167] mscc_felix 0000:00:00.5: Failed to register DSA switch: -22
-> [    2.711844] mscc_felix: probe of 0000:00:00.5 failed with error -22
->
-> Thus let the device tree disable this device entirely, like it is also
-> done with the enetc driver of the same SoC.
->
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  drivers/net/dsa/ocelot/felix.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-> index 69546383a382..531c7710063f 100644
-> --- a/drivers/net/dsa/ocelot/felix.c
-> +++ b/drivers/net/dsa/ocelot/felix.c
-> @@ -699,6 +699,11 @@ static int felix_pci_probe(struct pci_dev *pdev,
->         struct felix *felix;
->         int err;
->
-> +       if (pdev->dev.of_node && !of_device_is_available(pdev->dev.of_node)) {
-> +               dev_info(&pdev->dev, "device is disabled, skipping\n");
-> +               return -ENODEV;
-> +       }
-> +
+Hello,
 
-IMHO since DSA is already dependent on device tree for PHY bindings,
-it would make more sense to move this there:
+syzbot found the following crash on:
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index e7c30b472034..f7ca01d93928 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -878,7 +878,7 @@ static int dsa_switch_probe(struct dsa_switch *ds)
-        if (!ds->num_ports)
-                return -EINVAL;
+HEAD commit:    13fac1d8 bpf: Fix trampoline generation for fmod_ret progr..
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=167ba061e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=888f81f5410adfa2
+dashboard link: https://syzkaller.appspot.com/bug?extid=245129539c27fecf099a
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12ba39c3e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12bbb981e00000
 
--       if (np) {
-+       if (np && of_device_is_available(np)) {
-                err = dsa_switch_parse_of(ds, np);
-                if (err)
-                        dsa_switch_release_ports(ds);
+The bug was bisected to:
 
-so that we could enforce more uniform behavior across device drivers.
-Then you might want to make felix shut up:
+commit 94dacdbd5d2dfa2cffd308f128d78c99f855f5be
+Author: Thomas Gleixner <tglx@linutronix.de>
+Date:   Mon Feb 24 14:01:32 2020 +0000
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 35124ef7e75b..fbd17fa94bff 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -712,10 +712,8 @@ static int felix_pci_probe(struct pci_dev *pdev,
-        felix->ds = ds;
+    bpf: Tighten the requirements for preallocated hash maps
 
-        err = dsa_register_switch(ds);
--       if (err) {
--               dev_err(&pdev->dev, "Failed to register DSA switch: %d\n", err);
-+       if (err)
-                goto err_register_ds;
--       }
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1300a2b1e00000
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=1080a2b1e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=1700a2b1e00000
 
-        return 0;
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+245129539c27fecf099a@syzkaller.appspotmail.com
+Fixes: 94dacdbd5d2d ("bpf: Tighten the requirements for preallocated hash maps")
 
-This has the disadvantage of not printing the "nice" "device is
-disabled, skipping" message (useless in my opinion), but the advantage
-of also shutting up on -EPROBE_DEFER.
+------------[ cut here ]------------
+trace type BPF program uses run-time allocation
+WARNING: CPU: 1 PID: 9523 at kernel/bpf/verifier.c:8187 check_map_prog_compatibility kernel/bpf/verifier.c:8187 [inline]
+WARNING: CPU: 1 PID: 9523 at kernel/bpf/verifier.c:8187 replace_map_fd_with_map_ptr kernel/bpf/verifier.c:8282 [inline]
+WARNING: CPU: 1 PID: 9523 at kernel/bpf/verifier.c:8187 bpf_check+0x6dcb/0xa49b kernel/bpf/verifier.c:10112
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 9523 Comm: syz-executor700 Not tainted 5.6.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:221
+ __warn.cold+0x2f/0x35 kernel/panic.c:582
+ report_bug+0x27b/0x2f0 lib/bug.c:195
+ fixup_bug arch/x86/kernel/traps.c:174 [inline]
+ fixup_bug arch/x86/kernel/traps.c:169 [inline]
+ do_error_trap+0x12b/0x220 arch/x86/kernel/traps.c:267
+ do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
+ invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+RIP: 0010:check_map_prog_compatibility kernel/bpf/verifier.c:8187 [inline]
+RIP: 0010:replace_map_fd_with_map_ptr kernel/bpf/verifier.c:8282 [inline]
+RIP: 0010:bpf_check+0x6dcb/0xa49b kernel/bpf/verifier.c:10112
+Code: ff 48 8b bd 20 fe ff ff e8 02 56 2c 00 e9 bc cf ff ff e8 88 a0 ef ff 48 c7 c7 c0 8c 11 88 c6 05 c0 c7 de 08 01 e8 bd b3 c1 ff <0f> 0b e9 f3 ae ff ff c7 85 c0 fe ff ff f4 ff ff ff e9 d3 c6 ff ff
+RSP: 0018:ffffc90001ec7990 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815bfd81 RDI: fffff520003d8f24
+RBP: ffffc90001ec7b90 R08: ffff88809ae22380 R09: ffffed1015ce45c9
+R10: ffffed1015ce45c8 R11: ffff8880ae722e43 R12: 0000000000000002
+R13: ffffc90000d36048 R14: ffff88809a7d4800 R15: dffffc0000000000
+ bpf_prog_load+0xd92/0x15f0 kernel/bpf/syscall.c:2105
+ __do_sys_bpf+0x16f2/0x4020 kernel/bpf/syscall.c:3594
+ do_syscall_64+0xf6/0x790 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x440539
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 fb 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffdd65517e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440539
+RDX: 0000000000000014 RSI: 0000000020fed000 RDI: 0000000000000005
+RBP: 00000000006ca018 R08: 0000000000000000 R09: 00000000004002c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000401dc0
+R13: 0000000000401e50 R14: 0000000000000000 R15: 0000000000000000
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
->         err = pci_enable_device(pdev);
->         if (err) {
->                 dev_err(&pdev->dev, "device enable failed\n");
-> --
-> 2.20.1
->
 
-Thanks,
--Vladimir
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
