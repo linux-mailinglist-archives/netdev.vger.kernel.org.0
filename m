@@ -2,147 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7165C183433
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 16:13:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9307183519
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 16:38:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbgCLPNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 11:13:51 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:50873 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727467AbgCLPNu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 11:13:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584026029;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9bf9/oDQVPqmwti/EVtlX9Cs3BUPSCVo8ukwwv+UhFU=;
-        b=aJtSBHL/lr4DSR73o4IP2Kqst1qoxTzW9GXztSE3OI1fSuajmzQyMR20F0kJc2PISHQUM/
-        Pf5KfO8n4Qt4Ho8w9nDDr1dNwrfhHln35OzKRgU64M37/QMtPPVxjifjZMArEFpGsjE8Jm
-        3iho6BUABHh1gzZnhGM7Rv92beiHeyQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-348-ZwxSKMbkNzOtspnbv4707w-1; Thu, 12 Mar 2020 11:13:46 -0400
-X-MC-Unique: ZwxSKMbkNzOtspnbv4707w-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 45A488010F7;
-        Thu, 12 Mar 2020 15:13:45 +0000 (UTC)
-Received: from localhost.localdomain.com (ovpn-117-153.ams2.redhat.com [10.36.117.153])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 50A1019C6A;
-        Thu, 12 Mar 2020 15:13:44 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 2/2] mptcp: drop unneeded checks
-Date:   Thu, 12 Mar 2020 16:13:22 +0100
-Message-Id: <aeb6df3bf3b2b8f15184311309193ffb031d3f34.1584006115.git.pabeni@redhat.com>
-In-Reply-To: <cover.1584006115.git.pabeni@redhat.com>
-References: <cover.1584006115.git.pabeni@redhat.com>
+        id S1727585AbgCLPiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 11:38:04 -0400
+Received: from www62.your-server.de ([213.133.104.62]:42810 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727196AbgCLPiD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 11:38:03 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jCPuK-0007tp-88; Thu, 12 Mar 2020 16:38:00 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jCPuJ-0000d6-W7; Thu, 12 Mar 2020 16:38:00 +0100
+Subject: Re: [PATCH bpf] libbpf: add null pointer check in
+ bpf_object__init_user_btf_maps()
+To:     Quentin Monnet <quentin@isovalent.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Andrii Nakryiko <andriin@fb.com>,
+        Michal Rostecki <mrostecki@opensuse.org>
+References: <20200312140357.20174-1-quentin@isovalent.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1fff03e7-e52b-edcc-d427-f912bf0a4af2@iogearbox.net>
+Date:   Thu, 12 Mar 2020 16:37:59 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200312140357.20174-1-quentin@isovalent.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25749/Thu Mar 12 14:09:06 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After the previous patch subflow->conn is always !=3D NULL and
-is never changed. We can drop a bunch of now unneeded checks
+On 3/12/20 3:03 PM, Quentin Monnet wrote:
+> When compiling bpftool with clang 7, after the addition of its recent
+> "bpftool prog profile" feature, Michal reported a segfault. This
+> occurred while the build process was attempting to generate the
+> skeleton needed for the profiling program, with the following command:
+> 
+>      ./_bpftool gen skeleton skeleton/profiler.bpf.o > profiler.skel.h
+> 
+> Tracing the error showed that bpf_object__init_user_btf_maps() does no
+> verification on obj->btf before passing it to btf__get_nr_types(), where
+> btf is dereferenced. Libbpf considers BTF information should be here
+> because of the presence of a ".maps" section in the object file (hence
+> the check on "obj->efile.btf_maps_shndx < 0" fails and we do not exit
+> from the function early), but it was unable to load BTF info as there is
+> no .BTF section.
+> 
+> Add a null pointer check and error out if the pointer is null. The final
+> bpftool executable still fails to build, but at least we have a proper
+> error and no more segfault.
+> 
+> Fixes: abd29c931459 ("libbpf: allow specifying map definitions using BTF")
+> Cc: Andrii Nakryiko <andriin@fb.com>
+> Reported-by: Michal Rostecki <mrostecki@opensuse.org>
+> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/options.c |  2 +-
- net/mptcp/subflow.c | 18 +++++++-----------
- 2 files changed, 8 insertions(+), 12 deletions(-)
+Applied to bpf-next, thanks! Note ...
 
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index b9a8305bd934..eb6cd0accf99 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -362,7 +362,7 @@ static bool mptcp_established_options_dss(struct sock=
- *sk, struct sk_buff *skb,
-=20
- 	opts->ext_copy.use_ack =3D 0;
- 	msk =3D mptcp_sk(subflow->conn);
--	if (!msk || !READ_ONCE(msk->can_ack)) {
-+	if (!READ_ONCE(msk->can_ack)) {
- 		*size =3D ALIGN(dss_size, 4);
- 		return ret;
- 	}
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 047b088e4617..8434c7f5f712 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -112,7 +112,7 @@ static void subflow_finish_connect(struct sock *sk, c=
-onst struct sk_buff *skb)
-=20
- 	subflow->icsk_af_ops->sk_rx_dst_set(sk, skb);
-=20
--	if (subflow->conn && !subflow->conn_finished) {
-+	if (!subflow->conn_finished) {
- 		pr_debug("subflow=3D%p, remote_key=3D%llu", mptcp_subflow_ctx(sk),
- 			 subflow->remote_key);
- 		mptcp_finish_connect(sk);
-@@ -439,9 +439,6 @@ static bool subflow_check_data_avail(struct sock *ssk=
-)
- 	if (subflow->data_avail)
- 		return true;
-=20
--	if (!subflow->conn)
--		return false;
--
- 	msk =3D mptcp_sk(subflow->conn);
- 	for (;;) {
- 		u32 map_remaining;
-@@ -561,11 +558,10 @@ static void subflow_data_ready(struct sock *sk)
- 	struct mptcp_subflow_context *subflow =3D mptcp_subflow_ctx(sk);
- 	struct sock *parent =3D subflow->conn;
-=20
--	if (!parent || !subflow->mp_capable) {
-+	if (!subflow->mp_capable) {
- 		subflow->tcp_data_ready(sk);
-=20
--		if (parent)
--			parent->sk_data_ready(parent);
-+		parent->sk_data_ready(parent);
- 		return;
- 	}
-=20
-@@ -579,7 +575,7 @@ static void subflow_write_space(struct sock *sk)
- 	struct sock *parent =3D subflow->conn;
-=20
- 	sk_stream_write_space(sk);
--	if (parent && sk_stream_is_writeable(sk)) {
-+	if (sk_stream_is_writeable(sk)) {
- 		set_bit(MPTCP_SEND_SPACE, &mptcp_sk(parent)->flags);
- 		smp_mb__after_atomic();
- 		/* set SEND_SPACE before sk_stream_write_space clears NOSPACE */
-@@ -694,7 +690,7 @@ static bool subflow_is_done(const struct sock *sk)
- static void subflow_state_change(struct sock *sk)
- {
- 	struct mptcp_subflow_context *subflow =3D mptcp_subflow_ctx(sk);
--	struct sock *parent =3D READ_ONCE(subflow->conn);
-+	struct sock *parent =3D subflow->conn;
-=20
- 	__subflow_state_change(sk);
-=20
-@@ -702,10 +698,10 @@ static void subflow_state_change(struct sock *sk)
- 	 * a fin packet carrying a DSS can be unnoticed if we don't trigger
- 	 * the data available machinery here.
- 	 */
--	if (parent && subflow->mp_capable && mptcp_subflow_data_available(sk))
-+	if (subflow->mp_capable && mptcp_subflow_data_available(sk))
- 		mptcp_data_ready(parent, sk);
-=20
--	if (parent && !(parent->sk_shutdown & RCV_SHUTDOWN) &&
-+	if (!(parent->sk_shutdown & RCV_SHUTDOWN) &&
- 	    !subflow->rx_eof && subflow_is_done(sk)) {
- 		subflow->rx_eof =3D 1;
- 		parent->sk_shutdown |=3D RCV_SHUTDOWN;
---=20
-2.21.1
+> ---
+>   tools/lib/bpf/libbpf.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+> 
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 223be01dc466..19c0c40e8a80 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -2140,6 +2140,10 @@ static int bpf_object__init_user_btf_maps(struct bpf_object *obj, bool strict,
+>   		return -EINVAL;
+>   	}
+>   
+> +	if (!obj->btf) {
+> +		pr_warn("failed to retrieve BTF for map");
 
+I've added a '\n' here, otherwise it looks like:
+
+[...]
+   LINK     _bpftool
+   CLANG    skeleton/profiler.bpf.o
+   GEN      profiler.skel.h
+libbpf: failed to retrieve BTF for mapError: failed to open BPF object file: 0
+Makefile:129: recipe for target 'profiler.skel.h' failed
+
+Fixed version:
+
+   LINK     _bpftool
+   GEN      profiler.skel.h
+libbpf: failed to retrieve BTF for map
+Error: failed to open BPF object file: 0
+Makefile:129: recipe for target 'profiler.skel.h' failed
+
+Thanks,
+Daniel
