@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 847A1182D64
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 11:23:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CCDB182D6A
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 11:24:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726872AbgCLKXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 06:23:34 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:56519 "EHLO
+        id S1727015AbgCLKXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 06:23:55 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:56534 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726841AbgCLKXd (ORCPT
+        with ESMTP id S1726845AbgCLKXd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 06:23:33 -0400
 Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 12 Mar 2020 12:23:28 +0200
 Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02CANSTd017875;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02CANSTe017875;
         Thu, 12 Mar 2020 12:23:28 +0200
 From:   Paul Blakey <paulb@mellanox.com>
 To:     Paul Blakey <paulb@mellanox.com>,
@@ -25,9 +25,9 @@ To:     Paul Blakey <paulb@mellanox.com>,
         David Miller <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH net-next ct-offload v4 05/15] net/sched: act_ct: Support restoring conntrack info on skbs
-Date:   Thu, 12 Mar 2020 12:23:07 +0200
-Message-Id: <1584008597-15875-6-git-send-email-paulb@mellanox.com>
+Subject: [PATCH net-next ct-offload v4 06/15] net/sched: act_ct: Support refreshing the flow table entries
+Date:   Thu, 12 Mar 2020 12:23:08 +0200
+Message-Id: <1584008597-15875-7-git-send-email-paulb@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1584008597-15875-1-git-send-email-paulb@mellanox.com>
 References: <1584008597-15875-1-git-send-email-paulb@mellanox.com>
@@ -36,110 +36,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Provide an API to restore the ct state pointer.
+If driver deleted an FT entry, a FT failed to offload, or registered to the
+flow table after flows were already added, we still get packets in
+software.
 
-This may be used by drivers to restore the ct state if they
-miss in tc chain after they already did the hardware connection
-tracking action (ct_metadata action).
-
-For example, consider the following rule on chain 0 that is in_hw,
-however chain 1 is not_in_hw:
-
-$ tc filter add dev ... chain 0 ... \
-  flower ... action ct pipe action goto chain 1
-
-Packets of a flow offloaded (via nf flow table offload) by the driver
-hit this rule in hardware, will be marked with the ct metadata action
-(mark, label, zone) that does the equivalent of the software ct action,
-and when the packet jumps to hardware chain 1, there would be a miss.
-
-CT was already processed in hardware. Therefore, the driver's miss
-handling should restore the ct state on the skb, using the provided API,
-and continue the packet processing in chain 1.
+For those packets, while restoring the ct state from the flow table
+entry, refresh it's hardware offload.
 
 Signed-off-by: Paul Blakey <paulb@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
-Changelog:
-   v3->v4:
-     Rev xmas tree
+ include/net/netfilter/nf_flow_table.h |  3 +++
+ net/netfilter/nf_flow_table_core.c    | 13 +++++++++++++
+ net/netfilter/nf_flow_table_ip.c      | 15 ++-------------
+ net/sched/act_ct.c                    |  1 +
+ 4 files changed, 19 insertions(+), 13 deletions(-)
 
- include/net/flow_offload.h |  1 +
- include/net/tc_act/tc_ct.h |  7 +++++++
- net/sched/act_ct.c         | 16 ++++++++++++++++
- 3 files changed, 24 insertions(+)
-
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index ba43349..a039c90 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -227,6 +227,7 @@ struct flow_action_entry {
- 			u16 zone;
- 		} ct;
- 		struct {
-+			unsigned long cookie;
- 			u32 mark;
- 			u32 labels[4];
- 		} ct_metadata;
-diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
-index cf3492e..735da59 100644
---- a/include/net/tc_act/tc_ct.h
-+++ b/include/net/tc_act/tc_ct.h
-@@ -55,6 +55,13 @@ static inline int tcf_ct_action(const struct tc_action *a)
- static inline int tcf_ct_action(const struct tc_action *a) { return 0; }
- #endif /* CONFIG_NF_CONNTRACK */
+diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
+index c2d5cdd..6890f1c 100644
+--- a/include/net/netfilter/nf_flow_table.h
++++ b/include/net/netfilter/nf_flow_table.h
+@@ -162,6 +162,9 @@ int flow_offload_route_init(struct flow_offload *flow,
+ 			    const struct nf_flow_route *route);
  
-+#if IS_ENABLED(CONFIG_NET_ACT_CT)
-+void tcf_ct_flow_table_restore_skb(struct sk_buff *skb, unsigned long cookie);
-+#else
-+static inline void
-+tcf_ct_flow_table_restore_skb(struct sk_buff *skb, unsigned long cookie) { }
-+#endif
+ int flow_offload_add(struct nf_flowtable *flow_table, struct flow_offload *flow);
++void flow_offload_refresh(struct nf_flowtable *flow_table,
++			  struct flow_offload *flow);
 +
- static inline bool is_tcf_ct(const struct tc_action *a)
- {
- #if defined(CONFIG_NET_CLS_ACT) && IS_ENABLED(CONFIG_NF_CONNTRACK)
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 9c522bc..31eef8a 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -170,6 +170,7 @@ static void tcf_ct_flow_table_add_action_meta(struct nf_conn *ct,
- {
- 	struct nf_conn_labels *ct_labels;
- 	struct flow_action_entry *entry;
-+	enum ip_conntrack_info ctinfo;
- 	u32 *act_ct_labels;
+ struct flow_offload_tuple_rhash *flow_offload_lookup(struct nf_flowtable *flow_table,
+ 						     struct flow_offload_tuple *tuple);
+ void nf_flow_table_cleanup(struct net_device *dev);
+diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+index 4af0327..9a477bd 100644
+--- a/net/netfilter/nf_flow_table_core.c
++++ b/net/netfilter/nf_flow_table_core.c
+@@ -252,6 +252,19 @@ int flow_offload_add(struct nf_flowtable *flow_table, struct flow_offload *flow)
+ }
+ EXPORT_SYMBOL_GPL(flow_offload_add);
  
- 	entry = tcf_ct_flow_table_flow_action_get_next(action);
-@@ -177,6 +178,10 @@ static void tcf_ct_flow_table_add_action_meta(struct nf_conn *ct,
- #if IS_ENABLED(CONFIG_NF_CONNTRACK_MARK)
- 	entry->ct_metadata.mark = ct->mark;
- #endif
-+	ctinfo = dir == IP_CT_DIR_ORIGINAL ? IP_CT_ESTABLISHED :
-+					     IP_CT_ESTABLISHED_REPLY;
-+	/* aligns with the CT reference on the SKB nf_ct_set */
-+	entry->ct_metadata.cookie = (unsigned long)ct | ctinfo;
- 
- 	act_ct_labels = entry->ct_metadata.labels;
- 	ct_labels = nf_ct_labels_find(ct);
-@@ -1530,6 +1535,17 @@ static void __exit ct_cleanup_module(void)
- 	destroy_workqueue(act_ct_wq);
++void flow_offload_refresh(struct nf_flowtable *flow_table,
++			  struct flow_offload *flow)
++{
++	flow->timeout = nf_flowtable_time_stamp + NF_FLOW_TIMEOUT;
++
++	if (likely(!nf_flowtable_hw_offload(flow_table) ||
++		   !test_and_clear_bit(NF_FLOW_HW_REFRESH, &flow->flags)))
++		return;
++
++	nf_flow_offload_add(flow_table, flow);
++}
++EXPORT_SYMBOL_GPL(flow_offload_refresh);
++
+ static inline bool nf_flow_has_expired(const struct flow_offload *flow)
+ {
+ 	return nf_flow_timeout_delta(flow->timeout) <= 0;
+diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
+index 9e563fd..5272721 100644
+--- a/net/netfilter/nf_flow_table_ip.c
++++ b/net/netfilter/nf_flow_table_ip.c
+@@ -232,13 +232,6 @@ static unsigned int nf_flow_xmit_xfrm(struct sk_buff *skb,
+ 	return NF_STOLEN;
  }
  
-+void tcf_ct_flow_table_restore_skb(struct sk_buff *skb, unsigned long cookie)
-+{
-+	enum ip_conntrack_info ctinfo = cookie & NFCT_INFOMASK;
-+	struct nf_conn *ct;
-+
-+	ct = (struct nf_conn *)(cookie & NFCT_PTRMASK);
-+	nf_conntrack_get(&ct->ct_general);
-+	nf_ct_set(skb, ct, ctinfo);
-+}
-+EXPORT_SYMBOL_GPL(tcf_ct_flow_table_restore_skb);
-+
- module_init(ct_init_module);
- module_exit(ct_cleanup_module);
- MODULE_AUTHOR("Paul Blakey <paulb@mellanox.com>");
+-static bool nf_flow_offload_refresh(struct nf_flowtable *flow_table,
+-				    struct flow_offload *flow)
+-{
+-	return nf_flowtable_hw_offload(flow_table) &&
+-	       test_and_clear_bit(NF_FLOW_HW_REFRESH, &flow->flags);
+-}
+-
+ unsigned int
+ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
+ 			const struct nf_hook_state *state)
+@@ -279,8 +272,7 @@ static bool nf_flow_offload_refresh(struct nf_flowtable *flow_table,
+ 	if (nf_flow_state_check(flow, ip_hdr(skb)->protocol, skb, thoff))
+ 		return NF_ACCEPT;
+ 
+-	if (unlikely(nf_flow_offload_refresh(flow_table, flow)))
+-		nf_flow_offload_add(flow_table, flow);
++	flow_offload_refresh(flow_table, flow);
+ 
+ 	if (nf_flow_offload_dst_check(&rt->dst)) {
+ 		flow_offload_teardown(flow);
+@@ -290,7 +282,6 @@ static bool nf_flow_offload_refresh(struct nf_flowtable *flow_table,
+ 	if (nf_flow_nat_ip(flow, skb, thoff, dir) < 0)
+ 		return NF_DROP;
+ 
+-	flow->timeout = nf_flowtable_time_stamp + NF_FLOW_TIMEOUT;
+ 	iph = ip_hdr(skb);
+ 	ip_decrease_ttl(iph);
+ 	skb->tstamp = 0;
+@@ -508,8 +499,7 @@ static int nf_flow_tuple_ipv6(struct sk_buff *skb, const struct net_device *dev,
+ 				sizeof(*ip6h)))
+ 		return NF_ACCEPT;
+ 
+-	if (unlikely(nf_flow_offload_refresh(flow_table, flow)))
+-		nf_flow_offload_add(flow_table, flow);
++	flow_offload_refresh(flow_table, flow);
+ 
+ 	if (nf_flow_offload_dst_check(&rt->dst)) {
+ 		flow_offload_teardown(flow);
+@@ -522,7 +512,6 @@ static int nf_flow_tuple_ipv6(struct sk_buff *skb, const struct net_device *dev,
+ 	if (nf_flow_nat_ipv6(flow, skb, dir) < 0)
+ 		return NF_DROP;
+ 
+-	flow->timeout = nf_flowtable_time_stamp + NF_FLOW_TIMEOUT;
+ 	ip6h = ipv6_hdr(skb);
+ 	ip6h->hop_limit--;
+ 	skb->tstamp = 0;
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index 31eef8a..16fc731 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -531,6 +531,7 @@ static bool tcf_ct_flow_table_lookup(struct tcf_ct_params *p,
+ 	ctinfo = dir == FLOW_OFFLOAD_DIR_ORIGINAL ? IP_CT_ESTABLISHED :
+ 						    IP_CT_ESTABLISHED_REPLY;
+ 
++	flow_offload_refresh(nf_ft, flow);
+ 	nf_conntrack_get(&ct->ct_general);
+ 	nf_ct_set(skb, ct, ctinfo);
+ 
 -- 
 1.8.3.1
 
