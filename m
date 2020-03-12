@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EA24182992
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 08:12:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ECAF182994
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 08:12:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388137AbgCLHMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 03:12:20 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:11635 "EHLO huawei.com"
+        id S2388090AbgCLHMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 03:12:16 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:11631 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388089AbgCLHMT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Mar 2020 03:12:19 -0400
+        id S2388082AbgCLHMQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Mar 2020 03:12:16 -0400
 Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 16476B0A14B8EB317EBF;
+        by Forcepoint Email with ESMTP id 052506EFF710082B7DB4;
         Thu, 12 Mar 2020 15:12:14 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 12 Mar 2020 15:12:06 +0800
+ 14.3.487.0; Thu, 12 Mar 2020 15:12:07 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
@@ -24,9 +24,9 @@ CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
         Jian Shen <shenjian15@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net 3/4] net: hns3: fix RMW issue for VLAN filter switch
-Date:   Thu, 12 Mar 2020 15:11:05 +0800
-Message-ID: <1583997066-24773-4-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net 4/4] net: hns3: clear port base VLAN when unload PF
+Date:   Thu, 12 Mar 2020 15:11:06 +0800
+Message-ID: <1583997066-24773-5-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1583997066-24773-1-git-send-email-tanhuazhong@huawei.com>
 References: <1583997066-24773-1-git-send-email-tanhuazhong@huawei.com>
@@ -41,55 +41,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jian Shen <shenjian15@huawei.com>
 
-According to the user manual, the ingress and egress VLAN filter
-are configured at the same time. Currently, hclge_init_vlan_config()
-and hclge_set_vlan_spoofchk() will both change the VLAN filter
-switch. So it's necessary to read the old configuration before
-modifying it.
+Currently, PF missed to clear the port base VLAN for VF when
+unload. In this case, the VLAN id will remain in the VLAN
+table. This patch fixes it.
 
-Fixes: 22044f95faa0 ("net: hns3: add support for spoof check setting")
+Fixes: 92f11ea177cd ("net: hns3: fix set port based VLAN issue for VF")
 Signed-off-by: Jian Shen <shenjian15@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 23 ++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
 diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 6deeb96..06d0ed0 100644
+index 06d0ed0..d3b0cd7 100644
 --- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
 +++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -7745,16 +7745,27 @@ static int hclge_set_vlan_filter_ctrl(struct hclge_dev *hdev, u8 vlan_type,
- 	struct hclge_desc desc;
- 	int ret;
+@@ -8500,6 +8500,28 @@ static int hclge_set_vf_vlan_filter(struct hnae3_handle *handle, int vfid,
+ 	}
+ }
  
--	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_VLAN_FILTER_CTRL, false);
--
-+	/* read current vlan filter parameter */
-+	hclge_cmd_setup_basic_desc(&desc, HCLGE_OPC_VLAN_FILTER_CTRL, true);
- 	req = (struct hclge_vlan_filter_ctrl_cmd *)desc.data;
- 	req->vlan_type = vlan_type;
--	req->vlan_fe = filter_en ? fe_type : 0;
- 	req->vf_id = vf_id;
- 
- 	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
-+	if (ret) {
-+		dev_err(&hdev->pdev->dev,
-+			"failed to get vlan filter config, ret = %d.\n", ret);
-+		return ret;
++static void hclge_clear_vf_vlan(struct hclge_dev *hdev)
++{
++	struct hclge_vlan_info *vlan_info;
++	struct hclge_vport *vport;
++	int ret;
++	int vf;
++
++	/* clear port base vlan for all vf */
++	for (vf = HCLGE_VF_VPORT_START_NUM; vf < hdev->num_alloc_vport; vf++) {
++		vport = &hdev->vport[vf];
++		vlan_info = &vport->port_base_vlan_cfg.vlan_info;
++
++		ret = hclge_set_vlan_filter_hw(hdev, htons(ETH_P_8021Q),
++					       vport->vport_id,
++					       vlan_info->vlan_tag, true);
++		if (ret)
++			dev_err(&hdev->pdev->dev,
++				"failed to clear vf vlan for vf%d, ret = %d\n",
++				vf - HCLGE_VF_VPORT_START_NUM, ret);
 +	}
++}
 +
-+	/* modify and write new config parameter */
-+	hclge_cmd_reuse_desc(&desc, false);
-+	req->vlan_fe = filter_en ?
-+			(req->vlan_fe | fe_type) : (req->vlan_fe & ~fe_type);
-+
-+	ret = hclge_cmd_send(&hdev->hw, &desc, 1);
- 	if (ret)
--		dev_err(&hdev->pdev->dev, "set vlan filter fail, ret =%d.\n",
-+		dev_err(&hdev->pdev->dev, "failed to set vlan filter, ret = %d.\n",
- 			ret);
+ int hclge_set_vlan_filter(struct hnae3_handle *handle, __be16 proto,
+ 			  u16 vlan_id, bool is_kill)
+ {
+@@ -9909,6 +9931,7 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 	struct hclge_mac *mac = &hdev->hw.mac;
  
- 	return ret;
+ 	hclge_reset_vf_rate(hdev);
++	hclge_clear_vf_vlan(hdev);
+ 	hclge_misc_affinity_teardown(hdev);
+ 	hclge_state_uninit(hdev);
+ 
 -- 
 2.7.4
 
