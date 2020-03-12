@@ -2,117 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04524182F71
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 12:41:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CA01182F77
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 12:43:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726775AbgCLLlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 07:41:36 -0400
-Received: from foss.arm.com ([217.140.110.172]:60960 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725268AbgCLLlg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Mar 2020 07:41:36 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1ACA331B;
-        Thu, 12 Mar 2020 04:41:35 -0700 (PDT)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 11AB33F67D;
-        Thu, 12 Mar 2020 04:41:33 -0700 (PDT)
-Date:   Thu, 12 Mar 2020 11:41:31 +0000
-From:   Andre Przywara <andre.przywara@arm.com>
-To:     Radhey Shyam Pandey <radheys@xilinx.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Michal Simek <michals@xilinx.com>,
-        Robert Hancock <hancock@sedsystems.ca>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 09/14] net: axienet: Add mii-tool support
-Message-ID: <20200312114131.070d9a1c@donnerap.cambridge.arm.com>
-In-Reply-To: <CH2PR02MB700089E502A8C146D71C67C8C7350@CH2PR02MB7000.namprd02.prod.outlook.com>
-References: <20200110115415.75683-1-andre.przywara@arm.com>
- <20200110115415.75683-10-andre.przywara@arm.com>
- <CH2PR02MB700089E502A8C146D71C67C8C7350@CH2PR02MB7000.namprd02.prod.outlook.com>
-Organization: ARM
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+        id S1727082AbgCLLnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 07:43:05 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:28798 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725268AbgCLLnF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 07:43:05 -0400
+Received: from fcoe-test9.blr.asicdesigners.com (fcoe-test9.blr.asicdesigners.com [10.193.185.176])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 02CBgwmY018472;
+        Thu, 12 Mar 2020 04:42:59 -0700
+From:   Shahjada Abul Husain <shahjada@chelsio.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, nirranjan@chelsio.com, vishal@chelsio.com,
+        dt@chelsio.com, shahjada@chelsio.com
+Subject: [PATCH net-next] cxgb4: update T5/T6 adapter register ranges
+Date:   Thu, 12 Mar 2020 17:12:40 +0530
+Message-Id: <20200312114240.12862-1-shahjada@chelsio.com>
+X-Mailer: git-send-email 2.23.0.256.g4c86140
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 13 Jan 2020 06:12:10 +0000
-Radhey Shyam Pandey <radheys@xilinx.com> wrote:
+Add more T5/T6 registers to be collected in register dump:
 
-Hi,
+1. MPS register range 0x9810 to 0x9864 and 0xd000 to 0xd004.
+2. NCSI register range 0x1a114 to 0x1a130 and 0x1a138 to 0x1a1c4.
 
-(sorry, forgot to send this out before posting v2)
+Signed-off-by: Shahjada Abul Husain <shahjada@chelsio.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 22 ++++++++--------------
+ 1 file changed, 8 insertions(+), 14 deletions(-)
 
-> > -----Original Message-----
-> > From: Andre Przywara <andre.przywara@arm.com>
-> > Sent: Friday, January 10, 2020 5:24 PM
-> > To: David S . Miller <davem@davemloft.net>; Radhey Shyam Pandey
-> > <radheys@xilinx.com>
-> > Cc: Michal Simek <michals@xilinx.com>; Robert Hancock
-> > <hancock@sedsystems.ca>; netdev@vger.kernel.org; linux-arm-
-> > kernel@lists.infradead.org; linux-kernel@vger.kernel.org
-> > Subject: [PATCH 09/14] net: axienet: Add mii-tool support
-> > 
-> > mii-tool is useful for debugging, and all it requires to work is to wire
-> > up the ioctl ops function pointer.
-> > Add this to the axienet driver to enable mii-tool.
-> > 
-> > Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-> > ---
-> >  drivers/net/ethernet/xilinx/xilinx_axienet_main.c | 11 +++++++++++
-> >  1 file changed, 11 insertions(+)
-> > 
-> > diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> > b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> > index 7a747345e98e..64f799f3d248 100644
-> > --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> > +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-> > @@ -1152,6 +1152,16 @@ static void axienet_poll_controller(struct net_device
-> > *ndev)
-> >  }
-> >  #endif
-> > 
-> > +static int axienet_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
-> > +{
-> > +	struct axienet_local *lp = netdev_priv(dev);
-> > +
-> > +	if (!netif_running(dev))
-> > +		return -EINVAL;  
-> 
-> I think phy ioctl should be allowed even if the device is not up. 
-> Or is there any specific reason for keeping it?
-
-I found that some of the drivers check this (macb, stmmac), while others (dpaa2, mvneta, mvpp2, mtk_eth) don't. I don't know the reasons for that, so I play safe here.
-Happy to change this if someone provides some rationale.
-
-Cheers,
-Andre.
-
-> 
-> > +
-> > +	return phylink_mii_ioctl(lp->phylink, rq, cmd);
-> > +}
-> > +
-> >  static const struct net_device_ops axienet_netdev_ops = {
-> >  	.ndo_open = axienet_open,
-> >  	.ndo_stop = axienet_stop,
-> > @@ -1159,6 +1169,7 @@ static const struct net_device_ops
-> > axienet_netdev_ops = {
-> >  	.ndo_change_mtu	= axienet_change_mtu,
-> >  	.ndo_set_mac_address = netdev_set_mac_address,
-> >  	.ndo_validate_addr = eth_validate_addr,
-> > +	.ndo_do_ioctl = axienet_ioctl,
-> >  	.ndo_set_rx_mode = axienet_set_multicast_list,
-> >  #ifdef CONFIG_NET_POLL_CONTROLLER
-> >  	.ndo_poll_controller = axienet_poll_controller,
-> > --
-> > 2.17.1  
-> 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+index 844fdcf55118..df97200c52ee 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+@@ -1379,8 +1379,7 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
+ 		0x9608, 0x9638,
+ 		0x9640, 0x96f4,
+ 		0x9800, 0x9808,
+-		0x9820, 0x983c,
+-		0x9850, 0x9864,
++		0x9810, 0x9864,
+ 		0x9c00, 0x9c6c,
+ 		0x9c80, 0x9cec,
+ 		0x9d00, 0x9d6c,
+@@ -1389,7 +1388,7 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
+ 		0x9e80, 0x9eec,
+ 		0x9f00, 0x9f6c,
+ 		0x9f80, 0xa020,
+-		0xd004, 0xd004,
++		0xd000, 0xd004,
+ 		0xd010, 0xd03c,
+ 		0xdfc0, 0xdfe0,
+ 		0xe000, 0x1106c,
+@@ -1430,10 +1429,8 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
+ 		0x1a0b0, 0x1a0e4,
+ 		0x1a0ec, 0x1a0f8,
+ 		0x1a100, 0x1a108,
+-		0x1a114, 0x1a120,
+-		0x1a128, 0x1a130,
+-		0x1a138, 0x1a138,
+-		0x1a190, 0x1a1c4,
++		0x1a114, 0x1a130,
++		0x1a138, 0x1a1c4,
+ 		0x1a1fc, 0x1a1fc,
+ 		0x1e008, 0x1e00c,
+ 		0x1e040, 0x1e044,
+@@ -2162,8 +2159,7 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
+ 		0x9640, 0x9704,
+ 		0x9710, 0x971c,
+ 		0x9800, 0x9808,
+-		0x9820, 0x983c,
+-		0x9850, 0x9864,
++		0x9810, 0x9864,
+ 		0x9c00, 0x9c6c,
+ 		0x9c80, 0x9cec,
+ 		0x9d00, 0x9d6c,
+@@ -2172,7 +2168,7 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
+ 		0x9e80, 0x9eec,
+ 		0x9f00, 0x9f6c,
+ 		0x9f80, 0xa020,
+-		0xd004, 0xd03c,
++		0xd000, 0xd03c,
+ 		0xd100, 0xd118,
+ 		0xd200, 0xd214,
+ 		0xd220, 0xd234,
+@@ -2240,10 +2236,8 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
+ 		0x1a0b0, 0x1a0e4,
+ 		0x1a0ec, 0x1a0f8,
+ 		0x1a100, 0x1a108,
+-		0x1a114, 0x1a120,
+-		0x1a128, 0x1a130,
+-		0x1a138, 0x1a138,
+-		0x1a190, 0x1a1c4,
++		0x1a114, 0x1a130,
++		0x1a138, 0x1a1c4,
+ 		0x1a1fc, 0x1a1fc,
+ 		0x1e008, 0x1e00c,
+ 		0x1e040, 0x1e044,
+-- 
+2.23.0.256.g4c86140
 
