@@ -2,59 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57D0B1828A1
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 06:59:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FC451828B5
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 07:04:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387882AbgCLF7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 01:59:50 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:56002 "EHLO
+        id S2387932AbgCLGEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 02:04:04 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:56020 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387810AbgCLF7u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 01:59:50 -0400
+        with ESMTP id S2387767AbgCLGED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 02:04:03 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B5D9014CCC99D;
-        Wed, 11 Mar 2020 22:59:49 -0700 (PDT)
-Date:   Wed, 11 Mar 2020 22:59:49 -0700 (PDT)
-Message-Id: <20200311.225949.740386769094866809.davem@davemloft.net>
-To:     bay@hackerdom.ru
-Cc:     oliver@neukum.org, gregkh@linuxfoundation.org, tglx@linutronix.de,
-        info@metux.net, allison@lohutok.net, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] cdc_ncm: Implement the 32-bit version of NCM Transfer
- Block
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A3A6C14CCCAE8;
+        Wed, 11 Mar 2020 23:04:02 -0700 (PDT)
+Date:   Wed, 11 Mar 2020 23:04:02 -0700 (PDT)
+Message-Id: <20200311.230402.1496009558967017193.davem@davemloft.net>
+To:     mklntf@gmail.com
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: stmmac: platform: Fix misleading interrupt error
+ msg
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200305203318.8980-1-bay@hackerdom.ru>
-References: <20200305203318.8980-1-bay@hackerdom.ru>
+In-Reply-To: <20200306163848.5910-1-mklntf@gmail.com>
+References: <20200306163848.5910-1-mklntf@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 11 Mar 2020 22:59:50 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 11 Mar 2020 23:04:03 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Bersenev <bay@hackerdom.ru>
-Date: Fri,  6 Mar 2020 01:33:16 +0500
+From: Markus Fuchs <mklntf@gmail.com>
+Date: Fri,  6 Mar 2020 17:38:48 +0100
 
-> The NCM specification defines two formats of transfer blocks: with 16-bit
-> fields (NTB-16) and with 32-bit fields (NTB-32). Currently only NTB-16 is
-> implemented.
+> Not every stmmac based platform makes use of the eth_wake_irq or eth_lpi
+> interrupts. Use the platform_get_irq_byname_optional variant for these
+> interrupts, so no error message is displayed, if they can't be found.
+> Rather print an information to hint something might be wrong to assist
+> debugging on platforms which use these interrupts.
 > 
-> This patch adds the support of NTB-32. The motivation behind this is that
-> some devices such as E5785 or E5885 from the current generation of Huawei
-> LTE routers do not support NTB-16. The previous generations of Huawei
-> devices are also use NTB-32 by default.
-> 
-> Also this patch enables NTB-32 by default for Huawei devices.
-> 
-> During the 2019 ValdikSS made five attempts to contact Huawei to add the
-> NTB-16 support to their router firmware, but they were unsuccessful.
-> 
-> Signed-off-by: Alexander Bersenev <bay@hackerdom.ru>
+> Signed-off-by: Markus Fuchs <mklntf@gmail.com>
 
-I'll apply this to net-next, thank you.
+What do you mean the error message is misleading right now?
+
+It isn't printing anything out at the moment in this situation.
