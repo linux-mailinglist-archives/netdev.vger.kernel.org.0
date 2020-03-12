@@ -2,575 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C76B6182929
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 07:35:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 946A4182932
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 07:36:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387995AbgCLGfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 02:35:36 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:43574 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387786AbgCLGff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 02:35:35 -0400
-Received: by mail-yw1-f68.google.com with SMTP id p69so4551314ywh.10;
-        Wed, 11 Mar 2020 23:35:34 -0700 (PDT)
+        id S2388022AbgCLGgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 02:36:25 -0400
+Received: from mail-qv1-f68.google.com ([209.85.219.68]:43494 "EHLO
+        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387786AbgCLGgY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 02:36:24 -0400
+Received: by mail-qv1-f68.google.com with SMTP id c28so2070412qvb.10
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 23:36:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Jq60KikfqcHIEawN0jbn+0yOEFPFA4Zfl+x2hzyvxmQ=;
-        b=RWV7mb/dm5rFoLA3kmIgW3Vm8BQwce0CweAW5TQqATOuyCQMbjt/76t/fLolv2Cvte
-         7Aq5whVlcZikiJX3DwuhuuxSwiPCE4YJxF0eyTt4g58UQz8asKAG16aTjiitKfQMVzOK
-         +jBATWXlYdf/Adl3jlQDPVbkIU0be9cFoTp3DadbKWdkaswspXYUl04PNPjPM5yDp2Xq
-         bslVyKhfanK7lwSjS0drEbnrIS82CoFfH4/Z4mmC+TDYBYlGdTtjcFPuSRm9F1KJPw3o
-         NFYvTJszqVoZ8CcMfgUaKP3aowrniiFBdhkI0AOQXAYyKzEXmur/t7KQgLwDwnVyU36x
-         gECg==
+        bh=OmYhfalyPE2n7mUASlF7MytGTjb9PigptAh2TuJXUpE=;
+        b=F/tU8uxWlaEQwmS15OIZ8t9f/bwi+O0RYAClH6Ya3V9ThM9Fj7t0kPUQkf2DeIl79K
+         5sTtCv85iaJZjF3C/gxxrDXU3PePY92Yd4v0piau45HmHGxBxQD0/OqkMcHregAXs3Gq
+         74qgsVqO2G5zPcFbdbeqEKr5ujFRJaC/iWLXF4mcrcUK6iJT27uPVb5Ay+VRQG6Y0EOL
+         WjNGE4prK/b5mfm7bPHHF1oZv3ZJyNwrPkJpwFrYxENTIYDCB5+G7iiHZ6VfZCW/+gRL
+         RJhy2kHe9kP7C5QHffVntMz4To84/SsOpqGp/QpcFOmHn+12K2wmvlKIrUlyFNGJtqSe
+         n9eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Jq60KikfqcHIEawN0jbn+0yOEFPFA4Zfl+x2hzyvxmQ=;
-        b=Jk/E7u7R0HnN5U6lrRZfIDXZIKp8n974mQpJNaIsi/7FdbPgVjg54/8Jtsa9gdZ4Zo
-         cAoPPYB6MLiWUkrHq/zolTeAEPbE4RtBLJUWcl5jloGpaAbzJ8h+htP3HgTN2Iai3dLI
-         k4fztNah/3r48ZS+nM96iDRjWIiKhtTq890gAC5jnAjG2KP4NQlTfBLrq3gW4DmEkHJL
-         2o5Jf7BKD7IvHEjq3m5YcX2AoQyjNVrdtdGmXmN+MrwK+z8okn4EM7L9CG1jWLiiGUxR
-         0rOvyEwr/ET49ci1FfzZc4Mdu/98alUKwwao1mnc01QJ6RMobcJ2bwPPC1Ot1KaVSm9A
-         SeAw==
-X-Gm-Message-State: ANhLgQ2wphazNXTx4xdu9uDIud9XNG1e6c1CIZaQXdchcWvuT5bymwfw
-        e/RVnxl+7laL+CznxXkpNcyvUIK/epF/hMZDxQ==
-X-Google-Smtp-Source: ADFU+vtzgnkcBS0PCb/c6pQixbUgjk41EHere9fDSpEVb0CiSV20guMDfq+cSmSqSoMcfO5qdJue7ywz2uUT0BLJIJs=
-X-Received: by 2002:a81:ee0e:: with SMTP id l14mr7043476ywm.354.1583994933563;
- Wed, 11 Mar 2020 23:35:33 -0700 (PDT)
+        bh=OmYhfalyPE2n7mUASlF7MytGTjb9PigptAh2TuJXUpE=;
+        b=Jd70GrTQeNMQfjIcVF3whyAq42mQXy/RTjKctlxLwxZCKyQue/YC3CKzXXDfhKJBbU
+         UjyIiUXbmIPUajaQDJsjkujKk2QFusxCGMe0KzL8rAHM15ni8CsHyGsTywlW3LGdzlp+
+         /OaqgSVwHwJDNZfBQ8AVvhlrCOZvzvvVvG5KqwddCiQG3Fg1J3QvvM4vyq11e7W/ffWQ
+         Go0W1gTw4cDgKEHq4RUYW2EtI2Eyzb64B1WQCtim23BESBF68sU4WgJZBYBp5R6DpfkG
+         fldRR4l9Htuk9eSQORbFGAgaEK5arvQVXlr50jGW70eUoAUZIM2lmTHz0OD8nOMPM+DW
+         hGgw==
+X-Gm-Message-State: ANhLgQ25PfQhF6zPEkTeWQMMwnpeDDpxVKdpPuH7/yJNNVrGGtYjAyVr
+        VPr/NmG3adPVoc15CW1Be8d+0RfL5GWQK2IjrwPbOA==
+X-Google-Smtp-Source: ADFU+vsiQ62PSVs7mnY7zbIq11G9sXjPw2OuaTBdc/4A/m4kB/gNXR64wwn9XGYT7pXUFc+eGf70egHroht4FWcQTuU=
+X-Received: by 2002:a05:6214:11e6:: with SMTP id e6mr5755991qvu.22.1583994982157;
+ Wed, 11 Mar 2020 23:36:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200310232647.27777-1-danieltimlee@gmail.com>
- <20200310232647.27777-3-danieltimlee@gmail.com> <CAEf4BzYG5f70jYfTWdDdAS_ok4Bj8xJYz-x=zM1ppfRcer3=rQ@mail.gmail.com>
- <CAEKGpzgzeyuMf0AnWK-UeHZxBE9iCUA9FDOFu4iec8Q3cix5dA@mail.gmail.com> <CAEf4Bza4uhXJR3s1sj7vg0L4uAF__uVbp_A5UTy-2YTVc=YoCg@mail.gmail.com>
-In-Reply-To: <CAEf4Bza4uhXJR3s1sj7vg0L4uAF__uVbp_A5UTy-2YTVc=YoCg@mail.gmail.com>
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-Date:   Thu, 12 Mar 2020 15:35:17 +0900
-Message-ID: <CAEKGpzgQ4c-65P=7bPP7J818i=MZ3+G-vv4LbonQd1LyNRaDuw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/2] samples: bpf: refactor perf_event user
- program with libbpf bpf_link
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <000000000000e8001905a07be9de@google.com> <20200311200400.a383230a33722d4c3a6886dd@linux-foundation.org>
+In-Reply-To: <20200311200400.a383230a33722d4c3a6886dd@linux-foundation.org>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 12 Mar 2020 07:36:10 +0100
+Message-ID: <CACT4Y+aSGNcnkW+zu5Fexe7j7E3GnM81YH_+mC_Hp_ToC0+RhA@mail.gmail.com>
+Subject: Re: general protection fault in list_lru_del
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
+Cc:     syzbot <syzbot+34c3a8c021ca80c808b0@syzkaller.appspotmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 3:27 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Thu, Mar 12, 2020 at 4:04 AM Andrew Morton <akpm@linux-foundation.org> wrote:
 >
-> On Wed, Mar 11, 2020 at 11:16 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
-> >
-> > On Wed, Mar 11, 2020 at 1:55 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Tue, Mar 10, 2020 at 4:27 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
-> > > >
-> > > > The bpf_program__attach of libbpf(using bpf_link) is much more intuitive
-> > > > than the previous method using ioctl.
-> > > >
-> > > > bpf_program__attach_perf_event manages the enable of perf_event and
-> > > > attach of BPF programs to it, so there's no neeed to do this
-> > > > directly with ioctl.
-> > > >
-> > > > In addition, bpf_link provides consistency in the use of API because it
-> > > > allows disable (detach, destroy) for multiple events to be treated as
-> > > > one bpf_link__destroy.
-> > > >
-> > > > This commit refactors samples that attach the bpf program to perf_event
-> > > > by using libbbpf instead of ioctl. Also the bpf_load in the samples were
-> > > > removed and migrated to use libbbpf API.
-> > > >
-> > > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> > > > ---
-> > >
-> > > Daniel, thanks for this clean up! It's good to see samples be
-> > > modernized a bit :)
-> > >
-> >
-> > Thank you for your time and effort for the review :)
-> >
-> > > > Changes in v2:
-> > > >  - check memory allocation is successful
-> > > >  - clean up allocated memory on error
-> > > >
-> > > >  samples/bpf/Makefile           |  4 +-
-> > > >  samples/bpf/sampleip_user.c    | 76 ++++++++++++++++++++++------------
-> > > >  samples/bpf/trace_event_user.c | 63 ++++++++++++++++++++--------
-> > > >  3 files changed, 97 insertions(+), 46 deletions(-)
-> > > >
-> > > > diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> > > > index ff0061467dd3..424f6fe7ce38 100644
-> > > > --- a/samples/bpf/Makefile
-> > > > +++ b/samples/bpf/Makefile
-> > > > @@ -88,8 +88,8 @@ xdp2-objs := xdp1_user.o
-> > > >  xdp_router_ipv4-objs := xdp_router_ipv4_user.o
-> > > >  test_current_task_under_cgroup-objs := bpf_load.o $(CGROUP_HELPERS) \
-> > > >                                        test_current_task_under_cgroup_user.o
-> > > > -trace_event-objs := bpf_load.o trace_event_user.o $(TRACE_HELPERS)
-> > > > -sampleip-objs := bpf_load.o sampleip_user.o $(TRACE_HELPERS)
-> > > > +trace_event-objs := trace_event_user.o $(TRACE_HELPERS)
-> > > > +sampleip-objs := sampleip_user.o $(TRACE_HELPERS)
-> > > >  tc_l2_redirect-objs := bpf_load.o tc_l2_redirect_user.o
-> > > >  lwt_len_hist-objs := bpf_load.o lwt_len_hist_user.o
-> > > >  xdp_tx_iptunnel-objs := xdp_tx_iptunnel_user.o
-> > > > diff --git a/samples/bpf/sampleip_user.c b/samples/bpf/sampleip_user.c
-> > > > index b0f115f938bc..fd763a49c913 100644
-> > > > --- a/samples/bpf/sampleip_user.c
-> > > > +++ b/samples/bpf/sampleip_user.c
-> > > > @@ -10,13 +10,11 @@
-> > > >  #include <errno.h>
-> > > >  #include <signal.h>
-> > > >  #include <string.h>
-> > > > -#include <assert.h>
-> > > >  #include <linux/perf_event.h>
-> > > >  #include <linux/ptrace.h>
-> > > >  #include <linux/bpf.h>
-> > > > -#include <sys/ioctl.h>
-> > > > +#include <bpf/bpf.h>
-> > > >  #include <bpf/libbpf.h>
-> > > > -#include "bpf_load.h"
-> > > >  #include "perf-sys.h"
-> > > >  #include "trace_helpers.h"
-> > > >
-> > > > @@ -25,6 +23,7 @@
-> > > >  #define MAX_IPS                8192
-> > > >  #define PAGE_OFFSET    0xffff880000000000
-> > > >
-> > > > +static int map_fd;
-> > > >  static int nr_cpus;
-> > > >
-> > > >  static void usage(void)
-> > > > @@ -34,7 +33,8 @@ static void usage(void)
-> > > >         printf("       duration   # sampling duration (seconds), default 5\n");
-> > > >  }
-> > > >
-> > > > -static int sampling_start(int *pmu_fd, int freq)
-> > > > +static int sampling_start(int *pmu_fd, int freq, struct bpf_program *prog,
-> > > > +                         struct bpf_link **link)
-> > >
-> > > It's not apparent from looking at struct bpf_link **link whether it's
-> > > an output parameter (so sampling_start is supposed to assign *single*
-> > > link to return it to calling function) or it's an array of pointers.
-> > > Seems like it's the latter, so I'd prefer this written as
-> > >
-> > > struct bpf_link *links[] (notice also plural name).
-> > >
-> > > Please consider this.
-> > >
-> >
-> > This approach looks more apparent!
-> > I'll update code using this way.
-> >
-> > > >  {
-> > > >         int i;
-> > > >
-> > > > @@ -53,20 +53,22 @@ static int sampling_start(int *pmu_fd, int freq)
-> > > >                         fprintf(stderr, "ERROR: Initializing perf sampling\n");
-> > > >                         return 1;
-> > > >                 }
-> > > > -               assert(ioctl(pmu_fd[i], PERF_EVENT_IOC_SET_BPF,
-> > > > -                            prog_fd[0]) == 0);
-> > > > -               assert(ioctl(pmu_fd[i], PERF_EVENT_IOC_ENABLE, 0) == 0);
-> > > > +               link[i] = bpf_program__attach_perf_event(prog, pmu_fd[i]);
-> > > > +               if (link[i] < 0) {
-> > >
-> > > link is a pointer, < 0 doesn't make sense and is always going to be
-> > > false on x86. Use IS_ERR(link[i]). It's also a good idea to set it to
-> > > NULL, if link creation failed to prevent accidental
-> > > bpf_link__destroy(link[i]) later on, trying to free bogus pointer.
-> > >
-> >
-> > Failure on link creation is exactly what I was concerned about.
-> > Thank you for giving me a clear solution!
-> >
-> > > > +                       fprintf(stderr, "ERROR: Attach perf event\n");
-> > > > +                       return 1;
-> > > > +               }
-> > > >         }
-> > > >
-> > > >         return 0;
-> > > >  }
-> > > >
-> > > > -static void sampling_end(int *pmu_fd)
-> > > > +static void sampling_end(struct bpf_link **link)
-> > >
-> > > same as above, struct bpf_link *links[] would be much better here, IMO.
-> > >
-> >
-> > Also, I'll apply this at next version patch.
-> >
-> > > >  {
-> > > >         int i;
-> > > >
-> > > >         for (i = 0; i < nr_cpus; i++)
-> > > > -               close(pmu_fd[i]);
-> > > > +               bpf_link__destroy(link[i]);
-> > > >  }
-> > > >
-> > > >  struct ipcount {
-> > > > @@ -128,14 +130,18 @@ static void print_ip_map(int fd)
-> > > >  static void int_exit(int sig)
-> > > >  {
-> > > >         printf("\n");
-> > > > -       print_ip_map(map_fd[0]);
-> > > > +       print_ip_map(map_fd);
-> > > >         exit(0);
-> > > >  }
-> > > >
-> > > >  int main(int argc, char **argv)
-> > > >  {
-> > > > +       int prog_fd, *pmu_fd, opt, freq = DEFAULT_FREQ, secs = DEFAULT_SECS;
-> > > > +       struct bpf_program *prog;
-> > > > +       struct bpf_object *obj;
-> > > > +       struct bpf_link **link;
-> > > >         char filename[256];
-> > > > -       int *pmu_fd, opt, freq = DEFAULT_FREQ, secs = DEFAULT_SECS;
-> > > > +       int error = 0;
-> > > >
-> > > >         /* process arguments */
-> > > >         while ((opt = getopt(argc, argv, "F:h")) != -1) {
-> > > > @@ -165,36 +171,54 @@ int main(int argc, char **argv)
-> > > >         /* create perf FDs for each CPU */
-> > > >         nr_cpus = sysconf(_SC_NPROCESSORS_CONF);
-> > >
-> > > While neither approach is ideal, using number of online CPUs
-> > > (_SC_NPROCESSORS_ONLN) will probably work in slightly more cases
-> > > (there are machines configured with, say, 256 possible CPUs, but only
-> > > 32 available, for instance).
-> > >
-> >
-> > Thank you for pointing me out!
-> > I've never thought about situation when processors may be offline.
-> >
-> > >
-> > > >         pmu_fd = malloc(nr_cpus * sizeof(int));
-> > >
-> > > similar naming nit: pmu_fds?
-> > >
-> >
-> > Same again, apply this at next version patch.
-> >
-> > > > -       if (pmu_fd == NULL) {
-> > > > -               fprintf(stderr, "ERROR: malloc of pmu_fd\n");
-> > > > -               return 1;
-> > > > +       link = malloc(nr_cpus * sizeof(struct bpf_link *));
-> > >
-> > > Use calloc() to have those links initialized to NULL automatically.
-> > > Makes clean up so much easier.
-> > >
-> >
-> > About NULL set, like you mentioned, calloc approach looks more neat.
-> >
-> > > > +       if (pmu_fd == NULL || link == NULL) {
-> > > > +               fprintf(stderr, "ERROR: malloc of pmu_fd/link\n");
-> > > > +               error = 1;
-> > > > +               goto cleanup;
-> > > >         }
-> > > >
-> > > >         /* load BPF program */
-> > > >         snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
-> > > > -       if (load_bpf_file(filename)) {
-> > > > +       if (bpf_prog_load(filename, BPF_PROG_TYPE_PERF_EVENT, &obj, &prog_fd)) {
-> > >
-> > > Using skeleton would be best, but it's probably more appropriate for
-> > > another patch to integrate skeleton generation with samples/bpf. So
-> > > the next one would be bpf_object__open_file(), instead of legacy
-> > > bpf_prog_load().
-> > >
-> >
-> > I'll try skeleton with other sample cleanup. For now, I'll stick with
-> > bpf_object__{open/load}() instead of bpf_prog_load().
-> >
-> > > >                 fprintf(stderr, "ERROR: loading BPF program (errno %d):\n",
-> > > >                         errno);
-> > > > -               if (strcmp(bpf_log_buf, "") == 0)
-> > > > -                       fprintf(stderr, "Try: ulimit -l unlimited\n");
-> > > > -               else
-> > > > -                       fprintf(stderr, "%s", bpf_log_buf);
-> > > > -               return 1;
-> > > > +               error = 1;
-> > > > +               goto cleanup;
-> > > > +       }
-> > > > +
-> > > > +       prog = bpf_program__next(NULL, obj);
-> > >
-> > > I'm a bit lazy here, sorry, but isn't the name of the program known?
-> > > bpf_object__find_program_by_title() is preferable.
-> > >
-> >
-> > I also think it is good to specify the program title clearly.
-> >
-> > > > +       if (!prog) {
-> > > > +               fprintf(stderr, "ERROR: finding a prog in obj file failed\n");
-> > > > +               error = 1;
-> > > > +               goto cleanup;
-> > > > +       }
-> > > > +
-> > > > +       map_fd = bpf_object__find_map_fd_by_name(obj, "ip_map");
-> > > > +       if (map_fd < 0) {
-> > > > +               fprintf(stderr, "ERROR: finding a map in obj file failed\n");
-> > > > +               error = 1;
-> > > > +               goto cleanup;
-> > > >         }
-> > > > +
-> > > >         signal(SIGINT, int_exit);
-> > > >         signal(SIGTERM, int_exit);
-> > > >
-> > > >         /* do sampling */
-> > > >         printf("Sampling at %d Hertz for %d seconds. Ctrl-C also ends.\n",
-> > > >                freq, secs);
-> > > > -       if (sampling_start(pmu_fd, freq) != 0)
-> > > > -               return 1;
-> > > > +       if (sampling_start(pmu_fd, freq, prog, link) != 0) {
-> > > > +               error = 1;
-> > > > +               goto cleanup;
-> > > > +       }
-> > > >         sleep(secs);
-> > > > -       sampling_end(pmu_fd);
-> > > > -       free(pmu_fd);
-> > > > +       sampling_end(link);
-> > > >
-> > > >         /* output sample counts */
-> > > > -       print_ip_map(map_fd[0]);
-> > > > +       print_ip_map(map_fd);
-> > > >
-> > > > -       return 0;
-> > > > +cleanup:
-> > > > +       free(pmu_fd);
-> > > > +       free(link);
-> > >
-> > >
-> > > Uhm... you are freeing this only on clean up. Also, you need to
-> > > bpf_link__destroy() first. And close all pmu_fds. Surely process exit
-> > > will ensure all this is cleaned up, but it's a good tone to clean up
-> > > all resources explicitly.
-> > >
-> >
-> > Well, cleanup: could cover link destroy (sampling_end), but I think
-> > it is strange to clean up the link even though the bpf program is not
-> > attached to the event. I think it is better to specify the link destroy
-> > after the sampling starts.
+> On Tue, 10 Mar 2020 01:29:09 -0700 syzbot <syzbot+34c3a8c021ca80c808b0@syzkaller.appspotmail.com> wrote:
 >
-> bpf_link__destroy() is designed in such a way that if passed NULL it
-> will do nothing. So doing unconditional clean up at the end is clean
-> and straightforward solution. You'll see it in a bunch of places in
-> selftests.
+> > Hello,
+> >
+> > syzbot found the following crash on:
 >
+> Might be vfs, more likely networking, might be something else.  Cc's
+> added.
 
-I see. I will move this to cleanup: for an unconditional clean up at end.
+My bet would be on RDS, +RDS maintainers as well.
 
+> > HEAD commit:    63623fd4 Merge tag 'for-linus' of git://git.kernel.org/pub..
+> > git tree:       upstream
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=1492da55e00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=9833e26bab355358
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=34c3a8c021ca80c808b0
+> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 > >
-> > And, I've missed the link destroy when sampling got error.
-> > Since sampling_end will destroy the links, so I'll add this on error.
+> > Unfortunately, I don't have any reproducer for this crash yet.
 > >
-> >        if (sampling_start(pmu_fd, freq, prog, link) != 0) {
-> >                error = 1;
-> > +             sampling_end(links);
-> >                goto cleanup;
-> >        }
+> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > Reported-by: syzbot+34c3a8c021ca80c808b0@syzkaller.appspotmail.com
 > >
-> > > > +       return error;
-> > > >  }
-> > > > diff --git a/samples/bpf/trace_event_user.c b/samples/bpf/trace_event_user.c
-> > > > index 356171bc392b..30c25ef99fc5 100644
-> > > > --- a/samples/bpf/trace_event_user.c
-> > > > +++ b/samples/bpf/trace_event_user.c
-> > > > @@ -6,22 +6,21 @@
-> > > >  #include <stdlib.h>
-> > > >  #include <stdbool.h>
-> > > >  #include <string.h>
-> > > > -#include <fcntl.h>
-> > > > -#include <poll.h>
-> > > > -#include <sys/ioctl.h>
-> > > >  #include <linux/perf_event.h>
-> > > >  #include <linux/bpf.h>
-> > > >  #include <signal.h>
-> > > > -#include <assert.h>
-> > > >  #include <errno.h>
-> > > >  #include <sys/resource.h>
-> > > > +#include <bpf/bpf.h>
-> > > >  #include <bpf/libbpf.h>
-> > > > -#include "bpf_load.h"
-> > > >  #include "perf-sys.h"
-> > > >  #include "trace_helpers.h"
-> > > >
-> > > >  #define SAMPLE_FREQ 50
-> > > >
-> > > > +/* counts, stackmap */
-> > > > +static int map_fd[2];
-> > > > +struct bpf_program *prog;
-> > > >  static bool sys_read_seen, sys_write_seen;
-> > > >
-> > > >  static void print_ksym(__u64 addr)
-> > > > @@ -137,9 +136,16 @@ static inline int generate_load(void)
-> > > >  static void test_perf_event_all_cpu(struct perf_event_attr *attr)
-> > > >  {
-> > > >         int nr_cpus = sysconf(_SC_NPROCESSORS_CONF);
-> > > > +       struct bpf_link **link = malloc(nr_cpus * sizeof(struct bpf_link *));
-> > >
-> > > same as above, calloc() is better choice here
-> > >
+> > general protection fault, probably for non-canonical address 0xdffffc0000000000: 0000 [#1] PREEMPT SMP KASAN
+> > KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+> > CPU: 1 PID: 11205 Comm: kworker/u4:4 Not tainted 5.6.0-rc3-syzkaller #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > Workqueue: krdsd rds_tcp_accept_worker
+> > RIP: 0010:__list_del_entry_valid+0x85/0xf5 lib/list_debug.c:51
+> > Code: 0f 84 e1 00 00 00 48 b8 22 01 00 00 00 00 ad de 49 39 c4 0f 84 e2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4c 89 e2 48 c1 ea 03 <80> 3c 02 00 75 53 49 8b 14 24 4c 39 f2 0f 85 99 00 00 00 49 8d 7d
+> > RSP: 0018:ffffc90001b27af0 EFLAGS: 00010246
+> > RAX: dffffc0000000000 RBX: ffff888020040c60 RCX: ffffffff81a1dda6
+> > RDX: 0000000000000000 RSI: ffffffff81a1dba1 RDI: ffff888020040c68
+> > RBP: ffffc90001b27b08 R08: ffff88809f18e280 R09: fffff52000364f51
+> > R10: fffff52000364f50 R11: 0000000000000003 R12: 0000000000000000
+> > R13: 0000000000000000 R14: ffff888020040c60 R15: ffff888020040c68
+> > FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 00007f78a44de000 CR3: 000000008c993000 CR4: 00000000001426e0
+> > DR0: 0000000000000000 DR1: 0000000000006920 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Call Trace:
+> >  __list_del_entry include/linux/list.h:132 [inline]
+> >  list_del_init include/linux/list.h:204 [inline]
+> >  list_lru_del+0x11d/0x620 mm/list_lru.c:158
+> >  inode_lru_list_del fs/inode.c:450 [inline]
+> >  iput_final fs/inode.c:1568 [inline]
+> >  iput+0x52c/0x900 fs/inode.c:1597
+> >  __sock_release+0x20e/0x280 net/socket.c:617
+> >  sock_release+0x18/0x20 net/socket.c:625
+> >  rds_tcp_accept_one+0x5a9/0xc00 net/rds/tcp_listen.c:251
+> >  rds_tcp_accept_worker+0x56/0x80 net/rds/tcp.c:525
+> >  process_one_work+0xa05/0x17a0 kernel/workqueue.c:2264
+> >  worker_thread+0x98/0xe40 kernel/workqueue.c:2410
+> >  kthread+0x361/0x430 kernel/kthread.c:255
+> >  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+> > Modules linked in:
+> > ---[ end trace 424f0561ef9bfe17 ]---
+> > RIP: 0010:__list_del_entry_valid+0x85/0xf5 lib/list_debug.c:51
+> > Code: 0f 84 e1 00 00 00 48 b8 22 01 00 00 00 00 ad de 49 39 c4 0f 84 e2 00 00 00 48 b8 00 00 00 00 00 fc ff df 4c 89 e2 48 c1 ea 03 <80> 3c 02 00 75 53 49 8b 14 24 4c 39 f2 0f 85 99 00 00 00 49 8d 7d
+> > RSP: 0018:ffffc90001b27af0 EFLAGS: 00010246
+> > RAX: dffffc0000000000 RBX: ffff888020040c60 RCX: ffffffff81a1dda6
+> > RDX: 0000000000000000 RSI: ffffffff81a1dba1 RDI: ffff888020040c68
+> > RBP: ffffc90001b27b08 R08: ffff88809f18e280 R09: fffff52000364f51
+> > R10: fffff52000364f50 R11: 0000000000000003 R12: 0000000000000000
+> > R13: 0000000000000000 R14: ffff888020040c60 R15: ffff888020040c68
+> > FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 00007f78a44de000 CR3: 000000008c993000 CR4: 00000000001426e0
+> > DR0: 0000000000000000 DR1: 0000000000006920 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 > >
-> > Will apply this at next version patch.
 > >
-> > > >         int *pmu_fd = malloc(nr_cpus * sizeof(int));
-> > > >         int i, error = 0;
-> > > >
-> > > > +       if (pmu_fd == NULL || link == NULL) {
-> > > > +               printf("malloc of pmu_fd/link failed\n");
-> > > > +               error = 1;
-> > > > +               goto err;
-> > > > +       }
-> > > > +
-> > > >         /* system wide perf event, no need to inherit */
-> > > >         attr->inherit = 0;
-> > > >
-> > > > @@ -151,8 +157,12 @@ static void test_perf_event_all_cpu(struct perf_event_attr *attr)
-> > > >                         error = 1;
-> > > >                         goto all_cpu_err;
-> > > >                 }
-> > > > -               assert(ioctl(pmu_fd[i], PERF_EVENT_IOC_SET_BPF, prog_fd[0]) == 0);
-> > > > -               assert(ioctl(pmu_fd[i], PERF_EVENT_IOC_ENABLE) == 0);
-> > > > +               link[i] = bpf_program__attach_perf_event(prog, pmu_fd[i]);
-> > > > +               if (link[i] < 0) {
-> > > > +                       printf("bpf_program__attach_perf_event failed\n");
-> > > > +                       error = 1;
-> > > > +                       goto all_cpu_err;
-> > > > +               }
-> > > >         }
-> > > >
-> > > >         if (generate_load() < 0) {
-> > > > @@ -161,11 +171,11 @@ static void test_perf_event_all_cpu(struct perf_event_attr *attr)
-> > > >         }
-> > > >         print_stacks();
-> > > >  all_cpu_err:
-> > > > -       for (i--; i >= 0; i--) {
-> > > > -               ioctl(pmu_fd[i], PERF_EVENT_IOC_DISABLE);
-> > > > -               close(pmu_fd[i]);
-> > > > -       }
-> > > > +       for (i--; i >= 0; i--)
-> > > > +               bpf_link__destroy(link[i]);
-> > >
-> > > still need close(pmu_fd[i]);
-> > >
+> > ---
+> > This bug is generated by a bot. It may contain errors.
+> > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
 > >
-> > AFAIK, bpf_link__detach_perf_event() closes the pmu_fd.
-> > Am I missed something?
->
-> Ah, you are right, I missed that fact. But then you don't need pmu_fd
-> array at all. Do perf_event_open and then immediately
-> bpf_program__attach_perf_event().
->
-
-Right. I won't need to handle pmu_fds, since bpf_link manages all of it.
-Thanks for the tip!
-
-> >
-> >        static int bpf_link__detach_perf_event(struct bpf_link *link)
-> >        // TRUNCATED
-> >                close(link->fd);
-> >                return err;
-> >        }
-> >
-> > > > +err:
-> > > >         free(pmu_fd);
-> > > > +       free(link);
-> > > >         if (error)
-> > > >                 int_exit(0);
-> > >
-> > >
-> > > >  }
-> > > > @@ -173,6 +183,7 @@ static void test_perf_event_all_cpu(struct perf_event_attr *attr)
-> > > >  static void test_perf_event_task(struct perf_event_attr *attr)
-> > > >  {
-> > > >         int pmu_fd, error = 0;
-> > > > +       struct bpf_link *link;
-> > > >
-> > > >         /* per task perf event, enable inherit so the "dd ..." command can be traced properly.
-> > > >          * Enabling inherit will cause bpf_perf_prog_read_time helper failure.
-> > > > @@ -185,8 +196,12 @@ static void test_perf_event_task(struct perf_event_attr *attr)
-> > > >                 printf("sys_perf_event_open failed\n");
-> > > >                 int_exit(0);
-> > > >         }
-> > > > -       assert(ioctl(pmu_fd, PERF_EVENT_IOC_SET_BPF, prog_fd[0]) == 0);
-> > > > -       assert(ioctl(pmu_fd, PERF_EVENT_IOC_ENABLE) == 0);
-> > > > +       link = bpf_program__attach_perf_event(prog, pmu_fd);
-> > > > +       if (link < 0) {
-> > > > +               printf("bpf_program__attach_perf_event failed\n");
-> > > > +               close(pmu_fd);
-> > > > +               int_exit(0);
-> > > > +       }
-> > > >
-> > > >         if (generate_load() < 0) {
-> > > >                 error = 1;
-> > > > @@ -194,8 +209,7 @@ static void test_perf_event_task(struct perf_event_attr *attr)
-> > > >         }
-> > > >         print_stacks();
-> > > >  err:
-> > > > -       ioctl(pmu_fd, PERF_EVENT_IOC_DISABLE);
-> > > > -       close(pmu_fd);
-> > > > +       bpf_link__destroy(link);
-> > > >         if (error)
-> > > >                 int_exit(0);
-> > >
-> > > This will exit with 0 error code and won't notify about error... Pass
-> > > through err?
-> > >
-> >
-> > You're right. Missed the return code.
-> > Will apply this at next version patch.
-> >
-> > > >  }
-> > > > @@ -282,7 +296,9 @@ static void test_bpf_perf_event(void)
-> > > >  int main(int argc, char **argv)
-> > > >  {
-> > > >         struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
-> > > > +       struct bpf_object *obj;
-> > > >         char filename[256];
-> > > > +       int prog_fd;
-> > > >
-> > > >         snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
-> > > >         setrlimit(RLIMIT_MEMLOCK, &r);
-> > > > @@ -295,9 +311,20 @@ int main(int argc, char **argv)
-> > > >                 return 1;
-> > > >         }
-> > > >
-> > > > -       if (load_bpf_file(filename)) {
-> > > > -               printf("%s", bpf_log_buf);
-> > > > -               return 2;
-> > > > +       if (bpf_prog_load(filename, BPF_PROG_TYPE_PERF_EVENT, &obj, &prog_fd))
-> > > > +               return 1;
-> > > > +
-> > > > +       prog = bpf_program__next(NULL, obj);
-> > > > +       if (!prog) {
-> > > > +               printf("finding a prog in obj file failed\n");
-> > > > +               return 1;
-> > > > +       }
-> > > > +
-> > > > +       map_fd[0] = bpf_object__find_map_fd_by_name(obj, "counts");
-> > > > +       map_fd[1] = bpf_object__find_map_fd_by_name(obj, "stackmap");
-> > > > +       if (map_fd[0] < 0 || map_fd[1] < 0) {
-> > > > +               printf("finding a counts/stackmap map in obj file failed\n");
-> > > > +               return 1;
-> > > >         }
-> > > >
-> > > >         if (fork() == 0) {
-> > > > --
-> > > > 2.25.1
-> > > >
-> >
-> > Thank you for your detailed review!
-> >
-> > Best,
-> > Daniel
-
-Thanks for the super fast response!
-
-Best,
-Daniel
+> > syzbot will keep track of this bug report. See:
+> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
