@@ -2,90 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15A2418387D
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 19:21:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 083E418388D
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 19:24:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726676AbgCLSVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 14:21:14 -0400
-Received: from www62.your-server.de ([213.133.104.62]:44030 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726647AbgCLSVO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 14:21:14 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jCSSF-0006GZ-A8; Thu, 12 Mar 2020 19:21:11 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jCSSE-000JOa-UF; Thu, 12 Mar 2020 19:21:11 +0100
-Subject: Re: [PATCH bpf] libbpf: add null pointer check in
- bpf_object__init_user_btf_maps()
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Quentin Monnet <quentin@isovalent.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Michal Rostecki <mrostecki@opensuse.org>
-References: <20200312140357.20174-1-quentin@isovalent.com>
- <1fff03e7-e52b-edcc-d427-f912bf0a4af2@iogearbox.net>
- <CAEf4BzaQdv8s4cGp=ouitxczzWV1E1WeuxktDTp5JFkXXkRU=w@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <4a17add0-6756-a60c-7c5b-9ffe45ff4060@iogearbox.net>
-Date:   Thu, 12 Mar 2020 19:21:10 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726729AbgCLSYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 14:24:43 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:31510 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726569AbgCLSYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 14:24:43 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02CIHgT0020284
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 11:24:42 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=DYeI4xDldKGYM55ob3MvA89OrCHGz438Apo+oI5jwWc=;
+ b=pjJrA+uxkd965ElFuRooo8mw5X8hUiJ8EMXtpbUWuYzgjrv+sPFnBrK0SbouvNJv1c4v
+ hwNN+ThCwribQ5fWrNkk/Cxjs3ArFmmvVCxtAgaA+0EoBb3MZpLSlVk5JzI3fR/TNDVv
+ tpk0EMII1bwtw1MoKhRz1G5tVoXr9ae3Wtg= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yqt80r15d-16
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 11:24:42 -0700
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Thu, 12 Mar 2020 11:23:44 -0700
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id E2BFC62E017A; Thu, 12 Mar 2020 11:23:38 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Song Liu <songliubraving@fb.com>
+Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <john.fastabend@gmail.com>, <quentin@isovalent.com>,
+        <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <arnaldo.melo@gmail.com>, <jolsa@kernel.org>,
+        Song Liu <songliubraving@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v3 bpf-next 0/3] Fixes for bpftool-prog-profile
+Date:   Thu, 12 Mar 2020 11:23:29 -0700
+Message-ID: <20200312182332.3953408-1-songliubraving@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzaQdv8s4cGp=ouitxczzWV1E1WeuxktDTp5JFkXXkRU=w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25749/Thu Mar 12 14:09:06 2020)
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-12_12:2020-03-11,2020-03-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ malwarescore=0 clxscore=1015 adultscore=0 priorityscore=1501
+ lowpriorityscore=0 impostorscore=0 phishscore=0 mlxlogscore=837 mlxscore=0
+ bulkscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003120093
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/12/20 6:54 PM, Andrii Nakryiko wrote:
-> On Thu, Mar 12, 2020 at 8:38 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 3/12/20 3:03 PM, Quentin Monnet wrote:
->>> When compiling bpftool with clang 7, after the addition of its recent
->>> "bpftool prog profile" feature, Michal reported a segfault. This
->>> occurred while the build process was attempting to generate the
->>> skeleton needed for the profiling program, with the following command:
->>>
->>>       ./_bpftool gen skeleton skeleton/profiler.bpf.o > profiler.skel.h
->>>
->>> Tracing the error showed that bpf_object__init_user_btf_maps() does no
->>> verification on obj->btf before passing it to btf__get_nr_types(), where
->>> btf is dereferenced. Libbpf considers BTF information should be here
->>> because of the presence of a ".maps" section in the object file (hence
->>> the check on "obj->efile.btf_maps_shndx < 0" fails and we do not exit
->>> from the function early), but it was unable to load BTF info as there is
->>> no .BTF section.
->>>
->>> Add a null pointer check and error out if the pointer is null. The final
->>> bpftool executable still fails to build, but at least we have a proper
->>> error and no more segfault.
->>>
->>> Fixes: abd29c931459 ("libbpf: allow specifying map definitions using BTF")
->>> Cc: Andrii Nakryiko <andriin@fb.com>
->>> Reported-by: Michal Rostecki <mrostecki@opensuse.org>
->>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
->>
->> Applied to bpf-next, thanks! Note ...
-> 
-> I don't think this is the right fix. The problem was in my
-> 5327644614a1 ("libbpf: Relax check whether BTF is mandatory") commit.
-> I've removed "mandatory" status of BTF if .maps is present. But that's
-> not right. We have the need for BTF at two levels: for libbpf itself
-> and for kernel, those are overlapping, but not exactly the same. BTF
-> is needed for libbpf when .maps, .struct_ops and externs are present.
-> But kernel needs it only for when .struct_ops are present. Right now
-> those checks are conflated together. Proper fix would be to separate
-> them. Can we please undo this patch? I'll post a proper fix shortly.
+1. Fix build for older clang;
+2. Fix skeleton's dependency on libbpf;
+3. Add files to .gitignore.
 
-Ok, please send a proper fix for 5327644614a1 then. Tossed off the tree.
+Changes v2 => v3:
+1. Add -I$(LIBBPF_PATH) to Makefile (Quentin);
+2. Use p_err() for error message (Quentin).
+
+Changes v1 => v2:
+1. Rewrite patch 1 with real feature detection (Quentin, Alexei).
+2. Add files to .gitignore (Andrii).
+
+Song Liu (3):
+  bpftool: only build bpftool-prog-profile if supported by clang
+  bpftool: skeleton should depend on libbpf
+  bpftool: add _bpftool and profiler.skel.h to .gitignore
+
+ tools/bpf/bpftool/.gitignore                  |  2 ++
+ tools/bpf/bpftool/Makefile                    | 20 +++++++++++++------
+ tools/bpf/bpftool/prog.c                      |  1 +
+ tools/build/feature/Makefile                  |  9 ++++++++-
+ .../build/feature/test-clang-bpf-global-var.c |  4 ++++
+ 5 files changed, 29 insertions(+), 7 deletions(-)
+ create mode 100644 tools/build/feature/test-clang-bpf-global-var.c
+
+--
+2.17.1
