@@ -2,54 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EDAA182966
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 07:58:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C3E7182968
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 08:00:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387999AbgCLG6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 02:58:25 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:56406 "EHLO
+        id S2387958AbgCLHA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 03:00:27 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:56466 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387889AbgCLG6Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 02:58:25 -0400
+        with ESMTP id S2387831AbgCLHA1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 03:00:27 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 460A714E20282;
-        Wed, 11 Mar 2020 23:58:24 -0700 (PDT)
-Date:   Wed, 11 Mar 2020 23:58:23 -0700 (PDT)
-Message-Id: <20200311.235823.220996291757645509.davem@davemloft.net>
-To:     edumazet@google.com
-Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        shakeelb@google.com, syzkaller@googlegroups.com
-Subject: Re: [PATCH net] net: memcg: fix lockdep splat in inet_csk_accept()
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EC8A510099E8A;
+        Thu, 12 Mar 2020 00:00:26 -0700 (PDT)
+Date:   Thu, 12 Mar 2020 00:00:26 -0700 (PDT)
+Message-Id: <20200312.000026.1883783044714484563.davem@davemloft.net>
+To:     dcaratti@redhat.com
+Cc:     mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
+        pabeni@redhat.com, kuba@kernel.org, netdev@vger.kernel.org,
+        mptcp@lists.01.org
+Subject: Re: [PATCH net-next] net: mptcp: don't hang before sending 'MP
+ capable with data'
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200311184426.39253-1-edumazet@google.com>
-References: <20200311184426.39253-1-edumazet@google.com>
+In-Reply-To: <da448d7e0a2459519394ab0c398875061f2bf1d0.1583952277.git.dcaratti@redhat.com>
+References: <da448d7e0a2459519394ab0c398875061f2bf1d0.1583952277.git.dcaratti@redhat.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 11 Mar 2020 23:58:24 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 12 Mar 2020 00:00:27 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Wed, 11 Mar 2020 11:44:26 -0700
+From: Davide Caratti <dcaratti@redhat.com>
+Date: Wed, 11 Mar 2020 19:50:53 +0100
 
-> Locking newsk while still holding the listener lock triggered
-> a lockdep splat [1]
+> the following packetdrill script
 > 
-> We can simply move the memcg code after we release the listener lock,
-> as this can also help if multiple threads are sharing a common listener.
+>   socket(..., SOCK_STREAM, IPPROTO_MPTCP) = 3
+>   fcntl(3, F_GETFL) = 0x2 (flags O_RDWR)
+>   fcntl(3, F_SETFL, O_RDWR|O_NONBLOCK) = 0
+>   connect(3, ..., ...) = -1 EINPROGRESS (Operation now in progress)
+>   > S 0:0(0) <mss 1460,sackOK,TS val 100 ecr 0,nop,wscale 8,mpcapable v1 flags[flag_h] nokey>
+>   < S. 0:0(0) ack 1 win 65535 <mss 1460,sackOK,TS val 700 ecr 100,nop,wscale 8,mpcapable v1 flags[flag_h] key[skey=2]>
+>   > . 1:1(0) ack 1 win 256 <nop, nop, TS val 100 ecr 700,mpcapable v1 flags[flag_h] key[ckey,skey]>
+>   getsockopt(3, SOL_SOCKET, SO_ERROR, [0], [4]) = 0
+>   fcntl(3, F_SETFL, O_RDWR) = 0
+>   write(3, ..., 1000) = 1000
 > 
-> Also fix a typo while reading socket sk_rmem_alloc.
- ...
-> Fixes: d752a4986532 ("net: memcg: late association of sock to memcg")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Shakeel Butt <shakeelb@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
+> doesn't transmit 1KB data packet after a successful three-way-handshake,
+> using mp_capable with data as required by protocol v1, and write() hangs
+> forever:
+> 
+>  PID: 973    TASK: ffff97dd399cae80  CPU: 1   COMMAND: "packetdrill"
+>   #0 [ffffa9b94062fb78] __schedule at ffffffff9c90a000
+>   #1 [ffffa9b94062fc08] schedule at ffffffff9c90a4a0
+>   #2 [ffffa9b94062fc18] schedule_timeout at ffffffff9c90e00d
+>   #3 [ffffa9b94062fc90] wait_woken at ffffffff9c120184
+>   #4 [ffffa9b94062fcb0] sk_stream_wait_connect at ffffffff9c75b064
+>   #5 [ffffa9b94062fd20] mptcp_sendmsg at ffffffff9c8e801c
+>   #6 [ffffa9b94062fdc0] sock_sendmsg at ffffffff9c747324
+>   #7 [ffffa9b94062fdd8] sock_write_iter at ffffffff9c7473c7
+>   #8 [ffffa9b94062fe48] new_sync_write at ffffffff9c302976
+>   #9 [ffffa9b94062fed0] vfs_write at ffffffff9c305685
+>  #10 [ffffa9b94062ff00] ksys_write at ffffffff9c305985
+>  #11 [ffffa9b94062ff38] do_syscall_64 at ffffffff9c004475
+>  #12 [ffffa9b94062ff50] entry_SYSCALL_64_after_hwframe at ffffffff9ca0008c
+>      RIP: 00007f959407eaf7  RSP: 00007ffe9e95a910  RFLAGS: 00000293
+>      RAX: ffffffffffffffda  RBX: 0000000000000008  RCX: 00007f959407eaf7
+>      RDX: 00000000000003e8  RSI: 0000000001785fe0  RDI: 0000000000000008
+>      RBP: 0000000001785fe0   R8: 0000000000000000   R9: 0000000000000003
+>      R10: 0000000000000007  R11: 0000000000000293  R12: 00000000000003e8
+>      R13: 00007ffe9e95ae30  R14: 0000000000000000  R15: 0000000000000000
+>      ORIG_RAX: 0000000000000001  CS: 0033  SS: 002b
+> 
+> Fix it ensuring that socket state is TCP_ESTABLISHED on reception of the
+> third ack.
+> 
+> Fixes: 1954b86016cf ("mptcp: Check connection state before attempting send")
+> Suggested-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 
-Applied, thanks Eric.
+Applied, thanks.
