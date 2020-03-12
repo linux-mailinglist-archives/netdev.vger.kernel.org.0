@@ -2,104 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1919183017
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 13:20:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CB01183036
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 13:29:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727001AbgCLMUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 08:20:00 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:41978 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726254AbgCLMUA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 08:20:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=UVvVOMVGmynQndrdDhbozXlLAYHdva8vTup3iriWDnA=; b=qc6mGJzafV8GLUp95uxkRApr7Q
-        TMDbKIxncRtDeMhAyXNKNZrdN3PnpEI6iSkKjJR68e0je60pNjv90GKzN7v1hHOQCDg7FF5OoHqe0
-        GialVRIMDWG/IvFifKK+lEKnia68svmWJ+RSwvJKbBW1f1tYt3e4RMTKflK42dtsrgpVWlU2iGRby
-        nJ4HW2ve9OfTmBI9dOKlWRa8CJQURyOdbweRVl8FyIi0MnBU+FeZLAsnsu0ikP5b38IV1AEU4IIEO
-        k0TZTTYQXgNCNo1l5vW6enT0zA7MjdJGnWJLL0J3IGJ4oxh7pt8Ct5k4lyEFn+Tzc2wXwIeD7Slu5
-        qFFxyuaw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:40594 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jCMoa-00017A-Id; Thu, 12 Mar 2020 12:19:52 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jCMoZ-0005U0-Tv; Thu, 12 Mar 2020 12:19:51 +0000
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
+        id S1727075AbgCLM3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 08:29:30 -0400
+Received: from mx2.suse.de ([195.135.220.15]:58204 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726841AbgCLM3a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Mar 2020 08:29:30 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 7C355AFE3;
+        Thu, 12 Mar 2020 12:29:26 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id ACE64E0C79; Thu, 12 Mar 2020 13:29:22 +0100 (CET)
+Date:   Thu, 12 Mar 2020 13:29:22 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next] net: dsa: sja1105: move MAC configuration to
- .phylink_mac_link_up
+        John Linville <linville@tuxdriver.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 10/15] ethtool: provide ring sizes with
+ RINGS_GET request
+Message-ID: <20200312122922.GN8012@unicorn.suse.cz>
+References: <cover.1583962006.git.mkubecek@suse.cz>
+ <55a76ca4eecc92c7209775340ff36ba5dd32f713.1583962006.git.mkubecek@suse.cz>
+ <20200311161625.7292f745@kicinski-fedora-PC1C0HJN>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jCMoZ-0005U0-Tv@rmk-PC.armlinux.org.uk>
-Date:   Thu, 12 Mar 2020 12:19:51 +0000
+In-Reply-To: <20200311161625.7292f745@kicinski-fedora-PC1C0HJN>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
+On Wed, Mar 11, 2020 at 04:16:25PM -0700, Jakub Kicinski wrote:
+> On Wed, 11 Mar 2020 22:40:53 +0100 (CET) Michal Kubecek wrote:
+> > +static int rings_prepare_data(const struct ethnl_req_info *req_base,
+> > +			      struct ethnl_reply_data *reply_base,
+> > +			      struct genl_info *info)
+> > +{
+> > +	struct rings_reply_data *data = RINGS_REPDATA(reply_base);
+> > +	struct net_device *dev = reply_base->dev;
+> > +	int ret;
+> > +
+> > +	if (!dev->ethtool_ops->get_ringparam)
+> > +		return -EOPNOTSUPP;
+> > +	ret = ethnl_ops_begin(dev);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +	dev->ethtool_ops->get_ringparam(dev, &data->ringparam);
+> > +	ret = 0;
+> > +	ethnl_ops_complete(dev);
+> > +
+> > +	return ret;
+> 
+> nit: just return 0 and drop ret = 0 above, there is no goto here
 
-The switches supported so far by the driver only have non-SerDes ports,
-so they should be configured in the PHYLINK callback that provides the
-resolved PHY link parameters.
+OK
 
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/dsa/sja1105/sja1105_main.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+> > +}
+> > +
+> > +static int rings_reply_size(const struct ethnl_req_info *req_base,
+> > +			    const struct ethnl_reply_data *reply_base)
+> > +{
+> > +	return 8 * nla_total_size(sizeof(u32))
+> 
+> nit: 8 is a little bit of a magic constant
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 6fe679143216..2deb9c5e3ef7 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -765,15 +765,16 @@ static void sja1105_mac_config(struct dsa_switch *ds, int port,
- {
- 	struct sja1105_private *priv = ds->priv;
- 
--	if (sja1105_phy_mode_mismatch(priv, port, state->interface))
-+	if (sja1105_phy_mode_mismatch(priv, port, state->interface)) {
-+		dev_err(ds->dev, "Changing PHY mode to %s not supported!\n",
-+			phy_modes(state->interface));
- 		return;
-+	}
- 
- 	if (link_an_mode == MLO_AN_INBAND) {
- 		dev_err(ds->dev, "In-band AN not supported!\n");
- 		return;
- 	}
--
--	sja1105_adjust_port_config(priv, port, state->speed);
- }
- 
- static void sja1105_mac_link_down(struct dsa_switch *ds, int port,
-@@ -790,7 +791,11 @@ static void sja1105_mac_link_up(struct dsa_switch *ds, int port,
- 				int speed, int duplex,
- 				bool tx_pause, bool rx_pause)
- {
--	sja1105_inhibit_tx(ds->priv, BIT(port), false);
-+	struct sja1105_private *priv = ds->priv;
-+
-+	sja1105_adjust_port_config(priv, port, speed);
-+
-+	sja1105_inhibit_tx(priv, BIT(port), false);
- }
- 
- static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
--- 
-2.20.1
+I'll rewrite this as a sum of 8 entries with comment referring to
+attribute types. It's still a compile time computed constant so that
+there should be no impact on resulting code.
 
+> > +		+ 0;
+> 
+> nit: personally not a huge fan
+
+I don't like it either, to be honest. I just thought, based on reading
+some earlier discussions, that it's the preferred way as it enforces
+a compiler error when someone adds a new attribute and forgets to
+replace the semicolon with plus (which IIRC happened in the past).
+
+But as I checked now, reasonably new gcc (at least from version 7)
+issues a warning in such case so that it wouldn't go unnoticed with
+various kbuild bots around. So I agree to get rid of this trick.
+
+> > +static int rings_fill_reply(struct sk_buff *skb,
+> > +			    const struct ethnl_req_info *req_base,
+> > +			    const struct ethnl_reply_data *reply_base)
+> > +{
+> > +	const struct rings_reply_data *data = RINGS_REPDATA(reply_base);
+> > +	const struct ethtool_ringparam *ringparam = &data->ringparam;
+> > +
+> > +	if (nla_put_u32(skb, ETHTOOL_A_RINGS_RX_MAX,
+> > +			ringparam->rx_max_pending) ||
+> > +	    nla_put_u32(skb, ETHTOOL_A_RINGS_RX_MINI_MAX,
+> > +			ringparam->rx_mini_max_pending) ||
+> > +	    nla_put_u32(skb, ETHTOOL_A_RINGS_RX_JUMBO_MAX,
+> > +			ringparam->rx_jumbo_max_pending) ||
+> > +	    nla_put_u32(skb, ETHTOOL_A_RINGS_TX_MAX,
+> > +			ringparam->tx_max_pending) ||
+> > +	    nla_put_u32(skb, ETHTOOL_A_RINGS_RX,
+> > +			ringparam->rx_pending) ||
+> > +	    nla_put_u32(skb, ETHTOOL_A_RINGS_RX_MINI,
+> > +			ringparam->rx_mini_pending) ||
+> > +	    nla_put_u32(skb, ETHTOOL_A_RINGS_RX_JUMBO,
+> > +			ringparam->rx_jumbo_pending) ||
+> > +	    nla_put_u32(skb, ETHTOOL_A_RINGS_TX,
+> > +			ringparam->tx_pending))
+> > +		return -EMSGSIZE;
+> 
+> nit: I wonder if it's necessary to report the zero values..
+
+Good point. I would say that it makes perfect sense to omit the
+attributes if the max value is zero (i.e. this type of ring is not
+supported) but I would still report zero current size if corresponding
+limit is not zero as it means the zero size is meaningful. (Many drivers
+do not allow zero size but I found one which does.)
+
+Michal
