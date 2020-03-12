@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A408183A00
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 20:57:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 769EC183A03
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 20:57:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726997AbgCLT5F convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 12 Mar 2020 15:57:05 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:30604 "EHLO
+        id S1727000AbgCLT5J convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 12 Mar 2020 15:57:09 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:31997 "EHLO
         us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726810AbgCLT5E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 15:57:04 -0400
+        with ESMTP id S1726810AbgCLT5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 15:57:08 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-6-Y_-efEgtMQ-mgotKQmtRlQ-1; Thu, 12 Mar 2020 15:57:00 -0400
-X-MC-Unique: Y_-efEgtMQ-mgotKQmtRlQ-1
+ us-mta-19-fY9hT-M8OjOZttMZys8QDg-1; Thu, 12 Mar 2020 15:57:03 -0400
+X-MC-Unique: fY9hT-M8OjOZttMZys8QDg-1
 Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F20AA8018C9;
-        Thu, 12 Mar 2020 19:56:57 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A0E5A109DDEA;
+        Thu, 12 Mar 2020 19:57:01 +0000 (UTC)
 Received: from krava.redhat.com (ovpn-204-40.brq.redhat.com [10.40.204.40])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7D96B5D9C5;
-        Thu, 12 Mar 2020 19:56:52 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5AA285D9C5;
+        Thu, 12 Mar 2020 19:56:58 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>
@@ -37,9 +37,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Jesper Dangaard Brouer <hawk@kernel.org>,
         Arnaldo Carvalho de Melo <acme@redhat.com>,
         Song Liu <song@kernel.org>
-Subject: [PATCH 08/15] bpf: Add prog flag to struct bpf_ksym object
-Date:   Thu, 12 Mar 2020 20:56:03 +0100
-Message-Id: <20200312195610.346362-9-jolsa@kernel.org>
+Subject: [PATCH 09/15] bpf: Add bpf_ksym_add/del functions
+Date:   Thu, 12 Mar 2020 20:56:04 +0100
+Message-Id: <20200312195610.346362-10-jolsa@kernel.org>
 In-Reply-To: <20200312195610.346362-1-jolsa@kernel.org>
 References: <20200312195610.346362-1-jolsa@kernel.org>
 MIME-Version: 1.0
@@ -53,90 +53,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding 'prog' bool flag to 'struct bpf_ksym' to mark that
-this object belongs to bpf_prog object.
+Separating /proc/kallsyms add/del code and adding bpf_ksym_add/del
+functions for that.
 
-This change allows having bpf_prog objects together with
-other types (trampolines and dispatchers) in the single
-bpf_tree. It's used when searching for bpf_prog exception
-tables by the bpf_prog_ksym_find function, where we need
-to get the bpf_prog pointer.
-
-From now we can safely add bpf_ksym support for trampoline
-or dispatcher objects, because we can differentiate them
-from bpf_prog objects.
+Moving bpf_prog_ksym_node_add/del functions to __bpf_ksym_add/del
+and changing their argument to 'struct bpf_ksym' object. This way
+we can call them for other bpf objects types like trampoline and
+dispatcher.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- include/linux/bpf.h |  1 +
- kernel/bpf/core.c   | 22 +++++++++++-----------
- 2 files changed, 12 insertions(+), 11 deletions(-)
+ include/linux/bpf.h |  3 +++
+ kernel/bpf/core.c   | 33 +++++++++++++++++++--------------
+ 2 files changed, 22 insertions(+), 14 deletions(-)
 
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index c5afff03b0f4..739ec3f562bf 100644
+index 739ec3f562bf..83920cbce24c 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -478,6 +478,7 @@ struct bpf_ksym {
- 	char			 name[KSYM_NAME_LEN];
- 	struct list_head	 lnode;
- 	struct latch_tree_node	 tnode;
-+	bool			 prog;
- };
- 
- enum bpf_tramp_prog_type {
+@@ -584,6 +584,9 @@ struct bpf_image {
+ #define BPF_IMAGE_SIZE (PAGE_SIZE - sizeof(struct bpf_image))
+ bool is_bpf_image_address(unsigned long address);
+ void *bpf_image_alloc(void);
++/* Called only from JIT-enabled code, so there's no need for stubs. */
++void bpf_ksym_add(struct bpf_ksym *ksym);
++void bpf_ksym_del(struct bpf_ksym *ksym);
+ #else
+ static inline struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
+ {
 diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 6b58c2f1c9c0..92577a81122a 100644
+index 92577a81122a..cc360bfde1fe 100644
 --- a/kernel/bpf/core.c
 +++ b/kernel/bpf/core.c
-@@ -642,6 +642,7 @@ void bpf_prog_kallsyms_add(struct bpf_prog *fp)
+@@ -607,20 +607,29 @@ static DEFINE_SPINLOCK(bpf_lock);
+ static LIST_HEAD(bpf_kallsyms);
+ static struct latch_tree_root bpf_tree __cacheline_aligned;
  
- 	bpf_prog_ksym_set_addr(fp);
- 	bpf_prog_ksym_set_name(fp);
-+	fp->aux->ksym.prog = true;
- 
- 	spin_lock_bh(&bpf_lock);
- 	bpf_prog_ksym_node_add(fp->aux);
-@@ -658,16 +659,6 @@ void bpf_prog_kallsyms_del(struct bpf_prog *fp)
- 	spin_unlock_bh(&bpf_lock);
- }
- 
--static struct bpf_prog *bpf_prog_kallsyms_find(unsigned long addr)
--{
--	struct latch_tree_node *n;
--
--	n = latch_tree_find((void *)addr, &bpf_tree, &bpf_tree_ops);
--	return n ?
--	       container_of(n, struct bpf_prog_aux, ksym.tnode)->prog :
--	       NULL;
--}
--
- static struct bpf_ksym *bpf_ksym_find(unsigned long addr)
+-static void bpf_prog_ksym_node_add(struct bpf_prog_aux *aux)
++void bpf_ksym_add(struct bpf_ksym *ksym)
  {
- 	struct latch_tree_node *n;
-@@ -712,13 +703,22 @@ bool is_bpf_text_address(unsigned long addr)
- 	return ret;
+-	WARN_ON_ONCE(!list_empty(&aux->ksym.lnode));
+-	list_add_tail_rcu(&aux->ksym.lnode, &bpf_kallsyms);
+-	latch_tree_insert(&aux->ksym.tnode, &bpf_tree, &bpf_tree_ops);
++	spin_lock_bh(&bpf_lock);
++	WARN_ON_ONCE(!list_empty(&ksym->lnode));
++	list_add_tail_rcu(&ksym->lnode, &bpf_kallsyms);
++	latch_tree_insert(&ksym->tnode, &bpf_tree, &bpf_tree_ops);
++	spin_unlock_bh(&bpf_lock);
  }
  
-+static struct bpf_prog *bpf_prog_ksym_find(unsigned long addr)
-+{
-+	struct bpf_ksym *ksym = bpf_ksym_find(addr);
-+
-+	return ksym && ksym->prog ?
-+	       container_of(ksym, struct bpf_prog_aux, ksym)->prog :
-+	       NULL;
+-static void bpf_prog_ksym_node_del(struct bpf_prog_aux *aux)
++static void __bpf_ksym_del(struct bpf_ksym *ksym)
+ {
+-	if (list_empty(&aux->ksym.lnode))
++	if (list_empty(&ksym->lnode))
+ 		return;
+ 
+-	latch_tree_erase(&aux->ksym.tnode, &bpf_tree, &bpf_tree_ops);
+-	list_del_rcu(&aux->ksym.lnode);
++	latch_tree_erase(&ksym->tnode, &bpf_tree, &bpf_tree_ops);
++	list_del_rcu(&ksym->lnode);
 +}
 +
- const struct exception_table_entry *search_bpf_extables(unsigned long addr)
- {
- 	const struct exception_table_entry *e = NULL;
- 	struct bpf_prog *prog;
++void bpf_ksym_del(struct bpf_ksym *ksym)
++{
++	spin_lock_bh(&bpf_lock);
++	__bpf_ksym_del(ksym);
++	spin_unlock_bh(&bpf_lock);
+ }
  
- 	rcu_read_lock();
--	prog = bpf_prog_kallsyms_find(addr);
-+	prog = bpf_prog_ksym_find(addr);
- 	if (!prog)
- 		goto out;
- 	if (!prog->aux->num_exentries)
+ static bool bpf_prog_kallsyms_candidate(const struct bpf_prog *fp)
+@@ -644,9 +653,7 @@ void bpf_prog_kallsyms_add(struct bpf_prog *fp)
+ 	bpf_prog_ksym_set_name(fp);
+ 	fp->aux->ksym.prog = true;
+ 
+-	spin_lock_bh(&bpf_lock);
+-	bpf_prog_ksym_node_add(fp->aux);
+-	spin_unlock_bh(&bpf_lock);
++	bpf_ksym_add(&fp->aux->ksym);
+ }
+ 
+ void bpf_prog_kallsyms_del(struct bpf_prog *fp)
+@@ -654,9 +661,7 @@ void bpf_prog_kallsyms_del(struct bpf_prog *fp)
+ 	if (!bpf_prog_kallsyms_candidate(fp))
+ 		return;
+ 
+-	spin_lock_bh(&bpf_lock);
+-	bpf_prog_ksym_node_del(fp->aux);
+-	spin_unlock_bh(&bpf_lock);
++	bpf_ksym_del(&fp->aux->ksym);
+ }
+ 
+ static struct bpf_ksym *bpf_ksym_find(unsigned long addr)
 -- 
 2.24.1
 
