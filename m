@@ -2,49 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FA2A1838D4
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 19:40:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 674D11838F4
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 19:46:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726599AbgCLSj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 14:39:58 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:33678 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726362AbgCLSj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 14:39:58 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 06339157526A7;
-        Thu, 12 Mar 2020 11:39:57 -0700 (PDT)
-Date:   Thu, 12 Mar 2020 11:39:57 -0700 (PDT)
-Message-Id: <20200312.113957.925508715253795165.davem@davemloft.net>
-To:     tanhuazhong@huawei.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        salil.mehta@huawei.com, yisen.zhuang@huawei.com,
-        linuxarm@huawei.com, kuba@kernel.org
-Subject: Re: [PATCH net 0/4] net: hns3: fixes for -net
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1583997066-24773-1-git-send-email-tanhuazhong@huawei.com>
-References: <1583997066-24773-1-git-send-email-tanhuazhong@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 12 Mar 2020 11:39:58 -0700 (PDT)
+        id S1727023AbgCLSq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 14:46:27 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:34769 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726965AbgCLSq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 14:46:26 -0400
+Received: by mail-wr1-f67.google.com with SMTP id z15so8866375wrl.1
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 11:46:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wHahHzzB1M6+8JJ7CuCuHPOxvXEu0XndSLd5n2mjxiM=;
+        b=uqjUIowAJXYCGXsxX5gUJnJiRkx/uj06Ivjh0nNzP1LvWSfSIGo2eoitaeNL0Do24/
+         FjwVtH8tK9gUQZPpa/4Zr93Dce1kADQ9ucQzHfJbHVRd6cc1Np09x4cANumhWSEAnaKK
+         XCzi5rHy3qqEW9hUnqnzeyhrI5yp7KL9xk/XvsF5DjXL8heF53tVdhD/2LWAOlkxcg33
+         2UAKS5HMmdRp7mZ+4cwSrn9osRNIr4nEyO9stqFaacOJuIK6V0dZl/j7IgClemtJBihU
+         dHwwS8mdhOH7oKgGMpwKewflEHgDzv70XtZVGltwYxdek9pS6Alsu7zTO+QNmUraFilf
+         11Yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wHahHzzB1M6+8JJ7CuCuHPOxvXEu0XndSLd5n2mjxiM=;
+        b=LxiL0+OEjTlF21LAihwznzOGWIhDNo/oyJpXMKxg+i6hl5nGjJmnpvNJrKQwoR6jG0
+         KFRWIfOW1yOMC1EiWdNNN1vPpasFq2PlsKUL/nk/B1Xc7dmrU96qLqtIpZoZXqGwPegj
+         QNdr+EqOTD2NA5bY45fqQjwPjQ/ZHXbUQxVjfRCvdLgfa9HdYiiK3i4ekkyGU9VIG+wg
+         1Ilvj1D2I00Rn5zT9+e+KhdD/KU240/kltSvUGSIw1pEjSDty7UQxe5tQMcWWGcBRguj
+         G2wWDLaUP/9KJfxy1S07KN7QiBvdGnbMKMfT4Spm92WKsslpGOcU+Uo2T+kmAJLtQFQW
+         VSrg==
+X-Gm-Message-State: ANhLgQ2IWw6T6VMu5SugkrdtxIQmIyFhemnutl06iFsj7c61oLMP1LOF
+        vr/AiUwdyDfkNxg2VVaKU4Spvg==
+X-Google-Smtp-Source: ADFU+vueKDG1/hYIOSadvAMIOn9AlXAxKy54UOlSYRwnLgl1RLlutSjMQkTzwPTaRprEU2MndYPEvw==
+X-Received: by 2002:a5d:4a10:: with SMTP id m16mr11852192wrq.333.1584038784201;
+        Thu, 12 Mar 2020 11:46:24 -0700 (PDT)
+Received: from localhost.localdomain ([194.35.118.177])
+        by smtp.gmail.com with ESMTPSA id b12sm50019665wro.66.2020.03.12.11.46.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Mar 2020 11:46:23 -0700 (PDT)
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Quentin Monnet <quentin@isovalent.com>
+Subject: [PATCH bpf-next v2 0/2] tools: bpftool: fix object pinning and bash
+Date:   Thu, 12 Mar 2020 18:46:06 +0000
+Message-Id: <20200312184608.12050-1-quentin@isovalent.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Huazhong Tan <tanhuazhong@huawei.com>
-Date: Thu, 12 Mar 2020 15:11:02 +0800
+The first patch of this series improves user experience by allowing to pass
+all kinds of handles for programs and maps (id, tag, name, pinned path)
+instead of simply ids when pinning them with "bpftool (prog|map) pin".
 
-> This series includes several bugfixes for the HNS3 ethernet driver.
-> 
-> [patch 1] fixes an "tc qdisc del" failure.
-> [patch 2] fixes SW & HW VLAN table not consistent issue.
-> [patch 3] fixes a RMW issue related to VLAN filter switch.
-> [patch 4] clears port based VLAN when uploading PF.
+The second patch improves or fix bash completion, including for object
+pinning.
 
-Series applied and queued up for -stable.
+v2: Restore close() on file descriptor after pinning the object.
+
+Quentin Monnet (2):
+  tools: bpftool: allow all prog/map handles for pinning objects
+  tools: bpftool: fix minor bash completion mistakes
+
+ tools/bpf/bpftool/bash-completion/bpftool | 29 ++++++++++++++------
+ tools/bpf/bpftool/common.c                | 33 +++--------------------
+ tools/bpf/bpftool/main.h                  |  2 +-
+ tools/bpf/bpftool/map.c                   |  2 +-
+ tools/bpf/bpftool/prog.c                  |  2 +-
+ 5 files changed, 28 insertions(+), 40 deletions(-)
+
+-- 
+2.20.1
+
