@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE5BF183C04
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 23:11:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3CA4183C10
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 23:12:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726836AbgCLWLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 18:11:51 -0400
-Received: from mga04.intel.com ([192.55.52.120]:36896 "EHLO mga04.intel.com"
+        id S1726797AbgCLWMK convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 12 Mar 2020 18:12:10 -0400
+Received: from mga18.intel.com ([134.134.136.126]:17203 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726691AbgCLWLu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Mar 2020 18:11:50 -0400
+        id S1726513AbgCLWMJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Mar 2020 18:12:09 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Mar 2020 15:11:50 -0700
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Mar 2020 15:12:08 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,546,1574150400"; 
-   d="scan'208";a="444098165"
+   d="scan'208";a="444098219"
 Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.26])
-  by fmsmga006.fm.intel.com with ESMTP; 12 Mar 2020 15:11:48 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 12 Mar 2020 15:12:06 -0700
 From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
 To:     Po Liu <Po.Liu@nxp.com>, davem@davemloft.net,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
@@ -36,13 +36,14 @@ Cc:     po.liu@nxp.com, claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
         ivan.khoronzhuk@linaro.org, m-karicheri2@ti.com,
         andre.guedes@linux.intel.com, jakub.kicinski@netronome.com,
         Po Liu <Po.Liu@nxp.com>
-Subject: Re: [RFC,net-next  2/9] net: qos: introduce a gate control flow action
-In-Reply-To: <20200306125608.11717-3-Po.Liu@nxp.com>
-References: <20200306125608.11717-1-Po.Liu@nxp.com> <20200306125608.11717-3-Po.Liu@nxp.com>
-Date:   Thu, 12 Mar 2020 15:14:01 -0700
-Message-ID: <871rpxi5li.fsf@linux.intel.com>
+Subject: Re: [RFC,net-next  5/9] net: enetc: add tc flower psfp offload driver
+In-Reply-To: <20200306125608.11717-6-Po.Liu@nxp.com>
+References: <20200306125608.11717-1-Po.Liu@nxp.com> <20200306125608.11717-6-Po.Liu@nxp.com>
+Date:   Thu, 12 Mar 2020 15:14:18 -0700
+Message-ID: <87y2s5gr0l.fsf@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -50,885 +51,1515 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Po Liu <Po.Liu@nxp.com> writes:
 
-> Introduce a ingress frame gate control flow action. tc create a gate
-> action would provide a gate list to control when open/close state. when
-> the gate open state, the flow could pass but not when gate state is
-> close. The driver would repeat the gate list cyclically. User also could
-> assign a time point to start the gate list by the basetime parameter. if
-> the basetime has passed current time, start time would calculate by the
-> cycletime of the gate list.
-> The action gate behavior try to keep according to the IEEE 802.1Qci spec.
-> For the software simulation, require the user input the clock type.
+> This patch is to add tc flower offload for the enetc IEEE 802.1Qci(PSFP)
+> function. There are four main feature parts to implement the flow
+> policing and filtering for ingress flow with IEEE 802.1Qci features.
+> They are stream identify(this is defined in the P802.1cb exactly but
+> needed for 802.1Qci), stream filtering, stream gate and flow metering.
+> Each function block includes many entries by index to assign parameters.
+> So for one frame would be filtered by stream identify first, then
+> flow into stream filter block by the same handle between stream identify
+> and stream filtering. Then flow into stream gate control which assigned
+> by the stream filtering entry. And then policing by the gate and limited
+> by the max sdu in the filter block(optional). At last, policing by the
+> flow metering block, index choosing at the fitering block.
+> So you can see that each entry of block may link to many upper entries
+> since they can be assigned same index means more streams want to share
+> the same feature in the stream filtering or stream gate or flow
+> metering.
+> To implement such features, each stream filtered by source/destination
+> mac address, some stream maybe also plus the vlan id value would be
+> treated as one flow chain. This would be identified by the chain_index
+> which already in the tc filter concept. Driver would maintain this chain
+> and also with gate modules. The stream filter entry create by the gate
+> index and flow meter(optional) entry id and also one priority value.
+> Offloading only transfer the gate action and flow filtering parameters.
+> Driver would create (or search same gate id and flow meter id and
+>  priority) one stream filter entry to set to the hardware. So stream
+> filtering do not need transfer by the action offloading.
+> This architecture is same with tc filter and actions relationship. tc
+> filter maintain the list for each flow feature by keys. And actions
+> maintain by the action list.
 >
-> Below is the setting example in user space:
->
+> Below showing a example commands by tc:
 >> tc qdisc add dev eth0 ingress
+>> ip link set eth0 address 10:00:80:00:00:00
+>> tc filter add dev eth0 parent ffff: protocol ip chain 11 \
+> 	flower skip_sw dst_mac 10:00:80:00:00:00 \
+> 	action gate index 10 \
+> 	sched-entry OPEN 200000000 -1 -1 \
+> 	sched-entry CLOSE 100000000 -1 -1
+> (or just create one gate entry list to keep close)
 >
->> tc filter add dev eth0 parent ffff: protocol ip \
-> 	   flower src_ip 192.168.0.20 \
-> 	   action gate index 2 \
-> 	   sched-entry OPEN 200000000 -1 -1 \
-> 	   sched-entry CLOSE 100000000 -1 -1
->
->> tc chain del dev eth0 ingress chain 0
-
-A more complex example, showing how it would work for more filters would
-be nice.
-
-For example, filters matching 3 different source IPs (even better, using
-MAC addresses so it would work when you add the 'skip_sw' flag),
-assigning different priorities to them, also showing how the "base-time"
-could be used.
-
->
-> "sched-entry" follow the name taprio style. gate state is
-> "OPEN"/"CLOSE". Follow the period nanosecond. Then next -1 is internal
-> priority value means which ingress queue should put. "-1" means
-> wildcard. The last value optional specifies the maximum number of
-> MSDU octets that are permitted to pass the gate during the specified
-> time interval.
->
-> NOTE: This software simulator version not separate the admin/operation
-> state machine. Update setting would overwrite stop the previos setting
-> and waiting new cycle start.
+> That means to set the dst_mac 10:00:80:00:00:00 to index 11 of stream
+> identify module. And the set the gate index 10 of stream gate module.
 >
 > Signed-off-by: Po Liu <Po.Liu@nxp.com>
 > ---
->  include/net/tc_act/tc_gate.h        |  54 +++
->  include/uapi/linux/pkt_cls.h        |   1 +
->  include/uapi/linux/tc_act/tc_gate.h |  47 ++
->  net/sched/Kconfig                   |  15 +
->  net/sched/Makefile                  |   1 +
->  net/sched/act_gate.c                | 645 ++++++++++++++++++++++++++++
->  6 files changed, 763 insertions(+)
->  create mode 100644 include/net/tc_act/tc_gate.h
->  create mode 100644 include/uapi/linux/tc_act/tc_gate.h
->  create mode 100644 net/sched/act_gate.c
+>  drivers/net/ethernet/freescale/enetc/enetc.c  |   25 +-
+>  drivers/net/ethernet/freescale/enetc/enetc.h  |   39 +-
+>  .../net/ethernet/freescale/enetc/enetc_hw.h   |  142 +++
+>  .../net/ethernet/freescale/enetc/enetc_pf.c   |    4 +-
+>  .../net/ethernet/freescale/enetc/enetc_qos.c  | 1078 ++++++++++++++++-
+>  5 files changed, 1269 insertions(+), 19 deletions(-)
 >
-> diff --git a/include/net/tc_act/tc_gate.h b/include/net/tc_act/tc_gate.h
-> new file mode 100644
-> index 000000000000..932a2b91b944
-> --- /dev/null
-> +++ b/include/net/tc_act/tc_gate.h
-> @@ -0,0 +1,54 @@
-> +// SPDX-License-Identifier: (GPL-2.0+)
-> +/* Copyright 2020 NXP */
-> +
-> +#ifndef __NET_TC_gate_H
-> +#define __NET_TC_gate_H
-> +
-> +#include <net/act_api.h>
-> +#include <linux/tc_act/tc_gate.h>
-> +
-> +struct tcfg_gate_entry {
-> +	int			index;
-> +	u8			gate_state;
-> +	u32			interval;
-> +	s32			ipv;
-> +	s32			maxoctets;
-> +	struct list_head	list;
-> +};
-> +
-> +struct tcf_gate_params {
-> +	s32			tcfg_priority;
-> +	u64			tcfg_basetime;
-> +	u64			tcfg_cycletime;
-> +	u64			tcfg_cycletime_ext;
-> +	u32			tcfg_flags;
-> +	s32			tcfg_clockid;
-> +	size_t			num_entries;
-> +	struct list_head	entries;
-> +};
-> +
-> +#define GATE_ACT_GATE_OPEN	BIT(0)
-> +#define GATE_ACT_PENDING	BIT(1)
-> +struct gate_action {
-> +	struct tcf_gate_params param;
-> +	spinlock_t entry_lock;
-> +	u8 current_gate_status;
-> +	ktime_t current_close_time;
-> +	u32 current_entry_octets;
-> +	s32 current_max_octets;
-> +	struct tcfg_gate_entry __rcu *next_entry;
-> +	struct hrtimer hitimer;
-> +	enum tk_offsets tk_offset;
-> +	struct rcu_head rcu;
-> +};
-> +
-> +struct tcf_gate {
-> +	struct tc_action		common;
-> +	struct gate_action __rcu	*actg;
-> +};
-> +#define to_gate(a) ((struct tcf_gate *)a)
-> +
-> +#define get_gate_param(act) ((struct tcf_gate_params *)act)
-> +#define get_gate_action(p) ((struct gate_action *)p)
-> +
-> +#endif
-> diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-> index 449a63971451..d1f36a3f94d9 100644
-> --- a/include/uapi/linux/pkt_cls.h
-> +++ b/include/uapi/linux/pkt_cls.h
-> @@ -112,6 +112,7 @@ enum tca_id {
->  	TCA_ID_CTINFO,
->  	TCA_ID_MPLS,
->  	TCA_ID_CT,
-> +	TCA_ID_GATE,
->  	/* other actions go here */
->  	__TCA_ID_MAX = 255
->  };
-> diff --git a/include/uapi/linux/tc_act/tc_gate.h b/include/uapi/linux/tc_act/tc_gate.h
-> new file mode 100644
-> index 000000000000..e1b3a7f2ae7b
-> --- /dev/null
-> +++ b/include/uapi/linux/tc_act/tc_gate.h
-> @@ -0,0 +1,47 @@
-> +// SPDX-License-Identifier: (GPL-2.0+)
-> +/* Copyright 2020 NXP */
-> +
-> +#ifndef __LINUX_TC_GATE_H
-> +#define __LINUX_TC_GATE_H
-> +
-> +#include <linux/pkt_cls.h>
-> +
-> +struct tc_gate {
-> +	tc_gen;
-> +};
-> +
-> +enum {
-> +	TCA_GATE_ENTRY_UNSPEC,
-> +	TCA_GATE_ENTRY_INDEX,
-> +	TCA_GATE_ENTRY_GATE,
-> +	TCA_GATE_ENTRY_INTERVAL,
-> +	TCA_GATE_ENTRY_IPV,
-> +	TCA_GATE_ENTRY_MAX_OCTETS,
-> +	__TCA_GATE_ENTRY_MAX,
-> +};
-> +#define TCA_GATE_ENTRY_MAX (__TCA_GATE_ENTRY_MAX - 1)
-> +
-> +enum {
-> +	TCA_GATE_ONE_ENTRY_UNSPEC,
-> +	TCA_GATE_ONE_ENTRY,
-> +	__TCA_GATE_ONE_ENTRY_MAX,
-> +};
-> +#define TCA_GATE_ONE_ENTRY_MAX (__TCA_GATE_ONE_ENTRY_MAX - 1)
-> +
-> +enum {
-> +	TCA_GATE_UNSPEC,
-> +	TCA_GATE_TM,
-> +	TCA_GATE_PARMS,
-> +	TCA_GATE_PAD,
-> +	TCA_GATE_PRIORITY,
-> +	TCA_GATE_ENTRY_LIST,
-> +	TCA_GATE_BASE_TIME,
-> +	TCA_GATE_CYCLE_TIME,
-> +	TCA_GATE_CYCLE_TIME_EXT,
-> +	TCA_GATE_FLAGS,
-> +	TCA_GATE_CLOCKID,
-> +	__TCA_GATE_MAX,
-> +};
-> +#define TCA_GATE_MAX (__TCA_GATE_MAX - 1)
-> +
-> +#endif
-> diff --git a/net/sched/Kconfig b/net/sched/Kconfig
-> index bfbefb7bff9d..320471a0a21d 100644
-> --- a/net/sched/Kconfig
-> +++ b/net/sched/Kconfig
-> @@ -981,6 +981,21 @@ config NET_ACT_CT
->  	  To compile this code as a module, choose M here: the
->  	  module will be called act_ct.
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
+> index d810651317e1..df2e77619f64 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc.c
+> @@ -1520,6 +1520,8 @@ int enetc_setup_tc(struct net_device *ndev, enum tc_setup_type type,
+>  		return enetc_setup_tc_cbs(ndev, type_data);
+>  	case TC_SETUP_QDISC_ETF:
+>  		return enetc_setup_tc_txtime(ndev, type_data);
+> +	case TC_SETUP_BLOCK:
+> +		return enetc_setup_tc_psfp(ndev, type_data);
+>  	default:
+>  		return -EOPNOTSUPP;
+>  	}
+> @@ -1572,17 +1574,23 @@ static int enetc_set_rss(struct net_device *ndev, int en)
+>  static int enetc_set_psfp(struct net_device *ndev, int en)
+>  {
+>  	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+> +	int err;
 >  
-> +config NET_ACT_GATE
-> +	tristate "Frame gate list control tc action"
-> +	depends on NET_CLS_ACT
-> +	help
-> +	  Say Y here to allow the control the ingress flow by the gate list
-> +	  control. The frame policing by the time gate list control open/close
-> +	  cycle time. The manipulation will simulate the IEEE 802.1Qci stream
-> +	  gate control behavior. The action could be offload by the tc flower
-> +	  to hardware driver which the hardware own the capability of IEEE
-> +	  802.1Qci.
+>  	if (en) {
+> +		err = enetc_psfp_enable(priv);
+> +		if (err)
+> +			return err;
 > +
-> +	  If unsure, say N.
-> +	  To compile this code as a module, choose M here: the
-> +	  module will be called act_gate.
-> +
->  config NET_IFE_SKBMARK
->  	tristate "Support to encoding decoding skb mark on IFE action"
->  	depends on NET_ACT_IFE
-> diff --git a/net/sched/Makefile b/net/sched/Makefile
-> index 31c367a6cd09..66bbf9a98f9e 100644
-> --- a/net/sched/Makefile
-> +++ b/net/sched/Makefile
-> @@ -30,6 +30,7 @@ obj-$(CONFIG_NET_IFE_SKBPRIO)	+= act_meta_skbprio.o
->  obj-$(CONFIG_NET_IFE_SKBTCINDEX)	+= act_meta_skbtcindex.o
->  obj-$(CONFIG_NET_ACT_TUNNEL_KEY)+= act_tunnel_key.o
->  obj-$(CONFIG_NET_ACT_CT)	+= act_ct.o
-> +obj-$(CONFIG_NET_ACT_GATE)	+= act_gate.o
->  obj-$(CONFIG_NET_SCH_FIFO)	+= sch_fifo.o
->  obj-$(CONFIG_NET_SCH_CBQ)	+= sch_cbq.o
->  obj-$(CONFIG_NET_SCH_HTB)	+= sch_htb.o
-> diff --git a/net/sched/act_gate.c b/net/sched/act_gate.c
-> new file mode 100644
-> index 000000000000..c2c243ca028c
-> --- /dev/null
-> +++ b/net/sched/act_gate.c
-> @@ -0,0 +1,645 @@
-> +// SPDX-License-Identifier: (GPL-2.0+)
-> +/* Copyright 2020 NXP */
-> +
-> +#include <linux/module.h>
-> +#include <linux/types.h>
-> +#include <linux/kernel.h>
-> +#include <linux/string.h>
-> +#include <linux/errno.h>
-> +#include <linux/skbuff.h>
-> +#include <linux/rtnetlink.h>
-> +#include <linux/init.h>
-> +#include <linux/slab.h>
-> +#include <net/act_api.h>
-> +#include <net/netlink.h>
-> +#include <net/pkt_cls.h>
-> +#include <net/tc_act/tc_gate.h>
-> +
-> +static unsigned int gate_net_id;
-> +static struct tc_action_ops act_gate_ops;
-> +
-> +static ktime_t gate_get_time(struct gate_action *gact)
-> +{
-> +	ktime_t mono = ktime_get();
-> +
-> +	switch (gact->tk_offset) {
-> +	case TK_OFFS_MAX:
-> +		return mono;
-> +	default:
-> +		return ktime_mono_to_any(mono, gact->tk_offset);
-> +	}
-> +
-> +	return KTIME_MAX;
-> +}
-> +
-> +static int gate_get_start_time(struct gate_action *gact, ktime_t *start)
-> +{
-> +	struct tcf_gate_params *param = get_gate_param(gact);
-> +	ktime_t now, base, cycle;
-> +	u64 n;
-> +
-> +	base = ns_to_ktime(param->tcfg_basetime);
-> +	now = gate_get_time(gact);
-> +
-> +	if (ktime_after(base, now)) {
-> +		*start = base;
+>  		priv->active_offloads |= ENETC_F_QCI;
+> -		enetc_get_max_cap(priv);
+> -		enetc_psfp_enable(&priv->si->hw);
+> -	} else {
+> -		priv->active_offloads &= ~ENETC_F_QCI;
+> -		memset(&priv->psfp_cap, 0, sizeof(struct psfp_cap));
+> -		enetc_psfp_disable(&priv->si->hw);
 > +		return 0;
-> +	}
+>  	}
+>  
+> +	err = enetc_psfp_disable(priv);
+> +	if (err)
+> +		return err;
 > +
-> +	cycle = param->tcfg_cycletime;
+> +	priv->active_offloads &= ~ENETC_F_QCI;
 > +
-> +	/* cycle time should not be zero */
-> +	if (WARN_ON(!cycle))
-> +		return -EFAULT;
-> +
-> +	n = div64_u64(ktime_sub_ns(now, base), cycle);
-> +	*start = ktime_add_ns(base, (n + 1) * cycle);
-> +	return 0;
-> +}
-> +
-> +static void gate_start_timer(struct gate_action *gact, ktime_t start)
-> +{
-> +	ktime_t expires;
-> +
-> +	expires = hrtimer_get_expires(&gact->hitimer);
-> +	if (expires == 0)
-> +		expires = KTIME_MAX;
-> +
-> +	start = min_t(ktime_t, start, expires);
-> +
-> +	hrtimer_start(&gact->hitimer, start, HRTIMER_MODE_ABS);
-> +}
-> +
-> +static enum hrtimer_restart gate_timer_func(struct hrtimer *timer)
-> +{
-> +	struct gate_action *gact = container_of(timer, struct gate_action,
-> +						hitimer);
-> +	struct tcf_gate_params *p = get_gate_param(gact);
-> +	struct tcfg_gate_entry *next;
-> +	ktime_t close_time, now;
-> +
-> +	spin_lock(&gact->entry_lock);
-> +
-> +	next = rcu_dereference_protected(gact->next_entry,
-> +					 lockdep_is_held(&gact->entry_lock));
-> +
-> +	/* cycle start, clear pending bit, clear total octets */
-> +	gact->current_gate_status = next->gate_state ? GATE_ACT_GATE_OPEN : 0;
-> +	gact->current_entry_octets = 0;
-> +	gact->current_max_octets = next->maxoctets;
-> +
-> +	gact->current_close_time = ktime_add_ns(gact->current_close_time,
-> +						next->interval);
-> +
-> +	close_time = gact->current_close_time;
-> +
-> +	if (list_is_last(&next->list, &p->entries))
-> +		next = list_first_entry(&p->entries,
-> +					struct tcfg_gate_entry, list);
-> +	else
-> +		next = list_next_entry(next, list);
-> +
-> +	now = gate_get_time(gact);
-> +
-> +	if (ktime_after(now, close_time)) {
-> +		ktime_t cycle, base;
-> +		u64 n;
-> +
-> +		cycle = p->tcfg_cycletime;
-> +		base = ns_to_ktime(p->tcfg_basetime);
-> +		n = div64_u64(ktime_sub_ns(now, base), cycle);
-> +		close_time = ktime_add_ns(base, (n + 1) * cycle);
-> +	}
-> +
-> +	rcu_assign_pointer(gact->next_entry, next);
-> +	spin_unlock(&gact->entry_lock);
-> +
-> +	hrtimer_set_expires(&gact->hitimer, close_time);
-> +
-> +	return HRTIMER_RESTART;
-> +}
-> +
-> +static int tcf_gate_act(struct sk_buff *skb, const struct tc_action *a,
-> +			struct tcf_result *res)
-> +{
-> +	struct tcf_gate *g = to_gate(a);
-> +	struct tcf_gate_params *p;
-> +	struct gate_action *gact;
-> +	int action;
-> +
-> +	tcf_lastuse_update(&g->tcf_tm);
-> +	tcf_action_update_bstats(&g->common, skb);
-> +
-
-Please test this with lockdep enabled, I got the feeling that there's a
-missing rcu_read_lock() somewhere around here.
-
-> +	action = READ_ONCE(g->tcf_action);
-> +	gact = rcu_dereference_bh(g->actg);
-> +	p = get_gate_param(gact);
-> +
-> +	if (gact->current_gate_status & GATE_ACT_PENDING)
-> +		return action;
-> +
-> +	if (!(gact->current_gate_status & GATE_ACT_GATE_OPEN))
-> +		goto drop;
-> +
-> +	spin_lock(&gact->entry_lock);
-> +	if (gact->current_max_octets >= 0) {
-> +		gact->current_entry_octets += qdisc_pkt_len(skb);
-> +		if (gact->current_entry_octets > gact->current_max_octets) {
-> +			tcf_action_inc_overlimit_qstats(&g->common);
-> +			spin_unlock(&gact->entry_lock);
-> +			goto drop;
-> +		}
-> +	}
-> +	spin_unlock(&gact->entry_lock);
-> +
-> +	return action;
-> +drop:
-> +	tcf_action_inc_drop_qstats(&g->common);
-> +
-> +	return TC_ACT_SHOT;
-> +}
-> +
-> +static const struct nla_policy entry_policy[TCA_GATE_ENTRY_MAX + 1] = {
-> +	[TCA_GATE_ENTRY_INDEX]		= { .type = NLA_U32 },
-> +	[TCA_GATE_ENTRY_GATE]		= { .type = NLA_FLAG },
-> +	[TCA_GATE_ENTRY_INTERVAL]	= { .type = NLA_U32 },
-> +	[TCA_GATE_ENTRY_IPV]		= { .type = NLA_S32 },
-> +	[TCA_GATE_ENTRY_MAX_OCTETS]	= { .type = NLA_S32 },
-> +};
-> +
-> +static const struct nla_policy gate_policy[TCA_GATE_MAX + 1] = {
-> +	[TCA_GATE_PARMS]		= { .len = sizeof(struct tc_gate) },
-> +	[TCA_GATE_PRIORITY]		= { .type = NLA_S32 },
-> +	[TCA_GATE_ENTRY_LIST]		= { .type = NLA_NESTED },
-> +	[TCA_GATE_BASE_TIME]		= { .type = NLA_U64 },
-> +	[TCA_GATE_CYCLE_TIME]		= { .type = NLA_U64 },
-> +	[TCA_GATE_CYCLE_TIME_EXT]	= { .type = NLA_U64 },
-> +	[TCA_GATE_FLAGS]		= { .type = NLA_U32 },
-> +	[TCA_GATE_CLOCKID]		= { .type = NLA_S32 },
-> +};
-> +
-> +static int fill_gate_entry(struct nlattr **tb, struct tcfg_gate_entry *entry,
-> +			   struct netlink_ext_ack *extack)
-> +{
-> +	u32 interval = 0;
-> +
-> +	if (tb[TCA_GATE_ENTRY_GATE])
-> +		entry->gate_state = 1;
-> +	else
-> +		entry->gate_state = 0;
-> +
-> +	if (tb[TCA_GATE_ENTRY_INTERVAL])
-> +		interval = nla_get_u32(tb[TCA_GATE_ENTRY_INTERVAL]);
-> +
-> +	if (interval == 0) {
-> +		NL_SET_ERR_MSG(extack, "Invalid interval for schedule entry");
-> +		return -EINVAL;
-> +	}
-> +
-> +	entry->interval = interval;
-> +
-> +	if (tb[TCA_GATE_ENTRY_IPV])
-> +		entry->ipv = nla_get_s32(tb[TCA_GATE_ENTRY_IPV]);
-> +	else
-> +		entry->ipv = -1;
-> +
-> +	if (tb[TCA_GATE_ENTRY_MAX_OCTETS])
-> +		entry->maxoctets = nla_get_s32(tb[TCA_GATE_ENTRY_MAX_OCTETS]);
-> +	else
-> +		entry->maxoctets = -1;
-> +
-> +	return 0;
-> +}
-> +
-> +static int parse_gate_entry(struct nlattr *n, struct  tcfg_gate_entry *entry,
-> +			    int index, struct netlink_ext_ack *extack)
-> +{
-> +	struct nlattr *tb[TCA_GATE_ENTRY_MAX + 1] = { };
+>  	return 0;
+>  }
+>  
+> @@ -1590,14 +1598,15 @@ int enetc_set_features(struct net_device *ndev,
+>  		       netdev_features_t features)
+>  {
+>  	netdev_features_t changed = ndev->features ^ features;
+> +	int err = 0;
+>  
+>  	if (changed & NETIF_F_RXHASH)
+>  		enetc_set_rss(ndev, !!(features & NETIF_F_RXHASH));
+>  
+>  	if (changed & NETIF_F_HW_TC)
+> -		enetc_set_psfp(ndev, !!(features & NETIF_F_HW_TC));
+> +		err = enetc_set_psfp(ndev, !!(features & NETIF_F_HW_TC));
+>  
+> -	return 0;
+> +	return err;
+>  }
+>  
+>  #ifdef CONFIG_FSL_ENETC_HW_TIMESTAMPING
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
+> index bcdade8f7b8a..f1a9a4cf1914 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc.h
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc.h
+> @@ -269,6 +269,11 @@ int enetc_setup_tc_taprio(struct net_device *ndev, void *type_data);
+>  void enetc_sched_speed_set(struct net_device *ndev);
+>  int enetc_setup_tc_cbs(struct net_device *ndev, void *type_data);
+>  int enetc_setup_tc_txtime(struct net_device *ndev, void *type_data);
+> +int enetc_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
+> +			    void *cb_priv);
+> +int enetc_setup_tc_psfp(struct net_device *ndev, void *type_data);
+> +int enetc_psfp_init(struct enetc_ndev_priv *priv);
+> +int enetc_psfp_clean(struct enetc_ndev_priv *priv);
+>  
+>  static inline void enetc_get_max_cap(struct enetc_ndev_priv *priv)
+>  {
+> @@ -288,33 +293,59 @@ static inline void enetc_get_max_cap(struct enetc_ndev_priv *priv)
+>  	priv->psfp_cap.max_psfp_meter = reg & ENETC_PFMCAPR_MSK;
+>  }
+>  
+> -static inline void enetc_psfp_enable(struct enetc_hw *hw)
+> +static inline int enetc_psfp_enable(struct enetc_ndev_priv *priv)
+>  {
+> +	struct enetc_hw *hw = &priv->si->hw;
 > +	int err;
 > +
-> +	err = nla_parse_nested_deprecated(tb, TCA_GATE_ENTRY_MAX, n,
-> +					  entry_policy, NULL);
-> +	if (err < 0) {
-> +		NL_SET_ERR_MSG(extack, "Could not parse nested entry");
-> +		return -EINVAL;
-> +	}
+> +	enetc_get_max_cap(priv);
 > +
-> +	entry->index = index;
+> +	err = enetc_psfp_init(priv);
+> +	if (err)
+> +		return err;
 > +
-> +	return fill_gate_entry(tb, entry, extack);
-> +}
+>  	enetc_wr(hw, ENETC_PPSFPMR, enetc_rd(hw, ENETC_PPSFPMR)
+>  		 | ENETC_PPSFPMR_PSFPEN | ENETC_PPSFPMR_VS
+>  		 | ENETC_PPSFPMR_PVC | ENETC_PPSFPMR_PVZC);
 > +
-> +static int parse_gate_list(struct nlattr *list,
-> +			   struct tcf_gate_params *sched,
-> +			   struct netlink_ext_ack *extack)
-> +{
-> +	struct nlattr *n;
-> +	int err, rem;
-> +	int i = 0;
+> +	return 0;
+>  }
+>  
+> -static inline void enetc_psfp_disable(struct enetc_hw *hw)
+> +static inline int enetc_psfp_disable(struct enetc_ndev_priv *priv)
+>  {
+> +	struct enetc_hw *hw = &priv->si->hw;
+> +	int err;
 > +
-> +	if (!list)
-> +		return -EINVAL;
+> +	err = enetc_psfp_clean(priv);
+> +	if (err)
+> +		return err;
 > +
-> +	nla_for_each_nested(n, list, rem) {
-> +		struct tcfg_gate_entry *entry;
+>  	enetc_wr(hw, ENETC_PPSFPMR, enetc_rd(hw, ENETC_PPSFPMR)
+>  		 & ~ENETC_PPSFPMR_PSFPEN & ~ENETC_PPSFPMR_VS
+>  		 & ~ENETC_PPSFPMR_PVC & ~ENETC_PPSFPMR_PVZC);
 > +
-> +		if (nla_type(n) != TCA_GATE_ONE_ENTRY) {
-> +			NL_SET_ERR_MSG(extack, "Attribute isn't type 'entry'");
-> +			continue;
-> +		}
+> +	memset(&priv->psfp_cap, 0, sizeof(struct psfp_cap));
 > +
-> +		entry = kzalloc(sizeof(*entry), GFP_KERNEL);
-> +		if (!entry) {
-> +			NL_SET_ERR_MSG(extack, "Not enough memory for entry");
-> +			return -ENOMEM;
-> +		}
+> +	return 0;
+>  }
 > +
-> +		err = parse_gate_entry(n, entry, i, extack);
-> +		if (err < 0) {
-> +			kfree(entry);
-> +			return err;
-> +		}
+>  #else
+>  #define enetc_setup_tc_taprio(ndev, type_data) -EOPNOTSUPP
+>  #define enetc_sched_speed_set(ndev) (void)0
+>  #define enetc_setup_tc_cbs(ndev, type_data) -EOPNOTSUPP
+>  #define enetc_setup_tc_txtime(ndev, type_data) -EOPNOTSUPP
+> +#define enetc_setup_tc_psfp(ndev, type_data) -EOPNOTSUPP
+> +#define enetc_setup_tc_block_cb NULL
 > +
-> +		list_add_tail(&entry->list, &sched->entries);
-> +		i++;
-> +	}
+>  #define enetc_get_max_cap(p)		\
+>  	memset(&((p)->psfp_cap), 0, sizeof(struct psfp_cap))
+>  
+> -static inline void enetc_psfp_enable(struct enetc_hw *hw)
+> +static inline int enetc_psfp_enable(struct enetc_hw *hw)
+>  {
+>  	return 0;
+>  }
+>  
+> -static inline void enetc_psfp_disable(struct enetc_hw *hw)
+> +static inline int enetc_psfp_disable(struct enetc_hw *hw)
+>  {
+>  	return 0;
+>  }
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+> index 99d520207069..640099f48a0d 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
+> @@ -570,6 +570,9 @@ enum bdcr_cmd_class {
+>  	BDCR_CMD_RFS,
+>  	BDCR_CMD_PORT_GCL,
+>  	BDCR_CMD_RECV_CLASSIFIER,
+> +	BDCR_CMD_STREAM_IDENTIFY,
+> +	BDCR_CMD_STREAM_FILTER,
+> +	BDCR_CMD_STREAM_GCL,
+>  	__BDCR_CMD_MAX_LEN,
+>  	BDCR_CMD_MAX_LEN = __BDCR_CMD_MAX_LEN - 1,
+>  };
+> @@ -601,13 +604,152 @@ struct tgs_gcl_data {
+>  	struct gce	entry[];
+>  };
+>  
+> +/* class 7, command 0, Stream Identity Entry Configuration */
+> +struct streamid_conf {
+> +	__le32	stream_handle;	/* init gate value */
+> +	__le32	iports;
+> +		u8	id_type;
+> +		u8	oui[3];
+> +		u8	res[3];
+> +		u8	en;
+> +};
 > +
-> +	sched->num_entries = i;
+> +#define ENETC_CBDR_SID_VID_MASK 0xfff
+> +#define ENETC_CBDR_SID_VIDM BIT(12)
+> +#define ENETC_CBDR_SID_TG_MASK 0xc000
+> +/* streamid_conf address point to this data space */
+> +struct streamid_data {
+> +	union {
+> +		u8 dmac[6];
+> +		u8 smac[6];
+> +	};
+> +	u16     vid_vidm_tg;
+> +};
 > +
-> +	return i;
-> +}
+> +#define ENETC_CBDR_SFI_PRI_MASK 0x7
+> +#define ENETC_CBDR_SFI_PRIM		BIT(3)
+> +#define ENETC_CBDR_SFI_BLOV		BIT(4)
+> +#define ENETC_CBDR_SFI_BLEN		BIT(5)
+> +#define ENETC_CBDR_SFI_MSDUEN	BIT(6)
+> +#define ENETC_CBDR_SFI_FMITEN	BIT(7)
+> +#define ENETC_CBDR_SFI_ENABLE	BIT(7)
+> +/* class 8, command 0, Stream Filter Instance, Short Format */
+> +struct sfi_conf {
+> +	__le32	stream_handle;
+> +		u8	multi;
+> +		u8	res[2];
+> +		u8	sthm;
+> +	/* Max Service Data Unit or Flow Meter Instance Table index.
+> +	 * Depending on the value of FLT this represents either Max
+> +	 * Service Data Unit (max frame size) allowed by the filter
+> +	 * entry or is an index into the Flow Meter Instance table
+> +	 * index identifying the policer which will be used to police
+> +	 * it.
+> +	 */
+> +	__le16	fm_inst_table_index;
+> +	__le16	msdu;
+> +	__le16	sg_inst_table_index;
+> +		u8	res1[2];
+> +	__le32	input_ports;
+> +		u8	res2[3];
+> +		u8	en;
+> +};
 > +
-> +static int tcf_gate_init(struct net *net, struct nlattr *nla,
-> +			 struct nlattr *est, struct tc_action **a,
-> +			 int ovr, int bind, bool rtnl_held,
-> +			 struct tcf_proto *tp, u32 flags,
-> +			 struct netlink_ext_ack *extack)
-> +{
-> +	struct tc_action_net *tn = net_generic(net, gate_net_id);
-> +	enum tk_offsets tk_offset = TK_OFFS_TAI;
-> +	struct nlattr *tb[TCA_GATE_MAX + 1];
-> +	struct tcf_chain *goto_ch = NULL;
-> +	struct tcfg_gate_entry *next;
-> +	struct tcf_gate_params *p;
-> +	struct gate_action *gact;
-> +	s32 clockid = CLOCK_TAI;
-> +	struct tc_gate *parm;
-> +	struct tcf_gate *g;
-> +	int ret = 0, err;
-> +	u64 basetime = 0;
-> +	u32 gflags = 0;
-> +	s32 prio = -1;
-> +	ktime_t start;
+> +/* class 8, command 2 stream Filter Instance status query short format
+> + * command no need structure define
+> + * Stream Filter Instance Query Statistics Response data
+> + */
+> +struct sfi_counter_data {
+> +	u32 matchl;
+> +	u32 matchh;
+> +	u32 msdu_dropl;
+> +	u32 msdu_droph;
+> +	u32 stream_gate_dropl;
+> +	u32 stream_gate_droph;
+> +	u32 flow_meter_dropl;
+> +	u32 flow_meter_droph;
+> +};
+> +
+> +#define ENETC_CBDR_SGI_OIPV_MASK 0x7
+> +#define ENETC_CBDR_SGI_OIPV_EN	BIT(3)
+> +#define ENETC_CBDR_SGI_CGTST	BIT(6)
+> +#define ENETC_CBDR_SGI_OGTST	BIT(7)
+> +#define ENETC_CBDR_SGI_CFG_CHG  BIT(1)
+> +#define ENETC_CBDR_SGI_CFG_PND  BIT(2)
+> +#define ENETC_CBDR_SGI_OEX		BIT(4)
+> +#define ENETC_CBDR_SGI_OEXEN	BIT(5)
+> +#define ENETC_CBDR_SGI_IRX		BIT(6)
+> +#define ENETC_CBDR_SGI_IRXEN	BIT(7)
+> +#define ENETC_CBDR_SGI_ACLLEN_MASK 0x3
+> +#define ENETC_CBDR_SGI_OCLLEN_MASK 0xc
+> +#define	ENETC_CBDR_SGI_EN		BIT(7)
+> +/* class 9, command 0, Stream Gate Instance Table, Short Format
+> + * class 9, command 2, Stream Gate Instance Table entry query write back
+> + * Short Format
+> + */
+> +struct sgi_table {
+> +	u8	res[8];
+> +	u8	oipv;
+> +	u8	res0[2];
+> +	u8	ocgtst;
+> +	u8	res1[7];
+> +	u8	gset;
+> +	u8	oacl_len;
+> +	u8	res2[2];
+> +	u8	en;
+> +};
+> +
+> +#define ENETC_CBDR_SGI_AIPV_MASK 0x7
+> +#define ENETC_CBDR_SGI_AIPV_EN	BIT(3)
+> +#define ENETC_CBDR_SGI_AGTST	BIT(7)
+> +
+> +/* class 9, command 1, Stream Gate Control List, Long Format */
+> +struct sgcl_conf {
+> +	u8	aipv;
+> +	u8	res[2];
+> +	u8	agtst;
+> +	u8	res1[4];
+> +	union {
+> +		struct {
+> +			u8 res2[4];
+> +			u8 acl_len;
+> +			u8 res3[3];
+> +		};
+> +		u8 cct[8]; /* Config change time */
+> +	};
+> +};
+> +
+> +#define ENETC_CBDR_SGL_IOMEN	BIT(0)
+> +#define ENETC_CBDR_SGL_IPVEN	BIT(3)
+> +#define ENETC_CBDR_SGL_GTST		BIT(4)
+> +#define ENETC_CBDR_SGL_IPV_MASK 0xe
+> +/* Stream Gate Control List Entry */
+> +struct sgce {
+> +	u32	interval;
+> +	u8	msdu[3];
+> +	u8	multi;
+> +};
+> +
+> +/* stream control list class 9 , cmd 1 data buffer */
+> +struct sgcl_data {
+> +	u32		btl;
+> +	u32		bth;
+> +	u32		ct;
+> +	u32		cte;
+> +	struct sgce	sgcl[0];
+> +};
+> +
+>  struct enetc_cbd {
+>  	union{
+
+Wrong identation here. Should be fixed on a separated patch.
+
+> +		struct sfi_conf sfi_conf;
+> +		struct sgi_table sgi_table;
+>  		struct {
+>  			__le32	addr[2];
+>  			union {
+>  				__le32	opt[4];
+>  				struct tgs_gcl_conf	gcl_conf;
+> +				struct streamid_conf	sid_set;
+> +				struct sgcl_conf	sgcl_conf;
+>  			};
+>  		};	/* Long format */
+>  		__le32 data[6];
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+> index d880cbdc0d2e..a19095ab7b41 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+> @@ -740,12 +740,10 @@ static void enetc_pf_netdev_setup(struct enetc_si *si, struct net_device *ndev,
+>  	if (si->hw_features & ENETC_SI_F_QBV)
+>  		priv->active_offloads |= ENETC_F_QBV;
+>  
+> -	if (si->hw_features & ENETC_SI_F_PSFP) {
+> +	if (si->hw_features & ENETC_SI_F_PSFP && !enetc_psfp_enable(priv)) {
+>  		priv->active_offloads |= ENETC_F_QCI;
+>  		ndev->features |= NETIF_F_HW_TC;
+>  		ndev->hw_features |= NETIF_F_HW_TC;
+> -		enetc_get_max_cap(priv);
+> -		enetc_psfp_enable(&si->hw);
+>  	}
+>  
+>  	/* pick up primary MAC address from SI */
+> diff --git a/drivers/net/ethernet/freescale/enetc/enetc_qos.c b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> index 0c6bf3a55a9a..3ef46190d71d 100644
+> --- a/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> +++ b/drivers/net/ethernet/freescale/enetc/enetc_qos.c
+> @@ -5,6 +5,8 @@
+>  
+>  #include <net/pkt_sched.h>
+>  #include <linux/math64.h>
+> +#include <net/pkt_cls.h>
+> +#include <net/tc_act/tc_gate.h>
+>  
+>  static u16 enetc_get_max_gcl_len(struct enetc_hw *hw)
+>  {
+> @@ -108,13 +110,13 @@ static int enetc_setup_taprio(struct net_device *ndev,
+>  	gcl_data->cte = cpu_to_le32(admin_conf->cycle_time_extension);
+>  
+>  	for (i = 0; i < gcl_len; i++) {
+> -		struct tc_taprio_sched_entry *temp_entry;
+> +		struct tc_taprio_sched_entry *to;
+>  		struct gce *temp_gce = gce + i;
+>  
+> -		temp_entry = &admin_conf->entries[i];
+> +		to = &admin_conf->entries[i];
+>  
+> -		temp_gce->gate = (u8)temp_entry->gate_mask;
+> -		temp_gce->period = cpu_to_le32(temp_entry->interval);
+> +		temp_gce->gate = (u8)to->gate_mask;
+> +		temp_gce->period = cpu_to_le32(to->interval);
+
+These changes seem unrelated to the series.
+
+>  	}
+>  
+>  	cbd.length = cpu_to_le16(data_size);
+> @@ -331,3 +333,1071 @@ int enetc_setup_tc_txtime(struct net_device *ndev, void *type_data)
+>  
+>  	return 0;
+>  }
+> +
+> +enum streamid_type {
+> +	STREAMID_TYPE_RESERVED = 0,
+> +	STREAMID_TYPE_NULL,
+> +	STREAMID_TYPE_SMAC,
+> +};
+> +
+> +enum streamid_vlan_tagged {
+> +	STREAMID_VLAN_RESERVED = 0,
+> +	STREAMID_VLAN_TAGGED,
+> +	STREAMID_VLAN_UNTAGGED,
+> +	STREAMID_VLAN_ALL,
+> +};
+> +
+> +#define ENETC_PSFP_WILDCARD -1
+> +#define HANDLE_OFFSET 100
+> +
+> +enum forward_type {
+> +	FILTER_ACTION_TYPE_PSFP = BIT(0),
+> +	FILTER_ACTION_TYPE_ACL = BIT(1),
+> +	FILTER_ACTION_TYPE_BOTH = GENMASK(1, 0),
+> +};
+> +
+> +/* This is for limit output type for input actions */
+> +struct actions_fwd {
+> +	u64 actions;
+> +	u64 keys;	/* include the must needed keys */
+> +	enum forward_type output;
+> +};
+> +
+> +struct psfp_streamfilter_counters {
+> +	u64 matching_frames_count;
+> +	u64 passing_frames_count;
+> +	u64 not_passing_frames_count;
+> +	u64 passing_sdu_count;
+> +	u64 not_passing_sdu_count;
+> +	u64 red_frames_count;
+> +};
+> +
+> +struct enetc_streamid {
 > +	u32 index;
+> +	union {
+> +		u8 src_mac[6];
+> +		u8 dst_mac[6];
+> +	};
+> +	u8 filtertype;
+> +	u16 vid;
+> +	u8 tagged;
+> +	s32 handle;
+> +};
 > +
-> +	if (!nla)
+> +struct enetc_psfp_filter {
+> +	u32 index;
+> +	s32 handle;
+> +	s8 prio;
+> +	u32 gate_id;
+> +	s32 meter_id;
+> +	u32 refcount;
+
+It may be more appropriate to use <linux/refcount.h> instead of rolling
+your own.
+
+> +	struct hlist_node node;
+> +};
+> +
+> +struct enetc_psfp_gate {
+> +	u32 index;
+> +	s8 init_ipv;
+> +	u64 basetime;
+> +	u64 cycletime;
+> +	u64 cycletimext;
+> +	u32 num_entries;
+> +	u32 refcount;
+> +	struct hlist_node node;
+> +	struct action_gate_entry entries[0];
+> +};
+> +
+> +struct enetc_stream_filter {
+> +	struct enetc_streamid sid;
+> +	u32 sfi_index;
+> +	u32 sgi_index;
+> +	struct flow_stats stats;
+> +	struct hlist_node node;
+> +};
+> +
+> +struct enetc_psfp {
+> +	unsigned long dev_bitmap;
+> +	unsigned long *psfp_sfi_bitmap;
+> +	struct hlist_head stream_list;
+> +	struct hlist_head psfp_filter_list;
+> +	struct hlist_head psfp_gate_list;
+> +	spinlock_t psfp_lock; /* spinlock for the struct enetc_psfp r/w */
+> +};
+> +
+> +struct actions_fwd enetc_act_fwd[] = {
+> +	{
+> +		BIT(FLOW_ACTION_GATE),
+> +		BIT(FLOW_DISSECTOR_KEY_ETH_ADDRS),
+> +		FILTER_ACTION_TYPE_PSFP
+> +	},
+> +	/* example for ACL actions */
+> +	{
+> +		BIT(FLOW_ACTION_DROP),
+> +		0,
+> +		FILTER_ACTION_TYPE_ACL
+> +	}
+> +};
+> +
+> +static struct enetc_psfp epsfp = {
+> +	.psfp_sfi_bitmap = NULL,
+> +};
+
+Is it possible to have more than one these controllers in the same
+system? If it's possible to have more than one, this should be moved to
+live under a per-device struct.
+
+> +
+> +static LIST_HEAD(enetc_block_cb_list);
+> +
+> +static inline int enetc_get_port(struct enetc_ndev_priv *priv)
+> +{
+> +	return priv->si->pdev->devfn & 0x7;
+> +}
+> +
+> +/* Stream Identity Entry Set Descriptor */
+> +static int enetc_streamid_hw_set(struct enetc_ndev_priv *priv,
+> +				 struct enetc_streamid *sid,
+> +				 u8 enable)
+> +{
+> +	struct enetc_cbd cbd = {.cmd = 0};
+> +	struct streamid_data *si_data;
+> +	struct streamid_conf *si_conf;
+> +	u16 data_size;
+> +	dma_addr_t dma;
+> +	int err;
+> +
+> +	if (sid->index >= priv->psfp_cap.max_streamid)
 > +		return -EINVAL;
 > +
-> +	err = nla_parse_nested_deprecated(tb, TCA_GATE_MAX,
-> +					  nla, gate_policy, NULL);
-> +	if (err < 0)
-> +		return err;
+> +	if (sid->filtertype != STREAMID_TYPE_NULL &&
+> +	    sid->filtertype != STREAMID_TYPE_SMAC)
+> +		return -EOPNOTSUPP;
 > +
-> +	if (!tb[TCA_GATE_PARMS])
+> +	/* Disable operation before enable */
+> +	cbd.index = cpu_to_le16((u16)sid->index);
+> +	cbd.cls = BDCR_CMD_STREAM_IDENTIFY;
+> +	cbd.status_flags = 0;
+> +
+> +	data_size = sizeof(struct streamid_data);
+> +	si_data = kzalloc(data_size, __GFP_DMA | GFP_KERNEL);
+> +	cbd.length = cpu_to_le16(data_size);
+> +
+> +	dma = dma_map_single(&priv->si->pdev->dev, si_data,
+> +			     data_size, DMA_FROM_DEVICE);
+> +	if (dma_mapping_error(&priv->si->pdev->dev, dma)) {
+> +		netdev_err(priv->si->ndev, "DMA mapping failed!\n");
+> +		kfree(si_data);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	cbd.addr[0] = lower_32_bits(dma);
+> +	cbd.addr[1] = upper_32_bits(dma);
+> +	memset(si_data->dmac, 0xff, ETH_ALEN);
+> +	si_data->vid_vidm_tg =
+> +		cpu_to_le16(ENETC_CBDR_SID_VID_MASK
+> +			    + ((0x3 << 14) | ENETC_CBDR_SID_VIDM));
+> +
+> +	si_conf = &cbd.sid_set;
+> +	/* Only one port supported for one entry, set itself */
+> +	si_conf->iports = 1 << enetc_get_port(priv);
+> +	si_conf->id_type = 1;
+> +	si_conf->oui[2] = 0x0;
+> +	si_conf->oui[1] = 0x80;
+> +	si_conf->oui[0] = 0xC2;
+> +
+> +	err = enetc_send_cmd(priv->si, &cbd);
+> +	if (err)
 > +		return -EINVAL;
-> +	parm = nla_data(tb[TCA_GATE_PARMS]);
-> +	index = parm->index;
-> +	err = tcf_idr_check_alloc(tn, &index, a, bind);
-> +	if (err < 0)
-> +		return err;
 > +
-> +	if (err && bind)
+> +	if (!enable) {
+> +		kfree(si_data);
 > +		return 0;
-> +
-> +	if (!err) {
-> +		ret = tcf_idr_create_from_flags(tn, index, est, a,
-> +						&act_gate_ops, bind, flags);
-> +		if (ret) {
-> +			tcf_idr_cleanup(tn, index);
-> +			return ret;
-> +		}
-> +
-> +		ret = ACT_P_CREATED;
-> +	} else if (!ovr) {
-> +		tcf_idr_release(*a, bind);
-> +		return -EEXIST;
 > +	}
 > +
-> +	if (tb[TCA_GATE_PRIORITY])
-> +		prio = nla_get_s32(tb[TCA_GATE_PRIORITY]);
+> +	/* Enable the entry overwrite again incase space flushed by hardware */
+> +	memset(&cbd, 0, sizeof(cbd));
 > +
-> +	if (tb[TCA_GATE_BASE_TIME])
-> +		basetime = nla_get_u64(tb[TCA_GATE_BASE_TIME]);
+> +	cbd.index = cpu_to_le16((u16)sid->index);
+> +	cbd.cmd = 0;
+> +	cbd.cls = BDCR_CMD_STREAM_IDENTIFY;
+> +	cbd.status_flags = 0;
 > +
-> +	if (tb[TCA_GATE_FLAGS])
-> +		gflags = nla_get_u32(tb[TCA_GATE_FLAGS]);
+> +	si_conf->en = 0x80;
+> +	si_conf->stream_handle = cpu_to_le32(sid->handle);
+> +	si_conf->iports = 1 << enetc_get_port(priv);
+> +	si_conf->id_type = sid->filtertype;
+> +	si_conf->oui[2] = 0x0;
+> +	si_conf->oui[1] = 0x80;
+> +	si_conf->oui[0] = 0xC2;
 > +
-> +	if (tb[TCA_GATE_CLOCKID]) {
-> +		clockid = nla_get_s32(tb[TCA_GATE_CLOCKID]);
-> +		switch (clockid) {
-> +		case CLOCK_REALTIME:
-> +			tk_offset = TK_OFFS_REAL;
-> +			break;
-> +		case CLOCK_MONOTONIC:
-> +			tk_offset = TK_OFFS_MAX;
-> +			break;
-> +		case CLOCK_BOOTTIME:
-> +			tk_offset = TK_OFFS_BOOT;
-> +			break;
-> +		case CLOCK_TAI:
-> +			tk_offset = TK_OFFS_TAI;
-> +			break;
-> +		default:
-> +			NL_SET_ERR_MSG(extack, "Invalid 'clockid'");
-> +			goto release_idr;
-> +		}
+> +	memset(si_data, 0, data_size);
+> +
+> +	cbd.length = cpu_to_le16(data_size);
+> +
+> +	cbd.addr[0] = lower_32_bits(dma);
+> +	cbd.addr[1] = upper_32_bits(dma);
+> +
+> +	/* VIDM default to be 1.
+> +	 * VID Match. If set (b1) then the VID must match, otherwise
+> +	 * any VID is considered a match. VIDM setting is only used
+> +	 * when TG is set to b01.
+> +	 */
+> +	if (si_conf->id_type == STREAMID_TYPE_NULL) {
+> +		ether_addr_copy(si_data->dmac, sid->dst_mac);
+> +		si_data->vid_vidm_tg =
+> +		cpu_to_le16((sid->vid & ENETC_CBDR_SID_VID_MASK) +
+> +			    ((((u16)(sid->tagged) & 0x3) << 14)
+> +			     | ENETC_CBDR_SID_VIDM));
+> +	} else if (si_conf->id_type == STREAMID_TYPE_SMAC) {
+> +		ether_addr_copy(si_data->smac, sid->src_mac);
+> +		si_data->vid_vidm_tg =
+> +		cpu_to_le16((sid->vid & ENETC_CBDR_SID_VID_MASK) +
+> +			    ((((u16)(sid->tagged) & 0x3) << 14)
+> +			     | ENETC_CBDR_SID_VIDM));
 > +	}
 > +
-> +	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
-> +	if (err < 0)
-> +		goto release_idr;
+> +	err = enetc_send_cmd(priv->si, &cbd);
+> +	kfree(si_data);
 > +
-> +	g = to_gate(*a);
-> +
-> +	gact = kzalloc(sizeof(*gact), GFP_KERNEL);
-> +	if (!gact) {
-> +		err = -ENOMEM;
-> +		goto put_chain;
-> +	}
-> +
-> +	p = get_gate_param(gact);
-> +
-> +	INIT_LIST_HEAD(&p->entries);
-> +	if (tb[TCA_GATE_ENTRY_LIST]) {
-> +		err = parse_gate_list(tb[TCA_GATE_ENTRY_LIST], p, extack);
-> +		if (err < 0)
-> +			goto release_mem;
-> +	}
-> +
-> +	if (tb[TCA_GATE_CYCLE_TIME]) {
-> +		p->tcfg_cycletime = nla_get_u64(tb[TCA_GATE_CYCLE_TIME]);
-> +	} else {
-> +		struct tcfg_gate_entry *entry;
-> +		ktime_t cycle = 0;
-> +
-> +		list_for_each_entry(entry, &p->entries, list)
-> +			cycle = ktime_add_ns(cycle, entry->interval);
-> +		p->tcfg_cycletime = cycle;
-> +	}
-> +
-> +	if (tb[TCA_GATE_CYCLE_TIME_EXT])
-> +		p->tcfg_cycletime_ext =
-> +			nla_get_u64(tb[TCA_GATE_CYCLE_TIME_EXT]);
-> +
-> +	p->tcfg_priority = prio;
-> +	p->tcfg_basetime = basetime;
-> +	p->tcfg_clockid = clockid;
-> +	p->tcfg_flags = gflags;
-> +
-> +	gact->tk_offset = tk_offset;
-> +	spin_lock_init(&gact->entry_lock);
-> +	hrtimer_init(&gact->hitimer, clockid, HRTIMER_MODE_ABS);
-> +	gact->hitimer.function = gate_timer_func;
-
-Hm, having an hrtimer per filter seems kind dangerous, in the sense
-that it seems very hard to configure right.
-
-But I don't have any alternative ideas for now.
-
-> +
-> +	err = gate_get_start_time(gact, &start);
-> +	if (err < 0) {
-> +		NL_SET_ERR_MSG(extack,
-> +			       "Internal error: failed get start time");
-> +		goto release_mem;
-> +	}
-> +
-> +	gact->current_close_time = start;
-> +	gact->current_gate_status = GATE_ACT_GATE_OPEN | GATE_ACT_PENDING;
-> +
-> +	next = list_first_entry(&p->entries, struct tcfg_gate_entry, list);
-> +	rcu_assign_pointer(gact->next_entry, next);
-> +
-> +	gate_start_timer(gact, start);
-> +
-> +	spin_lock_bh(&g->tcf_lock);
-> +	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
-> +	gact = rcu_replace_pointer(g->actg, gact,
-> +				   lockdep_is_held(&g->tcf_lock));
-> +	spin_unlock_bh(&g->tcf_lock);
-> +
-> +	if (goto_ch)
-> +		tcf_chain_put_by_act(goto_ch);
-> +	if (gact)
-> +		kfree_rcu(gact, rcu);
-> +
-> +	if (ret == ACT_P_CREATED)
-> +		tcf_idr_insert(tn, *a);
-> +	return ret;
-> +
-> +release_mem:
-> +	kfree_rcu(gact, rcu);
-> +put_chain:
-> +	if (goto_ch)
-> +		tcf_chain_put_by_act(goto_ch);
-> +release_idr:
-> +	tcf_idr_release(*a, bind);
 > +	return err;
 > +}
 > +
-> +static void tcf_gate_cleanup(struct tc_action *a)
+> +/* Stream Filter Instance Set Descriptor */
+> +static int enetc_streamfilter_hw_set(struct enetc_ndev_priv *priv,
+> +				     struct enetc_psfp_filter *sfi,
+> +				     u8 enable)
 > +{
-> +	struct tcf_gate *g = to_gate(a);
-> +	struct tcfg_gate_entry *entry, *n;
-> +	struct tcf_gate_params *p;
-> +	struct gate_action *gact;
+> +	struct enetc_cbd cbd = {.cmd = 0};
+> +	struct sfi_conf *sfi_config;
 > +
-> +	spin_lock_bh(&g->tcf_lock);
-> +	gact = rcu_dereference_protected(g->actg,
-> +					 lockdep_is_held(&g->tcf_lock));
-> +	hrtimer_cancel(&gact->hitimer);
+> +	cbd.index = cpu_to_le16(sfi->index);
+> +	cbd.cls = BDCR_CMD_STREAM_FILTER;
+> +	cbd.status_flags = 0x80;
+> +	cbd.length = cpu_to_le16(1);
 > +
-> +	p = get_gate_param(gact);
-> +	list_for_each_entry_safe(entry, n, &p->entries, list) {
-> +		list_del(&entry->list);
-> +		kfree(entry);
+> +	sfi_config = &cbd.sfi_conf;
+> +	if (!enable)
+> +		goto exit;
+> +
+> +	sfi_config->en = 0x80;
+> +
+> +	if (sfi->handle >= 0) {
+> +		sfi_config->stream_handle =
+> +			cpu_to_le32(sfi->handle);
+> +		sfi_config->sthm |= 0x80;
 > +	}
-> +	spin_unlock_bh(&g->tcf_lock);
 > +
-> +	kfree_rcu(gact, rcu);
+> +	sfi_config->sg_inst_table_index = cpu_to_le16(sfi->gate_id);
+> +	sfi_config->input_ports = 1 << enetc_get_port(priv);
+> +
+> +	/* The priority value which may be matched against the
+> +	 * frame’s priority value to determine a match for this entry.
+> +	 */
+> +	if (sfi->prio >= 0)
+> +		sfi_config->multi |= (sfi->prio & 0x7) | 0x8;
+> +
+> +	/* Filter Type. Identifies the contents of the MSDU/FM_INST_INDEX
+> +	 * field as being either an MSDU value or an index into the Flow
+> +	 * Meter Instance table.
+> +	 * TODO: no limit max sdu
+> +	 */
+> +
+> +	if (sfi->meter_id >= 0) {
+> +		sfi_config->fm_inst_table_index = cpu_to_le16(sfi->meter_id);
+> +		sfi_config->multi |= 0x80;
+> +	}
+> +
+> +exit:
+> +	return enetc_send_cmd(priv->si, &cbd);
 > +}
 > +
-> +static int dumping_entry(struct sk_buff *skb,
-> +			 struct tcfg_gate_entry *entry)
+> +static int enetc_streamcounter_hw_get(struct enetc_ndev_priv *priv,
+> +				      u32 index,
+> +				      struct psfp_streamfilter_counters *cnt)
 > +{
-> +	struct nlattr *item;
+> +	struct enetc_cbd cbd = { .cmd = 2 };
+> +	struct sfi_counter_data *data_buf;
+> +	dma_addr_t dma;
+> +	u16 data_size;
+> +	int err;
 > +
-> +	item = nla_nest_start_noflag(skb, TCA_GATE_ONE_ENTRY);
-> +	if (!item)
+> +	cbd.index = cpu_to_le16((u16)index);
+> +	cbd.cmd = 2;
+> +	cbd.cls = BDCR_CMD_STREAM_FILTER;
+> +	cbd.status_flags = 0;
+> +
+> +	data_size = sizeof(struct sfi_counter_data);
+> +	data_buf = kzalloc(data_size, __GFP_DMA | GFP_KERNEL);
+> +	if (!data_buf)
+> +		return -ENOMEM;
+> +
+> +	dma = dma_map_single(&priv->si->pdev->dev, data_buf,
+> +			     data_size, DMA_FROM_DEVICE);
+> +	if (dma_mapping_error(&priv->si->pdev->dev, dma)) {
+> +		netdev_err(priv->si->ndev, "DMA mapping failed!\n");
+> +		err = -ENOMEM;
+> +		goto exit;
+> +	}
+> +	cbd.addr[0] = lower_32_bits(dma);
+> +	cbd.addr[1] = upper_32_bits(dma);
+> +
+> +	cbd.length = cpu_to_le16(data_size);
+> +
+> +	err = enetc_send_cmd(priv->si, &cbd);
+> +	if (err)
+> +		goto exit;
+> +
+> +	cnt->matching_frames_count =
+> +			((u64)le32_to_cpu(data_buf->matchh) << 32)
+> +			+ data_buf->matchl;
+> +
+> +	cnt->not_passing_sdu_count =
+> +			((u64)le32_to_cpu(data_buf->msdu_droph) << 32)
+> +			+ data_buf->msdu_dropl;
+> +
+> +	cnt->passing_sdu_count = cnt->matching_frames_count
+> +				- cnt->not_passing_sdu_count;
+> +
+> +	cnt->not_passing_frames_count =
+> +		((u64)le32_to_cpu(data_buf->stream_gate_droph) << 32)
+> +		+ le32_to_cpu(data_buf->stream_gate_dropl);
+> +
+> +	cnt->passing_frames_count = cnt->matching_frames_count
+> +				- cnt->not_passing_sdu_count
+> +				- cnt->not_passing_frames_count;
+> +
+> +	cnt->red_frames_count =
+> +		((u64)le32_to_cpu(data_buf->flow_meter_droph) << 32)
+> +		+ le32_to_cpu(data_buf->flow_meter_dropl);
+> +
+> +exit:
+> +	kfree(data_buf);
+> +	return err;
+> +}
+> +
+> +static int get_start_ns(struct enetc_ndev_priv *priv, u64 cycle, u64 *start)
+> +{
+> +	u64 now_lo, now_hi, now, n;
+> +
+> +	now_lo = enetc_rd(&priv->si->hw, ENETC_SICTR0);
+> +	now_hi = enetc_rd(&priv->si->hw, ENETC_SICTR1);
+> +	now = now_lo | now_hi << 32;
+> +
+> +	if (WARN_ON(!cycle))
+> +		return -EFAULT;
+> +
+> +	n = div64_u64(now, cycle);
+> +
+> +	*start = (n + 1) * cycle;
+> +
+> +	return 0;
+> +}
+> +
+> +/* Stream Gate Instance Set Descriptor */
+> +static int enetc_streamgate_hw_set(struct enetc_ndev_priv *priv,
+> +				   struct enetc_psfp_gate *sgi,
+> +				   u8 enable)
+> +{
+> +	struct enetc_cbd cbd = { .cmd = 0 };
+> +	struct sgi_table *sgi_config;
+> +	struct sgcl_conf *sgcl_config;
+> +	struct sgcl_data *sgcl_data;
+> +	struct sgce *sgce;
+> +	dma_addr_t dma;
+> +	u16 data_size;
+> +	int err, i;
+> +
+> +	cbd.index = cpu_to_le16(sgi->index);
+> +	cbd.cmd = 0;
+> +	cbd.cls = BDCR_CMD_STREAM_GCL;
+> +	cbd.status_flags = 0x80;
+> +
+> +	/* disable */
+> +	if (!enable)
+> +		return enetc_send_cmd(priv->si, &cbd);
+> +
+> +	/* enable */
+> +	sgi_config = &cbd.sgi_table;
+> +
+> +	/* Keep open before gate list start */
+> +	sgi_config->ocgtst = 0x80;
+> +
+> +	sgi_config->oipv = (sgi->init_ipv < 0) ?
+> +				0x0 : ((sgi->init_ipv & 0x7) | 0x8);
+> +
+> +	sgi_config->en = 0x80;
+> +
+> +	/* Basic config */
+> +	err = enetc_send_cmd(priv->si, &cbd);
+> +	if (err)
+> +		return -EINVAL;
+> +
+> +	if (!sgi->num_entries)
+> +		return 0;
+> +
+> +	if (sgi->num_entries > priv->psfp_cap.max_psfp_gatelist ||
+> +	    !sgi->cycletime)
+> +		return -EINVAL;
+
+You already check this when "sgi" is created, this check doesn't seem to
+be needed. If it's needed, it should be moved to the top of the
+function.
+
+> +
+> +	memset(&cbd, 0, sizeof(cbd));
+> +
+> +	cbd.index = cpu_to_le16(sgi->index);
+> +	cbd.cmd = 1;
+> +	cbd.cls = BDCR_CMD_STREAM_GCL;
+> +	cbd.status_flags = 0;
+> +
+> +	sgcl_config = &cbd.sgcl_conf;
+> +
+> +	sgcl_config->acl_len = (sgi->num_entries - 1) & 0x3;
+> +
+> +	data_size = struct_size(sgcl_data, sgcl, sgi->num_entries);
+> +
+> +	sgcl_data = kzalloc(data_size, __GFP_DMA | GFP_KERNEL);
+> +	if (!sgcl_data)
+> +		return -ENOMEM;
+> +
+> +	cbd.length = cpu_to_le16(data_size);
+> +
+> +	dma = dma_map_single(&priv->si->pdev->dev,
+> +			     sgcl_data, data_size,
+> +			     DMA_FROM_DEVICE);
+> +	if (dma_mapping_error(&priv->si->pdev->dev, dma)) {
+> +		netdev_err(priv->si->ndev, "DMA mapping failed!\n");
+> +		kfree(sgcl_data);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	cbd.addr[0] = lower_32_bits(dma);
+> +	cbd.addr[1] = upper_32_bits(dma);
+> +
+> +	sgce = &sgcl_data->sgcl[0];
+> +
+> +	sgcl_config->agtst = 0x80;
+> +
+> +	sgcl_data->ct = cpu_to_le32(sgi->cycletime);
+> +	sgcl_data->cte = cpu_to_le32(sgi->cycletimext);
+> +
+> +	if (sgi->init_ipv >= 0)
+> +		sgcl_config->aipv = (sgi->init_ipv & 0x7) | 0x8;
+> +
+> +	for (i = 0; i < sgi->num_entries; i++) {
+> +		struct action_gate_entry *from = &sgi->entries[i];
+> +		struct sgce *to = &sgce[i];
+> +
+> +		if (from->gate_state)
+> +			to->multi |= 0x10;
+> +
+> +		if (from->ipv >= 0)
+> +			to->multi |= ((from->ipv & 0x7) << 5) | 0x08;
+> +
+> +		if (from->maxoctets)
+> +			to->multi |= 0x01;
+> +
+> +		to->interval = cpu_to_le32(from->interval);
+> +		to->msdu[0] = from->maxoctets & 0xFF;
+> +		to->msdu[1] = (from->maxoctets >> 8) & 0xFF;
+> +		to->msdu[2] = (from->maxoctets >> 16) & 0xFF;
+> +	}
+> +
+> +	/* If basetime is 0, calculate start time */
+> +	if (!sgi->basetime) {
+> +		u64 start;
+> +
+> +		err = get_start_ns(priv, sgi->cycletime, &start);
+> +		if (err)
+> +			goto exit;
+> +		sgcl_data->btl = cpu_to_le32(lower_32_bits(start));
+> +		sgcl_data->bth = cpu_to_le32(upper_32_bits(start));
+> +	} else {
+> +		u32 hi, lo;
+> +
+> +		hi = upper_32_bits(sgi->basetime);
+> +		lo = lower_32_bits(sgi->basetime);
+> +		sgcl_data->bth = cpu_to_le32(hi);
+> +		sgcl_data->btl = cpu_to_le32(lo);
+> +	}
+> +
+> +	err = enetc_send_cmd(priv->si, &cbd);
+> +
+> +exit:
+> +	kfree(sgcl_data);
+> +
+> +	return err;
+> +}
+> +
+> +static struct enetc_stream_filter *enetc_get_stream_by_index(u32 index)
+> +{
+> +	struct enetc_stream_filter *f;
+> +
+> +	hlist_for_each_entry(f, &epsfp.stream_list, node)
+> +		if (f->sid.index == index)
+> +			return f;
+> +
+> +	return NULL;
+> +}
+> +
+> +static struct enetc_psfp_gate *enetc_get_gate_by_index(u32 index)
+> +{
+> +	struct enetc_psfp_gate *g;
+> +
+> +	hlist_for_each_entry(g, &epsfp.psfp_gate_list, node)
+> +		if (g->index == index)
+> +			return g;
+> +
+> +	return NULL;
+> +}
+> +
+> +static struct enetc_psfp_filter *enetc_get_filter_by_index(u32 index)
+> +{
+> +	struct enetc_psfp_filter *s;
+> +
+> +	hlist_for_each_entry(s, &epsfp.psfp_filter_list, node)
+> +		if (s->index == index)
+> +			return s;
+> +
+> +	return NULL;
+> +}
+> +
+> +static struct enetc_psfp_filter
+> +	*enetc_psfp_check_sfi(struct enetc_psfp_filter *sfi)
+> +{
+> +	struct enetc_psfp_filter *s;
+> +
+> +	hlist_for_each_entry(s, &epsfp.psfp_filter_list, node)
+> +		if (s->gate_id == sfi->gate_id &&
+> +		    s->prio == sfi->prio &&
+> +		    s->meter_id == sfi->meter_id)
+> +			return s;
+> +
+> +	return NULL;
+> +}
+> +
+> +static int enetc_get_free_index(struct enetc_ndev_priv *priv)
+> +{
+> +	u32 max_size = priv->psfp_cap.max_psfp_filter;
+> +	unsigned long index;
+> +
+> +	index = find_first_zero_bit(epsfp.psfp_sfi_bitmap, max_size);
+> +	if (index == max_size)
+> +		return -1;
+> +
+> +	return index;
+> +}
+> +
+> +static void reduce_ref_sfi(struct enetc_ndev_priv *priv, u32 index)
+
+Please use the more usual idioms, something like "sfi_unref()" or
+"stream_filter_unref".
+
+> +{
+> +	struct enetc_psfp_filter *sfi;
+> +
+> +	sfi = enetc_get_filter_by_index(index);
+> +	WARN_ON(!sfi);
+> +	sfi->refcount--;
+> +
+> +	if (!sfi->refcount) {
+> +		enetc_streamfilter_hw_set(priv, sfi, false);
+> +		hlist_del(&sfi->node);
+> +		kfree(sfi);
+> +		clear_bit(sfi->index, epsfp.psfp_sfi_bitmap);
+> +	}
+> +}
+> +
+> +static void reduce_ref_sgi(struct enetc_ndev_priv *priv, u32 index)
+> +{
+> +	struct enetc_psfp_gate *sgi;
+> +
+> +	sgi = enetc_get_gate_by_index(index);
+> +	WARN_ON(!sgi);
+> +	sgi->refcount--;
+> +
+> +	if (!sgi->refcount) {
+> +		enetc_streamgate_hw_set(priv, sgi, false);
+> +		hlist_del(&sgi->node);
+> +		kfree(sgi);
+> +	}
+> +}
+> +
+> +static void remove_one_chain(struct enetc_ndev_priv *priv,
+> +			     struct enetc_stream_filter *filter)
+> +{
+> +	reduce_ref_sgi(priv, filter->sgi_index);
+> +	reduce_ref_sfi(priv, filter->sfi_index);
+> +
+> +	hlist_del(&filter->node);
+> +	kfree(filter);
+> +}
+> +
+> +static int enetc_psfp_hw_set(struct enetc_ndev_priv *priv,
+> +			     struct enetc_streamid *sid,
+> +			     struct enetc_psfp_filter *sfi,
+> +			     struct enetc_psfp_gate *sgi)
+> +{
+> +	int err;
+> +
+> +	err = enetc_streamid_hw_set(priv, sid, true);
+> +	if (err)
+> +		return err;
+> +
+> +	if (sfi) {
+> +		err = enetc_streamfilter_hw_set(priv, sfi, true);
+> +		if (err)
+> +			goto revert_sid;
+> +	}
+> +
+> +	err = enetc_streamgate_hw_set(priv, sgi, true);
+> +	if (err)
+> +		goto revert_sfi;
+> +
+> +	return 0;
+> +
+> +revert_sfi:
+> +	if (sfi && !sfi->refcount)
+> +		enetc_streamfilter_hw_set(priv, sfi, false);
+> +revert_sid:
+> +	enetc_streamid_hw_set(priv, sid, false);
+> +	return err;
+> +}
+> +
+> +struct actions_fwd *enetc_check_flow_actions(u64 acts, unsigned int inputkeys)
+> +{
+> +	int i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(enetc_act_fwd); i++)
+> +		if (acts == enetc_act_fwd[i].actions &&
+> +		    inputkeys & enetc_act_fwd[i].keys)
+> +			return &enetc_act_fwd[i];
+> +
+> +	return NULL;
+> +}
+> +
+> +static int enetc_psfp_parse_clsflower(struct enetc_ndev_priv *priv,
+> +				      struct flow_cls_offload *f)
+> +{
+> +	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
+> +	struct netlink_ext_ack *extack = f->common.extack;
+> +	struct enetc_stream_filter *filter, *old_filter;
+> +	struct enetc_psfp_filter *sfi, *old_sfi;
+> +	struct enetc_psfp_gate *sgi, *old_sgi;
+> +	struct flow_action_entry *entry;
+> +	struct action_gate_entry *e;
+> +	u8 sfi_overwrite = 0;
+> +	int entries_size;
+> +	int i, err;
+> +
+> +	if (f->common.chain_index >= priv->psfp_cap.max_streamid) {
+> +		NL_SET_ERR_MSG_MOD(extack, "No Stream identify resource!");
 > +		return -ENOSPC;
-> +
-> +	if (nla_put_u32(skb, TCA_GATE_ENTRY_INDEX, entry->index))
-> +		goto nla_put_failure;
-> +
-> +	if (entry->gate_state && nla_put_flag(skb, TCA_GATE_ENTRY_GATE))
-> +		goto nla_put_failure;
-> +
-> +	if (nla_put_u32(skb, TCA_GATE_ENTRY_INTERVAL, entry->interval))
-> +		goto nla_put_failure;
-> +
-> +	if (nla_put_s32(skb, TCA_GATE_ENTRY_MAX_OCTETS, entry->maxoctets))
-> +		goto nla_put_failure;
-> +
-> +	if (nla_put_s32(skb, TCA_GATE_ENTRY_IPV, entry->ipv))
-> +		goto nla_put_failure;
-> +
-> +	return nla_nest_end(skb, item);
-> +
-> +nla_put_failure:
-> +	nla_nest_cancel(skb, item);
-> +	return -1;
-> +}
-> +
-> +static int tcf_gate_dump(struct sk_buff *skb, struct tc_action *a,
-> +			 int bind, int ref)
-> +{
-> +	unsigned char *b = skb_tail_pointer(skb);
-> +	struct tcf_gate *g = to_gate(a);
-> +	struct tc_gate opt = {
-> +		.index    = g->tcf_index,
-> +		.refcnt   = refcount_read(&g->tcf_refcnt) - ref,
-> +		.bindcnt  = atomic_read(&g->tcf_bindcnt) - bind,
-> +	};
-> +	struct tcfg_gate_entry *entry;
-> +	struct gate_action *gact;
-> +	struct tcf_gate_params *p;
-> +	struct nlattr *entry_list;
-> +	struct tcf_t t;
-> +
-> +	spin_lock_bh(&g->tcf_lock);
-> +	opt.action = g->tcf_action;
-> +	gact = rcu_dereference_protected(g->actg,
-> +					 lockdep_is_held(&g->tcf_lock));
-> +
-> +	p = get_gate_param(gact);
-> +
-> +	if (nla_put(skb, TCA_GATE_PARMS, sizeof(opt), &opt))
-> +		goto nla_put_failure;
-> +
-> +	if (nla_put_u64_64bit(skb, TCA_GATE_BASE_TIME,
-> +			      p->tcfg_basetime, TCA_GATE_PAD))
-> +		goto nla_put_failure;
-> +
-> +	if (nla_put_u64_64bit(skb, TCA_GATE_CYCLE_TIME,
-> +			      p->tcfg_cycletime, TCA_GATE_PAD))
-> +		goto nla_put_failure;
-> +
-> +	if (nla_put_u64_64bit(skb, TCA_GATE_CYCLE_TIME_EXT,
-> +			      p->tcfg_cycletime_ext, TCA_GATE_PAD))
-> +		goto nla_put_failure;
-> +
-> +	if (nla_put_s32(skb, TCA_GATE_CLOCKID, p->tcfg_clockid))
-> +		goto nla_put_failure;
-> +
-> +	if (nla_put_u32(skb, TCA_GATE_FLAGS, p->tcfg_flags))
-> +		goto nla_put_failure;
-> +
-> +	if (nla_put_s32(skb, TCA_GATE_PRIORITY, p->tcfg_priority))
-> +		goto nla_put_failure;
-> +
-> +	entry_list = nla_nest_start_noflag(skb, TCA_GATE_ENTRY_LIST);
-> +	if (!entry_list)
-> +		goto nla_put_failure;
-> +
-> +	list_for_each_entry(entry, &p->entries, list) {
-> +		if (dumping_entry(skb, entry) < 0)
-> +			goto nla_put_failure;
 > +	}
 > +
-> +	nla_nest_end(skb, entry_list);
+> +	flow_action_for_each(i, entry, &rule->action)
+> +		if (entry->id == FLOW_ACTION_GATE)
+> +			break;
 > +
-> +	tcf_tm_dump(&t, &g->tcf_tm);
-> +	if (nla_put_64bit(skb, TCA_GATE_TM, sizeof(t), &t, TCA_GATE_PAD))
-> +		goto nla_put_failure;
-> +	spin_unlock_bh(&g->tcf_lock);
+> +	if (entry->id != FLOW_ACTION_GATE)
+> +		return -EINVAL;
 > +
-> +	return skb->len;
+> +	filter = kzalloc(sizeof(*filter), GFP_KERNEL);
+> +	if (!filter)
+> +		return -ENOMEM;
 > +
-> +nla_put_failure:
-> +	spin_unlock_bh(&g->tcf_lock);
-> +	nlmsg_trim(skb, b);
-> +	return -1;
+> +	filter->sid.index = f->common.chain_index;
+> +
+> +	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ETH_ADDRS)) {
+> +		struct flow_match_eth_addrs match;
+> +
+> +		flow_rule_match_eth_addrs(rule, &match);
+> +
+> +		if (!is_zero_ether_addr(match.mask->dst)) {
+> +			ether_addr_copy(filter->sid.dst_mac, match.key->dst);
+> +			filter->sid.filtertype = STREAMID_TYPE_NULL;
+> +		}
+> +
+> +		if (!is_zero_ether_addr(match.mask->src)) {
+> +			ether_addr_copy(filter->sid.src_mac, match.key->src);
+> +			filter->sid.filtertype = STREAMID_TYPE_SMAC;
+> +		}
+> +	} else {
+> +		NL_SET_ERR_MSG_MOD(extack, "Unsupported, must ETH_ADDRS");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_VLAN)) {
+> +		struct flow_match_vlan match;
+> +
+> +		flow_rule_match_vlan(rule, &match);
+> +		if (match.mask->vlan_priority) {
+> +			if (match.mask->vlan_priority !=
+> +			    (VLAN_PRIO_MASK >> VLAN_PRIO_SHIFT)) {
+> +				NL_SET_ERR_MSG_MOD(extack, "Only full mask is supported for VLAN priority");
+> +				err = -EINVAL;
+> +				goto free_filter;
+> +			}
+> +		}
+> +
+> +		if (match.mask->vlan_tpid) {
+> +			if (match.mask->vlan_tpid != VLAN_VID_MASK) {
+> +				NL_SET_ERR_MSG_MOD(extack, "Only full mask is supported for VLAN id");
+> +				err = -EINVAL;
+> +				goto free_filter;
+> +			}
+> +
+> +			filter->sid.vid = match.key->vlan_tpid;
+> +			if (!filter->sid.vid)
+> +				filter->sid.tagged = STREAMID_VLAN_UNTAGGED;
+> +			else
+> +				filter->sid.tagged = STREAMID_VLAN_TAGGED;
+> +		}
+> +	} else {
+> +		filter->sid.tagged = STREAMID_VLAN_ALL;
+> +	}
+> +
+> +	/* parsing gate action */
+> +	if (entry->gate.index >= priv->psfp_cap.max_psfp_gate) {
+> +		NL_SET_ERR_MSG_MOD(extack, "No Stream Gate resource!");
+> +		err = -ENOSPC;
+> +		goto free_filter;
+> +	}
+> +
+> +	if (entry->gate.num_entries >= priv->psfp_cap.max_psfp_gatelist) {
+> +		NL_SET_ERR_MSG_MOD(extack, "No Stream Gate resource!");
+> +		err = -ENOSPC;
+> +		goto free_filter;
+> +	}
+> +
+> +	entries_size = struct_size(sgi, entries, entry->gate.num_entries);
+> +	sgi = kzalloc(entries_size, GFP_KERNEL);
+> +	if (!sgi) {
+> +		err = -ENOMEM;
+> +		goto free_filter;
+> +	}
+> +
+> +	sgi->index = entry->gate.index;
+> +	sgi->init_ipv = entry->gate.prio;
+> +	sgi->basetime = entry->gate.basetime;
+> +	sgi->cycletime = entry->gate.cycletime;
+> +	sgi->num_entries = entry->gate.num_entries;
+> +
+> +	e = sgi->entries;
+> +	for (i = 0; i < entry->gate.num_entries; i++) {
+> +		e[i].gate_state = entry->gate.entries[i].gate_state;
+> +		e[i].interval = entry->gate.entries[i].interval;
+> +		e[i].ipv = entry->gate.entries[i].ipv;
+> +		e[i].maxoctets = entry->gate.entries[i].maxoctets;
+> +	}
+> +
+> +	filter->sgi_index = sgi->index;
+> +
+> +	sfi = kzalloc(sizeof(*sfi), GFP_KERNEL);
+> +	if (!sfi) {
+> +		err = -ENOMEM;
+> +		goto free_gate;
+> +	}
+> +
+> +	sfi->gate_id = sgi->index;
+> +
+> +	/* flow meter not support yet */
+> +	sfi->meter_id = ENETC_PSFP_WILDCARD;
+> +
+> +	/* prio ref the filter prio */
+> +	if (f->common.prio && f->common.prio <= BIT(3))
+> +		sfi->prio = f->common.prio - 1;
+> +	else
+> +		sfi->prio = ENETC_PSFP_WILDCARD;
+> +
+> +	old_sfi = enetc_psfp_check_sfi(sfi);
+> +	if (!old_sfi) {
+> +		int index;
+> +
+> +		index = enetc_get_free_index(priv);
+> +		if (sfi->handle < 0) {
+> +			NL_SET_ERR_MSG_MOD(extack, "No Stream Filter resource!");
+> +			err = -ENOSPC;
+> +			goto free_sfi;
+> +		}
+> +
+> +		sfi->index = index;
+> +		sfi->handle = index + HANDLE_OFFSET;
+> +		/* Update the stream filter handle also */
+> +		filter->sid.handle = sfi->handle;
+> +		filter->sfi_index = sfi->index;
+> +		sfi_overwrite = 0;
+> +	} else {
+> +		filter->sfi_index = old_sfi->index;
+> +		filter->sid.handle = old_sfi->handle;
+> +		sfi_overwrite = 1;
+> +	}
+> +
+> +	err = enetc_psfp_hw_set(priv, &filter->sid,
+> +				sfi_overwrite ? NULL : sfi, sgi);
+> +	if (err)
+> +		goto free_sfi;
+> +
+> +	spin_lock(&epsfp.psfp_lock);
+> +	old_sgi = enetc_get_gate_by_index(filter->sgi_index);
+> +	if (old_sgi) {
+> +		sgi->refcount = old_sgi->refcount;
+> +		hlist_del(&old_sgi->node);
+> +		kfree(old_sgi);
+
+I don't understand what you are trying to achieve here. But there should
+be a cleaner way.
+
+> +	}
+> +
+> +	sgi->refcount++;
+> +	hlist_add_head(&sgi->node, &epsfp.psfp_gate_list);
+> +
+> +	if (!old_sfi) {
+> +		hlist_add_head(&sfi->node, &epsfp.psfp_filter_list);
+> +		set_bit(sfi->index, epsfp.psfp_sfi_bitmap);
+> +		sfi->refcount++;
+> +	} else {
+> +		kfree(sfi);
+> +		old_sfi->refcount++;
+> +	}
+> +
+> +	old_filter = enetc_get_stream_by_index(filter->sid.index);
+> +	if (old_filter)
+> +		remove_one_chain(priv, old_filter);
+> +
+> +	filter->stats.lastused = jiffies;
+> +	hlist_add_head(&filter->node, &epsfp.stream_list);
+> +
+> +	spin_unlock(&epsfp.psfp_lock);
+> +
+> +	return 0;
+> +
+> +free_sfi:
+> +	kfree(sfi);
+> +free_gate:
+> +	kfree(sgi);
+> +free_filter:
+> +	kfree(filter);
+> +
+> +	return err;
 > +}
 > +
-> +static int tcf_gate_walker(struct net *net, struct sk_buff *skb,
-> +			   struct netlink_callback *cb, int type,
-> +			   const struct tc_action_ops *ops,
-> +			   struct netlink_ext_ack *extack)
+> +static int enetc_config_clsflower(struct enetc_ndev_priv *priv,
+> +				  struct flow_cls_offload *cls_flower)
 > +{
-> +	struct tc_action_net *tn = net_generic(net, gate_net_id);
+> +	struct flow_rule *rule = flow_cls_offload_flow_rule(cls_flower);
+> +	struct netlink_ext_ack *extack = cls_flower->common.extack;
+> +	struct flow_dissector *dissector = rule->match.dissector;
+> +	struct flow_action *action = &rule->action;
+> +	struct flow_action_entry *entry;
+> +	struct actions_fwd *fwd;
+> +	u64 actions = 0;
+> +	int i, err;
 > +
-> +	return tcf_generic_walker(tn, skb, cb, type, ops, extack);
+> +	if (!flow_action_has_entries(action)) {
+> +		NL_SET_ERR_MSG_MOD(extack, "At least one action is needed");
+> +		return -EINVAL;
+> +	}
+> +
+> +	flow_action_for_each(i, entry, action)
+> +		actions |= BIT(entry->id);
+> +
+> +	fwd = enetc_check_flow_actions(actions, dissector->used_keys);
+> +	if (!fwd) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Unsupported filter type!");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (fwd->output & FILTER_ACTION_TYPE_PSFP) {
+> +		err = enetc_psfp_parse_clsflower(priv, cls_flower);
+> +		if (err) {
+> +			NL_SET_ERR_MSG_MOD(extack, "Invalid PSFP inputs");
+> +			return err;
+> +		}
+> +	} else {
+> +		NL_SET_ERR_MSG_MOD(extack, "Unsupported actions");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	return 0;
 > +}
 > +
-> +static void tcf_gate_stats_update(struct tc_action *a, u64 bytes, u64 packets,
-> +				  u64 lastuse, u64 dropped, bool hw)
+> +static int enetc_psfp_destroy_clsflower(struct enetc_ndev_priv *priv,
+> +					struct flow_cls_offload *f)
 > +{
-> +	struct tcf_gate *g = to_gate(a);
-> +	struct tcf_t *tm = &g->tcf_tm;
+> +	struct enetc_stream_filter *filter;
+> +	struct netlink_ext_ack *extack = f->common.extack;
+> +	int err;
 > +
-> +	tcf_action_update_stats(a, bytes, packets, dropped, hw);
-> +	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
+> +	if (f->common.chain_index >= priv->psfp_cap.max_streamid) {
+> +		NL_SET_ERR_MSG_MOD(extack, "No Stream identify resource!");
+> +		return -ENOSPC;
+> +	}
+> +
+> +	filter = enetc_get_stream_by_index(f->common.chain_index);
+> +	if (!filter)
+> +		return -EINVAL;
+> +
+> +	err = enetc_streamid_hw_set(priv, &filter->sid, false);
+> +	if (err)
+> +		return err;
+> +
+> +	remove_one_chain(priv, filter);
+> +
+> +	return 0;
 > +}
 > +
-> +static int tcf_gate_search(struct net *net, struct tc_action **a, u32 index)
+> +static int enetc_destroy_clsflower(struct enetc_ndev_priv *priv,
+> +				   struct flow_cls_offload *f)
 > +{
-> +	struct tc_action_net *tn = net_generic(net, gate_net_id);
-> +
-> +	return tcf_idr_search(tn, a, index);
+> +	return enetc_psfp_destroy_clsflower(priv, f);
 > +}
 > +
-> +static size_t tcf_gate_get_fill_size(const struct tc_action *act)
+> +static int enetc_psfp_get_stats(struct enetc_ndev_priv *priv,
+> +				struct flow_cls_offload *f)
 > +{
-> +	return nla_total_size(sizeof(struct tc_gate));
+> +	struct psfp_streamfilter_counters counters = {};
+> +	struct enetc_stream_filter *filter;
+> +	struct flow_stats stats = {};
+> +	int err;
+> +
+> +	filter = enetc_get_stream_by_index(f->common.chain_index);
+> +	if (!filter)
+> +		return -EINVAL;
+> +
+> +	err = enetc_streamcounter_hw_get(priv, filter->sfi_index, &counters);
+> +	if (err)
+> +		return -EINVAL;
+> +
+> +	spin_lock(&epsfp.psfp_lock);
+> +	stats.pkts = counters.matching_frames_count - filter->stats.pkts;
+> +	stats.dropped = counters.not_passing_frames_count -
+> +					filter->stats.dropped;
+> +	stats.lastused = filter->stats.lastused;
+> +	filter->stats.pkts += stats.pkts;
+> +	filter->stats.dropped += stats.dropped;
+> +
+> +	spin_unlock(&epsfp.psfp_lock);
+> +
+> +	flow_stats_update(&f->stats, 0x0, stats.pkts, stats.lastused,
+> +			  stats.dropped);
+> +
+> +	return 0;
 > +}
 > +
-> +static struct tc_action_ops act_gate_ops = {
-> +	.kind		=	"gate",
-> +	.id		=	TCA_ID_GATE,
-> +	.owner		=	THIS_MODULE,
-> +	.act		=	tcf_gate_act,
-> +	.dump		=	tcf_gate_dump,
-> +	.init		=	tcf_gate_init,
-> +	.cleanup	=	tcf_gate_cleanup,
-> +	.walk		=	tcf_gate_walker,
-> +	.stats_update	=	tcf_gate_stats_update,
-> +	.get_fill_size	=	tcf_gate_get_fill_size,
-> +	.lookup		=	tcf_gate_search,
-> +	.size		=	sizeof(struct gate_action),
-> +};
-> +
-> +static __net_init int gate_init_net(struct net *net)
+> +static int enetc_setup_tc_cls_flower(struct enetc_ndev_priv *priv,
+> +				     struct flow_cls_offload *cls_flower)
 > +{
-> +	struct tc_action_net *tn = net_generic(net, gate_net_id);
-> +
-> +	return tc_action_net_init(net, tn, &act_gate_ops);
+> +	switch (cls_flower->command) {
+> +	case FLOW_CLS_REPLACE:
+> +		return enetc_config_clsflower(priv, cls_flower);
+> +	case FLOW_CLS_DESTROY:
+> +		return enetc_destroy_clsflower(priv, cls_flower);
+> +	case FLOW_CLS_STATS:
+> +		return enetc_psfp_get_stats(priv, cls_flower);
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
 > +}
 > +
-> +static void __net_exit gate_exit_net(struct list_head *net_list)
+> +static inline void clean_psfp_sfi_bitmap(void)
 > +{
-> +	tc_action_net_exit(net_list, gate_net_id);
+> +	bitmap_free(epsfp.psfp_sfi_bitmap);
+> +	epsfp.psfp_sfi_bitmap = NULL;
 > +}
 > +
-> +static struct pernet_operations gate_net_ops = {
-> +	.init = gate_init_net,
-> +	.exit_batch = gate_exit_net,
-> +	.id   = &gate_net_id,
-> +	.size = sizeof(struct tc_action_net),
-> +};
-> +
-> +static int __init gate_init_module(void)
+> +static void clean_stream_list(void)
 > +{
-> +	return tcf_register_action(&act_gate_ops, &gate_net_ops);
+> +	struct enetc_stream_filter *s;
+> +	struct hlist_node *tmp;
+> +
+> +	hlist_for_each_entry_safe(s, tmp, &epsfp.stream_list, node) {
+> +		hlist_del(&s->node);
+> +		kfree(s);
+> +	}
 > +}
 > +
-> +static void __exit gate_cleanup_module(void)
+> +static void clean_sfi_list(void)
 > +{
-> +	tcf_unregister_action(&act_gate_ops, &gate_net_ops);
+> +	struct enetc_psfp_filter *sfi;
+> +	struct hlist_node *tmp;
+> +
+> +	hlist_for_each_entry_safe(sfi, tmp, &epsfp.psfp_filter_list, node) {
+> +		hlist_del(&sfi->node);
+> +		kfree(sfi);
+> +	}
 > +}
 > +
-> +module_init(gate_init_module);
-> +module_exit(gate_cleanup_module);
-> +MODULE_LICENSE("GPL v2");
+> +static void clean_sgi_list(void)
+> +{
+> +	struct enetc_psfp_gate *sgi;
+> +	struct hlist_node *tmp;
+> +
+> +	hlist_for_each_entry_safe(sgi, tmp, &epsfp.psfp_gate_list, node) {
+> +		hlist_del(&sgi->node);
+> +		kfree(sgi);
+> +	}
+> +}
+> +
+> +static void clean_psfp_all(void)
+> +{
+> +	/* Disable all list nodes and free all memory */
+> +	clean_sfi_list();
+> +	clean_sgi_list();
+> +	clean_stream_list();
+> +	epsfp.dev_bitmap = 0;
+> +	clean_psfp_sfi_bitmap();
+> +}
+> +
+> +int enetc_setup_tc_block_cb(enum tc_setup_type type, void *type_data,
+> +			    void *cb_priv)
+> +{
+> +	struct net_device *ndev = cb_priv;
+> +
+> +	if (!tc_can_offload(ndev))
+> +		return -EOPNOTSUPP;
+> +
+> +	switch (type) {
+> +	case TC_SETUP_CLSFLOWER:
+> +		return enetc_setup_tc_cls_flower(netdev_priv(ndev), type_data);
+> +	default:
+> +		return -EOPNOTSUPP;
+> +	}
+> +}
+> +
+> +int enetc_psfp_init(struct enetc_ndev_priv *priv)
+> +{
+> +	if (epsfp.psfp_sfi_bitmap)
+> +		return 0;
+> +
+> +	epsfp.psfp_sfi_bitmap = bitmap_zalloc(priv->psfp_cap.max_psfp_filter,
+> +					      GFP_KERNEL);
+> +	if (!epsfp.psfp_sfi_bitmap)
+> +		return -ENOMEM;
+> +
+> +	spin_lock_init(&epsfp.psfp_lock);
+> +
+> +	if (list_empty(&enetc_block_cb_list))
+> +		epsfp.dev_bitmap = 0;
+> +
+> +	return 0;
+> +}
+> +
+> +int enetc_psfp_clean(struct enetc_ndev_priv *priv)
+> +{
+> +	if (!list_empty(&enetc_block_cb_list))
+> +		return -EBUSY;
+> +
+> +	clean_psfp_all();
+> +
+> +	return 0;
+> +}
+> +
+> +int enetc_setup_tc_psfp(struct net_device *ndev, void *type_data)
+> +{
+> +	struct enetc_ndev_priv *priv = netdev_priv(ndev);
+> +	struct flow_block_offload *f = type_data;
+> +	int err;
+> +
+> +	err = flow_block_cb_setup_simple(f, &enetc_block_cb_list,
+> +					 enetc_setup_tc_block_cb,
+> +					 ndev, ndev, true);
+> +	if (err)
+> +		return err;
+> +
+> +	switch (f->command) {
+> +	case FLOW_BLOCK_BIND:
+> +		set_bit(enetc_get_port(priv), &epsfp.dev_bitmap);
+> +		break;
+> +	case FLOW_BLOCK_UNBIND:
+> +		clear_bit(enetc_get_port(priv), &epsfp.dev_bitmap);
+> +		if (!epsfp.dev_bitmap)
+> +			clean_psfp_all();
+> +		break;
+> +	}
+> +
+> +	return 0;
+> +}
 > -- 
 > 2.17.1
 >
