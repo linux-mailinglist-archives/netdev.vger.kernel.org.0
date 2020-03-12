@@ -2,154 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2046F182BAF
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 09:59:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2241A182C29
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 10:16:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726659AbgCLI64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 04:58:56 -0400
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:56306 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725978AbgCLI64 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 04:58:56 -0400
-Received: by mail-pj1-f67.google.com with SMTP id mj6so2146495pjb.5;
-        Thu, 12 Mar 2020 01:58:55 -0700 (PDT)
+        id S1726299AbgCLJQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 05:16:46 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:42769 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725978AbgCLJQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 05:16:46 -0400
+Received: by mail-ot1-f65.google.com with SMTP id 66so5345157otd.9
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 02:16:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kseNNsx2pgHvPyYxObU40X+5wxcbgZFilTTG78IMqS4=;
-        b=pJ6Rh4QcTq373FX7O740x9ngwJovg4bNa+ruWhc+Gsx4x6n6Z5p8mFiZtKMebHdeK2
-         AxRI8jt+Vj1OopakGjw2Dp8j8fVxpmrV92nRnPmzrMIldQcCSZ+nMxsyWCEYWNLYDXhw
-         l6PKz9AK+6cGT/3s0SaOW+58iqdfoeDNi50NZ9VNAE8SEUF98XituF8inDwy+4dQWCvR
-         Y6j3l9J1BtxT9v2iTO2E32FJJv5M5kknnpUYsDg8oQsIe+zPir0wm4TuGfz33VLA6ujG
-         fG9RExzq1tY0EzyV5WQ0Me3y1rLtsFpHUdn5IdMzWdgM5V2Rmb6auxqbw/RZz6U+vDPB
-         50eg==
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fAMw405Z2I4+Abs+opHY3r5ZOWNvTtzJUiJNOPxVtPI=;
+        b=rHqoJ6QGCxOky7urAwPH4FGhioj5JIMXoSDlwY9zTBHLJ8aeYKHNXLS3tQbRIZPZZ8
+         KdmtCY63VBupFWWNm3zICSVHObycPq57RQTrsoOvVqR9PCxcjtr3POPMK1oU/u4GstWJ
+         z3mLNzdpYVJOI3ex4M4Vjj78XnewbiokIzf54=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kseNNsx2pgHvPyYxObU40X+5wxcbgZFilTTG78IMqS4=;
-        b=UqFICZExZEOg9kj6bSAsnuFkkrJE5jjIowde19QGcQGOkDYJx5tAbZedCywshnvX/l
-         iMW0hIyGXph0hI+Ll82PHsDwYt6cGPjzHd7aWIU6uj2DJdpNoIZ2GblgAItqSHQY9M7S
-         FD3exH2eo6VQzsjHFKrFc04sOmbNsu9mNgVTVb6hiyZ+Y66qZgJ4KJyW/uanOZQvyhq5
-         Q9O9sl2VQGiyQ+TtIhM7/xinCKg18q0QcJU+YyAZGjD2Z+3/mvUl7NX5FfzDxpzOmrpe
-         z1abe9BoVRNHrpuR4xKcJ8/+gWyladbKNemtvReSg+6azlXF+V2XoVMla67tdwwUSPsA
-         RTzg==
-X-Gm-Message-State: ANhLgQ33Bj7MC9Y0CnNAqJrOXkQ0JqKUnVmgjduu8uNZTYwqJZpX01P1
-        Iwz7yrVVyx9IVtijbHv583Y=
-X-Google-Smtp-Source: ADFU+vukycXtGHoYcuotQ0VMk8rJ/gM3j14OTyZ1W99ibDvPzeKhBPuLDZuJRNvdUuz43vRH6qOV0g==
-X-Received: by 2002:a17:90a:ead6:: with SMTP id ev22mr3212027pjb.66.1584003535239;
-        Thu, 12 Mar 2020 01:58:55 -0700 (PDT)
-Received: from [0.0.0.0] ([2001:19f0:8001:1c6b:5400:2ff:fe92:fb44])
-        by smtp.googlemail.com with ESMTPSA id e28sm53152735pgn.21.2020.03.12.01.58.50
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 12 Mar 2020 01:58:54 -0700 (PDT)
-Subject: Re: Maybe a race condition in net/rds/rdma.c?
-To:     santosh.shilimkar@oracle.com
-Cc:     netdev <netdev@vger.kernel.org>,
-        OFED mailing list <linux-rdma@vger.kernel.org>,
-        haakon.bugge@oracle.com
-References: <afd9225d-5c43-8cc7-0eed-455837b53e10@gmail.com>
- <D8EB4A77-77D7-41EB-9021-EA7BB8C3FA5B@oracle.com>
- <94b20d30-1d7d-7a66-b943-d75a05bcb46e@oracle.com>
- <e525ec74-b62f-6e7c-e6bc-aad93d349f65@gmail.com>
- <54d1140d-3347-a2b1-1b20-9a3959d3b451@oracle.com>
- <603ec723-842c-f6e1-01ee-6889c3925a63@gmail.com>
- <d9004325-2a97-c711-3abc-eb2550e047b1@oracle.com>
-From:   zerons <sironhide0null@gmail.com>
-Openpgp: preference=signencrypt
-Message-ID: <a5990ab2-7d6b-8d5a-d461-8ad4bec104a4@gmail.com>
-Date:   Thu, 12 Mar 2020 16:58:43 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fAMw405Z2I4+Abs+opHY3r5ZOWNvTtzJUiJNOPxVtPI=;
+        b=dV4c9lMY9BTLYovkbsQ2/JaiSWz58qPPRnBscvQxAxWeOTd0B96U3Q9ZvTXyoL4bb9
+         MbS2A3ACfcCP+h8vxlzclDG2xfR47jDuCbrGR/OlZuOrfNcTVdpX+chodZWfkdPAmCEI
+         E8RD5QrNIGCn8xyxikvufknwcRR1EefCkD1vaN2KoCazYAmWBu8PiMwL+lTewTwS4k3V
+         iuRoneHRKPX+x/wLXcSj5z4Zd6d+o2gxumMFyfPI651q2K0S98q/0nKHQMdKYkAuU88A
+         LPPu4H9LLtYucJahItDy75tcXgKLu/ZQkiVyKGuF6ESvjlhUafBnbRtaN/rPdh4Djeg5
+         TU3g==
+X-Gm-Message-State: ANhLgQ1f7lEHSBYvcfSGOewo3hGRNf9mH6cRXjhBsDizY4GcojKFrngc
+        K2P3pebCmyfCKbHDZap2qaCA0Ri1WXyVenWwXU6rcg==
+X-Google-Smtp-Source: ADFU+vsdJMOalgUIpdt+aKol4bjP/txCqYfA3vDI7yyHw+g9tMIoPWM9O/s2/G+B+Anfuz52IPyABEZd1GZB0YAIuPg=
+X-Received: by 2002:a9d:10d:: with SMTP id 13mr5781391otu.334.1584004605574;
+ Thu, 12 Mar 2020 02:16:45 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <d9004325-2a97-c711-3abc-eb2550e047b1@oracle.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200310174711.7490-1-lmb@cloudflare.com> <20200312015822.bhu6ptkx5jpabkr6@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200312015822.bhu6ptkx5jpabkr6@ast-mbp.dhcp.thefacebook.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Thu, 12 Mar 2020 09:16:34 +0000
+Message-ID: <CACAyw9-Ui5FECjAaehP8raRjcRJVx2nQAj5=XPu=zXME2acMhg@mail.gmail.com>
+Subject: Re: [PATCH 0/5] Return fds from privileged sockhash/sockmap lookup
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        kernel-team <kernel-team@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 12 Mar 2020 at 01:58, Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> we do store the socket FD into a sockmap, but returning new FD to that socket
+> feels weird. The user space suppose to hold those sockets. If it was bpf prog
+> that stored a socket then what does user space want to do with that foreign
+> socket? It likely belongs to some other process. Stealing it from other process
+> doesn't feel right.
 
+For our BPF socket dispatch control plane this is true by design: all sockets
+belong to another process. The privileged user space is the steward of these,
+and needs to make sure traffic is steered to them. I agree that stealing them is
+weird, but after all this is CAP_NET_ADMIN only. pidfd_getfd allows you to
+really steal an fd from another process, so that cat is out of the bag ;)
 
-On 3/11/20 22:35, santosh.shilimkar@oracle.com wrote:
-> On 3/10/20 9:48 PM, zerons wrote:
->>
->>
->> On 3/11/20 01:53, santosh.shilimkar@oracle.com wrote:
->>> On 3/6/20 4:11 AM, zerons wrote:
->>>>
->>>>
->>>> On 2/28/20 02:10, santosh.shilimkar@oracle.com wrote:
->>>>>
->>>>>>> On 18 Feb 2020, at 14:13, zerons <sironhide0null@gmail.com> wrote:
->>>>>>>
->>>>>>> Hi, all
->>>>>>>
->>>>>>> In net/rds/rdma.c
->>>>>>> (https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/net/rds/rdma.c?h=v5.5.3*n419__;Iw!!GqivPVa7Brio!OwwQCLtjDsKmhaIz0sfaOVSuC4ai5t5_FgB7yqNExGOCBtACtIGLF61NNJyqSDtIAcGoPg$ ),
->>>>>>> there may be a race condition between rds_rdma_unuse() and rds_free_mr().
->>>>>>>
->>>>> Hmmm.. I didn't see email before in my inbox. Please post questions/patches on netdev in future which is the correct mailing list.
->>>>>
->>>>>>> It seems that this one need some specific devices to run test,
->>>>>>> unfortunately, I don't have any of these.
->>>>>>> I've already sent two emails to the maintainer for help, no response yet,
->>>>>>> (the email address may not be in use).
->>>>>>>
->>>>>>> 0) in rds_recv_incoming_exthdrs(), it calls rds_rdma_unuse() when receive an
->>>>>>> extension header with force=0, if the victim mr does not have RDS_RDMA_USE_ONCE
->>>>>>> flag set, then the mr would stay in the rbtree. Without any lock, it tries to
->>>>>>> call mr->r_trans->sync_mr().
->>>>>>>
->>> MR won't stay in the rbtree with force flag. If the MR is used or
->>> use_once is set in both cases its removed from the tree.
->>> See "if (mr->r_use_once || force)"
->>>
->>
->> Sorry, I may misunderstand. Did you mean that if the MR is *used*,
->> it is removed from the tree with or without the force flag in
->> rds_rdma_unuse(), even when r_use_once is not set?
->>
-> Once the MR is being used with use_once semantics it gets removed with or without remote side indicating it via extended header. use_once
-> optimization was added later. The base behavior is once the MR is
-> used by remote and same information is sent via extended header,
-> it gets cleaned up with force flag. Force flag ignores whether
-> its marked as used_once or not.
-> 
+Marek wrote a PoC control plane: https://github.com/majek/inet-tool
+It is a CLI tool and not a service, so it can't hold on to any sockets.
 
-Sorry, I am still confused.
+You can argue that we should turn it into a service, but that leads to another
+problem: there is no way of recovering these fds if the service crashes for
+some reason. The only solution would be to restart all services, which in
+our set up is the same as rebooting a machine really.
 
-I check the code again. The rds_rdma_unuse() is called in two functions,
-rds_recv_incoming_exthdrs() and rds_sendmsg().
+> Sounds like the use case is to take sockets one by one from one map, allocate
+> another map and store them there? The whole process has plenty of races.
 
-In rds_sendmsg(), it calls rds_rdma_unuse() *with* force flag only when
-the user included a RDMA_MAP cmsg *and* sendmsg() is failed.
+It doesn't have to race. Our user space can do the appropriate locking to ensure
+that operations are atomic wrt. dispatching to sockets:
 
-In rds_recv_incoming_exthdrs(), the force is *false*. So we can consider
-the rds_rdma_unuse() called *without* force flag.
-Then I go check where r_use_once can be set.
+- lock
+- read sockets from sockmap
+- write sockets into new sockmap
+- create new instance of BPF socket dispatch program
+- attach BPF socket dispatch program
+- remove old map
+- unlock
 
-__rds_rdma_map()
-	rds_get_mr()
-		rds_setsockopt()
+> I think it's better to tackle the problem from resize perspective. imo making it
+> something like sk_local_storage (which is already resizable pseudo map of
+> sockets) is a better way forward.
 
-	rds_get_mr_for_dest()
-		rds_setsockopt()
+Resizing is only one aspect. We may also need to shuffle services around,
+think "defragmentation", and I think there will be other cases as we gain more
+experience with the control plane. Being able to recover fds from the sockmap
+will make it more resilient. Adding a special API for every one of these cases
+seems cumbersome.
 
-	rds_cmsg_rdma_map()
-		rds_cmsg_send()
-			rds_sendmsg()
+Lorenz
 
-It seems to me that r_use_once is controlled by user applications.
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
-I also wonder if we can ensure that the MR found in rds_rdma_unuse()
-gets removed, then "if (mr->r_use_once || force)" doesn't make any sense.
-
-Sorry to keep bothering you with my questions. I wish I had such a device 
-that I can test it on.
-
-Best regards,
+www.cloudflare.com
