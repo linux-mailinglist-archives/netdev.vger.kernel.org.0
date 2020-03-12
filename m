@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F203C183D17
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 00:12:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 192FF183D18
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 00:12:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726901AbgCLXMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 19:12:48 -0400
+        id S1726917AbgCLXMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 19:12:50 -0400
 Received: from mail-eopbgr10083.outbound.protection.outlook.com ([40.107.1.83]:26253
         "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726710AbgCLXMr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Mar 2020 19:12:47 -0400
+        id S1726775AbgCLXMt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Mar 2020 19:12:49 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZpZnc2sxgTwOlVylKwlg9993rt6AeiTX4zEdAyemjn4hzQjhTXtnFoDuk2upL7DIXtVCCFfdRBTTPW1DqRhK38hNhsfg0oAqFuWsRqjt2UjO9W9WGM6PrkKxp06bu0HGVaO3OzkKZEeGIJY+bqxc/uBtPWUgStluOqcEU50mDzMqjgihY611iXkVHBUBI8Q/DiYcK9y+auYO0/zYECbOAN9en8Qs2jYZwsqyDc21uYxvbG2weY6BjoJE1dQZH7enXaqdBntVZQmXSbz3NtstZ8mgZSUgFAM/GBzqXPcSoX7uYUiKtV52wSpajkdjBYvuPnz9J1p9d6bcYLEZCEYfHw==
+ b=itJtFqoce/FvyHjQjdo8ptzITkDu76WkNzS4Q7/RleG35HBQ2QVING4e8+iF5LatJJBM31BCmIMoGuO4b2LkPO93A1M6z95hjMZScZ3bnuaz6egvufkBb9JISOo447zGQcDMTIv6tvGv9R/uIwp9+6H5FhzoDyOMhbHLuLGG+CyHm07f/L6Y8k0hTUBbrBxnLb8B2S4p/lXAQYtIrJOhVsisXNbJrmEseUeHwl+Qmtqy6Z+iuZXXMkvH+St2CxY2wrbwThhSY0MLoITSxBNwjUCvyWoAeDMmxHM54mNw63bqwzHb/0CARXHaYQxnZFYugOhihua23dcHF+kMLWgmhQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G2ukqXaET/kkLBfEfcOW0lAA/NKkKUhreyajjdmHBbg=;
- b=mPpBYrGXbW/nIGokrUpQl/gzRnxNOyqjCl7dYai7ro/9cgwUeJ2f8x6LHifexnvL4bG1YYREQpASqMEwzdoQKd9FUuCf3ANtdwecIkOV8iZXbbr+6ltIZfSjZYTrd/BU6PA3pujGG9LU+XjvLKLhCYb2/JVAJ3VkdKa+irPDMqY3maZGZ+l41mbRjajIpKvuk+VWIRtHyLHNglEdztC4Getnd9opoeFTeelKmoF9LQ40LacfGwc14z84QjJG99F2Yd2Ji2wA/khUofWdigfVCbC/6ZWIYnJlMazpo7YI2eIHkNfrrRvCQ3771NP9neL3GORnyMIGA3dXRl8VyITtnQ==
+ bh=F3TxnIf0qkF2GqLdvkqTYIE7x2yZD3r6oGFwcsB2ugM=;
+ b=hxZ7g0yzi66/IqV3p40EuzxbUo+HUubnUffQ0xAn/K7TSZJbaoNTP7yU40/y8RyM/MbI2TDEILRf5fxNd/J7GvocxKUniCnI5k532xqYp2Ynu/klFVpxsHPGXV/2OvKCsaIROQlnxs+ujrAcOf9mYVcg3qAj0IAbP+xXVJ1Oq3a10hu/cgspEP7t2J/aVrOdDdtz/1A3k6gO2YQ6oPocOtJ3tkfmPvtPPYCU5DDYvmabXFyAgFTCnR/mY+sPsEvcNRkvHJDoh+Q479/eUxGhiQzAKd6xPU2zgygeXlmMUS66azgZ/zSWoa6FKX/Z0F9jRFXt64sjXqJ6WW/KvixBxg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=G2ukqXaET/kkLBfEfcOW0lAA/NKkKUhreyajjdmHBbg=;
- b=OvIFSwQrWuQ1TIO5q23cBKPEd3YjrUz0zDrc9o7g1pYFoRK067LfUC2zrHnxb9hxWmDdjdxukKZCcr3NdcJcKWQys+nzxUaThetf+D/aKlKYJY9lT76dhd56+MqBVKTdyH5xZ1JlcLGYjEm7M5eAG7tcDv0n0rg8fgFamf85vYQ=
+ bh=F3TxnIf0qkF2GqLdvkqTYIE7x2yZD3r6oGFwcsB2ugM=;
+ b=qNOenQquV9z4xrGVfAsIhXIGa8ODKPWh7+M03CfNcsG3YKdEGtfLz0TcgVWew8B9OIbEeeWJNaEQgKOZr+nhl6ejIx5dU3pu7X5MhECCWAQX9AjUeSg3WhQj0NnMihjZPISqzL+6OaAuWLYotrc4TbjXU5Lm0s+rnmxrKQ/2i+k=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=petrm@mellanox.com; 
 Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (20.176.168.150) by
  HE1PR05MB3194.eurprd05.prod.outlook.com (10.170.241.25) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2793.17; Thu, 12 Mar 2020 23:12:39 +0000
+ 15.20.2793.17; Thu, 12 Mar 2020 23:12:40 +0000
 Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
  ([fe80::c146:9acd:f4dc:4e32]) by HE1PR05MB4746.eurprd05.prod.outlook.com
  ([fe80::c146:9acd:f4dc:4e32%7]) with mapi id 15.20.2793.018; Thu, 12 Mar 2020
- 23:12:39 +0000
+ 23:12:40 +0000
 From:   Petr Machata <petrm@mellanox.com>
 To:     netdev@vger.kernel.org
 Cc:     Petr Machata <petrm@mellanox.com>,
@@ -45,9 +45,9 @@ Cc:     Petr Machata <petrm@mellanox.com>,
         Eric Dumazet <eric.dumazet@gmail.com>, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, davem@davemloft.net, idosch@mellanox.com,
         mlxsw@mellanox.com
-Subject: [PATCH net-next v4 2/6] net: sched: Allow extending set of supported RED flags
-Date:   Fri, 13 Mar 2020 01:10:56 +0200
-Message-Id: <20200312231100.37180-3-petrm@mellanox.com>
+Subject: [PATCH net-next v4 3/6] net: sched: RED: Introduce an ECN nodrop mode
+Date:   Fri, 13 Mar 2020 01:10:57 +0200
+Message-Id: <20200312231100.37180-4-petrm@mellanox.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200312231100.37180-1-petrm@mellanox.com>
 References: <20200312231100.37180-1-petrm@mellanox.com>
@@ -57,297 +57,184 @@ X-ClientProxiedBy: PR2P264CA0002.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::14)
  To HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by PR2P264CA0002.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.20 via Frontend Transport; Thu, 12 Mar 2020 23:12:37 +0000
+Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by PR2P264CA0002.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.20 via Frontend Transport; Thu, 12 Mar 2020 23:12:39 +0000
 X-Mailer: git-send-email 2.20.1
 X-Originating-IP: [37.142.13.130]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: a6a9d2c4-fd05-4203-74b6-08d7c6dadbc7
+X-MS-Office365-Filtering-Correlation-Id: 6d1d5183-5dc7-4842-5d07-08d7c6dadcc5
 X-MS-TrafficTypeDiagnostic: HE1PR05MB3194:|HE1PR05MB3194:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB3194AE5363A8CEC83A7149B5DBFD0@HE1PR05MB3194.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <HE1PR05MB3194C5875CBC3AEF2B54C220DBFD0@HE1PR05MB3194.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-Forefront-PRVS: 0340850FCD
 X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(346002)(366004)(136003)(39860400002)(396003)(199004)(316002)(2906002)(66556008)(8676002)(66476007)(66946007)(4326008)(54906003)(81156014)(81166006)(6666004)(36756003)(1076003)(5660300002)(6512007)(6506007)(6486002)(52116002)(478600001)(16526019)(107886003)(26005)(8936002)(6916009)(956004)(86362001)(186003)(2616005);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR05MB3194;H:HE1PR05MB4746.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
 Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: q9UV7gbY/qWo6uk2y5+4PpHBX4lnwdmdMKOoxQCD3bDAMNVtBkU9qGj17w5z9CuFjwu8Ij6xlVFmVqilsqk3nd+dZEO7LOSuiTcL+5bOWbIFGCwSYavgovysZbcf64qmXWDb5MiWYrGXdZqVrylw9ePr0QEiLkvwXTi5enGxUsBLgl406485wI3O64E8bvs5h+QowzZ3ZG4AV/N01iXFA8Oj78le9PkXI27F0azaZZE3SIFLHQPxFZUd8DlOT4OoDZ4WK3nO7KCvghrNKmvkZFN6qWGUGIwKZDTuD1J5cgSBXnJvGUeQL+UNRdRAbJSJs0snpKsG5lsgc/H/PzpxjI1vAtDraqrj+yrqhXaI/v2cPwr0pCxtkuBD6yViNigSDNOlkaOw/sYoUAQc3EnwUZdkSCaUmmbQgGKbwXnkRSeSYnqM/RWkqhjnBjGtZXqT
-X-MS-Exchange-AntiSpam-MessageData: roDssCT1ulBniyUGTCU2CQfpULXmQK95Qh992aagPgCFIeK72onjYWculabiGg+RxHxg6SHHaxo0XP0HykZHakknA5wdvfbt8l5CAU9m89Q06CQUbZehLnR7p0/VpoI9ttW+9PtUcUpORjCgDeFkDA==
+X-Microsoft-Antispam-Message-Info: rq8QQx9pOUW+tlOSYMgKLUv+da5InkVasgAITSqwjSDZYtjLsLy/g8EEtWjHNhTrF2ac2cr+NhqIp7dgAgfBorvTWVB9H3yoNTSgv3nQJ3G/tFMnMHXo4gn/ah1hwjcbe14EuXM2j3t0+DU3mXbzg6v2UipDYOz9sb3qirZZJSIJwxfFIYFWi7SBRjm0Fce2mVzRC5myEk5d/0G79Wp1+nKZYgum9YrxaasnG3i5nw43JfBBU5gvWKPf0vy2HDLxmBowDy+NFKzMTnXZHaEB0zhNnGcr8//umQuYBdYS6lLhTrRmkjhmkJ5x3PjuVi6Lpp/SqMZFJ9Y0cQCL6wfWLeE+FJrsQ4UlhaBviqc2PqnH3iumHC/J6VvmVaSgyIW3WI2/kTVS6ByHm2OdyqUEkzWbw6z2w9FFWYGtK5a4ZjCoExeSxDku/sPGsV/msPau
+X-MS-Exchange-AntiSpam-MessageData: oynpXMX8YR0ue1QDMZioA2Ix1pOBRphUgsW5gY3aQosf0cugsV5OYJU1LqRLTrQJC2qrZn1+NHOQwK3X73Kq8vc7Ql1TBQ8pTvTn5hDAzn6HeiW+ySdHa9ThyZUBBqsu0jfbl3ap6ZhrgK+NTU82wQ==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a6a9d2c4-fd05-4203-74b6-08d7c6dadbc7
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2020 23:12:39.1005
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6d1d5183-5dc7-4842-5d07-08d7c6dadcc5
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2020 23:12:40.7905
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QnDX9Ma2yyDHfck+lagu5zdg8FUjW3uh8uMe2jptt6tYsSWTPB0gqER8crNtee9GeLfA/j6KeA87n383eoJzKg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: rYZ8VFiBkWPRMsImbSQOie+tLRoGApadLvI4AUmPnEMWMJ+q28sfLoQ4eAKnGC6lL74MUcHiOak7E3ojCAHKDw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3194
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The qdiscs RED, GRED, SFQ and CHOKE use different subsets of the same pool
-of global RED flags. These are passed in tc_red_qopt.flags. However none of
-these qdiscs validate the flag field, and just copy it over wholesale to
-internal structures, and later dump it back. (An exception is GRED, which
-does validate for VQs -- however not for the main setup.)
+When the RED Qdisc is currently configured to enable ECN, the RED algorithm
+is used to decide whether a certain SKB should be marked. If that SKB is
+not ECN-capable, it is early-dropped.
 
-A broken userspace can therefore configure a qdisc with arbitrary
-unsupported flags, and later expect to see the flags on qdisc dump. The
-current ABI therefore allows storage of several bits of custom data to
-qdisc instances of the types mentioned above. How many bits, depends on
-which flags are meaningful for the qdisc in question. E.g. SFQ recognizes
-flags ECN and HARDDROP, and the rest is not interpreted.
+It is also possible to keep all traffic in the queue, and just mark the
+ECN-capable subset of it, as appropriate under the RED algorithm. Some
+switches support this mode, and some installations make use of it.
 
-If SFQ ever needs to support ADAPTATIVE, it needs another way of doing it,
-and at the same time it needs to retain the possibility to store 6 bits of
-uninterpreted data. Likewise RED, which adds a new flag later in this
-patchset.
-
-To that end, this patch adds a new function, red_get_flags(), to split the
-passed flags of RED-like qdiscs to flags and user bits, and
-red_validate_flags() to validate the resulting configuration. It further
-adds a new attribute, TCA_RED_FLAGS, to pass arbitrary flags.
+To that end, add a new RED flag, TC_RED_NODROP. When the Qdisc is
+configured with this flag, non-ECT traffic is enqueued instead of being
+early-dropped.
 
 Signed-off-by: Petr Machata <petrm@mellanox.com>
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 ---
 
 Notes:
-    v4:
-    - Declare .strict_start_type at element with index zero, not at the
-      first array element declaration.
-    
     v3:
-    - Change TCA_RED_FLAGS from NLA_U32 to NLA_BITFIELD32. Change
-      RED_SUPPORTED_FLAGS the macro to red_supported_flags the constant
-      and use as .validation_data.
-    - Set policy's .strict_start_type to TCA_RED_FLAGS
-    - red_get_flags(): Don't modify the passed-in flags until the end of
-      the function. Return errno instead of bool.
-    - Keep red_sched_data.flags as unsigned char.
-    - Because bitfield32 allows only a subset of flags to be set, move the
-      validation of the resulting configuration in red_change() into the
-      critical section. Add a function red_validate_flags() specifically
-      for the validation.
-    - Remove braces when setting tc_red_qopt.flags in red_dump().
-    - Check nla_put()'s return code when dumping TCA_RED_FLAGS.
-    - Always dump TCA_RED_FLAGS, even if only old flags are active.
-      The BITFIELD32 interface is richer and this way we can communicate
-      to the client which flags are actually supported.
+    - Rename "taildrop" to "nodrop"
+    - Make red_use_nodrop() static instead of static inline
     
     v2:
-    - This patch is new.
+    - Fix red_use_taildrop() condition in red_enqueue switch for
+      probabilistic case.
 
- include/net/red.h              | 33 ++++++++++++++++++++++++++
- include/uapi/linux/pkt_sched.h | 16 +++++++++++++
- net/sched/sch_red.c            | 43 +++++++++++++++++++++++++++++++---
- 3 files changed, 89 insertions(+), 3 deletions(-)
+ include/net/pkt_cls.h          |  1 +
+ include/net/red.h              |  5 +++++
+ include/uapi/linux/pkt_sched.h |  1 +
+ net/sched/sch_red.c            | 31 +++++++++++++++++++++++++------
+ 4 files changed, 32 insertions(+), 6 deletions(-)
 
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index 341a66af8d59..e7e279ad8694 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -727,6 +727,7 @@ struct tc_red_qopt_offload_params {
+ 	u32 limit;
+ 	bool is_ecn;
+ 	bool is_harddrop;
++	bool is_nodrop;
+ 	struct gnet_stats_queue *qstats;
+ };
+ 
 diff --git a/include/net/red.h b/include/net/red.h
-index 9665582c4687..6a2aaa6c7c41 100644
+index 6a2aaa6c7c41..fc455445f4b2 100644
 --- a/include/net/red.h
 +++ b/include/net/red.h
-@@ -179,6 +179,39 @@ static inline bool red_check_params(u32 qth_min, u32 qth_max, u8 Wlog)
- 	return true;
- }
- 
-+static inline int red_get_flags(unsigned char qopt_flags,
-+				unsigned char historic_mask,
-+				struct nlattr *flags_attr,
-+				unsigned char supported_mask,
-+				struct nla_bitfield32 *p_flags,
-+				unsigned char *p_userbits,
-+				struct netlink_ext_ack *extack)
-+{
-+	struct nla_bitfield32 flags;
-+
-+	if (qopt_flags && flags_attr) {
-+		NL_SET_ERR_MSG_MOD(extack, "flags should be passed either through qopt, or through a dedicated attribute");
+@@ -209,6 +209,11 @@ static inline int red_get_flags(unsigned char qopt_flags,
+ static inline int red_validate_flags(unsigned char flags,
+ 				     struct netlink_ext_ack *extack)
+ {
++	if ((flags & TC_RED_NODROP) && !(flags & TC_RED_ECN)) {
++		NL_SET_ERR_MSG_MOD(extack, "nodrop mode is only meaningful with ECN");
 +		return -EINVAL;
 +	}
 +
-+	if (flags_attr) {
-+		flags = nla_get_bitfield32(flags_attr);
-+	} else {
-+		flags.selector = historic_mask;
-+		flags.value = qopt_flags & historic_mask;
-+	}
-+
-+	*p_flags = flags;
-+	*p_userbits = qopt_flags & ~historic_mask;
-+	return 0;
-+}
-+
-+static inline int red_validate_flags(unsigned char flags,
-+				     struct netlink_ext_ack *extack)
-+{
-+	return 0;
-+}
-+
- static inline void red_set_parms(struct red_parms *p,
- 				 u32 qth_min, u32 qth_max, u8 Wlog, u8 Plog,
- 				 u8 Scell_log, u8 *stab, u32 max_P)
+ 	return 0;
+ }
+ 
 diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-index bbe791b24168..6325507935ea 100644
+index 6325507935ea..ea39287d59c8 100644
 --- a/include/uapi/linux/pkt_sched.h
 +++ b/include/uapi/linux/pkt_sched.h
-@@ -256,6 +256,7 @@ enum {
- 	TCA_RED_PARMS,
- 	TCA_RED_STAB,
- 	TCA_RED_MAX_P,
-+	TCA_RED_FLAGS,		/* bitfield32 */
- 	__TCA_RED_MAX,
- };
- 
-@@ -268,12 +269,27 @@ struct tc_red_qopt {
- 	unsigned char   Wlog;		/* log(W)		*/
- 	unsigned char   Plog;		/* log(P_max/(qth_max-qth_min))	*/
- 	unsigned char   Scell_log;	/* cell size for idle damping */
-+
-+	/* This field can be used for flags that a RED-like qdisc has
-+	 * historically supported. E.g. when configuring RED, it can be used for
-+	 * ECN, HARDDROP and ADAPTATIVE. For SFQ it can be used for ECN,
-+	 * HARDDROP. Etc. Because this field has not been validated, and is
-+	 * copied back on dump, any bits besides those to which a given qdisc
-+	 * has assigned a historical meaning need to be considered for free use
-+	 * by userspace tools.
-+	 *
-+	 * Any further flags need to be passed differently, e.g. through an
-+	 * attribute (such as TCA_RED_FLAGS above). Such attribute should allow
-+	 * passing both recent and historic flags in one value.
-+	 */
- 	unsigned char	flags;
+@@ -286,6 +286,7 @@ struct tc_red_qopt {
  #define TC_RED_ECN		1
  #define TC_RED_HARDDROP		2
  #define TC_RED_ADAPTATIVE	4
++#define TC_RED_NODROP		8
  };
  
-+#define TC_RED_HISTORIC_FLAGS (TC_RED_ECN | TC_RED_HARDDROP | TC_RED_ADAPTATIVE)
-+
- struct tc_red_xstats {
- 	__u32           early;          /* Early drops */
- 	__u32           pdrop;          /* Drops due to queue limits */
+ #define TC_RED_HISTORIC_FLAGS (TC_RED_ECN | TC_RED_HARDDROP | TC_RED_ADAPTATIVE)
 diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
-index 1695421333e3..d4ce111704dc 100644
+index d4ce111704dc..3ef0a4f7399b 100644
 --- a/net/sched/sch_red.c
 +++ b/net/sched/sch_red.c
-@@ -35,7 +35,11 @@
- 
- struct red_sched_data {
- 	u32			limit;		/* HARD maximal queue length */
-+
- 	unsigned char		flags;
-+	/* Non-flags in tc_red_qopt.flags. */
-+	unsigned char		userbits;
-+
- 	struct timer_list	adapt_timer;
- 	struct Qdisc		*sch;
- 	struct red_parms	parms;
-@@ -44,6 +48,8 @@ struct red_sched_data {
+@@ -48,7 +48,7 @@ struct red_sched_data {
  	struct Qdisc		*qdisc;
  };
  
-+static const u32 red_supported_flags = TC_RED_HISTORIC_FLAGS;
-+
+-static const u32 red_supported_flags = TC_RED_HISTORIC_FLAGS;
++static const u32 red_supported_flags = TC_RED_HISTORIC_FLAGS | TC_RED_NODROP;
+ 
  static inline int red_use_ecn(struct red_sched_data *q)
  {
- 	return q->flags & TC_RED_ECN;
-@@ -183,9 +189,12 @@ static void red_destroy(struct Qdisc *sch)
+@@ -60,6 +60,11 @@ static inline int red_use_harddrop(struct red_sched_data *q)
+ 	return q->flags & TC_RED_HARDDROP;
  }
  
- static const struct nla_policy red_policy[TCA_RED_MAX + 1] = {
-+	[TCA_RED_UNSPEC] = { .strict_start_type = TCA_RED_FLAGS },
- 	[TCA_RED_PARMS]	= { .len = sizeof(struct tc_red_qopt) },
- 	[TCA_RED_STAB]	= { .len = RED_STAB_SIZE },
- 	[TCA_RED_MAX_P] = { .type = NLA_U32 },
-+	[TCA_RED_FLAGS] = { .type = NLA_BITFIELD32,
-+			    .validation_data = &red_supported_flags },
- };
- 
- static int red_change(struct Qdisc *sch, struct nlattr *opt,
-@@ -194,7 +203,10 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt,
- 	struct Qdisc *old_child = NULL, *child = NULL;
- 	struct red_sched_data *q = qdisc_priv(sch);
- 	struct nlattr *tb[TCA_RED_MAX + 1];
-+	struct nla_bitfield32 flags_bf;
- 	struct tc_red_qopt *ctl;
-+	unsigned char userbits;
-+	unsigned char flags;
- 	int err;
- 	u32 max_P;
- 
-@@ -216,6 +228,12 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt,
- 	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
- 		return -EINVAL;
- 
-+	err = red_get_flags(ctl->flags, TC_RED_HISTORIC_FLAGS,
-+			    tb[TCA_RED_FLAGS], red_supported_flags,
-+			    &flags_bf, &userbits, extack);
-+	if (err)
-+		return err;
++static int red_use_nodrop(struct red_sched_data *q)
++{
++	return q->flags & TC_RED_NODROP;
++}
 +
- 	if (ctl->limit > 0) {
- 		child = fifo_create_dflt(sch, &bfifo_qdisc_ops, ctl->limit,
- 					 extack);
-@@ -227,7 +245,14 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt,
+ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 		       struct sk_buff **to_free)
+ {
+@@ -80,23 +85,36 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+ 
+ 	case RED_PROB_MARK:
+ 		qdisc_qstats_overlimit(sch);
+-		if (!red_use_ecn(q) || !INET_ECN_set_ce(skb)) {
++		if (!red_use_ecn(q)) {
+ 			q->stats.prob_drop++;
+ 			goto congestion_drop;
+ 		}
+ 
+-		q->stats.prob_mark++;
++		if (INET_ECN_set_ce(skb)) {
++			q->stats.prob_mark++;
++		} else if (!red_use_nodrop(q)) {
++			q->stats.prob_drop++;
++			goto congestion_drop;
++		}
++
++		/* Non-ECT packet in ECN nodrop mode: queue it. */
+ 		break;
+ 
+ 	case RED_HARD_MARK:
+ 		qdisc_qstats_overlimit(sch);
+-		if (red_use_harddrop(q) || !red_use_ecn(q) ||
+-		    !INET_ECN_set_ce(skb)) {
++		if (red_use_harddrop(q) || !red_use_ecn(q)) {
+ 			q->stats.forced_drop++;
+ 			goto congestion_drop;
+ 		}
+ 
+-		q->stats.forced_mark++;
++		if (INET_ECN_set_ce(skb)) {
++			q->stats.forced_mark++;
++		} else if (!red_use_nodrop(q)) {
++			q->stats.forced_drop++;
++			goto congestion_drop;
++		}
++
++		/* Non-ECT packet in ECN nodrop mode: queue it. */
+ 		break;
  	}
  
- 	sch_tree_lock(sch);
--	q->flags = ctl->flags;
-+
-+	flags = (q->flags & ~flags_bf.selector) | flags_bf.value;
-+	err = red_validate_flags(flags, extack);
-+	if (err)
-+		goto unlock_out;
-+
-+	q->flags = flags;
-+	q->userbits = userbits;
- 	q->limit = ctl->limit;
- 	if (child) {
- 		qdisc_tree_flush_backlog(q->qdisc);
-@@ -256,6 +281,12 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt,
- 	if (old_child)
- 		qdisc_put(old_child);
- 	return 0;
-+
-+unlock_out:
-+	sch_tree_unlock(sch);
-+	if (child)
-+		qdisc_put(child);
-+	return err;
- }
- 
- static inline void red_adaptative_timer(struct timer_list *t)
-@@ -299,10 +330,15 @@ static int red_dump_offload_stats(struct Qdisc *sch)
- static int red_dump(struct Qdisc *sch, struct sk_buff *skb)
- {
- 	struct red_sched_data *q = qdisc_priv(sch);
-+	struct nla_bitfield32 flags_bf = {
-+		.selector = red_supported_flags,
-+		.value = q->flags,
-+	};
- 	struct nlattr *opts = NULL;
- 	struct tc_red_qopt opt = {
- 		.limit		= q->limit,
--		.flags		= q->flags,
-+		.flags		= (q->flags & TC_RED_HISTORIC_FLAGS) |
-+				  q->userbits,
- 		.qth_min	= q->parms.qth_min >> q->parms.Wlog,
- 		.qth_max	= q->parms.qth_max >> q->parms.Wlog,
- 		.Wlog		= q->parms.Wlog,
-@@ -319,7 +355,8 @@ static int red_dump(struct Qdisc *sch, struct sk_buff *skb)
- 	if (opts == NULL)
- 		goto nla_put_failure;
- 	if (nla_put(skb, TCA_RED_PARMS, sizeof(opt), &opt) ||
--	    nla_put_u32(skb, TCA_RED_MAX_P, q->parms.max_P))
-+	    nla_put_u32(skb, TCA_RED_MAX_P, q->parms.max_P) ||
-+	    nla_put(skb, TCA_RED_FLAGS, sizeof(flags_bf), &flags_bf))
- 		goto nla_put_failure;
- 	return nla_nest_end(skb, opts);
- 
+@@ -171,6 +189,7 @@ static int red_offload(struct Qdisc *sch, bool enable)
+ 		opt.set.limit = q->limit;
+ 		opt.set.is_ecn = red_use_ecn(q);
+ 		opt.set.is_harddrop = red_use_harddrop(q);
++		opt.set.is_nodrop = red_use_nodrop(q);
+ 		opt.set.qstats = &sch->qstats;
+ 	} else {
+ 		opt.command = TC_RED_DESTROY;
 -- 
 2.20.1
 
