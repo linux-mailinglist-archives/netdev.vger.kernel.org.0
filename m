@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CCDB182D6A
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 11:24:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A889182D5E
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 11:23:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727015AbgCLKXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 06:23:55 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:56534 "EHLO
+        id S1726964AbgCLKXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 06:23:38 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:56642 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726845AbgCLKXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 06:23:33 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+        with ESMTP id S1726913AbgCLKXg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 06:23:36 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 12 Mar 2020 12:23:28 +0200
 Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02CANSTe017875;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02CANSTf017875;
         Thu, 12 Mar 2020 12:23:28 +0200
 From:   Paul Blakey <paulb@mellanox.com>
 To:     Paul Blakey <paulb@mellanox.com>,
@@ -25,9 +25,9 @@ To:     Paul Blakey <paulb@mellanox.com>,
         David Miller <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>
-Subject: [PATCH net-next ct-offload v4 06/15] net/sched: act_ct: Support refreshing the flow table entries
-Date:   Thu, 12 Mar 2020 12:23:08 +0200
-Message-Id: <1584008597-15875-7-git-send-email-paulb@mellanox.com>
+Subject: [PATCH net-next ct-offload v4 07/15] net/sched: act_ct: Enable hardware offload of flow table entires
+Date:   Thu, 12 Mar 2020 12:23:09 +0200
+Message-Id: <1584008597-15875-8-git-send-email-paulb@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1584008597-15875-1-git-send-email-paulb@mellanox.com>
 References: <1584008597-15875-1-git-send-email-paulb@mellanox.com>
@@ -36,126 +36,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If driver deleted an FT entry, a FT failed to offload, or registered to the
-flow table after flows were already added, we still get packets in
-software.
+Pass the zone's flow table instance on the flow action to the drivers.
+Thus, allowing drivers to register FT add/del/stats callbacks.
 
-For those packets, while restoring the ct state from the flow table
-entry, refresh it's hardware offload.
+Finally, enable hardware offload on the flow table instance.
 
 Signed-off-by: Paul Blakey <paulb@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- include/net/netfilter/nf_flow_table.h |  3 +++
- net/netfilter/nf_flow_table_core.c    | 13 +++++++++++++
- net/netfilter/nf_flow_table_ip.c      | 15 ++-------------
- net/sched/act_ct.c                    |  1 +
- 4 files changed, 19 insertions(+), 13 deletions(-)
+ include/net/flow_offload.h |  1 +
+ include/net/tc_act/tc_ct.h | 10 ++++++++++
+ net/sched/act_ct.c         |  2 ++
+ net/sched/cls_api.c        |  1 +
+ 4 files changed, 14 insertions(+)
 
-diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
-index c2d5cdd..6890f1c 100644
---- a/include/net/netfilter/nf_flow_table.h
-+++ b/include/net/netfilter/nf_flow_table.h
-@@ -162,6 +162,9 @@ int flow_offload_route_init(struct flow_offload *flow,
- 			    const struct nf_flow_route *route);
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index a039c90..ceaa362 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -225,6 +225,7 @@ struct flow_action_entry {
+ 		struct {				/* FLOW_ACTION_CT */
+ 			int action;
+ 			u16 zone;
++			struct nf_flowtable *flow_table;
+ 		} ct;
+ 		struct {
+ 			unsigned long cookie;
+diff --git a/include/net/tc_act/tc_ct.h b/include/net/tc_act/tc_ct.h
+index 735da59..79654bc 100644
+--- a/include/net/tc_act/tc_ct.h
++++ b/include/net/tc_act/tc_ct.h
+@@ -27,6 +27,7 @@ struct tcf_ct_params {
+ 	struct rcu_head rcu;
  
- int flow_offload_add(struct nf_flowtable *flow_table, struct flow_offload *flow);
-+void flow_offload_refresh(struct nf_flowtable *flow_table,
-+			  struct flow_offload *flow);
-+
- struct flow_offload_tuple_rhash *flow_offload_lookup(struct nf_flowtable *flow_table,
- 						     struct flow_offload_tuple *tuple);
- void nf_flow_table_cleanup(struct net_device *dev);
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index 4af0327..9a477bd 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -252,6 +252,19 @@ int flow_offload_add(struct nf_flowtable *flow_table, struct flow_offload *flow)
+ 	struct tcf_ct_flow_table *ct_ft;
++	struct nf_flowtable *nf_ft;
+ };
+ 
+ struct tcf_ct {
+@@ -50,9 +51,18 @@ static inline int tcf_ct_action(const struct tc_action *a)
+ 	return to_ct_params(a)->ct_action;
  }
- EXPORT_SYMBOL_GPL(flow_offload_add);
  
-+void flow_offload_refresh(struct nf_flowtable *flow_table,
-+			  struct flow_offload *flow)
++static inline struct nf_flowtable *tcf_ct_ft(const struct tc_action *a)
 +{
-+	flow->timeout = nf_flowtable_time_stamp + NF_FLOW_TIMEOUT;
-+
-+	if (likely(!nf_flowtable_hw_offload(flow_table) ||
-+		   !test_and_clear_bit(NF_FLOW_HW_REFRESH, &flow->flags)))
-+		return;
-+
-+	nf_flow_offload_add(flow_table, flow);
++	return to_ct_params(a)->nf_ft;
 +}
-+EXPORT_SYMBOL_GPL(flow_offload_refresh);
 +
- static inline bool nf_flow_has_expired(const struct flow_offload *flow)
- {
- 	return nf_flow_timeout_delta(flow->timeout) <= 0;
-diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
-index 9e563fd..5272721 100644
---- a/net/netfilter/nf_flow_table_ip.c
-+++ b/net/netfilter/nf_flow_table_ip.c
-@@ -232,13 +232,6 @@ static unsigned int nf_flow_xmit_xfrm(struct sk_buff *skb,
- 	return NF_STOLEN;
- }
+ #else
+ static inline uint16_t tcf_ct_zone(const struct tc_action *a) { return 0; }
+ static inline int tcf_ct_action(const struct tc_action *a) { return 0; }
++static inline struct nf_flowtable *tcf_ct_ft(const struct tc_action *a)
++{
++	return NULL;
++}
+ #endif /* CONFIG_NF_CONNTRACK */
  
--static bool nf_flow_offload_refresh(struct nf_flowtable *flow_table,
--				    struct flow_offload *flow)
--{
--	return nf_flowtable_hw_offload(flow_table) &&
--	       test_and_clear_bit(NF_FLOW_HW_REFRESH, &flow->flags);
--}
--
- unsigned int
- nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
- 			const struct nf_hook_state *state)
-@@ -279,8 +272,7 @@ static bool nf_flow_offload_refresh(struct nf_flowtable *flow_table,
- 	if (nf_flow_state_check(flow, ip_hdr(skb)->protocol, skb, thoff))
- 		return NF_ACCEPT;
- 
--	if (unlikely(nf_flow_offload_refresh(flow_table, flow)))
--		nf_flow_offload_add(flow_table, flow);
-+	flow_offload_refresh(flow_table, flow);
- 
- 	if (nf_flow_offload_dst_check(&rt->dst)) {
- 		flow_offload_teardown(flow);
-@@ -290,7 +282,6 @@ static bool nf_flow_offload_refresh(struct nf_flowtable *flow_table,
- 	if (nf_flow_nat_ip(flow, skb, thoff, dir) < 0)
- 		return NF_DROP;
- 
--	flow->timeout = nf_flowtable_time_stamp + NF_FLOW_TIMEOUT;
- 	iph = ip_hdr(skb);
- 	ip_decrease_ttl(iph);
- 	skb->tstamp = 0;
-@@ -508,8 +499,7 @@ static int nf_flow_tuple_ipv6(struct sk_buff *skb, const struct net_device *dev,
- 				sizeof(*ip6h)))
- 		return NF_ACCEPT;
- 
--	if (unlikely(nf_flow_offload_refresh(flow_table, flow)))
--		nf_flow_offload_add(flow_table, flow);
-+	flow_offload_refresh(flow_table, flow);
- 
- 	if (nf_flow_offload_dst_check(&rt->dst)) {
- 		flow_offload_teardown(flow);
-@@ -522,7 +512,6 @@ static int nf_flow_tuple_ipv6(struct sk_buff *skb, const struct net_device *dev,
- 	if (nf_flow_nat_ipv6(flow, skb, dir) < 0)
- 		return NF_DROP;
- 
--	flow->timeout = nf_flowtable_time_stamp + NF_FLOW_TIMEOUT;
- 	ip6h = ipv6_hdr(skb);
- 	ip6h->hop_limit--;
- 	skb->tstamp = 0;
+ #if IS_ENABLED(CONFIG_NET_ACT_CT)
 diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 31eef8a..16fc731 100644
+index 16fc731..56b66d2 100644
 --- a/net/sched/act_ct.c
 +++ b/net/sched/act_ct.c
-@@ -531,6 +531,7 @@ static bool tcf_ct_flow_table_lookup(struct tcf_ct_params *p,
- 	ctinfo = dir == FLOW_OFFLOAD_DIR_ORIGINAL ? IP_CT_ESTABLISHED :
- 						    IP_CT_ESTABLISHED_REPLY;
+@@ -292,6 +292,7 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
+ 		goto err_insert;
  
-+	flow_offload_refresh(nf_ft, flow);
- 	nf_conntrack_get(&ct->ct_general);
- 	nf_ct_set(skb, ct, ctinfo);
+ 	ct_ft->nf_ft.type = &flowtable_ct;
++	ct_ft->nf_ft.flags |= NF_FLOWTABLE_HW_OFFLOAD;
+ 	err = nf_flow_table_init(&ct_ft->nf_ft);
+ 	if (err)
+ 		goto err_init;
+@@ -299,6 +300,7 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
+ 	__module_get(THIS_MODULE);
+ out_unlock:
+ 	params->ct_ft = ct_ft;
++	params->nf_ft = &ct_ft->nf_ft;
+ 	mutex_unlock(&zones_mutex);
  
+ 	return 0;
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 2b5b4eb..2046102 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3636,6 +3636,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 			entry->id = FLOW_ACTION_CT;
+ 			entry->ct.action = tcf_ct_action(act);
+ 			entry->ct.zone = tcf_ct_zone(act);
++			entry->ct.flow_table = tcf_ct_ft(act);
+ 		} else if (is_tcf_mpls(act)) {
+ 			switch (tcf_mpls_action(act)) {
+ 			case TCA_MPLS_ACT_PUSH:
 -- 
 1.8.3.1
 
