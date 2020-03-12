@@ -2,27 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A231B183A43
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 21:08:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92CE1183A45
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 21:08:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727195AbgCLUID (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 16:08:03 -0400
-Received: from mx2.suse.de ([195.135.220.15]:45230 "EHLO mx2.suse.de"
+        id S1727224AbgCLUII (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 16:08:08 -0400
+Received: from mx2.suse.de ([195.135.220.15]:45260 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727133AbgCLUIB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Mar 2020 16:08:01 -0400
+        id S1727133AbgCLUIF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Mar 2020 16:08:05 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id DA9F6AC51;
-        Thu, 12 Mar 2020 20:07:58 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id E1166AE44;
+        Thu, 12 Mar 2020 20:08:03 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 8941CE0C79; Thu, 12 Mar 2020 21:07:58 +0100 (CET)
-Message-Id: <82d8d976acc0039df90313d1835821f987ebef4f.1584043144.git.mkubecek@suse.cz>
+        id 8FC58E0C79; Thu, 12 Mar 2020 21:08:03 +0100 (CET)
+Message-Id: <62c68681c338ae22b0d2924e9b8728f7858023d2.1584043144.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1584043144.git.mkubecek@suse.cz>
 References: <cover.1584043144.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next v2 05/15] ethtool: set netdev features with
- FEATURES_SET request
+Subject: [PATCH net-next v2 06/15] ethtool: add FEATURES_NTF notification
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
 Cc:     Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
@@ -30,368 +29,151 @@ Cc:     Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
         John Linville <linville@tuxdriver.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
-Date:   Thu, 12 Mar 2020 21:07:58 +0100 (CET)
+Date:   Thu, 12 Mar 2020 21:08:03 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement FEATURES_SET netlink request to set network device features.
-These are traditionally set using ETHTOOL_SFEATURES ioctl request.
-
-Actual change is subject to netdev_change_features() sanity checks so that
-it can differ from what was requested. Unlike with most other SET requests,
-in addition to error code and optional extack, kernel provides an optional
-reply message (ETHTOOL_MSG_FEATURES_SET_REPLY) in the same format but with
-different semantics: information about difference between user request and
-actual result and difference between old and new state of dev->features.
-This reply message can be suppressed by setting ETHTOOL_FLAG_OMIT_REPLY
-flag in request header.
+Send ETHTOOL_MSG_FEATURES_NTF notification whenever network device features
+are modified using ETHTOOL_MSG_FEATURES_SET netlink message, ethtool ioctl
+request or any other way resulting in call to netdev_update_features() or
+netdev_change_features()
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- Documentation/networking/ethtool-netlink.rst |  56 +++++-
- include/uapi/linux/ethtool_netlink.h         |   2 +
- net/ethtool/features.c                       | 169 +++++++++++++++++++
- net/ethtool/netlink.c                        |   5 +
- net/ethtool/netlink.h                        |   1 +
- 5 files changed, 224 insertions(+), 9 deletions(-)
+ Documentation/networking/ethtool-netlink.rst |  6 ++++
+ include/uapi/linux/ethtool_netlink.h         |  1 +
+ net/ethtool/features.c                       |  4 +++
+ net/ethtool/netlink.c                        | 29 +++++++++++++++++++-
+ 4 files changed, 39 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index 5713abf98534..d6706c4aa972 100644
+index d6706c4aa972..47542f042e9d 100644
 --- a/Documentation/networking/ethtool-netlink.rst
 +++ b/Documentation/networking/ethtool-netlink.rst
-@@ -190,6 +190,7 @@ Userspace to kernel:
-   ``ETHTOOL_MSG_WOL_GET``               get wake-on-lan settings
-   ``ETHTOOL_MSG_WOL_SET``               set wake-on-lan settings
-   ``ETHTOOL_MSG_FEATURES_GET``          get device features
-+  ``ETHTOOL_MSG_FEATURES_SET``          set device features
-   ===================================== ================================
- 
- Kernel to userspace:
-@@ -206,6 +207,7 @@ Kernel to userspace:
-   ``ETHTOOL_MSG_WOL_GET_REPLY``         wake-on-lan settings
+@@ -208,6 +208,7 @@ Kernel to userspace:
    ``ETHTOOL_MSG_WOL_NTF``               wake-on-lan settings notification
    ``ETHTOOL_MSG_FEATURES_GET_REPLY``    device features
-+  ``ETHTOOL_MSG_FEATURES_SET_REPLY``    optional reply to FEATURES_SET
+   ``ETHTOOL_MSG_FEATURES_SET_REPLY``    optional reply to FEATURES_SET
++  ``ETHTOOL_MSG_FEATURES_NTF``          netdev features notification
    ===================================== =================================
  
  ``GET`` requests are sent by userspace applications to retrieve device
-@@ -554,6 +556,42 @@ provide all names when using verbose bitmap format), the other three use no
- mask (simple bit lists).
+@@ -591,6 +592,11 @@ reports the difference between old and new dev->features: mask consists of
+ bits which have changed, values are their values in new dev->features (after
+ the operation).
  
++``ETHTOOL_MSG_FEATURES_NTF`` notification is sent not only if device features
++are modified using ``ETHTOOL_MSG_FEATURES_SET`` request or on of ethtool ioctl
++request but also each time features are modified with netdev_update_features()
++or netdev_change_features().
++
  
-+FEATURES_SET
-+============
-+
-+Request to set netdev features like ``ETHTOOL_SFEATURES`` ioctl request.
-+
-+Request contents:
-+
-+  ====================================  ======  ==========================
-+  ``ETHTOOL_A_FEATURES_HEADER``         nested  request header
-+  ``ETHTOOL_A_FEATURES_WANTED``         bitset  requested features
-+  ====================================  ======  ==========================
-+
-+Kernel response contents:
-+
-+  ====================================  ======  ==========================
-+  ``ETHTOOL_A_FEATURES_HEADER``         nested  reply header
-+  ``ETHTOOL_A_FEATURES_WANTED``         bitset  diff wanted vs. result
-+  ``ETHTOOL_A_FEATURES_ACTIVE``         bitset  diff old vs. new active
-+  ====================================  ======  ==========================
-+
-+Request constains only one bitset which can be either value/mask pair (request
-+to change specific feature bits and leave the rest) or only a value (request
-+to set all features to specified set).
-+
-+As request is subject to netdev_change_features() sanity checks, optional
-+kernel reply (can be suppressed by ``ETHTOOL_FLAG_OMIT_REPLY`` flag in request
-+header) informs client about the actual result. ``ETHTOOL_A_FEATURES_WANTED``
-+reports the difference between client request and actual result: mask consists
-+of bits which differ between requested features and result (dev->features
-+after the operation), value consists of values of these bits in the request
-+(i.e. negated values from resulting features). ``ETHTOOL_A_FEATURES_ACTIVE``
-+reports the difference between old and new dev->features: mask consists of
-+bits which have changed, values are their values in new dev->features (after
-+the operation).
-+
-+
  Request translation
  ===================
- 
-@@ -585,30 +623,30 @@ have their netlink replacement yet.
-   ``ETHTOOL_GPAUSEPARAM``             n/a
-   ``ETHTOOL_SPAUSEPARAM``             n/a
-   ``ETHTOOL_GRXCSUM``                 ``ETHTOOL_MSG_FEATURES_GET``
--  ``ETHTOOL_SRXCSUM``                 n/a
-+  ``ETHTOOL_SRXCSUM``                 ``ETHTOOL_MSG_FEATURES_SET``
-   ``ETHTOOL_GTXCSUM``                 ``ETHTOOL_MSG_FEATURES_GET``
--  ``ETHTOOL_STXCSUM``                 n/a
-+  ``ETHTOOL_STXCSUM``                 ``ETHTOOL_MSG_FEATURES_SET``
-   ``ETHTOOL_GSG``                     ``ETHTOOL_MSG_FEATURES_GET``
--  ``ETHTOOL_SSG``                     n/a
-+  ``ETHTOOL_SSG``                     ``ETHTOOL_MSG_FEATURES_SET``
-   ``ETHTOOL_TEST``                    n/a
-   ``ETHTOOL_GSTRINGS``                ``ETHTOOL_MSG_STRSET_GET``
-   ``ETHTOOL_PHYS_ID``                 n/a
-   ``ETHTOOL_GSTATS``                  n/a
-   ``ETHTOOL_GTSO``                    ``ETHTOOL_MSG_FEATURES_GET``
--  ``ETHTOOL_STSO``                    n/a
-+  ``ETHTOOL_STSO``                    ``ETHTOOL_MSG_FEATURES_SET``
-   ``ETHTOOL_GPERMADDR``               rtnetlink ``RTM_GETLINK``
-   ``ETHTOOL_GUFO``                    ``ETHTOOL_MSG_FEATURES_GET``
--  ``ETHTOOL_SUFO``                    n/a
-+  ``ETHTOOL_SUFO``                    ``ETHTOOL_MSG_FEATURES_SET``
-   ``ETHTOOL_GGSO``                    ``ETHTOOL_MSG_FEATURES_GET``
--  ``ETHTOOL_SGSO``                    n/a
-+  ``ETHTOOL_SGSO``                    ``ETHTOOL_MSG_FEATURES_SET``
-   ``ETHTOOL_GFLAGS``                  ``ETHTOOL_MSG_FEATURES_GET``
--  ``ETHTOOL_SFLAGS``                  n/a
-+  ``ETHTOOL_SFLAGS``                  ``ETHTOOL_MSG_FEATURES_SET``
-   ``ETHTOOL_GPFLAGS``                 n/a
-   ``ETHTOOL_SPFLAGS``                 n/a
-   ``ETHTOOL_GRXFH``                   n/a
-   ``ETHTOOL_SRXFH``                   n/a
-   ``ETHTOOL_GGRO``                    ``ETHTOOL_MSG_FEATURES_GET``
--  ``ETHTOOL_SGRO``                    n/a
-+  ``ETHTOOL_SGRO``                    ``ETHTOOL_MSG_FEATURES_SET``
-   ``ETHTOOL_GRXRINGS``                n/a
-   ``ETHTOOL_GRXCLSRLCNT``             n/a
-   ``ETHTOOL_GRXCLSRULE``              n/a
-@@ -623,7 +661,7 @@ have their netlink replacement yet.
-   ``ETHTOOL_GRXFHINDIR``              n/a
-   ``ETHTOOL_SRXFHINDIR``              n/a
-   ``ETHTOOL_GFEATURES``               ``ETHTOOL_MSG_FEATURES_GET``
--  ``ETHTOOL_SFEATURES``               n/a
-+  ``ETHTOOL_SFEATURES``               ``ETHTOOL_MSG_FEATURES_SET``
-   ``ETHTOOL_GCHANNELS``               n/a
-   ``ETHTOOL_SCHANNELS``               n/a
-   ``ETHTOOL_SET_DUMP``                n/a
 diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index d0cc7a0334c8..6f7aaa6b7f42 100644
+index 6f7aaa6b7f42..3d0204cf96a6 100644
 --- a/include/uapi/linux/ethtool_netlink.h
 +++ b/include/uapi/linux/ethtool_netlink.h
-@@ -25,6 +25,7 @@ enum {
- 	ETHTOOL_MSG_WOL_GET,
- 	ETHTOOL_MSG_WOL_SET,
- 	ETHTOOL_MSG_FEATURES_GET,
-+	ETHTOOL_MSG_FEATURES_SET,
- 
- 	/* add new constants above here */
- 	__ETHTOOL_MSG_USER_CNT,
-@@ -45,6 +46,7 @@ enum {
- 	ETHTOOL_MSG_WOL_GET_REPLY,
+@@ -47,6 +47,7 @@ enum {
  	ETHTOOL_MSG_WOL_NTF,
  	ETHTOOL_MSG_FEATURES_GET_REPLY,
-+	ETHTOOL_MSG_FEATURES_SET_REPLY,
+ 	ETHTOOL_MSG_FEATURES_SET_REPLY,
++	ETHTOOL_MSG_FEATURES_NTF,
  
  	/* add new constants above here */
  	__ETHTOOL_MSG_KERNEL_CNT,
 diff --git a/net/ethtool/features.c b/net/ethtool/features.c
-index a0cc2b969053..4ac1e05684ce 100644
+index 4ac1e05684ce..4e632dc987d8 100644
 --- a/net/ethtool/features.c
 +++ b/net/ethtool/features.c
-@@ -129,3 +129,172 @@ const struct ethnl_request_ops ethnl_features_request_ops = {
- 	.reply_size		= features_reply_size,
- 	.fill_reply		= features_fill_reply,
- };
-+
-+/* FEATURES_SET */
-+
-+static const struct nla_policy
-+features_set_policy[ETHTOOL_A_FEATURES_MAX + 1] = {
-+	[ETHTOOL_A_FEATURES_UNSPEC]	= { .type = NLA_REJECT },
-+	[ETHTOOL_A_FEATURES_HEADER]	= { .type = NLA_NESTED },
-+	[ETHTOOL_A_FEATURES_HW]		= { .type = NLA_REJECT },
-+	[ETHTOOL_A_FEATURES_WANTED]	= { .type = NLA_NESTED },
-+	[ETHTOOL_A_FEATURES_ACTIVE]	= { .type = NLA_REJECT },
-+	[ETHTOOL_A_FEATURES_NOCHANGE]	= { .type = NLA_REJECT },
-+};
-+
-+static void ethnl_features_to_bitmap(unsigned long *dest, netdev_features_t val)
-+{
-+	const unsigned int words = BITS_TO_LONGS(NETDEV_FEATURE_COUNT);
-+	unsigned int i;
-+
-+	bitmap_zero(dest, NETDEV_FEATURE_COUNT);
-+	for (i = 0; i < words; i++)
-+		dest[i] = (unsigned long)(val >> (i * BITS_PER_LONG));
-+}
-+
-+static netdev_features_t ethnl_bitmap_to_features(unsigned long *src)
-+{
-+	const unsigned int nft_bits = sizeof(netdev_features_t) * BITS_PER_BYTE;
-+	const unsigned int words = BITS_TO_LONGS(NETDEV_FEATURE_COUNT);
-+	netdev_features_t ret = 0;
-+	unsigned int i;
-+
-+	for (i = 0; i < words; i++)
-+		ret |= (netdev_features_t)(src[i]) << (i * BITS_PER_LONG);
-+	ret &= ~(netdev_features_t)0 >> (nft_bits - NETDEV_FEATURE_COUNT);
-+	return ret;
-+}
-+
-+static int features_send_reply(struct net_device *dev, struct genl_info *info,
-+			       const unsigned long *wanted,
-+			       const unsigned long *wanted_mask,
-+			       const unsigned long *active,
-+			       const unsigned long *active_mask, bool compact)
-+{
-+	struct sk_buff *rskb;
-+	void *reply_payload;
-+	int reply_len = 0;
-+	int ret;
-+
-+	reply_len = ethnl_reply_header_size();
-+	ret = ethnl_bitset_size(wanted, wanted_mask, NETDEV_FEATURE_COUNT,
-+				netdev_features_strings, compact);
-+	if (ret < 0)
-+		goto err;
-+	reply_len += ret;
-+	ret = ethnl_bitset_size(active, active_mask, NETDEV_FEATURE_COUNT,
-+				netdev_features_strings, compact);
-+	if (ret < 0)
-+		goto err;
-+	reply_len += ret;
-+
-+	ret = -ENOMEM;
-+	rskb = ethnl_reply_init(reply_len, dev, ETHTOOL_MSG_FEATURES_SET_REPLY,
-+				ETHTOOL_A_FEATURES_HEADER, info,
-+				&reply_payload);
-+	if (!rskb)
-+		goto err;
-+
-+	ret = ethnl_put_bitset(rskb, ETHTOOL_A_FEATURES_WANTED, wanted,
-+			       wanted_mask, NETDEV_FEATURE_COUNT,
-+			       netdev_features_strings, compact);
-+	if (ret < 0)
-+		goto nla_put_failure;
-+	ret = ethnl_put_bitset(rskb, ETHTOOL_A_FEATURES_ACTIVE, active,
-+			       active_mask, NETDEV_FEATURE_COUNT,
-+			       netdev_features_strings, compact);
-+	if (ret < 0)
-+		goto nla_put_failure;
-+
-+	genlmsg_end(rskb, reply_payload);
-+	ret = genlmsg_reply(rskb, info);
-+	return ret;
-+
-+nla_put_failure:
-+	nlmsg_free(rskb);
-+	WARN_ONCE(1, "calculated message payload length (%d) not sufficient\n",
-+		  reply_len);
-+err:
-+	GENL_SET_ERR_MSG(info, "failed to send reply message");
-+	return ret;
-+}
-+
-+int ethnl_set_features(struct sk_buff *skb, struct genl_info *info)
-+{
-+	DECLARE_BITMAP(wanted_diff_mask, NETDEV_FEATURE_COUNT);
-+	DECLARE_BITMAP(active_diff_mask, NETDEV_FEATURE_COUNT);
-+	DECLARE_BITMAP(old_active, NETDEV_FEATURE_COUNT);
-+	DECLARE_BITMAP(new_active, NETDEV_FEATURE_COUNT);
-+	DECLARE_BITMAP(req_wanted, NETDEV_FEATURE_COUNT);
-+	DECLARE_BITMAP(req_mask, NETDEV_FEATURE_COUNT);
-+	struct nlattr *tb[ETHTOOL_A_FEATURES_MAX + 1];
-+	struct ethnl_req_info req_info = {};
-+	struct net_device *dev;
-+	int ret;
-+
-+	ret = nlmsg_parse(info->nlhdr, GENL_HDRLEN, tb,
-+			  ETHTOOL_A_FEATURES_MAX, features_set_policy,
-+			  info->extack);
-+	if (ret < 0)
-+		return ret;
-+	if (!tb[ETHTOOL_A_FEATURES_WANTED])
-+		return -EINVAL;
-+	ret = ethnl_parse_header_dev_get(&req_info,
-+					 tb[ETHTOOL_A_FEATURES_HEADER],
-+					 genl_info_net(info), info->extack,
-+					 true);
-+	if (ret < 0)
-+		return ret;
-+	dev = req_info.dev;
-+
-+	rtnl_lock();
-+	ethnl_features_to_bitmap(old_active, dev->features);
-+	ret = ethnl_parse_bitset(req_wanted, req_mask, NETDEV_FEATURE_COUNT,
-+				 tb[ETHTOOL_A_FEATURES_WANTED],
-+				 netdev_features_strings, info->extack);
-+	if (ret < 0)
-+		goto out_rtnl;
-+	if (ethnl_bitmap_to_features(req_mask) & ~NETIF_F_ETHTOOL_BITS) {
-+		GENL_SET_ERR_MSG(info, "attempt to change non-ethtool features");
-+		ret = -EINVAL;
-+		goto out_rtnl;
-+	}
-+
-+	/* set req_wanted bits not in req_mask from old_active */
-+	bitmap_and(req_wanted, req_wanted, req_mask, NETDEV_FEATURE_COUNT);
-+	bitmap_andnot(new_active, old_active, req_mask, NETDEV_FEATURE_COUNT);
-+	bitmap_or(req_wanted, new_active, req_wanted, NETDEV_FEATURE_COUNT);
-+	if (bitmap_equal(req_wanted, old_active, NETDEV_FEATURE_COUNT)) {
-+		ret = 0;
-+		goto out_rtnl;
-+	}
-+
-+	dev->wanted_features = ethnl_bitmap_to_features(req_wanted);
-+	__netdev_update_features(dev);
-+	ethnl_features_to_bitmap(new_active, dev->features);
-+
-+	ret = 0;
-+	if (!(req_info.flags & ETHTOOL_FLAG_OMIT_REPLY)) {
-+		bool compact = req_info.flags & ETHTOOL_FLAG_COMPACT_BITSETS;
-+
-+		bitmap_xor(wanted_diff_mask, req_wanted, new_active,
-+			   NETDEV_FEATURE_COUNT);
-+		bitmap_xor(active_diff_mask, old_active, new_active,
-+			   NETDEV_FEATURE_COUNT);
-+		bitmap_and(wanted_diff_mask, wanted_diff_mask, req_mask,
-+			   NETDEV_FEATURE_COUNT);
-+		bitmap_and(req_wanted, req_wanted, wanted_diff_mask,
-+			   NETDEV_FEATURE_COUNT);
-+		bitmap_and(new_active, new_active, active_diff_mask,
-+			   NETDEV_FEATURE_COUNT);
-+
-+		ret = features_send_reply(dev, info, req_wanted,
-+					  wanted_diff_mask, new_active,
-+					  active_diff_mask, compact);
-+	}
-+
-+out_rtnl:
-+	rtnl_unlock();
-+	dev_put(dev);
-+	return ret;
-+}
+@@ -230,6 +230,7 @@ int ethnl_set_features(struct sk_buff *skb, struct genl_info *info)
+ 	struct nlattr *tb[ETHTOOL_A_FEATURES_MAX + 1];
+ 	struct ethnl_req_info req_info = {};
+ 	struct net_device *dev;
++	bool mod;
+ 	int ret;
+ 
+ 	ret = nlmsg_parse(info->nlhdr, GENL_HDRLEN, tb,
+@@ -272,6 +273,7 @@ int ethnl_set_features(struct sk_buff *skb, struct genl_info *info)
+ 	dev->wanted_features = ethnl_bitmap_to_features(req_wanted);
+ 	__netdev_update_features(dev);
+ 	ethnl_features_to_bitmap(new_active, dev->features);
++	mod = !bitmap_equal(old_active, new_active, NETDEV_FEATURE_COUNT);
+ 
+ 	ret = 0;
+ 	if (!(req_info.flags & ETHTOOL_FLAG_OMIT_REPLY)) {
+@@ -292,6 +294,8 @@ int ethnl_set_features(struct sk_buff *skb, struct genl_info *info)
+ 					  wanted_diff_mask, new_active,
+ 					  active_diff_mask, compact);
+ 	}
++	if (mod)
++		ethtool_notify(dev, ETHTOOL_MSG_FEATURES_NTF, NULL);
+ 
+ out_rtnl:
+ 	rtnl_unlock();
 diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index e451a75e9577..757ea3fc98a0 100644
+index 757ea3fc98a0..5c0e361bfd66 100644
 --- a/net/ethtool/netlink.c
 +++ b/net/ethtool/netlink.c
-@@ -703,6 +703,11 @@ static const struct genl_ops ethtool_genl_ops[] = {
- 		.dumpit	= ethnl_default_dumpit,
- 		.done	= ethnl_default_done,
- 	},
-+	{
-+		.cmd	= ETHTOOL_MSG_FEATURES_SET,
-+		.flags	= GENL_UNS_ADMIN_PERM,
-+		.doit	= ethnl_set_features,
-+	},
+@@ -528,6 +528,7 @@ ethnl_default_notify_ops[ETHTOOL_MSG_KERNEL_MAX + 1] = {
+ 	[ETHTOOL_MSG_LINKMODES_NTF]	= &ethnl_linkmodes_request_ops,
+ 	[ETHTOOL_MSG_DEBUG_NTF]		= &ethnl_debug_request_ops,
+ 	[ETHTOOL_MSG_WOL_NTF]		= &ethnl_wol_request_ops,
++	[ETHTOOL_MSG_FEATURES_NTF]	= &ethnl_features_request_ops,
  };
  
- static const struct genl_multicast_group ethtool_nl_mcgrps[] = {
-diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index be2325ea8493..135836201e89 100644
---- a/net/ethtool/netlink.h
-+++ b/net/ethtool/netlink.h
-@@ -343,5 +343,6 @@ int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info);
- int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info);
- int ethnl_set_debug(struct sk_buff *skb, struct genl_info *info);
- int ethnl_set_wol(struct sk_buff *skb, struct genl_info *info);
-+int ethnl_set_features(struct sk_buff *skb, struct genl_info *info);
+ /* default notification handler */
+@@ -613,6 +614,7 @@ static const ethnl_notify_handler_t ethnl_notify_handlers[] = {
+ 	[ETHTOOL_MSG_LINKMODES_NTF]	= ethnl_default_notify,
+ 	[ETHTOOL_MSG_DEBUG_NTF]		= ethnl_default_notify,
+ 	[ETHTOOL_MSG_WOL_NTF]		= ethnl_default_notify,
++	[ETHTOOL_MSG_FEATURES_NTF]	= ethnl_default_notify,
+ };
  
- #endif /* _NET_ETHTOOL_NETLINK_H */
+ void ethtool_notify(struct net_device *dev, unsigned int cmd, const void *data)
+@@ -630,6 +632,29 @@ void ethtool_notify(struct net_device *dev, unsigned int cmd, const void *data)
+ }
+ EXPORT_SYMBOL(ethtool_notify);
+ 
++static void ethnl_notify_features(struct netdev_notifier_info *info)
++{
++	struct net_device *dev = netdev_notifier_info_to_dev(info);
++
++	ethtool_notify(dev, ETHTOOL_MSG_FEATURES_NTF, NULL);
++}
++
++static int ethnl_netdev_event(struct notifier_block *this, unsigned long event,
++			      void *ptr)
++{
++	switch (event) {
++	case NETDEV_FEAT_CHANGE:
++		ethnl_notify_features(ptr);
++		break;
++	}
++
++	return NOTIFY_DONE;
++}
++
++static struct notifier_block ethnl_netdev_notifier = {
++	.notifier_call = ethnl_netdev_event,
++};
++
+ /* genetlink setup */
+ 
+ static const struct genl_ops ethtool_genl_ops[] = {
+@@ -736,7 +761,9 @@ static int __init ethnl_init(void)
+ 		return ret;
+ 	ethnl_ok = true;
+ 
+-	return 0;
++	ret = register_netdevice_notifier(&ethnl_netdev_notifier);
++	WARN(ret < 0, "ethtool: net device notifier registration failed");
++	return ret;
+ }
+ 
+ subsys_initcall(ethnl_init);
 -- 
 2.25.1
 
