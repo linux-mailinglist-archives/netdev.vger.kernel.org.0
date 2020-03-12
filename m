@@ -2,131 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37938183902
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 19:50:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C99D18390A
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 19:53:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726512AbgCLSut (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 14:50:49 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:32806 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726485AbgCLSut (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 14:50:49 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02CIdOt3031048
-        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 11:50:47 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=7CqWL7njCBnzLXu3ibBgTdJkuKkrR/bNAhIh7rEjiVI=;
- b=lCFu5Nv87nA7w+vqOCT9AdpesFTpNvubz5jWcb+orw7A93DYXO0p4LpTwfz3wRaT5zK7
- Ka3RRhISiWTSGcclMb3t3JI8lX+1/4/lzBZiEOFHB5Dzj51MR0eCQqJkClOUjstLghtx
- wjEktu0xex1lHyTfdXwOT6BtIE89x3ia540= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yqt79g5cj-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 11:50:47 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Thu, 12 Mar 2020 11:50:46 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id F2E0A2EC2C49; Thu, 12 Mar 2020 11:50:41 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Quentin Monnet <quentin@isovalent.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] libbpf: split BTF presence checks into libbpf- and kernel-specific parts
-Date:   Thu, 12 Mar 2020 11:50:33 -0700
-Message-ID: <20200312185033.736911-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1726558AbgCLSxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 14:53:00 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:37738 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726362AbgCLSxA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 14:53:00 -0400
+Received: by mail-pf1-f196.google.com with SMTP id p14so3708762pfn.4
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 11:53:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=f4uAfd3YCJJUkGxUkhDaQo7XlDAotB8g1oi8PYRVai8=;
+        b=eq+Ln+cHnXFKNDe89DbT9wLugLXSqR8+/8teBIR4jxM0fj95+Dtf4IGwvIPjkaKjCj
+         KCcr6bw89FXLR6QpEmm27FsnHqOKL9NNsBdG6P9UpO5tAn2r4EAfvXlB0WSqw7vWaeEU
+         W71lmvhWp7U5J09SHCZvzTvPfpfULScWRWdsyL/zRjrr+PrkVQicPcLAE/M/M9fukJnL
+         fsNHDS6TlBu0FqeR8fhVjKpQ1K5mHc9YgH+jaloSefh5a8yBQNkPffjuJzF+fhqWSKzn
+         9BpPZqpge/ggpYfiRxDMUlZSalvqZ0v4J2VFwwILG1R6etTz1uInPss0hC0Lzepigcyg
+         /DQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=f4uAfd3YCJJUkGxUkhDaQo7XlDAotB8g1oi8PYRVai8=;
+        b=pcXsO5+VxNN1pfywBDqIKWFG9oJSPwE5lvUMorbXYo+qPJMMN07VyidU76qzci1+Jp
+         FdvF9Lg8C4sA3PFj25U3vXoaYm3hh7vxB+PVG8LXS67rQ697mq+b5sipDFGcuGEUfxka
+         jktSjIZdIMQliVPdOWidiNBehwqZAjyjqEIO7zcUSK0+2uzBD+RJdBh5uxvBYPZlHo0a
+         N4pGjYibcIsN3AADKdwizzv8yEGTZt/BLg1HUKCNQxZM9vklPdHVHJaagWSmJy2zzA7k
+         NurZl1n6RK5Iz+TH6XAv27/M12ia6iUsmfiDzBTFXvBZ1oVU37Q8LIkQb9eJeciGPwF8
+         wAHQ==
+X-Gm-Message-State: ANhLgQ1WjiXeiAYEmg+nLcOmWgfUIJcDsytR2iqJtRB2HQblpuoXlvbM
+        CUsWzc901grRcioyKUKJDwM=
+X-Google-Smtp-Source: ADFU+vtihjC/T+a+sEahJsAuhQ7xnf93KWBWF6HeXll1w5JhfdlmsompMolQpYZmz47se1qNnxaBrw==
+X-Received: by 2002:aa7:96a6:: with SMTP id g6mr9174623pfk.88.1584039179552;
+        Thu, 12 Mar 2020 11:52:59 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id f1sm9281000pjq.31.2020.03.12.11.52.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Mar 2020 11:52:58 -0700 (PDT)
+Subject: Re: [PATCH v5 net-next 0/4] Improve bind(addr, 0) behaviour.
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>, davem@davemloft.net,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, edumazet@google.com
+Cc:     kuni1840@gmail.com, netdev@vger.kernel.org,
+        osa-contribution-log@amazon.com
+References: <20200310080527.70180-1-kuniyu@amazon.co.jp>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <566b454d-f338-895e-03bf-346740f3ce48@gmail.com>
+Date:   Thu, 12 Mar 2020 11:52:57 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-12_12:2020-03-11,2020-03-12 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 malwarescore=0
- suspectscore=25 lowpriorityscore=0 spamscore=0 priorityscore=1501
- impostorscore=0 phishscore=0 mlxlogscore=774 clxscore=1015 bulkscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2003120094
-X-FB-Internal: deliver
+In-Reply-To: <20200310080527.70180-1-kuniyu@amazon.co.jp>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Needs for application BTF being present differs between user-space libbpf needs and kernel
-needs. Currently, BTF is mandatory only in kernel only when BPF application is
-using STRUCT_OPS. While libbpf itself relies more heavily on presense of BTF:
-  - for BTF-defined maps;
-  - for Kconfig externs;
-  - for STRUCT_OPS as well.
 
-Thus, checks for presence and validness of bpf_object's BPF needs to be
-performed separately, which is patch does.
 
-Fixes: 5327644614a1 ("libbpf: Relax check whether BTF is mandatory")
-Reported-by: Michal Rostecki <mrostecki@opensuse.org>
-Cc: Quentin Monnet <quentin@isovalent.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- tools/lib/bpf/libbpf.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+On 3/10/20 1:05 AM, Kuniyuki Iwashima wrote:
+> Currently we fail to bind sockets to ephemeral ports when all of the ports
+> are exhausted even if all sockets have SO_REUSEADDR enabled. In this case,
+> we still have a chance to connect to the different remote hosts.
+> 
+> These patches add net.ipv4.ip_autobind_reuse option and fix the behaviour
+> to fully utilize all space of the local (addr, port) tuples.
+> 
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 223be01dc466..1a787a2faf58 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -2284,9 +2284,16 @@ static void bpf_object__sanitize_btf_ext(struct bpf_object *obj)
- 	}
- }
- 
--static bool bpf_object__is_btf_mandatory(const struct bpf_object *obj)
-+static bool libbpf_needs_btf(const struct bpf_object *obj)
- {
--	return obj->efile.st_ops_shndx >= 0 || obj->nr_extern > 0;
-+	return obj->efile.btf_maps_shndx >= 0 ||
-+	       obj->efile.st_ops_shndx >= 0 ||
-+	       obj->nr_extern > 0;
-+}
-+
-+static bool kernel_needs_btf(const struct bpf_object *obj)
-+{
-+	return obj->efile.st_ops_shndx >= 0;
- }
- 
- static int bpf_object__init_btf(struct bpf_object *obj,
-@@ -2322,7 +2329,7 @@ static int bpf_object__init_btf(struct bpf_object *obj,
- 		}
- 	}
- out:
--	if (err && bpf_object__is_btf_mandatory(obj)) {
-+	if (err && libbpf_needs_btf(obj)) {
- 		pr_warn("BTF is required, but is missing or corrupted.\n");
- 		return err;
- 	}
-@@ -2346,7 +2353,7 @@ static int bpf_object__finalize_btf(struct bpf_object *obj)
- 	btf_ext__free(obj->btf_ext);
- 	obj->btf_ext = NULL;
- 
--	if (bpf_object__is_btf_mandatory(obj)) {
-+	if (libbpf_needs_btf(obj)) {
- 		pr_warn("BTF is required, but is missing or corrupted.\n");
- 		return -ENOENT;
- 	}
-@@ -2410,7 +2417,7 @@ static int bpf_object__sanitize_and_load_btf(struct bpf_object *obj)
- 			obj->btf_ext = NULL;
- 		}
- 
--		if (bpf_object__is_btf_mandatory(obj))
-+		if (kernel_needs_btf(obj))
- 			return err;
- 	}
- 	return 0;
--- 
-2.17.1
+
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+
+Thanks.
 
