@@ -2,87 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFEC9183959
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 20:19:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4EFD183962
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 20:21:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726822AbgCLTTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 15:19:12 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:38795 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726855AbgCLTTL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 15:19:11 -0400
-Received: by mail-lf1-f68.google.com with SMTP id n13so4031827lfh.5
-        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 12:19:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=WZJ/UKGJUnzZUZHFhn84tR/g32XaGlJEI3MHt5Z8Nn8=;
-        b=mBpPOCvSe6zKETPnxnt3S42VROkdiMzgVKmxn6ukTFrJKhlFmp7ef4WkruH5Azq4dU
-         GCCHNhgS7iB7bVSOMoWSdPr/PT9Mz94w+Tlw8yk8vC7vGGpyMUaWlg9LrAeMbLRT+Vmu
-         ETrxyhPs0aI4L9ws9XWHdRhH+PZw0BRC4MALE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=WZJ/UKGJUnzZUZHFhn84tR/g32XaGlJEI3MHt5Z8Nn8=;
-        b=XDzJWhHdpq86QnAYv6JPd2unPkm8LPoGd0AcnUPPNLwosr1gFOCCN9rbDdui/TwltI
-         IcdgntiYpjpNFBNkG5ANEh7qkhvY6I+TOaSk3J8QchlEHQshK5A1Bgf2kdM/DhQ0jMZN
-         7WX8k8xoq3SnsP5v5YqyMdzmLZVf27h8tVZMQqKojmIXzYCw+1iPyaO3DzmNos9xjhT4
-         x1AUs7tU1DiQfkmJuXgMBJLt484IB7ZOvw80v6WuCrjXKT4owWzXCYbZVmh5oUnGIDab
-         HH/7Yz6R3XHmqPW7U8rzOX9hgdtnQz5OS7g2gFb553lDJX/08WPu0XTGsLPaufHsCSwC
-         MQ1Q==
-X-Gm-Message-State: ANhLgQ1aShb/MhkIb1bpAHsN6Vxl3ej+lnjDJSnUjlcB50SYJHzAb7Qn
-        BrHxNQNrKoP9bdy7yhahpwJqfVvnABp9yA==
-X-Google-Smtp-Source: ADFU+vslvkZJQicskGyaq5JSHRIWZL6R1eXeD4uDnmxkx9t5iogJCoowPxvArsbTJxcGSid8S/YqAQ==
-X-Received: by 2002:a19:4354:: with SMTP id m20mr2147831lfj.166.1584040748325;
-        Thu, 12 Mar 2020 12:19:08 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id c22sm8155707lfm.25.2020.03.12.12.19.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Mar 2020 12:19:07 -0700 (PDT)
-References: <20200312171105.533690-1-jakub@cloudflare.com> <CAEf4BzbsDMbmury9Z-+j=egsfJf4uKxsu0Fsdr4YpP1FgvBiiQ@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next] selftests/bpf: Fix spurious failures in accept due to EAGAIN
-In-reply-to: <CAEf4BzbsDMbmury9Z-+j=egsfJf4uKxsu0Fsdr4YpP1FgvBiiQ@mail.gmail.com>
-Date:   Thu, 12 Mar 2020 20:19:06 +0100
-Message-ID: <87pndhxtxx.fsf@cloudflare.com>
+        id S1726729AbgCLTVt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 15:21:49 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:54100 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726594AbgCLTVt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 15:21:49 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us4.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 7FFD5BC006B;
+        Thu, 12 Mar 2020 19:21:47 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 12 Mar
+ 2020 19:21:42 +0000
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net-next] sfc: support configuring vf spoofchk on EF10 VFs
+To:     <davem@davemloft.net>
+CC:     <linux-net-drivers@solarflare.com>, <netdev@vger.kernel.org>
+Message-ID: <f4055a13-c3bd-ebf1-86fb-6fc64da4d363@solarflare.com>
+Date:   Thu, 12 Mar 2020 19:21:39 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25284.003
+X-TM-AS-Result: No-5.439800-8.000000-10
+X-TMASE-MatchedRID: zj6qu3YNhdKrAyqWeu/a0CMJO6daqdyWDvc/j9oMIgWbuvvgpZZI+VG9
+        QjBckSB9FvIUhHKsIDQPEFjkHTfDsGbQIxHg2fnbqJSK+HSPY+/pVMb1xnESMnAal2A1DQmsQBz
+        oPKhLasiPqQJ9fQR1znqkHNinj3pmrYhfqfvQWOmcxB01DrjF9/ngX/aL8PCN4PdcWsl+C/OMbv
+        oO9mofAUu5EPLAtH7UkZOl7WKIImrvXOvQVlExsAtuKBGekqUpI/NGWt0UYPBge2m3lGqlZS+xq
+        nJxbDjV/KW2dluIJJxLEiWjJhUpxd+yfB9xNB3E
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--5.439800-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25284.003
+X-MDID: 1584040908-4gqFEinYFpvC
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 06:57 PM CET, Andrii Nakryiko wrote:
-> On Thu, Mar 12, 2020 at 10:11 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->>
->> Andrii Nakryiko reports that sockmap_listen test suite is frequently
->> failing due to accept() calls erroring out with EAGAIN:
->>
->>   ./test_progs:connect_accept_thread:733: accept: Resource temporarily unavailable
->>   connect_accept_thread:FAIL:733
->>
->> This is because we are needlessly putting the listening TCP sockets in
->> non-blocking mode.
->>
->> Fix it by using the default blocking mode in all tests in this suite.
->>
->> Fixes: 44d28be2b8d4 ("selftests/bpf: Tests for sockmap/sockhash holding listening sockets")
->> Reported-by: Andrii Nakryiko <andrii.nakryiko@gmail.com>
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> ---
->
-> Thanks for looking into this. Can you please verify that test
-> successfully fails (not hangs) when, say, network is down (do `ip link
-> set lo down` before running test?). The reason I'm asking is that I
-> just fixed a problem in tcp_rtt selftest, in which accept() would
-> block forever, even if listening socket was closed.
+Corresponds to the MAC_SPOOFING_TX privilege in the hardware.
+Some firmware versions on some cards don't support the feature, so check
+ the TX_MAC_SECURITY capability and fail EOPNOTSUPP if trying to enable
+ spoofchk on a NIC that doesn't support it.
 
-Right, good point. We don't want tests hanging. Let me rework it.
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ drivers/net/ethernet/sfc/ef10_sriov.c | 66 +++++++++++++++++++++++++--
+ 1 file changed, 63 insertions(+), 3 deletions(-)
 
-[...]
+diff --git a/drivers/net/ethernet/sfc/ef10_sriov.c b/drivers/net/ethernet/sfc/ef10_sriov.c
+index 14393767ef9f..4580b30caae1 100644
+--- a/drivers/net/ethernet/sfc/ef10_sriov.c
++++ b/drivers/net/ethernet/sfc/ef10_sriov.c
+@@ -685,10 +685,70 @@ int efx_ef10_sriov_set_vf_vlan(struct efx_nic *efx, int vf_i, u16 vlan,
+ 	return rc ? rc : rc2;
+ }
+ 
+-int efx_ef10_sriov_set_vf_spoofchk(struct efx_nic *efx, int vf_i,
+-				   bool spoofchk)
++static int efx_ef10_sriov_set_privilege_mask(struct efx_nic *efx, int vf_i,
++					     u32 mask, u32 value)
+ {
+-	return spoofchk ? -EOPNOTSUPP : 0;
++	MCDI_DECLARE_BUF(pm_outbuf, MC_CMD_PRIVILEGE_MASK_OUT_LEN);
++	MCDI_DECLARE_BUF(pm_inbuf, MC_CMD_PRIVILEGE_MASK_IN_LEN);
++	struct efx_ef10_nic_data *nic_data = efx->nic_data;
++	u32 old_mask, new_mask;
++	size_t outlen;
++	int rc;
++
++	EFX_WARN_ON_PARANOID((value & ~mask) != 0);
++
++	/* Get privilege mask */
++	MCDI_POPULATE_DWORD_2(pm_inbuf, PRIVILEGE_MASK_IN_FUNCTION,
++			      PRIVILEGE_MASK_IN_FUNCTION_PF, nic_data->pf_index,
++			      PRIVILEGE_MASK_IN_FUNCTION_VF, vf_i);
++
++	rc = efx_mcdi_rpc(efx, MC_CMD_PRIVILEGE_MASK,
++			  pm_inbuf, sizeof(pm_inbuf),
++			  pm_outbuf, sizeof(pm_outbuf), &outlen);
++
++	if (rc != 0)
++		return rc;
++	if (outlen != MC_CMD_PRIVILEGE_MASK_OUT_LEN)
++		return -EIO;
++
++	old_mask = MCDI_DWORD(pm_outbuf, PRIVILEGE_MASK_OUT_OLD_MASK);
++
++	new_mask = old_mask & ~mask;
++	new_mask |= value;
++
++	if (new_mask == old_mask)
++		return 0;
++
++	new_mask |= MC_CMD_PRIVILEGE_MASK_IN_DO_CHANGE;
++
++	/* Set privilege mask */
++	MCDI_SET_DWORD(pm_inbuf, PRIVILEGE_MASK_IN_NEW_MASK, new_mask);
++
++	rc = efx_mcdi_rpc(efx, MC_CMD_PRIVILEGE_MASK,
++			  pm_inbuf, sizeof(pm_inbuf),
++			  pm_outbuf, sizeof(pm_outbuf), &outlen);
++
++	if (rc != 0)
++		return rc;
++	if (outlen != MC_CMD_PRIVILEGE_MASK_OUT_LEN)
++		return -EIO;
++
++	return 0;
++}
++
++int efx_ef10_sriov_set_vf_spoofchk(struct efx_nic *efx, int vf_i, bool spoofchk)
++{
++	struct efx_ef10_nic_data *nic_data = efx->nic_data;
++
++	/* Can't enable spoofchk if firmware doesn't support it. */
++	if (!(nic_data->datapath_caps &
++	      BIT(MC_CMD_GET_CAPABILITIES_OUT_TX_MAC_SECURITY_FILTERING_LBN)) &&
++	    spoofchk)
++		return -EOPNOTSUPP;
++
++	return efx_ef10_sriov_set_privilege_mask(efx, vf_i,
++		MC_CMD_PRIVILEGE_MASK_IN_GRP_MAC_SPOOFING_TX,
++		spoofchk ? 0 : MC_CMD_PRIVILEGE_MASK_IN_GRP_MAC_SPOOFING_TX);
+ }
+ 
+ int efx_ef10_sriov_set_vf_link_state(struct efx_nic *efx, int vf_i,
