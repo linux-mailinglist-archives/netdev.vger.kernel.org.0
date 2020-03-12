@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 597E1183D16
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 00:12:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F203C183D17
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 00:12:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726893AbgCLXMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 19:12:46 -0400
+        id S1726901AbgCLXMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 19:12:48 -0400
 Received: from mail-eopbgr10083.outbound.protection.outlook.com ([40.107.1.83]:26253
         "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726775AbgCLXMp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Mar 2020 19:12:45 -0400
+        id S1726710AbgCLXMr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Mar 2020 19:12:47 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U9c82QaBO7c2zlVXvcYiJeJEO9hTY5wBnSgD3fc2/Fqq6EY8dYfGT9u7bZM/RBMwF5wtKNL16ZiWlpFnnnc9M6hzINTnFBTl2QPVRSne0mdo3rJtmza8rtupjfZ9gAuHqsS34ZaIP37xoLFDiRhp59GsJtTef3jtDqQjoMA0xUBnY78kuMVjtO4fb9QA41wQ2AEjpLJA1gXZbOnJnx+SAwEuNz4ntRZabYROeMHzBbzbNc3KKs6Uu/sQm1R5q+RDhwxo0llqGSDy/VpLzyG+uCv2Za3nH6lylxylR4U0hEhPgZzaFejoNFZ1E5lFKkYXe0X6iymhI/ew5b9M3/ztBg==
+ b=ZpZnc2sxgTwOlVylKwlg9993rt6AeiTX4zEdAyemjn4hzQjhTXtnFoDuk2upL7DIXtVCCFfdRBTTPW1DqRhK38hNhsfg0oAqFuWsRqjt2UjO9W9WGM6PrkKxp06bu0HGVaO3OzkKZEeGIJY+bqxc/uBtPWUgStluOqcEU50mDzMqjgihY611iXkVHBUBI8Q/DiYcK9y+auYO0/zYECbOAN9en8Qs2jYZwsqyDc21uYxvbG2weY6BjoJE1dQZH7enXaqdBntVZQmXSbz3NtstZ8mgZSUgFAM/GBzqXPcSoX7uYUiKtV52wSpajkdjBYvuPnz9J1p9d6bcYLEZCEYfHw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2QwULAYUDB36c1ne4+GMANxtC3pAKc3nZ0iTgKUKlC8=;
- b=D45D8goMPXMgmx6KVmYON8ogn3KvNDYigeX/Ia8fyx63jzDkSIP7l4ujCwVgNb4DeBCc5KJ/SlK9KKBYY9TV3H6C2e7MiBiEcqVE/XX6nlJl14fWzEX7HNpvWUV6FFYYocyUv68qYoC71l3Gl1ZQNCivWoStq4JvVtjMjC0bvqqkBi3z1YA2NYJZn0RgcFcWhxtBvaGn5Gv2nk6ee1k4pw2dp7rF9OfGQI2ezKMSgg0mcMQK4oUpbMksmTV8Ok+nQSL5bRjWJ1twWaIGr52/ppV57PxWpl7x6v5IWAvlhjfGuro0IHrJhPiYJc+LHzdKij7Nt09JEZDXRrrqc0wkow==
+ bh=G2ukqXaET/kkLBfEfcOW0lAA/NKkKUhreyajjdmHBbg=;
+ b=mPpBYrGXbW/nIGokrUpQl/gzRnxNOyqjCl7dYai7ro/9cgwUeJ2f8x6LHifexnvL4bG1YYREQpASqMEwzdoQKd9FUuCf3ANtdwecIkOV8iZXbbr+6ltIZfSjZYTrd/BU6PA3pujGG9LU+XjvLKLhCYb2/JVAJ3VkdKa+irPDMqY3maZGZ+l41mbRjajIpKvuk+VWIRtHyLHNglEdztC4Getnd9opoeFTeelKmoF9LQ40LacfGwc14z84QjJG99F2Yd2Ji2wA/khUofWdigfVCbC/6ZWIYnJlMazpo7YI2eIHkNfrrRvCQ3771NP9neL3GORnyMIGA3dXRl8VyITtnQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2QwULAYUDB36c1ne4+GMANxtC3pAKc3nZ0iTgKUKlC8=;
- b=tNQuu0uJ+jXRZV/fKw+duYw8Nf3y/v9ckLLq4ai7Au2q/IltJuP8mQkvdI8Raz6EiZyDLot6//uEncaqH3wrYTB9ls0HMFFrXDN0V4esmOxdCZYpDUIIt6AWjA0B5f5rkx+ySsxVzHWvLOhp9HLOyIhY7NAxDvGBBLfUUkRlh/0=
+ bh=G2ukqXaET/kkLBfEfcOW0lAA/NKkKUhreyajjdmHBbg=;
+ b=OvIFSwQrWuQ1TIO5q23cBKPEd3YjrUz0zDrc9o7g1pYFoRK067LfUC2zrHnxb9hxWmDdjdxukKZCcr3NdcJcKWQys+nzxUaThetf+D/aKlKYJY9lT76dhd56+MqBVKTdyH5xZ1JlcLGYjEm7M5eAG7tcDv0n0rg8fgFamf85vYQ=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=petrm@mellanox.com; 
 Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (20.176.168.150) by
  HE1PR05MB3194.eurprd05.prod.outlook.com (10.170.241.25) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2793.17; Thu, 12 Mar 2020 23:12:37 +0000
+ 15.20.2793.17; Thu, 12 Mar 2020 23:12:39 +0000
 Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
  ([fe80::c146:9acd:f4dc:4e32]) by HE1PR05MB4746.eurprd05.prod.outlook.com
  ([fe80::c146:9acd:f4dc:4e32%7]) with mapi id 15.20.2793.018; Thu, 12 Mar 2020
- 23:12:37 +0000
+ 23:12:39 +0000
 From:   Petr Machata <petrm@mellanox.com>
 To:     netdev@vger.kernel.org
 Cc:     Petr Machata <petrm@mellanox.com>,
@@ -45,9 +45,9 @@ Cc:     Petr Machata <petrm@mellanox.com>,
         Eric Dumazet <eric.dumazet@gmail.com>, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, davem@davemloft.net, idosch@mellanox.com,
         mlxsw@mellanox.com
-Subject: [PATCH net-next v4 1/6] selftests: qdiscs: Add TDC test for RED
-Date:   Fri, 13 Mar 2020 01:10:55 +0200
-Message-Id: <20200312231100.37180-2-petrm@mellanox.com>
+Subject: [PATCH net-next v4 2/6] net: sched: Allow extending set of supported RED flags
+Date:   Fri, 13 Mar 2020 01:10:56 +0200
+Message-Id: <20200312231100.37180-3-petrm@mellanox.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200312231100.37180-1-petrm@mellanox.com>
 References: <20200312231100.37180-1-petrm@mellanox.com>
@@ -57,177 +57,297 @@ X-ClientProxiedBy: PR2P264CA0002.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::14)
  To HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by PR2P264CA0002.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.20 via Frontend Transport; Thu, 12 Mar 2020 23:12:35 +0000
+Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by PR2P264CA0002.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.20 via Frontend Transport; Thu, 12 Mar 2020 23:12:37 +0000
 X-Mailer: git-send-email 2.20.1
 X-Originating-IP: [37.142.13.130]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: d46c5262-22b7-4e75-a23c-08d7c6dadac8
+X-MS-Office365-Filtering-Correlation-Id: a6a9d2c4-fd05-4203-74b6-08d7c6dadbc7
 X-MS-TrafficTypeDiagnostic: HE1PR05MB3194:|HE1PR05MB3194:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB3194CF4FCDEEF3EE31DBA42BDBFD0@HE1PR05MB3194.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1751;
+X-Microsoft-Antispam-PRVS: <HE1PR05MB3194AE5363A8CEC83A7149B5DBFD0@HE1PR05MB3194.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-Forefront-PRVS: 0340850FCD
 X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(346002)(366004)(136003)(39860400002)(396003)(199004)(316002)(2906002)(66556008)(8676002)(66476007)(66946007)(4326008)(54906003)(81156014)(81166006)(6666004)(36756003)(1076003)(5660300002)(6512007)(6506007)(6486002)(52116002)(478600001)(16526019)(107886003)(26005)(8936002)(6916009)(956004)(86362001)(186003)(2616005);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR05MB3194;H:HE1PR05MB4746.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
 Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: U5NcQu9Hd1tmVnynYUcirqBSV3XLBkjfbyJ9ES/HuSMbtvTt1hMzWrHnw9GuhxLd0TrzMv1srMfhj8JXGRZuOqtf20dW+T5XTInUX10PFqgiNQczp5FqLyJiAEnYM7XS6EaYkGVwoJqxPFttVkD1O5BwpYhORyM6UEi6gLc/o1uB/Cd+JPjiTuRQNQp/gsag3x7D8LSz2gIJZzzX4RvD5X/cc4Fo6yTrLqME6q6RjEegTjJklCQ4udWCNWFaWEPWbOIey4dEO1v352I+9//utBvdrmdzwXtyTM+zpLzgGrV+6dnP8tRpW3gX+mr9Z6mTsbYKZYIa25GIdWzmehI75pBIC1py0Zc0M0i39Xq48XgTHSoPUnWw634DYYqUWRlKdnQB22GpV3zsPwcotF8nwsbg7926vwtgGsgU/rErcSckk9X5GNXNhOHPTRHg4Ydd
-X-MS-Exchange-AntiSpam-MessageData: FgUTbj0oHzgPhicWZe1BDf154yqEasiVwAkXbmyv4b4/8g5rmH3tQEs68rYc5LQhiZopFjc2ufLzkQnj9bSYFkZZ6HjVeXo6vwZsRRrS+DgGTbDHf4fiNPS6WqZx8rfA+T0ACHFlgpml+VNZEtHq7w==
+X-Microsoft-Antispam-Message-Info: q9UV7gbY/qWo6uk2y5+4PpHBX4lnwdmdMKOoxQCD3bDAMNVtBkU9qGj17w5z9CuFjwu8Ij6xlVFmVqilsqk3nd+dZEO7LOSuiTcL+5bOWbIFGCwSYavgovysZbcf64qmXWDb5MiWYrGXdZqVrylw9ePr0QEiLkvwXTi5enGxUsBLgl406485wI3O64E8bvs5h+QowzZ3ZG4AV/N01iXFA8Oj78le9PkXI27F0azaZZE3SIFLHQPxFZUd8DlOT4OoDZ4WK3nO7KCvghrNKmvkZFN6qWGUGIwKZDTuD1J5cgSBXnJvGUeQL+UNRdRAbJSJs0snpKsG5lsgc/H/PzpxjI1vAtDraqrj+yrqhXaI/v2cPwr0pCxtkuBD6yViNigSDNOlkaOw/sYoUAQc3EnwUZdkSCaUmmbQgGKbwXnkRSeSYnqM/RWkqhjnBjGtZXqT
+X-MS-Exchange-AntiSpam-MessageData: roDssCT1ulBniyUGTCU2CQfpULXmQK95Qh992aagPgCFIeK72onjYWculabiGg+RxHxg6SHHaxo0XP0HykZHakknA5wdvfbt8l5CAU9m89Q06CQUbZehLnR7p0/VpoI9ttW+9PtUcUpORjCgDeFkDA==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d46c5262-22b7-4e75-a23c-08d7c6dadac8
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2020 23:12:37.4305
+X-MS-Exchange-CrossTenant-Network-Message-Id: a6a9d2c4-fd05-4203-74b6-08d7c6dadbc7
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2020 23:12:39.1005
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: M3VQb3a70JBda7DB4tTDNaYBcLbj4mVRiBaWK0WDJ7EG2I8c3GDhGAczQ7fI0P+EWKYMfLGlzUZ0d2EpxtTv9A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: QnDX9Ma2yyDHfck+lagu5zdg8FUjW3uh8uMe2jptt6tYsSWTPB0gqER8crNtee9GeLfA/j6KeA87n383eoJzKg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3194
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a handful of tests for creating RED with different flags.
+The qdiscs RED, GRED, SFQ and CHOKE use different subsets of the same pool
+of global RED flags. These are passed in tc_red_qopt.flags. However none of
+these qdiscs validate the flag field, and just copy it over wholesale to
+internal structures, and later dump it back. (An exception is GRED, which
+does validate for VQs -- however not for the main setup.)
+
+A broken userspace can therefore configure a qdisc with arbitrary
+unsupported flags, and later expect to see the flags on qdisc dump. The
+current ABI therefore allows storage of several bits of custom data to
+qdisc instances of the types mentioned above. How many bits, depends on
+which flags are meaningful for the qdisc in question. E.g. SFQ recognizes
+flags ECN and HARDDROP, and the rest is not interpreted.
+
+If SFQ ever needs to support ADAPTATIVE, it needs another way of doing it,
+and at the same time it needs to retain the possibility to store 6 bits of
+uninterpreted data. Likewise RED, which adds a new flag later in this
+patchset.
+
+To that end, this patch adds a new function, red_get_flags(), to split the
+passed flags of RED-like qdiscs to flags and user bits, and
+red_validate_flags() to validate the resulting configuration. It further
+adds a new attribute, TCA_RED_FLAGS, to pass arbitrary flags.
 
 Signed-off-by: Petr Machata <petrm@mellanox.com>
-Reviewed-by: Roman Mashak <mrv@mojatatu.com>
 ---
 
 Notes:
+    v4:
+    - Declare .strict_start_type at element with index zero, not at the
+      first array element declaration.
+    
+    v3:
+    - Change TCA_RED_FLAGS from NLA_U32 to NLA_BITFIELD32. Change
+      RED_SUPPORTED_FLAGS the macro to red_supported_flags the constant
+      and use as .validation_data.
+    - Set policy's .strict_start_type to TCA_RED_FLAGS
+    - red_get_flags(): Don't modify the passed-in flags until the end of
+      the function. Return errno instead of bool.
+    - Keep red_sched_data.flags as unsigned char.
+    - Because bitfield32 allows only a subset of flags to be set, move the
+      validation of the resulting configuration in red_change() into the
+      critical section. Add a function red_validate_flags() specifically
+      for the validation.
+    - Remove braces when setting tc_red_qopt.flags in red_dump().
+    - Check nla_put()'s return code when dumping TCA_RED_FLAGS.
+    - Always dump TCA_RED_FLAGS, even if only old flags are active.
+      The BITFIELD32 interface is richer and this way we can communicate
+      to the client which flags are actually supported.
+    
     v2:
-    - Require nsPlugin in each RED test
-    - Match end-of-line to catch cases of more flags reported than
-      requested
+    - This patch is new.
 
- .../tc-testing/tc-tests/qdiscs/red.json       | 117 ++++++++++++++++++
- 1 file changed, 117 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/red.json
+ include/net/red.h              | 33 ++++++++++++++++++++++++++
+ include/uapi/linux/pkt_sched.h | 16 +++++++++++++
+ net/sched/sch_red.c            | 43 +++++++++++++++++++++++++++++++---
+ 3 files changed, 89 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/red.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/red.json
-new file mode 100644
-index 000000000000..b70a54464897
---- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/red.json
-@@ -0,0 +1,117 @@
-+[
-+    {
-+        "id": "8b6e",
-+        "name": "Create RED with no flags",
-+        "category": [
-+            "qdisc",
-+            "red"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root red limit 1M avpkt 1500 min 100K max 300K",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc red 1: root .* limit 1Mb min 100Kb max 300Kb $",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "342e",
-+        "name": "Create RED with adaptive flag",
-+        "category": [
-+            "qdisc",
-+            "red"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root red adaptive limit 1M avpkt 1500 min 100K max 300K",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc red 1: root .* limit 1Mb min 100Kb max 300Kb adaptive $",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "2d4b",
-+        "name": "Create RED with ECN flag",
-+        "category": [
-+            "qdisc",
-+            "red"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root red ecn limit 1M avpkt 1500 min 100K max 300K",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc red 1: root .* limit 1Mb min 100Kb max 300Kb ecn $",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "650f",
-+        "name": "Create RED with flags ECN, adaptive",
-+        "category": [
-+            "qdisc",
-+            "red"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root red ecn adaptive limit 1M avpkt 1500 min 100K max 300K",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc red 1: root .* limit 1Mb min 100Kb max 300Kb ecn adaptive $",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    },
-+    {
-+        "id": "5f15",
-+        "name": "Create RED with flags ECN, harddrop",
-+        "category": [
-+            "qdisc",
-+            "red"
-+        ],
-+        "plugins": {
-+            "requires": "nsPlugin"
-+        },
-+        "setup": [
-+            "$IP link add dev $DUMMY type dummy || /bin/true"
-+        ],
-+        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root red ecn harddrop limit 1M avpkt 1500 min 100K max 300K",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC qdisc show dev $DUMMY",
-+        "matchPattern": "qdisc red 1: root .* limit 1Mb min 100Kb max 300Kb ecn harddrop $",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DUMMY handle 1: root",
-+            "$IP link del dev $DUMMY type dummy"
-+        ]
-+    }
-+]
+diff --git a/include/net/red.h b/include/net/red.h
+index 9665582c4687..6a2aaa6c7c41 100644
+--- a/include/net/red.h
++++ b/include/net/red.h
+@@ -179,6 +179,39 @@ static inline bool red_check_params(u32 qth_min, u32 qth_max, u8 Wlog)
+ 	return true;
+ }
+ 
++static inline int red_get_flags(unsigned char qopt_flags,
++				unsigned char historic_mask,
++				struct nlattr *flags_attr,
++				unsigned char supported_mask,
++				struct nla_bitfield32 *p_flags,
++				unsigned char *p_userbits,
++				struct netlink_ext_ack *extack)
++{
++	struct nla_bitfield32 flags;
++
++	if (qopt_flags && flags_attr) {
++		NL_SET_ERR_MSG_MOD(extack, "flags should be passed either through qopt, or through a dedicated attribute");
++		return -EINVAL;
++	}
++
++	if (flags_attr) {
++		flags = nla_get_bitfield32(flags_attr);
++	} else {
++		flags.selector = historic_mask;
++		flags.value = qopt_flags & historic_mask;
++	}
++
++	*p_flags = flags;
++	*p_userbits = qopt_flags & ~historic_mask;
++	return 0;
++}
++
++static inline int red_validate_flags(unsigned char flags,
++				     struct netlink_ext_ack *extack)
++{
++	return 0;
++}
++
+ static inline void red_set_parms(struct red_parms *p,
+ 				 u32 qth_min, u32 qth_max, u8 Wlog, u8 Plog,
+ 				 u8 Scell_log, u8 *stab, u32 max_P)
+diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+index bbe791b24168..6325507935ea 100644
+--- a/include/uapi/linux/pkt_sched.h
++++ b/include/uapi/linux/pkt_sched.h
+@@ -256,6 +256,7 @@ enum {
+ 	TCA_RED_PARMS,
+ 	TCA_RED_STAB,
+ 	TCA_RED_MAX_P,
++	TCA_RED_FLAGS,		/* bitfield32 */
+ 	__TCA_RED_MAX,
+ };
+ 
+@@ -268,12 +269,27 @@ struct tc_red_qopt {
+ 	unsigned char   Wlog;		/* log(W)		*/
+ 	unsigned char   Plog;		/* log(P_max/(qth_max-qth_min))	*/
+ 	unsigned char   Scell_log;	/* cell size for idle damping */
++
++	/* This field can be used for flags that a RED-like qdisc has
++	 * historically supported. E.g. when configuring RED, it can be used for
++	 * ECN, HARDDROP and ADAPTATIVE. For SFQ it can be used for ECN,
++	 * HARDDROP. Etc. Because this field has not been validated, and is
++	 * copied back on dump, any bits besides those to which a given qdisc
++	 * has assigned a historical meaning need to be considered for free use
++	 * by userspace tools.
++	 *
++	 * Any further flags need to be passed differently, e.g. through an
++	 * attribute (such as TCA_RED_FLAGS above). Such attribute should allow
++	 * passing both recent and historic flags in one value.
++	 */
+ 	unsigned char	flags;
+ #define TC_RED_ECN		1
+ #define TC_RED_HARDDROP		2
+ #define TC_RED_ADAPTATIVE	4
+ };
+ 
++#define TC_RED_HISTORIC_FLAGS (TC_RED_ECN | TC_RED_HARDDROP | TC_RED_ADAPTATIVE)
++
+ struct tc_red_xstats {
+ 	__u32           early;          /* Early drops */
+ 	__u32           pdrop;          /* Drops due to queue limits */
+diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
+index 1695421333e3..d4ce111704dc 100644
+--- a/net/sched/sch_red.c
++++ b/net/sched/sch_red.c
+@@ -35,7 +35,11 @@
+ 
+ struct red_sched_data {
+ 	u32			limit;		/* HARD maximal queue length */
++
+ 	unsigned char		flags;
++	/* Non-flags in tc_red_qopt.flags. */
++	unsigned char		userbits;
++
+ 	struct timer_list	adapt_timer;
+ 	struct Qdisc		*sch;
+ 	struct red_parms	parms;
+@@ -44,6 +48,8 @@ struct red_sched_data {
+ 	struct Qdisc		*qdisc;
+ };
+ 
++static const u32 red_supported_flags = TC_RED_HISTORIC_FLAGS;
++
+ static inline int red_use_ecn(struct red_sched_data *q)
+ {
+ 	return q->flags & TC_RED_ECN;
+@@ -183,9 +189,12 @@ static void red_destroy(struct Qdisc *sch)
+ }
+ 
+ static const struct nla_policy red_policy[TCA_RED_MAX + 1] = {
++	[TCA_RED_UNSPEC] = { .strict_start_type = TCA_RED_FLAGS },
+ 	[TCA_RED_PARMS]	= { .len = sizeof(struct tc_red_qopt) },
+ 	[TCA_RED_STAB]	= { .len = RED_STAB_SIZE },
+ 	[TCA_RED_MAX_P] = { .type = NLA_U32 },
++	[TCA_RED_FLAGS] = { .type = NLA_BITFIELD32,
++			    .validation_data = &red_supported_flags },
+ };
+ 
+ static int red_change(struct Qdisc *sch, struct nlattr *opt,
+@@ -194,7 +203,10 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt,
+ 	struct Qdisc *old_child = NULL, *child = NULL;
+ 	struct red_sched_data *q = qdisc_priv(sch);
+ 	struct nlattr *tb[TCA_RED_MAX + 1];
++	struct nla_bitfield32 flags_bf;
+ 	struct tc_red_qopt *ctl;
++	unsigned char userbits;
++	unsigned char flags;
+ 	int err;
+ 	u32 max_P;
+ 
+@@ -216,6 +228,12 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt,
+ 	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
+ 		return -EINVAL;
+ 
++	err = red_get_flags(ctl->flags, TC_RED_HISTORIC_FLAGS,
++			    tb[TCA_RED_FLAGS], red_supported_flags,
++			    &flags_bf, &userbits, extack);
++	if (err)
++		return err;
++
+ 	if (ctl->limit > 0) {
+ 		child = fifo_create_dflt(sch, &bfifo_qdisc_ops, ctl->limit,
+ 					 extack);
+@@ -227,7 +245,14 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt,
+ 	}
+ 
+ 	sch_tree_lock(sch);
+-	q->flags = ctl->flags;
++
++	flags = (q->flags & ~flags_bf.selector) | flags_bf.value;
++	err = red_validate_flags(flags, extack);
++	if (err)
++		goto unlock_out;
++
++	q->flags = flags;
++	q->userbits = userbits;
+ 	q->limit = ctl->limit;
+ 	if (child) {
+ 		qdisc_tree_flush_backlog(q->qdisc);
+@@ -256,6 +281,12 @@ static int red_change(struct Qdisc *sch, struct nlattr *opt,
+ 	if (old_child)
+ 		qdisc_put(old_child);
+ 	return 0;
++
++unlock_out:
++	sch_tree_unlock(sch);
++	if (child)
++		qdisc_put(child);
++	return err;
+ }
+ 
+ static inline void red_adaptative_timer(struct timer_list *t)
+@@ -299,10 +330,15 @@ static int red_dump_offload_stats(struct Qdisc *sch)
+ static int red_dump(struct Qdisc *sch, struct sk_buff *skb)
+ {
+ 	struct red_sched_data *q = qdisc_priv(sch);
++	struct nla_bitfield32 flags_bf = {
++		.selector = red_supported_flags,
++		.value = q->flags,
++	};
+ 	struct nlattr *opts = NULL;
+ 	struct tc_red_qopt opt = {
+ 		.limit		= q->limit,
+-		.flags		= q->flags,
++		.flags		= (q->flags & TC_RED_HISTORIC_FLAGS) |
++				  q->userbits,
+ 		.qth_min	= q->parms.qth_min >> q->parms.Wlog,
+ 		.qth_max	= q->parms.qth_max >> q->parms.Wlog,
+ 		.Wlog		= q->parms.Wlog,
+@@ -319,7 +355,8 @@ static int red_dump(struct Qdisc *sch, struct sk_buff *skb)
+ 	if (opts == NULL)
+ 		goto nla_put_failure;
+ 	if (nla_put(skb, TCA_RED_PARMS, sizeof(opt), &opt) ||
+-	    nla_put_u32(skb, TCA_RED_MAX_P, q->parms.max_P))
++	    nla_put_u32(skb, TCA_RED_MAX_P, q->parms.max_P) ||
++	    nla_put(skb, TCA_RED_FLAGS, sizeof(flags_bf), &flags_bf))
+ 		goto nla_put_failure;
+ 	return nla_nest_end(skb, opts);
+ 
 -- 
 2.20.1
 
