@@ -2,116 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BADA18274C
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 04:10:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E95FC1827D4
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 05:35:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387735AbgCLDKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 23:10:05 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:35547 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387692AbgCLDKF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 23:10:05 -0400
-Received: by mail-io1-f67.google.com with SMTP id h8so4187820iob.2
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 20:10:03 -0700 (PDT)
+        id S1731647AbgCLEfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 00:35:38 -0400
+Received: from mail-qk1-f202.google.com ([209.85.222.202]:33226 "EHLO
+        mail-qk1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726678AbgCLEfh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 00:35:37 -0400
+Received: by mail-qk1-f202.google.com with SMTP id l27so3078171qkl.0
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 21:35:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=7UlCPqaifwtaHRBNM9OlkA92uhGP3P8YtjrPHhM2qXA=;
-        b=MymNgzFAjC7botrqgoNNcIOUuAsnEj/YaRhp929DK9qF9NTSCoVLgqQuyUlCuuWbmc
-         xTX8qnat5Lhd0dx2+HvITd9I3p8W2oFWYYiLmPSxLhHu9VDmI3IenMvfEFdho/S8vd2I
-         yuLM73a7S/wx1yoSfX+QL5qO2LsLHWifPuA0hRfAhHp4rftW0kW6WLVBjS4J0fyOpN3O
-         7r/1++AmSjZryTn2MxF74XgpKzfez6QsJWgBfcCvVchXvT9agRNixKTJPc0eob3a5Q1X
-         xoLsGG5eL0WYwn6be71SqmjgQeJZ5NZqTQtoyqlEcSz37jy3pIQVaP16SIN7GWzqFG9X
-         3jyg==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=SR8hiNoADlxPJ7CcKI/cTH5wQLtIQvLTLgazJPJGNSY=;
+        b=uLiENDqdQkSn5SrBwJEBq4oQcUDuZcSOG5zkYYqRIZZJCpxsJOQLFcGve4mlLBNzYd
+         qg2YWmhBtIQM8vcHe83uofHEraq0fon4u6+TmW8lwHTIBaRcIi8z+BbHRC8BWhiUCaX7
+         paEOla/sLyS/wDP9V9vOeniOWQLt2VbMsX8TGJ4EI9iuKCBmb90RT5IqMuJrwc7tpRxe
+         HDPPaUds1DCq8lHfLZfFqhx6bbhmm8reYKzK9IYrdUXxeZ0T4cfI3OqOxGuDqVKPAiN/
+         ouUCROrZxJ4Yqg67PfJ6mrdqCsqgZvXGBGZrEHMRFLBMsiJ51YnuQFJrwEy7loqKfIyM
+         IQRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=7UlCPqaifwtaHRBNM9OlkA92uhGP3P8YtjrPHhM2qXA=;
-        b=IbslklSqbCI/4/3XUGJoii6Jc42aWUo0ZyM9A29nWQbgQ0mi/03LnLzQaknQJQlP9L
-         xa29VYlGGCOsIPiRwuyMU68nOiJ3mnzTM3l1nbboVjCNTtlF7//hdzozS+oAkfmF/Ya8
-         T26bPZsfZhyAF/z54cOyzyrnob2Nqt9BxrmfPzaNlI/0ZW2zEIfm0o3RTrT07feUJ4TF
-         t1pKi+3gBLZqYGFyETT/1IoigV8OyqlAVRVflHNx39tFprM+Ei02vMCnHu32ma4V8iJF
-         PJkzI7ZHBK7oei3dV61YopOgOgJDXM/av4Em+tpGPywuerI7uAKlHP+h5yZd6mmN2gPR
-         iYOA==
-X-Gm-Message-State: ANhLgQ0U2y0AyVnRUvdXN47gsg/cv9xR81xcF++BAfLT4KeEiwh3Sxrz
-        98+Zc2+J5CsC8Ci9K73k59DQVA==
-X-Google-Smtp-Source: ADFU+vs/imBUNrCpmlxjMLXtYVDj0Q3NbjhYgAeR0ptUEQhLsK2b4DLsRH6n4QvzTYidB9g45CZyjQ==
-X-Received: by 2002:a6b:6606:: with SMTP id a6mr5411023ioc.8.1583982602672;
-        Wed, 11 Mar 2020 20:10:02 -0700 (PDT)
-Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id y18sm12685362ilg.82.2020.03.11.20.10.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Mar 2020 20:10:02 -0700 (PDT)
-Subject: Re: [PATCH v2 00/17] net: introduce Qualcomm IPA driver (UPDATED)
-To:     Dave Taht <dave.taht@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, Arnd Bergmann <arnd@arndb.de>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Dan Williams <dcbw@redhat.com>,
-        Evan Green <evgreen@google.com>,
-        Eric Caruso <ejcaruso@google.com>,
-        Susheel Yadav Yadagiri <syadagir@codeaurora.org>,
-        Chaitanya Pratapa <cpratapa@codeaurora.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Siddharth Gupta <sidgup@codeaurora.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200306042831.17827-1-elder@linaro.org>
- <CAA93jw5enz6-h1m=7tGFToK+E+8z3aD80pBef4AYkFrS2u3hHQ@mail.gmail.com>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <e4f436b4-3dd7-970a-9b08-7601fc5428d2@linaro.org>
-Date:   Wed, 11 Mar 2020 22:09:56 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-MIME-Version: 1.0
-In-Reply-To: <CAA93jw5enz6-h1m=7tGFToK+E+8z3aD80pBef4AYkFrS2u3hHQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=SR8hiNoADlxPJ7CcKI/cTH5wQLtIQvLTLgazJPJGNSY=;
+        b=FpBc+HY//IIbojIU66d3CpH72sFta1JvN/8rY2KRp4bJ76trk+Hx6WN5+wnGvtXx86
+         m7oPAiNP4BCZ7sTkVTfeM6xJyS3euJQ7+rnxHAwXc0KuyZSFrJoPLgGJCExsgCmXgF8H
+         CYTtBks7apyB5ldje5rjumCYqHWMKaKHMXBKE49tUx26Gc3l+/iMDxHjRYpiqRJOojRY
+         gTvIYyoTumtK/jJIgEae+nXFgRnpBpP7YwMlNqfMmLOLs3H4Or9PEwBA4O/HHTz33bKh
+         yzPv/XVGwfv0zS50icm4y2zDqNwgZlcyV8KEJoYnMefTkTrJhnJZteW23R3Du+PMikui
+         D1EA==
+X-Gm-Message-State: ANhLgQ2VVtjaZFvYmGx56mY13pWGyH2QJSWtqJp5C0VjN59LCzwNz2ZC
+        X53sWkdWK15hlPR6wAX63eMMtP97/tFXfrP1Mg==
+X-Google-Smtp-Source: ADFU+vsHKo49UpImt1uQNDK7E8mxBRFwbW1IJ+Ss7XMWSMMfaitQ/FWD3t/FqFEJZVeoiErHdrbE9g/Eoh1nfnb85Q==
+X-Received: by 2002:a37:7d2:: with SMTP id 201mr6131242qkh.146.1583987734205;
+ Wed, 11 Mar 2020 21:35:34 -0700 (PDT)
+Date:   Thu, 12 Mar 2020 12:35:27 +0800
+Message-Id: <20200312123453.Bluez.v2.1.I50b301a0464eb68e3d62721bf59e11ed2617c415@changeid>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
+Subject: [Bluez PATCH v2] Bluetooth: L2CAP: handle l2cap config request during
+ open state
+From:   Howard Chung <howardchung@google.com>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
+Cc:     chromeos-bluetooth-upstreaming@chromium.org,
+        Howard Chung <howardchung@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/9/20 11:54 AM, Dave Taht wrote:
-> I am happy to see this driver upstream.
-> 
->> Arnd's concern was that the rmnet_data0 network device does not
->> have the benefit of information about the state of the underlying
->> IPA hardware in order to be effective in controlling TX flow.
->> The feared result is over-buffering of TX packets (bufferbloat).
->> I began working on some simple experiments to see whether (or how
->> much) his concern was warranted.  But it turned out that completing
->> these experiments was much more work than had been hoped.
-> 
-> Members of the bufferbloat project *care*, and have tools and testbeds for
-> exploring these issues. It would be good to establish a relationship with
-> the vendor, obtain hardware, and other (technical and financial) support, if
-> possible.
-> 
-> Is there any specific hardware now available (generally or in beta) that
-> can be obtained by us to take a harder look? A contact at linaro or QCA
-> willing discuss options?
+According to Core Spec Version 5.2 | Vol 3, Part A 6.1.5,
+the incoming L2CAP_ConfigReq should be handled during
+OPEN state.
 
-There exists some hardware that could be used, but at the moment I have
-not ported this code to operate on it.  It is a current effort however,
-and I will be glad to keep you in the loop on progress.  There are a
-couple of target environments we'd like to support but until last week
-the primary goal was inclusion in the upstream tree.
+The section below shows the btmon trace when running
+L2CAP/COS/CFD/BV-12-C before and after this change.
 
-I will follow up with you after the dust settles a little bit with
-this patch series, maybe in a week or so.  In the mean time I'll
-also find out whether there are any other resources (people and/or
-hardware) available.
+=== Before ===
+...
+> ACL Data RX: Handle 256 flags 0x02 dlen 12                #22
+      L2CAP: Connection Request (0x02) ident 2 len 4
+        PSM: 1 (0x0001)
+        Source CID: 65
+< ACL Data TX: Handle 256 flags 0x00 dlen 16                #23
+      L2CAP: Connection Response (0x03) ident 2 len 8
+        Destination CID: 64
+        Source CID: 65
+        Result: Connection successful (0x0000)
+        Status: No further information available (0x0000)
+< ACL Data TX: Handle 256 flags 0x00 dlen 12                #24
+      L2CAP: Configure Request (0x04) ident 2 len 4
+        Destination CID: 65
+        Flags: 0x0000
+> HCI Event: Number of Completed Packets (0x13) plen 5      #25
+        Num handles: 1
+        Handle: 256
+        Count: 1
+> HCI Event: Number of Completed Packets (0x13) plen 5      #26
+        Num handles: 1
+        Handle: 256
+        Count: 1
+> ACL Data RX: Handle 256 flags 0x02 dlen 16                #27
+      L2CAP: Configure Request (0x04) ident 3 len 8
+        Destination CID: 64
+        Flags: 0x0000
+        Option: Unknown (0x10) [hint]
+        01 00                                            ..
+< ACL Data TX: Handle 256 flags 0x00 dlen 18                #28
+      L2CAP: Configure Response (0x05) ident 3 len 10
+        Source CID: 65
+        Flags: 0x0000
+        Result: Success (0x0000)
+        Option: Maximum Transmission Unit (0x01) [mandatory]
+          MTU: 672
+> HCI Event: Number of Completed Packets (0x13) plen 5      #29
+        Num handles: 1
+        Handle: 256
+        Count: 1
+> ACL Data RX: Handle 256 flags 0x02 dlen 14                #30
+      L2CAP: Configure Response (0x05) ident 2 len 6
+        Source CID: 64
+        Flags: 0x0000
+        Result: Success (0x0000)
+> ACL Data RX: Handle 256 flags 0x02 dlen 20                #31
+      L2CAP: Configure Request (0x04) ident 3 len 12
+        Destination CID: 64
+        Flags: 0x0000
+        Option: Unknown (0x10) [hint]
+        01 00 91 02 11 11                                ......
+< ACL Data TX: Handle 256 flags 0x00 dlen 14                #32
+      L2CAP: Command Reject (0x01) ident 3 len 6
+        Reason: Invalid CID in request (0x0002)
+        Destination CID: 64
+        Source CID: 65
+> HCI Event: Number of Completed Packets (0x13) plen 5      #33
+        Num handles: 1
+        Handle: 256
+        Count: 1
+...
+=== After ===
+...
+> ACL Data RX: Handle 256 flags 0x02 dlen 12               #22
+      L2CAP: Connection Request (0x02) ident 2 len 4
+        PSM: 1 (0x0001)
+        Source CID: 65
+< ACL Data TX: Handle 256 flags 0x00 dlen 16               #23
+      L2CAP: Connection Response (0x03) ident 2 len 8
+        Destination CID: 64
+        Source CID: 65
+        Result: Connection successful (0x0000)
+        Status: No further information available (0x0000)
+< ACL Data TX: Handle 256 flags 0x00 dlen 12               #24
+      L2CAP: Configure Request (0x04) ident 2 len 4
+        Destination CID: 65
+        Flags: 0x0000
+> HCI Event: Number of Completed Packets (0x13) plen 5     #25
+        Num handles: 1
+        Handle: 256
+        Count: 1
+> HCI Event: Number of Completed Packets (0x13) plen 5     #26
+        Num handles: 1
+        Handle: 256
+        Count: 1
+> ACL Data RX: Handle 256 flags 0x02 dlen 16               #27
+      L2CAP: Configure Request (0x04) ident 3 len 8
+        Destination CID: 64
+        Flags: 0x0000
+        Option: Unknown (0x10) [hint]
+        01 00                                            ..
+< ACL Data TX: Handle 256 flags 0x00 dlen 18               #28
+      L2CAP: Configure Response (0x05) ident 3 len 10
+        Source CID: 65
+        Flags: 0x0000
+        Result: Success (0x0000)
+        Option: Maximum Transmission Unit (0x01) [mandatory]
+          MTU: 672
+> HCI Event: Number of Completed Packets (0x13) plen 5     #29
+        Num handles: 1
+        Handle: 256
+        Count: 1
+> ACL Data RX: Handle 256 flags 0x02 dlen 14               #30
+      L2CAP: Configure Response (0x05) ident 2 len 6
+        Source CID: 64
+        Flags: 0x0000
+        Result: Success (0x0000)
+> ACL Data RX: Handle 256 flags 0x02 dlen 20               #31
+      L2CAP: Configure Request (0x04) ident 3 len 12
+        Destination CID: 64
+        Flags: 0x0000
+        Option: Unknown (0x10) [hint]
+        01 00 91 02 11 11                                .....
+< ACL Data TX: Handle 256 flags 0x00 dlen 18               #32
+      L2CAP: Configure Response (0x05) ident 3 len 10
+        Source CID: 65
+        Flags: 0x0000
+        Result: Success (0x0000)
+        Option: Maximum Transmission Unit (0x01) [mandatory]
+          MTU: 672
+< ACL Data TX: Handle 256 flags 0x00 dlen 12               #33
+      L2CAP: Configure Request (0x04) ident 3 len 4
+        Destination CID: 65
+        Flags: 0x0000
+> HCI Event: Number of Completed Packets (0x13) plen 5     #34
+        Num handles: 1
+        Handle: 256
+        Count: 1
+> HCI Event: Number of Completed Packets (0x13) plen 5     #35
+        Num handles: 1
+        Handle: 256
+        Count: 1
+...
 
-					-Alex
+Signed-off-by: Howard Chung <howardchung@google.com>
+
+---
+
+Changes in v2:
+- Updated commit messages
+
+ net/bluetooth/l2cap_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 697c0f7f2c1a..5e6e35ab44dd 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -4300,7 +4300,8 @@ static inline int l2cap_config_req(struct l2cap_conn *conn,
+ 		return 0;
+ 	}
+ 
+-	if (chan->state != BT_CONFIG && chan->state != BT_CONNECT2) {
++	if (chan->state != BT_CONFIG && chan->state != BT_CONNECT2 &&
++	    chan->state != BT_CONNECTED) {
+ 		cmd_reject_invalid_cid(conn, cmd->ident, chan->scid,
+ 				       chan->dcid);
+ 		goto unlock;
+-- 
+2.25.1.481.gfbce0eb801-goog
+
