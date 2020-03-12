@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15558183BBC
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 22:50:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10E1C183BBE
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 22:50:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbgCLVug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 17:50:36 -0400
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:54467 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726637AbgCLVud (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 17:50:33 -0400
-Received: by mail-pj1-f66.google.com with SMTP id np16so3093478pjb.4
-        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 14:50:32 -0700 (PDT)
+        id S1726702AbgCLVuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 17:50:37 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:38754 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726632AbgCLVue (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 17:50:34 -0400
+Received: by mail-pg1-f193.google.com with SMTP id x7so3731431pgh.5
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 14:50:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=3mb9QuPeiADGGqmEP+838Y3QNMnODA03xCrK5e6N588=;
-        b=jtcuZBPXsHGdn+xxrAG+082fFCkEWRwybCs+7jsdq9Ca1Ktf0bwwl4uUV9b7zz9HyN
-         DlK9QQaiCTRa+pi2Cmkub50ENeSJLNxmmvrPlvVl+97DowjLCF1HL8u1g/R2yn5LwuwR
-         X4XCX1cXB+i1nwNbQ3J+k/5shOLRSYDFQliUvm8l6RpaN7J3KueXxmYjR82fjVSZzbuH
-         SgIiSpX461GZUFreY/d75RWL6l6mx/ILABYKSspI4qFLSZUf/QuD0tppxYDdirm1GROs
-         J0U+oZX5K+V57D4yKzHyPNxjgT3AdX7JQnSFcb/ojUfe03vFJAbfnAyiqUl6okv8QTYM
-         /Ppw==
+        bh=Jgxy3tCrGex6W2ji7AyPVdZL2zZf5ftOnGNPJQUguS8=;
+        b=A6lXYk+B/IokykcSQKMhWcNCSF5DNGu31wRY8H/C1tsENFdmB3pefb7+n1EEy27Qzv
+         fsmLL5NHx/FEOW9KOkOdRHJk/6RIOXf2hj+mXI1re8Ci4X7bdI+7RIbQxgH78iOWdMxR
+         VRBItvS2D6qZLyX+jEue/i97krBYAJA29/Cbk+0IpVx3Z2pfAwK8QkCXNuo15PwwSf5W
+         eFhCdrvaxQ0p58D17K5JX2VvO95BtMHpdkPl30uDZqU1bw2QB8jCIWkbWPCIy8SYWMq9
+         bJULuIXWRS24YIoUPZLQUrBzLGcFiYqEWNGPgX2jC/+9EVbAaCzRgpmEFb/9o5+5QPMz
+         temA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=3mb9QuPeiADGGqmEP+838Y3QNMnODA03xCrK5e6N588=;
-        b=a4axrLcOo50rY5rqB3mCdiQbXg4R5rQZVdhp2Gzcy7+WLeNpEyB+e1d8r88/TCSlXl
-         c6B3NS6N2oU1yJxMBPcH5C//P9FHE40a488+YBuWNL/+IJVLqRHqNDGTjU+35WtGvE9K
-         O/0tpOBZEK3mbE3fhH1AyI4jAcHvGHuI6CY1BkBwgdAaMU+7j4EtfUyyKJhYvtDWM4Hg
-         nO+EqdyCwgkNGby+oIScHIVpp/nIwjnx2+0067wHxsHsnSgrozLXtltOdukIpBP9FUDi
-         QC4vaO5nkw9TZfwLmGv1FpsEYAMRicAq7tgrTGW9aml+mLYu1PZAOOMcNfOG0okj1rl/
-         WizA==
-X-Gm-Message-State: ANhLgQ1KcGehb3Fitfiouzyho9DEQj8l3A8w2yhmKjpyl5NHEFIay7yj
-        Oko3i3KWXChjuFhcJQfT/TD9wlugXus=
-X-Google-Smtp-Source: ADFU+vs/TFSUq/bZe8RVcJZ3rmcSb/6Z0KbfcP3qpprYqiqEiSc0fre8j1uxTB5T4Tz6RKHqWPKJvA==
-X-Received: by 2002:a17:902:247:: with SMTP id 65mr10175663plc.128.1584049831486;
-        Thu, 12 Mar 2020 14:50:31 -0700 (PDT)
+        bh=Jgxy3tCrGex6W2ji7AyPVdZL2zZf5ftOnGNPJQUguS8=;
+        b=cg6GPxFPNh6ncdIFaG9aSUiuTeng28MTMNWAf3pLZydt3PvYotIWV32pGfonRfcL6f
+         /NF1iXuv8psUjW50DIgysYXqLJNvk6ODxGQcnnnJuKW7nrTgCzzP38lPxc9Djd3m3gP0
+         6OhwUOXVd03FuanPLsKYu2lPrPhoHjTY9naKM+3vD1IU2Bp6PZAA8NxaRMoWF8fe+0Sb
+         RRwDsV8QQ/GSa/+JIZrejZWNmKNRZExLs7yJPWc8vf3SsHTQ5Tf8g9ONvSal6L5TzXbv
+         M9Xtq5kls8NaPQdH+Jw1c5PN6R35FY+5YigdP0xvpsfsxHPJQINQ2WFK0VwnJMhsCfrG
+         mtVQ==
+X-Gm-Message-State: ANhLgQ2zUS+2T8RvwuWr6seZNWptwShp36ZDQvOTXk4qa/Ke2UxWgdpf
+        cWvYSBiKIy2FDxCivrgTK3+3UXPVU70=
+X-Google-Smtp-Source: ADFU+vvmYh4t8G0Q6lCo0rbjBUh5NZ8k5uM4B9EUY4uQn3OAEbpWWFP0nTrid+zG4evj3j8ngicF2A==
+X-Received: by 2002:aa7:8553:: with SMTP id y19mr8246175pfn.307.1584049833115;
+        Thu, 12 Mar 2020 14:50:33 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id p2sm38281203pfb.41.2020.03.12.14.50.30
+        by smtp.gmail.com with ESMTPSA id p2sm38281203pfb.41.2020.03.12.14.50.31
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 12 Mar 2020 14:50:30 -0700 (PDT)
+        Thu, 12 Mar 2020 14:50:31 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 4/7] ionic: add a flag for FW in reset
-Date:   Thu, 12 Mar 2020 14:50:12 -0700
-Message-Id: <20200312215015.69547-5-snelson@pensando.io>
+Subject: [PATCH net-next 5/7] ionic: remove lifs on fw reset
+Date:   Thu, 12 Mar 2020 14:50:13 -0700
+Message-Id: <20200312215015.69547-6-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200312215015.69547-1-snelson@pensando.io>
 References: <20200312215015.69547-1-snelson@pensando.io>
@@ -57,247 +57,189 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the FW_RESET flag, and prevent a few things from happening
-if the FW_RESET flag is set.  Code for setting and clearing
-it is in a following patch.
+When the FW RESET event comes to the driver from the firmware,
+tear down the LIFs.  This event signals a FW upgrade where we
+need to quiesce all operations and wait for the FW to restart.
+The FW will continue the update process once it sees all the
+LIFs are reset.  When the update process is done it will set
+the fw_status back to RUNNING.  Meanwhile, the heartbeat
+check continues and when the fw_status is seen as set to
+running we can rebuild the LIFs.
+
+We expect that there was a LINK_DOWN event before this to stop
+the queues, and there will be a LINK_UP event afterwards to
+get things started again.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
-
-Depending on timing of net updates into net-next, this may have a
-conflict with 905fc4f8a399 ("ionic: fix vf op lock usage")
-
- .../ethernet/pensando/ionic/ionic_bus_pci.c   |  4 ++
- .../ethernet/pensando/ionic/ionic_ethtool.c   | 17 +++++++-
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 40 +++++++++++++++----
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 79 ++++++++++++++++---
  .../net/ethernet/pensando/ionic/ionic_lif.h   |  1 +
- .../net/ethernet/pensando/ionic/ionic_main.c  |  8 ++--
- 5 files changed, 58 insertions(+), 12 deletions(-)
+ 2 files changed, 70 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-index 60fc191a35e5..c55e28f3c986 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_bus_pci.c
-@@ -185,6 +185,10 @@ static int ionic_sriov_configure(struct pci_dev *pdev, int num_vfs)
- 	struct device *dev = ionic->dev;
- 	int ret = 0;
- 
-+	if (ionic->master_lif &&
-+	    test_bit(IONIC_LIF_F_FW_RESET, ionic->master_lif->state))
-+		return -EBUSY;
-+
- 	if (num_vfs > 0) {
- 		ret = pci_enable_sriov(pdev, num_vfs);
- 		if (ret) {
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-index a233716eac29..ddae21b1f80a 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
-@@ -27,10 +27,11 @@ static void ionic_get_stats_strings(struct ionic_lif *lif, u8 *buf)
- static void ionic_get_stats(struct net_device *netdev,
- 			    struct ethtool_stats *stats, u64 *buf)
- {
--	struct ionic_lif *lif;
-+	struct ionic_lif *lif = netdev_priv(netdev);
- 	u32 i;
- 
--	lif = netdev_priv(netdev);
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return;
- 
- 	memset(buf, 0, stats->n_stats * sizeof(*buf));
- 	for (i = 0; i < ionic_num_stats_grps; i++)
-@@ -255,6 +256,9 @@ static int ionic_set_link_ksettings(struct net_device *netdev,
- 	struct ionic_dev *idev;
- 	int err = 0;
- 
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return -EBUSY;
-+
- 	idev = &lif->ionic->idev;
- 
- 	/* set autoneg */
-@@ -303,6 +307,9 @@ static int ionic_set_pauseparam(struct net_device *netdev,
- 	u32 requested_pause;
- 	int err;
- 
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return -EBUSY;
-+
- 	if (pause->autoneg)
- 		return -EOPNOTSUPP;
- 
-@@ -355,6 +362,9 @@ static int ionic_set_fecparam(struct net_device *netdev,
- 	u8 fec_type;
- 	int ret = 0;
- 
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return -EBUSY;
-+
- 	if (lif->ionic->idev.port_info->config.an_enable) {
- 		netdev_err(netdev, "FEC request not allowed while autoneg is enabled\n");
- 		return -EINVAL;
-@@ -739,6 +749,9 @@ static int ionic_nway_reset(struct net_device *netdev)
- 	struct ionic *ionic = lif->ionic;
- 	int err = 0;
- 
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return -EBUSY;
-+
- 	/* flap the link to force auto-negotiation */
- 
- 	mutex_lock(&ionic->dev_cmd_lock);
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index eb1e885a2f70..7909a037d5f7 100644
+index 7909a037d5f7..a6af75031347 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -1664,6 +1664,9 @@ static int ionic_get_vf_config(struct net_device *netdev,
- 	struct ionic *ionic = lif->ionic;
- 	int ret = 0;
+@@ -21,6 +21,9 @@ static void ionic_lif_rx_mode(struct ionic_lif *lif, unsigned int rx_mode);
+ static int ionic_lif_addr_add(struct ionic_lif *lif, const u8 *addr);
+ static int ionic_lif_addr_del(struct ionic_lif *lif, const u8 *addr);
+ static void ionic_link_status_check(struct ionic_lif *lif);
++static void ionic_lif_handle_fw_down(struct ionic_lif *lif);
++static void ionic_lif_handle_fw_up(struct ionic_lif *lif);
++static void ionic_lif_set_netdev_info(struct ionic_lif *lif);
  
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return -EBUSY;
-+
- 	down_read(&ionic->vf_op_lock);
+ static void ionic_lif_deferred_work(struct work_struct *work)
+ {
+@@ -50,6 +53,12 @@ static void ionic_lif_deferred_work(struct work_struct *work)
+ 		case IONIC_DW_TYPE_LINK_STATUS:
+ 			ionic_link_status_check(lif);
+ 			break;
++		case IONIC_DW_TYPE_LIF_RESET:
++			if (w->fw_status)
++				ionic_lif_handle_fw_up(lif);
++			else
++				ionic_lif_handle_fw_down(lif);
++			break;
+ 		default:
+ 			break;
+ 		}
+@@ -690,6 +699,7 @@ static bool ionic_notifyq_service(struct ionic_cq *cq,
+ 				  struct ionic_cq_info *cq_info)
+ {
+ 	union ionic_notifyq_comp *comp = cq_info->cq_desc;
++	struct ionic_deferred_work *work;
+ 	struct net_device *netdev;
+ 	struct ionic_queue *q;
+ 	struct ionic_lif *lif;
+@@ -715,11 +725,13 @@ static bool ionic_notifyq_service(struct ionic_cq *cq,
+ 		ionic_link_status_check_request(lif);
+ 		break;
+ 	case IONIC_EVENT_RESET:
+-		netdev_info(netdev, "Notifyq IONIC_EVENT_RESET eid=%lld\n",
+-			    eid);
+-		netdev_info(netdev, "  reset_code=%d state=%d\n",
+-			    comp->reset.reset_code,
+-			    comp->reset.state);
++		work = kzalloc(sizeof(*work), GFP_ATOMIC);
++		if (!work) {
++			netdev_err(lif->netdev, "%s OOM\n", __func__);
++		} else {
++			work->type = IONIC_DW_TYPE_LIF_RESET;
++			ionic_lif_deferred_enqueue(&lif->deferred, work);
++		}
+ 		break;
+ 	default:
+ 		netdev_warn(netdev, "Notifyq unknown event ecode=%d eid=%lld\n",
+@@ -1232,7 +1244,8 @@ static int ionic_init_nic_features(struct ionic_lif *lif)
+ 	netdev->hw_features |= netdev->hw_enc_features;
+ 	netdev->features |= netdev->hw_features;
  
- 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
-@@ -1691,6 +1694,9 @@ static int ionic_get_vf_stats(struct net_device *netdev, int vf,
- 	struct ionic_lif_stats *vs;
- 	int ret = 0;
+-	netdev->priv_flags |= IFF_UNICAST_FLT;
++	netdev->priv_flags |= IFF_UNICAST_FLT |
++			      IFF_LIVE_ADDR_CHANGE;
  
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return -EBUSY;
-+
- 	down_read(&ionic->vf_op_lock);
- 
- 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
-@@ -1726,6 +1732,9 @@ static int ionic_set_vf_mac(struct net_device *netdev, int vf, u8 *mac)
- 	if (!(is_zero_ether_addr(mac) || is_valid_ether_addr(mac)))
- 		return -EINVAL;
- 
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return -EBUSY;
-+
- 	down_read(&ionic->vf_op_lock);
- 
- 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
-@@ -1757,6 +1766,9 @@ static int ionic_set_vf_vlan(struct net_device *netdev, int vf, u16 vlan,
- 	if (proto != htons(ETH_P_8021Q))
- 		return -EPROTONOSUPPORT;
- 
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return -EBUSY;
-+
- 	down_read(&ionic->vf_op_lock);
- 
- 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
-@@ -1783,6 +1795,9 @@ static int ionic_set_vf_rate(struct net_device *netdev, int vf,
- 	if (tx_min)
- 		return -EINVAL;
- 
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return -EBUSY;
-+
- 	down_write(&ionic->vf_op_lock);
- 
- 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
-@@ -1805,6 +1820,9 @@ static int ionic_set_vf_spoofchk(struct net_device *netdev, int vf, bool set)
- 	u8 data = set;  /* convert to u8 for config */
- 	int ret;
- 
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return -EBUSY;
-+
- 	down_write(&ionic->vf_op_lock);
- 
- 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
-@@ -1827,6 +1845,9 @@ static int ionic_set_vf_trust(struct net_device *netdev, int vf, bool set)
- 	u8 data = set;  /* convert to u8 for config */
- 	int ret;
- 
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return -EBUSY;
-+
- 	down_write(&ionic->vf_op_lock);
- 
- 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
-@@ -1863,6 +1884,9 @@ static int ionic_set_vf_link_state(struct net_device *netdev, int vf, int set)
- 		return -EINVAL;
- 	}
- 
-+	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		return -EBUSY;
-+
- 	down_write(&ionic->vf_op_lock);
- 
- 	if (vf >= pci_num_vf(ionic->pdev) || !ionic->vfs) {
-@@ -2055,7 +2079,8 @@ static void ionic_lif_free(struct ionic_lif *lif)
- 
- 	/* free queues */
- 	ionic_qcqs_free(lif);
--	ionic_lif_reset(lif);
-+	if (!test_bit(IONIC_LIF_F_FW_RESET, lif->state))
-+		ionic_lif_reset(lif);
- 
- 	/* free lif info */
- 	dma_free_coherent(dev, lif->info_sz, lif->info, lif->info_pa);
-@@ -2093,6 +2118,11 @@ static void ionic_lif_deinit(struct ionic_lif *lif)
- 
- 	clear_bit(IONIC_LIF_F_INITED, lif->state);
- 
-+	if (!test_bit(IONIC_LIF_F_FW_RESET, lif->state)) {
-+		cancel_work_sync(&lif->deferred.work);
-+		cancel_work_sync(&lif->tx_timeout_work);
-+	}
-+
- 	ionic_rx_filters_deinit(lif);
- 	ionic_lif_rss_deinit(lif);
- 
-@@ -2454,12 +2484,8 @@ void ionic_lifs_unregister(struct ionic *ionic)
- 	 * current model, so don't bother searching the
- 	 * ionic->lif for candidates to unregister
- 	 */
--	if (!ionic->master_lif)
--		return;
--
--	cancel_work_sync(&ionic->master_lif->deferred.work);
--	cancel_work_sync(&ionic->master_lif->tx_timeout_work);
--	if (ionic->master_lif->netdev->reg_state == NETREG_REGISTERED)
-+	if (ionic->master_lif &&
-+	    ionic->master_lif->netdev->reg_state == NETREG_REGISTERED)
- 		unregister_netdev(ionic->master_lif->netdev);
+ 	return 0;
+ }
+@@ -2067,6 +2080,51 @@ static void ionic_lif_reset(struct ionic_lif *lif)
+ 	mutex_unlock(&lif->ionic->dev_cmd_lock);
  }
  
++static void ionic_lif_handle_fw_down(struct ionic_lif *lif)
++{
++	struct ionic *ionic = lif->ionic;
++
++	set_bit(IONIC_LIF_F_FW_RESET, lif->state);
++	dev_info(ionic->dev, "FW Down: Stopping LIFs\n");
++
++	if (test_bit(IONIC_LIF_F_UP, lif->state)) {
++		dev_info(ionic->dev, "Surprise FW stop, stopping netdev\n");
++		rtnl_lock();
++		ionic_stop(lif->netdev);
++		rtnl_unlock();
++	}
++
++	ionic_lifs_deinit(ionic);
++	ionic_qcqs_free(lif);
++
++	dev_info(ionic->dev, "FW Down: LIFs stopped\n");
++}
++
++static void ionic_lif_handle_fw_up(struct ionic_lif *lif)
++{
++	struct ionic *ionic = lif->ionic;
++	int err;
++
++	dev_info(ionic->dev, "FW Up: restarting LIFs\n");
++
++	err = ionic_qcqs_alloc(lif);
++	if (!err)
++		err = ionic_lifs_init(ionic);
++
++	if (lif->registered)
++		ionic_lif_set_netdev_info(lif);
++
++	if (!err)
++		clear_bit(IONIC_LIF_F_FW_RESET, lif->state);
++
++	ionic_link_status_check_request(lif);
++
++	if (!err)
++		dev_info(ionic->dev, "FW Up: LIFs restarted\n");
++	else
++		dev_info(ionic->dev, "FW Up: LIFs restart failed\n");
++}
++
+ static void ionic_lif_free(struct ionic_lif *lif)
+ {
+ 	struct device *dev = lif->ionic->dev;
+@@ -2229,6 +2287,7 @@ static int ionic_lif_notifyq_init(struct ionic_lif *lif)
+ 	if (err)
+ 		return err;
+ 
++	lif->last_eid = 0;
+ 	q->hw_type = ctx.comp.q_init.hw_type;
+ 	q->hw_index = le32_to_cpu(ctx.comp.q_init.hw_index);
+ 	q->dbval = IONIC_DBELL_QID(q->hw_index);
+@@ -2271,8 +2330,8 @@ static int ionic_station_set(struct ionic_lif *lif)
+ 	addr.sa_family = AF_INET;
+ 	err = eth_prepare_mac_addr_change(netdev, &addr);
+ 	if (err) {
+-		netdev_warn(lif->netdev, "ignoring bad MAC addr from NIC %pM\n",
+-			    addr.sa_data);
++		netdev_warn(lif->netdev, "ignoring bad MAC addr from NIC %pM - err %d\n",
++			    addr.sa_data, err);
+ 		return 0;
+ 	}
+ 
+@@ -2296,8 +2355,6 @@ static int ionic_lif_init(struct ionic_lif *lif)
+ 	int dbpage_num;
+ 	int err;
+ 
+-	ionic_debugfs_add_lif(lif);
+-
+ 	mutex_lock(&lif->ionic->dev_cmd_lock);
+ 	ionic_dev_cmd_lif_init(idev, lif->index, lif->info_pa);
+ 	err = ionic_dev_cmd_wait(lif->ionic, DEVCMD_TIMEOUT);
+@@ -2333,6 +2390,8 @@ static int ionic_lif_init(struct ionic_lif *lif)
+ 		goto err_out_free_dbid;
+ 	}
+ 
++	ionic_debugfs_add_lif(lif);
++
+ 	err = ionic_lif_adminq_init(lif);
+ 	if (err)
+ 		goto err_out_adminq_deinit;
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-index 7c0c6fef8c0b..d811cbb790dc 100644
+index d811cbb790dc..732dc1f99d24 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-@@ -126,6 +126,7 @@ enum ionic_lif_state_flags {
- 	IONIC_LIF_F_UP,
- 	IONIC_LIF_F_LINK_CHECK_REQUESTED,
- 	IONIC_LIF_F_QUEUE_RESET,
-+	IONIC_LIF_F_FW_RESET,
- 
- 	/* leave this as last */
- 	IONIC_LIF_F_STATE_SIZE
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index 40345281b2c9..601865db7e03 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -283,9 +283,11 @@ int ionic_adminq_post_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
- 
- 	err = ionic_adminq_post(lif, ctx);
- 	if (err) {
--		name = ionic_opcode_to_str(ctx->cmd.cmd.opcode);
--		netdev_err(netdev, "Posting of %s (%d) failed: %d\n",
--			   name, ctx->cmd.cmd.opcode, err);
-+		if (!test_bit(IONIC_LIF_F_FW_RESET, lif->state)) {
-+			name = ionic_opcode_to_str(ctx->cmd.cmd.opcode);
-+			netdev_err(netdev, "Posting of %s (%d) failed: %d\n",
-+				   name, ctx->cmd.cmd.opcode, err);
-+		}
- 		return err;
- 	}
+@@ -98,6 +98,7 @@ struct ionic_deferred_work {
+ 	union {
+ 		unsigned int rx_mode;
+ 		u8 addr[ETH_ALEN];
++		u8 fw_status;
+ 	};
+ };
  
 -- 
 2.17.1
