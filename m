@@ -2,198 +2,323 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83E2F182B2F
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 09:27:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 618DC182B7E
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 09:40:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726480AbgCLI1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 04:27:11 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:40035 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726099AbgCLI1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 04:27:11 -0400
-Received: by mail-oi1-f196.google.com with SMTP id y71so4644991oia.7;
-        Thu, 12 Mar 2020 01:27:10 -0700 (PDT)
+        id S1726613AbgCLIkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 04:40:19 -0400
+Received: from mail-vs1-f68.google.com ([209.85.217.68]:35038 "EHLO
+        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725980AbgCLIkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 04:40:18 -0400
+Received: by mail-vs1-f68.google.com with SMTP id m9so3174684vso.2;
+        Thu, 12 Mar 2020 01:40:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QcZ2BowIj1mMaoHi3wMrHLLDZ1v/hgy/7xmi7Ci4Dsc=;
+        b=D1HT3VKAqPG6bFLUnNWaDvqxxKjE8znuqxzMFvXsPD3pGdZuik3/hEnhbU02/L2ADl
+         cL7P1YUss6RDwgxxLwbj0JEgr4QRVmu/cTzzx3mAXyufZ+XGAjs6n9vo6y2yblO/ol/h
+         G9RT+1znCthaOL4Y8oHV0uQHe+1LHqOb1TNwHZAfYEd3AvYc+smer8FfDV7ezVHIeCRl
+         BYe7+INiwtzWvZ8xbnloH42dMN1E/ALBH+EaXZp5CpO9zO2zbTV2RE1WnezYlKiT4ZVe
+         plTPv64rQDY3EkbLU5hxO3C22fxI7VAxDtXDchkLGwqIGv3sJvgvFBqIeYGTViQI2/Uy
+         epxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=HJXezJytBs2ImOuxNva4jz3WuW0zVGp2L5DblLHIFrU=;
-        b=af4Pf+ALACxYkfCz9le8xJtBgx2SU3o+mvzr+JY5yxll3IpSEwsLhxUHBe5K0VKDqg
-         Nv5srt8JO72LFyS+lVz0Do/ObXpAw9uARdVanHjWCvmAGOlYOFiE1iB8UFdhlD57o/hL
-         /CgupV6iU7DEPqjSZTZrtzOmkBOoKSPNiVDkol1oSswwg5vQQJrQpQS7TfiCqq3sFMIM
-         nZff38OEQqp17FQcbR/J0pdr31Tzp+xYL6yzhmzPDHcFbTNKwT/MLKfWSy22pzHPDYE6
-         7ihZ/6xTRUPFpPWf+kzyBsw4BAEia8QlGd97qsYXrqHzBIs7HHW0fx3Ue36czo1VLduf
-         R37w==
-X-Gm-Message-State: ANhLgQ3RniUmoiFMysQFLi6t+Z9uttGcmiPrs1OPy/pbDCxkj9lCIA72
-        wKylcDJneCEWcLO2CY6Ohc8Mcg8tgCWF7csJybI2YA==
-X-Google-Smtp-Source: ADFU+vvzhDC+t1gyY8tkY/3v9GX+ksbIGEkuBSS6l+YcV0tcpcF1N242O89tHB0irUICin1WxBvD7LN6t2vUuQEYFvU=
-X-Received: by 2002:aca:1a06:: with SMTP id a6mr1683846oia.148.1584001630171;
- Thu, 12 Mar 2020 01:27:10 -0700 (PDT)
+        bh=QcZ2BowIj1mMaoHi3wMrHLLDZ1v/hgy/7xmi7Ci4Dsc=;
+        b=gUPkUGqFV+0CImxFu5jMjLt3aPc44ByPDN3RwMwMiJyzYCk1KJNQWbia69yHJML8mF
+         8XibyC/7V18GsWnIKkHW3bA1V3+JUejuYLI+0+/DjNvQR0Tcrc0VYsJgyj7nO0D6ApC5
+         DGRi4nRZL9pagX7Eg8RxfUEP1yafF2qbbVaFx5KmLVR7nMatPLmA3YaBQ6+4rcboZEqD
+         qL5vZnZOiCNqofl4Z0xJTJGpFXVc1kZW1xgVzK3lsg011w2USjKO5GpueoIgOSITfLwy
+         kWkInxcDwj2kI5E2t57ff6p8hOme20wpN5m9u1sPF/39++zlfZiOT4xoNs5uL5v4CKMg
+         L5rg==
+X-Gm-Message-State: ANhLgQ1qQKiutjsm04L13DanL7eQ0zlxF2xAth6bia4Qj1FO37wao/9T
+        z4RUiICcS3WMwfCmEFPR5mDZ+z32iHGj3PEQH48Z0iGq
+X-Google-Smtp-Source: ADFU+vsLYTD5Vxqa/lXMMHg3t0IXeGXaNxnkcHGdweKfRcrDq4G6yKM9B+MXoTO1Kjs0f8JpNJNWy6/HGhBQuRkpDCQ=
+X-Received: by 2002:a67:24c1:: with SMTP id k184mr4601402vsk.177.1584002416920;
+ Thu, 12 Mar 2020 01:40:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200220233454.31514-1-f.fainelli@gmail.com> <20200223.205911.1667092059432885700.davem@davemloft.net>
- <CAMuHMdWuP1_3vqOpf7KEimLLTKiWpWku9fUAdP3CCR6WbHyQdg@mail.gmail.com>
- <c2a4edcb-dbf9-bc60-4399-3eaec9a20fe7@gmail.com> <CAMuHMdUMM0Q6W7A0mVgSf7XmF8yROZb3uzHPU1ETbMAfvTtfow@mail.gmail.com>
- <ca2abe1a-a9ed-23c9-ceaa-b0042be49be9@gmail.com>
-In-Reply-To: <ca2abe1a-a9ed-23c9-ceaa-b0042be49be9@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 12 Mar 2020 09:26:59 +0100
-Message-ID: <CAMuHMdWwFFYHB_MkfiFZPg4nMG1jiDJ+9f4s3FXQOPCpzUErGQ@mail.gmail.com>
-Subject: Re: [PATCH net] net: phy: Avoid multiple suspends
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+References: <20200303093327.8720-1-gmayyyha@gmail.com> <CAOi1vP8jZ2tX_dg90uZY5G8cKX2Lzyu2vrGT_Ew0gVsnK4DDMA@mail.gmail.com>
+ <CAB9OAC1+OOgaLF33bSrQ3WeKZyU0qwBqUQzi9MOXwzGta_b2XA@mail.gmail.com> <CAOi1vP9ZHj7gyrjrMmA2oa+cY3ZEO+4-mdJ0HMX7zSWvi_FRTA@mail.gmail.com>
+In-Reply-To: <CAOi1vP9ZHj7gyrjrMmA2oa+cY3ZEO+4-mdJ0HMX7zSWvi_FRTA@mail.gmail.com>
+From:   Yanhu Cao <gmayyyha@gmail.com>
+Date:   Thu, 12 Mar 2020 16:40:05 +0800
+Message-ID: <CAB9OAC0ZQtti3R3dtxfShBTJXvmwKb_cyY9K=k1mmq3kDm_myQ@mail.gmail.com>
+Subject: Re: [v2] ceph: using POOL FULL flag instead of OSDMAP FULL flag
+To:     Ilya Dryomov <idryomov@gmail.com>
+Cc:     Jeff Layton <jlayton@kernel.org>, Sage Weil <sage@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Ceph Development <ceph-devel@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Heiner,
-
-On Wed, Mar 11, 2020 at 10:22 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> On 11.03.2020 10:17, Geert Uytterhoeven wrote:
-> > On Tue, Mar 10, 2020 at 5:47 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> >> On 3/10/20 7:16 AM, Geert Uytterhoeven wrote:
-> >>> On Mon, Feb 24, 2020 at 5:59 AM David Miller <davem@davemloft.net> wrote:
-> >>>> From: Florian Fainelli <f.fainelli@gmail.com>
-> >>>> Date: Thu, 20 Feb 2020 15:34:53 -0800
-> >>>>
-> >>>>> It is currently possible for a PHY device to be suspended as part of a
-> >>>>> network device driver's suspend call while it is still being attached to
-> >>>>> that net_device, either via phy_suspend() or implicitly via phy_stop().
-> >>>>>
-> >>>>> Later on, when the MDIO bus controller get suspended, we would attempt
-> >>>>> to suspend again the PHY because it is still attached to a network
-> >>>>> device.
-> >>>>>
-> >>>>> This is both a waste of time and creates an opportunity for improper
-> >>>>> clock/power management bugs to creep in.
-> >>>>>
-> >>>>> Fixes: 803dd9c77ac3 ("net: phy: avoid suspending twice a PHY")
-> >>>>> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> >>>>
-> >>>> Applied, and queued up for -stable, thanks Florian.
-> >>>
-> >>> This patch causes a regression on r8a73a4/ape6evm and sh73a0/kzm9g.
-> >>> After resume from s2ram, Ethernet no longer works:
-> >>>
-> >>>         PM: suspend exit
-> >>>         nfs: server aaa.bbb.ccc.ddd not responding, still trying
-> >>>         ...
-> >>>
-> >>> Reverting commit 503ba7c6961034ff ("net: phy: Avoid multiple suspends")
-> >>> fixes the issue.
-> >>>
-> >>> On both boards, an SMSC LAN9220 is connected to a power-managed local
-> >>> bus.
-> >>>
-> >>> I added some debug code to check when the clock driving the local bus
-> >>> is stopped and started, but I see no difference before/after.  Hence I
-> >>> suspect the Ethernet chip is no longer reinitialized after resume.
-> >>
-> >> Can you provide a complete log?
-> >
-> > With some debug info:
-> >
-> >     SDHI0 Vcc: disabling
-> >     PM: suspend entry (deep)
-> >     Filesystems sync: 0.002 seconds
-> >     Freezing user space processes ... (elapsed 0.001 seconds) done.
-> >     OOM killer disabled.
-> >     Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
-> >     PM: ==== a3sp/ee120000.sd: stop
-> >     PM: ==== a3sp/ee100000.sd: stop
-> >     smsc911x 8000000.ethernet: smsc911x_suspend:2577
-> >     smsc911x 8000000.ethernet: smsc911x_suspend:2579 running
-> >     smsc911x 8000000.ethernet: smsc911x_suspend:2584
-> >     PM: ==== a3sp/ee200000.mmc: stop
-> >     PM: ==== c4/fec10000.bus: stop
-> >     PM: ==== a3sp/e6c40000.serial: stop
-> >     PM: ==== c5/e61f0000.thermal: stop
-> >     PM: ==== c4/e61c0200.interrupt-controller: stop
-> >     PM: == a3sp: power off
-> >     rmobile_pd_power_down: a3sp
-> >     Disabling non-boot CPUs ...
-> >     PM: ==== c4/e61c0200.interrupt-controller: start
-> >     PM: ==== c5/e61f0000.thermal: start
-> >     PM: ==== a3sp/e6c40000.serial: start
-> >     PM: ==== c4/fec10000.bus: start
-> >     PM: ==== a3sp/ee200000.mmc: start
-> >     smsc911x 8000000.ethernet: smsc911x_resume:2606
-> >     smsc911x 8000000.ethernet: smsc911x_resume:2625 running
-> >     PM: ==== a3sp/ee100000.sd: start
-> >     OOM killer enabled.
-> >     Restarting tasks ... done.
-> >     PM: ==== a3sp/ee120000.sd: start
-> >     PM: suspend exit
-> >     nfs: server aaa.bbb.ccc.ddd not responding, still trying
-> >     ...
-> >
-> > But no difference between the good and the bad case, except for the nfs
-> > failures.
-> >
-> >> Do you use the Generic PHY driver or a
-> >> specialized one?
-> >
-> > CONFIG_FIXED_PHY=y
-> > CONFIG_SMSC_PHY=y
-> >
-> > Just the smsc,lan9115 node, cfr. arch/arm/boot/dts/r8a73a4-ape6evm.dts
-> >
-> >> Do you have a way to dump the registers at the time of
-> >> failure and see if BMCR.PDOWN is still set somehow?
-> >
-> > Added a hook into "nfs: server not responding", which prints:
-> >
-> >     MII_BMCR = 0x1900
-> >
-> > i.e. BMCR_PDOWN = 0x0800 is still set.
-> >
-> >> Does the following help:
-> >>
-> >> diff --git a/drivers/net/ethernet/smsc/smsc911x.c
-> >> b/drivers/net/ethernet/smsc/smsc911x.c
-> >> index 49a6a9167af4..df17190c76c0 100644
-> >> --- a/drivers/net/ethernet/smsc/smsc911x.c
-> >> +++ b/drivers/net/ethernet/smsc/smsc911x.c
-> >> @@ -2618,6 +2618,7 @@ static int smsc911x_resume(struct device *dev)
-> >>         if (netif_running(ndev)) {
-> >>                 netif_device_attach(ndev);
-> >>                 netif_start_queue(ndev);
-> >> +               phy_resume(dev->phydev);
-> >>         }
-> >>
-> >
-> > Yes i does, after s/dev->/ndev->/.
-> > Thanks!
+On Wed, Mar 11, 2020 at 9:41 PM Ilya Dryomov <idryomov@gmail.com> wrote:
 >
-> This seems to be a workaround. And the same issue we may have with
-
-I agree.
-
-> other drivers too. Could you please alternatively test the following?
-> It tackles the issue that mdio_bus_phy_may_suspend() is used in
-> suspend AND resume, and both calls may return different values.
+> On Wed, Mar 11, 2020 at 10:55 AM Yanhu Cao <gmayyyha@gmail.com> wrote:
+> >
+> > On Tue, Mar 10, 2020 at 4:43 AM Ilya Dryomov <idryomov@gmail.com> wrote:
+> > >
+> > > On Tue, Mar 3, 2020 at 10:33 AM Yanhu Cao <gmayyyha@gmail.com> wrote:
+> > > >
+> > > > CEPH_OSDMAP_FULL/NEARFULL has been deprecated since mimic, so it
+> > > > does not work well in new versions, added POOL flags to handle it.
+> > > >
+> > > > Signed-off-by: Yanhu Cao <gmayyyha@gmail.com>
+> > > > ---
+> > > >  fs/ceph/file.c                  |  9 +++++++--
+> > > >  include/linux/ceph/osd_client.h |  2 ++
+> > > >  include/linux/ceph/osdmap.h     |  3 ++-
+> > > >  net/ceph/osd_client.c           | 23 +++++++++++++----------
+> > > >  4 files changed, 24 insertions(+), 13 deletions(-)
+> > > >
+> > > > diff --git a/fs/ceph/file.c b/fs/ceph/file.c
+> > > > index 7e0190b1f821..84ec44f9d77a 100644
+> > > > --- a/fs/ceph/file.c
+> > > > +++ b/fs/ceph/file.c
+> > > > @@ -1482,7 +1482,9 @@ static ssize_t ceph_write_iter(struct kiocb *iocb, struct iov_iter *from)
+> > > >         }
+> > > >
+> > > >         /* FIXME: not complete since it doesn't account for being at quota */
+> > > > -       if (ceph_osdmap_flag(&fsc->client->osdc, CEPH_OSDMAP_FULL)) {
+> > > > +       if (ceph_osdmap_flag(&fsc->client->osdc, CEPH_OSDMAP_FULL) ||
+> > > > +           pool_flag(&fsc->client->osdc, ci->i_layout.pool_id,
+> > > > +                                               CEPH_POOL_FLAG_FULL)) {
+> > > >                 err = -ENOSPC;
+> > > >                 goto out;
+> > > >         }
+> > > > @@ -1575,7 +1577,10 @@ static ssize_t ceph_write_iter(struct kiocb *iocb, struct iov_iter *from)
+> > > >         }
+> > > >
+> > > >         if (written >= 0) {
+> > > > -               if (ceph_osdmap_flag(&fsc->client->osdc, CEPH_OSDMAP_NEARFULL))
+> > > > +               if (ceph_osdmap_flag(&fsc->client->osdc,
+> > > > +                                       CEPH_OSDMAP_NEARFULL) ||
+> > > > +                   pool_flag(&fsc->client->osdc, ci->i_layout.pool_id,
+> > > > +                                       CEPH_POOL_FLAG_NEARFULL))
+> > > >                         iocb->ki_flags |= IOCB_DSYNC;
+> > > >                 written = generic_write_sync(iocb, written);
+> > > >         }
+> > > > diff --git a/include/linux/ceph/osd_client.h b/include/linux/ceph/osd_client.h
+> > > > index 5a62dbd3f4c2..be9007b93862 100644
+> > > > --- a/include/linux/ceph/osd_client.h
+> > > > +++ b/include/linux/ceph/osd_client.h
+> > > > @@ -375,6 +375,8 @@ static inline bool ceph_osdmap_flag(struct ceph_osd_client *osdc, int flag)
+> > > >         return osdc->osdmap->flags & flag;
+> > > >  }
+> > > >
+> > > > +bool pool_flag(struct ceph_osd_client *osdc, s64 pool_id, int flag);
+> > > > +
+> > > >  extern int ceph_osdc_setup(void);
+> > > >  extern void ceph_osdc_cleanup(void);
+> > > >
+> > > > diff --git a/include/linux/ceph/osdmap.h b/include/linux/ceph/osdmap.h
+> > > > index e081b56f1c1d..88faacc11f55 100644
+> > > > --- a/include/linux/ceph/osdmap.h
+> > > > +++ b/include/linux/ceph/osdmap.h
+> > > > @@ -36,7 +36,8 @@ int ceph_spg_compare(const struct ceph_spg *lhs, const struct ceph_spg *rhs);
+> > > >
+> > > >  #define CEPH_POOL_FLAG_HASHPSPOOL      (1ULL << 0) /* hash pg seed and pool id
+> > > >                                                        together */
+> > > > -#define CEPH_POOL_FLAG_FULL            (1ULL << 1) /* pool is full */
+> > > > +#define CEPH_POOL_FLAG_FULL            (1ULL << 1)  /* pool is full */
+> > > > +#define CEPH_POOL_FLAG_NEARFULL        (1ULL << 11) /* pool is nearfull */
+> > > >
+> > > >  struct ceph_pg_pool_info {
+> > > >         struct rb_node node;
+> > > > diff --git a/net/ceph/osd_client.c b/net/ceph/osd_client.c
+> > > > index b68b376d8c2f..9ad2b96c3e78 100644
+> > > > --- a/net/ceph/osd_client.c
+> > > > +++ b/net/ceph/osd_client.c
+> > > > @@ -1447,9 +1447,9 @@ static void unlink_request(struct ceph_osd *osd, struct ceph_osd_request *req)
+> > > >                 atomic_dec(&osd->o_osdc->num_homeless);
+> > > >  }
+> > > >
+> > > > -static bool __pool_full(struct ceph_pg_pool_info *pi)
+> > > > +static bool __pool_flag(struct ceph_pg_pool_info *pi, int flag)
+> > > >  {
+> > > > -       return pi->flags & CEPH_POOL_FLAG_FULL;
+> > > > +       return pi->flags & flag;
+> > > >  }
+> > > >
+> > > >  static bool have_pool_full(struct ceph_osd_client *osdc)
+> > > > @@ -1460,14 +1460,14 @@ static bool have_pool_full(struct ceph_osd_client *osdc)
+> > > >                 struct ceph_pg_pool_info *pi =
+> > > >                     rb_entry(n, struct ceph_pg_pool_info, node);
+> > > >
+> > > > -               if (__pool_full(pi))
+> > > > +               if (__pool_flag(pi, CEPH_POOL_FLAG_FULL))
+> > > >                         return true;
+> > > >         }
+> > > >
+> > > >         return false;
+> > > >  }
+> > > >
+> > > > -static bool pool_full(struct ceph_osd_client *osdc, s64 pool_id)
+> > > > +bool pool_flag(struct ceph_osd_client *osdc, s64 pool_id, int flag)
+> > > >  {
+> > > >         struct ceph_pg_pool_info *pi;
+> > > >
+> > > > @@ -1475,8 +1475,10 @@ static bool pool_full(struct ceph_osd_client *osdc, s64 pool_id)
+> > > >         if (!pi)
+> > > >                 return false;
+> > > >
+> > > > -       return __pool_full(pi);
+> > > > +       return __pool_flag(pi, flag);
+> > > >  }
+> > > > +EXPORT_SYMBOL(pool_flag);
+> > > > +
+> > > >
+> > > >  /*
+> > > >   * Returns whether a request should be blocked from being sent
+> > > > @@ -1489,7 +1491,7 @@ static bool target_should_be_paused(struct ceph_osd_client *osdc,
+> > > >         bool pauserd = ceph_osdmap_flag(osdc, CEPH_OSDMAP_PAUSERD);
+> > > >         bool pausewr = ceph_osdmap_flag(osdc, CEPH_OSDMAP_PAUSEWR) ||
+> > > >                        ceph_osdmap_flag(osdc, CEPH_OSDMAP_FULL) ||
+> > > > -                      __pool_full(pi);
+> > > > +                      __pool_flag(pi, CEPH_POOL_FLAG_FULL);
+> > > >
+> > > >         WARN_ON(pi->id != t->target_oloc.pool);
+> > > >         return ((t->flags & CEPH_OSD_FLAG_READ) && pauserd) ||
+> > > > @@ -2320,7 +2322,8 @@ static void __submit_request(struct ceph_osd_request *req, bool wrlocked)
+> > > >                    !(req->r_flags & (CEPH_OSD_FLAG_FULL_TRY |
+> > > >                                      CEPH_OSD_FLAG_FULL_FORCE)) &&
+> > > >                    (ceph_osdmap_flag(osdc, CEPH_OSDMAP_FULL) ||
+> > > > -                   pool_full(osdc, req->r_t.base_oloc.pool))) {
+> > > > +                  pool_flag(osdc, req->r_t.base_oloc.pool,
+> > > > +                            CEPH_POOL_FLAG_FULL))) {
+> > > >                 dout("req %p full/pool_full\n", req);
+> > > >                 if (ceph_test_opt(osdc->client, ABORT_ON_FULL)) {
+> > > >                         err = -ENOSPC;
+> > > > @@ -2539,7 +2542,7 @@ static int abort_on_full_fn(struct ceph_osd_request *req, void *arg)
+> > > >
+> > > >         if ((req->r_flags & CEPH_OSD_FLAG_WRITE) &&
+> > > >             (ceph_osdmap_flag(osdc, CEPH_OSDMAP_FULL) ||
+> > > > -            pool_full(osdc, req->r_t.base_oloc.pool))) {
+> > > > +            pool_flag(osdc, req->r_t.base_oloc.pool, CEPH_POOL_FLAG_FULL))) {
+> > > >                 if (!*victims) {
+> > > >                         update_epoch_barrier(osdc, osdc->osdmap->epoch);
+> > > >                         *victims = true;
+> > > > @@ -3707,7 +3710,7 @@ static void set_pool_was_full(struct ceph_osd_client *osdc)
+> > > >                 struct ceph_pg_pool_info *pi =
+> > > >                     rb_entry(n, struct ceph_pg_pool_info, node);
+> > > >
+> > > > -               pi->was_full = __pool_full(pi);
+> > > > +               pi->was_full = __pool_flag(pi, CEPH_POOL_FLAG_FULL);
+> > > >         }
+> > > >  }
+> > > >
+> > > > @@ -3719,7 +3722,7 @@ static bool pool_cleared_full(struct ceph_osd_client *osdc, s64 pool_id)
+> > > >         if (!pi)
+> > > >                 return false;
+> > > >
+> > > > -       return pi->was_full && !__pool_full(pi);
+> > > > +       return pi->was_full && !__pool_flag(pi, CEPH_POOL_FLAG_FULL);
+> > > >  }
+> > > >
+> > > >  static enum calc_target_result
+> > >
+> > > Hi Yanhu,
+> > >
+> > > Sorry for a late reply.
+> > >
+> > > This adds some unnecessary churn and also exposes a helper that
+> > > must be called under osdc->lock without making that obvious.  How
+> > > about the attached instead?
+> > >
+> > > ceph_pg_pool_flags() takes osdmap instead of osdc, making it clear
+> > > that the caller is resposibile for keeping the map stable.
+> > >
+> > > Thanks,
+> > >
+> > >                 Ilya
+> >
+> > net/ceph/osdmap.c
+> > --------------------------
+> > bool ceph_pg_pool_flags(struct ceph_osdmap *map, s64 pool_id, int flag)
+> > {
+> >         struct ceph_pg_pool_info *pi;
+> >
+> >         /* CEPH_OSDMAP_FULL|CEPH_OSDMAP_NEARFULL deprecated since mimic */
+> >         if (flag & (CEPH_POOL_FLAG_FULL|CEPH_POOL_FLAG_NEARFULL))
+> >                 if (map->flags & (CEPH_OSDMAP_FULL|CEPH_OSDMAP_NEARFULL))
+> >                         return true;
+> >
+> >         pi = ceph_pg_pool_by_id(map, pool_id);
+> >         if (!pi)
+> >                 return false;
+> >
+> >         return pi->flags & flag;
+> > }
+> >
+> > fs/ceph/file.c
+> > -----------------
+> > ceph_write_iter() {
+> > ...
+> >         down_read(&osdc->lock);
+> >         if (ceph_pg_pool_flags(osdc->osdmap, ci->i_layout.pool_id,
+> >                                CEPH_POOL_FLAG_FULL|CEPH_POOL_FLAG_FULL_QUOTA)) {
+> >                 err = -ENOSPC;
+> >                 up_read(&osdc->lock);
+> >                 goto out;
+> >         }
+> >         up_read(&osdc->lock);
+> > ...
+> >          down_read(&osdc->lock);
+> >           if (ceph_pg_pool_flags(osdc->osdmap, ci->i_layout.pool_id,
+> >                                         CEPH_POOL_FLAG_NEARFULL))
+> >               iocb->ki_flags |= IOCB_DSYNC;
+> >           up_read(&osdc->lock);
+> > ...
+> > }
+> >
+> > how about this?
 >
-> With this patch we call mdio_bus_phy_may_suspend() only when
-> suspending, and let the phy_device store whether it was suspended
-> by MDIO bus PM.
+> Well, this takes osdc->lock and looks up ceph_pg_pool_info twice.
+> Given that these checks are inherently racy, I think doing it once
+> at the top makes more sense.
 
-Thanks, your patch fixes the issue, too.
+be modified as follow.
 
-Gr{oetje,eeting}s,
+ceph_write_iter() {
+...
+        down_read(&osdc->lock);
+        pi = ceph_pg_pool_by_id(osdc->osdmap, ci->i_layout.pool_id);
+        if (!pi) {
+                err = -ENOENT;
+                up_read(&osdc->lock);
+                goto out;
+        }
+        up_read(&osdc->lock);
+...
+}
 
-                        Geert
+>
+> Also, I don't think this does what you intended it to do.  Your
+> ceph_pg_pool_flags(..., CEPH_POOL_FLAG_FULL) returns true even if
+> the map only has CEPH_OSDMAP_NEARFULL, triggering early ENOSPC.
+>
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Ah... my mistake. According to OSDMAP/POOL flag to do respectively.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+        if (ceph_osdmap_flag(osdc, CEPH_OSDMAP_FULL) ||
+            ceph_pg_pool_flags(pi, CEPH_POOL_FLAG_FULL)) {
+                err = -ENOSPC;
+                goto out;
+        }
+
+include/linux/ceph/osdmap.h
+--------------------------------------
+static inline bool ceph_pg_pool_flags(struct ceph_pg_pool_info *pi,  int flag)
+{
+        return pi->flags & flag;
+}
+
+Thanks.
