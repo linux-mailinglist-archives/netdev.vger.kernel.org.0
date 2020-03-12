@@ -2,51 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C14E9182914
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 07:33:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B6A7182927
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 07:35:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387930AbgCLGdR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 02:33:17 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:56240 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387784AbgCLGdR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 02:33:17 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0F5EF14DB1AB4;
-        Wed, 11 Mar 2020 23:33:16 -0700 (PDT)
-Date:   Wed, 11 Mar 2020 23:33:15 -0700 (PDT)
-Message-Id: <20200311.233315.1715097650969345027.davem@davemloft.net>
-To:     chenzhou10@huawei.com
-Cc:     willy@infradead.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] net: ibm: remove set but not used variables 'err'
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200311065411.172692-1-chenzhou10@huawei.com>
-References: <20200311065411.172692-1-chenzhou10@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 11 Mar 2020 23:33:16 -0700 (PDT)
+        id S2388048AbgCLGfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 02:35:03 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:54015 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387786AbgCLGee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 02:34:34 -0400
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jCHQF-0006xL-Lz; Thu, 12 Mar 2020 07:34:23 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jCHQE-00069u-8z; Thu, 12 Mar 2020 07:34:22 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Marek Vasut <marex@denx.de>, David Jander <david@protonic.nl>,
+        devicetree@vger.kernel.org
+Subject: [PATCH v3 0/4] add TJA1102 support
+Date:   Thu, 12 Mar 2020 07:34:15 +0100
+Message-Id: <20200312063419.23615-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chen Zhou <chenzhou10@huawei.com>
-Date: Wed, 11 Mar 2020 14:54:11 +0800
+changes v3:
+- export part of of_mdiobus_register_phy() and reuse it in tja11xx
+  driver
+- coding style fixes
 
-> Fixes gcc '-Wunused-but-set-variable' warning:
-> 
-> drivers/net/ethernet/ibm/emac/core.c: In function __emac_mdio_write:
-> drivers/net/ethernet/ibm/emac/core.c:875:9: warning:
-> 	variable err set but not used [-Wunused-but-set-variable]
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Chen Zhou <chenzhou10@huawei.com>
+changes v2:
+- use .match_phy_device
+- add irq support
+- add add delayed registration for PHY1
 
-Applied, thank you.
+Oleksij Rempel (4):
+  dt-bindings: net: phy: Add support for NXP TJA11xx
+  net: phy: tja11xx: add initial TJA1102 support
+  net: mdio: of: export part of of_mdiobus_register_phy()
+  net: phy: tja11xx: add delayed registration of TJA1102 PHY1
+
+ .../devicetree/bindings/net/nxp,tja11xx.yaml  |  61 ++++++
+ drivers/net/phy/nxp-tja11xx.c                 | 201 +++++++++++++++++-
+ drivers/of/of_mdio.c                          |  74 ++++---
+ include/linux/of_mdio.h                       |  11 +-
+ 4 files changed, 309 insertions(+), 38 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
+
+-- 
+2.25.1
+
