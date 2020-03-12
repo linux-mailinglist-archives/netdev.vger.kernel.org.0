@@ -2,146 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 500931826FF
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 03:20:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92216182702
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 03:21:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387651AbgCLCUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 22:20:21 -0400
-Received: from mail-pj1-f74.google.com ([209.85.216.74]:52890 "EHLO
-        mail-pj1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387404AbgCLCUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 22:20:21 -0400
-Received: by mail-pj1-f74.google.com with SMTP id c6so2384052pjs.2
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 19:20:20 -0700 (PDT)
+        id S2387670AbgCLCUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 22:20:53 -0400
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:38657 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387655AbgCLCUx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 22:20:53 -0400
+Received: by mail-yw1-f67.google.com with SMTP id 10so4155040ywv.5
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 19:20:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=rcj6bBjC8eeTo0oFTOG03100dOPRd+sT+MeVFj1k6mA=;
-        b=TN0Hk9Vlr9nUe66Kfks1oZvflGet0NTOh+FTOaukrvmsiQhyz1hkirVE+pcJxrjokZ
-         tWHYqt2TtIzz6QyFRErqrCDZwcVWklLYXQZDzeVDAuhDgfxSOz+cAALYjVcLaf318zoq
-         rYRp9b3Mr5gbqIBu20VCBrksnpjvymocYkKKwwqzWWzy6vCuxvYc7jRZ122sol6tkEG2
-         JNxlRbJeYLeThZ2E8c/nXi5wrlyGbVPjq+WstnjMY3t5Fed27YW9+Thl1iVkflatHe0O
-         HLpcY2gt0NQUocPF6a1eJLfZkrCYL8h/SStFxJXpeH74sZTNpuxv1c21ofZyHAWGZMfT
-         iLZA==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:references:date:in-reply-to:message-id
+         :user-agent:mime-version;
+        bh=mJO0gPfRVjyzJQO11qElbN2uFcbtpT5CCTcTA+OdWrc=;
+        b=v+L1Ey1UIF2qf1wfmJGouGAxO0c+m/+IRNtwaRuhOqpH/+XE2y2KnPN08BMNowt2R1
+         OHKo+l0c8vsYNP6JuudJJ3nTiesfk3vwealGP+tERZhuSEX+es4sIiGSG0qTvvlfjm37
+         x96exZaEbDRZ86lK58tLVDHWjmd1vOGMnIDXupM19t/GD0CHb63eGBJb4GCDn+ZudrbJ
+         rqIh2CAE4fEux6eiechwHBkR8QzXGYYkOPbwLejblkS92RGzmfnP16kZH+7kmoGhpc2q
+         l5yyn21QCgOq59WWunlRnWLP7SX5tG/2wJkZ+5Np2BrpAn4D3Pcy3eGAlpL3gLlUob5P
+         irIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=rcj6bBjC8eeTo0oFTOG03100dOPRd+sT+MeVFj1k6mA=;
-        b=qxo+0uluZp3rsYF6sX9kiahJGxkwzTzHp2U2bQclAahuLF7nYDzN7nHeyPIESRY/ZM
-         lZeYYs4lq2M8pUkmQAeWwlQjZXmSZq1YalhTKzXBOyXT2oO6+5FexIrCc+E6AioKBNXD
-         1/6Cpd7kWQtkaJv/JyCNY+LPHxmhTbGpViMw1lwUkxKyaIRf0MtSuTq4nmmC4Uj78SYn
-         iUcv3RngFAMEWXODX8EodeV/PfG2I63mFO1XzdMdz8lqICSLHKefWyqd7tGrxUdV05K8
-         W7imwC+NRX9zwT0hwkQHfO7KW5MMvtXK1viJDHgIsu5ACrDXLwI9nzVczdmCvP+ATKQi
-         0Gzg==
-X-Gm-Message-State: ANhLgQ2uboQGtMcZWWW/iPVnYkQMF6xyH8VrfUN2xtLTywUCIK6kGmwl
-        WdAo8aD6reNIVUfIjCtSSXTmp3PTwUuGFg==
-X-Google-Smtp-Source: ADFU+vt1IpdsKjnyDHOBBFNJ/1UpXWbObj4AfBQQ8ULIYIUPaCwDt98YX8rrJ9mZbbobHSxkLh4ho/ykSS30ew==
-X-Received: by 2002:a17:90a:cf0c:: with SMTP id h12mr1679625pju.164.1583979619855;
- Wed, 11 Mar 2020 19:20:19 -0700 (PDT)
-Date:   Wed, 11 Mar 2020 19:20:14 -0700
-Message-Id: <20200311191939.v2.1.I12c0712e93f74506385b67c6df287658c8fdad04@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
-Subject: [PATCH v2] Bluetooth: clean up connection in hci_cs_disconnect
-From:   Manish Mandlik <mmandlik@google.com>
-To:     marcel@holtmann.org
-Cc:     Alain Michaud <alainm@chromium.org>,
-        linux-bluetooth@vger.kernel.org,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Joseph Hwang <josephsih@chromium.org>,
-        Yoni Shavit <yshavit@chromium.org>,
-        Manish Mandlik <mmandlik@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:references:date:in-reply-to
+         :message-id:user-agent:mime-version;
+        bh=mJO0gPfRVjyzJQO11qElbN2uFcbtpT5CCTcTA+OdWrc=;
+        b=Or2YMCV5bp009TFxjhIhlOjwd73sh+5Zim9KqldlI/tcfMCWyj++bruHg99w+t1yry
+         jW5Z2hLqw+BMm9g2ZNo14B4ARSehc8O+4tnaidqSKcn9TQ5ZHjiBQG1u44k0XuX/5M21
+         drZVFUO7qM2Z/RrtKE5NJl2XqStcsfMcsBtaw/zdb+imGaII0s8kjucGDy7hudlTITAU
+         fAgd2Vl8e3hwWnAhtPkz2Wl9MvROvhj+cNBTXyrAIws39FeL/5lDjqjXtZHEEWc15bpJ
+         JaPGRk1SAccHwUpehRFmV52dOa6VH6FDayTcxZ26B68zFCGbtgnj83ZLvyL3j3qJlDd7
+         GhzA==
+X-Gm-Message-State: ANhLgQ0UHWM1rQwGMSUSFD7pcQcYqlUHFZ1krHSZCMDYr/hw+2Z+/dKW
+        KXde2pMUsVMw1A+L9sQoKjiq3sAbS2E=
+X-Google-Smtp-Source: ADFU+vt74rE93qfiMYpjNBt9FIN1E8IWbr2Xj5ifKWR/FhjC0cK6pW2OwYjxqea/I68KdT2PK88+kA==
+X-Received: by 2002:a25:ad1c:: with SMTP id y28mr6142005ybi.291.1583979651722;
+        Wed, 11 Mar 2020 19:20:51 -0700 (PDT)
+Received: from sevai ([74.127.202.122])
+        by smtp.gmail.com with ESMTPSA id q2sm19929479ywh.71.2020.03.11.19.20.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 11 Mar 2020 19:20:51 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, davem@davemloft.net,
+        jiri@mellanox.com, mlxsw@mellanox.com
+Subject: Re: [PATCH net-next v2 1/6] selftests: qdiscs: Add TDC test for RED
+References: <20200311173356.38181-1-petrm@mellanox.com>
+        <20200311173356.38181-2-petrm@mellanox.com>
+Date:   Wed, 11 Mar 2020 22:20:34 -0400
+In-Reply-To: <20200311173356.38181-2-petrm@mellanox.com> (Petr Machata's
+        message of "Wed, 11 Mar 2020 19:33:51 +0200")
+Message-ID: <85ftee5n65.fsf@mojatatu.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Joseph Hwang <josephsih@chromium.org>
+Petr Machata <petrm@mellanox.com> writes:
 
-In bluetooth core specification 4.2,
-Vol 2, Part E, 7.8.9 LE Set Advertise Enable Command, it says
+> Add a handful of tests for creating RED with different flags.
+>
+> Signed-off-by: Petr Machata <petrm@mellanox.com>
+> ---
+>
+> Notes:
+>     v2:
+>     - Require nsPlugin in each RED test
+>     - Match end-of-line to catch cases of more flags reported than
+>       requested
+>
+>  .../tc-testing/tc-tests/qdiscs/red.json       | 117 ++++++++++++++++++
+>  1 file changed, 117 insertions(+)
+>  create mode 100644 tools/testing/selftests/tc-testing/tc-tests/qdiscs/red.json
+>
+> diff --git a/tools/testing/selftests/tc-testing/tc-tests/qdiscs/red.json b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/red.json
+> new file mode 100644
+> index 000000000000..b70a54464897
+> --- /dev/null
+> +++ b/tools/testing/selftests/tc-testing/tc-tests/qdiscs/red.json
+> @@ -0,0 +1,117 @@
+> +[
+> +    {
+> +        "id": "8b6e",
+> +        "name": "Create RED with no flags",
+> +        "category": [
+> +            "qdisc",
+> +            "red"
+> +        ],
+> +        "plugins": {
+> +            "requires": "nsPlugin"
+> +        },
+> +        "setup": [
+> +            "$IP link add dev $DUMMY type dummy || /bin/true"
+> +        ],
+> +        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root red limit 1M avpkt 1500 min 100K max 300K",
+> +        "expExitCode": "0",
+> +        "verifyCmd": "$TC qdisc show dev $DUMMY",
+> +        "matchPattern": "qdisc red 1: root .* limit 1Mb min 100Kb max 300Kb $",
+> +        "matchCount": "1",
+> +        "teardown": [
+> +            "$TC qdisc del dev $DUMMY handle 1: root",
+> +            "$IP link del dev $DUMMY type dummy"
+> +        ]
+> +    },
+> +    {
+> +        "id": "342e",
+> +        "name": "Create RED with adaptive flag",
+> +        "category": [
+> +            "qdisc",
+> +            "red"
+> +        ],
+> +        "plugins": {
+> +            "requires": "nsPlugin"
+> +        },
+> +        "setup": [
+> +            "$IP link add dev $DUMMY type dummy || /bin/true"
+> +        ],
+> +        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root red adaptive limit 1M avpkt 1500 min 100K max 300K",
+> +        "expExitCode": "0",
+> +        "verifyCmd": "$TC qdisc show dev $DUMMY",
+> +        "matchPattern": "qdisc red 1: root .* limit 1Mb min 100Kb max 300Kb adaptive $",
+> +        "matchCount": "1",
+> +        "teardown": [
+> +            "$TC qdisc del dev $DUMMY handle 1: root",
+> +            "$IP link del dev $DUMMY type dummy"
+> +        ]
+> +    },
+> +    {
+> +        "id": "2d4b",
+> +        "name": "Create RED with ECN flag",
+> +        "category": [
+> +            "qdisc",
+> +            "red"
+> +        ],
+> +        "plugins": {
+> +            "requires": "nsPlugin"
+> +        },
+> +        "setup": [
+> +            "$IP link add dev $DUMMY type dummy || /bin/true"
+> +        ],
+> +        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root red ecn limit 1M avpkt 1500 min 100K max 300K",
+> +        "expExitCode": "0",
+> +        "verifyCmd": "$TC qdisc show dev $DUMMY",
+> +        "matchPattern": "qdisc red 1: root .* limit 1Mb min 100Kb max 300Kb ecn $",
+> +        "matchCount": "1",
+> +        "teardown": [
+> +            "$TC qdisc del dev $DUMMY handle 1: root",
+> +            "$IP link del dev $DUMMY type dummy"
+> +        ]
+> +    },
+> +    {
+> +        "id": "650f",
+> +        "name": "Create RED with flags ECN, adaptive",
+> +        "category": [
+> +            "qdisc",
+> +            "red"
+> +        ],
+> +        "plugins": {
+> +            "requires": "nsPlugin"
+> +        },
+> +        "setup": [
+> +            "$IP link add dev $DUMMY type dummy || /bin/true"
+> +        ],
+> +        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root red ecn adaptive limit 1M avpkt 1500 min 100K max 300K",
+> +        "expExitCode": "0",
+> +        "verifyCmd": "$TC qdisc show dev $DUMMY",
+> +        "matchPattern": "qdisc red 1: root .* limit 1Mb min 100Kb max 300Kb ecn adaptive $",
+> +        "matchCount": "1",
+> +        "teardown": [
+> +            "$TC qdisc del dev $DUMMY handle 1: root",
+> +            "$IP link del dev $DUMMY type dummy"
+> +        ]
+> +    },
+> +    {
+> +        "id": "5f15",
+> +        "name": "Create RED with flags ECN, harddrop",
+> +        "category": [
+> +            "qdisc",
+> +            "red"
+> +        ],
+> +        "plugins": {
+> +            "requires": "nsPlugin"
+> +        },
+> +        "setup": [
+> +            "$IP link add dev $DUMMY type dummy || /bin/true"
+> +        ],
+> +        "cmdUnderTest": "$TC qdisc add dev $DUMMY handle 1: root red ecn harddrop limit 1M avpkt 1500 min 100K max 300K",
+> +        "expExitCode": "0",
+> +        "verifyCmd": "$TC qdisc show dev $DUMMY",
+> +        "matchPattern": "qdisc red 1: root .* limit 1Mb min 100Kb max 300Kb ecn harddrop $",
+> +        "matchCount": "1",
+> +        "teardown": [
+> +            "$TC qdisc del dev $DUMMY handle 1: root",
+> +            "$IP link del dev $DUMMY type dummy"
+> +        ]
+> +    }
+> +]
 
-    The Controller shall continue advertising until ...
-    or until a connection is created or ...
-    In these cases, advertising is then disabled.
-
-Hence, advertising would be disabled before a connection is
-established. In current kernel implementation, advertising would
-be re-enabled when all connections are terminated.
-
-The correct disconnection flow looks like
-
-  < HCI Command: Disconnect
-
-  > HCI Event: Command Status
-      Status: Success
-
-  > HCI Event: Disconnect Complete
-      Status: Success
-
-Specifically, the last Disconnect Complete Event would trigger a
-callback function hci_event.c:hci_disconn_complete_evt() to
-cleanup the connection and re-enable advertising when proper.
-
-However, sometimes, there might occur an exception in the controller
-when disconnection is being executed. The disconnection flow might
-then look like
-
-  < HCI Command: Disconnect
-
-  > HCI Event: Command Status
-      Status: Unknown Connection Identifier
-
-  Note that "> HCI Event: Disconnect Complete" is missing when such an
-exception occurs. This would result in advertising staying disabled
-forever since the connection in question is not cleaned up correctly.
-
-To fix the controller exception issue, we need to do some connection
-cleanup when the disconnect command status indicates an error.
-
-Signed-off-by: Joseph Hwang <josephsih@chromium.org>
-Signed-off-by: Manish Mandlik <mmandlik@google.com>
----
-
-Changes in v2:
-- Moved "u8 type" declaration inside if block
-
- net/bluetooth/hci_event.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
-
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index a40ed31f6eb8f..a116114279107 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -2202,10 +2202,22 @@ static void hci_cs_disconnect(struct hci_dev *hdev, u8 status)
- 	hci_dev_lock(hdev);
- 
- 	conn = hci_conn_hash_lookup_handle(hdev, __le16_to_cpu(cp->handle));
--	if (conn)
-+	if (conn) {
-+		u8 type = conn->type;
-+
- 		mgmt_disconnect_failed(hdev, &conn->dst, conn->type,
- 				       conn->dst_type, status);
- 
-+		/* If the disconnection failed for any reason, the upper layer
-+		 * does not retry to disconnect in current implementation.
-+		 * Hence, we need to do some basic cleanup here and re-enable
-+		 * advertising if necessary.
-+		 */
-+		hci_conn_del(conn);
-+		if (type == LE_LINK)
-+			hci_req_reenable_advertising(hdev);
-+	}
-+
- 	hci_dev_unlock(hdev);
- }
- 
--- 
-2.25.1.481.gfbce0eb801-goog
-
+Reviewed-by: Roman Mashak <mrv@mojatatu.com>
