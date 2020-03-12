@@ -2,161 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5302B1829D6
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 08:35:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99878182A1B
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 09:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388152AbgCLHf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 03:35:27 -0400
-Received: from mail-eopbgr130085.outbound.protection.outlook.com ([40.107.13.85]:47609
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2387958AbgCLHf1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Mar 2020 03:35:27 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MMWWWI25Z4mzvPRQGkHadvqKIyTBrH8oUie2HmhXXC6sqOGdiR9+x+ibgw+TGsHXLwPHQoRg4Aj3A2zqLF6LHkeu85TsOABH+JgjT6yrxWkn6i0jzaEOdeczZT6EolSBHvkIOwgjI9DQ1/YYMpRS8esgJojnM6KulcxEfXwVgjx52GfcOzGCxOVYGYMwutYcWQCY8XnTKdEfBNayJn81jCwLrwAiyHm+vepGMuEa9r8uuqVzpzpzL5O2dBLBlh5oUuSk+iPWqYBCR5BaJAAZXaRTKZCNdAIM0PMyJxEntLZrU1Ui9getJ9c8BfMjxW1HcHIJr2imnrBZlUaHq9wP9g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ucsnHtPFYXDSMe9ZA6t9YJ9N+Zldr/cT7oNBxw/RU7w=;
- b=AROG4r2zKZkUUQShZ0kZh1yt+1XpNPk1p8taiBXBPufLs/S89agQ/lP3N7V/UDXLWTR5uRVVTaKVTUEzMzgw04MyTJGlogTRs6koUrQihHuE8r5WhwoMwCpDt+J1vD7onafVn9os/zhEaVkW7+WBd0HUpryM1K+0ITIpivmvejTQpYn8wldiVI1thbPrQ/mXL3tFcAT9tLeVxRl8u6ukn+Zqi0RnqqW7NhB56CfOHLx6MM3/hf4DfkxtBV2XP+h0bLvRST0qzYKJ+LMGFcy6d8rDLi+cB9JdyaXgCIwZWezObPC218BGNjTwMT8Kc4jCrD9OUpTXOM34kfRGk2S2gA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ucsnHtPFYXDSMe9ZA6t9YJ9N+Zldr/cT7oNBxw/RU7w=;
- b=SdnJlrgq3xL0hJhqCGaBDuZ+ZC3jz5QLnQXzTeCxW1sCPdJ7gawz6PGZVcVGo5Lf5fWBcNQSTmYbz53Xn7BeIDMx6tmOAra5dtgYRFoqU1Bl+6V4Gti9KDbym67K0t/7B9Kl9H8OkxsLvavOS+dYsZ8MPqDNHC5waip1ZQMUUr8=
-Received: from DB8PR04MB6985.eurprd04.prod.outlook.com (52.133.243.85) by
- DB8PR04MB6377.eurprd04.prod.outlook.com (20.179.249.76) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2793.17; Thu, 12 Mar 2020 07:35:23 +0000
-Received: from DB8PR04MB6985.eurprd04.prod.outlook.com
- ([fe80::a523:58cc:b584:2c2]) by DB8PR04MB6985.eurprd04.prod.outlook.com
- ([fe80::a523:58cc:b584:2c2%6]) with mapi id 15.20.2814.007; Thu, 12 Mar 2020
- 07:35:23 +0000
-From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "sathya.perla@broadcom.com" <sathya.perla@broadcom.com>,
-        "ajit.khaparde@broadcom.com" <ajit.khaparde@broadcom.com>,
-        "sriharsha.basavapatna@broadcom.com" 
-        <sriharsha.basavapatna@broadcom.com>,
-        "somnath.kotur@broadcom.com" <somnath.kotur@broadcom.com>,
-        Andy Duan <fugang.duan@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
-        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
-        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
-        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
-        "alexander.h.duyck@linux.intel.com" 
-        <alexander.h.duyck@linux.intel.com>
-Subject: RE: [PATCH net-next 02/15] net: dpaa: reject unsupported coalescing
- params
-Thread-Topic: [PATCH net-next 02/15] net: dpaa: reject unsupported coalescing
- params
-Thread-Index: AQHV9/UOAk2Fi/7/W0CEkm13RG+L8qhEkVug
-Date:   Thu, 12 Mar 2020 07:35:23 +0000
-Message-ID: <DB8PR04MB6985E63146F70829DDCD9280ECFD0@DB8PR04MB6985.eurprd04.prod.outlook.com>
-References: <20200311223302.2171564-1-kuba@kernel.org>
- <20200311223302.2171564-3-kuba@kernel.org>
-In-Reply-To: <20200311223302.2171564-3-kuba@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=madalin.bucur@oss.nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [86.126.9.20]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: b171f752-d965-4b45-d7d7-08d7c657ecf6
-x-ms-traffictypediagnostic: DB8PR04MB6377:|DB8PR04MB6377:
-x-ms-exchange-sharedmailbox-routingagent-processed: True
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB8PR04MB6377B390A8BA7746CF878644ADFD0@DB8PR04MB6377.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:514;
-x-forefront-prvs: 0340850FCD
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(39860400002)(376002)(396003)(366004)(199004)(81156014)(110136005)(71200400001)(2906002)(86362001)(33656002)(4326008)(8936002)(8676002)(54906003)(81166006)(316002)(66446008)(26005)(7416002)(66556008)(64756008)(52536014)(186003)(66946007)(5660300002)(6506007)(7696005)(9686003)(53546011)(66476007)(478600001)(55016002)(76116006);DIR:OUT;SFP:1101;SCL:1;SRVR:DB8PR04MB6377;H:DB8PR04MB6985.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:0;
-received-spf: None (protection.outlook.com: oss.nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 6oxqM47vxny26Nd3QN6WfDOhGObIEYb7WmDNCbNnEQ3E4wGAF6hbVTaX5fSJQTceYat9xlWAU8SoOBODGYPOIQsv63E0adCU62Eg7ZunJq3AffpIzKw4XXcl5EgOlMfKsF9QZywd53h+DPd3Wqo0ZhJ1r8dpqLU8WbHw/gPP/+0qsbCyTiPLDiF5+aNlanALV3wMf5BfNoHknJ4Hb8x9z8cVCOpUp27eL8/l7c+9ScfS+JkIbr+MGSpPD2D3st0ez4HWaO8JxNkupOH4o5WnbHi+O7C62CKLFhCcfWeF3iOMnnQnO5SreCEiWGV10MqV7txMfIh5+ss1J4O5XAT2YUH8z8OQy7LfIzZGtCkLpUXsfGH0U/9IhTZoihcxo7Gr9q1CkoNhOVeHy1FFBxO/0n9FNiWG807emHxN480gXOb/JjyAhb6Yv8e6mqmqHnq7
-x-ms-exchange-antispam-messagedata: vV856KSm+pkZQ4nY54VVzRE8EfxoPZ9o+5xakQ4Xsg03d4ZLTJr4n+FnbEh/riHlNqb3kBTpz1l23w3hcRTDJyMJYobb27r+38PJKihVSBJwcpKWYL7Oz2Lxl952nl3VjV4cT+7pUHwkKXytb8mU7A==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2388193AbgCLIBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 04:01:42 -0400
+Received: from lb1-smtp-cloud9.xs4all.net ([194.109.24.22]:55477 "EHLO
+        lb1-smtp-cloud9.xs4all.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387999AbgCLIBl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 04:01:41 -0400
+Received: from [192.168.2.10] ([46.9.234.233])
+        by smtp-cloud9.xs4all.net with ESMTPA
+        id CImQjXGct9Im2CImTjipFx; Thu, 12 Mar 2020 09:01:37 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xs4all.nl; s=s1;
+        t=1584000098; bh=rlvXrsquCgOAoL6m3j4naIDiZk45jPg5qzfaHkH6ylc=;
+        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type:From:
+         Subject;
+        b=S5pQfgbOLIHhQdw0W7sV5AZx/O5rbzeyPt7bFpTNkwgO8Qy0BKq+Rvjmju5L2B424
+         ts5RJaST/5DSO90woF88XEKoVSWzdXA1+cYgXtZ9lrnSZ/voNQNCc/kNcDWB/9eH8q
+         oukXvG+APHr07xXyoiRVnfNAIu0NoRyJO4gRl7kMox10FOdeAVa4C86hGVXEgWIL1z
+         DHpeiiUb+PUHWBRHnftozp83wtSCPlDu/KR0wA5Tus7873ErMhZjEh0V/cX/LLr9QJ
+         GcvLzWg4JtL3YxsnzXI28YMgDuIhwtNvDRGPXfnFqtov7CBrtU3S5QfdwsKM1K25I6
+         WU1k8NIIoVM6w==
+Subject: Re: [RESEND PATCH v2 8/9] media: fsl-viu: Constify ioreadX() iomem
+ argument (as in generic implementation)
+To:     Krzysztof Kozlowski <krzk@kernel.org>,
+        Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Alexey Brodkin <abrodkin@synopsys.com>,
+        Vineet Gupta <vgupta@synopsys.com>,
+        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+        Helge Deller <deller@gmx.de>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Rich Felker <dalias@libc.org>,
+        Dave Airlie <airlied@redhat.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Jiri Slaby <jirislaby@gmail.com>,
+        Nick Kossifidis <mickflemm@gmail.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-snps-arc@lists.infradead.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
+        linux-media@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-ntb@googlegroups.com,
+        virtualization@lists.linux-foundation.org,
+        linux-arch@vger.kernel.org
+References: <20200219175007.13627-1-krzk@kernel.org>
+ <20200219175007.13627-9-krzk@kernel.org>
+From:   Hans Verkuil <hverkuil@xs4all.nl>
+Message-ID: <1c4a11b5-5ca6-7555-de3c-ff30f707fac7@xs4all.nl>
+Date:   Thu, 12 Mar 2020 09:01:22 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b171f752-d965-4b45-d7d7-08d7c657ecf6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Mar 2020 07:35:23.5014
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8PgCTdELLXm73S2yXAe2brOiFoj6a8YWegCFIZ2t1OubNY74K9j5n8Pct+mxtheJso/JEp0DRdwwVnl4wmBFTA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6377
+In-Reply-To: <20200219175007.13627-9-krzk@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-CMAE-Envelope: MS4wfB1zxMJIE7wElbGm4sdMecyYLJ6LdsDMDpZDeSQuVKwPm0HLBt9h+mOdrGXFuIDkCI9Ox7ukCv0Xr+wsEhOQPNuuqPOa2tbCK6oF1PNdZVqk6thKvC3h
+ xE4aE9bNSUWOFhWxTazaeGPVr5hr0AhveAgdpPWZHpjhg5PxgtKgtRwcEM0X31YjusYjKeuEG9QF/4JOHzjohAIjiR+oAI0nyED+Jez9yI4FW1ZB3LXkp8TH
+ 7MMndY8iJadjMhsV5+oGTHeP7z8vzm/dZU83psQzhxRsPonohHX17/JsKF2l5MFAT9+97UKYOiKAsfrv1Cpys4Ae5wkTvdw4qsE49ssk4hjAoyha0QB9BVju
+ 9SGy1FrSenK0frRjbC8NaYY9ZERWNSiNH5LA36WXT5yWf3v+Qcv3MkgEimaOp41P2nlVLuOjtsbM7Oc0IE2oIVVfFA700ZJiP3znlyaVddewRuZDpRVP7LaM
+ BmiWSHGXgw8YtQmC7z4+FTtlDdPcaOnURURbGtwGqrG9ypYOfWaczdFyon9cFrdpqrNkvqRjWmqFa6YgsB57xqLqvFfcZaXIx/5GPRUQudUCvZPJzisakVQc
+ uttKYb/aM3WYuhJM4Wb1Pv6BrMYMIVXGCFsOBd7W/xp0N3iMBGSYj0Aa0rPNR8hHdzbHBC2fjWlNKKBiBqoznNqCGZ0CiVQoEM+QtyRRgiYnx6PeAm5PLOc4
+ VNFQmhkOpnD9IFKzOg7MDbXsSwg+OAG64qEuG/VscrSiDVQ1yjv5knp7CxhKGvYM4OpGHYT1Er7Bdx2FCmXu/yAwSbBDRagCD0kotDKUph18wrkxxeFljDJA
+ LSc1aSxY7WzE0MoB4x1WWy+jz94FDlyhtSMwiZ6y0dJP3+c2+Q5En242uHE069S9l+7oW8v5MGbWOStqt5f3vSjCb7LIzWN87JmuP89GFWwWLJsughS7GMyf
+ 9DHMMrFLvERXtynUPrxsXWOFJFYcfPWtUSuDRlT6lyW4OqviXxQxmuwWWPzBiEuN74qNtI+js8zLo4yvgjsgXCeSGNoTx+kuEqyjk5W1UzIpidGK0CRrnVbE
+ 6hD9Y/vETMZdaCRGTPOlU05njcJF+46w8BJ3SNj0Py3qBk1dX7c6nBfbFypmWYBFmuncdfgfV+GvZgph5pgPHOoQxVCf/tLCrfA6lP3T+1yMX4df+BQFRKLS
+ O4WmDF2MxF8KloewGsYz/rsmgB25E6V0YSDc8EvmqseT2P6A01f6bsdZt1AJnufocp+H44s+qhBR6buNUUMphP9KyIyYuNbtmFvkGTyK649jUP2q8Nik1rK1
+ 3AqiAYrtsks7Dqmq5Qj7chR5DBva/WjXbTAi9lRBeyrc1LiDTAHtFBMmOGm8QJ0PstgU+Qss/H31YuyO+vowQc/YkfqDiEmsIU7MZy0525QlKJCDuomrR9k/
+ pt0L69OpaODhDI2GKeTabUJfloUo1rGwDFifFZ3GiczPZsdGrTGULzWF8ZqXdk44Vxmf+o40QJa4goBPwv+YDuim0xPrbohAaaGJnTcviLLAbx0Be2IOpJK7
+ 066IFrJvKfz7/Wp2S67JJX5FtbO7VF+IrVN/N63uvfJb+FM6hLMjwGqczE7h5AhCTMRfIsHhAU9mTIYVyLN+UBlZ3WL3ahk0SjumGQqE2df8rbpt41Yx3WFA
+ IW77guEXBH/AFWkGJEIg2a3N91fXva0TdPJAF0YzlkCOnwCmb9/Naw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Thursday, March 12, 2020 12:33 AM
-> To: davem@davemloft.net
-> Subject: [PATCH net-next 02/15] net: dpaa: reject unsupported coalescing
-> params
->=20
-> Set ethtool_ops->supported_coalesce_params to let
-> the core reject unsupported coalescing parameters.
->=20
-> This driver did not previously reject unsupported parameters
-> (other than adaptive rx, which will now be rejected by core).
->=20
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+On 2/19/20 6:50 PM, Krzysztof Kozlowski wrote:
+> The ioreadX() helpers have inconsistent interface.  On some architectures
+> void *__iomem address argument is a pointer to const, on some not.
+> 
+> Implementations of ioreadX() do not modify the memory under the address
+> so they can be converted to a "const" version for const-safety and
+> consistency among architectures.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-Acked-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+
+Regards,
+
+	Hans
 
 > ---
->  drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-> b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-> index 6aa1fa22cd04..9db2a02fb531 100644
-> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_ethtool.c
-> @@ -525,7 +525,6 @@ static int dpaa_get_coalesce(struct net_device *dev,
->=20
->  	c->rx_coalesce_usecs =3D period;
->  	c->rx_max_coalesced_frames =3D thresh;
-> -	c->use_adaptive_rx_coalesce =3D false;
->=20
->  	return 0;
->  }
-> @@ -540,9 +539,6 @@ static int dpaa_set_coalesce(struct net_device *dev,
->  	u8 thresh, prev_thresh;
->  	int cpu, res;
->=20
-> -	if (c->use_adaptive_rx_coalesce)
-> -		return -EINVAL;
-> -
->  	period =3D c->rx_coalesce_usecs;
->  	thresh =3D c->rx_max_coalesced_frames;
->=20
-> @@ -582,6 +578,8 @@ static int dpaa_set_coalesce(struct net_device *dev,
->  }
->=20
->  const struct ethtool_ops dpaa_ethtool_ops =3D {
-> +	.supported_coalesce_params =3D ETHTOOL_COALESCE_RX_USECS |
-> +				     ETHTOOL_COALESCE_RX_MAX_FRAMES,
->  	.get_drvinfo =3D dpaa_get_drvinfo,
->  	.get_msglevel =3D dpaa_get_msglevel,
->  	.set_msglevel =3D dpaa_set_msglevel,
-> --
-> 2.24.1
+>  drivers/media/platform/fsl-viu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/media/platform/fsl-viu.c b/drivers/media/platform/fsl-viu.c
+> index 81a8faedbba6..991d9dc82749 100644
+> --- a/drivers/media/platform/fsl-viu.c
+> +++ b/drivers/media/platform/fsl-viu.c
+> @@ -34,7 +34,7 @@
+>  /* Allow building this driver with COMPILE_TEST */
+>  #if !defined(CONFIG_PPC) && !defined(CONFIG_MICROBLAZE)
+>  #define out_be32(v, a)	iowrite32be(a, (void __iomem *)v)
+> -#define in_be32(a)	ioread32be((void __iomem *)a)
+> +#define in_be32(a)	ioread32be((const void __iomem *)a)
+>  #endif
+>  
+>  #define BUFFER_TIMEOUT		msecs_to_jiffies(500)  /* 0.5 seconds */
+> 
 
