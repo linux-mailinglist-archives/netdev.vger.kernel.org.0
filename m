@@ -2,92 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45C541839C9
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 20:48:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB6641839E3
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 20:54:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726802AbgCLTsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 15:48:17 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:37417 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725268AbgCLTsR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 15:48:17 -0400
-Received: by mail-wm1-f66.google.com with SMTP id a141so7757855wme.2;
-        Thu, 12 Mar 2020 12:48:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=My5hy+eOd+BUGnLYjJSbZOd3nYUzutH2HG2GVn4YySU=;
-        b=AiSzVoHTgqpa1qac7d9U8arGecyjIGMg3cTXGJ8wlp5G007Eidw4MQ8r10C+dZx7vU
-         waJujvvQ3bbzCUvTunqQ7YHn/yXmeCwHKzYquSTivGPIZU/5BVFq27lEdMg2Pim1oIEL
-         0v8QKp1y6Q4deCwbn9he07U2CRFUHo0ve8poxzPjPbf1ZeF3OgfahrX3tA3YGkXDHK6c
-         r6uBPe53trUhQ+DJ13jQPSNIDUR1xKpxwFdp1ZC9/KV6BYeBRzjR+NSl4WMioL2GWSRE
-         dXj/AegDov5wW/VZJVPPUanYQpO8FlPyHs1wpfKcESCue6oA+/q7NhgeDZCvtkI7VUTw
-         /E9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=My5hy+eOd+BUGnLYjJSbZOd3nYUzutH2HG2GVn4YySU=;
-        b=rwOCJh5ea123nmT6BHe57PqXc52fgA0W6EIOXFXs6uTeVwKPBjDNPHbX1X7Iz0/nSn
-         me2BGOqtXX31OxyiVHjP/iBxOJ6Msm1JzcCccNCW9uPQEPZSX5ECh4vJV/J7Nn1vfXiY
-         rM21mKknMDT5oAf9Ef28pnxEyiokSeo+B4ptUuWhTc6T0NKhnJh5+vHq7vwb4FeUPYAo
-         smv+ZuycMtSSQFc/D0b72xlMcjkcvNpi4i51b774vA26fWAk8KQksFWreVXQk+/6TC20
-         HQJn5W4OPdcr26oBxt1pG1/knJ54yJ1hXiNF3qBCY0e8lzPnNFb1JFrsYx5G99+1KCkG
-         LbKQ==
-X-Gm-Message-State: ANhLgQ2adtJOTKBi4WISSCSSknKEC1IVhDeKPgoeZwK5pSqGced6h61d
-        8i09FvPpogQnVcxrJPIfjH4=
-X-Google-Smtp-Source: ADFU+vseCaW0oo7VMWsRQmbcHcBu9RZW4zq46TUY4mhg/yDNTUBrocjwJC+h98nGd0cnHrPixEVGnA==
-X-Received: by 2002:a1c:ac8a:: with SMTP id v132mr6092078wme.64.1584042493588;
-        Thu, 12 Mar 2020 12:48:13 -0700 (PDT)
-Received: from DEFRL0001.localdomain ([2a02:810d:1b40:644:cfdf:73ac:91bd:6a1d])
-        by smtp.gmail.com with ESMTPSA id z6sm7271122wrp.95.2020.03.12.12.48.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Mar 2020 12:48:12 -0700 (PDT)
-Date:   Thu, 12 Mar 2020 20:46:25 +0100
-From:   Markus Fuchs <mklntf@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: stmmac: platform: Fix misleading interrupt error msg
-Message-ID: <20200312194625.GA6684@DEFRL0001.localdomain>
-References: <20200306163848.5910-1-mklntf@gmail.com>
- <20200311.230402.1496009558967017193.davem@davemloft.net>
+        id S1726803AbgCLTyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 15:54:17 -0400
+Received: from smtprelay0009.hostedemail.com ([216.40.44.9]:42674 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725268AbgCLTyQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 15:54:16 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay08.hostedemail.com (Postfix) with ESMTP id EB034182CED5B;
+        Thu, 12 Mar 2020 19:54:15 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:967:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2525:2540:2553:2560:2563:2682:2685:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3872:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:5007:6117:7522:7903:7904:8784:9025:10004:10400:10848:10967:11026:11232:11473:11658:11914:12043:12297:12438:12555:12679:12681:12740:12760:12895:12986:13069:13161:13229:13311:13357:13439:13845:14181:14659:14721:21080:21451:21627:21740:21811:30046:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: baby05_7c5504a7ced51
+X-Filterd-Recvd-Size: 2717
+Received: from XPS-9350.home (unknown [47.151.143.254])
+        (Authenticated sender: joe@perches.com)
+        by omf18.hostedemail.com (Postfix) with ESMTPA;
+        Thu, 12 Mar 2020 19:54:14 +0000 (UTC)
+Message-ID: <62ed1e9972f5d7d8a203e9295c388a70e6e9e0c2.camel@perches.com>
+Subject: Re: [PATCH -next 001/491] MELLANOX ETHERNET INNOVA DRIVERS: Use
+ fallthrough;
+From:   Joe Perches <joe@perches.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, borisp@mellanox.com,
+        saeedm@mellanox.com, leon@kernel.org, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Thu, 12 Mar 2020 12:52:30 -0700
+In-Reply-To: <20200312124504.7ee481a9@kicinski-fedora-PC1C0HJN>
+References: <cover.1583896344.git.joe@perches.com>
+         <605f5d4954fcb254fe6fc5c22dc707f29b3b7405.1583896347.git.joe@perches.com>
+         <20200311.232302.1442236068172575398.davem@davemloft.net>
+         <cf74e8fdd3ee99aec86cec4abfdb1ce84b7fd90a.camel@perches.com>
+         <20200312124504.7ee481a9@kicinski-fedora-PC1C0HJN>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200311.230402.1496009558967017193.davem@davemloft.net>
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 11:04:02PM -0700, David Miller wrote:
-> From: Markus Fuchs <mklntf@gmail.com>
-> Date: Fri,  6 Mar 2020 17:38:48 +0100
-> 
-> > Not every stmmac based platform makes use of the eth_wake_irq or eth_lpi
-> > interrupts. Use the platform_get_irq_byname_optional variant for these
-> > interrupts, so no error message is displayed, if they can't be found.
-> > Rather print an information to hint something might be wrong to assist
-> > debugging on platforms which use these interrupts.
+On Thu, 2020-03-12 at 12:45 -0700, Jakub Kicinski wrote:
+> On Wed, 11 Mar 2020 23:26:59 -0700 Joe Perches wrote:
+> > On Wed, 2020-03-11 at 23:23 -0700, David Miller wrote:
+> > > Joe, please use Subject line subsystem prefixes consistent with what would
+> > > be used for other changes to these drivers.  
 > > 
-> > Signed-off-by: Markus Fuchs <mklntf@gmail.com>
+> > Not easy to do for scripted patches.
+> > There's no mechanism that scriptable.
 > 
-> What do you mean the error message is misleading right now?
+> I have this to show me the top 3 prefixes used for files currently
+> modified in my tree:
 > 
-> It isn't printing anything out at the moment in this situation.
+> tgs() {
+>     local fs
+> 
+>     fs=$(git status -s | sed -n 's/ M //p')
+> 
+>     git log --oneline --no-merges -- $fs | \
+> 	sed -e's/[^ ]* \(.*\):[^:]*/\1/' | \
+> 	sort | uniq -c | sort -rn | head -3
+> }
+> 
+> You could probably massage it to just give you to top one and feed 
+> that into git commit template?
 
-Commit 7723f4c5ecdb driver core: platform: Add an error message to 
-    platform_get_irq*()
+I had already tried that via:
 
-The above commit added a generic dev_err() output to the platform_get_irq_byname
-function.
+$ cat get_patch_subject_prefix.bash 
+#!/bin/bash
+git log --format="%s" --no-merges -200 --since=2-years-ago $@ | \
+  cut -f1 -d":" | \
+  sort  | uniq -c | sort -rn | head -1 | \
+  sed 's/^[[:space:]]*[[:digit:]]*[[:space:]]*//'
+$ 
 
-My patch uses the platform_get_irq_byname_optional function, which
-doesn't print anything and adds the original dev_err output as dev_info output 
-to the driver.
-Otherwise there would be no output at all even for platforms in need of these 
-irqs.
+It doesn't work very well for many of the subsystems.
+
+For instance, this script produces things like:
+
+ARM/ZYNQ ARCHITECTURE: treewide
+FCOE SUBSYSTEM (libfc, libfcoe, fcoe): scsi
+WOLFSON MICROELECTRONICS DRIVERS: ASoC
+
+There isn't a great single mechanism for this.
+
+At various times, I have proposed adding a grammar for
+patch subject titles to MAINTAINERS.
+
+Like:
+https://lore.kernel.org/lkml/1289919077.28741.50.camel@Joe-Laptop/
+
+
