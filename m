@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 192FF183D18
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 00:12:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DF6C183D19
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 00:12:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726917AbgCLXMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 19:12:50 -0400
+        id S1726934AbgCLXMw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 19:12:52 -0400
 Received: from mail-eopbgr10083.outbound.protection.outlook.com ([40.107.1.83]:26253
         "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726775AbgCLXMt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Mar 2020 19:12:49 -0400
+        id S1726710AbgCLXMv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Mar 2020 19:12:51 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=itJtFqoce/FvyHjQjdo8ptzITkDu76WkNzS4Q7/RleG35HBQ2QVING4e8+iF5LatJJBM31BCmIMoGuO4b2LkPO93A1M6z95hjMZScZ3bnuaz6egvufkBb9JISOo447zGQcDMTIv6tvGv9R/uIwp9+6H5FhzoDyOMhbHLuLGG+CyHm07f/L6Y8k0hTUBbrBxnLb8B2S4p/lXAQYtIrJOhVsisXNbJrmEseUeHwl+Qmtqy6Z+iuZXXMkvH+St2CxY2wrbwThhSY0MLoITSxBNwjUCvyWoAeDMmxHM54mNw63bqwzHb/0CARXHaYQxnZFYugOhihua23dcHF+kMLWgmhQ==
+ b=kgqz3dbJaTJP8Gnfo0/fT+snZewfXFIkvIFXKfnHIFFcstZfp7WonJxNbwBx6PMq68Ul3S9ZKjzMEaNEgtySm4Yfc7dZXKBl6n5rh73KXx2OIhoCMxy9lUjY9q9akbV/eicolwz/xvm78Gd9sKL4jBVUjFN1U+imaZcaUw7WATICNmRhS+zqQLIV3vsIMH0W9GWBx9xgtH6j1jr4dls08kzFdflDqcGYxFmjWCyrtr35Tu5OxB7fXNtStrE22ETnd+Tk6u3P8eecCFX02dliBYgtGza0kIjbUi2bxIICxM73VPtfy8I9f0sBqcQ08CmpZLhD1oPal/0ti3s1/JZISA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F3TxnIf0qkF2GqLdvkqTYIE7x2yZD3r6oGFwcsB2ugM=;
- b=hxZ7g0yzi66/IqV3p40EuzxbUo+HUubnUffQ0xAn/K7TSZJbaoNTP7yU40/y8RyM/MbI2TDEILRf5fxNd/J7GvocxKUniCnI5k532xqYp2Ynu/klFVpxsHPGXV/2OvKCsaIROQlnxs+ujrAcOf9mYVcg3qAj0IAbP+xXVJ1Oq3a10hu/cgspEP7t2J/aVrOdDdtz/1A3k6gO2YQ6oPocOtJ3tkfmPvtPPYCU5DDYvmabXFyAgFTCnR/mY+sPsEvcNRkvHJDoh+Q479/eUxGhiQzAKd6xPU2zgygeXlmMUS66azgZ/zSWoa6FKX/Z0F9jRFXt64sjXqJ6WW/KvixBxg==
+ bh=S8lnGBZqTfNuKdmW0q4BxNC48dI89Z542JQ6ITPx8Xc=;
+ b=P4drBck2K3u19Hts6fE1lVtWg6u8ASpiCrsQxldd5Ggb/GRAnJS8m4C/aZOssxme+cCqWvAoTdoG3rNV4x5dOjFWy3ULOnb+buolptuQ8Snbwy5DCYDfMY8MrTM6MFuy9YNT39F5ahijJRY123k6yl7ZBrhELUxJ//nRgN+QAlYFyGm1IgB0yTz+D3lHBdHQGBt19JPbt0QjLJO20hVPLoZUDmFd4sXFw8/QoVcGCv1KRY1qfLtlclxDcCEHpPjFrrbLylv+ZtRpjge4B1jaDoclN5dDsxPShA4S7qcJERCvDNrvO/aJuw9HvOEx1PYY7HvfyXt3UmQMjHuRmBg1UA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F3TxnIf0qkF2GqLdvkqTYIE7x2yZD3r6oGFwcsB2ugM=;
- b=qNOenQquV9z4xrGVfAsIhXIGa8ODKPWh7+M03CfNcsG3YKdEGtfLz0TcgVWew8B9OIbEeeWJNaEQgKOZr+nhl6ejIx5dU3pu7X5MhECCWAQX9AjUeSg3WhQj0NnMihjZPISqzL+6OaAuWLYotrc4TbjXU5Lm0s+rnmxrKQ/2i+k=
+ bh=S8lnGBZqTfNuKdmW0q4BxNC48dI89Z542JQ6ITPx8Xc=;
+ b=J6l8rQRH/uyxPa1reBXJw3U2vmZtKczya02XZFox5xXkgsim/iQbncIK4xlhK26AWJzyh4yUbeVlSgOejFGg9qlwWeULZoIZK9NZzbvY+22tR4Qn4yf08406IBedJ0xPS/2eL5FN9dYZrnccprSHUJ6wXQewuZlOIN9NBR/jhYo=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=petrm@mellanox.com; 
 Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (20.176.168.150) by
  HE1PR05MB3194.eurprd05.prod.outlook.com (10.170.241.25) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2793.17; Thu, 12 Mar 2020 23:12:40 +0000
+ 15.20.2793.17; Thu, 12 Mar 2020 23:12:42 +0000
 Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
  ([fe80::c146:9acd:f4dc:4e32]) by HE1PR05MB4746.eurprd05.prod.outlook.com
  ([fe80::c146:9acd:f4dc:4e32%7]) with mapi id 15.20.2793.018; Thu, 12 Mar 2020
- 23:12:40 +0000
+ 23:12:42 +0000
 From:   Petr Machata <petrm@mellanox.com>
 To:     netdev@vger.kernel.org
 Cc:     Petr Machata <petrm@mellanox.com>,
@@ -45,9 +45,9 @@ Cc:     Petr Machata <petrm@mellanox.com>,
         Eric Dumazet <eric.dumazet@gmail.com>, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, davem@davemloft.net, idosch@mellanox.com,
         mlxsw@mellanox.com
-Subject: [PATCH net-next v4 3/6] net: sched: RED: Introduce an ECN nodrop mode
-Date:   Fri, 13 Mar 2020 01:10:57 +0200
-Message-Id: <20200312231100.37180-4-petrm@mellanox.com>
+Subject: [PATCH net-next v4 4/6] mlxsw: spectrum_qdisc: Offload RED ECN nodrop mode
+Date:   Fri, 13 Mar 2020 01:10:58 +0200
+Message-Id: <20200312231100.37180-5-petrm@mellanox.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200312231100.37180-1-petrm@mellanox.com>
 References: <20200312231100.37180-1-petrm@mellanox.com>
@@ -57,184 +57,89 @@ X-ClientProxiedBy: PR2P264CA0002.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::14)
  To HE1PR05MB4746.eurprd05.prod.outlook.com (2603:10a6:7:a3::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by PR2P264CA0002.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.20 via Frontend Transport; Thu, 12 Mar 2020 23:12:39 +0000
+Received: from dev-r-vrt-156.mtr.labs.mlnx (37.142.13.130) by PR2P264CA0002.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.20 via Frontend Transport; Thu, 12 Mar 2020 23:12:40 +0000
 X-Mailer: git-send-email 2.20.1
 X-Originating-IP: [37.142.13.130]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 6d1d5183-5dc7-4842-5d07-08d7c6dadcc5
+X-MS-Office365-Filtering-Correlation-Id: fccefa7c-b218-40df-1547-08d7c6daddc7
 X-MS-TrafficTypeDiagnostic: HE1PR05MB3194:|HE1PR05MB3194:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HE1PR05MB3194C5875CBC3AEF2B54C220DBFD0@HE1PR05MB3194.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Microsoft-Antispam-PRVS: <HE1PR05MB3194D3554585286C889BE00CDBFD0@HE1PR05MB3194.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-Forefront-PRVS: 0340850FCD
 X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(346002)(366004)(136003)(39860400002)(396003)(199004)(316002)(2906002)(66556008)(8676002)(66476007)(66946007)(4326008)(54906003)(81156014)(81166006)(6666004)(36756003)(1076003)(5660300002)(6512007)(6506007)(6486002)(52116002)(478600001)(16526019)(107886003)(26005)(8936002)(6916009)(956004)(86362001)(186003)(2616005);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR05MB3194;H:HE1PR05MB4746.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
 Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rq8QQx9pOUW+tlOSYMgKLUv+da5InkVasgAITSqwjSDZYtjLsLy/g8EEtWjHNhTrF2ac2cr+NhqIp7dgAgfBorvTWVB9H3yoNTSgv3nQJ3G/tFMnMHXo4gn/ah1hwjcbe14EuXM2j3t0+DU3mXbzg6v2UipDYOz9sb3qirZZJSIJwxfFIYFWi7SBRjm0Fce2mVzRC5myEk5d/0G79Wp1+nKZYgum9YrxaasnG3i5nw43JfBBU5gvWKPf0vy2HDLxmBowDy+NFKzMTnXZHaEB0zhNnGcr8//umQuYBdYS6lLhTrRmkjhmkJ5x3PjuVi6Lpp/SqMZFJ9Y0cQCL6wfWLeE+FJrsQ4UlhaBviqc2PqnH3iumHC/J6VvmVaSgyIW3WI2/kTVS6ByHm2OdyqUEkzWbw6z2w9FFWYGtK5a4ZjCoExeSxDku/sPGsV/msPau
-X-MS-Exchange-AntiSpam-MessageData: oynpXMX8YR0ue1QDMZioA2Ix1pOBRphUgsW5gY3aQosf0cugsV5OYJU1LqRLTrQJC2qrZn1+NHOQwK3X73Kq8vc7Ql1TBQ8pTvTn5hDAzn6HeiW+ySdHa9ThyZUBBqsu0jfbl3ap6ZhrgK+NTU82wQ==
+X-Microsoft-Antispam-Message-Info: FEgay71cnWI2zvOzLeL/oUvg2zyapPvnmIRBTDmmpirvwsguhH7GIsb+m+VYut8kwrVm76EDUs/yLrduQxCxXb2yGsmSZ2/wEZNw67foDlfNaEh5vsfUghnX1qn6uBi7+nlQu1/uRhOo82a/EKI63Ca2O1xFVBMTC/z9G41Rpo8ct+5qUZEVnLbVcD4oyhteXkEK4sp3QnQWDARCZoZo47/PS9VDBzGEf7/59JP1ruCz7mHFCETeWtqjSnTAZ9AGzI9M0qGNN604tp9oAPKDqpQGTEtouFhz/vtmBEuD8C0Lkkmus4LX8fmd1RMbUFd+EP5up+BKgscH/3lgJelBqdOZZm2UlAKA1Sox4OiI/AvHNnkgJhqtUGd+Ri4bY4rpdGfML8FXuiTTMu/FaIxHuyQGRBjvE4sWfkqyHwxP0cSIu+ilQu7zs9l46xjYCW18
+X-MS-Exchange-AntiSpam-MessageData: EybT/6e2Jy+0ovwy+1pryvoggvQkHFyHrq3yTAWvO1kqhE1GmBS/R+lfdQ2TlrZOsX64oksNPxsj6IHVGEKXnATWwoV9i2BUR8QmBamiYbtyT4MH9pC9K0yfIFGLOCXorGZ8mKoBK5es375Q4O9Xtg==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d1d5183-5dc7-4842-5d07-08d7c6dadcc5
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2020 23:12:40.7905
+X-MS-Exchange-CrossTenant-Network-Message-Id: fccefa7c-b218-40df-1547-08d7c6daddc7
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2020 23:12:42.4585
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rYZ8VFiBkWPRMsImbSQOie+tLRoGApadLvI4AUmPnEMWMJ+q28sfLoQ4eAKnGC6lL74MUcHiOak7E3ojCAHKDw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: cFzL/F9ZVj2DG2Kw6axoYn0RsZlFgqFGaXlNeh1KTbjHoqmNtaRbgW22A3k0AsqVQnVcWjGo1aNYBQd0mFJzVQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3194
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the RED Qdisc is currently configured to enable ECN, the RED algorithm
-is used to decide whether a certain SKB should be marked. If that SKB is
-not ECN-capable, it is early-dropped.
+RED ECN nodrop mode means that non-ECT traffic should not be early-dropped,
+but enqueued normally instead. In Spectrum systems, this is achieved by
+disabling CWTPM.ew (enable WRED) for a given traffic class.
 
-It is also possible to keep all traffic in the queue, and just mark the
-ECN-capable subset of it, as appropriate under the RED algorithm. Some
-switches support this mode, and some installations make use of it.
-
-To that end, add a new RED flag, TC_RED_NODROP. When the Qdisc is
-configured with this flag, non-ECT traffic is enqueued instead of being
-early-dropped.
+So far CWTPM.ew was unconditionally enabled. Instead disable it when the
+RED qdisc is in nodrop mode.
 
 Signed-off-by: Petr Machata <petrm@mellanox.com>
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 ---
 
 Notes:
     v3:
-    - Rename "taildrop" to "nodrop"
-    - Make red_use_nodrop() static instead of static inline
-    
-    v2:
-    - Fix red_use_taildrop() condition in red_enqueue switch for
-      probabilistic case.
+    - Adjust for the rename from is_taildrop to is_nodrop.
 
- include/net/pkt_cls.h          |  1 +
- include/net/red.h              |  5 +++++
- include/uapi/linux/pkt_sched.h |  1 +
- net/sched/sch_red.c            | 31 +++++++++++++++++++++++++------
- 4 files changed, 32 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index 341a66af8d59..e7e279ad8694 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -727,6 +727,7 @@ struct tc_red_qopt_offload_params {
- 	u32 limit;
- 	bool is_ecn;
- 	bool is_harddrop;
-+	bool is_nodrop;
- 	struct gnet_stats_queue *qstats;
- };
- 
-diff --git a/include/net/red.h b/include/net/red.h
-index 6a2aaa6c7c41..fc455445f4b2 100644
---- a/include/net/red.h
-+++ b/include/net/red.h
-@@ -209,6 +209,11 @@ static inline int red_get_flags(unsigned char qopt_flags,
- static inline int red_validate_flags(unsigned char flags,
- 				     struct netlink_ext_ack *extack)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+index b9f429ec0db4..670a43fe2a00 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_qdisc.c
+@@ -323,7 +323,7 @@ mlxsw_sp_qdisc_get_tc_stats(struct mlxsw_sp_port *mlxsw_sp_port,
+ static int
+ mlxsw_sp_tclass_congestion_enable(struct mlxsw_sp_port *mlxsw_sp_port,
+ 				  int tclass_num, u32 min, u32 max,
+-				  u32 probability, bool is_ecn)
++				  u32 probability, bool is_wred, bool is_ecn)
  {
-+	if ((flags & TC_RED_NODROP) && !(flags & TC_RED_ECN)) {
-+		NL_SET_ERR_MSG_MOD(extack, "nodrop mode is only meaningful with ECN");
-+		return -EINVAL;
-+	}
-+
- 	return 0;
+ 	char cwtpm_cmd[MLXSW_REG_CWTPM_LEN];
+ 	char cwtp_cmd[MLXSW_REG_CWTP_LEN];
+@@ -341,7 +341,7 @@ mlxsw_sp_tclass_congestion_enable(struct mlxsw_sp_port *mlxsw_sp_port,
+ 		return err;
+ 
+ 	mlxsw_reg_cwtpm_pack(cwtpm_cmd, mlxsw_sp_port->local_port, tclass_num,
+-			     MLXSW_REG_CWTP_DEFAULT_PROFILE, true, is_ecn);
++			     MLXSW_REG_CWTP_DEFAULT_PROFILE, is_wred, is_ecn);
+ 
+ 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(cwtpm), cwtpm_cmd);
+ }
+@@ -445,8 +445,9 @@ mlxsw_sp_qdisc_red_replace(struct mlxsw_sp_port *mlxsw_sp_port, u32 handle,
+ 	prob = DIV_ROUND_UP(prob, 1 << 16);
+ 	min = mlxsw_sp_bytes_cells(mlxsw_sp, p->min);
+ 	max = mlxsw_sp_bytes_cells(mlxsw_sp, p->max);
+-	return mlxsw_sp_tclass_congestion_enable(mlxsw_sp_port, tclass_num, min,
+-						 max, prob, p->is_ecn);
++	return mlxsw_sp_tclass_congestion_enable(mlxsw_sp_port, tclass_num,
++						 min, max, prob,
++						 !p->is_nodrop, p->is_ecn);
  }
  
-diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-index 6325507935ea..ea39287d59c8 100644
---- a/include/uapi/linux/pkt_sched.h
-+++ b/include/uapi/linux/pkt_sched.h
-@@ -286,6 +286,7 @@ struct tc_red_qopt {
- #define TC_RED_ECN		1
- #define TC_RED_HARDDROP		2
- #define TC_RED_ADAPTATIVE	4
-+#define TC_RED_NODROP		8
- };
- 
- #define TC_RED_HISTORIC_FLAGS (TC_RED_ECN | TC_RED_HARDDROP | TC_RED_ADAPTATIVE)
-diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
-index d4ce111704dc..3ef0a4f7399b 100644
---- a/net/sched/sch_red.c
-+++ b/net/sched/sch_red.c
-@@ -48,7 +48,7 @@ struct red_sched_data {
- 	struct Qdisc		*qdisc;
- };
- 
--static const u32 red_supported_flags = TC_RED_HISTORIC_FLAGS;
-+static const u32 red_supported_flags = TC_RED_HISTORIC_FLAGS | TC_RED_NODROP;
- 
- static inline int red_use_ecn(struct red_sched_data *q)
- {
-@@ -60,6 +60,11 @@ static inline int red_use_harddrop(struct red_sched_data *q)
- 	return q->flags & TC_RED_HARDDROP;
- }
- 
-+static int red_use_nodrop(struct red_sched_data *q)
-+{
-+	return q->flags & TC_RED_NODROP;
-+}
-+
- static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 		       struct sk_buff **to_free)
- {
-@@ -80,23 +85,36 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 
- 	case RED_PROB_MARK:
- 		qdisc_qstats_overlimit(sch);
--		if (!red_use_ecn(q) || !INET_ECN_set_ce(skb)) {
-+		if (!red_use_ecn(q)) {
- 			q->stats.prob_drop++;
- 			goto congestion_drop;
- 		}
- 
--		q->stats.prob_mark++;
-+		if (INET_ECN_set_ce(skb)) {
-+			q->stats.prob_mark++;
-+		} else if (!red_use_nodrop(q)) {
-+			q->stats.prob_drop++;
-+			goto congestion_drop;
-+		}
-+
-+		/* Non-ECT packet in ECN nodrop mode: queue it. */
- 		break;
- 
- 	case RED_HARD_MARK:
- 		qdisc_qstats_overlimit(sch);
--		if (red_use_harddrop(q) || !red_use_ecn(q) ||
--		    !INET_ECN_set_ce(skb)) {
-+		if (red_use_harddrop(q) || !red_use_ecn(q)) {
- 			q->stats.forced_drop++;
- 			goto congestion_drop;
- 		}
- 
--		q->stats.forced_mark++;
-+		if (INET_ECN_set_ce(skb)) {
-+			q->stats.forced_mark++;
-+		} else if (!red_use_nodrop(q)) {
-+			q->stats.forced_drop++;
-+			goto congestion_drop;
-+		}
-+
-+		/* Non-ECT packet in ECN nodrop mode: queue it. */
- 		break;
- 	}
- 
-@@ -171,6 +189,7 @@ static int red_offload(struct Qdisc *sch, bool enable)
- 		opt.set.limit = q->limit;
- 		opt.set.is_ecn = red_use_ecn(q);
- 		opt.set.is_harddrop = red_use_harddrop(q);
-+		opt.set.is_nodrop = red_use_nodrop(q);
- 		opt.set.qstats = &sch->qstats;
- 	} else {
- 		opt.command = TC_RED_DESTROY;
+ static void
 -- 
 2.20.1
 
