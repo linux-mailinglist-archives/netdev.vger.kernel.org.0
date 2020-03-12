@@ -2,118 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20B12183A6A
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 21:13:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5496183A8B
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 21:25:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726984AbgCLUM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 16:12:57 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:40565 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726824AbgCLUMx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 16:12:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584043972;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=oFtA5foZqJcNjK+k5pElAYPfBCovM+fS0F+WtgscESA=;
-        b=PDmku7CcJ/E6F8AWBdA38RTR8Gd0/VlzcLMzGjma1t8I3anp4q12qolrKrQuILt4sueN5j
-        lazacH9A748UTVOg301gtbwk6oV9377mT6sZLLZOZ7OlMufBkZGw25ErAQYqR9yYwLrr/Z
-        nxCPSBuO8tfDmJEiGL3NIYMibmzshZA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-437-G3yM9eTeOEa5m1elEuDA0g-1; Thu, 12 Mar 2020 16:12:50 -0400
-X-MC-Unique: G3yM9eTeOEa5m1elEuDA0g-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E1736801E66;
-        Thu, 12 Mar 2020 20:12:46 +0000 (UTC)
-Received: from localhost (ovpn-121-102.rdu2.redhat.com [10.10.121.102])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 92C8073880;
-        Thu, 12 Mar 2020 20:12:43 +0000 (UTC)
-From:   Bruno Meneguele <bmeneg@redhat.com>
-To:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     GLin@suse.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, Bruno Meneguele <bmeneg@redhat.com>
-Subject: [PATCH] net/bpfilter: fix dprintf usage for logging into /dev/kmsg
-Date:   Thu, 12 Mar 2020 17:12:40 -0300
-Message-Id: <20200312201240.1960367-1-bmeneg@redhat.com>
+        id S1726971AbgCLUZc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 16:25:32 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:35756 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725268AbgCLUZb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 16:25:31 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02CKNTmd029007;
+        Thu, 12 Mar 2020 13:25:18 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=2JMQcd+BeNXUZyWrUz/8Wgmc2PotJWWQAkDmSpMvXig=;
+ b=D9us3vsVmqVNgkWQcq2+qin0snvV8/OBUNWDEK0mrGiaK6+azUEmu+6sXValy63KtUON
+ 5spR46SwVy4VpQYwtXkXnaOJSO5g5OoGkPUoM9CQkybpSUrO+arD+OmNk4nzyv7SXgpD
+ PhhjuTlTOUrVMSmT2xuR+0JcB529Jdftx/o= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yqt96rkgh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 12 Mar 2020 13:25:18 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.175) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Thu, 12 Mar 2020 13:25:16 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hcx6lFE80OAXKGOk8mXo5NhgkGCxJo7V+E6Ot4Bz4F3tHYjJkalQyAZP1OtryUuRUqpXHTWqodM3TdctLlNuf8Nb+4aLz06s9fEYkvOe2TmF99vZT0gzauVVf0yG0Y5ltHCKC4qZh3bdg/0Sl9yPGyeifTQZPxbdRUpxeTysAnfCAYwqjNoa+GIa/lwJW53XyKECzE6zaBWYRB5BUsXT5cVulRO/3WcoWu4rZGpc1PfMYzPx9tsqMYOks+PbDl8mO0KCdAxdW/IKDj88VJycjzZB7FYLYfouCYJpqTPWXcihJYV/c1VSNpEMcd59KfQtJgYSN3gUfmeyUdpm5zbX4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2JMQcd+BeNXUZyWrUz/8Wgmc2PotJWWQAkDmSpMvXig=;
+ b=JrbhZJXHqGWxnMtbK5biGGJjjx9gePsvbpw7sZOM6G/c+p4Ol4ygLKhqPs4AKbYGHRr/z3Z0w9Nl8l8Ac6QsHQoJnvCICgrZ5z+sR0aNo8BlKYmz6BK81vh4FKcQ7hfLU40xh7XktEGvrct23oKTk+oxbe51AybXBjiO7ThZ+S2JzKurMYO91bz5vHBMv515x+xSFMagYU8+dg7ujl/Mh0H2UTJzJYb4QJAhLqD7krB3ZlEzfFSxsZH22pLwVMlMAVkc8sFLmL219tcGukJWE/Y27ZNFifqcls+8sP44DSo7ovWHFZ6DkDyBDrO4hTtLMOb1uvk6NodiWGUVad2jHA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2JMQcd+BeNXUZyWrUz/8Wgmc2PotJWWQAkDmSpMvXig=;
+ b=TFSHmNPZ3VLFmH0elvCDdU/bmx9b2UXQvh+pZGbbENyVKQRIHSBpjZKMj1DNwjmOQ8hvwPkvfkLk7BWZ/AoX3Db94cwPVgr5ycNz556fYEC6jmfy4thwsAIvm2VkQuDoDdugtb/qDgiFgKsBAjQQyWk6J2HisPaAZr+B3QWTC0U=
+Received: from BYAPR15MB2278.namprd15.prod.outlook.com (2603:10b6:a02:8e::17)
+ by BYAPR15MB4133.namprd15.prod.outlook.com (2603:10b6:a03:9b::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.15; Thu, 12 Mar
+ 2020 20:25:14 +0000
+Received: from BYAPR15MB2278.namprd15.prod.outlook.com
+ ([fe80::4d5a:6517:802b:5f47]) by BYAPR15MB2278.namprd15.prod.outlook.com
+ ([fe80::4d5a:6517:802b:5f47%4]) with mapi id 15.20.2793.018; Thu, 12 Mar 2020
+ 20:25:14 +0000
+Date:   Thu, 12 Mar 2020 13:25:12 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Quentin Monnet <quentin@isovalent.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v2 0/2] tools: bpftool: fix object pinning and
+ bash
+Message-ID: <20200312202512.yuiesbhlrsglziap@kafai-mbp>
+References: <20200312184608.12050-1-quentin@isovalent.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200312184608.12050-1-quentin@isovalent.com>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: MWHPR21CA0030.namprd21.prod.outlook.com
+ (2603:10b6:300:129::16) To BYAPR15MB2278.namprd15.prod.outlook.com
+ (2603:10b6:a02:8e::17)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp (2620:10d:c090:400::5:fd85) by MWHPR21CA0030.namprd21.prod.outlook.com (2603:10b6:300:129::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.4 via Frontend Transport; Thu, 12 Mar 2020 20:25:13 +0000
+X-Originating-IP: [2620:10d:c090:400::5:fd85]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6d08e5fa-1bfe-470a-1c5f-08d7c6c378d6
+X-MS-TrafficTypeDiagnostic: BYAPR15MB4133:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB413309D6C88E7AD703A40D5BD5FD0@BYAPR15MB4133.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Forefront-PRVS: 0340850FCD
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(376002)(39860400002)(136003)(366004)(346002)(396003)(199004)(2906002)(86362001)(316002)(6496006)(9686003)(186003)(5660300002)(52116002)(478600001)(8936002)(16526019)(55016002)(66556008)(66476007)(66946007)(81156014)(6916009)(81166006)(33716001)(54906003)(4744005)(3716004)(8676002)(1076003)(4326008);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB4133;H:BYAPR15MB2278.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+Received-SPF: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Tb6rqKeag/pEWAG+ssrimIwXUA6BlgZaczbBHMSAeE43hUbYCiE6OYqQdHygVgDc9elDB6hgZ6iVGVnpTYznvRRJYUnTdgLGPpgluitqH4Qm8syq3Mu9ZbaDh9qSt0EHuqqPaE9ALdK8hLT2T0gql1lFu8rVHtjTqLYRWcZ/2vO1bFehAmXx4aTbtMLz4LVbtmJmOIcsMRLD2jajKY3fKy5o5i6W6auYMvr+HQTZE6GI9ZHN7IjULF+zliGfRbZJKqvdnuBSS/cTGS3vMND4H3fTn2l0IwxUlMT6CxgnE1WZe2PWRgSbeuOV+rE6B6t9722TivDZmT1Jgr93jB84fQ37yodJYQHgeaafk4VeeHnP2Y4B/cGyxGd2EAlRIypyiJx0MGowMLicE8mngfR3JLp4FyHr59GTzvyq5xuuAFP1GJWZ3cUGC1ciahx+EeBu
+X-MS-Exchange-AntiSpam-MessageData: n1zaxyr21vQUESvsS49kQt96evAxdwoogJhWtZ4MnU9oFXs3CASCZt5joZXxwKkhD2uZ6nBM0Cw42jQrlfTaPo6wWMPS1+JBZxHnESLttAjHHiuU7ipgovISmF8mrm3Bj+fnnlxvu/4HxaPDTPd5mVvorkG5kB2Kf02gIc9S/8akyrvpqmYBc0dqRlA0IOOn
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6d08e5fa-1bfe-470a-1c5f-08d7c6c378d6
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2020 20:25:14.6633
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0rGV8Ur5SUUmZP7VzWd2XduG/cggKT8nUDJX/JwJlkbgAvtkYRbd89fPIgXB91ap
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB4133
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-12_14:2020-03-11,2020-03-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ mlxlogscore=595 malwarescore=0 spamscore=0 priorityscore=1501
+ suspectscore=0 bulkscore=0 lowpriorityscore=0 adultscore=0 clxscore=1015
+ impostorscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003120102
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bpfilter UMH code was recently changed to log its informative message=
-s to
-/dev/kmsg, however this interface doesn't support SEEK_CUR yet, used by
-dprintf(). As result dprintf() returns -EINVAL and doesn't log anything.
-
-Although there already had some discussions about supporting SEEK_CUR int=
-o
-/dev/kmsg in the past, it wasn't concluded. Considering the only
-user of that interface from userspace perspective inside the kernel is th=
-e
-bpfilter UMH (userspace) module it's better to correct it here instead of
-waiting a conclusion on the interface changes.
-
-Signed-off-by: Bruno Meneguele <bmeneg@redhat.com>
----
- net/bpfilter/main.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
-
-diff --git a/net/bpfilter/main.c b/net/bpfilter/main.c
-index 77396a098fbe..efea4874743e 100644
---- a/net/bpfilter/main.c
-+++ b/net/bpfilter/main.c
-@@ -10,7 +10,7 @@
- #include <asm/unistd.h>
- #include "msgfmt.h"
-=20
--int debug_fd;
-+FILE *debug_f;
-=20
- static int handle_get_cmd(struct mbox_request *cmd)
- {
-@@ -35,9 +35,10 @@ static void loop(void)
- 		struct mbox_reply reply;
- 		int n;
-=20
-+		fprintf(debug_f, "testing the buffer\n");
- 		n =3D read(0, &req, sizeof(req));
- 		if (n !=3D sizeof(req)) {
--			dprintf(debug_fd, "invalid request %d\n", n);
-+			fprintf(debug_f, "invalid request %d\n", n);
- 			return;
- 		}
-=20
-@@ -47,7 +48,7 @@ static void loop(void)
-=20
- 		n =3D write(1, &reply, sizeof(reply));
- 		if (n !=3D sizeof(reply)) {
--			dprintf(debug_fd, "reply failed %d\n", n);
-+			fprintf(debug_f, "reply failed %d\n", n);
- 			return;
- 		}
- 	}
-@@ -55,9 +56,10 @@ static void loop(void)
-=20
- int main(void)
- {
--	debug_fd =3D open("/dev/kmsg", 00000002);
--	dprintf(debug_fd, "Started bpfilter\n");
-+	debug_f =3D fopen("/dev/kmsg", "w");
-+	setvbuf(debug_f, 0, _IOLBF, 0);
-+	fprintf(debug_f, "Started bpfilter\n");
- 	loop();
--	close(debug_fd);
-+	fclose(debug_f);
- 	return 0;
- }
---=20
-2.24.1
-
+On Thu, Mar 12, 2020 at 06:46:06PM +0000, Quentin Monnet wrote:
+> The first patch of this series improves user experience by allowing to pass
+> all kinds of handles for programs and maps (id, tag, name, pinned path)
+> instead of simply ids when pinning them with "bpftool (prog|map) pin".
+> 
+> The second patch improves or fix bash completion, including for object
+> pinning.
+> 
+> v2: Restore close() on file descriptor after pinning the object.
+Acked-by: Martin KaFai Lau <kafai@fb.com>
