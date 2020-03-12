@@ -2,99 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB6641839E3
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 20:54:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 579D81839ED
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 20:56:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726803AbgCLTyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 15:54:17 -0400
-Received: from smtprelay0009.hostedemail.com ([216.40.44.9]:42674 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725268AbgCLTyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 15:54:16 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay08.hostedemail.com (Postfix) with ESMTP id EB034182CED5B;
-        Thu, 12 Mar 2020 19:54:15 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:967:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2525:2540:2553:2560:2563:2682:2685:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3872:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:5007:6117:7522:7903:7904:8784:9025:10004:10400:10848:10967:11026:11232:11473:11658:11914:12043:12297:12438:12555:12679:12681:12740:12760:12895:12986:13069:13161:13229:13311:13357:13439:13845:14181:14659:14721:21080:21451:21627:21740:21811:30046:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: baby05_7c5504a7ced51
-X-Filterd-Recvd-Size: 2717
-Received: from XPS-9350.home (unknown [47.151.143.254])
-        (Authenticated sender: joe@perches.com)
-        by omf18.hostedemail.com (Postfix) with ESMTPA;
-        Thu, 12 Mar 2020 19:54:14 +0000 (UTC)
-Message-ID: <62ed1e9972f5d7d8a203e9295c388a70e6e9e0c2.camel@perches.com>
-Subject: Re: [PATCH -next 001/491] MELLANOX ETHERNET INNOVA DRIVERS: Use
- fallthrough;
-From:   Joe Perches <joe@perches.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>, borisp@mellanox.com,
-        saeedm@mellanox.com, leon@kernel.org, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Thu, 12 Mar 2020 12:52:30 -0700
-In-Reply-To: <20200312124504.7ee481a9@kicinski-fedora-PC1C0HJN>
-References: <cover.1583896344.git.joe@perches.com>
-         <605f5d4954fcb254fe6fc5c22dc707f29b3b7405.1583896347.git.joe@perches.com>
-         <20200311.232302.1442236068172575398.davem@davemloft.net>
-         <cf74e8fdd3ee99aec86cec4abfdb1ce84b7fd90a.camel@perches.com>
-         <20200312124504.7ee481a9@kicinski-fedora-PC1C0HJN>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
+        id S1726788AbgCLT4W convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 12 Mar 2020 15:56:22 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:48065 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726558AbgCLT4W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 15:56:22 -0400
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-205-VBfo_sYGNJaTpY-o8thzFg-1; Thu, 12 Mar 2020 15:56:17 -0400
+X-MC-Unique: VBfo_sYGNJaTpY-o8thzFg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3CB64DB62;
+        Thu, 12 Mar 2020 19:56:15 +0000 (UTC)
+Received: from krava.redhat.com (ovpn-204-40.brq.redhat.com [10.40.204.40])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 32AA05D9C5;
+        Thu, 12 Mar 2020 19:56:10 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Andrii Nakryiko <andriin@fb.com>, Yonghong Song <yhs@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Song Liu <song@kernel.org>
+Subject: [PATCHv5 00/15] bpf: Add trampoline and dispatcher to /proc/kallsyms
+Date:   Thu, 12 Mar 2020 20:55:55 +0100
+Message-Id: <20200312195610.346362-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-03-12 at 12:45 -0700, Jakub Kicinski wrote:
-> On Wed, 11 Mar 2020 23:26:59 -0700 Joe Perches wrote:
-> > On Wed, 2020-03-11 at 23:23 -0700, David Miller wrote:
-> > > Joe, please use Subject line subsystem prefixes consistent with what would
-> > > be used for other changes to these drivers.  
-> > 
-> > Not easy to do for scripted patches.
-> > There's no mechanism that scriptable.
-> 
-> I have this to show me the top 3 prefixes used for files currently
-> modified in my tree:
-> 
-> tgs() {
->     local fs
-> 
->     fs=$(git status -s | sed -n 's/ M //p')
-> 
->     git log --oneline --no-merges -- $fs | \
-> 	sed -e's/[^ ]* \(.*\):[^:]*/\1/' | \
-> 	sort | uniq -c | sort -rn | head -3
-> }
-> 
-> You could probably massage it to just give you to top one and feed 
-> that into git commit template?
+hi,
+this patchset adds trampoline and dispatcher objects
+to be visible in /proc/kallsyms. The last patch also
+adds sorting for all bpf objects in /proc/kallsyms.
 
-I had already tried that via:
+  $ sudo cat /proc/kallsyms | tail -20
+  ...
+  ffffffffa050f000 t bpf_prog_5a2b06eab81b8f51    [bpf]
+  ffffffffa0511000 t bpf_prog_6deef7357e7b4530    [bpf]
+  ffffffffa0542000 t bpf_trampoline_13832 [bpf]
+  ffffffffa0548000 t bpf_prog_96f1b5bf4e4cc6dc_mutex_lock [bpf]
+  ffffffffa0572000 t bpf_prog_d1c63e29ad82c4ab_bpf_prog1  [bpf]
+  ffffffffa0585000 t bpf_prog_e314084d332a5338__dissect   [bpf]
+  ffffffffa0587000 t bpf_prog_59785a79eac7e5d2_mutex_unlock       [bpf]
+  ffffffffa0589000 t bpf_prog_d0db6e0cac050163_mutex_lock [bpf]
+  ffffffffa058d000 t bpf_prog_d8f047721e4d8321_bpf_prog2  [bpf]
+  ffffffffa05df000 t bpf_trampoline_25637 [bpf]
+  ffffffffa05e3000 t bpf_prog_d8f047721e4d8321_bpf_prog2  [bpf]
+  ffffffffa05e5000 t bpf_prog_3b185187f1855c4c    [bpf]
+  ffffffffa05e7000 t bpf_prog_d8f047721e4d8321_bpf_prog2  [bpf]
+  ffffffffa05eb000 t bpf_prog_93cebb259dd5c4b2_do_sys_open        [bpf]
+  ffffffffa0677000 t bpf_dispatcher_xdp   [bpf]
 
-$ cat get_patch_subject_prefix.bash 
-#!/bin/bash
-git log --format="%s" --no-merges -200 --since=2-years-ago $@ | \
-  cut -f1 -d":" | \
-  sort  | uniq -c | sort -rn | head -1 | \
-  sed 's/^[[:space:]]*[[:digit:]]*[[:space:]]*//'
-$ 
+v5 changes:
+  - keeping just 1 bpf_tree for all the objects and adding flag
+    to recognize bpf_objects when searching for exception tables [Alexei]
+  - no need for is_bpf_image_address call in kernel_text_address [Alexei]
+  - removed the bpf_image tree, because it's no longer needed
 
-It doesn't work very well for many of the subsystems.
+v4 changes:
+  - add trampoline and dispatcher to kallsyms once the it's allocated [Alexei]
+  - omit the symbols sorting for kallsyms [Alexei]
+  - small title change in one patch [Song]
+  - some function renames:
+     bpf_get_prog_name to bpf_prog_ksym_set_name
+     bpf_get_prog_addr_region to bpf_prog_ksym_set_addr
+  - added acks to changelogs
+  - I checked and there'll be conflict on perftool side with
+    upcoming changes from Adrian Hunter (text poke events),
+    so I think it's better if Arnaldo takes the perf changes
+    via perf tree and we will solve all conflicts there
 
-For instance, this script produces things like:
+v3 changes:
+  - use container_of directly in bpf_get_ksym_start  [Daniel]
+  - add more changelog explanations for ksym addresses [Daniel]
 
-ARM/ZYNQ ARCHITECTURE: treewide
-FCOE SUBSYSTEM (libfc, libfcoe, fcoe): scsi
-WOLFSON MICROELECTRONICS DRIVERS: ASoC
+v2 changes:
+  - omit extra condition in __bpf_ksym_add for sorting code (Andrii)
+  - rename bpf_kallsyms_tree_ops to bpf_ksym_tree (Andrii)
+  - expose only executable code in kallsyms (Andrii)
+  - use full trampoline key as its kallsyms id (Andrii)
+  - explained the BPF_TRAMP_REPLACE case (Andrii)
+  - small format changes in bpf_trampoline_link_prog/bpf_trampoline_unlink_prog (Andrii)
+  - propagate error value in bpf_dispatcher_update and update kallsym if it's successful (Andrii)
+  - get rid of __always_inline for bpf_ksym_tree callbacks (Andrii)
+  - added KSYMBOL notification for bpf_image add/removal
+  - added perf tools changes to properly display trampoline/dispatcher
 
-There isn't a great single mechanism for this.
 
-At various times, I have proposed adding a grammar for
-patch subject titles to MAINTAINERS.
+For perf tool to properly display trampoline/dispatcher you need
+also Arnaldo's perf/urgent branch changes. I merged everything
+into following branch:
 
-Like:
-https://lore.kernel.org/lkml/1289919077.28741.50.camel@Joe-Laptop/
+  git://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/kallsyms
 
+thanks,
+jirka
+
+
+---
+Björn Töpel (1):
+      bpf: Add bpf_trampoline_ name prefix for DECLARE_BPF_DISPATCHER
+
+Jiri Olsa (14):
+      x86/mm: Rename is_kernel_text to __is_kernel_text
+      bpf: Add struct bpf_ksym
+      bpf: Add name to struct bpf_ksym
+      bpf: Move lnode list node to struct bpf_ksym
+      bpf: Move ksym_tnode to bpf_ksym
+      bpf: Add bpf_ksym_find function
+      bpf: Add prog flag to struct bpf_ksym object
+      bpf: Add bpf_ksym_add/del functions
+      bpf: Add trampolines to kallsyms
+      bpf: Add dispatchers to kallsyms
+      bpf: Remove bpf_image tree
+      perf tools: Synthesize bpf_trampoline/dispatcher ksymbol event
+      perf tools: Set ksymbol dso as loaded on arrival
+      perf annotate: Add base support for bpf_image
+
+ arch/x86/mm/init_32.c       |  14 +++++++++-----
+ include/linux/bpf.h         |  65 ++++++++++++++++++++++++++++++++++++++++-------------------------
+ include/linux/filter.h      |  15 ++++-----------
+ kernel/bpf/core.c           | 120 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--------------------------------------------------------
+ kernel/bpf/dispatcher.c     |   5 +++--
+ kernel/bpf/trampoline.c     |  85 +++++++++++++++++++++++++------------------------------------------------------------
+ kernel/events/core.c        |   9 ++++-----
+ kernel/extable.c            |   2 --
+ net/core/filter.c           |   5 ++---
+ tools/perf/util/annotate.c  |  20 ++++++++++++++++++++
+ tools/perf/util/bpf-event.c |  92 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ tools/perf/util/dso.c       |   1 +
+ tools/perf/util/dso.h       |   1 +
+ tools/perf/util/machine.c   |  12 ++++++++++++
+ tools/perf/util/symbol.c    |   1 +
+ 15 files changed, 278 insertions(+), 169 deletions(-)
 
