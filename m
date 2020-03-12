@@ -2,150 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B57CF18342B
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 16:12:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 078D2183431
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 16:13:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727775AbgCLPMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 11:12:16 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:59710 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727505AbgCLPMP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 11:12:15 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from tariqt@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 12 Mar 2020 17:12:13 +0200
-Received: from dev-l-vrt-207-005.mtl.labs.mlnx (dev-l-vrt-207-005.mtl.labs.mlnx [10.134.207.5])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02CFCDWt006145;
-        Thu, 12 Mar 2020 17:12:13 +0200
-From:   Tariq Toukan <tariqt@mellanox.com>
-To:     "John W. Linville" <linville@tuxdriver.com>
-Cc:     netdev@vger.kernel.org, Moshe Shemesh <moshe@mellanox.com>,
-        Aya Levin <ayal@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH ethtool] ethtool: Add support for Low Latency Reed Solomon
-Date:   Thu, 12 Mar 2020 17:12:03 +0200
-Message-Id: <1584025923-5385-1-git-send-email-tariqt@mellanox.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1727817AbgCLPNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 11:13:46 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:41623 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727317AbgCLPNq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 11:13:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584026025;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=W5FqBwMSbeRe4p3igBDvoZujQRiWRTKdR1MJR648s/Q=;
+        b=bLReC9trochUyKJ882S15sVEvbDZiWJMup0Yk24u1fpyE/Vy19HVTA5aPG0dLKi+mbIOdl
+        nvU9ZGV1Bd3UgE23rQIWWCsrLnuMPt0R39uFeFmUUGNiNjakSuCk7h1PzNpRkmHQ7Wqdqj
+        G0qbTK+Fk4CxW1xNvqy1H+MKVIc0D98=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-374-zdb5uh-AP6KI8qcdAyM5dA-1; Thu, 12 Mar 2020 11:13:43 -0400
+X-MC-Unique: zdb5uh-AP6KI8qcdAyM5dA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 61462189D6C0;
+        Thu, 12 Mar 2020 15:13:42 +0000 (UTC)
+Received: from localhost.localdomain.com (ovpn-117-153.ams2.redhat.com [10.36.117.153])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4F30E19C6A;
+        Thu, 12 Mar 2020 15:13:41 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 0/2] mptcp: simplify mptcp_accept()
+Date:   Thu, 12 Mar 2020 16:13:20 +0100
+Message-Id: <cover.1584006115.git.pabeni@redhat.com>
+MIME-Version: 1.0
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aya Levin <ayal@mellanox.com>
+Currently we allocate the MPTCP master socket at accept time.
 
-Introduce a new FEC mode LL-RS: Low Latency Reed Solomon, update print
-and initialization functions accordingly. In addition, update related
-man page.
+The above makes mptcp_accept() quite complex, and requires checks is seve=
+ral
+places for NULL MPTCP master socket.
 
-Signed-off-by: Aya Levin <ayal@mellanox.com>
-Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
----
- ethtool-copy.h |  3 +++
- ethtool.8.in   |  5 +++--
- ethtool.c      | 12 +++++++++++-
- 3 files changed, 17 insertions(+), 3 deletions(-)
+These series simplify the MPTCP accept implementation, moving the master =
+socket
+allocation at syn-ack time, so that we drop unneeded checks with the foll=
+ow-up
+patch.
 
-diff --git a/ethtool-copy.h b/ethtool-copy.h
-index 9afd2e6c5eea..a5482a91b429 100644
---- a/ethtool-copy.h
-+++ b/ethtool-copy.h
-@@ -1319,6 +1319,7 @@ enum ethtool_fec_config_bits {
- 	ETHTOOL_FEC_OFF_BIT,
- 	ETHTOOL_FEC_RS_BIT,
- 	ETHTOOL_FEC_BASER_BIT,
-+	ETHTOOL_FEC_LLRS_BIT,
- };
- 
- #define ETHTOOL_FEC_NONE		(1 << ETHTOOL_FEC_NONE_BIT)
-@@ -1326,6 +1327,7 @@ enum ethtool_fec_config_bits {
- #define ETHTOOL_FEC_OFF			(1 << ETHTOOL_FEC_OFF_BIT)
- #define ETHTOOL_FEC_RS			(1 << ETHTOOL_FEC_RS_BIT)
- #define ETHTOOL_FEC_BASER		(1 << ETHTOOL_FEC_BASER_BIT)
-+#define ETHTOOL_FEC_LLRS		(1 << ETHTOOL_FEC_LLRS_BIT)
- 
- /* CMDs currently supported */
- #define ETHTOOL_GSET		0x00000001 /* DEPRECATED, Get settings.
-@@ -1505,6 +1507,7 @@ enum ethtool_link_mode_bit_indices {
- 	ETHTOOL_LINK_MODE_200000baseCR4_Full_BIT	 = 66,
- 	ETHTOOL_LINK_MODE_100baseT1_Full_BIT		 = 67,
- 	ETHTOOL_LINK_MODE_1000baseT1_Full_BIT		 = 68,
-+	ETHTOOL_LINK_MODE_FEC_LLRS_BIT                   = 74,
- 
- 	/* must be last entry */
- 	__ETHTOOL_LINK_MODE_MASK_NBITS
-diff --git a/ethtool.8.in b/ethtool.8.in
-index 94364c626330..5d16aa27dab1 100644
---- a/ethtool.8.in
-+++ b/ethtool.8.in
-@@ -404,7 +404,7 @@ ethtool \- query or control network driver and hardware settings
- .B ethtool \-\-set\-fec
- .I devname
- .B encoding
--.BR auto | off | rs | baser \ [...]
-+.BR auto | off | rs | baser | ll-rs \ [...]
- .HP
- .B ethtool \-Q|\-\-per\-queue
- .I devname
-@@ -1204,7 +1204,7 @@ current FEC mode, the driver or firmware must take the link down
- administratively and report the problem in the system logs for users to correct.
- .RS 4
- .TP
--.BR encoding\ auto | off | rs | baser \ [...]
-+.BR encoding\ auto | off | rs | baser | ll-rs \ [...]
- 
- Sets the FEC encoding for the device.  Combinations of options are specified as
- e.g.
-@@ -1217,6 +1217,7 @@ auto	Use the driver's default encoding
- off	Turn off FEC
- RS	Force RS-FEC encoding
- BaseR	Force BaseR encoding
-+LL-RS	Force LL-RS-FEC encoding
- .TE
- .RE
- .TP
-diff --git a/ethtool.c b/ethtool.c
-index acf183dc5586..7110b269f306 100644
---- a/ethtool.c
-+++ b/ethtool.c
-@@ -562,6 +562,7 @@ static void init_global_link_mode_masks(void)
- 		ETHTOOL_LINK_MODE_FEC_NONE_BIT,
- 		ETHTOOL_LINK_MODE_FEC_RS_BIT,
- 		ETHTOOL_LINK_MODE_FEC_BASER_BIT,
-+		ETHTOOL_LINK_MODE_FEC_LLRS_BIT,
- 	};
- 	unsigned int i;
- 
-@@ -814,6 +815,12 @@ static void dump_link_caps(const char *prefix, const char *an_prefix,
- 			fprintf(stdout, " RS");
- 			fecreported = 1;
- 		}
-+		if (ethtool_link_mode_test_bit(ETHTOOL_LINK_MODE_FEC_LLRS_BIT,
-+					       mask)) {
-+			fprintf(stdout, " LL-RS");
-+			fecreported = 1;
-+		}
-+
- 		if (!fecreported)
- 			fprintf(stdout, " Not reported");
- 		fprintf(stdout, "\n");
-@@ -1696,6 +1703,8 @@ static void dump_fec(u32 fec)
- 		fprintf(stdout, " BaseR");
- 	if (fec & ETHTOOL_FEC_RS)
- 		fprintf(stdout, " RS");
-+	if (fec & ETHTOOL_FEC_LLRS)
-+		fprintf(stdout, " LL-RS");
- }
- 
- #define N_SOTS 7
-@@ -5209,7 +5218,8 @@ static int fecmode_str_to_type(const char *str)
- 		return ETHTOOL_FEC_RS;
- 	if (!strcasecmp(str, "baser"))
- 		return ETHTOOL_FEC_BASER;
--
-+	if (!strcasecmp(str, "ll-rs"))
-+		return ETHTOOL_FEC_LLRS;
- 	return 0;
- }
- 
--- 
-1.8.3.1
+Note: patch 2/2 will conflict with net commit 2398e3991bda ("mptcp: alway=
+s=20
+include dack if possible."). If the following will help, I can send a reb=
+ased
+version of the series after that net is merged back into net-next.
+
+Paolo Abeni (2):
+  mptcp: create msk early
+  mptcp: drop unneeded checks
+
+ net/mptcp/options.c  |  2 +-
+ net/mptcp/protocol.c | 83 ++++++++++++++++++++++++--------------------
+ net/mptcp/protocol.h |  4 +--
+ net/mptcp/subflow.c  | 50 ++++++++++++++------------
+ net/mptcp/token.c    | 31 ++---------------
+ 5 files changed, 78 insertions(+), 92 deletions(-)
+
+--=20
+2.21.1
 
