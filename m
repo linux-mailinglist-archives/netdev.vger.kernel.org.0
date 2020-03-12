@@ -2,167 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D477E182679
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 02:07:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D81DE1826AA
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 02:34:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387575AbgCLBG7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 21:06:59 -0400
-Received: from mail-qt1-f172.google.com ([209.85.160.172]:40244 "EHLO
-        mail-qt1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387480AbgCLBG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 21:06:59 -0400
-Received: by mail-qt1-f172.google.com with SMTP id n5so3104923qtv.7
-        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 18:06:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Ev8lm5ygXnR686vqTntiRRz9gKv6J5FR+M1iqWBA41M=;
-        b=hOQ0R8TKnuQa10mzEhoYmz33kSggAyFzn9vObHf0QsX/RKuGyrYq7gUUnf0m2X+nar
-         nts+vpKqg1zhpxC6NdVH9ynAMOfxSYv9vj+g2yiPUh73cIhk9YgPTi+Q9pwIJnTFqtyW
-         Qbr2tbKh+ZEaNhnbjd9cpcrzID7Tzwr+j9qEZnyWmwjffiXdwSW93JkKgu51iuYkX4P0
-         PMmd1HugLjTaoAVaE+lrCqKhOYas/GWo/Yqdw1P0tMcuLZV0mRXbwLfWJOMd7CIknn+H
-         NMyc0a+0t5bw8d6lx17dos/JZY3EXEa9PHQVZwCy+n9P7chsoig8zgi3I5Xl9tZ7xCdh
-         O44Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Ev8lm5ygXnR686vqTntiRRz9gKv6J5FR+M1iqWBA41M=;
-        b=fobimLm64v81tIR2vfdGzwtFRMkuaO4dqm5R4fpT3o1ZxD6faT5PW/2sAdORaytmkc
-         pby5jNhiECaVWDqRCeH7n89yiBtnXCpx/N38vaJcdkiMSZwEOK1BFlYjeopD+cjineAm
-         wJnTRMY7f1bPPjyqBzTXPYxDP+m0TLWnk/rWzL9FXv1G6zgTOIA9XDE2g251njicnYqy
-         yXYZ3TxgWcbBC/hKVRl9UmQKjzMZB6OvRsPMKDCYPaUS+tmmqIj70Wx1ZSISAKW+Z4/X
-         oKC89CyI9r4zylX54z9clFU1p4qqPTcbUIGSoBFiUXw7qhqNxuZW+K3KIsPwCRh8j5cC
-         vV+Q==
-X-Gm-Message-State: ANhLgQ1Rmabt41JsR5vB8Ob+G9z6ChtCk2CU9UncqKfDtA5gqDFhaNE1
-        sV/KRVxGchWvZYRErKFu35hSdDCU
-X-Google-Smtp-Source: ADFU+vsmHuGEyYIxydAUY1+x7a7EfeC6LkpDXnNkuRG+jTEW47snAYrpyfCQw9eQs/cvvHY3r9qWAg==
-X-Received: by 2002:aed:2266:: with SMTP id o35mr5223491qtc.392.1583975217061;
-        Wed, 11 Mar 2020 18:06:57 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:5964:b1d3:d29b:6c68? ([2601:282:803:7700:5964:b1d3:d29b:6c68])
-        by smtp.googlemail.com with ESMTPSA id o7sm8540961qtg.63.2020.03.11.18.06.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Mar 2020 18:06:56 -0700 (PDT)
-Subject: Re: VRF Issue Since kernel 5
-To:     Maximilian Bosch <maximilian@mbosch.me>, netdev@vger.kernel.org
-References: <CWLP265MB1554308A1373D9ECE68CB854FDB70@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
- <9E920DE7-9CC9-493C-A1D2-957FE1AED897@online.net>
- <CWLP265MB1554B902B7F3B43E6E75FD0DFDB70@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
- <7CAF2F23-5D88-4BE7-B703-06B71D1EDD11@online.net>
- <db3f6cd0-aa28-0883-715c-3e1eaeb7fd1e@gmail.com>
- <CWLP265MB1554C88316ACF2BDD4692ECAFDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
- <CWLP265MB15544E2F2303FA2D0F76B7F5FDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
- <CWLP265MB1554604C9DB9B28D245E47A2FDB10@CWLP265MB1554.GBRP265.PROD.OUTLOOK.COM>
- <ef7ca3ad-d85c-01aa-42b6-b08db69399e4@vyatta.att-mail.com>
- <20200310204721.7jo23zgb7pjf5j33@topsnens>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2583bdb7-f9ea-3b7b-1c09-a273d3229b45@gmail.com>
-Date:   Wed, 11 Mar 2020 19:06:54 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200310204721.7jo23zgb7pjf5j33@topsnens>
-Content-Type: text/plain; charset=utf-8
+        id S2387575AbgCLBZC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 21:25:02 -0400
+Received: from mail-eopbgr40042.outbound.protection.outlook.com ([40.107.4.42]:56033
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2387480AbgCLBZB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 11 Mar 2020 21:25:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=V9M8LPT607URRN11kRGEUsve9WFY8n2VN4juGywlDxl+oK7YlmfWMpu7W361FbkDk7EMhGVxLQEs5txDkKDaIdmDn6Mqet6PhPhWJ7mPcwOWS7wtb3sO89qszHiOU8OmaisGlL6fptwC6jON7e92qBVAu9qfmzbq876OrXzFOVhGkPHkBSPsLTlItIqA4NovzTrnBp2JZWsUtrLu4Y46XaZXR0XVg2wWgb75TKOJKMjos2eIz+u6DBqJinar7flt9Th02oi4n4eiUIIuwcKstUq3bBKKatst6+tM4lQEJv8rEP69KQOSl5kJYmhKwGy78M0X5st1kJJsVrasC6MNfQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KEGdhNmSga+6lR7FVE3QIOYmc0QQSGj+LlUQLgJc1ME=;
+ b=UcKNBpCEEfeWffbntMuAZtu0c4g/Gv9v7rDCpiaFxBbmtTZJqEBDG8hftRyF6fakAvWu6ZCgmTQFa8XaxsGC6PgyA3aP8UrwjIVAHegI/u99qblDkaAL5D8/ZpcvIv1NsYgsAJJ4lL2U052KE5dPqCyLvu9U30IcQpPCNuesIM6nEj4pFfM4fJhaxF/G1HEyXYpjSfRqVTsC85p9TwFRue+VNy+Gexu5KwHcCLHRyByJvbZ9EVC66Bl91J0BifjXWVfHuditKLxy8tAs7DMvZIAppZvuM12fyjLOv9sW4Q9OQGYhyMJb8/++QU8h00U4cOU8GZPEhiGG+6AO3hLw/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KEGdhNmSga+6lR7FVE3QIOYmc0QQSGj+LlUQLgJc1ME=;
+ b=bHXQHfrcSksL0C6ATBr8hoVxb0F+4S7v5tyHsP6Lg8MpOWdKvYrLnXWPWxXwea+3zUo2+G9F1T9xvK3sR+A3qEkYeJLYF8N4r8Gfo3IJSPVIREqaQO+zE4KoSG9mW82srsYFyHC8Fj1GybKa9ss+e/onsS0CYsufeYJNmxSDyxQ=
+Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com (52.134.3.146) by
+ VI1PR0402MB2864.eurprd04.prod.outlook.com (10.175.24.17) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2793.17; Thu, 12 Mar 2020 01:24:57 +0000
+Received: from VI1PR0402MB3600.eurprd04.prod.outlook.com
+ ([fe80::c991:848b:cc80:2768]) by VI1PR0402MB3600.eurprd04.prod.outlook.com
+ ([fe80::c991:848b:cc80:2768%7]) with mapi id 15.20.2793.018; Thu, 12 Mar 2020
+ 01:24:57 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>,
+        "sathya.perla@broadcom.com" <sathya.perla@broadcom.com>,
+        "ajit.khaparde@broadcom.com" <ajit.khaparde@broadcom.com>,
+        "sriharsha.basavapatna@broadcom.com" 
+        <sriharsha.basavapatna@broadcom.com>,
+        "somnath.kotur@broadcom.com" <somnath.kotur@broadcom.com>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "yisen.zhuang@huawei.com" <yisen.zhuang@huawei.com>,
+        "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
+        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
+        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
+        "alexander.h.duyck@linux.intel.com" 
+        <alexander.h.duyck@linux.intel.com>
+Subject: RE: [EXT] [PATCH net-next 03/15] net: fec: reject unsupported
+ coalescing params
+Thread-Topic: [EXT] [PATCH net-next 03/15] net: fec: reject unsupported
+ coalescing params
+Thread-Index: AQHV9/UODLqcvbJJh0mrKhiZWtyruqhEKflQ
+Date:   Thu, 12 Mar 2020 01:24:57 +0000
+Message-ID: <VI1PR0402MB3600AE1A8DE69790666F2950FFFD0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+References: <20200311223302.2171564-1-kuba@kernel.org>
+ <20200311223302.2171564-4-kuba@kernel.org>
+In-Reply-To: <20200311223302.2171564-4-kuba@kernel.org>
+Accept-Language: zh-CN, en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=fugang.duan@nxp.com; 
+x-originating-ip: [119.31.174.68]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 54a05340-d767-485c-6ac5-08d7c6242d4d
+x-ms-traffictypediagnostic: VI1PR0402MB2864:|VI1PR0402MB2864:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0402MB286439AD8C19DBB2981F7BFCFFFD0@VI1PR0402MB2864.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:357;
+x-forefront-prvs: 0340850FCD
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(346002)(396003)(136003)(366004)(199004)(110136005)(52536014)(9686003)(186003)(66556008)(5660300002)(64756008)(26005)(7696005)(4326008)(86362001)(76116006)(7416002)(66476007)(66446008)(33656002)(66946007)(316002)(54906003)(2906002)(478600001)(55016002)(71200400001)(8936002)(81156014)(8676002)(6506007)(81166006);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0402MB2864;H:VI1PR0402MB3600.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: bP8JEUsWvn6r7vNlC5hsz6pFuYpYm6vPCWPAeyFT04Ll42JIf6326IgVkjAaUDsfO5BYB6tlOw4wzgArCUWIByHP0Qm+kam0vxVZqqsGRO8cL/6D9L69RDs2ibuJV8Q9HdFqKhYl9o5wFtHXfDTQs1z+KtgHHRWeeobYmZ0OxdFW38nbIoDbh7FVYXtn15Vv2S3/rvl8PKCz+njxAeF6e8EYTpsBPuemYnMb+QVTx2j/t8DXVBlbOLN1mKE01tloDTRXEaRkSFmCheQXb1FY3mtV71UkxnyZWfGNCXniDFlmcWJHbY9QHtfEbfdLYz83Vi6qW+ZBhmfDHEh5dRQsXGT201lMtQ9Grqdy+GK24xgzCDjYJJ68ffKiypuY+zD0rNThm6vQIbkzDD1GAYSh/xpY4DOIWWYwKzzMTK2t2l54gR1Mtcxf6HjuE+8k1YMU
+x-ms-exchange-antispam-messagedata: TDOHdbv8ll/RDRpb1LVyKDRSd1WQoUDjKPPZq/WT+KH3SSwHDEBw6zn3a8UTu9mKX54rKaaTE5cn9Unyt+RR2WZ0FV1Cn4xCRSQ78EdBr1I/JtPOI7yLCt+RCzn9lgU13RdfRdF7B+RH+hw+l3vYUw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54a05340-d767-485c-6ac5-08d7c6242d4d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Mar 2020 01:24:57.6315
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: qnZBO/oQztrWESmPvtzHjMSBeNclnmHw6TO+sSfY0Im64E+alzto+0GXNQMNDj4LeXsbUdFWL6iDERC9mEkd9A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB2864
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/10/20 2:47 PM, Maximilian Bosch wrote:
-> Hi!
-> 
-> I suspect I hit the same issue which is why I decided to respond to this
-> thread (if that's wrong please let me know).
-> 
->> sudo sysctl -a | grep l3mdev
->>
->> If not,
->> sudo sysctl net.ipv4.raw_l3mdev_accept=1
->> sudo sysctl net.ipv4.udp_l3mdev_accept=1
->> sudo sysctl net.ipv4.tcp_l3mdev_accept=1
-> 
-> On my system (NixOS 20.03, Linux 5.5.8) those values are set to `1`, but
-> I experience the same issue.
-> 
->> Since Kernel 5 though I am no longer able to update – but the issue is quite a curious one as some traffic appears to be fine (DNS lookups use VRF correctly) but others don’t (updating/upgrading the packages)
-> 
-> I can reproduce this on 5.4.x and 5.5.x. To be more precise, I suspect
-> that only TCP traffic hangs in the VRF. When I try to `ssh` through the
-> VRF, I get a timeout, but UDP traffic e.g. from WireGuard works just fine.
-> 
-> However, TCP traffic through a VRF works fine as well on 4.x (just tested this on
-> 4.19.108 and 4.14.172).
+From: Jakub Kicinski <kuba@kernel.org> Sent: Thursday, March 12, 2020 6:33 =
+AM
+> Set ethtool_ops->supported_coalesce_params to let the core reject
+> unsupported coalescing parameters.
+>=20
+> This driver did not previously reject unsupported parameters.
+>=20
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-functional test script under tools/testing/selftests/net covers VRF
-tests and it ran clean for 5.4 last time I checked. There were a few
-changes that went into 4.20 or 5.0 that might be tripping up this use
-case, but I need a lot more information.
+Acked-by: Fugang Duan <fugang.duan@nxp.com>
+> ---
+>  drivers/net/ethernet/freescale/fec_main.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>=20
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c
+> b/drivers/net/ethernet/freescale/fec_main.c
+> index af7653e341f2..ce154695f67c 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -2641,6 +2641,8 @@ fec_enet_set_wol(struct net_device *ndev, struct
+> ethtool_wolinfo *wol)  }
+>=20
+>  static const struct ethtool_ops fec_enet_ethtool_ops =3D {
+> +       .supported_coalesce_params =3D ETHTOOL_COALESCE_USECS |
+> +
+> ETHTOOL_COALESCE_MAX_FRAMES,
+>         .get_drvinfo            =3D fec_enet_get_drvinfo,
+>         .get_regs_len           =3D fec_enet_get_regs_len,
+>         .get_regs               =3D fec_enet_get_regs,
+> --
+> 2.24.1
 
-> 
-> I use VRFs to enslave my physical uplink interfaces (enp0s31f6, wlp2s0).
-> My main routing table has a default route via my WireGuard Gateway and I
-> only route my WireGuard uplink through the VRF. With this approach I can
-> make sure that all of my traffic goes through the VPN and only the
-> UDP packets of WireGuard will be routed through the uplink network.
-
-are you saying wireguard worked with VRF in the past but is not now?
-
-
-> 
-> As mentioned above, the WireGuard traffic works perfectly fine, but I
-> can't access `<vpn-uplink>` via SSH:
-> 
-> ```
-> $ ssh root@<vpn-uplink> -vvvv
-> OpenSSH_8.2p1, OpenSSL 1.1.1d  10 Sep 2019
-> debug1: Reading configuration data /home/ma27/.ssh/config
-> debug1: /home/ma27/.ssh/config line 5: Applying options for *
-> debug1: Reading configuration data /etc/ssh/ssh_config
-> debug1: /etc/ssh/ssh_config line 5: Applying options for *
-> debug2: resolve_canonicalize: hostname <vpn-uplink> is address
-> debug1: Control socket "/home/ma27/.ssh/master-root@<vpn-uplink>:22" does not exist
-> debug2: ssh_connect_direct
-> debug1: Connecting to <vpn-uplink> [<vpn-uplink>] port 22.
-> # Hangs here for a while
-> ```
-> 
-> I get the following output when debugging this with `tcpdump`:
-> 
-> ```
-> $ tcpdump -ni uplink tcp
-> 20:06:40.409006 IP 10.214.40.237.58928 > <vpn-uplink>.22: Flags [S], seq 4123706560, win 65495, options [mss 65495,sackOK,TS val 3798273519 ecr 0,nop,wscale 7], length 0
-> 20:06:40.439699 IP <vpn-uplink>.22 > 10.214.40.237.58928: Flags [S.], seq 3289740891, ack 4123706561, win 65160, options [mss 1460,sackOK,TS val 1100235016 ecr 3798273519,nop,wscale 7], length 0
-> 20:06:40.439751 IP 10.214.40.237.58928 > <vpn-uplink>.22: Flags [R], seq 4123706561, win 0, length 0
-
-that suggests not finding a matching socket, so sending a reset.
-
-> 20:06:41.451871 IP 10.214.40.237.58928 > <vpn-uplink>.22: Flags [S], seq 4123706560, win 65495, options [mss 65495,sackOK,TS val 3798274562 ecr 0,nop,wscale 7], length 0
-> 20:06:41.484498 IP <vpn-uplink>.22 > 10.214.40.237.58928: Flags [S.], seq 3306036877, ack 4123706561, win 65160, options [mss 1460,sackOK,TS val 1100236059 ecr 3798274562,nop,wscale 7], length 0
-> 20:06:41.484528 IP 10.214.40.237.58928 > <vpn-uplink>.22: Flags [R], seq 4123706561, win 0, length 0
-> ```
-> 
-> AFAICS every SYN will be terminated with an RST which is the reason why
-> the connection hangs.
-> 
-> I can work around the issue by using `ip vrf exec`. However I get the
-> following error (unless I run `ulimit -l 2048`):
-> 
-> ```
-> Failed to load BPF prog: 'Operation not permitted'
-> ```
-
-'ip vrf exec' loads a bpf program and that requires locked memory, so
-yes, you need to increase it.
-
-Let's start with lookups:
-
-perf record -e fib:* -a -g
-<run test that fails, ctrl-c>
-perf script
-
-That shows the lookups (inputs, table id, result) and context (stack
-trace). That might give some context.
