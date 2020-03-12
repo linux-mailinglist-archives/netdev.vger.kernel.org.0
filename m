@@ -2,82 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 555D41832B0
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 15:19:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62FA21832C7
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 15:22:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727437AbgCLOTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 10:19:00 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:42520 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727123AbgCLOTA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 10:19:00 -0400
-Received: by mail-wr1-f68.google.com with SMTP id v11so7697702wrm.9
-        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 07:18:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aWarP+EBKLN3gxEo6HVS4CLZ1VqjakO82JFsSBfucsw=;
-        b=WhuD3Dl0PsfqPRphDIrF4efaakThsk8kod+ouXlriMsTvu7NCqg48RQ8NbGRGwmvdc
-         mGyPd/PlqI8iyaFaTCb+nOJNf8eWwGc8dGHP4do4kxf49VY6lOU6DBFeewBIxaWkW0t8
-         bzejvsSuEUFn0kLjZnyVmJ4VTx5lu3K1iVe8bV7zKZz69Yd3OsFHiNFPy1SS3bUPF2XZ
-         TrcgW3TseED09lxJop2GZT+HxczkkJiM9QQpFVikqVkQxYEphmpn859+k9WeFHk4Eum/
-         4eL0jSLoH/gGcbOIsVf9t/GGfG60dwpA/LoaMuLa+kO3USd7jTGjUDmc13cBgqetMMKB
-         z8eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=aWarP+EBKLN3gxEo6HVS4CLZ1VqjakO82JFsSBfucsw=;
-        b=Dvua2XwecyNDrFyl9bJ6gXCtfvpXnzGT5QtRVnxFe3spVdfdZ9xke1Jx93ToFCArna
-         IvsdIR/rNCaREfzK/W0CV0Xu+aRm5Y9bp+S2RUd09ohlCmBHMuVbOCdfwcaw46H+Du2J
-         mhSP2rU8sTLtnYylQuEWlekngDP+pObJYlNIr70RLb6ynFv6Gfu9FcfKYHNsHlySyc9+
-         8zwg08mU8X4EWc5XbQ3S31MjEPf3z4uL3A8aII9kBGiilaD7SOVIfgYq+ZUnddgiNb93
-         +N7vuxLvdlk9nQYJxEXqBVr/0zwC1DXE8FieJ0F3LjZAJGiLc7TkLyofv3xLnNwNozST
-         e66Q==
-X-Gm-Message-State: ANhLgQ3IL5QwMait1PQm/nHumDybj3Smf0HgxasXan4JWOScXgya/yzv
-        3a/Xc6KEMvgp+rdCLAVJ6FjvhAbCr8I=
-X-Google-Smtp-Source: ADFU+vsw56RVGklYCvDBb6zkLZVZ1nz8WlqMvoI5GiIPVmCjnNErT9D8BoK1xGHTruDJBE158HvEOg==
-X-Received: by 2002:adf:a2d9:: with SMTP id t25mr11037399wra.84.1584022738730;
-        Thu, 12 Mar 2020 07:18:58 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:7198:d5d7:af4f:fa54? ([2a01:e0a:410:bb00:7198:d5d7:af4f:fa54])
-        by smtp.gmail.com with ESMTPSA id i6sm43656209wra.42.2020.03.12.07.18.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Mar 2020 07:18:58 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH] vti6: Fix memory leak of skb if input policy check fails
-To:     Torsten Hilbrich <torsten.hilbrich@secunet.com>,
-        netdev@vger.kernel.org
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>
-References: <5fe49744-88ca-a7ac-d71c-223492811545@secunet.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <22c8ef07-70f4-e6a5-3066-357e1e688e72@6wind.com>
-Date:   Thu, 12 Mar 2020 15:18:57 +0100
+        id S1727531AbgCLOWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 10:22:38 -0400
+Received: from mx2.suse.de ([195.135.220.15]:60482 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727320AbgCLOWi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Mar 2020 10:22:38 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id D06EFAE95;
+        Thu, 12 Mar 2020 14:22:35 +0000 (UTC)
+Subject: Re: [PATCH bpf] libbpf: add null pointer check in
+ bpf_object__init_user_btf_maps()
+To:     Quentin Monnet <quentin@isovalent.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Andrii Nakryiko <andriin@fb.com>
+References: <20200312140357.20174-1-quentin@isovalent.com>
+From:   Michal Rostecki <mrostecki@opensuse.org>
+Autocrypt: addr=mrostecki@opensuse.org; keydata=
+ mQINBF4whosBEADQd45MN9lBl17sx48EAAfyrc6sVtmf/qyqsQgpJnuLGQTbSdI2Nckz0w04
+ YbGCGI0giMkBgJTEDB8+Or+DZtaa4MmnqMuivI9wWMJzf3IidAZOe262/blNjsTqITzoCJ48
+ MLufgrv3XkEZPEaeOEEswZ/PaemQIgW3Jn1K6IYfg9mXA1+Sn42Ikj7c41r30pnCTVDlhcyS
+ kMtt5Gs1u9yOkc8LFEo4w3F02SfFJ4t1ar04xY+znRwSDZh4xFVyradaP37mTDL/cAj94jEi
+ 44YzL22x6fAVRwH3wYLw49YnBK3j1uvys+DPqaOFJnQwfH3AA++tmOFYnJkC1s+E4mpcSIsn
+ H/jRznlv7SPttTRfsaJL0Gk9tHaIUI4o1kLkfMOV0QDJ4xBOCeOfjBQwcDAeiVQXtMnx4XkB
+ tmifSwFGlOTsEa0Mti7TlWrAPWBF5xEnG5tCuKaaLnyb4vu+gbV3r0TgI+BNv3ii+2nMFYWd
+ u49pV23pck61oJ43hR1WOZUWIyLvTTQveaYRzbfcG7wbR/C2NIuAtEf8wxBv1aRI/vDCZSjV
+ TK8Zh1pBdk+UsgC310ny4hcVYR1uwapJts2A+Q/rUMlsC6CAJwD916zAIAhaeNLOPYmb46Mw
+ 96AhRclvV5TW929X/vCe1iczDdfSyYkU41RJGTUSBfSQXMVomQARAQABtChNaWNoYWwgUm9z
+ dGVja2kgPG1yb3N0ZWNraUBvcGVuc3VzZS5vcmc+iQJUBBMBCAA+FiEE/xPU917HlqMFVtFM
+ 7/hds1JJaVUFAl4whosCGwMFCQHgwSUFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AACgkQ7/hd
+ s1JJaVWoyRAApCxV1shTrcIwO8ejZwr0NeZ2EBODcbJULgtjZCaCZp8ABzzUAB8uZCmxCDdL
+ PEDlZgWW8Pm0SkS5jyJZ4AI1OQNtX6m/gy7fFCpr1MIZoHsVuzYHswxzZhcDGbTXrkcmLygD
+ dTikyLEKAeCGMU6pbGrHfhzIRGasII1PqSO43XZYEKGPC3YgEIyx/tuL8bX3z/TxPp52oOjp
+ Q3bmJEIWEzz5v/46WE4Dj3s0aKTDY6zBoYGRehSuqaBRVEIR7Y7HBMtcPwK5S1VflG38B5wh
+ QuwRlz7Uuy48o0vsdnSMjuJoPZ4tmg056d0cmSse2NBfN+FPVrEw1L84jdijCBqLRam6tXuU
+ 4Npszr2Z6/OBu6gkn9FqSNP8nLwnvnEJ5300epRZ4kzJgtUhMz0743fE21bzNxJB4xdMcOjV
+ /yucMfwbgp3dD84A3N8jPaWCsLNuRsxjoAk6OKFz+WtHxT8m8ValYI4sn9PRhzTDTtnGlC/P
+ Sem/CIseMXNYxT6mJsXkjZi757/RM3JabNZ/N0gMiquVYAapxrxv2qiMDPHByZZd+yOsBk4X
+ FgfWwhOwW5g2qxXZ2mtMD4gAcDLj6x4QVf6mf6k4nPWgnOyZG7yrxu96R4jKN+kO6UAQ3RC+
+ FnCxz92QefeV0rYtF+DWy/5GElQowD+wVxZDUJgwki4SjVO5Ag0EXjCGiwEQAMSNQ0O2g4no
+ bi5T/eOhfVN6dzwr5nestMluQy4Xab1D2+vv4WcoIcxxj48pMSicNgbzHtoFKOALQEptuKwE
+ tipiOchCtCi6atpFC0hiy+eogaxC6sysvJ0MwBWk0spWXsPQRxIy/zWQaG0NLRNXOYhupgxZ
+ TN3008FsriFu/V0mQnF58w+Y8ZbpfaFUEJn4KoYtJEsjezYIAdQUDtohSrUzeK7KHGeBuePf
+ XyIsZZKRaMoYbAguE3WDLcqWPBLGH0ra5O+IkqoStc6FpyyvoNLAHTtJNfYfbpXpBjrl/x2n
+ hQqohQrH7+t8lDe4B6EPSHdSV9qY5l0p0y17nXY3ghQs/hqH6aw6MB52KtydKs/3dl9rxW61
+ 6McUUQGy6Z0H2MnV1KqiLvNx5abfOcbUGMZPwHYqPU4zoOQhbWN34q2AuK4lEY5nbmgwI92m
+ PFE5S5A2YPi2pFzVxhWUWFfX1AHWQ2NMudiYljFgCsp9sJLI+UCb8fNyDWD72e5QqKzBSLf/
+ z94NICpqBGX9Z4+uF0dmPZlJTilgFU3jEUuth5NiTm1qQBUqAHUAgZhGIqVWpECHFKaIMUxv
+ Xj6bvOCrCR0PfWxalS3RJT7z4OsETAG7QT4yOlqOhP5uue3I6WnzaQPZU0Gp9+vyQpuCVPdl
+ HbK2kx9hg5imRgmZLOKyjdhbABEBAAGJAjwEGAEIACYWIQT/E9T3XseWowVW0Uzv+F2zUklp
+ VQUCXjCGiwIbDAUJAeDBJQAKCRDv+F2zUklpVaFiEACHVCJJPXenIc5C4zkuu1pn0dmouoZV
+ LWEyk3zjcC7wVJ/RGr4apLKU0hAfp9O12/s4mxa3lzZ9EvaWUY7NwwYx4kCmVcsq2+a6NVNI
+ nkKUqPvj8sXd9dHWk283hDwrQrL7QPysr767TrLcXQ2l8o19q02lN/D7Jte37td8JMrsErEF
+ B0Q31D+HWnn1rFJCeCn5/vwHgDW8wWtYYisv/EmUf7ppP9teiNtrQinyljTUMsb1hiy2HkhL
+ qEOR7Q/NVk1yDC+oyQ08Zvt9LkELo3fPoeXX8RlbCUA36zq+3HsHggI6XJNmYDSS+l7N5r9B
+ GEGFgLvCFJMP6nNX16nkvpYflxIzlmAAWQUR8K/VGvW8YgfRJBVw7+AhCe7mXubIbTa9IrJs
+ QR74gvfGuJWrWq0ZtOzS5cKxos0rF2VON2rig5+5lf9A1UP1ZH0nfVCx5iXuJ1O1ld6tXHpD
+ qRunpTuuKg3wkHCAS4oC/ECFHV8JukpgEuR7CNvBbYyjc7BFImmOe0bGbbntFnU173ehj0A0
+ hjrs3VY5x7TDedJwEr5iMKzvI4NlXNQEjDEltBN88gMvtFo6w8W/bbe6OalIEfs42DS+5KIg
+ X91a5VRZRQo853ef/YjTRCZkGhUJ9A5uCLodR14o+C2Lzc3EmJ89awrqiAirZWPuZHCfud+f
+ ZURUUA==
+Message-ID: <8fbbc494-6df9-bf14-7abc-86548aa49070@opensuse.org>
+Date:   Thu, 12 Mar 2020 15:22:35 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <5fe49744-88ca-a7ac-d71c-223492811545@secunet.com>
+In-Reply-To: <20200312140357.20174-1-quentin@isovalent.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 11/03/2020 à 11:19, Torsten Hilbrich a écrit :
-> The vti6_rcv function performs some tests on the retrieved tunnel
-> including checking the IP protocol, the XFRM input policy, the
-> source and destination address.
+On 3/12/20 3:03 PM, Quentin Monnet wrote:
+> When compiling bpftool with clang 7, after the addition of its recent
+> "bpftool prog profile" feature, Michal reported a segfault. This
+> occurred while the build process was attempting to generate the
+> skeleton needed for the profiling program, with the following command:
 > 
-> In all but one places the skb is released in the error case. When
-> the input policy check fails the network packet is leaked.
+>     ./_bpftool gen skeleton skeleton/profiler.bpf.o > profiler.skel.h
 > 
-> Using the same goto-label discard in this case to fix this problem.
+> Tracing the error showed that bpf_object__init_user_btf_maps() does no
+> verification on obj->btf before passing it to btf__get_nr_types(), where
+> btf is dereferenced. Libbpf considers BTF information should be here
+> because of the presence of a ".maps" section in the object file (hence
+> the check on "obj->efile.btf_maps_shndx < 0" fails and we do not exit
+> from the function early), but it was unable to load BTF info as there is
+> no .BTF section.
 > 
-> Signed-off-by: Torsten Hilbrich <torsten.hilbrich@secunet.com>
-Fixes: ed1efb2aefbb ("ipv6: Add support for IPsec virtual tunnel interfaces")
-Reviewed-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> Add a null pointer check and error out if the pointer is null. The final
+> bpftool executable still fails to build, but at least we have a proper
+> error and no more segfault.
+> 
+> Fixes: abd29c931459 ("libbpf: allow specifying map definitions using BTF")
+> Cc: Andrii Nakryiko <andriin@fb.com>
+> Reported-by: Michal Rostecki <mrostecki@opensuse.org>
+> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+> ---
+>  tools/lib/bpf/libbpf.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 223be01dc466..19c0c40e8a80 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -2140,6 +2140,10 @@ static int bpf_object__init_user_btf_maps(struct bpf_object *obj, bool strict,
+>  		return -EINVAL;
+>  	}
+>  
+> +	if (!obj->btf) {
+> +		pr_warn("failed to retrieve BTF for map");
+> +		return -EINVAL;
+> +	}
+>  	nr_types = btf__get_nr_types(obj->btf);
+>  	for (i = 1; i <= nr_types; i++) {
+>  		t = btf__type_by_id(obj->btf, i);
+> 
+
+Tested-by: Michal Rostecki <mrostecki@opensuse.org>
+
+Thanks!
