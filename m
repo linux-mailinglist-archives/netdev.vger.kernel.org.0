@@ -2,111 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CA01182F77
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 12:43:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81A21182F85
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 12:46:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727082AbgCLLnF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 07:43:05 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:28798 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725268AbgCLLnF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 07:43:05 -0400
-Received: from fcoe-test9.blr.asicdesigners.com (fcoe-test9.blr.asicdesigners.com [10.193.185.176])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 02CBgwmY018472;
-        Thu, 12 Mar 2020 04:42:59 -0700
-From:   Shahjada Abul Husain <shahjada@chelsio.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, nirranjan@chelsio.com, vishal@chelsio.com,
-        dt@chelsio.com, shahjada@chelsio.com
-Subject: [PATCH net-next] cxgb4: update T5/T6 adapter register ranges
-Date:   Thu, 12 Mar 2020 17:12:40 +0530
-Message-Id: <20200312114240.12862-1-shahjada@chelsio.com>
-X-Mailer: git-send-email 2.23.0.256.g4c86140
+        id S1726905AbgCLLqa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 07:46:30 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38326 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726677AbgCLLq3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 07:46:29 -0400
+Received: by mail-wr1-f67.google.com with SMTP id x11so2260962wrv.5
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 04:46:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=inDMtYNsCPgtsoeJuXt25fIlas+Z9MXxfdx1yN6Wg68=;
+        b=cQipXksQQTUGXw9jSh3RQsTUzScRdBgJf3JOC0nmBVxnMThl9G8MB5Ea4iVj2qam7X
+         z0dHRM/c2adwFXW7bpNpuCjbLTVkxJX8y7TJ0atUqRvZdCelweVNJfe06G/3aQ5la991
+         zBY1Cv7okdypjy663mt4fLC4Ya/o3cr8s5vK3UaK9QrsUoKpI8jx8MHbouns+kGZ6CIT
+         SUDxOHMYjJulQwNxdOYbQaYGTSKeClWSiDFpeqQvG9IMH5pgDRyKTHXfSzEqcmZtECwq
+         XhLlhjrKF2KedfTTCFadDf+gK31jJErjaNMwrxXMopazIu5B+lGX1xR/j2g6slUUX8/h
+         RCUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=inDMtYNsCPgtsoeJuXt25fIlas+Z9MXxfdx1yN6Wg68=;
+        b=VKY4decX/v6XFVvkSOqCSqIKptloEgjG6jVzwO9heLPKzHwm7oj3suLOfjyFzyLZI2
+         7TrxzvuWSDrF+DOEmr07EWDtpF0fWrVrWpXw94Msv9UEnxnv1nPGTbnqeQ4DorC4T1RJ
+         YHOv/ybdZzx5Uwt0aV5c+1E0sFIuQeOzPzOkREtXP2wnuEKuDPtHbXyS8suFJIUtuD04
+         tZ0/NqWcUL01B5MpJCSskbWaKFsxwBfL8RYRPPzJNv2cicWNIJaPkQ1iAgv2ouqTb+K/
+         0ZiS6i8CKWeq+oc1UXlEOmk0FnXK07/+PlSWjXrF6juxrJSstd3A0Q3bamS/uCxRmXmD
+         23Rw==
+X-Gm-Message-State: ANhLgQ2T8qBIkmnLOWbfB5tWmt6qa6FTUXjmP5E7aDCOBrdwd94DcFax
+        PwKSdeVPYG7KBzfB2/UTzGEkjw==
+X-Google-Smtp-Source: ADFU+vtPMbwWSzcprz2nw2IMfY/wjhAN16hme2jtbMi+q04V+T3u0M81RM5r9YTmeaBPdBBmqmAlOQ==
+X-Received: by 2002:adf:ecca:: with SMTP id s10mr11019797wro.255.1584013587896;
+        Thu, 12 Mar 2020 04:46:27 -0700 (PDT)
+Received: from [192.168.1.10] ([194.35.118.177])
+        by smtp.gmail.com with ESMTPSA id f15sm12164113wmj.25.2020.03.12.04.46.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Mar 2020 04:46:27 -0700 (PDT)
+Subject: Re: [PATCH v2 bpf-next 1/3] bpftool: only build bpftool-prog-profile
+ if supported by clang
+To:     Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     john.fastabend@gmail.com, kernel-team@fb.com, ast@kernel.org,
+        daniel@iogearbox.net, arnaldo.melo@gmail.com, jolsa@kernel.org
+References: <20200311221844.3089820-1-songliubraving@fb.com>
+ <20200311221844.3089820-2-songliubraving@fb.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <50a4f620-c9ad-d17f-07ee-d7c901cb76ed@isovalent.com>
+Date:   Thu, 12 Mar 2020 11:46:24 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200311221844.3089820-2-songliubraving@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add more T5/T6 registers to be collected in register dump:
+2020-03-11 15:18 UTC-0700 ~ Song Liu <songliubraving@fb.com>
+> bpftoo-prog-profile requires clang to generate BTF for global variables.
 
-1. MPS register range 0x9810 to 0x9864 and 0xd000 to 0xd004.
-2. NCSI register range 0x1a114 to 0x1a130 and 0x1a138 to 0x1a1c4.
+Typo: bpftool (missing "l")
 
-Signed-off-by: Shahjada Abul Husain <shahjada@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 22 ++++++++--------------
- 1 file changed, 8 insertions(+), 14 deletions(-)
+> When compared with older clang, skip this command. This is achieved by
+> adding a new feature, clang-bpf-global-var, to tools/build/feature.
+> 
+> Signed-off-by: Song Liu <songliubraving@fb.com>
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-index 844fdcf55118..df97200c52ee 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-@@ -1379,8 +1379,7 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
- 		0x9608, 0x9638,
- 		0x9640, 0x96f4,
- 		0x9800, 0x9808,
--		0x9820, 0x983c,
--		0x9850, 0x9864,
-+		0x9810, 0x9864,
- 		0x9c00, 0x9c6c,
- 		0x9c80, 0x9cec,
- 		0x9d00, 0x9d6c,
-@@ -1389,7 +1388,7 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
- 		0x9e80, 0x9eec,
- 		0x9f00, 0x9f6c,
- 		0x9f80, 0xa020,
--		0xd004, 0xd004,
-+		0xd000, 0xd004,
- 		0xd010, 0xd03c,
- 		0xdfc0, 0xdfe0,
- 		0xe000, 0x1106c,
-@@ -1430,10 +1429,8 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
- 		0x1a0b0, 0x1a0e4,
- 		0x1a0ec, 0x1a0f8,
- 		0x1a100, 0x1a108,
--		0x1a114, 0x1a120,
--		0x1a128, 0x1a130,
--		0x1a138, 0x1a138,
--		0x1a190, 0x1a1c4,
-+		0x1a114, 0x1a130,
-+		0x1a138, 0x1a1c4,
- 		0x1a1fc, 0x1a1fc,
- 		0x1e008, 0x1e00c,
- 		0x1e040, 0x1e044,
-@@ -2162,8 +2159,7 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
- 		0x9640, 0x9704,
- 		0x9710, 0x971c,
- 		0x9800, 0x9808,
--		0x9820, 0x983c,
--		0x9850, 0x9864,
-+		0x9810, 0x9864,
- 		0x9c00, 0x9c6c,
- 		0x9c80, 0x9cec,
- 		0x9d00, 0x9d6c,
-@@ -2172,7 +2168,7 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
- 		0x9e80, 0x9eec,
- 		0x9f00, 0x9f6c,
- 		0x9f80, 0xa020,
--		0xd004, 0xd03c,
-+		0xd000, 0xd03c,
- 		0xd100, 0xd118,
- 		0xd200, 0xd214,
- 		0xd220, 0xd234,
-@@ -2240,10 +2236,8 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
- 		0x1a0b0, 0x1a0e4,
- 		0x1a0ec, 0x1a0f8,
- 		0x1a100, 0x1a108,
--		0x1a114, 0x1a120,
--		0x1a128, 0x1a130,
--		0x1a138, 0x1a138,
--		0x1a190, 0x1a1c4,
-+		0x1a114, 0x1a130,
-+		0x1a138, 0x1a1c4,
- 		0x1a1fc, 0x1a1fc,
- 		0x1e008, 0x1e00c,
- 		0x1e040, 0x1e044,
--- 
-2.23.0.256.g4c86140
+Works great when clang is either too old or missing, thanks!
 
+> diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+> index 576ddd82bc96..03b1979dfad8 100644
+> --- a/tools/bpf/bpftool/prog.c
+> +++ b/tools/bpf/bpftool/prog.c
+> @@ -1545,6 +1545,8 @@ static int do_loadall(int argc, char **argv)
+>  
+>  static int do_profile(int argc, char **argv)
+>  {
+> +	fprintf(stdout, "bpftool prog profile command is not supported.\n"
+> +		"Please build bpftool with clang >= 10.0.0\n");
+
+Nit: Can we use p_err() instead of fprintf(), and a single-line error
+message please? To remain consistent and work with JSON output.
+
+Thanks,
+Quentin
