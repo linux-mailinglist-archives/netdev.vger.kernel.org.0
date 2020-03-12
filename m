@@ -2,55 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C75EE18297B
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 08:06:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D66A218298E
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 08:12:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388012AbgCLHGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 03:06:00 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:56520 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387959AbgCLHGA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 03:06:00 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C6E2314E2AFDC;
-        Thu, 12 Mar 2020 00:05:59 -0700 (PDT)
-Date:   Thu, 12 Mar 2020 00:05:59 -0700 (PDT)
-Message-Id: <20200312.000559.707225825210372525.davem@davemloft.net>
-To:     elder@linaro.org
-Cc:     robh+dt@kernel.org, mark.rutland@arm.com,
-        bjorn.andersson@linaro.org, agross@kernel.org,
-        linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: soc: qcom: fix IPA binding
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200311214700.700-1-elder@linaro.org>
-References: <20200311214700.700-1-elder@linaro.org>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 12 Mar 2020 00:06:00 -0700 (PDT)
+        id S2388149AbgCLHMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 03:12:21 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:11632 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2388069AbgCLHMT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Mar 2020 03:12:19 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id ED8102E6CF4DC1D5E059;
+        Thu, 12 Mar 2020 15:12:13 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.56) by
+ DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
+ 14.3.487.0; Thu, 12 Mar 2020 15:12:05 +0800
+From:   Huazhong Tan <tanhuazhong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
+        <linuxarm@huawei.com>, <kuba@kernel.org>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net 0/4] net: hns3: fixes for -net
+Date:   Thu, 12 Mar 2020 15:11:02 +0800
+Message-ID: <1583997066-24773-1-git-send-email-tanhuazhong@huawei.com>
+X-Mailer: git-send-email 2.7.4
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.56]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
-Date: Wed, 11 Mar 2020 16:47:00 -0500
+This series includes several bugfixes for the HNS3 ethernet driver.
 
-> The definitions for the "qcom,smem-states" and "qcom,smem-state-names"
-> properties need to list their "$ref" under an "allOf" keyword.
-> 
-> In addition, fix two problems in the example at the end:
->   - Use #include for header files that define needed symbolic values
->   - Terminate the line that includes the "ipa-shared" register space
->     name with a comma rather than a semicolon
-> 
-> Finally, update some white space in the example for better alignment.
-> 
-> Signed-off-by: Alex Elder <elder@linaro.org>
+[patch 1] fixes an "tc qdisc del" failure.
+[patch 2] fixes SW & HW VLAN table not consistent issue.
+[patch 3] fixes a RMW issue related to VLAN filter switch.
+[patch 4] clears port based VLAN when uploading PF.
 
-Applied to net-next, thanks Alex.
+Jian Shen (3):
+  net: hns3: fix VF VLAN table entries inconsistent issue
+  net: hns3: fix RMW issue for VLAN filter switch
+  net: hns3: clear port base VLAN when unload PF
+
+Yonglong Liu (1):
+  net: hns3: fix "tc qdisc del" failed issue
+
+ drivers/net/ethernet/hisilicon/hns3/hclge_mbx.h    |  1 +
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    |  2 +-
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 43 ++++++++++++++++++++--
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_mbx.c |  1 +
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  3 ++
+ 5 files changed, 45 insertions(+), 5 deletions(-)
+
+-- 
+2.7.4
+
