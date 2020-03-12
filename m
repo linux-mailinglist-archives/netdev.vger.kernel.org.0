@@ -2,78 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 870FB18369F
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 17:53:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42C941836F7
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 18:11:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726387AbgCLQxC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 12:53:02 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:33590 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726328AbgCLQxC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 12:53:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584031981;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=SgzrkBKYKxEI91Bv031YqfH0jrAaW8qrFcv77hDNeXI=;
-        b=fBGkE03x1tXgpnFPAWbUKK5T0bfEm7nhU9zn5s7RHj8TlMoH75xfXEFneQZQ9cHZXqjKBw
-        0vQXUCBcUBZHuBl38xooB6x3mTFfEk3gBaJuhW535cMAmQMSnffUNW/FdG+LKqc5uJBI0N
-        X1hZ2CZSfn8pO18K3AtnVxPnG0XkAqk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-415-HJ85zVnNPLKI_zILyVShbA-1; Thu, 12 Mar 2020 12:52:59 -0400
-X-MC-Unique: HJ85zVnNPLKI_zILyVShbA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726676AbgCLRLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 13:11:15 -0400
+Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:35588 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725268AbgCLRLO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 13:11:14 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9069113F7;
-        Thu, 12 Mar 2020 16:52:58 +0000 (UTC)
-Received: from new-host-5.redhat.com (ovpn-206-30.brq.redhat.com [10.40.206.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E3C4619C6A;
-        Thu, 12 Mar 2020 16:52:56 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Roman Mashak <mrv@mojatatu.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@mellanox.com>
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH net] tc-testing: add ETS scheduler to tdc build configuration
-Date:   Thu, 12 Mar 2020 17:51:45 +0100
-Message-Id: <dcff461f45a5dc4a403dcbe020caeee607e7c5dc.1584031891.git.dcaratti@redhat.com>
-MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Content-Transfer-Encoding: quoted-printable
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id AA662C108A;
+        Thu, 12 Mar 2020 17:11:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1584033073; bh=JctjT8ZZB3iGiymejL3UkVZ9bMIbCL4Z7Cm4bSq+Rac=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VbdaxuRE/sDXULz7i8tqvuBSPauwJNtx8llrBmIzXeZV+nNrAvhFQ1ctRZ7bVk6Jy
+         6OE7rwePbWh7p0WNM9QMjnzhRVmLpcfHbOZOWGD+GBcLWlpUgLS4+SBpzIXOY5Kfny
+         +tREujQg2815XcPBR9iFnTX242mudETHJ/N262xd94o+4T6QPoT5gRrX9vqGor5I+l
+         TV/8yl014BY9de+QuO8nu9ODqxXlAddLFrkNDlqX2zidta0EgIVXDVwoDoZQy28dnB
+         +FQN1GL81lB7d8oXH3j6UrxZYohVHI1s57cKMVLPrZUqyNGz1Wy+uPRh+Nm6e75Bn3
+         YI2+qy1rNrusg==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id A430CA0061;
+        Thu, 12 Mar 2020 17:11:07 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/2] net: phy: XLGMII define and usage in PHYLINK
+Date:   Thu, 12 Mar 2020 18:10:08 +0100
+Message-Id: <cover.1584031294.git.Jose.Abreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-add CONFIG_NET_SCH_ETS to 'config', otherwise test suites using this file
-to perform a full tdc run will encounter the following warning:
+Adds XLGMII defines and usage in PHYLINK.
 
-  ok 645 e90e - Add ETS qdisc using bands # skipped - "-----> teardown st=
-age" did not complete successfully
+Patch 1/2, adds the define for it, whilst 2/2 adds the usage of it in
+PHYLINK.
 
-Fixes: 82c664b69c8b ("selftests: qdiscs: Add test coverage for ETS Qdisc"=
-)
-Reported-by: Jamal Hadi Salim <jhs@mojatatu.com>
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 ---
- tools/testing/selftests/tc-testing/config | 1 +
- 1 file changed, 1 insertion(+)
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
 
-diff --git a/tools/testing/selftests/tc-testing/config b/tools/testing/se=
-lftests/tc-testing/config
-index 477bc61b374a..c03af4600281 100644
---- a/tools/testing/selftests/tc-testing/config
-+++ b/tools/testing/selftests/tc-testing/config
-@@ -57,3 +57,4 @@ CONFIG_NET_IFE_SKBMARK=3Dm
- CONFIG_NET_IFE_SKBPRIO=3Dm
- CONFIG_NET_IFE_SKBTCINDEX=3Dm
- CONFIG_NET_SCH_FIFO=3Dy
-+CONFIG_NET_SCH_ETS=3Dm
---=20
-2.24.1
+Jose Abreu (2):
+  net: phy: Add XLGMII interface define
+  net: phylink: Add XLGMII support
+
+ drivers/net/phy/phylink.c | 27 +++++++++++++++++++++++++++
+ include/linux/phy.h       |  3 +++
+ 2 files changed, 30 insertions(+)
+
+-- 
+2.7.4
 
