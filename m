@@ -2,95 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0150F1838AB
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 19:28:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E19C1838B2
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 19:29:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726650AbgCLS2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 14:28:32 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:46198 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726299AbgCLS2c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 14:28:32 -0400
-Received: by mail-qk1-f196.google.com with SMTP id f28so7891523qkk.13;
-        Thu, 12 Mar 2020 11:28:30 -0700 (PDT)
+        id S1726731AbgCLS3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 14:29:32 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:34999 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726553AbgCLS3a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 14:29:30 -0400
+Received: by mail-wr1-f68.google.com with SMTP id d5so8449337wrc.2
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 11:29:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Z1+jrFk0l780LY82KtgQMlOjuOPnOSNUeBpKHT6Qy6g=;
-        b=Im3J3CT7QT/G7DEOXBPU5qa5NpzXZfgFk285tuuYBMicpySswnkSvESZnO6jErqFRd
-         UPjDpp+0r/vIODgW1k2ShKCiqBy9MmTZB95AFcHg6b7GeSpKBLUrNugoVoATGkaO79DP
-         mcRtqwQ/zX3X63/A+7p6exSokHYdR7eIJBUgv5B5sY+P2DtU9pohuGZNPHsQfo0VFSI2
-         VxQkQ/6aIBCgeOjZES4EHfdnoV985yMvsQIIreKQVnp8LIh6qsdqDWBCyvkBNnEKbegw
-         eLunF7LsF0q/MWSdI3ei6mjKA8959FeSB1VKEpCNXBnaDb99LSD6iiIueYU9p8geMzQv
-         814Q==
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BRHCWhmFlQPURHq+pBoLkGTysC+hecjyJW1t2JsHSNo=;
+        b=0F+83U6vTNMbdxCfzp+9BGDCgJ+jfRfz+fpPiZtdHECW9DgBIRQvXb3oigJ2D5OBnD
+         AFjjkcURKEUON/mmfIg6jBuYe/v0dMKdsCrzmssotT49QQ5xatloFHcHsrmNNzxpAQPp
+         4/Aw5sXbxlKLvslU+ZRqkszwZEI1ZALuxx/qeILfrZgvWUt/NYAo0pZkASqJV5cIrdwr
+         nUx84v5gVJMNbF+kpHQUX4zYy1WgZKHy8ssIPsTB5wxIkjkii+z2iO2fL0Duj+yvyL88
+         zF80qSys1rAKitNELa5z08LXsV3Hr6VvWDtLk5KOI5Rb7uwyiz+l2h76AQopCRjAe3yh
+         8H3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=Z1+jrFk0l780LY82KtgQMlOjuOPnOSNUeBpKHT6Qy6g=;
-        b=I8ZDFnRMX4pvkgU2j0u0yY/djLRsHaPgEUY9wJNY4owkPY555l7HuYl3/q2Y9egQVO
-         k8YiEj4CC0vC55Vji9SY1XbZc7J/OL9Iv+QT6BxMbHVXNFqc2ce9U0ViWHLOXFlzaxPP
-         M+6r2cR457B/quC8+6wqWCxjBjkK43ZP1872rJuvehmqy+urzd2oIRDz3LU0cmTVDIXH
-         TeSJRV7x2vj1IjPKDAKNjb5SgY4TlcuVwqtqwmlGaRqAeBTkxqAFV44L9zTK3sjWGkMq
-         gCy4xpnOqjlYJYOCWP23JPNOoaA/X7mayP5ca0X0j7IPXg7bz8au34RN1w8iPClQnojl
-         794w==
-X-Gm-Message-State: ANhLgQ3Xp8s1GHOhRqkUNmUwrspEKU0pHJQqMLwkI20oP+2ydtW5vSb/
-        a8LgbCy0AlzPugVi/mbIbW4=
-X-Google-Smtp-Source: ADFU+vt9JCwr3OZM0QDXDy3zEeWocBIU5GDRQ52/xx5BmZffX9syssLvIR6XyxNZEWqjxRiPw4/j+w==
-X-Received: by 2002:a37:b146:: with SMTP id a67mr1341985qkf.473.1584037710282;
-        Thu, 12 Mar 2020 11:28:30 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::fec8])
-        by smtp.gmail.com with ESMTPSA id h5sm11049665qkc.118.2020.03.12.11.28.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Mar 2020 11:28:29 -0700 (PDT)
-Date:   Thu, 12 Mar 2020 14:28:26 -0400
-From:   Tejun Heo <tj@kernel.org>
-To:     almasrymina@google.com,
-        syzbot <syzbot+cac0c4e204952cf449b1@syzkaller.appspotmail.com>
-Cc:     akpm@linux-foundation.org, andriin@fb.com, ast@kernel.org,
-        bpf@vger.kernel.org, cgroups@vger.kernel.org, christian@brauner.io,
-        daniel@iogearbox.net, hannes@cmpxchg.org, kafai@fb.com,
-        linux-kernel@vger.kernel.org, lizefan@huawei.com,
-        netdev@vger.kernel.org, sfr@canb.auug.org.au,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
-Subject: Re: KASAN: slab-out-of-bounds Read in cgroup_file_notify
-Message-ID: <20200312182826.GG79873@mtj.duckdns.org>
-References: <00000000000041c6c205a08225dc@google.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=BRHCWhmFlQPURHq+pBoLkGTysC+hecjyJW1t2JsHSNo=;
+        b=KIABSmvtIU8HE4As3U8tzvAMSJ6m6i3u5uzUk1Hv3BSq5Oz0vUrUv+mnfNGxsh3PF8
+         t8uRp+aY6HiY3VQ1MN5MTpCCUBoEnEXwBBPVRn2ZutHpWz8GM/cXokuxsY0gQiWyuh5q
+         HnSbqlYqcKy1GaKEXGx+idmRtPobk/Ir7yH7hss583tjLfg/KIHcwnPOISgx6MO1DtAj
+         t+wLytoawfGXG2gmEPJR+9WAJYqzTr7jSr+WodDclEf3dLLo1K5qjB+VnN5HMb9dPss3
+         S0GqwQNs+useJjshPacIJeh5vV65uaIuf/naTcRGpAGT6VadjLXLCMNYSbMIPjA+39C7
+         P7JQ==
+X-Gm-Message-State: ANhLgQ3s891LZIg0cDcgsTppu7ysE1K1vwhVBHqc96/i6BjsXJsVw+cP
+        tNK/UAHuJqanJb0C7CTV4dcGGQ==
+X-Google-Smtp-Source: ADFU+vvnu5jhezFpKMT+q/UzwIwyGAsFngjVM2cWS8rR8k8ojNctNy1ZNn6SEm0BEXqVT+ko0vT/yQ==
+X-Received: by 2002:a5d:52d0:: with SMTP id r16mr11893374wrv.379.1584037767514;
+        Thu, 12 Mar 2020 11:29:27 -0700 (PDT)
+Received: from [192.168.1.10] ([194.35.118.177])
+        by smtp.gmail.com with ESMTPSA id e22sm13237842wme.45.2020.03.12.11.29.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Mar 2020 11:29:27 -0700 (PDT)
+Subject: Re: [PATCH v3 bpf-next 0/3] Fixes for bpftool-prog-profile
+To:     Song Liu <songliubraving@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     john.fastabend@gmail.com, kernel-team@fb.com, ast@kernel.org,
+        daniel@iogearbox.net, arnaldo.melo@gmail.com, jolsa@kernel.org
+References: <20200312182332.3953408-1-songliubraving@fb.com>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <461f01a8-1506-97c9-11db-4f1f1bad092b@isovalent.com>
+Date:   Thu, 12 Mar 2020 18:29:26 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00000000000041c6c205a08225dc@google.com>
+In-Reply-To: <20200312182332.3953408-1-songliubraving@fb.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 08:55:14AM -0700, syzbot wrote:
-> Hello,
+2020-03-12 11:23 UTC-0700 ~ Song Liu <songliubraving@fb.com>
+> 1. Fix build for older clang;
+> 2. Fix skeleton's dependency on libbpf;
+> 3. Add files to .gitignore.
 > 
-> syzbot found the following crash on:
+> Changes v2 => v3:
+> 1. Add -I$(LIBBPF_PATH) to Makefile (Quentin);
+> 2. Use p_err() for error message (Quentin).
 > 
-> HEAD commit:    c99b17ac Add linux-next specific files for 20200225
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1610d70de00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=6b7ebe4bd0931c45
-> dashboard link: https://syzkaller.appspot.com/bug?extid=cac0c4e204952cf449b1
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1242e1fde00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1110d70de00000
+> Changes v1 => v2:
+> 1. Rewrite patch 1 with real feature detection (Quentin, Alexei).
+> 2. Add files to .gitignore (Andrii).
 > 
-> The bug was bisected to:
+> Song Liu (3):
+>   bpftool: only build bpftool-prog-profile if supported by clang
+>   bpftool: skeleton should depend on libbpf
+>   bpftool: add _bpftool and profiler.skel.h to .gitignore
 > 
-> commit 6863de00e5400b534cd4e3869ffbc8f94da41dfc
-> Author: Mina Almasry <almasrymina@google.com>
-> Date:   Thu Feb 20 03:55:30 2020 +0000
+>  tools/bpf/bpftool/.gitignore                  |  2 ++
+>  tools/bpf/bpftool/Makefile                    | 20 +++++++++++++------
+>  tools/bpf/bpftool/prog.c                      |  1 +
+>  tools/build/feature/Makefile                  |  9 ++++++++-
+>  .../build/feature/test-clang-bpf-global-var.c |  4 ++++
+>  5 files changed, 29 insertions(+), 7 deletions(-)
+>  create mode 100644 tools/build/feature/test-clang-bpf-global-var.c
 > 
->     hugetlb_cgroup: add accounting for shared mappings
+> --
+> 2.17.1
+> 
 
-Mina, can you please take a look at this?
+Series looks great, thank you!
 
-Thanks.
-
--- 
-tejun
+Reviewed-by: Quentin Monnet <quentin@isovalent.com>
