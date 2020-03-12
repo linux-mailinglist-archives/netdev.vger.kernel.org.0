@@ -2,84 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A539018265A
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 01:50:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9431182676
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 02:01:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387480AbgCLAtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 Mar 2020 20:49:46 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:46626 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731423AbgCLAtp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 20:49:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=JzdyPrN62BdDAmrcldEmQFBwM9GdlQHzAxzjjEn6/H4=; b=I8n0l60QOxFd+cp1P0neh7j0VR
-        z70RmleKd/l2LQqNCfyS3at4gq0Ah39vt0UeHGb7Ln1Y8F4evjFFz2DNhpGf2P9oQZrEQOziZFk4e
-        NkC8lvwUXApjj8AIaMD9L8Z6xa0ME5+VSt4FjDIC6MJrjT+jsALZz3g0ijpX39ZLFf0pb4ftipMjz
-        gJ5R0QxLbRASQ5bylEPSkjNTdmwQwxISYGAiNrSmOhkr51riRVHJsOxK4/2m3vyqlrGyjmeuZO5l7
-        FgeOMMtM3h5fUk2VTU0Faj2pyWk/GPQCIOZjt1bzyGCJOxSXWpioyI13QCMxKoYKqgTgAtWRQBxXc
-        gUex38tg==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jCC2i-0004EW-5V; Thu, 12 Mar 2020 00:49:44 +0000
-Date:   Wed, 11 Mar 2020 17:49:44 -0700
-From:   Matthew Wilcox <willy@infradead.org>
-To:     peter@bikeshed.quignogs.org.uk
-Cc:     linux-doc@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] Reformat return value descriptions as ReST lists.
-Message-ID: <20200312004944.GF22433@bombadil.infradead.org>
-References: <20200311192823.16213-1-peter@bikeshed.quignogs.org.uk>
- <20200311192823.16213-2-peter@bikeshed.quignogs.org.uk>
+        id S2387552AbgCLBBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 Mar 2020 21:01:42 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:36593 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387480AbgCLBBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 Mar 2020 21:01:42 -0400
+Received: by mail-pl1-f195.google.com with SMTP id g12so1927655plo.3
+        for <netdev@vger.kernel.org>; Wed, 11 Mar 2020 18:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=gJO+EgRp9xjkvuCYX2PFs4u1o4XVT8ml4D13osg99kU=;
+        b=YVkmwMQ3/gEUFyfHEytNLeAlYa2FPkgQJSIfAkF3mhONASN3wMOzIMlWiqRCbtHBSG
+         wfhdEdUilBKTNrjFHg6gCL80M9HxC4JdLaSKQPWb8EzzCScREos5Nj/RlD1Tp+RgSZ/a
+         qxpaYLyCwUBBkdGlw6pL59CaSSzZFcjIaAnv+I2cuEaZwZY1iPZJL2rivvvEZHxRX3Zn
+         L2eoGTRHj3s3eT3lV3WG9pS7QRWaN9G0sTaWu+l6oL+y7TrOqxS4A00EJaX+7Wp/sJNG
+         2MVXh01qKkjgERSKqF028DsE3icnR3nGE9Z5waiaAWixXe3k88TXNnD2RzkoLHX+ZszY
+         dTjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=gJO+EgRp9xjkvuCYX2PFs4u1o4XVT8ml4D13osg99kU=;
+        b=qY0sQcZAUdiSeneJV5hmrd/SBCOLPilM/xe8U5Lycjq77t/x5w+cpQ6Tq3t8ZcF2/O
+         9IDHqqpX2D4Wm+1PBf3QsKdQa8Ye6oa1yV4me63ksUXp53dLnfVimV2vj9dK/63nxEOB
+         TH2UOKmamueRunnbQQWup2dfqSpDVxg3gkQUigr4kB2+5OafrRUGCTXM5yHamdOxeUOy
+         jV8QJjrUwNCRJKgP8wbcK7q/k4nGd32NbZyM8On/TgjVEvh6PFOIrZkTUxbJOs1iMrJ6
+         QQT19NcKWX+7crpIHtBVpehW/KzN9EBBtzD4Ee51xz+iQ082uP0XEm1krRGI8hm7hB4L
+         hB6A==
+X-Gm-Message-State: ANhLgQ1T2ctMWcthgawzdzVBaBSeRmjLZa+iSb2yOU2d8EkCco7jOILF
+        zSbMDUWBHJYc1deFyplpIic=
+X-Google-Smtp-Source: ADFU+vtTMs9gM92i5dFEjhZo+iN00B8hRNLIyWWZbxiqcIf1zKD41SWJwlRVviZjqbqCSKYh9DsqmA==
+X-Received: by 2002:a17:902:a715:: with SMTP id w21mr5513515plq.244.1583974900786;
+        Wed, 11 Mar 2020 18:01:40 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id q187sm52148283pfq.185.2020.03.11.18.01.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Mar 2020 18:01:40 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/6] net: sched: RED: Introduce an ECN
+ tail-dropping mode
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Roman Mashak <mrv@mojatatu.com>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, davem@davemloft.net, jiri@mellanox.com,
+        mlxsw@mellanox.com
+References: <20200311173356.38181-1-petrm@mellanox.com>
+ <20200311173356.38181-4-petrm@mellanox.com>
+ <2629782f-24e7-bf34-6251-ab0afe22ff03@gmail.com>
+ <87imjaxv23.fsf@mellanox.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <7a7038ca-2f6f-30f6-e168-6a3510db0db7@gmail.com>
+Date:   Wed, 11 Mar 2020 18:01:38 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200311192823.16213-2-peter@bikeshed.quignogs.org.uk>
+In-Reply-To: <87imjaxv23.fsf@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 07:28:23PM +0000, peter@bikeshed.quignogs.org.uk wrote:
-> Added line breaks and blank lines to separate list items and escaped end-of-line
-> colons.
+
+
+On 3/11/20 5:42 PM, Petr Machata wrote:
 > 
-> This removes these warnings from doc build...
+> Eric Dumazet <eric.dumazet@gmail.com> writes:
 > 
-> ./drivers/net/phy/sfp-bus.c:579: WARNING: Unexpected indentation.
-> ./drivers/net/phy/sfp-bus.c:619: WARNING: Unexpected indentation.
+>> On 3/11/20 10:33 AM, Petr Machata wrote:
+>>> When the RED Qdisc is currently configured to enable ECN, the RED algorithm
+>>> is used to decide whether a certain SKB should be marked. If that SKB is
+>>> not ECN-capable, it is early-dropped.
+>>>
+>>> It is also possible to keep all traffic in the queue, and just mark the
+>>> ECN-capable subset of it, as appropriate under the RED algorithm. Some
+>>> switches support this mode, and some installations make use of it.
+>>>
+>>> To that end, add a new RED flag, TC_RED_TAILDROP. When the Qdisc is
+>>> configured with this flag, non-ECT traffic is enqueued (and tail-dropped
+>>> when the queue size is exhausted) instead of being early-dropped.
+>>>
+>>
+>> I find the naming of the feature very confusing.
+>>
+>> When enabling this new feature, we no longer drop packets
+>> that could not be CE marked.
+>> Tail drop is already in the packet scheduler, you want to disable it.
+>>
+>>
+>> How this feature has been named elsewhere ???
+>> (you mentioned in your cover letter :
+>> "Some switches support this mode, and some installations make use of it.")
+> 
+> The two interfaces that I know about are Juniper and Cumulus. I don't
+> know either from direct experience, but from the manual, Cumulus seems
+> to allow enablement of either ECN on its own[0], or ECN with RED[1]. (Or
+> RED on its own I presume, but I couldn't actually find that.)
+> 
+> In Juniper likewise, "on ECN-enabled queues, the switch [...] uses the
+> tail-drop algorithm to drop non-ECN-capable packets during periods of
+> congestion"[2]. You need to direct non-ECT traffic to a different queue
+> and configure RED on that to get the RED+ECN behavior ala Linux.
+> 
+> So this is unlike the RED qdisc, where RED is implied, and needs to be
+> turned off again by an anti-RED flag. The logic behind the chosen flag
+> name is that the opposite of early dropping is tail dropping. Note that
+> Juniper actually calls it that as well.
+> 
+> That said, I agree that from the perspective of the qdisc itself the
+> name does not make sense. We can make it "nodrop", or "nored", or maybe
+> "keep_non_ect"... I guess "nored" is closest to the desired effect.
 
-I'm all in favour of removing warnings, but I think you've fixed this
-the wrong way.
+Well, red algo is still used to decide if we attempt ECN marking, so "nodrop"
+seems better to me :)
 
-> @@ -572,12 +572,18 @@ static void sfp_upstream_clear(struct sfp_bus *bus)
->   * the sfp_bus structure, incrementing its reference count.  This must
->   * be put via sfp_bus_put() when done.
->   *
-> - * Returns: on success, a pointer to the sfp_bus structure,
-> + * Returns\:
-
-This should be Return: (not Returns:) and marks a section header,
-not the beginning of the list.  See the "Return values" section
-in Documentation/doc-guide/kernel-doc.rst
-
-> + *
-> + *          on success, a pointer to the sfp_bus structure,
->   *	    %NULL if no SFP is specified,
-> + *
->   * 	    on failure, an error pointer value:
-> + *
->   * 		corresponding to the errors detailed for
->   * 		fwnode_property_get_reference_args().
-> + *
->   * 	        %-ENOMEM if we failed to allocate the bus.
-> + *
->   *		an error from the upstream's connect_phy() method.
-
-Seems to me this should use the " * * VALUE - Description" format
-described in the document I mentioned above.
+> 
+> [0] https://docs.cumulusnetworks.com/cumulus-linux-40/Layer-1-and-Switch-Ports/Buffer-and-Queue-Management/
+> [1] https://docs.cumulusnetworks.com/version/cumulus-linux-37/Network-Solutions/RDMA-over-Converged-Ethernet-RoCE/
+> [2] https://www.juniper.net/documentation/en_US/junos/topics/concept/cos-qfx-series-tail-drop-understanding.html
+> 
