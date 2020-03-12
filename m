@@ -2,109 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 327A318375F
-	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 18:25:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D13241837B1
+	for <lists+netdev@lfdr.de>; Thu, 12 Mar 2020 18:34:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbgCLRZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 13:25:30 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:44957 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726328AbgCLRZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 13:25:30 -0400
-Received: by mail-lj1-f194.google.com with SMTP id a10so7338661ljp.11
-        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 10:25:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=92SOxOC18i6ds6Akqzym0x0waRhKEJcWlmWFOz79/NM=;
-        b=Vm/UODNL1cCp1DeobygEV9oz8iCVKwLZxSNuJX1LYHir8AsXsgIt1GFxZj6efgX1KH
-         zBIilnMxYQxGT4rO9xEBZgbcWuyHLN98wgUo6fMW+01WyQBBtXB8KE9f14eJ1pwVtiEr
-         zk+yg59VxyrI4XOmkKstZz7Fj0xs3r6IYSRl0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=92SOxOC18i6ds6Akqzym0x0waRhKEJcWlmWFOz79/NM=;
-        b=Rt0mUoMfson9JpqAtzWb5WajiY0EjGVPZNTm9qZO041WFhksKEst1OHO399S9k27K/
-         6YBymH2LjNNPR47YLItxxG/TMwUytfjJViTFy7hvvB8k/ZnA2rQvQXH/LcYrXlpOZmxk
-         7MD4vI5qhgbchrFIm6SOlz0VyLWN6FVXBbm/x0NiYe6MWdp6hjzQuj5ZYvu1sifYEfGR
-         9639tzBMr2SVjeYAYjfBGRidXc0VtgdMGdUsGhZ6X5GzYgqual516B4UIzCM58gvQaHy
-         iM0+zRMbITLjlxBoYKXvzDgK7i3bjJSJyrhz+95UYXlBROTOVGEIV+9ZTHkAa3HxJ/ax
-         cbOQ==
-X-Gm-Message-State: ANhLgQ0VF/q/H/E4pLgrzjD9veId7J6GUqWj1oiz7Nqb8AxGtbZ3bv1K
-        wF8xeC4P7ImCwc26pmNGQdppsA==
-X-Google-Smtp-Source: ADFU+vsNa6bA4DzWs4h9nx8AQPFFT5q3yyz8zsYF5Bb8Zn23qLnts4kjceprPYz7W8oTKbXw3jX4rg==
-X-Received: by 2002:a05:651c:204:: with SMTP id y4mr5518757ljn.280.1584033926831;
-        Thu, 12 Mar 2020 10:25:26 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id 2sm15198060lfy.8.2020.03.12.10.25.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Mar 2020 10:25:25 -0700 (PDT)
-References: <20200127125534.137492-1-jakub@cloudflare.com> <20200127125534.137492-13-jakub@cloudflare.com> <CAEf4Bzadh2T43bYbLO0EuKceUKr3SkfXK8Tj_fXFNj8BWtot1Q@mail.gmail.com> <87sgiey8mc.fsf@cloudflare.com> <CAEf4BzbSrnwq7ZC1j5YrqdJGO9bhgw=gpBmuTNP1UQFnDKABgA@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next v5 12/12] selftests/bpf: Tests for SOCKMAP holding listening sockets
-In-reply-to: <CAEf4BzbSrnwq7ZC1j5YrqdJGO9bhgw=gpBmuTNP1UQFnDKABgA@mail.gmail.com>
-Date:   Thu, 12 Mar 2020 18:25:25 +0100
-Message-ID: <87r1xxxz7e.fsf@cloudflare.com>
+        id S1726534AbgCLRdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 13:33:53 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:56988 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726443AbgCLRdw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 13:33:52 -0400
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02CHRFPh004624
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 13:33:51 -0400
+Received: from e06smtp07.uk.ibm.com (e06smtp07.uk.ibm.com [195.75.94.103])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2yqsaf8xmp-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 13:33:46 -0400
+Received: from localhost
+        by e06smtp07.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Thu, 12 Mar 2020 17:33:37 -0000
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp07.uk.ibm.com (192.168.101.137) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Thu, 12 Mar 2020 17:33:35 -0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 02CHXYm320054264
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 12 Mar 2020 17:33:34 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 44C11AE056;
+        Thu, 12 Mar 2020 17:33:34 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 09424AE04D;
+        Thu, 12 Mar 2020 17:33:34 +0000 (GMT)
+Received: from [9.152.222.57] (unknown [9.152.222.57])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 12 Mar 2020 17:33:33 +0000 (GMT)
+Subject: Re: [PATCH net-next] net: sched: make newly activated qdiscs visible
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+References: <20200310165335.88715-1-jwi@linux.ibm.com>
+ <20200312164814.GO8012@unicorn.suse.cz>
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+Date:   Thu, 12 Mar 2020 18:33:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20200312164814.GO8012@unicorn.suse.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+x-cbid: 20031217-0028-0000-0000-000003E3C188
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20031217-0029-0000-0000-000024A909E4
+Message-Id: <a239d059-1a08-bf20-82f7-19c00a7abb7f@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-12_11:2020-03-11,2020-03-12 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ spamscore=0 clxscore=1015 lowpriorityscore=0 bulkscore=0 impostorscore=0
+ phishscore=0 mlxlogscore=999 adultscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003120089
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 11, 2020 at 10:02 PM CET, Andrii Nakryiko wrote:
-> On Wed, Mar 11, 2020 at 12:49 PM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+On 12.03.20 17:48, Michal Kubecek wrote:
+> On Tue, Mar 10, 2020 at 05:53:35PM +0100, Julian Wiedmann wrote:
+>> In their .attach callback, mq[prio] only add the qdiscs of the currently
+>> active TX queues to the device's qdisc hash list.
+>> If a user later increases the number of active TX queues, their qdiscs
+>> are not visible via eg. 'tc qdisc show'.
 >>
->> On Wed, Mar 11, 2020 at 07:48 PM CET, Andrii Nakryiko wrote:
->> > On Mon, Jan 27, 2020 at 4:58 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
->> >>
->> >> Now that SOCKMAP can store listening sockets, user-space and BPF API is
->> >> open to a new set of potential pitfalls. Exercise the map operations (with
->> >> extra attention to code paths susceptible to races between map ops and
->> >> socket cloning), and BPF helpers that work with SOCKMAP to gain confidence
->> >> that all works as expected.
->> >>
->> >> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> >> ---
->> >>  .../selftests/bpf/prog_tests/sockmap_listen.c | 1455 +++++++++++++++++
->> >>  .../selftests/bpf/progs/test_sockmap_listen.c |   77 +
->> >>  2 files changed, 1532 insertions(+)
->> >>  create mode 100644 tools/testing/selftests/bpf/prog_tests/sockmap_listen.c
->> >>  create mode 100644 tools/testing/selftests/bpf/progs/test_sockmap_listen.c
->> >>
->> >
->> > Hey Jakub!
->> >
->> > I'm frequently getting spurious failures for sockmap_listen selftest.
->> > We also see that in libbpf's Github CI testing as well. Do you mind
->> > taking a look? Usually it's the following kinds of error:
->> >
->> > ./test_progs:connect_accept_thread:733: accept: Resource temporarily unavailable
->> > connect_accept_thread:FAIL:733
+>> Add a hook to netif_set_real_num_tx_queues() that walks all active
+>> TX queues and adds those which are missing to the hash list.
 >>
->> Hey Andrii,
->>
->> Sorry about that. Will investigate why this is happening.
->>
->> Can't say I've seen those. Any additional details about the test
->> enviroment would be helpful. Like the kernel build config and qemu
->> params (e.g. 1 vCPU vs more).
->
-> It happens quite regularly for me, once every few runs locally. You
-> can take a kernel config we use for Travis CI at [0].
->
->   [0] https://github.com/libbpf/libbpf/blob/master/travis-ci/vmtest/configs/latest.config
+>> CC: Eric Dumazet <edumazet@google.com>
+>> CC: Jamal Hadi Salim <jhs@mojatatu.com>
+>> CC: Cong Wang <xiyou.wangcong@gmail.com>
+>> CC: Jiri Pirko <jiri@resnulli.us>
+>> Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+>> ---
+> 
+> I started seeing the stack trace below consistently on boot with
+> (patched) net-next today and checking latest changes brought my
+> attention to commit 4cda75275f9f ("net: sched: make newly activated
+> qdiscs visible") (this patch) because it added the call of
+> dev_qdisc_set_real_num_tx_queues() to netif_set_real_num_tx_queues().
+> After reverting the commit, the same machine boots without any issue.
+> 
+> Michal
 
-Reproduced it. This should help:
+Thanks Michal. Brown bag time - I completely disregarded the case where
+the queue count gets changed prior to an initial dev_activate(). Darn.
 
-  https://lore.kernel.org/bpf/20200312171105.533690-1-jakub@cloudflare.com/T/#u
+Dave, I'll send you a revert in a minute. This clearly needs more
+thinking & testing.
 
-Thanks for bringing it to my attention.
+> 
+> [   40.579142] BUG: kernel NULL pointer dereference, address: 0000000000000400
+> [   40.586922] #PF: supervisor read access in kernel mode
+> [   40.592668] #PF: error_code(0x0000) - not-present page
+> [   40.598405] PGD 0 P4D 0 
+> [   40.601234] Oops: 0000 [#1] PREEMPT SMP PTI
+> [   40.605909] CPU: 18 PID: 1681 Comm: wickedd Tainted: G            E     5.6.0-rc3-ethnl.50-default #1
+> [   40.616205] Hardware name: Intel Corporation S2600CP/S2600CP, BIOS RMLSDP.86I.R3.27.D685.1305151734 05/15/2013
+> [   40.627377] RIP: 0010:qdisc_hash_add.part.22+0x2e/0x90
+> [   40.633115] Code: 00 55 53 89 f5 48 89 fb e8 2f 9b fb ff 85 c0 74 44 48 8b 43 40 48 8b 08 69 43 38 47 86 c8 61 c1 e8 1c 48 83 e8 80 48 8d 14 c1 <48> 8b 04 c1 48 8d 4b 28 48 89 53 30 48 89 43 28 48 85 c0 48 89 0a
+> [   40.654080] RSP: 0018:ffffb879864934d8 EFLAGS: 00010203
+> [   40.659914] RAX: 0000000000000080 RBX: ffffffffb8328d80 RCX: 0000000000000000
+> [   40.667882] RDX: 0000000000000400 RSI: 0000000000000000 RDI: ffffffffb831faa0
+> [   40.675849] RBP: 0000000000000000 R08: ffffa0752c8b9088 R09: ffffa0752c8b9208
+> [   40.683816] R10: 0000000000000006 R11: 0000000000000000 R12: ffffa0752d734000
+> [   40.691783] R13: 0000000000000008 R14: 0000000000000000 R15: ffffa07113c18000
+> [   40.699750] FS:  00007f94548e5880(0000) GS:ffffa0752e980000(0000) knlGS:0000000000000000
+> [   40.708782] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [   40.715189] CR2: 0000000000000400 CR3: 000000082b6ae006 CR4: 00000000001606e0
+> [   40.723156] Call Trace:
+> [   40.725888]  dev_qdisc_set_real_num_tx_queues+0x61/0x90
+> [   40.731725]  netif_set_real_num_tx_queues+0x94/0x1d0
+> [   40.737286]  __igb_open+0x19a/0x5d0 [igb]
+> [   40.741767]  __dev_open+0xbb/0x150
+> [   40.745567]  __dev_change_flags+0x157/0x1a0
+> [   40.750240]  dev_change_flags+0x23/0x60
+> [   40.754524]  do_setlink+0x301/0xe50
+> [   40.758420]  ? __nla_reserve+0x38/0x50
+> [   40.762609]  ? __nla_validate_parse+0x41/0x880
+> [   40.767569]  ? nla_put+0x2f/0x40
+> [   40.771167]  ? inet6_fill_ifla6_attrs+0x429/0x450
+> [   40.776417]  ? __nla_reserve+0x38/0x50
+> [   40.780603]  __rtnl_newlink+0x544/0x8d0
+> [   40.784887]  ? rtnl_dump_ifinfo+0x40b/0x560
+> [   40.789559]  ? __nla_reserve+0x38/0x50
+> [   40.793744]  ? __nla_put+0xc/0x20
+> [   40.797445]  ? nla_put+0x2f/0x40
+> [   40.801054]  ? fib_nexthop_info+0xde/0x1c0
+> [   40.805639]  ? kmem_cache_alloc_trace+0x1e0/0x5a0
+> [   40.810896]  ? __local_bh_enable_ip+0x47/0x80
+> [   40.815762]  rtnl_newlink+0x47/0x70
+> [   40.819659]  ? ns_capable_common+0x27/0x50
+> [   40.824234]  rtnetlink_rcv_msg+0x125/0x320
+> [   40.828809]  ? kmem_cache_alloc_node_trace+0x241/0x5b0
+> [   40.834546]  ? rtnl_calcit.isra.34+0x110/0x110
+> [   40.839511]  netlink_rcv_skb+0x4a/0x110
+> [   40.843793]  netlink_unicast+0x18e/0x250
+> [   40.848165]  netlink_sendmsg+0x2f2/0x410
+> [   40.852551]  sock_sendmsg+0x5b/0x60
+> [   40.856449]  ____sys_sendmsg+0x1e2/0x240
+> [   40.860829]  ? copy_msghdr_from_user+0xc5/0x130
+> [   40.865891]  ___sys_sendmsg+0x88/0xd0
+> [   40.869982]  ? preempt_count_sub+0x43/0x50
+> [   40.874558]  ? _raw_spin_unlock+0x16/0x30
+> [   40.879037]  ? do_wp_page+0x164/0x540
+> [   40.883127]  ? handle_pte_fault+0x521/0xda0
+> [   40.887799]  ? __handle_mm_fault+0x4e0/0x600
+> [   40.892568]  ? __sys_sendmsg+0x4e/0x80
+> [   40.896757]  __sys_sendmsg+0x4e/0x80
+> [   40.900756]  do_syscall_64+0x5a/0x1c0
+> [   40.904846]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> [   40.910486] RIP: 0033:0x7f9453dd8c47
+> [   40.914477] Code: 64 89 02 48 c7 c0 ff ff ff ff eb b9 0f 1f 80 00 00 00 00 8b 05 ea fb 2b 00 48 63 d2 48 63 ff 85 c0 75 18 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 59 f3 c3 0f 1f 80 00 00 00 00 53 48 89 f3 48
+> [   40.935445] RSP: 002b:00007fffe72e6cb8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> [   40.943901] RAX: ffffffffffffffda RBX: 000055df06f8dde0 RCX: 00007f9453dd8c47
+> [   40.951870] RDX: 0000000000000000 RSI: 00007fffe72e6cf0 RDI: 0000000000000006
+> [   40.959835] RBP: 000055df070d4c70 R08: 000055df070d4c70 R09: 000055df0703ae40
+> [   40.967800] R10: 0000000000000152 R11: 0000000000000246 R12: 000055df0702a330
+> [   40.975768] R13: 00007fffe72e6cf0 R14: 00007fffe72e6e40 R15: 000055df070211e0
+> [   40.983744] Modules linked in: br_netfilter(E) bridge(E) stp(E) llc(E) iscsi_ibft(E) iscsi_boot_sysfs(E) sunrpc(E) intel_rapl_msr(E) intel_rapl_common(E) sb_edac(E) x86_pkg_temp_thermal(E) intel_powerclamp(E) coretemp(E) crct10dif_pclmul(E) ixgbe(E) sfc(E) crc32_pclmul(E) crc32c_intel(E) ghash_clmulni_intel(E) xfrm_algo(E) iTCO_wdt(E) ipmi_ssif(E) aesni_intel(E) igb(E) libphy(E) iTCO_vendor_support(E) crypto_simd(E) joydev(E) mdio(E) mtd(E) cryptd(E) ptp(E) glue_helper(E) ioatdma(E) pps_core(E) ipmi_si(E) pcspkr(E) lpc_ich(E) dca(E) i2c_i801(E) ipmi_devintf(E) ipmi_msghandler(E) button(E) hid_generic(E) usbhid(E) mgag200(E) drm_kms_helper(E) syscopyarea(E) sysfillrect(E) sysimgblt(E) fb_sys_fops(E) drm_vram_helper(E) drm_ttm_helper(E) ttm(E) ehci_pci(E) ehci_hcd(E) sr_mod(E) drm(E) cdrom(E) i2c_algo_bit(E) usbcore(E) isci(E) libsas(E) scsi_transport_sas(E) wmi(E) sg(E) dm_multipath(E) dm_mod(E) scsi_dh_rdac(E) scsi_dh_emc(E) scsi_dh_alua(E)
+> [   41.076818] CR2: 0000000000000400
+> [   41.076867] ---[ end trace c1af668e054f361a ]---
+> 
 
-[...]
