@@ -2,108 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EAFF3184E32
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 18:56:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9224F184E3A
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 18:58:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727434AbgCMR4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 13:56:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40160 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727347AbgCMR4b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Mar 2020 13:56:31 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4B41620724;
-        Fri, 13 Mar 2020 17:56:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584122191;
-        bh=9Nke1s57My6lMKuqekfy60wrYVJLAhyF2Igp6v56kHI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OaRJwjUZtkVsu/lHoqp4xiUa9YlUt64f6sW4fxzsB5QGsOSOAspwluOWJgIQD1pKA
-         xUIWsRCzPCuy/zT35BGgfxIZTvfYJtRP4eMD78GNCelQgiq3Bd11xdJLMhkminlV0P
-         1gPJa800Rtn3TKnfjThGGglli5WO64IDxTJrMFqI=
-Date:   Fri, 13 Mar 2020 19:56:25 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     sunil.kovvuri@gmail.com
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        Tomasz Duszynski <tduszynski@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: Re: [PATCH v2 net-next 4/7] octeontx2-vf: Ethtool support
-Message-ID: <20200313175625.GB67638@unreal>
-References: <1584092566-4793-1-git-send-email-sunil.kovvuri@gmail.com>
- <1584092566-4793-5-git-send-email-sunil.kovvuri@gmail.com>
+        id S1727210AbgCMR6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 13:58:04 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:38004 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727154AbgCMR6E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 13:58:04 -0400
+Received: by mail-oi1-f194.google.com with SMTP id k21so10329989oij.5;
+        Fri, 13 Mar 2020 10:58:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FIpHicZ3t9iIlvAbQDoq7yMgDqITyaH5TIJrz/BqXnM=;
+        b=pajlEWhQvJv7jUlPghiKengiEw+LA672a3zHZyhTIOIHNd9fbK7F02v7SZS7Nd/Yve
+         wtvsHNiX3lOcQn+dJ716JHkKLfoznlfBDDbeIhxP0mWrbijWm495IPRMOQiT9e4w/O8K
+         FoNMZhdEgNALYCPWXluzZo/AN7pMYm61cEta/Sn93JLSZ+Y0Yiat2z2sQDalnTpHdDNB
+         atMJwbAPz/9RzSGLNGFx4ukFpNnR5a4Pvn6sf9PSTT6jFV+cbEfcNfz2VUd2ryytvo3p
+         3E/NuSx+rIPqfe/9kP+K4kA6kveUAkUbP2Q09Lr8qUMLHTlNN7dLFAbFmWDIz4B2GCCy
+         saMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FIpHicZ3t9iIlvAbQDoq7yMgDqITyaH5TIJrz/BqXnM=;
+        b=ZGLec1gsFLlUi7SynTdRDmPOMIv9gihN1pPs/F09PoHcyWoWfeRQaXzihHtJ+shh+h
+         /V9hYl0GBWBEI97+HucFEj1NQ+4fFJPmnnafLldrUY5tJyO9bxxVtb3oiz1e3b9pP0wF
+         BnyFtu7SswfnOxB6iFdL/4hHf20s0lq/zfQcq0T9HAVRTVv/4X0Y9H5Uf/dQXR1v0KEu
+         80bnVI51FBrMja+5xax9FlWJCa5ScO35n1OnkUS+ajqKFe8Oeyg2UU4pLuyMUQ/PhRuL
+         GxINqt9EZDFj0yKOXB+sgrKoSMyjUxSBFQLyx3cVxLBrKXg4e2c03t312wH+ImGisNil
+         qnRw==
+X-Gm-Message-State: ANhLgQ0h0cPVhGeOCOPLgRG8nqQzjConudNQOtExjBruU0mpAlBSGwSn
+        3jlDhQOlyEPl21H8Jp/KbvX8EJD/3HZkUmS4eew=
+X-Google-Smtp-Source: ADFU+vtEY7euvss/M7JNwQVhcGKtmxZ40FX07jehyrWbEISEBbbCApK8W2f0qsKVuiT238XrGK1YqqP9yLq4nUKVpPs=
+X-Received: by 2002:a05:6808:b24:: with SMTP id t4mr8115642oij.72.1584122283944;
+ Fri, 13 Mar 2020 10:58:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1584092566-4793-5-git-send-email-sunil.kovvuri@gmail.com>
+References: <00000000000061573105a08774c2@google.com>
+In-Reply-To: <00000000000061573105a08774c2@google.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 13 Mar 2020 10:57:52 -0700
+Message-ID: <CAM_iQpUBL=P6xvnyZckwVPUnmxReFDXJpfTA-ZtMqeAnh-4XVA@mail.gmail.com>
+Subject: Re: WARNING: ODEBUG bug in route4_change
+To:     syzbot <syzbot+f9b32aaacd60305d9687@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 13, 2020 at 03:12:43PM +0530, sunil.kovvuri@gmail.com wrote:
-> From: Tomasz Duszynski <tduszynski@marvell.com>
->
-> Added ethtool support for VF devices for
->  - Driver stats, Tx/Rx perqueue stats
->  - Set/show Rx/Tx queue count
->  - Set/show Rx/Tx ring sizes
->  - Set/show IRQ coalescing parameters
->  - RSS configuration etc
->
-> It's the PF which owns the interface, hence VF
-> cannot display underlying CGX interface stats.
-> Except for this rest ethtool support reuses PF's
-> APIs.
->
-> Signed-off-by: Tomasz Duszynski <tduszynski@marvell.com>
-> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-> ---
->  .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   1 +
->  .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 133 ++++++++++++++++++++-
->  .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |   4 +
->  3 files changed, 136 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-> index ca757b2..95b8f1e 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-> @@ -631,6 +631,7 @@ void otx2_update_lmac_stats(struct otx2_nic *pfvf);
->  int otx2_update_rq_stats(struct otx2_nic *pfvf, int qidx);
->  int otx2_update_sq_stats(struct otx2_nic *pfvf, int qidx);
->  void otx2_set_ethtool_ops(struct net_device *netdev);
-> +void otx2vf_set_ethtool_ops(struct net_device *netdev);
->
->  int otx2_open(struct net_device *netdev);
->  int otx2_stop(struct net_device *netdev);
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-> index f450111..1751e2d 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-> @@ -17,6 +17,7 @@
->  #include "otx2_common.h"
->
->  #define DRV_NAME	"octeontx2-nicpf"
-> +#define DRV_VF_NAME	"octeontx2-nicvf"
->
->  struct otx2_stat {
->  	char name[ETH_GSTRING_LEN];
-> @@ -63,14 +64,34 @@ static const unsigned int otx2_n_dev_stats = ARRAY_SIZE(otx2_dev_stats);
->  static const unsigned int otx2_n_drv_stats = ARRAY_SIZE(otx2_drv_stats);
->  static const unsigned int otx2_n_queue_stats = ARRAY_SIZE(otx2_queue_stats);
->
-> +int __weak otx2vf_open(struct net_device *netdev)
-> +{
-> +	return 0;
-> +}
-> +
-> +int __weak otx2vf_stop(struct net_device *netdev)
-> +{
-> +	return 0;
-> +}
-
-We tried very politely to explain that drivers shouldn't have "__weak"
-in their code, sorry if it wasn't clear enough.
-
-Thanks
+#syz test: https://github.com/congwang/linux.git tcindex
