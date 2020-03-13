@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29F22183FEF
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 05:08:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 397DC183FFA
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 05:08:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbgCMEIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 00:08:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39134 "EHLO mail.kernel.org"
+        id S1726632AbgCMEIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 00:08:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39170 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726593AbgCMEIM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Mar 2020 00:08:12 -0400
+        id S1725792AbgCMEIN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Mar 2020 00:08:13 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CDFFB2074F;
-        Fri, 13 Mar 2020 04:08:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E8B9C20769;
+        Fri, 13 Mar 2020 04:08:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584072491;
-        bh=xmWw3hyDhsas59JXMdvsr35LodVu6+YY6+iNUhoyZJE=;
+        s=default; t=1584072492;
+        bh=azJrLEZuxijOk6CiJ941Dw90KacGpr8xLvuAZBs80ls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zrBcWbUUQbgRBu5sNWKmji7TAZebmN5y7yJingN1sERDzXpLzJNLjhD2zksBQcbRX
-         grvISIS/VunV52yrpZRwV0H4877Vtnmdf9dXyDIGt1JOknAeMJku/Jue+LtiuKeco3
-         Z+Wuk9ClmAGN3GzcL+t2E8RXmeumpyqdg9HD1T8U=
+        b=CQueFjbcjFMZ/rCPW+jvhr3cZsBgyz7MwmKmkpeMgR9QeNL+9TtLylpx+AC3hM1cG
+         5XZbXmqIYw2pujHe+FKIF3wLZ09jLtzWnkvtgtJaAFGKrWTSZIIvU/08kq2PL/x0+o
+         VOq4dSCEhZaVmIwFalJYzx8ow/QhRdBmH0rWYICM=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
@@ -37,9 +37,9 @@ Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
         GR-everest-linux-l2@marvell.com, shshaikh@marvell.com,
         nic_swsd@realtek.com, hkallweit1@gmail.com, bh74.an@samsung.com,
         romieu@fr.zoreil.com
-Subject: [PATCH net-next 06/15] net: skge: reject unsupported coalescing params
-Date:   Thu, 12 Mar 2020 21:07:54 -0700
-Message-Id: <20200313040803.2367590-7-kuba@kernel.org>
+Subject: [PATCH net-next 07/15] net: sky2: reject unsupported coalescing params
+Date:   Thu, 12 Mar 2020 21:07:55 -0700
+Message-Id: <20200313040803.2367590-8-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200313040803.2367590-1-kuba@kernel.org>
 References: <20200313040803.2367590-1-kuba@kernel.org>
@@ -57,21 +57,24 @@ This driver did not previously reject unsupported parameters.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/marvell/skge.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/marvell/sky2.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/skge.c b/drivers/net/ethernet/marvell/skge.c
-index 97f270d30cce..3c89206f18a7 100644
---- a/drivers/net/ethernet/marvell/skge.c
-+++ b/drivers/net/ethernet/marvell/skge.c
-@@ -876,6 +876,7 @@ static int skge_set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom
+diff --git a/drivers/net/ethernet/marvell/sky2.c b/drivers/net/ethernet/marvell/sky2.c
+index ebfd0ceac884..241f00716979 100644
+--- a/drivers/net/ethernet/marvell/sky2.c
++++ b/drivers/net/ethernet/marvell/sky2.c
+@@ -4400,6 +4400,10 @@ static int sky2_set_features(struct net_device *dev, netdev_features_t features)
  }
  
- static const struct ethtool_ops skge_ethtool_ops = {
-+	.supported_coalesce_params = ETHTOOL_COALESCE_USECS,
- 	.get_drvinfo	= skge_get_drvinfo,
- 	.get_regs_len	= skge_get_regs_len,
- 	.get_regs	= skge_get_regs,
+ static const struct ethtool_ops sky2_ethtool_ops = {
++	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
++				     ETHTOOL_COALESCE_MAX_FRAMES |
++				     ETHTOOL_COALESCE_RX_USECS_IRQ |
++				     ETHTOOL_COALESCE_RX_MAX_FRAMES_IRQ,
+ 	.get_drvinfo	= sky2_get_drvinfo,
+ 	.get_wol	= sky2_get_wol,
+ 	.set_wol	= sky2_set_wol,
 -- 
 2.24.1
 
