@@ -2,80 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D3731848BF
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 15:04:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED4821848CA
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 15:07:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726838AbgCMOEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 10:04:37 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:30216 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726715AbgCMOEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 10:04:37 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-134-_2vTalQWPdiJaX_d4cyfRg-1; Fri, 13 Mar 2020 14:04:33 +0000
-X-MC-Unique: _2vTalQWPdiJaX_d4cyfRg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Fri, 13 Mar 2020 14:04:32 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Fri, 13 Mar 2020 14:04:32 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Willem de Bruijn' <willemdebruijn.kernel@gmail.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>
-CC:     David Miller <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Network Development <netdev@vger.kernel.org>
-Subject: RE: [PATCH v2] net: Make skb_segment not to compute checksum if
- network controller supports checksumming
-Thread-Topic: [PATCH v2] net: Make skb_segment not to compute checksum if
- network controller supports checksumming
-Thread-Index: AQHV8G6boeAUqLyQLkCRyXn9e/JzBKg1V/WQgAE/qgCAAAaz0IADkSRugAAGsUCAAA2BgIAABmFwgAxUGeSAAAFR8A==
-Date:   Fri, 13 Mar 2020 14:04:32 +0000
-Message-ID: <9c1768ab119241168ecac9879b24d022@AcuMS.aculab.com>
-References: <20200228.120150.302053489768447737.davem@davemloft.net>
- <1583131910-29260-1-git-send-email-kyk.segfault@gmail.com>
- <CABGOaVRdsw=4nqBMR0h8JPEiunOEpHR+02H=HRbgt_TxhVviiA@mail.gmail.com>
- <945f6cafc86b4f1bb18fa40e60d5c113@AcuMS.aculab.com>
- <CABGOaVQMq-AxwQOJ5DdDY6yLBOXqBg6G7qC_MdOYj_z4y-QQiw@mail.gmail.com>
- <de1012794ec54314b6fe790c01dee60b@AcuMS.aculab.com>
- <CABGOaVSddVL-T-Sz_GPuRoZbKM_HsZND84rJUm2G9RRw6cUwCQ@mail.gmail.com>
- <CA+FuTSc5QVF_kv8FNs03obXGbf6axrG5umCipE=LXvqQ_-hDAA@mail.gmail.com>
- <817a6418ac8742e6bb872992711beb47@AcuMS.aculab.com>
- <91fafe40-7856-8b22-c279-55df5d06ca39@gmail.com>
- <e8b84bcaee634b53bee797aa041824a4@AcuMS.aculab.com>
- <CABGOaVTzjJengG0e8AWFZE9ZG1245keuQHfRJ0zpoAMQrNmJ6g@mail.gmail.com>
- <CA+FuTSfO-kNWd0qzuUsCyDjad0dVJEdLh9x4bfRzMYs9wdqQ=g@mail.gmail.com>
-In-Reply-To: <CA+FuTSfO-kNWd0qzuUsCyDjad0dVJEdLh9x4bfRzMYs9wdqQ=g@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1726820AbgCMOHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 10:07:38 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:60168 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726647AbgCMOHh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 10:07:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=I2rYj07tX855QAdcSOk0Rje4H8eVvnH6CuKQg93fcXA=; b=rvhd8ewsG0OOZPKTQ+geFM1nL
+        nw6R7pwgzFvdh9nAi2ouV7wzwvQYWaAus5FPAWj+kOeCABusjRkVEoQq0DYlZPtFsHYT2xU6gtP4K
+        0ngsMnMcb60GeFGCar1+wc02VEB1aNX8aQQrovzUXVmTAYW4h6DtiaxZ8NnMmiYB/tgj1WYCySpzF
+        3ml+4iug9nEoQq5/BsaZ9nhm40ABY8/oLEhUsP0uHi3+/UDg6+OwNU/3O5RHQ0OmPSNNmBqP2X3VY
+        S2C8Q1j2XNkcDqlRrDiCMCO3O6L2XJ+Oy6tu1PaWx7ENl01V3z0m41GbhlWaXNpgBeaLLloctKGn7
+        cQud0B2VA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:35918)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jCkyL-0000fn-2f; Fri, 13 Mar 2020 14:07:33 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jCkyJ-0007NZ-Hq; Fri, 13 Mar 2020 14:07:31 +0000
+Date:   Fri, 13 Mar 2020 14:07:31 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Jose Abreu <Jose.Abreu@synopsys.com>
+Cc:     netdev@vger.kernel.org, Joao Pinto <Joao.Pinto@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/4] net: phy: xpcs: Return error upon RX/TX
+ fault
+Message-ID: <20200313140731.GD25745@shell.armlinux.org.uk>
+References: <cover.1584106347.git.Jose.Abreu@synopsys.com>
+ <7918fdf6bbe6505a64e54ae360c59c905aa3fe1d.1584106347.git.Jose.Abreu@synopsys.com>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7918fdf6bbe6505a64e54ae360c59c905aa3fe1d.1584106347.git.Jose.Abreu@synopsys.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiBPbiBGcmksIE1hciAxMywgMjAyMCBhdCAyOjM2IEFNIFlhZHUgS2lzaG9yZSA8a3lrLnNlZ2Zh
-dWx0QGdtYWlsLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiA+IFllcywgZ2l2ZW4gdGhlIGRpc2N1c3Np
-b24gSSBoYXZlIG5vIG9iamVjdGlvbnMuIFRoZSBjaGFuZ2UgdG8NCj4gPiA+IHNrYl9zZWdtZW50
-IGluIHYyIGxvb2sgZmluZS4NCj4gPg0KPiA+IEknbSBhc3N1bWluZyB0aGF0IHRoZSBjaGFuZ2Vz
-IGluIHBhdGNoIFYyIGFyZSBvayB0byBiZSBhY2NlcHRlZCBhbmQgbWVyZ2VkDQo+ID4gdG8gdGhl
-IGtlcm5lbC4gUGxlYXNlIGxldCBtZSBrbm93IGlmIHRoZXJlIGlzIGFueXRoaW5nIGVsc2UgdGhh
-dCBpcyBwZW5kaW5nDQo+ID4gZnJvbSBteSBzaWRlIHdpdGggcmVzcGVjdCB0byB0aGUgcGF0Y2gu
-DQo+IA0KPiBJIHRoaW5rIHlvdSBjYW4gcmViYXNlIGFuZCBzdWJtaXQgYWdhaW5zdCBuZXQtbmV4
-dC4NCg0KSXQncyBhbHNvIHdvcnRoIG1lbnRpb25pbmcgKHByb2JhYmx5IGluIDAvbikgdGhhdA0K
-dGhpcyBpcyBsaWtlbHkgdG8gYmUgYSBnYWluIGV2ZW4gb24geDg2IHdoZXJlIHRoZQ0KY2hlY2tz
-dW0gaXMgY2FsY3VsYXRlZCBkdXJpbmcgdGhlIGNvcHkgbG9vcC4NCg0KCURhdmlkDQoNCi0NClJl
-Z2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0
-b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykN
-Cg==
+On Fri, Mar 13, 2020 at 02:39:41PM +0100, Jose Abreu wrote:
+> RX/TX fault status results in link errors. Return error upon these cases
+> so that XPCS can be correctly resumed.
 
+Are you sure about this?  I'm sure that I read in IEEE 802.3 that
+a loss of link results in a receive fault being indicated in
+status register 2.
+
+See 49.2.14.1 describing "PCS_status" and the descriptions of MDIO
+registers 3.1.2 and 3.8.10.  Basically, the link status (3.1.2) is a
+latched-low version of PCS_status, and 3.8.10 is an inverted version
+of this, independently latched-high.
+
+Returning -EFAULT seems to mean that we'll soft-reset the PHY, and
+reconfigure it every time we attempt to read the status whenever the
+link is down.
+
+> 
+> Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
+> 
+> ---
+> Cc: Jose Abreu <Jose.Abreu@synopsys.com>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> ---
+>  drivers/net/phy/mdio-xpcs.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/phy/mdio-xpcs.c b/drivers/net/phy/mdio-xpcs.c
+> index a4cbeecc6d42..23516397b982 100644
+> --- a/drivers/net/phy/mdio-xpcs.c
+> +++ b/drivers/net/phy/mdio-xpcs.c
+> @@ -190,10 +190,14 @@ static int xpcs_read_fault(struct mdio_xpcs_args *xpcs,
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	if (ret & MDIO_STAT2_RXFAULT)
+> +	if (ret & MDIO_STAT2_RXFAULT) {
+>  		xpcs_warn(xpcs, state, "Receiver fault detected!\n");
+> -	if (ret & MDIO_STAT2_TXFAULT)
+> +		return -EFAULT;
+> +	}
+> +	if (ret & MDIO_STAT2_TXFAULT) {
+>  		xpcs_warn(xpcs, state, "Transmitter fault detected!\n");
+> +		return -EFAULT;
+> +	}
+>  
+>  	ret = xpcs_read_vendor(xpcs, MDIO_MMD_PCS, DW_VR_XS_PCS_DIG_STS);
+>  	if (ret < 0)
+> -- 
+> 2.7.4
+> 
+> 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
