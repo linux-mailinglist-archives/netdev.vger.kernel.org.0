@@ -2,80 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C948184CC4
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 17:45:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4030B184D8F
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 18:25:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727020AbgCMQpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 12:45:52 -0400
-Received: from us-smtp-2.mimecast.com ([205.139.110.61]:25243 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727024AbgCMQpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 12:45:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584117950;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2NGcze98cXWYCmagpEsgCSEsYGqJZVyFshEV55Z7Gjs=;
-        b=fRMBVFMVpdIShFmMGmp/IJ/b0TNZGj3lH1OZ4/EYAgrE8aCutCRmAErU94sZFkLpmoopXl
-        NWHLIWzWE/eQx0Ygm6pQ0Xl6N9gOTdhdsZl3aPI8Qjyaxj8DqFurrVQDwHP9rbdYNwBJyn
-        Mb3Gcsrrim1G6pQ/yBruV28q6BDqtCU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-86-CzQAHedQM_2jEHV0CsdCFg-1; Fri, 13 Mar 2020 12:45:42 -0400
-X-MC-Unique: CzQAHedQM_2jEHV0CsdCFg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 61380101FC68;
-        Fri, 13 Mar 2020 16:45:40 +0000 (UTC)
-Received: from x2.localnet (ovpn-117-60.phx2.redhat.com [10.3.117.60])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D1C565C1BB;
-        Fri, 13 Mar 2020 16:45:30 +0000 (UTC)
-From:   Steve Grubb <sgrubb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Richard Guy Briggs <rgb@redhat.com>, linux-audit@redhat.com,
-        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
-        containers@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
-        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
-        simo@redhat.com, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
-Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling the audit daemon
-Date:   Fri, 13 Mar 2020 12:45:29 -0400
-Message-ID: <2588582.z15pWOfGEt@x2>
-Organization: Red Hat
-In-Reply-To: <CAHC9VhS9DtxJ4gvOfMRnzoo6ccGJVKL+uZYe6qqH+SPqD8r01Q@mail.gmail.com>
-References: <cover.1577736799.git.rgb@redhat.com> <20200312202733.7kli64zsnqc4mrd2@madcap2.tricolour.ca> <CAHC9VhS9DtxJ4gvOfMRnzoo6ccGJVKL+uZYe6qqH+SPqD8r01Q@mail.gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+        id S1726550AbgCMRZd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 13:25:33 -0400
+Received: from mail.wangsu.com ([123.103.51.227]:44054 "EHLO wangsu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726414AbgCMRZd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Mar 2020 13:25:33 -0400
+Received: from 137.localdomain (unknown [218.107.205.216])
+        by app2 (Coremail) with SMTP id 4zNnewDnSNZEuWtesuYaAA--.224S2;
+        Sat, 14 Mar 2020 00:48:05 +0800 (CST)
+From:   Pengcheng Yang <yangpc@wangsu.com>
+To:     edumazet@google.com, davem@davemloft.net, ncardwell@google.com
+Cc:     netdev@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>
+Subject: [PATCH net-next 1/5] tcp: fix stretch ACK bugs in BIC
+Date:   Sat, 14 Mar 2020 00:47:20 +0800
+Message-Id: <1584118044-9798-1-git-send-email-yangpc@wangsu.com>
+X-Mailer: git-send-email 1.8.3.1
+X-CM-TRANSID: 4zNnewDnSNZEuWtesuYaAA--.224S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrKr4kKFy8Kw43Wr4fWr45Jrb_yoWDuwb_Z3
+        WxKasrCry8XrZ5ZFZF9r18Ar18Ka93uF45XF13J3yrJw18tFyUJw4kKFn5ur1vgF409Fy7
+        Wr9rJFWYva43XjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbYAFc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wA2ocxC64kI
+        II0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7
+        xvwVC0I7IYx2IY6xkF7I0E14v26F4UJVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28E
+        F7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F4
+        0EFcxC0VAKzVAqx4xG6I80ewAv7VCjz48v1sIEY20_Gr4lOx8S6xCaFVCjc4AY6r1j6r4U
+        M4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE14v_JwCF04
+        k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26r48MxC20s026xCaFVCjc4AY6r1j6r4U
+        MI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67
+        AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0
+        cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcV
+        C2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73
+        UjIFyTuYvjfU2iL0UUUUU
+X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Friday, March 13, 2020 12:42:15 PM EDT Paul Moore wrote:
-> > I think more and more, that more complete isolation is being done,
-> > taking advantage of each type of namespace as they become available, but
-> > I know a nuber of them didn't find it important yet to use IPC, PID or
-> > user namespaces which would be the only namespaces I can think of that
-> > would provide that isolation.
-> > 
-> > It isn't entirely clear to me which side you fall on this issue, Paul.
-> 
-> That's mostly because I was hoping for some clarification in the
-> discussion, especially the relevant certification requirements, but it
-> looks like there is still plenty of room for interpretation there (as
-> usual).  I'd much rather us arrive at decisions based on requirements
-> and not gut feelings, which is where I think we are at right now.
+Neal Cardwell submits a series of patches to handle stretched ACKs,
+which start with commit e73ebb0881ea ("tcp: stretch ACK fixes prep").
 
-Certification rquirements are that we need the identity of anyone attempting 
-to modify the audit configuration including shutting it down.
+This patch changes BIC to properly handle stretch ACKs in additive
+increase mode by passing in the count of ACKed packets to
+tcp_cong_avoid_ai().
 
--Steve
+Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+---
+ net/ipv4/tcp_bic.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
+diff --git a/net/ipv4/tcp_bic.c b/net/ipv4/tcp_bic.c
+index 645cc30..f5f588b 100644
+--- a/net/ipv4/tcp_bic.c
++++ b/net/ipv4/tcp_bic.c
+@@ -145,12 +145,13 @@ static void bictcp_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+ 	if (!tcp_is_cwnd_limited(sk))
+ 		return;
+ 
+-	if (tcp_in_slow_start(tp))
+-		tcp_slow_start(tp, acked);
+-	else {
+-		bictcp_update(ca, tp->snd_cwnd);
+-		tcp_cong_avoid_ai(tp, ca->cnt, 1);
++	if (tcp_in_slow_start(tp)) {
++		acked = tcp_slow_start(tp, acked);
++		if (!acked)
++			return;
+ 	}
++	bictcp_update(ca, tp->snd_cwnd);
++	tcp_cong_avoid_ai(tp, ca->cnt, acked);
+ }
+ 
+ /*
+-- 
+1.8.3.1
 
