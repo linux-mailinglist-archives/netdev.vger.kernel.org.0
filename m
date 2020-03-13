@@ -2,153 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 57537184AD5
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 16:35:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA625184B9B
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 16:48:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727021AbgCMPfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 11:35:00 -0400
-Received: from mail-co1nam11on2040.outbound.protection.outlook.com ([40.107.220.40]:6132
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726446AbgCMPe7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Mar 2020 11:34:59 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LBpUja6u9YtOEpIogQu36NBpoRZFCqToRoLdDCdMC+oHr/dcRfnwEyV0/23YSAKVYRBKVx7KoB9A0uaPWLaAKTLVYsLvXq0mFZvYhzpAcqFWqzAlY1MpicJZoh6kTAaxHUS5iV/x2SP+wlr6rmejZ168d5Um0epafGj3iWQVuPsjzJkh7Du8MlYObsQEDiWxx+pzXYhlDE/XxQG1lAO+rAybH2vvz/j/mdthpGG3remmOXl/90t4iJj2BoTWYfU0ISMSjnPH9mBraxJ/IOFD2xYFjFo6kCcIM+m3LiI69Jq8pUg4J4kvas/xuwQW+ztZjGl3IVuSIi9PGSfCQUD7bA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1QrJXH34Af3wy3eOaPZ8mFRizX/izUQ397oGXnT4LNc=;
- b=AoLkyIDOBUP47bi/60h6ou6ySxQVPTxhP1qHPSp6EevqvyJl5smFHkV5Dlmp2Gp/tPKMMaYOw9p1Dufq0fCc/pXt6xUJJGw5h6r/OPkHyjZ6VUvKMkJyf9lG0qDnAf0s86Z7T/Wp77v0AiXgVPY0N7SWjFdordakt/9eHdbqVnOLJ+Y87Dma3K1fw2NPp0cdbIBrnnALzSxK1FFGuhaTuHUSHvB075x3+3gF3KfTE7ledla6woVho362FQabd2xXFQ0rNFKpepFpA00kfg5VKeZ1EaxsH0Kf8ZWnmLVGeX32Yo0uVSP6JfCDBlaxvzQcqSeXPSIAYcpaSLfqS0Icqg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
+        id S1727002AbgCMPsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 11:48:25 -0400
+Received: from mail-qv1-f68.google.com ([209.85.219.68]:41370 "EHLO
+        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726446AbgCMPsY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 11:48:24 -0400
+Received: by mail-qv1-f68.google.com with SMTP id a10so4802823qvq.8;
+        Fri, 13 Mar 2020 08:48:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1QrJXH34Af3wy3eOaPZ8mFRizX/izUQ397oGXnT4LNc=;
- b=hhG9YDXAhCx9iWmRGbE6g46Dxwz5C/+4pRZXwwWZ5DkaPZSdm3b0x0V7+b3JKsV2FRGGbApo3hxT3yw+xAE1xlKf34LpIYUDrPhFt+7T5Qwg+FCcV0PxtcBjPhwR1sTULuio0+4jBQ9wv9/xqL4tTqwcq8nZf3f6rdW2eUShSl0=
-Received: from MN2PR11MB4063.namprd11.prod.outlook.com (2603:10b6:208:13f::22)
- by MN2PR11MB3550.namprd11.prod.outlook.com (2603:10b6:208:ee::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.17; Fri, 13 Mar
- 2020 15:34:43 +0000
-Received: from MN2PR11MB4063.namprd11.prod.outlook.com
- ([fe80::ade4:5702:1c8b:a2b3]) by MN2PR11MB4063.namprd11.prod.outlook.com
- ([fe80::ade4:5702:1c8b:a2b3%7]) with mapi id 15.20.2814.018; Fri, 13 Mar 2020
- 15:34:43 +0000
-From:   =?iso-8859-1?Q?J=E9r=F4me_Pouiller?= <Jerome.Pouiller@silabs.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-CC:     "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kalle Valo <kvalo@codeaurora.org>
-Subject: Re: [PATCH 3/5] staging: wfx: make warning about pending frame less
- scary
-Thread-Topic: [PATCH 3/5] staging: wfx: make warning about pending frame less
- scary
-Thread-Index: AQHV9sSohBK2XnsHaUKZ+zJWfUL/nqhFB/mAgAGkUgA=
-Date:   Fri, 13 Mar 2020 15:34:43 +0000
-Message-ID: <6287924.ghGFUMk3OD@pc-42>
-References: <20200310101356.182818-1-Jerome.Pouiller@silabs.com>
- <20200310101356.182818-4-Jerome.Pouiller@silabs.com>
- <20200312143019.GN11561@kadam>
-In-Reply-To: <20200312143019.GN11561@kadam>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Jerome.Pouiller@silabs.com; 
-x-originating-ip: [37.71.187.125]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7b3fa763-bf0c-469d-3911-08d7c7640dce
-x-ms-traffictypediagnostic: MN2PR11MB3550:
-x-microsoft-antispam-prvs: <MN2PR11MB35508EA16C5337AEFC184BA993FA0@MN2PR11MB3550.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:206;
-x-forefront-prvs: 034119E4F6
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(7916004)(366004)(396003)(39850400004)(136003)(346002)(376002)(199004)(186003)(81166006)(8936002)(71200400001)(26005)(54906003)(316002)(2906002)(8676002)(4326008)(478600001)(81156014)(64756008)(6916009)(6506007)(6486002)(91956017)(76116006)(66446008)(66476007)(6512007)(66574012)(33716001)(9686003)(66946007)(5660300002)(66556008)(86362001)(39026012);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR11MB3550;H:MN2PR11MB4063.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-received-spf: None (protection.outlook.com: silabs.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: KeC1LVAD8/qlYhyNhaOUUhCqk0Qc0pmYWhiXpyGAGS7wkE2/ykWOmfNqMQv7ofFF+3ZT5PjWd4b+LBaQ5jwJx6Rmp+AyAy9ChJAcWJafvc4sBdIHD622aSnxb+U5hAdcO5gi77reTkmIFZz2C0BXqP35wnADOBW8/InXqeR1c0y09LnGycH38cmzi1v9eUA0J4V4dD8GdI/LescuIy14SE5hxhuRD4qUntQUgutCojLtNbO/vwXX1tgaA5wQz47C9+MYcggltJ+d0X71CB+X4Y8+AEESxqB9Vm3W/mjdducLnCKIlksU/o6Q0Yns4UgdnOgPiyhzXZpy+l8e1mxkYpLMoQuzQ73IrUvwXvRXErqYmJUrJbHt6dqpVa/VX3nQuBS//PCKUeAJXPOqhza5MvSIpJO4w9GeKdWDkd7C0SpRpCI50Ia6CpFZrHUXmd0tJdPbtg0SNGGgTq0HUGsNnWgo4PUCYhIC/O6OqLK5IztGkQWhICNZ8qjXpHY+5W3E
-x-ms-exchange-antispam-messagedata: HAJtEkw55bCDqxWPYO8URB915Y2BB5R6hkTGiMViiMBjXh+xymQyqu6yKuNe8s+Yy1GtjruX5LZbs3AuMrGt99Axvp/lc873tP4zJemSKH/aLE2xnrm4IojEtkRCP1rKNMAHIEKMexV9HawCz0fV5w==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <6C67A06F0BF48A49A32F1DC4F83F5FCB@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1fjdWYaARiMbD5URtOSuvWLjsUmRZ4Mp3HLmBzQW/kM=;
+        b=OlpNUfGOqKNwfcKusKki8o85abd9opIo74cZ9U6Pj+Cgs+oB1tSiLTFQWvOoJlX1Nk
+         BZ4izs2ZbVrYjO/5z+8mKjAH26iRUnZ9SNhMAwCGNJELccfJszsB0yQu7sRJKSjp61tY
+         QUFeTIZ73BYINgCKrAghFJwexBwjKhTCioFD2bdndCCJS8SIZaq85mUEsNPgqtsdHxX+
+         1UBZnjwKhX16cdgtv3c5vqtzI4LCKZgZ9brpoS8PdJnHHq0P5pScRzHixWtzjOLJ9czt
+         6W8tGvbjg3Y9pYci+Gb9RSxL/Vn45N1G1YCC1w00LnPtS2kZOPvraznH8vweFB3AbJW8
+         ScPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1fjdWYaARiMbD5URtOSuvWLjsUmRZ4Mp3HLmBzQW/kM=;
+        b=B6j6j/exKiLDbShkOd5sW7vJJwLNDfi6iONgaK1M7NvMLwp162VltwBHhCP+mKCMYR
+         WumQazF/p5fd7WwhvJ+UoTOxrbA3D9MKxaKwo/H0NXyiNajttwVmCMtlZerOF5YMqRQy
+         ysdOjngpfdps9J6r6nHucIRtYmsZsI7RrgCK09XIj4Qyxdwt/FaldFLlZtuOHXnTQyz0
+         o2WatO2vzzomiBpsrqObylhUI+pnIdVvYoDhKmtXwDBbAAAwTnI6q6dI2jTV3EKIJPJq
+         oj+XBR9wvupUjWhmxu6PAt++fdEE8zSX5jZ9HO8u5MINGV3mzYCCc1GAmuDivbkP4Dy3
+         YB7A==
+X-Gm-Message-State: ANhLgQ2SdbUlK/9Y2bRRQZ4iSMk0sy3HWW1c2F7fJ5lORe194MpFzDOU
+        /0BLabSwVRFMGCXkrpKVvsq+ClXF8GyGxKLs
+X-Google-Smtp-Source: ADFU+vsQ5fmp9gmkM5tX7JbcggSnBTA5OKGHgShhhU7XIfSe/+4eyeP6F8XxxDpPg+MovX7YB3Z6DA==
+X-Received: by 2002:a0c:e450:: with SMTP id d16mr13178869qvm.195.1584114503027;
+        Fri, 13 Mar 2020 08:48:23 -0700 (PDT)
+Received: from localhost.localdomain (pc-184-104-160-190.cm.vtr.net. [190.160.104.184])
+        by smtp.googlemail.com with ESMTPSA id m6sm4600281qkh.33.2020.03.13.08.48.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Mar 2020 08:48:22 -0700 (PDT)
+From:   Carlos Neira <cneirabustos@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     yhs@fb.com, quentin@isovalent.com, ebiederm@xmission.com,
+        brouer@redhat.com, bpf@vger.kernel.org, cneirabustos@gmail.com
+Subject: [PATCH bpf-next] bpf_helpers_doc.py: Fix warning when compiling bpftool.
+Date:   Fri, 13 Mar 2020 12:46:50 -0300
+Message-Id: <20200313154650.13366-1-cneirabustos@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7b3fa763-bf0c-469d-3911-08d7c7640dce
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Mar 2020 15:34:43.6451
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Cg0qYDQrOFu3VX4FyV//cEciTGTtF4voQG5B3NxdK99t1nOPuZX1JLrT79t+0b/FsCiso/sHCZPe2/mf4fGeAA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR11MB3550
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday 12 March 2020 15:30:19 CET Dan Carpenter wrote:
-> On Tue, Mar 10, 2020 at 11:13:54AM +0100, Jerome Pouiller wrote:
-[...]
-> So it really helps me if the commit message restates the subject.  The
-> truth is that I don't really even like the advice that Josh wrote in
-> the howto about patch descriptions.  I normally start by explaining the
-> problem then how I solved it.  But I try not to be a pedant, so long as
-> I can understand the problem and the patch that's fine.  So how I would
-> write this commit message is:
->=20
->     The warning message about releasing a station while Tx is in
->     progress will trigger a stack trace, possibly a reboot depending
->     on the configuration, and a syzbot email.  It's not necessarily
->     a big deal that transmission is still in process so let's make the
->     warning less scary.
 
-Indeed, my idea was the reviewers start by reading subjects and then read
-the body of the commit. I will care now.
+When compiling bpftool the following warning is found: 
+"declaration of 'struct bpf_pidns_info' will not be visible outside of this function."
+This patch adds struct bpf_pidns_info to type_fwds array to fix this.
 
+Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+---
+ scripts/bpf_helpers_doc.py | 1 +
+ 1 file changed, 1 insertion(+)
 
-> > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
-> > ---
-> >  drivers/staging/wfx/sta.c | 4 +++-
-> >  1 file changed, 3 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/staging/wfx/sta.c b/drivers/staging/wfx/sta.c
-> > index 03d0f224ffdb..010e13bcd33e 100644
-> > --- a/drivers/staging/wfx/sta.c
-> > +++ b/drivers/staging/wfx/sta.c
-> > @@ -605,7 +605,9 @@ int wfx_sta_remove(struct ieee80211_hw *hw, struct =
-ieee80211_vif *vif,
-> >       int i;
-> >
-> >       for (i =3D 0; i < ARRAY_SIZE(sta_priv->buffered); i++)
-> > -             WARN(sta_priv->buffered[i], "release station while Tx is =
-in progress");
-> > +             if (sta_priv->buffered[i])
-> > +                     dev_warn(wvif->wdev->dev, "release station while =
-%d pending frame on queue %d",
-> > +                              sta_priv->buffered[i], i);
->=20
-> Why print a warning message at all if this is a normal situation?  Just
-> delete the whole thing.
-
-I saw cases where it happened and it seems harmless. In add, this code
-is going to be released with 5.6. So, the WARN have to be removed.
-
-However, I think it is not normal. Even if it is harmless, it is the
-symptom of something unclean.
-
-So, I think that dev_warn() is the correct level of notification.
-
-(I should have included that in the commit log)
-
---=20
-J=E9r=F4me Pouiller
+diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
+index c1e2b5410faa..f43d193aff3a 100755
+--- a/scripts/bpf_helpers_doc.py
++++ b/scripts/bpf_helpers_doc.py
+@@ -400,6 +400,7 @@ class PrinterHelpers(Printer):
+             'struct bpf_fib_lookup',
+             'struct bpf_perf_event_data',
+             'struct bpf_perf_event_value',
++            'struct bpf_pidns_info',
+             'struct bpf_sock',
+             'struct bpf_sock_addr',
+             'struct bpf_sock_ops',
+-- 
+2.20.1
 
