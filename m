@@ -2,98 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25DF51840EA
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 07:45:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0670E1840EF
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 07:45:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726299AbgCMGpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 02:45:05 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:38003 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726001AbgCMGpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 02:45:05 -0400
-Received: by mail-lj1-f193.google.com with SMTP id w1so9290716ljh.5
-        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 23:45:04 -0700 (PDT)
+        id S1726462AbgCMGp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 02:45:27 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:42315 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726314AbgCMGp1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 02:45:27 -0400
+Received: by mail-pg1-f194.google.com with SMTP id h8so4405133pgs.9;
+        Thu, 12 Mar 2020 23:45:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=MBjltrpzVuy71coDrjqZ/jRZcEj3O4VWUM3lq7hMfBA=;
-        b=IfE9P4GCCEyEBb0VtXp2eqPnj81jkJKGcVbYkuZ6a41UaSBz8OoXExltNo0LdxU1jP
-         7R43kUh1VVDaLJFvEfQUgqiTMOjwhG3RzH7DbOdF7SlhATVmtKrr07xO4q+giUIdQ768
-         g8R+rUKOQCsm0A9FpsZz1Xmi3JR7OjVnugcnL6lMGlQwJbPW2ivDZDFbCioRsoZlNPC/
-         WmGdYADnzFOZ2v5uQM476FjXn804xCh6jmd8PDpgnYGiIsjrxHp4XyB7ROoYZwJ7ochr
-         VmLPtPfhQ6aGfeaJ8UuMLGeHBJZ9eiN8XX4SA3Oh7H3eQnZ7NK2MaW5CIKVj/ajd19FI
-         5oBQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WPL3gUJrRKM2cbWWfIBmuWTyQv5A63MVH3jx8qJd4P8=;
+        b=mjEKyd/sdH949lL+MIiRiMVBQxWxwK5iyMcdEk8tyUd40X0Dzh0iKBUB8lxuWsqaTc
+         0l0ozuIUIt8XnD6zfnFR2aRiIRV9Ko3/K6pRIrSe+j8omma9FM/xGvhEFMcefI8m854W
+         9BkHwHyVVenQwEeYw34EiGyW4DZbk82R1iSmdWmimkqaCoShmredoIVnAqld35dKWmJY
+         sDSuGoiK0K+ABHPMn6rmwP/HDLddIm8rR1m3wKtIIjkBwZU0e/1qvlnhs7CpOnEG3foo
+         hUExpzHgMTQszVJHHCiz1w0i4BkrdlCvy4TG72uZkBNBJYUnU6PZhfQcTxQ2ur4hN5tR
+         Rtcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=MBjltrpzVuy71coDrjqZ/jRZcEj3O4VWUM3lq7hMfBA=;
-        b=HuQAEaBE8jdjjt6jTdqCSSRmFuBya47Md2A+5I0PMDIAI/WWaX6LyBmRcnFG5wOxrP
-         omu3J9k5MZpF3GvW1E8YNuXEVr8mWiE1puYBaPaUTkPX4LajoeBMAi8tCZ+HOXdMwHnO
-         P7IVdrPi6z50tUY+PzTHre1pTs6uvMsKzhACrWTJcgp4xSQuuRgl4EPtLiAwcDt1OISr
-         hwm4EvXp9xfeSQFBrpA3FF4ysWeCTJ5TexPDSbzjt51PlyqV+iK8A8cJRuNGyz49Ripu
-         DNIOMApWuP0vdVJNRZSTXHe+AZU1C7uRvM0U7V+7uqt1LJ9G4GMAio98nmMbvPI1e2JE
-         Widw==
-X-Gm-Message-State: ANhLgQ1ILlwCgLChuYv+QxQSOKMhvW2ZpIlB1a/zIPPP7XgPsvgJ4aTE
-        yx0Ah37czadbnjM7NYjkBF/ms2XJ4MpAeqfGA5E=
-X-Google-Smtp-Source: ADFU+vu4IfqqFhuMy3ZcP3/XpIFYBbbiWPMWBT7kR6cskKhU5b0JehzD7vqzp5hwzmW8ExJm5B5674PPkTb6t6hPdaw=
-X-Received: by 2002:a2e:9252:: with SMTP id v18mr7469945ljg.114.1584081903147;
- Thu, 12 Mar 2020 23:45:03 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WPL3gUJrRKM2cbWWfIBmuWTyQv5A63MVH3jx8qJd4P8=;
+        b=J1YA1/TUsHrS9UhN3rNDnfXEWS/ds6AENbHpSwhqdLJoCiMVBixTdGIgf1Rk7byNb4
+         TBOGVUnmmEEl/7GqmZ3o0DhgjpiGZFDYnIGyMwGQbZXhQaowVwmdCCoEQs6RMdckB6Td
+         wQkMUOa9gsDRxyjangVhQjlJ4q/Sh3ovqg7E873Q6h7wHtVjt86W7vlYUK+RPxuh1LQn
+         s5nwCoE29kwMQloZFM5+NMsnTD0X7qESbKHBXdu0FrJFXI0ofzj8sDGfQwwwFY4XvfNL
+         Be8UXeIJ/O1kCaO3I1/wmRnUaJUH++qfmF1E/OLyJ65xRXwsFljStYkihGn1JPLSJ/UC
+         3N/Q==
+X-Gm-Message-State: ANhLgQ3G/8MyNmZ7f1z7IvL7339moGhR8gEoiz70YzMSO5+5v541o56Y
+        71zvpkTCTgvULF2OEIdyJYc=
+X-Google-Smtp-Source: ADFU+vtdwSnIwGDkvJIX39nEet2iV8W2aSU5f/YqKOuadfd8aCC6VJ2S5ob98QKACgVeNVTms1f3MQ==
+X-Received: by 2002:aa7:8bd1:: with SMTP id s17mr12079026pfd.225.1584081924569;
+        Thu, 12 Mar 2020 23:45:24 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:d19a])
+        by smtp.gmail.com with ESMTPSA id o129sm3851681pfb.61.2020.03.12.23.45.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Mar 2020 23:45:23 -0700 (PDT)
+Date:   Thu, 12 Mar 2020 23:45:21 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix usleep() implementation
+Message-ID: <20200313064521.se2sqpgkpd5ekmfo@ast-mbp>
+References: <20200313061837.3685572-1-andriin@fb.com>
 MIME-Version: 1.0
-References: <20200313020502.31341-1-ap420073@gmail.com>
-In-Reply-To: <20200313020502.31341-1-ap420073@gmail.com>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Fri, 13 Mar 2020 15:44:51 +0900
-Message-ID: <CAMArcTWw6Kqg2+PZ10F9f8ASm40wEgUq6jhVrWAKu7XC_FYmjQ@mail.gmail.com>
-Subject: Re: [PATCH net 0/3] hsr: fix several bugs in generic netlink callback
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200313061837.3685572-1-andriin@fb.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 Mar 2020 at 11:05, Taehee Yoo <ap420073@gmail.com> wrote:
->
-> This patchset is to fix several bugs they are related in
-> generic netlink callback in hsr module.
->
-> 1. The first patch is to add missing rcu_read_lock() in
-> hsr_get_node_{list/status}().
-> The hsr_get_node_{list/status}() are not protected by RTNL because
-> they are callback functions of generic netlink.
-> But it calls __dev_get_by_index() without acquiring RTNL.
-> So, it would use unsafe data.
->
-> 2. The second patch is to avoid failure of hsr_get_node_list().
-> hsr_get_node_list() is a callback of generic netlink and
-> it is used to get node information in userspace.
-> But, if there are so many nodes, it fails because of buffer size.
-> So, in this patch, restart routine is added.
->
-> 3. The third patch is to set .netnsok flag to true.
-> If .netnsok flag is false, non-init_net namespace is not allowed to
-> operate generic netlink operations.
-> So, currently, non-init_net namespace has no way to get node information
-> because .netnsok is false in the current hsr code.
->
+On Thu, Mar 12, 2020 at 11:18:37PM -0700, Andrii Nakryiko wrote:
+> nanosleep syscall expects pointer to struct timespec, not nanoseconds
+> directly. Current implementation fulfills its purpose of invoking nanosleep
+> syscall, but doesn't really provide sleeping capabilities, which can cause
+> flakiness for tests relying on usleep() to wait for something.
+> 
+> Fixes: ec12a57b822c ("selftests/bpf: Guarantee that useep() calls nanosleep() syscall")
+> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> ---
+>  tools/testing/selftests/bpf/test_progs.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+> index 2b0bc1171c9c..b6201dd82edf 100644
+> --- a/tools/testing/selftests/bpf/test_progs.c
+> +++ b/tools/testing/selftests/bpf/test_progs.c
+> @@ -35,7 +35,16 @@ struct prog_test_def {
+>   */
+>  int usleep(useconds_t usec)
+>  {
+> -	return syscall(__NR_nanosleep, usec * 1000UL);
+> +	struct timespec ts;
+> +
+> +	if (usec > 999999) {
+> +		ts.tv_sec = usec / 1000000;
+> +		ts.tv_nsec = usec % 1000000;
+> +	} else {
+> +		ts.tv_sec = 0;
+> +		ts.tv_nsec = usec;
+> +	}
+> +	return nanosleep(&ts, NULL);
+>  }
 
-I found that the second patch doesn't preserve reverse christmas tree
-variable ordering.
-So, I will send a v2 patch.
+Is this a copy-paste from somewhere?
+Above 'if' looks like premature optimization.
+I applied it anyway, since it fixes flakiness in test_progs -n 24.
+Now pin*tp* tests are stable.
 
-
-> Taehee Yoo (3):
->   hsr: use rcu_read_lock() in hsr_get_node_{list/status}()
->   hsr: add restart routine into hsr_get_node_list()
->   hsr: set .netnsok flag
->
->  net/hsr/hsr_framereg.c |  9 ++-----
->  net/hsr/hsr_netlink.c  | 61 +++++++++++++++++++++++++++---------------
->  2 files changed, 41 insertions(+), 29 deletions(-)
->
-> --
-> 2.17.1
->
+But the other one is still flaky:
+server_thread:FAIL:237
+Failed to accept client: Resource temporarily unavailable
+#64 tcp_rtt:FAIL
+Note that if I run the test alone (test_progs -n 64) it is stable.
+It fails only when run as part of bigger test_progs.
+test_progs -n 30-64 sporadically fails (most of the time)
+test_progs -n 40-64 consistently passes
+Haven't bisected further.
