@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38C47184856
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 14:40:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2084184854
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 14:40:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726824AbgCMNkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 09:40:12 -0400
-Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:59826 "EHLO
+        id S1726847AbgCMNkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 09:40:13 -0400
+Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:59800 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726695AbgCMNkL (ORCPT
+        by vger.kernel.org with ESMTP id S1726495AbgCMNkL (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 09:40:11 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 194E1C0FB0;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 16DD1C0FAF;
         Fri, 13 Mar 2020 13:40:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1584106810; bh=rcAqQ1O33U21fdLUgojPBeEA9JnctLvnhRjalBTBl+k=;
+        t=1584106810; bh=ST+X4UnqMFXVp07BI90fmUYVsZvY74GXZgG0KxD/zzQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=ezSTBR352SeEGsPvGI0WubGZdMMH5XD853Ubuzb7afYnuzVU6VrXVLmLMqJrXV5/u
-         tOCaQe84PFjz3yoyqzuMYcOKU3wkiVggZ+QONvQbm6ZdI34cWF7gxcsEvOy5QEd01V
-         o7BcPS51EzO9fxsfUUE4WXh0dLFmOWm4w3kqp/WggMEi/jV2O1cjDXUy10VlaflYDH
-         sTmQ85f+dXXbFo7ZGZYeTG7DuF4qBCXJohhjPKIER5zyreZGYCmo7WQDXKVE3DJIE5
-         8pdeXdP/1Y+7hWqvHaK5IMW0FFzRKy1p3dk1Ch6r33bPFC7SNTShZI8Y0Z7QGePkIM
-         6F8wqropPUiag==
+        b=Pzqo3QBNM0LemVYxpUtRn2N/8EqcdycybF+g2FeQZyJOc6Pkjg94j8E2di9eawu6n
+         rWpsts3DEYiUT6i9lsB2D7zBzcHTGaRTcV95Knvxe3Zjv7CBJTl27oWiNZTUL2n5xG
+         hoIgTe5gZRjd72BdUY1mPqkxLGYK3AI9Iv8Nxx3a7HkUTEpTiFW7OhVVgSnMmjKrZA
+         0TkFpPTDywkPfwSCcDFWdLNHj4Q3Jez67fW8uYEBlwUMKAcFOp0wMS08nUDocWPZEi
+         czBs235OhaAbK+E59Ja/JP7oUybKnJMWy9H0WhFeBvCTzn88QETWq/8Ilc3ktK+7f/
+         KDaTAUgarqdqQ==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 8D0ACA0064;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 9D85BA0067;
         Fri, 13 Mar 2020 13:40:08 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -39,9 +39,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Russell King <linux@armlinux.org.uk>,
         "David S. Miller" <davem@davemloft.net>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 3/4] net: phy: xpcs: Return error when 10GKR link errors are found
-Date:   Fri, 13 Mar 2020 14:39:42 +0100
-Message-Id: <314512a6938e6472237b55753b04ec83177111b2.1584106347.git.Jose.Abreu@synopsys.com>
+Subject: [PATCH net-next 4/4] net: phy: xpcs: Reset XPCS upon probe
+Date:   Fri, 13 Mar 2020 14:39:43 +0100
+Message-Id: <422e8e739c9a2a2e64ac5eac44436e20f2a03174.1584106347.git.Jose.Abreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1584106347.git.Jose.Abreu@synopsys.com>
 References: <cover.1584106347.git.Jose.Abreu@synopsys.com>
@@ -52,8 +52,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For 10GKR rate, when link errors are found we need to return fault
-status so that XPCS is correctly resumed.
+Reset the XPCS upon probe stage so that we start it from well known
+state.
 
 Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
 
@@ -67,25 +67,22 @@ Cc: "David S. Miller" <davem@davemloft.net>
 Cc: netdev@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/phy/mdio-xpcs.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/phy/mdio-xpcs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/phy/mdio-xpcs.c b/drivers/net/phy/mdio-xpcs.c
-index 23516397b982..83ced7180a44 100644
+index 83ced7180a44..7960dc52c4bd 100644
 --- a/drivers/net/phy/mdio-xpcs.c
 +++ b/drivers/net/phy/mdio-xpcs.c
-@@ -219,8 +219,10 @@ static int xpcs_read_fault(struct mdio_xpcs_args *xpcs,
- 	if (ret < 0)
- 		return ret;
+@@ -595,7 +595,7 @@ static int xpcs_probe(struct mdio_xpcs_args *xpcs, phy_interface_t interface)
+ 			match = entry;
  
--	if (ret & MDIO_PCS_10GBRT_STAT2_ERR)
-+	if (ret & MDIO_PCS_10GBRT_STAT2_ERR) {
- 		xpcs_warn(xpcs, state, "Link has errors!\n");
-+		return -EFAULT;
-+	}
+ 			if (xpcs_check_features(xpcs, match, interface))
+-				return 0;
++				return xpcs_soft_reset(xpcs, MDIO_MMD_PCS);
+ 		}
+ 	}
  
- 	return 0;
- }
 -- 
 2.7.4
 
