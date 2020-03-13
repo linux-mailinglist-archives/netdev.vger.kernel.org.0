@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA7FE183F6E
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 04:18:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B262183F79
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 04:18:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726331AbgCMDSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 23:18:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33828 "EHLO mail.kernel.org"
+        id S1726716AbgCMDSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 23:18:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33840 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726582AbgCMDSA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Mar 2020 23:18:00 -0400
+        id S1726377AbgCMDSB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Mar 2020 23:18:01 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A25AB20738;
-        Fri, 13 Mar 2020 03:17:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 294EE206F7;
+        Fri, 13 Mar 2020 03:18:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1584069480;
-        bh=pVf6m6El5AxELoQ3CwGpQzIK2Qq5x4ZvdroQDWgvSAY=;
+        bh=PlCamJTnvAikiLhrMigIC4HZB975Y4esN2CyxHaljVg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0y/rLQ7iwxeVhGbJMxKO2KdOwpwb5We+ORSnQytgyiIlLq2/HGF30jibTfcV3JeJY
-         3YriRCdBSuqLUZLy1/ky+I7rcGx/mGULIul2nOHV9T4lyZemK8x7obDY+HxB/TqqTC
-         6Qek074nDMkvrl/fdaIhp6k/y/rxPTG1U6MJnRRs=
+        b=j8c6KBRnKhiuDK3Mv20hHV8q+rrR5AyZ3HS1dfPb7Onx/qQDLRbU2IvwFX4Mxt2vY
+         jcaVbtPn5NXV7XQxGzXdiH+uyU5xa3Cr2BsUu3Jzqeyg3S0joS4bM9ThftcOcE3X2e
+         V+tDw5ecHZEqq4VZutd3YM5DIreveeqD87hpjL3M=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     shuah@kernel.org
 Cc:     keescook@chromium.org, luto@amacapital.net, wad@chromium.org,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, kernel-team@fb.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 2/5] kselftest: create fixture objects
-Date:   Thu, 12 Mar 2020 20:17:49 -0700
-Message-Id: <20200313031752.2332565-3-kuba@kernel.org>
+Subject: [PATCH 3/5] kselftest: run tests by fixture
+Date:   Thu, 12 Mar 2020 20:17:50 -0700
+Message-Id: <20200313031752.2332565-4-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200313031752.2332565-1-kuba@kernel.org>
 References: <20200313031752.2332565-1-kuba@kernel.org>
@@ -42,134 +42,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Grouping tests by fixture will allow us to parametrize
-test runs. Create full objects for fixtures.
+Now that all tests have a fixture object move from a global
+list of tests to a list of tests per fixture.
 
-Add a "global" fixture for tests without a fixture.
+Order of tests may change as we will now group and run test
+fixture by fixture, rather than in declaration order.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/testing/selftests/kselftest_harness.h | 57 +++++++++++++++++----
- 1 file changed, 46 insertions(+), 11 deletions(-)
+ tools/testing/selftests/kselftest_harness.h | 42 ++++++++++++---------
+ 1 file changed, 25 insertions(+), 17 deletions(-)
 
 diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
-index 5336b26506ab..a396afe4a579 100644
+index a396afe4a579..7a3392941a5b 100644
 --- a/tools/testing/selftests/kselftest_harness.h
 +++ b/tools/testing/selftests/kselftest_harness.h
-@@ -169,8 +169,10 @@
- #define __TEST_IMPL(test_name, _signal) \
- 	static void test_name(struct __test_metadata *_metadata); \
- 	static struct __test_metadata _##test_name##_object = \
--		{ .name = "global." #test_name, \
--		  .fn = &test_name, .termsig = _signal, \
-+		{ .name = #test_name, \
-+		  .fn = &test_name, \
-+		  .fixture = &_fixture_global, \
-+		  .termsig = _signal, \
- 		  .timeout = TEST_TIMEOUT_DEFAULT, }; \
- 	static void __attribute__((constructor)) _register_##test_name(void) \
- 	{ \
-@@ -212,10 +214,12 @@
-  * populated and cleaned up using FIXTURE_SETUP() and FIXTURE_TEARDOWN().
-  */
- #define FIXTURE(fixture_name) \
-+	static struct __fixture_metadata _##fixture_name##_fixture_object = \
-+		{ .name =  #fixture_name, }; \
- 	static void __attribute__((constructor)) \
- 	_register_##fixture_name##_data(void) \
- 	{ \
--		__fixture_count++; \
-+		__register_fixture(&_##fixture_name##_fixture_object); \
- 	} \
- 	FIXTURE_DATA(fixture_name)
- 
-@@ -309,8 +313,9 @@
- 	} \
- 	static struct __test_metadata \
- 		      _##fixture_name##_##test_name##_object = { \
--		.name = #fixture_name "." #test_name, \
-+		.name = #test_name, \
- 		.fn = &wrapper_##fixture_name##_##test_name, \
-+		.fixture = &_##fixture_name##_fixture_object, \
- 		.termsig = signal, \
- 		.timeout = tmout, \
- 	 }; \
-@@ -631,10 +636,44 @@
- 	} \
+@@ -637,8 +637,11 @@
  } while (0); OPTIONAL_HANDLER(_assert)
  
-+/* Contains all the information about a fixture */
-+struct __fixture_metadata {
-+	const char *name;
-+	struct __fixture_metadata *prev, *next;
-+} _fixture_global __attribute__((unused)) = {
-+	.name = "global",
-+	.prev = &_fixture_global,
-+};
+ /* Contains all the information about a fixture */
++struct __test_metadata;
 +
-+static struct __fixture_metadata *__fixture_list = &_fixture_global;
-+static unsigned int __fixture_count;
-+static int __constructor_order;
-+
-+#define _CONSTRUCTOR_ORDER_FORWARD   1
-+#define _CONSTRUCTOR_ORDER_BACKWARD -1
-+
-+static inline void __register_fixture(struct __fixture_metadata *f)
-+{
-+	__fixture_count++;
-+	/* Circular linked list where only prev is circular. */
-+	if (__constructor_order == _CONSTRUCTOR_ORDER_FORWARD) {
-+		f->next = NULL;
-+		f->prev = __fixture_list->prev;
-+		f->prev->next = f;
-+		__fixture_list->prev = f;
-+	} else {
-+		f->next = __fixture_list;
-+		f->next->prev = f;
-+		f->prev = f;
-+		__fixture_list = f;
-+	}
-+}
-+
- /* Contains all the information for test execution and status checking. */
- struct __test_metadata {
+ struct __fixture_metadata {
  	const char *name;
- 	void (*fn)(struct __test_metadata *);
-+	struct __fixture_metadata *fixture;
- 	int termsig;
- 	int passed;
- 	int trigger; /* extra handler after the evaluation */
-@@ -647,11 +686,6 @@ struct __test_metadata {
++	struct __test_metadata *tests;
+ 	struct __fixture_metadata *prev, *next;
+ } _fixture_global __attribute__((unused)) = {
+ 	.name = "global",
+@@ -684,7 +687,6 @@ struct __test_metadata {
+ };
+ 
  /* Storage for the (global) tests to be run. */
- static struct __test_metadata *__test_list;
+-static struct __test_metadata *__test_list;
  static unsigned int __test_count;
--static unsigned int __fixture_count;
--static int __constructor_order;
--
--#define _CONSTRUCTOR_ORDER_FORWARD   1
--#define _CONSTRUCTOR_ORDER_BACKWARD -1
  
  /*
-  * Since constructors are called in reverse order, reverse the test
-@@ -702,7 +736,7 @@ void __run_test(struct __test_metadata *t)
+@@ -698,24 +700,26 @@ static unsigned int __test_count;
+  */
+ static inline void __register_test(struct __test_metadata *t)
+ {
++	struct __fixture_metadata *f = t->fixture;
++
+ 	__test_count++;
+ 	/* Circular linked list where only prev is circular. */
+-	if (__test_list == NULL) {
+-		__test_list = t;
++	if (f->tests == NULL) {
++		f->tests = t;
+ 		t->next = NULL;
+ 		t->prev = t;
+ 		return;
+ 	}
+ 	if (__constructor_order == _CONSTRUCTOR_ORDER_FORWARD) {
+ 		t->next = NULL;
+-		t->prev = __test_list->prev;
++		t->prev = f->tests->prev;
+ 		t->prev->next = t;
+-		__test_list->prev = t;
++		f->tests->prev = t;
+ 	} else {
+-		t->next = __test_list;
++		t->next = f->tests;
+ 		t->next->prev = t;
+ 		t->prev = t;
+-		__test_list = t;
++		f->tests = t;
+ 	}
+ }
+ 
+@@ -729,14 +733,15 @@ static inline int __bail(int for_realz, bool no_print, __u8 step)
+ 	return 0;
+ }
+ 
+-void __run_test(struct __test_metadata *t)
++void __run_test(struct __fixture_metadata *f,
++		struct __test_metadata *t)
+ {
+ 	pid_t child_pid;
+ 	int status;
  
  	t->passed = 1;
  	t->trigger = 0;
--	printf("[ RUN      ] %s\n", t->name);
-+	printf("[ RUN      ] %s.%s\n", t->fixture->name, t->name);
+-	printf("[ RUN      ] %s.%s\n", t->fixture->name, t->name);
++	printf("[ RUN      ] %s.%s\n", f->name, t->name);
  	alarm(t->timeout);
  	child_pid = fork();
  	if (child_pid < 0) {
-@@ -751,7 +785,8 @@ void __run_test(struct __test_metadata *t)
- 				status);
+@@ -786,13 +791,14 @@ void __run_test(struct __test_metadata *t)
  		}
  	}
--	printf("[     %4s ] %s\n", (t->passed ? "OK" : "FAIL"), t->name);
-+	printf("[     %4s ] %s.%s\n", (t->passed ? "OK" : "FAIL"),
-+	       t->fixture->name, t->name);
+ 	printf("[     %4s ] %s.%s\n", (t->passed ? "OK" : "FAIL"),
+-	       t->fixture->name, t->name);
++	       f->name, t->name);
  	alarm(0);
  }
  
+ static int test_harness_run(int __attribute__((unused)) argc,
+ 			    char __attribute__((unused)) **argv)
+ {
++	struct __fixture_metadata *f;
+ 	struct __test_metadata *t;
+ 	int ret = 0;
+ 	unsigned int count = 0;
+@@ -801,13 +807,15 @@ static int test_harness_run(int __attribute__((unused)) argc,
+ 	/* TODO(wad) add optional arguments similar to gtest. */
+ 	printf("[==========] Running %u tests from %u test cases.\n",
+ 	       __test_count, __fixture_count + 1);
+-	for (t = __test_list; t; t = t->next) {
+-		count++;
+-		__run_test(t);
+-		if (t->passed)
+-			pass_count++;
+-		else
+-			ret = 1;
++	for (f = __fixture_list; f; f = f->next) {
++		for (t = f->tests; t; t = t->next) {
++			count++;
++			__run_test(f, t);
++			if (t->passed)
++				pass_count++;
++			else
++				ret = 1;
++		}
+ 	}
+ 	printf("[==========] %u / %u tests passed.\n", pass_count, count);
+ 	printf("[  %s  ]\n", (ret ? "FAILED" : "PASSED"));
 -- 
 2.24.1
 
