@@ -2,104 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 640EF184424
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 10:54:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFA9B18442A
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 10:56:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbgCMJyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 05:54:22 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:57499 "EHLO ozlabs.org"
+        id S1726467AbgCMJz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 05:55:59 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33188 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726055AbgCMJyW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Mar 2020 05:54:22 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 48f1Ht6Vddz9sRN;
-        Fri, 13 Mar 2020 20:54:18 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1584093260;
-        bh=F5IlTkk39IWDGQXRHNm9wo5PIlgf3hecyR/kHVYijRo=;
-        h=Date:From:To:Cc:Subject:From;
-        b=T3nJ0/V8OTTViHqS0mLFA9PYluXBlprdrRZjsFRq7yG6mkjXeQS20NxUw5MC7R+fL
-         C7JKgiD+UF2Egc7f58QFaGXKoUR4j9d5h0ZRpivIIrXMBjKhAwSLg3DGKpGxiG/23+
-         imLYgV/sf4HTG3uraT/qPTY9Z3c2+gGGpQ+hXIa0WVkyZzLgSQFQ7J05pnJsmkI7w3
-         7EvDn8pBte+cBbr8I1McqvXXntjv+TrS6RWUfCKnw7HfNvNx+n4jT9RghsfsZfNmag
-         vlbQnz+HJPlgPPS9hjPiGxhwGfkvNcdTCx73+tTenElvrBu5xilr/S+NSSa8vroij8
-         5q763xQ4laBLA==
-Date:   Fri, 13 Mar 2020 20:54:15 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexander Bersenev <bay@hackerdom.ru>
-Subject: linux-next: build warning after merge of the net-next tree
-Message-ID: <20200313205415.021b7875@canb.auug.org.au>
+        id S1726055AbgCMJz7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Mar 2020 05:55:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=y5jMrVQ1rAmzFXJgVqMw4/HO7DqIcglA8Q3MOxQde5c=; b=pJqmMLtzgUNGpjUJSu2CBoZO+H
+        35G+hZ9wBhF01fL7YN2ghhtcenyHC4VjrRk/Zq6tnoEVKr1/LLSw4/SSfuayre8E+a34p2NjGFp05
+        6t16FcATEI6wA7e54dEMMdfZz1FJSrcgNqY2m+2Yd6oMfqHD+AByv9xrcYLwZVNs4ys0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jCh2f-00045u-0c; Fri, 13 Mar 2020 10:55:45 +0100
+Date:   Fri, 13 Mar 2020 10:55:45 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>, netdev@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH v2 2/2] ARM: dts: imx6q-marsboard: properly define rgmii
+ PHY
+Message-ID: <20200313095545.GD14553@lunn.ch>
+References: <20200313053224.8172-1-o.rempel@pengutronix.de>
+ <20200313053224.8172-3-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/3KNBiHufKXAROnO8L5EJBeW";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200313053224.8172-3-o.rempel@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/3KNBiHufKXAROnO8L5EJBeW
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Fri, Mar 13, 2020 at 06:32:24AM +0100, Oleksij Rempel wrote:
+> The Atheros AR8035 PHY can be autodetected but can't use interrupt
+> support provided on this board. Define MDIO bus and the PHY node to make
+> it work properly.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  arch/arm/boot/dts/imx6q-marsboard.dts | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm/boot/dts/imx6q-marsboard.dts b/arch/arm/boot/dts/imx6q-marsboard.dts
+> index 84b30bd6908f..1f31d86a217b 100644
+> --- a/arch/arm/boot/dts/imx6q-marsboard.dts
+> +++ b/arch/arm/boot/dts/imx6q-marsboard.dts
+> @@ -111,8 +111,21 @@ &fec {
+>  	pinctrl-names = "default";
+>  	pinctrl-0 = <&pinctrl_enet>;
+>  	phy-mode = "rgmii-id";
+> -	phy-reset-gpios = <&gpio3 31 GPIO_ACTIVE_LOW>;
+>  	status = "okay";
 
-Hi all,
+Hi Oleksij 
 
-After merging the net-next tree, today's linux-next build (powerpc
-allyesconfig) produced this warning:
+I don't see a phy-handle here. So is it still using phy_find_first()?
 
-In file included from include/linux/byteorder/big_endian.h:5,
-                 from arch/powerpc/include/uapi/asm/byteorder.h:14,
-                 from include/asm-generic/bitops/le.h:6,
-                 from arch/powerpc/include/asm/bitops.h:250,
-                 from include/linux/bitops.h:29,
-                 from include/linux/kernel.h:12,
-                 from include/linux/list.h:9,
-                 from include/linux/module.h:12,
-                 from drivers/net/usb/cdc_ncm.c:41:
-drivers/net/usb/cdc_ncm.c: In function 'cdc_ncm_ndp32':
-include/uapi/linux/byteorder/big_endian.h:33:26: warning: conversion from '=
-unsigned int' to '__le16' {aka 'short unsigned int'} changes value from '40=
-2653184' to '0' [-Woverflow]
-   33 | #define __cpu_to_le32(x) ((__force __le32)__swab32((x)))
-      |                          ^
-include/linux/byteorder/generic.h:88:21: note: in expansion of macro '__cpu=
-_to_le32'
-   88 | #define cpu_to_le32 __cpu_to_le32
-      |                     ^~~~~~~~~~~~~
-drivers/net/usb/cdc_ncm.c:1175:19: note: in expansion of macro 'cpu_to_le32'
- 1175 |  ndp32->wLength =3D cpu_to_le32(sizeof(struct usb_cdc_ncm_ndp32) + =
-sizeof(struct usb_cdc_ncm_dpe32));
-      |                   ^~~~~~~~~~~
-
-Introduced by commit
-
-  0fa81b304a79 ("cdc_ncm: Implement the 32-bit version of NCM Transfer Bloc=
-k")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/3KNBiHufKXAROnO8L5EJBeW
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5rWEcACgkQAVBC80lX
-0GzATAf+JG6bIEFdkQXTzmfqkIiSFrbGZKNZgOnrKWxp9PIWUhk/fVl3L1ikJwD9
-yYfw303c1qBkdBaHolIdVk5hpWhXO4L9TspaIukZ7sGCS6pE/LItUpnz+iaEPq01
-XGrZt1hjTbiGsebrhUV99zSowk4JJuGAu5aL6fiqYG7ShjRwrrpmAcCTeSW/ZevN
-PRbvOidkpc+S7KIBNprE7Wd9fp031mIsTTIMx22mq445vS+lJUP1aZox4s5x8NHL
-kay2z8m+dgB+LiOYgh4PyI4bsdeZTRs312yrJ1IMqv7jR4GsYAQx+cAvO+ZszxvY
-aJSJE4egr1eWxNmwM4Mcquxj3Tuixw==
-=K044
------END PGP SIGNATURE-----
-
---Sig_/3KNBiHufKXAROnO8L5EJBeW--
+  Andrew
