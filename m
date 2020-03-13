@@ -2,93 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0133E184CB7
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 17:42:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C948184CC4
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 17:45:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727085AbgCMQml (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 12:42:41 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:43988 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726729AbgCMQml (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 12:42:41 -0400
-Received: by mail-lf1-f66.google.com with SMTP id n20so5081748lfl.10
-        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 09:42:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=Z1VxIXBv35KeFZt3+dBi/tUwb8bgwLuhRxYuPlHgzsc=;
-        b=Xz98X0yXEPe1LumV9Ei3+6l9IIXcGbZ9Tw2yKHMJtVt5EZ3iEt6Q53kXCqmmRcCGBy
-         mRa8pOOFhlmqeObpdCTx3FTCBLagJ0YGOlTGv+dwL4pCe9iYVHX8v8Vyl4YeGK/PxEMz
-         wWZbDOys7OkLqQrmcL+fNCUm4AfwyAUAedFpQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=Z1VxIXBv35KeFZt3+dBi/tUwb8bgwLuhRxYuPlHgzsc=;
-        b=B+98CnE7XwG8Axwra5eu9F6dHiU3nzhsRnVzpBXhT/55aHjrJVVIjUk2xMkOFeKxkf
-         WZz3Ns52CYYHt7mI7Rqt5twh45U0U7CZgLpo8dsW9KwBoXSgozt/+ZpEdlBGg5vmu0Sb
-         qL9hPQ7FuTFiQtqr3iE56trrH4XlNBxv6hcnPkgqvcWpLIC2ImStwwNilz4mxKpgNGbp
-         uo3QfBgngNzWqtpE8P2EYOqJiWCM8OjPJYFN3VT20Us6aPOcp7aqLZgogX1k5FlxfAqs
-         J8UiCxdHvSE43KfY8+xQ5LSqUkkdSf8Qlfh7hLh9SrLSHytprp2JOvBwQJYn9UknSSL8
-         ULdg==
-X-Gm-Message-State: ANhLgQ3LNlrfMy4drQLX9Ijc/NLbKDp2TLOdp4Er6KWHpWVTbhbkOVZh
-        gJLBxvt2YLb6nQp1xibWRkWjxA==
-X-Google-Smtp-Source: ADFU+vvvHY+hBwL7hPxvU+2mWXJQMUNzP5RPqDtQnTqSKVc6jkn4FyByjXpa8bqK0+yNAS+N+VuyNg==
-X-Received: by 2002:a19:a401:: with SMTP id q1mr8860478lfc.157.1584117757875;
-        Fri, 13 Mar 2020 09:42:37 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id y6sm2496989lfy.38.2020.03.13.09.42.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Mar 2020 09:42:37 -0700 (PDT)
-References: <20200312171105.533690-1-jakub@cloudflare.com> <CAEf4BzbsDMbmury9Z-+j=egsfJf4uKxsu0Fsdr4YpP1FgvBiiQ@mail.gmail.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        kernel-team@cloudflare.com
-Subject: Re: [PATCH bpf-next] selftests/bpf: Fix spurious failures in accept due to EAGAIN
-In-reply-to: <CAEf4BzbsDMbmury9Z-+j=egsfJf4uKxsu0Fsdr4YpP1FgvBiiQ@mail.gmail.com>
-Date:   Fri, 13 Mar 2020 17:42:36 +0100
-Message-ID: <87o8t0xl37.fsf@cloudflare.com>
+        id S1727020AbgCMQpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 12:45:52 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:25243 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727024AbgCMQpv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 12:45:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584117950;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2NGcze98cXWYCmagpEsgCSEsYGqJZVyFshEV55Z7Gjs=;
+        b=fRMBVFMVpdIShFmMGmp/IJ/b0TNZGj3lH1OZ4/EYAgrE8aCutCRmAErU94sZFkLpmoopXl
+        NWHLIWzWE/eQx0Ygm6pQ0Xl6N9gOTdhdsZl3aPI8Qjyaxj8DqFurrVQDwHP9rbdYNwBJyn
+        Mb3Gcsrrim1G6pQ/yBruV28q6BDqtCU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-86-CzQAHedQM_2jEHV0CsdCFg-1; Fri, 13 Mar 2020 12:45:42 -0400
+X-MC-Unique: CzQAHedQM_2jEHV0CsdCFg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 61380101FC68;
+        Fri, 13 Mar 2020 16:45:40 +0000 (UTC)
+Received: from x2.localnet (ovpn-117-60.phx2.redhat.com [10.3.117.60])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D1C565C1BB;
+        Fri, 13 Mar 2020 16:45:30 +0000 (UTC)
+From:   Steve Grubb <sgrubb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Richard Guy Briggs <rgb@redhat.com>, linux-audit@redhat.com,
+        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling the audit daemon
+Date:   Fri, 13 Mar 2020 12:45:29 -0400
+Message-ID: <2588582.z15pWOfGEt@x2>
+Organization: Red Hat
+In-Reply-To: <CAHC9VhS9DtxJ4gvOfMRnzoo6ccGJVKL+uZYe6qqH+SPqD8r01Q@mail.gmail.com>
+References: <cover.1577736799.git.rgb@redhat.com> <20200312202733.7kli64zsnqc4mrd2@madcap2.tricolour.ca> <CAHC9VhS9DtxJ4gvOfMRnzoo6ccGJVKL+uZYe6qqH+SPqD8r01Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 06:57 PM CET, Andrii Nakryiko wrote:
-> Thanks for looking into this. Can you please verify that test
-> successfully fails (not hangs) when, say, network is down (do `ip link
-> set lo down` before running test?). The reason I'm asking is that I
-> just fixed a problem in tcp_rtt selftest, in which accept() would
-> block forever, even if listening socket was closed.
+On Friday, March 13, 2020 12:42:15 PM EDT Paul Moore wrote:
+> > I think more and more, that more complete isolation is being done,
+> > taking advantage of each type of namespace as they become available, but
+> > I know a nuber of them didn't find it important yet to use IPC, PID or
+> > user namespaces which would be the only namespaces I can think of that
+> > would provide that isolation.
+> > 
+> > It isn't entirely clear to me which side you fall on this issue, Paul.
+> 
+> That's mostly because I was hoping for some clarification in the
+> discussion, especially the relevant certification requirements, but it
+> looks like there is still plenty of room for interpretation there (as
+> usual).  I'd much rather us arrive at decisions based on requirements
+> and not gut feelings, which is where I think we are at right now.
 
-While on the topic writing network tests with test_progs.
+Certification rquirements are that we need the identity of anyone attempting 
+to modify the audit configuration including shutting it down.
 
-There are a couple pain points because all tests run as one process:
+-Steve
 
-1) resource cleanup on failure
 
-   Tests can't simply exit(), abort(), or error() on failure. Instead
-   they need to clean up all resources, like opened file descriptors and
-   memory allocations, and propagate the error up to the main test
-   function so it can return to the test runner.
-
-2) terminating in timely fashion
-
-   We don't have an option of simply setting alarm() to terminate after
-   a reasnable timeout without worrying about I/O syscalls in blocking
-   mode being stuck.
-
-Careful error and timeout handling makes test code more complicated that
-it really needs to be, IMHO. Making writing as well as maintaing them
-harder.
-
-What if we extended test_progs runner to support process-per-test
-execution model? Perhaps as an opt-in for selected tests.
-
-Is that in line with the plans/vision for BPF selftests?
