@@ -2,99 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DED8E184C42
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 17:20:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61DF2184C5C
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 17:22:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726990AbgCMQUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 12:20:07 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:46317 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726461AbgCMQUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 12:20:07 -0400
-Received: by mail-wr1-f66.google.com with SMTP id n15so12825608wrw.13
-        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 09:20:05 -0700 (PDT)
+        id S1726534AbgCMQWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 12:22:31 -0400
+Received: from mail-lf1-f48.google.com ([209.85.167.48]:39147 "EHLO
+        mail-lf1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726406AbgCMQWa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 12:22:30 -0400
+Received: by mail-lf1-f48.google.com with SMTP id j15so8391226lfk.6
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 09:22:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9yAuat/22fNvrLQHtVwJOuXJKdfyxNZNaC4y6TiV+Rc=;
-        b=B7sB/m8QnCzsW/O5BFA6AjN8CaY3UzbWxEwN/khlowudBy/e7Jhtto+AE6YEiV8VdN
-         WMBJdvfJdLw0/ydX6n6/OKFUivmhJYwT8GRm+xmE7Zd0Krt4rCGiaGG1sDegoUUpdczD
-         L7DFoiVkSPIbhhZp78YPE/1yUzFaWLm1v9lGpZMYpwmN2smyhfX7dBeTnzICqQMNVuz+
-         84+j445iQ6+s4j6jnnEvlaMxMSK5o5VP8+6TAuJlZsbN7OFfPkrg/iUPmeZMg05Sj5Xs
-         wLmxO2PURtw2J2Z3Td3szH6avZEBAhUVPJ0Wh3Ifb05VipUFIxsK0JCAzKJ1Ouworuqs
-         AjbA==
+        d=intelligence.org; s=google;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=4iQUS3k1PPvS58gHcgCugysQ/zIU+LpAs7H7OyDaCOk=;
+        b=DMP27bC5m0hUKFZg44witqcHFc8tEbNdaMYfSbE2gbRHu/T5aJ6CD47lMuoZ3KCG7j
+         YQZj3w2H+9GzYQtjjsP4UYKLaqTbzEU7hzltUd6QhvWUki8z2plG4j6E0Fv8pdOETou3
+         /nD2lg/ASUvvSuqkO/uTOBawAtg7D6y2Aw6IgS8g0z3jUH963x158j2bdHLvKp7yTEWs
+         DLOQn79q3oCJCbFMyXbANCrDPXabo/JHlcYKtqWEQ/RSBn4GACv1JcBGBRF8h+44UU/T
+         K3XI+geoy3zZ27rwYJn4IXDtM30jrEd2jANrRhOa5LqorWyROX1azXcq6QviFWkNPfUh
+         DRCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9yAuat/22fNvrLQHtVwJOuXJKdfyxNZNaC4y6TiV+Rc=;
-        b=Vf5zImcUbwY3roB/adg1sOmkXVccHTn0JIvaqAAJWgFmhaU0Zbm7Cvr/WmAcor4hN/
-         Vgtt0rT4T+JMoB4bICtuGPCor5gz+wxVAPvJITemm1FMWf7HMGkIlCuzceJOS7KqV3DI
-         9Snd9FyQUOeKgc+EkA4IYuiyKGnT8b1K+hLhMr62Kzy8V+11Im3pqMtQWZFMwdfYgUMf
-         0zpyuIwFS7CUKV4dHBbm8x9RexKiSDUzLeO5HTROu8F+EA33pE5vwV/q1kQ7plc+6UCJ
-         J1gCeG9wlR6MbIhd1PWOmmz4yjjqeQ8wtND4WugX5sEqEG5caE3nGxkOrqmvGerXqPz+
-         rCZw==
-X-Gm-Message-State: ANhLgQ31Cf/rmfKUzxYwZN6ZZxyWrQUTLhZbb036JzaJbv588x4YHX3E
-        jUQW+QUtjMGrA8g7tZUL0ygH8Q==
-X-Google-Smtp-Source: ADFU+vvW95OwsBswiJRiJS7hwm11qgjSosIqo5QDvCnw+u5d9QvIUy45j2V1wA/ZZj+Q3PmRIx//aw==
-X-Received: by 2002:adf:f847:: with SMTP id d7mr17807816wrq.31.1584116404760;
-        Fri, 13 Mar 2020 09:20:04 -0700 (PDT)
-Received: from [192.168.1.10] ([194.35.118.102])
-        by smtp.gmail.com with ESMTPSA id n1sm35833275wrj.77.2020.03.13.09.20.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 Mar 2020 09:20:04 -0700 (PDT)
-Subject: Re: [PATCH bpf-next] bpf_helpers_doc.py: Fix warning when compiling
- bpftool.
-To:     Carlos Neira <cneirabustos@gmail.com>, netdev@vger.kernel.org
-Cc:     yhs@fb.com, ebiederm@xmission.com, brouer@redhat.com,
-        bpf@vger.kernel.org
-References: <20200313154650.13366-1-cneirabustos@gmail.com>
-From:   Quentin Monnet <quentin@isovalent.com>
-Message-ID: <a71d42ca-662d-d057-6939-60ad2bc44e1d@isovalent.com>
-Date:   Fri, 13 Mar 2020 16:20:03 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=4iQUS3k1PPvS58gHcgCugysQ/zIU+LpAs7H7OyDaCOk=;
+        b=KmWNu7lSY1yJknPN7gUH3aJwSB53W9+wVqrCmSs46YttkEOIgvfzAz6fCKR06zDHEc
+         MeN1cMOMINXm1thv5c6Z745/I+klUEwqMfBRgoE85xZajTdoOnn5gV1b/yhPGL1GsjIN
+         KFWoD0NNQxScwiEGAKolo1i35aBSx8v+fMK/akwBwxiALb/ZexHSeANxWKKrn05rE6rv
+         RqjJoMh6vlOnsaOkntICXTApXoe6R+4g6z1JyhS/VzzDGgP69jvzxVgMIIYY+aEqzKy9
+         OqE645d4+c3T0AiBl8gUVRiH17Zew4alMoYO5tjC5wmI4T20ZhXmpLljrwKog1HL0kiO
+         7ePQ==
+X-Gm-Message-State: ANhLgQ3IHnvEVToDgSUoVsGxtrUtqQQEJZCvCuzU2FpjjfXtnAB+Zejq
+        9VrmAj6iKLhEKZam4j20GCFh2oRlxk+7rnQqZwgkI1C579lp
+X-Google-Smtp-Source: ADFU+vukXOL7JRCS1Dn/CaUpX0dIt5xSu+XrjT/SutWhnZ6bOnNVXHBg06cF4/+DLhcxVzEMJD39MWmfaWBbVdebbcc=
+X-Received: by 2002:a05:6512:2001:: with SMTP id a1mr8837817lfb.141.1584116548298;
+ Fri, 13 Mar 2020 09:22:28 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200313154650.13366-1-cneirabustos@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+From:   Chuck <chuck@intelligence.org>
+Date:   Fri, 13 Mar 2020 09:21:52 -0700
+Message-ID: <CAPwpnyTDpkX2hxiqYLxTuMM38cq+whPSC0yoee-YPLEAwfvqpQ@mail.gmail.com>
+Subject: How to set domainname with iproute2? (net-tools deprecation)
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2020-03-13 12:46 UTC-0300 ~ Carlos Neira <cneirabustos@gmail.com>
-> 
-> When compiling bpftool the following warning is found: 
-> "declaration of 'struct bpf_pidns_info' will not be visible outside of this function."
-> This patch adds struct bpf_pidns_info to type_fwds array to fix this.
-> 
-> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
-> ---
->  scripts/bpf_helpers_doc.py | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
-> index c1e2b5410faa..f43d193aff3a 100755
-> --- a/scripts/bpf_helpers_doc.py
-> +++ b/scripts/bpf_helpers_doc.py
-> @@ -400,6 +400,7 @@ class PrinterHelpers(Printer):
->              'struct bpf_fib_lookup',
->              'struct bpf_perf_event_data',
->              'struct bpf_perf_event_value',
-> +            'struct bpf_pidns_info',
->              'struct bpf_sock',
->              'struct bpf_sock_addr',
->              'struct bpf_sock_ops',
-> 
+I see calls to move the world from net-tools to iproute2 [1] [2] [3].
 
-Note that the warning is not specific to bpftool (I just happened to
-spot it when compiling this tool), it's for anything that uses libbpf,
-or more generally, the generated header for helpers.
+My Linux distro uses the `hostname` executable from net-tools to set the
+hostname, which simply passes it through to the `sethostname` system call.
+I don't see any references to `sethostname` in the iproute2 sources.  I
+guess the replacement is systemd's `hostnamectl set-hostname`?
 
-It is fixed by your patch, thank you!
+My distro uses the `domainname` executable (which is a symlink to
+`hostname`) from net-tools to set the domain name, which simply passes it
+through to the `setdomainname` system call.  I don't see any calls
+to `sethostname` in either iproute2 or systemd.
 
-Reviewed-by: Quentin Monnet <quentin@isovalent.com>
+What is the recommended way to set the domain name during system
+start-up without net-tools?
+
+(Asking here because iproute2 is supposed to replace net-tools.  If this is
+not the right list for this, 1. Apologies, and 2. Where is the right place
+for this inquiry?)
+
+[1] https://lwn.net/Articles/710533/
+[2] https://lwn.net/Articles/710535/
+[3] https://wiki.linuxfoundation.org/networking/iproute2
