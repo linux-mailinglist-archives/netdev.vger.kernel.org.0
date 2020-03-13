@@ -2,187 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBBFC184D63
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 18:16:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE5EA184D77
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 18:21:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726706AbgCMRQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 13:16:36 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:33106 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726442AbgCMRQg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 13:16:36 -0400
-Received: by mail-qt1-f194.google.com with SMTP id d22so8164766qtn.0;
-        Fri, 13 Mar 2020 10:16:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lh0hV2LBWCLYpY6cGphwGr9PuJFxCLWX7eWlYeoBrDE=;
-        b=DZD4Y25XT7ssinm0JN60ccOU3Ogynfx4haz2fLMw98tMNn8LsSr1gscJgGKDiECTKh
-         RS4AjNttEZrxt5H4uKBpXWrW82XQ044OUeqmmJGX8676f7boSTilUakMEB3xDdXFFjp8
-         KJA1ZxK0DmyJGQVdQPRzPL5X/kIwJO1psNauN+gDqGqK/NtB4InuuM6skHz0pbh+N5J7
-         86FUcxjh+drLyja355fIs65TShL9lTHp61SkY/QPSVG+ICO0QI/7LxKkBVPUaNVKD1k4
-         mgfioeOWHlDsFs1mg7G5ElzjRA7KP4SQlFkTs6d7Q/TafrOqeds3AmjeqctHrbL1lZ84
-         F8PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lh0hV2LBWCLYpY6cGphwGr9PuJFxCLWX7eWlYeoBrDE=;
-        b=tRVR6+45FShAHp44j//o6btsx8ujgcgqUU9a17LQFJwGhcZY+t+qO5OqInIgVYngtU
-         9bhE/lkeoCaEXkIgYx6t/slnNC0ezAqK86zuauAHxjwiRY76I9n1c+lLLvnl122ZstkN
-         5hk685JilH/UkFw3WVPkwIej4FLdugmCYNDoqMyMLq1vPTsH+JLuATtz4/2MzXI5HH0l
-         zY5Sf4GJD+GmsY+6arZM79lIBL7cDQeJLpTQTehDTcAMvF0kGKzaDjXNJPgRzazRZmB9
-         4K5RyL4uIX9WJBcxbvCkdFOhFvaCxyxY8bWoo3wD8DmPDHylGP0JavQhYw1YvzBT5J+/
-         YqIA==
-X-Gm-Message-State: ANhLgQ1pbcaXousgr4BKCZ2ay9I+0Do05K7+rjnUiPh04cmpEv3s3l3i
-        QkMrNbja9CgPQqw04qEI5Ky1drZF4NowPw6qVCFfzc/V
-X-Google-Smtp-Source: ADFU+vvu2bsR+GkgNhdMuRAqjIMcKyaF6MFWKbAJYHLL3u475yojH2HQvWwv2dMaE6FAGO5keX22QK1ZNFHOfp8KJr8=
-X-Received: by 2002:ac8:4e14:: with SMTP id c20mr13345117qtw.141.1584119795371;
- Fri, 13 Mar 2020 10:16:35 -0700 (PDT)
+        id S1726682AbgCMRV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 13:21:29 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:56596 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726622AbgCMRV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 13:21:28 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02DHB8AR017144;
+        Fri, 13 Mar 2020 10:21:25 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=QkKWp6YFHo90VhAeGFG4KdgDdnsZRXB4QDMlHXYGTfQ=;
+ b=mg2G6wWcXMKUaMdGzJm5KlDr8s4ZNL89+REYV+66/306PK/py33q3Q7KXAUR2CQulzmY
+ ahxdQIXqCm9va/PK4e6L9W3lwtUzbA1PKKltawdn4zuOLWAjASkhnTjHmY91ym9BZFWf
+ UQGqBKXmHFGyPpb4zva4X91E7HLGrs4FjTU= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yqt7t59cv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 13 Mar 2020 10:21:25 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Fri, 13 Mar 2020 10:21:24 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iD6w6buFlsmcrIX6tlPdug96xbcgQlcB2FibwOnAmVdBfcaPoWqU46swf1fr+FLJZyI3Kclf5gtcRpquuS11U1QQjlIBzd++32rwZIAOajLmB+luawE+Z+6YX5V9hVOPqavMIDdpcLf76aZP+wzI8nzTBxFT9NZq/Y/z/GN8APH6YGHT0ipKv3O0KQbei3jWJhDT5VlYCt9YmNH/MNHQ9PfPKKcCyuzm1eYBFaMrjlrFKVja4NmMoM37v1uP8ti1W6dPBTcdYEDCeUTvIIklPLZ/PvfVUbhCJLQ1UBZANc/YFUzHiCjQv+USnqN4TOUBM99IflQZTKAVM0V8Vz4eeg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QkKWp6YFHo90VhAeGFG4KdgDdnsZRXB4QDMlHXYGTfQ=;
+ b=Vk5ibgT2KzljOVlRrja17FG3ZmvyUan+e99428KzwTMJHJclDTtTd7Jio/GIXjbapTxnWSaVlhnsLyg4BEFbK2cwQ6LVpVn8YM3lrL7GcFMnjY+2U3Jo55Xo6R10WZ0yBNupW3Fd3AgslXEg/Cx2bvhUsTuPU4bO4RI4aM3oE6UK/53ZRfTgyNeT+yx5Zcrw7g79RaiU6mS/rHBdED83kQAj3V+9U1fD88PWtspXZQn5Ez/EjMnCktBhGQFbeHwreRBDrDSzXlPg44l8xkJ0gFOb7uZk/d8+q/0Y+GtPy38MiNas0B/qsQZfua1Xz7djMTeO8fV7PnHf2lnuNWSTgw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QkKWp6YFHo90VhAeGFG4KdgDdnsZRXB4QDMlHXYGTfQ=;
+ b=A0MdMCFlzxmjvvM95mwuAEqgxApt4CE2vDFjxRvLEIbYrP+dA3l9R/BxNsZdHgTKB7K8WCOufy8ZBJR1uh4rdGM5fiCwSSv/JjI9NrQZ+P3a0UnQkNYt9LnwxhuA4I1yXFSI12cC/AjBiMxt6CW5Ovg5n9BfWI5inW2/u3UwhuM=
+Received: from BYAPR15MB2278.namprd15.prod.outlook.com (2603:10b6:a02:8e::17)
+ by BYAPR15MB3080.namprd15.prod.outlook.com (2603:10b6:a03:ff::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.14; Fri, 13 Mar
+ 2020 17:21:21 +0000
+Received: from BYAPR15MB2278.namprd15.prod.outlook.com
+ ([fe80::4d5a:6517:802b:5f47]) by BYAPR15MB2278.namprd15.prod.outlook.com
+ ([fe80::4d5a:6517:802b:5f47%4]) with mapi id 15.20.2793.018; Fri, 13 Mar 2020
+ 17:21:21 +0000
+Date:   Fri, 13 Mar 2020 10:21:19 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Carlos Neira <cneirabustos@gmail.com>
+CC:     <netdev@vger.kernel.org>, <yhs@fb.com>, <quentin@isovalent.com>,
+        <ebiederm@xmission.com>, <brouer@redhat.com>, <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next] bpf_helpers_doc.py: Fix warning when compiling
+ bpftool.
+Message-ID: <20200313172119.3vflwxlbikvqdcqh@kafai-mbp>
+References: <20200313154650.13366-1-cneirabustos@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200313154650.13366-1-cneirabustos@gmail.com>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: CO2PR18CA0043.namprd18.prod.outlook.com
+ (2603:10b6:104:2::11) To BYAPR15MB2278.namprd15.prod.outlook.com
+ (2603:10b6:a02:8e::17)
 MIME-Version: 1.0
-References: <20200313075442.4071486-1-andriin@fb.com> <20200313075442.4071486-5-andriin@fb.com>
- <20200313170212.lf4lnljwtvhypkew@kafai-mbp>
-In-Reply-To: <20200313170212.lf4lnljwtvhypkew@kafai-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 13 Mar 2020 10:16:24 -0700
-Message-ID: <CAEf4BzbZ0rQ=Lwvvy1Kk8jQqRdHzPNodcXTHD=i1px7DKa-YsA@mail.gmail.com>
-Subject: Re: [Potential Spoof] [PATCH bpf-next 4/4] selftests/bpf: add
- vmlinux.h selftest exercising tracing of syscalls
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp (2620:10d:c090:400::5:ad28) by CO2PR18CA0043.namprd18.prod.outlook.com (2603:10b6:104:2::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.18 via Frontend Transport; Fri, 13 Mar 2020 17:21:20 +0000
+X-Originating-IP: [2620:10d:c090:400::5:ad28]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4efb1587-1f65-4e29-b79e-08d7c772f319
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3080:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB3080F4470D84300BC4CD7A5DD5FA0@BYAPR15MB3080.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-Forefront-PRVS: 034119E4F6
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(376002)(346002)(396003)(39860400002)(366004)(136003)(199004)(1076003)(52116002)(186003)(2906002)(6916009)(66946007)(66556008)(4744005)(8676002)(66476007)(16526019)(86362001)(5660300002)(4326008)(6496006)(33716001)(8936002)(316002)(478600001)(55016002)(81156014)(9686003)(81166006);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB3080;H:BYAPR15MB2278.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+Received-SPF: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: oSwgTFd99WoUnLpyMIB5xPQemmK38igL30T+uXsPtD2z6g8n1QBciA+RIr61/JxNrcPvp+k03XTsC0UtVNhhnlGLHSJJT2hxlC/+KMEMWRu+iwrIYp9CWgPpEpvdHOhuWY17ukghuj2lW8VjyQcgua5oyNS6sx1YaOfxzm5po0X66Ai9Xn7DfHC8VRSS6iM+JOOP7ZlmcWab5i8gw56t6MrXQhKimxFXEeksGjHD4V4kMnqT8RwF/dUkRmLyP9wvteG7uiF6D28+V2VrCsgg330mQjT7L0d8duvddIWVYkey1pvWYWSxE7UOr1XK3r8YKVeWbYD99icUNQNFsf3hZO471WahDfU21aXWd42Pyxgn6Cok6mN4xDlfYkrn9Z03nVzzON8uutD4c4adYh/6ZcDmKlFc1lhgDZZfMm9aSpfg6pvuarECYAHx48w5S0zv
+X-MS-Exchange-AntiSpam-MessageData: ifM1bmUlK0eXJIC0MzZkgH+nzuPnMBzNo5emsbmx9JzsXZPqxqPZun1U9q1qaq9zBjgWH2Vx350FJgQ1pNOrfLTXDbD9ZpOrJrvQjPasSh1gB25IBF3X0ULXwBjdszE279axCVNwMGMy79ze6Y6RtuiAZhnilQTMQKNFecWskUsx8e0FgY4/KW40t3o2hNR+
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4efb1587-1f65-4e29-b79e-08d7c772f319
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2020 17:21:21.7780
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: q/kcQbt15jcvBaF7uKLYbyc4JBRMwG9F3Mr5WnrzcT4bYlmKax2EVgTOTOjn5Xnd
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3080
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-13_06:2020-03-12,2020-03-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1011 mlxscore=0
+ lowpriorityscore=0 bulkscore=0 suspectscore=0 priorityscore=1501
+ phishscore=0 malwarescore=0 adultscore=0 spamscore=0 mlxlogscore=732
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003130085
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 13, 2020 at 10:02 AM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Fri, Mar 13, 2020 at 12:54:41AM -0700, Andrii Nakryiko wrote:
-> > Add vmlinux.h generation to selftest/bpf's Makefile. Use it from newly added
-> > test_vmlinux to trace nanosleep syscall using 5 different types of programs:
-> >   - tracepoint;
-> >   - raw tracepoint;
-> >   - raw tracepoint w/ direct memory reads (tp_btf);
-> >   - kprobe;
-> >   - fentry.
-> >
-> > These programs are realistic variants of real-life tracing programs,
-> > excercising vmlinux.h's usage with tracing applications.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> [ ... ]
->
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/vmlinux.c b/tools/testing/selftests/bpf/prog_tests/vmlinux.c
-> > new file mode 100644
-> > index 000000000000..04939eda1325
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/prog_tests/vmlinux.c
-> > @@ -0,0 +1,43 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/* Copyright (c) 2020 Facebook */
-> > +
-> > +#include <test_progs.h>
-> > +#include <time.h>
-> > +#include "test_vmlinux.skel.h"
-> > +
-> > +#define MY_TV_NSEC 1337
-> > +
-> > +static void nsleep()
-> > +{
-> > +     struct timespec ts = { .tv_nsec = MY_TV_NSEC };
-> > +
-> > +     (void)nanosleep(&ts, NULL);
-> > +}
-> > +
-> > +void test_vmlinux(void)
-> > +{
-> > +     int duration = 0, err;
-> > +     struct test_vmlinux* skel;
-> > +     struct test_vmlinux__bss *bss;
-> > +
-> > +     skel = test_vmlinux__open_and_load();
-> > +     if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-> > +             return;
-> > +     bss = skel->bss;
-> > +
-> > +     err = test_vmlinux__attach(skel);
-> > +     if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-> > +             goto cleanup;
-> > +
-> > +     /* trigger everything */
-> > +     nsleep();
-> > +
-> > +     CHECK(!bss->tp_called, "tp", "not called\n");
-> > +     CHECK(!bss->raw_tp_called, "raw_tp", "not called\n");
-> > +     CHECK(!bss->tp_btf_called, "tp_btf", "not called\n");
-> > +     CHECK(!bss->kprobe_called, "kprobe", "not called\n");
-> > +     CHECK(!bss->fentry_called, "fentry", "not called\n");
-> > +
-> > +cleanup:
-> > +     test_vmlinux__destroy(skel);
-> > +}
-> > diff --git a/tools/testing/selftests/bpf/progs/test_vmlinux.c b/tools/testing/selftests/bpf/progs/test_vmlinux.c
-> > new file mode 100644
-> > index 000000000000..5cc2bf8011b0
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/test_vmlinux.c
-> > @@ -0,0 +1,98 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/* Copyright (c) 2020 Facebook */
-> > +
-> > +#include "vmlinux.h"
-> > +#include <asm/unistd.h>
-> > +#include <bpf/bpf_helpers.h>
-> > +#include <bpf/bpf_tracing.h>
-> > +#include <bpf/bpf_core_read.h>
-> > +
-> > +#define MY_TV_NSEC 1337
-> > +
-> > +bool tp_called = false;
-> > +bool raw_tp_called = false;
-> > +bool tp_btf_called = false;
-> > +bool kprobe_called = false;
-> > +bool fentry_called = false;
-> > +
-> > +SEC("tp/syscalls/sys_enter_nanosleep")
-> > +int handle__tp(struct trace_event_raw_sys_enter *args)
-> > +{
-> > +     struct __kernel_timespec *ts;
-> > +
-> > +     if (args->id != __NR_nanosleep)
-> > +             return 0;
-> > +
-> > +     ts = (void *)args->args[0];
-> > +     if (BPF_CORE_READ(ts, tv_nsec) != MY_TV_NSEC)
-> > +             return 0;
-> > +
-> > +     tp_called = true;
-> > +     return 0;
-> > +}
-> > +
-> > +static bool __always_inline handle_probed(struct pt_regs *regs, long id)
-> It is not used, may be removing it?
->
+On Fri, Mar 13, 2020 at 12:46:50PM -0300, Carlos Neira wrote:
+> 
+> When compiling bpftool the following warning is found: 
+> "declaration of 'struct bpf_pidns_info' will not be visible outside of this function."
+> This patch adds struct bpf_pidns_info to type_fwds array to fix this.
+> 
+> Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+Fixes: b4490c5c4e02 ("bpf: Added new helper bpf_get_ns_current_pid_tgid")
+Acked-by: Martin KaFai Lau <kafai@fb.com>
 
-Oh, did I really leave it around?... Sigh, will post v2 without it.
-
-
-> > +{
-> > +     struct __kernel_timespec *ts;
-> > +
-> > +     if (id != __NR_nanosleep)
-> > +             return false;
-> > +
-> > +     ts = (void *)PT_REGS_PARM1_CORE(regs);
-> > +     if (BPF_CORE_READ(ts, tv_nsec) != MY_TV_NSEC)
-> > +             return false;
-> > +
-> > +     return true;
-> > +}
+Please add the Fixes tag next time.  Other than tracking,
+it will be easier for review purpose also.
