@@ -2,92 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81C0A184CE8
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 17:49:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1922D184D24
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 18:00:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727095AbgCMQte (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 12:49:34 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:45720 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726406AbgCMQtd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 12:49:33 -0400
-Received: by mail-ed1-f66.google.com with SMTP id h62so12638017edd.12
-        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 09:49:30 -0700 (PDT)
+        id S1726824AbgCMRAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 13:00:46 -0400
+Received: from mail-pj1-f53.google.com ([209.85.216.53]:35540 "EHLO
+        mail-pj1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726550AbgCMRAq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 13:00:46 -0400
+Received: by mail-pj1-f53.google.com with SMTP id mq3so4658559pjb.0
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 10:00:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YGG5XY3Ewg2kr6ydPgEVpPEQe8Bu0vVCZeuUuZTd/eQ=;
-        b=WoJn/P9W8ionIJ6xiBiPAmxmGbbYK44xv4IrICoWubAgYlhtkhxUJmVCijstH/13K8
-         e8sfsXfNGVfsBKnRV0SJuy8a8BZyemhuV3VRdHRn2DarGPfrMqFVOH/OuDqiVr4hokOl
-         UhOrjDnrSoggcD90vmrkTdZGj88Cdu4MhRmnyJ0V4shQjxGwADiObeG6nDXMrC2tX1Sf
-         Zx5guOou8iWTPF16pL8NUnjXXzxYS+GbneCIQZyfvTaduvQymLt4+IWsFLUbJONa/YD2
-         kXa9vk9xzfHNLaAh621qmRaQsnpJdixash8QTk6Mp+WMhkhfOstdpA5Hj+YyS0gM+Gnv
-         FnoA==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=uNamY5coKxe7ax+3q4QRdu2InpY//4/lBAUDffNTZSk=;
+        b=IuaksfItvQlxSK5JbDYhYeer7gVMH7PCKtY0RErKAQHH7gIQR+2looBz+mSq3d6eXK
+         cDNyVqKZgQGw9OQyYZPYzi+Dg37RM4vD3JtxiwPDxyIAMaQwAab6IqrqglrELQKR2LAV
+         IXBGwLtzZy9+EZ5UKqGK8dqwiDuA6IkaRnNaGxZAnTL2I2m0IKXRQG1WTkCQT+ej5duy
+         XLaHktO2IAC2AQCuMAjMTO5crNw8+4tVZnoi77lsShX6uSBmJG7ph/QOyjQkhP9eYf85
+         3g13dRPZzNHfrcY9F4bMc1eAK1YCuYNDtGLMa/Nf5G2sZdpp8EByQf0hJdCZ+PD87+VO
+         cYkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YGG5XY3Ewg2kr6ydPgEVpPEQe8Bu0vVCZeuUuZTd/eQ=;
-        b=M5lAg2vt+fDUBADI52xXVymvggaYSK7BoJe1VM6Up+WCNLnt2ajOrH7qwmgKPpcpHv
-         Pmxx/HsOqZuuc+ifaS3AyUwBTXGLlJQ2okVB3Bhi4gCcfpbdeZcnp0CP5CKeXMcR+XBl
-         xKVv1ZlCMO4Vv8jvYBLWcgx3Op1L9iev6HuryswKZKrI/p1iLXV57fJhLVs7nhU41ACW
-         zHxT3+eIItsNbX1WzIV49EsJoAf7iqZyt0eBnCaXh7hSSaO551h4nbaiC7tmxg2LzUm0
-         aU9Ynj73NxCT9f4Sc0rEnZQpk1Svts+75TUSDmJptvl1GpVixK2wTf6NkhyRXqRprAoh
-         xPTg==
-X-Gm-Message-State: ANhLgQ3C0O/Hlrz18ALKsoM61eGldftqSMRS389JX7L3GFaD0v5OSP2b
-        k+6CL+wYodDbkYMXdGt9i2YkRU69wiW5UGzewmh5
-X-Google-Smtp-Source: ADFU+vv+9NsRZqnIPliXMbq5GOtlCub1wdzEkmolWWP97LJYncHkT1zJ8K+tAtQcCN/BN4QsA0IqfHmFy6PXx2taKa0=
-X-Received: by 2002:aa7:dd01:: with SMTP id i1mr14078117edv.164.1584118169827;
- Fri, 13 Mar 2020 09:49:29 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=uNamY5coKxe7ax+3q4QRdu2InpY//4/lBAUDffNTZSk=;
+        b=kO0uBzfZfxnUQjtiMwElEY+jFRnD8/V9huSra4ljhzdA2H1mhau3NExqANU9C4m14h
+         mGvb6DluJ1/p2MDqGOGx/o7sBF4x01jomnS9YABXbuS+dNZmaJWD6cD3piztJhZLnu37
+         SOzAg7a9DLxIW49KsL+SZuix9xpdW9AQYq1LDdDPMH/T2vzXkjCqe0VQ35J7SpOi9aWE
+         e89CWO30QTNwdqxPJepAXUh/Jsb1Fx2Wm1ml88QHwRrQzuHq/SbfnHfI+A2QOeonLwCB
+         VNG/UIoeoiMWrtZbJep+s4r1ejkJ8eFuV8dBv2bLG4qVRmexMT5hDAuLTalwFu2dot7I
+         vzzg==
+X-Gm-Message-State: ANhLgQ02k97+P9kBizMHmHMJI5ziIavElt7kMSS6stVZ/cJrgjIknwyr
+        NhArpnpFbysM+j0deZI2IB0Y/QWNSkk=
+X-Google-Smtp-Source: ADFU+vtkEeNtdlUydCNRklNz4Fj0fxSKkHtmlZAUUBEz3vQPusagvXbsmMbHAEZ4657agbnM+lVByg==
+X-Received: by 2002:a17:902:8609:: with SMTP id f9mr13636319plo.203.1584118844942;
+        Fri, 13 Mar 2020 10:00:44 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id j12sm42109561pga.78.2020.03.13.10.00.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Mar 2020 10:00:44 -0700 (PDT)
+Date:   Fri, 13 Mar 2020 10:00:41 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Chuck <chuck@intelligence.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: How to set domainname with iproute2? (net-tools deprecation)
+Message-ID: <20200313100041.374b26da@hermes.lan>
+In-Reply-To: <CAPwpnyTDpkX2hxiqYLxTuMM38cq+whPSC0yoee-YPLEAwfvqpQ@mail.gmail.com>
+References: <CAPwpnyTDpkX2hxiqYLxTuMM38cq+whPSC0yoee-YPLEAwfvqpQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <cover.1577736799.git.rgb@redhat.com> <20200312202733.7kli64zsnqc4mrd2@madcap2.tricolour.ca>
- <CAHC9VhS9DtxJ4gvOfMRnzoo6ccGJVKL+uZYe6qqH+SPqD8r01Q@mail.gmail.com> <2588582.z15pWOfGEt@x2>
-In-Reply-To: <2588582.z15pWOfGEt@x2>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 13 Mar 2020 12:49:18 -0400
-Message-ID: <CAHC9VhQ7hFc8EqrEojmjQriWtKkqjPyzWrnrc_eVKjcYhhV8QQ@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
- the audit daemon
-To:     Steve Grubb <sgrubb@redhat.com>
-Cc:     Richard Guy Briggs <rgb@redhat.com>, linux-audit@redhat.com,
-        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
-        containers@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
-        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
-        simo@redhat.com, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 13, 2020 at 12:45 PM Steve Grubb <sgrubb@redhat.com> wrote:
-> On Friday, March 13, 2020 12:42:15 PM EDT Paul Moore wrote:
-> > > I think more and more, that more complete isolation is being done,
-> > > taking advantage of each type of namespace as they become available, but
-> > > I know a nuber of them didn't find it important yet to use IPC, PID or
-> > > user namespaces which would be the only namespaces I can think of that
-> > > would provide that isolation.
-> > >
-> > > It isn't entirely clear to me which side you fall on this issue, Paul.
-> >
-> > That's mostly because I was hoping for some clarification in the
-> > discussion, especially the relevant certification requirements, but it
-> > looks like there is still plenty of room for interpretation there (as
-> > usual).  I'd much rather us arrive at decisions based on requirements
-> > and not gut feelings, which is where I think we are at right now.
->
-> Certification rquirements are that we need the identity of anyone attempting
-> to modify the audit configuration including shutting it down.
+On Fri, 13 Mar 2020 09:21:52 -0700
+Chuck <chuck@intelligence.org> wrote:
 
-Yep, got it.  Unfortunately that doesn't really help with what we are
-talking about.  Although preventing the reuse of the ACID before the
-SIGNAL2 record does help preserve the sanity of the audit stream which
-I believe to be very important, regardless.
+> I see calls to move the world from net-tools to iproute2 [1] [2] [3].
+> 
+> My Linux distro uses the `hostname` executable from net-tools to set the
+> hostname, which simply passes it through to the `sethostname` system call.
+> I don't see any references to `sethostname` in the iproute2 sources.  I
+> guess the replacement is systemd's `hostnamectl set-hostname`?
+> 
+> My distro uses the `domainname` executable (which is a symlink to
+> `hostname`) from net-tools to set the domain name, which simply passes it
+> through to the `setdomainname` system call.  I don't see any calls
+> to `sethostname` in either iproute2 or systemd.
+> 
+> What is the recommended way to set the domain name during system
+> start-up without net-tools?
+> 
+> (Asking here because iproute2 is supposed to replace net-tools.  If this is
+> not the right list for this, 1. Apologies, and 2. Where is the right place
+> for this inquiry?)
+> 
+> [1] https://lwn.net/Articles/710533/
+> [2] https://lwn.net/Articles/710535/
+> [3] https://wiki.linuxfoundation.org/networking/iproute2
 
--- 
-paul moore
-www.paul-moore.com
+Iproute2 is focused around netlink and supporting the kernel networking.
