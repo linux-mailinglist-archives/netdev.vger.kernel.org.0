@@ -2,179 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00E87184BC0
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 16:53:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81E08184C06
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 17:08:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbgCMPxM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 11:53:12 -0400
-Received: from us-smtp-1.mimecast.com ([205.139.110.61]:40621 "EHLO
-        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726442AbgCMPxL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 11:53:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584114790;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=prP8G06Z8lWjAnIztTLuEEPiR8PxmQUL5o3aVg67oxg=;
-        b=Ga7k0eMgX+fLgkSm4mXBs/x3BRu+P2X2wHIXpgcqut9ULf0u897MbYEBaGhl3fG6k+mqFq
-        IcyNJfOe9soz/RUM48dsnFo64JrPx4CXfMvU3XdnBNApCSGp6Mq9mDkh8G7o4sHCUW0tHn
-        AzWLc+rMEi8Gc7Ao9JcjizY2R9J3nSM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-58-41a3_wwQOJa2ap-toJtaAA-1; Fri, 13 Mar 2020 11:53:07 -0400
-X-MC-Unique: 41a3_wwQOJa2ap-toJtaAA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DBC3313EA;
-        Fri, 13 Mar 2020 15:53:05 +0000 (UTC)
-Received: from localhost.localdomain.com (ovpn-116-114.ams2.redhat.com [10.36.116.114])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EAC4160C63;
-        Fri, 13 Mar 2020 15:53:04 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
+        id S1727046AbgCMQIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 12:08:32 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:39319 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726504AbgCMQIc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 12:08:32 -0400
+Received: by mail-wm1-f68.google.com with SMTP id f7so10902801wml.4
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 09:08:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ml2P3KKWTpFi6kw+xt/cwO8aUdMFrLyTs/rPNyzYSC0=;
+        b=bWFjqSu5CueE8pD/VvBvDz6h91SqkQqHDhgFS5tH1oJ2Q/AS6pSEI5Ugq02XTDRl1Q
+         SaP444QlFsjauPkEyJy6EhioFjyRQcHJsorL5W61T70uKxQjcEpe5c5AIDySWbd8zIW7
+         ZSwvm7S4GkwchgYFrC3bM0R8SlSrDwVL9ky/fN7F+GzCABne8KKA8dUE41+4SLK5CGVd
+         XePffyIvigIagtSh4ljE5B8wORlqPa28WpshchAk8HALhBrf0jcAh+YKAoRvNcSs6b9b
+         LW0vhCttmyCeHEzyofN0GzQztNIcRgZIAcO1l4p8SbYw/Aq+3sGEpUNJrNxRexNv332r
+         AjSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Ml2P3KKWTpFi6kw+xt/cwO8aUdMFrLyTs/rPNyzYSC0=;
+        b=S3azEX6Ihgmmb0g7jYkwLeKI0PmEIyskXWbae+35Kl2e5ohZji8oWgU4db7GIyMJPD
+         Zz95RlMCEOF06Er4hmA+79BIMQR0RvsnQVaK99x/oFiKAMm0SV8hTvnEjPDxjap3azlX
+         qZ2YyXk8ja6P3oORBA4VjV+pBPOVtCClrHqDimiWGjfdm4/kzQnZTUPeHQKTB9v27yFr
+         70e+3/BSy4bTGTrv08yH64qCWElfv2ZQiNJzl+hyGIjOE2STefqdaKUddm8SQuaKEA3K
+         pzLqfFbIA04aWjozufqqoqAyD5hlfCCoWgDTvWNFHDVZtKUuVe6DdTSd88rKRQhcB2UM
+         fsvw==
+X-Gm-Message-State: ANhLgQ3UQ5A9p5Kt4bK10669Ks3d/twj+Zb1Nd6QteSwqeqFfL+khduE
+        zbbhbuN/NItiCDJ/FIu0VKkTrw==
+X-Google-Smtp-Source: ADFU+vsHGDvfauS7DYG2WcqdbqzkgWf+vbceuxTPS17BWDYmI36UETrEGgQ4IHWQx4dmFMdnfBzBVw==
+X-Received: by 2002:a1c:750f:: with SMTP id o15mr11753406wmc.145.1584115709404;
+        Fri, 13 Mar 2020 09:08:29 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net (81.243-247-81.adsl-dyn.isp.belgacom.be. [81.247.243.81])
+        by smtp.gmail.com with ESMTPSA id v14sm44024671wrr.34.2020.03.13.09.08.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Mar 2020 09:08:28 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 1/2] mptcp: create msk early
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next v2 2/2] mptcp: drop unneeded checks
-Date:   Fri, 13 Mar 2020 16:52:42 +0100
-Message-Id: <cd82fc7a869af40debec550fb1270ff8a159296e.1584114674.git.pabeni@redhat.com>
-In-Reply-To: <cover.1584114674.git.pabeni@redhat.com>
 References: <cover.1584114674.git.pabeni@redhat.com>
+ <6a63634eeffdc7930755fcc1e46e93fb687ae380.1584114674.git.pabeni@redhat.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Message-ID: <5b85c12a-ddae-a8f6-e4ec-047b0fc6f28b@tessares.net>
+Date:   Fri, 13 Mar 2020 17:08:30 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <6a63634eeffdc7930755fcc1e46e93fb687ae380.1584114674.git.pabeni@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After the previous patch subflow->conn is always !=3D NULL and
-is never changed. We can drop a bunch of now unneeded checks.
+On 13/03/2020 16:52, Paolo Abeni wrote:
+> This change moves the mptcp socket allocation from mptcp_accept() to
+> subflow_syn_recv_sock(), so that subflow->conn is now always set
+> for the non fallback scenario.
+> 
+> It allows cleaning up a bit mptcp_accept() reducing the additional
+> locking and will allow fourther cleanup in the next patch.
+> 
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 
-v1 -> v2:
- - rebased on top of commit 2398e3991bda ("mptcp: always
-   include dack if possible.")
+LGTM, Thanks Paolo!
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/options.c | 14 ++------------
- net/mptcp/subflow.c | 18 +++++++-----------
- 2 files changed, 9 insertions(+), 23 deletions(-)
-
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index 9c71f427e6e3..63c8ee49cef2 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -336,7 +336,6 @@ static bool mptcp_established_options_dss(struct sock=
- *sk, struct sk_buff *skb,
- 	unsigned int ack_size;
- 	bool ret =3D false;
- 	bool can_ack;
--	u64 ack_seq;
- 	u8 tcp_fin;
-=20
- 	if (skb) {
-@@ -368,16 +367,7 @@ static bool mptcp_established_options_dss(struct soc=
-k *sk, struct sk_buff *skb,
- 	can_ack =3D true;
- 	opts->ext_copy.use_ack =3D 0;
- 	msk =3D mptcp_sk(subflow->conn);
--	if (likely(msk && READ_ONCE(msk->can_ack))) {
--		ack_seq =3D msk->ack_seq;
--	} else if (subflow->can_ack) {
--		mptcp_crypto_key_sha(subflow->remote_key, NULL, &ack_seq);
--		ack_seq++;
--	} else {
--		can_ack =3D false;
--	}
--
--	if (unlikely(!can_ack)) {
-+	if (!READ_ONCE(msk->can_ack)) {
- 		*size =3D ALIGN(dss_size, 4);
- 		return ret;
- 	}
-@@ -390,7 +380,7 @@ static bool mptcp_established_options_dss(struct sock=
- *sk, struct sk_buff *skb,
-=20
- 	dss_size +=3D ack_size;
-=20
--	opts->ext_copy.data_ack =3D ack_seq;
-+	opts->ext_copy.data_ack =3D msk->ack_seq;
- 	opts->ext_copy.ack64 =3D 1;
- 	opts->ext_copy.use_ack =3D 1;
-=20
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 047b088e4617..8434c7f5f712 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -112,7 +112,7 @@ static void subflow_finish_connect(struct sock *sk, c=
-onst struct sk_buff *skb)
-=20
- 	subflow->icsk_af_ops->sk_rx_dst_set(sk, skb);
-=20
--	if (subflow->conn && !subflow->conn_finished) {
-+	if (!subflow->conn_finished) {
- 		pr_debug("subflow=3D%p, remote_key=3D%llu", mptcp_subflow_ctx(sk),
- 			 subflow->remote_key);
- 		mptcp_finish_connect(sk);
-@@ -439,9 +439,6 @@ static bool subflow_check_data_avail(struct sock *ssk=
-)
- 	if (subflow->data_avail)
- 		return true;
-=20
--	if (!subflow->conn)
--		return false;
--
- 	msk =3D mptcp_sk(subflow->conn);
- 	for (;;) {
- 		u32 map_remaining;
-@@ -561,11 +558,10 @@ static void subflow_data_ready(struct sock *sk)
- 	struct mptcp_subflow_context *subflow =3D mptcp_subflow_ctx(sk);
- 	struct sock *parent =3D subflow->conn;
-=20
--	if (!parent || !subflow->mp_capable) {
-+	if (!subflow->mp_capable) {
- 		subflow->tcp_data_ready(sk);
-=20
--		if (parent)
--			parent->sk_data_ready(parent);
-+		parent->sk_data_ready(parent);
- 		return;
- 	}
-=20
-@@ -579,7 +575,7 @@ static void subflow_write_space(struct sock *sk)
- 	struct sock *parent =3D subflow->conn;
-=20
- 	sk_stream_write_space(sk);
--	if (parent && sk_stream_is_writeable(sk)) {
-+	if (sk_stream_is_writeable(sk)) {
- 		set_bit(MPTCP_SEND_SPACE, &mptcp_sk(parent)->flags);
- 		smp_mb__after_atomic();
- 		/* set SEND_SPACE before sk_stream_write_space clears NOSPACE */
-@@ -694,7 +690,7 @@ static bool subflow_is_done(const struct sock *sk)
- static void subflow_state_change(struct sock *sk)
- {
- 	struct mptcp_subflow_context *subflow =3D mptcp_subflow_ctx(sk);
--	struct sock *parent =3D READ_ONCE(subflow->conn);
-+	struct sock *parent =3D subflow->conn;
-=20
- 	__subflow_state_change(sk);
-=20
-@@ -702,10 +698,10 @@ static void subflow_state_change(struct sock *sk)
- 	 * a fin packet carrying a DSS can be unnoticed if we don't trigger
- 	 * the data available machinery here.
- 	 */
--	if (parent && subflow->mp_capable && mptcp_subflow_data_available(sk))
-+	if (subflow->mp_capable && mptcp_subflow_data_available(sk))
- 		mptcp_data_ready(parent, sk);
-=20
--	if (parent && !(parent->sk_shutdown & RCV_SHUTDOWN) &&
-+	if (!(parent->sk_shutdown & RCV_SHUTDOWN) &&
- 	    !subflow->rx_eof && subflow_is_done(sk)) {
- 		subflow->rx_eof =3D 1;
- 		parent->sk_shutdown |=3D RCV_SHUTDOWN;
---=20
-2.21.1
-
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
