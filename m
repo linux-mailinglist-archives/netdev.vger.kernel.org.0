@@ -2,97 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 800901849B6
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 15:43:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A47C9184A09
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 15:55:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbgCMOnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 10:43:08 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45883 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726436AbgCMOnI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 10:43:08 -0400
-Received: by mail-pg1-f194.google.com with SMTP id m15so5086683pgv.12;
-        Fri, 13 Mar 2020 07:43:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SpWWV8Vzt0B/4ORSdBbXWuLXrkvKyLnGYjPx6j+va9s=;
-        b=m5LgmXEhwH7qCMpy8AMDQtFnKbFzLNd1lr8HbI+GFBXXqqW/U4D2/KYjmL2jzG7Gkx
-         M1tgXjecGU60owDjsMItfb2FLXxIV0w58gQtMcgOUtkpmit0RQOA2R/IHV1yKcKQwhv1
-         2Kl2JDS6eL/Ykw2oMVcgdxPBxDCejryFlWxySlM/eK/yjHzoq+/DYHygSkqCHV6DsSVu
-         3rulJur/sf4uP23ZLtnbmejV+P0cZ3W+hz3WbGfpA0Kghk2bOPYnnPymXChNVon3NHU5
-         9A0JPNXyrG7c6ND4Y7seYi+1uljFG0f6rCPiJhStPjqtVX842n1R0PL6Vq0R7ww9jBwA
-         awzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SpWWV8Vzt0B/4ORSdBbXWuLXrkvKyLnGYjPx6j+va9s=;
-        b=mmR7cKZoexH1PsK73t7QSSyfCkkrvPYOJkl5sZww7QqoTN9Q6wcirMFYAFr+ktTr7+
-         0AywYK/cLM4URuapprLxSopa39E5WtQSmoXrg91o02YTbK1n+HZBvNmL3K7PSgpf0ybS
-         81Nq4/tkKkwOdDfkx+9IMbTv/Cx49ooEdcc6+lv0ngk8PEDSrUnXlPzlMKpEGn7nB9kP
-         xcp+GRccZUaOsF3OE5bEMnKOtpMmrbVZGfOAYwXxesM+yBi6J6Vb0El/2jFdA2SQpD7a
-         tRi20CaJ2cag0PI/9EhgqgQOHfzNOETxlpxmhh1XEHcwBxTtNmD9va8i0xLTZlyaPwJj
-         dmqg==
-X-Gm-Message-State: ANhLgQ379Lf0U/7NUrc7Cz10WfBPwMYo1gd0mvPpl27hO9DM+OqsC/6S
-        E/IzKF0cOSfDRG4apSdEN6w=
-X-Google-Smtp-Source: ADFU+vvCSWa2zU2rVO+1qqNp6WqSxenT9MGNGT5GMXvMz5XxJH9Q1BP281Kw1otg0AVl+FTOOIzmzw==
-X-Received: by 2002:a63:6907:: with SMTP id e7mr13366263pgc.445.1584110586743;
-        Fri, 13 Mar 2020 07:43:06 -0700 (PDT)
-Received: from localhost ([216.24.188.11])
-        by smtp.gmail.com with ESMTPSA id f8sm1000121pfq.178.2020.03.13.07.43.04
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 13 Mar 2020 07:43:06 -0700 (PDT)
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org
-Cc:     linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH net-next] net: stmmac: platform: convert to devm_platform_ioremap_resource
-Date:   Fri, 13 Mar 2020 22:42:57 +0800
-Message-Id: <20200313144257.9351-1-zhengdejin5@gmail.com>
-X-Mailer: git-send-email 2.25.0
+        id S1726651AbgCMOzb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 10:55:31 -0400
+Received: from correo.us.es ([193.147.175.20]:43366 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726528AbgCMOza (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Mar 2020 10:55:30 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id B86B2C2B16
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 15:55:04 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A96B4FC5E4
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 15:55:04 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 8D2DEFC594; Fri, 13 Mar 2020 15:55:04 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B6BA8DA736;
+        Fri, 13 Mar 2020 15:55:02 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 13 Mar 2020 15:55:02 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 8DAC64251480;
+        Fri, 13 Mar 2020 15:55:02 +0100 (CET)
+Date:   Fri, 13 Mar 2020 15:55:26 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Martin Mares <mj@ucw.cz>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH nf-next 3/3] netfilter: Introduce egress hook
+Message-ID: <20200313145526.ikovaalfuy7rnkdl@salvia>
+References: <cover.1583927267.git.lukas@wunner.de>
+ <14ab7e5af20124a34a50426fd570da7d3b0369ce.1583927267.git.lukas@wunner.de>
+ <a57687ae-2da6-ca2a-1c84-e4332a5e4556@iogearbox.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a57687ae-2da6-ca2a-1c84-e4332a5e4556@iogearbox.net>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use devm_platform_ioremap_resource() to simplify code, which
-contains platform_get_resource and devm_ioremap_resource.
+On Wed, Mar 11, 2020 at 03:05:16PM +0100, Daniel Borkmann wrote:
+> On 3/11/20 12:59 PM, Lukas Wunner wrote:
+> > Commit e687ad60af09 ("netfilter: add netfilter ingress hook after
+> > handle_ing() under unique static key") introduced the ability to
+> > classify packets on ingress.
+> > 
+> > Allow the same on egress.  Position the hook immediately before a packet
+> > is handed to tc and then sent out on an interface, thereby mirroring the
+> > ingress order.  This order allows marking packets in the netfilter
+> > egress hook and subsequently using the mark in tc.  Another benefit of
+> > this order is consistency with a lot of existing documentation which
+> > says that egress tc is performed after netfilter hooks.
+> > 
+> > Egress hooks already exist for the most common protocols, such as
+> > NF_INET_LOCAL_OUT or NF_ARP_OUT, and those are to be preferred because
+> > they are executed earlier during packet processing.  However for more
+> > exotic protocols, there is currently no provision to apply netfilter on
+> > egress.  A common workaround is to enslave the interface to a bridge and
+> 
+> Sorry for late reply, but still NAK.
 
-Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+I agree Lukas use-case is very specific.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index d10ac54bf385..bbc0a2ce24c0 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -645,8 +645,6 @@ EXPORT_SYMBOL_GPL(stmmac_remove_config_dt);
- int stmmac_get_platform_resources(struct platform_device *pdev,
- 				  struct stmmac_resources *stmmac_res)
- {
--	struct resource *res;
--
- 	memset(stmmac_res, 0, sizeof(*stmmac_res));
- 
- 	/* Get IRQ information early to have an ability to ask for deferred
-@@ -674,8 +672,7 @@ int stmmac_get_platform_resources(struct platform_device *pdev,
- 	if (stmmac_res->lpi_irq == -EPROBE_DEFER)
- 		return -EPROBE_DEFER;
- 
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	stmmac_res->addr = devm_ioremap_resource(&pdev->dev, res);
-+	stmmac_res->addr = devm_platform_ioremap_resource(pdev, 0);
- 
- 	return PTR_ERR_OR_ZERO(stmmac_res->addr);
- }
--- 
-2.25.0
+However, this is useful.
 
+We have plans to support for NAT64 and NAT46, this is the right spot
+to do this mangling. There is already support for the tunneling
+infrastructure in netfilter from ingress, this spot from egress will
+allow us to perform the tunneling from here. There is also no way to
+drop traffic generated by dhclient, this also allow for filtering such
+locally generated traffic. And many more.
+
+Performance impact is negligible, Lukas already provided what you
+asked for.
+
+And more importantly:
+
+I really think this patchset is _not_ interfering in your goals at all.
