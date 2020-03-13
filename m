@@ -2,87 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2084184854
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 14:40:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A4E3184871
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 14:47:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726847AbgCMNkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 09:40:13 -0400
-Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:59800 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726495AbgCMNkL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 09:40:11 -0400
-Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 16DD1C0FAF;
-        Fri, 13 Mar 2020 13:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1584106810; bh=ST+X4UnqMFXVp07BI90fmUYVsZvY74GXZgG0KxD/zzQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
-         References:From;
-        b=Pzqo3QBNM0LemVYxpUtRn2N/8EqcdycybF+g2FeQZyJOc6Pkjg94j8E2di9eawu6n
-         rWpsts3DEYiUT6i9lsB2D7zBzcHTGaRTcV95Knvxe3Zjv7CBJTl27oWiNZTUL2n5xG
-         hoIgTe5gZRjd72BdUY1mPqkxLGYK3AI9Iv8Nxx3a7HkUTEpTiFW7OhVVgSnMmjKrZA
-         0TkFpPTDywkPfwSCcDFWdLNHj4Q3Jez67fW8uYEBlwUMKAcFOp0wMS08nUDocWPZEi
-         czBs235OhaAbK+E59Ja/JP7oUybKnJMWy9H0WhFeBvCTzn88QETWq/8Ilc3ktK+7f/
-         KDaTAUgarqdqQ==
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 9D85BA0067;
-        Fri, 13 Mar 2020 13:40:08 +0000 (UTC)
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     netdev@vger.kernel.org
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/4] net: phy: xpcs: Reset XPCS upon probe
-Date:   Fri, 13 Mar 2020 14:39:43 +0100
-Message-Id: <422e8e739c9a2a2e64ac5eac44436e20f2a03174.1584106347.git.Jose.Abreu@synopsys.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1584106347.git.Jose.Abreu@synopsys.com>
-References: <cover.1584106347.git.Jose.Abreu@synopsys.com>
-In-Reply-To: <cover.1584106347.git.Jose.Abreu@synopsys.com>
-References: <cover.1584106347.git.Jose.Abreu@synopsys.com>
+        id S1726642AbgCMNrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 09:47:09 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:35881 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726327AbgCMNrJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 09:47:09 -0400
+Received: by mail-wm1-f68.google.com with SMTP id g62so10377097wme.1
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 06:47:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=ndIu99ABAkYmGCp9Qn/hXDVqgwRjxDCp9aP8bVN88h4=;
+        b=FrV2iXTeEMAPRNd3jd8GCRQwhBlnovVlQ2opFhgVcj2zdnuoWTwFkts2C3xGVCXzzz
+         h4xkazRn3vlYqt5a9Vh0Mpbv110wY4oJ0nzvZEs6K40RVpqQQ6wvtYC/1XmyZ2sRPnqA
+         xjSOZWDU0z5ISfhwyJlJLFIqAzV4VNI+bFBLODSOE8LdNcVZbXvsG916FW15E8Qy/GWY
+         uOUS9UjpOXmYro6TDA8BDJWkV/vwhuoXUcpci5i6q4bY7uFjLF2DRS0dtCcaeHKA7HUS
+         tZMCeGJELR+LoLpWMiktedgRo/13Vk0g+hsHIwFQPkfeivkCAUpQkdf3KaqqJzpG1gWO
+         3AHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ndIu99ABAkYmGCp9Qn/hXDVqgwRjxDCp9aP8bVN88h4=;
+        b=hRLLAHq0GyJ+Es0L6kEVZXJH1ZFxkBq9pTlhaiaSkClhmzHw9SZeBPk1H2obGrKmPr
+         fDrJyXQuOrLyzbMg26Owss7z/MU5NGDAm9lqSmH9/4mODc96YpyNAtfZAkTRNBohWKil
+         ZAwqH/7g9ZbcX2mAzh+eeqOsdBkAC3cglLct1+vZMASJ3oeDEOIBi5p+DCqvxzRQA88S
+         OPnuUPtu3X3gpK0X3ry4fqBGq1NbsKk9sUrK8cIFgp0wB6I7wKvcoQVjeGPuwzDUBpso
+         /0I1j/j6dK0DDoFfr1gXSEGMetGpamZQv/7VaKup0skKwyvvPdw9oQqrvwVDHR78n4aO
+         JKAg==
+X-Gm-Message-State: ANhLgQ0dKAmwvjhaQpaggq2mPcztdKCFjO2xxLDVt6h25eRPnRwMiekq
+        FrMXQrKCdP6ufsLoRiNrAAE=
+X-Google-Smtp-Source: ADFU+vvTsg0vuKC5Fk/1fv4IROJdDcCRACQxF+IEY6rQEqa02ovcLHXUK0CcXKswyMQPRQUAV5YSBA==
+X-Received: by 2002:a1c:b0c3:: with SMTP id z186mr10608826wme.36.1584107225751;
+        Fri, 13 Mar 2020 06:47:05 -0700 (PDT)
+Received: from localhost.localdomain ([79.115.60.40])
+        by smtp.gmail.com with ESMTPSA id t1sm34112219wrq.36.2020.03.13.06.47.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 Mar 2020 06:47:05 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net
+Cc:     horatiu.vultur@microchip.com, alexandre.belloni@bootlin.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        joergen.andreasen@microchip.com, allan.nielsen@microchip.com,
+        claudiu.manoil@nxp.com, netdev@vger.kernel.org,
+        UNGLinuxDriver@microchip.com, alexandru.marginean@nxp.com,
+        xiaoliang.yang_1@nxp.com, yangbo.lu@nxp.com, po.liu@nxp.com
+Subject: [PATCH net-next] net: mscc: ocelot: adjust maxlen on NPI port, not CPU
+Date:   Fri, 13 Mar 2020 15:46:51 +0200
+Message-Id: <20200313134651.5771-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reset the XPCS upon probe stage so that we start it from well known
-state.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
+Being a non-physical port, the CPU port does not have an ocelot_port
+structure, so the ocelot_port_writel call inside the
+ocelot_port_set_maxlen() function would access data behind a NULL
+pointer.
 
+This is a patch for net-next only, the net tree boots fine, the bug was
+introduced during the net -> net-next merge.
+
+Fixes: 1d3435793123 ("Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net")
+Fixes: a8015ded89ad ("net: mscc: ocelot: properly account for VLAN header length when setting MRU")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-Cc: Jose Abreu <Jose.Abreu@synopsys.com>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/net/phy/mdio-xpcs.c | 2 +-
+ drivers/net/ethernet/mscc/ocelot.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/mdio-xpcs.c b/drivers/net/phy/mdio-xpcs.c
-index 83ced7180a44..7960dc52c4bd 100644
---- a/drivers/net/phy/mdio-xpcs.c
-+++ b/drivers/net/phy/mdio-xpcs.c
-@@ -595,7 +595,7 @@ static int xpcs_probe(struct mdio_xpcs_args *xpcs, phy_interface_t interface)
- 			match = entry;
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 460dba862d24..38e9210f6099 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -2359,7 +2359,7 @@ void ocelot_configure_cpu(struct ocelot *ocelot, int npi,
+ 		else if (injection == OCELOT_TAG_PREFIX_LONG)
+ 			sdu += OCELOT_LONG_PREFIX_LEN;
  
- 			if (xpcs_check_features(xpcs, match, interface))
--				return 0;
-+				return xpcs_soft_reset(xpcs, MDIO_MMD_PCS);
- 		}
- 	}
+-		ocelot_port_set_maxlen(ocelot, cpu, sdu);
++		ocelot_port_set_maxlen(ocelot, npi, sdu);
  
+ 		/* Enable NPI port */
+ 		ocelot_write_rix(ocelot,
 -- 
-2.7.4
+2.17.1
 
