@@ -2,83 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7823D183EF3
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 03:06:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F07851847C4
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 14:15:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726464AbgCMCGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 22:06:36 -0400
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:40898 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726099AbgCMCGg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 22:06:36 -0400
-Received: by mail-pj1-f68.google.com with SMTP id bo3so2040128pjb.5
-        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 19:06:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Y/RiGmKu2bGOe1k4hPC/XK5RVGb6F9gd5djR4zEb8Ks=;
-        b=mDUEFUxPwHrIRNcNDDR5OVgOZfPQOgGwu+fzpzzKyKo6FRMD4BTshHH2rYtRryHwGR
-         gNxYIF9MXtLU+ptZPSwVU+u+ys1WEQ4WDZax+bdiUZT16MkhtLAWRjQmCcUeaSZfHrD/
-         R3knIQJiGcAJEyiAJFp0mHVtuU0WohzAuBw9QvyyuMy3SU+zz/TrncbqSjvG2CIbTHm+
-         cDKRNfKmBbBMB6vcCQdR3BEHRTzp4pFzzpfiR/Gn5srkMoL1aSE8rqGobncle1mmyAUG
-         F2/enl1bBzO8COkPBhVUo0GGOcAyS0M6BF7khQMwe8UHv+sQ1s6wVigV9MfjgZtaLafF
-         rUBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Y/RiGmKu2bGOe1k4hPC/XK5RVGb6F9gd5djR4zEb8Ks=;
-        b=ip5UVg9+Y3g9YPUGKnWI7qrql8Y+uv3otbtt+tMnS+uaaGh282FB7VJEfrZwC5pK5k
-         zYu8QP9NoYYGUOu0gS1S8x+ODoZZdDaQgw9gGG8S/aHL6KEvoJPujVswPV8NsIfw3OgY
-         LPNm454umgSJ1SomCNZZMVjs4N2rlH0LGNo5PEk1/FF7z8XiBhZ/OEWyfcZVyZkuGSOl
-         kFLAmonXXy4oqaLN02pPd+JqDC3iUP4oDMLjSBvjCMGHjF/3MNianR5Qm7lczziFmvo4
-         6Rqes/OnSQ+QY+ZWhLCYG4GYS2vDsBSdIAEVpDrv3UFPqrhkZozN+bjXvNVcpvRd1Lvo
-         rfag==
-X-Gm-Message-State: ANhLgQ1kV/89tyxuFPhj+u5E6MAxWA01/jKIFsNPjaFc5G2AXCrnFOtM
-        yJZBEIJCmKLC5XEl8qEwMqc=
-X-Google-Smtp-Source: ADFU+vuHy637+eHc+Ub8e4Hg/gxSp28bqDnQ3zK6Eyv/2jzGB9RPd1QvyMlOFmfK5gA8MXyHTC3Sjg==
-X-Received: by 2002:a17:902:9308:: with SMTP id bc8mr11300211plb.268.1584065195378;
-        Thu, 12 Mar 2020 19:06:35 -0700 (PDT)
-Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id s61sm10153249pjd.33.2020.03.12.19.06.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Mar 2020 19:06:34 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net 3/3] hsr: set .netnsok flag
-Date:   Fri, 13 Mar 2020 02:06:26 +0000
-Message-Id: <20200313020626.31683-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726622AbgCMNP4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 13 Mar 2020 09:15:56 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:10230 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726669AbgCMNP4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 09:15:56 -0400
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 02DD7jgw022436
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 06:15:55 -0700
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0001303.ppops.net with ESMTP id 2yqt89c0j9-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 06:15:55 -0700
+Received: from intmgw002.03.ash8.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Fri, 13 Mar 2020 06:15:53 -0700
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id BE8D57600DE; Thu, 12 Mar 2020 19:06:50 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: pull-request: bpf 2020-03-12
+Date:   Thu, 12 Mar 2020 19:06:49 -0700
+Message-ID: <20200313020649.1133477-1-ast@kernel.org>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-13_04:2020-03-12,2020-03-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ clxscore=1015 malwarescore=0 bulkscore=0 impostorscore=0 mlxscore=0
+ suspectscore=4 priorityscore=1501 spamscore=0 adultscore=0 phishscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003130070
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The hsr module has been supporting the list and status command.
-(HSR_C_GET_NODE_LIST and HSR_C_GET_NODE_STATUS)
-These commands send node information to the user-space via generic netlink.
-But, in the non-init_net namespace, these commands are not allowed
-because .netnsok flag is false.
-So, there is no way to get node information in the non-init_net namespace.
+Hi David,
 
-Fixes: f421436a591d ("net/hsr: Add support for the High-availability Seamless Redundancy protocol (HSRv0)")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
- net/hsr/hsr_netlink.c | 1 +
- 1 file changed, 1 insertion(+)
+The following pull-request contains BPF updates for your *net* tree.
 
-diff --git a/net/hsr/hsr_netlink.c b/net/hsr/hsr_netlink.c
-index 6a6e092153ef..1d3141aa5766 100644
---- a/net/hsr/hsr_netlink.c
-+++ b/net/hsr/hsr_netlink.c
-@@ -473,6 +473,7 @@ static struct genl_family hsr_genl_family __ro_after_init = {
- 	.version = 1,
- 	.maxattr = HSR_A_MAX,
- 	.policy = hsr_genl_policy,
-+	.netnsok = true,
- 	.module = THIS_MODULE,
- 	.ops = hsr_ops,
- 	.n_ops = ARRAY_SIZE(hsr_ops),
--- 
-2.17.1
+We've added 12 non-merge commits during the last 8 day(s) which contain
+a total of 12 files changed, 161 insertions(+), 15 deletions(-).
 
+The main changes are:
+
+1) Andrii fixed two bugs in cgroup-bpf.
+
+2) John fixed sockmap.
+
+3) Luke fixed x32 jit.
+
+4) Martin fixed two issues in struct_ops.
+
+5) Yonghong fixed bpf_send_signal.
+
+6) Yoshiki fixed BTF enum.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Andrii Nakryiko, Jakub Sitnicki, Roman Gushchin
+
+----------------------------------------------------------------
+
+The following changes since commit 209c65b61d94344522c41a83cd6ce51aac5fd0a4:
+
+  drivers/of/of_mdio.c:fix of_mdiobus_register() (2020-03-03 19:01:51 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to 90db6d772f749e38171d04619a5e3cd8804a6d02:
+
+  bpf, sockmap: Remove bucket->lock from sock_{hash|map}_free (2020-03-11 14:08:52 +0100)
+
+----------------------------------------------------------------
+Alexei Starovoitov (2):
+      Merge branch 'fix_bpf_send_signal'
+      Merge branch 'fix-BTF-enum'
+
+Andrii Nakryiko (2):
+      bpf: Initialize storage pointers to NULL to prevent freeing garbage pointer
+      bpf: Fix cgroup ref leak in cgroup_bpf_inherit on out-of-memory
+
+John Fastabend (1):
+      bpf, sockmap: Remove bucket->lock from sock_{hash|map}_free
+
+Luke Nelson (2):
+      bpf, x32: Fix bug with JMP32 JSET BPF_X checking upper bits
+      selftests: bpf: Add test for JMP32 JSET BPF_X with upper bits set
+
+Martin KaFai Lau (2):
+      bpf: Return better error value in delete_elem for struct_ops map
+      bpf: Do not allow map_freeze in struct_ops map
+
+Quentin Monnet (1):
+      mailmap: Update email address
+
+Yonghong Song (2):
+      bpf: Fix deadlock with rq_lock in bpf_send_signal()
+      selftests/bpf: Add send_signal_sched_switch test
+
+Yoshiki Komachi (2):
+      bpf/btf: Fix BTF verification of enum members in struct/union
+      selftests/bpf: Add test for the packed enum member in struct/union
+
+ .mailmap                                           |  1 +
+ arch/x86/net/bpf_jit_comp32.c                      | 10 ++--
+ kernel/bpf/bpf_struct_ops.c                        | 14 +++--
+ kernel/bpf/btf.c                                   |  2 +-
+ kernel/bpf/cgroup.c                                |  7 ++-
+ kernel/bpf/syscall.c                               |  5 ++
+ kernel/trace/bpf_trace.c                           |  2 +-
+ net/core/sock_map.c                                | 12 +++--
+ .../bpf/prog_tests/send_signal_sched_switch.c      | 60 ++++++++++++++++++++++
+ .../selftests/bpf/progs/test_send_signal_kern.c    |  6 +++
+ tools/testing/selftests/bpf/test_btf.c             | 42 +++++++++++++++
+ tools/testing/selftests/bpf/verifier/jmp32.c       | 15 ++++++
+ 12 files changed, 161 insertions(+), 15 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/send_signal_sched_switch.c
