@@ -2,119 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D53B418411B
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 07:52:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE7FF184179
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 08:24:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726483AbgCMGwV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 02:52:21 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:45641 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726364AbgCMGwU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 02:52:20 -0400
-Received: by mail-qk1-f196.google.com with SMTP id c145so10788994qke.12;
-        Thu, 12 Mar 2020 23:52:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xXfzwzuTUKaCEm/xC0r2pLq1q6cidFQU1IMonaCv1J0=;
-        b=OL0++InP1Z0QUCIW7zrL755v1AC8CJ9ooYRyzhkM4U591sEpCE2F3grAodK5mBIAIg
-         X1nM7yvEpAog1YRybeE7OfqBNTvbHMU/lfP1I6EtVxZItJgOl4wPjA1xClo1Gftsys09
-         NFIHR4WBvN3D9wdV4vszJdssY4ZO4VxGK3gZ7ZdEWs8mlH9xzqiYZTB0eN6FmVLfV3t5
-         BRHn7uPVt0qRB8HhtklC+nf3xP32NEkzn8iqhrW1X6hP3lttb0NESlzHPzXeNJELXpSa
-         Y0RXZ3ySgqeVOuP2085+s9K9WlsJirJw8lPjEfeG9knr3x1xBZFXaskZE5Yan9YP0v8I
-         erJQ==
+        id S1726534AbgCMHYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 03:24:11 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:34024 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726060AbgCMHYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 03:24:10 -0400
+Received: by mail-il1-f197.google.com with SMTP id x2so3274632ilg.1
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 00:24:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xXfzwzuTUKaCEm/xC0r2pLq1q6cidFQU1IMonaCv1J0=;
-        b=uDFwBYj5p8nGmBIKsXTGB7HpmaNK07IeMUHXiSOsnyc9cDjHCh6wVT2DQL4Ke8nAc8
-         mWeT9wBa788w8LxkkZQzO9O1+wRr4RICijg8jtSVXuwJKdCKvYxO853j0nwa372rW4h2
-         mTrFhRiWQvAU7jm7h4FsN+MXtU3EFkAG1oXHm3Ss3z0xgD/wGQ2NxZKBKWVBj9ToX6wg
-         ntr2T+cQ3UHyfY27rhv2nmyaDlVYz6ThkGt4bvKliLPxkkmV/M70nQJyfoP4YDRAxQKJ
-         whyWt9hdAA5X/XWNvdwoOOpgD8HJv/P/pNJWdvrEA+NYYbWn6oFcesMV3zkU0bE2UO7z
-         V91g==
-X-Gm-Message-State: ANhLgQ2oQuHWq5zgGJpwbNOEQN6G3EhATKlyel0VL9BL4geLZzVChXEQ
-        pPR+wgfCFgVeH9XxyJSkZ8n7yDjWfdlqC+3XHaA=
-X-Google-Smtp-Source: ADFU+vvZp3kqWFbJ46iA2ECcE5rqSgO4Y/JDCjzRMKoIXwQb/chqo6MkPaYui/XQ3WXqadic0xyudDWIbGjIdBo1Y6I=
-X-Received: by 2002:a37:9104:: with SMTP id t4mr12032448qkd.449.1584082339833;
- Thu, 12 Mar 2020 23:52:19 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=3fnqtx3Np3RmuYdkSlEXsgvvP9L18wQfb4Gxspps7uM=;
+        b=kuo/Z4pL72IYghJ6N46gK9WhXcwGpCAiPxQHS2EDFtH4hZLsqJfL+WYJiv6wGvQQPp
+         rU1eX/svbQTU1KYSZ7t4Sf9H0o0o5KJ8PKT6w1HANRBkCbCRIrfNEKt0Yy8QlBRL2d0U
+         m/uv2WMtQE+dd92j0vr4QV+q1pX2xHgZN71oMwQ1CfEU17C5Gm/lwMjTyV8PuXzYL7Yj
+         BG7PiAdmoVt2P7/U77kB1x+WsZnd+urjItfhZiiEh3tcZGC1E1IGvttNBO5uhCwxhjMC
+         BkwOD3dqPeNojjNz40uYaGvSHwQwBwwN0FfXDo0uojTL5AonPN7u2hX4LbdkWrAQXBZe
+         pPpQ==
+X-Gm-Message-State: ANhLgQ388wEsB42RP8WrxxBj9ITwCGPEckKMrleeAa1B/wkAKp6EdVdc
+        RrD6KCtK2lgfJvebo1Ood5NFGaynq1KZNiAFCSLxw+A+Rk/n
+X-Google-Smtp-Source: ADFU+vuVVo3qE4eAjTyKAogl7wzyNipsP9DNE++u7KnKnQjxhrUHqf2bi76wvPXzy4OAL7Uh+a0O2DgnVEHapTWUbecNyLlTPO1f
 MIME-Version: 1.0
-References: <20200313061837.3685572-1-andriin@fb.com> <20200313064521.se2sqpgkpd5ekmfo@ast-mbp>
-In-Reply-To: <20200313064521.se2sqpgkpd5ekmfo@ast-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 12 Mar 2020 23:52:08 -0700
-Message-ID: <CAEf4BzZDRQ7J5_1RN+wK1aD-LxdWD7FTbZpo+qPm8_yuGQ766Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix usleep() implementation
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+X-Received: by 2002:a02:8645:: with SMTP id e63mr9268338jai.14.1584084249541;
+ Fri, 13 Mar 2020 00:24:09 -0700 (PDT)
+Date:   Fri, 13 Mar 2020 00:24:09 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fd030905a0b75ac8@google.com>
+Subject: KASAN: use-after-free Read in route4_get
+From:   syzbot <syzbot+1cba26af4a37d30e8040@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 11:45 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, Mar 12, 2020 at 11:18:37PM -0700, Andrii Nakryiko wrote:
-> > nanosleep syscall expects pointer to struct timespec, not nanoseconds
-> > directly. Current implementation fulfills its purpose of invoking nanosleep
-> > syscall, but doesn't really provide sleeping capabilities, which can cause
-> > flakiness for tests relying on usleep() to wait for something.
-> >
-> > Fixes: ec12a57b822c ("selftests/bpf: Guarantee that useep() calls nanosleep() syscall")
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  tools/testing/selftests/bpf/test_progs.c | 11 ++++++++++-
-> >  1 file changed, 10 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-> > index 2b0bc1171c9c..b6201dd82edf 100644
-> > --- a/tools/testing/selftests/bpf/test_progs.c
-> > +++ b/tools/testing/selftests/bpf/test_progs.c
-> > @@ -35,7 +35,16 @@ struct prog_test_def {
-> >   */
-> >  int usleep(useconds_t usec)
-> >  {
-> > -     return syscall(__NR_nanosleep, usec * 1000UL);
-> > +     struct timespec ts;
-> > +
-> > +     if (usec > 999999) {
-> > +             ts.tv_sec = usec / 1000000;
-> > +             ts.tv_nsec = usec % 1000000;
-> > +     } else {
-> > +             ts.tv_sec = 0;
-> > +             ts.tv_nsec = usec;
-> > +     }
-> > +     return nanosleep(&ts, NULL);
-> >  }
->
-> Is this a copy-paste from somewhere?
+Hello,
 
-nope, my very own prematurely optimized implementation :)
+syzbot found the following crash on:
 
-> Above 'if' looks like premature optimization.
-> I applied it anyway, since it fixes flakiness in test_progs -n 24.
-> Now pin*tp* tests are stable.
->
+HEAD commit:    e6e6ec48 Merge tag 'fscrypt-for-linus' of git://git.kernel..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=14982f53e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a5295e161cd85b82
+dashboard link: https://syzkaller.appspot.com/bug?extid=1cba26af4a37d30e8040
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
 
-Great, I hoped as much.
+Unfortunately, I don't have any reproducer for this crash yet.
 
-> But the other one is still flaky:
-> server_thread:FAIL:237
-> Failed to accept client: Resource temporarily unavailable
-> #64 tcp_rtt:FAIL
-> Note that if I run the test alone (test_progs -n 64) it is stable.
-> It fails only when run as part of bigger test_progs.
-> test_progs -n 30-64 sporadically fails (most of the time)
-> test_progs -n 40-64 consistently passes
-> Haven't bisected further.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+1cba26af4a37d30e8040@syzkaller.appspotmail.com
 
-Okey, I'll get to it once I'm done fixing a bunch of other problems.
-Seems like tcp_rtt needs some more love, sigh... :(
+==================================================================
+BUG: KASAN: use-after-free in route4_get+0x351/0x380 net/sched/cls_route.c:235
+Read of size 4 at addr ffff8880a0d70040 by task syz-executor.0/9234
+
+CPU: 0 PID: 9234 Comm: syz-executor.0 Not tainted 5.6.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1e9/0x30e lib/dump_stack.c:118
+ print_address_description+0x74/0x5c0 mm/kasan/report.c:374
+ __kasan_report+0x14b/0x1c0 mm/kasan/report.c:506
+ kasan_report+0x25/0x50 mm/kasan/common.c:641
+ route4_get+0x351/0x380 net/sched/cls_route.c:235
+ tc_new_tfilter+0x111c/0x2f50 net/sched/cls_api.c:2082
+ rtnetlink_rcv_msg+0x8fb/0xd40 net/core/rtnetlink.c:5427
+ netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2478
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x4f9/0x7c0 net/socket.c:2343
+ ___sys_sendmsg net/socket.c:2397 [inline]
+ __sys_sendmsg+0x1ed/0x290 net/socket.c:2430
+ do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x45c679
+Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f7755ac4c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f7755ac56d4 RCX: 000000000045c679
+RDX: 0000000000000000 RSI: 0000000020000280 RDI: 0000000000000007
+RBP: 000000000076bfa0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
+R13: 00000000000009fa R14: 00000000004cc948 R15: 000000000076bfac
+
+Allocated by task 9226:
+ save_stack mm/kasan/common.c:72 [inline]
+ set_track mm/kasan/common.c:80 [inline]
+ __kasan_kmalloc+0x118/0x1c0 mm/kasan/common.c:515
+ kmem_cache_alloc_trace+0x234/0x300 mm/slab.c:3551
+ kmalloc include/linux/slab.h:555 [inline]
+ kzalloc include/linux/slab.h:669 [inline]
+ route4_change+0x224/0x1d90 net/sched/cls_route.c:493
+ tc_new_tfilter+0x1490/0x2f50 net/sched/cls_api.c:2103
+ rtnetlink_rcv_msg+0x8fb/0xd40 net/core/rtnetlink.c:5427
+ netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2478
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x4f9/0x7c0 net/socket.c:2343
+ ___sys_sendmsg net/socket.c:2397 [inline]
+ __sys_sendmsg+0x1ed/0x290 net/socket.c:2430
+ do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Freed by task 144:
+ save_stack mm/kasan/common.c:72 [inline]
+ set_track mm/kasan/common.c:80 [inline]
+ kasan_set_free_info mm/kasan/common.c:337 [inline]
+ __kasan_slab_free+0x12e/0x1e0 mm/kasan/common.c:476
+ __cache_free mm/slab.c:3426 [inline]
+ kfree+0x10a/0x220 mm/slab.c:3757
+ __route4_delete_filter net/sched/cls_route.c:257 [inline]
+ route4_delete_filter_work+0xb1/0xe0 net/sched/cls_route.c:266
+ process_one_work+0x76e/0xfd0 kernel/workqueue.c:2266
+ worker_thread+0xa7f/0x1450 kernel/workqueue.c:2412
+ kthread+0x317/0x340 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+The buggy address belongs to the object at ffff8880a0d70000
+ which belongs to the cache kmalloc-192 of size 192
+The buggy address is located 64 bytes inside of
+ 192-byte region [ffff8880a0d70000, ffff8880a0d700c0)
+The buggy address belongs to the page:
+page:ffffea0002835c00 refcount:1 mapcount:0 mapping:ffff8880aa400000 index:0x0
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea0002830e08 ffffea000263c548 ffff8880aa400000
+raw: 0000000000000000 ffff8880a0d70000 0000000100000010 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8880a0d6ff00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff8880a0d6ff80: fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc fc
+>ffff8880a0d70000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                           ^
+ ffff8880a0d70080: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+ ffff8880a0d70100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
