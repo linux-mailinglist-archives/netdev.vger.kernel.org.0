@@ -2,64 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF07D184F7A
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 20:49:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03686184F9D
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 20:53:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726779AbgCMTtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 15:49:07 -0400
-Received: from www62.your-server.de ([213.133.104.62]:43112 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726477AbgCMTtH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 15:49:07 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jCqIr-0005FL-2P; Fri, 13 Mar 2020 20:49:05 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jCqIq-000FUP-NU; Fri, 13 Mar 2020 20:49:04 +0100
-Subject: Re: [PATCH 1/8] bpf: Add missing annotations for __bpf_prog_enter()
- and __bpf_prog_exit()
-To:     Jules Irenge <jbi.octave@gmail.com>, boqun.feng@gmail.com
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-References: <0/8> <20200311010908.42366-1-jbi.octave@gmail.com>
- <20200311010908.42366-2-jbi.octave@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f0d5133d-91af-19fd-19c5-aa0b879c1db8@iogearbox.net>
-Date:   Fri, 13 Mar 2020 20:49:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727328AbgCMTwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 15:52:12 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:36762 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726477AbgCMTwK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 15:52:10 -0400
+Received: by mail-lf1-f68.google.com with SMTP id s1so8867025lfd.3;
+        Fri, 13 Mar 2020 12:52:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jIzR2VF5pztT8bGJoCnv210VBMIFx941tvF4lgwyJhk=;
+        b=H/4G0a4inqFmyc/ZgU9YotdnJII5m3EQDJJrxGps6EtV0QFXrC//vl5+03L3cOHdGy
+         rMuPqzftPUB77oaFRc0jdyTu0Yd6DIIQSwMTTRG/sHMUExTW8d1AayCkiDJJQG10AnNu
+         wF51wj5tDrEa/x/K4FUtkoVv7DcbniTMXF8sWXczVij4/XuwPKHrgdF/Dsuj3PyShFF8
+         JlyZvWRVMrR+UgaSu/cQLLQTUZ0gyWV/trt4RNPtAcBWFKC1fRpRh6qJlYAIB2iiHe7x
+         S7sAQ+KVKb6x3q9rQahoc4H/t+Vfyzt/KUe9t3Hd9nhA2g22AnR9lR6X+FdWPH39Wlfr
+         QVkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jIzR2VF5pztT8bGJoCnv210VBMIFx941tvF4lgwyJhk=;
+        b=BihbkNG7oQ9vxR4qDFz2nU8scLKdMEWWqYyJDLbga6k6uWXJfxqllEF6wURbwSOMs6
+         BvH2QO8RF3/Xo6KxRKSBLxdhVFIbElQoxb1hgTfjm1XqrVAN3afxpjDO8nBPrC7p+G7n
+         qqyIGL5XZFVJU01FcQ8llbOjTuNVhgz88oQKNAcLffB0I+jZLbDM+XznR/G+Q8XEUE6n
+         2/ZdRLZSxWSIf0jGippVRVJOVfMCES+Bvc21AnrLg1LIxvRq9zgByIpk0vOlEaBAdT2V
+         YaL9+WxG2w0fX42LErzKxWVIJEN8Zh/kY5pzwyi/ANcI+FdvQ2l9ma+CIIBjuAJ5/rME
+         nC6g==
+X-Gm-Message-State: ANhLgQ3eg2Yh4rJxL7q6Eo4+311fSzEpBLSOFqP9rcilEDNIaNx9dGy+
+        G+BboGZAYDO7IUWIv3sDkqmdOoyO/TOHOqtsyg8=
+X-Google-Smtp-Source: ADFU+vuyob2kNVFX2qwNK4cHEIyyfQOOrYJ9edLrWt/ZgCK5EyTlrU/7fRLKklUBicSDGHyC6BLUkY/zy7R10T1EXd0=
+X-Received: by 2002:a19:a401:: with SMTP id q1mr9255620lfc.157.1584129126306;
+ Fri, 13 Mar 2020 12:52:06 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200311010908.42366-2-jbi.octave@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25750/Fri Mar 13 14:03:09 2020)
+References: <20200313135850.2329f480@canb.auug.org.au>
+In-Reply-To: <20200313135850.2329f480@canb.auug.org.au>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 13 Mar 2020 12:51:54 -0700
+Message-ID: <CAADnVQ+r3hMEtqbkhm1j9HyXYxSNihbX=VCR9erUGXoE72Pwsg@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the bpf-next tree with the jc_docs tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Stephen Kitt <steve@sk2.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/11/20 2:09 AM, Jules Irenge wrote:
-> Sparse reports a warning at __bpf_prog_enter() and __bpf_prog_exit()
-> 
-> warning: context imbalance in __bpf_prog_enter() - wrong count at exit
-> warning: context imbalance in __bpf_prog_exit() - unexpected unlock
-> 
-> The root cause is the missing annotation at __bpf_prog_enter()
-> and __bpf_prog_exit()
-> 
-> Add the missing __acquires(RCU) annotation
-> Add the missing __releases(RCU) annotation
-> 
-> Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
+On Thu, Mar 12, 2020 at 7:59 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> Today's linux-next merge of the bpf-next tree got a conflict in:
+>
+>   Documentation/admin-guide/sysctl/kernel.rst
+>
+> between commit:
+>
+>   a3cb66a50852 ("docs: pretty up sysctl/kernel.rst")
+>
+> from the jc_docs tree and commit:
+>
+>   c480a3b79cbc ("docs: sysctl/kernel: Document BPF entries")
+>
+> from the bpf-next tree.
 
-Applied this one to bpf-next, thanks!
+I dropped this commit from bpf-next, since it causes unnecessary conflicts.
+Please steer it via Jon's tree.
+Thanks
