@@ -2,188 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71DDD184EFD
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 19:53:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10FEB184F16
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 19:59:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726678AbgCMSxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 14:53:33 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:56141 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726297AbgCMSxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 14:53:33 -0400
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jCpR4-0002TT-It; Fri, 13 Mar 2020 19:53:30 +0100
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jCpR1-0003M7-7O; Fri, 13 Mar 2020 19:53:27 +0100
-Date:   Fri, 13 Mar 2020 19:53:27 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Mark Rutland <mark.rutland@arm.com>,
-        Marek Vasut <marex@denx.de>, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v4 1/4] dt-bindings: net: phy: Add support for NXP TJA11xx
-Message-ID: <20200313185327.nawcp2imfldyhpqa@pengutronix.de>
-References: <20200313052252.25389-1-o.rempel@pengutronix.de>
- <20200313052252.25389-2-o.rempel@pengutronix.de>
- <545d5e46-644a-51fb-0d67-881dfe23e9d8@gmail.com>
- <20200313181056.GA29732@lunn.ch>
- <20200313181601.sbxdrqdjqfj3xn3e@pengutronix.de>
- <15dafdcd-1979-bf35-3968-c80ffc113001@gmail.com>
+        id S1726534AbgCMS7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 14:59:23 -0400
+Received: from us-smtp-2.mimecast.com ([205.139.110.61]:47614 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726446AbgCMS7X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 14:59:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584125961;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8o++RDtPi06edCq2V+yf5BrhzW8DgwWaCOa0CXjSS/g=;
+        b=cxGrw77JNHvC6v48owlJ3YgGYCEMUhBUNbBYzE4yTspeDwQ52h0j/1i4CtsoOdwQxJmvk5
+        izbo3Gk5MoLkFvbs2+Uy1RJ8ALU6fgQ78PceScIiaVN1O3+HHK/zQm57RHkNeyeXgTAeBU
+        yPmsbmXwE8g6t7tczLVLLewlifpiQC0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-292-XcPF1FLCMJWyZY5LCgmxEQ-1; Fri, 13 Mar 2020 14:59:18 -0400
+X-MC-Unique: XcPF1FLCMJWyZY5LCgmxEQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 31D29102CE17;
+        Fri, 13 Mar 2020 18:59:16 +0000 (UTC)
+Received: from madcap2.tricolour.ca (ovpn-112-16.rdu2.redhat.com [10.10.112.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8FA3B8FC06;
+        Fri, 13 Mar 2020 18:59:03 +0000 (UTC)
+Date:   Fri, 13 Mar 2020 14:59:00 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Steve Grubb <sgrubb@redhat.com>, linux-audit@redhat.com,
+        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
+ the audit daemon
+Message-ID: <20200313185900.y44yvrfm4zxa5lfk@madcap2.tricolour.ca>
+References: <cover.1577736799.git.rgb@redhat.com>
+ <20200204231454.oxa7pyvuxbj466fj@madcap2.tricolour.ca>
+ <CAHC9VhQquokw+7UOU=G0SsD35UdgmfysVKCGCE87JVaoTkbisg@mail.gmail.com>
+ <3142237.YMNxv0uec1@x2>
+ <CAHC9VhTiCHQbp2SwK0Xb1QgpUZxOQ26JKKPsVGT0ZvMqx28oPQ@mail.gmail.com>
+ <CAHC9VhS09b_fM19tn7pHZzxfyxcHnK+PJx80Z9Z1hn8-==4oLA@mail.gmail.com>
+ <20200312193037.2tb5f53yeisfq4ta@madcap2.tricolour.ca>
+ <CAHC9VhQoVOzy_b9W6h+kmizKr1rPkC4cy5aYoKT2i0ZgsceNDg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="yrnswsmuwla7326n"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <15dafdcd-1979-bf35-3968-c80ffc113001@gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 19:46:17 up 119 days, 10:04, 137 users,  load average: 0.20, 0.09,
- 0.03
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <CAHC9VhQoVOzy_b9W6h+kmizKr1rPkC4cy5aYoKT2i0ZgsceNDg@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 2020-03-13 12:29, Paul Moore wrote:
+> On Thu, Mar 12, 2020 at 3:30 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > On 2020-02-13 16:44, Paul Moore wrote:
+> > > This is a bit of a thread-hijack, and for that I apologize, but
+> > > another thought crossed my mind while thinking about this issue
+> > > further ... Once we support multiple auditd instances, including the
+> > > necessary record routing and duplication/multiple-sends (the host
+> > > always sees *everything*), we will likely need to find a way to "trim"
+> > > the audit container ID (ACID) lists we send in the records.  The
+> > > auditd instance running on the host/initns will always see everything,
+> > > so it will want the full container ACID list; however an auditd
+> > > instance running inside a container really should only see the ACIDs
+> > > of any child containers.
+> >
+> > Agreed.  This should be easy to check and limit, preventing an auditd
+> > from seeing any contid that is a parent of its own contid.
+> >
+> > > For example, imagine a system where the host has containers 1 and 2,
+> > > each running an auditd instance.  Inside container 1 there are
+> > > containers A and B.  Inside container 2 there are containers Y and Z.
+> > > If an audit event is generated in container Z, I would expect the
+> > > host's auditd to see a ACID list of "1,Z" but container 1's auditd
+> > > should only see an ACID list of "Z".  The auditd running in container
+> > > 2 should not see the record at all (that will be relatively
+> > > straightforward).  Does that make sense?  Do we have the record
+> > > formats properly designed to handle this without too much problem (I'm
+> > > not entirely sure we do)?
+> >
+> > I completely agree and I believe we have record formats that are able to
+> > handle this already.
+> 
+> I'm not convinced we do.  What about the cases where we have a field
+> with a list of audit container IDs?  How do we handle that?
 
---yrnswsmuwla7326n
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I don't understand the problem.  (I think you crossed your 1/2 vs
+A/B/Y/Z in your example.)  Clarifying the example above, if as you
+suggest an event happens in container Z, the hosts's auditd would report
+	Z,^2
+and the auditd in container 2 would report
+	Z,^2
+but if there were another auditd running in container Z it would report
+	Z
+while the auditd in container 1 or A/B would see nothing.
 
-On Fri, Mar 13, 2020 at 11:20:35AM -0700, Florian Fainelli wrote:
->=20
->=20
-> On 3/13/2020 11:16 AM, Oleksij Rempel wrote:
-> > On Fri, Mar 13, 2020 at 07:10:56PM +0100, Andrew Lunn wrote:
-> >>>> diff --git a/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml =
-b/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
-> >>>> new file mode 100644
-> >>>> index 000000000000..42be0255512b
-> >>>> --- /dev/null
-> >>>> +++ b/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
-> >>>> @@ -0,0 +1,61 @@
-> >>>> +# SPDX-License-Identifier: GPL-2.0+
-> >>>> +%YAML 1.2
-> >>>> +---
-> >>>> +$id: http://devicetree.org/schemas/net/nxp,tja11xx.yaml#
-> >>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> >>>> +
-> >>>> +title: NXP TJA11xx PHY
-> >>>> +
-> >>>> +maintainers:
-> >>>> +  - Andrew Lunn <andrew@lunn.ch>
-> >>>> +  - Florian Fainelli <f.fainelli@gmail.com>
-> >>>> +  - Heiner Kallweit <hkallweit1@gmail.com>
-> >>>> +
-> >>>> +description:
-> >>>> +  Bindings for NXP TJA11xx automotive PHYs
-> >>>> +
-> >>>> +allOf:
-> >>>> +  - $ref: ethernet-phy.yaml#
-> >>>> +
-> >>>> +patternProperties:
-> >>>> +  "^ethernet-phy@[0-9a-f]+$":
-> >>>> +    type: object
-> >>>> +    description: |
-> >>>> +      Some packages have multiple PHYs. Secondary PHY should be def=
-ines as
-> >>>> +      subnode of the first (parent) PHY.
-> >>>
-> >>>
-> >>> There are QSGMII PHYs which have 4 PHYs embedded and AFAICT they are
-> >>> defined as 4 separate Ethernet PHY nodes and this would not be quite a
-> >>> big stretch to represent them that way compared to how they are.
-> >>>
-> >>> I would recommend doing the same thing and not bend the MDIO framework
-> >>> to support the registration of "nested" Ethernet PHY nodes.
-> >>
-> >> Hi Florian
-> >>
-> >> The issue here is the missing PHY ID in the secondary PHY. Because of
-> >> that, the secondary does not probe in the normal way. We need the
-> >> primary to be involved to some degree. It needs to register it. What
-> >> i'm not so clear on is if it just needs to register it, or if these
-> >> sub nodes are actually needed, given the current code.
-> >=20
-> > There are a bit more dependencies:
-> > - PHY0 is responsible for health monitoring. If some thing wrong, it may
-> >   shut down complete chip.
-> > - We have shared reset. It make no sense to probe PHY1 before PHY0 with
-> >   more controlling options will be probed
-> > - It is possible bat dangerous to use PHY1 without PHY0.
->=20
-> probing is a software problem though. If we want to describe the PHY
-> package more correctly, we should be using a container node, something
-> like this maybe:
->
-> phy-package {
-> 	compatible =3D "nxp,tja1102";
->=20
-> 	ethernet-phy@4 {
-> 		reg =3D <4>;
-> 	};
->=20
-> 	ethernet-phy@5 {
-> 		reg =3D <5>;
-> 	};
-> };
+The format I had proposed already handles that:
+contid^contid,contid^contid but you'd like to see it changed to
+contid,^contid,contid,^contid and both formats handle it though I find
+the former much easier to read.  For the example above we'd have:
+	A,^1
+	B,^1
+	Y,^2
+	Z,^2
+and for a shared network namespace potentially:
+	A,^1,B,^1,Y,^2,Z,^2
+and if there were an event reported by an auditd in container Z it would
+report only:
+	Z
 
-Yes, this is almost the same as it is currently done:
+Now, I could see an argument for restricting the visibility of the
+contid to the container containing an auditd so that an auditd cannot
+see its own contid, but that wasn't my design intent.  This can still be
+addressed after the initial code is committed without breaking the API.
 
-phy-package {
-	reg =3D <4>;
-=20
- 	ethernet-phy@5 {
- 		reg =3D <5>;
- 	};
-};
+> paul moore
 
-Because the primary PHY0 can be autodetected by the bus scan.
-But I have nothing against your suggestions. Please, some one should say the
-last word here, how exactly it should be implemented?
+- RGB
 
-Regards,
-Oleksij
---=20
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
 
---yrnswsmuwla7326n
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEERBNZvwSgvmcMY/T74omh9DUaUbMFAl5r1qMACgkQ4omh9DUa
-UbOGdRAAmDhBqloB1t+KikfgqS6pVFUKUz5Jizm+mm7mEVGA/O7i42ZyW68QDm6m
-ZUqN7a8ZHqnqKH0Qs94ZroMwmcVyfYOnX3Wpryh71s3maHvyow/c03t2cJByiFal
-OvvE0eE9fOBH3ZZEmqUEA4yAlr62Q1zsJH9SgY5ZKn+4rJfIvHboKokynKejvQkX
-1QrZa9bMqVu6odPjpwkTO6aCesUN2ThtltoEC4jOxAbMm/Su9jIY5jnw+Cs88m2t
-G1QQAvneSlRzBd2WBpydUa5rvCvDW4vMmzB5ZGcTJYxVQCfrdDA73n1GTWkqLf0F
-NDwgazuU7zEd7ed+f3A6CwyocyJjbF1Dty24saK4Z7BZfbVUxKZDD0W6ALvDV3Yu
-tcpIq9u4eAYNJJCKF+MnDlkfMkHDOKcGLpgHHs3drB8qUlYLlKq41ltpkO5LuMCj
-T8et0XQ/FTnXS/hho9X6c7YFzmZTwNhkbvrJvy9YyU9L942YX7kpqeytSNvLGJTI
-P8pzutpMR9E/2qPgYx57ujRWjxrwFVze13LDKCStMXwfXfpTfJDFQE3zvuy1t+MK
-qZ1bmJ0K2x7nEVHGzrmiIdemsLDYBPc2WW4s3P8+5hqgU9FpNnv9f9DXFPP3/fGk
-zIaZN08rxT+Cpu2LguR695vYAEJEVoQMXqKj+6GxUxk1Oed4zko=
-=Cgfa
------END PGP SIGNATURE-----
-
---yrnswsmuwla7326n--
