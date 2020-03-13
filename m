@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F50D184D45
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 18:07:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E32C184D90
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 18:25:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726838AbgCMRHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 13:07:35 -0400
-Received: from mail.wangsu.com ([123.103.51.227]:40019 "EHLO wangsu.com"
+        id S1726643AbgCMRZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 13:25:36 -0400
+Received: from mail.wangsu.com ([123.103.51.227]:44052 "EHLO wangsu.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726475AbgCMRHe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Mar 2020 13:07:34 -0400
+        id S1726414AbgCMRZg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Mar 2020 13:25:36 -0400
 Received: from 137.localdomain (unknown [218.107.205.216])
-        by app2 (Coremail) with SMTP id 4zNnewDnSNZEuWtesuYaAA--.224S5;
-        Sat, 14 Mar 2020 00:48:15 +0800 (CST)
+        by app2 (Coremail) with SMTP id 4zNnewDnSNZEuWtesuYaAA--.224S6;
+        Sat, 14 Mar 2020 00:48:17 +0800 (CST)
 From:   Pengcheng Yang <yangpc@wangsu.com>
 To:     edumazet@google.com, davem@davemloft.net, ncardwell@google.com
 Cc:     netdev@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>
-Subject: [PATCH net-next 4/5] tcp: fix stretch ACK bugs in Veno
-Date:   Sat, 14 Mar 2020 00:47:23 +0800
-Message-Id: <1584118044-9798-4-git-send-email-yangpc@wangsu.com>
+Subject: [PATCH net-next 5/5] tcp: fix stretch ACK bugs in Yeah
+Date:   Sat, 14 Mar 2020 00:47:24 +0800
+Message-Id: <1584118044-9798-5-git-send-email-yangpc@wangsu.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1584118044-9798-1-git-send-email-yangpc@wangsu.com>
 References: <1584118044-9798-1-git-send-email-yangpc@wangsu.com>
-X-CM-TRANSID: 4zNnewDnSNZEuWtesuYaAA--.224S5
-X-Coremail-Antispam: 1UD129KBjvJXoWrKF18ZF15GFy5Xr1kuw17Wrg_yoW8JF1fpF
-        Z7GwsIkF4agFyIgFWfAa45Jw4UGa1vqFW8K34UJw1fXw4YqF13AFyvq3y5trWUG3yxAw1a
-        vr909w1fJF9akrJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+X-CM-TRANSID: 4zNnewDnSNZEuWtesuYaAA--.224S6
+X-Coremail-Antispam: 1UD129KBjvJXoWxAw4UKw1ruw1DKw43AFW7twb_yoW5Ww1xpa
+        s3C34a9F4UXFyIgFySy398Ar17G393KFy7G3yUG3s3Aw4q9F13ZF1qq3yjyry7G3yIk34a
+        yr40vw17JF92kFDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
         9KBjDU0xBIdaVrnRJUUUgI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l8cAvFVAK
         0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4
         x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2
@@ -45,48 +45,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change Veno to properly handle stretch ACKs in additive increase
-mode by passing in the count of ACKed packets to tcp_cong_avoid_ai().
+Change Yeah to properly handle stretch ACKs in additive
+increase mode by passing in the count of ACKed packets
+to tcp_cong_avoid_ai().
+
+In addition, we re-implemented the scalable path using
+tcp_cong_avoid_ai() and removed the pkts_acked variable.
 
 Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
 ---
- net/ipv4/tcp_veno.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ net/ipv4/tcp_yeah.c | 41 +++++++++++------------------------------
+ 1 file changed, 11 insertions(+), 30 deletions(-)
 
-diff --git a/net/ipv4/tcp_veno.c b/net/ipv4/tcp_veno.c
-index 857491c..50a9a6e 100644
---- a/net/ipv4/tcp_veno.c
-+++ b/net/ipv4/tcp_veno.c
-@@ -154,8 +154,9 @@ static void tcp_veno_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+diff --git a/net/ipv4/tcp_yeah.c b/net/ipv4/tcp_yeah.c
+index e00570d..3bb4487 100644
+--- a/net/ipv4/tcp_yeah.c
++++ b/net/ipv4/tcp_yeah.c
+@@ -36,8 +36,6 @@ struct yeah {
  
- 		if (tcp_in_slow_start(tp)) {
- 			/* Slow start. */
--			tcp_slow_start(tp, acked);
--			goto done;
-+			acked = tcp_slow_start(tp, acked);
-+			if (!acked)
-+				goto done;
- 		}
+ 	u32 reno_count;
+ 	u32 fast_count;
+-
+-	u32 pkts_acked;
+ };
  
- 		/* Congestion avoidance. */
-@@ -163,7 +164,7 @@ static void tcp_veno_cong_avoid(struct sock *sk, u32 ack, u32 acked)
- 			/* In the "non-congestive state", increase cwnd
- 			 * every rtt.
- 			 */
--			tcp_cong_avoid_ai(tp, tp->snd_cwnd, 1);
-+			tcp_cong_avoid_ai(tp, tp->snd_cwnd, acked);
- 		} else {
- 			/* In the "congestive state", increase cwnd
- 			 * every other rtt.
-@@ -177,7 +178,7 @@ static void tcp_veno_cong_avoid(struct sock *sk, u32 ack, u32 acked)
- 					veno->inc = 1;
- 				tp->snd_cwnd_cnt = 0;
- 			} else
--				tp->snd_cwnd_cnt++;
-+				tp->snd_cwnd_cnt += acked;
- 		}
- done:
- 		if (tp->snd_cwnd < 2)
+ static void tcp_yeah_init(struct sock *sk)
+@@ -57,18 +55,6 @@ static void tcp_yeah_init(struct sock *sk)
+ 	tp->snd_cwnd_clamp = min_t(u32, tp->snd_cwnd_clamp, 0xffffffff/128);
+ }
+ 
+-static void tcp_yeah_pkts_acked(struct sock *sk,
+-				const struct ack_sample *sample)
+-{
+-	const struct inet_connection_sock *icsk = inet_csk(sk);
+-	struct yeah *yeah = inet_csk_ca(sk);
+-
+-	if (icsk->icsk_ca_state == TCP_CA_Open)
+-		yeah->pkts_acked = sample->pkts_acked;
+-
+-	tcp_vegas_pkts_acked(sk, sample);
+-}
+-
+ static void tcp_yeah_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+@@ -77,24 +63,19 @@ static void tcp_yeah_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+ 	if (!tcp_is_cwnd_limited(sk))
+ 		return;
+ 
+-	if (tcp_in_slow_start(tp))
+-		tcp_slow_start(tp, acked);
++	if (tcp_in_slow_start(tp)) {
++		acked = tcp_slow_start(tp, acked);
++		if (!acked)
++			goto do_vegas;
++	}
+ 
+-	else if (!yeah->doing_reno_now) {
++	if (!yeah->doing_reno_now) {
+ 		/* Scalable */
+-
+-		tp->snd_cwnd_cnt += yeah->pkts_acked;
+-		if (tp->snd_cwnd_cnt > min(tp->snd_cwnd, TCP_SCALABLE_AI_CNT)) {
+-			if (tp->snd_cwnd < tp->snd_cwnd_clamp)
+-				tp->snd_cwnd++;
+-			tp->snd_cwnd_cnt = 0;
+-		}
+-
+-		yeah->pkts_acked = 1;
+-
++		tcp_cong_avoid_ai(tp, min(tp->snd_cwnd, TCP_SCALABLE_AI_CNT),
++				  acked);
+ 	} else {
+ 		/* Reno */
+-		tcp_cong_avoid_ai(tp, tp->snd_cwnd, 1);
++		tcp_cong_avoid_ai(tp, tp->snd_cwnd, acked);
+ 	}
+ 
+ 	/* The key players are v_vegas.beg_snd_una and v_beg_snd_nxt.
+@@ -118,7 +99,7 @@ static void tcp_yeah_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+ 	 * of bytes we send in an RTT is often less than our cwnd will allow.
+ 	 * So we keep track of our cwnd separately, in v_beg_snd_cwnd.
+ 	 */
+-
++do_vegas:
+ 	if (after(ack, yeah->vegas.beg_snd_nxt)) {
+ 		/* We do the Vegas calculations only if we got enough RTT
+ 		 * samples that we can be reasonably sure that we got
+@@ -232,7 +213,7 @@ static u32 tcp_yeah_ssthresh(struct sock *sk)
+ 	.set_state	= tcp_vegas_state,
+ 	.cwnd_event	= tcp_vegas_cwnd_event,
+ 	.get_info	= tcp_vegas_get_info,
+-	.pkts_acked	= tcp_yeah_pkts_acked,
++	.pkts_acked	= tcp_vegas_pkts_acked,
+ 
+ 	.owner		= THIS_MODULE,
+ 	.name		= "yeah",
 -- 
 1.8.3.1
 
