@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8BFE183FF0
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 05:08:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29F22183FEF
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 05:08:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726598AbgCMEIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 00:08:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39066 "EHLO mail.kernel.org"
+        id S1726613AbgCMEIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 00:08:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726520AbgCMEIL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Mar 2020 00:08:11 -0400
+        id S1726593AbgCMEIM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Mar 2020 00:08:12 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.4])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AD5102074C;
-        Fri, 13 Mar 2020 04:08:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CDFFB2074F;
+        Fri, 13 Mar 2020 04:08:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584072490;
-        bh=n2eivnnlYgl+7pmU8xbyWo8fcEbCzETgRFg4nEPtLho=;
+        s=default; t=1584072491;
+        bh=xmWw3hyDhsas59JXMdvsr35LodVu6+YY6+iNUhoyZJE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aFPaViOh270LPvtiFYlSecoK4cA0XlnTCSbQLMRC36FjwOE2rpvViUd+Wb2c2+fH4
-         gC9VmMcl82dfRkC2uLy39mzx1dAeYPAxzKv1O81w10x/NtTurucYUu1YMepiGyi7WI
-         2SIYDLe9288PpH7YlLJU6FDjBzbWut4wuN9iiA54=
+        b=zrBcWbUUQbgRBu5sNWKmji7TAZebmN5y7yJingN1sERDzXpLzJNLjhD2zksBQcbRX
+         grvISIS/VunV52yrpZRwV0H4877Vtnmdf9dXyDIGt1JOknAeMJku/Jue+LtiuKeco3
+         Z+Wuk9ClmAGN3GzcL+t2E8RXmeumpyqdg9HD1T8U=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
@@ -37,9 +37,9 @@ Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
         GR-everest-linux-l2@marvell.com, shshaikh@marvell.com,
         nic_swsd@realtek.com, hkallweit1@gmail.com, bh74.an@samsung.com,
         romieu@fr.zoreil.com
-Subject: [PATCH net-next 05/15] net: octeontx2-pf: let core reject the unsupported coalescing parameters
-Date:   Thu, 12 Mar 2020 21:07:53 -0700
-Message-Id: <20200313040803.2367590-6-kuba@kernel.org>
+Subject: [PATCH net-next 06/15] net: skge: reject unsupported coalescing params
+Date:   Thu, 12 Mar 2020 21:07:54 -0700
+Message-Id: <20200313040803.2367590-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200313040803.2367590-1-kuba@kernel.org>
 References: <20200313040803.2367590-1-kuba@kernel.org>
@@ -53,45 +53,25 @@ X-Mailing-List: netdev@vger.kernel.org
 Set ethtool_ops->supported_coalesce_params to let
 the core reject unsupported coalescing parameters.
 
-This driver correctly rejects all unsupported
-parameters, no functional changes.
+This driver did not previously reject unsupported parameters.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c   | 13 ++-----------
- 1 file changed, 2 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/marvell/skge.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index f450111423a8..017a295f568f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -368,17 +368,6 @@ static int otx2_set_coalesce(struct net_device *netdev,
- 	struct otx2_hw *hw = &pfvf->hw;
- 	int qidx;
- 
--	if (ec->use_adaptive_rx_coalesce || ec->use_adaptive_tx_coalesce ||
--	    ec->rx_coalesce_usecs_irq || ec->rx_max_coalesced_frames_irq ||
--	    ec->tx_coalesce_usecs_irq || ec->tx_max_coalesced_frames_irq ||
--	    ec->stats_block_coalesce_usecs || ec->pkt_rate_low ||
--	    ec->rx_coalesce_usecs_low || ec->rx_max_coalesced_frames_low ||
--	    ec->tx_coalesce_usecs_low || ec->tx_max_coalesced_frames_low ||
--	    ec->pkt_rate_high || ec->rx_coalesce_usecs_high ||
--	    ec->rx_max_coalesced_frames_high || ec->tx_coalesce_usecs_high ||
--	    ec->tx_max_coalesced_frames_high || ec->rate_sample_interval)
--		return -EOPNOTSUPP;
--
- 	if (!ec->rx_max_coalesced_frames || !ec->tx_max_coalesced_frames)
- 		return 0;
- 
-@@ -674,6 +663,8 @@ static u32 otx2_get_link(struct net_device *netdev)
+diff --git a/drivers/net/ethernet/marvell/skge.c b/drivers/net/ethernet/marvell/skge.c
+index 97f270d30cce..3c89206f18a7 100644
+--- a/drivers/net/ethernet/marvell/skge.c
++++ b/drivers/net/ethernet/marvell/skge.c
+@@ -876,6 +876,7 @@ static int skge_set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom
  }
  
- static const struct ethtool_ops otx2_ethtool_ops = {
-+	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
-+				     ETHTOOL_COALESCE_MAX_FRAMES,
- 	.get_link		= otx2_get_link,
- 	.get_drvinfo		= otx2_get_drvinfo,
- 	.get_strings		= otx2_get_strings,
+ static const struct ethtool_ops skge_ethtool_ops = {
++	.supported_coalesce_params = ETHTOOL_COALESCE_USECS,
+ 	.get_drvinfo	= skge_get_drvinfo,
+ 	.get_regs_len	= skge_get_regs_len,
+ 	.get_regs	= skge_get_regs,
 -- 
 2.24.1
 
