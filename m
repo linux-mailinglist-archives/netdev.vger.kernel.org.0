@@ -2,102 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BC7E183DCD
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 01:12:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36674183DD2
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 01:21:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726913AbgCMAMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 20:12:51 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:34771 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726608AbgCMAMv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 20:12:51 -0400
-Received: by mail-pg1-f193.google.com with SMTP id t3so3906183pgn.1
-        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 17:12:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=k+yg6Llpmfjhe7xJxz56MsL0qbD0y4irrW71qevvME0=;
-        b=F18lgvMAZEc+Yiu4gBFj5BfSgRCzsxuSxNQ2dvNhXiNLZIV11X/0LLo5XQ67UUxF0m
-         iRZKruILdQY3+mH34vIAVqHBgr/4i15GiLK5XCNyKbZdcYtN/0oBpe+6RbrMU6K0QG4J
-         sy72rrg/QPecUY24SosJH9w8kw2eQEf9Ym2zSrZ65iBG9DStREpfDoKQqAMJNH3ZFW7e
-         p1+Ek2ckOWuJetvsFWJ2mufVO6s1MnGXAvv6MrG/WLgICQABhRlonvpfmeYjhaLgoY8R
-         DcAmnWrWzX2O/3EbSeCsrn2iVZQ+IzCNGg/U35CvMbuv1LVNwOcGVDimdSk5bZ8c+BDS
-         hQ8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=k+yg6Llpmfjhe7xJxz56MsL0qbD0y4irrW71qevvME0=;
-        b=qZ098eJO1y6QdXIr2fmFg/eHyQkzqO1QIhVPgNMPcFkcw4EZFDEVO4482bhD0w1blN
-         1sr31Sxiq47q9oGKIFnsBADYPal+2/GVKY9TujUyqsAJ7zCHUjzm2Ny7D7asZZy3sY/a
-         YL8A9HPEXGTSdL3SA7icqkXF+gKfnGBEFhY2eMXVRi3ve8EmoZZvxkA4pNkUmrSUM2zf
-         x2dbPU7JswKRSrVG3WN+jeYg/KSu515QC97/D6LfKob0YVSrlkYURL5ZCQ9rkb5WMq1S
-         KE7un1JipxYV4n7zeaUpQ+FsTHvYm8sk69Kk/SkHJEkgLv5ZzazSG2EbWGJ5xZOFTkz7
-         rQjA==
-X-Gm-Message-State: ANhLgQ1d6Zm4lnir6hO6E+foJDnc6B8WlAPqUVPhT9FOqo8DwSA/MtG8
-        U839DF7pYuLVgT5PCZOoRae7Lnlj+yo=
-X-Google-Smtp-Source: ADFU+vvnSlXqQB2+/73VoX72gWL65vYVXo9NXjkdEA7qUK8x6SFEXM3EKOi4UxAOQpb6/xRnF09bCA==
-X-Received: by 2002:a63:1c4d:: with SMTP id c13mr10086432pgm.4.1584058368545;
-        Thu, 12 Mar 2020 17:12:48 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id e6sm6854120pgu.44.2020.03.12.17.12.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Mar 2020 17:12:48 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/7] ionic: tx and rx queues state follows link
- state
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-References: <20200312215015.69547-1-snelson@pensando.io>
- <20200312215015.69547-2-snelson@pensando.io>
- <20200312.154110.308373641367156886.davem@davemloft.net>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <af492e16-927e-e10f-1213-59d14634462d@pensando.io>
-Date:   Thu, 12 Mar 2020 17:12:45 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.5.0
+        id S1726930AbgCMAVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 20:21:36 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:39666 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726620AbgCMAVg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 20:21:36 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 02D0Jfx4025434
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 17:21:34 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=fvcRNntQMMkTA/GVquF6OBoXfs3H9zh3ARF8GXcr6Ww=;
+ b=W5F22ZVPtxVBCozbCV7lt3zNzMUWhj4nUbU/bet0m3AoeBnaQ/hdZpKlMGm1xd+oFDFQ
+ aWmjTfrgWX7h/w4XLLzuV0yFJ5w5dt0kc/xyGDJH4mG5JMyG4eq5/A2VVlOIBnPAby58
+ 9CewRK0iOkEngQI9Czx7ShGThcTTIhO0yK4= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2yqt7e9kmh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 17:21:34 -0700
+Received: from intmgw004.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Thu, 12 Mar 2020 17:21:34 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id B4CD02EC2E74; Thu, 12 Mar 2020 17:21:30 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next] bpf: abstract away entire bpf_link clean up procedure
+Date:   Thu, 12 Mar 2020 17:21:28 -0700
+Message-ID: <20200313002128.2028680-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <20200312.154110.308373641367156886.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-12_19:2020-03-11,2020-03-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ priorityscore=1501 mlxscore=0 phishscore=0 bulkscore=0 clxscore=1015
+ adultscore=0 impostorscore=0 mlxlogscore=765 spamscore=0 malwarescore=0
+ suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003130000
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/12/20 3:41 PM, David Miller wrote:
-> From: Shannon Nelson <snelson@pensando.io>
-> Date: Thu, 12 Mar 2020 14:50:09 -0700
->
->> +		if (!test_bit(IONIC_LIF_F_UP, lif->state) &&
->> +		    netif_running(netdev)) {
->> +			rtnl_lock();
->> +			ionic_open(netdev);
->> +			rtnl_unlock();
->>   		}
-> You're running into a major problem area here.
->
-> ionic_open() can fail, particularly because it allocates resources.
->
-> Yet you are doing this in an operational path that doesn't handle
-> and unwind from errors.
->
-> You must find a way to do this properly, because the current approach
-> can result in an inoperable interface.
+Instead of requiring users to do three steps for cleaning up bpf_link, its
+anon_inode file, and unused fd, abstract that away into bpf_link_cleanup()
+helper. bpf_link_defunct() is removed, as it shouldn't be needed as an
+individual operation anymore.
 
-I don't see this as much different from how we use it in 
-ionic_reset_queues(), which was modeled after some other drivers' uses 
-of the open call.  In the fw reset case, though, the time between the 
-close and the open is many seconds.
+v1->v2:
+- keep bpf_link_cleanup() static for now (Daniel).
 
-Yes, ionic_open() can fail, and it unwinds its own work.  There isn't 
-anything here in ionic_link_status_check() to unwind, and no one to 
-report the error to, so we don't catch the error here. However, it would 
-be better if I move the addition of the IONIC_LIF_F_TRANS flag and a 
-couple other bits from patch 7 into this patch - I can do that for a v2 
-patchset.
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ include/linux/bpf.h  |  1 -
+ kernel/bpf/syscall.c | 18 +++++++++++-------
+ 2 files changed, 11 insertions(+), 8 deletions(-)
 
-sln
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index 4fd91b7c95ea..49389ddb948f 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1075,7 +1075,6 @@ struct bpf_link_ops {
+ 
+ void bpf_link_init(struct bpf_link *link, const struct bpf_link_ops *ops,
+ 		   struct bpf_prog *prog);
+-void bpf_link_defunct(struct bpf_link *link);
+ void bpf_link_inc(struct bpf_link *link);
+ void bpf_link_put(struct bpf_link *link);
+ int bpf_link_new_fd(struct bpf_link *link);
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index b2f73ecacced..85567a6ea5f9 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2188,9 +2188,17 @@ void bpf_link_init(struct bpf_link *link, const struct bpf_link_ops *ops,
+ 	link->prog = prog;
+ }
+ 
+-void bpf_link_defunct(struct bpf_link *link)
++/* Clean up bpf_link and corresponding anon_inode file and FD. After
++ * anon_inode is created, bpf_link can't be just kfree()'d due to deferred
++ * anon_inode's release() call. This helper manages marking bpf_link as
++ * defunct, releases anon_inode file and puts reserved FD.
++ */
++static void bpf_link_cleanup(struct bpf_link *link, struct file *link_file,
++			     int link_fd)
+ {
+ 	link->prog = NULL;
++	fput(link_file);
++	put_unused_fd(link_fd);
+ }
+ 
+ void bpf_link_inc(struct bpf_link *link)
+@@ -2383,9 +2391,7 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog)
+ 
+ 	err = bpf_trampoline_link_prog(prog);
+ 	if (err) {
+-		bpf_link_defunct(&link->link);
+-		fput(link_file);
+-		put_unused_fd(link_fd);
++		bpf_link_cleanup(&link->link, link_file, link_fd);
+ 		goto out_put_prog;
+ 	}
+ 
+@@ -2498,9 +2504,7 @@ static int bpf_raw_tracepoint_open(const union bpf_attr *attr)
+ 
+ 	err = bpf_probe_register(link->btp, prog);
+ 	if (err) {
+-		bpf_link_defunct(&link->link);
+-		fput(link_file);
+-		put_unused_fd(link_fd);
++		bpf_link_cleanup(&link->link, link_file, link_fd);
+ 		goto out_put_btp;
+ 	}
+ 
+-- 
+2.17.1
 
