@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1515184CDC
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 17:49:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81C0A184CE8
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 17:49:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726741AbgCMQtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 12:49:10 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:43830 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726676AbgCMQtK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 12:49:10 -0400
-Received: by mail-qk1-f195.google.com with SMTP id x1so8758076qkx.10
-        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 09:49:09 -0700 (PDT)
+        id S1727095AbgCMQte (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 12:49:34 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:45720 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726406AbgCMQtd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 12:49:33 -0400
+Received: by mail-ed1-f66.google.com with SMTP id h62so12638017edd.12
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 09:49:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FmRBGgbeyZQ4puB57NT8Sof7/pO+vP+mNUY77fyl/y8=;
-        b=IMAfVUco2dykyQYb+F0HKZrTJN0cspRd/0PQlHPV3DNr2kuLzwua7K7Wt9R5Dz7mcI
-         Qye+oIb6V2FqqZCZmAgmQxV/3PwTkMYeb93fFDfAeqVhn+QLhhpcR8GoZuFApWYbA6x3
-         dXzfccxOa4WqQP8r3WonqAeJa8txecZXxarYwJRPiM0KC/cec4ev2m13o8U7Lin4ObkW
-         b4XftY0qJwQrsXl8F/1bKIQdLrSZGnBk72BMPwRcBXVaHWxWR06N6VPzABYxcoInlAZo
-         1KMhgQL8DfueY6gV44K5RwrHvZui8qD4/2xmc2UEbwyRBacMfykCpoGOmwHhCwnK19NG
-         6idQ==
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YGG5XY3Ewg2kr6ydPgEVpPEQe8Bu0vVCZeuUuZTd/eQ=;
+        b=WoJn/P9W8ionIJ6xiBiPAmxmGbbYK44xv4IrICoWubAgYlhtkhxUJmVCijstH/13K8
+         e8sfsXfNGVfsBKnRV0SJuy8a8BZyemhuV3VRdHRn2DarGPfrMqFVOH/OuDqiVr4hokOl
+         UhOrjDnrSoggcD90vmrkTdZGj88Cdu4MhRmnyJ0V4shQjxGwADiObeG6nDXMrC2tX1Sf
+         Zx5guOou8iWTPF16pL8NUnjXXzxYS+GbneCIQZyfvTaduvQymLt4+IWsFLUbJONa/YD2
+         kXa9vk9xzfHNLaAh621qmRaQsnpJdixash8QTk6Mp+WMhkhfOstdpA5Hj+YyS0gM+Gnv
+         FnoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FmRBGgbeyZQ4puB57NT8Sof7/pO+vP+mNUY77fyl/y8=;
-        b=jJqmYqSlWTFUUD85pQqdYyeWRtedS9l6RxT0+PV3EFeV6LpO/rdsIFvtX9N6+Y8gbc
-         1gkMd5CJo3m7c44JMsJJ3ngGBlSapXECEpdaIgl4hNXRaWVwED/yXgEMOXQHaMueFp0s
-         MWjQXqFpnLKHEzJdsW78qNKib3WNbKASH2hNQyoSiYfeUVg5sUlI7tqMbv5dFYYSTY8f
-         CJ9MlEyZx+P1ueRhE4azMt7B/thRQFWLgsN4JERnn3RFMQO+cezH9pKa4uA50qisWHMv
-         /A1uC8luB8Gmzwpah/3AHyGWBMCkd2/saUbaefCXJni+B/xJvF2BBlsm9RgcPXYxZDWi
-         ujFQ==
-X-Gm-Message-State: ANhLgQ3MCyGgvI4lgfWepcB0kZWuCOhI6rbWfPsAOxKunVHkMftHjo/+
-        GGrWNUvEhBQG2aaJcofb/KdSmEU6uss=
-X-Google-Smtp-Source: ADFU+vvN07S5pdQ4bZzRfVteSIayDd4ZOFYVbgUPwPa1xIgZFTTeOF3bmQChTchvqBtR+r5SK4MTKA==
-X-Received: by 2002:a37:8e44:: with SMTP id q65mr14132845qkd.70.1584118149079;
-        Fri, 13 Mar 2020 09:49:09 -0700 (PDT)
-Received: from localhost.localdomain ([168.181.48.211])
-        by smtp.gmail.com with ESMTPSA id l4sm7227174qkc.26.2020.03.13.09.49.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Mar 2020 09:49:08 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 99045C58FF; Fri, 13 Mar 2020 13:49:05 -0300 (-03)
-Date:   Fri, 13 Mar 2020 13:49:05 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     paulb@mellanox.com, saeedm@mellanox.com, ozsh@mellanox.com,
-        vladbu@mellanox.com, netdev@vger.kernel.org, jiri@mellanox.com,
-        roid@mellanox.com
-Subject: Re: [PATCH net-next ct-offload v4 00/15] Introduce connection
- tracking offload
-Message-ID: <20200313164905.GM2546@localhost.localdomain>
-References: <1584008597-15875-1-git-send-email-paulb@mellanox.com>
- <20200312.150600.667394309882963148.davem@davemloft.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YGG5XY3Ewg2kr6ydPgEVpPEQe8Bu0vVCZeuUuZTd/eQ=;
+        b=M5lAg2vt+fDUBADI52xXVymvggaYSK7BoJe1VM6Up+WCNLnt2ajOrH7qwmgKPpcpHv
+         Pmxx/HsOqZuuc+ifaS3AyUwBTXGLlJQ2okVB3Bhi4gCcfpbdeZcnp0CP5CKeXMcR+XBl
+         xKVv1ZlCMO4Vv8jvYBLWcgx3Op1L9iev6HuryswKZKrI/p1iLXV57fJhLVs7nhU41ACW
+         zHxT3+eIItsNbX1WzIV49EsJoAf7iqZyt0eBnCaXh7hSSaO551h4nbaiC7tmxg2LzUm0
+         aU9Ynj73NxCT9f4Sc0rEnZQpk1Svts+75TUSDmJptvl1GpVixK2wTf6NkhyRXqRprAoh
+         xPTg==
+X-Gm-Message-State: ANhLgQ3C0O/Hlrz18ALKsoM61eGldftqSMRS389JX7L3GFaD0v5OSP2b
+        k+6CL+wYodDbkYMXdGt9i2YkRU69wiW5UGzewmh5
+X-Google-Smtp-Source: ADFU+vv+9NsRZqnIPliXMbq5GOtlCub1wdzEkmolWWP97LJYncHkT1zJ8K+tAtQcCN/BN4QsA0IqfHmFy6PXx2taKa0=
+X-Received: by 2002:aa7:dd01:: with SMTP id i1mr14078117edv.164.1584118169827;
+ Fri, 13 Mar 2020 09:49:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200312.150600.667394309882963148.davem@davemloft.net>
+References: <cover.1577736799.git.rgb@redhat.com> <20200312202733.7kli64zsnqc4mrd2@madcap2.tricolour.ca>
+ <CAHC9VhS9DtxJ4gvOfMRnzoo6ccGJVKL+uZYe6qqH+SPqD8r01Q@mail.gmail.com> <2588582.z15pWOfGEt@x2>
+In-Reply-To: <2588582.z15pWOfGEt@x2>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Fri, 13 Mar 2020 12:49:18 -0400
+Message-ID: <CAHC9VhQ7hFc8EqrEojmjQriWtKkqjPyzWrnrc_eVKjcYhhV8QQ@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
+ the audit daemon
+To:     Steve Grubb <sgrubb@redhat.com>
+Cc:     Richard Guy Briggs <rgb@redhat.com>, linux-audit@redhat.com,
+        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 03:06:00PM -0700, David Miller wrote:
-> From: Paul Blakey <paulb@mellanox.com>
-> Date: Thu, 12 Mar 2020 12:23:02 +0200
-> 
->  ...
-> > Applying this patchset
-> > --------------------------
-> > 
-> > On top of current net-next ("r8169: simplify getting stats by using netdev_stats_to_stats64"),
-> > pull Saeed's ct-offload branch, from git git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git
-> > and fix the following non trivial conflict in fs_core.c as follows:
-> > #define OFFLOADS_MAX_FT 2
-> > #define OFFLOADS_NUM_PRIOS 2
-> > #define OFFLOADS_MIN_LEVEL (ANCHOR_MIN_LEVEL + OFFLOADS_NUM_PRIOS)
-> 
-> Done.
-> 
-> > Then apply this patchset.
-> > 
-> > Changelog:
-> >   v2->v3:
-> >     Added the first two patches needed after rebasing on net-next:
-> >      "net/mlx5: E-Switch, Enable reg c1 loopback when possible"
-> >      "net/mlx5e: en_rep: Create uplink rep root table after eswitch offloads table"
-> 
-> Applied and queued up for -stable.
+On Fri, Mar 13, 2020 at 12:45 PM Steve Grubb <sgrubb@redhat.com> wrote:
+> On Friday, March 13, 2020 12:42:15 PM EDT Paul Moore wrote:
+> > > I think more and more, that more complete isolation is being done,
+> > > taking advantage of each type of namespace as they become available, but
+> > > I know a nuber of them didn't find it important yet to use IPC, PID or
+> > > user namespaces which would be the only namespaces I can think of that
+> > > would provide that isolation.
+> > >
+> > > It isn't entirely clear to me which side you fall on this issue, Paul.
+> >
+> > That's mostly because I was hoping for some clarification in the
+> > discussion, especially the relevant certification requirements, but it
+> > looks like there is still plenty of room for interpretation there (as
+> > usual).  I'd much rather us arrive at decisions based on requirements
+> > and not gut feelings, which is where I think we are at right now.
+>
+> Certification rquirements are that we need the identity of anyone attempting
+> to modify the audit configuration including shutting it down.
 
-Thanks but, -stable?
+Yep, got it.  Unfortunately that doesn't really help with what we are
+talking about.  Although preventing the reuse of the ACID before the
+SIGNAL2 record does help preserve the sanity of the audit stream which
+I believe to be very important, regardless.
+
+-- 
+paul moore
+www.paul-moore.com
