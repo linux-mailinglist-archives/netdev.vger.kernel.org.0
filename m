@@ -2,120 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 381B71843FB
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 10:43:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3580F184407
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 10:47:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726652AbgCMJn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 05:43:26 -0400
-Received: from mail-pj1-f43.google.com ([209.85.216.43]:52658 "EHLO
-        mail-pj1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726632AbgCMJn0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 05:43:26 -0400
-Received: by mail-pj1-f43.google.com with SMTP id f15so3874835pjq.2
-        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 02:43:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Hh6KqYNTBZmUluUTxoQaRzg7K8olpbqaR6qYlN8qUU4=;
-        b=M7G40oKMZ8lKqVGsUBIggrO0klgQNwFkdu+Zxg1cQzIgSshasFs9LxmVcuroKm6nMa
-         Il8lJY5YBuDxvhsFbxXVOVbKTjX0S/RG9XWXrG5aRUEyvP6MWTle8kiyFsB+yveNm7jx
-         tvghYpFdGIR4b8dWwOhATBfOPYtqR7r+pMg0KeFxQx4X2z+31HDNMK+pxH3UvcL7UTFm
-         PksYVltfTnMMUVxGUMQ9ooWzM8IsUNITZUo17qtn5QO9gRJrFIl50wuYPaBHWE+l0aDy
-         soe6vcbFqQUvzZco/AqIAbiZo/Zmok7RPimfpECglckvew4+orf6nMW12Kx8SHZAGiox
-         HDkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Hh6KqYNTBZmUluUTxoQaRzg7K8olpbqaR6qYlN8qUU4=;
-        b=s5B29FVVlsV/vhLqwK4l+TFou1sB5PK6EkWkuPIX0O6//5MC7rXBwoFPVK9hQpY3HC
-         GxUPtn0RIkDGb/VjTkJa3XprDH1f9hvfmpBimrDqOE++fgiaFE76V7u6FcfCEQzbKKMK
-         8za8CBhpn5hZAL2ZAwhEs9k7zroNkWuwlqevLE7Q9qkeuREc0irFG3UnQ2L3x+y6dZwJ
-         +ISXrgUiC4RYKQH8Tt8++tuOtkY6ceU4qDIvvQN+D2+HKahShCPlwV5VnCx2vANlerOn
-         50gl97zDRVBcYw0J6Dntn6PXBczg44BlzNqT9dZnzBhEe+0gJkQump7nWPjncEkX4Fbp
-         lMIA==
-X-Gm-Message-State: ANhLgQ30c20TXLKxJQyy9N63rBBD5wO8k17QcHhtDnODcOAdKbYrpX+C
-        rjcUR3HP089gr8MxQwkXZSy7DDu2HlI=
-X-Google-Smtp-Source: ADFU+vv1JtawMYSd5C036UoiPPyVoWdzSIzmVTHD4JpK8gkcV/ZkPru6Dh2kG3rOXWF2UeCAM4+e3A==
-X-Received: by 2002:a17:90a:8905:: with SMTP id u5mr8615790pjn.137.1584092604763;
-        Fri, 13 Mar 2020 02:43:24 -0700 (PDT)
-Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id v67sm13896386pfc.120.2020.03.13.02.43.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 13 Mar 2020 02:43:24 -0700 (PDT)
-From:   sunil.kovvuri@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, leon@kernel.org,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH v2 net-next 7/7] octeontx2-af: Remove driver version and fix authorship
-Date:   Fri, 13 Mar 2020 15:12:46 +0530
-Message-Id: <1584092566-4793-8-git-send-email-sunil.kovvuri@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1584092566-4793-1-git-send-email-sunil.kovvuri@gmail.com>
-References: <1584092566-4793-1-git-send-email-sunil.kovvuri@gmail.com>
+        id S1726437AbgCMJrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 05:47:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33152 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726055AbgCMJrY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Mar 2020 05:47:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=owOPiunMIkWsfod4tnAl8VA0j1fimAzydoG8uLc2/7c=; b=uPkshxTCiRfKdwCswjvl2dJz4S
+        AB+JUe3UM/Gj+pvKXCJSOxII+Bt7iRvDlZmqMHL3Au3OZ0fnGHVrMLb6aRPLMy24VJ0ToEJXXNx77
+        lA4iBdL+uaB+BZezoqEJ5sxpYXuglbkH+i6HiYPVd3d4fxIz3rBi4bfnF8V9fcvRixkk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jCguY-00041g-BT; Fri, 13 Mar 2020 10:47:22 +0100
+Date:   Fri, 13 Mar 2020 10:47:22 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sriram Chadalavada <sriram.chadalavada@mindleap.ca>
+Cc:     netdev@vger.kernel.org
+Subject: Re: Information on DSA driver initialization
+Message-ID: <20200313094722.GC14553@lunn.ch>
+References: <CAOK2joFxzSETFgHX7dRuhWPVSSEYswJ+-xfSxbPr5n3LcsMHzw@mail.gmail.com>
+ <20200305225115.GC25183@lunn.ch>
+ <CAOK2joHQRaBaW0_xexZLTp432ByvC6uhgJvjsY8t3HNyL9GUwg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOK2joHQRaBaW0_xexZLTp432ByvC6uhgJvjsY8t3HNyL9GUwg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sunil Goutham <sgoutham@marvell.com>
+On Thu, Mar 12, 2020 at 06:38:24PM -0400, Sriram Chadalavada wrote:
+> Hi Andrew,
+>    Thank you for your response.
+> 
+>   Yes. There are patches applied.  I did scatter printks/pr_info but
+> don't see anything yet from the Marvell 6176 switch without
+> CONFIG_NET_DSA_LEGACY enabled.
 
-Removed MODULE_VERSION and fixed MODULE_AUTHOR.
+CONFIG_NET_DSA_LEGACY is dead. Don't use it. Use the new binding.
 
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c      | 4 +---
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 4 +---
- 2 files changed, 2 insertions(+), 6 deletions(-)
+> 
+>     One question I have is if CONFIG_NET_DSA_LEGACY is NOT selected,
+> what in the 4.19 kernel takes over the function of dsa_probe function
+> in net/dsa/legacy.c and mv88e6xxx_drv_probe in
+> drivers/net/dsa/mv88e6xxx/chip.c ?
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index 5ff25bf..557e429 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -21,7 +21,6 @@
- 
- #define DRV_NAME	"octeontx2-af"
- #define DRV_STRING      "Marvell OcteonTX2 RVU Admin Function Driver"
--#define DRV_VERSION	"1.0"
- 
- static int rvu_get_hwvf(struct rvu *rvu, int pcifunc);
- 
-@@ -46,10 +45,9 @@ static const struct pci_device_id rvu_id_table[] = {
- 	{ 0, }  /* end of table */
- };
- 
--MODULE_AUTHOR("Marvell International Ltd.");
-+MODULE_AUTHOR("Sunil Goutham <sgoutham@marvell.com>");
- MODULE_DESCRIPTION(DRV_STRING);
- MODULE_LICENSE("GPL v2");
--MODULE_VERSION(DRV_VERSION);
- MODULE_DEVICE_TABLE(pci, rvu_id_table);
- 
- static char *mkex_profile; /* MKEX profile name */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 6564f45..71415d7 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -24,7 +24,6 @@
- 
- #define DRV_NAME	"octeontx2-nicpf"
- #define DRV_STRING	"Marvell OcteonTX2 NIC Physical Function Driver"
--#define DRV_VERSION	"1.0"
- 
- /* Supported devices */
- static const struct pci_device_id otx2_pf_id_table[] = {
-@@ -32,10 +31,9 @@ static const struct pci_device_id otx2_pf_id_table[] = {
- 	{ 0, }  /* end of table */
- };
- 
--MODULE_AUTHOR("Marvell International Ltd.");
-+MODULE_AUTHOR("Sunil Goutham <sgoutham@marvell.com>");
- MODULE_DESCRIPTION(DRV_STRING);
- MODULE_LICENSE("GPL v2");
--MODULE_VERSION(DRV_VERSION);
- MODULE_DEVICE_TABLE(pci, otx2_pf_id_table);
- 
- enum {
--- 
-2.7.4
+When the mdio bus is registered, the mdio driver calls
+of_mdiobus_register() passing a DT node for the bus. The bus is walked
+and devices instantiated.
 
+    Andrew
