@@ -2,143 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F07851847C4
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 14:15:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFFBD183F2E
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 03:39:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726622AbgCMNP4 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 13 Mar 2020 09:15:56 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:10230 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726669AbgCMNP4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 09:15:56 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 02DD7jgw022436
-        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 06:15:55 -0700
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net with ESMTP id 2yqt89c0j9-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 06:15:55 -0700
-Received: from intmgw002.03.ash8.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Fri, 13 Mar 2020 06:15:53 -0700
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id BE8D57600DE; Thu, 12 Mar 2020 19:06:50 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: pull-request: bpf 2020-03-12
-Date:   Thu, 12 Mar 2020 19:06:49 -0700
-Message-ID: <20200313020649.1133477-1-ast@kernel.org>
-X-Mailer: git-send-email 2.23.0
+        id S1726423AbgCMCjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 22:39:33 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:40006 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726246AbgCMCjc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 22:39:32 -0400
+Received: by mail-pl1-f196.google.com with SMTP id h11so3489227plk.7;
+        Thu, 12 Mar 2020 19:39:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Rs1oqWipH70EqXQPZoCyLHHvdHZcK5yX7KipafNzHgo=;
+        b=fTihegLmnOtNBXny+Jn9Qu7R+3y3R1QNpb0QRLf4CwbwNTK8BGA3OtJLKMtEbQGZ2u
+         MUZ56T++lciXe6odpK+LWItTj42+GZxM2dRa+LEnSr3Tk6D1Oj+H2p2gMgnSTlbyXHQj
+         NLIsDFTlsrjyt8sM9MRN8NyGrO566G+kOdAkkqKEqrVMXMMoJQzC72ul2b8jJntKDzJb
+         Ha3n3Ar0FuJoIy32b+bsyFUviu3OWz7LFdGe12KbNtA+IKMAUXPLss5d24QNHdvdvv4Q
+         VVnpRT9w1rFHG3+RkCE6EEBAu1q/81Q5onKd4GaKh6mVPfa1llv03VRqg5c6jh+R8lSS
+         ke0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Rs1oqWipH70EqXQPZoCyLHHvdHZcK5yX7KipafNzHgo=;
+        b=n5pvriatbKrzaM4K5F1DehISWCcfiT1SL6OQN9wGzg+MpE4kPwiHsqgVWPyPM4XGMo
+         Cc9BolSm/FF6G5ulQhdkx7yoJKPOP00jze03/1V6KhPIZsS7EhWBAtSn6LLyiNnlmfj7
+         x1IgzNaAUG0Ttf/iaI0/9CUBUDsQZQmGSuyapJ6/jr/wQZ5eDkI1WRmvW/WZj4wRzZ0j
+         /TgZzKjv4HsNLWXGDPm6y5nrH+UbMJyDHgnzeFthee2XVhmzIQs9qI3/pBeqDRzzCQL7
+         5nZa7jc1EVN57bkfmmD/dhC0uSx7ZE5rKSfXJqYqjiwggyB8i2BxlA1/wGUQkSOSxwuv
+         Plzw==
+X-Gm-Message-State: ANhLgQ3PbiCX4ZfDf4R0KRyIIIp0XSNoyKNccQQ+buUYwY1oPtpwNJZn
+        CHOGameH7e78c0O4QooLAC4=
+X-Google-Smtp-Source: ADFU+vtN4yL9qUHvbzyq1p40z4iEFHQlcLn80n6s/5i495YXE7lv6/J6aTYMCfxZ/XdpuzZm1zEv8w==
+X-Received: by 2002:a17:90a:a48b:: with SMTP id z11mr7487175pjp.1.1584067171717;
+        Thu, 12 Mar 2020 19:39:31 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:df27])
+        by smtp.gmail.com with ESMTPSA id f4sm20951554pfn.116.2020.03.12.19.39.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Mar 2020 19:39:30 -0700 (PDT)
+Date:   Thu, 12 Mar 2020 19:39:27 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Andrii Nakryiko <andriin@fb.com>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@redhat.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Song Liu <song@kernel.org>
+Subject: Re: [PATCHv5 00/15] bpf: Add trampoline and dispatcher to
+ /proc/kallsyms
+Message-ID: <20200313023927.ejv6aubwzjht55cf@ast-mbp>
+References: <20200312195610.346362-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-13_04:2020-03-12,2020-03-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- clxscore=1015 malwarescore=0 bulkscore=0 impostorscore=0 mlxscore=0
- suspectscore=4 priorityscore=1501 spamscore=0 adultscore=0 phishscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2003130070
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200312195610.346362-1-jolsa@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+On Thu, Mar 12, 2020 at 08:55:55PM +0100, Jiri Olsa wrote:
+> hi,
+> this patchset adds trampoline and dispatcher objects
+> to be visible in /proc/kallsyms. The last patch also
+> adds sorting for all bpf objects in /proc/kallsyms.
 
-The following pull-request contains BPF updates for your *net* tree.
-
-We've added 12 non-merge commits during the last 8 day(s) which contain
-a total of 12 files changed, 161 insertions(+), 15 deletions(-).
-
-The main changes are:
-
-1) Andrii fixed two bugs in cgroup-bpf.
-
-2) John fixed sockmap.
-
-3) Luke fixed x32 jit.
-
-4) Martin fixed two issues in struct_ops.
-
-5) Yonghong fixed bpf_send_signal.
-
-6) Yoshiki fixed BTF enum.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
+I removed second sentence from the cover letter and
+applied the first 12 patches.
 Thanks a lot!
 
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
+> For perf tool to properly display trampoline/dispatcher you need
+> also Arnaldo's perf/urgent branch changes. I merged everything
+> into following branch:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/kallsyms
 
-Andrii Nakryiko, Jakub Sitnicki, Roman Gushchin
-
-----------------------------------------------------------------
-
-The following changes since commit 209c65b61d94344522c41a83cd6ce51aac5fd0a4:
-
-  drivers/of/of_mdio.c:fix of_mdiobus_register() (2020-03-03 19:01:51 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 90db6d772f749e38171d04619a5e3cd8804a6d02:
-
-  bpf, sockmap: Remove bucket->lock from sock_{hash|map}_free (2020-03-11 14:08:52 +0100)
-
-----------------------------------------------------------------
-Alexei Starovoitov (2):
-      Merge branch 'fix_bpf_send_signal'
-      Merge branch 'fix-BTF-enum'
-
-Andrii Nakryiko (2):
-      bpf: Initialize storage pointers to NULL to prevent freeing garbage pointer
-      bpf: Fix cgroup ref leak in cgroup_bpf_inherit on out-of-memory
-
-John Fastabend (1):
-      bpf, sockmap: Remove bucket->lock from sock_{hash|map}_free
-
-Luke Nelson (2):
-      bpf, x32: Fix bug with JMP32 JSET BPF_X checking upper bits
-      selftests: bpf: Add test for JMP32 JSET BPF_X with upper bits set
-
-Martin KaFai Lau (2):
-      bpf: Return better error value in delete_elem for struct_ops map
-      bpf: Do not allow map_freeze in struct_ops map
-
-Quentin Monnet (1):
-      mailmap: Update email address
-
-Yonghong Song (2):
-      bpf: Fix deadlock with rq_lock in bpf_send_signal()
-      selftests/bpf: Add send_signal_sched_switch test
-
-Yoshiki Komachi (2):
-      bpf/btf: Fix BTF verification of enum members in struct/union
-      selftests/bpf: Add test for the packed enum member in struct/union
-
- .mailmap                                           |  1 +
- arch/x86/net/bpf_jit_comp32.c                      | 10 ++--
- kernel/bpf/bpf_struct_ops.c                        | 14 +++--
- kernel/bpf/btf.c                                   |  2 +-
- kernel/bpf/cgroup.c                                |  7 ++-
- kernel/bpf/syscall.c                               |  5 ++
- kernel/trace/bpf_trace.c                           |  2 +-
- net/core/sock_map.c                                | 12 +++--
- .../bpf/prog_tests/send_signal_sched_switch.c      | 60 ++++++++++++++++++++++
- .../selftests/bpf/progs/test_send_signal_kern.c    |  6 +++
- tools/testing/selftests/bpf/test_btf.c             | 42 +++++++++++++++
- tools/testing/selftests/bpf/verifier/jmp32.c       | 15 ++++++
- 12 files changed, 161 insertions(+), 15 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/send_signal_sched_switch.c
+It sounds that you folks want to land the last three patches via Arnaldo's tree
+to avoid conflicts?
+Right?
