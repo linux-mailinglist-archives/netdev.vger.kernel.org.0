@@ -2,145 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E32C184D90
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 18:25:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4EC5184CCA
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 17:47:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726643AbgCMRZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 13:25:36 -0400
-Received: from mail.wangsu.com ([123.103.51.227]:44052 "EHLO wangsu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726414AbgCMRZg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Mar 2020 13:25:36 -0400
-Received: from 137.localdomain (unknown [218.107.205.216])
-        by app2 (Coremail) with SMTP id 4zNnewDnSNZEuWtesuYaAA--.224S6;
-        Sat, 14 Mar 2020 00:48:17 +0800 (CST)
-From:   Pengcheng Yang <yangpc@wangsu.com>
-To:     edumazet@google.com, davem@davemloft.net, ncardwell@google.com
-Cc:     netdev@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>
-Subject: [PATCH net-next 5/5] tcp: fix stretch ACK bugs in Yeah
-Date:   Sat, 14 Mar 2020 00:47:24 +0800
-Message-Id: <1584118044-9798-5-git-send-email-yangpc@wangsu.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1584118044-9798-1-git-send-email-yangpc@wangsu.com>
-References: <1584118044-9798-1-git-send-email-yangpc@wangsu.com>
-X-CM-TRANSID: 4zNnewDnSNZEuWtesuYaAA--.224S6
-X-Coremail-Antispam: 1UD129KBjvJXoWxAw4UKw1ruw1DKw43AFW7twb_yoW5Ww1xpa
-        s3C34a9F4UXFyIgFySy398Ar17G393KFy7G3yUG3s3Aw4q9F13ZF1qq3yjyry7G3yIk34a
-        yr40vw17JF92kFDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUgI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l8cAvFVAK
-        0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4
-        x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2
-        z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4
-        xG64xvF2IEw4CE5I8CrVC2j2WlYx0E74AGY7Cv6cx26r48McvjeVCFs4IE7xkEbVWUJVW8
-        JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r1l42
-        xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VW8GwCFx2IqxVCFs4IE7xkEbVWUJVW8
-        JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1V
-        AFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xII
-        jxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4
-        A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU
-        0xZFpf9x0JjeNtxUUUUU=
-X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
+        id S1726620AbgCMQru (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 12:47:50 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:46685 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726526AbgCMQru (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 12:47:50 -0400
+Received: by mail-ed1-f65.google.com with SMTP id ca19so12654221edb.13
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 09:47:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CgoM3beKoYI/5+BkvNF0e0zNF8rAhCT7BQOep064wDk=;
+        b=LGYXmthHZQmVeL3ORXAKlyXPn1vaS3e9UjtSB+15SH4QeWbUDxHZTA0wy6LXXSzU/y
+         AReDf/yNrW9KPOCuIFvFj8Lfr3Di/5qM1MMnxAfvmosg3+zMlQ0sG1h+tbIuzRJZnPGO
+         swdDQJLr7xPNoDTfBhEVjMDfsrwKTQJV4bSWXD9bugamcRKUt7zf8ITOeN7sc3ZoTK9J
+         32u0WLMxZ0xZ9QOW0Ub2cm8b85Yb1sMclPYCpKfHE8DO4V6pq5xMAVki0Yt1ISvmXyI7
+         iokKMBnrf8sn27LHEqKQc/RQ9QkZnxS3FLoraxrwV596hqsYFM7i92OTGeE+0NDjlzoO
+         dEow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CgoM3beKoYI/5+BkvNF0e0zNF8rAhCT7BQOep064wDk=;
+        b=di1iZnqVE8Ge68txrY1iAK6wOilDiHzMl3VdVFWMXPGNZTo2ndgGvN17XoSyz190BW
+         lEbTA+7smgkLjOryYQwpj3o/g2f73+ncHEQTuWO00GoM3T5uZgoA+kXVH7zh1qHWnLza
+         3neaE0EwjQ7mDEK/VkAJNizsKnnF21Kjd8Bh74JHEmRL91eyZuUbgVfbGTQn+3x/3zlg
+         mC46DDFbP5seWVGFNsDQZrivvktgQAzLDwv0j2gmFTwmVNulU074SUJVwVBri6Yfxn4/
+         k8o6qWPqDv2/Km6zwkyQ2/NBX5gS4REesp/ahHx2OgZRwyu5wDgRS/KRu+UllabzrSca
+         wZFw==
+X-Gm-Message-State: ANhLgQ1Sh5mmYtuQ0iS6/dhQoZ9fH+6o741Odbx5hrwHrCiMzQSE4T/e
+        R8m88fQDh/WZd+EPvNubgVindjAwzl2xsCoWotPZ
+X-Google-Smtp-Source: ADFU+vs1EpKcsGEO9GGNfp34//T93kL6R9Gi6RqejfY1jY1yluK7L7lRWoiZjwp6ZdPwGaa0kzHD5f4noecjshH23Kg=
+X-Received: by 2002:a17:907:271a:: with SMTP id w26mr130507ejk.271.1584118065825;
+ Fri, 13 Mar 2020 09:47:45 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1577736799.git.rgb@redhat.com> <6452955c1e038227a5cd169f689f3fd3db27513f.1577736799.git.rgb@redhat.com>
+ <CAHC9VhRkH=YEjAY6dJJHSp934grHnf=O4RiqLu3U8DzdVQOZkg@mail.gmail.com>
+ <20200130192753.n7jjrshbhrczjzoe@madcap2.tricolour.ca> <CAHC9VhSVN3mNb5enhLR1hY+ekiAyiYWbehrwd_zN7kz13dF=1w@mail.gmail.com>
+ <20200205235056.e5365xtgz7rbese2@madcap2.tricolour.ca> <CAHC9VhTM6MDHLcBfwJ_9DCroG0VA-meO770ihjn1sVy6=0JrHw@mail.gmail.com>
+ <20200312205147.plxs4czjeuu4davj@madcap2.tricolour.ca>
+In-Reply-To: <20200312205147.plxs4czjeuu4davj@madcap2.tricolour.ca>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Fri, 13 Mar 2020 12:47:34 -0400
+Message-ID: <CAHC9VhTqWdXMsbSbsWJzRRvVbSaaFBmnFFsVutM7XSx5NT_FJA@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V8 13/16] audit: track container nesting
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        Linux-Audit Mailing List <linux-audit@redhat.com>,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change Yeah to properly handle stretch ACKs in additive
-increase mode by passing in the count of ACKed packets
-to tcp_cong_avoid_ai().
+On Thu, Mar 12, 2020 at 4:52 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> On 2020-02-13 16:49, Paul Moore wrote:
+> > On Wed, Feb 5, 2020 at 6:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > On 2020-02-05 18:05, Paul Moore wrote:
+> > > > On Thu, Jan 30, 2020 at 2:28 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > > On 2020-01-22 16:29, Paul Moore wrote:
+> > > > > > On Tue, Dec 31, 2019 at 2:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > > > >
+> > > > > > > Track the parent container of a container to be able to filter and
+> > > > > > > report nesting.
+> > > > > > >
+> > > > > > > Now that we have a way to track and check the parent container of a
+> > > > > > > container, modify the contid field format to be able to report that
+> > > > > > > nesting using a carrat ("^") separator to indicate nesting.  The
+> > > > > > > original field format was "contid=<contid>" for task-associated records
+> > > > > > > and "contid=<contid>[,<contid>[...]]" for network-namespace-associated
+> > > > > > > records.  The new field format is
+> > > > > > > "contid=<contid>[^<contid>[...]][,<contid>[...]]".
+> > > > > >
+> > > > > > Let's make sure we always use a comma as a separator, even when
+> > > > > > recording the parent information, for example:
+> > > > > > "contid=<contid>[,^<contid>[...]][,<contid>[...]]"
+> > > > >
+> > > > > The intent here is to clearly indicate and separate nesting from
+> > > > > parallel use of several containers by one netns.  If we do away with
+> > > > > that distinction, then we lose that inheritance accountability and
+> > > > > should really run the list through a "uniq" function to remove the
+> > > > > produced redundancies.  This clear inheritance is something Steve was
+> > > > > looking for since tracking down individual events/records to show that
+> > > > > inheritance was not aways feasible due to rolled logs or search effort.
+> > > >
+> > > > Perhaps my example wasn't clear.  I'm not opposed to the little
+> > > > carat/hat character indicating a container's parent, I just think it
+> > > > would be good to also include a comma *in*addition* to the carat/hat.
+> > >
+> > > Ah, ok.  Well, I'd offer that it would be slightly shorter, slightly
+> > > less cluttered and having already written the parser in userspace, I
+> > > think the parser would be slightly simpler.
+> > >
+> > > I must admit, I was a bit puzzled by your snippet of code that was used
+> > > as a prefix to the next item rather than as a postfix to the given item.
+> > >
+> > > Can you say why you prefer the comma in addition?
+> >
+> > Generally speaking, I believe that a single delimiter is both easier
+> > for the eyes to parse, and easier/safer for machines to parse as well.
+> > In this particular case I think of the comma as a delimiter and the
+> > carat as a modifier, reusing the carat as a delimiter seems like a bad
+> > idea to me.
+>
+> I'm not crazy about this idea, but I'll have a look at how much work it
+> is to recode the userspace search tools.  It also adds extra characters
+> and noise into the string format that seems counterproductive.
 
-In addition, we re-implemented the scalable path using
-tcp_cong_avoid_ai() and removed the pkts_acked variable.
+If anything the parser should be *easier* (although both parsers
+should fall into the "trivial" category).  The comma is the one and
+only delimiter, and if the ACID starts with a carat then it is a
+parent of the preceding ACID.
 
-Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
----
- net/ipv4/tcp_yeah.c | 41 +++++++++++------------------------------
- 1 file changed, 11 insertions(+), 30 deletions(-)
+> > > > > > > diff --git a/kernel/audit.c b/kernel/audit.c
+> > > > > > > index ef8e07524c46..68be59d1a89b 100644
+> > > > > > > --- a/kernel/audit.c
+> > > > > > > +++ b/kernel/audit.c
+> > > > > >
+> > > > > > > @@ -492,6 +493,7 @@ void audit_switch_task_namespaces(struct nsproxy *ns, struct task_struct *p)
+> > > > > > >                 audit_netns_contid_add(new->net_ns, contid);
+> > > > > > >  }
+> > > > > > >
+> > > > > > > +void audit_log_contid(struct audit_buffer *ab, u64 contid);
+> > > > > >
+> > > > > > If we need a forward declaration, might as well just move it up near
+> > > > > > the top of the file with the rest of the declarations.
+> > > > >
+> > > > > Ok.
+> > > > >
+> > > > > > > +void audit_log_contid(struct audit_buffer *ab, u64 contid)
+> > > > > > > +{
+> > > > > > > +       struct audit_contobj *cont = NULL, *prcont = NULL;
+> > > > > > > +       int h;
+> > > > > >
+> > > > > > It seems safer to pass the audit container ID object and not the u64.
+> > > > >
+> > > > > It would also be faster, but in some places it isn't available such as
+> > > > > for ptrace and signal targets.  This also links back to the drop record
+> > > > > refcounts to hold onto the contobj until process exit, or signal
+> > > > > delivery.
+> > > > >
+> > > > > What we could do is to supply two potential parameters, a contobj and/or
+> > > > > a contid, and have it use the contobj if it is valid, otherwise, use the
+> > > > > contid, as is done for names and paths supplied to audit_log_name().
+> > > >
+> > > > Let's not do multiple parameters, that begs for misuse, let's take the
+> > > > wrapper function route:
+> > > >
+> > > >  func a(int id) {
+> > > >    // important stuff
+> > > >  }
+> > > >
+> > > >  func ao(struct obj) {
+> > > >    a(obj.id);
+> > > >  }
+> > > >
+> > > > ... and we can add a comment that you *really* should be using the
+> > > > variant that passes an object.
+> > >
+> > > I was already doing that where it available, and dereferencing the id
+> > > for the call.  But I see an advantage to having both parameters supplied
+> > > to the function, since it saves us the trouble of dereferencing it,
+> > > searching for the id in the hash list and re-locating the object if the
+> > > object is already available.
+> >
+> > I strongly prefer we not do multiple parameters for the same "thing";
+>
+> So do I, ideally.  However...
+>
+> > I would much rather do the wrapper approach as described above.  I
+> > would also like to see us use the audit container ID object as much as
+> > possible, using a bare integer should be a last resort.
+>
+> It is not clear to me that you understood what I wrote above.  I can't
+> use the object pointer where preferable because there are a few cases
+> where only the ID is available.  If only the ID is available, I would
+> have to make a best effort to look up the object pointer and am not
+> guaranteed to find it (invalid, stale, signal info...).  If I am forced
+> to use only one, it becomes the ID that is used, and I no longer have
+> the benefit of already having the object pointer for certainty and
+> saving work.  For all cases where I have the object pointer, which is
+> most cases, and most frequently used cases, I will have to dereference
+> the object pointer to an ID, then go through the work again to re-locate
+> the object pointer.  This is less certain, and more work.  Reluctantly,
+> the only practical solution I see here is to supply both, favouring the
+> object pointer if it is valid, then falling back on the ID from the next
+> parameter.
 
-diff --git a/net/ipv4/tcp_yeah.c b/net/ipv4/tcp_yeah.c
-index e00570d..3bb4487 100644
---- a/net/ipv4/tcp_yeah.c
-+++ b/net/ipv4/tcp_yeah.c
-@@ -36,8 +36,6 @@ struct yeah {
- 
- 	u32 reno_count;
- 	u32 fast_count;
--
--	u32 pkts_acked;
- };
- 
- static void tcp_yeah_init(struct sock *sk)
-@@ -57,18 +55,6 @@ static void tcp_yeah_init(struct sock *sk)
- 	tp->snd_cwnd_clamp = min_t(u32, tp->snd_cwnd_clamp, 0xffffffff/128);
- }
- 
--static void tcp_yeah_pkts_acked(struct sock *sk,
--				const struct ack_sample *sample)
--{
--	const struct inet_connection_sock *icsk = inet_csk(sk);
--	struct yeah *yeah = inet_csk_ca(sk);
--
--	if (icsk->icsk_ca_state == TCP_CA_Open)
--		yeah->pkts_acked = sample->pkts_acked;
--
--	tcp_vegas_pkts_acked(sk, sample);
--}
--
- static void tcp_yeah_cong_avoid(struct sock *sk, u32 ack, u32 acked)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
-@@ -77,24 +63,19 @@ static void tcp_yeah_cong_avoid(struct sock *sk, u32 ack, u32 acked)
- 	if (!tcp_is_cwnd_limited(sk))
- 		return;
- 
--	if (tcp_in_slow_start(tp))
--		tcp_slow_start(tp, acked);
-+	if (tcp_in_slow_start(tp)) {
-+		acked = tcp_slow_start(tp, acked);
-+		if (!acked)
-+			goto do_vegas;
-+	}
- 
--	else if (!yeah->doing_reno_now) {
-+	if (!yeah->doing_reno_now) {
- 		/* Scalable */
--
--		tp->snd_cwnd_cnt += yeah->pkts_acked;
--		if (tp->snd_cwnd_cnt > min(tp->snd_cwnd, TCP_SCALABLE_AI_CNT)) {
--			if (tp->snd_cwnd < tp->snd_cwnd_clamp)
--				tp->snd_cwnd++;
--			tp->snd_cwnd_cnt = 0;
--		}
--
--		yeah->pkts_acked = 1;
--
-+		tcp_cong_avoid_ai(tp, min(tp->snd_cwnd, TCP_SCALABLE_AI_CNT),
-+				  acked);
- 	} else {
- 		/* Reno */
--		tcp_cong_avoid_ai(tp, tp->snd_cwnd, 1);
-+		tcp_cong_avoid_ai(tp, tp->snd_cwnd, acked);
- 	}
- 
- 	/* The key players are v_vegas.beg_snd_una and v_beg_snd_nxt.
-@@ -118,7 +99,7 @@ static void tcp_yeah_cong_avoid(struct sock *sk, u32 ack, u32 acked)
- 	 * of bytes we send in an RTT is often less than our cwnd will allow.
- 	 * So we keep track of our cwnd separately, in v_beg_snd_cwnd.
- 	 */
--
-+do_vegas:
- 	if (after(ack, yeah->vegas.beg_snd_nxt)) {
- 		/* We do the Vegas calculations only if we got enough RTT
- 		 * samples that we can be reasonably sure that we got
-@@ -232,7 +213,7 @@ static u32 tcp_yeah_ssthresh(struct sock *sk)
- 	.set_state	= tcp_vegas_state,
- 	.cwnd_event	= tcp_vegas_cwnd_event,
- 	.get_info	= tcp_vegas_get_info,
--	.pkts_acked	= tcp_yeah_pkts_acked,
-+	.pkts_acked	= tcp_vegas_pkts_acked,
- 
- 	.owner		= THIS_MODULE,
- 	.name		= "yeah",
+It has been a while since I last looked at the patchset, but my
+concern over the prefered use of the ACID number vs the ACID object is
+that the number offers no reuse protection where the object does.  I
+really would like us to use the object everywhere it is possible.
+
 -- 
-1.8.3.1
-
+paul moore
+www.paul-moore.com
