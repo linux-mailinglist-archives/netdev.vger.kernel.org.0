@@ -2,178 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15187183F72
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 04:18:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02C7A183F83
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 04:18:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726670AbgCMDSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 23:18:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33874 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726621AbgCMDSC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 12 Mar 2020 23:18:02 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 35D122071C;
-        Fri, 13 Mar 2020 03:18:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584069481;
-        bh=eXsajFvCM9vSssTjEQAMyx5f9bmFy8Atwcln1l3tdSo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jFe0TZWSJ7ppM3pO0o2VA7S8gJa0XcMI8uB2/RCEy/GGMWkvJvYELmha/e0+Dpg1J
-         iif6jkXF45llpTgi/nNwR3qPN1uCKZ7Ey9qAg3aNSTb82t535+RXNTFD83G6oTFj36
-         4mxcnCT6mTO9rm4j5T1YQEF8LjaFXAEMQr/Ii2vA=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     shuah@kernel.org
-Cc:     keescook@chromium.org, luto@amacapital.net, wad@chromium.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5/5] selftests: tls: run all tests for TLS 1.2 and TLS 1.3
-Date:   Thu, 12 Mar 2020 20:17:52 -0700
-Message-Id: <20200313031752.2332565-6-kuba@kernel.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200313031752.2332565-1-kuba@kernel.org>
-References: <20200313031752.2332565-1-kuba@kernel.org>
-MIME-Version: 1.0
+        id S1726799AbgCMDSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 23:18:39 -0400
+Received: from mail-eopbgr140110.outbound.protection.outlook.com ([40.107.14.110]:51014
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726371AbgCMDSi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 12 Mar 2020 23:18:38 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NFlFJEmeWvPGUDnerV+Tr5oLSinmE4MzhDeB7f9YPXVGpsSUhanHLiPKxWxdYtWmQPax5xhStVywcLn3Uew9gdTnmMXsskg1P4QQ+YTDvxvnZoc/vpO3r8TPIsV4asSjKd0BxbwDXTqOasCkPRSPVSL8gM0T3d/dIfnplostVjzPMdzENnBDubwVBOh3K02qSYFe2bsYw3p5Y2AIs1f90ZQZtYGmnXNOcJuqFN8eVSH2qnfK+Yp7aspWv2x1LqHpBQAhvUxs9DPiAqX5bcx7OyAKUQE10P2M8zC3ryQdiX1qKeBecHbXKdS4AjC/cyc3SWQxUaMWXl5nYlhCfU9qoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q+RZOdLcGr567slWc7Y63kJ+k1M/svpR45bGousB8wY=;
+ b=Lnl1NPM06ZOBC11qyozIj8QeILquhQoZn7uncQW7baUfCBTvIVA5v/Bm5iYVZANTv0lanTAsoahSi1v7j9PzpFbCqwESW1ru4LXJQqvPBvABmCioYJ45cfwj4/p93UGZ9vbqlV/xwINW2NbgjXC3rhEazj0HQREsoCn1LnUVeZNX6N22v4SrJerGXwcvA+PwB8NmBz6Ju97zkLBHZCEnLFFpcpaHQa8XUnyVsFs9SHZs4c4lFOA35ZXMIjFQTVMNA8QQ40Ij8lzOH4/nJOkkHhYtcjhqBHWP+HfyrAIYJli6J6xqntK14tMjBzw2+AMBhnGLP+Xy6ww9bINKX2mxqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=dektech.com.au; dmarc=pass action=none
+ header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q+RZOdLcGr567slWc7Y63kJ+k1M/svpR45bGousB8wY=;
+ b=TCwlTuOjoP2jhQArjmw1efC8seXLgWL2WG8Ob0/pDPcNqKN+cuIj2merTu1b1F72gBsK1rDvbbn1bOzs3vO+hfYD0BL58JalBdcjCqwtRAq6rE1BmjJwRQUxBSIOB99afqcRAk7+SA8lcAG28PD4qIyivgLYRBACu6W0MQ+ycro=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=hoang.h.le@dektech.com.au; 
+Received: from VI1PR05MB4605.eurprd05.prod.outlook.com (20.176.4.149) by
+ VI1PR05MB4512.eurprd05.prod.outlook.com (52.133.14.10) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2793.20; Fri, 13 Mar 2020 03:18:33 +0000
+Received: from VI1PR05MB4605.eurprd05.prod.outlook.com
+ ([fe80::31c3:5db4:2b4a:fcec]) by VI1PR05MB4605.eurprd05.prod.outlook.com
+ ([fe80::31c3:5db4:2b4a:fcec%5]) with mapi id 15.20.2793.018; Fri, 13 Mar 2020
+ 03:18:33 +0000
+From:   hoang.h.le@dektech.com.au
+To:     ying.xue@windriver.com, netdev@vger.kernel.org
+Cc:     jmaloy@redhat.com, maloy@donjonn.com,
+        Hoang Le <hoang.h.le@dektech.com.au>
+Subject: [net-next 1/2] tipc: simplify trivial boolean return
+Date:   Fri, 13 Mar 2020 10:18:02 +0700
+Message-Id: <20200313031803.9588-1-hoang.h.le@dektech.com.au>
+X-Mailer: git-send-email 2.20.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: TY2PR06CA0023.apcprd06.prod.outlook.com
+ (2603:1096:404:42::35) To VI1PR05MB4605.eurprd05.prod.outlook.com
+ (2603:10a6:802:61::21)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from dektech.com.au (14.161.14.188) by TY2PR06CA0023.apcprd06.prod.outlook.com (2603:1096:404:42::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.16 via Frontend Transport; Fri, 13 Mar 2020 03:18:31 +0000
+X-Mailer: git-send-email 2.20.1
+X-Originating-IP: [14.161.14.188]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0987ab1d-ed62-4a57-fb0c-08d7c6fd3606
+X-MS-TrafficTypeDiagnostic: VI1PR05MB4512:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB45120A1692BA119006176478F1FA0@VI1PR05MB4512.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1468;
+X-Forefront-PRVS: 034119E4F6
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(136003)(366004)(346002)(376002)(396003)(39850400004)(199004)(66476007)(186003)(5660300002)(508600001)(26005)(66946007)(6666004)(36756003)(8936002)(81166006)(8676002)(316002)(81156014)(16526019)(55016002)(4326008)(9686003)(956004)(86362001)(52116002)(66556008)(4744005)(7696005)(107886003)(2906002)(2616005)(103116003)(1076003);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR05MB4512;H:VI1PR05MB4605.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+Received-SPF: None (protection.outlook.com: dektech.com.au does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ZyBYXkZQxCI+n8AZRzpApxEZ0XkpynjZLoTrAB+hu08RjQNhVNF9ZIZuUluVgLJY8a35a/cBGIAyoczMkLzslSfWuRJ26MI/omp349XMj9+1127FgLXc6Tkima/JsbYrfdOy43bHOkC6rMV0PxfPlIcDV5jj9EAgK0qhBypkrmKXF/Qz9PMgA8yGtzZE5PVivQlXtsXjzPUkXGjnLyk9cKA+z5WTwofuiCjUY29Oa8kOSi0umhixYimAhpZCmLbLgr41SiS2xC0N4R94NlEgVChYpZF43zd+n51g4U3PTb7hl3h9roupjgjTtl+OXfbZHX0iYigHRSBMU296czGja209PpsrEQH8vNzQibOY4EWHIO3RXsCGtNyhwGZUA1weh0Sw9Xm76u8JB7rGhxPpqIw2Y+cww9P+l+M/OjDIQ0o+uOSlByULWscBSgLWh2VI
+X-MS-Exchange-AntiSpam-MessageData: 3dlAs3+aAXHuShN8lG7NpmKgdGxco7QWJi+fT8yhObmgdN+kOe57J+kBFxRWdM9rWET+79UXTDq3XYB6WpMZATqVTk32CWRuuDJfsaB6UNzRd2KJ/F5iB0M2UZnqx8BZ6CBSjf2OfOZXBtM4RREdMg==
+X-OriginatorOrg: dektech.com.au
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0987ab1d-ed62-4a57-fb0c-08d7c6fd3606
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2020 03:18:33.6154
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zYKZULNdGvEZSxj3hp/+5UxGlmlXAiuxrLZ+zQBc3DT3huHO6Fne1hFGPfSOOjjuPnUup39STCF23qBOa1h/Nb/xnt5INtHDIr/Vbb9fhcM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4512
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TLS 1.2 and TLS 1.3 differ in the implementation.
-Use fixture parameters to run all tests for both
-versions, and remove the one-off TLS 1.2 test.
+From: Hoang Le <hoang.h.le@dektech.com.au>
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Checking and returning 'true' boolean is useless as it will be
+returning at end of function
+
+Signed-off-by: Hoang Le <hoang.h.le@dektech.com.au>
+Acked-by: Ying Xue <ying.xue@windriver.com>
+Acked-by: Jon Maloy <jmaloy@redhat.com>
 ---
- tools/testing/selftests/net/tls.c | 93 ++++++-------------------------
- 1 file changed, 17 insertions(+), 76 deletions(-)
+ net/tipc/msg.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-index 0ea44d975b6c..63029728ac97 100644
---- a/tools/testing/selftests/net/tls.c
-+++ b/tools/testing/selftests/net/tls.c
-@@ -101,6 +101,21 @@ FIXTURE(tls)
- 	bool notls;
- };
+diff --git a/net/tipc/msg.c b/net/tipc/msg.c
+index 0d515d20b056..4d0e0bdd997b 100644
+--- a/net/tipc/msg.c
++++ b/net/tipc/msg.c
+@@ -736,9 +736,6 @@ bool tipc_msg_lookup_dest(struct net *net, struct sk_buff *skb, int *err)
+ 	msg_set_destport(msg, dport);
+ 	*err = TIPC_OK;
  
-+FIXTURE_PARAMS(tls)
-+{
-+	unsigned int tls_version;
-+};
-+
-+FIXTURE_PARAMS_ADD(tls, 12)
-+{
-+	.tls_version = TLS_1_2_VERSION,
-+};
-+
-+FIXTURE_PARAMS_ADD(tls, 13)
-+{
-+	.tls_version = TLS_1_3_VERSION,
-+};
-+
- FIXTURE_SETUP(tls)
- {
- 	struct tls12_crypto_info_aes_gcm_128 tls12;
-@@ -112,7 +127,7 @@ FIXTURE_SETUP(tls)
- 	len = sizeof(addr);
- 
- 	memset(&tls12, 0, sizeof(tls12));
--	tls12.info.version = TLS_1_3_VERSION;
-+	tls12.info.version = params->tls_version;
- 	tls12.info.cipher_type = TLS_CIPHER_AES_GCM_128;
- 
- 	addr.sin_family = AF_INET;
-@@ -733,7 +748,7 @@ TEST_F(tls, bidir)
- 		struct tls12_crypto_info_aes_gcm_128 tls12;
- 
- 		memset(&tls12, 0, sizeof(tls12));
--		tls12.info.version = TLS_1_3_VERSION;
-+		tls12.info.version = params->tls_version;
- 		tls12.info.cipher_type = TLS_CIPHER_AES_GCM_128;
- 
- 		ret = setsockopt(self->fd, SOL_TLS, TLS_RX, &tls12,
-@@ -1258,78 +1273,4 @@ TEST(keysizes) {
- 	close(cfd);
+-	if (!skb_cloned(skb))
+-		return true;
+-
+ 	return true;
  }
  
--TEST(tls12) {
--	int fd, cfd;
--	bool notls;
--
--	struct tls12_crypto_info_aes_gcm_128 tls12;
--	struct sockaddr_in addr;
--	socklen_t len;
--	int sfd, ret;
--
--	notls = false;
--	len = sizeof(addr);
--
--	memset(&tls12, 0, sizeof(tls12));
--	tls12.info.version = TLS_1_2_VERSION;
--	tls12.info.cipher_type = TLS_CIPHER_AES_GCM_128;
--
--	addr.sin_family = AF_INET;
--	addr.sin_addr.s_addr = htonl(INADDR_ANY);
--	addr.sin_port = 0;
--
--	fd = socket(AF_INET, SOCK_STREAM, 0);
--	sfd = socket(AF_INET, SOCK_STREAM, 0);
--
--	ret = bind(sfd, &addr, sizeof(addr));
--	ASSERT_EQ(ret, 0);
--	ret = listen(sfd, 10);
--	ASSERT_EQ(ret, 0);
--
--	ret = getsockname(sfd, &addr, &len);
--	ASSERT_EQ(ret, 0);
--
--	ret = connect(fd, &addr, sizeof(addr));
--	ASSERT_EQ(ret, 0);
--
--	ret = setsockopt(fd, IPPROTO_TCP, TCP_ULP, "tls", sizeof("tls"));
--	if (ret != 0) {
--		notls = true;
--		printf("Failure setting TCP_ULP, testing without tls\n");
--	}
--
--	if (!notls) {
--		ret = setsockopt(fd, SOL_TLS, TLS_TX, &tls12,
--				 sizeof(tls12));
--		ASSERT_EQ(ret, 0);
--	}
--
--	cfd = accept(sfd, &addr, &len);
--	ASSERT_GE(cfd, 0);
--
--	if (!notls) {
--		ret = setsockopt(cfd, IPPROTO_TCP, TCP_ULP, "tls",
--				 sizeof("tls"));
--		ASSERT_EQ(ret, 0);
--
--		ret = setsockopt(cfd, SOL_TLS, TLS_RX, &tls12,
--				 sizeof(tls12));
--		ASSERT_EQ(ret, 0);
--	}
--
--	close(sfd);
--
--	char const *test_str = "test_read";
--	int send_len = 10;
--	char buf[10];
--
--	send_len = strlen(test_str) + 1;
--	EXPECT_EQ(send(fd, test_str, send_len, 0), send_len);
--	EXPECT_NE(recv(cfd, buf, send_len, 0), -1);
--	EXPECT_EQ(memcmp(buf, test_str, send_len), 0);
--
--	close(fd);
--	close(cfd);
--}
--
- TEST_HARNESS_MAIN
 -- 
-2.24.1
+2.20.1
 
