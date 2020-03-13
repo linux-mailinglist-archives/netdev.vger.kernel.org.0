@@ -2,204 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D65E185249
-	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 00:26:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0FD418524D
+	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 00:28:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726820AbgCMX0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 19:26:47 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:37519 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726736AbgCMX0r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 19:26:47 -0400
-Received: by mail-pf1-f193.google.com with SMTP id p14so6216718pfn.4
-        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 16:26:45 -0700 (PDT)
+        id S1727546AbgCMX17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 19:27:59 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:36390 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726637AbgCMX17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 19:27:59 -0400
+Received: by mail-pf1-f194.google.com with SMTP id i13so6223507pfe.3
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 16:27:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=nlUL7Q8I2iJ5jPudXrdaOgrxyrGBhdFIa//xZMcIhAU=;
-        b=DamwIXh1ZVKDBre3Y4XmAHGr5oTQDdlscyfeG2900MjmAxYR/K+bJNIcZrTQ5MX8Mn
-         mMniN6AlDkbkO6IhJSoVsQoXW02txd8kqpQlOXp/JeK2JWGqPNJT0bmpGFJ2R0PSF+BA
-         14BmYkvJMK/NJO0Krb4i0Cg9BhxwU8CZow1M4=
+        bh=0tiFZifHABrIihIfLAilpnPNa34Or637DFmBwGz6qsE=;
+        b=ZrpPr1iZD6WsTRwW1ADrN+wsqQN/RGfRQHJz5oZ3TMg/IUpK9fmvbNxUb2kLFKV341
+         2kneeRtyrhpTCG1u7bSuKQnxgwrRN068R9e4gjclVUso3F4S6LS7cnvBITabqVZnnD3P
+         uKZbkHyUBESTXZCX8tavVv4ynoYRtHXfemA0o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=nlUL7Q8I2iJ5jPudXrdaOgrxyrGBhdFIa//xZMcIhAU=;
-        b=R0+R4Tq8I5qAs8IqvySYn8EsogAXkGECS9UWdBtOripgYNfMLpCsfDf4JuzMNttxd1
-         Ff8EOpKQsQU/x6jATT8Wok/72RTVs8tqkVZsWoQW6/E+aoeGwlR2YSDhGcmPri3NOx1S
-         fasN1INgcSugZxJjY2PsLAaEdPvs6ym6QOzP05MrRp/p88vm1Qfu5Esy2U6X2TmKUzrV
-         1rX+tzqyff6YGq1Vufr6KH7+IEQfxZd5b/oBFsPvcq4LFOA5NiSNp1i5qS1rHeUexebW
-         ChsVbEBo0mQReNPPgqNGOYkGlceIx/GNK1NikwP6YuDSafG8ZEOJclgXLQdzeyPxXi9s
-         v2Uw==
-X-Gm-Message-State: ANhLgQ3A2BFFQwGvQ9LLYS2Ljbq+uXq8ZEixpLm/aTajSybkBhHpDw+E
-        5dbxAa0tzhICmsaCoenCbx0DRQ==
-X-Google-Smtp-Source: ADFU+vv+Psj2LxGAnvVhaqFOhyDsF8/04Uc9xGmW0Iao5vBArD3r7FNcmFkWoLPqY6mmAnAB1UAn1A==
-X-Received: by 2002:a62:2a8d:: with SMTP id q135mr16987444pfq.220.1584142005020;
-        Fri, 13 Mar 2020 16:26:45 -0700 (PDT)
+        bh=0tiFZifHABrIihIfLAilpnPNa34Or637DFmBwGz6qsE=;
+        b=IZnmuFzIvv7MkzSaZXw3GGav4MJl+zdWgb6WOnb6KOcfImF9EGNjy7HriZ2yD/xpsg
+         3527aLDvi3Cn2GdTvDnJKXdFTRa7gDGrgLubLIVI8dQHcSpC79DPlfCo4vfrXQ15JO/C
+         eX+BjXjZkIEmyf5jcVDw5gL3SYONOHfO+Uh7ssrSolLGQL1NvwqV7ZH3wNYzuxPFHq55
+         2TQPqc2q8wsw+Aqqq/d88RVn+U9tyMWRKNBfv5cx7fe1LKfkQeqf6kBNLZt4TW+fjDi7
+         kyv4Y6Hh0YVWKInZsjB0sio1zTuWqUa0nzoptuw6/IOU4nJdoHNrlCyLkZuhEE7z1V8n
+         Bjhg==
+X-Gm-Message-State: ANhLgQ1UGYvti6eQYbLIrq92odPGwv1c3JOFIy0BkqGAT3DY0/xun3ER
+        GyyrLQdiby/qvn44bF8iM4ZE4cLE+Zs=
+X-Google-Smtp-Source: ADFU+vvWTGEjVFYjtZV3wy+y6DlGY3xrVp8xaP7kamkbuouf9Lo2/WbxmGZ+IKIgJMs2dRa1CQZuOg==
+X-Received: by 2002:a63:f44d:: with SMTP id p13mr15782301pgk.113.1584142076175;
+        Fri, 13 Mar 2020 16:27:56 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id t11sm12598379pjo.21.2020.03.13.16.26.43
+        by smtp.gmail.com with ESMTPSA id i6sm12482946pjt.3.2020.03.13.16.27.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Mar 2020 16:26:44 -0700 (PDT)
-Date:   Fri, 13 Mar 2020 16:26:43 -0700
+        Fri, 13 Mar 2020 16:27:55 -0700 (PDT)
+Date:   Fri, 13 Mar 2020 16:27:54 -0700
 From:   Kees Cook <keescook@chromium.org>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     shuah@kernel.org, luto@amacapital.net, wad@chromium.org,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH 5/5] selftests: tls: run all tests for TLS 1.2 and TLS 1.3
-Message-ID: <202003131626.9B7EFB607@keescook>
+Subject: Re: [PATCH 3/5] kselftest: run tests by fixture
+Message-ID: <202003131626.8EF371151@keescook>
 References: <20200313031752.2332565-1-kuba@kernel.org>
- <20200313031752.2332565-6-kuba@kernel.org>
+ <20200313031752.2332565-4-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200313031752.2332565-6-kuba@kernel.org>
+In-Reply-To: <20200313031752.2332565-4-kuba@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 08:17:52PM -0700, Jakub Kicinski wrote:
-> TLS 1.2 and TLS 1.3 differ in the implementation.
-> Use fixture parameters to run all tests for both
-> versions, and remove the one-off TLS 1.2 test.
+On Thu, Mar 12, 2020 at 08:17:50PM -0700, Jakub Kicinski wrote:
+> Now that all tests have a fixture object move from a global
+> list of tests to a list of tests per fixture.
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Order of tests may change as we will now group and run test
+> fixture by fixture, rather than in declaration order.
 
-I really like the resulting effect here.
+I'm not convinced about this change. Declaration order is a pretty
+intuitive result that I'd like to keep for the harness.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Can this change be avoided and still keep the final results of a
+"mutable" fixture?
 
 -Kees
 
-> ---
->  tools/testing/selftests/net/tls.c | 93 ++++++-------------------------
->  1 file changed, 17 insertions(+), 76 deletions(-)
 > 
-> diff --git a/tools/testing/selftests/net/tls.c b/tools/testing/selftests/net/tls.c
-> index 0ea44d975b6c..63029728ac97 100644
-> --- a/tools/testing/selftests/net/tls.c
-> +++ b/tools/testing/selftests/net/tls.c
-> @@ -101,6 +101,21 @@ FIXTURE(tls)
->  	bool notls;
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  tools/testing/selftests/kselftest_harness.h | 42 ++++++++++++---------
+>  1 file changed, 25 insertions(+), 17 deletions(-)
+> 
+> diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
+> index a396afe4a579..7a3392941a5b 100644
+> --- a/tools/testing/selftests/kselftest_harness.h
+> +++ b/tools/testing/selftests/kselftest_harness.h
+> @@ -637,8 +637,11 @@
+>  } while (0); OPTIONAL_HANDLER(_assert)
+>  
+>  /* Contains all the information about a fixture */
+> +struct __test_metadata;
+> +
+>  struct __fixture_metadata {
+>  	const char *name;
+> +	struct __test_metadata *tests;
+>  	struct __fixture_metadata *prev, *next;
+>  } _fixture_global __attribute__((unused)) = {
+>  	.name = "global",
+> @@ -684,7 +687,6 @@ struct __test_metadata {
 >  };
 >  
-> +FIXTURE_PARAMS(tls)
-> +{
-> +	unsigned int tls_version;
-> +};
-> +
-> +FIXTURE_PARAMS_ADD(tls, 12)
-> +{
-> +	.tls_version = TLS_1_2_VERSION,
-> +};
-> +
-> +FIXTURE_PARAMS_ADD(tls, 13)
-> +{
-> +	.tls_version = TLS_1_3_VERSION,
-> +};
-> +
->  FIXTURE_SETUP(tls)
+>  /* Storage for the (global) tests to be run. */
+> -static struct __test_metadata *__test_list;
+>  static unsigned int __test_count;
+>  
+>  /*
+> @@ -698,24 +700,26 @@ static unsigned int __test_count;
+>   */
+>  static inline void __register_test(struct __test_metadata *t)
 >  {
->  	struct tls12_crypto_info_aes_gcm_128 tls12;
-> @@ -112,7 +127,7 @@ FIXTURE_SETUP(tls)
->  	len = sizeof(addr);
->  
->  	memset(&tls12, 0, sizeof(tls12));
-> -	tls12.info.version = TLS_1_3_VERSION;
-> +	tls12.info.version = params->tls_version;
->  	tls12.info.cipher_type = TLS_CIPHER_AES_GCM_128;
->  
->  	addr.sin_family = AF_INET;
-> @@ -733,7 +748,7 @@ TEST_F(tls, bidir)
->  		struct tls12_crypto_info_aes_gcm_128 tls12;
->  
->  		memset(&tls12, 0, sizeof(tls12));
-> -		tls12.info.version = TLS_1_3_VERSION;
-> +		tls12.info.version = params->tls_version;
->  		tls12.info.cipher_type = TLS_CIPHER_AES_GCM_128;
->  
->  		ret = setsockopt(self->fd, SOL_TLS, TLS_RX, &tls12,
-> @@ -1258,78 +1273,4 @@ TEST(keysizes) {
->  	close(cfd);
+> +	struct __fixture_metadata *f = t->fixture;
+> +
+>  	__test_count++;
+>  	/* Circular linked list where only prev is circular. */
+> -	if (__test_list == NULL) {
+> -		__test_list = t;
+> +	if (f->tests == NULL) {
+> +		f->tests = t;
+>  		t->next = NULL;
+>  		t->prev = t;
+>  		return;
+>  	}
+>  	if (__constructor_order == _CONSTRUCTOR_ORDER_FORWARD) {
+>  		t->next = NULL;
+> -		t->prev = __test_list->prev;
+> +		t->prev = f->tests->prev;
+>  		t->prev->next = t;
+> -		__test_list->prev = t;
+> +		f->tests->prev = t;
+>  	} else {
+> -		t->next = __test_list;
+> +		t->next = f->tests;
+>  		t->next->prev = t;
+>  		t->prev = t;
+> -		__test_list = t;
+> +		f->tests = t;
+>  	}
 >  }
 >  
-> -TEST(tls12) {
-> -	int fd, cfd;
-> -	bool notls;
-> -
-> -	struct tls12_crypto_info_aes_gcm_128 tls12;
-> -	struct sockaddr_in addr;
-> -	socklen_t len;
-> -	int sfd, ret;
-> -
-> -	notls = false;
-> -	len = sizeof(addr);
-> -
-> -	memset(&tls12, 0, sizeof(tls12));
-> -	tls12.info.version = TLS_1_2_VERSION;
-> -	tls12.info.cipher_type = TLS_CIPHER_AES_GCM_128;
-> -
-> -	addr.sin_family = AF_INET;
-> -	addr.sin_addr.s_addr = htonl(INADDR_ANY);
-> -	addr.sin_port = 0;
-> -
-> -	fd = socket(AF_INET, SOCK_STREAM, 0);
-> -	sfd = socket(AF_INET, SOCK_STREAM, 0);
-> -
-> -	ret = bind(sfd, &addr, sizeof(addr));
-> -	ASSERT_EQ(ret, 0);
-> -	ret = listen(sfd, 10);
-> -	ASSERT_EQ(ret, 0);
-> -
-> -	ret = getsockname(sfd, &addr, &len);
-> -	ASSERT_EQ(ret, 0);
-> -
-> -	ret = connect(fd, &addr, sizeof(addr));
-> -	ASSERT_EQ(ret, 0);
-> -
-> -	ret = setsockopt(fd, IPPROTO_TCP, TCP_ULP, "tls", sizeof("tls"));
-> -	if (ret != 0) {
-> -		notls = true;
-> -		printf("Failure setting TCP_ULP, testing without tls\n");
-> -	}
-> -
-> -	if (!notls) {
-> -		ret = setsockopt(fd, SOL_TLS, TLS_TX, &tls12,
-> -				 sizeof(tls12));
-> -		ASSERT_EQ(ret, 0);
-> -	}
-> -
-> -	cfd = accept(sfd, &addr, &len);
-> -	ASSERT_GE(cfd, 0);
-> -
-> -	if (!notls) {
-> -		ret = setsockopt(cfd, IPPROTO_TCP, TCP_ULP, "tls",
-> -				 sizeof("tls"));
-> -		ASSERT_EQ(ret, 0);
-> -
-> -		ret = setsockopt(cfd, SOL_TLS, TLS_RX, &tls12,
-> -				 sizeof(tls12));
-> -		ASSERT_EQ(ret, 0);
-> -	}
-> -
-> -	close(sfd);
-> -
-> -	char const *test_str = "test_read";
-> -	int send_len = 10;
-> -	char buf[10];
-> -
-> -	send_len = strlen(test_str) + 1;
-> -	EXPECT_EQ(send(fd, test_str, send_len, 0), send_len);
-> -	EXPECT_NE(recv(cfd, buf, send_len, 0), -1);
-> -	EXPECT_EQ(memcmp(buf, test_str, send_len), 0);
-> -
-> -	close(fd);
-> -	close(cfd);
-> -}
-> -
->  TEST_HARNESS_MAIN
+> @@ -729,14 +733,15 @@ static inline int __bail(int for_realz, bool no_print, __u8 step)
+>  	return 0;
+>  }
+>  
+> -void __run_test(struct __test_metadata *t)
+> +void __run_test(struct __fixture_metadata *f,
+> +		struct __test_metadata *t)
+>  {
+>  	pid_t child_pid;
+>  	int status;
+>  
+>  	t->passed = 1;
+>  	t->trigger = 0;
+> -	printf("[ RUN      ] %s.%s\n", t->fixture->name, t->name);
+> +	printf("[ RUN      ] %s.%s\n", f->name, t->name);
+>  	alarm(t->timeout);
+>  	child_pid = fork();
+>  	if (child_pid < 0) {
+> @@ -786,13 +791,14 @@ void __run_test(struct __test_metadata *t)
+>  		}
+>  	}
+>  	printf("[     %4s ] %s.%s\n", (t->passed ? "OK" : "FAIL"),
+> -	       t->fixture->name, t->name);
+> +	       f->name, t->name);
+>  	alarm(0);
+>  }
+>  
+>  static int test_harness_run(int __attribute__((unused)) argc,
+>  			    char __attribute__((unused)) **argv)
+>  {
+> +	struct __fixture_metadata *f;
+>  	struct __test_metadata *t;
+>  	int ret = 0;
+>  	unsigned int count = 0;
+> @@ -801,13 +807,15 @@ static int test_harness_run(int __attribute__((unused)) argc,
+>  	/* TODO(wad) add optional arguments similar to gtest. */
+>  	printf("[==========] Running %u tests from %u test cases.\n",
+>  	       __test_count, __fixture_count + 1);
+> -	for (t = __test_list; t; t = t->next) {
+> -		count++;
+> -		__run_test(t);
+> -		if (t->passed)
+> -			pass_count++;
+> -		else
+> -			ret = 1;
+> +	for (f = __fixture_list; f; f = f->next) {
+> +		for (t = f->tests; t; t = t->next) {
+> +			count++;
+> +			__run_test(f, t);
+> +			if (t->passed)
+> +				pass_count++;
+> +			else
+> +				ret = 1;
+> +		}
+>  	}
+>  	printf("[==========] %u / %u tests passed.\n", pass_count, count);
+>  	printf("[  %s  ]\n", (ret ? "FAILED" : "PASSED"));
 > -- 
 > 2.24.1
 > 
