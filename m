@@ -2,69 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0F09184843
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 14:36:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 582E418485B
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 14:40:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726695AbgCMNgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 09:36:37 -0400
-Received: from proxima.lasnet.de ([78.47.171.185]:39928 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726652AbgCMNgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 09:36:37 -0400
-Received: from PC192.168.2.50 (p200300E9D702D81DD67DF7ED221BA585.dip0.t-ipconnect.de [IPv6:2003:e9:d702:d81d:d67d:f7ed:221b:a585])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726726AbgCMNkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 09:40:11 -0400
+Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:59818 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726637AbgCMNkL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 09:40:11 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: stefan@sostec.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 86C5FC31EF;
-        Fri, 13 Mar 2020 14:36:34 +0100 (CET)
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-To:     davem@davemloft.net
-Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
-        netdev@vger.kernel.org
-Subject: pull-request: ieee802154-next 2020-03-13
-Date:   Fri, 13 Mar 2020 14:36:21 +0100
-Message-Id: <20200313133621.11374-1-stefan@datenfreihafen.org>
-X-Mailer: git-send-email 2.21.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 133DDC0FAA;
+        Fri, 13 Mar 2020 13:40:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1584106810; bh=t1pm7fKD92tjH8JBeBYBSHbf42hldqejbJpvYI28CJQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HKqB0i/fWg9Lt2naCYiuS0+CdVPXiMpTzPoy0NviRi3CdZlmOvoUi1PYf73UHxo2Z
+         TxELNZ852GuTdjxmw25xp/RPOi1IunJHv+xcOJ88jcC/VGkZTrT7ldnQYk7e/8EHHn
+         8pAq43RL0l+o2xJYdWhcchKnhkp3Zzuge5mPOhuhcYQuCWte+3eS8I+AhTDl3KbkUJ
+         UMNMP4uyQMBF4hmW/24D4vjyPo6/41fergIsknOnIAZKkciasoA+Vd5KYBm1MuHEm4
+         jiTL6FaFnnI5sd5wG7wp6ZqmgEujMPZX3BDYZSvrtOc01p6b58NtDZvdf4f8bl1mF+
+         axRfIjC3Eh8pw==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 000C7A005C;
+        Fri, 13 Mar 2020 13:40:07 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/4] net: phy: xpcs: Link errors improvements
+Date:   Fri, 13 Mar 2020 14:39:39 +0100
+Message-Id: <cover.1584106347.git.Jose.Abreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dave.
+First set of improvements for XPCS that were developed after exhaustive
+tests of Link Down / Link Up transitions.
 
-An update from ieee802154 for *net-next*
+As a side note, more fixes and improvements may come in the near future
+as we are adding XLGMII support at 25G, 40G, 50G and 100G speeds for
+both XPCS and stmmac drivers.
 
-Two small patches with updates targeting teh whole tree.
-Sergin does update SPI drivers to the new transfer delay handling
-and Gustavo did one of his zero-length array replacement patches.
+Patch 1/4, prevents reading old values from RX/TX fault.
 
-Please pull, or let me know if there are any problems.
+Patch 2/4 and 3/4, signals the check link function for critical errors
+that can disturbe link normal operation and that need XPCS reset.
 
-regards
-Stefan Schmidt
+Patch 4/4, resets the XPCS at probe so that we start from a well known
+state.
 
+---
+Cc: Jose Abreu <Jose.Abreu@synopsys.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
 
-The following changes since commit 9f6e055907362f6692185c1c9658295d24095c74:
+Jose Abreu (4):
+  net: phy: xpcs: Clear latched value of RX/TX fault
+  net: phy: xpcs: Return error upon RX/TX fault
+  net: phy: xpcs: Return error when 10GKR link errors are found
+  net: phy: xpcs: Reset XPCS upon probe
 
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-02-27 18:31:39 -0800)
+ drivers/net/phy/mdio-xpcs.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-are available in the Git repository at:
+-- 
+2.7.4
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan-next.git tags/ieee802154-for-davem-2020-03-13
-
-for you to fetch changes up to 53cb2cfaa62d122fa9d92398926a6b7e8f052844:
-
-  cfg802154: Replace zero-length array with flexible-array member (2020-02-29 14:39:08 +0100)
-
-----------------------------------------------------------------
-Gustavo A. R. Silva (1):
-      cfg802154: Replace zero-length array with flexible-array member
-
-Sergiu Cuciurean (1):
-      net: ieee802154: ca8210: Use new structure for SPI transfer delays
-
- drivers/net/ieee802154/ca8210.c | 3 ++-
- include/net/cfg802154.h         | 2 +-
- 2 files changed, 3 insertions(+), 2 deletions(-)
