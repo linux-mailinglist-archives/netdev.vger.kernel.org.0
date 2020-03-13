@@ -2,124 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD8AB183D83
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 00:47:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BC7E183DCD
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 01:12:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726882AbgCLXrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 Mar 2020 19:47:21 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:32816 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726772AbgCLXrV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 19:47:21 -0400
-Received: by mail-qt1-f196.google.com with SMTP id d22so6059164qtn.0;
-        Thu, 12 Mar 2020 16:47:19 -0700 (PDT)
+        id S1726913AbgCMAMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 Mar 2020 20:12:51 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:34771 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726608AbgCMAMv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 Mar 2020 20:12:51 -0400
+Received: by mail-pg1-f193.google.com with SMTP id t3so3906183pgn.1
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 17:12:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Lpl2QV0RKXwDmI8MubsMiuk111nEHMnLP4UT1DO8Mho=;
-        b=bxNqYPT5JTuXMck79mwmNTqg6v/lFRntWvwyUfLe7bCEyTuZQmDMiTqeLk+5vW5vJ9
-         zyd1D1dBF4IhTTC6BcACfywkZbYncuerakEg/CRBc53Pmiy/twKRywSrrQs1RdGzD0eh
-         StgUWd1sSI2ZVTp7HXyiE9GY9CCkLul9A+ADpxqY3T9nHtWZ3AZMABn+pxvmPqJiRnFM
-         56RHeK7OCUeWGP0Pq7xUEMYpOo0fHb1ftF6XLqYOmwEwk4QSBCKvwjGMLNFjFL4ElNEF
-         Vbr22K+7aJFb0pIBekirqzrTTsQbTR8NmGeQUYb9/JDs4q58J/6eO/Q7ssrcHRePt9Oq
-         ZXfw==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=k+yg6Llpmfjhe7xJxz56MsL0qbD0y4irrW71qevvME0=;
+        b=F18lgvMAZEc+Yiu4gBFj5BfSgRCzsxuSxNQ2dvNhXiNLZIV11X/0LLo5XQ67UUxF0m
+         iRZKruILdQY3+mH34vIAVqHBgr/4i15GiLK5XCNyKbZdcYtN/0oBpe+6RbrMU6K0QG4J
+         sy72rrg/QPecUY24SosJH9w8kw2eQEf9Ym2zSrZ65iBG9DStREpfDoKQqAMJNH3ZFW7e
+         p1+Ek2ckOWuJetvsFWJ2mufVO6s1MnGXAvv6MrG/WLgICQABhRlonvpfmeYjhaLgoY8R
+         DcAmnWrWzX2O/3EbSeCsrn2iVZQ+IzCNGg/U35CvMbuv1LVNwOcGVDimdSk5bZ8c+BDS
+         hQ8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Lpl2QV0RKXwDmI8MubsMiuk111nEHMnLP4UT1DO8Mho=;
-        b=VtTlmt7qhxTGtYbfQtlJu4UHhpxvbKyLbplTOWpACtrKleBmh+3Pzrlr0fFfLZLfzu
-         8EWy3QdtDRp8q76cQSLQKmfLEhOhfhQRB6FuMQ1axOZhjmlQ59KsUdc8e2+ZpAksM5EO
-         uRnHW3gbU6eQqr9ol2u4Qn3CWyCsxPE1j1rYTCj15yQKkfwJ/fxhBbCe9utnYm0+TjP0
-         9mBj7SAaslaj3Soe1PUcWZ5aLymEaXocgkko2oj7E1ZJJw6rQQ18lB+q1IQ7firQE0az
-         7QPIgK5kbB6mCASI+49YCOuTjzogR4KN6o0jhpX7b7YUIIElqTl3nh7jGcoL5eYhfguk
-         JwOg==
-X-Gm-Message-State: ANhLgQ1KN9Oa5GKJI/O/TbzMoThwMwBUn5kqQ/HyFSmOAdfHSO4L4MQv
-        UkOMtU+zl7JIJ7QrBxwlsLA1OrhXpef0j2/mK+o=
-X-Google-Smtp-Source: ADFU+vst1ucxeTOlWGXd+1TVcOO/Ws08yxiRqBrllUjsR7tYAi6+VzVvMvgL1TaHLdJ8fMfUlwDCGO4333nX6izqcw0=
-X-Received: by 2002:ac8:4e14:: with SMTP id c20mr9736769qtw.141.1584056839320;
- Thu, 12 Mar 2020 16:47:19 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=k+yg6Llpmfjhe7xJxz56MsL0qbD0y4irrW71qevvME0=;
+        b=qZ098eJO1y6QdXIr2fmFg/eHyQkzqO1QIhVPgNMPcFkcw4EZFDEVO4482bhD0w1blN
+         1sr31Sxiq47q9oGKIFnsBADYPal+2/GVKY9TujUyqsAJ7zCHUjzm2Ny7D7asZZy3sY/a
+         YL8A9HPEXGTSdL3SA7icqkXF+gKfnGBEFhY2eMXVRi3ve8EmoZZvxkA4pNkUmrSUM2zf
+         x2dbPU7JswKRSrVG3WN+jeYg/KSu515QC97/D6LfKob0YVSrlkYURL5ZCQ9rkb5WMq1S
+         KE7un1JipxYV4n7zeaUpQ+FsTHvYm8sk69Kk/SkHJEkgLv5ZzazSG2EbWGJ5xZOFTkz7
+         rQjA==
+X-Gm-Message-State: ANhLgQ1d6Zm4lnir6hO6E+foJDnc6B8WlAPqUVPhT9FOqo8DwSA/MtG8
+        U839DF7pYuLVgT5PCZOoRae7Lnlj+yo=
+X-Google-Smtp-Source: ADFU+vvnSlXqQB2+/73VoX72gWL65vYVXo9NXjkdEA7qUK8x6SFEXM3EKOi4UxAOQpb6/xRnF09bCA==
+X-Received: by 2002:a63:1c4d:: with SMTP id c13mr10086432pgm.4.1584058368545;
+        Thu, 12 Mar 2020 17:12:48 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id e6sm6854120pgu.44.2020.03.12.17.12.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Mar 2020 17:12:48 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/7] ionic: tx and rx queues state follows link
+ state
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+References: <20200312215015.69547-1-snelson@pensando.io>
+ <20200312215015.69547-2-snelson@pensando.io>
+ <20200312.154110.308373641367156886.davem@davemloft.net>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <af492e16-927e-e10f-1213-59d14634462d@pensando.io>
+Date:   Thu, 12 Mar 2020 17:12:45 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.5.0
 MIME-Version: 1.0
-References: <20200312203914.1195762-1-andriin@fb.com> <2d6ae192-fe22-0239-54c7-142ec21b7794@iogearbox.net>
- <CAEf4BzbcSC3LXckg3ksRhTN27g4sAXp_9-GgJFog21ZWAJU-DQ@mail.gmail.com> <e8845220-9817-6364-ffa8-f7195241881c@iogearbox.net>
-In-Reply-To: <e8845220-9817-6364-ffa8-f7195241881c@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 12 Mar 2020 16:47:08 -0700
-Message-ID: <CAEf4BzbjbXEBpYuhn_yQdHOb5Q3_WovEo87k0i+cu2BtCa_eOA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: abstract away entire bpf_link clean up procedure
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200312.154110.308373641367156886.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 4:41 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On 3/12/20 3:41 PM, David Miller wrote:
+> From: Shannon Nelson <snelson@pensando.io>
+> Date: Thu, 12 Mar 2020 14:50:09 -0700
 >
-> On 3/13/20 12:27 AM, Andrii Nakryiko wrote:
-> > On Thu, Mar 12, 2020 at 4:23 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >> On 3/12/20 9:39 PM, Andrii Nakryiko wrote:
-> >>> Instead of requiring users to do three steps for cleaning up bpf_link, its
-> >>> anon_inode file, and unused fd, abstract that away into bpf_link_cleanup()
-> >>> helper. bpf_link_defunct() is removed, as it shouldn't be needed as an
-> >>> individual operation anymore.
-> >>>
-> >>> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> >>> ---
-> >>>    include/linux/bpf.h  |  3 ++-
-> >>>    kernel/bpf/syscall.c | 18 +++++++++++-------
-> >>>    2 files changed, 13 insertions(+), 8 deletions(-)
-> >>>
-> >>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> >>> index 4fd91b7c95ea..358f3eb07c01 100644
-> >>> --- a/include/linux/bpf.h
-> >>> +++ b/include/linux/bpf.h
-> >>> @@ -1075,7 +1075,8 @@ struct bpf_link_ops {
-> >>>
-> >>>    void bpf_link_init(struct bpf_link *link, const struct bpf_link_ops *ops,
-> >>>                   struct bpf_prog *prog);
-> >>> -void bpf_link_defunct(struct bpf_link *link);
-> >>> +void bpf_link_cleanup(struct bpf_link *link, struct file *link_file,
-> >>> +                   int link_fd);
-> >>>    void bpf_link_inc(struct bpf_link *link);
-> >>>    void bpf_link_put(struct bpf_link *link);
-> >>>    int bpf_link_new_fd(struct bpf_link *link);
-> >>> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> >>> index b2f73ecacced..d2f49ae225b0 100644
-> >>> --- a/kernel/bpf/syscall.c
-> >>> +++ b/kernel/bpf/syscall.c
-> >>> @@ -2188,9 +2188,17 @@ void bpf_link_init(struct bpf_link *link, const struct bpf_link_ops *ops,
-> >>>        link->prog = prog;
-> >>>    }
-> >>>
-> >>> -void bpf_link_defunct(struct bpf_link *link)
-> >>> +/* Clean up bpf_link and corresponding anon_inode file and FD. After
-> >>> + * anon_inode is created, bpf_link can't be just kfree()'d due to deferred
-> >>> + * anon_inode's release() call. This helper manages marking bpf_link as
-> >>> + * defunct, releases anon_inode file and puts reserved FD.
-> >>> + */
-> >>> +void bpf_link_cleanup(struct bpf_link *link, struct file *link_file,
-> >>> +                   int link_fd)
-> >>
-> >> Looks good, but given it is only used here this should be static instead.
-> >
-> > This is part of bpf_link internal API. I have patches locally for
-> > cgroup bpf_link that use this for clean up as well already, other
-> > bpf_link types will also use this.
+>> +		if (!test_bit(IONIC_LIF_F_UP, lif->state) &&
+>> +		    netif_running(netdev)) {
+>> +			rtnl_lock();
+>> +			ionic_open(netdev);
+>> +			rtnl_unlock();
+>>   		}
+> You're running into a major problem area here.
 >
-> Meaning it's a logical part of your future series. When you added the bpf_link_*
-> stuff only the symbols should have been in bpf.h that are actually used in the
-> tree outside of syscall.c, and when you extend the series in future /then/ we
-> can export more as needed, so everything is kept self-contained. This is common
-> practice.
+> ionic_open() can fail, particularly because it allocates resources.
+>
+> Yet you are doing this in an operational path that doesn't handle
+> and unwind from errors.
+>
+> You must find a way to do this properly, because the current approach
+> can result in an inoperable interface.
 
-Alright, will remove in v2.
+I don't see this as much different from how we use it in 
+ionic_reset_queues(), which was modeled after some other drivers' uses 
+of the open call.  In the fw reset case, though, the time between the 
+close and the open is many seconds.
 
->
-> Thanks,
-> Daniel
+Yes, ionic_open() can fail, and it unwinds its own work.  There isn't 
+anything here in ionic_link_status_check() to unwind, and no one to 
+report the error to, so we don't catch the error here. However, it would 
+be better if I move the addition of the IONIC_LIF_F_TRANS flag and a 
+couple other bits from patch 7 into this patch - I can do that for a v2 
+patchset.
+
+sln
+
