@@ -2,83 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03686184F9D
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 20:53:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73917184FDE
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 21:04:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727328AbgCMTwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 15:52:12 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:36762 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726477AbgCMTwK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 15:52:10 -0400
-Received: by mail-lf1-f68.google.com with SMTP id s1so8867025lfd.3;
-        Fri, 13 Mar 2020 12:52:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jIzR2VF5pztT8bGJoCnv210VBMIFx941tvF4lgwyJhk=;
-        b=H/4G0a4inqFmyc/ZgU9YotdnJII5m3EQDJJrxGps6EtV0QFXrC//vl5+03L3cOHdGy
-         rMuPqzftPUB77oaFRc0jdyTu0Yd6DIIQSwMTTRG/sHMUExTW8d1AayCkiDJJQG10AnNu
-         wF51wj5tDrEa/x/K4FUtkoVv7DcbniTMXF8sWXczVij4/XuwPKHrgdF/Dsuj3PyShFF8
-         JlyZvWRVMrR+UgaSu/cQLLQTUZ0gyWV/trt4RNPtAcBWFKC1fRpRh6qJlYAIB2iiHe7x
-         S7sAQ+KVKb6x3q9rQahoc4H/t+Vfyzt/KUe9t3Hd9nhA2g22AnR9lR6X+FdWPH39Wlfr
-         QVkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jIzR2VF5pztT8bGJoCnv210VBMIFx941tvF4lgwyJhk=;
-        b=BihbkNG7oQ9vxR4qDFz2nU8scLKdMEWWqYyJDLbga6k6uWXJfxqllEF6wURbwSOMs6
-         BvH2QO8RF3/Xo6KxRKSBLxdhVFIbElQoxb1hgTfjm1XqrVAN3afxpjDO8nBPrC7p+G7n
-         qqyIGL5XZFVJU01FcQ8llbOjTuNVhgz88oQKNAcLffB0I+jZLbDM+XznR/G+Q8XEUE6n
-         2/ZdRLZSxWSIf0jGippVRVJOVfMCES+Bvc21AnrLg1LIxvRq9zgByIpk0vOlEaBAdT2V
-         YaL9+WxG2w0fX42LErzKxWVIJEN8Zh/kY5pzwyi/ANcI+FdvQ2l9ma+CIIBjuAJ5/rME
-         nC6g==
-X-Gm-Message-State: ANhLgQ3eg2Yh4rJxL7q6Eo4+311fSzEpBLSOFqP9rcilEDNIaNx9dGy+
-        G+BboGZAYDO7IUWIv3sDkqmdOoyO/TOHOqtsyg8=
-X-Google-Smtp-Source: ADFU+vuyob2kNVFX2qwNK4cHEIyyfQOOrYJ9edLrWt/ZgCK5EyTlrU/7fRLKklUBicSDGHyC6BLUkY/zy7R10T1EXd0=
-X-Received: by 2002:a19:a401:: with SMTP id q1mr9255620lfc.157.1584129126306;
- Fri, 13 Mar 2020 12:52:06 -0700 (PDT)
+        id S1727222AbgCMUEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 16:04:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42608 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726477AbgCMUEl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Mar 2020 16:04:41 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 43E55206E9;
+        Fri, 13 Mar 2020 20:04:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584129880;
+        bh=gRupmyo00Wss0GIjIjppM9vlDUc8QcO3JGaB5bZDcw0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=wySOpkgqxbQJD5g6KiD7Zg9QaqgMlV9nM//LIsKidQZPlSi35BhoWmnPJoYTDf+w2
+         tQfgbmd7Vtz0ji8O10i8+9uumn1r44l5hDq8yHiPBYyPJozrmY+Wo9KkTlD+ZzOH2r
+         6zG3luklOjIkQ3hsJwDIgKN+uluqbVvNazS5Mjog=
+Date:   Fri, 13 Mar 2020 13:04:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, Tero Kristo <t-kristo@ti.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Roger Quadros <rogerq@ti.com>,
+        <devicetree@vger.kernel.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Sekhar Nori <nsekhar@ti.com>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH net-next v3 05/10] net: ethernet: ti: introduce
+ am65x/j721e gigabit eth subsystem driver
+Message-ID: <20200313130438.73d9a56c@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200313175511.2155-6-grygorii.strashko@ti.com>
+References: <20200313175511.2155-1-grygorii.strashko@ti.com>
+        <20200313175511.2155-6-grygorii.strashko@ti.com>
 MIME-Version: 1.0
-References: <20200313135850.2329f480@canb.auug.org.au>
-In-Reply-To: <20200313135850.2329f480@canb.auug.org.au>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 13 Mar 2020 12:51:54 -0700
-Message-ID: <CAADnVQ+r3hMEtqbkhm1j9HyXYxSNihbX=VCR9erUGXoE72Pwsg@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the bpf-next tree with the jc_docs tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Stephen Kitt <steve@sk2.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 7:59 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi all,
->
-> Today's linux-next merge of the bpf-next tree got a conflict in:
->
->   Documentation/admin-guide/sysctl/kernel.rst
->
-> between commit:
->
->   a3cb66a50852 ("docs: pretty up sysctl/kernel.rst")
->
-> from the jc_docs tree and commit:
->
->   c480a3b79cbc ("docs: sysctl/kernel: Document BPF entries")
->
-> from the bpf-next tree.
+On Fri, 13 Mar 2020 19:55:06 +0200 Grygorii Strashko wrote:
+> +static void am65_cpsw_nuss_free_tx_chns(void *data)
+> +{
+> +	struct am65_cpsw_common *common = data;
+> +	int i;
+> +
+> +	for (i = 0; i < common->tx_ch_num; i++) {
+> +		struct am65_cpsw_tx_chn	*tx_chn = &common->tx_chns[i];
 
-I dropped this commit from bpf-next, since it causes unnecessary conflicts.
-Please steer it via Jon's tree.
-Thanks
+nit: stray tab?
+
+> +
+> +		if (!IS_ERR_OR_NULL(tx_chn->tx_chn))
+> +			k3_udma_glue_release_tx_chn(tx_chn->tx_chn);
+> +
+> +		if (!IS_ERR_OR_NULL(tx_chn->desc_pool))
+> +			k3_udma_desc_pool_destroy(tx_chn->desc_pool);
+> +
+> +		memset(tx_chn, 0, sizeof(*tx_chn));
+> +	};
+
+nit: you also got some stray semicolons in a few places
+
+Thanks for the changes, looks better. Hopefully someone who knows 
+the HW better can have a look as well.
+
