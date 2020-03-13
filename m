@@ -2,94 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 115731840C7
-	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 07:10:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B05C21840CA
+	for <lists+netdev@lfdr.de>; Fri, 13 Mar 2020 07:14:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726420AbgCMGKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 02:10:52 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:39520 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbgCMGKw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 02:10:52 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02D68eax114524;
-        Fri, 13 Mar 2020 06:10:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=TJWOR0b05KYgrYXI33ZRi3S9npsn8UNea81aSvD6684=;
- b=WCcVfhSDYmCqDAdlLcWsgyl0yX6YKMuRsrY0QlXfFfauSSkTGOnv9nbeHHtFAbQkXUeN
- Gj3W9gh/f2PAYwD7OJeWJFlewNW4tPhukgQLSq6oePyMvrd4Dgmp/PRaiNKipqXUQBXT
- FQpyFRbmHUHPSAIt5tmXCUnVv9pc5/JWCV3M+9pHLjGSSDMnL/bn0gjDYP/h5QQpiN0T
- T2uPnKKuzQJg/NGO7nvW2b7SNrcRAFkiBibnYiXr0x5ln3xvc5EsOC/ITcs6P3LEKlrf
- Huo5GZRA9OtsshVp5zbZEa128OMYMzGUkp2Bg0bz2FQ8QHc0/gLu1r8CK3AOWWiMTHHO tA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2130.oracle.com with ESMTP id 2yqtaga1bb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 13 Mar 2020 06:10:39 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02D68FS5104230;
-        Fri, 13 Mar 2020 06:10:39 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3030.oracle.com with ESMTP id 2yqtabvxcx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 13 Mar 2020 06:10:39 +0000
-Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 02D6AbFF030638;
-        Fri, 13 Mar 2020 06:10:37 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 12 Mar 2020 23:10:37 -0700
-Date:   Fri, 13 Mar 2020 09:10:29 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     sgoutham@marvell.com, gakula@marvell.com, sbhatta@marvell.com,
-        hkelam@marvell.com, andrew@lunn.ch, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] octeontx2-pf: unlock on error path in
- otx2_config_pause_frm()
-Message-ID: <20200313061028.GP11561@kadam>
-References: <20200312113048.GB20562@mwanda>
- <20200312.155321.1860923182739836747.davem@davemloft.net>
+        id S1726300AbgCMGOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 02:14:00 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:52527 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbgCMGOA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 02:14:00 -0400
+Received: by mail-wm1-f68.google.com with SMTP id 11so8603001wmo.2
+        for <netdev@vger.kernel.org>; Thu, 12 Mar 2020 23:13:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JduRkudgkxc5/Ub53X3j/qWRo+lor5OBNJ1jLBBHY8o=;
+        b=Mpjc/Qy5/iJip1DvTX6jJIRuJc0jVKhgYVs8y8/V+vMXJYPz7Q1p1zdubAuC1260JV
+         QakI8tjhK+jZFoGDhtb0URlOfOt0OK9sYfuuovmJRC2e1h4WamfweJ78nNiHjxaaCd6v
+         KkxRVF7q72nzQP9RV1HQy2fpqIQwWiM3eJnGCTSpDMP/wMpLwxrI2sXQfp9gouZnwKDf
+         fttOLiLKCmV6ePVj2Sa2I+ykUs0AV7Bn1dsfLKx4WQ+fTua8XizY9V1USTowrWf2iCUc
+         5eKCQXQiv/fPHRarjp2ek3q2npHh/w0QH952JFZvgkSnXw523QiJ0mgbm6y3UvvjMv44
+         xtoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JduRkudgkxc5/Ub53X3j/qWRo+lor5OBNJ1jLBBHY8o=;
+        b=KGG6wiAs5RbjrK7oILEYpIn7wemtbq+3r+cX28MkgHsCBda+87lLpCy7AzvP1Bfw/B
+         iSK6Kxs0JjSfkiehqLQsrGEJGITBuH7pF+AdUqbSWyNLYKQvJ9MeBGTGqZifss+ib4S7
+         WRVfedjSPohif/1vP2UXqBcjWvGa1w3wTzBlwjJHIu52bq9hYZZlLYgHwjTatdDoIvIE
+         28QO2C8B3ZqG+PHQbwJVIRDEQeNjHddbt1AVEAAko8/h5jFgmhVp+EoYv/jFvDaUg5ju
+         PT17CD0VEZNbbxGUm57WdJtgaNxSIuoEh4veLTr4uu+Mb1H7IBVHIsZ8zJt+nAEcOB2B
+         kIZA==
+X-Gm-Message-State: ANhLgQ3zbjh/BWIQy9zxyPAI+ln83bYLcRUYchMUdPgfegkaz3y7uHCf
+        PVoygQ5Hxxfb0fzke7Ynj84=
+X-Google-Smtp-Source: ADFU+vt0vwjP1SSPTdcpY79NeyOmPnvmefvYQ3aRdEAt/aJ3wr7mq7ZNz/9o1vWWVvUZ2qZxwZo9gw==
+X-Received: by 2002:a1c:81c3:: with SMTP id c186mr8589787wmd.62.1584080038089;
+        Thu, 12 Mar 2020 23:13:58 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:c9b7:bad8:eb25:3491? (p200300EA8F296000C9B7BAD8EB253491.dip0.t-ipconnect.de. [2003:ea:8f29:6000:c9b7:bad8:eb25:3491])
+        by smtp.googlemail.com with ESMTPSA id u25sm15269133wml.17.2020.03.12.23.13.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 Mar 2020 23:13:57 -0700 (PDT)
+Subject: Re: [PATCH net-next 13/15] net: r8169: reject unsupported coalescing
+ params
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
+        cooldavid@cooldavid.org, sebastian.hesselbarth@gmail.com,
+        thomas.petazzoni@bootlin.com, maxime.chevallier@bootlin.com,
+        rmk+kernel@armlinux.org.uk, mcroce@redhat.com,
+        sgoutham@marvell.com, gakula@marvell.com, sbhatta@marvell.com,
+        hkelam@marvell.com, mlindner@marvell.com,
+        stephen@networkplumber.org, christopher.lee@cspi.com,
+        manishc@marvell.com, rahulv@marvell.com,
+        GR-Linux-NIC-Dev@marvell.com, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, shshaikh@marvell.com,
+        nic_swsd@realtek.com, bh74.an@samsung.com, romieu@fr.zoreil.com
+References: <20200313040803.2367590-1-kuba@kernel.org>
+ <20200313040803.2367590-14-kuba@kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <47da46a6-0336-c9d2-3949-d19f8a752136@gmail.com>
+Date:   Fri, 13 Mar 2020 07:13:49 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200312.155321.1860923182739836747.davem@davemloft.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9558 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 suspectscore=0
- malwarescore=0 bulkscore=0 adultscore=0 mlxscore=0 spamscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2003130034
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9558 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxscore=0
- lowpriorityscore=0 priorityscore=1501 mlxlogscore=999 phishscore=0
- suspectscore=0 bulkscore=0 impostorscore=0 spamscore=0 adultscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2003130034
+In-Reply-To: <20200313040803.2367590-14-kuba@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 12, 2020 at 03:53:21PM -0700, David Miller wrote:
-> From: Dan Carpenter <dan.carpenter@oracle.com>
-> Date: Thu, 12 Mar 2020 14:30:48 +0300
+On 13.03.2020 05:08, Jakub Kicinski wrote:
+> Set ethtool_ops->supported_coalesce_params to let
+> the core reject unsupported coalescing parameters.
 > 
-> > We need to unlock before returning if this allocation fails.
-> > 
-> > Fixes: 75f36270990c ("octeontx2-pf: Support to enable/disable pause frames via ethtool")
-> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> This driver did not previously reject unsupported parameters.
 > 
-> Applied to net-next.
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> Dan, please indicate the appropriate target tree in your Subject lines
-> in the future.  I have to dance around my GIT trees to figure out where
-> your patches apply and that eats up more time than necessary.
 
-Sorry, I've been trying to do that but I forgot.  I'm going to update
-my QC scripts so hopefully it doesn't happen again.
-
-regards,
-dan carpenter
-
+Acked-by: Heiner Kallweit <hkallweit1@gmail.com>
