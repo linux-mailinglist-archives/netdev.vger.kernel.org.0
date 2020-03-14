@@ -2,86 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 872FC1856AD
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 02:29:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27E5C1856AC
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 02:28:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726669AbgCOB26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Mar 2020 21:28:58 -0400
+        id S1726613AbgCOB2z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Mar 2020 21:28:55 -0400
 Received: from pandora.armlinux.org.uk ([78.32.30.218]:55780 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726638AbgCOB25 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 21:28:57 -0400
+        with ESMTP id S1725962AbgCOB2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 21:28:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
         MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=KiZK+TM0YhwzSWKjwY/4kLPqOHk+DoccMqiBhFtQCMU=; b=YOMm9fZt6zyHnpeZSykzX/RzF
-        bQtZBH3m3l9tomiluH1WVtiZZutbVlOpYbEFTdX2PXaRnGaScKz34Zcrx/bCqw1Mk3DBgr/W9evhp
-        ljqKlWjUd/0KLwIsP7KAFtP3u80rFJC2/VB5938+38FC5OK4HqEpxYvakF6W+sitAL7uILZ04FMPS
-        HMGouZLPHNxMzz7fKVHLXJGUfsKtAcVfwAER71s1qABGYQk5SpaGqGr2vKtTMbGllK1MlN0sqTk2u
-        GPA8MUF6wPpzjRf1BUjNe4DroDXQ07VcvXApGj8ZXoausj3QVAJ1x1KqgIgJKHG92VcpkCzenSHua
-        ADIbhXtng==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36304)
+         bh=UGBufWbYvrmkwZrPGgicPt6Hy6K6TsTr3dcMbTR9N1Y=; b=FXFMF5BWRzoxEKYID3vwmM/+u
+        z0MFDVitEn8IGEyfQO2bZUomhrQamO14ftoWV/LwXO8n8qpYOV6dSyWdDi2wHrAGlV+ezW42mWJR6
+        VkHAvGymy6XLyZDhFXeTM+c/7hSxE70PXzMJ4RZkJZqWkrmLo3uwk+wEOv2T61pxGVlfIe/dxkknD
+        E5E3bOLJ2OHbQQucHfKgrNWY6x7RX88MPinxdxukPZvoCjYHm69TRBQYgYsstBn4RI+sWCzk/qfXk
+        0IZSFDdC7yZpnVC1G+R/ai6A9jkdD7MGVgyRc3yOdpz+EIuTSR1QSQvFKt5dUa48Pu+TpsUnaN6sr
+        aX63hzbFw==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:53084)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1jD44x-0006MT-Hs; Sat, 14 Mar 2020 10:31:39 +0000
+        id 1jDFWg-0006qM-FO; Sat, 14 Mar 2020 22:45:02 +0000
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jD44w-0008F7-3D; Sat, 14 Mar 2020 10:31:38 +0000
-Date:   Sat, 14 Mar 2020 10:31:38 +0000
+        id 1jDFWd-0000Ew-AQ; Sat, 14 Mar 2020 22:44:59 +0000
+Date:   Sat, 14 Mar 2020 22:44:59 +0000
 From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 0/3] net: add phylink support for PCS
-Message-ID: <20200314103137.GK25745@shell.armlinux.org.uk>
-References: <20200314102721.GG25745@shell.armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH REPOST3 net-next 0/3] net: add phylink support for PCS
+Message-ID: <20200314224459.GL25745@shell.armlinux.org.uk>
+References: <20200314103102.GJ25745@shell.armlinux.org.uk>
+ <20200314220018.GH8622@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200314102721.GG25745@shell.armlinux.org.uk>
+In-Reply-To: <20200314220018.GH8622@lunn.ch>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please ignore this series entirely.
+On Sat, Mar 14, 2020 at 11:00:18PM +0100, Andrew Lunn wrote:
+> On Sat, Mar 14, 2020 at 10:31:02AM +0000, Russell King - ARM Linux admin wrote:
+> > Depends on "net: mii clause 37 helpers".
+> > 
+> > This series adds support for IEEE 802.3 register set compliant PCS
+> > for phylink.  In order to do this, we:
+> > 
+> > 1. add accessors for modifying a MDIO device register, and use them in
+> >    phylib, rather than duplicating the code from phylib.
+> > 2. add support for decoding the advertisement from clause 22 compatible
+> >    register sets for clause 37 advertisements and SGMII advertisements.
+> > 3. add support for clause 45 register sets for 10GBASE-R PCS.
+> 
+> Hi Russell
+> 
+> How big is the patchset which actually makes use of this code? It is
+> normal to add helpers and at least one user in the same patchset. But
+> if that would make the patchset too big, there could be some leeway.
 
-On Sat, Mar 14, 2020 at 10:27:21AM +0000, Russell King - ARM Linux admin wrote:
-> Depends on "net: mii clause 37 helpers".
-> 
-> This series adds support for IEEE 802.3 register set compliant PCS
-> for phylink.  In order to do this, we:
-> 
-> 1. add accessors for modifying a MDIO device register, and use them in
->    phylib, rather than duplicating the code from phylib.
-> 2. add support for decoding the advertisement from clause 22 compatible
->    register sets for clause 37 advertisements and SGMII advertisements.
-> 3. add support for clause 45 register sets for 10GBASE-R PCS.
-> 
-> These have been tested on the LX2160A Clearfog-CX platform.
-> 
-> This is a re-post of the series previously sent, but with the first two
-> patches separated out; the conclusion of the discussion with Vladimir
-> seemed to be that there was no issue with the patches themselves.
-> 
->  drivers/net/phy/mdio_bus.c |  55 +++++++++++
->  drivers/net/phy/phy-core.c |  31 ------
->  drivers/net/phy/phylink.c  | 236 +++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/mdio.h       |   4 +
->  include/linux/phy.h        |  19 ++++
->  include/linux/phylink.h    |   8 ++
->  include/uapi/linux/mii.h   |   5 +
->  7 files changed, 327 insertions(+), 31 deletions(-)
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+The minimum is three patches:
+
+arm64: dts: lx2160a: add PCS MDIO nodes
+dpaa2-mac: add 1000BASE-X/SGMII PCS support
+dpaa2-mac: add 10GBASE-R PCS support
+
+but for it to actually be usable on hardware, it needs more than that:
+
+arm64: dts: lx2160a-clearfog-itx: add SFP support
+
+and, at the moment, depending on whether you want 1G or 10G speeds,
+changes to the board firmware to select the serdes group mode.
+
+The DTS patches can't go through netdev obviously, and it may be
+too late to get them queued through the proper channels.
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
