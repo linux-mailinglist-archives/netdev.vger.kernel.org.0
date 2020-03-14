@@ -2,113 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8373B18532D
-	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 01:10:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA91B18532F
+	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 01:12:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727656AbgCNAKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 20:10:42 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:46776 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726534AbgCNAKm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 20:10:42 -0400
-Received: by mail-qt1-f196.google.com with SMTP id t13so9205085qtn.13;
-        Fri, 13 Mar 2020 17:10:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fFSXCfPxZ44Gnna3dml1rVBvXL2ix7ceGBfMvBZcWhM=;
-        b=UkdDesbXxDUbg/DWkkM7sHPh9FhVdTbptkUsIMGIMH8oIJNK4CeqEW4mizy05MukkY
-         Wts6bS3oPfdRBlMrUsN0XD4L2kySfaN64YKwJ0rmfz0Tts1ja6sF4BaI5RLHjeRHsxY5
-         5dzmJ+ieanG7C0Yf/ZkYE+m6/fxyTbNNEIkqUSsTFOMdlL8DrQBXKITZo4BzAA1L/Npo
-         Z4oyOe7k7HnUy4qrGzofXI167Rv8R68BKgMqg/bzyvFDJavhol2wui3184MjBgzvVHrh
-         wQQqz5n7vN/wa8A29HqU75LAXCtJjWupVgN01of7YFROdlA6sx0B/ZGNOnrJqfFYjIlA
-         /cgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fFSXCfPxZ44Gnna3dml1rVBvXL2ix7ceGBfMvBZcWhM=;
-        b=iqy5WEYIGwThoWj/8l4++ruAWy5BnBF3Y0CPMsu/HrTCUSDXXuHeqJPj6gtEK2zhTM
-         n23DbHxbm04T2Q4DlRPqxDJ/+jd4ahIqRS7Qz2ic5AJ9m6FYyhru/l3jkma8OuWVxTuK
-         i3sVBPrfy4deDXNRFunNNRiKwluGRCc07kHEQdepTz+Zbmu6FCVBgR5V/8ITyuSEFj/G
-         wdf3jtCTBR4JLoWw5LheEjyEGPNZf12yFvUBHQmzHmAjv7BIbNH9Z908SS0H1y2GgW3C
-         T5w8US2UZJBWhmExcofBAd0RGCx5lecjIiUitTo/9N4ijAhJe8O5iFSwKe0hYekvcpqu
-         mIGA==
-X-Gm-Message-State: ANhLgQ1l7nsWXetQhPjbJCnEcypE5fMHX+B5HitUUpdyebgxPpdNfBJm
-        vXE/B1pA06s7O/oME2OeGanVH9owmXnMyf3ZS+Y=
-X-Google-Smtp-Source: ADFU+vsgImTQTIJZ5OGL/TViJc/xh0JVJ3pvrUibZAduISBqK1IMILlfRzrNz6b8LLekW4ilQ2KdjtG5wDQH8gCM6Ho=
-X-Received: by 2002:ac8:4e14:: with SMTP id c20mr14992805qtw.141.1584144640839;
- Fri, 13 Mar 2020 17:10:40 -0700 (PDT)
+        id S1727665AbgCNAMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 20:12:08 -0400
+Received: from www62.your-server.de ([213.133.104.62]:56300 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726736AbgCNAMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 20:12:08 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jCuPL-0002eS-Mi; Sat, 14 Mar 2020 01:12:03 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jCuPL-0000x0-8u; Sat, 14 Mar 2020 01:12:03 +0100
+Subject: Re: [PATCH nf-next 3/3] netfilter: Introduce egress hook
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Martin Mares <mj@ucw.cz>,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>
+References: <cover.1583927267.git.lukas@wunner.de>
+ <14ab7e5af20124a34a50426fd570da7d3b0369ce.1583927267.git.lukas@wunner.de>
+ <a57687ae-2da6-ca2a-1c84-e4332a5e4556@iogearbox.net>
+ <20200313145526.ikovaalfuy7rnkdl@salvia>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1bd50836-33c4-da44-5771-654bfb0348cc@iogearbox.net>
+Date:   Sat, 14 Mar 2020 01:12:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20200313233535.3557677-1-andriin@fb.com> <20200314000510.cmsepdhnywtglrcm@kafai-mbp>
-In-Reply-To: <20200314000510.cmsepdhnywtglrcm@kafai-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 13 Mar 2020 17:10:29 -0700
-Message-ID: <CAEf4BzbKAz699qu0ae=A_8WryUXWywXDJm17d4ogp8x=oHXa_Q@mail.gmail.com>
-Subject: Re: [Potential Spoof] [PATCH bpf-next] selftests/bpf: fix nanosleep
- for real this time
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200313145526.ikovaalfuy7rnkdl@salvia>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25750/Fri Mar 13 14:03:09 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 13, 2020 at 5:05 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Fri, Mar 13, 2020 at 04:35:35PM -0700, Andrii Nakryiko wrote:
-> > Amazingly, some libc implementations don't call __NR_nanosleep syscall from
-> > their nanosleep() APIs. Hammer it down with explicit syscall() call and never
-> > get back to it again. Also simplify code for timespec initialization.
-> >
-> > I verified that nanosleep is called w/ printk and in exactly same Linux image
-> > that is used in Travis CI. So it should both sleep and call correct syscall.
-> >
-> > Fixes: 4e1fd25d19e8 ("selftests/bpf: Fix usleep() implementation")
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >  tools/testing/selftests/bpf/test_progs.c | 16 ++++++----------
-> >  1 file changed, 6 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-> > index f85a06512541..6956d722a463 100644
-> > --- a/tools/testing/selftests/bpf/test_progs.c
-> > +++ b/tools/testing/selftests/bpf/test_progs.c
-> > @@ -35,16 +35,12 @@ struct prog_test_def {
-> >   */
-> >  int usleep(useconds_t usec)
-> >  {
-> > -     struct timespec ts;
-> > -
-> > -     if (usec > 999999) {
-> > -             ts.tv_sec = usec / 1000000;
-> > -             ts.tv_nsec = usec % 1000000;
-> > -     } else {
-> > -             ts.tv_sec = 0;
-> > -             ts.tv_nsec = usec;
-> > -     }
-> > -     return nanosleep(&ts, NULL);
-> > +     struct timespec ts = {
-> > +             .tv_sec = usec / 1000000,
-> > +             .tv_nsec = usec % 1000000,
-> usec is in micro and tv_nsec is in nano?
->
+On 3/13/20 3:55 PM, Pablo Neira Ayuso wrote:
+> On Wed, Mar 11, 2020 at 03:05:16PM +0100, Daniel Borkmann wrote:
+>> On 3/11/20 12:59 PM, Lukas Wunner wrote:
+>>> Commit e687ad60af09 ("netfilter: add netfilter ingress hook after
+>>> handle_ing() under unique static key") introduced the ability to
+>>> classify packets on ingress.
+>>>
+>>> Allow the same on egress.  Position the hook immediately before a packet
+>>> is handed to tc and then sent out on an interface, thereby mirroring the
+>>> ingress order.  This order allows marking packets in the netfilter
+>>> egress hook and subsequently using the mark in tc.  Another benefit of
+>>> this order is consistency with a lot of existing documentation which
+>>> says that egress tc is performed after netfilter hooks.
+>>>
+>>> Egress hooks already exist for the most common protocols, such as
+>>> NF_INET_LOCAL_OUT or NF_ARP_OUT, and those are to be preferred because
+>>> they are executed earlier during packet processing.  However for more
+>>> exotic protocols, there is currently no provision to apply netfilter on
+>>> egress.  A common workaround is to enslave the interface to a bridge and
+>>
+>> Sorry for late reply, but still NAK.
+> 
+> I agree Lukas use-case is very specific.
+> 
+> However, this is useful.
+> 
+> We have plans to support for NAT64 and NAT46, this is the right spot
+> to do this mangling. There is already support for the tunneling
 
-Yes, this is implementation of usleep() (microsecond sleep), so usec
-is microseconds. We call nanosleep internally, though, which accepts
-seconds and nanoseconds units. Did I mess up math here?
+But why is existing local-out or post-routing hook _not_ sufficient for
+NAT64 given it being IP based?
 
-But either way, sending v2, there is another place we explicitly are
-calling nanosleep as well, fixing that one as well.
+> infrastructure in netfilter from ingress, this spot from egress will
+> allow us to perform the tunneling from here. There is also no way to
+> drop traffic generated by dhclient, this also allow for filtering such
+> locally generated traffic. And many more.
 
-> > +     };
-> > +
-> > +     return syscall(__NR_nanosleep, &ts, NULL);
-> >  }
-> >
+This is a known fact for ~17 years [0] or probably more by now and noone
+from netfilter folks cared to address it in all the years, so I presume
+it cannot be important enough, and these days it can be filtered through
+other means already. Tbh, it's a bit laughable that you bring this up as
+an argument ...
+
+   [0] https://www.spinics.net/lists/netfilter/msg19488.html
+
+> Performance impact is negligible, Lukas already provided what you
+> asked for.
+
+Sure, and the claimed result was "as said the fast-path gets faster, not
+slower" without any explanation or digging into details on why this might
+be, especially since it appears counter-intuitive as was stated by the
+author ... and later demonstrated w/ measurements that show the opposite.
