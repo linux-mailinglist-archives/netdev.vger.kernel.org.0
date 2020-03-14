@@ -2,44 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1401F1853FC
-	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 03:26:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1B4E185405
+	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 03:37:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726623AbgCNC0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 22:26:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39342 "EHLO mail.kernel.org"
+        id S1726593AbgCNCgl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 22:36:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41532 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726414AbgCNC0f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Mar 2020 22:26:35 -0400
+        id S1726467AbgCNCgl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Mar 2020 22:36:41 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B512720663;
-        Sat, 14 Mar 2020 02:26:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4B4E72074B;
+        Sat, 14 Mar 2020 02:36:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584152795;
-        bh=AcJjJyWn5ByJbwtEz4BGq+xcuACI0IwUCrM4Q1XGnMI=;
+        s=default; t=1584153400;
+        bh=1pW85oOOhfsTgmi9io6OSE9zKksK/Q4NpH9Vurgl1a8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qT5imk+Rcv0q6OLRfWaLfXPZCf0ymZ01i/IhtVZHGCwljz0IDWJI9COcx3oi5UT5Q
-         bW/4Ukk85xOZwWH6vMnWDH+h8vBDQAAS8yN/g7pqrs/Aw6HqDkwJ37fGs9G+PtiWlo
-         o7eRZB/q5Z14t+K41rknCavEVQAZcS9wGwEgSD+U=
-Date:   Fri, 13 Mar 2020 19:26:32 -0700
+        b=apOSd0eSG99lJd7DXjd30V3Csb4lJOZaDW2+34B7i3iUn5uakWpykDyO8yLdkQJZV
+         8rhgtIE5g8Gr0fZv3rN82V9G5EuBrt62OYTPgRfuS6V3qAWs0wNLjoMpPnDF4f9XJf
+         4FeVCSmiedPaDYjtjsH1JzBqHvLMNbzhpk5tJDOk=
+Date:   Fri, 13 Mar 2020 19:36:38 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Bersenev <bay@hackerdom.ru>
-Cc:     Oliver Neukum <oliver@neukum.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Allison Randal <allison@lohutok.net>,
-        Enrico Weigelt <info@metux.net>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] cdc_ncm: Fix the build warning
-Message-ID: <20200313192632.7900a288@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200313213823.178435-2-bay@hackerdom.ru>
-References: <20200313213823.178435-1-bay@hackerdom.ru>
-        <20200313213823.178435-2-bay@hackerdom.ru>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Bodong Wang <bodong@mellanox.com>,
+        Parav Pandit <parav@mellanox.com>
+Subject: Re: [net-next 07/14] net/mlx5: E-Switch, Update VF vports config
+ when num of VFs changed
+Message-ID: <20200313193638.6d9fdff8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200314011622.64939-8-saeedm@mellanox.com>
+References: <20200314011622.64939-1-saeedm@mellanox.com>
+        <20200314011622.64939-8-saeedm@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -48,22 +43,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 14 Mar 2020 02:38:21 +0500 Alexander Bersenev wrote:
-> The ndp32->wLength is two bytes long, so replace cpu_to_le32 with cpu_to_le16.
+On Fri, 13 Mar 2020 18:16:15 -0700 Saeed Mahameed wrote:
+> From: Bodong Wang <bodong@mellanox.com>
+> 
+> Currently, ECPF eswitch manager does one-time only configuration for
+> VF vports when device switches to offloads mode. However, when num of
+> VFs changed from host side, driver doesn't update VF vports
+> configurations.
+> 
+> Hence, perform VFs vport configuration update whenever num_vfs change
+> event occurs.
 
-missing signoff
-
-> diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-> index 5569077bd5b8..8929669b5e6d 100644
-> --- a/drivers/net/usb/cdc_ncm.c
-> +++ b/drivers/net/usb/cdc_ncm.c
-> @@ -1172,7 +1172,7 @@ static struct usb_cdc_ncm_ndp32 *cdc_ncm_ndp32(struct cdc_ncm_ctx *ctx, struct s
->  		ndp32 = ctx->delayed_ndp32;
->  
->  	ndp32->dwSignature = sign;
-> -	ndp32->wLength = cpu_to_le32(sizeof(struct usb_cdc_ncm_ndp32) + sizeof(struct usb_cdc_ncm_dpe32));
-> +	ndp32->wLength = cpu_to_le16(sizeof(struct usb_cdc_ncm_ndp32) + sizeof(struct usb_cdc_ncm_dpe32));
->  	return ndp32;
-
-Isn't this code added in the previous patch? Why not squash them
-together?
+Oh, I thought you kept max_vfs number of reprs on the ECPF, always.
+Or was that just the initial plan?
