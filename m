@@ -2,140 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11E55185336
-	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 01:17:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8337118533D
+	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 01:18:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727481AbgCNARI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 20:17:08 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:33872 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726591AbgCNARI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 20:17:08 -0400
-Received: by mail-qt1-f195.google.com with SMTP id 59so9255717qtb.1;
-        Fri, 13 Mar 2020 17:17:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cbLmoFPbaR0Om8gK7/+cGCDufDcyaBbeBdOn/UU1NkE=;
-        b=hA0DODKaRhdHsi+lBx3R/y+EbXWK0vSdJmXgB6egz+NpKbQtKriTMsvR3dpZ4asnXp
-         PnmQ+3GqcnoVr/g59nY30jxdzsVndK0IwWISOqExuVKlJKRWoeaxd1xBBSIV5/+UZjAf
-         8Fi1ETIAxJ90PM3ws4quGARAGeZcpiAxBR5S4R7YIAFB1uOwQ8ehOcwVIuiA7XxdIYix
-         nH3FUM90iHThRBuInjNJmZokNKxitz52K+ecqD6O2qQNyGRQb95DREGomWDaGH7MAOob
-         7hC842baWXujcqzU16z5kvf554PxEAMpsnvJDiT4Cp6sby/GasnzHtv6/T9teoh6TJEQ
-         sdww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cbLmoFPbaR0Om8gK7/+cGCDufDcyaBbeBdOn/UU1NkE=;
-        b=QniADXxZcFVKlzzdmNjqcCIhut+ABeptiO7jpeixaf5Kbc/WbaBLCRVCmYDGlyeIYd
-         yvt2V6qa6+4u7G95/iZf9TcJfYeDQI8ICiptFtXBo0nbAPepfRisVLMUhJOSb1LyNkZE
-         c1NYs5cgMY0IOTid0sKlYn/Eqlo3xBDUE03MKbdybNaxYlTRqJ9M++qbEymY9U5/yjQA
-         TRX0KDKbopsiFDbMxz9j2U3MOaTusjZGjMDPunSTxNjNdK5yScm5Lb6x2sRFqbveYTDX
-         ArJgYCQMEJMc+SaIIuvhGD4yttXz7HMz+i/ruQwSPjJSu1fYl9xQ8XhCWj9nyxzdytaA
-         qfyw==
-X-Gm-Message-State: ANhLgQ0fu6YOszRjnZ3n5Ccu1Hdms92xdFOwnWmNCCFuuRegzYXRyaWY
-        pjz6AfmoUIZKi41n5PeFbxcRiIzrEwUDmSNS3X4=
-X-Google-Smtp-Source: ADFU+vs2o/JJfHhyAVRGKvlHoEciqAt1hlcnVZlRQilrSRH8RjlaD/RTVPxmFKuk3ubza7vyA21aCHljgDB6uWhgDr8=
-X-Received: by 2002:ac8:3f62:: with SMTP id w31mr7653920qtk.171.1584145026695;
- Fri, 13 Mar 2020 17:17:06 -0700 (PDT)
+        id S1727656AbgCNASn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 20:18:43 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:16106 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726853AbgCNASn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 20:18:43 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02E09kh6017992
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 17:18:41 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=S9ZVDUQiRYgS0apiBE5BXpX6NXW1i+DNM/ifUPR07f0=;
+ b=m17fdMsXC/52mOvPfMGETRh4Jmrje1H3Cfz4nbxDpoNfRYmD5yZ2YxdnM4c7zqWX48ne
+ JNKYGTb42DZYhyDvdlCkmNjI6aCnEWv4yRCCUpn//gPhYEEA+m0v4YBIFVEqy/jwIoK0
+ PZMbSgf/zYVkI6Awr3OFVJSXdDGhLLOyVDo= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yqt79q3bd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 17:18:41 -0700
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Fri, 13 Mar 2020 17:18:40 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id 226B12EC2D3F; Fri, 13 Mar 2020 17:18:38 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next] selftest/bpf: fix compilation warning in sockmap_parse_prog.c
+Date:   Fri, 13 Mar 2020 17:18:34 -0700
+Message-ID: <20200314001834.3727680-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <20200313233649.654954-1-kafai@fb.com>
-In-Reply-To: <20200313233649.654954-1-kafai@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 13 Mar 2020 17:16:55 -0700
-Message-ID: <CAEf4BzZOrYkmXixTdgyisRw8JaNmApHJ=_vmDJ5ryHovzj5e0g@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: Sanitize the bpf_struct_ops tcp-cc name
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-13_12:2020-03-12,2020-03-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 malwarescore=0
+ suspectscore=8 lowpriorityscore=0 spamscore=0 priorityscore=1501
+ impostorscore=0 phishscore=0 mlxlogscore=768 clxscore=1015 bulkscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003130107
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 13, 2020 at 4:37 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> The bpf_struct_ops tcp-cc name should be sanitized in order to
-> avoid problematic chars (e.g. whitespaces).
->
-> This patch reuses the bpf_obj_name_cpy() for accepting the same set
-> of characters in order to keep a consistent bpf programming experience.
-> A "size" param is added.  Also, the strlen is returned on success so
-> that the caller (like the bpf_tcp_ca here) can error out on empty name.
-> The existing callers of the bpf_obj_name_cpy() only need to change the
-> testing statement to "if (err < 0)".  For all these existing callers,
-> the err will be overwritten later, so no extra change is needed
-> for the new strlen return value.
->
-> Fixes: 0baf26b0fcd7 ("bpf: tcp: Support tcp_congestion_ops in bpf")
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> ---
->  include/linux/bpf.h   |  1 +
->  kernel/bpf/syscall.c  | 24 +++++++++++++-----------
->  net/ipv4/bpf_tcp_ca.c |  7 ++-----
->  3 files changed, 16 insertions(+), 16 deletions(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 49b1a70e12c8..212991f6f2a5 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -160,6 +160,7 @@ static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
->  }
->  void copy_map_value_locked(struct bpf_map *map, void *dst, void *src,
->                            bool lock_src);
-> +int bpf_obj_name_cpy(char *dst, const char *src, unsigned int size);
->
->  struct bpf_offload_dev;
->  struct bpf_offloaded_map;
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 0c7fb0d4836d..d2984bf362c2 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -696,14 +696,14 @@ int bpf_get_file_flag(int flags)
->                    offsetof(union bpf_attr, CMD##_LAST_FIELD) - \
->                    sizeof(attr->CMD##_LAST_FIELD)) != NULL
->
-> -/* dst and src must have at least BPF_OBJ_NAME_LEN number of bytes.
-> - * Return 0 on success and < 0 on error.
-> +/* dst and src must have at least "size" number of bytes.
-> + * Return strlen on success and < 0 on error.
->   */
-> -static int bpf_obj_name_cpy(char *dst, const char *src)
-> +int bpf_obj_name_cpy(char *dst, const char *src, unsigned int size)
->  {
-> -       const char *end = src + BPF_OBJ_NAME_LEN;
-> +       const char *end = src + size;
->
-> -       memset(dst, 0, BPF_OBJ_NAME_LEN);
-> +       memset(dst, 0, size);
->         /* Copy all isalnum(), '_' and '.' chars. */
->         while (src < end && *src) {
->                 if (!isalnum(*src) &&
-> @@ -712,11 +712,11 @@ static int bpf_obj_name_cpy(char *dst, const char *src)
->                 *dst++ = *src++;
->         }
->
-> -       /* No '\0' found in BPF_OBJ_NAME_LEN number of bytes */
-> +       /* No '\0' found in "size" number of bytes */
->         if (src == end)
->                 return -EINVAL;
->
-> -       return 0;
-> +       return src - (end - size);
+Remove unused len variable, which causes compilation warnings.
 
-it's a rather convoluted way of writing (src - orig_src), maybe just
-remember original src?
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/testing/selftests/bpf/progs/sockmap_parse_prog.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Either way not a big deal:
+diff --git a/tools/testing/selftests/bpf/progs/sockmap_parse_prog.c b/tools/testing/selftests/bpf/progs/sockmap_parse_prog.c
+index a5c6d5903b22..ca283af80d4e 100644
+--- a/tools/testing/selftests/bpf/progs/sockmap_parse_prog.c
++++ b/tools/testing/selftests/bpf/progs/sockmap_parse_prog.c
+@@ -12,7 +12,6 @@ int bpf_prog1(struct __sk_buff *skb)
+ 	__u32 lport = skb->local_port;
+ 	__u32 rport = skb->remote_port;
+ 	__u8 *d = data;
+-	__u32 len = (__u32) data_end - (__u32) data;
+ 	int err;
+ 
+ 	if (data + 10 > data_end) {
+-- 
+2.17.1
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
->  }
->
-
-[...]
