@@ -2,60 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F3A6185905
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 03:30:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE4911858D0
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 03:24:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727779AbgCOC36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Mar 2020 22:29:58 -0400
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:34553 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727519AbgCOC35 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 22:29:57 -0400
-Received: by mail-qv1-f68.google.com with SMTP id o18so6928237qvf.1;
-        Sat, 14 Mar 2020 19:29:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZEEnUHwkZMDbVRFi/MzyKhwtIiz6HxIBrFlnIEc6RNU=;
-        b=UtF1NsDXnHj+58UszKvNBbyAK47c838ncpsIkdFCBW1JmsCtG/hHuFT52R00vV/4vB
-         2LUJSnHt5bkbjBIeHkQ7ylDQMQtr3B7u2xmhxHBD9aYSsZtXN/LrDGRLfSK4P7WXJcar
-         nBMyLw4xmX/JTb4DsZ128A2fz3hhIdx0ceTtpGmlRPsPOroVerSCgePvQNgIp0vjrSu1
-         /qX2OY1rm41zsUbGaUiNaYqZIeeKat+5KrtJFJkvmur5YBRnbvQnuk1b67Lt//p6isTw
-         nMGqfpJ5Bc/tjuMDFsbmXDL7sOoKR+/s3IgQfkygtsqJ++a9aRhBnxkHvsye/ig6zo5h
-         0dyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZEEnUHwkZMDbVRFi/MzyKhwtIiz6HxIBrFlnIEc6RNU=;
-        b=MzqrtO4nhRRUMYTD9wds/pamtt064U5oOaUFZrOpOAKzPoLOelO/p7bLGSoIOKjAuy
-         0aztVcTKoDWNilwYuIx2vW5NW7W67O1xoGSTWXQBUyj4GfhPnJTFsTvd+8H9Wee7Xaku
-         RSl0XBkhPBvNdHc+UVtM5ia9wABQuXrqy05iTXNBX/v5gB99t1CrZzxJZpIbgX3ekA44
-         Vz2APkSZJTwqAYZIXtNGbuRzcQfI3JKAu2zApoWOLzoBBZ2A9sHb5UuX0NZMadNBPRXx
-         mxLyMR6hR9l0MVpr5Xi8kuXL/fVsd+mm3buwwuffg4h2cxaxKEaH4kgtjOLEyN/UWxYD
-         Pj9w==
-X-Gm-Message-State: ANhLgQ3MrU4c+5vZA1W77aRcclnQtfi9b5ATzu65Rb2tot87MLjXZ/iu
-        OzI4sIqBhyyaGLZqkL1FFfZjFMcGjiowA/QivDKiz+OdOdGYBw==
-X-Google-Smtp-Source: ADFU+vvsK8JvrXqPEXbA+j7zJUHM/6+ENQ1291U9h/aHYElOe7G36evoxnEgLffodJB2/XLtPIBp/qBsrOkSjmVlaCA=
-X-Received: by 2002:a67:3201:: with SMTP id y1mr12293028vsy.54.1584162630149;
- Fri, 13 Mar 2020 22:10:30 -0700 (PDT)
+        id S1727963AbgCOCYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Mar 2020 22:24:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39094 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727929AbgCOCYO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 14 Mar 2020 22:24:14 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7187520767;
+        Sat, 14 Mar 2020 09:57:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584179880;
+        bh=WVVParOWzgYVO4dfjDohwouHvjf1IsqACAGzrU0YV4w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=m8WfkxcMqznt826Wz+VQ0hcKDHS2V+XHmw7zFPl6lYz//Kdbv1GIVekjqJmkNHMvR
+         UnYQ7dLJP8CkmAsoBq/dTnSP6qkGK6eg8vc1o0wkDkbfGmQ8dBL7GfLzc7DbTSFnQq
+         JRGyUO8zHetKBBcfTpo9ejnXPBtJ7xnSORpG/6ZI=
+Date:   Sat, 14 Mar 2020 11:57:54 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Alex Vesker <valex@mellanox.com>,
+        Erez Shitrit <erezsh@mellanox.com>
+Subject: Re: [net-next 13/14] net/mlx5: DR, Add support for flow table id
+ destination action
+Message-ID: <20200314095754.GF67638@unreal>
+References: <20200314011622.64939-1-saeedm@mellanox.com>
+ <20200314011622.64939-14-saeedm@mellanox.com>
+ <20200313193643.5186b300@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <00000000000088452f05a07621d2@google.com>
-In-Reply-To: <00000000000088452f05a07621d2@google.com>
-From:   Qiujun Huang <anenbupt@gmail.com>
-Date:   Sat, 14 Mar 2020 13:10:19 +0800
-Message-ID: <CADG63jC=oy4PTRbw=6=OMdG3nabf3-AdjDKcH4FKJwNg4A-s5g@mail.gmail.com>
-Subject: Re: WARNING: refcount bug in sctp_wfree
-To:     syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com,
-        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200313193643.5186b300@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz test: https://github.com/hqj/hqjagain_test.git sctp_wfree
+On Fri, Mar 13, 2020 at 07:36:43PM -0700, Jakub Kicinski wrote:
+> On Fri, 13 Mar 2020 18:16:21 -0700 Saeed Mahameed wrote:
+> > From: Alex Vesker <valex@mellanox.com>
+> >
+> > This action allows to go to a flow table based on the table id.
+> > Goto flow table id is required for supporting user space SW.
+>
+> What's user space SW?
+
+"User space software steering" is a way to add rules to the packet
+processing. The rules can be written by user space applications and
+they are executed by the HW.
+
+The rdma-core (RDMA userspace counterpart) is exposing the proper API
+for that functionality.
+https://github.com/linux-rdma/rdma-core/blob/master/providers/mlx5/man/mlx5dv_dr_flow.3.md
+
+Thanks
