@@ -2,75 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C70E18593F
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 03:41:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C085D185932
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 03:37:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727334AbgCOClu convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sat, 14 Mar 2020 22:41:50 -0400
-Received: from mail-pf1-f199.google.com ([209.85.210.199]:55542 "EHLO
-        mail-pf1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726902AbgCOClu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 22:41:50 -0400
-Received: by mail-pf1-f199.google.com with SMTP id 78so9808504pfy.22
-        for <netdev@vger.kernel.org>; Sat, 14 Mar 2020 19:41:48 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to:content-transfer-encoding;
-        bh=+QdPalM1/7ayitV9XmteLgnXaS2hu+LX/EwtXkNn8sI=;
-        b=kXtyXMFub595yWgUXhYT+uihh6XGA/QugWgqte5CoMgbz8svviOS4GXLmPbB6kzK6i
-         JToEU4vtaxsF/bLWRChEcHeLevqJFWD0Mui9i/li1jwH/9OZje6TsG4XpSCXoVNDCNDf
-         kzP+G9K+ZDgScYsFj4QbxN0dun+FXoXL7PYzSACBv3pG1euPmOsXzFAX7Q9l2lNtd1xh
-         UWfhillUiNKVOVPu88AdI4uI210TZNrjhoaIDZeVssnvmTWv48oirboccOS85D4qlTP/
-         pctp0kZ9u3g2cNMpOVx3OlUdYmXvFLv4TKYruMlWbh2Lt26VaTCuxk9ulFaHfA6GQSjo
-         SNnQ==
-X-Gm-Message-State: ANhLgQ2JR4z19+NCT1+SRAs08v+C2CqjLkJPc7ybCXqlcyK4PZI7QcZ5
-        G0rRjhnXyXwd+IwmqJX3UBREMpLRk6/EnNRtybbxHeXUDz0w
-X-Google-Smtp-Source: ADFU+vsvmmvzF0I4nMIQXyBWKmywCRss6IV6wvF4RwqOdkw0XwU5mtrUilZd8jdSs9quwxi/+KGtd7aYDnIYchTEyVeGinshxzTm
+        id S1727496AbgCOChq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Mar 2020 22:37:46 -0400
+Received: from correo.santafe.edu.ar ([200.12.192.40]:47208 "EHLO
+        correo.santafe.edu.ar" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726712AbgCOChq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 22:37:46 -0400
+Received: from correo.santafe.edu.ar (localhost [127.0.0.1])
+        by correo.santafe.edu.ar (Postfix) with ESMTP id 48fzSp2RlCzD0dg
+        for <netdev@vger.kernel.org>; Sat, 14 Mar 2020 20:35:22 -0300 (-03)
+Authentication-Results: correo.santafe.edu.ar (amavisd-new);
+        dkim=pass (1024-bit key) reason="pass (just generated, assumed good)"
+        header.d=santafe.edu.ar
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=santafe.edu.ar;
+         h=content-transfer-encoding:organization:message-id:user-agent
+        :reply-to:subject:subject:to:from:from:date:date:content-type
+        :content-type:mime-version; s=dkim; t=1584228922; x=1586820923;
+         bh=Ch8MeA3o5Ps+sTgYQ/2xKYhD8wOfsokQchWDCmvcX0s=; b=pBYJ9vgqJNJe
+        Upf0JbznPgxElQZs7WF5E89VaGLEMBaLNiOl1SgOQ1oIh2ijzWp4tz+nSfOaW7U2
+        NjmM27S5DXePe2FreR37lMUmsXVNN22N59nIzHgt8C7wobZ5SPpdj0/TUgHyYma7
+        2zQt6SN+9npx88KNzsOQjtNtilaEpo8=
+X-Virus-Scanned: Debian amavisd-new at debian9-asiserver.santafe.gob.ar
+Received: from correo.santafe.edu.ar ([127.0.0.1])
+        by correo.santafe.edu.ar (correo.santafe.edu.ar [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id Hh1UEONPuH8n for <netdev@vger.kernel.org>;
+        Sat, 14 Mar 2020 20:35:22 -0300 (-03)
+Received: from localhost (localhost [127.0.0.1])
+        by correo.santafe.edu.ar (Postfix) with ESMTPSA id 48fyYX32TTzC9Bj;
+        Sat, 14 Mar 2020 19:54:24 -0300 (-03)
 MIME-Version: 1.0
-X-Received: by 2002:a92:aa87:: with SMTP id p7mr18089913ill.63.1584206402340;
- Sat, 14 Mar 2020 10:20:02 -0700 (PDT)
-Date:   Sat, 14 Mar 2020 10:20:02 -0700
-In-Reply-To: <000000000000cdbe79059ce82948@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000dccd2405a0d3cb04@google.com>
-Subject: Re: KASAN: slab-out-of-bounds Read in bitmap_ipmac_destroy
-From:   syzbot <syzbot+a85062dec5d65617cc1c@syzkaller.appspotmail.com>
-To:     a@unstable.cc, arvid.brodin@alten.se,
-        b.a.t.m.a.n@lists.open-mesh.org, coreteam@netfilter.org,
-        davem@davemloft.net, florent.fourcot@wifirst.fr, fw@strlen.de,
-        jeremy@azazel.net, johannes.berg@intel.com,
-        kadlec@blackhole.kfki.hu, kadlec@netfilter.org,
-        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com, xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Date:   Sat, 14 Mar 2020 23:54:24 +0100
+From:   Acaceres <acaceres@santafe.edu.ar>
+To:     undisclosed-recipients:;
+Subject: AW:
+Reply-To: niklaszennstromcare@gmail.com
+User-Agent: Roundcube Webmail
+Message-ID: <60735cd50f2b6b495c99ab28cb9da4e6@santafe.edu.ar>
+X-Sender: acaceres@santafe.edu.ar
+Organization: niklaszennstromcare@gmail.com
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this bug was fixed by commit:
 
-commit 32c72165dbd0e246e69d16a3ad348a4851afd415
-Author: Kadlecsik József <kadlec@blackhole.kfki.hu>
-Date:   Sun Jan 19 21:06:49 2020 +0000
 
-    netfilter: ipset: use bitmap infrastructure completely
+--=20
+Sch=C3=B6nen Tag,
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=10aef753e00000
-start commit:   4703d911 Merge tag 'xarray-5.5' of git://git.infradead.org..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=83c00afca9cf5153
-dashboard link: https://syzkaller.appspot.com/bug?extid=a85062dec5d65617cc1c
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1301ed85e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14b7b79ee00000
+Herr Niklas Zennstr=C3=B6m, ein schwedischer Wirtschaftsmagnat, Investor =
+und=20
+Philanthrop, der weltweit rund =C2=A3208.3 Millionen Pfund an=20
+Menschenrechtsorganisationen / Wohlt=C3=A4tigkeitsorganisationen gespende=
+t=20
+hat, hat sich ebenfalls verpflichtet, den Rest von 25% in diesem Jahr=20
+2020 zu verschenken, und Ihre E-Mail erfolgte nach dem Zufallsprinzip=20
+Das Team von Google Inc. wurde als aktiver Web-Nutzer ausgew=C3=A4hlt, um=
+=20
+eine Spende in H=C3=B6he von $1 Million USD im Rahmen des=20
+Wohlt=C3=A4tigkeitsprojekts Zennstr=C3=B6m Philanthropies zu erhalten. Bi=
+tte=20
+best=C3=A4tigen Sie den Besitz Ihrer E-Mail-Adresse, indem Sie sich per=20
+E-Mail an Niklas Zennstr=C3=B6m wenden: niklaszennstromcare@gmail.com =C2=
+=A0F=C3=BCr=20
+den Anspruch
 
-If the result looks correct, please mark the bug fixed by replying with:
-
-#syz fix: netfilter: ipset: use bitmap infrastructure completely
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Name des Ansprechpartners: Herr Niklas Zennstr=C3=B6m
