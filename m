@@ -2,106 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA91B18532F
-	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 01:12:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11E55185336
+	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 01:17:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727665AbgCNAMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 20:12:08 -0400
-Received: from www62.your-server.de ([213.133.104.62]:56300 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726736AbgCNAMI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 20:12:08 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jCuPL-0002eS-Mi; Sat, 14 Mar 2020 01:12:03 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jCuPL-0000x0-8u; Sat, 14 Mar 2020 01:12:03 +0100
-Subject: Re: [PATCH nf-next 3/3] netfilter: Introduce egress hook
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Martin Mares <mj@ucw.cz>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Thomas Graf <tgraf@suug.ch>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>
-References: <cover.1583927267.git.lukas@wunner.de>
- <14ab7e5af20124a34a50426fd570da7d3b0369ce.1583927267.git.lukas@wunner.de>
- <a57687ae-2da6-ca2a-1c84-e4332a5e4556@iogearbox.net>
- <20200313145526.ikovaalfuy7rnkdl@salvia>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <1bd50836-33c4-da44-5771-654bfb0348cc@iogearbox.net>
-Date:   Sat, 14 Mar 2020 01:12:02 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727481AbgCNARI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 20:17:08 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:33872 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726591AbgCNARI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 20:17:08 -0400
+Received: by mail-qt1-f195.google.com with SMTP id 59so9255717qtb.1;
+        Fri, 13 Mar 2020 17:17:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cbLmoFPbaR0Om8gK7/+cGCDufDcyaBbeBdOn/UU1NkE=;
+        b=hA0DODKaRhdHsi+lBx3R/y+EbXWK0vSdJmXgB6egz+NpKbQtKriTMsvR3dpZ4asnXp
+         PnmQ+3GqcnoVr/g59nY30jxdzsVndK0IwWISOqExuVKlJKRWoeaxd1xBBSIV5/+UZjAf
+         8Fi1ETIAxJ90PM3ws4quGARAGeZcpiAxBR5S4R7YIAFB1uOwQ8ehOcwVIuiA7XxdIYix
+         nH3FUM90iHThRBuInjNJmZokNKxitz52K+ecqD6O2qQNyGRQb95DREGomWDaGH7MAOob
+         7hC842baWXujcqzU16z5kvf554PxEAMpsnvJDiT4Cp6sby/GasnzHtv6/T9teoh6TJEQ
+         sdww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cbLmoFPbaR0Om8gK7/+cGCDufDcyaBbeBdOn/UU1NkE=;
+        b=QniADXxZcFVKlzzdmNjqcCIhut+ABeptiO7jpeixaf5Kbc/WbaBLCRVCmYDGlyeIYd
+         yvt2V6qa6+4u7G95/iZf9TcJfYeDQI8ICiptFtXBo0nbAPepfRisVLMUhJOSb1LyNkZE
+         c1NYs5cgMY0IOTid0sKlYn/Eqlo3xBDUE03MKbdybNaxYlTRqJ9M++qbEymY9U5/yjQA
+         TRX0KDKbopsiFDbMxz9j2U3MOaTusjZGjMDPunSTxNjNdK5yScm5Lb6x2sRFqbveYTDX
+         ArJgYCQMEJMc+SaIIuvhGD4yttXz7HMz+i/ruQwSPjJSu1fYl9xQ8XhCWj9nyxzdytaA
+         qfyw==
+X-Gm-Message-State: ANhLgQ0fu6YOszRjnZ3n5Ccu1Hdms92xdFOwnWmNCCFuuRegzYXRyaWY
+        pjz6AfmoUIZKi41n5PeFbxcRiIzrEwUDmSNS3X4=
+X-Google-Smtp-Source: ADFU+vs2o/JJfHhyAVRGKvlHoEciqAt1hlcnVZlRQilrSRH8RjlaD/RTVPxmFKuk3ubza7vyA21aCHljgDB6uWhgDr8=
+X-Received: by 2002:ac8:3f62:: with SMTP id w31mr7653920qtk.171.1584145026695;
+ Fri, 13 Mar 2020 17:17:06 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200313145526.ikovaalfuy7rnkdl@salvia>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25750/Fri Mar 13 14:03:09 2020)
+References: <20200313233649.654954-1-kafai@fb.com>
+In-Reply-To: <20200313233649.654954-1-kafai@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 13 Mar 2020 17:16:55 -0700
+Message-ID: <CAEf4BzZOrYkmXixTdgyisRw8JaNmApHJ=_vmDJ5ryHovzj5e0g@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: Sanitize the bpf_struct_ops tcp-cc name
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/13/20 3:55 PM, Pablo Neira Ayuso wrote:
-> On Wed, Mar 11, 2020 at 03:05:16PM +0100, Daniel Borkmann wrote:
->> On 3/11/20 12:59 PM, Lukas Wunner wrote:
->>> Commit e687ad60af09 ("netfilter: add netfilter ingress hook after
->>> handle_ing() under unique static key") introduced the ability to
->>> classify packets on ingress.
->>>
->>> Allow the same on egress.  Position the hook immediately before a packet
->>> is handed to tc and then sent out on an interface, thereby mirroring the
->>> ingress order.  This order allows marking packets in the netfilter
->>> egress hook and subsequently using the mark in tc.  Another benefit of
->>> this order is consistency with a lot of existing documentation which
->>> says that egress tc is performed after netfilter hooks.
->>>
->>> Egress hooks already exist for the most common protocols, such as
->>> NF_INET_LOCAL_OUT or NF_ARP_OUT, and those are to be preferred because
->>> they are executed earlier during packet processing.  However for more
->>> exotic protocols, there is currently no provision to apply netfilter on
->>> egress.  A common workaround is to enslave the interface to a bridge and
->>
->> Sorry for late reply, but still NAK.
-> 
-> I agree Lukas use-case is very specific.
-> 
-> However, this is useful.
-> 
-> We have plans to support for NAT64 and NAT46, this is the right spot
-> to do this mangling. There is already support for the tunneling
+On Fri, Mar 13, 2020 at 4:37 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> The bpf_struct_ops tcp-cc name should be sanitized in order to
+> avoid problematic chars (e.g. whitespaces).
+>
+> This patch reuses the bpf_obj_name_cpy() for accepting the same set
+> of characters in order to keep a consistent bpf programming experience.
+> A "size" param is added.  Also, the strlen is returned on success so
+> that the caller (like the bpf_tcp_ca here) can error out on empty name.
+> The existing callers of the bpf_obj_name_cpy() only need to change the
+> testing statement to "if (err < 0)".  For all these existing callers,
+> the err will be overwritten later, so no extra change is needed
+> for the new strlen return value.
+>
+> Fixes: 0baf26b0fcd7 ("bpf: tcp: Support tcp_congestion_ops in bpf")
+> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+> ---
+>  include/linux/bpf.h   |  1 +
+>  kernel/bpf/syscall.c  | 24 +++++++++++++-----------
+>  net/ipv4/bpf_tcp_ca.c |  7 ++-----
+>  3 files changed, 16 insertions(+), 16 deletions(-)
+>
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 49b1a70e12c8..212991f6f2a5 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -160,6 +160,7 @@ static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
+>  }
+>  void copy_map_value_locked(struct bpf_map *map, void *dst, void *src,
+>                            bool lock_src);
+> +int bpf_obj_name_cpy(char *dst, const char *src, unsigned int size);
+>
+>  struct bpf_offload_dev;
+>  struct bpf_offloaded_map;
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 0c7fb0d4836d..d2984bf362c2 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -696,14 +696,14 @@ int bpf_get_file_flag(int flags)
+>                    offsetof(union bpf_attr, CMD##_LAST_FIELD) - \
+>                    sizeof(attr->CMD##_LAST_FIELD)) != NULL
+>
+> -/* dst and src must have at least BPF_OBJ_NAME_LEN number of bytes.
+> - * Return 0 on success and < 0 on error.
+> +/* dst and src must have at least "size" number of bytes.
+> + * Return strlen on success and < 0 on error.
+>   */
+> -static int bpf_obj_name_cpy(char *dst, const char *src)
+> +int bpf_obj_name_cpy(char *dst, const char *src, unsigned int size)
+>  {
+> -       const char *end = src + BPF_OBJ_NAME_LEN;
+> +       const char *end = src + size;
+>
+> -       memset(dst, 0, BPF_OBJ_NAME_LEN);
+> +       memset(dst, 0, size);
+>         /* Copy all isalnum(), '_' and '.' chars. */
+>         while (src < end && *src) {
+>                 if (!isalnum(*src) &&
+> @@ -712,11 +712,11 @@ static int bpf_obj_name_cpy(char *dst, const char *src)
+>                 *dst++ = *src++;
+>         }
+>
+> -       /* No '\0' found in BPF_OBJ_NAME_LEN number of bytes */
+> +       /* No '\0' found in "size" number of bytes */
+>         if (src == end)
+>                 return -EINVAL;
+>
+> -       return 0;
+> +       return src - (end - size);
 
-But why is existing local-out or post-routing hook _not_ sufficient for
-NAT64 given it being IP based?
+it's a rather convoluted way of writing (src - orig_src), maybe just
+remember original src?
 
-> infrastructure in netfilter from ingress, this spot from egress will
-> allow us to perform the tunneling from here. There is also no way to
-> drop traffic generated by dhclient, this also allow for filtering such
-> locally generated traffic. And many more.
+Either way not a big deal:
 
-This is a known fact for ~17 years [0] or probably more by now and noone
-from netfilter folks cared to address it in all the years, so I presume
-it cannot be important enough, and these days it can be filtered through
-other means already. Tbh, it's a bit laughable that you bring this up as
-an argument ...
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-   [0] https://www.spinics.net/lists/netfilter/msg19488.html
+>  }
+>
 
-> Performance impact is negligible, Lukas already provided what you
-> asked for.
-
-Sure, and the claimed result was "as said the fast-path gets faster, not
-slower" without any explanation or digging into details on why this might
-be, especially since it appears counter-intuitive as was stated by the
-author ... and later demonstrated w/ measurements that show the opposite.
+[...]
