@@ -2,114 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F3FE1856AF
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 02:29:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 872FC1856AD
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 02:29:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726675AbgCOB3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Mar 2020 21:29:01 -0400
+        id S1726669AbgCOB26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Mar 2020 21:28:58 -0400
 Received: from pandora.armlinux.org.uk ([78.32.30.218]:55780 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726638AbgCOB3A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 21:29:00 -0400
+        with ESMTP id S1726638AbgCOB25 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 21:28:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=dCr9mcYJpknL0FgQQYLtOIx0B69mZAu/EfF5LqWKEoA=; b=12eWBYTcFN6CGyrwJuQ1b9wXuK
-        eTqulN+WIQptARCikqT9rCsBbYZKo5RTvg2/my6f0rDQPCVeqUubrajW8nNFv0FNrCq7+GkdqtE5Z
-        vnMK1TUwrrpSdME1m+ak+49NNkHL3kqmZ4Cp89MMw9hyju5dqdCn4ErPr0wn73Xuge4tyYTbvuxGr
-        b7tpJbx5cXw8n/1EJaFlNGPdmlZAKm2N+SNaJxULgudIFjVLqHHWvsvtzW4ak3yHKC5N7Y5L3NXF3
-        syIOgYsMN8xZVZuU61xvfvohR9axc26YedTTzN9XQcyCu7R69twDSJZpdqf9BZ9cTmYrqOyUOAa9y
-        4DyGrwAw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:57536 helo=rmk-PC.armlinux.org.uk)
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=KiZK+TM0YhwzSWKjwY/4kLPqOHk+DoccMqiBhFtQCMU=; b=YOMm9fZt6zyHnpeZSykzX/RzF
+        bQtZBH3m3l9tomiluH1WVtiZZutbVlOpYbEFTdX2PXaRnGaScKz34Zcrx/bCqw1Mk3DBgr/W9evhp
+        ljqKlWjUd/0KLwIsP7KAFtP3u80rFJC2/VB5938+38FC5OK4HqEpxYvakF6W+sitAL7uILZ04FMPS
+        HMGouZLPHNxMzz7fKVHLXJGUfsKtAcVfwAER71s1qABGYQk5SpaGqGr2vKtTMbGllK1MlN0sqTk2u
+        GPA8MUF6wPpzjRf1BUjNe4DroDXQ07VcvXApGj8ZXoausj3QVAJ1x1KqgIgJKHG92VcpkCzenSHua
+        ADIbhXtng==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:36304)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jD44t-0006MM-4M; Sat, 14 Mar 2020 10:31:35 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jD44s-0006Mx-Fv; Sat, 14 Mar 2020 10:31:34 +0000
-In-Reply-To: <20200314103102.GJ25745@shell.armlinux.org.uk>
-References: <20200314103102.GJ25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jD44x-0006MT-Hs; Sat, 14 Mar 2020 10:31:39 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jD44w-0008F7-3D; Sat, 14 Mar 2020 10:31:38 +0000
+Date:   Sat, 14 Mar 2020 10:31:38 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 3/3] net: phylink: pcs: add 802.3 clause 45 helpers
+Subject: Re: [PATCH net-next 0/3] net: add phylink support for PCS
+Message-ID: <20200314103137.GK25745@shell.armlinux.org.uk>
+References: <20200314102721.GG25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jD44s-0006Mx-Fv@rmk-PC.armlinux.org.uk>
-Date:   Sat, 14 Mar 2020 10:31:34 +0000
+In-Reply-To: <20200314102721.GG25745@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement helpers for PCS accessed via the MII bus using 802.3 clause
-45 cycles for 10GBASE-R. Only link up/down is supported, 10G full
-duplex is assumed.
+Please ignore this series entirely.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/phylink.c | 30 ++++++++++++++++++++++++++++++
- include/linux/phylink.h   |  2 ++
- 2 files changed, 32 insertions(+)
+On Sat, Mar 14, 2020 at 10:27:21AM +0000, Russell King - ARM Linux admin wrote:
+> Depends on "net: mii clause 37 helpers".
+> 
+> This series adds support for IEEE 802.3 register set compliant PCS
+> for phylink.  In order to do this, we:
+> 
+> 1. add accessors for modifying a MDIO device register, and use them in
+>    phylib, rather than duplicating the code from phylib.
+> 2. add support for decoding the advertisement from clause 22 compatible
+>    register sets for clause 37 advertisements and SGMII advertisements.
+> 3. add support for clause 45 register sets for 10GBASE-R PCS.
+> 
+> These have been tested on the LX2160A Clearfog-CX platform.
+> 
+> This is a re-post of the series previously sent, but with the first two
+> patches separated out; the conclusion of the discussion with Vladimir
+> seemed to be that there was no issue with the patches themselves.
+> 
+>  drivers/net/phy/mdio_bus.c |  55 +++++++++++
+>  drivers/net/phy/phy-core.c |  31 ------
+>  drivers/net/phy/phylink.c  | 236 +++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/mdio.h       |   4 +
+>  include/linux/phy.h        |  19 ++++
+>  include/linux/phylink.h    |   8 ++
+>  include/uapi/linux/mii.h   |   5 +
+>  7 files changed, 327 insertions(+), 31 deletions(-)
+> 
+> -- 
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index 7ca427c46d9f..bff570f59d5c 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -2247,4 +2247,34 @@ void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs)
- }
- EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_an_restart);
- 
-+#define C45_ADDR(d,a)	(MII_ADDR_C45 | (d) << 16 | (a))
-+void phylink_mii_c45_pcs_get_state(struct mdio_device *pcs,
-+				   struct phylink_link_state *state)
-+{
-+	struct mii_bus *bus = pcs->bus;
-+	int addr = pcs->addr;
-+	int stat;
-+
-+	stat = mdiobus_read(bus, addr, C45_ADDR(MDIO_MMD_PCS, MDIO_STAT1));
-+	if (stat < 0) {
-+		state->link = false;
-+		return;
-+	}
-+
-+	state->link = !!(stat & MDIO_STAT1_LSTATUS);
-+	if (!state->link)
-+		return;
-+
-+	switch (state->interface) {
-+	case PHY_INTERFACE_MODE_10GBASER:
-+		state->speed = SPEED_10000;
-+		state->duplex = DUPLEX_FULL;
-+		break;
-+
-+	default:
-+		break;
-+	}
-+}
-+EXPORT_SYMBOL_GPL(phylink_mii_c45_pcs_get_state);
-+
- MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index de591c2fb37e..8fa6df3b881b 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -323,4 +323,6 @@ int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
- 					const struct phylink_link_state *state);
- void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs);
- 
-+void phylink_mii_c45_pcs_get_state(struct mdio_device *pcs,
-+				   struct phylink_link_state *state);
- #endif
 -- 
-2.20.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
