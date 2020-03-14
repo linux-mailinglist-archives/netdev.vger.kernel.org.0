@@ -2,144 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EA181859BD
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 04:36:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DD3B1859AC
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 04:31:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727433AbgCODgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Mar 2020 23:36:43 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:35863 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726668AbgCODgm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 23:36:42 -0400
-Received: by mail-ed1-f67.google.com with SMTP id b18so12929555edu.3;
-        Sat, 14 Mar 2020 20:36:38 -0700 (PDT)
+        id S1726668AbgCODa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Mar 2020 23:30:58 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:35723 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726506AbgCODa6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 23:30:58 -0400
+Received: by mail-ed1-f66.google.com with SMTP id a20so17520343edj.2
+        for <netdev@vger.kernel.org>; Sat, 14 Mar 2020 20:30:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0GJ6VQfIcxSqmC0VsWA9DUzS28HpWl+CRKDXx7us1aY=;
+        b=J6xPdMw86fdXVo5tyJJ6sEdEFGCLTbXK12aV2erggYdOAxiGvoFTMN7mimOTPt2dse
+         llfyDFLoam74vzimGK0cbX3hB1as9Tzd+5MsbJ/TsyTKG/FF5gr5QPCOQ6hxWO57Q+Le
+         uq6tV2hg/uBy9keiYfvEYi5ZnLc4Rzu55tHVwQACjwze3wxSnoPuYM8fKJf3uphc/0Vx
+         ydEI+tBl81c0AqEHcJ/wXQJ8mgN1nVyp8D3VRiJ/Q5/QrWelMTpMo1EdmwS8CFySM/8P
+         gLuRxSm4UPnsWtviMkyXJWeRiEGWUdtCP7icbg/dD5yRheHuYZIzJxR4FTw8jOcRcN7n
+         /akw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=HXvNDpxcelYwn8PoDas8bnx/K7bC0ycG2928PB68YGs=;
-        b=YKAAoy3guDILzf55rJrqHmS33DFr7gLhgpzlqAL2ccq2l5WsrnIE9qn161aqpjK7P4
-         j8oC9WlEOBkqHTQoL8/VvNP7LItZX00rcSqGiYtjFKRJdAa/TbjhzCDlI9iVnSzpOQ6S
-         6mbDdaTIwVEdoH9HX/IFMXbMeT0nYyAtYFbMpAvoJgCTkE3zf/jAyY2Jav/pARQfgb8G
-         KqE6eokb2XaJtLg45bt1aJAVK/nRPp50FygJ/5tGOu0kSKdKVVu70zimmVwXlhNQDLne
-         keKPDpQFl6J89nYScWw41RjBOcbNhN+fxDVWsifa1/gk2oUkPwRKtEMH/D3+nXBwdP0I
-         YV7g==
-X-Gm-Message-State: ANhLgQ14vXV6zipNzFSjRtlenpI2Gz32OQ5cniuzqAyTDkbanPQr6fap
-        uJBau2miUm6TxStwJXjRprkoXOQxI3o=
-X-Google-Smtp-Source: ADFU+vv8nT7z/vEu1bvfu6+AMeellIORI/K4LaHKfZcEsgQyhBKLzYnFTNlP0g88C9JmPdb6eGvarg==
-X-Received: by 2002:a17:907:429c:: with SMTP id ny20mr14725961ejb.278.1584183783358;
-        Sat, 14 Mar 2020 04:03:03 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.125])
-        by smtp.googlemail.com with ESMTPSA id 94sm2657013eda.7.2020.03.14.04.03.00
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 14 Mar 2020 04:03:02 -0700 (PDT)
-Date:   Sat, 14 Mar 2020 12:02:58 +0100
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        Alexey Brodkin <abrodkin@synopsys.com>,
-        Vineet Gupta <vgupta@synopsys.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Helge Deller <deller@gmx.de>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>,
-        Dave Airlie <airlied@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Jiri Slaby <jirislaby@gmail.com>,
-        Nick Kossifidis <mickflemm@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Jon Mason <jdmason@kudzu.us>, Allen Hubbe <allenbh@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, nouveau@lists.freedesktop.org,
-        linux-media@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-ntb@googlegroups.com,
-        virtualization@lists.linux-foundation.org,
-        linux-arch@vger.kernel.org
-Subject: Re: [RESEND PATCH v2 1/9] iomap: Constify ioreadX() iomem argument
- (as in generic implementation)
-Message-ID: <20200314110258.GA16135@kozik-lap>
-References: <20200219175007.13627-1-krzk@kernel.org>
- <20200219175007.13627-2-krzk@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0GJ6VQfIcxSqmC0VsWA9DUzS28HpWl+CRKDXx7us1aY=;
+        b=rZ4w1NrolO0FaGMOSyAz2WhABWooEI+USqIttzv6iiNbei+VVuXQwR915RByirc5Um
+         aR2SETyVQkhq++X8xTenUsS5IZQ74fmj1X1GNlmyFY5TOo12LGEp16Jc49LWAbATIfaM
+         4637LCsg6vkj9MD+l68CtklftTwgPr1C9MNykJtEiGV8ItjvtGssvMW6Yx0ObgnsBO1a
+         1gpZT/qOZM8W249vFVRjv50CXsOffG87v2LcNEHQJn9vm2dMRO/rDIwzjTU0IEsXcCHU
+         LbIopIxpdjbaE2AB8BSHk1qT3bJoxGj+Dh9xowat/0gNaWD1AcXd/+7hgn0AnL4do/u0
+         +nFg==
+X-Gm-Message-State: ANhLgQ2WN3garYt5Vtr6qDnrvxZfcqOAmOjlYgMzQaayhGhJQjnP1niO
+        AFJCEvZWs0WhwVxmoWct0AL4wVqwGNz8kzuyBE2PS31p
+X-Google-Smtp-Source: ADFU+vsmzE1mpFxMZfj8suwxIsIPvrFLelItLQYl47HXj5mInaN+NgOhOA93wC1sOQjbpvlMmyNzCgIRe23ZUMP9/L4=
+X-Received: by 2002:adf:90e1:: with SMTP id i88mr25277941wri.95.1584200537249;
+ Sat, 14 Mar 2020 08:42:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20200219175007.13627-2-krzk@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <1584092566-4793-1-git-send-email-sunil.kovvuri@gmail.com>
+ <1584092566-4793-5-git-send-email-sunil.kovvuri@gmail.com> <20200313175625.GB67638@unreal>
+In-Reply-To: <20200313175625.GB67638@unreal>
+From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Date:   Sat, 14 Mar 2020 21:12:05 +0530
+Message-ID: <CA+sq2CcuDbwN1zFbgthysN87ZF43FSP4VEoQU4qerOR1i72_Qg@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 4/7] octeontx2-vf: Ethtool support
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tomasz Duszynski <tduszynski@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Feb 19, 2020 at 06:49:59PM +0100, Krzysztof Kozlowski wrote:
-> The ioreadX() and ioreadX_rep() helpers have inconsistent interface.  On
-> some architectures void *__iomem address argument is a pointer to const,
-> on some not.
-> 
-> Implementations of ioreadX() do not modify the memory under the address
-> so they can be converted to a "const" version for const-safety and
-> consistency among architectures.
-> 
-> Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+On Fri, Mar 13, 2020 at 11:26 PM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Fri, Mar 13, 2020 at 03:12:43PM +0530, sunil.kovvuri@gmail.com wrote:
+> > From: Tomasz Duszynski <tduszynski@marvell.com>
+> >
+> > Added ethtool support for VF devices for
+> >  - Driver stats, Tx/Rx perqueue stats
+> >  - Set/show Rx/Tx queue count
+> >  - Set/show Rx/Tx ring sizes
+> >  - Set/show IRQ coalescing parameters
+> >  - RSS configuration etc
+> >
+> > It's the PF which owns the interface, hence VF
+> > cannot display underlying CGX interface stats.
+> > Except for this rest ethtool support reuses PF's
+> > APIs.
+> >
+> > Signed-off-by: Tomasz Duszynski <tduszynski@marvell.com>
+> > Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+> > ---
+> >  .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   1 +
+> >  .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 133 ++++++++++++++++++++-
+> >  .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |   4 +
+> >  3 files changed, 136 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> > index ca757b2..95b8f1e 100644
+> > --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> > +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> > @@ -631,6 +631,7 @@ void otx2_update_lmac_stats(struct otx2_nic *pfvf);
+> >  int otx2_update_rq_stats(struct otx2_nic *pfvf, int qidx);
+> >  int otx2_update_sq_stats(struct otx2_nic *pfvf, int qidx);
+> >  void otx2_set_ethtool_ops(struct net_device *netdev);
+> > +void otx2vf_set_ethtool_ops(struct net_device *netdev);
+> >
+> >  int otx2_open(struct net_device *netdev);
+> >  int otx2_stop(struct net_device *netdev);
+> > diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+> > index f450111..1751e2d 100644
+> > --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+> > +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+> > @@ -17,6 +17,7 @@
+> >  #include "otx2_common.h"
+> >
+> >  #define DRV_NAME     "octeontx2-nicpf"
+> > +#define DRV_VF_NAME  "octeontx2-nicvf"
+> >
+> >  struct otx2_stat {
+> >       char name[ETH_GSTRING_LEN];
+> > @@ -63,14 +64,34 @@ static const unsigned int otx2_n_dev_stats = ARRAY_SIZE(otx2_dev_stats);
+> >  static const unsigned int otx2_n_drv_stats = ARRAY_SIZE(otx2_drv_stats);
+> >  static const unsigned int otx2_n_queue_stats = ARRAY_SIZE(otx2_queue_stats);
+> >
+> > +int __weak otx2vf_open(struct net_device *netdev)
+> > +{
+> > +     return 0;
+> > +}
+> > +
+> > +int __weak otx2vf_stop(struct net_device *netdev)
+> > +{
+> > +     return 0;
+> > +}
+>
+> We tried very politely to explain that drivers shouldn't have "__weak"
+> in their code, sorry if it wasn't clear enough.
+>
+> Thanks
 
-Hi Arnd,
+Hmm.. I will try to remove.
 
-This patch touches multipel file systems so no one is brave enough to
-pick it up. However you are mentioned as maintainer of generic asm
-headers so maybe you could apply it to arm-soc?
-
-Best regards,
-Krzysztof
-
-
-> 
-> ---
-> 
-> Changes since v1:
-> 1. Constify also ioreadX_rep() and mmio_insX(),
-> 2. Squash lib+alpha+powerpc+parisc+sh into one patch for bisectability,
-> 3. Add Geert's review.
-> 4. Add Arnd's review.
-> ---
->  arch/alpha/include/asm/core_apecs.h   |  6 +--
->  arch/alpha/include/asm/core_cia.h     |  6 +--
->  arch/alpha/include/asm/core_lca.h     |  6 +--
->  arch/alpha/include/asm/core_marvel.h  |  4 +-
->  arch/alpha/include/asm/core_mcpcia.h  |  6 +--
->  arch/alpha/include/asm/core_t2.h      |  2 +-
->  arch/alpha/include/asm/io.h           | 12 ++---
->  arch/alpha/include/asm/io_trivial.h   | 16 +++---
->  arch/alpha/include/asm/jensen.h       |  2 +-
->  arch/alpha/include/asm/machvec.h      |  6 +--
->  arch/alpha/kernel/core_marvel.c       |  2 +-
->  arch/alpha/kernel/io.c                | 12 ++---
->  arch/parisc/include/asm/io.h          |  4 +-
->  arch/parisc/lib/iomap.c               | 72 +++++++++++++--------------
->  arch/powerpc/kernel/iomap.c           | 28 +++++------
->  arch/sh/kernel/iomap.c                | 22 ++++----
->  include/asm-generic/iomap.h           | 28 +++++------
->  include/linux/io-64-nonatomic-hi-lo.h |  4 +-
->  include/linux/io-64-nonatomic-lo-hi.h |  4 +-
->  lib/iomap.c                           | 30 +++++------
->  20 files changed, 136 insertions(+), 136 deletions(-)
-> 
+Thanks,
+Sunil.
