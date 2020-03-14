@@ -2,64 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE4911858D0
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 03:24:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBA521858CE
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 03:24:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727963AbgCOCYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Mar 2020 22:24:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39094 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727929AbgCOCYO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Mar 2020 22:24:14 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7187520767;
-        Sat, 14 Mar 2020 09:57:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584179880;
-        bh=WVVParOWzgYVO4dfjDohwouHvjf1IsqACAGzrU0YV4w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=m8WfkxcMqznt826Wz+VQ0hcKDHS2V+XHmw7zFPl6lYz//Kdbv1GIVekjqJmkNHMvR
-         UnYQ7dLJP8CkmAsoBq/dTnSP6qkGK6eg8vc1o0wkDkbfGmQ8dBL7GfLzc7DbTSFnQq
-         JRGyUO8zHetKBBcfTpo9ejnXPBtJ7xnSORpG/6ZI=
-Date:   Sat, 14 Mar 2020 11:57:54 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Alex Vesker <valex@mellanox.com>,
-        Erez Shitrit <erezsh@mellanox.com>
-Subject: Re: [net-next 13/14] net/mlx5: DR, Add support for flow table id
- destination action
-Message-ID: <20200314095754.GF67638@unreal>
-References: <20200314011622.64939-1-saeedm@mellanox.com>
- <20200314011622.64939-14-saeedm@mellanox.com>
- <20200313193643.5186b300@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1727782AbgCOCYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Mar 2020 22:24:11 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:36282 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727727AbgCOCYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 22:24:11 -0400
+Received: by mail-lj1-f193.google.com with SMTP id g12so14804704ljj.3
+        for <netdev@vger.kernel.org>; Sat, 14 Mar 2020 19:24:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aAbKSNMDcMUO6uRsWJmHOq81eoTwUmocXTcEsEGnoos=;
+        b=M4ItZ5bpEoNeEFWFbfFjtL2wrraQYFzpy+uMEpR0gpuGHAtraQGKkZDzQ/aN0c9afe
+         RKbDs2E6F8rIfoKOGEWOc3UzCS9eP2j8NTP06QF/1bxIZydHqJ+fS+V4lmUBtetGjGZD
+         z58ucA/VJZ3TINoKPSJUz8eKkDbV3wVSoGo6NCAVTDEYMVXKwVytz1cGVMZsucGc8hxY
+         a/FcSPywvoUab9MMZb+PnpeXfTNPUveRShWxIjQzT/3RjAxLBHGSSERnIjUu3uy2Pypg
+         fU24glmqOzGi3bZ5E/CPbcAzdk3rXiI97YZmafB5+4R87v+7DIBw7anAnXoDnzlNi6d5
+         8B1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aAbKSNMDcMUO6uRsWJmHOq81eoTwUmocXTcEsEGnoos=;
+        b=L0E1rKYgxmXBQhbdGWo9wtRjI6AFwV89USD1ACTxBEeaESaOKDIMzF9WoJt5IvMzpP
+         9rlmp1sU3i7Teue8SJWSnTsZcwDNgieuW7pIkxcJRm69XqHv23Y9mJjlq5v3+ezvtupX
+         xL5b5MSCcrl0gGHQAhvUz+voVTk/GrmLdVJpODvDOdXLwojQ4FmlG81B/ABdL/iQK0tv
+         7OC6S4duL7bKrR7Ukj/G1h/4u0BGd6PCrpfveavr5RK6mopRmfV86zYlgq0jtIyJP1ld
+         6ljTLoiRJt6y870NBZD2+rh/j5PUqyBZebI634e4HBHZ/67LP/6vg4dZIv6jxpNxKY6t
+         X+gA==
+X-Gm-Message-State: ANhLgQ0ynY+3MKMXKIa/yniuzdZdAVUaNkuOWK67ZobpZhgCA89c+nPk
+        re8exKw37GFIUT3aNB/h1zkvxSACRpZGkwSnAwmLp58a
+X-Google-Smtp-Source: ADFU+vvKAGCQ+T6KsGaZPG9Hk6BOTmtaKFiJDYWLglzbIqZJLnHHIUpGWo3xNdpm8OEuyR3sMaUtnKH4CelxGs/Gudg=
+X-Received: by 2002:adf:90e1:: with SMTP id i88mr25280531wri.95.1584200585214;
+ Sat, 14 Mar 2020 08:43:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200313193643.5186b300@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <1584092566-4793-1-git-send-email-sunil.kovvuri@gmail.com>
+ <1584092566-4793-3-git-send-email-sunil.kovvuri@gmail.com> <20200313181648.GD67638@unreal>
+In-Reply-To: <20200313181648.GD67638@unreal>
+From:   Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Date:   Sat, 14 Mar 2020 21:12:53 +0530
+Message-ID: <CA+sq2CfJggqOJKb3jXnzg5YhBt4enoCFxnbUu83J4mdxUL0eBw@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 2/7] octeontx2-pf: Handle VF function level reset
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Linux Netdev List <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 13, 2020 at 07:36:43PM -0700, Jakub Kicinski wrote:
-> On Fri, 13 Mar 2020 18:16:21 -0700 Saeed Mahameed wrote:
-> > From: Alex Vesker <valex@mellanox.com>
-> >
-> > This action allows to go to a flow table based on the table id.
-> > Goto flow table id is required for supporting user space SW.
+On Fri, Mar 13, 2020 at 11:46 PM Leon Romanovsky <leon@kernel.org> wrote:
 >
-> What's user space SW?
+> On Fri, Mar 13, 2020 at 03:12:41PM +0530, sunil.kovvuri@gmail.com wrote:
+> > From: Geetha sowjanya <gakula@marvell.com>
+> >
+> > When FLR is initiated for a VF (PCI function level reset),
+> > the parent PF gets a interrupt. PF then sends a message to
+> > admin function (AF), which then cleanups all resources attached
+> > to that VF.
+> >
+> > Also handled IRQs triggered when master enable bit is cleared
+> > or set for VFs. This handler just clears the transaction pending
+> > ie TRPEND bit.
+> >
+> > Signed-off-by: Geetha sowjanya <gakula@marvell.com>
+> > Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+> > ---
+> >  .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   7 +
+> >  .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 234 ++++++++++++++++++++-
+> >  2 files changed, 240 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> > index 74439e1..c0a9693 100644
+> > --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> > +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+> > @@ -191,6 +191,11 @@ struct otx2_hw {
+> >       u64                     cgx_tx_stats[CGX_TX_STATS_COUNT];
+> >  };
+> >
+> > +struct flr_work {
+> > +     struct work_struct work;
+> > +     struct otx2_nic *pf;
+> > +};
+> > +
+> >  struct refill_work {
+> >       struct delayed_work pool_refill_work;
+> >       struct otx2_nic *pf;
+> > @@ -226,6 +231,8 @@ struct otx2_nic {
+> >
+> >       u64                     reset_count;
+> >       struct work_struct      reset_task;
+> > +     struct workqueue_struct *flr_wq;
+> > +     struct flr_work         *flr_wrk;
+> >       struct refill_work      *refill_wrk;
+> >
+> >       /* Ethtool stuff */
+> > diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> > index 967ef7b..bf6e2529 100644
+> > --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> > +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+> > @@ -61,6 +61,224 @@ static int otx2_change_mtu(struct net_device *netdev, int new_mtu)
+> >       return err;
+> >  }
+> >
+> > +static void otx2_disable_flr_me_intr(struct otx2_nic *pf)
+> > +{
+> > +     int irq, vfs = pf->total_vfs;
+> > +
+> > +     /* Disable VFs ME interrupts */
+> > +     otx2_write64(pf, RVU_PF_VFME_INT_ENA_W1CX(0), INTR_MASK(vfs));
+> > +     irq = pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFME0);
+> > +     free_irq(irq, pf);
+> > +
+> > +     /* Disable VFs FLR interrupts */
+> > +     otx2_write64(pf, RVU_PF_VFFLR_INT_ENA_W1CX(0), INTR_MASK(vfs));
+> > +     irq = pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFFLR0);
+> > +     free_irq(irq, pf);
+> > +
+> > +     if (vfs <= 64)
+> > +             return;
+> > +
+> > +     otx2_write64(pf, RVU_PF_VFME_INT_ENA_W1CX(1), INTR_MASK(vfs - 64));
+> > +     irq = pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFME1);
+> > +     free_irq(irq, pf);
+> > +
+> > +     otx2_write64(pf, RVU_PF_VFFLR_INT_ENA_W1CX(1), INTR_MASK(vfs - 64));
+> > +     irq = pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFFLR1);
+> > +     free_irq(irq, pf);
+> > +}
+> > +
+> > +static void otx2_flr_wq_destroy(struct otx2_nic *pf)
+> > +{
+> > +     if (!pf->flr_wq)
+> > +             return;
+> > +     flush_workqueue(pf->flr_wq);
+> > +     destroy_workqueue(pf->flr_wq);
+>
+> destroy_workqueue() calls to drain_workqueue() which calls to
+> flush_workqueue() in proper order and not like it is written here.
+>
 
-"User space software steering" is a way to add rules to the packet
-processing. The rules can be written by user space applications and
-they are executed by the HW.
+Thanks, will fix this in v3.
 
-The rdma-core (RDMA userspace counterpart) is exposing the proper API
-for that functionality.
-https://github.com/linux-rdma/rdma-core/blob/master/providers/mlx5/man/mlx5dv_dr_flow.3.md
-
-Thanks
+Sunil.
