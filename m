@@ -2,140 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 766271858DB
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 03:24:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B0891858C0
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 03:23:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728033AbgCOCYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Mar 2020 22:24:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39132 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727941AbgCOCYP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Mar 2020 22:24:15 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3B3FF20789;
-        Sat, 14 Mar 2020 19:13:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584213184;
-        bh=4ilPfPqmMr2qDiM6op1K1WZfZTrNgyjt3K0pmGUhn98=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=erpfrktOc+xlsyCdizTriN2N0FuvMJ6BusP1g+uGldK2beUq5TOyG1U63iFK4Fswc
-         UnxGXCcBxoQAAZWWjrjdzCYy+4PGoi2F6MGod9OjOcw+oKcTNOsVZd7P7jOMlN8zOr
-         XUhK6zx8ZnBGE2VDoauk5PJ2fPK7vZTlXtIBop90=
-Date:   Sat, 14 Mar 2020 21:12:58 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
-Cc:     Linux Netdev List <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tomasz Duszynski <tduszynski@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>
-Subject: Re: [PATCH v2 net-next 3/7] octeontx2-vf: Virtual function driver
- support
-Message-ID: <20200314191258.GB3046@unreal>
-References: <1584092566-4793-1-git-send-email-sunil.kovvuri@gmail.com>
- <1584092566-4793-4-git-send-email-sunil.kovvuri@gmail.com>
- <20200313181139.GC67638@unreal>
- <CA+sq2CeP3rfhBmxcs9Z6n7wVBmqP6upb8XFZF7nZ3R=QUtTF_g@mail.gmail.com>
+        id S1727695AbgCOCXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Mar 2020 22:23:00 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:34001 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727469AbgCOCXA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 22:23:00 -0400
+Received: by mail-lj1-f193.google.com with SMTP id s13so14785374ljm.1;
+        Sat, 14 Mar 2020 19:22:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=cc:subject:to:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=+ZyqDkOF3uWWxVDIECGMJtE168zkXbxMgJTb6gnPSGI=;
+        b=gUxOegdFDOTBDgWyZrf6ugdjgn7IAsexEdEx0Q1nYttVa9a3wV3c40gmawss+oN/tE
+         DWXS+xMAcW3numKqykXq7XYiVb0E42W9P1Qp7FpHSJ5LbgRsBCqqUK4cQphD4kB0aDvQ
+         PRtJP/ter6fSR0ldKEwRHlS404qeA+KOMOxmOeELrcF2csqX1RLcLIK/X8J2JggWE3ge
+         HFYZuVy28dFxgPVJ1/014+ChXzVE8sOrsyK2yBFvecI9wEvKi50g0AE5QX3HsFaxpWtf
+         eKkhVtJdXgEcArl68MGTCerpsXTmxJjEpatb+mlGxOQW/294YauVsfDAWjeHjsQf0ZGg
+         czow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:cc:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=+ZyqDkOF3uWWxVDIECGMJtE168zkXbxMgJTb6gnPSGI=;
+        b=OSV7hICeZz27VHVy5LKqsA26Me5ciApp20YZ6zdZVwIjPjGmgBS5zphbG0qBvbbBHK
+         +eVKQKInsyMsXJITXj2NCRMZfLjhR/8DZ9UAkcMrLstyh2wo0LJ0A3oX9ftEopZraZPV
+         MyEhMKyDUTXEaHtY6UEUGd8uCW4fWrfuiZVdQQ7k/0IggsqbCr1eQJDC9rdEZk1Scg8f
+         AEsxfylRZNLhhjqtuJHMdAYiEhIfPwHFuDFx2LyMxMskb6CbNlGYV4JdQKCHbtxggYEz
+         /sqXHNgN2kPjYJ3nDnrluH80idcImQ3DQXkp4MyCOPZm4DJsabGv4qC3ZVgw/vuKjruB
+         aQlA==
+X-Gm-Message-State: ANhLgQ34NE0kNW4WgXwkT4MBk6qyrBMh8d+Cz20dNl03nZkxXGqMLZ2z
+        x+vPQNiQPdFGyefrHTpdkeydbcwsN2Q=
+X-Google-Smtp-Source: ADFU+vvZCDegguLj8vLsgJ44NEmZgLAGVYr+4JeSWWkjH6ko7oHZAxDmkufT2nNGCx2K1M02gM2NOA==
+X-Received: by 2002:a5d:4a8c:: with SMTP id o12mr26717839wrq.10.1584223340528;
+        Sat, 14 Mar 2020 15:02:20 -0700 (PDT)
+Received: from ?IPv6:2001:a61:2482:101:3351:6160:8173:cc31? ([2001:a61:2482:101:3351:6160:8173:cc31])
+        by smtp.gmail.com with ESMTPSA id p10sm85897598wrx.81.2020.03.14.15.02.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 14 Mar 2020 15:02:20 -0700 (PDT)
+Cc:     mtk.manpages@gmail.com, Jorgen Hansen <jhansen@vmware.com>,
+        netdev@vger.kernel.org, linux-man@vger.kernel.org,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Dexuan Cui <decui@microsoft.com>
+Subject: Re: [PATCH v4] vsock.7: add VMADDR_CID_LOCAL description
+To:     Stefano Garzarella <sgarzare@redhat.com>
+References: <20200218155435.172860-1-sgarzare@redhat.com>
+From:   "Michael Kerrisk (man-pages)" <mtk.manpages@gmail.com>
+Message-ID: <b3289245-ba42-24d4-b96c-267d09b2e37a@gmail.com>
+Date:   Sat, 14 Mar 2020 23:02:19 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+sq2CeP3rfhBmxcs9Z6n7wVBmqP6upb8XFZF7nZ3R=QUtTF_g@mail.gmail.com>
+In-Reply-To: <20200218155435.172860-1-sgarzare@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 14, 2020 at 09:10:28PM +0530, Sunil Kovvuri wrote:
-> On Fri, Mar 13, 2020 at 11:41 PM Leon Romanovsky <leon@kernel.org> wrote:
->  > diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-> b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-> > > new file mode 100644
-> > > index 0000000..cf366dc
-> > > --- /dev/null
-> > > +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-> > > @@ -0,0 +1,659 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +/* Marvell OcteonTx2 RVU Virtual Function ethernet driver
-> > > + *
-> > > + * Copyright (C) 2020 Marvell International Ltd.
-> > > + *
-> > > + * This program is free software; you can redistribute it and/or modify
-> > > + * it under the terms of the GNU General Public License version 2 as
-> > > + * published by the Free Software Foundation.
-> > > + */
-> >
-> > Please don't add license text, the SPDX line is enough.
-> >
->
-> Can you please point me to where this is written.
+Hello Stefano,
 
-The whole idea of SPDX tags is to provide clear and proper license for the code.
-See what it means to place SPDX tags and there can be found LICENSE text.
-https://elixir.bootlin.com/linux/latest/source/Documentation/process/license-rules.rst
-https://elixir.bootlin.com/linux/latest/source/Documentation/process/howto.rst#L59
+On 2/18/20 4:54 PM, Stefano Garzarella wrote:
+> Linux 5.6 added the new well-known VMADDR_CID_LOCAL for
+> local communication.
+> 
+> This patch explains how to use it and remove the legacy
+> VMADDR_CID_RESERVED no longer available.
+> 
+> Reviewed-by: Jorgen Hansen <jhansen@vmware.com>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+> ---
+> v4:
+>     * removed "The" in the "Local communication" section [Stefan]
+> v3:
+>     * rephrased "Previous versions" part [Jorgen]
+> v2:
+>     * rephrased "Local communication" description [Stefan]
+>     * added a mention of previous versions that supported
+>       loopback only in the guest [Stefan]
+
+Thanks. Patch applied.
+
+Cheers,
+
+Michael
 
 
-> It would be great if these are made rules and written somewhere so
-> that everyone can go through and follow.
-> I see that there are so many patches being submitted with copyright text.
-> So this is very confusing.
+> ---
+>  man7/vsock.7 | 18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
+> 
+> diff --git a/man7/vsock.7 b/man7/vsock.7
+> index c5ffcf07d..fa2c6e17e 100644
+> --- a/man7/vsock.7
+> +++ b/man7/vsock.7
+> @@ -127,8 +127,8 @@ There are several special addresses:
+>  means any address for binding;
+>  .B VMADDR_CID_HYPERVISOR
+>  (0) is reserved for services built into the hypervisor;
+> -.B VMADDR_CID_RESERVED
+> -(1) must not be used;
+> +.B VMADDR_CID_LOCAL
+> +(1) is the well-known address for local communication (loopback);
+>  .B VMADDR_CID_HOST
+>  (2)
+>  is the well-known address of the host.
+> @@ -164,6 +164,15 @@ Consider using
+>  .B VMADDR_CID_ANY
+>  when binding instead of getting the local CID with
+>  .BR IOCTL_VM_SOCKETS_GET_LOCAL_CID .
+> +.SS Local communication
+> +.B VMADDR_CID_LOCAL
+> +(1) directs packets to the same host that generated them. This is useful
+> +for testing applications on a single host and for debugging.
+> +.PP
+> +The local CID obtained with
+> +.BR IOCTL_VM_SOCKETS_GET_LOCAL_CID
+> +can be used for the same purpose, but it is preferable to use
+> +.B VMADDR_CID_LOCAL .
+>  .SH ERRORS
+>  .TP
+>  .B EACCES
+> @@ -222,6 +231,11 @@ are valid.
+>  Support for VMware (VMCI) has been available since Linux 3.9.
+>  KVM (virtio) is supported since Linux 4.8.
+>  Hyper-V is supported since Linux 4.14.
+> +.PP
+> +VMADDR_CID_LOCAL is supported since Linux 5.6.
+> +Local communication in the guest and on the host is available since Linux 5.6.
+> +Previous versions only supported local communication within a guest
+> +(not on the host), and only with some transports (VMCI and virtio).
+>  .SH SEE ALSO
+>  .BR bind (2),
+>  .BR connect (2),
+> 
 
-It is a mistake to place LICENSE text in addition to SPDX in new files.
 
->
-> > > +
-> > > +static int otx2vf_process_mbox_msg_up(struct otx2_nic *vf,
-> > > +                                   struct mbox_msghdr *req)
-> > > +{
-> > > +     /* Check if valid, if not reply with a invalid msg */
-> > > +     if (req->sig != OTX2_MBOX_REQ_SIG) {
-> > > +             otx2_reply_invalid_msg(&vf->mbox.mbox_up, 0, 0, req->id);
-> > > +             return -ENODEV;
-> > > +     }
-> > > +
-> > > +     switch (req->id) {
-> > > +#define M(_name, _id, _fn_name, _req_type, _rsp_type)                        \
-> > > +     case _id: {                                                     \
-> > > +             struct _rsp_type *rsp;                                  \
-> > > +             int err;                                                \
-> > > +                                                                     \
-> > > +             rsp = (struct _rsp_type *)otx2_mbox_alloc_msg(          \
-> > > +                     &vf->mbox.mbox_up, 0,                           \
-> > > +                     sizeof(struct _rsp_type));                      \
-> > > +             if (!rsp)                                               \
-> > > +                     return -ENOMEM;                                 \
-> > > +                                                                     \
-> > > +             rsp->hdr.id = _id;                                      \
-> > > +             rsp->hdr.sig = OTX2_MBOX_RSP_SIG;                       \
-> > > +             rsp->hdr.pcifunc = 0;                                   \
-> > > +             rsp->hdr.rc = 0;                                        \
-> > > +                                                                     \
-> > > +             err = otx2_mbox_up_handler_ ## _fn_name(                \
-> > > +                     vf, (struct _req_type *)req, rsp);              \
-> > > +             return err;                                             \
-> > > +     }
-> > > +MBOX_UP_CGX_MESSAGES
-> > > +#undef M
-> >
-> > "return ..." inside macro which is called by another macro is highly
-> > discouraged by the Linux kernel coding style.
-> >
->
-> There are many mailbox messages to handle and adding each one of them
-> to switch case would be a
-> lot of duplicate code. Hence we choose to with these macros.
-
-The coding style section 12.1 talks exactly about that pattern.
-https://elixir.bootlin.com/linux/latest/source/Documentation/process/coding-style.rst#L752
-Somehow all other drivers succeeded to write their code without such
-macros, I'm confident that you will success too. Please try your best.
-
-Thanks
-
->
-> Thanks,
-> Sunil.
+-- 
+Michael Kerrisk
+Linux man-pages maintainer; http://www.kernel.org/doc/man-pages/
+Linux/UNIX System Programming Training: http://man7.org/training/
