@@ -2,499 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02829185462
-	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 04:45:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1987185489
+	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 04:48:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727015AbgCNDpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 23:45:10 -0400
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:35224 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727000AbgCNDpJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 23:45:09 -0400
-Received: by mail-pj1-f65.google.com with SMTP id mq3so5394026pjb.0;
-        Fri, 13 Mar 2020 20:45:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=IEEpAaB7BfCiMH4tkBxCm4CXM34COyC3pBMAjPnbUPM=;
-        b=djS6TLC59a966Qu0oHJuh1zVinr7vCcVZ1mAno9I7+viUeN46b7lezGz1nHly20V2B
-         2CRSMZsEdrkq63bxQXvouERMz4KibtygXfvz3bBs0FrKpki47s9xe4/GEDUJZhNj52d8
-         vrlwycQcG5uDbfH3A028ulWph57BD13NVZ2DwgoA3y6aG5UUIQeqeECJmf/+e0R9J29O
-         Jej+P5KJxvI7eDmYVb6BpS9KAETLcI8u8Jf7laI47h0ADx8kroo0pm/MLqd3AT/mO6Ah
-         D8T8/whafDKKTKF1SZIq+9EYADoC+VCgPSnKVjJIIaI53g7HmOigU36bEcnfno6l1hy2
-         lzPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IEEpAaB7BfCiMH4tkBxCm4CXM34COyC3pBMAjPnbUPM=;
-        b=E7014yBDe3RUIrNpZ0BBOmXDEYJ75T49YzqYOQAq+ei5iwxfxPIHiSe/yhMGNWx4S7
-         zPi8Lot7TYeNUb6jVFlwMPO49g8cTUgXu7AvNVXdZC3QdyPnyI/jMtvFAHsHkzjyALkf
-         cOhHJUGknzHlQTSUO2PEceXxNT24LiWo5FwMG7QHpb4hX9K9OaWO3KBu95GIVmpIDKpH
-         U7VXZG7i/Ir4MniAJht+DOvcaSLQDS5GxdMpOWsVbAXXem95qXoo6LILFTjTlUjmai6i
-         99D1AqviulZ153gQQIpjw6eLXw4OKUncUUIsooN8IdR2nM8C6dpJrrFZV9o8E4ckt4F8
-         QiDg==
-X-Gm-Message-State: ANhLgQ2dlPgpQ0b2jkL3aOlwRV9jolf+5WP4Vsv9PfvyhcGtffkq2PPK
-        nI7iZdCYjHtsMhxzl2ACwA==
-X-Google-Smtp-Source: ADFU+vuoaGRGIPg8+hYQUcoHWRAaQfjFSXUBQK8DX8iptwxjJG2rejz+NlmrfzWJ9Mn2t11xoak0PQ==
-X-Received: by 2002:a17:90a:d80b:: with SMTP id a11mr13327755pjv.21.1584157507475;
-        Fri, 13 Mar 2020 20:45:07 -0700 (PDT)
-Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id i21sm13526822pgn.5.2020.03.13.20.45.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Mar 2020 20:45:06 -0700 (PDT)
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next v4 2/2] samples: bpf: refactor perf_event user program with libbpf bpf_link
-Date:   Sat, 14 Mar 2020 12:44:56 +0900
-Message-Id: <20200314034456.26847-3-danieltimlee@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200314034456.26847-1-danieltimlee@gmail.com>
-References: <20200314034456.26847-1-danieltimlee@gmail.com>
+        id S1726652AbgCNDsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 23:48:18 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:36178 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726399AbgCNDsR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 23:48:17 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02E3ew53027178;
+        Fri, 13 Mar 2020 20:47:53 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=u53MbnbekFYHRfYzQAp8S1l2rnNrP+X3OuM1QNlxj6I=;
+ b=Hpo7qnjQkum5PU4rOoKAbCHHv0cI37+XoISP7x5B/9MJ2t4L2vDTac3Cf9Sp0/7Zehr4
+ XicUp3A76S4coBBUgL05GGDzP8Sx4GnxC0eHG0KRxUdOphXMXxi+mC04FH2h59brrrHE
+ pcfEf/J9Qo02SWaLCmpj1t6D3+8nv/XBrME= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yqt80ykcj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 13 Mar 2020 20:47:52 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Fri, 13 Mar 2020 20:47:52 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Lzb06Ygf5q+BJezx11H4nGI4XjP5BF81CS1TiSqS6RpqFjfLnjSeWPXx9etjwde+JiKjASaxTLn/O8D1MvGC1cmkUEke26sPUlvGisyjg3pbcg538PLw4kF81IfzejnWjyrwitWztdR3XlL0IXqSASPhpHMmvdrDTW2xqYv2JMrvJ8bkbITR09nUQ3gkNCe2l0t27gtkkaOC4GdUMHrKgrV9Mctl58o/2A6LiNN0BB0h+BWuExl43VidDvum5UeuhItz6gYZHBMUQTZVT3eySU0b2m8hKrqPht8dXdfhahZYXj9py8jZewzppNkylq/9u6jEV/LmsB1epT0t/aSa6w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=u53MbnbekFYHRfYzQAp8S1l2rnNrP+X3OuM1QNlxj6I=;
+ b=Z6enHWPjO6P9Izaf7507nkbyq8n9j8r7/tQaYGg56CrDVD7gtbkBM1q+gXYOU2uW3SGTzRTlcBuPZXUF/LilkcCGUt2ZgHjPtF1NwvUzzrQ31sPBmY4ZyZLGgLVA6Pea7P62UC0NNIB6HcR6maD/UeSKw2EnJWkuSnqRjjNMU8++eho5VaGAtQfr2P/knLoD95cutmkXbaPpB7GrAu0XuG29N3Qan9AKpikWZtiVpzTUvUBaekh3N9JRPu/erKZjXBPAN8O/taKkIjpsuuH1ZXERM03MJpN925c9wb+X5oRnltzACIpOrwqO0smtoAEdBSJhpdb1IaxsW/t78AMYaQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=u53MbnbekFYHRfYzQAp8S1l2rnNrP+X3OuM1QNlxj6I=;
+ b=SUAif4JNbcZnWG9m7xfJfReB22npuvr7Ttiqsmuw2TpdbRAQ6rHSr7NTbQMrxShN+blhRLNviRDR26hlle722m1KRgVPS6nuRMu1Y/dojMhV1CX58CkWYkZok6+M72EVrk7vvgpvHQHmgulJeR+IGYRgpl2jperVK0turEHiQ/0=
+Received: from MW3PR15MB3882.namprd15.prod.outlook.com (2603:10b6:303:49::11)
+ by MW3PR15MB4027.namprd15.prod.outlook.com (2603:10b6:303:4f::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.14; Sat, 14 Mar
+ 2020 03:47:50 +0000
+Received: from MW3PR15MB3882.namprd15.prod.outlook.com
+ ([fe80::c570:6c46:cc47:5ca5]) by MW3PR15MB3882.namprd15.prod.outlook.com
+ ([fe80::c570:6c46:cc47:5ca5%5]) with mapi id 15.20.2814.018; Sat, 14 Mar 2020
+ 03:47:50 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "Kernel Team" <Kernel-team@fb.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "yzaikin@google.com" <yzaikin@google.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "bristot@redhat.com" <bristot@redhat.com>,
+        "mingo@kernel.org" <mingo@kernel.org>
+Subject: Re: [RFC bpf-next 0/2] sharing bpf runtime stats with /dev/bpf_stats
+Thread-Topic: [RFC bpf-next 0/2] sharing bpf runtime stats with /dev/bpf_stats
+Thread-Index: AQHV+ZrMj1Iy/L1gLESYfUQuCI4fzqhHYXEAgAASAwA=
+Date:   Sat, 14 Mar 2020 03:47:50 +0000
+Message-ID: <E7BBB6E4-F911-47D4-A4BC-3DF3D29B557B@fb.com>
+References: <20200314003518.3114452-1-songliubraving@fb.com>
+ <20200314024322.vymr6qkxsf6nzpum@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20200314024322.vymr6qkxsf6nzpum@ast-mbp.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.60.0.2.5)
+x-originating-ip: [2620:10d:c090:400::5:7990]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 121b601f-2c4e-4706-08c8-08d7c7ca7806
+x-ms-traffictypediagnostic: MW3PR15MB4027:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW3PR15MB4027C934253EFA8E8B18B329B3FB0@MW3PR15MB4027.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 034215E98F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(136003)(39860400002)(376002)(366004)(346002)(199004)(478600001)(186003)(36756003)(33656002)(5660300002)(8936002)(86362001)(4326008)(6486002)(6512007)(53546011)(71200400001)(2616005)(6506007)(66946007)(66556008)(66476007)(54906003)(6916009)(64756008)(76116006)(81166006)(81156014)(8676002)(66446008)(7416002)(316002)(2906002);DIR:OUT;SFP:1102;SCL:1;SRVR:MW3PR15MB4027;H:MW3PR15MB3882.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: OVjmxPL0lQidTRnxCkjyGUVr7RPL3/z5JVYCTQ390uDtkFigemrO5SzU58rDjFmNfFZVdDUwQqfsN4t8tkIaTJ2GaC9AGIbrWP3wcQrOqJXhMCwf+VUUGqFUmC6zXM3laO73DRVkF4LxAJ6aRwAsCcUuT6dwB+90wl+UBL2htX7TWo1fof+SOgIhOUaqzQg+kn3BbhRMCZkGN47cs6o84mMf6R4W66gaDOEuhJULc21U93ER64h7x2Ilxs9g3z4sO179GOt322pihr0QseGg9WlQebIyUYV0VhurbTUCRTaJcqcz6c59Dyb58/FQiQRIZJd0kM3BLDIV2DYDjFUDWMRPIR80cPjxz6LxxCCFSykzk8/TbBfIuOabVdtfXrBCv3OLH5bL+4i5VKocxeQA7y0i0MEFuBSigDEIy2xNJMXA0RuMrqV6IwpSVZUsA76i
+x-ms-exchange-antispam-messagedata: 0rpnbBsLcDyBkedtEUnj11J0mh9GNqsUiaroDCb5lEXGdfwIjsm0Iw52IiXcwX2i5fDS2wXAbVvc5Ynfyz+7VIM9KecrmSP5b2f2JrH05auZFer5R6166anS0ehscycrPpgnOtQBuwYq5W1tpmZmEK7LZBnFg/d4cCwyzdsOEJ1fW87q6ynMfgdudkl4N75v
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <CB7BA1325CAFD246A722BA4C4E79064A@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: 121b601f-2c4e-4706-08c8-08d7c7ca7806
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Mar 2020 03:47:50.5833
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QwZr3o63Bx96YBBYFfV5nr5aBehegDDWC/afcCJxfQ+sKCSpGdeBKHIXK+rdi7b0pyeAnJ1acKN/+N+43PucTA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB4027
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-13_12:2020-03-12,2020-03-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ malwarescore=0 clxscore=1011 adultscore=0 priorityscore=1501
+ lowpriorityscore=0 impostorscore=0 phishscore=0 mlxlogscore=996 mlxscore=0
+ bulkscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003140018
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bpf_program__attach of libbpf(using bpf_link) is much more intuitive
-than the previous method using ioctl.
 
-bpf_program__attach_perf_event manages the enable of perf_event and
-attach of BPF programs to it, so there's no neeed to do this
-directly with ioctl.
 
-In addition, bpf_link provides consistency in the use of API because it
-allows disable (detach, destroy) for multiple events to be treated as
-one bpf_link__destroy. Also, bpf_link__destroy manages the close() of
-perf_event fd.
+> On Mar 13, 2020, at 7:43 PM, Alexei Starovoitov <alexei.starovoitov@gmail=
+.com> wrote:
+>=20
+> On Fri, Mar 13, 2020 at 05:35:16PM -0700, Song Liu wrote:
+>> Motivation (copied from 2/2):
+>>=20
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D 8<=
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>> Currently, sysctl kernel.bpf_stats_enabled controls BPF runtime stats.
+>> Typical userspace tools use kernel.bpf_stats_enabled as follows:
+>>=20
+>>  1. Enable kernel.bpf_stats_enabled;
+>>  2. Check program run_time_ns;
+>>  3. Sleep for the monitoring period;
+>>  4. Check program run_time_ns again, calculate the difference;
+>>  5. Disable kernel.bpf_stats_enabled.
+>>=20
+>> The problem with this approach is that only one userspace tool can toggl=
+e
+>> this sysctl. If multiple tools toggle the sysctl at the same time, the
+>> measurement may be inaccurate.
+>>=20
+>> To fix this problem while keep backward compatibility, introduce
+>> /dev/bpf_stats. sysctl kernel.bpf_stats_enabled will only change the
+>> lowest bit of the static key. /dev/bpf_stats, on the other hand, adds 2
+>> to the static key for each open fd. The runtime stats is enabled when
+>> kernel.bpf_stats_enabled =3D=3D 1 or there is open fd to /dev/bpf_stats.
+>>=20
+>> With /dev/bpf_stats, user space tool would have the following flow:
+>>=20
+>>  1. Open a fd to /dev/bpf_stats;
+>>  2. Check program run_time_ns;
+>>  3. Sleep for the monitoring period;
+>>  4. Check program run_time_ns again, calculate the difference;
+>>  5. Close the fd.
+>> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D 8<=
+ =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>>=20
+>> 1/2 adds a few new API to jump_label.
+>> 2/2 adds the /dev/bpf_stats and adjust kernel.bpf_stats_enabled handler.
+>>=20
+>> Please share your comments.
+>=20
+> Conceptually makes sense to me. Few comments:
+> 1. I don't understand why +2 logic is necessary.
+> Just do +1 for every FD and change proc_do_static_key() from doing
+> explicit enable/disable to do +1/-1 as well on transition from 0->1 and 1=
+->0.
+> The handler would need to check that 1->1 and 0->0 is a nop.
 
-This commit refactors samples that attach the bpf program to perf_event
-by using libbbpf instead of ioctl. Also the bpf_load in the samples were
-removed and migrated to use libbbpf API.
+With the +2/-2 logic, we use the lowest bit of the counter to remember=20
+the value of the sysctl. Otherwise, we cannot tell whether we are making
+0->1 transition or 1->1 transition.=20
 
-Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
----
-Changes in v2:
- - check memory allocation is successful
- - clean up allocated memory on error
+>=20
+> 2. /dev is kinda awkward. May be introduce a new bpf command that returns=
+ fd?
 
-Changes in v3:
- - Improve pointer error check (IS_ERR())
- - change to calloc for easier destroy of bpf_link
- - remove perf_event fd list since bpf_link handles fd
- - use newer bpf_object__{open/load} API instead of bpf_prog_load
- - perf_event for _SC_NPROCESSORS_ONLN instead of _SC_NPROCESSORS_CONF
- - find program with name explicitly instead of bpf_program__next
- - unconditional bpf_link__destroy() on cleanup
+Yeah, I also feel /dev is awkward. fd from bpf command sounds great.=20
 
-Changes in v4:
- - bpf_link *, bpf_object * set NULL on init & err for easier destroy
- - close bpf object with bpf_object__close()
+>=20
+> 3. Instead of 1 and 2 tweak sysctl to do ++/-- unconditionally?
+> Like repeated sysctl kernel.bpf_stats_enabled=3D1 will keep incrementing =
+it
+> and would need equal amount of sysctl kernel.bpf_stats_enabled=3D0 to get
+> it back to zero where it will stay zero even if users keep spamming
+> sysctl kernel.bpf_stats_enabled=3D0.
+> This way current services that use sysctl will keep working as-is.
+> Multiple services that currently collide on sysctl will magically start
+> working without any changes to them. It is still backwards compatible.
 
- samples/bpf/Makefile           |   4 +-
- samples/bpf/sampleip_user.c    |  98 +++++++++++++++++++----------
- samples/bpf/trace_event_user.c | 112 ++++++++++++++++++++++-----------
- 3 files changed, 143 insertions(+), 71 deletions(-)
+I think this is not fully backwards compatible. With current logic, the=20
+following sequence disables stats eventually.=20
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index ff0061467dd3..424f6fe7ce38 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -88,8 +88,8 @@ xdp2-objs := xdp1_user.o
- xdp_router_ipv4-objs := xdp_router_ipv4_user.o
- test_current_task_under_cgroup-objs := bpf_load.o $(CGROUP_HELPERS) \
- 				       test_current_task_under_cgroup_user.o
--trace_event-objs := bpf_load.o trace_event_user.o $(TRACE_HELPERS)
--sampleip-objs := bpf_load.o sampleip_user.o $(TRACE_HELPERS)
-+trace_event-objs := trace_event_user.o $(TRACE_HELPERS)
-+sampleip-objs := sampleip_user.o $(TRACE_HELPERS)
- tc_l2_redirect-objs := bpf_load.o tc_l2_redirect_user.o
- lwt_len_hist-objs := bpf_load.o lwt_len_hist_user.o
- xdp_tx_iptunnel-objs := xdp_tx_iptunnel_user.o
-diff --git a/samples/bpf/sampleip_user.c b/samples/bpf/sampleip_user.c
-index b0f115f938bc..4372d2da2f9e 100644
---- a/samples/bpf/sampleip_user.c
-+++ b/samples/bpf/sampleip_user.c
-@@ -10,21 +10,23 @@
- #include <errno.h>
- #include <signal.h>
- #include <string.h>
--#include <assert.h>
- #include <linux/perf_event.h>
- #include <linux/ptrace.h>
- #include <linux/bpf.h>
--#include <sys/ioctl.h>
-+#include <bpf/bpf.h>
- #include <bpf/libbpf.h>
--#include "bpf_load.h"
- #include "perf-sys.h"
- #include "trace_helpers.h"
- 
-+#define __must_check
-+#include <linux/err.h>
-+
- #define DEFAULT_FREQ	99
- #define DEFAULT_SECS	5
- #define MAX_IPS		8192
- #define PAGE_OFFSET	0xffff880000000000
- 
-+static int map_fd;
- static int nr_cpus;
- 
- static void usage(void)
-@@ -34,9 +36,10 @@ static void usage(void)
- 	printf("       duration   # sampling duration (seconds), default 5\n");
- }
- 
--static int sampling_start(int *pmu_fd, int freq)
-+static int sampling_start(int freq, struct bpf_program *prog,
-+			  struct bpf_link *links[])
- {
--	int i;
-+	int i, pmu_fd;
- 
- 	struct perf_event_attr pe_sample_attr = {
- 		.type = PERF_TYPE_SOFTWARE,
-@@ -47,26 +50,30 @@ static int sampling_start(int *pmu_fd, int freq)
- 	};
- 
- 	for (i = 0; i < nr_cpus; i++) {
--		pmu_fd[i] = sys_perf_event_open(&pe_sample_attr, -1 /* pid */, i,
-+		pmu_fd = sys_perf_event_open(&pe_sample_attr, -1 /* pid */, i,
- 					    -1 /* group_fd */, 0 /* flags */);
--		if (pmu_fd[i] < 0) {
-+		if (pmu_fd < 0) {
- 			fprintf(stderr, "ERROR: Initializing perf sampling\n");
- 			return 1;
- 		}
--		assert(ioctl(pmu_fd[i], PERF_EVENT_IOC_SET_BPF,
--			     prog_fd[0]) == 0);
--		assert(ioctl(pmu_fd[i], PERF_EVENT_IOC_ENABLE, 0) == 0);
-+		links[i] = bpf_program__attach_perf_event(prog, pmu_fd);
-+		if (IS_ERR(links[i])) {
-+			fprintf(stderr, "ERROR: Attach perf event\n");
-+			links[i] = NULL;
-+			close(pmu_fd);
-+			return 1;
-+		}
- 	}
- 
- 	return 0;
- }
- 
--static void sampling_end(int *pmu_fd)
-+static void sampling_end(struct bpf_link *links[])
- {
- 	int i;
- 
- 	for (i = 0; i < nr_cpus; i++)
--		close(pmu_fd[i]);
-+		bpf_link__destroy(links[i]);
- }
- 
- struct ipcount {
-@@ -128,14 +135,17 @@ static void print_ip_map(int fd)
- static void int_exit(int sig)
- {
- 	printf("\n");
--	print_ip_map(map_fd[0]);
-+	print_ip_map(map_fd);
- 	exit(0);
- }
- 
- int main(int argc, char **argv)
- {
-+	int opt, freq = DEFAULT_FREQ, secs = DEFAULT_SECS, error = 1;
-+	struct bpf_object *obj = NULL;
-+	struct bpf_program *prog;
-+	struct bpf_link **links;
- 	char filename[256];
--	int *pmu_fd, opt, freq = DEFAULT_FREQ, secs = DEFAULT_SECS;
- 
- 	/* process arguments */
- 	while ((opt = getopt(argc, argv, "F:h")) != -1) {
-@@ -163,38 +173,58 @@ int main(int argc, char **argv)
- 	}
- 
- 	/* create perf FDs for each CPU */
--	nr_cpus = sysconf(_SC_NPROCESSORS_CONF);
--	pmu_fd = malloc(nr_cpus * sizeof(int));
--	if (pmu_fd == NULL) {
--		fprintf(stderr, "ERROR: malloc of pmu_fd\n");
--		return 1;
-+	nr_cpus = sysconf(_SC_NPROCESSORS_ONLN);
-+	links = calloc(nr_cpus, sizeof(struct bpf_link *));
-+	if (!links) {
-+		fprintf(stderr, "ERROR: malloc of links\n");
-+		goto cleanup;
- 	}
- 
--	/* load BPF program */
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
--	if (load_bpf_file(filename)) {
--		fprintf(stderr, "ERROR: loading BPF program (errno %d):\n",
--			errno);
--		if (strcmp(bpf_log_buf, "") == 0)
--			fprintf(stderr, "Try: ulimit -l unlimited\n");
--		else
--			fprintf(stderr, "%s", bpf_log_buf);
--		return 1;
-+	obj = bpf_object__open_file(filename, NULL);
-+	if (IS_ERR(obj)) {
-+		fprintf(stderr, "ERROR: opening BPF object file failed\n");
-+		obj = NULL;
-+		goto cleanup;
-+	}
-+
-+	prog = bpf_object__find_program_by_name(obj, "do_sample");
-+	if (!prog) {
-+		fprintf(stderr, "ERROR: finding a prog in obj file failed\n");
-+		goto cleanup;
- 	}
-+
-+	/* load BPF program */
-+	if (bpf_object__load(obj)) {
-+		fprintf(stderr, "ERROR: loading BPF object file failed\n");
-+		goto cleanup;
-+	}
-+
-+	map_fd = bpf_object__find_map_fd_by_name(obj, "ip_map");
-+	if (map_fd < 0) {
-+		fprintf(stderr, "ERROR: finding a map in obj file failed\n");
-+		goto cleanup;
-+	}
-+
- 	signal(SIGINT, int_exit);
- 	signal(SIGTERM, int_exit);
- 
- 	/* do sampling */
- 	printf("Sampling at %d Hertz for %d seconds. Ctrl-C also ends.\n",
- 	       freq, secs);
--	if (sampling_start(pmu_fd, freq) != 0)
--		return 1;
-+	if (sampling_start(freq, prog, links) != 0)
-+		goto cleanup;
-+
- 	sleep(secs);
--	sampling_end(pmu_fd);
--	free(pmu_fd);
-+	error = 0;
- 
-+cleanup:
-+	sampling_end(links);
- 	/* output sample counts */
--	print_ip_map(map_fd[0]);
-+	if (!error)
-+		print_ip_map(map_fd);
- 
--	return 0;
-+	free(links);
-+	bpf_object__close(obj);
-+	return error;
- }
-diff --git a/samples/bpf/trace_event_user.c b/samples/bpf/trace_event_user.c
-index 356171bc392b..9764328019d1 100644
---- a/samples/bpf/trace_event_user.c
-+++ b/samples/bpf/trace_event_user.c
-@@ -6,22 +6,24 @@
- #include <stdlib.h>
- #include <stdbool.h>
- #include <string.h>
--#include <fcntl.h>
--#include <poll.h>
--#include <sys/ioctl.h>
- #include <linux/perf_event.h>
- #include <linux/bpf.h>
- #include <signal.h>
--#include <assert.h>
- #include <errno.h>
- #include <sys/resource.h>
-+#include <bpf/bpf.h>
- #include <bpf/libbpf.h>
--#include "bpf_load.h"
- #include "perf-sys.h"
- #include "trace_helpers.h"
- 
-+#define __must_check
-+#include <linux/err.h>
-+
- #define SAMPLE_FREQ 50
- 
-+/* counts, stackmap */
-+static int map_fd[2];
-+struct bpf_program *prog;
- static bool sys_read_seen, sys_write_seen;
- 
- static void print_ksym(__u64 addr)
-@@ -136,43 +138,52 @@ static inline int generate_load(void)
- 
- static void test_perf_event_all_cpu(struct perf_event_attr *attr)
- {
--	int nr_cpus = sysconf(_SC_NPROCESSORS_CONF);
--	int *pmu_fd = malloc(nr_cpus * sizeof(int));
--	int i, error = 0;
-+	int nr_cpus = sysconf(_SC_NPROCESSORS_ONLN);
-+	struct bpf_link **links = calloc(nr_cpus, sizeof(struct bpf_link *));
-+	int i, pmu_fd, error = 1;
-+
-+	if (!links) {
-+		printf("malloc of links failed\n");
-+		goto err;
-+	}
- 
- 	/* system wide perf event, no need to inherit */
- 	attr->inherit = 0;
- 
- 	/* open perf_event on all cpus */
- 	for (i = 0; i < nr_cpus; i++) {
--		pmu_fd[i] = sys_perf_event_open(attr, -1, i, -1, 0);
--		if (pmu_fd[i] < 0) {
-+		pmu_fd = sys_perf_event_open(attr, -1, i, -1, 0);
-+		if (pmu_fd < 0) {
- 			printf("sys_perf_event_open failed\n");
--			error = 1;
- 			goto all_cpu_err;
- 		}
--		assert(ioctl(pmu_fd[i], PERF_EVENT_IOC_SET_BPF, prog_fd[0]) == 0);
--		assert(ioctl(pmu_fd[i], PERF_EVENT_IOC_ENABLE) == 0);
-+		links[i] = bpf_program__attach_perf_event(prog, pmu_fd);
-+		if (IS_ERR(links[i])) {
-+			printf("bpf_program__attach_perf_event failed\n");
-+			links[i] = NULL;
-+			close(pmu_fd);
-+			goto all_cpu_err;
-+		}
- 	}
- 
--	if (generate_load() < 0) {
--		error = 1;
-+	if (generate_load() < 0)
- 		goto all_cpu_err;
--	}
-+
- 	print_stacks();
-+	error = 0;
- all_cpu_err:
--	for (i--; i >= 0; i--) {
--		ioctl(pmu_fd[i], PERF_EVENT_IOC_DISABLE);
--		close(pmu_fd[i]);
--	}
--	free(pmu_fd);
-+	for (i--; i >= 0; i--)
-+		bpf_link__destroy(links[i]);
-+err:
-+	free(links);
- 	if (error)
- 		int_exit(0);
- }
- 
- static void test_perf_event_task(struct perf_event_attr *attr)
- {
--	int pmu_fd, error = 0;
-+	struct bpf_link *link = NULL;
-+	int pmu_fd, error = 1;
- 
- 	/* per task perf event, enable inherit so the "dd ..." command can be traced properly.
- 	 * Enabling inherit will cause bpf_perf_prog_read_time helper failure.
-@@ -183,19 +194,23 @@ static void test_perf_event_task(struct perf_event_attr *attr)
- 	pmu_fd = sys_perf_event_open(attr, 0, -1, -1, 0);
- 	if (pmu_fd < 0) {
- 		printf("sys_perf_event_open failed\n");
--		int_exit(0);
-+		goto err;
- 	}
--	assert(ioctl(pmu_fd, PERF_EVENT_IOC_SET_BPF, prog_fd[0]) == 0);
--	assert(ioctl(pmu_fd, PERF_EVENT_IOC_ENABLE) == 0);
--
--	if (generate_load() < 0) {
--		error = 1;
-+	link = bpf_program__attach_perf_event(prog, pmu_fd);
-+	if (IS_ERR(link)) {
-+		printf("bpf_program__attach_perf_event failed\n");
-+		link = NULL;
-+		close(pmu_fd);
- 		goto err;
- 	}
-+
-+	if (generate_load() < 0)
-+		goto err;
-+
- 	print_stacks();
-+	error = 0;
- err:
--	ioctl(pmu_fd, PERF_EVENT_IOC_DISABLE);
--	close(pmu_fd);
-+	bpf_link__destroy(link);
- 	if (error)
- 		int_exit(0);
- }
-@@ -282,7 +297,9 @@ static void test_bpf_perf_event(void)
- int main(int argc, char **argv)
- {
- 	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
-+	struct bpf_object *obj = NULL;
- 	char filename[256];
-+	int error = 1;
- 
- 	snprintf(filename, sizeof(filename), "%s_kern.o", argv[0]);
- 	setrlimit(RLIMIT_MEMLOCK, &r);
-@@ -292,12 +309,33 @@ int main(int argc, char **argv)
- 
- 	if (load_kallsyms()) {
- 		printf("failed to process /proc/kallsyms\n");
--		return 1;
-+		goto cleanup;
-+	}
-+
-+	obj = bpf_object__open_file(filename, NULL);
-+	if (IS_ERR(obj)) {
-+		printf("opening BPF object file failed\n");
-+		obj = NULL;
-+		goto cleanup;
- 	}
- 
--	if (load_bpf_file(filename)) {
--		printf("%s", bpf_log_buf);
--		return 2;
-+	prog = bpf_object__find_program_by_name(obj, "bpf_prog1");
-+	if (!prog) {
-+		printf("finding a prog in obj file failed\n");
-+		goto cleanup;
-+	}
-+
-+	/* load BPF program */
-+	if (bpf_object__load(obj)) {
-+		printf("loading BPF object file failed\n");
-+		goto cleanup;
-+	}
-+
-+	map_fd[0] = bpf_object__find_map_fd_by_name(obj, "counts");
-+	map_fd[1] = bpf_object__find_map_fd_by_name(obj, "stackmap");
-+	if (map_fd[0] < 0 || map_fd[1] < 0) {
-+		printf("finding a counts/stackmap map in obj file failed\n");
-+		goto cleanup;
- 	}
- 
- 	if (fork() == 0) {
-@@ -305,6 +343,10 @@ int main(int argc, char **argv)
- 		return 0;
- 	}
- 	test_bpf_perf_event();
-+	error = 0;
-+
-+cleanup:
-+	bpf_object__close(obj);
- 	int_exit(0);
--	return 0;
-+	return error;
- }
--- 
-2.25.1
+  sysctl kernel.bpf_stats_enabled=3D1
+  sysctl kernel.bpf_stats_enabled=3D1
+  sysctl kernel.bpf_stats_enabled=3D0
+
+The same sequence will not disable stats with the ++/-- sysctl.=20
+
+Thanks,
+Song
+
+
 
