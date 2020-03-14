@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32CD41858E9
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 03:24:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 766271858DB
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 03:24:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728064AbgCOCYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Mar 2020 22:24:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39114 "EHLO mail.kernel.org"
+        id S1728033AbgCOCYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Mar 2020 22:24:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39132 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727924AbgCOCYO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Mar 2020 22:24:14 -0400
+        id S1727941AbgCOCYP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 14 Mar 2020 22:24:15 -0400
 Received: from localhost (unknown [213.57.247.131])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6797020785;
-        Sat, 14 Mar 2020 17:59:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3B3FF20789;
+        Sat, 14 Mar 2020 19:13:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584208759;
-        bh=HKJHEd0b4HXcP2CUqYh2rJjJcwSlu6+U4wh/p3NkG6Q=;
+        s=default; t=1584213184;
+        bh=4ilPfPqmMr2qDiM6op1K1WZfZTrNgyjt3K0pmGUhn98=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PNn6Btzqr/Jg8hQ1G3JCPwCgXizF0XyfHudD2V9hHnQHtIFuy65wVfm+6eyXQiCN1
-         yxT1Qkzh+l/Gg+fgzXPxqvmAQjylM+xveVMZZz/MUBKcTn6p4CCCIeTIvonUS9wEIE
-         68FyJYNcakkhsvqQ+hWvDlCTqURiXnGs7DONFFg8=
-Date:   Sat, 14 Mar 2020 19:59:13 +0200
+        b=erpfrktOc+xlsyCdizTriN2N0FuvMJ6BusP1g+uGldK2beUq5TOyG1U63iFK4Fswc
+         UnxGXCcBxoQAAZWWjrjdzCYy+4PGoi2F6MGod9OjOcw+oKcTNOsVZd7P7jOMlN8zOr
+         XUhK6zx8ZnBGE2VDoauk5PJ2fPK7vZTlXtIBop90=
+Date:   Sat, 14 Mar 2020 21:12:58 +0200
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
 Cc:     Linux Netdev List <netdev@vger.kernel.org>,
@@ -35,7 +35,7 @@ Cc:     Linux Netdev List <netdev@vger.kernel.org>,
         Sunil Goutham <sgoutham@marvell.com>
 Subject: Re: [PATCH v2 net-next 3/7] octeontx2-vf: Virtual function driver
  support
-Message-ID: <20200314175913.GG67638@unreal>
+Message-ID: <20200314191258.GB3046@unreal>
 References: <1584092566-4793-1-git-send-email-sunil.kovvuri@gmail.com>
  <1584092566-4793-4-git-send-email-sunil.kovvuri@gmail.com>
  <20200313181139.GC67638@unreal>
@@ -73,16 +73,18 @@ On Sat, Mar 14, 2020 at 09:10:28PM +0530, Sunil Kovvuri wrote:
 >
 > Can you please point me to where this is written.
 
-It is in nutshell of SPDX tags. They already include proper LICENSE text.
-https://elixir.bootlin.com/linux/latest/source/Documentation/process/howto.rst#L59
+The whole idea of SPDX tags is to provide clear and proper license for the code.
+See what it means to place SPDX tags and there can be found LICENSE text.
 https://elixir.bootlin.com/linux/latest/source/Documentation/process/license-rules.rst
+https://elixir.bootlin.com/linux/latest/source/Documentation/process/howto.rst#L59
+
 
 > It would be great if these are made rules and written somewhere so
 > that everyone can go through and follow.
 > I see that there are so many patches being submitted with copyright text.
 > So this is very confusing.
 
-This is a mistake, new files should carry SPDX tags only.
+It is a mistake to place LICENSE text in addition to SPDX in new files.
 
 >
 > > > +
@@ -127,11 +129,10 @@ This is a mistake, new files should carry SPDX tags only.
 > to switch case would be a
 > lot of duplicate code. Hence we choose to with these macros.
 
-Somehow other drivers succeeded to do it without such macros, I'm
-confident that you will success too. Please try your best to rewrite it.
-
-Section 12.1 talks exactly about this case and why it is **bad** idea.
+The coding style section 12.1 talks exactly about that pattern.
 https://elixir.bootlin.com/linux/latest/source/Documentation/process/coding-style.rst#L752
+Somehow all other drivers succeeded to write their code without such
+macros, I'm confident that you will success too. Please try your best.
 
 Thanks
 
