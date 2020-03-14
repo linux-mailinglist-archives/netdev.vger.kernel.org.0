@@ -2,48 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B20421856AB
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 02:28:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECF411856B4
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 02:29:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726597AbgCOB2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Mar 2020 21:28:50 -0400
+        id S1726826AbgCOB3S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Mar 2020 21:29:18 -0400
 Received: from pandora.armlinux.org.uk ([78.32.30.218]:55780 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725793AbgCOB2u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 21:28:50 -0400
+        with ESMTP id S1726770AbgCOB3N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 21:29:13 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=dil7C3egUGj9aFFuQLXd8JeybmuvdWV6IKvGnj64gBM=; b=DTCtNW4bCjz8pyo9Udvn2IBFo
-        dXGDbO6IGfF9EmUFo1iSWevwvnzFhHAoTqogPkYu1znpWLwls+cAXsEDYSBMG8HSza2blqIQD/bjI
-        AXuZIdYVJ2zL7peVjzLipb4PlMMqGIKtGZe3Nx05oadmSS5NB8N8JwD/7pcYuOxkS/ac//rEyJZpo
-        nJLqEjRwJ4oNfHmw8Hdmrm1QxunqkT61GOxmDbIMqUR6Z9/U8bbqKCHDw/NHttIAsFwXALywffNvP
-        cc+dwODIdHInNey7ceZWq4qokl4eyO3RcZiShC7AOXgN2fDhFt5dAZx5OblJNONBx1zqrcEdOK9gv
-        q2cuRz8CQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:52878)
+         bh=dil7C3egUGj9aFFuQLXd8JeybmuvdWV6IKvGnj64gBM=; b=ugQEyy6WuKUxXILTUmAcUmRfq
+        6X7TnQaRD5pUqXrlc2c5iBrE6UvTway+/aiiM3tVX7uuRrbwTOxCLz09swqtY3kWWIxEpnKEx5m+V
+        VKUDAl447YsKKYHFn8BHY3wZAQv17qSWmu2yGPRK3J2tF8kcFhQ8HOP5M2yahtrXT/+OZqwXNerJi
+        WB4f/oGJ7aOufx7tPBvKvV7iop3dfrbn/KEWz8uoIuptyDijehptKsIBS/TNcC9hHXgSgfU0gLi6h
+        xRR68NmOR6+t6sxhJYkLysBdBnSCDk2zj/dNId55FaU9h2q0y69ADHulFUgAUBITLraaBUA1UK6Be
+        bGQUkZiDg==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:60394)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1jD43H-0006L5-Bu; Sat, 14 Mar 2020 10:29:55 +0000
+        id 1jD44N-0006Lp-Fw; Sat, 14 Mar 2020 10:31:03 +0000
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jD43G-0008Ep-RI; Sat, 14 Mar 2020 10:29:54 +0000
-Date:   Sat, 14 Mar 2020 10:29:54 +0000
+        id 1jD44M-0008Ez-Jx; Sat, 14 Mar 2020 10:31:02 +0000
+Date:   Sat, 14 Mar 2020 10:31:02 +0000
 From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH REPOST2 net-next 0/3] net: add phylink support for PCS
-Message-ID: <20200314102954.GI25745@shell.armlinux.org.uk>
-References: <20200314102721.GG25745@shell.armlinux.org.uk>
+Subject: [PATCH REPOST3 net-next 0/3] net: add phylink support for PCS
+Message-ID: <20200314103102.GJ25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200314102721.GG25745@shell.armlinux.org.uk>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
