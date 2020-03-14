@@ -2,49 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B08851853BA
-	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 02:16:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA9E91853BB
+	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 02:16:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727462AbgCNBQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 21:16:46 -0400
+        id S1727629AbgCNBQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 21:16:47 -0400
 Received: from mail-eopbgr50063.outbound.protection.outlook.com ([40.107.5.63]:20602
         "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726637AbgCNBQp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 13 Mar 2020 21:16:45 -0400
+        id S1726893AbgCNBQr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Mar 2020 21:16:47 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OWy7oVVS1MSsIYqGhMXv/6iDSycMuDR5HXBLzqdH32zSNR2q58H90Sqv3Fi1mrwSYY13XA6DhXf5F04wPJ90mnaJeWt+eJLQcNmlB/BlbD7qmwq88SW3v0Vb4TUA+UaHuXIAxm2qfHedAzYKq7UZGz26HGJs+UnWk+MVN5xzNP2vbhLO53Jlf38mPEJ88kipT+J7Vclm/Tnq+pujX8X/ddsPSHGxdbbg29Tmry1gsHj2SNT56d/8FN/ni6plyVeV2yShjShhpgk3ixq9lis5kOsIieCHce1IW3ZCuaOrpdQM6Uq38M46vI3Md7EmmGW55MD3A/PvJpFICaX0xWe6qw==
+ b=Cy8XmbTNBF5Z75cCKnnqO3kG8VCdU6PDMeo/kLo5f/vAZ8LLTP1Zc2AsJUXAzY9TjG/2tF1jplmKcGoGMlG8njSd8SF91Efm0wmvAjrcN6E7xCiyr5QebuWJiAZdJUmCHB3Au3SkbdHtdF3TgOFNBc3y9eom/UcZ7DI2u7syG3gEHWD/sJ2IJUqr3wUlHxCo8ewAm7nbYqRP9U49M10ySPoAaMEBqkPqMrT6kcAQ6vpSxPgD7STD4SGd5MG35oblhSju0n2ScX+A7BL6xWGEbaiAbzwsNEtRWpRgs/AwVN46l1VlMdYQKFcosSimVxvYyWltvAZizPvm2dPsHer8eQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oK2CTXAOn4GcV4FcAkXjsh7ppt30gKdXJZCZmBaJ2dU=;
- b=XFzq5M7ndS/eUUWm/vjiABFynA1xVTUYpeEuiDgQarvUiliNQPLlAXBBGucEwX2cJ0Sh3Y36RxKb5BOSE5yX2gO4MbnMAtTNPD6b8ir5mr7TJiVKn442Pp8st7InAQgD8ju/5zOsPD4GU2qo5D93AOsSJ1rCR3UW6gTNc3XWr3rDTSuwHZ1YfTRtpLlvM+wZ8HthovWzjecwFgxGiK3mIQQNQv4zGX6+Z8tOaanghC4eG4W9I+vQSSZFBoTUltMftaPnDPpfCHaRELY4+x6ZoKcjHMxtpM1oXz8b4aSZJKfLN9KB/FbhG923nmw7m3kOawhwy13PoNw4hw3WCbAcHg==
+ bh=ZdzdVagxYRJ0rQspefBm6u0sPAWMVWQcULpe2VZAM9A=;
+ b=V4UZq1wMQFNJ+ACQXzeASjogH7/QaOl6gM0gtivGp0QyfdBB7hIeKshHkQjOMxseCplkWaFHaU3tRdc8oNr019DSFHMENRa63w0/SF27SHb1hA2bBrVeDO9s9KuSUbGL8ZLaGN0K9Wpo3qQu9t8L3U544ZAASv+R1hWBBzMqFWJbVAPS6f1CJ5h5IqpUBjF+WxoLmgn3MJIHFxceLjF86zm8JQXPXKlOVwAtx4DP/9Rt1OvhW2MtfYWlpoQw5snBNTyrQq2XJ2FLKvg7agBI8weZo938N9qnOesIttyVZOVXwlzKbYDvjuH6BM0pL8BdDCKGKlM4TKpd6gYfSL8QJA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oK2CTXAOn4GcV4FcAkXjsh7ppt30gKdXJZCZmBaJ2dU=;
- b=c0dl0lv7t0KVrZ9wxI+eMrvJ1A31t0YxgruJDqAE/2UEA4RFpGLerHyqa82GwsD5DPQGcoOO/Qsg/Gfvr3cFJvuZVlPjgyvkDg1tgUV+3PqRdqs+Eaq7r9WXZaY7rJTfNlyzXrzXyRDFZ2pACOZme1TKial309IpzZj0NyL+HIY=
+ bh=ZdzdVagxYRJ0rQspefBm6u0sPAWMVWQcULpe2VZAM9A=;
+ b=ipmszOcEx+xIktKdSMpcY4RohTEiwldLWxI4hl15rcmiNtCj8D5PDBK19QWpzepn55pXEmnJStFGXO3TW+Xjrl8Q1Nmoyqudc02YmVjfvpY7ZR6pr79+po7+FxUHczI6ilO0fB8stW6s+0ReFvwnpNeWsGylIrwiE/41eMPoQD0=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
  VI1PR05MB6845.eurprd05.prod.outlook.com (10.186.163.80) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2814.16; Sat, 14 Mar 2020 01:16:41 +0000
+ 15.20.2814.16; Sat, 14 Mar 2020 01:16:43 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2793.018; Sat, 14 Mar 2020
- 01:16:41 +0000
+ 01:16:43 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        Bodong Wang <bodong@mellanox.com>,
+        Parav Pandit <parav@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [pull request][net-next 00/14] Mellanox, mlx5 updates 2020-03-13
-Date:   Fri, 13 Mar 2020 18:16:08 -0700
-Message-Id: <20200314011622.64939-1-saeedm@mellanox.com>
+Subject: [net-next 01/14] net/mlx5: E-Switch, Remove redundant check of eswitch manager cap
+Date:   Fri, 13 Mar 2020 18:16:09 -0700
+Message-Id: <20200314011622.64939-2-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200314011622.64939-1-saeedm@mellanox.com>
+References: <20200314011622.64939-1-saeedm@mellanox.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: BY5PR03CA0005.namprd03.prod.outlook.com
@@ -52,112 +56,74 @@ X-ClientProxiedBy: BY5PR03CA0005.namprd03.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BY5PR03CA0005.namprd03.prod.outlook.com (2603:10b6:a03:1e0::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.16 via Frontend Transport; Sat, 14 Mar 2020 01:16:39 +0000
+Received: from smtp.office365.com (73.15.39.150) by BY5PR03CA0005.namprd03.prod.outlook.com (2603:10b6:a03:1e0::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.16 via Frontend Transport; Sat, 14 Mar 2020 01:16:41 +0000
 X-Mailer: git-send-email 2.24.1
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: a593e69b-6ea3-4839-ef5e-08d7c7b559ec
+X-MS-Office365-Filtering-Correlation-Id: 2d101d44-7584-4a11-b0d4-08d7c7b55b39
 X-MS-TrafficTypeDiagnostic: VI1PR05MB6845:|VI1PR05MB6845:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB6845D45C61E03EF0D72299E1BEFB0@VI1PR05MB6845.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB6845D1D2AFDB1768622146E0BEFB0@VI1PR05MB6845.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:644;
 X-Forefront-PRVS: 034215E98F
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(39860400002)(366004)(346002)(376002)(199004)(86362001)(6506007)(52116002)(4326008)(6486002)(6512007)(107886003)(15650500001)(2906002)(5660300002)(478600001)(316002)(66476007)(26005)(66946007)(8936002)(66556008)(8676002)(81166006)(81156014)(2616005)(36756003)(956004)(186003)(16526019)(1076003)(6916009)(6666004)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6845;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(39860400002)(366004)(346002)(376002)(199004)(86362001)(54906003)(6506007)(52116002)(4326008)(6486002)(6512007)(107886003)(2906002)(5660300002)(478600001)(316002)(66476007)(26005)(66946007)(8936002)(66556008)(8676002)(81166006)(81156014)(2616005)(36756003)(956004)(186003)(16526019)(1076003)(6916009)(6666004)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6845;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
 Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HYYqeJ9VzrRKpzt6BLRBeWNhtnE6hTlT0uF+QPP0J1mIa7CELwjG/+IqhMcBJ+MXNS/RxcsA6rOKkYVvXkmO2cJVaww+NmGXxcMSn02osGcn44m9WvvQfgGHZXL2r97+2NaQdgH8RovvQx4pvVhYJYzNjUTi+kIoKX+s0K9y6lfsPftoYL5XTYr/7cltKPAallwFZDlKdOdJHgeJmwzsVvnE1RUMXfYbG1sXiOuUQ2MpNfM7zWm9+1OHI8nGJEzZzQYvHtDBp2kgGDeIlRxAlMGKPIJLlfETxC/GjRkc18B1frCZ6QPpp+GAK4crJbHQ2uiwm+oXTrwu52NmIZQkpAquAO5G4GBC2N9l32lftxWWWUQRWjMecNwNVGDZRKUKA9+VD+TBtWa1g9fkTd15pRsKgb7mYd6sJGJe8QUzG7RJS6eCMTMm3AIk4ioLeYIfdYQJdfrT8z8Au+oxlWkpmgXox9e4PW0bTCzsciKDPbRrOGElXgDxF1w0+VssSmjzLFSnAi1HhntPpIT2Av4IkpxnZMEilZaoKgtbzx0cKaU=
-X-MS-Exchange-AntiSpam-MessageData: alR+Ri6J5N6j2z/HpagIyWxrtDfM2bsNTJXDtJio7RiCWE3lzuKKcC44LW3VDX7WflbVTK9VaDrbSgrG5vceNA6O8SncD+9sGWX+cP4tItWYYDVuwsyMXt+RLqmwPTn+TnX3xB1i7JobhYR7cu+01A==
+X-Microsoft-Antispam-Message-Info: xc1pbjsVPMh8+N1P0jICkHMm3gF5r6JCuhk1j20iHyWlreD6mArlWzrMLBLzFaXXL7LfNo+i9LPF+gMv+c8+Vr0mnH712635NrogMy+A3/sH9AQe5L54yIXhCZA12yBNTg9znXyJVzfD//LThjlinGn0mHkvDFfwxrJgFY+yoIVT+fAdI4QM2f8FQW5fAgg1TFHScesG9+sKk8SrihwKZu+QwZbf0OsPnWsCp+hIs2yNvAdKtMhaap3h17B4YxD7w0BSVolBEyMkUGey8q156hMeAW5egamLDhpK23d8ei3zZU5L5EusBrwTPrAX0NCSnLCrucAd3Mtjie2t5XJJO9eZmWtn/Ck9vLJ2TvG/ZEy4WB/a2iqepvSc8e5OS9eLZFPcZIqgS+cMCKzcJSrq8zlzZ/iGkBcqci1z2YNt2e4+MTIWPkPtoJSCpJI8QANhf2fad/1hdBNxRKfmX7VigVh6r58mIm2y+4XSllYZCNmSGk2IGZSvgK9/SJp1muIHsdDOIp9yri8mWl7aXJ5/YTmR8eHKy8YWm2awMkb5alw=
+X-MS-Exchange-AntiSpam-MessageData: qX0NtxyZWeGS+p73Q1p+u9hfMwkRdFbkJiys1rsEpnLpLFgU6ZL23Krcc/R24R2NA9Ie7N4Y8XgjQtbWT7ZBoelsD+u8VdN3uIfVrFXyjFIz78dVMBZN/zYoeYwvHuAhXSZdAklmnSTXSIZ4Gr04Eg==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a593e69b-6ea3-4839-ef5e-08d7c7b559ec
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2020 01:16:41.0960
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d101d44-7584-4a11-b0d4-08d7c7b55b39
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2020 01:16:43.2618
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: R9z2gaq4GAZ3sM8sov/9QT2ZSaxuIy7bvyi3tCpbmfRhf2roMXlJtkFdvHyajm1yYw/9dzmww5OMHuMUL13tEg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6FEI+Q+bYC3SNL8XKngSY3PgakMWOaCgVpuxcfMsziWjjlMEBtR6yY6hMtdP02xfXod7sK607TVPgjAhSB+CuA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6845
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+From: Bodong Wang <bodong@mellanox.com>
 
-This series adds misc updates to mlx5 driver
-For more information please see tag log below.
+esw_vport_create_legacy_acl_tables bails out immediately for eswitch
+manager, hence remove all the check of esw manager cap after.
 
-Please pull and let me know if there is any problem.
-
-Thanks,
-Saeed.
-
+Signed-off-by: Bodong Wang <bodong@mellanox.com>
+Reviewed-by: Parav Pandit <parav@mellanox.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
-The following changes since commit 1d343579312311aa9875b34d5a921f5e2ec69f0a:
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-03-12 22:34:48 -0700)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+index 25640864c375..b123089866e2 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -1707,8 +1707,7 @@ static int esw_vport_create_legacy_acl_tables(struct mlx5_eswitch *esw,
+ 	if (mlx5_esw_is_manager_vport(esw, vport->vport))
+ 		return 0;
+ 
+-	if (!mlx5_esw_is_manager_vport(esw, vport->vport) &&
+-	    MLX5_CAP_ESW_INGRESS_ACL(esw->dev, flow_counter)) {
++	if (MLX5_CAP_ESW_INGRESS_ACL(esw->dev, flow_counter)) {
+ 		vport->ingress.legacy.drop_counter = mlx5_fc_create(esw->dev, false);
+ 		if (IS_ERR(vport->ingress.legacy.drop_counter)) {
+ 			esw_warn(esw->dev,
+@@ -1722,8 +1721,7 @@ static int esw_vport_create_legacy_acl_tables(struct mlx5_eswitch *esw,
+ 	if (ret)
+ 		goto ingress_err;
+ 
+-	if (!mlx5_esw_is_manager_vport(esw, vport->vport) &&
+-	    MLX5_CAP_ESW_EGRESS_ACL(esw->dev, flow_counter)) {
++	if (MLX5_CAP_ESW_EGRESS_ACL(esw->dev, flow_counter)) {
+ 		vport->egress.legacy.drop_counter = mlx5_fc_create(esw->dev, false);
+ 		if (IS_ERR(vport->egress.legacy.drop_counter)) {
+ 			esw_warn(esw->dev,
+-- 
+2.24.1
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-03-13
-
-for you to fetch changes up to bc1a02884a33f9d49cda0c77dc8eccebd6c5c0e5:
-
-  net/mlx5: DR, Remove unneeded functions deceleration (2020-03-13 16:26:28 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2020-03-13
-
-Misc update to mlx5 core and E-Switch driver:
-
-1) Blue-Field, Update VF vports config when num of VFs changed
-
-From Bodon, Various misc cleanups and refactoring
-for vport enabling/disabling routines to allow them to be called
-dynamically and not only on E-Switch load.
-
-This will allow ECPF (ConnectX BlueField Smartnic) support for dynamic
-num vf changes and dynamic vport creation and configuration as introduced
-in "Update VF vports config when num of VFs changed" patch.
-
-2) From Parav and Mark, trivial clean-ups.
-
-3) Software steering support for flow table id as destination
-and a clean-up patch to remove unnecessary function stubs, from Alex.
-
-----------------------------------------------------------------
-Alex Vesker (2):
-      net/mlx5: DR, Add support for flow table id destination action
-      net/mlx5: DR, Remove unneeded functions deceleration
-
-Bodong Wang (8):
-      net/mlx5: E-Switch, Remove redundant check of eswitch manager cap
-      net/mlx5: E-Switch, Hold mutex when querying drop counter in legacy mode
-      net/mlx5: E-Switch, Remove redundant warning when QoS enable failed
-      net/mlx5: E-Switch, Prepare for vport enable/disable refactor
-      net/mlx5: E-switch, Make vport setup/cleanup sequence symmetric
-      net/mlx5: E-Switch, Introduce per vport configuration for eswitch modes
-      net/mlx5: E-Switch, Update VF vports config when num of VFs changed
-      net/mlx5: E-Switch, Refactor unload all reps per rep type
-
-Mark Bloch (1):
-      net/mlx5: Accept flow rules without match
-
-Parav Pandit (3):
-      net/mlx5: E-switch, Annotate termtbl_mutex mutex destroy
-      net/mlx5: E-switch, Annotate esw state_lock mutex destroy
-      net/mlx5: Avoid deriving mlx5_core_dev second time
-
- drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c  |  15 +-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  | 245 ++++++++++++---------
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  11 +
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 237 ++++++--------------
- .../mellanox/mlx5/core/eswitch_offloads_chains.c   |   3 +-
- .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  |   3 +-
- drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   4 +
- .../mellanox/mlx5/core/steering/dr_action.c        |  18 ++
- .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |  12 +
- .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  | 104 +--------
- 10 files changed, 266 insertions(+), 386 deletions(-)
