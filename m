@@ -2,104 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61B9818599A
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 04:14:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6212B185993
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 04:07:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726655AbgCODOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Mar 2020 23:14:30 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:34756 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726596AbgCODO3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 23:14:29 -0400
-Received: by mail-io1-f68.google.com with SMTP id h131so13747860iof.1
-        for <netdev@vger.kernel.org>; Sat, 14 Mar 2020 20:14:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XZY2E8NvJNRvuGgOczAKWNt0CfRe4EnCL+nHnshq92Y=;
-        b=mtFN5ouGC3mCqglYdPtn+KWckoUHyKpm13diSI6hxk1Gb3EUidgy1Zely1/xrZqK0r
-         vojgzLH9c0/iHegcE8eBT/XHQE3zBgP4yUUYuOpT+aT2qETIN+s7iDqgb27vVf+087J6
-         SI3NmfNEhOf0bqboR57I7sQxNPYeY1xVVsZC1kgT6AIHnqioCOOFAcbbpTtZq0lIWlsM
-         RiR7K+RGrfG+niWw3EhggkHXAcM+kWdar4LN4HhgeJ0UT6jAY1qBjx8lp5mbCtGEMHTL
-         S9GwEBK4x3PW+OSvXmoGTbs5OzAwWb4NOZKYRy1QL+94sWk85NHq6hpQ4gPglU1EdBnZ
-         CRPQ==
+        id S1726839AbgCODHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 Mar 2020 23:07:39 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:33587 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726189AbgCODHj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 23:07:39 -0400
+Received: by mail-il1-f197.google.com with SMTP id x14so10615122ilp.0
+        for <netdev@vger.kernel.org>; Sat, 14 Mar 2020 20:07:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XZY2E8NvJNRvuGgOczAKWNt0CfRe4EnCL+nHnshq92Y=;
-        b=cF0Rvo4Bji+AFVUduwSRHiXQkKzzCMnSb9DJvp86DmgvzJ8lSDfzx6YVcuoXWjTo5+
-         xNbGKa2zKF5RWNqu02I2AhNycrPQIKg9EsSgaz5MD0n9WD6Yklr8QBAVNZjPVqtObN9O
-         L6eVyW0DkIRQMlkc0fmIOIh0svdOeAwoypDhV+6+OnfeBKOFuGBySD4ZrVIkzwPijLcB
-         aIneCya4Lbx1GkJvI6PbF4lZwJA368G8axrP6CctDsYQNiS0jVKwPmOXssLHqWzGdZ+w
-         8bDUkXMCnPLTMe5kT2ppTE5P8jc5avVqhrlpdxQ/8HvzekcSffqUAox0P1aqxm4Uhhde
-         Kd4Q==
-X-Gm-Message-State: ANhLgQ3GO44y02K5mHW4Oho03IxcuGF7BF0KNbguQ/8VjdndofkVUk6d
-        MfLN/zULNQKGlCG4q3x3aot2HJJkPKE=
-X-Google-Smtp-Source: ADFU+vvrHiw8R6kOLYwonCdLylCcbbRoXi88McXYhaMddK25jum6SU1jLqQ02rzJKndOsJLCwl2Kkg==
-X-Received: by 2002:a63:a47:: with SMTP id z7mr16734899pgk.117.1584163818832;
-        Fri, 13 Mar 2020 22:30:18 -0700 (PDT)
-Received: from tw-172-25-31-169.office.twttr.net ([8.25.197.25])
-        by smtp.gmail.com with ESMTPSA id b2sm5796540pjc.6.2020.03.13.22.30.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Mar 2020 22:30:17 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot+f9b32aaacd60305d9687@syzkaller.appspotmail.com,
-        syzbot+2f8c233f131943d6056d@syzkaller.appspotmail.com,
-        syzbot+9c2df9fd5e9445b74e01@syzkaller.appspotmail.com,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [Patch net] net_sched: cls_route: remove the right filter from hashtable
-Date:   Fri, 13 Mar 2020 22:29:54 -0700
-Message-Id: <20200314052954.26885-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.21.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=pprWkeLcDDK7OkQ2Y9iXM9XZrZXSn7f3XX4nhoo6rSw=;
+        b=Uv8TbXDhO+vdS6kKpjPWmqhNONyS7xX3Oi/7AQOodAebHlNcot02poWjKLWDQM10nJ
+         PoHFsDkvn0Swh3BTR+D5NvThmsCXpAOpsfCWoOX/sYwPvdI5sWnxdXrEa0DTWKeLijO1
+         +7Bur3gxt0/52sEugJ3uoe6EISfEKfC0iRYrK/bhyuBIr1ue7QN3u5t3IqH1caSfhxkO
+         DOmx5WNFOVWpwYhrfoQV5zP3ujykM7bJn+8qXWEn/Gw/pdbYJKpbw5fDYt8pRsWmszFD
+         VJ4/+xR+jmrgtEqbOsRx8q563GdbtiPciCyAShJe7Ww5mK5NfcKZ78pTNlM+xzb+3Iao
+         OvUw==
+X-Gm-Message-State: ANhLgQ36uonGEoNAz4tuR04/4jS6JyDPUs8Fd/hnqv77FzFMdnK3Zg2Y
+        Nsn36wYzpoA+KiiJqKino+x2NO4Kh4FncA/98F05mDI7FowJ
+X-Google-Smtp-Source: ADFU+vu2SXA/dKpQ43odLnhOnSlKUPuNIrM34J+wCtnsfBmqnncXyUprk3FWCWZot0YxZl1vOGPZQCGFQ14BqT55KcFyz/7xGn41
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a02:8645:: with SMTP id e63mr14230111jai.14.1584172630425;
+ Sat, 14 Mar 2020 00:57:10 -0700 (PDT)
+Date:   Sat, 14 Mar 2020 00:57:10 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e642a905a0cbee6e@google.com>
+Subject: linux-next test error: WARNING: suspicious RCU usage in ovs_ct_exit
+From:   syzbot <syzbot+7ef50afd3a211f879112@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dev@openvswitch.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pshelar@ovn.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-route4_change() allocates a new filter and copies values from
-the old one. After the new filter is inserted into the hash
-table, the old filter should be removed and freed, as the final
-step of the update.
+Hello,
 
-However, the current code mistakenly removes the new one. This
-looks apparently wrong to me, and it causes double "free" and
-use-after-free too, as reported by syzbot.
+syzbot found the following crash on:
 
-Reported-and-tested-by: syzbot+f9b32aaacd60305d9687@syzkaller.appspotmail.com
-Reported-and-tested-by: syzbot+2f8c233f131943d6056d@syzkaller.appspotmail.com
-Reported-and-tested-by: syzbot+9c2df9fd5e9445b74e01@syzkaller.appspotmail.com
-Fixes: 1109c00547fc ("net: sched: RCU cls_route")
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+HEAD commit:    2e602db7 Add linux-next specific files for 20200313
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=16669919e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cf2879fc1055b886
+dashboard link: https://syzkaller.appspot.com/bug?extid=7ef50afd3a211f879112
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+
+Unfortunately, I don't have any reproducer for this crash yet.
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+7ef50afd3a211f879112@syzkaller.appspotmail.com
+
+=============================
+WARNING: suspicious RCU usage
+5.6.0-rc5-next-20200313-syzkaller #0 Not tainted
+-----------------------------
+net/openvswitch/conntrack.c:1898 RCU-list traversed in non-reader section!!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+3 locks held by kworker/u4:3/127:
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: __write_once_size include/linux/compiler.h:250 [inline]
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: set_work_data kernel/workqueue.c:615 [inline]
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: set_work_pool_and_clear_pending kernel/workqueue.c:642 [inline]
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: process_one_work+0x82a/0x1690 kernel/workqueue.c:2237
+ #1: ffffc900013a7dd0 (net_cleanup_work){+.+.}, at: process_one_work+0x85e/0x1690 kernel/workqueue.c:2241
+ #2: ffffffff8a54df08 (pernet_ops_rwsem){++++}, at: cleanup_net+0x9b/0xa50 net/core/net_namespace.c:551
+
+stack backtrace:
+CPU: 0 PID: 127 Comm: kworker/u4:3 Not tainted 5.6.0-rc5-next-20200313-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ ovs_ct_limit_exit net/openvswitch/conntrack.c:1898 [inline]
+ ovs_ct_exit+0x3db/0x558 net/openvswitch/conntrack.c:2295
+ ovs_exit_net+0x1df/0xba0 net/openvswitch/datapath.c:2469
+ ops_exit_list.isra.0+0xa8/0x150 net/core/net_namespace.c:172
+ cleanup_net+0x511/0xa50 net/core/net_namespace.c:589
+ process_one_work+0x94b/0x1690 kernel/workqueue.c:2266
+ worker_thread+0x96/0xe20 kernel/workqueue.c:2412
+ kthread+0x357/0x430 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+tipc: TX() has been purged, node left!
+
+=============================
+WARNING: suspicious RCU usage
+5.6.0-rc5-next-20200313-syzkaller #0 Not tainted
+-----------------------------
+net/ipv4/ipmr.c:1757 RCU-list traversed in non-reader section!!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+4 locks held by kworker/u4:3/127:
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: __write_once_size include/linux/compiler.h:250 [inline]
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: atomic64_set include/asm-generic/atomic-instrumented.h:856 [inline]
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: atomic_long_set include/asm-generic/atomic-long.h:41 [inline]
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: set_work_data kernel/workqueue.c:615 [inline]
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: set_work_pool_and_clear_pending kernel/workqueue.c:642 [inline]
+ #0: ffff8880a9771d28 ((wq_completion)netns){+.+.}, at: process_one_work+0x82a/0x1690 kernel/workqueue.c:2237
+ #1: ffffc900013a7dd0 (net_cleanup_work){+.+.}, at: process_one_work+0x85e/0x1690 kernel/workqueue.c:2241
+ #2: ffffffff8a54df08 (pernet_ops_rwsem){++++}, at: cleanup_net+0x9b/0xa50 net/core/net_namespace.c:551
+ #3: ffffffff8a559c80 (rtnl_mutex){+.+.}, at: ip6gre_exit_batch_net+0x88/0x700 net/ipv6/ip6_gre.c:1602
+
+stack backtrace:
+CPU: 1 PID: 127 Comm: kworker/u4:3 Not tainted 5.6.0-rc5-next-20200313-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: netns cleanup_net
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ ipmr_device_event+0x240/0x2b0 net/ipv4/ipmr.c:1757
+ notifier_call_chain+0xc0/0x230 kernel/notifier.c:83
+ call_netdevice_notifiers_info net/core/dev.c:1948 [inline]
+ call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1933
+ call_netdevice_notifiers_extack net/core/dev.c:1960 [inline]
+ call_netdevice_notifiers net/core/dev.c:1974 [inline]
+ rollback_registered_many+0x75c/0xe70 net/core/dev.c:8810
+ unregister_netdevice_many.part.0+0x16/0x1e0 net/core/dev.c:9966
+ unregister_netdevice_many+0x36/0x50 net/core/dev.c:9965
+ ip6gre_exit_batch_net+0x4e8/0x700 net/ipv6/ip6_gre.c:1605
+ ops_exit_list.isra.0+0x103/0x150 net/core/net_namespace.c:175
+ cleanup_net+0x511/0xa50 net/core/net_namespace.c:589
+ process_one_work+0x94b/0x1690 kernel/workqueue.c:2266
+ worker_thread+0x96/0xe20 kernel/workqueue.c:2412
+ kthread+0x357/0x430 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+
 ---
- net/sched/cls_route.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/net/sched/cls_route.c b/net/sched/cls_route.c
-index 6f8786b06bde..5efa3e7ace15 100644
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -534,8 +534,8 @@ static int route4_change(struct net *net, struct sk_buff *in_skb,
- 			fp = &b->ht[h];
- 			for (pfp = rtnl_dereference(*fp); pfp;
- 			     fp = &pfp->next, pfp = rtnl_dereference(*fp)) {
--				if (pfp == f) {
--					*fp = f->next;
-+				if (pfp == fold) {
-+					rcu_assign_pointer(*fp, fold->next);
- 					break;
- 				}
- 			}
--- 
-2.21.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
