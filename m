@@ -2,192 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9740418539D
-	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 02:02:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B08851853BA
+	for <lists+netdev@lfdr.de>; Sat, 14 Mar 2020 02:16:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727742AbgCNBCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 Mar 2020 21:02:15 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:32190 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727618AbgCNBCP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 Mar 2020 21:02:15 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02E0saqa001129
-        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 18:02:12 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=enjhqhTg+E1P45aNaI6TinOim3qPkw/553NJYphSBeE=;
- b=Pnb4u0L7YIHYR22nyL7ng8hs8uw7p3AAq2JdeV+uOXrfqnAH4RPG6KYcsDwxVIxpPG3h
- zPf45YRqeUR+bsMNBPYUUthGYrz/zlO7qzuRE35rztdSDtXDARvc5QnLi1X0xV5wMyXb
- 1kHDrFV6ZcDxFtONXu05AujIR0eHODX/2Ys= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yqt8jy8rs-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Fri, 13 Mar 2020 18:02:12 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Fri, 13 Mar 2020 18:02:10 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id BE8442942D3E; Fri, 13 Mar 2020 18:02:09 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v3 bpf] bpf: Sanitize the bpf_struct_ops tcp-cc name
-Date:   Fri, 13 Mar 2020 18:02:09 -0700
-Message-ID: <20200314010209.1131542-1-kafai@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
-MIME-Version: 1.0
+        id S1727462AbgCNBQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 Mar 2020 21:16:46 -0400
+Received: from mail-eopbgr50063.outbound.protection.outlook.com ([40.107.5.63]:20602
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726637AbgCNBQp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 13 Mar 2020 21:16:45 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OWy7oVVS1MSsIYqGhMXv/6iDSycMuDR5HXBLzqdH32zSNR2q58H90Sqv3Fi1mrwSYY13XA6DhXf5F04wPJ90mnaJeWt+eJLQcNmlB/BlbD7qmwq88SW3v0Vb4TUA+UaHuXIAxm2qfHedAzYKq7UZGz26HGJs+UnWk+MVN5xzNP2vbhLO53Jlf38mPEJ88kipT+J7Vclm/Tnq+pujX8X/ddsPSHGxdbbg29Tmry1gsHj2SNT56d/8FN/ni6plyVeV2yShjShhpgk3ixq9lis5kOsIieCHce1IW3ZCuaOrpdQM6Uq38M46vI3Md7EmmGW55MD3A/PvJpFICaX0xWe6qw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oK2CTXAOn4GcV4FcAkXjsh7ppt30gKdXJZCZmBaJ2dU=;
+ b=XFzq5M7ndS/eUUWm/vjiABFynA1xVTUYpeEuiDgQarvUiliNQPLlAXBBGucEwX2cJ0Sh3Y36RxKb5BOSE5yX2gO4MbnMAtTNPD6b8ir5mr7TJiVKn442Pp8st7InAQgD8ju/5zOsPD4GU2qo5D93AOsSJ1rCR3UW6gTNc3XWr3rDTSuwHZ1YfTRtpLlvM+wZ8HthovWzjecwFgxGiK3mIQQNQv4zGX6+Z8tOaanghC4eG4W9I+vQSSZFBoTUltMftaPnDPpfCHaRELY4+x6ZoKcjHMxtpM1oXz8b4aSZJKfLN9KB/FbhG923nmw7m3kOawhwy13PoNw4hw3WCbAcHg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oK2CTXAOn4GcV4FcAkXjsh7ppt30gKdXJZCZmBaJ2dU=;
+ b=c0dl0lv7t0KVrZ9wxI+eMrvJ1A31t0YxgruJDqAE/2UEA4RFpGLerHyqa82GwsD5DPQGcoOO/Qsg/Gfvr3cFJvuZVlPjgyvkDg1tgUV+3PqRdqs+Eaq7r9WXZaY7rJTfNlyzXrzXyRDFZ2pACOZme1TKial309IpzZj0NyL+HIY=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1PR05MB6845.eurprd05.prod.outlook.com (10.186.163.80) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2814.16; Sat, 14 Mar 2020 01:16:41 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2793.018; Sat, 14 Mar 2020
+ 01:16:41 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     kuba@kernel.org, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next 00/14] Mellanox, mlx5 updates 2020-03-13
+Date:   Fri, 13 Mar 2020 18:16:08 -0700
+Message-Id: <20200314011622.64939-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.24.1
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-13_12:2020-03-12,2020-03-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0
- impostorscore=0 bulkscore=0 malwarescore=0 suspectscore=38 adultscore=0
- clxscore=1015 spamscore=0 priorityscore=1501 phishscore=0 mlxlogscore=832
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2003140002
-X-FB-Internal: deliver
+X-ClientProxiedBy: BY5PR03CA0005.namprd03.prod.outlook.com
+ (2603:10b6:a03:1e0::15) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BY5PR03CA0005.namprd03.prod.outlook.com (2603:10b6:a03:1e0::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.16 via Frontend Transport; Sat, 14 Mar 2020 01:16:39 +0000
+X-Mailer: git-send-email 2.24.1
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: a593e69b-6ea3-4839-ef5e-08d7c7b559ec
+X-MS-TrafficTypeDiagnostic: VI1PR05MB6845:|VI1PR05MB6845:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB6845D45C61E03EF0D72299E1BEFB0@VI1PR05MB6845.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 034215E98F
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(39860400002)(366004)(346002)(376002)(199004)(86362001)(6506007)(52116002)(4326008)(6486002)(6512007)(107886003)(15650500001)(2906002)(5660300002)(478600001)(316002)(66476007)(26005)(66946007)(8936002)(66556008)(8676002)(81166006)(81156014)(2616005)(36756003)(956004)(186003)(16526019)(1076003)(6916009)(6666004)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6845;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HYYqeJ9VzrRKpzt6BLRBeWNhtnE6hTlT0uF+QPP0J1mIa7CELwjG/+IqhMcBJ+MXNS/RxcsA6rOKkYVvXkmO2cJVaww+NmGXxcMSn02osGcn44m9WvvQfgGHZXL2r97+2NaQdgH8RovvQx4pvVhYJYzNjUTi+kIoKX+s0K9y6lfsPftoYL5XTYr/7cltKPAallwFZDlKdOdJHgeJmwzsVvnE1RUMXfYbG1sXiOuUQ2MpNfM7zWm9+1OHI8nGJEzZzQYvHtDBp2kgGDeIlRxAlMGKPIJLlfETxC/GjRkc18B1frCZ6QPpp+GAK4crJbHQ2uiwm+oXTrwu52NmIZQkpAquAO5G4GBC2N9l32lftxWWWUQRWjMecNwNVGDZRKUKA9+VD+TBtWa1g9fkTd15pRsKgb7mYd6sJGJe8QUzG7RJS6eCMTMm3AIk4ioLeYIfdYQJdfrT8z8Au+oxlWkpmgXox9e4PW0bTCzsciKDPbRrOGElXgDxF1w0+VssSmjzLFSnAi1HhntPpIT2Av4IkpxnZMEilZaoKgtbzx0cKaU=
+X-MS-Exchange-AntiSpam-MessageData: alR+Ri6J5N6j2z/HpagIyWxrtDfM2bsNTJXDtJio7RiCWE3lzuKKcC44LW3VDX7WflbVTK9VaDrbSgrG5vceNA6O8SncD+9sGWX+cP4tItWYYDVuwsyMXt+RLqmwPTn+TnX3xB1i7JobhYR7cu+01A==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a593e69b-6ea3-4839-ef5e-08d7c7b559ec
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Mar 2020 01:16:41.0960
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: R9z2gaq4GAZ3sM8sov/9QT2ZSaxuIy7bvyi3tCpbmfRhf2roMXlJtkFdvHyajm1yYw/9dzmww5OMHuMUL13tEg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6845
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bpf_struct_ops tcp-cc name should be sanitized in order to
-avoid problematic chars (e.g. whitespaces).
+Hi Dave,
 
-This patch reuses the bpf_obj_name_cpy() for accepting the same set
-of characters in order to keep a consistent bpf programming experience.
-A "size" param is added.  Also, the strlen is returned on success so
-that the caller (like the bpf_tcp_ca here) can error out on empty name.
-The existing callers of the bpf_obj_name_cpy() only need to change the
-testing statement to "if (err < 0)".  For all these existing callers,
-the err will be overwritten later, so no extra change is needed
-for the new strlen return value.
+This series adds misc updates to mlx5 driver
+For more information please see tag log below.
 
-v3:
-- reverse xmas tree style
+Please pull and let me know if there is any problem.
 
-v2:
-- Save the orig_src to avoid "end - size" (Andrii)
+Thanks,
+Saeed.
 
-Fixes: 0baf26b0fcd7 ("bpf: tcp: Support tcp_congestion_ops in bpf")
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
 ---
- include/linux/bpf.h   |  1 +
- kernel/bpf/syscall.c  | 25 ++++++++++++++-----------
- net/ipv4/bpf_tcp_ca.c |  7 ++-----
- 3 files changed, 17 insertions(+), 16 deletions(-)
+The following changes since commit 1d343579312311aa9875b34d5a921f5e2ec69f0a:
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 49b1a70e12c8..212991f6f2a5 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -160,6 +160,7 @@ static inline void copy_map_value(struct bpf_map *map, void *dst, void *src)
- }
- void copy_map_value_locked(struct bpf_map *map, void *dst, void *src,
- 			   bool lock_src);
-+int bpf_obj_name_cpy(char *dst, const char *src, unsigned int size);
- 
- struct bpf_offload_dev;
- struct bpf_offloaded_map;
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 0c7fb0d4836d..2857b7dda382 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -696,14 +696,15 @@ int bpf_get_file_flag(int flags)
- 		   offsetof(union bpf_attr, CMD##_LAST_FIELD) - \
- 		   sizeof(attr->CMD##_LAST_FIELD)) != NULL
- 
--/* dst and src must have at least BPF_OBJ_NAME_LEN number of bytes.
-- * Return 0 on success and < 0 on error.
-+/* dst and src must have at least "size" number of bytes.
-+ * Return strlen on success and < 0 on error.
-  */
--static int bpf_obj_name_cpy(char *dst, const char *src)
-+int bpf_obj_name_cpy(char *dst, const char *src, unsigned int size)
- {
--	const char *end = src + BPF_OBJ_NAME_LEN;
-+	const char *end = src + size;
-+	const char *orig_src = src;
- 
--	memset(dst, 0, BPF_OBJ_NAME_LEN);
-+	memset(dst, 0, size);
- 	/* Copy all isalnum(), '_' and '.' chars. */
- 	while (src < end && *src) {
- 		if (!isalnum(*src) &&
-@@ -712,11 +713,11 @@ static int bpf_obj_name_cpy(char *dst, const char *src)
- 		*dst++ = *src++;
- 	}
- 
--	/* No '\0' found in BPF_OBJ_NAME_LEN number of bytes */
-+	/* No '\0' found in "size" number of bytes */
- 	if (src == end)
- 		return -EINVAL;
- 
--	return 0;
-+	return src - orig_src;
- }
- 
- int map_check_no_btf(const struct bpf_map *map,
-@@ -810,8 +811,9 @@ static int map_create(union bpf_attr *attr)
- 	if (IS_ERR(map))
- 		return PTR_ERR(map);
- 
--	err = bpf_obj_name_cpy(map->name, attr->map_name);
--	if (err)
-+	err = bpf_obj_name_cpy(map->name, attr->map_name,
-+			       sizeof(attr->map_name));
-+	if (err < 0)
- 		goto free_map;
- 
- 	atomic64_set(&map->refcnt, 1);
-@@ -2098,8 +2100,9 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
- 		goto free_prog;
- 
- 	prog->aux->load_time = ktime_get_boottime_ns();
--	err = bpf_obj_name_cpy(prog->aux->name, attr->prog_name);
--	if (err)
-+	err = bpf_obj_name_cpy(prog->aux->name, attr->prog_name,
-+			       sizeof(attr->prog_name));
-+	if (err < 0)
- 		goto free_prog;
- 
- 	/* run eBPF verifier */
-diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
-index 574972bc7299..2bf3abeb1456 100644
---- a/net/ipv4/bpf_tcp_ca.c
-+++ b/net/ipv4/bpf_tcp_ca.c
-@@ -184,7 +184,6 @@ static int bpf_tcp_ca_init_member(const struct btf_type *t,
- {
- 	const struct tcp_congestion_ops *utcp_ca;
- 	struct tcp_congestion_ops *tcp_ca;
--	size_t tcp_ca_name_len;
- 	int prog_fd;
- 	u32 moff;
- 
-@@ -199,13 +198,11 @@ static int bpf_tcp_ca_init_member(const struct btf_type *t,
- 		tcp_ca->flags = utcp_ca->flags;
- 		return 1;
- 	case offsetof(struct tcp_congestion_ops, name):
--		tcp_ca_name_len = strnlen(utcp_ca->name, sizeof(utcp_ca->name));
--		if (!tcp_ca_name_len ||
--		    tcp_ca_name_len == sizeof(utcp_ca->name))
-+		if (bpf_obj_name_cpy(tcp_ca->name, utcp_ca->name,
-+				     sizeof(tcp_ca->name)) <= 0)
- 			return -EINVAL;
- 		if (tcp_ca_find(utcp_ca->name))
- 			return -EEXIST;
--		memcpy(tcp_ca->name, utcp_ca->name, sizeof(tcp_ca->name));
- 		return 1;
- 	}
- 
--- 
-2.17.1
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-03-12 22:34:48 -0700)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-03-13
+
+for you to fetch changes up to bc1a02884a33f9d49cda0c77dc8eccebd6c5c0e5:
+
+  net/mlx5: DR, Remove unneeded functions deceleration (2020-03-13 16:26:28 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2020-03-13
+
+Misc update to mlx5 core and E-Switch driver:
+
+1) Blue-Field, Update VF vports config when num of VFs changed
+
+From Bodon, Various misc cleanups and refactoring
+for vport enabling/disabling routines to allow them to be called
+dynamically and not only on E-Switch load.
+
+This will allow ECPF (ConnectX BlueField Smartnic) support for dynamic
+num vf changes and dynamic vport creation and configuration as introduced
+in "Update VF vports config when num of VFs changed" patch.
+
+2) From Parav and Mark, trivial clean-ups.
+
+3) Software steering support for flow table id as destination
+and a clean-up patch to remove unnecessary function stubs, from Alex.
+
+----------------------------------------------------------------
+Alex Vesker (2):
+      net/mlx5: DR, Add support for flow table id destination action
+      net/mlx5: DR, Remove unneeded functions deceleration
+
+Bodong Wang (8):
+      net/mlx5: E-Switch, Remove redundant check of eswitch manager cap
+      net/mlx5: E-Switch, Hold mutex when querying drop counter in legacy mode
+      net/mlx5: E-Switch, Remove redundant warning when QoS enable failed
+      net/mlx5: E-Switch, Prepare for vport enable/disable refactor
+      net/mlx5: E-switch, Make vport setup/cleanup sequence symmetric
+      net/mlx5: E-Switch, Introduce per vport configuration for eswitch modes
+      net/mlx5: E-Switch, Update VF vports config when num of VFs changed
+      net/mlx5: E-Switch, Refactor unload all reps per rep type
+
+Mark Bloch (1):
+      net/mlx5: Accept flow rules without match
+
+Parav Pandit (3):
+      net/mlx5: E-switch, Annotate termtbl_mutex mutex destroy
+      net/mlx5: E-switch, Annotate esw state_lock mutex destroy
+      net/mlx5: Avoid deriving mlx5_core_dev second time
+
+ drivers/net/ethernet/mellanox/mlx5/core/en_arfs.c  |  15 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  | 245 ++++++++++++---------
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  11 +
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 237 ++++++--------------
+ .../mellanox/mlx5/core/eswitch_offloads_chains.c   |   3 +-
+ .../mellanox/mlx5/core/eswitch_offloads_termtbl.c  |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |   4 +
+ .../mellanox/mlx5/core/steering/dr_action.c        |  18 ++
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |  12 +
+ .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  | 104 +--------
+ 10 files changed, 266 insertions(+), 386 deletions(-)
