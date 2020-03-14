@@ -2,61 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BED7185818
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 02:54:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E145A185838
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 02:58:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727558AbgCOByc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 Mar 2020 21:54:32 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36040 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727123AbgCOByb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 14 Mar 2020 21:54:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=5jlhMOC+UmD+9/ZHo+msHHcbWx1FFxcsO03ey2pettQ=; b=wOVkaSbsQtaOmFpVQv94waqQw9
-        693RCNHtvmOr31UvxdYqSKqfrsjRgz5WMBmE42u8twkt30o9x1f5JSqvFEiOQZvUpQ9NHnCuXjnGn
-        BPwZfpkYZM0ngmZ3+xYT7cxfV+kRzVMEr0y0iOUFzGOsP+RhAXzioJqO5s1ZtSuEz9pA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jDBqO-0001gQ-0x; Sat, 14 Mar 2020 19:49:08 +0100
-Date:   Sat, 14 Mar 2020 19:49:08 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net-next 6/8] net: dsa: mv88e6xxx: combine port_set_speed
- and port_set_duplex
-Message-ID: <20200314184908.GJ5388@lunn.ch>
-References: <20200314101431.GF25745@shell.armlinux.org.uk>
- <E1jD3ph-0006Dq-Pd@rmk-PC.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <E1jD3ph-0006Dq-Pd@rmk-PC.armlinux.org.uk>
+        id S1727612AbgCOB6F convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sat, 14 Mar 2020 21:58:05 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:34600 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726853AbgCOB6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 Mar 2020 21:58:05 -0400
+Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 95D57CED19;
+        Sat, 14 Mar 2020 19:59:44 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: [PATCH -next] Bluetooth: L2CAP: remove set but not used variable
+ 'credits'
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20200314100606.41532-1-yuehaibing@huawei.com>
+Date:   Sat, 14 Mar 2020 19:50:14 +0100
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <DB8D6DBD-7FE3-4BF3-A284-4A0DF78F2A98@holtmann.org>
+References: <20200314100606.41532-1-yuehaibing@huawei.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 14, 2020 at 10:15:53AM +0000, Russell King wrote:
-> Setting the speed independently of duplex makes little sense; the two
-> parameters result from negotiation or fixed setup, and may have inter-
-> dependencies. Moreover, they are always controlled via the same
-> register - having them split means we have to read-modify-write this
-> register twice.
-> 
-> Combine the two operations into a single port_set_speed_duplex()
-> operation. Not only is this more efficient, it reduces the size of the
-> code as well.
-> 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+Hi Yue,
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> net/bluetooth/l2cap_core.c: In function l2cap_ecred_conn_req:
+> net/bluetooth/l2cap_core.c:5848:6: warning: variable credits set but not used [-Wunused-but-set-variable]
+> 
+> commit 15f02b910562 ("Bluetooth: L2CAP: Add initial code for Enhanced Credit Based Mode")
+> involved this unused variable, remove it.
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
+> net/bluetooth/l2cap_core.c | 3 +--
+> 1 file changed, 1 insertion(+), 2 deletions(-)
 
-    Andrew
+patch has been applied to bluetooth-next tree.
+
+Regards
+
+Marcel
+
