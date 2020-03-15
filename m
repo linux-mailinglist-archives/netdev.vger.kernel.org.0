@@ -2,28 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E011185B88
+	by mail.lfdr.de (Postfix) with ESMTP id 1E777185B87
 	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 10:35:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728173AbgCOJfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Mar 2020 05:35:10 -0400
-Received: from mx2.suse.de ([195.135.220.15]:57118 "EHLO mx2.suse.de"
+        id S1728156AbgCOJfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Mar 2020 05:35:09 -0400
+Received: from mx2.suse.de ([195.135.220.15]:57114 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728138AbgCOJfJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728137AbgCOJfJ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 15 Mar 2020 05:35:09 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id B1AE0AC91;
+        by mx2.suse.de (Postfix) with ESMTP id C23B2ACA4;
         Sun, 15 Mar 2020 09:35:07 +0000 (UTC)
 From:   Takashi Iwai <tiwai@suse.de>
 To:     netdev@vger.kernel.org
 Cc:     "David S . Miller" <davem@davemloft.net>,
-        Edward Cree <ecree@solarflare.com>,
-        Martin Habets <mhabets@solarflare.com>,
-        Solarflare linux maintainers <linux-net-drivers@solarflare.com>
-Subject: [PATCH v2 5/6] net: sfc: Use scnprintf() for avoiding potential buffer overflow
-Date:   Sun, 15 Mar 2020 10:35:02 +0100
-Message-Id: <20200315093503.8558-6-tiwai@suse.de>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH v2 6/6] net: netdevsim: Use scnprintf() for avoiding potential buffer overflow
+Date:   Sun, 15 Mar 2020 10:35:03 +0100
+Message-Id: <20200315093503.8558-7-tiwai@suse.de>
 X-Mailer: git-send-email 2.16.4
 In-Reply-To: <20200315093503.8558-1-tiwai@suse.de>
 References: <20200315093503.8558-1-tiwai@suse.de>
@@ -37,88 +35,63 @@ actual output size, the succeeding calls may go beyond the given
 buffer limit.  Fix it by replacing with scnprintf().
 
 Cc: "David S . Miller" <davem@davemloft.net>
-Cc: Edward Cree <ecree@solarflare.com>
-Cc: Martin Habets <mhabets@solarflare.com>
-Cc: Solarflare linux maintainers <linux-net-drivers@solarflare.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: netdev@vger.kernel.org
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 ---
 v1->v2: Align the remaining lines to the open parenthesis
 
- drivers/net/ethernet/sfc/mcdi.c | 32 ++++++++++++++++++--------------
- 1 file changed, 18 insertions(+), 14 deletions(-)
+ drivers/net/netdevsim/ipsec.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/mcdi.c
-index 2713300343c7..15c731d04065 100644
---- a/drivers/net/ethernet/sfc/mcdi.c
-+++ b/drivers/net/ethernet/sfc/mcdi.c
-@@ -212,12 +212,14 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
- 		 * progress on a NIC at any one time.  So no need for locking.
- 		 */
- 		for (i = 0; i < hdr_len / 4 && bytes < PAGE_SIZE; i++)
--			bytes += snprintf(buf + bytes, PAGE_SIZE - bytes,
--					  " %08x", le32_to_cpu(hdr[i].u32[0]));
-+			bytes += scnprintf(buf + bytes, PAGE_SIZE - bytes,
-+					   " %08x",
-+					   le32_to_cpu(hdr[i].u32[0]));
+diff --git a/drivers/net/netdevsim/ipsec.c b/drivers/net/netdevsim/ipsec.c
+index e27fc1a4516d..3811f1bde84e 100644
+--- a/drivers/net/netdevsim/ipsec.c
++++ b/drivers/net/netdevsim/ipsec.c
+@@ -29,9 +29,9 @@ static ssize_t nsim_dbg_netdev_ops_read(struct file *filp,
+ 		return -ENOMEM;
  
- 		for (i = 0; i < inlen / 4 && bytes < PAGE_SIZE; i++)
--			bytes += snprintf(buf + bytes, PAGE_SIZE - bytes,
--					  " %08x", le32_to_cpu(inbuf[i].u32[0]));
-+			bytes += scnprintf(buf + bytes, PAGE_SIZE - bytes,
-+					   " %08x",
-+					   le32_to_cpu(inbuf[i].u32[0]));
+ 	p = buf;
+-	p += snprintf(p, bufsize - (p - buf),
+-		      "SA count=%u tx=%u\n",
+-		      ipsec->count, ipsec->tx);
++	p += scnprintf(p, bufsize - (p - buf),
++		       "SA count=%u tx=%u\n",
++		       ipsec->count, ipsec->tx);
  
- 		netif_info(efx, hw, efx->net_dev, "MCDI RPC REQ:%s\n", buf);
+ 	for (i = 0; i < NSIM_IPSEC_MAX_SA_COUNT; i++) {
+ 		struct nsim_sa *sap = &ipsec->sa[i];
+@@ -39,18 +39,18 @@ static ssize_t nsim_dbg_netdev_ops_read(struct file *filp,
+ 		if (!sap->used)
+ 			continue;
+ 
+-		p += snprintf(p, bufsize - (p - buf),
+-			      "sa[%i] %cx ipaddr=0x%08x %08x %08x %08x\n",
+-			      i, (sap->rx ? 'r' : 't'), sap->ipaddr[0],
+-			      sap->ipaddr[1], sap->ipaddr[2], sap->ipaddr[3]);
+-		p += snprintf(p, bufsize - (p - buf),
+-			      "sa[%i]    spi=0x%08x proto=0x%x salt=0x%08x crypt=%d\n",
+-			      i, be32_to_cpu(sap->xs->id.spi),
+-			      sap->xs->id.proto, sap->salt, sap->crypt);
+-		p += snprintf(p, bufsize - (p - buf),
+-			      "sa[%i]    key=0x%08x %08x %08x %08x\n",
+-			      i, sap->key[0], sap->key[1],
+-			      sap->key[2], sap->key[3]);
++		p += scnprintf(p, bufsize - (p - buf),
++			       "sa[%i] %cx ipaddr=0x%08x %08x %08x %08x\n",
++			       i, (sap->rx ? 'r' : 't'), sap->ipaddr[0],
++			       sap->ipaddr[1], sap->ipaddr[2], sap->ipaddr[3]);
++		p += scnprintf(p, bufsize - (p - buf),
++			       "sa[%i]    spi=0x%08x proto=0x%x salt=0x%08x crypt=%d\n",
++			       i, be32_to_cpu(sap->xs->id.spi),
++			       sap->xs->id.proto, sap->salt, sap->crypt);
++		p += scnprintf(p, bufsize - (p - buf),
++			       "sa[%i]    key=0x%08x %08x %08x %08x\n",
++			       i, sap->key[0], sap->key[1],
++			       sap->key[2], sap->key[3]);
  	}
-@@ -302,15 +304,15 @@ static void efx_mcdi_read_response_header(struct efx_nic *efx)
- 		 */
- 		for (i = 0; i < hdr_len && bytes < PAGE_SIZE; i++) {
- 			efx->type->mcdi_read_response(efx, &hdr, (i * 4), 4);
--			bytes += snprintf(buf + bytes, PAGE_SIZE - bytes,
--					  " %08x", le32_to_cpu(hdr.u32[0]));
-+			bytes += scnprintf(buf + bytes, PAGE_SIZE - bytes,
-+					   " %08x", le32_to_cpu(hdr.u32[0]));
- 		}
  
- 		for (i = 0; i < data_len && bytes < PAGE_SIZE; i++) {
- 			efx->type->mcdi_read_response(efx, &hdr,
- 					mcdi->resp_hdr_len + (i * 4), 4);
--			bytes += snprintf(buf + bytes, PAGE_SIZE - bytes,
--					  " %08x", le32_to_cpu(hdr.u32[0]));
-+			bytes += scnprintf(buf + bytes, PAGE_SIZE - bytes,
-+					   " %08x", le32_to_cpu(hdr.u32[0]));
- 		}
- 
- 		netif_info(efx, hw, efx->net_dev, "MCDI RPC RESP:%s\n", buf);
-@@ -1417,9 +1419,11 @@ void efx_mcdi_print_fwver(struct efx_nic *efx, char *buf, size_t len)
- 	}
- 
- 	ver_words = (__le16 *)MCDI_PTR(outbuf, GET_VERSION_OUT_VERSION);
--	offset = snprintf(buf, len, "%u.%u.%u.%u",
--			  le16_to_cpu(ver_words[0]), le16_to_cpu(ver_words[1]),
--			  le16_to_cpu(ver_words[2]), le16_to_cpu(ver_words[3]));
-+	offset = scnprintf(buf, len, "%u.%u.%u.%u",
-+			   le16_to_cpu(ver_words[0]),
-+			   le16_to_cpu(ver_words[1]),
-+			   le16_to_cpu(ver_words[2]),
-+			   le16_to_cpu(ver_words[3]));
- 
- 	/* EF10 may have multiple datapath firmware variants within a
- 	 * single version.  Report which variants are running.
-@@ -1427,9 +1431,9 @@ void efx_mcdi_print_fwver(struct efx_nic *efx, char *buf, size_t len)
- 	if (efx_nic_rev(efx) >= EFX_REV_HUNT_A0) {
- 		struct efx_ef10_nic_data *nic_data = efx->nic_data;
- 
--		offset += snprintf(buf + offset, len - offset, " rx%x tx%x",
--				   nic_data->rx_dpcpu_fw_id,
--				   nic_data->tx_dpcpu_fw_id);
-+		offset += scnprintf(buf + offset, len - offset, " rx%x tx%x",
-+				    nic_data->rx_dpcpu_fw_id,
-+				    nic_data->tx_dpcpu_fw_id);
- 
- 		/* It's theoretically possible for the string to exceed 31
- 		 * characters, though in practice the first three version
+ 	len = simple_read_from_buffer(buffer, count, ppos, buf, p - buf);
 -- 
 2.16.4
 
