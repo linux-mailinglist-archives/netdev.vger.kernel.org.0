@@ -2,96 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05FA8185B1C
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 08:54:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CADC7185B21
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 09:00:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727767AbgCOHyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Mar 2020 03:54:13 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:33736 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727654AbgCOHyN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 03:54:13 -0400
-Received: by mail-wr1-f66.google.com with SMTP id a25so17322258wrd.0;
-        Sun, 15 Mar 2020 00:54:11 -0700 (PDT)
+        id S1727778AbgCOH7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Mar 2020 03:59:55 -0400
+Received: from mail-vs1-f53.google.com ([209.85.217.53]:42087 "EHLO
+        mail-vs1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727163AbgCOH7z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 03:59:55 -0400
+Received: by mail-vs1-f53.google.com with SMTP id i25so9192607vsq.9;
+        Sun, 15 Mar 2020 00:59:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=krZuLH5aA8NwXAZfipidEOIflgKvPBY7kHSi8m+OXmY=;
-        b=plSZ2YEqBywE95sMwb5/g9rxew5HtQN7TGswA23clZ5u+Lsfp1NPfjiJQQBn+w4NGu
-         P2Z1SsxnPhFEiv3BS49M0E7zeantBSJO6jVMlY97YJH0ntQwqXYroHFojNgIzGH5UEhf
-         QF92dp8zrcBCJ6yzUDFzPQxGbSdOnKZkf1nYHFkz4maNzdSEeOtdRLD8h4pERMSLqxpD
-         9tBdEscrUMNhN4Gfj+Y8uMH8NPLSZOjEIyl5j0s5i5do1nBTM6rjYptgaUIZa79DnCpT
-         szjX/bQOop0i1sCtFA6UqgSILpUvcrs6OOIu4woffBwLaO9oIl39UDHNoABe0GujGOnJ
-         zuhA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oN4/KUQ8b4ahyaIikru+djpxL5XQQFIKZYbjC0vKpsU=;
+        b=ZJpqU0YacLXt75ZJb6otm/x5pXGpsxQe52fa+/Ho7/a/XLPO9QCkPmxf0t2DFT9VaI
+         IxHddILTsRA88mQ5EvKNhXmG747pT5L1hJKwxZuwRMx3IRjVhAX+bUI69L8dmJ4AXWmE
+         6Am1/0QqorhookML6Yn6nNljt80TOiK9B1pnS49GjM4NDy+W2WwbYCoN5bKdLEw8xikS
+         SGFby3OGnM9JbJa2uUMKBFTVqFYaDRNSpu6UaRZ5dKP6x4e5GNMuP5Dz6fiSMVUPw//6
+         nboI4VNQYRma/rqik1hzVb0YxtI6/NewbWoUQyNltU1OqHGGSDBADPZxYsEzavnaEhUB
+         ZndQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=krZuLH5aA8NwXAZfipidEOIflgKvPBY7kHSi8m+OXmY=;
-        b=qoZEs6eeIP6/ETf4YdhuYyJHik25v2PyRc8gji+ajW4jXOxA2aJRaf7LRjOJ+GLMgn
-         aDo5D6gH4rcoy+Mthkqw9DyNrHOKBG4nzkNuSgme1ZiDd0WOObvbcBp/ai0/zC45rboB
-         eX6Ka6dM3NyfycvhOV5Vwj9IsHOeAxYvEMpaGGWXKSDGHeNpbW6pOCb/0+JBVB78t/02
-         Px5BYk/NXxnBYfbG+x/eykcWwyhUbclSx97dc7ELe4QL6oQ1JPBlUGcyzcRHiGJauEQm
-         IqN36B2oddSyOWLxpU4D5rV1ds46EvhOYeq/At6FRbBC6QXNQK+KwBwhfySoK2WqRNcL
-         +Sow==
-X-Gm-Message-State: ANhLgQ2M9+9xnuXFnj0cP6e0iYdig3UlXZ8NN+3/vG0spV9PbJAJQmZh
-        HEocSKslcD2qZl4pfPo5aIY=
-X-Google-Smtp-Source: ADFU+vtHChFjhT4bEeZSnYpEU/ALFDqNPkSpBIGVQaE1mDIrUUJukwiaOltooyAjRU2TukDAL8FKMA==
-X-Received: by 2002:a05:6000:c:: with SMTP id h12mr22936862wrx.168.1584258850781;
-        Sun, 15 Mar 2020 00:54:10 -0700 (PDT)
-Received: from felia.fritz.box ([2001:16b8:2d6c:6c00:888a:952a:33bc:a081])
-        by smtp.gmail.com with ESMTPSA id k126sm24716601wme.4.2020.03.15.00.54.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Mar 2020 00:54:10 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Benjamin Gaignard <benjamin.gaignard@st.com>,
-        Rob Herring <robh@kernel.org>
-Cc:     Dan Murphy <dmurphy@ti.com>, Sriram Dash <sriram.dash@samsung.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        Joe Perches <joe@perches.com>, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: adjust to MCAN MMIO schema conversion
-Date:   Sun, 15 Mar 2020 08:53:56 +0100
-Message-Id: <20200315075356.8596-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oN4/KUQ8b4ahyaIikru+djpxL5XQQFIKZYbjC0vKpsU=;
+        b=fvtTtw2I+/lKtIti5qqccrjcYxvSvU5r/7xHlvNoWMOn7kgtjVYlCb5SldYX3Sz8dy
+         hjLJBPqDqF5oVTVQUrkHMa2BijRjbYf8tWx9WRzodaoftMNbGikdGFpUsPJAU9vL2cMP
+         pmPwPNEcjK/K4apRefCIot3gy9PCMkiFUhPhw3LJ0HDvJh4f7FvtDafgoFIvUl1Dy70+
+         5RvAoLtvclyY447ByYsm5tQBIcVZYaNA96APDBT+Ssg+2McymBEzzC2W4tL22P3Grl/n
+         2jc95PB/+HvD5RC0jVKzwAGAhe7ft4qUC3YiQXNE7sOo47j7mMuNdsMejLtgQaZvfrgw
+         pngg==
+X-Gm-Message-State: ANhLgQ39ms13KJ6EKxBpo4dNa+5GBUBGcKgARbfICJxv1Xixu+K54x2e
+        ZXijWP3qXRMF/P9JVDIR0xocCs88Rw4KcxiZSsA=
+X-Google-Smtp-Source: ADFU+vuDN3k5UPA2Gh4K0jBtCB8/WfcDXhr26U/rtPdnGR6obi6LfAC8dBjYdTyDve8ClkHDcPaAU8SW8sPYVkVoTBA=
+X-Received: by 2002:a05:6102:2272:: with SMTP id v18mr13740542vsd.108.1584259194385;
+ Sun, 15 Mar 2020 00:59:54 -0700 (PDT)
+MIME-Version: 1.0
+References: <00000000000088452f05a07621d2@google.com>
+In-Reply-To: <00000000000088452f05a07621d2@google.com>
+From:   Qiujun Huang <anenbupt@gmail.com>
+Date:   Sun, 15 Mar 2020 15:59:41 +0800
+Message-ID: <CADG63jCNAngPC9+KuGAChibPn0ZeTmfiUvYntUqDudGQF0h7xw@mail.gmail.com>
+Subject: Re: WARNING: refcount bug in sctp_wfree
+To:     syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 824674b59f72 ("dt-bindings: net: can: Convert M_CAN to json-schema")
-missed to adjust the MCAN MMIO DEVICE DRIVER entry in MAINTAINERS.
-
-Since then, ./scripts/get_maintainer.pl --self-test complains:
-
-  warning: no file matches \
-  F: Documentation/devicetree/bindings/net/can/m_can.txt
-
-Update MAINTAINERS entry to location of converted schema.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-applies cleanly on next-20200313
-
-Benjamin, please ack.
-Rob, please pick this patch (it is not urgent, though).
-
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 32a95d162f06..ebc3d91294c6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -10323,7 +10323,7 @@ M:	Dan Murphy <dmurphy@ti.com>
- M:	Sriram Dash <sriram.dash@samsung.com>
- L:	linux-can@vger.kernel.org
- S:	Maintained
--F:	Documentation/devicetree/bindings/net/can/m_can.txt
-+F:	Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
- F:	drivers/net/can/m_can/m_can.c
- F:	drivers/net/can/m_can/m_can.h
- F:	drivers/net/can/m_can/m_can_platform.c
--- 
-2.17.1
-
+#syz test: https://github.com/hqj/hqjagain_test.git sctp_wfree_refcount_bug
