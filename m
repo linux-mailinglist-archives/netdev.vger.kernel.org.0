@@ -2,72 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 482B5185FFA
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 22:26:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D46E186002
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 22:28:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729217AbgCOV0H convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 15 Mar 2020 17:26:07 -0400
-Received: from mail-il1-f197.google.com ([209.85.166.197]:48897 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729210AbgCOV0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 17:26:06 -0400
-Received: by mail-il1-f197.google.com with SMTP id c12so12170462ilo.15
-        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 14:26:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to:content-transfer-encoding;
-        bh=ObBVExDwk8OBYjYRj5UK3XQ8zrdTqTo9rbmRyh92cU0=;
-        b=dYYun+pn9/Ec351+RLNgmUurV82MGMXq6Fow3jTFVdiPDwXcCHljp3/L2AWj03aoI8
-         DJv8Elaz6UKq8iaIo2nTmJBcHd3pajZo9Im8PwoTIuq+Thxm44kLP9QQ7AXdoIySbac3
-         r/JoPOo6M3b8zhh6YQt4knPk2s5gUcaQv00oF/Bekxhx8h8Iw4zgERy7exmRLifBJfuf
-         U3uF/CW+7Tue/VP2b0KSLoggfA0HJYLV2DHfI8S32xt4u5BV+QDk4FVytqZ2zOs56NVb
-         yaEe083u5oOzn5DSX+u+jnFPZfAq6oz5E+tO8ESjPTULWkV19w6XP1dcgJDeSU9+elib
-         Rusw==
-X-Gm-Message-State: ANhLgQ0qNMBduxCh+k0GdY+BDQwpVonSlUz1a0qT+2vtsgSL7Q9T5jV5
-        apzE8+I8kS6rDcGCCRVrxy8+36waGP+3aAG5XUTeSkuWgyf2
-X-Google-Smtp-Source: ADFU+vt4qJpj1JeI/CaGL1tH5qCsGjqSAlUF9zulnGe3k9qHg++O02+OAtSyUOSf2fVU7oTjSCFWtWERadBsDt0XUmGXBPeoxU6S
+        id S1729246AbgCOV2E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Mar 2020 17:28:04 -0400
+Received: from correo.us.es ([193.147.175.20]:38636 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729185AbgCOV2E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 15 Mar 2020 17:28:04 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 4B03EC39E2
+        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 22:27:36 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 3C07FDA736
+        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 22:27:36 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 3164DDA3C2; Sun, 15 Mar 2020 22:27:36 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 730BADA736;
+        Sun, 15 Mar 2020 22:27:34 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Sun, 15 Mar 2020 22:27:34 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 54D444251481;
+        Sun, 15 Mar 2020 22:27:34 +0100 (CET)
+Date:   Sun, 15 Mar 2020 22:28:00 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH nf-next v5 0/4] netfilter: flowtable: add indr-block
+ offload
+Message-ID: <20200315212800.j45jg3s4gbpiql53@salvia>
+References: <1582521775-25176-1-git-send-email-wenxu@ucloud.cn>
+ <20200303215300.qzo4ankxq5ktaba4@salvia>
+ <83bfbc34-6a3e-1f31-4546-1511c5dcddf5@ucloud.cn>
 MIME-Version: 1.0
-X-Received: by 2002:a92:d112:: with SMTP id a18mr12650691ilb.259.1584307564141;
- Sun, 15 Mar 2020 14:26:04 -0700 (PDT)
-Date:   Sun, 15 Mar 2020 14:26:04 -0700
-In-Reply-To: <000000000000f96400059c8ca8cd@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009363ac05a0eb5940@google.com>
-Subject: Re: KASAN: slab-out-of-bounds Read in bitmap_ipmac_ext_cleanup
-From:   syzbot <syzbot+c400f7b04cadb5df6ea7@syzkaller.appspotmail.com>
-To:     coreteam@netfilter.org, davem@davemloft.net,
-        florent.fourcot@wifirst.fr, fw@strlen.de, jeremy@azazel.net,
-        johannes.berg@intel.com, kadlec@blackhole.kfki.hu,
-        kadlec@netfilter.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <83bfbc34-6a3e-1f31-4546-1511c5dcddf5@ucloud.cn>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this bug was fixed by commit:
+On Wed, Mar 04, 2020 at 08:54:25PM +0800, wenxu wrote:
+> 
+> 在 2020/3/4 5:53, Pablo Neira Ayuso 写道:
+[...]
+> The indirect block infrastructure is designed by the driver guys. The callbacks
+> is used for building and finishing relationship between the tunnel device and
+> the hardware devices. Such as the tunnel device come in and go away and the hardware
+> device come in and go away. The relationship between the tunnel device and the
+> hardware devices is so subtle.
 
-commit 32c72165dbd0e246e69d16a3ad348a4851afd415
-Author: Kadlecsik József <kadlec@blackhole.kfki.hu>
-Date:   Sun Jan 19 21:06:49 2020 +0000
+I understand that this mechanism provides a way for the driver to
+subscribe to tunnel devices that might be offloaded.
 
-    netfilter: ipset: use bitmap infrastructure completely
+> > Probably not a requirement in your case, but the same net_device might
+> > be used in several flowtables. Your patch is flawed there and I don't
+> > see an easy way to fix this.
+> 
+> The same tunnel device can only be added to one offloaded flowtables.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1163e0d3e00000
-start commit:   4703d911 Merge tag 'xarray-5.5' of git://git.infradead.org..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cf8e288883e40aba
-dashboard link: https://syzkaller.appspot.com/bug?extid=c400f7b04cadb5df6ea7
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=155af721e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13cfb79ee00000
+This is a limitation that needs to be removed. There are requirements
+to allow to make the same tunnel device be part of another flowtable.
 
-If the result looks correct, please mark the bug fixed by replying with:
+> The tunnel device can build the relationship with the hardware
+> devices one time in the dirver. This is protected by
+> flow_block_cb_is_busy and xxx_indr_block_cb_priv in driver.
+>
+> > I know there is no way to use ->ndo_setup_tc for tunnel devices, but
+> > you could have just make it work making it look consistent to the
+> > ->ndo_setup_tc logic.
+> 
+> I think the difficulty is how to find the hardware device for tunnel
+> device to set the rule to the hardware.
 
-#syz fix: netfilter: ipset: use bitmap infrastructure completely
+Right, this is the problem that the infrastructure is solving,
+however, it's a bit of a twisty way to address the problem.
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> > I'm inclined to apply this patch though, in the hope that this all can
+> > be revisited later to get it in line with the ->ndo_setup_tc approach.
+> > However, probably I'm hoping for too much.
+
+I have applied this patchset to nf-next.
+
+Probably, there might be a chance to revisit this indirect block
+infrastructure.
+
+Thank you.
