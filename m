@@ -2,79 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92FF5185B32
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 09:33:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8723185B44
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 09:42:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727821AbgCOIdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Mar 2020 04:33:05 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:36312 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727646AbgCOIdF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 04:33:05 -0400
-Received: by mail-pg1-f193.google.com with SMTP id z4so1984867pgu.3;
-        Sun, 15 Mar 2020 01:33:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Mc91MOfwvy0Krn8xqZ+9eQ5qoxXVwyTfd8xLMYOaUhA=;
-        b=gUjQj0QaIXIolLufw1MTw01hCZkugAmnahw2dGNurUXkraFV5bat8RP+TeYi1QIzZL
-         mSvJJ8/LRjA8PSZ8duqmQL/aDIDF34HdZgrquYdObEr1R4WgPZu4WSadOSTqAKJcxsE8
-         ErgjJuvy96CEOlsNqNqZqW2thet038HemrXGGZfHDykopdtjJRBVd9IC+fBhO+bHTpRG
-         kx5BkKJCt4YB7DSfAohiADTPfBKk2Kkx8CogvwULf6fK+zSq0N3rK1UuvtBHzwq8Kird
-         7vpiovZpK2myt8Bj0G1VjIa6gXu/ZwjSL8ietEMafWBZTdrPBQH6kR8lvyY7fuD9TDYD
-         TFPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Mc91MOfwvy0Krn8xqZ+9eQ5qoxXVwyTfd8xLMYOaUhA=;
-        b=fTcfTyzczXCeeRAmUdDIx0HseT3zgxlhhA5qP0NVYSxdRJ7QXLAYgiMPwbfVx1JBC+
-         7CqK5PUnXwmBIQbL3/jmZyz5bYhd8q10hDeAXAAAxctEeGq5NaHrLFONqR7DEo31lJMd
-         1veU+wYwZkcMpXNrZlJxdwXGHDlPzQl9+ck4ndZuLcLzO5vHlAjPvwtoPRjP+5lXp8wg
-         uG2FhkYMk8IkQtz56moXGL+9ww6URgKro77UKngmK4Jx9oEnfOB+jEV1DiZIN6u4CuIX
-         wuw4ZuMpJC5pFHkFvLWSF9XwUvo/fWIGqHHJKGzyEyJhfue+5baqUedPlJw446hmSNGG
-         SbAQ==
-X-Gm-Message-State: ANhLgQ1QxZhbIMLwI20LTLCfjX1KiuPlQEYLe66bWwOsMkX4EjhmEkN1
-        lTZ5HPPbqZde5TUn9YdpSAAGwmBbCnTcyQ==
-X-Google-Smtp-Source: ADFU+vtCxwSyuEhkrTP4rZfIOCpK8kOyO8QPh77dTyImimqs3E4RAkEVtdIznCjghWxOgUwXb+vm+g==
-X-Received: by 2002:a63:6c8a:: with SMTP id h132mr19335055pgc.301.1584261181934;
-        Sun, 15 Mar 2020 01:33:01 -0700 (PDT)
-Received: from ubuntu-18.04-x8664 ([128.1.49.85])
-        by smtp.gmail.com with ESMTPSA id c207sm23181609pfb.47.2020.03.15.01.32.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Mar 2020 01:33:01 -0700 (PDT)
-From:   Wenbo Zhang <ethercflow@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ethercflow@gmail.com
-Subject: [PATCH] bpf: Fix ___bpf_kretprobe_args1(x) macro definition.
-Date:   Sun, 15 Mar 2020 04:32:52 -0400
-Message-Id: <20200315083252.22274-1-ethercflow@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1728053AbgCOImU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Mar 2020 04:42:20 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:36474 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727821AbgCOImT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 15 Mar 2020 04:42:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=ouKmZUl+e2q5E4IgzjgssmMnbl6mov070Bx+7m6iGhM=; b=zvlRjYDuwmVXjJ65BXu2tZNuUN
+        k+aUUPjeHXP+e0E5J9tGgPbfsbwqbJ5166NWztCRzIm1VMeL1gEle4np6j7nzzPduTeyLhaRO3pbu
+        y5L12bk/iCuDWJTk/5SEpGyF3oTVfUl76IhfiPQeOoeNXJy/0yP7cg9GME++8pALkNXs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jDOqd-00076K-M0; Sun, 15 Mar 2020 09:42:15 +0100
+Date:   Sun, 15 Mar 2020 09:42:15 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Sunil Kovvuri <sunil.kovvuri@gmail.com>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tomasz Duszynski <tduszynski@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>
+Subject: Re: [PATCH v2 net-next 3/7] octeontx2-vf: Virtual function driver
+ support
+Message-ID: <20200315084215.GI8622@lunn.ch>
+References: <1584092566-4793-1-git-send-email-sunil.kovvuri@gmail.com>
+ <1584092566-4793-4-git-send-email-sunil.kovvuri@gmail.com>
+ <20200313181139.GC67638@unreal>
+ <CA+sq2CeP3rfhBmxcs9Z6n7wVBmqP6upb8XFZF7nZ3R=QUtTF_g@mail.gmail.com>
+ <20200314191258.GB3046@unreal>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200314191258.GB3046@unreal>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use PT_REGS_RC instead of PT_REGS_RET to get ret currectly.
+> > > > +static int otx2vf_process_mbox_msg_up(struct otx2_nic *vf,
+> > > > +                                   struct mbox_msghdr *req)
+> > > > +{
+> > > > +     /* Check if valid, if not reply with a invalid msg */
+> > > > +     if (req->sig != OTX2_MBOX_REQ_SIG) {
+> > > > +             otx2_reply_invalid_msg(&vf->mbox.mbox_up, 0, 0, req->id);
+> > > > +             return -ENODEV;
+> > > > +     }
+> > > > +
+> > > > +     switch (req->id) {
+> > > > +#define M(_name, _id, _fn_name, _req_type, _rsp_type)                        \
+> > > > +     case _id: {                                                     \
+> > > > +             struct _rsp_type *rsp;                                  \
+> > > > +             int err;                                                \
+> > > > +                                                                     \
+> > > > +             rsp = (struct _rsp_type *)otx2_mbox_alloc_msg(          \
+> > > > +                     &vf->mbox.mbox_up, 0,                           \
+> > > > +                     sizeof(struct _rsp_type));                      \
+> > > > +             if (!rsp)                                               \
+> > > > +                     return -ENOMEM;                                 \
+> > > > +                                                                     \
+> > > > +             rsp->hdr.id = _id;                                      \
+> > > > +             rsp->hdr.sig = OTX2_MBOX_RSP_SIG;                       \
+> > > > +             rsp->hdr.pcifunc = 0;                                   \
+> > > > +             rsp->hdr.rc = 0;                                        \
+> > > > +                                                                     \
+> > > > +             err = otx2_mbox_up_handler_ ## _fn_name(                \
+> > > > +                     vf, (struct _req_type *)req, rsp);              \
+> > > > +             return err;                                             \
+> > > > +     }
+> > > > +MBOX_UP_CGX_MESSAGES
+> > > > +#undef M
+> > >
+> > > "return ..." inside macro which is called by another macro is highly
+> > > discouraged by the Linux kernel coding style.
+> > >
+> >
+> > There are many mailbox messages to handle and adding each one of them
+> > to switch case would be a
+> > lot of duplicate code. Hence we choose to with these macros.
+> 
+> The coding style section 12.1 talks exactly about that pattern.
+> https://elixir.bootlin.com/linux/latest/source/Documentation/process/coding-style.rst#L752
+> Somehow all other drivers succeeded to write their code without such
+> macros, I'm confident that you will success too. Please try your best.
 
-Signed-off-by: Wenbo Zhang <ethercflow@gmail.com>
----
- tools/lib/bpf/bpf_tracing.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Sunil
 
-diff --git a/tools/lib/bpf/bpf_tracing.h b/tools/lib/bpf/bpf_tracing.h
-index b0c9ae5c73b5..f3f3c3fb98cb 100644
---- a/tools/lib/bpf/bpf_tracing.h
-+++ b/tools/lib/bpf/bpf_tracing.h
-@@ -390,7 +390,7 @@ ____##name(struct pt_regs *ctx, ##args)
- 
- #define ___bpf_kretprobe_args0() ctx
- #define ___bpf_kretprobe_args1(x) \
--	___bpf_kretprobe_args0(), (void *)PT_REGS_RET(ctx)
-+	___bpf_kretprobe_args0(), (void *)PT_REGS_RC(ctx)
- #define ___bpf_kretprobe_args(args...) \
- 	___bpf_apply(___bpf_kretprobe_args, ___bpf_narg(args))(args)
- 
--- 
-2.17.1
+It is easy to create locking bugs with returns in macros. I've
+inherited code which did this, not realized where was a return hidden
+in a macro, and as a result got locks wrong, resulting in a deadlock.
 
+     Andrew
