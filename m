@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AD1F185E98
+	by mail.lfdr.de (Postfix) with ESMTP id BFB40185E99
 	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 18:04:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728947AbgCOQ4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Mar 2020 12:56:20 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:39040 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728628AbgCOQ4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 12:56:19 -0400
-Received: by mail-pl1-f196.google.com with SMTP id j20so6763436pll.6
-        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 09:56:19 -0700 (PDT)
+        id S1728957AbgCOQ5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Mar 2020 12:57:36 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:38460 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728628AbgCOQ5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 12:57:36 -0400
+Received: by mail-pg1-f193.google.com with SMTP id x7so8205311pgh.5
+        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 09:57:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=cid5VTPLehlCeSHLqDLGZ0DFhpoLzemPUpfKk2XUYkA=;
-        b=lUBAGMI7hSPlKUpxCeuygTDGOOTmSeWTKgX/5XUJHkEb465zLbi3oXCcDMqT0VZ9/o
-         dEKPIdV7z9I1/D8bsOUdcsTlkYtixNiall8OZBKDuOuEhU1b3ZDxX2JSjmf4EA63s53e
-         qMIOGg56HwmgpefukWH/sZTKWwKlPP8C7Ri7KBXfsncpBACaFebNecsox+vKdiLhh9aL
-         LLhmYpTAQu8ys6clx37yxdggnnyiCh1NIRZt9TtiuJa2ZmKoCn4bgQtnjv2hTpKLhUm8
-         r4BXWF9H84KjT6mmKgSnzp7UoPDlyLheXB/c/6qaMuk6DFXt5FB+wAy7HC5Y022zEQiv
-         8tGw==
+        bh=w2Y6grcKDpz7illvrAW0RS+fL1UuedzjiCjl5RFGUZY=;
+        b=q+H02gPwC4Uu5m/Tm0sZi5veVeZVJNesBGspjRxbVa9nMsObwVxjWen3qoVQmslSZz
+         2JGjfbYabU2f3ABEzeeuUHqhmf3dPyOAJJ2e0cS5SZIhzOaTpnr2Dq/AjFYIQZEzhBo9
+         Zfl+ecs6dV7s5X848y7xVAKxuo3GLi7zjOgNzVAMUTBgODLztN1TPQkgGdZFoeBcqLv5
+         P4CrMR3+K3+7zaNP1ngHDydklz9AwKNRbgufxAV9dpR78o3TCj4kRKj4aKnCvg0hoFW6
+         /5a/QVGs6noPs/jUqDo6DWlL3Q4QRcWnqlQWTcwYApm/vnPdgI2lNS1+Mtz1VJVV92i2
+         1HLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=cid5VTPLehlCeSHLqDLGZ0DFhpoLzemPUpfKk2XUYkA=;
-        b=nBHL4MvXxouDp5z03UYp2w47s/iYznmJXbHpzYyzb71avEYiy9CPQC9HTph5dX33vM
-         9yx7lUgIWKoXHTy04daQEMI29INnTSHvIcQRvoMNDs5iCFnyjjpB71izv9EhBn0bF5xt
-         jiUM+tGsLJi+I8IQA3sJXrHg5vVYXMPa8SUhExqktRa431ETbPKmdwtmuZc8ihoRdzyx
-         yrF6EWy6sznRPnHJ3cKcDn/6BgJeYhWlc1Z58IEmnzoxXaJAUvlOr8SHpD5jn80LyNQi
-         D1L3ocS2rRFY6g4isfqSXgxGxynTGW5i9OrUlskzVaRKhhhmYS42Swrfs1DYytu2Y4B+
-         DPxA==
-X-Gm-Message-State: ANhLgQ1TnxV6POrabzerStQGimKm0ZH1ZAMImXnowmHpWM/dy+GmGV73
-        tJ2dKEVRAX2mm6mfsO4T8WW6+vnmL8A=
-X-Google-Smtp-Source: ADFU+vsGUjHQ8M0PnV7pBXMyxN78LeCh4myPBk5mWktI/az1QdPdO4lqaxiFsGitM+5p/9GlWIUnAw==
-X-Received: by 2002:a17:902:d88d:: with SMTP id b13mr21701134plz.228.1584291378866;
-        Sun, 15 Mar 2020 09:56:18 -0700 (PDT)
+        bh=w2Y6grcKDpz7illvrAW0RS+fL1UuedzjiCjl5RFGUZY=;
+        b=QyoDH8xN48rOjCpmG/noL36z/vV7tErfYTdRPyWN3xvDpDcWuY//1iSoSGqqFSv9kq
+         njgxOHMVDarVYMRzCpL2qn9Lv000Yz/w9UkruhMGmiPqTfI/afqGW/xnWJdO0a7uErUH
+         5eT0EN2cyAR8mECVPPz5B9/84LWuYXILLEaE4h68MX0A2IhWKU68piFr/pK9+NUMbeoD
+         9ys+08AGaQfA52jRgJg2WddKLyscjJ+MfZSxOIisyrmr5OvW7rLIq5DRErsRDgpm47iv
+         OStZ8sICFr0a5TDGhuLx9Qvg9D6w12pkXA+LLR77MRTz89yD/n55ehzpZ9OldLyNv8lB
+         7mSw==
+X-Gm-Message-State: ANhLgQ2C+d/eGeOEhN/GLUSUMNUNCHCxaOx/lYcXjMqTiKeKRIYGpEiq
+        K1V+q9wL0Gk3z/4JgJI6DIBPOQ==
+X-Google-Smtp-Source: ADFU+vtP+58YlF2n14rhKTpqccbtajedmHrv5VPfloCje4cNZwCaEoBL9WspbSQ1b/q3Z1NYv5NkAA==
+X-Received: by 2002:a63:ed4d:: with SMTP id m13mr22645305pgk.350.1584291455108;
+        Sun, 15 Mar 2020 09:57:35 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 6sm23448565pfx.69.2020.03.15.09.56.17
+        by smtp.gmail.com with ESMTPSA id l67sm11513996pjb.23.2020.03.15.09.57.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Mar 2020 09:56:18 -0700 (PDT)
-Date:   Sun, 15 Mar 2020 09:56:09 -0700
+        Sun, 15 Mar 2020 09:57:34 -0700 (PDT)
+Date:   Sun, 15 Mar 2020 09:57:32 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Andrea Claudi <aclaudi@redhat.com>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com
-Subject: Re: [PATCH iproute2] nexthop: fix error reporting in filter dump
-Message-ID: <20200315095609.55264c48@hermes.lan>
-In-Reply-To: <07545342394d8a8477f81ecbc1909079bfeeb78e.1583842365.git.aclaudi@redhat.com>
-References: <07545342394d8a8477f81ecbc1909079bfeeb78e.1583842365.git.aclaudi@redhat.com>
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH iproute2] iproute2: fix MPLS label parsing
+Message-ID: <20200315095732.034b64e5@hermes.lan>
+In-Reply-To: <13e1c79da12f9c08739e1ba94361d203e2a6627d.1583939416.git.gnault@redhat.com>
+References: <13e1c79da12f9c08739e1ba94361d203e2a6627d.1583939416.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,13 +60,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 Mar 2020 13:15:17 +0100
-Andrea Claudi <aclaudi@redhat.com> wrote:
+On Wed, 11 Mar 2020 16:16:36 +0100
+Guillaume Nault <gnault@redhat.com> wrote:
 
-> nh_dump_filter is missing a return value check in two cases.
-> Fix this simply adding an assignment to the proper variable.
+> The initial value of "label" in parse_mpls() is 0xffffffff. Therefore
+> we should test for this value, and not 0, to detect if a label has been
+> provided. The "!label" test not only fails to detect a missing label
+> parameter, it also prevents the use of the IPv4 explicit NULL label,
+> which actually equals 0.
 > 
-> Fixes: 63df8e8543b03 ("Add support for nexthop objects")
-> Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
+> Reproducer:
+>   $ ip link add name dm0 type dummy
+>   $ tc qdisc add dev dm0 ingress
+> 
+>   $ tc filter add dev dm0 parent ffff: matchall action mpls push
+>   Error: act_mpls: Label is required for MPLS push.
+>   We have an error talking to the kernel
+>   --> Filter was pushed to the kernel, where it got rejected.  
+> 
+>   $ tc filter add dev dm0 parent ffff: matchall action mpls push label 0
+>   Error: argument "label" is required
+>   --> Label 0 was rejected by iproute2.  
+> 
+> Expected result:
+>   $ tc filter add dev dm0 parent ffff: matchall action mpls push
+>   Error: argument "label" is required
+>   --> Filter was directly rejected by iproute2.  
+> 
+>   $ tc filter add dev dm0 parent ffff: matchall action mpls push label 0
+>   --> Filter is accepted.  
+> 
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
 
 Applied, thanks
