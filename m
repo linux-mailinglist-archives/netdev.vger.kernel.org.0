@@ -2,133 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ABB0185CA2
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 14:28:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0B47185D75
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 15:15:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728637AbgCON2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Mar 2020 09:28:44 -0400
-Received: from correo.us.es ([193.147.175.20]:60582 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728589AbgCON2o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 15 Mar 2020 09:28:44 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id CF43F11EB29
-        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 14:28:13 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id BFE63DA7B2
-        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 14:28:13 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 9E9DDDA3C3; Sun, 15 Mar 2020 14:28:13 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 456F1DA788;
-        Sun, 15 Mar 2020 14:28:11 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sun, 15 Mar 2020 14:28:11 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 1F6D74251480;
-        Sun, 15 Mar 2020 14:28:11 +0100 (CET)
-Date:   Sun, 15 Mar 2020 14:28:36 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Lukas Wunner <lukas@wunner.de>,
+        id S1728272AbgCOOPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Mar 2020 10:15:36 -0400
+Received: from cmccmta3.chinamobile.com ([221.176.66.81]:4864 "EHLO
+        cmccmta3.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727778AbgCOOPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 10:15:36 -0400
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.15]) by rmmx-syy-dmz-app10-12010 (RichMail) with SMTP id 2eea5e6e38750a0-cade5; Sun, 15 Mar 2020 22:15:19 +0800 (CST)
+X-RM-TRANSID: 2eea5e6e38750a0-cade5
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from localhost (unknown[223.105.0.241])
+        by rmsmtp-syy-appsvr08-12008 (RichMail) with SMTP id 2ee85e6e386fc0d-23340;
+        Sun, 15 Mar 2020 22:15:19 +0800 (CST)
+X-RM-TRANSID: 2ee85e6e386fc0d-23340
+From:   Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
         Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Martin Mares <mj@ucw.cz>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Thomas Graf <tgraf@suug.ch>,
-        Alexei Starovoitov <ast@kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH nf-next 3/3] netfilter: Introduce egress hook
-Message-ID: <20200315132836.cj36ape6rpw33iqb@salvia>
-References: <cover.1583927267.git.lukas@wunner.de>
- <14ab7e5af20124a34a50426fd570da7d3b0369ce.1583927267.git.lukas@wunner.de>
- <a57687ae-2da6-ca2a-1c84-e4332a5e4556@iogearbox.net>
- <20200313145526.ikovaalfuy7rnkdl@salvia>
- <1bd50836-33c4-da44-5771-654bfb0348cc@iogearbox.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1bd50836-33c4-da44-5771-654bfb0348cc@iogearbox.net>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+        Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+Subject: [PATCH 1/4] netfilter: nf_flow_table: reload ipv6h in nf_flow_nat_ipv6
+Date:   Sun, 15 Mar 2020 22:15:02 +0800
+Message-Id: <1584281705-26228-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Daniel,
+Since nf_flow_snat_port and nf_flow_snat_ipv6 call pskb_may_pull()
+which may change skb->data, so we need to reload ipv6h at the right
+palce.
 
-On Sat, Mar 14, 2020 at 01:12:02AM +0100, Daniel Borkmann wrote:
-> On 3/13/20 3:55 PM, Pablo Neira Ayuso wrote:
-[...]
-> > We have plans to support for NAT64 and NAT46, this is the right spot
-> > to do this mangling. There is already support for the tunneling
-> 
-> But why is existing local-out or post-routing hook _not_ sufficient for
-> NAT64 given it being IP based?
+Fixes: a908fdec3dda ("netfilter: nf_flow_table: move ipv6 offload hook
+code to nf_flow_table")
+Signed-off-by: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+---
+ net/netfilter/nf_flow_table_ip.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Those hooks are not coming at the end of the IP processing. There is
-very relevant IP code after those hooks that cannot be bypassed such
-as fragmentation, tunneling and neighbour output. Such transformation
-needs to happen after the IP processing, exactly from where Lukas is
-proposing.
+diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
+index 5272721..2e6ebbe 100644
+--- a/net/netfilter/nf_flow_table_ip.c
++++ b/net/netfilter/nf_flow_table_ip.c
+@@ -417,11 +417,12 @@ static int nf_flow_nat_ipv6(const struct flow_offload *flow,
+ 
+ 	if (test_bit(NF_FLOW_SNAT, &flow->flags) &&
+ 	    (nf_flow_snat_port(flow, skb, thoff, ip6h->nexthdr, dir) < 0 ||
+-	     nf_flow_snat_ipv6(flow, skb, ip6h, thoff, dir) < 0))
++	     nf_flow_snat_ipv6(flow, skb, ipv6_hdr(skb), thoff, dir) < 0))
+ 		return -1;
++	ip6h = ipv6_hdr(skb);
+ 	if (test_bit(NF_FLOW_DNAT, &flow->flags) &&
+ 	    (nf_flow_dnat_port(flow, skb, thoff, ip6h->nexthdr, dir) < 0 ||
+-	     nf_flow_dnat_ipv6(flow, skb, ip6h, thoff, dir) < 0))
++	     nf_flow_dnat_ipv6(flow, skb, ipv6_hdr(skb), thoff, dir) < 0))
+ 		return -1;
+ 
+ 	return 0;
+-- 
+1.8.3.1
 
-[...]
-> > infrastructure in netfilter from ingress, this spot from egress will
-> > allow us to perform the tunneling from here. There is also no way to
-> > drop traffic generated by dhclient, this also allow for filtering such
-> > locally generated traffic. And many more.
-> 
-> This is a known fact for ~17 years [0] or probably more by now and noone
-> from netfilter folks cared to address it in all the years, so I presume
-> it cannot be important enough, and these days it can be filtered through
-> other means already. Tbh, it's a bit laughable that you bring this up as
-> an argument ...
-> 
->   [0] https://www.spinics.net/lists/netfilter/msg19488.html
 
-Look: ip6tables, arptables and ebtables are a copy and paste from the
-original iptables.
 
-At that time, the only way one way to add support for ingress/egress
-classification in netfilter: add "devtables", yet another copy and
-past from iptables, that was a no-go.
-
-This is not a problem anymore since there is a consolidated netfilter
-framework to achieve ingress/egress classification.
-
-> > Performance impact is negligible, Lukas already provided what you
-> > asked for.
-> 
-> Sure, and the claimed result was "as said the fast-path gets faster, not
-> slower" without any explanation or digging into details on why this might
-> be, especially since it appears counter-intuitive as was stated by the
-> author ... and later demonstrated w/ measurements that show the opposite.
-
-I remember one of your collegues used this same argument against new
-hooks back in 2015 [0], and the introduction of this hook was proven
-to be negligible. This patchset introduces code that looks very much
-the same.
-
-I can make a list of recent updates to the output path, several of
-them very are targeted to very specific usecases. You did not care at
-all about performance impact of those at all, however, you care about
-netfilter for some unknown reason.
-
-In my opinion, your original feedback has been addressed, it's time to
-move on.
-
-Thank you.
-
-[0] https://lwn.net/Articles/642414/
