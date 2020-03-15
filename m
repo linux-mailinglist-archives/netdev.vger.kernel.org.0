@@ -2,70 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67F54185FD3
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 21:44:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EB0D185FDF
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 21:55:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729181AbgCOUom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Mar 2020 16:44:42 -0400
-Received: from correo.us.es ([193.147.175.20]:54840 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729163AbgCOUok (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 15 Mar 2020 16:44:40 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 8721AE8B6C
-        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 21:44:12 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 7AF99DA3A3
-        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 21:44:12 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 709C3DA3A0; Sun, 15 Mar 2020 21:44:12 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 80597DA72F;
-        Sun, 15 Mar 2020 21:44:09 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sun, 15 Mar 2020 21:44:09 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 5464E4251480;
-        Sun, 15 Mar 2020 21:44:09 +0100 (CET)
-Date:   Sun, 15 Mar 2020 21:44:35 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
-Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/4] netfilter: nf_flow_table: reload ipv6h in
- nf_flow_nat_ipv6
-Message-ID: <20200315204435.25kji3x5me72xjgg@salvia>
-References: <1584281705-26228-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
+        id S1729179AbgCOUzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Mar 2020 16:55:51 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:42717 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729152AbgCOUzv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 16:55:51 -0400
+Received: by mail-pg1-f194.google.com with SMTP id h8so8452630pgs.9
+        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 13:55:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tbQkUnVAWk4DdNT2eI9KPJ4CRtZVJETNZZv1PgzqPdM=;
+        b=TUqHtxacJZiW83OVGKgFfuF6Fc/KC14JPIfKhWr/ZLp8b86LYAZcIh4ZLGLvv8HUqh
+         qDzP4e7q1vFJZKCl55haTEh/XB2LBczr02MYiehd3c1KVo8oo4NkaGTGAtwHlXKE2t/M
+         7pcrHYhRordlMkfMW29YuYSIcpzYZyDZ1wDpc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tbQkUnVAWk4DdNT2eI9KPJ4CRtZVJETNZZv1PgzqPdM=;
+        b=pD+jMzRDeCvhv+xwWYcu/PuFI6S1+J6jyqUgQ8WBhxH3zY0YXkBFHBo9t/kr18Tcix
+         5QinPPX2DwBk4GUrUUFxRrB9AMp3iZp/UMnHYfjHI3hV8uAMo1zKrrOXRZ1bZYf/USLt
+         ZRiA68s1hQ7eSEGltLxYFDgE3jfO2lkfOjcvD6E83cPa7UyK4bBab66ywDSe2EsNAJbI
+         JBv9BsroCYEbipkoW8MV7RnzG2B6LI8nTsyENik2za34MQ9xH78D7gysArZroVNYx0TD
+         7lx4UWxtWX3CAd2EEsA7nieiFbtg/bJrs+SE/VM9/n2T4+EWpvZmwyhR6aeU4X151Qyn
+         pxFQ==
+X-Gm-Message-State: ANhLgQ3LR2156ohN9TYdUcFaoKUZ9L7k5NOq28NBRH9jCJwXylyYUGB6
+        kJV3grYh+zdG8oIKVOcgVqdhAA==
+X-Google-Smtp-Source: ADFU+vtxEx4oeojuJNx6exzRxdGuXoqCl51ncVvkkl2QI21JaiWr2FV9967v4dRa9pBNfHP5Tulp2w==
+X-Received: by 2002:a63:a06e:: with SMTP id u46mr23528688pgn.140.1584305749808;
+        Sun, 15 Mar 2020 13:55:49 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id h23sm13566341pfo.220.2020.03.15.13.55.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Mar 2020 13:55:48 -0700 (PDT)
+Date:   Sun, 15 Mar 2020 13:55:48 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     kuba@kernel.org, shuah@kernel.org, luto@amacapital.net,
+        wad@chromium.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: [PATCH v2 0/4] kselftest: add fixture parameters
+Message-ID: <202003151355.C9118025F@keescook>
+References: <20200314005501.2446494-1-kuba@kernel.org>
+ <20200315.000517.641109897419327751.davem@davemloft.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1584281705-26228-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20200315.000517.641109897419327751.davem@davemloft.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 15, 2020 at 10:15:02PM +0800, Haishuang Yan wrote:
-> Since nf_flow_snat_port and nf_flow_snat_ipv6 call pskb_may_pull()
-> which may change skb->data, so we need to reload ipv6h at the right
-> palce.
+On Sun, Mar 15, 2020 at 12:05:17AM -0700, David Miller wrote:
+> From: Jakub Kicinski <kuba@kernel.org>
+> Date: Fri, 13 Mar 2020 17:54:57 -0700
+> 
+> > This set is an attempt to make running tests for different
+> > sets of data easier. The direct motivation is the tls
+> > test which we'd like to run for TLS 1.2 and TLS 1.3,
+> > but currently there is no easy way to invoke the same
+> > tests with different parameters.
+> > 
+> > Tested all users of kselftest_harness.h.
+> > 
+> > v2:
+> >  - don't run tests by fixture
+> >  - don't pass params as an explicit argument
+> > 
+> > Note that we loose a little bit of type safety
+> > without passing parameters as an explicit argument.
+> > If user puts the name of the wrong fixture as argument
+> > to CURRENT_FIXTURE() it will happily cast the type.
+> 
+> Hmmm, what tree should integrate this patch series?
 
-Could you collapse patch 1/4 and 2/4 ?
+I expect the final version (likely v3) to go via Shuah's selftest tree.
 
-Same thing with patches 3/4 and 4/4 ?
+-Kees
 
-Thanks.
+-- 
+Kees Cook
