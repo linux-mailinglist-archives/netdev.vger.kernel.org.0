@@ -2,91 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EB0D185FDF
-	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 21:55:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 482B5185FFA
+	for <lists+netdev@lfdr.de>; Sun, 15 Mar 2020 22:26:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729179AbgCOUzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Mar 2020 16:55:51 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42717 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729152AbgCOUzv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 16:55:51 -0400
-Received: by mail-pg1-f194.google.com with SMTP id h8so8452630pgs.9
-        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 13:55:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tbQkUnVAWk4DdNT2eI9KPJ4CRtZVJETNZZv1PgzqPdM=;
-        b=TUqHtxacJZiW83OVGKgFfuF6Fc/KC14JPIfKhWr/ZLp8b86LYAZcIh4ZLGLvv8HUqh
-         qDzP4e7q1vFJZKCl55haTEh/XB2LBczr02MYiehd3c1KVo8oo4NkaGTGAtwHlXKE2t/M
-         7pcrHYhRordlMkfMW29YuYSIcpzYZyDZ1wDpc=
+        id S1729217AbgCOV0H convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 15 Mar 2020 17:26:07 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:48897 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729210AbgCOV0G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 17:26:06 -0400
+Received: by mail-il1-f197.google.com with SMTP id c12so12170462ilo.15
+        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 14:26:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tbQkUnVAWk4DdNT2eI9KPJ4CRtZVJETNZZv1PgzqPdM=;
-        b=pD+jMzRDeCvhv+xwWYcu/PuFI6S1+J6jyqUgQ8WBhxH3zY0YXkBFHBo9t/kr18Tcix
-         5QinPPX2DwBk4GUrUUFxRrB9AMp3iZp/UMnHYfjHI3hV8uAMo1zKrrOXRZ1bZYf/USLt
-         ZRiA68s1hQ7eSEGltLxYFDgE3jfO2lkfOjcvD6E83cPa7UyK4bBab66ywDSe2EsNAJbI
-         JBv9BsroCYEbipkoW8MV7RnzG2B6LI8nTsyENik2za34MQ9xH78D7gysArZroVNYx0TD
-         7lx4UWxtWX3CAd2EEsA7nieiFbtg/bJrs+SE/VM9/n2T4+EWpvZmwyhR6aeU4X151Qyn
-         pxFQ==
-X-Gm-Message-State: ANhLgQ3LR2156ohN9TYdUcFaoKUZ9L7k5NOq28NBRH9jCJwXylyYUGB6
-        kJV3grYh+zdG8oIKVOcgVqdhAA==
-X-Google-Smtp-Source: ADFU+vtxEx4oeojuJNx6exzRxdGuXoqCl51ncVvkkl2QI21JaiWr2FV9967v4dRa9pBNfHP5Tulp2w==
-X-Received: by 2002:a63:a06e:: with SMTP id u46mr23528688pgn.140.1584305749808;
-        Sun, 15 Mar 2020 13:55:49 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id h23sm13566341pfo.220.2020.03.15.13.55.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Mar 2020 13:55:48 -0700 (PDT)
-Date:   Sun, 15 Mar 2020 13:55:48 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     kuba@kernel.org, shuah@kernel.org, luto@amacapital.net,
-        wad@chromium.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com
-Subject: Re: [PATCH v2 0/4] kselftest: add fixture parameters
-Message-ID: <202003151355.C9118025F@keescook>
-References: <20200314005501.2446494-1-kuba@kernel.org>
- <20200315.000517.641109897419327751.davem@davemloft.net>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to:content-transfer-encoding;
+        bh=ObBVExDwk8OBYjYRj5UK3XQ8zrdTqTo9rbmRyh92cU0=;
+        b=dYYun+pn9/Ec351+RLNgmUurV82MGMXq6Fow3jTFVdiPDwXcCHljp3/L2AWj03aoI8
+         DJv8Elaz6UKq8iaIo2nTmJBcHd3pajZo9Im8PwoTIuq+Thxm44kLP9QQ7AXdoIySbac3
+         r/JoPOo6M3b8zhh6YQt4knPk2s5gUcaQv00oF/Bekxhx8h8Iw4zgERy7exmRLifBJfuf
+         U3uF/CW+7Tue/VP2b0KSLoggfA0HJYLV2DHfI8S32xt4u5BV+QDk4FVytqZ2zOs56NVb
+         yaEe083u5oOzn5DSX+u+jnFPZfAq6oz5E+tO8ESjPTULWkV19w6XP1dcgJDeSU9+elib
+         Rusw==
+X-Gm-Message-State: ANhLgQ0qNMBduxCh+k0GdY+BDQwpVonSlUz1a0qT+2vtsgSL7Q9T5jV5
+        apzE8+I8kS6rDcGCCRVrxy8+36waGP+3aAG5XUTeSkuWgyf2
+X-Google-Smtp-Source: ADFU+vt4qJpj1JeI/CaGL1tH5qCsGjqSAlUF9zulnGe3k9qHg++O02+OAtSyUOSf2fVU7oTjSCFWtWERadBsDt0XUmGXBPeoxU6S
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200315.000517.641109897419327751.davem@davemloft.net>
+X-Received: by 2002:a92:d112:: with SMTP id a18mr12650691ilb.259.1584307564141;
+ Sun, 15 Mar 2020 14:26:04 -0700 (PDT)
+Date:   Sun, 15 Mar 2020 14:26:04 -0700
+In-Reply-To: <000000000000f96400059c8ca8cd@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000009363ac05a0eb5940@google.com>
+Subject: Re: KASAN: slab-out-of-bounds Read in bitmap_ipmac_ext_cleanup
+From:   syzbot <syzbot+c400f7b04cadb5df6ea7@syzkaller.appspotmail.com>
+To:     coreteam@netfilter.org, davem@davemloft.net,
+        florent.fourcot@wifirst.fr, fw@strlen.de, jeremy@azazel.net,
+        johannes.berg@intel.com, kadlec@blackhole.kfki.hu,
+        kadlec@netfilter.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        pablo@netfilter.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 15, 2020 at 12:05:17AM -0700, David Miller wrote:
-> From: Jakub Kicinski <kuba@kernel.org>
-> Date: Fri, 13 Mar 2020 17:54:57 -0700
-> 
-> > This set is an attempt to make running tests for different
-> > sets of data easier. The direct motivation is the tls
-> > test which we'd like to run for TLS 1.2 and TLS 1.3,
-> > but currently there is no easy way to invoke the same
-> > tests with different parameters.
-> > 
-> > Tested all users of kselftest_harness.h.
-> > 
-> > v2:
-> >  - don't run tests by fixture
-> >  - don't pass params as an explicit argument
-> > 
-> > Note that we loose a little bit of type safety
-> > without passing parameters as an explicit argument.
-> > If user puts the name of the wrong fixture as argument
-> > to CURRENT_FIXTURE() it will happily cast the type.
-> 
-> Hmmm, what tree should integrate this patch series?
+syzbot suspects this bug was fixed by commit:
 
-I expect the final version (likely v3) to go via Shuah's selftest tree.
+commit 32c72165dbd0e246e69d16a3ad348a4851afd415
+Author: Kadlecsik József <kadlec@blackhole.kfki.hu>
+Date:   Sun Jan 19 21:06:49 2020 +0000
 
--Kees
+    netfilter: ipset: use bitmap infrastructure completely
 
--- 
-Kees Cook
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1163e0d3e00000
+start commit:   4703d911 Merge tag 'xarray-5.5' of git://git.infradead.org..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cf8e288883e40aba
+dashboard link: https://syzkaller.appspot.com/bug?extid=c400f7b04cadb5df6ea7
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=155af721e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13cfb79ee00000
+
+If the result looks correct, please mark the bug fixed by replying with:
+
+#syz fix: netfilter: ipset: use bitmap infrastructure completely
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
