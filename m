@@ -2,99 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 571DA1874A5
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:20:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 185B11874A9
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:23:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732693AbgCPVTz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 17:19:55 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:35644 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732652AbgCPVTz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 17:19:55 -0400
-Received: by mail-oi1-f195.google.com with SMTP id k8so18033667oik.2
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 14:19:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a1XE8izbV0aV0z/olO49sH8BHMSQtnlugBK/5fYy8X0=;
-        b=BG+T0vYj04UU9sc0t/b/Jp6Xu57WufXdocIV02O2pLWUTL7JSKwxuho3mNpbM9jdwq
-         PcEvQRuGXBFH0UGhbqzkHMnAwE76hvV29U+dDluuIPfG+cYJ+1Wa9h2Ga8luBMzhytXQ
-         /F19jp8jL/8Wj3/tnD0UKos3PSVniRiZkF9yfA9ob0vpZyQlascM4hRhkzNYxaDBFyCv
-         UO2Cr/C3WYpKSMYMxW+nj8CtSv/rVoSMvCaGMxJ5KAb/uNigtrZhXvfEsIZOKJjbOvCA
-         l7iIt2VAbz2JhqQ/YN1+zguDpLogygrIkwPpqEGSk9GN+d50v9cBsTD/bK1xUhamexa/
-         9CbA==
+        id S1732648AbgCPVXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 17:23:40 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:38196 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732567AbgCPVXk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 17:23:40 -0400
+Received: by mail-wr1-f67.google.com with SMTP id s1so1365480wrv.5;
+        Mon, 16 Mar 2020 14:23:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=a1XE8izbV0aV0z/olO49sH8BHMSQtnlugBK/5fYy8X0=;
-        b=eoxsSAVKQxMgxe7eTlgwaVs2tDjj4FGV5Oj04gpx5kduxLUPWNDelva4Jk07I9D8Jo
-         KWgikCVPGXRtZkDf8VCdX2MYOzYjxs8KxZ7rjSgR+0HWli1cpfpHUpsFVRxsx07txP8f
-         +Tbr5VUc8fuiahq9TpPoOlFgxCRloTgpN9VaT1mZrkwkXVjt+NbmQuuFXZ4wKOVWOgyE
-         qyt2ZyfDWhfiQMTyvnTO1f6OcFWgWLWsbEw1LMXmJzX4jdZYLJ+UTZ+myAof820SjVRd
-         kkU6hzi3xm9cmjIGK3JFPYdx9lOzDmvkAs1RKwR9ah6bLGtX2gX31fcIuxOCYyd/vFzL
-         p1bw==
-X-Gm-Message-State: ANhLgQ2AyaodZMwtxxb0bLUFz8Z34XizLLhH52clb+efOTAthkTXBXOi
-        Mf/Zk9FpMuXO6VAvxl9ljZBfpOpUBBZjUNmdgP1mIQ==
-X-Google-Smtp-Source: ADFU+vsaemYxmyGdocbM2kpjTzMPjGbgh08QpwLxFtv3b7euEF5rISbQaAAMQa0H+kZyei4/IN9RaC1RgEJh5qQKdk8=
-X-Received: by 2002:aca:3354:: with SMTP id z81mr1137863oiz.129.1584393593967;
- Mon, 16 Mar 2020 14:19:53 -0700 (PDT)
+        bh=QDOgkrVz8ewx9AciRaUk8U8O72lBJhXXGq2eSOJbIms=;
+        b=CysS+J/i1RqZibfePOqmh1m97X3WfSUNIVjtrTt5/qoh2vD+kPGzmuYJQQtwgkCDd1
+         rhfOEIsts33FMSL5HkzZclER3V9ucJd/N1kj5Rhg3OiPhZO25+gvRUbGvZP48oRi5YG3
+         JmyUs8gudBAsEQNkbrbLWjkzXJd4mjsKXkcjA11Asa+BVia+ct0wXgXK6+wTUMpL2txc
+         D1McV9ynFlszIqKLZdV1IbKlfuC3dVJvtMvnizd9VHn0WnjUv65gsaNdJ9BUcNm4Njlz
+         aJKZvLIZ/C7zpEc1BRnGX3adsXgkfVKvOARU/qk75Z3s9/1nfVnDx0/SzvkX1Nwn3Oeu
+         bPRg==
+X-Gm-Message-State: ANhLgQ1aiEl9TrdyakvDjCTf+T7sj+iklQwWEAe9TrWSjNVpP1h6QNVI
+        5ciX7SSCZoVyiH92i/qTu3KE3pjurhM/4hbTuGo=
+X-Google-Smtp-Source: ADFU+vsGy7pvEgviPlRLc2PPHqUj5DkK0c547LMbJhTzJDJYCKzcw/tZdjXhLgaoACIImlVAMzM0p9U0XT8q9XK9mC0=
+X-Received: by 2002:adf:ce8e:: with SMTP id r14mr1330915wrn.415.1584393818504;
+ Mon, 16 Mar 2020 14:23:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <1584340511-9870-1-git-send-email-yangpc@wangsu.com> <1584340511-9870-2-git-send-email-yangpc@wangsu.com>
-In-Reply-To: <1584340511-9870-2-git-send-email-yangpc@wangsu.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Mon, 16 Mar 2020 17:19:37 -0400
-Message-ID: <CADVnQymUE6b5BFB8z-BLcsXx+W1KkuxwU9rAE0-nLfeQgzVsXw@mail.gmail.com>
-Subject: Re: [PATCH RESEND net-next v2 1/5] tcp: fix stretch ACK bugs in BIC
-To:     Pengcheng Yang <yangpc@wangsu.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20200312233648.1767-1-joe@wand.net.nz> <20200312233648.1767-4-joe@wand.net.nz>
+ <87mu8gy5m6.fsf@cloudflare.com>
+In-Reply-To: <87mu8gy5m6.fsf@cloudflare.com>
+From:   Joe Stringer <joe@wand.net.nz>
+Date:   Mon, 16 Mar 2020 14:23:24 -0700
+Message-ID: <CAOftzPiUKa87U4UtxFMvWPpZYTTjvfgyb5E=u110jRCsjUh--g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/7] bpf: Add socket assign support
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     Joe Stringer <joe@wand.net.nz>, bpf@vger.kernel.org,
+        netdev <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Florian Westphal <fw@strlen.de>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 16, 2020 at 2:36 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
+On Mon, Mar 16, 2020 at 3:08 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
 >
-> Changes BIC to properly handle stretch ACKs in additive
-> increase mode by passing in the count of ACKed packets
-> to tcp_cong_avoid_ai().
+> [+CC Florian]
 >
-> Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-> ---
->  net/ipv4/tcp_bic.c | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
+> Hey Joe,
 >
-> diff --git a/net/ipv4/tcp_bic.c b/net/ipv4/tcp_bic.c
-> index 645cc30..f5f588b 100644
-> --- a/net/ipv4/tcp_bic.c
-> +++ b/net/ipv4/tcp_bic.c
-> @@ -145,12 +145,13 @@ static void bictcp_cong_avoid(struct sock *sk, u32 ack, u32 acked)
->         if (!tcp_is_cwnd_limited(sk))
->                 return;
+> On Fri, Mar 13, 2020 at 12:36 AM CET, Joe Stringer wrote:
+> > Add support for TPROXY via a new bpf helper, bpf_sk_assign().
+> >
+> > This helper requires the BPF program to discover the socket via a call
+> > to bpf_sk*_lookup_*(), then pass this socket to the new helper. The
+> > helper takes its own reference to the socket in addition to any existing
+> > reference that may or may not currently be obtained for the duration of
+> > BPF processing. For the destination socket to receive the traffic, the
+> > traffic must be routed towards that socket via local route, the socket
+> > must have the transparent option enabled out-of-band, and the socket
+> > must not be closing. If all of these conditions hold, the socket will be
+> > assigned to the skb to allow delivery to the socket.
 >
-> -       if (tcp_in_slow_start(tp))
-> -               tcp_slow_start(tp, acked);
-> -       else {
-> -               bictcp_update(ca, tp->snd_cwnd);
-> -               tcp_cong_avoid_ai(tp, ca->cnt, 1);
-> +       if (tcp_in_slow_start(tp)) {
-> +               acked = tcp_slow_start(tp, acked);
-> +               if (!acked)
-> +                       return;
->         }
-> +       bictcp_update(ca, tp->snd_cwnd);
-> +       tcp_cong_avoid_ai(tp, ca->cnt, acked);
->  }
+> My impression from the last time we have been discussing TPROXY is that
+> the check for IP_TRANSPARENT on ingress doesn't serve any purpose [0].
 >
->  /*
-> --
+> The socket option only has effect on output, when there is a need to
+> source traffic from a non-local address.
+>
+> Setting IP_TRANSPARENT requires CAP_NET_{RAW|ADMIN}, which grant a wider
+> range of capabilities than needed to build a transparent proxy app. This
+> is problematic because you to lock down your application with seccomp.
+>
+> It seems it should be enough to use a port number from a privileged
+> range, if you want to ensure that only the designed process can receive
+> the proxied traffic.
 
-Acked-by: Neal Cardwell <ncardwell@google.com>
+Thanks for looking this over. You're right, I neglected to fix up the
+commit message here from an earlier iteration that enforced this
+constraint. I can fix this up in a v2.
 
-thanks,
-neal
+> Or, alternatively, instead of using socket lookup + IP_TRANSPARENT
+> check, get the socket from sockmap and apply control to who can update
+> the BPF map.
+
+There's no IP_TRANSPARENT check in this iteration of the series.
+
+Cheers,
+Joe
