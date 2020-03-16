@@ -2,130 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5221A186506
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 07:33:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A809186511
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 07:36:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729633AbgCPGc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 02:32:56 -0400
-Received: from scp8.hosting.reg.ru ([31.31.196.44]:54968 "EHLO
-        scp8.hosting.reg.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729593AbgCPGc4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 02:32:56 -0400
-X-Greylist: delayed 2456 seconds by postgrey-1.27 at vger.kernel.org; Mon, 16 Mar 2020 02:32:54 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=marinkevich.ru; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ICtt14DdKbzX+OLuDobayzCZUyiOY0nTOBAzHCBfqGE=; b=cCn4gbh0tjfZhaAf2FLyfea68j
-        gl+Es6KUTaf5V8E5Fl7F9B8MTUcDsPUPpMOOlHnqm/enLQzYaVC5VvClwbtMPp7LveOEJw4e01gjE
-        vfA8m6R7bEw+osghsGWL386vbR3Un5frZtYzIbjk3144DNFPIEFIKVqwPyKfJCbuYld3GOVe0usWJ
-        TbWjAN3BWHl7ZLdybrGMTyDqQGfjKVyerzI3oFpmO13zwXJ34UAa8zZ55Rz33Xo0CxWDJYiiC2TrW
-        YvR4LI2frniFi99val7SVRMV6MMs2w/UaYr5bBhJo5m26AuSV7dsOKdTk5umPxOfWkraqljQQbYlV
-        jiOnX7EA==;
-Received: from mail.eltex.org ([92.125.152.58]:46582 helo=GRayJob)
-        by scp8.hosting.reg.ru with esmtpa (Exim 4.92)
-        (envelope-from <s@marinkevich.ru>)
-        id 1jDifM-0002YW-H1; Mon, 16 Mar 2020 08:51:56 +0300
-Date:   Mon, 16 Mar 2020 12:51:56 +0700
-From:   Sergey Marinkevich <s@marinkevich.ru>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] netfilter: nft_masq: add range specified flag setting
-Message-ID: <20200316055156.GA3822@GRayJob>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - scp8.hosting.reg.ru
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - marinkevich.ru
-X-Get-Message-Sender-Via: scp8.hosting.reg.ru: authenticated_id: s@marinkevich.ru
-X-Authenticated-Sender: scp8.hosting.reg.ru: s@marinkevich.ru
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+        id S1729514AbgCPGgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 02:36:18 -0400
+Received: from mail.wangsu.com ([123.103.51.198]:36210 "EHLO wangsu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728302AbgCPGgS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Mar 2020 02:36:18 -0400
+Received: from 137.localdomain (unknown [218.107.205.216])
+        by app1 (Coremail) with SMTP id xjNnewDn7Q1cHm9ew20FAA--.217S2;
+        Mon, 16 Mar 2020 14:36:13 +0800 (CST)
+From:   Pengcheng Yang <yangpc@wangsu.com>
+To:     edumazet@google.com, ncardwell@google.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pengcheng Yang <yangpc@wangsu.com>
+Subject: [PATCH RESEND net-next v2 0/5] tcp: fix stretch ACK bugs in congestion control modules
+Date:   Mon, 16 Mar 2020 14:35:06 +0800
+Message-Id: <1584340511-9870-1-git-send-email-yangpc@wangsu.com>
+X-Mailer: git-send-email 1.8.3.1
+X-CM-TRANSID: xjNnewDn7Q1cHm9ew20FAA--.217S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrZF1fuF1kWry8GF4rXrW3Awb_yoWDKFbEyF
+        92ga98Gr1UXFWDXayIkrn8Ar90yrWjyr1UXF4Dt3yDt347t34UGr4DtrW8urn7Xa1q9Fy8
+        WrnxtrW8Aw47JjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbO8Fc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wA2ocxC64kI
+        II0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7
+        xvwVC0I7IYx2IY6xkF7I0E14v26rxl6s0DM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84AC
+        jcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrV
+        ACY4xI64kE6c02F40Ex7xfMcIj6x8ErcxFaVAv8VW8GwAm72CE4IkC6x0Yz7v_Jr0_Gr1l
+        F7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8AwCF04
+        k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26r48MxC20s026xCaFVCjc4AY6r1j6r4U
+        MI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67
+        AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0
+        cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcV
+        C2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kfnx
+        nUUI43ZEXa7VU00PfPUUUUU==
+X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With nf_tables it is not possible to use port range for masquerading.
-Masquerade statement has option "to [:port-port]" which give no effect
-to translation behavior. But it must change source port of packet to
-one from ":port-port" range.
+"stretch ACKs" (caused by LRO, GRO, delayed ACKs or middleboxes)
+can cause serious performance shortfalls in common congestion
+control algorithms. Neal Cardwell submitted a series of patches
+starting with commit e73ebb0881ea ("tcp: stretch ACK fixes prep")
+to handle stretch ACKs and fixed stretch ACK bugs in Reno and
+CUBIC congestion control algorithms.
 
-My network:
+This patch series continues to fix bic, scalable, veno and yeah
+congestion control algorithms to handle stretch ACKs.
 
-	+-----------------------------+
-	|   ROUTER                    |
-	|                             |
-	|                   Masquerade|
-	| 10.0.0.1            1.1.1.1 |
-	| +------+           +------+ |
-	| | eth1 |           | eth2 | |
-	+-+--^---+-----------+---^--+-+
-	     |                   |
-	     |                   |
-	+----v------+     +------v----+
-	|           |     |           |
-	| 10.0.0.2  |     |  1.1.1.2  |
-	|           |     |           |
-	|PC1        |     |PC2        |
-	+-----------+     +-----------+
+Changes in v2:
+- Provide [PATCH 0/N] to describe the modifications of this patch series
 
-For testing i used rule like this:
+Pengcheng Yang (5):
+  tcp: fix stretch ACK bugs in BIC
+  tcp: fix stretch ACK bugs in Scalable
+  tcp: stretch ACK fixes in Veno prep
+  tcp: fix stretch ACK bugs in Veno
+  tcp: fix stretch ACK bugs in Yeah
 
-	rule ip nat POSTROUTING oifname eth2 masquerade to :666
+ net/ipv4/tcp_bic.c      | 11 ++++++-----
+ net/ipv4/tcp_scalable.c | 17 +++++++++--------
+ net/ipv4/tcp_veno.c     | 47 +++++++++++++++++++++++++----------------------
+ net/ipv4/tcp_yeah.c     | 41 +++++++++++------------------------------
+ 4 files changed, 51 insertions(+), 65 deletions(-)
 
-Run netcat for 1.1.1.2 667(UDP) and get dump from PC2:
-
-	15:22:25.591567 a8:f9:4b:aa:08:44 > a8:f9:4b:ac:e7:8f, ethertype IPv4 (0x0800), length 60: 1.1.1.1.34466 > 1.1.1.2.667: UDP, length 1
-
-Address translation works fine, but source port are not belongs to
-specified range.
-
-I see in similar source code (i.e. nft_redir.c, nft_nat.c) that
-there is setting NF_NAT_RANGE_PROTO_SPECIFIED flag. After adding this,
-repeat test for kernel with this patch, and get dump:
-
-	16:16:22.324710 a8:f9:4b:aa:08:44 > a8:f9:4b:ac:e7:8f, ethertype IPv4 (0x0800), length 60: 1.1.1.1.666 > 1.1.1.2.667: UDP, length 1
-
-Now it is works fine.
-
-Signed-off-by: Sergey Marinkevich <s@marinkevich.ru>
----
- net/netfilter/nft_masq.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/netfilter/nft_masq.c b/net/netfilter/nft_masq.c
-index bc9fd98c5d6d..448376e59074 100644
---- a/net/netfilter/nft_masq.c
-+++ b/net/netfilter/nft_masq.c
-@@ -113,6 +113,7 @@ static void nft_masq_ipv4_eval(const struct nft_expr *expr,
- 			&regs->data[priv->sreg_proto_min]);
- 		range.max_proto.all = (__force __be16)nft_reg_load16(
- 			&regs->data[priv->sreg_proto_max]);
-+		range.flags |= NF_NAT_RANGE_PROTO_SPECIFIED;
- 	}
- 	regs->verdict.code = nf_nat_masquerade_ipv4(pkt->skb, nft_hook(pkt),
- 						    &range, nft_out(pkt));
-@@ -159,6 +160,7 @@ static void nft_masq_ipv6_eval(const struct nft_expr *expr,
- 			&regs->data[priv->sreg_proto_min]);
- 		range.max_proto.all = (__force __be16)nft_reg_load16(
- 			&regs->data[priv->sreg_proto_max]);
-+		range.flags |= NF_NAT_RANGE_PROTO_SPECIFIED;
- 	}
- 	regs->verdict.code = nf_nat_masquerade_ipv6(pkt->skb, &range,
- 						    nft_out(pkt));
 -- 
-2.21.0
+1.8.3.1
 
