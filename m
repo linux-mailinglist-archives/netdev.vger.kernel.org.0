@@ -2,136 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 754BD18746A
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:01:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D16AB187476
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:06:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732644AbgCPVBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 17:01:37 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:41986 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732571AbgCPVBh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 17:01:37 -0400
-Received: by mail-pg1-f195.google.com with SMTP id h8so10420230pgs.9
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 14:01:37 -0700 (PDT)
+        id S1732627AbgCPVGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 17:06:00 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:38682 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732607AbgCPVGA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 17:06:00 -0400
+Received: by mail-pl1-f195.google.com with SMTP id w3so8568584plz.5
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 14:05:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=FykSs6ArRQ1VTW0edGQU9r+oRpdoLevjlWnrbNH8SzQ=;
-        b=F/mKIGm2VSDsMdeG2UN7tdnBaLkXajwusX1FSQGsszz2c2mkMYP00hgIofJTgrQDW1
-         SlYcjtn0dgAw7izmdBv71zLnPNljO/N2mb5wfEaVhtU0iQ3ICwa7+j1vTDbBcOdxXrmc
-         L4SVReMbOZrT0y9fUuU3TP449id5RqEw/5/u0=
+        bh=y3IGmPwiq4wbs+3Nm8nYfgQPnK4Ox4cRsRDlqMwvWZw=;
+        b=Uq0m1LsnsVeUh9mPhVQCxIpjl7uOSEiupEU1sQZhy+FXtQmH1zskZYSnn8rE3/NVm5
+         2YnRwPm+TxZQrC7dYoyhE079DxdG8uJoO9kKvzPXCUP6Ele4cT31xVBvi/S6ffU/Z5BH
+         qCHqVQLZkw6PhpSRJN2PSIwyjLj49R+no6jR4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=FykSs6ArRQ1VTW0edGQU9r+oRpdoLevjlWnrbNH8SzQ=;
-        b=ZFuq+TWTmx1QyILv82eE04TLJhEpbfrwqdzCqjxH7PWSurb/U2Q6UWc3/OZJqmP+dm
-         dv4HSmY7AvHpQlJPVh7weQ4KdWBG30NfyIbgV0xtQVifSRPsWEp4f05yQsAe+GHPnV7Q
-         +8124mLXd+p+eluazad+nvO9fjb6RzLD4qO6OTS6eCVVjqG0GRjHQf6fPfB2WAXV/IIH
-         aH3IY4TDNyFHHgE2Ea6xS3VFju5ay8K+dJ12zmaJxZ6b/bGFXltRvondjxZNyu5igwuC
-         xwzkjwPYsg0R0fKoX+o7eqQS3VGC/6RmGKVLCiI+U325oTUs46jjeeaSMbpSnKrRk/2X
-         /JqQ==
-X-Gm-Message-State: ANhLgQ05oB6wVUh5MtLmUkZYYVi2Qe9tYgdIogGbzmUS1hS6bP+U+tDS
-        IaeCzwu06Nm/h9noP1My/QBRMg==
-X-Google-Smtp-Source: ADFU+vspzRBYngPdmN2Sb7yi3ynFWRC4K625gLz2x5YvOEj/9r9JVqHRh4cG4ZtIaq7Mzq78lwob+g==
-X-Received: by 2002:a63:7c4:: with SMTP id 187mr1570289pgh.369.1584392495839;
-        Mon, 16 Mar 2020 14:01:35 -0700 (PDT)
+        bh=y3IGmPwiq4wbs+3Nm8nYfgQPnK4Ox4cRsRDlqMwvWZw=;
+        b=kOPVf6asV433xGK+ooYzPEorVuGGcEFQ7iLiZZ4qSczjj/xSXcC7wtyshZ4oJyn/9o
+         wNefXDjllFeiG4KUTGhyAFvXOVhmri0Mo3aBo9ajdgI1bIJ36PRwSeS6GyYGih9Foybo
+         9ghfzXXrmebxk3fnMQYNyAz1arC2V5MKIdfhgd9rZl/uVHHVceO2MRvELcZMlcDdZTt/
+         ZjXFRRcozMA5woVDT+sE7035dUHAcDRuAZ0LOebNhu7MinyA3K1MVzy2hnChbvlbYyVp
+         L2s5v3IP7+1zeiwIoD8FBQd01ZKUfyaRtJwrmu7amyZO8CAfXhXEXXW8sqr4K2EH3dpo
+         7r1g==
+X-Gm-Message-State: ANhLgQ1XRsJ3g+GXnB8OggvaPW4lD4qjVU0c5AkvoSlM3USLpXUIrLvS
+        /qTq2hh/rQ0BtWH8KZwA6QhYmA==
+X-Google-Smtp-Source: ADFU+vvTUDyDUjCUl26KBVoud41E3T/YXGVRV8yipj/Wi5LH4KGqaXAvRVMdbUrjOQc3cY7SYA2png==
+X-Received: by 2002:a17:90a:8d81:: with SMTP id d1mr1460363pjo.63.1584392758209;
+        Mon, 16 Mar 2020 14:05:58 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id p4sm747093pfg.163.2020.03.16.14.01.34
+        by smtp.gmail.com with ESMTPSA id c201sm785900pfc.73.2020.03.16.14.05.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Mar 2020 14:01:34 -0700 (PDT)
-Date:   Mon, 16 Mar 2020 14:01:33 -0700
+        Mon, 16 Mar 2020 14:05:57 -0700 (PDT)
+Date:   Mon, 16 Mar 2020 14:05:56 -0700
 From:   Kees Cook <keescook@chromium.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "Bird, Tim" <Tim.Bird@sony.com>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "luto@amacapital.net" <luto@amacapital.net>,
-        "wad@chromium.org" <wad@chromium.org>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kernel-team@fb.com" <kernel-team@fb.com>
-Subject: Re: [PATCH v2 0/4] kselftest: add fixture parameters
-Message-ID: <202003161356.6CD6783@keescook>
-References: <20200314005501.2446494-1-kuba@kernel.org>
- <202003132049.3D0CDBB2A@keescook>
- <MWHPR13MB08957F02680872A2C30DD7F4FDF90@MWHPR13MB0895.namprd13.prod.outlook.com>
- <20200316130416.4ec9103b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>, shuah@kernel.org,
+        luto@amacapital.net, wad@chromium.org, daniel@iogearbox.net,
+        kafai@fb.com, yhs@fb.com, andriin@fb.com,
+        gregkh@linuxfoundation.org, tglx@linutronix.de,
+        khilman@baylibre.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH v3] selftests: Fix seccomp to support relocatable build
+ (O=objdir)
+Message-ID: <202003161404.934CCE0@keescook>
+References: <20200313212404.24552-1-skhan@linuxfoundation.org>
+ <8736a8qz06.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200316130416.4ec9103b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <8736a8qz06.fsf@mpe.ellerman.id.au>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 16, 2020 at 01:04:16PM -0700, Jakub Kicinski wrote:
-> Variant sounds good too, although the abbreviation would be VAR?
-> Which isn't ideal. 
+On Mon, Mar 16, 2020 at 11:12:57PM +1100, Michael Ellerman wrote:
+> Shuah Khan <skhan@linuxfoundation.org> writes:
+> > Fix seccomp relocatable builds. This is a simple fix to use the right
+> > lib.mk variable TEST_GEN_PROGS with dependency on kselftest_harness.h
+> > header, and defining LDFLAGS for pthread lib.
+> >
+> > Removes custom clean rule which is no longer necessary with the use of
+> > TEST_GEN_PROGS. 
+> >
+> > Uses $(OUTPUT) defined in lib.mk to handle build relocation.
+> >
+> > The following use-cases work with this change:
+> >
+> > In seccomp directory:
+> > make all and make clean
+> >
+> > From top level from main Makefile:
+> > make kselftest-install O=objdir ARCH=arm64 HOSTCC=gcc \
+> >  CROSS_COMPILE=aarch64-linux-gnu- TARGETS=seccomp
+> >
+> > Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+> > ---
+> >
+> > Changes since v2:
+> > -- Using TEST_GEN_PROGS is sufficient to generate objects.
+> >    Addresses review comments from Kees Cook.
+> >
+> >  tools/testing/selftests/seccomp/Makefile | 18 ++++++++----------
+> >  1 file changed, 8 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
+> > index 1760b3e39730..a0388fd2c3f2 100644
+> > --- a/tools/testing/selftests/seccomp/Makefile
+> > +++ b/tools/testing/selftests/seccomp/Makefile
+> > @@ -1,17 +1,15 @@
+> >  # SPDX-License-Identifier: GPL-2.0
+> > -all:
+> > -
+> > -include ../lib.mk
+> > +CFLAGS += -Wl,-no-as-needed -Wall
+> > +LDFLAGS += -lpthread
+> >  
+> >  .PHONY: all clean
+> >  
+> > -BINARIES := seccomp_bpf seccomp_benchmark
+> > -CFLAGS += -Wl,-no-as-needed -Wall
+> > +include ../lib.mk
+> > +
+> > +# OUTPUT set by lib.mk
+> > +TEST_GEN_PROGS := $(OUTPUT)/seccomp_bpf $(OUTPUT)/seccomp_benchmark
+> >  
+> > -seccomp_bpf: seccomp_bpf.c ../kselftest_harness.h
+> > -	$(CC) $(CFLAGS) $(LDFLAGS) $< -lpthread -o $@
+> > +$(TEST_GEN_PROGS): ../kselftest_harness.h
+> >  
+> > -TEST_PROGS += $(BINARIES)
+> > -EXTRA_CLEAN := $(BINARIES)
+> > +all: $(TEST_GEN_PROGS)
+> >  
+> > -all: $(BINARIES)
 > 
-> But I really don't care so whoever cares the most please speak up :P
-
-Let's go with "variant" and just spell it out.
-
-> > BTW - Fuego has a similar feature for naming a collection of test
-> > parameters with specific values (if I understand this proposed
-> > feature correctly).  Fuego's feature was named a long time ago
-> > (incorrectly, I think) and it continues to bug me to this day.
-> > It was named 'specs', and after giving it considerable thought
-> > I've been meaning to change it to 'variants'.
-> > 
-> > Just a suggestion for consideration.  The fact that Fuego got this
-> > wrong is what motivates my suggestion today.  You have to live
-> > with this kind of stuff a long time. :-)
-> > 
-> > We ran into some issues in Fuego with this concept, that motivate
-> > the comments below.  I'll use your 'instance' terminology in my comments
-> > although the terminology is different in Fuego.
-> > 
-> > > Also a change in reporting:
-> > > 
-> > > 	struct __fixture_params_metadata no_param = { .name = "", };
-> > > 
-> > > Let's make ".name = NULL" here, and then we can detect instantiation:
-> > > 
-> > > 	printf("[ RUN      ] %s%s%s.%s\n", f->name, p->name ? "." : "",
-> > > 				p->name ?: "", t->name);
 > 
-> Do I have to make it NULL or is it okay to test p->name[0] ?
-> That way we can save one ternary operator from the litany..
-
-I did consider Tim's idea of having them all say 'default', but since
-the bulk of tests aren't going to have variants, I don't want to spam
-the report with words I have to skip over.
-
-And empty-check (instead of NULL) is fine by me.
-
-> To me global.default.XYZ is a mouthful. so in my example (perhaps that
-> should have been part of the cover letter) I got:
+> It shouldn't be that complicated. We just need to define TEST_GEN_PROGS
+> before including lib.mk, and then add the dependency on the harness
+> after we include lib.mk (so that TEST_GEN_PROGS has been updated to
+> prefix $(OUTPUT)).
 > 
-> [ RUN      ] global.keysizes             <= non-fixture test
-> [       OK ] global.keysizes             
-> [ RUN      ] tls_basic.base_base         <= fixture: "tls_basic", no params
-> [       OK ] tls_basic.base_base         
-> [ RUN      ] tls12.sendfile              <= fixture: "tls", param: "12"
-> [       OK ] tls12.sendfile                 
-> [ RUN      ] tls13.sendfile              <= fixture: "tls", param: "13"
-> [       OK ] tls13.sendfile                 (same fixture, diff param)
+> eg:
 > 
-> And users can start inserting underscores themselves if they really
-> want. (For TLS I was considering different ciphers but they don't impact
-> testing much.)
+>   # SPDX-License-Identifier: GPL-2.0
+>   CFLAGS += -Wl,-no-as-needed -Wall
+>   LDFLAGS += -lpthread
+>   
+>   TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
+>   
+>   include ../lib.mk
+>   
+>   $(TEST_GEN_PROGS): ../kselftest_harness.h
 
-The reason I'd like a dot is just for lay-person grep-ability and
-to avoid everyone needing to remember to add separator prefixes --
-there should just be a common one. e.g.  searching for "tls13" in the
-tree wouldn't find the test (since it's actually named "tls" and "13"
-is separate places). (I mean, sure, searching for "tls" is also insane,
-but I think I made my point.)
+Exactly. This (with an extra comment) is precisely what I suggested during
+v2 review:
+https://lore.kernel.org/lkml/202003041815.B8C73DEC@keescook/
 
 -Kees
+
+> 
+> 
+> Normal in-tree build:
+> 
+>   selftests$ make TARGETS=seccomp
+>   make[1]: Entering directory '/home/michael/linux/tools/testing/selftests/seccomp'
+>   gcc -Wl,-no-as-needed -Wall  -lpthread  seccomp_bpf.c ../kselftest_harness.h  -o /home/michael/linux/tools/testing/selftests/seccomp/seccomp_bpf
+>   gcc -Wl,-no-as-needed -Wall  -lpthread  seccomp_benchmark.c ../kselftest_harness.h  -o /home/michael/linux/tools/testing/selftests/seccomp/seccomp_benchmark
+>   make[1]: Leaving directory '/home/michael/linux/tools/testing/selftests/seccomp'
+>   
+>   selftests$ ls -l seccomp/
+>   total 388
+>   -rw-rw-r-- 1 michael michael     41 Jan  9 12:00 config
+>   -rw-rw-r-- 1 michael michael    201 Mar 16 23:04 Makefile
+>   -rwxrwxr-x 1 michael michael  70824 Mar 16 23:07 seccomp_benchmark*
+>   -rw-rw-r-- 1 michael michael   2289 Feb 17 21:39 seccomp_benchmark.c
+>   -rwxrwxr-x 1 michael michael 290520 Mar 16 23:07 seccomp_bpf*
+>   -rw-rw-r-- 1 michael michael  94778 Mar  5 23:33 seccomp_bpf.c
+> 
+> 
+> O= build:
+> 
+>   selftests$ make TARGETS=seccomp O=$PWD/build
+>   make[1]: Entering directory '/home/michael/linux/tools/testing/selftests/seccomp'
+>   gcc -Wl,-no-as-needed -Wall  -lpthread  seccomp_bpf.c ../kselftest_harness.h  -o /home/michael/linux/tools/testing/selftests/build/seccomp/seccomp_bpf
+>   gcc -Wl,-no-as-needed -Wall  -lpthread  seccomp_benchmark.c ../kselftest_harness.h  -o /home/michael/linux/tools/testing/selftests/build/seccomp/seccomp_benchmark
+>   make[1]: Leaving directory '/home/michael/linux/tools/testing/selftests/seccomp'
+>   
+>   selftests$ ls -l build/seccomp/
+>   total 280
+>   -rwxrwxr-x 1 michael michael  70824 Mar 16 23:05 seccomp_benchmark*
+>   -rwxrwxr-x 1 michael michael 290520 Mar 16 23:05 seccomp_bpf*
+> 
+> 
+> Build in the directory itself:
+>   selftests$ cd seccomp
+>   seccomp$ make
+>   gcc -Wl,-no-as-needed -Wall  -lpthread  seccomp_bpf.c ../kselftest_harness.h  -o /home/michael/linux/tools/testing/selftests/seccomp/seccomp_bpf
+>   gcc -Wl,-no-as-needed -Wall  -lpthread  seccomp_benchmark.c ../kselftest_harness.h  -o /home/michael/linux/tools/testing/selftests/seccomp/seccomp_benchmark
+>   
+>   seccomp$ ls -l
+>   total 388
+>   -rw-rw-r-- 1 michael michael     41 Jan  9 12:00 config
+>   -rw-rw-r-- 1 michael michael    201 Mar 16 23:04 Makefile
+>   -rwxrwxr-x 1 michael michael  70824 Mar 16 23:06 seccomp_benchmark*
+>   -rw-rw-r-- 1 michael michael   2289 Feb 17 21:39 seccomp_benchmark.c
+>   -rwxrwxr-x 1 michael michael 290520 Mar 16 23:06 seccomp_bpf*
+>   -rw-rw-r-- 1 michael michael  94778 Mar  5 23:33 seccomp_bpf.c
+> 
+> 
+> cheers
 
 -- 
 Kees Cook
