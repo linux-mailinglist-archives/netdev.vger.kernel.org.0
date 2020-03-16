@@ -2,99 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3007C1874C4
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:33:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 039181874E9
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:43:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732691AbgCPVdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 17:33:41 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:41783 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732641AbgCPVdl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 17:33:41 -0400
-Received: by mail-wr1-f65.google.com with SMTP id f11so6345424wrp.8
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 14:33:39 -0700 (PDT)
+        id S1732719AbgCPVnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 17:43:08 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:35823 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732636AbgCPVnI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 17:43:08 -0400
+Received: by mail-ot1-f67.google.com with SMTP id k26so19583649otr.2
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 14:43:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=i7YOATVvrsSPvn9r0aMF6RsH98/oubZ/FNsZK+e/tgI=;
-        b=ZfYDIUCDQP6nZ8yc8rCQB2TJ1ejh9mZzqIOf8+kOuIByCoved/pFY4rnIuhbcsxqrh
-         ClUVclyto9/WUEY+bwnswgVsr8PNo8ibQpVMplofsuMCYzrC6d1SyXGjQ/AaBglC8Sg+
-         dTMsSJbe6USDwn+vw13w6KZZSUgp6UxhpiJ05T90h4s7R2TX9dxgCGnEBdovNtE0Wmc3
-         dYzARZL/f57PkCGUQK4k/ACV5ykRlUrw615/LdwZPU/MzAS1qwpCU5QZSDxJ2GCk0uL/
-         Bmd27DwKzHaxo5rqnOF1nfliN8o5/xF4qRveXKzxqyKIDVLUbZg9rbSDw+5zP/l5c8bt
-         SFTA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WMrl/A4S6Os3YKniWIbLiOD8XUx/BAWQkzygslygIP0=;
+        b=Ldm8Vw/ml3LDuNk/Sl8EV0aDsuBxJFUDKM0gcQErgV85iZrIM33vtem51He5gs2qbW
+         tnwhCYte5Dq+Cz7Gx6Dpyrom3n0/OAMoLdObTgFsuG/uG0cZr8/UhfOglxf2q+8qweMV
+         81cLpqcVi0O3tp4RT7JhlwH+xlh7OM9qLgGEltbiRPQVSZgKa2yR21TShplxtRFjFkio
+         1N3/cFGWQ86tVjXq3pEkwXQ+6uRvHPpSLFPds/yBf0Zj8+rCihVrILs7qvjN0ebpx1PN
+         A33XMEBEMTaVYJrtMYIfGxYypx42XxzS87mJPJTJ55E1aMCpNLd+q5X3lfYAA5CVOL6F
+         SSxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=i7YOATVvrsSPvn9r0aMF6RsH98/oubZ/FNsZK+e/tgI=;
-        b=fiY2E9wZyVA2aE4lfDtILpe+7yZZD2r395VQzY6LwC2/uJuUtiqfz4uOhzqpzdr7Si
-         S5wyjmAESW/SKyaBcItC/qm7+KVwNXhNB+WDbdFxK3G5GH1gwyjR6yjHaZ6+9zJt1weq
-         0ougYNBvzBowkC9JqHSNuLqGhG89P37/SyHa/lr+7oahf5epDHGR6Heb8R0rH1jCSoQn
-         YCEeTO7Ml2HhTl/E1F+U2wvc70tyc9v5//puxlyLRk6MW9TkErlALriD6wFLxMhQsKZn
-         Ijza8cgxGkhwAlio9LDtS2HUgIJiEfx/m68UahdCWxILVJcFEhtKKS8mT8mTfaIxtBR/
-         C/nQ==
-X-Gm-Message-State: ANhLgQ0kMdvgadzJtmJC4L+i3iOyoWG434zDi9Fp+4uf2qLuIHu5EEwi
-        OeToxw7Ql4ScXf3Gr/M0s49pyWW0
-X-Google-Smtp-Source: ADFU+vsUr4QfOCuKnuFYW6wmJUw0ONCMkgiY8BCLCs9AfR0Gh+Pq0WCycZWf/QJ8j9gq9emYelxAaw==
-X-Received: by 2002:adf:e511:: with SMTP id j17mr1482369wrm.25.1584394418842;
-        Mon, 16 Mar 2020 14:33:38 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:1dfa:b5c5:6377:a256? (p200300EA8F2960001DFAB5C56377A256.dip0.t-ipconnect.de. [2003:ea:8f29:6000:1dfa:b5c5:6377:a256])
-        by smtp.googlemail.com with ESMTPSA id k5sm1132387wmj.18.2020.03.16.14.33.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Mar 2020 14:33:38 -0700 (PDT)
-Subject: [PATCH net-next 2/2] net: phy: mscc: consider interrupt source in
- interrupt handler
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <49afbad9-317a-3eff-3692-441fae3c4f49@gmail.com>
-Message-ID: <14496a42-6203-b601-f301-91d28bedb09f@gmail.com>
-Date:   Mon, 16 Mar 2020 22:33:31 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WMrl/A4S6Os3YKniWIbLiOD8XUx/BAWQkzygslygIP0=;
+        b=nJEvbU2lp8rJliDLojXIF2LCweH3nQ9e91Pe5HvJVWIUc2dTrIAWPuTpCk07c9ZIWQ
+         882kTzU2v8dgAYAviCeqQl20k30lXy1dvyc1XpCB4ivINKtj1OZHatALZurIzo2ziqF6
+         Mx2tU0qxQ+5lI+1+dUTLpKm1JCWom0uEvrmzFkeF+Or+25wjnQ/W8p3GV6sS//DHMkf7
+         aqHNZc6sD8kiZ09qoOnVHmXhOnSdDyHlfX91SFQnbMamHwhNrodng6sz/XgLbxQIcL71
+         gPeejcRVMy8HyeMRNL0ss02eR4qCDqH38zt7lh6rr6Q43tzAFjz5SH0OoePKJj/3hNSP
+         Ws8Q==
+X-Gm-Message-State: ANhLgQ1gihDlIWw3BWOn8x5cBTTgGhbBzpYJYUJn7hV4NqpAB+vlOdUY
+        PtAJsnk5yvD7oG/kUoX+hNDnc9TgA5MDSAI5HXkBJw==
+X-Google-Smtp-Source: ADFU+vsfOUDl2usOfPoCGuD95oqi+EJZczpkiHeGbcNg5IfGGLn0G3tJWv1OPuc56W4ecmTljIjyHuiVxjSNoRZCgnc=
+X-Received: by 2002:a05:6830:c5:: with SMTP id x5mr1098239oto.302.1584394985594;
+ Mon, 16 Mar 2020 14:43:05 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <49afbad9-317a-3eff-3692-441fae3c4f49@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1584340511-9870-1-git-send-email-yangpc@wangsu.com> <1584340511-9870-4-git-send-email-yangpc@wangsu.com>
+In-Reply-To: <1584340511-9870-4-git-send-email-yangpc@wangsu.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Mon, 16 Mar 2020 17:42:49 -0400
+Message-ID: <CADVnQymgwy7+YkLvZ44iq_iO5kFBPqy-Q9hzNEvS=u5p_UBsQQ@mail.gmail.com>
+Subject: Re: [PATCH RESEND net-next v2 3/5] tcp: stretch ACK fixes in Veno prep
+To:     Pengcheng Yang <yangpc@wangsu.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Trigger the respective interrupt handler functionality only if the
-related interrupt source bit is set.
+On Mon, Mar 16, 2020 at 2:37 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
+>
+> No code logic has been changed in this patch.
+>
+> Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+> ---
+>  net/ipv4/tcp_veno.c | 44 +++++++++++++++++++++++---------------------
+>  1 file changed, 23 insertions(+), 21 deletions(-)
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/mscc/mscc_main.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Indeed this looks like a pure refactor.
 
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index 4727aba8e..2f6229a70 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -1437,8 +1437,11 @@ static irqreturn_t vsc8584_handle_interrupt(struct phy_device *phydev)
- 	if (irq_status < 0 || !(irq_status & MII_VSC85XX_INT_MASK_MASK))
- 		return IRQ_NONE;
- 
--	vsc8584_handle_macsec_interrupt(phydev);
--	phy_mac_interrupt(phydev);
-+	if (irq_status & MII_VSC85XX_INT_MASK_EXT)
-+		vsc8584_handle_macsec_interrupt(phydev);
-+
-+	if (irq_status & MII_VSC85XX_INT_MASK_LINK_CHG)
-+		phy_mac_interrupt(phydev);
- 
- 	return IRQ_HANDLED;
- }
--- 
-2.25.1
+Acked-by: Neal Cardwell <ncardwell@google.com>
 
-
+thanks,
+neal
