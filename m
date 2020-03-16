@@ -2,253 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A0A1186780
+	by mail.lfdr.de (Postfix) with ESMTP id DE77A186781
 	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 10:10:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730390AbgCPJKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 05:10:08 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:50214 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730110AbgCPJKI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 05:10:08 -0400
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02G93bt4015574;
-        Mon, 16 Mar 2020 10:09:45 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=STMicroelectronics;
- bh=iCHTmv5+KQ6tDSYoZf4uMAipyo7xfSoDIHIrOmeczBg=;
- b=amITm585YYoORfKCMeI0ovpNZ79QNp4zFMOnmwE5K1gdY/nZOWXp0dcHhVLOW8y8jAJb
- 1DQv9rrjboP8Eeurjo2Of4mYKKxMXmodhx4wUtZI8oomHzWK4Px4C0/BAe2NJBho+uSu
- y85Aeg/JkiNsPVCoJaJB3gnIkhUMLJSFyLFtXPjawB3lp/cvdg9Fg5mLwPVoiyUCeVIM
- eIt105Aip6byCu+B6z+OTIOdMlG3CHSMgNR0Z4fUyAR/otjS+HX4Lh8i12cEr/c7i0Gz
- Sn87JtRjm2yUuFpBjVkmv9I77E8lua1kVrlpBQEgPtI6y364Bhwhgr/6nwqiMVmVGPS5 7A== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2yrqvcxjew-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 16 Mar 2020 10:09:45 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9456910002A;
-        Mon, 16 Mar 2020 10:09:35 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5C4A22A4D77;
-        Mon, 16 Mar 2020 10:09:35 +0100 (CET)
-Received: from localhost (10.75.127.44) by SFHDAG5NODE3.st.com (10.75.127.15)
- with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 16 Mar 2020 10:09:34
- +0100
-From:   Christophe Roullier <christophe.roullier@st.com>
-To:     <robh@kernel.org>, <davem@davemloft.net>, <joabreu@synopsys.com>,
-        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <peppe.cavallaro@st.com>
-CC:     <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <christophe.roullier@st.com>, <andrew@lunn.ch>
-Subject: [PATCHv2 1/1] net: ethernet: stmmac: simplify phy modes management for stm32
-Date:   Mon, 16 Mar 2020 10:09:07 +0100
-Message-ID: <20200316090907.18488-1-christophe.roullier@st.com>
-X-Mailer: git-send-email 2.17.1
+        id S1730408AbgCPJKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 05:10:14 -0400
+Received: from mail-il1-f193.google.com ([209.85.166.193]:33446 "EHLO
+        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730110AbgCPJKN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 05:10:13 -0400
+Received: by mail-il1-f193.google.com with SMTP id k29so15744831ilg.0
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 02:10:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=V6d04aUz8lBO2qEFBfsPBEHGqCkxderOMVWg3UsNjTU=;
+        b=qVI3LciRtXV+uUlPLGc63wmJfSFidcj0D6EiLttevfrQ0TWWlivuiSwL397wbmc7/w
+         n4VjYxUt2zkooI6ykMbYOfUQfLMBRYBGloFPE1oT5HV3qqV3LcOy3o1p8Ftvg3ccpLLh
+         PL9NC02gYahR73NZBa2e/ktKq134DyDgL0ztdEZ8jDsio0qv789KCj13vwtNdnfQw6Mo
+         aFzXKcC/wDiCjNe7s7lfHNxvT1M9WNrhj2N03CINxU0I2+wmgtNw5AKWQWmbXUHdjdGE
+         r9kM9Wd42tqxX8DFEpoY8HxbpDRN3cplLMhMu/1yJoU/vow6KV9ig+NDeIByhRCMcjCS
+         M1mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=V6d04aUz8lBO2qEFBfsPBEHGqCkxderOMVWg3UsNjTU=;
+        b=I1b9YtOhysAXOD/AOh0Zn4mdHEzBLuo4QQfDRIXKuYipRn+W7UL3fgxk10NAmUS4SN
+         ZWmefGvZ5bjMQtAKEh4uZJDbl7pNJmvC0bLrLAPopNmYgRAuAHNaqYTjlNG5WdZ1BaUR
+         DS/JvDjxqrBeDvMusk8r9WTZpZcvbnEqPX3hLRwQXerYhY6NIXJp2DEShMtmfKgpvo4H
+         /yGoo9q14R2YGJwFQ/Oxz0V3t/eFOsC0TqWGj5i+Z/CCviX8Jc7gLEiJRx7gyiOOdNMD
+         kXQpev3kU0Hf85Mz0k/9g7ngBt6jk5zvK7LbX8Ixov7s+7jVRBhFRlLxNqW5AXU6dEeA
+         KQOA==
+X-Gm-Message-State: ANhLgQ3kGgaNzLAWVPZvaulXJcjHcCZPH4aGmZFY4ZwQS0ZJqpsxcCFG
+        ZinbhPIfy3N3KutmVaO36L4Xk1Pys9TOjTRu64M=
+X-Google-Smtp-Source: ADFU+vs+lkp5OUzH6TIe5s57Hm+NOjl+1o1KMfLumB6G/H/4+bYeQz6gHJFk3XFaGzBTdH9xSdFIiOJZ5fEMxlNloEA=
+X-Received: by 2002:a92:5e9b:: with SMTP id f27mr27138237ilg.263.1584349812191;
+ Mon, 16 Mar 2020 02:10:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG3NODE1.st.com (10.75.127.7) To SFHDAG5NODE3.st.com
- (10.75.127.15)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-03-16_02:2020-03-12,2020-03-16 signatures=0
+Received: by 2002:ac0:a97c:0:0:0:0:0 with HTTP; Mon, 16 Mar 2020 02:10:11
+ -0700 (PDT)
+Reply-To: robertandersongood1@gmail.com
+From:   robert anderson <robertandersongood7@gmail.com>
+Date:   Mon, 16 Mar 2020 02:10:11 -0700
+Message-ID: <CAE=WtcRGSqa8Bdsr87pdNxgCRULL+S76sX=H5LhCrnf+6ddnzQ@mail.gmail.com>
+Subject: happy day
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No new feature, just to simplify stm32 part to be easier to use.
-Add by default all Ethernet clocks in DT, and activate or not in function
-of phy mode, clock frequency, if property "st,ext-phyclk" is set or not.
-Keep backward compatibility
------------------------------------------------------------------------
-|PHY_MODE | Normal | PHY wo crystal|   PHY wo crystal   |  No 125Mhz  |
-|         |        |      25MHz    |        50MHz       |  from PHY   |
------------------------------------------------------------------------
-|  MII    |	 -    |     eth-ck    |       n/a          |	    n/a  |
-|         |        | st,ext-phyclk |                    |             |
------------------------------------------------------------------------
-|  GMII   |	 -    |     eth-ck    |       n/a          |	    n/a  |
-|         |        | st,ext-phyclk |                    |             |
------------------------------------------------------------------------
-| RGMII   |	 -    |     eth-ck    |       n/a          |      eth-ck  |
-|         |        | st,ext-phyclk |                    |st,eth-clk-sel|
-|         |        |               |                    |       or     |
-|         |        |               |                    | st,ext-phyclk|
-------------------------------------------------------------------------
-| RMII    |	 -    |     eth-ck    |      eth-ck        |	     n/a  |
-|         |        | st,ext-phyclk | st,eth-ref-clk-sel |              |
-|         |        |               | or st,ext-phyclk   |              |
-------------------------------------------------------------------------
-
-Signed-off-by: Christophe Roullier <christophe.roullier@st.com>
-
----
- .../net/ethernet/stmicro/stmmac/dwmac-stm32.c | 74 +++++++++++--------
- 1 file changed, 44 insertions(+), 30 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
-index b2dc99289687..5d4df4c5254e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
-@@ -29,6 +29,11 @@
- #define SYSCFG_PMCR_ETH_CLK_SEL		BIT(16)
- #define SYSCFG_PMCR_ETH_REF_CLK_SEL	BIT(17)
- 
-+/* CLOCK feed to PHY*/
-+#define ETH_CK_F_25M	25000000
-+#define ETH_CK_F_50M	50000000
-+#define ETH_CK_F_125M	125000000
-+
- /*  Ethernet PHY interface selection in register SYSCFG Configuration
-  *------------------------------------------
-  * src	 |BIT(23)| BIT(22)| BIT(21)|BIT(20)|
-@@ -58,33 +63,20 @@
-  *|         |        |      25MHz    |        50MHz       |                  |
-  * ---------------------------------------------------------------------------
-  *|  MII    |	 -   |     eth-ck    |	      n/a	  |	  n/a        |
-- *|         |        |		     |                    |		     |
-+ *|         |        | st,ext-phyclk |                    |		     |
-  * ---------------------------------------------------------------------------
-  *|  GMII   |	 -   |     eth-ck    |	      n/a	  |	  n/a        |
-- *|         |        |               |                    |		     |
-+ *|         |        | st,ext-phyclk |                    |		     |
-  * ---------------------------------------------------------------------------
-- *| RGMII   |	 -   |     eth-ck    |	      n/a	  |  eth-ck (no pin) |
-- *|         |        |               |                    |  st,eth-clk-sel  |
-+ *| RGMII   |	 -   |     eth-ck    |	      n/a	  |      eth-ck      |
-+ *|         |        | st,ext-phyclk |                    | st,eth-clk-sel or|
-+ *|         |        |               |                    | st,ext-phyclk    |
-  * ---------------------------------------------------------------------------
-  *| RMII    |	 -   |     eth-ck    |	    eth-ck        |	  n/a        |
-- *|         |        |		     | st,eth-ref-clk-sel |		     |
-+ *|         |        | st,ext-phyclk | st,eth-ref-clk-sel |		     |
-+ *|         |        |               | or st,ext-phyclk   |		     |
-  * ---------------------------------------------------------------------------
-  *
-- * BIT(17) : set this bit in RMII mode when you have PHY without crystal 50MHz
-- * BIT(16) : set this bit in GMII/RGMII PHY when you do not want use 125Mhz
-- * from PHY
-- *-----------------------------------------------------
-- * src	 |         BIT(17)       |       BIT(16)      |
-- *-----------------------------------------------------
-- * MII   |           n/a	 |         n/a        |
-- *-----------------------------------------------------
-- * GMII  |           n/a         |   st,eth-clk-sel   |
-- *-----------------------------------------------------
-- * RGMII |           n/a         |   st,eth-clk-sel   |
-- *-----------------------------------------------------
-- * RMII  |   st,eth-ref-clk-sel	 |         n/a        |
-- *-----------------------------------------------------
-- *
-  */
- 
- struct stm32_dwmac {
-@@ -93,6 +85,8 @@ struct stm32_dwmac {
- 	struct clk *clk_eth_ck;
- 	struct clk *clk_ethstp;
- 	struct clk *syscfg_clk;
-+	int ext_phyclk;
-+	int enable_eth_ck;
- 	int eth_clk_sel_reg;
- 	int eth_ref_clk_sel_reg;
- 	int irq_pwr_wakeup;
-@@ -155,14 +149,17 @@ static int stm32mp1_clk_prepare(struct stm32_dwmac *dwmac, bool prepare)
- 		ret = clk_prepare_enable(dwmac->syscfg_clk);
- 		if (ret)
- 			return ret;
--		ret = clk_prepare_enable(dwmac->clk_eth_ck);
--		if (ret) {
--			clk_disable_unprepare(dwmac->syscfg_clk);
--			return ret;
-+		if (dwmac->enable_eth_ck) {
-+			ret = clk_prepare_enable(dwmac->clk_eth_ck);
-+			if (ret) {
-+				clk_disable_unprepare(dwmac->syscfg_clk);
-+				return ret;
-+			}
- 		}
- 	} else {
- 		clk_disable_unprepare(dwmac->syscfg_clk);
--		clk_disable_unprepare(dwmac->clk_eth_ck);
-+		if (dwmac->enable_eth_ck)
-+			clk_disable_unprepare(dwmac->clk_eth_ck);
- 	}
- 	return ret;
- }
-@@ -170,24 +167,34 @@ static int stm32mp1_clk_prepare(struct stm32_dwmac *dwmac, bool prepare)
- static int stm32mp1_set_mode(struct plat_stmmacenet_data *plat_dat)
- {
- 	struct stm32_dwmac *dwmac = plat_dat->bsp_priv;
--	u32 reg = dwmac->mode_reg;
-+	u32 reg = dwmac->mode_reg, clk_rate;
- 	int val;
- 
-+	clk_rate = clk_get_rate(dwmac->clk_eth_ck);
-+	dwmac->enable_eth_ck = false;
- 	switch (plat_dat->interface) {
- 	case PHY_INTERFACE_MODE_MII:
-+		if (clk_rate == ETH_CK_F_25M && dwmac->ext_phyclk)
-+			dwmac->enable_eth_ck = true;
- 		val = SYSCFG_PMCR_ETH_SEL_MII;
- 		pr_debug("SYSCFG init : PHY_INTERFACE_MODE_MII\n");
- 		break;
- 	case PHY_INTERFACE_MODE_GMII:
- 		val = SYSCFG_PMCR_ETH_SEL_GMII;
--		if (dwmac->eth_clk_sel_reg)
-+		if (clk_rate == ETH_CK_F_25M &&
-+		    (dwmac->eth_clk_sel_reg || dwmac->ext_phyclk)) {
-+			dwmac->enable_eth_ck = true;
- 			val |= SYSCFG_PMCR_ETH_CLK_SEL;
-+		}
- 		pr_debug("SYSCFG init : PHY_INTERFACE_MODE_GMII\n");
- 		break;
- 	case PHY_INTERFACE_MODE_RMII:
- 		val = SYSCFG_PMCR_ETH_SEL_RMII;
--		if (dwmac->eth_ref_clk_sel_reg)
-+		if ((clk_rate == ETH_CK_F_25M || clk_rate == ETH_CK_F_50M) &&
-+		    (dwmac->eth_ref_clk_sel_reg || dwmac->ext_phyclk)) {
-+			dwmac->enable_eth_ck = true;
- 			val |= SYSCFG_PMCR_ETH_REF_CLK_SEL;
-+		}
- 		pr_debug("SYSCFG init : PHY_INTERFACE_MODE_RMII\n");
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII:
-@@ -195,8 +202,11 @@ static int stm32mp1_set_mode(struct plat_stmmacenet_data *plat_dat)
- 	case PHY_INTERFACE_MODE_RGMII_RXID:
- 	case PHY_INTERFACE_MODE_RGMII_TXID:
- 		val = SYSCFG_PMCR_ETH_SEL_RGMII;
--		if (dwmac->eth_clk_sel_reg)
-+		if ((clk_rate == ETH_CK_F_25M || clk_rate == ETH_CK_F_125M) &&
-+		    (dwmac->eth_clk_sel_reg || dwmac->ext_phyclk)) {
-+			dwmac->enable_eth_ck = true;
- 			val |= SYSCFG_PMCR_ETH_CLK_SEL;
-+		}
- 		pr_debug("SYSCFG init : PHY_INTERFACE_MODE_RGMII\n");
- 		break;
- 	default:
-@@ -294,6 +304,9 @@ static int stm32mp1_parse_data(struct stm32_dwmac *dwmac,
- 	struct device_node *np = dev->of_node;
- 	int err = 0;
- 
-+	/* Ethernet PHY have no crystal */
-+	dwmac->ext_phyclk = of_property_read_bool(np, "st,ext-phyclk");
-+
- 	/* Gigabit Ethernet 125MHz clock selection. */
- 	dwmac->eth_clk_sel_reg = of_property_read_bool(np, "st,eth-clk-sel");
- 
-@@ -431,7 +444,8 @@ static int stm32mp1_suspend(struct stm32_dwmac *dwmac)
- 
- 	clk_disable_unprepare(dwmac->clk_tx);
- 	clk_disable_unprepare(dwmac->syscfg_clk);
--	clk_disable_unprepare(dwmac->clk_eth_ck);
-+	if (dwmac->enable_eth_ck)
-+		clk_disable_unprepare(dwmac->clk_eth_ck);
- 
- 	return ret;
- }
--- 
-2.17.1
-
+0JTQvtGA0L7Qs9C+0Lkg0LTRgNGD0LMsDQoNCtCc0LXQvdGPINC30L7QstGD0YIg0JHQsNGALiDQ
+oNC+0LHQtdGA0YIg0JDQvdC00LXRgNGB0L7QvS4g0K8g0LDQtNCy0L7QutCw0YIg0Lgg0YfQsNGB
+0YLQvdGL0Lkg0LzQtdC90LXQtNC20LXRgCDQv9C+DQrRgNCw0LHQvtGC0LUg0YEg0LrQu9C40LXQ
+vdGC0LDQvNC4INC/0L7QutC+0LnQvdC+0LPQvi4g0JIgMjAxNSDQs9C+0LTRgyDQvNC+0Lkg0LrQ
+u9C40LXQvdGCINC/0L4g0LjQvNC10L3QuCDQsy3QvQ0K0JrQsNGA0LvQvtGBINGB0LrQvtC90YfQ
+sNC70YHRjywg0L7RgdGC0LDQstC40LIg0L/QvtGB0LvQtSDRgdC10LHRjyDQtNC10L3QtdC20L3Q
+vtC1INC90LDRgdC70LXQtNGB0YLQstC+INCyINGA0LDQt9C80LXRgNC1DQrQodCV0JzQrCDQvNC4
+0LvQu9C40L7QvdC+0LIg0L/Rj9GC0YzRgdC+0YIg0YLRi9GB0Y/RhyDQtNC+0LvQu9Cw0YDQvtCy
+INCh0KjQkCAoNzUgNTAwIDAwMCAwMDAg0LTQvtC70LvQsNGA0L7Qsg0K0KHQqNCQKS4g0JzQvtC5
+INC/0L7QutC+0LnQvdGL0Lkg0LrQu9C40LXQvdGCINC4INC30LDQutCw0LTRi9GH0L3Ri9C5INC0
+0YDRg9CzINCy0YvRgNC+0YHQu9C4INCyICLQlNC+0Lwg0LHQtdC30LTQvtC80L3Ri9GFDQrQtNC1
+0YLQtdC5Ii4g0KMg0L3QtdCz0L4g0L3QtSDQsdGL0LvQviDQvdC4INGB0LXQvNGM0LgsINC90Lgg
+0LHQtdC90LXRhNC40YbQuNCw0YDQsCwg0L3QuCDQsdC70LjQttCw0LnRiNC40YUNCtGA0L7QtNGB
+0YLQstC10L3QvdC40LrQvtCyINC6INC90LDRgdC70LXQtNGB0YLQstC10L3QvdGL0Lwg0YTQvtC9
+0LTQsNC8LCDQvtGB0YLQsNCy0LvQtdC90L3Ri9C8INCyINCR0LDQvdC60LUuDQoNCtCk0LjQvdCw
+0L3RgdC+0LLRi9C5INC30LDQutC+0L0g0L4g0L3QsNGB0LvQtdC00L7QstCw0L3QuNC4INC+0LTQ
+vdC+0LfQvdCw0YfQvdC+INGA0LDQt9GA0LXRiNCw0LXRgiDRg9C80LXRgNGI0LXQvNGDINCx0LDQ
+vdC60YMNCtC40YHQv9C+0LvRjNC30L7QstCw0YLRjCDRg9C80LXRgNGI0LjQtSDRgdGA0LXQtNGB
+0YLQstCwINC/0L4g0YHQstC+0LXQvNGDINGD0YHQvNC+0YLRgNC10L3QuNGOLCDQtdGB0LvQuA0K
+0L3QsNGB0LvQtdC00YHRgtCy0LXQvdC90YvQtSDRgdGA0LXQtNGB0YLQstCwINC+0YHRgtCw0Y7R
+gtGB0Y8g0L3QtdCy0L7RgdGC0YDQtdCx0L7QstCw0L3QvdGL0LzQuCDQv9C+0YHQu9C1INGB0LzQ
+tdGA0YLQuA0K0LLQu9Cw0LTQtdC70YzRhtCwINGB0YDQtdC00YHRgtCyPyDQn9GA0LjRh9C40L3Q
+sCwg0L/QviDQutC+0YLQvtGA0L7QuSDRjyDRgdCy0Y/Qt9Cw0LvRgdGPINGBINCy0LDQvNC4LCDQ
+t9Cw0LrQu9GO0YfQsNC10YLRgdGPDQrQsiDRgtC+0LwsINGH0YLQviDQstGLINC90L7RgdC40YLQ
+tSDRgtGDINC20LUg0YTQsNC80LjQu9C40Y4g0YEg0YPQvNC10YDRiNC10LPQviwg0Lgg0Y8g0LzQ
+vtCz0YMg0L/RgNC10LTRgdGC0LDQstC40YLRjA0K0LLQsNGBINC60LDQuiDQsdC10L3QtdGE0LjR
+htC40LDRgNCwINC4INCx0LvQuNC20LDQudGI0LjRhSDRgNC+0LTRgdGC0LLQtdC90L3QuNC60L7Q
+siDQsiDRgdGA0LXQtNGB0YLQstCw0YUg0LzQvtC10LPQvg0K0L/QvtC60L7QudC90L7Qs9C+INC6
+0LvQuNC10L3RgtCwLCDRgtC+0LPQtNCwINCy0Ysg0YHRgtCw0L3QtdGC0LUg0LXQs9C+INCx0LvQ
+uNC20LDQudGI0LjQvCDRgNC+0LTRgdGC0LLQtdC90L3QuNC60L7QvCDQuA0K0L/QvtGC0YDQtdCx
+0YPQtdGC0LUg0YHRgNC10LTRgdGC0LLQsC4NCg0K0JfQsNC60L7QvSDQviDQvdCw0YHQu9C10LTQ
+vtCy0LDQvdC40Lgg0Y/QstC90L4g0L7RgdGC0LDQstC70Y/QtdGCINC00L7QutCw0LfQsNGC0LXQ
+u9GM0YHRgtCy0L4g0YLQvtCz0L4sINC60YLQviDRj9Cy0LvRj9C10YLRgdGPDQrQuNC70Lgg0L3Q
+tSDRj9Cy0LvRj9C10YLRgdGPINCx0LvQuNC20LDQudGI0LjQvCDRgNC+0LTRgdGC0LLQtdC90L3Q
+uNC60L7QvCwg0L/QviDRg9GB0LzQvtGC0YDQtdC90LjRjiDRg9C80LXRgNGI0LXQs9C+DQrRjtGA
+0LjRgdGC0LAuINCa0LDQuiDQv9C+0LrQvtC50L3Ri9C5INGO0YDQuNGB0YIsINCX0LDQutC+0L0g
+0LPQu9Cw0YHQuNGCLCDRh9GC0L4g0YMg0LzQtdC90Y8g0LXRgdGC0YwNCtC+0LrQvtC90YfQsNGC
+0LXQu9GM0L3QvtC1INGA0LXRiNC10L3QuNC1INC+INGC0L7QvCwg0LrRgtC+INGP0LLQu9GP0LXR
+gtGB0Y8g0LHQtdC90LXRhNC40YbQuNCw0YDQvtC8INC/0L7QutC+0LnQvdC+0LPQvg0K0YTQvtC9
+0LTQsC4g0K3RgtC+INC90LAgMTAwJSDQt9Cw0LrQvtC90L3Qviwg0Lgg0Y8g0LfQvdCw0Y4g0Y3R
+gtC+INC60LDQuiDRjtGA0LjRgdGCLiDQn9C+0YHQutC+0LvRjNC60YMg0Y3RgtC+DQrQsdGD0LTQ
+tdGCINGB0LLQuNC00LXRgtC10LvRjNGB0YLQstC+0Lwg0LTQu9GPINCy0LDRgSDQuCDQvNC10L3R
+jywg0LXRgdC70Lgg0LLRiyDRgdC00LXQu9Cw0LXRgtC1INC/0L4g0LLQsNGI0LXQvNGDDQrRg9GB
+0LzQvtGC0YDQtdC90LjRjiwg0LTQu9GPINC/0YDQtdGC0LXQvdC30LjQuC4g0JXRgdC70Lgg0LLR
+iyDQt9Cw0LjQvdGC0LXRgNC10YHQvtCy0LDQvdGLINCyINGN0YLQvtC8INC/0YDQtdC00LvQvtC2
+0LXQvdC40LgsDQrQuCDQstGLINCz0L7RgtC+0LLRiyDQvtCx0YDQsNCx0L7RgtCw0YLRjCDRjdGC
+0L4g0L/RgNC10LTQu9C+0LbQtdC90LjQtSDQuNC00LXQsNC70YzQvdC+INC4INGBINC00L7QstC1
+0YDQuNC10LwsINGC0L4NCtC90LXQvNC10LTQu9C10L3QvdC+INGB0LLRj9C20LjRgtC10YHRjCDR
+gdC+INC80L3QvtC5LiDQldGB0LvQuCDQstGLINC90LUg0LfQsNC40L3RgtC10YDQtdGB0L7QstCw
+0L3Riywg0Lgg0L3QsNGI0LvQuCDRjdGC0L4NCtC/0LjRgdGM0LzQviDQvtGB0LrQvtGA0LHQuNGC
+0LXQu9GM0L3Ri9C8INC40LvQuCDRgdGH0LjRgtCw0LXRgtC1LCDRh9GC0L4g0Y3RgtC+INCw0YTQ
+tdGA0LAsINC90LUg0L7RgtCy0LXRh9Cw0LnRgtC1Lg0KDQrQryDQs9Cw0YDQsNC90YLQuNGA0YPR
+jiwg0YfRgtC+INGC0YDQsNC90LfQsNC60YbQuNGPINCx0YPQtNC10YIg0YHQvtCy0LXRgNGI0LXQ
+vdCwINCyINGB0L7QvtGC0LLQtdGC0YHRgtCy0LjQuCDRgSDQt9Cw0LrQvtC90L3Ri9C8DQrRgdC+
+0LPQu9Cw0YjQtdC90LjQtdC8LCDQutC+0YLQvtGA0L7QtSDQt9Cw0YnQuNGC0LjRgiDQstCw0YEg
+0L7RgiDQu9GO0LHQvtCz0L4g0L3QsNGA0YPRiNC10L3QuNGPINC30LDQutC+0L3QsC4g0KDQtdC2
+0LjQvA0K0L7QsdC80LXQvdCwINC/0L7RgdC70LUg0L/QtdGA0LXQstC+0LTQsCDQtNC10L3QtdCz
+INC90LAg0YPQutCw0LfQsNC90L3Ri9C5INCy0LDQvNC4INCx0LDQvdC60L7QstGB0LrQuNC5INGB
+0YfQtdGCDQrRgdC+0YHRgtCw0LLQu9GP0LXRgiA1MCUg0LTQu9GPINC80LXQvdGPLCA1MCUg0LTQ
+u9GPINCy0LDRgS4g0JXRgdC70Lgg0Y3RgtC+INC/0YDQtdC00LvQvtC20LXQvdC40LUg0YHQvtCy
+0L/QsNC00LDQtdGCINGBDQrQstCw0YjQuNC8INCy0L3Rg9GC0YDQtdC90L3QuNC8INGB0YLRgNC1
+0LzQu9C10L3QuNC10Lwg0Log0YPRgdC/0LXRhdGDLCDQstCw0Lwg0L3QsNGB0YLQvtGP0YLQtdC7
+0YzQvdC+INGA0LXQutC+0LzQtdC90LTRg9C10YLRgdGPDQrRgdC00LXQu9Cw0YLRjCDQsdGL0YHR
+gtGA0YvQuSDQvtGC0LLQtdGCINGBINGD0LrQsNC30LDQvdC40LXQvCDQstCw0YjQtdC5INCz0L7R
+gtC+0LLQvdC+0YHRgtC4INC4DQrQt9Cw0LjQvdGC0LXRgNC10YHQvtCy0LDQvdC90L7RgdGC0Lgg
+0YPRh9Cw0YHRgtCy0L7QstCw0YLRjCDQsiDQsdC40LfQvdC10YHQtS4NCg0K0J/RgNC10LbQtNC1
+INGH0LXQvCDQvNGLINC/0LXRgNC10LnQtNC10Lwg0Log0YHQu9C10LTRg9GO0YnQtdC80YMg0YjQ
+sNCz0YMuINCU0LvRjyDQv9C+0LTQs9C+0YLQvtCy0LrQuCDQtNCw0L3QvdC+0LkNCtGC0YDQsNC9
+0LfQsNC60YbQuNC4INCy0LDQvCDQvdC10L7QsdGF0L7QtNC40LzRiyDRgdC70LXQtNGD0Y7RidC4
+0LUg0LTQsNC90L3Ri9C1Og0KMS4g0JLQsNGI0Lgg0L/QvtC70L3Ri9C1INC40LzQtdC90LAgLi4u
+Li4uLi4uLi4uLi4uLi4uLi4uLi4uLiAuLg0KMi4g0JTQsNGC0LAg0YDQvtC20LTQtdC90LjRjyAu
+Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4NCjMuINCf0L7Qu9C90YvQuSDQutC+0L3RgtCw0LrRgtC9
+0YvQuSDQsNC00YDQtdGBIC4uLi4uLi4uLi4gKNCU0L7QvCDQuCDQvtGE0LjRgSkNCjQuINCn0LDR
+gdGC0L3Ri9C1INGC0LXQu9C10YTQvtC90L3Ri9C1INC90L7QvNC10YDQsCAuLi4uLi4uLi4uLi4u
+Li4uLi4uLi4uLg0KNS4g0J3QvtC80LXRgNCwINGE0LDQutGB0L7QsiAuLi4uLi4uLi4uLi4uLi4u
+DQo2LiDQodC10LzQtdC50L3QvtC1INC/0L7Qu9C+0LbQtdC90LjQtSAuLi4uLi4uLi4uLi4uLi4u
+Li4uLi4uLg0KNy4g0KDQvtC0INC30LDQvdGP0YLQuNC5IC4uLi4uLi4uLi4uLi4uLi4uLiAuLi4u
+Li4uDQo4LiDQodGC0YDQsNC90LAgLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLg0KOS4g0JLQsNGI
+INC70LjRh9C90YvQuSDQsNC00YDQtdGBINGN0LvQtdC60YLRgNC+0L3QvdC+0Lkg0L/QvtGH0YLR
+iyDQtNC70Y8g0YPQtNC+0LHQvdC+0LPQviDQvtCx0YnQtdC90LjRjyAuLi4uLi4uLg0K0JLRiyDQ
+tNC+0LvQttC90Ysg0YHQstGP0LfQsNGC0YzRgdGPINGB0L4g0LzQvdC+0Lkg0YfQtdGA0LXQtyDQ
+vNC+0Lkg0YfQsNGB0YLQvdGL0Lkg0LDQtNGA0LXRgSDRjdC70LXQutGC0YDQvtC90L3QvtC5INC/
+0L7Rh9GC0Ys6DQpyb2JlcnRhbmRlcnNvbmhhcHB5MUBnbWFpbC5jb20NCtChINGD0LLQsNC20LXQ
+vdC40LXQvCwNCtCR0LDRgC4g0KDQvtCx0LXRgNGCINCQ0L3QtNC10YDRgdC+0L0NCg==
