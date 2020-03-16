@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CFF2187390
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 20:46:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39F58187397
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 20:48:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732465AbgCPTqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 15:46:13 -0400
-Received: from mail-ot1-f41.google.com ([209.85.210.41]:42862 "EHLO
-        mail-ot1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732416AbgCPTqN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 15:46:13 -0400
-Received: by mail-ot1-f41.google.com with SMTP id 66so19144233otd.9;
-        Mon, 16 Mar 2020 12:46:13 -0700 (PDT)
+        id S1732500AbgCPTsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 15:48:05 -0400
+Received: from mail-oi1-f169.google.com ([209.85.167.169]:37209 "EHLO
+        mail-oi1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732436AbgCPTsE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 15:48:04 -0400
+Received: by mail-oi1-f169.google.com with SMTP id w13so19198698oih.4;
+        Mon, 16 Mar 2020 12:48:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=dD9qGn/FmD1rIVTC9XP6vGVct8WmBBkX3v6FBswGPLo=;
-        b=FqT9L+d/z12NLuSeT3JrqFMnKilv4DWfJckRqN3s7x44mG05Dt295h39OD4Oi+Cryj
-         +y88K4HcKPEqz1CZZ0z54c5NMFAp/R1b1zJZEnD6/imKqbg3iNBKdW0j9hMbXxcoHHau
-         O9daOgKikTP8NO5otGV2veBUKB6h6wePj4mjQatfuaavjgZS1vck0XWezWWfpDJawwpJ
-         LovCgFOM0ROSmBMRnsSddxYClXGNy3fpXvjDdo10gN8s1LZ3N0/RQeEo4AKIo4E5IKjK
-         OYlnQSvrpgp9rcfBXnOd7xPwy5vUBg0nzPUJEhwsebLvEoH3BD7dbrUS8rpWZp+NXjkA
-         XtKw==
+        bh=Gmf6IFRjpSX4UmNYPdLrHJndBgHmddXwR9Ebepw6Kis=;
+        b=ZZX5/mtQ4Ymm+bzCRblc7VnA8dzj+9dRq6R/DSXJx3sfkPfjUc9ObTL+KQvqAJKQ3Y
+         aYo27QAb5SBINMlJcgxDan8M/tq2pjjKeopBG3uE+IOv6obIZIj3cC3METJ9RhLG+pyj
+         LT0nD2hCVEYCyKrWQcFIAU8TPoQLXSYiGCDV4M7SVv/XIOwlfykOGNXmPpOETd46XFPS
+         8gdubWEJn1xZSqcqLziSeesYHZsPedyxUN+0vCJtlGfTRETFUe4XeJiNrPoVOdzoKS36
+         opnNEhjfNjTiej3nLvf2iRKznMZXZqvI2DoYhS1Od1Y1PBswRROdFAx1yc1VXpnTuVNB
+         86PA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=dD9qGn/FmD1rIVTC9XP6vGVct8WmBBkX3v6FBswGPLo=;
-        b=kzU620ZnROI8MH8OffE3/wYULHCfNTVX7OCsh5w06CX/1WllwfVHqeaHv9uMZYkIUO
-         gfNlOQSEt5KAOZfDBo2CFmO4qWpFiQvFqNXdz26+VyAnIbC+AFa0xrnnRmCSIsszGgtN
-         qKb+LMnmzAJ5wf7UHSuKvZ9jwm2a7UJSRd/k+WlrzMu9GG75PibRLMHPdo9tmfUH4ZHk
-         aW3JhtlmjHvC8f+E5bf0R0zVRUZm/3ZD4CMvjGSNjhiEOSGMkf4OwYWO1eESCYW6J2DW
-         DsNNTR/t3q3bIy+tivbc2FQ0Fd+kxQzzxVWDiVQsQDZgFvyK/D78e2RvnP5RD2i7aFEA
-         pUYw==
-X-Gm-Message-State: ANhLgQ3+AWzBP+Vh4j4n6vMpIxIQ2EyZapTmgTrM54L2+FAaXEWFAyRf
-        7Ed7mCLTKmCEkD5wtCILERjr63KzYY3kF3ekXwA=
-X-Google-Smtp-Source: ADFU+vtA7AzP+zXTm4BQNcSJHb20DfzuwnHnw+xS+lfJ+KbxiiJD/nA8Wgqaj1wL9kQWkN+9/TzCJDBQPXH5BQOJP6Q=
-X-Received: by 2002:a05:6830:1e96:: with SMTP id n22mr692919otr.189.1584387972457;
- Mon, 16 Mar 2020 12:46:12 -0700 (PDT)
+        bh=Gmf6IFRjpSX4UmNYPdLrHJndBgHmddXwR9Ebepw6Kis=;
+        b=M6jvfQrdsI/sKrwF/twp3OCBvuZNTfmtSGgRKhYP9x5REvrOym27KJZkdlha2EAWzk
+         uZyzdmkXd1ZTx5PsM6J8BKPklbubfE1mjay0YlDn4bk013OPPzmNApfYPq8Tr0QZzHx9
+         6AU9JrILHmPdAG0H/07OUxUOIaV9o/5W+z8mw8DVCO90Mwf2/906p+iP5ULR6T/wYiVv
+         maRK58pVp44yKNwajSFw5L+TOupSmkGCQWxZtD2+GfSq7pF9LQY1iCEKQtTG5Q7zXft2
+         CrHXLUjIUQTxjCQ8tvVbyPZnl0GklMvI/TTkrffPm8Pb0Ch/QrFSaSeUlt6ncslauC3o
+         iZHQ==
+X-Gm-Message-State: ANhLgQ2YhLhcUqqPIwFzfPsrwUZPtDkzJAiy5vuXLHAtsWiKF8PNG5A4
+        ct0cby7E7C9vPmtBm71gxorYCzbIZL1tx+n8N5M=
+X-Google-Smtp-Source: ADFU+vu3e+BAypw5BF+UC15bybXKNCSkNC/k8bcnEqHVhOsvvmJ1cAODT1vr1OqWqhET4541h7kSEGUmRIjsmoiYAkk=
+X-Received: by 2002:aca:ecd0:: with SMTP id k199mr935567oih.60.1584388084207;
+ Mon, 16 Mar 2020 12:48:04 -0700 (PDT)
 MIME-Version: 1.0
-References: <000000000000fd030905a0b75ac8@google.com>
-In-Reply-To: <000000000000fd030905a0b75ac8@google.com>
+References: <000000000000efa06005a0879722@google.com>
+In-Reply-To: <000000000000efa06005a0879722@google.com>
 From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 16 Mar 2020 12:46:01 -0700
-Message-ID: <CAM_iQpXMckb7O6Fje30icqpHuhmzYNOx_ugnVWoOpgGteVTtdw@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Read in route4_get
-To:     syzbot <syzbot+1cba26af4a37d30e8040@syzkaller.appspotmail.com>
+Date:   Mon, 16 Mar 2020 12:47:53 -0700
+Message-ID: <CAM_iQpVj0Oe-oNTRLQidoKOAuKB9Yh=VNjxWba+1Sv+9idEF3A@mail.gmail.com>
+Subject: Re: KASAN: use-after-free Read in tcindex_dump
+To:     syzbot <syzbot+653090db2562495901dc@syzkaller.appspotmail.com>
 Cc:     David Miller <davem@davemloft.net>,
         Jamal Hadi Salim <jhs@mojatatu.com>,
         Jiri Pirko <jiri@resnulli.us>,
@@ -61,4 +61,4 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz fix: net_sched: cls_route: remove the right filter from hashtable
+#syz fix: net_sched: hold rtnl lock in tcindex_partial_destroy_work()
