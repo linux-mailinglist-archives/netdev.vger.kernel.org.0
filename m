@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BD451875EC
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 23:57:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2409D1875E8
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 23:57:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732894AbgCPW44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 18:56:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60116 "EHLO mail.kernel.org"
+        id S1732915AbgCPW45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 18:56:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732865AbgCPW4z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Mar 2020 18:56:55 -0400
+        id S1732901AbgCPW44 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Mar 2020 18:56:56 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 03204206E2;
-        Mon, 16 Mar 2020 22:56:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 848B620724;
+        Mon, 16 Mar 2020 22:56:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584399415;
-        bh=dBsWz9addWONFKhna+kM5dhqeNsPSINqhlpIe9wHGnU=;
+        s=default; t=1584399416;
+        bh=KdS4RMI+OlO1mZZ760HpkNw0mD5vL6J8lZuSvxr4g2Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JsktEZ2KZrsXnfehohqXKiicv/WTjqA2HvjEEo/v/XupU0LuhDIZSTvQWdiQ3RpPk
-         sk3IJR/RWPgyt29eEa7diZloXtUY+YsBNRjyFVGsc3m8/zdhZPdIQHhJ8ADfhdl5o3
-         ObQgekkNw3JiOa4Q7cmjcwvx6vOi9nMM+RX4hXrc=
+        b=rHnnmF82YVF8pEREsRVlQhzNlvi5A6Y+dsupVocbNclYPaFwCQoRZyadVUaLwcJeF
+         JaVTNEPWSAXCQqELThYvXBsX9e3xXHsLuqUVxQuMiCQ/xcse8uOM70JB/rH7GKVMuG
+         Pkz9gw+NlccVDJdv/a/2yFhT3+eexZM/FwTi6RDI=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     shuah@kernel.org, keescook@chromium.org
 Cc:     luto@amacapital.net, wad@chromium.org,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, kernel-team@fb.com,
         Tim.Bird@sony.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH v3 1/6] selftests/seccomp: use correct FIXTURE macro
-Date:   Mon, 16 Mar 2020 15:56:41 -0700
-Message-Id: <20200316225647.3129354-2-kuba@kernel.org>
+Subject: [PATCH v3 2/6] kselftest: factor out list manipulation to a helper
+Date:   Mon, 16 Mar 2020 15:56:42 -0700
+Message-Id: <20200316225647.3129354-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200316225647.3129354-1-kuba@kernel.org>
 References: <20200316225647.3129354-1-kuba@kernel.org>
@@ -42,73 +42,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Quoting kdoc:
+Kees suggest to factor out the list append code to a macro,
+since following commits need it, which leads to code duplication.
 
-FIXTURE_DATA:
- * This call may be used when the type of the fixture data
- * is needed.  In general, this should not be needed unless
- * the *self* is being passed to a helper directly.
-
-FIXTURE:
- * Defines the data provided to TEST_F()-defined tests as *self*.  It should be
- * populated and cleaned up using FIXTURE_SETUP() and FIXTURE_TEARDOWN().
-
-seccomp should use FIXTURE to declare types.
-
+Suggested-by: Kees Cook <keescook@chromium.org>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/testing/selftests/seccomp/seccomp_bpf.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ tools/testing/selftests/kselftest_harness.h | 42 ++++++++++++---------
+ 1 file changed, 24 insertions(+), 18 deletions(-)
 
-diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
-index ee1b727ede04..7bf82fb07f67 100644
---- a/tools/testing/selftests/seccomp/seccomp_bpf.c
-+++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
-@@ -909,7 +909,7 @@ TEST(ERRNO_order)
- 	EXPECT_EQ(12, errno);
+diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
+index 5336b26506ab..aaf58fffc8f7 100644
+--- a/tools/testing/selftests/kselftest_harness.h
++++ b/tools/testing/selftests/kselftest_harness.h
+@@ -631,6 +631,29 @@
+ 	} \
+ } while (0); OPTIONAL_HANDLER(_assert)
+ 
++/* List helpers */
++#define __LIST_APPEND(head, item) \
++{ \
++	/* Circular linked list where only prev is circular. */ \
++	if (head == NULL) { \
++		head = item; \
++		item->next = NULL; \
++		item->prev = item; \
++		return;	\
++	} \
++	if (__constructor_order == _CONSTRUCTOR_ORDER_FORWARD) { \
++		item->next = NULL; \
++		item->prev = head->prev; \
++		item->prev->next = item; \
++		head->prev = item; \
++	} else { \
++		item->next = head; \
++		item->next->prev = item; \
++		item->prev = item; \
++		head = item; \
++	} \
++}
++
+ /* Contains all the information for test execution and status checking. */
+ struct __test_metadata {
+ 	const char *name;
+@@ -665,24 +688,7 @@ static int __constructor_order;
+ static inline void __register_test(struct __test_metadata *t)
+ {
+ 	__test_count++;
+-	/* Circular linked list where only prev is circular. */
+-	if (__test_list == NULL) {
+-		__test_list = t;
+-		t->next = NULL;
+-		t->prev = t;
+-		return;
+-	}
+-	if (__constructor_order == _CONSTRUCTOR_ORDER_FORWARD) {
+-		t->next = NULL;
+-		t->prev = __test_list->prev;
+-		t->prev->next = t;
+-		__test_list->prev = t;
+-	} else {
+-		t->next = __test_list;
+-		t->next->prev = t;
+-		t->prev = t;
+-		__test_list = t;
+-	}
++	__LIST_APPEND(__test_list, t);
  }
  
--FIXTURE_DATA(TRAP) {
-+FIXTURE(TRAP) {
- 	struct sock_fprog prog;
- };
- 
-@@ -1020,7 +1020,7 @@ TEST_F(TRAP, handler)
- 	EXPECT_NE(0, (unsigned long)sigsys->_call_addr);
- }
- 
--FIXTURE_DATA(precedence) {
-+FIXTURE(precedence) {
- 	struct sock_fprog allow;
- 	struct sock_fprog log;
- 	struct sock_fprog trace;
-@@ -1509,7 +1509,7 @@ void tracer_poke(struct __test_metadata *_metadata, pid_t tracee, int status,
- 	EXPECT_EQ(0, ret);
- }
- 
--FIXTURE_DATA(TRACE_poke) {
-+FIXTURE(TRACE_poke) {
- 	struct sock_fprog prog;
- 	pid_t tracer;
- 	long poked;
-@@ -1817,7 +1817,7 @@ void tracer_ptrace(struct __test_metadata *_metadata, pid_t tracee,
- 		change_syscall(_metadata, tracee, -1, -ESRCH);
- }
- 
--FIXTURE_DATA(TRACE_syscall) {
-+FIXTURE(TRACE_syscall) {
- 	struct sock_fprog prog;
- 	pid_t tracer, mytid, mypid, parent;
- };
-@@ -2321,7 +2321,7 @@ struct tsync_sibling {
- 		}							\
- 	} while (0)
- 
--FIXTURE_DATA(TSYNC) {
-+FIXTURE(TSYNC) {
- 	struct sock_fprog root_prog, apply_prog;
- 	struct tsync_sibling sibling[TSYNC_SIBLINGS];
- 	sem_t started;
+ static inline int __bail(int for_realz, bool no_print, __u8 step)
 -- 
 2.24.1
 
