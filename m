@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B64B186179
+	by mail.lfdr.de (Postfix) with ESMTP id E129318617A
 	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 03:14:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729421AbgCPCOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Mar 2020 22:14:41 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:38667 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729324AbgCPCOl (ORCPT
+        id S1729427AbgCPCOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Mar 2020 22:14:43 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38548 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729414AbgCPCOl (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 22:14:41 -0400
-Received: by mail-pg1-f194.google.com with SMTP id x7so8821328pgh.5
-        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 19:14:40 -0700 (PDT)
+Received: by mail-pf1-f196.google.com with SMTP id z5so9055727pfn.5
+        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 19:14:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Efs90bMbd7QSQoPO39b+jNsz85imJEBsT/DmTEGo90c=;
-        b=Qe+UuMsVLJoO/mk+2jmkPYQKb+s3ZAz9n6vwYqclyJmMlTRL2GrnJgJQ15djCUJ2oK
-         2MqGqPwXNF24yD2nJjoY56RNGtOznZwNqxnP2tBhFzUSlMtVb4ahyqXtqKKWl8Taan2X
-         6U9DyvtG998NSEECqiKDfzIPwCrYdCYhZj7F0ot877j3S5qMf1bZ9hvHRatwGKm8YXN7
-         M5ueCdlJOJnHqEB1efyCMLHkqq0iW4ouQT3vR9N/HIQfYbxtniF/klzo8dcObnIhFgVc
-         jvhwBKaIYMjdYGQ9laDlud1p9bZFaSomjtJggfYNNDxYlCMux5urn8bMEew371+U/n5s
-         2n3Q==
+        bh=UAMpz/e4GcTQuZef/9GgSHmWnX1J9EGuEZiUj8i53A4=;
+        b=q2Cv5aHGcSmwC8E73+u1Vr1k+oSc4A8C8oq/ZoIu1nEkBNY+5iYM8soZd2uG+mf6nF
+         htF1LNdOxrsvYr1MRQxIcMPyIibDOcmFdSubPoDoPO3z7mPGDnOr9dX7Nn1qX33XXFFm
+         5/VwVFVvn/v1WV8x48VvaKw3In++yPICHAvIaP9RA7so4SBN+0EdRkQLU6afjpOo/zxP
+         5lk6wW9Uh7lZI1kJ0Pwfy9HR7LVmwkWxjlxs44Wm/lAcJ4c2GbsG1EG+Y3ICQLKCqhVB
+         LM9p2WXDAghcITpxDYkNNO8yHgrdETDkUbRm/X2+0ErdeoCfj/F9Ia9BosouE+aQ7vKU
+         1VqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Efs90bMbd7QSQoPO39b+jNsz85imJEBsT/DmTEGo90c=;
-        b=mYvAHXl1LH7A8G/AowMw38DTpsIf6JF0cAjlQs/5krMrDXcVtmfgi3BempR/i6Vdx6
-         0DTcM9Y7XChJ5FTgTdGPvHldFnh+bbecF/vhLCxU/+8XlAvi8hMa939RGiS9qQQIhT1h
-         RkQbnIjyM0RCUleHOgZYbCUW3C3txlIcIp67NeWcZhP91lfYAOsifztiiw1p9m9sQ4l5
-         qPOsv1AoWxjt2oTsG/SqXBnGtxeZdo1Qk1yYec0PbSC3NMBsP9klKpKrEhUCQv6hBSRr
-         xCjEGo+PfVIXYpAIBQTjJd9H9H1oT1pcHoTVfkY/H5+opquLSGvIoYus6uzgNOA821F4
-         oDuw==
-X-Gm-Message-State: ANhLgQ0cb9OV3BQYZvFvgduDLPe2/jXqeGGQlZz0oiH7FQ4amEJY6Jr+
-        uOMZEGtDNND76vzRjjJnK3DRaxKK4iM=
-X-Google-Smtp-Source: ADFU+vuNRUBj2lAe6lHPGqL3azj3qMPIW11UajJD89yedEc4hVfP9nbvoYecv9JYLBXZW1dQcl+zgw==
-X-Received: by 2002:aa7:83d7:: with SMTP id j23mr24632199pfn.77.1584324879417;
-        Sun, 15 Mar 2020 19:14:39 -0700 (PDT)
+        bh=UAMpz/e4GcTQuZef/9GgSHmWnX1J9EGuEZiUj8i53A4=;
+        b=QhKsvjR+foaRCAjDv7slhbvFOpKCr1moxvtz0oMhrPEw2Ui0jTJbPQRAxHGI0Ji35X
+         Gl0bWBlMoJFIiW6aXVmuQRHrqS+m68cmf5cKlZznnRo5aHZlFQCMS2FECBJcO5dlHxi1
+         blFbR/J6Y5LNea+PLD3qE+pMQoJvDzxTsgDDfy0peOXhLFKmb14tHd0kUNdmnE7Drrfh
+         sB53fKYRqk/vAVr9gad+oSazQ+qZYgfgVT0HEe6fxjp4JDoZUak7HI2m5BnGaZFPdr8X
+         rNOqdEj92uJ0HpsfQM/mcFRWWhyfqO60M9IdRHCNhV2KIQ+qE+yZW7N/vUKLgVi7pnbS
+         bixg==
+X-Gm-Message-State: ANhLgQ36372W1aTFDQoFUyCSvNwLy9yCUvsVWcUMUw3ajQ0RsUAh7jwa
+        +z5rkWyWFqKIg9J7hdwnbdDbfIkihak=
+X-Google-Smtp-Source: ADFU+vtISPBE3aPrPhngsxrdyhKBVqxctg/2mHUYmLhkNaguPWvZf6r1fhz3MDapUGWTgioiiIOTcQ==
+X-Received: by 2002:a65:6909:: with SMTP id s9mr23670207pgq.92.1584324880175;
+        Sun, 15 Mar 2020 19:14:40 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id p4sm4386142pfg.163.2020.03.15.19.14.38
+        by smtp.gmail.com with ESMTPSA id p4sm4386142pfg.163.2020.03.15.19.14.39
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
         Sun, 15 Mar 2020 19:14:39 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 3/5] ionic: remove adminq napi instance
-Date:   Sun, 15 Mar 2020 19:14:26 -0700
-Message-Id: <20200316021428.48919-4-snelson@pensando.io>
+Subject: [PATCH net-next 4/5] ionic: return error for unknown xcvr type
+Date:   Sun, 15 Mar 2020 19:14:27 -0700
+Message-Id: <20200316021428.48919-5-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200316021428.48919-1-snelson@pensando.io>
 References: <20200316021428.48919-1-snelson@pensando.io>
@@ -57,26 +57,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove the adminq's napi struct when tearing down
-the adminq.
+If we don't recognize the transceiver type, return an error
+so that ethtool doesn't try dumping bogus eeprom contents.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../net/ethernet/pensando/ionic/ionic_ethtool.c    | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 19fd7cc36f28..12e3823b0bc1 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -2070,6 +2070,7 @@ static void ionic_lif_deinit(struct ionic_lif *lif)
- 		ionic_lif_rss_deinit(lif);
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+index a233716eac29..3f92f301a020 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
+@@ -694,7 +694,7 @@ static int ionic_get_module_info(struct net_device *netdev,
+ 	default:
+ 		netdev_info(netdev, "unknown xcvr type 0x%02x\n",
+ 			    xcvr->sprom[0]);
+-		break;
++		return -EINVAL;
+ 	}
  
- 	napi_disable(&lif->adminqcq->napi);
-+	netif_napi_del(&lif->adminqcq->napi);
- 	ionic_lif_qcq_deinit(lif, lif->notifyqcq);
- 	ionic_lif_qcq_deinit(lif, lif->adminqcq);
+ 	return 0;
+@@ -714,7 +714,19 @@ static int ionic_get_module_eeprom(struct net_device *netdev,
+ 	/* The NIC keeps the module prom up-to-date in the DMA space
+ 	 * so we can simply copy the module bytes into the data buffer.
+ 	 */
++
+ 	xcvr = &idev->port_info->status.xcvr;
++	switch (xcvr->sprom[0]) {
++	case 0x03: /* SFP */
++	case 0x0D: /* QSFP */
++	case 0x11: /* QSFP28 */
++		break;
++	default:
++		netdev_info(netdev, "unknown xcvr type 0x%02x\n",
++			    xcvr->sprom[0]);
++		return -EINVAL;
++	}
++
+ 	len = min_t(u32, sizeof(xcvr->sprom), ee->len);
  
+ 	do {
 -- 
 2.17.1
 
