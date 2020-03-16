@@ -2,141 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE77A186781
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 10:10:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82F42186786
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 10:10:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730408AbgCPJKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 05:10:14 -0400
-Received: from mail-il1-f193.google.com ([209.85.166.193]:33446 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730110AbgCPJKN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 05:10:13 -0400
-Received: by mail-il1-f193.google.com with SMTP id k29so15744831ilg.0
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 02:10:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=V6d04aUz8lBO2qEFBfsPBEHGqCkxderOMVWg3UsNjTU=;
-        b=qVI3LciRtXV+uUlPLGc63wmJfSFidcj0D6EiLttevfrQ0TWWlivuiSwL397wbmc7/w
-         n4VjYxUt2zkooI6ykMbYOfUQfLMBRYBGloFPE1oT5HV3qqV3LcOy3o1p8Ftvg3ccpLLh
-         PL9NC02gYahR73NZBa2e/ktKq134DyDgL0ztdEZ8jDsio0qv789KCj13vwtNdnfQw6Mo
-         aFzXKcC/wDiCjNe7s7lfHNxvT1M9WNrhj2N03CINxU0I2+wmgtNw5AKWQWmbXUHdjdGE
-         r9kM9Wd42tqxX8DFEpoY8HxbpDRN3cplLMhMu/1yJoU/vow6KV9ig+NDeIByhRCMcjCS
-         M1mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=V6d04aUz8lBO2qEFBfsPBEHGqCkxderOMVWg3UsNjTU=;
-        b=I1b9YtOhysAXOD/AOh0Zn4mdHEzBLuo4QQfDRIXKuYipRn+W7UL3fgxk10NAmUS4SN
-         ZWmefGvZ5bjMQtAKEh4uZJDbl7pNJmvC0bLrLAPopNmYgRAuAHNaqYTjlNG5WdZ1BaUR
-         DS/JvDjxqrBeDvMusk8r9WTZpZcvbnEqPX3hLRwQXerYhY6NIXJp2DEShMtmfKgpvo4H
-         /yGoo9q14R2YGJwFQ/Oxz0V3t/eFOsC0TqWGj5i+Z/CCviX8Jc7gLEiJRx7gyiOOdNMD
-         kXQpev3kU0Hf85Mz0k/9g7ngBt6jk5zvK7LbX8Ixov7s+7jVRBhFRlLxNqW5AXU6dEeA
-         KQOA==
-X-Gm-Message-State: ANhLgQ3kGgaNzLAWVPZvaulXJcjHcCZPH4aGmZFY4ZwQS0ZJqpsxcCFG
-        ZinbhPIfy3N3KutmVaO36L4Xk1Pys9TOjTRu64M=
-X-Google-Smtp-Source: ADFU+vs+lkp5OUzH6TIe5s57Hm+NOjl+1o1KMfLumB6G/H/4+bYeQz6gHJFk3XFaGzBTdH9xSdFIiOJZ5fEMxlNloEA=
-X-Received: by 2002:a92:5e9b:: with SMTP id f27mr27138237ilg.263.1584349812191;
- Mon, 16 Mar 2020 02:10:12 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:ac0:a97c:0:0:0:0:0 with HTTP; Mon, 16 Mar 2020 02:10:11
- -0700 (PDT)
-Reply-To: robertandersongood1@gmail.com
-From:   robert anderson <robertandersongood7@gmail.com>
-Date:   Mon, 16 Mar 2020 02:10:11 -0700
-Message-ID: <CAE=WtcRGSqa8Bdsr87pdNxgCRULL+S76sX=H5LhCrnf+6ddnzQ@mail.gmail.com>
-Subject: happy day
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+        id S1730410AbgCPJK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 05:10:29 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:41408 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730110AbgCPJK2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 05:10:28 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D89EA14706AC7;
+        Mon, 16 Mar 2020 02:10:27 -0700 (PDT)
+Date:   Mon, 16 Mar 2020 02:10:27 -0700 (PDT)
+Message-Id: <20200316.021027.1748414593839565698.davem@davemloft.net>
+To:     zhengdejin5@gmail.com
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, mcoquelin.stm32@gmail.com,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        andrew@lunn.ch, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 0/2] net: stmmac: Use readl_poll_timeout()
+ to simplify the code
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200316023254.13201-1-zhengdejin5@gmail.com>
+References: <20200316023254.13201-1-zhengdejin5@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 16 Mar 2020 02:10:28 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-0JTQvtGA0L7Qs9C+0Lkg0LTRgNGD0LMsDQoNCtCc0LXQvdGPINC30L7QstGD0YIg0JHQsNGALiDQ
-oNC+0LHQtdGA0YIg0JDQvdC00LXRgNGB0L7QvS4g0K8g0LDQtNCy0L7QutCw0YIg0Lgg0YfQsNGB
-0YLQvdGL0Lkg0LzQtdC90LXQtNC20LXRgCDQv9C+DQrRgNCw0LHQvtGC0LUg0YEg0LrQu9C40LXQ
-vdGC0LDQvNC4INC/0L7QutC+0LnQvdC+0LPQvi4g0JIgMjAxNSDQs9C+0LTRgyDQvNC+0Lkg0LrQ
-u9C40LXQvdGCINC/0L4g0LjQvNC10L3QuCDQsy3QvQ0K0JrQsNGA0LvQvtGBINGB0LrQvtC90YfQ
-sNC70YHRjywg0L7RgdGC0LDQstC40LIg0L/QvtGB0LvQtSDRgdC10LHRjyDQtNC10L3QtdC20L3Q
-vtC1INC90LDRgdC70LXQtNGB0YLQstC+INCyINGA0LDQt9C80LXRgNC1DQrQodCV0JzQrCDQvNC4
-0LvQu9C40L7QvdC+0LIg0L/Rj9GC0YzRgdC+0YIg0YLRi9GB0Y/RhyDQtNC+0LvQu9Cw0YDQvtCy
-INCh0KjQkCAoNzUgNTAwIDAwMCAwMDAg0LTQvtC70LvQsNGA0L7Qsg0K0KHQqNCQKS4g0JzQvtC5
-INC/0L7QutC+0LnQvdGL0Lkg0LrQu9C40LXQvdGCINC4INC30LDQutCw0LTRi9GH0L3Ri9C5INC0
-0YDRg9CzINCy0YvRgNC+0YHQu9C4INCyICLQlNC+0Lwg0LHQtdC30LTQvtC80L3Ri9GFDQrQtNC1
-0YLQtdC5Ii4g0KMg0L3QtdCz0L4g0L3QtSDQsdGL0LvQviDQvdC4INGB0LXQvNGM0LgsINC90Lgg
-0LHQtdC90LXRhNC40YbQuNCw0YDQsCwg0L3QuCDQsdC70LjQttCw0LnRiNC40YUNCtGA0L7QtNGB
-0YLQstC10L3QvdC40LrQvtCyINC6INC90LDRgdC70LXQtNGB0YLQstC10L3QvdGL0Lwg0YTQvtC9
-0LTQsNC8LCDQvtGB0YLQsNCy0LvQtdC90L3Ri9C8INCyINCR0LDQvdC60LUuDQoNCtCk0LjQvdCw
-0L3RgdC+0LLRi9C5INC30LDQutC+0L0g0L4g0L3QsNGB0LvQtdC00L7QstCw0L3QuNC4INC+0LTQ
-vdC+0LfQvdCw0YfQvdC+INGA0LDQt9GA0LXRiNCw0LXRgiDRg9C80LXRgNGI0LXQvNGDINCx0LDQ
-vdC60YMNCtC40YHQv9C+0LvRjNC30L7QstCw0YLRjCDRg9C80LXRgNGI0LjQtSDRgdGA0LXQtNGB
-0YLQstCwINC/0L4g0YHQstC+0LXQvNGDINGD0YHQvNC+0YLRgNC10L3QuNGOLCDQtdGB0LvQuA0K
-0L3QsNGB0LvQtdC00YHRgtCy0LXQvdC90YvQtSDRgdGA0LXQtNGB0YLQstCwINC+0YHRgtCw0Y7R
-gtGB0Y8g0L3QtdCy0L7RgdGC0YDQtdCx0L7QstCw0L3QvdGL0LzQuCDQv9C+0YHQu9C1INGB0LzQ
-tdGA0YLQuA0K0LLQu9Cw0LTQtdC70YzRhtCwINGB0YDQtdC00YHRgtCyPyDQn9GA0LjRh9C40L3Q
-sCwg0L/QviDQutC+0YLQvtGA0L7QuSDRjyDRgdCy0Y/Qt9Cw0LvRgdGPINGBINCy0LDQvNC4LCDQ
-t9Cw0LrQu9GO0YfQsNC10YLRgdGPDQrQsiDRgtC+0LwsINGH0YLQviDQstGLINC90L7RgdC40YLQ
-tSDRgtGDINC20LUg0YTQsNC80LjQu9C40Y4g0YEg0YPQvNC10YDRiNC10LPQviwg0Lgg0Y8g0LzQ
-vtCz0YMg0L/RgNC10LTRgdGC0LDQstC40YLRjA0K0LLQsNGBINC60LDQuiDQsdC10L3QtdGE0LjR
-htC40LDRgNCwINC4INCx0LvQuNC20LDQudGI0LjRhSDRgNC+0LTRgdGC0LLQtdC90L3QuNC60L7Q
-siDQsiDRgdGA0LXQtNGB0YLQstCw0YUg0LzQvtC10LPQvg0K0L/QvtC60L7QudC90L7Qs9C+INC6
-0LvQuNC10L3RgtCwLCDRgtC+0LPQtNCwINCy0Ysg0YHRgtCw0L3QtdGC0LUg0LXQs9C+INCx0LvQ
-uNC20LDQudGI0LjQvCDRgNC+0LTRgdGC0LLQtdC90L3QuNC60L7QvCDQuA0K0L/QvtGC0YDQtdCx
-0YPQtdGC0LUg0YHRgNC10LTRgdGC0LLQsC4NCg0K0JfQsNC60L7QvSDQviDQvdCw0YHQu9C10LTQ
-vtCy0LDQvdC40Lgg0Y/QstC90L4g0L7RgdGC0LDQstC70Y/QtdGCINC00L7QutCw0LfQsNGC0LXQ
-u9GM0YHRgtCy0L4g0YLQvtCz0L4sINC60YLQviDRj9Cy0LvRj9C10YLRgdGPDQrQuNC70Lgg0L3Q
-tSDRj9Cy0LvRj9C10YLRgdGPINCx0LvQuNC20LDQudGI0LjQvCDRgNC+0LTRgdGC0LLQtdC90L3Q
-uNC60L7QvCwg0L/QviDRg9GB0LzQvtGC0YDQtdC90LjRjiDRg9C80LXRgNGI0LXQs9C+DQrRjtGA
-0LjRgdGC0LAuINCa0LDQuiDQv9C+0LrQvtC50L3Ri9C5INGO0YDQuNGB0YIsINCX0LDQutC+0L0g
-0LPQu9Cw0YHQuNGCLCDRh9GC0L4g0YMg0LzQtdC90Y8g0LXRgdGC0YwNCtC+0LrQvtC90YfQsNGC
-0LXQu9GM0L3QvtC1INGA0LXRiNC10L3QuNC1INC+INGC0L7QvCwg0LrRgtC+INGP0LLQu9GP0LXR
-gtGB0Y8g0LHQtdC90LXRhNC40YbQuNCw0YDQvtC8INC/0L7QutC+0LnQvdC+0LPQvg0K0YTQvtC9
-0LTQsC4g0K3RgtC+INC90LAgMTAwJSDQt9Cw0LrQvtC90L3Qviwg0Lgg0Y8g0LfQvdCw0Y4g0Y3R
-gtC+INC60LDQuiDRjtGA0LjRgdGCLiDQn9C+0YHQutC+0LvRjNC60YMg0Y3RgtC+DQrQsdGD0LTQ
-tdGCINGB0LLQuNC00LXRgtC10LvRjNGB0YLQstC+0Lwg0LTQu9GPINCy0LDRgSDQuCDQvNC10L3R
-jywg0LXRgdC70Lgg0LLRiyDRgdC00LXQu9Cw0LXRgtC1INC/0L4g0LLQsNGI0LXQvNGDDQrRg9GB
-0LzQvtGC0YDQtdC90LjRjiwg0LTQu9GPINC/0YDQtdGC0LXQvdC30LjQuC4g0JXRgdC70Lgg0LLR
-iyDQt9Cw0LjQvdGC0LXRgNC10YHQvtCy0LDQvdGLINCyINGN0YLQvtC8INC/0YDQtdC00LvQvtC2
-0LXQvdC40LgsDQrQuCDQstGLINCz0L7RgtC+0LLRiyDQvtCx0YDQsNCx0L7RgtCw0YLRjCDRjdGC
-0L4g0L/RgNC10LTQu9C+0LbQtdC90LjQtSDQuNC00LXQsNC70YzQvdC+INC4INGBINC00L7QstC1
-0YDQuNC10LwsINGC0L4NCtC90LXQvNC10LTQu9C10L3QvdC+INGB0LLRj9C20LjRgtC10YHRjCDR
-gdC+INC80L3QvtC5LiDQldGB0LvQuCDQstGLINC90LUg0LfQsNC40L3RgtC10YDQtdGB0L7QstCw
-0L3Riywg0Lgg0L3QsNGI0LvQuCDRjdGC0L4NCtC/0LjRgdGM0LzQviDQvtGB0LrQvtGA0LHQuNGC
-0LXQu9GM0L3Ri9C8INC40LvQuCDRgdGH0LjRgtCw0LXRgtC1LCDRh9GC0L4g0Y3RgtC+INCw0YTQ
-tdGA0LAsINC90LUg0L7RgtCy0LXRh9Cw0LnRgtC1Lg0KDQrQryDQs9Cw0YDQsNC90YLQuNGA0YPR
-jiwg0YfRgtC+INGC0YDQsNC90LfQsNC60YbQuNGPINCx0YPQtNC10YIg0YHQvtCy0LXRgNGI0LXQ
-vdCwINCyINGB0L7QvtGC0LLQtdGC0YHRgtCy0LjQuCDRgSDQt9Cw0LrQvtC90L3Ri9C8DQrRgdC+
-0LPQu9Cw0YjQtdC90LjQtdC8LCDQutC+0YLQvtGA0L7QtSDQt9Cw0YnQuNGC0LjRgiDQstCw0YEg
-0L7RgiDQu9GO0LHQvtCz0L4g0L3QsNGA0YPRiNC10L3QuNGPINC30LDQutC+0L3QsC4g0KDQtdC2
-0LjQvA0K0L7QsdC80LXQvdCwINC/0L7RgdC70LUg0L/QtdGA0LXQstC+0LTQsCDQtNC10L3QtdCz
-INC90LAg0YPQutCw0LfQsNC90L3Ri9C5INCy0LDQvNC4INCx0LDQvdC60L7QstGB0LrQuNC5INGB
-0YfQtdGCDQrRgdC+0YHRgtCw0LLQu9GP0LXRgiA1MCUg0LTQu9GPINC80LXQvdGPLCA1MCUg0LTQ
-u9GPINCy0LDRgS4g0JXRgdC70Lgg0Y3RgtC+INC/0YDQtdC00LvQvtC20LXQvdC40LUg0YHQvtCy
-0L/QsNC00LDQtdGCINGBDQrQstCw0YjQuNC8INCy0L3Rg9GC0YDQtdC90L3QuNC8INGB0YLRgNC1
-0LzQu9C10L3QuNC10Lwg0Log0YPRgdC/0LXRhdGDLCDQstCw0Lwg0L3QsNGB0YLQvtGP0YLQtdC7
-0YzQvdC+INGA0LXQutC+0LzQtdC90LTRg9C10YLRgdGPDQrRgdC00LXQu9Cw0YLRjCDQsdGL0YHR
-gtGA0YvQuSDQvtGC0LLQtdGCINGBINGD0LrQsNC30LDQvdC40LXQvCDQstCw0YjQtdC5INCz0L7R
-gtC+0LLQvdC+0YHRgtC4INC4DQrQt9Cw0LjQvdGC0LXRgNC10YHQvtCy0LDQvdC90L7RgdGC0Lgg
-0YPRh9Cw0YHRgtCy0L7QstCw0YLRjCDQsiDQsdC40LfQvdC10YHQtS4NCg0K0J/RgNC10LbQtNC1
-INGH0LXQvCDQvNGLINC/0LXRgNC10LnQtNC10Lwg0Log0YHQu9C10LTRg9GO0YnQtdC80YMg0YjQ
-sNCz0YMuINCU0LvRjyDQv9C+0LTQs9C+0YLQvtCy0LrQuCDQtNCw0L3QvdC+0LkNCtGC0YDQsNC9
-0LfQsNC60YbQuNC4INCy0LDQvCDQvdC10L7QsdGF0L7QtNC40LzRiyDRgdC70LXQtNGD0Y7RidC4
-0LUg0LTQsNC90L3Ri9C1Og0KMS4g0JLQsNGI0Lgg0L/QvtC70L3Ri9C1INC40LzQtdC90LAgLi4u
-Li4uLi4uLi4uLi4uLi4uLi4uLi4uLiAuLg0KMi4g0JTQsNGC0LAg0YDQvtC20LTQtdC90LjRjyAu
-Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4NCjMuINCf0L7Qu9C90YvQuSDQutC+0L3RgtCw0LrRgtC9
-0YvQuSDQsNC00YDQtdGBIC4uLi4uLi4uLi4gKNCU0L7QvCDQuCDQvtGE0LjRgSkNCjQuINCn0LDR
-gdGC0L3Ri9C1INGC0LXQu9C10YTQvtC90L3Ri9C1INC90L7QvNC10YDQsCAuLi4uLi4uLi4uLi4u
-Li4uLi4uLi4uLg0KNS4g0J3QvtC80LXRgNCwINGE0LDQutGB0L7QsiAuLi4uLi4uLi4uLi4uLi4u
-DQo2LiDQodC10LzQtdC50L3QvtC1INC/0L7Qu9C+0LbQtdC90LjQtSAuLi4uLi4uLi4uLi4uLi4u
-Li4uLi4uLg0KNy4g0KDQvtC0INC30LDQvdGP0YLQuNC5IC4uLi4uLi4uLi4uLi4uLi4uLiAuLi4u
-Li4uDQo4LiDQodGC0YDQsNC90LAgLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLg0KOS4g0JLQsNGI
-INC70LjRh9C90YvQuSDQsNC00YDQtdGBINGN0LvQtdC60YLRgNC+0L3QvdC+0Lkg0L/QvtGH0YLR
-iyDQtNC70Y8g0YPQtNC+0LHQvdC+0LPQviDQvtCx0YnQtdC90LjRjyAuLi4uLi4uLg0K0JLRiyDQ
-tNC+0LvQttC90Ysg0YHQstGP0LfQsNGC0YzRgdGPINGB0L4g0LzQvdC+0Lkg0YfQtdGA0LXQtyDQ
-vNC+0Lkg0YfQsNGB0YLQvdGL0Lkg0LDQtNGA0LXRgSDRjdC70LXQutGC0YDQvtC90L3QvtC5INC/
-0L7Rh9GC0Ys6DQpyb2JlcnRhbmRlcnNvbmhhcHB5MUBnbWFpbC5jb20NCtChINGD0LLQsNC20LXQ
-vdC40LXQvCwNCtCR0LDRgC4g0KDQvtCx0LXRgNGCINCQ0L3QtNC10YDRgdC+0L0NCg==
+From: Dejin Zheng <zhengdejin5@gmail.com>
+Date: Mon, 16 Mar 2020 10:32:52 +0800
+
+> This patch sets just for replace the open-coded loop to the
+> readl_poll_timeout() helper macro for simplify the code in
+> stmmac driver.
+> 
+> v2 -> v3:
+> 	- return whatever error code by readl_poll_timeout() returned.
+> v1 -> v2:
+> 	- no changed. I am a newbie and sent this patch a month
+> 	  ago (February 6th). So far, I have not received any comments or
+> 	  suggestion. I think it may be lost somewhere in the world, so
+> 	  resend it.
+
+Looks good, series applied, thank you.
