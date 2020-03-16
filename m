@@ -2,208 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE6D3187601
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 00:02:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D48F3187609
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 00:03:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732910AbgCPXCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 19:02:38 -0400
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:51044 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732846AbgCPXCi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 19:02:38 -0400
-Received: by mail-pf1-f201.google.com with SMTP id r13so13918409pfr.17
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 16:02:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=jhAs29n0+NZeg5qm8jJD7VhT2jWXJ+XtUfvis6uHlq0=;
-        b=fs84lUryWuvKoH8QK1lHpCxYX2kngf/xJPKqgzj/UUjbrO6ZPGGW3Od78up8IX3Gb/
-         1W1OI6XhRdUdCOT6Cj78/ANpxKrrWga9fasH7fHWAPcucJeKGQJ9ndHsr/ldyz8LT7mo
-         cPljFfDkIEXl9lwWFQOwVVkmEPCNPYZHYifZ8ZidsQRy8T/s0BdpnWI/hLs3wK/UJSVT
-         3H8qssHhQwiNcH1ZG/HdJojAXboA+5Agd20k9nYrXVH1fFWN0D+Urm0g8fbeig2bN63o
-         QVkO60cPMR1IriQ+l+rHhnyusd+2FWrOnmNNDTZLDSngfPLJtvoLLi9+W8RK6NaoFne/
-         QcSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=jhAs29n0+NZeg5qm8jJD7VhT2jWXJ+XtUfvis6uHlq0=;
-        b=CQUkYayfdK5H2N1dtpkyhq+SDMycL5TYdOszX7BDsy//G/rBkdMDkhLImuop8ILanr
-         zWhLtQo6nZWUqa47SpAx1sCyRhblaJR13IY/j85LB4hl+igQvACDqbJHYb7O1NMcyN7x
-         lHDzVXQIZcJM5z1nmuIHBCGu9M6EiwwKRDXe/+l7z6iyP33HsrnAyq2KNu1+dk3cqw01
-         V5arDwK1dBY2NuowM0mcuZ0REeLnu9bXCceSCmK3QYLIC8Ow1v97Qe7zB40GumppgcaW
-         KfNCvM0QL51QA3c4aa6aqYVxgBv6526nVB41E7Ihg2TjHaodSvNthVJzrLAaDTk3ebUm
-         xXHg==
-X-Gm-Message-State: ANhLgQ2iIXswodW8WgqI7lYB8DGJEx1rk517aU7fEqaksBKcIK/kSUbi
-        2Y7qYuZnwPChM2AUTWroVU9eCllw9XlXfg==
-X-Google-Smtp-Source: ADFU+vsVDwxn3fha4y0R82aR8bn+bfdp/qJ4WogM49rbUHkvpdlLGko28D/KmqO8UUh80nL8i0XWVkoQjyzSaA==
-X-Received: by 2002:a63:82c2:: with SMTP id w185mr2171986pgd.382.1584399756805;
- Mon, 16 Mar 2020 16:02:36 -0700 (PDT)
-Date:   Mon, 16 Mar 2020 16:02:23 -0700
-In-Reply-To: <20200316230223.242532-1-edumazet@google.com>
-Message-Id: <20200316230223.242532-4-edumazet@google.com>
-Mime-Version: 1.0
-References: <20200316230223.242532-1-edumazet@google.com>
-X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
-Subject: [PATCH net-next 3/3] net_sched: sch_fq: enable use of hrtimer slack
-From:   Eric Dumazet <edumazet@google.com>
-To:     "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1732880AbgCPXDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 19:03:32 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:58408 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732854AbgCPXDc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 19:03:32 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02GMswMT018605;
+        Mon, 16 Mar 2020 16:03:18 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=AmLHjbOjHMCFh34G9DCXzmubytsXLMfpMjG4QgQ/9ME=;
+ b=IAnrP6r4DL/8rNdefzC6gnmedAI2A2cCcl/mT8YBktXxovn65TprUMNCQmbYMMeioaNJ
+ Fx/04FzYi3Xgsvhi+J8nIQVyBzxoHJ7r1vBRicsnes4Nqzre3hP+J1kX1BH5xSz2mGcT
+ awl8M+8Mmg3Wb9e6LcITR0PG2hdGZos7J+I= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2ysf9nycrv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 16 Mar 2020 16:03:18 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Mon, 16 Mar 2020 16:03:16 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dXzXOKqeenNeJoxwJodWtn4EwSBxe9raNZZA831iwlhKx4uWfeKEL5zKg+HICIjxgnDBuP83ouEx41hUJ/gsomRDnKcR9EsnTF38lC+P1qa7yNYFpfU7rjz29E5OGd05HnGOv3GX0Yb9tKwi1wZwq/kOeDumenmoCwBgP0VB4/oN5yLa1/KoKI0REGd6h2IULB/dUtp5gZ0zkYQw9OljTe7tv5YdlpBlujZH1/piBLNrHO5uuc9IVzc/o2d4rGTDrTkpP9sndtBhH2fTT2U4aUA9EsQyNKwuR/eFxtCqIbxiaIO8DSqaTzXzOrxgdubAdV1cpfpmHqROU+gzVj9gVg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AmLHjbOjHMCFh34G9DCXzmubytsXLMfpMjG4QgQ/9ME=;
+ b=Mdz0wf/63kiXXJeWlAMAmYXtCmgMicGkFz4AtpB2gVSOL3cnicR2GstzMf4NSlyaecX0QynFLY4x4EX0LJRmLWD5QI5XC2FsVC5YwxKZobrxpIQJ28uRa+UStJiN3wIiyliUm82tNuu00NK6BnMsILiTE1DUEgVjNB/hrbb+AkbdlDTAyWfHv+m2BNZ82Wx6un5PLRBvS8sL87xFQCC/FERdFfFJcJYrNnKFE8KukWorBLjMCdNxcMz3xHd7/OibH565RjvfSdjEf//ZtdtoqssXLxoky1ELGgLDWdc4CkYj9efPBf5QzTTpgQ9KloTtiEFpX5hJNc9biAWkUWXfTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AmLHjbOjHMCFh34G9DCXzmubytsXLMfpMjG4QgQ/9ME=;
+ b=C/XRHlnn3t4WNoKbhCR2njQZIWIBcp2/VYQtw3G/AYFYhpykChfADlrVTbkk2cRmQvb1GQ5AtvYSucWOv4vg/LwY/+eQNSPe1eAOFmwNyXuV/M+GvOAXmGuc+2E3f5nkE+pN//7NUBi3G/uwfdVsJOoaHURo/HiR7HdNgMhYUfE=
+Received: from BYAPR15MB2278.namprd15.prod.outlook.com (2603:10b6:a02:8e::17)
+ by BYAPR15MB4135.namprd15.prod.outlook.com (2603:10b6:a03:a0::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.22; Mon, 16 Mar
+ 2020 23:03:15 +0000
+Received: from BYAPR15MB2278.namprd15.prod.outlook.com
+ ([fe80::4d5a:6517:802b:5f47]) by BYAPR15MB2278.namprd15.prod.outlook.com
+ ([fe80::4d5a:6517:802b:5f47%4]) with mapi id 15.20.2814.021; Mon, 16 Mar 2020
+ 23:03:15 +0000
+Date:   Mon, 16 Mar 2020 16:03:12 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Joe Stringer <joe@wand.net.nz>
+CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <daniel@iogearbox.net>, <ast@kernel.org>, <eric.dumazet@gmail.com>,
+        <lmb@cloudflare.com>
+Subject: Re: [PATCH bpf-next 4/7] dst: Prefetch established socket
+ destinations
+Message-ID: <20200316230312.oxgsjpyzhp5iiyyx@kafai-mbp>
+References: <20200312233648.1767-1-joe@wand.net.nz>
+ <20200312233648.1767-5-joe@wand.net.nz>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200312233648.1767-5-joe@wand.net.nz>
+User-Agent: NeoMutt/20180716
+X-ClientProxiedBy: MWHPR22CA0062.namprd22.prod.outlook.com
+ (2603:10b6:300:12a::24) To BYAPR15MB2278.namprd15.prod.outlook.com
+ (2603:10b6:a02:8e::17)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp (2620:10d:c090:400::5:e745) by MWHPR22CA0062.namprd22.prod.outlook.com (2603:10b6:300:12a::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.14 via Frontend Transport; Mon, 16 Mar 2020 23:03:14 +0000
+X-Originating-IP: [2620:10d:c090:400::5:e745]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ce4edf5d-cce7-48cc-b4e5-08d7c9fe3592
+X-MS-TrafficTypeDiagnostic: BYAPR15MB4135:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB41355E239C8325CC29A9CFC3D5F90@BYAPR15MB4135.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-Forefront-PRVS: 03449D5DD1
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(366004)(346002)(136003)(376002)(396003)(39860400002)(199004)(86362001)(66946007)(4326008)(66476007)(81166006)(81156014)(1076003)(8936002)(8676002)(66556008)(5660300002)(33716001)(478600001)(6916009)(52116002)(6496006)(316002)(55016002)(9686003)(2906002)(186003)(16526019);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB4135;H:BYAPR15MB2278.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+Received-SPF: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: /c1O20cmLBOdMHMGpYR9bPEHd1l8Vugupg46kB79QdHyX7KdHL7+l7a2u71QB5/c/jDJW75EE6ugcELwH3j+gVoEOmQ27XnkzW9Nkvv+BtQkKqFbBmR5c7DVrT4eJQIzeCBjYK4sCpzZCSgy2IBLXf/wtQegULHSTgJPyyAmNp81SK4LJT+gUKU+D/hs3H+9EizQ3Fc3ePRT0mI/YDkbz5MVGVpBj8Jy9Wiu6To6LSf+lJL1RFqrn3dDuP5C4lbr6wJjOvQt7yWUXBRVzDPuI4Jj1t2KK5vxTsRBgCLrs3GbxKYDne5DzGt1MvVy/bQ06pYvibkq7X65tfCTb8hUV3zyOQEjR5W2ARfpe0RUJIYL79q1/qk9PrC2G21Sld1ZoUVASxeMhvLaQWkrwSfEU22l3O6jYR6d6WC6b81PnHz1MXfCWO//MvbBFFJ/FGmB
+X-MS-Exchange-AntiSpam-MessageData: zYHvL8OV71vqUMfJ8yxe0opXDB0CQeqkZuzkgIc+qJLnqrP7djQctxiqa57eScUoGsW9EDmAdvEXCoboN1iYGHmqGlQ6+7wftXPIdUSh5FE8ZPTeyRpKsmSjtHu6jZatKgdbRJClRQ1rawOsInXhPfx63DEZvCNjLI7lHqfCR+5Xns6M2Dqk3r5leOgwf2pC
+X-MS-Exchange-CrossTenant-Network-Message-Id: ce4edf5d-cce7-48cc-b4e5-08d7c9fe3592
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2020 23:03:15.6766
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: p4PF1p5Bm6vijEUEZqgKKhv5vcnvm2I1ayT8HoMoPZqkS6LmBWO6Nu6E2qHUFd7b
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB4135
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-16_10:2020-03-12,2020-03-16 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ bulkscore=0 impostorscore=0 spamscore=0 clxscore=1015 phishscore=0
+ mlxscore=0 lowpriorityscore=0 malwarescore=0 mlxlogscore=999 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003160094
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new attribute to control the fq qdisc hrtimer slack.
+On Thu, Mar 12, 2020 at 04:36:45PM -0700, Joe Stringer wrote:
+> Enhance the dst_sk_prefetch logic to temporarily store the socket
+> receive destination, to save the route lookup later on. The dst
+> reference is kept alive by the caller's socket reference.
+> 
+> Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
+> Signed-off-by: Joe Stringer <joe@wand.net.nz>
+> ---
+>  include/net/dst_metadata.h |  2 +-
+>  net/core/dst.c             | 20 +++++++++++++++++---
+>  net/core/filter.c          |  2 +-
+>  3 files changed, 19 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
+> index 31574c553a07..4f16322b08d5 100644
+> --- a/include/net/dst_metadata.h
+> +++ b/include/net/dst_metadata.h
+> @@ -230,7 +230,7 @@ static inline bool skb_dst_is_sk_prefetch(const struct sk_buff *skb)
+>  	return dst_is_sk_prefetch(skb_dst(skb));
+>  }
+>  
+> -void dst_sk_prefetch_store(struct sk_buff *skb);
+> +void dst_sk_prefetch_store(struct sk_buff *skb, struct sock *sk);
+>  void dst_sk_prefetch_fetch(struct sk_buff *skb);
+>  
+>  /**
+> diff --git a/net/core/dst.c b/net/core/dst.c
+> index cf1a1d5b6b0a..5068d127d9c2 100644
+> --- a/net/core/dst.c
+> +++ b/net/core/dst.c
+> @@ -346,11 +346,25 @@ EXPORT_SYMBOL(dst_sk_prefetch);
+>  
+>  DEFINE_PER_CPU(unsigned long, dst_sk_prefetch_dst);
+>  
+> -void dst_sk_prefetch_store(struct sk_buff *skb)
+> +void dst_sk_prefetch_store(struct sk_buff *skb, struct sock *sk)
+>  {
+> -	unsigned long refdst;
+> +	unsigned long refdst = 0L;
+> +
+> +	WARN_ON(!rcu_read_lock_held() &&
+> +		!rcu_read_lock_bh_held());
+> +	if (sk_fullsock(sk)) {
+> +		struct dst_entry *dst = READ_ONCE(sk->sk_rx_dst);
+> +
+> +		if (dst)
+> +			dst = dst_check(dst, 0);
+v6 requires a cookie.  tcp_v6_early_demux() could be a good example.
 
-Default is set to 10 usec.
-
-When/if packets are throttled, fq set up an hrtimer that can
-lead to one interrupt per packet in the throttled queue.
-
-By using a timer slack, we allow better use of timer interrupts,
-by giving them a chance to call multiple timer callbacks
-at each hardware interrupt.
-
-Also, giving a slack allows FQ to dequeue batches of packets
-instead of a single one, thus increasing xmit_more efficiency.
-
-This has no negative effect on the rate a TCP flow can sustain,
-since each TCP flow maintains its own precise vtime (tp->tcp_wstamp_ns)
-
-Tested:
- 1000 concurrent flows all using paced packets.
- 1,000,000 packets sent per second.
-
-Before the patch :
-
-$ vmstat 2 10
-procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
- r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
- 0  0      0 60726784  23628 3485992    0    0   138     1  977  535  0 12 87  0  0
- 0  0      0 60714700  23628 3485628    0    0     0     0 1568827 26462  0 22 78  0  0
- 1  0      0 60716012  23628 3485656    0    0     0     0 1570034 26216  0 22 78  0  0
- 0  0      0 60722420  23628 3485492    0    0     0     0 1567230 26424  0 22 78  0  0
- 0  0      0 60727484  23628 3485556    0    0     0     0 1568220 26200  0 22 78  0  0
- 2  0      0 60718900  23628 3485380    0    0     0    40 1564721 26630  0 22 78  0  0
- 2  0      0 60718096  23628 3485332    0    0     0     0 1562593 26432  0 22 78  0  0
- 0  0      0 60719608  23628 3485064    0    0     0     0 1563806 26238  0 22 78  0  0
- 1  0      0 60722876  23628 3485236    0    0     0   130 1565874 26566  0 22 78  0  0
- 1  0      0 60722752  23628 3484908    0    0     0     0 1567646 26247  0 22 78  0  0
-
-After the patch, slack of 10 usec, we can see a reduction of interrupts
-per second, and a small decrease of reported cpu usage.
-
-$ vmstat 2 10
-procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
- r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
- 1  0      0 60722564  23628 3484728    0    0   133     1  696  545  0 13 87  0  0
- 1  0      0 60722568  23628 3484824    0    0     0     0 977278 25469  0 20 80  0  0
- 0  0      0 60716396  23628 3484764    0    0     0     0 979997 25326  0 20 80  0  0
- 0  0      0 60713844  23628 3484960    0    0     0     0 981394 25249  0 20 80  0  0
- 2  0      0 60720468  23628 3484916    0    0     0     0 982860 25062  0 20 80  0  0
- 1  0      0 60721236  23628 3484856    0    0     0     0 982867 25100  0 20 80  0  0
- 1  0      0 60722400  23628 3484456    0    0     0     8 982698 25303  0 20 80  0  0
- 0  0      0 60715396  23628 3484428    0    0     0     0 981777 25176  0 20 80  0  0
- 0  0      0 60716520  23628 3486544    0    0     0    36 978965 27857  0 21 79  0  0
- 0  0      0 60719592  23628 3486516    0    0     0    22 977318 25106  0 20 80  0  0
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
- include/uapi/linux/pkt_sched.h |  2 ++
- net/sched/sch_fq.c             | 19 +++++++++++++++----
- 2 files changed, 17 insertions(+), 4 deletions(-)
-
-diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-index ea39287d59c812da7fc94379de41c2ba20e86557..7307a29a103e5191acd829c745860b637721be30 100644
---- a/include/uapi/linux/pkt_sched.h
-+++ b/include/uapi/linux/pkt_sched.h
-@@ -911,6 +911,8 @@ enum {
- 
- 	TCA_FQ_CE_THRESHOLD,	/* DCTCP-like CE-marking threshold */
- 
-+	TCA_FQ_TIMER_SLACK,	/* timer slack */
-+
- 	__TCA_FQ_MAX
- };
- 
-diff --git a/net/sched/sch_fq.c b/net/sched/sch_fq.c
-index 371ad84def3b6f1b5f0d0704b67723d0a8af22c6..9894577689faad16ed13c73725fb7da9b128bce9 100644
---- a/net/sched/sch_fq.c
-+++ b/net/sched/sch_fq.c
-@@ -121,6 +121,8 @@ struct fq_sched_data {
- 	u64		stat_flows_plimit;
- 	u64		stat_pkts_too_long;
- 	u64		stat_allocation_errors;
-+
-+	u32		timer_slack; /* hrtimer slack in ns */
- 	struct qdisc_watchdog watchdog;
- };
- 
-@@ -504,8 +506,9 @@ static struct sk_buff *fq_dequeue(struct Qdisc *sch)
- 		head = &q->old_flows;
- 		if (!head->first) {
- 			if (q->time_next_delayed_flow != ~0ULL)
--				qdisc_watchdog_schedule_ns(&q->watchdog,
--							   q->time_next_delayed_flow);
-+				qdisc_watchdog_schedule_range_ns(&q->watchdog,
-+							q->time_next_delayed_flow,
-+							q->timer_slack);
- 			return NULL;
- 		}
- 	}
-@@ -747,6 +750,7 @@ static const struct nla_policy fq_policy[TCA_FQ_MAX + 1] = {
- 	[TCA_FQ_ORPHAN_MASK]		= { .type = NLA_U32 },
- 	[TCA_FQ_LOW_RATE_THRESHOLD]	= { .type = NLA_U32 },
- 	[TCA_FQ_CE_THRESHOLD]		= { .type = NLA_U32 },
-+	[TCA_FQ_TIMER_SLACK]		= { .type = NLA_U32 },
- };
- 
- static int fq_change(struct Qdisc *sch, struct nlattr *opt,
-@@ -833,6 +837,9 @@ static int fq_change(struct Qdisc *sch, struct nlattr *opt,
- 		q->ce_threshold = (u64)NSEC_PER_USEC *
- 				  nla_get_u32(tb[TCA_FQ_CE_THRESHOLD]);
- 
-+	if (tb[TCA_FQ_TIMER_SLACK])
-+		q->timer_slack = nla_get_u32(tb[TCA_FQ_TIMER_SLACK]);
-+
- 	if (!err) {
- 		sch_tree_unlock(sch);
- 		err = fq_resize(sch, fq_log);
-@@ -884,6 +891,8 @@ static int fq_init(struct Qdisc *sch, struct nlattr *opt,
- 	q->orphan_mask		= 1024 - 1;
- 	q->low_rate_threshold	= 550000 / 8;
- 
-+	q->timer_slack = 10 * NSEC_PER_USEC; /* 10 usec of hrtimer slack */
-+
- 	/* Default ce_threshold of 4294 seconds */
- 	q->ce_threshold		= (u64)NSEC_PER_USEC * ~0U;
- 
-@@ -924,7 +933,8 @@ static int fq_dump(struct Qdisc *sch, struct sk_buff *skb)
- 	    nla_put_u32(skb, TCA_FQ_LOW_RATE_THRESHOLD,
- 			q->low_rate_threshold) ||
- 	    nla_put_u32(skb, TCA_FQ_CE_THRESHOLD, (u32)ce_threshold) ||
--	    nla_put_u32(skb, TCA_FQ_BUCKETS_LOG, q->fq_trees_log))
-+	    nla_put_u32(skb, TCA_FQ_BUCKETS_LOG, q->fq_trees_log) ||
-+	    nla_put_u32(skb, TCA_FQ_TIMER_SLACK, q->timer_slack))
- 		goto nla_put_failure;
- 
- 	return nla_nest_end(skb, opts);
-@@ -947,7 +957,8 @@ static int fq_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
- 	st.flows_plimit		  = q->stat_flows_plimit;
- 	st.pkts_too_long	  = q->stat_pkts_too_long;
- 	st.allocation_errors	  = q->stat_allocation_errors;
--	st.time_next_delayed_flow = q->time_next_delayed_flow - ktime_get_ns();
-+	st.time_next_delayed_flow = q->time_next_delayed_flow + q->timer_slack -
-+				    ktime_get_ns();
- 	st.flows		  = q->flows;
- 	st.inactive_flows	  = q->inactive_flows;
- 	st.throttled_flows	  = q->throttled_flows;
--- 
-2.25.1.481.gfbce0eb801-goog
-
+> +		if (dst)
+> +			refdst = (unsigned long)dst | SKB_DST_NOREF;
+> +	}
+> +	if (!refdst)
+> +		refdst = skb->_skb_refdst;
+> +	if (skb->_skb_refdst != refdst)
+> +		skb_dst_drop(skb);
+>  
+> -	refdst = skb->_skb_refdst;
+>  	__this_cpu_write(dst_sk_prefetch_dst, refdst);
+>  	skb_dst_set_noref(skb, (struct dst_entry *)&dst_sk_prefetch.dst);
+>  }
