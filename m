@@ -2,192 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD3A01862ED
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 03:42:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55B00186257
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 03:38:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729764AbgCPCeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 Mar 2020 22:34:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37256 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729742AbgCPCeG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 15 Mar 2020 22:34:06 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AD6032072A;
-        Mon, 16 Mar 2020 02:34:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584326045;
-        bh=kfUWbnTeMtmznHS2XI+DY12FQ9bzL1Ohz2f03135/Vs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1/UwPJSIKYUyGkWJNi0p4PpXttYjfdGxcHGEa8l21KyVYOhXKbwvQ0cr/ukRfxXFL
-         b42yYZdcCzVz7eJV9cHHl++D6v+8You17CDSLYPY3oJ2OHc/m1lgABexWbj7bx4Sr3
-         JZ7j826pVnYwPM7m2Aqn2iXMK/a2zgXYfwJ6oDn8=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tycho Andersen <tycho@tycho.ws>,
-        David Abdurachmanov <david.abdurachmanov@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Palmer Dabbelt <palmerdabbelt@google.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-riscv@lists.infradead.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 38/41] riscv: fix seccomp reject syscall code path
-Date:   Sun, 15 Mar 2020 22:33:16 -0400
-Message-Id: <20200316023319.749-38-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200316023319.749-1-sashal@kernel.org>
-References: <20200316023319.749-1-sashal@kernel.org>
+        id S1729724AbgCPCgR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Mar 2020 22:36:17 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:34839 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729924AbgCPCgQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 22:36:16 -0400
+Received: by mail-qt1-f196.google.com with SMTP id v15so12967396qto.2
+        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 19:36:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=y1j6PnKHT2h1YOO9oFSmwRw0AJ311hhA25AjtJNAkEw=;
+        b=fRk7F3kju0PACLQqHLT8lKVETCm3o9tbD6HiB/A7X6rp16EfeW9WXPDRPBio0OaAo6
+         /xW8bKZwo62DBysWVzx3L7n8Hz0vY3hJ6EQY9bVUzbE4cxsn7fQc32+jm73jQVhZN1Gj
+         01fLvAx7v7Om6ZmUltMyWgaupv9MujGalyqmQbppWPgQwxw+pPERAB2FUn4nHqwvTNqr
+         bjOMhsLsy0QVbrpMTS/YoirXGcaIqnTeqEEK/kYzchJtU3yp/mnmibDTsqdrvyTOpbj2
+         94O7hOB9pU5OgiBwhYlRrScO2ZTHjdPE6PE2LfubBzh76unBCymMUjfo0FUPJqYdvsKX
+         +YmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=y1j6PnKHT2h1YOO9oFSmwRw0AJ311hhA25AjtJNAkEw=;
+        b=ZrZkO8n1uyJtiJ4zgtq35JZRUG1ku8/6ytVRTdEd+p68TIt5AmNyqZftJ3wCfcvjFK
+         bgPgPMjhktL2S4hXstYoxK+FeM4i7LAvoPkY8LaqPsLUlv1v6h29SlBlDEm37SiVcd0Y
+         sP+RYxgzLFVMQh2Wfofxr3nuil5WDfyT+a5vOoviUZd6vgCJ+8FQ4SB12m9jpT88QMf+
+         Txpd2YIU6oH/x6Eb9gXfWWGnAlzNWYpERURV6gHUpeuNBEVvw2acJZqz9eAv7fdnnOAq
+         uL6vYqg9T3k1bKzAgM5SFhJs46HYCXMqGE7Bx4HnLj2+XQvJkm87pdpfCuaYlAwOxpLt
+         lbGw==
+X-Gm-Message-State: ANhLgQ3sxbssqHMyO24HKXS0jkEoOmbMKcHcaJisX/xQWVCoAPTA3DmC
+        Hnh1QYvu34/ULMeXbr3AhlE=
+X-Google-Smtp-Source: ADFU+vv4QmpMtpvrOT5yyL0etheq+XSuzRius4uyN5iu/ZiSsZOtmRL4FKQp4QMAd/d/yPi5EG+h3A==
+X-Received: by 2002:ac8:184f:: with SMTP id n15mr21554452qtk.371.1584326174261;
+        Sun, 15 Mar 2020 19:36:14 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:1068:8e8d:73f8:b838? ([2601:282:803:7700:1068:8e8d:73f8:b838])
+        by smtp.googlemail.com with ESMTPSA id g6sm8651572qtd.85.2020.03.15.19.36.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 15 Mar 2020 19:36:13 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next v1] net: core: enable SO_BINDTODEVICE for
+ non-root users
+To:     David Miller <davem@davemloft.net>, vincent@bernat.ch
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
+        kafai@fb.com
+References: <20200315155910.3262015-1-vincent@bernat.ch>
+ <20200315.170231.388798443331914470.davem@davemloft.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a2d2b020-c2a7-5efa-497e-44eff651b9ce@gmail.com>
+Date:   Sun, 15 Mar 2020 20:36:10 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.6.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200315.170231.388798443331914470.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tycho Andersen <tycho@tycho.ws>
+On 3/15/20 6:02 PM, David Miller wrote:
+> From: Vincent Bernat <vincent@bernat.ch>
+> Date: Sun, 15 Mar 2020 16:59:11 +0100
+> 
+>> Currently, SO_BINDTODEVICE requires CAP_NET_RAW. This change allows a
+>> non-root user to bind a socket to an interface if it is not already
+>> bound. This is useful to allow an application to bind itself to a
+>> specific VRF for outgoing or incoming connections. Currently, an
+>> application wanting to manage connections through several VRF need to
+>> be privileged. Moreover, I don't see a reason why an application
+>> couldn't restrict its own scope. Such a privilege is already possible
+>> with UDP through IP_UNICAST_IF.
+> 
+> It could be argued that IP_UNICAST_IF and similar should be privileged
+> as well.
+> 
+> When the administrator sets up the routes, they don't expect that
+> arbitrary user applications can "escape" the route configuration by
+> specifying the interface so readily.
+> 
 
-[ Upstream commit af33d2433b03d63ed31fcfda842f46676a5e1afc ]
+Hi Dave:
 
-If secure_computing() rejected a system call, we were previously setting
-the system call number to -1, to indicate to later code that the syscall
-failed. However, if something (e.g. a user notification) was sleeping, and
-received a signal, we may set a0 to -ERESTARTSYS and re-try the system call
-again.
+As a reminder, there are currently 3 APIs to specify a preferred device
+association which influences route lookups:
 
-In this case, seccomp "denies" the syscall (because of the signal), and we
-would set a7 to -1, thus losing the value of the system call we want to
-restart.
+1. SO_BINDTODEVICE - sets sk_bound_dev_if and is the strongest binding
+(ie., can not be overridden),
 
-Instead, let's return -1 from do_syscall_trace_enter() to indicate that the
-syscall was rejected, so we don't clobber the value in case of -ERESTARTSYS
-or whatever.
+2. IP_UNICAST_IF / IPV6_UNICAST_IF - sets uc_index / ucast_oif and is
+sticky for a socket, and
 
-This commit fixes the user_notification_signal seccomp selftest on riscv to
-no longer hang. That test expects the system call to be re-issued after the
-signal, and it wasn't due to the above bug. Now that it is, everything
-works normally.
+3. IP_PKTINFO / IPV6_PKTINFO - which is per message.
 
-Note that in the ptrace (tracer) case, the tracer can set the register
-values to whatever they want, so we still need to keep the code that
-handles out-of-bounds syscalls. However, we can drop the comment.
+The first, SO_BINDTODEVICE, requires root privileges. The last 2 do not
+require root privileges but only apply to raw and UDP sockets making TCP
+the outlier.
 
-We can also drop syscall_set_nr(), since it is no longer used anywhere, and
-the code that re-loads the value in a7 because of it.
+Further, a downside to the last 2 is that they work for sendmsg only;
+there is no way to definitively match a response to the sending socket.
+The key point is that UDP and raw have multiple non-root APIs to dictate
+a preferred device for sending messages.
 
-Reported in: https://lore.kernel.org/bpf/CAEn-LTp=ss0Dfv6J00=rCAy+N78U2AmhqJNjfqjr2FDpPYjxEQ@mail.gmail.com/
-
-Reported-by: David Abdurachmanov <david.abdurachmanov@gmail.com>
-Signed-off-by: Tycho Andersen <tycho@tycho.ws>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Palmer Dabbelt <palmerdabbelt@google.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/riscv/include/asm/syscall.h |  7 -------
- arch/riscv/kernel/entry.S        | 11 +++--------
- arch/riscv/kernel/ptrace.c       | 11 +++++------
- 3 files changed, 8 insertions(+), 21 deletions(-)
-
-diff --git a/arch/riscv/include/asm/syscall.h b/arch/riscv/include/asm/syscall.h
-index 42347d0981e7e..49350c8bd7b09 100644
---- a/arch/riscv/include/asm/syscall.h
-+++ b/arch/riscv/include/asm/syscall.h
-@@ -28,13 +28,6 @@ static inline int syscall_get_nr(struct task_struct *task,
- 	return regs->a7;
- }
- 
--static inline void syscall_set_nr(struct task_struct *task,
--				  struct pt_regs *regs,
--				  int sysno)
--{
--	regs->a7 = sysno;
--}
--
- static inline void syscall_rollback(struct task_struct *task,
- 				    struct pt_regs *regs)
- {
-diff --git a/arch/riscv/kernel/entry.S b/arch/riscv/kernel/entry.S
-index e163b7b64c86c..f6486d4956013 100644
---- a/arch/riscv/kernel/entry.S
-+++ b/arch/riscv/kernel/entry.S
-@@ -228,20 +228,13 @@ check_syscall_nr:
- 	/* Check to make sure we don't jump to a bogus syscall number. */
- 	li t0, __NR_syscalls
- 	la s0, sys_ni_syscall
--	/*
--	 * The tracer can change syscall number to valid/invalid value.
--	 * We use syscall_set_nr helper in syscall_trace_enter thus we
--	 * cannot trust the current value in a7 and have to reload from
--	 * the current task pt_regs.
--	 */
--	REG_L a7, PT_A7(sp)
- 	/*
- 	 * Syscall number held in a7.
- 	 * If syscall number is above allowed value, redirect to ni_syscall.
- 	 */
- 	bge a7, t0, 1f
- 	/*
--	 * Check if syscall is rejected by tracer or seccomp, i.e., a7 == -1.
-+	 * Check if syscall is rejected by tracer, i.e., a7 == -1.
- 	 * If yes, we pretend it was executed.
- 	 */
- 	li t1, -1
-@@ -334,6 +327,7 @@ work_resched:
- handle_syscall_trace_enter:
- 	move a0, sp
- 	call do_syscall_trace_enter
-+	move t0, a0
- 	REG_L a0, PT_A0(sp)
- 	REG_L a1, PT_A1(sp)
- 	REG_L a2, PT_A2(sp)
-@@ -342,6 +336,7 @@ handle_syscall_trace_enter:
- 	REG_L a5, PT_A5(sp)
- 	REG_L a6, PT_A6(sp)
- 	REG_L a7, PT_A7(sp)
-+	bnez t0, ret_from_syscall_rejected
- 	j check_syscall_nr
- handle_syscall_trace_exit:
- 	move a0, sp
-diff --git a/arch/riscv/kernel/ptrace.c b/arch/riscv/kernel/ptrace.c
-index 407464201b91e..444dc7b0fd78c 100644
---- a/arch/riscv/kernel/ptrace.c
-+++ b/arch/riscv/kernel/ptrace.c
-@@ -148,21 +148,19 @@ long arch_ptrace(struct task_struct *child, long request,
-  * Allows PTRACE_SYSCALL to work.  These are called from entry.S in
-  * {handle,ret_from}_syscall.
-  */
--__visible void do_syscall_trace_enter(struct pt_regs *regs)
-+__visible int do_syscall_trace_enter(struct pt_regs *regs)
- {
- 	if (test_thread_flag(TIF_SYSCALL_TRACE))
- 		if (tracehook_report_syscall_entry(regs))
--			syscall_set_nr(current, regs, -1);
-+			return -1;
- 
- 	/*
- 	 * Do the secure computing after ptrace; failures should be fast.
- 	 * If this fails we might have return value in a0 from seccomp
- 	 * (via SECCOMP_RET_ERRNO/TRACE).
- 	 */
--	if (secure_computing() == -1) {
--		syscall_set_nr(current, regs, -1);
--		return;
--	}
-+	if (secure_computing() == -1)
-+		return -1;
- 
- #ifdef CONFIG_HAVE_SYSCALL_TRACEPOINTS
- 	if (test_thread_flag(TIF_SYSCALL_TRACEPOINT))
-@@ -170,6 +168,7 @@ __visible void do_syscall_trace_enter(struct pt_regs *regs)
- #endif
- 
- 	audit_syscall_entry(regs->a7, regs->a0, regs->a1, regs->a2, regs->a3);
-+	return 0;
- }
- 
- __visible void do_syscall_trace_exit(struct pt_regs *regs)
--- 
-2.20.1
-
+Vincent's patch simplifies things quite a bit - allowing consistency
+across the protocols and directions - but without overriding any
+administrator settings (e.g., inherited bindings via ebpf programs).
