@@ -2,141 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1C71187451
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 21:56:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 754BD18746A
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:01:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732603AbgCPU4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 16:56:09 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:40070 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732567AbgCPU4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 16:56:09 -0400
-Received: by mail-pf1-f194.google.com with SMTP id l184so10606347pfl.7
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 13:56:08 -0700 (PDT)
+        id S1732644AbgCPVBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 17:01:37 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:41986 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732571AbgCPVBh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 17:01:37 -0400
+Received: by mail-pg1-f195.google.com with SMTP id h8so10420230pgs.9
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 14:01:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NZ/7vQHI7KE97BesE+3WxlmFuT1Y/pVRDjy/XH5FkC0=;
-        b=sp8cn/ioOKcQrBGgpv/MwvdbUYmqLpY3kwI0x736FzBzMjDBs+K3pg5UUG1Q1DCeI5
-         1zn/f5brLanFHqo0Pi0PlKHd5FTKycUoSSyfxNbIRzD0Gm8PrzXSWOP/yv1NXIywvuWV
-         NvWUdv8eYUpXPvoGC6Q7n8PkYcU1IOx3Ty8eAJPkTabAUsLDTP0BN+QnS2rYduD9ixFa
-         x8DTDXw1Y8QHmn3HdSK2F61wnQzHBQBCPgkC9kZDUmTWVrr3qd+cK8dXytoA6SleFib7
-         dNliIlDgmEDxwl4YuOOZ5bVeMwLMEEXEedpVexup+LT/AAjgdd16EmutVUrhVjABss71
-         cTQg==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FykSs6ArRQ1VTW0edGQU9r+oRpdoLevjlWnrbNH8SzQ=;
+        b=F/mKIGm2VSDsMdeG2UN7tdnBaLkXajwusX1FSQGsszz2c2mkMYP00hgIofJTgrQDW1
+         SlYcjtn0dgAw7izmdBv71zLnPNljO/N2mb5wfEaVhtU0iQ3ICwa7+j1vTDbBcOdxXrmc
+         L4SVReMbOZrT0y9fUuU3TP449id5RqEw/5/u0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NZ/7vQHI7KE97BesE+3WxlmFuT1Y/pVRDjy/XH5FkC0=;
-        b=CuJRrA9wRoq6NVdjEJX2is6L1G6W1jEN7PcNN7eDCnhRMQmgJh7smTnNPwpNWAGbIV
-         BhQUDqoOywJyF0OIC/kCX32ut+8L/0+nWpjH/UX5w72vG6ZnNuta/h4eYNgYBA8TpbDC
-         OP0IjGaeTK4+JmQJrjyOTQxq/okkwwwaF2FsGYZa34T8KeTXEUseivr/KyqyeFRaHY72
-         2zyyh+eyu5thXhSuL1JbcYiZ05UdeCwL606iqlFCKXOufiE0dTFaVouMZ0Z3vJdrBUun
-         uJhcZfBlGkTJi95KExwbyyVp7EQAMt0pKEwiSIZTCxQ2FPFTISTR2ifk76aBieAW8ZvY
-         pxpA==
-X-Gm-Message-State: ANhLgQ3oAXBTGTjWKEbovMOBmLbXoSL/MsioWNa9Qe0cUfzF3lfrdIM5
-        ErmiLqG2BaI04GuVyK3NzeTueJghThWM/EGAuf8lDw==
-X-Google-Smtp-Source: ADFU+vuCQ97q6HcYQkHwhQj8C1S5Oa2alEBysaM6RamyvELgnI7a1zylhDyl+jjS4YkMyCE133hnoh3bBFYURu9FD5U=
-X-Received: by 2002:a05:6a00:42:: with SMTP id i2mr1554887pfk.108.1584392167596;
- Mon, 16 Mar 2020 13:56:07 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FykSs6ArRQ1VTW0edGQU9r+oRpdoLevjlWnrbNH8SzQ=;
+        b=ZFuq+TWTmx1QyILv82eE04TLJhEpbfrwqdzCqjxH7PWSurb/U2Q6UWc3/OZJqmP+dm
+         dv4HSmY7AvHpQlJPVh7weQ4KdWBG30NfyIbgV0xtQVifSRPsWEp4f05yQsAe+GHPnV7Q
+         +8124mLXd+p+eluazad+nvO9fjb6RzLD4qO6OTS6eCVVjqG0GRjHQf6fPfB2WAXV/IIH
+         aH3IY4TDNyFHHgE2Ea6xS3VFju5ay8K+dJ12zmaJxZ6b/bGFXltRvondjxZNyu5igwuC
+         xwzkjwPYsg0R0fKoX+o7eqQS3VGC/6RmGKVLCiI+U325oTUs46jjeeaSMbpSnKrRk/2X
+         /JqQ==
+X-Gm-Message-State: ANhLgQ05oB6wVUh5MtLmUkZYYVi2Qe9tYgdIogGbzmUS1hS6bP+U+tDS
+        IaeCzwu06Nm/h9noP1My/QBRMg==
+X-Google-Smtp-Source: ADFU+vspzRBYngPdmN2Sb7yi3ynFWRC4K625gLz2x5YvOEj/9r9JVqHRh4cG4ZtIaq7Mzq78lwob+g==
+X-Received: by 2002:a63:7c4:: with SMTP id 187mr1570289pgh.369.1584392495839;
+        Mon, 16 Mar 2020 14:01:35 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id p4sm747093pfg.163.2020.03.16.14.01.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Mar 2020 14:01:34 -0700 (PDT)
+Date:   Mon, 16 Mar 2020 14:01:33 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Bird, Tim" <Tim.Bird@sony.com>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "luto@amacapital.net" <luto@amacapital.net>,
+        "wad@chromium.org" <wad@chromium.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-team@fb.com" <kernel-team@fb.com>
+Subject: Re: [PATCH v2 0/4] kselftest: add fixture parameters
+Message-ID: <202003161356.6CD6783@keescook>
+References: <20200314005501.2446494-1-kuba@kernel.org>
+ <202003132049.3D0CDBB2A@keescook>
+ <MWHPR13MB08957F02680872A2C30DD7F4FDF90@MWHPR13MB0895.namprd13.prod.outlook.com>
+ <20200316130416.4ec9103b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20200316203452.32998-1-natechancellor@gmail.com>
-In-Reply-To: <20200316203452.32998-1-natechancellor@gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 16 Mar 2020 13:55:55 -0700
-Message-ID: <CAKwvOdkDUYYm9ZoTeKt-5kGhDTxo6w2XhOjONWhzh6M4rE5LpA@mail.gmail.com>
-Subject: Re: [PATCH] mlx5: Remove uninitialized use of key in mlx5_core_create_mkey
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200316130416.4ec9103b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 16, 2020 at 1:35 PM Nathan Chancellor
-<natechancellor@gmail.com> wrote:
->
-> Clang warns:
->
-> ../drivers/net/ethernet/mellanox/mlx5/core/mr.c:63:21: warning: variable
-> 'key' is uninitialized when used here [-Wuninitialized]
->                       mkey_index, key, mkey->key);
->                                   ^~~
-> ../drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h:54:6: note:
-> expanded from macro 'mlx5_core_dbg'
->                  ##__VA_ARGS__)
->                    ^~~~~~~~~~~
-> ../include/linux/dev_printk.h:114:39: note: expanded from macro
-> 'dev_dbg'
->         dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
->                                              ^~~~~~~~~~~
-> ../include/linux/dynamic_debug.h:158:19: note: expanded from macro
-> 'dynamic_dev_dbg'
->                            dev, fmt, ##__VA_ARGS__)
->                                        ^~~~~~~~~~~
-> ../include/linux/dynamic_debug.h:143:56: note: expanded from macro
-> '_dynamic_func_call'
->         __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
->                                                               ^~~~~~~~~~~
-> ../include/linux/dynamic_debug.h:125:15: note: expanded from macro
-> '__dynamic_func_call'
->                 func(&id, ##__VA_ARGS__);               \
->                             ^~~~~~~~~~~
-> ../drivers/net/ethernet/mellanox/mlx5/core/mr.c:47:8: note: initialize
-> the variable 'key' to silence this warning
->         u8 key;
->               ^
->                = '\0'
-> 1 warning generated.
->
-> key's initialization was removed in commit fc6a9f86f08a ("{IB,net}/mlx5:
-> Assign mkey variant in mlx5_ib only") but its use was not fully removed.
-> Remove it now so that there is no more warning.
->
-> Fixes: fc6a9f86f08a ("{IB,net}/mlx5: Assign mkey variant in mlx5_ib only")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/932
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+On Mon, Mar 16, 2020 at 01:04:16PM -0700, Jakub Kicinski wrote:
+> Variant sounds good too, although the abbreviation would be VAR?
+> Which isn't ideal. 
+> 
+> But I really don't care so whoever cares the most please speak up :P
 
-Thanks for the patch and analysis, looks good to me!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Let's go with "variant" and just spell it out.
 
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/mr.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mr.c b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-> index fd3e6d217c3b..366f2cbfc6db 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-> @@ -44,7 +44,6 @@ int mlx5_core_create_mkey(struct mlx5_core_dev *dev,
->         u32 mkey_index;
->         void *mkc;
->         int err;
-> -       u8 key;
->
->         MLX5_SET(create_mkey_in, in, opcode, MLX5_CMD_OP_CREATE_MKEY);
->
-> @@ -59,8 +58,7 @@ int mlx5_core_create_mkey(struct mlx5_core_dev *dev,
->         mkey->key |= mlx5_idx_to_mkey(mkey_index);
->         mkey->pd = MLX5_GET(mkc, mkc, pd);
->
-> -       mlx5_core_dbg(dev, "out 0x%x, key 0x%x, mkey 0x%x\n",
-> -                     mkey_index, key, mkey->key);
-> +       mlx5_core_dbg(dev, "out 0x%x, mkey 0x%x\n", mkey_index, mkey->key);
->         return 0;
->  }
->  EXPORT_SYMBOL(mlx5_core_create_mkey);
-> --
-> 2.26.0.rc1
->
-> --
+> > BTW - Fuego has a similar feature for naming a collection of test
+> > parameters with specific values (if I understand this proposed
+> > feature correctly).  Fuego's feature was named a long time ago
+> > (incorrectly, I think) and it continues to bug me to this day.
+> > It was named 'specs', and after giving it considerable thought
+> > I've been meaning to change it to 'variants'.
+> > 
+> > Just a suggestion for consideration.  The fact that Fuego got this
+> > wrong is what motivates my suggestion today.  You have to live
+> > with this kind of stuff a long time. :-)
+> > 
+> > We ran into some issues in Fuego with this concept, that motivate
+> > the comments below.  I'll use your 'instance' terminology in my comments
+> > although the terminology is different in Fuego.
+> > 
+> > > Also a change in reporting:
+> > > 
+> > > 	struct __fixture_params_metadata no_param = { .name = "", };
+> > > 
+> > > Let's make ".name = NULL" here, and then we can detect instantiation:
+> > > 
+> > > 	printf("[ RUN      ] %s%s%s.%s\n", f->name, p->name ? "." : "",
+> > > 				p->name ?: "", t->name);
+> 
+> Do I have to make it NULL or is it okay to test p->name[0] ?
+> That way we can save one ternary operator from the litany..
+
+I did consider Tim's idea of having them all say 'default', but since
+the bulk of tests aren't going to have variants, I don't want to spam
+the report with words I have to skip over.
+
+And empty-check (instead of NULL) is fine by me.
+
+> To me global.default.XYZ is a mouthful. so in my example (perhaps that
+> should have been part of the cover letter) I got:
+> 
+> [ RUN      ] global.keysizes             <= non-fixture test
+> [       OK ] global.keysizes             
+> [ RUN      ] tls_basic.base_base         <= fixture: "tls_basic", no params
+> [       OK ] tls_basic.base_base         
+> [ RUN      ] tls12.sendfile              <= fixture: "tls", param: "12"
+> [       OK ] tls12.sendfile                 
+> [ RUN      ] tls13.sendfile              <= fixture: "tls", param: "13"
+> [       OK ] tls13.sendfile                 (same fixture, diff param)
+> 
+> And users can start inserting underscores themselves if they really
+> want. (For TLS I was considering different ciphers but they don't impact
+> testing much.)
+
+The reason I'd like a dot is just for lay-person grep-ability and
+to avoid everyone needing to remember to add separator prefixes --
+there should just be a common one. e.g.  searching for "tls13" in the
+tree wouldn't find the test (since it's actually named "tls" and "13"
+is separate places). (I mean, sure, searching for "tls" is also insane,
+but I think I made my point.)
+
+-Kees
 
 -- 
-Thanks,
-~Nick Desaulniers
+Kees Cook
