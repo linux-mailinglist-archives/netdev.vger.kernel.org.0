@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D3FF71875FF
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 00:02:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 885D3187600
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 00:02:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732900AbgCPXCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 19:02:32 -0400
-Received: from mail-qv1-f73.google.com ([209.85.219.73]:51753 "EHLO
-        mail-qv1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732854AbgCPXCb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 19:02:31 -0400
-Received: by mail-qv1-f73.google.com with SMTP id j5so3332871qvo.18
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 16:02:31 -0700 (PDT)
+        id S1732905AbgCPXCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 19:02:37 -0400
+Received: from mail-vs1-f74.google.com ([209.85.217.74]:37014 "EHLO
+        mail-vs1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732846AbgCPXCg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 19:02:36 -0400
+Received: by mail-vs1-f74.google.com with SMTP id g7so112760vsg.4
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 16:02:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=hjXTbZ9IR5FA3dvQi37uICZa1G9fdsOo4rBuWdq92qw=;
-        b=qwJUVXEPuC/av1Jr0sqiVz+dvVWR6yLtkOMKn+flTD7aB7CQG6yiJ/1PIJyoL0Ow2+
-         eEFb461uilKdjKDq1ZOEMktszzk0+wCCwBBvCuPVkMWiM57mEKRLUrN/lAkaUPcBrxVP
-         SPJNhhDbjNCLIQgIsB+W28X4mslpv5JVYeDxJ1ZqVw93q8EHVPBDASFyaf1kh+KkD7sh
-         huO3BiC4If2cqTofHJlOtsRobJa0JKl481gpZykozFdCWA5uZtcbmNpmqmAJBaeoZPmg
-         BzgCUV+ewuB6MmrvWWFxVjhYD6+tizsuO8nz0mMAuPDUhgyFqjCLUXMpgU7p5b9COT9q
-         +lhQ==
+        bh=bWU1KUea0PGdJyaHhg5e5jGP5H6rVnCR+piA28aOiVQ=;
+        b=rB/P5L0E2j+fEkVZZSb1yB1WPOCy07BCtvETq1E73hMdku5l5H6Ah3MSFW4Xa2xAvK
+         uGCEQiLKxZPKTcga99CzqdlrpxTCkQeQ/9bTJ7pSINViOJ1YlZ1Yl3xunkWyH8STiQ3K
+         8cUOifVZKCMYWDnjy4D+KuKDbr4erL/dYBBreB7HDoHJnTlq94LreL9Uf3njlmqhu1uK
+         wFabW0sgs3TmCmhrJOunZD2mRnl9FsFcUQ6ZeX7mGqkhZWbpmtXxwN7G5NuLeBG5ASGj
+         lDw5wi7TScAH5InCxh48jE1uiHNU1/bCyeYIYiQVKV8hpUmhrwEV10U8jPFcyKwmKXh1
+         ADww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=hjXTbZ9IR5FA3dvQi37uICZa1G9fdsOo4rBuWdq92qw=;
-        b=qwr9rFvkhvVefA/e45Eoinc1+UVyXoL7NxUuR7EX7LNKYjWrncy/7XAUcbvg8HSs17
-         r0Akc7+zeouuy4VjAXp06RpRH80bLPh/cx+J746qCeryUP5FRNklt0LzBrMAKUjjm5bY
-         BHyxzi1IyJFuQTwMiDaTB8KFIUr6+PiNnEQAn/dhvJx8OEurupYx6RgNOenrjeE39EzS
-         LQUAUazlw1HoOf4J41EL95BNVFOcOPCnfgEWphO41NvIhJ53ny3C9UIZJl3gJpvAL5xe
-         DZJFwLWWXD3vAL8Ihuam2BKuayG9qtzbKwREDEW5fjJ9mWSNVR2zAzQmOT+FBoR2ZuTM
-         ijrw==
-X-Gm-Message-State: ANhLgQ2uvLSMXqBh4QSC1FcGxfkUcBSD9u9xU4cY+/qa73LD+OK8/H7y
-        CNTUJzllTGuFVxz0gShx/Qb0N9O5FoQUKw==
-X-Google-Smtp-Source: ADFU+vsL98/sif6rEpL0hnW/uy3HLU6a6UdwBP4G0OgurVHosmH3buDWW7Tp5p1HnY09B+3AIUC1+0DmKYwqnw==
-X-Received: by 2002:ac8:6f50:: with SMTP id n16mr2624102qtv.5.1584399750504;
- Mon, 16 Mar 2020 16:02:30 -0700 (PDT)
-Date:   Mon, 16 Mar 2020 16:02:21 -0700
+        bh=bWU1KUea0PGdJyaHhg5e5jGP5H6rVnCR+piA28aOiVQ=;
+        b=S1AIRuDtZ2h+3DGgslU+PH4Ly8YmKeB58G+TKdRZfJZrXvKbUTLnegcotBXaNzD5Kp
+         O1TEqXwhezisaW89rA5wLT9wN/5idlYpPNmV8PM1aMIbtjBSlGYDnDz2FMk6HCgWdVjI
+         GFsaz4gb8dBj9iU+/QTPlJkUVEfB9NBayRb9M7wl7I+1jgKBdofgRrd4akeI02QwhGUe
+         zkoDtpN6cgaeh9IPEGCUox/HsFE2KutY2/4LjGXAqJXXCl7+7Y6NMQLlwH0HZ56qlEvh
+         Uw1X3RXeUlAOI3T3EcZioy1rj4OPC3jonpTLDRITMR295blVh80/29Q31k4MJavmSkSO
+         neXQ==
+X-Gm-Message-State: ANhLgQ2jx2uQwihraJVaookRXq+h/FpYUepnLT2L6v8pIxbQPSf2zDNR
+        SNms4P1XpqXTv96kxcicXvqbDtG1sOZYhQ==
+X-Google-Smtp-Source: ADFU+vvn9qZH1/r8UQFzzEZZXap6Vumh9PiBo5sB0hp3X1k4t4f9TJfXJYM63IukSzF7zUh62syXG9uj+2iRHQ==
+X-Received: by 2002:a1f:abc7:: with SMTP id u190mr1888423vke.65.1584399753906;
+ Mon, 16 Mar 2020 16:02:33 -0700 (PDT)
+Date:   Mon, 16 Mar 2020 16:02:22 -0700
 In-Reply-To: <20200316230223.242532-1-edumazet@google.com>
-Message-Id: <20200316230223.242532-2-edumazet@google.com>
+Message-Id: <20200316230223.242532-3-edumazet@google.com>
 Mime-Version: 1.0
 References: <20200316230223.242532-1-edumazet@google.com>
 X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
-Subject: [PATCH net-next 1/3] net_sched: add qdisc_watchdog_schedule_range_ns()
+Subject: [PATCH net-next 2/3] net_sched: do not reprogram a timer about to expire
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
@@ -59,75 +59,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some packet schedulers might want to add a slack
-when programming hrtimers. This can reduce number
-of interrupts and increase batch sizes and thus
-give good xmit_more savings.
+qdisc_watchdog_schedule_range_ns() can use the newly added slack
+and avoid rearming the hrtimer a bit earlier than the current
+value. This patch has no effect if delta_ns parameter
+is zero.
 
-This commit adds qdisc_watchdog_schedule_range_ns()
-helper, with an extra delta_ns parameter.
-
-Legacy qdisc_watchdog_schedule_n() becomes an inline
-passing a zero slack.
+Note that this means the max slack is potentially doubled.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/net/pkt_sched.h | 10 +++++++++-
- net/sched/sch_api.c     | 12 +++++++-----
- 2 files changed, 16 insertions(+), 6 deletions(-)
+ net/sched/sch_api.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
-index 20d2c6419612fd4d35b0960456394ea69ced7e7d..9092e697059e775af307be69a879386ebfd9924f 100644
---- a/include/net/pkt_sched.h
-+++ b/include/net/pkt_sched.h
-@@ -75,7 +75,15 @@ struct qdisc_watchdog {
- void qdisc_watchdog_init_clockid(struct qdisc_watchdog *wd, struct Qdisc *qdisc,
- 				 clockid_t clockid);
- void qdisc_watchdog_init(struct qdisc_watchdog *wd, struct Qdisc *qdisc);
--void qdisc_watchdog_schedule_ns(struct qdisc_watchdog *wd, u64 expires);
-+
-+void qdisc_watchdog_schedule_range_ns(struct qdisc_watchdog *wd, u64 expires,
-+				      u64 delta_ns);
-+
-+static inline void qdisc_watchdog_schedule_ns(struct qdisc_watchdog *wd,
-+					      u64 expires)
-+{
-+	return qdisc_watchdog_schedule_range_ns(wd, expires, 0ULL);
-+}
- 
- static inline void qdisc_watchdog_schedule(struct qdisc_watchdog *wd,
- 					   psched_time_t expires)
 diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 50794125bf0240031c142045d09b429cf945029f..83984be04f57d93b4efc50bb9cf390b116101fdd 100644
+index 83984be04f57d93b4efc50bb9cf390b116101fdd..0d99df1e764db812f5dfc78a9c54832c0f676f70 100644
 --- a/net/sched/sch_api.c
 +++ b/net/sched/sch_api.c
-@@ -618,7 +618,8 @@ void qdisc_watchdog_init(struct qdisc_watchdog *wd, struct Qdisc *qdisc)
- }
- EXPORT_SYMBOL(qdisc_watchdog_init);
- 
--void qdisc_watchdog_schedule_ns(struct qdisc_watchdog *wd, u64 expires)
-+void qdisc_watchdog_schedule_range_ns(struct qdisc_watchdog *wd, u64 expires,
-+				      u64 delta_ns)
- {
- 	if (test_bit(__QDISC_STATE_DEACTIVATED,
+@@ -625,8 +625,13 @@ void qdisc_watchdog_schedule_range_ns(struct qdisc_watchdog *wd, u64 expires,
  		     &qdisc_root_sleeping(wd->qdisc)->state))
-@@ -628,11 +629,12 @@ void qdisc_watchdog_schedule_ns(struct qdisc_watchdog *wd, u64 expires)
  		return;
  
- 	wd->last_expires = expires;
--	hrtimer_start(&wd->timer,
--		      ns_to_ktime(expires),
--		      HRTIMER_MODE_ABS_PINNED);
-+	hrtimer_start_range_ns(&wd->timer,
-+			       ns_to_ktime(expires),
-+			       delta_ns,
-+			       HRTIMER_MODE_ABS_PINNED);
- }
--EXPORT_SYMBOL(qdisc_watchdog_schedule_ns);
-+EXPORT_SYMBOL(qdisc_watchdog_schedule_range_ns);
+-	if (wd->last_expires == expires)
+-		return;
++	if (hrtimer_is_queued(&wd->timer)) {
++		/* If timer is already set in [expires, expires + delta_ns],
++		 * do not reprogram it.
++		 */
++		if (wd->last_expires - expires <= delta_ns)
++			return;
++	}
  
- void qdisc_watchdog_cancel(struct qdisc_watchdog *wd)
- {
+ 	wd->last_expires = expires;
+ 	hrtimer_start_range_ns(&wd->timer,
 -- 
 2.25.1.481.gfbce0eb801-goog
 
