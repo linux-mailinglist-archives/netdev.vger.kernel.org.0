@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9011F187430
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 21:47:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9086D187431
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 21:47:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732567AbgCPUrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 16:47:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58324 "EHLO mail.kernel.org"
+        id S1732578AbgCPUrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 16:47:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58350 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732537AbgCPUrV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Mar 2020 16:47:21 -0400
+        id S1732537AbgCPUrW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Mar 2020 16:47:22 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6624320674;
-        Mon, 16 Mar 2020 20:47:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2FD01206C0;
+        Mon, 16 Mar 2020 20:47:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584391641;
-        bh=j+t3U+mxMP+S4OM6a2aCZFOwzMo+0Q34ddVd4pi1S9o=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bjaufaktFtwXGaEQVESjvQXb+RCgdDElqcfJDK7KUkdzQA7k4qLUbglf0MHJQ5jmL
-         eZTfYvBf2LyJ5+HWnJNIkPoMa3/irxlASaIoNYDIqFwVAkoSAVsSM6xb1KA+V89kye
-         lyGsp8P3CYL/tID8Fszjy3nnmDC9JuhlLjHvMReg=
+        s=default; t=1584391642;
+        bh=euIWzGNH9+S/ctmKpMSkTr1QPPfHc+OCzxezSmAGOrU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eWlQMC6fjfJGA+6YIvXDSm5FVeU/DhHRzEesbtoBrrBqzljV3yEluyncqXWivpk2R
+         ojOOefF1JbiqtSIJjWR/6y3Zidq/rVbdpwGospCQlQK0Ddd177kvWipR9q+MRXKBtV
+         lzNu4AfiwgNUzMf1h8r5MjI85iriuNTd3i+ScQIA=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-net-drivers@solarflare.com,
@@ -32,10 +32,12 @@ Cc:     netdev@vger.kernel.org, linux-net-drivers@solarflare.com,
         grygorii.strashko@ti.com, andrew@lunn.ch, michal.simek@xilinx.com,
         radhey.shyam.pandey@xilinx.com, mkubecek@suse.cz,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 0/9] ethtool: consolidate irq coalescing - last part
-Date:   Mon, 16 Mar 2020 13:47:03 -0700
-Message-Id: <20200316204712.3098382-1-kuba@kernel.org>
+Subject: [PATCH net-next 1/9] net: sfc: reject unsupported coalescing params
+Date:   Mon, 16 Mar 2020 13:47:04 -0700
+Message-Id: <20200316204712.3098382-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200316204712.3098382-1-kuba@kernel.org>
+References: <20200316204712.3098382-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -43,50 +45,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+Set ethtool_ops->supported_coalesce_params to let
+the core reject unsupported coalescing parameters.
 
-Convert remaining drivers following the groundwork laid in a recent
-patch set [1] and continued in [2], [3], [4], [5]. The aim of
-the effort is to consolidate irq coalescing parameter validation
-in the core.
+This driver did not previously reject unsupported parameters.
+The check for use_adaptive_tx_coalesce will now be done by
+the core.
 
-This set is the sixth and last installment. It converts the remaining
-8 drivers in drivers/net/ethernet. The last patch makes declaring
-supported IRQ coalescing parameters a requirement.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/sfc/ethtool.c        | 6 +++---
+ drivers/net/ethernet/sfc/falcon/ethtool.c | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-[1] https://lore.kernel.org/netdev/20200305051542.991898-1-kuba@kernel.org/
-[2] https://lore.kernel.org/netdev/20200306010602.1620354-1-kuba@kernel.org/
-[3] https://lore.kernel.org/netdev/20200310021512.1861626-1-kuba@kernel.org/
-[4] https://lore.kernel.org/netdev/20200311223302.2171564-1-kuba@kernel.org/
-[5] https://lore.kernel.org/netdev/20200313040803.2367590-1-kuba@kernel.org/
-
-Jakub Kicinski (9):
-  net: sfc: reject unsupported coalescing params
-  net: socionext: reject unsupported coalescing params
-  net: dwc-xlgmac: let core reject the unsupported coalescing parameters
-  net: tehuti: reject unsupported coalescing params
-  net: cpsw: reject unsupported coalescing params
-  net: davinci_emac: reject unsupported coalescing params
-  net: ll_temac: let core reject the unsupported coalescing parameters
-  net: axienet: let core reject the unsupported coalescing parameters
-  net: ethtool: require drivers to set supported_coalesce_params
-
- drivers/net/ethernet/sfc/ethtool.c            |  6 ++---
- drivers/net/ethernet/sfc/falcon/ethtool.c     |  6 ++---
- drivers/net/ethernet/socionext/netsec.c       |  2 ++
- .../ethernet/synopsys/dwc-xlgmac-ethtool.c    | 17 ++------------
- drivers/net/ethernet/tehuti/tehuti.c          |  2 ++
- drivers/net/ethernet/ti/cpsw.c                |  1 +
- drivers/net/ethernet/ti/cpsw_new.c            |  1 +
- drivers/net/ethernet/ti/davinci_emac.c        |  1 +
- drivers/net/ethernet/xilinx/ll_temac_main.c   | 21 ++----------------
- .../net/ethernet/xilinx/xilinx_axienet_main.c | 22 +------------------
- include/linux/ethtool.h                       |  2 ++
- net/core/dev.c                                |  4 ++++
- net/ethtool/common.c                          | 11 ++++++++++
- net/ethtool/ioctl.c                           |  3 ---
- 14 files changed, 35 insertions(+), 64 deletions(-)
-
+diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/ethtool.c
+index 9a637cd67f43..04e88d05e8ff 100644
+--- a/drivers/net/ethernet/sfc/ethtool.c
++++ b/drivers/net/ethernet/sfc/ethtool.c
+@@ -232,9 +232,6 @@ static int efx_ethtool_set_coalesce(struct net_device *net_dev,
+ 	bool adaptive, rx_may_override_tx;
+ 	int rc;
+ 
+-	if (coalesce->use_adaptive_tx_coalesce)
+-		return -EINVAL;
+-
+ 	efx_get_irq_moderation(efx, &tx_usecs, &rx_usecs, &adaptive);
+ 
+ 	if (coalesce->rx_coalesce_usecs != rx_usecs)
+@@ -1138,6 +1135,9 @@ static int efx_ethtool_set_fecparam(struct net_device *net_dev,
+ }
+ 
+ const struct ethtool_ops efx_ethtool_ops = {
++	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
++				     ETHTOOL_COALESCE_USECS_IRQ |
++				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
+ 	.get_drvinfo		= efx_ethtool_get_drvinfo,
+ 	.get_regs_len		= efx_ethtool_get_regs_len,
+ 	.get_regs		= efx_ethtool_get_regs,
+diff --git a/drivers/net/ethernet/sfc/falcon/ethtool.c b/drivers/net/ethernet/sfc/falcon/ethtool.c
+index 08bd6a321918..db90d94e24c9 100644
+--- a/drivers/net/ethernet/sfc/falcon/ethtool.c
++++ b/drivers/net/ethernet/sfc/falcon/ethtool.c
+@@ -603,9 +603,6 @@ static int ef4_ethtool_set_coalesce(struct net_device *net_dev,
+ 	bool adaptive, rx_may_override_tx;
+ 	int rc;
+ 
+-	if (coalesce->use_adaptive_tx_coalesce)
+-		return -EINVAL;
+-
+ 	ef4_get_irq_moderation(efx, &tx_usecs, &rx_usecs, &adaptive);
+ 
+ 	if (coalesce->rx_coalesce_usecs != rx_usecs)
+@@ -1311,6 +1308,9 @@ static int ef4_ethtool_get_module_info(struct net_device *net_dev,
+ }
+ 
+ const struct ethtool_ops ef4_ethtool_ops = {
++	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
++				     ETHTOOL_COALESCE_USECS_IRQ |
++				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
+ 	.get_drvinfo		= ef4_ethtool_get_drvinfo,
+ 	.get_regs_len		= ef4_ethtool_get_regs_len,
+ 	.get_regs		= ef4_ethtool_get_regs,
 -- 
 2.24.1
 
