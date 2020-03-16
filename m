@@ -2,86 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E72F186319
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 03:42:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 255AD186363
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 03:47:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730491AbgCPCkJ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 15 Mar 2020 22:40:09 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:52376 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730479AbgCPCkE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 Mar 2020 22:40:04 -0400
-Received: by mail-il1-f199.google.com with SMTP id d2so12630591ilf.19
-        for <netdev@vger.kernel.org>; Sun, 15 Mar 2020 19:40:03 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to:content-transfer-encoding;
-        bh=G7pIHMXafOLm3F/2/i2LvBMFMIvTzROgcOUTWFn2X6I=;
-        b=kv8DPgUHxTyqaz4+9wS8NRVYeH/uVR+zUX9OIgDZ12oCGPAxw7xVs5u8PoWxQnUGq9
-         xqo/I12qNs45St4dCew4uyzcqygNVjX2FxdKI58JQsoBKUph8GJxxciho9zv7lDCO6iM
-         ZYN4vZFPHgxgALME6qeKG/6n3lW7unZdV74NtmHyTL+1Izwdy0GQpfWeXKHInW3uRoOf
-         iIBxS2wyMTWINR1OnUh2qJGXXX0kFo6yj7cuTKGN1ArB62je3cX0KWZcFDxGLugkkSx+
-         0nIbdWKK/AwY3rsIEY/0cQ5mP4XrDa5xamm0xvzLRiBGndYHG3a6xohridmP9nknLoRI
-         VJFA==
-X-Gm-Message-State: ANhLgQ2K9MiyukR79a/Y6Faq+NV8n73jaB7xIVLU1HnklYAgjhHqWcEd
-        /jaqgWRZezjKoBROWm/XCNuE0FdIIdGKF8v6/fVqnnH2cUV2
-X-Google-Smtp-Source: ADFU+vsoZxccOxRhbL4Y/MIwgxSx220g7zIbktYsAfwneEMRwc/N8lW0/7POXMyHaJ8GuPRqszlVeuTTjg5as1yqhzbhVmbrzHSZ
+        id S1729515AbgCPCro (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 Mar 2020 22:47:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49962 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729348AbgCPCro (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 15 Mar 2020 22:47:44 -0400
+Received: from dragon (80.251.214.228.16clouds.com [80.251.214.228])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 95EA02051A;
+        Mon, 16 Mar 2020 02:47:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584326863;
+        bh=2+qcIOCOkKHZNw4l4h7nefYzKid9thmlUS+TXFtvQ5U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=uLczIeoOq59Jz02rRHZvUWao/SCC5s6iUN2NnBAjGYYCV7VwdGlLthl9Ic3mzsjQz
+         az36797F0eejGPaBJCqYq9bcpO14f+epnG48RGUYPMLFjlg4RFnjbR589tn0ftHtcV
+         4J2+YDwm1eZD+RDXWivRF0MWbgvp6U9H5N4Ns8jI=
+Date:   Mon, 16 Mar 2020 10:47:36 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>, netdev@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH v2 0/2] properly define some of PHYs
+Message-ID: <20200316024735.GB17221@dragon>
+References: <20200313102534.5438-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:3dd:: with SMTP id r29mr2463944jaq.94.1584326403449;
- Sun, 15 Mar 2020 19:40:03 -0700 (PDT)
-Date:   Sun, 15 Mar 2020 19:40:03 -0700
-In-Reply-To: <000000000000bdb5b2059c865f5c@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007c695f05a0efbc52@google.com>
-Subject: Re: KASAN: slab-out-of-bounds Read in bitmap_ip_ext_cleanup
-From:   syzbot <syzbot+6491ea8f6dddbf04930e@syzkaller.appspotmail.com>
-To:     a@unstable.cc, akpm@linux-foundation.org, allison@lohutok.net,
-        arnd@arndb.de, axboe@kernel.dk, b.a.t.m.a.n@lists.open-mesh.org,
-        bp@alien8.de, catalin.marinas@arm.com, chris@zankel.net,
-        christian.brauner@ubuntu.com, christian@brauner.io,
-        coreteam@netfilter.org, dan.carpenter@oracle.com,
-        davem@davemloft.net, elena.reshetova@intel.com,
-        florent.fourcot@wifirst.fr, fw@strlen.de, geert@linux-m68k.org,
-        hare@suse.com, heiko.carstens@de.ibm.com, hpa@zytor.com,
-        info@drgreenstore.com, info@metux.net, jcmvbkbc@gmail.com,
-        jeremy@azazel.net, johannes.berg@intel.com,
-        kadlec@blackhole.kfki.hu, kadlec@netfilter.org,
-        linux-api@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-xtensa@linux-xtensa.org,
-        linux@armlinux.org.uk, mareklindner@neomailbox.ch,
-        mingo@redhat.com, netdev@vger.kernel.org,
-        netfilter-core-owner@lists.netfilter.org,
-        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        peterz@infradead.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        viro@zeniv.linux.org.uk, will@kernel.org, x86@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200313102534.5438-1-o.rempel@pengutronix.de>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this bug was fixed by commit:
+On Fri, Mar 13, 2020 at 11:25:32AM +0100, Oleksij Rempel wrote:
+> changes v3:
+> - add phy-handle on the marsboard
+> 
+> changes v2:
+> - remove spaces
+> 
+> Oleksij Rempel (2):
+>   ARM: dts: imx6dl-riotboard: properly define rgmii PHY
+>   ARM: dts: imx6q-marsboard: properly define rgmii PHY
 
-commit 32c72165dbd0e246e69d16a3ad348a4851afd415
-Author: Kadlecsik József <kadlec@blackhole.kfki.hu>
-Date:   Sun Jan 19 21:06:49 2020 +0000
-
-    netfilter: ipset: use bitmap infrastructure completely
-
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16b8e545e00000
-start commit:   d96d875e Merge tag 'fixes_for_v5.5-rc8' of git://git.kerne..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cf8e288883e40aba
-dashboard link: https://syzkaller.appspot.com/bug?extid=6491ea8f6dddbf04930e
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=126748d6e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1385f959e00000
-
-If the result looks correct, please mark the bug fixed by replying with:
-
-#syz fix: netfilter: ipset: use bitmap infrastructure completely
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Applied both, thanks.
