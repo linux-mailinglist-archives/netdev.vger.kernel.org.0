@@ -2,101 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24A9D1865B1
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 08:29:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90DAE1865DD
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 08:49:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729745AbgCPH30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 03:29:26 -0400
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:39881 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729582AbgCPH30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 03:29:26 -0400
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id B2170891AD;
-        Mon, 16 Mar 2020 20:29:21 +1300 (NZDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1584343761;
-        bh=6/Yhqp19M+yds+hz4CupW64wOVNXV7hqNXWPcJyyrTo=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To;
-        b=JF3JUlcfUyANbpc159tRbJKrhEwJgdXOzDRsWU76ejS0U2yWgjsUER/PkFNjbM+Xy
-         i3bMOxW8UbUJxLYBnGNKhbDeb18YMmH70A4uZ98O5dlF+9ykGP3lRul/1B14WUwH3P
-         RxKLMxod1qP/i5CF6YMRDf/irDX45pX8DAfbrhOMBTCbOwQgKL3G/rn8OBDxtibFtF
-         XQ8i04fvPMT4AegTociH5+CF4X9p8T64o7pzjo58OmoJpATTKNQPR+NJIUqaAW/CQe
-         0xcxgSShJlWpWFclfjmO2Hzjz7Apsp6VBC72K5GLDYEjvSxIu0wTC8GkfCB8jqsF2S
-         2lf0cUQKGy9Vg==
-Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5e6f2ad10001>; Mon, 16 Mar 2020 20:29:21 +1300
-Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
- svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
- (TLS) id 15.0.1497.2; Mon, 16 Mar 2020 20:29:20 +1300
-Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
- svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
- 15.00.1497.006; Mon, 16 Mar 2020 20:29:20 +1300
-From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "josua@solid-run.com" <josua@solid-run.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] net: mvmdio: avoid error message for optional IRQ
-Thread-Topic: [PATCH v2] net: mvmdio: avoid error message for optional IRQ
-Thread-Index: AQHV9+B2ZGst8pFaOk2XUMzXhPXGHqhJ/4cA
-Date:   Mon, 16 Mar 2020 07:29:20 +0000
-Message-ID: <63905ad2134b4d19cb274c9e082a9326a07991ac.camel@alliedtelesis.co.nz>
-References: <20200311200546.9936-1-chris.packham@alliedtelesis.co.nz>
-In-Reply-To: <20200311200546.9936-1-chris.packham@alliedtelesis.co.nz>
-Accept-Language: en-NZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.32.14.96]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <CFB33A6EA81CA1409524B0401684FEF1@atlnz.lc>
-Content-Transfer-Encoding: base64
+        id S1729921AbgCPHtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 03:49:03 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:51349 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729662AbgCPHtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 03:49:03 -0400
+Received: by mail-io1-f72.google.com with SMTP id d1so8131737iod.18
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 00:49:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=ouibFrPDWjCxL4FEpaUkFRuLLdmqeyOHLoLDagTo38s=;
+        b=bRPP14BcllzYfNducdHgIK/+bRLo3rSe6qeaJgBPSxddsiWwM+nxJ9nm+u42daSZqw
+         4BexhupiLW6Fz7cIwfM6g6HymSB16KDhNmjf7Eim3S9j2ChTtM3Ja/nIRHvIVaZOZ6gK
+         drnWQxVFGOksgI0SOvV4HqwGsWIQnqY93TXY/kuxTCe0ozi3zEIn0PD2jkFvO2+DnmbG
+         ylgjnAOgGfcUvB7n+n/1P2Nvfl+mSMZaaCVcacCrpfh86lkFVkhE79xsCN4csGqTezZn
+         l0O6cSZX5+P1tG/0wXNfI2mBUDG6LwOkLoZYI3w50KboCdLgQF8dJOVLjAmSwmMVQRrS
+         XkQA==
+X-Gm-Message-State: ANhLgQ1sdjJetD7A5/EdRf2eT2Qqy9J67HWG2p0U7XmXzEQEfdHDFaBh
+        qKGrpqNSSd0eXBVKgXnlK8t2m7MlbBzBB/vjsOpt4GS1YlGH
+X-Google-Smtp-Source: ADFU+vuDRuPOxa1IDImesiTPozC5o7HpVN8zsZ8bX3G8vsFE+prdAIwJ0Rw4kazKiRUzVPk45zL965SLV5YZQfZX51CMEkoS3u30
 MIME-Version: 1.0
+X-Received: by 2002:a6b:dd14:: with SMTP id f20mr22452258ioc.32.1584344942619;
+ Mon, 16 Mar 2020 00:49:02 -0700 (PDT)
+Date:   Mon, 16 Mar 2020 00:49:02 -0700
+In-Reply-To: <000000000000c08f2005a0ed60d4@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000081b1df05a0f40d13@google.com>
+Subject: Re: general protection fault in erspan_netlink_parms
+From:   syzbot <syzbot+1b4ebf4dae4e510dd219@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        petrm@mellanox.com, syzkaller-bugs@googlegroups.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDIwLTAzLTEyIGF0IDA5OjA1ICsxMzAwLCBDaHJpcyBQYWNraGFtIHdyb3RlOg0K
-PiBQZXIgdGhlIGR0LWJpbmRpbmcgdGhlIGludGVycnVwdCBpcyBvcHRpb25hbCBzbyB1c2UNCj4g
-cGxhdGZvcm1fZ2V0X2lycV9vcHRpb25hbCgpIGluc3RlYWQgb2YgcGxhdGZvcm1fZ2V0X2lycSgp
-LiBTaW5jZQ0KPiBjb21taXQgNzcyM2Y0YzVlY2RiICgiZHJpdmVyIGNvcmU6IHBsYXRmb3JtOiBB
-ZGQgYW4gZXJyb3IgbWVzc2FnZSB0bw0KPiBwbGF0Zm9ybV9nZXRfaXJxKigpIikgcGxhdGZvcm1f
-Z2V0X2lycSgpIHByb2R1Y2VzIGFuIGVycm9yIG1lc3NhZ2UNCj4gDQo+ICAgb3Jpb24tbWRpbyBm
-MTA3MjAwNC5tZGlvOiBJUlEgaW5kZXggMCBub3QgZm91bmQNCj4gDQo+IHdoaWNoIGlzIHBlcmZl
-Y3RseSBub3JtYWwgaWYgb25lIGhhc24ndCBzcGVjaWZpZWQgdGhlIG9wdGlvbmFsDQo+IHByb3Bl
-cnR5DQo+IGluIHRoZSBkZXZpY2UgdHJlZS4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IENocmlzIFBh
-Y2toYW0gPGNocmlzLnBhY2toYW1AYWxsaWVkdGVsZXNpcy5jby5uej4NCj4gUmV2aWV3ZWQtYnk6
-IEFuZHJldyBMdW5uIDxhbmRyZXdAbHVubi5jaD4NCj4gLS0tDQo+IA0KPiBOb3RlczoNCj4gICAg
-IENoYW5nZXMgaW4gdjI6DQo+ICAgICAtIEFkZCByZXZpZXcgZnJvbSBBbmRyZXcNCj4gICAgIC0g
-Q2xlYW4gdXAgZXJyb3IgaGFuZGxpbmcgY2FzZQ0KPiANCj4gIGRyaXZlcnMvbmV0L2V0aGVybmV0
-L21hcnZlbGwvbXZtZGlvLmMgfCA2ICsrKy0tLQ0KPiAgMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0
-aW9ucygrKSwgMyBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9l
-dGhlcm5ldC9tYXJ2ZWxsL212bWRpby5jDQo+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFydmVs
-bC9tdm1kaW8uYw0KPiBpbmRleCAwYjllODUxZjNkYTQuLmQyZTJkYzUzODQyOCAxMDA2NDQNCj4g
-LS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFydmVsbC9tdm1kaW8uYw0KPiArKysgYi9kcml2
-ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxsL212bWRpby5jDQo+IEBAIC0zNDcsNyArMzQ3LDcgQEAg
-c3RhdGljIGludCBvcmlvbl9tZGlvX3Byb2JlKHN0cnVjdA0KPiBwbGF0Zm9ybV9kZXZpY2UgKnBk
-ZXYpDQo+ICAJfQ0KPiAgDQo+ICANCj4gLQlkZXYtPmVycl9pbnRlcnJ1cHQgPSBwbGF0Zm9ybV9n
-ZXRfaXJxKHBkZXYsIDApOw0KPiArCWRldi0+ZXJyX2ludGVycnVwdCA9IHBsYXRmb3JtX2dldF9p
-cnFfb3B0aW9uYWwocGRldiwgMCk7DQo+ICAJaWYgKGRldi0+ZXJyX2ludGVycnVwdCA+IDAgJiYN
-Cj4gIAkgICAgcmVzb3VyY2Vfc2l6ZShyKSA8IE1WTURJT19FUlJfSU5UX01BU0sgKyA0KSB7DQo+
-ICAJCWRldl9lcnIoJnBkZXYtPmRldiwNCj4gQEAgLTM2NCw4ICszNjQsOCBAQCBzdGF0aWMgaW50
-IG9yaW9uX21kaW9fcHJvYmUoc3RydWN0DQo+IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4gIAkJ
-d3JpdGVsKE1WTURJT19FUlJfSU5UX1NNSV9ET05FLA0KPiAgCQkJZGV2LT5yZWdzICsgTVZNRElP
-X0VSUl9JTlRfTUFTSyk7DQo+ICANCj4gLQl9IGVsc2UgaWYgKGRldi0+ZXJyX2ludGVycnVwdCA9
-PSAtRVBST0JFX0RFRkVSKSB7DQo+IC0JCXJldCA9IC1FUFJPQkVfREVGRVI7DQo+ICsJfSBlbHNl
-IGlmIChkZXYtPmVycl9pbnRlcnJ1cHQgPCAwKSB7DQo+ICsJCXJldCA9IGRldi0+ZXJyX2ludGVy
-cnVwdDsNCj4gIAkJZ290byBvdXRfbWRpbzsNCj4gIAl9DQoNCkFjdHVhbGx5IG9uIGNsb3NlciBp
-bnNwZWN0aW9uIEkgdGhpbmsgdGhpcyBpcyB3cm9uZy4NCnBsYXRmb3JtX2dldF9pcnFfb3B0aW9u
-YWwoKSB3aWxsIHJldHVybiAtRU5YSU8gaWYgdGhlIGlycSBpcyBub3QNCnNwZWNpZmllZC4NCg0K
-U28gSSB0aGluayB2MSB3YXMgdGhlIGNvcnJlY3QgcGF0Y2ggYW5kIHRoZSBleHRyYSBjbGVhbnVw
-IGluIHYyIGlzDQp3cm9uZy4NCg0KRGF2ZSwNCg0KRG8geW91IHdhbnQgbWUgdG8gc2VuZCBhIHJl
-dmVydCBhbmQgcmUtc2VuZCB2MT8NCg==
+syzbot has bisected this bug to:
+
+commit e1f8f78ffe9854308b9e12a73ebe4e909074fc33
+Author: Petr Machata <petrm@mellanox.com>
+Date:   Fri Mar 13 11:39:36 2020 +0000
+
+    net: ip_gre: Separate ERSPAN newlink / changelink callbacks
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=101477fde00000
+start commit:   0fda7600 geneve: move debug check after netdev unregister
+git tree:       net
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=121477fde00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=141477fde00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c2e311dba9a02ba9
+dashboard link: https://syzkaller.appspot.com/bug?extid=1b4ebf4dae4e510dd219
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1627f955e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=111ac52de00000
+
+Reported-by: syzbot+1b4ebf4dae4e510dd219@syzkaller.appspotmail.com
+Fixes: e1f8f78ffe98 ("net: ip_gre: Separate ERSPAN newlink / changelink callbacks")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
