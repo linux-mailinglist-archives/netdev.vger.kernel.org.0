@@ -2,126 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 412FE186F4A
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 16:51:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52343186F48
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 16:51:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732135AbgCPPvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 11:51:35 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:43568 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732059AbgCPPvG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 11:51:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584373864;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=E437h4AXVPurdxkEZm+wlXmFwURlSgsNRNuhrB2sfJw=;
-        b=M0LSdkNnZy1sLx7OIVZ9moPfwCQGJkJqQ0a/IJaG7JLkQr3fRNuynbCJTSergx0LwG+OWj
-        80OHvNgiQgLQ9M5qXkuWiyaK+QkMKTY6+O32roRerG5IdSiS9hDpO1yS+sd/qq83NhvxxF
-        0KQtoCUSDop37MAySSI93qAaEdvmDh4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-345-t_Yyfeu5NZWwneY33GaOgw-1; Mon, 16 Mar 2020 11:44:44 -0400
-X-MC-Unique: t_Yyfeu5NZWwneY33GaOgw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1732116AbgCPPv0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 11:51:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50956 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731989AbgCPPvZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Mar 2020 11:51:25 -0400
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A6668144D8C;
-        Mon, 16 Mar 2020 15:44:42 +0000 (UTC)
-Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 44B348FBF9;
-        Mon, 16 Mar 2020 15:44:37 +0000 (UTC)
-Date:   Mon, 16 Mar 2020 16:44:35 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Denis Kirjanov <kda@linux-powerpc.org>
-Cc:     brouer@redhat.com, netdev@vger.kernel.org, jgross@suse.com,
-        ilias.apalodimas@linaro.org, wei.liu@kernel.org, paul@xen.org
-Subject: Re: [PATCH net-next v4] xen networking: add basic XDP support for
- xen-netfront
-Message-ID: <20200316164435.27751dbf@carbon>
-In-Reply-To: <1584364176-23346-1-git-send-email-kda@linux-powerpc.org>
-References: <1584364176-23346-1-git-send-email-kda@linux-powerpc.org>
+        by mail.kernel.org (Postfix) with ESMTPSA id CD4EA2071C;
+        Mon, 16 Mar 2020 15:51:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584373885;
+        bh=smYlIIlYR5FV3SifVHQI+MBbv/xwX8LecTo18P0xOfY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ICscU/9IsUDyRnvuS0ebSl0/HD0xCUkCBtlOPvFr6ovjChwH81Gyz6hIPmNAE51dF
+         keL5Er7uv/qmx/F85nUGV7zfjwgiFy6ySXiOA807h+MO9hxashewgNyLcmd1RZRc9Z
+         udeSSEHS05e0nb4Lp2G7rWBlAMYC7XeU7nMj6F6M=
+Date:   Mon, 16 Mar 2020 15:51:19 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>,
+        ardb@kernel.org, davem@davemloft.net, guohanjun@huawei.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        mingo@kernel.org, netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Subject: Re: WARNING: refcount bug in sctp_wfree
+Message-ID: <20200316155119.GB13004@willie-the-truck>
+References: <00000000000088452f05a07621d2@google.com>
+ <000000000000cc985b05a07ce36f@google.com>
+ <202003100900.1E2E399@keescook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202003100900.1E2E399@keescook>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Mar 2020 16:09:36 +0300
-Denis Kirjanov <kda@linux-powerpc.org> wrote:
+On Tue, Mar 10, 2020 at 09:01:18AM -0700, Kees Cook wrote:
+> On Tue, Mar 10, 2020 at 02:39:01AM -0700, syzbot wrote:
+> > syzbot has bisected this bug to:
+> > 
+> > commit fb041bb7c0a918b95c6889fc965cdc4a75b4c0ca
+> > Author: Will Deacon <will@kernel.org>
+> > Date:   Thu Nov 21 11:59:00 2019 +0000
+> > 
+> >     locking/refcount: Consolidate implementations of refcount_t
+> 
+> I suspect this is just bisecting to here because it made the refcount
+> checks more strict?
 
-> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-> index 482c6c8..c06ae57 100644
-> --- a/drivers/net/xen-netfront.c
-> +++ b/drivers/net/xen-netfront.c
-[...]
-> @@ -778,6 +790,52 @@ static int xennet_get_extras(struct netfront_queue *queue,
->  	return err;
->  }
->  
-> +u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
-> +		   struct xen_netif_rx_response *rx, struct bpf_prog *prog,
-> +		   struct xdp_buff *xdp)
-> +{
-> +	struct xdp_frame *xdpf;
-> +	u32 len = rx->status;
-> +	u32 act = XDP_PASS;
-> +	int err;
-> +
-> +	xdp->data_hard_start = page_address(pdata);
-> +	xdp->data = xdp->data_hard_start + XDP_PACKET_HEADROOM;
-> +	xdp_set_data_meta_invalid(xdp);
-> +	xdp->data_end = xdp->data + len;
-> +	xdp->rxq = &queue->xdp_rxq;
-> +	xdp->handle = 0;
-> +
-> +	act = bpf_prog_run_xdp(prog, xdp);
-> +	switch (act) {
-> +	case XDP_TX:
-> +		xdpf = convert_to_xdp_frame(xdp);
-> +		err = xennet_xdp_xmit(queue->info->netdev, 1,
-> +				&xdpf, 0);
+Yes, this is the commit that enables full refcount checking for all
+architectures unconditionally, so it's the canary in the coalmine rather
+than the source of the problem.
 
-Strange line wrap, I don't think this is needed, please fix.
-
-
-> +		if (unlikely(err < 0))
-> +			trace_xdp_exception(queue->info->netdev, prog, act);
-> +		break;
-> +	case XDP_REDIRECT:
-> +		err = xdp_do_redirect(queue->info->netdev, xdp, prog);
-
-What is the frame size of the packet memory?
-
-
-> +		if (unlikely(err))
-> +			trace_xdp_exception(queue->info->netdev, prog, act);
-> +		xdp_do_flush();
-> +		break;
-> +	case XDP_PASS:
-> +	case XDP_DROP:
-> +		break;
-> +
-> +	case XDP_ABORTED:
-> +		trace_xdp_exception(queue->info->netdev, prog, act);
-> +		break;
-> +
-> +	default:
-> +		bpf_warn_invalid_xdp_action(act);
-> +	}
-> +
-> +	return act;
-> +}
-> +
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Will
