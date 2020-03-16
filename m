@@ -2,102 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75FA7187584
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 23:25:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F4A5187588
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 23:29:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732816AbgCPWZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 18:25:24 -0400
-Received: from mail-pg1-f201.google.com ([209.85.215.201]:33487 "EHLO
-        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732652AbgCPWZY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 18:25:24 -0400
-Received: by mail-pg1-f201.google.com with SMTP id 33so10631481pgn.0
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 15:25:22 -0700 (PDT)
+        id S1732739AbgCPW27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 18:28:59 -0400
+Received: from mail-qv1-f49.google.com ([209.85.219.49]:46418 "EHLO
+        mail-qv1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732652AbgCPW27 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 18:28:59 -0400
+Received: by mail-qv1-f49.google.com with SMTP id m2so9806042qvu.13
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 15:28:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=CDSTXSoz8JLvnbI4Rvpwb3UtnFj/UPBOq4cipKiHAa8=;
-        b=mfudS3gFLjCVkxeKqKuIti5kPRwYSFzRUQXaEKSHT2SBuaKTMjz4B2nEV0DChQ09hs
-         jSStQPdDtrxV/y9xuUa4fv0Vqi0LjNFMjlXKBMfWhmZ914PhJowPNwAAZQhvfgjJwVCD
-         3CuKszPZEhXOVFK+RYTRwlW8lXDHKZsua/wTvL0umNojwdAncQOeQHYO+KT//TjLcilb
-         Y4TsaV1va7HT4Z9CZrCMDxVbXkQdALo30MEPdokZ3wHKdvVu/jWllq2ieItEXavSYc+y
-         PAEyGtKkZyqTAAl+lvSIMbzAOAddDp9Cwq68S8V+ZIfLE8Ks8GSEowoDFHFo75Q3LKEw
-         y2mw==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=74WFqqU8UvNSiPHo/92yGfDiCTDjTz6Bkk/bwSwNsVk=;
+        b=xwT/Jf0k9rLNKVBxgCugI7IPnT9ir8UWZBnqTSy6MkRviKmNrRijLPFwKkaUjprAkY
+         4AEZAReipahFck33hAag2JBi+4L1b4tChIuFY1Kb8SA9eXWDcPH8hpSOnFIF2k1hoflG
+         pr/EHJysC47s3vrd+hvX0gEcP5UD+9ucwIdP29CJ99HvvWh3lxmUMcGZoweLKJ0aKqd/
+         tLa3q7pt6q8sM8SZg+2jr+ePJhz65Xm+CABUEV2+dnG8iB3flHSDvfjlO1Pwp3SYVKez
+         ExlAq7sw4mxqEBYxm/PwGQnRYXrWD8R2or+Y4SaPB+rsxUF2LrBLG1MowBWMlvfG2bpU
+         X1Eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=CDSTXSoz8JLvnbI4Rvpwb3UtnFj/UPBOq4cipKiHAa8=;
-        b=XeXI9/E4QQjyVGbhQ7A/3KEp9A9V0n/Cm3pZZYG9wNcbTuYv+tjTkOBUofcIxrnRgJ
-         efClttdy4Cww3ti8eL7S0vu5b61Kjk64a38hsMRtLYqtiQSMEtOhUldIggQnuJOJSZJA
-         IAM3tvoKB7hlOL/QBszxjDMmxjl/4vjBt8T06XBFAUxiELevsB301iTvCfMV9HXvhCI1
-         Q+hVJUKMgdTxw30myPGPkHon4OzEEFXCR+pYNvkdR2F6jTqeusa1q9EF9ewoxWQWnqRB
-         clRqU+d6w+TRt7oA9H8TIZT5MROhke8tQ7XnhvS50WeK8y7uLE1d0EBvsyOSi15FXJLK
-         M0bg==
-X-Gm-Message-State: ANhLgQ1RhSvReE7VrA4vO3RmWwOmiVeE890mLO9+cpv146HsH0VFwQOy
-        KG4M0WjciowMUXZE/aT0ueWEo/0Lcevv83+AZpsZSneq7anmT5Xrbd02zzmGy/9RUjUxkERiv64
-        AmKM4yGPti1eTa2A6+PIoiqpEBxakgbDTNl1BXOmHTcsRrbah1OD10g==
-X-Google-Smtp-Source: ADFU+vtg+o9KJH/sNGo1ZSxUm97WYU4MunF3koiZCvSAQPSsFPYxKlf2EL51qt/hdH3VSOSoTO5/z+s=
-X-Received: by 2002:a63:8342:: with SMTP id h63mr2003915pge.141.1584397521541;
- Mon, 16 Mar 2020 15:25:21 -0700 (PDT)
-Date:   Mon, 16 Mar 2020 15:25:18 -0700
-Message-Id: <20200316222518.191601-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
-Subject: [PATCH bpf] bpf: Support llvm-objcopy for vmlinux BTF
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <natechancellor@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=74WFqqU8UvNSiPHo/92yGfDiCTDjTz6Bkk/bwSwNsVk=;
+        b=uk1sccBAo7VpvnA6qqrS8kyiYM7pC67G1vFb311QbZlHP2W2BpDdvC6n6oaVuh671H
+         2rOBTaQ26XEN6ilYFtKrgUCjeZrvzJ8Iydw3sWJhyO1g1szWTKSeiD5GELEo0O2O/m4Z
+         oygjbxkPGvUNKahIuiDI3Msj2S62bSxvPwvztUxIUK3gYneZeqDG5WR3ghUqUmrTvSgp
+         k7wLwoA4TAUXxMdAKjqhAksIZfFm435nKPlS6E2VG0iNDd5cj05c6eTum2OJDZzReI7j
+         pGtoB+iQgTkfQPqV2mqCyrmX3SKxwJd75PHzkkAlgsRR1Q7bInR0+4UXf2UYIOzLHTMl
+         FwSg==
+X-Gm-Message-State: ANhLgQ3PYRi5j41mbAnINksH6SYiZ6Q/ae4r0iKCO+HalUnfNzJckxup
+        H9+wy/XK5roIAcrPqrSctV3Zy7kFhcc=
+X-Google-Smtp-Source: ADFU+vvG9KXCD/lBD8mOCSsdqdFWA3+XJ3l4bj66JvKUSZCGk3NDf9aluedyAAyPpw88ZfFq/TSzmw==
+X-Received: by 2002:a0c:e912:: with SMTP id a18mr2135938qvo.101.1584397737943;
+        Mon, 16 Mar 2020 15:28:57 -0700 (PDT)
+Received: from localhost.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id y127sm715118qkb.76.2020.03.16.15.28.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Mar 2020 15:28:57 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     Ohad Ben-Cohen <ohad@wizery.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-remoteproc@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] Subject: [PATCH] remoteproc: clean up notification config
+Date:   Mon, 16 Mar 2020 17:28:53 -0500
+Message-Id: <20200316222853.14744-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit da5fb18225b4 ("bpf: Support pre-2.25-binutils objcopy for vmlinux
-BTF") switched from --dump-section to
---only-section/--change-section-address for BTF export assuming
-those ("legacy") options should cover all objcopy versions.
+Rearrange the config files for remoteproc and IPA to fix their
+interdependencies.
 
-Turns out llvm-objcopy doesn't implement --change-section-address [1],
-but it does support --dump-section. Let's partially roll back and
-try to use --dump-section first and fall back to
---only-section/--change-section-address for the older binutils.
+First, have CONFIG_QCOM_Q6V5_MSS select QCOM_Q6V5_IPA_NOTIFY so the
+notification code is built regardless of whether IPA needs it.
 
-1. https://bugs.llvm.org/show_bug.cgi?id=45217
+Next, represent QCOM_IPA as being dependent on QCOM_Q6V5_MSS rather
+than setting its value to match QCOM_Q6V5_COMMON (which is selected
+by QCOM_Q6V5_MSS).
 
-Fixes: df786c9b9476 ("bpf: Force .BTF section start to zero when dumping from vmlinux")
-Tested-by: Nick Desaulniers <ndesaulniers@google.com>
-Reported-by: Nathan Chancellor <natechancellor@gmail.com>
-Link: https://github.com/ClangBuiltLinux/linux/issues/871
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
+Drop all dependencies from QCOM_Q6V5_IPA_NOTIFY.  The notification
+code will be built whenever QCOM_Q6V5_MSS is set, and it has no other
+dependencies.
+
+Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- scripts/link-vmlinux.sh | 10 ++++++++++
- 1 file changed, 10 insertions(+)
 
-diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-index dd484e92752e..8ddf57cbc439 100755
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -127,6 +127,16 @@ gen_btf()
- 		cut -d, -f1 | cut -d' ' -f2)
- 	bin_format=$(LANG=C ${OBJDUMP} -f ${1} | grep 'file format' | \
- 		awk '{print $4}')
-+
-+	# Compatibility issues:
-+	# - pre-2.25 binutils objcopy doesn't support --dump-section
-+	# - llvm-objcopy doesn't support --change-section-address, but
-+	#   does support --dump-section
-+	#
-+	# Try to use --dump-section which should cover both recent
-+	# binutils and llvm-objcopy and fall back to --only-section
-+	# for pre-2.25 binutils.
-+	${OBJCOPY} --dump-section .BTF=$bin_file ${1} 2>/dev/null || \
- 	${OBJCOPY} --change-section-address .BTF=0 \
- 		--set-section-flags .BTF=alloc -O binary \
- 		--only-section=.BTF ${1} .btf.vmlinux.bin
+Dave,
+    I noticed some problems with the interaction between the IPA and
+    remoteproc configs, and after some discussion with Bjorn we came
+    up with this, which simplifies things a bit.  Both Kconfig files
+    are in net-next now, so I'm sending this to you.
+
+    Two other things:
+    - I will *not* be implementing the COMPILE_TEST suggestion until
+      after the next merge window.
+    - I learned of another issue that arises when ARM64 is built
+      with PAGE_SIZE > 4096.  I intend to fix that in the next day
+      or so.
+
+      					-Alex
+
+ drivers/net/ipa/Kconfig    | 2 +-
+ drivers/remoteproc/Kconfig | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ipa/Kconfig b/drivers/net/ipa/Kconfig
+index b8cb7cadbf75..9f0d2a93379c 100644
+--- a/drivers/net/ipa/Kconfig
++++ b/drivers/net/ipa/Kconfig
+@@ -1,9 +1,9 @@
+ config QCOM_IPA
+ 	tristate "Qualcomm IPA support"
+ 	depends on ARCH_QCOM && 64BIT && NET
++	depends on QCOM_Q6V5_MSS
+ 	select QCOM_QMI_HELPERS
+ 	select QCOM_MDT_LOADER
+-	default QCOM_Q6V5_COMMON
+ 	help
+ 	  Choose Y or M here to include support for the Qualcomm
+ 	  IP Accelerator (IPA), a hardware block present in some
+diff --git a/drivers/remoteproc/Kconfig b/drivers/remoteproc/Kconfig
+index ba318289df64..ffdb5bc25d6d 100644
+--- a/drivers/remoteproc/Kconfig
++++ b/drivers/remoteproc/Kconfig
+@@ -128,6 +128,7 @@ config QCOM_Q6V5_MSS
+ 	select MFD_SYSCON
+ 	select QCOM_MDT_LOADER
+ 	select QCOM_Q6V5_COMMON
++	select QCOM_Q6V5_IPA_NOTIFY
+ 	select QCOM_RPROC_COMMON
+ 	select QCOM_SCM
+ 	help
+@@ -169,7 +170,6 @@ config QCOM_Q6V5_WCSS
+ 
+ config QCOM_Q6V5_IPA_NOTIFY
+ 	tristate
+-	depends on QCOM_Q6V5_MSS && QCOM_IPA
+ 
+ config QCOM_SYSMON
+ 	tristate "Qualcomm sysmon driver"
 -- 
-2.25.1.481.gfbce0eb801-goog
+2.20.1
 
