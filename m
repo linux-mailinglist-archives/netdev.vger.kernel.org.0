@@ -2,51 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D079B187559
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 23:07:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75FA7187584
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 23:25:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732767AbgCPWHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 18:07:07 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:48614 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732731AbgCPWHH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 18:07:07 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C8E8A156E514D;
-        Mon, 16 Mar 2020 15:07:06 -0700 (PDT)
-Date:   Mon, 16 Mar 2020 15:07:06 -0700 (PDT)
-Message-Id: <20200316.150706.1749573279958363115.davem@davemloft.net>
-To:     jszhang3@mail.ustc.edu.cn
-Cc:     thomas.petazzoni@bootlin.com, gregory.clement@bootlin.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: mvneta: Fix the case where the last poll did not
- process all rx
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200316225636.78b08da4@xhacker>
-References: <20200316225636.78b08da4@xhacker>
-X-Mailer: Mew version 6.8 on Emacs 26.1
+        id S1732816AbgCPWZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 18:25:24 -0400
+Received: from mail-pg1-f201.google.com ([209.85.215.201]:33487 "EHLO
+        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732652AbgCPWZY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 18:25:24 -0400
+Received: by mail-pg1-f201.google.com with SMTP id 33so10631481pgn.0
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 15:25:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=CDSTXSoz8JLvnbI4Rvpwb3UtnFj/UPBOq4cipKiHAa8=;
+        b=mfudS3gFLjCVkxeKqKuIti5kPRwYSFzRUQXaEKSHT2SBuaKTMjz4B2nEV0DChQ09hs
+         jSStQPdDtrxV/y9xuUa4fv0Vqi0LjNFMjlXKBMfWhmZ914PhJowPNwAAZQhvfgjJwVCD
+         3CuKszPZEhXOVFK+RYTRwlW8lXDHKZsua/wTvL0umNojwdAncQOeQHYO+KT//TjLcilb
+         Y4TsaV1va7HT4Z9CZrCMDxVbXkQdALo30MEPdokZ3wHKdvVu/jWllq2ieItEXavSYc+y
+         PAEyGtKkZyqTAAl+lvSIMbzAOAddDp9Cwq68S8V+ZIfLE8Ks8GSEowoDFHFo75Q3LKEw
+         y2mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=CDSTXSoz8JLvnbI4Rvpwb3UtnFj/UPBOq4cipKiHAa8=;
+        b=XeXI9/E4QQjyVGbhQ7A/3KEp9A9V0n/Cm3pZZYG9wNcbTuYv+tjTkOBUofcIxrnRgJ
+         efClttdy4Cww3ti8eL7S0vu5b61Kjk64a38hsMRtLYqtiQSMEtOhUldIggQnuJOJSZJA
+         IAM3tvoKB7hlOL/QBszxjDMmxjl/4vjBt8T06XBFAUxiELevsB301iTvCfMV9HXvhCI1
+         Q+hVJUKMgdTxw30myPGPkHon4OzEEFXCR+pYNvkdR2F6jTqeusa1q9EF9ewoxWQWnqRB
+         clRqU+d6w+TRt7oA9H8TIZT5MROhke8tQ7XnhvS50WeK8y7uLE1d0EBvsyOSi15FXJLK
+         M0bg==
+X-Gm-Message-State: ANhLgQ1RhSvReE7VrA4vO3RmWwOmiVeE890mLO9+cpv146HsH0VFwQOy
+        KG4M0WjciowMUXZE/aT0ueWEo/0Lcevv83+AZpsZSneq7anmT5Xrbd02zzmGy/9RUjUxkERiv64
+        AmKM4yGPti1eTa2A6+PIoiqpEBxakgbDTNl1BXOmHTcsRrbah1OD10g==
+X-Google-Smtp-Source: ADFU+vtg+o9KJH/sNGo1ZSxUm97WYU4MunF3koiZCvSAQPSsFPYxKlf2EL51qt/hdH3VSOSoTO5/z+s=
+X-Received: by 2002:a63:8342:: with SMTP id h63mr2003915pge.141.1584397521541;
+ Mon, 16 Mar 2020 15:25:21 -0700 (PDT)
+Date:   Mon, 16 Mar 2020 15:25:18 -0700
+Message-Id: <20200316222518.191601-1-sdf@google.com>
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 16 Mar 2020 15:07:07 -0700 (PDT)
+X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
+Subject: [PATCH bpf] bpf: Support llvm-objcopy for vmlinux BTF
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <natechancellor@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
-Date: Mon, 16 Mar 2020 22:56:36 +0800
+Commit da5fb18225b4 ("bpf: Support pre-2.25-binutils objcopy for vmlinux
+BTF") switched from --dump-section to
+--only-section/--change-section-address for BTF export assuming
+those ("legacy") options should cover all objcopy versions.
 
-> From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
-> 
-> For the case where the last mvneta_poll did not process all
-> RX packets, we need to xor the pp->cause_rx_tx or port->cause_rx_tx
-> before claculating the rx_queue.
-> 
-> Fixes: 2dcf75e2793c ("net: mvneta: Associate RX queues with each CPU")
-> Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+Turns out llvm-objcopy doesn't implement --change-section-address [1],
+but it does support --dump-section. Let's partially roll back and
+try to use --dump-section first and fall back to
+--only-section/--change-section-address for the older binutils.
 
-Applied and queued up for -stable, thanks.
+1. https://bugs.llvm.org/show_bug.cgi?id=45217
+
+Fixes: df786c9b9476 ("bpf: Force .BTF section start to zero when dumping from vmlinux")
+Tested-by: Nick Desaulniers <ndesaulniers@google.com>
+Reported-by: Nathan Chancellor <natechancellor@gmail.com>
+Link: https://github.com/ClangBuiltLinux/linux/issues/871
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ scripts/link-vmlinux.sh | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+index dd484e92752e..8ddf57cbc439 100755
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -127,6 +127,16 @@ gen_btf()
+ 		cut -d, -f1 | cut -d' ' -f2)
+ 	bin_format=$(LANG=C ${OBJDUMP} -f ${1} | grep 'file format' | \
+ 		awk '{print $4}')
++
++	# Compatibility issues:
++	# - pre-2.25 binutils objcopy doesn't support --dump-section
++	# - llvm-objcopy doesn't support --change-section-address, but
++	#   does support --dump-section
++	#
++	# Try to use --dump-section which should cover both recent
++	# binutils and llvm-objcopy and fall back to --only-section
++	# for pre-2.25 binutils.
++	${OBJCOPY} --dump-section .BTF=$bin_file ${1} 2>/dev/null || \
+ 	${OBJCOPY} --change-section-address .BTF=0 \
+ 		--set-section-flags .BTF=alloc -O binary \
+ 		--only-section=.BTF ${1} .btf.vmlinux.bin
+-- 
+2.25.1.481.gfbce0eb801-goog
+
