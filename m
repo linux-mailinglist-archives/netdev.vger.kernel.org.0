@@ -2,97 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 185B11874A9
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:23:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6A521874AF
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:26:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732648AbgCPVXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 17:23:40 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:38196 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732567AbgCPVXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 17:23:40 -0400
-Received: by mail-wr1-f67.google.com with SMTP id s1so1365480wrv.5;
-        Mon, 16 Mar 2020 14:23:39 -0700 (PDT)
+        id S1732693AbgCPV0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 17:26:01 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:37092 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732621AbgCPVZ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 17:25:59 -0400
+Received: by mail-oi1-f194.google.com with SMTP id w13so19507902oih.4
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 14:25:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=v7jm6R1lI66fN9dOATmAhH/neJJRs+NMkuLfeIMHpr8=;
+        b=fw+Fzk5Nm5NC9Jjvn8y+I4rt14Z5Txz55IHQeV31ArJE88uELShhqpnkObRE5QZtmD
+         jYMj0aYW4UFoNXmQYdsS7keXHF7J8MPwMX0fqG/DLhwfR4JW1s2tbnlFC2Ox7c0faXxJ
+         b4K3YRyFMGS85VJnlMqBlqbcjmhoGhEjqw/5iwJkh2GA5Kli9USgQhTUXHtX/PDrI/kA
+         Ro1G92+6c6x/dfMwER6p7Vg/PWNh201KOudDxPtz46mvigy08VngVUd4a9UkkBaXkNmM
+         uS2lXIgqwdnUp2rhhr9ii9uFKVJFxThazdVykMUW+Cpqux+603zJr9aaHk0o6jfMw2Dv
+         pzLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=QDOgkrVz8ewx9AciRaUk8U8O72lBJhXXGq2eSOJbIms=;
-        b=CysS+J/i1RqZibfePOqmh1m97X3WfSUNIVjtrTt5/qoh2vD+kPGzmuYJQQtwgkCDd1
-         rhfOEIsts33FMSL5HkzZclER3V9ucJd/N1kj5Rhg3OiPhZO25+gvRUbGvZP48oRi5YG3
-         JmyUs8gudBAsEQNkbrbLWjkzXJd4mjsKXkcjA11Asa+BVia+ct0wXgXK6+wTUMpL2txc
-         D1McV9ynFlszIqKLZdV1IbKlfuC3dVJvtMvnizd9VHn0WnjUv65gsaNdJ9BUcNm4Njlz
-         aJKZvLIZ/C7zpEc1BRnGX3adsXgkfVKvOARU/qk75Z3s9/1nfVnDx0/SzvkX1Nwn3Oeu
-         bPRg==
-X-Gm-Message-State: ANhLgQ1aiEl9TrdyakvDjCTf+T7sj+iklQwWEAe9TrWSjNVpP1h6QNVI
-        5ciX7SSCZoVyiH92i/qTu3KE3pjurhM/4hbTuGo=
-X-Google-Smtp-Source: ADFU+vsGy7pvEgviPlRLc2PPHqUj5DkK0c547LMbJhTzJDJYCKzcw/tZdjXhLgaoACIImlVAMzM0p9U0XT8q9XK9mC0=
-X-Received: by 2002:adf:ce8e:: with SMTP id r14mr1330915wrn.415.1584393818504;
- Mon, 16 Mar 2020 14:23:38 -0700 (PDT)
+        bh=v7jm6R1lI66fN9dOATmAhH/neJJRs+NMkuLfeIMHpr8=;
+        b=GyAA05GFOpmi4bDSekgsHYFQqdZSHaGQymUCjUK2TvXxyzgz9fI3rW07ZRm+5Ytq4/
+         oHIS/R1AOnwt2AUSt6AhQloQRCk3IT7xZxvn4DfcVxAWhgM6VSBjLqqX/21S/C3SRRgf
+         0QBJHmmh38Cs36l07HofrJBjjoW5x6X0IWmVt8u4J9a49lcCxV19OFUdnTDGVFU4IQOe
+         WOMN4fFS2B94hQSDKfLbiojJPMvzheoqlhpt9Y6U1Ckz08In7V7EmaFlmwGmY+I9ePNg
+         ho/nUnGtcOiJ2DF8SMnxWPnDGmsUVXJV4No2MWdG/WpkHDwIAvx2PzEw0eLodz2Zdf8T
+         /lHg==
+X-Gm-Message-State: ANhLgQ0jSxtSEfPOjKQNV4i0mzX+xplndlxUVRemnjfq8juClnyeakGO
+        0cD1OOtqxgX97Z2HGMcmKhJHmJpVA877WF49ub6Nfw==
+X-Google-Smtp-Source: ADFU+vvkxg9Ial7cYzV1SowN5+eIGc432CbfznEyhKHlbm/HUvs/rzGh+lWYhOHIHg7xIx54UQ3VntghxWyXsT5IU5o=
+X-Received: by 2002:aca:aa12:: with SMTP id t18mr1157072oie.95.1584393957751;
+ Mon, 16 Mar 2020 14:25:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200312233648.1767-1-joe@wand.net.nz> <20200312233648.1767-4-joe@wand.net.nz>
- <87mu8gy5m6.fsf@cloudflare.com>
-In-Reply-To: <87mu8gy5m6.fsf@cloudflare.com>
-From:   Joe Stringer <joe@wand.net.nz>
-Date:   Mon, 16 Mar 2020 14:23:24 -0700
-Message-ID: <CAOftzPiUKa87U4UtxFMvWPpZYTTjvfgyb5E=u110jRCsjUh--g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/7] bpf: Add socket assign support
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Joe Stringer <joe@wand.net.nz>, bpf@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Florian Westphal <fw@strlen.de>
+References: <1584340511-9870-1-git-send-email-yangpc@wangsu.com> <1584340511-9870-3-git-send-email-yangpc@wangsu.com>
+In-Reply-To: <1584340511-9870-3-git-send-email-yangpc@wangsu.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Mon, 16 Mar 2020 17:25:41 -0400
+Message-ID: <CADVnQy=nhaKY8Ub84TvFH4cFtW92_TU72OxXnV32FzdEGtDCvw@mail.gmail.com>
+Subject: Re: [PATCH RESEND net-next v2 2/5] tcp: fix stretch ACK bugs in Scalable
+To:     Pengcheng Yang <yangpc@wangsu.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 16, 2020 at 3:08 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+On Mon, Mar 16, 2020 at 2:37 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
 >
-> [+CC Florian]
+> Change Scalable to properly handle stretch ACKs in additive
+> increase mode by passing in the count of ACKed packets to
+> tcp_cong_avoid_ai().
 >
-> Hey Joe,
+> In addition, because we are now precisely accounting for
+> stretch ACKs, including delayed ACKs, we can now change
+> TCP_SCALABLE_AI_CNT to 100.
 >
-> On Fri, Mar 13, 2020 at 12:36 AM CET, Joe Stringer wrote:
-> > Add support for TPROXY via a new bpf helper, bpf_sk_assign().
-> >
-> > This helper requires the BPF program to discover the socket via a call
-> > to bpf_sk*_lookup_*(), then pass this socket to the new helper. The
-> > helper takes its own reference to the socket in addition to any existing
-> > reference that may or may not currently be obtained for the duration of
-> > BPF processing. For the destination socket to receive the traffic, the
-> > traffic must be routed towards that socket via local route, the socket
-> > must have the transparent option enabled out-of-band, and the socket
-> > must not be closing. If all of these conditions hold, the socket will be
-> > assigned to the skb to allow delivery to the socket.
+> Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+> ---
+>  net/ipv4/tcp_scalable.c | 17 +++++++++--------
+>  1 file changed, 9 insertions(+), 8 deletions(-)
 >
-> My impression from the last time we have been discussing TPROXY is that
-> the check for IP_TRANSPARENT on ingress doesn't serve any purpose [0].
+> diff --git a/net/ipv4/tcp_scalable.c b/net/ipv4/tcp_scalable.c
+> index 471571e..6cebf41 100644
+> --- a/net/ipv4/tcp_scalable.c
+> +++ b/net/ipv4/tcp_scalable.c
+> @@ -10,10 +10,9 @@
+>  #include <net/tcp.h>
 >
-> The socket option only has effect on output, when there is a need to
-> source traffic from a non-local address.
+>  /* These factors derived from the recommended values in the aer:
+> - * .01 and and 7/8. We use 50 instead of 100 to account for
+> - * delayed ack.
+> + * .01 and and 7/8.
+>   */
+> -#define TCP_SCALABLE_AI_CNT    50U
+> +#define TCP_SCALABLE_AI_CNT    100U
+>  #define TCP_SCALABLE_MD_SCALE  3
 >
-> Setting IP_TRANSPARENT requires CAP_NET_{RAW|ADMIN}, which grant a wider
-> range of capabilities than needed to build a transparent proxy app. This
-> is problematic because you to lock down your application with seccomp.
+>  static void tcp_scalable_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+> @@ -23,11 +22,13 @@ static void tcp_scalable_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+>         if (!tcp_is_cwnd_limited(sk))
+>                 return;
 >
-> It seems it should be enough to use a port number from a privileged
-> range, if you want to ensure that only the designed process can receive
-> the proxied traffic.
+> -       if (tcp_in_slow_start(tp))
+> -               tcp_slow_start(tp, acked);
+> -       else
+> -               tcp_cong_avoid_ai(tp, min(tp->snd_cwnd, TCP_SCALABLE_AI_CNT),
+> -                                 1);
+> +       if (tcp_in_slow_start(tp)) {
+> +               acked = tcp_slow_start(tp, acked);
+> +               if (!acked)
+> +                       return;
+> +       }
+> +       tcp_cong_avoid_ai(tp, min(tp->snd_cwnd, TCP_SCALABLE_AI_CNT),
+> +                         acked);
+>  }
+>
+>  static u32 tcp_scalable_ssthresh(struct sock *sk)
+> --
 
-Thanks for looking this over. You're right, I neglected to fix up the
-commit message here from an earlier iteration that enforced this
-constraint. I can fix this up in a v2.
+Acked-by: Neal Cardwell <ncardwell@google.com>
 
-> Or, alternatively, instead of using socket lookup + IP_TRANSPARENT
-> check, get the socket from sockmap and apply control to who can update
-> the BPF map.
-
-There's no IP_TRANSPARENT check in this iteration of the series.
-
-Cheers,
-Joe
+thanks,
+neal
