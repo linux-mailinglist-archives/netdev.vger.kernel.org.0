@@ -2,89 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2328818735B
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 20:32:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CFF2187390
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 20:46:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732469AbgCPTb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 15:31:56 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:42383 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732468AbgCPTbz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 15:31:55 -0400
-Received: by mail-pl1-f196.google.com with SMTP id t3so8450143plz.9
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 12:31:54 -0700 (PDT)
+        id S1732465AbgCPTqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 15:46:13 -0400
+Received: from mail-ot1-f41.google.com ([209.85.210.41]:42862 "EHLO
+        mail-ot1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732416AbgCPTqN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 15:46:13 -0400
+Received: by mail-ot1-f41.google.com with SMTP id 66so19144233otd.9;
+        Mon, 16 Mar 2020 12:46:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Jcs/0s3CZSPtzbiw1HbYF9/yaS+V0LYheoQxKQVUgmI=;
-        b=4DG6wS0JeSLFdQ46V62qLOkcPHmWMu5B3CFnxUDNfsfj7QxmM8MD+RMHl7SQMqcjyJ
-         CfWnD9OLMfJ7FcPaGbr3aJ2iNRq3em1pFxYW59aLl9B+ApSFdHfrIyeZULw3Tb+pDh9J
-         2eCV49GQuhK0oAu58YXkZFPbhCsOwZE/vgCQBXRZ3ryFQNDDir7nIEm1dIj3kseYL0Ba
-         3VLqClJsXn6A63AwdYsInW5HQfOCspnI0eK/k6AXYjchHdvdbxqqamhDZWpsRG4rLhcz
-         4ivR99vBSlSjIbNa/rCDIqaRER0ZwlzUYtUQPmuBWWjzZyTH8shyZ9oCUKuuS7XPvYTU
-         D6rg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dD9qGn/FmD1rIVTC9XP6vGVct8WmBBkX3v6FBswGPLo=;
+        b=FqT9L+d/z12NLuSeT3JrqFMnKilv4DWfJckRqN3s7x44mG05Dt295h39OD4Oi+Cryj
+         +y88K4HcKPEqz1CZZ0z54c5NMFAp/R1b1zJZEnD6/imKqbg3iNBKdW0j9hMbXxcoHHau
+         O9daOgKikTP8NO5otGV2veBUKB6h6wePj4mjQatfuaavjgZS1vck0XWezWWfpDJawwpJ
+         LovCgFOM0ROSmBMRnsSddxYClXGNy3fpXvjDdo10gN8s1LZ3N0/RQeEo4AKIo4E5IKjK
+         OYlnQSvrpgp9rcfBXnOd7xPwy5vUBg0nzPUJEhwsebLvEoH3BD7dbrUS8rpWZp+NXjkA
+         XtKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Jcs/0s3CZSPtzbiw1HbYF9/yaS+V0LYheoQxKQVUgmI=;
-        b=EEDNKRUM7uxdQgH1KO6fYQRyy7fEQt0jWXrTYV7q1ozjxPVKxxezSRrkLzGt938me0
-         DM4XSZF2c0ikIcQAxg6j/YBfgJZA8S0sifDemMTfw8ifPoI7GGNfvtQKhCgAWB5833Vh
-         PMizRUR7Tz7rF0mg4yuftoJkpA5zD3J2mYK6cyLzR7oVBf0/kHTcPGQr4MCTcNWZ6b3D
-         17vts4ELb1vkCDkgC4sOhUFkPFT6XSpfDZ+VmxIWEnp/6+fJ7u6DJDYlKHTeO30y+szi
-         u3vpLVlMGrT8GWdRbpEDxq08Bsplc0cEolcg/iZgNHWzb+i34UlaxCBPW549sbKEvlIj
-         Sxgw==
-X-Gm-Message-State: ANhLgQ2Txqk/67gduR6R226RN7Xu4knbqlZtatSuKuqeoQ2wp2O+9dJm
-        MfWUEJtPjcbXB5pwmfbf3vehBM+mu/o=
-X-Google-Smtp-Source: ADFU+vtphku7mRGI+eDsdJbb8wmZuCGYrfJxteGPE1TYJjX9yY1m1FVlZKj2/MSSBqAtTCl718+3Iw==
-X-Received: by 2002:a17:902:904c:: with SMTP id w12mr720409plz.35.1584387113326;
-        Mon, 16 Mar 2020 12:31:53 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id w17sm656413pfi.59.2020.03.16.12.31.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 16 Mar 2020 12:31:52 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 5/5] ionic: add decode for IONIC_RC_ENOSUPP
-Date:   Mon, 16 Mar 2020 12:31:34 -0700
-Message-Id: <20200316193134.56820-6-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200316193134.56820-1-snelson@pensando.io>
-References: <20200316193134.56820-1-snelson@pensando.io>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dD9qGn/FmD1rIVTC9XP6vGVct8WmBBkX3v6FBswGPLo=;
+        b=kzU620ZnROI8MH8OffE3/wYULHCfNTVX7OCsh5w06CX/1WllwfVHqeaHv9uMZYkIUO
+         gfNlOQSEt5KAOZfDBo2CFmO4qWpFiQvFqNXdz26+VyAnIbC+AFa0xrnnRmCSIsszGgtN
+         qKb+LMnmzAJ5wf7UHSuKvZ9jwm2a7UJSRd/k+WlrzMu9GG75PibRLMHPdo9tmfUH4ZHk
+         aW3JhtlmjHvC8f+E5bf0R0zVRUZm/3ZD4CMvjGSNjhiEOSGMkf4OwYWO1eESCYW6J2DW
+         DsNNTR/t3q3bIy+tivbc2FQ0Fd+kxQzzxVWDiVQsQDZgFvyK/D78e2RvnP5RD2i7aFEA
+         pUYw==
+X-Gm-Message-State: ANhLgQ3+AWzBP+Vh4j4n6vMpIxIQ2EyZapTmgTrM54L2+FAaXEWFAyRf
+        7Ed7mCLTKmCEkD5wtCILERjr63KzYY3kF3ekXwA=
+X-Google-Smtp-Source: ADFU+vtA7AzP+zXTm4BQNcSJHb20DfzuwnHnw+xS+lfJ+KbxiiJD/nA8Wgqaj1wL9kQWkN+9/TzCJDBQPXH5BQOJP6Q=
+X-Received: by 2002:a05:6830:1e96:: with SMTP id n22mr692919otr.189.1584387972457;
+ Mon, 16 Mar 2020 12:46:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <000000000000fd030905a0b75ac8@google.com>
+In-Reply-To: <000000000000fd030905a0b75ac8@google.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 16 Mar 2020 12:46:01 -0700
+Message-ID: <CAM_iQpXMckb7O6Fje30icqpHuhmzYNOx_ugnVWoOpgGteVTtdw@mail.gmail.com>
+Subject: Re: KASAN: use-after-free Read in route4_get
+To:     syzbot <syzbot+1cba26af4a37d30e8040@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add decoding for a new firmware error code.
-
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- drivers/net/ethernet/pensando/ionic/ionic_main.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index e4a76e66f542..c5e3d7639f7e 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -58,6 +58,8 @@ static const char *ionic_error_to_str(enum ionic_status_code code)
- 		return "IONIC_RC_BAD_ADDR";
- 	case IONIC_RC_DEV_CMD:
- 		return "IONIC_RC_DEV_CMD";
-+	case IONIC_RC_ENOSUPP:
-+		return "IONIC_RC_ENOSUPP";
- 	case IONIC_RC_ERROR:
- 		return "IONIC_RC_ERROR";
- 	case IONIC_RC_ERDMA:
-@@ -76,6 +78,7 @@ static int ionic_error_to_errno(enum ionic_status_code code)
- 	case IONIC_RC_EQTYPE:
- 	case IONIC_RC_EQID:
- 	case IONIC_RC_EINVAL:
-+	case IONIC_RC_ENOSUPP:
- 		return -EINVAL;
- 	case IONIC_RC_EPERM:
- 		return -EPERM;
--- 
-2.17.1
-
+#syz fix: net_sched: cls_route: remove the right filter from hashtable
