@@ -2,63 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FCBA1866A4
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 09:39:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C7A41866C1
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 09:42:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730159AbgCPIjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 04:39:20 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:37850 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730048AbgCPIjU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Mar 2020 04:39:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=3DP+sd7j/ZzTQQA7FONRN+KtsAjsjix8FVp93YaNriU=; b=DqG8FnLtpeAGJ3ywim5K/6XLR8
-        KJKW2ANqD9R5c5BIyyf0I6y8xuf2QXqo76vZxNUG5if+MiPqe2YGXKltmG+qXfLJGp20v+wfzkXpi
-        9q8Xk+fLg8JWmSsRgYIjKqWUKh1LepfNq+29d65MyaFVdEZgg/TZXsG8LLXQTi4/E6bg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jDlHF-0005ox-7G; Mon, 16 Mar 2020 09:39:13 +0100
-Date:   Mon, 16 Mar 2020 09:39:13 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net 1/3] net: fsl/fman: treat all RGMII modes in
- memac_adjust_link()
-Message-ID: <20200316083913.GC8524@lunn.ch>
-References: <1584101065-3482-1-git-send-email-madalin.bucur@oss.nxp.com>
- <1584101065-3482-2-git-send-email-madalin.bucur@oss.nxp.com>
- <20200314211601.GA8622@lunn.ch>
- <DB8PR04MB69859D7B209FEA972409FEEBECF90@DB8PR04MB6985.eurprd04.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB8PR04MB69859D7B209FEA972409FEEBECF90@DB8PR04MB6985.eurprd04.prod.outlook.com>
+        id S1730118AbgCPImv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 04:42:51 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:40960 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730069AbgCPImv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 04:42:51 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2FCA914218234;
+        Mon, 16 Mar 2020 01:42:51 -0700 (PDT)
+Date:   Mon, 16 Mar 2020 01:42:47 -0700 (PDT)
+Message-Id: <20200316.014247.141724414124911729.davem@davemloft.net>
+To:     mayflowerera@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] macsec: Support XPN frame handling - IEEE
+ 802.1AEbw
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200309194702.117050-1-mayflowerera@gmail.com>
+References: <20200309194702.117050-1-mayflowerera@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 16 Mar 2020 01:42:51 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Hi Madalin
-> > 
-> > You can use phy_interface_mode_is_rgmii()
-> > 
-> >     Andrew
+From: Era Mayflower <mayflowerera@gmail.com>
+Date: Mon,  9 Mar 2020 19:47:01 +0000
+
+> Support extended packet number cipher suites (802.1AEbw) frames handling.
+> This does not include the needed netlink patches.
 > 
-> I have that on the todo list for all the places in the code, but that's
-> net-next material.
+>     * Added xpn boolean field to `struct macsec_secy`.
+>     * Added ssci field to `struct_macsec_tx_sa` (802.1AE figure 10-5).
+>     * Added ssci field to `struct_macsec_rx_sa` (802.1AE figure 10-5).
+>     * Added salt field to `struct macsec_key` (802.1AE 10.7 NOTE 1).
+>     * Created pn_t type for easy access to lower and upper halves.
+>     * Created salt_t type for easy access to the "ssci" and "pn" parts.
+>     * Created `macsec_fill_iv_xpn` function to create IV in XPN mode.
+>     * Support in PN recovery and preliminary replay check in XPN mode.
+> 
+> In addition, according to IEEE 802.1AEbw figure 10-5, the PN of incoming
+> frame can be 0 when XPN cipher suite is used, so fixed the function
+> `macsec_validate_skb` to fail on PN=0 only if XPN is off.
+> 
+> Signed-off-by: Era Mayflower <mayflowerera@gmail.com>
 
-I don't see why it cannot be used here, for this case, now.
-
-  Andrew
+Applied.
