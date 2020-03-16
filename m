@@ -2,123 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42471187635
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 00:30:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90BF2187657
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 00:47:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732883AbgCPXaT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 19:30:19 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:35916 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732855AbgCPXaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 19:30:19 -0400
-Received: by mail-pl1-f193.google.com with SMTP id g2so6214848plo.3
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 16:30:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=GHqfg8GjsM+6tRPeuPn3lcHQS9mt7K0jNR/KAOWyv7A=;
-        b=umWIr8pC2QgsRq5r4a2Sx3Y5HWcWGc88ibGuhqximyJUOkxrkRezDq7GbqTUV5TS+D
-         2ieQcPVUonn+TZzV1+TfCh8lkNTpmv+CYhUlpDHjQjrLtiTqDK3CtFFzz0vCfVM0ZWEX
-         rdaA+xUWBsam5Zk5WBT49G0Lbt2fCu8KnQ+J4WYWj3czWr/QZdG65g7OH+LsWMWm3qor
-         CbWaGjvhMbXdINjnzejbMBbs6HwxsJyRFKtgfJZn84njMVKUiGRv7T0XNmQZX1pVLq5S
-         iP23qTiozbbxwE8HSmA7XNxBHeKAgUf16rBbUs6spqRmfODLkueETrq2iAX0ez3zahoa
-         rOiQ==
+        id S1732962AbgCPXrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 19:47:18 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:44464 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732923AbgCPXrR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 19:47:17 -0400
+Received: by mail-io1-f69.google.com with SMTP id h4so2071077ior.11
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 16:47:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=GHqfg8GjsM+6tRPeuPn3lcHQS9mt7K0jNR/KAOWyv7A=;
-        b=twd2jpbjDJuqnaREr+nWBOZldrrRHP0Cno0TuMTTaOfv/bZsV1qAQFDt5pXz1qlMuH
-         NABdvSCDgmi1zSID3AJe/XAAwWkaPq/6aXzp77OjVYqKnaSm6k4cBAqmayU3BR2HNEeR
-         vUPYfuzziBwSJXSYzI9rGcBC3Y+2mlnJyyioVjfJ1t+RHiy6goPKQ/G699CTFJ39juAd
-         kwFHHq6yYcaAJ8ZsJQBy00GUoFjLPnByplD7Qex97UJS7J6uN2M2InnEUzw/gozqZwFd
-         7xLwh5NkeXeRmu9LllNzWvpEqZyta3UOeg08BoJEgM0rAp+DEO0qcmfTWASO24vJ+ar0
-         tXgQ==
-X-Gm-Message-State: ANhLgQ27KjctvWs3AI7cYP+iDwBBdS+jDwgJHw26+H2QpI12B71M4osE
-        VMCGxddXyVtHK6ZOJxe1PnCh3Q==
-X-Google-Smtp-Source: ADFU+vtu5roDXxZ8jOYgrUgk1vQD+iQMzUkA7Q0bxgvbPrYXAR1pc+QJ+sZropNYnlinFKtMM26dvg==
-X-Received: by 2002:a17:90a:de0a:: with SMTP id m10mr2135402pjv.34.1584401417855;
-        Mon, 16 Mar 2020 16:30:17 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id y28sm898493pfp.128.2020.03.16.16.30.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Mar 2020 16:30:17 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 4/5] ionic: return error for unknown xcvr type
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-References: <20200316193134.56820-1-snelson@pensando.io>
- <20200316193134.56820-5-snelson@pensando.io>
- <20200316150116.330e4d94@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <28e0b56c-68d1-3310-16c4-56355357e095@pensando.io>
-Date:   Mon, 16 Mar 2020 16:30:16 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.6.0
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=NlyCPiQeeXe46SWO6vOpnbLfRJ41bBQJbSHfng0kaHk=;
+        b=HkOglU8wltOrYxy/bOYeXJ0rHgZyAj5RIVbKiOh3ciPi8rmFuz1OFIKCDINxHF4b9E
+         9MFUX1uMkJ7XrEb+0qPOVVWsO8BvkmyScgtncbqyoa3dYLEiGQAjE6iLedq5vshopOk7
+         s9mZiro3sgHZMhcKrPD91Q41pfe8zlzlkr5x65Qk9yZwF49lUVhv2fYhUmfQwJB6mJkp
+         y13mFazCNexyXi044sI3zBmSTEbiJccJby7lY7p0gyF87admRHfGXdlmcQ5+m3mgvMW+
+         lc/HFiPZoXERaN2faS45ZUXLpo7eSR4rR05IV5nm4weDMBebxXVEYbid0Et4W7b8/694
+         d9xw==
+X-Gm-Message-State: ANhLgQ1msy9QvX6/4F3vEcrIdKalcpGkPpg2g3zQ1fYeQMuZw/VJEOZn
+        42QBVcPQHJoLwaRCI/XB2PQ1h84TbY8Vv4VLLVXdUz4O7dUb
+X-Google-Smtp-Source: ADFU+vsryNBcEg/zB8G6qOT+eYg/7l8gp78N4VCAXM42eZb7GFS9/j+AUdUkUK+g4/94bj3W1buRUJ4+QlmxMTwAn6TFwRWpsCA0
 MIME-Version: 1.0
-In-Reply-To: <20200316150116.330e4d94@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+X-Received: by 2002:a92:6a10:: with SMTP id f16mr2392363ilc.113.1584402437253;
+ Mon, 16 Mar 2020 16:47:17 -0700 (PDT)
+Date:   Mon, 16 Mar 2020 16:47:17 -0700
+In-Reply-To: <000000000000b380de059f5ff6aa@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000742e9e05a10170bc@google.com>
+Subject: Re: WARNING: ODEBUG bug in tcindex_destroy_work (3)
+From:   syzbot <syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/16/20 3:01 PM, Jakub Kicinski wrote:
-> On Mon, 16 Mar 2020 12:31:33 -0700 Shannon Nelson wrote:
->> If we don't recognize the transceiver type, return an error
->> so that ethtool doesn't try dumping bogus eeprom contents.
->>
->> Fixes: 4d03e00a2140 ("ionic: Add initial ethtool support")
->> Signed-off-by: Shannon Nelson <snelson@pensando.io>
->> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
->> index a233716eac29..3f92f301a020 100644
->> --- a/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
->> +++ b/drivers/net/ethernet/pensando/ionic/ionic_ethtool.c
->> @@ -694,7 +694,7 @@ static int ionic_get_module_info(struct net_device *netdev,
->>   	default:
->>   		netdev_info(netdev, "unknown xcvr type 0x%02x\n",
->>   			    xcvr->sprom[0]);
->> -		break;
->> +		return -EINVAL;
->>   	}
->>   
->>   	return 0;
->> @@ -714,7 +714,19 @@ static int ionic_get_module_eeprom(struct net_device *netdev,
->>   	/* The NIC keeps the module prom up-to-date in the DMA space
->>   	 * so we can simply copy the module bytes into the data buffer.
->>   	 */
->> +
->>   	xcvr = &idev->port_info->status.xcvr;
->> +	switch (xcvr->sprom[0]) {
->> +	case 0x03: /* SFP */
->> +	case 0x0D: /* QSFP */
->> +	case 0x11: /* QSFP28 */
-> Please use defines from sfp.h
+syzbot has found a reproducer for the following crash on:
 
-Yep, thanks, it's nice we have those now.
+HEAD commit:    74522e7b net: sched: set the hw_stats_type in pedit loop
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=14c85173e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b5acf5ac38a50651
+dashboard link: https://syzkaller.appspot.com/bug?extid=46f513c3033d592409d2
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17bfff65e00000
 
->
->> +		break;
->> +	default:
->> +		netdev_info(netdev, "unknown xcvr type 0x%02x\n",
->> +			    xcvr->sprom[0]);
->> +		return -EINVAL;
-> Isn't there _some_ amount of eeprom that we could always return?
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com
 
-It probably would be useful to return the first page (256 bytes) to help 
-the reader figure out what's up with the data.
-
-This only gets called it ionic_get_module_info() returns with no error, 
-so possibly that function could set type to 0 or -1 and len to 256, more 
-or less as default values for getting something printed.
-
-I'll play with that a little.
-
-Thanks,
-sln
+------------[ cut here ]------------
+ODEBUG: free active (active state 0) object type: work_struct hint: tcindex_destroy_rexts_work+0x0/0x20 net/sched/cls_tcindex.c:143
+WARNING: CPU: 1 PID: 7 at lib/debugobjects.c:485 debug_print_object+0x160/0x250 lib/debugobjects.c:485
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 7 Comm: kworker/u4:0 Not tainted 5.6.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: tc_filter_workqueue tcindex_destroy_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ panic+0x2e3/0x75c kernel/panic.c:221
+ __warn.cold+0x2f/0x35 kernel/panic.c:582
+ report_bug+0x27b/0x2f0 lib/bug.c:195
+ fixup_bug arch/x86/kernel/traps.c:174 [inline]
+ fixup_bug arch/x86/kernel/traps.c:169 [inline]
+ do_error_trap+0x12b/0x220 arch/x86/kernel/traps.c:267
+ do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
+ invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
+RIP: 0010:debug_print_object+0x160/0x250 lib/debugobjects.c:485
+Code: dd c0 fa 51 88 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 bf 00 00 00 48 8b 14 dd c0 fa 51 88 48 c7 c7 20 f0 51 88 e8 a8 bd b1 fd <0f> 0b 83 05 8b cf d3 06 01 48 83 c4 20 5b 5d 41 5c 41 5d c3 48 89
+RSP: 0018:ffffc90000cdfc40 EFLAGS: 00010082
+RAX: 0000000000000000 RBX: 0000000000000003 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815bfe61 RDI: fffff5200019bf7a
+RBP: 0000000000000001 R08: ffff8880a95de1c0 R09: ffffed1015ce45c9
+R10: ffffed1015ce45c8 R11: ffff8880ae722e43 R12: ffffffff8977aba0
+R13: ffffffff814a9360 R14: ffff88807e278f98 R15: ffff88809835c6c8
+ __debug_check_no_obj_freed lib/debugobjects.c:967 [inline]
+ debug_check_no_obj_freed+0x2e1/0x445 lib/debugobjects.c:998
+ kfree+0xf6/0x2b0 mm/slab.c:3756
+ tcindex_destroy_work+0x2e/0x70 net/sched/cls_tcindex.c:231
+ process_one_work+0x94b/0x1690 kernel/workqueue.c:2266
+ worker_thread+0x96/0xe20 kernel/workqueue.c:2412
+ kthread+0x357/0x430 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
 
