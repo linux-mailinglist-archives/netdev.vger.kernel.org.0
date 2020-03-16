@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11DE41875EA
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 23:57:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BD451875EC
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 23:57:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732871AbgCPW4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 18:56:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60098 "EHLO mail.kernel.org"
+        id S1732894AbgCPW44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 18:56:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60116 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732840AbgCPW4z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1732865AbgCPW4z (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 16 Mar 2020 18:56:55 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 59FC8205ED;
+        by mail.kernel.org (Postfix) with ESMTPSA id 03204206E2;
         Mon, 16 Mar 2020 22:56:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584399414;
-        bh=TzgLtqq0RK8QYJMNHKKMtrDmIEHuvSE/eTPQdeKuuq0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=WkLqPh8tvaVdZug19o9OYyOioZzZhJTLGUZi1tnf7F3X/vhFpVNoLO399Utat2hv+
-         VKRvfbe8eIPXEkkgVhNfLzWoT20tDmtiH4M6IEvvQ9nWtSEVi1SvKVOpugqkFQcqeB
-         oXqnJygKw8KdWM8b8Y7h+S3sRC2FW67NFL+pp3y0=
+        s=default; t=1584399415;
+        bh=dBsWz9addWONFKhna+kM5dhqeNsPSINqhlpIe9wHGnU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JsktEZ2KZrsXnfehohqXKiicv/WTjqA2HvjEEo/v/XupU0LuhDIZSTvQWdiQ3RpPk
+         sk3IJR/RWPgyt29eEa7diZloXtUY+YsBNRjyFVGsc3m8/zdhZPdIQHhJ8ADfhdl5o3
+         ObQgekkNw3JiOa4Q7cmjcwvx6vOi9nMM+RX4hXrc=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     shuah@kernel.org, keescook@chromium.org
 Cc:     luto@amacapital.net, wad@chromium.org,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, kernel-team@fb.com,
         Tim.Bird@sony.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH v3 0/6] kselftest: add fixture parameters
-Date:   Mon, 16 Mar 2020 15:56:40 -0700
-Message-Id: <20200316225647.3129354-1-kuba@kernel.org>
+Subject: [PATCH v3 1/6] selftests/seccomp: use correct FIXTURE macro
+Date:   Mon, 16 Mar 2020 15:56:41 -0700
+Message-Id: <20200316225647.3129354-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200316225647.3129354-1-kuba@kernel.org>
+References: <20200316225647.3129354-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -40,46 +42,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+Quoting kdoc:
 
-Shuah please consider applying to the kselftest tree.
+FIXTURE_DATA:
+ * This call may be used when the type of the fixture data
+ * is needed.  In general, this should not be needed unless
+ * the *self* is being passed to a helper directly.
 
-This set is an attempt to make running tests for different
-sets of data easier. The direct motivation is the tls
-test which we'd like to run for TLS 1.2 and TLS 1.3,
-but currently there is no easy way to invoke the same
-tests with different parameters.
+FIXTURE:
+ * Defines the data provided to TEST_F()-defined tests as *self*.  It should be
+ * populated and cleaned up using FIXTURE_SETUP() and FIXTURE_TEARDOWN().
 
-Tested all users of kselftest_harness.h.
+seccomp should use FIXTURE to declare types.
 
-v2:
- - don't run tests by fixture
- - don't pass params as an explicit argument
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ tools/testing/selftests/seccomp/seccomp_bpf.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-v3:
- - go back to the orginal implementation with an extra
-   parameter, and running by fixture (Kees);
- - add LIST_APPEND helper (Kees);
- - add a dot between fixture and param name (Kees);
- - rename the params to variants (Tim);
-
-v1: https://lore.kernel.org/netdev/20200313031752.2332565-1-kuba@kernel.org/
-v2: https://lore.kernel.org/netdev/20200314005501.2446494-1-kuba@kernel.org/
-
-Jakub Kicinski (6):
-  selftests/seccomp: use correct FIXTURE macro
-  kselftest: factor out list manipulation to a helper
-  kselftest: create fixture objects
-  kselftest: run tests by fixture
-  kselftest: add fixture variants
-  selftests: tls: run all tests for TLS 1.2 and TLS 1.3
-
- Documentation/dev-tools/kselftest.rst         |   3 +-
- tools/testing/selftests/kselftest_harness.h   | 233 ++++++++++++++----
- tools/testing/selftests/net/tls.c             |  93 ++-----
- tools/testing/selftests/seccomp/seccomp_bpf.c |  10 +-
- 4 files changed, 206 insertions(+), 133 deletions(-)
-
+diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
+index ee1b727ede04..7bf82fb07f67 100644
+--- a/tools/testing/selftests/seccomp/seccomp_bpf.c
++++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
+@@ -909,7 +909,7 @@ TEST(ERRNO_order)
+ 	EXPECT_EQ(12, errno);
+ }
+ 
+-FIXTURE_DATA(TRAP) {
++FIXTURE(TRAP) {
+ 	struct sock_fprog prog;
+ };
+ 
+@@ -1020,7 +1020,7 @@ TEST_F(TRAP, handler)
+ 	EXPECT_NE(0, (unsigned long)sigsys->_call_addr);
+ }
+ 
+-FIXTURE_DATA(precedence) {
++FIXTURE(precedence) {
+ 	struct sock_fprog allow;
+ 	struct sock_fprog log;
+ 	struct sock_fprog trace;
+@@ -1509,7 +1509,7 @@ void tracer_poke(struct __test_metadata *_metadata, pid_t tracee, int status,
+ 	EXPECT_EQ(0, ret);
+ }
+ 
+-FIXTURE_DATA(TRACE_poke) {
++FIXTURE(TRACE_poke) {
+ 	struct sock_fprog prog;
+ 	pid_t tracer;
+ 	long poked;
+@@ -1817,7 +1817,7 @@ void tracer_ptrace(struct __test_metadata *_metadata, pid_t tracee,
+ 		change_syscall(_metadata, tracee, -1, -ESRCH);
+ }
+ 
+-FIXTURE_DATA(TRACE_syscall) {
++FIXTURE(TRACE_syscall) {
+ 	struct sock_fprog prog;
+ 	pid_t tracer, mytid, mypid, parent;
+ };
+@@ -2321,7 +2321,7 @@ struct tsync_sibling {
+ 		}							\
+ 	} while (0)
+ 
+-FIXTURE_DATA(TSYNC) {
++FIXTURE(TSYNC) {
+ 	struct sock_fprog root_prog, apply_prog;
+ 	struct tsync_sibling sibling[TSYNC_SIBLINGS];
+ 	sem_t started;
 -- 
 2.24.1
 
