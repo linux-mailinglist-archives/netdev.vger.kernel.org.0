@@ -2,262 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C780187419
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 21:33:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE3EA18741E
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 21:35:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732549AbgCPUdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 16:33:37 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:4812 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732537AbgCPUdh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 16:33:37 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02GKLFJY006793
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 13:33:37 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=YAUYFyGl8iNhKU1xcSzkPALlFq5jHZIIxk/ZsP735eY=;
- b=QxJOZogHLnWyh13Ha6d3duikzhmBko4RiaAAgOKWi68NhGA+rgw/fqFjOjrunxkY9Lj0
- Ce+BElqZUc6TS2GBCk1vxQd3JKdDLF5xzKV4qtS9KhNmdvVIrc6A0SceRcLo1q0PGb/l
- Hv/1YjbJoLkUqp0TUzLHo4LACD9ZoWXUG8E= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2ysf9qpqq8-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 13:33:36 -0700
-Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Mon, 16 Mar 2020 13:33:34 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 2AD5362E20F8; Mon, 16 Mar 2020 13:33:31 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Song Liu <songliubraving@fb.com>
-Smtp-Origin-Hostname: devbig006.ftw2.facebook.com
-To:     <linux-fsdevel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <mcgrof@kernel.org>, <keescook@chromium.org>, <yzaikin@google.com>,
-        Song Liu <songliubraving@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next] bpf: sharing bpf runtime stats with /dev/bpf_stats
-Date:   Mon, 16 Mar 2020 13:33:29 -0700
-Message-ID: <20200316203329.2747779-1-songliubraving@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1732568AbgCPUfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 16:35:16 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:42516 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732486AbgCPUfQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 16:35:16 -0400
+Received: by mail-oi1-f194.google.com with SMTP id 13so10386933oiy.9;
+        Mon, 16 Mar 2020 13:35:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2WeeeQuIf6X+Fgo34LchZIqqcKLKtS9v2wrYypr8QcQ=;
+        b=VdQPD2e+W+dj6T/pc1K7U0NlTgVjr9jQQJP3cDhSIFn2wVwfqqIrK+OEebkM2I5DdP
+         6JeVtmsy3VsaNJIi8D8HiwH35Vqr/TvqZVzjip6PGSJokbfTz2xdUHuuD/qK+NbqhDmL
+         Glco0sva6+pQPhZWzH9GLR0nAULr1i1WB5/IsucKUiF/9Gx6/LL8gg7XIVviJsuX4ZiB
+         uQGZRfqr4wQZ/4WEmBoDzG2tddTZ9qQ2gbqdYTTT+jSTLpw9MSmZohk/sqxbi5ygP2cO
+         2NW29gjwY0UgluKxwgABVfDjfI0Wins3t08xeangQCzKSmpEyDYRYiC1rMgV3OrjHc7v
+         4sMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2WeeeQuIf6X+Fgo34LchZIqqcKLKtS9v2wrYypr8QcQ=;
+        b=CKSNVcuyCmB+twr8BHPHW2VzuYou0or3qFmhXdugTULa0+6xQ302/abfnAWfAoeiZY
+         /H3+3YO4vCVCVHqqmkYPSpWFmAZkNmAQ0evB62OVEGn++SItTiKQv3qXeoIdkWo5F1NB
+         iU+TAQXs3hKUI+Mpp2LZQ+DQmgZ4wc5u8lh4pkdSz8Zr/xoYYYMYPSbrpLuLCcTnnt3R
+         ZtSHS7NYJgGbT+s2WEgw+EiwJ8WOuepskx814Arz71RkoL+1f/E9OpBLx7y16RqXn9e1
+         pMjp4BHlNqSstf3hhW1Fa+i9HZIi5JRqJoFxzv6Zp++sBQeaHNui5sRT5o4kcz6id8uT
+         XTWg==
+X-Gm-Message-State: ANhLgQ0hZAg7Ag4XmjeRFLC4DBnzhjDzT2R9ClOywxKv4GXuoiofN6Lk
+        jRlO3n9270BrunjsSgcI8DA=
+X-Google-Smtp-Source: ADFU+vt05REQiVpWVawSbU9b+0kISMA+KKSDQTRxNNjoSMj/l5oSCOSmZZuFg7XjV2AsmmlGhe64nA==
+X-Received: by 2002:a05:6808:b17:: with SMTP id s23mr1049303oij.166.1584390914991;
+        Mon, 16 Mar 2020 13:35:14 -0700 (PDT)
+Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
+        by smtp.gmail.com with ESMTPSA id o6sm307086oti.65.2020.03.16.13.35.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Mar 2020 13:35:14 -0700 (PDT)
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH] mlx5: Remove uninitialized use of key in mlx5_core_create_mkey
+Date:   Mon, 16 Mar 2020 13:34:52 -0700
+Message-Id: <20200316203452.32998-1-natechancellor@gmail.com>
+X-Mailer: git-send-email 2.26.0.rc1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
- definitions=2020-03-16_09:2020-03-12,2020-03-16 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 adultscore=0
- bulkscore=0 suspectscore=0 clxscore=1015 malwarescore=0 mlxlogscore=999
- impostorscore=0 mlxscore=0 lowpriorityscore=0 phishscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2003160086
-X-FB-Internal: deliver
+X-Patchwork-Bot: notify
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, sysctl kernel.bpf_stats_enabled controls BPF runtime stats.
-Typical userspace tools use kernel.bpf_stats_enabled as follows:
+Clang warns:
 
-  1. Enable kernel.bpf_stats_enabled;
-  2. Check program run_time_ns;
-  3. Sleep for the monitoring period;
-  4. Check program run_time_ns again, calculate the difference;
-  5. Disable kernel.bpf_stats_enabled.
+../drivers/net/ethernet/mellanox/mlx5/core/mr.c:63:21: warning: variable
+'key' is uninitialized when used here [-Wuninitialized]
+                      mkey_index, key, mkey->key);
+                                  ^~~
+../drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h:54:6: note:
+expanded from macro 'mlx5_core_dbg'
+                 ##__VA_ARGS__)
+                   ^~~~~~~~~~~
+../include/linux/dev_printk.h:114:39: note: expanded from macro
+'dev_dbg'
+        dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+                                             ^~~~~~~~~~~
+../include/linux/dynamic_debug.h:158:19: note: expanded from macro
+'dynamic_dev_dbg'
+                           dev, fmt, ##__VA_ARGS__)
+                                       ^~~~~~~~~~~
+../include/linux/dynamic_debug.h:143:56: note: expanded from macro
+'_dynamic_func_call'
+        __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
+                                                              ^~~~~~~~~~~
+../include/linux/dynamic_debug.h:125:15: note: expanded from macro
+'__dynamic_func_call'
+                func(&id, ##__VA_ARGS__);               \
+                            ^~~~~~~~~~~
+../drivers/net/ethernet/mellanox/mlx5/core/mr.c:47:8: note: initialize
+the variable 'key' to silence this warning
+        u8 key;
+              ^
+               = '\0'
+1 warning generated.
 
-The problem with this approach is that only one userspace tool can toggle
-this sysctl. If multiple tools toggle the sysctl at the same time, the
-measurement may be inaccurate.
+key's initialization was removed in commit fc6a9f86f08a ("{IB,net}/mlx5:
+Assign mkey variant in mlx5_ib only") but its use was not fully removed.
+Remove it now so that there is no more warning.
 
-To fix this problem while keep backward compatibility, introduce a new
-bpf command BPF_ENABLE_RUNTIME_STATS. On success, this command enables
-run_time_ns stats and returns a valid fd.
-
-With BPF_ENABLE_RUNTIME_STATS, user space tool would have the following
-flow:
-
-  1. Get a fd with BPF_ENABLE_RUNTIME_STATS, and make sure it is valid;
-  2. Check program run_time_ns;
-  3. Sleep for the monitoring period;
-  4. Check program run_time_ns again, calculate the difference;
-  5. Close the fd.
-
-Signed-off-by: Song Liu <songliubraving@fb.com>
-
+Fixes: fc6a9f86f08a ("{IB,net}/mlx5: Assign mkey variant in mlx5_ib only")
+Link: https://github.com/ClangBuiltLinux/linux/issues/932
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
 ---
-Changes RFC => v2:
-1. Add a new bpf command instead of /dev/bpf_stats;
-2. Remove the jump_label patch, which is no longer needed;
-3. Add a static variable to save previous value of the sysctl.
----
- include/linux/bpf.h            |  1 +
- include/uapi/linux/bpf.h       |  1 +
- kernel/bpf/syscall.c           | 43 ++++++++++++++++++++++++++++++++++
- kernel/sysctl.c                | 36 +++++++++++++++++++++++++++-
- tools/include/uapi/linux/bpf.h |  1 +
- 5 files changed, 81 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/mr.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 4fd91b7c95ea..d542349771df 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -970,6 +970,7 @@ _out:							\
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mr.c b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+index fd3e6d217c3b..366f2cbfc6db 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/mr.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
+@@ -44,7 +44,6 @@ int mlx5_core_create_mkey(struct mlx5_core_dev *dev,
+ 	u32 mkey_index;
+ 	void *mkc;
+ 	int err;
+-	u8 key;
  
- #ifdef CONFIG_BPF_SYSCALL
- DECLARE_PER_CPU(int, bpf_prog_active);
-+extern struct mutex bpf_stats_enabled_mutex;
+ 	MLX5_SET(create_mkey_in, in, opcode, MLX5_CMD_OP_CREATE_MKEY);
  
- /*
-  * Block execution of BPF programs attached to instrumentation (perf,
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 40b2d9476268..8285ff37210c 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -111,6 +111,7 @@ enum bpf_cmd {
- 	BPF_MAP_LOOKUP_AND_DELETE_BATCH,
- 	BPF_MAP_UPDATE_BATCH,
- 	BPF_MAP_DELETE_BATCH,
-+	BPF_ENABLE_RUNTIME_STATS,
- };
+@@ -59,8 +58,7 @@ int mlx5_core_create_mkey(struct mlx5_core_dev *dev,
+ 	mkey->key |= mlx5_idx_to_mkey(mkey_index);
+ 	mkey->pd = MLX5_GET(mkc, mkc, pd);
  
- enum bpf_map_type {
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index b2f73ecacced..823dc9de7953 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -24,6 +24,9 @@
- #include <linux/ctype.h>
- #include <linux/nospec.h>
- #include <linux/audit.h>
-+#include <linux/miscdevice.h>
-+#include <linux/fs.h>
-+#include <linux/jump_label.h>
- #include <uapi/linux/btf.h>
- 
- #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
-@@ -3550,6 +3553,43 @@ static int bpf_map_do_batch(const union bpf_attr *attr,
- 	return err;
+-	mlx5_core_dbg(dev, "out 0x%x, key 0x%x, mkey 0x%x\n",
+-		      mkey_index, key, mkey->key);
++	mlx5_core_dbg(dev, "out 0x%x, mkey 0x%x\n", mkey_index, mkey->key);
+ 	return 0;
  }
- 
-+DEFINE_MUTEX(bpf_stats_enabled_mutex);
-+
-+static int bpf_stats_release(struct inode *inode, struct file *file)
-+{
-+	mutex_lock(&bpf_stats_enabled_mutex);
-+	static_key_slow_dec(&bpf_stats_enabled_key.key);
-+	mutex_unlock(&bpf_stats_enabled_mutex);
-+	return 0;
-+}
-+
-+static const struct file_operations bpf_stats_fops = {
-+	.release = bpf_stats_release,
-+};
-+
-+static int bpf_enable_runtime_stats(void)
-+{
-+	int fd;
-+
-+	if (!capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+
-+	mutex_lock(&bpf_stats_enabled_mutex);
-+	/* Set a very high limit to avoid overflow */
-+	if (static_key_count(&bpf_stats_enabled_key.key) > INT_MAX / 2) {
-+		mutex_unlock(&bpf_stats_enabled_mutex);
-+		return -EBUSY;
-+	}
-+
-+	fd = anon_inode_getfd("bpf-stats", &bpf_stats_fops, NULL, 0);
-+	if (fd >= 0)
-+		static_key_slow_inc(&bpf_stats_enabled_key.key);
-+
-+	mutex_unlock(&bpf_stats_enabled_mutex);
-+	return fd;
-+}
-+
-+
- SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
- {
- 	union bpf_attr attr = {};
-@@ -3660,6 +3700,9 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, siz
- 	case BPF_MAP_DELETE_BATCH:
- 		err = bpf_map_do_batch(&attr, uattr, BPF_MAP_DELETE_BATCH);
- 		break;
-+	case BPF_ENABLE_RUNTIME_STATS:
-+		err = bpf_enable_runtime_stats();
-+		break;
- 	default:
- 		err = -EINVAL;
- 		break;
-diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index ad5b88a53c5a..14613d1e0b88 100644
---- a/kernel/sysctl.c
-+++ b/kernel/sysctl.c
-@@ -316,6 +316,40 @@ static int min_extfrag_threshold;
- static int max_extfrag_threshold = 1000;
- #endif
- 
-+#ifdef CONFIG_BPF_SYSCALL
-+static int bpf_stats_handler(struct ctl_table *table, int write,
-+			     void __user *buffer, size_t *lenp,
-+			     loff_t *ppos)
-+{
-+	struct static_key *key = (struct static_key *)table->data;
-+	int val, ret;
-+	static int saved_val;
-+	struct ctl_table tmp = {
-+		.data   = &val,
-+		.maxlen = sizeof(val),
-+		.mode   = table->mode,
-+		.extra1 = SYSCTL_ZERO,
-+		.extra2 = SYSCTL_ONE,
-+	};
-+
-+	if (write && !capable(CAP_SYS_ADMIN))
-+		return -EPERM;
-+
-+	mutex_lock(&bpf_stats_enabled_mutex);
-+	val = saved_val;
-+	ret = proc_dointvec_minmax(&tmp, write, buffer, lenp, ppos);
-+	if (write && !ret && val != saved_val) {
-+		if (val)
-+			static_key_slow_inc(key);
-+		else
-+			static_key_slow_dec(key);
-+		saved_val = val;
-+	}
-+	mutex_unlock(&bpf_stats_enabled_mutex);
-+	return ret;
-+}
-+#endif
-+
- static struct ctl_table kern_table[] = {
- 	{
- 		.procname	= "sched_child_runs_first",
-@@ -1256,7 +1290,7 @@ static struct ctl_table kern_table[] = {
- 		.data		= &bpf_stats_enabled_key.key,
- 		.maxlen		= sizeof(bpf_stats_enabled_key),
- 		.mode		= 0644,
--		.proc_handler	= proc_do_static_key,
-+		.proc_handler	= bpf_stats_handler,
- 	},
- #endif
- #if defined(CONFIG_TREE_RCU)
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 40b2d9476268..8285ff37210c 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -111,6 +111,7 @@ enum bpf_cmd {
- 	BPF_MAP_LOOKUP_AND_DELETE_BATCH,
- 	BPF_MAP_UPDATE_BATCH,
- 	BPF_MAP_DELETE_BATCH,
-+	BPF_ENABLE_RUNTIME_STATS,
- };
- 
- enum bpf_map_type {
+ EXPORT_SYMBOL(mlx5_core_create_mkey);
 -- 
-2.17.1
+2.26.0.rc1
 
