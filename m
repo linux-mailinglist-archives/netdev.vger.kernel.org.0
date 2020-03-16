@@ -2,83 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5030186E3C
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 16:06:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 412FE186F4A
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 16:51:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731731AbgCPPG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 11:06:28 -0400
-Received: from smtp2.ustc.edu.cn ([202.38.64.46]:41231 "EHLO ustc.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731672AbgCPPG2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Mar 2020 11:06:28 -0400
-X-Greylist: delayed 486 seconds by postgrey-1.27 at vger.kernel.org; Mon, 16 Mar 2020 11:06:27 EDT
-Received: from xhacker (unknown [101.86.20.80])
-        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygDn74sFlG9eEGFPAA--.3001S2;
-        Mon, 16 Mar 2020 22:58:13 +0800 (CST)
-Date:   Mon, 16 Mar 2020 22:56:36 +0800
-From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
-To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: mvneta: Fix the case where the last poll did not
- process all rx
-Message-ID: <20200316225636.78b08da4@xhacker>
+        id S1732135AbgCPPvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 11:51:35 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:43568 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732059AbgCPPvG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 11:51:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584373864;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=E437h4AXVPurdxkEZm+wlXmFwURlSgsNRNuhrB2sfJw=;
+        b=M0LSdkNnZy1sLx7OIVZ9moPfwCQGJkJqQ0a/IJaG7JLkQr3fRNuynbCJTSergx0LwG+OWj
+        80OHvNgiQgLQ9M5qXkuWiyaK+QkMKTY6+O32roRerG5IdSiS9hDpO1yS+sd/qq83NhvxxF
+        0KQtoCUSDop37MAySSI93qAaEdvmDh4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-345-t_Yyfeu5NZWwneY33GaOgw-1; Mon, 16 Mar 2020 11:44:44 -0400
+X-MC-Unique: t_Yyfeu5NZWwneY33GaOgw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A6668144D8C;
+        Mon, 16 Mar 2020 15:44:42 +0000 (UTC)
+Received: from carbon (ovpn-200-32.brq.redhat.com [10.40.200.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 44B348FBF9;
+        Mon, 16 Mar 2020 15:44:37 +0000 (UTC)
+Date:   Mon, 16 Mar 2020 16:44:35 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Denis Kirjanov <kda@linux-powerpc.org>
+Cc:     brouer@redhat.com, netdev@vger.kernel.org, jgross@suse.com,
+        ilias.apalodimas@linaro.org, wei.liu@kernel.org, paul@xen.org
+Subject: Re: [PATCH net-next v4] xen networking: add basic XDP support for
+ xen-netfront
+Message-ID: <20200316164435.27751dbf@carbon>
+In-Reply-To: <1584364176-23346-1-git-send-email-kda@linux-powerpc.org>
+References: <1584364176-23346-1-git-send-email-kda@linux-powerpc.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: LkAmygDn74sFlG9eEGFPAA--.3001S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Xryktw1rtFy7tF1xCw4Durg_yoWkWrb_W3
-        Z7ZF9Iqw40gF10kw4kZr4rAryFyF1qqFs5AFs2qrWSqayxGF13Xrn5CFZYv3yDC3yayFyD
-        GwsI9ay2y3WaqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbF8YjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z2
-        80aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAK
-        zVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx
-        8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxAIw28IcxkI7VAKI48JMxC20s026xCa
-        FVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_Jr
-        Wlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j
-        6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr
-        1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8
-        JrUvcSsGvfC2KfnxnUUI43ZEXa7IU5PpnJUUUUU==
-X-CM-SenderInfo: xmv2xttqjtqzxdloh3xvwfhvlgxou0/
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+On Mon, 16 Mar 2020 16:09:36 +0300
+Denis Kirjanov <kda@linux-powerpc.org> wrote:
 
-For the case where the last mvneta_poll did not process all
-RX packets, we need to xor the pp->cause_rx_tx or port->cause_rx_tx
-before claculating the rx_queue.
+> diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+> index 482c6c8..c06ae57 100644
+> --- a/drivers/net/xen-netfront.c
+> +++ b/drivers/net/xen-netfront.c
+[...]
+> @@ -778,6 +790,52 @@ static int xennet_get_extras(struct netfront_queue *queue,
+>  	return err;
+>  }
+>  
+> +u32 xennet_run_xdp(struct netfront_queue *queue, struct page *pdata,
+> +		   struct xen_netif_rx_response *rx, struct bpf_prog *prog,
+> +		   struct xdp_buff *xdp)
+> +{
+> +	struct xdp_frame *xdpf;
+> +	u32 len = rx->status;
+> +	u32 act = XDP_PASS;
+> +	int err;
+> +
+> +	xdp->data_hard_start = page_address(pdata);
+> +	xdp->data = xdp->data_hard_start + XDP_PACKET_HEADROOM;
+> +	xdp_set_data_meta_invalid(xdp);
+> +	xdp->data_end = xdp->data + len;
+> +	xdp->rxq = &queue->xdp_rxq;
+> +	xdp->handle = 0;
+> +
+> +	act = bpf_prog_run_xdp(prog, xdp);
+> +	switch (act) {
+> +	case XDP_TX:
+> +		xdpf = convert_to_xdp_frame(xdp);
+> +		err = xennet_xdp_xmit(queue->info->netdev, 1,
+> +				&xdpf, 0);
 
-Fixes: 2dcf75e2793c ("net: mvneta: Associate RX queues with each CPU")
-Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
----
- drivers/net/ethernet/marvell/mvneta.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Strange line wrap, I don't think this is needed, please fix.
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 98017e7d5dd0..11babc79dc6c 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -3036,11 +3036,10 @@ static int mvneta_poll(struct napi_struct *napi, int budget)
- 	/* For the case where the last mvneta_poll did not process all
- 	 * RX packets
- 	 */
--	rx_queue = fls(((cause_rx_tx >> 8) & 0xff));
--
- 	cause_rx_tx |= pp->neta_armada3700 ? pp->cause_rx_tx :
- 		port->cause_rx_tx;
- 
-+	rx_queue = fls(((cause_rx_tx >> 8) & 0xff));
- 	if (rx_queue) {
- 		rx_queue = rx_queue - 1;
- 		if (pp->bm_priv)
+
+> +		if (unlikely(err < 0))
+> +			trace_xdp_exception(queue->info->netdev, prog, act);
+> +		break;
+> +	case XDP_REDIRECT:
+> +		err = xdp_do_redirect(queue->info->netdev, xdp, prog);
+
+What is the frame size of the packet memory?
+
+
+> +		if (unlikely(err))
+> +			trace_xdp_exception(queue->info->netdev, prog, act);
+> +		xdp_do_flush();
+> +		break;
+> +	case XDP_PASS:
+> +	case XDP_DROP:
+> +		break;
+> +
+> +	case XDP_ABORTED:
+> +		trace_xdp_exception(queue->info->netdev, prog, act);
+> +		break;
+> +
+> +	default:
+> +		bpf_warn_invalid_xdp_action(act);
+> +	}
+> +
+> +	return act;
+> +}
+> +
+
 -- 
-2.24.0
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
