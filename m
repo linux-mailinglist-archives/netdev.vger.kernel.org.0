@@ -2,66 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF1F51874F8
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:44:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9264D187502
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:45:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732750AbgCPVoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 17:44:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47474 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732680AbgCPVoL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Mar 2020 17:44:11 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A22D520658;
-        Mon, 16 Mar 2020 21:44:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584395051;
-        bh=NtwqjS8GGcvbcY9Ssa14vTtHWgHuCBV/WCBMZ4YR4IA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=r7WeHGQsE7RVfM+72tFbyL6xz0Y0jLiOi9pViKrBD/9r+8Ta6YjhiE6L47w5XiDc7
-         PGwW967AqtPQbmrhNpQgRAMG7qz4ucMFQSsVuW3vHiYhB2NfpK7hfImh/wXoasrunc
-         eylvR9uRJvMF9U5nDtsgGyzDi3P1mnxqkGkBhY1Q=
-Date:   Mon, 16 Mar 2020 14:44:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Luo bin <luobin9@huawei.com>
-Cc:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <aviad.krawczyk@huawei.com>,
-        <luoxianjun@huawei.com>, <cloud.wangxiaoyun@huawei.com>,
-        <yin.yinshi@huawei.com>
-Subject: Re: [PATCH net 1/6] hinic: fix process of long length skb without
- frags
-Message-ID: <20200316144408.00797c6f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200316005630.9817-2-luobin9@huawei.com>
-References: <20200316005630.9817-1-luobin9@huawei.com>
-        <20200316005630.9817-2-luobin9@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1732770AbgCPVpX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 17:45:23 -0400
+Received: from mail-wr1-f45.google.com ([209.85.221.45]:34940 "EHLO
+        mail-wr1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732652AbgCPVpX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 17:45:23 -0400
+Received: by mail-wr1-f45.google.com with SMTP id h4so2539986wru.2;
+        Mon, 16 Mar 2020 14:45:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=FfPpdz9J4skN4p3S/CS6XKQcAy2N9kTf5vI/j49UlgQ=;
+        b=GAaQ7sIzdom1zPFBKBJ0qramzcEWfAyH6wS9FE+ctO79AA5zuhWW7MRnREov6Kktwu
+         /mHnCpJeGC75drCn3e/Q8Dtb9Mzf14q3VDmZezYiY4I+93u6imbwa7wbTrUlLJTj5SQJ
+         cQoHbDCNDSTgHyHM0EGIxzcYozCqYzIspCEl09cswre1F/5K9j/ytSnaI+KdtXc9EYqY
+         TWvu0HpUd0XPrVZvBHvD1Xc1JAT7o5CmGuxChluOBhoDO68/5eW4mss5VHCyONINDDs0
+         C/TENN3J48NEdjfWD1p6qDRqZg5EWvFAC13Jqjb+7awmdL/1uJKyZcENWgX31PY69q+m
+         cTGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=FfPpdz9J4skN4p3S/CS6XKQcAy2N9kTf5vI/j49UlgQ=;
+        b=LypnkhnfhRtSlTg9rAkNy5W1q9dq2gIFUWabEZvmk7ofT0Gk0Q3zXc4p9kMSXt+nOp
+         KWK5d4Vqo/MXnz2aW0oatXcjA+zFxKkjlV5iwEry/2XZUpTxa4vaSCE7cs1jt8/jCZbm
+         BhayW3XNq92w0McU9lk8uE8Qcx3qozr6X2m/YXMDsdf1bhpA0xZDBVdZvlF55gVlikE9
+         2HjeVI+GXwg/qQcKT/2qtMDgaq1k/69idZThwtlrMSVkPzSTBdrVlcSuVLng0QZNuFx3
+         fbCYNBYWN7qO8hV5Wanm1drqd7uZticM+hwbAX3Hv8g00NXGZDxUS0xNul8TyLCEdM+A
+         sMNQ==
+X-Gm-Message-State: ANhLgQ12diOX8drcmC1/SUUAviSUAH4luVdnLqt9QzM1/Cu75wtS7LYN
+        KpaXGKSu3XdYHIKtdzgn6Rc=
+X-Google-Smtp-Source: ADFU+vuMlY3kwzXXs69D6CZI4m87gdH5XYJab7g0mZaWj3MEXEhiTPue0pxPxGqNDw2y4S0PE1VxXw==
+X-Received: by 2002:a5d:5741:: with SMTP id q1mr1394313wrw.169.1584395121578;
+        Mon, 16 Mar 2020 14:45:21 -0700 (PDT)
+Received: from stbirv-lnx-3.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id a13sm1625676wrh.80.2020.03.16.14.45.19
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 16 Mar 2020 14:45:21 -0700 (PDT)
+From:   Doug Berger <opendmb@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
+Subject: [PATCH net 0/2] net: bcmgenet: revisit MAC reset
+Date:   Mon, 16 Mar 2020 14:44:54 -0700
+Message-Id: <1584395096-41674-1-git-send-email-opendmb@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Mar 2020 00:56:25 +0000 Luo bin wrote:
-> -#define MIN_SKB_LEN                     17
-> +#define MIN_SKB_LEN			17
-> +#define HINIC_GSO_MAX_SIZE		65536
+Commit 3a55402c9387 ("net: bcmgenet: use RGMII loopback for MAC 
+reset") was intended to resolve issues with reseting the UniMAC
+core within the GENET block by providing better control over the
+clocks used by the UniMAC core. Unfortunately, it is not
+compatible with all of the supported system configurations so an
+alternative method must be applied.
 
-> +	if (unlikely(skb->len > HINIC_GSO_MAX_SIZE && nr_sges == 1)) {
-> +		txq->txq_stats.frag_len_overflow++;
-> +		goto skb_error;
-> +	}
+This commit set provides such an alternative. The first commit
+reverts the previous change and the second commit provides the
+alternative reset sequence that addresses the concerns observed
+with the previous implementation.
 
-I don't think drivers should have to check this condition.
+This replacement implementation should be applied to the stable
+branches wherever commit 3a55402c9387 ("net: bcmgenet: use RGMII 
+loopback for MAC reset") has been applied.
 
-We have netdev->gso_max_size which should be initialized to 
+Unfortunately, reverting that commit may conflict with some
+restructuring changes introduced by commit 4f8d81b77e66 ("net: 
+bcmgenet: Refactor register access in bcmgenet_mii_config").
+The first commit in this set has been manually edited to
+resolve the conflict on net/master. I would be happy to help
+stable maintainers with resolving any such conflicts if they
+occur. However, I do not expect that commit to have been
+backported to stable branch so hopefully the revert can be
+applied cleanly.
 
-include/linux/netdevice.h:#define GSO_MAX_SIZE          65536
+Doug Berger (2):
+  Revert "net: bcmgenet: use RGMII loopback for MAC reset"
+  net: bcmgenet: keep MAC in reset until PHY is up
 
-in
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c     | 10 +++---
+ drivers/net/ethernet/broadcom/genet/bcmgenet_wol.c |  6 +++-
+ drivers/net/ethernet/broadcom/genet/bcmmii.c       | 40 ++++------------------
+ 3 files changed, 16 insertions(+), 40 deletions(-)
 
-net/core/dev.c: dev->gso_max_size = GSO_MAX_SIZE;
+-- 
+2.7.4
 
-Please send a patch to pktgen to uphold the normal stack guarantees.
