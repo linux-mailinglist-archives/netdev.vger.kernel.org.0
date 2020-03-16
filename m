@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 217D6187532
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:56:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12832187539
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 22:58:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732737AbgCPV4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 17:56:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50730 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732636AbgCPV4S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Mar 2020 17:56:18 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 36F5620719;
-        Mon, 16 Mar 2020 21:56:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584395777;
-        bh=OZR5Xd8iB+ZM7yXCOTP3bEuYN8Sf5wRXOma5K07r6JQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PdpUud8j6BW6rNkRerno5S7Idd8ZCaF5ihfJ3+/TrEWSPFFsOWtkV/TjubFAr4+Mq
-         +idxNKS2v47l/mODmdcssXsEBcIP1li60eqXWM6xA5lBkp0AWilaEww65Jwp4SFAAe
-         h4kbyHs2BScHe7NLwL7h1QbOOh/nE2emwQQhG9x0=
-Date:   Mon, 16 Mar 2020 14:56:15 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     <akiyano@amazon.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <dwmw@amazon.com>,
-        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
-        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
-        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
-        <benh@amazon.com>, <ndagan@amazon.com>, <shayagr@amazon.com>,
-        <sameehj@amazon.com>
-Subject: Re: [PATCH V1 net 4/7] net: ena: remove code that does nothing
-Message-ID: <20200316145615.238af848@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1584362304-274-5-git-send-email-akiyano@amazon.com>
-References: <1584362304-274-1-git-send-email-akiyano@amazon.com>
-        <1584362304-274-5-git-send-email-akiyano@amazon.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1732742AbgCPV6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 17:58:49 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:48446 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732652AbgCPV6t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 17:58:49 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 941D0156D1DB5;
+        Mon, 16 Mar 2020 14:58:48 -0700 (PDT)
+Date:   Mon, 16 Mar 2020 14:58:47 -0700 (PDT)
+Message-Id: <20200316.145847.669961790477208036.davem@davemloft.net>
+To:     madalin.bucur@oss.nxp.com
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        shawnguo@kernel.org, leoyang.li@nxp.com, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2 0/3] QorIQ DPAA ARM RDBs need internal delay on
+ RGMII
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1584360358-8092-1-git-send-email-madalin.bucur@oss.nxp.com>
+References: <1584360358-8092-1-git-send-email-madalin.bucur@oss.nxp.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 16 Mar 2020 14:58:49 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 Mar 2020 14:38:21 +0200 akiyano@amazon.com wrote:
-> From: Arthur Kiyanovski <akiyano@amazon.com>
-> 
-> Both key and func parameters are pointers on the stack.
-> Setting them to NULL does nothing.
-> The original intent was to leave the key and func unset in this case,
-> but for this to happen nothing needs to be done as the calling
-> function ethtool_get_rxfh() already clears key and func.
-> 
-> This commit removes the above described useless code.
-> 
-> Fixes: 0c8923c0a64f ("net: ena: rss: fix failure to get indirection table")
-> Signed-off-by: Sameeh Jubran <sameehj@amazon.com>
-> Signed-off-by: Arthur Kiyanovski <akiyano@amazon.com>
+From: Madalin Bucur <madalin.bucur@oss.nxp.com>
+Date: Mon, 16 Mar 2020 14:05:55 +0200
 
-Why is this a fix?
+> v2: used phy_interface_mode_is_rgmii() to identify RGMII
+> 
+> The QorIQ DPAA 1 based RDB boards require internal delay on
+> both Tx and Rx to be set. The patch set ensures all RGMII
+> modes are treated correctly by the FMan driver and sets the
+> phy-connection-type to "rgmii-id" to restore functionality.
+> Previously Rx internal delay was set by board pull-ups and
+> was left untouched by the PHY driver. Since commit
+> 1b3047b5208a80 ("net: phy: realtek: add support for
+> configuring the RX delay on RTL8211F") the Realtek 8211F PHY
+> driver has control over the RGMII RX delay and it is
+> disabling it for other modes than RGMII_RXID and RGMII_ID.
+> 
+> Please note that u-boot in particular performs a fix-up of
+> the PHY connection type and will overwrite the values from
+> the Linux device tree. Another patch set was sent for u-boot
+> and one needs to apply that [1] to the boot loader, to ensure
+> this fix is complete, unless a different bootloader is used.
+
+Series applied, thanks.
