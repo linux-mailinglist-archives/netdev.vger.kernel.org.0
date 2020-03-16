@@ -2,87 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 363201871CD
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 19:01:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5488818727C
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 19:39:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732270AbgCPSBI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 14:01:08 -0400
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:38091 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730437AbgCPSBH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 14:01:07 -0400
-Received: by mail-pj1-f68.google.com with SMTP id m15so8420285pje.3
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 11:01:07 -0700 (PDT)
+        id S1732372AbgCPSi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 14:38:58 -0400
+Received: from mail-ot1-f45.google.com ([209.85.210.45]:39453 "EHLO
+        mail-ot1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731967AbgCPSi6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 14:38:58 -0400
+Received: by mail-ot1-f45.google.com with SMTP id r2so3508235otn.6;
+        Mon, 16 Mar 2020 11:38:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=oP44zQZnO9PeHFK6uB887nO6uamzTgiSUc6Q6McbwCM=;
-        b=n+r5HJvgnT+H3UEQ2x57vDaytsQ9ZMetnHERcsXplowQpsJZyrfO64GnPk4mlMzNR3
-         QA1P+6ItBNFkhCE7SQOHVbbKMOeyqjfYTGLf6OPbsfWUsQ0oABWM2G61PwD5ipGc1K2R
-         HgY/XXS/EAv6tyl6vcQd4gNP3ap+sFx4aW1oc/Ujt09v8qjMqNj9eB0qHtZwTXwSNYDO
-         lNmI5sQUM4hFZoc2ynofZk3J5INgPLZrEGhJqvVXrZRfVwr8qJdzdzqwKYw5GHw9KPqU
-         rWkJ6a7NQ3NZli1N6gPTufodogSJbiplSLogCDtJ0Cq4EtSKNs2ZthXJB3AS+MTN6e8T
-         0SfA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=V5MeuyFn7e4mHxz4tUSn4H5NtYvN6rAxu8E1UQB7qo4=;
+        b=fFqlVJZf/utj5DXMnZJY1/7oZIFZxzBbgaoVuXKMwqUU36i/1OOy8SEu3fUxF6mhXy
+         Z6VIy3HzZRynhnepTizhuYUx+twrzKxbmP/KwZO6ps/x9ALDyYCnKi1U/Hj7ZW4GZwvU
+         Ldj+MpSplKM1g21lrlXFuygjXP8sPmAS3OXHebiVlunZc8L3w+ODe9Q49GZG4GHeZkPI
+         +sWGh15AyUAPzMKB8lKC/ClzZUx6vKr5cDkmBS4LjVuzQHpU98+UKgm6LIPhOfIIHoi5
+         GFUgRfJQn7lmHUp7Ee951ggLltYvnhooxe9+3vbzlc1dja0hSWSYckR+2K3/q0xWNFhh
+         cWpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=oP44zQZnO9PeHFK6uB887nO6uamzTgiSUc6Q6McbwCM=;
-        b=jNM2zjoiis52xs5JN40LenpjE/uHyJjAxn13mC1pYKg8hARK6/sgeIX54Y7XzAW7yD
-         ctnBx/EML7Oabb4Bh8XgEWVzDtC0B9NCRTEVEYJgUsiJM+EVB5tULF+hqhX2qy45jPQ4
-         1xTK8yXvJrmJsUSzlik9L5rnLqnbYaY0+q0VDH8dnO5zqJiq0SMzFVtA31DulZL7zZvX
-         SSgm+VMURnrXTIQBu2UPwLoy01lgPB57fl4ds4pMxQTpDy8NZo/i15WV87hWZxRO2QiJ
-         7FlGulUedfWCjgboS++APYDz5SWEqumfqS9db3Q1ZiN/tPMJiOVCTJYTj8ENsF/2Vkac
-         wT2Q==
-X-Gm-Message-State: ANhLgQ1dR/5r3SrScE3lTidq/XsW48UfZZcUN4EQfbphN2NlVJMMBuYO
-        YsVZgMcEtnk3/M3FpTSTVbQFFg==
-X-Google-Smtp-Source: ADFU+vtIsM53ZZQ0t1FmwioGQHRACSPqLuazHTeGho4lTaso61txoTnU6Q+j/CLRH9GM0fhR8jlOxA==
-X-Received: by 2002:a17:90a:2ec7:: with SMTP id h7mr742668pjs.107.1584381666484;
-        Mon, 16 Mar 2020 11:01:06 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id 5sm543717pfw.98.2020.03.16.11.01.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Mar 2020 11:01:05 -0700 (PDT)
-Subject: Re: [PATCH net-next 3/5] ionic: remove adminq napi instance
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-References: <20200316021428.48919-1-snelson@pensando.io>
- <20200316021428.48919-4-snelson@pensando.io> <20200316065212.GC8510@unreal>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <8cd1862f-d5db-65a8-bf53-46092b89fda4@pensando.io>
-Date:   Mon, 16 Mar 2020 11:01:05 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V5MeuyFn7e4mHxz4tUSn4H5NtYvN6rAxu8E1UQB7qo4=;
+        b=TZRZNa+YPYhR/gWnGFf7WtOLy5w76FLpoC78QyOIXYOoCzlwGenOg1WxrL8A58p/0Q
+         2OPsJ5DOJPgZWbU1HYUotTi+GTVfBDZOztjo+FtczCOSuzwxFEeQpbwPGQMD5wbboD7m
+         PZpMTjd5trQBKtg9eEJRg4YLzgF3OGuf++6LFG0p9TWFRS2/+v/X5sbIcaJYW319VlRf
+         Lshk4anQild1P0/mQGkHautU7vH7fybc4J2EkCQQ00JtDA0G0sTsr8iVFcWps2vBe9QT
+         FvoDNLD00SfND84PjLe3kV+ROBQsa9oLWtgiFp8grHUnxFYdeT/uMEIGHfp+iYbuQlKR
+         86Rg==
+X-Gm-Message-State: ANhLgQ0Iqa91D5gdSXihidf9PEx0BTT/BP0inHgA2498z6gZ0GSW51Hg
+        qw8XgPNOmnwxEzEwXC6vMPAH/RV9aDJpUTtcKps=
+X-Google-Smtp-Source: ADFU+vuRdt3q64dbitsBauXjXkZnQqbPwYUIVUhmM7Zl9lDdq4ZPinFjgANOiz9ElZthcOh8vPTUfW7AjNjXdEEabOA=
+X-Received: by 2002:a05:6830:1190:: with SMTP id u16mr481291otq.298.1584383937944;
+ Mon, 16 Mar 2020 11:38:57 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200316065212.GC8510@unreal>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+References: <000000000000e6150305a08797cc@google.com>
+In-Reply-To: <000000000000e6150305a08797cc@google.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 16 Mar 2020 11:38:47 -0700
+Message-ID: <CAM_iQpX3ozoGK0BBJKNbVTUCXOZpVx-OaJL4xcvJ3Yp9051RkA@mail.gmail.com>
+Subject: Re: KMSAN: uninit-value in tcf_exts_change
+To:     syzbot <syzbot+a37cda34d2b8b740a5f1@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Alexander Potapenko <glider@google.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/15/20 11:52 PM, Leon Romanovsky wrote:
-> On Sun, Mar 15, 2020 at 07:14:26PM -0700, Shannon Nelson wrote:
->> Remove the adminq's napi struct when tearing down
->> the adminq.
->>
->> Signed-off-by: Shannon Nelson <snelson@pensando.io>
->> ---
->>   drivers/net/ethernet/pensando/ionic/ionic_lif.c | 1 +
->>   1 file changed, 1 insertion(+)
->>
-> It looks like a fix to me, and I would expect Fixes line here.
-
-I suppose they all could include Fixes tags, so I'll re-tag them and add 
-a description line to the last one.
-
-Perhaps all but the first could be promoted to net but they're not 
-serious issues so I wasn't going to worry about that.
-
-Thanks,
-sln
-
+#syz fix: net_sched: keep alloc_hash updated after hash allocation
