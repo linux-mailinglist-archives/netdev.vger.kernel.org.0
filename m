@@ -2,88 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8331186ACB
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 13:23:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D7BC186B2E
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 13:39:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730959AbgCPMXw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 08:23:52 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:52740 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730878AbgCPMXw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 08:23:52 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02GCNWG8055256;
-        Mon, 16 Mar 2020 07:23:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1584361412;
-        bh=/axxTSN4rOjW8bh6Kbh93WtVu/tmmhKSGynWOWCPzuY=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=vSg0a1+QKByxeZQ7KBTjfgkxDI9IEY9zlUWk/fQEdnbGDiw7iS+KNJxMY7pblqv91
-         xcRc9iE/EmWBlfMtFx29z1Q7oLaJDwW3ojWz/gBihLpbblaWUvjPcymhZ6fkd6lTnK
-         L6gF9F4A/jU3aB+ibd8fH0XVfsLOOvs8npPetIlU=
-Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02GCNWpJ082049;
-        Mon, 16 Mar 2020 07:23:32 -0500
-Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE105.ent.ti.com
- (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Mon, 16
- Mar 2020 07:23:32 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Mon, 16 Mar 2020 07:23:32 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02GCNS4R121266;
-        Mon, 16 Mar 2020 07:23:29 -0500
-Subject: Re: [PATCH] kthread: Mark timer used by delayed kthread works as IRQ
- safe
-To:     Tejun Heo <tj@kernel.org>, Petr Mladek <pmladek@suse.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        <linux-rt-users@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        <linux-kernel@vger.kernel.org>
-References: <20200217120709.1974-1-pmladek@suse.com>
- <20200219152248.GC698990@mtj.thefacebook.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <6a4c07df-8971-8637-5251-ce177c3a08ce@ti.com>
-Date:   Mon, 16 Mar 2020 14:23:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1731231AbgCPMif (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 08:38:35 -0400
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:7709 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731027AbgCPMif (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 08:38:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1584362315; x=1615898315;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=F2VZd3uGIxE6hDmCZjvbnCME+tF7b5YOlUzMprOlg6I=;
+  b=L8sJ5N+zaTC5AaBD5G1V7x7KETw1SrxgQpYDX52pLJmLajnmWXo2O/VE
+   e1MbibdegwZW2c+bm0/7AZQ/Kg8/q7rGZapzBvUzGQo/fpwEEX+/sz3XM
+   N4x10xX4Ui4eTi89NBIqOO6jawP13eVWRPPazF+1+W+3OSBY4nYcMIqoR
+   g=;
+IronPort-SDR: sXKSZzRn5oN+RIY0Au8OLWABtYIoNbim0C8Vlw3rcHzzmO2l6WFZEYYprlZvNnGFC+cYGARPWP
+ vneB62PDUZug==
+X-IronPort-AV: E=Sophos;i="5.70,560,1574121600"; 
+   d="scan'208";a="31410801"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-9ec21598.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 16 Mar 2020 12:38:33 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
+        by email-inbound-relay-1d-9ec21598.us-east-1.amazon.com (Postfix) with ESMTPS id 97E14A2832;
+        Mon, 16 Mar 2020 12:38:32 +0000 (UTC)
+Received: from EX13D10UWA004.ant.amazon.com (10.43.160.64) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.58) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Mon, 16 Mar 2020 12:38:32 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
+ EX13D10UWA004.ant.amazon.com (10.43.160.64) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Mon, 16 Mar 2020 12:38:31 +0000
+Received: from HFA15-G63729NC.amazon.com (10.1.213.27) by
+ mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP Server id
+ 15.0.1367.3 via Frontend Transport; Mon, 16 Mar 2020 12:38:27 +0000
+From:   <akiyano@amazon.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     Arthur Kiyanovski <akiyano@amazon.com>, <dwmw@amazon.com>,
+        <zorik@amazon.com>, <matua@amazon.com>, <saeedb@amazon.com>,
+        <msw@amazon.com>, <aliguori@amazon.com>, <nafea@amazon.com>,
+        <gtzalik@amazon.com>, <netanel@amazon.com>, <alisaidi@amazon.com>,
+        <benh@amazon.com>, <ndagan@amazon.com>, <shayagr@amazon.com>,
+        <sameehj@amazon.com>
+Subject: [PATCH V1 net 0/7] ENA driver bug fixes
+Date:   Mon, 16 Mar 2020 14:38:17 +0200
+Message-ID: <1584362304-274-1-git-send-email-akiyano@amazon.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-In-Reply-To: <20200219152248.GC698990@mtj.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Petr,
+From: Arthur Kiyanovski <akiyano@amazon.com>
 
-On 19/02/2020 17:22, Tejun Heo wrote:
-> On Mon, Feb 17, 2020 at 01:07:09PM +0100, Petr Mladek wrote:
->> The timer used by delayed kthread works are IRQ safe because the used
->> kthread_delayed_work_timer_fn() is IRQ safe.
->>
->> It is properly marked when initialized by KTHREAD_DELAYED_WORK_INIT().
->> But TIMER_IRQSAFE flag is missing when initialized by
->> kthread_init_delayed_work().
->>
->> The missing flag might trigger invalid warning from del_timer_sync()
->> when kthread_mod_delayed_work() is called with interrupts disabled.
->>
->> Reported-by: Grygorii Strashko <grygorii.strashko@ti.com>
->> Signed-off-by: Petr Mladek <pmladek@suse.com>
->> Tested-by: Grygorii Strashko <grygorii.strashko@ti.com>
-> 
-> Acked-by: Tejun Heo <tj@kernel.org>
+ENA driver bug fixes
 
-I'm worry shouldn't this patch have "fixes" tag?
+Arthur Kiyanovski (7):
+  net: ena: fix incorrect setting of the number of msix vectors
+  net: ena: avoid unnecessary admin command when RSS function set fails
+  net: ena: fix inability to set RSS hash function without changing the
+    key
+  net: ena: remove code that does nothing
+  net: ena: fix request of incorrect number of IRQ vectors
+  net: ena: avoid memory access violation by validating req_id properly
+  net: ena: fix continuous keep-alive resets
+
+ drivers/net/ethernet/amazon/ena/ena_com.c     | 17 ++++++++----
+ drivers/net/ethernet/amazon/ena/ena_com.h     | 21 ++++++++++-----
+ drivers/net/ethernet/amazon/ena/ena_ethtool.c | 15 +++++------
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  | 27 +++++++++++++------
+ 4 files changed, 52 insertions(+), 28 deletions(-)
 
 -- 
-Best regards,
-grygorii
+2.17.1
+
