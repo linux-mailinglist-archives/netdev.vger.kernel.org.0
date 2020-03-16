@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A85F8187433
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 21:47:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1DE5187435
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 21:47:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732609AbgCPUr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 16:47:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58464 "EHLO mail.kernel.org"
+        id S1732616AbgCPUra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 16:47:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58482 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732602AbgCPUr1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1732606AbgCPUr1 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 16 Mar 2020 16:47:27 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 658DF20736;
-        Mon, 16 Mar 2020 20:47:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BAF7C20738;
+        Mon, 16 Mar 2020 20:47:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584391646;
-        bh=05sPixts01WaYedUXMEihCusrO1iqQpFTSN9kYfKPuE=;
+        s=default; t=1584391647;
+        bh=fjHT+vXaGTkmgjflYBJF3oq9Wf1OCHxqOoCcMIvTVuY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=koyEqcBamf5FLsveBuaubrWnh7EBT8OvIsQFiEY6QAVAm4lziR1IcWjS+/3Ilq30S
-         fYnimo2mnehNKji7mGnHWDGkbJ/GZlSQ1RWrceQnWcJEv85FfyFPDz8nsbr4wktbey
-         0E7bmtvBISQxfCiLXebmrB2ppUl2cShjSVtDr+zw=
+        b=gMyCe00HorkAkiTkqfcj7nUSVRiWiua0H7UuSBulNUTgQcTm5lF4mQEIqtyRN1TPo
+         R9j3SNS89T7JqS9A5Xs1PHUtRn7kLvyBFNystTohvZoQloYxPdfzt9cAQkUsokHTAJ
+         u5qxs/jj6Y5WsQwqk8emfaCWwmVT0AwjLtoIW7+A=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, linux-net-drivers@solarflare.com,
@@ -32,9 +32,9 @@ Cc:     netdev@vger.kernel.org, linux-net-drivers@solarflare.com,
         grygorii.strashko@ti.com, andrew@lunn.ch, michal.simek@xilinx.com,
         radhey.shyam.pandey@xilinx.com, mkubecek@suse.cz,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 5/9] net: cpsw: reject unsupported coalescing params
-Date:   Mon, 16 Mar 2020 13:47:08 -0700
-Message-Id: <20200316204712.3098382-6-kuba@kernel.org>
+Subject: [PATCH net-next 6/9] net: davinci_emac: reject unsupported coalescing params
+Date:   Mon, 16 Mar 2020 13:47:09 -0700
+Message-Id: <20200316204712.3098382-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200316204712.3098382-1-kuba@kernel.org>
 References: <20200316204712.3098382-1-kuba@kernel.org>
@@ -52,34 +52,21 @@ This driver did not previously reject unsupported parameters.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- drivers/net/ethernet/ti/cpsw.c     | 1 +
- drivers/net/ethernet/ti/cpsw_new.c | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/net/ethernet/ti/davinci_emac.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index 6ae4a72e6f43..c2c5bf87da01 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -1211,6 +1211,7 @@ static int cpsw_set_channels(struct net_device *ndev,
- }
- 
- static const struct ethtool_ops cpsw_ethtool_ops = {
+diff --git a/drivers/net/ethernet/ti/davinci_emac.c b/drivers/net/ethernet/ti/davinci_emac.c
+index 75d4e16c692b..de282531f68b 100644
+--- a/drivers/net/ethernet/ti/davinci_emac.c
++++ b/drivers/net/ethernet/ti/davinci_emac.c
+@@ -481,6 +481,7 @@ static int emac_set_coalesce(struct net_device *ndev,
+  * Ethtool support for EMAC adapter
+  */
+ static const struct ethtool_ops ethtool_ops = {
 +	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS,
- 	.get_drvinfo	= cpsw_get_drvinfo,
- 	.get_msglevel	= cpsw_get_msglevel,
- 	.set_msglevel	= cpsw_set_msglevel,
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 71215db7934b..9209e613257d 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -1175,6 +1175,7 @@ static int cpsw_set_channels(struct net_device *ndev,
- }
- 
- static const struct ethtool_ops cpsw_ethtool_ops = {
-+	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS,
- 	.get_drvinfo		= cpsw_get_drvinfo,
- 	.get_msglevel		= cpsw_get_msglevel,
- 	.set_msglevel		= cpsw_set_msglevel,
+ 	.get_drvinfo = emac_get_drvinfo,
+ 	.get_link = ethtool_op_get_link,
+ 	.get_coalesce = emac_get_coalesce,
 -- 
 2.24.1
 
