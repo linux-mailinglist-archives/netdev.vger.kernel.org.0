@@ -2,61 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20A401866B0
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 09:41:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F119A18669F
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 09:38:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730247AbgCPIkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 04:40:37 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:38460 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730126AbgCPIkh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Mar 2020 04:40:37 -0400
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 84C48E8881D087B6834A;
-        Mon, 16 Mar 2020 16:40:34 +0800 (CST)
-Received: from localhost.localdomain (10.175.34.53) by
- DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 16 Mar 2020 16:40:23 +0800
-From:   Luo bin <luobin9@huawei.com>
-To:     <davem@davemloft.net>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <aviad.krawczyk@huawei.com>, <luoxianjun@huawei.com>,
-        <cloud.wangxiaoyun@huawei.com>, <yin.yinshi@huawei.com>
-Subject: [PATCH net 6/6] hinic: fix wrong value of MIN_SKB_LEN
-Date:   Mon, 16 Mar 2020 00:56:30 +0000
-Message-ID: <20200316005630.9817-7-luobin9@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200316005630.9817-1-luobin9@huawei.com>
-References: <20200316005630.9817-1-luobin9@huawei.com>
+        id S1730088AbgCPIiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 04:38:13 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37834 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730016AbgCPIiN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Mar 2020 04:38:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=k/vVSi3mYwF3AAtmeH2/WIkOImNO/t9AnTjIZUcijF4=; b=z7ChbV5lrfp/2p0zLSdtkc6Ol9
+        Q2lV7Q8lkm6qOYM/TgZ7rbuAxYqAPx4je3UreOEfBgRP4mCzsM7ue0maUdCdoHoZnwhP4Jwq8QOSZ
+        wKgm5mFH0ME4sX5dNsrYAbvKZwYW2YsQimsAkrWml4Jjsmdm1iVYh4y5fEi9All7Ulk8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jDlG4-0005ni-8K; Mon, 16 Mar 2020 09:38:00 +0100
+Date:   Mon, 16 Mar 2020 09:38:00 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "josua@solid-run.com" <josua@solid-run.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] net: mvmdio: avoid error message for optional IRQ
+Message-ID: <20200316083800.GB8524@lunn.ch>
+References: <20200311200546.9936-1-chris.packham@alliedtelesis.co.nz>
+ <63905ad2134b4d19cb274c9e082a9326a07991ac.camel@alliedtelesis.co.nz>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.34.53]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <63905ad2134b4d19cb274c9e082a9326a07991ac.camel@alliedtelesis.co.nz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-the minimum value of skb len that hw supports is 32 rather than 17
+> Actually on closer inspection I think this is wrong.
+> platform_get_irq_optional() will return -ENXIO if the irq is not
+> specified.
 
-Signed-off-by: Luo bin <luobin9@huawei.com>
----
- drivers/net/ethernet/huawei/hinic/hinic_tx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The _optional is then pointless. And different to all the other
+_optional functions which don't return an error if the property is not
+defined.
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_tx.c b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-index cabcc9019ee4..8993f5b07059 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
-@@ -45,7 +45,7 @@
- 
- #define HW_CONS_IDX(sq)                 be16_to_cpu(*(u16 *)((sq)->hw_ci_addr))
- 
--#define MIN_SKB_LEN			17
-+#define MIN_SKB_LEN			32
- #define HINIC_GSO_MAX_SIZE		65536
- 
- #define	MAX_PAYLOAD_OFFSET		221
--- 
-2.17.1
+Are you really sure about this? I don't have the time right now to
+check.
 
+	Andrew
