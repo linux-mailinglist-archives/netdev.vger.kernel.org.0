@@ -2,130 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41988186D38
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 15:38:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C5030186E3C
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 16:06:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731555AbgCPOiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 10:38:05 -0400
-Received: from m176115.mail.qiye.163.com ([59.111.176.115]:51937 "EHLO
-        m176115.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731507AbgCPOiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 10:38:05 -0400
-X-Greylist: delayed 533 seconds by postgrey-1.27 at vger.kernel.org; Mon, 16 Mar 2020 10:33:07 EDT
-Received: from localhost.localdomain (unknown [58.251.74.226])
-        by m176115.mail.qiye.163.com (Hmail) with ESMTPA id A5C8B664FF8;
-        Mon, 16 Mar 2020 22:24:06 +0800 (CST)
-From:   Zheng Wei <wei.zheng@vivo.com>
-To:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Jon Mason <jdmason@kudzu.us>,
+        id S1731731AbgCPPG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 11:06:28 -0400
+Received: from smtp2.ustc.edu.cn ([202.38.64.46]:41231 "EHLO ustc.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1731672AbgCPPG2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Mar 2020 11:06:28 -0400
+X-Greylist: delayed 486 seconds by postgrey-1.27 at vger.kernel.org; Mon, 16 Mar 2020 11:06:27 EDT
+Received: from xhacker (unknown [101.86.20.80])
+        by newmailweb.ustc.edu.cn (Coremail) with SMTP id LkAmygDn74sFlG9eEGFPAA--.3001S2;
+        Mon, 16 Mar 2020 22:58:13 +0800 (CST)
+Date:   Mon, 16 Mar 2020 22:56:36 +0800
+From:   Jisheng Zhang <jszhang3@mail.ustc.edu.cn>
+To:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Yunfeng Ye <yeyunfeng@huawei.com>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Enrico Weigelt <info@metux.net>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     kernel@vivo.com, wenhu.wang@vivo.com,
-        Zheng Wei <wei.zheng@vivo.com>
-Subject: [PATCH] net: vxge: fix wrong __VA_ARGS__ usage
-Date:   Mon, 16 Mar 2020 22:23:47 +0800
-Message-Id: <20200316142354.95201-1-wei.zheng@vivo.com>
-X-Mailer: git-send-email 2.17.1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZT1VCTktCQkJMSE1MQ05DQllXWShZQU
-        hPN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Phg6PBw4EDg6CjYoCksYAxA5
-        UUtPC0hVSlVKTkNPSE1DTU9MT0tJVTMWGhIXVQweElUBEx4VHDsNEg0UVRgUFkVZV1kSC1lBWU5D
-        VUlOSlVMT1VJSU1ZV1kIAVlBT0xPSTcG
-X-HM-Tid: 0a70e3bafc5a9373kuwsa5c8b664ff8
+        Gregory CLEMENT <gregory.clement@bootlin.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: mvneta: Fix the case where the last poll did not
+ process all rx
+Message-ID: <20200316225636.78b08da4@xhacker>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: LkAmygDn74sFlG9eEGFPAA--.3001S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Xryktw1rtFy7tF1xCw4Durg_yoWkWrb_W3
+        Z7ZF9Iqw40gF10kw4kZr4rAryFyF1qqFs5AFs2qrWSqayxGF13Xrn5CFZYv3yDC3yayFyD
+        GwsI9ay2y3WaqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbF8YjsxI4VWkKwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
+        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
+        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z2
+        80aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAK
+        zVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx
+        8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcVAKI48JMxAIw28IcxkI7VAKI48JMxC20s026xCa
+        FVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_Jr
+        Wlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j
+        6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Wr
+        1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8
+        JrUvcSsGvfC2KfnxnUUI43ZEXa7IU5PpnJUUUUU==
+X-CM-SenderInfo: xmv2xttqjtqzxdloh3xvwfhvlgxou0/
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-printk in macro vxge_debug_ll uses __VA_ARGS__ without "##" prefix,
-it causes a build error when there is no variable 
-arguments(e.g. only fmt is specified.).
+From: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
 
-Signed-off-by: Zheng Wei <wei.zheng@vivo.com>
+For the case where the last mvneta_poll did not process all
+RX packets, we need to xor the pp->cause_rx_tx or port->cause_rx_tx
+before claculating the rx_queue.
+
+Fixes: 2dcf75e2793c ("net: mvneta: Associate RX queues with each CPU")
+Signed-off-by: Jisheng Zhang <Jisheng.Zhang@synaptics.com>
 ---
- drivers/net/ethernet/neterion/vxge/vxge-config.h |  2 +-
- drivers/net/ethernet/neterion/vxge/vxge-main.h   | 14 +++++++-------
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/marvell/mvneta.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-config.h b/drivers/net/ethernet/neterion/vxge/vxge-config.h
-index e678ba379598..077a527bb294 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-config.h
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-config.h
-@@ -2045,7 +2045,7 @@ vxge_hw_vpath_strip_fcs_check(struct __vxge_hw_device *hldev, u64 vpath_mask);
- 	if ((level >= VXGE_ERR && VXGE_COMPONENT_LL & VXGE_DEBUG_ERR_MASK) ||  \
- 	    (level >= VXGE_TRACE && VXGE_COMPONENT_LL & VXGE_DEBUG_TRACE_MASK))\
- 		if ((mask & VXGE_DEBUG_MASK) == mask)			       \
--			printk(fmt "\n", __VA_ARGS__);			       \
-+			printk(fmt "\n", ##__VA_ARGS__);		       \
- } while (0)
- #else
- #define vxge_debug_ll(level, mask, fmt, ...)
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.h b/drivers/net/ethernet/neterion/vxge/vxge-main.h
-index 59a57ff5e96a..9c86f4f9cd42 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-main.h
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-main.h
-@@ -452,49 +452,49 @@ int vxge_fw_upgrade(struct vxgedev *vdev, char *fw_name, int override);
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 98017e7d5dd0..11babc79dc6c 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -3036,11 +3036,10 @@ static int mvneta_poll(struct napi_struct *napi, int budget)
+ 	/* For the case where the last mvneta_poll did not process all
+ 	 * RX packets
+ 	 */
+-	rx_queue = fls(((cause_rx_tx >> 8) & 0xff));
+-
+ 	cause_rx_tx |= pp->neta_armada3700 ? pp->cause_rx_tx :
+ 		port->cause_rx_tx;
  
- #if (VXGE_DEBUG_LL_CONFIG & VXGE_DEBUG_MASK)
- #define vxge_debug_ll_config(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_LL_CONFIG, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_LL_CONFIG, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_ll_config(level, fmt, ...)
- #endif
- 
- #if (VXGE_DEBUG_INIT & VXGE_DEBUG_MASK)
- #define vxge_debug_init(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_INIT, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_INIT, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_init(level, fmt, ...)
- #endif
- 
- #if (VXGE_DEBUG_TX & VXGE_DEBUG_MASK)
- #define vxge_debug_tx(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_TX, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_TX, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_tx(level, fmt, ...)
- #endif
- 
- #if (VXGE_DEBUG_RX & VXGE_DEBUG_MASK)
- #define vxge_debug_rx(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_RX, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_RX, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_rx(level, fmt, ...)
- #endif
- 
- #if (VXGE_DEBUG_MEM & VXGE_DEBUG_MASK)
- #define vxge_debug_mem(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_MEM, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_MEM, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_mem(level, fmt, ...)
- #endif
- 
- #if (VXGE_DEBUG_ENTRYEXIT & VXGE_DEBUG_MASK)
- #define vxge_debug_entryexit(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_ENTRYEXIT, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_ENTRYEXIT, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_entryexit(level, fmt, ...)
- #endif
- 
- #if (VXGE_DEBUG_INTR & VXGE_DEBUG_MASK)
- #define vxge_debug_intr(level, fmt, ...) \
--	vxge_debug_ll(level, VXGE_DEBUG_INTR, fmt, __VA_ARGS__)
-+	vxge_debug_ll(level, VXGE_DEBUG_INTR, fmt, ##__VA_ARGS__)
- #else
- #define vxge_debug_intr(level, fmt, ...)
- #endif
++	rx_queue = fls(((cause_rx_tx >> 8) & 0xff));
+ 	if (rx_queue) {
+ 		rx_queue = rx_queue - 1;
+ 		if (pp->bm_priv)
 -- 
-2.17.1
+2.24.0
+
 
