@@ -2,132 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EE3EA18741E
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 21:35:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9011F187430
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 21:47:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732568AbgCPUfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 16:35:16 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:42516 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732486AbgCPUfQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 16:35:16 -0400
-Received: by mail-oi1-f194.google.com with SMTP id 13so10386933oiy.9;
-        Mon, 16 Mar 2020 13:35:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2WeeeQuIf6X+Fgo34LchZIqqcKLKtS9v2wrYypr8QcQ=;
-        b=VdQPD2e+W+dj6T/pc1K7U0NlTgVjr9jQQJP3cDhSIFn2wVwfqqIrK+OEebkM2I5DdP
-         6JeVtmsy3VsaNJIi8D8HiwH35Vqr/TvqZVzjip6PGSJokbfTz2xdUHuuD/qK+NbqhDmL
-         Glco0sva6+pQPhZWzH9GLR0nAULr1i1WB5/IsucKUiF/9Gx6/LL8gg7XIVviJsuX4ZiB
-         uQGZRfqr4wQZ/4WEmBoDzG2tddTZ9qQ2gbqdYTTT+jSTLpw9MSmZohk/sqxbi5ygP2cO
-         2NW29gjwY0UgluKxwgABVfDjfI0Wins3t08xeangQCzKSmpEyDYRYiC1rMgV3OrjHc7v
-         4sMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2WeeeQuIf6X+Fgo34LchZIqqcKLKtS9v2wrYypr8QcQ=;
-        b=CKSNVcuyCmB+twr8BHPHW2VzuYou0or3qFmhXdugTULa0+6xQ302/abfnAWfAoeiZY
-         /H3+3YO4vCVCVHqqmkYPSpWFmAZkNmAQ0evB62OVEGn++SItTiKQv3qXeoIdkWo5F1NB
-         iU+TAQXs3hKUI+Mpp2LZQ+DQmgZ4wc5u8lh4pkdSz8Zr/xoYYYMYPSbrpLuLCcTnnt3R
-         ZtSHS7NYJgGbT+s2WEgw+EiwJ8WOuepskx814Arz71RkoL+1f/E9OpBLx7y16RqXn9e1
-         pMjp4BHlNqSstf3hhW1Fa+i9HZIi5JRqJoFxzv6Zp++sBQeaHNui5sRT5o4kcz6id8uT
-         XTWg==
-X-Gm-Message-State: ANhLgQ0hZAg7Ag4XmjeRFLC4DBnzhjDzT2R9ClOywxKv4GXuoiofN6Lk
-        jRlO3n9270BrunjsSgcI8DA=
-X-Google-Smtp-Source: ADFU+vt05REQiVpWVawSbU9b+0kISMA+KKSDQTRxNNjoSMj/l5oSCOSmZZuFg7XjV2AsmmlGhe64nA==
-X-Received: by 2002:a05:6808:b17:: with SMTP id s23mr1049303oij.166.1584390914991;
-        Mon, 16 Mar 2020 13:35:14 -0700 (PDT)
-Received: from localhost.localdomain ([2604:1380:4111:8b00::1])
-        by smtp.gmail.com with ESMTPSA id o6sm307086oti.65.2020.03.16.13.35.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Mar 2020 13:35:14 -0700 (PDT)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>
-Subject: [PATCH] mlx5: Remove uninitialized use of key in mlx5_core_create_mkey
-Date:   Mon, 16 Mar 2020 13:34:52 -0700
-Message-Id: <20200316203452.32998-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.26.0.rc1
+        id S1732567AbgCPUrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 16:47:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58324 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732537AbgCPUrV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Mar 2020 16:47:21 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6624320674;
+        Mon, 16 Mar 2020 20:47:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584391641;
+        bh=j+t3U+mxMP+S4OM6a2aCZFOwzMo+0Q34ddVd4pi1S9o=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bjaufaktFtwXGaEQVESjvQXb+RCgdDElqcfJDK7KUkdzQA7k4qLUbglf0MHJQ5jmL
+         eZTfYvBf2LyJ5+HWnJNIkPoMa3/irxlASaIoNYDIqFwVAkoSAVsSM6xb1KA+V89kye
+         lyGsp8P3CYL/tID8Fszjy3nnmDC9JuhlLjHvMReg=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-net-drivers@solarflare.com,
+        ecree@solarflare.com, mhabets@solarflare.com,
+        jaswinder.singh@linaro.org, ilias.apalodimas@linaro.org,
+        Jose.Abreu@synopsys.com, andy@greyhouse.net,
+        grygorii.strashko@ti.com, andrew@lunn.ch, michal.simek@xilinx.com,
+        radhey.shyam.pandey@xilinx.com, mkubecek@suse.cz,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 0/9] ethtool: consolidate irq coalescing - last part
+Date:   Mon, 16 Mar 2020 13:47:03 -0700
+Message-Id: <20200316204712.3098382-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clang warns:
+Hi!
 
-../drivers/net/ethernet/mellanox/mlx5/core/mr.c:63:21: warning: variable
-'key' is uninitialized when used here [-Wuninitialized]
-                      mkey_index, key, mkey->key);
-                                  ^~~
-../drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h:54:6: note:
-expanded from macro 'mlx5_core_dbg'
-                 ##__VA_ARGS__)
-                   ^~~~~~~~~~~
-../include/linux/dev_printk.h:114:39: note: expanded from macro
-'dev_dbg'
-        dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
-                                             ^~~~~~~~~~~
-../include/linux/dynamic_debug.h:158:19: note: expanded from macro
-'dynamic_dev_dbg'
-                           dev, fmt, ##__VA_ARGS__)
-                                       ^~~~~~~~~~~
-../include/linux/dynamic_debug.h:143:56: note: expanded from macro
-'_dynamic_func_call'
-        __dynamic_func_call(__UNIQUE_ID(ddebug), fmt, func, ##__VA_ARGS__)
-                                                              ^~~~~~~~~~~
-../include/linux/dynamic_debug.h:125:15: note: expanded from macro
-'__dynamic_func_call'
-                func(&id, ##__VA_ARGS__);               \
-                            ^~~~~~~~~~~
-../drivers/net/ethernet/mellanox/mlx5/core/mr.c:47:8: note: initialize
-the variable 'key' to silence this warning
-        u8 key;
-              ^
-               = '\0'
-1 warning generated.
+Convert remaining drivers following the groundwork laid in a recent
+patch set [1] and continued in [2], [3], [4], [5]. The aim of
+the effort is to consolidate irq coalescing parameter validation
+in the core.
 
-key's initialization was removed in commit fc6a9f86f08a ("{IB,net}/mlx5:
-Assign mkey variant in mlx5_ib only") but its use was not fully removed.
-Remove it now so that there is no more warning.
+This set is the sixth and last installment. It converts the remaining
+8 drivers in drivers/net/ethernet. The last patch makes declaring
+supported IRQ coalescing parameters a requirement.
 
-Fixes: fc6a9f86f08a ("{IB,net}/mlx5: Assign mkey variant in mlx5_ib only")
-Link: https://github.com/ClangBuiltLinux/linux/issues/932
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/mr.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+[1] https://lore.kernel.org/netdev/20200305051542.991898-1-kuba@kernel.org/
+[2] https://lore.kernel.org/netdev/20200306010602.1620354-1-kuba@kernel.org/
+[3] https://lore.kernel.org/netdev/20200310021512.1861626-1-kuba@kernel.org/
+[4] https://lore.kernel.org/netdev/20200311223302.2171564-1-kuba@kernel.org/
+[5] https://lore.kernel.org/netdev/20200313040803.2367590-1-kuba@kernel.org/
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mr.c b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-index fd3e6d217c3b..366f2cbfc6db 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mr.c
-@@ -44,7 +44,6 @@ int mlx5_core_create_mkey(struct mlx5_core_dev *dev,
- 	u32 mkey_index;
- 	void *mkc;
- 	int err;
--	u8 key;
- 
- 	MLX5_SET(create_mkey_in, in, opcode, MLX5_CMD_OP_CREATE_MKEY);
- 
-@@ -59,8 +58,7 @@ int mlx5_core_create_mkey(struct mlx5_core_dev *dev,
- 	mkey->key |= mlx5_idx_to_mkey(mkey_index);
- 	mkey->pd = MLX5_GET(mkc, mkc, pd);
- 
--	mlx5_core_dbg(dev, "out 0x%x, key 0x%x, mkey 0x%x\n",
--		      mkey_index, key, mkey->key);
-+	mlx5_core_dbg(dev, "out 0x%x, mkey 0x%x\n", mkey_index, mkey->key);
- 	return 0;
- }
- EXPORT_SYMBOL(mlx5_core_create_mkey);
+Jakub Kicinski (9):
+  net: sfc: reject unsupported coalescing params
+  net: socionext: reject unsupported coalescing params
+  net: dwc-xlgmac: let core reject the unsupported coalescing parameters
+  net: tehuti: reject unsupported coalescing params
+  net: cpsw: reject unsupported coalescing params
+  net: davinci_emac: reject unsupported coalescing params
+  net: ll_temac: let core reject the unsupported coalescing parameters
+  net: axienet: let core reject the unsupported coalescing parameters
+  net: ethtool: require drivers to set supported_coalesce_params
+
+ drivers/net/ethernet/sfc/ethtool.c            |  6 ++---
+ drivers/net/ethernet/sfc/falcon/ethtool.c     |  6 ++---
+ drivers/net/ethernet/socionext/netsec.c       |  2 ++
+ .../ethernet/synopsys/dwc-xlgmac-ethtool.c    | 17 ++------------
+ drivers/net/ethernet/tehuti/tehuti.c          |  2 ++
+ drivers/net/ethernet/ti/cpsw.c                |  1 +
+ drivers/net/ethernet/ti/cpsw_new.c            |  1 +
+ drivers/net/ethernet/ti/davinci_emac.c        |  1 +
+ drivers/net/ethernet/xilinx/ll_temac_main.c   | 21 ++----------------
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 22 +------------------
+ include/linux/ethtool.h                       |  2 ++
+ net/core/dev.c                                |  4 ++++
+ net/ethtool/common.c                          | 11 ++++++++++
+ net/ethtool/ioctl.c                           |  3 ---
+ 14 files changed, 35 insertions(+), 64 deletions(-)
+
 -- 
-2.26.0.rc1
+2.24.1
 
