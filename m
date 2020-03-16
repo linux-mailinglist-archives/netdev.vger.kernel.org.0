@@ -2,120 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0B26186954
-	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 11:45:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F050C186988
+	for <lists+netdev@lfdr.de>; Mon, 16 Mar 2020 11:55:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730702AbgCPKp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 06:45:26 -0400
-Received: from mail-vk1-f193.google.com ([209.85.221.193]:34311 "EHLO
-        mail-vk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730478AbgCPKp0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 06:45:26 -0400
-Received: by mail-vk1-f193.google.com with SMTP id w67so4707767vkf.1
-        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 03:45:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc;
-        bh=kgbi861lSDfgvA0Jv9kuIk8R6n+FSg3oBiHyjm9Try8=;
-        b=zJYn2LRh9FeKxyeD4OkUeIseW5Rbsf48IABA16AGgQuzsUhAFzJaC+yfE2BlPxV35i
-         ar6i1hJlbrjHzcDwUjKppJiC8ofv3tPZjn6z1+EFAhDrhXcm/N9RNPWbbDnaqXOmyuU+
-         5XK2Ds8+TD92xISJcA1rXkhuQoyJ44IQyusfmnzjG72slwdD9uL8a3VQ6oigp7iKkRVC
-         ftthtSJgE3mmcxucY6v38grdf1H7eQWWJZP2M4iGFECN4ar3iar/0qE82Ubolg28C2oz
-         6bcJD6vAopGCx/xn3IUbobRDewFOAlgXN0ELmbP+qaAqAJAQVCO2dEQAO8IL2IzyhgIV
-         2cqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc;
-        bh=kgbi861lSDfgvA0Jv9kuIk8R6n+FSg3oBiHyjm9Try8=;
-        b=cWuR9QVczu4L/ddVklIfxYCy3i92N87Sjan2PTE8SwvrDH1/yq/mCkTi38yiEm3ULx
-         3H04HF2iDFLjqseIAA8FMQyW76k/zhBrnSeGSGS+V3E8CE3K0u9a7zOcO0VpPlKyCLjO
-         TKCNT0LdlEfUywaVGVQhc2NRip6xUxHddCXCkWOEpeRPYNui48c5OxCovMzjC55xLPwN
-         IUlzTKPTOQGTPXbXrpBcq0S2dzkephpEX4ycXMWfLXa758ATjtaETHHMOjNpqmkRi/iP
-         CxpBsho29klFhEOgJc7DXrxqwSfhNoz0McsmvUPc9Ti1xWcgGFi1/MgAXhY/tl5HXk0X
-         3vxA==
-X-Gm-Message-State: ANhLgQ3qXw1lXy2PrD2p9sx5R98dAz/ZaFzBuQoXdSrygnAuaym1fVi5
-        SlMfBSLVVnW+B0wrcdLj0ZJlwuwdMAWC58G0os8yvg==
-X-Google-Smtp-Source: ADFU+vsFTJ171xqPQH+5cp5Ng/Nx0EP6BETw21Ydp3StuzpM32d43/UEx8M6hRdiOd5B0MML31cGZyjQQE5ScBdwuDM=
-X-Received: by 2002:a1f:b2d6:: with SMTP id b205mr16438521vkf.80.1584355524269;
- Mon, 16 Mar 2020 03:45:24 -0700 (PDT)
+        id S1730678AbgCPKzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 06:55:00 -0400
+Received: from mail-eopbgr140058.outbound.protection.outlook.com ([40.107.14.58]:24583
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730582AbgCPKzA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 16 Mar 2020 06:55:00 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=e5//YYmLAZY33gjlq9XSeG1EVY2e6JcV2++Rfgv7oKjhkAP07HlXWVrTAINZNwv/Y9a004q1ESu17GO7gcKWfO1ErMiNlum2mDDtUqb/A6rP5+HyvMUWHFIvtmlR/R0RX1H7jGBmSgcL6DV/cpGRSRdcKBw8UTQmDl3ffAUbhwl+JKsK8AdHuy2w8T9kC4+RLkxDngrQCGpw+ttEV+aVNngO2dZpu0jrC2saWKJZqWsQLRs2vN8nknplZ8H3eDsZnQv0IlIDEDhEy7Co+m/qHdOLYZvN3L2p4MHRtPRoxd/n2iG5l5BJIeAzNMw4kK7XgMxMRbUMbdSYMJ5dL0zeaw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z4zQc8GWVnt54dq2zLVBQI9VbL3YL6WNKjbNrk3jTK4=;
+ b=NNMxPhvG7xX9vZ+7zOV5zVXC+fKhWwBRZCnlFRrAlVfjozx5qy6+YuWWm2bup9sTvABSv/JsUHGE91C/cSVfuYegPn9TbA/9XsPxABMnhWAjH9auPu8IvLGXRiY8slXg3vyDkJk+hJ1eYC3yTu2DRJJyiTLqxjIa8mNm0d+x7EscVdlec8mHhdBiRlLgCn+JIPaEEcIc9rYjUyJNku/azppPCzXS+vh9msvTA5OgLKx68VqDUw9T6Cv/eUfQIGm3qAQW6RNTQ2YA4yRDfEChHIQg0SyOyrBHAI2lrE1GlHbazWvKPlHratHPjvBwzaps0l2vlmci1UqUXFJFZYpt/w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=z4zQc8GWVnt54dq2zLVBQI9VbL3YL6WNKjbNrk3jTK4=;
+ b=rfPEvQcCghfOKL1+ygrwJvnzwRBNnkZVx4afQZdka+f83Gu2hTjtLB2+TOHs+9upfTSSa4toC1TCnA2Pqa3Q40t8TS9vW+heXk66IoncKJrGZIj0LrTlKWX5x4Q9NJMS3GxG2WakpBK0TsxDedBMa8fvt2V+6zjxTA0Pf9pQWps=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=petrm@mellanox.com; 
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (20.176.168.150) by
+ HE1PR05MB3404.eurprd05.prod.outlook.com (10.170.244.144) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2814.22; Mon, 16 Mar 2020 10:54:53 +0000
+Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::c146:9acd:f4dc:4e32]) by HE1PR05MB4746.eurprd05.prod.outlook.com
+ ([fe80::c146:9acd:f4dc:4e32%7]) with mapi id 15.20.2793.018; Mon, 16 Mar 2020
+ 10:54:53 +0000
+References: <20200311173356.38181-1-petrm@mellanox.com> <20200314.210402.573725635566592048.davem@davemloft.net>
+User-agent: mu4e 1.3.3; emacs 26.3
+From:   Petr Machata <petrm@mellanox.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, mrv@mojatatu.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@mellanox.com,
+        mlxsw@mellanox.com
+Subject: Re: [PATCH net-next v2 0/6] RED: Introduce an ECN tail-dropping mode
+In-reply-to: <20200314.210402.573725635566592048.davem@davemloft.net>
+Date:   Mon, 16 Mar 2020 11:54:51 +0100
+Message-ID: <878sk0y3gk.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: AM4PR08CA0055.eurprd08.prod.outlook.com
+ (2603:10a6:205:2::26) To HE1PR05MB4746.eurprd05.prod.outlook.com
+ (2603:10a6:7:a3::22)
 MIME-Version: 1.0
-Received: by 2002:a9f:3b21:0:0:0:0:0 with HTTP; Mon, 16 Mar 2020 03:45:23
- -0700 (PDT)
-X-Originating-IP: [5.35.35.59]
-In-Reply-To: <20200316113515.16f7e243@carbon>
-References: <158410589474.499645.16292046086222118891.stgit@firesoul>
- <20200316.014927.1864775444299469362.davem@davemloft.net> <98fd3c0c-225b-d64c-a64f-ca497205d4ce@solarflare.com>
- <20200316113515.16f7e243@carbon>
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-Date:   Mon, 16 Mar 2020 13:45:23 +0300
-Message-ID: <CAOJe8K2BC2ABk9SdUm5236iPk=f4BNMsHQxFPsQy+Wc8+QjTSg@mail.gmail.com>
-Subject: Re: [PATCH net-next] sfc: fix XDP-redirect in this driver
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     Edward Cree <ecree@solarflare.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-net-drivers@solarflare.com, mhabets@solarflare.com,
-        cmclachlan@solarflare.com, ilias.apalodimas@linaro.org,
-        lorenzo@kernel.org, sameehj@amazon.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from yaviefel (213.220.234.169) by AM4PR08CA0055.eurprd08.prod.outlook.com (2603:10a6:205:2::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.16 via Frontend Transport; Mon, 16 Mar 2020 10:54:53 +0000
+X-Originating-IP: [213.220.234.169]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 5c592200-eaa5-4715-c4ab-08d7c9987547
+X-MS-TrafficTypeDiagnostic: HE1PR05MB3404:|HE1PR05MB3404:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1PR05MB3404ABFAC00D2DF03BE0B96DDBF90@HE1PR05MB3404.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 03449D5DD1
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(396003)(376002)(346002)(39860400002)(199004)(316002)(8936002)(81156014)(8676002)(81166006)(6486002)(2906002)(26005)(186003)(478600001)(956004)(2616005)(16526019)(4326008)(107886003)(36756003)(5660300002)(52116002)(66556008)(66476007)(66946007)(6496006)(86362001)(6916009);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR05MB3404;H:HE1PR05MB4746.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3vUzfFzwBEv4HlgJGWp8F/BTW38n/uny4S/dR6kzsC5S1Sa6cT4E6+vc+DbgVfyjQ6XbTRPY5RQrds40DwhcAovum1NtPX4k2syedd0oLgH5ypFsMplkm4JoLgrvGsG9AU8f9gVYZe2Pby5+sa1T5J51335f3sIYLUtkmtSfaILuwqp7ciAPdcZ9+OscB3N4BW8D090Ah4W0rYXOmS1iWyNppWPjaUH86nXG8mPbayGuSGsIRwSWPnJH3cVu2AMpPSvH0QmZXopRej57p182wl9mrWaLYbW+vi3TP8CZ+c3CZGs4Ufd6zJctLaBY+Jku37pYQHiOIXEE41r7H1c9y9RZlkdBVDhUZtf1hKnN7/B39zIqx6Da43OCadOXwUkAEvbF8vN633C/bFSBRGLHjUeyGUCjV257l9RuHvQ+br1Ba3XwxER9i6J0+rwFu8yi
+X-MS-Exchange-AntiSpam-MessageData: /j+vskHVHBC3U6mVeplrFjTMDZgO9sJ+w5HXB5SNnQ+qkwudGMlkn9gucyOufBM4Z8Dx30QBW+aZn1N7XlI4FJeirvWy76OBuYBFSGJW7WX85qv/pS1j2QohRr506L1SXqBioyR7Whiv993GFt/Lkg==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c592200-eaa5-4715-c4ab-08d7c9987547
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Mar 2020 10:54:53.7273
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3s0cYM0QBNqfZDWhWbxYI+0zZQS8lmvG875+Ap+a+PYQJj8XubaewZUMeYSmNIeQxJmoG3Eebimk8gBRHcAofA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3404
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/16/20, Jesper Dangaard Brouer <brouer@redhat.com> wrote:
-> On Mon, 16 Mar 2020 10:10:01 +0000
-> Edward Cree <ecree@solarflare.com> wrote:
+
+David Miller <davem@davemloft.net> writes:
+
+> From: Petr Machata <petrm@mellanox.com>
+> Date: Wed, 11 Mar 2020 19:33:50 +0200
 >
->> On 16/03/2020 08:49, David Miller wrote:
->> > Solarflare folks, please review.
+>> When the RED qdisc is currently configured to enable ECN, the RED algorithm
+>> is used to decide whether a certain SKB should be marked. If that SKB is
+>> not ECN-capable, it is early-dropped.
 >>
->> This looks like a correct implementation of what it purports to do, so
->> Acked-by: Edward Cree <ecree@solarflare.com>
->
-> Thanks for the review!
->
->> It did take me some digging to understand _why_ it was needed though;
->>  Jesper, is there any documentation of the tailroom requirement?  It
->>  doesn't seem to be mentioned anywhere I could find.
->
-> I admit that is is poorly documented.  It is a requirement as both
-> cpumap and veth have a dependency when they process the redirected
-> packet.  We/I also need to update the doc on one page per packet
-> requirement, as it is (in-practice) no longer true.
-
-Hi Jesper,
-
-that means that's on-going work to add multi-buffer/page support to XDP, right?
-
-Thanks!
->
-> I'm noticing these bugs, because I'm working on a patchset that add
-> tailroom extend, and also reserves this 'skb_shared_info' tailroom area.
-> The real goal is to later add XDP multi-buffer support, using this
-> 'skb_shared_info' tailroom area, as desc here[2]
->
-> [2]
-> https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org
->
->> (Is there even any up-to-date doc of the XDP driver interface?  The
->>  one at [1] looks a bit stale...)
->> -Ed
+>> It is also possible to keep all traffic in the queue, and just mark the
+>> ECN-capable subset of it, as appropriate under the RED algorithm. Some
+>> switches support this mode, and some installations make use of it.
+>> There is currently no way to put the RED qdiscs to this mode.
 >>
->> [1]:
->> https://prototype-kernel.readthedocs.io/en/latest/networking/XDP/design/requirements.html
+>> Therefore this patchset adds a new RED flag, TC_RED_TAILDROP. When the
+>> qdisc is configured with this flag, non-ECT traffic is enqueued (and
+>> tail-dropped when the queue size is exhausted) instead of being
+>> early-dropped.
+>  ...
 >
-> This is my old and out-dated documentation. I didn't know people were
-> still referring to this.  I does score quite high on Google, so I
-> guess, that I really need to update this documentation.  (It was my
-> plan that this would be merged into kernel tree, but I can see it have
-> been bit-rotting for too long).
->
-> --
-> Best regards,
->   Jesper Dangaard Brouer
->   MSc.CS, Principal Kernel Engineer at Red Hat
->   LinkedIn: http://www.linkedin.com/in/brouer
->
->
+> Series applied, thank you.
+
+Dave, there were v3 and v4 for this patchset as well. They had a
+different subject, s/taildrop/nodrop/, hence the confusion I think.
+Should I send a delta patch with just the changes, or do you want to
+revert-and-reapply, or...?
