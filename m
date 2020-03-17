@@ -2,101 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 543E4187AAA
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 08:51:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F183187AD0
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 09:06:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726192AbgCQHvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 03:51:35 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:45678 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725916AbgCQHvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 03:51:35 -0400
-Received: by mail-wr1-f66.google.com with SMTP id t2so14246373wrx.12
-        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 00:51:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=g3WSGBi1FDi2GJpIGSWTYSe6aWAgMu30Myfdzz9HNsM=;
-        b=w2zLRsEkcG95RMIE7eYdMjuhM4CO+d5pjRAX4gw1e/QLWvGopYEs6nv159wEXgfq5r
-         cLwDmRuDevPQ7s7ePVV/mn4tzDeahUYciLAVojpoNSc/mgH1jVTsoMksi4bX6L5hzA3z
-         V43/dzOrGUfkJtmuFNkrBR0MOvV/+j17iA8B1ASp6iIc+2zAhT0bxHDOJvn5uh9S/7lY
-         2yH0liTgN0icdFFCwO5Dfyc/fwzw9JTbt3yG3oJb2610jhcbdimbIqLWTO9KGp7/JYMq
-         wyGr+f9q7D5rMvUBjxGxb33Ue/FoFu2EpbLZbbRtspweauDz7L4pGcggqMRBk51Wu/i2
-         41lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=g3WSGBi1FDi2GJpIGSWTYSe6aWAgMu30Myfdzz9HNsM=;
-        b=ZoUl/RVvSierT2MOd7cvUO9mM8ArBhVKZrZ7AhuFR4PEbQCzke2zKMiDi12svVsqtL
-         6aNAfeU25C7gl6BHU3tky6hWCs6I7VA13QuaCBIxMBy7raToleM5Ec7pib+QCwMQKlo4
-         4tv2qeRHjuKPE1Kv0w2Jmn2peeMMQeO1Wgy3NdQ9zca4KVoJJJyb/b2J8qNJP3sNUa5s
-         wuo4H1+6+OL+rftzkTTim7sSgJsvbhcjUEX4M/17UUYsZLpcELBoqIrvfii3CKmabUUc
-         ljBAEJxBNllmuhAIP1P46CkJYlRjSAkDf6XIAFEewakhQCsFLrhcDZLl8CLXglqRu8/9
-         IEmw==
-X-Gm-Message-State: ANhLgQ0S0ziBifKLdqLof5Nnf/ENPDEWAxbLaMQz3+GEJPiiqMbeWyB8
-        YFDHon6tfMmBo65IwTKvO6S4rw==
-X-Google-Smtp-Source: ADFU+vsdV0tTQ+raJ7Ghqgv95OZ9/DNjBEN0UI90L0prhwBx+WeklN21ealtZRaQzbUQoNBSef7MYQ==
-X-Received: by 2002:a5d:4f0e:: with SMTP id c14mr4479813wru.100.1584431493879;
-        Tue, 17 Mar 2020 00:51:33 -0700 (PDT)
-Received: from apalos.home (ppp-2-87-54-32.home.otenet.gr. [2.87.54.32])
-        by smtp.gmail.com with ESMTPSA id p16sm2694517wmi.40.2020.03.17.00.51.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2020 00:51:33 -0700 (PDT)
-Date:   Tue, 17 Mar 2020 09:51:30 +0200
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-net-drivers@solarflare.com, ecree@solarflare.com,
-        mhabets@solarflare.com, jaswinder.singh@linaro.org,
-        Jose.Abreu@synopsys.com, andy@greyhouse.net,
-        grygorii.strashko@ti.com, andrew@lunn.ch, michal.simek@xilinx.com,
-        radhey.shyam.pandey@xilinx.com, mkubecek@suse.cz
-Subject: Re: [PATCH net-next 2/9] net: socionext: reject unsupported
- coalescing params
-Message-ID: <20200317075130.GA96496@apalos.home>
-References: <20200316204712.3098382-1-kuba@kernel.org>
- <20200316204712.3098382-3-kuba@kernel.org>
+        id S1726077AbgCQIGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 04:06:35 -0400
+Received: from mail-eopbgr130057.outbound.protection.outlook.com ([40.107.13.57]:40610
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725730AbgCQIGf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Mar 2020 04:06:35 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gmb1gWYwJX1jlsDepBkBzUxcgkTZYDdIjwkAQ10Yq0t0rqrFzcJUB9ckvjzh+vd6Hq4dmAkn8cZx4VO+1zUoNWIVOWo3QRQZVCMcaFjR6E1q4V2YI4x4vgfKoXUGxItQT8DwZZqggpXHKmNQYQ/tMQGhkvSyHj3wN0DJZbAB1mLcNwjxMIqoYL2mGSf9lRj6W9vLuubt71KZhqjvpxZ8w1f8/eZI+szsP2Jp1O0VdaN1BdEBF/r7YKYpRDAAcMLuJyhOJQpE7T5Rh2W4ShZCMBjXJcGxC+TuA0jsJ7BER8+26v6ZUdy0MwwDbT/gCqm8yWbsmUm9UE7bGMZ3JG1iCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rRqkWTAfK72ufs58Ea+1xBGmJbv9yDWDfWw1VWNzR9M=;
+ b=mL4P3JK5e92v8O8r2UI34P0h8eWe3PZpihWFI5Q/3vlqGTWshAF4FX0xMffNcDFEksUQPw+rGG7gRz/9lamEs3l05KioE7ohSp4DFq/Z+94b/oKib87E88zl3rYBL7pJYIKbJwsRYPzB2VAqHXpDkOtKNzcBhMR+VgvsDSUnEzUgErYz7pPOdim+NR1AAIYNoRUJuQ9jmlI2A+QQucZUjGhLtz4462drsKLTQf/36M0XhOEFefMi8tGybqoCw/YWjaNesc0NOVwiQb2/tSZdMNwOzHWJFYAJ1JFSWtph3OrYddBjCURsMjMDWi86gMTQcy277gN9k5FJdjj+4Q2nfg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rRqkWTAfK72ufs58Ea+1xBGmJbv9yDWDfWw1VWNzR9M=;
+ b=FoQMXKCWQvhtMgGbd+9fgUrLMx1SMoOInKCMjjCfV/kbGC1p0TXGwxqEmY0hPtjm0fZy8SJlQTOG4/jGPZVxxRXz0+hKUca5OAhZixKFy8JSP8yk2tW5RB8KJbIAw6dUntabrfWKxbE5XEoCHFMG0ddmJApLgf770C1FjY97Jik=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=tariqt@mellanox.com; 
+Received: from VI1PR0501MB2205.eurprd05.prod.outlook.com (10.169.134.20) by
+ VI1PR0501MB2365.eurprd05.prod.outlook.com (10.169.135.136) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2814.21; Tue, 17 Mar 2020 08:06:30 +0000
+Received: from VI1PR0501MB2205.eurprd05.prod.outlook.com
+ ([fe80::71d3:d6cf:eb7e:6a0e]) by VI1PR0501MB2205.eurprd05.prod.outlook.com
+ ([fe80::71d3:d6cf:eb7e:6a0e%3]) with mapi id 15.20.2814.021; Tue, 17 Mar 2020
+ 08:06:30 +0000
+Subject: Re: [PATCH ethtool] ethtool: Add support for Low Latency Reed Solomon
+To:     "John W. Linville" <linville@tuxdriver.com>
+Cc:     netdev@vger.kernel.org, Moshe Shemesh <moshe@mellanox.com>,
+        Aya Levin <ayal@mellanox.com>
+References: <1584025923-5385-1-git-send-email-tariqt@mellanox.com>
+ <20200313192803.GB1230@tuxdriver.com>
+From:   Tariq Toukan <tariqt@mellanox.com>
+Message-ID: <19010e9f-1847-717e-1ade-a4157205503a@mellanox.com>
+Date:   Tue, 17 Mar 2020 10:06:26 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
+In-Reply-To: <20200313192803.GB1230@tuxdriver.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM0PR01CA0093.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:10e::34) To VI1PR0501MB2205.eurprd05.prod.outlook.com
+ (2603:10a6:800:2a::20)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200316204712.3098382-3-kuba@kernel.org>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.110] (77.125.109.57) by AM0PR01CA0093.eurprd01.prod.exchangelabs.com (2603:10a6:208:10e::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.19 via Frontend Transport; Tue, 17 Mar 2020 08:06:29 +0000
+X-Originating-IP: [77.125.109.57]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 4a64ef94-d4d8-4f90-d9e6-08d7ca4a19b5
+X-MS-TrafficTypeDiagnostic: VI1PR0501MB2365:|VI1PR0501MB2365:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR0501MB2365FCCFF5E9DF45A344F6FCAEF60@VI1PR0501MB2365.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Forefront-PRVS: 0345CFD558
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(346002)(396003)(39860400002)(136003)(199004)(53546011)(54906003)(478600001)(16576012)(31686004)(52116002)(6486002)(316002)(2906002)(2616005)(956004)(4326008)(5660300002)(6916009)(86362001)(8676002)(81156014)(81166006)(16526019)(186003)(66946007)(66556008)(107886003)(36756003)(66476007)(31696002)(6666004)(8936002)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0501MB2365;H:VI1PR0501MB2205.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: i27Fa5dJgj3t/Q3tAfz6vDmZ8s7dJJfjSqzYZL8+dlYcqSZ4msqKzNesg6cgGCZ46E+Yw7U9dSzBqLnu8cRGXKwobBUoI28A56+jdAT0QxcoCCkpVUsWAlZWFx+560/Chr6eGcu7c3d8qtlNFT8sTdpYRSSnm7ramaSTg2NLqeLtSQVkQBzM6PcIGj2iWDVeWqEIU79Fk7q7RvA3AWHcfFv7Xg+Huw82XSqtie8TDuEdNYCgqfqR+/jekePDtExzojwe8ED1tvRhhOUPON9tb6DWVzQ0J59GKyD4AxDUSq/YssMN8n8QGg4GJ9kYvIWcgq0IerCe+Ftpu5bdCFfJZrL5t0zl/8N8bADTMd7XWMPnbjVAQmKNNp5TQ6JHzBpaAsG31TVhtRnuwI6bvBgMcbYESDbI/nIeKKy2ShJeA4FXCP8B1PYySI8eI0xPJGnj
+X-MS-Exchange-AntiSpam-MessageData: fGuxtdA83gPr9OeOb9R3OxxZ32wqO3LDSPxcCWAD3teFlJXtN0SqdogLkSlTjsUMdBP3BhhxJXRuGAU1EM96tyFRP7EaIEpsB5YuPF8i0RoIUcNrjb/95AxaE2WcYmI8cP4tKTcTCamUzSJtp2jMYw==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4a64ef94-d4d8-4f90-d9e6-08d7ca4a19b5
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2020 08:06:30.5862
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: u84y89aF58+UH9vg3QWWFQVf71tSExsLk8ZSgb/jFfPZCV2fqyKE0dkPC1RV9ILiWDl3sT2YgQ/f7lJiHWxs+g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2365
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub, 
 
-Thanks for the cleanup
 
-On Mon, Mar 16, 2020 at 01:47:05PM -0700, Jakub Kicinski wrote:
-> Set ethtool_ops->supported_coalesce_params to let
-> the core reject unsupported coalescing parameters.
+On 3/13/2020 9:28 PM, John W. Linville wrote:
+> On Thu, Mar 12, 2020 at 05:12:03PM +0200, Tariq Toukan wrote:
+>> From: Aya Levin <ayal@mellanox.com>
+>>
+>> Introduce a new FEC mode LL-RS: Low Latency Reed Solomon, update print
+>> and initialization functions accordingly. In addition, update related
+>> man page.
+>>
+>> Signed-off-by: Aya Levin <ayal@mellanox.com>
+>> Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
+>> ---
+>>   ethtool-copy.h |  3 +++
+>>   ethtool.8.in   |  5 +++--
+>>   ethtool.c      | 12 +++++++++++-
+>>   3 files changed, 17 insertions(+), 3 deletions(-)
 > 
-> This driver did not previously reject unsupported parameters.
+> Hey...
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
->  drivers/net/ethernet/socionext/netsec.c | 2 ++
->  1 file changed, 2 insertions(+)
+> Thanks for the patch! Unfortunately for you, I just merged "[PATCH
+> ethtool v3 01/25] move UAPI header copies to a separate directory"
+> from Michal Kubecek <mkubecek@suse.cz>, and that patch did this:
 > 
-> diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
-> index 58b9b7ce7195..a5a0fb60193a 100644
-> --- a/drivers/net/ethernet/socionext/netsec.c
-> +++ b/drivers/net/ethernet/socionext/netsec.c
-> @@ -589,6 +589,8 @@ static void netsec_et_set_msglevel(struct net_device *dev, u32 datum)
->  }
->  
->  static const struct ethtool_ops netsec_ethtool_ops = {
-> +	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
-> +				     ETHTOOL_COALESCE_MAX_FRAMES,
->  	.get_drvinfo		= netsec_et_get_drvinfo,
->  	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
->  	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
-> -- 
-> 2.24.1
+>   ethtool-copy.h => uapi/linux/ethtool.h       | 0
+>   rename ethtool-copy.h => uapi/linux/ethtool.h (100%)
 > 
+> Could you please rework your patch against the current kernel.org tree?
 
-Acked-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Hi John,
+Sure, we'll rework and respin.
+
+Thanks,
+Tariq
+
+> 
+> Thanks!
+> 
+> John
+>   
