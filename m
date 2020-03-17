@@ -2,125 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4440E18780B
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 04:18:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1577818780E
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 04:21:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726877AbgCQDSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 23:18:16 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:34065 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726803AbgCQDSQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 23:18:16 -0400
-Received: by mail-wm1-f66.google.com with SMTP id x3so14669457wmj.1;
-        Mon, 16 Mar 2020 20:18:14 -0700 (PDT)
+        id S1726901AbgCQDVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 23:21:14 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:43514 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726803AbgCQDVO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 23:21:14 -0400
+Received: by mail-ed1-f65.google.com with SMTP id dc19so24596403edb.10
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 20:21:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=VY/ljx3qFcl3xNunXRW1oERnylcMXyop7wEx3HVA3Zg=;
+        b=UloOwU/1cmNi2TI3C42LCw2DI/xxwb4fSRHHZijFwPXLMVqDfHblY0pVSoIUeGDkHt
+         KwnTZeCis9Zc543D9Q22QVyr8M2+riClgdkGgI0WCDfYd/PEUUyJgjVgNTNxhhwuR+3Y
+         a34dcUM56ucHzX2ZzhnK1tId97iI8Z0JKJPTUAxN7VEkEvF3XAN3/AoYBT1Qlhh/gfMs
+         BKBldfC3LJnycDMShDJJInF4gmyG6giEpnukVhAif6ZKiiIHMg89u4Ltma7mRMJNyZel
+         O+zEifpXmoHIngAqpZ/R3X8r21sjPWOJw8rn3WzDqX8to8rPPulpGpONW3D3x1K4ziaH
+         h9/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YQGjvHknB6zDlVk+ed/YittlC9xBHcBBwyN5Yg1ksag=;
-        b=K0NEheKD/j1cplTNeJaRm5ZHYGMSRfiXuP/Ik4Y+XjrtljcvYssqW7I4FsdW8DQpwM
-         CvvqfBnVTZzY4lBFdm5l9kJn135/1SmHtMN4woSXPrr7t60k49KMer9yL1UJvtJxU0/h
-         AmBBvdHIirNY2F6HkL9DOVVlREbj1l5+Y9YtwPlSytYEJJJ7CJTx1rzfSe0uwqX32qiK
-         3Vv/mIvGdWrfW4bO5HaKy96h4Cky8QKu+nAVaLJf5g6yZkanVCvsLRi6QkTalI7zPc6x
-         mmuW1zzS32veSQp2J/vXoWA3OsaD6aG1NuPHo1IvzKVVccGc+Pg59V9q72kBkcn0/RQR
-         KLZg==
-X-Gm-Message-State: ANhLgQ2Fv/tK3WcNztmzHD+9KAr9xdSEXgJfAMyF4U9OkZuOUF2fMh5K
-        y+8LDCqxyhctlLZZT2Oq1BnA1aergrMdOh2Y3ZQ=
-X-Google-Smtp-Source: ADFU+vu2j2iPXnw+5nE+9yYnQR8ga9l/jUSj6eic7p39KqgHl7rSS09+u93gO8OuWVOf+8Venz6rGeYNcxi4YMiumM8=
-X-Received: by 2002:a7b:c208:: with SMTP id x8mr2437860wmi.136.1584415093884;
- Mon, 16 Mar 2020 20:18:13 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=VY/ljx3qFcl3xNunXRW1oERnylcMXyop7wEx3HVA3Zg=;
+        b=Le/dCwovAcJkYvgnnaVHy0jnYZ/dOlSNpTVkMW9Qp4vTfGQL5b1oYCKY1LMTa+9vc2
+         TzuB9lGwTSwrvWWQ5mquid24OOrslouPo+QxIKSWjcaOTAmcL2li8xvsyD6Lr7kTPwwq
+         oXlaSxStnoUMgkghbzygsBxPgb75KiLC6rEZTRVkrWbwKTEF6g5dPCvsf1jo8f3kDl68
+         5eOQYIlf+p6xHxk1moQXbtDQGn3jw6uqWLWkw6mZziCa9sFe6qXiagyXb9HvsnU91tkf
+         ZBX+otvWjYkeyYhsQ4p+5SRnqb5UwfaJFja0CexPrpvifOJ0Tm7U5NFeaAKwSXmsqXOt
+         Cumw==
+X-Gm-Message-State: ANhLgQ3P1sX9rBU1GtVYULgLJ967WiyJu/xu39YP6qUYlDWPCk+GC4Zh
+        UrAwqR6avQbFGbP/yD5+AYaMnUpUeBlc6DXtSMw=
+X-Google-Smtp-Source: ADFU+vsTzF5PSxiJvvKZxEyNYfk4I/Lt16JBm38hKKY5D5U5WVLeJFt2A8ehk25/F43pNAu1G0FUiPDpNyH0S/vapbk=
+X-Received: by 2002:aa7:c4d0:: with SMTP id p16mr3188779edr.378.1584415272373;
+ Mon, 16 Mar 2020 20:21:12 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200312233648.1767-1-joe@wand.net.nz> <20200312233648.1767-5-joe@wand.net.nz>
- <20200316230312.oxgsjpyzhp5iiyyx@kafai-mbp>
-In-Reply-To: <20200316230312.oxgsjpyzhp5iiyyx@kafai-mbp>
-From:   Joe Stringer <joe@wand.net.nz>
-Date:   Mon, 16 Mar 2020 20:17:59 -0700
-Message-ID: <CAOftzPjMO2Y=efeqYZCzYd2JX8JZULfvCNw2mc-io1anxNYgGA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/7] dst: Prefetch established socket destinations
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Joe Stringer <joe@wand.net.nz>, bpf@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
+Reply-To: abd747591@gmail.com
+Received: by 2002:a17:906:5908:0:0:0:0 with HTTP; Mon, 16 Mar 2020 20:21:11
+ -0700 (PDT)
+From:   Mr Abd Manaf <abdmanaf2002@gmail.com>
+Date:   Tue, 17 Mar 2020 03:21:11 +0000
+X-Google-Sender-Auth: jI6LINw3zMS4nXb3_gL-Zh1b-fw
+Message-ID: <CAHQGum_JBk7TM=vh_oyfr2-4to08JYS=kdex7e54xK7wBTgyiw@mail.gmail.com>
+Subject: Dear Sir/Madam!,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 16, 2020 at 4:03 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Thu, Mar 12, 2020 at 04:36:45PM -0700, Joe Stringer wrote:
-> > Enhance the dst_sk_prefetch logic to temporarily store the socket
-> > receive destination, to save the route lookup later on. The dst
-> > reference is kept alive by the caller's socket reference.
-> >
-> > Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
-> > Signed-off-by: Joe Stringer <joe@wand.net.nz>
-> > ---
-> >  include/net/dst_metadata.h |  2 +-
-> >  net/core/dst.c             | 20 +++++++++++++++++---
-> >  net/core/filter.c          |  2 +-
-> >  3 files changed, 19 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/include/net/dst_metadata.h b/include/net/dst_metadata.h
-> > index 31574c553a07..4f16322b08d5 100644
-> > --- a/include/net/dst_metadata.h
-> > +++ b/include/net/dst_metadata.h
-> > @@ -230,7 +230,7 @@ static inline bool skb_dst_is_sk_prefetch(const struct sk_buff *skb)
-> >       return dst_is_sk_prefetch(skb_dst(skb));
-> >  }
-> >
-> > -void dst_sk_prefetch_store(struct sk_buff *skb);
-> > +void dst_sk_prefetch_store(struct sk_buff *skb, struct sock *sk);
-> >  void dst_sk_prefetch_fetch(struct sk_buff *skb);
-> >
-> >  /**
-> > diff --git a/net/core/dst.c b/net/core/dst.c
-> > index cf1a1d5b6b0a..5068d127d9c2 100644
-> > --- a/net/core/dst.c
-> > +++ b/net/core/dst.c
-> > @@ -346,11 +346,25 @@ EXPORT_SYMBOL(dst_sk_prefetch);
-> >
-> >  DEFINE_PER_CPU(unsigned long, dst_sk_prefetch_dst);
-> >
-> > -void dst_sk_prefetch_store(struct sk_buff *skb)
-> > +void dst_sk_prefetch_store(struct sk_buff *skb, struct sock *sk)
-> >  {
-> > -     unsigned long refdst;
-> > +     unsigned long refdst = 0L;
-> > +
-> > +     WARN_ON(!rcu_read_lock_held() &&
-> > +             !rcu_read_lock_bh_held());
-> > +     if (sk_fullsock(sk)) {
-> > +             struct dst_entry *dst = READ_ONCE(sk->sk_rx_dst);
-> > +
-> > +             if (dst)
-> > +                     dst = dst_check(dst, 0);
-> v6 requires a cookie.  tcp_v6_early_demux() could be a good example.
+Dear how are you,
 
-Nice catch. I plan to roll in the following incremental for v2:
 
-diff --git a/net/core/dst.c b/net/core/dst.c
-index 5068d127d9c2..b60f85227247 100644
---- a/net/core/dst.c
-+++ b/net/core/dst.c
-@@ -354,9 +354,14 @@ void dst_sk_prefetch_store(struct sk_buff *skb,
-struct sock *sk)
-                !rcu_read_lock_bh_held());
-        if (sk_fullsock(sk)) {
-                struct dst_entry *dst = READ_ONCE(sk->sk_rx_dst);
-+               u32 cookie = 0;
+How Are You? I Know That This Mail May Come To You Almost A Surprise
+As We Never Met Before And Please Before You Proceed Reading This
+mail,This Is True and not An Well I Saw Your Contact Email From Yahoo
+Search when I Was Looking For a Foreign Partner, please I don=E2=80=99t now=
+ if
+you can keep secret? A word of your own as a human-being? As I have
+gone through your profile.Well I have a deal worth 15.5m$ from the
+dormant account in the bank where I am working.so Please if you can
+keep secret, I will give you more details and the nest thing to do,
 
-+#if IS_ENABLED(CONFIG_IPV6)
-+               if (sk->sk_family == AF_INET6)
-+                       cookie = inet6_sk(sk)->rx_dst_cookie;
-+#endif
-                if (dst)
--                       dst = dst_check(dst, 0);
-+                       dst = dst_check(dst, cookie);
-                if (dst)
-                        refdst = (unsigned long)dst | SKB_DST_NOREF;
-        }
+Also all the documents that will back you up must send to you.
+Meanwhile before I contact you I have done every underground work
+through the documents of the deceases person, I have put or attachment
+his file to our favor. Also with my position every thing works
+successfully.
+
+Your Full Name,
+Phone No=E2=80=A6.,
+Receiver Country..,
+Occupation..,
+
+thanks for your understandplease contact me base if you can control
+this fund once it transferinto your account before my family and I
+will arriver in your country for the sharing, 40% for you. 10% for the
+poorest, rest is for me.
+Give me your Phone number Let me call you so that we can talk one and one=
+=E2=80=A6=E2=80=A6=E2=80=A6=E2=80=A6
+
+You should contact me immediately as soon as you receive this
+letter,if only you are interested and ready to help On this Contact
+me. through my private email
+address(abd747591@gmail.com)Trusting to hear from you
+immediately. Do keep this a top secret for security reasons.
+
+Yours faithfully,
+
+MR.Abd Manaf.
