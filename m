@@ -2,102 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DAD0188F45
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 21:47:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 036AA188FE1
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 21:56:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726810AbgCQUrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 16:47:17 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:40819 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726738AbgCQUrR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 16:47:17 -0400
-Received: by mail-pf1-f195.google.com with SMTP id l184so12589152pfl.7
-        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 13:47:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/ZMNFVo7Tsi5t68rALsYOvDVbYQdbqGTWKL9lb3JvuE=;
-        b=c9nyhi39KsZWTsbpDFXgSXKk3n7yOwp3uxTzHaQnVDIM13uJ4QnSSw/aQZXKdFL1ei
-         88iumTiBDgVcsVpOXraZRTpCQZJC4n/haKrhbtsyJ1arprcZ2hNrICrMgesDskYlzrHL
-         m0keVQltdevZKhucb9zYrQJdR6L7RgUiKoNJ8=
+        id S1726738AbgCQU4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 16:56:25 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:53258 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726549AbgCQU4Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 16:56:25 -0400
+Received: by mail-wm1-f65.google.com with SMTP id 25so834875wmk.3;
+        Tue, 17 Mar 2020 13:56:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/ZMNFVo7Tsi5t68rALsYOvDVbYQdbqGTWKL9lb3JvuE=;
-        b=Ytxt7MdV38lLy7TTAZvBSO/fMQ0jjy+qnflxVPRllTzblDn81F4/NpqP2Vw5AihTCO
-         UZkmId054eQnHd+XNUHmxuvmmS0kNprc+AmyFaLiqquSOCQF9Ka721rZIFVFcjhMPcdw
-         3U19YFBRFogpCICicuo6yvPR2HAXbbTh903Uqi/DUVEPMB35UViCMMspd+222m896pBm
-         99ej7MzI9cHcylIYrHiu/Yem75BNp0cF93fW81GeGwOzIMRMsn2B+Qnw2aB84QWFWAJ3
-         di7DcY69KFIWCkOM9t+F3C0nVVxMR72opBP520l7oS2AAFzqUyY/mnmNp0x9F2fj9Oy6
-         2GSw==
-X-Gm-Message-State: ANhLgQ33Kmj9q9MYFV+X45ew9OIz7N/1kgQ70YkWdBKlBiFqi47YT+59
-        U6JXxw6n3SrGWIBwTmriNAQTXg==
-X-Google-Smtp-Source: ADFU+vu6/iwKJHS7qAmilHd6qy3wjFZHBgJSRKd1VFcdNCaGVajZVzYQ5jIB8zxApm9ZrQs3cBrUsw==
-X-Received: by 2002:a62:de83:: with SMTP id h125mr607859pfg.161.1584478035217;
-        Tue, 17 Mar 2020 13:47:15 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id j21sm258232pji.13.2020.03.17.13.47.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2020 13:47:14 -0700 (PDT)
-Date:   Tue, 17 Mar 2020 13:47:13 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     shuah@kernel.org, luto@amacapital.net, wad@chromium.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-team@fb.com, Tim.Bird@sony.com
-Subject: Re: [PATCH v3 0/6] kselftest: add fixture parameters
-Message-ID: <202003171346.C4E287D@keescook>
-References: <20200316225647.3129354-1-kuba@kernel.org>
- <20200316155917.5ba8db1c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3FEKnVDxyBC9ZlonFYbDTDfp7q0thhaySUYzcO5Plhs=;
+        b=rNnIOSEiDEHYLAFIC5nv85oBwmdLSyT9O2RLbJhHiHwNCNE74i3PA/2uH5iu+b9a43
+         3a85kMDa6wRSb9gp/NSP6ZkpthTFbNd8fR2vBiSm9wguyJDdct2ch6HwzYI/7JX2ij2D
+         /hJ/hYW2mS6VvdIE7a7KUjHMTeFFbaxGRHUaZJUP4C2DgJ/V+nd6NKM5pnlb2k0yKd+M
+         GN/PDawFvYsMkYkwqdgmplCW0E1k01L6JuejSqb/NTWP+IDktUBZ4OoPVrNLVnV7bNAw
+         cfgSdmvenShuTZad4ut/SLk9p0H9J+gHo87eHlJbVOs63kSD0HzZIJ/pxUHsQaA37ylp
+         pilA==
+X-Gm-Message-State: ANhLgQ2sSD8s7PEoji6co3tVJ6/E87LiTIWCpDVsEc2VqMWoeEMHmpvx
+        QWv1dC4fjRf2iMIGOeOX2Vx4YHy9cAzquuh5ZUo=
+X-Google-Smtp-Source: ADFU+vu7edJpkkTIs7GHSis4k97jkv9UyDrGmidkARgAlfZwmdUsM20wjxLnUB9tTPJikbhlTtkpoOjPW5SaK5j8doU=
+X-Received: by 2002:a7b:cb50:: with SMTP id v16mr906245wmj.74.1584478583562;
+ Tue, 17 Mar 2020 13:56:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200316155917.5ba8db1c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200312233648.1767-1-joe@wand.net.nz> <20200312233648.1767-6-joe@wand.net.nz>
+ <20200317063044.l4csdcag7l74ehut@kafai-mbp>
+In-Reply-To: <20200317063044.l4csdcag7l74ehut@kafai-mbp>
+From:   Joe Stringer <joe@wand.net.nz>
+Date:   Tue, 17 Mar 2020 13:56:12 -0700
+Message-ID: <CAOftzPjBo6r2nymjUn4qr=N4Zd7rF=03=n45HDvyXfSXfDnBtg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 5/7] selftests: bpf: add test for sk_assign
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Joe Stringer <joe@wand.net.nz>, bpf@vger.kernel.org,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        netdev <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 16, 2020 at 03:59:17PM -0700, Jakub Kicinski wrote:
-> On Mon, 16 Mar 2020 15:56:40 -0700 Jakub Kicinski wrote:
-> > Hi!
-> > 
-> > Shuah please consider applying to the kselftest tree.
-> > 
-> > This set is an attempt to make running tests for different
-> > sets of data easier. The direct motivation is the tls
-> > test which we'd like to run for TLS 1.2 and TLS 1.3,
-> > but currently there is no easy way to invoke the same
-> > tests with different parameters.
-> > 
-> > Tested all users of kselftest_harness.h.
-> > 
-> > v2:
-> >  - don't run tests by fixture
-> >  - don't pass params as an explicit argument
-> > 
-> > v3:
-> >  - go back to the orginal implementation with an extra
-> >    parameter, and running by fixture (Kees);
-> >  - add LIST_APPEND helper (Kees);
-> >  - add a dot between fixture and param name (Kees);
-> >  - rename the params to variants (Tim);
-> > 
-> > v1: https://lore.kernel.org/netdev/20200313031752.2332565-1-kuba@kernel.org/
-> > v2: https://lore.kernel.org/netdev/20200314005501.2446494-1-kuba@kernel.org/
-> 
-> Ugh, sorry I forgot to realign things after the rename :S
-> 
-> I'll send a whitespace-only v4 in a hour, allowing a little bit 
-> of time in case there are some comments already.
+On Tue, Mar 17, 2020 at 12:31 AM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Thu, Mar 12, 2020 at 04:36:46PM -0700, Joe Stringer wrote:
+> > From: Lorenz Bauer <lmb@cloudflare.com>
+> >
+> > Attach a tc direct-action classifier to lo in a fresh network
+> > namespace, and rewrite all connection attempts to localhost:4321
+> > to localhost:1234.
+> >
+> > Keep in mind that both client to server and server to client traffic
+> > passes the classifier.
+> >
+> > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> > Signed-off-by: Joe Stringer <joe@wand.net.nz>
+> > ---
+> >  tools/testing/selftests/bpf/.gitignore        |   1 +
+> >  tools/testing/selftests/bpf/Makefile          |   3 +-
+> >  .../selftests/bpf/progs/test_sk_assign.c      | 127 +++++++++++++
+> >  tools/testing/selftests/bpf/test_sk_assign.c  | 176 ++++++++++++++++++
+> Can this test be put under the test_progs.c framework?
 
-No worries! I think a few small changes are needed for a v5 (please
-carry my Acked-bys with for v5). Thanks for working on this; I love it!
-:)
+I'm not sure, how does the test_progs.c framework handle the logic in
+"tools/testing/selftests/bpf/test_sk_assign.sh"?
 
--Kees
+Specifically I'm looking for:
+* Unique netns to avoid messing with host networking stack configuration
+* Control over routes
+* Attaching loaded bpf programs to ingress qdisc of a device
 
--- 
-Kees Cook
+These are each trivial one-liners in the supplied shell script
+(admittedly building on existing shell infrastructure in the tests dir
+and iproute2 package). Seems like maybe the netns parts aren't so bad
+looking at flow_dissector_reattach.c but anything involving netlink
+configuration would either require pulling in a netlink library
+dependency somewhere or shelling out to the existing binaries. At that
+point I wonder if we're trying to achieve integration of this test
+into some automated prog runner, is there a simpler way like a place I
+can just add a one-liner to run the test_sk_assign.sh script?
+
+> >  tools/testing/selftests/bpf/test_sk_assign.sh |  19 ++
