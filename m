@@ -2,142 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 366A5188E05
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 20:30:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59C31188E24
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 20:42:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726623AbgCQTaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 15:30:35 -0400
-Received: from www62.your-server.de ([213.133.104.62]:37880 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726476AbgCQTaf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 15:30:35 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jEHv6-0005Gw-7l; Tue, 17 Mar 2020 20:30:32 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jEHv5-000HzY-S0; Tue, 17 Mar 2020 20:30:31 +0100
-Subject: Re: [PATCH v2 bpf-next] bpf: sharing bpf runtime stats with
- /dev/bpf_stats
-To:     Song Liu <songliubraving@fb.com>, linux-fsdevel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     kernel-team@fb.com, ast@kernel.org, mcgrof@kernel.org,
-        keescook@chromium.org, yzaikin@google.com
-References: <20200316203329.2747779-1-songliubraving@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <eb31bed3-3be4-501e-4340-bd558b31ead2@iogearbox.net>
-Date:   Tue, 17 Mar 2020 20:30:31 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20200316203329.2747779-1-songliubraving@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25754/Tue Mar 17 14:09:15 2020)
+        id S1726733AbgCQTmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 15:42:44 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:51716 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726682AbgCQTmn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 15:42:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584474162;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=1fFQOEoei54nx8OzjJR+NcuP/thiJUDry70cCne9lJ0=;
+        b=DuT4cgBaZ4idPEoRtqF62j5aIjXyuJpyQQ8atuBQkC1KrTKZKdHwQNGHwv4NOhvpwzLAhu
+        K23P6aqEiDFfkOQcQ8IL8PqfmPUaD+QDuO+0uSQcHiMsvy/w0FtO3XGxxS+fqk0i+2rYyT
+        Y1V5BRaZ6GD8KZCAa2j6Ibu17QDSYUs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-121-x4VM4dJDOzCifI5d55Tjjg-1; Tue, 17 Mar 2020 15:42:38 -0400
+X-MC-Unique: x4VM4dJDOzCifI5d55Tjjg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1A4F6107ACCA;
+        Tue, 17 Mar 2020 19:42:36 +0000 (UTC)
+Received: from llong.com (ovpn-115-15.rdu2.redhat.com [10.10.115.15])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 70EDD10002AB;
+        Tue, 17 Mar 2020 19:42:26 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-integrity@vger.kernel.org, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org, Sumit Garg <sumit.garg@linaro.org>,
+        Jerry Snitselaar <jsnitsel@redhat.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Eric Biggers <ebiggers@google.com>,
+        Chris von Recklinghausen <crecklin@redhat.com>,
+        Waiman Long <longman@redhat.com>
+Subject: [PATCH v4 0/4] KEYS: Read keys to internal buffer & then copy to userspace
+Date:   Tue, 17 Mar 2020 15:41:36 -0400
+Message-Id: <20200317194140.6031-1-longman@redhat.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/16/20 9:33 PM, Song Liu wrote:
-> Currently, sysctl kernel.bpf_stats_enabled controls BPF runtime stats.
-> Typical userspace tools use kernel.bpf_stats_enabled as follows:
-> 
->    1. Enable kernel.bpf_stats_enabled;
->    2. Check program run_time_ns;
->    3. Sleep for the monitoring period;
->    4. Check program run_time_ns again, calculate the difference;
->    5. Disable kernel.bpf_stats_enabled.
-> 
-> The problem with this approach is that only one userspace tool can toggle
-> this sysctl. If multiple tools toggle the sysctl at the same time, the
-> measurement may be inaccurate.
-> 
-> To fix this problem while keep backward compatibility, introduce a new
-> bpf command BPF_ENABLE_RUNTIME_STATS. On success, this command enables
-> run_time_ns stats and returns a valid fd.
-> 
-> With BPF_ENABLE_RUNTIME_STATS, user space tool would have the following
-> flow:
-> 
->    1. Get a fd with BPF_ENABLE_RUNTIME_STATS, and make sure it is valid;
->    2. Check program run_time_ns;
->    3. Sleep for the monitoring period;
->    4. Check program run_time_ns again, calculate the difference;
->    5. Close the fd.
-> 
-> Signed-off-by: Song Liu <songliubraving@fb.com>
+v4:
+ - Remove the __user annotation from big_key_read() and user_read() in
+   patch 1.
+ - Add a new patch 2 to remove __user annotation from rxrpc_read().
+ - Add a new patch 3 to remove __user annotation from dns_resolver_read().
+ - Merge the original patches 2 and 3 into a single patch 4 and refactor
+   it as suggested by Jarkko and Eric.
 
-Hmm, I see no relation to /dev/bpf_stats anymore, yet the subject still talks
-about it?
+v3:
+ - Reorganize the keyctl_read_key() code to make it more readable as
+   suggested by Jarkko Sakkinen.
+ - Add patch 3 to use kvmalloc() for safer large buffer allocation as
+   suggested by David Howells.
 
-Also, should this have bpftool integration now that we have `bpftool prog profile`
-support? Would be nice to then fetch the related stats via bpf_prog_info, so users
-can consume this in an easy way.
+v2:
+ - Handle NULL buffer and buflen properly in patch 1.
+ - Fix a bug in big_key.c.
+ - Add patch 2 to handle arbitrary large user-supplied buflen.
 
-> Changes RFC => v2:
-> 1. Add a new bpf command instead of /dev/bpf_stats;
-> 2. Remove the jump_label patch, which is no longer needed;
-> 3. Add a static variable to save previous value of the sysctl.
-> ---
->   include/linux/bpf.h            |  1 +
->   include/uapi/linux/bpf.h       |  1 +
->   kernel/bpf/syscall.c           | 43 ++++++++++++++++++++++++++++++++++
->   kernel/sysctl.c                | 36 +++++++++++++++++++++++++++-
->   tools/include/uapi/linux/bpf.h |  1 +
->   5 files changed, 81 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 4fd91b7c95ea..d542349771df 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -970,6 +970,7 @@ _out:							\
->   
->   #ifdef CONFIG_BPF_SYSCALL
->   DECLARE_PER_CPU(int, bpf_prog_active);
-> +extern struct mutex bpf_stats_enabled_mutex;
->   
->   /*
->    * Block execution of BPF programs attached to instrumentation (perf,
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 40b2d9476268..8285ff37210c 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -111,6 +111,7 @@ enum bpf_cmd {
->   	BPF_MAP_LOOKUP_AND_DELETE_BATCH,
->   	BPF_MAP_UPDATE_BATCH,
->   	BPF_MAP_DELETE_BATCH,
-> +	BPF_ENABLE_RUNTIME_STATS,
->   };
->   
->   enum bpf_map_type {
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index b2f73ecacced..823dc9de7953 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -24,6 +24,9 @@
->   #include <linux/ctype.h>
->   #include <linux/nospec.h>
->   #include <linux/audit.h>
-> +#include <linux/miscdevice.h>
+The current security key read methods are called with the key semaphore
+held.  The methods then copy out the key data to userspace which is
+subjected to page fault and may acquire the mmap semaphore. That can
+result in circular lock dependency and hence a chance to get into
+deadlock.
 
-Is this still needed?
+To avoid such a deadlock, an internal buffer is now allocated for getting
+out the necessary data first. After releasing the key semaphore, the
+key data are then copied out to userspace sidestepping the circular
+lock dependency.
 
-> +#include <linux/fs.h>
-> +#include <linux/jump_label.h>
->   #include <uapi/linux/btf.h>
->   
->   #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
-> @@ -3550,6 +3553,43 @@ static int bpf_map_do_batch(const union bpf_attr *attr,
->   	return err;
->   }
->   
+The keyutils test suite was run and the test passed with these patchset
+applied without any falure.
 
-Thanks,
-Daniel
+Waiman Long (4):
+  KEYS: Don't write out to userspace while holding key semaphore
+  KEYS: Remove __user annotation from rxrpc_read()
+  KEYS: Remove __user annotation from dns_resolver_read()
+  KEYS: Avoid false positive ENOMEM error on key read
+
+ include/keys/big_key-type.h               |  2 +-
+ include/keys/user-type.h                  |  3 +-
+ include/linux/key-type.h                  |  2 +-
+ net/dns_resolver/dns_key.c                |  2 +-
+ net/rxrpc/key.c                           | 27 +++----
+ security/keys/big_key.c                   | 11 ++-
+ security/keys/encrypted-keys/encrypted.c  |  7 +-
+ security/keys/internal.h                  | 12 ++++
+ security/keys/keyctl.c                    | 86 ++++++++++++++++++++---
+ security/keys/keyring.c                   |  6 +-
+ security/keys/request_key_auth.c          |  7 +-
+ security/keys/trusted-keys/trusted_tpm1.c | 14 +---
+ security/keys/user_defined.c              |  5 +-
+ 13 files changed, 116 insertions(+), 68 deletions(-)
+
+-- 
+2.18.1
+
