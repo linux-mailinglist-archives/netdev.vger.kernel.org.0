@@ -2,89 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38AAC188C20
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 18:30:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F5ED188C24
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 18:31:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726964AbgCQRar (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 13:30:47 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:50688 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726738AbgCQRaq (ORCPT
+        id S1726916AbgCQRaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 13:30:46 -0400
+Received: from mail-qv1-f68.google.com ([209.85.219.68]:39442 "EHLO
+        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726082AbgCQRaq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 13:30:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584466245;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hRA3mLxIRW8RlSqNs1JzRim2qfbZVa1Otm7sdJNcWjU=;
-        b=LYyA4C0BJp7dJo6Ov00kNMHL//39t/Nw+dYB2svPv6Vr91dGJyPah56gygeQhTDo1zyzqp
-        9gFPkxG8GA17r+sNLIAuC4a9Y4VuwRUibJ6oWaA0DXuWBL5PW7Gsx5GWPz3m/AwpXTyREK
-        JQpOUKaro8QaZcYTOaBcLjkl48Dwr5w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-180-nkwSaraWPOS9d6OYjGG8vg-1; Tue, 17 Mar 2020 13:30:43 -0400
-X-MC-Unique: nkwSaraWPOS9d6OYjGG8vg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6480B1085988;
-        Tue, 17 Mar 2020 17:30:25 +0000 (UTC)
-Received: from firesoul.localdomain (unknown [10.40.208.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 06CD960BEE;
-        Tue, 17 Mar 2020 17:30:25 +0000 (UTC)
-Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 0722930721A66;
-        Tue, 17 Mar 2020 18:30:24 +0100 (CET)
-Subject: [PATCH RFC v1 15/15] dpaa2-eth: add XDP frame size
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     sameehj@amazon.com
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, zorik@amazon.com, akiyano@amazon.com,
-        gtzalik@amazon.com,
-        =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Date:   Tue, 17 Mar 2020 18:30:24 +0100
-Message-ID: <158446622395.702578.14405139445906785865.stgit@firesoul>
-In-Reply-To: <158446612466.702578.2795159620575737080.stgit@firesoul>
-References: <158446612466.702578.2795159620575737080.stgit@firesoul>
-User-Agent: StGit/0.19
+Received: by mail-qv1-f68.google.com with SMTP id v38so7281530qvf.6;
+        Tue, 17 Mar 2020 10:30:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uMZI9G+vOGyFJSyjy5BLGE+SbevgQEUuqjy8SQ3+oEs=;
+        b=bWh2drfzNsrrjWxTp0zb6MrVMeXTLND0nB3Z8X/MPrWKZC6ZJWYOvgc6bps+int15o
+         +rY8bKArNwjzuLFeyrx2ILFrr7pOnSPSR16JqcNyQg6bWQAbyCAenxmW58/7dFikmCLY
+         a1RCBsCrlO6LYmgRClI8BfYIWzrFKgS4k2QCcMVXVRyEbEPVFY2C/BO8JmHCtY5xM8HT
+         +65qwSnPt5fUOHF6oYUkjryI4HeqIbY9mMxn7PkqifgY8FzMcy/5MjFT3pyAfeKPRxSW
+         NU/X9g8sjTTrxBCuWC+iTaiKwlQYAqNwWxhfMKR4Looj5rrs7sT0sqy3xubCe+KcSVLK
+         gneg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uMZI9G+vOGyFJSyjy5BLGE+SbevgQEUuqjy8SQ3+oEs=;
+        b=VMWWmZaLCz6dZPgnP5g/vFjgSzG83PDULC7ERAUhyG69I0StDgIPV1K1Q6QUzAa9h5
+         LYZ+6hU1kFgnu28yOOnJsVu5BIzJqrr1gVsnbqQxWxClZqQ1CH8k07O002ZOY8AIJYKS
+         ju3PpbFoSecM4i89Via/Lj9pHInpvZHvuYuCSgANd7UudJRLnUA6JYKbMam45gUFjyBm
+         wOolumsOFCtciy9Um9TYpubc8wzSO32ww9HW4ehijst6gFs7E3y3EbfC/yNjPgxazP3K
+         cH8C+7JRjFcO5dasLdh6WqIA6+7p7sn2YiS3cpLAgbcYgYBl6rbsj7yOjVrePfs1gkDt
+         NX5A==
+X-Gm-Message-State: ANhLgQ3hWk7ygPFrK0D64USGvTOrBPUKCCOPUZyzP7OS3PoNcMPmPyYM
+        xq91M6w6oHMUn+tIiPhn2Nw=
+X-Google-Smtp-Source: ADFU+vsxfQXEWzA4tzIws3q/lri+BobagJ+smPhVzlUG+fAuPQFgpcO4I42vwikyOCMQj8SCBopeng==
+X-Received: by 2002:ad4:51c3:: with SMTP id p3mr210903qvq.97.1584466242913;
+        Tue, 17 Mar 2020 10:30:42 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f013:bfaf:5636:cd03:74f7:34b0])
+        by smtp.gmail.com with ESMTPSA id c12sm2808948qtb.49.2020.03.17.10.30.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Mar 2020 10:30:42 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id C39FBC54E2; Tue, 17 Mar 2020 14:30:39 -0300 (-03)
+Date:   Tue, 17 Mar 2020 14:30:39 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Qiujun Huang <hqjagain@gmail.com>
+Cc:     davem@davemloft.net, vyasevich@gmail.com, nhorman@tuxdriver.com,
+        kuba@kernel.org, linux-sctp@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        anenbupt@gmail.com
+Subject: Re: [PATCH v2] sctp: fix refcount bug in sctp_wfree
+Message-ID: <20200317173039.GA3828@localhost.localdomain>
+References: <20200317155536.10227-1-hqjagain@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200317155536.10227-1-hqjagain@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the full page size:
- #define DPAA2_ETH_RX_BUF_RAW_SIZE	PAGE_SIZE
+Hi,
 
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c |    1 +
- 1 file changed, 1 insertion(+)
+On Tue, Mar 17, 2020 at 11:55:36PM +0800, Qiujun Huang wrote:
+> Do accounting for skb's real sk.
+> In some case skb->sk != asoc->base.sk:
+> 
+> migrate routing        sctp_check_transmitted routing
+> ------------                    ---------------
+                                 sctp_close();
+				   lock_sock(sk2);
+				 sctp_primitive_ABORT();
+                                 sctp_do_sm();
+                                 sctp_cmd_interpreter();
+                                 sctp_cmd_process_sack();
+                                 sctp_outq_sack();
+				 sctp_check_transmitted();
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index 7ff147e89426..8b03b38b33c9 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -301,6 +301,7 @@ static u32 run_xdp(struct dpaa2_eth_priv *priv,
- 	xdp.data_hard_start = xdp.data - XDP_PACKET_HEADROOM;
- 	xdp_set_data_meta_invalid(&xdp);
- 	xdp.rxq = &ch->xdp_rxq;
-+	xdp.frame_sz = DPAA2_ETH_RX_BUF_RAW_SIZE;
- 
- 	xdp_act = bpf_prog_run_xdp(xdp_prog, &xdp);
- 
+  lock_sock(sk1);
+  sctp_getsockopt_peeloff();
+  sctp_do_peeloff();
+  sctp_sock_migrate();
+> lock_sock_nested(sk2);
+>                                mv the transmitted skb to
+>                                the it's local tlist
 
 
+How can sctp_do_sm() be called in the 2nd column so that it bypasses
+the locks in the left column, allowing this mv to happen?
+
+> 
+> sctp_for_each_tx_datachunk(
+> sctp_clear_owner_w);
+> sctp_assoc_migrate();
+> sctp_for_each_tx_datachunk(
+> sctp_set_owner_w);
+> 
+>                                put the skb back to the
+>                                assoc lists
+> ----------------------------------------------------
+> 
+> The skbs which held bysctp_check_transmitted were not changed
+> to newsk. They were not dealt with by sctp_for_each_tx_datachunk
+> (sctp_clear_owner_w/sctp_set_owner_w).
+
+It would make sense but I'm missing one step earlier, I'm not seeing
+how the move to local list is allowed/possible in there. It really
+shouldn't be possible.
+
+> 
+> It looks only trouble here so handling it in sctp_wfree is enough.
+> 
+> Reported-and-tested-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
+> Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
+> ---
+>  net/sctp/socket.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index 1b56fc440606..5f5c28b30e25 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -9080,7 +9080,7 @@ static void sctp_wfree(struct sk_buff *skb)
+>  {
+>  	struct sctp_chunk *chunk = skb_shinfo(skb)->destructor_arg;
+>  	struct sctp_association *asoc = chunk->asoc;
+> -	struct sock *sk = asoc->base.sk;
+> +	struct sock *sk = skb->sk;
+>  
+>  	sk_mem_uncharge(sk, skb->truesize);
+>  	sk->sk_wmem_queued -= skb->truesize + sizeof(struct sctp_chunk);
+> @@ -9109,7 +9109,7 @@ static void sctp_wfree(struct sk_buff *skb)
+>  	}
+>  
+>  	sock_wfree(skb);
+> -	sctp_wake_up_waiters(sk, asoc);
+> +	sctp_wake_up_waiters(asoc->base.sk, asoc);
+>  
+>  	sctp_association_put(asoc);
+>  }
+> -- 
+> 2.17.1
+> 
