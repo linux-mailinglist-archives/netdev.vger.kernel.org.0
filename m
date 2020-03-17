@@ -2,124 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CF1A1888F2
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 16:18:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BC62188923
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 16:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727091AbgCQPSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 11:18:25 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39474 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727077AbgCQPSZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 11:18:25 -0400
-Received: by mail-wm1-f65.google.com with SMTP id f7so22442201wml.4
-        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 08:18:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=qBXIZEzxGUqAyM9pIpBwJ4AViTVInHf7b+TVClzYuWM=;
-        b=Tpr5B2vnUsJrytN/KjvohZZDnhPLmWc3gu4a7Zk4pVGhdvmPPnlHbigO8nJnUjZLmU
-         dqYbnDaKnyVRP3t+CJcHtZdUjmNWIN8OIXh6KsPjBBY4qg0CSeaWC7Njw3goh2Q1gW62
-         6eylyApKAtGTwhaY3RuFk4B+CtUIK2dMIdAxo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=qBXIZEzxGUqAyM9pIpBwJ4AViTVInHf7b+TVClzYuWM=;
-        b=Hnhe6tp10/bm0nvTLQNULZC2fUONGmmYsLAO9SNeUACpERzjesLsu4hAwECtOCelTx
-         Euqzw3aod4C9RMtJ6ELjbesUHaMZ8ahDw+gC7xUjyCQCgPovwJignSWISWbc7QQatsEH
-         MsS2NnSdb4ljEI1dxkHP7e6TYy/wdOwEDNpPS4TQh9Efq//0oQnkmSEXO5VwzbLNFrMd
-         +o1Iu3Eh13JVL5kF4ab2FFN9Ex1pvh5zi5IXW0ZCnZ7SFoKJSwLlhZMCtPeNOeBFBxnK
-         aDzGR+cr/lX5nclUK4fncJYPRS7M0czmYdvX4kUFMD4AsQ74siDmyok0gGRe0Vgloz0O
-         DbMA==
-X-Gm-Message-State: ANhLgQ1X+0r2kuOB6cXoGD+u5qxQpcrnuA3sHUnEHNNCVhwKohfZabgo
-        PvX2yVGpkkkPOh0/7OVZqWJhEQ==
-X-Google-Smtp-Source: ADFU+vvvZ5+/lYRbIsazixQyqzZRdmk+3TtUtyYZ4FfAMpZUuapXzOiEWdXWf3/4kpMBhcOF5C9OaQ==
-X-Received: by 2002:a1c:ba42:: with SMTP id k63mr5961236wmf.71.1584458303817;
-        Tue, 17 Mar 2020 08:18:23 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id w7sm5221114wrr.60.2020.03.17.08.18.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2020 08:18:23 -0700 (PDT)
-References: <20200310174711.7490-1-lmb@cloudflare.com> <20200310174711.7490-5-lmb@cloudflare.com>
-User-agent: mu4e 1.1.0; emacs 26.3
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        kernel-team@cloudflare.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/5] bpf: sockmap, sockhash: return file descriptors from privileged lookup
-In-reply-to: <20200310174711.7490-5-lmb@cloudflare.com>
-Date:   Tue, 17 Mar 2020 16:18:22 +0100
-Message-ID: <87imj3xb5t.fsf@cloudflare.com>
+        id S1726704AbgCQP0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 11:26:47 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:41416 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726019AbgCQP0r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 11:26:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=c4VMEeyDub9gXNam5tpCczR26KhxHVaAyLJoni/S3RY=; b=oSzL0s7RhZ3kfnfVk9InOw2RV
+        /rZnV1en5VrEMPjBF0my7Xl6yRoJwkknuLQ26Ng3LqLWfT2TKpgM0sYIgFkxWdBfyH91Uijg03j7v
+        2Kvgmgk8aGUMeXBrakZBP0mNOGyhMwu5RPl7gyCJr5DL9JM+FtHaYDriEkRg1RlUp2LNLj5MkKzUo
+        vWsT6ptKZI3pDbd8KCR96BLJ2lbDxwnJ4RyKpeLxTsZHfNYuBEQA/A/Us8kYwYSOW1a+jQ8eP6R7/
+        2/Drsn82mbndGb6lDSX30Jw4wijbZX6Y3eEHCSQIrKj3nQMOka0bdeDIF+Lmbh1idkGATUxpUyD6Y
+        l2UByn9KQ==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:54286)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jEE77-0007sM-OA; Tue, 17 Mar 2020 15:26:41 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jEE76-0002ud-S8; Tue, 17 Mar 2020 15:26:40 +0000
+Date:   Tue, 17 Mar 2020 15:26:40 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH REPOST3 net-next 0/3] net: add phylink support for PCS
+Message-ID: <20200317152640.GR25745@shell.armlinux.org.uk>
+References: <20200314103102.GJ25745@shell.armlinux.org.uk>
+ <20200314220018.GH8622@lunn.ch>
+ <20200314224459.GL25745@shell.armlinux.org.uk>
+ <20200317141839.GT24270@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200317141839.GT24270@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 10, 2020 at 06:47 PM CET, Lorenz Bauer wrote:
-> Allow callers with CAP_NET_ADMIN to retrieve file descriptors from a
-> sockmap and sockhash. O_CLOEXEC is enforced on all fds.
->
-> Without this, it's difficult to resize or otherwise rebuild existing
-> sockmap or sockhashes.
->
-> Suggested-by: Jakub Sitnicki <jakub@cloudflare.com>
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> ---
->  net/core/sock_map.c | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
->
-> diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-> index 03e04426cd21..3228936aa31e 100644
-> --- a/net/core/sock_map.c
-> +++ b/net/core/sock_map.c
-> @@ -347,12 +347,31 @@ static void *sock_map_lookup(struct bpf_map *map, void *key)
->  static int __sock_map_copy_value(struct bpf_map *map, struct sock *sk,
->  				 void *value)
->  {
-> +	struct file *file;
-> +	int fd;
-> +
->  	switch (map->value_size) {
->  	case sizeof(u64):
->  		sock_gen_cookie(sk);
->  		*(u64 *)value = atomic64_read(&sk->sk_cookie);
->  		return 0;
->
-> +	case sizeof(u32):
-> +		if (!capable(CAP_NET_ADMIN))
-> +			return -EPERM;
-> +
-> +		fd = get_unused_fd_flags(O_CLOEXEC);
-> +		if (unlikely(fd < 0))
-> +			return fd;
-> +
-> +		read_lock_bh(&sk->sk_callback_lock);
-> +		file = get_file(sk->sk_socket->file);
+On Tue, Mar 17, 2020 at 03:18:39PM +0100, Andrew Lunn wrote:
+> On Sat, Mar 14, 2020 at 10:44:59PM +0000, Russell King - ARM Linux admin wrote:
+> > On Sat, Mar 14, 2020 at 11:00:18PM +0100, Andrew Lunn wrote:
+> > > On Sat, Mar 14, 2020 at 10:31:02AM +0000, Russell King - ARM Linux admin wrote:
+> > > > Depends on "net: mii clause 37 helpers".
+> > > > 
+> > > > This series adds support for IEEE 802.3 register set compliant PCS
+> > > > for phylink.  In order to do this, we:
+> > > > 
+> > > > 1. add accessors for modifying a MDIO device register, and use them in
+> > > >    phylib, rather than duplicating the code from phylib.
+> > > > 2. add support for decoding the advertisement from clause 22 compatible
+> > > >    register sets for clause 37 advertisements and SGMII advertisements.
+> > > > 3. add support for clause 45 register sets for 10GBASE-R PCS.
+> > > 
+> > > Hi Russell
+> > > 
+> > > How big is the patchset which actually makes use of this code? It is
+> > > normal to add helpers and at least one user in the same patchset. But
+> > > if that would make the patchset too big, there could be some leeway.
+> > 
+> > The minimum is three patches:
+> > 
+> > arm64: dts: lx2160a: add PCS MDIO nodes
+> > dpaa2-mac: add 1000BASE-X/SGMII PCS support
+> > dpaa2-mac: add 10GBASE-R PCS support
+> 
+> Hi Russell
+> 
+> Are the two dpaa2-mac changes safe without the DT changes? I guess
+> so. So it seems sensible to post a set of 5 patches.
 
-I think this deserves a second look.
+That would need to be tested; it hasn't yet been tested to prove
+that nothing breaks as a result.
 
-We don't lock the sock, so what if tcp_close orphans it before we enter
-this critical section? Looks like sk->sk_socket might be NULL.
+> > and, at the moment, depending on whether you want 1G or 10G speeds,
+> > changes to the board firmware to select the serdes group mode.
+> 
+> And this is where we start speculating.
 
-I'd find a test that tries to trigger the race helpful, like:
+It is not speculation, what I've said is factual.  "At the moment"
+describes the present situation.  If it was any different, then the
+discussions that are going on between SolidRun and NXP would have
+been over very quickly.  This was raised back in December, and
+conference calls are still on-going on this issue, so that's about
+four months so far.
 
-  thread A: loop in lookup FD from map
-  thread B: loop in insert FD into map, close FD
+There is also some evidence that if we attempt to reprogram the
+Serdes PLLs at runtime, that will raise an exception and completely
+reset the chip. There is also some evidence that experimenting with
+changing the setup somehow bricked one of the Honeycomb boards.
 
-> +		read_unlock_bh(&sk->sk_callback_lock);
-> +
-> +		fd_install(fd, file);
-> +		*(u32 *)value = fd;
-> +		return 0;
-> +
->  	default:
->  		return -ENOSPC;
->  	}
+So no, what I've said is not speculation.
+
+The fact is that today, I need two different firmware images, one for
+1G speeds and another for 10G speeds on _all_ the SFP+/QSFP+ cages -
+it's either all at 1G or all at 10G.  This is due to the "reset
+configuration word" block that is loaded from boot media at reset time
+to configure the hardware.
+
+Even different RAM speeds need different RCW contents and therefore
+different firmware.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
