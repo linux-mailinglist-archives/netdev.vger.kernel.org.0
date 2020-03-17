@@ -2,115 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0483C188827
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 15:54:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB0FF188848
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 15:55:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbgCQOyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 10:54:03 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:23584 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726112AbgCQOyD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 10:54:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584456842;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=l79FaHixoWb/YEr1Un8EfF3fxqL3uRrFsnQzA6pb2vc=;
-        b=EEaZu2rciKuVezwz4X5HjY21jCK9ktabJJXmOt6GKRmIbILStv6MrYXgw8bzFftuMZvJIS
-        IBj+IWe2ShZ5sb50T5DntzjLZLuogJqxjdMwX4S18/e3xw0GJhnhDhtcMVNhS8moY16aMx
-        QANchgavvRVvTo6whGPO51uqmZ86cDk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-317-5dvBq50rPqa9oK0HyjNbng-1; Tue, 17 Mar 2020 10:54:00 -0400
-X-MC-Unique: 5dvBq50rPqa9oK0HyjNbng-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1727194AbgCQOzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 10:55:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43596 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726909AbgCQOyb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Mar 2020 10:54:31 -0400
+Received: from mail.kernel.org (ip5f5ad4e9.dynamic.kabel-deutschland.de [95.90.212.233])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 615ACDB5A;
-        Tue, 17 Mar 2020 14:53:59 +0000 (UTC)
-Received: from localhost.localdomain.com (ovpn-113-23.ams2.redhat.com [10.36.113.23])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3FECF5F700;
-        Tue, 17 Mar 2020 14:53:57 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next] mptcp: move msk state update to subflow_syn_recv_sock()
-Date:   Tue, 17 Mar 2020 15:53:34 +0100
-Message-Id: <ca414f55f4c74190bc419815f6ac7c61313bac2a.1584456734.git.pabeni@redhat.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id A7F0C2076E;
+        Tue, 17 Mar 2020 14:54:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584456870;
+        bh=+tWg3awZHYeUlHfuDttl7kdQdrVI80/B6dM9qQLuAfQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YAg2rDen4aRhFDMEsTITiVwvtPHMSyu6taTbqxTNSY7YOMPe9RVndlS48lKL7HKBo
+         7ik04EKJab7YjYL6Oq8cmbfsA4JLb+2OnrQWVrHG+2N32myl5Ov1RYlAm9YASYytXP
+         Ywf2jHO1WUgqxdzRE4xE+g81bGS1vtCo3hQ9tpRo=
+Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
+        (envelope-from <mchehab@kernel.org>)
+        id 1jEDbw-000AMu-NE; Tue, 17 Mar 2020 15:54:28 +0100
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH 10/17] net: phy: sfp-bus.c: get rid of docs warnings
+Date:   Tue, 17 Mar 2020 15:54:19 +0100
+Message-Id: <0d4835042a03ecda3514c1de0254d30134b0e8e0.1584456635.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <cover.1584456635.git.mchehab+huawei@kernel.org>
+References: <cover.1584456635.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit 58b09919626b ("mptcp: create msk early"), the
-msk socket is already available at subflow_syn_recv_sock()
-time. Let's move there the state update, to mirror more
-closely the first subflow state.
+The indentation for the returned values are weird, causing those
+warnings:
 
-The above will also help multiple subflow supports.
+	./drivers/net/phy/sfp-bus.c:579: WARNING: Unexpected indentation.
+	./drivers/net/phy/sfp-bus.c:619: WARNING: Unexpected indentation.
 
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Use a list and change the identation for it to be properly
+parsed by the documentation toolchain.
+
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- net/mptcp/protocol.c | 9 +++------
- net/mptcp/subflow.c  | 2 ++
- 2 files changed, 5 insertions(+), 6 deletions(-)
+ drivers/net/phy/sfp-bus.c | 32 ++++++++++++++++++--------------
+ 1 file changed, 18 insertions(+), 14 deletions(-)
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 04c3caed92df..e959104832ef 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -861,6 +861,9 @@ struct sock *mptcp_sk_clone(const struct sock *sk, st=
-ruct request_sock *req)
- 		ack_seq++;
- 		msk->ack_seq =3D ack_seq;
- 	}
-+
-+	/* will be fully established after successful MPC subflow creation */
-+	inet_sk_state_store(nsk, TCP_SYN_RECV);
- 	bh_unlock_sock(nsk);
-=20
- 	/* keep a single reference */
-@@ -916,10 +919,6 @@ static struct sock *mptcp_accept(struct sock *sk, in=
-t flags, int *err,
- 		mptcp_copy_inaddrs(newsk, ssk);
- 		list_add(&subflow->node, &msk->conn_list);
-=20
--		/* will be fully established at mptcp_stream_accept()
--		 * completion.
--		 */
--		inet_sk_state_store(new_mptcp_sock, TCP_SYN_RECV);
- 		bh_unlock_sock(new_mptcp_sock);
- 		local_bh_enable();
- 	}
-@@ -1256,8 +1255,6 @@ static int mptcp_stream_accept(struct socket *sock,=
- struct socket *newsock,
- 			if (!ssk->sk_socket)
- 				mptcp_sock_graft(ssk, newsock);
- 		}
--
--		inet_sk_state_store(newsock->sk, TCP_ESTABLISHED);
- 	}
-=20
- 	sock_put(ssock->sk);
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 8434c7f5f712..052d72a1d3a2 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -234,6 +234,8 @@ static struct sock *subflow_syn_recv_sock(const struc=
-t sock *sk,
- 			/* new mpc subflow takes ownership of the newly
- 			 * created mptcp socket
- 			 */
-+			inet_sk_state_store((struct sock *)new_msk,
-+					    TCP_ESTABLISHED);
- 			ctx->conn =3D new_msk;
- 			new_msk =3D NULL;
- 		}
---=20
-2.21.1
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index d949ea7b4f8c..6900c68260e0 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -572,13 +572,15 @@ static void sfp_upstream_clear(struct sfp_bus *bus)
+  * the sfp_bus structure, incrementing its reference count.  This must
+  * be put via sfp_bus_put() when done.
+  *
+- * Returns: on success, a pointer to the sfp_bus structure,
+- *	    %NULL if no SFP is specified,
+- * 	    on failure, an error pointer value:
+- * 		corresponding to the errors detailed for
+- * 		fwnode_property_get_reference_args().
+- * 	        %-ENOMEM if we failed to allocate the bus.
+- *		an error from the upstream's connect_phy() method.
++ * Returns:
++ * 	    - on success, a pointer to the sfp_bus structure,
++ *	    - %NULL if no SFP is specified,
++ * 	    - on failure, an error pointer value:
++ *
++ * 	      - corresponding to the errors detailed for
++ * 	        fwnode_property_get_reference_args().
++ * 	      - %-ENOMEM if we failed to allocate the bus.
++ *	      - an error from the upstream's connect_phy() method.
+  */
+ struct sfp_bus *sfp_bus_find_fwnode(struct fwnode_handle *fwnode)
+ {
+@@ -612,13 +614,15 @@ EXPORT_SYMBOL_GPL(sfp_bus_find_fwnode);
+  * the SFP bus using sfp_register_upstream().  This takes a reference on the
+  * bus, so it is safe to put the bus after this call.
+  *
+- * Returns: on success, a pointer to the sfp_bus structure,
+- *	    %NULL if no SFP is specified,
+- * 	    on failure, an error pointer value:
+- * 		corresponding to the errors detailed for
+- * 		fwnode_property_get_reference_args().
+- * 	        %-ENOMEM if we failed to allocate the bus.
+- *		an error from the upstream's connect_phy() method.
++ * Returns:
++ * 	    - on success, a pointer to the sfp_bus structure,
++ *	    - %NULL if no SFP is specified,
++ * 	    - on failure, an error pointer value:
++ *
++ * 	      - corresponding to the errors detailed for
++ * 	        fwnode_property_get_reference_args().
++ * 	      - %-ENOMEM if we failed to allocate the bus.
++ *	      - an error from the upstream's connect_phy() method.
+  */
+ int sfp_bus_add_upstream(struct sfp_bus *bus, void *upstream,
+ 			 const struct sfp_upstream_ops *ops)
+-- 
+2.24.1
 
