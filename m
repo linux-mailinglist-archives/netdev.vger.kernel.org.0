@@ -2,294 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 213C61888E9
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 16:18:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 865161888FE
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 16:19:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727050AbgCQPRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 11:17:55 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:32530 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726607AbgCQPRx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 11:17:53 -0400
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02HFDNjo001999;
-        Tue, 17 Mar 2020 16:17:24 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=STMicroelectronics;
- bh=z2Z/BSGosSRak6mnNoW0BFzlgP/CgbBuGPkERy2kuNc=;
- b=k0YFT87AtxGDAo48E7eIHgMY1MFGYUPyIC0Iq2SuAHyw1EgyWIX/oyStxAPAdc1/MoGa
- eiQ8/1ECXFptNJ3AL7V0gsp4XuYPKKDdrluM7CU4YAYilO75EPZyI+nG0a+250z+Ne95
- LMGy43jFuCtLHDxBrKg2ck17a+kbF8u8Fy9YvavSIEs8MvJL9KqSKLlTHES5NK0vhQoD
- 5Uvhq98UAIsdhLKRJRONRXZYYMWakKCY+YNqSsbXq7YtMW/TroIqthcw6mQxUUJf1toR
- e34xSCTh9PJ+7szy1U2um7bWvoynFwBLtABf14rLPDwTiFWntEE4BI4Sx2tjKX//qzxC rA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2yrqa9s1vq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 Mar 2020 16:17:24 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id CD6A410002A;
-        Tue, 17 Mar 2020 16:17:19 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id BDD252BC7AF;
-        Tue, 17 Mar 2020 16:17:19 +0100 (CET)
-Received: from localhost (10.75.127.44) by SFHDAG5NODE3.st.com (10.75.127.15)
- with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 17 Mar 2020 16:17:18
- +0100
-From:   Christophe Roullier <christophe.roullier@st.com>
-To:     <davem@davemloft.net>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <mripard@kernel.org>,
-        <martin.blumenstingl@googlemail.com>,
-        <alexandru.ardelean@analog.com>, <narmstrong@baylibre.com>,
-        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>
-CC:     <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <christophe.roullier@st.com>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCHv2 2/2] dt-bindings: net: dwmac: Convert stm32 dwmac to DT schema
-Date:   Tue, 17 Mar 2020 16:17:06 +0100
-Message-ID: <20200317151706.25810-3-christophe.roullier@st.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200317151706.25810-1-christophe.roullier@st.com>
-References: <20200317151706.25810-1-christophe.roullier@st.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG6NODE2.st.com (10.75.127.17) To SFHDAG5NODE3.st.com
- (10.75.127.15)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
- definitions=2020-03-17_06:2020-03-17,2020-03-17 signatures=0
+        id S1726836AbgCQPTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 11:19:12 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:36049 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726478AbgCQPTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 11:19:12 -0400
+Received: by mail-wm1-f65.google.com with SMTP id g62so22468844wme.1
+        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 08:19:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=t5EZSWArlDkJThKqU9M4TgErWWuNwLLtIEjo1J6YeRg=;
+        b=fIAcaMwP1yDuay3qyY7NG7+LTvd18KdflbuB+llddnKjRF0FZzeREbspJMOIpOQ272
+         S1pL4chJZo9VwY1LoThu0gumHzAJ+oZAJwLot1BjdUsnGxiKmGnvku4mURUlOWgD8dT2
+         91Uty3AR4gOCvO8RdOE2QRCeGXKMVbi7eIiw8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=t5EZSWArlDkJThKqU9M4TgErWWuNwLLtIEjo1J6YeRg=;
+        b=SZdBumZ5hj2blFmTjMXVHWWnC93c6dswhDha/BkveJN5oIZsSW8qdEk7nKlI3O+GMJ
+         Ud3l4tyc61nVP5Gw5/NoOUJmsmz07Zf/9247bMckx9ECiMcei9btMd16JvbC0KTDael4
+         EXlqFM22VrXPGEuhLkihvbSKmYV9l+Q5RZUvGPC+UTtK5Hyu+i9kuOUkt3e8rwcTeN71
+         lY1fbTXuCNZVKejiid+tqhY1dyJTKOYvPM7xceP/+3fZr9Te41HKgVMWBjNDRIdB5bvz
+         yM9zbWyOj7McGSnOeKrnyllcUa4jWyBNBS9BAjOFnwNWLQnmcsgRaVM7m6+ec48GbuCs
+         weEw==
+X-Gm-Message-State: ANhLgQ2C695MjYvV98zPCRoepeLIUZsSbmSV/CGUUmEgPheCGlHSBZdf
+        O+JOhzRebYLKY3jEqeVM0e7J5ng/sVc=
+X-Google-Smtp-Source: ADFU+vvwOkQSJLGFI3OxjnPNHCmp1xB90SXOnzt9VSPT9GIrn1Ra+tiMtf14VM99ViNz4cgibyoEkA==
+X-Received: by 2002:a1c:9815:: with SMTP id a21mr5814322wme.11.1584458350031;
+        Tue, 17 Mar 2020 08:19:10 -0700 (PDT)
+Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
+        by smtp.gmail.com with ESMTPSA id z19sm4363534wma.41.2020.03.17.08.19.07
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 17 Mar 2020 08:19:09 -0700 (PDT)
+From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: [PATCH net-next 07/11] bnxt_en: Read partno and serialno of the board from VPD
+Date:   Tue, 17 Mar 2020 20:47:22 +0530
+Message-Id: <1584458246-29370-1-git-send-email-vasundhara-v.volam@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Convert stm32 dwmac to DT schema.
+Store the part number and serial number information from VPD in
+the bnxt structure. Follow up patch will add the support to display
+the information via devlink command.
 
-Signed-off-by: Christophe Roullier <christophe.roullier@st.com>
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- .../devicetree/bindings/net/stm32-dwmac.txt   |  44 -----
- .../devicetree/bindings/net/stm32-dwmac.yaml  | 160 ++++++++++++++++++
- 2 files changed, 160 insertions(+), 44 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/stm32-dwmac.txt
- create mode 100644 Documentation/devicetree/bindings/net/stm32-dwmac.yaml
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 59 +++++++++++++++++++++++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |  4 +++
+ 2 files changed, 63 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/stm32-dwmac.txt b/Documentation/devicetree/bindings/net/stm32-dwmac.txt
-deleted file mode 100644
-index a90eef11dc46..000000000000
---- a/Documentation/devicetree/bindings/net/stm32-dwmac.txt
-+++ /dev/null
-@@ -1,44 +0,0 @@
--STMicroelectronics STM32 / MCU DWMAC glue layer controller
--
--This file documents platform glue layer for stmmac.
--Please see stmmac.txt for the other unchanged properties.
--
--The device node has following properties.
--
--Required properties:
--- compatible:  For MCU family should be "st,stm32-dwmac" to select glue, and
--	       "snps,dwmac-3.50a" to select IP version.
--	       For MPU family should be "st,stm32mp1-dwmac" to select
--	       glue, and "snps,dwmac-4.20a" to select IP version.
--- clocks: Must contain a phandle for each entry in clock-names.
--- clock-names: Should be "stmmaceth" for the host clock.
--	       Should be "mac-clk-tx" for the MAC TX clock.
--	       Should be "mac-clk-rx" for the MAC RX clock.
--	       For MPU family need to add also "ethstp" for power mode clock
--- interrupt-names: Should contain a list of interrupt names corresponding to
--           the interrupts in the interrupts property, if available.
--		   Should be "macirq" for the main MAC IRQ
--		   Should be "eth_wake_irq" for the IT which wake up system
--- st,syscon : Should be phandle/offset pair. The phandle to the syscon node which
--	       encompases the glue register, and the offset of the control register.
--
--Optional properties:
--- clock-names:     For MPU family "eth-ck" for PHY without quartz
--- st,eth-clk-sel (boolean) : set this property in RGMII PHY when you want to select RCC clock instead of ETH_CLK125.
--- st,eth-ref-clk-sel (boolean) :  set this property in RMII mode when you have PHY without crystal 50MHz and want to select RCC clock instead of ETH_REF_CLK.
--
--Example:
--
--	ethernet@40028000 {
--		compatible = "st,stm32-dwmac", "snps,dwmac-3.50a";
--		reg = <0x40028000 0x8000>;
--		reg-names = "stmmaceth";
--		interrupts = <0 61 0>, <0 62 0>;
--		interrupt-names = "macirq", "eth_wake_irq";
--		clock-names = "stmmaceth", "mac-clk-tx", "mac-clk-rx";
--		clocks = <&rcc 0 25>, <&rcc 0 26>, <&rcc 0 27>;
--		st,syscon = <&syscfg 0x4>;
--		snps,pbl = <8>;
--		snps,mixed-burst;
--		dma-ranges;
--	};
-diff --git a/Documentation/devicetree/bindings/net/stm32-dwmac.yaml b/Documentation/devicetree/bindings/net/stm32-dwmac.yaml
-new file mode 100644
-index 000000000000..4440216917b3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/stm32-dwmac.yaml
-@@ -0,0 +1,160 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+# Copyright 2019 BayLibre, SAS
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/net/stm32-dwmac.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 663dcf6..b03cdda 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -11727,6 +11727,63 @@ static int bnxt_init_mac_addr(struct bnxt *bp)
+ 	return rc;
+ }
+ 
++#define BNXT_VPD_LEN	512
++static void bnxt_vpd_read_info(struct bnxt *bp)
++{
++	struct pci_dev *pdev = bp->pdev;
++	int i, len, pos, ro_size;
++	ssize_t vpd_size;
++	u8 *vpd_data;
 +
-+title: STMicroelectronics STM32 / MCU DWMAC glue layer controller
++	vpd_data = kmalloc(BNXT_VPD_LEN, GFP_KERNEL);
++	if (!vpd_data)
++		return;
 +
-+maintainers:
-+  - Alexandre Torgue <alexandre.torgue@st.com>
-+  - Christophe Roullier <christophe.roullier@st.com>
++	vpd_size = pci_read_vpd(pdev, 0, BNXT_VPD_LEN, vpd_data);
++	if (vpd_size <= 0) {
++		netdev_err(bp->dev, "Unable to read VPD\n");
++		goto exit;
++	}
 +
-+description:
-+  This file documents platform glue layer for stmmac.
++	i = pci_vpd_find_tag(vpd_data, 0, vpd_size, PCI_VPD_LRDT_RO_DATA);
++	if (i < 0) {
++		netdev_err(bp->dev, "VPD READ-Only not found\n");
++		goto exit;
++	}
 +
-+# We need a select here so we don't match all nodes with 'snps,dwmac'
-+select:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - st,stm32-dwmac
-+          - st,stm32mp1-dwmac
-+  required:
-+    - compatible
++	ro_size = pci_vpd_lrdt_size(&vpd_data[i]);
++	i += PCI_VPD_LRDT_TAG_SIZE;
++	if (i + ro_size > vpd_size)
++		goto exit;
 +
-+allOf:
-+  - $ref: "snps,dwmac.yaml#"
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - st,stm32-dwmac
-+              - st,stm32mp1-dwmac
-+    then:
-+      properties:
-+       clocks:
-+         minItems: 3
-+         maxItems: 5
-+         items:
-+          - description: GMAC main clock
-+          - description: MAC TX clock
-+          - description: MAC RX clock
-+          - description: For MPU family, used for power mode
-+          - description: For MPU family, used for PHY without quartz
++	pos = pci_vpd_find_info_keyword(vpd_data, i, ro_size,
++					PCI_VPD_RO_KEYWORD_PARTNO);
++	if (pos < 0)
++		goto read_sn;
 +
-+       clock-names:
-+         minItems: 3
-+         maxItems: 5
-+         contains:
-+          enum:
-+            - stmmaceth
-+            - mac-clk-tx
-+            - mac-clk-rx
-+            - ethstp
-+            - eth-ck
++	len = pci_vpd_info_field_size(&vpd_data[pos]);
++	pos += PCI_VPD_INFO_FLD_HDR_SIZE;
++	if (len + pos > vpd_size)
++		goto read_sn;
 +
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+          - enum:
-+              - st,stm32mp1-dwmac
-+          - const: snps,dwmac-4.20a
-+      - items:
-+          - enum:
-+              - st,stm32-dwmac
-+          - const: snps,dwmac-4.10a
-+      - items:
-+          - enum:
-+              - st,stm32-dwmac
-+          - const: snps,dwmac-3.50a
++	strlcpy(bp->board_partno, &vpd_data[pos], min(len, BNXT_VPD_FLD_LEN));
 +
-+  st,syscon:
-+    allOf:
-+      - $ref: "/schemas/types.yaml#/definitions/phandle-array"
-+    description:
-+      Should be phandle/offset pair. The phandle to the syscon node which
-+      encompases the glue register, and the offset of the control register
++read_sn:
++	pos = pci_vpd_find_info_keyword(vpd_data, i, ro_size,
++					PCI_VPD_RO_KEYWORD_SERIALNO);
++	if (pos < 0)
++		goto exit;
 +
-+  st,eth-clk-sel:
-+    description:
-+      set this property in RGMII PHY when you want to select RCC clock instead of ETH_CLK125.
-+    type: boolean
++	len = pci_vpd_info_field_size(&vpd_data[pos]);
++	pos += PCI_VPD_INFO_FLD_HDR_SIZE;
++	if (len + pos > vpd_size)
++		goto exit;
 +
-+  st,eth-ref-clk-sel:
-+    description:
-+      set this property in RMII mode when you have PHY without crystal 50MHz and want to
-+      select RCC clock instead of ETH_REF_CLK.
-+    type: boolean
++	strlcpy(bp->board_serialno, &vpd_data[pos], min(len, BNXT_VPD_FLD_LEN));
++exit:
++	kfree(vpd_data);
++}
 +
-+required:
-+  - compatible
-+  - clocks
-+  - clock-names
-+  - st,syscon
+ static int bnxt_pcie_dsn_get(struct bnxt *bp, u8 dsn[])
+ {
+ 	struct pci_dev *pdev = bp->pdev;
+@@ -11784,6 +11841,8 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	dev->ethtool_ops = &bnxt_ethtool_ops;
+ 	pci_set_drvdata(pdev, dev);
+ 
++	bnxt_vpd_read_info(bp);
 +
-+examples:
-+ - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/stm32mp1-clks.h>
-+    #include <dt-bindings/reset/stm32mp1-resets.h>
-+    #include <dt-bindings/mfd/stm32h7-rcc.h>
-+    //Example 1
-+     ethernet0: ethernet@5800a000 {
-+       compatible = "st,stm32mp1-dwmac", "snps,dwmac-4.20a";
-+       reg = <0x5800a000 0x2000>;
-+       reg-names = "stmmaceth";
-+       interrupts = <&intc GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>;
-+       interrupt-names = "macirq";
-+       clock-names = "stmmaceth",
-+                     "mac-clk-tx",
-+                     "mac-clk-rx",
-+                     "ethstp",
-+                     "eth-ck";
-+       clocks = <&rcc ETHMAC>,
-+                <&rcc ETHTX>,
-+                <&rcc ETHRX>,
-+                <&rcc ETHSTP>,
-+                <&rcc ETHCK_K>;
-+       st,syscon = <&syscfg 0x4>;
-+       snps,pbl = <2>;
-+       snps,axi-config = <&stmmac_axi_config_0>;
-+       snps,tso;
-+       status = "disabled";
-+       phy-mode = "rgmii";
-+       };
+ 	rc = bnxt_alloc_hwrm_resources(bp);
+ 	if (rc)
+ 		goto init_err_pci_clean;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 5adc25f..7f5f35b 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1500,6 +1500,10 @@ struct bnxt {
+ 	 (chip_num) == CHIP_NUM_58804 ||        \
+ 	 (chip_num) == CHIP_NUM_58808)
+ 
++#define BNXT_VPD_FLD_LEN	32
++	char			board_partno[BNXT_VPD_FLD_LEN];
++	char			board_serialno[BNXT_VPD_FLD_LEN];
 +
-+    //Example 2 (MCU example)
-+     ethernet1: ethernet@40028000 {
-+       compatible = "st,stm32-dwmac", "snps,dwmac-3.50a";
-+       reg = <0x40028000 0x8000>;
-+       reg-names = "stmmaceth";
-+       interrupts = <0 61 0>, <0 62 0>;
-+       interrupt-names = "macirq", "eth_wake_irq";
-+       clock-names = "stmmaceth", "mac-clk-tx", "mac-clk-rx";
-+       clocks = <&rcc 0 25>, <&rcc 0 26>, <&rcc 0 27>;
-+       st,syscon = <&syscfg 0x4>;
-+       snps,pbl = <8>;
-+       snps,mixed-burst;
-+       dma-ranges;
-+       phy-mode = "mii";
-+       };
-+
-+    //Example 3
-+     ethernet2: ethernet@40027000 {
-+       compatible = "st,stm32-dwmac", "snps,dwmac-4.10a";
-+       reg = <0x40028000 0x8000>;
-+       reg-names = "stmmaceth";
-+       interrupts = <61>;
-+       interrupt-names = "macirq";
-+       clock-names = "stmmaceth", "mac-clk-tx", "mac-clk-rx";
-+       clocks = <&rcc 62>, <&rcc 61>, <&rcc 60>;
-+       st,syscon = <&syscfg 0x4>;
-+       snps,pbl = <8>;
-+       status = "disabled";
-+       phy-mode = "mii";
-+       };
+ 	struct net_device	*dev;
+ 	struct pci_dev		*pdev;
+ 
 -- 
-2.17.1
+1.8.3.1
 
