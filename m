@@ -2,150 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BA621882FE
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 13:09:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07CF818830B
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 13:09:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726734AbgCQMIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 08:08:15 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:38792 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725916AbgCQMIP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 08:08:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=1cPwpOW6wyy38AvvEB2WIvO8j6ro4+e3JqGRpkola/Q=; b=auMKY7FCbW+rsFHdZPMl5yAo5U
-        LNCQSOQbEDbGNzvTFHic78orL+xQHsq9ogAuYHulpWPgBDGPy9KVIeU3rIfGNtgJvB1M7kiRdjWvm
-        pqh7uh7fIA85R9ywdZpJXLOH3P2pc3h+AFpk8wUyXrhjFm6/K5LZA8c1mcPQdTUH1jdvrwdbeivv2
-        UTURpPhwrVCHpBOLvPL+2OIzd4x9+rARVwkN2fye51fdshzipmuGGVMMhqXPfGO+w/qxe48qm6RBs
-        fS2i/K2rUeh4IwXiv9aeSXxEyDSA8bmZHPCjw/wvLdVkzpWJUZyTIMmMiqLy74KxltZvYuK4KZr5j
-        s99raqMg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:55692 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jEB0y-0006vN-T9; Tue, 17 Mar 2020 12:08:08 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jEB0y-0006iF-5g; Tue, 17 Mar 2020 12:08:08 +0000
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH REPOST net-next] net: dsa: mv88e6xxx: fix vlan setup
+        id S1726682AbgCQMJW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 08:09:22 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:41409 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726498AbgCQMJW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 08:09:22 -0400
+Received: by mail-ed1-f68.google.com with SMTP id v6so10944443edw.8
+        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 05:09:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CdpI6plcLqffgBOnjrXIKu3Uafpf4rcXyJ3pN99AXIc=;
+        b=ShQsp79LXm5GC7td8lqoA5hp/BSeNQvRiooz2UKFzmJRaAOzkgZjn7b41Fvhmuu49M
+         ZOSLn29Uj5nZ3XIkCxxwHGn2zMBaz3HEqE6LtEqOfAjivToFZCCTvMvo7J5GAXaE/lgb
+         PGCme0lxaWYhE70YuoIlNnCe0UdQsRuMBaFmI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=CdpI6plcLqffgBOnjrXIKu3Uafpf4rcXyJ3pN99AXIc=;
+        b=LaCw+0g1z/hkEwHLP9/j3WR8DqyOgWErLzodzBOkkCrUzyVnJz5QobMf9Ddtac87tt
+         fMBTzhWaG6UIbRLGTz/OtmrHt2P/VxXP0plS9UvWnMVXVWMJo3eBhnoVXmG7e8cRfC/q
+         GFAC2Qzwy+KvyOtE9LWkG3pVcVRFkKARN+Rq1E4GbIG4+wxjG3dJqS2tQRIUqjz+E5Pg
+         pVF5phRgnlwZ4mneeyJOQPAu7SX9Ctdt5Op7SuU0ZSaF4CMNHRSjyndTIOeIG6kO0s9Y
+         hSZjeHswM2UtSfMvk11t0ZFoQzzTKKD+OqPozxQyHaVIgUjdrIHS9cY8b+lp9iCArBhC
+         1yYQ==
+X-Gm-Message-State: ANhLgQ2IfZxqrc53HIZhuCUw0cyqyJ9XvxBiVdugn1bmOUV6vCSfoMTD
+        zzl72Rm4z+FDSbD0o6zMIzcZ07tC1Vs=
+X-Google-Smtp-Source: ADFU+vt7TNrAM455nmXuZSvQyzDrNcKz83mZLGvVuBNS1c1ZgvK/q0xOYvcCY03iNh9MFPWzGv9L9w==
+X-Received: by 2002:ac2:5187:: with SMTP id u7mr2264091lfi.153.1584446960058;
+        Tue, 17 Mar 2020 05:09:20 -0700 (PDT)
+Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id 23sm2389208lfa.28.2020.03.17.05.09.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Mar 2020 05:09:11 -0700 (PDT)
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
+        bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next 0/4] net: bridge: vlan options: add support for tunnel mapping
+Date:   Tue, 17 Mar 2020 14:08:32 +0200
+Message-Id: <20200317120836.1765164-1-nikolay@cumulusnetworks.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jEB0y-0006iF-5g@rmk-PC.armlinux.org.uk>
-Date:   Tue, 17 Mar 2020 12:08:08 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DSA assumes that a bridge which has vlan filtering disabled is not
-vlan aware, and ignores all vlan configuration. However, the kernel
-software bridge code allows configuration in this state.
+Hi,
+In order to bring the new vlan API on par with the old one and be able
+to completely migrate to the new one we need to support vlan tunnel mapping
+and statistics. This patch-set takes care of the former by making it a
+vlan option. There are two notable issues to deal with:
+ - vlan range to tunnel range mapping
+   * The tunnel ids are globally unique for the vlan code and a vlan can
+     be mapped to one tunnel, so the old API took care of ranges by
+     taking the starting tunnel id value and incrementally mapping
+     vlan id(i) -> tunnel id(i). This set takes the same approach and
+     uses one new attribute - BRIDGE_VLANDB_ENTRY_TUNNEL_ID. If used
+     with a vlan range then it's the starting tunnel id to map.
 
-This causes the kernel's idea of the bridge vlan state and the
-hardware state to disagree, so "bridge vlan show" indicates a correct
-configuration but the hardware lacks all configuration. Even worse,
-enabling vlan filtering on a DSA bridge immediately blocks all traffic
-which, given the output of "bridge vlan show", is very confusing.
+ - tunnel mapping removal
+   * Since there are no reserved/special tunnel ids defined, we can't
+     encode mapping removal within the new attribute, in order to be
+     able to remove a mapping we add a vlan flag which makes the new
+     tunnel option remove the mapping
 
-Provide an option that drivers can set to indicate they want to receive
-vlan configuration even when vlan filtering is disabled. This is safe
-for Marvell DSA bridges, which do not look up ingress traffic in the
-VTU if the port is in 8021Q disabled state. Whether this change is
-suitable for all DSA bridges is not known.
+The rest is pretty straight-forward, in fact we directly re-use the old
+code for manipulating tunnels by just mapping the command (set/del). In
+order to be able to keep detecting vlan ranges we check that the current
+vlan has a tunnel and it's extending the current vlan range end's tunnel
+id.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
-This patch depends on, and completes the changes previously merged in
-net-next in 2b99e54b30ed ("Merge branch 'VLANs-DSA-switches-and-multiple-bridges'")
-It has been delayed due to the lack of discussion concerning the
-naming of "vlan_bridge_vtu" which remains unresolved.
+Thanks,
+ Nik
 
- drivers/net/dsa/mv88e6xxx/chip.c |  1 +
- include/net/dsa.h                |  1 +
- net/dsa/slave.c                  | 12 ++++++++----
- 3 files changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 221593261e8f..3a8346a95dae 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -3036,6 +3036,7 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
- 
- 	chip->ds = ds;
- 	ds->slave_mii_bus = mv88e6xxx_default_mdio_bus(chip);
-+	ds->vlan_bridge_vtu = true;
- 
- 	mv88e6xxx_reg_lock(chip);
- 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index beeb81a532e3..4c895764447f 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -273,6 +273,7 @@ struct dsa_switch {
- 	 * settings on ports if not hardware-supported
- 	 */
- 	bool			vlan_filtering_is_global;
-+	bool			vlan_bridge_vtu;
- 
- 	/* In case vlan_filtering_is_global is set, the VLAN awareness state
- 	 * should be retrieved from here and not from the per-port settings.
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index c5beb3031a72..a4009e1e7bdd 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -314,7 +314,8 @@ static int dsa_slave_vlan_add(struct net_device *dev,
- 	if (obj->orig_dev != dev)
- 		return -EOPNOTSUPP;
- 
--	if (dp->bridge_dev && !br_vlan_enabled(dp->bridge_dev))
-+	if (dp->bridge_dev && !dp->ds->vlan_bridge_vtu &&
-+	    !br_vlan_enabled(dp->bridge_dev))
- 		return 0;
- 
- 	vlan = *SWITCHDEV_OBJ_PORT_VLAN(obj);
-@@ -381,7 +382,8 @@ static int dsa_slave_vlan_del(struct net_device *dev,
- 	if (obj->orig_dev != dev)
- 		return -EOPNOTSUPP;
- 
--	if (dp->bridge_dev && !br_vlan_enabled(dp->bridge_dev))
-+	if (dp->bridge_dev && !dp->ds->vlan_bridge_vtu &&
-+	    !br_vlan_enabled(dp->bridge_dev))
- 		return 0;
- 
- 	/* Do not deprogram the CPU port as it may be shared with other user
-@@ -1166,7 +1168,8 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- 	 * need to emulate the switchdev prepare + commit phase.
- 	 */
- 	if (dp->bridge_dev) {
--		if (!br_vlan_enabled(dp->bridge_dev))
-+		if (!dp->ds->vlan_bridge_vtu &&
-+		    !br_vlan_enabled(dp->bridge_dev))
- 			return 0;
- 
- 		/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
-@@ -1200,7 +1203,8 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 	 * need to emulate the switchdev prepare + commit phase.
- 	 */
- 	if (dp->bridge_dev) {
--		if (!br_vlan_enabled(dp->bridge_dev))
-+		if (!dp->ds->vlan_bridge_vtu &&
-+		    !br_vlan_enabled(dp->bridge_dev))
- 			return 0;
- 
- 		/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
+Nikolay Aleksandrov (4):
+  net: bridge: vlan options: rename br_vlan_opts_eq to
+    br_vlan_opts_eq_range
+  net: bridge: vlan tunnel: constify bridge and port arguments
+  net: bridge: vlan options: add support for tunnel id dumping
+  net: bridge: vlan options: add support for tunnel mapping set/del
+
+ include/uapi/linux/if_bridge.h |  2 +
+ net/bridge/br_netlink_tunnel.c | 12 +++---
+ net/bridge/br_private.h        |  4 +-
+ net/bridge/br_private_tunnel.h | 17 +++++---
+ net/bridge/br_vlan.c           |  3 +-
+ net/bridge/br_vlan_options.c   | 74 +++++++++++++++++++++++++++++++---
+ net/bridge/br_vlan_tunnel.c    |  5 ++-
+ 7 files changed, 94 insertions(+), 23 deletions(-)
+
 -- 
-2.20.1
+2.24.1
 
