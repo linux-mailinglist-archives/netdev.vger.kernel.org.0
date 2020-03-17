@@ -2,94 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47B85188F10
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 21:36:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EA77188F17
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 21:37:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726821AbgCQUgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 16:36:47 -0400
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:35044 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726388AbgCQUgq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 16:36:46 -0400
-Received: by mail-pj1-f68.google.com with SMTP id mq3so267203pjb.0
-        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 13:36:43 -0700 (PDT)
+        id S1726842AbgCQUh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 16:37:29 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:46910 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726555AbgCQUh3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 16:37:29 -0400
+Received: by mail-pf1-f196.google.com with SMTP id c19so12580366pfo.13
+        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 13:37:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=ib4SwHPhEWfJb/uM7SZdOGzb1C9ZMwqW8KhF+YMLT3M=;
-        b=dYo3YFbLQ3sdflQTmyvLyS4EkAkzpXmfCXPFn/r3mL7/ofYBawg+1sMIb53TSIod48
-         ZAsSb0PVHK8YmDLVaWLK64XknHAQKwgmN5kZC5vdqhTLAQQPA6NOhOBKFNsWSazmQFo4
-         bgj7ZMb1T+os0t2EOSHfGNcHiX61oSH/+I2jk=
+        bh=ia3F2HvTleBUd5k0glVvssWumV1C7B/usfl4j8ziVTk=;
+        b=VhA6UQpxRprIfMALPyddXrkODXZ1mLdlDqeNGMb/3XLpomhqvXD/+V+AruOkekOaF1
+         ejFlvWGOo7GdRrpAASBGuJFIbWqayHNGCIpceSescVLPpHaGkP4C9LXseHm2+vBBHXw4
+         Hqp9Hka0S/2cM5QLCYK7oVtsa/KWy84dn77Mg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=ib4SwHPhEWfJb/uM7SZdOGzb1C9ZMwqW8KhF+YMLT3M=;
-        b=JhhBuTSxuv0f+cPLwqWrZb0RzWz3hJ6XvgNOyjHJGj9WyX3zzQczHW6Yw+EZAw1WGk
-         xX8Ir108QgdnuVn9tlARzgpKCaZ+KTjHrEsyqPlDcHppuU2vhK7ppsyq+Sf9BuUpcRmB
-         SHL+tDX6i9+PVPGbnVlSCTfNOvNYd63RMl/4er2AL1ZbcKqJP5OarorhD2rMq+3XJPyB
-         MwAlG71nkyNhrUOORWKSXZqxYkiYNKW5kB9Msbdg5OtJpXgGB1F2ZQJ0F/Vsejo1uY+v
-         k4j6MFD+9ZcB9Cql/ElR7H9/k8I+0ymXCeZjQQ1Qju8XC0OA9dt5J6zC8fzbZN4H4N5O
-         /hXQ==
-X-Gm-Message-State: ANhLgQ2+MvGb2T5Ng6Mogz4DRleUioHl/u3uaOZj9XsnXjZ7OzuRbPtI
-        mAJXB7f/jLYXspTkuBVTwye/eA==
-X-Google-Smtp-Source: ADFU+vtywVKdA3PLHVrwUfLlI+Te1WxZLBOBQRoXC+vTAGy5lQ5ckL9RCHaEDGa2W5XtgG2S7iRKcQ==
-X-Received: by 2002:a17:90a:ab0a:: with SMTP id m10mr1046373pjq.105.1584477402819;
-        Tue, 17 Mar 2020 13:36:42 -0700 (PDT)
+        bh=ia3F2HvTleBUd5k0glVvssWumV1C7B/usfl4j8ziVTk=;
+        b=btTGCNpEAWMN/AQTSnSies6e/HWEndPqN6y94YOgiuyLZl0rxJH74542BaLD2/PEfb
+         95aZeJebTBL7PEjdaxTP2UJUAuJNBFbUa/usMPiOqpawsjvzEsXqLyCgj97f9FhHndK+
+         9yfUGDKU8+uUC9iptz/R124QWRwlSe4Gb8vy3CnhBkaKsJVESo3YZy0LO0tfFfuEdKRQ
+         H4Lmr8PQZWOfXcROUGQa8pxbO09hj8Ja6Gv/8+3D+9wHmOe1osVIBsQZ0dcfLf2X7P1U
+         mpRYZDzhA/HMQRx+GUVfeAF2wCFa0cdWXvlk1CI/FtoBTx6EfWdsSZeHD6AmUGiF5e3G
+         M0Tg==
+X-Gm-Message-State: ANhLgQ1MfJJiH3j/KSJKmP4ZZvlYR6HEmalR2hNqdpfqI0TkfbA6DLJT
+        gaILxAoox79ZqcFiKgMd922raw==
+X-Google-Smtp-Source: ADFU+vubc5WMN81vQ0fe8aciie9n6/qdhF8awX9OBaYM/+OhP6oVuSINpp+M/RKBOM/oxWdetcPIUQ==
+X-Received: by 2002:a63:8b42:: with SMTP id j63mr953821pge.27.1584477447536;
+        Tue, 17 Mar 2020 13:37:27 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d14sm3071222pfq.29.2020.03.17.13.36.41
+        by smtp.gmail.com with ESMTPSA id 72sm3509508pgd.86.2020.03.17.13.37.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2020 13:36:41 -0700 (PDT)
-Date:   Tue, 17 Mar 2020 13:36:40 -0700
+        Tue, 17 Mar 2020 13:37:26 -0700 (PDT)
+Date:   Tue, 17 Mar 2020 13:37:25 -0700
 From:   Kees Cook <keescook@chromium.org>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     shuah@kernel.org, luto@amacapital.net, wad@chromium.org,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, kernel-team@fb.com, Tim.Bird@sony.com
-Subject: Re: [PATCH v3 5/6] kselftest: add fixture parameters
-Message-ID: <202003171326.0EB9CC2@keescook>
+Subject: Re: [PATCH v3 5/6] kselftest: add fixture variants
+Message-ID: <202003171337.900705E@keescook>
 References: <20200316225647.3129354-1-kuba@kernel.org>
- <20200316225647.3129354-6-kuba@kernel.org>
+ <20200316225647.3129354-7-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200316225647.3129354-6-kuba@kernel.org>
+In-Reply-To: <20200316225647.3129354-7-kuba@kernel.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 16, 2020 at 03:56:45PM -0700, Jakub Kicinski wrote:
+v3.1 ;) My suggestions stand for the expansion of this commit log,
+though. :)
+
+-Kees
+
+On Mon, Mar 16, 2020 at 03:56:46PM -0700, Jakub Kicinski wrote:
 > Allow users to pass parameters to fixtures.
 > 
-> Each fixture will be evaluated for each of its parameter
-> sets.
-
-This commit log (and subject) needs to be reworded/expanded slightly.
-Perhaps:
-
-
-Subject: kselftest: add fixture variants
-
-Allow users to build parameterized variants of fixtures.
-
-If fixtures want variants, they call FIXTURE_VARIANT() to declare the
-structure to fill for each variant. Each fixture will be re-run for each
-of the variants defined by calling FIXTURE_VARIANT_ADD() with the
-differing parameters initializing the structure.
-
-Since tests are being re-run, additional initialization (steps,
-no_print) is also added.
-
-
-
-
+> Each fixture will be evaluated for each of its variants.
 > 
 > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 > --
 > v3:
->  - separate variant name out with a dot.
+>  - separate variant name out with a dot;
+>  - count variants as "cases" in the opening print.
 > ---
 >  Documentation/dev-tools/kselftest.rst       |   3 +-
 >  tools/testing/selftests/kselftest_harness.h | 145 ++++++++++++++++----
@@ -328,12 +313,6 @@ no_print) is also added.
 > -	printf("[ RUN      ] %s.%s\n", f->name, t->name);
 > +	t->step = 0;
 > +	t->no_print = 0;
-
-I called this out in the commit log. This will need some merge attention
-when my series for timeouts is merged too (since the new "timed_out"
-will need to be initialized here too), but you don't have to worry about
-that yet.
-
 > +
 > +	printf("[ RUN      ] %s%s%s.%s\n",
 > +	       f->name, variant->name[0] ? "." : "", variant->name, t->name);
@@ -406,10 +385,6 @@ that yet.
 > -- 
 > 2.24.1
 > 
-
-Otherwise, with those things fixed, yes:
-
-Acked-by: Kees Cook <keescook@chromium.org>
 
 -- 
 Kees Cook
