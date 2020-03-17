@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 09F4C188820
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 15:53:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FC22188822
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 15:53:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726874AbgCQOxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 10:53:18 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40964 "EHLO
+        id S1726893AbgCQOxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 10:53:23 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:40974 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726112AbgCQOxS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 10:53:18 -0400
+        with ESMTP id S1726112AbgCQOxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 10:53:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=PPvxJfz7fcMsqq7ucObIfV85gjZPQBTgrMZBZr7ovF4=; b=R5lO9zHklJzTmeXfqThKz6uqDz
-        IfCgrFTcrE36gJOK7mzJ7ZAn7cfhh5RWNePIc/xK44PmEETriROAKeUjQH+1wCwG2a5wroudwW3qo
-        0ZhiGJ/Mh48lIx4PrPX0Z+N2jaElfVRw9pLWj5JkGBEfaBBka0NVrK4cBezrxcNXJ0b99zn/6H5Lv
-        f75HnNhPbfFsHPjgLx4SndSS6XU+5F/mUQDvdBmqy78Z0Yt16OCCv18F3BRIK3vIguorECenYWoCc
-        /7aoUfGAMwJ1UVPxyVO9MoyBgKpNS3DXvh0UbNFW/xaXtJ8vYVAWfzG/suzt9TwvC4ofprth9DDPT
-        GVxr/OYg==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:44364 helo=rmk-PC.armlinux.org.uk)
+        bh=js1cMqI0tMMqv7zt1fkS4bAuhVX1aBsQDpCsKhLODcs=; b=I64gqa+T+FWzNSWB9YDahsPcgm
+        e9dxhL+call5eDZcdxQaAZNHarwMBSmzRrSI5cdj92vQYPtiFKXbwNar6PG8NcZXEZhoMdX6YxxzJ
+        d67pwDnEQesT/3Y9Hhlq2/Iwfy0mCeYJJZDtEIWLmhGFGBnuUX8hvheJbKfobF+gOf43yK5ChkV2i
+        LoUPLpqHx9XIF4nX2V0KAIKILrER/agDNiQdmyZ+MrCuT53B/s60awCtUbPEvlUEVU+k7tgumfVYS
+        o5EJEzFwSXKrL76UIaef4CPPQaACMwXsruwbfKhaJ8OdNbhlSa3fyR9REpH0XOLxSj4QkU3s9BWn1
+        3MjGbn2A==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:44366 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1jEDaU-0007iZ-Sc; Tue, 17 Mar 2020 14:52:59 +0000
+        id 1jEDaa-0007in-JE; Tue, 17 Mar 2020 14:53:04 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1jEDaS-0008JO-Po; Tue, 17 Mar 2020 14:52:56 +0000
+        id 1jEDaX-0008JW-Sl; Tue, 17 Mar 2020 14:53:01 +0000
 In-Reply-To: <20200317144944.GP25745@shell.armlinux.org.uk>
 References: <20200317144944.GP25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -38,17 +38,14 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [RFC net-next 3/5] arm64: dts: lx2160a: add PCS MDIO nodes
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>
+Subject: [RFC net-next 4/5] dpaa2-mac: add 1000BASE-X/SGMII PCS support
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jEDaS-0008JO-Po@rmk-PC.armlinux.org.uk>
-Date:   Tue, 17 Mar 2020 14:52:56 +0000
+Message-Id: <E1jEDaX-0008JW-Sl@rmk-PC.armlinux.org.uk>
+Date:   Tue, 17 Mar 2020 14:53:01 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -56,261 +53,317 @@ X-Mailing-List: netdev@vger.kernel.org
 
 *NOT FOR MERGING*
 
-Add PCS MDIO nodes for the LX2160A, which will be used when the MAC
-is in PHY mode and is using in-band negotiation.
+Add support for the PCS block, so we can dynamically configure it for
+1000base-X or SGMII depending on the SFP module inserted. This gives
+us more flexibility than using the MC firmware with a "fixed" link
+type, which can only be setup to support a single interface mode.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- .../arm64/boot/dts/freescale/fsl-lx2160a.dtsi | 144 ++++++++++++++++++
- 1 file changed, 144 insertions(+)
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 206 +++++++++++++++++-
+ .../net/ethernet/freescale/dpaa2/dpaa2-mac.h  |   1 +
+ 2 files changed, 204 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi b/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi
-index e5ee5591e52b..732af33eec18 100644
---- a/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi
-+++ b/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi
-@@ -960,6 +960,132 @@
- 			status = "disabled";
- 		};
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+index 3ee236c5fc37..e7b2dc366338 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
+@@ -7,6 +7,117 @@
+ #define phylink_to_dpaa2_mac(config) \
+ 	container_of((config), struct dpaa2_mac, phylink_config)
  
-+		pcs_mdio1: mdio@8c07000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c07000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++#define MII_IFMODE		0x14
++#define IF_MODE_SGMII_ENA	BIT(0)
++#define IF_MODE_USE_SGMII_AN	BIT(1)
++#define IF_MODE_SGMII_SPEED_10	(0 << 2)
++#define IF_MODE_SGMII_SPEED_100	(1 << 2)
++#define IF_MODE_SGMII_SPEED_1G	(2 << 2)
++#define IF_MODE_SGMII_SPEED_MSK	(3 << 2)
++#define IF_MODE_SGMII_DUPLEX	BIT(4)		// set = half duplex
 +
-+		pcs_mdio2: mdio@8c0b000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c0b000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++static void dpaa2_mac_pcs_get_state(struct phylink_config *config,
++				    struct phylink_link_state *state)
++{
++	struct mdio_device *pcs = phylink_to_dpaa2_mac(config)->pcs;
 +
-+		pcs_mdio3: mdio@8c0f000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c0f000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	switch (state->interface) {
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_1000BASEX:
++		phylink_mii_c22_pcs_get_state(pcs, state);
++		break;
 +
-+		pcs_mdio4: mdio@8c13000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c13000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	default:
++		break;
++	}
++}
 +
-+		pcs_mdio5: mdio@8c17000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c17000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++static void dpaa2_mac_pcs_an_restart(struct phylink_config *config)
++{
++	struct mdio_device *pcs = phylink_to_dpaa2_mac(config)->pcs;
 +
-+		pcs_mdio6: mdio@8c1b000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c1b000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	phylink_mii_c22_pcs_an_restart(pcs);
++}
 +
-+		pcs_mdio7: mdio@8c1f000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c1f000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++static int dpaa2_mac_pcs_config(struct phylink_config *config,
++				unsigned int mode,
++				const struct phylink_link_state *state)
++{
++	struct mdio_device *pcs = phylink_to_dpaa2_mac(config)->pcs;
++	u16 if_mode;
++	int bmcr, ret;
 +
-+		pcs_mdio8: mdio@8c23000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c23000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	if (mode == MLO_AN_INBAND)
++		bmcr = BMCR_ANENABLE;
++	else
++		bmcr = 0;
 +
-+		pcs_mdio9: mdio@8c27000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c27000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	switch (state->interface) {
++	case PHY_INTERFACE_MODE_SGMII:
++		if_mode = IF_MODE_SGMII_ENA;
++		if (mode == MLO_AN_INBAND)
++			if_mode |= IF_MODE_USE_SGMII_AN;
++		mdiobus_modify(pcs->bus, 0, MII_IFMODE,
++			       IF_MODE_SGMII_ENA | IF_MODE_USE_SGMII_AN,
++			       if_mode);
++		mdiobus_modify(pcs->bus, 0, MII_BMCR, BMCR_ANENABLE, bmcr);
++		ret = phylink_mii_c22_pcs_set_advertisement(pcs, state);
++		break;
 +
-+		pcs_mdio10: mdio@8c2b000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c2b000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	case PHY_INTERFACE_MODE_1000BASEX:
++		mdiobus_write(pcs->bus, 0, MII_IFMODE, 0);
++		mdiobus_modify(pcs->bus, 0, MII_BMCR, BMCR_ANENABLE, bmcr);
++		ret = phylink_mii_c22_pcs_set_advertisement(pcs, state);
++		break;
 +
-+		pcs_mdio11: mdio@8c2f000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c2f000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	default:
++		ret = 0;
++		break;
++	}
 +
-+		pcs_mdio12: mdio@8c33000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c33000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	return ret;
++}
 +
-+		pcs_mdio13: mdio@8c37000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c37000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++static void dpaa2_mac_pcs_link_up(struct phylink_config *config,
++				  unsigned int mode, phy_interface_t interface,
++				  int speed, int duplex)
++{
++	struct mdio_device *pcs = phylink_to_dpaa2_mac(config)->pcs;
++	u16 if_mode;
 +
-+		pcs_mdio14: mdio@8c3b000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c3b000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	/* The PCS PHY needs to be configured manually for the speed and
++	 * duplex when operating in SGMII mode without in-band negotiation.
++	 */
++	if (mode == MLO_AN_INBAND || interface != PHY_INTERFACE_MODE_SGMII)
++		return;
 +
-+		pcs_mdio15: mdio@8c3f000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c3f000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	switch (speed) {
++	case SPEED_10:
++		if_mode = IF_MODE_SGMII_SPEED_10;
++		break;
 +
-+		pcs_mdio16: mdio@8c43000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c43000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	case SPEED_100:
++		if_mode = IF_MODE_SGMII_SPEED_100;
++		break;
 +
-+		pcs_mdio17: mdio@8c47000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c47000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	default:
++		if_mode = IF_MODE_SGMII_SPEED_1G;
++		break;
++	}
++	if (duplex == DUPLEX_HALF)
++		if_mode |= IF_MODE_SGMII_DUPLEX;
 +
-+		pcs_mdio18: mdio@8c4b000 {
-+			compatible = "fsl,fman-memac-mdio";
-+			reg = <0x0 0x8c4b000 0x0 0x1000>;
-+			little-endian;
-+			status = "disabled";
-+		};
++	mdiobus_modify(pcs->bus, pcs->addr, MII_IFMODE,
++		       IF_MODE_SGMII_DUPLEX | IF_MODE_SGMII_SPEED_MSK, if_mode);
++}
 +
- 		fsl_mc: fsl-mc@80c000000 {
- 			compatible = "fsl,qoriq-mc";
- 			reg = <0x00000008 0x0c000000 0 0x40>,
-@@ -988,91 +1114,109 @@
- 				dpmac1: dpmac@1 {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0x1>;
-+					pcs-mdio = <&pcs_mdio1>;
- 				};
++static const struct phylink_pcs_ops dpaa2_pcs_phylink_ops = {
++	.pcs_get_state = dpaa2_mac_pcs_get_state,
++	.pcs_config = dpaa2_mac_pcs_config,
++	.pcs_an_restart = dpaa2_mac_pcs_an_restart,
++	.pcs_link_up = dpaa2_mac_pcs_link_up,
++};
++
+ static int phy_mode(enum dpmac_eth_if eth_if, phy_interface_t *if_mode)
+ {
+ 	*if_mode = PHY_INTERFACE_MODE_NA;
+@@ -15,6 +126,11 @@ static int phy_mode(enum dpmac_eth_if eth_if, phy_interface_t *if_mode)
+ 	case DPMAC_ETH_IF_RGMII:
+ 		*if_mode = PHY_INTERFACE_MODE_RGMII;
+ 		break;
++
++	case DPMAC_ETH_IF_SGMII:
++		*if_mode = PHY_INTERFACE_MODE_SGMII;
++		break;
++
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -67,6 +183,10 @@ static bool dpaa2_mac_phy_mode_mismatch(struct dpaa2_mac *mac,
+ 					phy_interface_t interface)
+ {
+ 	switch (interface) {
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_1000BASEX:
++		return interface != mac->if_mode && !mac->pcs;
++
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+ 	case PHY_INTERFACE_MODE_RGMII_RXID:
+@@ -95,13 +215,19 @@ static void dpaa2_mac_validate(struct phylink_config *config,
+ 	phylink_set(mask, Asym_Pause);
  
- 				dpmac2: dpmac@2 {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0x2>;
-+					pcs-mdio = <&pcs_mdio2>;
- 				};
+ 	switch (state->interface) {
++	case PHY_INTERFACE_MODE_NA:
++	case PHY_INTERFACE_MODE_1000BASEX:
++	case PHY_INTERFACE_MODE_SGMII:
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+ 	case PHY_INTERFACE_MODE_RGMII_RXID:
+ 	case PHY_INTERFACE_MODE_RGMII_TXID:
+-		phylink_set(mask, 10baseT_Full);
+-		phylink_set(mask, 100baseT_Full);
++		phylink_set(mask, 1000baseX_Full);
+ 		phylink_set(mask, 1000baseT_Full);
++		if (state->interface == PHY_INTERFACE_MODE_1000BASEX)
++			break;
++		phylink_set(mask, 100baseT_Full);
++		phylink_set(mask, 10baseT_Full);
+ 		break;
+ 	default:
+ 		goto empty_set;
+@@ -227,6 +353,65 @@ bool dpaa2_mac_is_type_fixed(struct fsl_mc_device *dpmac_dev,
+ 	return fixed;
+ }
  
- 				dpmac3: dpmac@3 {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0x3>;
-+					pcs-mdio = <&pcs_mdio3>;
- 				};
++static int dpaa2_pcs_create(struct dpaa2_mac *mac,
++			    struct device_node *dpmac_node, int id)
++{
++	struct mdio_device *mdiodev;
++	struct device_node *node;
++	struct mii_bus *bus;
++	int err;
++
++	node = of_parse_phandle(dpmac_node, "pcs-mdio", 0);
++	if (!node) {
++		/* allow old DT files to work */
++		netdev_warn(mac->netdev, "pcs-mdio node not found\n");
++		return 0;
++	}
++
++	if (!of_device_is_available(node)) {
++		netdev_err(mac->net_dev, "pcs-mdio node not available\n");
++		return -ENODEV;
++	}
++
++	bus = of_mdio_find_bus(node);
++	of_node_put(node);
++	if (!bus)
++		return -EPROBE_DEFER;
++
++	mdiodev = mdio_device_create(bus, 0);
++	if (IS_ERR(mdiodev)) {
++		err = PTR_ERR(mdiodev);
++		netdev_err(mac->net_dev, "failed to create mdio device: %d\n",
++			   err);
++		goto err;
++	}
++
++	err = mdio_device_register(mdiodev);
++	if (err) {
++		netdev_err(mac->net_dev, "failed to register mdio device: %d\n",
++			   err);
++		goto dev_free;
++	}
++
++	mac->pcs = mdiodev;
++	mac->phylink_config.pcs_poll = true;
++
++	return 0;
++
++dev_free:
++	mdio_device_free(mdiodev);
++err:
++	return err;
++}
++
++static void dpaa2_pcs_destroy(struct dpaa2_mac *mac)
++{
++	if (mac->pcs) {
++		mdio_device_remove(mac->pcs);
++		mdio_device_free(mac->pcs);
++	}
++}
++
+ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+ {
+ 	struct fsl_mc_device *dpmac_dev = mac->mc_dev;
+@@ -236,6 +421,8 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+ 	struct dpmac_attr attr;
+ 	int err;
  
- 				dpmac4: dpmac@4 {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0x4>;
-+					pcs-mdio = <&pcs_mdio4>;
- 				};
++	memset(&mac->phylink_config, 0, sizeof(mac->phylink_config));
++
+ 	err = dpmac_open(mac->mc_io, 0, dpmac_dev->obj_desc.id,
+ 			 &dpmac_dev->mc_handle);
+ 	if (err || !dpmac_dev->mc_handle) {
+@@ -278,6 +465,13 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+ 		goto err_put_node;
+ 	}
  
- 				dpmac5: dpmac@5 {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0x5>;
-+					pcs-mdio = <&pcs_mdio5>;
- 				};
++	if (attr.link_type == DPMAC_LINK_TYPE_PHY &&
++	    attr.eth_if != DPMAC_ETH_IF_RGMII) {
++		err = dpaa2_pcs_create(mac, dpmac_node, attr.id);
++		if (err)
++			goto err_put_node;
++	}
++
+ 	mac->phylink_config.dev = &net_dev->dev;
+ 	mac->phylink_config.type = PHYLINK_NETDEV;
  
- 				dpmac6: dpmac@6 {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0x6>;
-+					pcs-mdio = <&pcs_mdio6>;
- 				};
+@@ -286,10 +480,13 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
+ 				 &dpaa2_mac_phylink_ops);
+ 	if (IS_ERR(phylink)) {
+ 		err = PTR_ERR(phylink);
+-		goto err_put_node;
++		goto err_pcs_destroy;
+ 	}
+ 	mac->phylink = phylink;
  
- 				dpmac7: dpmac@7 {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0x7>;
-+					pcs-mdio = <&pcs_mdio7>;
- 				};
++	if (mac->pcs)
++		phylink_add_pcs(mac->phylink, &dpaa2_pcs_phylink_ops);
++
+ 	err = phylink_of_phy_connect(mac->phylink, dpmac_node, 0);
+ 	if (err) {
+ 		netdev_err(net_dev, "phylink_of_phy_connect() = %d\n", err);
+@@ -302,6 +499,8 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
  
- 				dpmac8: dpmac@8 {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0x8>;
-+					pcs-mdio = <&pcs_mdio8>;
- 				};
+ err_phylink_destroy:
+ 	phylink_destroy(mac->phylink);
++err_pcs_destroy:
++	dpaa2_pcs_destroy(mac);
+ err_put_node:
+ 	of_node_put(dpmac_node);
+ err_close_dpmac:
+@@ -316,6 +515,7 @@ void dpaa2_mac_disconnect(struct dpaa2_mac *mac)
  
- 				dpmac9: dpmac@9 {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0x9>;
-+					pcs-mdio = <&pcs_mdio9>;
- 				};
+ 	phylink_disconnect_phy(mac->phylink);
+ 	phylink_destroy(mac->phylink);
++	dpaa2_pcs_destroy(mac);
+ 	dpmac_close(mac->mc_io, 0, mac->mc_dev->mc_handle);
+ }
  
- 				dpmac10: dpmac@a {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0xa>;
-+					pcs-mdio = <&pcs_mdio10>;
- 				};
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
+index 2130d9c7d40e..5cfae5f8f55e 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h
+@@ -19,6 +19,7 @@ struct dpaa2_mac {
  
- 				dpmac11: dpmac@b {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0xb>;
-+					pcs-mdio = <&pcs_mdio11>;
- 				};
- 
- 				dpmac12: dpmac@c {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0xc>;
-+					pcs-mdio = <&pcs_mdio12>;
- 				};
- 
- 				dpmac13: dpmac@d {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0xd>;
-+					pcs-mdio = <&pcs_mdio13>;
- 				};
- 
- 				dpmac14: dpmac@e {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0xe>;
-+					pcs-mdio = <&pcs_mdio14>;
- 				};
- 
- 				dpmac15: dpmac@f {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0xf>;
-+					pcs-mdio = <&pcs_mdio15>;
- 				};
- 
- 				dpmac16: dpmac@10 {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0x10>;
-+					pcs-mdio = <&pcs_mdio16>;
- 				};
- 
- 				dpmac17: dpmac@11 {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0x11>;
-+					pcs-mdio = <&pcs_mdio17>;
- 				};
- 
- 				dpmac18: dpmac@12 {
- 					compatible = "fsl,qoriq-mc-dpmac";
- 					reg = <0x12>;
-+					pcs-mdio = <&pcs_mdio18>;
- 				};
- 			};
- 		};
+ 	struct phylink_config phylink_config;
+ 	struct phylink *phylink;
++	struct mdio_device *pcs;
+ 	phy_interface_t if_mode;
+ 	enum dpmac_link_type if_link_type;
+ };
 -- 
 2.20.1
 
