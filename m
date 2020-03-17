@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22352188C0B
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 18:29:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4138188C0D
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 18:29:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726785AbgCQR3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 13:29:54 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:52958 "EHLO
+        id S1726809AbgCQR36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 13:29:58 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:26294 "EHLO
         us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726726AbgCQR3y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 13:29:54 -0400
+        by vger.kernel.org with ESMTP id S1726793AbgCQR35 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 13:29:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584466192;
+        s=mimecast20190719; t=1584466196;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=y+eqYz6yAyXYK7PXXbQ/6uCaIrVxme+xjGQpkLgBZxA=;
-        b=I/HlR6hQAZiZNO5uQ8hgIq9rMKbr3l50bpegHD6+6Kz4Dnauu6YOnd7TxH0gb3xTwieyjA
-        T9qrOEHV+fUI6FpfYhW6Yb1kjB5Rrql0xVezza+1O6qOkLGz39mANw00rjMJPRClrAcKVU
-        nDuROvstk7LE0HfozikdjJ+19D6er6c=
+        bh=i8ADgiXCNrjUwtxx6VSppVeHIxTSGzYqm7aWz4SrIA0=;
+        b=BT4fanIL02AWmoziPxMAID/TStz+lSvSxyEaUdwvs5n0wMyHjDacmFTX6MJ/4Ot6MWEhLj
+        lVo2xxaMZfXjPYGKgu5eMgYcrrNo9zl/ug2A28S14HxHprYkQpyI5nKb8o4aAs0+oceV6o
+        LreeCqWRE/ra019KK5YVJMakHr4jpYc=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-393-5WdjETnPPk-4i6Xz77i8kQ-1; Tue, 17 Mar 2020 13:29:47 -0400
-X-MC-Unique: 5WdjETnPPk-4i6Xz77i8kQ-1
+ us-mta-23-mgRM24zENyqrL7KKCXJgIw-1; Tue, 17 Mar 2020 13:29:52 -0400
+X-MC-Unique: mgRM24zENyqrL7KKCXJgIw-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7EEBC18A5524;
-        Tue, 17 Mar 2020 17:29:34 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C349CDB23;
+        Tue, 17 Mar 2020 17:29:39 +0000 (UTC)
 Received: from firesoul.localdomain (unknown [10.40.208.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1F4917E30A;
-        Tue, 17 Mar 2020 17:29:34 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3657260BEE;
+        Tue, 17 Mar 2020 17:29:39 +0000 (UTC)
 Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 26C4B30721A66;
-        Tue, 17 Mar 2020 18:29:33 +0100 (CET)
-Subject: [PATCH RFC v1 05/15] ixgbe: add XDP frame size to driver
+        by firesoul.localdomain (Postfix) with ESMTP id 3B73D30721A66;
+        Tue, 17 Mar 2020 18:29:38 +0100 (CET)
+Subject: [PATCH RFC v1 06/15] sfc: fix XDP-redirect in this driver
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     sameehj@amazon.com
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
-        akiyano@amazon.com, gtzalik@amazon.com,
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, zorik@amazon.com, akiyano@amazon.com,
+        gtzalik@amazon.com,
         =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
         Daniel Borkmann <borkmann@iogearbox.net>,
         Alexei Starovoitov <alexei.starovoitov@gmail.com>,
@@ -53,8 +52,8 @@ Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         Lorenzo Bianconi <lorenzo@kernel.org>
-Date:   Tue, 17 Mar 2020 18:29:33 +0100
-Message-ID: <158446617307.702578.17057660405507953624.stgit@firesoul>
+Date:   Tue, 17 Mar 2020 18:29:38 +0100
+Message-ID: <158446617817.702578.15401678499421072150.stgit@firesoul>
 In-Reply-To: <158446612466.702578.2795159620575737080.stgit@firesoul>
 References: <158446612466.702578.2795159620575737080.stgit@firesoul>
 User-Agent: StGit/0.19
@@ -67,98 +66,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ixgbe driver uses different memory models depending on PAGE_SIZE at
-compile time. For PAGE_SIZE 4K it uses page splitting, meaning for
-normal MTU frame size is 2048 bytes (and headroom 192 bytes).
-For PAGE_SIZE larger than 4K, driver advance its rx_buffer->page_offset
-with the frame size "truesize".
+TODO: Drop as already accepted in net-next as
+ commit 86e85bf6981c ("sfc: fix XDP-redirect in this driver")
 
-When driver enable XDP it uses build_skb() which provides the necessary
-tailroom for XDP-redirect.
+XDP-redirect is broken in this driver sfc. XDP_REDIRECT requires
+tailroom for skb_shared_info when creating an SKB based on the
+redirected xdp_frame (both in cpumap and veth).
 
-When XDP frame size doesn't depend on RX packet size (4K case), then
-xdp.frame_sz can be updated once outside the main NAPI loop.
+The fix requires some initial explaining. The driver uses RX page-split
+when possible. It reserves the top 64 bytes in the RX-page for storing
+dma_addr (struct efx_rx_page_state). It also have the XDP recommended
+headroom of XDP_PACKET_HEADROOM (256 bytes). As it doesn't reserve any
+tailroom, it can still fit two standard MTU (1500) frames into one page.
 
-Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+The sizeof struct skb_shared_info in 320 bytes. Thus drivers like ixgbe
+and i40e, reduce their XDP headroom to 192 bytes, which allows them to
+fit two frames with max 1536 bytes into a 4K page (192+1536+320=2048).
+
+The fix is to reduce this drivers headroom to 128 bytes and add the 320
+bytes tailroom. This account for reserved top 64 bytes in the page, and
+still fit two frame in a page for normal MTUs.
+
+We must never go below 128 bytes of headroom for XDP, as one cacheline
+is for xdp_frame area and next cacheline is reserved for metadata area.
+
+Fixes: eb9a36be7f3e ("sfc: perform XDP processing on received packets")
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe.h      |   17 +++++++++++++++++
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   18 ++++++++++--------
- 2 files changed, 27 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/sfc/efx_common.c |    9 +++++----
+ drivers/net/ethernet/sfc/net_driver.h |    6 ++++++
+ drivers/net/ethernet/sfc/rx.c         |    2 +-
+ drivers/net/ethernet/sfc/rx_common.c  |    6 +++---
+ 4 files changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-index 2833e4f041ce..943b643b6ed8 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-@@ -417,6 +417,23 @@ static inline unsigned int ixgbe_rx_pg_order(struct ixgbe_ring *ring)
- }
- #define ixgbe_rx_pg_size(_ring) (PAGE_SIZE << ixgbe_rx_pg_order(_ring))
- 
-+static inline unsigned int ixgbe_rx_frame_truesize(struct ixgbe_ring *rx_ring,
-+						   unsigned int size)
-+{
-+	unsigned int truesize;
-+
-+#if (PAGE_SIZE < 8192)
-+	truesize = ixgbe_rx_pg_size(rx_ring) / 2; /* Must be power-of-2 */
-+#else
-+	/* Notice XDP must use build_skb() mode */
-+	truesize = ring_uses_build_skb(rx_ring) ?
-+		SKB_DATA_ALIGN(IXGBE_SKB_PAD + size) +
-+		SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) :
-+		SKB_DATA_ALIGN(size);
-+#endif
-+	return truesize;
-+}
-+
- #define IXGBE_ITR_ADAPTIVE_MIN_INC	2
- #define IXGBE_ITR_ADAPTIVE_MIN_USECS	10
- #define IXGBE_ITR_ADAPTIVE_MAX_USECS	126
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index ea6834bae04c..f505ed8c9dc1 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -2248,16 +2248,10 @@ static void ixgbe_rx_buffer_flip(struct ixgbe_ring *rx_ring,
- 				 struct ixgbe_rx_buffer *rx_buffer,
- 				 unsigned int size)
+diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
+index b0d76bc19673..1799ff9a45d9 100644
+--- a/drivers/net/ethernet/sfc/efx_common.c
++++ b/drivers/net/ethernet/sfc/efx_common.c
+@@ -200,11 +200,11 @@ void efx_link_status_changed(struct efx_nic *efx)
+ unsigned int efx_xdp_max_mtu(struct efx_nic *efx)
  {
-+	unsigned int truesize = ixgbe_rx_frame_truesize(rx_ring, size);
- #if (PAGE_SIZE < 8192)
--	unsigned int truesize = ixgbe_rx_pg_size(rx_ring) / 2;
--
- 	rx_buffer->page_offset ^= truesize;
- #else
--	unsigned int truesize = ring_uses_build_skb(rx_ring) ?
--				SKB_DATA_ALIGN(IXGBE_SKB_PAD + size) +
--				SKB_DATA_ALIGN(sizeof(struct skb_shared_info)) :
--				SKB_DATA_ALIGN(size);
--
- 	rx_buffer->page_offset += truesize;
- #endif
+ 	/* The maximum MTU that we can fit in a single page, allowing for
+-	 * framing, overhead and XDP headroom.
++	 * framing, overhead and XDP headroom + tailroom.
+ 	 */
+ 	int overhead = EFX_MAX_FRAME_LEN(0) + sizeof(struct efx_rx_page_state) +
+ 		       efx->rx_prefix_size + efx->type->rx_buffer_padding +
+-		       efx->rx_ip_align + XDP_PACKET_HEADROOM;
++		       efx->rx_ip_align + EFX_XDP_HEADROOM + EFX_XDP_TAILROOM;
+ 
+ 	return PAGE_SIZE - overhead;
  }
-@@ -2291,6 +2285,11 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
- 
- 	xdp.rxq = &rx_ring->xdp_rxq;
- 
-+	/* Frame size depend on rx_ring setup when PAGE_SIZE=4K */
-+#if (PAGE_SIZE < 8192)
-+	xdp.frame_sz = ixgbe_rx_frame_truesize(rx_ring, 0);
-+#endif
+@@ -302,8 +302,9 @@ static void efx_start_datapath(struct efx_nic *efx)
+ 	efx->rx_dma_len = (efx->rx_prefix_size +
+ 			   EFX_MAX_FRAME_LEN(efx->net_dev->mtu) +
+ 			   efx->type->rx_buffer_padding);
+-	rx_buf_len = (sizeof(struct efx_rx_page_state) + XDP_PACKET_HEADROOM +
+-		      efx->rx_ip_align + efx->rx_dma_len);
++	rx_buf_len = (sizeof(struct efx_rx_page_state)   + EFX_XDP_HEADROOM +
++		      efx->rx_ip_align + efx->rx_dma_len + EFX_XDP_TAILROOM);
 +
- 	while (likely(total_rx_packets < budget)) {
- 		union ixgbe_adv_rx_desc *rx_desc;
- 		struct ixgbe_rx_buffer *rx_buffer;
-@@ -2324,7 +2323,10 @@ static int ixgbe_clean_rx_irq(struct ixgbe_q_vector *q_vector,
- 			xdp.data_hard_start = xdp.data -
- 					      ixgbe_rx_offset(rx_ring);
- 			xdp.data_end = xdp.data + size;
--
-+#if (PAGE_SIZE > 4096)
-+			/* At larger PAGE_SIZE, frame_sz depend on size */
-+			xdp.frame_sz = ixgbe_rx_frame_truesize(rx_ring, size);
-+#endif
- 			skb = ixgbe_run_xdp(adapter, rx_ring, &xdp);
- 		}
+ 	if (rx_buf_len <= PAGE_SIZE) {
+ 		efx->rx_scatter = efx->type->always_rx_scatter;
+ 		efx->rx_buffer_order = 0;
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+index 9f9886f222c8..f96b1f9fe119 100644
+--- a/drivers/net/ethernet/sfc/net_driver.h
++++ b/drivers/net/ethernet/sfc/net_driver.h
+@@ -91,6 +91,12 @@
+ #define EFX_RX_BUF_ALIGNMENT	4
+ #endif
  
++/* Non-standard XDP_PACKET_HEADROOM and tailroom to satisfy XDP_REDIRECT and
++ * still fit two standard MTU size packets into a single 4K page.
++ */
++#define EFX_XDP_HEADROOM	128
++#define EFX_XDP_TAILROOM	SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
++
+ /* Forward declare Precision Time Protocol (PTP) support structure. */
+ struct efx_ptp_data;
+ struct hwtstamp_config;
+diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
+index a2042f16babc..260352d97d9d 100644
+--- a/drivers/net/ethernet/sfc/rx.c
++++ b/drivers/net/ethernet/sfc/rx.c
+@@ -302,7 +302,7 @@ static bool efx_do_xdp(struct efx_nic *efx, struct efx_channel *channel,
+ 	       efx->rx_prefix_size);
+ 
+ 	xdp.data = *ehp;
+-	xdp.data_hard_start = xdp.data - XDP_PACKET_HEADROOM;
++	xdp.data_hard_start = xdp.data - EFX_XDP_HEADROOM;
+ 
+ 	/* No support yet for XDP metadata */
+ 	xdp_set_data_meta_invalid(&xdp);
+diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
+index ee8beb87bdc1..e10c23833515 100644
+--- a/drivers/net/ethernet/sfc/rx_common.c
++++ b/drivers/net/ethernet/sfc/rx_common.c
+@@ -412,10 +412,10 @@ static int efx_init_rx_buffers(struct efx_rx_queue *rx_queue, bool atomic)
+ 			index = rx_queue->added_count & rx_queue->ptr_mask;
+ 			rx_buf = efx_rx_buffer(rx_queue, index);
+ 			rx_buf->dma_addr = dma_addr + efx->rx_ip_align +
+-					   XDP_PACKET_HEADROOM;
++					   EFX_XDP_HEADROOM;
+ 			rx_buf->page = page;
+ 			rx_buf->page_offset = page_offset + efx->rx_ip_align +
+-					      XDP_PACKET_HEADROOM;
++					      EFX_XDP_HEADROOM;
+ 			rx_buf->len = efx->rx_dma_len;
+ 			rx_buf->flags = 0;
+ 			++rx_queue->added_count;
+@@ -433,7 +433,7 @@ static int efx_init_rx_buffers(struct efx_rx_queue *rx_queue, bool atomic)
+ void efx_rx_config_page_split(struct efx_nic *efx)
+ {
+ 	efx->rx_page_buf_step = ALIGN(efx->rx_dma_len + efx->rx_ip_align +
+-				      XDP_PACKET_HEADROOM,
++				      EFX_XDP_HEADROOM + EFX_XDP_TAILROOM,
+ 				      EFX_RX_BUF_ALIGNMENT);
+ 	efx->rx_bufs_per_page = efx->rx_buffer_order ? 1 :
+ 		((PAGE_SIZE - sizeof(struct efx_rx_page_state)) /
 
 
