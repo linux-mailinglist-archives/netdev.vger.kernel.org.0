@@ -2,92 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD96318788F
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 05:44:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BFB61878C6
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 05:55:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726696AbgCQEoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 00:44:23 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:39555 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726637AbgCQEoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 00:44:22 -0400
-Received: by mail-io1-f67.google.com with SMTP id c19so18546586ioo.6;
-        Mon, 16 Mar 2020 21:44:20 -0700 (PDT)
+        id S1727215AbgCQEyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 00:54:50 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:40826 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726652AbgCQEyu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 00:54:50 -0400
+Received: by mail-wm1-f67.google.com with SMTP id z12so11241084wmf.5
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 21:54:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LLh9WEkB9hCvNCPoVrwAAYggf2WFsHcOiqOg9CycRzk=;
-        b=AK6tEpD+luiz5pKN/vp4AchiO1ciwHPnVwAYZBNXvLtBr2NhUCzLZ86fj19Ocx869y
-         khKh2G6PLuehKagz6NeSHeohensCduAB/1vUaS06oQ9zUnbwKnj10DIG9yQK2b/uqBOi
-         mNMNoMNZefrukNCgWPYBru+1b3f9MOJLm/OB3L8dOPsrGyqEbZI5ixn8Pb0YT0YBKJoL
-         T2f8KEK4LpIJTzrQETT/pLuiUDMLfoXWAKfCnMTNFIai4cEQ5PfVqzydjcDd8A47/h7Q
-         sm7kVJwqCSkUlWFZaokIsrxeULrzjspKzvfN3p03tvM6sAn668mfGt/Jg9BXT1KAwGtv
-         vAaw==
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=Z/pLHqEymmI8qdYZpx02WBRLipjnKwZXZVqV8m8MSSY=;
+        b=Hu9yeveSk7lvKAgkYqMZGbJjupqBFlO1hDJJn/f26IzkoN9kOnt+c1715OgLvVXhX6
+         SIXcVljSb2WE4ejla8A/dMxdUYQiO1PDZlEEa1fiKMEqWZho5cMEJYzTCs2sbjlRn+bg
+         0AQ/kJixJH546JWh2HbJ63TNz4z5jQgMIAvwk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LLh9WEkB9hCvNCPoVrwAAYggf2WFsHcOiqOg9CycRzk=;
-        b=ZdqdlJQUMXhPD6+UDcRiiByCkDdDVY5U4zHC23uqVZME+vHqKN1Q8FfLZfFx5pOnbI
-         PuSYnam+BKc5H5jSjBObzm9ZyBDVm+7hSGTEeJnmKO7y6xLB/EzfvC9dXF8XBjP3EOTv
-         uBOmcNGKI++IIBuIcujCwsTS7vSrr3y+wOLNr7tY8FlDJK0k6UZjTVuMn0h13o5RIsQ6
-         6+6iRRpiMlQmu3I5o97xg8PFL6eP9Wgruyb1htg9VXCKmqzeyXrPR65TqKz6kvd3eCbk
-         Komq3rBp6bagBMPlVZsxSHj5bCXfRRO9efDpI05tZxlxAhtig8MC7h9bCSztIrObADgj
-         8guQ==
-X-Gm-Message-State: ANhLgQ0hkEWafqlj4dyz0SjIdtcZKHwPMhzTUGgkrr1m+dPxIB3OgqzQ
-        F9gWA909Z/4HYgxWKAzCM5byl55R71eqpJeHbAc=
-X-Google-Smtp-Source: ADFU+vtSOxQ5/szRxmQfsje34YMe9w6YBped55Rfvr7ivgI4Jat5cM4nBsBKqEFHpf43rWklHGFbSzlm4Io6jIIgKOM=
-X-Received: by 2002:a6b:f404:: with SMTP id i4mr2243728iog.175.1584420259614;
- Mon, 16 Mar 2020 21:44:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <1584330804-18477-1-git-send-email-hqjagain@gmail.com> <20200317041523.GB3756@localhost.localdomain>
-In-Reply-To: <20200317041523.GB3756@localhost.localdomain>
-From:   Qiujun Huang <hqjagain@gmail.com>
-Date:   Tue, 17 Mar 2020 12:44:10 +0800
-Message-ID: <CAJRQjodkqMM8Sap50UaDr5fXD+30+5tgpj4-CdEt9fM2WVjm7w@mail.gmail.com>
-Subject: Re: [PATCH] sctp: fix refcount bug in sctp_wfree
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-sctp@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Z/pLHqEymmI8qdYZpx02WBRLipjnKwZXZVqV8m8MSSY=;
+        b=gsW7K2mDIjuKOpDUk5MjkbQ5CUVjgAZ/fDEKoidyfM2d2bsKJfH+PYeIAFiQapiFas
+         ONZAa5VuN6Wm3SdJKEPFlfly5WQ7vSLnXgw53XdaROxxL19b6VTJGpD7jMRlBowrbOc7
+         XyeYBaytl4RbI/VzGZ6Ga+soKuNG9EBbxzCJpduY4AC8bhCFNn69JjfdH0hWRHJix8rN
+         BS5QGMlwOadg9y4qq19qvWSApMGaTcsDm2tph6oapdnT0+6ytThNnSZC+nGimmvlz82y
+         dvXEhwsD2vDUnaLK8wSGfuowsWmWkPL5A8WYxOOn5LGgKz6U1QihNtdDYYSFLyy3eDis
+         MWRg==
+X-Gm-Message-State: ANhLgQ1G8hWzniD98vl6xQatjrFgBvqr1AuioM/kKGB5iINP1QAJXfD8
+        g0srVrBfMkThtrF609Zsi3H00w==
+X-Google-Smtp-Source: ADFU+vtloprSXesJvtRnEjLPOoV7EqcOa08m/oOOJVTgeOAFV+HVZ4G4S3W0WCB1yQtt7cfGvfhQRA==
+X-Received: by 2002:a1c:7207:: with SMTP id n7mr2819390wmc.138.1584420888626;
+        Mon, 16 Mar 2020 21:54:48 -0700 (PDT)
+Received: from rayagonda.dhcp.broadcom.net ([192.19.234.250])
+        by smtp.gmail.com with ESMTPSA id i67sm2874498wri.50.2020.03.16.21.54.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Mar 2020 21:54:47 -0700 (PDT)
+From:   Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, davem@davemloft.net,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Arun Parameswaran <arun.parameswaran@broadcom.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>
+Subject: [PATCH v1 1/1] net: phy: mdio-mux-bcm-iproc: check clk_prepare_enable() return value
+Date:   Tue, 17 Mar 2020 10:24:35 +0530
+Message-Id: <20200317045435.29975-1-rayagonda.kokatanur@broadcom.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 17, 2020 at 12:15 PM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Mon, Mar 16, 2020 at 11:53:24AM +0800, Qiujun Huang wrote:
-> > Do accounting for skb's real sk.
-> > In some case skb->sk != asoc->base.sk.
->
-> This is a too simple description.  Please elaborate how this can
-> happen in sctp_wfree. Especially considering the construct for
-> migrating the tx queue on sctp_sock_migrate(), as both sockets are
-> locked while moving the chunks around and the asoc itself is only
-> moved in between decrementing and incrementing the refcount:
->
->         lock_sock_nested(newsk, SINGLE_DEPTH_NESTING);
->         sctp_for_each_tx_datachunk(assoc, sctp_clear_owner_w);
->         sctp_assoc_migrate(assoc, newsk);
->         sctp_for_each_tx_datachunk(assoc, sctp_set_owner_w);
->         ...
+Check clk_prepare_enable() return value.
 
-Yeah, the description is too simple. I'll send v2.
+Fixes: 2c7230446bc9 ("net: phy: Add pm support to Broadcom iProc mdio mux driver")
+Signed-off-by: Rayagonda Kokatanur <rayagonda.kokatanur@broadcom.com>
+---
+ drivers/net/phy/mdio-mux-bcm-iproc.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
->
-> >
-> > Reported-and-tested-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
->
-> I can't see a positive test result, though. If I didn't loose any
-> email, your last test with a patch similar to this one actually
-> failed.
-> I'm talking about syzbot test result at Message-ID: <000000000000e7736205a0e041f5@google.com>
+diff --git a/drivers/net/phy/mdio-mux-bcm-iproc.c b/drivers/net/phy/mdio-mux-bcm-iproc.c
+index 88d409e48c1f..aad6809ebe39 100644
+--- a/drivers/net/phy/mdio-mux-bcm-iproc.c
++++ b/drivers/net/phy/mdio-mux-bcm-iproc.c
+@@ -288,8 +288,13 @@ static int mdio_mux_iproc_suspend(struct device *dev)
+ static int mdio_mux_iproc_resume(struct device *dev)
+ {
+ 	struct iproc_mdiomux_desc *md = dev_get_drvdata(dev);
++	int rc;
+ 
+-	clk_prepare_enable(md->core_clk);
++	rc = clk_prepare_enable(md->core_clk);
++	if (rc) {
++		dev_err(md->dev, "failed to enable core clk\n");
++		return rc;
++	}
+ 	mdio_mux_iproc_config(md);
+ 
+ 	return 0;
+-- 
+2.17.1
 
-I told with syzbot privately avoiding noise :p
-Thanks!
