@@ -2,131 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD424188E52
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 20:48:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B69E188E6A
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 20:55:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726793AbgCQTsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 15:48:54 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:33677 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726452AbgCQTsy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 15:48:54 -0400
-Received: by mail-wm1-f67.google.com with SMTP id r7so663157wmg.0;
-        Tue, 17 Mar 2020 12:48:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UtycnypWOSdTUQYhHk7hnh6AgLVp1bYsP5ki90i2Y50=;
-        b=Aqr6YEBJtMUlMY5Ay+o2QlIKdGFv6rH70hA9Nt7UYoNioeBneHY2Qp3QIe/Wa35UJu
-         YPak9Ak5g6GChk4EEIMQVuMDk06Q25BL2E5jUnwG0xXbppUMxrmjdo6M6U5cXfoC81YC
-         ncFsOEKzTtvCAicWm24D1U1VTM6/nnaS7MIB1b3KhMEYbTFHs2B/My4wrbrvIisxnfgZ
-         gz4X9YRS6hEg1u/Bi+0sdMnfZljyQC0yQtAsLRhe0CoGsxBWC2ov0WLVBx3xsOUeOtoE
-         d3HX3VeRF5mAApUF75i7dBVI4hCoQ5AkvEwFgRL7dpqzvGNncuzN9OJidvs5c5mtR9mH
-         y3vA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=UtycnypWOSdTUQYhHk7hnh6AgLVp1bYsP5ki90i2Y50=;
-        b=KZdzqLousAJWKpPM70m1ArlK4+Dl8KiXtqD5WOn+NNuc7eNe6j4+TEnriAwCYgt/6Z
-         aE3wwK/K+zyoKYDwY6Hj3j8ZjTrTkkiWG4ht/kkGhclz5NleueYrHGnhWZf2fgz7Dq5S
-         zENkYUAawh4qPpRQL7MUwl3hHC7w7fhrx5XweyplS1idW7hP2CFMxWRs4Htg7+Ix3t0p
-         oW1oGv2cMsvVC7mV6AvPYloRahKTw+kkeKRvpPd1TwBjNqCxIuhp4djkgaFgibuQz1JZ
-         8XstgNeLeStoY/ODONyNWcaa28dAL3OBnv/xLu5mqCqd3R3eW/HV6C0sWQIKNiGn1Tq/
-         sAEA==
-X-Gm-Message-State: ANhLgQ0+6tqXJncRSH/Vl+oVQj9J7aBGYnZjDDcXX+54HT8s+FZj9DHM
-        Dd4wnBiXK2hJI9ErLpe8WmQ=
-X-Google-Smtp-Source: ADFU+vvhEuibGD5YkWwoKjkRWQlckOFoKqjAUAJ8Q6aF0pCYYbkxrLEAnUPj9B5KhDnOLg3/L/1A0w==
-X-Received: by 2002:a05:600c:258:: with SMTP id 24mr624885wmj.59.1584474531393;
-        Tue, 17 Mar 2020 12:48:51 -0700 (PDT)
-Received: from [10.230.0.112] ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id f17sm6117960wrj.28.2020.03.17.12.48.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Mar 2020 12:48:50 -0700 (PDT)
-Subject: Re: [PATCH v4 1/4] dt-bindings: net: phy: Add support for NXP TJA11xx
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Marek Vasut <marex@denx.de>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <20200313052252.25389-1-o.rempel@pengutronix.de>
- <20200313052252.25389-2-o.rempel@pengutronix.de>
- <545d5e46-644a-51fb-0d67-881dfe23e9d8@gmail.com>
- <20200313181056.GA29732@lunn.ch>
- <20200313181601.sbxdrqdjqfj3xn3e@pengutronix.de>
- <15dafdcd-1979-bf35-3968-c80ffc113001@gmail.com>
- <20200313185327.nawcp2imfldyhpqa@pengutronix.de>
- <20200317115626.4ncavxdcw4wu5zgc@pengutronix.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
- xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
- X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
- AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
- ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
- SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
- nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
- qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
- YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
- FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
- 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
- WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
- pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
- hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
- OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
- Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
- oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
- 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
- BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
- +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
- FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
- 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
- vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
- WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
- HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
- HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
- Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
- kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
- aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
- y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
- X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
- HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
- YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
- PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
- UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
- iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
- WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
- UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
- sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
- KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
- t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
- AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
- RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
- e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
- UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
- 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
- V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
- xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
- dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
- pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
- caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
- 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
- a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <137a6dd3-c5ba-25b1-67ff-f0112afd7f34@gmail.com>
-Date:   Tue, 17 Mar 2020 12:48:47 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <20200317115626.4ncavxdcw4wu5zgc@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
+        id S1726823AbgCQTzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 15:55:04 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:63376 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726294AbgCQTzD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 15:55:03 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02HJZNw0027483;
+        Tue, 17 Mar 2020 12:54:46 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=fLO/Dq9G36waLOY96EaCNktwpfP0Vn/VL4I0Z284o7w=;
+ b=FySzspT1AiWLzkBGmHUzpS5CPA0MHH58BL2zloCnCIOpmaohkZvrVlUx6Tx6hO27MHfk
+ sGDPKtNU9nVjVtIPWQoOesAMK8U/+X/t13O7ibIKzyrj00JjMuZLWx3k+Y/3Q6/B8068
+ cOE4r2qa4N/teDIQP9lRsgFS8AcQhe0qf34= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2ysf3741k9-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 17 Mar 2020 12:54:46 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 17 Mar 2020 12:54:44 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=obQ8oqiglOC9fL+8gbrWm1/mAM/qYYp4rThiLpA7UTSbX92dHdOoFxCQUHSffOl8wStuOuhJtkHnZf38xwIUIZ5j1OD1n2HcIa2+12aL/YCdf8LZR1JBUmqg2B5sj+DBPNW2yovDRX252IF/wo9Bs5c5YEFHCJJdnepLe1zmkTPqTM3uE/m6Zxv38no5urVgExbuaJXYYxNHcay0EHUHotLBt9FRyuqEj4cM/Y+qiudwOBwbJHabra7gCYAqrAkOl7cTdlzDkDkhJ5ZDX8dXzyS9ynsHDQgQT5rbDc9c8lwX0DJlI5i/vYEVxFGEUTcwBDdJWGeFixgQoftJpXhtrw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fLO/Dq9G36waLOY96EaCNktwpfP0Vn/VL4I0Z284o7w=;
+ b=OJFxpUEcuEbwZB8Rf4Ny97T0wUhDhNUnu801BvCTBSJy6FHj0C0B+VGBH60rVTACzaD8d2eoqFS9z4ewiRib0A5CHnyNUV4bzgRNHbDPowga5jLdJKoDfiI/hSmJImbJ/bSfij9l8qQoM2s+xshjyRLtQqy9hqzQRfc5AYpK3aUVoH9eK0nGAgyXLRY3mQMvPI7Lnmp+96wnetdXmp58pk8E3yzoPcgi51OkV3NfGZqaXaNgOeVa99bDhTnI8CBbcWxHS8Pqj9/LLMSWR0NGp7wktqjIyb3BUOBt4U0Fd/HzJkIlg0vReFCf4GYoUfF2TIf401KFkqvOdUITmPwa4A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fLO/Dq9G36waLOY96EaCNktwpfP0Vn/VL4I0Z284o7w=;
+ b=KdSaF1MVDtXAJ8VMKrJRMjcvY3kEbeMWA2kcQaZ3kSVItl+vY4Hmwy8jxGIU0aF+qW8OJlgTdtRcxtd1uLzdp04Bqona9ZHD5PF2D5C3q7XmGnzkiKaVDY1azww03JLMMl3g+/zkG5cs2+G11VNwnwnf6XStG9CBaWuR40E5VbE=
+Received: from MW3PR15MB3882.namprd15.prod.outlook.com (2603:10b6:303:49::11)
+ by MW3PR15MB4044.namprd15.prod.outlook.com (2603:10b6:303:4b::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.14; Tue, 17 Mar
+ 2020 19:54:43 +0000
+Received: from MW3PR15MB3882.namprd15.prod.outlook.com
+ ([fe80::c570:6c46:cc47:5ca5]) by MW3PR15MB3882.namprd15.prod.outlook.com
+ ([fe80::c570:6c46:cc47:5ca5%5]) with mapi id 15.20.2814.021; Tue, 17 Mar 2020
+ 19:54:43 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+CC:     "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "yzaikin@google.com" <yzaikin@google.com>
+Subject: Re: [PATCH v2 bpf-next] bpf: sharing bpf runtime stats with
+ /dev/bpf_stats
+Thread-Topic: [PATCH v2 bpf-next] bpf: sharing bpf runtime stats with
+ /dev/bpf_stats
+Thread-Index: AQHV+9Iy3gdyr8P9PUGp5sv3FGMYHqhNLWaAgAAGw4A=
+Date:   Tue, 17 Mar 2020 19:54:43 +0000
+Message-ID: <920839AF-AC7A-4CD3-975F-111C3C6F75B9@fb.com>
+References: <20200316203329.2747779-1-songliubraving@fb.com>
+ <eb31bed3-3be4-501e-4340-bd558b31ead2@iogearbox.net>
+In-Reply-To: <eb31bed3-3be4-501e-4340-bd558b31ead2@iogearbox.net>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3608.60.0.2.5)
+x-originating-ip: [2620:10d:c090:400::5:424]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 23bf9a00-94ec-4c22-7214-08d7caad09b1
+x-ms-traffictypediagnostic: MW3PR15MB4044:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW3PR15MB404465ABB23787A86115D214B3F60@MW3PR15MB4044.namprd15.prod.outlook.com>
+x-fb-source: Internal
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0345CFD558
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(396003)(39860400002)(366004)(346002)(136003)(199004)(316002)(6916009)(54906003)(186003)(33656002)(86362001)(36756003)(53546011)(71200400001)(81156014)(8676002)(81166006)(2616005)(8936002)(6506007)(478600001)(5660300002)(76116006)(6512007)(66946007)(66556008)(66476007)(6486002)(2906002)(4326008)(66446008)(64756008);DIR:OUT;SFP:1102;SCL:1;SRVR:MW3PR15MB4044;H:MW3PR15MB3882.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: h7m2y+An/UBrErGyyG5pVZyfOq2Fa12CVPkSrOl/bPQ21C7L94vye4GltzZ18uEBu8dfQsN5Tk0+27rGwwI4EsEu/ySyw9jzBuncyy07FuM/n/NtsY+ueEZ3DhajfBqXMSYqD3D9V9JoUwWBwZR9S4qzQUpEZmjFnBGwlQefm8SV6tTAhZhELrjxVH4IUhdS20tyGao4Ka0PyCWKubX0GujSJBKqYNlMFOzgjIHG07GccNx+AsM0kUX/2FqKdW54BAJcT4I5W814gJI98ByykQNbnBEk2w/4HfAn1evECZfBk0f0goPHNN+rOTH9QDM9OwqcKnTtPMQHOfQD/Ujv8I9SimIBZUg10JV/MWUSDjgj6WqbDeOkz4SRBELQGbEPXdiRZIg5MLsT1BCizf2YSjz/J805u+h7OtmxEoH+fh9TqZZPEodayufk1NAropnB
+x-ms-exchange-antispam-messagedata: ZYSSe56Zqy7Qv4Nbd5/c5mp+S8voJTj02aqUWO0yZrhV/WlqrRIVmYAzouAuakNw+QkAyqsLYfEOJ5lddcC7FxlHpnweyYk4ByYRYjrGx8r60tBohirictn9CY9dHXjmXNEnlEr6Supck3jvsXJFOnR5LomIyrYIDdLQT4q5FH81OmE8BcxaW+8Uz0Cslzv0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <06E499519A4118418BBE60C11C3E2FC5@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23bf9a00-94ec-4c22-7214-08d7caad09b1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Mar 2020 19:54:43.5617
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eZr8utjBHQ1l0XLdNSuUQSejpy6t8Y0/hVnAOcgRifBsLZ6gC7F1vrE4D9Rk/9GMc6u/yFizHcFbgPx07IBMEA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB4044
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-17_08:2020-03-17,2020-03-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ adultscore=0 bulkscore=0 priorityscore=1501 impostorscore=0 malwarescore=0
+ clxscore=1015 mlxscore=0 lowpriorityscore=0 suspectscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003170075
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -134,100 +122,96 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 3/17/2020 4:56 AM, Oleksij Rempel wrote:
-> On Fri, Mar 13, 2020 at 07:53:27PM +0100, Oleksij Rempel wrote:
->> On Fri, Mar 13, 2020 at 11:20:35AM -0700, Florian Fainelli wrote:
->>>
->>>
->>> On 3/13/2020 11:16 AM, Oleksij Rempel wrote:
->>>> On Fri, Mar 13, 2020 at 07:10:56PM +0100, Andrew Lunn wrote:
->>>>>>> diff --git a/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml b/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
->>>>>>> new file mode 100644
->>>>>>> index 000000000000..42be0255512b
->>>>>>> --- /dev/null
->>>>>>> +++ b/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
->>>>>>> @@ -0,0 +1,61 @@
->>>>>>> +# SPDX-License-Identifier: GPL-2.0+
->>>>>>> +%YAML 1.2
->>>>>>> +---
->>>>>>> +$id: http://devicetree.org/schemas/net/nxp,tja11xx.yaml#
->>>>>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>>>>>> +
->>>>>>> +title: NXP TJA11xx PHY
->>>>>>> +
->>>>>>> +maintainers:
->>>>>>> +  - Andrew Lunn <andrew@lunn.ch>
->>>>>>> +  - Florian Fainelli <f.fainelli@gmail.com>
->>>>>>> +  - Heiner Kallweit <hkallweit1@gmail.com>
->>>>>>> +
->>>>>>> +description:
->>>>>>> +  Bindings for NXP TJA11xx automotive PHYs
->>>>>>> +
->>>>>>> +allOf:
->>>>>>> +  - $ref: ethernet-phy.yaml#
->>>>>>> +
->>>>>>> +patternProperties:
->>>>>>> +  "^ethernet-phy@[0-9a-f]+$":
->>>>>>> +    type: object
->>>>>>> +    description: |
->>>>>>> +      Some packages have multiple PHYs. Secondary PHY should be defines as
->>>>>>> +      subnode of the first (parent) PHY.
->>>>>>
->>>>>>
->>>>>> There are QSGMII PHYs which have 4 PHYs embedded and AFAICT they are
->>>>>> defined as 4 separate Ethernet PHY nodes and this would not be quite a
->>>>>> big stretch to represent them that way compared to how they are.
->>>>>>
->>>>>> I would recommend doing the same thing and not bend the MDIO framework
->>>>>> to support the registration of "nested" Ethernet PHY nodes.
->>>>>
->>>>> Hi Florian
->>>>>
->>>>> The issue here is the missing PHY ID in the secondary PHY. Because of
->>>>> that, the secondary does not probe in the normal way. We need the
->>>>> primary to be involved to some degree. It needs to register it. What
->>>>> i'm not so clear on is if it just needs to register it, or if these
->>>>> sub nodes are actually needed, given the current code.
->>>>
->>>> There are a bit more dependencies:
->>>> - PHY0 is responsible for health monitoring. If some thing wrong, it may
->>>>   shut down complete chip.
->>>> - We have shared reset. It make no sense to probe PHY1 before PHY0 with
->>>>   more controlling options will be probed
->>>> - It is possible bat dangerous to use PHY1 without PHY0.
->>>
->>> probing is a software problem though. If we want to describe the PHY
->>> package more correctly, we should be using a container node, something
->>> like this maybe:
->>>
->>> phy-package {
->>> 	compatible = "nxp,tja1102";
->>>
->>> 	ethernet-phy@4 {
->>> 		reg = <4>;
->>> 	};
->>>
->>> 	ethernet-phy@5 {
->>> 		reg = <5>;
->>> 	};
->>> };
->>
->> Yes, this is almost the same as it is currently done:
->>
->> phy-package {
->> 	reg = <4>;
->>  
->>  	ethernet-phy@5 {
->>  		reg = <5>;
->>  	};
->> };
->>
->> Because the primary PHY0 can be autodetected by the bus scan.
->> But I have nothing against your suggestions. Please, some one should say the
->> last word here, how exactly it should be implemented?
+> On Mar 17, 2020, at 12:30 PM, Daniel Borkmann <daniel@iogearbox.net> wrot=
+e:
+>=20
+> On 3/16/20 9:33 PM, Song Liu wrote:
+>> Currently, sysctl kernel.bpf_stats_enabled controls BPF runtime stats.
+>> Typical userspace tools use kernel.bpf_stats_enabled as follows:
+>>   1. Enable kernel.bpf_stats_enabled;
+>>   2. Check program run_time_ns;
+>>   3. Sleep for the monitoring period;
+>>   4. Check program run_time_ns again, calculate the difference;
+>>   5. Disable kernel.bpf_stats_enabled.
+>> The problem with this approach is that only one userspace tool can toggl=
+e
+>> this sysctl. If multiple tools toggle the sysctl at the same time, the
+>> measurement may be inaccurate.
+>> To fix this problem while keep backward compatibility, introduce a new
+>> bpf command BPF_ENABLE_RUNTIME_STATS. On success, this command enables
+>> run_time_ns stats and returns a valid fd.
+>> With BPF_ENABLE_RUNTIME_STATS, user space tool would have the following
+>> flow:
+>>   1. Get a fd with BPF_ENABLE_RUNTIME_STATS, and make sure it is valid;
+>>   2. Check program run_time_ns;
+>>   3. Sleep for the monitoring period;
+>>   4. Check program run_time_ns again, calculate the difference;
+>>   5. Close the fd.
+>> Signed-off-by: Song Liu <songliubraving@fb.com>
+>=20
+> Hmm, I see no relation to /dev/bpf_stats anymore, yet the subject still t=
+alks
+> about it?
 
-It's not for me to decide, I was hoping the Device Tree maintainers
-could chime in, your current approach would certainly work although it
-feels visually awkward.
--- 
-Florian
+My fault. Will fix..
+
+>=20
+> Also, should this have bpftool integration now that we have `bpftool prog=
+ profile`
+> support? Would be nice to then fetch the related stats via bpf_prog_info,=
+ so users
+> can consume this in an easy way.
+
+We can add "run_time_ns" as a metric to "bpftool prog profile". But the=20
+mechanism is not the same though. Let me think about this.=20
+
+>=20
+>> Changes RFC =3D> v2:
+>> 1. Add a new bpf command instead of /dev/bpf_stats;
+>> 2. Remove the jump_label patch, which is no longer needed;
+>> 3. Add a static variable to save previous value of the sysctl.
+>> ---
+>>  include/linux/bpf.h            |  1 +
+>>  include/uapi/linux/bpf.h       |  1 +
+>>  kernel/bpf/syscall.c           | 43 ++++++++++++++++++++++++++++++++++
+>>  kernel/sysctl.c                | 36 +++++++++++++++++++++++++++-
+>>  tools/include/uapi/linux/bpf.h |  1 +
+>>  5 files changed, 81 insertions(+), 1 deletion(-)
+>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+>> index 4fd91b7c95ea..d542349771df 100644
+>> --- a/include/linux/bpf.h
+>> +++ b/include/linux/bpf.h
+>> @@ -970,6 +970,7 @@ _out:							\
+>>    #ifdef CONFIG_BPF_SYSCALL
+>>  DECLARE_PER_CPU(int, bpf_prog_active);
+>> +extern struct mutex bpf_stats_enabled_mutex;
+>>    /*
+>>   * Block execution of BPF programs attached to instrumentation (perf,
+>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>> index 40b2d9476268..8285ff37210c 100644
+>> --- a/include/uapi/linux/bpf.h
+>> +++ b/include/uapi/linux/bpf.h
+>> @@ -111,6 +111,7 @@ enum bpf_cmd {
+>>  	BPF_MAP_LOOKUP_AND_DELETE_BATCH,
+>>  	BPF_MAP_UPDATE_BATCH,
+>>  	BPF_MAP_DELETE_BATCH,
+>> +	BPF_ENABLE_RUNTIME_STATS,
+>>  };
+>>    enum bpf_map_type {
+>> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+>> index b2f73ecacced..823dc9de7953 100644
+>> --- a/kernel/bpf/syscall.c
+>> +++ b/kernel/bpf/syscall.c
+>> @@ -24,6 +24,9 @@
+>>  #include <linux/ctype.h>
+>>  #include <linux/nospec.h>
+>>  #include <linux/audit.h>
+>> +#include <linux/miscdevice.h>
+>=20
+> Is this still needed?
+
+My fault again. Will fix.=20
+
+Thanks,
+Song
+
