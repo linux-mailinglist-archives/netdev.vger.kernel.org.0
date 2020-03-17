@@ -2,71 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A9DB187773
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 02:31:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71454187775
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 02:32:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729964AbgCQB3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 21:29:47 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([148.163.129.52]:35474 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729643AbgCQB3V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 21:29:21 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A751010005E;
-        Tue, 17 Mar 2020 01:29:19 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 17 Mar
- 2020 01:29:11 +0000
-Subject: Re: [PATCH net-next 1/9] net: sfc: reject unsupported coalescing
- params
-To:     Jakub Kicinski <kuba@kernel.org>, <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-net-drivers@solarflare.com>,
-        <mhabets@solarflare.com>, <jaswinder.singh@linaro.org>,
-        <ilias.apalodimas@linaro.org>, <Jose.Abreu@synopsys.com>,
-        <andy@greyhouse.net>, <grygorii.strashko@ti.com>, <andrew@lunn.ch>,
-        <michal.simek@xilinx.com>, <radhey.shyam.pandey@xilinx.com>,
-        <mkubecek@suse.cz>
-References: <20200316204712.3098382-1-kuba@kernel.org>
- <20200316204712.3098382-2-kuba@kernel.org>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <10298329-6f0b-8a91-e51f-499ea45fac4b@solarflare.com>
-Date:   Tue, 17 Mar 2020 01:29:02 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1725995AbgCQBcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 21:32:46 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:12306 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725783AbgCQBcq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 21:32:46 -0400
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 02H1E8rT011204
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 18:32:45 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=j1R7eEugnxEqS09xNMlOXk7xiHeqAMBvygRyAcfXaIY=;
+ b=Oumh6cKwSLX4w+1DIEWpLFWVUUJSoHhqzL/DNtmB6+M2RWeOGzo1dhynSujPqJLvTHW+
+ ykwVhPqiL+6txEvNbyzheaefWGcNGxhlf7TAAjUNLUyOoGRMhO+1WJJghv8umQNqQQZJ
+ eJqDFHWD6N9POiDRJXBBv9r+uR+IY9gNBnw= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 2yrtryaqgc-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 18:32:45 -0700
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Mon, 16 Mar 2020 18:32:44 -0700
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id F26EB2942D82; Mon, 16 Mar 2020 18:32:39 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next 0/4] bpftool: Add struct_ops support
+Date:   Mon, 16 Mar 2020 18:32:39 -0700
+Message-ID: <20200317013239.4066168-1-kafai@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <20200316204712.3098382-2-kuba@kernel.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25296.003
-X-TM-AS-Result: No-1.537300-8.000000-10
-X-TMASE-MatchedRID: fgYTp5XatxbmLzc6AOD8DfHkpkyUphL9wwD0mzFpRrd0+4P4W65ejqlO
-        2ekqlDI68M1BQSuxIAYXW7oNRX6ypXbI+PVdeqUpiVJZi91I9Jh9LQinZ4QefL6qvLNjDYTwIq9
-        5DjCZh0zLOq+UXtqwWAtuKBGekqUpnH7sbImOEBQLfTZDqgvNZeIyXAnWFg7dZ7jRYIlzRnz3Cq
-        U3Tst+nJyAWsk/zKrmUdNvZjjOj9C63BPMcrcQuXeYWV2RaAfD8VsfdwUmMsnAvpLE+mvX8g==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.537300-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25296.003
-X-MDID: 1584408560-yUa8Xb0KDgHj
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-16_11:2020-03-12,2020-03-16 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
+ suspectscore=13 bulkscore=0 spamscore=0 impostorscore=0 priorityscore=1501
+ mlxscore=0 lowpriorityscore=0 phishscore=0 clxscore=1015 malwarescore=0
+ mlxlogscore=427 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003170003
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16/03/2020 20:47, Jakub Kicinski wrote:
-> Set ethtool_ops->supported_coalesce_params to let
-> the core reject unsupported coalescing parameters.
->
-> This driver did not previously reject unsupported parameters.
-> The check for use_adaptive_tx_coalesce will now be done by
-> the core.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Acked-by: Edward Cree <ecree@solarflare.com>
+This set adds "struct_ops" support to bpftool.
+
+The first two patches improve the btf_dumper in bpftool.
+Patch 1: print the enum's name (if it is found) instead of the
+         enum's value.
+Patch 2: print a char[] as a string if all characters are printable.
+
+"struct_ops" stores the prog_id in a func ptr.
+Instead of printing a prog_id,
+patch 3 adds an option to btf_dumper to allow a func ptr's value
+to be printed with the full func_proto info and the prog_name.
+
+Patch 4 implements the "struct_ops" bpftool command.
+
+v2:
+- Typo fixes in comment and doc in patch 4 (Quentin)
+- Link to a few other man pages in doc in patch 4 (Quentin)
+- Alphabet ordering in include files in patch 4 (Quentin)
+- Use GET_ARG() in patch 4 (Quentin)
+
+Martin KaFai Lau (4):
+  bpftool: Print the enum's name instead of value
+  bpftool: Print as a string for char array
+  bpftool: Translate prog_id to its bpf prog_name
+  bpftool: Add struct_ops support
+
+ .../Documentation/bpftool-struct_ops.rst      | 116 ++++
+ tools/bpf/bpftool/bash-completion/bpftool     |  28 +
+ tools/bpf/bpftool/btf_dumper.c                | 194 +++++-
+ tools/bpf/bpftool/main.c                      |   3 +-
+ tools/bpf/bpftool/main.h                      |   2 +
+ tools/bpf/bpftool/struct_ops.c                | 596 ++++++++++++++++++
+ 6 files changed, 923 insertions(+), 16 deletions(-)
+ create mode 100644 tools/bpf/bpftool/Documentation/bpftool-struct_ops.rst
+ create mode 100644 tools/bpf/bpftool/struct_ops.c
+
+-- 
+2.17.1
+
