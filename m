@@ -2,64 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 631C2188784
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 15:30:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9AB91886C7
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 15:04:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbgCQOaH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 17 Mar 2020 10:30:07 -0400
-Received: from fsmsg.mtitc.government.bg ([46.10.156.10]:56100 "EHLO
-        fsmsg.mtitc.government.bg" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726112AbgCQOaG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 10:30:06 -0400
-X-Greylist: delayed 8127 seconds by postgrey-1.27 at vger.kernel.org; Tue, 17 Mar 2020 10:30:05 EDT
-Received: from pps.filterd (fsmsg.mtitc.government.bg [127.0.0.1])
-        by fsmsg.mtitc.government.bg (8.16.0.27/8.16.0.27) with SMTP id 02HBqW9R008629;
-        Tue, 17 Mar 2020 14:09:42 +0200
-Received: from mail.mtitc.government.bg (mtitc-ex01.mt.government.bg [172.23.0.83])
-        by fsmsg.mtitc.government.bg with ESMTP id 2yrp88gudt-12;
-        Tue, 17 Mar 2020 14:09:42 +0200
-Received: from mtitc-ex02.mt.government.bg (172.23.0.84) by
- mtitc-ex01.mt.government.bg (172.23.0.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.1913.5; Tue, 17 Mar 2020 14:09:39 +0200
-Received: from mtitc-ex02.mt.government.bg ([fe80::3da3:4b35:6b0c:c5b9]) by
- mtitc-ex02.mt.government.bg ([fe80::3da3:4b35:6b0c:c5b9%12]) with mapi id
- 15.01.1913.005; Tue, 17 Mar 2020 14:09:39 +0200
-From:   Vasilka Tabakova <vtabakova@mtitc.government.bg>
-To:     "No-reply@microsoft.net" <No-reply@microsoft.net>
-Subject: 10 Ihrer eingehenden Nachrichten wurden ausgesetzt
-Thread-Topic: 10 Ihrer eingehenden Nachrichten wurden ausgesetzt
-Thread-Index: AQHV/FQ6we8KxG3tSUKvZQxuR7xM9Q==
-Date:   Tue, 17 Mar 2020 12:09:39 +0000
-Message-ID: <7da74943397d433a9f5f4e7e31847353@mtitc.government.bg>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [192.168.10.111]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
+        id S1726278AbgCQOEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 10:04:37 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:40840 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726112AbgCQOEh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Mar 2020 10:04:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=ULONFoFy52YeIq0i+dbx5LG9OZ6+gxXYBBy7AX4SKfw=; b=tGznDHFIeW8VhzIHSfbLqJ1+wr
+        j2UUnERSAtKsQ4z8PekGZm1l89ill9A6WnaQUchaxwOhvzjLQWojgtb7kBcTm0JiZYHGnqBcu9hju
+        k00Pg7Am1r5+MhG/nB9MazCvE2TrOadbXhR+F54Bj52E3WDPRBhs3fmS8YxuuSj2rgQU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jECpW-0006lI-Pw; Tue, 17 Mar 2020 15:04:26 +0100
+Date:   Tue, 17 Mar 2020 15:04:26 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Jeremy Linton <jeremy.linton@arm.com>, linux.cj@gmail.com,
+        Jon Nettleton <jon@solid-run.com>, linux@armlinux.org.uk,
+        Makarand Pawagi <makarand.pawagi@nxp.com>,
+        cristian.sovaiala@nxp.com, laurentiu.tudor@nxp.com,
+        ioana.ciornei@nxp.com, V.Sethi@nxp.com, pankaj.bansal@nxp.com,
+        "Rajesh V . Bikkina" <rajesh.bikkina@nxp.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: Re: [PATCH v1 1/7] mdio_bus: Introduce fwnode MDIO helpers
+Message-ID: <20200317140426.GR24270@lunn.ch>
+References: <20200131153440.20870-1-calvin.johnson@nxp.com>
+ <20200131153440.20870-2-calvin.johnson@nxp.com>
+ <20200317113650.GA6016@lsv03152.swis.in-blr01.nxp.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
- definitions=2020-03-17_04:2020-03-17,2020-03-17 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=712
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-2002250000 definitions=main-2003170054
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200317113650.GA6016@lsv03152.swis.in-blr01.nxp.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MICROSOFT NOTIFICATION MEMO
+On Tue, Mar 17, 2020 at 05:06:50PM +0530, Calvin Johnson wrote:
+> Hi,
+> 
+> On Fri, Jan 31, 2020 at 09:04:34PM +0530, Calvin Johnson wrote:
+> 
+> <snip>
+> 
+> > +/**
+> > + * fwnode_mdiobus_child_is_phy - Return true if the child is a PHY node.
+> > + * It must either:
+> > + * o Compatible string of "ethernet-phy-ieee802.3-c45"
+> > + * o Compatible string of "ethernet-phy-ieee802.3-c22"
+> > + * Checking "compatible" property is done, in order to follow the DT binding.
+> > + */
+> > +static bool fwnode_mdiobus_child_is_phy(struct fwnode_handle *child)
+> > +{
+> > +	int ret;
+> > +
+> > +	ret = fwnode_property_match_string(child, "compatible",
+> > +					   "ethernet-phy-ieee802.3-c45");
+> > +	if (!ret)
+> > +		return true;
+> > +
+> > +	ret = fwnode_property_match_string(child, "compatible",
+> > +					   "ethernet-phy-ieee802.3-c22");
+> > +	if (!ret)
+> > +		return true;
+> > +
+> > +	if (!fwnode_property_present(child, "compatible"))
+> > +		return true;
+> > +
+> > +	return false;
+> > +}
+> 
+> Can we use _CID in ACPI to get the compatible string? Is there any other method
+> to handle this kind of situation where we would like to pass C45 or C22 info to
+> the mdiobus driver?
 
+Hi Calvin
 
-10 Ihrer eingehenden Nachrichten wurden jetzt gesperrt, da Ihr E-Mail-Box-Konto für dieses Jahr 2020 nicht überprüft wurde. Bitte überprüfen<https://guyman777.wixsite.com/mysite><https://killwix123.wixsite.com/mysite> Sie dies jetzt, damit alle Ihre gesperrten eingehenden Nachrichten jetzt für Sie freigegeben werden können.
+Is there any defacto standardised way to stuff this device tree
+property into ACPI? It is one of the key properties, so either there
+is one standard way, or lots of variants because nobody can be
+bothered to go to the ACPI standardisation body and get it formalised.
 
-
-Danke für dein Verständnis
-
-
-Microsoft Verification Team
-
-
+     Andrew
