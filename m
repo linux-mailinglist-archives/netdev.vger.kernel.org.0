@@ -2,44 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1A7A188C06
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 18:29:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F835188C09
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 18:29:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726769AbgCQR3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 13:29:41 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:20514 "EHLO
+        id S1726780AbgCQR3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 13:29:43 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:41190 "EHLO
         us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726704AbgCQR3k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 13:29:40 -0400
+        by vger.kernel.org with ESMTP id S1726754AbgCQR3l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 13:29:41 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1584466179;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=rVQlkij6I5xHfbasruFFj7SzHDLIXfVbaQI2OF3x3tE=;
-        b=XnqaELffCHUzipEEpCihJeEwqjnf+XFyf5K63igY3MA8d/r8VavfBprq9d9+K7H+6uv33y
-        a1D9ZywRTFIfcLxTFQ9c/PPsslb9tOeRpXu1b6WcsQVHohGbCrrt0LnammH108o3trKL1p
-        1oqCYjyb/Wi6/oI2hM+SCsTqX6UU+ME=
+        bh=XT5j9w3tCbOpcwlhO1qxUNWifvfqKWYCIqKqorwEJME=;
+        b=RSkjJ5urpzNIYFPUeyggwMkxHuphjjMizWTqzbPOVX2eBb/FDjGtsrTbXO6NFxUcRey3Tj
+        cngQCDyQxVXcbbQa7RF+dEXwlV2yZ7MAVRW43luySi6S3h1O2h5dIcyEIy6WVhJ08CFIMw
+        JA24O8kNqd+IxRVVoirdgs343jo9uIo=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-347-YNz80-B3PLihGs_qT-yX5Q-1; Tue, 17 Mar 2020 13:29:35 -0400
-X-MC-Unique: YNz80-B3PLihGs_qT-yX5Q-1
+ us-mta-419-Ts0dC3DhPn6CkHhxZ4Hn_Q-1; Tue, 17 Mar 2020 13:29:35 -0400
+X-MC-Unique: Ts0dC3DhPn6CkHhxZ4Hn_Q-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4DC301926DD9;
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3D723802C80;
         Tue, 17 Mar 2020 17:29:30 +0000 (UTC)
 Received: from firesoul.localdomain (unknown [10.40.208.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CE4B55C28E;
-        Tue, 17 Mar 2020 17:29:18 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D27BC173FF;
+        Tue, 17 Mar 2020 17:29:23 +0000 (UTC)
 Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id D8C5630740457;
-        Tue, 17 Mar 2020 18:29:17 +0100 (CET)
-Subject: [PATCH RFC v1 02/15] mvneta: add XDP frame size to driver
+        by firesoul.localdomain (Postfix) with ESMTP id EDF3F3074358B;
+        Tue, 17 Mar 2020 18:29:22 +0100 (CET)
+Subject: [PATCH RFC v1 03/15] bnxt: add XDP frame size to driver
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     sameehj@amazon.com
-Cc:     thomas.petazzoni@bootlin.com,
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
         akiyano@amazon.com, gtzalik@amazon.com,
@@ -53,8 +54,8 @@ Cc:     thomas.petazzoni@bootlin.com,
         Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
         Ilias Apalodimas <ilias.apalodimas@linaro.org>,
         Lorenzo Bianconi <lorenzo@kernel.org>
-Date:   Tue, 17 Mar 2020 18:29:17 +0100
-Message-ID: <158446615781.702578.17438189744745816482.stgit@firesoul>
+Date:   Tue, 17 Mar 2020 18:29:22 +0100
+Message-ID: <158446616289.702578.7889111879119296431.stgit@firesoul>
 In-Reply-To: <158446612466.702578.2795159620575737080.stgit@firesoul>
 References: <158446612466.702578.2795159620575737080.stgit@firesoul>
 User-Agent: StGit/0.19
@@ -67,27 +68,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This marvell driver mvneta uses PAGE_SIZE frames, which makes it
-really easy to convert.  It also only updated rxq and now frame_sz
-once per NAPI call.
+This driver uses full PAGE_SIZE pages when XDP is enabled.
 
-Cc: thomas.petazzoni@bootlin.com
+Cc: Michael Chan <michael.chan@broadcom.com>
+Cc: Andy Gospodarek <andrew.gospodarek@broadcom.com>
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- drivers/net/ethernet/marvell/mvneta.c |    1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |    1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-index 1c391f63a26f..e6c6524f63a5 100644
---- a/drivers/net/ethernet/marvell/mvneta.c
-+++ b/drivers/net/ethernet/marvell/mvneta.c
-@@ -2310,6 +2310,7 @@ static int mvneta_rx_swbm(struct napi_struct *napi,
- 	rcu_read_lock();
- 	xdp_prog = READ_ONCE(pp->xdp_prog);
- 	xdp_buf.rxq = &rxq->xdp_rxq;
-+	xdp_buf.frame_sz = PAGE_SIZE;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+index c6f6f2033880..5e3b4a3b69ea 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+@@ -138,6 +138,7 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
+ 	xdp_set_data_meta_invalid(&xdp);
+ 	xdp.data_end = *data_ptr + *len;
+ 	xdp.rxq = &rxr->xdp_rxq;
++	xdp.frame_sz = PAGE_SIZE; /* BNXT_RX_PAGE_MODE(bp) when XDP enabled */
+ 	orig_data = xdp.data;
  
- 	/* Fairness NAPI loop */
- 	while (rx_proc < budget && rx_proc < rx_todo) {
+ 	rcu_read_lock();
 
 
