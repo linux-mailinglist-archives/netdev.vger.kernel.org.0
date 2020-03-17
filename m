@@ -2,160 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 865161888FE
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 16:19:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D07C188900
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 16:19:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726836AbgCQPTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 11:19:12 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:36049 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726478AbgCQPTM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 11:19:12 -0400
-Received: by mail-wm1-f65.google.com with SMTP id g62so22468844wme.1
-        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 08:19:10 -0700 (PDT)
+        id S1726909AbgCQPTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 11:19:23 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:44713 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726478AbgCQPTX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 11:19:23 -0400
+Received: by mail-wr1-f67.google.com with SMTP id y2so10712173wrn.11
+        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 08:19:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=t5EZSWArlDkJThKqU9M4TgErWWuNwLLtIEjo1J6YeRg=;
-        b=fIAcaMwP1yDuay3qyY7NG7+LTvd18KdflbuB+llddnKjRF0FZzeREbspJMOIpOQ272
-         S1pL4chJZo9VwY1LoThu0gumHzAJ+oZAJwLot1BjdUsnGxiKmGnvku4mURUlOWgD8dT2
-         91Uty3AR4gOCvO8RdOE2QRCeGXKMVbi7eIiw8=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=807Ui94TU5u0AhxzhwnrSf/1vI/cWF4dKvvCGNgjD4c=;
+        b=Zz1jwkeLetyGDCMiay8Zr1gPM9+Oxud92I0ptKiObdrQBTq2Wv4UmwCW9zdfxlnDkq
+         YYdM1w6kRvzBpiI9l6bj291oT3JB4YjWiz57T/URCbNnBc/46adqH/v7p12z94VAfxdQ
+         TBr5L0CSEZWsbHQ5bYoRnj1rFM9W6C5qgsYwg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=t5EZSWArlDkJThKqU9M4TgErWWuNwLLtIEjo1J6YeRg=;
-        b=SZdBumZ5hj2blFmTjMXVHWWnC93c6dswhDha/BkveJN5oIZsSW8qdEk7nKlI3O+GMJ
-         Ud3l4tyc61nVP5Gw5/NoOUJmsmz07Zf/9247bMckx9ECiMcei9btMd16JvbC0KTDael4
-         EXlqFM22VrXPGEuhLkihvbSKmYV9l+Q5RZUvGPC+UTtK5Hyu+i9kuOUkt3e8rwcTeN71
-         lY1fbTXuCNZVKejiid+tqhY1dyJTKOYvPM7xceP/+3fZr9Te41HKgVMWBjNDRIdB5bvz
-         yM9zbWyOj7McGSnOeKrnyllcUa4jWyBNBS9BAjOFnwNWLQnmcsgRaVM7m6+ec48GbuCs
-         weEw==
-X-Gm-Message-State: ANhLgQ2C695MjYvV98zPCRoepeLIUZsSbmSV/CGUUmEgPheCGlHSBZdf
-        O+JOhzRebYLKY3jEqeVM0e7J5ng/sVc=
-X-Google-Smtp-Source: ADFU+vvwOkQSJLGFI3OxjnPNHCmp1xB90SXOnzt9VSPT9GIrn1Ra+tiMtf14VM99ViNz4cgibyoEkA==
-X-Received: by 2002:a1c:9815:: with SMTP id a21mr5814322wme.11.1584458350031;
-        Tue, 17 Mar 2020 08:19:10 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=807Ui94TU5u0AhxzhwnrSf/1vI/cWF4dKvvCGNgjD4c=;
+        b=CnS1LBAFVlXDq2bVIZ6nw7gxOlAPqs9e+jUJSvWup2k/25oO9InDI/SA67mkGxdrq/
+         +NDzYX5G2f9DXmsIX7hiSC2QMAQwuo5l1eP91LMo2bvbaqBEwDJ/V3uV73gifLnampuA
+         ifTieCm5IZaGUul88vBMjkiW9iZnSV37qoYVcYC99SEZkvmVx+N/2yfRWC0jYg7MQOKX
+         0bJHuVT9pPXlu9ThWuPKT+QeHmRlBWUg326kuOU/jZOSdr+ct6lvSbMMiObZgH5+kmiv
+         s9zlSqefpvV/t13cvUxuLsGT4TgZhEGPSaC7Qi2qlKu0zAU7VYw7srPZpMg3UbJRgL/l
+         +Dew==
+X-Gm-Message-State: ANhLgQ0S8DtBtq+9VOp+EDaGvIShuqQoSmv43CaNzKmAiRTyl/lF6gAx
+        ZLKpOUaD5f+qEwe2iKI45Kxcb/+e+gw=
+X-Google-Smtp-Source: ADFU+vskFESljA0pMg1dI++LGac1STuwFCnuhn3wHGsRc9oibKd9ebtgDxuYiZZZQWQdEMF1ZrWt5Q==
+X-Received: by 2002:a5d:4ecd:: with SMTP id s13mr6298103wrv.186.1584458361800;
+        Tue, 17 Mar 2020 08:19:21 -0700 (PDT)
 Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id z19sm4363534wma.41.2020.03.17.08.19.07
+        by smtp.gmail.com with ESMTPSA id z19sm4363534wma.41.2020.03.17.08.19.19
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Mar 2020 08:19:09 -0700 (PDT)
+        Tue, 17 Mar 2020 08:19:21 -0700 (PDT)
 From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org,
         Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
         Michael Chan <michael.chan@broadcom.com>
-Subject: [PATCH net-next 07/11] bnxt_en: Read partno and serialno of the board from VPD
-Date:   Tue, 17 Mar 2020 20:47:22 +0530
-Message-Id: <1584458246-29370-1-git-send-email-vasundhara-v.volam@broadcom.com>
+Subject: [PATCH net-next 08/11] bnxt_en: Add partno and serialno to devlink info_get cb
+Date:   Tue, 17 Mar 2020 20:47:23 +0530
+Message-Id: <1584458246-29370-2-git-send-email-vasundhara-v.volam@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1584458246-29370-1-git-send-email-vasundhara-v.volam@broadcom.com>
+References: <1584458246-29370-1-git-send-email-vasundhara-v.volam@broadcom.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Store the part number and serial number information from VPD in
-the bnxt structure. Follow up patch will add the support to display
-the information via devlink command.
+Add part number and serial number info from the vital product data
+to info_get command via devlink tool.
+
+Some of the broadcom devices support both PCI extended config space
+for device serial number and VPD serial number. With this patch, both
+the information will be displayed via info_get cb.
+
+Update bnxt.rst documentation as well.
+
+Example display:
+
+$ devlink dev info pci/0000:3b:00.1
+pci/0000:3b:00.1:
+  driver bnxt_en
+  serial_number B0-26-28-FF-FE-C8-85-20
+  versions:
+      fixed:
+        board.id BCM957508-P2100G
+        asic.id 1750
+        asic.rev 1
+        vpd.serialno P2100pm01920A0032CQ
+      running:
+        drv.spec 1.10.1.12
+        hw.addr b0:26:28:c8:85:21
+        hw.mh_base_addr b0:26:28:c8:85:20
+        fw 216.0.286.0
+        fw.psid 0.0.6
+        fw.app 216.0.251.0
 
 Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 59 +++++++++++++++++++++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h |  4 +++
- 2 files changed, 63 insertions(+)
+ Documentation/networking/devlink/bnxt.rst         |  6 ++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 15 +++++++++++++++
+ 2 files changed, 21 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 663dcf6..b03cdda 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -11727,6 +11727,63 @@ static int bnxt_init_mac_addr(struct bnxt *bp)
- 	return rc;
- }
- 
-+#define BNXT_VPD_LEN	512
-+static void bnxt_vpd_read_info(struct bnxt *bp)
-+{
-+	struct pci_dev *pdev = bp->pdev;
-+	int i, len, pos, ro_size;
-+	ssize_t vpd_size;
-+	u8 *vpd_data;
-+
-+	vpd_data = kmalloc(BNXT_VPD_LEN, GFP_KERNEL);
-+	if (!vpd_data)
-+		return;
-+
-+	vpd_size = pci_read_vpd(pdev, 0, BNXT_VPD_LEN, vpd_data);
-+	if (vpd_size <= 0) {
-+		netdev_err(bp->dev, "Unable to read VPD\n");
-+		goto exit;
-+	}
-+
-+	i = pci_vpd_find_tag(vpd_data, 0, vpd_size, PCI_VPD_LRDT_RO_DATA);
-+	if (i < 0) {
-+		netdev_err(bp->dev, "VPD READ-Only not found\n");
-+		goto exit;
-+	}
-+
-+	ro_size = pci_vpd_lrdt_size(&vpd_data[i]);
-+	i += PCI_VPD_LRDT_TAG_SIZE;
-+	if (i + ro_size > vpd_size)
-+		goto exit;
-+
-+	pos = pci_vpd_find_info_keyword(vpd_data, i, ro_size,
-+					PCI_VPD_RO_KEYWORD_PARTNO);
-+	if (pos < 0)
-+		goto read_sn;
-+
-+	len = pci_vpd_info_field_size(&vpd_data[pos]);
-+	pos += PCI_VPD_INFO_FLD_HDR_SIZE;
-+	if (len + pos > vpd_size)
-+		goto read_sn;
-+
-+	strlcpy(bp->board_partno, &vpd_data[pos], min(len, BNXT_VPD_FLD_LEN));
-+
-+read_sn:
-+	pos = pci_vpd_find_info_keyword(vpd_data, i, ro_size,
-+					PCI_VPD_RO_KEYWORD_SERIALNO);
-+	if (pos < 0)
-+		goto exit;
-+
-+	len = pci_vpd_info_field_size(&vpd_data[pos]);
-+	pos += PCI_VPD_INFO_FLD_HDR_SIZE;
-+	if (len + pos > vpd_size)
-+		goto exit;
-+
-+	strlcpy(bp->board_serialno, &vpd_data[pos], min(len, BNXT_VPD_FLD_LEN));
-+exit:
-+	kfree(vpd_data);
-+}
-+
- static int bnxt_pcie_dsn_get(struct bnxt *bp, u8 dsn[])
- {
- 	struct pci_dev *pdev = bp->pdev;
-@@ -11784,6 +11841,8 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	dev->ethtool_ops = &bnxt_ethtool_ops;
- 	pci_set_drvdata(pdev, dev);
- 
-+	bnxt_vpd_read_info(bp);
-+
- 	rc = bnxt_alloc_hwrm_resources(bp);
+diff --git a/Documentation/networking/devlink/bnxt.rst b/Documentation/networking/devlink/bnxt.rst
+index f850a18..17b6522 100644
+--- a/Documentation/networking/devlink/bnxt.rst
++++ b/Documentation/networking/devlink/bnxt.rst
+@@ -51,12 +51,18 @@ The ``bnxt_en`` driver reports the following versions
+    * - Name
+      - Type
+      - Description
++   * - ``board.id``
++     - fixed
++     - Part number identifying the board design
+    * - ``asic.id``
+      - fixed
+      - ASIC design identifier
+    * - ``asic.rev``
+      - fixed
+      - ASIC design revision
++   * - ``vpd.serialno``
++     - fixed
++     - Serial number identifying the board
+    * - ``drv.spec``
+      - running
+      - HWRM specification version supported by driver HWRM implementation
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 607e27a..6065602 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -439,6 +439,14 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
  	if (rc)
- 		goto init_err_pci_clean;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 5adc25f..7f5f35b 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1500,6 +1500,10 @@ struct bnxt {
- 	 (chip_num) == CHIP_NUM_58804 ||        \
- 	 (chip_num) == CHIP_NUM_58808)
+ 		return rc;
  
-+#define BNXT_VPD_FLD_LEN	32
-+	char			board_partno[BNXT_VPD_FLD_LEN];
-+	char			board_serialno[BNXT_VPD_FLD_LEN];
++	if (strlen(bp->board_partno)) {
++		rc = devlink_info_version_fixed_put(req,
++			DEVLINK_INFO_VERSION_GENERIC_BOARD_ID,
++			bp->board_partno);
++		if (rc)
++			return rc;
++	}
 +
- 	struct net_device	*dev;
- 	struct pci_dev		*pdev;
+ 	sprintf(buf, "%X", bp->chip_num);
+ 	rc = devlink_info_version_fixed_put(req,
+ 			DEVLINK_INFO_VERSION_GENERIC_ASIC_ID, buf);
+@@ -461,6 +469,13 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+ 			return rc;
+ 	}
  
++	if (strlen(bp->board_serialno)) {
++		rc = devlink_info_version_fixed_put(req, "vpd.serialno",
++						    bp->board_serialno);
++		if (rc)
++			return rc;
++	}
++
+ 	rc = devlink_info_version_running_put(req,
+ 		DEVLINK_INFO_VERSION_GENERIC_DRV_SPEC, HWRM_VERSION_STR);
+ 	if (rc)
 -- 
 1.8.3.1
 
