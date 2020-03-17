@@ -2,101 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A3A6188474
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 13:44:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F23361884EE
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 14:11:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726192AbgCQMoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 08:44:01 -0400
-Received: from mail-am6eur05on2087.outbound.protection.outlook.com ([40.107.22.87]:6017
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725906AbgCQMoA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Mar 2020 08:44:00 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BVoQpTcEE8QjNamff562yYytIbGsYe67yNvbqMYrXAVfV6Gk4II6g56op8w2Xn/0WIFgC8MUmFnrVhs8utmoyRnKu9jmCL6G6Ty3ahjvpDMI0RxvhxX+/o7dFjh4CdIr6TiSYeMAvwUVJ4LaxwMsJDvLGEb40hqfRjTSbSdHPL3DJw7ZEmEPcwdGMzWxwl9+Kjxry86g84Byl9bsB3doT1YnXpnZQu+yMKXrw07YtopJBACpk24RApm79o42PMav96nUnKWDs0WSOYwYdPtZxJifA75T12Dt2H9xS42oHuno6x9MgJ5gW3eFMIODcNTpZwdyLx6bh393f62jSOdvSA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=98AFEjMX5f3X9H26/+c+a7ugLJFa+WIRPV65WfKl8AU=;
- b=UvYWsX+48Bgsb1tGnP/+zhicmhUGJUjeOgeL3l67gxKL+tf2iB1AzSt9imoXpjKXfXH4Oneoz5gdCBN0AeVGofqYsCgFNTAjDouQoq3h6xVsZ7hp9zyTqTC90zfTdksRg//3c6ay4YFDLBEzoCeUyMIo0QEK5jsf56o6ots+X4CuuhNFeTUS2RSg7ImzJkhO5De57GAIxBNH/LtCica1haJSPbkWkJqTKyQl62trHO0h56vJxsQZ+nsZeLJ7TdYR925nSVVqJ2gr4fMGmI8zymyfViCZ7yeJ8Kn5682INnu1Yr5k7YdH5Z8sD1wyFM+qVpYP0zzmK9OYHzO1iJmYbA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=98AFEjMX5f3X9H26/+c+a7ugLJFa+WIRPV65WfKl8AU=;
- b=EMkL8S0MRL0s2wyQeXT2+i7igudN+Ic6kbbbHJGj3jTC7mPEZ2U/W+WIRqC2BEzgU9uhgdUv2rCpca5MSPNlQDLdwotNKNnStQnLCZlL1JjuOKSIPb4ZxitBhNdciHvKA1dN+Ec6qaiSW4Pq1M311NvCFvC+OYeOK3Te0Wknljw=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=petrm@mellanox.com; 
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (20.176.168.150) by
- AM6SPR01MB0019.eurprd05.prod.outlook.com (20.177.39.222) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.15; Tue, 17 Mar 2020 12:43:54 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::c146:9acd:f4dc:4e32]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::c146:9acd:f4dc:4e32%7]) with mapi id 15.20.2793.018; Tue, 17 Mar 2020
- 12:43:54 +0000
-References: <20200311173356.38181-1-petrm@mellanox.com> <20200314.210402.573725635566592048.davem@davemloft.net> <878sk0y3gk.fsf@mellanox.com> <20200316.145552.114479252418690423.davem@davemloft.net>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@mellanox.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, mrv@mojatatu.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@mellanox.com,
-        mlxsw@mellanox.com
-Subject: Re: [PATCH net-next v2 0/6] RED: Introduce an ECN tail-dropping mode
-In-reply-to: <20200316.145552.114479252418690423.davem@davemloft.net>
-Date:   Tue, 17 Mar 2020 13:43:50 +0100
-Message-ID: <87v9n3w3qx.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR02CA0094.eurprd02.prod.outlook.com
- (2603:10a6:208:154::35) To HE1PR05MB4746.eurprd05.prod.outlook.com
- (2603:10a6:7:a3::22)
+        id S1727052AbgCQNL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 09:11:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37814 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726474AbgCQNK4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Mar 2020 09:10:56 -0400
+Received: from mail.kernel.org (ip5f5ad4e9.dynamic.kabel-deutschland.de [95.90.212.233])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B6AED2076E;
+        Tue, 17 Mar 2020 13:10:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584450655;
+        bh=qcurY8bOcWo5+GUNbRcDNmw4qaVy7k5l/0CO6+ZkKn8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=jl7qcP50X5PEG7pLxCKMawz9B/YaStb/OFPHwDjzIcVY19FeS1R3yo0VxzuRD+ym9
+         S+81PAI+1NAfeNkBWgzWrPQzSLvxUth+7zhHb362HH+aM9PGwy9W2eHJ4Rp6bkFw6w
+         36hdLJzkW2dPPbezgaeHvBZdG/HPKoMhzIwPaoYU=
+Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
+        (envelope-from <mchehab@kernel.org>)
+        id 1jEBzh-0006S1-JQ; Tue, 17 Mar 2020 14:10:53 +0100
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Dan Murphy <dmurphy@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Benjamin Gaignard <benjamin.gaignard@st.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH 04/12] docs: dt: fix references to m_can.txt file
+Date:   Tue, 17 Mar 2020 14:10:43 +0100
+Message-Id: <db67f9bc93f062179942f1e095a46b572a442b76.1584450500.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <cover.1584450500.git.mchehab+huawei@kernel.org>
+References: <cover.1584450500.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from yaviefel (213.220.234.169) by AM0PR02CA0094.eurprd02.prod.outlook.com (2603:10a6:208:154::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.21 via Frontend Transport; Tue, 17 Mar 2020 12:43:53 +0000
-X-Originating-IP: [213.220.234.169]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 580dc756-944e-472d-7601-08d7ca70da0f
-X-MS-TrafficTypeDiagnostic: AM6SPR01MB0019:|AM6SPR01MB0019:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM6SPR01MB0019895DDBE2EA7C12E327BEDBF60@AM6SPR01MB0019.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:663;
-X-Forefront-PRVS: 0345CFD558
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(136003)(376002)(346002)(39860400002)(199004)(107886003)(478600001)(316002)(86362001)(26005)(956004)(2616005)(186003)(4326008)(16526019)(6496006)(2906002)(52116002)(8936002)(6916009)(81166006)(81156014)(8676002)(6486002)(36756003)(4744005)(5660300002)(66556008)(66476007)(66946007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6SPR01MB0019;H:HE1PR05MB4746.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XESWnXjXdVD7zBVdi1BU5w44A2z49tUqkJO/MDXDjakzZcbg9yLCxLSSG57A28OiQr+464fr4wUzmGTImUVIJfn5En1jl59wqjQsRHL41Q/wVBGd2w8ZZ0Lli4xd/7sppRQ7WRnnBtq6JvbUPuC3TSQdn9wIWZPitNhBAakh830R0Qia0KzSOaaZ206w4Bi8r/5fz1m9UfGcJb6t6NRMr+/ttF2eABAVUaAARqoTnpVbv11WHHQXp7HWBWv9caFwv9elzPae1EZF2TpUvw+EhmQ1ELrRKUhtzKZMtUN5B0JEE31uVaTU8aTGh7enL4s3I7tpbK7tePZT1wUTFamccFH+84rKLnMF8kAZ9WLgqOFk5yIMXc3lCY7ORoIxfWn7KmjmVPJ/8tutwsTbkUq8ieUfeQrWSJLxFQU3tiFDVG+GJ1CzwE5jSzPR8yVzxfeQ
-X-MS-Exchange-AntiSpam-MessageData: BX5Key14iwcoRbpH0R9apw6668NQaTCSu1/S9nMq9wxgvY43YiFYIsgTOvLaaKpESbbJHKOvUviWvcKMl1ACm4XyrtE1ZEIwflqeXPFawO4/TjtEpng3XiAhEqdI1ijRYQRyFsQ/48AhelrCNPg8zg==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 580dc756-944e-472d-7601-08d7ca70da0f
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2020 12:43:54.4416
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wYcXWb4QgbiSbDrbuC2xQdEOF9KFB5gdSHaY0nBmh0RuDg8jD4l2aK8qnnWWylQqz9XrJhrggApf5O8YxIiwFg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6SPR01MB0019
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This file was converted to json and renamed. Update its
+references accordingly.
 
-David Miller <davem@davemloft.net> writes:
+Fixes: 824674b59f72 ("dt-bindings: net: can: Convert M_CAN to json-schema")
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ Documentation/devicetree/bindings/net/can/tcan4x5x.txt | 2 +-
+ MAINTAINERS                                            | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-> From: Petr Machata <petrm@mellanox.com>
-> Date: Mon, 16 Mar 2020 11:54:51 +0100
->
->> Dave, there were v3 and v4 for this patchset as well. They had a
->> different subject, s/taildrop/nodrop/, hence the confusion I think.
->> Should I send a delta patch with just the changes, or do you want to
->> revert-and-reapply, or...?
->
-> I prefer deltas, thank you.
+diff --git a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+index 6bdcc3f84bd3..3613c2c8f75d 100644
+--- a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
++++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+@@ -14,7 +14,7 @@ Required properties:
+                     the interrupt.
+ 	- interrupts: interrupt specification for data-ready.
+ 
+-See Documentation/devicetree/bindings/net/can/m_can.txt for additional
++See Documentation/devicetree/bindings/net/can/bosch,m_can.yaml for additional
+ required property details.
+ 
+ Optional properties:
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 39da9ac4cc1f..84cb39b5a23b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10327,7 +10327,7 @@ M:	Dan Murphy <dmurphy@ti.com>
+ M:	Sriram Dash <sriram.dash@samsung.com>
+ L:	linux-can@vger.kernel.org
+ S:	Maintained
+-F:	Documentation/devicetree/bindings/net/can/m_can.txt
++F:	Documentation/devicetree/bindings/net/can/bosch,m_can.yaml
+ F:	drivers/net/can/m_can/m_can.c
+ F:	drivers/net/can/m_can/m_can.h
+ F:	drivers/net/can/m_can/m_can_platform.c
+-- 
+2.24.1
 
-Never mind, it's just the merge commit that contains v2, the actual
-patches are v4.
