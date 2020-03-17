@@ -2,81 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD42A188A26
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 17:25:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3D69188A13
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 17:20:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726616AbgCQQZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 12:25:05 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:55980 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726207AbgCQQZF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 12:25:05 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02HGOnQN073884;
-        Tue, 17 Mar 2020 11:24:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1584462289;
-        bh=FMEfVF/Y6JC0PmkJEu3lBXtB/Eyjcxja+1xNFplvEe8=;
-        h=From:To:CC:Subject:Date;
-        b=hsRpF3SMUwPAnHVRLPldS3DwA4UAevCJY/DWuq6M+FnadUTjcz4u0mOlUdHaGIxFm
-         dHZVIeUJbYHsKqyLWXF6Ao5Qhdt4dxC5m2UJC83zJ4glVT5Bq3VmS9GpQDMpegp7UC
-         uAN8gYA4IG66Yuds/yjn8wY7bSxecK8fHdfxgro8=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 02HGOnMR091951
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 17 Mar 2020 11:24:49 -0500
-Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 17
- Mar 2020 11:24:48 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 17 Mar 2020 11:24:48 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02HGOm1H100261;
-        Tue, 17 Mar 2020 11:24:48 -0500
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <linux-doc@vger.kernel.org>
-CC:     <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-can@vger.kernel.org>, <robh+dt@kernel.org>,
-        <davem@davemloft.net>, <mkl@pengutronix.de>, <wg@grandegger.com>,
-        <corbet@lwn.net>, <linux-kernel@vger.kernel.org>,
-        Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH] docs: dt: Fix m_can.txt reference in tcan4x5x.txt
-Date:   Tue, 17 Mar 2020 11:19:00 -0500
-Message-ID: <20200317161900.14380-1-dmurphy@ti.com>
-X-Mailer: git-send-email 2.25.1
+        id S1726780AbgCQQUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 12:20:40 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41198 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726207AbgCQQUk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Mar 2020 12:20:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=HRovH6G0RZG3SHyJ4faEeAc3B3T1NOk/4OtmF2uo1qw=; b=UjF9UgYyM3tNlBO8h5x4nCeoZC
+        DsPS73t4uWjUJmKkAspP24X1cvlZYRxHZA5aR11ekIxTA+D6LQGtjPxq/gEP/XlU/oRgKWf+rcbRY
+        Plpz+ixhDjNNkZ0sQH7HQxvfJJUld8z212tg50a8R/O4ac4WfY4+LxYE0D+r4umlPjEM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jEExI-0007c6-5i; Tue, 17 Mar 2020 17:20:36 +0100
+Date:   Tue, 17 Mar 2020 17:20:36 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [RFC net-next 1/5] net: phylink: rename 'ops' to 'mac_ops'
+Message-ID: <20200317162036.GY24270@lunn.ch>
+References: <20200317144944.GP25745@shell.armlinux.org.uk>
+ <E1jEDaI-0008JA-I7@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1jEDaI-0008JA-I7@rmk-PC.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the m_can.txt reference to point to the bosch,m_can.yaml.
+On Tue, Mar 17, 2020 at 02:52:46PM +0000, Russell King wrote:
+> *NOT FOR MERGING*
+> 
+> Rename the bland 'ops' member of struct phylink to be a more
+> descriptive 'mac_ops' - this is necessary as we're about to introduce
+> another set of operations.
+> 
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 
-Fixes: 824674b59f72 ("dt-bindings: net: can: Convert M_CAN to json-schema")
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
----
- Documentation/devicetree/bindings/net/can/tcan4x5x.txt | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-diff --git a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-index 6bdcc3f84bd3..3613c2c8f75d 100644
---- a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-+++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
-@@ -14,7 +14,7 @@ Required properties:
-                     the interrupt.
- 	- interrupts: interrupt specification for data-ready.
- 
--See Documentation/devicetree/bindings/net/can/m_can.txt for additional
-+See Documentation/devicetree/bindings/net/can/bosch,m_can.yaml for additional
- required property details.
- 
- Optional properties:
--- 
-2.25.1
-
+    Andrew
