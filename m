@@ -2,79 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 876011888F4
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 16:18:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EA501888EE
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 16:18:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727132AbgCQPS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 11:18:28 -0400
-Received: from mail-wm1-f54.google.com ([209.85.128.54]:51910 "EHLO
-        mail-wm1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727101AbgCQPS1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 11:18:27 -0400
-Received: by mail-wm1-f54.google.com with SMTP id a132so21885797wme.1
-        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 08:18:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=fWJS1K8DaSEgRDiDV9AcCT/035zEMfTydDERyKEuy2U=;
-        b=ASL07buAWMPriX0XDeDS46CINBuUir50WGSStWMfXAQbWjzSEkdTQYlibx4Hmv9V+g
-         xUnWSwcfolqkkSxPyx6fauKuCeI6I+JpJkSboWqUTFhDfTQdg9FvUzteAkNn5qjolq+z
-         iJTUK79OYlHQ7rsQCR5x/74CjCM/r7ghLpH1s=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=fWJS1K8DaSEgRDiDV9AcCT/035zEMfTydDERyKEuy2U=;
-        b=d4bAkn1yL8hdSQPoCkr2mLar0oWexURPN7LpLlHqzUcuiztHY7rEwnUua2GoJTvA9m
-         TRa8XJCFbNnmaBvjBC4HDfveBYBOgcZ/sbm5Rlh7aZlN0ofQT/SsGb2Q/croBzY45ItO
-         AMfTLVEJoz35BulsQ71M1meSfrpkR3phq/D0C8EJcvHeFOK7W25pq0vYKXhiv8wck1P1
-         uRzFBP9q5JkmSoIhZNNDfmBZPmZDC4CoPSYZrIApucz5ZZq2RFWjT5W5QYVFVVkYbzjw
-         fa6euYZeiVi5bcWESI+1KBIu14/lOfJHfQIgPcAjLBbwJvOxksDfNgIZSdsn+3ICvbgA
-         M58g==
-X-Gm-Message-State: ANhLgQ0qYB5A/y36wR4qJPGaw12oVrAZgtUeC12HVscpnQoMgoFngOJd
-        8jnLH8IG6uDUOCLpqOiyl/WDww==
-X-Google-Smtp-Source: ADFU+vvmrI8fEHU+l+2nvOmXwSM4p8w+RFzlgP05vuVTNvaIpVkBWRgdcbhA3bpwnV1C3JucUe8muw==
-X-Received: by 2002:a05:600c:4145:: with SMTP id h5mr5787880wmm.3.1584458304813;
-        Tue, 17 Mar 2020 08:18:24 -0700 (PDT)
-Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id i6sm4878489wru.40.2020.03.17.08.18.21
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 Mar 2020 08:18:24 -0700 (PDT)
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-To:     linux-pci@vger.kernel.org, davem@davemloft.net
-Cc:     netdev@vger.kernel.org,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: [PATCH net-next 06/11] PCI: Add new PCI_VPD_RO_KEYWORD_SERIALNO macro
-Date:   Tue, 17 Mar 2020 20:46:44 +0530
-Message-Id: <1584458204-29285-1-git-send-email-vasundhara-v.volam@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1726890AbgCQPRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 11:17:52 -0400
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:32520 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726388AbgCQPRv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 11:17:51 -0400
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02HFDLIT001980;
+        Tue, 17 Mar 2020 16:17:24 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=STMicroelectronics;
+ bh=k0ZMfP7aKLkzfzu3eH2J4VQnqrCYW3x7HRTJSMhhAes=;
+ b=yAtDccBGIxfisii37vFQGuMhAub3J1lz8e6Z/NwU5mFZAyoUv8F5N3xBvi8zo6U+87pI
+ 35w8/n5f0njv83PGrDCY1bI5X4Y1G38LhievMBHKob+WoVmQFsgAFNWuTYRY7O2AcCCS
+ NZliLMW5NC8b23P6dWlTEzB7hnWhy6B11sE/eP9y5OJjHCzZgw8PAMVEKpZ/jucMs1qv
+ 2nROyZOWPL9EbqNGq+XjbiMjGxkh1Fj5YMouTZ0vy/rEsxM3iUFsOVPnnsxVGlGJ58pY
+ 78I7chAfQKIECLj3AmUITdvonMVbXSQSGE626qa5vDtygo5MLPJ/wNhnWnQCRkAHU9n/ RQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 2yrqa9s1vp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 17 Mar 2020 16:17:24 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B0151100038;
+        Tue, 17 Mar 2020 16:17:14 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 8A84D2BC7AF;
+        Tue, 17 Mar 2020 16:17:14 +0100 (CET)
+Received: from localhost (10.75.127.46) by SFHDAG5NODE3.st.com (10.75.127.15)
+ with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 17 Mar 2020 16:17:13
+ +0100
+From:   Christophe Roullier <christophe.roullier@st.com>
+To:     <davem@davemloft.net>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <mripard@kernel.org>,
+        <martin.blumenstingl@googlemail.com>,
+        <alexandru.ardelean@analog.com>, <narmstrong@baylibre.com>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>
+CC:     <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <christophe.roullier@st.com>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [PATCHv2 0/2] Convert stm32 dwmac to DT schema
+Date:   Tue, 17 Mar 2020 16:17:04 +0100
+Message-ID: <20200317151706.25810-1-christophe.roullier@st.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.46]
+X-ClientProxiedBy: SFHDAG7NODE3.st.com (10.75.127.21) To SFHDAG5NODE3.st.com
+ (10.75.127.15)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-17_06:2020-03-17,2020-03-17 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a new macro for serial number keyword.
+Convert stm32 dwmac to DT schema
 
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- include/linux/pci.h | 1 +
- 1 file changed, 1 insertion(+)
+Christophe Roullier (2):
+  dt-bindings: net: dwmac: increase 'maxItems' for 'clocks',
+    'clock-names' properties
+  dt-bindings: net: dwmac: Convert stm32 dwmac to DT schema
 
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index fc54b89..a048fba 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -2184,6 +2184,7 @@ bool pci_acs_path_enabled(struct pci_dev *start,
- #define PCI_VPD_INFO_FLD_HDR_SIZE	3
- 
- #define PCI_VPD_RO_KEYWORD_PARTNO	"PN"
-+#define PCI_VPD_RO_KEYWORD_SERIALNO	"SN"
- #define PCI_VPD_RO_KEYWORD_MFR_ID	"MN"
- #define PCI_VPD_RO_KEYWORD_VENDOR0	"V0"
- #define PCI_VPD_RO_KEYWORD_CHKSUM	"RV"
+v1->v2:
+update from Rob (solve checkpatch errors with trailing WS,
+rename "Example", Wrap lines)
+
+ .../devicetree/bindings/net/snps,dwmac.yaml   |   8 +-
+ .../devicetree/bindings/net/stm32-dwmac.txt   |  44 -----
+ .../devicetree/bindings/net/stm32-dwmac.yaml  | 160 ++++++++++++++++++
+ 3 files changed, 167 insertions(+), 45 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/stm32-dwmac.txt
+ create mode 100644 Documentation/devicetree/bindings/net/stm32-dwmac.yaml
+
 -- 
-1.8.3.1
+2.17.1
 
