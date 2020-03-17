@@ -2,148 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F5ED188C24
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 18:31:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1156B188C4E
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 18:41:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726916AbgCQRaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 13:30:46 -0400
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:39442 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726082AbgCQRaq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 13:30:46 -0400
-Received: by mail-qv1-f68.google.com with SMTP id v38so7281530qvf.6;
-        Tue, 17 Mar 2020 10:30:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uMZI9G+vOGyFJSyjy5BLGE+SbevgQEUuqjy8SQ3+oEs=;
-        b=bWh2drfzNsrrjWxTp0zb6MrVMeXTLND0nB3Z8X/MPrWKZC6ZJWYOvgc6bps+int15o
-         +rY8bKArNwjzuLFeyrx2ILFrr7pOnSPSR16JqcNyQg6bWQAbyCAenxmW58/7dFikmCLY
-         a1RCBsCrlO6LYmgRClI8BfYIWzrFKgS4k2QCcMVXVRyEbEPVFY2C/BO8JmHCtY5xM8HT
-         +65qwSnPt5fUOHF6oYUkjryI4HeqIbY9mMxn7PkqifgY8FzMcy/5MjFT3pyAfeKPRxSW
-         NU/X9g8sjTTrxBCuWC+iTaiKwlQYAqNwWxhfMKR4Looj5rrs7sT0sqy3xubCe+KcSVLK
-         gneg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uMZI9G+vOGyFJSyjy5BLGE+SbevgQEUuqjy8SQ3+oEs=;
-        b=VMWWmZaLCz6dZPgnP5g/vFjgSzG83PDULC7ERAUhyG69I0StDgIPV1K1Q6QUzAa9h5
-         LYZ+6hU1kFgnu28yOOnJsVu5BIzJqrr1gVsnbqQxWxClZqQ1CH8k07O002ZOY8AIJYKS
-         ju3PpbFoSecM4i89Via/Lj9pHInpvZHvuYuCSgANd7UudJRLnUA6JYKbMam45gUFjyBm
-         wOolumsOFCtciy9Um9TYpubc8wzSO32ww9HW4ehijst6gFs7E3y3EbfC/yNjPgxazP3K
-         cH8C+7JRjFcO5dasLdh6WqIA6+7p7sn2YiS3cpLAgbcYgYBl6rbsj7yOjVrePfs1gkDt
-         NX5A==
-X-Gm-Message-State: ANhLgQ3hWk7ygPFrK0D64USGvTOrBPUKCCOPUZyzP7OS3PoNcMPmPyYM
-        xq91M6w6oHMUn+tIiPhn2Nw=
-X-Google-Smtp-Source: ADFU+vsxfQXEWzA4tzIws3q/lri+BobagJ+smPhVzlUG+fAuPQFgpcO4I42vwikyOCMQj8SCBopeng==
-X-Received: by 2002:ad4:51c3:: with SMTP id p3mr210903qvq.97.1584466242913;
-        Tue, 17 Mar 2020 10:30:42 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:bfaf:5636:cd03:74f7:34b0])
-        by smtp.gmail.com with ESMTPSA id c12sm2808948qtb.49.2020.03.17.10.30.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2020 10:30:42 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id C39FBC54E2; Tue, 17 Mar 2020 14:30:39 -0300 (-03)
-Date:   Tue, 17 Mar 2020 14:30:39 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Qiujun Huang <hqjagain@gmail.com>
-Cc:     davem@davemloft.net, vyasevich@gmail.com, nhorman@tuxdriver.com,
-        kuba@kernel.org, linux-sctp@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        anenbupt@gmail.com
-Subject: Re: [PATCH v2] sctp: fix refcount bug in sctp_wfree
-Message-ID: <20200317173039.GA3828@localhost.localdomain>
-References: <20200317155536.10227-1-hqjagain@gmail.com>
+        id S1726733AbgCQRky (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 13:40:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42522 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726597AbgCQRky (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Mar 2020 13:40:54 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 568832073E;
+        Tue, 17 Mar 2020 17:40:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584466853;
+        bh=KUHj/fuUeemlpkuOI07XUbnahmn3yc+vookLyNg2itc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dYZcAk8MGX3UZAUztXpcwat6pEnW66tfcvRX7MzfZtyGwKDKgJZIAw52z7qD7ZUdR
+         3Efspf6nK2B2SRLc6hTYhk9N5p5WScZZk0FlpYCkSDQeI8MMxD2I8d1J4Y2jBmvVai
+         54jAys+iGmVn1CRAseatEqMRlrzNxNQ+tVt1UAwk=
+Date:   Tue, 17 Mar 2020 10:40:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Jiri Pirko <jiri@mellanox.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Jacob Keller <jacob.e.keller@intel.com>
+Subject: Re: [PATCH net-next 01/11] devlink: add macro for "drv.spec"
+Message-ID: <20200317104046.1702b601@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1584458082-29207-2-git-send-email-vasundhara-v.volam@broadcom.com>
+References: <1584458082-29207-1-git-send-email-vasundhara-v.volam@broadcom.com>
+        <1584458082-29207-2-git-send-email-vasundhara-v.volam@broadcom.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200317155536.10227-1-hqjagain@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Tue, Mar 17, 2020 at 11:55:36PM +0800, Qiujun Huang wrote:
-> Do accounting for skb's real sk.
-> In some case skb->sk != asoc->base.sk:
+On Tue, 17 Mar 2020 20:44:38 +0530 Vasundhara Volam wrote:
+> Add definition and documentation for the new generic info "drv.spec".
+> "drv.spec" specifies the version of the software interfaces between
+> driver and firmware.
 > 
-> migrate routing        sctp_check_transmitted routing
-> ------------                    ---------------
-                                 sctp_close();
-				   lock_sock(sk2);
-				 sctp_primitive_ABORT();
-                                 sctp_do_sm();
-                                 sctp_cmd_interpreter();
-                                 sctp_cmd_process_sack();
-                                 sctp_outq_sack();
-				 sctp_check_transmitted();
-
-  lock_sock(sk1);
-  sctp_getsockopt_peeloff();
-  sctp_do_peeloff();
-  sctp_sock_migrate();
-> lock_sock_nested(sk2);
->                                mv the transmitted skb to
->                                the it's local tlist
-
-
-How can sctp_do_sm() be called in the 2nd column so that it bypasses
-the locks in the left column, allowing this mv to happen?
-
-> 
-> sctp_for_each_tx_datachunk(
-> sctp_clear_owner_w);
-> sctp_assoc_migrate();
-> sctp_for_each_tx_datachunk(
-> sctp_set_owner_w);
-> 
->                                put the skb back to the
->                                assoc lists
-> ----------------------------------------------------
-> 
-> The skbs which held bysctp_check_transmitted were not changed
-> to newsk. They were not dealt with by sctp_for_each_tx_datachunk
-> (sctp_clear_owner_w/sctp_set_owner_w).
-
-It would make sense but I'm missing one step earlier, I'm not seeing
-how the move to local list is allowed/possible in there. It really
-shouldn't be possible.
-
-> 
-> It looks only trouble here so handling it in sctp_wfree is enough.
-> 
-> Reported-and-tested-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
-> Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
+> Cc: Jiri Pirko <jiri@mellanox.com>
+> Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 > ---
->  net/sctp/socket.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  Documentation/networking/devlink/devlink-info.rst | 6 ++++++
+>  include/net/devlink.h                             | 3 +++
+>  2 files changed, 9 insertions(+)
 > 
-> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-> index 1b56fc440606..5f5c28b30e25 100644
-> --- a/net/sctp/socket.c
-> +++ b/net/sctp/socket.c
-> @@ -9080,7 +9080,7 @@ static void sctp_wfree(struct sk_buff *skb)
->  {
->  	struct sctp_chunk *chunk = skb_shinfo(skb)->destructor_arg;
->  	struct sctp_association *asoc = chunk->asoc;
-> -	struct sock *sk = asoc->base.sk;
-> +	struct sock *sk = skb->sk;
+> diff --git a/Documentation/networking/devlink/devlink-info.rst b/Documentation/networking/devlink/devlink-info.rst
+> index 70981dd..0765a48 100644
+> --- a/Documentation/networking/devlink/devlink-info.rst
+> +++ b/Documentation/networking/devlink/devlink-info.rst
+> @@ -59,6 +59,12 @@ board.manufacture
 >  
->  	sk_mem_uncharge(sk, skb->truesize);
->  	sk->sk_wmem_queued -= skb->truesize + sizeof(struct sctp_chunk);
-> @@ -9109,7 +9109,7 @@ static void sctp_wfree(struct sk_buff *skb)
->  	}
+>  An identifier of the company or the facility which produced the part.
 >  
->  	sock_wfree(skb);
-> -	sctp_wake_up_waiters(sk, asoc);
-> +	sctp_wake_up_waiters(asoc->base.sk, asoc);
+> +drv.spec
+> +--------
+> +
+> +Firmware interface specification version of the software interfaces between
+
+Why did you call this "drv" if the first sentence of the description
+says it's a property of the firmware?
+
+Upcoming Intel patches call this "fw.mgmt.api". Please use that name,
+it makes far more sense.
+
+> +driver and firmware. This tag displays spec version implemented by driver.
+> +
+>  fw
+>  --
 >  
->  	sctp_association_put(asoc);
->  }
-> -- 
-> 2.17.1
-> 
+> diff --git a/include/net/devlink.h b/include/net/devlink.h
+> index c9ca86b..9c4d889 100644
+> --- a/include/net/devlink.h
+> +++ b/include/net/devlink.h
+> @@ -476,6 +476,9 @@ enum devlink_param_generic_id {
+>  /* Revision of asic design */
+>  #define DEVLINK_INFO_VERSION_GENERIC_ASIC_REV	"asic.rev"
+>  
+> +/* FW interface specification version implemented by driver */
+> +#define DEVLINK_INFO_VERSION_GENERIC_DRV_SPEC	"drv.spec"
+> +
+>  /* Overall FW version */
+>  #define DEVLINK_INFO_VERSION_GENERIC_FW		"fw"
+>  /* Control processor FW version */
+
