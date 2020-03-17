@@ -2,77 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB14F1877AA
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 03:04:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C4091877B9
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 03:12:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726112AbgCQCEp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 22:04:45 -0400
-Received: from cmccmta2.chinamobile.com ([221.176.66.80]:3534 "EHLO
-        cmccmta2.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbgCQCEp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 22:04:45 -0400
-Received: from spf.mail.chinamobile.com (unknown[172.16.121.1]) by rmmx-syy-dmz-app05-12005 (RichMail) with SMTP id 2ee55e702fde376-ec129; Tue, 17 Mar 2020 10:03:10 +0800 (CST)
-X-RM-TRANSID: 2ee55e702fde376-ec129
-X-RM-TagInfo: emlType=0                                       
-X-RM-SPAM-FLAG: 00000000
-Received: from localhost (unknown[223.105.0.241])
-        by rmsmtp-syy-appsvr01-12001 (RichMail) with SMTP id 2ee15e702fdd10e-ec706;
-        Tue, 17 Mar 2020 10:03:10 +0800 (CST)
-X-RM-TRANSID: 2ee15e702fdd10e-ec706
-From:   Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
-Subject: [PATCH v2 2/2] netfilter: nf_flow_table: reload ip{v6}h in nf_flow_tuple_ip{v6}
-Date:   Tue, 17 Mar 2020 10:02:53 +0800
-Message-Id: <1584410573-6812-2-git-send-email-yanhaishuang@cmss.chinamobile.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1584410573-6812-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
-References: <1584410573-6812-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
+        id S1726278AbgCQCMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 22:12:55 -0400
+Received: from mail-pl1-f202.google.com ([209.85.214.202]:49015 "EHLO
+        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726112AbgCQCMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 22:12:55 -0400
+Received: by mail-pl1-f202.google.com with SMTP id w3so11596182plz.15
+        for <netdev@vger.kernel.org>; Mon, 16 Mar 2020 19:12:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=2cUYfUOQeA8LojVinsllri32Ii03s1TL/iCiy8JjnPs=;
+        b=ernmM1bCG2YNhdCEo7HlaHD1EzmtDoCxHyOKW8bxQGCxYhNxpgr+GFvOKQu0gVFats
+         bwD4WvzpPu41UXjW5LIJ5LxtL1WQAVZSinjFX0K9WCQX9aYaJ5JYTet5mQBhE3Ea95Bm
+         mHptBct0ER7O0cXad6UUtS4Ejs/b5BvnDb6pTx/CYTlRtcCetj/W/HZRHxDPKN2yI0z/
+         N1BLAe1ahaO5k0JA/+27hAyIwJpw10pNhFuuXODieuZ661MdaawgeD/RGRpz7JApXOaM
+         x9hoaMCLulfg2u/nP77TMm2WTJgt7NWaolwl8cMvZ2N7Q1d4233zYq0oiYLwPH8l0ppp
+         G+Ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=2cUYfUOQeA8LojVinsllri32Ii03s1TL/iCiy8JjnPs=;
+        b=Ngg5bpCaracIDGyMKkj/nfAzlieeJuXeFYmoyv87clEhf5YbafEm6WWPW0ntyuRsIa
+         H9Jr+CDDYw/NsrY+gZusJ4pajUXfnfbiv8pyBS4zCutOvnxhdrAjBAbzfUBa1QH2T07d
+         BrRyTuVo0PS70db1ghg4YpKqCIN1fVPyZbkUJRVP+se+Mq5KviRZinKjOM0lOhgploGw
+         I/t6WJm8XavSN+m2295OCtyq2/ybc6jgHnIrMbKtloV+Q3xBfMDCrL6EdDg0fAC0wmjA
+         slIu5KwSXgbF2Wau6ev4RLXiWPdDRYlE9NXBxYLSP1LDZqdRTfNBC1bhwx9SeaDsMJB8
+         tRHQ==
+X-Gm-Message-State: ANhLgQ0baqLII9rDM4x1l7UeHkGf5MyVtMAKwrBK/yITxlW3xgTe/KSv
+        Vo7brMRiYHqkVxblr45a8mTd2Yey59ivKA==
+X-Google-Smtp-Source: ADFU+vv0TOSkXxuijwiZifB5W/p/NtXa8iy5Kdzdxw7kWj+WddAHdxCylAL3VGm/XqdOIrZxkQEDFS7QJQMjcw==
+X-Received: by 2002:a17:90a:1912:: with SMTP id 18mr2642406pjg.10.1584411174073;
+ Mon, 16 Mar 2020 19:12:54 -0700 (PDT)
+Date:   Mon, 16 Mar 2020 19:12:48 -0700
+Message-Id: <20200317021251.75190-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
+Subject: [PATCH v2 net-next 0/3] net_sched: allow use of hrtimer slack
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since pskb_may_pull may change skb->data, so we need to reload ip{v6}h at
-the right place.
+Packet schedulers have used hrtimers with exact expiry times.
 
-Fixes: a908fdec3dda ("netfilter: nf_flow_table: move ipv6 offload hook
-code to nf_flow_table")
-Fixes: 7d2086871762 ("netfilter: nf_flow_table: move ipv4 offload hook
-code to nf_flow_table")
-Signed-off-by: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
----
-v2: collapse the patches
----
- net/netfilter/nf_flow_table_ip.c | 2 ++
- 1 file changed, 2 insertions(+)
+Some of them can afford having a slack, in order to reduce
+the number of timer interrupts and feed bigger batches
+to increase efficiency.
 
-diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
-index 942bda5..610c60a 100644
---- a/net/netfilter/nf_flow_table_ip.c
-+++ b/net/netfilter/nf_flow_table_ip.c
-@@ -190,6 +190,7 @@ static int nf_flow_tuple_ip(struct sk_buff *skb, const struct net_device *dev,
- 	if (!pskb_may_pull(skb, thoff + sizeof(*ports)))
- 		return -1;
- 
-+	iph = ip_hdr(skb);
- 	ports = (struct flow_ports *)(skb_network_header(skb) + thoff);
- 
- 	tuple->src_v4.s_addr	= iph->saddr;
-@@ -452,6 +453,7 @@ static int nf_flow_tuple_ipv6(struct sk_buff *skb, const struct net_device *dev,
- 	if (!pskb_may_pull(skb, thoff + sizeof(*ports)))
- 		return -1;
- 
-+	ip6h = ipv6_hdr(skb);
- 	ports = (struct flow_ports *)(skb_network_header(skb) + thoff);
- 
- 	tuple->src_v6		= ip6h->saddr;
+FQ for example does not care if throttled packets are
+sent with an additional (small) delay.
+
+Original observation of having maybe too many interrupts
+was made by Willem de Bruijn.
+
+v2: added strict netlink checking (Jakub Kicinski)
+
+Eric Dumazet (3):
+  net_sched: add qdisc_watchdog_schedule_range_ns()
+  net_sched: do not reprogram a timer about to expire
+  net_sched: sch_fq: enable use of hrtimer slack
+
+ include/net/pkt_sched.h        | 10 +++++++++-
+ include/uapi/linux/pkt_sched.h |  2 ++
+ net/sched/sch_api.c            | 21 ++++++++++++++-------
+ net/sched/sch_fq.c             | 21 +++++++++++++++++----
+ 4 files changed, 42 insertions(+), 12 deletions(-)
+
 -- 
-1.8.3.1
-
-
+2.25.1.481.gfbce0eb801-goog
 
