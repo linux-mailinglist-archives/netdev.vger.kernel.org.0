@@ -2,68 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07F5D188808
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 15:49:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA4B1188816
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 15:52:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726726AbgCQOtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 10:49:50 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40854 "EHLO
+        id S1726855AbgCQOwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 10:52:36 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:40892 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726650AbgCQOtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 10:49:50 -0400
+        with ESMTP id S1726668AbgCQOwg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 10:52:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
-        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=k7+i231jDjsm8522fP/urW3aKe5ogcB0Dz0oNPfSKxQ=; b=ZVzUyxowFODWWzKTQ5fC+Znod
-        DC9aABxe+fPaIgUpvKGlQOwZ9agaUaHUY+JBDAjKhtOjo949TcV0WmgTBsJM4n05xrupew4eHiqYM
-        ahxLfU2aNDa170u1QZ+uyGVfp+wQcGWxNxWaVwReoFvZzT9qM57oU065G4DnX0mUrB6xHE8FoTvlB
-        wVRIGes/pyWS6kJvrIzB48Awlft4Pr2LcIaFhxP6mZ3g/eJ0NO6ZuzfMp89jVbfOAlQNfU1op3X9K
-        3lGwoW+ZwbU/0DHJnrB3Ej00L4tO/0l3bpABSRskS2czE83PxB9aW0JlWGP3CVQoym/8ByeI5z7CA
-        2jHV9hOwQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:54266)
+        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
+        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
+        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=I+CnsYu5/W3zcU0P7WpqCGsZph7XFTUJ0Pa2YZiumvg=; b=Z4yidZMg9vDPQXbD0q570iO05x
+        y4kHRFMxYUJ5oIc3mFZU8LMIxmO19DiwX/5H3PiZxru0dm1sXbzbw8xi+6bllBYzX4+KUNP8JSkW7
+        jbkaIuS8brqF88YGvKP8ZrobU43GFGzqeDDSNxxOH2x7qVgKZDLiMmx3InivdOUXgH/lj6tnshZbJ
+        igN97y8Ten9wUc4NKdNa+HqAWJILzUFRLCBitfx1lXvG6iQjrbBVuRQ2Q27ofkhvQonXVpU73iAuy
+        CpogpeFvhSRAKszFk5ukkmYHs6YQwcaScMjTXS9nk29C8Wmmtw9XmoVUQR23U80yyzQeuuIFTMfD+
+        E6PWLnVg==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:44352 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jEDXM-0007go-Ne; Tue, 17 Mar 2020 14:49:44 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jEDXM-0002tF-7X; Tue, 17 Mar 2020 14:49:44 +0000
-Date:   Tue, 17 Mar 2020 14:49:44 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jEDZy-0007ha-Lc; Tue, 17 Mar 2020 14:52:26 +0000
+Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <rmk@armlinux.org.uk>)
+        id 1jEDZy-0008Ih-3D; Tue, 17 Mar 2020 14:52:26 +0000
+In-Reply-To: <20200317144906.GO25745@shell.armlinux.org.uk>
+References: <20200317144906.GO25745@shell.armlinux.org.uk>
+From:   Russell King <rmk+kernel@armlinux.org.uk>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [RFC net-next 0/2] split phylink PCS operations and add PCS support
- for dpaa2
-Message-ID: <20200317144944.GP25745@shell.armlinux.org.uk>
+Subject: [PATCH v2 net-next 1/4] net: mdiobus: avoid BUG_ON() in mdiobus
+ accessors
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Message-Id: <E1jEDZy-0008Ih-3D@rmk-PC.armlinux.org.uk>
+Date:   Tue, 17 Mar 2020 14:52:26 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series splits the phylink_mac_ops structure so that PCS can be
-supported separately with their own PCS operations, and illustrates
-the use of the helpers in the previous patch series (net: add phylink
-support for PCS) in the DPAA2 driver.
+Avoid using BUG_ON() in the mdiobus accessors, prefering instead to use
+WARN_ON_ONCE() and returning an error.
 
-This is prototype code, not intended to be merged yet, and is merely
-being sent for illustrative purposes only.
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+---
+ drivers/net/phy/mdio_bus.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
- arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi   | 144 +++++++++++++++
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 226 ++++++++++++++++++++++-
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h |   1 +
- drivers/net/phy/phylink.c                        | 102 ++++++----
- include/linux/phylink.h                          |  11 ++
- 5 files changed, 446 insertions(+), 38 deletions(-)
-
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 3ab9ca7614d1..129e60630319 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -841,7 +841,8 @@ int mdiobus_read_nested(struct mii_bus *bus, int addr, u32 regnum)
+ {
+ 	int retval;
+ 
+-	BUG_ON(in_interrupt());
++	if (WARN_ON_ONCE(in_interrupt()))
++		return -EINVAL;
+ 
+ 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+ 	retval = __mdiobus_read(bus, addr, regnum);
+@@ -865,7 +866,8 @@ int mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
+ {
+ 	int retval;
+ 
+-	BUG_ON(in_interrupt());
++	if (WARN_ON_ONCE(in_interrupt()))
++		return -EINVAL;
+ 
+ 	mutex_lock(&bus->mdio_lock);
+ 	retval = __mdiobus_read(bus, addr, regnum);
+@@ -893,7 +895,8 @@ int mdiobus_write_nested(struct mii_bus *bus, int addr, u32 regnum, u16 val)
+ {
+ 	int err;
+ 
+-	BUG_ON(in_interrupt());
++	if (WARN_ON_ONCE(in_interrupt()))
++		return -EINVAL;
+ 
+ 	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
+ 	err = __mdiobus_write(bus, addr, regnum, val);
+@@ -918,7 +921,8 @@ int mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
+ {
+ 	int err;
+ 
+-	BUG_ON(in_interrupt());
++	if (WARN_ON_ONCE(in_interrupt()))
++		return -EINVAL;
+ 
+ 	mutex_lock(&bus->mdio_lock);
+ 	err = __mdiobus_write(bus, addr, regnum, val);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+2.20.1
+
