@@ -2,154 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C79F188B8C
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 18:05:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09AD9188BA0
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 18:07:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbgCQRE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 13:04:58 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:37223 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgCQRE6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 13:04:58 -0400
-Received: by mail-wm1-f65.google.com with SMTP id a141so80066wme.2
-        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 10:04:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0hUgEWAsZWr/sBCuSkbT1f0TalDz7qAAFKwMxJsuHJc=;
-        b=rcUmQWSbXToo9qU01X9jrnaL3+0G7fkFZvohlYN76ayY5Ho1Zqb5X0Gl9uGisn36Rm
-         o9IN4bkTTDph0K+OVtrQvkXg7xv/8tJxHxZBrRwKbWkwll3zLsokU9RA6Gc/FXq+K0Z7
-         UXcYZPchkUPEIRb0M9hez+2ckhjUIkenkbrKg=
+        id S1726814AbgCQRHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 13:07:12 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:56009 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726740AbgCQRHM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 13:07:12 -0400
+Received: by mail-io1-f69.google.com with SMTP id k5so14470775ioa.22
+        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 10:07:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0hUgEWAsZWr/sBCuSkbT1f0TalDz7qAAFKwMxJsuHJc=;
-        b=OZUP4V+xTvKXqc4ApDVf4K+xo99VONdxudyAOXLkEKcBf++dUf+LoZhp6zA7hKrtyh
-         /4wBY5ClJgtp6GUGiWBozY/Tu7Qx1WwKVSAoOtHL1F11oQaGkTg5KNOWEkXagbL+ubfH
-         0JWjwTt6SynN1yUxuT8KJjh0hNsuN8VO2YiYRDnvfD2AehNfxUFfnpoXAy70pPZtLfKx
-         L8wyrXzEZzQ2yvtaaPRyKEo9XUEGJasy1nR5zNSy33/WAN9hxzG5xtB3JznJRbEfkiIL
-         UXcWMna6k2wJo2+aK7Goh39TXv0h9BygWrl8q5357A3GFaJfH9SPQE+fEFbWhCGY0e6Q
-         fUHg==
-X-Gm-Message-State: ANhLgQ0qhb5KaOqplHTssdQOCfyN+swbL9oh3BnmuBRAYUOzhOlDbw0j
-        mTvRlJPDCkLUqny4NdR+02xpTxOqg4lBwg==
-X-Google-Smtp-Source: ADFU+vvalgCRA/H4k7xLyFy/PfWpPewTxGUt5TFhuxeHY1FrXPqCwN4SPiZaluPMzCUwfnfZl8Jblw==
-X-Received: by 2002:a1c:1d88:: with SMTP id d130mr13405wmd.138.1584464695696;
-        Tue, 17 Mar 2020 10:04:55 -0700 (PDT)
-Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id u17sm4544620wra.63.2020.03.17.10.04.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2020 10:04:54 -0700 (PDT)
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     netdev@vger.kernel.org
-Cc:     kernel-team@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH net-next 3/3] net/tls: Annotate access to sk_prot with READ_ONCE/WRITE_ONCE
-Date:   Tue, 17 Mar 2020 18:04:39 +0100
-Message-Id: <20200317170439.873532-4-jakub@cloudflare.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200317170439.873532-1-jakub@cloudflare.com>
-References: <20200317170439.873532-1-jakub@cloudflare.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=7KdZfoOYN4gRS0oH0w8c/jmQngODpEYTiEryLZllDF0=;
+        b=AL+z5CaajDkM0zw3iHey+w7owjGgv6sKHMh/UW3h8YgFBFRGIktZge7BBEs5DNlLF4
+         x4k/xxLfioaY3zf53Q7956J3klvg0lJ7rKCwPec8qqJSkVmGY6Fr4uETu5ReP8oKnsbQ
+         Y/aZR/l5wsEK3W1htsnZ533rK0pR6ipquE4PSSlTLqlRMuULaQZrjKsBFcfeq92cEVUq
+         vhMHbfgJ2DYvq8SmBrEq9kdjmAOFtZWxgjW8lYRBUu1Vts67pFX3iSC5bNOvelFYyklP
+         X3u1VrTfmAEc117tc1c7NSFiO7h2UAr0didGFTWHVgAcAqbm1k8taJvNQT9hsPaxMCyH
+         clJQ==
+X-Gm-Message-State: ANhLgQ0blZQ5zfHP/Hl9Le3gghSr1ZZs0XXU/rnPFuZ+FJofjcpy5VyC
+        VRcjbw8Tw/kf2+k4xArddiwlp0+xd16ZOBifiWyrKYFKANr5
+X-Google-Smtp-Source: ADFU+vt82XYZeyCTNR4F9H7m6nneQlOjOlIllTfhytdGqCtJXlKTu1289E77p/oqDQC/teUN19g+432ZgUnnUbJAfqoKgNbmK8yB
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a5d:8782:: with SMTP id f2mr4980149ion.53.1584464831529;
+ Tue, 17 Mar 2020 10:07:11 -0700 (PDT)
+Date:   Tue, 17 Mar 2020 10:07:11 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007158e205a10ff75c@google.com>
+Subject: KASAN: use-after-free Read in route4_destroy
+From:   syzbot <syzbot+703474f5b80cd91649bc@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sockmap performs lockless writes to sk->sk_prot on the following paths:
+Hello,
 
-tcp_bpf_{recvmsg|sendmsg} / sock_map_unref
-  sk_psock_put
-    sk_psock_drop
-      sk_psock_restore_proto
-        WRITE_ONCE(sk->sk_prot, proto)
+syzbot found the following crash on:
 
-To prevent load/store tearing [1], and to make tooling aware of intentional
-shared access [2], we need to annotate other sites that access sk_prot with
-READ_ONCE/WRITE_ONCE macros.
+HEAD commit:    fb33c651 Linux 5.6-rc6
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1394f7c3e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=9f894bd92023de02
+dashboard link: https://syzkaller.appspot.com/bug?extid=703474f5b80cd91649bc
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1397ffdde00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13cb20e5e00000
 
-Change done with Coccinelle with following semantic patch:
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+703474f5b80cd91649bc@syzkaller.appspotmail.com
 
-@@
-expression E;
-identifier I;
-struct sock *sk;
-identifier sk_prot =~ "^sk_prot$";
-@@
-(
- E =
--sk->sk_prot
-+READ_ONCE(sk->sk_prot)
-|
--sk->sk_prot = E
-+WRITE_ONCE(sk->sk_prot, E)
-|
--sk->sk_prot
-+READ_ONCE(sk->sk_prot)
- ->I
-)
+tipc: TX() has been purged, node left!
+==================================================================
+BUG: KASAN: use-after-free in route4_destroy+0x6bf/0x800 net/sched/cls_route.c:295
+Read of size 8 at addr ffff888022eab800 by task kworker/u16:0/8
 
-Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
+CPU: 3 PID: 8 Comm: kworker/u16:0 Not tainted 5.6.0-rc6-syzkaller #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+Workqueue: netns cleanup_net
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:374
+ __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:506
+ kasan_report+0xe/0x20 mm/kasan/common.c:641
+ route4_destroy+0x6bf/0x800 net/sched/cls_route.c:295
+ tcf_proto_destroy+0x6e/0x310 net/sched/cls_api.c:296
+ tcf_proto_put+0x8c/0xc0 net/sched/cls_api.c:308
+ tcf_chain_flush+0x266/0x390 net/sched/cls_api.c:600
+ tcf_block_flush_all_chains net/sched/cls_api.c:1052 [inline]
+ __tcf_block_put+0x1a4/0x540 net/sched/cls_api.c:1214
+ tcf_block_put_ext net/sched/cls_api.c:1414 [inline]
+ tcf_block_put+0xb3/0x100 net/sched/cls_api.c:1429
+ hfsc_destroy_qdisc+0xe0/0x280 net/sched/sch_hfsc.c:1501
+ qdisc_destroy+0x118/0x690 net/sched/sch_generic.c:958
+ qdisc_put+0xcd/0xe0 net/sched/sch_generic.c:985
+ dev_shutdown+0x2b5/0x486 net/sched/sch_generic.c:1311
+ rollback_registered_many+0x603/0xe70 net/core/dev.c:8803
+ unregister_netdevice_many.part.0+0x16/0x1e0 net/core/dev.c:9966
+ unregister_netdevice_many net/core/dev.c:9965 [inline]
+ default_device_exit_batch+0x311/0x3d0 net/core/dev.c:10442
+ ops_exit_list.isra.0+0x103/0x150 net/core/net_namespace.c:175
+ cleanup_net+0x511/0xa50 net/core/net_namespace.c:589
+ process_one_work+0x94b/0x1690 kernel/workqueue.c:2266
+ worker_thread+0x96/0xe20 kernel/workqueue.c:2412
+ kthread+0x357/0x430 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+Allocated by task 8791:
+ save_stack+0x1b/0x80 mm/kasan/common.c:72
+ set_track mm/kasan/common.c:80 [inline]
+ __kasan_kmalloc mm/kasan/common.c:515 [inline]
+ __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:488
+ kmem_cache_alloc_trace+0x153/0x7d0 mm/slab.c:3551
+ kmalloc include/linux/slab.h:555 [inline]
+ kzalloc include/linux/slab.h:669 [inline]
+ route4_change+0x2a9/0x2250 net/sched/cls_route.c:493
+ tc_new_tfilter+0xa59/0x20b0 net/sched/cls_api.c:2103
+ rtnetlink_rcv_msg+0x810/0xad0 net/core/rtnetlink.c:5427
+ netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+ __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Freed by task 8:
+ save_stack+0x1b/0x80 mm/kasan/common.c:72
+ set_track mm/kasan/common.c:80 [inline]
+ kasan_set_free_info mm/kasan/common.c:337 [inline]
+ __kasan_slab_free+0xf7/0x140 mm/kasan/common.c:476
+ __cache_free mm/slab.c:3426 [inline]
+ kfree+0x109/0x2b0 mm/slab.c:3757
+ route4_delete_filter_work+0x17/0x20 net/sched/cls_route.c:266
+ process_one_work+0x94b/0x1690 kernel/workqueue.c:2266
+ worker_thread+0x96/0xe20 kernel/workqueue.c:2412
+ kthread+0x357/0x430 kernel/kthread.c:255
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+
+The buggy address belongs to the object at ffff888022eab800
+ which belongs to the cache kmalloc-192 of size 192
+The buggy address is located 0 bytes inside of
+ 192-byte region [ffff888022eab800, ffff888022eab8c0)
+The buggy address belongs to the page:
+page:ffffea00008baac0 refcount:1 mapcount:0 mapping:ffff88802cc00000 index:0x0
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea0000a95b08 ffffea00008a6fc8 ffff88802cc00000
+raw: 0000000000000000 ffff888022eab000 0000000100000010 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff888022eab700: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff888022eab780: 00 00 00 00 00 00 fc fc fc fc fc fc fc fc fc fc
+>ffff888022eab800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                   ^
+ ffff888022eab880: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+ ffff888022eab900: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+==================================================================
+
+
 ---
- net/tls/tls_device.c | 2 +-
- net/tls/tls_main.c   | 9 +++++----
- 2 files changed, 6 insertions(+), 5 deletions(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index 1c5574e2e058..a562ebaaa33c 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -366,7 +366,7 @@ static int tls_do_allocation(struct sock *sk,
- 	if (!offload_ctx->open_record) {
- 		if (unlikely(!skb_page_frag_refill(prepend_size, pfrag,
- 						   sk->sk_allocation))) {
--			sk->sk_prot->enter_memory_pressure(sk);
-+			READ_ONCE(sk->sk_prot)->enter_memory_pressure(sk);
- 			sk_stream_moderate_sndbuf(sk);
- 			return -ENOMEM;
- 		}
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index e7de0306a7df..156efce50dbd 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -69,7 +69,8 @@ void update_sk_prot(struct sock *sk, struct tls_context *ctx)
- {
- 	int ip_ver = sk->sk_family == AF_INET6 ? TLSV6 : TLSV4;
- 
--	sk->sk_prot = &tls_prots[ip_ver][ctx->tx_conf][ctx->rx_conf];
-+	WRITE_ONCE(sk->sk_prot,
-+		   &tls_prots[ip_ver][ctx->tx_conf][ctx->rx_conf]);
- }
- 
- int wait_on_pending_writer(struct sock *sk, long *timeo)
-@@ -312,7 +313,7 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
- 	write_lock_bh(&sk->sk_callback_lock);
- 	if (free_ctx)
- 		rcu_assign_pointer(icsk->icsk_ulp_data, NULL);
--	sk->sk_prot = ctx->sk_proto;
-+	WRITE_ONCE(sk->sk_prot, ctx->sk_proto);
- 	if (sk->sk_write_space == tls_write_space)
- 		sk->sk_write_space = ctx->sk_write_space;
- 	write_unlock_bh(&sk->sk_callback_lock);
-@@ -621,14 +622,14 @@ struct tls_context *tls_ctx_create(struct sock *sk)
- 
- 	mutex_init(&ctx->tx_lock);
- 	rcu_assign_pointer(icsk->icsk_ulp_data, ctx);
--	ctx->sk_proto = sk->sk_prot;
-+	ctx->sk_proto = READ_ONCE(sk->sk_prot);
- 	return ctx;
- }
- 
- static void tls_build_proto(struct sock *sk)
- {
- 	int ip_ver = sk->sk_family == AF_INET6 ? TLSV6 : TLSV4;
--	const struct proto *prot = sk->sk_prot;
-+	const struct proto *prot = READ_ONCE(sk->sk_prot);
- 
- 	/* Build IPv6 TLS whenever the address of tcpv6 _prot changes */
- 	if (ip_ver == TLSV6 &&
--- 
-2.24.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
