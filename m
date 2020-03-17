@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72280187A52
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 08:28:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69EA6187A57
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 08:28:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726272AbgCQH2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 03:28:02 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:43918 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725783AbgCQH2C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 03:28:02 -0400
+        id S1726417AbgCQH2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 03:28:10 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:44658 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726057AbgCQH2J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 03:28:09 -0400
 Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02H7RtvY106033;
-        Tue, 17 Mar 2020 02:27:55 -0500
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02H7S3Vx062377;
+        Tue, 17 Mar 2020 02:28:03 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1584430075;
-        bh=8YHq2J68+0j2Fs0bfJ25HKCvq9MmsLj2RsTsoQk+IrI=;
+        s=ti-com-17Q1; t=1584430083;
+        bh=GkIWSmqvUvL2zn1Fz+5BNI1CldpfxGZjKHp5TqDc4bY=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=BfEpOBKEP6Cm9WcECOhS8bJcSBDlw8RVnHPVjO8lJ6OlGT6Sd8r81fxU4zLtQ8tmr
-         E7it/7ckwwZQ2NfRG8rxwv/+B84z27zLG00NI9U1fBlXI7GdwtQGMrFhj1+z7l7CQJ
-         3c50ibjZsCT8z/t7HLWh5CxtBmAa6pTbkUBr0d8Q=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 02H7RtTL055892
+        b=g/vgMYhq3cJXgrTPYzpCByxDT1iz7zT2T4U4+7ZUuzJRqf5StDS2xaIJBY0TkJHgk
+         dhxDV4yNZ9U+Q03qitJnB0Gyt4XjDtkNMRGVW5Au2qaeiBra5Mj/BSrL7AWPDruuuo
+         Rs9+dnX9hNA16T+hR0XvnfAQuahEaKbF/IxuY6iM=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 02H7S2Ln056091
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 17 Mar 2020 02:27:55 -0500
-Received: from DFLE103.ent.ti.com (10.64.6.24) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+        Tue, 17 Mar 2020 02:28:03 -0500
+Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 17
- Mar 2020 02:27:54 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE103.ent.ti.com
- (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ Mar 2020 02:28:02 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 17 Mar 2020 02:27:54 -0500
+ Frontend Transport; Tue, 17 Mar 2020 02:28:02 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02H7RrwT091572;
-        Tue, 17 Mar 2020 02:27:54 -0500
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02H7S0wt123456;
+        Tue, 17 Mar 2020 02:28:01 -0500
 From:   Grygorii Strashko <grygorii.strashko@ti.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Kishon Vijay Abraham I <kishon@ti.com>,
@@ -49,9 +49,9 @@ CC:     Murali Karicheri <m-karicheri2@ti.com>,
         <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH net-next v4 01/11] phy: ti: gmii-sel: simplify config dependencies between net drivers and gmii phy
-Date:   Tue, 17 Mar 2020 09:27:29 +0200
-Message-ID: <20200317072739.23950-2-grygorii.strashko@ti.com>
+Subject: [PATCH net-next v4 02/11] net: ethernet: ti: ale: fix seeing unreg mcast packets with promisc and allmulti disabled
+Date:   Tue, 17 Mar 2020 09:27:30 +0200
+Message-ID: <20200317072739.23950-3-grygorii.strashko@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200317072739.23950-1-grygorii.strashko@ti.com>
 References: <20200317072739.23950-1-grygorii.strashko@ti.com>
@@ -63,50 +63,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The phy-gmii-sel can be only auto selected in Kconfig and now the pretty
-complex Kconfig dependencies are defined for phy-gmii-sel driver, which
-also need to be updated every time phy-gmii-sel is re-used for any new
-networking driver.
+On AM65xx MCU CPSW2G NUSS and 66AK2E/L NUSS the unregistered multicast
+packets are still can be received with promisc and allmulti disabled.
 
-Simplify Kconfig definition for phy-gmii-sel PHY driver - drop all
-dependencies and from networking drivers and rely on using 'imply
-PHY_TI_GMII_SEL' in Kconfig definitions for networking drivers instead.
+This happens, because ALE VLAN entries on these SoCs do not contain port
+masks for reg/unreg mcast packets, but instead store indexes of
+ALE_VLAN_MASK_MUXx_REG registers which intended for store port masks for
+reg/unreg mcast packets.
 
+ALE VLAN entry:UNREG_MCAST_FLOOD_INDEX -> ALE_VLAN_MASK_MUXx
+ALE VLAN entry:REG_MCAST_FLOOD_INDEX -> ALE_VLAN_MASK_MUXy
+
+The commit b361da837392 ("net: netcp: ale: add proper ale entry mask bits
+for netcp switch ALE") update ALE code to support such ALE entries, it is
+always used ALE_VLAN_MASK_MUX0_REG index in ALE VLAN entry for unreg mcast
+packets mask configuration, which is read-only, at least for AM65xx MCU
+CPSW2G NUSS and 66AK2E/L NUSS. As result unreg mcast packets are allowed
+always.
+
+Hence, update ALE code to use ALE_VLAN_MASK_MUX1_REG index for ALE VLAN
+entries to configure unreg mcast port mask.
+
+Fixes: b361da837392 ("net: netcp: ale: add proper ale entry mask bits for netcp switch ALE")
 Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
-Acked-by: Kishon Vijay Abraham I <kishon@ti.com>
 ---
- drivers/net/ethernet/ti/Kconfig | 1 +
- drivers/phy/ti/Kconfig          | 3 ---
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/ethernet/ti/cpsw_ale.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
-index bf98e0fa7d8b..8a6ca16eee3b 100644
---- a/drivers/net/ethernet/ti/Kconfig
-+++ b/drivers/net/ethernet/ti/Kconfig
-@@ -53,6 +53,7 @@ config TI_CPSW
- 	select MFD_SYSCON
- 	select PAGE_POOL
- 	select REGMAP
-+	imply PHY_TI_GMII_SEL
- 	---help---
- 	  This driver supports TI's CPSW Ethernet Switch.
+diff --git a/drivers/net/ethernet/ti/cpsw_ale.c b/drivers/net/ethernet/ti/cpsw_ale.c
+index ecdbde539eb7..5815225c000c 100644
+--- a/drivers/net/ethernet/ti/cpsw_ale.c
++++ b/drivers/net/ethernet/ti/cpsw_ale.c
+@@ -122,6 +122,8 @@ DEFINE_ALE_FIELD(mcast,			40,	1)
+ DEFINE_ALE_FIELD(vlan_unreg_mcast_idx,	20,	3)
+ DEFINE_ALE_FIELD(vlan_reg_mcast_idx,	44,	3)
  
-diff --git a/drivers/phy/ti/Kconfig b/drivers/phy/ti/Kconfig
-index 6dbe9d0b9ff3..15a3bcf32308 100644
---- a/drivers/phy/ti/Kconfig
-+++ b/drivers/phy/ti/Kconfig
-@@ -106,11 +106,8 @@ config TWL4030_USB
- 
- config PHY_TI_GMII_SEL
- 	tristate
--	default y if TI_CPSW=y || TI_CPSW_SWITCHDEV=y
--	depends on TI_CPSW || TI_CPSW_SWITCHDEV || COMPILE_TEST
- 	select GENERIC_PHY
- 	select REGMAP
--	default m
- 	help
- 	  This driver supports configuring of the TI CPSW Port mode depending on
- 	  the Ethernet PHY connected to the CPSW Port.
++#define NU_VLAN_UNREG_MCAST_IDX	1
++
+ /* The MAC address field in the ALE entry cannot be macroized as above */
+ static inline void cpsw_ale_get_addr(u32 *ale_entry, u8 *addr)
+ {
+@@ -455,6 +457,8 @@ int cpsw_ale_add_vlan(struct cpsw_ale *ale, u16 vid, int port_mask, int untag,
+ 		cpsw_ale_set_vlan_unreg_mcast(ale_entry, unreg_mcast,
+ 					      ale->vlan_field_bits);
+ 	} else {
++		cpsw_ale_set_vlan_unreg_mcast_idx(ale_entry,
++						  NU_VLAN_UNREG_MCAST_IDX);
+ 		cpsw_ale_set_vlan_mcast(ale, ale_entry, reg_mcast, unreg_mcast);
+ 	}
+ 	cpsw_ale_set_vlan_member_list(ale_entry, port_mask,
 -- 
 2.17.1
 
