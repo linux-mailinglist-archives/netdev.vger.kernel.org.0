@@ -2,242 +2,341 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F498188D23
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 19:28:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 525F9188D2F
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 19:29:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726762AbgCQS24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 14:28:56 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:48837 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726704AbgCQS24 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 14:28:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584469734;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=K+IwNfCaU/P1ux5HKJF3z1NkFX7txjGZvGBam0p510E=;
-        b=eTqnZyuGttuLlwqatpUrLdFnAanCa7vMCj9/ecVvnTMu2nprrmxSFwK47NwSW6/NNVrLkF
-        aulW674PGQjcPaEAgLhbPesWP+ucSVAg+SJPjgvSiZmDklJeRHakXtI1FXD/zHB3wEfUjo
-        Ytnp4R5vMr92SHFMNQd7yyOLdIyeb5E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-346-5pYTBthUM_qAjZ1-ibWyTw-1; Tue, 17 Mar 2020 14:28:51 -0400
-X-MC-Unique: 5pYTBthUM_qAjZ1-ibWyTw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 054BF1857BE9;
-        Tue, 17 Mar 2020 18:28:49 +0000 (UTC)
-Received: from madcap2.tricolour.ca (unknown [10.36.110.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id D19B36E3EE;
-        Tue, 17 Mar 2020 18:28:33 +0000 (UTC)
-Date:   Tue, 17 Mar 2020 14:28:29 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     nhorman@tuxdriver.com, linux-api@vger.kernel.org,
-        containers@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
-        simo@redhat.com, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
-Subject: Re: [PATCH ghak90 V8 13/16] audit: track container nesting
-Message-ID: <20200317182828.t4ewyw2l5epy2s6n@madcap2.tricolour.ca>
-References: <cover.1577736799.git.rgb@redhat.com>
- <6452955c1e038227a5cd169f689f3fd3db27513f.1577736799.git.rgb@redhat.com>
- <CAHC9VhRkH=YEjAY6dJJHSp934grHnf=O4RiqLu3U8DzdVQOZkg@mail.gmail.com>
- <20200130192753.n7jjrshbhrczjzoe@madcap2.tricolour.ca>
- <CAHC9VhSVN3mNb5enhLR1hY+ekiAyiYWbehrwd_zN7kz13dF=1w@mail.gmail.com>
- <20200205235056.e5365xtgz7rbese2@madcap2.tricolour.ca>
- <CAHC9VhTM6MDHLcBfwJ_9DCroG0VA-meO770ihjn1sVy6=0JrHw@mail.gmail.com>
- <20200312205147.plxs4czjeuu4davj@madcap2.tricolour.ca>
- <CAHC9VhTqWdXMsbSbsWJzRRvVbSaaFBmnFFsVutM7XSx5NT_FJA@mail.gmail.com>
- <20200314224203.ncyx3rgwwe6zet4e@madcap2.tricolour.ca>
+        id S1726781AbgCQS33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 14:29:29 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:35029 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726278AbgCQS32 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 14:29:28 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1jEGxu-0006vX-1V; Tue, 17 Mar 2020 18:29:22 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-everest-linux-l2@marvell.com,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] bnx2x: fix spelling mistake "pauseable" -> "pausable"
+Date:   Tue, 17 Mar 2020 18:29:21 +0000
+Message-Id: <20200317182921.482606-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200314224203.ncyx3rgwwe6zet4e@madcap2.tricolour.ca>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-03-14 18:42, Richard Guy Briggs wrote:
-> On 2020-03-13 12:47, Paul Moore wrote:
-> > On Thu, Mar 12, 2020 at 4:52 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > On 2020-02-13 16:49, Paul Moore wrote:
-> > > > On Wed, Feb 5, 2020 at 6:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > > > On 2020-02-05 18:05, Paul Moore wrote:
-> > > > > > On Thu, Jan 30, 2020 at 2:28 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > > > > > On 2020-01-22 16:29, Paul Moore wrote:
-> > > > > > > > On Tue, Dec 31, 2019 at 2:51 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > > > > > > >
-> > > > > > > > > Track the parent container of a container to be able to filter and
-> > > > > > > > > report nesting.
-> > > > > > > > >
-> > > > > > > > > Now that we have a way to track and check the parent container of a
-> > > > > > > > > container, modify the contid field format to be able to report that
-> > > > > > > > > nesting using a carrat ("^") separator to indicate nesting.  The
-> > > > > > > > > original field format was "contid=<contid>" for task-associated records
-> > > > > > > > > and "contid=<contid>[,<contid>[...]]" for network-namespace-associated
-> > > > > > > > > records.  The new field format is
-> > > > > > > > > "contid=<contid>[^<contid>[...]][,<contid>[...]]".
-> > > > > > > >
-> > > > > > > > Let's make sure we always use a comma as a separator, even when
-> > > > > > > > recording the parent information, for example:
-> > > > > > > > "contid=<contid>[,^<contid>[...]][,<contid>[...]]"
-> > > > > > >
-> > > > > > > The intent here is to clearly indicate and separate nesting from
-> > > > > > > parallel use of several containers by one netns.  If we do away with
-> > > > > > > that distinction, then we lose that inheritance accountability and
-> > > > > > > should really run the list through a "uniq" function to remove the
-> > > > > > > produced redundancies.  This clear inheritance is something Steve was
-> > > > > > > looking for since tracking down individual events/records to show that
-> > > > > > > inheritance was not aways feasible due to rolled logs or search effort.
-> > > > > >
-> > > > > > Perhaps my example wasn't clear.  I'm not opposed to the little
-> > > > > > carat/hat character indicating a container's parent, I just think it
-> > > > > > would be good to also include a comma *in*addition* to the carat/hat.
-> > > > >
-> > > > > Ah, ok.  Well, I'd offer that it would be slightly shorter, slightly
-> > > > > less cluttered and having already written the parser in userspace, I
-> > > > > think the parser would be slightly simpler.
-> > > > >
-> > > > > I must admit, I was a bit puzzled by your snippet of code that was used
-> > > > > as a prefix to the next item rather than as a postfix to the given item.
-> > > > >
-> > > > > Can you say why you prefer the comma in addition?
-> > > >
-> > > > Generally speaking, I believe that a single delimiter is both easier
-> > > > for the eyes to parse, and easier/safer for machines to parse as well.
-> > > > In this particular case I think of the comma as a delimiter and the
-> > > > carat as a modifier, reusing the carat as a delimiter seems like a bad
-> > > > idea to me.
-> > >
-> > > I'm not crazy about this idea, but I'll have a look at how much work it
-> > > is to recode the userspace search tools.  It also adds extra characters
-> > > and noise into the string format that seems counterproductive.
-> > 
-> > If anything the parser should be *easier* (although both parsers
-> > should fall into the "trivial" category).  The comma is the one and
-> > only delimiter, and if the ACID starts with a carat then it is a
-> > parent of the preceding ACID.
-> 
-> Ok, after a day of staring at the code and getting nowhere due to
-> multiple distractions, I was able to rework this code fairly easily and
-> it turned out simpler which should not surprise you.  Both kernel and
-> userspace code are now in the format you recommended.
-> 
-> > > > > > > > > diff --git a/kernel/audit.c b/kernel/audit.c
-> > > > > > > > > index ef8e07524c46..68be59d1a89b 100644
-> > > > > > > > > --- a/kernel/audit.c
-> > > > > > > > > +++ b/kernel/audit.c
-> > > > > > > >
-> > > > > > > > > @@ -492,6 +493,7 @@ void audit_switch_task_namespaces(struct nsproxy *ns, struct task_struct *p)
-> > > > > > > > >                 audit_netns_contid_add(new->net_ns, contid);
-> > > > > > > > >  }
-> > > > > > > > >
-> > > > > > > > > +void audit_log_contid(struct audit_buffer *ab, u64 contid);
-> > > > > > > >
-> > > > > > > > If we need a forward declaration, might as well just move it up near
-> > > > > > > > the top of the file with the rest of the declarations.
-> > > > > > >
-> > > > > > > Ok.
-> > > > > > >
-> > > > > > > > > +void audit_log_contid(struct audit_buffer *ab, u64 contid)
-> > > > > > > > > +{
-> > > > > > > > > +       struct audit_contobj *cont = NULL, *prcont = NULL;
-> > > > > > > > > +       int h;
-> > > > > > > >
-> > > > > > > > It seems safer to pass the audit container ID object and not the u64.
-> > > > > > >
-> > > > > > > It would also be faster, but in some places it isn't available such as
-> > > > > > > for ptrace and signal targets.  This also links back to the drop record
-> > > > > > > refcounts to hold onto the contobj until process exit, or signal
-> > > > > > > delivery.
-> > > > > > >
-> > > > > > > What we could do is to supply two potential parameters, a contobj and/or
-> > > > > > > a contid, and have it use the contobj if it is valid, otherwise, use the
-> > > > > > > contid, as is done for names and paths supplied to audit_log_name().
-> > > > > >
-> > > > > > Let's not do multiple parameters, that begs for misuse, let's take the
-> > > > > > wrapper function route:
-> > > > > >
-> > > > > >  func a(int id) {
-> > > > > >    // important stuff
-> > > > > >  }
-> > > > > >
-> > > > > >  func ao(struct obj) {
-> > > > > >    a(obj.id);
-> > > > > >  }
-> > > > > >
-> > > > > > ... and we can add a comment that you *really* should be using the
-> > > > > > variant that passes an object.
-> > > > >
-> > > > > I was already doing that where it available, and dereferencing the id
-> > > > > for the call.  But I see an advantage to having both parameters supplied
-> > > > > to the function, since it saves us the trouble of dereferencing it,
-> > > > > searching for the id in the hash list and re-locating the object if the
-> > > > > object is already available.
-> > > >
-> > > > I strongly prefer we not do multiple parameters for the same "thing";
-> > >
-> > > So do I, ideally.  However...
-> > >
-> > > > I would much rather do the wrapper approach as described above.  I
-> > > > would also like to see us use the audit container ID object as much as
-> > > > possible, using a bare integer should be a last resort.
-> > >
-> > > It is not clear to me that you understood what I wrote above.  I can't
-> > > use the object pointer where preferable because there are a few cases
-> > > where only the ID is available.  If only the ID is available, I would
-> > > have to make a best effort to look up the object pointer and am not
-> > > guaranteed to find it (invalid, stale, signal info...).  If I am forced
-> > > to use only one, it becomes the ID that is used, and I no longer have
-> > > the benefit of already having the object pointer for certainty and
-> > > saving work.  For all cases where I have the object pointer, which is
-> > > most cases, and most frequently used cases, I will have to dereference
-> > > the object pointer to an ID, then go through the work again to re-locate
-> > > the object pointer.  This is less certain, and more work.  Reluctantly,
-> > > the only practical solution I see here is to supply both, favouring the
-> > > object pointer if it is valid, then falling back on the ID from the next
-> > > parameter.
-> > 
-> > It has been a while since I last looked at the patchset, but my
-> > concern over the prefered use of the ACID number vs the ACID object is
-> > that the number offers no reuse protection where the object does.  I
-> > really would like us to use the object everywhere it is possible.
-> 
-> Ok, so I take it from this that I go ahead with the dual format since
-> the wrapper funciton to convert from object to ID strips away object
-> information negating any benefit of favouring the object pointer.  I'll
-> look at the remaining calls that use a contid (rather than contobj) and
-> convert all that I can over to storing an object using the dual counters
-> that track process exits versus signal2 and trace references.
+From: Colin Ian King <colin.king@canonical.com>
 
-After reworking all the signal code to use the contobj and open coding
-unnested single contid appearances, I was able to stick with just
-passing a contobj to audit_contiainer_id() and audit_log_contid(), so
-the dual format conundrum went away.
+Bulk rename of variables and literal strings. No functional
+changes.
 
-It issues the death certificate on process exit, and will issue an error
-indicating the contid is dead and can't be reused yet until it is reaped
-by a sig2 call.
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ .../net/ethernet/broadcom/bnx2x/bnx2x_dcb.c   | 84 +++++++++----------
+ .../net/ethernet/broadcom/bnx2x/bnx2x_dcb.h   |  6 +-
+ 2 files changed, 45 insertions(+), 45 deletions(-)
 
-> > paul moore
-> 
-> - RGB
-
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_dcb.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_dcb.c
+index 2c6ba046d2a8..fc15a4864077 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_dcb.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_dcb.c
+@@ -44,7 +44,7 @@ static void bnx2x_dcbx_fill_cos_params(struct bnx2x *bp,
+ 				       struct pg_help_data *help_data,
+ 				       struct dcbx_ets_feature *ets,
+ 				       u32 *pg_pri_orginal_spread);
+-static void bnx2x_dcbx_separate_pauseable_from_non(struct bnx2x *bp,
++static void bnx2x_dcbx_separate_pausable_from_non(struct bnx2x *bp,
+ 				struct cos_help_data *cos_data,
+ 				u32 *pg_pri_orginal_spread,
+ 				struct dcbx_ets_feature *ets);
+@@ -80,7 +80,7 @@ static void bnx2x_pfc_set(struct bnx2x *bp)
+ 	/* Tx COS configuration */
+ 	for (i = 0; i < bp->dcbx_port_params.ets.num_of_cos; i++)
+ 		/*
+-		 * We configure only the pauseable bits (non pauseable aren't
++		 * We configure only the pausable bits (non pausable aren't
+ 		 * configured at all) it's done to avoid false pauses from
+ 		 * network
+ 		 */
+@@ -290,7 +290,7 @@ static void bnx2x_dcbx_get_ets_feature(struct bnx2x *bp,
+ 
+ 	/* Clean up old settings of ets on COS */
+ 	for (i = 0; i < ARRAY_SIZE(bp->dcbx_port_params.ets.cos_params) ; i++) {
+-		cos_params[i].pauseable = false;
++		cos_params[i].pausable = false;
+ 		cos_params[i].strict = BNX2X_DCBX_STRICT_INVALID;
+ 		cos_params[i].bw_tbl = DCBX_INVALID_COS_BW;
+ 		cos_params[i].pri_bitmask = 0;
+@@ -335,12 +335,12 @@ static void  bnx2x_dcbx_get_pfc_feature(struct bnx2x *bp,
+ 	   !GET_FLAGS(error, DCBX_LOCAL_PFC_ERROR | DCBX_LOCAL_PFC_MISMATCH |
+ 			     DCBX_REMOTE_PFC_TLV_NOT_FOUND)) {
+ 		bp->dcbx_port_params.pfc.enabled = true;
+-		bp->dcbx_port_params.pfc.priority_non_pauseable_mask =
++		bp->dcbx_port_params.pfc.priority_non_pausable_mask =
+ 			~(pfc->pri_en_bitmap);
+ 	} else {
+ 		DP(BNX2X_MSG_DCB, "DCBX_LOCAL_PFC_DISABLED\n");
+ 		bp->dcbx_port_params.pfc.enabled = false;
+-		bp->dcbx_port_params.pfc.priority_non_pauseable_mask = 0;
++		bp->dcbx_port_params.pfc.priority_non_pausable_mask = 0;
+ 	}
+ }
+ 
+@@ -1080,8 +1080,8 @@ bnx2x_dcbx_print_cos_params(struct bnx2x *bp,
+ 	DP(BNX2X_MSG_DCB,
+ 	   "pfc_fw_cfg->dcb_version %x\n", pfc_fw_cfg->dcb_version);
+ 	DP(BNX2X_MSG_DCB,
+-	   "pdev->params.dcbx_port_params.pfc.priority_non_pauseable_mask %x\n",
+-	   bp->dcbx_port_params.pfc.priority_non_pauseable_mask);
++	   "pdev->params.dcbx_port_params.pfc.priority_non_pausable_mask %x\n",
++	   bp->dcbx_port_params.pfc.priority_non_pausable_mask);
+ 
+ 	for (cos = 0 ; cos < bp->dcbx_port_params.ets.num_of_cos ; cos++) {
+ 		DP(BNX2X_MSG_DCB,
+@@ -1097,8 +1097,8 @@ bnx2x_dcbx_print_cos_params(struct bnx2x *bp,
+ 		   cos, bp->dcbx_port_params.ets.cos_params[cos].strict);
+ 
+ 		DP(BNX2X_MSG_DCB,
+-		   "pdev->params.dcbx_port_params.ets.cos_params[%d].pauseable %x\n",
+-		   cos, bp->dcbx_port_params.ets.cos_params[cos].pauseable);
++		   "pdev->params.dcbx_port_params.ets.cos_params[%d].pausable %x\n",
++		   cos, bp->dcbx_port_params.ets.cos_params[cos].pausable);
+ 	}
+ 
+ 	for (pri = 0; pri < LLFC_DRIVER_TRAFFIC_TYPE_MAX; pri++) {
+@@ -1182,7 +1182,7 @@ static inline void bnx2x_dcbx_add_to_cos_bw(struct bnx2x *bp,
+ 		data->cos_bw += pg_bw;
+ }
+ 
+-static void bnx2x_dcbx_separate_pauseable_from_non(struct bnx2x *bp,
++static void bnx2x_dcbx_separate_pausable_from_non(struct bnx2x *bp,
+ 			struct cos_help_data *cos_data,
+ 			u32 *pg_pri_orginal_spread,
+ 			struct dcbx_ets_feature *ets)
+@@ -1247,14 +1247,14 @@ static void bnx2x_dcbx_2cos_limit_cee_single_pg_to_cos_params(struct bnx2x *bp,
+ 	}
+ 	/* single priority group */
+ 	if (pg_help_data->data[0].pg < DCBX_MAX_NUM_PG_BW_ENTRIES) {
+-		/* If there are both pauseable and non-pauseable priorities,
+-		 * the pauseable priorities go to the first queue and
+-		 * the non-pauseable priorities go to the second queue.
++		/* If there are both pausable and non-pausable priorities,
++		 * the pausable priorities go to the first queue and
++		 * the non-pausable priorities go to the second queue.
+ 		 */
+ 		if (IS_DCBX_PFC_PRI_MIX_PAUSE(bp, pri_join_mask)) {
+ 			/* Pauseable */
+ 			cos_data->data[0].pausable = true;
+-			/* Non pauseable.*/
++			/* Non pausable.*/
+ 			cos_data->data[1].pausable = false;
+ 
+ 			if (2 == num_of_dif_pri) {
+@@ -1274,7 +1274,7 @@ static void bnx2x_dcbx_2cos_limit_cee_single_pg_to_cos_params(struct bnx2x *bp,
+ 			}
+ 
+ 		} else if (IS_DCBX_PFC_PRI_ONLY_PAUSE(bp, pri_join_mask)) {
+-			/* If there are only pauseable priorities,
++			/* If there are only pausable priorities,
+ 			 * then one/two priorities go to the first queue
+ 			 * and one priority goes to the second queue.
+ 			 */
+@@ -1294,7 +1294,7 @@ static void bnx2x_dcbx_2cos_limit_cee_single_pg_to_cos_params(struct bnx2x *bp,
+ 			cos_data->data[1].pri_join_mask =
+ 				(1 << ttp[LLFC_TRAFFIC_TYPE_FCOE]);
+ 		} else
+-			/* If there are only non-pauseable priorities,
++			/* If there are only non-pausable priorities,
+ 			 * they will all go to the same queue.
+ 			 */
+ 			bnx2x_dcbx_ets_disabled_entry_data(bp,
+@@ -1302,9 +1302,9 @@ static void bnx2x_dcbx_2cos_limit_cee_single_pg_to_cos_params(struct bnx2x *bp,
+ 	} else {
+ 		/* priority group which is not BW limited (PG#15):*/
+ 		if (IS_DCBX_PFC_PRI_MIX_PAUSE(bp, pri_join_mask)) {
+-			/* If there are both pauseable and non-pauseable
+-			 * priorities, the pauseable priorities go to the first
+-			 * queue and the non-pauseable priorities
++			/* If there are both pausable and non-pausable
++			 * priorities, the pausable priorities go to the first
++			 * queue and the non-pausable priorities
+ 			 * go to the second queue.
+ 			 */
+ 			if (DCBX_PFC_PRI_GET_PAUSE(bp, pri_join_mask) >
+@@ -1326,8 +1326,8 @@ static void bnx2x_dcbx_2cos_limit_cee_single_pg_to_cos_params(struct bnx2x *bp,
+ 			/* Non pause-able.*/
+ 			cos_data->data[1].pausable = false;
+ 		} else {
+-			/* If there are only pauseable priorities or
+-			 * only non-pauseable,* the lower priorities go
++			/* If there are only pausable priorities or
++			 * only non-pausable,* the lower priorities go
+ 			 * to the first queue and the higher priorities go
+ 			 * to the second queue.
+ 			 */
+@@ -1375,19 +1375,19 @@ static void bnx2x_dcbx_2cos_limit_cee_two_pg_to_cos_params(
+ 	u8 i = 0;
+ 	u8 pg[DCBX_COS_MAX_NUM_E2] = { 0 };
+ 
+-	/* If there are both pauseable and non-pauseable priorities,
+-	 * the pauseable priorities go to the first queue and
+-	 * the non-pauseable priorities go to the second queue.
++	/* If there are both pausable and non-pausable priorities,
++	 * the pausable priorities go to the first queue and
++	 * the non-pausable priorities go to the second queue.
+ 	 */
+ 	if (IS_DCBX_PFC_PRI_MIX_PAUSE(bp, pri_join_mask)) {
+ 		if (IS_DCBX_PFC_PRI_MIX_PAUSE(bp,
+ 					 pg_help_data->data[0].pg_priority) ||
+ 		    IS_DCBX_PFC_PRI_MIX_PAUSE(bp,
+ 					 pg_help_data->data[1].pg_priority)) {
+-			/* If one PG contains both pauseable and
+-			 * non-pauseable priorities then ETS is disabled.
++			/* If one PG contains both pausable and
++			 * non-pausable priorities then ETS is disabled.
+ 			 */
+-			bnx2x_dcbx_separate_pauseable_from_non(bp, cos_data,
++			bnx2x_dcbx_separate_pausable_from_non(bp, cos_data,
+ 					pg_pri_orginal_spread, ets);
+ 			bp->dcbx_port_params.ets.enabled = false;
+ 			return;
+@@ -1395,18 +1395,18 @@ static void bnx2x_dcbx_2cos_limit_cee_two_pg_to_cos_params(
+ 
+ 		/* Pauseable */
+ 		cos_data->data[0].pausable = true;
+-		/* Non pauseable. */
++		/* Non pausable. */
+ 		cos_data->data[1].pausable = false;
+ 		if (IS_DCBX_PFC_PRI_ONLY_PAUSE(bp,
+ 				pg_help_data->data[0].pg_priority)) {
+-			/* 0 is pauseable */
++			/* 0 is pausable */
+ 			cos_data->data[0].pri_join_mask =
+ 				pg_help_data->data[0].pg_priority;
+ 			pg[0] = pg_help_data->data[0].pg;
+ 			cos_data->data[1].pri_join_mask =
+ 				pg_help_data->data[1].pg_priority;
+ 			pg[1] = pg_help_data->data[1].pg;
+-		} else {/* 1 is pauseable */
++		} else {/* 1 is pausable */
+ 			cos_data->data[0].pri_join_mask =
+ 				pg_help_data->data[1].pg_priority;
+ 			pg[0] = pg_help_data->data[1].pg;
+@@ -1415,8 +1415,8 @@ static void bnx2x_dcbx_2cos_limit_cee_two_pg_to_cos_params(
+ 			pg[1] = pg_help_data->data[0].pg;
+ 		}
+ 	} else {
+-		/* If there are only pauseable priorities or
+-		 * only non-pauseable, each PG goes to a queue.
++		/* If there are only pausable priorities or
++		 * only non-pausable, each PG goes to a queue.
+ 		 */
+ 		cos_data->data[0].pausable = cos_data->data[1].pausable =
+ 			IS_DCBX_PFC_PRI_ONLY_PAUSE(bp, pri_join_mask);
+@@ -1507,23 +1507,23 @@ static void bnx2x_dcbx_2cos_limit_cee_three_pg_to_cos_params(
+ 	u8 num_of_pri = LLFC_DRIVER_TRAFFIC_TYPE_MAX;
+ 
+ 	cos_data->data[0].pri_join_mask = cos_data->data[1].pri_join_mask = 0;
+-	/* If there are both pauseable and non-pauseable priorities,
+-	 * the pauseable priorities go to the first queue and the
+-	 * non-pauseable priorities go to the second queue.
++	/* If there are both pausable and non-pausable priorities,
++	 * the pausable priorities go to the first queue and the
++	 * non-pausable priorities go to the second queue.
+ 	 */
+ 	if (IS_DCBX_PFC_PRI_MIX_PAUSE(bp, pri_join_mask))
+-		bnx2x_dcbx_separate_pauseable_from_non(bp,
++		bnx2x_dcbx_separate_pausable_from_non(bp,
+ 				cos_data, pg_pri_orginal_spread, ets);
+ 	else {
+ 		/* If two BW-limited PG-s were combined to one queue,
+ 		 * the BW is their sum.
+ 		 *
+-		 * If there are only pauseable priorities or only non-pauseable,
++		 * If there are only pausable priorities or only non-pausable,
+ 		 * and there are both BW-limited and non-BW-limited PG-s,
+ 		 * the BW-limited PG/s go to one queue and the non-BW-limited
+ 		 * PG/s go to the second queue.
+ 		 *
+-		 * If there are only pauseable priorities or only non-pauseable
++		 * If there are only pausable priorities or only non-pausable
+ 		 * and all are BW limited, then	two priorities go to the first
+ 		 * queue and one priority goes to the second queue.
+ 		 *
+@@ -1796,7 +1796,7 @@ static void bnx2x_dcbx_fill_cos_params(struct bnx2x *bp,
+ 		p->strict = cos_data.data[i].strict;
+ 		p->bw_tbl = cos_data.data[i].cos_bw;
+ 		p->pri_bitmask = cos_data.data[i].pri_join_mask;
+-		p->pauseable = cos_data.data[i].pausable;
++		p->pausable = cos_data.data[i].pausable;
+ 
+ 		/* sanity */
+ 		if (p->bw_tbl != DCBX_INVALID_COS_BW ||
+@@ -1806,13 +1806,13 @@ static void bnx2x_dcbx_fill_cos_params(struct bnx2x *bp,
+ 
+ 			if (CHIP_IS_E2(bp) || CHIP_IS_E3A0(bp)) {
+ 
+-				if (p->pauseable &&
++				if (p->pausable &&
+ 				    DCBX_PFC_PRI_GET_NON_PAUSE(bp,
+ 						p->pri_bitmask) != 0)
+ 					BNX2X_ERR("Inconsistent config for pausable COS %d\n",
+ 						  i);
+ 
+-				if (!p->pauseable &&
++				if (!p->pausable &&
+ 				    DCBX_PFC_PRI_GET_PAUSE(bp,
+ 						p->pri_bitmask) != 0)
+ 					BNX2X_ERR("Inconsistent config for nonpausable COS %d\n",
+@@ -1820,7 +1820,7 @@ static void bnx2x_dcbx_fill_cos_params(struct bnx2x *bp,
+ 			}
+ 		}
+ 
+-		if (p->pauseable)
++		if (p->pausable)
+ 			DP(BNX2X_MSG_DCB, "COS %d PAUSABLE prijoinmask 0x%x\n",
+ 				  i, cos_data.data[i].pri_join_mask);
+ 		else
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_dcb.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_dcb.h
+index 9a9517c0f703..6cfe0d50bcd0 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_dcb.h
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_dcb.h
+@@ -46,7 +46,7 @@ struct bnx2x_dcbx_cos_params {
+ #define BNX2X_DCBX_STRICT_INVALID			DCBX_COS_MAX_NUM
+ #define BNX2X_DCBX_STRICT_COS_HIGHEST			0
+ #define BNX2X_DCBX_STRICT_COS_NEXT_LOWER_PRI(sp)	((sp) + 1)
+-	u8	pauseable;
++	u8	pausable;
+ };
+ 
+ struct bnx2x_dcbx_pg_params {
+@@ -57,7 +57,7 @@ struct bnx2x_dcbx_pg_params {
+ 
+ struct bnx2x_dcbx_pfc_params {
+ 	u32 enabled;
+-	u32 priority_non_pauseable_mask;
++	u32 priority_non_pausable_mask;
+ };
+ 
+ struct bnx2x_dcbx_port_params {
+@@ -153,7 +153,7 @@ struct cos_help_data {
+ #define DCBX_STRICT_PRIORITY			(15)
+ #define DCBX_INVALID_COS_BW			(0xFFFFFFFF)
+ #define DCBX_PFC_PRI_NON_PAUSE_MASK(bp)		\
+-			((bp)->dcbx_port_params.pfc.priority_non_pauseable_mask)
++			((bp)->dcbx_port_params.pfc.priority_non_pausable_mask)
+ #define DCBX_PFC_PRI_PAUSE_MASK(bp)		\
+ 					((u8)~DCBX_PFC_PRI_NON_PAUSE_MASK(bp))
+ #define DCBX_PFC_PRI_GET_PAUSE(bp, pg_pri)	\
+-- 
+2.25.1
 
