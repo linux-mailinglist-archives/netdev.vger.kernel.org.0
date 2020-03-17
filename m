@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69828188817
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 15:52:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A443A188818
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 15:52:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726859AbgCQOwi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 10:52:38 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40902 "EHLO
+        id S1726867AbgCQOws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 10:52:48 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:40914 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726668AbgCQOwi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 10:52:38 -0400
+        with ESMTP id S1726112AbgCQOwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 10:52:47 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
         Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
         In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2E3SthG3FlBjH/88JhPtn7qQjzNTcfPA+eCSLpF+UzM=; b=W7VPgmwxE/XlBORJlQ2w7tItMK
-        nbst2vK++ay9jPIhNlHG4PAyaEMZ6AYu/DjVmIM8JTocNjblPgXNdL+pp1yq7ny+L4FhncwFoHchZ
-        WRm8Jq5jYI1LoHTYO6g9eHXUC4ttyYk5WaiNFlTSUE1Arr5HChpNRbFV5SYaINS4nuAYGUsPt8kHg
-        hgiX52eTF1oyAJKccw3BclDc4ZX20tcJD9TfZnicLJASm7vI0wywHzHM8qllcKEfRzg10va7xvBsc
-        S8p1M6jie7br4cRVhPeMiJg9qWep0i9rameEpSx4/uNzgirlhgPPIng5oovnUJ7DtBgIe9AddL5KG
-        6tfzYWSA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:36218 helo=rmk-PC.armlinux.org.uk)
+        bh=spmuibcd4ia1QJBMf71O9qnn2V+msUKHLU/GGalyxxw=; b=IJ2vScNmUr+aUVFCg2XQ+i8VPW
+        UHLaGjAoUTNvgZlmc4aA9UmuZF27EM5droNyOGp9Bttk0Hlj/3S5Hng+Dq6WsJXBtmPoQMjOK2dm4
+        +HqJ8opQ/+KJg1Pw6Se1CthyiSBlzyzOku/x8H0836vTOdXNww12xxPniXwhT7LvkjTgpEI5BuwEJ
+        vCJL4bSOxBn+zQUquhFzcs9i5LYaXrepofu9/H+0EYV4FizwUN6RQAL91sabG2fPf2lfUf8pZ3Bzo
+        HyBtEADWTnRkbwlVeprhdaI90RJz+V6Ri1Xn434iq4030J7Edg3aejcOXZFAg92KRCyh9DvGxa5dd
+        J/RJfQ8g==;
+Received: from e0022681537dd.dyn.armlinux.org.uk ([2002:4e20:1eda:1:222:68ff:fe15:37dd]:36220 helo=rmk-PC.armlinux.org.uk)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1jEDa3-0007hj-S1; Tue, 17 Mar 2020 14:52:31 +0000
+        id 1jEDa9-0007hs-62; Tue, 17 Mar 2020 14:52:37 +0000
 Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <rmk@armlinux.org.uk>)
-        id 1jEDa3-0008Io-6h; Tue, 17 Mar 2020 14:52:31 +0000
+        id 1jEDa8-0008Iv-AR; Tue, 17 Mar 2020 14:52:36 +0000
 In-Reply-To: <20200317144906.GO25745@shell.armlinux.org.uk>
 References: <20200317144906.GO25745@shell.armlinux.org.uk>
 From:   Russell King <rmk+kernel@armlinux.org.uk>
@@ -38,197 +38,281 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH v2 net-next 2/4] net: mdiobus: add APIs for modifying a MDIO
- device register
+Subject: [PATCH v2 net-next 3/4] net: phylink: pcs: add 802.3 clause 22
+ helpers
 MIME-Version: 1.0
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jEDa3-0008Io-6h@rmk-PC.armlinux.org.uk>
-Date:   Tue, 17 Mar 2020 14:52:31 +0000
+Message-Id: <E1jEDa8-0008Iv-AR@rmk-PC.armlinux.org.uk>
+Date:   Tue, 17 Mar 2020 14:52:36 +0000
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add APIs for modifying a MDIO device register, similar to the existing
-phy_modify() group of functions, but at mdiobus level instead.  Adapt
-__phy_modify_changed() to use the new mdiobus level helper.
+Implement helpers for PCS accessed via the MII bus using 802.3 clause
+22 cycles, conforming to 802.3 clause 37 and Cisco SGMII specifications
+for the advertisement word.
 
 Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 ---
- drivers/net/phy/mdio_bus.c | 56 ++++++++++++++++++++++++++++++++++++++
- drivers/net/phy/phy-core.c | 31 ---------------------
- include/linux/mdio.h       |  4 +++
- include/linux/phy.h        | 19 +++++++++++++
- 4 files changed, 79 insertions(+), 31 deletions(-)
+ drivers/net/phy/phylink.c | 206 ++++++++++++++++++++++++++++++++++++++
+ include/linux/phylink.h   |   6 ++
+ include/uapi/linux/mii.h  |   5 +
+ 3 files changed, 217 insertions(+)
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 129e60630319..522760c8bca6 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -824,6 +824,38 @@ int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 60f32b354013..ced99e8fda31 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -2068,4 +2068,210 @@ void phylink_helper_basex_speed(struct phylink_link_state *state)
  }
- EXPORT_SYMBOL(__mdiobus_write);
+ EXPORT_SYMBOL_GPL(phylink_helper_basex_speed);
  
-+/**
-+ * __mdiobus_modify_changed - Unlocked version of the mdiobus_modify function
-+ * @bus: the mii_bus struct
-+ * @addr: the phy address
-+ * @regnum: register number to modify
-+ * @mask: bit mask of bits to clear
-+ * @set: bit mask of bits to set
-+ *
-+ * Read, modify, and if any change, write the register value back to the
-+ * device. Any error returns a negative number.
-+ *
-+ * NOTE: MUST NOT be called from interrupt context.
-+ */
-+int __mdiobus_modify_changed(struct mii_bus *bus, int addr, u32 regnum,
-+			     u16 mask, u16 set)
++static void phylink_decode_c37_word(struct phylink_link_state *state,
++				    uint16_t config_reg, int speed)
 +{
-+	int new, ret;
++	bool tx_pause, rx_pause;
++	int fd_bit;
 +
-+	ret = __mdiobus_read(bus, addr, regnum);
-+	if (ret < 0)
-+		return ret;
++	if (speed == SPEED_2500)
++		fd_bit = ETHTOOL_LINK_MODE_2500baseX_Full_BIT;
++	else
++		fd_bit = ETHTOOL_LINK_MODE_1000baseX_Full_BIT;
 +
-+	new = (ret & ~mask) | set;
-+	if (new == ret)
++	mii_lpa_mod_linkmode_x(state->lp_advertising, config_reg, fd_bit);
++
++	if (linkmode_test_bit(fd_bit, state->advertising) &&
++	    linkmode_test_bit(fd_bit, state->lp_advertising)) {
++		state->speed = speed;
++		state->duplex = DUPLEX_FULL;
++	} else {
++		/* negotiation failure */
++		state->link = false;
++	}
++
++	linkmode_resolve_pause(state->advertising, state->lp_advertising,
++			       &tx_pause, &rx_pause);
++
++	if (tx_pause)
++		state->pause |= MLO_PAUSE_TX;
++	if (rx_pause)
++		state->pause |= MLO_PAUSE_RX;
++}
++
++static void phylink_decode_sgmii_word(struct phylink_link_state *state,
++				      uint16_t config_reg)
++{
++	if (!(config_reg & LPA_SGMII_LINK)) {
++		state->link = false;
++		return;
++	}
++
++	switch (config_reg & LPA_SGMII_SPD_MASK) {
++	case LPA_SGMII_10:
++		state->speed = SPEED_10;
++		break;
++	case LPA_SGMII_100:
++		state->speed = SPEED_100;
++		break;
++	case LPA_SGMII_1000:
++		state->speed = SPEED_1000;
++		break;
++	default:
++		state->link = false;
++		return;
++	}
++	if (config_reg & LPA_SGMII_FULL_DUPLEX)
++		state->duplex = DUPLEX_FULL;
++	else
++		state->duplex = DUPLEX_HALF;
++}
++
++/**
++ * phylink_mii_c22_pcs_get_state() - read the MAC PCS state
++ * @pcs: a pointer to a &struct mdio_device.
++ * @state: a pointer to a &struct phylink_link_state.
++ *
++ * Helper for MAC PCS supporting the 802.3 clause 22 register set for
++ * clause 37 negotiation and/or SGMII control.
++ *
++ * Read the MAC PCS state from the MII device configured in @config and
++ * parse the Clause 37 or Cisco SGMII link partner negotiation word into
++ * the phylink @state structure. This is suitable to be directly plugged
++ * into the mac_pcs_get_state() member of the struct phylink_mac_ops
++ * structure.
++ */
++void phylink_mii_c22_pcs_get_state(struct mdio_device *pcs,
++				   struct phylink_link_state *state)
++{
++	struct mii_bus *bus = pcs->bus;
++	int addr = pcs->addr;
++	int bmsr, lpa;
++
++	bmsr = mdiobus_read(bus, addr, MII_BMSR);
++	lpa = mdiobus_read(bus, addr, MII_LPA);
++	if (bmsr < 0 || lpa < 0) {
++		state->link = false;
++		return;
++	}
++
++	state->link = !!(bmsr & BMSR_LSTATUS);
++	state->an_complete = !!(bmsr & BMSR_ANEGCOMPLETE);
++	if (!state->link)
++		return;
++
++	switch (state->interface) {
++	case PHY_INTERFACE_MODE_1000BASEX:
++		phylink_decode_c37_word(state, lpa, SPEED_1000);
++		break;
++
++	case PHY_INTERFACE_MODE_2500BASEX:
++		phylink_decode_c37_word(state, lpa, SPEED_2500);
++		break;
++
++	case PHY_INTERFACE_MODE_SGMII:
++		phylink_decode_sgmii_word(state, lpa);
++		break;
++
++	default:
++		state->link = false;
++		break;
++	}
++}
++EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_get_state);
++
++/**
++ * phylink_mii_c22_pcs_set_advertisement() - configure the clause 37 PCS
++ *	advertisement
++ * @pcs: a pointer to a &struct mdio_device.
++ * @state: a pointer to the state being configured.
++ *
++ * Helper for MAC PCS supporting the 802.3 clause 22 register set for
++ * clause 37 negotiation and/or SGMII control.
++ *
++ * Configure the clause 37 PCS advertisement as specified by @state. This
++ * does not trigger a renegotiation; phylink will do that via the
++ * mac_an_restart() method of the struct phylink_mac_ops structure.
++ *
++ * Returns negative error code on failure to configure the advertisement,
++ * zero if no change has been made, or one if the advertisement has changed.
++ */
++int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
++					const struct phylink_link_state *state)
++{
++	struct mii_bus *bus = pcs->bus;
++	int addr = pcs->addr;
++	int val, ret;
++	u16 adv;
++
++	switch (state->interface) {
++	case PHY_INTERFACE_MODE_1000BASEX:
++	case PHY_INTERFACE_MODE_2500BASEX:
++		adv = ADVERTISE_1000XFULL;
++		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Pause_BIT,
++				      state->advertising))
++			adv |= ADVERTISE_1000XPAUSE;
++		if (linkmode_test_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT,
++				      state->advertising))
++			adv |= ADVERTISE_1000XPSE_ASYM;
++
++		val = mdiobus_read(bus, addr, MII_ADVERTISE);
++		if (val < 0)
++			return val;
++
++		if (val == adv)
++			return 0;
++
++		ret = mdiobus_write(bus, addr, MII_ADVERTISE, adv);
++		if (ret < 0)
++			return ret;
++
++		return 1;
++
++	case PHY_INTERFACE_MODE_SGMII:
++		val = mdiobus_read(bus, addr, MII_ADVERTISE);
++		if (val < 0)
++			return val;
++
++		if (val == 0x0001)
++			return 0;
++
++		ret = mdiobus_write(bus, addr, MII_ADVERTISE, 0x0001);
++		if (ret < 0)
++			return ret;
++
++		return 1;
++
++	default:
++		/* Nothing to do for other modes */
 +		return 0;
-+
-+	ret = __mdiobus_write(bus, addr, regnum, new);
-+
-+	return ret < 0 ? ret : 1;
++	}
 +}
-+EXPORT_SYMBOL_GPL(__mdiobus_modify_changed);
++EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_set_advertisement);
 +
- /**
-  * mdiobus_read_nested - Nested version of the mdiobus_read function
-  * @bus: the mii_bus struct
-@@ -932,6 +964,30 @@ int mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
- }
- EXPORT_SYMBOL(mdiobus_write);
- 
 +/**
-+ * mdiobus_modify - Convenience function for modifying a given mdio device
-+ *	register
-+ * @bus: the mii_bus struct
-+ * @addr: the phy address
-+ * @regnum: register number to write
-+ * @mask: bit mask of bits to clear
-+ * @set: bit mask of bits to set
-+ */
-+int mdiobus_modify(struct mii_bus *bus, int addr, u32 regnum, u16 mask, u16 set)
-+{
-+	int err;
-+
-+	if (WARN_ON_ONCE(in_interrupt()))
-+		return -EINVAL;
-+
-+	mutex_lock(&bus->mdio_lock);
-+	err = __mdiobus_modify_changed(bus, addr, regnum, mask, set);
-+	mutex_unlock(&bus->mdio_lock);
-+
-+	return err < 0 ? err : 0;
-+}
-+EXPORT_SYMBOL_GPL(mdiobus_modify);
-+
- /**
-  * mdio_bus_match - determine if given MDIO driver supports the given
-  *		    MDIO device
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index e083e7a76ada..94cd85b1e49b 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -488,37 +488,6 @@ int phy_write_mmd(struct phy_device *phydev, int devad, u32 regnum, u16 val)
- }
- EXPORT_SYMBOL(phy_write_mmd);
- 
--/**
-- * __phy_modify_changed() - Convenience function for modifying a PHY register
-- * @phydev: a pointer to a &struct phy_device
-- * @regnum: register number
-- * @mask: bit mask of bits to clear
-- * @set: bit mask of bits to set
-- *
-- * Unlocked helper function which allows a PHY register to be modified as
-- * new register value = (old register value & ~mask) | set
-- *
-- * Returns negative errno, 0 if there was no change, and 1 in case of change
-- */
--int __phy_modify_changed(struct phy_device *phydev, u32 regnum, u16 mask,
--			 u16 set)
--{
--	int new, ret;
--
--	ret = __phy_read(phydev, regnum);
--	if (ret < 0)
--		return ret;
--
--	new = (ret & ~mask) | set;
--	if (new == ret)
--		return 0;
--
--	ret = __phy_write(phydev, regnum, new);
--
--	return ret < 0 ? ret : 1;
--}
--EXPORT_SYMBOL_GPL(__phy_modify_changed);
--
- /**
-  * phy_modify_changed - Function for modifying a PHY register
-  * @phydev: the phy_device struct
-diff --git a/include/linux/mdio.h b/include/linux/mdio.h
-index a7604248777b..917e4bb2ed71 100644
---- a/include/linux/mdio.h
-+++ b/include/linux/mdio.h
-@@ -316,11 +316,15 @@ static inline void mii_10gbt_stat_mod_linkmode_lpa_t(unsigned long *advertising,
- 
- int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum);
- int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val);
-+int __mdiobus_modify_changed(struct mii_bus *bus, int addr, u32 regnum,
-+			     u16 mask, u16 set);
- 
- int mdiobus_read(struct mii_bus *bus, int addr, u32 regnum);
- int mdiobus_read_nested(struct mii_bus *bus, int addr, u32 regnum);
- int mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val);
- int mdiobus_write_nested(struct mii_bus *bus, int addr, u32 regnum, u16 val);
-+int mdiobus_modify(struct mii_bus *bus, int addr, u32 regnum, u16 mask,
-+		   u16 set);
- 
- int mdiobus_register_device(struct mdio_device *mdiodev);
- int mdiobus_unregister_device(struct mdio_device *mdiodev);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 6b872aed8ba6..b8328bc48efc 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -753,6 +753,25 @@ static inline int __phy_write(struct phy_device *phydev, u32 regnum, u16 val)
- 			       val);
- }
- 
-+/**
-+ * __phy_modify_changed() - Convenience function for modifying a PHY register
-+ * @phydev: a pointer to a &struct phy_device
-+ * @regnum: register number
-+ * @mask: bit mask of bits to clear
-+ * @set: bit mask of bits to set
++ * phylink_mii_c22_pcs_an_restart() - restart 802.3z autonegotiation
++ * @pcs: a pointer to a &struct mdio_device.
 + *
-+ * Unlocked helper function which allows a PHY register to be modified as
-+ * new register value = (old register value & ~mask) | set
++ * Helper for MAC PCS supporting the 802.3 clause 22 register set for
++ * clause 37 negotiation.
 + *
-+ * Returns negative errno, 0 if there was no change, and 1 in case of change
++ * Restart the clause 37 negotiation with the link partner. This is
++ * suitable to be directly plugged into the mac_pcs_get_state() member
++ * of the struct phylink_mac_ops structure.
 + */
-+static inline int __phy_modify_changed(struct phy_device *phydev, u32 regnum,
-+				       u16 mask, u16 set)
++void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs)
 +{
-+	return __mdiobus_modify_changed(phydev->mdio.bus, phydev->mdio.addr,
-+					regnum, mask, set);
-+}
++	struct mii_bus *bus = pcs->bus;
++	int val, addr = pcs->addr;
 +
- /**
-  * phy_read_mmd - Convenience function for reading a register
-  * from an MMD on a given PHY.
++	val = mdiobus_read(bus, addr, MII_BMCR);
++	if (val >= 0) {
++		val |= BMCR_ANRESTART;
++
++		mdiobus_write(bus, addr, MII_BMCR, val);
++	}
++}
++EXPORT_SYMBOL_GPL(phylink_mii_c22_pcs_an_restart);
++
+ MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/phylink.h b/include/linux/phylink.h
+index 2180eb1aa254..de591c2fb37e 100644
+--- a/include/linux/phylink.h
++++ b/include/linux/phylink.h
+@@ -317,4 +317,10 @@ int phylink_mii_ioctl(struct phylink *, struct ifreq *, int);
+ void phylink_set_port_modes(unsigned long *bits);
+ void phylink_helper_basex_speed(struct phylink_link_state *state);
+ 
++void phylink_mii_c22_pcs_get_state(struct mdio_device *pcs,
++				   struct phylink_link_state *state);
++int phylink_mii_c22_pcs_set_advertisement(struct mdio_device *pcs,
++					const struct phylink_link_state *state);
++void phylink_mii_c22_pcs_an_restart(struct mdio_device *pcs);
++
+ #endif
+diff --git a/include/uapi/linux/mii.h b/include/uapi/linux/mii.h
+index 0b9c3beda345..90f9b4e1ba27 100644
+--- a/include/uapi/linux/mii.h
++++ b/include/uapi/linux/mii.h
+@@ -134,11 +134,16 @@
+ /* MAC and PHY tx_config_Reg[15:0] for SGMII in-band auto-negotiation.*/
+ #define ADVERTISE_SGMII		0x0001	/* MAC can do SGMII            */
+ #define LPA_SGMII		0x0001	/* PHY can do SGMII            */
++#define LPA_SGMII_SPD_MASK	0x0c00	/* SGMII speed mask            */
++#define LPA_SGMII_FULL_DUPLEX	0x1000	/* SGMII full duplex           */
+ #define LPA_SGMII_DPX_SPD_MASK	0x1C00	/* SGMII duplex and speed bits */
++#define LPA_SGMII_10		0x0000	/* 10Mbps                      */
+ #define LPA_SGMII_10HALF	0x0000	/* Can do 10mbps half-duplex   */
+ #define LPA_SGMII_10FULL	0x1000	/* Can do 10mbps full-duplex   */
++#define LPA_SGMII_100		0x0400	/* 100Mbps                     */
+ #define LPA_SGMII_100HALF	0x0400	/* Can do 100mbps half-duplex  */
+ #define LPA_SGMII_100FULL	0x1400	/* Can do 100mbps full-duplex  */
++#define LPA_SGMII_1000		0x0800	/* 1000Mbps                    */
+ #define LPA_SGMII_1000HALF	0x0800	/* Can do 1000mbps half-duplex */
+ #define LPA_SGMII_1000FULL	0x1800	/* Can do 1000mbps full-duplex */
+ #define LPA_SGMII_LINK		0x8000	/* PHY link with copper-side partner */
 -- 
 2.20.1
 
