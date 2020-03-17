@@ -2,191 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BF8F188DF9
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 20:27:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 366A5188E05
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 20:30:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbgCQT1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 15:27:02 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38000 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726294AbgCQT07 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 15:26:59 -0400
-Received: by mail-pf1-f194.google.com with SMTP id z5so12500077pfn.5
-        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 12:26:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5Wv4yd6kR1QRFXmj2NzM07bN147FOh0EzFD89nDLwIg=;
-        b=JbCimMAGYjEZ0zc+C4XcbauR6gn4y+fhcwZ36n+F9lR3NE7grLLeK4jW17f1cDHuvA
-         uNYw6v/6rQIJkWO7z5BFAL3DjDBjXEPjbzmFku0JIhtUHJfiUkUpL0aRmNSe/TCcPkPi
-         83I9syJIxdiHqnWg8pTJFbddKuuth0xQSrLMF2Q6PtSd5lfEZ2Hdz06UH8GBYKZEB/m+
-         lV1QkWIUQal7U5bSiDgYNSUUPRcy5WelwP9nNQgNLz7Vgz/UVmc2SoryBjkcS/azCPz2
-         SzJN1w/WwY9rleOcAuwAx6jn0Jb+dmqxPcX9hCBKQNEgGe46aFo16dphsdW6BfopgIV9
-         lfhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5Wv4yd6kR1QRFXmj2NzM07bN147FOh0EzFD89nDLwIg=;
-        b=XVGceNQIZEvsX9+GEwd/O67NNL7zzLenC5ulTQi/rt/6UHJnMumJljst3skKrwOnai
-         9r18Sg63TfPpuIVp07BxhuN53XdanRxos/uz4GqlDmkTZ4MxWXLIKthrtNA1BwM8bKdv
-         MDk3mSuzDSfHdCvBzfabg3R+dRLYXRhFHhv7VVd7kUqf5fydbD2alkhYVLWHHcqKD4TO
-         qKxiYzly98iAV8KNU1ezNCKVbVmG7TxmjA6zFc35LGPbfaufvHpCtVu0wQhB9ew0MVA9
-         FR7+RaIEQFrBDHstREt3RwNKuqfCt0rGZ3hGDf5ARM3pvkaP2XNDJTVtiDYD0FoKrDVK
-         MFRw==
-X-Gm-Message-State: ANhLgQ0knGnxT1i+ON59xzsoCcTcg1rD0VzbhK7wz/SmP+Gqzf9nQimM
-        NEunBt6mlCJXx7S3ytsBsX0=
-X-Google-Smtp-Source: ADFU+vu5MqXVG3sKiPSGLMIM6ccxiO2hIUIrFnK657jFPN+C662Qtk5zsBKUVpS+wQOQT5M44vOQBw==
-X-Received: by 2002:a62:f20d:: with SMTP id m13mr320045pfh.314.1584473217801;
-        Tue, 17 Mar 2020 12:26:57 -0700 (PDT)
-Received: from jian-dev.svl.corp.google.com ([2620:15c:2c4:201:83ec:eccf:6871:57])
-        by smtp.gmail.com with ESMTPSA id gn11sm173209pjb.42.2020.03.17.12.26.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2020 12:26:57 -0700 (PDT)
-From:   Jian Yang <jianyang.kernel@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Soheil Hassas Yeganeh <soheil@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jian Yang <jianyang@google.com>
-Subject: [PATCH net-next 5/5] selftests: txtimestamp: print statistics for timestamp events.
-Date:   Tue, 17 Mar 2020 12:25:09 -0700
-Message-Id: <20200317192509.150725-6-jianyang.kernel@gmail.com>
-X-Mailer: git-send-email 2.25.1.481.gfbce0eb801-goog
-In-Reply-To: <20200317192509.150725-1-jianyang.kernel@gmail.com>
-References: <20200317192509.150725-1-jianyang.kernel@gmail.com>
+        id S1726623AbgCQTaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 15:30:35 -0400
+Received: from www62.your-server.de ([213.133.104.62]:37880 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726476AbgCQTaf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 15:30:35 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jEHv6-0005Gw-7l; Tue, 17 Mar 2020 20:30:32 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jEHv5-000HzY-S0; Tue, 17 Mar 2020 20:30:31 +0100
+Subject: Re: [PATCH v2 bpf-next] bpf: sharing bpf runtime stats with
+ /dev/bpf_stats
+To:     Song Liu <songliubraving@fb.com>, linux-fsdevel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     kernel-team@fb.com, ast@kernel.org, mcgrof@kernel.org,
+        keescook@chromium.org, yzaikin@google.com
+References: <20200316203329.2747779-1-songliubraving@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <eb31bed3-3be4-501e-4340-bd558b31ead2@iogearbox.net>
+Date:   Tue, 17 Mar 2020 20:30:31 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200316203329.2747779-1-songliubraving@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25754/Tue Mar 17 14:09:15 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jian Yang <jianyang@google.com>
+On 3/16/20 9:33 PM, Song Liu wrote:
+> Currently, sysctl kernel.bpf_stats_enabled controls BPF runtime stats.
+> Typical userspace tools use kernel.bpf_stats_enabled as follows:
+> 
+>    1. Enable kernel.bpf_stats_enabled;
+>    2. Check program run_time_ns;
+>    3. Sleep for the monitoring period;
+>    4. Check program run_time_ns again, calculate the difference;
+>    5. Disable kernel.bpf_stats_enabled.
+> 
+> The problem with this approach is that only one userspace tool can toggle
+> this sysctl. If multiple tools toggle the sysctl at the same time, the
+> measurement may be inaccurate.
+> 
+> To fix this problem while keep backward compatibility, introduce a new
+> bpf command BPF_ENABLE_RUNTIME_STATS. On success, this command enables
+> run_time_ns stats and returns a valid fd.
+> 
+> With BPF_ENABLE_RUNTIME_STATS, user space tool would have the following
+> flow:
+> 
+>    1. Get a fd with BPF_ENABLE_RUNTIME_STATS, and make sure it is valid;
+>    2. Check program run_time_ns;
+>    3. Sleep for the monitoring period;
+>    4. Check program run_time_ns again, calculate the difference;
+>    5. Close the fd.
+> 
+> Signed-off-by: Song Liu <songliubraving@fb.com>
 
-Statistics on timestamps is useful to quantify average and tail latency.
+Hmm, I see no relation to /dev/bpf_stats anymore, yet the subject still talks
+about it?
 
-Print timestamp statistics in count/avg/min/max format.
+Also, should this have bpftool integration now that we have `bpftool prog profile`
+support? Would be nice to then fetch the related stats via bpf_prog_info, so users
+can consume this in an easy way.
 
-Signed-off-by: Jian Yang <jianyang@google.com>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
----
- .../networking/timestamping/txtimestamp.c     | 58 +++++++++++++++++++
- 1 file changed, 58 insertions(+)
+> Changes RFC => v2:
+> 1. Add a new bpf command instead of /dev/bpf_stats;
+> 2. Remove the jump_label patch, which is no longer needed;
+> 3. Add a static variable to save previous value of the sysctl.
+> ---
+>   include/linux/bpf.h            |  1 +
+>   include/uapi/linux/bpf.h       |  1 +
+>   kernel/bpf/syscall.c           | 43 ++++++++++++++++++++++++++++++++++
+>   kernel/sysctl.c                | 36 +++++++++++++++++++++++++++-
+>   tools/include/uapi/linux/bpf.h |  1 +
+>   5 files changed, 81 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 4fd91b7c95ea..d542349771df 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -970,6 +970,7 @@ _out:							\
+>   
+>   #ifdef CONFIG_BPF_SYSCALL
+>   DECLARE_PER_CPU(int, bpf_prog_active);
+> +extern struct mutex bpf_stats_enabled_mutex;
+>   
+>   /*
+>    * Block execution of BPF programs attached to instrumentation (perf,
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 40b2d9476268..8285ff37210c 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -111,6 +111,7 @@ enum bpf_cmd {
+>   	BPF_MAP_LOOKUP_AND_DELETE_BATCH,
+>   	BPF_MAP_UPDATE_BATCH,
+>   	BPF_MAP_DELETE_BATCH,
+> +	BPF_ENABLE_RUNTIME_STATS,
+>   };
+>   
+>   enum bpf_map_type {
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index b2f73ecacced..823dc9de7953 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -24,6 +24,9 @@
+>   #include <linux/ctype.h>
+>   #include <linux/nospec.h>
+>   #include <linux/audit.h>
+> +#include <linux/miscdevice.h>
 
-diff --git a/tools/testing/selftests/networking/timestamping/txtimestamp.c b/tools/testing/selftests/networking/timestamping/txtimestamp.c
-index f915f24db3fa..011b0da6b033 100644
---- a/tools/testing/selftests/networking/timestamping/txtimestamp.c
-+++ b/tools/testing/selftests/networking/timestamping/txtimestamp.c
-@@ -84,6 +84,17 @@ static struct timespec ts_usr;
- static int saved_tskey = -1;
- static int saved_tskey_type = -1;
- 
-+struct timing_event {
-+	int64_t min;
-+	int64_t max;
-+	int64_t total;
-+	int count;
-+};
-+
-+static struct timing_event usr_enq;
-+static struct timing_event usr_snd;
-+static struct timing_event usr_ack;
-+
- static bool test_failed;
- 
- static int64_t timespec_to_ns64(struct timespec *ts)
-@@ -96,6 +107,27 @@ static int64_t timespec_to_us64(struct timespec *ts)
- 	return ts->tv_sec * USEC_PER_SEC + ts->tv_nsec / NSEC_PER_USEC;
- }
- 
-+static void init_timing_event(struct timing_event *te)
-+{
-+	te->min = INT64_MAX;
-+	te->max = 0;
-+	te->total = 0;
-+	te->count = 0;
-+}
-+
-+static void add_timing_event(struct timing_event *te,
-+		struct timespec *t_start, struct timespec *t_end)
-+{
-+	int64_t ts_delta = timespec_to_ns64(t_end) - timespec_to_ns64(t_start);
-+
-+	te->count++;
-+	if (ts_delta < te->min)
-+		te->min = ts_delta;
-+	if (ts_delta > te->max)
-+		te->max = ts_delta;
-+	te->total += ts_delta;
-+}
-+
- static void validate_key(int tskey, int tstype)
- {
- 	int stepsize;
-@@ -187,14 +219,17 @@ static void print_timestamp(struct scm_timestamping *tss, int tstype,
- 	case SCM_TSTAMP_SCHED:
- 		tsname = "  ENQ";
- 		validate_timestamp(&tss->ts[0], 0);
-+		add_timing_event(&usr_enq, &ts_usr, &tss->ts[0]);
- 		break;
- 	case SCM_TSTAMP_SND:
- 		tsname = "  SND";
- 		validate_timestamp(&tss->ts[0], cfg_delay_snd);
-+		add_timing_event(&usr_snd, &ts_usr, &tss->ts[0]);
- 		break;
- 	case SCM_TSTAMP_ACK:
- 		tsname = "  ACK";
- 		validate_timestamp(&tss->ts[0], cfg_delay_ack);
-+		add_timing_event(&usr_ack, &ts_usr, &tss->ts[0]);
- 		break;
- 	default:
- 		error(1, 0, "unknown timestamp type: %u",
-@@ -203,6 +238,21 @@ static void print_timestamp(struct scm_timestamping *tss, int tstype,
- 	__print_timestamp(tsname, &tss->ts[0], tskey, payload_len);
- }
- 
-+static void print_timing_event(char *name, struct timing_event *te)
-+{
-+	if (!te->count)
-+		return;
-+
-+	fprintf(stderr, "    %s: count=%d", name, te->count);
-+	fprintf(stderr, ", avg=");
-+	__print_ts_delta_formatted((int64_t)(te->total / te->count));
-+	fprintf(stderr, ", min=");
-+	__print_ts_delta_formatted(te->min);
-+	fprintf(stderr, ", max=");
-+	__print_ts_delta_formatted(te->max);
-+	fprintf(stderr, "\n");
-+}
-+
- /* TODO: convert to check_and_print payload once API is stable */
- static void print_payload(char *data, int len)
- {
-@@ -436,6 +486,10 @@ static void do_test(int family, unsigned int report_opt)
- 	char *buf;
- 	int fd, i, val = 1, total_len, epfd = 0;
- 
-+	init_timing_event(&usr_enq);
-+	init_timing_event(&usr_snd);
-+	init_timing_event(&usr_ack);
-+
- 	total_len = cfg_payload_len;
- 	if (cfg_use_pf_packet || cfg_proto == SOCK_RAW) {
- 		total_len += sizeof(struct udphdr);
-@@ -595,6 +649,10 @@ static void do_test(int family, unsigned int report_opt)
- 		while (!recv_errmsg(fd)) {}
- 	}
- 
-+	print_timing_event("USR-ENQ", &usr_enq);
-+	print_timing_event("USR-SND", &usr_snd);
-+	print_timing_event("USR-ACK", &usr_ack);
-+
- 	if (close(fd))
- 		error(1, errno, "close");
- 
--- 
-2.25.1.481.gfbce0eb801-goog
+Is this still needed?
 
+> +#include <linux/fs.h>
+> +#include <linux/jump_label.h>
+>   #include <uapi/linux/btf.h>
+>   
+>   #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
+> @@ -3550,6 +3553,43 @@ static int bpf_map_do_batch(const union bpf_attr *attr,
+>   	return err;
+>   }
+>   
+
+Thanks,
+Daniel
