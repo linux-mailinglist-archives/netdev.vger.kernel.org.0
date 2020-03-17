@@ -2,114 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B937B188823
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 15:53:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0483C188827
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 15:54:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726901AbgCQOxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 10:53:30 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40996 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726112AbgCQOxa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 10:53:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=zy40pSnnLPpjvBORId3UuXxIFCVRHdxNligFP4pP/e0=; b=n+KG9/UbqaX6zOQN/6dQMF2dyu
-        5RQFRroaYN4ORg2TDwxd6XTPlNk231l1n7gNtlCL4s0F11cAH6vKgIarwT8POHcl8bX3FTHIb7hDU
-        /5muV2cjfHo5ndwFMTr1miLZPki40WXSlkusCPCLfWQQ9c0ZfbLGDBWJHa3PWJqQ1lk4v0JldqZ91
-        GqLjZr/pvOraqUifDfys9qnnScMidFNXVFKDCa83D96YIMu59/ryp/MHF1IgfnNXbNvF+c1/IDdxP
-        N7DTqWgFGdrn1DpMA2GjuxExbFNLOEOs6UsZBcW6rnwynr+5SH7fArbei1XGibenZxglbAmVbJOZM
-        wcCS08Qw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:44368 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jEDaf-0007is-1K; Tue, 17 Mar 2020 14:53:09 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jEDac-0008Jd-Vq; Tue, 17 Mar 2020 14:53:07 +0000
-In-Reply-To: <20200317144944.GP25745@shell.armlinux.org.uk>
-References: <20200317144944.GP25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>
-Subject: [RFC net-next 5/5] dpaa2-mac: add 10GBASE-R PCS support
+        id S1726541AbgCQOyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 10:54:03 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:23584 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726112AbgCQOyD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 10:54:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584456842;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=l79FaHixoWb/YEr1Un8EfF3fxqL3uRrFsnQzA6pb2vc=;
+        b=EEaZu2rciKuVezwz4X5HjY21jCK9ktabJJXmOt6GKRmIbILStv6MrYXgw8bzFftuMZvJIS
+        IBj+IWe2ShZ5sb50T5DntzjLZLuogJqxjdMwX4S18/e3xw0GJhnhDhtcMVNhS8moY16aMx
+        QANchgavvRVvTo6whGPO51uqmZ86cDk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-317-5dvBq50rPqa9oK0HyjNbng-1; Tue, 17 Mar 2020 10:54:00 -0400
+X-MC-Unique: 5dvBq50rPqa9oK0HyjNbng-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 615ACDB5A;
+        Tue, 17 Mar 2020 14:53:59 +0000 (UTC)
+Received: from localhost.localdomain.com (ovpn-113-23.ams2.redhat.com [10.36.113.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3FECF5F700;
+        Tue, 17 Mar 2020 14:53:57 +0000 (UTC)
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH net-next] mptcp: move msk state update to subflow_syn_recv_sock()
+Date:   Tue, 17 Mar 2020 15:53:34 +0100
+Message-Id: <ca414f55f4c74190bc419815f6ac7c61313bac2a.1584456734.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jEDac-0008Jd-Vq@rmk-PC.armlinux.org.uk>
-Date:   Tue, 17 Mar 2020 14:53:06 +0000
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-*NOT FOR MERGING*
+After commit 58b09919626b ("mptcp: create msk early"), the
+msk socket is already available at subflow_syn_recv_sock()
+time. Let's move there the state update, to mirror more
+closely the first subflow state.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+The above will also help multiple subflow supports.
+
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 ---
- .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
+ net/mptcp/protocol.c | 9 +++------
+ net/mptcp/subflow.c  | 2 ++
+ 2 files changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index e7b2dc366338..38f8d31bf426 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -27,6 +27,10 @@ static void dpaa2_mac_pcs_get_state(struct phylink_config *config,
- 		phylink_mii_c22_pcs_get_state(pcs, state);
- 		break;
- 
-+	case PHY_INTERFACE_MODE_10GBASER:
-+		phylink_mii_c45_pcs_get_state(pcs, state);
-+		break;
-+
- 	default:
- 		break;
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 04c3caed92df..e959104832ef 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -861,6 +861,9 @@ struct sock *mptcp_sk_clone(const struct sock *sk, st=
+ruct request_sock *req)
+ 		ack_seq++;
+ 		msk->ack_seq =3D ack_seq;
  	}
-@@ -131,6 +135,10 @@ static int phy_mode(enum dpmac_eth_if eth_if, phy_interface_t *if_mode)
- 		*if_mode = PHY_INTERFACE_MODE_SGMII;
- 		break;
- 
-+	case DPMAC_ETH_IF_XFI:
-+		*if_mode = PHY_INTERFACE_MODE_10GBASER;
-+		break;
 +
- 	default:
- 		return -EINVAL;
++	/* will be fully established after successful MPC subflow creation */
++	inet_sk_state_store(nsk, TCP_SYN_RECV);
+ 	bh_unlock_sock(nsk);
+=20
+ 	/* keep a single reference */
+@@ -916,10 +919,6 @@ static struct sock *mptcp_accept(struct sock *sk, in=
+t flags, int *err,
+ 		mptcp_copy_inaddrs(newsk, ssk);
+ 		list_add(&subflow->node, &msk->conn_list);
+=20
+-		/* will be fully established at mptcp_stream_accept()
+-		 * completion.
+-		 */
+-		inet_sk_state_store(new_mptcp_sock, TCP_SYN_RECV);
+ 		bh_unlock_sock(new_mptcp_sock);
+ 		local_bh_enable();
  	}
-@@ -191,6 +199,7 @@ static bool dpaa2_mac_phy_mode_mismatch(struct dpaa2_mac *mac,
- 	case PHY_INTERFACE_MODE_RGMII_ID:
- 	case PHY_INTERFACE_MODE_RGMII_RXID:
- 	case PHY_INTERFACE_MODE_RGMII_TXID:
-+	case PHY_INTERFACE_MODE_10GBASER:
- 		return (interface != mac->if_mode);
- 	default:
- 		return true;
-@@ -216,6 +225,17 @@ static void dpaa2_mac_validate(struct phylink_config *config,
- 
- 	switch (state->interface) {
- 	case PHY_INTERFACE_MODE_NA:
-+	case PHY_INTERFACE_MODE_10GBASER:
-+		phylink_set(mask, 10000baseT_Full);
-+		phylink_set(mask, 10000baseKR_Full);
-+		phylink_set(mask, 10000baseCR_Full);
-+		phylink_set(mask, 10000baseSR_Full);
-+		phylink_set(mask, 10000baseLR_Full);
-+		phylink_set(mask, 10000baseLRM_Full);
-+		phylink_set(mask, 10000baseER_Full);
-+		if (state->interface != PHY_INTERFACE_MODE_NA)
-+			break;
-+		/* fallthrough */
- 	case PHY_INTERFACE_MODE_1000BASEX:
- 	case PHY_INTERFACE_MODE_SGMII:
- 	case PHY_INTERFACE_MODE_RGMII:
--- 
-2.20.1
+@@ -1256,8 +1255,6 @@ static int mptcp_stream_accept(struct socket *sock,=
+ struct socket *newsock,
+ 			if (!ssk->sk_socket)
+ 				mptcp_sock_graft(ssk, newsock);
+ 		}
+-
+-		inet_sk_state_store(newsock->sk, TCP_ESTABLISHED);
+ 	}
+=20
+ 	sock_put(ssock->sk);
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 8434c7f5f712..052d72a1d3a2 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -234,6 +234,8 @@ static struct sock *subflow_syn_recv_sock(const struc=
+t sock *sk,
+ 			/* new mpc subflow takes ownership of the newly
+ 			 * created mptcp socket
+ 			 */
++			inet_sk_state_store((struct sock *)new_msk,
++					    TCP_ESTABLISHED);
+ 			ctx->conn =3D new_msk;
+ 			new_msk =3D NULL;
+ 		}
+--=20
+2.21.1
 
