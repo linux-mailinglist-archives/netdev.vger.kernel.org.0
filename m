@@ -2,67 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C8A618778B
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 02:42:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DFB051877A8
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 03:03:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726651AbgCQBmr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 21:42:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46492 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726596AbgCQBmr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 16 Mar 2020 21:42:47 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8EEB420719;
-        Tue, 17 Mar 2020 01:42:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584409366;
-        bh=dajjltS70DyT0tGcFX9CImUOD2RAIdlVGDKEpxCSmhY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2FKcCT4yUOLyEnY9Mtf9l9EWT4ipnYLHD7eaTdsx/OR0T2ktTcPhvh+2b1YIfYUfU
-         OTHJojLQOL4AK+ZqX+0kZ2POKrSCC3DeeHAmav/UlGVfl+dn574hG9qslpHfupFnrX
-         7VQ9x9ulQyUxzfQWzN82lwntpbuhNI28x545xu3c=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net, jiri@resnulli.us
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com, ecree@solarflare.com,
-        pablo@netfilter.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 2/2] nfp: allow explicitly selected delayed stats
-Date:   Mon, 16 Mar 2020 18:42:12 -0700
-Message-Id: <20200317014212.3467451-3-kuba@kernel.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200317014212.3467451-1-kuba@kernel.org>
-References: <20200317014212.3467451-1-kuba@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726802AbgCQCDi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 22:03:38 -0400
+Received: from cmccmta3.chinamobile.com ([221.176.66.81]:9062 "EHLO
+        cmccmta3.chinamobile.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725995AbgCQCDi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 22:03:38 -0400
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.19]) by rmmx-syy-dmz-app12-12012 (RichMail) with SMTP id 2eec5e702fd7356-ec074; Tue, 17 Mar 2020 10:03:04 +0800 (CST)
+X-RM-TRANSID: 2eec5e702fd7356-ec074
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from localhost (unknown[223.105.0.241])
+        by rmsmtp-syy-appsvr10-12010 (RichMail) with SMTP id 2eea5e702fd7558-f80c0;
+        Tue, 17 Mar 2020 10:03:04 +0800 (CST)
+X-RM-TRANSID: 2eea5e702fd7558-f80c0
+From:   Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+Subject: [PATCH v2 1/2] netfilter: nf_flow_table: reload ip{v6}h in nf_flow_nat_ip{v6}
+Date:   Tue, 17 Mar 2020 10:02:52 +0800
+Message-Id: <1584410573-6812-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-NFP flower offload uses delayed stats. Kernel recently gained
-the ability to specify stats types. Make nfp accept DELAYED
-stats, not just the catch all "any".
+Since nf_flow_snat_port and nf_flow_snat_ip{v6} call pskb_may_pull()
+which may change skb->data, so we need to reload ip{v6}h at the right
+palce.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: a908fdec3dda ("netfilter: nf_flow_table: move ipv6 offload hook
+code to nf_flow_table")
+Fixes: 7d2086871762 ("netfilter: nf_flow_table: move ipv4 offload hook
+code to nf_flow_table")
+Signed-off-by: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
 ---
- drivers/net/ethernet/netronome/nfp/flower/action.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+v2: collapse the patches
+---
+ net/netfilter/nf_flow_table_ip.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/action.c b/drivers/net/ethernet/netronome/nfp/flower/action.c
-index 5fb9869f85d7..1c76e1592ca2 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/action.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/action.c
-@@ -1207,7 +1207,8 @@ int nfp_flower_compile_action(struct nfp_app *app,
- 	bool pkt_host = false;
- 	u32 csum_updated = 0;
+diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
+index 5272721..942bda5 100644
+--- a/net/netfilter/nf_flow_table_ip.c
++++ b/net/netfilter/nf_flow_table_ip.c
+@@ -146,11 +146,12 @@ static int nf_flow_nat_ip(const struct flow_offload *flow, struct sk_buff *skb,
  
--	if (!flow_action_basic_hw_stats_check(&flow->rule->action, extack))
-+	if (!flow_action_hw_stats_check(&flow->rule->action, extack,
-+					FLOW_ACTION_HW_STATS_DELAYED_BIT))
- 		return -EOPNOTSUPP;
+ 	if (test_bit(NF_FLOW_SNAT, &flow->flags) &&
+ 	    (nf_flow_snat_port(flow, skb, thoff, iph->protocol, dir) < 0 ||
+-	     nf_flow_snat_ip(flow, skb, iph, thoff, dir) < 0))
++	     nf_flow_snat_ip(flow, skb, ip_hdr(skb), thoff, dir) < 0))
+ 		return -1;
++	iph = ip_hdr(skb);
+ 	if (test_bit(NF_FLOW_DNAT, &flow->flags) &&
+ 	    (nf_flow_dnat_port(flow, skb, thoff, iph->protocol, dir) < 0 ||
+-	     nf_flow_dnat_ip(flow, skb, iph, thoff, dir) < 0))
++	     nf_flow_dnat_ip(flow, skb, ip_hdr(skb), thoff, dir) < 0))
+ 		return -1;
  
- 	memset(nfp_flow->action_data, 0, NFP_FL_MAX_A_SIZ);
+ 	return 0;
+@@ -417,11 +418,12 @@ static int nf_flow_nat_ipv6(const struct flow_offload *flow,
+ 
+ 	if (test_bit(NF_FLOW_SNAT, &flow->flags) &&
+ 	    (nf_flow_snat_port(flow, skb, thoff, ip6h->nexthdr, dir) < 0 ||
+-	     nf_flow_snat_ipv6(flow, skb, ip6h, thoff, dir) < 0))
++	     nf_flow_snat_ipv6(flow, skb, ipv6_hdr(skb), thoff, dir) < 0))
+ 		return -1;
++	ip6h = ipv6_hdr(skb);
+ 	if (test_bit(NF_FLOW_DNAT, &flow->flags) &&
+ 	    (nf_flow_dnat_port(flow, skb, thoff, ip6h->nexthdr, dir) < 0 ||
+-	     nf_flow_dnat_ipv6(flow, skb, ip6h, thoff, dir) < 0))
++	     nf_flow_dnat_ipv6(flow, skb, ipv6_hdr(skb), thoff, dir) < 0))
+ 		return -1;
+ 
+ 	return 0;
 -- 
-2.24.1
+1.8.3.1
+
+
 
