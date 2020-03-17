@@ -2,183 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19B7A18904D
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 22:25:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EF3E1890BB
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 22:47:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726871AbgCQVZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 17:25:18 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:45668 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726388AbgCQVZS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 17:25:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=EYkrmVZKJc55hiH7sahW+IAVzSPmzWr7Qzpmj6OO7ck=; b=OcMUooOuEFc9/BCd9EWQtOByp
-        PrnDA9RFRWkQZ9p6tqyoGJHcDZOhnqJT2J5yZHnVjAD40kznbyRXO3Q3yIbszpdtM0TI2N+n4EWhw
-        UCQHPKYAzDvObCbRvHYMrKSbegUTlYS6huJ9bDoHeecUF8sxyD1R6JdbvX1z8YIT1CtIYrMSRC71/
-        8B9BjLQMTp4AuT6tk5okW73DFQKCs431s9hbUbxknK/3Oajn0T4CIy/qiiEPptBfdMbi0bjlR+4pa
-        Qmb0yt0E/xqv6n3UHxhAIdrJBqktQzLT0l4AwdpkGZ68fHO3JQl5+xuHOVN5xSAPxF7PsMPKwbY2k
-        X5L+y8S+Q==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:37816)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jEJhp-0000yI-Jo; Tue, 17 Mar 2020 21:24:57 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jEJhl-00039D-8Z; Tue, 17 Mar 2020 21:24:53 +0000
-Date:   Tue, 17 Mar 2020 21:24:53 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/3] VLANs, DSA switches and multiple bridges
-Message-ID: <20200317212453.GV25745@shell.armlinux.org.uk>
-References: <CA+h21hrjAT4yCh=UgJJDfv3=3OWkHUjMRB94WuAPDk-hkhOZ6w@mail.gmail.com>
- <15ce2fae-c2c8-4a36-c741-6fef58115604@gmail.com>
- <20200219231528.GS25745@shell.armlinux.org.uk>
- <e9b51f9e-4a8f-333d-5ba9-3fcf220ace7c@gmail.com>
- <20200221002110.GE25745@shell.armlinux.org.uk>
- <20200316111524.GE5827@shell.armlinux.org.uk>
- <20200317120044.GH5827@shell.armlinux.org.uk>
- <CA+h21hpGvhgxdNid8OMG15Zyp6uzGjAq_xmGgz2Udvo3sHuZ0g@mail.gmail.com>
- <20200317151238.GQ25745@shell.armlinux.org.uk>
- <20200317144906.GB3155670@t480s.localdomain>
+        id S1726735AbgCQVrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 17:47:04 -0400
+Received: from www62.your-server.de ([213.133.104.62]:56464 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726388AbgCQVrE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 17:47:04 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jEK3B-000880-36; Tue, 17 Mar 2020 22:47:01 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jEK3A-0002u4-Oi; Tue, 17 Mar 2020 22:47:00 +0100
+Subject: Re: [PATCH v2 bpf-next] bpf: sharing bpf runtime stats with
+ /dev/bpf_stats
+To:     Song Liu <songliubraving@fb.com>
+Cc:     "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "yzaikin@google.com" <yzaikin@google.com>
+References: <20200316203329.2747779-1-songliubraving@fb.com>
+ <eb31bed3-3be4-501e-4340-bd558b31ead2@iogearbox.net>
+ <920839AF-AC7A-4CD3-975F-111C3C6F75B9@fb.com>
+ <a69245f8-c70f-857c-b109-556d1bc267f7@iogearbox.net>
+ <C126A009-516F-451A-9A83-31BC8F67AA11@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <53f8973f-4b3e-08fe-2363-2300027c8f9d@iogearbox.net>
+Date:   Tue, 17 Mar 2020 22:47:00 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200317144906.GB3155670@t480s.localdomain>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <C126A009-516F-451A-9A83-31BC8F67AA11@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25754/Tue Mar 17 14:09:15 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 17, 2020 at 02:49:06PM -0400, Vivien Didelot wrote:
-> Hi Russell,
+On 3/17/20 9:13 PM, Song Liu wrote:
+>> On Mar 17, 2020, at 1:03 PM, Daniel Borkmann <daniel@iogearbox.net> wrote:
+>> On 3/17/20 8:54 PM, Song Liu wrote:
+>>>> On Mar 17, 2020, at 12:30 PM, Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>>> On 3/16/20 9:33 PM, Song Liu wrote:
+>>>>> Currently, sysctl kernel.bpf_stats_enabled controls BPF runtime stats.
+>>>>> Typical userspace tools use kernel.bpf_stats_enabled as follows:
+>>>>>    1. Enable kernel.bpf_stats_enabled;
+>>>>>    2. Check program run_time_ns;
+>>>>>    3. Sleep for the monitoring period;
+>>>>>    4. Check program run_time_ns again, calculate the difference;
+>>>>>    5. Disable kernel.bpf_stats_enabled.
+>>>>> The problem with this approach is that only one userspace tool can toggle
+>>>>> this sysctl. If multiple tools toggle the sysctl at the same time, the
+>>>>> measurement may be inaccurate.
+>>>>> To fix this problem while keep backward compatibility, introduce a new
+>>>>> bpf command BPF_ENABLE_RUNTIME_STATS. On success, this command enables
+>>>>> run_time_ns stats and returns a valid fd.
+>>>>> With BPF_ENABLE_RUNTIME_STATS, user space tool would have the following
+>>>>> flow:
+>>>>>    1. Get a fd with BPF_ENABLE_RUNTIME_STATS, and make sure it is valid;
+>>>>>    2. Check program run_time_ns;
+>>>>>    3. Sleep for the monitoring period;
+>>>>>    4. Check program run_time_ns again, calculate the difference;
+>>>>>    5. Close the fd.
+>>>>> Signed-off-by: Song Liu <songliubraving@fb.com>
+>>>>
+>>>> Hmm, I see no relation to /dev/bpf_stats anymore, yet the subject still talks
+>>>> about it?
+>>> My fault. Will fix..
+>>>> Also, should this have bpftool integration now that we have `bpftool prog profile`
+>>>> support? Would be nice to then fetch the related stats via bpf_prog_info, so users
+>>>> can consume this in an easy way.
+>>> We can add "run_time_ns" as a metric to "bpftool prog profile". But the
+>>> mechanism is not the same though. Let me think about this.
+>>
+>> Hm, true as well. Wouldn't long-term extending "bpftool prog profile" fentry/fexit
+>> programs supersede this old bpf_stats infrastructure? Iow, can't we implement the
+>> same (or even more elaborate stats aggregation) in BPF via fentry/fexit and then
+>> potentially deprecate bpf_stats counters?
 > 
-> On Tue, 17 Mar 2020 15:12:38 +0000, Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> > On Tue, Mar 17, 2020 at 04:21:00PM +0200, Vladimir Oltean wrote:
-> > > Hi Russell,
-> > > 
-> > > On Tue, 17 Mar 2020 at 14:00, Russell King - ARM Linux admin
-> > > <linux@armlinux.org.uk> wrote:
-> > > >
-> > > > On Mon, Mar 16, 2020 at 11:15:24AM +0000, Russell King - ARM Linux admin wrote:
-> > > > > On Fri, Feb 21, 2020 at 12:21:10AM +0000, Russell King - ARM Linux admin wrote:
-> > > > > > On Thu, Feb 20, 2020 at 10:56:17AM -0800, Florian Fainelli wrote:
-> > > > > > > Let's get your patch series merged. If you re-spin while addressing
-> > > > > > > Vivien's comment not to use the term "vtu", I think I would be fine with
-> > > > > > > the current approach of having to go after each driver and enabling them
-> > > > > > > where necessary.
-> > > > > >
-> > > > > > The question then becomes what to call it.  "always_allow_vlans" or
-> > > > > > "always_allow_vlan_config" maybe?
-> > > > >
-> > > > > Please note that I still have this patch pending (i.o.w., the problem
-> > > > > with vlans remains unfixed) as I haven't received a reply to this,
-> > > > > although the first two patches have been merged.
-> > > >
-> > > > Okay, I think three and a half weeks is way beyond a reasonable time
-> > > > period to expect any kind of reply.
-> > > >
-> > > > Since no one seems to have any idea what to name this, but can only
-> > > > offer "we don't like the vtu" term, it's difficult to see what would
-> > > > actually be acceptable.  So, I propose that we go with the existing
-> > > > naming.
-> > > >
-> > > > If you only know what you don't want, but not what you want, and aren't
-> > > > even willing to discuss it, it makes it very much impossible to
-> > > > progress.
-> > > >
-> > > > --
-> > > > RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> > > > FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
-> > > 
-> > > As I said, I know why I need this blocking of bridge vlan
-> > > configuration for sja1105, but not more. For sja1105 in particular, I
-> > > fully admit that the hardware is quirky, but I can work around that
-> > > within the driver. The concern is for the other drivers where we don't
-> > > really "remember" why this workaround is in place. I think, while your
-> > > patch is definitely a punctual fix for one case that doesn't need the
-> > > workaround, it might be better for maintenance to just see exactly
-> > > what breaks, instead of introducing this opaque property.
-> > > While I don't want to speak on behalf of the maintainers, I think that
-> > > may be at least part of the reason why there is little progress being
-> > > made. Introducing some breakage which is going to be fixed better next
-> > > time might be the more appropriate thing to do.
-> > 
-> > The conclusion on 21st February was that all patches should be merged,
-> > complete with the boolean control, but there was an open question about
-> > the name of the boolean used to enable this behaviour.
-> > 
-> > That question has not been resolved, so I'm trying to re-open discussion
-> > of that point.  I've re-posted the patch.
-> > 
-> > -- 
-> > RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> > FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
-> 
-> In response to your 3/3 patch, I suggested commands to test setting up a
-> VLAN filtering aware bridge with your own default PVID before enslaving
-> DSA ports. Unfortunately you left this unanswered.
+> I think run_time_ns has its own value as a simple monitoring framework. We can
+> use it in tools like top (and variations). It will be easier for these tools to
+> adopt run_time_ns than using fentry/fexit.
 
-I don't believe I left it unanswered.  However, I'm not about to rip
-apart my network to try an experiment with specific set of commands.
-I did, however, experiment a lot to work out what was going on, so I
-already have the knowledge.
+Agree that this is easier; I presume there is no such official integration today
+in tools like top, right, or is there anything planned?
 
-I believe I explained in the series description that the problem only
-happens when vlan filtering is enabled with a pre-existing vlan
-configuration present, even the default configuration.
+> On the other hand, in long term, we may include a few fentry/fexit based programs
+> in the kernel binary (or the rpm), so that these tools can use them easily. At
+> that time, we can fully deprecate run_time_ns. Maybe this is not too far away?
 
-Enabling vlan filtering *immediately* blocks all traffic on the Marvell
-switch, whether it has vlan tags or not.  Any *new* vlan modifications
-then get entered into the VTU, and the Marvell switch then behaves
-accordingly with those new entries as one would expect.
+Did you check how feasible it is to have something like `bpftool prog profile top`
+which then enables fentry/fexit for /all/ existing BPF programs in the system? It
+could then sort the sample interval by run_cnt, cycles, cache misses, aggregated
+runtime, etc in a top-like output. Wdyt?
 
-Any setup done *before* vlan filtering is enabled is not present in the
-VTU, and so remains non-existent as far as the DSA switch is concerned.
-
-As soon as vlan filtering is enabled, the ports are switched to "802.1Q
-secure" state, which means:
-
-- The switch will consult the VTU for the incoming packet; if no entry
-  is found for the vlan number either tagged to the packet, or the
-  default vlan if not, then the packet will be discarded by the switch.
-
-So, the setup done *before* vlan filtering is enabled, which is not
-programmed into the VTU, results in that traffic being lost.
-
-> I think this would be
-> much more interesting in order to tackle the issue you're having here with
-> mv88e6xxx and bridge, instead of pointing out the lack of response regarding
-> an alternative boolean name.
-
-It is my understanding that Florian actively wants this merged.  No
-one objected to his email.
-
-It seems there's a disconnect *between* the DSA maintainers - I think
-you need to be more effectively communicating with each other and
-reading each other's emails, and pro-actively replying to stuff you
-may have other views on.
-
-> That being said, "force_vlan_programming",
-> "always_allow_vlans", or whatever explicit non-"vtu" term is fine by me.
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+Thanks,
+Daniel
