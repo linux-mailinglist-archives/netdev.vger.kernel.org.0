@@ -2,152 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC5881889BE
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 17:04:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D1BB1889C4
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 17:05:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726809AbgCQQEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 12:04:40 -0400
-Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:38042 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726783AbgCQQEj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 12:04:39 -0400
-Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 4CE29402D3;
-        Tue, 17 Mar 2020 16:04:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1584461079; bh=IEapErGx1GPb/LDcQqKK+waiT25ShV5DZRDwLwzeWzc=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=g5caUmTDfbklpWrPjFNsuwlyEnQGI2JQE+mSkrQZeag/luKymYtQjFbOY9WVPJExe
-         b/L3fDCq/h8JdSTDX9zW74yxD+0MZpRfKMqoE/lmKamYgN2kQ6UfxXUOqlS1R9Ga56
-         ln2/fSMeTfmg9zuqGljDnDjFPl+4GG1GftHZd8olNIbtzOjHRs0032pznnYK8oUqLY
-         aLrg2gycMbopMOzJpNWktE5KHGfOSWocbYwG8UqGdgnEXTVw+CR3qw5coXfzlHruIT
-         qf63MFZEWMU2r+0asqKKJUhvMjBc0+EqsKnNPk5CpKU8K57Pk6vpldUaaQVBzbf3uf
-         KVB993Sv7dVSA==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id E67E6A00AE;
-        Tue, 17 Mar 2020 16:04:38 +0000 (UTC)
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Tue, 17 Mar 2020 09:04:31 -0700
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (10.202.3.67) by
- mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Tue, 17 Mar 2020 09:04:31 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fdt4TMpSVz/l+RxAI4TgdSBkrHIxHrKeKQ6jWCH5KJJl28wVxoscPQrZ2LbStU1IHgp7yQde2TE+NI62fSh0AfoBKJk3aYb8w2U2YxNTdbCHJizTqIQJAaF+ackkgh/8XZ3Js/lQnFx/BbRSSs/uXnSiUPfAbKb4Og6mNnuz3KKB4sw/7EIWQAkocFV1Zo08yvmS8RdzItjWpeQAs6QQiikce1ZQGXPsSphG7VHMxvybz0Wa/owjr/ETQHDb36PUWLFmdXQnh6TTrRfhWtNJy/eq2bKLfoaPqA/fqZd7kd+Rgb3YLqf2gi0CTEPNvrgjWp4NIrDm4HnGk8bnQZQ7Yw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HCB+BzgJpHY8/1I0KuyEwp0jfU6w52pBDvOcz9HGruY=;
- b=e44S5GkNOKzoh8vuPPr5aUG4GdLesQMlebClbP3RXvyHLuliJYKxMDAOEydOSCPnQ53hXt7p3yPNmuAKjyiZBjjiAzoZRhgS1buAfSrZR9s2L0ZlLPVwRzH7NwZLKYP6CnMPZ0LYhV64W/Pg4XFAV8Qc9lzRRp9elY0gCQzJUZ10fDKJwbQ9vfEjc+2k2QNwpjtZBK6Rco7XjA+YXUGeluMJBR2qjUXPVwiRlrxX5PVAjrivLHHQqk09NXKRT6wks1FC4WD2zyK8MhUbNwWuCEJzFnsMmUIzccK0W0B1CWsGMdKFx3+RgLptFCKAut4d/RzArQ4ZpoP/zvMskCs5dw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HCB+BzgJpHY8/1I0KuyEwp0jfU6w52pBDvOcz9HGruY=;
- b=GqRWXe/RgElsrtF0FkKUKuW6KMGI+7wofDFvynPQIqcyCC1k3pOESbM0X6SG6NxGmpCFonyfbLuc/uhFTc4XTjtQCDumYPi92EYhM+snXWZyNsH9KYylkYnYOioQ+u2fxiISiMQpBZ3cfpGDH9O1eGFNvSIgkSNSXjnfvYGAJ0I=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (2603:10b6:408:6e::17)
- by BN8PR12MB2948.namprd12.prod.outlook.com (2603:10b6:408:6d::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.13; Tue, 17 Mar
- 2020 16:04:28 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::c9ed:b08e:f3c5:42fa]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::c9ed:b08e:f3c5:42fa%7]) with mapi id 15.20.2814.021; Tue, 17 Mar 2020
- 16:04:28 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        id S1726803AbgCQQFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 12:05:20 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:45437 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726564AbgCQQFU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 12:05:20 -0400
+Received: by mail-pg1-f195.google.com with SMTP id m15so11974376pgv.12
+        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 09:05:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=0fe+6CUwzbiQ8d1E1j8IqRqgWqyoAVB18XoQMWs5ZAM=;
+        b=S911caeIj9AdJQpRgY1A0JtWKuRsNfR+zSL4mp58SX8MwjNiE2DIo5s7dmYhzIJ7bM
+         UhPrPKWIMJbt3g5xMrGuuDJhZW0oFQTT3l9xMbUS4EeDF17gRgKUL/C8l0tucG3MTsyX
+         Zn2HyU3ngbMdAyjRFWoeavASiVwo3On4hCXy1p2MFeG/aJfZRbMEqAV6Tv/+msGRoEFj
+         oSUiPgyz7MhDl8ZbIu2QcoPtfSpUUCl5pRfp0/vs3hIFefUNF8i8sg2SatHdWyFO4oIf
+         nSAD6wJ0umDnLhWz4mg9R3sGe7yJ+laXyvF/y6JwE7bKzaV7RkxsKaeh+y1ksWcYyEiG
+         tSyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=0fe+6CUwzbiQ8d1E1j8IqRqgWqyoAVB18XoQMWs5ZAM=;
+        b=pyskFPiilbvR+EtMLKW8oL7oxU68HimV9viFZ53iRw414pZHZh+1PeGd0wNE2kYfXf
+         g9XVJREa0/k1HVU3SFS/97mB9FB8tmMGom+0CNf2sOZA7bNdYIGJIt3C/n8347ZGZFx/
+         jxhgbZ2BouYdBkQPv4LVAmxEXAuWGC/4zi9it/H3q0yao+D2bC8LXmzUuj0MiaP52xJz
+         Dsq/DIYilmWbtOKulBT/yeu8oD0XVOjug+IZtx5++B+OK3YmtO8JiCl8l7DOJIXJCSHv
+         DmzKqYjY+RxRzy0U0CDykc4WE0kf4SolQs20x2U7r/mKcrDN1h/oZueuyOr9IcPCJwRV
+         xu7Q==
+X-Gm-Message-State: ANhLgQ1mbFliEkFkApGhbZiLMbQGhrkDNKG9Dr3ftDTe8HLO1DVgZP4M
+        DoAbhMxMR1OftgCXU3nUJC9QmA==
+X-Google-Smtp-Source: ADFU+vsjvp9ANlE3hq9XBKsNMc2OON/6Swy1KD/IZwyUCj7gJvSjAF6p1XfZBhpbP5+U3guMPSvevw==
+X-Received: by 2002:a62:1513:: with SMTP id 19mr5877005pfv.85.1584461116885;
+        Tue, 17 Mar 2020 09:05:16 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id c207sm3665064pfb.47.2020.03.17.09.05.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Mar 2020 09:05:15 -0700 (PDT)
+Date:   Tue, 17 Mar 2020 09:05:15 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Fangrui Song <maskray@google.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        clang-built-linux@googlegroups.com,
+        Stanislav Fomichev <sdf@google.com>,
         "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [RFC net-next 2/5] net: phylink: add separate pcs operations
- structure
-Thread-Topic: [RFC net-next 2/5] net: phylink: add separate pcs operations
- structure
-Thread-Index: AQHV/HG4xNUA04fN3kCshkX6WTztf6hM7DowgAAECQCAAAETcA==
-Date:   Tue, 17 Mar 2020 16:04:28 +0000
-Message-ID: <BN8PR12MB32669A0271475CF06C0008C4D3F60@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <20200317144944.GP25745@shell.armlinux.org.uk>
- <E1jEDaN-0008JH-MY@rmk-PC.armlinux.org.uk>
- <BN8PR12MB3266FC193AF677B87DFC98C2D3F60@BN8PR12MB3266.namprd12.prod.outlook.com>
- <20200317155610.GS25745@shell.armlinux.org.uk>
-In-Reply-To: <20200317155610.GS25745@shell.armlinux.org.uk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [198.182.37.200]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e47c3655-ce7f-4af3-eee4-08d7ca8cdf57
-x-ms-traffictypediagnostic: BN8PR12MB2948:
-x-microsoft-antispam-prvs: <BN8PR12MB2948977A2749AB8277639F98D3F60@BN8PR12MB2948.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0345CFD558
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(396003)(39860400002)(136003)(366004)(346002)(376002)(199004)(9686003)(8936002)(55016002)(26005)(5660300002)(7696005)(54906003)(478600001)(8676002)(186003)(81156014)(316002)(6506007)(2906002)(71200400001)(76116006)(4326008)(33656002)(81166006)(66556008)(66946007)(66446008)(66476007)(6916009)(52536014)(64756008)(86362001);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB2948;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: RSoWT2hVBaWn67X4Q1OcDiMH8kaRtUw4FJc3Ql4PXi5bZrlbC6TPYt07maGxLSrfI9bE3wweTWzQsBoKsg1qV51SF8k99XvFG2j/lmADpBQ/AxaPtRG2/PtVi4klCfTQPV6euWbIXwtPYl6kvfIzFD7x4TUu+OcLocrt+B0QddKVytAlU50Se/pQGQrH2JBMdK/LBIiZzk4cm7N6vgDyIleMEMomqIldFt0TEez+wZh4cxJIXb4fVvr1y7KqIZ9Qazt2X8YrEuPWiGXuc/nQLZpjrjvznKkRQhTjJEjg8KdjO38GIDJVFLFMrz+hHs/0k7W8+IjL2OgW93cWyZvs4cJU+3sEri9eWMXV2lAdWyyDIJEQy6XXe/aQ5DcG/m/ufIe4QXz1TFHY0F+QA/j2ekXEZcfF8AAmm83HcZGxnQ9Ppk/sY/gMcTRFBaTm1krW
-x-ms-exchange-antispam-messagedata: BvntBo2kfVDCjWmy4L/RAcr4B9z6HgKWIx2bKJQc+uktOpso4mVagPcTgKZjaUeBUMvHIJHLFS9A8OHR7lFRmC1RvdnY9CY8hYzhgW+Bvzgn3px2Co4qu8hknDq24Dj8IyjkyckfRGiNwoeXqi2F6A==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Alexei Starovoitov <ast@kernel.org>
+Subject: Re: [PATCH bpf v3] bpf: Support llvm-objcopy and llvm-objdump for
+ vmlinux BTF
+Message-ID: <20200317160515.GA2459609@mini-arch.hsd1.ca.comcast.net>
+References: <20200317011654.zkx5r7so53skowlc@google.com>
+ <CAEf4BzYTJqWU++QnQupxFBWGSMPfGt6r-5u9jbeLnEF2ipw+Mw@mail.gmail.com>
+ <20200317033701.w7jwos7mvfnde2t2@google.com>
+ <CAEf4BzYyimAo2_513kW6hrDWwmzSDhNjTYksjy01ugKKTPt+qA@mail.gmail.com>
+ <20200317052120.diawg3a75kxl5hkn@google.com>
+ <CAEf4BzYepRs4uB9vd1SCFY81H5S1kbvw2n9bKNeh-ORK_kutSg@mail.gmail.com>
+ <20200317054359.snyyojyf6gjxufij@google.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: e47c3655-ce7f-4af3-eee4-08d7ca8cdf57
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Mar 2020 16:04:28.6479
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ooGcPUYY7CQ54xL40wveN8rMUO/qcClMHfOUSw0AqHi1vADGIL/KuAQvH6ZvsriPZzQn6XJhb8c8l+s8oT9ftQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB2948
-X-OriginatorOrg: synopsys.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200317054359.snyyojyf6gjxufij@google.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Date: Mar/17/2020, 15:56:10 (UTC+00:00)
+On 03/16, Fangrui Song wrote:
+> On 2020-03-16, Andrii Nakryiko wrote:
+> > On Mon, Mar 16, 2020 at 10:21 PM Fangrui Song <maskray@google.com> wrote:
+> > > 
+> > > 
+> > > On 2020-03-16, Andrii Nakryiko wrote:
+> > > >On Mon, Mar 16, 2020 at 8:37 PM Fangrui Song <maskray@google.com> wrote:
+> > > >>
+> > > >> On 2020-03-16, Andrii Nakryiko wrote:
+> > > >> >On Mon, Mar 16, 2020 at 6:17 PM Fangrui Song <maskray@google.com> wrote:
+> > > >> >>
+> > > >> >> Simplify gen_btf logic to make it work with llvm-objcopy and
+> > > >> >> llvm-objdump.  We just need to retain one section .BTF. To do so, we can
+> > > >> >> use a simple objcopy --only-section=.BTF instead of jumping all the
+> > > >> >> hoops via an architecture-less binary file.
+> > > >> >>
+> > > >> >> We use a dd comment to change the e_type field in the ELF header from
+> > > >> >> ET_EXEC to ET_REL so that .btf.vmlinux.bin.o will be accepted by lld.
+> > > >> >>
+> > > >> >> Fixes: df786c9b9476 ("bpf: Force .BTF section start to zero when dumping from vmlinux")
+> > > >> >> Cc: Stanislav Fomichev <sdf@google.com>
+> > > >> >> Cc: Nick Desaulniers <ndesaulniers@google.com>
+> > > >> >> Tested-by: Nick Desaulniers <ndesaulniers@google.com>
+> > > >> >> Reported-by: Nathan Chancellor <natechancellor@gmail.com>
+> > > >> >> Link: https://github.com/ClangBuiltLinux/linux/issues/871
+> > > >> >> Signed-off-by: Fangrui Song <maskray@google.com>
+> > > >> >> ---
+> > > >> >>  scripts/link-vmlinux.sh | 13 ++-----------
+> > > >> >>  1 file changed, 2 insertions(+), 11 deletions(-)
+> > > >> >>
+> > > >> >> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> > > >> >> index dd484e92752e..84be8d7c361d 100755
+> > > >> >> --- a/scripts/link-vmlinux.sh
+> > > >> >> +++ b/scripts/link-vmlinux.sh
+> > > >> >> @@ -120,18 +120,9 @@ gen_btf()
+> > > >> >>
+> > > >> >>         info "BTF" ${2}
+> > > >> >>         vmlinux_link ${1}
+> > > >> >> -       LLVM_OBJCOPY=${OBJCOPY} ${PAHOLE} -J ${1}
+> > > >> >
+> > > >> >Is it really tested? Seems like you just dropped .BTF generation step
+> > > >> >completely...
+> > > >>
+> > > >> Sorry, dropped the whole line:/
+> > > >> I don't know how to test .BTF . I can only check readelf -S...
+> > > >>
+> > > >> Attached the new patch.
+> > > >>
+> > > >>
+> > > >>  From 02afb9417d4f0f8d2175c94fc3797a94a95cc248 Mon Sep 17 00:00:00 2001
+> > > >> From: Fangrui Song <maskray@google.com>
+> > > >> Date: Mon, 16 Mar 2020 18:02:31 -0700
+> > > >> Subject: [PATCH bpf v2] bpf: Support llvm-objcopy and llvm-objdump for
+> > > >>   vmlinux BTF
+> > > >>
+> > > >> Simplify gen_btf logic to make it work with llvm-objcopy and llvm-objdump.
+> > > >> We use a dd comment to change the e_type field in the ELF header from
+> > > >> ET_EXEC to ET_REL so that .btf.vmlinux.bin.o can be accepted by lld.
+> > > >>
+> > > >> Fixes: df786c9b9476 ("bpf: Force .BTF section start to zero when dumping from vmlinux")
+> > > >> Cc: Stanislav Fomichev <sdf@google.com>
+> > > >> Cc: Nick Desaulniers <ndesaulniers@google.com>
+> > > >> Reported-by: Nathan Chancellor <natechancellor@gmail.com>
+> > > >> Link: https://github.com/ClangBuiltLinux/linux/issues/871
+> > > >> Signed-off-by: Fangrui Song <maskray@google.com>
+> > > >> ---
+> > > >>   scripts/link-vmlinux.sh | 14 +++-----------
+> > > >>   1 file changed, 3 insertions(+), 11 deletions(-)
+> > > >>
+> > > >> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> > > >> index dd484e92752e..b23313944c89 100755
+> > > >> --- a/scripts/link-vmlinux.sh
+> > > >> +++ b/scripts/link-vmlinux.sh
+> > > >> @@ -120,18 +120,10 @@ gen_btf()
+> > > >>
+> > > >>         info "BTF" ${2}
+> > > >>         vmlinux_link ${1}
+> > > >> -       LLVM_OBJCOPY=${OBJCOPY} ${PAHOLE} -J ${1}
+> > > >> +       ${PAHOLE} -J ${1}
+> > > >
+> > > >I'm not sure why you are touching this line at all. LLVM_OBJCOPY part
+> > > >is necessary, pahole assumes llvm-objcopy by default, but that can
+> > > >(and should for objcopy) be overridden with LLVM_OBJCOPY.
+> > > 
+> > > Why is LLVM_OBJCOPY assumed? What if llvm-objcopy is not available?
+> > 
+> > It's pahole assumption that we have to live with. pahole assumes
+> > llvm-objcopy internally, unless it is overriden with LLVM_OBJCOPY env
+> > var. So please revert this line otherwise you are breaking it for GCC
+> > objcopy case.
+> 
+> Acknowledged. Uploaded v3.
+> 
+> I added back 2>/dev/null which was removed by a previous change, to
+> suppress GNU objcopy warnings. The warnings could be annoying in V=1
+> output.
+> 
+> > > This is confusing that one tool assumes llvm-objcopy while the block
+> > > below immediately uses GNU objcopy (without this patch).
+> > > 
+> > > e83b9f55448afce3fe1abcd1d10db9584f8042a6 "kbuild: add ability to
+> > > generate BTF type info for vmlinux" does not say why LLVM_OBJCOPY is
+> > > set.
+> > > 
+> > > >>
+> > > >> -       # dump .BTF section into raw binary file to link with final vmlinux
+> > > >> -       bin_arch=$(LANG=C ${OBJDUMP} -f ${1} | grep architecture | \
+> > > >> -               cut -d, -f1 | cut -d' ' -f2)
+> > > >> -       bin_format=$(LANG=C ${OBJDUMP} -f ${1} | grep 'file format' | \
+> > > >> -               awk '{print $4}')
+> > > >> -       ${OBJCOPY} --change-section-address .BTF=0 \
+> > > >> -               --set-section-flags .BTF=alloc -O binary \
+> > > >> -               --only-section=.BTF ${1} .btf.vmlinux.bin
+> > > >> -       ${OBJCOPY} -I binary -O ${bin_format} -B ${bin_arch} \
+> > > >> -               --rename-section .data=.BTF .btf.vmlinux.bin ${2}
+> > > >> +       # Extract .BTF section, change e_type to ET_REL, to link with final vmlinux
+> > > >> +       ${OBJCOPY} --only-section=.BTF ${1} ${2} && printf '\1' | dd of=${2} conv=notrunc bs=1 seek=16
+> > > >>   }
+> > > >>
+> > > >>   # Create ${2} .o file with all symbols from the ${1} object file
+> > > >> --
+> > > >> 2.25.1.481.gfbce0eb801-goog
+> > > >>
+> 
+> From ca3597477542453e9f63185c27c162da081a4baf Mon Sep 17 00:00:00 2001
+> From: Fangrui Song <maskray@google.com>
+> Date: Mon, 16 Mar 2020 22:38:23 -0700
+> Subject: [PATCH bpf v3] bpf: Support llvm-objcopy and llvm-objdump for
+>  vmlinux BTF
+> 
+> Simplify gen_btf logic to make it work with llvm-objcopy and llvm-objdump.
+> Add 2>/dev/null to suppress GNU objcopy (but not llvm-objcopy) warnings
+> "empty loadable segment detected at vaddr=0xffffffff81000000, is this intentional?"
+> Our use of --only-section drops many SHF_ALLOC sections which will essentially nullify
+> program headers. When used as linker input, program headers are simply
+> ignored.
+> 
+> We use a dd command to change the e_type field in the ELF header from
+> ET_EXEC to ET_REL so that .btf.vmlinux.bin.o can be accepted by lld.
+> Accepting ET_EXEC as an input file is an extremely rare GNU ld feature
+> that lld does not intend to support, because this is very error-prone.
+I'm testing this with binutils objcopy, will update with the results.
 
-> > Please consider removing this condition and just rely on an_enabled fie=
-ld.=20
-> > I have USXGMII support for Clause 73 Autoneg so this won't work with=20
-> > that.
->=20
-> That is actually incorrect.  SGMII can have an_enabled being true, but
-> SGMII is not an autonegotiation between the MAC and PHY - it is merely
-> a mechanism for the PHY to inform the MAC what the results of _its_
-> negotiation are.
->=20
-> I suspect USXGMII is the same since it is just an "upgraded" version of
-> SGMII.  Please can you check whether there really is any value in trying
-> (and likely failing) to restart the "handshake" with the PHY from the
-> MAC end, rather than requesting the PHY to restart negotiation on its
-> media side.
+> Fixes: df786c9b9476 ("bpf: Force .BTF section start to zero when dumping from vmlinux")
+> Cc: Stanislav Fomichev <sdf@google.com>
+> Cc: Nick Desaulniers <ndesaulniers@google.com>
+> Reported-by: Nathan Chancellor <natechancellor@gmail.com>
+> Link: https://github.com/ClangBuiltLinux/linux/issues/871
+> Signed-off-by: Fangrui Song <maskray@google.com>
+> ---
+>  scripts/link-vmlinux.sh | 12 ++----------
+>  1 file changed, 2 insertions(+), 10 deletions(-)
+> 
+> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> index dd484e92752e..c3e808a89d4a 100755
+> --- a/scripts/link-vmlinux.sh
+> +++ b/scripts/link-vmlinux.sh
+> @@ -122,16 +122,8 @@ gen_btf()
+>  	vmlinux_link ${1}
+>  	LLVM_OBJCOPY=${OBJCOPY} ${PAHOLE} -J ${1}
+> -	# dump .BTF section into raw binary file to link with final vmlinux
+> -	bin_arch=$(LANG=C ${OBJDUMP} -f ${1} | grep architecture | \
+> -		cut -d, -f1 | cut -d' ' -f2)
+> -	bin_format=$(LANG=C ${OBJDUMP} -f ${1} | grep 'file format' | \
+> -		awk '{print $4}')
+Should you also remove 'local bin_arch' on top?
 
-I think we are speaking of different things here. I'm speaking about=20
-end-to-end Autoneg. Not PHY <-> PCS <-> MAC.
-
-I'm so sorry but I'm not an expert in this field, I just deal mostly with=20
-IP.
-
-Anyway, I'm speaking about end-to-end Clause 73 Autoneg which involves=20
-exchanging info with the peer. If peer for some reason is not available to=
-=20
-receive this info then AutoNeg will not succeed. Hence the reason to=20
-restart it.
-
----
-Thanks,
-Jose Miguel Abreu
+> -	${OBJCOPY} --change-section-address .BTF=0 \
+> -		--set-section-flags .BTF=alloc -O binary \
+> -		--only-section=.BTF ${1} .btf.vmlinux.bin
+> -	${OBJCOPY} -I binary -O ${bin_format} -B ${bin_arch} \
+> -		--rename-section .data=.BTF .btf.vmlinux.bin ${2}
+> +	# Extract .BTF section, change e_type to ET_REL, to link with final vmlinux
+> +	${OBJCOPY} --only-section=.BTF ${1} ${2} 2> /dev/null && printf '\1' | dd of=${2} conv=notrunc bs=1 seek=16
+nit: maybe split this into multiple lines? and drop space in '2>/dev/null'?
+	${OBJCOPY} .... 2>/dev/null && \
+		printf '\1' | dd ....
+?
