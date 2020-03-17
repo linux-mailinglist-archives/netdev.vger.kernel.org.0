@@ -2,142 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D970D1877FB
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 04:06:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ACBDA1877FF
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 04:10:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726823AbgCQDGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 Mar 2020 23:06:55 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:35911 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726343AbgCQDGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 23:06:55 -0400
-Received: by mail-wr1-f67.google.com with SMTP id s5so23827573wrg.3;
-        Mon, 16 Mar 2020 20:06:53 -0700 (PDT)
+        id S1726828AbgCQDKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 Mar 2020 23:10:46 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:45124 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726803AbgCQDKq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 Mar 2020 23:10:46 -0400
+Received: by mail-qk1-f194.google.com with SMTP id c145so30152616qke.12;
+        Mon, 16 Mar 2020 20:10:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xytRqayxQuC5eMurSet0/Fcn3iTENtGu+EYSbqGw130=;
+        b=FmkrITYHFTvNr2BFMCHmyNzEbaygEXkRwYT+8L0le+HLxl7aGPYi36zK0x7FfTwSwB
+         uZb59tI0dw8kYrxot+xGA3E0atoOHLXnDg8yjGywR3tFsrMUZAgS7rsKgUzzrRFsqd3U
+         UuTgqQCIWnkl0sX1kPaECVc/M2Bv3iWdvE0TVecs9OBdTxt/DSu42AMmUgkkxz07mwar
+         vjvvu7NBP9WWChqr5SkBnBvXL2eeHdzSIUK7vUNFt+AyTmP0FKg2g4KqFG1YW54J9ynC
+         6qnTG5K+o1V/6vBZB+Lfr7jqPol3wCokdknh0ecTlMiEOsBfz74g3L+YuTxysQg5ZkUa
+         AxzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=cR/hhNkP8odwBbN5YNL0sAg8Mhq/bF3O0eciWPxcFR8=;
-        b=b8c7J86pxGschSWZIXD3WA1Z9JYv7UgGKytr+L9ppH9f/3G+wszmisZzFuft7xLalp
-         Xb5ybizmn0Ob8WYiWYm9pg1dxm8RJjdWQxA0LQiGVIWvCYe4n8czsR3cm2s8O06VzspZ
-         7xIKVOWGE4ZMZjp9mvN7oYKtdtCcG4XI3jjnQBQHxmnddgXt2W9AdT8Te7TetZeYr1cV
-         VTJ9L0bV1pLJiq4OKaRGiJEri4iu6utjSuAOxyv4KUop4rXeusSxjDJ5XDz5vMnaoX60
-         U6aezcU4pqLwDHG5tn5xAK7sQlFpFN+Wz/Ewy1xySTkaSDov8novL00/lyTIryD0XOfR
-         XO8g==
-X-Gm-Message-State: ANhLgQ3Ip5zLGahQliTr/hug/sCkROhIJNmi+XsG/B4DA4+G916Ah/ND
-        Yk+E29QybwjVkpwYHRjLRG8NunEB7cdHux5OCa9XuQxk
-X-Google-Smtp-Source: ADFU+vthxuTXA4MYijhtCBA+mjbVaxncDtg0CUyfTESWUeEama/v0J+XX2euKfqonIgnaugPKQhfIyF0tJnHJW0Xxgk=
-X-Received: by 2002:adf:df0b:: with SMTP id y11mr2624050wrl.388.1584414412910;
- Mon, 16 Mar 2020 20:06:52 -0700 (PDT)
+        bh=xytRqayxQuC5eMurSet0/Fcn3iTENtGu+EYSbqGw130=;
+        b=d/6Q3TVCC6Rhr/PQtoWt3o4dYCMftxwWclvUVzLngXbAeTD7EubMs7L8LlGjl4ZoyG
+         wotdiImTMMmdG/K8gbvEKrAf+zo5oeAjM7NrDIExmJqmKcCITJ6SYck6I4TvLchg37id
+         yv6BTgRwxVRT0AJXS74PC7KO4EqG2vnoutmWDqewZ5TWvWV6/AlQXNJCxttEQgu8LL/v
+         XLgLGUAwcPATc1UywztMAMeiQP1yVzN0ePFKaDH2hCGU6f5OmBqKMuiJmHcBqVCbLPS1
+         lBLdfvPZToXqVD0hm7F64N/lKR1weAZdTu284lFAF6aC1pwnW5iklX19bhCwiZhyl4Xa
+         1EpQ==
+X-Gm-Message-State: ANhLgQ3oedVauUvxM1aSusP49Pw867efEZw7nXZd7wHPv0LKUeU+NEgm
+        CIFEMcqbc3ilqcWMYxoLaGnprFfhjG9+99MasPgEXcVG
+X-Google-Smtp-Source: ADFU+vsxWiPD6zajQiVO96SdqcjDR+VfTl8TzIOFs4++mO88cdmCIZd5MLG43yOIn7OfsmfddPz3GyqCL0uQlTwBZ7c=
+X-Received: by 2002:ae9:c011:: with SMTP id u17mr2924638qkk.92.1584414642995;
+ Mon, 16 Mar 2020 20:10:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200312233648.1767-1-joe@wand.net.nz> <20200312233648.1767-4-joe@wand.net.nz>
- <20200316225729.kd4hmz3oco5l7vn4@kafai-mbp>
-In-Reply-To: <20200316225729.kd4hmz3oco5l7vn4@kafai-mbp>
-From:   Joe Stringer <joe@wand.net.nz>
-Date:   Mon, 16 Mar 2020 20:06:38 -0700
-Message-ID: <CAOftzPgsVOqCLZatjytBXdQxH-DqJxiycXWN2d4C_-BjR5v1Kw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/7] bpf: Add socket assign support
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Joe Stringer <joe@wand.net.nz>, bpf@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>,
+References: <20200317011654.zkx5r7so53skowlc@google.com>
+In-Reply-To: <20200317011654.zkx5r7so53skowlc@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 16 Mar 2020 20:10:31 -0700
+Message-ID: <CAEf4BzYTJqWU++QnQupxFBWGSMPfGt6r-5u9jbeLnEF2ipw+Mw@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: Support llvm-objcopy and llvm-objdump for
+ vmlinux BTF
+To:     Fangrui Song <maskray@google.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        clang-built-linux@googlegroups.com,
+        Stanislav Fomichev <sdf@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 16, 2020 at 3:58 PM Martin KaFai Lau <kafai@fb.com> wrote:
+On Mon, Mar 16, 2020 at 6:17 PM Fangrui Song <maskray@google.com> wrote:
 >
-> On Thu, Mar 12, 2020 at 04:36:44PM -0700, Joe Stringer wrote:
-> > Add support for TPROXY via a new bpf helper, bpf_sk_assign().
-> >
-> > This helper requires the BPF program to discover the socket via a call
-> > to bpf_sk*_lookup_*(), then pass this socket to the new helper. The
-> > helper takes its own reference to the socket in addition to any existing
-> > reference that may or may not currently be obtained for the duration of
-> > BPF processing. For the destination socket to receive the traffic, the
-> > traffic must be routed towards that socket via local route, the socket
-> I also missed where is the local route check in the patch.
-> Is it implied by a sk can be found in bpf_sk*_lookup_*()?
-
-This is a requirement for traffic redirection, it's not enforced by
-the patch. If the operator does not configure routing for the relevant
-traffic to ensure that the traffic is delivered locally, then after
-the eBPF program terminates, it will pass up through ip_rcv() and
-friends and be subject to the whims of the routing table. (or
-alternatively if the BPF program redirects somewhere else then this
-reference will be dropped).
-
-Maybe there's a path to simplifying this configuration path in future
-to loosen this requirement, but for now I've kept the series as
-minimal as possible on that front.
-
-> [ ... ]
+> Simplify gen_btf logic to make it work with llvm-objcopy and
+> llvm-objdump.  We just need to retain one section .BTF. To do so, we can
+> use a simple objcopy --only-section=.BTF instead of jumping all the
+> hoops via an architecture-less binary file.
 >
-> > diff --git a/net/core/filter.c b/net/core/filter.c
-> > index cd0a532db4e7..bae0874289d8 100644
-> > --- a/net/core/filter.c
-> > +++ b/net/core/filter.c
-> > @@ -5846,6 +5846,32 @@ static const struct bpf_func_proto bpf_tcp_gen_syncookie_proto = {
-> >       .arg5_type      = ARG_CONST_SIZE,
-> >  };
-> >
-> > +BPF_CALL_3(bpf_sk_assign, struct sk_buff *, skb, struct sock *, sk, u64, flags)
-> > +{
-> > +     if (flags != 0)
-> > +             return -EINVAL;
-> > +     if (!skb_at_tc_ingress(skb))
-> > +             return -EOPNOTSUPP;
-> > +     if (unlikely(!refcount_inc_not_zero(&sk->sk_refcnt)))
-> > +             return -ENOENT;
-> > +
-> > +     skb_orphan(skb);
-> > +     skb->sk = sk;
-> sk is from the bpf_sk*_lookup_*() which does not consider
-> the bpf_prog installed in SO_ATTACH_REUSEPORT_EBPF.
-> However, the use-case is currently limited to sk inspection.
+> We use a dd comment to change the e_type field in the ELF header from
+> ET_EXEC to ET_REL so that .btf.vmlinux.bin.o will be accepted by lld.
 >
-> It now supports selecting a particular sk to receive traffic.
-> Any plan in supporting that?
+> Fixes: df786c9b9476 ("bpf: Force .BTF section start to zero when dumping from vmlinux")
+> Cc: Stanislav Fomichev <sdf@google.com>
+> Cc: Nick Desaulniers <ndesaulniers@google.com>
+> Tested-by: Nick Desaulniers <ndesaulniers@google.com>
+> Reported-by: Nathan Chancellor <natechancellor@gmail.com>
+> Link: https://github.com/ClangBuiltLinux/linux/issues/871
+> Signed-off-by: Fangrui Song <maskray@google.com>
+> ---
+>  scripts/link-vmlinux.sh | 13 ++-----------
+>  1 file changed, 2 insertions(+), 11 deletions(-)
+>
+> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
+> index dd484e92752e..84be8d7c361d 100755
+> --- a/scripts/link-vmlinux.sh
+> +++ b/scripts/link-vmlinux.sh
+> @@ -120,18 +120,9 @@ gen_btf()
+>
+>         info "BTF" ${2}
+>         vmlinux_link ${1}
+> -       LLVM_OBJCOPY=${OBJCOPY} ${PAHOLE} -J ${1}
 
-I think this is a general bpf_sk*_lookup_*() question, previous
-discussion[0] settled on avoiding that complexity before a use case
-arises, for both TC and XDP versions of these helpers; I still don't
-have a specific use case in mind for such functionality. If we were to
-do it, I would presume that the socket lookup caller would need to
-pass a dedicated flag (supported at TC and likely not at XDP) to
-communicate that SO_ATTACH_REUSEPORT_EBPF progs should be respected
-and used to select the reuseport socket.
+Is it really tested? Seems like you just dropped .BTF generation step
+completely...
 
-> > diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-> > index 7b089d0ac8cd..f7b42adca9d0 100644
-> > --- a/net/ipv6/ip6_input.c
-> > +++ b/net/ipv6/ip6_input.c
-> > @@ -285,7 +285,10 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
-> >       rcu_read_unlock();
-> >
-> >       /* Must drop socket now because of tproxy. */
-> > -     skb_orphan(skb);
-> > +     if (skb_dst_is_sk_prefetch(skb))
-> > +             dst_sk_prefetch_fetch(skb);
-> > +     else
-> > +             skb_orphan(skb);
-> If I understand it correctly, this new test is to skip
-> the skb_orphan() call for locally routed skb.
-> Others cases (forward?) still depend on skb_orphan() to be called here?
-
-Roughly yes. 'locally routed skb' is a bit loose wording though, at
-this point the BPF program only prefetched the socket to let the stack
-know that it should deliver the skb to that socket, assuming that it
-passes the upcoming routing check.
-
-For more discussion on the other cases, there is the previous
-thread[1] and in particular the child thread discussion with Florian,
-Eric and Daniel.
-
-[0] https://www.mail-archive.com/netdev@vger.kernel.org/msg253250.html
-[1] https://www.spinics.net/lists/netdev/msg580058.html
+>
+> -       # dump .BTF section into raw binary file to link with final vmlinux
+> -       bin_arch=$(LANG=C ${OBJDUMP} -f ${1} | grep architecture | \
+> -               cut -d, -f1 | cut -d' ' -f2)
+> -       bin_format=$(LANG=C ${OBJDUMP} -f ${1} | grep 'file format' | \
+> -               awk '{print $4}')
+> -       ${OBJCOPY} --change-section-address .BTF=0 \
+> -               --set-section-flags .BTF=alloc -O binary \
+> -               --only-section=.BTF ${1} .btf.vmlinux.bin
+> -       ${OBJCOPY} -I binary -O ${bin_format} -B ${bin_arch} \
+> -               --rename-section .data=.BTF .btf.vmlinux.bin ${2}
+> +       # Extract .BTF section, change e_type to ET_REL, to link with final vmlinux
+> +       ${OBJCOPY} --only-section=.BTF ${1} ${2} && printf '\1' | dd of=${2} conv=notrunc bs=1 seek=16
+>  }
+>
+>  # Create ${2} .o file with all symbols from the ${1} object file
+> --
+> 2.25.1.481.gfbce0eb801-goog
