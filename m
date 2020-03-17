@@ -2,114 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4F5A187BE9
-	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 10:19:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD466187BFB
+	for <lists+netdev@lfdr.de>; Tue, 17 Mar 2020 10:25:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726148AbgCQJTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 05:19:11 -0400
-Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:48632 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725730AbgCQJTL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 05:19:11 -0400
-Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id D2CBE40217;
-        Tue, 17 Mar 2020 09:19:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1584436750; bh=i644QpwR/Pj8qreHw+wBacaYLXNNUovwNW3FcT/AZtk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
-         References:From;
-        b=OfZq2MZzAWJUiBUpabfvxRyce94+M7ijQWQWeKEUhxtu9YWe2XammtdJgjX/k+gpN
-         opuPMxZKaZxEKAzNp3ufX54v74LfXi30TjuZbQdcuUrCeEVMF/ITbPDbdHLGSAkFaO
-         jWXiTfoPbE4a6eV4FnWJMy+K1cPue227m8lK166/BkqVjOH0N7ZVa+gcb2MDA4R26l
-         tsLpqH9i1syLaHaUbrhnzSt5muB48RABT18pmZJzEg2A42WlYdXCbufa1ryCMypL6v
-         eLsCjC2uDjAKG2wYcokZ1pdEsU0B1hHpvZkXkpASDq3zw/f5yuioZ35pAmX8WX+m0L
-         6axOiJyx8CTdw==
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 644BDA006E;
-        Tue, 17 Mar 2020 09:19:08 +0000 (UTC)
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     netdev@vger.kernel.org
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-doc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/4] Documentation: networking: stmmac: Mention new XLGMAC support
-Date:   Tue, 17 Mar 2020 10:18:53 +0100
-Message-Id: <b036ffbc3649297c5b08860c5b6776af025570a4.1584436401.git.Jose.Abreu@synopsys.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1584436401.git.Jose.Abreu@synopsys.com>
-References: <cover.1584436401.git.Jose.Abreu@synopsys.com>
-In-Reply-To: <cover.1584436401.git.Jose.Abreu@synopsys.com>
-References: <cover.1584436401.git.Jose.Abreu@synopsys.com>
+        id S1725962AbgCQJZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 05:25:38 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:34246 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725868AbgCQJZh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 05:25:37 -0400
+Received: by mail-wm1-f67.google.com with SMTP id x3so15185643wmj.1
+        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 02:25:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dnT+/2ywN3t7DjrpcWeRO3HK1L7kQfjRXTbsRuGbotI=;
+        b=WREWzB/hW4Zo0bJCD7QHal7MSU/MXQ5VdKHhFYYOfkkuhYZhXRiOuRLvmokgldwlSB
+         yw1Ppoa71oCs0gLklgotpVUQUmmDKtAJvksMfgN7buqytEqANLj4NKVRrXevGHDQVoph
+         OoVN7k5YJs+e90K/ToC2GUwI2ETXh9KJk6lgpKU1Q8V/+sFc8k3MqR0dBEkmTVvFaX8L
+         gXSy96qyfpdA88+7q7SV4zr/FkLTT+5til08ZBf4P14aO4m23C2lOZLVGlfLz5pRQsUR
+         MhCVk4oKt+XKlnE3lJxmdwHh/DHAxFuj7QVdwgAnekWDSaSudaCZSPpQ7G8F1ujd/scb
+         UxNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dnT+/2ywN3t7DjrpcWeRO3HK1L7kQfjRXTbsRuGbotI=;
+        b=Es+9ZednPBLNBqgDgbec4iYBIubmsNcAtZ87PwHNH0yjtryiXJZ2BIeHFWXdcYFeDl
+         VgPQ2i6IWqAUIFG4FaGtrOOJZIq5gIhkN6tOAKmi4wJPHzImEHJgpYdboalAnZzsfrPw
+         gqxXb6NeCOjjclogqnwTXN+ej2Z1B96hg9Eb6VYz9sHo3iOJdFd7uxJs0Zv3TA0ZaZln
+         QEj9FS0lWiXo0tCAMmi3IQo74vKANVxOoqpfWCFgNRSyEPCjL097hb7y/+PAuZnJ8n46
+         1HWlTFHOILxYtHBi9+2SEG1SuBHtiZGIeyc9qHZsVtySmuoCEkQ7jb2+LZb4AuwakM8B
+         qxyg==
+X-Gm-Message-State: ANhLgQ1Pww98WT+YufxOyeuw8Hw0jNVPwhlI2ytt2mbAI1crVkBI5Wv5
+        VGz1r+9l5Zv4wcRrlLNks5LadzHOf0cX1A==
+X-Google-Smtp-Source: ADFU+vsgia+n3CffwxBS/UeKOixscRMnN4nC4k/WfjGmkr8scW8DFr63keFcGb91zXBov3hj/o4Yaw==
+X-Received: by 2002:a1c:4d13:: with SMTP id o19mr4318837wmh.186.1584437136062;
+        Tue, 17 Mar 2020 02:25:36 -0700 (PDT)
+Received: from [192.168.1.10] ([194.35.116.181])
+        by smtp.gmail.com with ESMTPSA id f17sm3887956wrj.28.2020.03.17.02.25.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Mar 2020 02:25:35 -0700 (PDT)
+Subject: Re: [PATCH bpf-next 4/4] bpftool: Add struct_ops support
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, kernel-team@fb.com,
+        netdev@vger.kernel.org
+References: <20200316005559.2952646-1-kafai@fb.com>
+ <20200316005624.2954179-1-kafai@fb.com>
+ <da2d5a6c-3023-bb27-7c45-96224c8f4334@isovalent.com>
+ <20200317002452.a4w2pu6vbv4cvsid@kafai-mbp>
+ <20200317005721.vhruudlmhr637uto@kafai-mbp>
+From:   Quentin Monnet <quentin@isovalent.com>
+Message-ID: <8bc91294-dd7a-deb7-5006-4350bbb3b70f@isovalent.com>
+Date:   Tue, 17 Mar 2020 09:25:34 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <20200317005721.vhruudlmhr637uto@kafai-mbp>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the Enterprise MAC support to the list of supported IP versions and
-the newly added XLGMII interface support.
+2020-03-16 17:57 UTC-0700 ~ Martin KaFai Lau <kafai@fb.com>
+> On Mon, Mar 16, 2020 at 05:24:52PM -0700, Martin KaFai Lau wrote:
+>> On Mon, Mar 16, 2020 at 11:54:28AM +0000, Quentin Monnet wrote:
+>>
+>>> [...]
+>>>
+>>>> +static int do_unregister(int argc, char **argv)
+>>>> +{
+>>>> +	const char *search_type, *search_term;
+>>>> +	struct res res;
+>>>> +
+>>>> +	if (argc != 2)
+>>>> +		usage();
+>>>
+>>> Or you could reuse the macros in main.h, for more consistency with other
+>>> subcommands:
+>>>
+>>> 	if (!REQ_ARGS(2))
+>>> 		return -1;
+>> Thanks for the review!
+>>
+>> I prefer to print out "usage();" whenever possible but then "-j" gave
+>> me a 'null' after a json error mesage ...
+>>
+>> # bpftool -j struct_ops unregister
+>> {"error":"'unregister' needs at least 2 arguments, 0 found"},null
+>>
+>> Then I went without REQ_ARGS(2) which is similar to a few existing
+>> cases like do_dump(), do_updaate()...etc in map.c.
+>>
+>> That was my consideration.  However, I can go back to use REQ_ARGS(2)
+>> and return -1 without printing usage.  no strong preference here.
+> After another look,  I will keep it as is since REQ_ARGS() is a "<"
+> check.  "argc != 2" is the correct check here.  Otherwise,
+> allowing 'bpftool struct_ops unregister name cubic dctcp' looks weird.
+> 
 
-Signed-off-by: Jose Abreu <Jose.Abreu@synopsys.com>
-
----
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-doc@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
----
- Documentation/networking/device_drivers/stmicro/stmmac.rst | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/networking/device_drivers/stmicro/stmmac.rst b/Documentation/networking/device_drivers/stmicro/stmmac.rst
-index c34bab3d2df0..5d46e5036129 100644
---- a/Documentation/networking/device_drivers/stmicro/stmmac.rst
-+++ b/Documentation/networking/device_drivers/stmicro/stmmac.rst
-@@ -32,7 +32,8 @@ is also supported.
- DesignWare(R) Cores Ethernet MAC 10/100/1000 Universal version 3.70a
- (and older) and DesignWare(R) Cores Ethernet Quality-of-Service version 4.0
- (and upper) have been used for developing this driver as well as
--DesignWare(R) Cores XGMAC - 10G Ethernet MAC.
-+DesignWare(R) Cores XGMAC - 10G Ethernet MAC and DesignWare(R) Cores
-+Enterprise MAC - 100G Ethernet MAC.
- 
- This driver supports both the platform bus and PCI.
- 
-@@ -48,6 +49,8 @@ Cores Ethernet Controllers and corresponding minimum and maximum versions:
- +-------------------------------+--------------+--------------+--------------+
- | XGMAC - 10G Ethernet MAC      | 2.10a        | N/A          | XGMAC2+      |
- +-------------------------------+--------------+--------------+--------------+
-+| XLGMAC - 100G Ethernet MAC    | 2.00a        | N/A          | XLGMAC2+     |
-++-------------------------------+--------------+--------------+--------------+
- 
- For questions related to hardware requirements, refer to the documentation
- supplied with your Ethernet adapter. All hardware requirements listed apply
-@@ -57,7 +60,7 @@ Feature List
- ============
- 
- The following features are available in this driver:
-- - GMII/MII/RGMII/SGMII/RMII/XGMII Interface
-+ - GMII/MII/RGMII/SGMII/RMII/XGMII/XLGMII Interface
-  - Half-Duplex / Full-Duplex Operation
-  - Energy Efficient Ethernet (EEE)
-  - IEEE 802.3x PAUSE Packets (Flow Control)
--- 
-2.7.4
-
+Ah right, fair enough. I'm good with v2, thanks for the changes!
+Quentin
