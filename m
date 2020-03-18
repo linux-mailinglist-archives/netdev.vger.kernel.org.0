@@ -2,114 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29FE41893DE
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 03:04:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 791391893FF
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 03:26:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727144AbgCRCD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 22:03:59 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:37970 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726871AbgCRCD7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 22:03:59 -0400
-Received: by mail-wm1-f68.google.com with SMTP id t13so1506940wmi.3;
-        Tue, 17 Mar 2020 19:03:57 -0700 (PDT)
+        id S1727133AbgCRC0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 22:26:42 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:38291 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726871AbgCRC0m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 22:26:42 -0400
+Received: by mail-qt1-f194.google.com with SMTP id z12so209101qtq.5
+        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 19:26:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=T/Urqk83SlmgqPe6Ia/iCxEK3eI5p/CJgzdx5zdL0zY=;
+        b=fmvXkstPdQAULrxaG/YduhIrMxvcYk8zLHZCy8X7a/hQH/gi2olKZ+9hJdP+yaAXyj
+         rQxh/WtPDpcUxDrQZby8KhAX37G0XyAkqfYhLzSfSkfmrK7CN1J6Le8x+F9qzJ+hLeNv
+         vYPm/c82g7EeR8/Zuu6ZxIsbzzyQL/Rj/nwixOfffuy8AbyhzDTWdI+nrE1BvL+qpEXH
+         sFn4uq3kbMMz/BblSxluKxus1yhx3NU8oMc6lOpdf5UKBRA+voBKWFo/kGOkdsqftHUq
+         OLuiB0cfB9fwqmz1C61TibEQXW2P0JPqaxE6ngZmFlhZCq8Ih/XQELuuts043yj8Ira3
+         CIbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FABasMwMskF7foIZI74WnbbUanagtErXSwxfbZA1fzE=;
-        b=ug4fGgOg5X8gtg6iHr63X5hKzVmpphbqE+gf7qUbPloiEreLQE/cIy64WDkNT5OdyM
-         kt8W/Swfnq8S60xkLuJWfdPoOEjfOZ/TBWtos3ZS423a3A3lkXFGXuiynHVKFd9wtqGA
-         RCZZPJDjln7okgrleBJuG8Ex79qEq+OFAXrWYt5FaWf3JY5ms4duqQ9qfK685vnYu6rG
-         puAvxbUsZjFrqSWLWb6sXMrcACDdkRXQozoNhwOWLJ1EPYdmDbDYmlnqBoPIpPFxvhnj
-         FoyAFebEQYtPktOuPeZEEjrIxnaCcb/Nw+PkkSqBcQQmmP9miGoFQynUxyI4vL6XZ5GF
-         Vi6Q==
-X-Gm-Message-State: ANhLgQ3AmQcZGZ9EWlT95s3Ha20t+AUS6wTeWHyikid7oHM8zLTXs2dJ
-        PKDiMQ92hKtcB/49EPIBqYXfgESN3VSAHuaKl00=
-X-Google-Smtp-Source: ADFU+vsw82WXRu0BqjkZhF7t+00pdye6vztVtWOdcHEdze2KolKLSoWmR0SfOIvjUW7sIp/JtISdahlGzpzoDpiaQOs=
-X-Received: by 2002:a7b:cb50:: with SMTP id v16mr2074239wmj.74.1584497037073;
- Tue, 17 Mar 2020 19:03:57 -0700 (PDT)
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=T/Urqk83SlmgqPe6Ia/iCxEK3eI5p/CJgzdx5zdL0zY=;
+        b=ajx91McquGYDR1ox6XEVxpFvDAc5fiptEJgRU3ogP1eiPqeLDLhpdbWLLgM2vBlHWv
+         CT0tSWvA+03AOfuVnvaMN+I6c4MQvjWissMAhhgmJxA9JN/IKtfkKCD+f/oHVBb0RvQd
+         nlpOonhl5117rV4XRFSzCGPJa9i0bJZNcVTkKQ2l5nDWeuSk1rH/jVr00LmR47aRI4ug
+         pN1Y1MnHKciyHf2R7OZI++LCw2/I9uXdy1zstqr5XfWLZ6dRtW0bSyJ+HH1UI2d1SZi4
+         /jsLocMF0eIL6U0gjwnv+CVUUJ5crEulsjPFEj3jl8ZPkoLhNrkVElHeKYtLPhWduN3c
+         Hr9Q==
+X-Gm-Message-State: ANhLgQ2+wpGl81hfDhxbc5NUO9/sdjekjJwzswiYuyivNN0cpqmGnvYC
+        af0XYy1J0BJybL9bxZty/us=
+X-Google-Smtp-Source: ADFU+vvpeh7EVfEvVfXr5o+PemqTtHMtkJaxmZw+fRi38KFQ8OsosmWBjxaFyOG341jL/0vX+Meffg==
+X-Received: by 2002:ac8:7496:: with SMTP id v22mr2250102qtq.291.1584498400586;
+        Tue, 17 Mar 2020 19:26:40 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id b145sm3295268qkg.52.2020.03.17.19.26.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Mar 2020 19:26:39 -0700 (PDT)
+Date:   Tue, 17 Mar 2020 22:26:38 -0400
+Message-ID: <20200317222638.GB3226601@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/3] VLANs, DSA switches and multiple bridges
+In-Reply-To: <20200317212453.GV25745@shell.armlinux.org.uk>
+References: <CA+h21hrjAT4yCh=UgJJDfv3=3OWkHUjMRB94WuAPDk-hkhOZ6w@mail.gmail.com>
+ <15ce2fae-c2c8-4a36-c741-6fef58115604@gmail.com>
+ <20200219231528.GS25745@shell.armlinux.org.uk>
+ <e9b51f9e-4a8f-333d-5ba9-3fcf220ace7c@gmail.com>
+ <20200221002110.GE25745@shell.armlinux.org.uk>
+ <20200316111524.GE5827@shell.armlinux.org.uk>
+ <20200317120044.GH5827@shell.armlinux.org.uk>
+ <CA+h21hpGvhgxdNid8OMG15Zyp6uzGjAq_xmGgz2Udvo3sHuZ0g@mail.gmail.com>
+ <20200317151238.GQ25745@shell.armlinux.org.uk>
+ <20200317144906.GB3155670@t480s.localdomain>
+ <20200317212453.GV25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
-References: <20200312233648.1767-1-joe@wand.net.nz> <20200312233648.1767-4-joe@wand.net.nz>
- <20200316225729.kd4hmz3oco5l7vn4@kafai-mbp> <CAOftzPgsVOqCLZatjytBXdQxH-DqJxiycXWN2d4C_-BjR5v1Kw@mail.gmail.com>
- <CACAyw9_zt-wetBiFWXtpQOOv79QCFR12dA9jx1UDEya=0_poyQ@mail.gmail.com> <CAOftzPjeO4QJJnOBHjhzDmJRwqRztYaHLuKEOB_7a4KwDxgAHw@mail.gmail.com>
-In-Reply-To: <CAOftzPjeO4QJJnOBHjhzDmJRwqRztYaHLuKEOB_7a4KwDxgAHw@mail.gmail.com>
-From:   Joe Stringer <joe@wand.net.nz>
-Date:   Tue, 17 Mar 2020 19:03:45 -0700
-Message-ID: <CAOftzPj+H1fep3D2E=zZr_ys=cdwT9Ci7=evHQirzc8C6toqfA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/7] bpf: Add socket assign support
-To:     Joe Stringer <joe@wand.net.nz>
-Cc:     Lorenz Bauer <lmb@cloudflare.com>, Martin KaFai Lau <kafai@fb.com>,
-        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 17, 2020 at 6:10 PM Joe Stringer <joe@wand.net.nz> wrote:
->
-> On Tue, Mar 17, 2020 at 3:10 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
-> >
-> > On Tue, 17 Mar 2020 at 03:06, Joe Stringer <joe@wand.net.nz> wrote:
-> > >
-> > > On Mon, Mar 16, 2020 at 3:58 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > > >
-> > > > On Thu, Mar 12, 2020 at 04:36:44PM -0700, Joe Stringer wrote:
-> > > > > Add support for TPROXY via a new bpf helper, bpf_sk_assign().
-> > > > >
-> > > > > This helper requires the BPF program to discover the socket via a call
-> > > > > to bpf_sk*_lookup_*(), then pass this socket to the new helper. The
-> > > > > helper takes its own reference to the socket in addition to any existing
-> > > > > reference that may or may not currently be obtained for the duration of
-> > > > > BPF processing. For the destination socket to receive the traffic, the
-> > > > > traffic must be routed towards that socket via local route, the socket
-> > > > I also missed where is the local route check in the patch.
-> > > > Is it implied by a sk can be found in bpf_sk*_lookup_*()?
-> > >
-> > > This is a requirement for traffic redirection, it's not enforced by
-> > > the patch. If the operator does not configure routing for the relevant
-> > > traffic to ensure that the traffic is delivered locally, then after
-> > > the eBPF program terminates, it will pass up through ip_rcv() and
-> > > friends and be subject to the whims of the routing table. (or
-> > > alternatively if the BPF program redirects somewhere else then this
-> > > reference will be dropped).
-> >
-> > Can you elaborate what "an appropriate routing configuration" would be?
-> > I'm not well versed with how routing works, sorry.
->
-> [...]
->
-> > Do you think being subject to the routing table is desirable, or is it an
-> > implementation trade-off?
->
-> I think it's an implementation trade-off.
+On Tue, 17 Mar 2020 21:24:53 +0000, Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
+> > In response to your 3/3 patch, I suggested commands to test setting up a
+> > VLAN filtering aware bridge with your own default PVID before enslaving
+> > DSA ports. Unfortunately you left this unanswered.
+> 
+> I don't believe I left it unanswered.  However, I'm not about to rip
+> apart my network to try an experiment with specific set of commands.
 
-Perhaps it's worth expanding on this a bit more. There's always the
-tradeoff of solving your specific problem vs. introducing
-functionality that will integrate with the rest of the stack. In some
-sense, I would like a notion here of "shortcut this traffic directly
-to the socket", it will solve my problem but it's quite specific to
-that so there's not much room for sharing the usage. It could still be
-very useful to some use cases, but alternatives may support use cases
-you hadn't thought of in the first place. Maybe there's a more
-incremental path to achieving my goal through an implementation like
-this.
+In mail 3/3 I suggested to run the following snippet to configure the bridge
+at creation time so that we can see clearly if the problem still occurs:
 
-The current design of bpf_sk_assign() in this series defers to the
-stack a bit more than alternatives may do (thinking eg a socket
-redirect function "bpf_sk_redirect()"). It says "this is best-effort";
-if you wanted to, you could still override this functionality with
-iptables tproxy rules. You could choose to route the traffic
-differently (although through the exploration with Martin above for
-now this will have fairly limited options unless we make additional
-changes..). Glancing through the existing eBPF API, you could assign
-the socket to the skb then subsequently use things like
-bpf_get_socket_cookie() to fetch the cookie out. For all I know,
-someone will come up with some nifty future idea that makes use of the
-idea "we associate the socket with the skb" to solve a use case I
-haven't thought of, and that could exist either within the bpf@tc hook
-or after.
+    # ip link add name br0 type bridge vlan_filtering 1 vlan_default_pvid 42
+    # ip link set master br0 dev lan2 up
+    # cat /sys/kernel/debug/mv88e6xxx/sw0/vtu
+    vid 42      fid 1   sid 0   dpv 0 unmodified 2 untagged 10 unmodified
+
+You skipped this, last email without reply, this feels pretty unanswered to me.
+
+But whatever, I don't want these two commands to rip apart your network.
+
+> It is my understanding that Florian actively wants this merged.  No
+> one objected to his email.
+> 
+> It seems there's a disconnect *between* the DSA maintainers - I think
+> you need to be more effectively communicating with each other and
+> reading each other's emails, and pro-actively replying to stuff you
+> may have other views on.
+
+I'm not sure to understand what you're assuming here. As Florian said, your
+patch is good to go as long as you change the boolean name to something
+generic not containing "vtu", which is Marvell specific. If you really
+need us to choose, then go with "force_vlan_programming" or one of your
+suggestions. What matters here is that a non-mv88e6xxx user can clearly
+understand what this boolean does.
+
+
+Thank you,
+
+	Vivien
