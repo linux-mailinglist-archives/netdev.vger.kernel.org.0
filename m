@@ -2,117 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F6F2189428
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 03:48:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AF1C18944E
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 04:15:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726713AbgCRCst (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 22:48:49 -0400
-Received: from mail-eopbgr130088.outbound.protection.outlook.com ([40.107.13.88]:62369
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727290AbgCRCss (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Mar 2020 22:48:48 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OjxDOv5RNVUkn+eP6hjIA0KEqxXmNXC/FSaXU+62uB0oGL2qgprKFTVS29Vo6tKTg84ebZWQ7PZWTlSObl+ib7fu0olFvf2wLsVIloKEqcRbG4KHrV5DQfu/qehgS1sV8f949//4vDkYTM5raIqZIo5NNg9ED8RactmslvMIzwSXyXGZ0OfYpTpMEMW5Km2Ogu0i50gisuyxEVWKsSI0/rPGRseH3LmgJJBuKxih+uBOjvYamw1zgiaPIxoYWAn8pho9ogsFs1ZA3h5eQECR2W4AUhX46g55jAPv/iWVYaSFtpGmGGwdQijay1FcniWBzx28mRA5mRlfL5iwwLYyYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8UIYYIzdqu/ZdqyernnS2m0VQC0v4yBiQH2gEOWey6U=;
- b=IQ9TLjLwdn6tbvw7FT+2dnYAsF3/hN974BD0ISzZMnmsO6v/HjzXchLkRQY7B3ALy3HgYj/y618dhKP+A4NR7BFr9wDr5aR/oDenCOPHzKBmDD46Jpewp+dyBLK5OwW2UafsgwxDpGlQK1CUmBOGVDKmgO794adQ3KSstXwfJRHq6hlg3meTgbgjYC9e4VYPNtKG1F4zfoZcUgmRdc4DumwpYE43TAhOti91HZW0FIskYHi5t7ZGwOp7YPeqyVD9Tk+4iEI3zXmOlm2sArNzq7AiEoWfxXZWy2CBE231VFhEM3/UtTHo1rA25Ka+Fg//2fLJbrNX3BUZqoOUOaCaBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8UIYYIzdqu/ZdqyernnS2m0VQC0v4yBiQH2gEOWey6U=;
- b=MIRbSR1riL8r4sWklH8l7QmoTQCPYRnD7QXVP6Ha8q9BP7DObJANgQJ3CMfT51S2XWE36MmQdx83BJmgHwBY5Hw1qXtuR6BABxRaRkToCznfrNyAGOd47GDmc3P0fbG+e29hwYsZUoZzsYsvpm2PBH947VdeFabNDsjuTW29xIg=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB4109.eurprd05.prod.outlook.com (10.171.182.30) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2814.14; Wed, 18 Mar 2020 02:48:30 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2814.021; Wed, 18 Mar 2020
- 02:48:30 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        Eli Cohen <eli@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 14/14] net/mlx5: Avoid forwarding to other eswitch uplink
-Date:   Tue, 17 Mar 2020 19:47:22 -0700
-Message-Id: <20200318024722.26580-15-saeedm@mellanox.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200318024722.26580-1-saeedm@mellanox.com>
-References: <20200318024722.26580-1-saeedm@mellanox.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BY5PR13CA0027.namprd13.prod.outlook.com
- (2603:10b6:a03:180::40) To VI1PR05MB5102.eurprd05.prod.outlook.com
- (2603:10a6:803:5e::23)
+        id S1726730AbgCRDO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 23:14:59 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63402 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726229AbgCRDO7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 23:14:59 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02I3EuNe016397
+        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 20:14:58 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=+kFPsMVhi9HZlxqWgOCcpftHZOADrXWFHmYOJVT+9RM=;
+ b=lPlRBCG3Has7Mn+YxVISrLO8HmF4p8rHKHoGGmOYTXb8yo0nIgzrsU8av50DnrllD1tk
+ LAZcSEXudRBGbtBT5048zw8OnevV9wM2DQ9VHMsoCkKoWxfzR7QBhhQz72gfRAy51Qak
+ 2rFtI135r8oYAmq+0igyGVUZ0Td44CuLdLY= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 2yua0wra2u-5
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 20:14:58 -0700
+Received: from intmgw004.08.frc2.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:21d::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Tue, 17 Mar 2020 20:14:35 -0700
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id 713F7294307C; Tue, 17 Mar 2020 20:14:31 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Martin KaFai Lau <kafai@fb.com>
+Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v3 bpf-next 0/4] bpftool: Add struct_ops support
+Date:   Tue, 17 Mar 2020 20:14:31 -0700
+Message-ID: <20200318031431.1256036-1-kafai@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BY5PR13CA0027.namprd13.prod.outlook.com (2603:10b6:a03:180::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.12 via Frontend Transport; Wed, 18 Mar 2020 02:48:28 +0000
-X-Mailer: git-send-email 2.24.1
-X-Originating-IP: [73.15.39.150]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: dff40725-bfb7-49ce-09f8-08d7cae6d70f
-X-MS-TrafficTypeDiagnostic: VI1PR05MB4109:|VI1PR05MB4109:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB41094822B57D83D62FDE2470BEF70@VI1PR05MB4109.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1169;
-X-Forefront-PRVS: 03468CBA43
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(346002)(39860400002)(376002)(136003)(199004)(956004)(478600001)(2616005)(6486002)(2906002)(54906003)(5660300002)(52116002)(86362001)(81156014)(6506007)(81166006)(4326008)(107886003)(8676002)(8936002)(26005)(66946007)(186003)(16526019)(4744005)(1076003)(6512007)(66556008)(6666004)(66476007)(36756003)(316002)(6916009)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4109;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NTeF3GWu3V68ZWMcIG22a5XWMLikEz2ubYe5mzLjiZPdDDw4h+ZicbDjEizwuBV0dnT2GEASLcm2uBoqR8zSb7BLgFzBamJLbjRg7YQPgcUJKts8/ohANR/y3WnwKDYNtj0MoY6NV5CUh6QKZPrlH1Iac7PMRts8vDZBGf3jPDWjkoE15BrnJQWosmgEGcbkhY9vzScrXsNO05bNPnufaoLaqcsidsdVPJArQCQLa1qzRbaTVPUARkz/HMQvV6tqGxS0NGn4Q4Y7t9pUNBZu9sqfK5BkMOtB16J6b6OYAPQGw7AzHtndOOzhQO9KkPtmeZIg7wTPb5n6tU+Y+TL4jJ2HjmLimLrqyfm8e6MA/RfyHiCxGcKmge9jrgxRMEFkrcKX31T+Cdq42Far0A/0M9P/O31i2y2J4MOj2NeLmUwuliY8VbFEaG71b1VI73Uc/uOisnkqgOI5zhc6KTkBr1s6kN0TTAeFAeAWYs+v85kOjymEO8eF4J+7JTyx2qYLxoqubhztcNoZwueLtgI4OJrvgv+h7WElHg5zcjbRAak=
-X-MS-Exchange-AntiSpam-MessageData: FB0OVEBl1PjY0pYjeukFeWoP9ReQ8fT7Ii5Ovzj20mCO6QSqugVOuhAsjU9wa88N0SHfH7bNX90WBA1b9wpIzXVKBEcmuXVIhfyC74DnaGK3CoGIIb4mG6U6XNBhRfaaAQutfMqosB+WyjY/9Lguig==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dff40725-bfb7-49ce-09f8-08d7cae6d70f
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2020 02:48:30.0677
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YvS+t2DxrYSPKAsxnO5STaQvH37yNHjgpVdMSjKj08YbEgpsujGa7fhG+/KnqwyOMgrB4aJEh7u8KBwnlAs/vQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4109
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-17_10:2020-03-17,2020-03-17 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=420
+ priorityscore=1501 impostorscore=0 bulkscore=0 adultscore=0
+ lowpriorityscore=0 phishscore=0 malwarescore=0 spamscore=0 clxscore=1015
+ suspectscore=13 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003180016
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eli Cohen <eli@mellanox.com>
+This set adds "struct_ops" support to bpftool.
 
-Do not allow forwarding of encapsulated traffic received from one eswtich's
-uplink to another eswtich's uplink.
+The first two patches improve the btf_dumper in bpftool.
+Patch 1: print the enum's name (if it is found) instead of the
+         enum's value.
+Patch 2: print a char[] as a string if all characters are printable.
 
-Signed-off-by: Eli Cohen <eli@mellanox.com>
-Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c | 3 +++
- 1 file changed, 3 insertions(+)
+"struct_ops" stores the prog_id in a func ptr.
+Instead of printing a prog_id,
+patch 3 adds an option to btf_dumper to allow a func ptr's value
+to be printed with the full func_proto info and the prog_name.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-index 608d0e07c308..b45c3f46570b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_tun.c
-@@ -66,6 +66,9 @@ static int get_route_and_out_devs(struct mlx5e_priv *priv,
- 	      mlx5e_is_uplink_rep(netdev_priv(*out_dev))))
- 		return -EOPNOTSUPP;
- 
-+	if (mlx5e_eswitch_uplink_rep(priv->netdev) && *out_dev != priv->netdev)
-+		return -EOPNOTSUPP;
-+
- 	return 0;
- }
- 
+Patch 4 implements the "struct_ops" bpftool command.
+
+v3:
+- Check for "case 1:" in patch 1 (Andrii)
+
+v2:
+- Typo fixes in comment and doc in patch 4 (Quentin)
+- Link to a few other man pages in doc in patch 4 (Quentin)
+- Alphabet ordering in include files in patch 4 (Quentin)
+- Use GET_ARG() in patch 4 (Quentin)
+
+Martin KaFai Lau (4):
+  bpftool: Print the enum's name instead of value
+  bpftool: Print as a string for char array
+  bpftool: Translate prog_id to its bpf prog_name
+  bpftool: Add struct_ops support
+
+ .../Documentation/bpftool-struct_ops.rst      | 116 ++++
+ tools/bpf/bpftool/bash-completion/bpftool     |  28 +
+ tools/bpf/bpftool/btf_dumper.c                | 198 +++++-
+ tools/bpf/bpftool/main.c                      |   3 +-
+ tools/bpf/bpftool/main.h                      |   2 +
+ tools/bpf/bpftool/struct_ops.c                | 596 ++++++++++++++++++
+ 6 files changed, 927 insertions(+), 16 deletions(-)
+ create mode 100644 tools/bpf/bpftool/Documentation/bpftool-struct_ops.rst
+ create mode 100644 tools/bpf/bpftool/struct_ops.c
+
 -- 
-2.24.1
+2.17.1
 
