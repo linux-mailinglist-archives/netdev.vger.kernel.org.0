@@ -2,75 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 452A0189811
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:41:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45EA2189839
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:44:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727501AbgCRJld (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 05:41:33 -0400
-Received: from www62.your-server.de ([213.133.104.62]:49836 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726994AbgCRJld (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:41:33 -0400
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jEVCd-0002xu-Dx; Wed, 18 Mar 2020 10:41:31 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jEVCd-000G0w-6m; Wed, 18 Mar 2020 10:41:31 +0100
-Subject: Re: [PATCH net-next] netfilter: revert introduction of egress hook
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>
-References: <bbdee6355234e730ef686f9321bd072bcf4bb232.1584523237.git.daniel@iogearbox.net>
- <20200318093649.sn3hsi7nkd3j34lj@salvia>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <97a81974-5063-ed3d-8ad4-9f7ff3aa0908@iogearbox.net>
-Date:   Wed, 18 Mar 2020 10:41:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20200318093649.sn3hsi7nkd3j34lj@salvia>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25754/Tue Mar 17 14:09:15 2020)
+        id S1727730AbgCRJod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 05:44:33 -0400
+Received: from smtp-rs2-vallila1.fe.helsinki.fi ([128.214.173.73]:51658 "EHLO
+        smtp-rs2-vallila1.fe.helsinki.fi" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727604AbgCRJn6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:43:58 -0400
+Received: from whs-18.cs.helsinki.fi (whs-18.cs.helsinki.fi [128.214.166.46])
+        by smtp-rs2.it.helsinki.fi (8.14.7/8.14.7) with ESMTP id 02I9hoqn012819;
+        Wed, 18 Mar 2020 11:43:50 +0200
+Received: by whs-18.cs.helsinki.fi (Postfix, from userid 1070048)
+        id A1E8F36032A; Wed, 18 Mar 2020 11:43:50 +0200 (EET)
+From:   =?ISO-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@helsinki.fi>
+To:     netdev@vger.kernel.org
+Cc:     Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
+Subject: [RFC PATCH 00/28]: Accurate ECN for TCP
+Date:   Wed, 18 Mar 2020 11:43:04 +0200
+Message-Id: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/18/20 10:36 AM, Pablo Neira Ayuso wrote:
-> On Wed, Mar 18, 2020 at 10:33:22AM +0100, Daniel Borkmann wrote:
->> This reverts the following commits:
->>
->>    8537f78647c0 ("netfilter: Introduce egress hook")
->>    5418d3881e1f ("netfilter: Generalize ingress hook")
->>    b030f194aed2 ("netfilter: Rename ingress hook include file")
->>
->>  From the discussion in [0], the author's main motivation to add a hook
->> in fast path is for an out of tree kernel module, which is a red flag
->> to begin with. Other mentioned potential use cases like NAT{64,46}
->> is on future extensions w/o concrete code in the tree yet. Revert as
->> suggested [1] given the weak justification to add more hooks to critical
->> fast-path.
->>
->>    [0] https://lore.kernel.org/netdev/cover.1583927267.git.lukas@wunner.de/
->>    [1] https://lore.kernel.org/netdev/20200318.011152.72770718915606186.davem@davemloft.net/
->>
->> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> 
-> Nacked-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> 
-> Daniel, you must be really worried about achieving your goals if you
-> have to do politics to block stuff.
+Hi all,
 
-Looks like this is your only rationale technical argument you can come
-up with?
+Here's the full Accurate ECN implementation mostly based on
+  https://tools.ietf.org/html/draft-ietf-tcpm-accurate-ecn-11
 
-Thanks,
-Daniel
+Comments would be highly appreciated. The GSO/TSO maze of bits
+in particular is something I'm somewhat unsure if I got it
+right (for a feature that has a software fallback).
+
+There is an extensive set of packetdrill unit tests for most of
+the functionality (I'll send separately to packetdrill).
+
+Please note that this submission is not yet intented to be
+included to net-next because some small changes seem still
+possible to the spec.
+
+ Documentation/networking/ip-sysctl.txt |  12 +-
+ drivers/net/tun.c                      |   3 +-
+ include/linux/netdev_features.h        |   3 +
+ include/linux/skbuff.h                 |   2 +
+ include/linux/tcp.h                    |  19 ++
+ include/net/tcp.h                      | 221 ++++++++++---
+ include/uapi/linux/tcp.h               |   9 +-
+ net/ethtool/common.c                   |   1 +
+ net/ipv4/bpf_tcp_ca.c                  |   2 +-
+ net/ipv4/syncookies.c                  |  12 +
+ net/ipv4/tcp.c                         |  10 +-
+ net/ipv4/tcp_dctcp.c                   |   2 +-
+ net/ipv4/tcp_dctcp.h                   |   2 +-
+ net/ipv4/tcp_input.c                   | 558 ++++++++++++++++++++++++++++-----
+ net/ipv4/tcp_ipv4.c                    |   8 +-
+ net/ipv4/tcp_minisocks.c               |  84 ++++-
+ net/ipv4/tcp_offload.c                 |  11 +-
+ net/ipv4/tcp_output.c                  | 298 +++++++++++++++---
+ net/ipv4/tcp_timer.c                   |   4 +-
+ net/ipv6/syncookies.c                  |   1 +
+ net/ipv6/tcp_ipv6.c                    |   4 +-
+ net/netfilter/nf_log_common.c          |   4 +-
+
+--
+ i.   
+
+ps. My apologies if you got a duplicate copy of them. It seems that
+answering "no" to git send-email asking "Send this email?" might
+still have sent something out.
+
