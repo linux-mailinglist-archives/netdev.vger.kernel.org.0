@@ -2,186 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48774189C30
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 13:43:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B5AAD189C4A
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 13:50:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726864AbgCRMnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 08:43:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52654 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726827AbgCRMnt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 08:43:49 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 31C5520768;
-        Wed, 18 Mar 2020 12:43:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584535427;
-        bh=iddU/5ft/10pg+Xr5zE0XMBFuNwqtbvd8ElppRsR3+8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F85LsXsnfexgwo67WV+O6TlVa6l1FuHW+D+KXBOYfs+GlFh2BgSeICaGzip7N+xaX
-         mSIru3oqMvZ7H3pXQw7tTT34mKC791Ax118FhGXxBtB7xfPspwLNEXOx0+Z49JRINM
-         Xam0TnqMqIfRvGBDGd5MBKlmSf/lMxcawiN7GGgE=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Yishai Hadas <yishaih@mellanox.com>, linux-rdma@vger.kernel.org,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
-Subject: [PATCH mlx5-next 4/4] IB/mlx5: Move to fully dynamic UAR mode once user space supports it
-Date:   Wed, 18 Mar 2020 14:43:29 +0200
-Message-Id: <20200318124329.52111-5-leon@kernel.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200318124329.52111-1-leon@kernel.org>
-References: <20200318124329.52111-1-leon@kernel.org>
+        id S1726875AbgCRMuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 08:50:23 -0400
+Received: from mail-vs1-f66.google.com ([209.85.217.66]:37906 "EHLO
+        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726546AbgCRMuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 08:50:22 -0400
+Received: by mail-vs1-f66.google.com with SMTP id x206so7605882vsx.5
+        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 05:50:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=tNH5oppoky0OHGa5tXYcwyV7SJRdKkQrTvDjbdQHru4=;
+        b=NA5BCCk6cEdsdxdych4EBOfRTF2f+xIX55/kbCWgDSx44xCejlGrWQVPFvMYTLJ3/w
+         UERaGmqLf3LWko+XvLsAsrEqYUq0ZFzWsI2bmSRE9/r5GePZtFv4z7ql4tdzH2e7orjK
+         39u8iqGXTLm2C/f+bF51L7D2GNwvVqkUQhMTVxiI04J+vug3vmax0NdgLdaZ8GQSYcwr
+         0ku9IG4Wq7BUHpioN9okIkF6uk7yUTZFB2SsvGvxE1nW1NwsAHkyEgaFl6NPTKUIhYW6
+         YBocu8VeNhu8yZ0n030mCJnOzc/0vb8wLCzZaNa9lULMMc3dezVYSoUdsN6mv5mTV1bp
+         vw9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=tNH5oppoky0OHGa5tXYcwyV7SJRdKkQrTvDjbdQHru4=;
+        b=Prv1oOAc6QBn/WMfoK5K786/JFMNjpn6fr5QfuNLdmvfTiz7Cffa/8SfSk/9P0l+oP
+         CTBFEa5Hv46AcQGH/95X9MRUYRNTHj3lAO8FctlDvOa8xstWFQ4YWWeums4STItKZHuh
+         U5/W+E5Qhv8p/JpCJB6YfRJTIDhmxlHXMXCme8NKDnz+K2AS4o1IKpJpqU7KfhCgys4m
+         6FG12VP1HAzGH2VEfZ+yE9AtUA1o6kJtDxZaSK+IACOJHLrIo9ujD/r2ZWZnnFZ9LnT/
+         cTotwNkfUo03SMy5wY46O0vbmLpHoEiwNlIdpNQl7B7qKsREqe9szxsbmGbSLDvqfoo1
+         RTTg==
+X-Gm-Message-State: ANhLgQ3lLf18grJrInJj15h8BDj6FgUOSSjd7pZOuvTJmEIZbZXjwBgS
+        XSP3C0pZ6WDdO6RFfiM4Bp/oqVjD2O77QAaYfxFO2g==
+X-Google-Smtp-Source: ADFU+vuGTbacJJyl1R90h0Jboo62I4NU99xdEygLBx6b4WhzEwyH/jgtPtVjq2yCEIPJ3MRUxjSt1XO7sNNC/UvJxVc=
+X-Received: by 2002:a67:df97:: with SMTP id x23mr3051735vsk.160.1584535820076;
+ Wed, 18 Mar 2020 05:50:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: by 2002:a9f:3b21:0:0:0:0:0 with HTTP; Wed, 18 Mar 2020 05:50:19
+ -0700 (PDT)
+X-Originating-IP: [5.35.35.59]
+In-Reply-To: <f75365c7-a3ca-cf12-b2fc-e48652071795@suse.com>
+References: <1584364176-23346-1-git-send-email-kda@linux-powerpc.org> <f75365c7-a3ca-cf12-b2fc-e48652071795@suse.com>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Wed, 18 Mar 2020 15:50:19 +0300
+Message-ID: <CAOJe8K3gDJrdKz9zVZNj=N76GygMnPbCKM0-kVfoV53fASAefg@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] xen networking: add basic XDP support for xen-netfront
+To:     =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
+        wei.liu@kernel.org, paul@xen.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yishai Hadas <yishaih@mellanox.com>
+On 3/18/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+> On 16.03.20 14:09, Denis Kirjanov wrote:
+>> The patch adds a basic XDP processing to xen-netfront driver.
+>>
+>> We ran an XDP program for an RX response received from netback
+>> driver. Also we request xen-netback to adjust data offset for
+>> bpf_xdp_adjust_head() header space for custom headers.
+>
+> This is in no way a "verbose patch descriprion".
+>
+> I'm missing:
+>
+> - Why are you doing this. "Add XDP support" is not enough, for such
+>    a change I'd like to see some performance numbers to get an idea
+>    of the improvement to expect, or which additional functionality
+>    for the user is available.
+Ok, I'll try to measure  some numbers.
 
-Move to fully dynamic UAR mode once user space supports it.
-In this case we prevent any legacy mode of UARs on the allocated context
-and prevent redundant allocation of the static ones.
+>
+> - A short description for me as a Xen maintainer with only basic
+>    networking know-how, what XDP programs are about (a link to some
+>    more detailed doc is enough, of course) and how the interface
+>    is working (especially for switching between XDP mode and normal
+>    SKB processing).
 
-Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
-Reviewed-by: Michael Guralnik <michaelgur@mellanox.com>
-Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
----
- drivers/infiniband/hw/mlx5/cq.c   |  8 ++++++--
- drivers/infiniband/hw/mlx5/main.c | 13 ++++++++++++-
- drivers/infiniband/hw/mlx5/qp.c   |  6 ++++++
- include/linux/mlx5/driver.h       |  1 +
- include/uapi/rdma/mlx5-abi.h      |  1 +
- 5 files changed, 26 insertions(+), 3 deletions(-)
+You can search for the "A practical introduction to XDP" tutorial.
+Actually there is a lot of information available regarding XDP, you
+can easily find it.
 
-diff --git a/drivers/infiniband/hw/mlx5/cq.c b/drivers/infiniband/hw/mlx5/cq.c
-index eafedc2f697b..146ba2966744 100644
---- a/drivers/infiniband/hw/mlx5/cq.c
-+++ b/drivers/infiniband/hw/mlx5/cq.c
-@@ -764,10 +764,14 @@ static int create_cq_user(struct mlx5_ib_dev *dev, struct ib_udata *udata,
- 	MLX5_SET(cqc, cqc, log_page_size,
- 		 page_shift - MLX5_ADAPTER_PAGE_SHIFT);
- 
--	if (ucmd.flags & MLX5_IB_CREATE_CQ_FLAGS_UAR_PAGE_INDEX)
-+	if (ucmd.flags & MLX5_IB_CREATE_CQ_FLAGS_UAR_PAGE_INDEX) {
- 		*index = ucmd.uar_page_index;
--	else
-+	} else if (context->bfregi.lib_uar_dyn) {
-+		err = -EINVAL;
-+		goto err_cqb;
-+	} else {
- 		*index = context->bfregi.sys_pages[0];
-+	}
- 
- 	if (ucmd.cqe_comp_en == 1) {
- 		int mini_cqe_format;
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index e8787af2d74d..e355e06bf3ac 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -1787,6 +1787,7 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 				     max_cqe_version);
- 	u32 dump_fill_mkey;
- 	bool lib_uar_4k;
-+	bool lib_uar_dyn;
- 
- 	if (!dev->ib_active)
- 		return -EAGAIN;
-@@ -1845,8 +1846,14 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 	}
- 
- 	lib_uar_4k = req.lib_caps & MLX5_LIB_CAP_4K_UAR;
-+	lib_uar_dyn = req.lib_caps & MLX5_LIB_CAP_DYN_UAR;
- 	bfregi = &context->bfregi;
- 
-+	if (lib_uar_dyn) {
-+		bfregi->lib_uar_dyn = lib_uar_dyn;
-+		goto uar_done;
-+	}
-+
- 	/* updates req->total_num_bfregs */
- 	err = calc_total_bfregs(dev, lib_uar_4k, &req, bfregi);
- 	if (err)
-@@ -1873,6 +1880,7 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 	if (err)
- 		goto out_sys_pages;
- 
-+uar_done:
- 	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX) {
- 		err = mlx5_ib_devx_create(dev, true);
- 		if (err < 0)
-@@ -1894,7 +1902,7 @@ static int mlx5_ib_alloc_ucontext(struct ib_ucontext *uctx,
- 	INIT_LIST_HEAD(&context->db_page_list);
- 	mutex_init(&context->db_page_mutex);
- 
--	resp.tot_bfregs = req.total_num_bfregs;
-+	resp.tot_bfregs = lib_uar_dyn ? 0 : req.total_num_bfregs;
- 	resp.num_ports = dev->num_ports;
- 
- 	if (offsetofend(typeof(resp), cqe_version) <= udata->outlen)
-@@ -2142,6 +2150,9 @@ static int uar_mmap(struct mlx5_ib_dev *dev, enum mlx5_ib_mmap_cmd cmd,
- 	int max_valid_idx = dyn_uar ? bfregi->num_sys_pages :
- 				bfregi->num_static_sys_pages;
- 
-+	if (bfregi->lib_uar_dyn)
-+		return -EINVAL;
-+
- 	if (vma->vm_end - vma->vm_start != PAGE_SIZE)
- 		return -EINVAL;
- 
-diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
-index 380ba3321851..319d514a2223 100644
---- a/drivers/infiniband/hw/mlx5/qp.c
-+++ b/drivers/infiniband/hw/mlx5/qp.c
-@@ -697,6 +697,9 @@ static int alloc_bfreg(struct mlx5_ib_dev *dev,
- {
- 	int bfregn = -ENOMEM;
- 
-+	if (bfregi->lib_uar_dyn)
-+		return -EINVAL;
-+
- 	mutex_lock(&bfregi->lock);
- 	if (bfregi->ver >= 2) {
- 		bfregn = alloc_high_class_bfreg(dev, bfregi);
-@@ -768,6 +771,9 @@ int bfregn_to_uar_index(struct mlx5_ib_dev *dev,
- 	u32 index_of_sys_page;
- 	u32 offset;
- 
-+	if (bfregi->lib_uar_dyn)
-+		return -EINVAL;
-+
- 	bfregs_per_sys_page = get_uars_per_sys_page(dev, bfregi->lib_uar_4k) *
- 				MLX5_NON_FP_BFREGS_PER_UAR;
- 	index_of_sys_page = bfregn / bfregs_per_sys_page;
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 3f10a9633012..e4ab0eb9d202 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -224,6 +224,7 @@ struct mlx5_bfreg_info {
- 	struct mutex		lock;
- 	u32			ver;
- 	bool			lib_uar_4k;
-+	u8			lib_uar_dyn : 1;
- 	u32			num_sys_pages;
- 	u32			num_static_sys_pages;
- 	u32			total_num_bfregs;
-diff --git a/include/uapi/rdma/mlx5-abi.h b/include/uapi/rdma/mlx5-abi.h
-index a65d60b44829..df1cc3641bda 100644
---- a/include/uapi/rdma/mlx5-abi.h
-+++ b/include/uapi/rdma/mlx5-abi.h
-@@ -79,6 +79,7 @@ struct mlx5_ib_alloc_ucontext_req {
- 
- enum mlx5_lib_caps {
- 	MLX5_LIB_CAP_4K_UAR	= (__u64)1 << 0,
-+	MLX5_LIB_CAP_DYN_UAR	= (__u64)1 << 1,
- };
- 
- enum mlx5_ib_alloc_uctx_v2_flags {
--- 
-2.24.1
+>
+> - A proper description of the netfront/netback communication when
+>    enabling or disabling XDP mode (who is doing what, is silencing
+>    of the virtual adapter required, ...).
+Currently we need only a header offset from netback driver so that we can p=
+ut
+custom encapsulation header if required and that's done using xen bus
+state switching,
+so that:
+- netback tells that it can adjust the header offset
+- netfront part reads it
+>
+> - Reasoning why the suggested changes of frontend and backend state
+>    are no problem for special cases like hot-remove of an interface or
+>    live migration or suspend of the guest.
 
+I've put the code to talk_to_netback which is called "when first
+setting up, and when resuming"
+If you see a problem with that please share.
+
+>
+> Finally I'd like to ask you to split up the patch into a netfront and
+> a netback one.
+
+Ok, will do.
+
+Thanks!
+>
+>
+> Juergen
+>
