@@ -2,35 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9012418A643
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:07:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8B5618A640
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:07:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727771AbgCRUyT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:54:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53764 "EHLO mail.kernel.org"
+        id S1727836AbgCRUy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 16:54:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53954 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727749AbgCRUyS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:54:18 -0400
+        id S1727785AbgCRUy2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 16:54:28 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 35CD0208D5;
-        Wed, 18 Mar 2020 20:54:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3EF5D208D5;
+        Wed, 18 Mar 2020 20:54:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584564857;
-        bh=qVjoLHhaWei+kQZu9/OxgcFz2dT0HIX9Y4RCzcxpQQw=;
+        s=default; t=1584564867;
+        bh=uiJJtRB8sMgUS5zJByFw8EMWgw3zf4pjcht87XSVQJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JHetefNwmK7eoFAJEYsACi45/xvFvWW3uMBOpzmMoERqr8nXdLzALWijAdKE6ySKI
-         RFvoQcW7GtV9rKDUhV+e4ZxI/mD4X4fyCpJIpYVQ6nndVD//zsheDoEanD/ChfsRQ/
-         0TAAIa7NGxxRFIgXSSHIb8t2iviAMutIgqn0VDfA=
+        b=TNATGN/ZeMv/8b0LJVLRhNqMN4MGWp3xsismVOe2q3nU0NXMskuxGLZ80MwYzV7n7
+         XdxRK0o7l81mUsow82XzbfOvd4yld0TN68vUlebiqkIu9BJJhBkyFt1/PPvjCqiJ8Q
+         T5/U7OxzQ1LntEg+nJ+63CBWq7uts8ZbWMe5xSuE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
+Cc:     Jiri Wiesner <jwiesner@suse.com>,
+        Per Sundstrom <per.sundstrom@redqube.se>,
+        Eric Dumazet <edumazet@google.com>,
+        Mahesh Bandewar <maheshb@google.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 34/73] fsl/fman: detect FMan erratum A050385
-Date:   Wed, 18 Mar 2020 16:52:58 -0400
-Message-Id: <20200318205337.16279-34-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 39/73] ipvlan: do not add hardware address of master to its unicast filter list
+Date:   Wed, 18 Mar 2020 16:53:03 -0400
+Message-Id: <20200318205337.16279-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200318205337.16279-1-sashal@kernel.org>
 References: <20200318205337.16279-1-sashal@kernel.org>
@@ -43,128 +46,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madalin Bucur <madalin.bucur@nxp.com>
+From: Jiri Wiesner <jwiesner@suse.com>
 
-[ Upstream commit b281f7b93b258ce1419043bbd898a29254d5c9c7 ]
+[ Upstream commit 63aae7b17344d4b08a7d05cb07044de4c0f9dcc6 ]
 
-Detect the presence of the A050385 erratum.
+There is a problem when ipvlan slaves are created on a master device that
+is a vmxnet3 device (ipvlan in VMware guests). The vmxnet3 driver does not
+support unicast address filtering. When an ipvlan device is brought up in
+ipvlan_open(), the ipvlan driver calls dev_uc_add() to add the hardware
+address of the vmxnet3 master device to the unicast address list of the
+master device, phy_dev->uc. This inevitably leads to the vmxnet3 master
+device being forced into promiscuous mode by __dev_set_rx_mode().
 
-Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
+Promiscuous mode is switched on the master despite the fact that there is
+still only one hardware address that the master device should use for
+filtering in order for the ipvlan device to be able to receive packets.
+The comment above struct net_device describes the uc_promisc member as a
+"counter, that indicates, that promiscuous mode has been enabled due to
+the need to listen to additional unicast addresses in a device that does
+not implement ndo_set_rx_mode()". Moreover, the design of ipvlan
+guarantees that only the hardware address of a master device,
+phy_dev->dev_addr, will be used to transmit and receive all packets from
+its ipvlan slaves. Thus, the unicast address list of the master device
+should not be modified by ipvlan_open() and ipvlan_stop() in order to make
+ipvlan a workable option on masters that do not support unicast address
+filtering.
+
+Fixes: 2ad7bf3638411 ("ipvlan: Initial check-in of the IPVLAN driver")
+Reported-by: Per Sundstrom <per.sundstrom@redqube.se>
+Signed-off-by: Jiri Wiesner <jwiesner@suse.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Acked-by: Mahesh Bandewar <maheshb@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/fman/Kconfig | 28 +++++++++++++++++++++
- drivers/net/ethernet/freescale/fman/fman.c  | 18 +++++++++++++
- drivers/net/ethernet/freescale/fman/fman.h  |  5 ++++
- 3 files changed, 51 insertions(+)
+ drivers/net/ipvlan/ipvlan_main.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/fman/Kconfig b/drivers/net/ethernet/freescale/fman/Kconfig
-index 0139cb9042ec7..34150182cc35c 100644
---- a/drivers/net/ethernet/freescale/fman/Kconfig
-+++ b/drivers/net/ethernet/freescale/fman/Kconfig
-@@ -8,3 +8,31 @@ config FSL_FMAN
- 	help
- 		Freescale Data-Path Acceleration Architecture Frame Manager
- 		(FMan) support
-+
-+config DPAA_ERRATUM_A050385
-+	bool
-+	depends on ARM64 && FSL_DPAA
-+	default y
-+	help
-+		DPAA FMan erratum A050385 software workaround implementation:
-+		align buffers, data start, SG fragment length to avoid FMan DMA
-+		splits.
-+		FMAN DMA read or writes under heavy traffic load may cause FMAN
-+		internal resource leak thus stopping further packet processing.
-+		The FMAN internal queue can overflow when FMAN splits single
-+		read or write transactions into multiple smaller transactions
-+		such that more than 17 AXI transactions are in flight from FMAN
-+		to interconnect. When the FMAN internal queue overflows, it can
-+		stall further packet processing. The issue can occur with any
-+		one of the following three conditions:
-+		1. FMAN AXI transaction crosses 4K address boundary (Errata
-+		A010022)
-+		2. FMAN DMA address for an AXI transaction is not 16 byte
-+		aligned, i.e. the last 4 bits of an address are non-zero
-+		3. Scatter Gather (SG) frames have more than one SG buffer in
-+		the SG list and any one of the buffers, except the last
-+		buffer in the SG list has data size that is not a multiple
-+		of 16 bytes, i.e., other than 16, 32, 48, 64, etc.
-+		With any one of the above three conditions present, there is
-+		likelihood of stalled FMAN packet processing, especially under
-+		stress with multiple ports injecting line-rate traffic.
-diff --git a/drivers/net/ethernet/freescale/fman/fman.c b/drivers/net/ethernet/freescale/fman/fman.c
-index 210749bf1eac1..4c2fa13a7dd7b 100644
---- a/drivers/net/ethernet/freescale/fman/fman.c
-+++ b/drivers/net/ethernet/freescale/fman/fman.c
-@@ -1,5 +1,6 @@
- /*
-  * Copyright 2008-2015 Freescale Semiconductor Inc.
-+ * Copyright 2020 NXP
-  *
-  * Redistribution and use in source and binary forms, with or without
-  * modification, are permitted provided that the following conditions are met:
-@@ -566,6 +567,10 @@ struct fman_cfg {
- 	u32 qmi_def_tnums_thresh;
- };
- 
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+static bool fman_has_err_a050385;
-+#endif
-+
- static irqreturn_t fman_exceptions(struct fman *fman,
- 				   enum fman_exceptions exception)
+diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
+index ba3dfac1d9043..b805abc9ec3b4 100644
+--- a/drivers/net/ipvlan/ipvlan_main.c
++++ b/drivers/net/ipvlan/ipvlan_main.c
+@@ -164,7 +164,6 @@ static void ipvlan_uninit(struct net_device *dev)
+ static int ipvlan_open(struct net_device *dev)
  {
-@@ -2514,6 +2519,14 @@ struct fman *fman_bind(struct device *fm_dev)
+ 	struct ipvl_dev *ipvlan = netdev_priv(dev);
+-	struct net_device *phy_dev = ipvlan->phy_dev;
+ 	struct ipvl_addr *addr;
+ 
+ 	if (ipvlan->port->mode == IPVLAN_MODE_L3 ||
+@@ -178,7 +177,7 @@ static int ipvlan_open(struct net_device *dev)
+ 		ipvlan_ht_addr_add(ipvlan, addr);
+ 	rcu_read_unlock();
+ 
+-	return dev_uc_add(phy_dev, phy_dev->dev_addr);
++	return 0;
  }
- EXPORT_SYMBOL(fman_bind);
  
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+bool fman_has_errata_a050385(void)
-+{
-+	return fman_has_err_a050385;
-+}
-+EXPORT_SYMBOL(fman_has_errata_a050385);
-+#endif
-+
- static irqreturn_t fman_err_irq(int irq, void *handle)
- {
- 	struct fman *fman = (struct fman *)handle;
-@@ -2841,6 +2854,11 @@ static struct fman *read_dts_node(struct platform_device *of_dev)
- 		goto fman_free;
- 	}
+ static int ipvlan_stop(struct net_device *dev)
+@@ -190,8 +189,6 @@ static int ipvlan_stop(struct net_device *dev)
+ 	dev_uc_unsync(phy_dev, dev);
+ 	dev_mc_unsync(phy_dev, dev);
  
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+	fman_has_err_a050385 =
-+		of_property_read_bool(fm_node, "fsl,erratum-a050385");
-+#endif
-+
- 	return fman;
- 
- fman_node_put:
-diff --git a/drivers/net/ethernet/freescale/fman/fman.h b/drivers/net/ethernet/freescale/fman/fman.h
-index 935c317fa6964..f2ede1360f03a 100644
---- a/drivers/net/ethernet/freescale/fman/fman.h
-+++ b/drivers/net/ethernet/freescale/fman/fman.h
-@@ -1,5 +1,6 @@
- /*
-  * Copyright 2008-2015 Freescale Semiconductor Inc.
-+ * Copyright 2020 NXP
-  *
-  * Redistribution and use in source and binary forms, with or without
-  * modification, are permitted provided that the following conditions are met:
-@@ -398,6 +399,10 @@ u16 fman_get_max_frm(void);
- 
- int fman_get_rx_extra_headroom(void);
- 
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+bool fman_has_errata_a050385(void);
-+#endif
-+
- struct fman *fman_bind(struct device *dev);
- 
- #endif /* __FM_H */
+-	dev_uc_del(phy_dev, phy_dev->dev_addr);
+-
+ 	rcu_read_lock();
+ 	list_for_each_entry_rcu(addr, &ipvlan->addrs, anode)
+ 		ipvlan_ht_addr_del(addr);
 -- 
 2.20.1
 
