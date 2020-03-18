@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA73E18A718
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:32:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B4A9718A719
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:32:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726974AbgCRVc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 17:32:27 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:43868 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726776AbgCRVc1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 17:32:27 -0400
-Received: by mail-wr1-f68.google.com with SMTP id b2so257110wrj.10
-        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 14:32:25 -0700 (PDT)
+        id S1727127AbgCRVcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 17:32:31 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:33975 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726776AbgCRVca (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 17:32:30 -0400
+Received: by mail-wm1-f67.google.com with SMTP id x3so3289046wmj.1
+        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 14:32:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FYYwgn5zja27gxHB30Dof3wp4fAiP/Mr8LvA96t2nLw=;
-        b=G3zqk9xwUJ3Yg2zqpIyGZUhvVQDMyuLfDQFZzBnaIuS4DXgOa/qgoRCY2XFIBUhTnK
-         eIpNtnuq2a/QqszPT4AujVtWj9X9Q6XWAVP1clG79pTbMzPV+3duWPMkOnntOKxAiGPu
-         VIh0//AYUe3LsIiDGmyabAPIjv4Vk/S+qDFrE53Z4REC9/uAPZMzkrD9e/smrXkED0+n
-         pWf0ltq/WMZ+zZ1ooNEhsmXQIKO2j+1bAmuZT8kWQSBxAJV6VkLOgiTzAECkQB4KLzwK
-         FvW54LqgwjBKxBQwIeoyW2pb6QBD9xT7GNfzVpegmGWzNk5wUVBx2CbWKUjQWmgMv0mF
-         3T0w==
+        bh=5B/qNdY0WNZGNcZ4e+FIr5yzavXE++f/Ppts/oFfCQU=;
+        b=fEy88gORjVRZZpuEnSPl3PpLpjcWmsx3bLV32ZwL4/n1PbI5RljCuIFMpbxqVhtdwI
+         0ypsoqgxbT9sEfJiUCEf1AuWFz6nU5dTSwEwccYQ7Z09VP7PuNdYDw2YUZ8SL9s7AmR/
+         I+wQstjHArY0lnl7bQdF3HH/38O6W7YGBDzPqgU6a62H66v/nEClzLwoZx803ZCEZp0h
+         24TNvNh95CJtmhwB6FIB7mHib3qaQjSlAc347b2Kor2v2UbxUVlxSHMBLA3HnHy4z5Dw
+         wiS6dSePqnkVt4jFOXummduLNx6gXZNTezmlXXu1PiVksAOtfseUSDYWxXl6Jm7wOS5Z
+         BPjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=FYYwgn5zja27gxHB30Dof3wp4fAiP/Mr8LvA96t2nLw=;
-        b=S+MsVjWT+QkdZ6cO5Hp0uCPeQmO69ZDY3VK390rcmwTfpGjuvBlBVuAUgZrLxXF9Do
-         Op0SNXSs+0KBMj/9ml7XQ0bRpobeLG2//y5HzsJ/TNET3cI8i9AsAU2vWVSWQqolCI4d
-         krU3IemSFlVVmL4JzH7OfGASNd1+47IFk/63aXZb+8fSYUh6hN5PkO7qq+oDxpBWfRZS
-         WIeay5yd7kE2TI92BSCipU4s6PMikt3/q8WGo+vTa5lWTwN6+tIhuUbjTUFSXOPw59Hc
-         jZcreTOKyVx4kYaXIRossXN2q5kdI9+GsN7aGkRMxBWTxuTMgLNXFjIHsPBG7R/HIEqT
-         332w==
-X-Gm-Message-State: ANhLgQ1a/2WV4oBEmhfFHV8lDviZvdqIkTqjL+FewW2HWhAleUP8wtLr
-        +tpX9g+uEamnaxWISByQAIiMfMu+
-X-Google-Smtp-Source: ADFU+vutm1tTkoLodcBVIjxmcXbhsTAqLtzaO7u72OzRvORROmGf/RKI0BR1++2kfvYeAarriSAodQ==
-X-Received: by 2002:adf:a313:: with SMTP id c19mr7592085wrb.411.1584567144823;
-        Wed, 18 Mar 2020 14:32:24 -0700 (PDT)
+        bh=5B/qNdY0WNZGNcZ4e+FIr5yzavXE++f/Ppts/oFfCQU=;
+        b=kyLcEHKk9wHLaK/FPXOiO+0m8EPpmZEm3Wd/wympZZPOH3cbgeFNeaVFkUKvf4wHYx
+         cx1WO8scIrINxNi6iwuhwK/39lrT4RoekEaiBHwY0PENru45Aw4nm7cz6vfYtPjlaMlS
+         r84BbqUpzCogiOH2YSM4JDK5mjV6cTz1RWjUEfJrKQkWQwpuTNw7xn2YubmwpXr5kqQK
+         didYmDxBTmXGzmiAcQkDn+68f9M6JnvmC0swUeVo/xyHmse93jN7T1mwCBJEVjDeprml
+         0xOCYtiYJgh/Akg9jP+jNAQNBpthNnO9Rf6Abre4dI/GitDCqejGn3C8lbEIrmNhxKwm
+         qWgg==
+X-Gm-Message-State: ANhLgQ0dx1Z7VSgR7/65E/AyD2Btms+ttMRoWg/WZ35a9zOUyufxUqF6
+        VT4ydAPI/8asateaIijCLK17AsiV
+X-Google-Smtp-Source: ADFU+vvFEP/Ht0kMJDjBjaIZztVefMa4vkmFmd+E6rfiJ8P21Dc62HbPnAWmUoyqsHbaIl5uoOkxNg==
+X-Received: by 2002:a1c:4d7:: with SMTP id 206mr7130077wme.5.1584567145948;
+        Wed, 18 Mar 2020 14:32:25 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8f29:6000:c8fb:eee:cf86:ecdf? (p200300EA8F296000C8FB0EEECF86ECDF.dip0.t-ipconnect.de. [2003:ea:8f29:6000:c8fb:eee:cf86:ecdf])
-        by smtp.googlemail.com with ESMTPSA id g2sm186083wrs.42.2020.03.18.14.32.24
+        by smtp.googlemail.com with ESMTPSA id o16sm190829wrs.44.2020.03.18.14.32.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Mar 2020 14:32:24 -0700 (PDT)
-Subject: [PATCH net-next 1/3] net: phy: add and use phy_check_downshift
+        Wed, 18 Mar 2020 14:32:25 -0700 (PDT)
+Subject: [PATCH net-next 2/3] net: phy: marvell: remove downshift warning now
+ that phylib takes care
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -53,8 +54,8 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <6e4ea372-3d05-3446-2928-2c1e76a66faf@gmail.com>
-Message-ID: <d2822357-4c1e-a072-632e-a902b04eba7c@gmail.com>
-Date:   Wed, 18 Mar 2020 22:29:01 +0100
+Message-ID: <ac35c144-d8b8-2a3f-9b85-ace1e230d9ec@gmail.com>
+Date:   Wed, 18 Mar 2020 22:29:57 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
@@ -67,88 +68,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So far PHY drivers have to check whether a downshift occurred to be
-able to notify the user. To make life of drivers authors a little bit
-easier move the downshift notification to phylib. phy_check_downshift()
-compares the highest mutually advertised speed with the actual value
-of phydev->speed (typically read by the PHY driver from a
-vendor-specific register) to detect a downshift.
+Now that phylib notifies the user of a downshift we can remove
+this functionality from the driver.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/phy/phy-core.c | 33 +++++++++++++++++++++++++++++++++
- drivers/net/phy/phy.c      |  1 +
- include/linux/phy.h        |  1 +
- 3 files changed, 35 insertions(+)
+ drivers/net/phy/marvell.c | 24 ------------------------
+ 1 file changed, 24 deletions(-)
 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index e083e7a76..8e861be73 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -329,6 +329,39 @@ void phy_resolve_aneg_linkmode(struct phy_device *phydev)
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 9a8badafe..4714ca0e0 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -867,21 +867,6 @@ static int m88e1011_set_tunable(struct phy_device *phydev,
+ 	}
  }
- EXPORT_SYMBOL_GPL(phy_resolve_aneg_linkmode);
  
-+/**
-+ * phy_check_downshift - check whether downshift occurred
-+ * @phydev: The phy_device struct
-+ *
-+ * Check whether a downshift to a lower speed occurred. If this should be the
-+ * case warn the user.
-+ */
-+bool phy_check_downshift(struct phy_device *phydev)
-+{
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(common);
-+	int i, speed = SPEED_UNKNOWN;
-+
-+	if (phydev->autoneg == AUTONEG_DISABLE)
-+		return false;
-+
-+	linkmode_and(common, phydev->lp_advertising, phydev->advertising);
-+
-+	for (i = 0; i < ARRAY_SIZE(settings); i++)
-+		if (test_bit(settings[i].bit, common)) {
-+			speed = settings[i].speed;
-+			break;
-+		}
-+
-+	if (phydev->speed == speed)
-+		return false;
-+
-+	phydev_warn(phydev, "Downshift occurred from negotiated speed %s to actual speed %s, check cabling!\n",
-+		    phy_speed_to_str(speed), phy_speed_to_str(phydev->speed));
-+
-+	return true;
-+}
-+EXPORT_SYMBOL_GPL(phy_check_downshift);
-+
- static int phy_resolve_min_speed(struct phy_device *phydev, bool fdx_only)
+-static void m88e1011_link_change_notify(struct phy_device *phydev)
+-{
+-	int status;
+-
+-	if (phydev->state != PHY_RUNNING)
+-		return;
+-
+-	/* we may be on fiber page currently */
+-	status = phy_read_paged(phydev, MII_MARVELL_COPPER_PAGE,
+-				MII_M1011_PHY_SSR);
+-
+-	if (status > 0 && status & MII_M1011_PHY_SSR_DOWNSHIFT)
+-		phydev_warn(phydev, "Downshift occurred! Cabling may be defective.\n");
+-}
+-
+ static int m88e1116r_config_init(struct phy_device *phydev)
  {
- 	__ETHTOOL_DECLARE_LINK_MODE_MASK(common);
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index d71212a41..067ff5fec 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -507,6 +507,7 @@ static int phy_check_link_status(struct phy_device *phydev)
- 		return err;
+ 	int err;
+@@ -2201,7 +2186,6 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1011_get_tunable,
+ 		.set_tunable = m88e1011_set_tunable,
+-		.link_change_notify = m88e1011_link_change_notify,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1111,
+@@ -2223,7 +2207,6 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1111_get_tunable,
+ 		.set_tunable = m88e1111_set_tunable,
+-		.link_change_notify = m88e1011_link_change_notify,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1118,
+@@ -2264,7 +2247,6 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1011_get_tunable,
+ 		.set_tunable = m88e1011_set_tunable,
+-		.link_change_notify = m88e1011_link_change_notify,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1318S,
+@@ -2308,7 +2290,6 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1111_get_tunable,
+ 		.set_tunable = m88e1111_set_tunable,
+-		.link_change_notify = m88e1011_link_change_notify,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1149R,
+@@ -2364,7 +2345,6 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1011_get_tunable,
+ 		.set_tunable = m88e1011_set_tunable,
+-		.link_change_notify = m88e1011_link_change_notify,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1510,
+@@ -2390,7 +2370,6 @@ static struct phy_driver marvell_drivers[] = {
+ 		.set_loopback = genphy_loopback,
+ 		.get_tunable = m88e1011_get_tunable,
+ 		.set_tunable = m88e1011_set_tunable,
+-		.link_change_notify = m88e1011_link_change_notify,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1540,
+@@ -2413,7 +2392,6 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1540_get_tunable,
+ 		.set_tunable = m88e1540_set_tunable,
+-		.link_change_notify = m88e1011_link_change_notify,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E1545,
+@@ -2436,7 +2414,6 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1540_get_tunable,
+ 		.set_tunable = m88e1540_set_tunable,
+-		.link_change_notify = m88e1011_link_change_notify,
+ 	},
+ 	{
+ 		.phy_id = MARVELL_PHY_ID_88E3016,
+@@ -2479,7 +2456,6 @@ static struct phy_driver marvell_drivers[] = {
+ 		.get_stats = marvell_get_stats,
+ 		.get_tunable = m88e1540_get_tunable,
+ 		.set_tunable = m88e1540_set_tunable,
+-		.link_change_notify = m88e1011_link_change_notify,
+ 	},
+ };
  
- 	if (phydev->link && phydev->state != PHY_RUNNING) {
-+		phy_check_downshift(phydev);
- 		phydev->state = PHY_RUNNING;
- 		phy_link_up(phydev);
- 	} else if (!phydev->link && phydev->state != PHY_NOLINK) {
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index cb5a2182b..4962766b2 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -698,6 +698,7 @@ static inline bool phy_is_started(struct phy_device *phydev)
- 
- void phy_resolve_aneg_pause(struct phy_device *phydev);
- void phy_resolve_aneg_linkmode(struct phy_device *phydev);
-+bool phy_check_downshift(struct phy_device *phydev);
- 
- /**
-  * phy_read - Convenience function for reading a given PHY register
 -- 
 2.25.1
 
