@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 284C8189857
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:46:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA04318985C
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:46:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727592AbgCRJqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 05:46:44 -0400
+        id S1727635AbgCRJqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 05:46:51 -0400
 Received: from smtp-rs2-vallila1.fe.helsinki.fi ([128.214.173.73]:53282 "EHLO
         smtp-rs2-vallila1.fe.helsinki.fi" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727569AbgCRJqn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:46:43 -0400
+        by vger.kernel.org with ESMTP id S1727597AbgCRJqu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:46:50 -0400
 Received: from whs-18.cs.helsinki.fi (whs-18.cs.helsinki.fi [128.214.166.46])
-        by smtp-rs2.it.helsinki.fi (8.14.7/8.14.7) with ESMTP id 02I9cEcM006446;
+        by smtp-rs2.it.helsinki.fi (8.14.7/8.14.7) with ESMTP id 02I9cENd006447;
         Wed, 18 Mar 2020 11:38:14 +0200
 Received: by whs-18.cs.helsinki.fi (Postfix, from userid 1070048)
-        id B39C7360F61; Wed, 18 Mar 2020 11:38:14 +0200 (EET)
+        id B5E64360F62; Wed, 18 Mar 2020 11:38:14 +0200 (EET)
 From:   =?ISO-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@helsinki.fi>
 To:     netdev@vger.kernel.org
 Cc:     Yuchung Cheng <ycheng@google.com>,
         Neal Cardwell <ncardwell@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
         Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
-Subject: [RFC PATCH 27/28] gro: flushing when CWR is set negatively affects AccECN
-Date:   Wed, 18 Mar 2020 11:38:08 +0200
-Message-Id: <1584524289-24187-27-git-send-email-ilpo.jarvinen@helsinki.fi>
+Subject: [RFC PATCH 28/28] tcp: AccECN sysctl documentation
+Date:   Wed, 18 Mar 2020 11:38:09 +0200
+Message-Id: <1584524289-24187-28-git-send-email-ilpo.jarvinen@helsinki.fi>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1584524289-24187-2-git-send-email-ilpo.jarvinen@helsinki.fi>
 References: <1584524289-24187-2-git-send-email-ilpo.jarvinen@helsinki.fi>
@@ -38,31 +38,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ilpo Järvinen <ilpo.jarvinen@cs.helsinki.fi>
 
-As AccECN may keep CWR bit asserted due to different
-interpretation of the bit, flushing with GRO because of
-CWR may effectively disable GRO until AccECN counter
-field changes such that CWR-bit becomes 0.
-
-There is no harm done from not immediately forwarding the
-CWR'ed segment with RFC3168 ECN.
-
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@cs.helsinki.fi>
 ---
- net/ipv4/tcp_offload.c | 1 -
- 1 file changed, 1 deletion(-)
+ Documentation/networking/ip-sysctl.txt | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
-index 58ce382c793e..555c9be84f10 100644
---- a/net/ipv4/tcp_offload.c
-+++ b/net/ipv4/tcp_offload.c
-@@ -240,7 +240,6 @@ struct sk_buff *tcp_gro_receive(struct list_head *head, struct sk_buff *skb)
- found:
- 	/* Include the IP ID check below from the inner most IP hdr */
- 	flush = NAPI_GRO_CB(p)->flush;
--	flush |= (__force int)(flags & TCP_FLAG_CWR);
- 	flush |= (__force int)((flags ^ tcp_flag_word(th2)) &
- 		  ~(TCP_FLAG_FIN | TCP_FLAG_PSH));
- 	flush |= (__force int)(th->ack_seq ^ th2->ack_seq);
+diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+index 5f53faff4e25..ecca6e1d6bea 100644
+--- a/Documentation/networking/ip-sysctl.txt
++++ b/Documentation/networking/ip-sysctl.txt
+@@ -301,15 +301,21 @@ tcp_ecn - INTEGER
+ 		0 Disable ECN.  Neither initiate nor accept ECN.
+ 		1 Enable ECN when requested by incoming connections and
+ 		  also request ECN on outgoing connection attempts.
+-		2 Enable ECN when requested by incoming connections
++		2 Enable ECN or AccECN when requested by incoming connections
+ 		  but do not request ECN on outgoing connections.
++		3 Enable AccECN when requested by incoming connections and
++		  also request AccECN on outgoing connection attempts.
++	    0x102 Enable AccECN in optionless mode for incoming connections.
++	    0x103 Enable AccECN in optionless mode for incoming and outgoing
++		  connections.
+ 	Default: 2
+ 
+ tcp_ecn_fallback - BOOLEAN
+ 	If the kernel detects that ECN connection misbehaves, enable fall
+ 	back to non-ECN. Currently, this knob implements the fallback
+-	from RFC3168, section 6.1.1.1., but we reserve that in future,
+-	additional detection mechanisms could be implemented under this
++	from RFC3168, section 6.1.1.1., as well as the ECT codepoint mangling
++	detection during the Accurate ECN handshake, but we reserve that in
++	future, additional detection mechanisms could be implemented under this
+ 	knob. The value	is not used, if tcp_ecn or per route (or congestion
+ 	control) ECN settings are disabled.
+ 	Default: 1 (fallback enabled)
 -- 
 2.20.1
 
