@@ -2,76 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA04318985C
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:46:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 452A0189811
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:41:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727635AbgCRJqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 05:46:51 -0400
-Received: from smtp-rs2-vallila1.fe.helsinki.fi ([128.214.173.73]:53282 "EHLO
-        smtp-rs2-vallila1.fe.helsinki.fi" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727597AbgCRJqu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:46:50 -0400
-Received: from whs-18.cs.helsinki.fi (whs-18.cs.helsinki.fi [128.214.166.46])
-        by smtp-rs2.it.helsinki.fi (8.14.7/8.14.7) with ESMTP id 02I9cENd006447;
-        Wed, 18 Mar 2020 11:38:14 +0200
-Received: by whs-18.cs.helsinki.fi (Postfix, from userid 1070048)
-        id B5E64360F62; Wed, 18 Mar 2020 11:38:14 +0200 (EET)
-From:   =?ISO-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@helsinki.fi>
-To:     netdev@vger.kernel.org
-Cc:     Yuchung Cheng <ycheng@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
-Subject: [RFC PATCH 28/28] tcp: AccECN sysctl documentation
-Date:   Wed, 18 Mar 2020 11:38:09 +0200
-Message-Id: <1584524289-24187-28-git-send-email-ilpo.jarvinen@helsinki.fi>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1584524289-24187-2-git-send-email-ilpo.jarvinen@helsinki.fi>
-References: <1584524289-24187-2-git-send-email-ilpo.jarvinen@helsinki.fi>
+        id S1727501AbgCRJld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 05:41:33 -0400
+Received: from www62.your-server.de ([213.133.104.62]:49836 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726994AbgCRJld (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:41:33 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jEVCd-0002xu-Dx; Wed, 18 Mar 2020 10:41:31 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jEVCd-000G0w-6m; Wed, 18 Mar 2020 10:41:31 +0100
+Subject: Re: [PATCH net-next] netfilter: revert introduction of egress hook
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>
+References: <bbdee6355234e730ef686f9321bd072bcf4bb232.1584523237.git.daniel@iogearbox.net>
+ <20200318093649.sn3hsi7nkd3j34lj@salvia>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <97a81974-5063-ed3d-8ad4-9f7ff3aa0908@iogearbox.net>
+Date:   Wed, 18 Mar 2020 10:41:30 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200318093649.sn3hsi7nkd3j34lj@salvia>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25754/Tue Mar 17 14:09:15 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ilpo Järvinen <ilpo.jarvinen@cs.helsinki.fi>
+On 3/18/20 10:36 AM, Pablo Neira Ayuso wrote:
+> On Wed, Mar 18, 2020 at 10:33:22AM +0100, Daniel Borkmann wrote:
+>> This reverts the following commits:
+>>
+>>    8537f78647c0 ("netfilter: Introduce egress hook")
+>>    5418d3881e1f ("netfilter: Generalize ingress hook")
+>>    b030f194aed2 ("netfilter: Rename ingress hook include file")
+>>
+>>  From the discussion in [0], the author's main motivation to add a hook
+>> in fast path is for an out of tree kernel module, which is a red flag
+>> to begin with. Other mentioned potential use cases like NAT{64,46}
+>> is on future extensions w/o concrete code in the tree yet. Revert as
+>> suggested [1] given the weak justification to add more hooks to critical
+>> fast-path.
+>>
+>>    [0] https://lore.kernel.org/netdev/cover.1583927267.git.lukas@wunner.de/
+>>    [1] https://lore.kernel.org/netdev/20200318.011152.72770718915606186.davem@davemloft.net/
+>>
+>> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> 
+> Nacked-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> 
+> Daniel, you must be really worried about achieving your goals if you
+> have to do politics to block stuff.
 
-Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@cs.helsinki.fi>
----
- Documentation/networking/ip-sysctl.txt | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+Looks like this is your only rationale technical argument you can come
+up with?
 
-diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-index 5f53faff4e25..ecca6e1d6bea 100644
---- a/Documentation/networking/ip-sysctl.txt
-+++ b/Documentation/networking/ip-sysctl.txt
-@@ -301,15 +301,21 @@ tcp_ecn - INTEGER
- 		0 Disable ECN.  Neither initiate nor accept ECN.
- 		1 Enable ECN when requested by incoming connections and
- 		  also request ECN on outgoing connection attempts.
--		2 Enable ECN when requested by incoming connections
-+		2 Enable ECN or AccECN when requested by incoming connections
- 		  but do not request ECN on outgoing connections.
-+		3 Enable AccECN when requested by incoming connections and
-+		  also request AccECN on outgoing connection attempts.
-+	    0x102 Enable AccECN in optionless mode for incoming connections.
-+	    0x103 Enable AccECN in optionless mode for incoming and outgoing
-+		  connections.
- 	Default: 2
- 
- tcp_ecn_fallback - BOOLEAN
- 	If the kernel detects that ECN connection misbehaves, enable fall
- 	back to non-ECN. Currently, this knob implements the fallback
--	from RFC3168, section 6.1.1.1., but we reserve that in future,
--	additional detection mechanisms could be implemented under this
-+	from RFC3168, section 6.1.1.1., as well as the ECT codepoint mangling
-+	detection during the Accurate ECN handshake, but we reserve that in
-+	future, additional detection mechanisms could be implemented under this
- 	knob. The value	is not used, if tcp_ecn or per route (or congestion
- 	control) ECN settings are disabled.
- 	Default: 1 (fallback enabled)
--- 
-2.20.1
-
+Thanks,
+Daniel
