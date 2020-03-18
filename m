@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 510CD18A3FC
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:47:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81C7918A41A
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:48:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727283AbgCRUre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:47:34 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:58413 "EHLO
+        id S1727218AbgCRUra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 16:47:30 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:58408 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727227AbgCRUrd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 16:47:33 -0400
+        with ESMTP id S1727168AbgCRUr1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 16:47:27 -0400
 Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1jEfaO-0006CC-Ol; Wed, 18 Mar 2020 21:46:45 +0100
+        id 1jEfaO-0006CB-Vy; Wed, 18 Mar 2020 21:46:45 +0100
 Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id 2A8F31040CB;
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id 61F721040CC;
         Wed, 18 Mar 2020 21:46:36 +0100 (CET)
-Message-Id: <20200318204407.901266791@linutronix.de>
+Message-Id: <20200318204408.010461877@linutronix.de>
 User-Agent: quilt/0.65
-Date:   Wed, 18 Mar 2020 21:43:07 +0100
+Date:   Wed, 18 Mar 2020 21:43:08 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -31,6 +31,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Joel Fernandes <joel@joelfernandes.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Randy Dunlap <rdunlap@infradead.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Logan Gunthorpe <logang@deltatee.com>,
         Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
@@ -40,11 +42,9 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
-Subject: [patch V2 05/15] acpi: Remove header dependency
+Subject: [patch V2 06/15] rcuwait: Add @state argument to rcuwait_wait_event()
 References: <20200318204302.693307984@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,58 +56,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to avoid future header hell, remove the inclusion of
-proc_fs.h from acpi_bus.h. All it needs is a forward declaration of a
-struct.
+Extend rcuwait_wait_event() with a state variable so that it is not
+restricted to UNINTERRUPTIBLE waits.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Oleg Nesterov <oleg@redhat.com>
+Cc: Davidlohr Bueso <dave@stgolabs.net>
 ---
- drivers/platform/x86/dell-smo8800.c                      |    1 +
- drivers/platform/x86/wmi.c                               |    1 +
- drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c |    1 +
- include/acpi/acpi_bus.h                                  |    2 +-
- 4 files changed, 4 insertions(+), 1 deletion(-)
+ include/linux/rcuwait.h       |   12 ++++++++++--
+ kernel/locking/percpu-rwsem.c |    2 +-
+ 2 files changed, 11 insertions(+), 3 deletions(-)
 
---- a/drivers/platform/x86/dell-smo8800.c
-+++ b/drivers/platform/x86/dell-smo8800.c
-@@ -16,6 +16,7 @@
- #include <linux/interrupt.h>
- #include <linux/miscdevice.h>
- #include <linux/uaccess.h>
-+#include <linux/fs.h>
+--- a/include/linux/rcuwait.h
++++ b/include/linux/rcuwait.h
+@@ -3,6 +3,7 @@
+ #define _LINUX_RCUWAIT_H_
  
- struct smo8800_device {
- 	u32 irq;                     /* acpi device irq */
---- a/drivers/platform/x86/wmi.c
-+++ b/drivers/platform/x86/wmi.c
-@@ -29,6 +29,7 @@
- #include <linux/uaccess.h>
- #include <linux/uuid.h>
- #include <linux/wmi.h>
-+#include <linux/fs.h>
- #include <uapi/linux/wmi.h>
+ #include <linux/rcupdate.h>
++#include <linux/sched/signal.h>
  
- ACPI_MODULE_NAME("wmi");
---- a/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c
-+++ b/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c
-@@ -19,6 +19,7 @@
- #include <linux/acpi.h>
- #include <linux/uaccess.h>
- #include <linux/miscdevice.h>
-+#include <linux/fs.h>
- #include "acpi_thermal_rel.h"
+ /*
+  * rcuwait provides a way of blocking and waking up a single
+@@ -30,23 +31,30 @@ extern void rcuwait_wake_up(struct rcuwa
+  * The caller is responsible for locking around rcuwait_wait_event(),
+  * such that writes to @task are properly serialized.
+  */
+-#define rcuwait_wait_event(w, condition)				\
++#define rcuwait_wait_event(w, condition, state)				\
+ ({									\
++	int __ret = 0;							\
+ 	rcu_assign_pointer((w)->task, current);				\
+ 	for (;;) {							\
+ 		/*							\
+ 		 * Implicit barrier (A) pairs with (B) in		\
+ 		 * rcuwait_wake_up().					\
+ 		 */							\
+-		set_current_state(TASK_UNINTERRUPTIBLE);		\
++		set_current_state(state);				\
+ 		if (condition)						\
+ 			break;						\
+ 									\
++		if (signal_pending_state(state, current)) {		\
++			__ret = -EINTR;					\
++			break;						\
++		}							\
++									\
+ 		schedule();						\
+ 	}								\
+ 									\
+ 	WRITE_ONCE((w)->task, NULL);					\
+ 	__set_current_state(TASK_RUNNING);				\
++	__ret;								\
+ })
  
- static acpi_handle acpi_thermal_rel_handle;
---- a/include/acpi/acpi_bus.h
-+++ b/include/acpi/acpi_bus.h
-@@ -80,7 +80,7 @@ bool acpi_dev_present(const char *hid, c
+ #endif /* _LINUX_RCUWAIT_H_ */
+--- a/kernel/locking/percpu-rwsem.c
++++ b/kernel/locking/percpu-rwsem.c
+@@ -162,7 +162,7 @@ void percpu_down_write(struct percpu_rw_
+ 	 */
  
- #ifdef CONFIG_ACPI
+ 	/* Wait for all now active readers to complete. */
+-	rcuwait_wait_event(&sem->writer, readers_active_check(sem));
++	rcuwait_wait_event(&sem->writer, readers_active_check(sem), TASK_UNINTERRUPTIBLE);
+ }
+ EXPORT_SYMBOL_GPL(percpu_down_write);
  
--#include <linux/proc_fs.h>
-+struct proc_dir_entry;
- 
- #define ACPI_BUS_FILE_ROOT	"acpi"
- extern struct proc_dir_entry *acpi_root_dir;
 
