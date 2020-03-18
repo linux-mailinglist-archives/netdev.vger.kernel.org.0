@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F52A18A550
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:01:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AD3F18A563
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:01:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728587AbgCRU4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:56:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57124 "EHLO mail.kernel.org"
+        id S1728725AbgCRVBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 17:01:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57204 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728570AbgCRU4S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:56:18 -0400
+        id S1728591AbgCRU4W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 16:56:22 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 488EA208CA;
-        Wed, 18 Mar 2020 20:56:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C2C4720A8B;
+        Wed, 18 Mar 2020 20:56:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584564977;
-        bh=5fy+DpjSqmh99XFyScJ450EPzLn3lYCObsESE/dMIBs=;
+        s=default; t=1584564981;
+        bh=TjxRBjyDqR6zzQOC/HGBTYmQpr6jaZ9DhUjPHJEcGrI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HtLd0RaJCciG4qSbjnMA2e8vtCn+Va4bBHkVisqB+eppa09MuhYFYo2CyKnvMhFOD
-         w16Oa2wcmVSaBgQXbpPoRWbDzbN92yfZ+3ymUcMOTynEKRwt4VDKHaVENz1WLlKLcJ
-         meYZxdEeUCGMcibrXRTUAYuyH0hprK+OEjFCSgNE=
+        b=gXFm77B5qN1va6dwM/hDFz2v++wgcIb+x2odatCAmSMmLkTItqawNec/DE9Iakvyx
+         l8BN60UIBGRdqtA0KbV7+jO5EMsJcpum63KPzMvvTxymtua0WqVvA2zHoww2KeD0wd
+         LTCG7g3YCkHVz86SeR1GvB52L5Vcp6AkrIpU0mNM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Madalin Bucur <madalin.bucur@nxp.com>,
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Mahesh Bandewar <maheshb@google.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 19/28] fsl/fman: detect FMan erratum A050385
-Date:   Wed, 18 Mar 2020 16:55:46 -0400
-Message-Id: <20200318205555.17447-19-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 22/28] ipvlan: do not use cond_resched_rcu() in ipvlan_process_multicast()
+Date:   Wed, 18 Mar 2020 16:55:49 -0400
+Message-Id: <20200318205555.17447-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200318205555.17447-1-sashal@kernel.org>
 References: <20200318205555.17447-1-sashal@kernel.org>
@@ -43,128 +44,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Madalin Bucur <madalin.bucur@nxp.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit b281f7b93b258ce1419043bbd898a29254d5c9c7 ]
+[ Upstream commit afe207d80a61e4d6e7cfa0611a4af46d0ba95628 ]
 
-Detect the presence of the A050385 erratum.
+Commit e18b353f102e ("ipvlan: add cond_resched_rcu() while
+processing muticast backlog") added a cond_resched_rcu() in a loop
+using rcu protection to iterate over slaves.
 
-Signed-off-by: Madalin Bucur <madalin.bucur@nxp.com>
+This is breaking rcu rules, so lets instead use cond_resched()
+at a point we can reschedule
+
+Fixes: e18b353f102e ("ipvlan: add cond_resched_rcu() while processing muticast backlog")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Mahesh Bandewar <maheshb@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/fman/Kconfig | 28 +++++++++++++++++++++
- drivers/net/ethernet/freescale/fman/fman.c  | 18 +++++++++++++
- drivers/net/ethernet/freescale/fman/fman.h  |  5 ++++
- 3 files changed, 51 insertions(+)
+ drivers/net/ipvlan/ipvlan_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/fman/Kconfig b/drivers/net/ethernet/freescale/fman/Kconfig
-index 8870a9a798ca4..91437b94bfcb6 100644
---- a/drivers/net/ethernet/freescale/fman/Kconfig
-+++ b/drivers/net/ethernet/freescale/fman/Kconfig
-@@ -8,3 +8,31 @@ config FSL_FMAN
- 	help
- 		Freescale Data-Path Acceleration Architecture Frame Manager
- 		(FMan) support
-+
-+config DPAA_ERRATUM_A050385
-+	bool
-+	depends on ARM64 && FSL_DPAA
-+	default y
-+	help
-+		DPAA FMan erratum A050385 software workaround implementation:
-+		align buffers, data start, SG fragment length to avoid FMan DMA
-+		splits.
-+		FMAN DMA read or writes under heavy traffic load may cause FMAN
-+		internal resource leak thus stopping further packet processing.
-+		The FMAN internal queue can overflow when FMAN splits single
-+		read or write transactions into multiple smaller transactions
-+		such that more than 17 AXI transactions are in flight from FMAN
-+		to interconnect. When the FMAN internal queue overflows, it can
-+		stall further packet processing. The issue can occur with any
-+		one of the following three conditions:
-+		1. FMAN AXI transaction crosses 4K address boundary (Errata
-+		A010022)
-+		2. FMAN DMA address for an AXI transaction is not 16 byte
-+		aligned, i.e. the last 4 bits of an address are non-zero
-+		3. Scatter Gather (SG) frames have more than one SG buffer in
-+		the SG list and any one of the buffers, except the last
-+		buffer in the SG list has data size that is not a multiple
-+		of 16 bytes, i.e., other than 16, 32, 48, 64, etc.
-+		With any one of the above three conditions present, there is
-+		likelihood of stalled FMAN packet processing, especially under
-+		stress with multiple ports injecting line-rate traffic.
-diff --git a/drivers/net/ethernet/freescale/fman/fman.c b/drivers/net/ethernet/freescale/fman/fman.c
-index 97425d94e280d..9080d2332d030 100644
---- a/drivers/net/ethernet/freescale/fman/fman.c
-+++ b/drivers/net/ethernet/freescale/fman/fman.c
-@@ -1,5 +1,6 @@
- /*
-  * Copyright 2008-2015 Freescale Semiconductor Inc.
-+ * Copyright 2020 NXP
-  *
-  * Redistribution and use in source and binary forms, with or without
-  * modification, are permitted provided that the following conditions are met:
-@@ -566,6 +567,10 @@ struct fman_cfg {
- 	u32 qmi_def_tnums_thresh;
- };
+diff --git a/drivers/net/ipvlan/ipvlan_core.c b/drivers/net/ipvlan/ipvlan_core.c
+index 91886b5323dff..1d97d6958e4b8 100644
+--- a/drivers/net/ipvlan/ipvlan_core.c
++++ b/drivers/net/ipvlan/ipvlan_core.c
+@@ -240,7 +240,6 @@ void ipvlan_process_multicast(struct work_struct *work)
+ 			}
+ 			ipvlan_count_rx(ipvlan, len, ret == NET_RX_SUCCESS, true);
+ 			local_bh_enable();
+-			cond_resched_rcu();
+ 		}
+ 		rcu_read_unlock();
  
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+static bool fman_has_err_a050385;
-+#endif
-+
- static irqreturn_t fman_exceptions(struct fman *fman,
- 				   enum fman_exceptions exception)
- {
-@@ -2517,6 +2522,14 @@ struct fman *fman_bind(struct device *fm_dev)
- }
- EXPORT_SYMBOL(fman_bind);
- 
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+bool fman_has_errata_a050385(void)
-+{
-+	return fman_has_err_a050385;
-+}
-+EXPORT_SYMBOL(fman_has_errata_a050385);
-+#endif
-+
- static irqreturn_t fman_err_irq(int irq, void *handle)
- {
- 	struct fman *fman = (struct fman *)handle;
-@@ -2843,6 +2856,11 @@ static struct fman *read_dts_node(struct platform_device *of_dev)
- 		goto fman_free;
+@@ -257,6 +256,7 @@ void ipvlan_process_multicast(struct work_struct *work)
+ 		}
+ 		if (dev)
+ 			dev_put(dev);
++		cond_resched();
  	}
+ }
  
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+	fman_has_err_a050385 =
-+		of_property_read_bool(fm_node, "fsl,erratum-a050385");
-+#endif
-+
- 	return fman;
- 
- fman_node_put:
-diff --git a/drivers/net/ethernet/freescale/fman/fman.h b/drivers/net/ethernet/freescale/fman/fman.h
-index bfa02e0014ae0..693401994fa2d 100644
---- a/drivers/net/ethernet/freescale/fman/fman.h
-+++ b/drivers/net/ethernet/freescale/fman/fman.h
-@@ -1,5 +1,6 @@
- /*
-  * Copyright 2008-2015 Freescale Semiconductor Inc.
-+ * Copyright 2020 NXP
-  *
-  * Redistribution and use in source and binary forms, with or without
-  * modification, are permitted provided that the following conditions are met:
-@@ -397,6 +398,10 @@ u16 fman_get_max_frm(void);
- 
- int fman_get_rx_extra_headroom(void);
- 
-+#ifdef CONFIG_DPAA_ERRATUM_A050385
-+bool fman_has_errata_a050385(void);
-+#endif
-+
- struct fman *fman_bind(struct device *dev);
- 
- #endif /* __FM_H */
 -- 
 2.20.1
 
