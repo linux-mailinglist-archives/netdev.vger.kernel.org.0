@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8F6D18983A
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:44:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28966189833
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:44:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727736AbgCRJoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 05:44:34 -0400
-Received: from smtp-rs2-vallila1.fe.helsinki.fi ([128.214.173.73]:51664 "EHLO
+        id S1727710AbgCRJoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 05:44:21 -0400
+Received: from smtp-rs2-vallila1.fe.helsinki.fi ([128.214.173.73]:51678 "EHLO
         smtp-rs2-vallila1.fe.helsinki.fi" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727617AbgCRJn6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:43:58 -0400
+        by vger.kernel.org with ESMTP id S1727632AbgCRJoB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:44:01 -0400
 Received: from whs-18.cs.helsinki.fi (whs-18.cs.helsinki.fi [128.214.166.46])
-        by smtp-rs2.it.helsinki.fi (8.14.7/8.14.7) with ESMTP id 02I9hplx012879;
+        by smtp-rs2.it.helsinki.fi (8.14.7/8.14.7) with ESMTP id 02I9hpqk012885;
         Wed, 18 Mar 2020 11:43:51 +0200
 Received: by whs-18.cs.helsinki.fi (Postfix, from userid 1070048)
-        id F33CD360030; Wed, 18 Mar 2020 11:43:50 +0200 (EET)
+        id 06724360030; Wed, 18 Mar 2020 11:43:50 +0200 (EET)
 From:   =?ISO-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@helsinki.fi>
 To:     netdev@vger.kernel.org
 Cc:     Yuchung Cheng <ycheng@google.com>,
         Neal Cardwell <ncardwell@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
         Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
-Subject: [RFC PATCH 16/28] tcp: allow embedding leftover into option padding
-Date:   Wed, 18 Mar 2020 11:43:20 +0200
-Message-Id: <1584524612-24470-17-git-send-email-ilpo.jarvinen@helsinki.fi>
+Subject: [RFC PATCH 17/28] tcp: AccECN needs to know delivered bytes
+Date:   Wed, 18 Mar 2020 11:43:21 +0200
+Message-Id: <1584524612-24470-18-git-send-email-ilpo.jarvinen@helsinki.fi>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi>
 References: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi>
@@ -38,84 +38,91 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ilpo Järvinen <ilpo.jarvinen@cs.helsinki.fi>
 
-There is some waste space in the option usage due to padding
-of 32-bit fields. AccECN option can take advantage of those
-few bytes as its tail is often consuming just a few odd bytes.
+AccECN byte counter estimation requires delivered bytes
+which can be calculated while processing SACK blocks and
+cumulative ACK.
+
+Non-SACK calculation is quite annoying, inaccurate, and
+likely bogus.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@cs.helsinki.fi>
 ---
- net/ipv4/tcp_output.c | 22 +++++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
+ net/ipv4/tcp_input.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index adc22d0d75fd..9ff6d14363df 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -504,6 +504,8 @@ static void mptcp_options_write(__be32 *ptr, struct tcp_out_options *opts)
- #endif
- }
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 3109e3199906..0a63f8a49057 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -1235,6 +1235,7 @@ static bool tcp_check_dsack(struct sock *sk, const struct sk_buff *ack_skb,
  
-+#define NOP_LEFTOVER	((TCPOPT_NOP << 8) | TCPOPT_NOP)
-+
- /* Write previously computed TCP options to the packet.
-  *
-  * Beware: Something in the Internet is very sensitive to the ordering of
-@@ -521,6 +523,8 @@ static void tcp_options_write(__be32 *ptr, struct tcp_sock *tp,
- 			      struct tcp_out_options *opts)
+ struct tcp_sacktag_state {
+ 	u32	reord;
++	u32	delivered_bytes;
+ 	/* Timestamps for earliest and latest never-retransmitted segment
+ 	 * that was SACKed. RTO needs the earliest RTT to stay conservative,
+ 	 * but congestion control should still get an accurate delay signal.
+@@ -1306,7 +1307,7 @@ static int tcp_match_skb_to_sack(struct sock *sk, struct sk_buff *skb,
+ static u8 tcp_sacktag_one(struct sock *sk,
+ 			  struct tcp_sacktag_state *state, u8 sacked,
+ 			  u32 start_seq, u32 end_seq,
+-			  int dup_sack, int pcount,
++			  int dup_sack, int pcount, u32 plen,
+ 			  u64 xmit_time)
  {
- 	u16 options = opts->options;	/* mungable copy */
-+	u16 leftover_bytes = NOP_LEFTOVER;	/* replace next NOPs if avail */
-+	int leftover_size = 2;
+ 	struct tcp_sock *tp = tcp_sk(sk);
+@@ -1365,6 +1366,7 @@ static u8 tcp_sacktag_one(struct sock *sk,
+ 		state->flag |= FLAG_DATA_SACKED;
+ 		tp->sacked_out += pcount;
+ 		tp->delivered += pcount;  /* Out-of-order packets delivered */
++		state->delivered_bytes += plen;
  
- 	if (unlikely(OPTION_MD5 & options)) {
- 		*ptr++ = htonl((TCPOPT_NOP << 24) | (TCPOPT_NOP << 16) |
-@@ -554,17 +558,22 @@ static void tcp_options_write(__be32 *ptr, struct tcp_sock *tp,
- 	}
+ 		/* Lost marker hint past SACKed? Tweak RFC3517 cnt */
+ 		if (tp->lost_skb_hint &&
+@@ -1406,7 +1408,7 @@ static bool tcp_shifted_skb(struct sock *sk, struct sk_buff *prev,
+ 	 * tcp_highest_sack_seq() when skb is highest_sack.
+ 	 */
+ 	tcp_sacktag_one(sk, state, TCP_SKB_CB(skb)->sacked,
+-			start_seq, end_seq, dup_sack, pcount,
++			start_seq, end_seq, dup_sack, pcount, skb->len,
+ 			tcp_skb_timestamp_us(skb));
+ 	tcp_rate_skb_delivered(sk, skb, state->rate);
  
- 	if (unlikely(OPTION_SACK_ADVERTISE & options)) {
--		*ptr++ = htonl((TCPOPT_NOP << 24) |
--			       (TCPOPT_NOP << 16) |
-+		*ptr++ = htonl((leftover_bytes << 16) |
- 			       (TCPOPT_SACK_PERM << 8) |
- 			       TCPOLEN_SACK_PERM);
-+		leftover_bytes = NOP_LEFTOVER;
- 	}
- 
- 	if (unlikely(OPTION_WSCALE & options)) {
--		*ptr++ = htonl((TCPOPT_NOP << 24) |
-+		u8 highbyte = TCPOPT_NOP;
+@@ -1696,6 +1698,7 @@ static struct sk_buff *tcp_sacktag_walk(struct sk_buff *skb, struct sock *sk,
+ 						TCP_SKB_CB(skb)->end_seq,
+ 						dup_sack,
+ 						tcp_skb_pcount(skb),
++						skb->len,
+ 						tcp_skb_timestamp_us(skb));
+ 			tcp_rate_skb_delivered(sk, skb, state->rate);
+ 			if (TCP_SKB_CB(skb)->sacked & TCPCB_SACKED_ACKED)
+@@ -3239,6 +3242,7 @@ static int tcp_clean_rtx_queue(struct sock *sk, u32 prior_fack,
+ 			tp->sacked_out -= acked_pcount;
+ 		} else if (tcp_is_sack(tp)) {
+ 			tp->delivered += acked_pcount;
++			sack->delivered_bytes += skb->len;
+ 			if (!tcp_skb_spurious_retrans(tp, skb))
+ 				tcp_rack_advance(tp, sacked, scb->end_seq,
+ 						 tcp_skb_timestamp_us(skb));
+@@ -3325,6 +3329,10 @@ static int tcp_clean_rtx_queue(struct sock *sk, u32 prior_fack,
+ 			 */
+ 			if (flag & FLAG_RETRANS_DATA_ACKED)
+ 				flag &= ~FLAG_ORIG_SACK_ACKED;
 +
-+		if (unlikely(leftover_size == 1))
-+			highbyte = leftover_bytes >> 8;
-+		*ptr++ = htonl((highbyte << 24) |
- 			       (TCPOPT_WINDOW << 16) |
- 			       (TCPOLEN_WINDOW << 8) |
- 			       opts->ws);
-+		leftover_bytes = NOP_LEFTOVER;
- 	}
++			sack->delivered_bytes = (skb ?
++						 TCP_SKB_CB(skb)->seq :
++						 tp->snd_una) - prior_snd_una;
+ 		} else {
+ 			int delta;
  
- 	if (unlikely(opts->num_sack_blocks)) {
-@@ -572,8 +581,7 @@ static void tcp_options_write(__be32 *ptr, struct tcp_sock *tp,
- 			tp->duplicate_sack : tp->selective_acks;
- 		int this_sack;
+@@ -3742,6 +3750,7 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
+ 	u32 ecn_count = 0; /* Did we receive ECE/an AccECN ACE update? */
+ 	u32 prior_fack;
  
--		*ptr++ = htonl((TCPOPT_NOP  << 24) |
--			       (TCPOPT_NOP  << 16) |
-+		*ptr++ = htonl((leftover_bytes << 16) |
- 			       (TCPOPT_SACK <<  8) |
- 			       (TCPOLEN_SACK_BASE + (opts->num_sack_blocks *
- 						     TCPOLEN_SACK_PERBLOCK)));
-@@ -585,6 +593,10 @@ static void tcp_options_write(__be32 *ptr, struct tcp_sock *tp,
- 		}
++	sack_state.delivered_bytes = 0;
+ 	sack_state.first_sackt = 0;
+ 	sack_state.rate = &rs;
  
- 		tp->rx_opt.dsack = 0;
-+	} else if (unlikely(leftover_bytes != NOP_LEFTOVER)) {
-+		*ptr++ = htonl((leftover_bytes << 16) |
-+			       (TCPOPT_NOP << 8) |
-+			       TCPOPT_NOP);
- 	}
- 
- 	if (unlikely(OPTION_FAST_OPEN_COOKIE & options)) {
 -- 
 2.20.1
 
