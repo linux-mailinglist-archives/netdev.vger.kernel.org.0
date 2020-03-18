@@ -2,101 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08DB7189880
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:51:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B817918988A
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:53:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727405AbgCRJvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 05:51:54 -0400
-Received: from correo.us.es ([193.147.175.20]:45052 "EHLO mail.us.es"
+        id S1727585AbgCRJxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 05:53:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49042 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726786AbgCRJvy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 05:51:54 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 2D456FB44A
-        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 10:51:23 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 1E3B6DA390
-        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 10:51:23 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 1386BDA3C3; Wed, 18 Mar 2020 10:51:23 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id F1565DA3A3;
-        Wed, 18 Mar 2020 10:51:20 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 18 Mar 2020 10:51:20 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
+        id S1726786AbgCRJxG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 05:53:06 -0400
+Received: from localhost (unknown [213.57.247.131])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id D3A6F42EE38E;
-        Wed, 18 Mar 2020 10:51:20 +0100 (CET)
-Date:   Wed, 18 Mar 2020 10:51:49 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: Re: [PATCH net-next] netfilter: revert introduction of egress hook
-Message-ID: <20200318095149.stvs27fj2whir2x5@salvia>
-References: <bbdee6355234e730ef686f9321bd072bcf4bb232.1584523237.git.daniel@iogearbox.net>
- <20200318093649.sn3hsi7nkd3j34lj@salvia>
- <97a81974-5063-ed3d-8ad4-9f7ff3aa0908@iogearbox.net>
+        by mail.kernel.org (Postfix) with ESMTPSA id DDEEF2076F;
+        Wed, 18 Mar 2020 09:53:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584525185;
+        bh=8gg3tjIhkt2FJ8A0Bi3bOqZB1iaXQRhtVf8ExTCF3mo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=GULeZ9sVKOoRFqUYShCmm7PrYsvTqv1IdWGpLslE3Btn3NYvT9i2Ax5VmOlflI50J
+         mfBkDaShnZ2oaFjftPVbBImntHMeTgiNa4psdGgb+OqpeVw5z9ZZn6VSC3vVPWCOxb
+         wub0yA4/+yANMq9qOui9wZ3aWD00wQcsF7QHscjM=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Leon Romanovsky <leonro@mellanox.com>, linux-rdma@vger.kernel.org,
+        Maor Gottlieb <maorg@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [PATCH rdma-next 0/6] Set flow_label and RoCEv2 UDP source port for datagram QP
+Date:   Wed, 18 Mar 2020 11:52:54 +0200
+Message-Id: <20200318095300.45574-1-leon@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <97a81974-5063-ed3d-8ad4-9f7ff3aa0908@iogearbox.net>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 10:41:30AM +0100, Daniel Borkmann wrote:
-> On 3/18/20 10:36 AM, Pablo Neira Ayuso wrote:
-> > On Wed, Mar 18, 2020 at 10:33:22AM +0100, Daniel Borkmann wrote:
-> > > This reverts the following commits:
-> > > 
-> > >    8537f78647c0 ("netfilter: Introduce egress hook")
-> > >    5418d3881e1f ("netfilter: Generalize ingress hook")
-> > >    b030f194aed2 ("netfilter: Rename ingress hook include file")
-> > > 
-> > >  From the discussion in [0], the author's main motivation to add a hook
-> > > in fast path is for an out of tree kernel module, which is a red flag
-> > > to begin with. Other mentioned potential use cases like NAT{64,46}
-> > > is on future extensions w/o concrete code in the tree yet. Revert as
-> > > suggested [1] given the weak justification to add more hooks to critical
-> > > fast-path.
-> > > 
-> > >    [0] https://lore.kernel.org/netdev/cover.1583927267.git.lukas@wunner.de/
-> > >    [1] https://lore.kernel.org/netdev/20200318.011152.72770718915606186.davem@davemloft.net/
-> > > 
-> > > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> > 
-> > Nacked-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> > 
-> > Daniel, you must be really worried about achieving your goals if you
-> > have to do politics to block stuff.
-> 
-> Looks like this is your only rationale technical argument you can come
-> up with?
+From: Leon Romanovsky <leonro@mellanox.com>
 
-I have waited for two days and I got no feedback from you.
+From Mark:
 
-Moreover, your concerns on performance has been addressed: Performance
-impact is negligible.
+This series provide flow label and UDP source port definition in RoCE v2.
+Those fields are used to create entropy for network routes (ECMP), load
+balancers and 802.3ad link aggregation switching that are not aware of
+RoCE headers.
 
-Then, you popped up more arguments, like a reference to an email from
-17 years ago, where only iptables was available and the only choice to
-add ingress/egress filtering was to make another copy and paste of the
-iptables code.
+Thanks.
 
-I also explained how to use this egress hook in Netfilter.
+Mark Zhang (6):
+  net/mlx5: Enable SW-defined RoCEv2 UDP source port
+  RDMA/core: Add hash functions to calculate RoCEv2 flowlabel and UDP
+    source port
+  RDMA/mlx5: Define RoCEv2 udp source port when set path
+  RDMA/cma: Initialize the flow label of CM's route path record
+  RDMA/cm: Set flow label of recv_wc based on primary flow label
+  RDMA/mlx5: Set UDP source port based on the grh.flow_label
 
-What's missing on your side?
+ drivers/infiniband/core/cm.c                  |  7 +++
+ drivers/infiniband/core/cma.c                 | 23 ++++++++++
+ drivers/infiniband/hw/mlx5/ah.c               | 21 ++++++++-
+ drivers/infiniband/hw/mlx5/main.c             |  4 +-
+ drivers/infiniband/hw/mlx5/mlx5_ib.h          |  4 +-
+ drivers/infiniband/hw/mlx5/qp.c               | 30 ++++++++++---
+ .../net/ethernet/mellanox/mlx5/core/main.c    | 39 ++++++++++++++++
+ include/linux/mlx5/mlx5_ifc.h                 |  5 ++-
+ include/rdma/ib_verbs.h                       | 44 +++++++++++++++++++
+ 9 files changed, 164 insertions(+), 13 deletions(-)
+
+--
+2.24.1
+
