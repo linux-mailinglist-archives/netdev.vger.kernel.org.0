@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81C7918A41A
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:48:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E87DE18A407
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:47:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727218AbgCRUra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:47:30 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:58408 "EHLO
+        id S1727365AbgCRUr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 16:47:56 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:58412 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727168AbgCRUr1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 16:47:27 -0400
+        with ESMTP id S1727225AbgCRUrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 16:47:32 -0400
 Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1jEfaO-0006CB-Vy; Wed, 18 Mar 2020 21:46:45 +0100
+        id 1jEfaK-000669-59; Wed, 18 Mar 2020 21:46:40 +0100
 Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id 61F721040CC;
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id 9A0B91040CD;
         Wed, 18 Mar 2020 21:46:36 +0100 (CET)
-Message-Id: <20200318204408.010461877@linutronix.de>
+Message-Id: <20200318204408.102694393@linutronix.de>
 User-Agent: quilt/0.65
-Date:   Wed, 18 Mar 2020 21:43:08 +0100
+Date:   Wed, 18 Mar 2020 21:43:09 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -31,8 +31,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Joel Fernandes <joel@joelfernandes.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Randy Dunlap <rdunlap@infradead.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Logan Gunthorpe <logang@deltatee.com>,
         Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
@@ -42,9 +42,9 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
-Subject: [patch V2 06/15] rcuwait: Add @state argument to rcuwait_wait_event()
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: [patch V2 07/15] powerpc/ps3: Convert half completion to rcuwait
 References: <20200318204302.693307984@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,70 +56,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend rcuwait_wait_event() with a state variable so that it is not
-restricted to UNINTERRUPTIBLE waits.
+The PS3 notification interrupt and kthread use a hacked up completion to
+communicate. Since we're wanting to change the completion implementation and
+this is abuse anyway, replace it with a simple rcuwait since there is only ever
+the one waiter.
+
+AFAICT the kthread uses TASK_INTERRUPTIBLE to not increase loadavg, kthreads
+cannot receive signals by default and this one doesn't look different. Use
+TASK_IDLE instead.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Oleg Nesterov <oleg@redhat.com>
-Cc: Davidlohr Bueso <dave@stgolabs.net>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: linuxppc-dev@lists.ozlabs.org
 ---
- include/linux/rcuwait.h       |   12 ++++++++++--
- kernel/locking/percpu-rwsem.c |    2 +-
- 2 files changed, 11 insertions(+), 3 deletions(-)
+V2: New patch to avoid the magic completion wait variant
+---
+ arch/powerpc/platforms/ps3/device-init.c |   17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
---- a/include/linux/rcuwait.h
-+++ b/include/linux/rcuwait.h
-@@ -3,6 +3,7 @@
- #define _LINUX_RCUWAIT_H_
+--- a/arch/powerpc/platforms/ps3/device-init.c
++++ b/arch/powerpc/platforms/ps3/device-init.c
+@@ -13,6 +13,7 @@
+ #include <linux/init.h>
+ #include <linux/slab.h>
+ #include <linux/reboot.h>
++#include <linux/rcuwait.h>
  
- #include <linux/rcupdate.h>
-+#include <linux/sched/signal.h>
+ #include <asm/firmware.h>
+ #include <asm/lv1call.h>
+@@ -670,7 +671,8 @@ struct ps3_notification_device {
+ 	spinlock_t lock;
+ 	u64 tag;
+ 	u64 lv1_status;
+-	struct completion done;
++	struct rcuwait wait;
++	bool done;
+ };
  
- /*
-  * rcuwait provides a way of blocking and waking up a single
-@@ -30,23 +31,30 @@ extern void rcuwait_wake_up(struct rcuwa
-  * The caller is responsible for locking around rcuwait_wait_event(),
-  * such that writes to @task are properly serialized.
-  */
--#define rcuwait_wait_event(w, condition)				\
-+#define rcuwait_wait_event(w, condition, state)				\
- ({									\
-+	int __ret = 0;							\
- 	rcu_assign_pointer((w)->task, current);				\
- 	for (;;) {							\
- 		/*							\
- 		 * Implicit barrier (A) pairs with (B) in		\
- 		 * rcuwait_wake_up().					\
- 		 */							\
--		set_current_state(TASK_UNINTERRUPTIBLE);		\
-+		set_current_state(state);				\
- 		if (condition)						\
- 			break;						\
- 									\
-+		if (signal_pending_state(state, current)) {		\
-+			__ret = -EINTR;					\
-+			break;						\
-+		}							\
-+									\
- 		schedule();						\
- 	}								\
- 									\
- 	WRITE_ONCE((w)->task, NULL);					\
- 	__set_current_state(TASK_RUNNING);				\
-+	__ret;								\
- })
+ enum ps3_notify_type {
+@@ -712,7 +714,8 @@ static irqreturn_t ps3_notification_inte
+ 		pr_debug("%s:%u: completed, status 0x%llx\n", __func__,
+ 			 __LINE__, status);
+ 		dev->lv1_status = status;
+-		complete(&dev->done);
++		dev->done = true;
++		rcuwait_wake_up(&dev->wait);
+ 	}
+ 	spin_unlock(&dev->lock);
+ 	return IRQ_HANDLED;
+@@ -725,12 +728,12 @@ static int ps3_notification_read_write(s
+ 	unsigned long flags;
+ 	int res;
  
- #endif /* _LINUX_RCUWAIT_H_ */
---- a/kernel/locking/percpu-rwsem.c
-+++ b/kernel/locking/percpu-rwsem.c
-@@ -162,7 +162,7 @@ void percpu_down_write(struct percpu_rw_
- 	 */
+-	init_completion(&dev->done);
+ 	spin_lock_irqsave(&dev->lock, flags);
+ 	res = write ? lv1_storage_write(dev->sbd.dev_id, 0, 0, 1, 0, lpar,
+ 					&dev->tag)
+ 		    : lv1_storage_read(dev->sbd.dev_id, 0, 0, 1, 0, lpar,
+ 				       &dev->tag);
++	dev->done = false;
+ 	spin_unlock_irqrestore(&dev->lock, flags);
+ 	if (res) {
+ 		pr_err("%s:%u: %s failed %d\n", __func__, __LINE__, op, res);
+@@ -738,14 +741,10 @@ static int ps3_notification_read_write(s
+ 	}
+ 	pr_debug("%s:%u: notification %s issued\n", __func__, __LINE__, op);
  
- 	/* Wait for all now active readers to complete. */
--	rcuwait_wait_event(&sem->writer, readers_active_check(sem));
-+	rcuwait_wait_event(&sem->writer, readers_active_check(sem), TASK_UNINTERRUPTIBLE);
- }
- EXPORT_SYMBOL_GPL(percpu_down_write);
+-	res = wait_event_interruptible(dev->done.wait,
+-				       dev->done.done || kthread_should_stop());
++	rcuwait_wait_event(&dev->wait, dev->done || kthread_should_stop(), TASK_IDLE);
++
+ 	if (kthread_should_stop())
+ 		res = -EINTR;
+-	if (res) {
+-		pr_debug("%s:%u: interrupted %s\n", __func__, __LINE__, op);
+-		return res;
+-	}
  
+ 	if (dev->lv1_status) {
+ 		pr_err("%s:%u: %s not completed, status 0x%llx\n", __func__,
 
