@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 21DC718A558
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:01:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AE6218A54B
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:00:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728476AbgCRVAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 17:00:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57336 "EHLO mail.kernel.org"
+        id S1728626AbgCRU4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 16:56:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57612 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728604AbgCRU40 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:56:26 -0400
+        id S1727975AbgCRU4d (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 16:56:33 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 59D682137B;
-        Wed, 18 Mar 2020 20:56:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D958C20BED;
+        Wed, 18 Mar 2020 20:56:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584564986;
-        bh=Ueg9Zw03/bC0jrpPrYe2uRa++2Dy+9cvjAOMfNFrvYU=;
+        s=default; t=1584564992;
+        bh=XzLnamPGAVWNo71FOyVtfuxzgn2GqCeijCwLwzNzh+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HSOyr9SGkauOz4FZcTzeqFh7eEE0w7L4E58PMoSKwApR1DtQzOauma9l1cdXOette
-         DWRivOMQRWrUTA7Njmtgrl1X6vAN2pUbqV+U6Gy74M56uGUjS2JEsFRu7hFcwecUdw
-         f0lgJdOgTuu7oMFLLE1cO/7ZbC5rpmuhIcmftsps=
+        b=c3fu4bWVP6NsREdu+m1zjQrmWxoiqzBmAG14JJvr23h50urScQpKWxJXvHsUzSnvk
+         iJG5TrBK44bTxwkC8+a2Oq+5nWgXvop9JkckLOW91tVFB+IFjNg43qVQp8flq5Rja6
+         zLdBdW4+1hkuUceAPAxZDuMNMZkknR+qm8yyGayM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dominik Czarnota <dominik.b.czarnota@gmail.com>,
+Cc:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 26/28] sxgbe: Fix off by one in samsung driver strncpy size arg
-Date:   Wed, 18 Mar 2020 16:55:53 -0400
-Message-Id: <20200318205555.17447-26-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 02/15] bnxt_en: reinitialize IRQs when MTU is modified
+Date:   Wed, 18 Mar 2020 16:56:16 -0400
+Message-Id: <20200318205629.17750-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200318205555.17447-1-sashal@kernel.org>
-References: <20200318205555.17447-1-sashal@kernel.org>
+In-Reply-To: <20200318205629.17750-1-sashal@kernel.org>
+References: <20200318205629.17750-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,42 +44,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dominik Czarnota <dominik.b.czarnota@gmail.com>
+From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-[ Upstream commit f3cc008bf6d59b8d93b4190e01d3e557b0040e15 ]
+[ Upstream commit a9b952d267e59a3b405e644930f46d252cea7122 ]
 
-This patch fixes an off-by-one error in strncpy size argument in
-drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c. The issue is that in:
+MTU changes may affect the number of IRQs so we must call
+bnxt_close_nic()/bnxt_open_nic() with the irq_re_init parameter
+set to true.  The reason is that a larger MTU may require
+aggregation rings not needed with smaller MTU.  We may not be
+able to allocate the required number of aggregation rings and
+so we reduce the number of channels which will change the number
+of IRQs.  Without this patch, it may crash eventually in
+pci_disable_msix() when the IRQs are not properly unwound.
 
-        strncmp(opt, "eee_timer:", 6)
-
-the passed string literal: "eee_timer:" has 10 bytes (without the NULL
-byte) and the passed size argument is 6. As a result, the logic will
-also accept other, malformed strings, e.g. "eee_tiXXX:".
-
-This bug doesn't seem to have any security impact since its present in
-module's cmdline parsing code.
-
-Signed-off-by: Dominik Czarnota <dominik.b.czarnota@gmail.com>
+Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-index 89831adb8eb75..6d27eec85fcef 100644
---- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-+++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_main.c
-@@ -2284,7 +2284,7 @@ static int __init sxgbe_cmdline_opt(char *str)
- 	if (!str || !*str)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index fbe3c2c114f93..736e550163e10 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -6439,13 +6439,13 @@ static int bnxt_change_mtu(struct net_device *dev, int new_mtu)
  		return -EINVAL;
- 	while ((opt = strsep(&str, ",")) != NULL) {
--		if (!strncmp(opt, "eee_timer:", 6)) {
-+		if (!strncmp(opt, "eee_timer:", 10)) {
- 			if (kstrtoint(opt + 10, 0, &eee_timer))
- 				goto err;
- 		}
+ 
+ 	if (netif_running(dev))
+-		bnxt_close_nic(bp, false, false);
++		bnxt_close_nic(bp, true, false);
+ 
+ 	dev->mtu = new_mtu;
+ 	bnxt_set_ring_params(bp);
+ 
+ 	if (netif_running(dev))
+-		return bnxt_open_nic(bp, false, false);
++		return bnxt_open_nic(bp, true, false);
+ 
+ 	return 0;
+ }
 -- 
 2.20.1
 
