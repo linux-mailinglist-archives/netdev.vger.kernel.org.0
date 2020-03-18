@@ -2,216 +2,353 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7A0318A13A
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 18:10:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 316AF18A140
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 18:12:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbgCRRKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 13:10:48 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:43894 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726776AbgCRRKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 13:10:48 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02IGhvuG002134;
-        Wed, 18 Mar 2020 10:10:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=lsikV0D5kGE0JaInRCNF3SJwUl60wilp6eQ7umi5DQk=;
- b=SUZBnPlMpB1Y3KUsDbN3QNzZ7gXTyZKV/O/PKXbA9wMmX/mrega5E8Pv4Zu6L2+LJWPW
- jeeEEfAOws6Z+4vvwIQ6kJk4lQ8X8tt7FlaginWde92ILvRxv9ZQYPDmOrCBusPbbpQ1
- Tqbw8rUxAknYeH8b3a7OevIUh7GXSCCSKro= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yu9avkmsb-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 18 Mar 2020 10:10:33 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Wed, 18 Mar 2020 10:10:32 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZWHx91Wu8DS12riOhUCkEN3Womc8f/cV9gFAgo5q2diOZm/1aSTHVh7rwSxiXSnse5M9ZKnNJx0xdZKgoDvAwlSOqC+an+9MiybavO91MFF3Ng/4cnN6owAsRmEvytL8XL1XIflO9NgUmtBY/NcyTkq/h9HkuIhAqKHNuk5R/ufM6GzzAiiIKzGKISHAR3mW/vAeM7QUTfNTdjwjBElViJ7LGDhKX1G4SS4JyQUC1f36O9hlIKhY+SqNI8wVrMY8ZXMpeePtdupdEDUp09S/RmYomNTv1zpQy9Pw6v+lHYTyTpAvi3zSWH/kFROB7xwEesNCAgk2aH7freBg5rB3NQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lsikV0D5kGE0JaInRCNF3SJwUl60wilp6eQ7umi5DQk=;
- b=BGN3MLXXp7LrTY4wInD/vs+tOsuxAE7paS/M24IsEnTLG/L+QwGeoMgtI/Al+u+Xb1qa4ofrlnwks3McsgULj1Osm8tRxX0IqkwQ8Rdeqtjgq3YLWSdc6GpEwHcr9ErJqw58sP0wfknGtL2ssiIM03fteioXTRD3ZNzjIA2tfmNswfT6ysR7q8irD56Tf0+o9PBRi7rx1a/csHPYu5pi7KI2ww4OFNiHhVuc8mCTHy55v9d/EUWw3Zvv4cQE2klISQaMj+Tnwk3ZZ5KvvhJi0a+u+hIRjbYPHNHuszZUpyS/mcDjGHfywc3DiaqUOlhMBzsE/4Rw68n5k9yVqsPeLg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lsikV0D5kGE0JaInRCNF3SJwUl60wilp6eQ7umi5DQk=;
- b=Wrt3bIVcMHY70w5BqvC1I1cBK33V+R7TDYgDgBN1viUJmx2V5OETodVyYTa9iWByR5Lh+xHUBd8uk4bNYxZlkvH3ApvZzyDATFfhmXkik9pySIjSgVVtMlycWdxzLYOBt7qb34ouCm91wjitSyo7J2e1V1S2ellCuQOCBGm2kKE=
-Received: from BYAPR15MB2278.namprd15.prod.outlook.com (2603:10b6:a02:8e::17)
- by BYAPR15MB2549.namprd15.prod.outlook.com (2603:10b6:a03:15c::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.15; Wed, 18 Mar
- 2020 17:10:31 +0000
-Received: from BYAPR15MB2278.namprd15.prod.outlook.com
- ([fe80::4d5a:6517:802b:5f47]) by BYAPR15MB2278.namprd15.prod.outlook.com
- ([fe80::4d5a:6517:802b:5f47%4]) with mapi id 15.20.2814.021; Wed, 18 Mar 2020
- 17:10:31 +0000
-Date:   Wed, 18 Mar 2020 10:10:28 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 bpf-next 1/4] bpftool: Print the enum's name instead
- of value
-Message-ID: <20200318171028.yttynowwqrfbmie2@kafai-mbp>
-References: <20200318031431.1256036-1-kafai@fb.com>
- <20200318031437.1256423-1-kafai@fb.com>
- <CAEf4BzbghUkbAjQcDAUGGoTpT-RszbHRYegbFsDLSjRqGvcVDA@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbghUkbAjQcDAUGGoTpT-RszbHRYegbFsDLSjRqGvcVDA@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-ClientProxiedBy: CO1PR15CA0062.namprd15.prod.outlook.com
- (2603:10b6:101:1f::30) To BYAPR15MB2278.namprd15.prod.outlook.com
- (2603:10b6:a02:8e::17)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp (2620:10d:c090:400::5:9ce5) by CO1PR15CA0062.namprd15.prod.outlook.com (2603:10b6:101:1f::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.21 via Frontend Transport; Wed, 18 Mar 2020 17:10:30 +0000
-X-Originating-IP: [2620:10d:c090:400::5:9ce5]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f788980c-2a4d-4861-61fd-08d7cb5f4340
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2549:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB25498242AA9D06648AC516CBD5F70@BYAPR15MB2549.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:3631;
-X-Forefront-PRVS: 03468CBA43
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(39860400002)(366004)(346002)(396003)(136003)(376002)(199004)(8936002)(8676002)(81156014)(54906003)(81166006)(66946007)(52116002)(6496006)(66556008)(86362001)(66476007)(4326008)(53546011)(55016002)(6916009)(2906002)(33716001)(9686003)(1076003)(316002)(478600001)(5660300002)(186003)(16526019);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2549;H:BYAPR15MB2278.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-Received-SPF: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Krpr4AkijERLxBrIQ9IXOCEDQKAGqECqX5EarS2Mr//mLe0OZxWBOTlu4DJVLdoNtDXgLerSBK//kt8zr5PAO9N5kWPDu2QoZ/F2qVucaFvKQFblNZwLHQFaiH+NX5cHQxlYYLAzgdZhVHg6ow2qfK8yjkrPaN/zH33RFIibHLXDRB9lLsAoGuJ3AFRMQUSGcjF/ZIKzlU/186LAhK2Ge1xJmUlS2I8qjKiqVsafa7xSmww4H21Fk3AOt1QBJYHaNpPhZMNMv8/1tufPbUnplkQLtxrZfZYYP6nXwIIFlFn5VQKn3NYzjiPsoEWImqFz9bE+zn3cFSF/XhDF5smjEpeQjlnE/2f9fJIRj1nzfRUY13FwWwLh9+ilFaOXtyaCi210jBbZfVm8cb/2r03hKEy9ymdwh2eXcvHVGBW0hXgAUOa4E3KymnsdJivKHvLD
-X-MS-Exchange-AntiSpam-MessageData: wC0BHFHMgLfyGbq54s+JNwoCJtFUiNMGE+4C64KR9N8x40CUrvrOifErbu4yitlNMESGwm3SyoTHdUCfxJTri6tTZm8jY0hnZ3ISy8xErWju88q9WniS0VDugJhX9I1pSfyNfcLpBhTTrBX463xiiaSfykIg56BDz4l2KF3at0n+dT+s5PQZ+tQliF+g3E8O
-X-MS-Exchange-CrossTenant-Network-Message-Id: f788980c-2a4d-4861-61fd-08d7cb5f4340
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2020 17:10:30.9737
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2UIns93V0t76EAQ5xMdEijQitzG5qSEZ1tVQSuUQ8qTnfl50+35FwZ7s1oqIvPwE
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2549
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
- definitions=2020-03-18_07:2020-03-18,2020-03-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- bulkscore=0 mlxscore=0 malwarescore=0 clxscore=1015 adultscore=0
- suspectscore=0 impostorscore=0 spamscore=0 priorityscore=1501
- mlxlogscore=999 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2003180076
-X-FB-Internal: deliver
+        id S1726911AbgCRRLz convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Mar 2020 13:11:55 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:60770 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726619AbgCRRLz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 13:11:55 -0400
+Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 85B23CECF8;
+        Wed, 18 Mar 2020 18:21:22 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: [PATCH 1/1] Bluetooth: Prioritize SCO traffic on slow interfaces
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <CANFp7mXwWGZF80EBqEmacc5uQWkaC0pL1rp+x5Qa40kkAcod-Q@mail.gmail.com>
+Date:   Wed, 18 Mar 2020 18:11:51 +0100
+Cc:     Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+        ChromeOS Bluetooth Upstreaming 
+        <chromeos-bluetooth-upstreaming@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <FFDE30C9-EE74-436D-8628-9FFC79114D3B@holtmann.org>
+References: <20200312181055.94038-1-abhishekpandit@chromium.org>
+ <20200312111036.1.I17e2220fd0c0822c76a15ef89b882fb4cfe3fe89@changeid>
+ <A79B48D3-D342-473C-B94A-A2E0AA83B505@holtmann.org>
+ <CANFp7mXwWGZF80EBqEmacc5uQWkaC0pL1rp+x5Qa40kkAcod-Q@mail.gmail.com>
+To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 17, 2020 at 11:09:24PM -0700, Andrii Nakryiko wrote:
-> On Tue, Mar 17, 2020 at 8:15 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> >
-> > This patch prints the enum's name if there is one found in
-> > the array of btf_enum.
-> >
-> > The commit 9eea98497951 ("bpf: fix BTF verification of enums")
-> > has details about an enum could have any power-of-2 size (up to 8 bytes).
-> > This patch also takes this chance to accommodate these non 4 byte
-> > enums.
-> >
-> > Acked-by: Quentin Monnet <quentin@isovalent.com>
-> > Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> > ---
-> >  tools/bpf/bpftool/btf_dumper.c | 39 +++++++++++++++++++++++++++++++---
-> >  1 file changed, 36 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/tools/bpf/bpftool/btf_dumper.c b/tools/bpf/bpftool/btf_dumper.c
-> > index 01cc52b834fa..079f9171b1a3 100644
-> > --- a/tools/bpf/bpftool/btf_dumper.c
-> > +++ b/tools/bpf/bpftool/btf_dumper.c
-> > @@ -43,9 +43,42 @@ static int btf_dumper_modifier(const struct btf_dumper *d, __u32 type_id,
-> >         return btf_dumper_do_type(d, actual_type_id, bit_offset, data);
-> >  }
-> >
-> > -static void btf_dumper_enum(const void *data, json_writer_t *jw)
-> > +static void btf_dumper_enum(const struct btf_dumper *d,
-> > +                           const struct btf_type *t,
-> > +                           const void *data)
-> >  {
-> > -       jsonw_printf(jw, "%d", *(int *)data);
-> > +       const struct btf_enum *enums = btf_enum(t);
-> > +       __s64 value;
-> > +       __u16 i;
-> > +
-> > +       switch (t->size) {
-> > +       case 8:
-> > +               value = *(__s64 *)data;
-> > +               break;
-> > +       case 4:
-> > +               value = *(__s32 *)data;
-> > +               break;
-> > +       case 2:
-> > +               value = *(__s16 *)data;
-> > +               break;
-> > +       case 1:
-> > +               value = *(__s8 *)data;
-> > +               break;
-> > +       default:
-> > +               jsonw_string(d->jw, "<invalid_enum_size>");
-> 
-> Why not return error and let it propagate, similar to how
-> btf_dumper_array() can return an error? BTF is malformed if this
-> happened, so there is no point in continuing dumping, it's most
-> probably going to be a garbage.
-I can send v4 to return -EINVAL here.
+Hi Abhishek,
 
-However, the caller of btf_dump*() is pretty loose on checking it.
-It won't be difficult to find other existing codes that will
-continue on btf_type's related error cases.  I also don't
-think fixing all these error checking/returning is the
-right answer here
+>>> When scheduling TX packets, send all SCO/eSCO packets first and then
+>>> send only 1 ACL/LE packet in a loop while checking that there are no SCO
+>>> packets pending. This is done to make sure that we can meet SCO
+>>> deadlines on slow interfaces like UART. If we were to queue up multiple
+>>> ACL packets without checking for a SCO packet, we might miss the SCO
+>>> timing. For example:
+>>> 
+>>> The time it takes to send a maximum size ACL packet (1024 bytes):
+>>> t = 10/8 * 1024 bytes * 8 bits/byte * 1 packet / baudrate
+>>>       where 10/8 is uart overhead due to start/stop bits per byte
+>>> 
+>>> Replace t = 3.75ms (SCO deadline), which gives us a baudrate of 2730666
+>>> and is pretty close to a common baudrate of 3000000 used for BT. At this
+>>> baudrate, if we sent two 1024 byte ACL packets, we would miss the 3.75ms
+>>> timing window.
+>>> 
+>>> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+>>> ---
+>>> 
+>>> include/net/bluetooth/hci_core.h |  1 +
+>>> net/bluetooth/hci_core.c         | 91 +++++++++++++++++++++++++-------
+>>> 2 files changed, 73 insertions(+), 19 deletions(-)
+>>> 
+>>> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+>>> index d4e28773d378..f636c89f1fe1 100644
+>>> --- a/include/net/bluetooth/hci_core.h
+>>> +++ b/include/net/bluetooth/hci_core.h
+>>> @@ -315,6 +315,7 @@ struct hci_dev {
+>>>      __u8            ssp_debug_mode;
+>>>      __u8            hw_error_code;
+>>>      __u32           clock;
+>>> +     __u8            sched_limit;
+>> 
+>> why do you need this parameter?
+> 
+> This is really only necessary on systems where the data transfer rate
+> to the controller is low. I want the driver to set whether we should
+> aggressively schedule SCO packets. A quirk might actually be better
+> than a variable (wasn't sure what is preferable).
 
-The proper place to check malformed BTF is in btf__new().
-Check it once there like how the kernel does.
-[ btw, the data and btf here are obtained from the kernel
-  which has verified it ].
+or maybe we try without driver choice first. I would assume what is required for UART, will not harm USB or SDIO transports either.
+
+>>>      __u16           devid_source;
+>>>      __u16           devid_vendor;
+>>> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+>>> index dbd2ad3a26ed..00a72265cd96 100644
+>>> --- a/net/bluetooth/hci_core.c
+>>> +++ b/net/bluetooth/hci_core.c
+>>> @@ -4239,18 +4239,32 @@ static void __check_timeout(struct hci_dev *hdev, unsigned int cnt)
+>>>      }
+>>> }
+>>> 
+>>> -static void hci_sched_acl_pkt(struct hci_dev *hdev)
+>>> +/* Limit packets in flight when SCO/eSCO links are active. */
+>>> +static bool hci_sched_limit(struct hci_dev *hdev)
+>>> +{
+>>> +     return hdev->sched_limit && hci_conn_num(hdev, SCO_LINK);
+>>> +}
+>>> +
+>>> +static bool hci_sched_acl_pkt(struct hci_dev *hdev)
+>>> {
+>>>      unsigned int cnt = hdev->acl_cnt;
+>>>      struct hci_chan *chan;
+>>>      struct sk_buff *skb;
+>>>      int quote;
+>>> +     bool sched_limit = hci_sched_limit(hdev);
+>>> +     bool resched = false;
+>>> 
+>>>      __check_timeout(hdev, cnt);
+>>> 
+>>>      while (hdev->acl_cnt &&
+>>>             (chan = hci_chan_sent(hdev, ACL_LINK, &quote))) {
+>>>              u32 priority = (skb_peek(&chan->data_q))->priority;
+>>> +
+>>> +             if (sched_limit && quote > 0) {
+>>> +                     resched = true;
+>>> +                     quote = 1;
+>>> +             }
+>>> +
+>>>              while (quote-- && (skb = skb_peek(&chan->data_q))) {
+>>>                      BT_DBG("chan %p skb %p len %d priority %u", chan, skb,
+>>>                             skb->len, skb->priority);
+>>> @@ -4271,19 +4285,26 @@ static void hci_sched_acl_pkt(struct hci_dev *hdev)
+>>>                      chan->sent++;
+>>>                      chan->conn->sent++;
+>>>              }
+>>> +
+>>> +             if (resched && cnt != hdev->acl_cnt)
+>>> +                     break;
+>>>      }
+>>> 
+>>> -     if (cnt != hdev->acl_cnt)
+>>> +     if (hdev->acl_cnt == 0 && cnt != hdev->acl_cnt)
+>>>              hci_prio_recalculate(hdev, ACL_LINK);
+>>> +
+>>> +     return resched;
+>>> }
+>>> 
+>>> -static void hci_sched_acl_blk(struct hci_dev *hdev)
+>>> +static bool hci_sched_acl_blk(struct hci_dev *hdev)
+>>> {
+>>>      unsigned int cnt = hdev->block_cnt;
+>>>      struct hci_chan *chan;
+>>>      struct sk_buff *skb;
+>>>      int quote;
+>>>      u8 type;
+>>> +     bool sched_limit = hci_sched_limit(hdev);
+>>> +     bool resched = false;
+>>> 
+>>>      __check_timeout(hdev, cnt);
+>>> 
+>>> @@ -4297,6 +4318,12 @@ static void hci_sched_acl_blk(struct hci_dev *hdev)
+>>>      while (hdev->block_cnt > 0 &&
+>>>             (chan = hci_chan_sent(hdev, type, &quote))) {
+>>>              u32 priority = (skb_peek(&chan->data_q))->priority;
+>>> +
+>>> +             if (sched_limit && quote > 0) {
+>>> +                     resched = true;
+>>> +                     quote = 1;
+>>> +             }
+>>> +
+>>>              while (quote > 0 && (skb = skb_peek(&chan->data_q))) {
+>>>                      int blocks;
+>>> 
+>>> @@ -4311,7 +4338,7 @@ static void hci_sched_acl_blk(struct hci_dev *hdev)
+>>> 
+>>>                      blocks = __get_blocks(hdev, skb);
+>>>                      if (blocks > hdev->block_cnt)
+>>> -                             return;
+>>> +                             return false;
+>>> 
+>>>                      hci_conn_enter_active_mode(chan->conn,
+>>>                                                 bt_cb(skb)->force_active);
+>>> @@ -4325,33 +4352,39 @@ static void hci_sched_acl_blk(struct hci_dev *hdev)
+>>>                      chan->sent += blocks;
+>>>                      chan->conn->sent += blocks;
+>>>              }
+>>> +
+>>> +             if (resched && cnt != hdev->block_cnt)
+>>> +                     break;
+>>>      }
+>>> 
+>>> -     if (cnt != hdev->block_cnt)
+>>> +     if (hdev->block_cnt == 0 && cnt != hdev->block_cnt)
+>>>              hci_prio_recalculate(hdev, type);
+>>> +
+>>> +     return resched;
+>>> }
+>>> 
+>>> -static void hci_sched_acl(struct hci_dev *hdev)
+>>> +static bool hci_sched_acl(struct hci_dev *hdev)
+>>> {
+>>>      BT_DBG("%s", hdev->name);
+>>> 
+>>>      /* No ACL link over BR/EDR controller */
+>>>      if (!hci_conn_num(hdev, ACL_LINK) && hdev->dev_type == HCI_PRIMARY)
+>>> -             return;
+>>> +             goto done;
+>> 
+>> Style wise the goto done is overkill. Just return false.
+> 
+> Will do.
+> 
+>> 
+>>> 
+>>>      /* No AMP link over AMP controller */
+>>>      if (!hci_conn_num(hdev, AMP_LINK) && hdev->dev_type == HCI_AMP)
+>>> -             return;
+>>> +             goto done;
+>>> 
+>>>      switch (hdev->flow_ctl_mode) {
+>>>      case HCI_FLOW_CTL_MODE_PACKET_BASED:
+>>> -             hci_sched_acl_pkt(hdev);
+>>> -             break;
+>>> +             return hci_sched_acl_pkt(hdev);
+>>> 
+>>>      case HCI_FLOW_CTL_MODE_BLOCK_BASED:
+>>> -             hci_sched_acl_blk(hdev);
+>>> -             break;
+>>> +             return hci_sched_acl_blk(hdev);
+>> 
+>> So the block based mode is for AMP controllers and not used on BR/EDR controllers. Since AMP controllers only transport ACL packet and no SCO/eSCO packets, we can ignore this here.
+> 
+> Ok, I'll remove it there.
+> 
+>> 
+>>>      }
+>>> +
+>>> +done:
+>>> +     return false;
+>>> }
+>>> 
+>>> /* Schedule SCO */
+>>> @@ -4402,16 +4435,18 @@ static void hci_sched_esco(struct hci_dev *hdev)
+>>>      }
+>>> }
+>>> 
+>>> -static void hci_sched_le(struct hci_dev *hdev)
+>>> +static bool hci_sched_le(struct hci_dev *hdev)
+>>> {
+>>>      struct hci_chan *chan;
+>>>      struct sk_buff *skb;
+>>>      int quote, cnt, tmp;
+>>> +     bool sched_limit = hci_sched_limit(hdev);
+>>> +     bool resched = false;
+>>> 
+>>>      BT_DBG("%s", hdev->name);
+>>> 
+>>>      if (!hci_conn_num(hdev, LE_LINK))
+>>> -             return;
+>>> +             return resched;
+>>> 
+>>>      cnt = hdev->le_pkts ? hdev->le_cnt : hdev->acl_cnt;
+>>> 
+>>> @@ -4420,6 +4455,12 @@ static void hci_sched_le(struct hci_dev *hdev)
+>>>      tmp = cnt;
+>>>      while (cnt && (chan = hci_chan_sent(hdev, LE_LINK, &quote))) {
+>>>              u32 priority = (skb_peek(&chan->data_q))->priority;
+>>> +
+>>> +             if (sched_limit && quote > 0) {
+>>> +                     resched = true;
+>>> +                     quote = 1;
+>>> +             }
+>>> +
+>>>              while (quote-- && (skb = skb_peek(&chan->data_q))) {
+>>>                      BT_DBG("chan %p skb %p len %d priority %u", chan, skb,
+>>>                             skb->len, skb->priority);
+>>> @@ -4437,6 +4478,9 @@ static void hci_sched_le(struct hci_dev *hdev)
+>>>                      chan->sent++;
+>>>                      chan->conn->sent++;
+>>>              }
+>>> +
+>>> +             if (resched && cnt != tmp)
+>>> +                     break;
+>>>      }
+>>> 
+>>>      if (hdev->le_pkts)
+>>> @@ -4444,24 +4488,33 @@ static void hci_sched_le(struct hci_dev *hdev)
+>>>      else
+>>>              hdev->acl_cnt = cnt;
+>>> 
+>>> -     if (cnt != tmp)
+>>> +     if (cnt == 0 && cnt != tmp)
+>>>              hci_prio_recalculate(hdev, LE_LINK);
+>>> +
+>>> +     return resched;
+>>> }
+>>> 
+>>> static void hci_tx_work(struct work_struct *work)
+>>> {
+>>>      struct hci_dev *hdev = container_of(work, struct hci_dev, tx_work);
+>>>      struct sk_buff *skb;
+>>> +     bool resched;
+>>> 
+>>>      BT_DBG("%s acl %d sco %d le %d", hdev->name, hdev->acl_cnt,
+>>>             hdev->sco_cnt, hdev->le_cnt);
+>>> 
+>>>      if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
+>>>              /* Schedule queues and send stuff to HCI driver */
+>>> -             hci_sched_acl(hdev);
+>>> -             hci_sched_sco(hdev);
+>>> -             hci_sched_esco(hdev);
+>>> -             hci_sched_le(hdev);
+>>> +             do {
+>>> +                     /* SCO and eSCO send all packets until emptied */
+>>> +                     hci_sched_sco(hdev);
+>>> +                     hci_sched_esco(hdev);
+>>> +
+>>> +                     /* Acl and Le send based on quota (priority on ACL per
+>>> +                      * loop)
+>>> +                      */
+>>> +                     resched = hci_sched_acl(hdev) || hci_sched_le(hdev);
+>>> +             } while (resched);
+>>>      }
+>> 
+>> I am not in favor of this busy loop. We might want to re-think the whole scheduling by connection type and really only focus on scheduling ACL (BR/EDR and LE) and audio packets (SCO/eSCO and ISO).
+> 
+> I think the busy loop is the simplest solution if we want to solve the
+> problem: don't send 2 ACL packets without checking if there is a SCO
+> packet scheduled (which is the worst case I'm worried about on UART
+> interfaces).
+> 
+> If we get rid of the connection type scheduling and only do audio and
+> ACL, we would still need some mechanism to guarantee that you don't
+> send >~1100 bytes without checking if SCO is queued (assuming 3000000
+> baudrate and 3.75ms latency requirement).
+
+Why don’t we just say that if SCO is queued up, then after each ACL packet we should send a SCO packet.
 
 > 
-> > +               return;
-> > +       }
-> > +
-> > +       for (i = 0; i < btf_vlen(t); i++) {
-> > +               if (value == enums[i].val) {
-> > +                       jsonw_string(d->jw,
-> > +                                    btf__name_by_offset(d->btf,
-> > +                                                        enums[i].name_off));
-> 
-> nit: local variable will make it cleaner
-I prefer to keep it as is.  There are many other uses like this.
+>> 
+>> In addition, we also need to check that SCO scheduling and A2DP media channel ACL packets do work together. I think that generally it would be best to have a clear rate at which SCO packets are require to pushed down to the hardware. So you really reserve bandwidth and not blindly prioritize them via a busy loop.
+>> 
+> I am less worried about bandwidth and more about latency. If I start
+> sending really large ACL packets through UART, it could take multiple
+> milliseconds. It really has to be reserved bandwidth per small
+> timeslice (like 3.75ms) so I can guarantee that if a SCO packet is
+> seen within that time slice, it will be transferred. There will still
+> have to be a busy loop though because the amount of data you can send
+> in the time slice will probably be less than the data that can be
+> in-flight to the controller (i.e. acl_max_pkts).
 
-> 
-> > +                       return;
-> > +               }
-> > +       }
-> > +
-> > +       jsonw_int(d->jw, value);
-> >  }
-> >
-> >  static int btf_dumper_array(const struct btf_dumper *d, __u32 type_id,
-> > @@ -366,7 +399,7 @@ static int btf_dumper_do_type(const struct btf_dumper *d, __u32 type_id,
-> >         case BTF_KIND_ARRAY:
-> >                 return btf_dumper_array(d, type_id, data);
-> >         case BTF_KIND_ENUM:
-> > -               btf_dumper_enum(data, d->jw);
-> > +               btf_dumper_enum(d, t, data);
-> >                 return 0;
-> >         case BTF_KIND_PTR:
-> >                 btf_dumper_ptr(data, d->jw, d->is_plain_text);
-> > --
-> > 2.17.1
-> >
+Right now we kinda let the SCO socket application provide the correct timing. I was thinking that the kernel might need to enforce this.
+
+Regards
+
+Marcel
+
