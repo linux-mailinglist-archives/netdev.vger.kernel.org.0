@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1CBE18A5A8
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:03:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB7FF18A5B2
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:03:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728392AbgCRUzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:55:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56166 "EHLO mail.kernel.org"
+        id S1727803AbgCRVDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 17:03:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56184 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728379AbgCRUzk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:55:40 -0400
+        id S1728359AbgCRUzl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 16:55:41 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 232BE208E4;
-        Wed, 18 Mar 2020 20:55:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 620AC208E0;
+        Wed, 18 Mar 2020 20:55:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584564940;
-        bh=CRAB778nqg1MgETvFzYotqQD43sufLM5qforwF49esM=;
+        s=default; t=1584564941;
+        bh=Mvf0nlAPOIsBi6bXbdEjMKe94UpF17RxnZ9l1Xzf/ag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1tnQH3WcMhQwTPlTBB/AFo7ONdlU/qksvq4f+P8vaC6ud6nvirBnmTJRdc8hXk3E6
-         i9jMt3hJ/8IpkRDicsNcwKXmNA/CLDJmd4Ozt9AEyH8H1mlO+6WdIeVbnO2vYc+fqB
-         GK8mhHwOsnTAc2wao4VwagFc2JBoqrxACljaIC2M=
+        b=hdid3Yv4vDnPO5apwlycxxfJvbgAzmvl0FK/Jb9ZO38wfCakKTcwN6hxJXVPxEk0Q
+         nSL6OkCUlf/xEonR5UVILaObuLuBegSw2w7kpFeJu4jyxOiwDtMRvWoEFn7Zj2MuFG
+         eW4EzoqTmq26ULqfQEpbOh+HYGe5B3IC4BmZR2As=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Remi Pommarel <repk@triplefau.lt>,
+Cc:     Mahesh Bandewar <maheshb@google.com>,
+        Eric Dumazet <edumazet@google.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 25/37] net: stmmac: dwmac1000: Disable ACS if enhanced descs are not used
-Date:   Wed, 18 Mar 2020 16:54:57 -0400
-Message-Id: <20200318205509.17053-25-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 26/37] ipvlan: don't deref eth hdr before checking it's set
+Date:   Wed, 18 Mar 2020 16:54:58 -0400
+Message-Id: <20200318205509.17053-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200318205509.17053-1-sashal@kernel.org>
 References: <20200318205509.17053-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -45,48 +45,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Remi Pommarel <repk@triplefau.lt>
+From: Mahesh Bandewar <maheshb@google.com>
 
-[ Upstream commit b723bd933980f4956dabc8a8d84b3e83be8d094c ]
+[ Upstream commit ad8192767c9f9cf97da57b9ffcea70fb100febef ]
 
-ACS (auto PAD/FCS stripping) removes FCS off 802.3 packets (LLC) so that
-there is no need to manually strip it for such packets. The enhanced DMA
-descriptors allow to flag LLC packets so that the receiving callback can
-use that to strip FCS manually or not. On the other hand, normal
-descriptors do not support that.
+IPvlan in L3 mode discards outbound multicast packets but performs
+the check before ensuring the ether-header is set or not. This is
+an error that Eric found through code browsing.
 
-Thus in order to not truncate LLC packet ACS should be disabled when
-using normal DMA descriptors.
-
-Fixes: 47dd7a540b8a0 ("net: add support for STMicroelectronics Ethernet controllers.")
-Signed-off-by: Remi Pommarel <repk@triplefau.lt>
+Fixes: 2ad7bf363841 (“ipvlan: Initial check-in of the IPVLAN driver.”)
+Signed-off-by: Mahesh Bandewar <maheshb@google.com>
+Reported-by: Eric Dumazet <edumazet@google.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ipvlan/ipvlan_core.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-index 21d131347e2ef..7b2a84320aabd 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-@@ -34,6 +34,7 @@
- static void dwmac1000_core_init(struct mac_device_info *hw,
- 				struct net_device *dev)
- {
-+	struct stmmac_priv *priv = netdev_priv(dev);
- 	void __iomem *ioaddr = hw->pcsr;
- 	u32 value = readl(ioaddr + GMAC_CONTROL);
- 	int mtu = dev->mtu;
-@@ -45,7 +46,7 @@ static void dwmac1000_core_init(struct mac_device_info *hw,
- 	 * Broadcom tags can look like invalid LLC/SNAP packets and cause the
- 	 * hardware to truncate packets on reception.
- 	 */
--	if (netdev_uses_dsa(dev))
-+	if (netdev_uses_dsa(dev) || !priv->plat->enh_desc)
- 		value &= ~GMAC_CONTROL_ACS;
+diff --git a/drivers/net/ipvlan/ipvlan_core.c b/drivers/net/ipvlan/ipvlan_core.c
+index 1a8132eb2a3ec..9b5aaafea1549 100644
+--- a/drivers/net/ipvlan/ipvlan_core.c
++++ b/drivers/net/ipvlan/ipvlan_core.c
+@@ -504,19 +504,21 @@ static int ipvlan_process_outbound(struct sk_buff *skb)
+ 	struct ethhdr *ethh = eth_hdr(skb);
+ 	int ret = NET_XMIT_DROP;
  
- 	if (mtu > 1500)
+-	/* In this mode we dont care about multicast and broadcast traffic */
+-	if (is_multicast_ether_addr(ethh->h_dest)) {
+-		pr_debug_ratelimited("Dropped {multi|broad}cast of type=[%x]\n",
+-				     ntohs(skb->protocol));
+-		kfree_skb(skb);
+-		goto out;
+-	}
+-
+ 	/* The ipvlan is a pseudo-L2 device, so the packets that we receive
+ 	 * will have L2; which need to discarded and processed further
+ 	 * in the net-ns of the main-device.
+ 	 */
+ 	if (skb_mac_header_was_set(skb)) {
++		/* In this mode we dont care about
++		 * multicast and broadcast traffic */
++		if (is_multicast_ether_addr(ethh->h_dest)) {
++			pr_debug_ratelimited(
++				"Dropped {multi|broad}cast of type=[%x]\n",
++				ntohs(skb->protocol));
++			kfree_skb(skb);
++			goto out;
++		}
++
+ 		skb_pull(skb, sizeof(*ethh));
+ 		skb->mac_header = (typeof(skb->mac_header))~0U;
+ 		skb_reset_network_header(skb);
 -- 
 2.20.1
 
