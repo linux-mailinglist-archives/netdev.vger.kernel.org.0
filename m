@@ -2,190 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96F9D18A957
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 00:38:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20E9018A95B
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 00:39:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbgCRXig (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 19:38:36 -0400
-Received: from mail-eopbgr60069.outbound.protection.outlook.com ([40.107.6.69]:40800
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726647AbgCRXig (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 19:38:36 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HVz27beyGTElt234sfhOw7zlnzwDio7c6q47TkT10IgF/SgYuCOpHqmFhFTXCUfz138GmSQw6qRBf6LAApWMH/Zg72UPjIPcCcSodllK8Z6xyXSsjskcQS+36pO/7GaF4gHnK/SM+a2JqrE9p81w83CeqiLjTzy2P9Ned5Z3E0DW6PD3us5r0MlXxTNuIsdYgP5ARWtalxw9t9JGaOF1Zskw02HOCIt4sTE38EbCE2F1/+V2QByRoICFMh5oZrGtD5k3FbKst3GskxDzfxalCdEQUET3Pql/H/Rlrnw3WO2p7SqMZrF9U9v2oQ5MPzPmlSw9tgca75C96KK5UBN1ew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N/EkTXF6RDiSAV1hACP/TNiuikmnyQU04DUHRz6pAuw=;
- b=hvaHpCr3AqmntuHSPGzhPNrPkjfwRNOpmkq5hisgt91rjIxxNi6OVpBznlDZ1Ap4tmcnLuWYvwKymkn6loarT1HXZsyku16YebpDbR1Hu+N2nGKWnGRgXHwWEKjMpmtDe9oE1gFhfMkjrMYItTfW8ORXGdsPD1xdpCYLx/jf7ex7qjE8d961W3HYAKPX/yZ9Mw/GCBYAjNo1p+wHRcKC2lbZjdsua8CQgp4NAMVvtx4oGwPlXq8cGnFGtOBblwIncRViZZJmZhUKklJI6K9wfLcEwqKtZr+yt7lExmuOQ/tPH0oU2ZzvJ86OsC1S8RAtTI4huAM7uvKevN2iloClrw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N/EkTXF6RDiSAV1hACP/TNiuikmnyQU04DUHRz6pAuw=;
- b=LHjvbQ0knTfQ2zJMF146ykj6aW3AtQBdzvOW1i5BxGDY2Nn9I8s9ZsjAEzq2WneNM2N2OwWX+bo+3Jh+Bl6LDCtVzN21sKmb5SuvQJk7TEMImIXtgi6KJO3qWWmZvpnbyCcQWJ4R2LyJk+YMBZrYd/iQ+z5rqvDsKnbpBIxG2BU=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB5533.eurprd05.prod.outlook.com (20.177.201.157) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.18; Wed, 18 Mar 2020 23:38:32 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2814.021; Wed, 18 Mar 2020
- 23:38:32 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Jason Gunthorpe <jgg@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>
-CC:     Michael Guralnik <michaelgur@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH mlx5-next 4/4] IB/mlx5: Move to fully dynamic UAR mode
- once user space supports it
-Thread-Topic: [PATCH mlx5-next 4/4] IB/mlx5: Move to fully dynamic UAR mode
- once user space supports it
-Thread-Index: AQHV/SLgpq/bmDdqLkSeJsfyxtpDsKhPAmIA
-Date:   Wed, 18 Mar 2020 23:38:32 +0000
-Message-ID: <2c4602b1761397d270a7be67be2e489eb2171281.camel@mellanox.com>
-References: <20200318124329.52111-1-leon@kernel.org>
-         <20200318124329.52111-5-leon@kernel.org>
-In-Reply-To: <20200318124329.52111-5-leon@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: e784aa06-a589-40dd-a0fc-08d7cb95785e
-x-ms-traffictypediagnostic: VI1PR05MB5533:|VI1PR05MB5533:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB5533515F0247B1C3A0781B90BEF70@VI1PR05MB5533.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 03468CBA43
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(396003)(346002)(136003)(39860400002)(199004)(54906003)(8936002)(36756003)(71200400001)(2906002)(8676002)(81156014)(66946007)(81166006)(26005)(66446008)(66476007)(66556008)(64756008)(186003)(2616005)(76116006)(5660300002)(91956017)(6506007)(478600001)(110136005)(86362001)(316002)(6512007)(4326008)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5533;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: yxPjRLQipixyfI3qDJAyho9mAEhBvqZDfB4k8z4rkwIUisYfFpJ0MdOE9iDIhThxzBBzJvVJViwyCE5W2r/ThEydlWiQUXckMAbme5rDM3cy5z3kvE9/3GH6wB1jbxuuTQ8FwOeXXrWYp05dp9K7Swga/aiXzTC4k/tO3+j0sovsb4ehMM1mZcTShsj6pjlvdGvpniJbQDNnZOxTnn9DDbw/pfhezNkygUYUVEwiGH8zOBbBWr2XQ9MJS6+ukH26jpYFEcTnvEc88fICOBjBdbwoybvv0kkyjn0EVMazuVOd2ChXAZaGVPPFdiXYE32D1YVkx4P5aY63F2BLjCd6D2jLD2pfafSkt76jWKuyfJoYZC/YF8Llscx5MPgqxPsm3+gjZAzwLZsF1SOUyt5rPglxqBWbghug8tHkmQOh1c+nKr6ZmkAiU0UXIU/H/G4Z
-x-ms-exchange-antispam-messagedata: f+/LcKURJ96Z6+wCgjElGuTcg/cXXr3jygF7JtByj60R0FJknPoXVMa/i3q53vKV7kHh2JR6mc+ANvZBBbYXudDkDBtjVwu01I92LLh7/TIRIBxS3qCLq0fsjdNKdXmv1cFivb/U1BVf09z8WCgxsQ==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <4989AF8CF895404A8D4BC00C185F95CC@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e784aa06-a589-40dd-a0fc-08d7cb95785e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Mar 2020 23:38:32.5318
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ok9zP8XbK3OWQc2vTjBF36kN9NZYHRN2PosscLvjKRorpYRYMGaq3lIIglFP3+9Vaujvth+dl8VFGoFm7Kc4eQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5533
+        id S1727189AbgCRXjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 19:39:17 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:32774 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726647AbgCRXjR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 19:39:17 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A1F44155371D4;
+        Wed, 18 Mar 2020 16:39:16 -0700 (PDT)
+Date:   Wed, 18 Mar 2020 16:39:16 -0700 (PDT)
+Message-Id: <20200318.163916.1829921372966500306.davem@davemloft.net>
+To:     rahul.lakkireddy@chelsio.com
+Cc:     netdev@vger.kernel.org, nirranjan@chelsio.com, vishal@chelsio.com,
+        dt@chelsio.com
+Subject: Re: [PATCH net-next] cxgb4: rework TC filter rule insertion across
+ regions
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1584528891-24714-1-git-send-email-rahul.lakkireddy@chelsio.com>
+References: <1584528891-24714-1-git-send-email-rahul.lakkireddy@chelsio.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 18 Mar 2020 16:39:16 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDIwLTAzLTE4IGF0IDE0OjQzICswMjAwLCBMZW9uIFJvbWFub3Zza3kgd3JvdGU6
-DQo+IEZyb206IFlpc2hhaSBIYWRhcyA8eWlzaGFpaEBtZWxsYW5veC5jb20+DQo+IA0KPiBNb3Zl
-IHRvIGZ1bGx5IGR5bmFtaWMgVUFSIG1vZGUgb25jZSB1c2VyIHNwYWNlIHN1cHBvcnRzIGl0Lg0K
-PiBJbiB0aGlzIGNhc2Ugd2UgcHJldmVudCBhbnkgbGVnYWN5IG1vZGUgb2YgVUFScyBvbiB0aGUg
-YWxsb2NhdGVkDQo+IGNvbnRleHQNCj4gYW5kIHByZXZlbnQgcmVkdW5kYW50IGFsbG9jYXRpb24g
-b2YgdGhlIHN0YXRpYyBvbmVzLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogWWlzaGFpIEhhZGFzIDx5
-aXNoYWloQG1lbGxhbm94LmNvbT4NCj4gUmV2aWV3ZWQtYnk6IE1pY2hhZWwgR3VyYWxuaWsgPG1p
-Y2hhZWxndXJAbWVsbGFub3guY29tPg0KPiBTaWduZWQtb2ZmLWJ5OiBMZW9uIFJvbWFub3Zza3kg
-PGxlb25yb0BtZWxsYW5veC5jb20+DQo+IC0tLQ0KPiAgZHJpdmVycy9pbmZpbmliYW5kL2h3L21s
-eDUvY3EuYyAgIHwgIDggKysrKysrLS0NCj4gIGRyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L21h
-aW4uYyB8IDEzICsrKysrKysrKysrKy0NCj4gIGRyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L3Fw
-LmMgICB8ICA2ICsrKysrKw0KPiAgaW5jbHVkZS9saW51eC9tbHg1L2RyaXZlci5oICAgICAgIHwg
-IDEgKw0KPiAgaW5jbHVkZS91YXBpL3JkbWEvbWx4NS1hYmkuaCAgICAgIHwgIDEgKw0KPiAgNSBm
-aWxlcyBjaGFuZ2VkLCAyNiBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L2NxLmMNCj4gYi9kcml2ZXJzL2lu
-ZmluaWJhbmQvaHcvbWx4NS9jcS5jDQo+IGluZGV4IGVhZmVkYzJmNjk3Yi4uMTQ2YmEyOTY2NzQ0
-IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWx4NS9jcS5jDQo+ICsrKyBi
-L2RyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L2NxLmMNCj4gQEAgLTc2NCwxMCArNzY0LDE0IEBA
-IHN0YXRpYyBpbnQgY3JlYXRlX2NxX3VzZXIoc3RydWN0IG1seDVfaWJfZGV2DQo+ICpkZXYsIHN0
-cnVjdCBpYl91ZGF0YSAqdWRhdGEsDQo+ICAJTUxYNV9TRVQoY3FjLCBjcWMsIGxvZ19wYWdlX3Np
-emUsDQo+ICAJCSBwYWdlX3NoaWZ0IC0gTUxYNV9BREFQVEVSX1BBR0VfU0hJRlQpOw0KPiAgDQo+
-IC0JaWYgKHVjbWQuZmxhZ3MgJiBNTFg1X0lCX0NSRUFURV9DUV9GTEFHU19VQVJfUEFHRV9JTkRF
-WCkNCj4gKwlpZiAodWNtZC5mbGFncyAmIE1MWDVfSUJfQ1JFQVRFX0NRX0ZMQUdTX1VBUl9QQUdF
-X0lOREVYKSB7DQo+ICAJCSppbmRleCA9IHVjbWQudWFyX3BhZ2VfaW5kZXg7DQo+IC0JZWxzZQ0K
-PiArCX0gZWxzZSBpZiAoY29udGV4dC0+YmZyZWdpLmxpYl91YXJfZHluKSB7DQo+ICsJCWVyciA9
-IC1FSU5WQUw7DQo+ICsJCWdvdG8gZXJyX2NxYjsNCj4gKwl9IGVsc2Ugew0KPiAgCQkqaW5kZXgg
-PSBjb250ZXh0LT5iZnJlZ2kuc3lzX3BhZ2VzWzBdOw0KPiArCX0NCj4gIA0KPiAgCWlmICh1Y21k
-LmNxZV9jb21wX2VuID09IDEpIHsNCj4gIAkJaW50IG1pbmlfY3FlX2Zvcm1hdDsNCj4gZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L21haW4uYw0KPiBiL2RyaXZlcnMvaW5m
-aW5pYmFuZC9ody9tbHg1L21haW4uYw0KPiBpbmRleCBlODc4N2FmMmQ3NGQuLmUzNTVlMDZiZjNh
-YyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9pbmZpbmliYW5kL2h3L21seDUvbWFpbi5jDQo+ICsr
-KyBiL2RyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1L21haW4uYw0KPiBAQCAtMTc4Nyw2ICsxNzg3
-LDcgQEAgc3RhdGljIGludCBtbHg1X2liX2FsbG9jX3Vjb250ZXh0KHN0cnVjdA0KPiBpYl91Y29u
-dGV4dCAqdWN0eCwNCj4gIAkJCQkgICAgIG1heF9jcWVfdmVyc2lvbik7DQo+ICAJdTMyIGR1bXBf
-ZmlsbF9ta2V5Ow0KPiAgCWJvb2wgbGliX3Vhcl80azsNCj4gKwlib29sIGxpYl91YXJfZHluOw0K
-PiAgDQo+ICAJaWYgKCFkZXYtPmliX2FjdGl2ZSkNCj4gIAkJcmV0dXJuIC1FQUdBSU47DQo+IEBA
-IC0xODQ1LDggKzE4NDYsMTQgQEAgc3RhdGljIGludCBtbHg1X2liX2FsbG9jX3Vjb250ZXh0KHN0
-cnVjdA0KPiBpYl91Y29udGV4dCAqdWN0eCwNCj4gIAl9DQo+ICANCj4gIAlsaWJfdWFyXzRrID0g
-cmVxLmxpYl9jYXBzICYgTUxYNV9MSUJfQ0FQXzRLX1VBUjsNCj4gKwlsaWJfdWFyX2R5biA9IHJl
-cS5saWJfY2FwcyAmIE1MWDVfTElCX0NBUF9EWU5fVUFSOw0KPiAgCWJmcmVnaSA9ICZjb250ZXh0
-LT5iZnJlZ2k7DQo+ICANCj4gKwlpZiAobGliX3Vhcl9keW4pIHsNCj4gKwkJYmZyZWdpLT5saWJf
-dWFyX2R5biA9IGxpYl91YXJfZHluOw0KPiArCQlnb3RvIHVhcl9kb25lOw0KPiArCX0NCj4gKw0K
-PiAgCS8qIHVwZGF0ZXMgcmVxLT50b3RhbF9udW1fYmZyZWdzICovDQo+ICAJZXJyID0gY2FsY190
-b3RhbF9iZnJlZ3MoZGV2LCBsaWJfdWFyXzRrLCAmcmVxLCBiZnJlZ2kpOw0KPiAgCWlmIChlcnIp
-DQo+IEBAIC0xODczLDYgKzE4ODAsNyBAQCBzdGF0aWMgaW50IG1seDVfaWJfYWxsb2NfdWNvbnRl
-eHQoc3RydWN0DQo+IGliX3Vjb250ZXh0ICp1Y3R4LA0KPiAgCWlmIChlcnIpDQo+ICAJCWdvdG8g
-b3V0X3N5c19wYWdlczsNCj4gIA0KPiArdWFyX2RvbmU6DQo+ICAJaWYgKHJlcS5mbGFncyAmIE1M
-WDVfSUJfQUxMT0NfVUNUWF9ERVZYKSB7DQo+ICAJCWVyciA9IG1seDVfaWJfZGV2eF9jcmVhdGUo
-ZGV2LCB0cnVlKTsNCj4gIAkJaWYgKGVyciA8IDApDQo+IEBAIC0xODk0LDcgKzE5MDIsNyBAQCBz
-dGF0aWMgaW50IG1seDVfaWJfYWxsb2NfdWNvbnRleHQoc3RydWN0DQo+IGliX3Vjb250ZXh0ICp1
-Y3R4LA0KPiAgCUlOSVRfTElTVF9IRUFEKCZjb250ZXh0LT5kYl9wYWdlX2xpc3QpOw0KPiAgCW11
-dGV4X2luaXQoJmNvbnRleHQtPmRiX3BhZ2VfbXV0ZXgpOw0KPiAgDQo+IC0JcmVzcC50b3RfYmZy
-ZWdzID0gcmVxLnRvdGFsX251bV9iZnJlZ3M7DQo+ICsJcmVzcC50b3RfYmZyZWdzID0gbGliX3Vh
-cl9keW4gPyAwIDogcmVxLnRvdGFsX251bV9iZnJlZ3M7DQo+ICAJcmVzcC5udW1fcG9ydHMgPSBk
-ZXYtPm51bV9wb3J0czsNCj4gIA0KPiAgCWlmIChvZmZzZXRvZmVuZCh0eXBlb2YocmVzcCksIGNx
-ZV92ZXJzaW9uKSA8PSB1ZGF0YS0+b3V0bGVuKQ0KPiBAQCAtMjE0Miw2ICsyMTUwLDkgQEAgc3Rh
-dGljIGludCB1YXJfbW1hcChzdHJ1Y3QgbWx4NV9pYl9kZXYgKmRldiwNCj4gZW51bSBtbHg1X2li
-X21tYXBfY21kIGNtZCwNCj4gIAlpbnQgbWF4X3ZhbGlkX2lkeCA9IGR5bl91YXIgPyBiZnJlZ2kt
-Pm51bV9zeXNfcGFnZXMgOg0KPiAgCQkJCWJmcmVnaS0+bnVtX3N0YXRpY19zeXNfcGFnZXM7DQo+
-ICANCj4gKwlpZiAoYmZyZWdpLT5saWJfdWFyX2R5bikNCj4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+
-ICsNCj4gIAlpZiAodm1hLT52bV9lbmQgLSB2bWEtPnZtX3N0YXJ0ICE9IFBBR0VfU0laRSkNCj4g
-IAkJcmV0dXJuIC1FSU5WQUw7DQo+ICANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW5maW5pYmFu
-ZC9ody9tbHg1L3FwLmMNCj4gYi9kcml2ZXJzL2luZmluaWJhbmQvaHcvbWx4NS9xcC5jDQo+IGlu
-ZGV4IDM4MGJhMzMyMTg1MS4uMzE5ZDUxNGEyMjIzIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2lu
-ZmluaWJhbmQvaHcvbWx4NS9xcC5jDQo+ICsrKyBiL2RyaXZlcnMvaW5maW5pYmFuZC9ody9tbHg1
-L3FwLmMNCj4gQEAgLTY5Nyw2ICs2OTcsOSBAQCBzdGF0aWMgaW50IGFsbG9jX2JmcmVnKHN0cnVj
-dCBtbHg1X2liX2RldiAqZGV2LA0KPiAgew0KPiAgCWludCBiZnJlZ24gPSAtRU5PTUVNOw0KPiAg
-DQo+ICsJaWYgKGJmcmVnaS0+bGliX3Vhcl9keW4pDQo+ICsJCXJldHVybiAtRUlOVkFMOw0KPiAr
-DQo+ICAJbXV0ZXhfbG9jaygmYmZyZWdpLT5sb2NrKTsNCj4gIAlpZiAoYmZyZWdpLT52ZXIgPj0g
-Mikgew0KPiAgCQliZnJlZ24gPSBhbGxvY19oaWdoX2NsYXNzX2JmcmVnKGRldiwgYmZyZWdpKTsN
-Cj4gQEAgLTc2OCw2ICs3NzEsOSBAQCBpbnQgYmZyZWduX3RvX3Vhcl9pbmRleChzdHJ1Y3QgbWx4
-NV9pYl9kZXYgKmRldiwNCj4gIAl1MzIgaW5kZXhfb2Zfc3lzX3BhZ2U7DQo+ICAJdTMyIG9mZnNl
-dDsNCj4gIA0KPiArCWlmIChiZnJlZ2ktPmxpYl91YXJfZHluKQ0KPiArCQlyZXR1cm4gLUVJTlZB
-TDsNCj4gKw0KPiAgCWJmcmVnc19wZXJfc3lzX3BhZ2UgPSBnZXRfdWFyc19wZXJfc3lzX3BhZ2Uo
-ZGV2LCBiZnJlZ2ktDQo+ID5saWJfdWFyXzRrKSAqDQo+ICAJCQkJTUxYNV9OT05fRlBfQkZSRUdT
-X1BFUl9VQVI7DQo+ICAJaW5kZXhfb2Zfc3lzX3BhZ2UgPSBiZnJlZ24gLyBiZnJlZ3NfcGVyX3N5
-c19wYWdlOw0KPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9tbHg1L2RyaXZlci5oDQo+IGIv
-aW5jbHVkZS9saW51eC9tbHg1L2RyaXZlci5oDQo+IGluZGV4IDNmMTBhOTYzMzAxMi4uZTRhYjBl
-YjlkMjAyIDEwMDY0NA0KPiAtLS0gYS9pbmNsdWRlL2xpbnV4L21seDUvZHJpdmVyLmgNCj4gKysr
-IGIvaW5jbHVkZS9saW51eC9tbHg1L2RyaXZlci5oDQo+IEBAIC0yMjQsNiArMjI0LDcgQEAgc3Ry
-dWN0IG1seDVfYmZyZWdfaW5mbyB7DQo+ICAJc3RydWN0IG11dGV4CQlsb2NrOw0KPiAgCXUzMgkJ
-CXZlcjsNCj4gIAlib29sCQkJbGliX3Vhcl80azsNCj4gKwl1OAkJCWxpYl91YXJfZHluIDogMTsN
-Cj4gIAl1MzIJCQludW1fc3lzX3BhZ2VzOw0KPiAgCXUzMgkJCW51bV9zdGF0aWNfc3lzX3BhZ2Vz
-DQo+ICAJdTMyCQkJdG90YWxfbnVtX2JmcmVnczsNCg0KdGhpcyBzdHJ1Y3QgaXMgbm90IHVzZWQg
-aW4gbWx4NV9jb3JlLCBzaGFsbCB3ZSBtb3ZlIGl0IHRvIG1seDVfaWIgYXMNCnBhcnQgb2YgdGhp
-cyBwYXRjaD8gDQpzbyBuZXh0IHRpbWUgeW91IG5lZWQgdG8gdXBkYXRlIGl0IHlvdSBkb24ndCBu
-ZWVkIHRvIGJvdGhlciBuZXRkZXYgYnVzeQ0KcGVvcGxlIGFib3V0IGl0IDstKQ0KDQo+IGRpZmYg
-LS1naXQgYS9pbmNsdWRlL3VhcGkvcmRtYS9tbHg1LWFiaS5oIGIvaW5jbHVkZS91YXBpL3JkbWEv
-bWx4NS0NCj4gYWJpLmgNCj4gaW5kZXggYTY1ZDYwYjQ0ODI5Li5kZjFjYzM2NDFiZGEgMTAwNjQ0
-DQo+IC0tLSBhL2luY2x1ZGUvdWFwaS9yZG1hL21seDUtYWJpLmgNCj4gKysrIGIvaW5jbHVkZS91
-YXBpL3JkbWEvbWx4NS1hYmkuaA0KPiBAQCAtNzksNiArNzksNyBAQCBzdHJ1Y3QgbWx4NV9pYl9h
-bGxvY191Y29udGV4dF9yZXEgew0KPiAgDQo+ICBlbnVtIG1seDVfbGliX2NhcHMgew0KPiAgCU1M
-WDVfTElCX0NBUF80S19VQVIJPSAoX191NjQpMSA8PCAwLA0KPiArCU1MWDVfTElCX0NBUF9EWU5f
-VUFSCT0gKF9fdTY0KTEgPDwgMSwNCj4gIH07DQo+ICANCj4gIGVudW0gbWx4NV9pYl9hbGxvY191
-Y3R4X3YyX2ZsYWdzIHsNCg==
+From: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+Date: Wed, 18 Mar 2020 16:24:51 +0530
+
+> Chelsio NICs have 3 filter regions, in following order of priority:
+> 1. High Priority (HPFILTER) region (Highest Priority).
+> 2. HASH region.
+> 3. Normal FILTER region (Lowest Priority).
+> 
+> Currently, there's a 1-to-1 mapping between the prio value passed
+> by TC and the filter region index. However, it's possible to have
+> multiple TC rules with the same prio value. In this case, if a region
+> is exhausted, no attempt is made to try inserting the rule in the
+> next available region.
+> 
+> So, rework and remove the 1-to-1 mapping. Instead, dynamically select
+> the region to insert the filter rule, as long as the new rule's prio
+> value doesn't conflict with existing rules across all the 3 regions.
+> 
+> Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+
+Applied, thank you.
