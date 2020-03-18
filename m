@@ -2,141 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04B31189C05
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 13:33:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 50E5E189C2B
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 13:43:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726664AbgCRMdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 08:33:22 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:59126 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726546AbgCRMdW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 08:33:22 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1jEXsp-0004kd-GV; Wed, 18 Mar 2020 13:33:15 +0100
-Date:   Wed, 18 Mar 2020 13:33:15 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Florian Westphal <fw@strlen.de>, davem@davemloft.net,
-        netdev@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: Re: [PATCH net-next] netfilter: revert introduction of egress hook
-Message-ID: <20200318123315.GI979@breakpoint.cc>
-References: <bbdee6355234e730ef686f9321bd072bcf4bb232.1584523237.git.daniel@iogearbox.net>
- <20200318100227.GE979@breakpoint.cc>
- <c7c6fb40-06f9-8078-6f76-5dc75a094e25@iogearbox.net>
+        id S1726822AbgCRMnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 08:43:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52570 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726550AbgCRMnh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 08:43:37 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EA81A20768;
+        Wed, 18 Mar 2020 12:43:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584535416;
+        bh=/EPNFAe7/7mGCp7zLP2uohFvZkzaU4incXI5NEe8P1w=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PvCWYRhoRdB4cCFGR5hCeRWmZL8nyGpyurzHb5buFamfoHRyDSqUV1O7g1FIMrcVH
+         cdcIZKjIGOhi6sfQA2Gk+6c10p9YdW7mjovOQqhjYoXx+e4NZqW5Ggqnx/1NiiYUPD
+         4SCui9Vsx2xL4houhahuw2THRi9/ihE/6RutmxCw=
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Leon Romanovsky <leonro@mellanox.com>, linux-rdma@vger.kernel.org,
+        Michael Guralnik <michaelgur@mellanox.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
+        Yishai Hadas <yishaih@mellanox.com>
+Subject: [PATCH rdma-next 0/4] Introduce dynamic UAR allocation mode
+Date:   Wed, 18 Mar 2020 14:43:25 +0200
+Message-Id: <20200318124329.52111-1-leon@kernel.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c7c6fb40-06f9-8078-6f76-5dc75a094e25@iogearbox.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> wrote:
-> On 3/18/20 11:02 AM, Florian Westphal wrote:
-> > Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > > This reverts the following commits:
-> > > 
-> > >    8537f78647c0 ("netfilter: Introduce egress hook")
-> > >    5418d3881e1f ("netfilter: Generalize ingress hook")
-> > >    b030f194aed2 ("netfilter: Rename ingress hook include file")
-> > > 
-> > >  From the discussion in [0], the author's main motivation to add a hook
-> > > in fast path is for an out of tree kernel module, which is a red flag
-> > > to begin with.
-> > 
-> > The author did post patches for nftables, i.e. you can hook up rulesets to
-> > this new hook point.
-> > 
-> > > is on future extensions w/o concrete code in the tree yet. Revert as
-> > > suggested [1] given the weak justification to add more hooks to critical
-> > > fast-path.
-> > 
-> > Do you have an alternative suggestion on how to expose this?
-> 
-> Yeah, I think we should not plaster the stack with same/similar hooks that
-> achieve the same functionality next to each other over and over at the cost
-> of performance for users .. ideally there should just be a single entry point
-> that is very lightweight/efficient when not used and can otherwise patch to
-> a direct call when in use. Recent work from KP Singh goes into this direction
-> with the fmodify_return work [0], so we would have a single static key which
-> wraps an empty function call entry which can then be patched by the kernel at
-> runtime. Inside that trampoline we can still keep the ordering intact, but
-> imho this would overall better reduce overhead when functionality is not used
-> compared to the practice of duplication today.
+From: Leon Romanovsky <leonro@mellanox.com>
 
-Thanks for explaining.  If I understand this correctly then:
+From Yishai,
 
-1. sch_handle_egress() becomes a non-inlined function that isn't called
-   from __dev_queue_xmit or any other location
-2. __dev_queue_xmit calls a dummy do-nothing function wrapped in
-   existing egress-static-key
-3. kernels sched/tc code can patch the dummy function so it calls
-   sch_handle_egress, without userspace changes/awareness
-4. netfilter could reuse this even when tc is already patched in, so
-   the dummy function does two direct calls.
+This series exposes API to enable a dynamic allocation and management of a
+UAR which now becomes to be a regular uobject.
 
-How does that differ from current code?  One could also re-arrange
-things like this (diff below, just for illustration).
+Moving to that mode enables allocating a UAR only upon demand and drop the
+redundant static allocation of UARs upon context creation.
 
-The only difference I see vs. my understanding of your proposal is:
-1. no additional static key, nf_hook_egress_active() doesn't exist
-2. nf_hook_egress exists, but isn't called anywhere, patched-in at runtime
-3. sch_handle_egress isn't called anywhere either, patched-in too
+In addition, it allows master and secondary processes that own the same command
+FD to allocate and manage UARs according to their needs, this can’t be achieved
+today.
 
-Did I get that right? The idea/plan looks good to me, it just looks
-like a very marginal difference to me, thats why I'm asking.
+As part of this option, QP & CQ creation flows were adapted to support this
+dynamic UAR mode once asked by user space.
 
-Thanks!
+Once this mode is asked by mlx5 user space driver on a given context, it will
+be mutual exclusive, means both the static and legacy dynamic modes for using
+UARs will be blocked.
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index aeb8ccbbe93b..406ac86b6d6c 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3770,13 +3770,24 @@ int dev_loopback_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
- EXPORT_SYMBOL(dev_loopback_xmit);
- 
- #ifdef CONFIG_NET_EGRESS
--static struct sk_buff *
-+static int nf_egress(struct sk_buff *skb)
-+{
-+	if (nf_hook_egress_active(skb))
-+		return nf_hook_egress(skb);
-+
-+	return 0;
-+}
-+
-+static noinline struct sk_buff *
- sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
- {
--#ifdef CONFIG_NET_CLS_ACT
--	struct mini_Qdisc *miniq = rcu_dereference_bh(dev->miniq_egress);
-+	struct mini_Qdisc *miniq;
- 	struct tcf_result cl_res;
- 
-+	if (nf_egress(skb) < 0)
-+		return NULL;
-+
-+	miniq = rcu_dereference_bh(dev->miniq_egress);
- 	if (!miniq)
- 		return skb;
- 
-@@ -3812,19 +3823,6 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
- }
- #endif /* CONFIG_NET_EGRESS */
- #ifdef CONFIG_XPS
- static int __get_xps_queue_idx(struct net_device *dev, struct sk_buff *skb,
- 			       struct xps_dev_maps *dev_maps, unsigned int tci)
-@@ -4014,9 +4012,6 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
- #endif
- #ifdef CONFIG_NET_EGRESS
- 	if (static_branch_unlikely(&egress_needed_key)) {
--		if (nf_egress(skb) < 0)
--			goto out;
--
- 		skb = sch_handle_egress(skb, &rc, dev);
- 		if (!skb)
- 			goto out;
+The legacy modes are supported for backward compatible reasons, looking
+forward we expect this new mode to be the default.
+
+Thanks
+
+Yishai Hadas (4):
+  IB/mlx5: Expose UAR object and its alloc/destroy commands
+  IB/mlx5: Extend CQ creation to get uar page index from user space
+  IB/mlx5: Extend QP creation to get uar page index from user space
+  IB/mlx5: Move to fully dynamic UAR mode once user space supports it
+
+ drivers/infiniband/hw/mlx5/cq.c           |  21 ++-
+ drivers/infiniband/hw/mlx5/main.c         | 185 ++++++++++++++++++++--
+ drivers/infiniband/hw/mlx5/mlx5_ib.h      |   2 +
+ drivers/infiniband/hw/mlx5/qp.c           |  33 ++--
+ include/linux/mlx5/driver.h               |   1 +
+ include/rdma/uverbs_ioctl.h               |   2 +-
+ include/uapi/rdma/mlx5-abi.h              |   6 +
+ include/uapi/rdma/mlx5_user_ioctl_cmds.h  |  18 +++
+ include/uapi/rdma/mlx5_user_ioctl_verbs.h |   5 +
+ 9 files changed, 246 insertions(+), 27 deletions(-)
+
+--
+2.24.1
+
