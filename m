@@ -2,98 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92EB01897E0
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:26:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C8221897E8
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:29:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727490AbgCRJ0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 05:26:33 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:29535 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726586AbgCRJ0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:26:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584523591;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1qGXHmo6zQlOJUVGU6+V+s7qzR5Y8nEM9Xk6bPWFSOA=;
-        b=WzwUrYxFRWZfp4UFeYOedBPa/jKruYzuGtneMwqrZN1JbS4IbZ2dD0D6UP5iSRUJYnG9cT
-        hVlB5yZyHkGVEMMPtYyZvpnfrbgrjQ3vxnP03bBeVIP2bk8fE/0kvAQ/FRX03VaqOqdlwy
-        IGT2FCdBvnYMRBJmB/ou3dKoNwfajJE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-396-345NDzGCMeG3TODua96K0g-1; Wed, 18 Mar 2020 05:26:29 -0400
-X-MC-Unique: 345NDzGCMeG3TODua96K0g-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 42E2D107ACC7;
-        Wed, 18 Mar 2020 09:26:28 +0000 (UTC)
-Received: from ovpn-115-29.ams2.redhat.com (ovpn-115-29.ams2.redhat.com [10.36.115.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 33E067387B;
-        Wed, 18 Mar 2020 09:26:23 +0000 (UTC)
-Message-ID: <2a5b1c0194a92bcaa626c071701a399cc85ee0b4.camel@redhat.com>
-Subject: Re: [PATCH net-next] mptcp: Remove set but not used variable
- 'can_ack'
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Date:   Wed, 18 Mar 2020 10:26:22 +0100
-In-Reply-To: <20200318020157.178956-1-yuehaibing@huawei.com>
-References: <20200318020157.178956-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1727537AbgCRJ3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 05:29:02 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:46287 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726994AbgCRJ3C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:29:02 -0400
+Received: by mail-lf1-f68.google.com with SMTP id a28so7894799lfr.13
+        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 02:29:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=flowbird.group; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xI+nNVteVjSy3ZGdtWuI/tAMjznZhMdLDuHpaHBTc6A=;
+        b=SymM6JX3M8rY9bbhScbNhia4a5WFTNME1ETRVETTwmfizUPUHXvQdjS2BcdWjuLHiT
+         et0mvFjOuJhBpDEIPymT1vewmNvt8yMS8OkejsRxMFN7Ngi4YwcIcITomJouE1LaT085
+         JeGSwQw3C25xiy8b4RgOLL3udu8m7VSExEtP0WysVtH4XNbf+9K0LOnVAmlvJ+G574ss
+         qmnYOuGlGJGHPH96D8xznl1/WCAdlXhIYvXf9ig5LWXD/pctUaWlDIJv9cMKCwFbECTY
+         JtEfwH7/fjpBTjxhkg/mKd3kfqLivbtIaZRW8PF58oTveVdb9I2WNL0KcTVdxHkTJJrM
+         +sSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xI+nNVteVjSy3ZGdtWuI/tAMjznZhMdLDuHpaHBTc6A=;
+        b=BJqBIeWoO1nGbdDGjvwFT76iEj4KM803F/S4tOlTcdtU3lzwCY/Do7pW1H5jNW/LZ8
+         mEhtVeVbRsgXSDj/FD5FEx5YNkblWNNTDxSQRvqAdd59ST96L2QgVfFYbnMBg+TzSPzg
+         3JcvdMrGfmyskYSSLDkBqfqGnd92qrvY9LMJliVvkXAcVWCpXgdRrH1Z4b+J8Qj5Vfe+
+         iIRizXri3fM0pue6Pu2YtbD59Se2VoWAf5A9BM5n1SzM4cS1CaAKhNDXMVtfM2EiNNdm
+         zLozVbrLFM2S1/kFZQOV8OMuTZ0B2iaDwtyLObXwaAlGbnBozpE7pZoohx1G+4g91QBe
+         B4uQ==
+X-Gm-Message-State: ANhLgQ0C+XQUgLBhO/2Sio2UccT7o0JNtvHtKGMj/t+dymG+UAAAZXqR
+        OgLA+mYqiqwcClmds3w57a0VRGgN1864UGGVIa4UGQ==
+X-Google-Smtp-Source: ADFU+vt9RaqPeaQFcnibcOYchRkGU43JPFZ+ootd7u1qqbA7zone9+6G7f6jOLdG+HJihZ1J+PXHqkiyj/xrGoYNbZU=
+X-Received: by 2002:a05:6512:1054:: with SMTP id c20mr2294611lfb.69.1584523739621;
+ Wed, 18 Mar 2020 02:28:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+References: <1584463806-15788-1-git-send-email-martin.fuzzey@flowbird.group>
+ <1584463806-15788-4-git-send-email-martin.fuzzey@flowbird.group> <20200318091734.GA23244@lunn.ch>
+In-Reply-To: <20200318091734.GA23244@lunn.ch>
+From:   "Fuzzey, Martin" <martin.fuzzey@flowbird.group>
+Date:   Wed, 18 Mar 2020 10:28:48 +0100
+Message-ID: <CANh8QzzA34th-h8ULM=LNvOvRw9P9=vekOBGvdYjv6TEBNDMig@mail.gmail.com>
+Subject: Re: [PATCH 3/4] dt-bindings: fec: document the new fsl,stop-mode property
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Fugang Duan <fugang.duan@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Fabio Estevam <festevam@gmail.com>,
+        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-03-18 at 02:01 +0000, YueHaibing wrote:
-> Fixes gcc '-Wunused-but-set-variable' warning:
-> 
-> net/mptcp/options.c: In function 'mptcp_established_options_dss':
-> net/mptcp/options.c:338:7: warning:
->  variable 'can_ack' set but not used [-Wunused-but-set-variable]
-> 
-> commit dc093db5cc05 ("mptcp: drop unneeded checks")
-> leave behind this unused, remove it.
-> 
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  net/mptcp/options.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-> index 63c8ee49cef2..8ba34950241c 100644
-> --- a/net/mptcp/options.c
-> +++ b/net/mptcp/options.c
-> @@ -335,7 +335,6 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
->  	struct mptcp_sock *msk;
->  	unsigned int ack_size;
->  	bool ret = false;
-> -	bool can_ack;
->  	u8 tcp_fin;
->  
->  	if (skb) {
-> @@ -364,7 +363,6 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
->  	/* passive sockets msk will set the 'can_ack' after accept(), even
->  	 * if the first subflow may have the already the remote key handy
->  	 */
-> -	can_ack = true;
->  	opts->ext_copy.use_ack = 0;
->  	msk = mptcp_sk(subflow->conn);
->  	if (!READ_ONCE(msk->can_ack)) {
+Hi Andrew,
 
-Yep, left-over on my side! Thanks for clearing it!
+On Wed, 18 Mar 2020 at 10:17, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> You should not be putting registers and values into device tree.
+>
+> The regmap is fine. But could you add the register and the bit to
+> fec_devtype[IMX6SX_FEC], fec_devtype[IMX6UL_FEC], etc.
+>
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+If that's the consensus I can do it that way.
 
+But I should point out that there is already a precedent in mainline for this:
+
+Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
+
+Regards,
+
+Martin
