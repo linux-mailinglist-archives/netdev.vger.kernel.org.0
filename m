@@ -2,138 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ABBC18A71A
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:32:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA84C18A738
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:42:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726912AbgCRVca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 17:32:30 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:37616 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726733AbgCRVca (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 17:32:30 -0400
-Received: by mail-wr1-f65.google.com with SMTP id w10so301476wrm.4
-        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 14:32:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3eodPXLXtt5t8s46JrHKm7viP/pzc2GFuxyi3+xmNFs=;
-        b=cIrQAaCSM4Da+AP0qH4Nr/xQUbvErL1UBJL1s6GIjF4YhnV6nsFD93kPD0FE1o0rmc
-         8AubywY5lCVVbVNcvYYw3RKvHV9UqfyNRdHdMZg9NFzQeok5gGj8HFd9PEyJrijOFomy
-         p27BwtyJC4UHn7vJeA7W4Ic1gUmnmM3oMkFlv9RXWA+nqJves6A/mehqYHE7npAf2cT/
-         YcchWEHWl/jFXmvE/lnbyPu1jC1Q3gfWP2vLkNuWAEn3mF5oR490IdzRZ/rzN0B/xC57
-         9cABrcgEryMd3dxq01IuXZo3xqE8Yw7iFApUisb9CpsbPOmLDqVffjq/FW44uG8P51vA
-         NgfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3eodPXLXtt5t8s46JrHKm7viP/pzc2GFuxyi3+xmNFs=;
-        b=otDQaxoaYJdch4T6/CZ8gkuZtcWgntANq+UmtPZGedvmjl6qGwp+oQejurkfU8m8ya
-         2SWkzS/rvaXgV15HiKijwJ+04r66yrAHG5mRlLjlMNMC6vau1FXNlMOhXw0RnBQ+shKP
-         A1vjLd3RZLVticAk4W0eITY6/e3wM0R67Koz3Iv3/Jbd986DJ3Gs+1X1XEqQAjPDZRd2
-         ZWjFZIVHxFGBEQtC88MAAgglkJv0vOW/omlsnEidk8+fdgfJxhnC0Nel+m7akhQk3+0R
-         BLwfjt7cr1H/US9Z0y1n0aoM4VQz6Gj3Qu1U93k9srF/JsO3+FJZknL7nb4nSLaYPxAK
-         YdVg==
-X-Gm-Message-State: ANhLgQ1GfNbMMTJqEIAJK3nDj+xl1BCz6JBeGC+jihGsJyNXgme/kwGs
-        hTExAjFCH2quohfH6F2UuuwEOcCE
-X-Google-Smtp-Source: ADFU+vvZIVhBk8lfmsm+Eui4HH43iOukwpqJ1HqzRG4MVohzV97S7PdlqQbwNPw9e/zAIU6XRS/dNQ==
-X-Received: by 2002:adf:eb51:: with SMTP id u17mr8236405wrn.29.1584567147021;
-        Wed, 18 Mar 2020 14:32:27 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:c8fb:eee:cf86:ecdf? (p200300EA8F296000C8FB0EEECF86ECDF.dip0.t-ipconnect.de. [2003:ea:8f29:6000:c8fb:eee:cf86:ecdf])
-        by smtp.googlemail.com with ESMTPSA id p10sm146103wrx.81.2020.03.18.14.32.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 Mar 2020 14:32:26 -0700 (PDT)
-Subject: [PATCH net-next 3/3] net: phy: aquantia: remove downshift warning now
- that phylib takes care
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <6e4ea372-3d05-3446-2928-2c1e76a66faf@gmail.com>
-Message-ID: <f721148c-ac1b-68a8-863b-4e197f28cdc2@gmail.com>
-Date:   Wed, 18 Mar 2020 22:31:40 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1727279AbgCRVm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 17:42:26 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:48520 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727101AbgCRVmW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 17:42:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584567741;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=FI4r1zHhj1RMuaE8Pn/teSAlnWkMrk+yN7HsYv/jDKI=;
+        b=hwnGi2726ij2ZDjgpGdGrEdtuaj8rDnKky3rvoPCunUMxgWtg7DFuNsrQ7HH2EzL+48IJm
+        tdomi1DWjCbADMqSV4roQbJOzeCNzrHwECHk2pFS0ZhXjBTgcoPJZraWN8n5TAIg8OPDe9
+        ZHUy1iUkofQ9oLmT3ehoojAWF+0vmO0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-90-cGEOpaJlMG6QfxMxXASyTw-1; Wed, 18 Mar 2020 17:42:18 -0400
+X-MC-Unique: cGEOpaJlMG6QfxMxXASyTw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4288110C9FC1;
+        Wed, 18 Mar 2020 21:42:16 +0000 (UTC)
+Received: from madcap2.tricolour.ca (unknown [10.36.110.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 65C105C1D8;
+        Wed, 18 Mar 2020 21:41:59 +0000 (UTC)
+Date:   Wed, 18 Mar 2020 17:41:54 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Steve Grubb <sgrubb@redhat.com>, linux-audit@redhat.com,
+        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
+ the audit daemon
+Message-ID: <20200318214154.ycxy5dl4pxno6fvi@madcap2.tricolour.ca>
+References: <cover.1577736799.git.rgb@redhat.com>
+ <20200204231454.oxa7pyvuxbj466fj@madcap2.tricolour.ca>
+ <CAHC9VhQquokw+7UOU=G0SsD35UdgmfysVKCGCE87JVaoTkbisg@mail.gmail.com>
+ <3142237.YMNxv0uec1@x2>
+ <CAHC9VhTiCHQbp2SwK0Xb1QgpUZxOQ26JKKPsVGT0ZvMqx28oPQ@mail.gmail.com>
+ <20200312202733.7kli64zsnqc4mrd2@madcap2.tricolour.ca>
+ <CAHC9VhS9DtxJ4gvOfMRnzoo6ccGJVKL+uZYe6qqH+SPqD8r01Q@mail.gmail.com>
+ <20200313192306.wxey3wn2h4htpccm@madcap2.tricolour.ca>
+ <CAHC9VhQKOpVWxDg-tWuCWV22QRu8P_NpFKme==0Ot1RQKa_DWA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <6e4ea372-3d05-3446-2928-2c1e76a66faf@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhQKOpVWxDg-tWuCWV22QRu8P_NpFKme==0Ot1RQKa_DWA@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that phylib notifies the user of a downshift we can remove
-this functionality from the driver.
+On 2020-03-18 17:01, Paul Moore wrote:
+> On Fri, Mar 13, 2020 at 3:23 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > On 2020-03-13 12:42, Paul Moore wrote:
+> 
+> ...
+> 
+> > > The thread has had a lot of starts/stops, so I may be repeating a
+> > > previous suggestion, but one idea would be to still emit a "death
+> > > record" when the final task in the audit container ID does die, but
+> > > block the particular audit container ID from reuse until it the
+> > > SIGNAL2 info has been reported.  This gives us the timely ACID death
+> > > notification while still preventing confusion and ambiguity caused by
+> > > potentially reusing the ACID before the SIGNAL2 record has been sent;
+> > > there is a small nit about the ACID being present in the SIGNAL2
+> > > *after* its death, but I think that can be easily explained and
+> > > understood by admins.
+> >
+> > Thinking quickly about possible technical solutions to this, maybe it
+> > makes sense to have two counters on a contobj so that we know when the
+> > last process in that container exits and can issue the death
+> > certificate, but we still block reuse of it until all further references
+> > to it have been resolved.  This will likely also make it possible to
+> > report the full contid chain in SIGNAL2 records.  This will eliminate
+> > some of the issues we are discussing with regards to passing a contobj
+> > vs a contid to the audit_log_contid function, but won't eliminate them
+> > all because there are still some contids that won't have an object
+> > associated with them to make it impossible to look them up in the
+> > contobj lists.
+> 
+> I'm not sure you need a full second counter, I imagine a simple flag
+> would be okay.  I think you just something to indicate that this ACID
+> object is marked as "dead" but it still being held for sanity reasons
+> and should not be reused.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/aquantia_main.c | 25 +------------------------
- 1 file changed, 1 insertion(+), 24 deletions(-)
+Ok, I see your point.  This refcount can be changed to a flag easily
+enough without change to the api if we can be sure that more than one
+signal can't be delivered to the audit daemon *and* collected by sig2.
+I'll have a more careful look at the audit daemon code to see if I can
+determine this.
 
-diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_main.c
-index 31927b2c7..837d5eaf9 100644
---- a/drivers/net/phy/aquantia_main.c
-+++ b/drivers/net/phy/aquantia_main.c
-@@ -290,17 +290,6 @@ static int aqr_read_status(struct phy_device *phydev)
- 	return genphy_c45_read_status(phydev);
- }
- 
--static int aqr107_read_downshift_event(struct phy_device *phydev)
--{
--	int val;
--
--	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_TX_VEND_INT_STATUS1);
--	if (val < 0)
--		return val;
--
--	return !!(val & MDIO_AN_TX_VEND_INT_STATUS1_DOWNSHIFT);
--}
--
- static int aqr107_read_rate(struct phy_device *phydev)
- {
- 	int val;
-@@ -377,13 +366,7 @@ static int aqr107_read_status(struct phy_device *phydev)
- 		break;
- 	}
- 
--	val = aqr107_read_downshift_event(phydev);
--	if (val <= 0)
--		return val;
--
--	phydev_warn(phydev, "Downshift occurred! Cabling may be defective.\n");
--
--	/* Read downshifted rate from vendor register */
-+	/* Read possibly downshifted rate from vendor register */
- 	return aqr107_read_rate(phydev);
- }
- 
-@@ -506,9 +489,6 @@ static int aqr107_config_init(struct phy_device *phydev)
- 	if (!ret)
- 		aqr107_chip_info(phydev);
- 
--	/* ensure that a latched downshift event is cleared */
--	aqr107_read_downshift_event(phydev);
--
- 	return aqr107_set_downshift(phydev, MDIO_AN_VEND_PROV_DOWNSHIFT_DFLT);
- }
- 
-@@ -533,9 +513,6 @@ static int aqcs109_config_init(struct phy_device *phydev)
- 	if (ret)
- 		return ret;
- 
--	/* ensure that a latched downshift event is cleared */
--	aqr107_read_downshift_event(phydev);
--
- 	return aqr107_set_downshift(phydev, MDIO_AN_VEND_PROV_DOWNSHIFT_DFLT);
- }
- 
--- 
-2.25.1
+Steve, can you have a look and tell us if it is possible for the audit
+daemon to make more than one signal_info (or signal_info2) record
+request from the kernel after receiving a signal?
 
+
+Another question occurs to me is that what if the audit daemon is sent a
+signal and it cannot or will not collect the sig2 information from the
+kernel (SIGKILL?)?  Does that audit container identifier remain dead
+until reboot, or do we institute some other form of reaping, possibly
+time-based?
+
+
+> paul moore
+
+- RGB
+
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
 
