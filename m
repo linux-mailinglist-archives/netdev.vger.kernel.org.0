@@ -2,161 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B45418A917
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 00:18:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB33D18A927
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 00:22:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727250AbgCRXS0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 19:18:26 -0400
-Received: from smtp.uniroma2.it ([160.80.6.16]:46380 "EHLO smtp.uniroma2.it"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726704AbgCRXSZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 19:18:25 -0400
-Received: from smtpauth-2019-1.uniroma2.it (smtpauth.uniroma2.it [160.80.5.46])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 02INHLkS003538;
-        Thu, 19 Mar 2020 00:17:26 +0100
-Received: from utente-Aspire-V3-572G.campusx-relay3.uniroma2.it (wireless-125-133.net.uniroma2.it [160.80.133.125])
-        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id CE515122903;
-        Thu, 19 Mar 2020 00:17:16 +0100 (CET)
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
-        s=ed201904; t=1584573437; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=mej9aNRLvDHBYp6C+0JEMnnGVNRirupCbZfr5nASbD0=;
-        b=j3S0mXDYrmENAz30oShIRK6uTZusg6n/i2NC1omBc2cqT+S7v2UKDv7fLdbWfJ1+wSf97n
-        TDSJbK+dgibXjyBg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
-        t=1584573437; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=mej9aNRLvDHBYp6C+0JEMnnGVNRirupCbZfr5nASbD0=;
-        b=o9ZcDTEgf5DW5GxipEzMLzZ3DpPjcgQy6MV88/kxFjZNCzqSWsYHtVBhHJLRd+gds67amA
-        v1CSpYYbJn2zW/l0zUFE3yHql4jUYfLVIi+Rkhd7973iUbvY7oh/aZoDxoF+KI9xM8rRJ4
-        Ts3+xro7C5HdaDY1kB14bJlqSfOwx4tzFZkor+Jkbu9/IE+PqXB8kc6eg8R2qkvNNkXFXk
-        LvfgZQbqQOqIyG/LmNklziK5RI7hwBjVXcD1PKvCqKD9AVQdQzlZmrOUpBgyOJ54Zh+tU5
-        N2KGv7KOt1Zzr/BCSE4pMOCnybbXqCHmMabQtsnpoKEoCEYvH2qG2fTcxb+MVg==
-From:   Carmine Scarpitta <carmine.scarpitta@uniroma2.it>
-To:     davem@davemloft.net
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ahmed.abdelsalam@gssi.it, david.lebrun@uclouvain.be,
-        dav.lebrun@gmail.com, stefano.salsano@uniroma2.it,
-        andrea.mayer@uniroma2.it, paolo.lungaroni@cnit.it,
-        hiroki.shirokura@linecorp.com,
-        Carmine Scarpitta <carmine.scarpitta@uniroma2.it>
-Subject: [v2,net-next 2/2] Add support for SRv6 End.DT4 action
-Date:   Thu, 19 Mar 2020 00:16:35 +0100
-Message-Id: <20200318231635.15116-3-carmine.scarpitta@uniroma2.it>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200318231635.15116-1-carmine.scarpitta@uniroma2.it>
-References: <20200318231635.15116-1-carmine.scarpitta@uniroma2.it>
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
+        id S1726821AbgCRXWQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 19:22:16 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:35024 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726619AbgCRXWQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 19:22:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=ZTGgzmv1en6p1p0DLyxrQHO3W+VNWh3PFsOduvdmpx8=; b=MsdTTHp/hhdOKOI+75oPbq9pC
+        Y1OGdLfJ0xwFsvkowI9y2PY+YYOuuNmXol42xOSSbLJ+0Aog9AwSIQnPgqw6F2FCyxBtIgai5cz4R
+        YF/AcT+P8RXE5lAV4w1kpHqTjI2Q/T0RtZRzO5L3eu3EWcc33THFRHKHD1Uvfyy5KudV7EZ3+ze8Z
+        pIhffSQMyoso28dU3osmOaV2dgJDaCz6VgeNIjR/QwciO342rGVZXUYzj4wjaTe/uA2hcZjivmTzn
+        yMdRlkJ4WKg9n5zZdN6LKZy2teEuJl+nLUHabGPPU5OcdjwmgFfJ/GpooVROZuB+TfYLgGY1Fc23c
+        +LaW+Px5Q==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:34142)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jEi0i-0007LC-6u; Wed, 18 Mar 2020 23:22:04 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jEi0d-0004Be-VA; Wed, 18 Mar 2020 23:21:59 +0000
+Date:   Wed, 18 Mar 2020 23:21:59 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/3] net: phy: add and use phy_check_downshift
+Message-ID: <20200318232159.GA25745@shell.armlinux.org.uk>
+References: <6e4ea372-3d05-3446-2928-2c1e76a66faf@gmail.com>
+ <d2822357-4c1e-a072-632e-a902b04eba7c@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d2822357-4c1e-a072-632e-a902b04eba7c@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SRv6 End.DT4 is defined in the SRv6 Network Programming doc within IETF [1].
+On Wed, Mar 18, 2020 at 10:29:01PM +0100, Heiner Kallweit wrote:
+> So far PHY drivers have to check whether a downshift occurred to be
+> able to notify the user. To make life of drivers authors a little bit
+> easier move the downshift notification to phylib. phy_check_downshift()
+> compares the highest mutually advertised speed with the actual value
+> of phydev->speed (typically read by the PHY driver from a
+> vendor-specific register) to detect a downshift.
 
-End.DT4 is used to implement IPv4 L3VPN use-cases in multi-tenants
-environments. It decapsulates the received packets and does IPv4 routing
-lookup in the routing table of the tenant.
+My personal position on this is that reporting a downshift will be
+sporadic at best, even when the link has negotiated slower.
 
-At JANOG44, LINE corporation presented their multi-tenant DC architecture
-using SRv6 [2]. In the slides, they reported that the linux kernel is
-missing the support of SRv6 End.DT4 action.
+The reason for this is that either end can decide to downshift.  If
+the remote partner downshifts, then the local side has no idea that
+a downshift occurred, and can't report that the link was downshifted.
 
-This patch adds support to SRv6 End.DT4 action.
+So, is it actually useful to report these events?
 
-The iproute2 part required for this action was already implemented along
-with the other supported SRv6 actions [3].
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/net/phy/phy-core.c | 33 +++++++++++++++++++++++++++++++++
+>  drivers/net/phy/phy.c      |  1 +
+>  include/linux/phy.h        |  1 +
+>  3 files changed, 35 insertions(+)
+> 
+> diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+> index e083e7a76..8e861be73 100644
+> --- a/drivers/net/phy/phy-core.c
+> +++ b/drivers/net/phy/phy-core.c
+> @@ -329,6 +329,39 @@ void phy_resolve_aneg_linkmode(struct phy_device *phydev)
+>  }
+>  EXPORT_SYMBOL_GPL(phy_resolve_aneg_linkmode);
+>  
+> +/**
+> + * phy_check_downshift - check whether downshift occurred
+> + * @phydev: The phy_device struct
+> + *
+> + * Check whether a downshift to a lower speed occurred. If this should be the
+> + * case warn the user.
+> + */
+> +bool phy_check_downshift(struct phy_device *phydev)
+> +{
+> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(common);
+> +	int i, speed = SPEED_UNKNOWN;
+> +
+> +	if (phydev->autoneg == AUTONEG_DISABLE)
+> +		return false;
+> +
+> +	linkmode_and(common, phydev->lp_advertising, phydev->advertising);
+> +
+> +	for (i = 0; i < ARRAY_SIZE(settings); i++)
+> +		if (test_bit(settings[i].bit, common)) {
+> +			speed = settings[i].speed;
+> +			break;
+> +		}
+> +
+> +	if (phydev->speed == speed)
+> +		return false;
+> +
+> +	phydev_warn(phydev, "Downshift occurred from negotiated speed %s to actual speed %s, check cabling!\n",
+> +		    phy_speed_to_str(speed), phy_speed_to_str(phydev->speed));
+> +
+> +	return true;
+> +}
+> +EXPORT_SYMBOL_GPL(phy_check_downshift);
+> +
+>  static int phy_resolve_min_speed(struct phy_device *phydev, bool fdx_only)
+>  {
+>  	__ETHTOOL_DECLARE_LINK_MODE_MASK(common);
+> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+> index d71212a41..067ff5fec 100644
+> --- a/drivers/net/phy/phy.c
+> +++ b/drivers/net/phy/phy.c
+> @@ -507,6 +507,7 @@ static int phy_check_link_status(struct phy_device *phydev)
+>  		return err;
+>  
+>  	if (phydev->link && phydev->state != PHY_RUNNING) {
+> +		phy_check_downshift(phydev);
+>  		phydev->state = PHY_RUNNING;
+>  		phy_link_up(phydev);
+>  	} else if (!phydev->link && phydev->state != PHY_NOLINK) {
+> diff --git a/include/linux/phy.h b/include/linux/phy.h
+> index cb5a2182b..4962766b2 100644
+> --- a/include/linux/phy.h
+> +++ b/include/linux/phy.h
+> @@ -698,6 +698,7 @@ static inline bool phy_is_started(struct phy_device *phydev)
+>  
+>  void phy_resolve_aneg_pause(struct phy_device *phydev);
+>  void phy_resolve_aneg_linkmode(struct phy_device *phydev);
+> +bool phy_check_downshift(struct phy_device *phydev);
+>  
+>  /**
+>   * phy_read - Convenience function for reading a given PHY register
+> -- 
+> 2.25.1
+> 
+> 
+> 
 
-[1] https://tools.ietf.org/html/draft-ietf-spring-srv6-network-programming-08
-[2] https://speakerdeck.com/line_developers/line-data-center-networking-with-srv6
-[3] https://patchwork.ozlabs.org/patch/799837/
-
-Signed-off-by: Carmine Scarpitta <carmine.scarpitta@uniroma2.it>
-Acked-by: Ahmed Abdelsalam <ahmed.abdelsalam@gssi.it>
-Acked-by: Andrea Mayer <andrea.mayer@uniroma2.it>
-Acked-by: Paolo Lungaroni <paolo.lungaroni@cnit.it>
----
- net/ipv6/seg6_local.c | 49 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
-
-diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
-index 7cbc19731997..d54a921ea96d 100644
---- a/net/ipv6/seg6_local.c
-+++ b/net/ipv6/seg6_local.c
-@@ -151,6 +151,26 @@ static void advance_nextseg(struct ipv6_sr_hdr *srh, struct in6_addr *daddr)
- 	*daddr = *addr;
- }
- 
-+static int seg6_lookup_nexthop_v4(struct sk_buff *skb, u32 tbl_id)
-+{
-+	struct net *net = dev_net(skb->dev);
-+	struct fib_result res;
-+	struct iphdr *iph;
-+	u8 tos;
-+
-+	iph = ip_hdr(skb);
-+	tos = iph->tos & IPTOS_RT_MASK;
-+
-+	res.table = fib_get_table(net, tbl_id);
-+	if (!res.table)
-+		return -ENOENT;
-+
-+	skb_dst_drop(skb);
-+
-+	return ip_route_input_rcu(skb, iph->daddr, iph->saddr,
-+				  tos, skb->dev, &res, true);
-+}
-+
- static int
- seg6_lookup_any_nexthop(struct sk_buff *skb, struct in6_addr *nhaddr,
- 			u32 tbl_id, bool local_delivery)
-@@ -401,6 +421,30 @@ static int input_action_end_dx4(struct sk_buff *skb,
- 	return -EINVAL;
- }
- 
-+static int input_action_end_dt4(struct sk_buff *skb,
-+				struct seg6_local_lwt *slwt)
-+{
-+	int err;
-+
-+	if (!decap_and_validate(skb, IPPROTO_IPIP))
-+		goto drop;
-+
-+	if (!pskb_may_pull(skb, sizeof(struct iphdr)))
-+		goto drop;
-+
-+	skb_set_transport_header(skb, sizeof(struct iphdr));
-+
-+	err = seg6_lookup_nexthop_v4(skb, slwt->table);
-+	if (err)
-+		goto drop;
-+
-+	return dst_input(skb);
-+
-+drop:
-+	kfree_skb(skb);
-+	return -EINVAL;
-+}
-+
- static int input_action_end_dt6(struct sk_buff *skb,
- 				struct seg6_local_lwt *slwt)
- {
-@@ -589,6 +633,11 @@ static struct seg6_action_desc seg6_action_table[] = {
- 		.attrs		= (1 << SEG6_LOCAL_NH4),
- 		.input		= input_action_end_dx4,
- 	},
-+	{
-+		.action		= SEG6_LOCAL_ACTION_END_DT4,
-+		.attrs		= (1 << SEG6_LOCAL_TABLE),
-+		.input		= input_action_end_dt4,
-+	},
- 	{
- 		.action		= SEG6_LOCAL_ACTION_END_DT6,
- 		.attrs		= (1 << SEG6_LOCAL_TABLE),
 -- 
-2.17.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
