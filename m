@@ -2,157 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C24F189DC0
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 15:25:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F29F9189DE1
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 15:32:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726984AbgCROZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 10:25:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48066 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726730AbgCROZA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 10:25:00 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727059AbgCROc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 10:32:27 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:55075 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727021AbgCROc1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 10:32:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584541946;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=O4Lls9UoDb9uKTNqm5ZPP3fEFfUNHwPy6zZuzCAlNcw=;
+        b=W8IcQYeoKGniWZ+xVNtxREbpKz4mw0VF+HX84ejIYX1AL78EbHzm3s+e3LdMe8tctBn7nA
+        +9OvvYtfbfu45uzSbxs67eIV4+1gMjxsVPLoBgJvsaqaU6bK3dDGXwF8A93oD7/8e0Bdp2
+        PkD3hlwWrfQrdQ3fgmp4eJdCexZAvD8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-202-ftqBYlSBOgiVh8uJpfOpng-1; Wed, 18 Mar 2020 10:32:25 -0400
+X-MC-Unique: ftqBYlSBOgiVh8uJpfOpng-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 487D020772;
-        Wed, 18 Mar 2020 14:24:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584541499;
-        bh=BChmZzd88HK0dXwb9bIaljh5t1P188iQLWcsYUASXpM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=iiAvxFu5mWU7mqNGAXj62Zsy6fYXMK0XFD3fPtXvMVvWYmdCfbw9jjQ7AufCjxsuL
-         1QXPqNFgicv0Myrw9gcyj/gWfr6bjnO48BDqhaCWR/lfiM+HWQlnjJpsRC/aA6Ic2Q
-         RrOBurnndke1M6D2mW8zB7/u5LkacUYjwfDrSgdY=
-Date:   Wed, 18 Mar 2020 16:24:55 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@mellanox.com>
-Cc:     Doug Ledford <dledford@redhat.com>, linux-rdma@vger.kernel.org,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>
-Subject: Re: [PATCH rdma-next 0/4] Introduce dynamic UAR allocation mode
-Message-ID: <20200318142455.GC126814@unreal>
-References: <20200318124329.52111-1-leon@kernel.org>
- <20200318125459.GI13183@mellanox.com>
- <20200318131450.GY3351@unreal>
- <20200318132100.GK13183@mellanox.com>
- <20200318135631.GA126497@unreal>
- <20200318140001.GL13183@mellanox.com>
- <20200318140932.GB126814@unreal>
- <20200318141208.GM13183@mellanox.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 78E1E800D50;
+        Wed, 18 Mar 2020 14:32:22 +0000 (UTC)
+Received: from llong.remote.csb (ovpn-120-114.rdu2.redhat.com [10.10.120.114])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D818B5C1D8;
+        Wed, 18 Mar 2020 14:32:19 +0000 (UTC)
+Subject: Re: [PATCH v4 2/4] KEYS: Remove __user annotation from rxrpc_read()
+To:     David Howells <dhowells@redhat.com>
+Cc:     Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, keyrings@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-integrity@vger.kernel.org, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org, Sumit Garg <sumit.garg@linaro.org>,
+        Jerry Snitselaar <jsnitsel@redhat.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Eric Biggers <ebiggers@google.com>,
+        Chris von Recklinghausen <crecklin@redhat.com>
+References: <20200317194140.6031-3-longman@redhat.com>
+ <20200317194140.6031-1-longman@redhat.com>
+ <2831786.1584519784@warthog.procyon.org.uk>
+From:   Waiman Long <longman@redhat.com>
+Organization: Red Hat
+Message-ID: <fc537b1b-36f5-eac7-111b-e50f41fd01ff@redhat.com>
+Date:   Wed, 18 Mar 2020 10:32:19 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <2831786.1584519784@warthog.procyon.org.uk>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200318141208.GM13183@mellanox.com>
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 11:12:08AM -0300, Jason Gunthorpe wrote:
-> On Wed, Mar 18, 2020 at 04:09:32PM +0200, Leon Romanovsky wrote:
-> > On Wed, Mar 18, 2020 at 11:00:01AM -0300, Jason Gunthorpe wrote:
-> > > On Wed, Mar 18, 2020 at 03:56:31PM +0200, Leon Romanovsky wrote:
-> > > > On Wed, Mar 18, 2020 at 10:21:00AM -0300, Jason Gunthorpe wrote:
-> > > > > On Wed, Mar 18, 2020 at 03:14:50PM +0200, Leon Romanovsky wrote:
-> > > > > > On Wed, Mar 18, 2020 at 09:54:59AM -0300, Jason Gunthorpe wrote:
-> > > > > > > On Wed, Mar 18, 2020 at 02:43:25PM +0200, Leon Romanovsky wrote:
-> > > > > > > > From: Leon Romanovsky <leonro@mellanox.com>
-> > > > > > > >
-> > > > > > > > From Yishai,
-> > > > > > > >
-> > > > > > > > This series exposes API to enable a dynamic allocation and management of a
-> > > > > > > > UAR which now becomes to be a regular uobject.
-> > > > > > > >
-> > > > > > > > Moving to that mode enables allocating a UAR only upon demand and drop the
-> > > > > > > > redundant static allocation of UARs upon context creation.
-> > > > > > > >
-> > > > > > > > In addition, it allows master and secondary processes that own the same command
-> > > > > > > > FD to allocate and manage UARs according to their needs, this can’t be achieved
-> > > > > > > > today.
-> > > > > > > >
-> > > > > > > > As part of this option, QP & CQ creation flows were adapted to support this
-> > > > > > > > dynamic UAR mode once asked by user space.
-> > > > > > > >
-> > > > > > > > Once this mode is asked by mlx5 user space driver on a given context, it will
-> > > > > > > > be mutual exclusive, means both the static and legacy dynamic modes for using
-> > > > > > > > UARs will be blocked.
-> > > > > > > >
-> > > > > > > > The legacy modes are supported for backward compatible reasons, looking
-> > > > > > > > forward we expect this new mode to be the default.
-> > > > > > >
-> > > > > > > We are starting to accumulate a lot of code that is now old-rdma-core
-> > > > > > > only.
-> > > > > >
-> > > > > > Agree
-> > > > > >
-> > > > > > >
-> > > > > > > I have been wondering if we should add something like
-> > > > > > >
-> > > > > > > #if CONFIG_INFINIBAND_MIN_RDMA_CORE_VERSION < 21
-> > > > > > > #endif
-> > > > > >
-> > > > > > From one side it will definitely help to see old code, but from another
-> > > > > > it will create many ifdef inside of the code with a very little chance
-> > > > > > of testing. Also we will continue to have the same problem to decide when
-> > > > > > we can delete this code.
-> > > > >
-> > > > > Well, it doesn't have to be an #ifdef, eg just sticking
-> > > > >
-> > > > > if (CONFIG_INFINIBAND_MIN_RDMA_CORE_VERSION >= 21)
-> > > > >      return -ENOPROTOOPT;
-> > > > >
-> > > > > at the top of obsolete functions would go a long way
-> > > >
-> > > > First, how will you set this min_version? hordcoded in the kernel
-> > > > code?
-> > >
-> > > Yes, when a rdma-core release obsoletes the code path then it can
-> > > become annotated.
-> > >
-> > > > Second, it will work for simple flows, but can be extremely complex
-> > > > if your code looks like:
-> > > > if (old_version)
-> > > >  do something
-> > > > if (new version)
-> > > >  do something else
-> > >
-> > > Well, we'd avoid making such complications, it would be something like
-> > >
-> > > if (flag & foo) {
-> > >    if (CONFIG_INFINIBAND_MIN_RDMA_CORE_VERSION >= 21)
-> > >       return -ENOPROTOOPT;
-> > >   [keep going as before]
-> > > }
-> > >
-> > > At least we now know this conditional path isn't used / isn't covered
-> > > by testing
-> >
-> > I'm ok with this approach because it helps us to find those dead
-> > paths, but have last question, shouldn't this be achieved with
-> > proper documentation of every flag instead of adding CONFIG_..?
+On 3/18/20 4:23 AM, David Howells wrote:
+> Patch 2 and 3 need to be rolled into patch 1 otherwise sparse will give
+> warnings about mismatches in address spaces on patch 1.
 >
-> How do you mean?
->
-> The other half of this idea is to disable obsolete un tested code to
-> avoid potential bugs. Which requires CONFIG_?
+> Thanks,
+> David
 
-The second part is achievable by distros when they will decide to
-support starting from version X. The same decision is not so easy
-to do in the upstream.
+I separated them because they spans different domain. Sure, I will
+repost it to merge the first three.
 
-Let's take as an example this feature. It will be set as default from
-rdma-core v29 and the legacy code will be guarded by
-"if (CONFIG_INFINIBAND_MIN_RDMA_CORE_VERSION >= 29)". When will change
-CONFIG_INFINIBAND_MIN_RDMA_CORE_VERSION to be above 29? So we will
-delete such legacy code.
+Cheers,
+Longman
 
-In the world where we are not breaking user space, it will never happen.
-
-It means that upstream doesn't get anything from those CONFIG_*s.
-
-Thanks
-
->
-> Jason
