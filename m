@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDCAF18A44A
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:53:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C01D418A45A
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:53:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727064AbgCRUx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:53:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52296 "EHLO mail.kernel.org"
+        id S1727436AbgCRUx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 16:53:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53066 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726894AbgCRUx0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:53:26 -0400
+        id S1726757AbgCRUxw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 16:53:52 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 36EC420724;
-        Wed, 18 Mar 2020 20:53:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4459120724;
+        Wed, 18 Mar 2020 20:53:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584564805;
-        bh=rRNLqGDe4Hh9VMNxMXiXDvn4zvX3xSXrJ2j8vKZEdL4=;
+        s=default; t=1584564832;
+        bh=25VKQu1HzSnFCJmJ0Cco4zrqkgTMP42DNRpR0k+HFn4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vC4ytYBFLDVWKAqBMv1QVIPSr6hqii9qKgtApNOCWFaw+T7NxBLQcGf12oSwixEK1
-         XquXGk4+woE8W7sf5NoKd8EiYnWF6xjOjcD7g2HTler+UxC+zjHCVqp3iRiq04B6Rd
-         BthlzDu/w3U9Vt1sbPimLWfI2Bq4bAj+yFBI+If8=
+        b=q3XXcES3cLhuNgRaI/KNRQw/jPN/W/0tKf39sqGvm1zj9OeIJS+3acn4NTv/U98Hm
+         yGen1v/Y5tkbpuM3ZXOg7oGf5uC5OgUPrqMYrppZduJWeCUWT9TAW+l88Tl9Xxz0jt
+         vA3vjsxF7Y85ShA+r4bTRTJqVEbGYYNyAQcJpc4I=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dan Moulding <dmoulding@me.com>, Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 03/84] iwlwifi: mvm: Do not require PHY_SKU NVM section for 3168 devices
-Date:   Wed, 18 Mar 2020 16:52:00 -0400
-Message-Id: <20200318205321.16066-3-sashal@kernel.org>
+Cc:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 12/73] bnxt_en: reinitialize IRQs when MTU is modified
+Date:   Wed, 18 Mar 2020 16:52:36 -0400
+Message-Id: <20200318205337.16279-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200318205321.16066-1-sashal@kernel.org>
-References: <20200318205321.16066-1-sashal@kernel.org>
+In-Reply-To: <20200318205337.16279-1-sashal@kernel.org>
+References: <20200318205337.16279-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,43 +44,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dan Moulding <dmoulding@me.com>
+From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-[ Upstream commit a9149d243f259ad8f02b1e23dfe8ba06128f15e1 ]
+[ Upstream commit a9b952d267e59a3b405e644930f46d252cea7122 ]
 
-The logic for checking required NVM sections was recently fixed in
-commit b3f20e098293 ("iwlwifi: mvm: fix NVM check for 3168
-devices"). However, with that fixed the else is now taken for 3168
-devices and within the else clause there is a mandatory check for the
-PHY_SKU section. This causes the parsing to fail for 3168 devices.
+MTU changes may affect the number of IRQs so we must call
+bnxt_close_nic()/bnxt_open_nic() with the irq_re_init parameter
+set to true.  The reason is that a larger MTU may require
+aggregation rings not needed with smaller MTU.  We may not be
+able to allocate the required number of aggregation rings and
+so we reduce the number of channels which will change the number
+of IRQs.  Without this patch, it may crash eventually in
+pci_disable_msix() when the IRQs are not properly unwound.
 
-The PHY_SKU section is really only mandatory for the IWL_NVM_EXT
-layout (the phy_sku parameter of iwl_parse_nvm_data is only used when
-the NVM type is IWL_NVM_EXT). So this changes the PHY_SKU section
-check so that it's only mandatory for IWL_NVM_EXT.
-
-Fixes: b3f20e098293 ("iwlwifi: mvm: fix NVM check for 3168 devices")
-Signed-off-by: Dan Moulding <dmoulding@me.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/nvm.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/nvm.c b/drivers/net/wireless/intel/iwlwifi/mvm/nvm.c
-index 46128a2a9c6e1..e98ce380c7b91 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/nvm.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/nvm.c
-@@ -308,7 +308,8 @@ iwl_parse_nvm_sections(struct iwl_mvm *mvm)
- 		}
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 374e11a91790b..57c88e157f866 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -10891,13 +10891,13 @@ static int bnxt_change_mtu(struct net_device *dev, int new_mtu)
+ 	struct bnxt *bp = netdev_priv(dev);
  
- 		/* PHY_SKU section is mandatory in B0 */
--		if (!mvm->nvm_sections[NVM_SECTION_TYPE_PHY_SKU].data) {
-+		if (mvm->trans->cfg->nvm_type == IWL_NVM_EXT &&
-+		    !mvm->nvm_sections[NVM_SECTION_TYPE_PHY_SKU].data) {
- 			IWL_ERR(mvm,
- 				"Can't parse phy_sku in B0, empty sections\n");
- 			return NULL;
+ 	if (netif_running(dev))
+-		bnxt_close_nic(bp, false, false);
++		bnxt_close_nic(bp, true, false);
+ 
+ 	dev->mtu = new_mtu;
+ 	bnxt_set_ring_params(bp);
+ 
+ 	if (netif_running(dev))
+-		return bnxt_open_nic(bp, false, false);
++		return bnxt_open_nic(bp, true, false);
+ 
+ 	return 0;
+ }
 -- 
 2.20.1
 
