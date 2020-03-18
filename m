@@ -2,119 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CC1418A896
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 23:50:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A403D18A915
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 00:18:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727218AbgCRWt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 18:49:59 -0400
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:54174 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726619AbgCRWt5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 18:49:57 -0400
-Received: by mail-pj1-f67.google.com with SMTP id l36so86183pjb.3
-        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 15:49:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Od0623i0mOnU6GdQVJb7G33/cJXn+fiCsgtOaGr94Sc=;
-        b=bcKJVTdDT1JYpAewJcI4hblrF5mrr8fLrj0Q+zYBD5Uw46ZRSS1eSuIvn1zGGCJX8j
-         SOV0kiOl5ftcdJSag/uKO0OCTOGF63UpwInY0LkztaIvEL5frUqdESp7Ad3hNw2smQ06
-         DIWQct2GSiEHpZDBNxisWVtOZlxXfvdS/Kmps=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Od0623i0mOnU6GdQVJb7G33/cJXn+fiCsgtOaGr94Sc=;
-        b=anCb9b5+86dGcKS+Hv6T0zghbpUTO4LTm8VRD7GdeoZv+PBmNWJfrYSD4G1b5YdZB0
-         1JyeuRE4wKTvLiPEJNRR0t5rBmCJj+DpF5OfWGz/p7VOUx2QN/0L4wUHYqK3okzFUAtT
-         gYpcf40QHhrWvm7ChLUS86p+A3o+xsyS5nzn6GkOeR/p4Qq7E0m8UTxU7ISd2Jyid/cr
-         gsBJ99QjVFpSwkeIje5PCIozr8GwcOqQbIhU/fHPS079i5yFnhKFIjnaKtBMbNTS8qwh
-         zfTdMpMaStZ72rWnppZRk6r9cVGFfH8LM3NczcVYIh+AhtJ1vvx8Vv2G76EvJEh26VKZ
-         2UXg==
-X-Gm-Message-State: ANhLgQ1eWAupTQF04SzAgyP11t1EYictJy969Ygn3xwlGLBmVSr+OAPA
-        iUZanwirOwJ2gqtj8xXIIb88Ig==
-X-Google-Smtp-Source: ADFU+vtadZ73ag69PyW66TRpU3y2R+cMnQ1BUGAlWtlcfWsNxCHY1Q0/k9GwNr37EIwluqLR26yKtg==
-X-Received: by 2002:a17:90a:cf86:: with SMTP id i6mr511077pju.158.1584571795086;
-        Wed, 18 Mar 2020 15:49:55 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id e14sm71844pfn.196.2020.03.18.15.49.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Mar 2020 15:49:54 -0700 (PDT)
-Date:   Wed, 18 Mar 2020 15:49:53 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     shuah@kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        luto@amacapital.net, wad@chromium.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-team@fb.com, Tim.Bird@sony.com
-Subject: Re: [PATCH v5 0/5] kselftest: add fixture parameters
-Message-ID: <202003181548.930237FD6@keescook>
-References: <20200318010153.40797-1-kuba@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200318010153.40797-1-kuba@kernel.org>
+        id S1726871AbgCRXSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 19:18:25 -0400
+Received: from smtp.uniroma2.it ([160.80.6.16]:46379 "EHLO smtp.uniroma2.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726733AbgCRXSY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 19:18:24 -0400
+Received: from smtpauth-2019-1.uniroma2.it (smtpauth.uniroma2.it [160.80.5.46])
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 02INHLjU003536;
+        Thu, 19 Mar 2020 00:17:26 +0100
+Received: from utente-Aspire-V3-572G.campusx-relay3.uniroma2.it (wireless-125-133.net.uniroma2.it [160.80.133.125])
+        by smtpauth-2019-1.uniroma2.it (Postfix) with ESMTPSA id 680FF120057;
+        Thu, 19 Mar 2020 00:17:16 +0100 (CET)
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=uniroma2.it;
+        s=ed201904; t=1584573436; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:content-type:
+         content-transfer-encoding:in-reply-to:references;
+        bh=L9Jk2zEYlbg0F6JH6HWkhpaQt2AaMKx/YMFzfOa6ft8=;
+        b=N3xS2LXBoOlTT1hkSKBLmYPkb6pau9KTC8hPK2xFQe0tsQCyqTD8RUZWWodF2cQY/fCwrx
+        nhtgUgFArDclzwAg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uniroma2.it; s=rsa201904;
+        t=1584573436; h=from:from:sender:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:content-type:
+         content-transfer-encoding:in-reply-to:references;
+        bh=L9Jk2zEYlbg0F6JH6HWkhpaQt2AaMKx/YMFzfOa6ft8=;
+        b=JxCuXWA1qfwhB/W+5xIKympnDqj1LFxeU3MUsFyKv55OFcAMwIZyEEamplE+ZH7XX47cTA
+        jwb6+blobh6i1ACPSRTV6l1+RALmA4bMDlcoBGgNnui9i8ZsMe7ooHwoZVHIlVawPgNS9d
+        5aDjJ7qXY1N1/50+L/hZWhWoYnLqTWPOYFCj86SRRD+iTjnyIQ9HA2gUEU9zWshsw1b3jP
+        Ww4U0cE0OkGbD9YqqU1Hp0ZFpCI6g4ecUA2xurGYQIlwi/wOEbTZOn7jrFJKi1AmcbcplL
+        KssHS/GcayiQ9Ev1+9geX61YW0UJgM/+fP1+eWq8elro3OlDxX3D7GXWXwZ8fA==
+From:   Carmine Scarpitta <carmine.scarpitta@uniroma2.it>
+To:     davem@davemloft.net
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ahmed.abdelsalam@gssi.it, david.lebrun@uclouvain.be,
+        dav.lebrun@gmail.com, stefano.salsano@uniroma2.it,
+        andrea.mayer@uniroma2.it, paolo.lungaroni@cnit.it,
+        hiroki.shirokura@linecorp.com,
+        Carmine Scarpitta <carmine.scarpitta@uniroma2.it>
+Subject: [v2,net-next 0/2] Add support for SRv6 End.DT4 action
+Date:   Thu, 19 Mar 2020 00:16:33 +0100
+Message-Id: <20200318231635.15116-1-carmine.scarpitta@uniroma2.it>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 17, 2020 at 06:01:48PM -0700, Jakub Kicinski wrote:
-> Shuah please consider applying to the kselftest tree.
+Hi,
 
-Just to confirm: yes please. Shuah, I'd love to see this land.
+this patch series adds the support for SRv6 End.DT4 action.
+End.DT4 decapsulates the received packets and does IPv4 routing
+lookup in a specific routing table.
 
--Kees
+The IPv4 routing subsystem does not allow to specify the routing
+table in which the lookup has to be performed.
 
-> 
-> This set is an attempt to make running tests for different
-> sets of data easier. The direct motivation is the tls
-> test which we'd like to run for TLS 1.2 and TLS 1.3,
-> but currently there is no easy way to invoke the same
-> tests with different parameters.
-> 
-> Tested all users of kselftest_harness.h.
-> 
-> v2:
->  - don't run tests by fixture
->  - don't pass params as an explicit argument
-> 
-> v3:
->  - go back to the orginal implementation with an extra
->    parameter, and running by fixture (Kees);
->  - add LIST_APPEND helper (Kees);
->  - add a dot between fixture and param name (Kees);
->  - rename the params to variants (Tim);
-> 
-> v4:
->  - whitespace fixes.
-> 
-> v5 (Kees):
->  - move a comment;
->  - remove a temporary variable;
->  - reword the commit message on patch 4.
-> 
-> v1: https://lore.kernel.org/netdev/20200313031752.2332565-1-kuba@kernel.org/
-> v2: https://lore.kernel.org/netdev/20200314005501.2446494-1-kuba@kernel.org/
-> v3: https://lore.kernel.org/netdev/20200316225647.3129354-1-kuba@kernel.org/
-> v4: https://lore.kernel.org/netdev/20200317010419.3268916-1-kuba@kernel.org/
-> 
-> Jakub Kicinski (5):
->   kselftest: factor out list manipulation to a helper
->   kselftest: create fixture objects
->   kselftest: run tests by fixture
->   kselftest: add fixture variants
->   selftests: tls: run all tests for TLS 1.2 and TLS 1.3
-> 
->  Documentation/dev-tools/kselftest.rst       |   3 +-
->  tools/testing/selftests/kselftest_harness.h | 234 +++++++++++++++-----
->  tools/testing/selftests/net/tls.c           |  93 ++------
->  3 files changed, 202 insertions(+), 128 deletions(-)
-> 
-> -- 
-> 2.25.1
-> 
+Patch 1 enables to perform IPv4 FIB lookup in a predefined FIB table.
+Patch 2 adds the support for SRv6 End.DT4 action.
+
+v2:
+- Fix an issue of "fi" member of struct "fib_result" used
+  uninitialized
+- Wrap the check of the "tbl_known" flag in a "#ifdef
+  CONFIG_IP_MULTIPLE_TABLES" directive
+
+Thanks,
+Carmine Scarpitta
+
+Carmine Scarpitta (2):
+  Perform IPv4 FIB lookup in a predefined FIB table
+  Add support for SRv6 End.DT4 action
+
+ include/net/route.h   |  2 +-
+ net/ipv4/route.c      | 23 ++++++++++++++------
+ net/ipv6/seg6_local.c | 49 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 67 insertions(+), 7 deletions(-)
 
 -- 
-Kees Cook
+2.17.1
+
