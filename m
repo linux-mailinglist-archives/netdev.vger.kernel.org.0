@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98A9D18A463
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:54:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4262418A469
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:54:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727569AbgCRUyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:54:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53450 "EHLO mail.kernel.org"
+        id S1727632AbgCRUyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 16:54:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53568 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727499AbgCRUyG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:54:06 -0400
+        id S1727610AbgCRUyL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 16:54:11 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 52986208D5;
-        Wed, 18 Mar 2020 20:54:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3A583208D6;
+        Wed, 18 Mar 2020 20:54:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584564845;
-        bh=pP25dGs0qhPsHPBXaWMxCr5rU29q+GM9TmYMhLNGNRo=;
+        s=default; t=1584564851;
+        bh=wFVAbSXXnLviOvnVsJg1EPq85ZisqHoqs4AhjG/CuEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KUaTo3h/95WXMDdtJpYOjslsR/ew40Sr7zbk3eybodczlnQLZilUGtpFdQrAPRgMk
-         9eB/Czm4X04Ym4ND2gX2ND63C1PblYnViKfpT1Xaxs5JBoCWYmFNxRLktwL0yekAYn
-         ri0eEr0t21CYMrJ5ltaBjPlbJ+x5RXa4YcHcjxIs=
+        b=zu7YtM3aHozIPgf6CnV6h0w63+e8kFYUKTJzWXacv6UtnU+uL1ytJDgDZC6WjwbNA
+         iP5FSr01Nr2UQjXuvpfU+Ax2cSwMhOIOGJ93++ttb57WdFYMVpVIZV9kjFW6YeGOLI
+         /D99n/MSfeF6jJ0Q/raSvHa+ngQ/bVTj0S3MgScI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jonas Gorski <jonas.gorski@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+Cc:     Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 23/73] net: phy: bcm63xx: fix OOPS due to missing driver name
-Date:   Wed, 18 Mar 2020 16:52:47 -0400
-Message-Id: <20200318205337.16279-23-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 28/73] slip: make slhc_compress() more robust against malicious packets
+Date:   Wed, 18 Mar 2020 16:52:52 -0400
+Message-Id: <20200318205337.16279-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200318205337.16279-1-sashal@kernel.org>
 References: <20200318205337.16279-1-sashal@kernel.org>
@@ -45,78 +44,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonas Gorski <jonas.gorski@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 43de81b0601df7d7988d3f5617ee0987df65c883 ]
+[ Upstream commit 110a40dfb708fe940a3f3704d470e431c368d256 ]
 
-719655a14971 ("net: phy: Replace phy driver features u32 with link_mode
-bitmap") was a bit over-eager and also removed the second phy driver's
-name, resulting in a nasty OOPS on registration:
+Before accessing various fields in IPV4 network header
+and TCP header, make sure the packet :
 
-[    1.319854] CPU 0 Unable to handle kernel paging request at virtual address 00000000, epc == 804dd50c, ra == 804dd4f0
-[    1.330859] Oops[#1]:
-[    1.333138] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.4.22 #0
-[    1.339217] $ 0   : 00000000 00000001 87ca7f00 805c1874
-[    1.344590] $ 4   : 00000000 00000047 00585000 8701f800
-[    1.349965] $ 8   : 8701f800 804f4a5c 00000003 64726976
-[    1.355341] $12   : 00000001 00000000 00000000 00000114
-[    1.360718] $16   : 87ca7f80 00000000 00000000 80639fe4
-[    1.366093] $20   : 00000002 00000000 806441d0 80b90000
-[    1.371470] $24   : 00000000 00000000
-[    1.376847] $28   : 87c1e000 87c1fda0 80b90000 804dd4f0
-[    1.382224] Hi    : d1c8f8da
-[    1.385180] Lo    : 5518a480
-[    1.388182] epc   : 804dd50c kset_find_obj+0x3c/0x114
-[    1.393345] ra    : 804dd4f0 kset_find_obj+0x20/0x114
-[    1.398530] Status: 10008703 KERNEL EXL IE
-[    1.402833] Cause : 00800008 (ExcCode 02)
-[    1.406952] BadVA : 00000000
-[    1.409913] PrId  : 0002a075 (Broadcom BMIPS4350)
-[    1.414745] Modules linked in:
-[    1.417895] Process swapper/0 (pid: 1, threadinfo=(ptrval), task=(ptrval), tls=00000000)
-[    1.426214] Stack : 87cec000 80630000 80639370 80640658 80640000 80049af4 80639fe4 8063a0d8
-[    1.434816]         8063a0d8 802ef078 00000002 00000000 806441d0 80b90000 8063a0d8 802ef114
-[    1.443417]         87cea0de 87c1fde0 00000000 804de488 87cea000 8063a0d8 8063a0d8 80334e48
-[    1.452018]         80640000 8063984c 80639bf4 00000000 8065de48 00000001 8063a0d8 80334ed0
-[    1.460620]         806441d0 80b90000 80b90000 802ef164 8065dd70 80620000 80b90000 8065de58
-[    1.469222]         ...
-[    1.471734] Call Trace:
-[    1.474255] [<804dd50c>] kset_find_obj+0x3c/0x114
-[    1.479141] [<802ef078>] driver_find+0x1c/0x44
-[    1.483665] [<802ef114>] driver_register+0x74/0x148
-[    1.488719] [<80334e48>] phy_driver_register+0x9c/0xd0
-[    1.493968] [<80334ed0>] phy_drivers_register+0x54/0xe8
-[    1.499345] [<8001061c>] do_one_initcall+0x7c/0x1f4
-[    1.504374] [<80644ed8>] kernel_init_freeable+0x1d4/0x2b4
-[    1.509940] [<804f4e24>] kernel_init+0x10/0xf8
-[    1.514502] [<80018e68>] ret_from_kernel_thread+0x14/0x1c
-[    1.520040] Code: 1060000c  02202025  90650000 <90810000> 24630001  14250004  24840001  14a0fffb  90650000
-[    1.530061]
-[    1.531698] ---[ end trace d52f1717cd29bdc8 ]---
+- Has IP version 4 (ip->version == 4)
+- Has not a silly network length (ip->ihl >= 5)
+- Is big enough to hold network and transport headers
+- Has not a silly TCP header size (th->doff >= sizeof(struct tcphdr) / 4)
 
-Fix it by readding the name.
+syzbot reported :
 
-Fixes: 719655a14971 ("net: phy: Replace phy driver features u32 with link_mode bitmap")
-Signed-off-by: Jonas Gorski <jonas.gorski@gmail.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+BUG: KMSAN: uninit-value in slhc_compress+0x5b9/0x2e60 drivers/net/slip/slhc.c:270
+CPU: 0 PID: 11728 Comm: syz-executor231 Not tainted 5.6.0-rc2-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1c9/0x220 lib/dump_stack.c:118
+ kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:118
+ __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
+ slhc_compress+0x5b9/0x2e60 drivers/net/slip/slhc.c:270
+ ppp_send_frame drivers/net/ppp/ppp_generic.c:1637 [inline]
+ __ppp_xmit_process+0x1902/0x2970 drivers/net/ppp/ppp_generic.c:1495
+ ppp_xmit_process+0x147/0x2f0 drivers/net/ppp/ppp_generic.c:1516
+ ppp_write+0x6bb/0x790 drivers/net/ppp/ppp_generic.c:512
+ do_loop_readv_writev fs/read_write.c:717 [inline]
+ do_iter_write+0x812/0xdc0 fs/read_write.c:1000
+ compat_writev+0x2df/0x5a0 fs/read_write.c:1351
+ do_compat_pwritev64 fs/read_write.c:1400 [inline]
+ __do_compat_sys_pwritev fs/read_write.c:1420 [inline]
+ __se_compat_sys_pwritev fs/read_write.c:1414 [inline]
+ __ia32_compat_sys_pwritev+0x349/0x3f0 fs/read_write.c:1414
+ do_syscall_32_irqs_on arch/x86/entry/common.c:339 [inline]
+ do_fast_syscall_32+0x3c7/0x6e0 arch/x86/entry/common.c:410
+ entry_SYSENTER_compat+0x68/0x77 arch/x86/entry/entry_64_compat.S:139
+RIP: 0023:0xf7f7cd99
+Code: 90 e8 0b 00 00 00 f3 90 0f ae e8 eb f9 8d 74 26 00 89 3c 24 c3 90 90 90 90 90 90 90 90 90 90 90 90 51 52 55 89 e5 0f 34 cd 80 <5d> 5a 59 c3 90 90 90 90 eb 0d 90 90 90 90 90 90 90 90 90 90 90 90
+RSP: 002b:00000000ffdb84ac EFLAGS: 00000217 ORIG_RAX: 000000000000014e
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000200001c0
+RDX: 0000000000000001 RSI: 0000000000000000 RDI: 0000000000000003
+RBP: 0000000040047459 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+
+Uninit was created at:
+ kmsan_save_stack_with_flags mm/kmsan/kmsan.c:144 [inline]
+ kmsan_internal_poison_shadow+0x66/0xd0 mm/kmsan/kmsan.c:127
+ kmsan_slab_alloc+0x8a/0xe0 mm/kmsan/kmsan_hooks.c:82
+ slab_alloc_node mm/slub.c:2793 [inline]
+ __kmalloc_node_track_caller+0xb40/0x1200 mm/slub.c:4401
+ __kmalloc_reserve net/core/skbuff.c:142 [inline]
+ __alloc_skb+0x2fd/0xac0 net/core/skbuff.c:210
+ alloc_skb include/linux/skbuff.h:1051 [inline]
+ ppp_write+0x115/0x790 drivers/net/ppp/ppp_generic.c:500
+ do_loop_readv_writev fs/read_write.c:717 [inline]
+ do_iter_write+0x812/0xdc0 fs/read_write.c:1000
+ compat_writev+0x2df/0x5a0 fs/read_write.c:1351
+ do_compat_pwritev64 fs/read_write.c:1400 [inline]
+ __do_compat_sys_pwritev fs/read_write.c:1420 [inline]
+ __se_compat_sys_pwritev fs/read_write.c:1414 [inline]
+ __ia32_compat_sys_pwritev+0x349/0x3f0 fs/read_write.c:1414
+ do_syscall_32_irqs_on arch/x86/entry/common.c:339 [inline]
+ do_fast_syscall_32+0x3c7/0x6e0 arch/x86/entry/common.c:410
+ entry_SYSENTER_compat+0x68/0x77 arch/x86/entry/entry_64_compat.S:139
+
+Fixes: b5451d783ade ("slip: Move the SLIP drivers")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/bcm63xx.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/slip/slhc.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/bcm63xx.c b/drivers/net/phy/bcm63xx.c
-index 23f1958ba6ad4..459fb2069c7e0 100644
---- a/drivers/net/phy/bcm63xx.c
-+++ b/drivers/net/phy/bcm63xx.c
-@@ -73,6 +73,7 @@ static struct phy_driver bcm63xx_driver[] = {
- 	/* same phy as above, with just a different OUI */
- 	.phy_id		= 0x002bdc00,
- 	.phy_id_mask	= 0xfffffc00,
-+	.name		= "Broadcom BCM63XX (2)",
- 	/* PHY_BASIC_FEATURES */
- 	.flags		= PHY_IS_INTERNAL,
- 	.config_init	= bcm63xx_config_init,
+diff --git a/drivers/net/slip/slhc.c b/drivers/net/slip/slhc.c
+index 58a69f830d29b..f78ceba42e57e 100644
+--- a/drivers/net/slip/slhc.c
++++ b/drivers/net/slip/slhc.c
+@@ -232,7 +232,7 @@ slhc_compress(struct slcompress *comp, unsigned char *icp, int isize,
+ 	struct cstate *cs = lcs->next;
+ 	unsigned long deltaS, deltaA;
+ 	short changes = 0;
+-	int hlen;
++	int nlen, hlen;
+ 	unsigned char new_seq[16];
+ 	unsigned char *cp = new_seq;
+ 	struct iphdr *ip;
+@@ -248,6 +248,8 @@ slhc_compress(struct slcompress *comp, unsigned char *icp, int isize,
+ 		return isize;
+ 
+ 	ip = (struct iphdr *) icp;
++	if (ip->version != 4 || ip->ihl < 5)
++		return isize;
+ 
+ 	/* Bail if this packet isn't TCP, or is an IP fragment */
+ 	if (ip->protocol != IPPROTO_TCP || (ntohs(ip->frag_off) & 0x3fff)) {
+@@ -258,10 +260,14 @@ slhc_compress(struct slcompress *comp, unsigned char *icp, int isize,
+ 			comp->sls_o_tcp++;
+ 		return isize;
+ 	}
+-	/* Extract TCP header */
++	nlen = ip->ihl * 4;
++	if (isize < nlen + sizeof(*th))
++		return isize;
+ 
+-	th = (struct tcphdr *)(((unsigned char *)ip) + ip->ihl*4);
+-	hlen = ip->ihl*4 + th->doff*4;
++	th = (struct tcphdr *)(icp + nlen);
++	if (th->doff < sizeof(struct tcphdr) / 4)
++		return isize;
++	hlen = nlen + th->doff * 4;
+ 
+ 	/*  Bail if the TCP packet isn't `compressible' (i.e., ACK isn't set or
+ 	 *  some other control bit is set). Also uncompressible if
 -- 
 2.20.1
 
