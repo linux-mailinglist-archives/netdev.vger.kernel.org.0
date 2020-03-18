@@ -2,95 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EEE42189755
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 09:36:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C18F018977E
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:00:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727504AbgCRIgD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 04:36:03 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:40480 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726713AbgCRIgD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 04:36:03 -0400
-Received: by mail-lj1-f195.google.com with SMTP id 19so25951724ljj.7
-        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 01:36:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=flowbird.group; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aPBJn2ynYA8FJEh8jEBQDW67obM5EQ6JxVESIr5G6yA=;
-        b=QZr448e03X1SLqCc4Dnk4uM0I3ixSAV5zIkNiw1rz87pIUY6oRIMRNV9PqrljcXj9a
-         4fyIpf2y4kGj8zX247H4hg3Ol9suRDrX/YKmGSN/KRW7dlOypGjZ2M2eiSzYUG4USk+F
-         PcJGvdV0uzHelwz6P2df1ZSSuNcRGXy9oh+GXj6qDAbG3GDL6GsEwIKFHyUKS9PJikSb
-         OXKSr0x94bDktZolTFej6YovTmzcwb4/XjkG/cVhyhAPyqvlE1spQq4oJN1SlmIPUVhj
-         pL1VPknjBRO5XFAx5/LnsUa7p+N4JFhnq4Q1s99C2eHk4o3ObRkbGkVl/oTGDfe0H/uY
-         JBpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aPBJn2ynYA8FJEh8jEBQDW67obM5EQ6JxVESIr5G6yA=;
-        b=XbX4GnUIy/M/MfRfqsg3ZIxJHJBR4R1y/bdtEN0L3SoOtZUW9ZxsLxA3gY4DT2cBEl
-         hHOmm/EhuJFl82HKzszk7x2wgtI+2VOdoWk3HeyRtNnLtqQpGeiH829efa8nb7sSUTYs
-         3RVJW5hWfmPNhsYFPCImoGqi8QeThE808pDF0qBYhxs5P9dP0q4ME2d/j1B44bWVWLZ5
-         B/aAt/vxONrr/NCdXsaCmpiB4vKDuy+34pMcwHkmg56U9EDImotB0rgwMyVuocbW64MG
-         dc7pzQGiMKneOHjy9x2dhhH4Jd/UaYU27c7dCJrR72uO2XQftrW/ka09/R9utueBB3jO
-         t/hg==
-X-Gm-Message-State: ANhLgQ0zkyE0rqDNCGugzoMA7wjsbcFA0sNnp7eDcKO2wlIZxJd+h4Jf
-        4Ntm+BhvBXXSjqpQstJqWNEw+a/l+xEPgRmBzrsTTg==
-X-Google-Smtp-Source: ADFU+vtiUorwgV4PFpNYqYoopqpRkCfZjSt9PPkm/PAS/NdlKM7bdkwklNxYBg0is2VnuB7B8PaXEZ7DimvmfvvZWO4=
-X-Received: by 2002:a2e:b0f7:: with SMTP id h23mr1695669ljl.56.1584520560877;
- Wed, 18 Mar 2020 01:36:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <1584463806-15788-1-git-send-email-martin.fuzzey@flowbird.group>
- <1584463806-15788-2-git-send-email-martin.fuzzey@flowbird.group> <VI1PR0402MB3600396A11D0AB39FBF9C54AFFF70@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-In-Reply-To: <VI1PR0402MB3600396A11D0AB39FBF9C54AFFF70@VI1PR0402MB3600.eurprd04.prod.outlook.com>
-From:   "Fuzzey, Martin" <martin.fuzzey@flowbird.group>
-Date:   Wed, 18 Mar 2020 09:35:49 +0100
-Message-ID: <CANh8QzxNYzLL8sAXwYEnic2-o-3xzyQaUZZ3LmaRO7fCfgoLQg@mail.gmail.com>
-Subject: Re: [EXT] [PATCH 1/4] net: fec: set GPR bit on suspend by DT connfiguration.
-To:     Andy Duan <fugang.duan@nxp.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1727113AbgCRJAf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 05:00:35 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:63852 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726523AbgCRJAe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:00:34 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id C229740F45;
+        Wed, 18 Mar 2020 17:00:12 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     netdev@vger.kernel.org, paulb@mellanox.com
+Cc:     netfilter-devel@vger.kernel.org
+Subject: [PATCH net-next] flow_offload: add TC_SETP_FT type in flow_indr_block_call
+Date:   Wed, 18 Mar 2020 17:00:12 +0800
+Message-Id: <1584522012-5692-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVJQ0lCQkJCQklITEtNSllXWShZQU
+        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MlE6Cjo4ODg5OBwxOjArARFD
+        MlEaChBVSlVKTkNPTklJS0pJQktJVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQU9LS083Bg++
+X-HM-Tid: 0a70ecdf28882086kuqyc229740f45
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Mar 2020 at 07:26, Andy Duan <fugang.duan@nxp.com> wrote:
->
-> From: Martin Fuzzey <martin.fuzzey@flowbird.group> Sent: Wednesday, March 18, 2020 12:50 AM
-> > +static int fec_enet_of_parse_stop_mode(struct fec_enet_private *fep,
-> > +                                      struct device_node *np) {
-> > +       static const char prop[] = "fsl,stop-mode";
-> > +       struct of_phandle_args args;
-> > +       int ret;
-> > +
-> > +       ret = of_parse_phandle_with_fixed_args(np, prop, 2, 0, &args);
-> To save memory:
->
->                  ret = of_parse_phandle_with_fixed_args(np, "fsl,stop-mode", 2, 0, &args);
->
+From: wenxu <wenxu@ucloud.cn>
 
-Why would this save memory?
-prop is defined static const char[] (and not char *) so there will no
-be extra pointers.
+Add TC_SETP_FT type in flow_indr_block_call for supporting indr block call
+in nf_flow_table_offload
 
-I haven't checked the generated assembler but this should generate the
-same code as a string litteral I think.
+Fixes: b5140a36da78 ("netfilter: flowtable: add indr block setup support")
+Signed-off-by: wenxu <wenxu@ucloud.cn>
+---
+ include/net/flow_offload.h            | 3 ++-
+ net/core/flow_offload.c               | 6 +++---
+ net/netfilter/nf_flow_table_offload.c | 2 +-
+ net/netfilter/nf_tables_offload.c     | 2 +-
+ net/sched/cls_api.c                   | 2 +-
+ 5 files changed, 8 insertions(+), 7 deletions(-)
 
-It is also reused later in the function in a debug (which is the
-reason I did it this way to ensure the property name is unique and
-consistent.
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index efd8d47..80b6555 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -523,6 +523,7 @@ void flow_indr_block_cb_unregister(struct net_device *dev,
+ 
+ void flow_indr_block_call(struct net_device *dev,
+ 			  struct flow_block_offload *bo,
+-			  enum flow_block_command command);
++			  enum flow_block_command command,
++			  enum tc_setup_type type);
+ 
+ #endif /* _NET_FLOW_OFFLOAD_H */
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 7440e61..e951b74 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -511,7 +511,8 @@ void flow_indr_block_cb_unregister(struct net_device *dev,
+ 
+ void flow_indr_block_call(struct net_device *dev,
+ 			  struct flow_block_offload *bo,
+-			  enum flow_block_command command)
++			  enum flow_block_command command,
++			  enum tc_setup_type type)
+ {
+ 	struct flow_indr_block_cb *indr_block_cb;
+ 	struct flow_indr_block_dev *indr_dev;
+@@ -521,8 +522,7 @@ void flow_indr_block_call(struct net_device *dev,
+ 		return;
+ 
+ 	list_for_each_entry(indr_block_cb, &indr_dev->cb_list, list)
+-		indr_block_cb->cb(dev, indr_block_cb->cb_priv, TC_SETUP_BLOCK,
+-				  bo);
++		indr_block_cb->cb(dev, indr_block_cb->cb_priv, type, bo);
+ }
+ EXPORT_SYMBOL_GPL(flow_indr_block_call);
+ 
+diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
+index ad54931..cd5bd23 100644
+--- a/net/netfilter/nf_flow_table_offload.c
++++ b/net/netfilter/nf_flow_table_offload.c
+@@ -938,7 +938,7 @@ static int nf_flow_table_indr_offload_cmd(struct flow_block_offload *bo,
+ {
+ 	nf_flow_table_block_offload_init(bo, dev_net(dev), cmd, flowtable,
+ 					 extack);
+-	flow_indr_block_call(dev, bo, cmd);
++	flow_indr_block_call(dev, bo, cmd, TC_SETUP_FT);
+ 
+ 	if (list_empty(&bo->cb_list))
+ 		return -EOPNOTSUPP;
+diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
+index 2bb2848..954bccb 100644
+--- a/net/netfilter/nf_tables_offload.c
++++ b/net/netfilter/nf_tables_offload.c
+@@ -313,7 +313,7 @@ static int nft_indr_block_offload_cmd(struct nft_base_chain *chain,
+ 
+ 	nft_flow_block_offload_init(&bo, dev_net(dev), cmd, chain, &extack);
+ 
+-	flow_indr_block_call(dev, &bo, cmd);
++	flow_indr_block_call(dev, &bo, cmd, TC_SETUP_BLOCK);
+ 
+ 	if (list_empty(&bo.cb_list))
+ 		return -EOPNOTSUPP;
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 2046102..0db43d7 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -708,7 +708,7 @@ static void tc_indr_block_call(struct tcf_block *block,
+ 	};
+ 	INIT_LIST_HEAD(&bo.cb_list);
+ 
+-	flow_indr_block_call(dev, &bo, command);
++	flow_indr_block_call(dev, &bo, command, TC_SETUP_BLOCK);
+ 	tcf_block_setup(block, &bo);
+ }
+ 
+-- 
+1.8.3.1
 
-Regards,
-
-Martin
-
---
