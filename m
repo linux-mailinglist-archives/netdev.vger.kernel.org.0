@@ -2,90 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 495B01893CD
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 02:45:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 569341893D9
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 02:59:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727133AbgCRBpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 21:45:52 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:38301 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726680AbgCRBpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 21:45:51 -0400
-Received: by mail-pf1-f193.google.com with SMTP id z5so12990377pfn.5;
-        Tue, 17 Mar 2020 18:45:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:subject:date:message-id;
-        bh=vl7JF+OisrWnn7NeOtdHVLmflZshg8AAgtUNfRFLflc=;
-        b=FUS6W2x88n00x5pQaTOUkBnchsk57tCIrdDh1sFLYJvRuj9+qP8hL8K1XtcxhJsHwo
-         Wr29miD6cbpw84zTFBoqdOKAP8EmPPi8Qq55/Vxixxq89oC4PxG9wBOgUdREOb9xE8h7
-         K+LTcsBLMRas28dCdBuNeKLXoG+wg+wHoHwB7om35zrBB1iVlpPUhpEUl4bhEeWoKqif
-         z+GlPTe7UTHE0XZntOL61mRmNLiQrEiiIfsKvs7m4Hj3xtVMQR78lOV1qrWm+asqFIC1
-         nzQluPQsKxBrw5BO4Z8or75bptDI5DKNK6PBiQBKJo9sls6/G3j+cvOU+pv0K6L716tP
-         VG7Q==
+        id S1727114AbgCRB7E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 21:59:04 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:34824 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726680AbgCRB7E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 21:59:04 -0400
+Received: by mail-il1-f198.google.com with SMTP id c18so695994ils.2
+        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 18:59:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:subject:date:message-id;
-        bh=vl7JF+OisrWnn7NeOtdHVLmflZshg8AAgtUNfRFLflc=;
-        b=XgN4rRtuvAFJT4mV4ISg/BZRbNRtMzS4P0rH1tQmNkS+r8b3OETOlaXIPq6qxrEnxd
-         5BFCVQk3dxIYGaZQI6RZJLoMj4VE2fN0gvhU9V6sVixxitiM6JZvIoqx/zH4+S6W8Xp6
-         nAFd5OAOxL9IL+E5Fl+8kpBboDjdh5ZG4paGiQcysipYwcibR0mZQ8WDwd3Pw5KrMIMS
-         pXCxvAEKCJZ1Z27Jo+956QUVmz2WcjmZ/EUk/UHdPGJIZLbu3vgcPZNAwNtdjmWZl1mF
-         vOob7irxCg38frPNKbnRuTq2ORfOj8g18wA+Y54WNh8hYxI5ZXX4iU2Q6YpkvFNbc7ra
-         1D7g==
-X-Gm-Message-State: ANhLgQ1++kMocrbWIL6t5wjLEZbsJ+bHDSzxMt1k+DaGbdvld32naM1e
-        b4jcm/ZtbAMabObZ7uQTKQA=
-X-Google-Smtp-Source: ADFU+vuS+bdJUG5tLY7i8U6U3kyyVSoXxc9bsPwpUqCLo38zkEFB5U5elGkdJs2VfdrkgveNtP5Ygg==
-X-Received: by 2002:a63:48e:: with SMTP id 136mr2073825pge.169.1584495950400;
-        Tue, 17 Mar 2020 18:45:50 -0700 (PDT)
-Received: from localhost (220-135-95-34.HINET-IP.hinet.net. [220.135.95.34])
-        by smtp.gmail.com with ESMTPSA id s125sm3800084pgc.53.2020.03.17.18.45.49
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 17 Mar 2020 18:45:49 -0700 (PDT)
-From:   AceLan Kao <acelan.kao@canonical.com>
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] r8169: only disable ASPM L1.1 support, instead of disabling them all
-Date:   Wed, 18 Mar 2020 09:45:48 +0800
-Message-Id: <20200318014548.14547-1-acelan.kao@canonical.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=0HNo1qd7HDCjZwp/AckavVWsU51cjSgzVKKMqeaV0/Q=;
+        b=mKP0T7LmZG9QKtufbCTIOrZ05qM8g4qYLtyJIkFq8C6pkRY15ZhEanf3GjMsfSW38E
+         DL13V2XsPySRe2HFWHUe1g5+eBUO0dw2i/6Lw248l8xF0vLghxx43k4aTMYt1syMz363
+         KEe1wvPhsLvM7NGRavabax/vE32XSqLqSdPk9iqcKSbNjPhJfnaIHn2emugqiWG7RCsx
+         59h0kfH7oPvPAywJmQDdziSbygr/h60v5cjbc2N7qP4mLolkHutJ86MpANDHbJqF2yEx
+         lvrdKK7kni+KX8JtZuyLpq60OzCzbNLZQA5EhmXAh834sPIcSsnZZiYpk5oqR6wGLurC
+         j0Jg==
+X-Gm-Message-State: ANhLgQ0O2yW0zselMEiSEA+VNj2CU7mxzBTmc8l6WWy13y8KqGXJN64J
+        HoFYA9Q7vuIbJ3+FbmZv4O9HfxEmR0BnOGll3wGC2CRLt4+N
+X-Google-Smtp-Source: ADFU+vsJ30sc+Dzh9VHBJOAI0emX3Sfo1QftuTzYodRR9NKuh9cYqsuC48zEhQnxNxrdJ3ulsDA9CbCBEePqgxPvqlJYkrCy3Jwf
+MIME-Version: 1.0
+X-Received: by 2002:a5d:8f96:: with SMTP id l22mr1608247iol.19.1584496743564;
+ Tue, 17 Mar 2020 18:59:03 -0700 (PDT)
+Date:   Tue, 17 Mar 2020 18:59:03 -0700
+In-Reply-To: <00000000000088487805a116880c@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008c4f0805a11765a0@google.com>
+Subject: Re: KASAN: use-after-free Write in tcindex_change
+From:   syzbot <syzbot+ba4bcf1563f90386910f@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The issues which have been seen by enabling ASPM support are from the
-BIOS that enables the ASPM L1.1 support on the device. It leads to some
-strange behaviors when the device enter L1.1 state.
-So, we don't have to disable ASPM support entriely, just disable L1.1
-state, that fixes the issues and also has good power management.
+syzbot has bisected this bug to:
 
-Signed-off-by: AceLan Kao <acelan.kao@canonical.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+commit 599be01ee567b61f4471ee8078870847d0a11e8e
+Author: Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon Feb 3 05:14:35 2020 +0000
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index a2168a14794c..b52680e7323b 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -5473,11 +5473,10 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (rc)
- 		return rc;
- 
--	/* Disable ASPM completely as that cause random device stop working
--	 * problems as well as full system hangs for some PCIe devices users.
-+	/* r8169 suppots ASPM L0 and L1 well, and doesn't support L1.1,
-+	 * so disable ASPM L1.1 only.
- 	 */
--	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S |
--					  PCIE_LINK_STATE_L1);
-+	rc = pci_disable_link_state(pdev, PCIE_LINK_STATE_L1_1);
- 	tp->aspm_manageable = !rc;
- 
- 	/* enable device (incl. PCI PM wakeup and hotplug setup) */
--- 
-2.17.1
+    net_sched: fix an OOB access in cls_tcindex
 
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14dbc973e00000
+start commit:   fb33c651 Linux 5.6-rc6
+git tree:       upstream
+final crash:    https://syzkaller.appspot.com/x/report.txt?x=16dbc973e00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12dbc973e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6dfa02302d6db985
+dashboard link: https://syzkaller.appspot.com/bug?extid=ba4bcf1563f90386910f
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1748dfdde00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16afffdde00000
+
+Reported-by: syzbot+ba4bcf1563f90386910f@syzkaller.appspotmail.com
+Fixes: 599be01ee567 ("net_sched: fix an OOB access in cls_tcindex")
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
