@@ -2,109 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E09F18A6E8
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:25:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95AF318A6F8
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:27:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726950AbgCRVZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 17:25:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53380 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726619AbgCRVZQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 17:25:16 -0400
-Received: from localhost (mobile-166-175-186-165.mycingular.net [166.175.186.165])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727137AbgCRV1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 17:27:45 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:40890 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726747AbgCRV1o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 17:27:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584566863;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Vfeg96jC3449/b+nif4AVPPcBXCL9wEY1xZDJxISjtU=;
+        b=cSkwLJA33CH6MpGTBd6Wan4IwYvCxNVCIpBQHE+1BJvglyQkpjbRGGtiuTMp9ccEN6GQmB
+        bX9NxJgs3Pl+b5bIgWasVJLLjqqBR9TthrAV2r1D17YQ9isyCd+Yv9CfR2MmyDSu0iEEHQ
+        0J6znRI9YOxuthHblrxx6NWtmGIWseg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-320-YfG_1nJtPVGzL6Exm2B_mA-1; Wed, 18 Mar 2020 17:27:40 -0400
+X-MC-Unique: YfG_1nJtPVGzL6Exm2B_mA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A267920772;
-        Wed, 18 Mar 2020 21:25:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584566716;
-        bh=PPihHaGg1zzpn1nHu5VlZHYT+H8Lm/yb44OJhzptGDI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=J4R5BuBT7s0ufQ6OkQFm2DJaGU3GVO9cGs2MX4LtzTi7i9JWE5dM20xu5JQTXlZ83
-         PEvcq3DTg4VilmyOANCyGwCHYadT4otbhpLYSpa8TZJkQXYvR3a8J+LlUM3ulELzZx
-         jLKhC0M9bULug4AxIw26CRfmCEZy/H4Ad8J0WRnI=
-Date:   Wed, 18 Mar 2020 16:25:13 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        linux-pci@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [patch V2 01/15] PCI/switchtec: Fix init_completion race
- condition with poll_wait()
-Message-ID: <20200318212513.GA240916@google.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 148D6107ACCD;
+        Wed, 18 Mar 2020 21:26:52 +0000 (UTC)
+Received: from madcap2.tricolour.ca (unknown [10.36.110.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 66A7560BF1;
+        Wed, 18 Mar 2020 21:26:36 +0000 (UTC)
+Date:   Wed, 18 Mar 2020 17:26:30 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Steve Grubb <sgrubb@redhat.com>, linux-audit@redhat.com,
+        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
+ the audit daemon
+Message-ID: <20200318212630.mw2geg4ykhnbtr3k@madcap2.tricolour.ca>
+References: <cover.1577736799.git.rgb@redhat.com>
+ <20200204231454.oxa7pyvuxbj466fj@madcap2.tricolour.ca>
+ <CAHC9VhQquokw+7UOU=G0SsD35UdgmfysVKCGCE87JVaoTkbisg@mail.gmail.com>
+ <3142237.YMNxv0uec1@x2>
+ <CAHC9VhTiCHQbp2SwK0Xb1QgpUZxOQ26JKKPsVGT0ZvMqx28oPQ@mail.gmail.com>
+ <CAHC9VhS09b_fM19tn7pHZzxfyxcHnK+PJx80Z9Z1hn8-==4oLA@mail.gmail.com>
+ <20200312193037.2tb5f53yeisfq4ta@madcap2.tricolour.ca>
+ <CAHC9VhQoVOzy_b9W6h+kmizKr1rPkC4cy5aYoKT2i0ZgsceNDg@mail.gmail.com>
+ <20200313185900.y44yvrfm4zxa5lfk@madcap2.tricolour.ca>
+ <CAHC9VhR2zCCE5bjH75rSwfLC7TJGFj4RBnrtcOoUiqVp9q5TaA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200318204407.497942274@linutronix.de>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+In-Reply-To: <CAHC9VhR2zCCE5bjH75rSwfLC7TJGFj4RBnrtcOoUiqVp9q5TaA@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 09:43:03PM +0100, Thomas Gleixner wrote:
-> From: Logan Gunthorpe <logang@deltatee.com>
+On 2020-03-18 16:56, Paul Moore wrote:
+> On Fri, Mar 13, 2020 at 2:59 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > On 2020-03-13 12:29, Paul Moore wrote:
+> > > On Thu, Mar 12, 2020 at 3:30 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > On 2020-02-13 16:44, Paul Moore wrote:
+> > > > > This is a bit of a thread-hijack, and for that I apologize, but
+> > > > > another thought crossed my mind while thinking about this issue
+> > > > > further ... Once we support multiple auditd instances, including the
+> > > > > necessary record routing and duplication/multiple-sends (the host
+> > > > > always sees *everything*), we will likely need to find a way to "trim"
+> > > > > the audit container ID (ACID) lists we send in the records.  The
+> > > > > auditd instance running on the host/initns will always see everything,
+> > > > > so it will want the full container ACID list; however an auditd
+> > > > > instance running inside a container really should only see the ACIDs
+> > > > > of any child containers.
+> > > >
+> > > > Agreed.  This should be easy to check and limit, preventing an auditd
+> > > > from seeing any contid that is a parent of its own contid.
+> > > >
+> > > > > For example, imagine a system where the host has containers 1 and 2,
+> > > > > each running an auditd instance.  Inside container 1 there are
+> > > > > containers A and B.  Inside container 2 there are containers Y and Z.
+> > > > > If an audit event is generated in container Z, I would expect the
+> > > > > host's auditd to see a ACID list of "1,Z" but container 1's auditd
+> > > > > should only see an ACID list of "Z".  The auditd running in container
+> > > > > 2 should not see the record at all (that will be relatively
+> > > > > straightforward).  Does that make sense?  Do we have the record
+> > > > > formats properly designed to handle this without too much problem (I'm
+> > > > > not entirely sure we do)?
+> > > >
+> > > > I completely agree and I believe we have record formats that are able to
+> > > > handle this already.
+> > >
+> > > I'm not convinced we do.  What about the cases where we have a field
+> > > with a list of audit container IDs?  How do we handle that?
+> >
+> > I don't understand the problem.  (I think you crossed your 1/2 vs
+> > A/B/Y/Z in your example.) ...
 > 
-> The call to init_completion() in mrpc_queue_cmd() can theoretically
-> race with the call to poll_wait() in switchtec_dev_poll().
+> It looks like I did, sorry about that.
 > 
->   poll()			write()
->     switchtec_dev_poll()   	  switchtec_dev_write()
->       poll_wait(&s->comp.wait);      mrpc_queue_cmd()
-> 			               init_completion(&s->comp)
-> 				         init_waitqueue_head(&s->comp.wait)
+> > ... Clarifying the example above, if as you
+> > suggest an event happens in container Z, the hosts's auditd would report
+> >         Z,^2
+> > and the auditd in container 2 would report
+> >         Z,^2
+> > but if there were another auditd running in container Z it would report
+> >         Z
+> > while the auditd in container 1 or A/B would see nothing.
 > 
-> To my knowledge, no one has hit this bug.
-> 
-> Fix this by using reinit_completion() instead of init_completion() in
-> mrpc_queue_cmd().
-> 
-> Fixes: 080b47def5e5 ("MicroSemi Switchtec management interface driver")
-> Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Link: https://lkml.kernel.org/r/20200313183608.2646-1-logang@deltatee.com
+> Yes.  My concern is how do we handle this to minimize duplicating and
+> rewriting the records?  It isn't so much about the format, although
+> the format is a side effect.
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Are you talking about caching, or about divulging more information than
+necessary or even information leaks?  Or even noticing that records that
+need to be generated to two audit daemons share the same contid field
+values and should be generated at the same time or information shared
+between them?  I'd see any of these as optimizations that don't affect
+the api.
 
-Not because I understand and have reviewed this, but because I trust
-you to do the right thing and it belongs with the rest of the series.
+> paul moore
 
-> ---
->  drivers/pci/switch/switchtec.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/pci/switch/switchtec.c b/drivers/pci/switch/switchtec.c
-> index a823b4b8ef8a..81dc7ac01381 100644
-> --- a/drivers/pci/switch/switchtec.c
-> +++ b/drivers/pci/switch/switchtec.c
-> @@ -175,7 +175,7 @@ static int mrpc_queue_cmd(struct switchtec_user *stuser)
->  	kref_get(&stuser->kref);
->  	stuser->read_len = sizeof(stuser->data);
->  	stuser_set_state(stuser, MRPC_QUEUED);
-> -	init_completion(&stuser->comp);
-> +	reinit_completion(&stuser->comp);
->  	list_add_tail(&stuser->list, &stdev->mrpc_queue);
->  
->  	mrpc_cmd_submit(stdev);
-> -- 
-> 2.20.1
-> 
-> 
+- RGB
+
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
+
