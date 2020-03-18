@@ -2,76 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED7B418A524
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:59:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1F5F18A6A6
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:09:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727399AbgCRU7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:59:23 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:33354 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727228AbgCRU7W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 16:59:22 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1jEfma-0007pN-9C; Wed, 18 Mar 2020 21:59:20 +0100
-Date:   Wed, 18 Mar 2020 21:59:20 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org,
-        mptcp@lists.01.org, Eric Dumazet <edumazet@google.com>
-Subject: Re: [RFC mptcp-next] tcp: mptcp: use mptcp receive buffer space to
- select rcv window
-Message-ID: <20200318205920.GK979@breakpoint.cc>
-References: <20200318141917.2612-1-fw@strlen.de>
- <48933c49-0889-5dba-29e2-62640e47797a@gmail.com>
- <20200318180526.GJ979@breakpoint.cc>
- <95e08be8-9902-f998-6558-e7e574d783b0@gmail.com>
+        id S1727232AbgCRUxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 16:53:40 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:58457 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727175AbgCRUxi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 16:53:38 -0400
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1jEfgZ-0006nB-PS; Wed, 18 Mar 2020 21:53:08 +0100
+Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id 5B0BB101161;
+        Wed, 18 Mar 2020 21:53:05 +0100 (CET)
+Message-Id: <20200318204408.428468767@linutronix.de>
+User-Agent: quilt/0.65
+Date:   Wed, 18 Mar 2020 21:43:12 +0100
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
+Subject: [patch V2 10/15] sched/swait: Prepare usage in completions
+References: <20200318204302.693307984@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <95e08be8-9902-f998-6558-e7e574d783b0@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> >>> +/* If ssk has an mptcp parent socket, use the mptcp rcvbuf occupancy,
-> >>> + * not the ssk one.
-> >>> + *
-> >>> + * In mptcp, rwin is about the mptcp-level connection data.
-> >>> + *
-> >>> + * Data that is still on the ssk rx queue can thus be ignored,
-> >>> + * as far as mptcp peer is concerened that data is still inflight.
-> >>> + */
-> >>> +void mptcp_space(const struct sock *ssk, int *space, int *full_space)
-> >>> +{
-> >>> +	const struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
-> >>> +	const struct sock *sk = READ_ONCE(subflow->conn);
-> >>
-> >> What are the rules protecting subflow->conn lifetime ?
-> >>
-> >> Why dereferencing sk after this line is safe ?
-> > 
-> > Subflow sockets hold a reference on the master/parent mptcp-socket.
-> > 
-> 
-> Presence of READ_ONCE() tells something might happen on
-> this pointer after you read it.
+From: Thomas Gleixner <tglx@linutronix.de>
 
-Right, sorry about this. The READ_ONCE() isn't needed anymore after
-recent improvement from Paolo.
+As a preparation to use simple wait queues for completions:
 
-> Can this pointer be set while this thread is owning the socket lock ?
+  - Provide swake_up_all_locked() to support complete_all()
+  - Make __prepare_to_swait() public available
 
-Only by the one holding the sk lock, so no race.
+This is done to enable the usage of complete() within truly atomic contexts
+on a PREEMPT_RT enabled kernel.
 
-> If not, then you do not need READ_ONCE(), this is confusing.
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+V2: Add comment to swake_up_all_locked()
+---
+ kernel/sched/sched.h |    3 +++
+ kernel/sched/swait.c |   15 ++++++++++++++-
+ 2 files changed, 17 insertions(+), 1 deletion(-)
 
-Yes.
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -2492,3 +2492,6 @@ static inline bool is_per_cpu_kthread(st
+ 	return true;
+ }
+ #endif
++
++void swake_up_all_locked(struct swait_queue_head *q);
++void __prepare_to_swait(struct swait_queue_head *q, struct swait_queue *wait);
+--- a/kernel/sched/swait.c
++++ b/kernel/sched/swait.c
+@@ -32,6 +32,19 @@ void swake_up_locked(struct swait_queue_
+ }
+ EXPORT_SYMBOL(swake_up_locked);
+ 
++/*
++ * Wake up all waiters. This is an interface which is solely exposed for
++ * completions and not for general usage.
++ *
++ * It is intentionally different from swake_up_all() to allow usage from
++ * hard interrupt context and interrupt disabled regions.
++ */
++void swake_up_all_locked(struct swait_queue_head *q)
++{
++	while (!list_empty(&q->task_list))
++		swake_up_locked(q);
++}
++
+ void swake_up_one(struct swait_queue_head *q)
+ {
+ 	unsigned long flags;
+@@ -69,7 +82,7 @@ void swake_up_all(struct swait_queue_hea
+ }
+ EXPORT_SYMBOL(swake_up_all);
+ 
+-static void __prepare_to_swait(struct swait_queue_head *q, struct swait_queue *wait)
++void __prepare_to_swait(struct swait_queue_head *q, struct swait_queue *wait)
+ {
+ 	wait->task = current;
+ 	if (list_empty(&wait->task_list))
 
-> If yes, then it means that whatever changes the pointer might also release the reference
-> on the old object.
-
-The reference is released only after aquiring the socket lock.
