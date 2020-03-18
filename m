@@ -2,74 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7597F189AD4
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 12:38:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6B82189B6F
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 12:55:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727225AbgCRLi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 07:38:29 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42892 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727112AbgCRLi3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 07:38:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=KeX7i7jjwGyFs685ZA1LZLsXq6Fd8T1pDtpjn4jVKw8=; b=ZxgkoOUgTaYm/6nU/4W74ecjY1
-        M3v3Zo9C3eXMkasX1L1fXpg2YPuc9bEdn03t5zOwnHWmBK3/lO7iGwQwNBJsK6xcmFEfWmLrirw89
-        Y9DzC7CVLYc8ae0soeUlzGXdU1/iADHpf1Q1TozWljsEuxel4MW1m6qwepeWqd5XOCdw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jEX1g-00075r-7y; Wed, 18 Mar 2020 12:38:20 +0100
-Date:   Wed, 18 Mar 2020 12:38:20 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Fuzzey, Martin" <martin.fuzzey@flowbird.group>
-Cc:     Fugang Duan <fugang.duan@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Fabio Estevam <festevam@gmail.com>,
-        "Linux-Kernel@Vger. Kernel. Org" <linux-kernel@vger.kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 3/4] dt-bindings: fec: document the new fsl,stop-mode
- property
-Message-ID: <20200318113820.GA27205@lunn.ch>
-References: <1584463806-15788-1-git-send-email-martin.fuzzey@flowbird.group>
- <1584463806-15788-4-git-send-email-martin.fuzzey@flowbird.group>
- <20200318091734.GA23244@lunn.ch>
- <CANh8QzzA34th-h8ULM=LNvOvRw9P9=vekOBGvdYjv6TEBNDMig@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANh8QzzA34th-h8ULM=LNvOvRw9P9=vekOBGvdYjv6TEBNDMig@mail.gmail.com>
+        id S1727224AbgCRLz0 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Mar 2020 07:55:26 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:57313 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726638AbgCRLz0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 07:55:26 -0400
+Received: from [192.168.1.91] (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id B5C2FCECF3;
+        Wed, 18 Mar 2020 13:04:54 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: [PATCH] Bluetooth: Do not cancel advertising when starting a scan
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <CAO1O6sdfdVavo9U0UKewbS9YAjCVzdXDYms-OJZNEJVzMmkgMg@mail.gmail.com>
+Date:   Wed, 18 Mar 2020 12:54:54 +0100
+Cc:     Manish Mandlik <mmandlik@google.com>,
+        Yoni Shavit <yshavit@chromium.org>,
+        Alain Michaud <alainm@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
+        Dmitry Grinberg <dmitrygr@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <F5E108DF-2004-4C52-8A5B-12A392D2416D@holtmann.org>
+References: <20200316224023.1.I002569822232363cfbb5af1f33a293ea390c24c7@changeid>
+ <4DF7C709-1AD3-42FF-A0C2-EF488D82F083@holtmann.org>
+ <CAO1O6sdfdVavo9U0UKewbS9YAjCVzdXDYms-OJZNEJVzMmkgMg@mail.gmail.com>
+To:     Emil Lenngren <emil.lenngren@gmail.com>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 10:28:48AM +0100, Fuzzey, Martin wrote:
-> Hi Andrew,
-> 
-> On Wed, 18 Mar 2020 at 10:17, Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > You should not be putting registers and values into device tree.
-> >
-> > The regmap is fine. But could you add the register and the bit to
-> > fec_devtype[IMX6SX_FEC], fec_devtype[IMX6UL_FEC], etc.
-> >
-> 
-> If that's the consensus I can do it that way.
-> 
-> But I should point out that there is already a precedent in mainline for this:
-> 
-> Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
+Hi Emil,
 
-Hi Martin
+>>> BlueZ cancels adv when starting a scan, but does not cancel a scan when
+>>> starting to adv. Neither is required, so this brings both to a
+>>> consistent state (of not affecting each other). Some very rare (I've
+>>> never seen one) BT 4.0 chips will fail to do both at once. Even this is
+>>> ok since the command that will fail will be the second one, and thus the
+>>> common sense logic of first-come-first-served is preserved for BLE
+>>> requests.
+>>> 
+>>> Signed-off-by: Dmitry Grinberg <dmitrygr@google.com>
+>>> Signed-off-by: Manish Mandlik <mmandlik@google.com>
+>>> ---
+>>> 
+>>> net/bluetooth/hci_request.c | 17 -----------------
+>>> 1 file changed, 17 deletions(-)
+>> 
+>> patch has been applied to bluetooth-next tree.
+>> 
+>> If you know the controller that doesn’t support this, can we blacklist that one and just disable advertising (peripheral mode) for that controller.
+> 
+> Can't the "LE Supported States" be inspected instead to figure out
+> what simultaneous capabilities are supported? It seems a bit rough to
+> always assume the worst.
 
-And there are probably hundreds of emails saying don't do this.
+if there are not false-positives, then yes, by all means. However my statement still applies. If a controller can do scanning and advertising at the same time, we should just not indicate support for peripheral mode.
 
-	Andrew
+Regards
+
+Marcel
+
