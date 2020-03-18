@@ -2,79 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0EBC189F6D
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 16:14:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C46418A04B
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 17:14:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727152AbgCRPOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 11:14:37 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:29700 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727014AbgCRPOg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 11:14:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584544475;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rDahFV9TPWnSHYGEo4pu2LmiluREcgL9pHQHEehqYmE=;
-        b=OixeC8J5rWvPM1HvR4PADk47xq4+qPr5lrz4KoHSeL30EOX9RKsD7nfzdj1wrhdV5wxf5B
-        u5IDcKW6ceyVQdpR1XWgAWqwJqYwzTISc/dgEiEWMBKjNfTMAvrYrmzkfEFt8OB5y+tCEB
-        g/ag96fPTgyi4laZED0PaMe6mluUgsY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-115-zLovBwwuOPCXLkjvjN2tvw-1; Wed, 18 Mar 2020 11:14:34 -0400
-X-MC-Unique: zLovBwwuOPCXLkjvjN2tvw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 97683107ACC7;
-        Wed, 18 Mar 2020 15:14:31 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-113-126.rdu2.redhat.com [10.10.113.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0851A5C1D8;
-        Wed, 18 Mar 2020 15:14:25 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <e47bef56-9271-93e0-0e59-c77c253babea@redhat.com>
-References: <e47bef56-9271-93e0-0e59-c77c253babea@redhat.com> <20200317194140.6031-5-longman@redhat.com> <20200317194140.6031-1-longman@redhat.com> <2832139.1584520054@warthog.procyon.org.uk>
-To:     Waiman Long <longman@redhat.com>
-Cc:     dhowells@redhat.com,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, keyrings@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org, netdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, Sumit Garg <sumit.garg@linaro.org>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Chris von Recklinghausen <crecklin@redhat.com>
-Subject: Re: [PATCH v4 4/4] KEYS: Avoid false positive ENOMEM error on key read
+        id S1727171AbgCRQOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 12:14:53 -0400
+Received: from smtprelay0091.hostedemail.com ([216.40.44.91]:37834 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726473AbgCRQOx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 12:14:53 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 22426181D3030;
+        Wed, 18 Mar 2020 16:14:52 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1540:1593:1594:1711:1730:1747:1777:1792:2393:2525:2565:2682:2685:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3870:3871:3872:3873:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:4605:5007:7576:8985:9025:9121:10004:10400:10848:11232:11233:11658:11914:12043:12048:12297:12663:12740:12760:12895:13069:13161:13229:13311:13357:13439:13845:14040:14096:14097:14181:14581:14659:14721:14764:21080:21324:21433:21627:30054:30070:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: size14_d38f1d1e6128
+X-Filterd-Recvd-Size: 2078
+Received: from XPS-9350.home (unknown [47.151.143.254])
+        (Authenticated sender: joe@perches.com)
+        by omf03.hostedemail.com (Postfix) with ESMTPA;
+        Wed, 18 Mar 2020 16:14:50 +0000 (UTC)
+Message-ID: <1bcfc53c523f120a4cf0f19490de506c5704d306.camel@perches.com>
+Subject: Re: [PATCH] bnx2x: fix spelling mistake "pauseable" -> "pausable"
+From:   Joe Perches <joe@perches.com>
+To:     Colin Ian King <colin.king@canonical.com>,
+        Ariel Elior <aelior@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        GR-everest-linux-l2@marvell.com,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 18 Mar 2020 09:13:02 -0700
+In-Reply-To: <7ce6d58f-a2d0-7173-0163-f1e3b5f93e65@canonical.com>
+References: <20200317182921.482606-1-colin.king@canonical.com>
+         <8d9544fe6d413cdd600504e48f301e023b99e17b.camel@perches.com>
+         <7ce6d58f-a2d0-7173-0163-f1e3b5f93e65@canonical.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2866041.1584544464.1@warthog.procyon.org.uk>
-Date:   Wed, 18 Mar 2020 15:14:24 +0000
-Message-ID: <2866042.1584544464@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Waiman Long <longman@redhat.com> wrote:
+On Wed, 2020-03-18 at 09:16 +0000, Colin Ian King wrote:
+> On 18/03/2020 03:37, Joe Perches wrote:
+> > On Tue, 2020-03-17 at 18:29 +0000, Colin King wrote:
+> > > From: Colin Ian King <colin.king@canonical.com>
+> > > 
+> > > Bulk rename of variables and literal strings. No functional
+> > > changes.
+> > 
+> > I'm not sure either spelling is a "real" word and
+> > pauseable seems more intelligible and less likely
+> > to be intended to be a typo of "possible" to me.
+> 
+> It's indeed of marginal benefit. However..
+> 
+> https://www.yourdictionary.com/pausable
 
-> Doing this is micro-optimization. As the keys subsystem is that
-> performance critical, do we need to do that to save a cycle or two while
-> making the code a bit harder to read?
+Then again there's this:
+https://www.spellcheck.net/misspelled-words/pausable
 
-It was more sort of a musing comment.  Feel free to ignore it.  kvfree()
-doesn't do this.
+Correct spelling for PAUSABLE
+        
+            We think the word pausable is a misspelling.
 
-David
+and
+
+https://www.anagrammer.com/crossword/answer/pausable
+
+The word PAUSABLE is NOT valid in any word game. (Sorry, you cannot play
+PAUSABLE in Scrabble, Words With Friends etc) 
+    
+
+                
+        
 
