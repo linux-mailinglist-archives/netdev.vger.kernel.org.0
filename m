@@ -2,81 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A57E01897C9
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:17:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92EB01897E0
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:26:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727501AbgCRJRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 05:17:45 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42586 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726586AbgCRJRp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 05:17:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=KeLPJyyquVYMqBbQtbmvA4XwuIDg/90uof9w1TOJEf0=; b=GWbfE9TR8Qjf3F+si9NU9WUvdR
-        yOYUQhp4cjhe3RNjs0dkBjwl97SNYZtImawJ1P2sEZvPhRDUb5IGhlnqyz84tMkFWE/FigDp0+t+0
-        S//51x0ON8RP1nbs9Kq3Gd5bB8Dag8Iz0r9m3yQZCb+r5Y3+0avwHoOmzI6ytv3vsNJE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jEUpS-00069u-NQ; Wed, 18 Mar 2020 10:17:34 +0100
-Date:   Wed, 18 Mar 2020 10:17:34 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Martin Fuzzey <martin.fuzzey@flowbird.group>
-Cc:     Fugang Duan <fugang.duan@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Fabio Estevam <festevam@gmail.com>,
+        id S1727490AbgCRJ0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 05:26:33 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:29535 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726586AbgCRJ0c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:26:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584523591;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=1qGXHmo6zQlOJUVGU6+V+s7qzR5Y8nEM9Xk6bPWFSOA=;
+        b=WzwUrYxFRWZfp4UFeYOedBPa/jKruYzuGtneMwqrZN1JbS4IbZ2dD0D6UP5iSRUJYnG9cT
+        hVlB5yZyHkGVEMMPtYyZvpnfrbgrjQ3vxnP03bBeVIP2bk8fE/0kvAQ/FRX03VaqOqdlwy
+        IGT2FCdBvnYMRBJmB/ou3dKoNwfajJE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-396-345NDzGCMeG3TODua96K0g-1; Wed, 18 Mar 2020 05:26:29 -0400
+X-MC-Unique: 345NDzGCMeG3TODua96K0g-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 42E2D107ACC7;
+        Wed, 18 Mar 2020 09:26:28 +0000 (UTC)
+Received: from ovpn-115-29.ams2.redhat.com (ovpn-115-29.ams2.redhat.com [10.36.115.29])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 33E067387B;
+        Wed, 18 Mar 2020 09:26:23 +0000 (UTC)
+Message-ID: <2a5b1c0194a92bcaa626c071701a399cc85ee0b4.camel@redhat.com>
+Subject: Re: [PATCH net-next] mptcp: Remove set but not used variable
+ 'can_ack'
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
         linux-kernel@vger.kernel.org,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 3/4] dt-bindings: fec: document the new fsl,stop-mode
- property
-Message-ID: <20200318091734.GA23244@lunn.ch>
-References: <1584463806-15788-1-git-send-email-martin.fuzzey@flowbird.group>
- <1584463806-15788-4-git-send-email-martin.fuzzey@flowbird.group>
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Date:   Wed, 18 Mar 2020 10:26:22 +0100
+In-Reply-To: <20200318020157.178956-1-yuehaibing@huawei.com>
+References: <20200318020157.178956-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1584463806-15788-4-git-send-email-martin.fuzzey@flowbird.group>
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 17, 2020 at 05:50:05PM +0100, Martin Fuzzey wrote:
-> This property allows the appropriate GPR register bit to be set
-> for wake on lan support.
+On Wed, 2020-03-18 at 02:01 +0000, YueHaibing wrote:
+> Fixes gcc '-Wunused-but-set-variable' warning:
 > 
-> Signed-off-by: Martin Fuzzey <martin.fuzzey@flowbird.group>
+> net/mptcp/options.c: In function 'mptcp_established_options_dss':
+> net/mptcp/options.c:338:7: warning:
+>  variable 'can_ack' set but not used [-Wunused-but-set-variable]
+> 
+> commit dc093db5cc05 ("mptcp: drop unneeded checks")
+> leave behind this unused, remove it.
+> 
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 > ---
->  Documentation/devicetree/bindings/net/fsl-fec.txt | 5 +++++
->  1 file changed, 5 insertions(+)
+>  net/mptcp/options.c | 2 --
+>  1 file changed, 2 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/net/fsl-fec.txt b/Documentation/devicetree/bindings/net/fsl-fec.txt
-> index 5b88fae0..bd0ef5e 100644
-> --- a/Documentation/devicetree/bindings/net/fsl-fec.txt
-> +++ b/Documentation/devicetree/bindings/net/fsl-fec.txt
-> @@ -19,6 +19,11 @@ Optional properties:
->    number to 1.
->  - fsl,magic-packet : If present, indicates that the hardware supports waking
->    up via magic packet.
-> +- fsl,stop-mode: register bits of stop mode control, the format is
-> +		 <&gpr reg bit>.
-> +		 gpr is the phandle to general purpose register node.
-> +		 reg is the gpr register offset for the stop request.
-> +		 bit is the bit offset for the stop request.
+> diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+> index 63c8ee49cef2..8ba34950241c 100644
+> --- a/net/mptcp/options.c
+> +++ b/net/mptcp/options.c
+> @@ -335,7 +335,6 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
+>  	struct mptcp_sock *msk;
+>  	unsigned int ack_size;
+>  	bool ret = false;
+> -	bool can_ack;
+>  	u8 tcp_fin;
+>  
+>  	if (skb) {
+> @@ -364,7 +363,6 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
+>  	/* passive sockets msk will set the 'can_ack' after accept(), even
+>  	 * if the first subflow may have the already the remote key handy
+>  	 */
+> -	can_ack = true;
+>  	opts->ext_copy.use_ack = 0;
+>  	msk = mptcp_sk(subflow->conn);
+>  	if (!READ_ONCE(msk->can_ack)) {
 
-Hi Martin
+Yep, left-over on my side! Thanks for clearing it!
 
-You should not be putting registers and values into device tree.
+Acked-by: Paolo Abeni <pabeni@redhat.com>
 
-The regmap is fine. But could you add the register and the bit to
-fec_devtype[IMX6SX_FEC], fec_devtype[IMX6UL_FEC], etc.
-
-	Andrew
