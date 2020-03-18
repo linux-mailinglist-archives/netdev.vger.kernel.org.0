@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D856018A65C
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:07:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99ACD18A651
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:07:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727993AbgCRVHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 17:07:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53564 "EHLO mail.kernel.org"
+        id S1728026AbgCRVHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 17:07:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53634 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727589AbgCRUyK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:54:10 -0400
+        id S1727656AbgCRUyP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 16:54:15 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0195520724;
-        Wed, 18 Mar 2020 20:54:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C4423208D5;
+        Wed, 18 Mar 2020 20:54:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584564849;
-        bh=xBOE+7Ra99qAzGVmvgHSfG1A656KnnXW9Gtqj1hXnE4=;
+        s=default; t=1584564854;
+        bh=zkRWAbiq0M3xe+y08WZiqdbbWb156+sTJhQOtwChwbk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pjhlSKq08UWbF05KEUnQEOATpghtM5pPNgM7lCY2ggd4f+7OYIB9lxHGxFuW2u9lb
-         0tZhc/ib05xJmnXvLKEHM1Dl5Kb3kQTbxODNKMjqkB3Z+vo22hqC2aa+UEayEsrSPu
-         81NKPLHQb9OletfMUXC1Pd9n0xhG6YVUvS51xF2Y=
+        b=d9jXOmfPdt4gDAbAN7SKs5UfNVZn1DR8eTWe5GkCXEcrfk2GybsuKHgIwkFuTVF3M
+         5nB/ykvM9sCjfuDxdEdcRvz/p/uLKyOC4g406WL4iKXRRVB40deGmrB0D7kzIbjz7u
+         rINOeLNkdrJxuihBG1mhhPyXZSQeftmWLnx//ba8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 27/73] netfilter: nf_tables: fix infinite loop when expr is not available
-Date:   Wed, 18 Mar 2020 16:52:51 -0400
-Message-Id: <20200318205337.16279-27-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 31/73] netfilter: nft_chain_nat: inet family is missing module ownership
+Date:   Wed, 18 Mar 2020 16:52:55 -0400
+Message-Id: <20200318205337.16279-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200318205337.16279-1-sashal@kernel.org>
 References: <20200318205337.16279-1-sashal@kernel.org>
@@ -45,69 +44,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-[ Upstream commit 1d305ba40eb8081ff21eeb8ca6ba5c70fd920934 ]
+[ Upstream commit 6a42cefb25d8bdc1b391f4a53c78c32164eea2dd ]
 
-nft will loop forever if the kernel doesn't support an expression:
+Set owner to THIS_MODULE, otherwise the nft_chain_nat module might be
+removed while there are still inet/nat chains in place.
 
-1. nft_expr_type_get() appends the family specific name to the module list.
-2. -EAGAIN is returned to nfnetlink, nfnetlink calls abort path.
-3. abort path sets ->done to true and calls request_module for the
-   expression.
-4. nfnetlink replays the batch, we end up in nft_expr_type_get() again.
-5. nft_expr_type_get attempts to append family-specific name. This
-   one already exists on the list, so we continue
-6. nft_expr_type_get adds the generic expression name to the module
-   list. -EAGAIN is returned, nfnetlink calls abort path.
-7. abort path encounters the family-specific expression which
-   has 'done' set, so it gets removed.
-8. abort path requests the generic expression name, sets done to true.
-9. batch is replayed.
+[  117.942096] BUG: unable to handle page fault for address: ffffffffa0d5e040
+[  117.942101] #PF: supervisor read access in kernel mode
+[  117.942103] #PF: error_code(0x0000) - not-present page
+[  117.942106] PGD 200c067 P4D 200c067 PUD 200d063 PMD 3dc909067 PTE 0
+[  117.942113] Oops: 0000 [#1] PREEMPT SMP PTI
+[  117.942118] CPU: 3 PID: 27 Comm: kworker/3:0 Not tainted 5.6.0-rc3+ #348
+[  117.942133] Workqueue: events nf_tables_trans_destroy_work [nf_tables]
+[  117.942145] RIP: 0010:nf_tables_chain_destroy.isra.0+0x94/0x15a [nf_tables]
+[  117.942149] Code: f6 45 54 01 0f 84 d1 00 00 00 80 3b 05 74 44 48 8b 75 e8 48 c7 c7 72 be de a0 e8 56 e6 2d e0 48 8b 45 e8 48 c7 c7 7f be de a0 <48> 8b 30 e8 43 e6 2d e0 48 8b 45 e8 48 8b 40 10 48 85 c0 74 5b 8b
+[  117.942152] RSP: 0018:ffffc9000015be10 EFLAGS: 00010292
+[  117.942155] RAX: ffffffffa0d5e040 RBX: ffff88840be87fc2 RCX: 0000000000000007
+[  117.942158] RDX: 0000000000000007 RSI: 0000000000000086 RDI: ffffffffa0debe7f
+[  117.942160] RBP: ffff888403b54b50 R08: 0000000000001482 R09: 0000000000000004
+[  117.942162] R10: 0000000000000000 R11: 0000000000000001 R12: ffff8883eda7e540
+[  117.942164] R13: dead000000000122 R14: dead000000000100 R15: ffff888403b3db80
+[  117.942167] FS:  0000000000000000(0000) GS:ffff88840e4c0000(0000) knlGS:0000000000000000
+[  117.942169] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  117.942172] CR2: ffffffffa0d5e040 CR3: 00000003e4c52002 CR4: 00000000001606e0
+[  117.942174] Call Trace:
+[  117.942188]  nf_tables_trans_destroy_work.cold+0xd/0x12 [nf_tables]
+[  117.942196]  process_one_work+0x1d6/0x3b0
+[  117.942200]  worker_thread+0x45/0x3c0
+[  117.942203]  ? process_one_work+0x3b0/0x3b0
+[  117.942210]  kthread+0x112/0x130
+[  117.942214]  ? kthread_create_worker_on_cpu+0x40/0x40
+[  117.942221]  ret_from_fork+0x35/0x40
 
-If the expression could not be loaded, then we will end up back at 1),
-because the family-specific name got removed and the cycle starts again.
+nf_tables_chain_destroy() crashes on module_put() because the module is
+gone.
 
-Note that userspace can SIGKILL the nft process to stop the cycle, but
-the desired behaviour is to return an error after the generic expr name
-fails to load the expression.
-
-Fixes: eb014de4fd418 ("netfilter: nf_tables: autoload modules from the abort path")
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Fixes: d164385ec572 ("netfilter: nat: add inet family nat support")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_tables_api.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ net/netfilter/nft_chain_nat.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index bd76ef77c03f5..068daff41f6e6 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -6975,13 +6975,8 @@ static void nf_tables_module_autoload(struct net *net)
- 	list_splice_init(&net->nft.module_list, &module_list);
- 	mutex_unlock(&net->nft.commit_mutex);
- 	list_for_each_entry_safe(req, next, &module_list, list) {
--		if (req->done) {
--			list_del(&req->list);
--			kfree(req);
--		} else {
--			request_module("%s", req->module);
--			req->done = true;
--		}
-+		request_module("%s", req->module);
-+		req->done = true;
- 	}
- 	mutex_lock(&net->nft.commit_mutex);
- 	list_splice(&module_list, &net->nft.module_list);
-@@ -7764,6 +7759,7 @@ static void __net_exit nf_tables_exit_net(struct net *net)
- 	__nft_release_tables(net);
- 	mutex_unlock(&net->nft.commit_mutex);
- 	WARN_ON_ONCE(!list_empty(&net->nft.tables));
-+	WARN_ON_ONCE(!list_empty(&net->nft.module_list));
- }
- 
- static struct pernet_operations nf_tables_net_ops = {
+diff --git a/net/netfilter/nft_chain_nat.c b/net/netfilter/nft_chain_nat.c
+index ff9ac8ae0031f..eac4a901233f2 100644
+--- a/net/netfilter/nft_chain_nat.c
++++ b/net/netfilter/nft_chain_nat.c
+@@ -89,6 +89,7 @@ static const struct nft_chain_type nft_chain_nat_inet = {
+ 	.name		= "nat",
+ 	.type		= NFT_CHAIN_T_NAT,
+ 	.family		= NFPROTO_INET,
++	.owner		= THIS_MODULE,
+ 	.hook_mask	= (1 << NF_INET_PRE_ROUTING) |
+ 			  (1 << NF_INET_LOCAL_IN) |
+ 			  (1 << NF_INET_LOCAL_OUT) |
 -- 
 2.20.1
 
