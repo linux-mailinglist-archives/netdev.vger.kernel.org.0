@@ -2,115 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AA7C189DBA
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 15:22:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C24F189DC0
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 15:25:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726971AbgCROWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 10:22:42 -0400
-Received: from www62.your-server.de ([213.133.104.62]:44064 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726623AbgCROWm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 10:22:42 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jEZaX-0005bw-Md; Wed, 18 Mar 2020 15:22:29 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jEZaX-000WcX-Ea; Wed, 18 Mar 2020 15:22:29 +0100
-Subject: Re: [PATCH net-next] netfilter: revert introduction of egress hook
-To:     Florian Westphal <fw@strlen.de>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Alexei Starovoitov <ast@kernel.org>
-References: <bbdee6355234e730ef686f9321bd072bcf4bb232.1584523237.git.daniel@iogearbox.net>
- <20200318100227.GE979@breakpoint.cc>
- <c7c6fb40-06f9-8078-6f76-5dc75a094e25@iogearbox.net>
- <20200318123315.GI979@breakpoint.cc>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <792ee103-a357-e80c-31f0-684de55fd6e6@iogearbox.net>
-Date:   Wed, 18 Mar 2020 15:22:28 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726984AbgCROZA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 10:25:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48066 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726730AbgCROZA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 10:25:00 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 487D020772;
+        Wed, 18 Mar 2020 14:24:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584541499;
+        bh=BChmZzd88HK0dXwb9bIaljh5t1P188iQLWcsYUASXpM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iiAvxFu5mWU7mqNGAXj62Zsy6fYXMK0XFD3fPtXvMVvWYmdCfbw9jjQ7AufCjxsuL
+         1QXPqNFgicv0Myrw9gcyj/gWfr6bjnO48BDqhaCWR/lfiM+HWQlnjJpsRC/aA6Ic2Q
+         RrOBurnndke1M6D2mW8zB7/u5LkacUYjwfDrSgdY=
+Date:   Wed, 18 Mar 2020 16:24:55 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Doug Ledford <dledford@redhat.com>, linux-rdma@vger.kernel.org,
+        Michael Guralnik <michaelgur@mellanox.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
+        Yishai Hadas <yishaih@mellanox.com>
+Subject: Re: [PATCH rdma-next 0/4] Introduce dynamic UAR allocation mode
+Message-ID: <20200318142455.GC126814@unreal>
+References: <20200318124329.52111-1-leon@kernel.org>
+ <20200318125459.GI13183@mellanox.com>
+ <20200318131450.GY3351@unreal>
+ <20200318132100.GK13183@mellanox.com>
+ <20200318135631.GA126497@unreal>
+ <20200318140001.GL13183@mellanox.com>
+ <20200318140932.GB126814@unreal>
+ <20200318141208.GM13183@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20200318123315.GI979@breakpoint.cc>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25755/Wed Mar 18 14:14:00 2020)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200318141208.GM13183@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/18/20 1:33 PM, Florian Westphal wrote:
-> Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 3/18/20 11:02 AM, Florian Westphal wrote:
->>> Daniel Borkmann <daniel@iogearbox.net> wrote:
->>>> This reverts the following commits:
->>>>
->>>>     8537f78647c0 ("netfilter: Introduce egress hook")
->>>>     5418d3881e1f ("netfilter: Generalize ingress hook")
->>>>     b030f194aed2 ("netfilter: Rename ingress hook include file")
->>>>
->>>>   From the discussion in [0], the author's main motivation to add a hook
->>>> in fast path is for an out of tree kernel module, which is a red flag
->>>> to begin with.
->>>
->>> The author did post patches for nftables, i.e. you can hook up rulesets to
->>> this new hook point.
->>>
->>>> is on future extensions w/o concrete code in the tree yet. Revert as
->>>> suggested [1] given the weak justification to add more hooks to critical
->>>> fast-path.
->>>
->>> Do you have an alternative suggestion on how to expose this?
->>
->> Yeah, I think we should not plaster the stack with same/similar hooks that
->> achieve the same functionality next to each other over and over at the cost
->> of performance for users .. ideally there should just be a single entry point
->> that is very lightweight/efficient when not used and can otherwise patch to
->> a direct call when in use. Recent work from KP Singh goes into this direction
->> with the fmodify_return work [0], so we would have a single static key which
->> wraps an empty function call entry which can then be patched by the kernel at
->> runtime. Inside that trampoline we can still keep the ordering intact, but
->> imho this would overall better reduce overhead when functionality is not used
->> compared to the practice of duplication today.
-> 
-> Thanks for explaining.  If I understand this correctly then:
-> 
-> 1. sch_handle_egress() becomes a non-inlined function that isn't called
->     from __dev_queue_xmit or any other location
-> 2. __dev_queue_xmit calls a dummy do-nothing function wrapped in
->     existing egress-static-key
-> 3. kernels sched/tc code can patch the dummy function so it calls
->     sch_handle_egress, without userspace changes/awareness
-> 4. netfilter could reuse this even when tc is already patched in, so
->     the dummy function does two direct calls.
+On Wed, Mar 18, 2020 at 11:12:08AM -0300, Jason Gunthorpe wrote:
+> On Wed, Mar 18, 2020 at 04:09:32PM +0200, Leon Romanovsky wrote:
+> > On Wed, Mar 18, 2020 at 11:00:01AM -0300, Jason Gunthorpe wrote:
+> > > On Wed, Mar 18, 2020 at 03:56:31PM +0200, Leon Romanovsky wrote:
+> > > > On Wed, Mar 18, 2020 at 10:21:00AM -0300, Jason Gunthorpe wrote:
+> > > > > On Wed, Mar 18, 2020 at 03:14:50PM +0200, Leon Romanovsky wrote:
+> > > > > > On Wed, Mar 18, 2020 at 09:54:59AM -0300, Jason Gunthorpe wrote:
+> > > > > > > On Wed, Mar 18, 2020 at 02:43:25PM +0200, Leon Romanovsky wrote:
+> > > > > > > > From: Leon Romanovsky <leonro@mellanox.com>
+> > > > > > > >
+> > > > > > > > From Yishai,
+> > > > > > > >
+> > > > > > > > This series exposes API to enable a dynamic allocation and management of a
+> > > > > > > > UAR which now becomes to be a regular uobject.
+> > > > > > > >
+> > > > > > > > Moving to that mode enables allocating a UAR only upon demand and drop the
+> > > > > > > > redundant static allocation of UARs upon context creation.
+> > > > > > > >
+> > > > > > > > In addition, it allows master and secondary processes that own the same command
+> > > > > > > > FD to allocate and manage UARs according to their needs, this can’t be achieved
+> > > > > > > > today.
+> > > > > > > >
+> > > > > > > > As part of this option, QP & CQ creation flows were adapted to support this
+> > > > > > > > dynamic UAR mode once asked by user space.
+> > > > > > > >
+> > > > > > > > Once this mode is asked by mlx5 user space driver on a given context, it will
+> > > > > > > > be mutual exclusive, means both the static and legacy dynamic modes for using
+> > > > > > > > UARs will be blocked.
+> > > > > > > >
+> > > > > > > > The legacy modes are supported for backward compatible reasons, looking
+> > > > > > > > forward we expect this new mode to be the default.
+> > > > > > >
+> > > > > > > We are starting to accumulate a lot of code that is now old-rdma-core
+> > > > > > > only.
+> > > > > >
+> > > > > > Agree
+> > > > > >
+> > > > > > >
+> > > > > > > I have been wondering if we should add something like
+> > > > > > >
+> > > > > > > #if CONFIG_INFINIBAND_MIN_RDMA_CORE_VERSION < 21
+> > > > > > > #endif
+> > > > > >
+> > > > > > From one side it will definitely help to see old code, but from another
+> > > > > > it will create many ifdef inside of the code with a very little chance
+> > > > > > of testing. Also we will continue to have the same problem to decide when
+> > > > > > we can delete this code.
+> > > > >
+> > > > > Well, it doesn't have to be an #ifdef, eg just sticking
+> > > > >
+> > > > > if (CONFIG_INFINIBAND_MIN_RDMA_CORE_VERSION >= 21)
+> > > > >      return -ENOPROTOOPT;
+> > > > >
+> > > > > at the top of obsolete functions would go a long way
+> > > >
+> > > > First, how will you set this min_version? hordcoded in the kernel
+> > > > code?
+> > >
+> > > Yes, when a rdma-core release obsoletes the code path then it can
+> > > become annotated.
+> > >
+> > > > Second, it will work for simple flows, but can be extremely complex
+> > > > if your code looks like:
+> > > > if (old_version)
+> > > >  do something
+> > > > if (new version)
+> > > >  do something else
+> > >
+> > > Well, we'd avoid making such complications, it would be something like
+> > >
+> > > if (flag & foo) {
+> > >    if (CONFIG_INFINIBAND_MIN_RDMA_CORE_VERSION >= 21)
+> > >       return -ENOPROTOOPT;
+> > >   [keep going as before]
+> > > }
+> > >
+> > > At least we now know this conditional path isn't used / isn't covered
+> > > by testing
+> >
+> > I'm ok with this approach because it helps us to find those dead
+> > paths, but have last question, shouldn't this be achieved with
+> > proper documentation of every flag instead of adding CONFIG_..?
+>
+> How do you mean?
+>
+> The other half of this idea is to disable obsolete un tested code to
+> avoid potential bugs. Which requires CONFIG_?
 
-Yes, pretty much and we could do the same for the ingress side as well.
+The second part is achievable by distros when they will decide to
+support starting from version X. The same decision is not so easy
+to do in the upstream.
 
-> How does that differ from current code?  One could also re-arrange
-> things like this (diff below, just for illustration).
-> 
-> The only difference I see vs. my understanding of your proposal is:
-> 1. no additional static key, nf_hook_egress_active() doesn't exist
-> 2. nf_hook_egress exists, but isn't called anywhere, patched-in at runtime
-> 3. sch_handle_egress isn't called anywhere either, patched-in too
-> 
-> Did I get that right? The idea/plan looks good to me, it just looks
-> like a very marginal difference to me, thats why I'm asking.
+Let's take as an example this feature. It will be set as default from
+rdma-core v29 and the legacy code will be guarded by
+"if (CONFIG_INFINIBAND_MIN_RDMA_CORE_VERSION >= 29)". When will change
+CONFIG_INFINIBAND_MIN_RDMA_CORE_VERSION to be above 29? So we will
+delete such legacy code.
 
-Aside from that, we could take that approach potentially even further in that
-it would allow for converting more indirect calls into direct ones, e.g. the
-tp->classify() ones from sch_handle_egress() or potentially the entry->hook()
-from nf_hook_slow() side, or BPF directly as well, so I think it would be worth
-a try to see how far we could simplify both and get rid of indirect calls for
-their users with this approach. Happy to help out here as well.
+In the world where we are not breaking user space, it will never happen.
 
-Thanks,
-Daniel
+It means that upstream doesn't get anything from those CONFIG_*s.
+
+Thanks
+
+>
+> Jason
