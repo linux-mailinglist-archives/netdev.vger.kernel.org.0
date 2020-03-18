@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8562518A529
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:59:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7836618A525
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:59:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728705AbgCRU4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:56:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58238 "EHLO mail.kernel.org"
+        id S1728718AbgCRU4x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 16:56:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58294 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728696AbgCRU4u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:56:50 -0400
+        id S1728706AbgCRU4x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 16:56:53 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 835DD20BED;
-        Wed, 18 Mar 2020 20:56:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C93D621473;
+        Wed, 18 Mar 2020 20:56:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584565010;
-        bh=n+12w1H1+k6Ai1zMSyVDLLX4P4yFMdnnT66W/zNH6po=;
-        h=From:To:Cc:Subject:Date:From;
-        b=CK9a2U/1R31yb0iypExkKE3Rq7JjNEfq6jVA6JwyLVQ2RrBdqcZIEVC2yDliEHN8D
-         RNG852StVRmhvnEc2+zueFP0dffFhrTEhqhR6qQuw5QbrEN/tCsrbtn54zt97D11vg
-         isFypWYsVl/kmZ3bWOmHjTlbIAoGOx8eBR5dcnFk=
+        s=default; t=1584565012;
+        bh=vbsnVur4lvljTik9l516vSEogUmTcpdKtY8HlintBzk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CmAtZz0Y+78BybnuniLfvUfC/h3lHcWRhyfmInuH8Xv4wv0IhPyTgyEtwf6bxJ6f0
+         lL4DDHvF5z/Lcv6KIU656thfr3oUlzROdoCdEPtjuD0bxruf6Nu/BOB4IUCRHUgCqV
+         RN5/gBnVCQXUaX+QIUXtI4EjiS5Q2u5Z4itBA2CQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
+Cc:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 01/12] bnxt_en: reinitialize IRQs when MTU is modified
-Date:   Wed, 18 Mar 2020 16:56:37 -0400
-Message-Id: <20200318205648.17937-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 03/12] fib: add missing attribute validation for tun_id
+Date:   Wed, 18 Mar 2020 16:56:39 -0400
+Message-Id: <20200318205648.17937-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200318205648.17937-1-sashal@kernel.org>
+References: <20200318205648.17937-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -42,48 +43,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit a9b952d267e59a3b405e644930f46d252cea7122 ]
+[ Upstream commit 4c16d64ea04056f1b1b324ab6916019f6a064114 ]
 
-MTU changes may affect the number of IRQs so we must call
-bnxt_close_nic()/bnxt_open_nic() with the irq_re_init parameter
-set to true.  The reason is that a larger MTU may require
-aggregation rings not needed with smaller MTU.  We may not be
-able to allocate the required number of aggregation rings and
-so we reduce the number of channels which will change the number
-of IRQs.  Without this patch, it may crash eventually in
-pci_disable_msix() when the IRQs are not properly unwound.
+Add missing netlink policy entry for FRA_TUN_ID.
 
-Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Fixes: e7030878fc84 ("fib: Add fib rule match on tunnel id")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: David Ahern <dsahern@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/fib_rules.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 81282b811a6cd..d91953eabfeb4 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -5310,13 +5310,13 @@ static int bnxt_change_mtu(struct net_device *dev, int new_mtu)
- 		return -EINVAL;
- 
- 	if (netif_running(dev))
--		bnxt_close_nic(bp, false, false);
-+		bnxt_close_nic(bp, true, false);
- 
- 	dev->mtu = new_mtu;
- 	bnxt_set_ring_params(bp);
- 
- 	if (netif_running(dev))
--		return bnxt_open_nic(bp, false, false);
-+		return bnxt_open_nic(bp, true, false);
- 
- 	return 0;
- }
+diff --git a/include/net/fib_rules.h b/include/net/fib_rules.h
+index 59160de702b68..99ae8ac65ecad 100644
+--- a/include/net/fib_rules.h
++++ b/include/net/fib_rules.h
+@@ -85,6 +85,7 @@ struct fib_rules_ops {
+ 	[FRA_OIFNAME]	= { .type = NLA_STRING, .len = IFNAMSIZ - 1 }, \
+ 	[FRA_PRIORITY]	= { .type = NLA_U32 }, \
+ 	[FRA_FWMARK]	= { .type = NLA_U32 }, \
++	[FRA_TUN_ID]	= { .type = NLA_U64 }, \
+ 	[FRA_FWMASK]	= { .type = NLA_U32 }, \
+ 	[FRA_TABLE]     = { .type = NLA_U32 }, \
+ 	[FRA_SUPPRESS_PREFIXLEN] = { .type = NLA_U32 }, \
 -- 
 2.20.1
 
