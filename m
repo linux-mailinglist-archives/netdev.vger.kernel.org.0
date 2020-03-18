@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59CD618A6B3
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:10:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88EE218A69F
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:09:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727149AbgCRUxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:53:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52380 "EHLO mail.kernel.org"
+        id S1727282AbgCRUxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 16:53:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52772 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727022AbgCRUx3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:53:29 -0400
+        id S1727262AbgCRUxn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 16:53:43 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 85C8520777;
-        Wed, 18 Mar 2020 20:53:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BEF4020775;
+        Wed, 18 Mar 2020 20:53:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584564808;
+        s=default; t=1584564822;
         bh=F0FLa2iKgD3VIOUQXUfJd6u9S0Ph0eysk4JIX+3072E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0uP77P7+2vNnJS3CN7ojZJenxyX8npZI4WgZSfnIhxDBAi+U26hoR13tBqYmwMlZb
-         mr0eXWBRAlKtVqm5ew8WHplYfk9yyCOHWY2McbmzoUMbgavtEb7k6qmWNd1i8Pi6WA
-         d8jeXYatF5Dm+FOJLTSx5Eni8jzQG7HeCGS5UcZk=
+        b=T/6SsHQbK/w/BpCu+x/aDWJv1ibsanSGXs/Cte/h0Hs8yA+g8+cd3UdzdIpE6kGZq
+         xxZW81rsfFh9wXuhcXR+XYKU7/zzgNszo3Bu0VIzkOXEb1Z7nNqYhKbAsZJOObTYNE
+         swBZB0nGU3X91u5Tx4tD6wIVwt+1rGj+/ZgbjaKQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Sven Eckelmann <sven@narfation.org>,
@@ -32,12 +32,12 @@ Cc:     Sven Eckelmann <sven@narfation.org>,
         Simon Wunderlich <sw@simonwunderlich.de>,
         Sasha Levin <sashal@kernel.org>,
         b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 05/84] batman-adv: Don't schedule OGM for disabled interface
-Date:   Wed, 18 Mar 2020 16:52:02 -0400
-Message-Id: <20200318205321.16066-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 04/73] batman-adv: Don't schedule OGM for disabled interface
+Date:   Wed, 18 Mar 2020 16:52:28 -0400
+Message-Id: <20200318205337.16279-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200318205321.16066-1-sashal@kernel.org>
-References: <20200318205321.16066-1-sashal@kernel.org>
+In-Reply-To: <20200318205337.16279-1-sashal@kernel.org>
+References: <20200318205337.16279-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
