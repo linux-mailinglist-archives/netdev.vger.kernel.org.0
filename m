@@ -2,131 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EFB1189C54
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 13:55:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C77EE189C7E
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 14:04:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726845AbgCRMzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 08:55:08 -0400
-Received: from mail-eopbgr70075.outbound.protection.outlook.com ([40.107.7.75]:62957
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726546AbgCRMzI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 08:55:08 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LYWUIkcj3Kj3U3Tt0EuWYdGVh5g4Lwc5vlfHMqLL1lYIJUxEZgaWqLekMDkpCG2yu3NyQHUDHHLq3Oj+hw9yzIFUP3EAaE9WYh6Gzcwulqs2XQ3DtY/mPFGXtAjuaiHouRDD4gafekImlcTOYQ1xk1+0hmn1+EcJehH3RtW7x2FOUY9iIfvpWH7TUisACJhAeNZibF7npmeA4RsJRWH7VeAOaruB6wtCiu5kqHZUXpgsohfM8OLsYlK1BjaNkSlCcelFwR04dQFojYkpcQTWq0TMUVKpINeHm4peN0r9JAeFJTVK4ZNFhYD2NOn/qJC5e/WeYdz5P5sDiATfA0Vf+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3LaL8hutKHGnH4r18ajhmXDOhDPoTBI8b+aF3WEJNvw=;
- b=VgMMda6bdpxI1abdJwlYFs2v1oLnvRqV4tvRtD0GGys1mLA/x8yLEJujsPmN24CnjLKWoDRN5FazE4F8elsNgMwmiwg6F6BA6HjWZ1HpEDC8is/p/+ED0zCx+AJRo1S2t1AQccIysuTRI0HcTazorcTMvhtqnpClveY5x3zo5SZvWXWBlS+gRW21Ox6hpvcgDW/eZy1vtvm8oKK4kR9Hhgd7lxe4dIr7ZHgFazIqF+pJ7PwVa8CjqQTWdlpNutuIsaeWH8PxiaYmiGgMlVJgqyg674aBt+g8HSahU6dqyzcLzNvZHVnjyZxGwy4GHjopwSYwlCCze7A20t7xi7eHSQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3LaL8hutKHGnH4r18ajhmXDOhDPoTBI8b+aF3WEJNvw=;
- b=P5qdxkh+EQ97zVXLH7aJKxooVHnaovYyGuF3FaKchdA3wmLB+s2opCbPFpFNH6ydn8XguKC8shnVoTs/KCbkdSJelP7B2gZvn92R1ImzZdkhtJraD/xQC60zEFJc0gA213v4seOPOvdhAfljCMYfotrHY2I6xXlv5x9bHbVZBXk=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (52.133.14.15) by
- VI1PR05MB6350.eurprd05.prod.outlook.com (20.179.26.215) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.18; Wed, 18 Mar 2020 12:55:03 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::18d2:a9ea:519:add3]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::18d2:a9ea:519:add3%7]) with mapi id 15.20.2814.025; Wed, 18 Mar 2020
- 12:55:03 +0000
-Date:   Wed, 18 Mar 2020 09:54:59 -0300
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        linux-rdma@vger.kernel.org,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>
-Subject: Re: [PATCH rdma-next 0/4] Introduce dynamic UAR allocation mode
-Message-ID: <20200318125459.GI13183@mellanox.com>
-References: <20200318124329.52111-1-leon@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200318124329.52111-1-leon@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: MN2PR01CA0049.prod.exchangelabs.com (2603:10b6:208:23f::18)
- To VI1PR05MB4141.eurprd05.prod.outlook.com (2603:10a6:803:44::15)
+        id S1726874AbgCRNEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 09:04:13 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:37882 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726619AbgCRNEN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 09:04:13 -0400
+Received: by mail-lf1-f65.google.com with SMTP id j11so20291216lfg.4
+        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 06:04:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L4yQJluOvc46lNyqqVb7se6AVE/Gv7oCJyL3ecL5y8E=;
+        b=hzjFpIyR5P6z3ucc8PqCSysdAnjqk/dzMlwCscfvCsq9DyHXLoXyVDpr6MEMAZ8/lw
+         df06enFrsk90Yc1ssz3A6CSJwfofEcyrX038b1vwbxPRNk2Yl+zxOQ8fJ9/g9pyVV3tE
+         nxiEm18/XDSfGyy7rO79SD7Ch4gIp3cxnkxjM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L4yQJluOvc46lNyqqVb7se6AVE/Gv7oCJyL3ecL5y8E=;
+        b=C6bTRuvTQpDM42qZ/veSCZ4HzFo4h47MQDTCyX4mlvojvE9oXCXC64fE4AC1IV3HGq
+         yAFxCbWmPzusmSh8QDoVpoDCf9pTGOExe9ApgG9h16EFxj9tFoVGE0IKhqvnw8ADb7c2
+         W90bzfQQtBxzh6ROqtihQvkE53D5m06YxZTjNTTuCIHba9VmsGoCG8Vo3k7thDe7p2m/
+         6MmfAKJiDxSQlez5pTlKh2SiaP+NTKkmESmhNgsQ0dsHidq4JY0JH7BmlB9vOCd2HM7Z
+         HZQSu+OM3PSK05oqmV80j6KstQQqEIeH6GPnB+zXXgz9g8hB1DTWut4OxnbBxL3M4o8E
+         gtbg==
+X-Gm-Message-State: ANhLgQ1JKRefplikMphnDlkVipmr94HRxi6lvZWojqZp5aQsPg+bu+3m
+        tcBZ7qvo1HPr2aIK2BPR6Vqq2VQ6vd4=
+X-Google-Smtp-Source: ADFU+vs2xcl+H0IsaDmTdFXuU/T/kxXtS4+mJrhnTe/rONX3bjTjl7o5kxf9K3BwiyEZ4k4zMVSZQA==
+X-Received: by 2002:a19:8c4d:: with SMTP id i13mr2942888lfj.42.1584536648083;
+        Wed, 18 Mar 2020 06:04:08 -0700 (PDT)
+Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id z21sm4327384ljz.49.2020.03.18.06.04.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Mar 2020 06:04:07 -0700 (PDT)
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
+        bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next] net: bridge: vlan: include stats in dumps if requested
+Date:   Wed, 18 Mar 2020 15:03:25 +0200
+Message-Id: <20200318130325.100508-1-nikolay@cumulusnetworks.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.68.57.212) by MN2PR01CA0049.prod.exchangelabs.com (2603:10b6:208:23f::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.18 via Frontend Transport; Wed, 18 Mar 2020 12:55:03 +0000
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1jEYDr-0004Zs-QL; Wed, 18 Mar 2020 09:54:59 -0300
-X-Originating-IP: [142.68.57.212]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 6847729f-6aa5-47de-681a-08d7cb3b9368
-X-MS-TrafficTypeDiagnostic: VI1PR05MB6350:|VI1PR05MB6350:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB6350D60C426B7E78CD34DCCFCFF70@VI1PR05MB6350.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Forefront-PRVS: 03468CBA43
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(396003)(376002)(346002)(39860400002)(199004)(66946007)(86362001)(9786002)(107886003)(9746002)(478600001)(66476007)(186003)(1076003)(2616005)(52116002)(26005)(54906003)(4326008)(2906002)(33656002)(5660300002)(316002)(81166006)(81156014)(8676002)(8936002)(66556008)(6916009)(36756003)(24400500001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6350;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Sg9mwugB2t55EGjSYpwPx5FOwE91G9/+6m5sl2NC65REJY6XSDQlpuSb28haaS3c0J/tsksTSk7YLzwhhv2fflw9Ogz5245+LXbdGQtsIKWk7wu8O7bIrtNEn3wl3HOkxVHLkCXd42aSsaAA5y8RReQGX3AbVNgxpNoPzcTPfArMGsR7daZ5dIDipZchmc2sxIdn+BDkvt8eks8/j2Y8CtCd+rJuN0snPIZphFLPZZrI6aUj4VOCkYKZ5Twn7gGqtDDYBw1KkIu1ppL3H9+Bj0x/dk8+7nrC+ebZoEo1inWjEpYB/9P35C7evP/MJtKoWRVfKn/ic8l0xHms7KihjVXgqXm9Q9S0WVgrHVzqwlioPnhLtB/glkP2u+0jNVeMcm5V3kRUzLD89SY3R8ivPG/khI/VZhfcOf8XWv+bFqDaUdPcJEIrA5Yc+WcIbt/0WsU96Mlc7v0JfX6NYFXXB6AX8YqItNnp02oYGPPZm+revlhydEPavXSnMT2bcPzT
-X-MS-Exchange-AntiSpam-MessageData: J3btn9XfaNaCVnPomuUIV/eSJnB8QOqKp4djeKhcUkEgm99Qh0G4bxOm/2js75S/eotjL7hg30140qRsCqPNIPIndlau2LsyTJNG7nzMFinmOYiXpD9r3XLj4aXRV2JKjh2cQb1gnic4KJcgKvR/gg==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6847729f-6aa5-47de-681a-08d7cb3b9368
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2020 12:55:03.4005
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bol06R9uoR8fmJBMrOOb6kjVDt/m6VvvHBX96x7HAUsLfXeOLUdj8ejUVdrJpypLfni1cb1bsAze+/vJijkTzA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6350
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 02:43:25PM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@mellanox.com>
-> 
-> From Yishai,
-> 
-> This series exposes API to enable a dynamic allocation and management of a
-> UAR which now becomes to be a regular uobject.
-> 
-> Moving to that mode enables allocating a UAR only upon demand and drop the
-> redundant static allocation of UARs upon context creation.
-> 
-> In addition, it allows master and secondary processes that own the same command
-> FD to allocate and manage UARs according to their needs, this can’t be achieved
-> today.
-> 
-> As part of this option, QP & CQ creation flows were adapted to support this
-> dynamic UAR mode once asked by user space.
-> 
-> Once this mode is asked by mlx5 user space driver on a given context, it will
-> be mutual exclusive, means both the static and legacy dynamic modes for using
-> UARs will be blocked.
-> 
-> The legacy modes are supported for backward compatible reasons, looking
-> forward we expect this new mode to be the default.
+This patch adds support for vlan stats to be included when dumping vlan
+information. We have to dump them only when explicitly requested (thus the
+flag below) because that disables the vlan range compression and will make
+the dump significantly larger. In order to request the stats dump we turn
+one of the br_vlan_msg reserved fields into a flag field and check it for:
+  - BRIDGE_VLMSG_FLAG_DUMP_STATS
+The stats are intentionally nested and put into separate attributes to make
+it easier for extending later since we plan to add per-vlan mcast stats,
+drop stats and possibly STP stats. This is the last missing piece from the
+new vlan API which makes the dumped vlan information complete.
 
-We are starting to accumulate a lot of code that is now old-rdma-core
-only.
+A vlandb entry attribute with stats looks like:
+ [BRIDGE_VLANDB_ENTRY] = {
+     [BRIDGE_VLANDB_ENTRY_STATS] = {
+         [BRIDGE_VLANDB_STATS_RX_BYTES]
+         [BRIDGE_VLANDB_STATS_RX_PACKETS]
+         ...
+     }
+ }
 
-I have been wondering if we should add something like
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+---
+ include/uapi/linux/if_bridge.h | 24 ++++++++++++-
+ net/bridge/br_vlan.c           | 62 ++++++++++++++++++++++++++++------
+ 2 files changed, 74 insertions(+), 12 deletions(-)
 
-#if CONFIG_INFINIBAND_MIN_RDMA_CORE_VERSION < 21
-#endif
+diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+index 54010b49c093..13b76a4e7ed8 100644
+--- a/include/uapi/linux/if_bridge.h
++++ b/include/uapi/linux/if_bridge.h
+@@ -170,11 +170,13 @@ struct bridge_stp_xstats {
+ /* Bridge vlan RTM header */
+ struct br_vlan_msg {
+ 	__u8 family;
+-	__u8 reserved1;
++	__u8 flags;
+ 	__u16 reserved2;
+ 	__u32 ifindex;
+ };
+ 
++#define BRIDGE_VLMSG_FLAG_DUMP_STATS	(1 << 0) /* Include stats in the dump */
++
+ /* Bridge vlan RTM attributes
+  * [BRIDGE_VLANDB_ENTRY] = {
+  *     [BRIDGE_VLANDB_ENTRY_INFO]
+@@ -194,10 +196,30 @@ enum {
+ 	BRIDGE_VLANDB_ENTRY_RANGE,
+ 	BRIDGE_VLANDB_ENTRY_STATE,
+ 	BRIDGE_VLANDB_ENTRY_TUNNEL_ID,
++	BRIDGE_VLANDB_ENTRY_STATS,
+ 	__BRIDGE_VLANDB_ENTRY_MAX,
+ };
+ #define BRIDGE_VLANDB_ENTRY_MAX (__BRIDGE_VLANDB_ENTRY_MAX - 1)
+ 
++/* [BRIDGE_VLANDB_ENTRY] = {
++ *     [BRIDGE_VLANDB_ENTRY_STATS] = {
++ *         [BRIDGE_VLANDB_STATS_RX_BYTES]
++ *         ...
++ *     }
++ *     ...
++ * }
++ */
++enum {
++	BRIDGE_VLANDB_STATS_UNSPEC,
++	BRIDGE_VLANDB_STATS_RX_BYTES,
++	BRIDGE_VLANDB_STATS_RX_PACKETS,
++	BRIDGE_VLANDB_STATS_TX_BYTES,
++	BRIDGE_VLANDB_STATS_TX_PACKETS,
++	BRIDGE_VLANDB_STATS_PAD,
++	__BRIDGE_VLANDB_STATS_MAX,
++};
++#define BRIDGE_VLANDB_STATS_MAX (__BRIDGE_VLANDB_STATS_MAX - 1)
++
+ /* Bridge multicast database attributes
+  * [MDBA_MDB] = {
+  *     [MDBA_MDB_ENTRY] = {
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index 24f524536be4..8fa5f6df36bb 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -1569,10 +1569,41 @@ void br_vlan_port_event(struct net_bridge_port *p, unsigned long event)
+ 	}
+ }
+ 
++static bool br_vlan_stats_fill(struct sk_buff *skb,
++			       const struct net_bridge_vlan *v)
++{
++	struct br_vlan_stats stats;
++	struct nlattr *nest;
++
++	nest = nla_nest_start(skb, BRIDGE_VLANDB_ENTRY_STATS);
++	if (!nest)
++		return false;
++
++	br_vlan_get_stats(v, &stats);
++	if (nla_put_u64_64bit(skb, BRIDGE_VLANDB_STATS_RX_BYTES, stats.rx_bytes,
++			      BRIDGE_VLANDB_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, BRIDGE_VLANDB_STATS_RX_PACKETS,
++			      stats.rx_packets, BRIDGE_VLANDB_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, BRIDGE_VLANDB_STATS_TX_BYTES, stats.tx_bytes,
++			      BRIDGE_VLANDB_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, BRIDGE_VLANDB_STATS_TX_PACKETS,
++			      stats.tx_packets, BRIDGE_VLANDB_STATS_PAD))
++		goto out_err;
++
++	nla_nest_end(skb, nest);
++
++	return true;
++
++out_err:
++	nla_nest_cancel(skb, nest);
++	return false;
++}
++
+ /* v_opts is used to dump the options which must be equal in the whole range */
+ static bool br_vlan_fill_vids(struct sk_buff *skb, u16 vid, u16 vid_range,
+ 			      const struct net_bridge_vlan *v_opts,
+-			      u16 flags)
++			      u16 flags,
++			      bool dump_stats)
+ {
+ 	struct bridge_vlan_info info;
+ 	struct nlattr *nest;
+@@ -1596,8 +1627,13 @@ static bool br_vlan_fill_vids(struct sk_buff *skb, u16 vid, u16 vid_range,
+ 	    nla_put_u16(skb, BRIDGE_VLANDB_ENTRY_RANGE, vid_range))
+ 		goto out_err;
+ 
+-	if (v_opts && !br_vlan_opts_fill(skb, v_opts))
+-		goto out_err;
++	if (v_opts) {
++		if (!br_vlan_opts_fill(skb, v_opts))
++			goto out_err;
++
++		if (dump_stats && !br_vlan_stats_fill(skb, v_opts))
++			goto out_err;
++	}
+ 
+ 	nla_nest_end(skb, nest);
+ 
+@@ -1675,7 +1711,7 @@ void br_vlan_notify(const struct net_bridge *br,
+ 		goto out_kfree;
+ 	}
+ 
+-	if (!br_vlan_fill_vids(skb, vid, vid_range, v, flags))
++	if (!br_vlan_fill_vids(skb, vid, vid_range, v, flags, false))
+ 		goto out_err;
+ 
+ 	nlmsg_end(skb, nlh);
+@@ -1699,9 +1735,11 @@ bool br_vlan_can_enter_range(const struct net_bridge_vlan *v_curr,
+ 
+ static int br_vlan_dump_dev(const struct net_device *dev,
+ 			    struct sk_buff *skb,
+-			    struct netlink_callback *cb)
++			    struct netlink_callback *cb,
++			    u8 bvm_flags)
+ {
+ 	struct net_bridge_vlan *v, *range_start = NULL, *range_end = NULL;
++	bool dump_stats = !!(bvm_flags & BRIDGE_VLMSG_FLAG_DUMP_STATS);
+ 	struct net_bridge_vlan_group *vg;
+ 	int idx = 0, s_idx = cb->args[1];
+ 	struct nlmsghdr *nlh = NULL;
+@@ -1754,12 +1792,13 @@ static int br_vlan_dump_dev(const struct net_device *dev,
+ 			continue;
+ 		}
+ 
+-		if (v->vid == pvid || !br_vlan_can_enter_range(v, range_end)) {
+-			u16 flags = br_vlan_flags(range_start, pvid);
++		if (dump_stats || v->vid == pvid ||
++		    !br_vlan_can_enter_range(v, range_end)) {
++			u16 vlan_flags = br_vlan_flags(range_start, pvid);
+ 
+ 			if (!br_vlan_fill_vids(skb, range_start->vid,
+ 					       range_end->vid, range_start,
+-					       flags)) {
++					       vlan_flags, dump_stats)) {
+ 				err = -EMSGSIZE;
+ 				break;
+ 			}
+@@ -1778,7 +1817,8 @@ static int br_vlan_dump_dev(const struct net_device *dev,
+ 	 */
+ 	if (!err && range_start &&
+ 	    !br_vlan_fill_vids(skb, range_start->vid, range_end->vid,
+-			       range_start, br_vlan_flags(range_start, pvid)))
++			       range_start, br_vlan_flags(range_start, pvid),
++			       dump_stats))
+ 		err = -EMSGSIZE;
+ 
+ 	cb->args[1] = err ? idx : 0;
+@@ -1808,7 +1848,7 @@ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
+ 			err = -ENODEV;
+ 			goto out_err;
+ 		}
+-		err = br_vlan_dump_dev(dev, skb, cb);
++		err = br_vlan_dump_dev(dev, skb, cb, bvm->flags);
+ 		if (err && err != -EMSGSIZE)
+ 			goto out_err;
+ 	} else {
+@@ -1816,7 +1856,7 @@ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
+ 			if (idx < s_idx)
+ 				goto skip;
+ 
+-			err = br_vlan_dump_dev(dev, skb, cb);
++			err = br_vlan_dump_dev(dev, skb, cb, bvm->flags);
+ 			if (err == -EMSGSIZE)
+ 				break;
+ skip:
+-- 
+2.25.1
 
-So we can keep track of what is actually a used code flow and what is
-now hard to test legacy code.
-
-eg this config would also disable the write interface(), turn off
-compat write interfaces as they are switched to use ioctl, etc, etc.
-
-Jason
