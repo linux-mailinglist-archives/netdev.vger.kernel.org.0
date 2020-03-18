@@ -2,141 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 26A1818941F
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 03:48:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AB44189420
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 03:48:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726881AbgCRCsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 22:48:17 -0400
+        id S1727054AbgCRCsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 22:48:20 -0400
 Received: from mail-eopbgr130053.outbound.protection.outlook.com ([40.107.13.53]:20090
         "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726616AbgCRCsQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Mar 2020 22:48:16 -0400
+        id S1726616AbgCRCsU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Mar 2020 22:48:20 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YHr3Zoyytg/kLVkGJEX9wifUyMkxeX6FPs7zTW58gdPmtnbZfwu8h77UBNgMvoYMSWKcTq0JMKppu5jFXhjbjdbd3rv9MhxAkp7mKp8iofLNfDyNrO+2OvxElm0AkVKsIWt3vep6Ra7GxD6PTNo4f/P4pHvfJgPhsfyk+xBPoS7Y24sjqLfdYpLtuZMOYNOEr85Jlg+SQO2O9Gs+DY3+4ZvG5khhKcBmI1IZ3DXnoQKOjCv9jfJqyJdJ7gzK/1hl/FrmXjZmuQTo8YI28gn6XnPmBQ2aHuuqelEkXmKcd0aF4ivIAqawVMnmd3lovBZMgnN+dhIqPtGt9giayrECEA==
+ b=DTTOqQuJ9z9ojppyrGXVh99Tweh6xO08rGvchiPZjtdy9DMlEgCL8vBrwFsEI6u+N1BPmNIQI0H4yUWlESqzuoHLxYZPweXW6SjnX9tPSHNpUZ3jRvwaG1nuP1vJ99OFYeOHVr37NcQ2XZxBBGFo+xnVCsF96G7oSXaJU7/OQ3N3M0/axXneTWqvNdvocdgyaNBjk9DHDzoAkWRlBDXWMCjVs3H+H7H+7thE4+5+X2rTaQNjSJ/bRFUjdI/DR4Wmk8g9PmwjbwmeddGdI97ZiEIxSKJdjf2OdTXALYF4ZL5B/iHcjECpQGI2c5DRNYA9wZA41bmHcuTIKUW0dqHt1Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qqw0KKJxvcNaYuFzc0U4W8nYxKuS0nKmkUSzrThxC44=;
- b=XcC/MwpTj8y8Txv8qTq3IrrYPB+8qQzV/HAFvBfYhNR6jb3EiCfVHYhMS0ZNIn2EbKU5fBpa4pMh4lQ6+Jx59dsZdfS6iUWftoEcbVQHDwNTtnUw8JJQQoK85LY1KXJzj313e4OcZk9S/I9bSQxTJlXXfyTu1lx7mEI434jid/F6WAsh93sOR9xR8y1CGB+LFoixnxlkQq68UFka2lD70Nk+iWBN3917EwOOEPW+VpK5po6BX96EeEzyEV1w0ZvoJYvl3p/rFKlcPMfKYfwRsKKS158gtEAV1EfSt5w50aXfv3w4WRCwC+WmhXxVAPgmLKz32x1RzJSs5udrDywk8Q==
+ bh=nZ19AO7uWN7LLS7nCPqO6rEJC505VNz1F6SikkE3a5k=;
+ b=mh+TOzvjhun/Ulgu0sslyIw/sYrEugO3TkOEs0qAt6zBqDWMsK9qiZ5ygGSZzBC34w+L9gYpMuWIhoNVpXdNrGXT9FG0LF5vA+8v5nywC3ETqAJbgvr4vl+97GWmGetLKXDH0VqTsRO+j+MesDWCTXZoMTsxddGhY4nxowTk+rGWhlG2koPTVlNtNymLYgK0V+np+xfAyRdflTD2HfoWII9hc7bmpyN24sn8PYu1giebHFJQN4I8GgpR/RCuFzKfVyZUATazLyHoJtBIsROBX7srInfX7pXBYx9ardyA82lmrizkxJbJJ5dO6sEbi06YObO9pByt4EyXM3CGayqJjA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qqw0KKJxvcNaYuFzc0U4W8nYxKuS0nKmkUSzrThxC44=;
- b=PQ2tI0cqboBDDq9bjE3cYasFXlTORmBd5j+e8gR6az/if5MOzyF3hM/8N7JQ4dfIHOFdlg7zUvMn+gp8xUhE1a93++eugjZee+6JkRpTiINDgTzJnnwWn1SUg0qbLzr3rIR30mMuprYZsuRiJhRjkXiNUOtkIzk7n1PeB4hQBtA=
+ bh=nZ19AO7uWN7LLS7nCPqO6rEJC505VNz1F6SikkE3a5k=;
+ b=gzMFZQkGlzoVpqkS/+i6mr4fjdAsFIi6X1zdq9AyHP2AiUVi17YasIRZPBJh8291+UelfLyMcKeL+m3gXP7nLeUBEi1BGD02vn+ooCS0AMrvgOdZ8ZUnXhfvx2eILuE97R+KfojeJnVWwdLoThAiLMV+apUrX9zSMLUUFUSRJgQ=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
  VI1PR05MB4109.eurprd05.prod.outlook.com (10.171.182.30) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2814.14; Wed, 18 Mar 2020 02:48:07 +0000
+ 15.20.2814.14; Wed, 18 Mar 2020 02:48:11 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2814.021; Wed, 18 Mar 2020
- 02:48:07 +0000
+ 02:48:11 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        Paul Blakey <paulb@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 05/14] net/mlx5e: CT: Fix insert rules when TC_CT config isn't enabled
-Date:   Tue, 17 Mar 2020 19:47:13 -0700
-Message-Id: <20200318024722.26580-6-saeedm@mellanox.com>
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Paul Blakey <paulb@mellanox.com>
+Subject: [net-next 06/14] net/mlx5e: CT: Fix stack usage compiler warning
+Date:   Tue, 17 Mar 2020 19:47:14 -0700
+Message-Id: <20200318024722.26580-7-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200318024722.26580-1-saeedm@mellanox.com>
 References: <20200318024722.26580-1-saeedm@mellanox.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-ClientProxiedBy: BY5PR13CA0027.namprd13.prod.outlook.com
  (2603:10b6:a03:180::40) To VI1PR05MB5102.eurprd05.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BY5PR13CA0027.namprd13.prod.outlook.com (2603:10b6:a03:180::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.12 via Frontend Transport; Wed, 18 Mar 2020 02:48:05 +0000
+Received: from smtp.office365.com (73.15.39.150) by BY5PR13CA0027.namprd13.prod.outlook.com (2603:10b6:a03:180::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.12 via Frontend Transport; Wed, 18 Mar 2020 02:48:09 +0000
 X-Mailer: git-send-email 2.24.1
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 79c807b3-b4b8-4a5d-8f61-08d7cae6c9ec
+X-MS-Office365-Filtering-Correlation-Id: f86a1c7e-c221-4c0f-1896-08d7cae6cbef
 X-MS-TrafficTypeDiagnostic: VI1PR05MB4109:|VI1PR05MB4109:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB4109271AEDCD5A3611D26108BEF70@VI1PR05MB4109.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:513;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB4109D7B58F46ACD811B014F9BEF70@VI1PR05MB4109.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2331;
 X-Forefront-PRVS: 03468CBA43
 X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(346002)(39860400002)(376002)(136003)(199004)(956004)(478600001)(2616005)(6486002)(2906002)(54906003)(5660300002)(52116002)(86362001)(81156014)(6506007)(81166006)(4326008)(107886003)(8676002)(8936002)(26005)(66946007)(186003)(16526019)(1076003)(6512007)(66556008)(6666004)(66476007)(36756003)(316002)(6916009)(54420400002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4109;H:VI1PR05MB5102.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
 Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AXtci4dA1LPuLkDiB4HMM3Q4rADlpkFNRs8KtAX3jCJORd6RrgS0MUJSzeF27BNaqHA/tdq1M90GL1wuzgXJEeyWFwu9332ZIk6FdZFUs9UT7nMEL3Teoc9/VUKmW5YppAhsQ54lEQHiQVpUjr3qzhLvs6TKsZR/BkZny9KJUa8fsJwaoiiM0Bpk6KQ9cvECu8+JsYRHdBLqge1i5YJkYsoKmkHos3zhYVUpcFHfvH/2r6qwJFQTnLeTCyKVWh4wG2odYw3+ZPpbsC85tQVKwxRH7NDkowZGatiOaguNPBfaDMIYWXNeAEanG/diQFk6ReHNKnAcAGqVlZwPjKRl8C8USCgwl3jU4PEnIeplxgArpc0Sw+VaM9MWNo/VTGwnFdZ1IKWIH8r6wZoCLTcbKKTDsNdLq2QPouW+9IhQRTDcu5P+wNUaCAt1GnWzzemRx3YU8HpKsq6ohbllZ90/5ceDO9NnF6uZmXwtPMiquosvPjTrfu8kXHyB8xT+JDepHQVxOOjpDQtfWV6jKAVFgFad+e+mVM6uwQEl/YnHAqg=
-X-MS-Exchange-AntiSpam-MessageData: uvy/Lze4iHQfcAThMzjCXEGa6Q+Pgha+6UYwlXDv1id/ECVIDSie53zhCb8ifWfsF9+GNiXtvGPTpDkzunwga7chsNVvgbUehkAxKGhVJ+wVBK1OI3pJIqqiCo8f7H0iqt1gzN20iIIpxCVbF2joDg==
+X-Microsoft-Antispam-Message-Info: ultFeetBdVWZKwdLGztO3GyWIXL+CF695uKC9iJfoMBFvJtUua8BniqegA8DFRTtnR3NesclckN5BeSOj1piyQQZGYpR1mQxisvRyXgPotiyT1PT9pRftuBZiIZ9zb00A66KXHOZhn4cDxqUWsSpz4tvF5n+AwoKEAgWHUe8giYx3Z8u2chEC8eHU78TJDQRxYq9Og9lW74aKu8E3/qlOYiV4uL2nh9j//snyXcqdwdiPgip6fNrsbONUjJxw3GboHaL1zxl+J3Ft3wUr2TE4983xvWp96Yhib1S3Nlm4ddS9FNdyCWT/U9ciNPw/BRfjjMtW5+LJ+B0g7foW00yhseanM1v5yxRBrp16b5keKhqWr6GUZYSTwfwNeXsN5Cnm6mT7hqXFbXYA0K5T4wniJaNoP65L3PLF/sbF9K1U5LJP0HQShI+AftMOY6FTZuVfsPyGTkZgv0MJ/hqo9mTsC4Nu+eeOKTit3FAqMywm+LcM9d2I1AU433fn3bf1bVltPSDeLSQnvVJzVG90CU4592XeMSp79Ftek+choYH474=
+X-MS-Exchange-AntiSpam-MessageData: lKLMPZAEX+TiSP62aUFEiTCP+5IUqXv+ShBDoM49SAlIBuQIaEbd5y1daQ5i6KbG2/tuiUg5CtI81M/N0Thct1aATq7BZK2o7kCv7LP84vAS8bP5dJPWshZ1ZfqlvAHgHHjPdEeMvvFt6MtRtr3Nvg==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 79c807b3-b4b8-4a5d-8f61-08d7cae6c9ec
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2020 02:48:07.7685
+X-MS-Exchange-CrossTenant-Network-Message-Id: f86a1c7e-c221-4c0f-1896-08d7cae6cbef
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2020 02:48:11.0996
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: u3Xor1UaGAuNnbN1UkS1PwcOQN4oBfMOxdXrh1G90bTXizhlYB8QuuAkLGGSuV2YJPXZZ+jWInmerduBDPqqIg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: B1Luo4N6Wg0kG9j6CgUM9OpQc+NvO+pdR1pRwLQ6p+8xoRTaO8AlI5GwSIHxjSmsX71kw5zK2pl+CEZ2EICVBA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4109
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Blakey <paulb@mellanox.com>
+Fix the following warnings: [-Werror=frame-larger-than=]
 
-If CONFIG_MLX5_TC_CT isn't enabled, all offloading of eswitch tc rules
-fails on parsing ct match, even if there is no ct match.
+In function ‘mlx5_tc_ct_entry_add_rule’:
+drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c:541:1:
+error: the frame size of 1136 bytes is larger than 1024 bytes
 
-Return success if there is no ct match, regardless of config.
+In function ‘__mlx5_tc_ct_flow_offload’:
+drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c:1049:1:
+error: the frame size of 1168 bytes is larger than 1024 bytes
 
 Fixes: 4c3844d9e97e ("net/mlx5e: CT: Introduce connection tracking")
-Signed-off-by: Paul Blakey <paulb@mellanox.com>
-Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Reviewed-by: Paul Blakey <paulb@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 31 +++++++++++++------
+ 1 file changed, 22 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-index 6b2c893372da..091d305b633e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
-@@ -8,6 +8,8 @@
- #include <linux/mlx5/fs.h>
- #include <net/tc_act/tc_ct.h>
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+index 9fe150957d65..a22ad6b90847 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+@@ -484,19 +484,23 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
+ 	struct mlx5_ct_zone_rule *zone_rule = &entry->zone_rules[nat];
+ 	struct mlx5_esw_flow_attr *attr = &zone_rule->attr;
+ 	struct mlx5_eswitch *esw = ct_priv->esw;
+-	struct mlx5_flow_spec spec = {};
++	struct mlx5_flow_spec *spec = NULL;
+ 	u32 tupleid = 1;
+ 	int err;
  
-+#include "en.h"
+ 	zone_rule->nat = nat;
+ 
++	spec = kzalloc(sizeof(*spec), GFP_KERNEL);
++	if (!spec)
++		return -ENOMEM;
 +
- struct mlx5_esw_flow_attr;
- struct mlx5e_tc_mod_hdr_acts;
- struct mlx5_rep_uplink_priv;
-@@ -128,6 +130,11 @@ mlx5_tc_ct_parse_match(struct mlx5e_priv *priv,
- 		       struct flow_cls_offload *f,
- 		       struct netlink_ext_ack *extack)
- {
-+	if (!flow_rule_match_key(f->rule, FLOW_DISSECTOR_KEY_CT))
-+		return 0;
-+
-+	NL_SET_ERR_MSG_MOD(extack, "mlx5 tc ct offload isn't enabled.");
-+	netdev_warn(priv->netdev, "mlx5 tc ct offload isn't enabled.\n");
- 	return -EOPNOTSUPP;
+ 	/* Get tuple unique id */
+ 	err = idr_alloc_u32(&ct_priv->tuple_ids, zone_rule, &tupleid,
+ 			    TUPLE_ID_MAX, GFP_KERNEL);
+ 	if (err) {
+ 		netdev_warn(ct_priv->netdev,
+ 			    "Failed to allocate tuple id, err: %d\n", err);
+-		return err;
++		goto err_idr_alloc;
+ 	}
+ 	zone_rule->tupleid = tupleid;
+ 
+@@ -517,18 +521,19 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
+ 	attr->counter = entry->counter;
+ 	attr->flags |= MLX5_ESW_ATTR_FLAG_NO_IN_PORT;
+ 
+-	mlx5_tc_ct_set_tuple_match(&spec, flow_rule);
+-	mlx5e_tc_match_to_reg_match(&spec, ZONE_TO_REG,
++	mlx5_tc_ct_set_tuple_match(spec, flow_rule);
++	mlx5e_tc_match_to_reg_match(spec, ZONE_TO_REG,
+ 				    entry->zone & MLX5_CT_ZONE_MASK,
+ 				    MLX5_CT_ZONE_MASK);
+ 
+-	zone_rule->rule = mlx5_eswitch_add_offloaded_rule(esw, &spec, attr);
++	zone_rule->rule = mlx5_eswitch_add_offloaded_rule(esw, spec, attr);
+ 	if (IS_ERR(zone_rule->rule)) {
+ 		err = PTR_ERR(zone_rule->rule);
+ 		ct_dbg("Failed to add ct entry rule, nat: %d", nat);
+ 		goto err_rule;
+ 	}
+ 
++	kfree(spec);
+ 	ct_dbg("Offloaded ct entry rule in zone %d", entry->zone);
+ 
+ 	return 0;
+@@ -537,6 +542,8 @@ mlx5_tc_ct_entry_add_rule(struct mlx5_tc_ct_priv *ct_priv,
+ 	mlx5_modify_header_dealloc(esw->dev, attr->modify_hdr);
+ err_mod_hdr:
+ 	idr_remove(&ct_priv->tuple_ids, zone_rule->tupleid);
++err_idr_alloc:
++	kfree(spec);
+ 	return err;
  }
  
-@@ -137,6 +144,8 @@ mlx5_tc_ct_parse_action(struct mlx5e_priv *priv,
- 			const struct flow_action_entry *act,
- 			struct netlink_ext_ack *extack)
- {
-+	NL_SET_ERR_MSG_MOD(extack, "mlx5 tc ct offload isn't enabled.");
-+	netdev_warn(priv->netdev, "mlx5 tc ct offload isn't enabled.\n");
- 	return -EOPNOTSUPP;
- }
+@@ -884,8 +891,8 @@ __mlx5_tc_ct_flow_offload(struct mlx5e_priv *priv,
+ 	struct mlx5_tc_ct_priv *ct_priv = mlx5_tc_ct_get_ct_priv(priv);
+ 	bool nat = attr->ct_attr.ct_action & TCA_CT_ACT_NAT;
+ 	struct mlx5e_tc_mod_hdr_acts pre_mod_acts = {};
++	struct mlx5_flow_spec *post_ct_spec = NULL;
+ 	struct mlx5_eswitch *esw = ct_priv->esw;
+-	struct mlx5_flow_spec post_ct_spec = {};
+ 	struct mlx5_esw_flow_attr *pre_ct_attr;
+ 	struct  mlx5_modify_hdr *mod_hdr;
+ 	struct mlx5_flow_handle *rule;
+@@ -894,9 +901,13 @@ __mlx5_tc_ct_flow_offload(struct mlx5e_priv *priv,
+ 	struct mlx5_ct_ft *ft;
+ 	u32 fte_id = 1;
  
++	post_ct_spec = kzalloc(sizeof(*post_ct_spec), GFP_KERNEL);
+ 	ct_flow = kzalloc(sizeof(*ct_flow), GFP_KERNEL);
+-	if (!ct_flow)
++	if (!post_ct_spec || !ct_flow) {
++		kfree(post_ct_spec);
++		kfree(ct_flow);
+ 		return -ENOMEM;
++	}
+ 
+ 	/* Register for CT established events */
+ 	ft = mlx5_tc_ct_add_ft_cb(ct_priv, attr->ct_attr.zone,
+@@ -991,7 +1002,7 @@ __mlx5_tc_ct_flow_offload(struct mlx5e_priv *priv,
+ 	/* Post ct rule matches on fte_id and executes original rule's
+ 	 * tc rule action
+ 	 */
+-	mlx5e_tc_match_to_reg_match(&post_ct_spec, FTEID_TO_REG,
++	mlx5e_tc_match_to_reg_match(post_ct_spec, FTEID_TO_REG,
+ 				    fte_id, MLX5_FTE_ID_MASK);
+ 
+ 	/* Put post_ct rule on post_ct fdb */
+@@ -1002,7 +1013,7 @@ __mlx5_tc_ct_flow_offload(struct mlx5e_priv *priv,
+ 	ct_flow->post_ct_attr.inner_match_level = MLX5_MATCH_NONE;
+ 	ct_flow->post_ct_attr.outer_match_level = MLX5_MATCH_NONE;
+ 	ct_flow->post_ct_attr.action &= ~(MLX5_FLOW_CONTEXT_ACTION_DECAP);
+-	rule = mlx5_eswitch_add_offloaded_rule(esw, &post_ct_spec,
++	rule = mlx5_eswitch_add_offloaded_rule(esw, post_ct_spec,
+ 					       &ct_flow->post_ct_attr);
+ 	ct_flow->post_ct_rule = rule;
+ 	if (IS_ERR(ct_flow->post_ct_rule)) {
+@@ -1026,6 +1037,7 @@ __mlx5_tc_ct_flow_offload(struct mlx5e_priv *priv,
+ 	attr->ct_attr.ct_flow = ct_flow;
+ 	*flow_rule = ct_flow->post_ct_rule;
+ 	dealloc_mod_hdr_actions(&pre_mod_acts);
++	kfree(post_ct_spec);
+ 
+ 	return 0;
+ 
+@@ -1042,6 +1054,7 @@ __mlx5_tc_ct_flow_offload(struct mlx5e_priv *priv,
+ err_idr:
+ 	mlx5_tc_ct_del_ft_cb(ct_priv, ft);
+ err_ft:
++	kfree(post_ct_spec);
+ 	kfree(ct_flow);
+ 	netdev_warn(priv->netdev, "Failed to offload ct flow, err %d\n", err);
+ 	return err;
 -- 
 2.24.1
 
