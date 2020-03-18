@@ -2,195 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B326E18934B
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 01:47:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17E25189356
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 01:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727114AbgCRArN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 17 Mar 2020 20:47:13 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:35835 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726871AbgCRArN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 20:47:13 -0400
-Received: by mail-wm1-f67.google.com with SMTP id m3so1419035wmi.0;
-        Tue, 17 Mar 2020 17:47:11 -0700 (PDT)
+        id S1727240AbgCRA5R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 20:57:17 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:55110 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726871AbgCRA5R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 20:57:17 -0400
+Received: by mail-il1-f198.google.com with SMTP id m2so9390209ilb.21
+        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 17:57:16 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=9/exMKIZ8ieEohQ+Fb4Z3Q8IHb8NhRUPovwuH0tpsik=;
-        b=jRZ3TId5A4WIiVjoF/T8T4aw4j3pcv7oPRT5scPn87ce1H8A4jsd5VSPEE2tYJCxAy
-         57309nWx243AW0iS9teOKlRdRdCRv1DuOKHC/DSbjjuRtlN0xITTccquvpFmDnWEIaC2
-         Jy1VKsndVBK/9Lq8Npfx5mQZsb+k2RoPriTR+cuJt+nGN8foKdu2O4QOc6mc3824jMX/
-         8swxOtmJY49berUf0oRj57nlX+pN8RdPvX6ZF5/72w8odg3mKU2y89Oe8RI/UwTkb5mV
-         xpnhf2EuSio51/Lrz25Er0TDA7hwxyrWyN/CByo26NObSC/B8r7xobR0sAQ0cVFb8nxP
-         syLQ==
-X-Gm-Message-State: ANhLgQ3Gb03Zq8CowqLKBU/X3FR382SKoMDbYx4I98p0aF7VnBh1M7He
-        TZuuvtj80VQzohGr5qNWrptdzDUmGYTN+XkIl7s=
-X-Google-Smtp-Source: ADFU+vu2pcHM7a3Azn6XWazMw8W9fGOK6UBmTzaGV9EiuxuFwcnObroHWgjAoT7RXhB8mFi0h0HRRrH9tevtw1piddE=
-X-Received: by 2002:a7b:c208:: with SMTP id x8mr1698076wmi.136.1584492430512;
- Tue, 17 Mar 2020 17:47:10 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=AwxUWTQVZ+/aEy1zEIo924Rdw2MHYeelIX0x8Zy9SDM=;
+        b=i0nbwjuW/qcYgvbfKf+rUXXRpYFfUUs6eMappZv/VV0mWlCo1fqxjTYJDm2x1pKkT0
+         0qec4OxK3reRRCjw0lPFfIkBQQ9AYuZ/NwEWjo8RM8JaN6tzC+ZAh5BtqK2SjUmZTL4f
+         kZ7ntYDQYmQ9DMuVXYjYPmAcR7407HHMXFjl8FRW8v/1oWqi/Oqvy2+NUjJ4EY/GqMqW
+         ltqapGYZZd+RCJWkBfRPuqE6CT8HQhtIzozAMZHnEdc4K3xxmsmOf63xzv/0NVFfqpjT
+         N1LQRVTAa1Ax+QcmTg6j78osU7hkay4YUVUJ9AWnXI5oM2Ny2Z8oASWlSMHUIbkxLQ1s
+         5GmQ==
+X-Gm-Message-State: ANhLgQ2CsCXymrAR8scb+S08tBVt2E8UwD5WjP5M17Szt92Y2Hv081WS
+        PEQEYRSY99DF/SixlkEydyKIPxCFUtHXOdtJJrWYZHMaw6Ma
+X-Google-Smtp-Source: ADFU+vsBUcUjMSGR2RIVHBSQ+ZMxjiDPezE+DKLDNiIS3nDs+IwAscd82aFCKYGH8wMQd69WW6aSLHSklvEuJhbmYK7Z5QdKKKiI
 MIME-Version: 1.0
-References: <20200312233648.1767-1-joe@wand.net.nz> <20200312233648.1767-4-joe@wand.net.nz>
- <20200316225729.kd4hmz3oco5l7vn4@kafai-mbp> <CAOftzPgsVOqCLZatjytBXdQxH-DqJxiycXWN2d4C_-BjR5v1Kw@mail.gmail.com>
- <20200317062623.y5v2hejgtdbvexnz@kafai-mbp>
-In-Reply-To: <20200317062623.y5v2hejgtdbvexnz@kafai-mbp>
-From:   Joe Stringer <joe@wand.net.nz>
-Date:   Tue, 17 Mar 2020 17:46:58 -0700
-Message-ID: <CAOftzPjXexvng-+77b-4Yw0pEBHXchsNVwrx+h9vV+5XBQzy-g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/7] bpf: Add socket assign support
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Joe Stringer <joe@wand.net.nz>, bpf@vger.kernel.org,
-        netdev <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
+X-Received: by 2002:a92:6501:: with SMTP id z1mr1563074ilb.235.1584493035534;
+ Tue, 17 Mar 2020 17:57:15 -0700 (PDT)
+Date:   Tue, 17 Mar 2020 17:57:15 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000088487805a116880c@google.com>
+Subject: KASAN: use-after-free Write in tcindex_change
+From:   syzbot <syzbot+ba4bcf1563f90386910f@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        xiyou.wangcong@gmail.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 16, 2020 at 11:27 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Mon, Mar 16, 2020 at 08:06:38PM -0700, Joe Stringer wrote:
-> > On Mon, Mar 16, 2020 at 3:58 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> > >
-> > > On Thu, Mar 12, 2020 at 04:36:44PM -0700, Joe Stringer wrote:
-> > > > Add support for TPROXY via a new bpf helper, bpf_sk_assign().
-> > > >
-> > > > This helper requires the BPF program to discover the socket via a call
-> > > > to bpf_sk*_lookup_*(), then pass this socket to the new helper. The
-> > > > helper takes its own reference to the socket in addition to any existing
-> > > > reference that may or may not currently be obtained for the duration of
-> > > > BPF processing. For the destination socket to receive the traffic, the
-> > > > traffic must be routed towards that socket via local route, the socket
-> > > I also missed where is the local route check in the patch.
-> > > Is it implied by a sk can be found in bpf_sk*_lookup_*()?
-> >
-> > This is a requirement for traffic redirection, it's not enforced by
-> > the patch. If the operator does not configure routing for the relevant
-> > traffic to ensure that the traffic is delivered locally, then after
-> > the eBPF program terminates, it will pass up through ip_rcv() and
-> > friends and be subject to the whims of the routing table. (or
-> > alternatively if the BPF program redirects somewhere else then this
-> > reference will be dropped).
-> >
-> > Maybe there's a path to simplifying this configuration path in future
-> > to loosen this requirement, but for now I've kept the series as
-> > minimal as possible on that front.
-> >
-> > > [ ... ]
-> > >
-> > > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > > index cd0a532db4e7..bae0874289d8 100644
-> > > > --- a/net/core/filter.c
-> > > > +++ b/net/core/filter.c
-> > > > @@ -5846,6 +5846,32 @@ static const struct bpf_func_proto bpf_tcp_gen_syncookie_proto = {
-> > > >       .arg5_type      = ARG_CONST_SIZE,
-> > > >  };
-> > > >
-> > > > +BPF_CALL_3(bpf_sk_assign, struct sk_buff *, skb, struct sock *, sk, u64, flags)
-> > > > +{
-> > > > +     if (flags != 0)
-> > > > +             return -EINVAL;
-> > > > +     if (!skb_at_tc_ingress(skb))
-> > > > +             return -EOPNOTSUPP;
-> > > > +     if (unlikely(!refcount_inc_not_zero(&sk->sk_refcnt)))
-> > > > +             return -ENOENT;
-> > > > +
-> > > > +     skb_orphan(skb);
-> > > > +     skb->sk = sk;
-> > > sk is from the bpf_sk*_lookup_*() which does not consider
-> > > the bpf_prog installed in SO_ATTACH_REUSEPORT_EBPF.
-> > > However, the use-case is currently limited to sk inspection.
-> > >
-> > > It now supports selecting a particular sk to receive traffic.
-> > > Any plan in supporting that?
-> >
-> > I think this is a general bpf_sk*_lookup_*() question, previous
-> > discussion[0] settled on avoiding that complexity before a use case
-> > arises, for both TC and XDP versions of these helpers; I still don't
-> > have a specific use case in mind for such functionality. If we were to
-> > do it, I would presume that the socket lookup caller would need to
-> > pass a dedicated flag (supported at TC and likely not at XDP) to
-> > communicate that SO_ATTACH_REUSEPORT_EBPF progs should be respected
-> > and used to select the reuseport socket.
-> It is more about the expectation on the existing SO_ATTACH_REUSEPORT_EBPF
-> usecase.  It has been fine because SO_ATTACH_REUSEPORT_EBPF's bpf prog
-> will still be run later (e.g. from tcp_v4_rcv) to decide which sk to
-> recieve the skb.
->
-> If the bpf@tc assigns a TCP_LISTEN sk in bpf_sk_assign(),
-> will the SO_ATTACH_REUSEPORT_EBPF's bpf still be run later
-> to make the final sk decision?
+Hello,
 
-I don't believe so, no:
+syzbot found the following crash on:
 
-ip_local_deliver()
--> ...
--> ip_protocol_deliver_rcu()
--> tcp_v4_rcv()
--> __inet_lookup_skb()
--> skb_steal_sock(skb)
+HEAD commit:    fb33c651 Linux 5.6-rc6
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=177b20e5e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6dfa02302d6db985
+dashboard link: https://syzkaller.appspot.com/bug?extid=ba4bcf1563f90386910f
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1748dfdde00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16afffdde00000
 
-But this will only affect you if you are running both the bpf@tc
-program with sk_assign() and the reuseport BPF sock programs at the
-same time. This is why I link it back to the bpf_sk*_lookup_*()
-functions: If the socket lookup in the initial step respects reuseport
-BPF prog logic and returns the socket using the same logic, then the
-packet will be directed to the socket you expect. Just like how
-non-BPF reuseport would work with this series today.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+ba4bcf1563f90386910f@syzkaller.appspotmail.com
 
-> >
-> > > > diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-> > > > index 7b089d0ac8cd..f7b42adca9d0 100644
-> > > > --- a/net/ipv6/ip6_input.c
-> > > > +++ b/net/ipv6/ip6_input.c
-> > > > @@ -285,7 +285,10 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
-> > > >       rcu_read_unlock();
-> > > >
-> > > >       /* Must drop socket now because of tproxy. */
-> > > > -     skb_orphan(skb);
-> > > > +     if (skb_dst_is_sk_prefetch(skb))
-> > > > +             dst_sk_prefetch_fetch(skb);
-> > > > +     else
-> > > > +             skb_orphan(skb);
-> > > If I understand it correctly, this new test is to skip
-> > > the skb_orphan() call for locally routed skb.
-> > > Others cases (forward?) still depend on skb_orphan() to be called here?
-> >
-> > Roughly yes. 'locally routed skb' is a bit loose wording though, at
-> > this point the BPF program only prefetched the socket to let the stack
-> > know that it should deliver the skb to that socket, assuming that it
-> > passes the upcoming routing check.
-> Which upcoming routing check?  I think it is the part I am missing.
->
-> In patch 4, let say the dst_check() returns NULL (may be due to a route
-> change).  Later in the upper stack, it does a route lookup
-> (ip_route_input_noref() or ip6_route_input()).  Could it return
-> a forward route? and I assume missing a skb_orphan() call
-> here will still be fine?
+IPVS: ftp: loaded support on port[0] = 21
+==================================================================
+BUG: KASAN: use-after-free in tcindex_set_parms net/sched/cls_tcindex.c:455 [inline]
+BUG: KASAN: use-after-free in tcindex_change+0x1c61/0x27b0 net/sched/cls_tcindex.c:518
+Write of size 16 at addr ffff8880a4765830 by task syz-executor577/8737
 
-Yes it could return a forward route, in that case:
+CPU: 1 PID: 8737 Comm: syz-executor577 Not tainted 5.6.0-rc6-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x1e9/0x30e lib/dump_stack.c:118
+ print_address_description+0x74/0x5c0 mm/kasan/report.c:374
+ __kasan_report+0x14b/0x1c0 mm/kasan/report.c:506
+ kasan_report+0x25/0x50 mm/kasan/common.c:641
+ check_memory_region_inline mm/kasan/generic.c:182 [inline]
+ check_memory_region+0x2a5/0x2e0 mm/kasan/generic.c:192
+ memcpy+0x38/0x50 mm/kasan/common.c:128
+ tcindex_set_parms net/sched/cls_tcindex.c:455 [inline]
+ tcindex_change+0x1c61/0x27b0 net/sched/cls_tcindex.c:518
+ tc_new_tfilter+0x1490/0x2f50 net/sched/cls_api.c:2103
+ rtnetlink_rcv_msg+0x8fb/0xd40 net/core/rtnetlink.c:5427
+ netlink_rcv_skb+0x190/0x3a0 net/netlink/af_netlink.c:2478
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x786/0x940 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0xa57/0xd70 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x4f9/0x7c0 net/socket.c:2343
+ ___sys_sendmsg net/socket.c:2397 [inline]
+ __sys_sendmsg+0x1ed/0x290 net/socket.c:2430
+ do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x440e79
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 10 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffd720b07b8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004a2650 RCX: 0000000000440e79
+RDX: 0000000000000000 RSI: 00000000200001c0 RDI: 0000000000000003
+RBP: 00007ffd720b07c0 R08: 0000000120080522 R09: 0000000120080522
+R10: 0000000120080522 R11: 0000000000000246 R12: 00000000004a2650
+R13: 0000000000402410 R14: 0000000000000000 R15: 0000000000000000
 
-ip_forward()
--> if (unlikely(skb->sk)) goto drop;
+Allocated by task 4680:
+ save_stack mm/kasan/common.c:72 [inline]
+ set_track mm/kasan/common.c:80 [inline]
+ __kasan_kmalloc+0x118/0x1c0 mm/kasan/common.c:515
+ __do_kmalloc mm/slab.c:3656 [inline]
+ __kmalloc+0x24b/0x330 mm/slab.c:3665
+ kmalloc include/linux/slab.h:560 [inline]
+ kzalloc+0x1d/0x40 include/linux/slab.h:669
+ lsm_cred_alloc security/security.c:532 [inline]
+ security_prepare_creds+0x46/0x220 security/security.c:1586
+ prepare_creds+0x3dc/0x590 kernel/cred.c:285
+ do_faccessat+0x53/0x780 fs/open.c:360
+ do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-Note that you'd have to get a socket reference to get to this point in
-the first place. I see two options:
-* BPF program operator didn't set up the routes correctly for local
-socket destination
-* BPF program looks up socket in another netns and tries to assign it.
+Freed by task 4680:
+ save_stack mm/kasan/common.c:72 [inline]
+ set_track mm/kasan/common.c:80 [inline]
+ kasan_set_free_info mm/kasan/common.c:337 [inline]
+ __kasan_slab_free+0x12e/0x1e0 mm/kasan/common.c:476
+ __cache_free mm/slab.c:3426 [inline]
+ kfree+0x10a/0x220 mm/slab.c:3757
+ security_cred_free+0xbf/0x100 security/security.c:1580
+ put_cred_rcu+0xca/0x350 kernel/cred.c:114
+ put_cred include/linux/cred.h:287 [inline]
+ do_faccessat+0x613/0x780 fs/open.c:439
+ do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-For the latter case I could introduce a netns validation check to
-ensure it matches the netns of the device.
+The buggy address belongs to the object at ffff8880a4765800
+ which belongs to the cache kmalloc-192 of size 192
+The buggy address is located 48 bytes inside of
+ 192-byte region [ffff8880a4765800, ffff8880a47658c0)
+The buggy address belongs to the page:
+page:ffffea000291d940 refcount:1 mapcount:0 mapping:ffff8880aa400000 index:0x0
+flags: 0xfffe0000000200(slab)
+raw: 00fffe0000000200 ffffea0002a554c8 ffffea000291b188 ffff8880aa400000
+raw: 0000000000000000 ffff8880a4765000 0000000100000010 0000000000000000
+page dumped because: kasan: bad access detected
 
-> >
-> > For more discussion on the other cases, there is the previous
-> > thread[1] and in particular the child thread discussion with Florian,
-> > Eric and Daniel.
-> >
-> > [0] https://urldefense.proofpoint.com/v2/url?u=https-3A__www.mail-2Darchive.com_netdev-40vger.kernel.org_msg253250.html&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=VQnoQ7LvghIj0gVEaiQSUw&m=mX45GxyUJ_HfsBIJTVMZY9ztD5rVViDuOIQ0pXtyJcM&s=z5lZSVTonmhT5OeyxsefzUC2fMqDEwFvlEV1qkyrULg&e=
-> > [1] https://urldefense.proofpoint.com/v2/url?u=https-3A__www.spinics.net_lists_netdev_msg580058.html&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=VQnoQ7LvghIj0gVEaiQSUw&m=mX45GxyUJ_HfsBIJTVMZY9ztD5rVViDuOIQ0pXtyJcM&s=oFYt8cTKQEc-wEfY5YSsjfVN3QqBlFGfrrT7DTKw1rc&e=
+Memory state around the buggy address:
+ ffff8880a4765700: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8880a4765780: 00 fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff8880a4765800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                     ^
+ ffff8880a4765880: fb fb fb fb fb fb fb fb fc fc fc fc fc fc fc fc
+ ffff8880a4765900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
