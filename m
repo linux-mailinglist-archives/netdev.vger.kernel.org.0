@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A392118986B
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:47:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65B42189868
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 10:47:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727692AbgCRJrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 05:47:23 -0400
+        id S1727700AbgCRJrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 05:47:16 -0400
 Received: from smtp-rs2-vallila1.fe.helsinki.fi ([128.214.173.73]:53282 "EHLO
         smtp-rs2-vallila1.fe.helsinki.fi" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727673AbgCRJrV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:47:21 -0400
+        by vger.kernel.org with ESMTP id S1727405AbgCRJrP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 05:47:15 -0400
 Received: from whs-18.cs.helsinki.fi (whs-18.cs.helsinki.fi [128.214.166.46])
-        by smtp-rs2.it.helsinki.fi (8.14.7/8.14.7) with ESMTP id 02I9cE9R006445;
+        by smtp-rs2.it.helsinki.fi (8.14.7/8.14.7) with ESMTP id 02I9cENZ006447;
         Wed, 18 Mar 2020 11:38:14 +0200
 Received: by whs-18.cs.helsinki.fi (Postfix, from userid 1070048)
-        id 42764360F4D; Wed, 18 Mar 2020 11:38:14 +0200 (EET)
+        id 44807360F46; Wed, 18 Mar 2020 11:38:14 +0200 (EET)
 From:   =?ISO-8859-1?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@helsinki.fi>
 To:     netdev@vger.kernel.org
 Cc:     Yuchung Cheng <ycheng@google.com>,
         Neal Cardwell <ncardwell@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
         Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
-Subject: [RFC PATCH 08/28] tcp: helpers for ECN mode handling
-Date:   Wed, 18 Mar 2020 11:37:49 +0200
-Message-Id: <1584524289-24187-8-git-send-email-ilpo.jarvinen@helsinki.fi>
+Subject: [RFC PATCH 09/28] gso: AccECN support
+Date:   Wed, 18 Mar 2020 11:37:50 +0200
+Message-Id: <1584524289-24187-9-git-send-email-ilpo.jarvinen@helsinki.fi>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1584524289-24187-2-git-send-email-ilpo.jarvinen@helsinki.fi>
 References: <1584524289-24187-2-git-send-email-ilpo.jarvinen@helsinki.fi>
@@ -38,192 +38,116 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ilpo Järvinen <ilpo.jarvinen@cs.helsinki.fi>
 
-Create helpers for TCP ECN modes. No functional changes.
+Handling the CWR flag differs between RFC 3168 ECN and AccECN.
+Take it into account in GSO by not clearing the CWR bit.
 
 Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@cs.helsinki.fi>
 ---
- include/net/tcp.h        | 44 ++++++++++++++++++++++++++++++++++++----
- net/ipv4/tcp.c           |  2 +-
- net/ipv4/tcp_dctcp.c     |  2 +-
- net/ipv4/tcp_input.c     | 14 ++++++-------
- net/ipv4/tcp_minisocks.c |  4 +++-
- net/ipv4/tcp_output.c    |  6 +++---
- 6 files changed, 55 insertions(+), 17 deletions(-)
+ drivers/net/tun.c               | 3 ++-
+ include/linux/netdev_features.h | 3 +++
+ include/linux/skbuff.h          | 2 ++
+ net/ethtool/common.c            | 1 +
+ net/ipv4/tcp_offload.c          | 6 +++++-
+ 5 files changed, 13 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 6b6a1b8b3c6e..f4ac4c029215 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -363,10 +363,46 @@ static inline void tcp_dec_quickack_mode(struct sock *sk,
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index 228fe449dc6d..d376a7cb0d63 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -2788,7 +2788,8 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+ 
+ 		dev->hw_features = NETIF_F_SG | NETIF_F_FRAGLIST |
+ 				   TUN_USER_FEATURES | NETIF_F_HW_VLAN_CTAG_TX |
+-				   NETIF_F_HW_VLAN_STAG_TX;
++				   NETIF_F_HW_VLAN_STAG_TX |
++				   NETIF_F_GSO_ACCECN;
+ 		dev->features = dev->hw_features | NETIF_F_LLTX;
+ 		dev->vlan_features = dev->features &
+ 				     ~(NETIF_F_HW_VLAN_CTAG_TX |
+diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+index 34d050bb1ae6..c7065b468d21 100644
+--- a/include/linux/netdev_features.h
++++ b/include/linux/netdev_features.h
+@@ -83,6 +83,7 @@ enum {
+ 	NETIF_F_HW_TLS_RECORD_BIT,	/* Offload TLS record */
+ 	NETIF_F_GRO_FRAGLIST_BIT,	/* Fraglist GRO */
+ 
++	NETIF_F_GSO_ACCECN_BIT,		/* ... TCP AccECN support */
+ 	/*
+ 	 * Add your fresh new feature above and remember to update
+ 	 * netdev_features_strings[] in net/core/ethtool.c and maybe
+@@ -124,6 +125,7 @@ enum {
+ #define NETIF_F_SG		__NETIF_F(SG)
+ #define NETIF_F_TSO6		__NETIF_F(TSO6)
+ #define NETIF_F_TSO_ECN		__NETIF_F(TSO_ECN)
++#define NETIF_F_GSO_ACCECN	__NETIF_F(GSO_ACCECN)
+ #define NETIF_F_TSO		__NETIF_F(TSO)
+ #define NETIF_F_VLAN_CHALLENGED	__NETIF_F(VLAN_CHALLENGED)
+ #define NETIF_F_RXFCS		__NETIF_F(RXFCS)
+@@ -205,6 +207,7 @@ static inline int find_next_netdev_feature(u64 feature, unsigned long start)
+ 
+ /* List of features with software fallbacks. */
+ #define NETIF_F_GSO_SOFTWARE	(NETIF_F_ALL_TSO | \
++				 NETIF_F_GSO_ACCECN | \
+ 				 NETIF_F_GSO_SCTP)
+ 
+ /*
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 21749b2cdc9b..fdd73dc126a2 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -594,6 +594,8 @@ enum {
+ 	SKB_GSO_UDP_L4 = 1 << 17,
+ 
+ 	SKB_GSO_FRAGLIST = 1 << 18,
++
++	SKB_GSO_TCP_ACCECN = 1 << 19,
+ };
+ 
+ #if BITS_PER_LONG > 32
+diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+index 7b6969af5ae7..26241b5d62a4 100644
+--- a/net/ethtool/common.c
++++ b/net/ethtool/common.c
+@@ -27,6 +27,7 @@ const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
+ 	[NETIF_F_TSO_BIT] =              "tx-tcp-segmentation",
+ 	[NETIF_F_GSO_ROBUST_BIT] =       "tx-gso-robust",
+ 	[NETIF_F_TSO_ECN_BIT] =          "tx-tcp-ecn-segmentation",
++	[NETIF_F_GSO_ACCECN_BIT] =       "tx-tcp-accecn-segmentation",
+ 	[NETIF_F_TSO_MANGLEID_BIT] =	 "tx-tcp-mangleid-segmentation",
+ 	[NETIF_F_TSO6_BIT] =             "tx-tcp6-segmentation",
+ 	[NETIF_F_FSO_BIT] =              "tx-fcoe-segmentation",
+diff --git a/net/ipv4/tcp_offload.c b/net/ipv4/tcp_offload.c
+index e09147ac9a99..7a81cf438010 100644
+--- a/net/ipv4/tcp_offload.c
++++ b/net/ipv4/tcp_offload.c
+@@ -65,6 +65,7 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
+ 	struct sk_buff *gso_skb = skb;
+ 	__sum16 newcheck;
+ 	bool ooo_okay, copy_destructor;
++	bool ecn_cwr_mask;
+ 
+ 	th = tcp_hdr(skb);
+ 	thlen = th->doff * 4;
+@@ -121,6 +122,8 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
+ 	newcheck = ~csum_fold((__force __wsum)((__force u32)th->check +
+ 					       (__force u32)delta));
+ 
++	ecn_cwr_mask = !!(skb_shinfo(gso_skb)->gso_type & SKB_GSO_TCP_ACCECN);
++
+ 	while (skb->next) {
+ 		th->fin = th->psh = 0;
+ 		th->check = newcheck;
+@@ -140,7 +143,8 @@ struct sk_buff *tcp_gso_segment(struct sk_buff *skb,
+ 		th = tcp_hdr(skb);
+ 
+ 		th->seq = htonl(seq);
+-		th->cwr = 0;
++
++		th->cwr &= ecn_cwr_mask;
  	}
- }
  
--#define	TCP_ECN_OK		1
--#define	TCP_ECN_QUEUE_CWR	2
--#define	TCP_ECN_DEMAND_CWR	4
--#define	TCP_ECN_SEEN		8
-+#define	TCP_ECN_MODE_RFC3168	0x1
-+#define	TCP_ECN_QUEUE_CWR	0x2
-+#define	TCP_ECN_DEMAND_CWR	0x4
-+#define	TCP_ECN_SEEN		0x8
-+#define TCP_ECN_MODE_ACCECN	0x10
-+
-+#define TCP_ECN_DISABLED	0
-+#define TCP_ECN_MODE_PENDING	(TCP_ECN_MODE_RFC3168|TCP_ECN_MODE_ACCECN)
-+#define TCP_ECN_MODE_ANY	(TCP_ECN_MODE_RFC3168|TCP_ECN_MODE_ACCECN)
-+
-+static inline bool tcp_ecn_mode_any(const struct tcp_sock *tp)
-+{
-+	return tp->ecn_flags & TCP_ECN_MODE_ANY;
-+}
-+
-+static inline bool tcp_ecn_mode_rfc3168(const struct tcp_sock *tp)
-+{
-+	return (tp->ecn_flags & TCP_ECN_MODE_ANY) == TCP_ECN_MODE_RFC3168;
-+}
-+
-+static inline bool tcp_ecn_mode_accecn(const struct tcp_sock *tp)
-+{
-+	return (tp->ecn_flags & TCP_ECN_MODE_ANY) == TCP_ECN_MODE_ACCECN;
-+}
-+
-+static inline bool tcp_ecn_disabled(const struct tcp_sock *tp)
-+{
-+	return !tcp_ecn_mode_any(tp);
-+}
-+
-+static inline bool tcp_ecn_mode_pending(const struct tcp_sock *tp)
-+{
-+	return (tp->ecn_flags & TCP_ECN_MODE_PENDING) == TCP_ECN_MODE_PENDING;
-+}
-+
-+static inline void tcp_ecn_mode_set(struct tcp_sock *tp, u8 mode)
-+{
-+	tp->ecn_flags &= ~TCP_ECN_MODE_ANY;
-+	tp->ecn_flags |= mode;
-+}
- 
- enum tcp_tw_status {
- 	TCP_TW_SUCCESS = 0,
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 48aa457a9516..fbf365dd51e4 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3254,7 +3254,7 @@ void tcp_get_info(struct sock *sk, struct tcp_info *info)
- 		info->tcpi_rcv_wscale = tp->rx_opt.rcv_wscale;
- 	}
- 
--	if (tp->ecn_flags & TCP_ECN_OK)
-+	if (tcp_ecn_mode_any(tp))
- 		info->tcpi_options |= TCPI_OPT_ECN;
- 	if (tp->ecn_flags & TCP_ECN_SEEN)
- 		info->tcpi_options |= TCPI_OPT_ECN_SEEN;
-diff --git a/net/ipv4/tcp_dctcp.c b/net/ipv4/tcp_dctcp.c
-index 79f705450c16..8cf81e942675 100644
---- a/net/ipv4/tcp_dctcp.c
-+++ b/net/ipv4/tcp_dctcp.c
-@@ -76,7 +76,7 @@ static void dctcp_init(struct sock *sk)
- {
- 	const struct tcp_sock *tp = tcp_sk(sk);
- 
--	if ((tp->ecn_flags & TCP_ECN_OK) ||
-+	if (tcp_ecn_mode_any(tp) ||
- 	    (sk->sk_state == TCP_LISTEN ||
- 	     sk->sk_state == TCP_CLOSE)) {
- 		struct dctcp *ca = inet_csk_ca(sk);
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 2f0a9a2ee5c1..59078fa2240d 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -249,7 +249,7 @@ static bool tcp_in_quickack_mode(struct sock *sk)
- 
- static void tcp_ecn_queue_cwr(struct tcp_sock *tp)
- {
--	if (tp->ecn_flags & TCP_ECN_OK)
-+	if (tcp_ecn_mode_rfc3168(tp))
- 		tp->ecn_flags |= TCP_ECN_QUEUE_CWR;
- }
- 
-@@ -277,7 +277,7 @@ static void tcp_data_ecn_check(struct sock *sk, const struct sk_buff *skb)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 
--	if (!(tcp_sk(sk)->ecn_flags & TCP_ECN_OK))
-+	if (tcp_ecn_disabled(tp))
- 		return;
- 
- 	switch (TCP_SKB_CB(skb)->ip_dsfield & INET_ECN_MASK) {
-@@ -310,19 +310,19 @@ static void tcp_data_ecn_check(struct sock *sk, const struct sk_buff *skb)
- 
- static void tcp_ecn_rcv_synack(struct tcp_sock *tp, const struct tcphdr *th)
- {
--	if ((tp->ecn_flags & TCP_ECN_OK) && (!th->ece || th->cwr))
--		tp->ecn_flags &= ~TCP_ECN_OK;
-+	if (tcp_ecn_mode_rfc3168(tp) && (!th->ece || th->cwr))
-+		tcp_ecn_mode_set(tp, TCP_ECN_DISABLED);
- }
- 
- static void tcp_ecn_rcv_syn(struct tcp_sock *tp, const struct tcphdr *th)
- {
--	if ((tp->ecn_flags & TCP_ECN_OK) && (!th->ece || !th->cwr))
--		tp->ecn_flags &= ~TCP_ECN_OK;
-+	if (tcp_ecn_mode_rfc3168(tp) && (!th->ece || !th->cwr))
-+		tcp_ecn_mode_set(tp, TCP_ECN_DISABLED);
- }
- 
- static bool tcp_ecn_rcv_ecn_echo(const struct tcp_sock *tp, const struct tcphdr *th)
- {
--	if (th->ece && !th->syn && (tp->ecn_flags & TCP_ECN_OK))
-+	if (th->ece && !th->syn && tcp_ecn_mode_rfc3168(tp))
- 		return true;
- 	return false;
- }
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index c8274371c3d0..3b5a137e416c 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -400,7 +400,9 @@ EXPORT_SYMBOL(tcp_openreq_init_rwin);
- static void tcp_ecn_openreq_child(struct tcp_sock *tp,
- 				  const struct request_sock *req)
- {
--	tp->ecn_flags = inet_rsk(req)->ecn_ok ? TCP_ECN_OK : 0;
-+	tcp_ecn_mode_set(tp, inet_rsk(req)->ecn_ok ?
-+			     TCP_ECN_MODE_RFC3168 :
-+			     TCP_ECN_DISABLED);
- }
- 
- void tcp_ca_openreq_child(struct sock *sk, const struct dst_entry *dst)
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 116be30c1b2c..71a96983987d 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -311,7 +311,7 @@ static void tcp_ecn_send_synack(struct sock *sk, struct sk_buff *skb)
- 	const struct tcp_sock *tp = tcp_sk(sk);
- 
- 	TCP_SKB_CB(skb)->tcp_flags &= ~TCPHDR_CWR;
--	if (!(tp->ecn_flags & TCP_ECN_OK))
-+	if (tcp_ecn_disabled(tp))
- 		TCP_SKB_CB(skb)->tcp_flags &= ~TCPHDR_ECE;
- 	else if (tcp_ca_needs_ecn(sk) ||
- 		 tcp_bpf_ca_needs_ecn(sk))
-@@ -340,7 +340,7 @@ static void tcp_ecn_send_syn(struct sock *sk, struct sk_buff *skb)
- 			INET_ECN_xmit(sk);
- 
- 		TCP_SKB_CB(skb)->tcp_flags |= TCPHDR_ECE | TCPHDR_CWR;
--		tp->ecn_flags = TCP_ECN_OK;
-+		tcp_ecn_mode_set(tp, TCP_ECN_MODE_RFC3168);
- 	}
- }
- 
-@@ -368,7 +368,7 @@ static void tcp_ecn_send(struct sock *sk, struct sk_buff *skb,
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 
--	if (tp->ecn_flags & TCP_ECN_OK) {
-+	if (tcp_ecn_mode_rfc3168(tp)) {
- 		/* Not-retransmitted data segment: set ECT and inject CWR. */
- 		if (skb->len != tcp_header_len &&
- 		    !before(TCP_SKB_CB(skb)->seq, tp->snd_nxt)) {
+ 	/* Following permits TCP Small Queues to work well with GSO :
 -- 
 2.20.1
 
