@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 398D5189D53
+	by mail.lfdr.de (Postfix) with ESMTP id A2DBE189D54
 	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 14:50:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727135AbgCRNtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727141AbgCRNtz (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 18 Mar 2020 09:49:55 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:46649 "EHLO
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:36397 "EHLO
         out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727092AbgCRNtx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 09:49:53 -0400
+        by vger.kernel.org with ESMTP id S1727116AbgCRNty (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 09:49:54 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4D4B55C019D;
-        Wed, 18 Mar 2020 09:49:52 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 9F2EE5C019D;
+        Wed, 18 Mar 2020 09:49:53 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Wed, 18 Mar 2020 09:49:52 -0400
+  by compute4.internal (MEProxy); Wed, 18 Mar 2020 09:49:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=xM1NXhymvuEmmmOpsqXSnzOMbhVcKh95A5b6jbq7L1E=; b=2JWfRQcB
-        tHVAhQpdYQXnmpaVJcSEPd8FTcz/eA35I9IAhef4TrG+z+NeVbd13KlPIoTf3ZO9
-        c2AkSt6h42bZ2DlGXj1nhLYSFPE5Huq9b1BjLwZnpag+XYTqNKwCKRWtZq2ccZRg
-        dfCsVxKFsQY58kQttsvK9G6M28gDGFCoMuBU5QnUST79ZSSVQj8mmhDnsCQ2ENP7
-        pHBvEM+5bMqqr9CM8CojNS3ObD6Rgd8WeIkiCFUv9hTNLafp8A32oG8LTzzrFHhz
-        b6WyGk7rchHz4ciDrHN2akapxAYzoQ4kkYdQc2b+R9j5431he1zHBQqE2UdcCGDb
-        JZ0RT3PLvNH6Vw==
-X-ME-Sender: <xms:ACdyXjKrzknN2H-6eLb-YvtmhlINqXe8KcbdWvZNx7vQAVid3MqPhg>
+        fm2; bh=ro72zr/yv5EhaekOKPK2qdvRg2tMpMqpboNZUF5kewk=; b=pbGdaQUb
+        wmbq6SeSPIlaFp6ALAb1Ejt2LkNPSRwcE1bPr6YnWqr6fW7cSenHkRr+OOzvlUIm
+        Gk4FHuDkUzq4cT4GGcivqus/AYfZYBKPnKL0jLQp0a0ceMSVOplWaoPb47mA2vq5
+        J6v4nrz2pcBWotiq96ZEX4h2vLzw8MNF/RvVIlY6ZM5butgVJJcqoOQjN82VNa6k
+        R09qCB4E9yGDLNivOyYhWbhX5l5LDYmOzBLq9t6IfLBo0GDxes/ekZ1PTqxmMtOH
+        h91BhKkF6Q8nxrFsJWk5wP57sRMHUO5G1sHcVeMa3AxnbTJaAzoNKm8rRrnPvCXc
+        TK6M+uAoB8yQ1Q==
+X-ME-Sender: <xms:ASdyXiRxb-SlSP8DB7X8kWnPdEDfTeFjLqIW2FJXBnmSL5zxkM7dRA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefjedgheeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefjedgheeiucetufdoteggod
     shgthhdrohhrgheqnecukfhppeejledrudekfedrkedrudekudenucevlhhushhtvghruf
     hiiigvpeejnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghh
     rdhorhhg
-X-ME-Proxy: <xmx:ACdyXmD3VUw4FCI-Q9HgikPaVm6PoORsWik-73BghU-OsvQtoFgIXA>
-    <xmx:ACdyXsEf0e5BvmiPAAiKu4-G9MPs_wYxiH0xYL1efS4rIWhkbpqQHA>
-    <xmx:ACdyXhb0wmDjRK6Rj4R7AGptu9YeEpiSom9h5tPO21sf7BphNxLzOA>
-    <xmx:ACdyXjGL8awVyca4W8R9U80mxXJ5V7uAFWGUem5tUXLktxU0ROkrNw>
+X-ME-Proxy: <xmx:ASdyXjuadmEoiDShagbkRVw0T-_T-h6ZM9jjR_w5rGOAOYbC2dlMsg>
+    <xmx:ASdyXi7KBQSmie0-TRL9pHFuD5Wi8l5LTCZ9ZMmRJoyeo7vMLzEyRg>
+    <xmx:ASdyXpYZVGDxPapAwhpVt0QNIb9z9zWW2qoA5xrBFytStuJgiHB_Sg>
+    <xmx:ASdyXvQ1f-l-qvrIJxLVJcudld-HOEQdHaA1cWcn6LuW-Cr7LgbD6Q>
 Received: from splinter.mtl.com (bzq-79-183-8-181.red.bezeqint.net [79.183.8.181])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 07FAC3061CB6;
-        Wed, 18 Mar 2020 09:49:50 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 5C01A3061CB6;
+        Wed, 18 Mar 2020 09:49:52 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 8/9] mlxsw: spectrum_cnt: Expose devlink resource occupancy for counters
-Date:   Wed, 18 Mar 2020 15:48:56 +0200
-Message-Id: <20200318134857.1003018-9-idosch@idosch.org>
+Subject: [PATCH net-next 9/9] selftests: mlxsw: Add tc action hw_stats tests
+Date:   Wed, 18 Mar 2020 15:48:57 +0200
+Message-Id: <20200318134857.1003018-10-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200318134857.1003018-1-idosch@idosch.org>
 References: <20200318134857.1003018-1-idosch@idosch.org>
@@ -61,158 +61,172 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Implement occupancy counting for counters and expose over devlink
-resource API.
+Add tests for mlxsw hw_stats types.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_cnt.c    | 63 ++++++++++++++++++-
- 1 file changed, 62 insertions(+), 1 deletion(-)
+ .../drivers/net/mlxsw/tc_action_hw_stats.sh   | 130 ++++++++++++++++++
+ tools/testing/selftests/net/forwarding/lib.sh |   9 ++
+ 2 files changed, 139 insertions(+)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/tc_action_hw_stats.sh
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.c
-index 417c512bc7a2..0268f0a6662a 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_cnt.c
-@@ -15,12 +15,14 @@ struct mlxsw_sp_counter_sub_pool {
- 	u64 resource_id; /* devlink resource id */
- 	unsigned int entry_size;
- 	unsigned int bank_count;
-+	atomic_t active_entries_count;
- };
- 
- struct mlxsw_sp_counter_pool {
- 	u64 pool_size;
- 	unsigned long *usage; /* Usage bitmap */
- 	spinlock_t counter_pool_lock; /* Protects counter pool allocations */
-+	atomic_t active_entries_count;
- 	unsigned int sub_pools_count;
- 	struct mlxsw_sp_counter_sub_pool sub_pools[];
- };
-@@ -40,6 +42,13 @@ static const struct mlxsw_sp_counter_sub_pool mlxsw_sp_counter_sub_pools[] = {
- 	}
- };
- 
-+static u64 mlxsw_sp_counter_sub_pool_occ_get(void *priv)
-+{
-+	const struct mlxsw_sp_counter_sub_pool *sub_pool = priv;
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/tc_action_hw_stats.sh b/tools/testing/selftests/drivers/net/mlxsw/tc_action_hw_stats.sh
+new file mode 100755
+index 000000000000..20ed98fe5a60
+--- /dev/null
++++ b/tools/testing/selftests/drivers/net/mlxsw/tc_action_hw_stats.sh
+@@ -0,0 +1,130 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
-+	return atomic_read(&sub_pool->active_entries_count);
++lib_dir=$(dirname $0)/../../../net/forwarding
++
++ALL_TESTS="
++	default_hw_stats_test
++	immediate_hw_stats_test
++	delayed_hw_stats_test
++	disabled_hw_stats_test
++"
++NUM_NETIFS=2
++
++source $lib_dir/tc_common.sh
++source $lib_dir/lib.sh
++source $lib_dir/devlink_lib.sh
++
++h1_create()
++{
++	simple_if_init $h1 192.0.2.1/24
 +}
 +
- static int mlxsw_sp_counter_sub_pools_init(struct mlxsw_sp *mlxsw_sp)
- {
- 	struct mlxsw_sp_counter_pool *pool = mlxsw_sp->counter_pool;
-@@ -62,12 +71,50 @@ static int mlxsw_sp_counter_sub_pools_init(struct mlxsw_sp *mlxsw_sp)
- 						sub_pool->resource_id,
- 						&sub_pool->size);
- 		if (err)
--			return err;
-+			goto err_resource_size_get;
-+
-+		devlink_resource_occ_get_register(devlink,
-+						  sub_pool->resource_id,
-+						  mlxsw_sp_counter_sub_pool_occ_get,
-+						  sub_pool);
- 
- 		sub_pool->base_index = base_index;
- 		base_index += sub_pool->size;
-+		atomic_set(&sub_pool->active_entries_count, 0);
- 	}
- 	return 0;
-+
-+err_resource_size_get:
-+	for (i--; i >= 0; i--) {
-+		sub_pool = &pool->sub_pools[i];
-+
-+		devlink_resource_occ_get_unregister(devlink,
-+						    sub_pool->resource_id);
-+	}
-+	return err;
++h1_destroy()
++{
++	simple_if_fini $h1 192.0.2.1/24
 +}
 +
-+static void mlxsw_sp_counter_sub_pools_fini(struct mlxsw_sp *mlxsw_sp)
++switch_create()
 +{
-+	struct mlxsw_sp_counter_pool *pool = mlxsw_sp->counter_pool;
-+	struct devlink *devlink = priv_to_devlink(mlxsw_sp->core);
-+	struct mlxsw_sp_counter_sub_pool *sub_pool;
-+	int i;
-+
-+	for (i = 0; i < pool->sub_pools_count; i++) {
-+		sub_pool = &pool->sub_pools[i];
-+
-+		WARN_ON(atomic_read(&sub_pool->active_entries_count));
-+		devlink_resource_occ_get_unregister(devlink,
-+						    sub_pool->resource_id);
-+	}
++	simple_if_init $swp1 192.0.2.2/24
++	tc qdisc add dev $swp1 clsact
 +}
 +
-+static u64 mlxsw_sp_counter_pool_occ_get(void *priv)
++switch_destroy()
 +{
-+	const struct mlxsw_sp_counter_pool *pool = priv;
++	tc qdisc del dev $swp1 clsact
++	simple_if_fini $swp1 192.0.2.2/24
++}
 +
-+	return atomic_read(&pool->active_entries_count);
++hw_stats_test()
++{
++	RET=0
++
++	local name=$1
++	local action_hw_stats=$2
++	local occ_delta=$3
++	local expected_packet_count=$4
++
++	local orig_occ=$(devlink_resource_get "counters" "flow" | jq '.["occ"]')
++
++	tc filter add dev $swp1 ingress protocol ip pref 1 handle 101 flower \
++		skip_sw dst_ip 192.0.2.2 action drop $action_hw_stats
++	check_err $? "Failed to add rule with $name hw_stats"
++
++	local new_occ=$(devlink_resource_get "counters" "flow" | jq '.["occ"]')
++	local expected_occ=$((orig_occ + occ_delta))
++	[ "$new_occ" == "$expected_occ" ]
++	check_err $? "Expected occupancy of $expected_occ, got $new_occ"
++
++	$MZ $h1 -c 1 -p 64 -a $h1mac -b $swp1mac -A 192.0.2.1 -B 192.0.2.2 \
++		-t ip -q
++
++	tc_check_packets "dev $swp1 ingress" 101 $expected_packet_count
++	check_err $? "Did not match incoming packet"
++
++	tc filter del dev $swp1 ingress protocol ip pref 1 handle 101 flower
++
++	log_test "$name hw_stats"
++}
++
++default_hw_stats_test()
++{
++	hw_stats_test "default" "" 2 1
++}
++
++immediate_hw_stats_test()
++{
++	hw_stats_test "immediate" "hw_stats immediate" 2 1
++}
++
++delayed_hw_stats_test()
++{
++	RET=0
++
++	tc filter add dev $swp1 ingress protocol ip pref 1 handle 101 flower \
++		skip_sw dst_ip 192.0.2.2 action drop hw_stats delayed
++	check_fail $? "Unexpected success in adding rule with delayed hw_stats"
++
++	log_test "delayed hw_stats"
++}
++
++disabled_hw_stats_test()
++{
++	hw_stats_test "disabled" "hw_stats disabled" 0 0
++}
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	swp1=${NETIFS[p2]}
++
++	h1mac=$(mac_get $h1)
++	swp1mac=$(mac_get $swp1)
++
++	vrf_prepare
++
++	h1_create
++	switch_create
++}
++
++cleanup()
++{
++	pre_cleanup
++
++	switch_destroy
++	h1_destroy
++
++	vrf_cleanup
++}
++
++check_tc_action_hw_stats_support
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++
++tests_run
++
++exit $EXIT_STATUS
+diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+index a4a7879b3bb9..977fc2b326a2 100644
+--- a/tools/testing/selftests/net/forwarding/lib.sh
++++ b/tools/testing/selftests/net/forwarding/lib.sh
+@@ -60,6 +60,15 @@ check_tc_chain_support()
+ 	fi
  }
  
- int mlxsw_sp_counter_pool_init(struct mlxsw_sp *mlxsw_sp)
-@@ -88,11 +135,14 @@ int mlxsw_sp_counter_pool_init(struct mlxsw_sp *mlxsw_sp)
- 	       sub_pools_count * sizeof(*sub_pool));
- 	pool->sub_pools_count = sub_pools_count;
- 	spin_lock_init(&pool->counter_pool_lock);
-+	atomic_set(&pool->active_entries_count, 0);
- 
- 	err = devlink_resource_size_get(devlink, MLXSW_SP_RESOURCE_COUNTERS,
- 					&pool->pool_size);
- 	if (err)
- 		goto err_pool_resource_size_get;
-+	devlink_resource_occ_get_register(devlink, MLXSW_SP_RESOURCE_COUNTERS,
-+					  mlxsw_sp_counter_pool_occ_get, pool);
- 
- 	map_size = BITS_TO_LONGS(pool->pool_size) * sizeof(unsigned long);
- 
-@@ -111,6 +161,8 @@ int mlxsw_sp_counter_pool_init(struct mlxsw_sp *mlxsw_sp)
- err_sub_pools_init:
- 	kfree(pool->usage);
- err_usage_alloc:
-+	devlink_resource_occ_get_unregister(devlink,
-+					    MLXSW_SP_RESOURCE_COUNTERS);
- err_pool_resource_size_get:
- 	kfree(pool);
- 	return err;
-@@ -119,10 +171,15 @@ int mlxsw_sp_counter_pool_init(struct mlxsw_sp *mlxsw_sp)
- void mlxsw_sp_counter_pool_fini(struct mlxsw_sp *mlxsw_sp)
- {
- 	struct mlxsw_sp_counter_pool *pool = mlxsw_sp->counter_pool;
-+	struct devlink *devlink = priv_to_devlink(mlxsw_sp->core);
- 
-+	mlxsw_sp_counter_sub_pools_fini(mlxsw_sp);
- 	WARN_ON(find_first_bit(pool->usage, pool->pool_size) !=
- 			       pool->pool_size);
-+	WARN_ON(atomic_read(&pool->active_entries_count));
- 	kfree(pool->usage);
-+	devlink_resource_occ_get_unregister(devlink,
-+					    MLXSW_SP_RESOURCE_COUNTERS);
- 	kfree(pool);
- }
- 
-@@ -158,6 +215,8 @@ int mlxsw_sp_counter_alloc(struct mlxsw_sp *mlxsw_sp,
- 	spin_unlock(&pool->counter_pool_lock);
- 
- 	*p_counter_index = entry_index;
-+	atomic_add(sub_pool->entry_size, &sub_pool->active_entries_count);
-+	atomic_add(sub_pool->entry_size, &pool->active_entries_count);
- 	return 0;
- 
- err_alloc:
-@@ -180,6 +239,8 @@ void mlxsw_sp_counter_free(struct mlxsw_sp *mlxsw_sp,
- 	for (i = 0; i < sub_pool->entry_size; i++)
- 		__clear_bit(counter_index + i, pool->usage);
- 	spin_unlock(&pool->counter_pool_lock);
-+	atomic_sub(sub_pool->entry_size, &sub_pool->active_entries_count);
-+	atomic_sub(sub_pool->entry_size, &pool->active_entries_count);
- }
- 
- int mlxsw_sp_counter_resources_register(struct mlxsw_core *mlxsw_core)
++check_tc_action_hw_stats_support()
++{
++	tc actions help 2>&1 | grep -q hw_stats
++	if [[ $? -ne 0 ]]; then
++		echo "SKIP: iproute2 too old; tc is missing action hw_stats support"
++		exit 1
++	fi
++}
++
+ if [[ "$(id -u)" -ne 0 ]]; then
+ 	echo "SKIP: need root privileges"
+ 	exit 0
 -- 
 2.24.1
 
