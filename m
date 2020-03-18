@@ -2,101 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B84D9189AA7
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 12:31:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42FD1189ACA
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 12:37:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727804AbgCRLbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 07:31:47 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:40611 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727217AbgCRLbr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 07:31:47 -0400
-Received: by mail-ot1-f65.google.com with SMTP id e19so4021859otj.7;
-        Wed, 18 Mar 2020 04:31:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=NjD2GamyBEc3sKrO1F2PZeSZdHhFZ3Ii1Pkm+OVNywQ=;
-        b=Da1jSNe6xlZ/GBGCQJZ7qqQIRteleIHOErt7JIc00/AfTtQzZEK0B6IBoRe3w+p1J0
-         GZ5cNqkjGNxzSYjCqwjwvEeiCt9fgX2Q4ulDbn2xrpFAqVOahRi9LJO+n+xUxR4qT3kI
-         IV5Ojt0xWxy5OXylEWpRqgbUD2dY70GNJJhgk0aHCK9N2aZI6n5g6XiWhUVmS1IftoRG
-         cwHw0sJberSdtUyouOMD2eSP3edYAoUxg0TnK33UPw0thLJxPzb/uTPpm4+u+l6Kw3M4
-         p1uBpIhLhtchxOg3LF82qKMVd6bTLPZxD0AGxYmw51iHKC8iiLmRqwhCP5616WJnVSJb
-         rKeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NjD2GamyBEc3sKrO1F2PZeSZdHhFZ3Ii1Pkm+OVNywQ=;
-        b=abbMLaFsA1XDEvfeteOiyH+kYR8aKzfR1FQp/baQjMb9J38/Q1wKG+HJw3Lp1exb+M
-         1Ps5YbK1K8vp1/OKTWvjSgR0riY2+aHrmyN4/4CvGfs1WPpWhdfsAknfBfS7EPUN60M+
-         XKnud2YKuYzmKEstTTFDJwxJljY+DYk3LG7Hu1gUbkCrIb/Uf74dtgJqJN0/zNToSObh
-         q6uRJk1eLFoKuj8WIjmwV5gDbCqE8Znh56e1P0bVGXnOGPFhx8AFJp3L2qmOWaprk1m1
-         pkHvOvDfz/ur7zhRLpFj3xggemPSYnaegw6RNN8PONXoEBiNd6MUkMh8XVX4L+kBpGH5
-         hgZg==
-X-Gm-Message-State: ANhLgQ1ZeHU9LheteWAyxviHsUPzYTSh8D5TyC3i6Xa0H/kABhXrI34u
-        nFXsW06mcw3B0iAMtCabk0AVIXQNtIKGU42v19I=
-X-Google-Smtp-Source: ADFU+vtzJZKy3xkB3VSgaCd/spw1j4x/jxGImWuqnB3Bj4i1qWxwbtcjbyCUDiuoi+1rbybTHgsJkXydu4Q/NCLEdno=
-X-Received: by 2002:a05:6830:1195:: with SMTP id u21mr3175391otq.351.1584531105983;
- Wed, 18 Mar 2020 04:31:45 -0700 (PDT)
+        id S1727414AbgCRLhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 07:37:21 -0400
+Received: from ja.ssi.bg ([178.16.129.10]:49902 "EHLO ja.ssi.bg"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726933AbgCRLhV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 07:37:21 -0400
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 02IBaWel007780;
+        Wed, 18 Mar 2020 13:36:42 +0200
+Date:   Wed, 18 Mar 2020 13:36:32 +0200 (EET)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+cc:     Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] ipvs: optimize tunnel dumps for icmp errors
+In-Reply-To: <1584278741-13944-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
+Message-ID: <alpine.LFD.2.21.2003181333460.4911@ja.home.ssi.bg>
+References: <1584278741-13944-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
+User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
 MIME-Version: 1.0
-References: <20200316224023.1.I002569822232363cfbb5af1f33a293ea390c24c7@changeid>
- <4DF7C709-1AD3-42FF-A0C2-EF488D82F083@holtmann.org>
-In-Reply-To: <4DF7C709-1AD3-42FF-A0C2-EF488D82F083@holtmann.org>
-From:   Emil Lenngren <emil.lenngren@gmail.com>
-Date:   Wed, 18 Mar 2020 12:31:35 +0100
-Message-ID: <CAO1O6sdfdVavo9U0UKewbS9YAjCVzdXDYms-OJZNEJVzMmkgMg@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: Do not cancel advertising when starting a scan
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Manish Mandlik <mmandlik@google.com>,
-        Yoni Shavit <yshavit@chromium.org>,
-        Alain Michaud <alainm@chromium.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Bluez mailing list <linux-bluetooth@vger.kernel.org>,
-        Dmitry Grinberg <dmitrygr@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-Den ons 18 mars 2020 kl 12:27 skrev Marcel Holtmann <marcel@holtmann.org>:
->
-> Hi Manish,
->
-> > BlueZ cancels adv when starting a scan, but does not cancel a scan when
-> > starting to adv. Neither is required, so this brings both to a
-> > consistent state (of not affecting each other). Some very rare (I've
-> > never seen one) BT 4.0 chips will fail to do both at once. Even this is
-> > ok since the command that will fail will be the second one, and thus th=
-e
-> > common sense logic of first-come-first-served is preserved for BLE
-> > requests.
-> >
-> > Signed-off-by: Dmitry Grinberg <dmitrygr@google.com>
-> > Signed-off-by: Manish Mandlik <mmandlik@google.com>
-> > ---
-> >
-> > net/bluetooth/hci_request.c | 17 -----------------
-> > 1 file changed, 17 deletions(-)
->
-> patch has been applied to bluetooth-next tree.
->
-> If you know the controller that doesn=E2=80=99t support this, can we blac=
-klist that one and just disable advertising (peripheral mode) for that cont=
-roller.
+	Hello,
 
-Can't the "LE Supported States" be inspected instead to figure out
-what simultaneous capabilities are supported? It seems a bit rough to
-always assume the worst.
+On Sun, 15 Mar 2020, Haishuang Yan wrote:
 
-/Emil
+> After strip GRE/UDP tunnel header for icmp errors, it's better to show
+> "GRE/UDP" instead of "IPIP" in debug message.
+> 
+> Signed-off-by: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+
+	Looks good to me, thanks!
+
+Acked-by: Julian Anastasov <ja@ssi.bg>
+
+	Simon, this is for -next kernels...
+
+> ---
+> v2: Fix wrong proto message
+> ---
+>  net/netfilter/ipvs/ip_vs_core.c | 46 +++++++++++++++++++++++------------------
+>  1 file changed, 26 insertions(+), 20 deletions(-)
+> 
+> diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+> index 512259f..d2ac530 100644
+> --- a/net/netfilter/ipvs/ip_vs_core.c
+> +++ b/net/netfilter/ipvs/ip_vs_core.c
+> @@ -1661,8 +1661,9 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  	struct ip_vs_protocol *pp;
+>  	struct ip_vs_proto_data *pd;
+>  	unsigned int offset, offset2, ihl, verdict;
+> -	bool ipip, new_cp = false;
+> +	bool tunnel, new_cp = false;
+>  	union nf_inet_addr *raddr;
+> +	char *outer_proto;
+>  
+>  	*related = 1;
+>  
+> @@ -1703,8 +1704,8 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  		return NF_ACCEPT; /* The packet looks wrong, ignore */
+>  	raddr = (union nf_inet_addr *)&cih->daddr;
+>  
+> -	/* Special case for errors for IPIP packets */
+> -	ipip = false;
+> +	/* Special case for errors for IPIP/UDP/GRE tunnel packets */
+> +	tunnel = false;
+>  	if (cih->protocol == IPPROTO_IPIP) {
+>  		struct ip_vs_dest *dest;
+>  
+> @@ -1721,7 +1722,8 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  		cih = skb_header_pointer(skb, offset, sizeof(_ciph), &_ciph);
+>  		if (cih == NULL)
+>  			return NF_ACCEPT; /* The packet looks wrong, ignore */
+> -		ipip = true;
+> +		tunnel = true;
+> +		outer_proto = "IPIP";
+>  	} else if ((cih->protocol == IPPROTO_UDP ||	/* Can be UDP encap */
+>  		    cih->protocol == IPPROTO_GRE) &&	/* Can be GRE encap */
+>  		   /* Error for our tunnel must arrive at LOCAL_IN */
+> @@ -1729,16 +1731,19 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  		__u8 iproto;
+>  		int ulen;
+>  
+> -		/* Non-first fragment has no UDP header */
+> +		/* Non-first fragment has no UDP/GRE header */
+>  		if (unlikely(cih->frag_off & htons(IP_OFFSET)))
+>  			return NF_ACCEPT;
+>  		offset2 = offset + cih->ihl * 4;
+> -		if (cih->protocol == IPPROTO_UDP)
+> +		if (cih->protocol == IPPROTO_UDP) {
+>  			ulen = ipvs_udp_decap(ipvs, skb, offset2, AF_INET,
+>  					      raddr, &iproto);
+> -		else
+> +			outer_proto = "UDP";
+> +		} else {
+>  			ulen = ipvs_gre_decap(ipvs, skb, offset2, AF_INET,
+>  					      raddr, &iproto);
+> +			outer_proto = "GRE";
+> +		}
+>  		if (ulen > 0) {
+>  			/* Skip IP and UDP/GRE tunnel headers */
+>  			offset = offset2 + ulen;
+> @@ -1747,7 +1752,7 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  						 &_ciph);
+>  			if (cih && cih->version == 4 && cih->ihl >= 5 &&
+>  			    iproto == IPPROTO_IPIP)
+> -				ipip = true;
+> +				tunnel = true;
+>  			else
+>  				return NF_ACCEPT;
+>  		}
+> @@ -1767,11 +1772,11 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  		      "Checking incoming ICMP for");
+>  
+>  	offset2 = offset;
+> -	ip_vs_fill_iph_skb_icmp(AF_INET, skb, offset, !ipip, &ciph);
+> +	ip_vs_fill_iph_skb_icmp(AF_INET, skb, offset, !tunnel, &ciph);
+>  	offset = ciph.len;
+>  
+>  	/* The embedded headers contain source and dest in reverse order.
+> -	 * For IPIP this is error for request, not for reply.
+> +	 * For IPIP/UDP/GRE tunnel this is error for request, not for reply.
+>  	 */
+>  	cp = INDIRECT_CALL_1(pp->conn_in_get, ip_vs_conn_in_get_proto,
+>  			     ipvs, AF_INET, skb, &ciph);
+> @@ -1779,7 +1784,7 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  	if (!cp) {
+>  		int v;
+>  
+> -		if (ipip || !sysctl_schedule_icmp(ipvs))
+> +		if (tunnel || !sysctl_schedule_icmp(ipvs))
+>  			return NF_ACCEPT;
+>  
+>  		if (!ip_vs_try_to_schedule(ipvs, AF_INET, skb, pd, &v, &cp, &ciph))
+> @@ -1797,7 +1802,7 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  		goto out;
+>  	}
+>  
+> -	if (ipip) {
+> +	if (tunnel) {
+>  		__be32 info = ic->un.gateway;
+>  		__u8 type = ic->type;
+>  		__u8 code = ic->code;
+> @@ -1809,17 +1814,18 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  			u32 mtu = ntohs(ic->un.frag.mtu);
+>  			__be16 frag_off = cih->frag_off;
+>  
+> -			/* Strip outer IP and ICMP, go to IPIP header */
+> +			/* Strip outer IP and ICMP, go to IPIP/UDP/GRE header */
+>  			if (pskb_pull(skb, ihl + sizeof(_icmph)) == NULL)
+> -				goto ignore_ipip;
+> +				goto ignore_tunnel;
+>  			offset2 -= ihl + sizeof(_icmph);
+>  			skb_reset_network_header(skb);
+> -			IP_VS_DBG(12, "ICMP for IPIP %pI4->%pI4: mtu=%u\n",
+> -				&ip_hdr(skb)->saddr, &ip_hdr(skb)->daddr, mtu);
+> +			IP_VS_DBG(12, "ICMP for %s %pI4->%pI4: mtu=%u\n",
+> +				  outer_proto, &ip_hdr(skb)->saddr,
+> +				  &ip_hdr(skb)->daddr, mtu);
+>  			ipv4_update_pmtu(skb, ipvs->net, mtu, 0, 0);
+>  			/* Client uses PMTUD? */
+>  			if (!(frag_off & htons(IP_DF)))
+> -				goto ignore_ipip;
+> +				goto ignore_tunnel;
+>  			/* Prefer the resulting PMTU */
+>  			if (dest) {
+>  				struct ip_vs_dest_dst *dest_dst;
+> @@ -1832,11 +1838,11 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  				mtu -= sizeof(struct iphdr);
+>  			info = htonl(mtu);
+>  		}
+> -		/* Strip outer IP, ICMP and IPIP, go to IP header of
+> +		/* Strip outer IP, ICMP and IPIP/UDP/GRE, go to IP header of
+>  		 * original request.
+>  		 */
+>  		if (pskb_pull(skb, offset2) == NULL)
+> -			goto ignore_ipip;
+> +			goto ignore_tunnel;
+>  		skb_reset_network_header(skb);
+>  		IP_VS_DBG(12, "Sending ICMP for %pI4->%pI4: t=%u, c=%u, i=%u\n",
+>  			&ip_hdr(skb)->saddr, &ip_hdr(skb)->daddr,
+> @@ -1845,7 +1851,7 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  		/* ICMP can be shorter but anyways, account it */
+>  		ip_vs_out_stats(cp, skb);
+>  
+> -ignore_ipip:
+> +ignore_tunnel:
+>  		consume_skb(skb);
+>  		verdict = NF_STOLEN;
+>  		goto out;
+> -- 
+> 1.8.3.1
+
+Regards
+
+--
+Julian Anastasov <ja@ssi.bg>
