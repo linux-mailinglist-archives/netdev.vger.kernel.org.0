@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60E22189319
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 01:41:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C49C1892FD
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 01:40:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727483AbgCRAlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 20:41:05 -0400
-Received: from correo.us.es ([193.147.175.20]:45652 "EHLO mail.us.es"
+        id S1727304AbgCRAkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 20:40:24 -0400
+Received: from correo.us.es ([193.147.175.20]:45596 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727283AbgCRAkR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 17 Mar 2020 20:40:17 -0400
+        id S1727301AbgCRAkW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 17 Mar 2020 20:40:22 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 3C09B27F8C3
+        by mail.us.es (Postfix) with ESMTP id C666A27F8C6
         for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 01:39:47 +0100 (CET)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2F0A4DA3A3
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B7BE3DA3A4
         for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 01:39:47 +0100 (CET)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 24DC1DA3A0; Wed, 18 Mar 2020 01:39:47 +0100 (CET)
+        id AD77CDA390; Wed, 18 Mar 2020 01:39:47 +0100 (CET)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 472EADA38F;
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C8348DA390;
         Wed, 18 Mar 2020 01:39:45 +0100 (CET)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
@@ -32,15 +32,15 @@ Received: from 192.168.1.97 (192.168.1.97)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from salvia.here (unknown [90.77.255.23])
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 216FF426CCB9;
+        by entrada.int (Postfix) with ESMTPA id A131A426CCB9;
         Wed, 18 Mar 2020 01:39:45 +0100 (CET)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 12/29] netfilter: flowtable: add indr block setup support
-Date:   Wed, 18 Mar 2020 01:39:39 +0100
-Message-Id: <20200318003956.73573-13-pablo@netfilter.org>
+Subject: [PATCH 13/29] netfilter: flowtable: add tunnel match offload support
+Date:   Wed, 18 Mar 2020 01:39:40 +0100
+Message-Id: <20200318003956.73573-14-pablo@netfilter.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20200318003956.73573-1-pablo@netfilter.org>
 References: <20200318003956.73573-1-pablo@netfilter.org>
@@ -52,159 +52,135 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: wenxu <wenxu@ucloud.cn>
 
-Add etfilter flowtable support indr-block setup. It makes flowtable offload
-vlan and tunnel device.
+This patch support both ipv4 and ipv6 tunnel_id, tunnel_src and
+tunnel_dst match for flowtable offload
 
 Signed-off-by: wenxu <wenxu@ucloud.cn>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_flow_table_offload.c | 94 +++++++++++++++++++++++++++++++++--
- 1 file changed, 90 insertions(+), 4 deletions(-)
+ include/net/netfilter/nf_flow_table.h |  6 ++++
+ net/netfilter/nf_flow_table_offload.c | 61 +++++++++++++++++++++++++++++++++--
+ 2 files changed, 65 insertions(+), 2 deletions(-)
 
+diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
+index 6890f1ca3e31..f523ea87b6ae 100644
+--- a/include/net/netfilter/nf_flow_table.h
++++ b/include/net/netfilter/nf_flow_table.h
+@@ -19,11 +19,17 @@ enum flow_offload_tuple_dir;
+ struct nf_flow_key {
+ 	struct flow_dissector_key_meta			meta;
+ 	struct flow_dissector_key_control		control;
++	struct flow_dissector_key_control		enc_control;
+ 	struct flow_dissector_key_basic			basic;
+ 	union {
+ 		struct flow_dissector_key_ipv4_addrs	ipv4;
+ 		struct flow_dissector_key_ipv6_addrs	ipv6;
+ 	};
++	struct flow_dissector_key_keyid			enc_key_id;
++	union {
++		struct flow_dissector_key_ipv4_addrs	enc_ipv4;
++		struct flow_dissector_key_ipv6_addrs	enc_ipv6;
++	};
+ 	struct flow_dissector_key_tcp			tcp;
+ 	struct flow_dissector_key_ports			tp;
+ } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
 diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index c4cb03555315..f60f01e929b8 100644
+index f60f01e929b8..3101b35eac80 100644
 --- a/net/netfilter/nf_flow_table_offload.c
 +++ b/net/netfilter/nf_flow_table_offload.c
-@@ -7,6 +7,7 @@
- #include <linux/tc_act/tc_csum.h>
- #include <net/flow_offload.h>
- #include <net/netfilter/nf_flow_table.h>
-+#include <net/netfilter/nf_tables.h>
- #include <net/netfilter/nf_conntrack.h>
- #include <net/netfilter/nf_conntrack_core.h>
- #include <net/netfilter/nf_conntrack_tuple.h>
-@@ -827,6 +828,22 @@ static void nf_flow_table_block_offload_init(struct flow_block_offload *bo,
- 	INIT_LIST_HEAD(&bo->cb_list);
- }
+@@ -28,11 +28,61 @@ struct flow_offload_work {
+ 	(__match)->dissector.offset[__type] =		\
+ 		offsetof(struct nf_flow_key, __field)
  
-+static int nf_flow_table_indr_offload_cmd(struct flow_block_offload *bo,
-+					  struct nf_flowtable *flowtable,
-+					  struct net_device *dev,
-+					  enum flow_block_command cmd,
-+					  struct netlink_ext_ack *extack)
++static void nf_flow_rule_lwt_match(struct nf_flow_match *match,
++				   struct ip_tunnel_info *tun_info)
 +{
-+	nf_flow_table_block_offload_init(bo, dev_net(dev), cmd, flowtable,
-+					 extack);
-+	flow_indr_block_call(dev, bo, cmd);
++	struct nf_flow_key *mask = &match->mask;
++	struct nf_flow_key *key = &match->key;
++	unsigned int enc_keys;
 +
-+	if (list_empty(&bo->cb_list))
-+		return -EOPNOTSUPP;
-+
-+	return 0;
-+}
-+
- static int nf_flow_table_offload_cmd(struct flow_block_offload *bo,
- 				     struct nf_flowtable *flowtable,
- 				     struct net_device *dev,
-@@ -835,9 +852,6 @@ static int nf_flow_table_offload_cmd(struct flow_block_offload *bo,
- {
- 	int err;
- 
--	if (!dev->netdev_ops->ndo_setup_tc)
--		return -EOPNOTSUPP;
--
- 	nf_flow_table_block_offload_init(bo, dev_net(dev), cmd, flowtable,
- 					 extack);
- 	err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_FT, bo);
-@@ -858,7 +872,12 @@ int nf_flow_table_offload_setup(struct nf_flowtable *flowtable,
- 	if (!nf_flowtable_hw_offload(flowtable))
- 		return 0;
- 
--	err = nf_flow_table_offload_cmd(&bo, flowtable, dev, cmd, &extack);
-+	if (dev->netdev_ops->ndo_setup_tc)
-+		err = nf_flow_table_offload_cmd(&bo, flowtable, dev, cmd,
-+						&extack);
-+	else
-+		err = nf_flow_table_indr_offload_cmd(&bo, flowtable, dev, cmd,
-+						     &extack);
- 	if (err < 0)
- 		return err;
- 
-@@ -866,10 +885,75 @@ int nf_flow_table_offload_setup(struct nf_flowtable *flowtable,
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_offload_setup);
- 
-+static void nf_flow_table_indr_block_ing_cmd(struct net_device *dev,
-+					     struct nf_flowtable *flowtable,
-+					     flow_indr_block_bind_cb_t *cb,
-+					     void *cb_priv,
-+					     enum flow_block_command cmd)
-+{
-+	struct netlink_ext_ack extack = {};
-+	struct flow_block_offload bo;
-+
-+	if (!flowtable)
++	if (!tun_info || !(tun_info->mode & IP_TUNNEL_INFO_TX))
 +		return;
 +
-+	nf_flow_table_block_offload_init(&bo, dev_net(dev), cmd, flowtable,
-+					 &extack);
++	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_ENC_CONTROL, enc_control);
++	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_ENC_KEYID, enc_key_id);
++	key->enc_key_id.keyid = tunnel_id_to_key32(tun_info->key.tun_id);
++	mask->enc_key_id.keyid = 0xffffffff;
++	enc_keys = BIT(FLOW_DISSECTOR_KEY_ENC_KEYID) |
++		   BIT(FLOW_DISSECTOR_KEY_ENC_CONTROL);
 +
-+	cb(dev, cb_priv, TC_SETUP_FT, &bo);
-+
-+	nf_flow_table_block_setup(flowtable, &bo, cmd);
-+}
-+
-+static void nf_flow_table_indr_block_cb_cmd(struct nf_flowtable *flowtable,
-+					    struct net_device *dev,
-+					    flow_indr_block_bind_cb_t *cb,
-+					    void *cb_priv,
-+					    enum flow_block_command cmd)
-+{
-+	if (!(flowtable->flags & NF_FLOWTABLE_HW_OFFLOAD))
-+		return;
-+
-+	nf_flow_table_indr_block_ing_cmd(dev, flowtable, cb, cb_priv, cmd);
-+}
-+
-+static void nf_flow_table_indr_block_cb(struct net_device *dev,
-+					flow_indr_block_bind_cb_t *cb,
-+					void *cb_priv,
-+					enum flow_block_command cmd)
-+{
-+	struct net *net = dev_net(dev);
-+	struct nft_flowtable *nft_ft;
-+	struct nft_table *table;
-+	struct nft_hook *hook;
-+
-+	mutex_lock(&net->nft.commit_mutex);
-+	list_for_each_entry(table, &net->nft.tables, list) {
-+		list_for_each_entry(nft_ft, &table->flowtables, list) {
-+			list_for_each_entry(hook, &nft_ft->hook_list, list) {
-+				if (hook->ops.dev != dev)
-+					continue;
-+
-+				nf_flow_table_indr_block_cb_cmd(&nft_ft->data,
-+								dev, cb,
-+								cb_priv, cmd);
-+			}
-+		}
++	if (ip_tunnel_info_af(tun_info) == AF_INET) {
++		NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS,
++				  enc_ipv4);
++		key->enc_ipv4.src = tun_info->key.u.ipv4.dst;
++		key->enc_ipv4.dst = tun_info->key.u.ipv4.src;
++		if (key->enc_ipv4.src)
++			mask->enc_ipv4.src = 0xffffffff;
++		if (key->enc_ipv4.dst)
++			mask->enc_ipv4.dst = 0xffffffff;
++		enc_keys |= BIT(FLOW_DISSECTOR_KEY_ENC_IPV4_ADDRS);
++		key->enc_control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
++	} else {
++		memcpy(&key->enc_ipv6.src, &tun_info->key.u.ipv6.dst,
++		       sizeof(struct in6_addr));
++		memcpy(&key->enc_ipv6.dst, &tun_info->key.u.ipv6.src,
++		       sizeof(struct in6_addr));
++		if (memcmp(&key->enc_ipv6.src, &in6addr_any,
++			   sizeof(struct in6_addr)))
++			memset(&key->enc_ipv6.src, 0xff,
++			       sizeof(struct in6_addr));
++		if (memcmp(&key->enc_ipv6.dst, &in6addr_any,
++			   sizeof(struct in6_addr)))
++			memset(&key->enc_ipv6.dst, 0xff,
++			       sizeof(struct in6_addr));
++		enc_keys |= BIT(FLOW_DISSECTOR_KEY_ENC_IPV6_ADDRS);
++		key->enc_control.addr_type = FLOW_DISSECTOR_KEY_IPV6_ADDRS;
 +	}
-+	mutex_unlock(&net->nft.commit_mutex);
++
++	match->dissector.used_keys |= enc_keys;
 +}
 +
-+static struct flow_indr_block_entry block_ing_entry = {
-+	.cb	= nf_flow_table_indr_block_cb,
-+	.list	= LIST_HEAD_INIT(block_ing_entry.list),
-+};
-+
- int nf_flow_table_offload_init(void)
+ static int nf_flow_rule_match(struct nf_flow_match *match,
+-			      const struct flow_offload_tuple *tuple)
++			      const struct flow_offload_tuple *tuple,
++			      struct dst_entry *other_dst)
  {
- 	INIT_WORK(&nf_flow_offload_work, flow_offload_work_handler);
+ 	struct nf_flow_key *mask = &match->mask;
+ 	struct nf_flow_key *key = &match->key;
++	struct ip_tunnel_info *tun_info;
  
-+	flow_indr_add_block_cb(&block_ing_entry);
+ 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_META, meta);
+ 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_CONTROL, control);
+@@ -42,6 +92,11 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
+ 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_TCP, tcp);
+ 	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_PORTS, tp);
+ 
++	if (other_dst->lwtstate) {
++		tun_info = lwt_tun_info(other_dst->lwtstate);
++		nf_flow_rule_lwt_match(match, tun_info);
++	}
 +
- 	return 0;
- }
+ 	key->meta.ingress_ifindex = tuple->iifidx;
+ 	mask->meta.ingress_ifindex = 0xffffffff;
  
-@@ -878,6 +962,8 @@ void nf_flow_table_offload_exit(void)
- 	struct flow_offload_work *offload, *next;
- 	LIST_HEAD(offload_pending_list);
+@@ -480,6 +535,7 @@ nf_flow_offload_rule_alloc(struct net *net,
+ 	const struct flow_offload *flow = offload->flow;
+ 	const struct flow_offload_tuple *tuple;
+ 	struct nf_flow_rule *flow_rule;
++	struct dst_entry *other_dst;
+ 	int err = -ENOMEM;
  
-+	flow_indr_del_block_cb(&block_ing_entry);
-+
- 	cancel_work_sync(&nf_flow_offload_work);
+ 	flow_rule = kzalloc(sizeof(*flow_rule), GFP_KERNEL);
+@@ -495,7 +551,8 @@ nf_flow_offload_rule_alloc(struct net *net,
+ 	flow_rule->rule->match.key = &flow_rule->match.key;
  
- 	list_for_each_entry_safe(offload, next, &offload_pending_list, list) {
+ 	tuple = &flow->tuplehash[dir].tuple;
+-	err = nf_flow_rule_match(&flow_rule->match, tuple);
++	other_dst = flow->tuplehash[!dir].tuple.dst_cache;
++	err = nf_flow_rule_match(&flow_rule->match, tuple, other_dst);
+ 	if (err < 0)
+ 		goto err_flow_match;
+ 
 -- 
 2.11.0
 
