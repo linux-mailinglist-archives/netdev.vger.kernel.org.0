@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA13418A51E
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:59:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F367918A519
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:59:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728641AbgCRU7K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:59:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58372 "EHLO mail.kernel.org"
+        id S1728739AbgCRU46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 16:56:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728724AbgCRU4z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:56:55 -0400
+        id S1727804AbgCRU44 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 16:56:56 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2797B208FE;
-        Wed, 18 Mar 2020 20:56:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 556E521473;
+        Wed, 18 Mar 2020 20:56:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584565014;
-        bh=Xbn6HVdf2Rr06BngOPRSafzwB1lYDKBAhjv8a6jaFNo=;
+        s=default; t=1584565016;
+        bh=e6ZbtL6uKzijKplzpSabQhYVd1hsxqGHDUAVZXO08oY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hMd4tFHlwNHFn1/pIscteGqQrRI14g3eUKLraSyQRdEDJwSDsWjhVcxi8BZjleRXb
-         GxoPIAVnAsT4DWa2rZK4fg0qN4wqgjq2nuXNn4JWtnjmqqFoHrXeZTitZJfXf+89oH
-         7BZWmdX63JvEHFJocWByXmwEFTtXi+5BCfFOerWA=
+        b=1wVvfpXXeMT5anA+o/BQHwm4b9/kMWTXbwyEbPXfWgWztx3O4xqQJNejMCUKOAEbU
+         QAbbhd/Pkja2OLvHo3jnMX0JsEvA+XPOyPwoh2wfg94N3UfsWU6GmF3Zo7abmBD3wj
+         OnLG5TdGMfN3/jyI6tRRxshIZ+adCshbz9aqMsl4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 05/12] team: add missing attribute validation for array index
-Date:   Wed, 18 Mar 2020 16:56:41 -0400
-Message-Id: <20200318205648.17937-5-sashal@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 06/12] netfilter: cthelper: add missing attribute validation for cthelper
+Date:   Wed, 18 Mar 2020 16:56:42 -0400
+Message-Id: <20200318205648.17937-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200318205648.17937-1-sashal@kernel.org>
 References: <20200318205648.17937-1-sashal@kernel.org>
@@ -45,32 +47,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 669fcd7795900cd1880237cbbb57a7db66cb9ac8 ]
+[ Upstream commit c049b3450072b8e3998053490e025839fecfef31 ]
 
-Add missing attribute validation for TEAM_ATTR_OPTION_ARRAY_INDEX
+Add missing attribute validation for cthelper
 to the netlink policy.
 
-Fixes: b13033262d24 ("team: introduce array options")
+Fixes: 12f7a505331e ("netfilter: add user-space connection tracking helper infrastructure")
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/team/team.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/netfilter/nfnetlink_cthelper.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index adafc570c6507..e51fb7cb77282 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -2170,6 +2170,7 @@ team_nl_option_policy[TEAM_ATTR_OPTION_MAX + 1] = {
- 	[TEAM_ATTR_OPTION_TYPE]			= { .type = NLA_U8 },
- 	[TEAM_ATTR_OPTION_DATA]			= { .type = NLA_BINARY },
- 	[TEAM_ATTR_OPTION_PORT_IFINDEX]		= { .type = NLA_U32 },
-+	[TEAM_ATTR_OPTION_ARRAY_INDEX]		= { .type = NLA_U32 },
+diff --git a/net/netfilter/nfnetlink_cthelper.c b/net/netfilter/nfnetlink_cthelper.c
+index ac143ae4f7b65..8c17338693432 100644
+--- a/net/netfilter/nfnetlink_cthelper.c
++++ b/net/netfilter/nfnetlink_cthelper.c
+@@ -711,6 +711,8 @@ static const struct nla_policy nfnl_cthelper_policy[NFCTH_MAX+1] = {
+ 	[NFCTH_NAME] = { .type = NLA_NUL_STRING,
+ 			 .len = NF_CT_HELPER_NAME_LEN-1 },
+ 	[NFCTH_QUEUE_NUM] = { .type = NLA_U32, },
++	[NFCTH_PRIV_DATA_LEN] = { .type = NLA_U32, },
++	[NFCTH_STATUS] = { .type = NLA_U32, },
  };
  
- static int team_nl_cmd_noop(struct sk_buff *skb, struct genl_info *info)
+ static const struct nfnl_callback nfnl_cthelper_cb[NFNL_MSG_CTHELPER_MAX] = {
 -- 
 2.20.1
 
