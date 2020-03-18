@@ -2,184 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6759618A6EF
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:26:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A68E18A6F3
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:27:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727089AbgCRV0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 17:26:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53862 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726596AbgCRV0m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 17:26:42 -0400
-Received: from localhost (mobile-166-175-186-165.mycingular.net [166.175.186.165])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A258F20772;
-        Wed, 18 Mar 2020 21:26:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584566801;
-        bh=1vEeYFZKs+pqphscw5LB3ggCm30tEd47/HI2FhiZYUE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Q/k/7g6Fs8MEcVqp9/2TZdaWhoFsMx+/onLyytrPDHvgE7rsxzjDskMuxtp1gXUyp
-         Wi8odsF7QYIzY8B/+b/sb2a70+RZ3Hw1++0HvDbEESz4VY9HIVMcyf/qe7Y3lXxsgr
-         qFhaS+Q26CaVOqmqGEp0gY8SFNEjRw7VXlRty4cQ=
-Date:   Wed, 18 Mar 2020 16:26:39 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        linux-pci@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [patch V2 02/15] pci/switchtec: Replace completion wait queue
- usage for poll
-Message-ID: <20200318212639.GA242647@google.com>
+        id S1726777AbgCRV11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 17:27:27 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:42815 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726747AbgCRV11 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 17:27:27 -0400
+Received: by mail-wr1-f67.google.com with SMTP id v11so253645wrm.9
+        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 14:27:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:from:cc:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=i1a16XyvRoIOj6Ljs+l1mgrGBz01gHICBnr2Sub8y9Q=;
+        b=YM56lddnL6kV6F8B7QrO/X6gik+J53tDwaC1pJcFWGP6Vm2rEFYWLh9+O/z75brJhV
+         HzSzppy/BkVay/VMgsIDQ2IJV9+Qw1I+tgvn21uap/pV9Oml3CsX6LNuA79OJpOaD+48
+         ZC9yKtKIXtzhB4NN3IslB3yiisFbCoi1jV89wbJ5GBQY6Z8gdZ9WWdEF0hlMdzuimI0K
+         7Oz9F9NRFR+e4cHAGufl54hQ7ybgWcFsjkMSgGPcB4bnyViXpMC1P7q7BOOryL066MuN
+         4rrZIcWSPc5ob5F+aUskTdPtUtv5W+75d4S9keYWA3HSoVzIDcmFXhBVJkGf9e9jdpsU
+         S/jA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:from:cc:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=i1a16XyvRoIOj6Ljs+l1mgrGBz01gHICBnr2Sub8y9Q=;
+        b=fQ/zNSKL4wt24HF+OOsovVAtW82V1BaPhnJApU/FMZZdGPLL6gH76sdEGNNokVJZia
+         djPRPiiA9xybN6pRnQ4wF3ijGIa5GSC8ACUsSLhp2RLZ6eqSFq8of3ipm8qkJhB2lzju
+         qSAkNkxgdOr+yUVmCYt2Bkxi0D719XocBKnU1jz633CPgO6/OoSRi9kSwMd5MKKfTTxW
+         MmP6NrxCMF0K0Gw7W8HvjmFETcj2agSmRb+TgmIMzzJVFGo+Iy5ggWLa6ggVCBEZZPvx
+         uk6sKBkTnszJcgIGNIhie7OI7ixt4ubuJZgMaDLQHp6BHxn9rJMo/qqs5VB8+ZE8zLFR
+         COAA==
+X-Gm-Message-State: ANhLgQ3IWCINzJi9HCWSU6wsjuoqYMwEDRC4/kRN/x16SUkzG6ZD9TtI
+        nGP9AdBGxyumHcaGPZ+TJvxCVvA8
+X-Google-Smtp-Source: ADFU+vtNTu+tYCnI9kHeRBxcQbG9OoS06kx4MND16Gp4fNd3VgTMpn2qlNKuGstxzb3KU2qVvhhsRw==
+X-Received: by 2002:a5d:658f:: with SMTP id q15mr7649713wru.110.1584566845607;
+        Wed, 18 Mar 2020 14:27:25 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:c8fb:eee:cf86:ecdf? (p200300EA8F296000C8FB0EEECF86ECDF.dip0.t-ipconnect.de. [2003:ea:8f29:6000:c8fb:eee:cf86:ecdf])
+        by smtp.googlemail.com with ESMTPSA id c2sm53466wma.39.2020.03.18.14.27.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Mar 2020 14:27:25 -0700 (PDT)
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [PATCH net-next 0/3] net: phy: add and use phy_check_downshift
+Message-ID: <6e4ea372-3d05-3446-2928-2c1e76a66faf@gmail.com>
+Date:   Wed, 18 Mar 2020 22:27:20 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200318204407.607241357@linutronix.de>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 09:43:04PM +0100, Thomas Gleixner wrote:
-> From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> 
-> The poll callback is using the completion wait queue and sticks it into
-> poll_wait() to wake up pollers after a command has completed.
-> 
-> This works to some extent, but cannot provide EPOLLEXCLUSIVE support
-> because the waker side uses complete_all() which unconditionally wakes up
-> all waiters. complete_all() is required because completions internally use
-> exclusive wait and complete() only wakes up one waiter by default.
-> 
-> This mixes conceptually different mechanisms and relies on internal
-> implementation details of completions, which in turn puts contraints on
-> changing the internal implementation of completions.
-> 
-> Replace it with a regular wait queue and store the state in struct
-> switchtec_user.
-> 
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-> Cc: Kurt Schwemmer <kurt.schwemmer@microsemi.com>
-> Cc: Logan Gunthorpe <logang@deltatee.com>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: linux-pci@vger.kernel.org
+So far PHY drivers have to check whether a downshift occurred to be
+able to notify the user. To make life of drivers authors a little bit
+easier move the downshift notification to phylib. phy_check_downshift()
+compares the highest mutually advertised speed with the actual value
+of phydev->speed (typically read by the PHY driver from a
+vendor-specific register) to detect a downshift.
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Heiner Kallweit (3):
+  net: phy: add and use phy_check_downshift
+  net: phy: marvell: remove downshift warning now that phylib takes care
+  net: phy: aquantia: remove downshift warning now that phylib takes
+    care
 
-But please tweak the subject so it matches the other:
+ drivers/net/phy/aquantia_main.c | 25 +------------------------
+ drivers/net/phy/marvell.c       | 24 ------------------------
+ drivers/net/phy/phy-core.c      | 33 +++++++++++++++++++++++++++++++++
+ drivers/net/phy/phy.c           |  1 +
+ include/linux/phy.h             |  1 +
+ 5 files changed, 36 insertions(+), 48 deletions(-)
 
-  - pci/switchtec: Replace completion wait queue usage for poll
-  + PCI/switchtec: Replace completion wait queue usage for poll
+-- 
+2.25.1
 
-> ---
-> V2: Reworded changelog.
-> ---
->  drivers/pci/switch/switchtec.c |   22 +++++++++++++---------
->  1 file changed, 13 insertions(+), 9 deletions(-)
-> 
-> --- a/drivers/pci/switch/switchtec.c
-> +++ b/drivers/pci/switch/switchtec.c
-> @@ -52,10 +52,11 @@ struct switchtec_user {
->  
->  	enum mrpc_state state;
->  
-> -	struct completion comp;
-> +	wait_queue_head_t cmd_comp;
->  	struct kref kref;
->  	struct list_head list;
->  
-> +	bool cmd_done;
->  	u32 cmd;
->  	u32 status;
->  	u32 return_code;
-> @@ -77,7 +78,7 @@ static struct switchtec_user *stuser_cre
->  	stuser->stdev = stdev;
->  	kref_init(&stuser->kref);
->  	INIT_LIST_HEAD(&stuser->list);
-> -	init_completion(&stuser->comp);
-> +	init_waitqueue_head(&stuser->cmd_comp);
->  	stuser->event_cnt = atomic_read(&stdev->event_cnt);
->  
->  	dev_dbg(&stdev->dev, "%s: %p\n", __func__, stuser);
-> @@ -175,7 +176,7 @@ static int mrpc_queue_cmd(struct switcht
->  	kref_get(&stuser->kref);
->  	stuser->read_len = sizeof(stuser->data);
->  	stuser_set_state(stuser, MRPC_QUEUED);
-> -	reinit_completion(&stuser->comp);
-> +	stuser->cmd_done = false;
->  	list_add_tail(&stuser->list, &stdev->mrpc_queue);
->  
->  	mrpc_cmd_submit(stdev);
-> @@ -222,7 +223,8 @@ static void mrpc_complete_cmd(struct swi
->  		memcpy_fromio(stuser->data, &stdev->mmio_mrpc->output_data,
->  			      stuser->read_len);
->  out:
-> -	complete_all(&stuser->comp);
-> +	stuser->cmd_done = true;
-> +	wake_up_interruptible(&stuser->cmd_comp);
->  	list_del_init(&stuser->list);
->  	stuser_put(stuser);
->  	stdev->mrpc_busy = 0;
-> @@ -529,10 +531,11 @@ static ssize_t switchtec_dev_read(struct
->  	mutex_unlock(&stdev->mrpc_mutex);
->  
->  	if (filp->f_flags & O_NONBLOCK) {
-> -		if (!try_wait_for_completion(&stuser->comp))
-> +		if (!stuser->cmd_done)
->  			return -EAGAIN;
->  	} else {
-> -		rc = wait_for_completion_interruptible(&stuser->comp);
-> +		rc = wait_event_interruptible(stuser->cmd_comp,
-> +					      stuser->cmd_done);
->  		if (rc < 0)
->  			return rc;
->  	}
-> @@ -580,7 +583,7 @@ static __poll_t switchtec_dev_poll(struc
->  	struct switchtec_dev *stdev = stuser->stdev;
->  	__poll_t ret = 0;
->  
-> -	poll_wait(filp, &stuser->comp.wait, wait);
-> +	poll_wait(filp, &stuser->cmd_comp, wait);
->  	poll_wait(filp, &stdev->event_wq, wait);
->  
->  	if (lock_mutex_and_test_alive(stdev))
-> @@ -588,7 +591,7 @@ static __poll_t switchtec_dev_poll(struc
->  
->  	mutex_unlock(&stdev->mrpc_mutex);
->  
-> -	if (try_wait_for_completion(&stuser->comp))
-> +	if (stuser->cmd_done)
->  		ret |= EPOLLIN | EPOLLRDNORM;
->  
->  	if (stuser->event_cnt != atomic_read(&stdev->event_cnt))
-> @@ -1272,7 +1275,8 @@ static void stdev_kill(struct switchtec_
->  
->  	/* Wake up and kill any users waiting on an MRPC request */
->  	list_for_each_entry_safe(stuser, tmpuser, &stdev->mrpc_queue, list) {
-> -		complete_all(&stuser->comp);
-> +		stuser->cmd_done = true;
-> +		wake_up_interruptible(&stuser->cmd_comp);
->  		list_del_init(&stuser->list);
->  		stuser_put(stuser);
->  	}
-> 
