@@ -2,436 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D514F18A1E7
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 18:47:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F3DA318A205
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 18:59:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726796AbgCRRpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 13:45:30 -0400
-Received: from mail-vs1-f67.google.com ([209.85.217.67]:34502 "EHLO
-        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726647AbgCRRp1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 13:45:27 -0400
-Received: by mail-vs1-f67.google.com with SMTP id t10so17078661vsp.1
-        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 10:45:24 -0700 (PDT)
+        id S1726738AbgCRR7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 13:59:17 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:46426 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726506AbgCRR7R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 13:59:17 -0400
+Received: by mail-pg1-f196.google.com with SMTP id y30so14081341pga.13
+        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 10:59:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=W8EYTRRSrIFJb9uuOe46tiIynHS99UpPKyp4HomAnkY=;
-        b=SLP2cpJtHEdbzXptKnbdKeZEUGNIud9PyQ7ZrlGKjTws5UnBjA++qH4aGBnvvAX+Os
-         Ck50nXkjTz5Ux0q5GrwVqW0CkhI1N+qeBWi/6ySpcFHO1irbnAkRi4P950iEyhLYCoJb
-         mhdcW2ITGvAIEO9tNJlyJAHtypKEmv81xjhJg=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=CnA7/Xu0NQs9NwBN2bst7DdL1jgo5t7ZKIEKv3j7WoU=;
+        b=VDyR14u9nysz5rpF6+dXzVA0UGC1RLBSBHpCchPnsFZQ93pOGfLX5AgMLBbpfBwtLd
+         7o9CgVC93O0tYIBHVYP/+2k63ECUxt5+L3Zoskazw+ESXka5vcSyd603DKQu91dTwTb6
+         DOoAsJLwNcoQAuWzxmu2WrQ8u3etmmZ4iugBAsEI/ehgqp4andz2LDdlFtEbopXygNsL
+         eO8lDFWymwYUThylWDC7nEX84LaaxqsMx4mbNHGb+As4UoO8J0n2aCNLzxkKLnbXezue
+         kGv0IM3KsobHHZGdknsoOu56EDNciyWQN3bSJ0X120vN5VQHqZokax9ouyr7Par59nyJ
+         2odg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=W8EYTRRSrIFJb9uuOe46tiIynHS99UpPKyp4HomAnkY=;
-        b=l1SCU6E9UQqWUhO/ApT0Pzw3ZSgvE5yrbDXIWtug9LoRUqpkmT7L3HHS8cdEt+Ah7G
-         Qvu12pPuaPx/ynuYXFk33CymHpVErrXyeoQ89+FVrqUWlo53l/QQXHNkNJ/c/dcLTaEY
-         NoketDLOc31LgNTfhlMcYNVBMd26HFkcffwu5/RNoWzbal4JXM2ws/cSad4pNd7Vz8WY
-         x5MgZsHADFG/V7I0pxBDRlf+IHwEb7keqzgIYK8Uhx5ImhKvwkbVl2i8+8qCQasrbkid
-         MxzOUylRM3wFEdQdg0/wkouOcW1mbhTHOYp6t9SvTUkbcw9ddiUzqV9m0mwS4+5Bm4mK
-         E3bQ==
-X-Gm-Message-State: ANhLgQ3+2SdNyX53BJXGtJWQ/vcIFoL0Z4Z3J5FU6Y1J0/SsWX8XrIyY
-        Rq9HKd8A5gDecbHiFwULNq+z+lRrfssNQfQzmlIC0w==
-X-Google-Smtp-Source: ADFU+vvBd8HD6uKQA4RG9EepmQUvi+4svy5ZuSSUhpBh9SC6dCz4LWMPBptYdxGbysKXC4whrwDMp9x5c1UTck4k9G0=
-X-Received: by 2002:a67:ec81:: with SMTP id h1mr3849233vsp.96.1584553524118;
- Wed, 18 Mar 2020 10:45:24 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=CnA7/Xu0NQs9NwBN2bst7DdL1jgo5t7ZKIEKv3j7WoU=;
+        b=bPufxJ5v8jSmiwwO4n8TaCchsryhT+KzdPICoIfctMLy3NFrrfWCn0SYknuGHdvNvm
+         IxGd9r3TEK1Uq+Fq4GgIpjrMlzTzP5bUcmhGJQUby8PsOp8YVhjhhrytUGYX/Yq8Smgh
+         +8gNbrWQ/6/DM/7Wy3//N0xc4uydrrgew0T9zY6nBkkXZFKhgiZiS0G3VC135I5+zXVq
+         z1z4xrFuk6Gs/UDZMsmHjLHtJTmoGaJPVxx7anO89PHKOWiUp3ZXR5R6IVvE3xItMnmF
+         3rh9LjRDnyWtqugZHW5gd/5F53JKOzlaZlHZ9vgsOxn18tXaTLntvcxdqVCWW5LvOZQQ
+         zQGQ==
+X-Gm-Message-State: ANhLgQ0r84T6MXARcrSlDIbNNtRPbz6TsRvf9/c5dLxpuXO5IWIZIkjD
+        ChKr6ZKNfJ0VEVNmhLwhGtk=
+X-Google-Smtp-Source: ADFU+vs/7REdz/pv4OTsW09i0jC69L9nJXIHnawVkzE+xNMIz3p/AS7tP2QPZKyLjrhHZEtCcONSNw==
+X-Received: by 2002:aa7:848d:: with SMTP id u13mr5595365pfn.253.1584554355314;
+        Wed, 18 Mar 2020 10:59:15 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id 9sm6579304pge.65.2020.03.18.10.59.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Mar 2020 10:59:14 -0700 (PDT)
+Subject: Re: [RFC mptcp-next] tcp: mptcp: use mptcp receive buffer space to
+ select rcv window
+To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
+Cc:     mptcp@lists.01.org, Eric Dumazet <edumazet@google.com>
+References: <20200318141917.2612-1-fw@strlen.de>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <48933c49-0889-5dba-29e2-62640e47797a@gmail.com>
+Date:   Wed, 18 Mar 2020 10:59:12 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-References: <20200312181055.94038-1-abhishekpandit@chromium.org>
- <20200312111036.1.I17e2220fd0c0822c76a15ef89b882fb4cfe3fe89@changeid>
- <A79B48D3-D342-473C-B94A-A2E0AA83B505@holtmann.org> <CANFp7mXwWGZF80EBqEmacc5uQWkaC0pL1rp+x5Qa40kkAcod-Q@mail.gmail.com>
- <FFDE30C9-EE74-436D-8628-9FFC79114D3B@holtmann.org>
-In-Reply-To: <FFDE30C9-EE74-436D-8628-9FFC79114D3B@holtmann.org>
-From:   Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Date:   Wed, 18 Mar 2020 10:45:12 -0700
-Message-ID: <CANFp7mXtrU8GwWASnfsKkeOyEFNcoCvPb1TJ6vvCtUBZEMKWBg@mail.gmail.com>
-Subject: Re: [PATCH 1/1] Bluetooth: Prioritize SCO traffic on slow interfaces
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Bluez mailing list <linux-bluetooth@vger.kernel.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200318141917.2612-1-fw@strlen.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 10:11 AM Marcel Holtmann <marcel@holtmann.org> wrot=
-e:
->
-> Hi Abhishek,
->
-> >>> When scheduling TX packets, send all SCO/eSCO packets first and then
-> >>> send only 1 ACL/LE packet in a loop while checking that there are no =
-SCO
-> >>> packets pending. This is done to make sure that we can meet SCO
-> >>> deadlines on slow interfaces like UART. If we were to queue up multip=
-le
-> >>> ACL packets without checking for a SCO packet, we might miss the SCO
-> >>> timing. For example:
-> >>>
-> >>> The time it takes to send a maximum size ACL packet (1024 bytes):
-> >>> t =3D 10/8 * 1024 bytes * 8 bits/byte * 1 packet / baudrate
-> >>>       where 10/8 is uart overhead due to start/stop bits per byte
-> >>>
-> >>> Replace t =3D 3.75ms (SCO deadline), which gives us a baudrate of 273=
-0666
-> >>> and is pretty close to a common baudrate of 3000000 used for BT. At t=
-his
-> >>> baudrate, if we sent two 1024 byte ACL packets, we would miss the 3.7=
-5ms
-> >>> timing window.
-> >>>
-> >>> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> >>> ---
-> >>>
-> >>> include/net/bluetooth/hci_core.h |  1 +
-> >>> net/bluetooth/hci_core.c         | 91 +++++++++++++++++++++++++------=
--
-> >>> 2 files changed, 73 insertions(+), 19 deletions(-)
-> >>>
-> >>> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth=
-/hci_core.h
-> >>> index d4e28773d378..f636c89f1fe1 100644
-> >>> --- a/include/net/bluetooth/hci_core.h
-> >>> +++ b/include/net/bluetooth/hci_core.h
-> >>> @@ -315,6 +315,7 @@ struct hci_dev {
-> >>>      __u8            ssp_debug_mode;
-> >>>      __u8            hw_error_code;
-> >>>      __u32           clock;
-> >>> +     __u8            sched_limit;
-> >>
-> >> why do you need this parameter?
-> >
-> > This is really only necessary on systems where the data transfer rate
-> > to the controller is low. I want the driver to set whether we should
-> > aggressively schedule SCO packets. A quirk might actually be better
-> > than a variable (wasn't sure what is preferable).
->
-> or maybe we try without driver choice first. I would assume what is requi=
-red for UART, will not harm USB or SDIO transports either.
 
-Ack -- I can make this default behavior.
 
->
-> >>>      __u16           devid_source;
-> >>>      __u16           devid_vendor;
-> >>> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> >>> index dbd2ad3a26ed..00a72265cd96 100644
-> >>> --- a/net/bluetooth/hci_core.c
-> >>> +++ b/net/bluetooth/hci_core.c
-> >>> @@ -4239,18 +4239,32 @@ static void __check_timeout(struct hci_dev *h=
-dev, unsigned int cnt)
-> >>>      }
-> >>> }
-> >>>
-> >>> -static void hci_sched_acl_pkt(struct hci_dev *hdev)
-> >>> +/* Limit packets in flight when SCO/eSCO links are active. */
-> >>> +static bool hci_sched_limit(struct hci_dev *hdev)
-> >>> +{
-> >>> +     return hdev->sched_limit && hci_conn_num(hdev, SCO_LINK);
-> >>> +}
-> >>> +
-> >>> +static bool hci_sched_acl_pkt(struct hci_dev *hdev)
-> >>> {
-> >>>      unsigned int cnt =3D hdev->acl_cnt;
-> >>>      struct hci_chan *chan;
-> >>>      struct sk_buff *skb;
-> >>>      int quote;
-> >>> +     bool sched_limit =3D hci_sched_limit(hdev);
-> >>> +     bool resched =3D false;
-> >>>
-> >>>      __check_timeout(hdev, cnt);
-> >>>
-> >>>      while (hdev->acl_cnt &&
-> >>>             (chan =3D hci_chan_sent(hdev, ACL_LINK, &quote))) {
-> >>>              u32 priority =3D (skb_peek(&chan->data_q))->priority;
-> >>> +
-> >>> +             if (sched_limit && quote > 0) {
-> >>> +                     resched =3D true;
-> >>> +                     quote =3D 1;
-> >>> +             }
-> >>> +
-> >>>              while (quote-- && (skb =3D skb_peek(&chan->data_q))) {
-> >>>                      BT_DBG("chan %p skb %p len %d priority %u", chan=
-, skb,
-> >>>                             skb->len, skb->priority);
-> >>> @@ -4271,19 +4285,26 @@ static void hci_sched_acl_pkt(struct hci_dev =
-*hdev)
-> >>>                      chan->sent++;
-> >>>                      chan->conn->sent++;
-> >>>              }
-> >>> +
-> >>> +             if (resched && cnt !=3D hdev->acl_cnt)
-> >>> +                     break;
-> >>>      }
-> >>>
-> >>> -     if (cnt !=3D hdev->acl_cnt)
-> >>> +     if (hdev->acl_cnt =3D=3D 0 && cnt !=3D hdev->acl_cnt)
-> >>>              hci_prio_recalculate(hdev, ACL_LINK);
-> >>> +
-> >>> +     return resched;
-> >>> }
-> >>>
-> >>> -static void hci_sched_acl_blk(struct hci_dev *hdev)
-> >>> +static bool hci_sched_acl_blk(struct hci_dev *hdev)
-> >>> {
-> >>>      unsigned int cnt =3D hdev->block_cnt;
-> >>>      struct hci_chan *chan;
-> >>>      struct sk_buff *skb;
-> >>>      int quote;
-> >>>      u8 type;
-> >>> +     bool sched_limit =3D hci_sched_limit(hdev);
-> >>> +     bool resched =3D false;
-> >>>
-> >>>      __check_timeout(hdev, cnt);
-> >>>
-> >>> @@ -4297,6 +4318,12 @@ static void hci_sched_acl_blk(struct hci_dev *=
-hdev)
-> >>>      while (hdev->block_cnt > 0 &&
-> >>>             (chan =3D hci_chan_sent(hdev, type, &quote))) {
-> >>>              u32 priority =3D (skb_peek(&chan->data_q))->priority;
-> >>> +
-> >>> +             if (sched_limit && quote > 0) {
-> >>> +                     resched =3D true;
-> >>> +                     quote =3D 1;
-> >>> +             }
-> >>> +
-> >>>              while (quote > 0 && (skb =3D skb_peek(&chan->data_q))) {
-> >>>                      int blocks;
-> >>>
-> >>> @@ -4311,7 +4338,7 @@ static void hci_sched_acl_blk(struct hci_dev *h=
-dev)
-> >>>
-> >>>                      blocks =3D __get_blocks(hdev, skb);
-> >>>                      if (blocks > hdev->block_cnt)
-> >>> -                             return;
-> >>> +                             return false;
-> >>>
-> >>>                      hci_conn_enter_active_mode(chan->conn,
-> >>>                                                 bt_cb(skb)->force_act=
-ive);
-> >>> @@ -4325,33 +4352,39 @@ static void hci_sched_acl_blk(struct hci_dev =
-*hdev)
-> >>>                      chan->sent +=3D blocks;
-> >>>                      chan->conn->sent +=3D blocks;
-> >>>              }
-> >>> +
-> >>> +             if (resched && cnt !=3D hdev->block_cnt)
-> >>> +                     break;
-> >>>      }
-> >>>
-> >>> -     if (cnt !=3D hdev->block_cnt)
-> >>> +     if (hdev->block_cnt =3D=3D 0 && cnt !=3D hdev->block_cnt)
-> >>>              hci_prio_recalculate(hdev, type);
-> >>> +
-> >>> +     return resched;
-> >>> }
-> >>>
-> >>> -static void hci_sched_acl(struct hci_dev *hdev)
-> >>> +static bool hci_sched_acl(struct hci_dev *hdev)
-> >>> {
-> >>>      BT_DBG("%s", hdev->name);
-> >>>
-> >>>      /* No ACL link over BR/EDR controller */
-> >>>      if (!hci_conn_num(hdev, ACL_LINK) && hdev->dev_type =3D=3D HCI_P=
-RIMARY)
-> >>> -             return;
-> >>> +             goto done;
-> >>
-> >> Style wise the goto done is overkill. Just return false.
-> >
-> > Will do.
-> >
-> >>
-> >>>
-> >>>      /* No AMP link over AMP controller */
-> >>>      if (!hci_conn_num(hdev, AMP_LINK) && hdev->dev_type =3D=3D HCI_A=
-MP)
-> >>> -             return;
-> >>> +             goto done;
-> >>>
-> >>>      switch (hdev->flow_ctl_mode) {
-> >>>      case HCI_FLOW_CTL_MODE_PACKET_BASED:
-> >>> -             hci_sched_acl_pkt(hdev);
-> >>> -             break;
-> >>> +             return hci_sched_acl_pkt(hdev);
-> >>>
-> >>>      case HCI_FLOW_CTL_MODE_BLOCK_BASED:
-> >>> -             hci_sched_acl_blk(hdev);
-> >>> -             break;
-> >>> +             return hci_sched_acl_blk(hdev);
-> >>
-> >> So the block based mode is for AMP controllers and not used on BR/EDR =
-controllers. Since AMP controllers only transport ACL packet and no SCO/eSC=
-O packets, we can ignore this here.
-> >
-> > Ok, I'll remove it there.
-> >
-> >>
-> >>>      }
-> >>> +
-> >>> +done:
-> >>> +     return false;
-> >>> }
-> >>>
-> >>> /* Schedule SCO */
-> >>> @@ -4402,16 +4435,18 @@ static void hci_sched_esco(struct hci_dev *hd=
-ev)
-> >>>      }
-> >>> }
-> >>>
-> >>> -static void hci_sched_le(struct hci_dev *hdev)
-> >>> +static bool hci_sched_le(struct hci_dev *hdev)
-> >>> {
-> >>>      struct hci_chan *chan;
-> >>>      struct sk_buff *skb;
-> >>>      int quote, cnt, tmp;
-> >>> +     bool sched_limit =3D hci_sched_limit(hdev);
-> >>> +     bool resched =3D false;
-> >>>
-> >>>      BT_DBG("%s", hdev->name);
-> >>>
-> >>>      if (!hci_conn_num(hdev, LE_LINK))
-> >>> -             return;
-> >>> +             return resched;
-> >>>
-> >>>      cnt =3D hdev->le_pkts ? hdev->le_cnt : hdev->acl_cnt;
-> >>>
-> >>> @@ -4420,6 +4455,12 @@ static void hci_sched_le(struct hci_dev *hdev)
-> >>>      tmp =3D cnt;
-> >>>      while (cnt && (chan =3D hci_chan_sent(hdev, LE_LINK, &quote))) {
-> >>>              u32 priority =3D (skb_peek(&chan->data_q))->priority;
-> >>> +
-> >>> +             if (sched_limit && quote > 0) {
-> >>> +                     resched =3D true;
-> >>> +                     quote =3D 1;
-> >>> +             }
-> >>> +
-> >>>              while (quote-- && (skb =3D skb_peek(&chan->data_q))) {
-> >>>                      BT_DBG("chan %p skb %p len %d priority %u", chan=
-, skb,
-> >>>                             skb->len, skb->priority);
-> >>> @@ -4437,6 +4478,9 @@ static void hci_sched_le(struct hci_dev *hdev)
-> >>>                      chan->sent++;
-> >>>                      chan->conn->sent++;
-> >>>              }
-> >>> +
-> >>> +             if (resched && cnt !=3D tmp)
-> >>> +                     break;
-> >>>      }
-> >>>
-> >>>      if (hdev->le_pkts)
-> >>> @@ -4444,24 +4488,33 @@ static void hci_sched_le(struct hci_dev *hdev=
-)
-> >>>      else
-> >>>              hdev->acl_cnt =3D cnt;
-> >>>
-> >>> -     if (cnt !=3D tmp)
-> >>> +     if (cnt =3D=3D 0 && cnt !=3D tmp)
-> >>>              hci_prio_recalculate(hdev, LE_LINK);
-> >>> +
-> >>> +     return resched;
-> >>> }
-> >>>
-> >>> static void hci_tx_work(struct work_struct *work)
-> >>> {
-> >>>      struct hci_dev *hdev =3D container_of(work, struct hci_dev, tx_w=
-ork);
-> >>>      struct sk_buff *skb;
-> >>> +     bool resched;
-> >>>
-> >>>      BT_DBG("%s acl %d sco %d le %d", hdev->name, hdev->acl_cnt,
-> >>>             hdev->sco_cnt, hdev->le_cnt);
-> >>>
-> >>>      if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
-> >>>              /* Schedule queues and send stuff to HCI driver */
-> >>> -             hci_sched_acl(hdev);
-> >>> -             hci_sched_sco(hdev);
-> >>> -             hci_sched_esco(hdev);
-> >>> -             hci_sched_le(hdev);
-> >>> +             do {
-> >>> +                     /* SCO and eSCO send all packets until emptied =
-*/
-> >>> +                     hci_sched_sco(hdev);
-> >>> +                     hci_sched_esco(hdev);
-> >>> +
-> >>> +                     /* Acl and Le send based on quota (priority on =
-ACL per
-> >>> +                      * loop)
-> >>> +                      */
-> >>> +                     resched =3D hci_sched_acl(hdev) || hci_sched_le=
-(hdev);
-> >>> +             } while (resched);
-> >>>      }
-> >>
-> >> I am not in favor of this busy loop. We might want to re-think the who=
-le scheduling by connection type and really only focus on scheduling ACL (B=
-R/EDR and LE) and audio packets (SCO/eSCO and ISO).
-> >
-> > I think the busy loop is the simplest solution if we want to solve the
-> > problem: don't send 2 ACL packets without checking if there is a SCO
-> > packet scheduled (which is the worst case I'm worried about on UART
-> > interfaces).
-> >
-> > If we get rid of the connection type scheduling and only do audio and
-> > ACL, we would still need some mechanism to guarantee that you don't
-> > send >~1100 bytes without checking if SCO is queued (assuming 3000000
-> > baudrate and 3.75ms latency requirement).
->
-> Why don=E2=80=99t we just say that if SCO is queued up, then after each A=
-CL packet we should send a SCO packet.
+On 3/18/20 7:19 AM, Florian Westphal wrote:
+> In MPTCP, the receive windo is shared across all subflows, because it
+> refers to the mptcp-level sequence space.
+> 
+> This commit doesn't change choice of initial window for passive or active
+> connections.
+> While it would be possible to change those as well, this adds complexity
+> (especially when handling MP_JOIN requests).
+> 
+> However, the MPTCP RFC specifically says that a MPTCP sender
+> 'MUST NOT use the RCV.WND field of a TCP segment at the connection level if
+> it does not also carry a DSS option with a Data ACK field.'
+> 
+> SYN/SYNACK packets do not carry a DSS option with a Data ACK field.
+> 
+> CC: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Florian Westphal <fw@strlen.de>
+> ---
+>  This patch would add additional direct call in __tcp_select_window().
+> 
+>  I looked at mptcp option writing to check if it could be done there but
+>  that seemed worse.
+> 
+>  include/net/mptcp.h   |  3 +++
+>  net/ipv4/tcp_output.c |  5 +++++
+>  net/mptcp/subflow.c   | 17 +++++++++++++++++
+>  3 files changed, 25 insertions(+)
+> 
+> diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+> index 7489f9267640..1ef4520f45c3 100644
+> --- a/include/net/mptcp.h
+> +++ b/include/net/mptcp.h
+> @@ -66,6 +66,8 @@ static inline bool rsk_is_mptcp(const struct request_sock *req)
+>  	return tcp_rsk(req)->is_mptcp;
+>  }
+>  
+> +void mptcp_space(const struct sock *ssk, int *space, int *full_space);
+> +
+>  void mptcp_parse_option(const struct sk_buff *skb, const unsigned char *ptr,
+>  			int opsize, struct tcp_options_received *opt_rx);
+>  bool mptcp_syn_options(struct sock *sk, const struct sk_buff *skb,
+> @@ -195,6 +197,7 @@ static inline bool mptcp_sk_is_subflow(const struct sock *sk)
+>  	return false;
+>  }
+>  
+> +static inline void mptcp_space(const struct sock *ssk, int *s, int *fs) { }
+>  static inline void mptcp_seq_show(struct seq_file *seq) { }
+>  #endif /* CONFIG_MPTCP */
+>  
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index 306e25d743e8..1a829536a115 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -2771,6 +2771,11 @@ u32 __tcp_select_window(struct sock *sk)
+>  	int full_space = min_t(int, tp->window_clamp, allowed_space);
+>  	int window;
+>  
+> +	if (sk_is_mptcp(sk)) {
+> +		mptcp_space(sk, &free_space, &allowed_space);
+> +		full_space = min_t(int, tp->window_clamp, allowed_space);
+> +	}
 
-That sounds good. Effectively, this is what I wanted to achieve
-without modifying the ACL round robin mechanism too much.
+You could move the full_space = min_t(int, tp->window_clamp, allowed_space);
+after this block factorize it.
 
->
-> >
-> >>
-> >> In addition, we also need to check that SCO scheduling and A2DP media =
-channel ACL packets do work together. I think that generally it would be be=
-st to have a clear rate at which SCO packets are require to pushed down to =
-the hardware. So you really reserve bandwidth and not blindly prioritize th=
-em via a busy loop.
-> >>
-> > I am less worried about bandwidth and more about latency. If I start
-> > sending really large ACL packets through UART, it could take multiple
-> > milliseconds. It really has to be reserved bandwidth per small
-> > timeslice (like 3.75ms) so I can guarantee that if a SCO packet is
-> > seen within that time slice, it will be transferred. There will still
-> > have to be a busy loop though because the amount of data you can send
-> > in the time slice will probably be less than the data that can be
-> > in-flight to the controller (i.e. acl_max_pkts).
->
-> Right now we kinda let the SCO socket application provide the correct tim=
-ing. I was thinking that the kernel might need to enforce this.
 
-I was under the assumption that the Num Completed Pkts event would
-actually help us regulate the timing (assuming controller sends that
-event once it actually sends SCO packet over the air). Currently, we
-don't seem to be using it for SCO.
+> +
+>  	if (unlikely(mss > full_space)) {
+>  		mss = full_space;
+>  		if (mss <= 0)
+> diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+> index 40ad7995b13b..aefcbb8bb737 100644
+> --- a/net/mptcp/subflow.c
+> +++ b/net/mptcp/subflow.c
+> @@ -745,6 +745,23 @@ bool mptcp_subflow_data_available(struct sock *sk)
+>  	return subflow->data_avail;
+>  }
+>  
+> +/* If ssk has an mptcp parent socket, use the mptcp rcvbuf occupancy,
+> + * not the ssk one.
+> + *
+> + * In mptcp, rwin is about the mptcp-level connection data.
+> + *
+> + * Data that is still on the ssk rx queue can thus be ignored,
+> + * as far as mptcp peer is concerened that data is still inflight.
+> + */
+> +void mptcp_space(const struct sock *ssk, int *space, int *full_space)
+> +{
+> +	const struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
+> +	const struct sock *sk = READ_ONCE(subflow->conn);
 
->
-> Regards
->
-> Marcel
->
+What are the rules protecting subflow->conn lifetime ?
 
-For the next patch revision, I will remove the driver specific enable,
-gotos and scheduling of acl block. I'll also add a limit to SCO
-packets sent so it observes and respects the number of sco packets
-completed (same as ACL).
+Why dereferencing sk after this line is safe ?
 
-I'm not yet comfortable refactoring the scheduling from per connection
-to per type, especially as I'm not sure what to do with ISO or ACL
-audio. I think those will require a bit more thought.
-
-Thanks
-Abhishek
+> +
+> +	*space = tcp_space(sk);
+> +	*full_space = tcp_full_space(sk);
+> +}
+> +
+>  static void subflow_data_ready(struct sock *sk)
+>  {
+>  	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+> 
