@@ -2,78 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CA3618A399
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:15:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1639118A3E0
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:42:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727005AbgCRUPX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:15:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57424 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726976AbgCRUPX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:15:23 -0400
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0BAE520752;
-        Wed, 18 Mar 2020 20:15:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584562523;
-        bh=+rIapVGC/kKpY69+060nK0REWuvz58lkwTQP/NBoQ/0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=S06kWRXux66DHUfQkB8JlBCDogSMSnG7Zg83qDU7xtn1xi50dB8oJpM1+NfNi5xzZ
-         PLvypmOkaDe58dc+X9iAX/hBQIKN7zqBGCeNHFmLWyMm3rt4cdAlvkoj/CrcTO7E/8
-         pGW2Jbn13GUCTYmFnRofrA6N5mP7L79uGX92ZrJM=
-Date:   Wed, 18 Mar 2020 13:15:21 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pavan Chebbi <pavan.chebbi@broadcom.com>
-Cc:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH net-next 09/11] devlink: Add new enable_ecn generic
- device param
-Message-ID: <20200318131521.7f3634a6@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <CALs4sv0Y5bw85bh9=6T2EmwGKqJvjNr-ptw8Kovyp7Bb6mHDDA@mail.gmail.com>
-References: <1584458246-29370-1-git-send-email-vasundhara-v.volam@broadcom.com>
-        <1584458246-29370-3-git-send-email-vasundhara-v.volam@broadcom.com>
-        <20200317105220.3ae07cad@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CALs4sv0Y5bw85bh9=6T2EmwGKqJvjNr-ptw8Kovyp7Bb6mHDDA@mail.gmail.com>
+        id S1726897AbgCRUmR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 18 Mar 2020 16:42:17 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:54825 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726647AbgCRUmR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 16:42:17 -0400
+Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1jEfVj-0004Va-6W; Wed, 18 Mar 2020 20:41:55 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 691DB630E4; Wed, 18 Mar 2020 13:41:53 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 5DA87AC1DD;
+        Wed, 18 Mar 2020 13:41:53 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jarod Wilson <jarod@redhat.com>
+cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Moshe Levi <moshele@mellanox.com>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] ipv6: don't auto-add link-local address to lag ports
+In-reply-to: <CAKfmpSc0yea5-OfE1rnVdErDTeOza=owbL00QQEaH-M-A6Za7g@mail.gmail.com>
+References: <20200318140605.45273-1-jarod@redhat.com> <8a88d1c8-c6b1-ad85-7971-e6ae8c6fa0e4@gmail.com> <CAKfmpSc0yea5-OfE1rnVdErDTeOza=owbL00QQEaH-M-A6Za7g@mail.gmail.com>
+Comments: In-reply-to Jarod Wilson <jarod@redhat.com>
+   message dated "Wed, 18 Mar 2020 14:32:52 -0400."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <25628.1584564113.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Wed, 18 Mar 2020 13:41:53 -0700
+Message-ID: <25629.1584564113@famine>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Mar 2020 10:56:52 +0530 Pavan Chebbi wrote:
-> On Tue, Mar 17, 2020 at 11:22 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Tue, 17 Mar 2020 20:47:24 +0530 Vasundhara Volam wrote:  
-> > > From: Pavan Chebbi <pavan.chebbi@broadcom.com>
-> > >
-> > > Add new device parameter to enable/disable handling of Explicit
-> > > Congestion Notification(ECN) in the device.
-> > >
-> > > This patch also addresses comments from Jiri Pirko, to update the
-> > > devlink-info.rst documentation.
-> > >
-> > > Cc: Jiri Pirko <jiri@mellanox.com>
-> > > Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-> > > Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-> > > Signed-off-by: Michael Chan <michael.chan@broadcom.com>  
-> >
-> > Nacked-by: Jakub Kicinski <kuba@kernel.org>
-> >
-> > We've been over this multiple times. Devlink is not for configuring
-> > forwarding features. Use qdisc offload.  
-> 
-> This is just a config option like enable_sriov and enable_roce.
-> This will only enable the capability in the device and not configure any rules.
+Jarod Wilson <jarod@redhat.com> wrote:
 
-Not what the documentation added by the patch says. But I'm sure the
-reality^W documentation can be bent as needed.
+>On Wed, Mar 18, 2020 at 2:02 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>
+>> On 3/18/20 7:06 AM, Jarod Wilson wrote:
+>> > Bonding slave and team port devices should not have link-local addresses
+>> > automatically added to them, as it can interfere with openvswitch being
+>> > able to properly add tc ingress.
+>> >
+>> > Reported-by: Moshe Levi <moshele@mellanox.com>
+>> > CC: Marcelo Ricardo Leitner <mleitner@redhat.com>
+>> > CC: netdev@vger.kernel.org
+>> > Signed-off-by: Jarod Wilson <jarod@redhat.com>
+>>
+>>
+>> This does not look a net candidate to me, unless the bug has been added recently ?
+>>
+>> The absence of Fixes: tag is a red flag for a net submission.
+>>
+>> By adding a Fixes: tag, you are doing us a favor, please.
+>
+>Yeah, wasn't entirely sure on this one. It fixes a problem, but it's
+>not exactly a new one. A quick look at git history suggests this might
+>actually be something that technically pre-dates the move to git in
+>2005, but only really became a problem with some additional far more
+>recent infrastructure (tc and friends). I can resubmit it as net-next
+>if that's preferred.
 
-If you really "just enable the capability like SR-IOV", please come
-back with this patch once you implement an API to make use of such
-capability.
+	Commit
+
+c2edacf80e15 bonding / ipv6: no addrconf for slaves separately from master
+
+	should (in theory) already prevent ipv6 link-local addrconf, at
+least for bonding slaves, and dates from 2007.  If something has changed
+to break the logic in this commit, then (a) you might need to do some
+research to find a candidate for your Fixes tag, and (b) I'd suggest
+also investigating whether or not the change added by c2edacf80e15 to
+addrconf_notify() no longer serves any purpose, and should be removed if
+that is the case.
+
+	Note also that the hyperv netvsc driver, in netvsc_vf_join(),
+sets IFF_SLAVE in order to trigger the addrconf prevention logic from
+c2edacf80e15; I'm not sure if your patch would affect its expectations
+(if c2edacf80e15 were removed).
+
+	-J
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
