@@ -2,106 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2C6A18A4F1
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:57:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A53F18A501
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 21:58:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728771AbgCRU5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:57:12 -0400
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:44744 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728773AbgCRU5K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 16:57:10 -0400
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 84AAD891AD;
-        Thu, 19 Mar 2020 09:57:06 +1300 (NZDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1584565026;
-        bh=E7sNL3L2Rpq0d2IIqOPuqXtBvkN0Vw7/6CgrbMg5BXg=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To;
-        b=KOQv1bzFI8HNuA5GUrr0v0cwgGqw0ZKMHDtwVDthiOs66xGxzZD765xZ4gvbURiGE
-         T8fN0vJsC006q8OHtlrE4wOi9EVTFUekbZdGLwSl9jAaGyuKrp3WbZNUsFYYKETaoL
-         0Lw5/v3NjI3rNiEJW5L86THG1D3WFQohXO2CS1W3b/ANfmwzHvK2I6HIJ200OFrudX
-         Cyb6vP3Ym7SeaUaUjEchr9hMBVrJUM12rAW9FeIqj0xu/WJ/mJgifSO34q091NCzm5
-         x4IULTH76EnfgxFeoF+G3/tx4tJ1ahDw+PQoWBYewjowBklD1L9/nnoqLwPdBzwDeL
-         0PLab3HxFQyRw==
-Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5e728b200003>; Thu, 19 Mar 2020 09:57:04 +1300
-Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
- svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
- (TLS) id 15.0.1497.2; Thu, 19 Mar 2020 09:57:06 +1300
-Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
- svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
- 15.00.1497.006; Thu, 19 Mar 2020 09:57:06 +1300
-From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-To:     "sashal@kernel.org" <sashal@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCH AUTOSEL 5.4 64/73] net: mvmdio: avoid error message for
- optional IRQ
-Thread-Topic: [PATCH AUTOSEL 5.4 64/73] net: mvmdio: avoid error message for
- optional IRQ
-Thread-Index: AQHV/Wd8NY6V9SWU00qgq4fAlqRGrahN+tKA
-Date:   Wed, 18 Mar 2020 20:57:05 +0000
-Message-ID: <c5894605427bfd8a6e649894ef3874d90707a9bc.camel@alliedtelesis.co.nz>
-References: <20200318205337.16279-1-sashal@kernel.org>
-         <20200318205337.16279-64-sashal@kernel.org>
-In-Reply-To: <20200318205337.16279-64-sashal@kernel.org>
-Accept-Language: en-NZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [2001:df5:b000:22:c08d:12b2:f65d:675b]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E770614109D42547B951A03DC3043519@atlnz.lc>
-Content-Transfer-Encoding: base64
+        id S1728516AbgCRU6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 16:58:12 -0400
+Received: from www62.your-server.de ([213.133.104.62]:44520 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728181AbgCRU6L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 16:58:11 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jEflQ-00077f-Lh; Wed, 18 Mar 2020 21:58:08 +0100
+Received: from [85.7.42.192] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jEflQ-0007WN-Ax; Wed, 18 Mar 2020 21:58:08 +0100
+Subject: Re: [PATCH v2 bpf-next] bpf: sharing bpf runtime stats with
+ /dev/bpf_stats
+To:     Song Liu <songliubraving@fb.com>
+Cc:     "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "mcgrof@kernel.org" <mcgrof@kernel.org>,
+        "keescook@chromium.org" <keescook@chromium.org>,
+        "yzaikin@google.com" <yzaikin@google.com>
+References: <20200316203329.2747779-1-songliubraving@fb.com>
+ <eb31bed3-3be4-501e-4340-bd558b31ead2@iogearbox.net>
+ <920839AF-AC7A-4CD3-975F-111C3C6F75B9@fb.com>
+ <a69245f8-c70f-857c-b109-556d1bc267f7@iogearbox.net>
+ <C126A009-516F-451A-9A83-31BC8F67AA11@fb.com>
+ <53f8973f-4b3e-08fe-2363-2300027c8f9d@iogearbox.net>
+ <C624907B-22DB-4505-9C9E-1F8A96013AC7@fb.com>
+ <6D317BBF-093E-41DC-9838-D685C39F6DAB@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <ba62e0be-6de6-036c-a836-178c1a9c079a@iogearbox.net>
+Date:   Wed, 18 Mar 2020 21:58:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <6D317BBF-093E-41DC-9838-D685C39F6DAB@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25755/Wed Mar 18 14:14:00 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDIwLTAzLTE4IGF0IDE2OjUzIC0wNDAwLCBTYXNoYSBMZXZpbiB3cm90ZToNCj4g
-RnJvbTogQ2hyaXMgUGFja2hhbSA8Y2hyaXMucGFja2hhbUBhbGxpZWR0ZWxlc2lzLmNvLm56Pg0K
-PiANCj4gWyBVcHN0cmVhbSBjb21taXQgZTFmNTUwZGM0NGE0ZDUzNWRhNGUyNWFkYTFiMGVhZjhm
-MzQxNzkyOSBdDQo+IA0KPiBQZXIgdGhlIGR0LWJpbmRpbmcgdGhlIGludGVycnVwdCBpcyBvcHRp
-b25hbCBzbyB1c2UNCj4gcGxhdGZvcm1fZ2V0X2lycV9vcHRpb25hbCgpIGluc3RlYWQgb2YgcGxh
-dGZvcm1fZ2V0X2lycSgpLiBTaW5jZQ0KPiBjb21taXQgNzcyM2Y0YzVlY2RiICgiZHJpdmVyIGNv
-cmU6IHBsYXRmb3JtOiBBZGQgYW4gZXJyb3IgbWVzc2FnZSB0bw0KPiBwbGF0Zm9ybV9nZXRfaXJx
-KigpIikgcGxhdGZvcm1fZ2V0X2lycSgpIHByb2R1Y2VzIGFuIGVycm9yIG1lc3NhZ2UNCj4gDQo+
-ICAgb3Jpb24tbWRpbyBmMTA3MjAwNC5tZGlvOiBJUlEgaW5kZXggMCBub3QgZm91bmQNCj4gDQo+
-IHdoaWNoIGlzIHBlcmZlY3RseSBub3JtYWwgaWYgb25lIGhhc24ndCBzcGVjaWZpZWQgdGhlIG9w
-dGlvbmFsIHByb3BlcnR5DQo+IGluIHRoZSBkZXZpY2UgdHJlZS4NCj4gDQo+IFNpZ25lZC1vZmYt
-Ynk6IENocmlzIFBhY2toYW0gPGNocmlzLnBhY2toYW1AYWxsaWVkdGVsZXNpcy5jby5uej4NCj4g
-UmV2aWV3ZWQtYnk6IEFuZHJldyBMdW5uIDxhbmRyZXdAbHVubi5jaD4NCj4gU2lnbmVkLW9mZi1i
-eTogRGF2aWQgUy4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0Pg0KPiBTaWduZWQtb2ZmLWJ5
-OiBTYXNoYSBMZXZpbiA8c2FzaGFsQGtlcm5lbC5vcmc+DQo+IC0tLQ0KPiAgZHJpdmVycy9uZXQv
-ZXRoZXJuZXQvbWFydmVsbC9tdm1kaW8uYyB8IDYgKysrLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwg
-MyBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvbmV0L2V0aGVybmV0L21hcnZlbGwvbXZtZGlvLmMgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9t
-YXJ2ZWxsL212bWRpby5jDQo+IGluZGV4IDBiOWU4NTFmM2RhNGYuLmQyZTJkYzUzODQyODcgMTAw
-NjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21hcnZlbGwvbXZtZGlvLmMNCj4gKysr
-IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFydmVsbC9tdm1kaW8uYw0KPiBAQCAtMzQ3LDcgKzM0
-Nyw3IEBAIHN0YXRpYyBpbnQgb3Jpb25fbWRpb19wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNl
-ICpwZGV2KQ0KPiAgCX0NCj4gIA0KPiAgDQo+IC0JZGV2LT5lcnJfaW50ZXJydXB0ID0gcGxhdGZv
-cm1fZ2V0X2lycShwZGV2LCAwKTsNCj4gKwlkZXYtPmVycl9pbnRlcnJ1cHQgPSBwbGF0Zm9ybV9n
-ZXRfaXJxX29wdGlvbmFsKHBkZXYsIDApOw0KPiAgCWlmIChkZXYtPmVycl9pbnRlcnJ1cHQgPiAw
-ICYmDQo+ICAJICAgIHJlc291cmNlX3NpemUocikgPCBNVk1ESU9fRVJSX0lOVF9NQVNLICsgNCkg
-ew0KPiAgCQlkZXZfZXJyKCZwZGV2LT5kZXYsDQo+IEBAIC0zNjQsOCArMzY0LDggQEAgc3RhdGlj
-IGludCBvcmlvbl9tZGlvX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ICAJ
-CXdyaXRlbChNVk1ESU9fRVJSX0lOVF9TTUlfRE9ORSwNCj4gIAkJCWRldi0+cmVncyArIE1WTURJ
-T19FUlJfSU5UX01BU0spOw0KPiAgDQo+IC0JfSBlbHNlIGlmIChkZXYtPmVycl9pbnRlcnJ1cHQg
-PT0gLUVQUk9CRV9ERUZFUikgew0KPiAtCQlyZXQgPSAtRVBST0JFX0RFRkVSOw0KPiArCX0gZWxz
-ZSBpZiAoZGV2LT5lcnJfaW50ZXJydXB0IDwgMCkgew0KPiArCQlyZXQgPSBkZXYtPmVycl9pbnRl
-cnJ1cHQ7DQo+ICAJCWdvdG8gb3V0X21kaW87DQo+ICAJfQ0KPiAgDQoNCk5BSy4NCg0KUGxlYXNl
-IGRvbid0IGFwcGx5IHRoaXMgb25lLiBJdCBjYXVzZWQgYSBkaWZmZXJlbnQgYnVnIGFuZCB3YXMN
-CnJldmVydGVkLg0KDQpEYXZlIGhhcyBqdXN0IGFwcGxpZWQgdGhlIGNvcnJlY3Qgb25lIHRvIG5l
-dC9tYXN0ZXIgY29tbWl0IGlkIGlzDQpmYTI2MzJmNzRlNTdiYmM4NjljOGFkMzc3NTFhMTFiNjE0
-N2EzYWNjDQoNCg==
+On 3/18/20 7:33 AM, Song Liu wrote:
+>> On Mar 17, 2020, at 4:08 PM, Song Liu <songliubraving@fb.com> wrote:
+>>> On Mar 17, 2020, at 2:47 PM, Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>>>>
+>>>>> Hm, true as well. Wouldn't long-term extending "bpftool prog profile" fentry/fexit
+>>>>> programs supersede this old bpf_stats infrastructure? Iow, can't we implement the
+>>>>> same (or even more elaborate stats aggregation) in BPF via fentry/fexit and then
+>>>>> potentially deprecate bpf_stats counters?
+>>>> I think run_time_ns has its own value as a simple monitoring framework. We can
+>>>> use it in tools like top (and variations). It will be easier for these tools to
+>>>> adopt run_time_ns than using fentry/fexit.
+>>>
+>>> Agree that this is easier; I presume there is no such official integration today
+>>> in tools like top, right, or is there anything planned?
+>>
+>> Yes, we do want more supports in different tools to increase the visibility.
+>> Here is the effort for atop: https://github.com/Atoptool/atop/pull/88 .
+>>
+>> I wasn't pushing push hard on this one mostly because the sysctl interface requires
+>> a user space "owner".
+>>
+>>>> On the other hand, in long term, we may include a few fentry/fexit based programs
+>>>> in the kernel binary (or the rpm), so that these tools can use them easily. At
+>>>> that time, we can fully deprecate run_time_ns. Maybe this is not too far away?
+>>>
+>>> Did you check how feasible it is to have something like `bpftool prog profile top`
+>>> which then enables fentry/fexit for /all/ existing BPF programs in the system? It
+>>> could then sort the sample interval by run_cnt, cycles, cache misses, aggregated
+>>> runtime, etc in a top-like output. Wdyt?
+>>
+>> I wonder whether we can achieve this with one bpf prog (or a trampoline) that covers
+>> all BPF programs, like a trampoline inside __BPF_PROG_RUN()?
+>>
+>> For long term direction, I think we could compare two different approaches: add new
+>> tools (like bpftool prog profile top) vs. add BPF support to existing tools. The
+>> first approach is easier. The latter approach would show BPF information to users
+>> who are not expecting BPF programs in the systems. For many sysadmins, seeing BPF
+>> programs in top/ps, and controlling them via kill is more natural than learning
+>> bpftool. What's your thought on this?
+> 
+> More thoughts on this.
+> 
+> If we have a special trampoline that attach to all BPF programs at once, we really
+> don't need the run_time_ns stats anymore. Eventually, tools that monitor BPF
+> programs will depend on libbpf, so using fentry/fexit to monitor BPF programs doesn't
+> introduce extra dependency. I guess we also need a way to include BPF program in
+> libbpf.
+> 
+> To summarize this plan, we need:
+> 
+> 1) A global trampoline that attaches to all BPF programs at once;
+
+Overall sounds good, I think the `at once` part might be tricky, at least it would
+need to patch one prog after another, each prog also needs to store its own metrics
+somewhere for later collection. The start-to-sample could be a shared global var (aka
+shared map between all the programs) which would flip the switch though.
+
+> 2) Embed fentry/fexit program in libbpf, which will be used by tools for monitoring;
+> 3) BPF helpers to read time, which replaces current run_time_ns.
+> 
+> Does this look reasonable?
+> 
+> Thanks,
+> Song
+> 
+
