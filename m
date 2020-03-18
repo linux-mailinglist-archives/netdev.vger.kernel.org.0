@@ -2,74 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84A7F1896D5
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 09:23:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 458141896FD
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 09:27:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727387AbgCRIXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 04:23:20 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:30251 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727350AbgCRIXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 04:23:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584519798;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=c5ZmniDWtOGgirD0ysXPKxoDj8zWagjtTzwo7m2KYVo=;
-        b=Y0r8NXkMi7FThx6FhibC1nb1o//S89dYspxFVuLGQ/kDNl0XOuEd+ZGG+RKYYGow/l1Qc3
-        ZfDW7RDIgYgPO983Wae7fXqmToLJu125iW1AHOwaAzJJ3izkUNvF9hmkqU/ZZu+0sJyh+g
-        tpd+M5pYXoNPcsf+iOEOhcs8kNiIQiM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-372-UnVQ4uV7PpGJbTpejA56sQ-1; Wed, 18 Mar 2020 04:23:15 -0400
-X-MC-Unique: UnVQ4uV7PpGJbTpejA56sQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 240158010C8;
-        Wed, 18 Mar 2020 08:23:12 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-113-126.rdu2.redhat.com [10.10.113.126])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A427B60BEC;
-        Wed, 18 Mar 2020 08:23:05 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20200317194140.6031-3-longman@redhat.com>
-References: <20200317194140.6031-3-longman@redhat.com> <20200317194140.6031-1-longman@redhat.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     dhowells@redhat.com,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, keyrings@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org, netdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, Sumit Garg <sumit.garg@linaro.org>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Chris von Recklinghausen <crecklin@redhat.com>
-Subject: Re: [PATCH v4 2/4] KEYS: Remove __user annotation from rxrpc_read()
+        id S1727281AbgCRI1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 04:27:11 -0400
+Received: from mail-pg1-f171.google.com ([209.85.215.171]:45195 "EHLO
+        mail-pg1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726550AbgCRI1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 04:27:11 -0400
+Received: by mail-pg1-f171.google.com with SMTP id m15so13247335pgv.12
+        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 01:27:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5LGJ1tadBVSKcXHWmxYL9RsY79DWIeIh5wKubnO5eqk=;
+        b=e8dl+UdnULDH7XYMFNjJmuLS6sr66005KzMrcl9E+V3VoFx05HjvO7RQSNdU3ghaz8
+         Q33IZFKTfLuuV2UEmgENXMwlL4GJ5ZGoWgCw/rVr8Dk/OB60kYw90aArMAJPWrxFTWjb
+         A9+oCSEQABtZCuvwV8fQfvNVVjG1pyk3Q274b2+QgDjyAs0z9vtEXTVKqlexteUwHjHX
+         I1TD5yvw5EWCHxX6FqwK5wJC8+NPPvrzzX/gy2yZbfDSrQ1kMBFUnprUjynugofCz8gA
+         KWeEH6ztWip0/HbPthW6yFu5oxajfN4xXYhrmVI4jD1N4+0K3bhN+2EhWM4DIw9AyCU2
+         MC2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5LGJ1tadBVSKcXHWmxYL9RsY79DWIeIh5wKubnO5eqk=;
+        b=nt8gum9Ji6OFjyTdqjFsACUxIyNpS6RvvnstXX7F3UhJeSA1B9uehe1OELYSmPYEfH
+         NpKto/1u7gbwETkTBmVTJZHgPoxidKQnpdd3+HaXYYxwMYuL3gM9HFdKjEM/MbBe+GjQ
+         kBvRjhbwjQpjcQgl39hRsKgEXdIQzUUCBVWQZuB+MCEJfl75TbrUmaSCOUIC9AxKGMv5
+         PcFqoAKYgCWZ+WPJZ6F+h+ufRjKx7mWO4YrZXPiAfpMs97tqMmYzXoV1VaSQcvQJG/x6
+         hrFt0q69AuoV0hRKcHHvoWDMhc2nSfyNQtMNR4+A7r6PuVaNZdGCOuGHFeKdWE5AnT88
+         mkeA==
+X-Gm-Message-State: ANhLgQ1ZcOBEIyX82w+V2ejbE+vyv2nB7xSjOK6a2KfTHTvFDUheRyvp
+        538FyRW5m0dhgT37Axk/bXA9kw==
+X-Google-Smtp-Source: ADFU+vtzMfXeCeHxOSeg+6PKfpDdbNC5fJZ5fLgsY4UNtVtABqiqbRlsTey5zSb/YgEPIRFuWf+OLg==
+X-Received: by 2002:a63:5f13:: with SMTP id t19mr3302456pgb.265.1584520029786;
+        Wed, 18 Mar 2020 01:27:09 -0700 (PDT)
+Received: from localhost.localdomain (59-127-47-126.HINET-IP.hinet.net. [59.127.47.126])
+        by smtp.gmail.com with ESMTPSA id 18sm5492148pfj.140.2020.03.18.01.27.07
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 18 Mar 2020 01:27:09 -0700 (PDT)
+From:   Chris Chiu <chiu@endlessm.com>
+To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com
+Subject: [PATCH 0/2] Feed current txrate information for mac80211
+Date:   Wed, 18 Mar 2020 16:26:58 +0800
+Message-Id: <20200318082700.71875-1-chiu@endlessm.com>
+X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2831785.1584519784.1@warthog.procyon.org.uk>
-Date:   Wed, 18 Mar 2020 08:23:04 +0000
-Message-ID: <2831786.1584519784@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Patch 2 and 3 need to be rolled into patch 1 otherwise sparse will give
-warnings about mismatches in address spaces on patch 1.
+This patchset fills the txrate, sgi, bandwidth information
+in the sta_statistics function. Then the nl80211 commands
+such as 'iw link' can show the correct txrate information.
 
-Thanks,
-David
+Chris Chiu (2):
+  rtl8xxxu: add enumeration for channel bandwidth
+  rtl8xxxu: Feed current txrate information for nl80211 commands
+
+ .../net/wireless/realtek/rtl8xxxu/rtl8xxxu.h  | 21 ++++-
+ .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 77 ++++++++++++++++++-
+ 2 files changed, 95 insertions(+), 3 deletions(-)
+
+-- 
+2.20.1
 
