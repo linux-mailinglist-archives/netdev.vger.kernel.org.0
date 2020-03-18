@@ -2,120 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 791391893FF
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 03:26:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D482E189414
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 03:46:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727133AbgCRC0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 Mar 2020 22:26:42 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:38291 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726871AbgCRC0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 22:26:42 -0400
-Received: by mail-qt1-f194.google.com with SMTP id z12so209101qtq.5
-        for <netdev@vger.kernel.org>; Tue, 17 Mar 2020 19:26:41 -0700 (PDT)
+        id S1726730AbgCRCqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 Mar 2020 22:46:02 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:40117 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726229AbgCRCqC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 Mar 2020 22:46:02 -0400
+Received: by mail-io1-f67.google.com with SMTP id h18so2753305ioh.7;
+        Tue, 17 Mar 2020 19:46:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=T/Urqk83SlmgqPe6Ia/iCxEK3eI5p/CJgzdx5zdL0zY=;
-        b=fmvXkstPdQAULrxaG/YduhIrMxvcYk8zLHZCy8X7a/hQH/gi2olKZ+9hJdP+yaAXyj
-         rQxh/WtPDpcUxDrQZby8KhAX37G0XyAkqfYhLzSfSkfmrK7CN1J6Le8x+F9qzJ+hLeNv
-         vYPm/c82g7EeR8/Zuu6ZxIsbzzyQL/Rj/nwixOfffuy8AbyhzDTWdI+nrE1BvL+qpEXH
-         sFn4uq3kbMMz/BblSxluKxus1yhx3NU8oMc6lOpdf5UKBRA+voBKWFo/kGOkdsqftHUq
-         OLuiB0cfB9fwqmz1C61TibEQXW2P0JPqaxE6ngZmFlhZCq8Ih/XQELuuts043yj8Ira3
-         CIbQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HmI0RMPyhwlmaO8Qr7O9Xwp+ugsNgOEyCsiabbFK+es=;
+        b=LMuX11ZcSHF+tQU/KnFmGjilz6BcVP9hrain8dbHYPIzaa5KbpfEbnSpeyp1hqEf9l
+         G6lPWklk3sO3sM2mfRCimJrXcFy0YXJcejafLHYk3XQdD31OzC7sUoD04wfnB+B8cffZ
+         pPIiZX6XmLIZZd8dcNBAwujCFEUhttz4FnTJNcG1Mm/xbaf0/P4nKf7m+Z20jJtOQgFB
+         VempRnbs/TbDOBJW1RCUW1skWKemlVu0GW4f3+Ybm0ra702K7zQpd8WNsmZHNLhzEtEq
+         AeVQLWv89pmydguSPfw53CREspyEK9wmtCEM80seLYrd73XiiRQ2cHtnw8r8tnpYhjN6
+         3bEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=T/Urqk83SlmgqPe6Ia/iCxEK3eI5p/CJgzdx5zdL0zY=;
-        b=ajx91McquGYDR1ox6XEVxpFvDAc5fiptEJgRU3ogP1eiPqeLDLhpdbWLLgM2vBlHWv
-         CT0tSWvA+03AOfuVnvaMN+I6c4MQvjWissMAhhgmJxA9JN/IKtfkKCD+f/oHVBb0RvQd
-         nlpOonhl5117rV4XRFSzCGPJa9i0bJZNcVTkKQ2l5nDWeuSk1rH/jVr00LmR47aRI4ug
-         pN1Y1MnHKciyHf2R7OZI++LCw2/I9uXdy1zstqr5XfWLZ6dRtW0bSyJ+HH1UI2d1SZi4
-         /jsLocMF0eIL6U0gjwnv+CVUUJ5crEulsjPFEj3jl8ZPkoLhNrkVElHeKYtLPhWduN3c
-         Hr9Q==
-X-Gm-Message-State: ANhLgQ2+wpGl81hfDhxbc5NUO9/sdjekjJwzswiYuyivNN0cpqmGnvYC
-        af0XYy1J0BJybL9bxZty/us=
-X-Google-Smtp-Source: ADFU+vvpeh7EVfEvVfXr5o+PemqTtHMtkJaxmZw+fRi38KFQ8OsosmWBjxaFyOG341jL/0vX+Meffg==
-X-Received: by 2002:ac8:7496:: with SMTP id v22mr2250102qtq.291.1584498400586;
-        Tue, 17 Mar 2020 19:26:40 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id b145sm3295268qkg.52.2020.03.17.19.26.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2020 19:26:39 -0700 (PDT)
-Date:   Tue, 17 Mar 2020 22:26:38 -0400
-Message-ID: <20200317222638.GB3226601@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/3] VLANs, DSA switches and multiple bridges
-In-Reply-To: <20200317212453.GV25745@shell.armlinux.org.uk>
-References: <CA+h21hrjAT4yCh=UgJJDfv3=3OWkHUjMRB94WuAPDk-hkhOZ6w@mail.gmail.com>
- <15ce2fae-c2c8-4a36-c741-6fef58115604@gmail.com>
- <20200219231528.GS25745@shell.armlinux.org.uk>
- <e9b51f9e-4a8f-333d-5ba9-3fcf220ace7c@gmail.com>
- <20200221002110.GE25745@shell.armlinux.org.uk>
- <20200316111524.GE5827@shell.armlinux.org.uk>
- <20200317120044.GH5827@shell.armlinux.org.uk>
- <CA+h21hpGvhgxdNid8OMG15Zyp6uzGjAq_xmGgz2Udvo3sHuZ0g@mail.gmail.com>
- <20200317151238.GQ25745@shell.armlinux.org.uk>
- <20200317144906.GB3155670@t480s.localdomain>
- <20200317212453.GV25745@shell.armlinux.org.uk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HmI0RMPyhwlmaO8Qr7O9Xwp+ugsNgOEyCsiabbFK+es=;
+        b=eg8VPz9zttXgyZq9stPqVxB+AKbQKLbsXJjMe2+qKh/SIbd7x5gGzAdye8sGPR6hP+
+         adD+y8yWiowWvJk4jriI6pwLH9kThd/9ZLyD6ovXoowGysRCjuI7GIkgno+XoBHnpsrY
+         j7eTpvT5mD2o+GG+GT/4Tna/y5x3rAZ2sznzF2g5Bm5V7ZwD++nlfzJQIXEwFLxNuuQ/
+         WfTFqtzc7uLSkw2DFf48gYOViSVBBh+CrD+7CX80HGZU5usRrLnkz6p++F3dnr+oCPBn
+         2lml1Q47a7cOdYehqCiNlRJRe/ssiE7ApdktWpFlEahdL/CNC//t0A38r6eH3hMB5OYl
+         5GeA==
+X-Gm-Message-State: ANhLgQ3i644KeMQ+l6Ic8FyM8377YLocFtVyQzRuGnhab1PqACFYfUqd
+        vVl0W83Axkc70DMzitoDme+fuvCOxCuwu7IJ0PmZm+k3
+X-Google-Smtp-Source: ADFU+vu7ASoM/a9tA1PJlBd+5ZUSo0HpmB4s0bW5JSxUP/lgawvFE9ABn3QAEZe7WwSRpsAVX1pqfFJcyLSbtVmPwNA=
+X-Received: by 2002:a6b:f404:: with SMTP id i4mr1715360iog.175.1584499561560;
+ Tue, 17 Mar 2020 19:46:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20200317155536.10227-1-hqjagain@gmail.com> <20200317173039.GA3828@localhost.localdomain>
+In-Reply-To: <20200317173039.GA3828@localhost.localdomain>
+From:   Qiujun Huang <hqjagain@gmail.com>
+Date:   Wed, 18 Mar 2020 10:45:51 +0800
+Message-ID: <CAJRQjocwMzmBiYXwCnupE7hd8qYveBXtUiF2WKBe=TFfJLqcDw@mail.gmail.com>
+Subject: Re: [PATCH v2] sctp: fix refcount bug in sctp_wfree
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, Jakub Kicinski <kuba@kernel.org>,
+        linux-sctp@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, anenbupt@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Mar 2020 21:24:53 +0000, Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> > In response to your 3/3 patch, I suggested commands to test setting up a
-> > VLAN filtering aware bridge with your own default PVID before enslaving
-> > DSA ports. Unfortunately you left this unanswered.
-> 
-> I don't believe I left it unanswered.  However, I'm not about to rip
-> apart my network to try an experiment with specific set of commands.
+On Wed, Mar 18, 2020 at 1:30 AM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> Hi,
+>
+> On Tue, Mar 17, 2020 at 11:55:36PM +0800, Qiujun Huang wrote:
+> > Do accounting for skb's real sk.
+> > In some case skb->sk != asoc->base.sk:
+> >
+> > migrate routing        sctp_check_transmitted routing
+> > ------------                    ---------------
+>                                  sctp_close();
+>                                    lock_sock(sk2);
+>                                  sctp_primitive_ABORT();
+>                                  sctp_do_sm();
+>                                  sctp_cmd_interpreter();
+>                                  sctp_cmd_process_sack();
+>                                  sctp_outq_sack();
+>                                  sctp_check_transmitted();
+>
+>   lock_sock(sk1);
+>   sctp_getsockopt_peeloff();
+>   sctp_do_peeloff();
+>   sctp_sock_migrate();
+> > lock_sock_nested(sk2);
+> >                                mv the transmitted skb to
+> >                                the it's local tlist
+>
+>
+> How can sctp_do_sm() be called in the 2nd column so that it bypasses
+> the locks in the left column, allowing this mv to happen?
+>
+> >
+> > sctp_for_each_tx_datachunk(
+> > sctp_clear_owner_w);
+> > sctp_assoc_migrate();
+> > sctp_for_each_tx_datachunk(
+> > sctp_set_owner_w);
+> >
+> >                                put the skb back to the
+> >                                assoc lists
+> > ----------------------------------------------------
+> >
+> > The skbs which held bysctp_check_transmitted were not changed
+> > to newsk. They were not dealt with by sctp_for_each_tx_datachunk
+> > (sctp_clear_owner_w/sctp_set_owner_w).
+>
+> It would make sense but I'm missing one step earlier, I'm not seeing
+> how the move to local list is allowed/possible in there. It really
+> shouldn't be possible.
 
-In mail 3/3 I suggested to run the following snippet to configure the bridge
-at creation time so that we can see clearly if the problem still occurs:
+I totally agree that.
+My mistake. So I added some log in my test showing the case:
+The backtrace:
+sctp_close
+sctp_primitive_ABORT
+sctp_do_sm
+sctp_association_free
+__sctp_outq_teardown
+     /* Throw away unacknowledged chunks. */
+    list_for_each_entry(transport, &q->asoc->peer.transport_addr_list,
+    transports) {
+    printk("[%d]deal with transmitted %#llx from transport %#llx  %s,
+%d\n", raw_smp_processor_id(),
+   &transport->transmitted, transport, __func__, __LINE__);
+   while ((lchunk = sctp_list_dequeue(&transport->transmitted)) != NULL) {
 
-    # ip link add name br0 type bridge vlan_filtering 1 vlan_default_pvid 42
-    # ip link set master br0 dev lan2 up
-    # cat /sys/kernel/debug/mv88e6xxx/sw0/vtu
-    vid 42      fid 1   sid 0   dpv 0 unmodified 2 untagged 10 unmodified
-
-You skipped this, last email without reply, this feels pretty unanswered to me.
-
-But whatever, I don't want these two commands to rip apart your network.
-
-> It is my understanding that Florian actively wants this merged.  No
-> one objected to his email.
-> 
-> It seems there's a disconnect *between* the DSA maintainers - I think
-> you need to be more effectively communicating with each other and
-> reading each other's emails, and pro-actively replying to stuff you
-> may have other views on.
-
-I'm not sure to understand what you're assuming here. As Florian said, your
-patch is good to go as long as you change the boolean name to something
-generic not containing "vtu", which is Marvell specific. If you really
-need us to choose, then go with "force_vlan_programming" or one of your
-suggestions. What matters here is that a non-mv88e6xxx user can clearly
-understand what this boolean does.
-
-
-Thank you,
-
-	Vivien
+The trouble skb is from another peer sk in the same asoc, but
+accounted to the base.sk.
