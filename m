@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE6218A54B
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:00:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD87D18A546
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:00:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728626AbgCRU4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:56:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57612 "EHLO mail.kernel.org"
+        id S1728809AbgCRVAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 17:00:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57766 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727975AbgCRU4d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:56:33 -0400
+        id S1728640AbgCRU4h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 16:56:37 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D958C20BED;
-        Wed, 18 Mar 2020 20:56:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 56ECA2166E;
+        Wed, 18 Mar 2020 20:56:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584564992;
-        bh=XzLnamPGAVWNo71FOyVtfuxzgn2GqCeijCwLwzNzh+E=;
+        s=default; t=1584564997;
+        bh=onoiNj67Li7ArrWTRP5pydx7Di1dU5uyf4sm/wAU0AQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c3fu4bWVP6NsREdu+m1zjQrmWxoiqzBmAG14JJvr23h50urScQpKWxJXvHsUzSnvk
-         iJG5TrBK44bTxwkC8+a2Oq+5nWgXvop9JkckLOW91tVFB+IFjNg43qVQp8flq5Rja6
-         zLdBdW4+1hkuUceAPAxZDuMNMZkknR+qm8yyGayM=
+        b=wfwPz0VhIlCJpaMMDLxHzfsJhfnNzomvOB1IHs0kggeYAV74gkQu4mPD3DYYXywNm
+         igW6jQn+7Ve20+IAoQYWBQ2pW/htMuqdwBI1gOAKDTta1xYsyHxINotpeofYlrc2Xm
+         DshUqCsWjXXJuPgCK2DOlJVQX2Ny9Z2zEq3mVj4w=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
+Cc:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@mellanox.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 02/15] bnxt_en: reinitialize IRQs when MTU is modified
-Date:   Wed, 18 Mar 2020 16:56:16 -0400
-Message-Id: <20200318205629.17750-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 06/15] team: add missing attribute validation for port ifindex
+Date:   Wed, 18 Mar 2020 16:56:20 -0400
+Message-Id: <20200318205629.17750-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200318205629.17750-1-sashal@kernel.org>
 References: <20200318205629.17750-1-sashal@kernel.org>
@@ -44,48 +43,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit a9b952d267e59a3b405e644930f46d252cea7122 ]
+[ Upstream commit dd25cb272ccce4db67dc8509278229099e4f5e99 ]
 
-MTU changes may affect the number of IRQs so we must call
-bnxt_close_nic()/bnxt_open_nic() with the irq_re_init parameter
-set to true.  The reason is that a larger MTU may require
-aggregation rings not needed with smaller MTU.  We may not be
-able to allocate the required number of aggregation rings and
-so we reduce the number of channels which will change the number
-of IRQs.  Without this patch, it may crash eventually in
-pci_disable_msix() when the IRQs are not properly unwound.
+Add missing attribute validation for TEAM_ATTR_OPTION_PORT_IFINDEX
+to the netlink policy.
 
-Fixes: c0c050c58d84 ("bnxt_en: New Broadcom ethernet driver.")
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Fixes: 80f7c6683fe0 ("team: add support for per-port options")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/team/team.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index fbe3c2c114f93..736e550163e10 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -6439,13 +6439,13 @@ static int bnxt_change_mtu(struct net_device *dev, int new_mtu)
- 		return -EINVAL;
+diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
+index fd2573cca803b..eaae1ac4749bd 100644
+--- a/drivers/net/team/team.c
++++ b/drivers/net/team/team.c
+@@ -2216,6 +2216,7 @@ team_nl_option_policy[TEAM_ATTR_OPTION_MAX + 1] = {
+ 	[TEAM_ATTR_OPTION_CHANGED]		= { .type = NLA_FLAG },
+ 	[TEAM_ATTR_OPTION_TYPE]			= { .type = NLA_U8 },
+ 	[TEAM_ATTR_OPTION_DATA]			= { .type = NLA_BINARY },
++	[TEAM_ATTR_OPTION_PORT_IFINDEX]		= { .type = NLA_U32 },
+ };
  
- 	if (netif_running(dev))
--		bnxt_close_nic(bp, false, false);
-+		bnxt_close_nic(bp, true, false);
- 
- 	dev->mtu = new_mtu;
- 	bnxt_set_ring_params(bp);
- 
- 	if (netif_running(dev))
--		return bnxt_open_nic(bp, false, false);
-+		return bnxt_open_nic(bp, true, false);
- 
- 	return 0;
- }
+ static int team_nl_cmd_noop(struct sk_buff *skb, struct genl_info *info)
 -- 
 2.20.1
 
