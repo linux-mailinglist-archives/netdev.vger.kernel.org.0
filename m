@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8B5618A640
-	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:07:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19CC518A63B
+	for <lists+netdev@lfdr.de>; Wed, 18 Mar 2020 22:06:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727836AbgCRUy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 16:54:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53954 "EHLO mail.kernel.org"
+        id S1727850AbgCRUya (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 16:54:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53994 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727785AbgCRUy2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 16:54:28 -0400
+        id S1727829AbgCRUy3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 16:54:29 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3EF5D208D5;
-        Wed, 18 Mar 2020 20:54:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9808B2098B;
+        Wed, 18 Mar 2020 20:54:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584564867;
-        bh=uiJJtRB8sMgUS5zJByFw8EMWgw3zf4pjcht87XSVQJU=;
+        s=default; t=1584564868;
+        bh=CPQtHhru0LQFaw5HTaIZ2IC1hzuZCsiamkZyzzB0/vc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TNATGN/ZeMv/8b0LJVLRhNqMN4MGWp3xsismVOe2q3nU0NXMskuxGLZ80MwYzV7n7
-         XdxRK0o7l81mUsow82XzbfOvd4yld0TN68vUlebiqkIu9BJJhBkyFt1/PPvjCqiJ8Q
-         T5/U7OxzQ1LntEg+nJ+63CBWq7uts8ZbWMe5xSuE=
+        b=G+IrRK8f2A0wYwU8QzMC0k+xrstON+enN6/aOQAf4IeLJuQy9jwIIi8kWEQcYQ2x4
+         b72B9kwEvYlNxj2tdb2HCYh9un5JmLCLnAB8oWntNw4WzgDNbmzr4wqzElwYqRxglD
+         KvzHPXL/LlfkLezkkv/c7fG8KPtEyFdYPC1lCFMI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Wiesner <jwiesner@suse.com>,
-        Per Sundstrom <per.sundstrom@redqube.se>,
-        Eric Dumazet <edumazet@google.com>,
-        Mahesh Bandewar <maheshb@google.com>,
+Cc:     Remi Pommarel <repk@triplefau.lt>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 39/73] ipvlan: do not add hardware address of master to its unicast filter list
-Date:   Wed, 18 Mar 2020 16:53:03 -0400
-Message-Id: <20200318205337.16279-39-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 40/73] net: stmmac: dwmac1000: Disable ACS if enhanced descs are not used
+Date:   Wed, 18 Mar 2020 16:53:04 -0400
+Message-Id: <20200318205337.16279-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200318205337.16279-1-sashal@kernel.org>
 References: <20200318205337.16279-1-sashal@kernel.org>
@@ -46,73 +45,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Wiesner <jwiesner@suse.com>
+From: Remi Pommarel <repk@triplefau.lt>
 
-[ Upstream commit 63aae7b17344d4b08a7d05cb07044de4c0f9dcc6 ]
+[ Upstream commit b723bd933980f4956dabc8a8d84b3e83be8d094c ]
 
-There is a problem when ipvlan slaves are created on a master device that
-is a vmxnet3 device (ipvlan in VMware guests). The vmxnet3 driver does not
-support unicast address filtering. When an ipvlan device is brought up in
-ipvlan_open(), the ipvlan driver calls dev_uc_add() to add the hardware
-address of the vmxnet3 master device to the unicast address list of the
-master device, phy_dev->uc. This inevitably leads to the vmxnet3 master
-device being forced into promiscuous mode by __dev_set_rx_mode().
+ACS (auto PAD/FCS stripping) removes FCS off 802.3 packets (LLC) so that
+there is no need to manually strip it for such packets. The enhanced DMA
+descriptors allow to flag LLC packets so that the receiving callback can
+use that to strip FCS manually or not. On the other hand, normal
+descriptors do not support that.
 
-Promiscuous mode is switched on the master despite the fact that there is
-still only one hardware address that the master device should use for
-filtering in order for the ipvlan device to be able to receive packets.
-The comment above struct net_device describes the uc_promisc member as a
-"counter, that indicates, that promiscuous mode has been enabled due to
-the need to listen to additional unicast addresses in a device that does
-not implement ndo_set_rx_mode()". Moreover, the design of ipvlan
-guarantees that only the hardware address of a master device,
-phy_dev->dev_addr, will be used to transmit and receive all packets from
-its ipvlan slaves. Thus, the unicast address list of the master device
-should not be modified by ipvlan_open() and ipvlan_stop() in order to make
-ipvlan a workable option on masters that do not support unicast address
-filtering.
+Thus in order to not truncate LLC packet ACS should be disabled when
+using normal DMA descriptors.
 
-Fixes: 2ad7bf3638411 ("ipvlan: Initial check-in of the IPVLAN driver")
-Reported-by: Per Sundstrom <per.sundstrom@redqube.se>
-Signed-off-by: Jiri Wiesner <jwiesner@suse.com>
-Reviewed-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Mahesh Bandewar <maheshb@google.com>
+Fixes: 47dd7a540b8a0 ("net: add support for STMicroelectronics Ethernet controllers.")
+Signed-off-by: Remi Pommarel <repk@triplefau.lt>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ipvlan/ipvlan_main.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
-index ba3dfac1d9043..b805abc9ec3b4 100644
---- a/drivers/net/ipvlan/ipvlan_main.c
-+++ b/drivers/net/ipvlan/ipvlan_main.c
-@@ -164,7 +164,6 @@ static void ipvlan_uninit(struct net_device *dev)
- static int ipvlan_open(struct net_device *dev)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+index 3d69da112625e..43a785f86c69d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+@@ -24,6 +24,7 @@
+ static void dwmac1000_core_init(struct mac_device_info *hw,
+ 				struct net_device *dev)
  {
- 	struct ipvl_dev *ipvlan = netdev_priv(dev);
--	struct net_device *phy_dev = ipvlan->phy_dev;
- 	struct ipvl_addr *addr;
++	struct stmmac_priv *priv = netdev_priv(dev);
+ 	void __iomem *ioaddr = hw->pcsr;
+ 	u32 value = readl(ioaddr + GMAC_CONTROL);
+ 	int mtu = dev->mtu;
+@@ -35,7 +36,7 @@ static void dwmac1000_core_init(struct mac_device_info *hw,
+ 	 * Broadcom tags can look like invalid LLC/SNAP packets and cause the
+ 	 * hardware to truncate packets on reception.
+ 	 */
+-	if (netdev_uses_dsa(dev))
++	if (netdev_uses_dsa(dev) || !priv->plat->enh_desc)
+ 		value &= ~GMAC_CONTROL_ACS;
  
- 	if (ipvlan->port->mode == IPVLAN_MODE_L3 ||
-@@ -178,7 +177,7 @@ static int ipvlan_open(struct net_device *dev)
- 		ipvlan_ht_addr_add(ipvlan, addr);
- 	rcu_read_unlock();
- 
--	return dev_uc_add(phy_dev, phy_dev->dev_addr);
-+	return 0;
- }
- 
- static int ipvlan_stop(struct net_device *dev)
-@@ -190,8 +189,6 @@ static int ipvlan_stop(struct net_device *dev)
- 	dev_uc_unsync(phy_dev, dev);
- 	dev_mc_unsync(phy_dev, dev);
- 
--	dev_uc_del(phy_dev, phy_dev->dev_addr);
--
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(addr, &ipvlan->addrs, anode)
- 		ipvlan_ht_addr_del(addr);
+ 	if (mtu > 1500)
 -- 
 2.20.1
 
