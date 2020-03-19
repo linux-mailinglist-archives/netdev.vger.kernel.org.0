@@ -2,72 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17E6618C0BE
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 20:51:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20FC818C0CF
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 20:52:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726619AbgCSTvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 15:51:36 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:33664 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbgCSTvg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 15:51:36 -0400
-Received: by mail-qt1-f195.google.com with SMTP id d22so3012757qtn.0
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 12:51:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FQz+fPstj07hGd7KH6Oe3yoW/JL1chHoanegZGBYiIs=;
-        b=uM7fXEcbetx0DfhNsaa2w7yrlXUD0T6/PIupc4aAoRa4ByYdSyh+ebk8NJvunZPFeM
-         Y+QGs4kYF904sQTlhi8Y/0yrfGgIoTyZyDvleMHx+WIPImB4q4Iu3Sd2/C7Pb2BQU8BL
-         JE9xqwqg3UdRYJsu5poc9o6oE4/fznl0evULYbipwNQD1+hHoUXwBdJ9IYZr0ELlPPLt
-         Tlor3+sJAggG+QOIYeFJ5tA5Z9UWAPpO5t/ZfnDffwc0psrvWoO5qmFW0JiDQCrivKHB
-         qk+iHTyugn+ARegMeRlUGt8M+rH7805jnqAAd+mG15aVzlNN5ayZqMuYA1t4s4+9rqCI
-         e0Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FQz+fPstj07hGd7KH6Oe3yoW/JL1chHoanegZGBYiIs=;
-        b=FVYcS723dfNSp0silWSv59yH0UO2XSmIV9aG0HekzxMCzqdn4hbNnZNUEO9LqFKPND
-         rEzdrJuxi8iESLGot5SX+e9/3xsjJ1VdcFFrCW8fCjTWD+eq6ttCy3Va2/E18zAYdoov
-         AdH87qlDfwHKXomfzHIFXFuhcX8tETHBglYRR47HGlBvlCrR49uEQ9jAZ6oagJMbYwJV
-         IN3Ex/5AaDuztcGEub2C3NrCfv+pmRo9yuHu5E8F5qQsaX9QxbovKyifrkCTFYKf3a5X
-         pPO7Lf8UAEkqn5qRJU0EPMJ8jwyuBSkXr/OUMFaa0/Jy4BAJQAV85qo26g+KbGvb1D5l
-         WizQ==
-X-Gm-Message-State: ANhLgQ1HYfzKj5yjfcW6GnD+sAptczjnFoKMSfgSBF73BBVIyRScDwo9
-        2PAGDey/W+lk3LJyJgko4szqdbvKxgVlgnXM8mK8Yw==
-X-Google-Smtp-Source: ADFU+vs1ehY3PYXuVZqRk44kx+WAkp/jiYALUDAKWmNvk3yiG8hvk8ttMe4HVP6beLJsTKTXznw8v20+AQlzTpKaGYs=
-X-Received: by 2002:ac8:110a:: with SMTP id c10mr4146299qtj.365.1584647493822;
- Thu, 19 Mar 2020 12:51:33 -0700 (PDT)
+        id S1727627AbgCSTwb convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Mar 2020 15:52:31 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:49002 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726785AbgCSTwb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 15:52:31 -0400
+Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1jF1DN-0000I7-4o; Thu, 19 Mar 2020 19:52:25 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 4A7F3630E4; Thu, 19 Mar 2020 12:52:23 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 42A95AC1DD;
+        Thu, 19 Mar 2020 12:52:23 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jarod Wilson <jarod@redhat.com>
+cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Moshe Levi <moshele@mellanox.com>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>
+Subject: Re: [PATCH net] ipv6: don't auto-add link-local address to lag ports
+In-reply-to: <CAKfmpScXTnnz6wQK3OZcqw4aM1PaLnBRfQL769JgyR7tgM-u5A@mail.gmail.com>
+References: <20200318140605.45273-1-jarod@redhat.com> <8a88d1c8-c6b1-ad85-7971-e6ae8c6fa0e4@gmail.com> <CAKfmpSc0yea5-OfE1rnVdErDTeOza=owbL00QQEaH-M-A6Za7g@mail.gmail.com> <25629.1584564113@famine> <CAKfmpScbzEZAEw=zOEwguQJvr6L2fQiGmAY60SqSBQ_g-+B4tw@mail.gmail.com> <3dbabf42-90e6-4c82-0b84-d1b1a9e8fadf@gmail.com> <CAKfmpScXTnnz6wQK3OZcqw4aM1PaLnBRfQL769JgyR7tgM-u5A@mail.gmail.com>
+Comments: In-reply-to Jarod Wilson <jarod@redhat.com>
+   message dated "Thu, 19 Mar 2020 15:29:51 -0400."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
 MIME-Version: 1.0
-References: <404ccbc9216441393063948ad762f4ab3339fa44.1584101053.git.petrm@mellanox.com>
-In-Reply-To: <404ccbc9216441393063948ad762f4ab3339fa44.1584101053.git.petrm@mellanox.com>
-From:   William Tu <u9012063@gmail.com>
-Date:   Thu, 19 Mar 2020 12:50:55 -0700
-Message-ID: <CALDO+SbODKyvzj7Kyufty_pSE2nH+p+AiG3NuK3g2nyuvw866Q@mail.gmail.com>
-Subject: Re: [PATCH iproute2-next] ip: link_gre: Do not send ERSPAN attributes
- to GRE tunnels
-To:     Petr Machata <petrm@mellanox.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Xin Long <lucien.xin@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <7027.1584647543.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Thu, 19 Mar 2020 12:52:23 -0700
+Message-ID: <7028.1584647543@famine>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 13, 2020 at 5:06 AM Petr Machata <petrm@mellanox.com> wrote:
->
-> In the commit referenced below, ip link started sending ERSPAN-specific
-> attributes even for GRE and gretap tunnels. Fix by more carefully
-> distinguishing between the GRE/tap and ERSPAN modes. Do not show
-> ERSPAN-related help in GRE/tap mode, likewise do not accept ERSPAN
-> arguments, or send ERSPAN attributes.
->
-> Fixes: 83c543af872e ("erspan: set erspan_ver to 1 by default")
-> Signed-off-by: Petr Machata <petrm@mellanox.com>
-> ---
-LGTM, thanks.
+Jarod Wilson <jarod@redhat.com> wrote:
 
-Acked-by: William Tu <u9012063@gmail.com>
+>On Thu, Mar 19, 2020 at 1:06 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>
+>> On 3/19/20 9:42 AM, Jarod Wilson wrote:
+>>
+>> > Interesting. We'll keep digging over here, but that's definitely not
+>> > working for this particular use case with OVS for whatever reason.
+>>
+>> I did a quick test and confirmed that my bonding slaves do not have link-local addresses,
+>> without anything done to prevent them to appear.
+>>
+>> You might add a selftest, if you ever find what is the trigger :)
+>
+>Okay, have a basic reproducer, courtesy of Marcelo:
+>
+># ip link add name bond0 type bond
+># ip link set dev ens2f0np0 master bond0
+># ip link set dev ens2f1np2 master bond0
+># ip link set dev bond0 up
+># ip a s
+>1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN
+>group default qlen 1000
+>    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+>    inet 127.0.0.1/8 scope host lo
+>       valid_lft forever preferred_lft forever
+>    inet6 ::1/128 scope host
+>       valid_lft forever preferred_lft forever
+>2: ens2f0np0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc
+>mq master bond0 state UP group default qlen 1000
+>    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+>5: ens2f1np2: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
+>mq master bond0 state DOWN group default qlen 1000
+>    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+>11: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc
+>noqueue state UP group default qlen 1000
+>    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+>    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link
+>       valid_lft forever preferred_lft forever
+>
+>(above trimmed to relevant entries, obviously)
+>
+># sysctl net.ipv6.conf.ens2f0np0.addr_gen_mode=0
+>net.ipv6.conf.ens2f0np0.addr_gen_mode = 0
+># sysctl net.ipv6.conf.ens2f1np2.addr_gen_mode=0
+>net.ipv6.conf.ens2f1np2.addr_gen_mode = 0
+>
+># ip a l ens2f0np0
+>2: ens2f0np0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc
+>mq master bond0 state UP group default qlen 1000
+>    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+>    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link tentative
+>       valid_lft forever preferred_lft forever
+># ip a l ens2f1np2
+>5: ens2f1np2: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
+>mq master bond0 state DOWN group default qlen 1000
+>    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+>    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link tentative
+>       valid_lft forever preferred_lft forever
+>
+>Looks like addrconf_sysctl_addr_gen_mode() bypasses the original "is
+>this a slave interface?" check, and results in an address getting
+>added, while w/the proposed patch added, no address gets added.
+
+	I wonder if this also breaks for the netvsc usage of IFF_SLAVE
+to suppress ipv6 addrconf?  Adding the hyperv maintainers to Cc.
+
+	In any event, it looks like addrconf_sysctl_addr_gen_mode()
+calls addrconf_dev_config() directly, which bypasses the IFF_SLAVE check
+in addrconf_notify() that would gate other callers.
+
+	From my reading, your patch appears to cover a superset of cases
+as compared to the existing IFF_SLAVE test from c2edacf80e15.
+
+>Looking back through git history again, I see a bunch of 'Fixes:
+>d35a00b8e33d ("net/ipv6: allow sysctl to change link-local address
+>generation mode")' patches, and I guess that's where this issue was
+>also introduced.
+
+	Can the problem be induced via ip link set ... addrgenmode ?
+That functionality predates the sysctl interface, looks like it was
+introduced with
+
+bc91b0f07ada ipv6: addrconf: implement address generation modes
+
+	-J
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
