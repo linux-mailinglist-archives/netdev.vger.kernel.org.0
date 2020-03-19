@@ -2,120 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A807F18BCE0
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:42:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D896118BCE8
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:43:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728493AbgCSQma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 12:42:30 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:28907 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727772AbgCSQm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 12:42:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584636148;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=zOA+IMIU8Q7WJF49pLVV19IvK2l47KrbLmH0N3YKQfA=;
-        b=i4xCU8o9Gv+e8dG31+nLJov9r66vhVMD4NBMQDBiH658ChLc0EKA94SGHCfekLf0K4/7xd
-        GwGvEtxEpofadiDKS3el9SmIJiZpBcfjxJkW8pRMSUraZA7dMeWp0EpbpUtyTFVsZF6Q2r
-        3+6DVcjCaxq26EI3HW8fHWXzpmP2S6g=
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
- [209.85.166.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-323-BcWg29wLNiCjMzFdJ-3hsw-1; Thu, 19 Mar 2020 12:42:26 -0400
-X-MC-Unique: BcWg29wLNiCjMzFdJ-3hsw-1
-Received: by mail-io1-f70.google.com with SMTP id k5so2200808ioa.22
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 09:42:25 -0700 (PDT)
+        id S1728571AbgCSQms (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 12:42:48 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:35900 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728551AbgCSQmr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 12:42:47 -0400
+Received: by mail-pl1-f194.google.com with SMTP id g2so1294957plo.3;
+        Thu, 19 Mar 2020 09:42:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QnWCdSysocTO2lLV5rIIDxRRIGt32v7dmFXsuQtVctw=;
+        b=RFeqocxbTGjKAxWf17iUmUts1I0aUwtRztYIvPE2mb58LaL7QSbT841gIwspf8Jgpp
+         nQHvJutthWkvDaHuQYnkFu7ovpjegeE0eRJJYsCy+OpWhrfCgvHXiZ3+MPhAuwPTP7TK
+         ZxCYBeiU2KhewxfaAIqguI97Xix9GX3BKlmVlqBHZwOTReRjaM0+3gvt6OnPmPISmT7x
+         1i2Bfvqi/jkIHFD+35et8MUhihwWmR2FIfJMBsZCYv+69oevd8axWOkI9NKHzb7F6Q3R
+         bSsOhyT+kw83iGxqVRcOg1ouuBhZUxQAWsuF8J1WRjZHiXm8Jb745OhU6qCekGkYz1Na
+         vKzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zOA+IMIU8Q7WJF49pLVV19IvK2l47KrbLmH0N3YKQfA=;
-        b=VuSr5hu7T6RSdlBoTapbkpYFSOxOvu0hTI9eknRgFzc33hVTOsihmIBFfibxxNEw8i
-         VIWR2IgqexHQ6xl622DX1iFmLmB9mXnSVdqE+72AlN15/mf26FvTo0A/V/+t6whr2L+2
-         SVWKdztvMd+P0WXXnIgMqNvh6kzgNdoV9VOBgDhNOPX429TLldMAACcA6GGE6fc/KxXe
-         sEy8lb+G8BCnxuzIppmXwDw7CB10xh6SJK+CxHUszgPVNrdYcj1gEUSFenqPjyLo8JgY
-         +ln2bksUZ0RpZ7angFIL0RrsAHzgqVvphH3uuc2SevaMViDLLgJrSqTADw7OJIbVzdcE
-         Wotw==
-X-Gm-Message-State: ANhLgQ3Q1zyvsb7V29ut0o9Y0SnfDYUWGsi/u96yO0G/VbP7EHkWTxB5
-        nbnZyvEIbxyo0/SbZKZoeEZd+8VGEHljK4P/VPtNbL7g/60/u5flq5tZLF3wM7W5xdGdoXOWWuw
-        neWt9obiJg5kW8zq69ScxS+B3UwVxo6uG
-X-Received: by 2002:a6b:be02:: with SMTP id o2mr3477760iof.39.1584636144620;
-        Thu, 19 Mar 2020 09:42:24 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vs8iofIYJ+iNpo9+omXOEAEZcpDGFzEXydxLKvQtkjHH4wpvAEyj5/8Q2KiQ1Qpj4eSOH80FA0MxKZjmfU4MgQ=
-X-Received: by 2002:a6b:be02:: with SMTP id o2mr3477735iof.39.1584636144322;
- Thu, 19 Mar 2020 09:42:24 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=QnWCdSysocTO2lLV5rIIDxRRIGt32v7dmFXsuQtVctw=;
+        b=uaMHthVCxNM12WjcmF36YCzEV8/Pmpzj9axw/cmtkpDBZ+Ry69DHwpoE07gjXpDKBk
+         +Oa107PlPNgSLfmPq6hdCsv/TQFYxjzqaCwigHH/5pCamtAXHiISoue4St/SZjDyinGL
+         dmsZIL9GZTx+HG2h6E89/vSzPvg1lsagdWEH6cMiN1SqFQKVonCYzxVDWJBXeWhaKcB2
+         RiP1PdKnXnp2da3kEsV+YsrBdan+KFFP/+H5dtmM9lVvMuO+EWBHv8yPT9+QUeNuHQN4
+         TVy9bgv10Y+avN1RBY0byAIXnXdTjRbd/GDhXxCR1N1NUI+iN3Y4sFfvscUj/Dg6vxFS
+         1u4g==
+X-Gm-Message-State: ANhLgQ1R4owHYT+HjqhGhLNANLyryhjDMylSUiahM2N7MjwkRkLkjSFe
+        E30SV1FwUi/gEGrSphZoW+ZK+tSN
+X-Google-Smtp-Source: ADFU+vsvbOhk9eBxqC9tMGFgPXvUeS5fyFN1SNzgdg7AGKj3tJZP3B52C3rCxFjYxdOUXbDYlet9KA==
+X-Received: by 2002:a17:902:e981:: with SMTP id f1mr4290172plb.103.1584636164257;
+        Thu, 19 Mar 2020 09:42:44 -0700 (PDT)
+Received: from [192.168.1.2] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.googlemail.com with ESMTPSA id f19sm2901596pgf.33.2020.03.19.09.42.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Mar 2020 09:42:43 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/7] introduce read_poll_timeout
+To:     Dejin Zheng <zhengdejin5@gmail.com>, andrew@lunn.ch,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        tglx@linutronix.de, broonie@kernel.org, corbet@lwn.net,
+        mchehab+samsung@kernel.org, netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20200319163910.14733-1-zhengdejin5@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
+Message-ID: <d1ba5c47-5a8f-f689-6d33-ec927f4268d8@gmail.com>
+Date:   Thu, 19 Mar 2020 09:42:42 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-References: <20200318140605.45273-1-jarod@redhat.com> <8a88d1c8-c6b1-ad85-7971-e6ae8c6fa0e4@gmail.com>
- <CAKfmpSc0yea5-OfE1rnVdErDTeOza=owbL00QQEaH-M-A6Za7g@mail.gmail.com> <25629.1584564113@famine>
-In-Reply-To: <25629.1584564113@famine>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Thu, 19 Mar 2020 12:42:14 -0400
-Message-ID: <CAKfmpScbzEZAEw=zOEwguQJvr6L2fQiGmAY60SqSBQ_g-+B4tw@mail.gmail.com>
-Subject: Re: [PATCH net] ipv6: don't auto-add link-local address to lag ports
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Moshe Levi <moshele@mellanox.com>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200319163910.14733-1-zhengdejin5@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 4:42 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
->
-> Jarod Wilson <jarod@redhat.com> wrote:
->
-> >On Wed, Mar 18, 2020 at 2:02 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> >>
-> >> On 3/18/20 7:06 AM, Jarod Wilson wrote:
-> >> > Bonding slave and team port devices should not have link-local addresses
-> >> > automatically added to them, as it can interfere with openvswitch being
-> >> > able to properly add tc ingress.
-> >> >
-> >> > Reported-by: Moshe Levi <moshele@mellanox.com>
-> >> > CC: Marcelo Ricardo Leitner <mleitner@redhat.com>
-> >> > CC: netdev@vger.kernel.org
-> >> > Signed-off-by: Jarod Wilson <jarod@redhat.com>
-> >>
-> >>
-> >> This does not look a net candidate to me, unless the bug has been added recently ?
-> >>
-> >> The absence of Fixes: tag is a red flag for a net submission.
-> >>
-> >> By adding a Fixes: tag, you are doing us a favor, please.
-> >
-> >Yeah, wasn't entirely sure on this one. It fixes a problem, but it's
-> >not exactly a new one. A quick look at git history suggests this might
-> >actually be something that technically pre-dates the move to git in
-> >2005, but only really became a problem with some additional far more
-> >recent infrastructure (tc and friends). I can resubmit it as net-next
-> >if that's preferred.
->
->         Commit
->
-> c2edacf80e15 bonding / ipv6: no addrconf for slaves separately from master
->
->         should (in theory) already prevent ipv6 link-local addrconf, at
-> least for bonding slaves, and dates from 2007.  If something has changed
-> to break the logic in this commit, then (a) you might need to do some
-> research to find a candidate for your Fixes tag, and (b) I'd suggest
-> also investigating whether or not the change added by c2edacf80e15 to
-> addrconf_notify() no longer serves any purpose, and should be removed if
-> that is the case.
->
->         Note also that the hyperv netvsc driver, in netvsc_vf_join(),
-> sets IFF_SLAVE in order to trigger the addrconf prevention logic from
-> c2edacf80e15; I'm not sure if your patch would affect its expectations
-> (if c2edacf80e15 were removed).
+Le 2020-03-19 à 09:39, Dejin Zheng a écrit :
+> This patch sets is introduce read_poll_timeout macro, it is an extension
+> of readx_poll_timeout macro. the accessor function op just supports only
+> one parameter in the readx_poll_timeout macro, but this macro can
+> supports multiple variable parameters for it. so functions like
+> phy_read(struct phy_device *phydev, u32 regnum) and
+> phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum) can
+> use this poll timeout framework.
+> 
+> the first patch introduce read_poll_timeout macro, and the second patch
+> redefined readx_poll_timeout macro by read_poll_timeout(), and the other
+> patches are examples using read_poll_timeout macro.
+> 
+> 
+> Dejin Zheng (7):
+>   iopoll: introduce read_poll_timeout macro
+>   iopoll: redefined readx_poll_timeout macro to simplify the code
+>   net: phy: introduce phy_read_mmd_poll_timeout macro
+>   net: phy: bcm84881: use phy_read_mmd_poll_timeout() to simplify the
+>     code
+>   net: phy: aquantia: use phy_read_mmd_poll_timeout() to simplify the
+>     code
+>   net: phy: introduce phy_read_poll_timeout macro
+>   net: phy: use phy_read_poll_timeout() to simplify the code
+> 
+>  drivers/net/phy/aquantia_main.c | 16 +++++++--------
+>  drivers/net/phy/bcm84881.c      | 24 ++++++----------------
+>  drivers/net/phy/phy_device.c    | 18 ++++++-----------
+>  include/linux/iopoll.h          | 36 ++++++++++++++++++++++++++-------
+>  include/linux/phy.h             |  7 +++++++
+>  5 files changed, 55 insertions(+), 46 deletions(-)
 
-Interesting. We'll keep digging over here, but that's definitely not
-working for this particular use case with OVS for whatever reason.
-
+Your diffstat is positive, so what's the point of doing this? What
+problem are you trying to solve?
 -- 
-Jarod Wilson
-jarod@redhat.com
-
+Florian
