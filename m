@@ -2,155 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AD4618ABE4
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 05:41:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61D6318ABF5
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 06:00:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726596AbgCSElr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 00:41:47 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:63965 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbgCSElr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 00:41:47 -0400
-Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 02J4fNiM012950;
-        Wed, 18 Mar 2020 21:41:24 -0700
-From:   Rohit Maheshwari <rohitm@chelsio.com>
-To:     herbert@gondor.apana.org.au, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org
-Cc:     borisp@mellanox.com, secdev@chelsio.com,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>
-Subject: [PATCH net-next v2] Crypto/chtls: add/delete TLS header in driver
-Date:   Thu, 19 Mar 2020 10:11:21 +0530
-Message-Id: <20200319044121.6688-1-rohitm@chelsio.com>
-X-Mailer: git-send-email 2.18.1
+        id S1726774AbgCSFAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 01:00:06 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:35491 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725874AbgCSFAG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 01:00:06 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 48jZTZ1tJcz9sPR;
+        Thu, 19 Mar 2020 16:00:02 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1584594003;
+        bh=aTbHR7hHUN6fU6enhevF6rNEujrRIXd6MP2kaGHM6ps=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=o0jRAuHPTG7y3TjFRIfqgvymrH9m/fme+Jp30Ajqu21qSWhQqDEUytv3LpXEOx6t/
+         c7nLrs4jJfrqg2oxcWwTMMp9aHMhmXOkm6EPt3rWzMmilW2ny2+CBovAu95NNznj9A
+         YFjcNlLCx6g4pwTUeSFPH7SMhq6c7uco0PeANTvRiP3bmtsSHJ3XeutqNSrBWeSUFo
+         g/lC7kZe4rrF4j4icfWZScp8qw3qvPgc24inkaF+O2fS+4ptQvbYteVpgc68Y6ZIBQ
+         GzzB7ZFWJYpoOvOefHRuliCiBYhXdKHpZ2yTrNWNe5tmTSWpB7UY4GEorz2Bn1MoeP
+         DDj/kyIWvzpkw==
+Date:   Thu, 19 Mar 2020 15:59:56 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20200319155956.1e916454@canb.auug.org.au>
+In-Reply-To: <CA+h21hq1pVEJCZHzM4mCPEWhOL-_ugJ5h=EA4g=Lv5sweXGnAA@mail.gmail.com>
+References: <20200311123318.51eff802@canb.auug.org.au>
+        <CA+h21hq1pVEJCZHzM4mCPEWhOL-_ugJ5h=EA4g=Lv5sweXGnAA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/aKmygoOAv6BkFT.MF31uU50";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kernel TLS forms TLS header in kernel during encryption and removes
-while decryption before giving packet back to user application. The
-similar logic is introduced in chtls code as well.
+--Sig_/aKmygoOAv6BkFT.MF31uU50
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-v1->v2:
-- tls_proccess_cmsg() uses tls_handle_open_record() which is not required
-  in TOE-TLS. Don't mix TOE with other TLS types.
+Hi Vladimir,
 
-Signed-off-by: Vinay Kumar Yadav <vinay.yadav@chelsio.com>
-Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
----
- drivers/crypto/chelsio/chtls/chtls_io.c | 73 ++++++++++++++++++++-----
- 1 file changed, 59 insertions(+), 14 deletions(-)
+[Sorry fr the slow response]
 
-diff --git a/drivers/crypto/chelsio/chtls/chtls_io.c b/drivers/crypto/chelsio/chtls/chtls_io.c
-index 5cf9b021220b..e1651adb9d06 100644
---- a/drivers/crypto/chelsio/chtls/chtls_io.c
-+++ b/drivers/crypto/chelsio/chtls/chtls_io.c
-@@ -902,14 +902,6 @@ static int chtls_skb_copy_to_page_nocache(struct sock *sk,
- 	return 0;
- }
- 
--/* Read TLS header to find content type and data length */
--static int tls_header_read(struct tls_hdr *thdr, struct iov_iter *from)
--{
--	if (copy_from_iter(thdr, sizeof(*thdr), from) != sizeof(*thdr))
--		return -EFAULT;
--	return (__force int)cpu_to_be16(thdr->length);
--}
--
- static int csk_mem_free(struct chtls_dev *cdev, struct sock *sk)
- {
- 	return (cdev->max_host_sndbuf - sk->sk_wmem_queued);
-@@ -981,6 +973,37 @@ static int csk_wait_memory(struct chtls_dev *cdev,
- 	goto do_rm_wq;
- }
- 
-+static int chtls_proccess_cmsg(struct sock *sk, struct msghdr *msg,
-+			       unsigned char *record_type)
-+{
-+	struct cmsghdr *cmsg;
-+	int rc = -EINVAL;
-+
-+	for_each_cmsghdr(cmsg, msg) {
-+		if (!CMSG_OK(msg, cmsg))
-+			return -EINVAL;
-+		if (cmsg->cmsg_level != SOL_TLS)
-+			continue;
-+
-+		switch (cmsg->cmsg_type) {
-+		case TLS_SET_RECORD_TYPE:
-+			if (cmsg->cmsg_len < CMSG_LEN(sizeof(*record_type)))
-+				return -EINVAL;
-+
-+			if (msg->msg_flags & MSG_MORE)
-+				return -EINVAL;
-+
-+			*record_type = *(unsigned char *)CMSG_DATA(cmsg);
-+			rc = 0;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+	}
-+
-+	return rc;
-+}
-+
- int chtls_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- {
- 	struct chtls_sock *csk = rcu_dereference_sk_user_data(sk);
-@@ -1022,15 +1045,21 @@ int chtls_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- 			goto wait_for_sndbuf;
- 
- 		if (is_tls_tx(csk) && !csk->tlshws.txleft) {
--			struct tls_hdr hdr;
-+			unsigned char record_type = TLS_RECORD_TYPE_DATA;
- 
--			recordsz = tls_header_read(&hdr, &msg->msg_iter);
--			size -= TLS_HEADER_LENGTH;
--			copied += TLS_HEADER_LENGTH;
-+			if (unlikely(msg->msg_controllen)) {
-+				err = chtls_proccess_cmsg(sk, msg,
-+							  &record_type);
-+				if (err)
-+					goto out_err;
-+			}
-+
-+			recordsz = size;
- 			csk->tlshws.txleft = recordsz;
--			csk->tlshws.type = hdr.type;
-+			csk->tlshws.type = record_type;
-+
- 			if (skb)
--				ULP_SKB_CB(skb)->ulp.tls.type = hdr.type;
-+				ULP_SKB_CB(skb)->ulp.tls.type = record_type;
- 		}
- 
- 		if (!skb || (ULP_SKB_CB(skb)->flags & ULPCB_FLAG_NO_APPEND) ||
-@@ -1521,6 +1550,22 @@ static int chtls_pt_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 				}
- 			}
- 		}
-+		/* Set record type if not already done. For a non-data record,
-+		 * do not proceed if record type could not be copied.
-+		 */
-+		if (ULP_SKB_CB(skb)->flags & ULPCB_FLAG_TLS_HDR) {
-+			struct tls_hdr *thdr = (struct tls_hdr *)skb->data;
-+			int cerr = 0;
-+
-+			cerr = put_cmsg(msg, SOL_TLS, TLS_GET_RECORD_TYPE,
-+					sizeof(thdr->type), &thdr->type);
-+
-+			if (cerr && thdr->type != TLS_RECORD_TYPE_DATA)
-+				return -EIO;
-+			/*  don't send tls header, skip copy */
-+			goto skip_copy;
-+		}
-+
- 		if (skb_copy_datagram_msg(skb, offset, msg, avail)) {
- 			if (!copied) {
- 				copied = -EFAULT;
--- 
-2.18.1
+On Wed, 11 Mar 2020 11:50:17 +0200 Vladimir Oltean <olteanv@gmail.com> wrot=
+e:
+>
+> What would be the takeaway here? I did bring the fact that it will
+> conflict to David's attention here, not sure what else should have
+> been done:
+> https://www.spinics.net/lists/netdev/msg636207.html
+> The conflict resolution looks fine btw, I've tested linux-next and it
+> also works.
 
+David has now merged the two trees and resolved this.  My notification
+is just so that people are aware of conflicts in separate trees that
+usually only come together in Linus' tree.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/aKmygoOAv6BkFT.MF31uU50
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5y/EwACgkQAVBC80lX
+0Gwcnwf/Y/1g384Izgi4aLvLdFAw7MtRWrwTnTUWPbITPyFb3/N0Gqr+18wLDWsq
+tN/m2dEWW5vxPhKt5f6GP99eZldcmJjxGCJwseix/LZNgtIbynZuf8Y2txNMaBoe
+fKqgzlb28t8BfKdXvnvsY0EhUJMqyg8NMCyx1eK0BgfNlWdURf/qU+kRo87l4Ptg
+soXxtL3ldR1pbu924PzCnCDpwyahDCPlEAoCHRsU5WVpaPepzyb2dAu4YBG1Y5AP
+tWPrjAxirMfzJPWbv0ME7rsk8QT5knPnPc8K+gpuTeAJ6Vk3SjlSFyWz2sLyjLxf
+ujzMaw75yyZbCnmSzrCVzTVnVL+DWw==
+=nXma
+-----END PGP SIGNATURE-----
+
+--Sig_/aKmygoOAv6BkFT.MF31uU50--
