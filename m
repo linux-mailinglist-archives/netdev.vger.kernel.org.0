@@ -2,77 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5280618AED9
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 09:58:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DD3618AEDD
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 10:01:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726802AbgCSI60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 04:58:26 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44632 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725767AbgCSI60 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 04:58:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=3qTNVfTalmQw4j9NwfoM927J2Yu1TVj9lFggc1wxXrM=; b=TH+EMnSqYlryYc/9Modbn0ujuk
-        uQ3fMqCReDQHzRHrsLYK3/47CJnkiE8xAPUghz+XlvkiIt2Nd2vGZjxEKJvbVNa4XkXu8Je93DKPA
-        jFc34UPG5EBfpluUVN2Vz1hKFrxRYI/2mIhz+PsEZek5ER/bFa7vBr2imsQNVvTE3Oe8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jEr0G-0005Py-6I; Thu, 19 Mar 2020 09:58:12 +0100
-Date:   Thu, 19 Mar 2020 09:58:12 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: mvmdio: fix driver probe on missing irq
-Message-ID: <20200319085812.GA20761@lunn.ch>
-References: <20200319012940.14490-1-marek.behun@nic.cz>
- <d7cfec6e2b6952776dfedfbb0ba69a5f060d7cb5.camel@alliedtelesis.co.nz>
- <20200319052119.4e694c8b@nic.cz>
- <de28dd392987d666f9ad4a0c94e71fc0a686d8d6.camel@alliedtelesis.co.nz>
- <20200319053659.4da19ae0@nic.cz>
+        id S1726796AbgCSJBF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 19 Mar 2020 05:01:05 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:59964 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725767AbgCSJBE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 05:01:04 -0400
+Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
+        (envelope-from <bigeasy@linutronix.de>)
+        id 1jEr2O-0003WY-CF; Thu, 19 Mar 2020 10:00:24 +0100
+Date:   Thu, 19 Mar 2020 10:00:24 +0100
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>
+Subject: Re: [patch V2 07/15] powerpc/ps3: Convert half completion to rcuwait
+Message-ID: <20200319090024.wbrywc77tff3ro7i@linutronix.de>
+References: <20200318204302.693307984@linutronix.de>
+ <20200318204408.102694393@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200319053659.4da19ae0@nic.cz>
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200318204408.102694393@linutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 05:36:59AM +0100, Marek Behun wrote:
-> On Thu, 19 Mar 2020 04:27:56 +0000
-> Chris Packham <Chris.Packham@alliedtelesis.co.nz> wrote:
-> 
-> > On Thu, 2020-03-19 at 05:21 +0100, Marek Behun wrote:
-> > > On Thu, 19 Mar 2020 02:00:57 +0000
-> > > Chris Packham <Chris.Packham@alliedtelesis.co.nz> wrote:
-> > >   
-> > > > Hi Marek,
-> > > > 
-> > > > On Thu, 2020-03-19 at 02:29 +0100, Marek Behún wrote:  
-> > > > > Commit e1f550dc44a4 made the use of platform_get_irq_optional, which can
-> > > > > return -ENXIO when interrupt is missing. Handle this as non-error,
-> > > > > otherwise the driver won't probe.    
-> > > > 
-> > > > This has already been fixed in net/master by reverting e1f550dc44a4 and
-> > > > replacing it with fa2632f74e57bbc869c8ad37751a11b6147a3acc.  
-> > > 
-> > > :( It isn't in net-next. I've spent like an hour debugging it :-D  
-> > 
-> > I can only offer my humble apologies and promise to do better next
-> > time. I did test the first minimally correct change, but clearly
-> > stuffed up on v2.
-> 
-> That's ok, but this should be also in net-next as well. Has Dave
-> forgotten to apply it there, or is there some other plan?
+On 2020-03-18 21:43:09 [+0100], Thomas Gleixner wrote:
+> --- a/arch/powerpc/platforms/ps3/device-init.c
+> +++ b/arch/powerpc/platforms/ps3/device-init.c
+> @@ -725,12 +728,12 @@ static int ps3_notification_read_write(s
+>  	unsigned long flags;
+>  	int res;
+>  
+> -	init_completion(&dev->done);
+>  	spin_lock_irqsave(&dev->lock, flags);
+>  	res = write ? lv1_storage_write(dev->sbd.dev_id, 0, 0, 1, 0, lpar,
+>  					&dev->tag)
+>  		    : lv1_storage_read(dev->sbd.dev_id, 0, 0, 1, 0, lpar,
+>  				       &dev->tag);
+> +	dev->done = false;
+>  	spin_unlock_irqrestore(&dev->lock, flags);
+>  	if (res) {
+>  		pr_err("%s:%u: %s failed %d\n", __func__, __LINE__, op, res);
+> @@ -738,14 +741,10 @@ static int ps3_notification_read_write(s
+>  	}
+>  	pr_debug("%s:%u: notification %s issued\n", __func__, __LINE__, op);
+>  
+> -	res = wait_event_interruptible(dev->done.wait,
+> -				       dev->done.done || kthread_should_stop());
+> +	rcuwait_wait_event(&dev->wait, dev->done || kthread_should_stop(), TASK_IDLE);
+> +
+â€¦
 
-It probably went into net. It then takes around a week before net is
-merged into net-next.
+Not sure it matters but this struct `dev' is allocated on stack. Should
+the interrupt fire *before* rcuwait_wait_event() set wait.task to NULL
+then it is of random value on the first invocation of rcuwait_wake_up().
+->
 
-       Andrew
+diff --git a/arch/powerpc/platforms/ps3/device-init.c b/arch/powerpc/platforms/ps3/device-init.c
+index 197347c3c0b24..e87360a0fb40d 100644
+--- a/arch/powerpc/platforms/ps3/device-init.c
++++ b/arch/powerpc/platforms/ps3/device-init.c
+@@ -809,6 +809,7 @@ static int ps3_probe_thread(void *data)
+ 	}
+ 
+ 	spin_lock_init(&dev.lock);
++	rcuwait_init(&dev.wait);
+ 
+ 	res = request_irq(irq, ps3_notification_interrupt, 0,
+ 			  "ps3_notification", &dev);
+
+
+Sebastian
