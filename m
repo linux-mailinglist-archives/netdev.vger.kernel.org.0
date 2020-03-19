@@ -2,78 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD45018AABB
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 03:37:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E031318AB07
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 04:15:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726809AbgCSChj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 22:37:39 -0400
-Received: from szxga02-in.huawei.com ([45.249.212.188]:3479 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726623AbgCSChi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 22:37:38 -0400
-Received: from DGGEMM403-HUB.china.huawei.com (unknown [172.30.72.57])
-        by Forcepoint Email with ESMTP id 1C37A70826ADA42F216E;
-        Thu, 19 Mar 2020 10:37:35 +0800 (CST)
-Received: from dggeme758-chm.china.huawei.com (10.3.19.104) by
- DGGEMM403-HUB.china.huawei.com (10.3.20.211) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 19 Mar 2020 10:37:34 +0800
-Received: from [10.173.219.71] (10.173.219.71) by
- dggeme758-chm.china.huawei.com (10.3.19.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Thu, 19 Mar 2020 10:37:34 +0800
-Subject: Re: [PATCH net 1/6] hinic: fix process of long length skb without
- frags
-To:     David Miller <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <aviad.krawczyk@huawei.com>, <luoxianjun@huawei.com>,
-        <cloud.wangxiaoyun@huawei.com>, <yin.yinshi@huawei.com>
-References: <20200316005630.9817-1-luobin9@huawei.com>
- <20200316005630.9817-2-luobin9@huawei.com>
- <20200316144408.00797c6f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200316.173330.2197524619383790235.davem@davemloft.net>
-From:   "luobin (L)" <luobin9@huawei.com>
-Message-ID: <69cec570-7b7d-f779-3ef3-b7f658f64555@huawei.com>
-Date:   Thu, 19 Mar 2020 10:37:33 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.1
+        id S1726780AbgCSDPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 23:15:14 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:47565 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726623AbgCSDPO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 23:15:14 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 48jX8X5w3qz9sPF;
+        Thu, 19 Mar 2020 14:15:08 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1584587710;
+        bh=rG0ZNtXeOAIDv6nCRsCIvY7aiOa2R5AcTzVNUoyUCUM=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=lChQmtD0utfONPyZbRLEW+i1FS865SHM6yI7oEJ/I8vHdalR5I4FhRBQZUxh0tpel
+         VTqIUg9j2ZcNdmOXQixeNcm3twMifZ/pCiiBMaeZANmLR5oR8BVyd4B5G33uc+9oHl
+         zFjnoSM69uY4a1dP7ITQnF+3ia32Rka50mwbyLDP9PRdYuyt2q1jezDPjp06F/JgRd
+         brwMOdZp3XLIl1Dakg+h5s6KcVCvuld1AmsobLfc4d86CpMcgL566CN6mhmQQDKNf6
+         0EP65bsu2Q2+wS4MyeZqZk3uZAh9rKi4FvefRqmIEqJbtw4gWiex8mLMjUiRHn6yDy
+         UXukKabLCJuEQ==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Shuah Khan <skhan@linuxfoundation.org>, shuah@kernel.org,
+        luto@amacapital.net, wad@chromium.org, daniel@iogearbox.net,
+        kafai@fb.com, yhs@fb.com, andriin@fb.com,
+        gregkh@linuxfoundation.org, tglx@linutronix.de,
+        khilman@baylibre.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH v3] selftests: Fix seccomp to support relocatable build (O=objdir)
+In-Reply-To: <202003161404.934CCE0@keescook>
+References: <20200313212404.24552-1-skhan@linuxfoundation.org> <8736a8qz06.fsf@mpe.ellerman.id.au> <202003161404.934CCE0@keescook>
+Date:   Thu, 19 Mar 2020 14:15:11 +1100
+Message-ID: <87h7yldohs.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-In-Reply-To: <20200316.173330.2197524619383790235.davem@davemloft.net>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Originating-IP: [10.173.219.71]
-X-ClientProxiedBy: dggeme714-chm.china.huawei.com (10.1.199.110) To
- dggeme758-chm.china.huawei.com (10.3.19.104)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ok，I will undo this patch.
-
-On 2020/3/17 8:33, David Miller wrote:
-> From: Jakub Kicinski <kuba@kernel.org>
-> Date: Mon, 16 Mar 2020 14:44:08 -0700
+Kees Cook <keescook@chromium.org> writes:
+> On Mon, Mar 16, 2020 at 11:12:57PM +1100, Michael Ellerman wrote:
+>> Shuah Khan <skhan@linuxfoundation.org> writes:
+>> > Fix seccomp relocatable builds. This is a simple fix to use the right
+>> > lib.mk variable TEST_GEN_PROGS with dependency on kselftest_harness.h
+>> > header, and defining LDFLAGS for pthread lib.
+>> >
+>> > Removes custom clean rule which is no longer necessary with the use of
+>> > TEST_GEN_PROGS. 
+>> >
+>> > Uses $(OUTPUT) defined in lib.mk to handle build relocation.
+>> >
+>> > The following use-cases work with this change:
+>> >
+>> > In seccomp directory:
+>> > make all and make clean
+>> >
+>> > From top level from main Makefile:
+>> > make kselftest-install O=objdir ARCH=arm64 HOSTCC=gcc \
+>> >  CROSS_COMPILE=aarch64-linux-gnu- TARGETS=seccomp
+>> >
+>> > Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+>> > ---
+>> >
+>> > Changes since v2:
+>> > -- Using TEST_GEN_PROGS is sufficient to generate objects.
+>> >    Addresses review comments from Kees Cook.
+>> >
+>> >  tools/testing/selftests/seccomp/Makefile | 18 ++++++++----------
+>> >  1 file changed, 8 insertions(+), 10 deletions(-)
+>> >
+>> > diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
+>> > index 1760b3e39730..a0388fd2c3f2 100644
+>> > --- a/tools/testing/selftests/seccomp/Makefile
+>> > +++ b/tools/testing/selftests/seccomp/Makefile
+>> > @@ -1,17 +1,15 @@
+>> >  # SPDX-License-Identifier: GPL-2.0
+>> > -all:
+>> > -
+>> > -include ../lib.mk
+>> > +CFLAGS += -Wl,-no-as-needed -Wall
+>> > +LDFLAGS += -lpthread
+>> >  
+>> >  .PHONY: all clean
+>> >  
+>> > -BINARIES := seccomp_bpf seccomp_benchmark
+>> > -CFLAGS += -Wl,-no-as-needed -Wall
+>> > +include ../lib.mk
+>> > +
+>> > +# OUTPUT set by lib.mk
+>> > +TEST_GEN_PROGS := $(OUTPUT)/seccomp_bpf $(OUTPUT)/seccomp_benchmark
+>> >  
+>> > -seccomp_bpf: seccomp_bpf.c ../kselftest_harness.h
+>> > -	$(CC) $(CFLAGS) $(LDFLAGS) $< -lpthread -o $@
+>> > +$(TEST_GEN_PROGS): ../kselftest_harness.h
+>> >  
+>> > -TEST_PROGS += $(BINARIES)
+>> > -EXTRA_CLEAN := $(BINARIES)
+>> > +all: $(TEST_GEN_PROGS)
+>> >  
+>> > -all: $(BINARIES)
+>> 
+>> 
+>> It shouldn't be that complicated. We just need to define TEST_GEN_PROGS
+>> before including lib.mk, and then add the dependency on the harness
+>> after we include lib.mk (so that TEST_GEN_PROGS has been updated to
+>> prefix $(OUTPUT)).
+>> 
+>> eg:
+>> 
+>>   # SPDX-License-Identifier: GPL-2.0
+>>   CFLAGS += -Wl,-no-as-needed -Wall
+>>   LDFLAGS += -lpthread
+>>   
+>>   TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
+>>   
+>>   include ../lib.mk
+>>   
+>>   $(TEST_GEN_PROGS): ../kselftest_harness.h
 >
->> On Mon, 16 Mar 2020 00:56:25 +0000 Luo bin wrote:
->>> -#define MIN_SKB_LEN                     17
->>> +#define MIN_SKB_LEN			17
->>> +#define HINIC_GSO_MAX_SIZE		65536
->>> +	if (unlikely(skb->len > HINIC_GSO_MAX_SIZE && nr_sges == 1)) {
->>> +		txq->txq_stats.frag_len_overflow++;
->>> +		goto skb_error;
->>> +	}
->> I don't think drivers should have to check this condition.
->>
->> We have netdev->gso_max_size which should be initialized to
->>
->> include/linux/netdevice.h:#define GSO_MAX_SIZE          65536
->>
->> in
->>
->> net/core/dev.c: dev->gso_max_size = GSO_MAX_SIZE;
->>
->> Please send a patch to pktgen to uphold the normal stack guarantees.
-> Agreed, the driver should not have to validate this.
-> .
+> Exactly. This (with an extra comment) is precisely what I suggested during
+> v2 review:
+> https://lore.kernel.org/lkml/202003041815.B8C73DEC@keescook/
+
+Oh sorry, I missed that.
+
+OK so I think we know what the right solution is.
+
+cheers
