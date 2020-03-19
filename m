@@ -2,113 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC36218A9A9
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 01:12:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70CC018A9CC
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 01:30:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727783AbgCSAMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 20:12:02 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:49299 "EHLO ozlabs.org"
+        id S1727218AbgCSAau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 20:30:50 -0400
+Received: from frisell.zx2c4.com ([192.95.5.64]:39393 "EHLO frisell.zx2c4.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727321AbgCSALE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 20:11:04 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 48jS4626w6z9sPk;
-        Thu, 19 Mar 2020 11:11:02 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1584576662;
-        bh=4NeHfuenkCF6u/+kEoesLWlSHw3XkaaPyGQc98hjRGQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=WDWvPg/wLRHG3UHvKXOZH8kDol+lSTsMmw0hkBGJaT742jX2qdWR8r8HEpRfKiGeU
-         wJdjcRBuTUam5RpR3JdszpnZYzYIlSqleCh0qLceAxD6Mey+RIetnjxEUHDrBelurR
-         F8+zRbC5VcOOhlTksTbrCF1U61NLlQRHlpLMiWsEuOhsqZhBO6mn0S79y/RCc64cdf
-         ohc6P+D10KTCjwkzEsCgay0Jux/CzM13FaXu6cwAeE+s/+WKErUTVfptVc5CecLk0I
-         gD3guZfOcG13qtkc9GYDg33SyBuckEHfSdjQiGfKICPCooc+WDupeoVVdJQbK7hrox
-         w+kIk6MIQZi6Q==
-Date:   Thu, 19 Mar 2020 11:10:53 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arthur Kiyanovski <akiyano@amazon.com>,
-        Noam Dagan <ndagan@amazon.com>,
-        Leon Romanovsky <leonro@mellanox.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20200319111053.597bd4d1@canb.auug.org.au>
+        id S1726596AbgCSAau (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 20:30:50 -0400
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 113907c2;
+        Thu, 19 Mar 2020 00:24:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
+        :subject:date:message-id:mime-version:content-transfer-encoding;
+         s=mail; bh=ADT2x3MfY9Do41eWJ+yA+zzB9zo=; b=gFBKUMTMLQSgVml5n1KG
+        k/xt0gg2HJJra4M8WoeifHtwPdE3fyNhr52K3HqBsxPWyAtJHTQjfwS4iuDoPT/L
+        jd3nv4HGOM/EfcLRybeaBkL2X7GaV9JFIb6IdIhZ4dgKI5EN3Rh58LYiPnlC63WZ
+        RY9ivvwouI/EsguYrxFIDlc3pvHLxq0kjiN7rCn5nX0sMsb5tkASpm2KRbIYK0Gm
+        auoSRpLkNsW84pk3qowmkfkQuPqMHCgmjKn3QnNw6S9hrXiNKBVdyebEvTL82tmC
+        eqMdEqs/vNfU5V8seuN/UytlYXUJnz502Kdkf31NY7/4iGAVwTM9uEaQLddeRJDA
+        ZQ==
+Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 7c14b63d (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
+        Thu, 19 Mar 2020 00:24:24 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH net 0/5] wireguard fixes for 5.6-rc7
+Date:   Wed, 18 Mar 2020 18:30:42 -0600
+Message-Id: <20200319003047.113501-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/5vHI_Q_c2A6E/.8i+PNP8Go";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/5vHI_Q_c2A6E/.8i+PNP8Go
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Dave,
 
-Hi all,
+I originally intended to spend this cycle working on fun optimizations
+and architecture for WireGuard for 5.7, but I've been a bit neurotic
+about having 5.6 ship without any show stopper bugs. WireGuard has been
+stable for a long time now, but that doesn't make me any less nervous
+about the real deal in 5.6. To that end, I've been doing code reviews
+and having discussions, and we also had a security firm audit the code.
+That audit didn't turn up any vulnerabilities, but they did make a good
+defense-in-depth suggestion. This series contains:
 
-Today's linux-next merge of the net-next tree got a conflict in:
+1) Removal of a duplicated header, from YueHaibing.
+2) Testing with 64-bit time in our test suite.
+3) Account for skb->protocol==0 due to AF_PACKET sockets, suggested
+   by Florian Fainelli.
+4) Clean up some code in an unreachable switch/case branch, suggested
+   by Florian Fainelli.
+5) Better handling of low-order points, discussed with Mathias
+   Hall-Andersen.
 
-  drivers/net/ethernet/amazon/ena/ena_netdev.c
+Thanks,
+Jason
 
-between commit:
+Jason A. Donenfeld (4):
+  wireguard: selftests: test using new 64-bit time_t
+  wireguard: queueing: account for skb->protocol==0
+  wireguard: receive: remove dead code from default packet type case
+  wireguard: noise: error out precomputed DH during handshake rather
+    than config
 
-  dfdde1345bc1 ("net: ena: fix continuous keep-alive resets")
+YueHaibing (1):
+  wireguard: selftests: remove duplicated include <sys/types.h>
 
-from the net tree and commit:
+ drivers/net/wireguard/device.c                |  2 +-
+ drivers/net/wireguard/netlink.c               |  8 +--
+ drivers/net/wireguard/noise.c                 | 55 ++++++++++---------
+ drivers/net/wireguard/noise.h                 | 12 ++--
+ drivers/net/wireguard/peer.c                  |  7 +--
+ drivers/net/wireguard/queueing.h              |  8 ++-
+ drivers/net/wireguard/receive.c               |  7 +--
+ tools/testing/selftests/wireguard/netns.sh    |  6 --
+ .../testing/selftests/wireguard/qemu/Makefile |  2 +-
+ tools/testing/selftests/wireguard/qemu/init.c |  1 -
+ .../selftests/wireguard/qemu/kernel.config    |  1 -
+ 11 files changed, 51 insertions(+), 58 deletions(-)
 
-  1a63443afd70 ("net/amazon: Ensure that driver version is aligned to the l=
-inux kernel")
+-- 
+2.25.1
 
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/ethernet/amazon/ena/ena_netdev.c
-index 4647d7656761,555c7273d712..000000000000
---- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-+++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-@@@ -3486,10 -3473,7 +3483,8 @@@ static int ena_restore_device(struct en
-  		netif_carrier_on(adapter->netdev);
- =20
-  	mod_timer(&adapter->timer_service, round_jiffies(jiffies + HZ));
- +	adapter->last_keep_alive_jiffies =3D jiffies;
-- 	dev_err(&pdev->dev,
-- 		"Device reset completed successfully, Driver info: %s\n",
-- 		version);
-+ 	dev_err(&pdev->dev, "Device reset completed successfully\n");
- =20
-  	return rc;
-  err_disable_msix:
-
---Sig_/5vHI_Q_c2A6E/.8i+PNP8Go
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl5yuI0ACgkQAVBC80lX
-0GxwDQf/Uho6IaGCmfwvaMFtSKnQW6lVYzKQ9v6sVtTjaTch6Vnj4DOGZDMUPN/G
-KaGHYNehY4s4L/jicSCImhMkY7Lm5aFmnDsCLhhjBt93EypyW0KDvNGg9CbwYfjY
-dYr7Ii3RQnhJCxgocnF5HQNxtg2Ssns9m1Ynj2LxTYxN065b9ELGOI56zEUI2bp4
-+rxlXgJuG1SeZMXNYj2+FZIpgZM2P8D/CXcgQuhr7Q038YmKQFscdTEoh1Jj6yio
-GH2kNEjMpMjmSnzR+E4So8gTMVyGGEXe6kqtzGgqQq73mM3pfI3x1FCZP/bl62KO
-6LvklCycRNGSyv7JmuMsJYjYEp72NQ==
-=/Xxx
------END PGP SIGNATURE-----
-
---Sig_/5vHI_Q_c2A6E/.8i+PNP8Go--
