@@ -2,135 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D91CA18BA4C
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 16:04:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFCA418BA5D
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 16:07:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727977AbgCSPEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 11:04:30 -0400
-Received: from ms.lwn.net ([45.79.88.28]:33904 "EHLO ms.lwn.net"
+        id S1728015AbgCSPG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 11:06:58 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45260 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726795AbgCSPE3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 11:04:29 -0400
-Received: from lwn.net (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id DB45F384;
-        Thu, 19 Mar 2020 15:04:27 +0000 (UTC)
-Date:   Thu, 19 Mar 2020 09:04:26 -0600
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [patch V2 08/15] Documentation: Add lock ordering and nesting
- documentation
-Message-ID: <20200319090426.512510cb@lwn.net>
-In-Reply-To: <20200318204408.211530902@linutronix.de>
-References: <20200318204302.693307984@linutronix.de>
-        <20200318204408.211530902@linutronix.de>
-Organization: LWN.net
+        id S1727183AbgCSPG6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 11:06:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=3DvunhSyQHRaZjV0LfeT42iyChJCmq7DqlZQEUaWdsQ=; b=x3fTtLuLlRb9DLpuvaPKjFsJoc
+        XWlwaygWgiip9x2pm14+Z1Th5c1SYXvEJtwWKm0OObboetH2GTsaoOq2C3dPi7aEYRA0gI9eWKenP
+        +vxS6u92FvxLT0vv/5n39v4RW4fF1XR162VfJp17UY0OaGJOzRb1F2lWtesBBQd+A2MA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jEwl2-0007G5-Np; Thu, 19 Mar 2020 16:06:52 +0100
+Date:   Thu, 19 Mar 2020 16:06:52 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [RFC net-next 2/5] net: phylink: add separate pcs operations
+ structure
+Message-ID: <20200319150652.GA27807@lunn.ch>
+References: <20200317144944.GP25745@shell.armlinux.org.uk>
+ <E1jEDaN-0008JH-MY@rmk-PC.armlinux.org.uk>
+ <20200317163802.GZ24270@lunn.ch>
+ <20200317165422.GU25745@shell.armlinux.org.uk>
+ <20200319121418.GJ5827@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200319121418.GJ5827@shell.armlinux.org.uk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Mar 2020 21:43:10 +0100
-Thomas Gleixner <tglx@linutronix.de> wrote:
-
-> From: Thomas Gleixner <tglx@linutronix.de>
+> Oh, I forgot to mention on the library point - that's what has already
+> been created in:
 > 
-> The kernel provides a variety of locking primitives. The nesting of these
-> lock types and the implications of them on RT enabled kernels is nowhere
-> documented.
+> "net: phylink: pcs: add 802.3 clause 45 helpers"
+> "net: phylink: pcs: add 802.3 clause 22 helpers"
 > 
-> Add initial documentation.
-
-...time to add a a couple of nits...:)
-
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> ---
-> V2: Addressed review comments from Randy
-> ---
->  Documentation/locking/index.rst     |    1 
->  Documentation/locking/locktypes.rst |  298 ++++++++++++++++++++++++++++++++++++
->  2 files changed, 299 insertions(+)
->  create mode 100644 Documentation/locking/locktypes.rst
+> which add library implementations for the pcs_get_state(), pcs_config()
+> and pcs_an_restart() methods.
 > 
-> --- a/Documentation/locking/index.rst
-> +++ b/Documentation/locking/index.rst
-> @@ -7,6 +7,7 @@ locking
->  .. toctree::
->      :maxdepth: 1
->  
-> +    locktypes
->      lockdep-design
->      lockstat
->      locktorture
-> --- /dev/null
-> +++ b/Documentation/locking/locktypes.rst
-> @@ -0,0 +1,298 @@
-> +.. _kernel_hacking_locktypes:
-> +
+> What remains is vendor specific - for pcs_link_up(), there is no
+> standard, since it requires fiddling with vendor specific registers to
+> program, e.g. the speed in SGMII mode when in-band is not being used.
+> The selection between different PCS is also vendor specific.
+> 
+> It would have been nice to use these helpers for Marvell DSA switches
+> too, but the complexities of DSA taking a multi-layered approach rather
+> than a library approach, plus the use of paging makes it very
+> difficult.
+> 
+> So, basically on the library point, "already considered and
+> implemented".
 
-So ... I vaguely remember that some Thomas guy added a document saying we
-should be putting SPDX tags on our files? :)
+Hi Russell
 
-> +==========================
-> +Lock types and their rules
-> +==========================
+The 6390X family of switches has two PCSs, one for 1000BaseX/SGMII and
+a second one for 10GBaseR. So at some point there is going to be a
+mux, but maybe it will be internal to mv88e6xxx and not shareable. Or
+internal to DSA, and shareable between DSA drivers. We will see.
 
-[...]
-
-> +PREEMPT_RT caveats
-> +==================
-> +
-> +spinlock_t and rwlock_t
-> +-----------------------
-> +
-> +The substitution of spinlock_t and rwlock_t on PREEMPT_RT enabled kernels
-> +with RT-mutex based implementations has a few implications.
-> +
-> +On a non PREEMPT_RT enabled kernel the following code construct is
-> +perfectly fine::
-> +
-> +   local_irq_disable();
-> +   spin_lock(&lock);
-> +
-> +and fully equivalent to::
-> +
-> +   spin_lock_irq(&lock);
-> +
-> +Same applies to rwlock_t and the _irqsave() suffix variant.
-> +
-> +On a PREEMPT_RT enabled kernel this breaks because the RT-mutex
-> +substitution expects a fully preemptible context.
-> +
-> +The preferred solution is to use :c:func:`spin_lock_irq()` or
-> +:c:func:`spin_lock_irqsave()` and their unlock counterparts.
-
-We don't need (and shouldn't use) :c:func: anymore; just saying
-spin_lock_irq() will cause the Right Things to happen.
-
-Thanks,
-jon
+     Andrew
