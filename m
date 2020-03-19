@@ -2,103 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F3B718B86C
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 14:58:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D72D318B87A
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 15:01:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727407AbgCSN6M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 09:58:12 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:44936 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727180AbgCSN6L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 09:58:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=JbcPGnuINlXiKU7pzfjGVNxHgU8/NfDj/roK0Ui4qiU=; b=DPVBOy2zVfGVA8Cpqv7+H391u
-        St7kcwC+IcZ+vYgDu8D3FaYNqbsUD8XJFP8wjhoU2Pit1qI8hVuEXSpUofUXT4dIAfZdV9kHpaQmY
-        431WkSrxlxo5iw0i5SmB7h/ITiWatGlkPD6Tckxkr9zJCfZqLW099IPR525SmFwP9bqRlUtvaEVCK
-        P4r7C39YccyofAsAynL3n8cb8yozNs2Rj+ZslbZLhalVYY3rrQs9NoAb8swiMRuPhVv9JP+oLqRiI
-        JSVVf+3VT8CK2RaRno7jiGQBOmVuLASirvix/a7fuFQjZwZZeMgX2+7eZ97LQBm1doG+BJ1YJLlfY
-        CojyAPiag==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:55152)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jEvgR-0002WF-Ak; Thu, 19 Mar 2020 13:58:03 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jEvgO-0004pZ-NJ; Thu, 19 Mar 2020 13:58:00 +0000
-Date:   Thu, 19 Mar 2020 13:58:00 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/3] net: phy: add and use phy_check_downshift
-Message-ID: <20200319135800.GE25745@shell.armlinux.org.uk>
-References: <6e4ea372-3d05-3446-2928-2c1e76a66faf@gmail.com>
- <d2822357-4c1e-a072-632e-a902b04eba7c@gmail.com>
- <20200318232159.GA25745@shell.armlinux.org.uk>
- <b0bc3ca0-0c1b-045e-cd00-37fc85c4eebf@gmail.com>
- <20200319112535.GD25745@shell.armlinux.org.uk>
- <20200319130429.GC24972@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200319130429.GC24972@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727381AbgCSOBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 10:01:12 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:40814 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727219AbgCSOBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 10:01:12 -0400
+Received: by mail-wr1-f68.google.com with SMTP id f3so3126463wrw.7
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 07:01:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:organization;
+        bh=epr8PK2VzXVYapRJnDnkNy1xjUuDqi3UfJCVQq6LU7g=;
+        b=2MnHN7Fz/GWwuwgoGGPog07yYwmBxnFF6fmLd10nxHvtaRjUyAuF6a78nuqXvcaAwJ
+         uWTYtDB0H/GFWh0efT+fd3exw/xSkGIGqZSTkwA9G6dHJ7KGg9xFwwCPaURkd5IO+Oa5
+         J5uhEkVXhMzicNHls3fmazrbIwiPJMrZdG1afDjYs0RJf5UA30io5qoS59gnnBAOO9Xx
+         YlQINJfm/wDp3ZRPwdhJqA5HKduzjISY65QAMgUgZlAr+CZDnkU8ZDtkeLufUF7mjb01
+         GD88kTn6/EVBfNCp1Sq6DC6RW59vXRFMqInIz4+blVvVGv+kNqlCyxyyGgPAFkAyDExU
+         dG8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:organization;
+        bh=epr8PK2VzXVYapRJnDnkNy1xjUuDqi3UfJCVQq6LU7g=;
+        b=cPXumlvg86jWp/R10n7n1m00D6ENCyLySlzhrlcxThl8uufR/d7uruV4OaFFvQgq3I
+         XSfBBpcuuAbUQ43w58jv9c0S6pd8ryPC86xc7axncErsuYndudOFxnqg2cgeePgPKoqF
+         MhPrS624vJpnqHBhn5ASwQXrsWvwHpaTJRy7rgRCWhXB9vxUGffRqlS8vXFZSTRQ95FL
+         7YE+NrSIPAx3gciFQD4N020qHOi+kmb7mcoXxJUr5u4GG4rw+wWF1Gxpx1ytK0hzPVAd
+         dwFGwvwkxxpzTg+q3na5GexO9x4Ly1rUe2CSbgmr9cBaSISz8KkTNmq4dECUOlTAnPoI
+         XVGg==
+X-Gm-Message-State: ANhLgQ2XzpMr/HyMCfBLqGUgaCJanVIuKJj8/Lth52+Et4IphYpwYn4I
+        jjh5fBV+OmoYJlVTOPCqlKpNlVNd4p5zBg==
+X-Google-Smtp-Source: ADFU+vty5nyKYLm7iLu/li/9mjplUtMiHi0kcNOXDvvOMWqkWm2MU6WLXSxRvwLkLvRcVpZHYVS3Fg==
+X-Received: by 2002:a5d:6245:: with SMTP id m5mr4526129wrv.154.1584626469813;
+        Thu, 19 Mar 2020 07:01:09 -0700 (PDT)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id p10sm3747251wrx.81.2020.03.19.07.01.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Mar 2020 07:01:09 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com
+Subject: [PATCH v2 1/2] dt-bindings: net: add marvell smi2usb bindings
+Date:   Thu, 19 Mar 2020 14:59:51 +0100
+Message-Id: <20200319135952.16258-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.17.1
+Organization: Westermo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 02:04:29PM +0100, Andrew Lunn wrote:
-> > The only time that this helps is if PHY drivers implement reading a
-> > vendor register to report the actual link speed, and the PHY specific
-> > driver is used.
-> 
-> So maybe we either need to implement this reading of the vendor
-> register as a driver op, or we have a flag indicating the driver is
-> returning the real speed, not the negotiated speed?
+Describe how the smi2usb controller can optionally use device tree
+bindings to reference attached devices such as switches.
 
-I'm not sure it's necessary to have another driver op.  How about
-this for an idea:
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+---
+ .../bindings/net/marvell,smi2usb.yaml         | 65 +++++++++++++++++++
+ MAINTAINERS                                   |  6 ++
+ 2 files changed, 71 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/marvell,smi2usb.yaml
 
-- add a flag to struct phy_device which indicates the status of
-  downshift.
-- on link-up, check the flag and report whether a downshift occurred,
-  printing whether a downshift occurred in phy_print_status() and
-  similar places.  (Yes, I know that there are some network drivers
-  that don't use phy_print_status().)
-
-The downshift flag could be made tristate - "unknown", "not downshifted"
-and "downshifted" - which would enable phy_print_status() to indicate
-whether there is downshift supported (and hence whether we need to pay
-more attention to what is going on when there is a slow-link report.)
-
-Something like:
-
-For no downshift:
-	Link is Up - 1Gbps/Full - flow control off
-For downshift:
-	Link is Up - 100Mbps/Full (downshifted) - flow control off
-For unknown:
-	Link is Up - 1Gbps/Full (unknown downshift) - flow control off
-
-which has the effect of being immediately obvious if the driver lacks
-support.
-
-We may wish to consider PHYs which support no downshift ability as
-well, which should probably set the status to "not downshifted" or
-maybe an "unsupported" state.
-
-This way, if we fall back to the generic PHY driver, we'd get the
-"unknown" state.
-
+diff --git a/Documentation/devicetree/bindings/net/marvell,smi2usb.yaml b/Documentation/devicetree/bindings/net/marvell,smi2usb.yaml
+new file mode 100644
+index 000000000000..498a19bf7326
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/marvell,smi2usb.yaml
+@@ -0,0 +1,65 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/marvell,smi2usb.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Marvell SMI2USB MDIO Controller
++
++maintainers:
++  - Tobias Waldekranz <tobias@waldekranz.com>
++
++description: |+
++  This controller is mounted on development boards for Marvell's Link Street
++  family of Ethernet switches. It allows you to configure the switch's registers
++  using the standard MDIO interface.
++
++  Since the device is connected over USB, there is no strict requirement of
++  having a device tree representation of the device. But in order to use it with
++  the mv88e6xxx driver, you need a device tree node in which to place the switch
++  definition.
++
++allOf:
++  - $ref: "mdio.yaml#"
++
++properties:
++  compatible:
++    const: usb1286,1fa4
++  reg:
++    maxItems: 1
++    description: The USB port number on the host controller
++
++required:
++  - compatible
++  - reg
++  - "#address-cells"
++  - "#size-cells"
++
++examples:
++  - |
++    /* USB host controller */
++    &usb1 {
++            smi2usb: mdio@1 {
++                    compatible = "usb1286,1fa4";
++                    reg = <1>;
++                    #address-cells = <1>;
++                    #size-cells = <0>;
++            };
++    };
++
++    /* MV88E6390X devboard */
++    &smi2usb {
++            switch@0 {
++                    compatible = "marvell,mv88e6190";
++                    status = "ok";
++                    reg = <0x0>;
++
++                    ports {
++                            /* Port definitions */
++                    };
++
++                    mdio {
++                            /* PHY definitions */
++                    };
++            };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 5dbee41045bc..83bb7ce3e23e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10096,6 +10096,12 @@ S:	Maintained
+ F:	drivers/mtd/nand/raw/marvell_nand.c
+ F:	Documentation/devicetree/bindings/mtd/marvell-nand.txt
+ 
++MARVELL SMI2USB MDIO CONTROLLER DRIVER
++M:	Tobias Waldekranz <tobias@waldekranz.com>
++L:	netdev@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/net/marvell,smi2usb.yaml
++
+ MARVELL SOC MMC/SD/SDIO CONTROLLER DRIVER
+ M:	Nicolas Pitre <nico@fluxnic.net>
+ S:	Odd Fixes
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+2.17.1
+
