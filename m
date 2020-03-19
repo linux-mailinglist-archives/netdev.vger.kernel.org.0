@@ -2,120 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5087618B7F1
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 14:37:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A0CA18B7D8
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 14:36:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728171AbgCSNIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 09:08:34 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:46345 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727432AbgCSNId (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 09:08:33 -0400
-Received: by mail-pg1-f194.google.com with SMTP id k191so95471pgc.13
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 06:08:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=pepMrae6ENSPn3EvchLtqsb9vVHWXr5w0v7tU5H5W7c=;
-        b=DTait0UqhZBJg/o6uGyfztdmWgd/+brRxu0KnAYGazyYw6bfn/EbJq7DBbqNK1jq59
-         znyH9zyZLthW87QmTqIaii90vjHANpEmYbFPVOEr1l5jdAluq3INB1ecW6K5f0XpNhjj
-         3udwqa7eD+TJXVSzsvUeG8XEkcC+5k67IixqSY5BoyatBKk9Vx0U4F3KAvNsRXPdazbX
-         38G/aI/eRz+dxq5iW9OMRHlUtxGLFsK616M8SgQ6aIu8BUC1UVVFKbJ4g5mplds+JnSA
-         TsNejDm343prsxUB7vQlQ98JnGdU6rKkivdLGGWzeEwcRxoDaNhpcaZVXVgEl0e8ouIe
-         cnlw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=pepMrae6ENSPn3EvchLtqsb9vVHWXr5w0v7tU5H5W7c=;
-        b=NeuaMKeeEdis5A1vnJzAuYzcHrgbVs80ophbc97FbD12RrtwSmEMZNBHvy6lnYgqd7
-         xn3uIe3y87QmUA7e1ZALUcwrLU8Kdl7l/2Z8geLjHjqRtU1p4W4iTgklmtP7hbXRdVZc
-         9ArCpQILdj8Zxvd6v1Jg+j1AUnRjbdwcsU0HdGljKQPw4Zn1mEoKqIvYenHQeCXVORZ6
-         EOutzcliiK236597bsZcyrws7gQlvh1pBs0g7TOO90xNh78sD8m+5LAj08CGVYEtiX7n
-         oMkkuO6YdUKpOXKU8o5ncdXk660MmhUhhuPx4Sl5qYzNSFeVVhqbBsj62NDE96Hs6feO
-         4Oog==
-X-Gm-Message-State: ANhLgQ3SSDvRZlOMpHGtvUTEbVtNi0fxJIS0LoKySxY95LnZJCjRszVv
-        ntfEBet3J13KYUI+FCYIucBpCllMUyE=
-X-Google-Smtp-Source: ADFU+vs7Tqd6FwUKfsWw+ZpOtDWnKFGqK32UArukE5zA2sIpTqwAb+3+zYe0/dXjBySS/2USPcaifw==
-X-Received: by 2002:a62:a119:: with SMTP id b25mr3906282pff.158.1584623312105;
-        Thu, 19 Mar 2020 06:08:32 -0700 (PDT)
-Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id c15sm2336292pgk.66.2020.03.19.06.08.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 19 Mar 2020 06:08:28 -0700 (PDT)
-From:   sunil.kovvuri@gmail.com
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, leon@kernel.org,
-        andrew@lunn.ch, Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH v3 net-next 7/8] octeontx2-af: Remove driver version and fix authorship
-Date:   Thu, 19 Mar 2020 18:37:27 +0530
-Message-Id: <1584623248-27508-8-git-send-email-sunil.kovvuri@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1584623248-27508-1-git-send-email-sunil.kovvuri@gmail.com>
-References: <1584623248-27508-1-git-send-email-sunil.kovvuri@gmail.com>
+        id S1727901AbgCSNgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 09:36:18 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:39304 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727711AbgCSNKR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 09:10:17 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02JDA5DD061902;
+        Thu, 19 Mar 2020 08:10:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1584623405;
+        bh=SBBrZzkb2E7HPlrCtxk5PrJICSjHhhKeRTUaGwHvp9k=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=UDPiBny1cnDEdprAZNdpNaemRHJTpRRzgaa5v/D0PRJBleLTQ5iCh/p2+vvN90Q12
+         EbVkbI/y2CPZFoKwNrXPSomlHorO7MDFo+dTgSxGyAyCqFEJ16e7CU7R6DN+AyPxM9
+         /Ze7wqHFuyqX51gpcUtXdweqQndXZn1ST7lvg+ug=
+Received: from DFLE103.ent.ti.com (dfle103.ent.ti.com [10.64.6.24])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 02JDA5C6074181
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 19 Mar 2020 08:10:05 -0500
+Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE103.ent.ti.com
+ (10.64.6.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Thu, 19
+ Mar 2020 08:10:05 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Thu, 19 Mar 2020 08:10:05 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02JDA0oK003728;
+        Thu, 19 Mar 2020 08:10:02 -0500
+Subject: Re: [PATCH net-next v4 06/11] net: ethernet: ti: introduce
+ am65x/j721e gigabit eth subsystem driver
+To:     Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Tero Kristo <t-kristo@ti.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Roger Quadros <rogerq@ti.com>,
+        <devicetree@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>
+CC:     Murali Karicheri <m-karicheri2@ti.com>,
+        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+References: <20200317072739.23950-1-grygorii.strashko@ti.com>
+ <20200317072739.23950-7-grygorii.strashko@ti.com>
+ <dcd70320-8f1e-dbb5-c275-3b203e9b5851@ti.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <78bc1ee2-5a56-82e7-229d-52cea8002eec@ti.com>
+Date:   Thu, 19 Mar 2020 15:09:59 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
+MIME-Version: 1.0
+In-Reply-To: <dcd70320-8f1e-dbb5-c275-3b203e9b5851@ti.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sunil Goutham <sgoutham@marvell.com>
 
-Removed MODULE_VERSION and fixed MODULE_AUTHOR.
 
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c      | 4 +---
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 4 +---
- 2 files changed, 2 insertions(+), 6 deletions(-)
+On 19/03/2020 13:46, Peter Ujfalusi wrote:
+> Hi Grygorii,
+> 
+> On 17/03/2020 9.27, Grygorii Strashko wrote:
+>> The TI AM65x/J721E SoCs Gigabit Ethernet Switch subsystem (CPSW2G NUSS) has
+>> two ports - One Ethernet port (port 1) with selectable RGMII and RMII
+>> interfaces and an internal Communications Port Programming Interface (CPPI)
+>> port (Host port 0) and with ALE in between. It also contains
+>>   - Management Data Input/Output (MDIO) interface for physical layer device
+>> (PHY) management;
+>>   - Updated Address Lookup Engine (ALE) module;
+>>   - (TBD) New version of Common platform time sync (CPTS) module.
+>>
+>> On the TI am65x/J721E SoCs CPSW NUSS Ethernet subsystem into device MCU
+>> domain named MCU_CPSW0.
+>>
+>> Host Port 0 CPPI Packet Streaming Interface interface supports 8 TX
+>> channels and one RX channels operating by TI am654 NAVSS Unified DMA
+>> Peripheral Root Complex (UDMA-P) controller.
+>>
+>> Introduced driver provides standard Linux net_device to user space and supports:
+>>   - ifconfig up/down
+>>   - MAC address configuration
+>>   - ethtool operation:
+>>     --driver
+>>     --change
+>>     --register-dump
+>>     --negotiate phy
+>>     --statistics
+>>     --set-eee phy
+>>     --show-ring
+>>     --show-channels
+>>     --set-channels
+>>   - net_device ioctl mii-control
+>>   - promisc mode
+>>
+>>   - rx checksum offload for non-fragmented IPv4/IPv6 TCP/UDP packets.
+>>     The CPSW NUSS can verify IPv4/IPv6 TCP/UDP packets checksum and fills
+>>     csum information for each packet in psdata[2] word:
+>>     - BIT(16) CHECKSUM_ERROR - indicates csum error
+>>     - BIT(17) FRAGMENT -  indicates fragmented packet
+>>     - BIT(18) TCP_UDP_N -  Indicates TCP packet was detected
+>>     - BIT(19) IPV6_VALID,  BIT(20) IPV4_VALID - indicates IPv6/IPv4 packet
+>>     - BIT(15, 0) CHECKSUM_ADD - This is the value that was summed
+>>     during the checksum computation. This value is FFFFh for non fragmented
+>>     IPV4/6 UDP/TCP packets with no checksum error.
+>>
+>>     RX csum offload can be disabled:
+>> 	 ethtool -K <dev> rx-checksum on|off
+>>
+>>   - tx checksum offload support for IPv4/IPv6 TCP/UDP packets (J721E only).
+>>     TX csum HW offload  can be enabled/disabled:
+>> 	 ethtool -K <dev> tx-checksum-ip-generic on|off
+>>
+>>   - multiq and switch between round robin/prio modes for cppi tx queues by
+>>     using Netdev private flag "p0-rx-ptype-rrobin" to switch between
+>>     Round Robin and Fixed priority modes:
+>> 	 # ethtool --show-priv-flags eth0
+>> 	 Private flags for eth0:
+>> 	 p0-rx-ptype-rrobin: on
+>> 	 # ethtool --set-priv-flags eth0 p0-rx-ptype-rrobin off
+>>
+>>     Number of TX DMA channels can be changed using "ethtool -L eth0 tx <N>".
+>>
+>>   - GRO support: the napi_gro_receive() and napi_complete_done() are used.
+>>
+>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+>> ---
+>>   drivers/net/ethernet/ti/Kconfig             |   19 +-
+>>   drivers/net/ethernet/ti/Makefile            |    3 +
+>>   drivers/net/ethernet/ti/am65-cpsw-ethtool.c |  747 +++++++
+>>   drivers/net/ethernet/ti/am65-cpsw-nuss.c    | 1965 +++++++++++++++++++
+>>   drivers/net/ethernet/ti/am65-cpsw-nuss.h    |  143 ++
+>>   drivers/net/ethernet/ti/k3-udma-desc-pool.c |  126 ++
+>>   drivers/net/ethernet/ti/k3-udma-desc-pool.h |   30 +
+> 
+> I would rather loose the 'udma' from the name and API. It is more like
+> CPPI5 descriptor pool than UDMA. UDMA is just happen to use CPPI5.
+> Probably ti-cppi5-desc-pool?
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index 5ff25bf..557e429 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -21,7 +21,6 @@
- 
- #define DRV_NAME	"octeontx2-af"
- #define DRV_STRING      "Marvell OcteonTX2 RVU Admin Function Driver"
--#define DRV_VERSION	"1.0"
- 
- static int rvu_get_hwvf(struct rvu *rvu, int pcifunc);
- 
-@@ -46,10 +45,9 @@ static const struct pci_device_id rvu_id_table[] = {
- 	{ 0, }  /* end of table */
- };
- 
--MODULE_AUTHOR("Marvell International Ltd.");
-+MODULE_AUTHOR("Sunil Goutham <sgoutham@marvell.com>");
- MODULE_DESCRIPTION(DRV_STRING);
- MODULE_LICENSE("GPL v2");
--MODULE_VERSION(DRV_VERSION);
- MODULE_DEVICE_TABLE(pci, rvu_id_table);
- 
- static char *mkex_profile; /* MKEX profile name */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index d491819..4a72738 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -24,7 +24,6 @@
- 
- #define DRV_NAME	"octeontx2-nicpf"
- #define DRV_STRING	"Marvell OcteonTX2 NIC Physical Function Driver"
--#define DRV_VERSION	"1.0"
- 
- /* Supported devices */
- static const struct pci_device_id otx2_pf_id_table[] = {
-@@ -32,10 +31,9 @@ static const struct pci_device_id otx2_pf_id_table[] = {
- 	{ 0, }  /* end of table */
- };
- 
--MODULE_AUTHOR("Marvell International Ltd.");
-+MODULE_AUTHOR("Sunil Goutham <sgoutham@marvell.com>");
- MODULE_DESCRIPTION(DRV_STRING);
- MODULE_LICENSE("GPL v2");
--MODULE_VERSION(DRV_VERSION);
- MODULE_DEVICE_TABLE(pci, otx2_pf_id_table);
- 
- enum {
+ok. I'll update and re-send
+
+> 
+>>   7 files changed, 3031 insertions(+), 2 deletions(-)
+>>   create mode 100644 drivers/net/ethernet/ti/am65-cpsw-ethtool.c
+>>   create mode 100644 drivers/net/ethernet/ti/am65-cpsw-nuss.c
+>>   create mode 100644 drivers/net/ethernet/ti/am65-cpsw-nuss.h
+>>   create mode 100644 drivers/net/ethernet/ti/k3-udma-desc-pool.c
+>>   create mode 100644 drivers/net/ethernet/ti/k3-udma-desc-pool.h
+> 
+>> diff --git a/drivers/net/ethernet/ti/Kconfig b/drivers/net/ethernet/ti/Kconfig
+>> index 8a6ca16eee3b..89cec778cf2d 100644
+>> --- a/drivers/net/ethernet/ti/Kconfig
+>> +++ b/drivers/net/ethernet/ti/Kconfig
+>> @@ -6,7 +6,7 @@
+>>   config NET_VENDOR_TI
+>>   	bool "Texas Instruments (TI) devices"
+>>   	default y
+>> -	depends on PCI || EISA || AR7 || ARCH_DAVINCI || ARCH_OMAP2PLUS || ARCH_KEYSTONE
+>> +	depends on PCI || EISA || AR7 || ARCH_DAVINCI || ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3
+>>   	---help---
+>>   	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>   
+>> @@ -31,7 +31,7 @@ config TI_DAVINCI_EMAC
+>>   
+>>   config TI_DAVINCI_MDIO
+>>   	tristate "TI DaVinci MDIO Support"
+>> -	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || ARCH_KEYSTONE || COMPILE_TEST
+>> +	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST
+>>   	select PHYLIB
+>>   	---help---
+>>   	  This driver supports TI's DaVinci MDIO module.
+>> @@ -95,6 +95,21 @@ config TI_CPTS_MOD
+>>   	imply PTP_1588_CLOCK
+>>   	default m
+>>   
+>> +config TI_K3_AM65_CPSW_NUSS
+>> +	tristate "TI K3 AM654x/J721E CPSW Ethernet driver"
+>> +	depends on ARCH_K3 && OF && TI_K3_UDMA_GLUE_LAYER
+>> +	select TI_DAVINCI_MDIO
+>> +	imply PHY_TI_GMII_SEL
+>> +	help
+>> +	  This driver supports TI K3 AM654/J721E CPSW2G Ethernet SubSystem.
+>> +	  The two-port Gigabit Ethernet MAC (MCU_CPSW0) subsystem provides
+>> +	  Ethernet packet communication for the device: One Ethernet port
+>> +	  (port 1) with selectable RGMII and RMII interfaces and an internal
+>> +	  Communications Port Programming Interface (CPPI) port (port 0).
+>> +
+>> +	  To compile this driver as a module, choose M here: the module
+>> +	  will be called ti-am65-cpsw-nuss.
+>> +
+>>   config TI_KEYSTONE_NETCP
+>>   	tristate "TI Keystone NETCP Core Support"
+>>   	select TI_DAVINCI_MDIO
+>> diff --git a/drivers/net/ethernet/ti/Makefile b/drivers/net/ethernet/ti/Makefile
+>> index ecf776ad8689..6362a9b0bb8a 100644
+>> --- a/drivers/net/ethernet/ti/Makefile
+>> +++ b/drivers/net/ethernet/ti/Makefile
+>> @@ -23,3 +23,6 @@ obj-$(CONFIG_TI_KEYSTONE_NETCP) += keystone_netcp.o
+>>   keystone_netcp-y := netcp_core.o cpsw_ale.o
+>>   obj-$(CONFIG_TI_KEYSTONE_NETCP_ETHSS) += keystone_netcp_ethss.o
+>>   keystone_netcp_ethss-y := netcp_ethss.o netcp_sgmii.o netcp_xgbepcsr.o cpsw_ale.o
+>> +
+>> +obj-$(CONFIG_TI_K3_AM65_CPSW_NUSS) += ti-am65-cpsw-nuss.o
+>> +ti-am65-cpsw-nuss-y := am65-cpsw-nuss.o cpsw_sl.o am65-cpsw-ethtool.o cpsw_ale.o k3-udma-desc-pool.o
+> 
+> Would not be better to have the desc-pool (silent) Kconfig selectable?
+> The not yet upstream icssg-prueth also needs the same desc-pool library
+> as cpsw.
+>
+
+I'd prefer not to add new Kconfig options unless required.
+This driver simply not work without it, so no Kconfig option for now.
+
 -- 
-2.7.4
-
+Best regards,
+grygorii
