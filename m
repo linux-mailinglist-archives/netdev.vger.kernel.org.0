@@ -2,154 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DF8218B774
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 14:33:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B068718B72F
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 14:32:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727555AbgCSNdf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 09:33:35 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:36735 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729143AbgCSNNX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 09:13:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584623601;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M4dRrS/fWrSqKKRd6oOKfmva/Wbg7A8r+k8nfZOWXeY=;
-        b=eh5cIG77J5yHmHTJkD0RW/oBXu75O/+JQGs3fjH7dCKvSvfZJK167nw8B3z5azGHxm4/fH
-        kRzEHmEOhJ1JnkXrjegMlIJYeAn9DsFYjmkp6Dkg8U6om5PfTsvV8QA8kxepI5LRPi1QT5
-        9HMlbbJlfI1Rf+ffdkMzuNvnJGJNkqA=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-412-lXYfWS1fOnegq1387hNeiQ-1; Thu, 19 Mar 2020 09:13:20 -0400
-X-MC-Unique: lXYfWS1fOnegq1387hNeiQ-1
-Received: by mail-wm1-f69.google.com with SMTP id f8so683888wmh.4
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 06:13:20 -0700 (PDT)
+        id S1728153AbgCSNQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 09:16:50 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:45390 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729584AbgCSNQr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 09:16:47 -0400
+Received: by mail-pg1-f195.google.com with SMTP id m15so1244582pgv.12;
+        Thu, 19 Mar 2020 06:16:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nqJw5vg4Nil/Y9pZjcpy6DTelU/teueaanPhC3c5U58=;
+        b=T+cYXbZAHaDkG0GNHDjApa0wSTlshXtBKTVMP29hon48mbyn2rSVvYi8nKMBRhYv9j
+         MaKesS8Pu3GoCeHrmfoHRCXKVwIARQ+N1VF8r9mMjrHKehag+deLDFwHqy1/FTUkY05S
+         sVFv9NZdiGYRSgp05pOjM0JIVbyLu+ZxdRZxdviw9Je8WpmC/i2tyZNZz+Te2KvU9QW8
+         kdwYoB2a2CEZcw/nAJpp1R7rHtdDIZKpe9p5irMpWk6Wzn/6LtM5AysvML1Dnh/9sa3O
+         Kr6n9MBkKJjOY7RyLAJSwa7bpppLJSIOzc7Ly3KI+uiKWassksQrMsoh1gxvZTIgRr/o
+         pY3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=M4dRrS/fWrSqKKRd6oOKfmva/Wbg7A8r+k8nfZOWXeY=;
-        b=coeXIfjmlHsOQYM9BIM5mil1WyQsNPJ+NXRxfh3Z/G9jrtXe1QLhUkYlUbN8E7s9ho
-         lVNCqHVoIhW8GVCQURaCMPiKcRK8tITe1aMB2hMRQhmLShpeyrKbC6C3k9sCo/SHY5Pm
-         jolucGx3s4zWvMwWD2an+Xbnc7AbTQ4Cp43V46j8XK0hy/QGCoYL6Kjr/j4pe61kkga5
-         u0V078YhnMBK2XZCvpOrGp9g+ZNL7kRmGkECoboP+3ieF0SJWcE+yKTYPMee9mIS2ENP
-         Ec9RSaaHVt7GW1a0PxaZ1iAyJYMxbb6XN1eQn9bATER0abU6mLHjYDQhrr1Db3HevLCP
-         5g1w==
-X-Gm-Message-State: ANhLgQ0+1o7g01hl+pEp3B8tkg9nsuaQQ2Yoi0cfrKmj7Ze/dPwVdTPo
-        FWMUFzTNUc0aYmdrkNPaiZwO18fiOc20x2dKH6cEQNQFE+KjRQsFS0JtZi7SehntBVpJ3OExdI6
-        KtaonpZdpPeyi6vvc
-X-Received: by 2002:a1c:a950:: with SMTP id s77mr3663115wme.176.1584623598880;
-        Thu, 19 Mar 2020 06:13:18 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vtQGbZqPfcT159lnrEmvTWmj54va8IAqg8WwLw1ki+Kq5yPWHrr+ir5aCmBAe/AbeidmulhTw==
-X-Received: by 2002:a1c:a950:: with SMTP id s77mr3663084wme.176.1584623598665;
-        Thu, 19 Mar 2020 06:13:18 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id i1sm3293742wrq.89.2020.03.19.06.13.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Mar 2020 06:13:17 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 6D2D7180371; Thu, 19 Mar 2020 14:13:16 +0100 (CET)
-Subject: [PATCH bpf-next 4/4] selftests/bpf: Add tests for attaching XDP
- programs
-From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Andrey Ignatov <rdna@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Date:   Thu, 19 Mar 2020 14:13:16 +0100
-Message-ID: <158462359640.164779.1404778744339993026.stgit@toke.dk>
-In-Reply-To: <158462359206.164779.15902346296781033076.stgit@toke.dk>
-References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
-User-Agent: StGit/0.22
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=nqJw5vg4Nil/Y9pZjcpy6DTelU/teueaanPhC3c5U58=;
+        b=mRFmk+aj2hWGaRIfsxl1SlHTG7xILVvQOW1MX56m29lCcG1f2BSjYjBhZJaKC6Dbm6
+         n+pJKY6vx9p2FqpzOHTJJkNxnS3aeQvsoNm6kLqCEvXMdeFGuV0BaRsd2bbAfVd5VpW8
+         j7qEzC3g0LP3ST3JgFf83F69+C22i6tkSdCg/ylp6rP+BuSpyYVxZAbeWeBmolGA7LNo
+         jxfkqAs5yiPhoA3iKlQb4weVMFzf2XBtiTZe/qUUoyLFr2l1mFSxnjgSmW9CbmvQCxY4
+         8JDuQbvjuINghO5aoo3ePmHCqLxACwHR1X5XMjs79c+ffwDgE7rvA7YGj06l+2OYniZ/
+         t63A==
+X-Gm-Message-State: ANhLgQ0dnfrclRn8/Q46u7sETT+fXd8VC5eug8eICwYBxoozTsS/sjUQ
+        sqtPCM5Q1573bVL19JcKVRRk1FOg
+X-Google-Smtp-Source: ADFU+vsVUcop1IJD5Y5GJDWMkZo9mIv9UFBUlK2kkpeO2PwWiaR6FToo9iw+OWXW3qnKj5G8oMYMrA==
+X-Received: by 2002:a63:fd0d:: with SMTP id d13mr2905382pgh.302.1584623806046;
+        Thu, 19 Mar 2020 06:16:46 -0700 (PDT)
+Received: from localhost ([216.24.188.11])
+        by smtp.gmail.com with ESMTPSA id j38sm2383940pgi.51.2020.03.19.06.16.44
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 19 Mar 2020 06:16:45 -0700 (PDT)
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org
+Cc:     linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Dejin Zheng <zhengdejin5@gmail.com>
+Subject: [PATCH net-next v2] net: stmmac: dwmac_lib: remove unnecessary checks in dwmac_dma_reset()
+Date:   Thu, 19 Mar 2020 21:16:38 +0800
+Message-Id: <20200319131638.12936-1-zhengdejin5@gmail.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+it will check the return value of dwmac_dma_reset() in the
+stmmac_init_dma_engine() function and report an error if the
+return value is not zero. so don't need check here.
 
-This adds tests for the various replacement operations using
-IFLA_XDP_EXPECTED_FD.
-
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 ---
- .../testing/selftests/bpf/prog_tests/xdp_attach.c  |   55 ++++++++++++++++++++
- 1 file changed, 55 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_attach.c
+v1 -> v2:
+	changed subject-prefix to [PATCH net-next v2] from [PATCH]
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/xdp_attach.c b/tools/testing/selftests/bpf/prog_tests/xdp_attach.c
-new file mode 100644
-index 000000000000..ad974b677e74
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/xdp_attach.c
-@@ -0,0 +1,55 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+
-+#define IFINDEX_LO 1
-+
-+void test_xdp_attach(void)
-+{
-+	struct bpf_object *obj1, *obj2, *obj3;
-+	const char *file = "./test_xdp.o";
-+	int err, fd1, fd2, fd3;
-+        __u32 duration = 0;
-+
-+	err = bpf_prog_load(file, BPF_PROG_TYPE_XDP, &obj1, &fd1);
-+	if (CHECK_FAIL(err))
-+		return;
-+	err = bpf_prog_load(file, BPF_PROG_TYPE_XDP, &obj2, &fd2);
-+	if (CHECK_FAIL(err))
-+		goto out_1;
-+	err = bpf_prog_load(file, BPF_PROG_TYPE_XDP, &obj3, &fd3);
-+	if (CHECK_FAIL(err))
-+		goto out_2;
-+
-+        err = bpf_set_link_xdp_fd_replace(IFINDEX_LO, fd1, -1, 0);
-+        if (CHECK(err, "load_ok", "initial load failed"))
-+                goto out_close;
-+
-+        err = bpf_set_link_xdp_fd_replace(IFINDEX_LO, fd2, -1, 0);
-+        if (CHECK(!err, "load_fail", "load with expected fd didn't fail"))
-+                goto out;
-+
-+        err = bpf_set_link_xdp_fd_replace(IFINDEX_LO, fd2, fd1, 0);
-+        if (CHECK(err, "replace_ok", "replace valid old_fd failed"))
-+                goto out;
-+
-+        err = bpf_set_link_xdp_fd_replace(IFINDEX_LO, fd3, fd1, 0);
-+        if (CHECK(!err, "replace_fail", "replace invalid old_fd didn't fail"))
-+                goto out;
-+
-+        err = bpf_set_link_xdp_fd_replace(IFINDEX_LO, -1, fd1, 0);
-+        if (CHECK(!err, "remove_fail", "remove invalid old_fd didn't fail"))
-+                goto out;
-+
-+        err = bpf_set_link_xdp_fd_replace(IFINDEX_LO, -1, fd2, 0);
-+        if (CHECK(err, "remove_ok", "remove valid old_fd failed"))
-+                goto out;
-+
-+out:
-+        bpf_set_link_xdp_fd(IFINDEX_LO, -1, 0);
-+out_close:
-+	bpf_object__close(obj3);
-+out_2:
-+	bpf_object__close(obj2);
-+out_1:
-+	bpf_object__close(obj1);
-+}
+ drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
+index 688d36095333..cb87d31a99df 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac_lib.c
+@@ -16,19 +16,14 @@
+ int dwmac_dma_reset(void __iomem *ioaddr)
+ {
+ 	u32 value = readl(ioaddr + DMA_BUS_MODE);
+-	int err;
+ 
+ 	/* DMA SW reset */
+ 	value |= DMA_BUS_MODE_SFT_RESET;
+ 	writel(value, ioaddr + DMA_BUS_MODE);
+ 
+-	err = readl_poll_timeout(ioaddr + DMA_BUS_MODE, value,
++	return readl_poll_timeout(ioaddr + DMA_BUS_MODE, value,
+ 				 !(value & DMA_BUS_MODE_SFT_RESET),
+ 				 10000, 100000);
+-	if (err)
+-		return -EBUSY;
+-
+-	return 0;
+ }
+ 
+ /* CSR1 enables the transmit DMA to check for new descriptor */
+-- 
+2.25.0
 
