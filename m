@@ -2,63 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E6AE318B3BC
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 13:50:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A74CF18B3BA
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 13:50:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727189AbgCSMuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 08:50:06 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:58459 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726934AbgCSMuG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 08:50:06 -0400
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 457001BF210;
-        Thu, 19 Mar 2020 12:50:01 +0000 (UTC)
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: phy: mscc: add missing check on a phy_write return value
-Date:   Thu, 19 Mar 2020 13:48:19 +0100
-Message-Id: <20200319124819.369431-1-antoine.tenart@bootlin.com>
-X-Mailer: git-send-email 2.25.1
+        id S1725787AbgCSMuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 08:50:03 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:35181 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727095AbgCSMuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 08:50:02 -0400
+Received: by mail-io1-f65.google.com with SMTP id h8so2113491iob.2
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 05:50:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=yv6EoSuXYnVOLdAQdlrLMbtnaCiE6QeodA9eh5mGaTA=;
+        b=KBV3imAmNiL4Lf4kM4aoaLuaVP04YtlSQQFaOM6WZHr0q3Prk5aka6QpDcxJO8XaFh
+         vvg19a6WGHsXDNtiWnJqR1s8jwxw15NvlE5otGtqPhkcOV0KoJV77tEoOzoj6aaKRc68
+         aqq3xz5JEcAPq/uUJ8YX0yF59HLVPPuOBkYn8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=yv6EoSuXYnVOLdAQdlrLMbtnaCiE6QeodA9eh5mGaTA=;
+        b=ZNik5w8j3rLce6lzigpgG152PqqMR/oErd5FiPXC+3oKW8TO1xzpMT0q03jyCuoKFP
+         awQwrpvX8Kh8bT0HrRXa9EU9E05s7gbfEA3ob7BYgD7V3rN3tcOqILm9Sne2z1n7Tb9y
+         udIxujluPfHGy4gT6CpfNLnCm0hC57Eax5b0t/4NFmhc5F8DSUp4gTqQNfH4UQV4Ic9R
+         HosQRoyqZbM3eKWmEaI26GncYEa8snii0UuoY0iae9C36iNmWmAsNnRg3kgzGKeyOs7Z
+         drc8vUOrqLtjA7TGGQwU7z3w39IU1dmy1lC/yfDfm0Q1wApSIhafNOdhEZmchNbIYIZt
+         B+1Q==
+X-Gm-Message-State: ANhLgQ1qlWl/3v07WjAIJtOiNHx3lrzDZv7xBFb5/UCsK1l2cwMI/RXo
+        brMAxYsPWwmKTTyGpk77o0CdJFMzBNY=
+X-Google-Smtp-Source: ADFU+vv5H5lV25zssFZ6PnK55QvOQtjicferw1xpNJM6wlTKLRYAbO5cojAJ8vw88jdLbKkluUjuqw==
+X-Received: by 2002:a02:9183:: with SMTP id p3mr2886997jag.55.1584622200077;
+        Thu, 19 Mar 2020 05:50:00 -0700 (PDT)
+Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id p68sm820388ilb.80.2020.03.19.05.49.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Mar 2020 05:49:59 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: ipa: fix platform_no_drv_owner.cocci
+ warnings
+To:     YueHaibing <yuehaibing@huawei.com>, Alex Elder <elder@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <20200319121127.30944-1-yuehaibing@huawei.com>
+From:   Alex Elder <elder@ieee.org>
+Message-ID: <5a19f5b3-5d11-2f63-89f9-b64ec6404278@ieee.org>
+Date:   Thu, 19 Mar 2020 07:49:55 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200319121127.30944-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit a5afc1678044 ("net: phy: mscc: add support for VSC8584 PHY")
-introduced a call to 'phy_write' storing its return value to a variable
-called 'ret'. But 'ret' never was checked for a possible error being
-returned, and hence was not used at all. Fix this by checking the return
-value and exiting the function if an error was returned.
+On 3/19/20 7:11 AM, YueHaibing wrote:
+> Remove .owner field if calls are used which set it automatically
+> Generated by: scripts/coccinelle/api/platform_no_drv_owner.cocci
+> 
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-As this does not fix a known bug, this commit is mostly cosmetic and not
-sent as a fix.
+Looks good.
 
-Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
----
- drivers/net/phy/mscc/mscc_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+Reviewed-by: Alex Elder <elder@linaro.org>
 
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index 2f6229a70ec1..bc6beec8aff0 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -1411,6 +1411,8 @@ static int vsc8584_config_init(struct phy_device *phydev)
- 	val |= (MEDIA_OP_MODE_COPPER << MEDIA_OP_MODE_POS) |
- 	       (VSC8584_MAC_IF_SELECTION_SGMII << VSC8584_MAC_IF_SELECTION_POS);
- 	ret = phy_write(phydev, MSCC_PHY_EXT_PHY_CNTL_1, val);
-+	if (ret)
-+		return ret;
- 
- 	ret = genphy_soft_reset(phydev);
- 	if (ret)
--- 
-2.25.1
+> ---
+>  drivers/net/ipa/ipa_main.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+> index d6e7f257e99d..28998dcce3d2 100644
+> --- a/drivers/net/ipa/ipa_main.c
+> +++ b/drivers/net/ipa/ipa_main.c
+> @@ -942,7 +942,6 @@ static struct platform_driver ipa_driver = {
+>  	.remove	= ipa_remove,
+>  	.driver	= {
+>  		.name		= "ipa",
+> -		.owner		= THIS_MODULE,
+>  		.pm		= &ipa_pm_ops,
+>  		.of_match_table	= ipa_match,
+>  	},
+> 
+> 
+> 
 
