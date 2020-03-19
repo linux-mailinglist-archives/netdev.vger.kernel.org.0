@@ -2,69 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 126BF18AA13
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 01:52:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C60F18AA4F
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 02:29:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbgCSAwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 20:52:42 -0400
-Received: from mga04.intel.com ([192.55.52.120]:39148 "EHLO mga04.intel.com"
+        id S1726851AbgCSB3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 21:29:43 -0400
+Received: from mail.nic.cz ([217.31.204.67]:39740 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726596AbgCSAwm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 20:52:42 -0400
-IronPort-SDR: kqP3qPTQjFV5dfMYhd8Pg5mIveO65Z8xKYcMBJP+7UtLn6U+eRdyNll+9kX9Pbd+i8iwK6fPzw
- Mq93DthkxARg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2020 17:52:42 -0700
-IronPort-SDR: pylb1Q2pqDgBW9TBZ6Otx8Gajj1wINJ5ppLWK1rtewRX62EIVSKUR//TprOAEKd0HFFBFFpRk9
- 12DRW66XY4Hg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,569,1574150400"; 
-   d="scan'208";a="418155202"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 18 Mar 2020 17:52:39 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1jEjQN-0003OP-85; Thu, 19 Mar 2020 08:52:39 +0800
-Date:   Thu, 19 Mar 2020 08:52:09 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Chris Chiu <chiu@endlessm.com>
-Cc:     kbuild-all@lists.01.org, Jes.Sorensen@gmail.com,
-        kvalo@codeaurora.org, davem@davemloft.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@endlessm.com
-Subject: [RFC PATCH] rtl8xxxu: rtl8xxxu_desc_to_mcsrate() can be static
-Message-ID: <20200319005209.GA16405@256b6bfaef2b>
-References: <20200318082700.71875-3-chiu@endlessm.com>
+        id S1726623AbgCSB3n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 18 Mar 2020 21:29:43 -0400
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTP id E23D1141B54;
+        Thu, 19 Mar 2020 02:29:41 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1584581382; bh=smPg6bUN9iYsjOGsgMn5scMwqFNNXz6iBZhhcj1gDdE=;
+        h=From:To:Date;
+        b=JE4H85XMcYVZ1IdcD+NCNJHg8Do5/EwI4had+P/22q7end3aHKjpJhwfz3mgC7qCU
+         6nwPG0Q8czxgZQl3X1MnT5H5zP3voaCl0x9LNmo5O9ZqeHJDaRp41/lsscxL64rXqJ
+         0hhLZGvoAQglzfQwsbMHZ+pyNhOmfk2PsSntPPxI=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+To:     netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next] net: mvmdio: fix driver probe on missing irq
+Date:   Thu, 19 Mar 2020 02:29:40 +0100
+Message-Id: <20200319012940.14490-1-marek.behun@nic.cz>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200318082700.71875-3-chiu@endlessm.com>
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Spam-Status: No, score=0.00
+X-Spamd-Bar: /
+X-Virus-Scanned: clamav-milter 0.101.4 at mail
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Commit e1f550dc44a4 made the use of platform_get_irq_optional, which can
+return -ENXIO when interrupt is missing. Handle this as non-error,
+otherwise the driver won't probe.
 
-Fixes: b509af994715 ("rtl8xxxu: Feed current txrate information for mac80211")
-Signed-off-by: kbuild test robot <lkp@intel.com>
+Fixes: e1f550dc44a4 ("net: mvmdio: avoid error message for optional...")
+Signed-off-by: Marek Behún <marek.behun@nic.cz>
+Cc: Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc: Andrew Lunn <andrew@lunn.ch>
 ---
- rtl8xxxu_core.c |    2 +-
+ drivers/net/ethernet/marvell/mvmdio.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 49dfa32b572a3..4f0d0bce48b03 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -5404,7 +5404,7 @@ static struct ieee80211_rate rtl8xxxu_legacy_ratetable[] = {
- 	{.bitrate = 540, .hw_value = 0x0b,},
- };
+diff --git a/drivers/net/ethernet/marvell/mvmdio.c b/drivers/net/ethernet/marvell/mvmdio.c
+index d2e2dc538428..f9f09da57031 100644
+--- a/drivers/net/ethernet/marvell/mvmdio.c
++++ b/drivers/net/ethernet/marvell/mvmdio.c
+@@ -364,7 +364,7 @@ static int orion_mdio_probe(struct platform_device *pdev)
+ 		writel(MVMDIO_ERR_INT_SMI_DONE,
+ 			dev->regs + MVMDIO_ERR_INT_MASK);
  
--void rtl8xxxu_desc_to_mcsrate(u16 rate, u8 *mcs, u8 *nss)
-+static void rtl8xxxu_desc_to_mcsrate(u16 rate, u8 *mcs, u8 *nss)
- {
- 	if (rate <= DESC_RATE_54M)
- 		return;
+-	} else if (dev->err_interrupt < 0) {
++	} else if (dev->err_interrupt < 0 && dev->err_interrupt != -ENXIO) {
+ 		ret = dev->err_interrupt;
+ 		goto out_mdio;
+ 	}
+-- 
+2.24.1
+
