@@ -2,194 +2,537 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79FEE18C3F0
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 00:50:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 17D0B18C3F4
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 00:53:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727269AbgCSXuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 19:50:16 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:10110 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727259AbgCSXuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 19:50:16 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02JNiQcH016103
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 16:50:15 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=yrWJRi38W9oupJjIde8sUqOlzGDR3r3tZUbZvAg6zWk=;
- b=beS7aLM4sd74/gXH9cRag51VIVLNecJsI+pgUry7ppfP3riGkHKyp5S5EPpml7SWu3lK
- xwy+Rp+5kN9gVlFASHhraw5MFtmjaLvZQfOCx9pvFZg6X6ockpi/x0QE5vzgJYEOcj9B
- RYEht5L1IHO/FWQ54HH99LU03A69E7P1AE0= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yvf4hs28r-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 16:50:15 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Thu, 19 Mar 2020 16:50:14 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id 6EAF32942DAE; Thu, 19 Mar 2020 16:50:08 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Martin KaFai Lau <kafai@fb.com>
-Smtp-Origin-Hostname: devbig005.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next 2/2] bpf: Add tests for bpf_sk_storage to bpf_tcp_ca
-Date:   Thu, 19 Mar 2020 16:50:08 -0700
-Message-ID: <20200319235008.2940124-1-kafai@fb.com>
+        id S1726998AbgCSXx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 19:53:26 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:46194 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726663AbgCSXx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 19:53:26 -0400
+Received: by mail-wr1-f66.google.com with SMTP id j17so2034166wru.13
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 16:53:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=E8+LSjg5gDkuEO9FOuDbIAtRXNfwh6kKxDUKUVYF8iA=;
+        b=M+T7ZdtroJLukeV7opUrJHl6JDE3m0JmMnO42JZa/FWG9/h5hmgcQ5isoAk481qeEK
+         bSZqwlEAj+4qEk1bQQhEGO6Glp08VXdnQQpDLi7as7gcMglDqNa29FiD+Lj1pgaorlkW
+         fyZLy5h3VOoXXehaKIJemhKWKkWFDN8f1r4Iq4i6EhxntRZX5THb95Rb9m0tAdTaiIHE
+         fMYs5muukWmSaBHEj+MWhd4hJ+CspopoDWnt7t5EjlVrdKosK9LFCX9K4dpZRXztm6GW
+         qOIw+ahnQy7PvYnI3hsM37t2jOrztRoyazgsMqcfARza4jwK7z/etfOQSoloWG+Pxtqj
+         IJow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=E8+LSjg5gDkuEO9FOuDbIAtRXNfwh6kKxDUKUVYF8iA=;
+        b=lEvY5JnJFVw6zo4HfQ2d5P861ZTwhxZ0vWPW/HKSsjveeUabFZJY/JijxAT7lO52Xk
+         ECONxzP9KKuKLZuAQCtF0GlUMtKPohRT8ewl7kXlpLRM/mowjoO1TZ3Jgqt1pEXhRtVr
+         rSROQ7t3NoCY3kutltwS8DszKAlwR+tOREL8AmEPNrfpaSq8AmV391doZYkaXPiO6N9X
+         YfECkNvlaRsnctKx7MHOOf5X7AP6/Ko9qLPVdrrsSPBxG8IpvptU2ILTK/wGCpR45vLv
+         J1n9rowx/EupObN12P5BYcT5eajtg2nMvOai7G1do0DeIaetZHqeAwyYnd6zoe+ywDy/
+         tXlw==
+X-Gm-Message-State: ANhLgQ2srWw+k1+acEnvGNnE7ulU0FL7lG7elX2RfIC/HxJ0sLVXPTyZ
+        GcXpFV/tiDCEO/NarWFQSzs=
+X-Google-Smtp-Source: ADFU+vvos9XXO5xFK9Br4n7TXuxJ3Zf4IiAKnh4ezUs4i4GNeRFl/KROcKdpbsP32RntwJaZVX+bhA==
+X-Received: by 2002:a5d:4111:: with SMTP id l17mr7666035wrp.271.1584662001858;
+        Thu, 19 Mar 2020 16:53:21 -0700 (PDT)
+Received: from localhost.localdomain ([79.115.60.40])
+        by smtp.gmail.com with ESMTPSA id q72sm5219130wme.31.2020.03.19.16.53.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Mar 2020 16:53:21 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, linux@armlinux.org.uk
+Subject: [PATCH net-next] net: dsa: sja1105: Add support for the SGMII port
+Date:   Fri, 20 Mar 2020 01:53:13 +0200
+Message-Id: <20200319235313.26579-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200319234955.2933540-1-kafai@fb.com>
-References: <20200319234955.2933540-1-kafai@fb.com>
-X-FB-Internal: Safe
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
- definitions=2020-03-19_10:2020-03-19,2020-03-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- mlxlogscore=999 priorityscore=1501 mlxscore=0 clxscore=1015 adultscore=0
- spamscore=0 malwarescore=0 suspectscore=13 phishscore=0 bulkscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2003190095
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds test to exercise the bpf_sk_storage_get()
-and bpf_sk_storage_delete() helper from the bpf_dctcp.c.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+SJA1105 switches R and S have one SerDes port with an 802.3z
+quasi-compatible PCS, hardwired on port 4. The other ports are still
+MII/RMII/RGMII. The PCS performs rate adaptation to lower link speeds;
+the MAC on this port is hardwired at gigabit. Only full duplex is
+supported.
+
+The SGMII port can be configured as part of the static config tables, as
+well as through a dedicated SPI address region for its pseudo-clause-22
+registers. However it looks like the static configuration is not
+able to change some out-of-reset values (like the value of MII_BMCR), so
+at the end of the day, having code for it is utterly pointless. We are
+just going to use the pseudo-C22 interface.
+
+Because the PCS gets reset when the switch resets, we have to add even
+more restoration logic to sja1105_static_config_reload, otherwise the
+SGMII port breaks after operations such as enabling PTP timestamping
+which require a switch reset.
+
+From PHYLINK perspective, the switch supports *only* SGMII (it doesn't
+support 1000Base-X). It also doesn't expose access to the raw config
+word for in-band AN in registers MII_ADV/MII_LPA.
+It is able to work in the following modes:
+ - Forced speed
+ - SGMII in-band AN slave (speed received from PHY)
+ - SGMII in-band AN master (acting as a PHY)
+
+The latter mode is not supported by this patch. It is even unclear to me
+how that would be described.
+
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- .../selftests/bpf/prog_tests/bpf_tcp_ca.c     | 28 +++++++++++++++++--
- tools/testing/selftests/bpf/progs/bpf_dctcp.c | 16 +++++++++++
- 2 files changed, 41 insertions(+), 3 deletions(-)
+ drivers/net/dsa/sja1105/sja1105.h          |   2 +
+ drivers/net/dsa/sja1105/sja1105_clocking.c |   4 +
+ drivers/net/dsa/sja1105/sja1105_main.c     | 217 ++++++++++++++++++++-
+ drivers/net/dsa/sja1105/sja1105_sgmii.h    |  56 ++++++
+ drivers/net/dsa/sja1105/sja1105_spi.c      |   1 +
+ 5 files changed, 276 insertions(+), 4 deletions(-)
+ create mode 100644 drivers/net/dsa/sja1105/sja1105_sgmii.h
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-index 8482bbc67eec..9aaecce0bc3c 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_tcp_ca.c
-@@ -11,6 +11,7 @@
- static const unsigned int total_bytes = 10 * 1024 * 1024;
- static const struct timeval timeo_sec = { .tv_sec = 10 };
- static const size_t timeo_optlen = sizeof(timeo_sec);
-+static int expected_stg = 0xeB9F;
- static int stop, duration;
+diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+index d801fc204d19..4c40f2d51a54 100644
+--- a/drivers/net/dsa/sja1105/sja1105.h
++++ b/drivers/net/dsa/sja1105/sja1105.h
+@@ -36,6 +36,7 @@ struct sja1105_regs {
+ 	u64 port_control;
+ 	u64 rgu;
+ 	u64 config;
++	u64 sgmii;
+ 	u64 rmii_pll1;
+ 	u64 ptp_control;
+ 	u64 ptpclkval;
+@@ -159,6 +160,7 @@ typedef enum {
+ 	XMII_MODE_MII		= 0,
+ 	XMII_MODE_RMII		= 1,
+ 	XMII_MODE_RGMII		= 2,
++	XMII_MODE_SGMII		= 3,
+ } sja1105_phy_interface_t;
  
- static int settimeo(int fd)
-@@ -88,7 +89,7 @@ static void *server(void *arg)
- 	return NULL;
+ typedef enum {
+diff --git a/drivers/net/dsa/sja1105/sja1105_clocking.c b/drivers/net/dsa/sja1105/sja1105_clocking.c
+index 9082e52b55e9..0fdc2d55fff6 100644
+--- a/drivers/net/dsa/sja1105/sja1105_clocking.c
++++ b/drivers/net/dsa/sja1105/sja1105_clocking.c
+@@ -660,6 +660,10 @@ int sja1105_clocking_setup_port(struct sja1105_private *priv, int port)
+ 	case XMII_MODE_RGMII:
+ 		rc = sja1105_rgmii_clocking_setup(priv, port, role);
+ 		break;
++	case XMII_MODE_SGMII:
++		/* Nothing to do in the CGU for SGMII */
++		rc = 0;
++		break;
+ 	default:
+ 		dev_err(dev, "Invalid interface mode specified: %d\n",
+ 			phy_mode);
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index edf57ea07083..ceeeafd579b5 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -22,6 +22,7 @@
+ #include <linux/if_ether.h>
+ #include <linux/dsa/8021q.h>
+ #include "sja1105.h"
++#include "sja1105_sgmii.h"
+ #include "sja1105_tas.h"
+ 
+ static void sja1105_hw_reset(struct gpio_desc *gpio, unsigned int pulse_len,
+@@ -135,6 +136,21 @@ static int sja1105_init_mac_settings(struct sja1105_private *priv)
+ 	return 0;
  }
  
--static void do_test(const char *tcp_ca)
-+static void do_test(const char *tcp_ca, const struct bpf_map *sk_stg_map)
++static bool sja1105_supports_sgmii(struct sja1105_private *priv, int port)
++{
++	if (priv->info->part_no != SJA1105R_PART_NO &&
++	    priv->info->part_no != SJA1105S_PART_NO)
++		return false;
++
++	if (port != SJA1105_SGMII_PORT)
++		return false;
++
++	if (dsa_is_unused_port(priv->ds, port))
++		return false;
++
++	return true;
++}
++
+ static int sja1105_init_mii_settings(struct sja1105_private *priv,
+ 				     struct sja1105_dt_port *ports)
  {
- 	struct sockaddr_in6 sa6 = {};
- 	ssize_t nr_recv = 0, bytes = 0;
-@@ -110,6 +111,14 @@ static void do_test(const char *tcp_ca)
- 		return;
+@@ -178,12 +194,24 @@ static int sja1105_init_mii_settings(struct sja1105_private *priv,
+ 		case PHY_INTERFACE_MODE_RGMII_TXID:
+ 			mii->xmii_mode[i] = XMII_MODE_RGMII;
+ 			break;
++		case PHY_INTERFACE_MODE_SGMII:
++			if (!sja1105_supports_sgmii(priv, i))
++				return -EINVAL;
++			mii->xmii_mode[i] = XMII_MODE_SGMII;
++			break;
+ 		default:
+ 			dev_err(dev, "Unsupported PHY mode %s!\n",
+ 				phy_modes(ports[i].phy_mode));
+ 		}
+ 
+-		mii->phy_mac[i] = ports[i].role;
++		/* Even though the SerDes port is able to drive SGMII autoneg
++		 * like a PHY would, from the perspective of the XMII tables,
++		 * the SGMII port should always be put in MAC mode.
++		 */
++		if (ports[i].phy_mode == PHY_INTERFACE_MODE_SGMII)
++			mii->phy_mac[i] = XMII_MAC;
++		else
++			mii->phy_mac[i] = ports[i].role;
  	}
- 
-+	if (sk_stg_map) {
-+		err = bpf_map_update_elem(bpf_map__fd(sk_stg_map), &fd,
-+					  &expected_stg, BPF_NOEXIST);
-+		if (CHECK(err, "bpf_map_update_elem(sk_stg_map)",
-+			  "err:%d errno:%d\n", err, errno))
-+			goto done;
-+	}
-+
- 	if (settcpca(lfd, tcp_ca) || settcpca(fd, tcp_ca) ||
- 	    settimeo(lfd) || settimeo(fd))
- 		goto done;
-@@ -149,6 +158,16 @@ static void do_test(const char *tcp_ca)
- 	CHECK(bytes != total_bytes, "recv", "%zd != %u nr_recv:%zd errno:%d\n",
- 	      bytes, total_bytes, nr_recv, errno);
- 
-+	if (sk_stg_map) {
-+		int tmp_stg;
-+
-+		err = bpf_map_lookup_elem(bpf_map__fd(sk_stg_map), &fd,
-+					  &tmp_stg);
-+		CHECK(!err || errno != ENOENT,
-+		      "bpf_map_lookup_elem(sk_stg_map)",
-+		      "err:%d errno:%d\n", err, errno);
-+	}
-+
- wait_thread:
- 	WRITE_ONCE(stop, 1);
- 	pthread_join(srv_thread, &thread_ret);
-@@ -175,7 +194,7 @@ static void test_cubic(void)
- 		return;
- 	}
- 
--	do_test("bpf_cubic");
-+	do_test("bpf_cubic", NULL);
- 
- 	bpf_link__destroy(link);
- 	bpf_cubic__destroy(cubic_skel);
-@@ -197,7 +216,10 @@ static void test_dctcp(void)
- 		return;
- 	}
- 
--	do_test("bpf_dctcp");
-+	do_test("bpf_dctcp", dctcp_skel->maps.sk_stg_map);
-+	CHECK(dctcp_skel->bss->stg_result != expected_stg,
-+	      "Unexpected stg_result", "stg_result (%x) != expected_stg (%x)\n",
-+	      dctcp_skel->bss->stg_result, expected_stg);
- 
- 	bpf_link__destroy(link);
- 	bpf_dctcp__destroy(dctcp_skel);
-diff --git a/tools/testing/selftests/bpf/progs/bpf_dctcp.c b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
-index 127ea762a062..5c1fc584f3ae 100644
---- a/tools/testing/selftests/bpf/progs/bpf_dctcp.c
-+++ b/tools/testing/selftests/bpf/progs/bpf_dctcp.c
-@@ -6,6 +6,7 @@
-  * the kernel BPF logic.
-  */
- 
-+#include <stddef.h>
- #include <linux/bpf.h>
- #include <linux/types.h>
- #include <bpf/bpf_helpers.h>
-@@ -14,6 +15,15 @@
- 
- char _license[] SEC("license") = "GPL";
- 
-+static volatile int stg_result;
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_SK_STORAGE);
-+	__uint(map_flags, BPF_F_NO_PREALLOC);
-+	__type(key, int);
-+	__type(value, int);
-+} sk_stg_map SEC(".maps");
-+
- #define DCTCP_MAX_ALPHA	1024U
- 
- struct dctcp {
-@@ -43,12 +53,18 @@ void BPF_PROG(dctcp_init, struct sock *sk)
- {
- 	const struct tcp_sock *tp = tcp_sk(sk);
- 	struct dctcp *ca = inet_csk_ca(sk);
-+	int *stg;
- 
- 	ca->prior_rcv_nxt = tp->rcv_nxt;
- 	ca->dctcp_alpha = min(dctcp_alpha_on_init, DCTCP_MAX_ALPHA);
- 	ca->loss_cwnd = 0;
- 	ca->ce_state = 0;
- 
-+	stg = bpf_sk_storage_get(&sk_stg_map, (void *)tp, NULL, 0);
-+	if (stg) {
-+		stg_result = *stg;
-+		bpf_sk_storage_delete(&sk_stg_map, (void *)tp);
-+	}
- 	dctcp_reset(tp, ca);
+ 	return 0;
+ }
+@@ -650,6 +678,77 @@ static int sja1105_parse_dt(struct sja1105_private *priv,
+ 	return rc;
  }
  
++static int sja1105_sgmii_read(struct sja1105_private *priv, int pcs_reg)
++{
++	const struct sja1105_regs *regs = priv->info->regs;
++	u32 val;
++	int rc;
++
++	rc = sja1105_xfer_u32(priv, SPI_READ, regs->sgmii + pcs_reg, &val,
++			      NULL);
++	if (rc < 0)
++		return rc;
++
++	return val;
++}
++
++static int sja1105_sgmii_write(struct sja1105_private *priv, int pcs_reg,
++			       u16 pcs_val)
++{
++	const struct sja1105_regs *regs = priv->info->regs;
++	u32 val = pcs_val;
++	int rc;
++
++	rc = sja1105_xfer_u32(priv, SPI_WRITE, regs->sgmii + pcs_reg, &val,
++			      NULL);
++	if (rc < 0)
++		return rc;
++
++	return val;
++}
++
++static void sja1105_sgmii_config(struct sja1105_private *priv, int port,
++				 bool inband_autoneg, int speed)
++{
++	/* DIGITAL_CONTROL_1: Enable vendor-specific MMD1, allow the PHY to
++	 * stop the clock during LPI mode, make the MAC reconfigure
++	 * autonomously after PCS autoneg is done, flush the internal FIFOs.
++	 */
++	sja1105_sgmii_write(priv, 0x8000, SJA1105_DC1_EN_VSMMD1 |
++					  SJA1105_DC1_CLOCK_STOP_EN |
++					  SJA1105_DC1_MAC_AUTO_SW |
++					  SJA1105_DC1_INIT);
++	/* DIGITAL_CONTROL_2: No polarity inversion for TX and RX lanes */
++	sja1105_sgmii_write(priv, 0x80e1, SJA1105_DC2_TX_POL_INV_DISABLE);
++	/* AUTONEG_CONTROL: Use SGMII autoneg */
++	sja1105_sgmii_write(priv, 0x8001, SJA1105_AC_AUTONEG_MODE_SGMII);
++
++	if (inband_autoneg) {
++		int bmcr;
++
++		bmcr = sja1105_sgmii_read(priv, MII_BMCR);
++		sja1105_sgmii_write(priv, MII_BMCR, bmcr | BMCR_ANENABLE);
++	} else {
++		int pcs_speed;
++
++		switch (speed) {
++		case SPEED_1000:
++			pcs_speed = BMCR_SPEED1000;
++			break;
++		case SPEED_100:
++			pcs_speed = BMCR_SPEED100;
++			break;
++		case SPEED_10:
++			pcs_speed = BMCR_SPEED10;
++			break;
++		default:
++			dev_err(priv->ds->dev, "Invalid speed %d\n", speed);
++			return;
++		}
++		sja1105_sgmii_write(priv, MII_BMCR, pcs_speed | BMCR_FULLDPLX);
++	}
++}
++
+ /* Convert link speed from SJA1105 to ethtool encoding */
+ static int sja1105_speed[] = {
+ 	[SJA1105_SPEED_AUTO]		= SPEED_UNKNOWN,
+@@ -707,8 +806,13 @@ static int sja1105_adjust_port_config(struct sja1105_private *priv, int port,
+ 	 * table, since this will be used for the clocking setup, and we no
+ 	 * longer need to store it in the static config (already told hardware
+ 	 * we want auto during upload phase).
++	 * Actually for the SGMII port, the MAC is fixed at 1 Gbps and
++	 * we need to configure the PCS only (if even that).
+ 	 */
+-	mac[port].speed = speed;
++	if (sja1105_supports_sgmii(priv, port))
++		mac[port].speed = SJA1105_SPEED_1000MBPS;
++	else
++		mac[port].speed = speed;
+ 
+ 	/* Write to the dynamic reconfiguration tables */
+ 	rc = sja1105_dynamic_config_write(priv, BLK_IDX_MAC_CONFIG, port,
+@@ -757,6 +861,8 @@ static bool sja1105_phy_mode_mismatch(struct sja1105_private *priv, int port,
+ 	case PHY_INTERFACE_MODE_RGMII_RXID:
+ 	case PHY_INTERFACE_MODE_RGMII_TXID:
+ 		return (phy_mode != XMII_MODE_RGMII);
++	case PHY_INTERFACE_MODE_SGMII:
++		return (phy_mode != XMII_MODE_SGMII);
+ 	default:
+ 		return true;
+ 	}
+@@ -767,6 +873,7 @@ static void sja1105_mac_config(struct dsa_switch *ds, int port,
+ 			       const struct phylink_link_state *state)
+ {
+ 	struct sja1105_private *priv = ds->priv;
++	bool is_sgmii = sja1105_supports_sgmii(priv, port);
+ 
+ 	if (sja1105_phy_mode_mismatch(priv, port, state->interface)) {
+ 		dev_err(ds->dev, "Changing PHY mode to %s not supported!\n",
+@@ -774,10 +881,14 @@ static void sja1105_mac_config(struct dsa_switch *ds, int port,
+ 		return;
+ 	}
+ 
+-	if (link_an_mode == MLO_AN_INBAND) {
++	if (link_an_mode == MLO_AN_INBAND && !is_sgmii) {
+ 		dev_err(ds->dev, "In-band AN not supported!\n");
+ 		return;
+ 	}
++
++	if (is_sgmii)
++		sja1105_sgmii_config(priv, port, link_an_mode == MLO_AN_INBAND,
++				     state->speed);
+ }
+ 
+ static void sja1105_mac_link_down(struct dsa_switch *ds, int port,
+@@ -833,7 +944,8 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
+ 	phylink_set(mask, 10baseT_Full);
+ 	phylink_set(mask, 100baseT_Full);
+ 	phylink_set(mask, 100baseT1_Full);
+-	if (mii->xmii_mode[port] == XMII_MODE_RGMII)
++	if (mii->xmii_mode[port] == XMII_MODE_RGMII ||
++	    mii->xmii_mode[port] == XMII_MODE_SGMII)
+ 		phylink_set(mask, 1000baseT_Full);
+ 
+ 	bitmap_and(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
+@@ -841,6 +953,82 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
+ 		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+ }
+ 
++static int sja1105_mac_pcs_get_state(struct dsa_switch *ds, int port,
++				     struct phylink_link_state *state)
++{
++	struct sja1105_private *priv = ds->priv;
++	int bmcr;
++
++	bmcr = sja1105_sgmii_read(priv, MII_BMCR);
++	if (bmcr < 0)
++		return bmcr;
++
++	state->an_enabled = !!(bmcr & BMCR_ANENABLE);
++
++	if (state->an_enabled) {
++		/* Read the vendor-specific AUTONEG_INTR_STATUS register */
++		int ais = sja1105_sgmii_read(priv, SJA1105_AIS);
++
++		if (ais < 0)
++			return ais;
++
++		switch (SJA1105_AIS_SPEED(ais)) {
++		case 0:
++			state->speed = SPEED_10;
++			break;
++		case 1:
++			state->speed = SPEED_100;
++			break;
++		case 2:
++			state->speed = SPEED_1000;
++			break;
++		default:
++			dev_err(ds->dev, "Invalid SGMII PCS speed %lu\n",
++				SJA1105_AIS_SPEED(ais));
++		}
++		state->duplex = SJA1105_AIS_DUPLEX_MODE(ais);
++		state->an_complete = SJA1105_AIS_COMPLETE(ais);
++		state->link = SJA1105_AIS_LINK_STATUS(ais);
++	} else {
++		int bmsr;
++
++		if (bmcr & BMCR_SPEED1000)
++			state->speed = SPEED_1000;
++		else if (bmcr & BMCR_SPEED100)
++			state->speed = SPEED_100;
++		else if (bmcr & BMCR_SPEED10)
++			state->speed = SPEED_10;
++		else
++			dev_err(ds->dev, "No valid speed bits in BMCR: %04x\n",
++				bmcr);
++
++		if (bmcr & BMCR_FULLDPLX)
++			state->duplex = DUPLEX_FULL;
++
++		bmsr = sja1105_sgmii_read(priv, MII_BMSR);
++		if (bmsr < 0)
++			return bmsr;
++
++		state->link = !!(bmsr & BMSR_LSTATUS);
++	}
++
++	return 0;
++}
++
++static void sja1105_mac_an_restart(struct dsa_switch *ds, int port)
++{
++	struct sja1105_private *priv = ds->priv;
++	int bmcr;
++
++	bmcr = sja1105_sgmii_read(priv, MII_BMCR);
++	if (bmcr < 0)
++		return;
++
++	bmcr |= BMCR_ANRESTART;
++
++	sja1105_sgmii_write(priv, MII_BMCR, bmcr);
++}
++
+ static int
+ sja1105_find_static_fdb_entry(struct sja1105_private *priv, int port,
+ 			      const struct sja1105_l2_lookup_entry *requested)
+@@ -1367,6 +1555,7 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 	struct dsa_switch *ds = priv->ds;
+ 	s64 t1, t2, t3, t4;
+ 	s64 t12, t34;
++	u16 bmcr = 0;
+ 	int rc, i;
+ 	s64 now;
+ 
+@@ -1384,6 +1573,9 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 		mac[i].speed = SJA1105_SPEED_AUTO;
+ 	}
+ 
++	if (sja1105_supports_sgmii(priv, SJA1105_SGMII_PORT))
++		bmcr = sja1105_sgmii_read(priv, MII_BMCR);
++
+ 	/* No PTP operations can run right now */
+ 	mutex_lock(&priv->ptp_data.lock);
+ 
+@@ -1433,6 +1625,21 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
+ 		if (rc < 0)
+ 			goto out;
+ 	}
++
++	if (sja1105_supports_sgmii(priv, SJA1105_SGMII_PORT)) {
++		bool inband_autoneg = !!(bmcr & BMCR_ANENABLE);
++		int speed = SPEED_UNKNOWN;
++
++		if (bmcr & BMCR_SPEED1000)
++			speed = SPEED_1000;
++		else if (bmcr & BMCR_SPEED100)
++			speed = SPEED_100;
++		else if (bmcr & BMCR_SPEED10)
++			speed = SPEED_10;
++
++		sja1105_sgmii_config(priv, SJA1105_SGMII_PORT, inband_autoneg,
++				     speed);
++	}
+ out:
+ 	mutex_unlock(&priv->mgmt_lock);
+ 
+@@ -1998,6 +2205,8 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.teardown		= sja1105_teardown,
+ 	.set_ageing_time	= sja1105_set_ageing_time,
+ 	.phylink_validate	= sja1105_phylink_validate,
++	.phylink_mac_link_state	= sja1105_mac_pcs_get_state,
++	.phylink_mac_an_restart	= sja1105_mac_an_restart,
+ 	.phylink_mac_config	= sja1105_mac_config,
+ 	.phylink_mac_link_up	= sja1105_mac_link_up,
+ 	.phylink_mac_link_down	= sja1105_mac_link_down,
+diff --git a/drivers/net/dsa/sja1105/sja1105_sgmii.h b/drivers/net/dsa/sja1105/sja1105_sgmii.h
+new file mode 100644
+index 000000000000..0517b5bcb36e
+--- /dev/null
++++ b/drivers/net/dsa/sja1105/sja1105_sgmii.h
+@@ -0,0 +1,56 @@
++/* SPDX-License-Identifier: BSD-3-Clause */
++/* Copyright 2020, NXP Semiconductors
++ */
++#ifndef _SJA1105_SGMII_H
++#define _SJA1105_SGMII_H
++
++#define SJA1105_SGMII_PORT		4
++
++/* DIGITAL_CONTROL_1 (address 1f8000h) */
++#define SJA1105_DC1			0x8000
++#define SJA1105_DC1_VS_RESET		BIT(15)
++#define SJA1105_DC1_REMOTE_LOOPBACK	BIT(14)
++#define SJA1105_DC1_EN_VSMMD1		BIT(13)
++#define SJA1105_DC1_POWER_SAVE		BIT(11)
++#define SJA1105_DC1_CLOCK_STOP_EN	BIT(10)
++#define SJA1105_DC1_MAC_AUTO_SW		BIT(9)
++#define SJA1105_DC1_INIT		BIT(8)
++#define SJA1105_DC1_TX_DISABLE		BIT(4)
++#define SJA1105_DC1_AUTONEG_TIMER_OVRR	BIT(3)
++#define SJA1105_DC1_BYP_POWERUP		BIT(1)
++#define SJA1105_DC1_PHY_MODE_CONTROL	BIT(0)
++
++/* DIGITAL_CONTROL_2 register (address 1f80E1h) */
++#define SJA1105_DC2			0x80e1
++#define SJA1105_DC2_TX_POL_INV_DISABLE	BIT(4)
++#define SJA1105_DC2_RX_POL_INV		BIT(0)
++
++/* DIGITAL_ERROR_CNT register (address 1f80E2h) */
++#define SJA1105_DEC			0x80e2
++#define SJA1105_DEC_ICG_EC_ENA		BIT(4)
++#define SJA1105_DEC_CLEAR_ON_READ	BIT(0)
++
++/* AUTONEG_CONTROL register (address 1f8001h) */
++#define SJA1105_AC			0x8001
++#define SJA1105_AC_MII_CONTROL		BIT(8)
++#define SJA1105_AC_SGMII_LINK		BIT(4)
++#define SJA1105_AC_PHY_MODE		BIT(3)
++#define SJA1105_AC_AUTONEG_MODE(x)	(((x) << 1) & GENMASK(2, 1))
++#define SJA1105_AC_AUTONEG_MODE_1000BASEX \
++	SJA1105_AC_AUTONEG_MODE(0)
++#define SJA1105_AC_AUTONEG_MODE_SGMII \
++	SJA1105_AC_AUTONEG_MODE(2)
++
++/* AUTONEG_INTR_STATUS register (address 1f8002h) */
++#define SJA1105_AIS			0x8002
++#define SJA1105_AIS_LINK_STATUS(x)	(!!((x) & BIT(4)))
++#define SJA1105_AIS_SPEED(x)		(((x) & GENMASK(3, 2)) >> 2)
++#define SJA1105_AIS_DUPLEX_MODE(x)	(!!((x) & BIT(1)))
++#define SJA1105_AIS_COMPLETE(x)		(!!((x) & BIT(0)))
++
++/* DEBUG_CONTROL register (address 1f8005h) */
++#define SJA1105_DC			0x8005
++#define SJA1105_DC_SUPPRESS_LOS		BIT(4)
++#define SJA1105_DC_RESTART_SYNC		BIT(0)
++
++#endif
+diff --git a/drivers/net/dsa/sja1105/sja1105_spi.c b/drivers/net/dsa/sja1105/sja1105_spi.c
+index 29b127f3bf9c..45da162ba268 100644
+--- a/drivers/net/dsa/sja1105/sja1105_spi.c
++++ b/drivers/net/dsa/sja1105/sja1105_spi.c
+@@ -474,6 +474,7 @@ static struct sja1105_regs sja1105pqrs_regs = {
+ 	/* UM10944.pdf, Table 86, ACU Register overview */
+ 	.pad_mii_tx = {0x100800, 0x100802, 0x100804, 0x100806, 0x100808},
+ 	.pad_mii_id = {0x100810, 0x100811, 0x100812, 0x100813, 0x100814},
++	.sgmii = 0x1F0000,
+ 	.rmii_pll1 = 0x10000A,
+ 	.cgu_idiv = {0x10000B, 0x10000C, 0x10000D, 0x10000E, 0x10000F},
+ 	.mac = {0x200, 0x202, 0x204, 0x206, 0x208},
 -- 
 2.17.1
 
