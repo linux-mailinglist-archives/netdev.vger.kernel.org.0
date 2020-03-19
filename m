@@ -2,144 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CA6D18BCF9
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:45:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D85CC18BD00
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:47:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727928AbgCSQpt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 12:45:49 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:46026 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727739AbgCSQps (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 12:45:48 -0400
-Received: by mail-pf1-f194.google.com with SMTP id j10so1704428pfi.12;
-        Thu, 19 Mar 2020 09:45:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=rqoxRu5uTV9HdpBRh5ZrKoR06yptV6U1vRvMIWMLqWk=;
-        b=gYc0DWaYJUGrkknc68PCAmoedaYWvGk2WPN5jLPkV/MTJ8EuIa7/CP5cOqOAD7+5vv
-         C9jXyAXOm/qvendCa7gOgJ9B80kJw+2SOPIquD2w0RfLFTeeuGXC1zddK9x+E1YZC4No
-         tDMt66CY7gs1O1DOxcD3qaaFcp9DNSxnb6XCILY4fJxlOo7D+Ld/DGUdnLyM9ZyScBsP
-         3kSqYqED7SRDBvm0I6qHCNilsv9STQgP9gsbbJrWC92pEqVHCIsjN+xGhvLV/456UqIb
-         N9nF71Huf2UZNOLuwW9IqIjcv5cuymHyHQx/gp19xy4dRfs+LAfZI5GTrav3jteh10PL
-         f+6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rqoxRu5uTV9HdpBRh5ZrKoR06yptV6U1vRvMIWMLqWk=;
-        b=VHK2yTSXXhXRWwb2v5nT7L9E4Qer5OfHWlNT9UK0VIewrz4RnsKNY09EROZA9Ekx8/
-         7HPHzp0eKUJyDwwEfTLWfCa+ek9A1RvsPjrqCR/L5IqQScpETh+tPX5Kpn1dLyznGLq8
-         QiC4vk52MEyEuglsbnoA56+f2/Trl5XIaDE+fFDYPHN3WIw7a0mnT/tPLiGU0svvtrYK
-         W7Rrkgl0Qz1ZHacGpw3BR7j1hoyLJt83Jxdi5usAUytlDnAMzBNJCCu9DmynPK8b0TDF
-         AUuN+VXnvTCFvZAjS/TF5hGSfJIMMXdeGaYKZaMGslyBtTDDtn6ZkI1TonryM8Cc5WDR
-         967w==
-X-Gm-Message-State: ANhLgQ1QzObQ9lM97qe+LAc4dx44pokUVzflWz7ZhKPPiaoH7qUBclEl
-        VmBnysvQGH06iNTzlb22wMx2VLJT
-X-Google-Smtp-Source: ADFU+vtd1EcregzpOuJLRbg4mfZJJwu7a8XDtTUwoAzxdwD+cy6BlKF+LL9klkqMF44sfAsy57Ioxw==
-X-Received: by 2002:aa7:9a01:: with SMTP id w1mr4893396pfj.256.1584636347009;
-        Thu, 19 Mar 2020 09:45:47 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id a2sm2549789pjq.20.2020.03.19.09.45.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Mar 2020 09:45:46 -0700 (PDT)
-Subject: Re: Bug URGENT Report with new kernel 5.5.10-5.6-rc6
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Martin Zaharinov <micron10@gmail.com>,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-References: <CALidq=XsQy66n-pTMOMN=B7nEsk7BpRZnUHery5RJyjnMsiXZQ@mail.gmail.com>
- <CALidq=VVpixeJFJFkUSeDqTW=OX0+dhA04ypE=y949B+Aqaq0w@mail.gmail.com>
- <CALidq=UXHz+rjiG5JxAz-CJ1mKsFLVupsH3W+z58L2nSPKE-7w@mail.gmail.com>
- <20200319003823.3b709ad8@elisabeth>
- <CALidq=Xow0EkAP4LkqvQiDOmVDduEwLKa4c-A54or3GMj6+qVw@mail.gmail.com>
- <20200319103438.GO979@breakpoint.cc> <20200319104750.x2zz7negjbm6lwch@salvia>
- <20200319105248.GP979@breakpoint.cc>
- <fff10500-8b87-62f0-ec89-49453cf9ae57@gmail.com>
-Message-ID: <4d9f339c-b0a7-1861-7d76-e0f2cee92b8c@gmail.com>
-Date:   Thu, 19 Mar 2020 09:45:38 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+        id S1728182AbgCSQrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 12:47:15 -0400
+Received: from mail-eopbgr60048.outbound.protection.outlook.com ([40.107.6.48]:7209
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727302AbgCSQrO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 12:47:14 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hsoTIaV+uQ9n4iKjKTQxPPYuvzrJ42T71zaqX6VVkxP57pA3fW8jW3Yfp0b3AixYTjM+bpRQsJdqY+sifQBuU4Er89tw9MdMziOzgF0eXlA/KtMehOMYCt6Mg2PYhzn9P5oGtsdGamWOjWmsOQBvcBCMP8mEAYgrk828XPckJxqAoGXZWr/FZ3AINmC4E3Bo+M2GNBJxXDo8S9fAlvNuIgFt3dBMk87eaaqmMrtRwXFVsoaVw3Uhf7wHvRn/i7rYyfQtWzOnmlVf/d+cja+sR1kaf9/EC+jo3C0ABG1zVo27SCmGeLqJE5TyJ6paZI2edYW+8CzI/Jh6o4vxXzsdMA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bT9qw5gaakQjllV27SsUUDfrJBt40VzWJZnJ+a8yfkI=;
+ b=XVnxXsoYenWsG6AB+YulC1NJXaFVk9R5nUxfQVMoMppUo0qCzMco4NCrDDHta/2EnMV6n9RJSYu2Ch6En6ZMHcU9f66IED/3LibCiWIu3R38+uCLTZwQeOHcgx3M7I6ac+9X/981uiSGJ42ChHdcicBevoRrBEvOBqn+K0xISbEqNkhjO50nd+7ty/t5DTL14v3IJsx3nBCuqlgvOeHPbwhTpbSDJDwhgeWeYLJulDYymHiAbBKjc8DDcvXq8DhLonKTj9+5XkLo15ElD6TnISpHeRGF1odFa8xyNSQ5dhc6YDhFx7vpbuGxAhLCB7KUt5FBfawwS72JTDFk8NB8TQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bT9qw5gaakQjllV27SsUUDfrJBt40VzWJZnJ+a8yfkI=;
+ b=CHF3jmS98Ag50IH7zU2lncbpwT8TDgrldyYP/3Qv+Isa6G+JBCNm1k4/7svZRvrCH1sGEMsL0E7hv2vsorCkZZwe37PIt9P7NGi46dUdbSiW53J59PSbU5zdW+dUEfE/ibwdosX9gl3gMcLFk7IAAzWqHhaJHsIv+QCBOC3Aoyo=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=paulb@mellanox.com; 
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com (20.177.36.78) by
+ AM6PR05MB4918.eurprd05.prod.outlook.com (20.177.34.216) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2835.15; Thu, 19 Mar 2020 16:47:11 +0000
+Received: from AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::4d29:be06:e98f:c2b2]) by AM6PR05MB5096.eurprd05.prod.outlook.com
+ ([fe80::4d29:be06:e98f:c2b2%7]) with mapi id 15.20.2814.025; Thu, 19 Mar 2020
+ 16:47:11 +0000
+Subject: Re: [PATCH net-next 6/6] netfilter: nf_flow_table: hardware offload
+ support
+To:     Edward Cree <ecree@solarflare.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, ozsh@mellanox.com,
+        majd@mellanox.com, saeedm@mellanox.com
+References: <20191111232956.24898-1-pablo@netfilter.org>
+ <20191111232956.24898-7-pablo@netfilter.org>
+ <64004716-fdbe-9542-2484-8a1691d54e53@solarflare.com>
+From:   Paul Blakey <paulb@mellanox.com>
+Message-ID: <87cc5180-4e84-753f-0acf-1c7a0fa8549d@mellanox.com>
+Date:   Thu, 19 Mar 2020 18:47:07 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <fff10500-8b87-62f0-ec89-49453cf9ae57@gmail.com>
+In-Reply-To: <64004716-fdbe-9542-2484-8a1691d54e53@solarflare.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Content-Language: en-GB
+X-ClientProxiedBy: ZR0P278CA0053.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:1d::22) To AM6PR05MB5096.eurprd05.prod.outlook.com
+ (2603:10a6:20b:11::14)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.50.105] (5.29.240.93) by ZR0P278CA0053.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:1d::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.19 via Frontend Transport; Thu, 19 Mar 2020 16:47:10 +0000
+X-Originating-IP: [5.29.240.93]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 3e09649e-745b-4a6b-d3c5-08d7cc252b85
+X-MS-TrafficTypeDiagnostic: AM6PR05MB4918:|AM6PR05MB4918:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR05MB491845B977E86A6C1AA031C8CFF40@AM6PR05MB4918.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1051;
+X-Forefront-PRVS: 0347410860
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(396003)(346002)(376002)(39860400002)(199004)(36756003)(956004)(6666004)(81166006)(8936002)(81156014)(8676002)(16576012)(110136005)(186003)(2616005)(316002)(16526019)(26005)(66946007)(53546011)(478600001)(66476007)(52116002)(66556008)(2906002)(86362001)(31686004)(31696002)(107886003)(4326008)(5660300002)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB4918;H:AM6PR05MB5096.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: B6ITdbmU26OOr/QiEr6NC79CAiIK48NPiNQJ8tSsioHOsTRykhzDma90vG9d74LgBZ24WFDRaqPkH/UGgWlc+uJHXQMkpbsjklefD6+aWadyLWGigVQPlXiVj/22A8CRXJEyTM/ODDkcnnLg7aaixRfp0D42qFvC35YNmMrGO7oyaqudlDLzA6Yu7F4zpoLNXVuGD/xa9R3hGf9QbZB0s8cz2lpU5y7Ba9DLwCT2tdkAddSeBBzfcWCgQdCclp4drrIJGYCpk72jmI6fGGH2RcZxb8z4lmZlMh7YCEk20ii7WIW8xArCVDM2guhnqA/mgza1x7ltzrWIMRGmTwLpu1vk06WMZ+qB2QHJai1kMx6ERPzIdxvtd6yzyZ/BZC5QElDhykzFH7KirP6I9uuaBTsIxeHjO+kBTh5YH3k0I8qZ8iHtiT3LzwT1P4a6DeW4
+X-MS-Exchange-AntiSpam-MessageData: FhqlI+ySKezb5S1k6VkWugnzjqY20bE4nGXJ45Ogo2NmzoxnHG4T1659gK15cuFADhusolEo8T/7DnnGzYAa/7LV1dKGBJHQ1qM0ZE812xUkikGeInOTDcqMql8WgQGnmX33wOz2gqq2jSLzL/Jx6Q==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e09649e-745b-4a6b-d3c5-08d7cc252b85
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Mar 2020 16:47:11.3653
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9sOa+XXNlKayde1gTtNOKnX5eyZEYg9xUhUqK6HNVfT2Y6ojFIpTo9oQmsUj2M56KIITqUf+uxblrVQfO7fLlw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB4918
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
-On 3/19/20 9:40 AM, Eric Dumazet wrote:
-> 
-> 
-> On 3/19/20 3:52 AM, Florian Westphal wrote:
->> Pablo Neira Ayuso <pablo@netfilter.org> wrote:
->>> On Thu, Mar 19, 2020 at 11:34:38AM +0100, Florian Westphal wrote:
->>>> Martin Zaharinov <micron10@gmail.com> wrote:
->>>>
->>>> [ trimming CC ]
->>>>
->>>> Please revert
->>>>
->>>> commit 28f8bfd1ac948403ebd5c8070ae1e25421560059
->>>> netfilter: Support iif matches in POSTROUTING
->>>
->>> Please, specify a short description to append to the revert.
+On 19/03/2020 17:57, Edward Cree wrote:
+> On 11/11/2019 23:29, Pablo Neira Ayuso wrote:
+>> This patch adds the dataplane hardware offload to the flowtable
+>> infrastructure. Three new flags represent the hardware state of this
+>> flow:
 >>
->> TCP makes use of the rb_node in sk_buff for its retransmit queue,
->> amongst others.
-> 
-> 
-> Only for master skbs kept in TCP internal queues (rtx rb tree)
-> 
-> However the packets leaving TCP stack are clones.
-> 
->   skb->dev aliases to this storage, i.e., passing
->> skb->dev as the input interface in postrouting may point to another
->> sk_buff instead.
->> This will cause crashes and data corruption with nf_queue, as we will
->> attempt to increment a random pcpu variable when calling dev_hold().
+>> * FLOW_OFFLOAD_HW: This flow entry resides in the hardware.
+>> * FLOW_OFFLOAD_HW_DYING: This flow entry has been scheduled to be remove
+>>   from hardware. This might be triggered by either packet path (via TCP
+>>   RST/FIN packet) or via aging.
+>> * FLOW_OFFLOAD_HW_DEAD: This flow entry has been already removed from
+>>   the hardware, the software garbage collector can remove it from the
+>>   software flowtable.
 >>
->> Also, the memory address may also be free'd, which gives UAF splat.
+>> This patch supports for:
 >>
-> 
-> This seems to suggest clones skb->dev should be cleared before leaving TCP stack,
-> if some layer is confused because skb->dev has not yet been set by IP layer ?
-> 
-> Untested patch :
-> 
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index 306e25d743e8de1bfe23d6e3b3a9fb0f23664912..c40fb3880307aa3156d01a8b49f1296657346cfd 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -1228,6 +1228,7 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
->         /* Cleanup our debris for IP stacks */
->         memset(skb->cb, 0, max(sizeof(struct inet_skb_parm),
->                                sizeof(struct inet6_skb_parm)));
-> +       skb->dev = NULL;
->  
->         tcp_add_tx_delay(skb, tp);
->  
-> 
-
-Or clear the field only after cloning :
-
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 306e25d743e8de1bfe23d6e3b3a9fb0f23664912..13dd0d8003baee3febcfb85df84421f8f91132ef 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1109,6 +1109,7 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
- 
-                if (unlikely(!skb))
-                        return -ENOBUFS;
-+               skb->dev = NULL;
-        }
- 
-        inet = inet_sk(sk);
-
+>> * IPv4 only.
+>> * Aging via FLOW_CLS_STATS, no packet and byte counter synchronization
+>>   at this stage.
+>>
+>> This patch also adds the action callback that specifies how to convert
+>> the flow entry into the flow_rule object that is passed to the driver.
+>>
+>> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> <snip>
+>> +static int nf_flow_rule_match(struct nf_flow_match *match,
+>> +			      const struct flow_offload_tuple *tuple)
+>> +{
+>> +	struct nf_flow_key *mask = &match->mask;
+>> +	struct nf_flow_key *key = &match->key;
+>> +
+>> +	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_CONTROL, control);
+>> +	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_BASIC, basic);
+>> +	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_IPV4_ADDRS, ipv4);
+>> +	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_TCP, tcp);
+>> +	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_PORTS, tp);
+>> +
+>> +	switch (tuple->l3proto) {
+>> +	case AF_INET:
+>> +		key->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
+> Is it intentional that mask->control.addr_type never gets set?
+It should be set.
+>
+> -ed
