@@ -2,56 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D896118BCE8
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:43:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4257318BCEE
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:43:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728571AbgCSQms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 12:42:48 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:35900 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728551AbgCSQmr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 12:42:47 -0400
-Received: by mail-pl1-f194.google.com with SMTP id g2so1294957plo.3;
-        Thu, 19 Mar 2020 09:42:45 -0700 (PDT)
+        id S1727816AbgCSQnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 12:43:51 -0400
+Received: from mail-pg1-f178.google.com ([209.85.215.178]:46460 "EHLO
+        mail-pg1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727399AbgCSQnu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 12:43:50 -0400
+Received: by mail-pg1-f178.google.com with SMTP id k191so406821pgc.13
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 09:43:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QnWCdSysocTO2lLV5rIIDxRRIGt32v7dmFXsuQtVctw=;
-        b=RFeqocxbTGjKAxWf17iUmUts1I0aUwtRztYIvPE2mb58LaL7QSbT841gIwspf8Jgpp
-         nQHvJutthWkvDaHuQYnkFu7ovpjegeE0eRJJYsCy+OpWhrfCgvHXiZ3+MPhAuwPTP7TK
-         ZxCYBeiU2KhewxfaAIqguI97Xix9GX3BKlmVlqBHZwOTReRjaM0+3gvt6OnPmPISmT7x
-         1i2Bfvqi/jkIHFD+35et8MUhihwWmR2FIfJMBsZCYv+69oevd8axWOkI9NKHzb7F6Q3R
-         bSsOhyT+kw83iGxqVRcOg1ouuBhZUxQAWsuF8J1WRjZHiXm8Jb745OhU6qCekGkYz1Na
-         vKzw==
+        bh=nutBtZSSrxHSWNlv4EFvg9vRZZx3/bPTfG92sxy/WBI=;
+        b=rlIybPyThGEq0lQ5I2j81lTGc11H56HJQPEnsboaHMYxoOqcG+/MKjPcDDfpy0vbty
+         JbsUpCYxWVxDBurPFG88QpCbr6iTuqoJ9kZiiZ1Ea3RWfA9IIeRr6HV7itKWORPlKiyT
+         lCT2kzMS3mPdvA3gjYStnoG979QOTzGfZX3RIg8tFh83LPPjHZycD31uohUZZLAm9ZXD
+         a/SdyvVA22Y9QQC5IKGxj1PxkQIaSOB90wzm5W6gDv9NL29HfTEE42aadbP205cR5TGF
+         PGEmsdAduD4M+VQj2ML+IDzjZnV9w13TZLH1CwDH5V+VVzv3FXbqgHuge/QWbLITnZ1S
+         Cl7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=QnWCdSysocTO2lLV5rIIDxRRIGt32v7dmFXsuQtVctw=;
-        b=uaMHthVCxNM12WjcmF36YCzEV8/Pmpzj9axw/cmtkpDBZ+Ry69DHwpoE07gjXpDKBk
-         +Oa107PlPNgSLfmPq6hdCsv/TQFYxjzqaCwigHH/5pCamtAXHiISoue4St/SZjDyinGL
-         dmsZIL9GZTx+HG2h6E89/vSzPvg1lsagdWEH6cMiN1SqFQKVonCYzxVDWJBXeWhaKcB2
-         RiP1PdKnXnp2da3kEsV+YsrBdan+KFFP/+H5dtmM9lVvMuO+EWBHv8yPT9+QUeNuHQN4
-         TVy9bgv10Y+avN1RBY0byAIXnXdTjRbd/GDhXxCR1N1NUI+iN3Y4sFfvscUj/Dg6vxFS
-         1u4g==
-X-Gm-Message-State: ANhLgQ1R4owHYT+HjqhGhLNANLyryhjDMylSUiahM2N7MjwkRkLkjSFe
-        E30SV1FwUi/gEGrSphZoW+ZK+tSN
-X-Google-Smtp-Source: ADFU+vsvbOhk9eBxqC9tMGFgPXvUeS5fyFN1SNzgdg7AGKj3tJZP3B52C3rCxFjYxdOUXbDYlet9KA==
-X-Received: by 2002:a17:902:e981:: with SMTP id f1mr4290172plb.103.1584636164257;
-        Thu, 19 Mar 2020 09:42:44 -0700 (PDT)
+        bh=nutBtZSSrxHSWNlv4EFvg9vRZZx3/bPTfG92sxy/WBI=;
+        b=f6ushGGQ0qUf/HpkmeRguPF8agsTAxthtai0w/5fMJ/xNR+LirPw6NOS7NH8/u51Si
+         5oVNdGVWH2Ek9XFeNGfB6mgB09FnsYMTv07+5umdxwaPP2f+jSv/gMaAhkcUaJgbursx
+         UqED65nHrN1N9RViwI1gejVVOsAkp1x6ot2QPXM/ojJD1Qx//8JpiJzs/l1GZu0E/LmL
+         6yot+XwKj8RlMy4vyUwWcUVxWOli0Tks9jSZ8vLW/14cc/8TIETLxHyRq2/RtXD+4ati
+         dyETU+26tgp6jqQuH7/pRUHkstE78N7FoGA4Isyv2dS8AdugAwQy71GJiocYCNr5692r
+         gnjA==
+X-Gm-Message-State: ANhLgQ2v8DLmwiOf3u9PUR8PKEEGkc6/R27cSijsouqf57DzJ1/rZX1+
+        dXd2Wv1vzllt84kroU91A44=
+X-Google-Smtp-Source: ADFU+vsdlGjAKLjbhMiQ0aHpojd6NOha9eGNSEsLUMQ04dQMjJVadi0Ohh+zQygTU3FCl3kb4Tpmqg==
+X-Received: by 2002:a63:d144:: with SMTP id c4mr4083569pgj.261.1584636229315;
+        Thu, 19 Mar 2020 09:43:49 -0700 (PDT)
 Received: from [192.168.1.2] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.googlemail.com with ESMTPSA id f19sm2901596pgf.33.2020.03.19.09.42.43
+        by smtp.googlemail.com with ESMTPSA id i131sm2952404pgc.18.2020.03.19.09.43.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Mar 2020 09:42:43 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/7] introduce read_poll_timeout
-To:     Dejin Zheng <zhengdejin5@gmail.com>, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        tglx@linutronix.de, broonie@kernel.org, corbet@lwn.net,
-        mchehab+samsung@kernel.org, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-References: <20200319163910.14733-1-zhengdejin5@gmail.com>
+        Thu, 19 Mar 2020 09:43:48 -0700 (PDT)
+Subject: Re: [[PATCH,net]] net: dsa: mt7530: Change the LINK bit to reflect
+ the link status
+To:     =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        netdev@vger.kernel.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <landen.chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-mediatek@lists.infradead.org,
+        Andrew Smith <andrew.smith@digi.com>
+References: <20200319134756.46428-1-opensource@vdorst.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -107,12 +116,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9qfUATKC9NgZjRvBztfqy4
  a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <d1ba5c47-5a8f-f689-6d33-ec927f4268d8@gmail.com>
-Date:   Thu, 19 Mar 2020 09:42:42 -0700
+Message-ID: <4a389a34-f41e-4b86-c0c7-94e4f36db442@gmail.com>
+Date:   Thu, 19 Mar 2020 09:43:47 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <20200319163910.14733-1-zhengdejin5@gmail.com>
+In-Reply-To: <20200319134756.46428-1-opensource@vdorst.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -121,39 +130,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 2020-03-19 à 09:39, Dejin Zheng a écrit :
-> This patch sets is introduce read_poll_timeout macro, it is an extension
-> of readx_poll_timeout macro. the accessor function op just supports only
-> one parameter in the readx_poll_timeout macro, but this macro can
-> supports multiple variable parameters for it. so functions like
-> phy_read(struct phy_device *phydev, u32 regnum) and
-> phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum) can
-> use this poll timeout framework.
+Le 2020-03-19 à 06:47, René van Dorst a écrit :
+> Andrew reported:
 > 
-> the first patch introduce read_poll_timeout macro, and the second patch
-> redefined readx_poll_timeout macro by read_poll_timeout(), and the other
-> patches are examples using read_poll_timeout macro.
+> After a number of network port link up/down changes, sometimes the switch
+> port gets stuck in a state where it thinks it is still transmitting packets
+> but the cpu port is not actually transmitting anymore. In this state you
+> will see a message on the console
+> "mtk_soc_eth 1e100000.ethernet eth0: transmit timed out" and the Tx counter
+> in ifconfig will be incrementing on virtual port, but not incrementing on
+> cpu port.
 > 
+> The issue is that MAC TX/RX status has no impact on the link status or
+> queue manager of the switch. So the queue manager just queues up packets
+> of a disabled port and sends out pause frames when the queue is full.
 > 
-> Dejin Zheng (7):
->   iopoll: introduce read_poll_timeout macro
->   iopoll: redefined readx_poll_timeout macro to simplify the code
->   net: phy: introduce phy_read_mmd_poll_timeout macro
->   net: phy: bcm84881: use phy_read_mmd_poll_timeout() to simplify the
->     code
->   net: phy: aquantia: use phy_read_mmd_poll_timeout() to simplify the
->     code
->   net: phy: introduce phy_read_poll_timeout macro
->   net: phy: use phy_read_poll_timeout() to simplify the code
+> Change the LINK bit to reflect the link status.
 > 
->  drivers/net/phy/aquantia_main.c | 16 +++++++--------
->  drivers/net/phy/bcm84881.c      | 24 ++++++----------------
->  drivers/net/phy/phy_device.c    | 18 ++++++-----------
->  include/linux/iopoll.h          | 36 ++++++++++++++++++++++++++-------
->  include/linux/phy.h             |  7 +++++++
->  5 files changed, 55 insertions(+), 46 deletions(-)
+> Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
+> Reported-by: Andrew Smith <andrew.smith@digi.com>
+> Signed-off-by: René van Dorst <opensource@vdorst.com>
 
-Your diffstat is positive, so what's the point of doing this? What
-problem are you trying to solve?
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
