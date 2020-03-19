@@ -2,99 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4371718ADBE
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 08:56:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F05D018AE32
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 09:15:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726603AbgCSH4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 03:56:16 -0400
-Received: from mx.socionext.com ([202.248.49.38]:23193 "EHLO mx.socionext.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725768AbgCSH4Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 03:56:16 -0400
-Received: from unknown (HELO iyokan-ex.css.socionext.com) ([172.31.9.54])
-  by mx.socionext.com with ESMTP; 19 Mar 2020 16:56:14 +0900
-Received: from mail.mfilter.local (m-filter-1 [10.213.24.61])
-        by iyokan-ex.css.socionext.com (Postfix) with ESMTP id 91D9560057;
-        Thu, 19 Mar 2020 16:56:14 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Thu, 19 Mar 2020 16:56:14 +0900
-Received: from yuzu.css.socionext.com (yuzu [172.31.8.45])
-        by kinkan.css.socionext.com (Postfix) with ESMTP id 425CA1A0E67;
-        Thu, 19 Mar 2020 16:56:14 +0900 (JST)
-Received: from ptp-master.e01.socionext.com (unknown [10.213.95.142])
-        by yuzu.css.socionext.com (Postfix) with ESMTP id 37033120134;
-        Thu, 19 Mar 2020 16:56:14 +0900 (JST)
-From:   Zh-yuan Ye <ye.zh-yuan@socionext.com>
-To:     netdev@vger.kernel.org
-Cc:     okamoto.satoru@socionext.com, kojima.masahisa@socionext.com,
-        vinicius.gomes@intel.com, Zh-yuan Ye <ye.zh-yuan@socionext.com>
-Subject: [PATCH net] net: cbs: Fix software cbs to consider packet
-Date:   Thu, 19 Mar 2020 16:56:59 +0900
-Message-Id: <20200319075659.3126-1-ye.zh-yuan@socionext.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726905AbgCSIPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 04:15:53 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:24386 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726658AbgCSIPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 04:15:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584605751;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TgtDtG3cRVj31mITgFClFTokcEIBD9CXpdML9H7Wb8k=;
+        b=OQZKXqXxdyRhU92rEGhd7sJG3gAi4j5gU6xdxv8iZ4VD99LArR56QY+N/pCIwGQBAxx4Z6
+        1iTx6grokSq+CHArLU/s2fLFzfO5gWvroP+U3t5RoS6zvvMIHlOdo4tC4Z/h1AflHFP8nH
+        GJzY3y1BvqHfAEoVWCg+kMqcG7pa3HI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-270-1bCvthWzPxO0ZFGWraD_bQ-1; Thu, 19 Mar 2020 04:15:50 -0400
+X-MC-Unique: 1bCvthWzPxO0ZFGWraD_bQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 49FA9189D6C3;
+        Thu, 19 Mar 2020 08:15:47 +0000 (UTC)
+Received: from [10.72.12.119] (ovpn-12-119.pek2.redhat.com [10.72.12.119])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3A67B19756;
+        Thu, 19 Mar 2020 08:14:40 +0000 (UTC)
+Subject: Re: [PATCH V6 8/8] virtio: Intel IFC VF driver for VDPA
+To:     Jason Gunthorpe <jgg@mellanox.com>
+Cc:     mst@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, lingshan.zhu@intel.com, eperezma@redhat.com,
+        lulu@redhat.com, parav@mellanox.com, kevin.tian@intel.com,
+        stefanha@redhat.com, rdunlap@infradead.org, hch@infradead.org,
+        aadam@redhat.com, jiri@mellanox.com, shahafs@mellanox.com,
+        hanand@xilinx.com, mhabets@solarflare.com, gdawar@xilinx.com,
+        saugatm@xilinx.com, vmireyno@marvell.com,
+        Bie Tiwei <tiwei.bie@intel.com>
+References: <20200318080327.21958-1-jasowang@redhat.com>
+ <20200318080327.21958-9-jasowang@redhat.com>
+ <20200318122255.GG13183@mellanox.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <30359bae-d66a-0311-0028-d7d33b8295f2@redhat.com>
+Date:   Thu, 19 Mar 2020 16:14:37 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200318122255.GG13183@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the software CBS does not consider the packet sending time
-when depleting the credits. It caused the throughput to be
-Idleslope[kbps] * (Port transmit rate[kbps] / |Sendslope[kbps]|) where
-Idleslope * (Port transmit rate / (Idleslope + |Sendslope|)) is expected.
-In order to fix the issue above, this patch takes the time when the
-packet sending completes into account by moving the anchor time variable
-"last" ahead to the send completion time upon transmission and adding
-wait when the next dequeue request comes before the send completion time
-of the previous packet.
 
-Signed-off-by: Zh-yuan Ye <ye.zh-yuan@socionext.com>
----
- net/sched/sch_cbs.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+On 2020/3/18 =E4=B8=8B=E5=8D=888:22, Jason Gunthorpe wrote:
+> On Wed, Mar 18, 2020 at 04:03:27PM +0800, Jason Wang wrote:
+>> From: Zhu Lingshan <lingshan.zhu@intel.com>
+>> +
+>> +static int ifcvf_vdpa_attach(struct ifcvf_adapter *adapter)
+>> +{
+>> +	int ret;
+>> +
+>> +	adapter->vdpa_dev  =3D vdpa_alloc_device(adapter->dev, adapter->dev,
+>> +					       &ifc_vdpa_ops);
+>> +	if (IS_ERR(adapter->vdpa_dev)) {
+>> +		IFCVF_ERR(adapter->dev, "Failed to init ifcvf on vdpa bus");
+>> +		put_device(&adapter->vdpa_dev->dev);
+>> +		return -ENODEV;
+>> +	}
+> The point of having an alloc call is so that the drivers
+> ifcvf_adaptor memory could be placed in the same struct - eg use
+> container_of to flip between them, and have a kref for both memories.
+>
+> It seem really weird to have an alloc followed immediately by
+> register.
 
-diff --git a/net/sched/sch_cbs.c b/net/sched/sch_cbs.c
-index b2905b03a432..a78b8a750bd9 100644
---- a/net/sched/sch_cbs.c
-+++ b/net/sched/sch_cbs.c
-@@ -71,6 +71,7 @@ struct cbs_sched_data {
- 	int queue;
- 	atomic64_t port_rate; /* in bytes/s */
- 	s64 last; /* timestamp in ns */
-+	s64 send_completed; /* timestamp in ns */
- 	s64 credits; /* in bytes */
- 	s32 locredit; /* in bytes */
- 	s32 hicredit; /* in bytes */
-@@ -181,6 +182,10 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
- 	s64 credits;
- 	int len;
- 
-+	if (now < q->send_completed) {
-+		qdisc_watchdog_schedule_ns(&q->watchdog, q->send_completed);
-+		return NULL;
-+	}
- 	if (q->credits < 0) {
- 		credits = timediff_to_credits(now - q->last, q->idleslope);
- 
-@@ -192,7 +197,6 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
- 
- 			delay = delay_from_credits(q->credits, q->idleslope);
- 			qdisc_watchdog_schedule_ns(&q->watchdog, now + delay);
--
- 			q->last = now;
- 
- 			return NULL;
-@@ -212,7 +216,9 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
- 	credits += q->credits;
- 
- 	q->credits = max_t(s64, credits, q->locredit);
--	q->last = now;
-+	q->send_completed = now + div64_s64(len * NSEC_PER_SEC,
-+					    atomic64_read(&q->port_rate));
-+	q->last = q->send_completed;
- 
- 	return skb;
- }
--- 
-2.20.1
+
+I admit the ifcvf_adapter is not correctly ref-counted. What you suggest=20
+should work. But it looks to me the following is more cleaner since the=20
+members of ifcvf_adapter are all related to PCI device not vDPA itself.
+
+- keep the current layout of ifcvf_adapter
+- merge vdpa_alloc_device() and vdpa_register_device()
+- use devres to bind ifcvf_adapter refcnt/lifcycle to the under PCI devic=
+e
+
+If we go for the container_of method, we probably need
+
+- accept a size of parent parent structure in vdpa_alloc_device() and=20
+mandate vdpa_device to be the first member of ifcvf_adapter
+- we need provide a way to free resources of parent structure when we=20
+destroy vDPA device
+
+What's your thought?
+
+
+>> diff --git a/drivers/virtio/virtio_vdpa.c b/drivers/virtio/virtio_vdpa=
+.c
+>> index c30eb55030be..de64b88ee7e4 100644
+>> +++ b/drivers/virtio/virtio_vdpa.c
+>> @@ -362,6 +362,7 @@ static int virtio_vdpa_probe(struct vdpa_device *v=
+dpa)
+>>   		goto err;
+>>  =20
+>>   	vdpa_set_drvdata(vdpa, vd_dev);
+>> +	dev_info(vd_dev->vdev.dev.parent, "device attached to VDPA bus\n");
+>>  =20
+>>   	return 0;
+> This hunk seems out of place
+>
+> Jason
+
+
+Right, will fix.
+
+Thanks
 
