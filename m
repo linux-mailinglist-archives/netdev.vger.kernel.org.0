@@ -2,139 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF8C918C068
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 20:30:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DBA918C078
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 20:35:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728251AbgCSTaJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 15:30:09 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:37146 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727178AbgCSTaJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 15:30:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584646207;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=n7cgCt123/9s5EdM3uN46GsE87oxih4QTqJ6fbmKrSc=;
-        b=GOi3sguxlo61/vamcpAXYeAQVTvCBmtqq18xSMBcf9NhjslU5/ekjXxpN8Q/W6Njt9fit5
-        CNiA6hX+ZsgvooqwJJnwSUdovgnJAdwou1kFHIYWb8C6AkCI+JyQmDtERP9wcjp4tKRpSk
-        dv5yaiLxhkoGU/Lyna/rP6cOxlUvyKM=
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
- [209.85.166.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-63-0ywMXyoIOKC6lvaUe5zICg-1; Thu, 19 Mar 2020 15:30:04 -0400
-X-MC-Unique: 0ywMXyoIOKC6lvaUe5zICg-1
-Received: by mail-il1-f197.google.com with SMTP id j88so2979578ilg.9
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 12:30:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n7cgCt123/9s5EdM3uN46GsE87oxih4QTqJ6fbmKrSc=;
-        b=T5DEnsZFXn9nhNfPuC0v9bHe7+XyLXuEVrRQ+Hnrekrf/4d11v96AFGfpc17lyqoWd
-         6FORxqFEcZ54LQVhT2yQbHJoPC0TEQboHvGaEEijfD60ZNCnC13li73vKADytZVdKYwj
-         IIbURbBDL196drzBZx7Pohe4+xKGrVPEOMp9iORsQMeChoGtJ/N5leImtysJMm7ltyeG
-         qlYdlbyCpTN48HrZGgWGTTPWxHOniqijOzysYc8dzQjADltQWb//DbZPukiYyNFL/FH+
-         4s2fET2+MBSpv6ZI9Iu8UMYXRwORN+JI6IwE3lt5JqztxByAVoPb0GFjZn4aGy11rQxM
-         jjYw==
-X-Gm-Message-State: ANhLgQ3BNkSG4f6IP/x/uYoCg+K+pbvYeE4dlZAQpDhm0KEZbphDwf9l
-        H8wwHFcTtBqtKbmjJSmIfbwqKk2sNvlF5HKJgzYwvajouRQG2lZEiijDEVpNCSzqBBqpe4nj9MF
-        nreTJzL6/zLYii/fKRR9H86K06yK3sRdR
-X-Received: by 2002:a92:d08:: with SMTP id 8mr4654500iln.136.1584646203454;
-        Thu, 19 Mar 2020 12:30:03 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vvVShStUfB2AGYam9Btfu27vVxasgER5AsPtAa4PgQ4ohw05qzh/EdsWzM9Dxc2ZTws9ccvB4BhM3f9ny30cf0=
-X-Received: by 2002:a92:9606:: with SMTP id g6mr4691336ilh.119.1584646202385;
- Thu, 19 Mar 2020 12:30:02 -0700 (PDT)
+        id S1725747AbgCSTfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 15:35:41 -0400
+Received: from correo.us.es ([193.147.175.20]:34204 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726825AbgCSTfk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 15:35:40 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 53415E8624
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 20:35:07 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 43DDDFEFAA
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 20:35:07 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 397FBDA736; Thu, 19 Mar 2020 20:35:07 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 935E5FEFAF;
+        Thu, 19 Mar 2020 20:35:04 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 19 Mar 2020 20:35:04 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 72BD442EFB80;
+        Thu, 19 Mar 2020 20:35:04 +0100 (CET)
+Date:   Thu, 19 Mar 2020 20:35:34 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, wenxu@ucloud.cn
+Subject: Re: [PATCH 13/29] netfilter: flowtable: add tunnel match offload
+ support
+Message-ID: <20200319193534.7s6aw2xn5xzoebjn@salvia>
+References: <20200318003956.73573-1-pablo@netfilter.org>
+ <20200318003956.73573-14-pablo@netfilter.org>
+ <72f9e0d8-56ac-aa01-63d1-9ffdab8c13c4@solarflare.com>
 MIME-Version: 1.0
-References: <20200318140605.45273-1-jarod@redhat.com> <8a88d1c8-c6b1-ad85-7971-e6ae8c6fa0e4@gmail.com>
- <CAKfmpSc0yea5-OfE1rnVdErDTeOza=owbL00QQEaH-M-A6Za7g@mail.gmail.com>
- <25629.1584564113@famine> <CAKfmpScbzEZAEw=zOEwguQJvr6L2fQiGmAY60SqSBQ_g-+B4tw@mail.gmail.com>
- <3dbabf42-90e6-4c82-0b84-d1b1a9e8fadf@gmail.com>
-In-Reply-To: <3dbabf42-90e6-4c82-0b84-d1b1a9e8fadf@gmail.com>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Thu, 19 Mar 2020 15:29:51 -0400
-Message-ID: <CAKfmpScXTnnz6wQK3OZcqw4aM1PaLnBRfQL769JgyR7tgM-u5A@mail.gmail.com>
-Subject: Re: [PATCH net] ipv6: don't auto-add link-local address to lag ports
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Jay Vosburgh <jay.vosburgh@canonical.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Moshe Levi <moshele@mellanox.com>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>,
-        Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <72f9e0d8-56ac-aa01-63d1-9ffdab8c13c4@solarflare.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 1:06 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> On 3/19/20 9:42 AM, Jarod Wilson wrote:
->
-> > Interesting. We'll keep digging over here, but that's definitely not
-> > working for this particular use case with OVS for whatever reason.
->
-> I did a quick test and confirmed that my bonding slaves do not have link-local addresses,
-> without anything done to prevent them to appear.
->
-> You might add a selftest, if you ever find what is the trigger :)
+On Thu, Mar 19, 2020 at 07:02:23PM +0000, Edward Cree wrote:
+> On 18/03/2020 00:39, Pablo Neira Ayuso wrote:
+> > From: wenxu <wenxu@ucloud.cn>
+> >
+> > This patch support both ipv4 and ipv6 tunnel_id, tunnel_src and
+> > tunnel_dst match for flowtable offload
+> >
+> > Signed-off-by: wenxu <wenxu@ucloud.cn>
+> > Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> <snip>
+[...]
+> From matching up the Code: line, it appears that %rax is other_dst;
+>  the faulting instruction is "mov 0x50(%rax),%rcx".
+> IOW other_dst == NULL.
 
-Okay, have a basic reproducer, courtesy of Marcelo:
+Would this test this patch?
 
-# ip link add name bond0 type bond
-# ip link set dev ens2f0np0 master bond0
-# ip link set dev ens2f1np2 master bond0
-# ip link set dev bond0 up
-# ip a s
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN
-group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host
-       valid_lft forever preferred_lft forever
-2: ens2f0np0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc
-mq master bond0 state UP group default qlen 1000
-    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
-5: ens2f1np2: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
-mq master bond0 state DOWN group default qlen 1000
-    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
-11: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc
-noqueue state UP group default qlen 1000
-    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
-    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link
-       valid_lft forever preferred_lft forever
+https://patchwork.ozlabs.org/patch/1257949/
 
-(above trimmed to relevant entries, obviously)
-
-# sysctl net.ipv6.conf.ens2f0np0.addr_gen_mode=0
-net.ipv6.conf.ens2f0np0.addr_gen_mode = 0
-# sysctl net.ipv6.conf.ens2f1np2.addr_gen_mode=0
-net.ipv6.conf.ens2f1np2.addr_gen_mode = 0
-
-# ip a l ens2f0np0
-2: ens2f0np0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc
-mq master bond0 state UP group default qlen 1000
-    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
-    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link tentative
-       valid_lft forever preferred_lft forever
-# ip a l ens2f1np2
-5: ens2f1np2: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
-mq master bond0 state DOWN group default qlen 1000
-    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
-    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link tentative
-       valid_lft forever preferred_lft forever
-
-Looks like addrconf_sysctl_addr_gen_mode() bypasses the original "is
-this a slave interface?" check, and results in an address getting
-added, while w/the proposed patch added, no address gets added.
-
-Looking back through git history again, I see a bunch of 'Fixes:
-d35a00b8e33d ("net/ipv6: allow sysctl to change link-local address
-generation mode")' patches, and I guess that's where this issue was
-also introduced.
-
--- 
-Jarod Wilson
-jarod@redhat.com
-
+Thank you.
