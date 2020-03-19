@@ -2,122 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4F3A18BEB9
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 18:49:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22EA518BEBB
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 18:49:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727382AbgCSRtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 13:49:04 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:21915 "EHLO
+        id S1727561AbgCSRtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 13:49:12 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:65110 "EHLO
         stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727009AbgCSRtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 13:49:03 -0400
+        with ESMTP id S1726934AbgCSRtM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 13:49:12 -0400
 Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 02JHmx6x015044;
-        Thu, 19 Mar 2020 10:49:00 -0700
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 02JHn86S015047;
+        Thu, 19 Mar 2020 10:49:09 -0700
 From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, nirranjan@chelsio.com, vishal@chelsio.com,
         dt@chelsio.com
-Subject: [PATCH net] cxgb4: fix throughput drop during Tx backpressure
-Date:   Thu, 19 Mar 2020 23:08:09 +0530
-Message-Id: <1584639490-27208-1-git-send-email-rahul.lakkireddy@chelsio.com>
+Subject: [PATCH net] cxgb4: fix Txq restart check during backpressure
+Date:   Thu, 19 Mar 2020 23:08:10 +0530
+Message-Id: <1584639490-27208-2-git-send-email-rahul.lakkireddy@chelsio.com>
 X-Mailer: git-send-email 2.5.3
+In-Reply-To: <1584639490-27208-1-git-send-email-rahul.lakkireddy@chelsio.com>
+References: <1584639490-27208-1-git-send-email-rahul.lakkireddy@chelsio.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit 7c3bebc3d868 ("cxgb4: request the TX CIDX updates to status page")
-reverted back to getting Tx CIDX updates via DMA, instead of interrupts,
-introduced by commit d429005fdf2c ("cxgb4/cxgb4vf: Add support for SGE
-doorbell queue timer")
+Driver reclaims descriptors in much smaller batches, even if hardware
+indicates more to reclaim, during backpressure. So, fix the check to
+restart the Txq during backpressure, by looking at how many
+descriptors hardware had indicated to reclaim, and not on how many
+descriptors that driver had actually reclaimed. Once the Txq is
+restarted, driver will reclaim even more descriptors when Tx path
+is entered again.
 
-However, it missed reverting back several code changes where Tx CIDX
-updates are not explicitly requested during backpressure when using
-interrupt mode. These missed changes cause slow recovery during
-backpressure because the corresponding interrupt no longer comes and
-hence results in Tx throughput drop.
-
-So, revert back these missed code changes, as well, which will allow
-explicitly requesting Tx CIDX updates when backpressure happens.
-This enables the corresponding interrupt with Tx CIDX update message
-to get generated and hence speed up recovery and restore back
-throughput.
-
-Fixes: 7c3bebc3d868 ("cxgb4: request the TX CIDX updates to status page")
 Fixes: d429005fdf2c ("cxgb4/cxgb4vf: Add support for SGE doorbell queue timer")
 Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/sge.c | 42 ++----------------------
- 1 file changed, 2 insertions(+), 40 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb4/sge.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-index 97cda501e7e8..c816837fbd85 100644
+index c816837fbd85..cab3d17e0e1a 100644
 --- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
 +++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-@@ -1486,16 +1486,7 @@ static netdev_tx_t cxgb4_eth_xmit(struct sk_buff *skb, struct net_device *dev)
- 		 * has opened up.
- 		 */
- 		eth_txq_stop(q);
--
--		/* If we're using the SGE Doorbell Queue Timer facility, we
--		 * don't need to ask the Firmware to send us Egress Queue CIDX
--		 * Updates: the Hardware will do this automatically.  And
--		 * since we send the Ingress Queue CIDX Updates to the
--		 * corresponding Ethernet Response Queue, we'll get them very
--		 * quickly.
--		 */
--		if (!q->dbqt)
--			wr_mid |= FW_WR_EQUEQ_F | FW_WR_EQUIQ_F;
-+		wr_mid |= FW_WR_EQUEQ_F | FW_WR_EQUIQ_F;
+@@ -1307,8 +1307,9 @@ static inline void *write_tso_wr(struct adapter *adap, struct sk_buff *skb,
+ int t4_sge_eth_txq_egress_update(struct adapter *adap, struct sge_eth_txq *eq,
+ 				 int maxreclaim)
+ {
++	unsigned int reclaimed, hw_cidx;
+ 	struct sge_txq *q = &eq->q;
+-	unsigned int reclaimed;
++	int hw_in_use;
+ 
+ 	if (!q->in_use || !__netif_tx_trylock(eq->txq))
+ 		return 0;
+@@ -1316,12 +1317,17 @@ int t4_sge_eth_txq_egress_update(struct adapter *adap, struct sge_eth_txq *eq,
+ 	/* Reclaim pending completed TX Descriptors. */
+ 	reclaimed = reclaim_completed_tx(adap, &eq->q, maxreclaim, true);
+ 
++	hw_cidx = ntohs(READ_ONCE(q->stat->cidx));
++	hw_in_use = q->pidx - hw_cidx;
++	if (hw_in_use < 0)
++		hw_in_use += q->size;
++
+ 	/* If the TX Queue is currently stopped and there's now more than half
+ 	 * the queue available, restart it.  Otherwise bail out since the rest
+ 	 * of what we want do here is with the possibility of shipping any
+ 	 * currently buffered Coalesced TX Work Request.
+ 	 */
+-	if (netif_tx_queue_stopped(eq->txq) && txq_avail(q) > (q->size / 2)) {
++	if (netif_tx_queue_stopped(eq->txq) && hw_in_use < (q->size / 2)) {
+ 		netif_tx_wake_queue(eq->txq);
+ 		eq->q.restarts++;
  	}
- 
- 	wr = (void *)&q->q.desc[q->q.pidx];
-@@ -1805,16 +1796,7 @@ static netdev_tx_t cxgb4_vf_eth_xmit(struct sk_buff *skb,
- 		 * has opened up.
- 		 */
- 		eth_txq_stop(txq);
--
--		/* If we're using the SGE Doorbell Queue Timer facility, we
--		 * don't need to ask the Firmware to send us Egress Queue CIDX
--		 * Updates: the Hardware will do this automatically.  And
--		 * since we send the Ingress Queue CIDX Updates to the
--		 * corresponding Ethernet Response Queue, we'll get them very
--		 * quickly.
--		 */
--		if (!txq->dbqt)
--			wr_mid |= FW_WR_EQUEQ_F | FW_WR_EQUIQ_F;
-+		wr_mid |= FW_WR_EQUEQ_F | FW_WR_EQUIQ_F;
- 	}
- 
- 	/* Start filling in our Work Request.  Note that we do _not_ handle
-@@ -3370,26 +3352,6 @@ static void t4_tx_completion_handler(struct sge_rspq *rspq,
- 	}
- 
- 	txq = &s->ethtxq[pi->first_qset + rspq->idx];
--
--	/* We've got the Hardware Consumer Index Update in the Egress Update
--	 * message.  If we're using the SGE Doorbell Queue Timer mechanism,
--	 * these Egress Update messages will be our sole CIDX Updates we get
--	 * since we don't want to chew up PCIe bandwidth for both Ingress
--	 * Messages and Status Page writes.  However, The code which manages
--	 * reclaiming successfully DMA'ed TX Work Requests uses the CIDX value
--	 * stored in the Status Page at the end of the TX Queue.  It's easiest
--	 * to simply copy the CIDX Update value from the Egress Update message
--	 * to the Status Page.  Also note that no Endian issues need to be
--	 * considered here since both are Big Endian and we're just copying
--	 * bytes consistently ...
--	 */
--	if (txq->dbqt) {
--		struct cpl_sge_egr_update *egr;
--
--		egr = (struct cpl_sge_egr_update *)rsp;
--		WRITE_ONCE(txq->q.stat->cidx, egr->cidx);
--	}
--
- 	t4_sge_eth_txq_egress_update(adapter, txq, -1);
- }
- 
 -- 
 2.24.0
 
