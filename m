@@ -2,95 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6D2618BDA5
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 18:10:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 097D818BDD7
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 18:20:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728278AbgCSRKb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 13:10:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45678 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727235AbgCSRKb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 13:10:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=97QUluO/9z2nRz1LUzTzwjEEpdtKGGADgdrtcJm2fOA=; b=rMIndAv4X0iMvZD54MRmU04cL9
-        wigGi4hw8VKxK79UiAvPzUG36qw6+8iJqWdy2A4J1EHH/w4iRt2r1IjxGpuXKZdzkVqyLQn1c4PAF
-        FjjmDNkrmn83p2tyiVYaTzWNLYOOPKKOiXvttuCjz4ApHuebPULjbbmMM8A5rUvgbYn4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jEygV-000893-QN; Thu, 19 Mar 2020 18:10:19 +0100
-Date:   Thu, 19 Mar 2020 18:10:19 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Dejin Zheng <zhengdejin5@gmail.com>, f.fainelli@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, tglx@linutronix.de,
-        broonie@kernel.org, corbet@lwn.net, mchehab+samsung@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 3/7] net: phy: introduce
- phy_read_mmd_poll_timeout macro
-Message-ID: <20200319171019.GJ27807@lunn.ch>
-References: <20200319163910.14733-1-zhengdejin5@gmail.com>
- <20200319163910.14733-4-zhengdejin5@gmail.com>
- <c88c0ce1-af42-db67-22bc-92e82bd9efbf@gmail.com>
+        id S1727947AbgCSRUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 13:20:48 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:46885 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727009AbgCSRUs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 13:20:48 -0400
+Received: by mail-ed1-f67.google.com with SMTP id ca19so3637080edb.13
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 10:20:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mGnzjLPuiF5jh+YmVcnbPs/rygoBzTtr0yQpmvu1C/U=;
+        b=ho5WkQIp7FBmmWnNEs8qarjlXHQ/bMpYIjVlz5diN+cFqHjIA9Cfpaie2yvrq56MzY
+         6TnA04IH3cBRxYREMcsiPUpLCig/QPzuawQ7+ZDABjg2D7iZ5uNSWio6VnyJC48k22lp
+         9sUOw53EsymdqqmachpMBK4cZKv94z+KiqobI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mGnzjLPuiF5jh+YmVcnbPs/rygoBzTtr0yQpmvu1C/U=;
+        b=juY6MB5qTOSwKYgOooQN6SMmdpGJNdNWPD3EIghvka3q152DueqMVt7+2o2Xj/Tcpm
+         vMF+/xUktai1fYuGalUtyesgkIypaeEQ0VkHjusc9WgIKBnSXuwTmcKxxPdOa3ijgObc
+         qSGVwgrwwSIFFKBaNVnhiSW30vIdog+mp+/CTGPiev68dyc/J1S9ChZrTp3vRew3OBXP
+         B5DEYcCLXKcyJ3uV9Z9oZEiAJVhJDrP/yiELtApEqKph+BBbl+Op3pryEl3ldAKioxup
+         +0M20EXmyaSju8PQEJuvmDnqYM9q9Ls4f13cKJsmslPliQEdSfKD5NPLFxWnNhEvhqDw
+         4TxQ==
+X-Gm-Message-State: ANhLgQ1/BA6J2VnSo+kA50YggRJRyuiwBIUdvL4b1GDjxmCwqKG6xteK
+        SI4EyO7P8iQqr33HmGNUOvpiqZdCPmw=
+X-Google-Smtp-Source: ADFU+vuPThJQTr4g0NcJMOieyn4USA91OlPTx1Z5kK7B5llp+xFcL5QQ1fC2Ca4RUtNAbeXo9yXfqw==
+X-Received: by 2002:a05:6402:c8e:: with SMTP id cm14mr3912337edb.163.1584638441696;
+        Thu, 19 Mar 2020 10:20:41 -0700 (PDT)
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com. [209.85.221.46])
+        by smtp.gmail.com with ESMTPSA id j26sm177050ejd.6.2020.03.19.10.20.41
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Mar 2020 10:20:41 -0700 (PDT)
+Received: by mail-wr1-f46.google.com with SMTP id w10so4119705wrm.4
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 10:20:41 -0700 (PDT)
+X-Received: by 2002:a19:c7:: with SMTP id 190mr2779646lfa.30.1584637965843;
+ Thu, 19 Mar 2020 10:12:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c88c0ce1-af42-db67-22bc-92e82bd9efbf@gmail.com>
+References: <20200318204302.693307984@linutronix.de> <20200318204408.521507446@linutronix.de>
+In-Reply-To: <20200318204408.521507446@linutronix.de>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 19 Mar 2020 10:12:29 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wj3bwUD9=y4Wd6=Dh1Xwib+N3nYuKA=hd3-y+0OUeLcOQ@mail.gmail.com>
+Message-ID: <CAHk-=wj3bwUD9=y4Wd6=Dh1Xwib+N3nYuKA=hd3-y+0OUeLcOQ@mail.gmail.com>
+Subject: Re: [patch V2 11/15] completion: Use simple wait queues
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 05:56:39PM +0100, Heiner Kallweit wrote:
-> On 19.03.2020 17:39, Dejin Zheng wrote:
-> > it is sometimes necessary to poll a phy register by phy_read_mmd()
-> > function until its value satisfies some condition. introduce
-> > phy_read_mmd_poll_timeout() macros that do this.
-> > 
-> > Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
-> > ---
-> >  include/linux/phy.h | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/include/linux/phy.h b/include/linux/phy.h
-> > index 36d9dea04016..a30e9008647f 100644
-> > --- a/include/linux/phy.h
-> > +++ b/include/linux/phy.h
-> > @@ -24,6 +24,7 @@
-> >  #include <linux/mod_devicetable.h>
-> >  #include <linux/u64_stats_sync.h>
-> >  #include <linux/irqreturn.h>
-> > +#include <linux/iopoll.h>
-> >  
-> >  #include <linux/atomic.h>
-> >  
-> > @@ -784,6 +785,9 @@ static inline int __phy_modify_changed(struct phy_device *phydev, u32 regnum,
-> >   */
-> >  int phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum);
-> >  
-> > +#define phy_read_mmd_poll_timeout(val, cond, sleep_us, timeout_us, args...) \
-> > +	read_poll_timeout(phy_read_mmd, val, cond, sleep_us, timeout_us, args)
-> > +
-> >  /**
-> >   * __phy_read_mmd - Convenience function for reading a register
-> >   * from an MMD on a given PHY.
-> > 
-> I'm not fully convinced. Usage of the new macro with its lots of
-> parameters makes the code quite hard to read. Therefore I'm also
-> not a big fan of readx_poll_timeout.
+On Wed, Mar 18, 2020 at 1:47 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+>
+> There is no semantical or functional change:
 
-One issue is that people often implement polling wrong. They don't
-take into account where extra delays can happen, and return -ETIMEOUT
-when in fact the operation was successful. readx_poll_timeout gives us
-a core which is known to be good.
+Ack, with just the explanation, I'm no longer objecting to this.
 
-What i don't like here is phy_read_mmd_poll_timeout() takes args... We
-know it should be passed a phydev, and device address and a reg. I
-would prefer these to be explicit parameters. We can then get the
-compiler to check the correct number of parameters are passed.
+Plus you fixed and cleaned up the odd usb gadget code separately
+(well, most of it).
 
-      Andrew
+              Linus
