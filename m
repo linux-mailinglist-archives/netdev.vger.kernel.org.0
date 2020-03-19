@@ -2,267 +2,309 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81BF018A9D1
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 01:31:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A7AC118A9DE
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 01:34:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727328AbgCSAa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 20:30:57 -0400
-Received: from frisell.zx2c4.com ([192.95.5.64]:39393 "EHLO frisell.zx2c4.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726596AbgCSAa4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 20:30:56 -0400
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 1c9ba923;
-        Thu, 19 Mar 2020 00:24:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=from:to:cc
-        :subject:date:message-id:in-reply-to:references:mime-version
-        :content-transfer-encoding; s=mail; bh=+zHFm0/F9vmAnsG2NXgZq9C8o
-        wM=; b=2n4+462jz07TrTCTBndAM/7iZKDN/aUnfqKLemuRAJqfqRdRga20Ppq/U
-        juyzRMdlJkkhHH6Lz/DRWJCrp1mzOApWchRbCN4PLTodY1sHelqcr/2nzQdIH+zO
-        c8F+9//aDXX+BSYBzXbULM2foqSsT+m1DjCvewf1R8CORnpfx6TAx48EdHjhPSVg
-        lPggvQXvNzc0SUwaqgRKndXacCLTWL9lgn/F3DPL0J06ZX7gHWPBGYXyLqRtp26P
-        1PfSqYYo+UL8Fph1XgFhrqsM4b0vAhseBvcvz7QwFHdJQPbedn+g4sR+WY5wlxFB
-        ++KzubKufAhiI7mhSQWlb+04xVRsg==
-Received: by frisell.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 1cf06c71 (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256:NO);
-        Thu, 19 Mar 2020 00:24:30 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH net 5/5] wireguard: noise: error out precomputed DH during handshake rather than config
-Date:   Wed, 18 Mar 2020 18:30:47 -0600
-Message-Id: <20200319003047.113501-6-Jason@zx2c4.com>
-In-Reply-To: <20200319003047.113501-1-Jason@zx2c4.com>
-References: <20200319003047.113501-1-Jason@zx2c4.com>
+        id S1727236AbgCSAdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 20:33:55 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:41354 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726596AbgCSAdy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 20:33:54 -0400
+Received: by mail-qt1-f195.google.com with SMTP id i26so366056qtq.8
+        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 17:33:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=cHl5FEDU/in/tKhyh8KADSkZ8t44HVVU6qSIiQF7HDk=;
+        b=vKjz15irrUHQOxGKx3YJZSYaREZiLBQ5dkdKASVNi/DUnapYI1oeMp9PSbchikzKPl
+         RL8eE9BxcoQ9gT2Z+96oGA/M+zvf4M7Ww0jlnMdeOCV7wPsoaRRDYZ+t1YRHJBhYvxmw
+         JQHaOq18/lt39V3Rogoc35Lu1FpkxEJUwdFM4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=cHl5FEDU/in/tKhyh8KADSkZ8t44HVVU6qSIiQF7HDk=;
+        b=BcmCXQwZrUuMNGdpzO8hTFyBP6nyz4Z74W38QonQa0CkWPfqcbYmmp9JOpnJaiZAcP
+         8aoy2Dd3aybtgbKUkQpSGpVQmH8aKVBNsNG0bSt4NiPZzRSWHGzulItAr2dg+JBYQaor
+         io23PDRCBkDqq1c8jcivfChLITbiOuHBkHad7q9g2MSRQ9uvB8jfBJPNtEx6e2VzwyRr
+         KyqgajIgtEUwT1f8oTg/5xycYS0DcmfrHk1sK6cnADYOXZpHwV45OKhmky7hwPebwA9s
+         Xcb+80ik5vlJBH/emaelFIjOvz7expdfv9pvWNmFBZE0bKnYHWN/dGnF2T/UopbKYYfx
+         UQIA==
+X-Gm-Message-State: ANhLgQ1K8Z9aNfYezJV20LxnpTqhFPoGEJz3+ByS/+6N3xjWTT9X134h
+        7rFcMfngBsxXU7bdY4YO+yQTIA==
+X-Google-Smtp-Source: ADFU+vte9vg5yrKnsJYwQUFLJMp35Yp0oNpQIim2wyXmoa5rkeGpiqYzRFosPkhMiCPa11iAMkqA+g==
+X-Received: by 2002:ac8:1762:: with SMTP id u31mr389327qtk.359.1584578032733;
+        Wed, 18 Mar 2020 17:33:52 -0700 (PDT)
+Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
+        by smtp.gmail.com with ESMTPSA id f13sm456312qkm.19.2020.03.18.17.33.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Mar 2020 17:33:52 -0700 (PDT)
+Date:   Wed, 18 Mar 2020 20:33:51 -0400
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org
+Subject: Re: [patch V2 11/15] completion: Use simple wait queues
+Message-ID: <20200319003351.GA211584@google.com>
+References: <20200318204302.693307984@linutronix.de>
+ <20200318204408.521507446@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200318204408.521507446@linutronix.de>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We precompute the static-static ECDH during configuration time, in order
-to save an expensive computation later when receiving network packets.
-However, not all ECDH computations yield a contributory result. Prior,
-we were just not letting those peers be added to the interface. However,
-this creates a strange inconsistency, since it was still possible to add
-other weird points, like a valid public key plus a low-order point, and,
-like points that result in zeros, a handshake would not complete. In
-order to make the behavior more uniform and less surprising, simply
-allow all peers to be added. Then, we'll error out later when doing the
-crypto if there's an issue. This also adds more separation between the
-crypto layer and the configuration layer.
+Hi Thomas,
 
-Discussed-with: Mathias Hall-Andersen <mathias@hall-andersen.dk>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/net/wireguard/netlink.c            |  8 +---
- drivers/net/wireguard/noise.c              | 55 ++++++++++++----------
- drivers/net/wireguard/noise.h              | 12 ++---
- drivers/net/wireguard/peer.c               |  7 +--
- tools/testing/selftests/wireguard/netns.sh | 15 ++++--
- 5 files changed, 49 insertions(+), 48 deletions(-)
+On Wed, Mar 18, 2020 at 09:43:13PM +0100, Thomas Gleixner wrote:
+> From: Thomas Gleixner <tglx@linutronix.de>
+> 
+> completion uses a wait_queue_head_t to enqueue waiters.
+> 
+> wait_queue_head_t contains a spinlock_t to protect the list of waiters
+> which excludes it from being used in truly atomic context on a PREEMPT_RT
+> enabled kernel.
+> 
+> The spinlock in the wait queue head cannot be replaced by a raw_spinlock
+> because:
+> 
+>   - wait queues can have custom wakeup callbacks, which acquire other
+>     spinlock_t locks and have potentially long execution times
 
-diff --git a/drivers/net/wireguard/netlink.c b/drivers/net/wireguard/netlink.c
-index bda26405497c..802099c8828a 100644
---- a/drivers/net/wireguard/netlink.c
-+++ b/drivers/net/wireguard/netlink.c
-@@ -411,11 +411,7 @@ static int set_peer(struct wg_device *wg, struct nlattr **attrs)
- 
- 		peer = wg_peer_create(wg, public_key, preshared_key);
- 		if (IS_ERR(peer)) {
--			/* Similar to the above, if the key is invalid, we skip
--			 * it without fanfare, so that services don't need to
--			 * worry about doing key validation themselves.
--			 */
--			ret = PTR_ERR(peer) == -EKEYREJECTED ? 0 : PTR_ERR(peer);
-+			ret = PTR_ERR(peer);
- 			peer = NULL;
- 			goto out;
- 		}
-@@ -569,7 +565,7 @@ static int wg_set_device(struct sk_buff *skb, struct genl_info *info)
- 							 private_key);
- 		list_for_each_entry_safe(peer, temp, &wg->peer_list,
- 					 peer_list) {
--			BUG_ON(!wg_noise_precompute_static_static(peer));
-+			wg_noise_precompute_static_static(peer);
- 			wg_noise_expire_current_peer_keypairs(peer);
- 		}
- 		wg_cookie_checker_precompute_device_keys(&wg->cookie_checker);
-diff --git a/drivers/net/wireguard/noise.c b/drivers/net/wireguard/noise.c
-index 919d9d866446..708dc61c974f 100644
---- a/drivers/net/wireguard/noise.c
-+++ b/drivers/net/wireguard/noise.c
-@@ -44,32 +44,23 @@ void __init wg_noise_init(void)
- }
- 
- /* Must hold peer->handshake.static_identity->lock */
--bool wg_noise_precompute_static_static(struct wg_peer *peer)
-+void wg_noise_precompute_static_static(struct wg_peer *peer)
- {
--	bool ret;
--
- 	down_write(&peer->handshake.lock);
--	if (peer->handshake.static_identity->has_identity) {
--		ret = curve25519(
--			peer->handshake.precomputed_static_static,
-+	if (!peer->handshake.static_identity->has_identity ||
-+	    !curve25519(peer->handshake.precomputed_static_static,
- 			peer->handshake.static_identity->static_private,
--			peer->handshake.remote_static);
--	} else {
--		u8 empty[NOISE_PUBLIC_KEY_LEN] = { 0 };
--
--		ret = curve25519(empty, empty, peer->handshake.remote_static);
-+			peer->handshake.remote_static))
- 		memset(peer->handshake.precomputed_static_static, 0,
- 		       NOISE_PUBLIC_KEY_LEN);
--	}
- 	up_write(&peer->handshake.lock);
--	return ret;
- }
- 
--bool wg_noise_handshake_init(struct noise_handshake *handshake,
--			   struct noise_static_identity *static_identity,
--			   const u8 peer_public_key[NOISE_PUBLIC_KEY_LEN],
--			   const u8 peer_preshared_key[NOISE_SYMMETRIC_KEY_LEN],
--			   struct wg_peer *peer)
-+void wg_noise_handshake_init(struct noise_handshake *handshake,
-+			     struct noise_static_identity *static_identity,
-+			     const u8 peer_public_key[NOISE_PUBLIC_KEY_LEN],
-+			     const u8 peer_preshared_key[NOISE_SYMMETRIC_KEY_LEN],
-+			     struct wg_peer *peer)
- {
- 	memset(handshake, 0, sizeof(*handshake));
- 	init_rwsem(&handshake->lock);
-@@ -81,7 +72,7 @@ bool wg_noise_handshake_init(struct noise_handshake *handshake,
- 		       NOISE_SYMMETRIC_KEY_LEN);
- 	handshake->static_identity = static_identity;
- 	handshake->state = HANDSHAKE_ZEROED;
--	return wg_noise_precompute_static_static(peer);
-+	wg_noise_precompute_static_static(peer);
- }
- 
- static void handshake_zero(struct noise_handshake *handshake)
-@@ -403,6 +394,19 @@ static bool __must_check mix_dh(u8 chaining_key[NOISE_HASH_LEN],
- 	return true;
- }
- 
-+static bool __must_check mix_precomputed_dh(u8 chaining_key[NOISE_HASH_LEN],
-+					    u8 key[NOISE_SYMMETRIC_KEY_LEN],
-+					    const u8 precomputed[NOISE_PUBLIC_KEY_LEN])
-+{
-+	static u8 zero_point[NOISE_PUBLIC_KEY_LEN];
-+	if (unlikely(!crypto_memneq(precomputed, zero_point, NOISE_PUBLIC_KEY_LEN)))
-+		return false;
-+	kdf(chaining_key, key, NULL, precomputed, NOISE_HASH_LEN,
-+	    NOISE_SYMMETRIC_KEY_LEN, 0, NOISE_PUBLIC_KEY_LEN,
-+	    chaining_key);
-+	return true;
-+}
-+
- static void mix_hash(u8 hash[NOISE_HASH_LEN], const u8 *src, size_t src_len)
- {
- 	struct blake2s_state blake;
-@@ -531,10 +535,9 @@ wg_noise_handshake_create_initiation(struct message_handshake_initiation *dst,
- 			NOISE_PUBLIC_KEY_LEN, key, handshake->hash);
- 
- 	/* ss */
--	kdf(handshake->chaining_key, key, NULL,
--	    handshake->precomputed_static_static, NOISE_HASH_LEN,
--	    NOISE_SYMMETRIC_KEY_LEN, 0, NOISE_PUBLIC_KEY_LEN,
--	    handshake->chaining_key);
-+	if (!mix_precomputed_dh(handshake->chaining_key, key,
-+				handshake->precomputed_static_static))
-+		goto out;
- 
- 	/* {t} */
- 	tai64n_now(timestamp);
-@@ -595,9 +598,9 @@ wg_noise_handshake_consume_initiation(struct message_handshake_initiation *src,
- 	handshake = &peer->handshake;
- 
- 	/* ss */
--	kdf(chaining_key, key, NULL, handshake->precomputed_static_static,
--	    NOISE_HASH_LEN, NOISE_SYMMETRIC_KEY_LEN, 0, NOISE_PUBLIC_KEY_LEN,
--	    chaining_key);
-+	if (!mix_precomputed_dh(chaining_key, key,
-+				handshake->precomputed_static_static))
-+	    goto out;
- 
- 	/* {t} */
- 	if (!message_decrypt(t, src->encrypted_timestamp,
-diff --git a/drivers/net/wireguard/noise.h b/drivers/net/wireguard/noise.h
-index 138a07bb817c..f532d59d3f19 100644
---- a/drivers/net/wireguard/noise.h
-+++ b/drivers/net/wireguard/noise.h
-@@ -94,11 +94,11 @@ struct noise_handshake {
- struct wg_device;
- 
- void wg_noise_init(void);
--bool wg_noise_handshake_init(struct noise_handshake *handshake,
--			   struct noise_static_identity *static_identity,
--			   const u8 peer_public_key[NOISE_PUBLIC_KEY_LEN],
--			   const u8 peer_preshared_key[NOISE_SYMMETRIC_KEY_LEN],
--			   struct wg_peer *peer);
-+void wg_noise_handshake_init(struct noise_handshake *handshake,
-+			     struct noise_static_identity *static_identity,
-+			     const u8 peer_public_key[NOISE_PUBLIC_KEY_LEN],
-+			     const u8 peer_preshared_key[NOISE_SYMMETRIC_KEY_LEN],
-+			     struct wg_peer *peer);
- void wg_noise_handshake_clear(struct noise_handshake *handshake);
- static inline void wg_noise_reset_last_sent_handshake(atomic64_t *handshake_ns)
- {
-@@ -116,7 +116,7 @@ void wg_noise_expire_current_peer_keypairs(struct wg_peer *peer);
- void wg_noise_set_static_identity_private_key(
- 	struct noise_static_identity *static_identity,
- 	const u8 private_key[NOISE_PUBLIC_KEY_LEN]);
--bool wg_noise_precompute_static_static(struct wg_peer *peer);
-+void wg_noise_precompute_static_static(struct wg_peer *peer);
- 
- bool
- wg_noise_handshake_create_initiation(struct message_handshake_initiation *dst,
-diff --git a/drivers/net/wireguard/peer.c b/drivers/net/wireguard/peer.c
-index 071eedf33f5a..1d634bd3038f 100644
---- a/drivers/net/wireguard/peer.c
-+++ b/drivers/net/wireguard/peer.c
-@@ -34,11 +34,8 @@ struct wg_peer *wg_peer_create(struct wg_device *wg,
- 		return ERR_PTR(ret);
- 	peer->device = wg;
- 
--	if (!wg_noise_handshake_init(&peer->handshake, &wg->static_identity,
--				     public_key, preshared_key, peer)) {
--		ret = -EKEYREJECTED;
--		goto err_1;
--	}
-+	wg_noise_handshake_init(&peer->handshake, &wg->static_identity,
-+				public_key, preshared_key, peer);
- 	if (dst_cache_init(&peer->endpoint_cache, GFP_KERNEL))
- 		goto err_1;
- 	if (wg_packet_queue_init(&peer->tx_queue, wg_packet_tx_worker, false,
-diff --git a/tools/testing/selftests/wireguard/netns.sh b/tools/testing/selftests/wireguard/netns.sh
-index 138d46b3f330..936e1ca9410e 100755
---- a/tools/testing/selftests/wireguard/netns.sh
-+++ b/tools/testing/selftests/wireguard/netns.sh
-@@ -527,11 +527,16 @@ n0 wg set wg0 peer "$pub2" allowed-ips 0.0.0.0/0
- n0 wg set wg0 peer "$pub2" allowed-ips ::/0,1700::/111,5000::/4,e000::/37,9000::/75
- n0 wg set wg0 peer "$pub2" allowed-ips ::/0
- n0 wg set wg0 peer "$pub2" remove
--low_order_points=( AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= 4Ot6fDtBuK4WVuP68Z/EatoJjeucMrH9hmIFFl9JuAA= X5yVvKNQjCSx0LFVnIPvWwREXMRYHI6G2CJO3dCfEVc= 7P///////////////////////////////////////38= 7f///////////////////////////////////////38= 7v///////////////////////////////////////38= )
--n0 wg set wg0 private-key /dev/null ${low_order_points[@]/#/peer }
--[[ -z $(n0 wg show wg0 peers) ]]
--n0 wg set wg0 private-key <(echo "$key1") ${low_order_points[@]/#/peer }
--[[ -z $(n0 wg show wg0 peers) ]]
-+for low_order_point in AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA= 4Ot6fDtBuK4WVuP68Z/EatoJjeucMrH9hmIFFl9JuAA= X5yVvKNQjCSx0LFVnIPvWwREXMRYHI6G2CJO3dCfEVc= 7P///////////////////////////////////////38= 7f///////////////////////////////////////38= 7v///////////////////////////////////////38=; do
-+	n0 wg set wg0 peer "$low_order_point" persistent-keepalive 1 endpoint 127.0.0.1:1111
-+done
-+[[ -n $(n0 wg show wg0 peers) ]]
-+exec 4< <(n0 ncat -l -u -p 1111)
-+ncat_pid=$!
-+waitncatudp $netns0 $ncat_pid
-+ip0 link set wg0 up
-+! read -r -n 1 -t 2 <&4 || false
-+kill $ncat_pid
- ip0 link del wg0
- 
- declare -A objects
--- 
-2.25.1
+Cool, makes sense.
 
+>   - wake_up() walks an unbounded number of list entries during the wake up
+>     and may wake an unbounded number of waiters.
+
+Just to clarify here, wake_up() will really wake up just 1 waiter if all the
+waiters on the queue are exclusive right? So in such scenario at least, the
+"unbounded number of waiters" would not be an issue if everything waiting was
+exclusive and waitqueue with wake_up() was used. Please correct me if I'm
+wrong about that though.
+
+So the main reasons to avoid waitqueue in favor of swait (as you mentioned)
+would be the sleep-while-atomic issue in truly atomic context on RT, and the
+fact that callbacks can take a long time.
+
+> 
+> For simplicity and performance reasons complete() should be usable on
+> PREEMPT_RT enabled kernels.
+> 
+> completions do not use custom wakeup callbacks and are usually single
+> waiter, except for a few corner cases.
+> 
+> Replace the wait queue in the completion with a simple wait queue (swait),
+> which uses a raw_spinlock_t for protecting the waiter list and therefore is
+> safe to use inside truly atomic regions on PREEMPT_RT.
+> 
+> There is no semantical or functional change:
+> 
+>   - completions use the exclusive wait mode which is what swait provides
+> 
+>   - complete() wakes one exclusive waiter
+> 
+>   - complete_all() wakes all waiters while holding the lock which protects
+>     the wait queue against newly incoming waiters. The conversion to swait
+>     preserves this behaviour.
+> 
+> complete_all() might cause unbound latencies with a large number of waiters
+> being woken at once, but most complete_all() usage sites are either in
+> testing or initialization code or have only a really small number of
+> concurrent waiters which for now does not cause a latency problem. Keep it
+> simple for now.
+> 
+> The fixup of the warning check in the USB gadget driver is just a straight
+> forward conversion of the lockless waiter check from one waitqueue type to
+> the other.
+> 
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+
+Reviewed-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+
+thanks,
+
+ - Joel
+
+
+> ---
+> V2: Split out the orinoco and usb gadget parts and amended change log
+> ---
+>  drivers/usb/gadget/function/f_fs.c |    2 +-
+>  include/linux/completion.h         |    8 ++++----
+>  kernel/sched/completion.c          |   36 +++++++++++++++++++-----------------
+>  3 files changed, 24 insertions(+), 22 deletions(-)
+> 
+> --- a/drivers/usb/gadget/function/f_fs.c
+> +++ b/drivers/usb/gadget/function/f_fs.c
+> @@ -1703,7 +1703,7 @@ static void ffs_data_put(struct ffs_data
+>  		pr_info("%s(): freeing\n", __func__);
+>  		ffs_data_clear(ffs);
+>  		BUG_ON(waitqueue_active(&ffs->ev.waitq) ||
+> -		       waitqueue_active(&ffs->ep0req_completion.wait) ||
+> +		       swait_active(&ffs->ep0req_completion.wait) ||
+>  		       waitqueue_active(&ffs->wait));
+>  		destroy_workqueue(ffs->io_completion_wq);
+>  		kfree(ffs->dev_name);
+> --- a/include/linux/completion.h
+> +++ b/include/linux/completion.h
+> @@ -9,7 +9,7 @@
+>   * See kernel/sched/completion.c for details.
+>   */
+>  
+> -#include <linux/wait.h>
+> +#include <linux/swait.h>
+>  
+>  /*
+>   * struct completion - structure used to maintain state for a "completion"
+> @@ -25,7 +25,7 @@
+>   */
+>  struct completion {
+>  	unsigned int done;
+> -	wait_queue_head_t wait;
+> +	struct swait_queue_head wait;
+>  };
+>  
+>  #define init_completion_map(x, m) __init_completion(x)
+> @@ -34,7 +34,7 @@ static inline void complete_acquire(stru
+>  static inline void complete_release(struct completion *x) {}
+>  
+>  #define COMPLETION_INITIALIZER(work) \
+> -	{ 0, __WAIT_QUEUE_HEAD_INITIALIZER((work).wait) }
+> +	{ 0, __SWAIT_QUEUE_HEAD_INITIALIZER((work).wait) }
+>  
+>  #define COMPLETION_INITIALIZER_ONSTACK_MAP(work, map) \
+>  	(*({ init_completion_map(&(work), &(map)); &(work); }))
+> @@ -85,7 +85,7 @@ static inline void complete_release(stru
+>  static inline void __init_completion(struct completion *x)
+>  {
+>  	x->done = 0;
+> -	init_waitqueue_head(&x->wait);
+> +	init_swait_queue_head(&x->wait);
+>  }
+>  
+>  /**
+> --- a/kernel/sched/completion.c
+> +++ b/kernel/sched/completion.c
+> @@ -29,12 +29,12 @@ void complete(struct completion *x)
+>  {
+>  	unsigned long flags;
+>  
+> -	spin_lock_irqsave(&x->wait.lock, flags);
+> +	raw_spin_lock_irqsave(&x->wait.lock, flags);
+>  
+>  	if (x->done != UINT_MAX)
+>  		x->done++;
+> -	__wake_up_locked(&x->wait, TASK_NORMAL, 1);
+> -	spin_unlock_irqrestore(&x->wait.lock, flags);
+> +	swake_up_locked(&x->wait);
+> +	raw_spin_unlock_irqrestore(&x->wait.lock, flags);
+>  }
+>  EXPORT_SYMBOL(complete);
+>  
+> @@ -58,10 +58,12 @@ void complete_all(struct completion *x)
+>  {
+>  	unsigned long flags;
+>  
+> -	spin_lock_irqsave(&x->wait.lock, flags);
+> +	WARN_ON(irqs_disabled());
+> +
+> +	raw_spin_lock_irqsave(&x->wait.lock, flags);
+>  	x->done = UINT_MAX;
+> -	__wake_up_locked(&x->wait, TASK_NORMAL, 0);
+> -	spin_unlock_irqrestore(&x->wait.lock, flags);
+> +	swake_up_all_locked(&x->wait);
+> +	raw_spin_unlock_irqrestore(&x->wait.lock, flags);
+>  }
+>  EXPORT_SYMBOL(complete_all);
+>  
+> @@ -70,20 +72,20 @@ do_wait_for_common(struct completion *x,
+>  		   long (*action)(long), long timeout, int state)
+>  {
+>  	if (!x->done) {
+> -		DECLARE_WAITQUEUE(wait, current);
+> +		DECLARE_SWAITQUEUE(wait);
+>  
+> -		__add_wait_queue_entry_tail_exclusive(&x->wait, &wait);
+>  		do {
+>  			if (signal_pending_state(state, current)) {
+>  				timeout = -ERESTARTSYS;
+>  				break;
+>  			}
+> +			__prepare_to_swait(&x->wait, &wait);
+>  			__set_current_state(state);
+> -			spin_unlock_irq(&x->wait.lock);
+> +			raw_spin_unlock_irq(&x->wait.lock);
+>  			timeout = action(timeout);
+> -			spin_lock_irq(&x->wait.lock);
+> +			raw_spin_lock_irq(&x->wait.lock);
+>  		} while (!x->done && timeout);
+> -		__remove_wait_queue(&x->wait, &wait);
+> +		__finish_swait(&x->wait, &wait);
+>  		if (!x->done)
+>  			return timeout;
+>  	}
+> @@ -100,9 +102,9 @@ static inline long __sched
+>  
+>  	complete_acquire(x);
+>  
+> -	spin_lock_irq(&x->wait.lock);
+> +	raw_spin_lock_irq(&x->wait.lock);
+>  	timeout = do_wait_for_common(x, action, timeout, state);
+> -	spin_unlock_irq(&x->wait.lock);
+> +	raw_spin_unlock_irq(&x->wait.lock);
+>  
+>  	complete_release(x);
+>  
+> @@ -291,12 +293,12 @@ bool try_wait_for_completion(struct comp
+>  	if (!READ_ONCE(x->done))
+>  		return false;
+>  
+> -	spin_lock_irqsave(&x->wait.lock, flags);
+> +	raw_spin_lock_irqsave(&x->wait.lock, flags);
+>  	if (!x->done)
+>  		ret = false;
+>  	else if (x->done != UINT_MAX)
+>  		x->done--;
+> -	spin_unlock_irqrestore(&x->wait.lock, flags);
+> +	raw_spin_unlock_irqrestore(&x->wait.lock, flags);
+>  	return ret;
+>  }
+>  EXPORT_SYMBOL(try_wait_for_completion);
+> @@ -322,8 +324,8 @@ bool completion_done(struct completion *
+>  	 * otherwise we can end up freeing the completion before complete()
+>  	 * is done referencing it.
+>  	 */
+> -	spin_lock_irqsave(&x->wait.lock, flags);
+> -	spin_unlock_irqrestore(&x->wait.lock, flags);
+> +	raw_spin_lock_irqsave(&x->wait.lock, flags);
+> +	raw_spin_unlock_irqrestore(&x->wait.lock, flags);
+>  	return true;
+>  }
+>  EXPORT_SYMBOL(completion_done);
+> 
