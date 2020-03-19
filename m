@@ -2,187 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 134D018AD54
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 08:31:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25A0418AD7B
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 08:46:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727045AbgCSHbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 03:31:10 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:42622 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725767AbgCSHbK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 03:31:10 -0400
-Received: by mail-wr1-f65.google.com with SMTP id v11so1349440wrm.9
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 00:31:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=m2p6JNj5eh/IxHSDwtrNY7piiLKH5MbMVTK+eXXDELE=;
-        b=NNSuT3CXBKD0KmMtdNXa4Xvwj12RxfEPDlL8AotvlMIQR5Wj5qGD69edjFbqzgCjkC
-         IuqBDSzZbz7oVDV2ubeNyGt5WLX6umaoQizb/tTf9DHp696YrUv60/zn99yj4Yzty1ac
-         EHlh1AdJwZj6bUWxviHFEUbsemAhuo7ZMNMXxP8uG5QT3WUgxU14KcoqctIutJMhDNeO
-         RFec0p+r4yPFTPE/FCUCDgRJXFVhvHRCrbTXsbmE6YHENkjJe/6nhu2/0LDhJyjcEeuV
-         zyHXeHqYS8GRI5xpOvjuDVK36jJtEEvbT5m4BWLiMdW3dXOU0wRYvl+dxdpGip3SW+CX
-         BkAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=m2p6JNj5eh/IxHSDwtrNY7piiLKH5MbMVTK+eXXDELE=;
-        b=JGMVQmtMUSNOSOQcvW/yObAf+K0jsiY/h+2zRzN1axdcT/QhcJa5VYVA8pcx8YucTp
-         FimUhiA1YAaquNDRoiITwM7kuGBLts38laxTDuA62x6M26JEzOoGLH3phik3s6M8h7z4
-         AJE5mjx+bWfVc2b+P0+ZLKUlHcgK1RJY0X8AG5Ky+WcdlcJnkxpvtsnA4+T7wYyVsLyX
-         9oezOB81aJGPnFspZxvzPL5woX0Ye1rZkjutET9ac/TgK/TaUfKZl/HO6uHP+N3VBFn8
-         nDaRsCrBfr0548pxdeIjhPAkFqcXMWEo67eqUgfEbU/Xo3v/AYSjTaVx1AUedocbL8an
-         y9dA==
-X-Gm-Message-State: ANhLgQ1kLy2+/y6HVzMCKnMrc3b9DdKkg9/PtAnhNArmR4dn+y/vx+cM
-        LkquCcxgQ3DzErfuZV/isMoaZmQW
-X-Google-Smtp-Source: ADFU+vsWneqMfeJtxH0qm6jKXDoJLiJPBR5zzkH3KvFPs4PM9Z8SMM45XksjlNy4rD13ErfE9cnZew==
-X-Received: by 2002:adf:bc04:: with SMTP id s4mr2335838wrg.244.1584603068437;
-        Thu, 19 Mar 2020 00:31:08 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:ecff:1b4a:46cb:d5e4? (p200300EA8F296000ECFF1B4A46CBD5E4.dip0.t-ipconnect.de. [2003:ea:8f29:6000:ecff:1b4a:46cb:d5e4])
-        by smtp.googlemail.com with ESMTPSA id u1sm2070051wrt.78.2020.03.19.00.31.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Mar 2020 00:31:07 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/3] net: phy: add and use phy_check_downshift
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <6e4ea372-3d05-3446-2928-2c1e76a66faf@gmail.com>
- <d2822357-4c1e-a072-632e-a902b04eba7c@gmail.com>
- <20200318232159.GA25745@shell.armlinux.org.uk>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <b0bc3ca0-0c1b-045e-cd00-37fc85c4eebf@gmail.com>
-Date:   Thu, 19 Mar 2020 08:30:58 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1726562AbgCSHqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 03:46:39 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:59709 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725768AbgCSHqj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 03:46:39 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id B74C15C01EA;
+        Thu, 19 Mar 2020 03:46:37 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Thu, 19 Mar 2020 03:46:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm3; bh=f5rFjbDiH3kcnIpvJKnrExFwLrT
+        thw0CoS09zAxpBd8=; b=Y9WmBzCwdRvXXIZC03nlFw+7z+iDs5rr8un9cqk1i2Q
+        1Phkpc1ApRbSu4gQew0s4cwQ0ASuIJRqWodxUyqNWvaQTEmepSijmH5i1IjZUga1
+        ICj/YMG4IL7qh4BKBkHY+RRpbzkLS75myixaaTeTuZfrFwuDMDD7u8YaxH+SZvmC
+        TCwhDlaT76HtB7Bkm/xLzmO+euzw37YOGOwr4hvHEvLGGtI+Ag1k7ZAqXq++K9OT
+        WPmluPXLcL5HFFtMmYBjJ2s+h4LtdDtLirguxZouzmCJ5Vz9zQyz+vmgOx/7s6DH
+        +cqzUuj/93zrtSqJoQQja5idr7+Jr+nU1xhGtQinDww==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=f5rFjb
+        DiH3kcnIpvJKnrExFwLrTthw0CoS09zAxpBd8=; b=RBV6nW+f++25Letgc5eNXV
+        xmhajnZQUnMaTeXrDR1WDLsvGjxeVNcmbHwkD2VSHzQXavHFgriWD+7y88TuM/K4
+        +NXKuUpBh4v7G483Cu0LPv3F13CmnDPmiYfLFbh1lXz/aP9VXVFBg+R6/c/u6EZv
+        y6yDd2YNQ53ulFTTpizlcGLcQPmWYCXnfi3MmqPrEkfjkqkNaOwywJAf0SlfxA+V
+        EKuKsntMbNtErydIBuORz3px5NARhnTzYgg2uktzFelugRZcYzl1SSiLHhVFg9J+
+        pkpKDVHHFVjGE8OxWYh+mEvEP5FkgA2oGo5xvBZDv6U1iMKIRp6O8xAswzlToKWA
+        ==
+X-ME-Sender: <xms:XSNzXneTT4lzd-_-iRKmo-USFBdB9L1BA1C0Af2fAzjWUocs_3qA-A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefkedguddugecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepifhrvghg
+    ucfmjfcuoehgrhgvgheskhhrohgrhhdrtghomheqnecukfhppeekfedrkeeirdekledrud
+    dtjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehg
+    rhgvgheskhhrohgrhhdrtghomh
+X-ME-Proxy: <xmx:XSNzXskKR9qQy0jCaKOaJ7x-0EdmIzk8ohyQZXwQiRIp0WQoKE60lg>
+    <xmx:XSNzXjGaFcVzSxHgJTYpP1sgM34-T6uRIdhfY03HcB8qOKQ6K8oNPg>
+    <xmx:XSNzXqJxRiJs2Dd_2_eXIrNflwpcL69eU-wopSo_3Kj-61w4VAk1PA>
+    <xmx:XSNzXgqBf8pOo_7Ic_wGYK0s6AkQUzZJKaLYZCdKdvOUg8ZqiZIGiQ>
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        by mail.messagingengine.com (Postfix) with ESMTPA id B4B76328005E;
+        Thu, 19 Mar 2020 03:46:36 -0400 (EDT)
+Date:   Thu, 19 Mar 2020 08:46:34 +0100
+From:   Greg KH <greg@kroah.com>
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     "stable@vger.kernel.org" <stable@vger.kernel.org>,
+        Wen Gong <wgong@codeaurora.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, ath11k@lists.infradead.org,
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH v2] net: qrtr: fix len of skb_put_padto in
+ qrtr_node_enqueue
+Message-ID: <20200319074634.GA3421780@kroah.com>
+References: <20200103045016.12459-1-wgong@codeaurora.org>
+ <20200105.144704.221506192255563950.davem@davemloft.net>
+ <CAD=FV=WiceRwLUS1sdL_W=ELKYZ9zKE13e8vx9SO0+tRvX74QQ@mail.gmail.com>
+ <20200317102604.GD1130294@kroah.com>
+ <CAD=FV=XXPACnPt=5=7gH3L6DufZ4tLSPTN-AtTAmvi5KAJuP6A@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200318232159.GA25745@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAD=FV=XXPACnPt=5=7gH3L6DufZ4tLSPTN-AtTAmvi5KAJuP6A@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19.03.2020 00:21, Russell King - ARM Linux admin wrote:
-> On Wed, Mar 18, 2020 at 10:29:01PM +0100, Heiner Kallweit wrote:
->> So far PHY drivers have to check whether a downshift occurred to be
->> able to notify the user. To make life of drivers authors a little bit
->> easier move the downshift notification to phylib. phy_check_downshift()
->> compares the highest mutually advertised speed with the actual value
->> of phydev->speed (typically read by the PHY driver from a
->> vendor-specific register) to detect a downshift.
+On Tue, Mar 17, 2020 at 08:45:09AM -0700, Doug Anderson wrote:
+> Hi,
 > 
-> My personal position on this is that reporting a downshift will be
-> sporadic at best, even when the link has negotiated slower.
+> On Tue, Mar 17, 2020 at 3:26 AM Greg KH <greg@kroah.com> wrote:
+> >
+> > On Tue, Feb 25, 2020 at 02:52:24PM -0800, Doug Anderson wrote:
+> > > Hi,
+> > >
+> > >
+> > > On Sun, Jan 5, 2020 at 2:47 PM David Miller <davem@davemloft.net> wrote:
+> > > >
+> > > > From: Wen Gong <wgong@codeaurora.org>
+> > > > Date: Fri,  3 Jan 2020 12:50:16 +0800
+> > > >
+> > > > > The len used for skb_put_padto is wrong, it need to add len of hdr.
+> > > >
+> > > > Thanks, applied.
+> > >
+> > > I noticed this patch is in mainline now as:
+> > >
+> > > ce57785bf91b net: qrtr: fix len of skb_put_padto in qrtr_node_enqueue
+> > >
+> > > Though I'm not an expert on the code, it feels like a stable candidate
+> > > unless someone objects.
+> >
+> > Stable candidate for what tree(s)?
 > 
-> The reason for this is that either end can decide to downshift.  If
-> the remote partner downshifts, then the local side has no idea that
-> a downshift occurred, and can't report that the link was downshifted.
+> I noticed that it was lacking and applied cleanly on 5.4.  As of
+> 5.4.25 it's still not stable there.  I only noticed it because I was
+> comparing all the patches in mainline in "net/qrtr" with what we had
+> in our tree and stumbled upon this one.
 > 
-Right, this warning can't cover the case that remote link partner
-downshifts. In this case however ethtool et al should show the reduced
-link partner advertisement, and therefore provide a hint why speed
-is slow.
+> Looking at it a little more carefully, I guess you could say:
+> 
+> Fixes: e7044482c8ac ("net: qrtr: Pass source and destination to
+> enqueue functions")
+> 
+> ...though it will be trickier to apply past commit 194ccc88297a ("net:
+> qrtr: Support decoding incoming v2 packets") just because the math
+> changed.
 
-> So, is it actually useful to report these events?
-> 
-To provide an example: A user recently complained that r8169 driver
-makes problems on his system:
-- it takes long time until link comes up
-- link is slow
-With iperf he then found out that displayed speed is 1Gbps but actual
-link speed is 100Mbps. In the end he found that one pin of his network
-port was corroded, therefore the downshift.
+Given that both of those commits showed up in 4.15, it doesn't matter
+much :)
 
-The phase of blaming the driver could have been skipped if he would
-have seen a downshift warning from the very beginning.
+I've queued this up for 5.4.y and 4.19.y now, thanks.
 
->>
->> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->> ---
->>  drivers/net/phy/phy-core.c | 33 +++++++++++++++++++++++++++++++++
->>  drivers/net/phy/phy.c      |  1 +
->>  include/linux/phy.h        |  1 +
->>  3 files changed, 35 insertions(+)
->>
->> diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
->> index e083e7a76..8e861be73 100644
->> --- a/drivers/net/phy/phy-core.c
->> +++ b/drivers/net/phy/phy-core.c
->> @@ -329,6 +329,39 @@ void phy_resolve_aneg_linkmode(struct phy_device *phydev)
->>  }
->>  EXPORT_SYMBOL_GPL(phy_resolve_aneg_linkmode);
->>  
->> +/**
->> + * phy_check_downshift - check whether downshift occurred
->> + * @phydev: The phy_device struct
->> + *
->> + * Check whether a downshift to a lower speed occurred. If this should be the
->> + * case warn the user.
->> + */
->> +bool phy_check_downshift(struct phy_device *phydev)
->> +{
->> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(common);
->> +	int i, speed = SPEED_UNKNOWN;
->> +
->> +	if (phydev->autoneg == AUTONEG_DISABLE)
->> +		return false;
->> +
->> +	linkmode_and(common, phydev->lp_advertising, phydev->advertising);
->> +
->> +	for (i = 0; i < ARRAY_SIZE(settings); i++)
->> +		if (test_bit(settings[i].bit, common)) {
->> +			speed = settings[i].speed;
->> +			break;
->> +		}
->> +
->> +	if (phydev->speed == speed)
->> +		return false;
->> +
->> +	phydev_warn(phydev, "Downshift occurred from negotiated speed %s to actual speed %s, check cabling!\n",
->> +		    phy_speed_to_str(speed), phy_speed_to_str(phydev->speed));
->> +
->> +	return true;
->> +}
->> +EXPORT_SYMBOL_GPL(phy_check_downshift);
->> +
->>  static int phy_resolve_min_speed(struct phy_device *phydev, bool fdx_only)
->>  {
->>  	__ETHTOOL_DECLARE_LINK_MODE_MASK(common);
->> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
->> index d71212a41..067ff5fec 100644
->> --- a/drivers/net/phy/phy.c
->> +++ b/drivers/net/phy/phy.c
->> @@ -507,6 +507,7 @@ static int phy_check_link_status(struct phy_device *phydev)
->>  		return err;
->>  
->>  	if (phydev->link && phydev->state != PHY_RUNNING) {
->> +		phy_check_downshift(phydev);
->>  		phydev->state = PHY_RUNNING;
->>  		phy_link_up(phydev);
->>  	} else if (!phydev->link && phydev->state != PHY_NOLINK) {
->> diff --git a/include/linux/phy.h b/include/linux/phy.h
->> index cb5a2182b..4962766b2 100644
->> --- a/include/linux/phy.h
->> +++ b/include/linux/phy.h
->> @@ -698,6 +698,7 @@ static inline bool phy_is_started(struct phy_device *phydev)
->>  
->>  void phy_resolve_aneg_pause(struct phy_device *phydev);
->>  void phy_resolve_aneg_linkmode(struct phy_device *phydev);
->> +bool phy_check_downshift(struct phy_device *phydev);
->>  
->>  /**
->>   * phy_read - Convenience function for reading a given PHY register
->> -- 
->> 2.25.1
->>
->>
->>
-> 
-
+greg k-h
