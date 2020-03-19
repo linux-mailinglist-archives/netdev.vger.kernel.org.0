@@ -2,100 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D1C418C173
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 21:33:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 320B118C174
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 21:35:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726867AbgCSUdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 16:33:45 -0400
-Received: from script.cs.helsinki.fi ([128.214.11.1]:50572 "EHLO
-        script.cs.helsinki.fi" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725787AbgCSUdp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 16:33:45 -0400
-X-DKIM: Courier DKIM Filter v0.50+pk-2017-10-25 mail.cs.helsinki.fi Thu, 19 Mar 2020 22:33:43 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cs.helsinki.fi;
-         h=date:from:to:cc:subject:in-reply-to:message-id:references
-        :mime-version:content-type; s=dkim20130528; bh=SAnJOdfd6Sr+2Q3KZ
-        EWzQqrrkTbV182u9jiaj1x0Rp8=; b=TwfyFKQRP3mm2HD2L/oGTe3DgsynOeXjW
-        QfxnatEZOjMJ1QMrTP4MmPk01gaFia/26pD1x/n8FPrbGIwU/S5VHRM5nmgM7Eig
-        UFR4ZKAPYRQ6BDPqrJtxsc5/256Jgo6ask6PN082sIYCaDXMCGzJ+NjF1q+yqhjp
-        vu/KwLZBr8=
-Received: from whs-18.cs.helsinki.fi (whs-18.cs.helsinki.fi [128.214.166.46])
-  (TLS: TLSv1/SSLv3,256bits,AES256-GCM-SHA384)
-  by mail.cs.helsinki.fi with ESMTPS; Thu, 19 Mar 2020 22:33:43 +0200
-  id 00000000005A0146.000000005E73D727.000023D1
-Date:   Thu, 19 Mar 2020 22:33:43 +0200 (EET)
-From:   "=?ISO-8859-15?Q?Ilpo_J=E4rvinen?=" <ilpo.jarvinen@cs.helsinki.fi>
-X-X-Sender: ijjarvin@whs-18.cs.helsinki.fi
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-cc:     Netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
-Subject: Re: [RFC PATCH 24/28] tcp: try to fit AccECN option with SACK
-In-Reply-To: <4ae2c8be-3235-9158-a2a7-7f9d30a20c04@gmail.com>
-Message-ID: <alpine.DEB.2.20.2003192225360.5256@whs-18.cs.helsinki.fi>
-References: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi> <1584524612-24470-25-git-send-email-ilpo.jarvinen@helsinki.fi> <4ae2c8be-3235-9158-a2a7-7f9d30a20c04@gmail.com>
-User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
+        id S1726950AbgCSUfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 16:35:01 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:45058 "EHLO mx.0dd.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725787AbgCSUfB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 16:35:01 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mx.0dd.nl (Postfix) with ESMTPS id 45AE45FAE6;
+        Thu, 19 Mar 2020 21:35:00 +0100 (CET)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="iemcHV0x";
+        dkim-atps=neutral
+Received: from www (www.vdorst.com [192.168.2.222])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id EEFCB25026C;
+        Thu, 19 Mar 2020 21:34:59 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com EEFCB25026C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1584650100;
+        bh=cSLvUWll0EXOQRnoPBZasPlEwOgeA+HGgMKCZAuoZdY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iemcHV0xIJAdVye15L7fb3pyDiheB46s6gQcbIXdScFMwMX3wn0Le14D0f20uVGaI
+         odTIOghRJVOJdFs0nPWJD85tPpjGqXarSE5BwMOBelkftE0/dglwdenfvkOdJVzBiV
+         Mo4xabOCdRFY3MP6YCdHEycMHS+pZsSlDCgP3w1xX6d17meJePFeENGHj9zKm3KBCU
+         0AHwkPp+37u2pTFDg7/EpehbLuf7gld/h7R+4PZvV8Pf1eTD9oeuRPgm7jm3c9Ay4H
+         8Dl2fGy1uYWV0raIn2rA8c1iLNnOOfgKsE7NvafuPKARb7k8S2Y89y70z0VGv9D+It
+         +VhzeUWAt2NZw==
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
+ www.vdorst.com (Horde Framework) with HTTPS; Thu, 19 Mar 2020 20:34:59 +0000
+Date:   Thu, 19 Mar 2020 20:34:59 +0000
+Message-ID: <20200319203459.Horde.FHMW3lKtaN-qI8lZ8qts7N_@www.vdorst.com>
+From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+To:     Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     netdev@vger.kernel.org, Frank Wunderlich <frank-w@public-files.de>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <landen.chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-mediatek@lists.infradead.org,
+        Andrew Smith <andrew.smith@digi.com>
+Subject: Re: [[PATCH,net]] net: dsa: mt7530: Change the LINK bit to reflect
+ the link status
+References: <20200319134756.46428-1-opensource@vdorst.com>
+ <20200319124123.GB3412372@t480s.localdomain>
+In-Reply-To: <20200319124123.GB3412372@t480s.localdomain>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="=_script-9193-1584650023-0001-2"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a MIME-formatted message.  If you see this text it means that your
-E-mail software does not support MIME-formatted messages.
+Quoting Vivien Didelot <vivien.didelot@gmail.com>:
 
---=_script-9193-1584650023-0001-2
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+> Hi René,
+>
+> On Thu, 19 Mar 2020 14:47:56 +0100, René van Dorst  
+> <opensource@vdorst.com> wrote:
+>> Andrew reported:
+>>
+>> After a number of network port link up/down changes, sometimes the switch
+>> port gets stuck in a state where it thinks it is still transmitting packets
+>> but the cpu port is not actually transmitting anymore. In this state you
+>> will see a message on the console
+>> "mtk_soc_eth 1e100000.ethernet eth0: transmit timed out" and the Tx counter
+>> in ifconfig will be incrementing on virtual port, but not incrementing on
+>> cpu port.
+>>
+>> The issue is that MAC TX/RX status has no impact on the link status or
+>> queue manager of the switch. So the queue manager just queues up packets
+>> of a disabled port and sends out pause frames when the queue is full.
+>>
+>> Change the LINK bit to reflect the link status.
+>>
+>> Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek  
+>> MT7530 switch")
+>> Reported-by: Andrew Smith <andrew.smith@digi.com>
+>> Signed-off-by: René van Dorst <opensource@vdorst.com>
+>
 
-On Wed, 18 Mar 2020, Eric Dumazet wrote:
+Hi Vivien,
 
->=20
->=20
-> On 3/18/20 2:43 AM, Ilpo J=E4rvinen wrote:
-> > From: Ilpo J=E4rvinen <ilpo.jarvinen@cs.helsinki.fi>
-> >=20
-> > As SACK blocks tend to eat all option space when there are
-> > many holes, it is useful to compromise on sending many SACK
-> > blocks in every ACK and try to fit AccECN option there
-> > by reduction the number of SACK blocks. But never go below
-> > two SACK blocks because of AccECN option.
-> >=20
-> > As AccECN option is often not put to every ACK, the space
-> > hijack is usually only temporary.
-> >=20
-> > Signed-off-by: Ilpo J=E4rvinen <ilpo.jarvinen@cs.helsinki.fi>
-> > ---
-> >  net/ipv4/tcp_output.c | 15 +++++++++++++++
-> >  1 file changed, 15 insertions(+)
-> >=20
-> > diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> > index 4cc590a47f43..0aec2c57a9cc 100644
-> > --- a/net/ipv4/tcp_output.c
-> > +++ b/net/ipv4/tcp_output.c
-> > @@ -756,6 +756,21 @@ static int tcp_options_fit_accecn(struct tcp_out=
-_options *opts, int required,
-> >  =09if (opts->num_ecn_bytes < required)
-> >  =09=09return 0;
->=20
-> Have you tested this patch ?
->=20
-> (You forgot to remove the prior 2 lines)
->=20
-> > =20
-> > +=09if (opts->num_ecn_bytes < required) {
+> Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+>
+> For the subject prefix, it is preferable to use "[PATCH net]" over
+> "[[PATCH,net]]". You can easily add this bracketed prefix with git
+> format-patch's option --subject-prefix="PATCH net".
 
-Yes and no. There was no unit test for this particular condition but
-I added a few now (with and w/o timestamps). I also managed to find and=20
-fix a byte-order related bug related to non-fullsized option while making=20
-those tests.
+Thanks for reviewing.
 
-(I didn't actually forget to remove it. I managed to add the problem=20
-during a botched conflict merge when I reorganized some of the code.)
+Funny is that I used subject-prefix option but I with the brackets.
+Like --subject-prefix="[PATCH,net]" but not realizing that git also
+add brackets. I didn't noticed until I got an email back from the
+mailinglist that it had double brackets.
+Next time I use "[PATCH net]".
 
-Thanks for taking a look.
+Great,
 
---=20
- i.
---=_script-9193-1584650023-0001-2--
+René
+
+
+>
+>
+> Thank you,
+>
+> 	Vivien
+
+
+
