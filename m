@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FD7118B448
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 14:08:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 943EE18B44A
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 14:08:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728102AbgCSNIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 09:08:14 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:39219 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727430AbgCSNIM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 09:08:12 -0400
-Received: by mail-pf1-f195.google.com with SMTP id d25so1401839pfn.6
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 06:08:10 -0700 (PDT)
+        id S1728129AbgCSNIT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 09:08:19 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:43484 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728113AbgCSNIQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 09:08:16 -0400
+Received: by mail-pg1-f193.google.com with SMTP id u12so1239802pgb.10
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 06:08:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=yWPKGMP1Sr2IVpaDf8DZ9AoF+sjjNjIRwxd7ZqLQorc=;
-        b=oJuddvUFnSvW6WoKv/iDAWEfhVFtg3/6EH5QCG8XBTzkuK2rN8rm+FeUR5ZS9Zhk0N
-         8lFeWhoHFzKrq80+QqPs1uY1fuIdJSbPG9VxQpj/a8eoo01thb88XjltZpq2U7YkZSQH
-         0QL5qvBTNl/95LWayAUNE/zuX0gGSGhz7bYKBms3BKyZGjSFSichuKisytU+iwKXUYxp
-         djOzQ+AWMwuOp9UxlEt2ihm8d0kWJn/ILO5DcDqQF/3QBQoHK3Xvt/+gQcswgYRqQYH+
-         n/Wzz3S5R8segX1JAywieobJrLyHGkijN36jEagW3egFcJko1pNSIoAO9ljsSAB97izM
-         lHZg==
+        bh=oBBnmdrh2QXcMwUOXPIszY0CSXJOunL4q5BQifUywNk=;
+        b=INgK5FonM1BGOg5+UWNfmSCTatIXscp+QHeitsAtiTn97e964gomOCoH+67wff59em
+         LsBefDz3SSF2P18Kx75L4AJfu5xnhO8x8+ih1XtkhU8gbcJbt7BHh4zj4MNbAmnmqQCq
+         QgM7iGAjyy3AWRoRtAQPzP63J4G3mJE5FF6C15v7/oIUr9JCjZ9/67wWXgC70W0OHrry
+         6W3yTUZ7MqDzMKrzAq0hrbA/eBe0osWwvPyvfem99p1o24cFTUi4gUHCBh1qHCKnyVhz
+         /h3KbS7lIXRygRPxG31DaHp9KZR03dsLRx9q6ZagAxBYCUkJoLj1MarV7DIR8ecmlH9t
+         GPvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=yWPKGMP1Sr2IVpaDf8DZ9AoF+sjjNjIRwxd7ZqLQorc=;
-        b=S8UAmffRxgsFMovPgZWzyxtl2HjBmm5nlqozPpEqDhjB8tYNCWVXzpvQFPz3nt/QCe
-         aS69nUqgh5AeDXRQts70msCNLB36G/053Or1snaOZOCororbIU7hF1alBG3qW5N3tfiT
-         1negbIQ3z/DTx2MR2KqGIV1kOgvGki50YINWijJx2HMYmGBcGTEa7auykZ+u0/ki0Iz5
-         M4xfSUPlUE+E8QKtNv+zIBwP/BuweO0wVv14q0CrCp+orKWoLndLApYT4U+gdRpQVP/n
-         fc1sqmX4ffugW8TZ361f/wMUxRoOnc9c/4YIIS0nYX7yKbvFdtY6WKkyNy6SN5cFg+yU
-         O5/A==
-X-Gm-Message-State: ANhLgQ2F9rIwd1CsZfJObPwouRgRkpsV0N23HFP2qAerGsy3/RMpdJDo
-        n/0Dag1WezVMGhHy2ln/16IP9F+mABU=
-X-Google-Smtp-Source: ADFU+vv2fPm+0x4W0ZJRlIph64ic1gpikpKOXvSjlxGdht4P7ZZAf0JDDFUI95GjGLWb7UrbcPCrIA==
-X-Received: by 2002:a62:3784:: with SMTP id e126mr3877072pfa.50.1584623290008;
-        Thu, 19 Mar 2020 06:08:10 -0700 (PDT)
+        bh=oBBnmdrh2QXcMwUOXPIszY0CSXJOunL4q5BQifUywNk=;
+        b=pHk79/BMWF1FtbjF3PsSYoyjynz8rXtBYVSt6XZv/U7FTnHRlUmXLr9U0T5ggzhp1b
+         ItmjQabJP2xBE7pR8G2jfZOSMxmRBsY9SaBFXFTbCRy9UuZf5ZfTk3EwzaqsmrNB07fo
+         vtnl0qnG0fWIkFXRod/prK5kIK6eXpN4jRSVwm/zosam1ngsX9YWtYRMRvA9QmwegciL
+         LPqIb91uaS2vJXIZZ0s2v/A9pxloacXUXbYhqG+3yLCD1jndaxkw9dOdMGy33wmwVg7E
+         zmq01hddx1mIoW0THPOWrDLhNVfgxvq6+XLqJ3d2Y22wLbrst1kz9i9vL6GEkQyQrNdI
+         iPrA==
+X-Gm-Message-State: ANhLgQ05ZEo/Nqg4/qZcKLyjG0esnyhxym5dfSd+4uOdIW0+l7UlBR+B
+        K0ZAzNdAbA6LDsp6tdzX+pPh2N/BWk0=
+X-Google-Smtp-Source: ADFU+vuZdk1M1X5knJsy4Ojff21WctrQrTsqFTB3daQ7KD7xdurzRksziV2ySblYTS7cwE1j8ypuXQ==
+X-Received: by 2002:a63:1c4d:: with SMTP id c13mr3248379pgm.4.1584623294900;
+        Thu, 19 Mar 2020 06:08:14 -0700 (PDT)
 Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id c15sm2336292pgk.66.2020.03.19.06.08.07
+        by smtp.googlemail.com with ESMTPSA id c15sm2336292pgk.66.2020.03.19.06.08.11
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 19 Mar 2020 06:08:09 -0700 (PDT)
+        Thu, 19 Mar 2020 06:08:13 -0700 (PDT)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, leon@kernel.org,
         andrew@lunn.ch, Tomasz Duszynski <tduszynski@marvell.com>,
         Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH v3 net-next 4/8] octeontx2-vf: Ethtool support
-Date:   Thu, 19 Mar 2020 18:37:24 +0530
-Message-Id: <1584623248-27508-5-git-send-email-sunil.kovvuri@gmail.com>
+Subject: [PATCH v3 net-next 5/8] octeontx2-vf: Link event notification support
+Date:   Thu, 19 Mar 2020 18:37:25 +0530
+Message-Id: <1584623248-27508-6-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1584623248-27508-1-git-send-email-sunil.kovvuri@gmail.com>
 References: <1584623248-27508-1-git-send-email-sunil.kovvuri@gmail.com>
@@ -61,263 +61,201 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Tomasz Duszynski <tduszynski@marvell.com>
 
-Added ethtool support for VF devices for
- - Driver stats, Tx/Rx perqueue stats
- - Set/show Rx/Tx queue count
- - Set/show Rx/Tx ring sizes
- - Set/show IRQ coalescing parameters
- - RSS configuration etc
+VF shares physical link with PF. Admin function (AF) sends
+notification to PF whenever a link change event happens. PF
+has to forward the same notification to each of the enabled VF.
 
-It's the PF which owns the interface, hence VF
-cannot display underlying CGX interface stats.
-Except for this rest ethtool support reuses PF's
-APIs.
+PF traps START/STOP_RX messages sent by VF to AF to keep track of
+VF's enabled/disabled state.
 
 Signed-off-by: Tomasz Duszynski <tduszynski@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   1 +
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 128 ++++++++++++++++++---
- .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   |   4 +
- 3 files changed, 119 insertions(+), 14 deletions(-)
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  7 ++
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 88 +++++++++++++++++++++-
+ 2 files changed, 93 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index ca757b2..95b8f1e 100644
+index 95b8f1e..5c96fee 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -631,6 +631,7 @@ void otx2_update_lmac_stats(struct otx2_nic *pfvf);
- int otx2_update_rq_stats(struct otx2_nic *pfvf, int qidx);
- int otx2_update_sq_stats(struct otx2_nic *pfvf, int qidx);
- void otx2_set_ethtool_ops(struct net_device *netdev);
-+void otx2vf_set_ethtool_ops(struct net_device *netdev);
+@@ -193,6 +193,12 @@ struct otx2_hw {
+ 	u64			cgx_tx_stats[CGX_TX_STATS_COUNT];
+ };
  
- int otx2_open(struct net_device *netdev);
- int otx2_stop(struct net_device *netdev);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index 017a295..d59f5a9 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -17,6 +17,7 @@
- #include "otx2_common.h"
- 
- #define DRV_NAME	"octeontx2-nicpf"
-+#define DRV_VF_NAME	"octeontx2-nicvf"
- 
- struct otx2_stat {
- 	char name[ETH_GSTRING_LEN];
-@@ -63,16 +64,6 @@ static const unsigned int otx2_n_dev_stats = ARRAY_SIZE(otx2_dev_stats);
- static const unsigned int otx2_n_drv_stats = ARRAY_SIZE(otx2_drv_stats);
- static const unsigned int otx2_n_queue_stats = ARRAY_SIZE(otx2_queue_stats);
- 
--static void otx2_dev_open(struct net_device *netdev)
--{
--	otx2_open(netdev);
--}
--
--static void otx2_dev_stop(struct net_device *netdev)
--{
--	otx2_stop(netdev);
--}
--
- static void otx2_get_drvinfo(struct net_device *netdev,
- 			     struct ethtool_drvinfo *info)
- {
-@@ -232,7 +223,7 @@ static int otx2_set_channels(struct net_device *dev,
- 		return -EINVAL;
- 
- 	if (if_up)
--		otx2_dev_stop(dev);
-+		dev->netdev_ops->ndo_stop(dev);
- 
- 	err = otx2_set_real_num_queues(dev, channel->tx_count,
- 				       channel->rx_count);
-@@ -245,7 +236,7 @@ static int otx2_set_channels(struct net_device *dev,
- 
- fail:
- 	if (if_up)
--		otx2_dev_open(dev);
-+		dev->netdev_ops->ndo_open(dev);
- 
- 	netdev_info(dev, "Setting num Tx rings to %d, Rx rings to %d success\n",
- 		    pfvf->hw.tx_queues, pfvf->hw.rx_queues);
-@@ -259,6 +250,9 @@ static void otx2_get_pauseparam(struct net_device *netdev,
- 	struct otx2_nic *pfvf = netdev_priv(netdev);
- 	struct cgx_pause_frm_cfg *req, *rsp;
- 
-+	if (is_otx2_lbkvf(pfvf->pdev))
-+		return;
-+
- 	req = otx2_mbox_alloc_msg_cgx_cfg_pause_frm(&pfvf->mbox);
- 	if (!req)
- 		return;
-@@ -279,6 +273,9 @@ static int otx2_set_pauseparam(struct net_device *netdev,
- 	if (pause->autoneg)
- 		return -EOPNOTSUPP;
- 
-+	if (is_otx2_lbkvf(pfvf->pdev))
-+		return -EOPNOTSUPP;
-+
- 	if (pause->rx_pause)
- 		pfvf->flags |= OTX2_FLAG_RX_PAUSE_ENABLED;
- 	else
-@@ -336,14 +333,15 @@ static int otx2_set_ringparam(struct net_device *netdev,
- 		return 0;
- 
- 	if (if_up)
--		otx2_dev_stop(netdev);
-+		netdev->netdev_ops->ndo_stop(netdev);
- 
- 	/* Assigned to the nearest possible exponent. */
- 	qs->sqe_cnt = tx_count;
- 	qs->rqe_cnt = rx_count;
- 
- 	if (if_up)
--		otx2_dev_open(netdev);
-+		netdev->netdev_ops->ndo_open(netdev);
-+
- 	return 0;
- }
- 
-@@ -659,6 +657,9 @@ static u32 otx2_get_link(struct net_device *netdev)
- {
- 	struct otx2_nic *pfvf = netdev_priv(netdev);
- 
-+	/* LBK link is internal and always UP */
-+	if (is_otx2_lbkvf(pfvf->pdev))
-+		return 1;
- 	return pfvf->linfo.link_up;
- }
- 
-@@ -692,3 +693,102 @@ void otx2_set_ethtool_ops(struct net_device *netdev)
- {
- 	netdev->ethtool_ops = &otx2_ethtool_ops;
- }
-+
-+/* VF's ethtool APIs */
-+static void otx2vf_get_drvinfo(struct net_device *netdev,
-+			       struct ethtool_drvinfo *info)
-+{
-+	struct otx2_nic *vf = netdev_priv(netdev);
-+
-+	strlcpy(info->driver, DRV_VF_NAME, sizeof(info->driver));
-+	strlcpy(info->bus_info, pci_name(vf->pdev), sizeof(info->bus_info));
-+}
-+
-+static void otx2vf_get_strings(struct net_device *netdev, u32 sset, u8 *data)
-+{
-+	struct otx2_nic *vf = netdev_priv(netdev);
-+	int stats;
-+
-+	if (sset != ETH_SS_STATS)
-+		return;
-+
-+	for (stats = 0; stats < otx2_n_dev_stats; stats++) {
-+		memcpy(data, otx2_dev_stats[stats].name, ETH_GSTRING_LEN);
-+		data += ETH_GSTRING_LEN;
-+	}
-+
-+	for (stats = 0; stats < otx2_n_drv_stats; stats++) {
-+		memcpy(data, otx2_drv_stats[stats].name, ETH_GSTRING_LEN);
-+		data += ETH_GSTRING_LEN;
-+	}
-+
-+	otx2_get_qset_strings(vf, &data, 0);
-+
-+	strcpy(data, "reset_count");
-+	data += ETH_GSTRING_LEN;
-+}
-+
-+static void otx2vf_get_ethtool_stats(struct net_device *netdev,
-+				     struct ethtool_stats *stats, u64 *data)
-+{
-+	struct otx2_nic *vf = netdev_priv(netdev);
-+	int stat;
-+
-+	otx2_get_dev_stats(vf);
-+	for (stat = 0; stat < otx2_n_dev_stats; stat++)
-+		*(data++) = ((u64 *)&vf->hw.dev_stats)
-+				[otx2_dev_stats[stat].index];
-+
-+	for (stat = 0; stat < otx2_n_drv_stats; stat++)
-+		*(data++) = atomic_read(&((atomic_t *)&vf->hw.drv_stats)
-+						[otx2_drv_stats[stat].index]);
-+
-+	otx2_get_qset_stats(vf, stats, &data);
-+	*(data++) = vf->reset_count;
-+}
-+
-+static int otx2vf_get_sset_count(struct net_device *netdev, int sset)
-+{
-+	struct otx2_nic *vf = netdev_priv(netdev);
-+	int qstats_count;
-+
-+	if (sset != ETH_SS_STATS)
-+		return -EINVAL;
-+
-+	qstats_count = otx2_n_queue_stats *
-+		       (vf->hw.rx_queues + vf->hw.tx_queues);
-+
-+	return otx2_n_dev_stats + otx2_n_drv_stats + qstats_count + 1;
-+}
-+
-+static const struct ethtool_ops otx2vf_ethtool_ops = {
-+	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
-+				     ETHTOOL_COALESCE_MAX_FRAMES,
-+	.get_link		= otx2_get_link,
-+	.get_drvinfo		= otx2vf_get_drvinfo,
-+	.get_strings		= otx2vf_get_strings,
-+	.get_ethtool_stats	= otx2vf_get_ethtool_stats,
-+	.get_sset_count		= otx2vf_get_sset_count,
-+	.set_channels		= otx2_set_channels,
-+	.get_channels		= otx2_get_channels,
-+	.get_rxnfc		= otx2_get_rxnfc,
-+	.set_rxnfc              = otx2_set_rxnfc,
-+	.get_rxfh_key_size	= otx2_get_rxfh_key_size,
-+	.get_rxfh_indir_size	= otx2_get_rxfh_indir_size,
-+	.get_rxfh		= otx2_get_rxfh,
-+	.set_rxfh		= otx2_set_rxfh,
-+	.get_ringparam		= otx2_get_ringparam,
-+	.set_ringparam		= otx2_set_ringparam,
-+	.get_coalesce		= otx2_get_coalesce,
-+	.set_coalesce		= otx2_set_coalesce,
-+	.get_msglevel		= otx2_get_msglevel,
-+	.set_msglevel		= otx2_set_msglevel,
-+	.get_pauseparam		= otx2_get_pauseparam,
-+	.set_pauseparam		= otx2_set_pauseparam,
++struct otx2_vf_config {
++	struct otx2_nic *pf;
++	struct delayed_work link_event_work;
++	bool intf_down; /* interface was either configured or not */
 +};
 +
-+void otx2vf_set_ethtool_ops(struct net_device *netdev)
-+{
-+	netdev->ethtool_ops = &otx2vf_ethtool_ops;
-+}
-+EXPORT_SYMBOL(otx2vf_set_ethtool_ops);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-index 891274f..2fbadf3 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-@@ -368,11 +368,13 @@ int otx2vf_open(struct net_device *netdev)
+ struct flr_work {
+ 	struct work_struct work;
+ 	struct otx2_nic *pf;
+@@ -229,6 +235,7 @@ struct otx2_nic {
+ 	u8			total_vfs;
+ 	u16			pcifunc; /* RVU PF_FUNC */
+ 	u16			bpid[NIX_MAX_BPID_CHAN];
++	struct otx2_vf_config	*vf_configs;
+ 	struct cgx_link_user_info linfo;
  
- 	return 0;
- }
-+EXPORT_SYMBOL(otx2vf_open);
- 
- int otx2vf_stop(struct net_device *netdev)
+ 	u64			reset_count;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index bc421f1..d491819 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -715,6 +715,8 @@ static int otx2_register_pfvf_mbox_intr(struct otx2_nic *pf, int numvfs)
+ static void otx2_process_pfaf_mbox_msg(struct otx2_nic *pf,
+ 				       struct mbox_msghdr *msg)
  {
- 	return otx2_stop(netdev);
- }
-+EXPORT_SYMBOL(otx2vf_stop);
- 
- static netdev_tx_t otx2vf_xmit(struct sk_buff *skb, struct net_device *netdev)
- {
-@@ -579,6 +581,8 @@ static int otx2vf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		goto err_detach_rsrc;
++	int devid;
++
+ 	if (msg->id >= MBOX_MSG_MAX) {
+ 		dev_err(pf->dev,
+ 			"Mbox msg with unknown ID 0x%x\n", msg->id);
+@@ -728,6 +730,26 @@ static void otx2_process_pfaf_mbox_msg(struct otx2_nic *pf,
+ 		return;
  	}
  
-+	otx2vf_set_ethtool_ops(netdev);
++	/* message response heading VF */
++	devid = msg->pcifunc & RVU_PFVF_FUNC_MASK;
++	if (devid) {
++		struct otx2_vf_config *config = &pf->vf_configs[devid - 1];
++		struct delayed_work *dwork;
 +
- 	/* Enable pause frames by default */
- 	vf->flags |= OTX2_FLAG_RX_PAUSE_ENABLED;
- 	vf->flags |= OTX2_FLAG_TX_PAUSE_ENABLED;
++		switch (msg->id) {
++		case MBOX_MSG_NIX_LF_START_RX:
++			config->intf_down = false;
++			dwork = &config->link_event_work;
++			schedule_delayed_work(dwork, msecs_to_jiffies(100));
++			break;
++		case MBOX_MSG_NIX_LF_STOP_RX:
++			config->intf_down = true;
++			break;
++		}
++
++		return;
++	}
++
+ 	switch (msg->id) {
+ 	case MBOX_MSG_READY:
+ 		pf->pcifunc = msg->pcifunc;
+@@ -809,9 +831,22 @@ int otx2_mbox_up_handler_cgx_link_event(struct otx2_nic *pf,
+ 					struct cgx_link_info_msg *msg,
+ 					struct msg_rsp *rsp)
+ {
++	int i;
++
+ 	/* Copy the link info sent by AF */
+ 	pf->linfo = msg->link_info;
+ 
++	/* notify VFs about link event */
++	for (i = 0; i < pci_num_vf(pf->pdev); i++) {
++		struct otx2_vf_config *config = &pf->vf_configs[i];
++		struct delayed_work *dwork = &config->link_event_work;
++
++		if (config->intf_down)
++			continue;
++
++		schedule_delayed_work(dwork, msecs_to_jiffies(100));
++	}
++
+ 	/* interface has not been fully configured yet */
+ 	if (pf->flags & OTX2_FLAG_INTF_DOWN)
+ 		return 0;
+@@ -1925,11 +1960,39 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	return err;
+ }
+ 
++static void otx2_vf_link_event_task(struct work_struct *work)
++{
++	struct otx2_vf_config *config;
++	struct cgx_link_info_msg *req;
++	struct mbox_msghdr *msghdr;
++	struct otx2_nic *pf;
++	int vf_idx;
++
++	config = container_of(work, struct otx2_vf_config,
++			      link_event_work.work);
++	vf_idx = config - config->pf->vf_configs;
++	pf = config->pf;
++
++	msghdr = otx2_mbox_alloc_msg_rsp(&pf->mbox_pfvf[0].mbox_up, vf_idx,
++					 sizeof(*req), sizeof(struct msg_rsp));
++	if (!msghdr) {
++		dev_err(pf->dev, "Failed to create VF%d link event\n", vf_idx);
++		return;
++	}
++
++	req = (struct cgx_link_info_msg *)msghdr;
++	req->hdr.id = MBOX_MSG_CGX_LINK_EVENT;
++	req->hdr.sig = OTX2_MBOX_REQ_SIG;
++	memcpy(&req->link_info, &pf->linfo, sizeof(req->link_info));
++
++	otx2_sync_mbox_up_msg(&pf->mbox_pfvf[0], vf_idx);
++}
++
+ static int otx2_sriov_enable(struct pci_dev *pdev, int numvfs)
+ {
+ 	struct net_device *netdev = pci_get_drvdata(pdev);
+ 	struct otx2_nic *pf = netdev_priv(netdev);
+-	int ret;
++	int ret, i;
+ 
+ 	/* Init PF <=> VF mailbox stuff */
+ 	ret = otx2_pfvf_mbox_init(pf, numvfs);
+@@ -1940,9 +2003,23 @@ static int otx2_sriov_enable(struct pci_dev *pdev, int numvfs)
+ 	if (ret)
+ 		goto free_mbox;
+ 
++	pf->vf_configs = kcalloc(numvfs, sizeof(struct otx2_vf_config),
++				 GFP_KERNEL);
++	if (!pf->vf_configs) {
++		ret = -ENOMEM;
++		goto free_intr;
++	}
++
++	for (i = 0; i < numvfs; i++) {
++		pf->vf_configs[i].pf = pf;
++		pf->vf_configs[i].intf_down = true;
++		INIT_DELAYED_WORK(&pf->vf_configs[i].link_event_work,
++				  otx2_vf_link_event_task);
++	}
++
+ 	ret = otx2_pf_flr_init(pf, numvfs);
+ 	if (ret)
+-		goto free_intr;
++		goto free_configs;
+ 
+ 	ret = otx2_register_flr_me_intr(pf, numvfs);
+ 	if (ret)
+@@ -1957,6 +2034,8 @@ static int otx2_sriov_enable(struct pci_dev *pdev, int numvfs)
+ 	otx2_disable_flr_me_intr(pf);
+ free_flr:
+ 	otx2_flr_wq_destroy(pf);
++free_configs:
++	kfree(pf->vf_configs);
+ free_intr:
+ 	otx2_disable_pfvf_mbox_intr(pf, numvfs);
+ free_mbox:
+@@ -1969,12 +2048,17 @@ static int otx2_sriov_disable(struct pci_dev *pdev)
+ 	struct net_device *netdev = pci_get_drvdata(pdev);
+ 	struct otx2_nic *pf = netdev_priv(netdev);
+ 	int numvfs = pci_num_vf(pdev);
++	int i;
+ 
+ 	if (!numvfs)
+ 		return 0;
+ 
+ 	pci_disable_sriov(pdev);
+ 
++	for (i = 0; i < pci_num_vf(pdev); i++)
++		cancel_delayed_work_sync(&pf->vf_configs[i].link_event_work);
++	kfree(pf->vf_configs);
++
+ 	otx2_disable_flr_me_intr(pf);
+ 	otx2_flr_wq_destroy(pf);
+ 	otx2_disable_pfvf_mbox_intr(pf, numvfs);
 -- 
 2.7.4
 
