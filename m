@@ -2,120 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B612B18C378
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 00:06:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B68FF18C398
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 00:26:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727685AbgCSXGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 19:06:20 -0400
-Received: from gateway21.websitewelcome.com ([192.185.46.113]:40229 "EHLO
-        gateway21.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727258AbgCSXGU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 19:06:20 -0400
-Received: from cm12.websitewelcome.com (cm12.websitewelcome.com [100.42.49.8])
-        by gateway21.websitewelcome.com (Postfix) with ESMTP id 2E365400CE6A1
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 18:06:19 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id F4F1j0tTT1s2xF4F1jjGMw; Thu, 19 Mar 2020 18:06:19 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
-        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=EQ6+e94EbbRCvZN1MHbBCIYfPJUa31xR11Y1UAO3a5Y=; b=bbqQ6UjBbYS5lZK6jibj0Q4RXr
-        oGcRafr24mHM8HhpT4wDedr92j84t6b0jdCXWe0is43cEy1Ujyy3ZjOtE9t2enNCbCdei3K+kQkat
-        HXShAyF6UW1HNm+XK2AhwzQVvmS9huGrxmFtLnSUPM/Qb505GQAVwcUbnsi8YKxSfz9tg9UhF5hkr
-        0hOfKzvPAicZY+VG7ixmCq8Cb8s1ekqv/Tb02B6gotHYfQse5cd+KYmRBUIz921QyaPkz0I8Z4StN
-        5xvYwQs31KTH7kje1G0n1hvEVxlI8ypofez7QX81axcFUCOHt3YRTWu6f12EgPvgVpm64Knv9zgcm
-        238nrMFw==;
-Received: from cablelink-189-218-116-241.hosts.intercable.net ([189.218.116.241]:54032 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.92)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1jF4Ez-002P1y-OU; Thu, 19 Mar 2020 18:06:17 -0500
-Date:   Thu, 19 Mar 2020 18:06:17 -0500
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH][next] net: wireless: wl3501.h: Replace zero-length array
- with flexible-array member
-Message-ID: <20200319230617.GA15035@embeddedor.com>
+        id S1727500AbgCSXZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 19:25:55 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:37834 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727103AbgCSXZz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 19:25:55 -0400
+Received: by mail-lf1-f65.google.com with SMTP id j11so3090599lfg.4;
+        Thu, 19 Mar 2020 16:25:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xryJO8lkXqRCZQK2yjx1cRHjWBLO8IFysYsWxEoA3uE=;
+        b=W4p7IqK840U96gHxPUFDwKRKl0DeyM62Cf4hK4MVxDeZLz/NuJnzVzNLCXHzzJPXw3
+         cuO7UoACnyau5ntSIeAtexp74bDciO1/5FPGcp4uN5dfZOgTP1gdGS6uEx07EyMxxSuW
+         UTG41vXaINQUcorBOvlljqNGUuDzQ/Gzdti5RddYiwIqkyU/TcLQoyujB40JItwp4I44
+         aLE8124W9EF1NiPA2u/s7EaM8iAp9jTolVsVbLF6auvhBLnXqNVx2On8kwVpvS0Al6yh
+         3ce8EGJVdi1kbQEQX8KtoqT37e1mM0eGUDk1WEofyR/5anu3exltpzmPFnsw6CUMrPmR
+         10SA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xryJO8lkXqRCZQK2yjx1cRHjWBLO8IFysYsWxEoA3uE=;
+        b=MKcr+XdNyQCVdcT89qLObnS3T9lVEzJOuviZO3j+W/r3Zv8IaVhcZzet+GN3J8LP/E
+         Yybjn6SmXRUwp9gYrh9i0i6MxqxVUu3Algmc5sdmjXT+fQdJmQF9C5xNGhLWRbWVjYyy
+         w9wCTx8+ls84XsFk+6SBdGXg2fgr1yEqy20FBXp/0QF8H0RtIG77ny9HxEx8uEyKSugz
+         bKwm7aUhBWNP6757hq7L1WkTEVG6EBzD48IrXtJcxRShetf1NkVF5gwdfb1zxSvh/6DE
+         fkFqGhz9UhrWoRZ+E2cFXDmG92VHD9Mp8YgQpC+sHdcBRH7GRfnmMFib90IxMzgykkn8
+         qDxw==
+X-Gm-Message-State: ANhLgQ2Gj6xWISZgAGHPVfwZjf+u3YPECEtKCTvFyioTJGydiJHlVz3W
+        nNsUSXGvaPyMHp9Tl3w0K7gZvu3gxjf68AIPgy4=
+X-Google-Smtp-Source: ADFU+vutZe3vAn9jxlvO0kvX2a2rYQyzTHs+93M3VoF6k7ot+b480wfjbV128JnurPO8vWCARFUaoAdJ1D285cdVDEc=
+X-Received: by 2002:a19:5504:: with SMTP id n4mr3537070lfe.149.1584660352957;
+ Thu, 19 Mar 2020 16:25:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.218.116.241
-X-Source-L: No
-X-Exim-ID: 1jF4Ez-002P1y-OU
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: cablelink-189-218-116-241.hosts.intercable.net (embeddedor) [189.218.116.241]:54032
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 9
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+References: <20200318204302.693307984@linutronix.de> <20200318204408.521507446@linutronix.de>
+In-Reply-To: <20200318204408.521507446@linutronix.de>
+From:   Julian Calaby <julian.calaby@gmail.com>
+Date:   Fri, 20 Mar 2020 10:25:41 +1100
+Message-ID: <CAGRGNgXAW14=8ntTiB_hJ_nLq7WC_oFR3N9BNjqVEZM=ze85tQ@mail.gmail.com>
+Subject: Re: [patch V2 11/15] completion: Use simple wait queues
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb <linux-usb@vger.kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev@lists.ozlabs.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current codebase makes use of the zero-length array language
-extension to the C90 standard, but the preferred mechanism to declare
-variable-length types such as these ones is a flexible array member[1][2],
-introduced in C99:
+Hi Thomas,
 
-struct foo {
-        int stuff;
-        struct boo array[];
-};
+On Thu, Mar 19, 2020 at 7:48 AM Thomas Gleixner <tglx@linutronix.de> wrote:
+>
+> From: Thomas Gleixner <tglx@linutronix.de>
+>
+> completion uses a wait_queue_head_t to enqueue waiters.
+>
+> wait_queue_head_t contains a spinlock_t to protect the list of waiters
+> which excludes it from being used in truly atomic context on a PREEMPT_RT
+> enabled kernel.
+>
+> The spinlock in the wait queue head cannot be replaced by a raw_spinlock
+> because:
+>
+>   - wait queues can have custom wakeup callbacks, which acquire other
+>     spinlock_t locks and have potentially long execution times
+>
+>   - wake_up() walks an unbounded number of list entries during the wake up
+>     and may wake an unbounded number of waiters.
+>
+> For simplicity and performance reasons complete() should be usable on
+> PREEMPT_RT enabled kernels.
+>
+> completions do not use custom wakeup callbacks and are usually single
+> waiter, except for a few corner cases.
+>
+> Replace the wait queue in the completion with a simple wait queue (swait),
+> which uses a raw_spinlock_t for protecting the waiter list and therefore is
+> safe to use inside truly atomic regions on PREEMPT_RT.
+>
+> There is no semantical or functional change:
+>
+>   - completions use the exclusive wait mode which is what swait provides
+>
+>   - complete() wakes one exclusive waiter
+>
+>   - complete_all() wakes all waiters while holding the lock which protects
+>     the wait queue against newly incoming waiters. The conversion to swait
+>     preserves this behaviour.
+>
+> complete_all() might cause unbound latencies with a large number of waiters
+> being woken at once, but most complete_all() usage sites are either in
+> testing or initialization code or have only a really small number of
+> concurrent waiters which for now does not cause a latency problem. Keep it
+> simple for now.
+>
+> The fixup of the warning check in the USB gadget driver is just a straight
+> forward conversion of the lockless waiter check from one waitqueue type to
+> the other.
+>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Arnd Bergmann <arnd@arndb.de>
+> ---
+> V2: Split out the orinoco and usb gadget parts and amended change log
+> ---
+>  drivers/usb/gadget/function/f_fs.c |    2 +-
+>  include/linux/completion.h         |    8 ++++----
+>  kernel/sched/completion.c          |   36 +++++++++++++++++++-----------------
+>  3 files changed, 24 insertions(+), 22 deletions(-)
+>
+> --- a/drivers/usb/gadget/function/f_fs.c
+> +++ b/drivers/usb/gadget/function/f_fs.c
+> @@ -1703,7 +1703,7 @@ static void ffs_data_put(struct ffs_data
+>                 pr_info("%s(): freeing\n", __func__);
+>                 ffs_data_clear(ffs);
+>                 BUG_ON(waitqueue_active(&ffs->ev.waitq) ||
+> -                      waitqueue_active(&ffs->ep0req_completion.wait) ||
+> +                      swait_active(&ffs->ep0req_completion.wait) ||
 
-By making use of the mechanism above, we will get a compiler warning
-in case the flexible array does not occur last in the structure, which
-will help us prevent some kind of undefined behavior bugs from being
-inadvertently introduced[3] to the codebase from now on.
+This looks like some code is reaching deep into the dirty dark corners
+of the completion implementation, should there be some wrapper around
+this to hide that?
 
-Also, notice that, dynamic memory allocations won't be affected by
-this change:
+Thanks,
 
-"Flexible array members have incomplete type, and so the sizeof operator
-may not be applied. As a quirk of the original implementation of
-zero-length arrays, sizeof evaluates to zero."[1]
-
-This issue was found with the help of Coccinelle.
-
-[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-[2] https://github.com/KSPP/linux/issues/21
-[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/net/wireless/wl3501.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/wl3501.h b/drivers/net/wireless/wl3501.h
-index efdce9ae36ea..b446cb369557 100644
---- a/drivers/net/wireless/wl3501.h
-+++ b/drivers/net/wireless/wl3501.h
-@@ -231,7 +231,7 @@ struct iw_mgmt_info_element {
- 	u8 id; /* one of enum iw_mgmt_info_element_ids,
- 		  but sizeof(enum) > sizeof(u8) :-( */
- 	u8 len;
--	u8 data[0];
-+	u8 data[];
- } __packed;
- 
- struct iw_mgmt_essid_pset {
 -- 
-2.23.0
+Julian Calaby
 
+Email: julian.calaby@gmail.com
+Profile: http://www.google.com/profiles/julian.calaby/
