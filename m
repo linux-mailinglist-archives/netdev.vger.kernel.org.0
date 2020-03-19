@@ -2,90 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ED1B18A9EF
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 01:45:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69C8018AA01
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 01:47:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726913AbgCSApN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 20:45:13 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:59198 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726663AbgCSApM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 20:45:12 -0400
-Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1jEjIR-0005E3-Fd; Thu, 19 Mar 2020 01:44:27 +0100
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id CFC0A103088; Thu, 19 Mar 2020 01:44:26 +0100 (CET)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     Joel Fernandes <joel@joelfernandes.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: Re: [patch V2 11/15] completion: Use simple wait queues
-In-Reply-To: <20200319003351.GA211584@google.com>
-References: <20200318204302.693307984@linutronix.de> <20200318204408.521507446@linutronix.de> <20200319003351.GA211584@google.com>
-Date:   Thu, 19 Mar 2020 01:44:26 +0100
-Message-ID: <87a74ddvh1.fsf@nanos.tec.linutronix.de>
+        id S1727132AbgCSArj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 20:47:39 -0400
+Received: from mail-qv1-f66.google.com ([209.85.219.66]:36610 "EHLO
+        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726866AbgCSArj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 20:47:39 -0400
+Received: by mail-qv1-f66.google.com with SMTP id z13so146901qvw.3
+        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 17:47:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=A720JABHxNJ9agKM47V+Qyc1pFwMkcg2jlZ4hFlzOr0=;
+        b=QSraFvt5isb6q82CVvF0YlJ5wMcrox8yv5yjEJEcQSXKa3SWYtne12tF7oIGsa9In0
+         1+fDmAoWF60Rr9BW9ZTXgglY+8UU8TSUresHRbN8a/Zh8prwn6Tk4uj2hi7D8F4DOZEM
+         Xhl4cADhXvp+p8S009WSfF6Mru4mEyb70WHds=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=A720JABHxNJ9agKM47V+Qyc1pFwMkcg2jlZ4hFlzOr0=;
+        b=LEad6SpYtCJgky8iMgIH6g0uXRkWRCduJPvrPVidOEZtxM7VdRLhoVxK+deXbhDX+R
+         tG3QNIbaQLldwyn+E+VeN8NEdXGp3+H8b/dJ0dAKqu2MQnHpwKS0RqAOuLxDU3fB9VfZ
+         rRawsIOLAgGUB6UOnhR/hbvpmM7Dy5uqtHEwKVtFZ+SmR5q4FwbRuMjBgYaCVcYUXVxK
+         Wz04OlvkNlHwkHvRkxMu6jPMx04EB3xRaDJwNuG1sjmf0D4QwPr+KtV3fqwtKE3bnCp3
+         ck2TVUsKJcD3OB2zDUt7u48ie4n3CgDCVD+yqEehY6ORpazrR7/jWkWmcKjE6jMPS5iK
+         NVDw==
+X-Gm-Message-State: ANhLgQ01pql4YZUobdtqVqf9jaqQfWj6oNnHliDH5tRTnMQzAuxalE6i
+        XWwUfNzeMMdDprJQmeLPbcy9LWtAYzS/zp/ldI7paw==
+X-Google-Smtp-Source: ADFU+vvlmszk//vEOKvcanmLt18UkRrYcZTTNdlZrOtBFvwem4KTrueVhhWQJZVhEWQ4R9um+82XSqBP0PZJ7IcJfv8=
+X-Received: by 2002:a0c:ee28:: with SMTP id l8mr657058qvs.196.1584578858194;
+ Wed, 18 Mar 2020 17:47:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+References: <1584458082-29207-1-git-send-email-vasundhara-v.volam@broadcom.com>
+ <1584458082-29207-2-git-send-email-vasundhara-v.volam@broadcom.com>
+ <20200317104046.1702b601@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAACQVJqSMsMNChPssuw850HVYXYJAYx=HcwYXGrG3FsMgVQf1g@mail.gmail.com>
+ <20200318130441.42ac70b5@kicinski-fedora-PC1C0HJN> <cc554929-9dbb-998e-aa83-0e5ccb6c3867@intel.com>
+In-Reply-To: <cc554929-9dbb-998e-aa83-0e5ccb6c3867@intel.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Wed, 18 Mar 2020 17:47:26 -0700
+Message-ID: <CACKFLikpaDrykkzsUNgRdUejQSM4S3M==+TVnRxMCA54DRFFOQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 01/11] devlink: add macro for "drv.spec"
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
+        David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Joel,
-
-Joel Fernandes <joel@joelfernandes.org> writes:
-> On Wed, Mar 18, 2020 at 09:43:13PM +0100, Thomas Gleixner wrote:
->> The spinlock in the wait queue head cannot be replaced by a raw_spinlock
->> because:
->> 
->>   - wait queues can have custom wakeup callbacks, which acquire other
->>     spinlock_t locks and have potentially long execution times
+On Wed, Mar 18, 2020 at 5:05 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
+> On 3/18/2020 1:04 PM, Jakub Kicinski wrote:
+> > We're just getting rid of driver versions, with significant effort,
+> > so starting to extend devlink info with driver stuff seems risky.
+> > How is driver information part of device info in the first place?
+> >
+> > As you said good driver and firmware will be modular and backward
+> > compatible, so what's the meaning of the API version?
+> >
+> > This field is meaningless.
+> >
 >
-> Cool, makes sense.
+> I think I agree with Jakub here. I assume, if it's anything like what
+> the ice driver does, the firmware has an API field used to communicate
+> to the driver what it can support. This can be used by the driver to
+> decide if it can load.
 >
->>   - wake_up() walks an unbounded number of list entries during the wake up
->>     and may wake an unbounded number of waiters.
+> For example, if the major API number increases, the ice driver then
+> assumes that it must be a very old driver which will not work at all
+> with that firmware. (This is mostly kept as a safety hatch in case no
+> other alternative can be determined).
 >
-> Just to clarify here, wake_up() will really wake up just 1 waiter if all the
-> waiters on the queue are exclusive right? So in such scenario at least, the
-> "unbounded number of waiters" would not be an issue if everything waiting was
-> exclusive and waitqueue with wake_up() was used. Please correct me if I'm
-> wrong about that though.
+> The driver can then use this API number as a way to decide if certain
+> features can be enabled or not.
+>
+> I suppose printing the driver's "expected" API number makes sense, but I
+> think the stronger approach is to make the driver able to interoperate
+> with any previous API version. Newer minor API numbers only mean that
+> new features exist which the driver might not be aware of. (for example,
+> if you're running an old driver).
+>
 
-Correct.
+Agreed.  Our driver is backward and forward compatible with all
+production firmware for the most part.  The idea is that the effective
+API version number is the minimum of the driver's API and firmware's
+API.  For example, if firmware is at v1.5 and driver is at v1.4, then
+the effective or operating API is v1.4.  The new features after v1.4
+are unused because the driver does not understand those new features.
+Similarly, a newer driver running on older firmware will have the
+older firmware's API as the effective API.  The driver will not use
+the new features that the firmware doesn't understand.
 
-> So the main reasons to avoid waitqueue in favor of swait (as you mentioned)
-> would be the sleep-while-atomic issue in truly atomic context on RT, and the
-> fact that callbacks can take a long time.
+So if there is only one API version to report, reporting the min.
+makes the most sense to the user in our case.  It is similar to a Gen4
+PCIe card currently operating in a Gen3 slot.
 
-Yes.
-
-Thanks,
-
-        tglx
-
+Thanks.
