@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B53118BCDB
+	by mail.lfdr.de (Postfix) with ESMTP id BFC8D18BCDC
 	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:41:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728327AbgCSQlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 12:41:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40504 "EHLO mail.kernel.org"
+        id S1728375AbgCSQly (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 12:41:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40516 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728260AbgCSQlv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 12:41:51 -0400
+        id S1728260AbgCSQlx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 12:41:53 -0400
 Received: from lore-desk-wlan.redhat.com (unknown [151.48.128.122])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 35DA62070A;
-        Thu, 19 Mar 2020 16:41:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AA6B42072D;
+        Thu, 19 Mar 2020 16:41:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584636110;
-        bh=xrI/ea9M6RAPFMH64NL5kONdcqhFNlldITx1hwTjPkM=;
+        s=default; t=1584636113;
+        bh=JDcArIjhwfvXkpLGDHltgyMjCJBnYEAE7m3soZVKqlI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0u9512V+B2qjjNfYtrgf3+t7W5JdN5FwScHEbj6yMGFJe+01Zj7+uLZIWunwIvSb3
-         LGTnKbKeGOTqUQqQsz51E0cO89DEnauQ3MnZDA/AyCzcUKAiT/0VbnvDBdLcJm7wMX
-         6BMJOJEx25klnIIoeLteXMl0WnBAq0gsDIT9A0TE=
+        b=wvnFIU5nRJIawkSrbgbv2KvYSucRYNCqrYFoiOHzlJJd7PkMX3bViTLZEyk8jNRsV
+         OFWTA1SyDpRwdv+F3O/Tf0mPKt2ehsp2v6RhMS2Tr/jzBN7Vm+dmHN1y6iG4yAIJlS
+         3NYUL2+Qjb+ACURizMgGm2+8Iocogst8RwF4vpqo=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, toshiaki.makita1@gmail.com, brouer@redhat.com,
         dsahern@gmail.com, lorenzo.bianconi@redhat.com, toke@redhat.com
-Subject: [PATCH net-next 3/5] veth: distinguish between rx_drops and xdp_drops
-Date:   Thu, 19 Mar 2020 17:41:27 +0100
-Message-Id: <4ab2cf4ede80a42fb6cd9e2309f645857ed09c74.1584635611.git.lorenzo@kernel.org>
+Subject: [PATCH net-next 4/5] veth: introduce more xdp counters
+Date:   Thu, 19 Mar 2020 17:41:28 +0100
+Message-Id: <0763c17646523acb4dc15aaec01decb4efe11eac.1584635611.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1584635611.git.lorenzo@kernel.org>
 References: <cover.1584635611.git.lorenzo@kernel.org>
@@ -40,68 +40,137 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Distinguish between rx_drops and xdp_drops since the latter is already
-reported in rx_packets. Report xdp_drops in ethtool statistics
+Introduce xdp_xmit counter in order to distinguish between XDP_TX and
+ndo_xdp_xmit stats. Introduce the following ethtool counters:
+- rx_xdp_tx
+- rx_xdp_tx_errors
+- tx_xdp_xmit
+- tx_xdp_xmit_errors
+- rx_xdp_redirect
 
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/veth.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/net/veth.c | 42 +++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 35 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index bad8fd432067..2307696d4897 100644
+index 2307696d4897..093b55acedb1 100644
 --- a/drivers/net/veth.c
 +++ b/drivers/net/veth.c
-@@ -90,6 +90,7 @@ static const struct veth_q_stat_desc veth_rq_stats_desc[] = {
+@@ -44,6 +44,9 @@ struct veth_stats {
+ 	u64	xdp_redirect;
+ 	u64	xdp_drops;
+ 	u64	xdp_tx;
++	u64	xdp_tx_err;
++	u64	xdp_xmit;
++	u64	xdp_xmit_err;
+ };
+ 
+ struct veth_rq_stats {
+@@ -89,8 +92,13 @@ struct veth_q_stat_desc {
+ static const struct veth_q_stat_desc veth_rq_stats_desc[] = {
  	{ "xdp_packets",	VETH_RQ_STAT(xdp_packets) },
  	{ "xdp_bytes",		VETH_RQ_STAT(xdp_bytes) },
- 	{ "xdp_drops",		VETH_RQ_STAT(xdp_drops) },
-+	{ "rx_drops",		VETH_RQ_STAT(rx_drops) },
+-	{ "xdp_drops",		VETH_RQ_STAT(xdp_drops) },
+ 	{ "rx_drops",		VETH_RQ_STAT(rx_drops) },
++	{ "rx_xdp_redirect",	VETH_RQ_STAT(xdp_redirect) },
++	{ "rx_xdp_drops",	VETH_RQ_STAT(xdp_drops) },
++	{ "rx_xdp_tx",		VETH_RQ_STAT(xdp_tx) },
++	{ "rx_xdp_tx_errors",	VETH_RQ_STAT(xdp_tx_err) },
++	{ "tx_xdp_xmit",	VETH_RQ_STAT(xdp_xmit) },
++	{ "tx_xdp_xmit_errors",	VETH_RQ_STAT(xdp_xmit_err) },
  };
  
  #define VETH_RQ_STATS_LEN	ARRAY_SIZE(veth_rq_stats_desc)
-@@ -294,7 +295,7 @@ static void veth_stats_rx(struct veth_stats *result, struct net_device *dev)
- 
- 	result->xdp_packets = 0;
- 	result->xdp_bytes = 0;
--	result->xdp_drops = 0;
-+	result->rx_drops = 0;
- 	for (i = 0; i < dev->num_rx_queues; i++) {
- 		struct veth_rq_stats *stats = &priv->rq[i].stats;
- 		u64 packets, bytes, drops;
-@@ -304,11 +305,11 @@ static void veth_stats_rx(struct veth_stats *result, struct net_device *dev)
- 			start = u64_stats_fetch_begin_irq(&stats->syncp);
- 			packets = stats->vs.xdp_packets;
- 			bytes = stats->vs.xdp_bytes;
--			drops = stats->vs.xdp_drops;
-+			drops = stats->vs.rx_drops;
- 		} while (u64_stats_fetch_retry_irq(&stats->syncp, start));
- 		result->xdp_packets += packets;
- 		result->xdp_bytes += bytes;
--		result->xdp_drops += drops;
-+		result->rx_drops += drops;
- 	}
+@@ -129,7 +137,7 @@ static void veth_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
+ 		for (i = 0; i < dev->real_num_rx_queues; i++) {
+ 			for (j = 0; j < VETH_RQ_STATS_LEN; j++) {
+ 				snprintf(p, ETH_GSTRING_LEN,
+-					 "rx_queue_%u_%.11s",
++					 "rx_queue_%u_%.18s",
+ 					 i, veth_rq_stats_desc[j].desc);
+ 				p += ETH_GSTRING_LEN;
+ 			}
+@@ -374,12 +382,13 @@ static int veth_select_rxq(struct net_device *dev)
  }
  
-@@ -325,7 +326,7 @@ static void veth_get_stats64(struct net_device *dev,
- 	tot->tx_packets = packets;
+ static int veth_xdp_xmit(struct net_device *dev, int n,
+-			 struct xdp_frame **frames, u32 flags)
++			 struct xdp_frame **frames,
++			 u32 flags, bool ndo_xmit)
+ {
+ 	struct veth_priv *rcv_priv, *priv = netdev_priv(dev);
++	unsigned int qidx, max_len;
+ 	struct net_device *rcv;
+ 	int i, ret, drops = n;
+-	unsigned int max_len;
+ 	struct veth_rq *rq;
  
- 	veth_stats_rx(&rx, dev);
--	tot->rx_dropped = rx.xdp_drops;
-+	tot->rx_dropped = rx.rx_drops;
- 	tot->rx_bytes = rx.xdp_bytes;
- 	tot->rx_packets = rx.xdp_packets;
+ 	rcu_read_lock();
+@@ -395,7 +404,8 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
+ 	}
  
-@@ -753,7 +754,8 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
+ 	rcv_priv = netdev_priv(rcv);
+-	rq = &rcv_priv->rq[veth_select_rxq(rcv)];
++	qidx = veth_select_rxq(rcv);
++	rq = &rcv_priv->rq[qidx];
+ 	/* Non-NULL xdp_prog ensures that xdp_ring is initialized on receive
+ 	 * side. This means an XDP program is loaded on the peer and the peer
+ 	 * device is up.
+@@ -424,6 +434,17 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
+ 	if (flags & XDP_XMIT_FLUSH)
+ 		__veth_xdp_flush(rq);
+ 
++	rq = &priv->rq[qidx];
++	u64_stats_update_begin(&rq->stats.syncp);
++	if (ndo_xmit) {
++		rq->stats.vs.xdp_xmit += n - drops;
++		rq->stats.vs.xdp_xmit_err += drops;
++	} else {
++		rq->stats.vs.xdp_tx += n - drops;
++		rq->stats.vs.xdp_tx_err += drops;
++	}
++	u64_stats_update_end(&rq->stats.syncp);
++
+ 	if (likely(!drops)) {
+ 		rcu_read_unlock();
+ 		return n;
+@@ -437,11 +458,17 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
+ 	return ret;
+ }
+ 
++static int veth_ndo_xdp_xmit(struct net_device *dev, int n,
++			     struct xdp_frame **frames, u32 flags)
++{
++	return veth_xdp_xmit(dev, n, frames, flags, true);
++}
++
+ static void veth_xdp_flush_bq(struct net_device *dev, struct veth_xdp_tx_bq *bq)
+ {
+ 	int sent, i, err = 0;
+ 
+-	sent = veth_xdp_xmit(dev, bq->count, bq->q, 0);
++	sent = veth_xdp_xmit(dev, bq->count, bq->q, 0, false);
+ 	if (sent < 0) {
+ 		err = sent;
+ 		sent = 0;
+@@ -753,6 +780,7 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
+ 	}
  
  	u64_stats_update_begin(&rq->stats.syncp);
++	rq->stats.vs.xdp_redirect += stats->xdp_redirect;
  	rq->stats.vs.xdp_bytes += stats->xdp_bytes;
--	rq->stats.vs.xdp_drops += stats->xdp_drops + stats->rx_drops;
-+	rq->stats.vs.xdp_drops += stats->xdp_drops;
-+	rq->stats.vs.rx_drops += stats->rx_drops;
- 	rq->stats.vs.xdp_packets += done;
- 	u64_stats_update_end(&rq->stats.syncp);
+ 	rq->stats.vs.xdp_drops += stats->xdp_drops;
+ 	rq->stats.vs.rx_drops += stats->rx_drops;
+@@ -1172,7 +1200,7 @@ static const struct net_device_ops veth_netdev_ops = {
+ 	.ndo_features_check	= passthru_features_check,
+ 	.ndo_set_rx_headroom	= veth_set_rx_headroom,
+ 	.ndo_bpf		= veth_xdp,
+-	.ndo_xdp_xmit		= veth_xdp_xmit,
++	.ndo_xdp_xmit		= veth_ndo_xdp_xmit,
+ };
  
+ #define VETH_FEATURES (NETIF_F_SG | NETIF_F_FRAGLIST | NETIF_F_HW_CSUM | \
 -- 
 2.25.1
 
