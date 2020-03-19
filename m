@@ -2,75 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6042B18C080
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 20:37:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29DE418C083
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 20:37:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbgCSThe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 15:37:34 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:51372 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725817AbgCSThe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 15:37:34 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        id S1727122AbgCSThl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 15:37:41 -0400
+Received: from correo.us.es ([193.147.175.20]:35440 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726936AbgCSThl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 15:37:41 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id C1830EBAD2
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 20:37:08 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B3293FEFB3
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 20:37:08 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id A8C18FEFA9; Thu, 19 Mar 2020 20:37:08 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7E7B0FEFAE;
+        Thu, 19 Mar 2020 20:37:06 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 19 Mar 2020 20:37:06 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 548914C005C;
-        Thu, 19 Mar 2020 19:37:33 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 19 Mar
- 2020 19:37:24 +0000
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net] netfilter: nf_flow_table: populate addr_type mask
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <pablo@netfilter.org>,
-        <netfilter-devel@vger.kernel.org>, <paulb@mellanox.com>
-Message-ID: <7ab81e8a-d1db-6b0c-7f22-fb07e0d0432c@solarflare.com>
-Date:   Thu, 19 Mar 2020 19:37:21 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 5C5BE42EFB80;
+        Thu, 19 Mar 2020 20:37:06 +0100 (CET)
+Date:   Thu, 19 Mar 2020 20:37:36 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     Edward Cree <ecree@solarflare.com>,
+        netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, ozsh@mellanox.com, majd@mellanox.com,
+        saeedm@mellanox.com
+Subject: Re: [PATCH net-next 6/6] netfilter: nf_flow_table: hardware offload
+ support
+Message-ID: <20200319193736.zzbrb6ktfmqatkon@salvia>
+References: <20191111232956.24898-1-pablo@netfilter.org>
+ <20191111232956.24898-7-pablo@netfilter.org>
+ <64004716-fdbe-9542-2484-8a1691d54e53@solarflare.com>
+ <87cc5180-4e84-753f-0acf-1c7a0fa8549d@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25300.003
-X-TM-AS-Result: No-1.830800-8.000000-10
-X-TMASE-MatchedRID: oFxBp2LP3lKUkDPUhpX2vnpRh12Siy9rmdrHMkUHHq8ZwGrh4y4izBMn
-        vir+JcmKBTL3N8yyT9ePQi9XuOWoOHI/MxNRI7UkKrDHzH6zmUV9LQinZ4QefL6qvLNjDYTwIq9
-        5DjCZh0wUGm4zriL0oQtuKBGekqUpm+MB6kaZ2g4zyYQWlx89fUPaNQFgB7GZgKwNEXpWsKgzVt
-        53+nukjq5FpTdUFrAhTcpBEpRR6nDwZnIKqsIaRZLOwgMioCAWwN5vxK4c6q7tfQ1SPvnqTJqVX
-        UXjGsjz2F+vBZls4K+yaqc7gc0b5cNrTE0oNMe+
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--1.830800-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25300.003
-X-MDID: 1584646653-Wegfq2_PwKxe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87cc5180-4e84-753f-0acf-1c7a0fa8549d@mellanox.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-nf_flow_rule_match() sets control.addr_type in key, so needs to also set
- the corresponding mask.  An exact match is wanted, so mask is all ones.
+On Thu, Mar 19, 2020 at 06:47:07PM +0200, Paul Blakey wrote:
+> 
+> On 19/03/2020 17:57, Edward Cree wrote:
+[...]
+> > <snip>
+> >> +static int nf_flow_rule_match(struct nf_flow_match *match,
+> >> +			      const struct flow_offload_tuple *tuple)
+> >> +{
+> >> +	struct nf_flow_key *mask = &match->mask;
+> >> +	struct nf_flow_key *key = &match->key;
+> >> +
+> >> +	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_CONTROL, control);
+> >> +	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_BASIC, basic);
+> >> +	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_IPV4_ADDRS, ipv4);
+> >> +	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_TCP, tcp);
+> >> +	NF_FLOW_DISSECTOR(match, FLOW_DISSECTOR_KEY_PORTS, tp);
+> >> +
+> >> +	switch (tuple->l3proto) {
+> >> +	case AF_INET:
+> >> +		key->control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
+> >>
+> > Is it intentional that mask->control.addr_type never gets set?
+>
+> It should be set.
 
-Fixes: c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- net/netfilter/nf_flow_table_offload.c | 1 +
- 1 file changed, 1 insertion(+)
+I'd be glad to take a patch for this into nf.git
 
-diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index 06f00cdc3891..f2c22c682851 100644
---- a/net/netfilter/nf_flow_table_offload.c
-+++ b/net/netfilter/nf_flow_table_offload.c
-@@ -87,6 +87,7 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
- 	default:
- 		return -EOPNOTSUPP;
- 	}
-+	mask->control.addr_type = 0xffff;
- 	match->dissector.used_keys |= BIT(key->control.addr_type);
- 	mask->basic.n_proto = 0xffff;
- 
+Thanks.
