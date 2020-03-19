@@ -2,62 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7325618C13E
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 21:22:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A1218C170
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 21:32:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726619AbgCSUWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 16:22:54 -0400
-Received: from correo.us.es ([193.147.175.20]:60058 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726785AbgCSUWy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 16:22:54 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 229966CB6A
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 21:22:22 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 13022DA7B6
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 21:22:22 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 08634DA38F; Thu, 19 Mar 2020 21:22:22 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 3FB8FDA3C3;
-        Thu, 19 Mar 2020 21:22:20 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 19 Mar 2020 21:22:20 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 1B71F42EFB81;
-        Thu, 19 Mar 2020 21:22:20 +0100 (CET)
-Date:   Thu, 19 Mar 2020 21:22:50 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, paulb@mellanox.com
-Subject: Re: [PATCH net] netfilter: nf_flow_table: populate addr_type mask
-Message-ID: <20200319202250.gruvkyiobkjwcvho@salvia>
-References: <7ab81e8a-d1db-6b0c-7f22-fb07e0d0432c@solarflare.com>
+        id S1727195AbgCSUae (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 16:30:34 -0400
+Received: from script.cs.helsinki.fi ([128.214.11.1]:35090 "EHLO
+        script.cs.helsinki.fi" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727023AbgCSUae (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 16:30:34 -0400
+X-Greylist: delayed 302 seconds by postgrey-1.27 at vger.kernel.org; Thu, 19 Mar 2020 16:30:32 EDT
+X-DKIM: Courier DKIM Filter v0.50+pk-2017-10-25 mail.cs.helsinki.fi Thu, 19 Mar 2020 22:25:24 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cs.helsinki.fi;
+         h=date:from:to:cc:subject:in-reply-to:message-id:references
+        :mime-version:content-type; s=dkim20130528; bh=VnkDG3KitidHP1UqN
+        rOacPMm9utq+fSIYJuzQ20LCAs=; b=SlblTcqYnr5vGcT4pQsPltbSxC0Zqj5hk
+        qYU6j+WLsHTM9I4f5USW5SJ/10dXnphaB+SK0CCNqPGyM/Y3SMzHaP1hPko6uZKa
+        hpE3f299KZdFu38X2z2bqDmY/FfvvervF746Y32hC7pnR3qmfbej4sID5L5byM50
+        0LVzsNciN0=
+Received: from whs-18.cs.helsinki.fi (whs-18.cs.helsinki.fi [128.214.166.46])
+  (TLS: TLSv1/SSLv3,256bits,AES256-GCM-SHA384)
+  by mail.cs.helsinki.fi with ESMTPS; Thu, 19 Mar 2020 22:25:23 +0200
+  id 00000000005A00CF.000000005E73D533.0000385E
+Date:   Thu, 19 Mar 2020 22:25:23 +0200 (EET)
+From:   "=?ISO-8859-15?Q?Ilpo_J=E4rvinen?=" <ilpo.jarvinen@cs.helsinki.fi>
+X-X-Sender: ijjarvin@whs-18.cs.helsinki.fi
+To:     David Miller <davem@davemloft.net>
+cc:     Netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
+Subject: Re: [RFC PATCH 00/28]: Accurate ECN for TCP
+In-Reply-To: <20200318.162958.1146893420208387579.davem@davemloft.net>
+Message-ID: <alpine.DEB.2.20.2003192222320.5256@whs-18.cs.helsinki.fi>
+References: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi> <20200318.162958.1146893420208387579.davem@davemloft.net>
+User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7ab81e8a-d1db-6b0c-7f22-fb07e0d0432c@solarflare.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: multipart/mixed; boundary="=_script-14522-1584649524-0001-2"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 07:37:21PM +0000, Edward Cree wrote:
-> nf_flow_rule_match() sets control.addr_type in key, so needs to also set
->  the corresponding mask.  An exact match is wanted, so mask is all ones.
+This is a MIME-formatted message.  If you see this text it means that your
+E-mail software does not support MIME-formatted messages.
 
-Applied, thank you.
+--=_script-14522-1584649524-0001-2
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, 18 Mar 2020, David Miller wrote:
+
+> From: Ilpo J=E4rvinen <ilpo.jarvinen@helsinki.fi>
+> Date: Wed, 18 Mar 2020 11:43:04 +0200
+>=20
+> > Comments would be highly appreciated.
+>=20
+> Two coding style comments which you should audit your entire submission
+> for:
+>=20
+> 1) Please order local variables in reverse christmas tree ordering (lon=
+gest
+>    to shortest long)
+
+Does this apply also to the usual struct tcp_sock *tp =3D tcp_sk(sk); lin=
+e
+or can it be put first if there are some dependencies on it?
+
+> 2) Please do not use the inline keyword in foo.c files, let the compile=
+r
+>    decide.
+
+Thanks. I'll do those (I certainly removed some other bits I moved from
+header to .c but missed a few it seems).=20
+
+--=20
+ i.
+--=_script-14522-1584649524-0001-2--
