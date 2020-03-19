@@ -2,81 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 22EA518BEBB
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 18:49:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 239BA18BE47
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 18:38:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727561AbgCSRtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 13:49:12 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:65110 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726934AbgCSRtM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 13:49:12 -0400
-Received: from localhost (scalar.blr.asicdesigners.com [10.193.185.94])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 02JHn86S015047;
-        Thu, 19 Mar 2020 10:49:09 -0700
-From:   Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, nirranjan@chelsio.com, vishal@chelsio.com,
-        dt@chelsio.com
-Subject: [PATCH net] cxgb4: fix Txq restart check during backpressure
-Date:   Thu, 19 Mar 2020 23:08:10 +0530
-Message-Id: <1584639490-27208-2-git-send-email-rahul.lakkireddy@chelsio.com>
-X-Mailer: git-send-email 2.5.3
-In-Reply-To: <1584639490-27208-1-git-send-email-rahul.lakkireddy@chelsio.com>
-References: <1584639490-27208-1-git-send-email-rahul.lakkireddy@chelsio.com>
+        id S1728468AbgCSRim (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 13:38:42 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:37511 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727009AbgCSRil (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 13:38:41 -0400
+Received: by mail-qt1-f196.google.com with SMTP id d12so114540qtj.4;
+        Thu, 19 Mar 2020 10:38:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PPbGgs4Rz2rmlkEGYcxAMjdsYAQ4dAfXfNpPuXXsgYU=;
+        b=QreGGVLWyJYHh1IFERLJOEvXAy98RixUjHEQKXn5F5+8e7H9hnbWpFmUVdguLCUY2T
+         V4qKC8tmI2glfuWKvVNdgba1uiISdjRZ/r/6NQp1wZOSyfdmJpNVBkkLSmAItLb6E3ur
+         3hZB6IbL3Jt/0MMTTEZnzAwpsoa0yJ+jybm2JqJvb8W/FBPCAEbOmkwavuUHDgY6RN0Y
+         yJOutyqjFWb8uiZXn7DdKQV0xV8fi1W8FY1Z7wXzOLbStS4ZhpWqSW8rCMzpjWivMKps
+         09qc39s7ByX4vF/P4tQuPZHJ6kPIs4c1SCRL8qO1sdL5TM0usqaCCFuIYfhMRRVc74+D
+         D5Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PPbGgs4Rz2rmlkEGYcxAMjdsYAQ4dAfXfNpPuXXsgYU=;
+        b=aQs5h9qK1OaXgXxmjPE7WjkLNiVzAOvOJnEmktARzZgjxQTStVJNwOYT5F6vUedawk
+         KB49SK2UTmve4MEIe6d1bor1zqVtdDGHWGmyP2oIRE+p8ei2mFVi1Bm5V6r6slATDZ+3
+         fqO1t3FrklaIiZk+OTUuWHVS182vyuxx2GZkJ2G+pkwtA0cmqMFxldNcQ/d29WEYcncL
+         PSAzJ8j9axjLWQ20Xr9L7TUwJOARlIzvmfBbpgioOonA+iRNoqEwcKz59C/0jHgAR/UW
+         pMYq51vd6cYafoerq5lxzCZ9LoOdVkaixDwpMJSOG/HoM5CB+xxfcd1LMUYWav9fcv0A
+         2pqw==
+X-Gm-Message-State: ANhLgQ0EsIpMqXqJFLwUEfXEQMAfmNM5Xt27jERH0+limAKoXpU8NryL
+        F+L26I6/POKD9TEMrEojYgQ8Cp8L0fTAGQ35RPg=
+X-Google-Smtp-Source: ADFU+vuvyXkeruxCSr9kM6D2FDoaXom6uXzfhzHnUGEBohTdbUr3hhmsS8s+HR3XOWBKS3xhb5fXb3kaGdEkbq92mbg=
+X-Received: by 2002:ac8:7448:: with SMTP id h8mr4101625qtr.117.1584639520560;
+ Thu, 19 Mar 2020 10:38:40 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200319124631.58432-1-yuehaibing@huawei.com> <87fte4xot3.fsf@cloudflare.com>
+In-Reply-To: <87fte4xot3.fsf@cloudflare.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 19 Mar 2020 10:38:29 -0700
+Message-ID: <CAEf4BzYbrXW-eYpKmr07Xba_wZkuws-7fChGw17u1nFLLmu2Zw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf: tcp: Fix unused function warnings
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     YueHaibing <yuehaibing@huawei.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        john fastabend <john.fastabend@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Driver reclaims descriptors in much smaller batches, even if hardware
-indicates more to reclaim, during backpressure. So, fix the check to
-restart the Txq during backpressure, by looking at how many
-descriptors hardware had indicated to reclaim, and not on how many
-descriptors that driver had actually reclaimed. Once the Txq is
-restarted, driver will reclaim even more descriptors when Tx path
-is entered again.
+On Thu, Mar 19, 2020 at 10:00 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> On Thu, Mar 19, 2020 at 01:46 PM CET, YueHaibing wrote:
+> > If BPF_STREAM_PARSER is not set, gcc warns:
+> >
+> > net/ipv4/tcp_bpf.c:483:12: warning: 'tcp_bpf_sendpage' defined but not used [-Wunused-function]
+> > net/ipv4/tcp_bpf.c:395:12: warning: 'tcp_bpf_sendmsg' defined but not used [-Wunused-function]
+> > net/ipv4/tcp_bpf.c:13:13: warning: 'tcp_bpf_stream_read' defined but not used [-Wunused-function]
+> >
+> > Moves the unused functions into the #ifdef
+> >
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> > ---
+>
+> In addition to this fix, looks like tcp_bpf_recvmsg can be static and
+> also conditional on CONFIG_BPF_STREAM_PARSER.
+>
+> Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
 
-Fixes: d429005fdf2c ("cxgb4/cxgb4vf: Add support for SGE doorbell queue timer")
-Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
----
- drivers/net/ethernet/chelsio/cxgb4/sge.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-index c816837fbd85..cab3d17e0e1a 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-@@ -1307,8 +1307,9 @@ static inline void *write_tso_wr(struct adapter *adap, struct sk_buff *skb,
- int t4_sge_eth_txq_egress_update(struct adapter *adap, struct sge_eth_txq *eq,
- 				 int maxreclaim)
- {
-+	unsigned int reclaimed, hw_cidx;
- 	struct sge_txq *q = &eq->q;
--	unsigned int reclaimed;
-+	int hw_in_use;
- 
- 	if (!q->in_use || !__netif_tx_trylock(eq->txq))
- 		return 0;
-@@ -1316,12 +1317,17 @@ int t4_sge_eth_txq_egress_update(struct adapter *adap, struct sge_eth_txq *eq,
- 	/* Reclaim pending completed TX Descriptors. */
- 	reclaimed = reclaim_completed_tx(adap, &eq->q, maxreclaim, true);
- 
-+	hw_cidx = ntohs(READ_ONCE(q->stat->cidx));
-+	hw_in_use = q->pidx - hw_cidx;
-+	if (hw_in_use < 0)
-+		hw_in_use += q->size;
-+
- 	/* If the TX Queue is currently stopped and there's now more than half
- 	 * the queue available, restart it.  Otherwise bail out since the rest
- 	 * of what we want do here is with the possibility of shipping any
- 	 * currently buffered Coalesced TX Work Request.
- 	 */
--	if (netif_tx_queue_stopped(eq->txq) && txq_avail(q) > (q->size / 2)) {
-+	if (netif_tx_queue_stopped(eq->txq) && hw_in_use < (q->size / 2)) {
- 		netif_tx_wake_queue(eq->txq);
- 		eq->q.restarts++;
- 	}
--- 
-2.24.0
-
+Fixes tag is missing as well?
