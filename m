@@ -2,138 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E031318AB07
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 04:15:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70B6D18AB2C
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 04:29:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726780AbgCSDPO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 23:15:14 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:47565 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726623AbgCSDPO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 23:15:14 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 48jX8X5w3qz9sPF;
-        Thu, 19 Mar 2020 14:15:08 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
-        s=201909; t=1584587710;
-        bh=rG0ZNtXeOAIDv6nCRsCIvY7aiOa2R5AcTzVNUoyUCUM=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=lChQmtD0utfONPyZbRLEW+i1FS865SHM6yI7oEJ/I8vHdalR5I4FhRBQZUxh0tpel
-         VTqIUg9j2ZcNdmOXQixeNcm3twMifZ/pCiiBMaeZANmLR5oR8BVyd4B5G33uc+9oHl
-         zFjnoSM69uY4a1dP7ITQnF+3ia32Rka50mwbyLDP9PRdYuyt2q1jezDPjp06F/JgRd
-         brwMOdZp3XLIl1Dakg+h5s6KcVCvuld1AmsobLfc4d86CpMcgL566CN6mhmQQDKNf6
-         0EP65bsu2Q2+wS4MyeZqZk3uZAh9rKi4FvefRqmIEqJbtw4gWiex8mLMjUiRHn6yDy
-         UXukKabLCJuEQ==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Shuah Khan <skhan@linuxfoundation.org>, shuah@kernel.org,
-        luto@amacapital.net, wad@chromium.org, daniel@iogearbox.net,
-        kafai@fb.com, yhs@fb.com, andriin@fb.com,
-        gregkh@linuxfoundation.org, tglx@linutronix.de,
-        khilman@baylibre.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH v3] selftests: Fix seccomp to support relocatable build (O=objdir)
-In-Reply-To: <202003161404.934CCE0@keescook>
-References: <20200313212404.24552-1-skhan@linuxfoundation.org> <8736a8qz06.fsf@mpe.ellerman.id.au> <202003161404.934CCE0@keescook>
-Date:   Thu, 19 Mar 2020 14:15:11 +1100
-Message-ID: <87h7yldohs.fsf@mpe.ellerman.id.au>
+        id S1726814AbgCSD3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 23:29:39 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:42856 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726596AbgCSD3i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 23:29:38 -0400
+Received: by mail-pg1-f195.google.com with SMTP id h8so434024pgs.9
+        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 20:29:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=tQlJ3NjfplqkMyQMxVBekp3rm26vqmGcdAxC1LUBh9w=;
+        b=Z/LTi23X8599QqYsduum93XoZCbF6aAoZdqITodxVhofIeDMXO5IudoV3CyvuCSdZb
+         AmuGdND6iQODj0quj7g7CIQj8t5TYq3GYfed5ijrMix2tFYbXB+vfDe4baWFUB0mYU77
+         J+Di17Le82m4mOcKLKabIDnlO2lDIKSTFx3Y0HXdsTaKxFLZq4Vc8YZLNdeQYE9TuBJC
+         eDAzLyh1ci3xaWMtlBcVXOPdhuMg4ySbI1EQ4LA+oDB2idcajDYVGgM282YrodAcQ+OV
+         vaO9/N292ZeguVaqJlR3ipFjv9PQ3nD8fffnJVhHumOEY+qN01Yd8LnHqIXsjQVdHjIB
+         41dw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=tQlJ3NjfplqkMyQMxVBekp3rm26vqmGcdAxC1LUBh9w=;
+        b=hyl6zuSuyLkJy+ZRoDu5FzEqXrapjpyfctJqJtXmwJTfbH8Syhg1+r24I7osEGYnUd
+         e/8Oy+ZW3Y0/+GRPVpB3K/U5Vo8W+9O2kMSld9vvwbZpp2xxKy7+cMXMPnVPJQdt/F/s
+         dBzB5tF1BkuDNBeNVdoZo12iY04iVGsKDIZ7X5NfatFZyNLmSDWkVjS3d281v9aZY4b5
+         NX6qk9MflhPNIlyPdJlnwYeCBcmrxqKUqR9a4+b2HJsoV8lbnf8vk8gsVvm5JONKtKpY
+         zCFz5z4Df6lsa7ReRzmYZN0tBZ7mI8HwpS8U8FkhsiVmRGiXwdvjpYOKlBR6S218D1h8
+         l+iw==
+X-Gm-Message-State: ANhLgQ0QoxMYymo+usrngJsxJZBQ8EFssbRR6uXaYG3bq+W96SHqYaJE
+        lA0rfYO/laTTG4pPS8GPGE8=
+X-Google-Smtp-Source: ADFU+vt39HsKzBphwuiaKKwMxjzFUa/s7HsssUVqlfE7mfwN/YzPQZJld3aOiHyyaCp78OJ0d/oY8g==
+X-Received: by 2002:a63:cc13:: with SMTP id x19mr1074838pgf.65.1584588577374;
+        Wed, 18 Mar 2020 20:29:37 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id g75sm316198pje.37.2020.03.18.20.29.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 Mar 2020 20:29:36 -0700 (PDT)
+Subject: Re: [RFC PATCH 24/28] tcp: try to fit AccECN option with SACK
+To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@helsinki.fi>,
+        netdev@vger.kernel.org
+Cc:     Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
+References: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi>
+ <1584524612-24470-25-git-send-email-ilpo.jarvinen@helsinki.fi>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <4ae2c8be-3235-9158-a2a7-7f9d30a20c04@gmail.com>
+Date:   Wed, 18 Mar 2020 20:29:34 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1584524612-24470-25-git-send-email-ilpo.jarvinen@helsinki.fi>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kees Cook <keescook@chromium.org> writes:
-> On Mon, Mar 16, 2020 at 11:12:57PM +1100, Michael Ellerman wrote:
->> Shuah Khan <skhan@linuxfoundation.org> writes:
->> > Fix seccomp relocatable builds. This is a simple fix to use the right
->> > lib.mk variable TEST_GEN_PROGS with dependency on kselftest_harness.h
->> > header, and defining LDFLAGS for pthread lib.
->> >
->> > Removes custom clean rule which is no longer necessary with the use of
->> > TEST_GEN_PROGS. 
->> >
->> > Uses $(OUTPUT) defined in lib.mk to handle build relocation.
->> >
->> > The following use-cases work with this change:
->> >
->> > In seccomp directory:
->> > make all and make clean
->> >
->> > From top level from main Makefile:
->> > make kselftest-install O=objdir ARCH=arm64 HOSTCC=gcc \
->> >  CROSS_COMPILE=aarch64-linux-gnu- TARGETS=seccomp
->> >
->> > Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
->> > ---
->> >
->> > Changes since v2:
->> > -- Using TEST_GEN_PROGS is sufficient to generate objects.
->> >    Addresses review comments from Kees Cook.
->> >
->> >  tools/testing/selftests/seccomp/Makefile | 18 ++++++++----------
->> >  1 file changed, 8 insertions(+), 10 deletions(-)
->> >
->> > diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
->> > index 1760b3e39730..a0388fd2c3f2 100644
->> > --- a/tools/testing/selftests/seccomp/Makefile
->> > +++ b/tools/testing/selftests/seccomp/Makefile
->> > @@ -1,17 +1,15 @@
->> >  # SPDX-License-Identifier: GPL-2.0
->> > -all:
->> > -
->> > -include ../lib.mk
->> > +CFLAGS += -Wl,-no-as-needed -Wall
->> > +LDFLAGS += -lpthread
->> >  
->> >  .PHONY: all clean
->> >  
->> > -BINARIES := seccomp_bpf seccomp_benchmark
->> > -CFLAGS += -Wl,-no-as-needed -Wall
->> > +include ../lib.mk
->> > +
->> > +# OUTPUT set by lib.mk
->> > +TEST_GEN_PROGS := $(OUTPUT)/seccomp_bpf $(OUTPUT)/seccomp_benchmark
->> >  
->> > -seccomp_bpf: seccomp_bpf.c ../kselftest_harness.h
->> > -	$(CC) $(CFLAGS) $(LDFLAGS) $< -lpthread -o $@
->> > +$(TEST_GEN_PROGS): ../kselftest_harness.h
->> >  
->> > -TEST_PROGS += $(BINARIES)
->> > -EXTRA_CLEAN := $(BINARIES)
->> > +all: $(TEST_GEN_PROGS)
->> >  
->> > -all: $(BINARIES)
->> 
->> 
->> It shouldn't be that complicated. We just need to define TEST_GEN_PROGS
->> before including lib.mk, and then add the dependency on the harness
->> after we include lib.mk (so that TEST_GEN_PROGS has been updated to
->> prefix $(OUTPUT)).
->> 
->> eg:
->> 
->>   # SPDX-License-Identifier: GPL-2.0
->>   CFLAGS += -Wl,-no-as-needed -Wall
->>   LDFLAGS += -lpthread
->>   
->>   TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
->>   
->>   include ../lib.mk
->>   
->>   $(TEST_GEN_PROGS): ../kselftest_harness.h
->
-> Exactly. This (with an extra comment) is precisely what I suggested during
-> v2 review:
-> https://lore.kernel.org/lkml/202003041815.B8C73DEC@keescook/
 
-Oh sorry, I missed that.
 
-OK so I think we know what the right solution is.
+On 3/18/20 2:43 AM, Ilpo Järvinen wrote:
+> From: Ilpo Järvinen <ilpo.jarvinen@cs.helsinki.fi>
+> 
+> As SACK blocks tend to eat all option space when there are
+> many holes, it is useful to compromise on sending many SACK
+> blocks in every ACK and try to fit AccECN option there
+> by reduction the number of SACK blocks. But never go below
+> two SACK blocks because of AccECN option.
+> 
+> As AccECN option is often not put to every ACK, the space
+> hijack is usually only temporary.
+> 
+> Signed-off-by: Ilpo Järvinen <ilpo.jarvinen@cs.helsinki.fi>
+> ---
+>  net/ipv4/tcp_output.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+> 
+> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> index 4cc590a47f43..0aec2c57a9cc 100644
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -756,6 +756,21 @@ static int tcp_options_fit_accecn(struct tcp_out_options *opts, int required,
+>  	if (opts->num_ecn_bytes < required)
+>  		return 0;
 
-cheers
+Have you tested this patch ?
+
+(You forgot to remove the prior 2 lines)
+
+>  
+> +	if (opts->num_ecn_bytes < required) {
+> +		if (opts->num_sack_blocks > 2) {
+> +			/* Try to fit the option by removing one SACK block */
+> +			opts->num_sack_blocks--;
+> +			size = tcp_options_fit_accecn(opts, required,
+> +						      remaining + TCPOLEN_SACK_PERBLOCK,
+> +						      max_combine_saving);
+> +			if (opts->options & OPTION_ACCECN)
+> +				return size - TCPOLEN_SACK_PERBLOCK;
+> +
+> +			opts->num_sack_blocks++;
+> +		}
+> +		return 0;
+> +	}
+> +
+>  	opts->options |= OPTION_ACCECN;
+>  	return size;
+>  }
+> 
