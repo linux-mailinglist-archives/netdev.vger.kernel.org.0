@@ -2,203 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08B7818B234
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 12:17:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D4DA18B248
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 12:25:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725601AbgCSLRG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 07:17:06 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:48380 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726933AbgCSLRG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 07:17:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584616623;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=owRQsKwA9dFOy6TRW7LYRc1oipCF11iMEKwcjW7tiVo=;
-        b=ivCQZ221mNg/U1rQGHqMTqRnTqxaUsw1PGaXmLmc9CHkmX8CfAPy/lISCJTQ+eg9OYAN+o
-        xf+9IbRh5UvD9jqbsQrt0VwtTyugsIeHaDbTfUEKBOSbSVTQv63wF9q30orjxCAqT8i9oO
-        e/rYTJOiFcIbLIswuwCRokJEggh38Jw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-356-Ya3Q54nxNX21qjK2_dyxvw-1; Thu, 19 Mar 2020 07:17:00 -0400
-X-MC-Unique: Ya3Q54nxNX21qjK2_dyxvw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ABB04477;
-        Thu, 19 Mar 2020 11:16:58 +0000 (UTC)
-Received: from elisabeth (unknown [10.40.208.93])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 1366C6EF95;
-        Thu, 19 Mar 2020 11:16:55 +0000 (UTC)
-Date:   Thu, 19 Mar 2020 12:16:50 +0100
-From:   Stefano Brivio <sbrivio@redhat.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH 19/29] nft_set_pipapo: Introduce AVX2-based lookup
- implementation
-Message-ID: <20200319121650.44bf3c17@elisabeth>
-In-Reply-To: <CACRpkdbK0dZ87beU8qPSHmRMxTWog-8WbiDQvM-ec06_hAjkoQ@mail.gmail.com>
-References: <20200318003956.73573-1-pablo@netfilter.org>
-        <20200318003956.73573-20-pablo@netfilter.org>
-        <CACRpkdbK0dZ87beU8qPSHmRMxTWog-8WbiDQvM-ec06_hAjkoQ@mail.gmail.com>
-Organization: Red Hat
+        id S1726947AbgCSLZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 07:25:41 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:43042 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726589AbgCSLZl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 07:25:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=M3SZPnC7Rmsrg1bRz2AgIM/I53b4DuL+NG8Nhk1rG1A=; b=iF/N+o/XfGoh1QxJdF94MAyH/
+        V8juDEEGV9l7N04GZiooB9yOzDxbo6YiXcEmYp9ljIuXVpu+zsAuwJDA0oCUePOQM3Eg3/H/rCEPS
+        5CDb8yvfyXfLdDpf9GEBn+oV54kGbzliH2qZrNOAyqiqwyD4zSD0CviC81fg/TrbupdfavXoylMwW
+        Rp5a9rzjefhd3UcqZRuG+l3OjCX+DthBiICEmPaSLzs6sdJmpcSTJOZQWX5Chdj62Em3sFBOmw3Gs
+        U+u/UEH2wHwvgqSZX2jG4lOG9kGv13ijQDj2M6xRr0HNMh4FRb8M7DtmJkeJQJuG1XyLYRC6Ih0zi
+        QFl6pER+g==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38516)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jEtIt-0001rg-Ub; Thu, 19 Mar 2020 11:25:36 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jEtIt-0004jf-3y; Thu, 19 Mar 2020 11:25:35 +0000
+Date:   Thu, 19 Mar 2020 11:25:35 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/3] net: phy: add and use phy_check_downshift
+Message-ID: <20200319112535.GD25745@shell.armlinux.org.uk>
+References: <6e4ea372-3d05-3446-2928-2c1e76a66faf@gmail.com>
+ <d2822357-4c1e-a072-632e-a902b04eba7c@gmail.com>
+ <20200318232159.GA25745@shell.armlinux.org.uk>
+ <b0bc3ca0-0c1b-045e-cd00-37fc85c4eebf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b0bc3ca0-0c1b-045e-cd00-37fc85c4eebf@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus,
-
-On Thu, 19 Mar 2020 11:20:28 +0100
-Linus Walleij <linus.walleij@linaro.org> wrote:
-
-> Hi Pablo,
+On Thu, Mar 19, 2020 at 08:30:58AM +0100, Heiner Kallweit wrote:
+> On 19.03.2020 00:21, Russell King - ARM Linux admin wrote:
+> > On Wed, Mar 18, 2020 at 10:29:01PM +0100, Heiner Kallweit wrote:
+> >> So far PHY drivers have to check whether a downshift occurred to be
+> >> able to notify the user. To make life of drivers authors a little bit
+> >> easier move the downshift notification to phylib. phy_check_downshift()
+> >> compares the highest mutually advertised speed with the actual value
+> >> of phydev->speed (typically read by the PHY driver from a
+> >> vendor-specific register) to detect a downshift.
+> > 
+> > My personal position on this is that reporting a downshift will be
+> > sporadic at best, even when the link has negotiated slower.
+> > 
+> > The reason for this is that either end can decide to downshift.  If
+> > the remote partner downshifts, then the local side has no idea that
+> > a downshift occurred, and can't report that the link was downshifted.
+> > 
+> Right, this warning can't cover the case that remote link partner
+> downshifts. In this case however ethtool et al should show the reduced
+> link partner advertisement, and therefore provide a hint why speed
+> is slow.
 > 
-> First: I really like this type of optimizations. It's really cool to
-> see this hardware being put to good use. So for the record,
-> I'm impressed with your work here.
-
-Thanks! :)
-
-> On Wed, Mar 18, 2020 at 1:40 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> > So, is it actually useful to report these events?
+> > 
+> To provide an example: A user recently complained that r8169 driver
+> makes problems on his system:
+> - it takes long time until link comes up
+> - link is slow
+> With iperf he then found out that displayed speed is 1Gbps but actual
+> link speed is 100Mbps. In the end he found that one pin of his network
+> port was corroded, therefore the downshift.
 > 
-> > +ifdef CONFIG_X86_64
-> > +ifneq (,$(findstring -DCONFIG_AS_AVX2=1,$(KBUILD_CFLAGS)))
-> > +nf_tables-objs += nft_set_pipapo_avx2.o
-> > +endif
-> > +endif  
-> 
-> So this is the first time I see some x86-specific asm optimizations
-> in the middle of nftables. That's pretty significant, so it should be
-> pointed out in the commit message I think.
+> The phase of blaming the driver could have been skipped if he would
+> have seen a downshift warning from the very beginning.
 
-It didn't occur to me, you're right, sorry for that (this is in
-net-next already).
+This sounds like a good theory to justify it, but it suffers from one
+major flaw.
 
-> I have a question around this:
-> 
-> > +#define NFT_PIPAPO_LONGS_PER_M256      (XSAVE_YMM_SIZE / BITS_PER_LONG)
-> > +
-> > +/* Load from memory into YMM register with non-temporal hint ("stream load"),
-> > + * that is, don't fetch lines from memory into the cache. This avoids pushing
-> > + * precious packet data out of the cache hierarchy, and is appropriate when:
-> > + *
-> > + * - loading buckets from lookup tables, as they are not going to be used
-> > + *   again before packets are entirely classified
-> > + *
-> > + * - loading the result bitmap from the previous field, as it's never used
-> > + *   again
-> > + */
-> > +#define NFT_PIPAPO_AVX2_LOAD(reg, loc)                                 \
-> > +       asm volatile("vmovntdqa %0, %%ymm" #reg : : "m" (loc))  
-> 
-> (...)
-> 
-> > +/* Bitwise AND: the staple operation of this algorithm */
-> > +#define NFT_PIPAPO_AVX2_AND(dst, a, b)                                 \
-> > +       asm volatile("vpand %ymm" #a ", %ymm" #b ", %ymm" #dst)
-> > +
-> > +/* Jump to label if @reg is zero */
-> > +#define NFT_PIPAPO_AVX2_NOMATCH_GOTO(reg, label)                       \
-> > +       asm_volatile_goto("vptest %%ymm" #reg ", %%ymm" #reg ";"        \
-> > +                         "je %l[" #label "]" : : : : label)
-> > +
-> > +/* Store 256 bits from YMM register into memory. Contrary to bucket load
-> > + * operation, we don't bypass the cache here, as stored matching results
-> > + * are always used shortly after.
-> > + */
-> > +#define NFT_PIPAPO_AVX2_STORE(loc, reg)                                        \
-> > +       asm volatile("vmovdqa %%ymm" #reg ", %0" : "=m" (loc))
-> > +
-> > +/* Zero out a complete YMM register, @reg */
-> > +#define NFT_PIPAPO_AVX2_ZERO(reg)                                      \
-> > +       asm volatile("vpxor %ymm" #reg ", %ymm" #reg ", %ymm" #reg)  
-> 
-> The usual practice for this kind of asm optimizations is to store it
-> in the arch.
-> 
-> See for example
-> arch/x86/include/asm/bitops.h
-> arch/arm64/include/asm/bitrev.h
-> which optimize a few bit operations with inline assembly.
-> 
-> The upside is that bitwise operations can be optimized per-arch
-> depending on available arch instructions.
+There was indeed a bug - the driver was reporting 1Gbps, whereas the
+link was not operating at that speed, but at 100Mbps.  Had that bug
+not existed, the kernel would've reported 100Mbps as the speed, and
+then your justification in the first paragraph applies - the link
+speed is slower than expected.
 
-I spent some time trying to figure out where to fit this, and decided
-instead to go the same way as RAID6 and some crypto implementations.
+With that bug in place, this patch does nothing; you're using the same
+algorithm to calculate what the speed should be and comparing it with
+the same algorithm result reported from phy_resolve_aneg_linkmode().
 
-A reasonable threshold (and what appears to be the current practice for
-the few examples we have) seems to be how specific to a subsystem an
-implementation actually is. In that perspective, this looks to me
-conceptually similar to AVX2 (or NEON) RAID6 implementations.
+So, the problem is going to remain.
 
-> If other archs have similar instructions to AVX2 which can
-> slot in and optimize the same code, it would make sense to
-> move the assembly to the arch and define some new
-> bitops for loading, storing, zero and bitwise AND, possibly even
-> if restricted to 256 bits bitmaps.
+The only time that this helps is if PHY drivers implement reading a
+vendor register to report the actual link speed, and the PHY specific
+driver is used.
 
-I'm currently taking care of that for NEON, and while we'll have obvious
-gains using a vectorised bitwise AND (with different sizes), the cost of
-other operations involved (e.g. branching, or the "refill" operation)
-is different, so I'll probably have to arrange algorithm steps in a
-different way, and use SIMD instructions that are fundamentally not
-equivalent.
+Also, falling back to the generic PHY driver is going to result in the
+same hard-to-debug problem that you refer to above.
 
-On top of that, some architectures are not super-scalar, and some are
-but in a different way. Another example: I'm using vmovntdqa here, but,
-for a generic 256-bit AND operation, vmovdqa (without non-temporal
-memory hint, that is, pushing to cache) makes more sense in the general
-case.
+So, do we need to print a big fat warning that the generic driver is
+being used, and recommend the user uses the tailored driver instead?
 
-So, well, this implementation has to be way more specific (at least for
-AVX2 and NEON) than just a random pile of AND operations. :) However,
-
-> We have lib/bitmap.c I can see that this library contain
-> things such as:
-> 
-> int __bitmap_and(unsigned long *dst, const unsigned long *bitmap1,
->                                 const unsigned long *bitmap2, unsigned int bits)
-> 
-> Which intuitively seems like something that could use
-> these optimizations. It should be fine to augment the kernel
-> to handle arch-specific optimizations of bitmap operations
-> just like we do for setting bits or finding the first set bit
-> in a bitmap etc. Today only bitops.h contain arch optimizations
-> but if needed surely we can expand on that?
-
-...yes, absolutely, this makes a lot of sense, I've also been thinking
-about this.
-
-For instance, I use __bitmap_and() in the non-AVX2 implementation, and
-that would benefit from generic vectorised operations on other
-architectures (AltiVec extensions are probably a good example). I plan
-to eventually work on this, help would be greatly appreciated (ARM/MIPS
-person here :)).
-
-> So I would like to see an explanation why we cannot take
-> an extra step and make this code something that is entire
-> abstract from x86 and will optimize any arch that can to
-> 256 bit bitwise acceleration such as this.
-
-I can add some specific comments if you think it makes sense, detailing
-exactly what makes this special compared to a simple sequence of
-vectorised 256-bit AND operations. The current comments probably give a
-hint about that, but I haven't provided a detailed list there, I can add
-it.
+There's lots of issues to consider here; it is not as simple as has
+been suggested, and I'm not sure that this patch adds particularly
+high value by really solving the problem.
 
 -- 
-Stefano
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
