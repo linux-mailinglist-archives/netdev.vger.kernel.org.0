@@ -2,134 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A3FF18C36B
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 00:00:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 363D218C36E
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 00:02:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727500AbgCSXAF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 19:00:05 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:46192 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727442AbgCSXAF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 19:00:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=nJ3RQq5k4oQrLoKYkTfeXSLHosWOJBMgbqxYfwIzYec=; b=TpZCIGDxBIMC2xx9b7D7m9Iqhx
-        VXWESjDV5RcelMAVkmrtiuT5N/aCNquXDvvwpPbV/Jmb3RSH3TEqmBHT4arPw7YYG72Gn/AaYrSRf
-        saoIwjHabga0ORaJ5fA+wJZyaY+h4Ibyp3fvcGLZ62xdik0de1Yj7uI0eQI1RvXB8GxA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jF48w-0001gT-G2; Fri, 20 Mar 2020 00:00:02 +0100
-Date:   Fri, 20 Mar 2020 00:00:02 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, hkallweit1@gmail.com
-Subject: Re: [PATCH v2 2/2] net: phy: marvell smi2usb mdio controller
-Message-ID: <20200319230002.GO27807@lunn.ch>
-References: <20200319135952.16258-1-tobias@waldekranz.com>
- <20200319135952.16258-2-tobias@waldekranz.com>
- <20200319154937.GB27807@lunn.ch>
- <20200319223544.GA14699@wkz-x280>
+        id S1727352AbgCSXCu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 19:02:50 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:33529 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726867AbgCSXCu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 19:02:50 -0400
+Received: by mail-io1-f65.google.com with SMTP id o127so4180199iof.0
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 16:02:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=hR+XK2zRPLgVTwAf7qPvlWm9tn+TvLr43X7/s0p04PY=;
+        b=PY65ki+RCJ2Hnod7S2negtRzqojq+en0hmlTgsFf2Spqd+YZMSeesWkkP/9G79Dzia
+         VjIOcPfMEK4TFX8IbR59tHC+EKSTLWj0g4z7Oi8X3mFNYopF7VsrjpSpAO4J9TpYzGWQ
+         uPG2nksCJjaP/xWDBgabu9yEi0lPUDsJGH59ZGgeXSzFwajFAPsvK4yIkcTh0gYLwHtZ
+         cIq5AnreXf4HO6M/f2tpZ3oKt6tzHBiXDWbtdfINNdShq3OZOVY8WqklWv4fwtJ7pvVF
+         0EmS/1xmOrvU7iZlIhct83tSJLXOhLuNiWwhPNzgawgUndkzJMDpwsb/N2IqfuVkU9pt
+         rs9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=hR+XK2zRPLgVTwAf7qPvlWm9tn+TvLr43X7/s0p04PY=;
+        b=ohljVzg9lRV8iQNEGxq/RUod7SX14zTV+dgjimM9nohAhJWrEi68ykm/EQykEAJdot
+         XZhYlDBnWumg5r+sMbnmN2wmG5D3Dr/WDW8ycC3T3MwDxyWBIGrtGNKcCEXGiopjtCDl
+         p1tIx49xNhcwa6Jk3dsjj2JahRZ/7nx/Ekb1Twdlj3dzAEngpAgfJ/FzG5USahOiWoMI
+         2NUk9kxRDmj+pQyT43sR8UDu7SDRlgNCgbpN7GURh4M5DlXS03aEGOAEklcRd2p4GkfV
+         zjhX3dX0AR2V1ixqVOy7q8KtpZN6VFNjl7L0G7RkUfc6xyQt5kdeaMJq3YojPIXyJkTX
+         qEbg==
+X-Gm-Message-State: ANhLgQ0UYYNGfp9x1KloQicIA7hrPxQOE52NfhWM3O/Tik2F3/3UIVkM
+        00uHl5B+DkBGnsBTyCEMATzhu+Kr+cSfXrIpLdw=
+X-Google-Smtp-Source: ADFU+vsMA7ybJUaT+Bez2lJMLfNZNroktp0vL8J60Q3DAq4E2sQDV9Z3g0kPKM7t4DNrrLNzL49ks/6eQedAKFCWW/Y=
+X-Received: by 2002:a6b:f616:: with SMTP id n22mr4939892ioh.100.1584658968834;
+ Thu, 19 Mar 2020 16:02:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200319223544.GA14699@wkz-x280>
+References: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi> <1584524612-24470-29-git-send-email-ilpo.jarvinen@helsinki.fi>
+In-Reply-To: <1584524612-24470-29-git-send-email-ilpo.jarvinen@helsinki.fi>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Thu, 19 Mar 2020 16:02:36 -0700
+Message-ID: <CAA93jw7_YG-KMns8UP-aTPHNjPG+A_rwWUWbt1+8i4+UNhALnA@mail.gmail.com>
+Subject: Re: [RFC PATCH 28/28] tcp: AccECN sysctl documentation
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@helsinki.fi>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tobias
+On Wed, Mar 18, 2020 at 2:44 AM Ilpo J=C3=A4rvinen <ilpo.jarvinen@helsinki.=
+fi> wrote:
+>
+> From: Ilpo J=C3=A4rvinen <ilpo.jarvinen@cs.helsinki.fi>
+>
+> Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@cs.helsinki.fi>
+> ---
+>  Documentation/networking/ip-sysctl.txt | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+>
+> diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/netwo=
+rking/ip-sysctl.txt
+> index 5f53faff4e25..ecca6e1d6bea 100644
+> --- a/Documentation/networking/ip-sysctl.txt
+> +++ b/Documentation/networking/ip-sysctl.txt
+> @@ -301,15 +301,21 @@ tcp_ecn - INTEGER
+>                 0 Disable ECN.  Neither initiate nor accept ECN.
+>                 1 Enable ECN when requested by incoming connections and
+>                   also request ECN on outgoing connection attempts.
+> -               2 Enable ECN when requested by incoming connections
+> +               2 Enable ECN or AccECN when requested by incoming connect=
+ions
+>                   but do not request ECN on outgoing connections.
 
-> How about just mdio-mvusb?
+Changing existing user-behavior for this default seems to be overly
+optimistic. Useful for testing, but...
 
-Yes, i like that.
+> +               3 Enable AccECN when requested by incoming connections an=
+d
+> +                 also request AccECN on outgoing connection attempts.
+> +           0x102 Enable AccECN in optionless mode for incoming connectio=
+ns.
+> +           0x103 Enable AccECN in optionless mode for incoming and outgo=
+ing
+> +                 connections.
 
-> On the 88E6390X-DB, I know that there is a chip by the USB port that
-> is probably either an MCU or a small FPGA. I can have a closer look at
-> it when I'm at the office tomorrow if you'd like. I also remember
-> seeing some docs from Marvell which seemed to indicate that they have
-> a standalone product providing only the USB-to-MDIO functionality.
+In terms of the logic bits here, it might make more sense
 
-I would be interested in knowing more.
+0: disable ecn
+1: enable std ecn on in or out
+2: enable std ecn when requested on in (the default)
+3: essentially unused
+4: enable accecn when requested on in
+5: enable std ecn and accecn on in or out
+6: enable accecn and ecn on in but not out
 
-> The x86 use-case is interesting. It would be even more so if there was
-> some way of loading a DSA DT fragment so that you could hook it up to
-> your machine's Ethernet port.
+Do we have any data on how often the tcp ns bit is a source of
+firewalling problems yet?
 
-We don't have that at the moment. But so long as you only need
-internal copper PHYs, it is possible to use a platform device and it
-all just works.
+0x102 strikes me as a bit more magical than required and I don't know
+what optionless means in this context.
 
-> > > +static int smi2usb_probe(struct usb_interface *interface,
-> > > +			 const struct usb_device_id *id)
-> > > +{
-> > > +	struct device *dev = &interface->dev;
-> > > +	struct mii_bus *mdio;
-> > > +	struct smi2usb *smi;
-> > > +	int err = -ENOMEM;
-> > > +
-> > > +	mdio = devm_mdiobus_alloc_size(dev, sizeof(*smi));
-> > > +	if (!mdio)
-> > > +		goto err;
-> > > +
-> > 
-> > ...
-> > 
-> > 
-> > > +static void smi2usb_disconnect(struct usb_interface *interface)
-> > > +{
-> > > +	struct smi2usb *smi;
-> > > +
-> > > +	smi = usb_get_intfdata(interface);
-> > > +	mdiobus_unregister(smi->mdio);
-> > > +	usb_set_intfdata(interface, NULL);
-> > > +
-> > > +	usb_put_intf(interface);
-> > > +	usb_put_dev(interface_to_usbdev(interface));
-> > > +}
-> > 
-> > I don't know enough about USB. Does disconnect have the same semantics
-> > remove()? You used devm_mdiobus_alloc_size() to allocate the bus
-> > structure. Will it get freed after disconnect? I've had USB devices
-> > connected via flaky USB hubs and they have repeatedly disappeared and
-> > reappeared. I wonder if in that case you are leaking memory if
-> > disconnect does not release the memory?
-> 
-> Disclaimer: This is my first ever USB driver.
+>         Default: 2
+>
+>  tcp_ecn_fallback - BOOLEAN
+>         If the kernel detects that ECN connection misbehaves, enable fall
+>         back to non-ECN. Currently, this knob implements the fallback
+> -       from RFC3168, section 6.1.1.1., but we reserve that in future,
+> -       additional detection mechanisms could be implemented under this
+> +       from RFC3168, section 6.1.1.1., as well as the ECT codepoint mang=
+ling
+> +       detection during the Accurate ECN handshake, but we reserve that =
+in
+> +       future, additional detection mechanisms could be implemented unde=
+r this
+>         knob. The value is not used, if tcp_ecn or per route (or congesti=
+on
+>         control) ECN settings are disabled.
+>         Default: 1 (fallback enabled)
+> --
+> 2.20.1
+>
 
-And i've only ever written one which has been merged.
 
-> I assumed that since we're removing 'interface', 'interface->dev' will
-> be removed as well and thus calling all devm hooks.
-> 
-> > > +	usb_put_intf(interface);
-> > > +	usb_put_dev(interface_to_usbdev(interface));
-> > > +}
-> > 
-> > Another USB novice question. Is this safe? Could the put of interface
-> > cause it to be destroyed? Then interface_to_usbdev() is called on
-> > invalid memory?
-> 
-> That does indeed look scary. I inverted the order of the calls to the
-> _get_ functions, which I got from the USB skeleton driver. I'll try to
-> review some other drivers to see if I can figure this out.
-> 
-> > Maybe this should be cross posted to a USB mailing list, so we can get
-> > the USB aspects reviewed. The MDIO bits seem good to me.
-> 
-> Good idea. Any chance you can help an LKML rookie out? How does one go
-> about that? Do I simply reply to this thread and add the USB list, or
-> do I post the patches again as a new series? Any special tags? Is
-> there any documentation available?
+--=20
+Make Music, Not War
 
-I would fixup the naming and repost. You can put whatever comments you
-want under the --- marker. So say this driver should be merged via
-netdev, but you would appreciate reviews of the USB parts from USB
-maintainers. linux-usb@vger.kernel.org would be the correct list to
-add.
-
-     Andrew
+Dave T=C3=A4ht
+CTO, TekLibre, LLC
+http://www.teklibre.com
+Tel: 1-831-435-0729
