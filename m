@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA7A318B24A
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 12:26:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA9E018B260
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 12:33:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727045AbgCSL0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 07:26:19 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:46939 "EHLO
+        id S1727050AbgCSLdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 07:33:45 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:35565 "EHLO
         out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726188AbgCSL0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 07:26:18 -0400
+        by vger.kernel.org with ESMTP id S1727045AbgCSLdo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 07:33:44 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 2099B5C02CD;
-        Thu, 19 Mar 2020 07:26:17 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 19 Mar 2020 07:26:17 -0400
+        by mailout.nyi.internal (Postfix) with ESMTP id 795AA5C0176;
+        Thu, 19 Mar 2020 07:33:43 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Thu, 19 Mar 2020 07:33:43 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=y5trE7kCu0P1/uhF8
-        98LAGD1kgCGvqOLiC02Ap42UwE=; b=BG0KIfG4eMIC5dsJe2AujjMVbneD17d3o
-        AYjEdVwt/rpXwa8C3jYDkZhfeJ5IYzCe29JoD54f0khpGdjkqcPiRBTwwV7kQ/51
-        4ThMCMVmOf/lfQlog2ciDc0GM2aCTijJMzpjcj65kGtY8Oo+JtoIkKqLfJ5HEC7X
-        yvxrE3KcyIhmbfQ7Rp7txvwK367vDnIUkGuME+guUjB+zsVVE4Cwg4IlJO3e/rE9
-        q6UAvniKMVuVNS4Bd78868+V1I9MRgDfxp0WxHkW4zjyp7b/tLuDNLEOeWJkTqWN
-        6Nm/4nOO+3c603rUUjEVzz08Q377ki3T4k9XtX7ZGpqOZVD1QSjcw==
-X-ME-Sender: <xms:2FZzXtSiIo1YiQ_jgfHJwtlLTk7JQbuwnLziW9BLbrc6dxvvmDVRCw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefledgvdekucetufdoteggodetrfdotf
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=mBquizU4BFTc/EBFD
+        bhSQcCGpvypE5LMo9eCObarFmA=; b=j0nTTcBMYDAO6vA1mCttC0uz2fJkhT9Gi
+        uQ3eG4V0RnTK+JNXnM7FgrtyeIY0tmueNZ/w8CAv4DgriB1TdiF361pyhtEurCzr
+        h5QOcw1b7nOBIyzgk17nxd0QZCyfylyORm/rqwy8cbtg8BGTZTH108WFrGUgtD2P
+        QbFh8vvxV3V65AftRFr2M47gUIKpSmPjlOl97RcR8308sZSr8x/0kMqD0OrlKGB3
+        3/Z4CrdjBUkSh3rM+1vhrz64sswBJxGAdpjMAErRwBnUDF8CI3m75bbsDjUtvnJM
+        fnIsKr5ZucNeOFIgxpxce6aeHQ4BDNZCkrPwdPOLpBlK+vHta6sUw==
+X-ME-Sender: <xms:l1hzXtSC9MHf1kaTn_EF5NxbdZdT5_wYCxRVzKD9W-5CCvkrBXW_sA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefledgvdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
     dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
     hhdrohhrgheqnecukfhppeejledrudekfedrkedrudekudenucevlhhushhtvghrufhiii
     gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdho
     rhhg
-X-ME-Proxy: <xmx:2FZzXjcYJDfHA-sQrarPvxBcVTTvajK3txr5ccTnATA6nMwNs891qQ>
-    <xmx:2FZzXmucwWaZq17CcRvTqDzLh8S0lUoho7UWbBzPvkNJNvo-wLFEhg>
-    <xmx:2FZzXvKuYU1tV3AusA5xhGZJOCSF-depmzi_zkz1GQeFWZHUH7ltQQ>
-    <xmx:2VZzXgNahBhXDBetncKXVbEj3HxXWisBe064yCtZKgmh8IJrXUdz9w>
+X-ME-Proxy: <xmx:l1hzXgl0gSlt9UNyJV6AQl1o26Fxg0cOfm_1VIEsTPv6pSu2mjgFAA>
+    <xmx:l1hzXhppU8YSRmxgo98tyEn1KUE6s0vygQ6PLZlHhT0fCZzAnPngIA>
+    <xmx:l1hzXgZGTnCGiGTaXQg7Y5Rqvdw80OlQhRDzatv2I48MzyaxNWl9Pg>
+    <xmx:l1hzXnLXy7U-d6BZtJrS79uB9q1LThPiJRA_TY-0rLE7HBMlz6K1bw>
 Received: from splinter.mtl.com (bzq-79-183-8-181.red.bezeqint.net [79.183.8.181])
-        by mail.messagingengine.com (Postfix) with ESMTPA id DCB103061856;
-        Thu, 19 Mar 2020 07:26:15 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 900363280063;
+        Thu, 19 Mar 2020 07:33:41 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net] mlxsw: pci: Only issue reset when system is ready
-Date:   Thu, 19 Mar 2020 13:25:39 +0200
-Message-Id: <20200319112539.1030494-1-idosch@idosch.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, vladbu@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next] net: sched: Do not assume RTNL is held in tunnel key action helpers
+Date:   Thu, 19 Mar 2020 13:33:10 +0200
+Message-Id: <20200319113310.1031149-1-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -58,111 +59,123 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-During initialization the driver issues a software reset command and
-then waits for the system status to change back to "ready" state.
+The cited commit removed RTNL from tc_setup_flow_action(), but the
+function calls two tunnel key action helpers that use rtnl_dereference()
+to fetch the action's parameters. This leads to "suspicious RCU usage"
+warnings [1][2].
 
-However, before issuing the reset command the driver does not check that
-the system is actually in "ready" state. On Spectrum-{1,2} systems this
-was always the case as the hardware initialization time is very short.
-On Spectrum-3 systems this is no longer the case. This results in the
-software reset command timing-out and the driver failing to load:
+Change the helpers to use rcu_dereference_protected() while requiring
+the action's lock to be held. This is safe because the two helpers are
+only called from tc_setup_flow_action() which acquires the lock.
 
-[ 6.347591] mlxsw_spectrum3 0000:06:00.0: Cmd exec timed-out (opcode=40(ACCESS_REG),opcode_mod=0,in_mod=0)
-[ 6.358382] mlxsw_spectrum3 0000:06:00.0: Reg cmd access failed (reg_id=9023(mrsr),type=write)
-[ 6.368028] mlxsw_spectrum3 0000:06:00.0: cannot register bus device
-[ 6.375274] mlxsw_spectrum3: probe of 0000:06:00.0 failed with error -110
+[1]
+[  156.950855] =============================
+[  156.955463] WARNING: suspicious RCU usage
+[  156.960085] 5.6.0-rc5-custom-47426-gdfe43878d573 #2409 Not tainted
+[  156.967116] -----------------------------
+[  156.971728] include/net/tc_act/tc_tunnel_key.h:31 suspicious rcu_dereference_protected() usage!
+[  156.981583]
+[  156.981583] other info that might help us debug this:
+[  156.981583]
+[  156.990675]
+[  156.990675] rcu_scheduler_active = 2, debug_locks = 1
+[  156.998205] 1 lock held by tc/877:
+[  157.002187]  #0: ffff8881cbf7bea0 (&(&p->tcfa_lock)->rlock){+...}, at: tc_setup_flow_action+0xbe/0x4f78
+[  157.012866]
+[  157.012866] stack backtrace:
+[  157.017886] CPU: 2 PID: 877 Comm: tc Not tainted 5.6.0-rc5-custom-47426-gdfe43878d573 #2409
+[  157.027253] Hardware name: Mellanox Technologies Ltd. MSN2100-CB2FO/SA001017, BIOS 5.6.5 06/07/2016
+[  157.037389] Call Trace:
+[  157.040170]  dump_stack+0xfd/0x178
+[  157.044034]  lockdep_rcu_suspicious+0x14a/0x153
+[  157.049157]  tc_setup_flow_action+0x89f/0x4f78
+[  157.054227]  fl_hw_replace_filter+0x375/0x640
+[  157.064348]  fl_change+0x28ec/0x4f6b
+[  157.088843]  tc_new_tfilter+0x15e2/0x2260
+[  157.176801]  rtnetlink_rcv_msg+0x8d6/0xb60
+[  157.190915]  netlink_rcv_skb+0x177/0x460
+[  157.208884]  rtnetlink_rcv+0x21/0x30
+[  157.212925]  netlink_unicast+0x5d0/0x7f0
+[  157.227728]  netlink_sendmsg+0x981/0xe90
+[  157.245416]  ____sys_sendmsg+0x76d/0x8f0
+[  157.255348]  ___sys_sendmsg+0x10f/0x190
+[  157.320308]  __sys_sendmsg+0x115/0x1f0
+[  157.342553]  __x64_sys_sendmsg+0x7d/0xc0
+[  157.346987]  do_syscall_64+0xc1/0x600
+[  157.351142]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-Fix this by waiting for the system to become ready both before issuing
-the reset command and afterwards. In case of failure, print the last
-system status to aid in debugging.
+[2]
+[  157.432346] =============================
+[  157.436937] WARNING: suspicious RCU usage
+[  157.441537] 5.6.0-rc5-custom-47426-gdfe43878d573 #2409 Not tainted
+[  157.448559] -----------------------------
+[  157.453204] include/net/tc_act/tc_tunnel_key.h:43 suspicious rcu_dereference_protected() usage!
+[  157.463042]
+[  157.463042] other info that might help us debug this:
+[  157.463042]
+[  157.472112]
+[  157.472112] rcu_scheduler_active = 2, debug_locks = 1
+[  157.479529] 1 lock held by tc/877:
+[  157.483442]  #0: ffff8881cbf7bea0 (&(&p->tcfa_lock)->rlock){+...}, at: tc_setup_flow_action+0xbe/0x4f78
+[  157.494119]
+[  157.494119] stack backtrace:
+[  157.499114] CPU: 2 PID: 877 Comm: tc Not tainted 5.6.0-rc5-custom-47426-gdfe43878d573 #2409
+[  157.508485] Hardware name: Mellanox Technologies Ltd. MSN2100-CB2FO/SA001017, BIOS 5.6.5 06/07/2016
+[  157.518628] Call Trace:
+[  157.521416]  dump_stack+0xfd/0x178
+[  157.525293]  lockdep_rcu_suspicious+0x14a/0x153
+[  157.530425]  tc_setup_flow_action+0x993/0x4f78
+[  157.535505]  fl_hw_replace_filter+0x375/0x640
+[  157.545650]  fl_change+0x28ec/0x4f6b
+[  157.570204]  tc_new_tfilter+0x15e2/0x2260
+[  157.658199]  rtnetlink_rcv_msg+0x8d6/0xb60
+[  157.672315]  netlink_rcv_skb+0x177/0x460
+[  157.690278]  rtnetlink_rcv+0x21/0x30
+[  157.694320]  netlink_unicast+0x5d0/0x7f0
+[  157.709129]  netlink_sendmsg+0x981/0xe90
+[  157.726813]  ____sys_sendmsg+0x76d/0x8f0
+[  157.736725]  ___sys_sendmsg+0x10f/0x190
+[  157.801721]  __sys_sendmsg+0x115/0x1f0
+[  157.823967]  __x64_sys_sendmsg+0x7d/0xc0
+[  157.828403]  do_syscall_64+0xc1/0x600
+[  157.832558]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-Fixes: da382875c616 ("mlxsw: spectrum: Extend to support Spectrum-3 ASIC")
+Fixes: b15e7a6e8d31 ("net: sched: don't take rtnl lock during flow_action setup")
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Reviewed-by: Vlad Buslov <vladbu@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/pci.c | 50 ++++++++++++++++++-----
- 1 file changed, 39 insertions(+), 11 deletions(-)
+ include/net/tc_act/tc_tunnel_key.h | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index 914c33e46fb4..e9ded1a6e131 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -1322,36 +1322,64 @@ static void mlxsw_pci_mbox_free(struct mlxsw_pci *mlxsw_pci,
- 			    mbox->mapaddr);
- }
- 
--static int mlxsw_pci_sw_reset(struct mlxsw_pci *mlxsw_pci,
--			      const struct pci_device_id *id)
-+static int mlxsw_pci_sys_ready_wait(struct mlxsw_pci *mlxsw_pci,
-+				    const struct pci_device_id *id,
-+				    u32 *p_sys_status)
+diff --git a/include/net/tc_act/tc_tunnel_key.h b/include/net/tc_act/tc_tunnel_key.h
+index 2b3df076e5b6..e1057b255f69 100644
+--- a/include/net/tc_act/tc_tunnel_key.h
++++ b/include/net/tc_act/tc_tunnel_key.h
+@@ -28,8 +28,10 @@ static inline bool is_tcf_tunnel_set(const struct tc_action *a)
  {
- 	unsigned long end;
--	char mrsr_pl[MLXSW_REG_MRSR_LEN];
--	int err;
-+	u32 val;
+ #ifdef CONFIG_NET_CLS_ACT
+ 	struct tcf_tunnel_key *t = to_tunnel_key(a);
+-	struct tcf_tunnel_key_params *params = rtnl_dereference(t->params);
++	struct tcf_tunnel_key_params *params;
  
--	mlxsw_reg_mrsr_pack(mrsr_pl);
--	err = mlxsw_reg_write(mlxsw_pci->core, MLXSW_REG(mrsr), mrsr_pl);
--	if (err)
--		return err;
- 	if (id->device == PCI_DEVICE_ID_MELLANOX_SWITCHX2) {
- 		msleep(MLXSW_PCI_SW_RESET_TIMEOUT_MSECS);
- 		return 0;
- 	}
- 
--	/* We must wait for the HW to become responsive once again. */
-+	/* We must wait for the HW to become responsive. */
- 	msleep(MLXSW_PCI_SW_RESET_WAIT_MSECS);
- 
- 	end = jiffies + msecs_to_jiffies(MLXSW_PCI_SW_RESET_TIMEOUT_MSECS);
- 	do {
--		u32 val = mlxsw_pci_read32(mlxsw_pci, FW_READY);
--
-+		val = mlxsw_pci_read32(mlxsw_pci, FW_READY);
- 		if ((val & MLXSW_PCI_FW_READY_MASK) == MLXSW_PCI_FW_READY_MAGIC)
- 			return 0;
- 		cond_resched();
- 	} while (time_before(jiffies, end));
-+
-+	*p_sys_status = val & MLXSW_PCI_FW_READY_MASK;
-+
- 	return -EBUSY;
- }
- 
-+static int mlxsw_pci_sw_reset(struct mlxsw_pci *mlxsw_pci,
-+			      const struct pci_device_id *id)
-+{
-+	struct pci_dev *pdev = mlxsw_pci->pdev;
-+	char mrsr_pl[MLXSW_REG_MRSR_LEN];
-+	u32 sys_status;
-+	int err;
-+
-+	err = mlxsw_pci_sys_ready_wait(mlxsw_pci, id, &sys_status);
-+	if (err) {
-+		dev_err(&pdev->dev, "Failed to reach system ready status before reset. Status is 0x%x\n",
-+			sys_status);
-+		return err;
-+	}
-+
-+	mlxsw_reg_mrsr_pack(mrsr_pl);
-+	err = mlxsw_reg_write(mlxsw_pci->core, MLXSW_REG(mrsr), mrsr_pl);
-+	if (err)
-+		return err;
-+
-+	err = mlxsw_pci_sys_ready_wait(mlxsw_pci, id, &sys_status);
-+	if (err) {
-+		dev_err(&pdev->dev, "Failed to reach system ready status after reset. Status is 0x%x\n",
-+			sys_status);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
- static int mlxsw_pci_alloc_irq_vectors(struct mlxsw_pci *mlxsw_pci)
++	params = rcu_dereference_protected(t->params,
++					   lockdep_is_held(&a->tcfa_lock));
+ 	if (a->ops && a->ops->id == TCA_ID_TUNNEL_KEY)
+ 		return params->tcft_action == TCA_TUNNEL_KEY_ACT_SET;
+ #endif
+@@ -40,8 +42,10 @@ static inline bool is_tcf_tunnel_release(const struct tc_action *a)
  {
- 	int err;
+ #ifdef CONFIG_NET_CLS_ACT
+ 	struct tcf_tunnel_key *t = to_tunnel_key(a);
+-	struct tcf_tunnel_key_params *params = rtnl_dereference(t->params);
++	struct tcf_tunnel_key_params *params;
+ 
++	params = rcu_dereference_protected(t->params,
++					   lockdep_is_held(&a->tcfa_lock));
+ 	if (a->ops && a->ops->id == TCA_ID_TUNNEL_KEY)
+ 		return params->tcft_action == TCA_TUNNEL_KEY_ACT_RELEASE;
+ #endif
 -- 
 2.24.1
 
