@@ -2,61 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FEBA18AA7A
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 02:55:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8980B18AA88
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 03:01:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727065AbgCSByz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 21:54:55 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:33800 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726777AbgCSByz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 21:54:55 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        id S1726877AbgCSCBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 22:01:17 -0400
+Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:45424 "EHLO
+        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726596AbgCSCBR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 22:01:17 -0400
+Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 314ED15720BBA;
-        Wed, 18 Mar 2020 18:54:55 -0700 (PDT)
-Date:   Wed, 18 Mar 2020 18:54:54 -0700 (PDT)
-Message-Id: <20200318.185454.2276380590236986388.davem@davemloft.net>
-To:     Jason@zx2c4.com
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net 0/5] wireguard fixes for 5.6-rc7
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200319003047.113501-1-Jason@zx2c4.com>
-References: <20200319003047.113501-1-Jason@zx2c4.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 18 Mar 2020 18:54:55 -0700 (PDT)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 92C76891AD
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 15:01:14 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1584583274;
+        bh=sXipLBlSBjXVTINH+Wab8FEFAm0QRlBTKmtfGF2xf30=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To;
+        b=GzeG+MHVJTc23Rnx5F9wi93+gXPk11ibBH0DXfvynLl4N+4ZDWpFFt3qxOavmynWj
+         vEQG+xJtpGexh9Hg4cboA0ORkx+npF411kaEhHylb0wgtCm62doRYSE+5g108OV484
+         RapqRX2Y+I5X/jHsjK/4asWtiCx9pAni7RLqRCQjJQDWEXaKu2AnmCy6STD+xbSaOy
+         SCLPloS7udVMY/CkTVZvJ8xQIlk87bMQ3SlFvdY7BOZIZTWjMnuAUHF4o3+mI3+IFw
+         dbVWh9TDAULX57Bpv1KATOh4z7fUmIKhaj8rqlCJRgs2KwEUxzob4ezh0kD5lkXeNk
+         oHyqiETOPgfQQ==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
+        id <B5e72d25a0002>; Thu, 19 Mar 2020 15:00:58 +1300
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
+ svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.2; Thu, 19 Mar 2020 15:00:57 +1300
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.006; Thu, 19 Mar 2020 15:00:57 +1300
+From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "marek.behun@nic.cz" <marek.behun@nic.cz>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>
+Subject: Re: [PATCH net-next] net: mvmdio: fix driver probe on missing irq
+Thread-Topic: [PATCH net-next] net: mvmdio: fix driver probe on missing irq
+Thread-Index: AQHV/Y3jysg2xFhB6kOpvd67sEDP3KhOT2uA
+Date:   Thu, 19 Mar 2020 02:00:57 +0000
+Message-ID: <d7cfec6e2b6952776dfedfbb0ba69a5f060d7cb5.camel@alliedtelesis.co.nz>
+References: <20200319012940.14490-1-marek.behun@nic.cz>
+In-Reply-To: <20200319012940.14490-1-marek.behun@nic.cz>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [2001:df5:b000:22:c08d:12b2:f65d:675b]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <FFF3D0D6EE07C94A9269BC59EABD5CBE@atlnz.lc>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date: Wed, 18 Mar 2020 18:30:42 -0600
-
-> I originally intended to spend this cycle working on fun optimizations
-> and architecture for WireGuard for 5.7, but I've been a bit neurotic
-> about having 5.6 ship without any show stopper bugs. WireGuard has been
-> stable for a long time now, but that doesn't make me any less nervous
-> about the real deal in 5.6. To that end, I've been doing code reviews
-> and having discussions, and we also had a security firm audit the code.
-> That audit didn't turn up any vulnerabilities, but they did make a good
-> defense-in-depth suggestion. This series contains:
-> 
-> 1) Removal of a duplicated header, from YueHaibing.
-> 2) Testing with 64-bit time in our test suite.
-> 3) Account for skb->protocol==0 due to AF_PACKET sockets, suggested
->    by Florian Fainelli.
-> 4) Clean up some code in an unreachable switch/case branch, suggested
->    by Florian Fainelli.
-> 5) Better handling of low-order points, discussed with Mathias
->    Hall-Andersen.
-
-Series applied, please start providing appropriate Fixes: tags in the
-future.
-
-Thank you.
+SGkgTWFyZWssDQoNCk9uIFRodSwgMjAyMC0wMy0xOSBhdCAwMjoyOSArMDEwMCwgTWFyZWsgQmVo
+w7puIHdyb3RlOg0KPiBDb21taXQgZTFmNTUwZGM0NGE0IG1hZGUgdGhlIHVzZSBvZiBwbGF0Zm9y
+bV9nZXRfaXJxX29wdGlvbmFsLCB3aGljaCBjYW4NCj4gcmV0dXJuIC1FTlhJTyB3aGVuIGludGVy
+cnVwdCBpcyBtaXNzaW5nLiBIYW5kbGUgdGhpcyBhcyBub24tZXJyb3IsDQo+IG90aGVyd2lzZSB0
+aGUgZHJpdmVyIHdvbid0IHByb2JlLg0KDQpUaGlzIGhhcyBhbHJlYWR5IGJlZW4gZml4ZWQgaW4g
+bmV0L21hc3RlciBieSByZXZlcnRpbmcgZTFmNTUwZGM0NGE0IGFuZA0KcmVwbGFjaW5nIGl0IHdp
+dGggZmEyNjMyZjc0ZTU3YmJjODY5YzhhZDM3NzUxYTExYjYxNDdhM2FjYy4NCg0KPiANCj4gRml4
+ZXM6IGUxZjU1MGRjNDRhNCAoIm5ldDogbXZtZGlvOiBhdm9pZCBlcnJvciBtZXNzYWdlIGZvciBv
+cHRpb25hbC4uLiIpDQo+IFNpZ25lZC1vZmYtYnk6IE1hcmVrIEJlaMO6biA8bWFyZWsuYmVodW5A
+bmljLmN6Pg0KPiBDYzogQ2hyaXMgUGFja2hhbSA8Y2hyaXMucGFja2hhbUBhbGxpZWR0ZWxlc2lz
+LmNvLm56Pg0KPiBDYzogQW5kcmV3IEx1bm4gPGFuZHJld0BsdW5uLmNoPg0KPiAtLS0NCj4gIGRy
+aXZlcnMvbmV0L2V0aGVybmV0L21hcnZlbGwvbXZtZGlvLmMgfCAyICstDQo+ICAxIGZpbGUgY2hh
+bmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxsL212bWRpby5jIGIvZHJpdmVycy9uZXQvZXRoZXJu
+ZXQvbWFydmVsbC9tdm1kaW8uYw0KPiBpbmRleCBkMmUyZGM1Mzg0MjguLmY5ZjA5ZGE1NzAzMSAx
+MDA2NDQNCj4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWFydmVsbC9tdm1kaW8uYw0KPiAr
+KysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxsL212bWRpby5jDQo+IEBAIC0zNjQsNyAr
+MzY0LDcgQEAgc3RhdGljIGludCBvcmlvbl9tZGlvX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZp
+Y2UgKnBkZXYpDQo+ICAJCXdyaXRlbChNVk1ESU9fRVJSX0lOVF9TTUlfRE9ORSwNCj4gIAkJCWRl
+di0+cmVncyArIE1WTURJT19FUlJfSU5UX01BU0spOw0KPiAgDQo+IC0JfSBlbHNlIGlmIChkZXYt
+PmVycl9pbnRlcnJ1cHQgPCAwKSB7DQo+ICsJfSBlbHNlIGlmIChkZXYtPmVycl9pbnRlcnJ1cHQg
+PCAwICYmIGRldi0+ZXJyX2ludGVycnVwdCAhPSAtRU5YSU8pIHsNCj4gIAkJcmV0ID0gZGV2LT5l
+cnJfaW50ZXJydXB0Ow0KPiAgCQlnb3RvIG91dF9tZGlvOw0KPiAgCX0NCg==
