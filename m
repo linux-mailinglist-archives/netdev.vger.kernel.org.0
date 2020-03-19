@@ -2,119 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A608D18AC41
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 06:36:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E1118AC6D
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 06:46:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727032AbgCSFgL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 01:36:11 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:34129 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726063AbgCSFgL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 01:36:11 -0400
-Received: by mail-lf1-f68.google.com with SMTP id f3so600871lfc.1;
-        Wed, 18 Mar 2020 22:36:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=qIUO0hzIJLnhM3/d3IVA2vTbDbVTDn7s2q9RHhGWWzk=;
-        b=JKgyRDDqHsyJru81fzR6JGLaS5tV27Y3hvzLOg+e+kRVDudFq6pWe3W95JqnGIqYoJ
-         3uXUNNxJymLk+wh1uG4XGtruI+k30W3xIzOAcGg1fWZ9Nq3eZEmBXXJbK8s3juXJ88py
-         SqBpp8GoJkOthyROyN3tKs1r9OiohA+4JFy7muyRasIaMGShUyKfuQErooqIp8NhHZM6
-         9dGCkhvlJEzCc26udxLdcIDqs1iDQUh4PnZboba9NpuTePNwn9WajaaPQZDNt0S7iKRH
-         rCeaxmm37SBaNsYB3cuKQELI+oEhHyVghIo0cmwqvV0McUvTuJarCwW0SN35q8HYHf+k
-         3Lsw==
+        id S1726847AbgCSFqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 01:46:22 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:51108 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725767AbgCSFqW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 01:46:22 -0400
+Received: by mail-wm1-f66.google.com with SMTP id z13so628405wml.0;
+        Wed, 18 Mar 2020 22:46:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=qIUO0hzIJLnhM3/d3IVA2vTbDbVTDn7s2q9RHhGWWzk=;
-        b=Vqzx/xucqmb3md9F9s0zgyp2wztjkOKsEO6kGovDYD9dwbi+AOnrRDS7wQB1iepFt4
-         DHriTfmxN/nEag+T4AeRaa3lQpHOE7l9jFa6tan/5L9Bl6LA3eygCzgrqSsNYuctQdZ7
-         brnwRipkREld501EVGRaF2HRFsIwJhejI2Tv/+9pywPakhxNd6LxcYBHozyqEueImNw5
-         3f5MX+oInZvVa4DOmKlmjPnOPjzYpBdcW4/4FqiDqfLJtduwDTiz8CYzHQh524TUwjW6
-         QW8avB25k5noqhnijRwABGwMB4+Qu9I57zcXYV+ZidLJa7ujuK5PN3DFCMV+a5XKU/Pm
-         gYhQ==
-X-Gm-Message-State: ANhLgQ1u9/W8PvGTeyOrZHbN0vicWaUtu4UkWDAFcx7dBwdFIZEckzOS
-        1TU+hS5fU3uo10sx7qDpJXkbg910NNQIsQMu0xI=
-X-Google-Smtp-Source: ADFU+vvnztqsLBJbjkjoHTTm7baXcKYd7UsJqgu9uHhIkYfAizHxJ1tQSrgOsj5zGQ05rrB/G4RYgcvnT34n1YZeaGU=
-X-Received: by 2002:a19:c748:: with SMTP id x69mr993743lff.196.1584596167869;
- Wed, 18 Mar 2020 22:36:07 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=5vd53o8Bhbj83gVxusGt4kiAUbgdOP3qtnG2UsNxDF4=;
+        b=OGLfZbGGMrFQZxG/JSvCk1gDKrS5XHDKS2f/Yo6reab+fG4B9AI/kI41gURWNh6Lgu
+         If8jt18Ptj6nPs51X0gtXoHbES9w5/p8P6c2fvBeg9fTbu9uUq5HRw+StL4kHYvGVqJk
+         ygNGh2Nhz8es/hG04Fq3KqFDIOcRJM21uH5/5AJIHFZX3D0eFwXWUjH0bW0Z0idn7MBy
+         ZHSdf0IjpZo3a8yKceckJWVauntvashOpnhJfWQQNpmyz0M2L3//1RcV3BOZDIaKK6nb
+         MDb6Kxra8T5Fe+UXoumMCTnWSdpF1+W0XuP/wWlW4pp4xfWD3X41HjJJfX1+WFNdNW3M
+         LqyA==
+X-Gm-Message-State: ANhLgQ148wsulSsIemwe6MwQUvANl3In9hLXxM/DvcHzgY88/cc3fGWr
+        FP2a4Xln4VqmI6x9pljF1xo/MKHeB1weScvCVhlHTQ==
+X-Google-Smtp-Source: ADFU+vuZVCbYQ5OfSlkrUhqZ0STc5kGaqqzN96nHoR2DbKCFV3IcgaR56Y7o70rCfsgAF62D8p3wHxw/fbJJbnvgQ2o=
+X-Received: by 2002:a1c:acc8:: with SMTP id v191mr1571712wme.185.1584596779992;
+ Wed, 18 Mar 2020 22:46:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <158446612466.702578.2795159620575737080.stgit@firesoul>
- <158446619342.702578.1522482431365026926.stgit@firesoul> <87v9n2koqt.fsf@toke.dk>
- <20200318112539.6b595142@carbon>
-In-Reply-To: <20200318112539.6b595142@carbon>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 18 Mar 2020 19:35:56 -1000
-Message-ID: <CAADnVQK--Opu1hSfQhnzCkcE10AsyXrmJaD9hQoaeqZGAc2Djw@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 09/15] xdp: clear grow memory in bpf_xdp_adjust_tail()
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        sameehj@amazon.com, Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, zorik@amazon.com, akiyano@amazon.com,
-        gtzalik@amazon.com, Daniel Borkmann <borkmann@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
+References: <20200312233648.1767-1-joe@wand.net.nz> <20200312233648.1767-6-joe@wand.net.nz>
+ <20200317063044.l4csdcag7l74ehut@kafai-mbp> <CAOftzPjBo6r2nymjUn4qr=N4Zd7rF=03=n45HDvyXfSXfDnBtg@mail.gmail.com>
+ <20200318172735.kxwuvccegquupkwh@kafai-mbp>
+In-Reply-To: <20200318172735.kxwuvccegquupkwh@kafai-mbp>
+From:   Joe Stringer <joe@wand.net.nz>
+Date:   Wed, 18 Mar 2020 22:45:58 -0700
+Message-ID: <CAOftzPguUws6sVKg0PQ4pQNhOQL5Q14XiwpHb60=271Jcw+pnA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 5/7] selftests: bpf: add test for sk_assign
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     Joe Stringer <joe@wand.net.nz>, bpf <bpf@vger.kernel.org>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        netdev <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 12:25 AM Jesper Dangaard Brouer
-<brouer@redhat.com> wrote:
+On Wed, Mar 18, 2020 at 10:28 AM Martin KaFai Lau <kafai@fb.com> wrote:
 >
-> On Wed, 18 Mar 2020 10:15:38 +0100
-> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
->
-> > Jesper Dangaard Brouer <brouer@redhat.com> writes:
+> On Tue, Mar 17, 2020 at 01:56:12PM -0700, Joe Stringer wrote:
+> > On Tue, Mar 17, 2020 at 12:31 AM Martin KaFai Lau <kafai@fb.com> wrote:
+> > >
+> > > On Thu, Mar 12, 2020 at 04:36:46PM -0700, Joe Stringer wrote:
+> > > > From: Lorenz Bauer <lmb@cloudflare.com>
+> > > >
+> > > > Attach a tc direct-action classifier to lo in a fresh network
+> > > > namespace, and rewrite all connection attempts to localhost:4321
+> > > > to localhost:1234.
+> > > >
+> > > > Keep in mind that both client to server and server to client traffic
+> > > > passes the classifier.
+> > > >
+> > > > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> > > > Signed-off-by: Joe Stringer <joe@wand.net.nz>
+> > > > ---
+> > > >  tools/testing/selftests/bpf/.gitignore        |   1 +
+> > > >  tools/testing/selftests/bpf/Makefile          |   3 +-
+> > > >  .../selftests/bpf/progs/test_sk_assign.c      | 127 +++++++++++++
+> > > >  tools/testing/selftests/bpf/test_sk_assign.c  | 176 ++++++++++++++++++
+> > > Can this test be put under the test_progs.c framework?
 > >
-> > > To reviewers: Need some opinions if this is needed?
-> > >
-> > > (TODO: Squash patch)
-> > > ---
-> > >  net/core/filter.c |    6 ++++++
-> > >  1 file changed, 6 insertions(+)
-> > >
-> > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > index 0ceddee0c678..669f29992177 100644
-> > > --- a/net/core/filter.c
-> > > +++ b/net/core/filter.c
-> > > @@ -3432,6 +3432,12 @@ BPF_CALL_2(bpf_xdp_adjust_tail, struct xdp_buf=
-f *, xdp, int, offset)
-> > >     if (unlikely(data_end < xdp->data + ETH_HLEN))
-> > >             return -EINVAL;
-> > >
-> > > +   // XXX: To reviewers: How paranoid are we? Do we really need to
-> > > +   /* clear memory area on grow, as in-theory can contain uninit kme=
-m */
-> > > +   if (offset > 0) {
-> > > +           memset(xdp->data_end, 0, offset);
-> > > +   }
+> > I'm not sure, how does the test_progs.c framework handle the logic in
+> > "tools/testing/selftests/bpf/test_sk_assign.sh"?
 > >
-> > This memory will usually be recycled through page_pool or equivalent,
-> > right? So couldn't we clear the pages when they are first allocated?
-> > That way, the only data that would be left there would be packet data
-> > from previous packets...
+> > Specifically I'm looking for:
+> > * Unique netns to avoid messing with host networking stack configuration
+> > * Control over routes
+> > * Attaching loaded bpf programs to ingress qdisc of a device
+> >
+> > These are each trivial one-liners in the supplied shell script
+> > (admittedly building on existing shell infrastructure in the tests dir
+> > and iproute2 package). Seems like maybe the netns parts aren't so bad
+> > looking at flow_dissector_reattach.c but anything involving netlink
+> > configuration would either require pulling in a netlink library
+> > dependency somewhere or shelling out to the existing binaries. At that
+> > point I wonder if we're trying to achieve integration of this test
+> > into some automated prog runner, is there a simpler way like a place I
+> > can just add a one-liner to run the test_sk_assign.sh script?
+> I think running a system(cmd) in test_progs is fine, as long as it cleans
+> up everything when it is done.  There is some pieces of netlink
+> in tools/lib/bpf/netlink.c that may be reuseable also.
 >
-> Yes, that is another option, to clear pages on "real" alloc (not
-> recycle alloc), but it is a bit harder to implement (when not using
-> page_pool).
+> Other than test_progs.c, I am not aware there is a script to run
+> all *.sh.  I usually only run test_progs.
 >
-> And yes, this area will very likely just contain old packet data, but
-> we cannot be 100% sure.
->
-> Previously Alexei have argued that we should not leak pointer values in
-> XDP.  Which is why we have xdp_scrub_frame(), but this is not 100% the
-> same.  So, I would like to hear Alexei's opinion ?
+> Cc: Andrii who has fixed many selftest issues recently.
 
-those were the days when sw didn't need to worry about hw bugs.
-Looks like these types of security issues are acceptable now, since
-pointer leaks no longer get CVE assigned.
+OK, unless I get some other guidance I'll take a stab at this.
