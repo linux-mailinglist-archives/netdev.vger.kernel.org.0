@@ -2,197 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BD0818AC73
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 06:55:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 643D218AC94
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 06:59:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbgCSFze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 01:55:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59128 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725767AbgCSFze (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 01:55:34 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B51EF2072C;
-        Thu, 19 Mar 2020 05:55:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584597333;
-        bh=P641bdvvN5BP0XDZKnhg9W1/C9QmLH9xkyfPNmbqTsU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=f7PbWkyOBgMCEMfwKN5bz0SD5fcKRQ1WHB0qemT3NqrXrM0qHTAj0oLXD0dwaRlXk
-         vxIZPfvqFvuiCjfChK1nBE2qmJbSALjjKBq3JE42woXDJ+V25z/QQu+N5icfPeL/QI
-         iUYEspFbqCZrvZqBRtyAIYYbqFmTMfZYR9N14cK0=
-Date:   Thu, 19 Mar 2020 07:55:27 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     Jason Gunthorpe <jgg@mellanox.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH mlx5-next 4/4] IB/mlx5: Move to fully dynamic UAR mode
- once user space supports it
-Message-ID: <20200319055527.GF126814@unreal>
-References: <20200318124329.52111-1-leon@kernel.org>
- <20200318124329.52111-5-leon@kernel.org>
- <2c4602b1761397d270a7be67be2e489eb2171281.camel@mellanox.com>
+        id S1727050AbgCSF7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 01:59:31 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:46530 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725601AbgCSF7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 01:59:30 -0400
+Received: by mail-lf1-f67.google.com with SMTP id a28so587382lfr.13;
+        Wed, 18 Mar 2020 22:59:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4AbHLBURcg70iEWU76CnCq8iJIf343eM2hhp8ZJ9uIs=;
+        b=WJie2FFqqnjkHSs7KRUyot9wFIe/zORBUT6bNUlWZiD15hdkbXDt2Bz6Z9urRfN5Ms
+         V7jm7TUtBh5LivuF6ukKuhwi8nowZgTdkfJ/S2blg3RIkBzclxMIKe6JUaLrDSj600kS
+         XgkvJ9sm7QnxNMNaLYmiecvfhrR+iERPRPSwfPITv6UflMhtHti4Tgor28gtpCnYmxd0
+         Y0avHBoL3qmTr7BrhnpFltnlo5VVDA9aRj6WUf0dD9DtKH8z2JUXxDL5bdZ5kb8OEXW1
+         R7OFWd8zLzU1wJqQ3LI5vtS7ay2iKZ/ICwp54BFBoqQjD1aWRJs9qeN/E/TQp1ae9A46
+         CGqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4AbHLBURcg70iEWU76CnCq8iJIf343eM2hhp8ZJ9uIs=;
+        b=pZxLJcs4OFRcn4L19N46r/n9a4mQg19J2o3d3arnnmqfn02+UUbWIx7vZYPEuertQs
+         ZfnmZ4yCIw8oAQl7rbqKhVQSs0Eq3j7Mlf09Sm2MKVIFhYWPZP0nO5hLITR+qv9PcUN4
+         GxD2np1dtM7H7qhY2W8EPU4yxLoND4TRzJn/4TxNVTJs9XNkBD3yEBygJtshmiGONF7F
+         KyDN2AkRtpmJcgYmjC/oV+1zNsZB7+mpHx6dXEd90kH5lC8Z/UelaQ0fVLx6W/q4B1jF
+         TUs3ByU5DCn8jxOE1reOAmVnkD2Wdp5ISyAvXbIg+6JbkVJXCw6LEa9g/4mFJhWao9dg
+         WIFA==
+X-Gm-Message-State: ANhLgQ0aQIWMJqiBsFp7g0qnuLBpXKN66C4i3QoxRr/21P5g3InPOVJa
+        0v8EdRIuNsEkGYNIBGqXDY3h1F1jARjpJA==
+X-Google-Smtp-Source: ADFU+vtffu02yPuSwfMvRqzYoFHvAnQpPa5NGlmqCKfTHzfqmex3xIco+kCqUplRSHES4MDsakSH8w==
+X-Received: by 2002:ac2:5187:: with SMTP id u7mr1055273lfi.153.1584597566619;
+        Wed, 18 Mar 2020 22:59:26 -0700 (PDT)
+Received: from localhost.localdomain ([185.188.71.122])
+        by smtp.gmail.com with ESMTPSA id o15sm604393ljj.55.2020.03.18.22.59.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Mar 2020 22:59:26 -0700 (PDT)
+From:   Pawel Dembicki <paweldembicki@gmail.com>
+To:     linux-usb@vger.kernel.org
+Cc:     Pawel Dembicki <paweldembicki@gmail.com>,
+        Cezary Jackiewicz <cezary@eko.one.pl>,
+        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: qmi_wwan: add support for ASKEY WWHC050
+Date:   Thu, 19 Mar 2020 06:58:45 +0100
+Message-Id: <20200319055845.6431-1-paweldembicki@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2c4602b1761397d270a7be67be2e489eb2171281.camel@mellanox.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 11:38:32PM +0000, Saeed Mahameed wrote:
-> On Wed, 2020-03-18 at 14:43 +0200, Leon Romanovsky wrote:
-> > From: Yishai Hadas <yishaih@mellanox.com>
-> >
-> > Move to fully dynamic UAR mode once user space supports it.
-> > In this case we prevent any legacy mode of UARs on the allocated
-> > context
-> > and prevent redundant allocation of the static ones.
-> >
-> > Signed-off-by: Yishai Hadas <yishaih@mellanox.com>
-> > Reviewed-by: Michael Guralnik <michaelgur@mellanox.com>
-> > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
-> > ---
-> >  drivers/infiniband/hw/mlx5/cq.c   |  8 ++++++--
-> >  drivers/infiniband/hw/mlx5/main.c | 13 ++++++++++++-
-> >  drivers/infiniband/hw/mlx5/qp.c   |  6 ++++++
-> >  include/linux/mlx5/driver.h       |  1 +
-> >  include/uapi/rdma/mlx5-abi.h      |  1 +
-> >  5 files changed, 26 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/infiniband/hw/mlx5/cq.c
-> > b/drivers/infiniband/hw/mlx5/cq.c
-> > index eafedc2f697b..146ba2966744 100644
-> > --- a/drivers/infiniband/hw/mlx5/cq.c
-> > +++ b/drivers/infiniband/hw/mlx5/cq.c
-> > @@ -764,10 +764,14 @@ static int create_cq_user(struct mlx5_ib_dev
-> > *dev, struct ib_udata *udata,
-> >  	MLX5_SET(cqc, cqc, log_page_size,
-> >  		 page_shift - MLX5_ADAPTER_PAGE_SHIFT);
-> >
-> > -	if (ucmd.flags & MLX5_IB_CREATE_CQ_FLAGS_UAR_PAGE_INDEX)
-> > +	if (ucmd.flags & MLX5_IB_CREATE_CQ_FLAGS_UAR_PAGE_INDEX) {
-> >  		*index = ucmd.uar_page_index;
-> > -	else
-> > +	} else if (context->bfregi.lib_uar_dyn) {
-> > +		err = -EINVAL;
-> > +		goto err_cqb;
-> > +	} else {
-> >  		*index = context->bfregi.sys_pages[0];
-> > +	}
-> >
-> >  	if (ucmd.cqe_comp_en == 1) {
-> >  		int mini_cqe_format;
-> > diff --git a/drivers/infiniband/hw/mlx5/main.c
-> > b/drivers/infiniband/hw/mlx5/main.c
-> > index e8787af2d74d..e355e06bf3ac 100644
-> > --- a/drivers/infiniband/hw/mlx5/main.c
-> > +++ b/drivers/infiniband/hw/mlx5/main.c
-> > @@ -1787,6 +1787,7 @@ static int mlx5_ib_alloc_ucontext(struct
-> > ib_ucontext *uctx,
-> >  				     max_cqe_version);
-> >  	u32 dump_fill_mkey;
-> >  	bool lib_uar_4k;
-> > +	bool lib_uar_dyn;
-> >
-> >  	if (!dev->ib_active)
-> >  		return -EAGAIN;
-> > @@ -1845,8 +1846,14 @@ static int mlx5_ib_alloc_ucontext(struct
-> > ib_ucontext *uctx,
-> >  	}
-> >
-> >  	lib_uar_4k = req.lib_caps & MLX5_LIB_CAP_4K_UAR;
-> > +	lib_uar_dyn = req.lib_caps & MLX5_LIB_CAP_DYN_UAR;
-> >  	bfregi = &context->bfregi;
-> >
-> > +	if (lib_uar_dyn) {
-> > +		bfregi->lib_uar_dyn = lib_uar_dyn;
-> > +		goto uar_done;
-> > +	}
-> > +
-> >  	/* updates req->total_num_bfregs */
-> >  	err = calc_total_bfregs(dev, lib_uar_4k, &req, bfregi);
-> >  	if (err)
-> > @@ -1873,6 +1880,7 @@ static int mlx5_ib_alloc_ucontext(struct
-> > ib_ucontext *uctx,
-> >  	if (err)
-> >  		goto out_sys_pages;
-> >
-> > +uar_done:
-> >  	if (req.flags & MLX5_IB_ALLOC_UCTX_DEVX) {
-> >  		err = mlx5_ib_devx_create(dev, true);
-> >  		if (err < 0)
-> > @@ -1894,7 +1902,7 @@ static int mlx5_ib_alloc_ucontext(struct
-> > ib_ucontext *uctx,
-> >  	INIT_LIST_HEAD(&context->db_page_list);
-> >  	mutex_init(&context->db_page_mutex);
-> >
-> > -	resp.tot_bfregs = req.total_num_bfregs;
-> > +	resp.tot_bfregs = lib_uar_dyn ? 0 : req.total_num_bfregs;
-> >  	resp.num_ports = dev->num_ports;
-> >
-> >  	if (offsetofend(typeof(resp), cqe_version) <= udata->outlen)
-> > @@ -2142,6 +2150,9 @@ static int uar_mmap(struct mlx5_ib_dev *dev,
-> > enum mlx5_ib_mmap_cmd cmd,
-> >  	int max_valid_idx = dyn_uar ? bfregi->num_sys_pages :
-> >  				bfregi->num_static_sys_pages;
-> >
-> > +	if (bfregi->lib_uar_dyn)
-> > +		return -EINVAL;
-> > +
-> >  	if (vma->vm_end - vma->vm_start != PAGE_SIZE)
-> >  		return -EINVAL;
-> >
-> > diff --git a/drivers/infiniband/hw/mlx5/qp.c
-> > b/drivers/infiniband/hw/mlx5/qp.c
-> > index 380ba3321851..319d514a2223 100644
-> > --- a/drivers/infiniband/hw/mlx5/qp.c
-> > +++ b/drivers/infiniband/hw/mlx5/qp.c
-> > @@ -697,6 +697,9 @@ static int alloc_bfreg(struct mlx5_ib_dev *dev,
-> >  {
-> >  	int bfregn = -ENOMEM;
-> >
-> > +	if (bfregi->lib_uar_dyn)
-> > +		return -EINVAL;
-> > +
-> >  	mutex_lock(&bfregi->lock);
-> >  	if (bfregi->ver >= 2) {
-> >  		bfregn = alloc_high_class_bfreg(dev, bfregi);
-> > @@ -768,6 +771,9 @@ int bfregn_to_uar_index(struct mlx5_ib_dev *dev,
-> >  	u32 index_of_sys_page;
-> >  	u32 offset;
-> >
-> > +	if (bfregi->lib_uar_dyn)
-> > +		return -EINVAL;
-> > +
-> >  	bfregs_per_sys_page = get_uars_per_sys_page(dev, bfregi-
-> > >lib_uar_4k) *
-> >  				MLX5_NON_FP_BFREGS_PER_UAR;
-> >  	index_of_sys_page = bfregn / bfregs_per_sys_page;
-> > diff --git a/include/linux/mlx5/driver.h
-> > b/include/linux/mlx5/driver.h
-> > index 3f10a9633012..e4ab0eb9d202 100644
-> > --- a/include/linux/mlx5/driver.h
-> > +++ b/include/linux/mlx5/driver.h
-> > @@ -224,6 +224,7 @@ struct mlx5_bfreg_info {
-> >  	struct mutex		lock;
-> >  	u32			ver;
-> >  	bool			lib_uar_4k;
-> > +	u8			lib_uar_dyn : 1;
-> >  	u32			num_sys_pages;
-> >  	u32			num_static_sys_pages
-> >  	u32			total_num_bfregs;
->
-> this struct is not used in mlx5_core, shall we move it to mlx5_ib as
-> part of this patch?
-> so next time you need to update it you don't need to bother netdev busy
-> people about it ;-)
+ASKEY WWHC050 is a mcie LTE modem.
+The oem configuration states:
 
-Thanks, completely agree. I'll do it now.
+T:  Bus=01 Lev=01 Prnt=01 Port=00 Cnt=01 Dev#=  2 Spd=480  MxCh= 0
+D:  Ver= 2.10 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
+P:  Vendor=1690 ProdID=7588 Rev=ff.ff
+S:  Manufacturer=Android
+S:  Product=Android
+S:  SerialNumber=813f0eef6e6e
+C:* #Ifs= 6 Cfg#= 1 Atr=80 MxPwr=500mA
+I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=ff Driver=option
+E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 1 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=42 Prot=01 Driver=(none)
+E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=84(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=83(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
+E:  Ad=86(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
+E:  Ad=85(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
+E:  Ad=88(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
+E:  Ad=87(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=05(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I:* If#= 5 Alt= 0 #EPs= 2 Cls=08(stor.) Sub=06 Prot=50 Driver=(none)
+E:  Ad=89(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+E:  Ad=06(O) Atr=02(Bulk) MxPS= 512 Ivl=125us
+
+Tested on openwrt distribution.
+
+Signed-off-by: Cezary Jackiewicz <cezary@eko.one.pl>
+[add commit message]
+Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+---
+ drivers/net/usb/qmi_wwan.c  | 1 +
+ drivers/usb/serial/option.c | 2 ++
+ 2 files changed, 3 insertions(+)
+
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 5754bb6ca0ee..6c738a271257 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1210,6 +1210,7 @@ static const struct usb_device_id products[] = {
+ 	{QMI_FIXED_INTF(0x1435, 0xd182, 5)},	/* Wistron NeWeb D18 */
+ 	{QMI_FIXED_INTF(0x1435, 0xd191, 4)},	/* Wistron NeWeb D19Q1 */
+ 	{QMI_QUIRK_SET_DTR(0x1508, 0x1001, 4)},	/* Fibocom NL668 series */
++	{QMI_FIXED_INTF(0x1690, 0x7588, 4)},    /* ASKEY WWHC050 */
+ 	{QMI_FIXED_INTF(0x16d8, 0x6003, 0)},	/* CMOTech 6003 */
+ 	{QMI_FIXED_INTF(0x16d8, 0x6007, 0)},	/* CMOTech CHE-628S */
+ 	{QMI_FIXED_INTF(0x16d8, 0x6008, 0)},	/* CMOTech CMU-301 */
+diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+index 084cc2fff3ae..809e6ba85045 100644
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -2016,6 +2016,8 @@ static const struct usb_device_id option_ids[] = {
+ 	  .driver_info = RSVD(4) | RSVD(5) },
+ 	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0105, 0xff),			/* Fibocom NL678 series */
+ 	  .driver_info = RSVD(6) },
++	{ USB_DEVICE(0x1690, 0x7588),                                           /* ASKEY WWHC050 */
++	  .driver_info = RSVD(1) | RSVD(4) },
+ 	{ } /* Terminating entry */
+ };
+ MODULE_DEVICE_TABLE(usb, option_ids);
+-- 
+2.20.1
+
