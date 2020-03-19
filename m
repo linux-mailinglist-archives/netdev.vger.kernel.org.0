@@ -2,194 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E120B18C307
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 23:35:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC46718C308
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 23:36:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727426AbgCSWfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 18:35:51 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:42109 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727091AbgCSWfv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 18:35:51 -0400
-Received: by mail-lf1-f67.google.com with SMTP id t21so3001333lfe.9
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 15:35:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=lzI8/7nA+s6X3dOFA/8/KMKAbtd9jvxTx8zVp7VE0k8=;
-        b=M03EUWFV+gYg8qS44Glzupp/ne9pA4NosNadaj8UTN9PehWnkFy8XO3yKFsKTtHp0V
-         KSldZvoDZyBIOfbzKHt6P3UNNSBTdSckVn1eC5WjXfmW+8B25tCxfOcM/oc6miTZrV9y
-         lsan+PFT7eKhN5G3/6mqPz+I/HjHOAKfIuQqGza+uQ48jBICRqi+oiOFCSfg/jSjtXWt
-         E5PE4TgyZVTBp3JI37hju9jnD7lNYv1Y5WMvs0sal3tZNW+Td+tKqve4mIA7qqUOnsHl
-         KwKed+dQaZDTgO2uUDhEwWD2UbUHJRVSqQEKx7X14ncR3PaJs7C52QpgUZmS8Xa370D9
-         to5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=lzI8/7nA+s6X3dOFA/8/KMKAbtd9jvxTx8zVp7VE0k8=;
-        b=D2+7oDqZ5yS78Fqwmh6Flb443xT7j+yshHJ0Nvh66lpwhgUD5gBZPVz+YxU/1wgM1s
-         oNNAb1bFXphGVuDKtm+0GzYLD526eDMFBBQx/MfARLxr2fb0NtRTTwwP51wJZUqZW9hy
-         glw0o0SW+DpFuXDBA0kF5/GCL2xLd1PhzstBVPeJEsx54ce64D70W/gDrBBWBszgq76Y
-         6gKcalp7ObZj5AsXnPh9lnDZseID/hYKSwXjHOA8uwhK/uL7kdBb4LJuMdrKJClvkHJl
-         VGLCY/KP5anU83WRvYkoqwoSEuyRbbw6/XmmoBmjT8Y1DBDjew34zOnkqXgBCfqXHH3c
-         sJnA==
-X-Gm-Message-State: ANhLgQ2yJJv+qs30tPUhAHBNUaRgBC07e3T6So51ZY67xYsXdjI3vpsV
-        gobcF2VPRi6IT2rCkW1A+emy5g==
-X-Google-Smtp-Source: ADFU+vui9nOHJY55V1GL7Mqr2QrqNZ/JcehTyPMarunr0z82kdkqGFPkhEunjrfLaoRSXQUJ43MW2Q==
-X-Received: by 2002:ac2:41d3:: with SMTP id d19mr3497869lfi.57.1584657346840;
-        Thu, 19 Mar 2020 15:35:46 -0700 (PDT)
-Received: from wkz-x280 (h-50-180.A259.priv.bahnhof.se. [155.4.50.180])
-        by smtp.gmail.com with ESMTPSA id d12sm2203433lfi.86.2020.03.19.15.35.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Mar 2020 15:35:46 -0700 (PDT)
-Date:   Thu, 19 Mar 2020 23:35:44 +0100
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, hkallweit1@gmail.com
-Subject: Re: [PATCH v2 2/2] net: phy: marvell smi2usb mdio controller
-Message-ID: <20200319223544.GA14699@wkz-x280>
-References: <20200319135952.16258-1-tobias@waldekranz.com>
- <20200319135952.16258-2-tobias@waldekranz.com>
- <20200319154937.GB27807@lunn.ch>
+        id S1727461AbgCSWgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 18:36:33 -0400
+Received: from script.cs.helsinki.fi ([128.214.11.1]:47624 "EHLO
+        script.cs.helsinki.fi" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727091AbgCSWgd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 18:36:33 -0400
+X-DKIM: Courier DKIM Filter v0.50+pk-2017-10-25 mail.cs.helsinki.fi Fri, 20 Mar 2020 00:36:30 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cs.helsinki.fi;
+         h=date:from:to:cc:subject:in-reply-to:message-id:references
+        :mime-version:content-type:content-id; s=dkim20130528; bh=msaeSY
+        tqooVLpDUxurOgY9SaCqtpCsKgr4Ov6fOeSg4=; b=Vhme2jMyFmEMfVmYK0Fiu9
+        uWPplXdZEwkQgpjzencv70gVa5umBtdE2ONswOSLHVQHzqJsefpX7LleIjDSTf40
+        inRa05RZHnTfYufRziIzpUjWws2lg9uulk4JNGI5NJdcqXIcLhwkstWvra0u22pm
+        QAPGIkFNj9n9GiZFeoKYc=
+Received: from whs-18.cs.helsinki.fi (whs-18.cs.helsinki.fi [128.214.166.46])
+  (TLS: TLSv1/SSLv3,256bits,AES256-GCM-SHA384)
+  by mail.cs.helsinki.fi with ESMTPS; Fri, 20 Mar 2020 00:36:30 +0200
+  id 00000000005A000D.000000005E73F3EE.00006638
+Date:   Fri, 20 Mar 2020 00:36:30 +0200 (EET)
+From:   "=?ISO-8859-15?Q?Ilpo_J=E4rvinen?=" <ilpo.jarvinen@cs.helsinki.fi>
+X-X-Sender: ijjarvin@whs-18.cs.helsinki.fi
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+cc:     Netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
+Subject: Re: [RFC PATCH 09/28] gso: AccECN support
+In-Reply-To: <6940af98-7083-15c7-dcea-54eb9d040a3d@gmail.com>
+Message-ID: <alpine.DEB.2.20.2003192233580.5256@whs-18.cs.helsinki.fi>
+References: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi> <1584524612-24470-10-git-send-email-ilpo.jarvinen@helsinki.fi> <6940af98-7083-15c7-dcea-54eb9d040a3d@gmail.com>
+User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200319154937.GB27807@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: multipart/mixed; boundary="=_script-26192-1584657390-0001-2"
+Content-ID: <alpine.DEB.2.20.2003200029590.5256@whs-18.cs.helsinki.fi>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 04:49:37PM +0100, Andrew Lunn wrote:
-> On Thu, Mar 19, 2020 at 02:59:52PM +0100, Tobias Waldekranz wrote:
-> > An MDIO controller present on development boards for Marvell switches
-> > from the Link Street (88E6xxx) family.
-> > 
-> > Using this module, you can use the following setup as a development
-> > platform for switchdev and DSA related work.
-> > 
-> >    .-------.      .-----------------.
-> >    |      USB----USB                |
-> >    |  SoC  |      |  88E6390X-DB  ETH1-10
-> >    |      ETH----ETH0               |
-> >    '-------'      '-----------------'
-> > 
-> > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> > ---
-> > 
-> > v1->v2:
-> > - Reverse christmas tree ordering of local variables.
-> > 
-> > ---
-> >  MAINTAINERS                    |   1 +
-> >  drivers/net/phy/Kconfig        |   7 ++
-> >  drivers/net/phy/Makefile       |   1 +
-> >  drivers/net/phy/mdio-smi2usb.c | 137 +++++++++++++++++++++++++++++++++
-> >  4 files changed, 146 insertions(+)
-> >  create mode 100644 drivers/net/phy/mdio-smi2usb.c
-> 
-> Hi Tobias
-> 
-> Where does the name mii2usb come from? To me, it seems to be the wrong
-> way around, it is USB to MII. I suppose the Marvell Switch team could
-> of given it this name, for them the switch is the centre of their
-> world, and things connect to it?
+This is a MIME-formatted message.  If you see this text it means that your
+E-mail software does not support MIME-formatted messages.
 
-The name is indeed coming from Marvell. They use the term SMI over
-MDIO in most of their software and documentation. I had the same
-reaction to the name regarding the ordering of the terms, but felt it
-was best to go with the vendor's choice.
+--=_script-26192-1584657390-0001-2
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
+Content-ID: <alpine.DEB.2.20.2003192343491.5256@whs-18.cs.helsinki.fi>
 
-> I'm just wondering if we should actually ignore Marvell and call it
-> usb2mii?
-> 
-> I also think there should be a marvell prefix in the name, since were
-> could be other implementations of USB/MII. mvusb2mii?
+On Wed, 18 Mar 2020, Eric Dumazet wrote:
+> On 3/18/20 2:43 AM, Ilpo J=E4rvinen wrote:
+> > From: Ilpo J=E4rvinen <ilpo.jarvinen@cs.helsinki.fi>
+> >=20
+> > Handling the CWR flag differs between RFC 3168 ECN and AccECN.
+> > Take it into account in GSO by not clearing the CWR bit.
+> >=20
+> > Signed-off-by: Ilpo J=E4rvinen <ilpo.jarvinen@cs.helsinki.fi>
+> >
+>=20
+> Does it means TCP segmentation offload is disabled on all the NIC
+> around ?
 
-You're absolutely right that there should be an mv prefix in
-there. Calling it usb2mii seems like a misnomer though. At least for
-me, MII relates more to the data interface between a MAC and a PHY,
-whereas MDIO or SMI refers to the control interface (MDC/MDIO).
+On general level, yes. HW TSO should be disabled with AccECN (or when CWR=20
+flag is set for an incoming packet). The reason is how CWR flag is handle=
+d=20
+by RFC 3168 ECN-aware TSO. It splits the segment such that CWR is cleared=20
+starting from the 2nd segment which is incompatible how AccECN handles th=
+e=20
+CWR flag. With AccECN, CWR flag (or more accurately, the ACE field that=20
+also includes ECE & AE flags) changes only when new packet(s) with CE mar=
+k=20
+arrives so the flag should not be changed within a super-skb. The new
+feature flag is necessary to prevent such TSO engines happily clearing=20
+CWRs (if the CWR handling feature cannot be turned off).
 
-How about just mdio-mvusb?
+If NIC is completely unaware of RFC3168 ECN (doesn't support=20
+NETIF_F_TSO_ECN) or its TSO engine can be set to not touch CWR flag
+despite supporting also NETIF_F_TSO_ECN, TSO could be safely used with=20
+AccECN on such NIC. I've little expertise on TSO HW so I don't know if=20
+some/what NICs can do it. Nonetheless, there's nothing fundamental=20
+preventing TSO being enabled with AccECN by NICs (if either of those=20
+conditions is met).
 
-> Do you know how this is implemented? Is it a product you can purchase?
-> Or a microcontroller on the board which implements this? It would be
-> an interesting product, especially on x86 machines which generally end
-> up doing bit-banging because of the lack of drivers using kernel MDIO.
+In the cases, where TSO would fail to keep its hands off CWR flag, it
+should fallback to GSO which has always on AccECN support (similar to=20
+always on ECN support). I think that the current GSO changes are capable=20
+of handling AccECN skbs. For the other parts of the idea above I'm not=20
+so sure. There is this NETIF_F_GSO_SOFTWARE with comment that seems to=20
+indicate it's doing what I want but I'm not fully sure if adding a flag=20
+there is enough to achieve the desired effect?
 
-On the 88E6390X-DB, I know that there is a chip by the USB port that
-is probably either an MCU or a small FPGA. I can have a closer look at
-it when I'm at the office tomorrow if you'd like. I also remember
-seeing some docs from Marvell which seemed to indicate that they have
-a standalone product providing only the USB-to-MDIO functionality.
+On the rx side, supporting both RFC3168 and AccECN style CWR handling
+is slightly more complicated (and possibly not worth the effort given
+CWRs should be relatively rare with RFC3168-style ECN).
 
-The x86 use-case is interesting. It would be even more so if there was
-some way of loading a DSA DT fragment so that you could hook it up to
-your machine's Ethernet port.
+> Why tun driver is changed and not others ?
 
-> > +static int smi2usb_probe(struct usb_interface *interface,
-> > +			 const struct usb_device_id *id)
-> > +{
-> > +	struct device *dev = &interface->dev;
-> > +	struct mii_bus *mdio;
-> > +	struct smi2usb *smi;
-> > +	int err = -ENOMEM;
-> > +
-> > +	mdio = devm_mdiobus_alloc_size(dev, sizeof(*smi));
-> > +	if (!mdio)
-> > +		goto err;
-> > +
-> 
-> ...
-> 
-> 
-> > +static void smi2usb_disconnect(struct usb_interface *interface)
-> > +{
-> > +	struct smi2usb *smi;
-> > +
-> > +	smi = usb_get_intfdata(interface);
-> > +	mdiobus_unregister(smi->mdio);
-> > +	usb_set_intfdata(interface, NULL);
-> > +
-> > +	usb_put_intf(interface);
-> > +	usb_put_dev(interface_to_usbdev(interface));
-> > +}
-> 
-> I don't know enough about USB. Does disconnect have the same semantics
-> remove()? You used devm_mdiobus_alloc_size() to allocate the bus
-> structure. Will it get freed after disconnect? I've had USB devices
-> connected via flaky USB hubs and they have repeatedly disappeared and
-> reappeared. I wonder if in that case you are leaking memory if
-> disconnect does not release the memory?
+I think I didn't really understand why tun.c plays with the TSO_ECN flag=20
+until now (after finding a related comment from tap.c) and so that change=20
+now doesn't make much sense for me now any more. So I'll just remove that=20
+part.
 
-Disclaimer: This is my first ever USB driver.
+> I believe you need to give much more details in changelog in general,
+> because many changes are not that obvious.
 
-I assumed that since we're removing 'interface', 'interface->dev' will
-be removed as well and thus calling all devm hooks.
+I'll try to.
 
-> > +	usb_put_intf(interface);
-> > +	usb_put_dev(interface_to_usbdev(interface));
-> > +}
-> 
-> Another USB novice question. Is this safe? Could the put of interface
-> cause it to be destroyed? Then interface_to_usbdev() is called on
-> invalid memory?
+Thanks.
 
-That does indeed look scary. I inverted the order of the calls to the
-_get_ functions, which I got from the USB skeleton driver. I'll try to
-review some other drivers to see if I can figure this out.
-
-> Maybe this should be cross posted to a USB mailing list, so we can get
-> the USB aspects reviewed. The MDIO bits seem good to me.
-
-Good idea. Any chance you can help an LKML rookie out? How does one go
-about that? Do I simply reply to this thread and add the USB list, or
-do I post the patches again as a new series? Any special tags? Is
-there any documentation available?
-
-> 	   Andrew
-
+--=20
+ i.
+--=_script-26192-1584657390-0001-2--
