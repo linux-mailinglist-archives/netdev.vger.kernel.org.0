@@ -2,109 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF3FA18BCCE
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:40:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E52A18BCD5
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:41:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728523AbgCSQkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 12:40:18 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:41808 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727477AbgCSQkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 12:40:16 -0400
-Received: by mail-pf1-f196.google.com with SMTP id z65so1705366pfz.8;
-        Thu, 19 Mar 2020 09:40:15 -0700 (PDT)
+        id S1728184AbgCSQlF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 12:41:05 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:44113 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727877AbgCSQlE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 12:41:04 -0400
+Received: by mail-pl1-f194.google.com with SMTP id h11so1275735plr.11;
+        Thu, 19 Mar 2020 09:41:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Spp2H3hwciDP1zBFrVBHl1IpU/knurYnjuBrzYZScTU=;
-        b=UpAgYC7nZVkWQF4LvCgpV5BXriVMI8qNFksFs8kzGsHdIv+o6gD8M4zQ1CpiLksx+g
-         GKDbgYud0ixo198bAP5YNrGbK4+RBQ2iJ8m2XyFCI+FG5iCacmqTmXT0QcwNUaFWU04N
-         xNXgUGGovwiKV0HTIzBo7usKrqSvGMNBts/ZJHiOmrB4cIn6KA/OjkHA0p+REmbgo/6h
-         omjg4n1d++HkWdkDZBxeOhBzPeEajlyY9B8a1H1aphY0ihkVL9F6YYXn1ckvjPwBhzZU
-         WrvYJKzKH8U2AynfRMYQlQSW2dP0Q48LEvB3aRkQE0JgL7li3ADBiDLSlO8fMMeXkWHL
-         qbkw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=N+kUskOEAztsUSeY3dZT12vj2Ojdgoxn5lGNikj9z1U=;
+        b=M5htu4nft5Wl6IcM9YkoOY+berCLoHv2KhBl4yrj1LNzgifwMLJSrdni4h36LM/3lz
+         GpAJ5ITg6czoojg096Uk2x+lYbOv5TXYJB7cJ2e2r5YrBenRBz4ffpmtZW7bhsnnnOu8
+         aTLLEiWr0fX2lRMHNEiflHuRhpMHBLZ+tmh5iGsVTcnv1JupoQ3UeDx6uVi2lUKv03ey
+         KUQ3+6RG+3/hWTsXmjzqKyLi/Yv+qwOJJjNHxwWI7flOzjDo8meaPSU9Tv4HMbEvq47j
+         +R/0JATKjdKC4FeQh92+4OnQce9B5jw3jO2fjWVNvqxWQ0WjX9nawSf0u8ZisB92IE76
+         Zpmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Spp2H3hwciDP1zBFrVBHl1IpU/knurYnjuBrzYZScTU=;
-        b=IGe0Vx4A7O9Tj1wFjjy1uefb9tdXXc8Vq+UGC9b4tVYNDFJidMEeb/OAGizBGKCkbP
-         CZ4Y2jPdn2pdxDIjSd2oSchDvzG4g+kHHLZ/9r29xXkqWBKAR9dopvuZkDdiDBQe1Avj
-         92ZtKfY3SvnVW1fDijq7JLJmLVPcmyVdiqGBsF0rADh0iHmS+C8uGQeYouH//D5c8GSh
-         UP/q0kP9N9gNZknfM6Z1n+5xyQeAHVAb/3Cs3CPqsTiMlopzPqtWWbeJoL2VBcMLkbtb
-         /KE1a3NdRo70jgriUSvVzGzrxx1Aq0OioXLL9UV30PQaMGBEUnmToLYnXev6ePHZWY+R
-         OFIQ==
-X-Gm-Message-State: ANhLgQ2iMHi9+EFp5q0z3jBXtkwjM7WgmrDud+neOucRAMAhaMvyIhiM
-        zwVUpuRb6SoWFGbYDCvSqvY=
-X-Google-Smtp-Source: ADFU+vsaJO/NrK2mI3eUq7ZsN5qq4mcDmMwFMUxb7gJtsg8rSJhCsjt8VIN4SpEv0XLLqE8+u8KX0w==
-X-Received: by 2002:aa7:84cd:: with SMTP id x13mr5055484pfn.310.1584636015372;
-        Thu, 19 Mar 2020 09:40:15 -0700 (PDT)
-Received: from localhost ([216.24.188.11])
-        by smtp.gmail.com with ESMTPSA id b4sm2833621pfd.18.2020.03.19.09.40.14
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 19 Mar 2020 09:40:14 -0700 (PDT)
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, tglx@linutronix.de,
-        broonie@kernel.org, corbet@lwn.net, mchehab+samsung@kernel.org,
-        netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH net-next 7/7] net: phy: use phy_read_poll_timeout() to simplify the code
-Date:   Fri, 20 Mar 2020 00:39:10 +0800
-Message-Id: <20200319163910.14733-8-zhengdejin5@gmail.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200319163910.14733-1-zhengdejin5@gmail.com>
-References: <20200319163910.14733-1-zhengdejin5@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=N+kUskOEAztsUSeY3dZT12vj2Ojdgoxn5lGNikj9z1U=;
+        b=qYPwbxd1NetK822UJY+37f9H4qTQzkwfB+TPZfsnIS6zkrkZBwDmv6CbW/Muxk3EEg
+         idiOHfD3EQJP4zr3k7M1foUmgwzwz56HDyaIl3bwPUsCerQqbfhKO7we1x13Y/NISsr/
+         CHF2vhUb7iIuSi1A70Yx6qoeo28E4H5VSi4bHtNb6Y92rOnJHqcrV9t/rX6OvKB3Gjcn
+         bhEEPzUfBExvGrcCV4FwqQjovCOwR3Jdv2zgH5jdXJD6MoaEthsFBCq7K2CoyV4Bdm9f
+         j7qOO72R1p7qbMDtfaZbbcCcJeQdKBQzaY/ZxOwGMuGEkSJanGkKikNUYnE02Xr9W8Ks
+         Ca2g==
+X-Gm-Message-State: ANhLgQ2AwT+KMokiDRxX8FOREn2iPK4zOFJj15yioubzRRCW+88GAc4r
+        RNOse8DtDGzbEZuJCqQp21mw1z+f
+X-Google-Smtp-Source: ADFU+vuFp5ZNwIXfJTevssPDNf3T8CH3AaNlm9oYHgHSdzLv5seXgCry8wf8JOaObTMCI+Lt2p3iyA==
+X-Received: by 2002:a17:902:eb49:: with SMTP id i9mr4148743pli.91.1584636063110;
+        Thu, 19 Mar 2020 09:41:03 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id y18sm3008136pge.73.2020.03.19.09.41.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Mar 2020 09:41:02 -0700 (PDT)
+Subject: Re: Bug URGENT Report with new kernel 5.5.10-5.6-rc6
+To:     Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Martin Zaharinov <micron10@gmail.com>,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+References: <CALidq=XsQy66n-pTMOMN=B7nEsk7BpRZnUHery5RJyjnMsiXZQ@mail.gmail.com>
+ <CALidq=VVpixeJFJFkUSeDqTW=OX0+dhA04ypE=y949B+Aqaq0w@mail.gmail.com>
+ <CALidq=UXHz+rjiG5JxAz-CJ1mKsFLVupsH3W+z58L2nSPKE-7w@mail.gmail.com>
+ <20200319003823.3b709ad8@elisabeth>
+ <CALidq=Xow0EkAP4LkqvQiDOmVDduEwLKa4c-A54or3GMj6+qVw@mail.gmail.com>
+ <20200319103438.GO979@breakpoint.cc> <20200319104750.x2zz7negjbm6lwch@salvia>
+ <20200319105248.GP979@breakpoint.cc>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <fff10500-8b87-62f0-ec89-49453cf9ae57@gmail.com>
+Date:   Thu, 19 Mar 2020 09:40:59 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200319105248.GP979@breakpoint.cc>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-use phy_read_poll_timeout() to replace the poll codes for
-simplify the code in phy_poll_reset() function.
 
-Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
----
- drivers/net/phy/phy_device.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index a585faf8b844..bdef427593c9 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1059,23 +1059,17 @@ EXPORT_SYMBOL(phy_disconnect);
- static int phy_poll_reset(struct phy_device *phydev)
- {
- 	/* Poll until the reset bit clears (50ms per retry == 0.6 sec) */
--	unsigned int retries = 12;
--	int ret;
--
--	do {
--		msleep(50);
--		ret = phy_read(phydev, MII_BMCR);
--		if (ret < 0)
--			return ret;
--	} while (ret & BMCR_RESET && --retries);
--	if (ret & BMCR_RESET)
--		return -ETIMEDOUT;
-+	int ret, val;
+On 3/19/20 3:52 AM, Florian Westphal wrote:
+> Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+>> On Thu, Mar 19, 2020 at 11:34:38AM +0100, Florian Westphal wrote:
+>>> Martin Zaharinov <micron10@gmail.com> wrote:
+>>>
+>>> [ trimming CC ]
+>>>
+>>> Please revert
+>>>
+>>> commit 28f8bfd1ac948403ebd5c8070ae1e25421560059
+>>> netfilter: Support iif matches in POSTROUTING
+>>
+>> Please, specify a short description to append to the revert.
+> 
+> TCP makes use of the rb_node in sk_buff for its retransmit queue,
+> amongst others.
+
+
+Only for master skbs kept in TCP internal queues (rtx rb tree)
+
+However the packets leaving TCP stack are clones.
+
+  skb->dev aliases to this storage, i.e., passing
+> skb->dev as the input interface in postrouting may point to another
+> sk_buff instead.
+> This will cause crashes and data corruption with nf_queue, as we will
+> attempt to increment a random pcpu variable when calling dev_hold().
+> 
+> Also, the memory address may also be free'd, which gives UAF splat.
+> 
+
+This seems to suggest clones skb->dev should be cleared before leaving TCP stack,
+if some layer is confused because skb->dev has not yet been set by IP layer ?
+
+Untested patch :
+
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 306e25d743e8de1bfe23d6e3b3a9fb0f23664912..c40fb3880307aa3156d01a8b49f1296657346cfd 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1228,6 +1228,7 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
+        /* Cleanup our debris for IP stacks */
+        memset(skb->cb, 0, max(sizeof(struct inet_skb_parm),
+                               sizeof(struct inet6_skb_parm)));
++       skb->dev = NULL;
  
-+	ret = phy_read_poll_timeout(val, val < 0 || !(val & BMCR_RESET),
-+				    50000, 600000, phydev, MII_BMCR);
-+	if (val < 0)
-+		ret = val;
- 	/* Some chips (smsc911x) may still need up to another 1ms after the
- 	 * BMCR_RESET bit is cleared before they are usable.
- 	 */
- 	msleep(1);
--	return 0;
-+	return ret;
- }
+        tcp_add_tx_delay(skb, tp);
  
- int phy_init_hw(struct phy_device *phydev)
--- 
-2.25.0
 
