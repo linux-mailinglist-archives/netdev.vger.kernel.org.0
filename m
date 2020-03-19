@@ -2,107 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8897218C284
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 22:46:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E894718C288
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 22:48:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727318AbgCSVqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 17:46:43 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:25505 "EHLO
+        id S1727091AbgCSVs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 17:48:26 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:21215 "EHLO
         us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727102AbgCSVqn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 17:46:43 -0400
+        by vger.kernel.org with ESMTP id S1726785AbgCSVsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 17:48:25 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584654401;
+        s=mimecast20190719; t=1584654504;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=Qb8XlgVTtjSbLUpAWpl/SSyVtuJqK+Yx4DWYw4SmJeA=;
-        b=P3xnz356PkBdEWZ7mxRrtZssfNSKnenTm5qbLx8F0TDp4zw3fxutU7yWzVRoNeXI5B1LGz
-        2xzLWuqq2PJvJog8ICOi8tykRtB2ccDV/o/zSY8lbUrd5R64P03r2KGHVCWPGRZYsBXC4H
-        Vc13EA4JvTVjlrmfHKq6C/3bUhTUaDo=
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tsfr9KiPwPHaSNob1o89QdgA/mKpTxdC3audBQKrY6g=;
+        b=VIj3VaFzXUnNG3jOdDv4XDNOfQq0bU1VQzy7kPD85+d3TOQYC7RCkfLkC7Cb3+xHUlDjQT
+        QUzabA0oL2pTE4ydqN268uBxnrspTGoAQctXSHWf6VCn7Kjo60CPm1dJY9LJypI/DXhmAp
+        zxuA6csXGGDTM7RCvHg8rB2SWDrSYtg=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-176-dnb4iA3jNpKqcJq7Dwa7Sg-1; Thu, 19 Mar 2020 17:46:40 -0400
-X-MC-Unique: dnb4iA3jNpKqcJq7Dwa7Sg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+ us-mta-111-OLeMbR_VN_W9GnHsc2JE3w-1; Thu, 19 Mar 2020 17:48:23 -0400
+X-MC-Unique: OLeMbR_VN_W9GnHsc2JE3w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ACDAE100550D;
-        Thu, 19 Mar 2020 21:46:38 +0000 (UTC)
-Received: from new-host-5.redhat.com (unknown [10.40.194.135])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 42D525D9CA;
-        Thu, 19 Mar 2020 21:46:34 +0000 (UTC)
-From:   Davide Caratti <dcaratti@redhat.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org
-Subject: [PATCH net-next] net: mptcp: don't hang in mptcp_sendmsg() after TCP fallback
-Date:   Thu, 19 Mar 2020 22:45:37 +0100
-Message-Id: <9a7cd34e2d8688364297d700bfd8aea60c3a6c7f.1584653622.git.dcaratti@redhat.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 28CAF107ACC4;
+        Thu, 19 Mar 2020 21:48:20 +0000 (UTC)
+Received: from madcap2.tricolour.ca (unknown [10.36.110.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0A40CBBBF3;
+        Thu, 19 Mar 2020 21:48:03 +0000 (UTC)
+Date:   Thu, 19 Mar 2020 17:47:59 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Steve Grubb <sgrubb@redhat.com>, linux-audit@redhat.com,
+        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
+ the audit daemon
+Message-ID: <20200319214759.qgxt2sfkmd6srdol@madcap2.tricolour.ca>
+References: <20200204231454.oxa7pyvuxbj466fj@madcap2.tricolour.ca>
+ <CAHC9VhQquokw+7UOU=G0SsD35UdgmfysVKCGCE87JVaoTkbisg@mail.gmail.com>
+ <3142237.YMNxv0uec1@x2>
+ <CAHC9VhTiCHQbp2SwK0Xb1QgpUZxOQ26JKKPsVGT0ZvMqx28oPQ@mail.gmail.com>
+ <20200312202733.7kli64zsnqc4mrd2@madcap2.tricolour.ca>
+ <CAHC9VhS9DtxJ4gvOfMRnzoo6ccGJVKL+uZYe6qqH+SPqD8r01Q@mail.gmail.com>
+ <20200313192306.wxey3wn2h4htpccm@madcap2.tricolour.ca>
+ <CAHC9VhQKOpVWxDg-tWuCWV22QRu8P_NpFKme==0Ot1RQKa_DWA@mail.gmail.com>
+ <20200318214154.ycxy5dl4pxno6fvi@madcap2.tricolour.ca>
+ <CAHC9VhSuMnd3-ci2Bx-xJ0yscQ=X8ZqFAcNPKpbh_ZWN3FJcuQ@mail.gmail.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhSuMnd3-ci2Bx-xJ0yscQ=X8ZqFAcNPKpbh_ZWN3FJcuQ@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-it's still possible for packetdrill to hang in mptcp_sendmsg(), when the
-MPTCP socket falls back to regular TCP (e.g. after receiving unsupported
-flags/version during the three-way handshake). Adjust MPTCP socket state
-earlier, to ensure correct functionality of mptcp_sendmsg() even in case
-of TCP fallback.
+On 2020-03-18 17:47, Paul Moore wrote:
+> On Wed, Mar 18, 2020 at 5:42 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > On 2020-03-18 17:01, Paul Moore wrote:
+> > > On Fri, Mar 13, 2020 at 3:23 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > On 2020-03-13 12:42, Paul Moore wrote:
+> > >
+> > > ...
+> > >
+> > > > > The thread has had a lot of starts/stops, so I may be repeating a
+> > > > > previous suggestion, but one idea would be to still emit a "death
+> > > > > record" when the final task in the audit container ID does die, but
+> > > > > block the particular audit container ID from reuse until it the
+> > > > > SIGNAL2 info has been reported.  This gives us the timely ACID death
+> > > > > notification while still preventing confusion and ambiguity caused by
+> > > > > potentially reusing the ACID before the SIGNAL2 record has been sent;
+> > > > > there is a small nit about the ACID being present in the SIGNAL2
+> > > > > *after* its death, but I think that can be easily explained and
+> > > > > understood by admins.
+> > > >
+> > > > Thinking quickly about possible technical solutions to this, maybe it
+> > > > makes sense to have two counters on a contobj so that we know when the
+> > > > last process in that container exits and can issue the death
+> > > > certificate, but we still block reuse of it until all further references
+> > > > to it have been resolved.  This will likely also make it possible to
+> > > > report the full contid chain in SIGNAL2 records.  This will eliminate
+> > > > some of the issues we are discussing with regards to passing a contobj
+> > > > vs a contid to the audit_log_contid function, but won't eliminate them
+> > > > all because there are still some contids that won't have an object
+> > > > associated with them to make it impossible to look them up in the
+> > > > contobj lists.
+> > >
+> > > I'm not sure you need a full second counter, I imagine a simple flag
+> > > would be okay.  I think you just something to indicate that this ACID
+> > > object is marked as "dead" but it still being held for sanity reasons
+> > > and should not be reused.
+> >
+> > Ok, I see your point.  This refcount can be changed to a flag easily
+> > enough without change to the api if we can be sure that more than one
+> > signal can't be delivered to the audit daemon *and* collected by sig2.
+> > I'll have a more careful look at the audit daemon code to see if I can
+> > determine this.
+> 
+> Maybe I'm not understanding your concern, but this isn't really
+> different than any of the other things we track for the auditd signal
+> sender, right?  If we are worried about multiple signals being sent
+> then it applies to everything, not just the audit container ID.
 
-Fixes: 767d3ded5fb8 ("net: mptcp: don't hang before sending 'MP capable w=
-ith data'")
-Fixes: 1954b86016cf ("mptcp: Check connection state before attempting sen=
-d")
-Signed-off-by: Davide Caratti <dcaratti@redhat.com>
----
- net/mptcp/protocol.c | 4 ----
- net/mptcp/subflow.c  | 6 ++++++
- 2 files changed, 6 insertions(+), 4 deletions(-)
+Yes, you are right.  In all other cases the information is simply
+overwritten.  In the case of the audit container identifier any
+previous value is put before a new one is referenced, so only the last
+signal is kept.  So, we only need a flag.  Does a flag implemented with
+a rcu-protected refcount sound reasonable to you?
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index e959104832ef..92d5382e71f4 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -1055,10 +1055,6 @@ void mptcp_finish_connect(struct sock *ssk)
- 	WRITE_ONCE(msk->write_seq, subflow->idsn + 1);
- 	WRITE_ONCE(msk->ack_seq, ack_seq);
- 	WRITE_ONCE(msk->can_ack, 1);
--	if (inet_sk_state_load(sk) !=3D TCP_ESTABLISHED) {
--		inet_sk_state_store(sk, TCP_ESTABLISHED);
--		sk->sk_state_change(sk);
--	}
- }
-=20
- static void mptcp_sock_graft(struct sock *sk, struct socket *parent)
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 052d72a1d3a2..06b9075333c5 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -109,9 +109,15 @@ static void subflow_v6_init_req(struct request_sock =
-*req,
- static void subflow_finish_connect(struct sock *sk, const struct sk_buff=
- *skb)
- {
- 	struct mptcp_subflow_context *subflow =3D mptcp_subflow_ctx(sk);
-+	struct sock *parent =3D subflow->conn;
-=20
- 	subflow->icsk_af_ops->sk_rx_dst_set(sk, skb);
-=20
-+	if (inet_sk_state_load(parent) !=3D TCP_ESTABLISHED) {
-+		inet_sk_state_store(parent, TCP_ESTABLISHED);
-+		parent->sk_state_change(parent);
-+	}
-+
- 	if (!subflow->conn_finished) {
- 		pr_debug("subflow=3D%p, remote_key=3D%llu", mptcp_subflow_ctx(sk),
- 			 subflow->remote_key);
---=20
-2.24.1
+> > Another question occurs to me is that what if the audit daemon is sent a
+> > signal and it cannot or will not collect the sig2 information from the
+> > kernel (SIGKILL?)?  Does that audit container identifier remain dead
+> > until reboot, or do we institute some other form of reaping, possibly
+> > time-based?
+> 
+> In order to preserve the integrity of the audit log that ACID value
+> would need to remain unavailable until the ACID which contains the
+> associated auditd is "dead" (no one can request the signal sender's
+> info if that container is dead).
+
+I don't understand why it would be associated with the contid of the
+audit daemon process rather than with the audit daemon process itself.
+How does the signal collection somehow get transferred or delegated to
+another member of that audit daemon's container?
+
+Thinking aloud here, the audit daemon's exit when it calls audit_free()
+needs to ..._put_sig and cancel that audit_sig_cid (which in the future
+will be allocated per auditd rather than the global it is now since
+there is only one audit daemon).
+
+> paul moore
+
+- RGB
+
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
 
