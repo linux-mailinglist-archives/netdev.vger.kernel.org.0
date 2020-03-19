@@ -2,246 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CFBD18B858
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 14:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB68918B867
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 14:54:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727548AbgCSNsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 09:48:23 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:34641 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727303AbgCSNsX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 09:48:23 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6FE155C01B2;
-        Thu, 19 Mar 2020 09:48:22 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 19 Mar 2020 09:48:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=JnqhB7n2SLcGF4frV624NFsQ4jLyoFnt8P2lB9Fu54c=; b=B82yffnZ
-        5LR/ouC610lHVoQPyH5cWr6vJY6xzcxZl4zfnRN7jxRpYtzCqb5AAjy4shdIyPeZ
-        8eW3qi37FyJbsVQfFrV5Jqo/WDDjUCPQ6Jx11VvBn64oEF+xa39pR40iAlmnhtut
-        27MuP/dMjP4MNzfG6yveG4IlcVp7kKoFaDPaY3hRznCPoRfHUTEYZXpFzoMTxDeE
-        GR013g42VtSYIKWKit446zyqaaDMYodRHNscfdVmsnAYw60pUg1xh/S9ak7LFGmJ
-        iDudhF8hmE3JASgI9ItQte+0YiluN8yG2phBpXiCjzQG0g0RnAqo1TibRRfPMOKg
-        pkQKMHuOepRH9Q==
-X-ME-Sender: <xms:JnhzXipcj9kxJWpdpZs0mzwhaMpx2BEZIhtC91jwR2_s7CH-982ArQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefledgheeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppedutdelrdeiiedrudeftddrheenucevlhhushhtvghruf
-    hiiigvpeegnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghh
-    rdhorhhg
-X-ME-Proxy: <xmx:JnhzXh7bPc_cmJlenG612eao3tGbFwXlE6xclmB-sHicr9g9j1FsTg>
-    <xmx:JnhzXgGT_hD358d3LOmUwq7iDnENMDdCeyFM49j6zwFGifeGmIil3A>
-    <xmx:JnhzXo5nHjwXoPCvC0YIDuZdSAs2xudrT4Xu5CA5AG6Z8BS-s1vPXA>
-    <xmx:JnhzXk8duJfr_UfYPuny5wDl5W-ABDDgmnRfTIayBuXEtmMBhecMyg>
-Received: from splinter.mtl.com (bzq-109-66-130-5.red.bezeqint.net [109.66.130.5])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 375FF30618B7;
-        Thu, 19 Mar 2020 09:48:18 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
+        id S1727290AbgCSNy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 09:54:57 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:43316 "EHLO mx.0dd.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727194AbgCSNy5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 09:54:57 -0400
+X-Greylist: delayed 402 seconds by postgrey-1.27 at vger.kernel.org; Thu, 19 Mar 2020 09:54:56 EDT
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mx.0dd.nl (Postfix) with ESMTPS id 0BB065FAE6;
+        Thu, 19 Mar 2020 14:48:14 +0100 (CET)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="noV2Bi8S";
+        dkim-atps=neutral
+Received: from pc-rene-vdorst-com.vdorst.com (pc-rene-vdorst-com.vdorst.com [192.168.2.14])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id B65A424FCBC;
+        Thu, 19 Mar 2020 14:48:13 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com B65A424FCBC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1584625693;
+        bh=O6YczJK1x6AOo1kB2bIezDwDRopcG6VypEaDqIBfUMM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=noV2Bi8S9TcIClj7xR6/P0K1PQmfRwkoO4jN2XGaSGv4LIWM/62TmvBatR57czl/6
+         sy/4wFrEg2MF6bJoLFxGrmJ+E/J5ZxetESI6iy5pfW786/vqUFvhZ0/omebB2oRYuG
+         UUCcO/riKC6BYTspGaK/l67IdOuTChEF0/Ybykcd+X7gA+i8NMNRp+TX4zS5d/G+jB
+         UJYaLV5ELFKMXpsQU8QYRCT5Y4ZStzHdE6/kuC6gNxvuDJWZ3pUD8r0z76mYXiI4QC
+         8KQ+h3lymmO9AlYtkWfWFt9LHV8wAcpjMvQqiC2HEADRk6w9vbGrEBFw0D8vzn0IKk
+         +H8D2ybk/7Kdw==
+From:   =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, petrm@mellanox.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 5/5] selftests: forwarding: Add an skbedit priority selftest
-Date:   Thu, 19 Mar 2020 15:47:24 +0200
-Message-Id: <20200319134724.1036942-6-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200319134724.1036942-1-idosch@idosch.org>
-References: <20200319134724.1036942-1-idosch@idosch.org>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Landen Chao <landen.chao@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-mediatek@lists.infradead.org,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        Andrew Smith <andrew.smith@digi.com>
+Subject: [[PATCH,net]] net: dsa: mt7530: Change the LINK bit to reflect the link status
+Date:   Thu, 19 Mar 2020 14:47:56 +0100
+Message-Id: <20200319134756.46428-1-opensource@vdorst.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@mellanox.com>
+Andrew reported:
 
-Add a test that runs traffic through a port such that skbedit priority
-action acts on it during forwarding. Test that at egress, it is classified
-correctly according to the new priority at a PRIO qdisc.
+After a number of network port link up/down changes, sometimes the switch
+port gets stuck in a state where it thinks it is still transmitting packets
+but the cpu port is not actually transmitting anymore. In this state you
+will see a message on the console
+"mtk_soc_eth 1e100000.ethernet eth0: transmit timed out" and the Tx counter
+in ifconfig will be incrementing on virtual port, but not incrementing on
+cpu port.
 
-Signed-off-by: Petr Machata <petrm@mellanox.com>
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+The issue is that MAC TX/RX status has no impact on the link status or
+queue manager of the switch. So the queue manager just queues up packets
+of a disabled port and sends out pause frames when the queue is full.
+
+Change the LINK bit to reflect the link status.
+
+Fixes: b8f126a8d543 ("net-next: dsa: add dsa support for Mediatek MT7530 switch")
+Reported-by: Andrew Smith <andrew.smith@digi.com>
+Signed-off-by: René van Dorst <opensource@vdorst.com>
 ---
- .../net/forwarding/skbedit_priority.sh        | 163 ++++++++++++++++++
- 1 file changed, 163 insertions(+)
- create mode 100755 tools/testing/selftests/net/forwarding/skbedit_priority.sh
+ drivers/net/dsa/mt7530.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/net/forwarding/skbedit_priority.sh b/tools/testing/selftests/net/forwarding/skbedit_priority.sh
-new file mode 100755
-index 000000000000..0e7693297765
---- /dev/null
-+++ b/tools/testing/selftests/net/forwarding/skbedit_priority.sh
-@@ -0,0 +1,163 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+# This test sends traffic from H1 to H2. Either on ingress of $swp1, or on
-+# egress of $swp2, the traffic is acted upon by an action skbedit priority. The
-+# new priority should be taken into account when classifying traffic on the PRIO
-+# qdisc at $swp2. The test verifies that for different priority values, the
-+# traffic ends up in expected PRIO band.
-+#
-+# +----------------------+                             +----------------------+
-+# | H1                   |                             |                   H2 |
-+# |    + $h1             |                             |            $h2 +     |
-+# |    | 192.0.2.1/28    |                             |   192.0.2.2/28 |     |
-+# +----|-----------------+                             +----------------|-----+
-+#      |                                                                |
-+# +----|----------------------------------------------------------------|-----+
-+# | SW |                                                                |     |
-+# |  +-|----------------------------------------------------------------|-+   |
-+# |  | + $swp1                       BR                           $swp2 + |   |
-+# |  |                                                             PRIO   |   |
-+# |  +--------------------------------------------------------------------+   |
-+# +---------------------------------------------------------------------------+
-+
-+ALL_TESTS="
-+	ping_ipv4
-+	test_ingress
-+	test_egress
-+"
-+
-+NUM_NETIFS=4
-+source lib.sh
-+
-+: ${HIT_TIMEOUT:=2000} # ms
-+
-+h1_create()
-+{
-+	simple_if_init $h1 192.0.2.1/28
-+}
-+
-+h1_destroy()
-+{
-+	simple_if_fini $h1 192.0.2.1/28
-+}
-+
-+h2_create()
-+{
-+	simple_if_init $h2 192.0.2.2/28
-+}
-+
-+h2_destroy()
-+{
-+	simple_if_fini $h2 192.0.2.2/28
-+}
-+
-+switch_create()
-+{
-+	ip link add name br1 up type bridge vlan_filtering 1
-+	ip link set dev $swp1 master br1
-+	ip link set dev $swp1 up
-+	ip link set dev $swp2 master br1
-+	ip link set dev $swp2 up
-+
-+	tc qdisc add dev $swp1 clsact
-+	tc qdisc add dev $swp2 clsact
-+	tc qdisc add dev $swp2 root handle 10: \
-+	   prio bands 8 priomap 7 6 5 4 3 2 1 0
-+}
-+
-+switch_destroy()
-+{
-+	tc qdisc del dev $swp2 root
-+	tc qdisc del dev $swp2 clsact
-+	tc qdisc del dev $swp1 clsact
-+
-+	ip link set dev $swp2 nomaster
-+	ip link set dev $swp1 nomaster
-+	ip link del dev br1
-+}
-+
-+setup_prepare()
-+{
-+	h1=${NETIFS[p1]}
-+	swp1=${NETIFS[p2]}
-+
-+	swp2=${NETIFS[p3]}
-+	h2=${NETIFS[p4]}
-+
-+	h2mac=$(mac_get $h2)
-+
-+	vrf_prepare
-+	h1_create
-+	h2_create
-+	switch_create
-+}
-+
-+cleanup()
-+{
-+	pre_cleanup
-+
-+	switch_destroy
-+	h2_destroy
-+	h1_destroy
-+	vrf_cleanup
-+}
-+
-+ping_ipv4()
-+{
-+	ping_test $h1 192.0.2.2
-+}
-+
-+test_skbedit_priority_one()
-+{
-+	local locus=$1; shift
-+	local prio=$1; shift
-+	local classid=$1; shift
-+
-+	RET=0
-+
-+	tc filter add $locus handle 101 pref 1 \
-+	   flower action skbedit priority $prio
-+
-+	local pkt0=$(qdisc_parent_stats_get $swp2 $classid .packets)
-+	$MZ $h1 -t udp "sp=54321,dp=12345" -c 10 -d 20msec -p 100 \
-+	    -a own -b $h2mac -A 192.0.2.1 -B 192.0.2.2 -q
-+	local pkt1
-+	pkt1=$(busywait "$HIT_TIMEOUT" until_counter_is ">= $((pkt0 + 10))" \
-+			qdisc_parent_stats_get $swp2 $classid .packets)
-+
-+	check_err $? "Expected to get 10 packets on class $classid, but got
-+$((pkt1 - pkt0))."
-+	log_test "$locus skbedit priority $prio -> classid $classid"
-+
-+	tc filter del $locus pref 1
-+}
-+
-+test_ingress()
-+{
-+	local prio
-+
-+	for prio in {0..7}; do
-+		test_skbedit_priority_one "dev $swp1 ingress" \
-+					  $prio 10:$((8 - prio))
-+	done
-+}
-+
-+test_egress()
-+{
-+	local prio
-+
-+	for prio in {0..7}; do
-+		test_skbedit_priority_one "dev $swp2 egress" \
-+					  $prio 10:$((8 - prio))
-+	done
-+}
-+
-+trap cleanup EXIT
-+
-+setup_prepare
-+setup_wait
-+
-+tests_run
-+
-+exit $EXIT_STATUS
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 9ee3f263d529..d422d3d6a129 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -566,7 +566,7 @@ mt7530_mib_reset(struct dsa_switch *ds)
+ static void
+ mt7530_port_set_status(struct mt7530_priv *priv, int port, int enable)
+ {
+-	u32 mask = PMCR_TX_EN | PMCR_RX_EN;
++	u32 mask = PMCR_TX_EN | PMCR_RX_EN | PMCR_FORCE_LNK;
+ 
+ 	if (enable)
+ 		mt7530_set(priv, MT7530_PMCR_P(port), mask);
+@@ -1512,7 +1512,7 @@ static void mt7530_phylink_mac_config(struct dsa_switch *ds, int port,
+ 	mcr_new &= ~(PMCR_FORCE_SPEED_1000 | PMCR_FORCE_SPEED_100 |
+ 		     PMCR_FORCE_FDX | PMCR_TX_FC_EN | PMCR_RX_FC_EN);
+ 	mcr_new |= PMCR_IFG_XMIT(1) | PMCR_MAC_MODE | PMCR_BACKOFF_EN |
+-		   PMCR_BACKPR_EN | PMCR_FORCE_MODE | PMCR_FORCE_LNK;
++		   PMCR_BACKPR_EN | PMCR_FORCE_MODE;
+ 
+ 	/* Are we connected to external phy */
+ 	if (port == 5 && dsa_is_user_port(ds, 5))
 -- 
-2.24.1
+2.25.1
 
