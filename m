@@ -2,148 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53AE218B0E9
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 11:07:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E111C18B0FA
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 11:14:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726881AbgCSKHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 06:07:21 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:53669 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725601AbgCSKHV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 06:07:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584612439;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=nWEk+0kj8FksCoj7KClb84pskllv3CGFPyiC3mzU2go=;
-        b=ighL+TI7oq2di4zoP/W5dtaoYgT8Wemv4LOUfX8gW2FG/DOEqBwXUCcSpD4zzcdfj2Cw14
-        zccHTMiYQ+wN+sN1M46hp+gMmRwXG2x8fGr1w1ehwUE00Ik+JNZSWOxLRa8fTNIXwYSOh3
-        wJd/hrDKSVVKbR3Rvzc5prBL7DdUR90=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-205-2BrI8os1OeKFJVmJ3XqIkQ-1; Thu, 19 Mar 2020 06:07:18 -0400
-X-MC-Unique: 2BrI8os1OeKFJVmJ3XqIkQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4CEF2107ACC4;
-        Thu, 19 Mar 2020 10:07:17 +0000 (UTC)
-Received: from localhost.localdomain.com (ovpn-114-148.ams2.redhat.com [10.36.114.148])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A6FCC9CA3;
-        Thu, 19 Mar 2020 10:07:15 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
+        id S1726767AbgCSKOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 06:14:25 -0400
+Received: from mail-lj1-f176.google.com ([209.85.208.176]:34154 "EHLO
+        mail-lj1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725601AbgCSKOY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 06:14:24 -0400
+Received: by mail-lj1-f176.google.com with SMTP id s13so1805695ljm.1
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 03:14:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NS59NhIO9FklVSlocZ9COaIootU6HPAqwvgvjPc0JZI=;
+        b=SqyyKzxUs28gcPCwVh8IeEUD9O5N1DSX9MOVC2q0MCGzGNm3D11USn4YL65M2BM9XT
+         cJzx/beasUHcfJw86tj0hhHtHVSKRUoXXapZld6DqjSc4lQw0Q1bulNhkjJkI4qrs6UW
+         fupiP3NJ+zsgiTzGQc4YTzvE8hZuu60Bavl1s=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NS59NhIO9FklVSlocZ9COaIootU6HPAqwvgvjPc0JZI=;
+        b=lS25+rFZP+52ptMaWQthTsl2JcWDkqcnSoMgbkH06psNdFcyHMi/WxaLj8uLe4QtDl
+         U1g2lVMZT73wU99eg+I9oVtjTO4pQZAHAEklDjEUPnivluXvE6SAvTY0nzVYe+I+sSOo
+         z3GmalQdTPH3XdrQZGs5qkM4Ce7C/N3WgU5GxKFp6Gnj37cSLZwonYmsfsw/Qsh6Zbpl
+         X37q1KGCtCt+1EH92H2WrYoqPpBZp+5OftprcuA7ArCg6/X1+AlWfmJ0+863NNnjQS8V
+         wQ9inIHkGNWQIRBPchjTX9RMel+qFwfouCcIQbLHfVvfcEWFhdjt+MtydvfDaLSYo3z5
+         SkjQ==
+X-Gm-Message-State: ANhLgQ0kYHUh9BaNkND41QveYYGWDcZcEKO/RowUXiPHEASbjt9x4w1T
+        fUtt+7m9QWlXoQjxw3HUff3gmxaYhac=
+X-Google-Smtp-Source: ADFU+vvzbrwtgfA7x5AdvT8J/tb7SkV+yGQsbrrF0o+yL8hpzRnXirorSWpuOlNvHfscZMXv7k99DQ==
+X-Received: by 2002:a2e:9b44:: with SMTP id o4mr1656826ljj.63.1584612860427;
+        Thu, 19 Mar 2020 03:14:20 -0700 (PDT)
+Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id r10sm1124678ljk.13.2020.03.19.03.14.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Mar 2020 03:14:19 -0700 (PDT)
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next] mptcp: rename fourth ack field
-Date:   Thu, 19 Mar 2020 11:06:30 +0100
-Message-Id: <3c7d0601bc04139108479bf06a8d299b14496300.1584612221.git.pabeni@redhat.com>
+Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
+        bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next v2] net: bridge: vlan: include stats in dumps if requested
+Date:   Thu, 19 Mar 2020 12:14:14 +0200
+Message-Id: <20200319101414.201391-1-nikolay@cumulusnetworks.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The name is misleading, it actually tracks the 'fully established'
-status.
+This patch adds support for vlan stats to be included when dumping vlan
+information. We have to dump them only when explicitly requested (thus the
+flag below) because that disables the vlan range compression and will make
+the dump significantly larger. In order to request the stats to be
+included we add a new dump attribute called BRIDGE_VLANDB_DUMP_FLAGS which
+can affect dumps with the following first flag:
+  - BRIDGE_VLANDB_DUMPF_STATS
+The stats are intentionally nested and put into separate attributes to make
+it easier for extending later since we plan to add per-vlan mcast stats,
+drop stats and possibly STP stats. This is the last missing piece from the
+new vlan API which makes the dumped vlan information complete.
 
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/options.c  | 18 +++++++++---------
- net/mptcp/protocol.h |  2 +-
- net/mptcp/subflow.c  |  2 +-
- 3 files changed, 11 insertions(+), 11 deletions(-)
+A dump request which should include stats looks like:
+ [BRIDGE_VLANDB_DUMP_FLAGS] |= BRIDGE_VLANDB_DUMPF_STATS
 
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index 63c8ee49cef2..55f3ce7638a0 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -259,11 +259,11 @@ static bool mptcp_established_options_mp(struct soc=
-k *sk, struct sk_buff *skb,
- 	struct mptcp_ext *mpext;
- 	unsigned int data_len;
-=20
--	pr_debug("subflow=3D%p fourth_ack=3D%d seq=3D%x:%x remaining=3D%d", sub=
-flow,
--		 subflow->fourth_ack, subflow->snd_isn,
-+	pr_debug("subflow=3D%p fully established=3D%d seq=3D%x:%x remaining=3D%=
-d",
-+		 subflow, subflow->fully_established, subflow->snd_isn,
- 		 skb ? TCP_SKB_CB(skb)->seq : 0, remaining);
-=20
--	if (subflow->mp_capable && !subflow->fourth_ack && skb &&
-+	if (subflow->mp_capable && !subflow->fully_established && skb &&
- 	    subflow->snd_isn =3D=3D TCP_SKB_CB(skb)->seq) {
- 		/* When skb is not available, we better over-estimate the
- 		 * emitted options len. A full DSS option is longer than
-@@ -429,19 +429,19 @@ bool mptcp_synack_options(const struct request_sock=
- *req, unsigned int *size,
- 	return false;
+A vlandb entry attribute with stats looks like:
+ [BRIDGE_VLANDB_ENTRY] = {
+     [BRIDGE_VLANDB_ENTRY_STATS] = {
+         [BRIDGE_VLANDB_STATS_RX_BYTES]
+         [BRIDGE_VLANDB_STATS_RX_PACKETS]
+         ...
+     }
  }
-=20
--static bool check_fourth_ack(struct mptcp_subflow_context *subflow,
--			     struct sk_buff *skb,
--			     struct mptcp_options_received *mp_opt)
-+static bool check_fully_established(struct mptcp_subflow_context *subflo=
-w,
-+				    struct sk_buff *skb,
-+				    struct mptcp_options_received *mp_opt)
+
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+---
+v2: Use a separate dump attribute for the flags instead of a reserved
+    field to avoid uapi breakage as noted by DaveM.
+    Rebased and retested on the latest net-next.
+
+ include/uapi/linux/if_bridge.h | 30 ++++++++++++++
+ net/bridge/br_vlan.c           | 73 ++++++++++++++++++++++++++++------
+ 2 files changed, 91 insertions(+), 12 deletions(-)
+
+diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
+index 54010b49c093..9dd1b1fa3291 100644
+--- a/include/uapi/linux/if_bridge.h
++++ b/include/uapi/linux/if_bridge.h
+@@ -175,6 +175,16 @@ struct br_vlan_msg {
+ 	__u32 ifindex;
+ };
+ 
++enum {
++	BRIDGE_VLANDB_DUMP_UNSPEC,
++	BRIDGE_VLANDB_DUMP_FLAGS,
++	__BRIDGE_VLANDB_DUMP_MAX,
++};
++#define BRIDGE_VLANDB_DUMP_MAX (__BRIDGE_VLANDB_DUMP_MAX - 1)
++
++/* flags used in BRIDGE_VLANDB_DUMP_FLAGS attribute to affect dumps */
++#define BRIDGE_VLANDB_DUMPF_STATS	(1 << 0) /* Include stats in the dump */
++
+ /* Bridge vlan RTM attributes
+  * [BRIDGE_VLANDB_ENTRY] = {
+  *     [BRIDGE_VLANDB_ENTRY_INFO]
+@@ -194,10 +204,30 @@ enum {
+ 	BRIDGE_VLANDB_ENTRY_RANGE,
+ 	BRIDGE_VLANDB_ENTRY_STATE,
+ 	BRIDGE_VLANDB_ENTRY_TUNNEL_ID,
++	BRIDGE_VLANDB_ENTRY_STATS,
+ 	__BRIDGE_VLANDB_ENTRY_MAX,
+ };
+ #define BRIDGE_VLANDB_ENTRY_MAX (__BRIDGE_VLANDB_ENTRY_MAX - 1)
+ 
++/* [BRIDGE_VLANDB_ENTRY] = {
++ *     [BRIDGE_VLANDB_ENTRY_STATS] = {
++ *         [BRIDGE_VLANDB_STATS_RX_BYTES]
++ *         ...
++ *     }
++ *     ...
++ * }
++ */
++enum {
++	BRIDGE_VLANDB_STATS_UNSPEC,
++	BRIDGE_VLANDB_STATS_RX_BYTES,
++	BRIDGE_VLANDB_STATS_RX_PACKETS,
++	BRIDGE_VLANDB_STATS_TX_BYTES,
++	BRIDGE_VLANDB_STATS_TX_PACKETS,
++	BRIDGE_VLANDB_STATS_PAD,
++	__BRIDGE_VLANDB_STATS_MAX,
++};
++#define BRIDGE_VLANDB_STATS_MAX (__BRIDGE_VLANDB_STATS_MAX - 1)
++
+ /* Bridge multicast database attributes
+  * [MDBA_MDB] = {
+  *     [MDBA_MDB_ENTRY] = {
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index 24f524536be4..4398f3796665 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -1569,10 +1569,41 @@ void br_vlan_port_event(struct net_bridge_port *p, unsigned long event)
+ 	}
+ }
+ 
++static bool br_vlan_stats_fill(struct sk_buff *skb,
++			       const struct net_bridge_vlan *v)
++{
++	struct br_vlan_stats stats;
++	struct nlattr *nest;
++
++	nest = nla_nest_start(skb, BRIDGE_VLANDB_ENTRY_STATS);
++	if (!nest)
++		return false;
++
++	br_vlan_get_stats(v, &stats);
++	if (nla_put_u64_64bit(skb, BRIDGE_VLANDB_STATS_RX_BYTES, stats.rx_bytes,
++			      BRIDGE_VLANDB_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, BRIDGE_VLANDB_STATS_RX_PACKETS,
++			      stats.rx_packets, BRIDGE_VLANDB_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, BRIDGE_VLANDB_STATS_TX_BYTES, stats.tx_bytes,
++			      BRIDGE_VLANDB_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, BRIDGE_VLANDB_STATS_TX_PACKETS,
++			      stats.tx_packets, BRIDGE_VLANDB_STATS_PAD))
++		goto out_err;
++
++	nla_nest_end(skb, nest);
++
++	return true;
++
++out_err:
++	nla_nest_cancel(skb, nest);
++	return false;
++}
++
+ /* v_opts is used to dump the options which must be equal in the whole range */
+ static bool br_vlan_fill_vids(struct sk_buff *skb, u16 vid, u16 vid_range,
+ 			      const struct net_bridge_vlan *v_opts,
+-			      u16 flags)
++			      u16 flags,
++			      bool dump_stats)
  {
- 	/* here we can process OoO, in-window pkts, only in-sequence 4th ack
- 	 * are relevant
+ 	struct bridge_vlan_info info;
+ 	struct nlattr *nest;
+@@ -1596,8 +1627,13 @@ static bool br_vlan_fill_vids(struct sk_buff *skb, u16 vid, u16 vid_range,
+ 	    nla_put_u16(skb, BRIDGE_VLANDB_ENTRY_RANGE, vid_range))
+ 		goto out_err;
+ 
+-	if (v_opts && !br_vlan_opts_fill(skb, v_opts))
+-		goto out_err;
++	if (v_opts) {
++		if (!br_vlan_opts_fill(skb, v_opts))
++			goto out_err;
++
++		if (dump_stats && !br_vlan_stats_fill(skb, v_opts))
++			goto out_err;
++	}
+ 
+ 	nla_nest_end(skb, nest);
+ 
+@@ -1675,7 +1711,7 @@ void br_vlan_notify(const struct net_bridge *br,
+ 		goto out_kfree;
+ 	}
+ 
+-	if (!br_vlan_fill_vids(skb, vid, vid_range, v, flags))
++	if (!br_vlan_fill_vids(skb, vid, vid_range, v, flags, false))
+ 		goto out_err;
+ 
+ 	nlmsg_end(skb, nlh);
+@@ -1699,9 +1735,11 @@ bool br_vlan_can_enter_range(const struct net_bridge_vlan *v_curr,
+ 
+ static int br_vlan_dump_dev(const struct net_device *dev,
+ 			    struct sk_buff *skb,
+-			    struct netlink_callback *cb)
++			    struct netlink_callback *cb,
++			    u32 dump_flags)
+ {
+ 	struct net_bridge_vlan *v, *range_start = NULL, *range_end = NULL;
++	bool dump_stats = !!(dump_flags & BRIDGE_VLANDB_DUMPF_STATS);
+ 	struct net_bridge_vlan_group *vg;
+ 	int idx = 0, s_idx = cb->args[1];
+ 	struct nlmsghdr *nlh = NULL;
+@@ -1754,12 +1792,13 @@ static int br_vlan_dump_dev(const struct net_device *dev,
+ 			continue;
+ 		}
+ 
+-		if (v->vid == pvid || !br_vlan_can_enter_range(v, range_end)) {
+-			u16 flags = br_vlan_flags(range_start, pvid);
++		if (dump_stats || v->vid == pvid ||
++		    !br_vlan_can_enter_range(v, range_end)) {
++			u16 vlan_flags = br_vlan_flags(range_start, pvid);
+ 
+ 			if (!br_vlan_fill_vids(skb, range_start->vid,
+ 					       range_end->vid, range_start,
+-					       flags)) {
++					       vlan_flags, dump_stats)) {
+ 				err = -EMSGSIZE;
+ 				break;
+ 			}
+@@ -1778,7 +1817,8 @@ static int br_vlan_dump_dev(const struct net_device *dev,
  	 */
--	if (likely(subflow->fourth_ack ||
-+	if (likely(subflow->fully_established ||
- 		   TCP_SKB_CB(skb)->seq !=3D subflow->ssn_offset + 1))
- 		return true;
-=20
- 	if (mp_opt->use_ack)
--		subflow->fourth_ack =3D 1;
-+		subflow->fully_established =3D 1;
-=20
- 	if (subflow->can_ack)
- 		return true;
-@@ -467,7 +467,7 @@ void mptcp_incoming_options(struct sock *sk, struct s=
-k_buff *skb,
- 	struct mptcp_ext *mpext;
-=20
- 	mp_opt =3D &opt_rx->mptcp;
--	if (!check_fourth_ack(subflow, skb, mp_opt))
-+	if (!check_fully_established(subflow, skb, mp_opt))
- 		return;
-=20
- 	if (!mp_opt->dss)
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 9baf6fcba914..eb3f65264a40 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -119,7 +119,7 @@ struct mptcp_subflow_context {
- 	u32	map_data_len;
- 	u32	request_mptcp : 1,  /* send MP_CAPABLE */
- 		mp_capable : 1,	    /* remote is MPTCP capable */
--		fourth_ack : 1,	    /* send initial DSS */
-+		fully_established : 1,	    /* path validated */
- 		conn_finished : 1,
- 		map_valid : 1,
- 		mpc_map : 1,
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 052d72a1d3a2..e1faa88855bf 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -802,7 +802,7 @@ static void subflow_ulp_clone(const struct request_so=
-ck *req,
- 	new_ctx->tcp_sock =3D newsk;
-=20
- 	new_ctx->mp_capable =3D 1;
--	new_ctx->fourth_ack =3D subflow_req->remote_key_valid;
-+	new_ctx->fully_established =3D subflow_req->remote_key_valid;
- 	new_ctx->can_ack =3D subflow_req->remote_key_valid;
- 	new_ctx->remote_key =3D subflow_req->remote_key;
- 	new_ctx->local_key =3D subflow_req->local_key;
---=20
-2.21.1
+ 	if (!err && range_start &&
+ 	    !br_vlan_fill_vids(skb, range_start->vid, range_end->vid,
+-			       range_start, br_vlan_flags(range_start, pvid)))
++			       range_start, br_vlan_flags(range_start, pvid),
++			       dump_stats))
+ 		err = -EMSGSIZE;
+ 
+ 	cb->args[1] = err ? idx : 0;
+@@ -1788,18 +1828,27 @@ static int br_vlan_dump_dev(const struct net_device *dev,
+ 	return err;
+ }
+ 
++static const struct nla_policy br_vlan_db_dump_pol[BRIDGE_VLANDB_DUMP_MAX + 1] = {
++	[BRIDGE_VLANDB_DUMP_FLAGS] = { .type = NLA_U32 },
++};
++
+ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
+ {
++	struct nlattr *dtb[BRIDGE_VLANDB_DUMP_MAX + 1];
+ 	int idx = 0, err = 0, s_idx = cb->args[0];
+ 	struct net *net = sock_net(skb->sk);
+ 	struct br_vlan_msg *bvm;
+ 	struct net_device *dev;
++	u32 dump_flags = 0;
+ 
+-	err = nlmsg_parse(cb->nlh, sizeof(*bvm), NULL, 0, NULL, cb->extack);
++	err = nlmsg_parse(cb->nlh, sizeof(*bvm), dtb, BRIDGE_VLANDB_DUMP_MAX,
++			  br_vlan_db_dump_pol, cb->extack);
+ 	if (err < 0)
+ 		return err;
+ 
+ 	bvm = nlmsg_data(cb->nlh);
++	if (dtb[BRIDGE_VLANDB_DUMP_FLAGS])
++		dump_flags = nla_get_u32(dtb[BRIDGE_VLANDB_DUMP_FLAGS]);
+ 
+ 	rcu_read_lock();
+ 	if (bvm->ifindex) {
+@@ -1808,7 +1857,7 @@ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
+ 			err = -ENODEV;
+ 			goto out_err;
+ 		}
+-		err = br_vlan_dump_dev(dev, skb, cb);
++		err = br_vlan_dump_dev(dev, skb, cb, dump_flags);
+ 		if (err && err != -EMSGSIZE)
+ 			goto out_err;
+ 	} else {
+@@ -1816,7 +1865,7 @@ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
+ 			if (idx < s_idx)
+ 				goto skip;
+ 
+-			err = br_vlan_dump_dev(dev, skb, cb);
++			err = br_vlan_dump_dev(dev, skb, cb, dump_flags);
+ 			if (err == -EMSGSIZE)
+ 				break;
+ skip:
+-- 
+2.25.1
 
