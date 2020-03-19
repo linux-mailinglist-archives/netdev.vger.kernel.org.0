@@ -2,146 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97E8F18BCDD
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:42:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A807F18BCE0
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:42:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728454AbgCSQl5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 12:41:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40538 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728407AbgCSQl4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 12:41:56 -0400
-Received: from lore-desk-wlan.redhat.com (unknown [151.48.128.122])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2A28F2070A;
-        Thu, 19 Mar 2020 16:41:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584636115;
-        bh=8VgabHfLg2BEwFMOhzTZQsIhzbvrgOmG2oyDVFVIP8E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HXq6bNlb6RhP35bZyQaE7subMsb3ZxS5bTlBdeOl4S6sNu+eUgYdt1+JtvkjTn5MF
-         kDVYuQg+3FV0VM9tT4qka/y2QfA8R/I2a9MRfRpoDgtxD2/GsWUjXgVymtxTFlg7/B
-         /+J6lkec7VVM+xc++98aHDxWKFEsWDh1X0d6AyXU=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, toshiaki.makita1@gmail.com, brouer@redhat.com,
-        dsahern@gmail.com, lorenzo.bianconi@redhat.com, toke@redhat.com
-Subject: [PATCH net-next 5/5] veth: remove atomic64_add from veth_xdp_xmit hotpath
-Date:   Thu, 19 Mar 2020 17:41:29 +0100
-Message-Id: <9d2d67d96de5609947d40cbd358ccf2f167f0814.1584635611.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1584635611.git.lorenzo@kernel.org>
-References: <cover.1584635611.git.lorenzo@kernel.org>
+        id S1728493AbgCSQma (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 12:42:30 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:28907 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727772AbgCSQm3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 12:42:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584636148;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zOA+IMIU8Q7WJF49pLVV19IvK2l47KrbLmH0N3YKQfA=;
+        b=i4xCU8o9Gv+e8dG31+nLJov9r66vhVMD4NBMQDBiH658ChLc0EKA94SGHCfekLf0K4/7xd
+        GwGvEtxEpofadiDKS3el9SmIJiZpBcfjxJkW8pRMSUraZA7dMeWp0EpbpUtyTFVsZF6Q2r
+        3+6DVcjCaxq26EI3HW8fHWXzpmP2S6g=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-323-BcWg29wLNiCjMzFdJ-3hsw-1; Thu, 19 Mar 2020 12:42:26 -0400
+X-MC-Unique: BcWg29wLNiCjMzFdJ-3hsw-1
+Received: by mail-io1-f70.google.com with SMTP id k5so2200808ioa.22
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 09:42:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zOA+IMIU8Q7WJF49pLVV19IvK2l47KrbLmH0N3YKQfA=;
+        b=VuSr5hu7T6RSdlBoTapbkpYFSOxOvu0hTI9eknRgFzc33hVTOsihmIBFfibxxNEw8i
+         VIWR2IgqexHQ6xl622DX1iFmLmB9mXnSVdqE+72AlN15/mf26FvTo0A/V/+t6whr2L+2
+         SVWKdztvMd+P0WXXnIgMqNvh6kzgNdoV9VOBgDhNOPX429TLldMAACcA6GGE6fc/KxXe
+         sEy8lb+G8BCnxuzIppmXwDw7CB10xh6SJK+CxHUszgPVNrdYcj1gEUSFenqPjyLo8JgY
+         +ln2bksUZ0RpZ7angFIL0RrsAHzgqVvphH3uuc2SevaMViDLLgJrSqTADw7OJIbVzdcE
+         Wotw==
+X-Gm-Message-State: ANhLgQ3Q1zyvsb7V29ut0o9Y0SnfDYUWGsi/u96yO0G/VbP7EHkWTxB5
+        nbnZyvEIbxyo0/SbZKZoeEZd+8VGEHljK4P/VPtNbL7g/60/u5flq5tZLF3wM7W5xdGdoXOWWuw
+        neWt9obiJg5kW8zq69ScxS+B3UwVxo6uG
+X-Received: by 2002:a6b:be02:: with SMTP id o2mr3477760iof.39.1584636144620;
+        Thu, 19 Mar 2020 09:42:24 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vs8iofIYJ+iNpo9+omXOEAEZcpDGFzEXydxLKvQtkjHH4wpvAEyj5/8Q2KiQ1Qpj4eSOH80FA0MxKZjmfU4MgQ=
+X-Received: by 2002:a6b:be02:: with SMTP id o2mr3477735iof.39.1584636144322;
+ Thu, 19 Mar 2020 09:42:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200318140605.45273-1-jarod@redhat.com> <8a88d1c8-c6b1-ad85-7971-e6ae8c6fa0e4@gmail.com>
+ <CAKfmpSc0yea5-OfE1rnVdErDTeOza=owbL00QQEaH-M-A6Za7g@mail.gmail.com> <25629.1584564113@famine>
+In-Reply-To: <25629.1584564113@famine>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Thu, 19 Mar 2020 12:42:14 -0400
+Message-ID: <CAKfmpScbzEZAEw=zOEwguQJvr6L2fQiGmAY60SqSBQ_g-+B4tw@mail.gmail.com>
+Subject: Re: [PATCH net] ipv6: don't auto-add link-local address to lag ports
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Moshe Levi <moshele@mellanox.com>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>,
+        Netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove atomic64_add from veth_xdp_xmit hotpath and rely on
-xdp_xmit_err/xdp_tx_err counters
+On Wed, Mar 18, 2020 at 4:42 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+>
+> Jarod Wilson <jarod@redhat.com> wrote:
+>
+> >On Wed, Mar 18, 2020 at 2:02 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >>
+> >> On 3/18/20 7:06 AM, Jarod Wilson wrote:
+> >> > Bonding slave and team port devices should not have link-local addresses
+> >> > automatically added to them, as it can interfere with openvswitch being
+> >> > able to properly add tc ingress.
+> >> >
+> >> > Reported-by: Moshe Levi <moshele@mellanox.com>
+> >> > CC: Marcelo Ricardo Leitner <mleitner@redhat.com>
+> >> > CC: netdev@vger.kernel.org
+> >> > Signed-off-by: Jarod Wilson <jarod@redhat.com>
+> >>
+> >>
+> >> This does not look a net candidate to me, unless the bug has been added recently ?
+> >>
+> >> The absence of Fixes: tag is a red flag for a net submission.
+> >>
+> >> By adding a Fixes: tag, you are doing us a favor, please.
+> >
+> >Yeah, wasn't entirely sure on this one. It fixes a problem, but it's
+> >not exactly a new one. A quick look at git history suggests this might
+> >actually be something that technically pre-dates the move to git in
+> >2005, but only really became a problem with some additional far more
+> >recent infrastructure (tc and friends). I can resubmit it as net-next
+> >if that's preferred.
+>
+>         Commit
+>
+> c2edacf80e15 bonding / ipv6: no addrconf for slaves separately from master
+>
+>         should (in theory) already prevent ipv6 link-local addrconf, at
+> least for bonding slaves, and dates from 2007.  If something has changed
+> to break the logic in this commit, then (a) you might need to do some
+> research to find a candidate for your Fixes tag, and (b) I'd suggest
+> also investigating whether or not the change added by c2edacf80e15 to
+> addrconf_notify() no longer serves any purpose, and should be removed if
+> that is the case.
+>
+>         Note also that the hyperv netvsc driver, in netvsc_vf_join(),
+> sets IFF_SLAVE in order to trigger the addrconf prevention logic from
+> c2edacf80e15; I'm not sure if your patch would affect its expectations
+> (if c2edacf80e15 were removed).
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/veth.c | 30 +++++++++++++++++-------------
- 1 file changed, 17 insertions(+), 13 deletions(-)
+Interesting. We'll keep digging over here, but that's definitely not
+working for this particular use case with OVS for whatever reason.
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 093b55acedb1..b6505a6c7102 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -301,20 +301,26 @@ static void veth_stats_rx(struct veth_stats *result, struct net_device *dev)
- 	struct veth_priv *priv = netdev_priv(dev);
- 	int i;
- 
-+	result->xdp_xmit_err = 0;
- 	result->xdp_packets = 0;
-+	result->xdp_tx_err = 0;
- 	result->xdp_bytes = 0;
- 	result->rx_drops = 0;
- 	for (i = 0; i < dev->num_rx_queues; i++) {
-+		u64 packets, bytes, drops, xdp_tx_err, xdp_xmit_err;
- 		struct veth_rq_stats *stats = &priv->rq[i].stats;
--		u64 packets, bytes, drops;
- 		unsigned int start;
- 
- 		do {
- 			start = u64_stats_fetch_begin_irq(&stats->syncp);
-+			xdp_xmit_err = stats->vs.xdp_xmit_err;
-+			xdp_tx_err = stats->vs.xdp_tx_err;
- 			packets = stats->vs.xdp_packets;
- 			bytes = stats->vs.xdp_bytes;
- 			drops = stats->vs.rx_drops;
- 		} while (u64_stats_fetch_retry_irq(&stats->syncp, start));
-+		result->xdp_xmit_err += xdp_xmit_err;
-+		result->xdp_tx_err += xdp_tx_err;
- 		result->xdp_packets += packets;
- 		result->xdp_bytes += bytes;
- 		result->rx_drops += drops;
-@@ -334,6 +340,7 @@ static void veth_get_stats64(struct net_device *dev,
- 	tot->tx_packets = packets;
- 
- 	veth_stats_rx(&rx, dev);
-+	tot->tx_dropped += rx.xdp_xmit_err + rx.xdp_tx_err;
- 	tot->rx_dropped = rx.rx_drops;
- 	tot->rx_bytes = rx.xdp_bytes;
- 	tot->rx_packets = rx.xdp_packets;
-@@ -346,6 +353,7 @@ static void veth_get_stats64(struct net_device *dev,
- 		tot->rx_packets += packets;
- 
- 		veth_stats_rx(&rx, peer);
-+		tot->rx_dropped += rx.xdp_xmit_err + rx.xdp_tx_err;
- 		tot->tx_bytes += rx.xdp_bytes;
- 		tot->tx_packets += rx.xdp_packets;
- 	}
-@@ -393,14 +401,16 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
- 
- 	rcu_read_lock();
- 	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK)) {
--		ret = -EINVAL;
--		goto drop;
-+		rcu_read_unlock();
-+		atomic64_add(drops, &priv->dropped);
-+		return -EINVAL;
- 	}
- 
- 	rcv = rcu_dereference(priv->peer);
- 	if (unlikely(!rcv)) {
--		ret = -ENXIO;
--		goto drop;
-+		rcu_read_unlock();
-+		atomic64_add(drops, &priv->dropped);
-+		return -ENXIO;
- 	}
- 
- 	rcv_priv = netdev_priv(rcv);
-@@ -434,6 +444,8 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
- 	if (flags & XDP_XMIT_FLUSH)
- 		__veth_xdp_flush(rq);
- 
-+	ret = n - drops;
-+drop:
- 	rq = &priv->rq[qidx];
- 	u64_stats_update_begin(&rq->stats.syncp);
- 	if (ndo_xmit) {
-@@ -445,15 +457,7 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
- 	}
- 	u64_stats_update_end(&rq->stats.syncp);
- 
--	if (likely(!drops)) {
--		rcu_read_unlock();
--		return n;
--	}
--
--	ret = n - drops;
--drop:
- 	rcu_read_unlock();
--	atomic64_add(drops, &priv->dropped);
- 
- 	return ret;
- }
 -- 
-2.25.1
+Jarod Wilson
+jarod@redhat.com
 
