@@ -2,108 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87EA718B3AF
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 13:47:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6AE318B3BC
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 13:50:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727108AbgCSMrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 08:47:05 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:12102 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726589AbgCSMrE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 08:47:04 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 9810353EC2277E87DC44;
-        Thu, 19 Mar 2020 20:46:57 +0800 (CST)
-Received: from localhost (10.173.223.234) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.487.0; Thu, 19 Mar 2020
- 20:46:51 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <lmb@cloudflare.com>, <daniel@iogearbox.net>,
-        <jakub@cloudflare.com>, <john.fastabend@gmail.com>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH bpf-next] bpf: tcp: Fix unused function warnings
-Date:   Thu, 19 Mar 2020 20:46:31 +0800
-Message-ID: <20200319124631.58432-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1727189AbgCSMuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 08:50:06 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:58459 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726934AbgCSMuG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 08:50:06 -0400
+X-Originating-IP: 90.76.143.236
+Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 457001BF210;
+        Thu, 19 Mar 2020 12:50:01 +0000 (UTC)
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     davem@davemloft.net, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: phy: mscc: add missing check on a phy_write return value
+Date:   Thu, 19 Mar 2020 13:48:19 +0100
+Message-Id: <20200319124819.369431-1-antoine.tenart@bootlin.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.173.223.234]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If BPF_STREAM_PARSER is not set, gcc warns:
+Commit a5afc1678044 ("net: phy: mscc: add support for VSC8584 PHY")
+introduced a call to 'phy_write' storing its return value to a variable
+called 'ret'. But 'ret' never was checked for a possible error being
+returned, and hence was not used at all. Fix this by checking the return
+value and exiting the function if an error was returned.
 
-net/ipv4/tcp_bpf.c:483:12: warning: 'tcp_bpf_sendpage' defined but not used [-Wunused-function]
-net/ipv4/tcp_bpf.c:395:12: warning: 'tcp_bpf_sendmsg' defined but not used [-Wunused-function]
-net/ipv4/tcp_bpf.c:13:13: warning: 'tcp_bpf_stream_read' defined but not used [-Wunused-function]
+As this does not fix a known bug, this commit is mostly cosmetic and not
+sent as a fix.
 
-Moves the unused functions into the #ifdef
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
 ---
- net/ipv4/tcp_bpf.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ drivers/net/phy/mscc/mscc_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index fe7b4fbc31c1..37c91f25cae3 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -10,19 +10,6 @@
- #include <net/inet_common.h>
- #include <net/tls.h>
+diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
+index 2f6229a70ec1..bc6beec8aff0 100644
+--- a/drivers/net/phy/mscc/mscc_main.c
++++ b/drivers/net/phy/mscc/mscc_main.c
+@@ -1411,6 +1411,8 @@ static int vsc8584_config_init(struct phy_device *phydev)
+ 	val |= (MEDIA_OP_MODE_COPPER << MEDIA_OP_MODE_POS) |
+ 	       (VSC8584_MAC_IF_SELECTION_SGMII << VSC8584_MAC_IF_SELECTION_POS);
+ 	ret = phy_write(phydev, MSCC_PHY_EXT_PHY_CNTL_1, val);
++	if (ret)
++		return ret;
  
--static bool tcp_bpf_stream_read(const struct sock *sk)
--{
--	struct sk_psock *psock;
--	bool empty = true;
--
--	rcu_read_lock();
--	psock = sk_psock(sk);
--	if (likely(psock))
--		empty = list_empty(&psock->ingress_msg);
--	rcu_read_unlock();
--	return !empty;
--}
--
- static int tcp_bpf_wait_data(struct sock *sk, struct sk_psock *psock,
- 			     int flags, long timeo, int *err)
- {
-@@ -298,6 +285,20 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
- }
- EXPORT_SYMBOL_GPL(tcp_bpf_sendmsg_redir);
- 
-+#ifdef CONFIG_BPF_STREAM_PARSER
-+static bool tcp_bpf_stream_read(const struct sock *sk)
-+{
-+	struct sk_psock *psock;
-+	bool empty = true;
-+
-+	rcu_read_lock();
-+	psock = sk_psock(sk);
-+	if (likely(psock))
-+		empty = list_empty(&psock->ingress_msg);
-+	rcu_read_unlock();
-+	return !empty;
-+}
-+
- static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
- 				struct sk_msg *msg, int *copied, int flags)
- {
-@@ -528,7 +529,6 @@ static int tcp_bpf_sendpage(struct sock *sk, struct page *page, int offset,
- 	return copied ? copied : err;
- }
- 
--#ifdef CONFIG_BPF_STREAM_PARSER
- enum {
- 	TCP_BPF_IPV4,
- 	TCP_BPF_IPV6,
+ 	ret = genphy_soft_reset(phydev);
+ 	if (ret)
 -- 
-2.17.1
-
+2.25.1
 
