@@ -2,170 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A3E318C299
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 22:53:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49B0F18C2B6
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 23:03:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727138AbgCSVxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 17:53:21 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:39352 "EHLO
+        id S1727384AbgCSWDV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 18:03:21 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:35568 "EHLO
         us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726619AbgCSVxU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 17:53:20 -0400
+        by vger.kernel.org with ESMTP id S1726663AbgCSWDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 18:03:20 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584654798;
+        s=mimecast20190719; t=1584655398;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=sfdaZlf6kOgQb4CeBwGTpbCE+UMt/Lv7sVpchM8h290=;
-        b=ZZStwUY+s8rRZe8WI1kxUcCVbc8BJ8jtDRZIPbYRtxhTgwC5RW+8r5WG7l0dhZ9z7/gi3p
-        fTtyyiw6T6KihEq+tgs3/OHOnHACPn8WOZIsdnfBeLqS46DtbK4vI1cL2cBWfH4z6S2osl
-        nH4jYcnULTSzt3tMl7o72Zw3jIGGB/s=
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
- [209.85.166.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-61-EikR2TtDO626nzRXdLP71g-1; Thu, 19 Mar 2020 17:53:15 -0400
-X-MC-Unique: EikR2TtDO626nzRXdLP71g-1
-Received: by mail-il1-f197.google.com with SMTP id u9so3261668iln.22
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 14:53:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sfdaZlf6kOgQb4CeBwGTpbCE+UMt/Lv7sVpchM8h290=;
-        b=Fh108lARP74MVFM5jk+U3z6qVlaw049b0AuxCOA0B9ImxfEfiyVMUDn4V2Ic8fwg8/
-         DLznl4Er/GRTfxEF7ZFTpd4Cmq1zDsX96nt4XGVP1TBLXl6TaMN95L4ckxndwduUkEX1
-         Qy5xHkDSc+RleyHLFOYphxpZh0Gf43StmyjO9RP6yLRKfGOy11JvHr05SeeaDEJ0pMaL
-         G9ir9yheQ9+y6pEN3sq06GxF/YmGfBKXaOg/bg2RNv5oEalwxkziG/7rvZ4eEM7fahU9
-         de+LXI0ZtAWSxhxQLVNjr/lalW0e4fQ4fphHtsEz4juhOa/qFpJiR8wZVnilHVmeyF/Z
-         DFCQ==
-X-Gm-Message-State: ANhLgQ1XO8KE0JOIpWeNY+s+Kcq4dYZkg3RIZm/uaRTZew/Wtqenk7Lo
-        EnwaiktyiywZqPANAXmJWkN6Tk13d0HRJzSxXw4/IO+WH8t7Tx7xP01a+JhDRZwWODj877OyBq6
-        NyMG5OeK40dTxERGB12RuUYZrms2fQamm
-X-Received: by 2002:a05:6638:201:: with SMTP id e1mr5268649jaq.111.1584654795239;
-        Thu, 19 Mar 2020 14:53:15 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vt7wgb+udfKl9vXnE86o8XTwCNKmWyvf1v7C4dl9OpvEtKtF78iguVy0Sy84eezKuSKS2luBzJx11/DeHG7bVs=
-X-Received: by 2002:a05:6638:201:: with SMTP id e1mr5268628jaq.111.1584654794914;
- Thu, 19 Mar 2020 14:53:14 -0700 (PDT)
+        bh=/mdxk2khEaDoWIwtVFmt93rKTZk2xKfiNva34Q7ynLE=;
+        b=V8uLtDLGxDFNcKSRfFhjjLM1+77pfi8p+8sLTPG76bbRV55LM+WeTBFZwz+5faLXUmOMUv
+        loBpBG0zSLFwhBOfLrAqAE0PdQhN6MO9TJtPG6X15YFUFjZCqZeqrTOEzgywrKpuj9bHis
+        VjO32BEQQ2Omlvb6+AQsrsDiIZZvQLE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-234-arOU1dVhPROw7mgYVI1lzA-1; Thu, 19 Mar 2020 18:03:14 -0400
+X-MC-Unique: arOU1dVhPROw7mgYVI1lzA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 988B5107ACC9;
+        Thu, 19 Mar 2020 22:03:12 +0000 (UTC)
+Received: from madcap2.tricolour.ca (unknown [10.36.110.5])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id A1BF5BBBEB;
+        Thu, 19 Mar 2020 22:02:53 +0000 (UTC)
+Date:   Thu, 19 Mar 2020 18:02:49 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Steve Grubb <sgrubb@redhat.com>, linux-audit@redhat.com,
+        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
+ the audit daemon
+Message-ID: <20200319220249.jyr6xmwvflya5mks@madcap2.tricolour.ca>
+References: <CAHC9VhTiCHQbp2SwK0Xb1QgpUZxOQ26JKKPsVGT0ZvMqx28oPQ@mail.gmail.com>
+ <CAHC9VhS09b_fM19tn7pHZzxfyxcHnK+PJx80Z9Z1hn8-==4oLA@mail.gmail.com>
+ <20200312193037.2tb5f53yeisfq4ta@madcap2.tricolour.ca>
+ <CAHC9VhQoVOzy_b9W6h+kmizKr1rPkC4cy5aYoKT2i0ZgsceNDg@mail.gmail.com>
+ <20200313185900.y44yvrfm4zxa5lfk@madcap2.tricolour.ca>
+ <CAHC9VhR2zCCE5bjH75rSwfLC7TJGFj4RBnrtcOoUiqVp9q5TaA@mail.gmail.com>
+ <20200318212630.mw2geg4ykhnbtr3k@madcap2.tricolour.ca>
+ <CAHC9VhRYvGAru3aOMwWKCCWDktS+2pGr+=vV4SjHW_0yewD98A@mail.gmail.com>
+ <20200318215550.es4stkjwnefrfen2@madcap2.tricolour.ca>
+ <CAHC9VhSdDDP7Ec-w61NhGxZG5ZiekmrBCAg=Y=VJvEZcgQh46g@mail.gmail.com>
 MIME-Version: 1.0
-References: <20200318140605.45273-1-jarod@redhat.com> <8a88d1c8-c6b1-ad85-7971-e6ae8c6fa0e4@gmail.com>
- <CAKfmpSc0yea5-OfE1rnVdErDTeOza=owbL00QQEaH-M-A6Za7g@mail.gmail.com>
- <25629.1584564113@famine> <CAKfmpScbzEZAEw=zOEwguQJvr6L2fQiGmAY60SqSBQ_g-+B4tw@mail.gmail.com>
- <3dbabf42-90e6-4c82-0b84-d1b1a9e8fadf@gmail.com> <CAKfmpScXTnnz6wQK3OZcqw4aM1PaLnBRfQL769JgyR7tgM-u5A@mail.gmail.com>
- <7028.1584647543@famine>
-In-Reply-To: <7028.1584647543@famine>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Thu, 19 Mar 2020 17:53:03 -0400
-Message-ID: <CAKfmpSfw0xvmOKYA+VDdTP4GM=uxWsrYQ7ywHufa+KDrLEvf_Q@mail.gmail.com>
-Subject: Re: [PATCH net] ipv6: don't auto-add link-local address to lag ports
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Moshe Levi <moshele@mellanox.com>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>,
-        Netdev <netdev@vger.kernel.org>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhSdDDP7Ec-w61NhGxZG5ZiekmrBCAg=Y=VJvEZcgQh46g@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 3:52 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
->
-> Jarod Wilson <jarod@redhat.com> wrote:
->
-> >On Thu, Mar 19, 2020 at 1:06 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
-> >>
-> >> On 3/19/20 9:42 AM, Jarod Wilson wrote:
-> >>
-> >> > Interesting. We'll keep digging over here, but that's definitely not
-> >> > working for this particular use case with OVS for whatever reason.
-> >>
-> >> I did a quick test and confirmed that my bonding slaves do not have link-local addresses,
-> >> without anything done to prevent them to appear.
-> >>
-> >> You might add a selftest, if you ever find what is the trigger :)
+On 2020-03-18 18:06, Paul Moore wrote:
+> On Wed, Mar 18, 2020 at 5:56 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > On 2020-03-18 17:42, Paul Moore wrote:
+> > > On Wed, Mar 18, 2020 at 5:27 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > On 2020-03-18 16:56, Paul Moore wrote:
+> > > > > On Fri, Mar 13, 2020 at 2:59 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > > > On 2020-03-13 12:29, Paul Moore wrote:
+> > > > > > > On Thu, Mar 12, 2020 at 3:30 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > > > > > On 2020-02-13 16:44, Paul Moore wrote:
+> > > > > > > > > This is a bit of a thread-hijack, and for that I apologize, but
+> > > > > > > > > another thought crossed my mind while thinking about this issue
+> > > > > > > > > further ... Once we support multiple auditd instances, including the
+> > > > > > > > > necessary record routing and duplication/multiple-sends (the host
+> > > > > > > > > always sees *everything*), we will likely need to find a way to "trim"
+> > > > > > > > > the audit container ID (ACID) lists we send in the records.  The
+> > > > > > > > > auditd instance running on the host/initns will always see everything,
+> > > > > > > > > so it will want the full container ACID list; however an auditd
+> > > > > > > > > instance running inside a container really should only see the ACIDs
+> > > > > > > > > of any child containers.
+> > > > > > > >
+> > > > > > > > Agreed.  This should be easy to check and limit, preventing an auditd
+> > > > > > > > from seeing any contid that is a parent of its own contid.
+> > > > > > > >
+> > > > > > > > > For example, imagine a system where the host has containers 1 and 2,
+> > > > > > > > > each running an auditd instance.  Inside container 1 there are
+> > > > > > > > > containers A and B.  Inside container 2 there are containers Y and Z.
+> > > > > > > > > If an audit event is generated in container Z, I would expect the
+> > > > > > > > > host's auditd to see a ACID list of "1,Z" but container 1's auditd
+> > > > > > > > > should only see an ACID list of "Z".  The auditd running in container
+> > > > > > > > > 2 should not see the record at all (that will be relatively
+> > > > > > > > > straightforward).  Does that make sense?  Do we have the record
+> > > > > > > > > formats properly designed to handle this without too much problem (I'm
+> > > > > > > > > not entirely sure we do)?
+> > > > > > > >
+> > > > > > > > I completely agree and I believe we have record formats that are able to
+> > > > > > > > handle this already.
+> > > > > > >
+> > > > > > > I'm not convinced we do.  What about the cases where we have a field
+> > > > > > > with a list of audit container IDs?  How do we handle that?
+> > > > > >
+> > > > > > I don't understand the problem.  (I think you crossed your 1/2 vs
+> > > > > > A/B/Y/Z in your example.) ...
+> > > > >
+> > > > > It looks like I did, sorry about that.
+> > > > >
+> > > > > > ... Clarifying the example above, if as you
+> > > > > > suggest an event happens in container Z, the hosts's auditd would report
+> > > > > >         Z,^2
+> > > > > > and the auditd in container 2 would report
+> > > > > >         Z,^2
+> > > > > > but if there were another auditd running in container Z it would report
+> > > > > >         Z
+> > > > > > while the auditd in container 1 or A/B would see nothing.
+> > > > >
+> > > > > Yes.  My concern is how do we handle this to minimize duplicating and
+> > > > > rewriting the records?  It isn't so much about the format, although
+> > > > > the format is a side effect.
+> > > >
+> > > > Are you talking about caching, or about divulging more information than
+> > > > necessary or even information leaks?  Or even noticing that records that
+> > > > need to be generated to two audit daemons share the same contid field
+> > > > values and should be generated at the same time or information shared
+> > > > between them?  I'd see any of these as optimizations that don't affect
+> > > > the api.
+> > >
+> > > Imagine a record is generated in a container which has more than one
+> > > auditd in it's ancestry that should receive this record, how do we
+> > > handle that without completely killing performance?  That's my
+> > > concern.  If you've already thought up a plan for this - excellent,
+> > > please share :)
 > >
-> >Okay, have a basic reproducer, courtesy of Marcelo:
+> > No, I haven't given that much thought other than the correctness and
+> > security issues of making sure that each audit daemon is sufficiently
+> > isolated to do its job but not jeopardize another audit domain.  Audit
+> > already kills performance, according to some...
 > >
-> ># ip link add name bond0 type bond
-> ># ip link set dev ens2f0np0 master bond0
-> ># ip link set dev ens2f1np2 master bond0
-> ># ip link set dev bond0 up
-> ># ip a s
-> >1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN
-> >group default qlen 1000
-> >    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> >    inet 127.0.0.1/8 scope host lo
-> >       valid_lft forever preferred_lft forever
-> >    inet6 ::1/128 scope host
-> >       valid_lft forever preferred_lft forever
-> >2: ens2f0np0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc
-> >mq master bond0 state UP group default qlen 1000
-> >    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
-> >5: ens2f1np2: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
-> >mq master bond0 state DOWN group default qlen 1000
-> >    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
-> >11: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc
-> >noqueue state UP group default qlen 1000
-> >    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
-> >    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link
-> >       valid_lft forever preferred_lft forever
+> > We currently won't have that problem since there can only be one so far.
+> > Fixing and optimizing this is part of the next phase of the challenge of
+> > adding a second audit daemon.
 > >
-> >(above trimmed to relevant entries, obviously)
-> >
-> ># sysctl net.ipv6.conf.ens2f0np0.addr_gen_mode=0
-> >net.ipv6.conf.ens2f0np0.addr_gen_mode = 0
-> ># sysctl net.ipv6.conf.ens2f1np2.addr_gen_mode=0
-> >net.ipv6.conf.ens2f1np2.addr_gen_mode = 0
-> >
-> ># ip a l ens2f0np0
-> >2: ens2f0np0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc
-> >mq master bond0 state UP group default qlen 1000
-> >    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
-> >    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link tentative
-> >       valid_lft forever preferred_lft forever
-> ># ip a l ens2f1np2
-> >5: ens2f1np2: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
-> >mq master bond0 state DOWN group default qlen 1000
-> >    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
-> >    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link tentative
-> >       valid_lft forever preferred_lft forever
-> >
-> >Looks like addrconf_sysctl_addr_gen_mode() bypasses the original "is
-> >this a slave interface?" check, and results in an address getting
-> >added, while w/the proposed patch added, no address gets added.
->
->         I wonder if this also breaks for the netvsc usage of IFF_SLAVE
-> to suppress ipv6 addrconf?  Adding the hyperv maintainers to Cc.
->
->         In any event, it looks like addrconf_sysctl_addr_gen_mode()
-> calls addrconf_dev_config() directly, which bypasses the IFF_SLAVE check
-> in addrconf_notify() that would gate other callers.
+> > Let's work on correctness and reasonable efficiency for this phase and
+> > not focus on a problem we don't yet have.  I wouldn't consider this
+> > incurring technical debt at this point.
+> 
+> I agree, one stage at a time, but the choice we make here is going to
+> have a significant impact on what we can do later.  We need to get
+> this as "right" as possible; this isn't something we should dismiss
+> with a hand-wave as a problem for the next stage.  We don't need an
+> implementation, but I would like to see a rough design of how we would
+> address this problem.
+> 
+> > I could see cacheing a contid string from one starting point, but it may
+> > be more work to search that cached string to truncate it or add to it
+> > when another audit daemon requests a copy of a similar string.  I
+> > suppose every full contid string could be generated the first time it is
+> > used and parts of it used (start/finish) as needed but that
+> > search/indexing may not be worth it.
+> 
+> I hope we can do better than string manipulations in the kernel.  I'd
+> much rather defer generating the ACID list (if possible), than
+> generating a list only to keep copying and editing it as the record is
+> sent.
 
-Yeah, that's what I was thinking as well.
+At the moment we are stuck with a string-only format.  The contid list
+only exists in the kernel.  When do you suggest generating the contid
+list?  It sounds like you are hinting at userspace generating that list
+from multiple records over the span of audit logs since boot of the
+machine.
 
->         From my reading, your patch appears to cover a superset of cases
-> as compared to the existing IFF_SLAVE test from c2edacf80e15.
+Even if we had a binary format, the current design would require
+generating that list at the time of record generation since it could be
+any contiguous subset of a full nested contid list.
 
-I wasn't aware of additional devices that would want to prevent these
-addresses, could certainly alter the patch to reject anything with
-IFF_SLAVE too for consistency.
+> paul moore
 
-> >Looking back through git history again, I see a bunch of 'Fixes:
-> >d35a00b8e33d ("net/ipv6: allow sysctl to change link-local address
-> >generation mode")' patches, and I guess that's where this issue was
-> >also introduced.
->
->         Can the problem be induced via ip link set ... addrgenmode ?
-> That functionality predates the sysctl interface, looks like it was
-> introduced with
+- RGB
 
-Doesn't look like it, no. No change after either trying addrgenmode
-none or random.
-
--- 
-Jarod Wilson
-jarod@redhat.com
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
 
