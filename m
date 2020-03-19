@@ -2,81 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DBA918C078
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 20:35:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6042B18C080
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 20:37:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725747AbgCSTfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 15:35:41 -0400
-Received: from correo.us.es ([193.147.175.20]:34204 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726825AbgCSTfk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 15:35:40 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 53415E8624
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 20:35:07 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 43DDDFEFAA
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 20:35:07 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 397FBDA736; Thu, 19 Mar 2020 20:35:07 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 935E5FEFAF;
-        Thu, 19 Mar 2020 20:35:04 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 19 Mar 2020 20:35:04 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726825AbgCSThe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 15:37:34 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:51372 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725817AbgCSThe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 15:37:34 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 72BD442EFB80;
-        Thu, 19 Mar 2020 20:35:04 +0100 (CET)
-Date:   Thu, 19 Mar 2020 20:35:34 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, wenxu@ucloud.cn
-Subject: Re: [PATCH 13/29] netfilter: flowtable: add tunnel match offload
- support
-Message-ID: <20200319193534.7s6aw2xn5xzoebjn@salvia>
-References: <20200318003956.73573-1-pablo@netfilter.org>
- <20200318003956.73573-14-pablo@netfilter.org>
- <72f9e0d8-56ac-aa01-63d1-9ffdab8c13c4@solarflare.com>
+        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 548914C005C;
+        Thu, 19 Mar 2020 19:37:33 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 19 Mar
+ 2020 19:37:24 +0000
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net] netfilter: nf_flow_table: populate addr_type mask
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <pablo@netfilter.org>,
+        <netfilter-devel@vger.kernel.org>, <paulb@mellanox.com>
+Message-ID: <7ab81e8a-d1db-6b0c-7f22-fb07e0d0432c@solarflare.com>
+Date:   Thu, 19 Mar 2020 19:37:21 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <72f9e0d8-56ac-aa01-63d1-9ffdab8c13c4@solarflare.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25300.003
+X-TM-AS-Result: No-1.830800-8.000000-10
+X-TMASE-MatchedRID: oFxBp2LP3lKUkDPUhpX2vnpRh12Siy9rmdrHMkUHHq8ZwGrh4y4izBMn
+        vir+JcmKBTL3N8yyT9ePQi9XuOWoOHI/MxNRI7UkKrDHzH6zmUV9LQinZ4QefL6qvLNjDYTwIq9
+        5DjCZh0wUGm4zriL0oQtuKBGekqUpm+MB6kaZ2g4zyYQWlx89fUPaNQFgB7GZgKwNEXpWsKgzVt
+        53+nukjq5FpTdUFrAhTcpBEpRR6nDwZnIKqsIaRZLOwgMioCAWwN5vxK4c6q7tfQ1SPvnqTJqVX
+        UXjGsjz2F+vBZls4K+yaqc7gc0b5cNrTE0oNMe+
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--1.830800-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25300.003
+X-MDID: 1584646653-Wegfq2_PwKxe
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 07:02:23PM +0000, Edward Cree wrote:
-> On 18/03/2020 00:39, Pablo Neira Ayuso wrote:
-> > From: wenxu <wenxu@ucloud.cn>
-> >
-> > This patch support both ipv4 and ipv6 tunnel_id, tunnel_src and
-> > tunnel_dst match for flowtable offload
-> >
-> > Signed-off-by: wenxu <wenxu@ucloud.cn>
-> > Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-> <snip>
-[...]
-> From matching up the Code: line, it appears that %rax is other_dst;
->  the faulting instruction is "mov 0x50(%rax),%rcx".
-> IOW other_dst == NULL.
+nf_flow_rule_match() sets control.addr_type in key, so needs to also set
+ the corresponding mask.  An exact match is wanted, so mask is all ones.
 
-Would this test this patch?
+Fixes: c29f74e0df7a ("netfilter: nf_flow_table: hardware offload support")
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ net/netfilter/nf_flow_table_offload.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-https://patchwork.ozlabs.org/patch/1257949/
-
-Thank you.
+diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
+index 06f00cdc3891..f2c22c682851 100644
+--- a/net/netfilter/nf_flow_table_offload.c
++++ b/net/netfilter/nf_flow_table_offload.c
+@@ -87,6 +87,7 @@ static int nf_flow_rule_match(struct nf_flow_match *match,
+ 	default:
+ 		return -EOPNOTSUPP;
+ 	}
++	mask->control.addr_type = 0xffff;
+ 	match->dissector.used_keys |= BIT(key->control.addr_type);
+ 	mask->basic.n_proto = 0xffff;
+ 
