@@ -2,154 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05A1C18C122
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 21:15:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5117F18C126
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 21:17:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727116AbgCSUPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 16:15:03 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:38602 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725787AbgCSUPD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 16:15:03 -0400
-Received: by mail-ed1-f68.google.com with SMTP id h5so4335744edn.5
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 13:15:01 -0700 (PDT)
+        id S1726998AbgCSUQ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 16:16:58 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:32918 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725768AbgCSUQ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 16:16:58 -0400
+Received: by mail-qt1-f193.google.com with SMTP id d22so3088169qtn.0
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 13:16:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=XhJaJgHHBbx6CeUEut5CiByebd0OHra++Cf/Z1iRtAc=;
-        b=CXhTO3MSxKnJ+Al3OCKjItq4GEOfkRxbFZP/eatgAi0vgbFdYAKfpM4ROMiWCCzjqk
-         3bY2Wsnx/rWUvpqsh5kIaP+cEtbgAbTm3xuV30u2QUBW+3M/xE0Q6h8/2OVpnCqk5g4r
-         rBnHubTB6mTjSFB2aVXVMz2BGamjweEGYdaMBwdwOIfBsR8WXvXJDa0FgB4o7ZjaaxVh
-         fSXriLxKgMVqOwaOo7OIqKwcPSh3mwiJ2XTrLrTzmV7KA9FVTD5YHEKmfYe5AGiQTG2+
-         KPRuBmDJR5KcBUr/UxNJixjt813lXAM2cL14LwMYyYFRRJbn5XvsOruN914UPVGEmT0n
-         KRrQ==
+        bh=JErCvWaKpcJG3GRh9rczgHuqJsPxETBAnwDOnv64wK0=;
+        b=CrH1MwrL4RrmFjNPxD7z2Y8VGWOUV2eHnS1Dz5/oRHf3/qP6ZmugmO6PAscS7JQTN0
+         4xIUYEPY5ddHhVGWELcl4LQU/JEdAW88JrrL+B3j7jzEMHq7Ss5z588mxphfl/p0E3ZS
+         nUNmEHIqllbk9R9D8G9KyrWsuAUBgbrvvuQCDUXwcke5k6xXReDUdSnLPuxQPgFHsl20
+         RljmyoItfoEAqzAlr78Ey/8Xi5+D9fb/a+1Dri/V+TM5UGOxXLYS3tMCxxrntIFWR16l
+         MpQCAEwAQcH7Ie5T+dMvp2Eh1r+z7EyseRlWTzm9VrfGGCFkIU2nGFdvFXDoEdKuWRPD
+         BW8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XhJaJgHHBbx6CeUEut5CiByebd0OHra++Cf/Z1iRtAc=;
-        b=ULPvE7ewo9rd1WqAi0SocihQzTEjW2Cq3XPAueGY8hQJ0VEtlu4ipSzq9RSI9uQgak
-         I9oQiqK7DwzPZ8EgkQRBd2k0ud1RB/eqlYvSQh4rpUrPRYsjaVWmHD1i7D5n/enQZoUJ
-         K0Z6O+2VfG2YadrtLdBtLxFQxusN/PMcaOKLjFDxtAQE4loyR1uDh5DG3/GGcN3ZM57Q
-         bO+IEq/9+Oc9q6iKU+ZsT86XyoJ8pLJy+On/MwsioWILUds/WCY8/QzGi5SWBdtpozYz
-         XRZIOkCUFYgbXBcSMsbGrTFlnoJsNZLt6gM3HmHH3VjADomiMAUc8zUc0GLa/w2E2bXs
-         9bNA==
-X-Gm-Message-State: ANhLgQ3JDpB5vjuJrRmbXqWMA1FMkYxaPTtCFKNisHmOi/ZaMYjZfodO
-        oG4vS6QM6yj0MwVuM/S4q/SeG5FbK0VHF6uc3Sw=
-X-Google-Smtp-Source: ADFU+vvofdZVahSQ7FPnXcmwgmCgOIk11/6nVf1JYDMqw2PqpPN8GAGhWg0yR9a5nYwn8bWTLGU0VsoBDVy9TbKLPUY=
-X-Received: by 2002:a17:906:4956:: with SMTP id f22mr4826870ejt.293.1584648901177;
- Thu, 19 Mar 2020 13:15:01 -0700 (PDT)
+        bh=JErCvWaKpcJG3GRh9rczgHuqJsPxETBAnwDOnv64wK0=;
+        b=WnFN6No+QS7KP/pqDePR4Ys7AWz0PFQolqmKUjmIINTb3F8kNfyFu1w7CAr/rBFZ5a
+         Db4f7/BGkEFBXaBiGwuEcYxF5wshI6lndOn/yPh3WT3aSVARbeAVQ5nFNbjsnf1IZleR
+         Z8PYJgW4pZI+VE3GQ80MDM1qC/kxvsQSy6hVqypv2FQfvtzkgQNfwSdiQzby21xUz42X
+         lCVU+sgFhOOfXLxgKPcgByscrK8nq5BtTGemEsY2iOR3K2r2vsDEkrxHHZFqySK7AopM
+         ph+6jnaIOiM3nOLolIrY8IOEi5sIQQS9r0M0od/A1d/smypr9ZuBTY2JxRejoz3P25Sm
+         CyxA==
+X-Gm-Message-State: ANhLgQ2VfO2849RWAe+eKmsZhFCr7CYzcVgnVvAJ9VZInnKNGKweBNJy
+        XzFRUB6KdQstsF8ZGEe9C9wVW3KA8J1JMT1PkeE=
+X-Google-Smtp-Source: ADFU+vs7GC118FtEz6+r8jnFVGS6TDfUfRM7QYHZ4Smm31FdlI1W2KF5HqhPOU284HOi5sELLt60szfXabgIr/mRBKc=
+X-Received: by 2002:ac8:708f:: with SMTP id y15mr4957349qto.35.1584649016647;
+ Thu, 19 Mar 2020 13:16:56 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200319185620.1581-1-olteanv@gmail.com> <20200319151714.GB3446043@t480s.localdomain>
-In-Reply-To: <20200319151714.GB3446043@t480s.localdomain>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 19 Mar 2020 22:14:50 +0200
-Message-ID: <CA+h21hqn5BH5u+6ornb--haE2yad1Mqe_B9L5UMEBuUAdiNazw@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net: dsa: add a dsa_port_is_enabled helper function
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
+References: <557d411272605c1611a209389ee198c534efde56.1584099517.git.petrm@mellanox.com>
+In-Reply-To: <557d411272605c1611a209389ee198c534efde56.1584099517.git.petrm@mellanox.com>
+From:   William Tu <u9012063@gmail.com>
+Date:   Thu, 19 Mar 2020 13:16:20 -0700
+Message-ID: <CALDO+SYHvFY1ygvSEp05sEcN6pQ6+z=U4giaCv_j7viRgnFj+Q@mail.gmail.com>
+Subject: Re: [PATCH net] net: ip_gre: Separate ERSPAN newlink / changelink callbacks
+To:     Petr Machata <petrm@mellanox.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Xin Long <lucien.xin@gmail.com>,
+        Meenakshi Vohra <mvohra@vmware.com>,
+        "David S . Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew, Vivien,
+On Fri, Mar 13, 2020 at 4:40 AM Petr Machata <petrm@mellanox.com> wrote:
+>
+> ERSPAN shares most of the code path with GRE and gretap code. While that
+> helps keep the code compact, it is also error prone. Currently a broken
+> userspace can turn a gretap tunnel into a de facto ERSPAN one by passing
+> IFLA_GRE_ERSPAN_VER. There has been a similar issue in ip6gretap in the
+> past.
+>
+> To prevent these problems in future, split the newlink and changelink code
+> paths. Split the ERSPAN code out of ipgre_netlink_parms() into a new
+> function erspan_netlink_parms(). Extract a piece of common logic from
+> ipgre_newlink() and ipgre_changelink() into ipgre_newlink_encap_setup().
+> Add erspan_newlink() and erspan_changelink().
+>
+> Fixes: 84e54fe0a5ea ("gre: introduce native tunnel support for ERSPAN")
+> Signed-off-by: Petr Machata <petrm@mellanox.com>
+> ---
 
-On Thu, 19 Mar 2020 at 21:17, Vivien Didelot <vivien.didelot@gmail.com> wrote:
->
-> Hi Vladimir,
->
-> On Thu, 19 Mar 2020 20:56:19 +0200, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > Sometimes drivers need to do per-port operation outside the port DSA
-> > methods, and in that case they typically iterate through their port list
-> > themselves.
-> >
-> > Give them an aid to skip ports that are disabled in the device tree
-> > (which the DSA core already skips).
-> >
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > ---
-> >  include/net/dsa.h |  2 ++
-> >  net/dsa/dsa2.c    | 29 +++++++++++++++++++++++++++++
-> >  2 files changed, 31 insertions(+)
-> >
-> > diff --git a/include/net/dsa.h b/include/net/dsa.h
-> > index beeb81a532e3..813792e6f0be 100644
-> > --- a/include/net/dsa.h
-> > +++ b/include/net/dsa.h
-> > @@ -376,6 +376,8 @@ static inline bool dsa_port_is_vlan_filtering(const struct dsa_port *dp)
-> >               return dp->vlan_filtering;
-> >  }
-> >
-> > +bool dsa_port_is_enabled(struct dsa_switch *ds, int port);
-> > +
-> >  typedef int dsa_fdb_dump_cb_t(const unsigned char *addr, u16 vid,
-> >                             bool is_static, void *data);
-> >  struct dsa_switch_ops {
-> > diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-> > index e7c30b472034..752f21273bd6 100644
-> > --- a/net/dsa/dsa2.c
-> > +++ b/net/dsa/dsa2.c
-> > @@ -727,6 +727,35 @@ static int dsa_switch_parse_ports_of(struct dsa_switch *ds,
-> >       return err;
-> >  }
-> >
-> > +bool dsa_port_is_enabled(struct dsa_switch *ds, int port)
-> > +{
-> > +     struct device_node *dn = ds->dev->of_node;
-> > +     struct device_node *ports, *port_node;
-> > +     bool found = false;
-> > +     int reg, err;
-> > +
-> > +     ports = of_get_child_by_name(dn, "ports");
-> > +     if (!ports) {
-> > +             dev_err(ds->dev, "no ports child node found\n");
-> > +             return false;
-> > +     }
-> > +
-> > +     for_each_available_child_of_node(ports, port_node) {
-> > +             err = of_property_read_u32(port_node, "reg", &reg);
-> > +             if (err)
-> > +                     goto out_put_node;
-> > +
-> > +             if (reg == port) {
-> > +                     found = true;
-> > +                     break;
-> > +             }
-> > +     }
-> > +
-> > +out_put_node:
-> > +     of_node_put(ports);
-> > +     return found;
-> > +}
->
-> Why do you need to iterate on the device tree? Ideally we could make
-> abstraction of that (basic platform data is supported too) and use pure DSA
-> helpers, given that DSA core has already peeled all that for us.
->
-> Your helper above doesn't even look at the port's state, only if it is declared
-> or not. Looking at patch 2, Using !dsa_is_unused_port(ds, port) seems enough.
->
+I found this already applied. Looks good to me, thanks!
 
-Huh, this one was too smart for me.
-I wrote the patch a while ago and did not really look deep enough to
-spot this one. Actually I remember I did notice the
-DSA_PORT_TYPE_UNUSED keyword, but I hadn't seen the ports being set
-anywhere to that value. I realized just now that it's zero so they're
-unused by default.
-That's exactly why code review is amazing! Thank you, I've sent a v2
-with your suggestion, it works a treat.
-
->
-> Thanks,
->
->         Vivien
-
-Thanks,
--Vladimir
+William
