@@ -2,133 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E953118C302
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 23:32:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E120B18C307
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 23:35:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727345AbgCSWcV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 18:32:21 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:37780 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727091AbgCSWcV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 18:32:21 -0400
-Received: by mail-pl1-f195.google.com with SMTP id f16so1675676plj.4;
-        Thu, 19 Mar 2020 15:32:19 -0700 (PDT)
+        id S1727426AbgCSWfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 18:35:51 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:42109 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727091AbgCSWfv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 18:35:51 -0400
+Received: by mail-lf1-f67.google.com with SMTP id t21so3001333lfe.9
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 15:35:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Yn0bvtfI8PGAgDPeIqZITACHOyKmYANGVfVMnX+ajjU=;
-        b=uUxrCcsIYetoQfJZB1E6FdPnZjhbcGtFhytVv34E5uYmR+052Pi6qkvIVIv1Y3CsxJ
-         QvQagoStq7ECjCxDrfzLB0cZTRkn3YYKfL7dtZeNU8Ii1QGv9UMRxkcf1TcVGaT+3P9F
-         IvGQXXw0N4GQMESv2xplDdNb1bdjUqYEoUet/IWMhX6B+MDmBpTZS4zrUaxJRvABNQRR
-         n+qRXN2YXPvXc2+vc6yD1vuDfmBbkuupEW35OSSLfj7tJUp2Y6UJxQe9zZDbI9RLUpbO
-         uwjBWL5CwdbroosBt1hnrdCBWQ70AkQQ/ccFuWlHXwn9FqnpHFJOziqJJEtyC23RYHQX
-         NYPw==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=lzI8/7nA+s6X3dOFA/8/KMKAbtd9jvxTx8zVp7VE0k8=;
+        b=M03EUWFV+gYg8qS44Glzupp/ne9pA4NosNadaj8UTN9PehWnkFy8XO3yKFsKTtHp0V
+         KSldZvoDZyBIOfbzKHt6P3UNNSBTdSckVn1eC5WjXfmW+8B25tCxfOcM/oc6miTZrV9y
+         lsan+PFT7eKhN5G3/6mqPz+I/HjHOAKfIuQqGza+uQ48jBICRqi+oiOFCSfg/jSjtXWt
+         E5PE4TgyZVTBp3JI37hju9jnD7lNYv1Y5WMvs0sal3tZNW+Td+tKqve4mIA7qqUOnsHl
+         KwKed+dQaZDTgO2uUDhEwWD2UbUHJRVSqQEKx7X14ncR3PaJs7C52QpgUZmS8Xa370D9
+         to5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Yn0bvtfI8PGAgDPeIqZITACHOyKmYANGVfVMnX+ajjU=;
-        b=PHjlOi7IjtXplWNfZ/wT7mYLz5UmD/2e3I9OUu2kK2hzyZUjsaND4euBXVRLw9kSaP
-         k7WAP0j8BYq6oC4434XorVC7wS54A0R+zy7DrzGiCdQ/BUG5+1ROW/5Uxb6IDQyx8Jr3
-         cQqKmEDa9wz4i89wxv8PESLG03KW2I79iOXki8k9gjWBJvdynUdoIk/mfW8CHo4YfEyu
-         GyThvx7zyiV6rLZ2VopcASqlAxO34iRZ4k9llVt2bw4rm2Sm+HcDJA4i4ZGsnKTrQ8Jx
-         9Rv+pggXF0uGL1clbNgAw10Jbpzx2ffjGtbSvcVwygwWIZz9JcbpSCFhek2CvSMjNezM
-         gbQw==
-X-Gm-Message-State: ANhLgQ1t1ICW3jzxot/nZ6+u4SCDwZl7hSSYcearBMK8q6fWh4bCeqLn
-        ihN3FGkNCHbwpUZIDCKKuJkELcJn
-X-Google-Smtp-Source: ADFU+vutLiD6fSLkHPNxhyuU7XKmRhjj+YP3VQriWyRk7yWl94rVBiIaemgaT8zPWHgF9CLlaTcLzQ==
-X-Received: by 2002:a17:90a:8806:: with SMTP id s6mr6191359pjn.141.1584657138404;
-        Thu, 19 Mar 2020 15:32:18 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:e986:7672:8e0d:7fbd? ([2601:282:803:7700:e986:7672:8e0d:7fbd])
-        by smtp.googlemail.com with ESMTPSA id fz3sm3025898pjb.41.2020.03.19.15.32.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Mar 2020 15:32:17 -0700 (PDT)
-Subject: Re: [PATCH] ipv4: fix a RCU-list bug in inet_dump_fib()
-To:     Qian Cai <cai@lca.pw>, davem@davemloft.net
-Cc:     alexander.h.duyck@linux.intel.com, kuznet@ms2.inr.ac.ru,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20200319221141.8814-1-cai@lca.pw>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3804be39-c185-592d-852d-3e91d4231b55@gmail.com>
-Date:   Thu, 19 Mar 2020 16:32:15 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.6.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=lzI8/7nA+s6X3dOFA/8/KMKAbtd9jvxTx8zVp7VE0k8=;
+        b=D2+7oDqZ5yS78Fqwmh6Flb443xT7j+yshHJ0Nvh66lpwhgUD5gBZPVz+YxU/1wgM1s
+         oNNAb1bFXphGVuDKtm+0GzYLD526eDMFBBQx/MfARLxr2fb0NtRTTwwP51wJZUqZW9hy
+         glw0o0SW+DpFuXDBA0kF5/GCL2xLd1PhzstBVPeJEsx54ce64D70W/gDrBBWBszgq76Y
+         6gKcalp7ObZj5AsXnPh9lnDZseID/hYKSwXjHOA8uwhK/uL7kdBb4LJuMdrKJClvkHJl
+         VGLCY/KP5anU83WRvYkoqwoSEuyRbbw6/XmmoBmjT8Y1DBDjew34zOnkqXgBCfqXHH3c
+         sJnA==
+X-Gm-Message-State: ANhLgQ2yJJv+qs30tPUhAHBNUaRgBC07e3T6So51ZY67xYsXdjI3vpsV
+        gobcF2VPRi6IT2rCkW1A+emy5g==
+X-Google-Smtp-Source: ADFU+vui9nOHJY55V1GL7Mqr2QrqNZ/JcehTyPMarunr0z82kdkqGFPkhEunjrfLaoRSXQUJ43MW2Q==
+X-Received: by 2002:ac2:41d3:: with SMTP id d19mr3497869lfi.57.1584657346840;
+        Thu, 19 Mar 2020 15:35:46 -0700 (PDT)
+Received: from wkz-x280 (h-50-180.A259.priv.bahnhof.se. [155.4.50.180])
+        by smtp.gmail.com with ESMTPSA id d12sm2203433lfi.86.2020.03.19.15.35.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Mar 2020 15:35:46 -0700 (PDT)
+Date:   Thu, 19 Mar 2020 23:35:44 +0100
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, hkallweit1@gmail.com
+Subject: Re: [PATCH v2 2/2] net: phy: marvell smi2usb mdio controller
+Message-ID: <20200319223544.GA14699@wkz-x280>
+References: <20200319135952.16258-1-tobias@waldekranz.com>
+ <20200319135952.16258-2-tobias@waldekranz.com>
+ <20200319154937.GB27807@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20200319221141.8814-1-cai@lca.pw>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200319154937.GB27807@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/19/20 4:11 PM, Qian Cai wrote:
-> There is a place,
+On Thu, Mar 19, 2020 at 04:49:37PM +0100, Andrew Lunn wrote:
+> On Thu, Mar 19, 2020 at 02:59:52PM +0100, Tobias Waldekranz wrote:
+> > An MDIO controller present on development boards for Marvell switches
+> > from the Link Street (88E6xxx) family.
+> > 
+> > Using this module, you can use the following setup as a development
+> > platform for switchdev and DSA related work.
+> > 
+> >    .-------.      .-----------------.
+> >    |      USB----USB                |
+> >    |  SoC  |      |  88E6390X-DB  ETH1-10
+> >    |      ETH----ETH0               |
+> >    '-------'      '-----------------'
+> > 
+> > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> > ---
+> > 
+> > v1->v2:
+> > - Reverse christmas tree ordering of local variables.
+> > 
+> > ---
+> >  MAINTAINERS                    |   1 +
+> >  drivers/net/phy/Kconfig        |   7 ++
+> >  drivers/net/phy/Makefile       |   1 +
+> >  drivers/net/phy/mdio-smi2usb.c | 137 +++++++++++++++++++++++++++++++++
+> >  4 files changed, 146 insertions(+)
+> >  create mode 100644 drivers/net/phy/mdio-smi2usb.c
 > 
-> inet_dump_fib()
->   fib_table_dump
->     fn_trie_dump_leaf()
->       hlist_for_each_entry_rcu()
+> Hi Tobias
 > 
-> without rcu_read_lock() triggers a warning,
-> 
->  WARNING: suspicious RCU usage
->  -----------------------------
->  net/ipv4/fib_trie.c:2216 RCU-list traversed in non-reader section!!
-> 
->  other info that might help us debug this:
-> 
->  rcu_scheduler_active = 2, debug_locks = 1
->  1 lock held by ip/1923:
->   #0: ffffffff8ce76e40 (rtnl_mutex){+.+.}, at: netlink_dump+0xd6/0x840
-> 
->  Call Trace:
->   dump_stack+0xa1/0xea
->   lockdep_rcu_suspicious+0x103/0x10d
->   fn_trie_dump_leaf+0x581/0x590
->   fib_table_dump+0x15f/0x220
->   inet_dump_fib+0x4ad/0x5d0
->   netlink_dump+0x350/0x840
->   __netlink_dump_start+0x315/0x3e0
->   rtnetlink_rcv_msg+0x4d1/0x720
->   netlink_rcv_skb+0xf0/0x220
->   rtnetlink_rcv+0x15/0x20
->   netlink_unicast+0x306/0x460
->   netlink_sendmsg+0x44b/0x770
->   __sys_sendto+0x259/0x270
->   __x64_sys_sendto+0x80/0xa0
->   do_syscall_64+0x69/0xf4
->   entry_SYSCALL_64_after_hwframe+0x49/0xb3
-> 
+> Where does the name mii2usb come from? To me, it seems to be the wrong
+> way around, it is USB to MII. I suppose the Marvell Switch team could
+> of given it this name, for them the switch is the centre of their
+> world, and things connect to it?
 
-Fixes: 18a8021a7be3 ("net/ipv4: Plumb support for filtering route dumps")
+The name is indeed coming from Marvell. They use the term SMI over
+MDIO in most of their software and documentation. I had the same
+reaction to the name regarding the ordering of the terms, but felt it
+was best to go with the vendor's choice.
 
-but you have a problem below ...
-
-> Signed-off-by: Qian Cai <cai@lca.pw>
-> ---
->  net/ipv4/fib_frontend.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> I'm just wondering if we should actually ignore Marvell and call it
+> usb2mii?
 > 
-> diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-> index 577db1d50a24..5e441282d647 100644
-> --- a/net/ipv4/fib_frontend.c
-> +++ b/net/ipv4/fib_frontend.c
-> @@ -987,6 +987,8 @@ static int inet_dump_fib(struct sk_buff *skb, struct netlink_callback *cb)
->  	if (filter.flags & RTM_F_PREFIX)
->  		return skb->len;
->  
-> +	rcu_read_lock();
-> +
->  	if (filter.table_id) {
->  		tb = fib_get_table(net, filter.table_id);
->  		if (!tb) {
+> I also think there should be a marvell prefix in the name, since were
+> could be other implementations of USB/MII. mvusb2mii?
 
-this branch has 2 return points which now have rcu_read_lock; you should
-have seen this when you tested the change..
+You're absolutely right that there should be an mv prefix in
+there. Calling it usb2mii seems like a misnomer though. At least for
+me, MII relates more to the data interface between a MAC and a PHY,
+whereas MDIO or SMI refers to the control interface (MDC/MDIO).
 
+How about just mdio-mvusb?
+
+> Do you know how this is implemented? Is it a product you can purchase?
+> Or a microcontroller on the board which implements this? It would be
+> an interesting product, especially on x86 machines which generally end
+> up doing bit-banging because of the lack of drivers using kernel MDIO.
+
+On the 88E6390X-DB, I know that there is a chip by the USB port that
+is probably either an MCU or a small FPGA. I can have a closer look at
+it when I'm at the office tomorrow if you'd like. I also remember
+seeing some docs from Marvell which seemed to indicate that they have
+a standalone product providing only the USB-to-MDIO functionality.
+
+The x86 use-case is interesting. It would be even more so if there was
+some way of loading a DSA DT fragment so that you could hook it up to
+your machine's Ethernet port.
+
+> > +static int smi2usb_probe(struct usb_interface *interface,
+> > +			 const struct usb_device_id *id)
+> > +{
+> > +	struct device *dev = &interface->dev;
+> > +	struct mii_bus *mdio;
+> > +	struct smi2usb *smi;
+> > +	int err = -ENOMEM;
+> > +
+> > +	mdio = devm_mdiobus_alloc_size(dev, sizeof(*smi));
+> > +	if (!mdio)
+> > +		goto err;
+> > +
+> 
+> ...
+> 
+> 
+> > +static void smi2usb_disconnect(struct usb_interface *interface)
+> > +{
+> > +	struct smi2usb *smi;
+> > +
+> > +	smi = usb_get_intfdata(interface);
+> > +	mdiobus_unregister(smi->mdio);
+> > +	usb_set_intfdata(interface, NULL);
+> > +
+> > +	usb_put_intf(interface);
+> > +	usb_put_dev(interface_to_usbdev(interface));
+> > +}
+> 
+> I don't know enough about USB. Does disconnect have the same semantics
+> remove()? You used devm_mdiobus_alloc_size() to allocate the bus
+> structure. Will it get freed after disconnect? I've had USB devices
+> connected via flaky USB hubs and they have repeatedly disappeared and
+> reappeared. I wonder if in that case you are leaking memory if
+> disconnect does not release the memory?
+
+Disclaimer: This is my first ever USB driver.
+
+I assumed that since we're removing 'interface', 'interface->dev' will
+be removed as well and thus calling all devm hooks.
+
+> > +	usb_put_intf(interface);
+> > +	usb_put_dev(interface_to_usbdev(interface));
+> > +}
+> 
+> Another USB novice question. Is this safe? Could the put of interface
+> cause it to be destroyed? Then interface_to_usbdev() is called on
+> invalid memory?
+
+That does indeed look scary. I inverted the order of the calls to the
+_get_ functions, which I got from the USB skeleton driver. I'll try to
+review some other drivers to see if I can figure this out.
+
+> Maybe this should be cross posted to a USB mailing list, so we can get
+> the USB aspects reviewed. The MDIO bits seem good to me.
+
+Good idea. Any chance you can help an LKML rookie out? How does one go
+about that? Do I simply reply to this thread and add the USB list, or
+do I post the patches again as a new series? Any special tags? Is
+there any documentation available?
+
+> 	   Andrew
 
