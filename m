@@ -2,29 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E76318AE82
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 09:42:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3875E18AEC7
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 09:52:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726785AbgCSIms (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 04:42:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56754 "EHLO mail.kernel.org"
+        id S1726912AbgCSIwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 04:52:19 -0400
+Received: from mx2.suse.de ([195.135.220.15]:35642 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725601AbgCSImr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 04:42:47 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9125A20724;
-        Thu, 19 Mar 2020 08:42:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584607367;
-        bh=bc6Fify+38nZAY3Cia1aV1OdCk4gn2q4y8vjHO0jHQs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tziaOs8nF6qC2ZxtPxDt+NdfWpIrzDmvKzsswJgbGZoj8i6PseYVNTHnVQCWhF3l7
-         BlaCfZEzl2+/751CB3Sz2r9W2tBaPF/Ha6955QYPrXbnsfvJrB3QDPo2+ZfG4d0stK
-         TebhEBXc4YrP7M09KzptbT9OYlt0nFKptulOurBg=
-Date:   Thu, 19 Mar 2020 09:42:44 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        id S1725601AbgCSIwT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 04:52:19 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 25E85B117;
+        Thu, 19 Mar 2020 08:52:16 +0000 (UTC)
+Date:   Thu, 19 Mar 2020 01:51:09 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
 To:     Thomas Gleixner <tglx@linutronix.de>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
         Peter Zijlstra <peterz@infradead.org>,
@@ -34,90 +26,70 @@ Cc:     LKML <linux-kernel@vger.kernel.org>,
         Joel Fernandes <joel@joelfernandes.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
         Logan Gunthorpe <logang@deltatee.com>,
         Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
         Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
         Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: Re: [patch V2 11/15] completion: Use simple wait queues
-Message-ID: <20200319084244.GC3492783@kroah.com>
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [patch V2 08/15] Documentation: Add lock ordering and nesting
+ documentation
+Message-ID: <20200319085109.vrvmpesytul3ek3e@linux-p48b>
 References: <20200318204302.693307984@linutronix.de>
- <20200318204408.521507446@linutronix.de>
+ <20200318204408.211530902@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20200318204408.521507446@linutronix.de>
+In-Reply-To: <20200318204408.211530902@linutronix.de>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 09:43:13PM +0100, Thomas Gleixner wrote:
-> From: Thomas Gleixner <tglx@linutronix.de>
-> 
-> completion uses a wait_queue_head_t to enqueue waiters.
-> 
-> wait_queue_head_t contains a spinlock_t to protect the list of waiters
-> which excludes it from being used in truly atomic context on a PREEMPT_RT
-> enabled kernel.
-> 
-> The spinlock in the wait queue head cannot be replaced by a raw_spinlock
-> because:
-> 
->   - wait queues can have custom wakeup callbacks, which acquire other
->     spinlock_t locks and have potentially long execution times
-> 
->   - wake_up() walks an unbounded number of list entries during the wake up
->     and may wake an unbounded number of waiters.
-> 
-> For simplicity and performance reasons complete() should be usable on
-> PREEMPT_RT enabled kernels.
-> 
-> completions do not use custom wakeup callbacks and are usually single
-> waiter, except for a few corner cases.
-> 
-> Replace the wait queue in the completion with a simple wait queue (swait),
-> which uses a raw_spinlock_t for protecting the waiter list and therefore is
-> safe to use inside truly atomic regions on PREEMPT_RT.
-> 
-> There is no semantical or functional change:
-> 
->   - completions use the exclusive wait mode which is what swait provides
-> 
->   - complete() wakes one exclusive waiter
-> 
->   - complete_all() wakes all waiters while holding the lock which protects
->     the wait queue against newly incoming waiters. The conversion to swait
->     preserves this behaviour.
-> 
-> complete_all() might cause unbound latencies with a large number of waiters
-> being woken at once, but most complete_all() usage sites are either in
-> testing or initialization code or have only a really small number of
-> concurrent waiters which for now does not cause a latency problem. Keep it
-> simple for now.
-> 
-> The fixup of the warning check in the USB gadget driver is just a straight
-> forward conversion of the lockless waiter check from one waitqueue type to
-> the other.
-> 
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Arnd Bergmann <arnd@arndb.de>
-> ---
-> V2: Split out the orinoco and usb gadget parts and amended change log
-> ---
->  drivers/usb/gadget/function/f_fs.c |    2 +-
->  include/linux/completion.h         |    8 ++++----
->  kernel/sched/completion.c          |   36 +++++++++++++++++++-----------------
->  3 files changed, 24 insertions(+), 22 deletions(-)
+On Wed, 18 Mar 2020, Thomas Gleixner wrote:
+>+Owner semantics
+>+===============
+>+
+>+Most lock types in the Linux kernel have strict owner semantics, i.e. the
+>+context (task) which acquires a lock has to release it.
+>+
+>+There are two exceptions:
+>+
+>+  - semaphores
+>+  - rwsems
+>+
+>+semaphores have no strict owner semantics for historical reasons. They are
 
-For USB portion:
+I would rephrase this to:
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+semaphores have no owner semantics for historical reason, and as such
+trylock and release operations can be called from interrupt context. They
+are ...
+
+>+often used for both serialization and waiting purposes. That's generally
+>+discouraged and should be replaced by separate serialization and wait
+>+mechanisms.
+            ^ , such as mutexes or completions.
+
+>+
+>+rwsems have grown interfaces which allow non owner release for special
+>+purposes. This usage is problematic on PREEMPT_RT because PREEMPT_RT
+>+substitutes all locking primitives except semaphores with RT-mutex based
+>+implementations to provide priority inheritance for all lock types except
+>+the truly spinning ones. Priority inheritance on ownerless locks is
+>+obviously impossible.
+>+
+>+For now the rwsem non-owner release excludes code which utilizes it from
+>+being used on PREEMPT_RT enabled kernels. In same cases this can be
+>+mitigated by disabling portions of the code, in other cases the complete
+>+functionality has to be disabled until a workable solution has been found.
+
+Thanks,
+Davidlohr
