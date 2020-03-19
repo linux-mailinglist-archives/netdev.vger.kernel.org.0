@@ -2,56 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BE6218B3E0
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 14:04:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 260B018B439
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 14:08:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727222AbgCSNEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 09:04:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45000 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726864AbgCSNEf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 09:04:35 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ALEhqzUrdWOrOtrsu5TizOy7Y+cg2H0bWBjU7zo4CqA=; b=AjKCdmNyspJyHUcO6CU/0cJDlk
-        69L+e1V6H+HHaWWjdftzXM/ba0jNXxpN4zh701dbzLsUmkjk+GhlSidH8gz2tQ5bDQwDEPpA/sXgC
-        dZH/URHTh51VXi/DZ34sT+h6uqOGxUyH5sW2vOKufrVbIjNK60sggv2z3/cGgMoGvV8g=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jEuqb-0006YF-4A; Thu, 19 Mar 2020 14:04:29 +0100
-Date:   Thu, 19 Mar 2020 14:04:29 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/3] net: phy: add and use phy_check_downshift
-Message-ID: <20200319130429.GC24972@lunn.ch>
-References: <6e4ea372-3d05-3446-2928-2c1e76a66faf@gmail.com>
- <d2822357-4c1e-a072-632e-a902b04eba7c@gmail.com>
- <20200318232159.GA25745@shell.armlinux.org.uk>
- <b0bc3ca0-0c1b-045e-cd00-37fc85c4eebf@gmail.com>
- <20200319112535.GD25745@shell.armlinux.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200319112535.GD25745@shell.armlinux.org.uk>
+        id S1727996AbgCSNHp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 09:07:45 -0400
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:52436 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727978AbgCSNHm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 09:07:42 -0400
+Received: by mail-pj1-f65.google.com with SMTP id ng8so1008792pjb.2
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 06:07:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=EiCffRJzs1rPLEHZVeeVO+6enSILFAhPzCiZrfUMA1c=;
+        b=hzTeTogp2lBxj2ggXhTE7LahQs/qdWaCzvvxMg4lY8sf3Fe/WmzywdlVDUvoduVgp3
+         9UWkymsMwW6xLtLG7z1EsMvsbeN/302oTwDQwTRNJ9fJY04tCfiGtAIUFkIodPvugQxy
+         wKucW4wYFRSrvTsDHa2uv9kXanVL2bNZyH/viqBGC2EAcDHNctr9XEWc2DNV3Sg5Rjij
+         ONJun1Cyjr2bRYx2bGNR67rgTLBf18l8gk4iw3Z1/8205Ht/ZAQ9r28vwFAI5lFEbLfk
+         poSjChEaD3AUXrq7zuwN02vRq+sUeIdw76mT/uDaUaelUEUYz/WzB7ZoPtYPq79iNXur
+         UO4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=EiCffRJzs1rPLEHZVeeVO+6enSILFAhPzCiZrfUMA1c=;
+        b=hAH6BuRFkaNBMvWuOBSmv5d/LAkyMS8hVyUzkpslX7CXWlf+PugpFaT+LNLooSggFx
+         WIySYebA7ENdW6XTxo5ihhH25+kVurzKbz2h30ykSM6gv+s0U1LzVg0bhyP9PFDoUQ9k
+         imhoqf4PIZN9oZtv+xzCa4QWtztmZmi2FS+X+9QldECGyib7B6WRZnjew8aKLFJcQ9Jh
+         QoFEa4VxWvsaTkLZcbTaMfrxSDBn4Lafb+71kIhEEJfxNrOOgjuEPOb6u9XNvGaim0d6
+         zY/DAVHCStkPEdXZdXyRPj2TKdBn7EmewmdQJYUvrNS9HNWgPk4uG7rRgdnyNA+yqpRy
+         l6LA==
+X-Gm-Message-State: ANhLgQ0UCE1x+N09OqCiEpICLtpCjm/AQkbaVJTB1M3CCMvS0Wk7hvhP
+        iYsWTTOryiu4XTGVBKvZ+GxAM6tEOQs=
+X-Google-Smtp-Source: ADFU+vt4S5V3cleJA/aFJnkx+mwgjF3u061qltqBouVPsZfQz+qr33Gd0Q2vJBSD1XIJAkAqRHia2g==
+X-Received: by 2002:a17:902:123:: with SMTP id 32mr3570080plb.38.1584623259094;
+        Thu, 19 Mar 2020 06:07:39 -0700 (PDT)
+Received: from machine421.marvell.com ([115.113.156.2])
+        by smtp.googlemail.com with ESMTPSA id c15sm2336292pgk.66.2020.03.19.06.07.36
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Thu, 19 Mar 2020 06:07:38 -0700 (PDT)
+From:   sunil.kovvuri@gmail.com
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, leon@kernel.org,
+        andrew@lunn.ch, Sunil Goutham <sgoutham@marvell.com>
+Subject: [PATCH v3 net-next 0/8] octeontx2-vf: Add network driver for virtual function
+Date:   Thu, 19 Mar 2020 18:37:20 +0530
+Message-Id: <1584623248-27508-1-git-send-email-sunil.kovvuri@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The only time that this helps is if PHY drivers implement reading a
-> vendor register to report the actual link speed, and the PHY specific
-> driver is used.
+From: Sunil Goutham <sgoutham@marvell.com>
 
-So maybe we either need to implement this reading of the vendor
-register as a driver op, or we have a flag indicating the driver is
-returning the real speed, not the negotiated speed?
+This patch series adds  network driver for the virtual functions of
+OcteonTX2 SOC's resource virtualization unit (RVU).
 
-	   Andrew
+Changes from v2:
+   * Removed Copyright license text.
+   * Removed wrapper fn()s around mutex_lock and unlock.
+   * Got rid of using macro with 'return'.
+   * Removed __weak fn()s.
+        - Sugested by Leon Romanovsky and Andrew Lunn
+
+Changes from v1:
+   * Removed driver version and fixed authorship
+   * Removed driver version and fixed authorship in the already
+     upstreamed AF, PF drivers.
+   * Removed unnecessary checks in sriov_enable and xmit fn()s.
+   * Removed WQ_MEM_RECLAIM flag while creating workqueue.
+   * Added lock in tx_timeout task.
+   * Added 'supported_coalesce_params' in ethtool ops.
+   * Minor other cleanups.
+        - Sugested by Jakub Kicinski
+
+Geetha sowjanya (2):
+  octeontx2-pf: Handle VF function level reset
+  octeontx2-pf: Cleanup all receive buffers in SG descriptor
+
+Sunil Goutham (3):
+  octeontx2-pf: Enable SRIOV and added VF mbox handling
+  octeontx2-af: Remove driver version and fix authorship
+  octeontx2-pf: Remove wrapper APIs for mutex lock and unlock
+
+Tomasz Duszynski (3):
+  octeontx2-vf: Virtual function driver support
+  octeontx2-vf: Ethtool support
+  octeontx2-vf: Link event notification support
+
+ drivers/net/ethernet/marvell/octeontx2/Kconfig     |   6 +
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |   4 +-
+ .../net/ethernet/marvell/octeontx2/nic/Makefile    |   2 +
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  99 +--
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  42 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 128 +++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 824 ++++++++++++++++++++-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_reg.h  |  13 +
+ .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  41 +-
+ .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   | 650 ++++++++++++++++
+ 10 files changed, 1697 insertions(+), 112 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
+
+-- 
+2.7.4
+
