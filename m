@@ -2,99 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9222918AD14
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 08:01:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9921A18AD28
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 08:07:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727142AbgCSHBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 03:01:32 -0400
-Received: from mail-eopbgr40080.outbound.protection.outlook.com ([40.107.4.80]:58375
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725787AbgCSHBb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 03:01:31 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k3onsb5ZtcRkkIewYtty9YNI2YG/Q2TwuY5ZWoKEJMzZcJA7XlJJNRdK+E6a0kgWu2nkn9RUFxve8HJlAEGPje4FVGAJi1k6PcryIJ9NL4EzRQrwFNNfwnMUg7Ke3Mrd65uQQ84aU96ivHGYCKYUCVvEG6VvJB0LF3xBMJvrRCxWiCYxeu0Fk6G063cY8uzMaKO51QRRKanubvjq6PyezTIDHkDGJuVf0jlE5K6El2PJYyO98icDH3J84fOl6+7dsXOoPccfmRAhOxvqCaCF2C4hfqWtd0e1fd4oXht/6BVt8xZYtasSE0UzqFhfHfVndjo4/eKvHamQKYW1FWt05w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3vGa26LuFfY+iHgMfUtU1vFcXCpGi56ULIn1q2psfjM=;
- b=dd3EoDX8LmmMmjaUIkRZk3/4BdOryTChlnOcZQYxnL7oznW0fP8eppftl6ChfZYTsnAZbATo5BDtntlXCywIQAfiV83ywvpJzkUHUeaqAUK4Je0ow67sB4/iwxQHi61JiqID/YCjIy6YamkO9E2lOy6QduQxCcnFUKg12x6JZCebNJ3R5NubfwK7OL2hc3m9fYMEHaH24r3ptMpdQZ5gZnntbbNaxF37EdvDLfKVbPDneHAUO/wdxrpRiyCzXD4+KG6cucmlJxKmmfCL1fCSxsn4YfUNvqg7QFq6cAYR7egbxkrgW6QsF2n0oVgEMdy1ergnqu1fnMFCQrp86kG5xg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3vGa26LuFfY+iHgMfUtU1vFcXCpGi56ULIn1q2psfjM=;
- b=tTwgtpyccWfPiSAOQIoUDmSbySZjknN7eLRYhi7X/I13q4DCyK0F4WJ525QE7NHPfj93LEisAlo2lNS7tLBNrcKNJvJT8ass7xVRNLRv75mj5HXk0YA3XhmPHBS7BfhBCVLL9wgCUiMn7Xp+yyxkvWWcUaDjx3x2Lg/l2qLnWNY=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=leonro@mellanox.com; 
-Received: from AM6PR05MB6408.eurprd05.prod.outlook.com (20.179.5.215) by
- AM6PR05MB6405.eurprd05.prod.outlook.com (20.179.7.210) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2814.22; Thu, 19 Mar 2020 07:01:28 +0000
-Received: from AM6PR05MB6408.eurprd05.prod.outlook.com
- ([fe80::c99f:9130:561f:dea0]) by AM6PR05MB6408.eurprd05.prod.outlook.com
- ([fe80::c99f:9130:561f:dea0%3]) with mapi id 15.20.2814.021; Thu, 19 Mar 2020
- 07:01:28 +0000
-Date:   Thu, 19 Mar 2020 09:01:25 +0200
-From:   Leon Romanovsky <leonro@mellanox.com>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     claudiu.manoil@nxp.com, davem@davemloft.net,
+        id S1727154AbgCSHHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 03:07:39 -0400
+Received: from canardo.mork.no ([148.122.252.1]:41195 "EHLO canardo.mork.no"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725787AbgCSHHj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 03:07:39 -0400
+Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 02J77Bpc005985
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Thu, 19 Mar 2020 08:07:11 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1584601632; bh=r/4K24OT0deWd8YUUm6JdctYt4wSWEamTge4QGcoXFc=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=DsNwuT5pO1BrL2BJt+8dt8/hxLnv6e8aJ6OSS+rCJcULtKttn9aJVMLAp8E8NS132
+         xJxIHf+6F2qX++qhgbXkkbz276F1Ity6MWljxSQIjxFyWrD5KgKu6ROh+vWAymNU9f
+         qbNC343wi1uvKdf82/lF0ayv7yAV9W6iLDMmWgHQ=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
+        (envelope-from <bjorn@mork.no>)
+        id 1jEpGp-0003ku-CW; Thu, 19 Mar 2020 08:07:11 +0100
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Pawel Dembicki <paweldembicki@gmail.com>
+Cc:     linux-usb@vger.kernel.org, Cezary Jackiewicz <cezary@eko.one.pl>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] enetc: Remove unused variable 'enetc_drv_name'
-Message-ID: <20200319070125.GM126814@unreal>
-References: <20200319064637.45048-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200319064637.45048-1-yuehaibing@huawei.com>
-X-ClientProxiedBy: PR0P264CA0225.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:1e::21) To AM6PR05MB6408.eurprd05.prod.outlook.com
- (2603:10a6:20b:b8::23)
+Subject: Re: [PATCH] net: qmi_wwan: add support for ASKEY WWHC050
+Organization: m
+References: <20200319055845.6431-1-paweldembicki@gmail.com>
+Date:   Thu, 19 Mar 2020 08:07:11 +0100
+In-Reply-To: <20200319055845.6431-1-paweldembicki@gmail.com> (Pawel Dembicki's
+        message of "Thu, 19 Mar 2020 06:58:45 +0100")
+Message-ID: <87sgi4257k.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost (2a00:a040:183:2d::393) by PR0P264CA0225.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:1e::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.15 via Frontend Transport; Thu, 19 Mar 2020 07:01:27 +0000
-X-Originating-IP: [2a00:a040:183:2d::393]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: d5263be1-b355-45f1-228e-08d7cbd35884
-X-MS-TrafficTypeDiagnostic: AM6PR05MB6405:
-X-Microsoft-Antispam-PRVS: <AM6PR05MB64053FEB44D6F0A21FCB0F3DB0F40@AM6PR05MB6405.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:161;
-X-Forefront-PRVS: 0347410860
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(7916004)(4636009)(39860400002)(346002)(396003)(136003)(376002)(366004)(199004)(8936002)(9686003)(66946007)(66556008)(66476007)(81166006)(81156014)(2906002)(33656002)(8676002)(316002)(1076003)(6486002)(33716001)(478600001)(16526019)(186003)(4744005)(6496006)(6916009)(5660300002)(4326008)(52116002)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB6405;H:AM6PR05MB6408.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HbDCpxmwt5c60oBl1uU6yb0ePGLUml7joFtPXnamVOvaDIZFCv7TdNCyEvIIcd8qi5WgjrtUXTuqwsFuLF0sKTuHGKwF+gDmeNmCDl7TGftYNJOHD2QG/MifSyVXRl2L7CEU5c0zsXIBfTuHiEP0sHp7IZd+wPgq8YPZesUHW4dLLi8XVcLkT5K+rL1EBsqUilLq6jOxsZqquQYw0H3wx4cA6etr1OkqS+hzJxWentD8hv1pfTSXKqlcUgIUsjPOhbDjr14medWfblKjZl369mneayXd1GrAI+RljTNITwu+NZYmfbRu3hiRm6NyILa4lwNvcxEnV2DIZjbFs5JGH40UuL4ygqvqknGDFLaPu/EXyW/DNq1M8k9fn4VK3TqqmJzbkaq7miL4BK8frVAw1egBXJ3GfiuMOUJqAlr1MUYOupX6E1UXoA/Gu8OEFSm9
-X-MS-Exchange-AntiSpam-MessageData: XkVC7g6MVxrFmrHCvHceXYbo1uG6uBbqC8g1srAWWL6EQ9QDbqrCkMLIOuMMrwYy4R77A28juPspoJVtI0qT8c+7IjYR7Sdmtt4UZfNOhTKGKwWVzabn4NBJbrU6Tkq1EBCjhVN/q9LRlLxsgMbZiT3tjirqsagGEdS2l9MZtTA=
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5263be1-b355-45f1-228e-08d7cbd35884
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Mar 2020 07:01:28.1825
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: J5h9Rp0gpdFJMVHcL41kQsxUQPI9U2vB3kfBwvb5zQvcwRc+1EpGq8ek5idmsAeCMREO7tkD1dS0Q3GP85qD1Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB6405
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.102.1 at canardo
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 02:46:37PM +0800, YueHaibing wrote:
-> commit ed0a72e0de16 ("net/freescale: Clean drivers from static versions")
-> leave behind this, remove it .
->
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Pawel Dembicki <paweldembicki@gmail.com> writes:
+
+> [add commit message]
+
+Forgot to delete that line? :-)
+
 > ---
->  drivers/net/ethernet/freescale/enetc/enetc_pf.c | 1 -
->  drivers/net/ethernet/freescale/enetc/enetc_vf.c | 1 -
->  2 files changed, 2 deletions(-)
->
+>  drivers/net/usb/qmi_wwan.c  | 1 +
+>  drivers/usb/serial/option.c | 2 ++
+>  2 files changed, 3 insertions(+)
 
-Fixes: ed0a72e0de16 ("net/freescale: Clean drivers from static versions")
+You need to split this in two patches.  The drivers are in two different
+subsystems.
 
-Thanks a lot.
-Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
+> diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+> index 5754bb6ca0ee..6c738a271257 100644
+> --- a/drivers/net/usb/qmi_wwan.c
+> +++ b/drivers/net/usb/qmi_wwan.c
+> @@ -1210,6 +1210,7 @@ static const struct usb_device_id products[] =3D {
+>  	{QMI_FIXED_INTF(0x1435, 0xd182, 5)},	/* Wistron NeWeb D18 */
+>  	{QMI_FIXED_INTF(0x1435, 0xd191, 4)},	/* Wistron NeWeb D19Q1 */
+>  	{QMI_QUIRK_SET_DTR(0x1508, 0x1001, 4)},	/* Fibocom NL668 series */
+> +	{QMI_FIXED_INTF(0x1690, 0x7588, 4)},    /* ASKEY WWHC050 */
+>  	{QMI_FIXED_INTF(0x16d8, 0x6003, 0)},	/* CMOTech 6003 */
+>  	{QMI_FIXED_INTF(0x16d8, 0x6007, 0)},	/* CMOTech CHE-628S */
+>  	{QMI_FIXED_INTF(0x16d8, 0x6008, 0)},	/* CMOTech CMU-301 */
+
+I know it isn't perfect as it is, but please try to sort new entries by
+vid/pid if possible.  Keep any logical grouping of entries though, of
+that applies.
+
+Thanks
+
+
+Bj=C3=B8rn
