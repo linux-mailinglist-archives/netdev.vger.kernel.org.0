@@ -2,153 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E894718C288
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 22:48:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A3E318C299
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 22:53:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727091AbgCSVs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 17:48:26 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:21215 "EHLO
+        id S1727138AbgCSVxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 17:53:21 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:39352 "EHLO
         us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726785AbgCSVsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 17:48:25 -0400
+        by vger.kernel.org with ESMTP id S1726619AbgCSVxU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 17:53:20 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584654504;
+        s=mimecast20190719; t=1584654798;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=tsfr9KiPwPHaSNob1o89QdgA/mKpTxdC3audBQKrY6g=;
-        b=VIj3VaFzXUnNG3jOdDv4XDNOfQq0bU1VQzy7kPD85+d3TOQYC7RCkfLkC7Cb3+xHUlDjQT
-        QUzabA0oL2pTE4ydqN268uBxnrspTGoAQctXSHWf6VCn7Kjo60CPm1dJY9LJypI/DXhmAp
-        zxuA6csXGGDTM7RCvHg8rB2SWDrSYtg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-111-OLeMbR_VN_W9GnHsc2JE3w-1; Thu, 19 Mar 2020 17:48:23 -0400
-X-MC-Unique: OLeMbR_VN_W9GnHsc2JE3w-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 28CAF107ACC4;
-        Thu, 19 Mar 2020 21:48:20 +0000 (UTC)
-Received: from madcap2.tricolour.ca (unknown [10.36.110.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0A40CBBBF3;
-        Thu, 19 Mar 2020 21:48:03 +0000 (UTC)
-Date:   Thu, 19 Mar 2020 17:47:59 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Steve Grubb <sgrubb@redhat.com>, linux-audit@redhat.com,
-        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
-        containers@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
-        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
-        simo@redhat.com, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
-Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
- the audit daemon
-Message-ID: <20200319214759.qgxt2sfkmd6srdol@madcap2.tricolour.ca>
-References: <20200204231454.oxa7pyvuxbj466fj@madcap2.tricolour.ca>
- <CAHC9VhQquokw+7UOU=G0SsD35UdgmfysVKCGCE87JVaoTkbisg@mail.gmail.com>
- <3142237.YMNxv0uec1@x2>
- <CAHC9VhTiCHQbp2SwK0Xb1QgpUZxOQ26JKKPsVGT0ZvMqx28oPQ@mail.gmail.com>
- <20200312202733.7kli64zsnqc4mrd2@madcap2.tricolour.ca>
- <CAHC9VhS9DtxJ4gvOfMRnzoo6ccGJVKL+uZYe6qqH+SPqD8r01Q@mail.gmail.com>
- <20200313192306.wxey3wn2h4htpccm@madcap2.tricolour.ca>
- <CAHC9VhQKOpVWxDg-tWuCWV22QRu8P_NpFKme==0Ot1RQKa_DWA@mail.gmail.com>
- <20200318214154.ycxy5dl4pxno6fvi@madcap2.tricolour.ca>
- <CAHC9VhSuMnd3-ci2Bx-xJ0yscQ=X8ZqFAcNPKpbh_ZWN3FJcuQ@mail.gmail.com>
+        bh=sfdaZlf6kOgQb4CeBwGTpbCE+UMt/Lv7sVpchM8h290=;
+        b=ZZStwUY+s8rRZe8WI1kxUcCVbc8BJ8jtDRZIPbYRtxhTgwC5RW+8r5WG7l0dhZ9z7/gi3p
+        fTtyyiw6T6KihEq+tgs3/OHOnHACPn8WOZIsdnfBeLqS46DtbK4vI1cL2cBWfH4z6S2osl
+        nH4jYcnULTSzt3tMl7o72Zw3jIGGB/s=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-61-EikR2TtDO626nzRXdLP71g-1; Thu, 19 Mar 2020 17:53:15 -0400
+X-MC-Unique: EikR2TtDO626nzRXdLP71g-1
+Received: by mail-il1-f197.google.com with SMTP id u9so3261668iln.22
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 14:53:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sfdaZlf6kOgQb4CeBwGTpbCE+UMt/Lv7sVpchM8h290=;
+        b=Fh108lARP74MVFM5jk+U3z6qVlaw049b0AuxCOA0B9ImxfEfiyVMUDn4V2Ic8fwg8/
+         DLznl4Er/GRTfxEF7ZFTpd4Cmq1zDsX96nt4XGVP1TBLXl6TaMN95L4ckxndwduUkEX1
+         Qy5xHkDSc+RleyHLFOYphxpZh0Gf43StmyjO9RP6yLRKfGOy11JvHr05SeeaDEJ0pMaL
+         G9ir9yheQ9+y6pEN3sq06GxF/YmGfBKXaOg/bg2RNv5oEalwxkziG/7rvZ4eEM7fahU9
+         de+LXI0ZtAWSxhxQLVNjr/lalW0e4fQ4fphHtsEz4juhOa/qFpJiR8wZVnilHVmeyF/Z
+         DFCQ==
+X-Gm-Message-State: ANhLgQ1XO8KE0JOIpWeNY+s+Kcq4dYZkg3RIZm/uaRTZew/Wtqenk7Lo
+        EnwaiktyiywZqPANAXmJWkN6Tk13d0HRJzSxXw4/IO+WH8t7Tx7xP01a+JhDRZwWODj877OyBq6
+        NyMG5OeK40dTxERGB12RuUYZrms2fQamm
+X-Received: by 2002:a05:6638:201:: with SMTP id e1mr5268649jaq.111.1584654795239;
+        Thu, 19 Mar 2020 14:53:15 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vt7wgb+udfKl9vXnE86o8XTwCNKmWyvf1v7C4dl9OpvEtKtF78iguVy0Sy84eezKuSKS2luBzJx11/DeHG7bVs=
+X-Received: by 2002:a05:6638:201:: with SMTP id e1mr5268628jaq.111.1584654794914;
+ Thu, 19 Mar 2020 14:53:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHC9VhSuMnd3-ci2Bx-xJ0yscQ=X8ZqFAcNPKpbh_ZWN3FJcuQ@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+References: <20200318140605.45273-1-jarod@redhat.com> <8a88d1c8-c6b1-ad85-7971-e6ae8c6fa0e4@gmail.com>
+ <CAKfmpSc0yea5-OfE1rnVdErDTeOza=owbL00QQEaH-M-A6Za7g@mail.gmail.com>
+ <25629.1584564113@famine> <CAKfmpScbzEZAEw=zOEwguQJvr6L2fQiGmAY60SqSBQ_g-+B4tw@mail.gmail.com>
+ <3dbabf42-90e6-4c82-0b84-d1b1a9e8fadf@gmail.com> <CAKfmpScXTnnz6wQK3OZcqw4aM1PaLnBRfQL769JgyR7tgM-u5A@mail.gmail.com>
+ <7028.1584647543@famine>
+In-Reply-To: <7028.1584647543@famine>
+From:   Jarod Wilson <jarod@redhat.com>
+Date:   Thu, 19 Mar 2020 17:53:03 -0400
+Message-ID: <CAKfmpSfw0xvmOKYA+VDdTP4GM=uxWsrYQ7ywHufa+KDrLEvf_Q@mail.gmail.com>
+Subject: Re: [PATCH net] ipv6: don't auto-add link-local address to lag ports
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Moshe Levi <moshele@mellanox.com>,
+        Marcelo Ricardo Leitner <mleitner@redhat.com>,
+        Netdev <netdev@vger.kernel.org>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-03-18 17:47, Paul Moore wrote:
-> On Wed, Mar 18, 2020 at 5:42 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > On 2020-03-18 17:01, Paul Moore wrote:
-> > > On Fri, Mar 13, 2020 at 3:23 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > > On 2020-03-13 12:42, Paul Moore wrote:
-> > >
-> > > ...
-> > >
-> > > > > The thread has had a lot of starts/stops, so I may be repeating a
-> > > > > previous suggestion, but one idea would be to still emit a "death
-> > > > > record" when the final task in the audit container ID does die, but
-> > > > > block the particular audit container ID from reuse until it the
-> > > > > SIGNAL2 info has been reported.  This gives us the timely ACID death
-> > > > > notification while still preventing confusion and ambiguity caused by
-> > > > > potentially reusing the ACID before the SIGNAL2 record has been sent;
-> > > > > there is a small nit about the ACID being present in the SIGNAL2
-> > > > > *after* its death, but I think that can be easily explained and
-> > > > > understood by admins.
-> > > >
-> > > > Thinking quickly about possible technical solutions to this, maybe it
-> > > > makes sense to have two counters on a contobj so that we know when the
-> > > > last process in that container exits and can issue the death
-> > > > certificate, but we still block reuse of it until all further references
-> > > > to it have been resolved.  This will likely also make it possible to
-> > > > report the full contid chain in SIGNAL2 records.  This will eliminate
-> > > > some of the issues we are discussing with regards to passing a contobj
-> > > > vs a contid to the audit_log_contid function, but won't eliminate them
-> > > > all because there are still some contids that won't have an object
-> > > > associated with them to make it impossible to look them up in the
-> > > > contobj lists.
-> > >
-> > > I'm not sure you need a full second counter, I imagine a simple flag
-> > > would be okay.  I think you just something to indicate that this ACID
-> > > object is marked as "dead" but it still being held for sanity reasons
-> > > and should not be reused.
+On Thu, Mar 19, 2020 at 3:52 PM Jay Vosburgh <jay.vosburgh@canonical.com> wrote:
+>
+> Jarod Wilson <jarod@redhat.com> wrote:
+>
+> >On Thu, Mar 19, 2020 at 1:06 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >>
+> >> On 3/19/20 9:42 AM, Jarod Wilson wrote:
+> >>
+> >> > Interesting. We'll keep digging over here, but that's definitely not
+> >> > working for this particular use case with OVS for whatever reason.
+> >>
+> >> I did a quick test and confirmed that my bonding slaves do not have link-local addresses,
+> >> without anything done to prevent them to appear.
+> >>
+> >> You might add a selftest, if you ever find what is the trigger :)
 > >
-> > Ok, I see your point.  This refcount can be changed to a flag easily
-> > enough without change to the api if we can be sure that more than one
-> > signal can't be delivered to the audit daemon *and* collected by sig2.
-> > I'll have a more careful look at the audit daemon code to see if I can
-> > determine this.
-> 
-> Maybe I'm not understanding your concern, but this isn't really
-> different than any of the other things we track for the auditd signal
-> sender, right?  If we are worried about multiple signals being sent
-> then it applies to everything, not just the audit container ID.
+> >Okay, have a basic reproducer, courtesy of Marcelo:
+> >
+> ># ip link add name bond0 type bond
+> ># ip link set dev ens2f0np0 master bond0
+> ># ip link set dev ens2f1np2 master bond0
+> ># ip link set dev bond0 up
+> ># ip a s
+> >1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN
+> >group default qlen 1000
+> >    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+> >    inet 127.0.0.1/8 scope host lo
+> >       valid_lft forever preferred_lft forever
+> >    inet6 ::1/128 scope host
+> >       valid_lft forever preferred_lft forever
+> >2: ens2f0np0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc
+> >mq master bond0 state UP group default qlen 1000
+> >    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+> >5: ens2f1np2: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
+> >mq master bond0 state DOWN group default qlen 1000
+> >    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+> >11: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc
+> >noqueue state UP group default qlen 1000
+> >    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+> >    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link
+> >       valid_lft forever preferred_lft forever
+> >
+> >(above trimmed to relevant entries, obviously)
+> >
+> ># sysctl net.ipv6.conf.ens2f0np0.addr_gen_mode=0
+> >net.ipv6.conf.ens2f0np0.addr_gen_mode = 0
+> ># sysctl net.ipv6.conf.ens2f1np2.addr_gen_mode=0
+> >net.ipv6.conf.ens2f1np2.addr_gen_mode = 0
+> >
+> ># ip a l ens2f0np0
+> >2: ens2f0np0: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc
+> >mq master bond0 state UP group default qlen 1000
+> >    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+> >    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link tentative
+> >       valid_lft forever preferred_lft forever
+> ># ip a l ens2f1np2
+> >5: ens2f1np2: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc
+> >mq master bond0 state DOWN group default qlen 1000
+> >    link/ether 00:0f:53:2f:ea:40 brd ff:ff:ff:ff:ff:ff
+> >    inet6 fe80::20f:53ff:fe2f:ea40/64 scope link tentative
+> >       valid_lft forever preferred_lft forever
+> >
+> >Looks like addrconf_sysctl_addr_gen_mode() bypasses the original "is
+> >this a slave interface?" check, and results in an address getting
+> >added, while w/the proposed patch added, no address gets added.
+>
+>         I wonder if this also breaks for the netvsc usage of IFF_SLAVE
+> to suppress ipv6 addrconf?  Adding the hyperv maintainers to Cc.
+>
+>         In any event, it looks like addrconf_sysctl_addr_gen_mode()
+> calls addrconf_dev_config() directly, which bypasses the IFF_SLAVE check
+> in addrconf_notify() that would gate other callers.
 
-Yes, you are right.  In all other cases the information is simply
-overwritten.  In the case of the audit container identifier any
-previous value is put before a new one is referenced, so only the last
-signal is kept.  So, we only need a flag.  Does a flag implemented with
-a rcu-protected refcount sound reasonable to you?
+Yeah, that's what I was thinking as well.
 
-> > Another question occurs to me is that what if the audit daemon is sent a
-> > signal and it cannot or will not collect the sig2 information from the
-> > kernel (SIGKILL?)?  Does that audit container identifier remain dead
-> > until reboot, or do we institute some other form of reaping, possibly
-> > time-based?
-> 
-> In order to preserve the integrity of the audit log that ACID value
-> would need to remain unavailable until the ACID which contains the
-> associated auditd is "dead" (no one can request the signal sender's
-> info if that container is dead).
+>         From my reading, your patch appears to cover a superset of cases
+> as compared to the existing IFF_SLAVE test from c2edacf80e15.
 
-I don't understand why it would be associated with the contid of the
-audit daemon process rather than with the audit daemon process itself.
-How does the signal collection somehow get transferred or delegated to
-another member of that audit daemon's container?
+I wasn't aware of additional devices that would want to prevent these
+addresses, could certainly alter the patch to reject anything with
+IFF_SLAVE too for consistency.
 
-Thinking aloud here, the audit daemon's exit when it calls audit_free()
-needs to ..._put_sig and cancel that audit_sig_cid (which in the future
-will be allocated per auditd rather than the global it is now since
-there is only one audit daemon).
+> >Looking back through git history again, I see a bunch of 'Fixes:
+> >d35a00b8e33d ("net/ipv6: allow sysctl to change link-local address
+> >generation mode")' patches, and I guess that's where this issue was
+> >also introduced.
+>
+>         Can the problem be induced via ip link set ... addrgenmode ?
+> That functionality predates the sysctl interface, looks like it was
+> introduced with
 
-> paul moore
+Doesn't look like it, no. No change after either trying addrgenmode
+none or random.
 
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
+-- 
+Jarod Wilson
+jarod@redhat.com
 
