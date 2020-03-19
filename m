@@ -2,112 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F08018C33F
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 23:48:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25E4C18C348
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 23:50:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727653AbgCSWse (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 18:48:34 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:31557 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727646AbgCSWsd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 18:48:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584658111;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hGXoQGvrZTkgCm169M9Ovm0ZHysGkKm26/X8UwKR7hM=;
-        b=ezlLwlBt8Zs+ptQBAerrldTnuN51XmoabIW0ovm1hxa5hOUeYFLMv2h2p0oHPeXEQrdnQl
-        SzvNe0K+ol6zABpytVA5pk+b1teerIHy9UmCf5pRcBNmkvQ2Ju0JxIMpCpSmU4tXkd3Ryh
-        Im7KllRPqf9Q2oX66qw1yKAE+GUw+tQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-122-hUXB1XyBMs-BMTEsFQgDSA-1; Thu, 19 Mar 2020 18:48:27 -0400
-X-MC-Unique: hUXB1XyBMs-BMTEsFQgDSA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C5DF9800D4E;
-        Thu, 19 Mar 2020 22:48:25 +0000 (UTC)
-Received: from ovpn-112-2.ams2.redhat.com (ovpn-112-2.ams2.redhat.com [10.36.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1E40A5D9CD;
-        Thu, 19 Mar 2020 22:48:22 +0000 (UTC)
-Message-ID: <3121516743a4acdb67799565d0251531092244e7.camel@redhat.com>
-Subject: Re: [PATCH net-next] net: mptcp: don't hang in mptcp_sendmsg()
- after TCP fallback
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Davide Caratti <dcaratti@redhat.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org
-Date:   Thu, 19 Mar 2020 23:48:21 +0100
-In-Reply-To: <9a7cd34e2d8688364297d700bfd8aea60c3a6c7f.1584653622.git.dcaratti@redhat.com>
-References: <9a7cd34e2d8688364297d700bfd8aea60c3a6c7f.1584653622.git.dcaratti@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1727563AbgCSWuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 18:50:08 -0400
+Received: from gateway22.websitewelcome.com ([192.185.47.144]:13871 "EHLO
+        gateway22.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726964AbgCSWuH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 18:50:07 -0400
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway22.websitewelcome.com (Postfix) with ESMTP id CAF2B5F13
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 17:50:05 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id F3zJjStEPVQh0F3zJjhsCF; Thu, 19 Mar 2020 17:50:05 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=4Xd+EIBGjgt1E9Uzt3IjK5xIRtMxS0VYzjqJP+T0LYM=; b=YBipCxykX/IiHi/cgcXtsqkRk+
+        ZGg4jc2IUE2YxUFcmN3D4xCFwIouZ6Wx6ybO0esEjs9I6mG6s7IGDs/Am0pePypEu/qj+RWKFk0aD
+        dSAQ4pDYNSNCTAsKOa3T2f2buxhpu2H4fE+J0n5Qj5OwWzZEuoUcCCvjAK91h2Vv2p8ZbeNp0ibnN
+        G5H+jghapW8fHdekXHS6r+TCOeKdZp8Uf0a7Wx67YmNSuoEuM5KiVEC7twmstj5zckMrYgG+9J0he
+        b7LcfRj7zxoHsemPgGKdNiI+mdScvJz3y6gKnkvH8HrGEvdkRT2FG3++qru5VQqW/y1nIoe+alfbt
+        FVvlMrBw==;
+Received: from cablelink-189-218-116-241.hosts.intercable.net ([189.218.116.241]:53990 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1jF3zI-002Gs1-79; Thu, 19 Mar 2020 17:50:04 -0500
+Date:   Thu, 19 Mar 2020 17:50:02 -0500
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH][next] admtek: adm8211.h: Replace zero-length array with
+ flexible-array member
+Message-ID: <20200319225002.GA28673@embeddedor.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.218.116.241
+X-Source-L: No
+X-Exim-ID: 1jF3zI-002Gs1-79
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: cablelink-189-218-116-241.hosts.intercable.net (embeddedor) [189.218.116.241]:53990
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 48
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-03-19 at 22:45 +0100, Davide Caratti wrote:
-> it's still possible for packetdrill to hang in mptcp_sendmsg(), when the
-> MPTCP socket falls back to regular TCP (e.g. after receiving unsupported
-> flags/version during the three-way handshake). Adjust MPTCP socket state
-> earlier, to ensure correct functionality of mptcp_sendmsg() even in case
-> of TCP fallback.
-> 
-> Fixes: 767d3ded5fb8 ("net: mptcp: don't hang before sending 'MP capable with data'")
-> Fixes: 1954b86016cf ("mptcp: Check connection state before attempting send")
-> Signed-off-by: Davide Caratti <dcaratti@redhat.com>
-> ---
->  net/mptcp/protocol.c | 4 ----
->  net/mptcp/subflow.c  | 6 ++++++
->  2 files changed, 6 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-> index e959104832ef..92d5382e71f4 100644
-> --- a/net/mptcp/protocol.c
-> +++ b/net/mptcp/protocol.c
-> @@ -1055,10 +1055,6 @@ void mptcp_finish_connect(struct sock *ssk)
->  	WRITE_ONCE(msk->write_seq, subflow->idsn + 1);
->  	WRITE_ONCE(msk->ack_seq, ack_seq);
->  	WRITE_ONCE(msk->can_ack, 1);
-> -	if (inet_sk_state_load(sk) != TCP_ESTABLISHED) {
-> -		inet_sk_state_store(sk, TCP_ESTABLISHED);
-> -		sk->sk_state_change(sk);
-> -	}
->  }
->  
->  static void mptcp_sock_graft(struct sock *sk, struct socket *parent)
-> diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-> index 052d72a1d3a2..06b9075333c5 100644
-> --- a/net/mptcp/subflow.c
-> +++ b/net/mptcp/subflow.c
-> @@ -109,9 +109,15 @@ static void subflow_v6_init_req(struct request_sock *req,
->  static void subflow_finish_connect(struct sock *sk, const struct sk_buff *skb)
->  {
->  	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
-> +	struct sock *parent = subflow->conn;
->  
->  	subflow->icsk_af_ops->sk_rx_dst_set(sk, skb);
->  
-> +	if (inet_sk_state_load(parent) != TCP_ESTABLISHED) {
-> +		inet_sk_state_store(parent, TCP_ESTABLISHED);
-> +		parent->sk_state_change(parent);
-> +	}
-> +
->  	if (!subflow->conn_finished) {
->  		pr_debug("subflow=%p, remote_key=%llu", mptcp_subflow_ctx(sk),
->  			 subflow->remote_key);
+The current codebase makes use of the zero-length array language
+extension to the C90 standard, but the preferred mechanism to declare
+variable-length types such as these ones is a flexible array member[1][2],
+introduced in C99:
 
-LGTM, thanks Davide!
+struct foo {
+        int stuff;
+        struct boo array[];
+};
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+By making use of the mechanism above, we will get a compiler warning
+in case the flexible array does not occur last in the structure, which
+will help us prevent some kind of undefined behavior bugs from being
+inadvertently introduced[3] to the codebase from now on.
+
+Also, notice that, dynamic memory allocations won't be affected by
+this change:
+
+"Flexible array members have incomplete type, and so the sizeof operator
+may not be applied. As a quirk of the original implementation of
+zero-length arrays, sizeof evaluates to zero."[1]
+
+This issue was found with the help of Coccinelle.
+
+[1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+[2] https://github.com/KSPP/linux/issues/21
+[3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/net/wireless/admtek/adm8211.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/admtek/adm8211.h b/drivers/net/wireless/admtek/adm8211.h
+index 2c55c629de28..095625ecb8ff 100644
+--- a/drivers/net/wireless/admtek/adm8211.h
++++ b/drivers/net/wireless/admtek/adm8211.h
+@@ -531,7 +531,7 @@ struct adm8211_eeprom {
+ 	u8	lpf_cutoff[14];		/* 0x62 */
+ 	u8	lnags_threshold[14];	/* 0x70 */
+ 	__le16	checksum;		/* 0x7E */
+-	u8	cis_data[0];		/* 0x80, 384 bytes */
++	u8	cis_data[];		/* 0x80, 384 bytes */
+ } __packed;
+ 
+ struct adm8211_priv {
+-- 
+2.23.0
 
