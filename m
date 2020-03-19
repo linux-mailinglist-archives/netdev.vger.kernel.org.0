@@ -2,144 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2292918BCA1
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:32:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E019F18BCAE
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 17:36:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728042AbgCSQbU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 12:31:20 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:34916 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727222AbgCSQbU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 12:31:20 -0400
-Received: by mail-pf1-f193.google.com with SMTP id u68so1706387pfb.2;
-        Thu, 19 Mar 2020 09:31:18 -0700 (PDT)
+        id S1727698AbgCSQgk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 12:36:40 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:39247 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727477AbgCSQgj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 12:36:39 -0400
+Received: by mail-wm1-f66.google.com with SMTP id a9so36154wmj.4
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 09:36:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+        h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=az/1hcN+eeN8o/PwP0DhUtoipfDsLHrH0zpr+Js0UaE=;
-        b=IvgyU37AFRc2WUCe0v5AE6ph7V5iRLSq1MGxJvXBMDywGP2MESn9Olz9x31cgNl7f3
-         CpDsYE+cIGyybNcK1Uls5L0OJG8/dyshf15MC1/C9z8y/2j/9/aG0LOjlKDTY3fysls5
-         IHe7RkTEEFX0Xta6jc+qckjuPMqvQudg9kBPJLxw/lcwozINcloquDjGVre6y2NFlNK5
-         t50fb18vASPDJTVBGY/u80IoaYg3rd/nlI8GY+mkgSzA+sK6+WX/rXQW1/dwIOOKAqy7
-         7XY+Fl+/GO0FALgm/ikv6n5G6JKSv44vULT1yS9Ixf43zmHDwOgDCHWIuU3L2rV+0v6w
-         S5WQ==
+        bh=3Qi1/0g6HcBmMES4ToJIb52lGasb0+SC87qg08Z50n8=;
+        b=HFOM/dc1KeqAQAZbap8pMR1caHgGyRFz8kk25Hq/uGxfz+xDJIeOIlSt8T0Alipf74
+         nGpUt1gKCQ5SnVsVLx2AF40qz3ANx6CiTQPRALZYw1LcOCcbJi/cCxfIonELvZLTZewB
+         7Ylmv6N9XuV/RQy4sYiMaEsI/qsW4r0O4umF8kX3SN536aqcZyW5+wzBnf4c9nKFpMsH
+         /TUQY2L5wSQ+pdQOX5lrTSV/BlEEgyZZs4fkWz/YxnfEr9g41LZzN9BScbZ2o1RHZrK+
+         e2+TMhwj3FAsI8LerhZujDRkX9dLHzdYHCZJ6C6isrzkTY7OHtOPUrmAaaF2vbBZRqHF
+         xwBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=az/1hcN+eeN8o/PwP0DhUtoipfDsLHrH0zpr+Js0UaE=;
-        b=N3sHx0qcDaOnn4xmJnf4vQ+uDiP6Vqx8uEJSGqr9hoPXGnK12L8eJwh0gHZHjkvKpF
-         +m/u6HQ1OeHeHe6zfq15ymJV/u5BEgHXAIvhHnnXuMm3tgk6Wbcpj96B+z7f3Hp7m0lf
-         PceEsPfjs3Cqk86+WuJ2HvG00iEX5mgKqiXtW9CtVT2Y8bYuTiO1AdDNcNhAeYDbeuys
-         +7RA5uS+g3WWkpoX3FXN8iwXvGnVavB8D4SrVhdApv8ifxHQGlgOBdnKdDJ+dO6apw5v
-         d1GdLr5KHPysErTYI5WRWOJGw5IKdGQ0XBU78DCOJKu3cGSuojM1VoZD4RdvuYK+RZng
-         hk5Q==
-X-Gm-Message-State: ANhLgQ13bPo4BFwUWO0LcxikW1sh3TnQ15/meF2Jwmx6gjBJQY3Gzhto
-        5BtMjNb9rtqTbP6yajS5Vqi+Q+9A
-X-Google-Smtp-Source: ADFU+vuy5SwjRzrywjOTflNbtXA29ZOClYJprmO74g02rgzCuQqvoG7khnqTa0xow/vBL6xukySgWw==
-X-Received: by 2002:a63:7e56:: with SMTP id o22mr4062070pgn.136.1584635478020;
-        Thu, 19 Mar 2020 09:31:18 -0700 (PDT)
-Received: from [192.168.1.2] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.googlemail.com with ESMTPSA id x190sm2847114pfb.96.2020.03.19.09.31.16
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=3Qi1/0g6HcBmMES4ToJIb52lGasb0+SC87qg08Z50n8=;
+        b=k182cNJACPa+m5VphwQMGhB+ysNnRx2h+rjNOisVJuesWIj6Tj35upAUsVJC7ZUlqi
+         2etBN7VrY1XXrK0xJEtNs94mREm3bdVwJlXa0bmWabvu+FRdlbmx2GlyaXwvSZKZ0PLs
+         R1hqctMDM6bLf8wekGUoLbOsDOjcGKa6/b7ifoy3vVslAHVFQKUr5lgq9cQGw8RdLoS1
+         ORwKQVCxaHY/z0xhHxMCxRdamxKMhLQglH7ZXx2bxE3ha+63tWeXtbawY0wf/+5Ckdyo
+         Cgf3RKsK7EjUAxtoLwROASbuuKh7TGfrvFINrUSye+4Ibiwi3sSrjzwemJKPHaNtH9B9
+         7OGA==
+X-Gm-Message-State: ANhLgQ2niSGH3Ph74A4/BGX66FcQgTWycCYFBegDD2f5YGfuqHwcrclM
+        jrFS5XKhNQZDrW2xxERd8O3fpNl4
+X-Google-Smtp-Source: ADFU+vsazLbt9DHJaWHa9ZrJYALyZp9an7OcuKR0NCUSHoApuZ0bf7uQccBpmwOwMNesPbIEcAsRaQ==
+X-Received: by 2002:a1c:41d6:: with SMTP id o205mr4664439wma.122.1584635796792;
+        Thu, 19 Mar 2020 09:36:36 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:f482:8f51:2469:4533? (p200300EA8F296000F4828F5124694533.dip0.t-ipconnect.de. [2003:ea:8f29:6000:f482:8f51:2469:4533])
+        by smtp.googlemail.com with ESMTPSA id t1sm4425991wrq.36.2020.03.19.09.36.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Mar 2020 09:31:17 -0700 (PDT)
-Subject: Re: [PATCH net] net: bcmgenet: always enable status blocks
-To:     Doug Berger <opendmb@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1584489936-26812-1-git-send-email-opendmb@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <97201122-3bfa-1a4e-4e8d-52f6c50e32f1@gmail.com>
-Date:   Thu, 19 Mar 2020 09:31:16 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        Thu, 19 Mar 2020 09:36:36 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/3] net: phy: add and use phy_check_downshift
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <6e4ea372-3d05-3446-2928-2c1e76a66faf@gmail.com>
+ <d2822357-4c1e-a072-632e-a902b04eba7c@gmail.com>
+ <20200318232159.GA25745@shell.armlinux.org.uk>
+ <b0bc3ca0-0c1b-045e-cd00-37fc85c4eebf@gmail.com>
+ <20200319112535.GD25745@shell.armlinux.org.uk>
+ <20200319130429.GC24972@lunn.ch>
+ <20200319135800.GE25745@shell.armlinux.org.uk>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <92689def-4bbf-8988-3137-f3cfb940e9fc@gmail.com>
+Date:   Thu, 19 Mar 2020 17:36:30 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <1584489936-26812-1-git-send-email-opendmb@gmail.com>
+In-Reply-To: <20200319135800.GE25745@shell.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 2020-03-17 à 17:05, Doug Berger a écrit :
-> The hardware offloading of the NETIF_F_HW_CSUM and NETIF_F_RXCSUM
-> features requires the use of Transmit Status Blocks before transmit
-> frame data and Receive Status Blocks before receive frame data to
-> carry the checksum information.
+On 19.03.2020 14:58, Russell King - ARM Linux admin wrote:
+> On Thu, Mar 19, 2020 at 02:04:29PM +0100, Andrew Lunn wrote:
+>>> The only time that this helps is if PHY drivers implement reading a
+>>> vendor register to report the actual link speed, and the PHY specific
+>>> driver is used.
+>>
+>> So maybe we either need to implement this reading of the vendor
+>> register as a driver op, or we have a flag indicating the driver is
+>> returning the real speed, not the negotiated speed?
 > 
-> Unfortunately, these status blocks are currently only enabled when
-> the NETIF_F_HW_CSUM feature is enabled. As a result NETIF_F_RXCSUM
-> will not actually be offloaded to the hardware unless both it and
-> NETIF_F_HW_CSUM are enabled. Fortunately, that is the default
-> configuration.
+> I'm not sure it's necessary to have another driver op.  How about
+> this for an idea:
 > 
-> This commit addresses this issue by always enabling the use of
-> status blocks on both transmit and receive frames. Further, it
-> replaces the use of a dedicated flag within the driver private
-> data structure with direct use of the netdev features flags.
+> - add a flag to struct phy_device which indicates the status of
+>   downshift.
+> - on link-up, check the flag and report whether a downshift occurred,
+>   printing whether a downshift occurred in phy_print_status() and
+>   similar places.  (Yes, I know that there are some network drivers
+>   that don't use phy_print_status().)
 > 
-> Fixes: 810155397890 ("net: bcmgenet: use CHECKSUM_COMPLETE for NETIF_F_RXCSUM")
-> Signed-off-by: Doug Berger <opendmb@gmail.com>
+> The downshift flag could be made tristate - "unknown", "not downshifted"
+> and "downshifted" - which would enable phy_print_status() to indicate
+> whether there is downshift supported (and hence whether we need to pay
+> more attention to what is going on when there is a slow-link report.)
+> 
+> Something like:
+> 
+> For no downshift:
+> 	Link is Up - 1Gbps/Full - flow control off
+> For downshift:
+> 	Link is Up - 100Mbps/Full (downshifted) - flow control off
+> For unknown:
+> 	Link is Up - 1Gbps/Full (unknown downshift) - flow control off
+> 
+> which has the effect of being immediately obvious if the driver lacks
+> support.
+> 
+> We may wish to consider PHYs which support no downshift ability as
+> well, which should probably set the status to "not downshifted" or
+> maybe an "unsupported" state.
+> 
+> This way, if we fall back to the generic PHY driver, we'd get the
+> "unknown" state.
+> 
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+I'd like to split the topics. First we have downshift detection,
+then we have downshift reporting/warning.
+
+*Downshift detection*
+Prerequisite of course is that the PHY supports reading the actual,
+possibly downshifted link speed (typically from a vendor-specific
+register). Then the PHY driver has to set phydev->speed to the
+actual link speed in the read_status() implementation.
+
+For the actual downshift detection we have two options:
+1. PHY provides info about a downshift event in a vendor-specific
+   register or as an interrupt source.
+2. The generic method, compare actual link speed with the highest
+   mutually advertised speed.
+So far I don't see a benefit of option 1. The generic method is
+easier and reduces complexity in drivers.
+
+The genphy driver is a fallback, and in addition may be intentionally
+used for PHY's that have no specific features. A PHY with additional
+features in general may or may not work properly with the genphy
+driver. Some RTL8168-internal PHY's fail miserably with the genphy
+driver. I just had a longer discussion about it caused by the fact
+that on some distributions r8169.ko is in initramfs but realtek.ko
+is not.
+On a side note: Seems that so far the kernel doesn't provide an
+option to express a hard module dependency that is not a code
+dependency.
+
+*Downshift reporting/warning*
+In most cases downshift is caused by some problem with the cabling.
+Users like the typical Ubuntu user in most cases are not familiar
+with the concept of PHY downshift and what causes a downshift.
+Therefore it's not sufficient to just report a downshift, we have
+to provide the user with a hint what to do.
+Adding the "downshifted" info to phy_print_status() is a good idea,
+however I'd see it as an optional addition to the mentioned hint
+to the user what to do.
+The info "unknown downshift" IMO would just cause confusion. If we
+have nothing to say, then why say something. Also users may interpret
+"unknown" as "there's something wrong".
