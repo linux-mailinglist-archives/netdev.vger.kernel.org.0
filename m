@@ -2,306 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E111C18B0FA
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 11:14:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C006D18B11D
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 11:20:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726767AbgCSKOZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 06:14:25 -0400
-Received: from mail-lj1-f176.google.com ([209.85.208.176]:34154 "EHLO
-        mail-lj1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725601AbgCSKOY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 06:14:24 -0400
-Received: by mail-lj1-f176.google.com with SMTP id s13so1805695ljm.1
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 03:14:21 -0700 (PDT)
+        id S1727116AbgCSKUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 06:20:43 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:46774 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726663AbgCSKUm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 06:20:42 -0400
+Received: by mail-lf1-f67.google.com with SMTP id a28so1113444lfr.13
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 03:20:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NS59NhIO9FklVSlocZ9COaIootU6HPAqwvgvjPc0JZI=;
-        b=SqyyKzxUs28gcPCwVh8IeEUD9O5N1DSX9MOVC2q0MCGzGNm3D11USn4YL65M2BM9XT
-         cJzx/beasUHcfJw86tj0hhHtHVSKRUoXXapZld6DqjSc4lQw0Q1bulNhkjJkI4qrs6UW
-         fupiP3NJ+zsgiTzGQc4YTzvE8hZuu60Bavl1s=
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TQcasci4XhSrKCJoPRA/qSrDjHc7fp39qcsEw/ahKX0=;
+        b=MSgi21U0HiEtb+VOKq4HocZQ/U6wvkd5CsdWTOSFmR+ziVKqNIFuSgTp4prNkWzn/A
+         AYfkVwDR1k3bF71X81xApg+Rrj7LmELIUDNIaprXCzE+rrix9WZvUGGbQeru2aVcDVUg
+         kNrs1oGPjUQ+m01XHPrQjI4dhbfQpB/Yii3wqnjTekBmr++XHHx97gdIi0sXEkEQX9mt
+         RSRMGub7M0Xaufs0ENHsZYonb3nrC4jhQg+Ijhh2KC1DXHkZ0ptcubbb1MQdOnNo3Tt5
+         gsb/V0eizY4VNoyJHnnJ8fD8GF44/KRf5y3HDyojG35vL+Uy3+/rKnAmoMQzU6TdRMXo
+         vFwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=NS59NhIO9FklVSlocZ9COaIootU6HPAqwvgvjPc0JZI=;
-        b=lS25+rFZP+52ptMaWQthTsl2JcWDkqcnSoMgbkH06psNdFcyHMi/WxaLj8uLe4QtDl
-         U1g2lVMZT73wU99eg+I9oVtjTO4pQZAHAEklDjEUPnivluXvE6SAvTY0nzVYe+I+sSOo
-         z3GmalQdTPH3XdrQZGs5qkM4Ce7C/N3WgU5GxKFp6Gnj37cSLZwonYmsfsw/Qsh6Zbpl
-         X37q1KGCtCt+1EH92H2WrYoqPpBZp+5OftprcuA7ArCg6/X1+AlWfmJ0+863NNnjQS8V
-         wQ9inIHkGNWQIRBPchjTX9RMel+qFwfouCcIQbLHfVvfcEWFhdjt+MtydvfDaLSYo3z5
-         SkjQ==
-X-Gm-Message-State: ANhLgQ0kYHUh9BaNkND41QveYYGWDcZcEKO/RowUXiPHEASbjt9x4w1T
-        fUtt+7m9QWlXoQjxw3HUff3gmxaYhac=
-X-Google-Smtp-Source: ADFU+vvzbrwtgfA7x5AdvT8J/tb7SkV+yGQsbrrF0o+yL8hpzRnXirorSWpuOlNvHfscZMXv7k99DQ==
-X-Received: by 2002:a2e:9b44:: with SMTP id o4mr1656826ljj.63.1584612860427;
-        Thu, 19 Mar 2020 03:14:20 -0700 (PDT)
-Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id r10sm1124678ljk.13.2020.03.19.03.14.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Mar 2020 03:14:19 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
-        bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next v2] net: bridge: vlan: include stats in dumps if requested
-Date:   Thu, 19 Mar 2020 12:14:14 +0200
-Message-Id: <20200319101414.201391-1-nikolay@cumulusnetworks.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TQcasci4XhSrKCJoPRA/qSrDjHc7fp39qcsEw/ahKX0=;
+        b=C78Pf4t5JCgkJXDJjiFdkgHRfFG8zNx3YM019zZyPR5CGRAui55MMdAhiFXOrOxJoE
+         Ic1hWYmJcIzJ6X6uKhDgexDItMnAE4A3oha5uw8PMJl/SCM/kEEZDE0kai2xahPIVDKo
+         EDLhdII3wFqULc2tkOKyPNcMIz078PT8v5hCv/HXWiD155YDSbC63c5YzDrMccoJY900
+         OsgjaHQq0uwfgabv3EkVnvzhCb8lbRlGR4dTT+CJEiw0vm0Lk7pWFcA6l8eD3DgM3dcz
+         jg4J+suf1XaB8W2mXzgA9VfLZ39B9+zKCZ3IuPGhooBCRjEYuecgh+BKVn00GH99decN
+         /QpQ==
+X-Gm-Message-State: ANhLgQ1v1tQAgtmQcxfL4vX8iLIZdmFV3n2A53YVAMD1aV1PCTkOlNv2
+        eO7N45fV0CzsnfWK/5rPdSGbFK6bV972RoJ/KpUaRF1sFjM=
+X-Google-Smtp-Source: ADFU+vtxQY6TLf9RCdpR3pIWpMz/lw0qNuGNd69xOwiknAhuTdy6sWA9qnnsHTERhr29y6VEpekrkFQyIu8q+rV2njg=
+X-Received: by 2002:a19:6502:: with SMTP id z2mr1626078lfb.47.1584613239811;
+ Thu, 19 Mar 2020 03:20:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200318003956.73573-1-pablo@netfilter.org> <20200318003956.73573-20-pablo@netfilter.org>
+In-Reply-To: <20200318003956.73573-20-pablo@netfilter.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 19 Mar 2020 11:20:28 +0100
+Message-ID: <CACRpkdbK0dZ87beU8qPSHmRMxTWog-8WbiDQvM-ec06_hAjkoQ@mail.gmail.com>
+Subject: Re: [PATCH 19/29] nft_set_pipapo: Introduce AVX2-based lookup implementation
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>, Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for vlan stats to be included when dumping vlan
-information. We have to dump them only when explicitly requested (thus the
-flag below) because that disables the vlan range compression and will make
-the dump significantly larger. In order to request the stats to be
-included we add a new dump attribute called BRIDGE_VLANDB_DUMP_FLAGS which
-can affect dumps with the following first flag:
-  - BRIDGE_VLANDB_DUMPF_STATS
-The stats are intentionally nested and put into separate attributes to make
-it easier for extending later since we plan to add per-vlan mcast stats,
-drop stats and possibly STP stats. This is the last missing piece from the
-new vlan API which makes the dumped vlan information complete.
+Hi Pablo,
 
-A dump request which should include stats looks like:
- [BRIDGE_VLANDB_DUMP_FLAGS] |= BRIDGE_VLANDB_DUMPF_STATS
+First: I really like this type of optimizations. It's really cool to
+see this hardware being put to good use. So for the record,
+I'm impressed with your work here.
 
-A vlandb entry attribute with stats looks like:
- [BRIDGE_VLANDB_ENTRY] = {
-     [BRIDGE_VLANDB_ENTRY_STATS] = {
-         [BRIDGE_VLANDB_STATS_RX_BYTES]
-         [BRIDGE_VLANDB_STATS_RX_PACKETS]
-         ...
-     }
- }
+On Wed, Mar 18, 2020 at 1:40 AM Pablo Neira Ayuso <pablo@netfilter.org> wrote:
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
----
-v2: Use a separate dump attribute for the flags instead of a reserved
-    field to avoid uapi breakage as noted by DaveM.
-    Rebased and retested on the latest net-next.
+> +ifdef CONFIG_X86_64
+> +ifneq (,$(findstring -DCONFIG_AS_AVX2=1,$(KBUILD_CFLAGS)))
+> +nf_tables-objs += nft_set_pipapo_avx2.o
+> +endif
+> +endif
 
- include/uapi/linux/if_bridge.h | 30 ++++++++++++++
- net/bridge/br_vlan.c           | 73 ++++++++++++++++++++++++++++------
- 2 files changed, 91 insertions(+), 12 deletions(-)
+So this is the first time I see some x86-specific asm optimizations
+in the middle of nftables. That's pretty significant, so it should be
+pointed out in the commit message I think.
 
-diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-index 54010b49c093..9dd1b1fa3291 100644
---- a/include/uapi/linux/if_bridge.h
-+++ b/include/uapi/linux/if_bridge.h
-@@ -175,6 +175,16 @@ struct br_vlan_msg {
- 	__u32 ifindex;
- };
- 
-+enum {
-+	BRIDGE_VLANDB_DUMP_UNSPEC,
-+	BRIDGE_VLANDB_DUMP_FLAGS,
-+	__BRIDGE_VLANDB_DUMP_MAX,
-+};
-+#define BRIDGE_VLANDB_DUMP_MAX (__BRIDGE_VLANDB_DUMP_MAX - 1)
-+
-+/* flags used in BRIDGE_VLANDB_DUMP_FLAGS attribute to affect dumps */
-+#define BRIDGE_VLANDB_DUMPF_STATS	(1 << 0) /* Include stats in the dump */
-+
- /* Bridge vlan RTM attributes
-  * [BRIDGE_VLANDB_ENTRY] = {
-  *     [BRIDGE_VLANDB_ENTRY_INFO]
-@@ -194,10 +204,30 @@ enum {
- 	BRIDGE_VLANDB_ENTRY_RANGE,
- 	BRIDGE_VLANDB_ENTRY_STATE,
- 	BRIDGE_VLANDB_ENTRY_TUNNEL_ID,
-+	BRIDGE_VLANDB_ENTRY_STATS,
- 	__BRIDGE_VLANDB_ENTRY_MAX,
- };
- #define BRIDGE_VLANDB_ENTRY_MAX (__BRIDGE_VLANDB_ENTRY_MAX - 1)
- 
-+/* [BRIDGE_VLANDB_ENTRY] = {
-+ *     [BRIDGE_VLANDB_ENTRY_STATS] = {
-+ *         [BRIDGE_VLANDB_STATS_RX_BYTES]
-+ *         ...
-+ *     }
-+ *     ...
-+ * }
-+ */
-+enum {
-+	BRIDGE_VLANDB_STATS_UNSPEC,
-+	BRIDGE_VLANDB_STATS_RX_BYTES,
-+	BRIDGE_VLANDB_STATS_RX_PACKETS,
-+	BRIDGE_VLANDB_STATS_TX_BYTES,
-+	BRIDGE_VLANDB_STATS_TX_PACKETS,
-+	BRIDGE_VLANDB_STATS_PAD,
-+	__BRIDGE_VLANDB_STATS_MAX,
-+};
-+#define BRIDGE_VLANDB_STATS_MAX (__BRIDGE_VLANDB_STATS_MAX - 1)
-+
- /* Bridge multicast database attributes
-  * [MDBA_MDB] = {
-  *     [MDBA_MDB_ENTRY] = {
-diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 24f524536be4..4398f3796665 100644
---- a/net/bridge/br_vlan.c
-+++ b/net/bridge/br_vlan.c
-@@ -1569,10 +1569,41 @@ void br_vlan_port_event(struct net_bridge_port *p, unsigned long event)
- 	}
- }
- 
-+static bool br_vlan_stats_fill(struct sk_buff *skb,
-+			       const struct net_bridge_vlan *v)
-+{
-+	struct br_vlan_stats stats;
-+	struct nlattr *nest;
-+
-+	nest = nla_nest_start(skb, BRIDGE_VLANDB_ENTRY_STATS);
-+	if (!nest)
-+		return false;
-+
-+	br_vlan_get_stats(v, &stats);
-+	if (nla_put_u64_64bit(skb, BRIDGE_VLANDB_STATS_RX_BYTES, stats.rx_bytes,
-+			      BRIDGE_VLANDB_STATS_PAD) ||
-+	    nla_put_u64_64bit(skb, BRIDGE_VLANDB_STATS_RX_PACKETS,
-+			      stats.rx_packets, BRIDGE_VLANDB_STATS_PAD) ||
-+	    nla_put_u64_64bit(skb, BRIDGE_VLANDB_STATS_TX_BYTES, stats.tx_bytes,
-+			      BRIDGE_VLANDB_STATS_PAD) ||
-+	    nla_put_u64_64bit(skb, BRIDGE_VLANDB_STATS_TX_PACKETS,
-+			      stats.tx_packets, BRIDGE_VLANDB_STATS_PAD))
-+		goto out_err;
-+
-+	nla_nest_end(skb, nest);
-+
-+	return true;
-+
-+out_err:
-+	nla_nest_cancel(skb, nest);
-+	return false;
-+}
-+
- /* v_opts is used to dump the options which must be equal in the whole range */
- static bool br_vlan_fill_vids(struct sk_buff *skb, u16 vid, u16 vid_range,
- 			      const struct net_bridge_vlan *v_opts,
--			      u16 flags)
-+			      u16 flags,
-+			      bool dump_stats)
- {
- 	struct bridge_vlan_info info;
- 	struct nlattr *nest;
-@@ -1596,8 +1627,13 @@ static bool br_vlan_fill_vids(struct sk_buff *skb, u16 vid, u16 vid_range,
- 	    nla_put_u16(skb, BRIDGE_VLANDB_ENTRY_RANGE, vid_range))
- 		goto out_err;
- 
--	if (v_opts && !br_vlan_opts_fill(skb, v_opts))
--		goto out_err;
-+	if (v_opts) {
-+		if (!br_vlan_opts_fill(skb, v_opts))
-+			goto out_err;
-+
-+		if (dump_stats && !br_vlan_stats_fill(skb, v_opts))
-+			goto out_err;
-+	}
- 
- 	nla_nest_end(skb, nest);
- 
-@@ -1675,7 +1711,7 @@ void br_vlan_notify(const struct net_bridge *br,
- 		goto out_kfree;
- 	}
- 
--	if (!br_vlan_fill_vids(skb, vid, vid_range, v, flags))
-+	if (!br_vlan_fill_vids(skb, vid, vid_range, v, flags, false))
- 		goto out_err;
- 
- 	nlmsg_end(skb, nlh);
-@@ -1699,9 +1735,11 @@ bool br_vlan_can_enter_range(const struct net_bridge_vlan *v_curr,
- 
- static int br_vlan_dump_dev(const struct net_device *dev,
- 			    struct sk_buff *skb,
--			    struct netlink_callback *cb)
-+			    struct netlink_callback *cb,
-+			    u32 dump_flags)
- {
- 	struct net_bridge_vlan *v, *range_start = NULL, *range_end = NULL;
-+	bool dump_stats = !!(dump_flags & BRIDGE_VLANDB_DUMPF_STATS);
- 	struct net_bridge_vlan_group *vg;
- 	int idx = 0, s_idx = cb->args[1];
- 	struct nlmsghdr *nlh = NULL;
-@@ -1754,12 +1792,13 @@ static int br_vlan_dump_dev(const struct net_device *dev,
- 			continue;
- 		}
- 
--		if (v->vid == pvid || !br_vlan_can_enter_range(v, range_end)) {
--			u16 flags = br_vlan_flags(range_start, pvid);
-+		if (dump_stats || v->vid == pvid ||
-+		    !br_vlan_can_enter_range(v, range_end)) {
-+			u16 vlan_flags = br_vlan_flags(range_start, pvid);
- 
- 			if (!br_vlan_fill_vids(skb, range_start->vid,
- 					       range_end->vid, range_start,
--					       flags)) {
-+					       vlan_flags, dump_stats)) {
- 				err = -EMSGSIZE;
- 				break;
- 			}
-@@ -1778,7 +1817,8 @@ static int br_vlan_dump_dev(const struct net_device *dev,
- 	 */
- 	if (!err && range_start &&
- 	    !br_vlan_fill_vids(skb, range_start->vid, range_end->vid,
--			       range_start, br_vlan_flags(range_start, pvid)))
-+			       range_start, br_vlan_flags(range_start, pvid),
-+			       dump_stats))
- 		err = -EMSGSIZE;
- 
- 	cb->args[1] = err ? idx : 0;
-@@ -1788,18 +1828,27 @@ static int br_vlan_dump_dev(const struct net_device *dev,
- 	return err;
- }
- 
-+static const struct nla_policy br_vlan_db_dump_pol[BRIDGE_VLANDB_DUMP_MAX + 1] = {
-+	[BRIDGE_VLANDB_DUMP_FLAGS] = { .type = NLA_U32 },
-+};
-+
- static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
- {
-+	struct nlattr *dtb[BRIDGE_VLANDB_DUMP_MAX + 1];
- 	int idx = 0, err = 0, s_idx = cb->args[0];
- 	struct net *net = sock_net(skb->sk);
- 	struct br_vlan_msg *bvm;
- 	struct net_device *dev;
-+	u32 dump_flags = 0;
- 
--	err = nlmsg_parse(cb->nlh, sizeof(*bvm), NULL, 0, NULL, cb->extack);
-+	err = nlmsg_parse(cb->nlh, sizeof(*bvm), dtb, BRIDGE_VLANDB_DUMP_MAX,
-+			  br_vlan_db_dump_pol, cb->extack);
- 	if (err < 0)
- 		return err;
- 
- 	bvm = nlmsg_data(cb->nlh);
-+	if (dtb[BRIDGE_VLANDB_DUMP_FLAGS])
-+		dump_flags = nla_get_u32(dtb[BRIDGE_VLANDB_DUMP_FLAGS]);
- 
- 	rcu_read_lock();
- 	if (bvm->ifindex) {
-@@ -1808,7 +1857,7 @@ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
- 			err = -ENODEV;
- 			goto out_err;
- 		}
--		err = br_vlan_dump_dev(dev, skb, cb);
-+		err = br_vlan_dump_dev(dev, skb, cb, dump_flags);
- 		if (err && err != -EMSGSIZE)
- 			goto out_err;
- 	} else {
-@@ -1816,7 +1865,7 @@ static int br_vlan_rtm_dump(struct sk_buff *skb, struct netlink_callback *cb)
- 			if (idx < s_idx)
- 				goto skip;
- 
--			err = br_vlan_dump_dev(dev, skb, cb);
-+			err = br_vlan_dump_dev(dev, skb, cb, dump_flags);
- 			if (err == -EMSGSIZE)
- 				break;
- skip:
--- 
-2.25.1
+I have a question around this:
 
+> +#define NFT_PIPAPO_LONGS_PER_M256      (XSAVE_YMM_SIZE / BITS_PER_LONG)
+> +
+> +/* Load from memory into YMM register with non-temporal hint ("stream load"),
+> + * that is, don't fetch lines from memory into the cache. This avoids pushing
+> + * precious packet data out of the cache hierarchy, and is appropriate when:
+> + *
+> + * - loading buckets from lookup tables, as they are not going to be used
+> + *   again before packets are entirely classified
+> + *
+> + * - loading the result bitmap from the previous field, as it's never used
+> + *   again
+> + */
+> +#define NFT_PIPAPO_AVX2_LOAD(reg, loc)                                 \
+> +       asm volatile("vmovntdqa %0, %%ymm" #reg : : "m" (loc))
+
+(...)
+
+> +/* Bitwise AND: the staple operation of this algorithm */
+> +#define NFT_PIPAPO_AVX2_AND(dst, a, b)                                 \
+> +       asm volatile("vpand %ymm" #a ", %ymm" #b ", %ymm" #dst)
+> +
+> +/* Jump to label if @reg is zero */
+> +#define NFT_PIPAPO_AVX2_NOMATCH_GOTO(reg, label)                       \
+> +       asm_volatile_goto("vptest %%ymm" #reg ", %%ymm" #reg ";"        \
+> +                         "je %l[" #label "]" : : : : label)
+> +
+> +/* Store 256 bits from YMM register into memory. Contrary to bucket load
+> + * operation, we don't bypass the cache here, as stored matching results
+> + * are always used shortly after.
+> + */
+> +#define NFT_PIPAPO_AVX2_STORE(loc, reg)                                        \
+> +       asm volatile("vmovdqa %%ymm" #reg ", %0" : "=m" (loc))
+> +
+> +/* Zero out a complete YMM register, @reg */
+> +#define NFT_PIPAPO_AVX2_ZERO(reg)                                      \
+> +       asm volatile("vpxor %ymm" #reg ", %ymm" #reg ", %ymm" #reg)
+
+The usual practice for this kind of asm optimizations is to store it
+in the arch.
+
+See for example
+arch/x86/include/asm/bitops.h
+arch/arm64/include/asm/bitrev.h
+which optimize a few bit operations with inline assembly.
+
+The upside is that bitwise operations can be optimized per-arch
+depending on available arch instructions.
+
+If other archs have similar instructions to AVX2 which can
+slot in and optimize the same code, it would make sense to
+move the assembly to the arch and define some new
+bitops for loading, storing, zero and bitwise AND, possibly even
+if restricted to 256 bits bitmaps.
+
+We have lib/bitmap.c I can see that this library contain
+things such as:
+
+int __bitmap_and(unsigned long *dst, const unsigned long *bitmap1,
+                                const unsigned long *bitmap2, unsigned int bits)
+
+Which intuitively seems like something that could use
+these optimizations. It should be fine to augment the kernel
+to handle arch-specific optimizations of bitmap operations
+just like we do for setting bits or finding the first set bit
+in a bitmap etc. Today only bitops.h contain arch optimizations
+but if needed surely we can expand on that?
+
+So I would like to see an explanation why we cannot take
+an extra step and make this code something that is entire
+abstract from x86 and will optimize any arch that can to
+256 bit bitwise acceleration such as this.
+
+Yours,
+Linus Walleij
