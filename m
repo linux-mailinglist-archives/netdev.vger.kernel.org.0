@@ -2,123 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E0B4B18B9D5
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 15:58:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D91CA18BA4C
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 16:04:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727605AbgCSO6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 10:58:50 -0400
-Received: from mail-pl1-f181.google.com ([209.85.214.181]:38748 "EHLO
-        mail-pl1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726785AbgCSO6t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 10:58:49 -0400
-Received: by mail-pl1-f181.google.com with SMTP id w3so1174029plz.5
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 07:58:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QG2RZb+BTryN8i49xjLkaQ5YR5Ti0pAT5u6H0IdRBv4=;
-        b=Mdb2fG9MJyXN8LHINqle/3JaVDneR+XN7dHSQc8rmxxbzJ29aZMeltukXPXYIqPAsF
-         8hMqCPXJm5ERVlZPjTAdokA8IRZbSUskmyqVXniwdkySH6ejdSPrUNo6nK7T6XGYbOe0
-         HZNxTBHV/0sire7f9x6yMMSy6VA+K7UTSUgvHsXgrORwCD0xtYguivHnrqd+pncqfjPT
-         4RP468s+ZArovJ9sCk7myEntjt6LnGnZKEGBjDaLJLZvZMjnWtLq6jtDuj19DCdedWSJ
-         qtNX4X7XzgNUhoMQ2UFtXpeRm0oycNkE1KRi1nJ1o3kyhpGw7IL0RB7Bgc5VzcHpwK0K
-         TdyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QG2RZb+BTryN8i49xjLkaQ5YR5Ti0pAT5u6H0IdRBv4=;
-        b=eiquMBmtz0BLfxR7DBFT45pkNl+nBSbZkuan8yebOAq6YUzss17wWTi+wIBzqVBO5g
-         oMeoWiJnWfF1LzisrEYwIelBFB3kPePxBHdIvuzFkxFu6sLmJAZOdqPh4Oa+d4wJUZpl
-         O/ex0q86vyjgqltGxADDPvIeM9zMpHgnJS5v0RXHm3aLLCAkXOi7UV4Ga6DSmw2AUNCO
-         Vc26WZRQGUpXwtH5NZjQ23NlegnvYYnmbCuPI9kyowIzmz8nXrsoIEzKlS/9BHQYg115
-         4psSCAoK7tzje7wn51Ep7OfxXpAR4V1r8MhJljx+Loj7OgktUEYTjaZcFKDmhghnU1tS
-         KdJw==
-X-Gm-Message-State: ANhLgQ0kcYPuBiEiIjXuJYP2KcnoNFuSC3uaL2TmA47Fg3IrEsmHGLnN
-        2uD1fUznFbk+80ReZNevJ/VsZa/+rCw=
-X-Google-Smtp-Source: ADFU+vvsiWlmejKJ3gF2LbyVRw8XC0KodPI1rrRnCZ5H7kC93XxjLrpiAu0Sx0pVVRyrCQ7IDbKo0Q==
-X-Received: by 2002:a17:902:22e:: with SMTP id 43mr3631716plc.119.1584629927662;
-        Thu, 19 Mar 2020 07:58:47 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id f19sm2724019pgf.33.2020.03.19.07.58.47
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Mar 2020 07:58:47 -0700 (PDT)
-Date:   Thu, 19 Mar 2020 07:58:39 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     netdev@vger.kernel.org
-Subject: Fw: [Bug 206885] New: macvlan and proxy ARP can be accidentally
- configured to respond to ARP requests for all IPs
-Message-ID: <20200319075839.0af55790@hermes.lan>
+        id S1727977AbgCSPEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 11:04:30 -0400
+Received: from ms.lwn.net ([45.79.88.28]:33904 "EHLO ms.lwn.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726795AbgCSPE3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 11:04:29 -0400
+Received: from lwn.net (localhost [127.0.0.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id DB45F384;
+        Thu, 19 Mar 2020 15:04:27 +0000 (UTC)
+Date:   Thu, 19 Mar 2020 09:04:26 -0600
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [patch V2 08/15] Documentation: Add lock ordering and nesting
+ documentation
+Message-ID: <20200319090426.512510cb@lwn.net>
+In-Reply-To: <20200318204408.211530902@linutronix.de>
+References: <20200318204302.693307984@linutronix.de>
+        <20200318204408.211530902@linutronix.de>
+Organization: LWN.net
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-My gut feeling is this a user error, but forwarding to get more eyes.
+On Wed, 18 Mar 2020 21:43:10 +0100
+Thomas Gleixner <tglx@linutronix.de> wrote:
 
-Begin forwarded message:
+> From: Thomas Gleixner <tglx@linutronix.de>
+> 
+> The kernel provides a variety of locking primitives. The nesting of these
+> lock types and the implications of them on RT enabled kernels is nowhere
+> documented.
+> 
+> Add initial documentation.
 
-Date: Thu, 19 Mar 2020 13:48:01 +0000
-From: bugzilla-daemon@bugzilla.kernel.org
-To: stephen@networkplumber.org
-Subject: [Bug 206885] New: macvlan and proxy ARP can be accidentally configured to respond to ARP requests for all IPs
+...time to add a a couple of nits...:)
 
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> ---
+> V2: Addressed review comments from Randy
+> ---
+>  Documentation/locking/index.rst     |    1 
+>  Documentation/locking/locktypes.rst |  298 ++++++++++++++++++++++++++++++++++++
+>  2 files changed, 299 insertions(+)
+>  create mode 100644 Documentation/locking/locktypes.rst
+> 
+> --- a/Documentation/locking/index.rst
+> +++ b/Documentation/locking/index.rst
+> @@ -7,6 +7,7 @@ locking
+>  .. toctree::
+>      :maxdepth: 1
+>  
+> +    locktypes
+>      lockdep-design
+>      lockstat
+>      locktorture
+> --- /dev/null
+> +++ b/Documentation/locking/locktypes.rst
+> @@ -0,0 +1,298 @@
+> +.. _kernel_hacking_locktypes:
+> +
 
-https://bugzilla.kernel.org/show_bug.cgi?id=206885
+So ... I vaguely remember that some Thomas guy added a document saying we
+should be putting SPDX tags on our files? :)
 
-            Bug ID: 206885
-           Summary: macvlan and proxy ARP can be accidentally configured
-                    to respond to ARP requests for all IPs
-           Product: Networking
-           Version: 2.5
-    Kernel Version: 5.3.0-42-generic
-          Hardware: All
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: IPV4
-          Assignee: stephen@networkplumber.org
-          Reporter: thomas.parrott@canonical.com
-        Regression: No
+> +==========================
+> +Lock types and their rules
+> +==========================
 
-Using the following approach it is possible to accidentally configure a macvlan
-interface to respond to ARP requests for all IPs.
+[...]
 
-Reproducer:
+> +PREEMPT_RT caveats
+> +==================
+> +
+> +spinlock_t and rwlock_t
+> +-----------------------
+> +
+> +The substitution of spinlock_t and rwlock_t on PREEMPT_RT enabled kernels
+> +with RT-mutex based implementations has a few implications.
+> +
+> +On a non PREEMPT_RT enabled kernel the following code construct is
+> +perfectly fine::
+> +
+> +   local_irq_disable();
+> +   spin_lock(&lock);
+> +
+> +and fully equivalent to::
+> +
+> +   spin_lock_irq(&lock);
+> +
+> +Same applies to rwlock_t and the _irqsave() suffix variant.
+> +
+> +On a PREEMPT_RT enabled kernel this breaks because the RT-mutex
+> +substitution expects a fully preemptible context.
+> +
+> +The preferred solution is to use :c:func:`spin_lock_irq()` or
+> +:c:func:`spin_lock_irqsave()` and their unlock counterparts.
 
-ip link add link enp3s0 address f6:83:72:e4:77:0a vtest type macvlan
-ip addr add 192.168.1.200/32 dev vtest
-ip link set vtest up
+We don't need (and shouldn't use) :c:func: anymore; just saying
+spin_lock_irq() will cause the Right Things to happen.
 
-sysctl -w net.ipv4.conf.vtest.rp_filter=2
-sysctl -w net.ipv4.conf.vtest.proxy_arp=1
-sysctl -w net.ipv4.conf.vtest.forwarding=1
-
-
-On a separate host on the same segment:
-
-arping -c 1 -I eth1 -s 192.168.1.2 10.1.2.3
-ARPING 10.1.2.3 from 192.168.1.2 eth1
-Unicast reply from 10.1.2.3 [f6:83:72:e4:77:0a] 419.288ms
-Sent 1 probe(s) (0 broadcast(s))
-Received 1 response(s) (0 request(s), 0 broadcast(s))
-
-arping -c 1 -I eth1 -s 192.168.1.2 8.8.8.8
-ARPING 10.1.2.3 from 192.168.1.2 eth1
-Unicast reply from 10.1.2.3 [f6:83:72:e4:77:0a] 27.754ms
-Sent 1 probe(s) (0 broadcast(s))
-Received 1 response(s) (0 request(s), 0 broadcast(s))
-
-
-See https://github.com/lxc/lxc/issues/775 for more information.
-
--- 
-You are receiving this mail because:
-You are the assignee for the bug.
+Thanks,
+jon
