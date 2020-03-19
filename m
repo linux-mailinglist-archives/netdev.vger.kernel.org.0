@@ -2,305 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECD5218AC6B
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 06:46:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E45BB18AC71
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 06:50:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726589AbgCSFqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 01:46:04 -0400
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:38021 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725767AbgCSFqE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 01:46:04 -0400
-Received: by mail-pj1-f67.google.com with SMTP id m15so515167pje.3
-        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 22:46:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ru5neFweJumNPNlzao84Aj5kHcPfSkI6AXdUVCHgqkI=;
-        b=ack+gQ09BgNOxheRNxLXssdG8WwF6aMIqMjghX/BYEbpmBzesuWWdlbx+Dy9MbQgym
-         KEeRXe5+RHocj0AU8J2OZpDZtlQczPEf1yGD1nUO8h8pFD3d1uI4K4CiS83lb88NBPD0
-         FHxO4GUa2nogNvVO31K4V9Pr2PIx8mpIn8AFk=
+        id S1726774AbgCSFuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 01:50:05 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:34034 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725945AbgCSFuF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 01:50:05 -0400
+Received: by mail-wr1-f66.google.com with SMTP id z15so1184115wrl.1;
+        Wed, 18 Mar 2020 22:50:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ru5neFweJumNPNlzao84Aj5kHcPfSkI6AXdUVCHgqkI=;
-        b=LFfAbfG7CwLUGKKxeM7LDtfiAIxCjtaSyPcO+hNPPC7l1+Pmwjt9HmWPxaZm2nNcgR
-         C6tnVm0lh7HFJcPIDzmt3Lh6kJ1pkTWTvGnxjmx0Gh7P21HQEoKs1zB7VNcDg/YZf1/m
-         BEm2d/A0kfvqJtYbeVf8xYAmHG7vw5vmqDsgefIuvb1lgP+0OSUZbC6mTbW+QaTLb9HL
-         sZgfjskzlCSwVfvT4KjVOrcNNWMn/sIzLhE3fh5YmWvHeLBl2FgSyABRhNpWAs/5dlIC
-         b0QpolfBzwvyStv6CqxiCSnWqGt9rdWk2+UZ3w2H1zdvTjKi4+Muhn+AFYFzPTh10yN6
-         4e3Q==
-X-Gm-Message-State: ANhLgQ2G+OnW36nvf0f7wTuaojzZ9IR/TcxZAeh/jZH0G5cSqzR/Q8Re
-        FiqHmFPp7a4p58qVY/xJjkAIDA==
-X-Google-Smtp-Source: ADFU+vvl28xd57Avm1nubGBb/R+VAa9+RPK6ULc8sp9uq7zrN9TMCEbtA66Gqme7dndG2/IqxG4aeA==
-X-Received: by 2002:a17:90b:370e:: with SMTP id mg14mr441874pjb.16.1584596761585;
-        Wed, 18 Mar 2020 22:46:01 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id k24sm904433pgm.61.2020.03.18.22.46.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Mar 2020 22:46:00 -0700 (PDT)
-Date:   Wed, 18 Mar 2020 22:45:59 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Fangrui Song <maskray@google.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        "Naveen N . Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH bpf-next v6] bpf: Support llvm-objcopy for vmlinux BTF
-Message-ID: <202003182245.589A6B5@keescook>
-References: <20200318222746.173648-1-maskray@google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q71s4/UJ0VKnFdm1xhOSDFO2dtII/kxNq44R1hj7yQw=;
+        b=Xn35aB4d9Q4tEB9psJ1Pa3EzmEcxt5WbLFXLGh36sAPUVxGibxfDawAobSFDXjkDuW
+         fWE+eNHu85Xg23okx21Q7s3IFUzuxjBO38Q30AbXJG522gZ2+6mACG28317ZtWGLF/AG
+         Ex0p0IoO3EF0+mdqP5NHkuQ4LVGU85w0eKbH1j8QKioLj7vN+bJ3XHoGW8dVhmVWM7RA
+         B+AVgwUzzKGVm1WTShmPQbGPF6Lxrt8aM27L4UWNjXvozGoFqec180QAf8CHKTvhJfi8
+         F+jiKdm4rJB9AkEXPT1DUwWEOsBdNEJdxfW45drqziFgvxDfOpmUjfhlHN6svyH2F9Ob
+         jjIw==
+X-Gm-Message-State: ANhLgQ2AXYRCn95PO9707Pr4zOIjAI1AZARBywaSTrKlO4GO9oQE1o/M
+        fQPlJ6apwigvSwnLgUuqFB9i5h8HUbaerCp4H5o=
+X-Google-Smtp-Source: ADFU+vtOY/oJeS3kEvtxbw21NpnKmzmRq0SHq3JgREKY28hWQ3tR9B5BXHy1xqk9hRU2q/bKlPR8XkhliqbGK38CVyY=
+X-Received: by 2002:adf:ed86:: with SMTP id c6mr1809332wro.286.1584597001003;
+ Wed, 18 Mar 2020 22:50:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200318222746.173648-1-maskray@google.com>
+References: <20200312233648.1767-1-joe@wand.net.nz> <20200312233648.1767-4-joe@wand.net.nz>
+ <20200316225729.kd4hmz3oco5l7vn4@kafai-mbp> <CAOftzPgsVOqCLZatjytBXdQxH-DqJxiycXWN2d4C_-BjR5v1Kw@mail.gmail.com>
+ <20200317062623.y5v2hejgtdbvexnz@kafai-mbp> <CAOftzPjXexvng-+77b-4Yw0pEBHXchsNVwrx+h9vV+5XBQzy-g@mail.gmail.com>
+ <87h7ymx9my.fsf@cloudflare.com>
+In-Reply-To: <87h7ymx9my.fsf@cloudflare.com>
+From:   Joe Stringer <joe@wand.net.nz>
+Date:   Wed, 18 Mar 2020 22:49:39 -0700
+Message-ID: <CAOftzPiN0V=RhJ9WAk5qO3AwvwjrRn+rPjDPMLg4gFSqn3yqHA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/7] bpf: Add socket assign support
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+Cc:     Joe Stringer <joe@wand.net.nz>, Martin KaFai Lau <kafai@fb.com>,
+        bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 03:27:46PM -0700, Fangrui Song wrote:
-> Simplify gen_btf logic to make it work with llvm-objcopy. The existing
-> 'file format' and 'architecture' parsing logic is brittle and does not
-> work with llvm-objcopy/llvm-objdump.
-> 'file format' output of llvm-objdump>=11 will match GNU objdump, but
-> 'architecture' (bfdarch) may not.
-> 
-> .BTF in .tmp_vmlinux.btf is non-SHF_ALLOC. Add the SHF_ALLOC flag
-> because it is part of vmlinux image used for introspection. C code can
-> reference the section via linker script defined __start_BTF and
-> __stop_BTF. This fixes a small problem that previous .BTF had the
-> SHF_WRITE flag (objcopy -I binary -O elf* synthesized .data).
-> 
-> Additionally, `objcopy -I binary` synthesized symbols
-> _binary__btf_vmlinux_bin_start and _binary__btf_vmlinux_bin_stop (not
-> used elsewhere) are replaced with more commonplace __start_BTF and
-> __stop_BTF.
-> 
-> Add 2>/dev/null because GNU objcopy (but not llvm-objcopy) warns
-> "empty loadable segment detected at vaddr=0xffffffff81000000, is this intentional?"
-> 
-> We use a dd command to change the e_type field in the ELF header from
-> ET_EXEC to ET_REL so that lld will accept .btf.vmlinux.bin.o.  Accepting
-> ET_EXEC as an input file is an extremely rare GNU ld feature that lld
-> does not intend to support, because this is error-prone.
-> 
-> The output section description .BTF in include/asm-generic/vmlinux.lds.h
-> avoids potential subtle orphan section placement issues and suppresses
-> --orphan-handling=warn warnings.
-> 
-> v6:
-> - drop llvm-objdump from the title. We don't run objdump now
-> - delete unused local variables: bin_arch, bin_format and bin_file
-> - mention in the comment that lld does not allow an ET_EXEC input
-> - rename BTF back to .BTF . The section name is assumed by bpftool
-> - add output section description to include/asm-generic/vmlinux.lds.h
-> - mention cb0cc635c7a9 ("powerpc: Include .BTF section")
-> 
-> v5:
-> - rebase on top of bpf-next/master
-> - rename .BTF to BTF
-> 
-> Fixes: df786c9b9476 ("bpf: Force .BTF section start to zero when dumping from vmlinux")
-> Fixes: cb0cc635c7a9 ("powerpc: Include .BTF section")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/871
-> Signed-off-by: Fangrui Song <maskray@google.com>
+On Wed, Mar 18, 2020 at 3:03 AM Jakub Sitnicki <jakub@cloudflare.com> wrote:
+>
+> On Wed, Mar 18, 2020 at 01:46 AM CET, Joe Stringer wrote:
+> > On Mon, Mar 16, 2020 at 11:27 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> >>
+> >> On Mon, Mar 16, 2020 at 08:06:38PM -0700, Joe Stringer wrote:
+> >> > On Mon, Mar 16, 2020 at 3:58 PM Martin KaFai Lau <kafai@fb.com> wrote:
+> >> > >
+> >> > > On Thu, Mar 12, 2020 at 04:36:44PM -0700, Joe Stringer wrote:
+> >> > > > Add support for TPROXY via a new bpf helper, bpf_sk_assign().
+> >> > > >
+> >> > > > This helper requires the BPF program to discover the socket via a call
+> >> > > > to bpf_sk*_lookup_*(), then pass this socket to the new helper. The
+> >> > > > helper takes its own reference to the socket in addition to any existing
+> >> > > > reference that may or may not currently be obtained for the duration of
+> >> > > > BPF processing. For the destination socket to receive the traffic, the
+> >> > > > traffic must be routed towards that socket via local route, the socket
+> >> > > I also missed where is the local route check in the patch.
+> >> > > Is it implied by a sk can be found in bpf_sk*_lookup_*()?
+> >> >
+> >> > This is a requirement for traffic redirection, it's not enforced by
+> >> > the patch. If the operator does not configure routing for the relevant
+> >> > traffic to ensure that the traffic is delivered locally, then after
+> >> > the eBPF program terminates, it will pass up through ip_rcv() and
+> >> > friends and be subject to the whims of the routing table. (or
+> >> > alternatively if the BPF program redirects somewhere else then this
+> >> > reference will be dropped).
+> >> >
+> >> > Maybe there's a path to simplifying this configuration path in future
+> >> > to loosen this requirement, but for now I've kept the series as
+> >> > minimal as possible on that front.
+> >> >
+> >> > > [ ... ]
+> >> > >
+> >> > > > diff --git a/net/core/filter.c b/net/core/filter.c
+> >> > > > index cd0a532db4e7..bae0874289d8 100644
+> >> > > > --- a/net/core/filter.c
+> >> > > > +++ b/net/core/filter.c
+> >> > > > @@ -5846,6 +5846,32 @@ static const struct bpf_func_proto bpf_tcp_gen_syncookie_proto = {
+> >> > > >       .arg5_type      = ARG_CONST_SIZE,
+> >> > > >  };
+> >> > > >
+> >> > > > +BPF_CALL_3(bpf_sk_assign, struct sk_buff *, skb, struct sock *, sk, u64, flags)
+> >> > > > +{
+> >> > > > +     if (flags != 0)
+> >> > > > +             return -EINVAL;
+> >> > > > +     if (!skb_at_tc_ingress(skb))
+> >> > > > +             return -EOPNOTSUPP;
+> >> > > > +     if (unlikely(!refcount_inc_not_zero(&sk->sk_refcnt)))
+> >> > > > +             return -ENOENT;
+> >> > > > +
+> >> > > > +     skb_orphan(skb);
+> >> > > > +     skb->sk = sk;
+> >> > > sk is from the bpf_sk*_lookup_*() which does not consider
+> >> > > the bpf_prog installed in SO_ATTACH_REUSEPORT_EBPF.
+> >> > > However, the use-case is currently limited to sk inspection.
+> >> > >
+> >> > > It now supports selecting a particular sk to receive traffic.
+> >> > > Any plan in supporting that?
+> >> >
+> >> > I think this is a general bpf_sk*_lookup_*() question, previous
+> >> > discussion[0] settled on avoiding that complexity before a use case
+> >> > arises, for both TC and XDP versions of these helpers; I still don't
+> >> > have a specific use case in mind for such functionality. If we were to
+> >> > do it, I would presume that the socket lookup caller would need to
+> >> > pass a dedicated flag (supported at TC and likely not at XDP) to
+> >> > communicate that SO_ATTACH_REUSEPORT_EBPF progs should be respected
+> >> > and used to select the reuseport socket.
+> >> It is more about the expectation on the existing SO_ATTACH_REUSEPORT_EBPF
+> >> usecase.  It has been fine because SO_ATTACH_REUSEPORT_EBPF's bpf prog
+> >> will still be run later (e.g. from tcp_v4_rcv) to decide which sk to
+> >> recieve the skb.
+> >>
+> >> If the bpf@tc assigns a TCP_LISTEN sk in bpf_sk_assign(),
+> >> will the SO_ATTACH_REUSEPORT_EBPF's bpf still be run later
+> >> to make the final sk decision?
+> >
+> > I don't believe so, no:
+> >
+> > ip_local_deliver()
+> > -> ...
+> > -> ip_protocol_deliver_rcu()
+> > -> tcp_v4_rcv()
+> > -> __inet_lookup_skb()
+> > -> skb_steal_sock(skb)
+> >
+> > But this will only affect you if you are running both the bpf@tc
+> > program with sk_assign() and the reuseport BPF sock programs at the
+> > same time. This is why I link it back to the bpf_sk*_lookup_*()
+> > functions: If the socket lookup in the initial step respects reuseport
+> > BPF prog logic and returns the socket using the same logic, then the
+> > packet will be directed to the socket you expect. Just like how
+> > non-BPF reuseport would work with this series today.
+>
+> I'm a bit lost in argumentation. The cover letter says that the goal is
+> to support TPROXY use cases from BPF TC. TPROXY, however, supports
+> reuseport load-balancing, which is essential to scaling out your
+> receiver [0].
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Thanks for the link, that helps set the background.
 
--Kees
+> I assume that in Cilium use case, single socket / single core is
+> sufficient to handle traffic steered with this new mechanism.
+>
+> Also, socket lookup from XDP / BPF TC _without_ reuseport sounds
+> okay-ish because you're likely after information that a socket (group)
+> is attached to some local address / port.
+>
+> However, when you go one step further and assign the socket to skb
+> without running reuseport logic, that is breaking socket load-balancing
+> for applications.
+>
+> That is to say that I'm with Lorenz on this one. Sockets that belong to
+> reuseport group should not be a valid target for assignment until socket
+> lookup from BPF honors reuseport.
 
-> Reported-by: Nathan Chancellor <natechancellor@gmail.com>
-> Reviewed-by: Stanislav Fomichev <sdf@google.com>
-> Tested-by: Stanislav Fomichev <sdf@google.com>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Kees Cook <keescook@chromium.org>
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-> Cc: Nick Desaulniers <ndesaulniers@google.com>
-> Cc: clang-built-linux@googlegroups.com
-> ---
->  arch/powerpc/kernel/vmlinux.lds.S |  6 ------
->  include/asm-generic/vmlinux.lds.h | 15 +++++++++++++++
->  kernel/bpf/btf.c                  |  9 ++++-----
->  kernel/bpf/sysfs_btf.c            | 11 +++++------
->  scripts/link-vmlinux.sh           | 24 ++++++++++--------------
->  5 files changed, 34 insertions(+), 31 deletions(-)
-> 
-> diff --git a/arch/powerpc/kernel/vmlinux.lds.S b/arch/powerpc/kernel/vmlinux.lds.S
-> index a32d478a7f41..b4c89a1acebb 100644
-> --- a/arch/powerpc/kernel/vmlinux.lds.S
-> +++ b/arch/powerpc/kernel/vmlinux.lds.S
-> @@ -303,12 +303,6 @@ SECTIONS
->  		*(.branch_lt)
->  	}
->  
-> -#ifdef CONFIG_DEBUG_INFO_BTF
-> -	.BTF : AT(ADDR(.BTF) - LOAD_OFFSET) {
-> -		*(.BTF)
-> -	}
-> -#endif
-> -
->  	.opd : AT(ADDR(.opd) - LOAD_OFFSET) {
->  		__start_opd = .;
->  		KEEP(*(.opd))
-> diff --git a/include/asm-generic/vmlinux.lds.h b/include/asm-generic/vmlinux.lds.h
-> index e00f41aa8ec4..39da8d8b561d 100644
-> --- a/include/asm-generic/vmlinux.lds.h
-> +++ b/include/asm-generic/vmlinux.lds.h
-> @@ -535,6 +535,7 @@
->  									\
->  	RO_EXCEPTION_TABLE						\
->  	NOTES								\
-> +	BTF								\
->  									\
->  	. = ALIGN((align));						\
->  	__end_rodata = .;
-> @@ -621,6 +622,20 @@
->  		__stop___ex_table = .;					\
->  	}
->  
-> +/*
-> + * .BTF
-> + */
-> +#ifdef CONFIG_DEBUG_INFO_BTF
-> +#define BTF								\
-> +	.BTF : AT(ADDR(.BTF) - LOAD_OFFSET) {				\
-> +		__start_BTF = .;					\
-> +		*(.BTF)							\
-> +		__stop_BTF = .;						\
-> +	}
-> +#else
-> +#define BTF
-> +#endif
-> +
->  /*
->   * Init task
->   */
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index 50080add2ab9..6f397c4da05e 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -3477,8 +3477,8 @@ static struct btf *btf_parse(void __user *btf_data, u32 btf_data_size,
->  	return ERR_PTR(err);
->  }
->  
-> -extern char __weak _binary__btf_vmlinux_bin_start[];
-> -extern char __weak _binary__btf_vmlinux_bin_end[];
-> +extern char __weak __start_BTF[];
-> +extern char __weak __stop_BTF[];
->  extern struct btf *btf_vmlinux;
->  
->  #define BPF_MAP_TYPE(_id, _ops)
-> @@ -3605,9 +3605,8 @@ struct btf *btf_parse_vmlinux(void)
->  	}
->  	env->btf = btf;
->  
-> -	btf->data = _binary__btf_vmlinux_bin_start;
-> -	btf->data_size = _binary__btf_vmlinux_bin_end -
-> -		_binary__btf_vmlinux_bin_start;
-> +	btf->data = __start_BTF;
-> +	btf->data_size = __stop_BTF - __start_BTF;
->  
->  	err = btf_parse_hdr(env);
->  	if (err)
-> diff --git a/kernel/bpf/sysfs_btf.c b/kernel/bpf/sysfs_btf.c
-> index 7ae5dddd1fe6..3b495773de5a 100644
-> --- a/kernel/bpf/sysfs_btf.c
-> +++ b/kernel/bpf/sysfs_btf.c
-> @@ -9,15 +9,15 @@
->  #include <linux/sysfs.h>
->  
->  /* See scripts/link-vmlinux.sh, gen_btf() func for details */
-> -extern char __weak _binary__btf_vmlinux_bin_start[];
-> -extern char __weak _binary__btf_vmlinux_bin_end[];
-> +extern char __weak __start_BTF[];
-> +extern char __weak __stop_BTF[];
->  
->  static ssize_t
->  btf_vmlinux_read(struct file *file, struct kobject *kobj,
->  		 struct bin_attribute *bin_attr,
->  		 char *buf, loff_t off, size_t len)
->  {
-> -	memcpy(buf, _binary__btf_vmlinux_bin_start + off, len);
-> +	memcpy(buf, __start_BTF + off, len);
->  	return len;
->  }
->  
-> @@ -30,15 +30,14 @@ static struct kobject *btf_kobj;
->  
->  static int __init btf_vmlinux_init(void)
->  {
-> -	if (!_binary__btf_vmlinux_bin_start)
-> +	if (!__start_BTF)
->  		return 0;
->  
->  	btf_kobj = kobject_create_and_add("btf", kernel_kobj);
->  	if (!btf_kobj)
->  		return -ENOMEM;
->  
-> -	bin_attr_btf_vmlinux.size = _binary__btf_vmlinux_bin_end -
-> -				    _binary__btf_vmlinux_bin_start;
-> +	bin_attr_btf_vmlinux.size = __stop_BTF - __start_BTF;
->  
->  	return sysfs_create_bin_file(btf_kobj, &bin_attr_btf_vmlinux);
->  }
-> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-> index ac569e197bfa..d09ab4afbda4 100755
-> --- a/scripts/link-vmlinux.sh
-> +++ b/scripts/link-vmlinux.sh
-> @@ -113,9 +113,6 @@ vmlinux_link()
->  gen_btf()
->  {
->  	local pahole_ver
-> -	local bin_arch
-> -	local bin_format
-> -	local bin_file
->  
->  	if ! [ -x "$(command -v ${PAHOLE})" ]; then
->  		echo >&2 "BTF: ${1}: pahole (${PAHOLE}) is not available"
-> @@ -133,17 +130,16 @@ gen_btf()
->  	info "BTF" ${2}
->  	LLVM_OBJCOPY=${OBJCOPY} ${PAHOLE} -J ${1}
->  
-> -	# dump .BTF section into raw binary file to link with final vmlinux
-> -	bin_arch=$(LANG=C ${OBJDUMP} -f ${1} | grep architecture | \
-> -		cut -d, -f1 | cut -d' ' -f2)
-> -	bin_format=$(LANG=C ${OBJDUMP} -f ${1} | grep 'file format' | \
-> -		awk '{print $4}')
-> -	bin_file=.btf.vmlinux.bin
-> -	${OBJCOPY} --change-section-address .BTF=0 \
-> -		--set-section-flags .BTF=alloc -O binary \
-> -		--only-section=.BTF ${1} $bin_file
-> -	${OBJCOPY} -I binary -O ${bin_format} -B ${bin_arch} \
-> -		--rename-section .data=.BTF $bin_file ${2}
-> +	# Create ${2} which contains just .BTF section but no symbols. Add
-> +	# SHF_ALLOC because .BTF will be part of the vmlinux image. --strip-all
-> +	# deletes all symbols including __start_BTF and __stop_BTF, which will
-> +	# be redefined in the linker script. Add 2>/dev/null to suppress GNU
-> +	# objcopy warnings: "empty loadable segment detected at ..."
-> +	${OBJCOPY} --only-section=.BTF --set-section-flags .BTF=alloc,readonly \
-> +		--strip-all ${1} ${2} 2>/dev/null
-> +	# Change e_type to ET_REL so that it can be used to link final vmlinux.
-> +	# Unlike GNU ld, lld does not allow an ET_EXEC input.
-> +	printf '\1' | dd of=${2} conv=notrunc bs=1 seek=16 status=none
->  }
->  
->  # Create ${2} .o file with all symbols from the ${1} object file
-> -- 
-> 2.25.1.481.gfbce0eb801-goog
-> 
+I was considering SO_REUSEPORT socket option separately from the BPF
+reuseport programs, and thinking that from that perspective if you
+weren't at the point of loading the BPF programs to help steer the
+traffic to reuseport sockets, then you could still make use of this
+helper. I think you're conversely assuming BPF reuseport program will
+be configured and that's the default, so if we allow this at all then
+we'll break that use case.
 
--- 
-Kees Cook
+I still disagree, but in the interests of unblocking the basic cases
+here I can roll in this restriction; it's always easier to loosen
+things up in future than to make them more restrictive later.
