@@ -2,71 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C60F18AA4F
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 02:29:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A02B18AA6E
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 02:45:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbgCSB3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 Mar 2020 21:29:43 -0400
-Received: from mail.nic.cz ([217.31.204.67]:39740 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726623AbgCSB3n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 18 Mar 2020 21:29:43 -0400
-Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id E23D1141B54;
-        Thu, 19 Mar 2020 02:29:41 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1584581382; bh=smPg6bUN9iYsjOGsgMn5scMwqFNNXz6iBZhhcj1gDdE=;
-        h=From:To:Date;
-        b=JE4H85XMcYVZ1IdcD+NCNJHg8Do5/EwI4had+P/22q7end3aHKjpJhwfz3mgC7qCU
-         6nwPG0Q8czxgZQl3X1MnT5H5zP3voaCl0x9LNmo5O9ZqeHJDaRp41/lsscxL64rXqJ
-         0hhLZGvoAQglzfQwsbMHZ+pyNhOmfk2PsSntPPxI=
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-To:     netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next] net: mvmdio: fix driver probe on missing irq
-Date:   Thu, 19 Mar 2020 02:29:40 +0100
-Message-Id: <20200319012940.14490-1-marek.behun@nic.cz>
-X-Mailer: git-send-email 2.24.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Spam-Status: No, score=0.00
-X-Spamd-Bar: /
-X-Virus-Scanned: clamav-milter 0.101.4 at mail
-X-Virus-Status: Clean
+        id S1727116AbgCSBpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 Mar 2020 21:45:34 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:33724 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727064AbgCSBpe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 Mar 2020 21:45:34 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id B4CF815717BEF;
+        Wed, 18 Mar 2020 18:45:33 -0700 (PDT)
+Date:   Wed, 18 Mar 2020 18:45:31 -0700 (PDT)
+Message-Id: <20200318.184531.2286126098336198373.davem@davemloft.net>
+To:     daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, pablo@netfilter.org, ast@kernel.org
+Subject: Re: [PATCH net-next] netfilter: revert introduction of egress hook
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <bbdee6355234e730ef686f9321bd072bcf4bb232.1584523237.git.daniel@iogearbox.net>
+References: <bbdee6355234e730ef686f9321bd072bcf4bb232.1584523237.git.daniel@iogearbox.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 18 Mar 2020 18:45:34 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit e1f550dc44a4 made the use of platform_get_irq_optional, which can
-return -ENXIO when interrupt is missing. Handle this as non-error,
-otherwise the driver won't probe.
+From: Daniel Borkmann <daniel@iogearbox.net>
+Date: Wed, 18 Mar 2020 10:33:22 +0100
 
-Fixes: e1f550dc44a4 ("net: mvmdio: avoid error message for optional...")
-Signed-off-by: Marek Behún <marek.behun@nic.cz>
-Cc: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Cc: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/ethernet/marvell/mvmdio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> This reverts the following commits:
+> 
+>   8537f78647c0 ("netfilter: Introduce egress hook")
+>   5418d3881e1f ("netfilter: Generalize ingress hook")
+>   b030f194aed2 ("netfilter: Rename ingress hook include file")
+> 
+> From the discussion in [0], the author's main motivation to add a hook
+> in fast path is for an out of tree kernel module, which is a red flag
+> to begin with. Other mentioned potential use cases like NAT{64,46}
+> is on future extensions w/o concrete code in the tree yet. Revert as
+> suggested [1] given the weak justification to add more hooks to critical
+> fast-path.
+> 
+>   [0] https://lore.kernel.org/netdev/cover.1583927267.git.lukas@wunner.de/
+>   [1] https://lore.kernel.org/netdev/20200318.011152.72770718915606186.davem@davemloft.net/
+> 
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 
-diff --git a/drivers/net/ethernet/marvell/mvmdio.c b/drivers/net/ethernet/marvell/mvmdio.c
-index d2e2dc538428..f9f09da57031 100644
---- a/drivers/net/ethernet/marvell/mvmdio.c
-+++ b/drivers/net/ethernet/marvell/mvmdio.c
-@@ -364,7 +364,7 @@ static int orion_mdio_probe(struct platform_device *pdev)
- 		writel(MVMDIO_ERR_INT_SMI_DONE,
- 			dev->regs + MVMDIO_ERR_INT_MASK);
- 
--	} else if (dev->err_interrupt < 0) {
-+	} else if (dev->err_interrupt < 0 && dev->err_interrupt != -ENXIO) {
- 		ret = dev->err_interrupt;
- 		goto out_mdio;
- 	}
--- 
-2.24.1
+Applied, this definitely needs more discussion.
 
+Thanks Daniel.
