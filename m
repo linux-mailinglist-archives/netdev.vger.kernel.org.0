@@ -2,70 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE3CA18C0AF
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 20:47:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F25818C0B5
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 20:50:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727235AbgCSTrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 15:47:02 -0400
-Received: from mga09.intel.com ([134.134.136.24]:56401 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725747AbgCSTrB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 15:47:01 -0400
-IronPort-SDR: Po8Z/pzT4ZyzATKERnc1WJgjSBvnAiGgTZcOVGdH2Sbi5IJn62f1jnNywVcCqPEXMi+J7xo/x9
- wwy0XEFxe94Q==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2020 12:46:58 -0700
-IronPort-SDR: a6SaYj/xeKftbSen3LWYA6qWR9ApLeeTa+v5cjiVyF9UB9Q7xyMMQqIfWGC7lVjo5Zg0E1J0nu
- 0ljRFqFI0wdQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,572,1574150400"; 
-   d="scan'208";a="391910291"
-Received: from oamor-mobl1.ger.corp.intel.com (HELO localhost) ([10.251.182.181])
-  by orsmga004.jf.intel.com with ESMTP; 19 Mar 2020 12:46:51 -0700
-Date:   Thu, 19 Mar 2020 21:46:50 +0200
-From:   Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
-To:     Waiman Long <longman@redhat.com>
-Cc:     David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, keyrings@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org, netdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, Sumit Garg <sumit.garg@linaro.org>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Chris von Recklinghausen <crecklin@redhat.com>
-Subject: Re: [PATCH v5 2/2] KEYS: Avoid false positive ENOMEM error on key
- read
-Message-ID: <20200319194650.GA24804@linux.intel.com>
-References: <20200318221457.1330-1-longman@redhat.com>
- <20200318221457.1330-3-longman@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200318221457.1330-3-longman@redhat.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        id S1727064AbgCSTuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 15:50:03 -0400
+Received: from mail-pj1-f73.google.com ([209.85.216.73]:58712 "EHLO
+        mail-pj1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725747AbgCSTuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 15:50:02 -0400
+Received: by mail-pj1-f73.google.com with SMTP id r42so2396660pjb.8
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 12:50:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=XT4x4JQMOqj28IN9OvTrKae936apFzRtQmeyO1heFao=;
+        b=dGMpdlx7E2h9/MoeV6GZVnVsS1w+uPT4jfiwyOjNqBNIsjUVClUHlOW6JM1nGKdUav
+         +e8OtTe6CmbKXsyfGwbPuztx4Y9kJDmYEcuBFQo8pM2rRGJFSvEQczqHgtyAPJ/Jzrvs
+         LGnZolXv1cHl87vyjC6FV3mvPCOW/s/luy3LvGFWFTN5GYt6XDXXG8rzYUDZLl+yKdBT
+         aILOAD0FeDq1J5fN8DRGjU2GDZEkQzKzlfGi5vT1bxPD5XZhWFHz4fAIFW4Q3BYoI+lR
+         MwJvQZbAoOz+v7tD+8eYxw+7am1Iww+/16+6T2vRq228Eb9hos23y/l87lEeoFTuvyli
+         5OpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=XT4x4JQMOqj28IN9OvTrKae936apFzRtQmeyO1heFao=;
+        b=dOdcA5bpo6wM1s+tpRedToLjQrmR/da6ZkvGhlakuU3GXZopAeM/qStyuPik7B331r
+         YsqKLT+A2vXR8WKO6jKoyQqRIcUA4uf7HQDiYHifgpOMsWrefuKBQyfJOHQhJz05cgNb
+         X2bGA/qMyMu+sY9Pa2huaURhC8qXBoHWP3OtkQ4Gcz3V1jB9h0fiX+lvbucE22LX9V6R
+         SrEeNQ5hstxQdTFpaReViT40l0nPiuv3S1fZYaEKTeIVHi72abbrvA17Ie6hMvjR5alX
+         4FJ3A6tByb1HfBt9VdMlikHROkcLqKys3ShFgA0ljzICwJMObdFHkggnuf61iFzB28B7
+         10Aw==
+X-Gm-Message-State: ANhLgQ30MUeU6PMGge9yila0UUFzjopnXQ7aIyEO3nw2ZC1xK3nTNq/1
+        0p3tn/gU34GWvQNytbedtfx7aIf/yUwoiA==
+X-Google-Smtp-Source: ADFU+vsWNAaP/bb+n0K+3pud/Mub++NuJBA1r1o7ZZXgd7J/NCReLyYgDfolKQk2qIFgDMGoCCQBww0Xz0CDjw==
+X-Received: by 2002:a17:90b:3849:: with SMTP id nl9mr5344507pjb.86.1584647399277;
+ Thu, 19 Mar 2020 12:49:59 -0700 (PDT)
+Date:   Thu, 19 Mar 2020 12:49:55 -0700
+Message-Id: <20200319194955.13742-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.1.696.g5e7596f4ac-goog
+Subject: [PATCH net] tcp: ensure skb->dev is NULL before leaving TCP stack
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Martin Zaharinov <micron10@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 06:14:57PM -0400, Waiman Long wrote:
-> +			 * It is possible, though unlikely, that the key
-> +			 * changes in between the up_read->down_read period.
-> +			 * If the key becomes longer, we will have to
-> +			 * allocate a larger buffer and redo the key read
-> +			 * again.
-> +			 */
-> +			if (!tmpbuf || unlikely(ret > tmpbuflen)) {
+skb->rbnode is sharing three skb fields : next, prev, dev
 
-Shouldn't you check that tmpbuflen stays below buflen (why else
-you had made copy of buflen otherwise)?
+When a packet is sent, TCP keeps the original skb (master)
+in a rtx queue, which was converted to rbtree a while back.
 
-/Jarkko
+__tcp_transmit_skb() is responsible to clone the master skb,
+and add the TCP header to the clone before sending it
+to network layer.
+
+skb_clone() already clears skb->next and skb->prev, but copies
+the master oskb->dev into the clone.
+
+We need to clear skb->dev, otherwise lower layers could interpret
+the value as a pointer to a netdev.
+
+This old bug surfaced recently when commit 28f8bfd1ac94
+("netfilter: Support iif matches in POSTROUTING") was merged.
+
+Before this netfilter commit, skb->dev value was ignored and
+changed before reaching dev_queue_xmit()
+
+Fixes: 75c119afe14f ("tcp: implement rb-tree based retransmit queue")
+Fixes: 28f8bfd1ac94 ("netfilter: Support iif matches in POSTROUTING")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Martin Zaharinov <micron10@gmail.com>
+Cc: Florian Westphal <fw@strlen.de>
+Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/ipv4/tcp_output.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 306e25d743e8de1bfe23d6e3b3a9fb0f23664912..e8cf8fde3d37dc3b455224d33d0bde0e585f989e 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1109,6 +1109,10 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
+ 
+ 		if (unlikely(!skb))
+ 			return -ENOBUFS;
++		/* retransmit skbs might have a non zero value in skb->dev
++		 * because skb->dev is aliased with skb->rbnode.rb_left
++		 */
++		skb->dev = NULL;
+ 	}
+ 
+ 	inet = inet_sk(sk);
+-- 
+2.25.1.696.g5e7596f4ac-goog
+
