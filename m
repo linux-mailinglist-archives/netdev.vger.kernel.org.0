@@ -2,100 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECF7F18ACF3
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 07:43:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24D7318ACF9
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 07:47:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727142AbgCSGnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 02:43:53 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:37171 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727101AbgCSGnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 02:43:53 -0400
-Received: by mail-pl1-f195.google.com with SMTP id f16so641972plj.4
-        for <netdev@vger.kernel.org>; Wed, 18 Mar 2020 23:43:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4+ce41gqzm22CFinhLSiCMx2DKeV8K25scp1EFRhKKw=;
-        b=EAH0hp/YzZ0Vx4g3oknSGTUeMwX95d+ZF2zis5RDrJWofKUdR7jCmr9F3UI41cFa8y
-         hc1EYB0izrbe8GkM+C2rYNh5gTUutq8UUfe4ZukDPfKRBCKchRvx7wbcjJL3RfDYx1t9
-         +ChaHcSXgT0Ndz7bEhiR6HYOe/ZHxNi/MT/uJKdO3FETYnijJArGITiW+ncDlo5TsRoo
-         Iwl7nUxxKl89ONoO+Mj/N74P/pZiRlTusFfWkXgurYTasrNhRBvVZUtlJULO55e6pWAc
-         X6SFTRFqON2doCR5bBwtb4M+Q1xkGJXnq/JL/yQXBdTn2P9Oz5/IU1EfsvCGsm2tTVmS
-         XeQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4+ce41gqzm22CFinhLSiCMx2DKeV8K25scp1EFRhKKw=;
-        b=iyIYjIjbIq050GBpT4ErxbGpGEU6+Ncc8aQ4BMtfU79swXUN5j637XjfuoZimZjpQd
-         Nn8ZO7Thrl4sbmdexdFJqbQaBzeKcmdtpxlkTa4ly/Rllj5kmxQfjTCpq+hHsSorrKAQ
-         x41Ads6wG9npURlfdo4qq1EnAceWc7nscs+W6OXgYrGDK8kRVGHR7enAf9y9TrXZHpiW
-         /FAg6Eh7JQySETKLCxC6VOQsDpt/UcXb3MtqmstmzXyEbN26DRI6pW+yd+NF5933lOPv
-         J5HETDIOC6BkwvlnHUW8zq9UHwaZUUCMPMrAdLaS+S0HzVDwahllRu3wxuwuMGk9QXF4
-         bCcw==
-X-Gm-Message-State: ANhLgQ0ep+zEZ8CpFOCUQB/fhoNetT/IGWVVKEvg26+gN6ELXQkYYnDU
-        S+d3jbZF3uanfP/+hoNwP3Byrg==
-X-Google-Smtp-Source: ADFU+vvMiNTNJKvodZ7OC0QL8loodVxCZgzt0kLxePaXUFH5k5QafWPyqtXsLXgxDGFI7lDonBoHEw==
-X-Received: by 2002:a17:90a:bc01:: with SMTP id w1mr2182430pjr.154.1584600230434;
-        Wed, 18 Mar 2020 23:43:50 -0700 (PDT)
-Received: from localhost.localdomain (59-127-47-130.HINET-IP.hinet.net. [59.127.47.130])
-        by smtp.gmail.com with ESMTPSA id x8sm1098973pfp.135.2020.03.18.23.43.48
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 18 Mar 2020 23:43:49 -0700 (PDT)
-From:   Chris Chiu <chiu@endlessm.com>
-To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@endlessm.com,
-        kbuild test robot <lkp@intel.com>
-Subject: [PATCH] rtl8xxxu: Fix sparse warning: cast from restricted __le16
-Date:   Thu, 19 Mar 2020 14:43:41 +0800
-Message-Id: <20200319064341.49500-1-chiu@endlessm.com>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
+        id S1727050AbgCSGrb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 02:47:31 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:35730 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726063AbgCSGrb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 02:47:31 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id C2B2C19FDB0857EA0842;
+        Thu, 19 Mar 2020 14:47:05 +0800 (CST)
+Received: from localhost (10.173.223.234) by DGGEMS402-HUB.china.huawei.com
+ (10.3.19.202) with Microsoft SMTP Server id 14.3.487.0; Thu, 19 Mar 2020
+ 14:46:58 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <claudiu.manoil@nxp.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <leonro@mellanox.com>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] enetc: Remove unused variable 'enetc_drv_name'
+Date:   Thu, 19 Mar 2020 14:46:37 +0800
+Message-ID: <20200319064637.45048-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.173.223.234]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the warning reported by sparse as:
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:4819:17: sparse: sparse: cast from restricted __le16
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:4892:17: sparse: sparse: cast from restricted __le16
+commit ed0a72e0de16 ("net/freescale: Clean drivers from static versions")
+leave behind this, remove it .
 
-Signed-off-by: Chris Chiu <chiu@endlessm.com>
-Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/freescale/enetc/enetc_pf.c | 1 -
+ drivers/net/ethernet/freescale/enetc/enetc_vf.c | 1 -
+ 2 files changed, 2 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 54a1a4ea107b..daa6ce14c68b 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -4816,8 +4816,8 @@ rtl8xxxu_fill_txdesc_v1(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
- 		rate = tx_rate->hw_value;
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+index 4e4a49179f0b..85e2b741df41 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+@@ -8,7 +8,6 @@
+ #include "enetc_pf.h"
  
- 	if (rtl8xxxu_debug & RTL8XXXU_DEBUG_TX)
--		dev_info(dev, "%s: TX rate: %d, pkt size %d\n",
--			 __func__, rate, cpu_to_le16(tx_desc->pkt_size));
-+		dev_info(dev, "%s: TX rate: %d, pkt size %u\n",
-+			 __func__, rate, le16_to_cpu(tx_desc->pkt_size));
+ #define ENETC_DRV_NAME_STR "ENETC PF driver"
+-static const char enetc_drv_name[] = ENETC_DRV_NAME_STR;
  
- 	seq_number = IEEE80211_SEQ_TO_SN(le16_to_cpu(hdr->seq_ctrl));
+ static void enetc_pf_get_primary_mac_addr(struct enetc_hw *hw, int si, u8 *addr)
+ {
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_vf.c b/drivers/net/ethernet/freescale/enetc/enetc_vf.c
+index 28a786b2f3e7..f14576212a0e 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_vf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_vf.c
+@@ -5,7 +5,6 @@
+ #include "enetc.h"
  
-@@ -4889,8 +4889,8 @@ rtl8xxxu_fill_txdesc_v2(struct ieee80211_hw *hw, struct ieee80211_hdr *hdr,
- 		rate = tx_rate->hw_value;
+ #define ENETC_DRV_NAME_STR "ENETC VF driver"
+-static const char enetc_drv_name[] = ENETC_DRV_NAME_STR;
  
- 	if (rtl8xxxu_debug & RTL8XXXU_DEBUG_TX)
--		dev_info(dev, "%s: TX rate: %d, pkt size %d\n",
--			 __func__, rate, cpu_to_le16(tx_desc40->pkt_size));
-+		dev_info(dev, "%s: TX rate: %d, pkt size %u\n",
-+			 __func__, rate, le16_to_cpu(tx_desc40->pkt_size));
- 
- 	seq_number = IEEE80211_SEQ_TO_SN(le16_to_cpu(hdr->seq_ctrl));
- 
+ /* Messaging */
+ static void enetc_msg_vsi_write_msg(struct enetc_hw *hw,
 -- 
-2.20.1
+2.17.1
+
 
