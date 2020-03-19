@@ -2,94 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3875E18AEC7
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 09:52:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5280618AED9
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 09:58:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726912AbgCSIwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 04:52:19 -0400
-Received: from mx2.suse.de ([195.135.220.15]:35642 "EHLO mx2.suse.de"
+        id S1726802AbgCSI60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 04:58:26 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44632 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725601AbgCSIwT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 19 Mar 2020 04:52:19 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 25E85B117;
-        Thu, 19 Mar 2020 08:52:16 +0000 (UTC)
-Date:   Thu, 19 Mar 2020 01:51:09 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [patch V2 08/15] Documentation: Add lock ordering and nesting
- documentation
-Message-ID: <20200319085109.vrvmpesytul3ek3e@linux-p48b>
-References: <20200318204302.693307984@linutronix.de>
- <20200318204408.211530902@linutronix.de>
+        id S1725767AbgCSI60 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 04:58:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=3qTNVfTalmQw4j9NwfoM927J2Yu1TVj9lFggc1wxXrM=; b=TH+EMnSqYlryYc/9Modbn0ujuk
+        uQ3fMqCReDQHzRHrsLYK3/47CJnkiE8xAPUghz+XlvkiIt2Nd2vGZjxEKJvbVNa4XkXu8Je93DKPA
+        jFc34UPG5EBfpluUVN2Vz1hKFrxRYI/2mIhz+PsEZek5ER/bFa7vBr2imsQNVvTE3Oe8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jEr0G-0005Py-6I; Thu, 19 Mar 2020 09:58:12 +0100
+Date:   Thu, 19 Mar 2020 09:58:12 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marek Behun <marek.behun@nic.cz>
+Cc:     Chris Packham <Chris.Packham@alliedtelesis.co.nz>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: mvmdio: fix driver probe on missing irq
+Message-ID: <20200319085812.GA20761@lunn.ch>
+References: <20200319012940.14490-1-marek.behun@nic.cz>
+ <d7cfec6e2b6952776dfedfbb0ba69a5f060d7cb5.camel@alliedtelesis.co.nz>
+ <20200319052119.4e694c8b@nic.cz>
+ <de28dd392987d666f9ad4a0c94e71fc0a686d8d6.camel@alliedtelesis.co.nz>
+ <20200319053659.4da19ae0@nic.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20200318204408.211530902@linutronix.de>
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200319053659.4da19ae0@nic.cz>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Mar 2020, Thomas Gleixner wrote:
->+Owner semantics
->+===============
->+
->+Most lock types in the Linux kernel have strict owner semantics, i.e. the
->+context (task) which acquires a lock has to release it.
->+
->+There are two exceptions:
->+
->+  - semaphores
->+  - rwsems
->+
->+semaphores have no strict owner semantics for historical reasons. They are
+On Thu, Mar 19, 2020 at 05:36:59AM +0100, Marek Behun wrote:
+> On Thu, 19 Mar 2020 04:27:56 +0000
+> Chris Packham <Chris.Packham@alliedtelesis.co.nz> wrote:
+> 
+> > On Thu, 2020-03-19 at 05:21 +0100, Marek Behun wrote:
+> > > On Thu, 19 Mar 2020 02:00:57 +0000
+> > > Chris Packham <Chris.Packham@alliedtelesis.co.nz> wrote:
+> > >   
+> > > > Hi Marek,
+> > > > 
+> > > > On Thu, 2020-03-19 at 02:29 +0100, Marek Behún wrote:  
+> > > > > Commit e1f550dc44a4 made the use of platform_get_irq_optional, which can
+> > > > > return -ENXIO when interrupt is missing. Handle this as non-error,
+> > > > > otherwise the driver won't probe.    
+> > > > 
+> > > > This has already been fixed in net/master by reverting e1f550dc44a4 and
+> > > > replacing it with fa2632f74e57bbc869c8ad37751a11b6147a3acc.  
+> > > 
+> > > :( It isn't in net-next. I've spent like an hour debugging it :-D  
+> > 
+> > I can only offer my humble apologies and promise to do better next
+> > time. I did test the first minimally correct change, but clearly
+> > stuffed up on v2.
+> 
+> That's ok, but this should be also in net-next as well. Has Dave
+> forgotten to apply it there, or is there some other plan?
 
-I would rephrase this to:
+It probably went into net. It then takes around a week before net is
+merged into net-next.
 
-semaphores have no owner semantics for historical reason, and as such
-trylock and release operations can be called from interrupt context. They
-are ...
-
->+often used for both serialization and waiting purposes. That's generally
->+discouraged and should be replaced by separate serialization and wait
->+mechanisms.
-            ^ , such as mutexes or completions.
-
->+
->+rwsems have grown interfaces which allow non owner release for special
->+purposes. This usage is problematic on PREEMPT_RT because PREEMPT_RT
->+substitutes all locking primitives except semaphores with RT-mutex based
->+implementations to provide priority inheritance for all lock types except
->+the truly spinning ones. Priority inheritance on ownerless locks is
->+obviously impossible.
->+
->+For now the rwsem non-owner release excludes code which utilizes it from
->+being used on PREEMPT_RT enabled kernels. In same cases this can be
->+mitigated by disabling portions of the code, in other cases the complete
->+functionality has to be disabled until a workable solution has been found.
-
-Thanks,
-Davidlohr
+       Andrew
