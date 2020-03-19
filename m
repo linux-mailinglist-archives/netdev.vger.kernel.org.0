@@ -2,122 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D4DA18B248
-	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 12:25:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA7A318B24A
+	for <lists+netdev@lfdr.de>; Thu, 19 Mar 2020 12:26:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726947AbgCSLZl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 07:25:41 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:43042 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726589AbgCSLZl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 07:25:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=M3SZPnC7Rmsrg1bRz2AgIM/I53b4DuL+NG8Nhk1rG1A=; b=iF/N+o/XfGoh1QxJdF94MAyH/
-        V8juDEEGV9l7N04GZiooB9yOzDxbo6YiXcEmYp9ljIuXVpu+zsAuwJDA0oCUePOQM3Eg3/H/rCEPS
-        5CDb8yvfyXfLdDpf9GEBn+oV54kGbzliH2qZrNOAyqiqwyD4zSD0CviC81fg/TrbupdfavXoylMwW
-        Rp5a9rzjefhd3UcqZRuG+l3OjCX+DthBiICEmPaSLzs6sdJmpcSTJOZQWX5Chdj62Em3sFBOmw3Gs
-        U+u/UEH2wHwvgqSZX2jG4lOG9kGv13ijQDj2M6xRr0HNMh4FRb8M7DtmJkeJQJuG1XyLYRC6Ih0zi
-        QFl6pER+g==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:38516)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jEtIt-0001rg-Ub; Thu, 19 Mar 2020 11:25:36 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jEtIt-0004jf-3y; Thu, 19 Mar 2020 11:25:35 +0000
-Date:   Thu, 19 Mar 2020 11:25:35 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/3] net: phy: add and use phy_check_downshift
-Message-ID: <20200319112535.GD25745@shell.armlinux.org.uk>
-References: <6e4ea372-3d05-3446-2928-2c1e76a66faf@gmail.com>
- <d2822357-4c1e-a072-632e-a902b04eba7c@gmail.com>
- <20200318232159.GA25745@shell.armlinux.org.uk>
- <b0bc3ca0-0c1b-045e-cd00-37fc85c4eebf@gmail.com>
+        id S1727045AbgCSL0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 07:26:19 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:46939 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726188AbgCSL0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 07:26:18 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 2099B5C02CD;
+        Thu, 19 Mar 2020 07:26:17 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Thu, 19 Mar 2020 07:26:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=y5trE7kCu0P1/uhF8
+        98LAGD1kgCGvqOLiC02Ap42UwE=; b=BG0KIfG4eMIC5dsJe2AujjMVbneD17d3o
+        AYjEdVwt/rpXwa8C3jYDkZhfeJ5IYzCe29JoD54f0khpGdjkqcPiRBTwwV7kQ/51
+        4ThMCMVmOf/lfQlog2ciDc0GM2aCTijJMzpjcj65kGtY8Oo+JtoIkKqLfJ5HEC7X
+        yvxrE3KcyIhmbfQ7Rp7txvwK367vDnIUkGuME+guUjB+zsVVE4Cwg4IlJO3e/rE9
+        q6UAvniKMVuVNS4Bd78868+V1I9MRgDfxp0WxHkW4zjyp7b/tLuDNLEOeWJkTqWN
+        6Nm/4nOO+3c603rUUjEVzz08Q377ki3T4k9XtX7ZGpqOZVD1QSjcw==
+X-ME-Sender: <xms:2FZzXtSiIo1YiQ_jgfHJwtlLTk7JQbuwnLziW9BLbrc6dxvvmDVRCw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudefledgvdekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeejledrudekfedrkedrudekudenucevlhhushhtvghrufhiii
+    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdho
+    rhhg
+X-ME-Proxy: <xmx:2FZzXjcYJDfHA-sQrarPvxBcVTTvajK3txr5ccTnATA6nMwNs891qQ>
+    <xmx:2FZzXmucwWaZq17CcRvTqDzLh8S0lUoho7UWbBzPvkNJNvo-wLFEhg>
+    <xmx:2FZzXvKuYU1tV3AusA5xhGZJOCSF-depmzi_zkz1GQeFWZHUH7ltQQ>
+    <xmx:2VZzXgNahBhXDBetncKXVbEj3HxXWisBe064yCtZKgmh8IJrXUdz9w>
+Received: from splinter.mtl.com (bzq-79-183-8-181.red.bezeqint.net [79.183.8.181])
+        by mail.messagingengine.com (Postfix) with ESMTPA id DCB103061856;
+        Thu, 19 Mar 2020 07:26:15 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net] mlxsw: pci: Only issue reset when system is ready
+Date:   Thu, 19 Mar 2020 13:25:39 +0200
+Message-Id: <20200319112539.1030494-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b0bc3ca0-0c1b-045e-cd00-37fc85c4eebf@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 08:30:58AM +0100, Heiner Kallweit wrote:
-> On 19.03.2020 00:21, Russell King - ARM Linux admin wrote:
-> > On Wed, Mar 18, 2020 at 10:29:01PM +0100, Heiner Kallweit wrote:
-> >> So far PHY drivers have to check whether a downshift occurred to be
-> >> able to notify the user. To make life of drivers authors a little bit
-> >> easier move the downshift notification to phylib. phy_check_downshift()
-> >> compares the highest mutually advertised speed with the actual value
-> >> of phydev->speed (typically read by the PHY driver from a
-> >> vendor-specific register) to detect a downshift.
-> > 
-> > My personal position on this is that reporting a downshift will be
-> > sporadic at best, even when the link has negotiated slower.
-> > 
-> > The reason for this is that either end can decide to downshift.  If
-> > the remote partner downshifts, then the local side has no idea that
-> > a downshift occurred, and can't report that the link was downshifted.
-> > 
-> Right, this warning can't cover the case that remote link partner
-> downshifts. In this case however ethtool et al should show the reduced
-> link partner advertisement, and therefore provide a hint why speed
-> is slow.
-> 
-> > So, is it actually useful to report these events?
-> > 
-> To provide an example: A user recently complained that r8169 driver
-> makes problems on his system:
-> - it takes long time until link comes up
-> - link is slow
-> With iperf he then found out that displayed speed is 1Gbps but actual
-> link speed is 100Mbps. In the end he found that one pin of his network
-> port was corroded, therefore the downshift.
-> 
-> The phase of blaming the driver could have been skipped if he would
-> have seen a downshift warning from the very beginning.
+From: Ido Schimmel <idosch@mellanox.com>
 
-This sounds like a good theory to justify it, but it suffers from one
-major flaw.
+During initialization the driver issues a software reset command and
+then waits for the system status to change back to "ready" state.
 
-There was indeed a bug - the driver was reporting 1Gbps, whereas the
-link was not operating at that speed, but at 100Mbps.  Had that bug
-not existed, the kernel would've reported 100Mbps as the speed, and
-then your justification in the first paragraph applies - the link
-speed is slower than expected.
+However, before issuing the reset command the driver does not check that
+the system is actually in "ready" state. On Spectrum-{1,2} systems this
+was always the case as the hardware initialization time is very short.
+On Spectrum-3 systems this is no longer the case. This results in the
+software reset command timing-out and the driver failing to load:
 
-With that bug in place, this patch does nothing; you're using the same
-algorithm to calculate what the speed should be and comparing it with
-the same algorithm result reported from phy_resolve_aneg_linkmode().
+[ 6.347591] mlxsw_spectrum3 0000:06:00.0: Cmd exec timed-out (opcode=40(ACCESS_REG),opcode_mod=0,in_mod=0)
+[ 6.358382] mlxsw_spectrum3 0000:06:00.0: Reg cmd access failed (reg_id=9023(mrsr),type=write)
+[ 6.368028] mlxsw_spectrum3 0000:06:00.0: cannot register bus device
+[ 6.375274] mlxsw_spectrum3: probe of 0000:06:00.0 failed with error -110
 
-So, the problem is going to remain.
+Fix this by waiting for the system to become ready both before issuing
+the reset command and afterwards. In case of failure, print the last
+system status to aid in debugging.
 
-The only time that this helps is if PHY drivers implement reading a
-vendor register to report the actual link speed, and the PHY specific
-driver is used.
+Fixes: da382875c616 ("mlxsw: spectrum: Extend to support Spectrum-3 ASIC")
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/pci.c | 50 ++++++++++++++++++-----
+ 1 file changed, 39 insertions(+), 11 deletions(-)
 
-Also, falling back to the generic PHY driver is going to result in the
-same hard-to-debug problem that you refer to above.
-
-So, do we need to print a big fat warning that the generic driver is
-being used, and recommend the user uses the tailored driver instead?
-
-There's lots of issues to consider here; it is not as simple as has
-been suggested, and I'm not sure that this patch adds particularly
-high value by really solving the problem.
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+index 914c33e46fb4..e9ded1a6e131 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+@@ -1322,36 +1322,64 @@ static void mlxsw_pci_mbox_free(struct mlxsw_pci *mlxsw_pci,
+ 			    mbox->mapaddr);
+ }
+ 
+-static int mlxsw_pci_sw_reset(struct mlxsw_pci *mlxsw_pci,
+-			      const struct pci_device_id *id)
++static int mlxsw_pci_sys_ready_wait(struct mlxsw_pci *mlxsw_pci,
++				    const struct pci_device_id *id,
++				    u32 *p_sys_status)
+ {
+ 	unsigned long end;
+-	char mrsr_pl[MLXSW_REG_MRSR_LEN];
+-	int err;
++	u32 val;
+ 
+-	mlxsw_reg_mrsr_pack(mrsr_pl);
+-	err = mlxsw_reg_write(mlxsw_pci->core, MLXSW_REG(mrsr), mrsr_pl);
+-	if (err)
+-		return err;
+ 	if (id->device == PCI_DEVICE_ID_MELLANOX_SWITCHX2) {
+ 		msleep(MLXSW_PCI_SW_RESET_TIMEOUT_MSECS);
+ 		return 0;
+ 	}
+ 
+-	/* We must wait for the HW to become responsive once again. */
++	/* We must wait for the HW to become responsive. */
+ 	msleep(MLXSW_PCI_SW_RESET_WAIT_MSECS);
+ 
+ 	end = jiffies + msecs_to_jiffies(MLXSW_PCI_SW_RESET_TIMEOUT_MSECS);
+ 	do {
+-		u32 val = mlxsw_pci_read32(mlxsw_pci, FW_READY);
+-
++		val = mlxsw_pci_read32(mlxsw_pci, FW_READY);
+ 		if ((val & MLXSW_PCI_FW_READY_MASK) == MLXSW_PCI_FW_READY_MAGIC)
+ 			return 0;
+ 		cond_resched();
+ 	} while (time_before(jiffies, end));
++
++	*p_sys_status = val & MLXSW_PCI_FW_READY_MASK;
++
+ 	return -EBUSY;
+ }
+ 
++static int mlxsw_pci_sw_reset(struct mlxsw_pci *mlxsw_pci,
++			      const struct pci_device_id *id)
++{
++	struct pci_dev *pdev = mlxsw_pci->pdev;
++	char mrsr_pl[MLXSW_REG_MRSR_LEN];
++	u32 sys_status;
++	int err;
++
++	err = mlxsw_pci_sys_ready_wait(mlxsw_pci, id, &sys_status);
++	if (err) {
++		dev_err(&pdev->dev, "Failed to reach system ready status before reset. Status is 0x%x\n",
++			sys_status);
++		return err;
++	}
++
++	mlxsw_reg_mrsr_pack(mrsr_pl);
++	err = mlxsw_reg_write(mlxsw_pci->core, MLXSW_REG(mrsr), mrsr_pl);
++	if (err)
++		return err;
++
++	err = mlxsw_pci_sys_ready_wait(mlxsw_pci, id, &sys_status);
++	if (err) {
++		dev_err(&pdev->dev, "Failed to reach system ready status after reset. Status is 0x%x\n",
++			sys_status);
++		return err;
++	}
++
++	return 0;
++}
++
+ static int mlxsw_pci_alloc_irq_vectors(struct mlxsw_pci *mlxsw_pci)
+ {
+ 	int err;
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+2.24.1
+
