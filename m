@@ -2,181 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 018AC18DAA1
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 22:56:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD0E318DAFF
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 23:19:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727257AbgCTV4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 17:56:20 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:44368 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726953AbgCTV4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 17:56:19 -0400
-Received: by mail-ed1-f65.google.com with SMTP id z3so8889631edq.11
-        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 14:56:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a8ahsfZRQ8/CSI+HAyAd7oA0o7kapBNHEzGZ00xwq3I=;
-        b=joKgmK9wgVE7QE07hU5dO+MoJls/GcqZynQzrl68rPRQ51Q52Ru9XsznWpGol/aQ0O
-         M3YgBzyDaIz8nYyYqpF9yduv/p9Sd4U1gly8tWOTPlboNkBQW5c+mQtPlmJCGCWXrNkI
-         LTZG3vIb0+0VYhUO8n6mbY+/vsqyNELZcnMQUfb8hjguw2bdDsvVn8u2ddElF+EN9IMD
-         +qetEs210+YIzihlQmhQJGbQqNw8qHsfd4OT9QIOzpHTQ1yVFW0QBhCYb/l4Nv3fwjcv
-         nHOcM3bspTnrBFbgoJVgt7QLNYhjjYHzUqmXLYTwloY4/4m221E0gs5EhZr7MNb3crv/
-         /fbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a8ahsfZRQ8/CSI+HAyAd7oA0o7kapBNHEzGZ00xwq3I=;
-        b=k7SIuTYTbZoYKlhnH2gI8oi6x0PjRKGkwtPb16BQJxKqsSJTF/f+/mrJm/xVspDPPZ
-         yuaYTSriCsbSri22pqaQrp0DAOir6A5SiiOv11F2UipwbCDws5jOiwn05SLE5UKy0gqL
-         iw3A6hQo5NVCLOhgWqHo/dZLafawCYbJGpp+XCjSunBGGBQPohSTQ8l+FevaumMY6dA7
-         oDZ0c9kpPKcDUL7Q9xW4ePINg7/SjM55N0nmYUyQTyYKxWSfxwEKhuYCCfquD2AQpWtF
-         7+ZPkbuKKn3IXWHtwotudO/ib8M7wy8Hq+Sw6BU8fNjU2HihJ25CKPfgxD4GoTnOOl1p
-         83LA==
-X-Gm-Message-State: ANhLgQ13pPxMPWAibOq9d2qfs4YkNxfhjw3Vs8nxcmC8ah8Mhe9YfZri
-        BYvHU1K4raYZyOc9CRuP5J8zVJAHa4bflSv+Kk+w
-X-Google-Smtp-Source: ADFU+vsnJYrIu/MOTz9EI2jeor+Xy6uyGiLiWiERy9jOTAu1RDM2AARj7RAdubH3sb2vtE4+97cBebgy5KEDdsp3hZk=
-X-Received: by 2002:aa7:dd01:: with SMTP id i1mr9889360edv.164.1584741376576;
- Fri, 20 Mar 2020 14:56:16 -0700 (PDT)
+        id S1727437AbgCTWT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 18:19:29 -0400
+Received: from mga06.intel.com ([134.134.136.31]:53498 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726666AbgCTWT2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Mar 2020 18:19:28 -0400
+IronPort-SDR: si/LD4a8Aji0385SJt2eZFB9gaiUkKaL/g1KETSGRFQYr+2S1YaQOoiKU4w90/VMwhjYZEhEP/
+ 1V3hPDf2eYLQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2020 15:19:27 -0700
+IronPort-SDR: IPRpLBa7WdI+MvkLQla232xaQRnNsQS2sfWzk6Kjfj4cTeVvuvAdu9x/YLVx9WxSnLs9J2vFiy
+ a6AI4GaxQzzw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,286,1580803200"; 
+   d="scan'208";a="269236493"
+Received: from mnyman-mobl.ger.corp.intel.com (HELO localhost) ([10.249.32.33])
+  by fmsmga004.fm.intel.com with ESMTP; 20 Mar 2020 15:19:19 -0700
+Date:   Sat, 21 Mar 2020 00:19:18 +0200
+From:   Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+To:     Waiman Long <longman@redhat.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, keyrings@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-integrity@vger.kernel.org, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org, Sumit Garg <sumit.garg@linaro.org>,
+        Jerry Snitselaar <jsnitsel@redhat.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Eric Biggers <ebiggers@google.com>,
+        Chris von Recklinghausen <crecklin@redhat.com>
+Subject: Re: [PATCH v6 2/2] KEYS: Avoid false positive ENOMEM error on key
+ read
+Message-ID: <20200320221918.GA5284@linux.intel.com>
+References: <20200320191903.19494-1-longman@redhat.com>
+ <20200320191903.19494-3-longman@redhat.com>
 MIME-Version: 1.0
-References: <20200204231454.oxa7pyvuxbj466fj@madcap2.tricolour.ca>
- <CAHC9VhQquokw+7UOU=G0SsD35UdgmfysVKCGCE87JVaoTkbisg@mail.gmail.com>
- <3142237.YMNxv0uec1@x2> <CAHC9VhTiCHQbp2SwK0Xb1QgpUZxOQ26JKKPsVGT0ZvMqx28oPQ@mail.gmail.com>
- <20200312202733.7kli64zsnqc4mrd2@madcap2.tricolour.ca> <CAHC9VhS9DtxJ4gvOfMRnzoo6ccGJVKL+uZYe6qqH+SPqD8r01Q@mail.gmail.com>
- <20200313192306.wxey3wn2h4htpccm@madcap2.tricolour.ca> <CAHC9VhQKOpVWxDg-tWuCWV22QRu8P_NpFKme==0Ot1RQKa_DWA@mail.gmail.com>
- <20200318214154.ycxy5dl4pxno6fvi@madcap2.tricolour.ca> <CAHC9VhSuMnd3-ci2Bx-xJ0yscQ=X8ZqFAcNPKpbh_ZWN3FJcuQ@mail.gmail.com>
- <20200319214759.qgxt2sfkmd6srdol@madcap2.tricolour.ca>
-In-Reply-To: <20200319214759.qgxt2sfkmd6srdol@madcap2.tricolour.ca>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Fri, 20 Mar 2020 17:56:05 -0400
-Message-ID: <CAHC9VhTp25OAaTO5UMft0OzUZ=oQpZFjebkjjQP0-NrPp0bNAg@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
- the audit daemon
-To:     Richard Guy Briggs <rgb@redhat.com>
-Cc:     Steve Grubb <sgrubb@redhat.com>, linux-audit@redhat.com,
-        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
-        containers@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
-        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
-        simo@redhat.com, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200320191903.19494-3-longman@redhat.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 5:48 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> On 2020-03-18 17:47, Paul Moore wrote:
-> > On Wed, Mar 18, 2020 at 5:42 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > On 2020-03-18 17:01, Paul Moore wrote:
-> > > > On Fri, Mar 13, 2020 at 3:23 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > > > On 2020-03-13 12:42, Paul Moore wrote:
-> > > >
-> > > > ...
-> > > >
-> > > > > > The thread has had a lot of starts/stops, so I may be repeating a
-> > > > > > previous suggestion, but one idea would be to still emit a "death
-> > > > > > record" when the final task in the audit container ID does die, but
-> > > > > > block the particular audit container ID from reuse until it the
-> > > > > > SIGNAL2 info has been reported.  This gives us the timely ACID death
-> > > > > > notification while still preventing confusion and ambiguity caused by
-> > > > > > potentially reusing the ACID before the SIGNAL2 record has been sent;
-> > > > > > there is a small nit about the ACID being present in the SIGNAL2
-> > > > > > *after* its death, but I think that can be easily explained and
-> > > > > > understood by admins.
-> > > > >
-> > > > > Thinking quickly about possible technical solutions to this, maybe it
-> > > > > makes sense to have two counters on a contobj so that we know when the
-> > > > > last process in that container exits and can issue the death
-> > > > > certificate, but we still block reuse of it until all further references
-> > > > > to it have been resolved.  This will likely also make it possible to
-> > > > > report the full contid chain in SIGNAL2 records.  This will eliminate
-> > > > > some of the issues we are discussing with regards to passing a contobj
-> > > > > vs a contid to the audit_log_contid function, but won't eliminate them
-> > > > > all because there are still some contids that won't have an object
-> > > > > associated with them to make it impossible to look them up in the
-> > > > > contobj lists.
-> > > >
-> > > > I'm not sure you need a full second counter, I imagine a simple flag
-> > > > would be okay.  I think you just something to indicate that this ACID
-> > > > object is marked as "dead" but it still being held for sanity reasons
-> > > > and should not be reused.
-> > >
-> > > Ok, I see your point.  This refcount can be changed to a flag easily
-> > > enough without change to the api if we can be sure that more than one
-> > > signal can't be delivered to the audit daemon *and* collected by sig2.
-> > > I'll have a more careful look at the audit daemon code to see if I can
-> > > determine this.
-> >
-> > Maybe I'm not understanding your concern, but this isn't really
-> > different than any of the other things we track for the auditd signal
-> > sender, right?  If we are worried about multiple signals being sent
-> > then it applies to everything, not just the audit container ID.
->
-> Yes, you are right.  In all other cases the information is simply
-> overwritten.  In the case of the audit container identifier any
-> previous value is put before a new one is referenced, so only the last
-> signal is kept.  So, we only need a flag.  Does a flag implemented with
-> a rcu-protected refcount sound reasonable to you?
+On Fri, Mar 20, 2020 at 03:19:03PM -0400, Waiman Long wrote:
+> By allocating a kernel buffer with a user-supplied buffer length, it
+> is possible that a false positive ENOMEM error may be returned because
+> the user-supplied length is just too large even if the system do have
+> enough memory to hold the actual key data.
+> 
+> Moreover, if the buffer length is larger than the maximum amount of
+> memory that can be returned by kmalloc() (2^(MAX_ORDER-1) number of
+> pages), a warning message will also be printed.
+> 
+> To reduce this possibility, we set a threshold (page size) over which we
+> do check the actual key length first before allocating a buffer of the
+> right size to hold it. The threshold is arbitrary, it is just used to
+> trigger a buffer length check. It does not limit the actual key length
+> as long as there is enough memory to satisfy the memory request.
+> 
+> To further avoid large buffer allocation failure due to page
+> fragmentation, kvmalloc() is used to allocate the buffer so that vmapped
+> pages can be used when there is not a large enough contiguous set of
+> pages available for allocation.
+> 
+> Signed-off-by: Waiman Long <longman@redhat.com>
+> ---
+>  security/keys/internal.h | 12 ++++++++++++
+>  security/keys/keyctl.c   | 39 +++++++++++++++++++++++++++++++--------
+>  2 files changed, 43 insertions(+), 8 deletions(-)
+> 
+> diff --git a/security/keys/internal.h b/security/keys/internal.h
+> index ba3e2da14cef..6d0ca48ae9a5 100644
+> --- a/security/keys/internal.h
+> +++ b/security/keys/internal.h
+> @@ -16,6 +16,8 @@
+>  #include <linux/keyctl.h>
+>  #include <linux/refcount.h>
+>  #include <linux/compat.h>
+> +#include <linux/mm.h>
+> +#include <linux/vmalloc.h>
+>  
+>  struct iovec;
+>  
+> @@ -349,4 +351,14 @@ static inline void key_check(const struct key *key)
+>  
+>  #endif
+>  
+> +/*
+> + * Helper function to clear and free a kvmalloc'ed memory object.
+> + */
+> +static inline void __kvzfree(const void *addr, size_t len)
+> +{
+> +	if (addr) {
+> +		memset((void *)addr, 0, len);
+> +		kvfree(addr);
+> +	}
+> +}
+>  #endif /* _INTERNAL_H */
+> diff --git a/security/keys/keyctl.c b/security/keys/keyctl.c
+> index 5a0794cb8815..ded69108db0d 100644
+> --- a/security/keys/keyctl.c
+> +++ b/security/keys/keyctl.c
+> @@ -339,7 +339,7 @@ long keyctl_update_key(key_serial_t id,
+>  	payload = NULL;
+>  	if (plen) {
+>  		ret = -ENOMEM;
+> -		payload = kmalloc(plen, GFP_KERNEL);
+> +		payload = kvmalloc(plen, GFP_KERNEL);
+>  		if (!payload)
+>  			goto error;
+>  
+> @@ -360,7 +360,7 @@ long keyctl_update_key(key_serial_t id,
+>  
+>  	key_ref_put(key_ref);
+>  error2:
+> -	kzfree(payload);
+> +	__kvzfree(payload, plen);
+>  error:
+>  	return ret;
+>  }
+> @@ -877,13 +877,23 @@ long keyctl_read_key(key_serial_t keyid, char __user *buffer, size_t buflen)
+>  		 * transferring them to user buffer to avoid potential
+>  		 * deadlock involving page fault and mmap_sem.
+>  		 */
+> -		char *key_data = kmalloc(buflen, GFP_KERNEL);
+> +		char *key_data = NULL;
+> +		size_t key_data_len = buflen;
+>  
+> -		if (!key_data) {
+> -			ret = -ENOMEM;
+> -			goto error2;
+> +		/*
+> +		 * When the user-supplied key length is larger than
+> +		 * PAGE_SIZE, we get the actual key length first before
+> +		 * allocating a right-sized key data buffer.
+> +		 */
+> +		if (buflen <= PAGE_SIZE) {
+> +allocbuf:
 
-Well, if I recall correctly you still need to fix the locking in this
-patchset so until we see what that looks like it is hard to say for
-certain.  Just make sure that the flag is somehow protected from
-races; it is probably a lot like the "valid" flags you sometimes see
-with RCU protected lists.
+Would move this label before condition instead of jumping inside the
+nested block since it will always evaluate correctly.
 
-> > > Another question occurs to me is that what if the audit daemon is sent a
-> > > signal and it cannot or will not collect the sig2 information from the
-> > > kernel (SIGKILL?)?  Does that audit container identifier remain dead
-> > > until reboot, or do we institute some other form of reaping, possibly
-> > > time-based?
-> >
-> > In order to preserve the integrity of the audit log that ACID value
-> > would need to remain unavailable until the ACID which contains the
-> > associated auditd is "dead" (no one can request the signal sender's
-> > info if that container is dead).
->
-> I don't understand why it would be associated with the contid of the
-> audit daemon process rather than with the audit daemon process itself.
-> How does the signal collection somehow get transferred or delegated to
-> another member of that audit daemon's container?
+To this version haven't really gotten why you don't use a legit loop
+construct but instead jump from one random nested location to another
+random nested location? This construct will be somewhat nasty to
+maintain. The construct is weird enough that you should have rather
+good explanation in the long description why such a mess.
 
-Presumably once we support multiple audit daemons we will need a
-struct to contain the associated connection state, with at most one
-struct (and one auditd) allowed for a given ACID.  I would expect that
-the signal sender info would be part of that state included in that
-struct.  If a task sent a signal to it's associated auditd, and no one
-ever queried the signal information stored in the per-ACID state
-struct, I would expect that the refcount/flag/whatever would remain
-held for the signal sender's ACID until the auditd state's ACID died
-(the struct would be reaped as part of the ACID death).  In cases
-where the container orchestrator blocks sending signals across ACID
-boundaries this really isn't an issue as it will all be the same ACID,
-but since we don't want to impose any restrictions on what a container
-*could* be it is important to make sure we handle the case where the
-signal sender's ACID may be different from the associated auditd's
-ACID.
 
-> Thinking aloud here, the audit daemon's exit when it calls audit_free()
-> needs to ..._put_sig and cancel that audit_sig_cid (which in the future
-> will be allocated per auditd rather than the global it is now since
-> there is only one audit daemon).
->
-> > paul moore
->
-> - RGB
->
-> --
-> Richard Guy Briggs <rgb@redhat.com>
-> Sr. S/W Engineer, Kernel Security, Base Operating Systems
-> Remote, Ottawa, Red Hat Canada
-> IRC: rgb, SunRaycer
-> Voice: +1.647.777.2635, Internal: (81) 32635
+> +			key_data = kvmalloc(key_data_len, GFP_KERNEL);
+> +			if (!key_data) {
+> +				ret = -ENOMEM;
+> +				goto error2;
+> +			}
+>  		}
+> -		ret = __keyctl_read_key(key, key_data, buflen);
+> +		ret = __keyctl_read_key(key, key_data, key_data_len);
+>  
+>  		/*
+>  		 * Read methods will just return the required length
+> @@ -891,10 +901,23 @@ long keyctl_read_key(key_serial_t keyid, char __user *buffer, size_t buflen)
+>  		 * enough.
+>  		 */
+>  		if (ret > 0 && ret <= buflen) {
+> +			/*
+> +			 * The key may change (unlikely) in between 2
+> +			 * consecutive __keyctl_read_key() calls. We will
+> +			 * need to allocate a larger buffer and redo the key
+> +			 * read when key_data_len < ret <= buflen.
+> +			 */
+> +			if (!key_data || unlikely(ret > key_data_len)) {
+> +				if (unlikely(key_data))
+> +					__kvzfree(key_data, key_data_len);
+> +				key_data_len = ret;
+> +				goto allocbuf;
+> +			}
+> +
+>  			if (copy_to_user(buffer, key_data, ret))
+>  				ret = -EFAULT;
+>  		}
+> -		kzfree(key_data);
+> +		__kvzfree(key_data, key_data_len);
+>  	}
+>  
+>  error2:
+> -- 
+> 2.18.1
+> 
 
--- 
-paul moore
-www.paul-moore.com
+Doesn't this go to infinite loop if actual key size is at least
+PAGE_SIZE + 1? Where is the guarantee that this cannot happen?
+
+/Jarkko
+
+
