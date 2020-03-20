@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 384B118DE54
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 07:58:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DFCF18DE57
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 07:58:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728088AbgCUG60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 02:58:26 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:32976 "EHLO huawei.com"
+        id S1728118AbgCUG6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 02:58:36 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:33140 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728005AbgCUG6Z (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Mar 2020 02:58:25 -0400
+        id S1728005AbgCUG6g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Mar 2020 02:58:36 -0400
 Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 7ABD0317735B697E49A3;
+        by Forcepoint Email with ESMTP id 928C2BBD596AE1935CE6;
         Sat, 21 Mar 2020 14:58:20 +0800 (CST)
 Received: from localhost.localdomain (10.175.34.53) by
  DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
@@ -22,9 +22,9 @@ To:     <davem@davemloft.net>
 CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         <luoxianjun@huawei.com>, <luobin9@huawei.com>,
         <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
-Subject: [PATCH net 4/5] hinic: fix wrong para of wait_for_completion_timeout
-Date:   Fri, 20 Mar 2020 23:13:19 +0000
-Message-ID: <20200320231320.1001-5-luobin9@huawei.com>
+Subject: [PATCH net 5/5] hinic: fix wrong value of MIN_SKB_LEN
+Date:   Fri, 20 Mar 2020 23:13:20 +0000
+Message-ID: <20200320231320.1001-6-luobin9@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200320231320.1001-1-luobin9@huawei.com>
 References: <20200320231320.1001-1-luobin9@huawei.com>
@@ -37,52 +37,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-the second input parameter of wait_for_completion_timeout should
-be jiffies instead of millisecond
+the minimum value of skb len that hw supports is 32 rather than 17
 
 Signed-off-by: Luo bin <luobin9@huawei.com>
 ---
- drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c | 3 ++-
- drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c | 5 +++--
- 2 files changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/huawei/hinic/hinic_tx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
-index 33f93cc25193..5f2d57d1b2d3 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_cmdq.c
-@@ -389,7 +389,8 @@ static int cmdq_sync_cmd_direct_resp(struct hinic_cmdq *cmdq,
+diff --git a/drivers/net/ethernet/huawei/hinic/hinic_tx.c b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
+index cabcc9019ee4..8993f5b07059 100644
+--- a/drivers/net/ethernet/huawei/hinic/hinic_tx.c
++++ b/drivers/net/ethernet/huawei/hinic/hinic_tx.c
+@@ -45,7 +45,7 @@
  
- 	spin_unlock_bh(&cmdq->cmdq_lock);
+ #define HW_CONS_IDX(sq)                 be16_to_cpu(*(u16 *)((sq)->hw_ci_addr))
  
--	if (!wait_for_completion_timeout(&done, CMDQ_TIMEOUT)) {
-+	if (!wait_for_completion_timeout(&done,
-+					 msecs_to_jiffies(CMDQ_TIMEOUT))) {
- 		spin_lock_bh(&cmdq->cmdq_lock);
+-#define MIN_SKB_LEN			17
++#define MIN_SKB_LEN			32
+ #define HINIC_GSO_MAX_SIZE		65536
  
- 		if (cmdq->errcode[curr_prod_idx] == &errcode)
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-index c1a6be6bf6a8..8995e32dd1c0 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-@@ -43,7 +43,7 @@
- 
- #define MSG_NOT_RESP                    0xFFFF
- 
--#define MGMT_MSG_TIMEOUT                1000
-+#define MGMT_MSG_TIMEOUT                5000
- 
- #define mgmt_to_pfhwdev(pf_mgmt)        \
- 		container_of(pf_mgmt, struct hinic_pfhwdev, pf_to_mgmt)
-@@ -267,7 +267,8 @@ static int msg_to_mgmt_sync(struct hinic_pf_to_mgmt *pf_to_mgmt,
- 		goto unlock_sync_msg;
- 	}
- 
--	if (!wait_for_completion_timeout(recv_done, MGMT_MSG_TIMEOUT)) {
-+	if (!wait_for_completion_timeout(recv_done,
-+					 msecs_to_jiffies(MGMT_MSG_TIMEOUT))) {
- 		dev_err(&pdev->dev, "MGMT timeout, MSG id = %d\n", msg_id);
- 		err = -ETIMEDOUT;
- 		goto unlock_sync_msg;
+ #define	MAX_PAYLOAD_OFFSET		221
 -- 
 2.17.1
 
