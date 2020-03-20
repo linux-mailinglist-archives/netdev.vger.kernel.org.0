@@ -2,93 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 932DA18C41F
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 01:08:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1821818C449
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 01:38:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727402AbgCTAIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 20:08:04 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:50907 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727159AbgCTAIE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 20:08:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584662883;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Anb5LRo8xpBF1QOjWwn5JazocJjB3iK3v4+s87FrK8A=;
-        b=UEvzJ4NbUVFJ0b37HCB8L+FhTkbAmEeDz6h72T+m4muyPzPbAWdTcAOh8U5gdLHIUQ/0hX
-        /n3pX5Xv6LC0N3lA8547MbzO/cWa3Pi7ycGXaJKuxk9cgVKw/sFwxFXrFedzabgFGAcZVK
-        t+UH3212IQiKDLOt0CB9C0AcAaSzEzM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-100-f_JiBXiuMQ2zkpAPZ_nSSw-1; Thu, 19 Mar 2020 20:08:01 -0400
-X-MC-Unique: f_JiBXiuMQ2zkpAPZ_nSSw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DC5D4107ACC7;
-        Fri, 20 Mar 2020 00:07:58 +0000 (UTC)
-Received: from llong.remote.csb (ovpn-113-139.rdu2.redhat.com [10.10.113.139])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8BC6719C58;
-        Fri, 20 Mar 2020 00:07:55 +0000 (UTC)
-Subject: Re: [PATCH v5 2/2] KEYS: Avoid false positive ENOMEM error on key
- read
-To:     Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
-Cc:     David Howells <dhowells@redhat.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, keyrings@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org, netdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, Sumit Garg <sumit.garg@linaro.org>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Chris von Recklinghausen <crecklin@redhat.com>
-References: <20200318221457.1330-1-longman@redhat.com>
- <20200318221457.1330-3-longman@redhat.com>
- <20200319194650.GA24804@linux.intel.com>
-From:   Waiman Long <longman@redhat.com>
-Organization: Red Hat
-Message-ID: <f22757ad-4d6f-ffd2-eed5-6b9bd1621b10@redhat.com>
-Date:   Thu, 19 Mar 2020 20:07:55 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726975AbgCTAin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 20:38:43 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:43990 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725787AbgCTAin (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 20:38:43 -0400
+Received: by mail-ed1-f68.google.com with SMTP id n25so4154147eds.10
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 17:38:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SnMDiUsf0gLzR7Dht4JACDUEl2yuy7X2DACh6GqC7I8=;
+        b=aDLugUvmVbLY1i9QzAhQGKNTMTAIDH+R6fdWI03dxNFqqWkuE3TcJjqU98gEkZN2qE
+         i5NJoW0vWdDSLAF2Ad2RsosHAvniKaQ0GQ1Z5iByZOOdSuCInZiLmQsuW8ueo/45GT98
+         hevhm2/Y2yjue+vq05lrWqN+qV8R+sSYd0rBqcXeNDVOdMMRPMX+w8EohjK8hS1zC5LQ
+         tdq0MtLwA/VUB/E51Komr6PTmdF5vhGA6grF6kK+nMWI2Mb7PmlrQPtR2iQ6YRnyvTwy
+         J3BT/IkoI4KuynSyIf/AxVhJJZ9KFmj1RyQ4f4YEDZmjCCTdf1Yq2uH56bXJRi/mxkUX
+         vusg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SnMDiUsf0gLzR7Dht4JACDUEl2yuy7X2DACh6GqC7I8=;
+        b=uaESvttUE08RX9uW4OM9K+cjnl0Z8MLec0b/VYcl3O3220oNiSgjxyUEE+2DXqY9XS
+         ypM8DSQjyaiztER0lkU85jEuLiv9UDp9fPaoVLSeZaVvA4QWWS7cutWKpe9ILNggxgGA
+         4TQtyv+UH7pjSjtFTim536L36bgYdyf9RIJ/x1doCGYuxmTHcffEmtpdOrmT9EOh474S
+         gcQP2SUXb+5bnARWwoBRxoYXgvOcABfQEB7aZeP8X3MYG6xg50WeS0lgWlw6bwaiSslm
+         H3dKitKny5ljDhy+FlLiZqn+suFJWK/vtDS64E5Bih1ydEzAylp8wsmiEcpGEPI5+0Y2
+         mcAw==
+X-Gm-Message-State: ANhLgQ0jQDiKA1sC5ObId16zE/Upl//1WfsVx1kf5EL/YDd9EDA0O2jl
+        eGh2/ETTvouU1JGb98cQtxP8S32k06Bq4iCUsvY=
+X-Google-Smtp-Source: ADFU+vsa1kiuxkyuUDwlu1eMkuhKVm3kxxqk7vYEBEnzgLen6vD/kwzbrTyQhECc/FlBtdlRkC3BQT7nrNa/MWVaE8s=
+X-Received: by 2002:a17:906:1308:: with SMTP id w8mr5628496ejb.189.1584664721069;
+ Thu, 19 Mar 2020 17:38:41 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200319194650.GA24804@linux.intel.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <20200319235313.26579-1-olteanv@gmail.com> <20200320000622.GI25745@shell.armlinux.org.uk>
+In-Reply-To: <20200320000622.GI25745@shell.armlinux.org.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 20 Mar 2020 02:38:30 +0200
+Message-ID: <CA+h21howFajxEWhmRDDcZhvrA6Rr10pX8MJUkE9f0CAeOVOeSA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: sja1105: Add support for the SGMII port
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/19/20 3:46 PM, Jarkko Sakkinen wrote:
-> On Wed, Mar 18, 2020 at 06:14:57PM -0400, Waiman Long wrote:
->> +			 * It is possible, though unlikely, that the key
->> +			 * changes in between the up_read->down_read period.
->> +			 * If the key becomes longer, we will have to
->> +			 * allocate a larger buffer and redo the key read
->> +			 * again.
->> +			 */
->> +			if (!tmpbuf || unlikely(ret > tmpbuflen)) {
-> Shouldn't you check that tmpbuflen stays below buflen (why else
-> you had made copy of buflen otherwise)?
+On Fri, 20 Mar 2020 at 02:06, Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> On Fri, Mar 20, 2020 at 01:53:13AM +0200, Vladimir Oltean wrote:
+> > @@ -774,10 +881,14 @@ static void sja1105_mac_config(struct dsa_switch *ds, int port,
+> >               return;
+> >       }
+> >
+> > -     if (link_an_mode == MLO_AN_INBAND) {
+> > +     if (link_an_mode == MLO_AN_INBAND && !is_sgmii) {
+> >               dev_err(ds->dev, "In-band AN not supported!\n");
+> >               return;
+> >       }
+> > +
+> > +     if (is_sgmii)
+> > +             sja1105_sgmii_config(priv, port, link_an_mode == MLO_AN_INBAND,
+> > +                                  state->speed);
+>
+> Please avoid new usages of state->speed in mac_config() - I'm trying
+> to eliminate them now that the mac_link_up() patches are in.  If you
+> need to set the PCS for the link speed, please hook that into
+> mac_link_up() instead.
+>
 
-The check above this thunk:
+Well, duh. I forward-ported this from a 5.4 kernel and I simply forgot
+to do this extra change. I'll still have to turn it around when I
+backport it again, but whatever.
 
-if ((ret > 0) && (ret <= buflen)) {
+> >  }
+> >
+> >  static void sja1105_mac_link_down(struct dsa_switch *ds, int port,
+> > @@ -833,7 +944,8 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
+> >       phylink_set(mask, 10baseT_Full);
+> >       phylink_set(mask, 100baseT_Full);
+> >       phylink_set(mask, 100baseT1_Full);
+> > -     if (mii->xmii_mode[port] == XMII_MODE_RGMII)
+> > +     if (mii->xmii_mode[port] == XMII_MODE_RGMII ||
+> > +         mii->xmii_mode[port] == XMII_MODE_SGMII)
+> >               phylink_set(mask, 1000baseT_Full);
+> >
+> >       bitmap_and(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
+> > @@ -841,6 +953,82 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
+> >                  __ETHTOOL_LINK_MODE_MASK_NBITS);
+> >  }
+> >
+> > +static int sja1105_mac_pcs_get_state(struct dsa_switch *ds, int port,
+> > +                                  struct phylink_link_state *state)
+> > +{
+> > +     struct sja1105_private *priv = ds->priv;
+> > +     int bmcr;
+> > +
+> > +     bmcr = sja1105_sgmii_read(priv, MII_BMCR);
+> > +     if (bmcr < 0)
+> > +             return bmcr;
+> > +
+> > +     state->an_enabled = !!(bmcr & BMCR_ANENABLE);
+> > +
+> > +     if (state->an_enabled) {
+>
+> mac_pcs_get_state() is only called when in in-band AN mode, so this
+> is not useful.  If it's called with AN disabled, that's a bug.
+>
 
-will make sure that ret will not be larger than buflen. So tmpbuflen
-will never be bigger than buflen.
+Correct. In fact I only 'tested' in-band AN via register dumps. On my
+board it is physically impossible to really make use of
+mac_pcs_get_state because port 4 is a PHY-less interface (the CPU
+port), and if there were any in-band AN to take place at all, this
+switch port would have to be the AN master, and there isn't logic for
+that at the moment.
+Because there isn't more than 1 SGMII port in this 5-port switch, I
+suspect that AN disabled is going to be the case for pretty much every
+other board out there.
+Since I did spend the time to figure out how it should work, I thought
+it might have been useful to have some code, even if just
+blind-tested, for whomever needed it. But after your comment, I'm not
+willing to figure out now how to split the PCS config function to be
+called from the AN as well as non-AN code paths. So I'll just drop any
+sort of AN code in v2.
 
-Cheers,
-Longman
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
 
+Thanks,
+-Vladimir
