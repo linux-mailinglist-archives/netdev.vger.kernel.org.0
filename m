@@ -2,54 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F311C18D801
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 19:57:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6DFE18D802
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 19:57:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726840AbgCTS5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 14:57:38 -0400
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:38585 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726738AbgCTS5i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 14:57:38 -0400
-Received: by mail-pj1-f65.google.com with SMTP id m15so2888475pje.3
-        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 11:57:37 -0700 (PDT)
+        id S1726953AbgCTS5n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 14:57:43 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:46634 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726738AbgCTS5n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 14:57:43 -0400
+Received: by mail-pl1-f195.google.com with SMTP id r3so2879125pls.13
+        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 11:57:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=zVfALwvu3zSfBzPTP7/Ke9u2Arsne90290ch/JMdZKc=;
-        b=jAYlQgB2gI2j7KWEBSo/79SFPy8FziCfFjno8eDCchllR8afG3CfxftiJliWbvsbTV
-         S+clg/E/sLB0ISWZmvYmpHFru5H3Klhrxiyx/2v5aWOoORGOtYuRre4YvSS9WlgI7OoH
-         gx5Ha4i2PyAoLK+lhqVyql0IT5lOKEUOnG2jiVRqjVA5DIq1IFeQQLyrupmyyUu/PURb
-         hw8MmEhApVqytbXbiTDUbWJHVQR48ojO8Rt67//NjrlZvG+rnBEBvi14AYGmi30Rl5/j
-         H3OKtY1sOQKBzsSbhitohfGW3OeiedKHNs/5gGEi8v5eSgcP20BJ7yTDa321krqBJX8p
-         59ew==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=8HQv72Jk+Z7XmcQffbFmB7+WXLE/tPu6kTTYuyox2gg=;
+        b=s0AwJ6m79cI0bFTLefFC8t1/K5fbGd6IRNsGCY4rjQTqy1q6kd38BIA/aiSyY8Yzj7
+         w7BfLUyrjJUYzkuL8T/LyJBR/8wmQSF2sC3taa6zp7bErDCWxtNCzhkHd4D3vGoKotYL
+         nJh6T7LtfHYUSG+ttD307QuEkukXCbFWfWAQhG2Cfw7EKo3Anzgcv7AhsRfW8oUhVusR
+         3LbFP/CYhzXSFspLUgxfC17oPblfFjG7TQ82z5xRXkP2ZBd+CaPTOXIanGWlMBhBrE5/
+         U/F6koP8Ic1umQoeYinNgg3vMJSIG+6MPo9CN3sdE7o7/Y9F6vG+fLUtanMINVADVcrA
+         pY+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=zVfALwvu3zSfBzPTP7/Ke9u2Arsne90290ch/JMdZKc=;
-        b=Rg0ND3MBAM0RHY+2TH/M5Pjx5BGpfe0FHPs875pnJ5znBGlUpGthb4ShroLZbPIvle
-         tFrtKcUXP9fm08ah9cgy6LSCV99Krpsgo7zTRbQnNEz3f4C9csYAh8+X0GAlPADwdAh5
-         qEWrI/ThyYfoqNdx2C0fGtmUZhSUVHr92jwx96nvIW/g5us/ayhXfPPF6Af3EbCPAEAu
-         sHIfhIiGW36HXznrbzB/qfxEA29f4xsnIksoOwMD+rSn0QGXzv7vB+a3esM0O9JdWqSa
-         1f77hqKwC9tHNVU282eBomhmvFfhI10jCn2mHIRyPjk7/mJLJFX0BBqYsvUlRh7bi6pr
-         1/Ig==
-X-Gm-Message-State: ANhLgQ3ecB67pIg56GH4Hp6FfEVVY39Q9mQ3IpskXlgLKzXtb5fB5X7s
-        uje1ALFQjAuCSDhngSbl8WRGMLZfIc0=
-X-Google-Smtp-Source: ADFU+vu89T2hBHZANpTEqp6YnOld/d9Kq+NPZusVPWoUaUj98XXV5LZIVcC9/L8OkikzH6yDzyBvNw==
-X-Received: by 2002:a17:90b:11d0:: with SMTP id gv16mr11251802pjb.106.1584730656234;
-        Fri, 20 Mar 2020 11:57:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=8HQv72Jk+Z7XmcQffbFmB7+WXLE/tPu6kTTYuyox2gg=;
+        b=Q2cdDR1+hpnhaKQqk4aitKdcdzYkLaiBntc/zIZF8VqIV7WdFBg+e9o12w/GQnjxpm
+         vKICpGMyRLTSgC6QeQBghldxM7eTBFUeUv0mVDgb1GcYJ6KIANMLiwgsk0/5McKjIFdl
+         mMNC78KOtf5wgwU+wkTbnY1j/2Y0Qzvg6XpQT/5nXoVrL4Ac6tlUU3Dta9vtxf8NWC4n
+         xUlBEFSdzkZlFgeE577is1ODG5YQ0JvZG+l8AwWeZDDs4+857fnUeGDLm9RRbrYQAsgM
+         AcloSlAVCvK7FblODLNJYvg7hsztiRlB3hCTn9Rz9DTCejqZ0uvEabc7Cs8eRzuh/lRh
+         n7gw==
+X-Gm-Message-State: ANhLgQ16JSknjYV7UUgMgrTqxHN/EkA9ybtnZ2BmavqXsVGSakPj+2EA
+        sJgI3hA01EWgGxYlt/NUmTkqXsNljvU=
+X-Google-Smtp-Source: ADFU+vsNuBhLOFXIgYxSgmuq6Z/nIMGnJEAyGwDzr4r0tPONgdrAOF7HB/Y/YO7Zh18tkPqzk66bLg==
+X-Received: by 2002:a17:902:8bc3:: with SMTP id r3mr10032072plo.220.1584730660089;
+        Fri, 20 Mar 2020 11:57:40 -0700 (PDT)
 Received: from machine421.marvell.com ([115.113.156.2])
-        by smtp.googlemail.com with ESMTPSA id l59sm2407044pjb.2.2020.03.20.11.57.33
+        by smtp.googlemail.com with ESMTPSA id l59sm2407044pjb.2.2020.03.20.11.57.36
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 20 Mar 2020 11:57:35 -0700 (PDT)
+        Fri, 20 Mar 2020 11:57:39 -0700 (PDT)
 From:   sunil.kovvuri@gmail.com
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, leon@kernel.org,
-        andrew@lunn.ch, Sunil Goutham <sgoutham@marvell.com>
-Subject: [PATCH v4 net-next 0/8] octeontx2-vf: Add network driver for virtual function
-Date:   Sat, 21 Mar 2020 00:27:18 +0530
-Message-Id: <1584730646-15953-1-git-send-email-sunil.kovvuri@gmail.com>
+        andrew@lunn.ch, Sunil Goutham <sgoutham@marvell.com>,
+        Tomasz Duszynski <tduszynski@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Christina Jacob <cjacob@marvell.com>
+Subject: [PATCH v4 net-next 1/8] octeontx2-pf: Enable SRIOV and added VF mbox handling
+Date:   Sat, 21 Mar 2020 00:27:19 +0530
+Message-Id: <1584730646-15953-2-git-send-email-sunil.kovvuri@gmail.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1584730646-15953-1-git-send-email-sunil.kovvuri@gmail.com>
+References: <1584730646-15953-1-git-send-email-sunil.kovvuri@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -57,57 +63,534 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sunil Goutham <sgoutham@marvell.com>
 
-This patch series adds  network driver for the virtual functions of
-OcteonTX2 SOC's resource virtualization unit (RVU).
+Added 'sriov_configure' to enable/disable virtual functions (VFs).
+Also added handling of mailbox messages from these VFs.
 
-Changes from v3:
-   * Removed missed out EXPORT symbols in VF driver.
+Admin function (AF) is the only one with all priviliges to configure
+HW, alloc resources etc etc, PFs and it's VFs have to request AF
+via mbox for all their needs. But unlike PFs, their VFs cannot
+send a mbox request directly. A VF shares a mailbox region with
+it's parent PF, so VF sends a mailbox msg to PF and then PF forwards
+it to AF. Then AF after processing sends response to PF which it
+again forwards to VF.
 
-Changes from v2:
-   * Removed Copyright license text.
-   * Removed wrapper fn()s around mutex_lock and unlock.
-   * Got rid of using macro with 'return'.
-   * Removed __weak fn()s.
-        - Sugested by Leon Romanovsky and Andrew Lunn
+This patch adds support for this 'VF <=> PF <=> AF' mailbox
+communication.
 
-Changes from v1:
-   * Removed driver version and fixed authorship
-   * Removed driver version and fixed authorship in the already
-     upstreamed AF, PF drivers.
-   * Removed unnecessary checks in sriov_enable and xmit fn()s.
-   * Removed WQ_MEM_RECLAIM flag while creating workqueue.
-   * Added lock in tx_timeout task.
-   * Added 'supported_coalesce_params' in ethtool ops.
-   * Minor other cleanups.
-        - Sugested by Jakub Kicinski
+Signed-off-by: Tomasz Duszynski <tduszynski@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
+Signed-off-by: Christina Jacob <cjacob@marvell.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+---
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   3 +
+ .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 443 +++++++++++++++++++++
+ 2 files changed, 446 insertions(+)
 
-Geetha sowjanya (2):
-  octeontx2-pf: Handle VF function level reset
-  octeontx2-pf: Cleanup all receive buffers in SG descriptor
-
-Sunil Goutham (3):
-  octeontx2-pf: Enable SRIOV and added VF mbox handling
-  octeontx2-af: Remove driver version and fix authorship
-  octeontx2-pf: Remove wrapper APIs for mutex lock and unlock
-
-Tomasz Duszynski (3):
-  octeontx2-vf: Virtual function driver support
-  octeontx2-vf: Ethtool support
-  octeontx2-vf: Link event notification support
-
- drivers/net/ethernet/marvell/octeontx2/Kconfig     |   6 +
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |   4 +-
- .../net/ethernet/marvell/octeontx2/nic/Makefile    |   2 +
- .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  99 +--
- .../ethernet/marvell/octeontx2/nic/otx2_common.h   |  40 +-
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 128 +++-
- .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   | 824 ++++++++++++++++++++-
- .../net/ethernet/marvell/octeontx2/nic/otx2_reg.h  |  13 +
- .../net/ethernet/marvell/octeontx2/nic/otx2_txrx.c |  41 +-
- .../net/ethernet/marvell/octeontx2/nic/otx2_vf.c   | 648 ++++++++++++++++
- 10 files changed, 1693 insertions(+), 112 deletions(-)
- create mode 100644 drivers/net/ethernet/marvell/octeontx2/nic/otx2_vf.c
-
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index 885c3dc..74439e1 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -215,8 +215,11 @@ struct otx2_nic {
+ 
+ 	/* Mbox */
+ 	struct mbox		mbox;
++	struct mbox		*mbox_pfvf;
+ 	struct workqueue_struct *mbox_wq;
++	struct workqueue_struct *mbox_pfvf_wq;
+ 
++	u8			total_vfs;
+ 	u16			pcifunc; /* RVU PF_FUNC */
+ 	u16			bpid[NIX_MAX_BPID_CHAN];
+ 	struct cgx_link_user_info linfo;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 22f9a32..967ef7b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -115,6 +115,387 @@ static void otx2_queue_work(struct mbox *mw, struct workqueue_struct *mbox_wq,
+ 	}
+ }
+ 
++static void otx2_forward_msg_pfvf(struct otx2_mbox_dev *mdev,
++				  struct otx2_mbox *pfvf_mbox, void *bbuf_base,
++				  int devid)
++{
++	struct otx2_mbox_dev *src_mdev = mdev;
++	int offset;
++
++	/* Msgs are already copied, trigger VF's mbox irq */
++	smp_wmb();
++
++	offset = pfvf_mbox->trigger | (devid << pfvf_mbox->tr_shift);
++	writeq(1, (void __iomem *)pfvf_mbox->reg_base + offset);
++
++	/* Restore VF's mbox bounce buffer region address */
++	src_mdev->mbase = bbuf_base;
++}
++
++static int otx2_forward_vf_mbox_msgs(struct otx2_nic *pf,
++				     struct otx2_mbox *src_mbox,
++				     int dir, int vf, int num_msgs)
++{
++	struct otx2_mbox_dev *src_mdev, *dst_mdev;
++	struct mbox_hdr *mbox_hdr;
++	struct mbox_hdr *req_hdr;
++	struct mbox *dst_mbox;
++	int dst_size, err;
++
++	if (dir == MBOX_DIR_PFAF) {
++		/* Set VF's mailbox memory as PF's bounce buffer memory, so
++		 * that explicit copying of VF's msgs to PF=>AF mbox region
++		 * and AF=>PF responses to VF's mbox region can be avoided.
++		 */
++		src_mdev = &src_mbox->dev[vf];
++		mbox_hdr = src_mbox->hwbase +
++				src_mbox->rx_start + (vf * MBOX_SIZE);
++
++		dst_mbox = &pf->mbox;
++		dst_size = dst_mbox->mbox.tx_size -
++				ALIGN(sizeof(*mbox_hdr), MBOX_MSG_ALIGN);
++		/* Check if msgs fit into destination area */
++		if (mbox_hdr->msg_size > dst_size)
++			return -EINVAL;
++
++		dst_mdev = &dst_mbox->mbox.dev[0];
++
++		otx2_mbox_lock(&pf->mbox);
++		dst_mdev->mbase = src_mdev->mbase;
++		dst_mdev->msg_size = mbox_hdr->msg_size;
++		dst_mdev->num_msgs = num_msgs;
++		err = otx2_sync_mbox_msg(dst_mbox);
++		if (err) {
++			dev_warn(pf->dev,
++				 "AF not responding to VF%d messages\n", vf);
++			/* restore PF mbase and exit */
++			dst_mdev->mbase = pf->mbox.bbuf_base;
++			otx2_mbox_unlock(&pf->mbox);
++			return err;
++		}
++		/* At this point, all the VF messages sent to AF are acked
++		 * with proper responses and responses are copied to VF
++		 * mailbox hence raise interrupt to VF.
++		 */
++		req_hdr = (struct mbox_hdr *)(dst_mdev->mbase +
++					      dst_mbox->mbox.rx_start);
++		req_hdr->num_msgs = num_msgs;
++
++		otx2_forward_msg_pfvf(dst_mdev, &pf->mbox_pfvf[0].mbox,
++				      pf->mbox.bbuf_base, vf);
++		otx2_mbox_unlock(&pf->mbox);
++	} else if (dir == MBOX_DIR_PFVF_UP) {
++		src_mdev = &src_mbox->dev[0];
++		mbox_hdr = src_mbox->hwbase + src_mbox->rx_start;
++		req_hdr = (struct mbox_hdr *)(src_mdev->mbase +
++					      src_mbox->rx_start);
++		req_hdr->num_msgs = num_msgs;
++
++		dst_mbox = &pf->mbox_pfvf[0];
++		dst_size = dst_mbox->mbox_up.tx_size -
++				ALIGN(sizeof(*mbox_hdr), MBOX_MSG_ALIGN);
++		/* Check if msgs fit into destination area */
++		if (mbox_hdr->msg_size > dst_size)
++			return -EINVAL;
++
++		dst_mdev = &dst_mbox->mbox_up.dev[vf];
++		dst_mdev->mbase = src_mdev->mbase;
++		dst_mdev->msg_size = mbox_hdr->msg_size;
++		dst_mdev->num_msgs = mbox_hdr->num_msgs;
++		err = otx2_sync_mbox_up_msg(dst_mbox, vf);
++		if (err) {
++			dev_warn(pf->dev,
++				 "VF%d is not responding to mailbox\n", vf);
++			return err;
++		}
++	} else if (dir == MBOX_DIR_VFPF_UP) {
++		req_hdr = (struct mbox_hdr *)(src_mbox->dev[0].mbase +
++					      src_mbox->rx_start);
++		req_hdr->num_msgs = num_msgs;
++		otx2_forward_msg_pfvf(&pf->mbox_pfvf->mbox_up.dev[vf],
++				      &pf->mbox.mbox_up,
++				      pf->mbox_pfvf[vf].bbuf_base,
++				      0);
++	}
++
++	return 0;
++}
++
++static void otx2_pfvf_mbox_handler(struct work_struct *work)
++{
++	struct mbox_msghdr *msg = NULL;
++	int offset, vf_idx, id, err;
++	struct otx2_mbox_dev *mdev;
++	struct mbox_hdr *req_hdr;
++	struct otx2_mbox *mbox;
++	struct mbox *vf_mbox;
++	struct otx2_nic *pf;
++
++	vf_mbox = container_of(work, struct mbox, mbox_wrk);
++	pf = vf_mbox->pfvf;
++	vf_idx = vf_mbox - pf->mbox_pfvf;
++
++	mbox = &pf->mbox_pfvf[0].mbox;
++	mdev = &mbox->dev[vf_idx];
++	req_hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);
++
++	offset = ALIGN(sizeof(*req_hdr), MBOX_MSG_ALIGN);
++
++	for (id = 0; id < vf_mbox->num_msgs; id++) {
++		msg = (struct mbox_msghdr *)(mdev->mbase + mbox->rx_start +
++					     offset);
++
++		if (msg->sig != OTX2_MBOX_REQ_SIG)
++			goto inval_msg;
++
++		/* Set VF's number in each of the msg */
++		msg->pcifunc &= RVU_PFVF_FUNC_MASK;
++		msg->pcifunc |= (vf_idx + 1) & RVU_PFVF_FUNC_MASK;
++		offset = msg->next_msgoff;
++	}
++	err = otx2_forward_vf_mbox_msgs(pf, mbox, MBOX_DIR_PFAF, vf_idx,
++					vf_mbox->num_msgs);
++	if (err)
++		goto inval_msg;
++	return;
++
++inval_msg:
++	otx2_reply_invalid_msg(mbox, vf_idx, 0, msg->id);
++	otx2_mbox_msg_send(mbox, vf_idx);
++}
++
++static void otx2_pfvf_mbox_up_handler(struct work_struct *work)
++{
++	struct mbox *vf_mbox = container_of(work, struct mbox, mbox_up_wrk);
++	struct otx2_nic *pf = vf_mbox->pfvf;
++	struct otx2_mbox_dev *mdev;
++	int offset, id, vf_idx = 0;
++	struct mbox_hdr *rsp_hdr;
++	struct mbox_msghdr *msg;
++	struct otx2_mbox *mbox;
++
++	vf_idx = vf_mbox - pf->mbox_pfvf;
++	mbox = &pf->mbox_pfvf[0].mbox_up;
++	mdev = &mbox->dev[vf_idx];
++
++	rsp_hdr = (struct mbox_hdr *)(mdev->mbase + mbox->rx_start);
++	offset = mbox->rx_start + ALIGN(sizeof(*rsp_hdr), MBOX_MSG_ALIGN);
++
++	for (id = 0; id < vf_mbox->up_num_msgs; id++) {
++		msg = mdev->mbase + offset;
++
++		if (msg->id >= MBOX_MSG_MAX) {
++			dev_err(pf->dev,
++				"Mbox msg with unknown ID 0x%x\n", msg->id);
++			goto end;
++		}
++
++		if (msg->sig != OTX2_MBOX_RSP_SIG) {
++			dev_err(pf->dev,
++				"Mbox msg with wrong signature %x, ID 0x%x\n",
++				msg->sig, msg->id);
++			goto end;
++		}
++
++		switch (msg->id) {
++		case MBOX_MSG_CGX_LINK_EVENT:
++			break;
++		default:
++			if (msg->rc)
++				dev_err(pf->dev,
++					"Mbox msg response has err %d, ID 0x%x\n",
++					msg->rc, msg->id);
++			break;
++		}
++
++end:
++		offset = mbox->rx_start + msg->next_msgoff;
++		mdev->msgs_acked++;
++	}
++
++	otx2_mbox_reset(mbox, vf_idx);
++}
++
++static irqreturn_t otx2_pfvf_mbox_intr_handler(int irq, void *pf_irq)
++{
++	struct otx2_nic *pf = (struct otx2_nic *)(pf_irq);
++	int vfs = pf->total_vfs;
++	struct mbox *mbox;
++	u64 intr;
++
++	mbox = pf->mbox_pfvf;
++	/* Handle VF interrupts */
++	if (vfs > 64) {
++		intr = otx2_read64(pf, RVU_PF_VFPF_MBOX_INTX(1));
++		otx2_write64(pf, RVU_PF_VFPF_MBOX_INTX(1), intr);
++		otx2_queue_work(mbox, pf->mbox_pfvf_wq, 64, vfs, intr,
++				TYPE_PFVF);
++		vfs -= 64;
++	}
++
++	intr = otx2_read64(pf, RVU_PF_VFPF_MBOX_INTX(0));
++	otx2_write64(pf, RVU_PF_VFPF_MBOX_INTX(0), intr);
++
++	otx2_queue_work(mbox, pf->mbox_pfvf_wq, 0, vfs, intr, TYPE_PFVF);
++
++	return IRQ_HANDLED;
++}
++
++static int otx2_pfvf_mbox_init(struct otx2_nic *pf, int numvfs)
++{
++	void __iomem *hwbase;
++	struct mbox *mbox;
++	int err, vf;
++	u64 base;
++
++	if (!numvfs)
++		return -EINVAL;
++
++	pf->mbox_pfvf = devm_kcalloc(&pf->pdev->dev, numvfs,
++				     sizeof(struct mbox), GFP_KERNEL);
++	if (!pf->mbox_pfvf)
++		return -ENOMEM;
++
++	pf->mbox_pfvf_wq = alloc_workqueue("otx2_pfvf_mailbox",
++					   WQ_UNBOUND | WQ_HIGHPRI |
++					   WQ_MEM_RECLAIM, 1);
++	if (!pf->mbox_pfvf_wq)
++		return -ENOMEM;
++
++	base = readq((void __iomem *)((u64)pf->reg_base + RVU_PF_VF_BAR4_ADDR));
++	hwbase = ioremap_wc(base, MBOX_SIZE * pf->total_vfs);
++
++	if (!hwbase) {
++		err = -ENOMEM;
++		goto free_wq;
++	}
++
++	mbox = &pf->mbox_pfvf[0];
++	err = otx2_mbox_init(&mbox->mbox, hwbase, pf->pdev, pf->reg_base,
++			     MBOX_DIR_PFVF, numvfs);
++	if (err)
++		goto free_iomem;
++
++	err = otx2_mbox_init(&mbox->mbox_up, hwbase, pf->pdev, pf->reg_base,
++			     MBOX_DIR_PFVF_UP, numvfs);
++	if (err)
++		goto free_iomem;
++
++	for (vf = 0; vf < numvfs; vf++) {
++		mbox->pfvf = pf;
++		INIT_WORK(&mbox->mbox_wrk, otx2_pfvf_mbox_handler);
++		INIT_WORK(&mbox->mbox_up_wrk, otx2_pfvf_mbox_up_handler);
++		mbox++;
++	}
++
++	return 0;
++
++free_iomem:
++	if (hwbase)
++		iounmap(hwbase);
++free_wq:
++	destroy_workqueue(pf->mbox_pfvf_wq);
++	return err;
++}
++
++static void otx2_pfvf_mbox_destroy(struct otx2_nic *pf)
++{
++	struct mbox *mbox = &pf->mbox_pfvf[0];
++
++	if (!mbox)
++		return;
++
++	if (pf->mbox_pfvf_wq) {
++		flush_workqueue(pf->mbox_pfvf_wq);
++		destroy_workqueue(pf->mbox_pfvf_wq);
++		pf->mbox_pfvf_wq = NULL;
++	}
++
++	if (mbox->mbox.hwbase)
++		iounmap(mbox->mbox.hwbase);
++
++	otx2_mbox_destroy(&mbox->mbox);
++}
++
++static void otx2_enable_pfvf_mbox_intr(struct otx2_nic *pf, int numvfs)
++{
++	/* Clear PF <=> VF mailbox IRQ */
++	otx2_write64(pf, RVU_PF_VFPF_MBOX_INTX(0), ~0ull);
++	otx2_write64(pf, RVU_PF_VFPF_MBOX_INTX(1), ~0ull);
++
++	/* Enable PF <=> VF mailbox IRQ */
++	otx2_write64(pf, RVU_PF_VFPF_MBOX_INT_ENA_W1SX(0), INTR_MASK(numvfs));
++	if (numvfs > 64) {
++		numvfs -= 64;
++		otx2_write64(pf, RVU_PF_VFPF_MBOX_INT_ENA_W1SX(1),
++			     INTR_MASK(numvfs));
++	}
++}
++
++static void otx2_disable_pfvf_mbox_intr(struct otx2_nic *pf, int numvfs)
++{
++	int vector;
++
++	/* Disable PF <=> VF mailbox IRQ */
++	otx2_write64(pf, RVU_PF_VFPF_MBOX_INT_ENA_W1CX(0), ~0ull);
++	otx2_write64(pf, RVU_PF_VFPF_MBOX_INT_ENA_W1CX(1), ~0ull);
++
++	otx2_write64(pf, RVU_PF_VFPF_MBOX_INTX(0), ~0ull);
++	vector = pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFPF_MBOX0);
++	free_irq(vector, pf);
++
++	if (numvfs > 64) {
++		otx2_write64(pf, RVU_PF_VFPF_MBOX_INTX(1), ~0ull);
++		vector = pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFPF_MBOX1);
++		free_irq(vector, pf);
++	}
++}
++
++static int otx2_register_pfvf_mbox_intr(struct otx2_nic *pf, int numvfs)
++{
++	struct otx2_hw *hw = &pf->hw;
++	char *irq_name;
++	int err;
++
++	/* Register MBOX0 interrupt handler */
++	irq_name = &hw->irq_name[RVU_PF_INT_VEC_VFPF_MBOX0 * NAME_SIZE];
++	if (pf->pcifunc)
++		snprintf(irq_name, NAME_SIZE,
++			 "RVUPF%d_VF Mbox0", rvu_get_pf(pf->pcifunc));
++	else
++		snprintf(irq_name, NAME_SIZE, "RVUPF_VF Mbox0");
++	err = request_irq(pci_irq_vector(pf->pdev, RVU_PF_INT_VEC_VFPF_MBOX0),
++			  otx2_pfvf_mbox_intr_handler, 0, irq_name, pf);
++	if (err) {
++		dev_err(pf->dev,
++			"RVUPF: IRQ registration failed for PFVF mbox0 irq\n");
++		return err;
++	}
++
++	if (numvfs > 64) {
++		/* Register MBOX1 interrupt handler */
++		irq_name = &hw->irq_name[RVU_PF_INT_VEC_VFPF_MBOX1 * NAME_SIZE];
++		if (pf->pcifunc)
++			snprintf(irq_name, NAME_SIZE,
++				 "RVUPF%d_VF Mbox1", rvu_get_pf(pf->pcifunc));
++		else
++			snprintf(irq_name, NAME_SIZE, "RVUPF_VF Mbox1");
++		err = request_irq(pci_irq_vector(pf->pdev,
++						 RVU_PF_INT_VEC_VFPF_MBOX1),
++						 otx2_pfvf_mbox_intr_handler,
++						 0, irq_name, pf);
++		if (err) {
++			dev_err(pf->dev,
++				"RVUPF: IRQ registration failed for PFVF mbox1 irq\n");
++			return err;
++		}
++	}
++
++	otx2_enable_pfvf_mbox_intr(pf, numvfs);
++
++	return 0;
++}
++
+ static void otx2_process_pfaf_mbox_msg(struct otx2_nic *pf,
+ 				       struct mbox_msghdr *msg)
+ {
+@@ -286,6 +667,12 @@ static void otx2_pfaf_mbox_up_handler(struct work_struct *work)
+ 			otx2_process_mbox_msg_up(pf, msg);
+ 		offset = mbox->rx_start + msg->next_msgoff;
+ 	}
++	if (devid) {
++		otx2_forward_vf_mbox_msgs(pf, &pf->mbox.mbox_up,
++					  MBOX_DIR_PFVF_UP, devid - 1,
++					  af_mbox->up_num_msgs);
++		return;
++	}
+ 
+ 	otx2_mbox_msg_send(mbox, 0);
+ }
+@@ -1184,6 +1571,7 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	pf->netdev = netdev;
+ 	pf->pdev = pdev;
+ 	pf->dev = dev;
++	pf->total_vfs = pci_sriov_get_totalvfs(pdev);
+ 	pf->flags |= OTX2_FLAG_INTF_DOWN;
+ 
+ 	hw = &pf->hw;
+@@ -1313,6 +1701,58 @@ static int otx2_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 	return err;
+ }
+ 
++static int otx2_sriov_enable(struct pci_dev *pdev, int numvfs)
++{
++	struct net_device *netdev = pci_get_drvdata(pdev);
++	struct otx2_nic *pf = netdev_priv(netdev);
++	int ret;
++
++	/* Init PF <=> VF mailbox stuff */
++	ret = otx2_pfvf_mbox_init(pf, numvfs);
++	if (ret)
++		return ret;
++
++	ret = otx2_register_pfvf_mbox_intr(pf, numvfs);
++	if (ret)
++		goto free_mbox;
++
++	ret = pci_enable_sriov(pdev, numvfs);
++	if (ret)
++		goto free_intr;
++
++	return numvfs;
++free_intr:
++	otx2_disable_pfvf_mbox_intr(pf, numvfs);
++free_mbox:
++	otx2_pfvf_mbox_destroy(pf);
++	return ret;
++}
++
++static int otx2_sriov_disable(struct pci_dev *pdev)
++{
++	struct net_device *netdev = pci_get_drvdata(pdev);
++	struct otx2_nic *pf = netdev_priv(netdev);
++	int numvfs = pci_num_vf(pdev);
++
++	if (!numvfs)
++		return 0;
++
++	pci_disable_sriov(pdev);
++
++	otx2_disable_pfvf_mbox_intr(pf, numvfs);
++	otx2_pfvf_mbox_destroy(pf);
++
++	return 0;
++}
++
++static int otx2_sriov_configure(struct pci_dev *pdev, int numvfs)
++{
++	if (numvfs == 0)
++		return otx2_sriov_disable(pdev);
++	else
++		return otx2_sriov_enable(pdev, numvfs);
++}
++
+ static void otx2_remove(struct pci_dev *pdev)
+ {
+ 	struct net_device *netdev = pci_get_drvdata(pdev);
+@@ -1327,6 +1767,8 @@ static void otx2_remove(struct pci_dev *pdev)
+ 	otx2_cgx_config_linkevents(pf, false);
+ 
+ 	unregister_netdev(netdev);
++	otx2_sriov_disable(pf->pdev);
++
+ 	otx2_detach_resources(&pf->mbox);
+ 	otx2_disable_mbox_intr(pf);
+ 	otx2_pfaf_mbox_destroy(pf);
+@@ -1343,6 +1785,7 @@ static struct pci_driver otx2_pf_driver = {
+ 	.probe = otx2_probe,
+ 	.shutdown = otx2_remove,
+ 	.remove = otx2_remove,
++	.sriov_configure = otx2_sriov_configure
+ };
+ 
+ static int __init otx2_rvupf_init_module(void)
 -- 
 2.7.4
 
