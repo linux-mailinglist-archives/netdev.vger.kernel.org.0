@@ -2,131 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11F0518C54F
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 03:32:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A224718C551
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 03:33:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726971AbgCTCcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 22:32:11 -0400
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:54767 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726877AbgCTCcH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 22:32:07 -0400
-Received: by mail-pj1-f67.google.com with SMTP id np9so1835003pjb.4
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 19:32:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=qLfC4IEo6kThpOF/F41+wWQG9McBRedKRA2BMoUFuX0=;
-        b=F+Dq6NPE3YUYAB9iSfXCO9SGcpsaO6C9lDA1BnEYE9Rzl8qxXDlKADygj+R1witPh1
-         5aIK/mmBL0pLVNuBjvS5XKP2cn5l1NXDxFFbdqPpFwbjz51QNUq7vHHdNO3O9ZdVuli4
-         crpF2I/A4LvL9FgzF/YTjUH4Wji32FtvgqTYbdnvkrOk6knyDyCf3QLNwkoiziM1yjKo
-         +3z5zqeo6fYhPjm7BRFKLfZRKvCHGo/CfVvi6IDjJCM0Te2XMUy9ZYH2ncsVD2IsU34a
-         9SeomoNvs37nCQVdI+v+vGj2+CrNHq1tzvMowqYdVcCm+w/ROBTKLIaabQOa8zKNtwHd
-         tipw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=qLfC4IEo6kThpOF/F41+wWQG9McBRedKRA2BMoUFuX0=;
-        b=XZeH6/D2rQc3cTmbwj4imPwUlAYlFtt5bY0T8J1QCzhVW58t/OQeNZjW5EgKLFXv5N
-         s1BojpskSg3hu/MnuZ0hkwIsl31L0mCMWN0xlUXx3Nk4/xZLSQ7NSK0pw4yCG62iYH9c
-         91QyJ+X4SRQiARrNXmm2UFxfI1hyNyG+Q6aIE+m/IjghKpzrRBjBEoO6c6mXb8OuK8Yl
-         Wz2xBLiMvpzOOK4yNCfSRqcYmmB0xlRV1dasPzR1k+lyszmVNOODr+hMkvrmnn0IM0c0
-         8sjwMRsruK/LTCQoITTF1xIDBBizTxFGzvNumd7ToRiZo65cYbmRnubH51HVTx6k6WCb
-         aNow==
-X-Gm-Message-State: ANhLgQ2MFx/6rZ2KJO08mfwbtcq1k005XornT3bQ+yqgzeJV1GLLpWEz
-        wEXBmXK1Zy37uv//oxsVxl/utgOsAWA=
-X-Google-Smtp-Source: ADFU+vsPb1qz0gHkUFrsnuSU91KnBwq2QkdwZ8egStdeclaGdUu8IL7em0so3NpNaBCDw/7uu6wFcQ==
-X-Received: by 2002:a17:902:562:: with SMTP id 89mr6074149plf.249.1584671525717;
-        Thu, 19 Mar 2020 19:32:05 -0700 (PDT)
-Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id i124sm3606485pfg.14.2020.03.19.19.32.05
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 19 Mar 2020 19:32:05 -0700 (PDT)
-From:   Shannon Nelson <snelson@pensando.io>
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 6/6] ionic: check for NULL structs on teardown
-Date:   Thu, 19 Mar 2020 19:31:53 -0700
-Message-Id: <20200320023153.48655-7-snelson@pensando.io>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200320023153.48655-1-snelson@pensando.io>
-References: <20200320023153.48655-1-snelson@pensando.io>
+        id S1727011AbgCTCdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 22:33:21 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:33404 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726666AbgCTCdV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 22:33:21 -0400
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id BAFFA24877BE96986CAF;
+        Fri, 20 Mar 2020 10:33:14 +0800 (CST)
+Received: from [127.0.0.1] (10.173.223.234) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0; Fri, 20 Mar 2020
+ 10:33:13 +0800
+Subject: Re: [PATCH bpf-next] bpf: tcp: Fix unused function warnings
+To:     Jakub Sitnicki <jakub@cloudflare.com>
+References: <20200319124631.58432-1-yuehaibing@huawei.com>
+ <87fte4xot3.fsf@cloudflare.com>
+CC:     <lmb@cloudflare.com>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <f27ae22a-e5e4-2873-1e00-bb59979e92ff@huawei.com>
+Date:   Fri, 20 Mar 2020 10:33:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
+MIME-Version: 1.0
+In-Reply-To: <87fte4xot3.fsf@cloudflare.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.173.223.234]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make sure the queue structs exist before trying to tear
-them down to make for safer error recovery.
+On 2020/3/20 1:00, Jakub Sitnicki wrote:
+> On Thu, Mar 19, 2020 at 01:46 PM CET, YueHaibing wrote:
+>> If BPF_STREAM_PARSER is not set, gcc warns:
+>>
+>> net/ipv4/tcp_bpf.c:483:12: warning: 'tcp_bpf_sendpage' defined but not used [-Wunused-function]
+>> net/ipv4/tcp_bpf.c:395:12: warning: 'tcp_bpf_sendmsg' defined but not used [-Wunused-function]
+>> net/ipv4/tcp_bpf.c:13:13: warning: 'tcp_bpf_stream_read' defined but not used [-Wunused-function]
+>>
+>> Moves the unused functions into the #ifdef
+>>
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+>> ---
+> 
+> In addition to this fix, looks like tcp_bpf_recvmsg can be static and
+> also conditional on CONFIG_BPF_STREAM_PARSER.
 
-Fixes: 0f3154e6bcb3 ("ionic: Add Tx and Rx handling")
-Signed-off-by: Shannon Nelson <snelson@pensando.io>
----
- .../net/ethernet/pensando/ionic/ionic_lif.c   | 26 ++++++++++---------
- .../net/ethernet/pensando/ionic/ionic_main.c  |  7 ++++-
- 2 files changed, 20 insertions(+), 13 deletions(-)
+Thanks, will do this in next version.
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 490f79c82bf1..8b442eb010a2 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -320,19 +320,21 @@ static void ionic_qcqs_free(struct ionic_lif *lif)
- 		lif->adminqcq = NULL;
- 	}
- 
--	for (i = 0; i < lif->nxqs; i++)
--		if (lif->rxqcqs[i].stats)
--			devm_kfree(dev, lif->rxqcqs[i].stats);
--
--	devm_kfree(dev, lif->rxqcqs);
--	lif->rxqcqs = NULL;
--
--	for (i = 0; i < lif->nxqs; i++)
--		if (lif->txqcqs[i].stats)
--			devm_kfree(dev, lif->txqcqs[i].stats);
-+	if (lif->rxqcqs) {
-+		for (i = 0; i < lif->nxqs; i++)
-+			if (lif->rxqcqs[i].stats)
-+				devm_kfree(dev, lif->rxqcqs[i].stats);
-+		devm_kfree(dev, lif->rxqcqs);
-+		lif->rxqcqs = NULL;
-+	}
- 
--	devm_kfree(dev, lif->txqcqs);
--	lif->txqcqs = NULL;
-+	if (lif->txqcqs) {
-+		for (i = 0; i < lif->nxqs; i++)
-+			if (lif->txqcqs[i].stats)
-+				devm_kfree(dev, lif->txqcqs[i].stats);
-+		devm_kfree(dev, lif->txqcqs);
-+		lif->txqcqs = NULL;
-+	}
- }
- 
- static void ionic_link_qcq_interrupts(struct ionic_qcq *src_qcq,
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index a0dc100b12e6..c16dbbe54bf7 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -243,11 +243,16 @@ static void ionic_adminq_cb(struct ionic_queue *q,
- 
- static int ionic_adminq_post(struct ionic_lif *lif, struct ionic_admin_ctx *ctx)
- {
--	struct ionic_queue *adminq = &lif->adminqcq->q;
-+	struct ionic_queue *adminq;
- 	int err = 0;
- 
- 	WARN_ON(in_interrupt());
- 
-+	if (!lif->adminqcq)
-+		return -EIO;
-+
-+	adminq = &lif->adminqcq->q;
-+
- 	spin_lock(&lif->adminq_lock);
- 	if (!ionic_q_has_space(adminq, 1)) {
- 		err = -ENOSPC;
--- 
-2.17.1
+> 
+> Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
+> 
+> .
+> 
 
