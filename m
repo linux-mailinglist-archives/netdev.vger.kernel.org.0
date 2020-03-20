@@ -2,97 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB10A18CEBC
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 14:23:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38FAA18CECF
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 14:27:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727325AbgCTNXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 09:23:20 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:38922 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727021AbgCTNXU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 09:23:20 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02KDE3W2106996;
-        Fri, 20 Mar 2020 13:23:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=GWBqcLJVqqizx+c4t6vsOhemKvLjhfwd2QQHwu9uWOo=;
- b=0Wi4QBu4CtGBAj3Lhu2Nhh4gLtxAKA/mEG178Tn7V3uGpcl9TpW1SOP3Rj96gOpXU2CB
- OFn/Np+e/Nzaittd5xw+r26D+L6WpElnAQWaoCNg0NCUzMaXmzlFfrKhBO3ZMe5b+HDs
- VcAs96Vn/HUWLk2QwmK9kYoWSFDCOxuNh8Z41urJJXeJVT5igTboHvj58gHfli0wfShH
- Q/uehJYgloSEQg8Ly7WNCv7ujuaESRZvVAl26yg7mf8d0Ffqh/2t7GUnhNPNu2hcmjhe
- KechvCB1A3vpteV8z/CyPH2y3rCAAk+D86xWZRwEce6J0iYXGaZXhRCc2DW0R7ke3OjM 8w== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 2yub27dgbj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 20 Mar 2020 13:23:15 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02KDKpF8031400;
-        Fri, 20 Mar 2020 13:23:15 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3030.oracle.com with ESMTP id 2ys8rpus84-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 20 Mar 2020 13:23:15 +0000
-Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 02KDNE11010187;
-        Fri, 20 Mar 2020 13:23:14 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 20 Mar 2020 06:23:13 -0700
-Date:   Fri, 20 Mar 2020 16:23:05 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
+        id S1727178AbgCTN1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 09:27:14 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:31846 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727133AbgCTN1N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 09:27:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584710832;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=POqaw/FzEI0CTYjogTPDNEyESdDoII+GoAasJ6PFXJc=;
+        b=AOugaLk+fvsm+Sh9/dYT7edGGoj/cEp/jrnYM09hLAKYKclgj2+lesXiWuFd38bIWmyN+N
+        n3wrQ+HaKuddTlxbA7cEw1AzWWZiEwrWvyGID07ldVMF/bSdKeIuLLs76zDF5JPjRRzora
+        RxA2EjtfJFTah2IA+lmds30J3AOz/kQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-370-wfUqiJITPG6-L5EefAJGvA-1; Fri, 20 Mar 2020 09:27:10 -0400
+X-MC-Unique: wfUqiJITPG6-L5EefAJGvA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E2697477;
+        Fri, 20 Mar 2020 13:27:07 +0000 (UTC)
+Received: from llong.remote.csb (ovpn-118-190.rdu2.redhat.com [10.10.118.190])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E3F4660BFB;
+        Fri, 20 Mar 2020 13:27:03 +0000 (UTC)
+Subject: Re: [PATCH v5 2/2] KEYS: Avoid false positive ENOMEM error on key
+ read
+To:     Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Roi Dayan <roid@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net-next] net/mlx5e: Fix actions_match_supported() return
-Message-ID: <20200320132305.GB95012@mwanda>
+        Jakub Kicinski <kuba@kernel.org>, keyrings@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-integrity@vger.kernel.org, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org, Sumit Garg <sumit.garg@linaro.org>,
+        Jerry Snitselaar <jsnitsel@redhat.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Eric Biggers <ebiggers@google.com>,
+        Chris von Recklinghausen <crecklin@redhat.com>
+References: <20200318221457.1330-1-longman@redhat.com>
+ <20200318221457.1330-3-longman@redhat.com>
+ <20200319194650.GA24804@linux.intel.com>
+ <f22757ad-4d6f-ffd2-eed5-6b9bd1621b10@redhat.com>
+ <20200320020717.GC183331@linux.intel.com>
+From:   Waiman Long <longman@redhat.com>
+Organization: Red Hat
+Message-ID: <7dbc524f-6c16-026a-a372-2e80b40eab30@redhat.com>
+Date:   Fri, 20 Mar 2020 09:27:03 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9565 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 bulkscore=0 phishscore=0
- malwarescore=0 mlxscore=0 mlxlogscore=999 adultscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
- definitions=main-2003200057
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9565 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 impostorscore=0
- mlxlogscore=999 mlxscore=0 phishscore=0 adultscore=0 suspectscore=0
- clxscore=1011 priorityscore=1501 lowpriorityscore=0 bulkscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2003200057
+In-Reply-To: <20200320020717.GC183331@linux.intel.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The actions_match_supported() function returns a bool, true for success
-and false for failure.  This error path is returning a negative which
-is cast to true but it should return false.
+On 3/19/20 10:07 PM, Jarkko Sakkinen wrote:
+> On Thu, Mar 19, 2020 at 08:07:55PM -0400, Waiman Long wrote:
+>> On 3/19/20 3:46 PM, Jarkko Sakkinen wrote:
+>>> On Wed, Mar 18, 2020 at 06:14:57PM -0400, Waiman Long wrote:
+>>>> +			 * It is possible, though unlikely, that the key
+>>>> +			 * changes in between the up_read->down_read period.
+>>>> +			 * If the key becomes longer, we will have to
+>>>> +			 * allocate a larger buffer and redo the key read
+>>>> +			 * again.
+>>>> +			 */
+>>>> +			if (!tmpbuf || unlikely(ret > tmpbuflen)) {
+>>> Shouldn't you check that tmpbuflen stays below buflen (why else
+>>> you had made copy of buflen otherwise)?
+>> The check above this thunk:
+>>
+>> if ((ret > 0) && (ret <= buflen)) {
+>>
+>> will make sure that ret will not be larger than buflen. So tmpbuflen
+>> will never be bigger than buflen.
+> Ah right, of course, thanks.
+>
+> What would go wrong if the condition was instead
+> ((ret > 0) && (ret <= tmpbuflen))?
 
-Fixes: 4c3844d9e97e ("net/mlx5e: CT: Introduce connection tracking")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+That if statement is a check to see if the actual key length is longer
+than the user-supplied buffer (buflen). If that is the case, it will
+just return the expected length without storing anything into the user
+buffer. For the case that buflen >= ret > tmpbuflen, the revised check
+above will incorrectly skip the storing step causing the caller to
+incorrectly think the key is there in the buffer.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 044891a03be3..e5de7d2bac2b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -3058,7 +3058,7 @@ static bool actions_match_supported(struct mlx5e_priv *priv,
- 			 */
- 			NL_SET_ERR_MSG_MOD(extack,
- 					   "Can't offload mirroring with action ct");
--			return -EOPNOTSUPP;
-+			return false;
- 		}
- 	} else {
- 		actions = flow->nic_attr->action;
--- 
-2.25.1
+Maybe I should clarify that a bit more in the comment.
+
+Cheers,
+Longman
 
