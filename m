@@ -2,144 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1821818C449
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 01:38:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27A5918C456
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 01:45:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726975AbgCTAin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 20:38:43 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:43990 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725787AbgCTAin (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 20:38:43 -0400
-Received: by mail-ed1-f68.google.com with SMTP id n25so4154147eds.10
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 17:38:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SnMDiUsf0gLzR7Dht4JACDUEl2yuy7X2DACh6GqC7I8=;
-        b=aDLugUvmVbLY1i9QzAhQGKNTMTAIDH+R6fdWI03dxNFqqWkuE3TcJjqU98gEkZN2qE
-         i5NJoW0vWdDSLAF2Ad2RsosHAvniKaQ0GQ1Z5iByZOOdSuCInZiLmQsuW8ueo/45GT98
-         hevhm2/Y2yjue+vq05lrWqN+qV8R+sSYd0rBqcXeNDVOdMMRPMX+w8EohjK8hS1zC5LQ
-         tdq0MtLwA/VUB/E51Komr6PTmdF5vhGA6grF6kK+nMWI2Mb7PmlrQPtR2iQ6YRnyvTwy
-         J3BT/IkoI4KuynSyIf/AxVhJJZ9KFmj1RyQ4f4YEDZmjCCTdf1Yq2uH56bXJRi/mxkUX
-         vusg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SnMDiUsf0gLzR7Dht4JACDUEl2yuy7X2DACh6GqC7I8=;
-        b=uaESvttUE08RX9uW4OM9K+cjnl0Z8MLec0b/VYcl3O3220oNiSgjxyUEE+2DXqY9XS
-         ypM8DSQjyaiztER0lkU85jEuLiv9UDp9fPaoVLSeZaVvA4QWWS7cutWKpe9ILNggxgGA
-         4TQtyv+UH7pjSjtFTim536L36bgYdyf9RIJ/x1doCGYuxmTHcffEmtpdOrmT9EOh474S
-         gcQP2SUXb+5bnARWwoBRxoYXgvOcABfQEB7aZeP8X3MYG6xg50WeS0lgWlw6bwaiSslm
-         H3dKitKny5ljDhy+FlLiZqn+suFJWK/vtDS64E5Bih1ydEzAylp8wsmiEcpGEPI5+0Y2
-         mcAw==
-X-Gm-Message-State: ANhLgQ0jQDiKA1sC5ObId16zE/Upl//1WfsVx1kf5EL/YDd9EDA0O2jl
-        eGh2/ETTvouU1JGb98cQtxP8S32k06Bq4iCUsvY=
-X-Google-Smtp-Source: ADFU+vsa1kiuxkyuUDwlu1eMkuhKVm3kxxqk7vYEBEnzgLen6vD/kwzbrTyQhECc/FlBtdlRkC3BQT7nrNa/MWVaE8s=
-X-Received: by 2002:a17:906:1308:: with SMTP id w8mr5628496ejb.189.1584664721069;
- Thu, 19 Mar 2020 17:38:41 -0700 (PDT)
+        id S1727207AbgCTApY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 20:45:24 -0400
+Received: from ozlabs.org ([203.11.71.1]:46035 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725787AbgCTApY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 19 Mar 2020 20:45:24 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 48k4n82YYsz9sPF;
+        Fri, 20 Mar 2020 11:45:16 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1584665121;
+        bh=W+Z34vvZKks0HjWcw4Ddw/+LfmZqr1ApEjeY4QXdx4k=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=iC9emPAuS206WtkabWO9eiUH5LztrJbBox0vIOO3kG0SPAnzRJgryz3vVCJbwNVHg
+         ChJHL3XBrOvTGVMVOfltoDKGUtZFjkxVnXFTzQ1TYd6mypfOAF2KMXB3DUTC7uSKTh
+         oF4RTptfsRx2oy1FfM0kULYxXYx8zNnnnAUk08dO+rJphnaXy06EWZx71jVHnDP127
+         l5uCxuHEqQ850rzJ6nQGBNnVW7w5K2Yf8/sIlxW2i0QNGxfOMb5MTgdjv4/CTROVBe
+         Iwn7NXnhB6fPJK4bYVeFjWm2DLK9TZs1BTFTRTJ2s4T76HvHWDDPHqlOiIIkN1syjf
+         /ka3XQZiH7IEA==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Christoph Hellwig <hch@infradead.org>
+Cc:     linux-usb@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        linux-pci@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Will Deacon <will@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Ingo Molnar <mingo@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-wireless@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Geoff Levand <geoff@infradead.org>
+Subject: Re: [patch V2 07/15] powerpc/ps3: Convert half completion to rcuwait
+In-Reply-To: <20200319102613.hbwax7zrrvgcde4x@linutronix.de>
+References: <20200318204302.693307984@linutronix.de> <20200318204408.102694393@linutronix.de> <20200319100459.GA18506@infradead.org> <20200319102613.hbwax7zrrvgcde4x@linutronix.de>
+Date:   Fri, 20 Mar 2020 11:45:16 +1100
+Message-ID: <87lfnvdfc3.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-References: <20200319235313.26579-1-olteanv@gmail.com> <20200320000622.GI25745@shell.armlinux.org.uk>
-In-Reply-To: <20200320000622.GI25745@shell.armlinux.org.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 20 Mar 2020 02:38:30 +0200
-Message-ID: <CA+h21howFajxEWhmRDDcZhvrA6Rr10pX8MJUkE9f0CAeOVOeSA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: sja1105: Add support for the SGMII port
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Mar 2020 at 02:06, Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
+Sebastian Andrzej Siewior <bigeasy@linutronix.de> writes:
+> On 2020-03-19 03:04:59 [-0700], Christoph Hellwig wrote:
+>> But I wonder how alive the whole PS3 support is to start with..
 >
-> On Fri, Mar 20, 2020 at 01:53:13AM +0200, Vladimir Oltean wrote:
-> > @@ -774,10 +881,14 @@ static void sja1105_mac_config(struct dsa_switch *ds, int port,
-> >               return;
-> >       }
-> >
-> > -     if (link_an_mode == MLO_AN_INBAND) {
-> > +     if (link_an_mode == MLO_AN_INBAND && !is_sgmii) {
-> >               dev_err(ds->dev, "In-band AN not supported!\n");
-> >               return;
-> >       }
-> > +
-> > +     if (is_sgmii)
-> > +             sja1105_sgmii_config(priv, port, link_an_mode == MLO_AN_INBAND,
-> > +                                  state->speed);
+> OtherOS can only be used on "old" PS3 which do not have have their
+> firmware upgraded past version 3.21, released April 1, 2010 [0].
+> It was not possible to install OtherOS on PS3-slim and I don't remember
+> if it was a successor or a budget version (but it had lower power
+> consumption as per my memory).
+> *I* remember from back then that a few universities bought quite a few
+> of them and used them as a computation cluster. However, whatever broke
+> over the last 10 years is broken.
 >
-> Please avoid new usages of state->speed in mac_config() - I'm trying
-> to eliminate them now that the mac_link_up() patches are in.  If you
-> need to set the PCS for the link speed, please hook that into
-> mac_link_up() instead.
->
+> [0] https://en.wikipedia.org/wiki/OtherOS
 
-Well, duh. I forward-ported this from a 5.4 kernel and I simply forgot
-to do this extra change. I'll still have to turn it around when I
-backport it again, but whatever.
+Last time I asked on the list there were still a handful of users.
 
-> >  }
-> >
-> >  static void sja1105_mac_link_down(struct dsa_switch *ds, int port,
-> > @@ -833,7 +944,8 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
-> >       phylink_set(mask, 10baseT_Full);
-> >       phylink_set(mask, 100baseT_Full);
-> >       phylink_set(mask, 100baseT1_Full);
-> > -     if (mii->xmii_mode[port] == XMII_MODE_RGMII)
-> > +     if (mii->xmii_mode[port] == XMII_MODE_RGMII ||
-> > +         mii->xmii_mode[port] == XMII_MODE_SGMII)
-> >               phylink_set(mask, 1000baseT_Full);
-> >
-> >       bitmap_and(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
-> > @@ -841,6 +953,82 @@ static void sja1105_phylink_validate(struct dsa_switch *ds, int port,
-> >                  __ETHTOOL_LINK_MODE_MASK_NBITS);
-> >  }
-> >
-> > +static int sja1105_mac_pcs_get_state(struct dsa_switch *ds, int port,
-> > +                                  struct phylink_link_state *state)
-> > +{
-> > +     struct sja1105_private *priv = ds->priv;
-> > +     int bmcr;
-> > +
-> > +     bmcr = sja1105_sgmii_read(priv, MII_BMCR);
-> > +     if (bmcr < 0)
-> > +             return bmcr;
-> > +
-> > +     state->an_enabled = !!(bmcr & BMCR_ANENABLE);
-> > +
-> > +     if (state->an_enabled) {
->
-> mac_pcs_get_state() is only called when in in-band AN mode, so this
-> is not useful.  If it's called with AN disabled, that's a bug.
->
+And I had a patch submitted from a user as recently as last October, so
+it still has some life.
 
-Correct. In fact I only 'tested' in-band AN via register dumps. On my
-board it is physically impossible to really make use of
-mac_pcs_get_state because port 4 is a PHY-less interface (the CPU
-port), and if there were any in-band AN to take place at all, this
-switch port would have to be the AN master, and there isn't logic for
-that at the moment.
-Because there isn't more than 1 SGMII port in this 5-port switch, I
-suspect that AN disabled is going to be the case for pretty much every
-other board out there.
-Since I did spend the time to figure out how it should work, I thought
-it might have been useful to have some code, even if just
-blind-tested, for whomever needed it. But after your comment, I'm not
-willing to figure out now how to split the PCS config function to be
-called from the AN as well as non-AN code paths. So I'll just drop any
-sort of AN code in v2.
-
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
-
-Thanks,
--Vladimir
+cheers
