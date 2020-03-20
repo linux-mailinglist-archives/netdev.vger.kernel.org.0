@@ -2,135 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D31DC18D8EA
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 21:21:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2333F18D8FC
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 21:25:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbgCTUVu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 16:21:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45494 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726666AbgCTUVt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Mar 2020 16:21:49 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E417C2072C;
-        Fri, 20 Mar 2020 20:21:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584735709;
-        bh=5MxXiNlaxkSrV5kXV9n5kbNoUGDmotCxPRAYt7ylxmc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U81RNk9Sqy4Jxl/5uRbW4XF2/IGO+BtHj46XnVORtAVnTX1Yvj7lIGQYWZrKeRlcP
-         6rjFDdwGZPLcl6o+6vn7ONCCEthhSWBRwc3TTgPjuJydSj1kjyzis+7FEVjJEeBvCz
-         D8hCJCw6+UB4mpASajaewqbvigJuSYQG2UmtiAX0=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     dsahern@gmail.com
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        jiri@resnulli.us, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH iproute2-next] tc: m_action: rename hw stats type uAPI
-Date:   Fri, 20 Mar 2020 13:21:45 -0700
-Message-Id: <20200320202145.149844-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <4e960372-2a5e-5a38-b2ae-843957f0cd67@gmail.com>
-References: <4e960372-2a5e-5a38-b2ae-843957f0cd67@gmail.com>
+        id S1727101AbgCTUY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 16:24:58 -0400
+Received: from mail-qv1-f66.google.com ([209.85.219.66]:40114 "EHLO
+        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726829AbgCTUY6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 16:24:58 -0400
+Received: by mail-qv1-f66.google.com with SMTP id cy12so3733583qvb.7;
+        Fri, 20 Mar 2020 13:24:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=o7SwPtKOPm+0Wb3fK59kuKPlfB1Jibqv6sRHYrNfJy8=;
+        b=i3OGO2CHpzlCVWcow5sUWOkqybpNiDyLoajYtZXGM/fJPGRvhjHbF3bHUSylRThfFL
+         XCbM0sjdWOlfijcUKjBEQeP3070iTrJOqpAiWf6e+py86fDDT4mLfvFn1AL8toARFr8+
+         kyd9viYdQEnpQQAH/pNxBaUR9omjdUyXyAcfs7hQjrBK4f9prayt4Y+SaQlziqf/jhVw
+         jkByPk8/XNoVGFIca8AWLE6wfHCH+m7oHnyufLxR9zxRnPXn86xYYrdd4VKxw3zhcje4
+         VQctZQxPLllErsB6LwfO33zWuQcXss+SR25mcyApuWnmwIeMx4qkNgWFGKU1mHJLFial
+         hrqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=o7SwPtKOPm+0Wb3fK59kuKPlfB1Jibqv6sRHYrNfJy8=;
+        b=H0ydwTtg79cTIJo9qmpv37H8X5W9q9HnhjbXrxldNIhjEJ+bX+u2YkOReeNUpWdVBo
+         0fULZzh1cYppgmjbm3486G03Wud1ZLbDWIdIO8Ry0aNHGy1QRb9reiU+iSFRDdu5T/qM
+         yQ2GzxbJotK0/+1myI/2llrOXO8wrBkwS9xRxqWqAn1HDY5PZktr3jp96PvHiMUR02dt
+         mzcWxFilQ7LNQsbbtd5H/ZWBubKJnbWhYeon8mZzjqTBFclVejWoB04Y30U5EYaXSNkm
+         UpJO+o3syPoOsvq9/4NAvOvo1Hp/bc2/ckcJAM+9SDLRXsmasUR/42ZoQdNeTTGSZntJ
+         52PQ==
+X-Gm-Message-State: ANhLgQ2N3Jooe/FMCievhVGyy66rkdXQ+4fq+vA6QF4gzBr+uC1R7B82
+        a3MDHBP4WsJE1rLqJTklYvd6bGxLswUsUcZqP8c=
+X-Google-Smtp-Source: ADFU+vvWj5F/vBmx15w6yLihdRAtwuckOPzczFMWZP4IAP8pAxTf0tVUBpdnBIAK6RPrQCqFi90dXOp7vkqQm05n1PU=
+X-Received: by 2002:a0c:f786:: with SMTP id s6mr10085742qvn.224.1584735896859;
+ Fri, 20 Mar 2020 13:24:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
+ <158462359315.164779.13931660750493121404.stgit@toke.dk> <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN>
+ <875zez76ph.fsf@toke.dk> <20200320103530.2853c573@kicinski-fedora-PC1C0HJN> <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
+In-Reply-To: <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 20 Mar 2020 13:24:45 -0700
+Message-ID: <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
+ program when attaching XDP
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Andrey Ignatov <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Follow the kernel rename to shorten the identifiers.
-Rename hw_stats_type to hw_stats.
+On Fri, Mar 20, 2020 at 11:31 AM John Fastabend
+<john.fastabend@gmail.com> wrote:
+>
+> Jakub Kicinski wrote:
+> > On Fri, 20 Mar 2020 09:48:10 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wro=
+te:
+> > > Jakub Kicinski <kuba@kernel.org> writes:
+> > > > On Thu, 19 Mar 2020 14:13:13 +0100 Toke H=C3=B8iland-J=C3=B8rgensen=
+ wrote:
+> > > >> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> > > >>
+> > > >> While it is currently possible for userspace to specify that an ex=
+isting
+> > > >> XDP program should not be replaced when attaching to an interface,=
+ there is
+> > > >> no mechanism to safely replace a specific XDP program with another=
+.
+> > > >>
+> > > >> This patch adds a new netlink attribute, IFLA_XDP_EXPECTED_FD, whi=
+ch can be
+> > > >> set along with IFLA_XDP_FD. If set, the kernel will check that the=
+ program
+> > > >> currently loaded on the interface matches the expected one, and fa=
+il the
+> > > >> operation if it does not. This corresponds to a 'cmpxchg' memory o=
+peration.
+> > > >>
+> > > >> A new companion flag, XDP_FLAGS_EXPECT_FD, is also added to explic=
+itly
+> > > >> request checking of the EXPECTED_FD attribute. This is needed for =
+userspace
+> > > >> to discover whether the kernel supports the new attribute.
+> > > >>
+> > > >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> > > >
+> > > > I didn't know we wanted to go ahead with this...
+> > >
+> > > Well, I'm aware of the bpf_link discussion, obviously. Not sure what'=
+s
+> > > happening with that, though. So since this is a straight-forward
+> > > extension of the existing API, that doesn't carry a high implementati=
+on
+> > > cost, I figured I'd just go ahead with this. Doesn't mean we can't ha=
+ve
+> > > something similar in bpf_link as well, of course.
+> >
+> > I'm not really in the loop, but from what I overheard - I think the
+> > bpf_link may be targeting something non-networking first.
+>
+> My preference is to avoid building two different APIs one for XDP and ano=
+ther
+> for everything else. If we have userlands that already understand links a=
+nd
+> pinning support is on the way imo lets use these APIs for networking as w=
+ell.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- tc/m_action.c | 39 +++++++++++++++++++--------------------
- 1 file changed, 19 insertions(+), 20 deletions(-)
+I agree here. And yes, I've been working on extending bpf_link into
+cgroup and then to XDP. We are still discussing some cgroup-specific
+details, but the patch is ready. I'm going to post it as an RFC to get
+the discussion started, before we do this for XDP.
 
-diff --git a/tc/m_action.c b/tc/m_action.c
-index 58ae1846033b..2c4b5df6e05c 100644
---- a/tc/m_action.c
-+++ b/tc/m_action.c
-@@ -150,31 +150,30 @@ new_cmd(char **argv)
- 		(matches(*argv, "add") == 0);
- }
- 
--static const struct hw_stats_type_item {
-+static const struct hw_stats_item {
- 	const char *str;
- 	__u8 type;
--} hw_stats_type_items[] = {
--	{ "immediate", TCA_ACT_HW_STATS_TYPE_IMMEDIATE },
--	{ "delayed", TCA_ACT_HW_STATS_TYPE_DELAYED },
-+} hw_stats_items[] = {
-+	{ "immediate", TCA_ACT_HW_STATS_IMMEDIATE },
-+	{ "delayed", TCA_ACT_HW_STATS_DELAYED },
- 	{ "disabled", 0 }, /* no bit set */
- };
- 
- static void print_hw_stats(const struct rtattr *arg)
- {
--	struct nla_bitfield32 *hw_stats_type_bf = RTA_DATA(arg);
--	__u8 hw_stats_type;
-+	struct nla_bitfield32 *hw_stats_bf = RTA_DATA(arg);
-+	__u8 hw_stats;
- 	int i;
- 
--	hw_stats_type = hw_stats_type_bf->value & hw_stats_type_bf->selector;
-+	hw_stats = hw_stats_bf->value & hw_stats_bf->selector;
- 	print_string(PRINT_FP, NULL, "\t", NULL);
- 	open_json_array(PRINT_ANY, "hw_stats");
- 
--	for (i = 0; i < ARRAY_SIZE(hw_stats_type_items); i++) {
--		const struct hw_stats_type_item *item;
-+	for (i = 0; i < ARRAY_SIZE(hw_stats_items); i++) {
-+		const struct hw_stats_item *item;
- 
--		item = &hw_stats_type_items[i];
--		if ((!hw_stats_type && !item->type) ||
--		    hw_stats_type & item->type)
-+		item = &hw_stats_items[i];
-+		if ((!hw_stats && !item->type) || hw_stats & item->type)
- 			print_string(PRINT_ANY, NULL, " %s", item->str);
- 	}
- 	close_json_array(PRINT_JSON, NULL);
-@@ -184,18 +183,18 @@ static int parse_hw_stats(const char *str, struct nlmsghdr *n)
- {
- 	int i;
- 
--	for (i = 0; i < ARRAY_SIZE(hw_stats_type_items); i++) {
--		const struct hw_stats_type_item *item;
-+	for (i = 0; i < ARRAY_SIZE(hw_stats_items); i++) {
-+		const struct hw_stats_item *item;
- 
--		item = &hw_stats_type_items[i];
-+		item = &hw_stats_items[i];
- 		if (matches(str, item->str) == 0) {
--			struct nla_bitfield32 hw_stats_type_bf = {
-+			struct nla_bitfield32 hw_stats_bf = {
- 				.value = item->type,
- 				.selector = item->type
- 			};
- 
--			addattr_l(n, MAX_MSG, TCA_ACT_HW_STATS_TYPE,
--				  &hw_stats_type_bf, sizeof(hw_stats_type_bf));
-+			addattr_l(n, MAX_MSG, TCA_ACT_HW_STATS,
-+				  &hw_stats_bf, sizeof(hw_stats_bf));
- 			return 0;
- 		}
- 
-@@ -399,8 +398,8 @@ static int tc_print_one_action(FILE *f, struct rtattr *arg)
- 				   TCA_ACT_FLAGS_NO_PERCPU_STATS);
- 		print_string(PRINT_FP, NULL, "%s", _SL_);
- 	}
--	if (tb[TCA_ACT_HW_STATS_TYPE])
--		print_hw_stats(tb[TCA_ACT_HW_STATS_TYPE]);
-+	if (tb[TCA_ACT_HW_STATS])
-+		print_hw_stats(tb[TCA_ACT_HW_STATS]);
- 
- 	return 0;
- }
--- 
-2.25.1
+>
+> Would a link_swap() API (proposed by Andrii iirc) resolve this use case a=
+s
+> well? If not why? If it can it seems like the more general and consistent
+> solution. I can imagine swapping links is useful in tracing as well and
+> likely other cases I haven't thought about.
 
+Yes, that's the idea. Right now I have implementation for cgroups, but
+API itself is generic and should/will be extended to tracing and XDP.
