@@ -2,101 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A75318CEB0
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 14:20:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E5FA18CEB1
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 14:21:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727210AbgCTNUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 09:20:46 -0400
-Received: from mail-ed1-f50.google.com ([209.85.208.50]:32788 "EHLO
-        mail-ed1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727113AbgCTNUq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 09:20:46 -0400
-Received: by mail-ed1-f50.google.com with SMTP id z65so7110951ede.0;
-        Fri, 20 Mar 2020 06:20:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dUEEIXwK5ES9niBblpQmidtobsRZQ/p8qQvEflwvR7Y=;
-        b=Ovz1jPHkhhJXMWr1p86lFmV8kwp9F0zmQBsHj5nURFj1OHPjfpeI9eXBePgTjUGs6q
-         F4XeQCwxH2ABKBKNstH7Dn/I5b2lm/f76I1Ru7fytTc9A3L1tJc+HFP7p7G0YMbQuVD0
-         Z/+GAuXaQnvTlXkrnoCBVPejq4bu1Es8/Fom7djd/1ID5Gqj4fwvr1L7xZn1kGLDVLTA
-         agtEJcd8A88InIo5pQDqrJgdT4VKHXjl0RWyjNKpLRERBX/29yg+KQ+gTPC6h+H5hOMI
-         4l/vRvbId5dA7bWwZhYtln7/b00jt6NEiBTi0VMs9omcRHT/gDE+9Sq3MD5dpsdnFqoc
-         +ZFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dUEEIXwK5ES9niBblpQmidtobsRZQ/p8qQvEflwvR7Y=;
-        b=IJmpOJzIsdi1q5dklFjB4zeKmoniGJX1Xmd+dA1ufsc/RaCFC77qYG6ebQw6ODpq/J
-         oX8qLCVY8UGyHzOdHxqW/BJw5sTgIhxqRDjrFPdWOVHdmF67rsIbgQVFeFQvBdV9ZXde
-         7GwXdpbZajFrov3QnY62s+ZkXKV/pEO2l3ikkwbFbgP4V27A4vDoCogiMqPnyVVTy3pq
-         bWbLxTIMUgS1diQuE6buG8YA6cb2H4FFjYaO5jUtF3tCKWsZyzofnuVO9WNQSqnxzgkV
-         AdtsyD0AgiDSq9FOVYaujpGxGg+QHoSNhhpxUnha1oAoVCgxB2PbDGe6nik3wuYXQhMT
-         4BCw==
-X-Gm-Message-State: ANhLgQ3BiKTzUMsFzCZFJihsry3fF4Tp7tyJ06CI1L+9Fw+Tg1o7NJ9o
-        MHVZ7Kkb4ZYCmCqXaq8lsn789FjnHGy6psarKdOJzlQv4fEb/w==
-X-Google-Smtp-Source: ADFU+vuf9xaZBaI2oibiYxtqEAdFjuhMPXdoHi0JJKOs4zyG3rzHxiK0YyrzxAKsNbUit5SiknX6MQF0eyGs1BNeN84=
-X-Received: by 2002:a17:906:4956:: with SMTP id f22mr7897973ejt.293.1584710443930;
- Fri, 20 Mar 2020 06:20:43 -0700 (PDT)
+        id S1727239AbgCTNVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 09:21:42 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:36790 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726971AbgCTNVm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 09:21:42 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02KDD0Uj105707;
+        Fri, 20 Mar 2020 13:21:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=PM8Q+Hx8NwCZgBMyx2dUA43tpTH7qJzxffPwtYOeC/s=;
+ b=M//EJNge1L5eS1eCtGEYzu+7CxJFVaMi8ksrBXwm3nV8waVfKY0WaaGplPqT5fiYyTKY
+ ZQlFTg2Sr7vswBEa+LRU1BlLpOKjPhVzeM77NehfresOmZMVaIL+7VapRGNxVhcni/vn
+ ij/HIFUdyTriAF1J5wSjwAkisqooUyTa3LL6eFSXxTBh2/PwZNZSuoE5WB2UcvZ9Cf6K
+ ogR5UJvcgRU5n9LnIdkRc2nU4wBovsFR4rtFDW4CP5/q/Sjyo6W4gH+b0FQmOAGOFK13
+ FjvELMer5v1RpffITXvx01i+R2/+BuZsfo7r0o34y8SWA0PwzrGu0AseJa7R85n7YPwc GQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2130.oracle.com with ESMTP id 2yrpprnpe7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 20 Mar 2020 13:21:27 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02KDJssr025502;
+        Fri, 20 Mar 2020 13:21:26 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3020.oracle.com with ESMTP id 2ys92qg2dt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 20 Mar 2020 13:21:26 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 02KDLOxL008014;
+        Fri, 20 Mar 2020 13:21:24 GMT
+Received: from mwanda (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 20 Mar 2020 06:21:23 -0700
+Date:   Fri, 20 Mar 2020 16:21:17 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Kate Stewart <kstewart@linuxfoundation.org>,
+        Robert Dolca <robert.dolca@intel.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Samuel Ortiz <sameo@linux.intel.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net] NFC: fdp: Fix a signedness bug in fdp_nci_send_patch()
+Message-ID: <20200320132117.GA95012@mwanda>
 MIME-Version: 1.0
-References: <20200320103726.32559-1-yangbo.lu@nxp.com> <20200320103726.32559-7-yangbo.lu@nxp.com>
-In-Reply-To: <20200320103726.32559-7-yangbo.lu@nxp.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 20 Mar 2020 15:20:32 +0200
-Message-ID: <CA+h21hoBwDuWCFbO70u1FAERB8zc5F+H5URBkn=2_bpRRRz1oA@mail.gmail.com>
-Subject: Re: [PATCH 6/6] ptp_ocelot: support 4 programmable pins
-To:     Yangbo Lu <yangbo.lu@nxp.com>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9565 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=999
+ mlxscore=0 spamscore=0 bulkscore=0 adultscore=0 suspectscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003200057
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9565 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0
+ suspectscore=0 lowpriorityscore=0 phishscore=0 adultscore=0 clxscore=1011
+ impostorscore=0 priorityscore=1501 spamscore=0 mlxlogscore=999 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
+ definitions=main-2003200057
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yangbo,
+The nci_conn_max_data_pkt_payload_size() function sometimes returns
+-EPROTO so "max_size" needs to be signed for the error handling to
+work.  We can make "payload_size" an int as well.
 
-On Fri, 20 Mar 2020 at 12:42, Yangbo Lu <yangbo.lu@nxp.com> wrote:
->
-> Support 4 programmable pins for only one function periodic
-> signal for now. Since the hardware is not able to support
-> absolute start time, driver starts periodic signal immediately.
->
+Fixes: a06347c04c13 ("NFC: Add Intel Fields Peak NFC solution driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/nfc/fdp/fdp.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Are you absolutely sure it doesn't support absolute start time?
-Because that would mean it's pretty useless if the phase of the PTP
-clock signal is out of control.
+diff --git a/drivers/nfc/fdp/fdp.c b/drivers/nfc/fdp/fdp.c
+index 7c0b1e6b80ff..4dc7bd7e02b6 100644
+--- a/drivers/nfc/fdp/fdp.c
++++ b/drivers/nfc/fdp/fdp.c
+@@ -184,7 +184,7 @@ static int fdp_nci_send_patch(struct nci_dev *ndev, u8 conn_id, u8 type)
+ 	const struct firmware *fw;
+ 	struct sk_buff *skb;
+ 	unsigned long len;
+-	u8 max_size, payload_size;
++	int max_size, payload_size;
+ 	int rc = 0;
+ 
+ 	if ((type == NCI_PATCH_TYPE_OTP && !info->otp_patch) ||
+@@ -207,8 +207,7 @@ static int fdp_nci_send_patch(struct nci_dev *ndev, u8 conn_id, u8 type)
+ 
+ 	while (len) {
+ 
+-		payload_size = min_t(unsigned long, (unsigned long) max_size,
+-				     len);
++		payload_size = min_t(unsigned long, max_size, len);
+ 
+ 		skb = nci_skb_alloc(ndev, (NCI_CTRL_HDR_SIZE + payload_size),
+ 				    GFP_KERNEL);
+-- 
+2.20.1
 
-I tested your patch on the LS1028A-RDB board using the following commands:
-
-# Select PEROUT function and assign a channel to each of pins
-SWITCH_1588_DAT0 and SWITCH_1588_DAT1
-echo '2 0' > /sys/class/ptp/ptp1/pins/switch_1588_dat0
-echo '2 1' > /sys/class/ptp/ptp1/pins/switch_1588_dat1
-# Generate pulses with 1 second period on channel 0
-echo '0 0 0 1 0' > /sys/class/ptp/ptp1/period
-# Generate pulses with 1 second period on channel 1
-echo '1 0 0 1 0' > /sys/class/ptp/ptp1/period
-
-And here is what I get:
-https://drive.google.com/open?id=1ErWufJL0TWv6hKDQdF1pRL5gn4hn4X-r
-
-So the periodic output really starts 'now' just like the print says,
-so the output from DAT0 is not even in sync with DAT1.
-
-> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-> ---
-
-Thanks,
--Vladimir
