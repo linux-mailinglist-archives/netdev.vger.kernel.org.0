@@ -2,63 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7155118DE31
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 06:45:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D841B18DE5A
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 07:59:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727917AbgCUFmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 01:42:37 -0400
-Received: from isilmar-4.linta.de ([136.243.71.142]:36190 "EHLO
-        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725763AbgCUFmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 01:42:36 -0400
-Received: by isilmar-4.linta.de (Postfix, from userid 1000)
-        id 442E2200B38; Sat, 21 Mar 2020 05:42:35 +0000 (UTC)
-Date:   Sat, 21 Mar 2020 06:42:35 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     syzbot <syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com>
-Cc:     adam.zerella@gmail.com, davem@davemloft.net,
-        gregkh@linuxfoundation.org, hdanton@sina.com, jhs@mojatatu.com,
-        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tglx@linutronix.de, xiyou.wangcong@gmail.com
-Subject: Re: WARNING: ODEBUG bug in tcindex_destroy_work (3)
-Message-ID: <20200321054235.s35tcj23hcfnc6wx@isilmar-4.linta.de>
-References: <000000000000b380de059f5ff6aa@google.com>
- <00000000000006777805a1561fa3@google.com>
+        id S1728142AbgCUG6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 02:58:44 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:32974 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728010AbgCUG6l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Mar 2020 02:58:41 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 7ED3EC11A0CC40588250;
+        Sat, 21 Mar 2020 14:58:20 +0800 (CST)
+Received: from localhost.localdomain (10.175.34.53) by
+ DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
+ 14.3.487.0; Sat, 21 Mar 2020 14:57:21 +0800
+From:   Luo bin <luobin9@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <luoxianjun@huawei.com>, <luobin9@huawei.com>,
+        <yin.yinshi@huawei.com>, <cloud.wangxiaoyun@huawei.com>
+Subject: [PATCH net 0/5] hinic: BugFixes
+Date:   Fri, 20 Mar 2020 23:13:15 +0000
+Message-ID: <20200320231320.1001-1-luobin9@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <00000000000006777805a1561fa3@google.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain
+X-Originating-IP: [10.175.34.53]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 20, 2020 at 09:49:03PM -0700, syzbot wrote:
-> syzbot has bisected this bug to:
-> 
-> commit 836e9494f4485127a5b505ae57e4387bea8b53c4
-> Author: Adam Zerella <adam.zerella@gmail.com>
-> Date:   Sun Aug 25 05:35:10 2019 +0000
-> 
->     pcmcia/i82092: Refactored dprintk macro for dev_dbg().
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=175cffe3e00000
-> start commit:   74522e7b net: sched: set the hw_stats_type in pedit loop
-> git tree:       net-next
-> final crash:    https://syzkaller.appspot.com/x/report.txt?x=14dcffe3e00000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=10dcffe3e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=b5acf5ac38a50651
-> dashboard link: https://syzkaller.appspot.com/bug?extid=46f513c3033d592409d2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17bfff65e00000
-> 
-> Reported-by: syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com
-> Fixes: 836e9494f448 ("pcmcia/i82092: Refactored dprintk macro for dev_dbg().")
-> 
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Fix a number of bugs which have been present since the first commit.
 
-That bisect evidently can't be right.
+The bugs fixed in these patchs are hardly exposed unless given
+very specific conditions.
 
-Thanks,
-	Dominik
+Luo bin (5):
+  hinic: fix a bug of waitting for IO stopped
+  hinic: fix the bug of clearing event queue
+  hinic: fix out-of-order excution in arm cpu
+  hinic: fix wrong para of wait_for_completion_timeout
+  hinic: fix wrong value of MIN_SKB_LEN
+
+ .../net/ethernet/huawei/hinic/hinic_hw_cmdq.c |  5 +-
+ .../net/ethernet/huawei/hinic/hinic_hw_dev.c  | 51 +------------------
+ .../net/ethernet/huawei/hinic/hinic_hw_eqs.c  | 26 +++++++---
+ .../net/ethernet/huawei/hinic/hinic_hw_mgmt.c |  5 +-
+ drivers/net/ethernet/huawei/hinic/hinic_rx.c  |  3 ++
+ drivers/net/ethernet/huawei/hinic/hinic_tx.c  |  4 +-
+ 6 files changed, 34 insertions(+), 60 deletions(-)
+
+-- 
+2.17.1
+
