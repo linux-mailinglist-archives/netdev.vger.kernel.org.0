@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 99CF218CBDB
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 11:41:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87A0E18CBDD
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 11:41:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727383AbgCTKlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 06:41:09 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:54920 "EHLO inva021.nxp.com"
+        id S1727441AbgCTKlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 06:41:19 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:51914 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727347AbgCTKlH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Mar 2020 06:41:07 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id E51032004AD;
-        Fri, 20 Mar 2020 11:41:05 +0100 (CET)
+        id S1727354AbgCTKlJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Mar 2020 06:41:09 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 97F9A1A0543;
+        Fri, 20 Mar 2020 11:41:06 +0100 (CET)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id BFDA12004AC;
-        Fri, 20 Mar 2020 11:40:59 +0100 (CET)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 3B1351A055C;
+        Fri, 20 Mar 2020 11:41:00 +0100 (CET)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 654DE4030B;
-        Fri, 20 Mar 2020 18:40:51 +0800 (SGT)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 9633B4031C;
+        Fri, 20 Mar 2020 18:40:52 +0800 (SGT)
 From:   Yangbo Lu <yangbo.lu@nxp.com>
 To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
@@ -32,9 +32,9 @@ Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Subject: [PATCH 5/6] net: mscc: ocelot: add wave programming registers definitions
-Date:   Fri, 20 Mar 2020 18:37:25 +0800
-Message-Id: <20200320103726.32559-6-yangbo.lu@nxp.com>
+Subject: [PATCH 6/6] ptp_ocelot: support 4 programmable pins
+Date:   Fri, 20 Mar 2020 18:37:26 +0800
+Message-Id: <20200320103726.32559-7-yangbo.lu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200320103726.32559-1-yangbo.lu@nxp.com>
 References: <20200320103726.32559-1-yangbo.lu@nxp.com>
@@ -44,68 +44,163 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add wave programming registers definitions for Ocelot platforms.
+Support 4 programmable pins for only one function periodic
+signal for now. Since the hardware is not able to support
+absolute start time, driver starts periodic signal immediately.
 
 Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c  | 2 ++
- drivers/net/ethernet/mscc/ocelot_regs.c | 2 ++
- include/soc/mscc/ocelot.h               | 2 ++
- include/soc/mscc/ocelot_ptp.h           | 2 ++
- 4 files changed, 8 insertions(+)
+ drivers/ptp/ptp_ocelot.c  | 97 ++++++++++++++++++++++++++++++++++++++++++++++-
+ include/soc/mscc/ocelot.h |  3 ++
+ 2 files changed, 98 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index b4078f3..4fe707e 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -313,6 +313,8 @@ static const u32 vsc9959_ptp_regmap[] = {
- 	REG(PTP_PIN_TOD_SEC_MSB,           0x000004),
- 	REG(PTP_PIN_TOD_SEC_LSB,           0x000008),
- 	REG(PTP_PIN_TOD_NSEC,              0x00000c),
-+	REG(PTP_PIN_WF_HIGH_PERIOD,        0x000014),
-+	REG(PTP_PIN_WF_LOW_PERIOD,         0x000018),
- 	REG(PTP_CFG_MISC,                  0x0000a0),
- 	REG(PTP_CLK_CFG_ADJ_CFG,           0x0000a4),
- 	REG(PTP_CLK_CFG_ADJ_FREQ,          0x0000a8),
-diff --git a/drivers/net/ethernet/mscc/ocelot_regs.c b/drivers/net/ethernet/mscc/ocelot_regs.c
-index b88b589..ed4dd01 100644
---- a/drivers/net/ethernet/mscc/ocelot_regs.c
-+++ b/drivers/net/ethernet/mscc/ocelot_regs.c
-@@ -239,6 +239,8 @@ static const u32 ocelot_ptp_regmap[] = {
- 	REG(PTP_PIN_TOD_SEC_MSB,           0x000004),
- 	REG(PTP_PIN_TOD_SEC_LSB,           0x000008),
- 	REG(PTP_PIN_TOD_NSEC,              0x00000c),
-+	REG(PTP_PIN_WF_HIGH_PERIOD,        0x000014),
-+	REG(PTP_PIN_WF_LOW_PERIOD,         0x000018),
- 	REG(PTP_CFG_MISC,                  0x0000a0),
- 	REG(PTP_CLK_CFG_ADJ_CFG,           0x0000a4),
- 	REG(PTP_CLK_CFG_ADJ_FREQ,          0x0000a8),
+diff --git a/drivers/ptp/ptp_ocelot.c b/drivers/ptp/ptp_ocelot.c
+index 59420a7..299928e 100644
+--- a/drivers/ptp/ptp_ocelot.c
++++ b/drivers/ptp/ptp_ocelot.c
+@@ -164,26 +164,119 @@ static int ocelot_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ 	return 0;
+ }
+ 
++static int ocelot_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
++			     enum ptp_pin_function func, unsigned int chan)
++{
++	switch (func) {
++	case PTP_PF_NONE:
++	case PTP_PF_PEROUT:
++		break;
++	case PTP_PF_EXTTS:
++	case PTP_PF_PHYSYNC:
++		return -1;
++	}
++	return 0;
++}
++
++static int ocelot_ptp_enable(struct ptp_clock_info *ptp,
++			     struct ptp_clock_request *rq, int on)
++{
++	struct ocelot *ocelot = container_of(ptp, struct ocelot, ptp_info);
++	enum ocelot_ptp_pins ptp_pin;
++	struct timespec64 ts;
++	unsigned long flags;
++	int pin = -1;
++	u32 val;
++	s64 ns;
++
++	switch (rq->type) {
++	case PTP_CLK_REQ_PEROUT:
++		/* Reject requests with unsupported flags */
++		if (rq->perout.flags)
++			return -EOPNOTSUPP;
++
++		/*
++		 * TODO: support disabling function
++		 * When ptp_disable_pinfunc() is to disable function,
++		 * it has already held pincfg_mux.
++		 * However ptp_find_pin() in .enable() called also needs
++		 * to hold pincfg_mux.
++		 * This causes dead lock. So, just return for function
++		 * disabling, and this needs fix-up.
++		 */
++		if (!on)
++			break;
++
++		pin = ptp_find_pin(ocelot->ptp_clock, PTP_PF_PEROUT,
++				   rq->perout.index);
++		if (pin == 0)
++			ptp_pin = PTP_PIN_0;
++		else if (pin == 1)
++			ptp_pin = PTP_PIN_1;
++		else if (pin == 2)
++			ptp_pin = PTP_PIN_2;
++		else if (pin == 3)
++			ptp_pin = PTP_PIN_3;
++		else
++			return -EINVAL;
++
++		ts.tv_sec = rq->perout.period.sec;
++		ts.tv_nsec = rq->perout.period.nsec;
++		ns = timespec64_to_ns(&ts);
++		ns = ns >> 1;
++		if (ns > 0x3fffffff || ns <= 0x6)
++			return -EINVAL;
++
++		spin_lock_irqsave(&ocelot->ptp_clock_lock, flags);
++		ocelot_write_rix(ocelot, ns, PTP_PIN_WF_LOW_PERIOD, ptp_pin);
++		ocelot_write_rix(ocelot, ns, PTP_PIN_WF_HIGH_PERIOD, ptp_pin);
++
++		val = PTP_PIN_CFG_ACTION(PTP_PIN_ACTION_CLOCK);
++		ocelot_write_rix(ocelot, val, PTP_PIN_CFG, ptp_pin);
++		spin_unlock_irqrestore(&ocelot->ptp_clock_lock, flags);
++		dev_warn(ocelot->dev,
++			 "Starting periodic signal now! (absolute start time not supported)\n");
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++	return 0;
++}
++
+ static struct ptp_clock_info ocelot_ptp_clock_info = {
+ 	.owner		= THIS_MODULE,
+ 	.name		= "ocelot ptp",
+ 	.max_adj	= 0x7fffffff,
+ 	.n_alarm	= 0,
+ 	.n_ext_ts	= 0,
+-	.n_per_out	= 0,
+-	.n_pins		= 0,
++	.n_per_out	= OCELOT_PTP_PINS_NUM,
++	.n_pins		= OCELOT_PTP_PINS_NUM,
+ 	.pps		= 0,
+ 	.gettime64	= ocelot_ptp_gettime64,
+ 	.settime64	= ocelot_ptp_settime64,
+ 	.adjtime	= ocelot_ptp_adjtime,
+ 	.adjfine	= ocelot_ptp_adjfine,
++	.verify		= ocelot_ptp_verify,
++	.enable		= ocelot_ptp_enable,
+ };
+ 
+ int ocelot_init_timestamp(struct ocelot *ocelot)
+ {
+ 	struct ptp_clock *ptp_clock;
++	int i;
+ 
+ 	ocelot->ptp_info = ocelot_ptp_clock_info;
++
++	for (i = 0; i < OCELOT_PTP_PINS_NUM; i++) {
++		struct ptp_pin_desc *p = &ocelot->ptp_pins[i];
++
++		snprintf(p->name, sizeof(p->name), "switch_1588_dat%d", i);
++		p->index = i;
++		p->func = PTP_PF_NONE;
++	}
++
++	ocelot->ptp_info.pin_config = &ocelot->ptp_pins[0];
++
+ 	ptp_clock = ptp_clock_register(&ocelot->ptp_info, ocelot->dev);
+ 	if (IS_ERR(ptp_clock))
+ 		return PTR_ERR(ptp_clock);
 diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 0ad61e3..bcce278 100644
+index bcce278..db2fb14 100644
 --- a/include/soc/mscc/ocelot.h
 +++ b/include/soc/mscc/ocelot.h
-@@ -385,6 +385,8 @@ enum ocelot_reg {
- 	PTP_PIN_TOD_SEC_MSB,
- 	PTP_PIN_TOD_SEC_LSB,
- 	PTP_PIN_TOD_NSEC,
-+	PTP_PIN_WF_HIGH_PERIOD,
-+	PTP_PIN_WF_LOW_PERIOD,
- 	PTP_CFG_MISC,
- 	PTP_CLK_CFG_ADJ_CFG,
- 	PTP_CLK_CFG_ADJ_FREQ,
-diff --git a/include/soc/mscc/ocelot_ptp.h b/include/soc/mscc/ocelot_ptp.h
-index 2dd27f0..3dd63d2 100644
---- a/include/soc/mscc/ocelot_ptp.h
-+++ b/include/soc/mscc/ocelot_ptp.h
-@@ -14,6 +14,8 @@
- #define PTP_PIN_TOD_SEC_MSB_RSZ		PTP_PIN_CFG_RSZ
- #define PTP_PIN_TOD_SEC_LSB_RSZ		PTP_PIN_CFG_RSZ
- #define PTP_PIN_TOD_NSEC_RSZ		PTP_PIN_CFG_RSZ
-+#define PTP_PIN_WF_HIGH_PERIOD_RSZ	PTP_PIN_CFG_RSZ
-+#define PTP_PIN_WF_LOW_PERIOD_RSZ	PTP_PIN_CFG_RSZ
+@@ -92,6 +92,8 @@
+ #define OCELOT_SPEED_100		2
+ #define OCELOT_SPEED_10			3
  
- #define PTP_PIN_CFG_DOM			BIT(0)
- #define PTP_PIN_CFG_SYNC		BIT(2)
++#define OCELOT_PTP_PINS_NUM		4
++
+ #define TARGET_OFFSET			24
+ #define REG_MASK			GENMASK(TARGET_OFFSET - 1, 0)
+ #define REG(reg, offset)		[reg & REG_MASK] = offset
+@@ -544,6 +546,7 @@ struct ocelot {
+ 	struct mutex			ptp_lock;
+ 	/* Protects the PTP clock */
+ 	spinlock_t			ptp_clock_lock;
++	struct ptp_pin_desc		ptp_pins[OCELOT_PTP_PINS_NUM];
+ };
+ 
+ #define ocelot_read_ix(ocelot, reg, gi, ri) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
 -- 
 2.7.4
 
