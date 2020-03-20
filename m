@@ -2,122 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB16F18CC66
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 12:10:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76E7718CC6C
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 12:11:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727337AbgCTLKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 07:10:07 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:34330 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726894AbgCTLKH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 07:10:07 -0400
-Received: by mail-pg1-f196.google.com with SMTP id t3so2929002pgn.1;
-        Fri, 20 Mar 2020 04:10:06 -0700 (PDT)
+        id S1726991AbgCTLLN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 07:11:13 -0400
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:33875 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726726AbgCTLLN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 07:11:13 -0400
+Received: by mail-vs1-f65.google.com with SMTP id t10so3726277vsp.1;
+        Fri, 20 Mar 2020 04:11:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=8DC0Aw490tAtEteDyenp5f58iML9PsV1SemgO6pMc4k=;
-        b=id84JLVQrc1pByXQ0kRoTprdf6KnYiB0t8lk6sCBFM9RdBrAOUPfbvVMzV9qiaL87i
-         Wvp0xRICCAcPHoCFnMV8StTu3kzu2Ft7+QZOs/hvVTDp5jVlpx8UGbuABCSV+viP2YNC
-         mRkOrLWy6XA1ndOvPPBf3ObeCBzPs4nSgMonij7C0tCECY+ai9NEJSlOfTAmCYY7HowQ
-         ypNdhiNr1c38NknrwPv2fPDaonMx/BfmL48kL+8o3LrdM6Fc0w3969as+h8J+OwPzxsa
-         HnPzBg+fibzVhbE8FTsCvmqAH8+x9IkWTNoFBL3QbbE2qNdzuWnBsNsWef+oiodFcD1e
-         9u1A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oN4/KUQ8b4ahyaIikru+djpxL5XQQFIKZYbjC0vKpsU=;
+        b=RG4d5K1oz2ont5jUJjkmBXY8+/64X5o3IKIS4LOSaudxUVUe8DU1ydUBqbiQboKELu
+         1ShHuDcThMIFNOAeKf9tDwjqw0JD2VD1JpQID7+cH7o6+JfICVKvz4V984jiknR/mmw8
+         DzXs1jdJJTlxXsvtCLrKUH2u3HagA7ZvDhtaP2ox+KWSqtIM1C271gNXEtCd2P3dytUn
+         O6nm8l1TYAlQbcFMaJdY2GR7PMy/utD82oPmrj9xG2NfYizrVrVaMn5tRiLHtcL3ZkNv
+         ghk2Px//JSIsj1S93uV8jR/iFOdRWNaPme7LthP+qDx+QkfrE65yHJJ82m04tVoXmP86
+         Bisw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=8DC0Aw490tAtEteDyenp5f58iML9PsV1SemgO6pMc4k=;
-        b=om4pd303E0mgA1BPEs76WWotfJpBWkwFrcgK7xyoelHDpjpVsJ2JZw0iMmcVq+nlJu
-         +gCQI0PDrbgb6amHrjhs9kn1X3mcFtZPz8BVbIJWey2KfHnzBU6Bkn1sHEci1H2ehHru
-         B9JEfMx1ttJoBBAXdlpmb4pylRxHYqwLP10CuUzURjEvkglvkBziDWWzyH5A2EKClFj1
-         kGGZdYH0gJEjLaqtss/zLf1mBTONyD9NE5J7NYOhqzaoSUq7N06mbnneuvSRkDmh0PQV
-         b/Rg2ucj3kuxpBUJYECCS+81X7bQZasOcyzrDY0WDlNR6iwvCcmNhYcPA/CufCaVhYom
-         WYGg==
-X-Gm-Message-State: ANhLgQ2JKfDZxtRw9RH0SYH4wXJrpfiueMatf5FKmY6fOp0nBKxqSXiY
-        83Gpc0F5nk/aUdPacOWjQIwcU/TOHCkWlg==
-X-Google-Smtp-Source: ADFU+vuVlMHmABpQyheyAcx3cY1cUhb6lfIhNDQ0xBjDWcqim11OoGyYbBSUhx+SgoDYa54pUcjH7w==
-X-Received: by 2002:a62:d144:: with SMTP id t4mr1396205pfl.10.1584702605420;
-        Fri, 20 Mar 2020 04:10:05 -0700 (PDT)
-Received: from localhost ([161.117.239.120])
-        by smtp.gmail.com with ESMTPSA id u9sm5202984pfn.116.2020.03.20.04.10.04
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 20 Mar 2020 04:10:04 -0700 (PDT)
-From:   Qiujun Huang <hqjagain@gmail.com>
-To:     marcelo.leitner@gmail.com, davem@davemloft.net
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com, kuba@kernel.org,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, anenbupt@gmail.com,
-        Qiujun Huang <hqjagain@gmail.com>
-Subject: [PATCH v3] sctp: fix refcount bug in sctp_wfree
-Date:   Fri, 20 Mar 2020 19:09:59 +0800
-Message-Id: <20200320110959.2114-1-hqjagain@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oN4/KUQ8b4ahyaIikru+djpxL5XQQFIKZYbjC0vKpsU=;
+        b=eAQ1GBq+dPcXJrEutbZxXCgPnwmw6O84rAJUCTyB1iJ0NY6kifb4kbsyHNyK5wK6S7
+         1fNfkh3lRxrmq5V8RYXjZLROLuoUO6oTZeaf6xvB+SJfGhfFx6LnhztJhjam6gxvUCC2
+         QVMMkmir/CTtcjPwrPHXgcN2TwgLFx2UE+SSnhlk/jXbgpjayf/nO0dpqwfAXsWbxKhq
+         ikLa6lNIGoyvASufSbU1Nq+0ZHYDtgWPhaxAllkYhyEdDrpfo9tMyGnyPdqO9Dl+7pnS
+         RN4td6oTPiom6N6z64Zci0eM3uvlnu1gz0QuXA6CXoEH35uI3fW+mkrBltTNh1P7RTgn
+         /NNQ==
+X-Gm-Message-State: ANhLgQ2KAHY+HPF/cUlR4gKhYoOUeCh2EFu67630hXJm2yQAEMfECuId
+        dhEfEKkXi8puZcl7eMGIPGlNWo56YGhIT7N00zE=
+X-Google-Smtp-Source: ADFU+vsejFVbOnAEdlAKw8nIgzTdGgU0d2mSV9i20J6AFqSFFPnk0AB6zKSwUyzGRMagEavDO/mDBNZWfo1spYVz3hc=
+X-Received: by 2002:a05:6102:303c:: with SMTP id v28mr5230330vsa.91.1584702672495;
+ Fri, 20 Mar 2020 04:11:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <00000000000088452f05a07621d2@google.com>
+In-Reply-To: <00000000000088452f05a07621d2@google.com>
+From:   Qiujun Huang <anenbupt@gmail.com>
+Date:   Fri, 20 Mar 2020 19:11:00 +0800
+Message-ID: <CADG63jAwaYMP+Q3WNqpOnf39_XZ3z5ZZu-ST-f5q2XM+kHgcgg@mail.gmail.com>
+Subject: Re: WARNING: refcount bug in sctp_wfree
+To:     syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Do accounting for skb's real sk.
-In some case skb->sk != asoc->base.sk:
-
-for the trouble SKB, it was in outq->transmitted queue
-
-sctp_outq_sack
-	sctp_check_transmitted
-		SKB was moved to outq->sack
-	then throw away the sack queue
-		SKB was deleted from outq->sack
-(but the datamsg held SKB at sctp_datamsg_to_asoc
-So, sctp_wfree was not called to destroy SKB)
-
-then migrate happened
-
-	sctp_for_each_tx_datachunk(
-	sctp_clear_owner_w);
-	sctp_assoc_migrate();
-	sctp_for_each_tx_datachunk(
-	sctp_set_owner_w);
-SKB was not in the outq, and was not changed to newsk
-
-finally
-
-__sctp_outq_teardown
-	sctp_chunk_put (for another skb)
-		sctp_datamsg_put
-			__kfree_skb(msg->frag_list)
-				sctp_wfree (for SKB)
-this case in sctp_wfree SKB->sk was oldsk.
-
-It looks only trouble here so handling it in sctp_wfree is enough.
-
-Reported-and-tested-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
-Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
----
- net/sctp/socket.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 1b56fc440606..5f5c28b30e25 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -9080,7 +9080,7 @@ static void sctp_wfree(struct sk_buff *skb)
- {
- 	struct sctp_chunk *chunk = skb_shinfo(skb)->destructor_arg;
- 	struct sctp_association *asoc = chunk->asoc;
--	struct sock *sk = asoc->base.sk;
-+	struct sock *sk = skb->sk;
- 
- 	sk_mem_uncharge(sk, skb->truesize);
- 	sk->sk_wmem_queued -= skb->truesize + sizeof(struct sctp_chunk);
-@@ -9109,7 +9109,7 @@ static void sctp_wfree(struct sk_buff *skb)
- 	}
- 
- 	sock_wfree(skb);
--	sctp_wake_up_waiters(sk, asoc);
-+	sctp_wake_up_waiters(asoc->base.sk, asoc);
- 
- 	sctp_association_put(asoc);
- }
--- 
-2.17.1
-
+#syz test: https://github.com/hqj/hqjagain_test.git sctp_wfree_refcount_bug
