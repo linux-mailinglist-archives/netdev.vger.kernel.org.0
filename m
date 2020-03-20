@@ -2,126 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1536418C585
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 03:54:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73D5C18C58A
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 04:00:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726673AbgCTCyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 22:54:40 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:38341 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726103AbgCTCyj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 22:54:39 -0400
-Received: by mail-qt1-f194.google.com with SMTP id z12so3833611qtq.5
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 19:54:39 -0700 (PDT)
+        id S1726704AbgCTDAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 23:00:30 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:41577 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726596AbgCTDAa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 23:00:30 -0400
+Received: by mail-pl1-f193.google.com with SMTP id t16so1898696plr.8;
+        Thu, 19 Mar 2020 20:00:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
+        d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=S0/mrn3rzQVBFkzod99RMOB6yGI2xYesLtS40pF0HvY=;
-        b=diAsWuOEtzlsKfOfRgUcqOHG9kn8IIUQ6GQqF8gnYrOKQRTXGdVkzcvLdnb5mgmo+4
-         /X/ORHQp4Wz8u0/toRiVzhuXNnzl3/fesQFew+4uvHL9Isb6kXxlknmsDA6jcY7cIrpv
-         eZqOIirMmeHDxFoEWKpHgdeLcdo3Ot65ukMeoL57m0C8lnOZBdY3GLv4udgjG67LRrVv
-         t50GUSgH70zQOzANRFozgT4NPYOs2YNj1O+nfSgKrQsGbCW9B1at/ZQnoEjRa9AT+7xD
-         +N40PE9h7FikJxiJa3orhUDsxZw7r3uzLe0/XhbRbe2es5Vkf27tgNppZ+g9XL0Kblf3
-         6JCg==
+        bh=gxG63zAIWgKTBOzHey2DE/duHVniOWkY6U4i26i98aw=;
+        b=kpCH9LKrGaaiPmxORj8fBNKI8yqyzvb5aT65crNDKkfH0n2KJs8Aw+8z2lgPEuXN4e
+         sxfYSe66E8q7uBa4SKdhr+IrXOOtLws+f8ZCoU2sV3sHwU0TkxBuAyD4qpoGw1phwvOn
+         DzABBTRWOJomb0lhh7Xrka7woxbA36GHOzLFwNs3Vc2zX9gshbz1deuycF91wJ8YH/69
+         Rjt7rVkNUhGRRQOMmi6npUfpek23wzY8MtXHeOyMAIbijP4o32evxvPeJYJffpDRjIuA
+         9eB3LYuicMm1bY05vGCyIqkHCWJ4KVAy5tncp1B6ftKY4BIOVdcd51koVKQOWMRZMaVp
+         cATg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=S0/mrn3rzQVBFkzod99RMOB6yGI2xYesLtS40pF0HvY=;
-        b=ZighjDNKbaT1HKg42ZV581RuU4C8S6dZN9I7JKusmlz6pq7ESzWb7RhzFlvKCjZv3F
-         NivhHnqHBAY3aH5B3P7BVwthAiIGWmnlewB4uNkIb8m++Ciw1ehWd+RyJQnVEEJxeiKe
-         2UTEJvYqtL1BJTgHS5OUKd6cNjWKTddizz5FK+INJPm0Ijzv/r06i+3D4mf2snBzcUvK
-         aOmv7oa/QrFY/EGgPzkzXkTubRFlt8EAgEirORVNdqaktlrPqvoSN2MteV4hWbQcWTq4
-         75GP0mq5bkZN+FXIG9tMXuh9I7ZHmnBW+dDmHdNztLlPYfraYiKLOHb8SZQH2nSx32kJ
-         c9/w==
-X-Gm-Message-State: ANhLgQ30M1wZGvYdnOBAzs2Hsuej7AEXGPm1eRe9LXR/nV9DvS0Ncfjn
-        p6ISZ83zOPWRB685GJNd7iRdbA==
-X-Google-Smtp-Source: ADFU+vvXJKh1T/KUuUPCH/VMXxunSSn2oqq4GnaqzV1YA7XZi4u4vl3hefMLbEGpHGQBNlgio/39sQ==
-X-Received: by 2002:ac8:2d88:: with SMTP id p8mr3126608qta.346.1584672878551;
-        Thu, 19 Mar 2020 19:54:38 -0700 (PDT)
-Received: from ovpn-66-200.rdu2.redhat.com (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
-        by smtp.gmail.com with ESMTPSA id 16sm3134342qkk.79.2020.03.19.19.54.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 19 Mar 2020 19:54:38 -0700 (PDT)
-From:   Qian Cai <cai@lca.pw>
-To:     davem@davemloft.net
-Cc:     alexander.h.duyck@linux.intel.com, kuznet@ms2.inr.ac.ru,
-        kuba@kernel.org, yoshfuji@linux-ipv6.org, dsahern@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Qian Cai <cai@lca.pw>
-Subject: [PATCH v2] ipv4: fix a RCU-list lock in inet_dump_fib()
-Date:   Thu, 19 Mar 2020 22:54:21 -0400
-Message-Id: <20200320025421.9216-1-cai@lca.pw>
-X-Mailer: git-send-email 2.21.0 (Apple Git-122.2)
+        bh=gxG63zAIWgKTBOzHey2DE/duHVniOWkY6U4i26i98aw=;
+        b=dzjghrSPwOT7743d5AmMQikoX8/0Qt4jXgVxR5d2xLksTcWYJQ0xoACAS0uiPg2lDk
+         eyrRxMr5g4S4jQ71J/T1WDVWK7srHjZHI0fmSXzWPm66whT4UCAjuD7GZ0xHy66yog6F
+         DC8W0YD3iYwRkODfPNFheG4NsI1zocm/riYasl7azVAr9SGbCurcQUZvoCtj/SZRvo6K
+         Jge2SuX8ql7OZqcSQ0pYXRvUFWycyydzDC78uO3ZO6mKPT8nxPPFhCqYdQ/JRz3wn7JC
+         JXzgwR+4b36QDlgliTVuN139FZpxMQc0pAbjMeV/vp4up9wIDiC6mOZgRJ6f7eA3GS2T
+         dYeg==
+X-Gm-Message-State: ANhLgQ0qVZMTdQTWfMH9IVasoexbrqnw4HPPajweoojWWvNEcD3hnU/q
+        rU2tIEs1x5m8ceihHMFjY+4cvbH/
+X-Google-Smtp-Source: ADFU+vvQMiSD4kmAPMzMtXnU0/i5RXxIHIPkQNLxnQbasYOi9U2EHYOh/MEm2uCaf5e8BGZZcARL1g==
+X-Received: by 2002:a17:90a:33d1:: with SMTP id n75mr6898323pjb.167.1584673227305;
+        Thu, 19 Mar 2020 20:00:27 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
+        by smtp.gmail.com with ESMTPSA id w127sm3680794pfb.70.2020.03.19.20.00.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Mar 2020 20:00:26 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org, Chenbo Feng <fengc@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH] iptables: open eBPF programs in read only mode
+Date:   Thu, 19 Mar 2020 20:00:15 -0700
+Message-Id: <20200320030015.195806-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.25.1.696.g5e7596f4ac-goog
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a place,
+From: Maciej Żenczykowski <maze@google.com>
 
-inet_dump_fib()
-  fib_table_dump
-    fn_trie_dump_leaf()
-      hlist_for_each_entry_rcu()
+Adjust the mode eBPF programs are opened in so 0400 pinned bpf programs
+work without requiring CAP_DAC_OVERRIDE.
 
-without rcu_read_lock() will trigger a warning,
+This matches Linux 5.2's:
+  commit e547ff3f803e779a3898f1f48447b29f43c54085
+  Author: Chenbo Feng <fengc@google.com>
+  Date:   Tue May 14 19:42:57 2019 -0700
 
- WARNING: suspicious RCU usage
- -----------------------------
- net/ipv4/fib_trie.c:2216 RCU-list traversed in non-reader section!!
+    bpf: relax inode permission check for retrieving bpf program
 
- other info that might help us debug this:
+    For iptable module to load a bpf program from a pinned location, it
+    only retrieve a loaded program and cannot change the program content so
+    requiring a write permission for it might not be necessary.
+    Also when adding or removing an unrelated iptable rule, it might need to
+    flush and reload the xt_bpf related rules as well and triggers the inode
+    permission check. It might be better to remove the write premission
+    check for the inode so we won't need to grant write access to all the
+    processes that flush and restore iptables rules.
 
- rcu_scheduler_active = 2, debug_locks = 1
- 1 lock held by ip/1923:
-  #0: ffffffff8ce76e40 (rtnl_mutex){+.+.}, at: netlink_dump+0xd6/0x840
+  kernel/bpf/inode.c:
+  - int ret = inode_permission(inode, MAY_READ | MAY_WRITE);
+  + int ret = inode_permission(inode, MAY_READ);
 
- Call Trace:
-  dump_stack+0xa1/0xea
-  lockdep_rcu_suspicious+0x103/0x10d
-  fn_trie_dump_leaf+0x581/0x590
-  fib_table_dump+0x15f/0x220
-  inet_dump_fib+0x4ad/0x5d0
-  netlink_dump+0x350/0x840
-  __netlink_dump_start+0x315/0x3e0
-  rtnetlink_rcv_msg+0x4d1/0x720
-  netlink_rcv_skb+0xf0/0x220
-  rtnetlink_rcv+0x15/0x20
-  netlink_unicast+0x306/0x460
-  netlink_sendmsg+0x44b/0x770
-  __sys_sendto+0x259/0x270
-  __x64_sys_sendto+0x80/0xa0
-  do_syscall_64+0x69/0xf4
-  entry_SYSCALL_64_after_hwframe+0x49/0xb3
+In practice, AFAICT, the xt_bpf match .fd field isn't even used by new
+kernels, but I believe it might be needed for compatibility with old ones
+(though I'm pretty sure table modifications on them will outright fail).
 
-Fixes: 18a8021a7be3 ("net/ipv4: Plumb support for filtering route dumps")
-Signed-off-by: Qian Cai <cai@lca.pw>
+Test: builds, passes Android test suite (albeit on an older iptables base),
+  git grep bpf_obj_get - finds no other users
+Cc: Chenbo Feng <fengc@google.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Willem de Bruijn <willemb@google.com>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
 ---
+ extensions/libxt_bpf.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-v2: Call rcu_read_unlock() before returning.
-    Add a "Fixes" tag per David.
-
- net/ipv4/fib_frontend.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
-index 577db1d50a24..213be9c050ad 100644
---- a/net/ipv4/fib_frontend.c
-+++ b/net/ipv4/fib_frontend.c
-@@ -997,7 +997,9 @@ static int inet_dump_fib(struct sk_buff *skb, struct netlink_callback *cb)
- 			return -ENOENT;
- 		}
+diff --git a/extensions/libxt_bpf.c b/extensions/libxt_bpf.c
+index 92958247..bf46505c 100644
+--- a/extensions/libxt_bpf.c
++++ b/extensions/libxt_bpf.c
+@@ -61,12 +61,13 @@ static const struct xt_option_entry bpf_opts_v1[] = {
+ 	XTOPT_TABLEEND,
+ };
  
-+		rcu_read_lock();
- 		err = fib_table_dump(tb, skb, cb, &filter);
-+		rcu_read_unlock();
- 		return skb->len ? : err;
- 	}
+-static int bpf_obj_get(const char *filepath)
++static int bpf_obj_get_readonly(const char *filepath)
+ {
+ #if defined HAVE_LINUX_BPF_H && defined __NR_bpf && defined BPF_FS_MAGIC
+ 	union bpf_attr attr;
  
+ 	memset(&attr, 0, sizeof(attr));
++	attr.file_flags = BPF_F_RDONLY;
+ 	attr.pathname = (__u64) filepath;
+ 
+ 	return syscall(__NR_bpf, BPF_OBJ_GET, &attr, sizeof(attr));
+@@ -125,7 +126,7 @@ static void bpf_parse_string(struct sock_filter *pc, __u16 *lenp, __u16 len_max,
+ static void bpf_parse_obj_pinned(struct xt_bpf_info_v1 *bi,
+ 				 const char *filepath)
+ {
+-	bi->fd = bpf_obj_get(filepath);
++	bi->fd = bpf_obj_get_readonly(filepath);
+ 	if (bi->fd < 0)
+ 		xtables_error(PARAMETER_PROBLEM,
+ 			      "bpf: failed to get bpf object");
 -- 
-2.21.0 (Apple Git-122.2)
+2.25.1.696.g5e7596f4ac-goog
 
