@@ -2,246 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AB28918C795
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 07:39:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CDF818C7C7
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 08:00:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726956AbgCTGi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 02:38:59 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:45898 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726602AbgCTGi4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 02:38:56 -0400
-Received: by mail-pg1-f195.google.com with SMTP id m15so2563395pgv.12
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 23:38:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+Gz23ad9AvdRoMjmJFcsLfjZKfRHk6dvHUMzeLv4Wjw=;
-        b=GrR9VV/Jq9umbquLRVw1EwHmsDlx7qq470R4dR8XLM3KMa0kYapSCjUs/UC70/Y3JK
-         586CSwAQ+uib6khtLjipY2Azs93Ya0Up+T6MuW3HI+iBxgyNq7AaFjL0oEeDBxVe5L06
-         wL9KWUcDThTLTR6xBD460qU/s191ZZ+r6lsCKnlwcVgTHuF4J4/pJdkbn64Am/s8pOgC
-         +XUhVFSIQ+PP52slvKBTxVU3eDD3VndHnNw/MxTYzUIWjAnubpCeYpQxySSiSmkWTYNP
-         nABl0K/YNAJP1K+Zyctk16c3bdxohta9H8qCcO7DJFwQr4yBIBgv2Nej4AcmkNXKshzJ
-         C41A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+Gz23ad9AvdRoMjmJFcsLfjZKfRHk6dvHUMzeLv4Wjw=;
-        b=hseqeA8vNUk9j/fGuJTqAcz/wSvvrrB2JB2GPfL1yBxr0COoxQRZNjHvpFe9Rwz2SD
-         KK1RPuDfHLwsSUkEm29Jy/751sd23R7qfT2abQmXlETqA43ax3XE10LdBGWIApoWRMic
-         ZC/O/oThCNidNHc9dx9atoAHpgj++dxSi9uq7KPj19YJyzF77dmv26Enk+kt5kqpc94C
-         Y0wxXxmssziFQyYj3Q1iu/VGGSVOzqnhnwZiPy4wfZc/FLVM2edmaCHBIAKL5NK9aPz0
-         m0zOqpZeAswQUjsxeSg3laslmXrH0WQadm8HTcICSmtw8QSBluz5Eoe7t8hgbFtgi3i1
-         gjiw==
-X-Gm-Message-State: ANhLgQ0gVy4l0hzBobH9qoxUGj3A6cvi13dBp3jIsdJezo36gpzGl7mg
-        G6dxg+cxnK2h0jZMJYF/PzIvtA==
-X-Google-Smtp-Source: ADFU+vtXDTo5wevM9skvrRSf+gizUi9kU2ZHkCT0Tj1M5HBjmttRJU36h2f8oxdfASpetZKz9BtPGQ==
-X-Received: by 2002:a63:6ec7:: with SMTP id j190mr7040675pgc.356.1584686335108;
-        Thu, 19 Mar 2020 23:38:55 -0700 (PDT)
-Received: from localhost.localdomain (59-127-47-126.HINET-IP.hinet.net. [59.127.47.126])
-        by smtp.gmail.com with ESMTPSA id y3sm4370901pfy.158.2020.03.19.23.38.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 19 Mar 2020 23:38:54 -0700 (PDT)
-From:   Chris Chiu <chiu@endlessm.com>
-To:     Jes.Sorensen@gmail.com, kvalo@codeaurora.org, davem@davemloft.net
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@endlessm.com
-Subject: [PATCH v2 2/2] rtl8xxxu: Feed current txrate information for mac80211
-Date:   Fri, 20 Mar 2020 14:38:33 +0800
-Message-Id: <20200320063833.1058-3-chiu@endlessm.com>
-X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
-In-Reply-To: <20200320063833.1058-1-chiu@endlessm.com>
-References: <20200320063833.1058-1-chiu@endlessm.com>
+        id S1726851AbgCTG75 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 02:59:57 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:43512 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726232AbgCTG75 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 02:59:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=iZ+tfXP9s+9EAQeQf95cP5ovh7AcQ3rFatDjmNA0Hpo=; b=SS2stUyn7rcx2bDE5sgbJPy234
+        X9zm/vp1W32VRiUAiag9wc6+PVqSgvIgsex3vU9E84yi9emMqCBjOL8b7qfPZtQkzzDv+ofwjR/c0
+        QqIG4wFoyXYG03dKfZLr/ByjjOnzQZgMIsED/UXA3TjGOpdi16UiLfl7+s/pKrebSwQXNd9u4pstl
+        +qXtTUiOQHDVZkhWsyHsqIFLLUunbIQgVzbJEP1S4/2sDgk9ikKUV9u7HOeGT3pSs1gwB2yhFrrPK
+        c3xR/dV7sjrTgGqDl4NyeXhuFf9XPfBkHa1DsefnsUIiMYD5W+PnILH3G4rhCIrK0mmmME0frAQvb
+        yfAFAVTA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jFBdD-00080q-N8; Fri, 20 Mar 2020 06:59:47 +0000
+Date:   Thu, 19 Mar 2020 23:59:47 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Julian Calaby <julian.calaby@gmail.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-pci@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb <linux-usb@vger.kernel.org>,
+        linux-wireless@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, netdev@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [patch V2 11/15] completion: Use simple wait queues
+Message-ID: <20200320065947.GA25206@infradead.org>
+References: <20200318204302.693307984@linutronix.de>
+ <20200318204408.521507446@linutronix.de>
+ <CAGRGNgXAW14=8ntTiB_hJ_nLq7WC_oFR3N9BNjqVEZM=ze85tQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGRGNgXAW14=8ntTiB_hJ_nLq7WC_oFR3N9BNjqVEZM=ze85tQ@mail.gmail.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The nl80211 commands such as 'iw link' can't get current txrate
-information from the driver. This commit fills in the tx rate
-information from the C2H RA report in the sta_statistics function.
+On Fri, Mar 20, 2020 at 10:25:41AM +1100, Julian Calaby wrote:
+> > +++ b/drivers/usb/gadget/function/f_fs.c
+> > @@ -1703,7 +1703,7 @@ static void ffs_data_put(struct ffs_data
+> >                 pr_info("%s(): freeing\n", __func__);
+> >                 ffs_data_clear(ffs);
+> >                 BUG_ON(waitqueue_active(&ffs->ev.waitq) ||
+> > -                      waitqueue_active(&ffs->ep0req_completion.wait) ||
+> > +                      swait_active(&ffs->ep0req_completion.wait) ||
+> 
+> This looks like some code is reaching deep into the dirty dark corners
+> of the completion implementation, should there be some wrapper around
+> this to hide that?
 
-Signed-off-by: Chris Chiu <chiu@endlessm.com>
----
-
-Note:
-  v2: Make the rtl8xxxu_desc_to_mcsrate() static 
-
- .../net/wireless/realtek/rtl8xxxu/rtl8xxxu.h  | 12 ++-
- .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 75 ++++++++++++++++++-
- 2 files changed, 85 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-index 86d1d50511a8..e6fd1ecaca9c 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h
-@@ -1183,13 +1183,16 @@ struct rtl8723bu_c2h {
- 		} __packed bt_info;
- 		struct {
- 			u8 rate:7;
--			u8 dummy0_0:1;
-+			u8 sgi:1;
- 			u8 macid;
- 			u8 ldpc:1;
- 			u8 txbf:1;
- 			u8 noisy_state:1;
- 			u8 dummy2_0:5;
- 			u8 dummy3_0;
-+			u8 dummy4_0;
-+			u8 dummy5_0;
-+			u8 bw;
- 		} __packed ra_report;
- 	};
- };
-@@ -1269,6 +1272,12 @@ struct rtl8xxxu_btcoex {
- #define RTL8XXXU_SNR_THRESH_HIGH	50
- #define RTL8XXXU_SNR_THRESH_LOW	20
- 
-+struct rtl8xxxu_ra_report {
-+	struct rate_info txrate;
-+	u32 bit_rate;
-+	u8 desc_rate;
-+};
-+
- struct rtl8xxxu_priv {
- 	struct ieee80211_hw *hw;
- 	struct usb_device *udev;
-@@ -1384,6 +1393,7 @@ struct rtl8xxxu_priv {
- 	struct sk_buff_head c2hcmd_queue;
- 	spinlock_t c2hcmd_lock;
- 	struct rtl8xxxu_btcoex bt_coex;
-+	struct rtl8xxxu_ra_report ra_report;
- };
- 
- struct rtl8xxxu_rx_urb {
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index c334418cd7ae..19efae462a24 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -5389,6 +5389,35 @@ void rtl8723bu_handle_bt_info(struct rtl8xxxu_priv *priv)
- 	}
- }
- 
-+static struct ieee80211_rate rtl8xxxu_legacy_ratetable[] = {
-+	{.bitrate = 10, .hw_value = 0x00,},
-+	{.bitrate = 20, .hw_value = 0x01,},
-+	{.bitrate = 55, .hw_value = 0x02,},
-+	{.bitrate = 110, .hw_value = 0x03,},
-+	{.bitrate = 60, .hw_value = 0x04,},
-+	{.bitrate = 90, .hw_value = 0x05,},
-+	{.bitrate = 120, .hw_value = 0x06,},
-+	{.bitrate = 180, .hw_value = 0x07,},
-+	{.bitrate = 240, .hw_value = 0x08,},
-+	{.bitrate = 360, .hw_value = 0x09,},
-+	{.bitrate = 480, .hw_value = 0x0a,},
-+	{.bitrate = 540, .hw_value = 0x0b,},
-+};
-+
-+static void rtl8xxxu_desc_to_mcsrate(u16 rate, u8 *mcs, u8 *nss)
-+{
-+	if (rate <= DESC_RATE_54M)
-+		return;
-+
-+	if (rate >= DESC_RATE_MCS0 && rate <= DESC_RATE_MCS15) {
-+		if (rate < DESC_RATE_MCS8)
-+			*nss = 1;
-+		else
-+			*nss = 2;
-+		*mcs = rate - DESC_RATE_MCS0;
-+	}
-+}
-+
- static void rtl8xxxu_c2hcmd_callback(struct work_struct *work)
- {
- 	struct rtl8xxxu_priv *priv;
-@@ -5397,9 +5426,14 @@ static void rtl8xxxu_c2hcmd_callback(struct work_struct *work)
- 	unsigned long flags;
- 	u8 bt_info = 0;
- 	struct rtl8xxxu_btcoex *btcoex;
-+	struct rtl8xxxu_ra_report *rarpt;
-+	u8 rate, sgi, bw;
-+	u32 bit_rate;
-+	u8 mcs = 0, nss = 0;
- 
- 	priv = container_of(work, struct rtl8xxxu_priv, c2hcmd_work);
- 	btcoex = &priv->bt_coex;
-+	rarpt = &priv->ra_report;
- 
- 	if (priv->rf_paths > 1)
- 		goto out;
-@@ -5422,6 +5456,34 @@ static void rtl8xxxu_c2hcmd_callback(struct work_struct *work)
- 			}
- 			rtl8723bu_handle_bt_info(priv);
- 			break;
-+		case C2H_8723B_RA_REPORT:
-+			rarpt->txrate.flags = 0;
-+			rate = c2h->ra_report.rate;
-+			sgi = c2h->ra_report.sgi;
-+			bw = c2h->ra_report.bw;
-+
-+			if (rate < DESC_RATE_MCS0) {
-+				rarpt->txrate.legacy =
-+					rtl8xxxu_legacy_ratetable[rate].bitrate;
-+			} else {
-+				rtl8xxxu_desc_to_mcsrate(rate, &mcs, &nss);
-+				rarpt->txrate.flags |= RATE_INFO_FLAGS_MCS;
-+
-+				rarpt->txrate.mcs = mcs;
-+				rarpt->txrate.nss = nss;
-+
-+				if (sgi) {
-+					rarpt->txrate.flags |=
-+						RATE_INFO_FLAGS_SHORT_GI;
-+				}
-+
-+				if (bw == RATE_INFO_BW_20)
-+					rarpt->txrate.bw |= RATE_INFO_BW_20;
-+			}
-+			bit_rate = cfg80211_calculate_bitrate(&rarpt->txrate);
-+			rarpt->bit_rate = bit_rate;
-+			rarpt->desc_rate = rate;
-+			break;
- 		default:
- 			break;
- 		}
-@@ -5465,7 +5527,7 @@ static void rtl8723bu_handle_c2h(struct rtl8xxxu_priv *priv,
- 	case C2H_8723B_RA_REPORT:
- 		dev_dbg(dev,
- 			"C2H RA RPT: rate %02x, unk %i, macid %02x, noise %i\n",
--			c2h->ra_report.rate, c2h->ra_report.dummy0_0,
-+			c2h->ra_report.rate, c2h->ra_report.sgi,
- 			c2h->ra_report.macid, c2h->ra_report.noisy_state);
- 		break;
- 	default:
-@@ -6069,6 +6131,16 @@ rtl8xxxu_ampdu_action(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
- 	return 0;
- }
- 
-+static void
-+rtl8xxxu_sta_statistics(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
-+			struct ieee80211_sta *sta, struct station_info *sinfo)
-+{
-+	struct rtl8xxxu_priv *priv = hw->priv;
-+
-+	sinfo->txrate = priv->ra_report.txrate;
-+	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_BITRATE);
-+}
-+
- static u8 rtl8xxxu_signal_to_snr(int signal)
- {
- 	if (signal < RTL8XXXU_NOISE_FLOOR_MIN)
-@@ -6371,6 +6443,7 @@ static const struct ieee80211_ops rtl8xxxu_ops = {
- 	.sw_scan_complete = rtl8xxxu_sw_scan_complete,
- 	.set_key = rtl8xxxu_set_key,
- 	.ampdu_action = rtl8xxxu_ampdu_action,
-+	.sta_statistics = rtl8xxxu_sta_statistics,
- };
- 
- static int rtl8xxxu_parse_usb(struct rtl8xxxu_priv *priv,
--- 
-2.20.1
-
+Or just remote it entirely..
