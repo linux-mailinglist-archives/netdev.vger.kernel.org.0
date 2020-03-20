@@ -2,107 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6319018C96F
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 10:02:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FC7F18C991
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 10:08:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbgCTJCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 05:02:14 -0400
-Received: from mx2.suse.de ([195.135.220.15]:45570 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726979AbgCTJCO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Mar 2020 05:02:14 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 60CA0AECE;
-        Fri, 20 Mar 2020 09:02:12 +0000 (UTC)
-Date:   Fri, 20 Mar 2020 02:01:06 -0700
-From:   Davidlohr Bueso <dave@stgolabs.net>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: Re: [patch V2 11/15] completion: Use simple wait queues
-Message-ID: <20200320090106.6p2lwqvs4jedhvds@linux-p48b>
-References: <20200318204302.693307984@linutronix.de>
- <20200318204408.521507446@linutronix.de>
+        id S1727141AbgCTJIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 05:08:48 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:40752 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726979AbgCTJIr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 05:08:47 -0400
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02K98jPA059657;
+        Fri, 20 Mar 2020 04:08:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1584695325;
+        bh=iIVhyBp9gLMYDLuXFGRZPRptJw/NYgWDMuFepFE+92o=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=uO54Iy8H4yh7Jo14cgDxb5ffUAn6A68+cu62YzeV+xWp9R1aKyYS/Gnu0VNWjiHJ0
+         XhWg0Ble3ZcH8CmLH8r3UwF3FXDFC1dODLqLv4JmKUGi2znaeRkSLtKBbFCCy5pkOa
+         D6eYkQIpe/01BpDxpfgg1pm7nR9v8W88DqqfajGc=
+Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 02K98jUH095614
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 20 Mar 2020 04:08:45 -0500
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE111.ent.ti.com
+ (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 20
+ Mar 2020 04:08:44 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Fri, 20 Mar 2020 04:08:44 -0500
+Received: from [127.0.0.1] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02K98fUm108760;
+        Fri, 20 Mar 2020 04:08:42 -0500
+Subject: Re: [for-next PATCH v2 0/5] phy: ti: gmii-sel: add support for
+ am654x/j721e soc
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        David Miller <davem@davemloft.net>
+CC:     <m-karicheri2@ti.com>, <nsekhar@ti.com>, <robh+dt@kernel.org>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20200303160029.345-1-grygorii.strashko@ti.com>
+ <20200304.143951.1102411401290807167.davem@davemloft.net>
+ <71a6fea9-65c1-3a3c-a35b-9432208b3ee5@ti.com>
+ <7c5395a6-56cb-1d2a-0243-99a6b0fed2a7@ti.com>
+From:   Tero Kristo <t-kristo@ti.com>
+Message-ID: <a6fad5b9-fb90-2db7-9876-d875a91b0633@ti.com>
+Date:   Fri, 20 Mar 2020 11:08:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20200318204408.521507446@linutronix.de>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <7c5395a6-56cb-1d2a-0243-99a6b0fed2a7@ti.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 Mar 2020, Thomas Gleixner wrote:
+On 05/03/2020 12:55, Grygorii Strashko wrote:
+> 
+> 
+> On 05/03/2020 07:17, Kishon Vijay Abraham I wrote:
+>> Hi,
+>>
+>> On 05/03/20 4:09 am, David Miller wrote:
+>>> From: Grygorii Strashko <grygorii.strashko@ti.com>
+>>> Date: Tue, 3 Mar 2020 18:00:24 +0200
+>>>
+>>>> Hi Kishon,
+>>>>
+>>>> This series adds support for TI K3 AM654x/J721E SoCs in TI 
+>>>> phy-gmii-sel PHY
+>>>> driver, which is required for future adding networking support.
+>>>>
+>>>> depends on:
+>>>>   [PATCH 0/2] phy: ti: gmii-sel: two fixes
+>>>>   https://lkml.org/lkml/2020/2/14/2510
+>>>>
+>>>> Changes in v2:
+>>>>   - fixed comments
+>>>>
+>>>> v1: https://lkml.org/lkml/2020/2/22/100
+>>>
+>>> This is mostly DT updates and not much networking code changes, will 
+>>> some other
+>>> tree take this?
+>>
+>> I can take the phy related changes. Grygorii, can you split the dt
+>> patches into a separate series?
+> 
+> sure. Could pls, pick up 1-3 and I'll resend 4-5.
+> Or you want me re-send once again?
+> 
 
->From: Thomas Gleixner <tglx@linutronix.de>
->
->completion uses a wait_queue_head_t to enqueue waiters.
->
->wait_queue_head_t contains a spinlock_t to protect the list of waiters
->which excludes it from being used in truly atomic context on a PREEMPT_RT
->enabled kernel.
->
->The spinlock in the wait queue head cannot be replaced by a raw_spinlock
->because:
->
->  - wait queues can have custom wakeup callbacks, which acquire other
->    spinlock_t locks and have potentially long execution times
->
->  - wake_up() walks an unbounded number of list entries during the wake up
->    and may wake an unbounded number of waiters.
->
->For simplicity and performance reasons complete() should be usable on
->PREEMPT_RT enabled kernels.
->
->completions do not use custom wakeup callbacks and are usually single
->waiter, except for a few corner cases.
->
->Replace the wait queue in the completion with a simple wait queue (swait),
->which uses a raw_spinlock_t for protecting the waiter list and therefore is
->safe to use inside truly atomic regions on PREEMPT_RT.
->
->There is no semantical or functional change:
->
->  - completions use the exclusive wait mode which is what swait provides
->
->  - complete() wakes one exclusive waiter
->
->  - complete_all() wakes all waiters while holding the lock which protects
->    the wait queue against newly incoming waiters. The conversion to swait
->    preserves this behaviour.
->
->complete_all() might cause unbound latencies with a large number of waiters
->being woken at once, but most complete_all() usage sites are either in
->testing or initialization code or have only a really small number of
->concurrent waiters which for now does not cause a latency problem. Keep it
->simple for now.
->
->The fixup of the warning check in the USB gadget driver is just a straight
->forward conversion of the lockless waiter check from one waitqueue type to
->the other.
->
->Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
->Cc: Arnd Bergmann <arnd@arndb.de>
+Queued up patches #4 and #5 towards 5.7, thanks.
 
-Reviewed-by: Davidlohr Bueso <dbueso@suse.de>
+-Tero
+--
+Texas Instruments Finland Oy, Porkkalankatu 22, 00180 Helsinki. Y-tunnus/Business ID: 0615521-4. Kotipaikka/Domicile: Helsinki
