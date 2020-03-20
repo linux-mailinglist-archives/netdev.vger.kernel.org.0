@@ -2,73 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD71A18DA06
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 22:13:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9AEB18DA10
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 22:22:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbgCTVNq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 17:13:46 -0400
-Received: from mx2.suse.de ([195.135.220.15]:33226 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726851AbgCTVNq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Mar 2020 17:13:46 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 5F12DABD7;
-        Fri, 20 Mar 2020 21:13:44 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 4BD38E0FD3; Fri, 20 Mar 2020 22:13:43 +0100 (CET)
-From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net] netlink: check for null extack in cookie helpers
-To:     "David S. Miller" <davem@davemloft.net>,
+        id S1726997AbgCTVWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 17:22:54 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:54122 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726738AbgCTVWx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 17:22:53 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.93)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1jFP6N-00Bvcd-65; Fri, 20 Mar 2020 22:22:47 +0100
+Message-ID: <b4b1d7b252820591ebb00e3851d44dc6c3f2d1b9.camel@sipsolutions.net>
+Subject: Re: [PATCH net] netlink: check for null extack in cookie helpers
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Michal Kubecek <mkubecek@suse.cz>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        linux-kernel@vger.kernel.org
-Message-Id: <20200320211343.4BD38E0FD3@unicorn.suse.cz>
-Date:   Fri, 20 Mar 2020 22:13:43 +0100 (CET)
+Cc:     linux-kernel@vger.kernel.org
+Date:   Fri, 20 Mar 2020 22:22:45 +0100
+In-Reply-To: <20200320211343.4BD38E0FD3@unicorn.suse.cz>
+References: <20200320211343.4BD38E0FD3@unicorn.suse.cz>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unlike NL_SET_ERR_* macros, nl_set_extack_cookie_u64() and
-nl_set_extack_cookie_u32() helpers do not check extack argument for null
-and neither do their callers, as syzbot recently discovered for
-ethnl_parse_header().
+Hi Michal,
 
-Instead of fixing the callers and leaving the trap in place, add check of
-null extack to both helpers to make them consistent with NL_SET_ERR_*
-macros.
+> Unlike NL_SET_ERR_* macros, nl_set_extack_cookie_u64() and
+> nl_set_extack_cookie_u32() helpers do not check extack argument for null
+> and neither do their callers, as syzbot recently discovered for
+> ethnl_parse_header().
 
-Fixes: 2363d73a2f3e ("ethtool: reject unrecognized request flags")
-Fixes: 9bb7e0f24e7e ("cfg80211: add peer measurement with FTM initiator API")
-Reported-by: syzbot+258a9089477493cea67b@syzkaller.appspotmail.com
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
----
- include/linux/netlink.h | 4 ++++
- 1 file changed, 4 insertions(+)
+What exactly did it discover?
 
-diff --git a/include/linux/netlink.h b/include/linux/netlink.h
-index 4090524c3462..60739d0cbf93 100644
---- a/include/linux/netlink.h
-+++ b/include/linux/netlink.h
-@@ -115,6 +115,8 @@ static inline void nl_set_extack_cookie_u64(struct netlink_ext_ack *extack,
- {
- 	u64 __cookie = cookie;
- 
-+	if (!extack)
-+		return;
- 	memcpy(extack->cookie, &__cookie, sizeof(__cookie));
- 	extack->cookie_len = sizeof(__cookie);
- }
-@@ -124,6 +126,8 @@ static inline void nl_set_extack_cookie_u32(struct netlink_ext_ack *extack,
- {
- 	u32 __cookie = cookie;
- 
-+	if (!extack)
-+		return;
- 	memcpy(extack->cookie, &__cookie, sizeof(__cookie));
- 	extack->cookie_len = sizeof(__cookie);
- }
--- 
-2.25.1
+> Instead of fixing the callers and leaving the trap in place, add check of
+> null extack to both helpers to make them consistent with NL_SET_ERR_*
+> macros.
+> 
+> Fixes: 2363d73a2f3e ("ethtool: reject unrecognized request flags")
+> Fixes: 9bb7e0f24e7e ("cfg80211: add peer measurement with FTM initiator API")
+
+I'm not really convinced, at least not for the second patch.
+
+After all, this is an important part of the functionality, and the whole
+thing is pretty useless if no extack/cookie is returned since then you
+don't have a handle to the in-progress operation.
+
+That was the intention originally too, until now the cookie also got
+used for auxiliary error information...
+
+Now, I don't think we need to *crash* when something went wrong here,
+but then I'd argue there should at least be a WARN_ON(). But then that
+means syzbot will just trigger the WARN_ON which also makes it unhappy,
+so you still would have to check in the caller?
+
+johannes
 
