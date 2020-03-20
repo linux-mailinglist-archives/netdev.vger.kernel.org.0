@@ -2,96 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EB0A18CBED
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 11:45:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3DF318CC1C
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 12:03:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727265AbgCTKpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 06:45:06 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:33516 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726791AbgCTKpG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 06:45:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=gpF47OFbSCOaH9j5hP1QeTQDztS/I2yzYL1A8Yg/DCI=; b=m8gRkUViv+3RtA+3AN1Hq8RB2p
-        /nd8koJA7/ftGKlqVgXGyTS1/R5zs5CBqOx+xx+6K9nCiYjvgKGyw0YC0ClboDv10bRHr9uFVti5l
-        EKvrd8vTTtGuSCXjYHyBDIj5z1uJ87Gimm+Jq3l7cxSmAzKhoX5U0dufJsqNv3jrKQNIBSslh2ZBx
-        d6J4/8w72QCJsw2WMsEdzs02t4aMmq5QQ4FsVoSmBkcn0g/+PBYsMy74VM0WnvU6eDHMxJ7NO6YW7
-        oGhprUfFSJmuJzo+np93Zq4slkqAXWnt+jp4L4s7owS9q9n3ZLlPNQHf+KIrDpK7Ir2rNYPzd9bem
-        57qKm1WQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jFF8f-0006yB-F2; Fri, 20 Mar 2020 10:44:29 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        id S1727103AbgCTLDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 07:03:33 -0400
+Received: from ssl.serverraum.org ([176.9.125.105]:39339 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726821AbgCTLDd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 07:03:33 -0400
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 627F2300606;
-        Fri, 20 Mar 2020 11:44:26 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 48697285E2762; Fri, 20 Mar 2020 11:44:26 +0100 (CET)
-Date:   Fri, 20 Mar 2020 11:44:26 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Davidlohr Bueso <dave@stgolabs.net>
-Cc:     tglx@linutronix.de, arnd@arndb.de, balbi@kernel.org,
-        bhelgaas@google.com, bigeasy@linutronix.de, davem@davemloft.net,
-        gregkh@linuxfoundation.org, joel@joelfernandes.org,
-        kurt.schwemmer@microsemi.com, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, logang@deltatee.com,
-        mingo@kernel.org, mpe@ellerman.id.au, netdev@vger.kernel.org,
-        oleg@redhat.com, paulmck@kernel.org, rdunlap@infradead.org,
-        rostedt@goodmis.org, torvalds@linux-foundation.org,
-        will@kernel.org, Davidlohr Bueso <dbueso@suse.de>
-Subject: Re: [PATCH 17/15] rcuwait: Inform rcuwait_wake_up() users if a
- wakeup was attempted
-Message-ID: <20200320104426.GD20696@hirez.programming.kicks-ass.net>
-References: <20200318204302.693307984@linutronix.de>
- <20200320085527.23861-1-dave@stgolabs.net>
- <20200320085527.23861-2-dave@stgolabs.net>
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 96A8022F2D;
+        Fri, 20 Mar 2020 12:03:28 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1584702209;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gUkotz8OFFBMd9PmlQFXSI+efiAIa/TYqSLX2WL8g28=;
+        b=A3Gz3E5G1Gem0xRzkSd0oeQk+cgMuLYcVtYDXHrlGssh5Q5Hs/Nm7cG3jf4WjYMzk8eR8M
+        1VMA6tmMfaeR+B11jg/Lgk6lj5QoUMoTlyg373DjtD63bJopsfBY9F6cClgZ24FIcHYWWP
+        IAULBD/aLkz15S1EhwkBHlAEF0wQD3I=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200320085527.23861-2-dave@stgolabs.net>
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Fri, 20 Mar 2020 12:03:28 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     David Miller <davem@davemloft.net>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
+        robh+dt@kernel.org, leoyang.li@nxp.com, shawnguo@kernel.org
+Subject: Re: [PATCH 1/2] net: dsa: felix: allow the device to be disabled
+In-Reply-To: <20200314.205335.907987569817755804.davem@davemloft.net>
+References: <20200312164320.22349-1-michael@walle.cc>
+ <20200314.205335.907987569817755804.davem@davemloft.net>
+Message-ID: <516fced37ce8b390e89eb0557b0b7362@walle.cc>
+X-Sender: michael@walle.cc
+User-Agent: Roundcube Webmail/1.3.10
+X-Spamd-Bar: +
+X-Spam-Level: *
+X-Rspamd-Server: web
+X-Spam-Status: No, score=1.40
+X-Spam-Score: 1.40
+X-Rspamd-Queue-Id: 96A8022F2D
+X-Spamd-Result: default: False [1.40 / 15.00];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         TAGGED_RCPT(0.00)[dt];
+         MIME_GOOD(-0.10)[text/plain];
+         DKIM_SIGNED(0.00)[];
+         RCPT_COUNT_TWELVE(0.00)[13];
+         NEURAL_HAM(-0.00)[-0.632];
+         RCVD_COUNT_ZERO(0.00)[0];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         FREEMAIL_CC(0.00)[lists.infradead.org,vger.kernel.org,gmail.com,lunn.ch,nxp.com,kernel.org];
+         MID_RHS_MATCH_FROM(0.00)[];
+         SUSPICIOUS_RECIPS(1.50)[]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 20, 2020 at 01:55:25AM -0700, Davidlohr Bueso wrote:
+Hi David, Hi Shawnguo,
 
-> diff --git a/kernel/exit.c b/kernel/exit.c
-> index 6cc6cc485d07..b0bb0a8ec4b1 100644
-> --- a/kernel/exit.c
-> +++ b/kernel/exit.c
-> @@ -234,9 +234,10 @@ void release_task(struct task_struct *p)
->  		goto repeat;
->  }
->  
-> -void rcuwait_wake_up(struct rcuwait *w)
-> +bool rcuwait_wake_up(struct rcuwait *w)
->  {
->  	struct task_struct *task;
-> +	bool ret = false;
->  
->  	rcu_read_lock();
->  
-> @@ -254,10 +255,15 @@ void rcuwait_wake_up(struct rcuwait *w)
->  	smp_mb(); /* (B) */
->  
->  	task = rcu_dereference(w->task);
-> -	if (task)
-> +	if (task) {
->  		wake_up_process(task);
-> +	        ret = true;
+Am 2020-03-15 04:53, schrieb David Miller:
+> This series depends upon some devicetree tree changes, so why don't you
+> submit these changes there and add my:
+> 
+> Acked-by: David S. Miller <davem@davemloft.net>
+> 
+> Thank you.
 
-		ret = wake_up_process(task); ?
+Patch 2/2 is already in linux-next, picked by Shawnguo. Who will
+pick 1/2? I guess it doesn't matter through which tree it will go.
 
-> +	}
->  	rcu_read_unlock();
-> +
-> +	return ret;
->  }
-> +EXPORT_SYMBOL_GPL(rcuwait_wake_up);
+-michael
