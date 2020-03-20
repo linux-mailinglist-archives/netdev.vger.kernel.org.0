@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEDEF18CAAA
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 10:49:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C2DE918CAB0
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 10:49:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727222AbgCTJt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 05:49:26 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:35044 "EHLO
+        id S1727308AbgCTJtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 05:49:35 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:35066 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726602AbgCTJtY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 05:49:24 -0400
+        with ESMTP id S1726791AbgCTJtb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 05:49:31 -0400
 Received: from localhost ([127.0.0.1] helo=flow.W.breakpoint.cc)
         by Galois.linutronix.de with esmtp (Exim 4.80)
         (envelope-from <bigeasy@linutronix.de>)
-        id 1jFEH0-0000vL-Ur; Fri, 20 Mar 2020 10:49:03 +0100
+        id 1jFEH1-0000vL-J1; Fri, 20 Mar 2020 10:49:03 +0100
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 To:     tglx@linutronix.de
 Cc:     arnd@arndb.de, balbi@kernel.org, bhelgaas@google.com,
@@ -28,13 +28,11 @@ Cc:     arnd@arndb.de, balbi@kernel.org, bhelgaas@google.com,
         oleg@redhat.com, paulmck@kernel.org, peterz@infradead.org,
         rdunlap@infradead.org, rostedt@goodmis.org,
         torvalds@linux-foundation.org, will@kernel.org,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
+        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
         kbuild test robot <lkp@intel.com>
-Subject: [PATCH 1/5] nds32: Remove mm.h from asm/uaccess.h
-Date:   Fri, 20 Mar 2020 10:48:52 +0100
-Message-Id: <20200320094856.3453859-2-bigeasy@linutronix.de>
+Subject: [PATCH 2/5] csky: Remove mm.h from asm/uaccess.h
+Date:   Fri, 20 Mar 2020 10:48:53 +0100
+Message-Id: <20200320094856.3453859-3-bigeasy@linutronix.de>
 X-Mailer: git-send-email 2.26.0.rc2
 In-Reply-To: <20200320094856.3453859-1-bigeasy@linutronix.de>
 References: <20200318204408.010461877@linutronix.de>
@@ -51,7 +49,7 @@ include chain leands to:
 |   CC      kernel/locking/percpu-rwsem.o
 | In file included from include/linux/huge_mm.h:8,
 |                  from include/linux/mm.h:567,
-|                  from arch/nds32/include/asm/uaccess.h:,
+|                  from arch/csky/include/asm/uaccess.h:,
 |                  from include/linux/uaccess.h:11,
 |                  from include/linux/sched/task.h:11,
 |                  from include/linux/sched/signal.h:9,
@@ -66,28 +64,27 @@ once rcuwait.h includes linux/sched/signal.h.
 
 Remove the linux/mm.h include.
 
-Cc: Nick Hu <nickhu@andestech.com>
-Cc: Greentime Hu <green.hu@gmail.com>
-Cc: Vincent Chen <deanbo422@gmail.com>
+Cc: Guo Ren <guoren@kernel.org>
+Cc: linux-csky@vger.kernel.org
 Reported-by: kbuild test robot <lkp@intel.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- arch/nds32/include/asm/uaccess.h | 1 -
+ arch/csky/include/asm/uaccess.h | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/arch/nds32/include/asm/uaccess.h b/arch/nds32/include/asm/uacc=
-ess.h
-index 8916ad9f9f139..3a9219f53ee0d 100644
---- a/arch/nds32/include/asm/uaccess.h
-+++ b/arch/nds32/include/asm/uaccess.h
+diff --git a/arch/csky/include/asm/uaccess.h b/arch/csky/include/asm/uacces=
+s.h
+index eaa1c3403a424..abefa125b93cf 100644
+--- a/arch/csky/include/asm/uaccess.h
++++ b/arch/csky/include/asm/uaccess.h
 @@ -11,7 +11,6 @@
- #include <asm/errno.h>
- #include <asm/memory.h>
- #include <asm/types.h>
+ #include <linux/errno.h>
+ #include <linux/types.h>
+ #include <linux/sched.h>
 -#include <linux/mm.h>
-=20
- #define __asmeq(x, y)  ".ifnc " x "," y " ; .err ; .endif\n\t"
-=20
+ #include <linux/string.h>
+ #include <linux/version.h>
+ #include <asm/segment.h>
 --=20
 2.26.0.rc2
 
