@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42BEC18D9E2
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 21:59:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DF9518D9E9
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 22:00:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbgCTU66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 16:58:58 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:45042 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726738AbgCTU66 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 16:58:58 -0400
-Received: by mail-wr1-f68.google.com with SMTP id m17so175524wrw.11
-        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 13:58:55 -0700 (PDT)
+        id S1727105AbgCTVAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 17:00:06 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54910 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726783AbgCTVAG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 17:00:06 -0400
+Received: by mail-wm1-f68.google.com with SMTP id f130so6795071wmf.4
+        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 14:00:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dlYFUvVSxWdYbjS/6AS4CntgIKd0jDsIOuNYV3Yw6IU=;
-        b=JhuMRUzkJl3DmsdYWpBvWNVCroAPAf0/Bu/kVKccRP/wo6I8qB5HCs1ytdcT3+7uaS
-         xDN4W7GJ684fY20IU/wOxeU+eYAu/lhY2jzVyNaztkC5xBjAYMEQEjraGLYCzQIV2zhp
-         RABNYWMwG6z4ey/Oo70LnHg8Bq8nRtqKoWMKFswFB2hvrcwazFL+hIKp0Ft7+zlN9Mnd
-         ITsb5v11VIORoJ/WkZ840Sb7hCaskZJApZgxye6LY3pJH37mNCSdNcFHIzM7E+3P4erl
-         /NE7BJCSizV+ehEvgRy7cUzgpSfV5tvy1GwVdacowwFpzOzFZ3yMR8X35FK15j3HLr8d
-         bTsg==
+        bh=ii+KP/3B4/QTzCIPWB1dmGEzYwTo5Se5giZFkFmEXNM=;
+        b=RAiBe4kCDU/FPmiQ0IDOPKZ4QVZcxAMyIiKyEpUaP155Up9aiO5rLUjheyYqPZR8h1
+         Xaq3kJ6u4tjF40J06zniBPZd3ILJ7PDbC32g3ttlsf82vdN2okoOUsMvjtT0T6OWJWPE
+         oUoq3wrjP8RWQk0v11lybm2T5xofQKwuC8b4SuR4XiQX2ZMhWbkl1Zgwk/9/RnTiut4N
+         z/V7dIrG0+tpU9vK126SleVqPIuc4nrewqhG/kaID7y1Ad/BbdY/BfzVb6TLkLIijbkZ
+         f12EjSp3CZG6e+GKhdm6GFZF2rfZu5GkucQMF/RBwYk5X87rQ11/M/hGzS1eVYjQQjvD
+         FrpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=dlYFUvVSxWdYbjS/6AS4CntgIKd0jDsIOuNYV3Yw6IU=;
-        b=Ke+jzQemLDg37vxamOo5I3HSmDu8kaftvwvIOZJ2fEEKFFGP2ceC/M8HFFY4Wowo8M
-         Nz53b9xT5Iyn+7uMG/TsqfaAJp0rvgeWkMyLvPXOJrzLEIakSq3XlZ9Jh3PgbuiWWKva
-         +bcjbYsoO009z+Hl1y0BjCVKEeTzZnGvZtSWWBKkmgH5OCiPGKomPtIoqplI3pbhwyJy
-         IedD4pI0gP3oUWequqRH6ddeQ7knoGc6Kss7jcrwSCHuLyJEd9IpEwWabkfr3+FaJDd7
-         t+lDWoOxk7P37TxP2yjkhTV/svPSxLMhhheNhl5DZucASlmU+Meh+RBXRx+oTO6pELnQ
-         JhDw==
-X-Gm-Message-State: ANhLgQ1RJLsfnyLrb38KlHd3lBqJrXfHwkKpUfNZQOAeIP5aqRtCCRBq
-        KJ7pLBKWIZa1KXWsySeBE8Q=
-X-Google-Smtp-Source: ADFU+vvbwEYvoOs1+gCCvRDq5CdqV9DBLsibiI7J7X7XTp3RpE4qHe9ELuye5jcCn2FnJ0bhTka8iA==
-X-Received: by 2002:a5d:480c:: with SMTP id l12mr13436526wrq.19.1584737935206;
-        Fri, 20 Mar 2020 13:58:55 -0700 (PDT)
+        bh=ii+KP/3B4/QTzCIPWB1dmGEzYwTo5Se5giZFkFmEXNM=;
+        b=qb3g95mjs4qz5pz+7ggjybIdbhV9xxYTF0aE5ATEgbOaBZW+IV3SL6+NdpXxBkrtzp
+         M+kOc98IlViZgnrxK1GlZFXGC2mp9EHhog2Y2jdZu9MCKMFcApK09FcctNmJ5qNt0hsD
+         UWWnsKe+AJlavtT3BMaN9UjDskEjqNC3AojbdfbHcr67rnp/SdpJr06t6Urw0a+nxHtF
+         71rKeM+QcvRKZ1eDVCd3phayjX7oohHxvVQZmUKsK/xe7ZdsEq59aUYaaVhQmbE1WgzB
+         e29dCEist06+rVc4z+6FKS3sk7VxUr1d4+PaDkxYblMuAAY2s0NFv0BHlWls2l7xRNNW
+         ohnA==
+X-Gm-Message-State: ANhLgQ07yOXpPYweUecjWIENoUGKLdwT0F0LhH7veS1yRQX8VVEaNsGF
+        98u/Dfq+7ZSJ1XAcxukVye/Cdjre
+X-Google-Smtp-Source: ADFU+vu3NG5VlPBaU+axLNXIy2pbFJ0967VSab3vcAqsOf/3yPbM3PhsrKTVdcQ6fBbOeTiswdY9Sg==
+X-Received: by 2002:a05:600c:2947:: with SMTP id n7mr13049924wmd.13.1584738002709;
+        Fri, 20 Mar 2020 14:00:02 -0700 (PDT)
 Received: from [10.230.1.111] ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id l17sm3441157wrm.57.2020.03.20.13.58.52
+        by smtp.gmail.com with ESMTPSA id a6sm9977481wrn.49.2020.03.20.13.59.58
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Mar 2020 13:58:54 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/4] net: phy: mscc: accept all RGMII species in
- vsc85xx_mac_if_set
+        Fri, 20 Mar 2020 14:00:01 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/4] net: phy: mscc: rename enum
+ rgmii_rx_clock_delay to rgmii_clock_delay
 To:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
         antoine.tenart@bootlin.com
 References: <20200319211649.10136-1-olteanv@gmail.com>
- <20200319211649.10136-3-olteanv@gmail.com>
+ <20200319211649.10136-2-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -107,12 +107,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <a6492444-ae86-bebf-83e5-0d65a631cbe5@gmail.com>
-Date:   Fri, 20 Mar 2020 13:58:50 -0700
+Message-ID: <ab44db7a-165b-4906-1234-8a90aef12b47@gmail.com>
+Date:   Fri, 20 Mar 2020 13:59:56 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200319211649.10136-3-olteanv@gmail.com>
+In-Reply-To: <20200319211649.10136-2-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -126,10 +126,9 @@ X-Mailing-List: netdev@vger.kernel.org
 On 3/19/2020 2:16 PM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> The helper for configuring the pinout of the MII side of the PHY should
-> do so irrespective of whether RGMII delays are used or not. So accept
-> the ID, TXID and RXID variants as well, not just the no-delay RGMII
-> variant.
+> There is nothing RX-specific about these clock skew values. So remove
+> "RX" from the name in preparation for the next patch where TX delays are
+> also going to be configured.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
