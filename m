@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC39418C567
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 03:39:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F11C18C568
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 03:39:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727140AbgCTCjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 22:39:23 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:44449 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726103AbgCTCjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 22:39:23 -0400
-Received: by mail-qk1-f195.google.com with SMTP id j4so5435406qkc.11
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 19:39:22 -0700 (PDT)
+        id S1727176AbgCTCj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 22:39:27 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:33916 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727144AbgCTCjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 22:39:24 -0400
+Received: by mail-qk1-f193.google.com with SMTP id f3so5537327qkh.1
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 19:39:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NOcbegi1l7xTihrE+PQU6zO4Dow+M35LYDDeoAcbal4=;
-        b=cunoUNmblo/g9vYxph0WuVThslBa2UuXavEBY2uJU5YDU17NDG7LnOFw/mUyYozeTR
-         UsUB6x41+VMC9Dk9FP0gLien+5cbZAkhYMpM0Oa/9N3O0RKRsudffs8p+16jQ1zUL2iz
-         vjzDIAzdVt917ytwB8ExnLggdB6hKLOr5fTVzZDD+T2ehCboqtfWkw5nZttHT4iYxPVc
-         wY2Ok7VqdLW8mUMSjvmQ71VV66658lJIAywp9llMMps6MvWokzyPYbE2CLiyOmLYgaNT
-         1w/DTaqs2Ch88GnU1OJbOpF7jd7f/lp1y+RXA1gW5LcUQJ6ZXfoumHK/xxXha4e53XBn
-         Evkw==
+        bh=ZS8M0AMPQ/pd9K0+faleEnmCY2uycUzWBIiVSWaMoTI=;
+        b=RMy/cIJx9mKq+pOS2GtC5V9z8uKeuNXLCF2so/TLIAUc7KJuBT+tuTpI0AVaY5EVZQ
+         iWYRZpBN072+vNTRpRIKsouq7B+MdvCM1TLSUXk/UM0gpPwydo/H3zQz8ulKhAw59xfh
+         c1yF0q5Vj+bPpMe3K3jroJep4HZ1LeWKtRaAzm/FHBGT42fjm/c4CBr5hmcLQCAJcCOs
+         mCnBHdjRlE3mNM69mEfSlnmMm92YRCdroB6Uz7KZMfML5howgf8ugsFgB/Utp547XVwW
+         RdLX7Zi5zEqYTFa3e0AER3E9f8bK0rX75mm6uO9sphR6hS3swPyQv6rWZ65uEdLdiBOW
+         Z6nA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NOcbegi1l7xTihrE+PQU6zO4Dow+M35LYDDeoAcbal4=;
-        b=csDOKRx9mUDy5gPdt4hwfKsTBrMaAc4MZSo+eHw5mdOmdcG3s1VKk8yLVo22uPFFuQ
-         U+YR9WBvU/WsmhzQlNkLkMTt81/HsI/Ws/eZ6yeWsV2Y/EYL8FZrkPCBCTaAhyiBmtyA
-         f6vMBpHiozKce1FuFeLTHELJHe8tcI92pFLRFhjN/iSV0lzZ1RChz3hDUi96nxK0ab7U
-         LqWSZ/MkZh9X5JPaKkrPuG3eVSg3TOu4aW1bgjRg+4xbVnWFUCgIBWcMsTHPPq10KJVx
-         IV8v1Bc7+CPl+iEfIvBAb13nNHwbheHFFq6ZV0sevQCBkR0zD/4dYNEqAv7XQOUTgaUV
-         Uxfg==
-X-Gm-Message-State: ANhLgQ0YzpOgUvzznngmuqZbmOYu/JCyq48OIMVXqDbjVFEuXRnvAONO
-        7bItFDTjLrlxrVjHwnbBckA=
-X-Google-Smtp-Source: ADFU+vsOycVdlEM87sgghqGBl9w6G5KYSN5P3WyuaNycmASoSSMs9malfXOsxhxHXNB77bGD4FEFtg==
-X-Received: by 2002:a37:61d0:: with SMTP id v199mr5874063qkb.292.1584671961778;
-        Thu, 19 Mar 2020 19:39:21 -0700 (PDT)
+        bh=ZS8M0AMPQ/pd9K0+faleEnmCY2uycUzWBIiVSWaMoTI=;
+        b=MfEsCx8mNQ/kSJXSfz1F43qCObfj9+FvS8/I84IhJWKhGETos9SsWx/rjbcwHe5508
+         g8wkTukJnuD5Iobr21Maauc3PXsEz8WmtNi22/20uTBslzn0r+lB1jcw9i9aVOHnxh98
+         wUIH5AgzCn6+w3JJMjd/W6hHu0Hefd00hd+3Aa6ppMXjCP/wzTUr9zIbh+yer99fB3Ug
+         nSkJL8tzX8Qt2strHQV97Nlu6KKiNbAmdVTkrP8x4K2lk6PDMl0Y3TbjDJqysaaBB90G
+         QTtrBm7rptZFDIUHWA2LUYH28BU3LTaY2uBfUPrrufu+8X7kDYo5lJRry6+xVHecaZpP
+         8IJQ==
+X-Gm-Message-State: ANhLgQ00Pqno457akKa2NpsN2Y46FgyKbT22llknnMtkwyI+U6Lfn+tX
+        5mzy7XKcInfR5CHVcBiKuiA=
+X-Google-Smtp-Source: ADFU+vuCk8P156Eeatu4EJbNOW/GHINjd8Z2/+8USh62SwWyUHTmt90DKZ4HniuboOO0SOrXbJoiTw==
+X-Received: by 2002:a37:9f58:: with SMTP id i85mr6151285qke.186.1584671963464;
+        Thu, 19 Mar 2020 19:39:23 -0700 (PDT)
 Received: from localhost.localdomain (69-196-128-153.dsl.teksavvy.com. [69.196.128.153])
-        by smtp.gmail.com with ESMTPSA id d9sm2979465qth.34.2020.03.19.19.39.20
+        by smtp.gmail.com with ESMTPSA id d9sm2979465qth.34.2020.03.19.19.39.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Mar 2020 19:39:21 -0700 (PDT)
+        Thu, 19 Mar 2020 19:39:23 -0700 (PDT)
 From:   Alexander Aring <alex.aring@gmail.com>
 To:     davem@davemloft.net
 Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
@@ -51,9 +51,9 @@ Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
         kai.beckmann@hs-rm.de, martin.gergeleit@hs-rm.de,
         robert.kaiser@hs-rm.de, netdev@vger.kernel.org,
         Alexander Aring <alex.aring@gmail.com>
-Subject: [PATCHv2 net-next 2/5] addrconf: add functionality to check on rpl requirements
-Date:   Thu, 19 Mar 2020 22:38:58 -0400
-Message-Id: <20200320023901.31129-3-alex.aring@gmail.com>
+Subject: [PATCHv2 net-next 3/5] net: ipv6: add support for rpl sr exthdr
+Date:   Thu, 19 Mar 2020 22:38:59 -0400
+Message-Id: <20200320023901.31129-4-alex.aring@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200320023901.31129-1-alex.aring@gmail.com>
 References: <20200320023901.31129-1-alex.aring@gmail.com>
@@ -64,98 +64,509 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a functionality to addrconf to check on a specific RPL
-address configuration. According to RFC 6554:
-
-To detect loops in the SRH, a router MUST determine if the SRH
-includes multiple addresses assigned to any interface on that
-router. If such addresses appear more than once and are separated by
-at least one address not assigned to that router.
+This patch adds rpl source routing receive handling. Everything works
+only if sysconf "rpl_seg_enabled" and source routing is enabled. Mostly
+the same behaviour as IPv6 segmentation routing. To handle compression
+and uncompression a rpl.c file is created which contains the necessary
+functionality. The receive handling will also care about IPv6
+encapsulated so far it's specified as possible nexthdr in RFC 6554.
 
 Signed-off-by: Alexander Aring <alex.aring@gmail.com>
 ---
- include/net/addrconf.h |  3 +++
- net/ipv6/addrconf.c    | 53 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 56 insertions(+)
+ include/linux/ipv6.h      |   1 +
+ include/net/rpl.h         |  34 +++++++
+ include/uapi/linux/ipv6.h |   2 +
+ net/ipv6/Makefile         |   2 +-
+ net/ipv6/addrconf.c       |  10 ++
+ net/ipv6/exthdrs.c        | 201 +++++++++++++++++++++++++++++++++++++-
+ net/ipv6/rpl.c            | 123 +++++++++++++++++++++++
+ 7 files changed, 370 insertions(+), 3 deletions(-)
+ create mode 100644 include/net/rpl.h
+ create mode 100644 net/ipv6/rpl.c
 
-diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-index a088349dd94f..e0eabe58aa8b 100644
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -90,6 +90,9 @@ int ipv6_chk_addr_and_flags(struct net *net, const struct in6_addr *addr,
- int ipv6_chk_home_addr(struct net *net, const struct in6_addr *addr);
- #endif
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index ea7c7906591e..2cb445a8fc9e 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -74,6 +74,7 @@ struct ipv6_devconf {
+ 	__u32		addr_gen_mode;
+ 	__s32		disable_policy;
+ 	__s32           ndisc_tclass;
++	__s32		rpl_seg_enabled;
  
-+int ipv6_chk_rpl_srh_loop(struct net *net, const struct in6_addr *segs,
-+			  unsigned char nsegs);
-+
- bool ipv6_chk_custom_prefix(const struct in6_addr *addr,
- 				   const unsigned int prefix_len,
- 				   struct net_device *dev);
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 5b9de773ce73..594963a7e1ec 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -4398,6 +4398,59 @@ int ipv6_chk_home_addr(struct net *net, const struct in6_addr *addr)
- }
- #endif
- 
-+/* RFC6554 has some algorithm to avoid loops in segment routing by
-+ * checking if the segments contains any of a local interface address.
+ 	struct ctl_table_header *sysctl_header;
+ };
+diff --git a/include/net/rpl.h b/include/net/rpl.h
+new file mode 100644
+index 000000000000..16739c10cea7
+--- /dev/null
++++ b/include/net/rpl.h
+@@ -0,0 +1,34 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ *  RPL implementation
 + *
-+ * Quote:
-+ *
-+ * To detect loops in the SRH, a router MUST determine if the SRH
-+ * includes multiple addresses assigned to any interface on that router.
-+ * If such addresses appear more than once and are separated by at least
-+ * one address not assigned to that router.
++ *  Author:
++ *  (C) 2020 Alexander Aring <alex.aring@gmail.com>
 + */
-+int ipv6_chk_rpl_srh_loop(struct net *net, const struct in6_addr *segs,
-+			  unsigned char nsegs)
++
++#ifndef _NET_RPL_H
++#define _NET_RPL_H
++
++#include <linux/rpl.h>
++
++/* Worst decompression memory usage ipv6 address (16) + pad 7 */
++#define IPV6_RPL_SRH_WORST_SWAP_SIZE (sizeof(struct in6_addr) + 7)
++
++static inline size_t ipv6_rpl_srh_alloc_size(unsigned char n)
 +{
-+	const struct in6_addr *addr;
-+	int i, ret = 0, found = 0;
-+	struct inet6_ifaddr *ifp;
-+	bool separated = false;
-+	unsigned int hash;
-+	bool hash_found;
-+
-+	rcu_read_lock();
-+	for (i = 0; i < nsegs; i++) {
-+		addr = &segs[i];
-+		hash = inet6_addr_hash(net, addr);
-+
-+		hash_found = false;
-+		hlist_for_each_entry_rcu(ifp, &inet6_addr_lst[hash], addr_lst) {
-+			if (!net_eq(dev_net(ifp->idev->dev), net))
-+				continue;
-+
-+			if (ipv6_addr_equal(&ifp->addr, addr)) {
-+				hash_found = true;
-+				break;
-+			}
-+		}
-+
-+		if (hash_found) {
-+			if (found > 1 && separated) {
-+				ret = 1;
-+				break;
-+			}
-+
-+			separated = false;
-+			found++;
-+		} else {
-+			separated = true;
-+		}
-+	}
-+	rcu_read_unlock();
-+
-+	return ret;
++	return sizeof(struct ipv6_rpl_sr_hdr) +
++		((n + 1) * sizeof(struct in6_addr));
 +}
 +
++size_t ipv6_rpl_srh_decompress_size(unsigned char n, unsigned char cmpri,
++				    unsigned char cmpre);
++
++void ipv6_rpl_srh_decompress(struct ipv6_rpl_sr_hdr *outhdr,
++			     const struct ipv6_rpl_sr_hdr *inhdr,
++			     const struct in6_addr *daddr, unsigned char n);
++
++void ipv6_rpl_srh_compress(struct ipv6_rpl_sr_hdr *outhdr,
++			   const struct ipv6_rpl_sr_hdr *inhdr,
++			   const struct in6_addr *daddr, unsigned char n);
++
++#endif /* _NET_RPL_H */
+diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
+index 9c0f4a92bcff..13e8751bf24a 100644
+--- a/include/uapi/linux/ipv6.h
++++ b/include/uapi/linux/ipv6.h
+@@ -40,6 +40,7 @@ struct in6_ifreq {
+ #define IPV6_SRCRT_STRICT	0x01	/* Deprecated; will be removed */
+ #define IPV6_SRCRT_TYPE_0	0	/* Deprecated; will be removed */
+ #define IPV6_SRCRT_TYPE_2	2	/* IPv6 type 2 Routing Header	*/
++#define IPV6_SRCRT_TYPE_3	3	/* RPL Segment Routing with IPv6 */
+ #define IPV6_SRCRT_TYPE_4	4	/* Segment Routing with IPv6 */
+ 
  /*
-  *	Periodic address status verification
-  */
+@@ -187,6 +188,7 @@ enum {
+ 	DEVCONF_DISABLE_POLICY,
+ 	DEVCONF_ACCEPT_RA_RT_INFO_MIN_PLEN,
+ 	DEVCONF_NDISC_TCLASS,
++	DEVCONF_RPL_SEG_ENABLED,
+ 	DEVCONF_MAX
+ };
+ 
+diff --git a/net/ipv6/Makefile b/net/ipv6/Makefile
+index 8ccf35514015..9d3e9bd2334f 100644
+--- a/net/ipv6/Makefile
++++ b/net/ipv6/Makefile
+@@ -10,7 +10,7 @@ ipv6-objs :=	af_inet6.o anycast.o ip6_output.o ip6_input.o addrconf.o \
+ 		route.o ip6_fib.o ipv6_sockglue.o ndisc.o udp.o udplite.o \
+ 		raw.o icmp.o mcast.o reassembly.o tcp_ipv6.o ping.o \
+ 		exthdrs.o datagram.o ip6_flowlabel.o inet6_connection_sock.o \
+-		udp_offload.o seg6.o fib6_notifier.o
++		udp_offload.o seg6.o fib6_notifier.o rpl.o
+ 
+ ipv6-offload :=	ip6_offload.o tcpv6_offload.o exthdrs_offload.o
+ 
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 594963a7e1ec..a11fd4d67832 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -236,6 +236,7 @@ static struct ipv6_devconf ipv6_devconf __read_mostly = {
+ 	.enhanced_dad           = 1,
+ 	.addr_gen_mode		= IN6_ADDR_GEN_MODE_EUI64,
+ 	.disable_policy		= 0,
++	.rpl_seg_enabled	= 0,
+ };
+ 
+ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
+@@ -290,6 +291,7 @@ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
+ 	.enhanced_dad           = 1,
+ 	.addr_gen_mode		= IN6_ADDR_GEN_MODE_EUI64,
+ 	.disable_policy		= 0,
++	.rpl_seg_enabled	= 0,
+ };
+ 
+ /* Check if link is ready: is it up and is a valid qdisc available */
+@@ -5520,6 +5522,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
+ 	array[DEVCONF_ADDR_GEN_MODE] = cnf->addr_gen_mode;
+ 	array[DEVCONF_DISABLE_POLICY] = cnf->disable_policy;
+ 	array[DEVCONF_NDISC_TCLASS] = cnf->ndisc_tclass;
++	array[DEVCONF_RPL_SEG_ENABLED] = cnf->rpl_seg_enabled;
+ }
+ 
+ static inline size_t inet6_ifla6_size(void)
+@@ -6900,6 +6903,13 @@ static const struct ctl_table addrconf_sysctl[] = {
+ 		.extra1		= (void *)SYSCTL_ZERO,
+ 		.extra2		= (void *)&two_five_five,
+ 	},
++	{
++		.procname	= "rpl_seg_enabled",
++		.data		= &ipv6_devconf.rpl_seg_enabled,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec,
++	},
+ 	{
+ 		/* sentinel */
+ 	}
+diff --git a/net/ipv6/exthdrs.c b/net/ipv6/exthdrs.c
+index bcb9f5e62808..12046c2dfb90 100644
+--- a/net/ipv6/exthdrs.c
++++ b/net/ipv6/exthdrs.c
+@@ -48,6 +48,7 @@
+ #ifdef CONFIG_IPV6_SEG6_HMAC
+ #include <net/seg6_hmac.h>
+ #endif
++#include <net/rpl.h>
+ 
+ #include <linux/uaccess.h>
+ 
+@@ -468,6 +469,195 @@ static int ipv6_srh_rcv(struct sk_buff *skb)
+ 	return -1;
+ }
+ 
++static int ipv6_rpl_srh_rcv(struct sk_buff *skb)
++{
++	struct ipv6_rpl_sr_hdr *hdr, *ohdr, *chdr;
++	struct inet6_skb_parm *opt = IP6CB(skb);
++	struct net *net = dev_net(skb->dev);
++	struct inet6_dev *idev;
++	struct ipv6hdr *oldhdr;
++	struct in6_addr addr;
++	unsigned char *buf;
++	int accept_rpl_seg;
++	int i, err;
++	u64 n = 0;
++	u32 r;
++
++	idev = __in6_dev_get(skb->dev);
++
++	accept_rpl_seg = net->ipv6.devconf_all->rpl_seg_enabled;
++	if (accept_rpl_seg > idev->cnf.rpl_seg_enabled)
++		accept_rpl_seg = idev->cnf.rpl_seg_enabled;
++
++	if (!accept_rpl_seg) {
++		kfree_skb(skb);
++		return -1;
++	}
++
++looped_back:
++	hdr = (struct ipv6_rpl_sr_hdr *)skb_transport_header(skb);
++
++	if (hdr->segments_left == 0) {
++		if (hdr->nexthdr == NEXTHDR_IPV6) {
++			int offset = (hdr->hdrlen + 1) << 3;
++
++			skb_postpull_rcsum(skb, skb_network_header(skb),
++					   skb_network_header_len(skb));
++
++			if (!pskb_pull(skb, offset)) {
++				kfree_skb(skb);
++				return -1;
++			}
++			skb_postpull_rcsum(skb, skb_transport_header(skb),
++					   offset);
++
++			skb_reset_network_header(skb);
++			skb_reset_transport_header(skb);
++			skb->encapsulation = 0;
++
++			__skb_tunnel_rx(skb, skb->dev, net);
++
++			netif_rx(skb);
++			return -1;
++		}
++
++		opt->srcrt = skb_network_header_len(skb);
++		opt->lastopt = opt->srcrt;
++		skb->transport_header += (hdr->hdrlen + 1) << 3;
++		opt->nhoff = (&hdr->nexthdr) - skb_network_header(skb);
++
++		return 1;
++	}
++
++	if (!pskb_may_pull(skb, sizeof(*hdr))) {
++		kfree_skb(skb);
++		return -1;
++	}
++
++	n = (hdr->hdrlen << 3) - hdr->pad - (16 - hdr->cmpre);
++	r = do_div(n, (16 - hdr->cmpri));
++	/* checks if calculation was without remainder and n fits into
++	 * unsigned char which is segments_left field. Should not be
++	 * higher than that.
++	 */
++	if (r || (n + 1) > 255) {
++		kfree_skb(skb);
++		return -1;
++	}
++
++	if (hdr->segments_left > n + 1) {
++		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
++		icmpv6_param_prob(skb, ICMPV6_HDR_FIELD,
++				  ((&hdr->segments_left) -
++				   skb_network_header(skb)));
++		return -1;
++	}
++
++	if (skb_cloned(skb)) {
++		if (pskb_expand_head(skb, IPV6_RPL_SRH_WORST_SWAP_SIZE, 0,
++				     GFP_ATOMIC)) {
++			__IP6_INC_STATS(net, ip6_dst_idev(skb_dst(skb)),
++					IPSTATS_MIB_OUTDISCARDS);
++			kfree_skb(skb);
++			return -1;
++		}
++	} else {
++		err = skb_cow_head(skb, IPV6_RPL_SRH_WORST_SWAP_SIZE);
++		if (unlikely(err)) {
++			kfree_skb(skb);
++			return err;
++		}
++	}
++
++	hdr = (struct ipv6_rpl_sr_hdr *)skb_transport_header(skb);
++
++	if (!pskb_may_pull(skb, ipv6_rpl_srh_decompress_size(n, hdr->cmpri,
++							     hdr->cmpre))) {
++		kfree_skb(skb);
++		return -1;
++	}
++
++	hdr->segments_left--;
++	i = n - hdr->segments_left;
++
++	buf = kzalloc(ipv6_rpl_srh_alloc_size(n + 1) * 2, GFP_ATOMIC);
++	if (unlikely(!buf)) {
++		kfree_skb(skb);
++		return -1;
++	}
++
++	ohdr = (struct ipv6_rpl_sr_hdr *)buf;
++	ipv6_rpl_srh_decompress(ohdr, hdr, &ipv6_hdr(skb)->daddr, n);
++	chdr = (struct ipv6_rpl_sr_hdr *)(buf + ((ohdr->hdrlen + 1) << 3));
++
++	if ((ipv6_addr_type(&ipv6_hdr(skb)->daddr) & IPV6_ADDR_MULTICAST) ||
++	    (ipv6_addr_type(&ohdr->rpl_segaddr[i]) & IPV6_ADDR_MULTICAST)) {
++		kfree_skb(skb);
++		kfree(buf);
++		return -1;
++	}
++
++	err = ipv6_chk_rpl_srh_loop(net, ohdr->rpl_segaddr, n + 1);
++	if (err) {
++		icmpv6_send(skb, ICMPV6_PARAMPROB, 0, 0);
++		kfree_skb(skb);
++		kfree(buf);
++		return -1;
++	}
++
++	addr = ipv6_hdr(skb)->daddr;
++	ipv6_hdr(skb)->daddr = ohdr->rpl_segaddr[i];
++	ohdr->rpl_segaddr[i] = addr;
++
++	ipv6_rpl_srh_compress(chdr, ohdr, &ipv6_hdr(skb)->daddr, n);
++
++	oldhdr = ipv6_hdr(skb);
++
++	skb_pull(skb, ((hdr->hdrlen + 1) << 3));
++	skb_postpull_rcsum(skb, oldhdr,
++			   sizeof(struct ipv6hdr) + ((hdr->hdrlen + 1) << 3));
++	skb_push(skb, ((chdr->hdrlen + 1) << 3) + sizeof(struct ipv6hdr));
++	skb_reset_network_header(skb);
++	skb_mac_header_rebuild(skb);
++	skb_set_transport_header(skb, sizeof(struct ipv6hdr));
++
++	memmove(ipv6_hdr(skb), oldhdr, sizeof(struct ipv6hdr));
++	memcpy(skb_transport_header(skb), chdr, (chdr->hdrlen + 1) << 3);
++
++	ipv6_hdr(skb)->payload_len = htons(skb->len - sizeof(struct ipv6hdr));
++	skb_postpush_rcsum(skb, ipv6_hdr(skb),
++			   sizeof(struct ipv6hdr) + ((chdr->hdrlen + 1) << 3));
++
++	kfree(buf);
++
++	skb_dst_drop(skb);
++
++	ip6_route_input(skb);
++
++	if (skb_dst(skb)->error) {
++		dst_input(skb);
++		return -1;
++	}
++
++	if (skb_dst(skb)->dev->flags & IFF_LOOPBACK) {
++		if (ipv6_hdr(skb)->hop_limit <= 1) {
++			__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
++			icmpv6_send(skb, ICMPV6_TIME_EXCEED,
++				    ICMPV6_EXC_HOPLIMIT, 0);
++			kfree_skb(skb);
++			return -1;
++		}
++		ipv6_hdr(skb)->hop_limit--;
++
++		skb_pull(skb, sizeof(struct ipv6hdr));
++		goto looped_back;
++	}
++
++	dst_input(skb);
++
++	return -1;
++}
++
+ /********************************
+   Routing header.
+  ********************************/
+@@ -506,9 +696,16 @@ static int ipv6_rthdr_rcv(struct sk_buff *skb)
+ 		return -1;
+ 	}
+ 
+-	/* segment routing */
+-	if (hdr->type == IPV6_SRCRT_TYPE_4)
++	switch (hdr->type) {
++	case IPV6_SRCRT_TYPE_4:
++		/* segment routing */
+ 		return ipv6_srh_rcv(skb);
++	case IPV6_SRCRT_TYPE_3:
++		/* rpl segment routing */
++		return ipv6_rpl_srh_rcv(skb);
++	default:
++		break;
++	}
+ 
+ looped_back:
+ 	if (hdr->segments_left == 0) {
+diff --git a/net/ipv6/rpl.c b/net/ipv6/rpl.c
+new file mode 100644
+index 000000000000..d1bd1fec2cff
+--- /dev/null
++++ b/net/ipv6/rpl.c
+@@ -0,0 +1,123 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/**
++ * Authors:
++ * (C) 2020 Alexander Aring <alex.aring@gmail.com>
++ */
++
++#include <net/ipv6.h>
++#include <net/rpl.h>
++
++#define IPV6_PFXTAIL_LEN(x) (sizeof(struct in6_addr) - (x))
++
++static void ipv6_rpl_addr_decompress(struct in6_addr *dst,
++				     const struct in6_addr *daddr,
++				     const void *post, unsigned char pfx)
++{
++	memcpy(dst, daddr, pfx);
++	memcpy(&dst->s6_addr[pfx], post, IPV6_PFXTAIL_LEN(pfx));
++}
++
++static void ipv6_rpl_addr_compress(void *dst, const struct in6_addr *addr,
++				   unsigned char pfx)
++{
++	memcpy(dst, &addr->s6_addr[pfx], IPV6_PFXTAIL_LEN(pfx));
++}
++
++static void *ipv6_rpl_segdata_pos(const struct ipv6_rpl_sr_hdr *hdr, int i)
++{
++	return (void *)&hdr->rpl_segdata[i * IPV6_PFXTAIL_LEN(hdr->cmpri)];
++}
++
++size_t ipv6_rpl_srh_decompress_size(unsigned char n, unsigned char cmpri,
++				    unsigned char cmpre)
++{
++	return (n * IPV6_PFXTAIL_LEN(cmpri)) + IPV6_PFXTAIL_LEN(cmpre);
++}
++
++void ipv6_rpl_srh_decompress(struct ipv6_rpl_sr_hdr *outhdr,
++			     const struct ipv6_rpl_sr_hdr *inhdr,
++			     const struct in6_addr *daddr, unsigned char n)
++{
++	int i;
++
++	outhdr->nexthdr = inhdr->nexthdr;
++	outhdr->hdrlen = (((n + 1) * sizeof(struct in6_addr)) >> 3);
++	outhdr->pad = 0;
++	outhdr->type = inhdr->type;
++	outhdr->segments_left = inhdr->segments_left;
++	outhdr->cmpri = 0;
++	outhdr->cmpre = 0;
++
++	for (i = 0; i <= n; i++)
++		ipv6_rpl_addr_decompress(&outhdr->rpl_segaddr[i], daddr,
++					 ipv6_rpl_segdata_pos(inhdr, i),
++					 inhdr->cmpri);
++
++	ipv6_rpl_addr_decompress(&outhdr->rpl_segaddr[n], daddr,
++				 ipv6_rpl_segdata_pos(inhdr, n),
++				 inhdr->cmpre);
++}
++
++static unsigned char ipv6_rpl_srh_calc_cmpri(const struct ipv6_rpl_sr_hdr *inhdr,
++					     const struct in6_addr *daddr,
++					     unsigned char n)
++{
++	unsigned char plen;
++	int i;
++
++	for (plen = 0; plen < sizeof(*daddr); plen++) {
++		for (i = 0; i <= n; i++) {
++			if (daddr->s6_addr[plen] !=
++			    inhdr->rpl_segaddr[i].s6_addr[plen])
++				return plen;
++		}
++	}
++
++	return plen;
++}
++
++static unsigned char ipv6_rpl_srh_calc_cmpre(const struct in6_addr *daddr,
++					     const struct in6_addr *last_segment)
++{
++	unsigned int plen;
++
++	for (plen = 0; plen < sizeof(*daddr); plen++) {
++		if (daddr->s6_addr[plen] != last_segment->s6_addr[plen])
++			break;
++	}
++
++	return plen;
++}
++
++void ipv6_rpl_srh_compress(struct ipv6_rpl_sr_hdr *outhdr,
++			   const struct ipv6_rpl_sr_hdr *inhdr,
++			   const struct in6_addr *daddr, unsigned char n)
++{
++	unsigned char cmpri, cmpre;
++	size_t seglen;
++	int i;
++
++	cmpri = ipv6_rpl_srh_calc_cmpri(inhdr, daddr, n);
++	cmpre = ipv6_rpl_srh_calc_cmpre(daddr, &inhdr->rpl_segaddr[n]);
++
++	outhdr->nexthdr = inhdr->nexthdr;
++	seglen = (n * IPV6_PFXTAIL_LEN(cmpri)) + IPV6_PFXTAIL_LEN(cmpre);
++	outhdr->hdrlen = seglen >> 3;
++	if (seglen & 0x7) {
++		outhdr->hdrlen++;
++		outhdr->pad = 8 - (seglen & 0x7);
++	} else {
++		outhdr->pad = 0;
++	}
++	outhdr->type = inhdr->type;
++	outhdr->segments_left = inhdr->segments_left;
++	outhdr->cmpri = cmpri;
++	outhdr->cmpre = cmpre;
++
++	for (i = 0; i <= n; i++)
++		ipv6_rpl_addr_compress(ipv6_rpl_segdata_pos(outhdr, i),
++				       &inhdr->rpl_segaddr[i], cmpri);
++
++	ipv6_rpl_addr_compress(ipv6_rpl_segdata_pos(outhdr, n),
++			       &inhdr->rpl_segaddr[n], cmpre);
++}
 -- 
 2.20.1
 
