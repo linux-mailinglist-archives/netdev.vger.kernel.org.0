@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 877F018C54A
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 03:32:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 064B618C54B
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 03:32:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726847AbgCTCcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 22:32:05 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:45010 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726103AbgCTCcD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 22:32:03 -0400
-Received: by mail-pl1-f193.google.com with SMTP id h11so1871207plr.11
+        id S1726894AbgCTCcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 22:32:06 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:34521 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726855AbgCTCcF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 22:32:05 -0400
+Received: by mail-pg1-f194.google.com with SMTP id t3so2324019pgn.1
         for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 19:32:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=P+o/xmIwloxnf/kcXoii3cfLlqj1+C/3YOs388gSVDc=;
-        b=1P/mN8+KKeiK28Z0o6s/+5xcg4SjG3wL4BRYANIVuxPmbSD5yuKGwJM8IX7DDEZzR4
-         hI1Y/p9KWkI/pv7sw9a91FE+6x866ZVXqxx5iXgxZbm3i1g2Vt4x/zGRJkA8jbsYxr4F
-         uOdKr7howU7Q5FwSyh/52ZbpWwY8Yj03mbosjM6VLeYrN0In1VQzkyl7jUCL+jeE5N5a
-         i/zau3XRBYo1r/qRJxwTlriRcW4orBGwiWDmDua7Bimm+RYV4i9fs5CwxjGebmz4to/6
-         fUrDJX+xoLb5DcE3vHlxLyvxMXE/2tecNhC2bmfXVfLb+UTLsjy4BIwonrK8Rk5qqksB
-         9mtw==
+        bh=HbQVdEF54f94ZDG1LFQPZsH9GhURnXxjD80x/frEOdc=;
+        b=1cOyFnYvfCWpU9dkBr/qN223/qSUqKnr53wfB4/9W7hqSUGnJj4g1KRYVS/BVprYyW
+         D44L99g4gXWF1CMQ3Ws66fLX9th/Y0areipsozehGH/cDPhgIJhSaPc5FT3pFe8GVHnq
+         eOV5jLoISuxSnFURSzNl3kkyrZYEBiD5kDvyc5YwyRXtaAA5uezuyAmBouLlvUkda5Oc
+         U9xlnfoPj/hzTpP4iC8WdxW9GezV/wHRJb5c+y0WTwaVA6D7gLuKbq5ege5sNu757t6I
+         tR3SR+5/q/X933LXF9Ny33ekxhDgUKYCGKYN5lK9hvz38Zn6Cibm7rwHqFLjPlgFoAVw
+         E/EQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=P+o/xmIwloxnf/kcXoii3cfLlqj1+C/3YOs388gSVDc=;
-        b=rU5XYl5xHAVsdr7R7YB7t9GY/dpqnAy+jwIUPkXAEgcTrxCDpaAcyB8e+LA/0IFcfM
-         FfGbN+geWOiWqWaJQULX3FK7vjSM9b7vQhz33GPrL6JVzJLOrVsiwRN6OAheuFb104pn
-         lU/7xXd9zOW6c+HjJh9bATRe9XuZonGrPnPB1BBo3pApkuxUfJgtUGvNB09OCdOigUW3
-         tfcAzj4Ob46VGTEtACw+SZMFtSh9yXQV5U6vxF3taM+Bnx+PX0ynXzOF4lwIpeUc7ZsU
-         LUq4EhMFq0QncAXJx5QtANu+CWKgHPyDMxWRiMnasKMfh0u50dHhAkjN0dbcFiWUpPCf
-         tlWQ==
-X-Gm-Message-State: ANhLgQ11bCTgpI4KBoKOg6LMbjjPsPc32tMoEPkcYmq/2C4uOC6OJVwQ
-        +JGA4EULWTGTjTdS3Cyx8qiZDnmxQBo=
-X-Google-Smtp-Source: ADFU+vtTpLYqy+am2jLeVag2fwFItsV2gvSUbCQQngaTZ6SHiviV/CTUHxGLndRk3SaHXk8A38/+Ag==
-X-Received: by 2002:a17:902:eb11:: with SMTP id l17mr6222761plb.52.1584671522349;
-        Thu, 19 Mar 2020 19:32:02 -0700 (PDT)
+        bh=HbQVdEF54f94ZDG1LFQPZsH9GhURnXxjD80x/frEOdc=;
+        b=siSj802vEZbI1CKPIKDfaikxEUqiVxmipf0TIAv6dogNZwg01vI30OtQoCxuv+vFyz
+         G5Rt4T4cN4wfmrAxjJhOFT7aOh9gtVFPP6qpw74NcAkcUekMEqld2l/W/DDnZ+3gNYBk
+         2P+ERIQ4R+IuqZFoTS2Ox/5SpHX3B0TWcnMcZfEL3OfAHgLbnsg0w2n2PJeDV856vgJD
+         LLwEy3nDsvMx31fKvGaaXw2u2WE/3qTg+ePyvhb3KvhybO0T8b1apb6uEsztIIxQ168L
+         I4+AEhVedNV3irWiTUam3iFP1sKPZp+/K/6N14Nd71v8BhZuQO3aB25OAcBHMXFQyzph
+         hc8Q==
+X-Gm-Message-State: ANhLgQ3JW6QzE0bYpH2cIVtdrPsW3wEtnSwS3QJ9Y0U6e2Q9zY3d7pHS
+        bB8HvHDHMXbm+0kEIc8UGK+sWWcpHbA=
+X-Google-Smtp-Source: ADFU+vsgEVd1+ZhE+sLv7oPcw4d501zsdQxQgzOukyKACdog/bB1BeaMGgpbjJpkV2tZNJlNqyzf1Q==
+X-Received: by 2002:a65:60d7:: with SMTP id r23mr2300666pgv.321.1584671523240;
+        Thu, 19 Mar 2020 19:32:03 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id i124sm3606485pfg.14.2020.03.19.19.32.01
+        by smtp.gmail.com with ESMTPSA id i124sm3606485pfg.14.2020.03.19.19.32.02
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 19 Mar 2020 19:32:01 -0700 (PDT)
+        Thu, 19 Mar 2020 19:32:02 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     netdev@vger.kernel.org, davem@davemloft.net
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH net-next 2/6] ionic: leave dev cmd request contents alone on FW timeout
-Date:   Thu, 19 Mar 2020 19:31:49 -0700
-Message-Id: <20200320023153.48655-3-snelson@pensando.io>
+Subject: [PATCH net-next 3/6] ionic: only save good lif dentry
+Date:   Thu, 19 Mar 2020 19:31:50 -0700
+Message-Id: <20200320023153.48655-4-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200320023153.48655-1-snelson@pensando.io>
 References: <20200320023153.48655-1-snelson@pensando.io>
@@ -57,34 +57,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is possible (but unlikely) that FW was busy and missed a heartbeat
-check but is still alive and will process the pending request, so don't
-clean the dev_cmd in this case.  This occasionally occurs when working
-with a card that is supporting many devices and is trying to shut them
-all down at once, but still wants to see that last LIF disable request.
+Don't save the lif->dentry until we know we have
+a good value.
 
-Fixes: 97ca486592c0 ("ionic: add heartbeat check")
+Fixes: 1a58e196467f ("ionic: Add basic lif support")
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_main.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/pensando/ionic/ionic_debugfs.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-index c5e3d7639f7e..a0dc100b12e6 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
-@@ -360,7 +360,10 @@ int ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds)
- 		done, duration / HZ, duration);
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+index bc03cecf80cc..5f8fc58d42b3 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
++++ b/drivers/net/ethernet/pensando/ionic/ionic_debugfs.c
+@@ -228,7 +228,13 @@ DEFINE_SHOW_ATTRIBUTE(netdev);
  
- 	if (!done && hb) {
--		ionic_dev_cmd_clean(ionic);
-+		/* It is possible (but unlikely) that FW was busy and missed a
-+		 * heartbeat check but is still alive and will process this
-+		 * request, so don't clean the dev_cmd in this case.
-+		 */
- 		dev_warn(ionic->dev, "DEVCMD %s (%d) failed - FW halted\n",
- 			 ionic_opcode_to_str(opcode), opcode);
- 		return -ENXIO;
+ void ionic_debugfs_add_lif(struct ionic_lif *lif)
+ {
+-	lif->dentry = debugfs_create_dir(lif->name, lif->ionic->dentry);
++	struct dentry *lif_dentry;
++
++	lif_dentry = debugfs_create_dir(lif->name, lif->ionic->dentry);
++	if (IS_ERR_OR_NULL(lif_dentry))
++		return;
++	lif->dentry = lif_dentry;
++
+ 	debugfs_create_file("netdev", 0400, lif->dentry,
+ 			    lif->netdev, &netdev_fops);
+ }
 -- 
 2.17.1
 
