@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE79618C53E
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 03:22:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8F8E18C53F
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 03:22:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727437AbgCTCW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 Mar 2020 22:22:26 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:39006 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727413AbgCTCWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 22:22:25 -0400
-Received: by mail-pg1-f193.google.com with SMTP id b22so2293759pgb.6
-        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 19:22:25 -0700 (PDT)
+        id S1727441AbgCTCW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 Mar 2020 22:22:29 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:46854 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727145AbgCTCW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 Mar 2020 22:22:28 -0400
+Received: by mail-pf1-f193.google.com with SMTP id c19so2432550pfo.13
+        for <netdev@vger.kernel.org>; Thu, 19 Mar 2020 19:22:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=kernel-dk.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fbheEg10SbUTsjAqjhSAuNozu2FF30lIAVOK4ONpdZ4=;
-        b=xTQQ11RmtPmCWNmJskDGv4tA1MlIOc+CflXD2aL1EifyklT9w15HmB057mjfVUvPie
-         6uW4cIJWFKu5Qn6r+6J+PvhcLwSFKeHCiaQX4qdQtGqppmZgXYulrZdNjeyZtz9aXV0r
-         9B+JzPdkEeFvSX0wkKnAG356GeKGi+461RyhrH9zSZpDs36i+rHzkoHCkEWSuEx74n94
-         N75THLebFC6KMc+SORwZGkYIQdiuG+U/nHjs2jNhzXsEcsT3Bmwfn46P07i0Y6TMBCwU
-         3Tc4y77m5SidLzzKfLcxGIy4Ilb+K3wG7ctSV99FKGzMwffLbyUfep86J0P2krCqwyId
-         RuAw==
+        bh=kXGOntefvjB2Y8QtfqDQM++Ajt9qSrFSAqP+s5iPWxI=;
+        b=SN2hH+qpbPr8WVIJNADvlQrWgrmW5MUFeRgVywttTgRd+/OWtml4JU6s7cuV/tmzxe
+         ntmT7VI3ZkQanYcZl0QIOISbANfajfDkzlfOY/Tn0QwBkW5MTbS6OOrl+NtSK2H813bI
+         eCh3dXi37YYgcNXF7sfdaichLlf5dyNxPTYaoKNa7B2k3h21C+LN3zyzQBxn9gK8nM0o
+         DAxCb9QXvbEOcgAUQA0jqwViJi5KWbzDfnMhTFQZBTHHTKrZiwS7fP3R28UdvbmbfVQG
+         ujWCBszvHRzvSTOLmWmEyRyK6qGK1VMSJ4WS9tngqqAQF43Qi7iBXPizfbDgN17eQals
+         BFKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fbheEg10SbUTsjAqjhSAuNozu2FF30lIAVOK4ONpdZ4=;
-        b=e4B9toftZug5Ie6GWXLZE83joET/hrifWrpKUjmlqjgSJUsh6gIUWm3Y0rrnFZjGkN
-         +PBgmMDJQXZS6J+Y6tqdY2XHPWOzyzlOfNf0Q9QrJfOaSiCeqa59bVDqKhk9SNw86XnH
-         2+fGogX9ZP/j+9JekubhAINi0NAif4VDcBGGw8SW/M+F+vHkg0xHnd5z7AeooSvm4B8T
-         T6vYGW+KUmB9Hwd9L3+UPPlYJG+LxHwKjy1quCS2+4BXVP6FhxPANs/BrLT3ZARglhSE
-         DY32e/nMcNxGEY5v7mKNAsBvNyEc2yoSzYQ4fLiQWOi/i4rHGeDPh8LDSbYq8vRlZB6W
-         XIhA==
-X-Gm-Message-State: ANhLgQ1L9FrDvbg+ICYQVZlTgUbjGxEtI2gJNef2wBmXys2ZX3h2BfBh
-        qvaUn5OKiP1a3r3Q9leq+w7FDVo0ILd0+Q==
-X-Google-Smtp-Source: ADFU+vs8Pin1GVlzywK6sDOHdXesbckgeoc9cYroBZtHto9jRv68GR/p6ElJfxGFFkRmo2G6UaEO/Q==
-X-Received: by 2002:a62:19d8:: with SMTP id 207mr7383918pfz.278.1584670944511;
-        Thu, 19 Mar 2020 19:22:24 -0700 (PDT)
+        bh=kXGOntefvjB2Y8QtfqDQM++Ajt9qSrFSAqP+s5iPWxI=;
+        b=m8Lkz0LVwlT56m7yht3Vi0TGQ7OT6wG7kYS2woaRChAiy/wRd69g9azmIpKKu8XV6B
+         DkkGvwOLfv9DNZ7XMHsabR6aYpRSXCJ0ZFmndESLPqhhDA0HW9juf3dTP74+JdoDC3r0
+         kTnoWnGgGu6cj7k2ASgknPRMkfiPR+emcRa8W0uxlnAUhsKIyH3rjJruoRiMfphMNahE
+         SWQTCw0TVNkm7aDhK+b3nvQLRMWiI7SwcgCe/tyT3TwPRxQgYYe67nQWrIAUE22XTkED
+         X3ygTC758H9zP9CcqO3mxGuFM2MEomMq5VNJ1NoinqCqiFZqHCPnDoaQNvAjoQlp/a2Z
+         xiuQ==
+X-Gm-Message-State: ANhLgQ3XNLSRr7wDa7wHALmuWhUZEoSG6q1lxp85oYtCAB6RF8WQE2lA
+        h3ulE5e2E578IczVtls7DZ77ZA==
+X-Google-Smtp-Source: ADFU+vto/8eO6YBD6Y1LtqhicFAhZVCZanz3cpeiXC3Q3c8O0INPr0fGWAt4ZSdxk3oGLkqA9RKh/g==
+X-Received: by 2002:aa7:85d3:: with SMTP id z19mr7100239pfn.13.1584670945886;
+        Thu, 19 Mar 2020 19:22:25 -0700 (PDT)
 Received: from x1.localdomain ([66.219.217.145])
-        by smtp.gmail.com with ESMTPSA id mq18sm3423993pjb.6.2020.03.19.19.22.23
+        by smtp.gmail.com with ESMTPSA id mq18sm3423993pjb.6.2020.03.19.19.22.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Mar 2020 19:22:23 -0700 (PDT)
+        Thu, 19 Mar 2020 19:22:25 -0700 (PDT)
 From:   Jens Axboe <axboe@kernel.dk>
 To:     io-uring@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Jens Axboe <axboe@kernel.dk>,
-        Dmitry Kadashev <dkadashev@gmail.com>
-Subject: [PATCH 1/2] io_uring: make sure openat/openat2 honor rlimit nofile
-Date:   Thu, 19 Mar 2020 20:22:15 -0600
-Message-Id: <20200320022216.20993-2-axboe@kernel.dk>
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 2/2] io_uring: make sure accept honor rlimit nofile
+Date:   Thu, 19 Mar 2020 20:22:16 -0600
+Message-Id: <20200320022216.20993-3-axboe@kernel.dk>
 X-Mailer: git-send-email 2.25.2
 In-Reply-To: <20200320022216.20993-1-axboe@kernel.dk>
 References: <20200320022216.20993-1-axboe@kernel.dk>
@@ -62,90 +61,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dmitry reports that a test case shows that io_uring isn't honoring a
-modified rlimit nofile setting. get_unused_fd_flags() checks the task
-signal->rlimi[] for the limits. As this isn't easily inheritable,
-provide a __get_unused_fd_flags() that takes the value instead. Then we
-can grab it when the request is prepared (from the original task), and
-pass that in when we do the async part part of the open.
+Just like commit 21ec2da35ce3, this fixes the fact that
+IORING_OP_ACCEPT ends up using get_unused_fd_flags(), which checks
+current->signal->rlim[] for limits.
 
-Reported-by: Dmitry Kadashev <dkadashev@gmail.com>
+Add an extra argument to __sys_accept4_file() that allows us to pass
+in the proper nofile limit, and grab it at request prep time.
+
 Signed-off-by: Jens Axboe <axboe@kernel.dk>
 ---
- fs/file.c            | 7 ++++++-
- fs/io_uring.c        | 5 ++++-
- include/linux/file.h | 1 +
- 3 files changed, 11 insertions(+), 2 deletions(-)
+ fs/io_uring.c          | 5 ++++-
+ include/linux/socket.h | 3 ++-
+ net/socket.c           | 8 +++++---
+ 3 files changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/fs/file.c b/fs/file.c
-index a364e1a9b7e8..c8a4e4c86e55 100644
---- a/fs/file.c
-+++ b/fs/file.c
-@@ -540,9 +540,14 @@ static int alloc_fd(unsigned start, unsigned flags)
- 	return __alloc_fd(current->files, start, rlimit(RLIMIT_NOFILE), flags);
- }
- 
-+int __get_unused_fd_flags(unsigned flags, unsigned long nofile)
-+{
-+	return __alloc_fd(current->files, 0, nofile, flags);
-+}
-+
- int get_unused_fd_flags(unsigned flags)
- {
--	return __alloc_fd(current->files, 0, rlimit(RLIMIT_NOFILE), flags);
-+	return __get_unused_fd_flags(flags, rlimit(RLIMIT_NOFILE));
- }
- EXPORT_SYMBOL(get_unused_fd_flags);
- 
 diff --git a/fs/io_uring.c b/fs/io_uring.c
-index b1fbc4424aa6..fe5ded7c74ef 100644
+index fe5ded7c74ef..3affd96a98ba 100644
 --- a/fs/io_uring.c
 +++ b/fs/io_uring.c
-@@ -397,6 +397,7 @@ struct io_open {
- 	struct filename			*filename;
- 	struct statx __user		*buffer;
- 	struct open_how			how;
+@@ -343,6 +343,7 @@ struct io_accept {
+ 	struct sockaddr __user		*addr;
+ 	int __user			*addr_len;
+ 	int				flags;
 +	unsigned long			nofile;
  };
  
- struct io_files_update {
-@@ -2577,6 +2578,7 @@ static int io_openat_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 		return ret;
- 	}
- 
-+	req->open.nofile = rlimit(RLIMIT_NOFILE);
- 	req->flags |= REQ_F_NEED_CLEANUP;
+ struct io_sync {
+@@ -3324,6 +3325,7 @@ static int io_accept_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
+ 	accept->addr = u64_to_user_ptr(READ_ONCE(sqe->addr));
+ 	accept->addr_len = u64_to_user_ptr(READ_ONCE(sqe->addr2));
+ 	accept->flags = READ_ONCE(sqe->accept_flags);
++	accept->nofile = rlimit(RLIMIT_NOFILE);
  	return 0;
- }
-@@ -2618,6 +2620,7 @@ static int io_openat2_prep(struct io_kiocb *req, const struct io_uring_sqe *sqe)
- 		return ret;
+ #else
+ 	return -EOPNOTSUPP;
+@@ -3340,7 +3342,8 @@ static int __io_accept(struct io_kiocb *req, struct io_kiocb **nxt,
+ 
+ 	file_flags = force_nonblock ? O_NONBLOCK : 0;
+ 	ret = __sys_accept4_file(req->file, file_flags, accept->addr,
+-					accept->addr_len, accept->flags);
++					accept->addr_len, accept->flags,
++					accept->nofile);
+ 	if (ret == -EAGAIN && force_nonblock)
+ 		return -EAGAIN;
+ 	if (ret == -ERESTARTSYS)
+diff --git a/include/linux/socket.h b/include/linux/socket.h
+index 2d2313403101..15f3412d481e 100644
+--- a/include/linux/socket.h
++++ b/include/linux/socket.h
+@@ -401,7 +401,8 @@ extern int __sys_sendto(int fd, void __user *buff, size_t len,
+ 			int addr_len);
+ extern int __sys_accept4_file(struct file *file, unsigned file_flags,
+ 			struct sockaddr __user *upeer_sockaddr,
+-			 int __user *upeer_addrlen, int flags);
++			 int __user *upeer_addrlen, int flags,
++			 unsigned long nofile);
+ extern int __sys_accept4(int fd, struct sockaddr __user *upeer_sockaddr,
+ 			 int __user *upeer_addrlen, int flags);
+ extern int __sys_socket(int family, int type, int protocol);
+diff --git a/net/socket.c b/net/socket.c
+index b79a05de7c6e..2eecf1517f76 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -1707,7 +1707,8 @@ SYSCALL_DEFINE2(listen, int, fd, int, backlog)
+ 
+ int __sys_accept4_file(struct file *file, unsigned file_flags,
+ 		       struct sockaddr __user *upeer_sockaddr,
+-		       int __user *upeer_addrlen, int flags)
++		       int __user *upeer_addrlen, int flags,
++		       unsigned long nofile)
+ {
+ 	struct socket *sock, *newsock;
+ 	struct file *newfile;
+@@ -1738,7 +1739,7 @@ int __sys_accept4_file(struct file *file, unsigned file_flags,
+ 	 */
+ 	__module_get(newsock->ops->owner);
+ 
+-	newfd = get_unused_fd_flags(flags);
++	newfd = __get_unused_fd_flags(flags, nofile);
+ 	if (unlikely(newfd < 0)) {
+ 		err = newfd;
+ 		sock_release(newsock);
+@@ -1807,7 +1808,8 @@ int __sys_accept4(int fd, struct sockaddr __user *upeer_sockaddr,
+ 	f = fdget(fd);
+ 	if (f.file) {
+ 		ret = __sys_accept4_file(f.file, 0, upeer_sockaddr,
+-						upeer_addrlen, flags);
++						upeer_addrlen, flags,
++						rlimit(RLIMIT_NOFILE));
+ 		if (f.flags)
+ 			fput(f.file);
  	}
- 
-+	req->open.nofile = rlimit(RLIMIT_NOFILE);
- 	req->flags |= REQ_F_NEED_CLEANUP;
- 	return 0;
- }
-@@ -2636,7 +2639,7 @@ static int io_openat2(struct io_kiocb *req, struct io_kiocb **nxt,
- 	if (ret)
- 		goto err;
- 
--	ret = get_unused_fd_flags(req->open.how.flags);
-+	ret = __get_unused_fd_flags(req->open.how.flags, req->open.nofile);
- 	if (ret < 0)
- 		goto err;
- 
-diff --git a/include/linux/file.h b/include/linux/file.h
-index c6c7b24ea9f7..142d102f285e 100644
---- a/include/linux/file.h
-+++ b/include/linux/file.h
-@@ -85,6 +85,7 @@ extern int f_dupfd(unsigned int from, struct file *file, unsigned flags);
- extern int replace_fd(unsigned fd, struct file *file, unsigned flags);
- extern void set_close_on_exec(unsigned int fd, int flag);
- extern bool get_close_on_exec(unsigned int fd);
-+extern int __get_unused_fd_flags(unsigned flags, unsigned long nofile);
- extern int get_unused_fd_flags(unsigned flags);
- extern void put_unused_fd(unsigned int fd);
- 
 -- 
 2.25.2
 
