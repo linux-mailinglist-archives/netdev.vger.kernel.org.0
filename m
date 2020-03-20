@@ -2,93 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9354C18CB3B
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 11:09:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DD5418CBE3
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 11:41:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727113AbgCTKJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 06:09:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47032 "EHLO vps0.lunn.ch"
+        id S1727221AbgCTKlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 06:41:01 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:51626 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726527AbgCTKJ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Mar 2020 06:09:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=tAYPRm4IJac7W+8neIju/63yEbVYeH5eneKaf19WKEM=; b=tjLnoMEycQl+PY5k8MsaF3UQsc
-        aoBPNM4AZBRZNU2l9gOyf1s5nFJrRVwyOw1LQm4LXg0TBd9isvzD9/GFIkN+xbNrK41G5DA3B54v0
-        cBLHoqyHH2oNZMW72xBRqbI2DoM3xZoE0Bn7FscrLQR4Q0tQFSzgcp2eRxCKXY6OR4y0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jFEaj-0004lE-EH; Fri, 20 Mar 2020 11:09:25 +0100
-Date:   Fri, 20 Mar 2020 11:09:25 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, antoine.tenart@bootlin.com
-Subject: Re: [PATCH net-next 1/4] net: phy: mscc: rename enum
- rgmii_rx_clock_delay to rgmii_clock_delay
-Message-ID: <20200320100925.GB16662@lunn.ch>
-References: <20200319211649.10136-1-olteanv@gmail.com>
- <20200319211649.10136-2-olteanv@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200319211649.10136-2-olteanv@gmail.com>
+        id S1726726AbgCTKlA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Mar 2020 06:41:00 -0400
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 175341A055F;
+        Fri, 20 Mar 2020 11:40:59 +0100 (CET)
+Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id E59DA1A0538;
+        Fri, 20 Mar 2020 11:40:52 +0100 (CET)
+Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 351E4402E4;
+        Fri, 20 Mar 2020 18:40:45 +0800 (SGT)
+From:   Yangbo Lu <yangbo.lu@nxp.com>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: [PATCH 0/6] Support programmable pins for Ocelot PTP driver
+Date:   Fri, 20 Mar 2020 18:37:20 +0800
+Message-Id: <20200320103726.32559-1-yangbo.lu@nxp.com>
+X-Mailer: git-send-email 2.17.1
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 19, 2020 at 11:16:46PM +0200, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> There is nothing RX-specific about these clock skew values. So remove
-> "RX" from the name in preparation for the next patch where TX delays are
-> also going to be configured.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/phy/mscc/mscc.h      | 18 +++++++++---------
->  drivers/net/phy/mscc/mscc_main.c |  2 +-
->  2 files changed, 10 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-> index 29ccb2c9c095..56feb14838f3 100644
-> --- a/drivers/net/phy/mscc/mscc.h
-> +++ b/drivers/net/phy/mscc/mscc.h
-> @@ -12,15 +12,15 @@
->  #include "mscc_macsec.h"
->  #endif
->  
-> -enum rgmii_rx_clock_delay {
-> -	RGMII_RX_CLK_DELAY_0_2_NS = 0,
-> -	RGMII_RX_CLK_DELAY_0_8_NS = 1,
-> -	RGMII_RX_CLK_DELAY_1_1_NS = 2,
-> -	RGMII_RX_CLK_DELAY_1_7_NS = 3,
-> -	RGMII_RX_CLK_DELAY_2_0_NS = 4,
-> -	RGMII_RX_CLK_DELAY_2_3_NS = 5,
-> -	RGMII_RX_CLK_DELAY_2_6_NS = 6,
-> -	RGMII_RX_CLK_DELAY_3_4_NS = 7
-> +enum rgmii_clock_delay {
-> +	RGMII_CLK_DELAY_0_2_NS = 0,
-> +	RGMII_CLK_DELAY_0_8_NS = 1,
-> +	RGMII_CLK_DELAY_1_1_NS = 2,
-> +	RGMII_CLK_DELAY_1_7_NS = 3,
-> +	RGMII_CLK_DELAY_2_0_NS = 4,
-> +	RGMII_CLK_DELAY_2_3_NS = 5,
-> +	RGMII_CLK_DELAY_2_6_NS = 6,
-> +	RGMII_CLK_DELAY_3_4_NS = 7
->  };
+The Ocelot PTP clock driver had been embedded into ocelot.c driver.
+It had supported basic gettime64/settime64/adjtime/adjfine functions
+by now which were used by both Ocelot switch and Felix switch.
 
-Can this be shared?
+This patch-set is to move current ptp clock code out of ocelot.c driver
+maintaining as a single ptp_ocelot.c driver, and to implement 4
+programmable pins (with only periodic signal function for now).
 
-https://www.spinics.net/lists/netdev/msg638747.html
+Yangbo Lu (6):
+  ptp: move ocelot ptp clock code out of Ethernet driver
+  MAINTAINERS: add entry for Microsemi Ocelot PTP driver
+  net: mscc: ocelot: fix timestamp info if ptp clock does not work
+  net: mscc: ocelot: redefine PTP pins
+  net: mscc: ocelot: add wave programming registers definitions
+  ptp_ocelot: support 4 programmable pins
 
-Looks to be the same values?
+ MAINTAINERS                                        |   9 +
+ drivers/net/dsa/ocelot/felix.c                     |   3 +-
+ drivers/net/dsa/ocelot/felix_vsc9959.c             |   2 +
+ drivers/net/ethernet/mscc/ocelot.c                 | 207 +-------------
+ drivers/net/ethernet/mscc/ocelot.h                 |   3 +-
+ drivers/net/ethernet/mscc/ocelot_board.c           |   1 +
+ drivers/net/ethernet/mscc/ocelot_regs.c            |   2 +
+ drivers/ptp/Kconfig                                |  10 +
+ drivers/ptp/Makefile                               |   1 +
+ drivers/ptp/ptp_ocelot.c                           | 310 +++++++++++++++++++++
+ include/soc/mscc/ocelot.h                          |  15 +-
+ .../net/ethernet => include/soc}/mscc/ocelot_ptp.h |   3 +
+ include/soc/mscc/ptp_ocelot.h                      |  34 +++
+ 13 files changed, 395 insertions(+), 205 deletions(-)
+ create mode 100644 drivers/ptp/ptp_ocelot.c
+ rename {drivers/net/ethernet => include/soc}/mscc/ocelot_ptp.h (88%)
+ create mode 100644 include/soc/mscc/ptp_ocelot.h
 
-Can some of the implementation be consolidated?
+-- 
+2.7.4
 
-    Andrew
