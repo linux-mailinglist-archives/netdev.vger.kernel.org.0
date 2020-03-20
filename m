@@ -2,194 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 980A618D8A4
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 20:44:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DCFD18D8BB
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 20:52:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727501AbgCTToB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 15:44:01 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:35532 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727443AbgCTTn7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 15:43:59 -0400
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02KJhtwV087128;
-        Fri, 20 Mar 2020 14:43:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1584733435;
-        bh=TxhNK/kZhfoMIijSWn6NMMWmiR8t3zZMCX2pTgEW97k=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=PdXJJcoLOlDZy7025aDaMv276j1uEJckeMm/zcX1otvbJwWWNd35NMZnKD6rpZThu
-         ACRXQrOP8dsCnbmGaVwWbKYfxnQvDlea7TmY3R9xo9UBhTECvJgf522hJf1/V38Agl
-         VtyXfD2nAOx15upg/hez+Yb0QY3JF8g7PyofOuqk=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02KJhtpJ010783;
-        Fri, 20 Mar 2020 14:43:55 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 20
- Mar 2020 14:43:55 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 20 Mar 2020 14:43:55 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02KJhsl9043509;
-        Fri, 20 Mar 2020 14:43:55 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Tony Lindgren <tony@atomide.com>
-CC:     Sekhar Nori <nsekhar@ti.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        netdev <netdev@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH net-next v3 11/11] net: ethernet: ti: cpsw: enable cpts irq
-Date:   Fri, 20 Mar 2020 21:42:44 +0200
-Message-ID: <20200320194244.4703-12-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200320194244.4703-1-grygorii.strashko@ti.com>
-References: <20200320194244.4703-1-grygorii.strashko@ti.com>
+        id S1727046AbgCTTwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 15:52:32 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:37003 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726773AbgCTTwa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 15:52:30 -0400
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1jFNgI-0002w2-14; Fri, 20 Mar 2020 20:51:46 +0100
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+        id 626F61039FC; Fri, 20 Mar 2020 20:51:44 +0100 (CET)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     paulmck@kernel.org
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [patch V2 08/15] Documentation: Add lock ordering and nesting documentation
+In-Reply-To: <20200320160145.GN3199@paulmck-ThinkPad-P72>
+Date:   Fri, 20 Mar 2020 20:51:44 +0100
+Message-ID: <87mu8apzxr.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The CPSW misc IRQ need be enabled for CPTS event_pend IRQs processing. This
-patch adds corresponding support to CPSW driver.
+"Paul E. McKenney" <paulmck@kernel.org> writes:
+>
+>  - The soft interrupt related suffix (_bh()) still disables softirq
+>    handlers.  However, unlike non-PREEMPT_RT kernels (which disable
+>    preemption to get this effect), PREEMPT_RT kernels use a per-CPU
+>    lock to exclude softirq handlers.
 
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- drivers/net/ethernet/ti/cpsw.c      | 21 +++++++++++++++++++++
- drivers/net/ethernet/ti/cpsw_new.c  | 20 ++++++++++++++++++++
- drivers/net/ethernet/ti/cpsw_priv.c | 12 ++++++++++++
- drivers/net/ethernet/ti/cpsw_priv.h |  2 ++
- 4 files changed, 55 insertions(+)
+I've made that:
 
-diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
-index ce2155394830..ce8151e95443 100644
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -1573,6 +1573,12 @@ static int cpsw_probe(struct platform_device *pdev)
- 		return irq;
- 	cpsw->irqs_table[1] = irq;
- 
-+	/* get misc irq*/
-+	irq = platform_get_irq(pdev, 3);
-+	if (irq <= 0)
-+		return irq;
-+	cpsw->misc_irq = irq;
-+
- 	/*
- 	 * This may be required here for child devices.
- 	 */
-@@ -1707,6 +1713,21 @@ static int cpsw_probe(struct platform_device *pdev)
- 		goto clean_unregister_netdev_ret;
- 	}
- 
-+	if (!cpsw->cpts)
-+		goto skip_cpts;
-+
-+	ret = devm_request_irq(&pdev->dev, cpsw->misc_irq, cpsw_misc_interrupt,
-+			       0, dev_name(&pdev->dev), cpsw);
-+	if (ret < 0) {
-+		dev_err(dev, "error attaching misc irq (%d)\n", ret);
-+		goto clean_unregister_netdev_ret;
-+	}
-+
-+	/* Enable misc CPTS evnt_pend IRQ */
-+	cpts_set_irqpoll(cpsw->cpts, false);
-+	writel(0x10, &cpsw->wr_regs->misc_en);
-+
-+skip_cpts:
- 	cpsw_notice(priv, probe,
- 		    "initialized device (regs %pa, irq %d, pool size %d)\n",
- 		    &ss_res->start, cpsw->irqs_table[0], descs_pool_size);
-diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
-index 8561f0e3b769..5d7c8ea4b5c7 100644
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -1901,6 +1901,11 @@ static int cpsw_probe(struct platform_device *pdev)
- 		return irq;
- 	cpsw->irqs_table[1] = irq;
- 
-+	irq = platform_get_irq_byname(pdev, "misc");
-+	if (irq <= 0)
-+		return irq;
-+	cpsw->misc_irq = irq;
-+
- 	platform_set_drvdata(pdev, cpsw);
- 	/* This may be required here for child devices. */
- 	pm_runtime_enable(dev);
-@@ -1980,6 +1985,21 @@ static int cpsw_probe(struct platform_device *pdev)
- 		goto clean_unregister_netdev;
- 	}
- 
-+	if (!cpsw->cpts)
-+		goto skip_cpts;
-+
-+	ret = devm_request_irq(dev, cpsw->misc_irq, cpsw_misc_interrupt,
-+			       0, dev_name(&pdev->dev), cpsw);
-+	if (ret < 0) {
-+		dev_err(dev, "error attaching misc irq (%d)\n", ret);
-+		goto clean_unregister_netdev;
-+	}
-+
-+	/* Enable misc CPTS evnt_pend IRQ */
-+	cpts_set_irqpoll(cpsw->cpts, false);
-+	writel(0x10, &cpsw->wr_regs->misc_en);
-+
-+skip_cpts:
- 	ret = cpsw_register_notifiers(cpsw);
- 	if (ret)
- 		goto clean_unregister_netdev;
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index 099208927400..9d098c802c6d 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -114,6 +114,18 @@ irqreturn_t cpsw_rx_interrupt(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
-+irqreturn_t cpsw_misc_interrupt(int irq, void *dev_id)
-+{
-+	struct cpsw_common *cpsw = dev_id;
-+
-+	writel(0, &cpsw->wr_regs->misc_en);
-+	cpdma_ctlr_eoi(cpsw->dma, CPDMA_EOI_MISC);
-+	cpts_misc_interrupt(cpsw->cpts);
-+	writel(0x10, &cpsw->wr_regs->misc_en);
-+
-+	return IRQ_HANDLED;
-+}
-+
- int cpsw_tx_mq_poll(struct napi_struct *napi_tx, int budget)
- {
- 	struct cpsw_common	*cpsw = napi_to_cpsw(napi_tx);
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.h b/drivers/net/ethernet/ti/cpsw_priv.h
-index b8d7b924ee3d..bf4e179b4ca4 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.h
-+++ b/drivers/net/ethernet/ti/cpsw_priv.h
-@@ -350,6 +350,7 @@ struct cpsw_common {
- 	bool				rx_irq_disabled;
- 	bool				tx_irq_disabled;
- 	u32 irqs_table[IRQ_NUM];
-+	int misc_irq;
- 	struct cpts			*cpts;
- 	struct devlink *devlink;
- 	int				rx_ch_num, tx_ch_num;
-@@ -442,6 +443,7 @@ int cpsw_run_xdp(struct cpsw_priv *priv, int ch, struct xdp_buff *xdp,
- 		 struct page *page, int port);
- irqreturn_t cpsw_tx_interrupt(int irq, void *dev_id);
- irqreturn_t cpsw_rx_interrupt(int irq, void *dev_id);
-+irqreturn_t cpsw_misc_interrupt(int irq, void *dev_id);
- int cpsw_tx_mq_poll(struct napi_struct *napi_tx, int budget);
- int cpsw_tx_poll(struct napi_struct *napi_tx, int budget);
- int cpsw_rx_mq_poll(struct napi_struct *napi_rx, int budget);
--- 
-2.17.1
+  - The soft interrupt related suffix (_bh()) still disables softirq
+    handlers.
 
+    Non-PREEMPT_RT kernels disable preemption to get this effect.
+
+    PREEMPT_RT kernels use a per-CPU lock for serialization. The lock
+    disables softirq handlers and prevents reentrancy by a preempting
+    task.
+    
+On non-RT this is implicit through preemption disable, but it's non
+obvious for RT as preemption stays enabled.
+
+> PREEMPT_RT kernels preserve all other spinlock_t semantics:
+>
+>  - Tasks holding a spinlock_t do not migrate.  Non-PREEMPT_RT kernels
+>    avoid migration by disabling preemption.  PREEMPT_RT kernels instead
+>    disable migration, which ensures that pointers to per-CPU variables
+>    remain valid even if the task is preempted.
+>
+>  - Task state is preserved across spinlock acquisition, ensuring that the
+>    task-state rules apply to all kernel configurations.  In non-PREEMPT_RT
+>    kernels leave task state untouched.  However, PREEMPT_RT must change
+>    task state if the task blocks during acquisition.  Therefore, the
+>    corresponding lock wakeup restores the task state.  Note that regular
+>    (not lock related) wakeups do not restore task state.
+
+   - Task state is preserved across spinlock acquisition, ensuring that the
+     task-state rules apply to all kernel configurations.  Non-PREEMPT_RT
+     kernels leave task state untouched.  However, PREEMPT_RT must change
+     task state if the task blocks during acquisition.  Therefore, it
+     saves the current task state before blocking and the corresponding
+     lock wakeup restores it. A regular not lock related wakeup sets the
+     task state to RUNNING. If this happens while the task is blocked on
+     a spinlock then the saved task state is changed so that correct
+     state is restored on lock wakeup.
+
+Hmm?
+
+> But this code failes on PREEMPT_RT kernels because the memory allocator
+> is fully preemptible and therefore cannot be invoked from truly atomic
+> contexts.  However, it is perfectly fine to invoke the memory allocator
+> while holding a normal non-raw spinlocks because they do not disable
+> preemption::
+>
+>> +  spin_lock(&lock);
+>> +  p = kmalloc(sizeof(*p), GFP_ATOMIC);
+>> +
+>> +Most places which use GFP_ATOMIC allocations are safe on PREEMPT_RT as the
+>> +execution is forced into thread context and the lock substitution is
+>> +ensuring preemptibility.
+>
+> Interestingly enough, most uses of GFP_ATOMIC allocations are
+> actually safe on PREEMPT_RT because the the lock substitution ensures
+> preemptibility.  Only those GFP_ATOMIC allocations that are invoke
+> while holding a raw spinlock or with preemption otherwise disabled need
+> adjustment to work correctly on PREEMPT_RT.
+>
+> [ I am not as confident of the above as I would like to be... ]
+
+I'd leave that whole paragraph out. This documents the rules and from
+the above code examples it's pretty clear what works and what not :)
+
+> And meeting time, will continue later!
+
+Enjoy!
+
+Thanks,
+
+        tglx
