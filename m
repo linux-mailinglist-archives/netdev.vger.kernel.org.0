@@ -2,87 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3DF318CC1C
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 12:03:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0549D18CC23
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 12:05:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727103AbgCTLDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 07:03:33 -0400
-Received: from ssl.serverraum.org ([176.9.125.105]:39339 "EHLO
-        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726821AbgCTLDd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 07:03:33 -0400
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 96A8022F2D;
-        Fri, 20 Mar 2020 12:03:28 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1584702209;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gUkotz8OFFBMd9PmlQFXSI+efiAIa/TYqSLX2WL8g28=;
-        b=A3Gz3E5G1Gem0xRzkSd0oeQk+cgMuLYcVtYDXHrlGssh5Q5Hs/Nm7cG3jf4WjYMzk8eR8M
-        1VMA6tmMfaeR+B11jg/Lgk6lj5QoUMoTlyg373DjtD63bJopsfBY9F6cClgZ24FIcHYWWP
-        IAULBD/aLkz15S1EhwkBHlAEF0wQD3I=
+        id S1727272AbgCTLFC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 20 Mar 2020 07:05:02 -0400
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:55131 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726821AbgCTLFB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 07:05:01 -0400
+X-Originating-IP: 90.76.143.236
+Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
+        (Authenticated sender: antoine.tenart@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id BB551E0015;
+        Fri, 20 Mar 2020 11:04:57 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Fri, 20 Mar 2020 12:03:28 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     David Miller <davem@davemloft.net>
-Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
-        robh+dt@kernel.org, leoyang.li@nxp.com, shawnguo@kernel.org
-Subject: Re: [PATCH 1/2] net: dsa: felix: allow the device to be disabled
-In-Reply-To: <20200314.205335.907987569817755804.davem@davemloft.net>
-References: <20200312164320.22349-1-michael@walle.cc>
- <20200314.205335.907987569817755804.davem@davemloft.net>
-Message-ID: <516fced37ce8b390e89eb0557b0b7362@walle.cc>
-X-Sender: michael@walle.cc
-User-Agent: Roundcube Webmail/1.3.10
-X-Spamd-Bar: +
-X-Spam-Level: *
-X-Rspamd-Server: web
-X-Spam-Status: No, score=1.40
-X-Spam-Score: 1.40
-X-Rspamd-Queue-Id: 96A8022F2D
-X-Spamd-Result: default: False [1.40 / 15.00];
-         FROM_HAS_DN(0.00)[];
-         TO_DN_SOME(0.00)[];
-         FREEMAIL_ENVRCPT(0.00)[gmail.com];
-         TO_MATCH_ENVRCPT_ALL(0.00)[];
-         TAGGED_RCPT(0.00)[dt];
-         MIME_GOOD(-0.10)[text/plain];
-         DKIM_SIGNED(0.00)[];
-         RCPT_COUNT_TWELVE(0.00)[13];
-         NEURAL_HAM(-0.00)[-0.632];
-         RCVD_COUNT_ZERO(0.00)[0];
-         FROM_EQ_ENVFROM(0.00)[];
-         MIME_TRACE(0.00)[0:+];
-         FREEMAIL_CC(0.00)[lists.infradead.org,vger.kernel.org,gmail.com,lunn.ch,nxp.com,kernel.org];
-         MID_RHS_MATCH_FROM(0.00)[];
-         SUSPICIOUS_RECIPS(1.50)[]
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <CA+h21hrvsfwspGE6z37p-fwso3oD0pXijh+fZZfEEUEv6bySHQ@mail.gmail.com>
+References: <20200319211649.10136-1-olteanv@gmail.com> <20200319211649.10136-2-olteanv@gmail.com> <20200320100925.GB16662@lunn.ch> <CA+h21hrvsfwspGE6z37p-fwso3oD0pXijh+fZZfEEUEv6bySHQ@mail.gmail.com>
+From:   Antoine Tenart <antoine.tenart@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next 1/4] net: phy: mscc: rename enum rgmii_rx_clock_delay to rgmii_clock_delay
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <158470229183.43774.8932556125293087780@kwain>
+Date:   Fri, 20 Mar 2020 12:04:53 +0100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, Hi Shawnguo,
+Hello,
 
-Am 2020-03-15 04:53, schrieb David Miller:
-> This series depends upon some devicetree tree changes, so why don't you
-> submit these changes there and add my:
-> 
-> Acked-by: David S. Miller <davem@davemloft.net>
-> 
-> Thank you.
+Quoting Vladimir Oltean (2020-03-20 11:38:05)
+> On Fri, 20 Mar 2020 at 12:09, Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > On Thu, Mar 19, 2020 at 11:16:46PM +0200, Vladimir Oltean wrote:
+> > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > >
+> > > There is nothing RX-specific about these clock skew values. So remove
+> > > "RX" from the name in preparation for the next patch where TX delays are
+> > > also going to be configured.
+> > >
+> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > > ---
+> > >  drivers/net/phy/mscc/mscc.h      | 18 +++++++++---------
+> > >  drivers/net/phy/mscc/mscc_main.c |  2 +-
+> > >  2 files changed, 10 insertions(+), 10 deletions(-)
+> > >
+> > > diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
+> > > index 29ccb2c9c095..56feb14838f3 100644
+> > > --- a/drivers/net/phy/mscc/mscc.h
+> > > +++ b/drivers/net/phy/mscc/mscc.h
+> > > @@ -12,15 +12,15 @@
+> > >  #include "mscc_macsec.h"
+> > >  #endif
+> > >
+> > > -enum rgmii_rx_clock_delay {
+> > > -     RGMII_RX_CLK_DELAY_0_2_NS = 0,
+> > > -     RGMII_RX_CLK_DELAY_0_8_NS = 1,
+> > > -     RGMII_RX_CLK_DELAY_1_1_NS = 2,
+> > > -     RGMII_RX_CLK_DELAY_1_7_NS = 3,
+> > > -     RGMII_RX_CLK_DELAY_2_0_NS = 4,
+> > > -     RGMII_RX_CLK_DELAY_2_3_NS = 5,
+> > > -     RGMII_RX_CLK_DELAY_2_6_NS = 6,
+> > > -     RGMII_RX_CLK_DELAY_3_4_NS = 7
+> > > +enum rgmii_clock_delay {
+> > > +     RGMII_CLK_DELAY_0_2_NS = 0,
+> > > +     RGMII_CLK_DELAY_0_8_NS = 1,
+> > > +     RGMII_CLK_DELAY_1_1_NS = 2,
+> > > +     RGMII_CLK_DELAY_1_7_NS = 3,
+> > > +     RGMII_CLK_DELAY_2_0_NS = 4,
+> > > +     RGMII_CLK_DELAY_2_3_NS = 5,
+> > > +     RGMII_CLK_DELAY_2_6_NS = 6,
+> > > +     RGMII_CLK_DELAY_3_4_NS = 7
+> > >  };
+> >
+> > Can this be shared?
+> >
+> > https://www.spinics.net/lists/netdev/msg638747.html
+> >
+> > Looks to be the same values?
+> >
+> > Can some of the implementation be consolidated?
 
-Patch 2/2 is already in linux-next, picked by Shawnguo. Who will
-pick 1/2? I guess it doesn't matter through which tree it will go.
+> - That patch is writing to MSCC_PHY_RGMII_SETTINGS (defined to 18).
+> This one is writing to MSCC_PHY_RGMII_CNTL (defined to 20). And since
+> I have no documentation to understand why, I'm back to square 1.
 
--michael
+These are two different registers, using similar values. I guess the
+register was moved around as those PHYs are from the same family; but
+I'm not sure if it's correct to consolidate it as we do not know for
+sure. (Practically speaking the same values are used, so why not).
+
+Thanks,
+Antoine
+
+-- 
+Antoine Ténart, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
