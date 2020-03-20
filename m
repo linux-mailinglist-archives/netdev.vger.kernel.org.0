@@ -2,93 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4737918DB24
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 23:27:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BEA918DB3B
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 23:36:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727372AbgCTW1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 18:27:38 -0400
-Received: from mx2.suse.de ([195.135.220.15]:56184 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727113AbgCTW1i (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Mar 2020 18:27:38 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id B7368AD66;
-        Fri, 20 Mar 2020 22:27:36 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id F1BF8E0FD3; Fri, 20 Mar 2020 23:27:35 +0100 (CET)
-Date:   Fri, 20 Mar 2020 23:27:35 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] netlink: check for null extack in cookie helpers
-Message-ID: <20200320222735.GA31519@unicorn.suse.cz>
-References: <20200320211343.4BD38E0FD3@unicorn.suse.cz>
- <b4b1d7b252820591ebb00e3851d44dc6c3f2d1b9.camel@sipsolutions.net>
+        id S1727441AbgCTWgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 18:36:36 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:37622 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726855AbgCTWgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 18:36:35 -0400
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1jFQFI-0005GA-2c; Fri, 20 Mar 2020 23:36:04 +0100
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+        id 7EC4C1039FC; Fri, 20 Mar 2020 23:36:03 +0100 (CET)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     paulmck@kernel.org
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [patch V2 08/15] Documentation: Add lock ordering and nesting documentation
+In-Reply-To: <20200320210243.GT3199@paulmck-ThinkPad-P72>
+References: <20200320160145.GN3199@paulmck-ThinkPad-P72> <87mu8apzxr.fsf@nanos.tec.linutronix.de> <20200320210243.GT3199@paulmck-ThinkPad-P72>
+Date:   Fri, 20 Mar 2020 23:36:03 +0100
+Message-ID: <874kuipsbw.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b4b1d7b252820591ebb00e3851d44dc6c3f2d1b9.camel@sipsolutions.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 20, 2020 at 10:22:45PM +0100, Johannes Berg wrote:
-> Hi Michal,
-> 
-> > Unlike NL_SET_ERR_* macros, nl_set_extack_cookie_u64() and
-> > nl_set_extack_cookie_u32() helpers do not check extack argument for null
-> > and neither do their callers, as syzbot recently discovered for
-> > ethnl_parse_header().
-> 
-> What exactly did it discover?
+"Paul E. McKenney" <paulmck@kernel.org> writes:
+> On Fri, Mar 20, 2020 at 08:51:44PM +0100, Thomas Gleixner wrote:
+>> "Paul E. McKenney" <paulmck@kernel.org> writes:
+>> >
+>> >  - The soft interrupt related suffix (_bh()) still disables softirq
+>> >    handlers.  However, unlike non-PREEMPT_RT kernels (which disable
+>> >    preemption to get this effect), PREEMPT_RT kernels use a per-CPU
+>> >    lock to exclude softirq handlers.
+>> 
+>> I've made that:
+>> 
+>>   - The soft interrupt related suffix (_bh()) still disables softirq
+>>     handlers.
+>> 
+>>     Non-PREEMPT_RT kernels disable preemption to get this effect.
+>> 
+>>     PREEMPT_RT kernels use a per-CPU lock for serialization. The lock
+>>     disables softirq handlers and prevents reentrancy by a preempting
+>>     task.
+>
+> That works!  At the end, I would instead say "prevents reentrancy
+> due to task preemption", but what you have works.
 
-It's this report:
+Yours is better.
 
-  https://lkml.kernel.org/r/00000000000027204705a1354443@google.com
+>>    - Task state is preserved across spinlock acquisition, ensuring that the
+>>      task-state rules apply to all kernel configurations.  Non-PREEMPT_RT
+>>      kernels leave task state untouched.  However, PREEMPT_RT must change
+>>      task state if the task blocks during acquisition.  Therefore, it
+>>      saves the current task state before blocking and the corresponding
+>>      lock wakeup restores it. A regular not lock related wakeup sets the
+>>      task state to RUNNING. If this happens while the task is blocked on
+>>      a spinlock then the saved task state is changed so that correct
+>>      state is restored on lock wakeup.
+>> 
+>> Hmm?
+>
+> I of course cannot resist editing the last two sentences:
+>
+>    ... Other types of wakeups unconditionally set task state to RUNNING.
+>    If this happens while a task is blocked while acquiring a spinlock,
+>    then the task state is restored to its pre-acquisition value at
+>    lock-wakeup time.
 
-The reproducer does not set NLM_F_ACK in a dump request so that extack
-is null and nl_set_extack_cookie_u32() tries to write at address 0x10.
+Errm no. That would mean
 
-> > Instead of fixing the callers and leaving the trap in place, add check of
-> > null extack to both helpers to make them consistent with NL_SET_ERR_*
-> > macros.
-> > 
-> > Fixes: 2363d73a2f3e ("ethtool: reject unrecognized request flags")
-> > Fixes: 9bb7e0f24e7e ("cfg80211: add peer measurement with FTM initiator API")
-> 
-> I'm not really convinced, at least not for the second patch.
+     state = UNINTERRUPTIBLE
+     lock()
+       block()
+         real_state = state
+         state = SLEEPONLOCK
 
-Now I see that I was mistaken by the name and nl80211_pmsr_start() is in
-fact ->doit() handler, not ->start(), so that it seems that it cannot be
-really called with null info->extack. I'm not 100% sure of that either
-(I would need to check the whole call path carefully again) but I'll
-drop the second Fixes line.
+                               non lock wakeup
+                                 state = RUNNING    <--- FAIL #1
 
-> After all, this is an important part of the functionality, and the whole
-> thing is pretty useless if no extack/cookie is returned since then you
-> don't have a handle to the in-progress operation.
-> 
-> That was the intention originally too, until now the cookie also got
-> used for auxiliary error information...
-> 
-> Now, I don't think we need to *crash* when something went wrong here,
-> but then I'd argue there should at least be a WARN_ON(). But then that
-> means syzbot will just trigger the WARN_ON which also makes it unhappy,
-> so you still would have to check in the caller?
+                               lock wakeup
+                                 state = real_state <--- FAIL #2
 
-From my point of view, having to keep in mind that NL_SET_ERR_MSG* are
-no-op if extack is null but nl_set_extack_cookie_u{64,32} would crash
-seems very inconvenient and even if I add the check into
-ethnl_parse_header(), sooner or later someone is going to fall into the
-same trap. Thus I believe that if there is a need for a warning when
-nl80211_pmsr_start() is unexpectedly called with null info->extack, such
-check should be done in nl80211_pmsr_start(), not by letting
-nl_set_extack_cookie_u64() crash.
+How it works is:
 
-Michal
+     state = UNINTERRUPTIBLE
+     lock()
+       block()
+         real_state = state
+         state = SLEEPONLOCK
 
+                               non lock wakeup
+                                 real_state = RUNNING
+
+                               lock wakeup
+                                 state = real_state == RUNNING
+
+If there is no 'non lock wakeup' before the lock wakeup:
+
+     state = UNINTERRUPTIBLE
+     lock()
+       block()
+         real_state = state
+         state = SLEEPONLOCK
+
+                               lock wakeup
+                                 state = real_state == UNINTERRUPTIBLE
+
+I agree that what I tried to express is hard to parse, but it's at least
+halfways correct :)
+
+Thanks,
+
+        tglx
