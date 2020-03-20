@@ -2,92 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AEEA18DC1B
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 00:35:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A922F18DC22
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 00:36:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727427AbgCTXfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 19:35:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44466 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726738AbgCTXfR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Mar 2020 19:35:17 -0400
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0335320714;
-        Fri, 20 Mar 2020 23:35:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584747316;
-        bh=rhwn6qeTqAe225E+kLoz/+4Ql4VI3OGBbm8jRVxHZDY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=saJBFcmjrpm5m5RSTNjxDpbEgRDHcUYXF9OLIuCQtJvmxJV4JjjSHJPe1PQESuBuw
-         Tk4xSOISYaaqD0cyJQUYg2WrdYwF8wIDRAoVuC6xGgP2eHq7VNWVah2An+g3t1+Yf7
-         Zh5jHoxt3kxBCdDaUzrRsGmdbWPtLIViSHulVfs0=
-Date:   Fri, 20 Mar 2020 16:35:14 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Andrey Ignatov <rdna@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
- program when attaching XDP
-Message-ID: <20200320163514.5f26d547@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <3aca04e2-4034-f41a-8e98-f40471601dff@iogearbox.net>
-References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
-        <158462359315.164779.13931660750493121404.stgit@toke.dk>
-        <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN>
-        <875zez76ph.fsf@toke.dk>
-        <ad09e018-377f-9864-60eb-cf4291f49d41@iogearbox.net>
-        <80235a44-8f01-6733-0638-c70c51cd1b90@iogearbox.net>
-        <20200320143014.4dde2868@kicinski-fedora-PC1C0HJN>
-        <3aca04e2-4034-f41a-8e98-f40471601dff@iogearbox.net>
+        id S1727745AbgCTXgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 19:36:38 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:38976 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727631AbgCTXgh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 19:36:37 -0400
+Received: by mail-io1-f67.google.com with SMTP id c19so7865543ioo.6;
+        Fri, 20 Mar 2020 16:36:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=r56c2sC6zamlywNB9189icYDyAGKVdxKEKYyEkkrtbs=;
+        b=jIglHsdBBqGfP+iZRD+xmqhg6u0oes4iqVrlOxhxfrU1/HvYH5tqBY70q8K1GaW7F7
+         QU2tfM/SHKVZDjBBz0r9YusVGDwACXLU1bCYVNAGidoXju78eb+xAUbeE2VgD2zpqIfb
+         yBDLxS6nFFsQsbfOUo83L8DO4uPPdW9djOvDu0oi1szuCKH2KlxqCk+jCRWDJqmwxcvr
+         78m1MAonXVES7tNbLechb9RFdd55Dh00aS2rycxffXWNAbZDp//pD7nCLeo3IJPjn+wk
+         rSaw8qk9RS+22pcZEz+ee24ZRKw6DO0N6p+m1nqrdzOFbGfCRk938uF18LUKYL9jcdpz
+         dnoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=r56c2sC6zamlywNB9189icYDyAGKVdxKEKYyEkkrtbs=;
+        b=o/m21ztVyO/AkF/nmBdH7SFF+R8pmzEA7CdUcKJ/43h5bjG3MAQShq2endrTJ1u/XR
+         OGzryo7e/OlMnVKbyzbFgKWkkoqHYZseE7Dig0OV6grCutaP2jmifnHwe5Z4sHs+T9d+
+         mAWg63dJxlSw3kboStnLrsvKKdwmcSC05dQbiVgM8i9v3ZfZtUL0Lr0KadcEbWgn/+6U
+         vwAFHJ4XTUfEbbAy4Dr0tX4tohO/QIaRKVZIoIulzmw72nTRmFP9DrucElyJ73ls3Irn
+         YcpMTyih/aDU2jCv48AiyOj/H0Md8YTaFQpQzAmL2IVYwiQwBXImB1qVMWqQz1uW4ODU
+         LZJg==
+X-Gm-Message-State: ANhLgQ2vgZ9gIaXyXga+IIomuyw4pu/r9QIP4qadXaku96dcADA7XXOz
+        SfT189UBAv221mcT/4RZoFO/X1g2dhtR6YZRw7U=
+X-Google-Smtp-Source: ADFU+vswMWOI+4/lmZP7NubSfTT4Gc+zjPJx/vu+4CB9gKmAIL7r/Cx3A4SqMr8iKsJ4UneSjQvw0JrHpgMFITL80rY=
+X-Received: by 2002:a02:1683:: with SMTP id a125mr2499634jaa.61.1584747396297;
+ Fri, 20 Mar 2020 16:36:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200320110959.2114-1-hqjagain@gmail.com> <2dc8673f-a46d-1438-95a8-cfb455bbea57@gmail.com>
+In-Reply-To: <2dc8673f-a46d-1438-95a8-cfb455bbea57@gmail.com>
+From:   Qiujun Huang <hqjagain@gmail.com>
+Date:   Sat, 21 Mar 2020 07:36:24 +0800
+Message-ID: <CAJRQjoedC4PTycGEpv_pCfbzW9zaA+kz2JTJaTi-EDWxcPUvFA@mail.gmail.com>
+Subject: Re: [PATCH v3] sctp: fix refcount bug in sctp_wfree
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, Jakub Kicinski <kuba@kernel.org>,
+        linux-sctp@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, anenbupt@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 Mar 2020 22:55:43 +0100 Daniel Borkmann wrote:
-> >> Another aspect that falls into this atomic replacement is also that the programs can
-> >> actually be atomically replaced at runtime. Last time I looked, some drivers still do
-> >> a down/up cycle on replacement and hence traffic would be interrupted. I would argue
-> >> that such /atomic/ swap operation on bpf_link would cover a guarantee of not having to
-> >> perform this as well (workaround today would be a simple tail call map as entry point).  
-> > 
-> > I don't think that's the case. Drivers generally have a fast path
-> > for the active-active replace.
-> > 
-> > Up/Down is only done to remap DMA buffers and change RX buffer
-> > allocation scheme. That's when program is installed or removed,
-> > not replaced.  
-> 
-> I know; though it seems not all adhere to that scheme sadly. I don't have that HW so can
-> only judge on the code, but one example that looked suspicious enough to me is qede_xdp().
-> It calls qede_xdp_set(), which does a qede_reload() for /every/ prog update. The latter
-> basically does ...
-> 
->      if (edev->state == QEDE_STATE_OPEN) {
->          qede_unload(edev, QEDE_UNLOAD_NORMAL, true);
->          if (args)
->              args->func(edev, args);               <-- prog replace here
->          qede_load(edev, QEDE_LOAD_RELOAD, true);
->          [...]
->      }
+On Sat, Mar 21, 2020 at 1:10 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+>
+> This does not really solve the issue.
+>
+> Even if the particular syzbot repro is now fine.
+>
+> Really, having anything _after_ the sock_wfree(skb) is the bug, since the current thread no longer
+> own a reference on a socket.
 
-Ack, one day maybe we can restructure things enough so that drivers
-don't have to copy/paste this dance :(
+I get it, thanks.
 
-> ... now that is one driver. I haven't checked all the others (aside from i40e/ixgbe/mlx4/
-> mlx5/nfp), but in any case it's also fixable in the driver w/o the extra need for bpf_link.
-
-Agreed
+>
+>
+>
+>
