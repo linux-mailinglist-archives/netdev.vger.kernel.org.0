@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F8A18D894
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 20:43:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9911818D89C
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 20:43:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727223AbgCTTnP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 15:43:15 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:44708 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726976AbgCTTnN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 15:43:13 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02KJh8eK018569;
-        Fri, 20 Mar 2020 14:43:08 -0500
+        id S1727425AbgCTTnp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 15:43:45 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:39996 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727152AbgCTTnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 15:43:14 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02KJhAaI027949;
+        Fri, 20 Mar 2020 14:43:10 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1584733388;
-        bh=VDL4bQPEF3OLQcAhE+BrvsJYUbu3alZiaqyJxwQK41U=;
+        s=ti-com-17Q1; t=1584733390;
+        bh=j9ewmM7hESI6g6wk0ydAH0XJIu7pbzNMSXUh1AYtGvM=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=FqUD23SAgGkn+rfzF1vV45BGMwYffmehZgW5L9AxdengmSdPkQUC9aNW4JkE/cspa
-         o2Fafnlgfk3DK5UiN3otnHQc1C6vWPRMWPO6LqXvmmt2ujpLJH6kKzzWYazlx3h0fh
-         g5YBIQZLvhfP4I2t/Ctugsfc7Ioq0CxnAcrLHZdM=
-Received: from DLEE110.ent.ti.com (dlee110.ent.ti.com [157.170.170.21])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 02KJh8AK117191
+        b=gS57sK/P3Kdhzv/95mOjc7FaOW2DuEYZDWHmZ9JOEf4merbotbb8fqQEzF4dAlJpM
+         ETrFTvl7LXXp+GYd3D6ZbU4+Px2D8XlkAnS+3pb5NXHTGHy8q7ueKkVD54NKCl0mCM
+         noW7B0vv82uSsH0nME4hQkpCLi/dzeH7QboOpQ4Y=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 02KJhAFU018688
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 20 Mar 2020 14:43:08 -0500
-Received: from DLEE107.ent.ti.com (157.170.170.37) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+        Fri, 20 Mar 2020 14:43:10 -0500
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 20
- Mar 2020 14:43:08 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE107.ent.ti.com
- (157.170.170.37) with Microsoft SMTP Server (version=TLS1_2,
+ Mar 2020 14:43:10 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 20 Mar 2020 14:43:08 -0500
+ Frontend Transport; Fri, 20 Mar 2020 14:43:10 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02KJh72I044782;
-        Fri, 20 Mar 2020 14:43:07 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02KJh9ua073749;
+        Fri, 20 Mar 2020 14:43:09 -0500
 From:   Grygorii Strashko <grygorii.strashko@ti.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Richard Cochran <richardcochran@gmail.com>,
@@ -46,9 +46,9 @@ CC:     Sekhar Nori <nsekhar@ti.com>,
         netdev <netdev@vger.kernel.org>, <linux-omap@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>,
         Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH net-next v3 03/11] net: ethernet: ti: cpts: move tc mult update in cpts_fifo_read()
-Date:   Fri, 20 Mar 2020 21:42:36 +0200
-Message-ID: <20200320194244.4703-4-grygorii.strashko@ti.com>
+Subject: [PATCH net-next v3 04/11] net: ethernet: ti: cpts: switch to use new .gettimex64() interface
+Date:   Fri, 20 Mar 2020 21:42:37 +0200
+Message-ID: <20200320194244.4703-5-grygorii.strashko@ti.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200320194244.4703-1-grygorii.strashko@ti.com>
 References: <20200320194244.4703-1-grygorii.strashko@ti.com>
@@ -60,61 +60,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now CPTS driver .adjfreq() generates request to read CPTS current time
-(CPTS_EV_PUSH) with intention to process all pending event using previous
-frequency adjustment values before switching to the new ones. So
-CPTS_EV_PUSH works as a marker to switch to the new frequency adjustment
-values. Current code assumes that all job is done in .adjfreq(), but after
-enabling IRQ this will not be true any more.
+The CPTS HW latches and saves CPTS counter value in CPTS fifo immediately
+after writing to CPSW_CPTS_PUSH.TS_PUSH (bit 0), so the total time that the
+driver needs to read the CPTS timestamp is the time required CPSW_CPTS_PUSH
+write to actually reach HW.
 
-Hence save new frequency adjustment values (mult) and perform actual freq
-adjustment in cpts_fifo_read() immediately after CPTS_EV_PUSH is received.
+Hence switch CPTS driver to implement new .gettimex64() callback for more
+precise measurement of the offset between a PHC and the system clock which
+is measured as time between
+  write(CPSW_CPTS_PUSH)
+  read(CPSW_CPTS_PUSH)
 
 Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 ---
- drivers/net/ethernet/ti/cpts.c | 8 ++++++--
- drivers/net/ethernet/ti/cpts.h | 1 +
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/ti/cpts.c | 22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/ti/cpts.c b/drivers/net/ethernet/ti/cpts.c
-index 6a1844cd23ff..e6a8ccae711c 100644
+index e6a8ccae711c..7e4c1de0d207 100644
 --- a/drivers/net/ethernet/ti/cpts.c
 +++ b/drivers/net/ethernet/ti/cpts.c
-@@ -165,6 +165,10 @@ static int cpts_fifo_read(struct cpts *cpts, int match)
- 		case CPTS_EV_PUSH:
- 			WRITE_ONCE(cpts->cur_timestamp, lo);
- 			timecounter_read(&cpts->tc);
-+			if (cpts->mult_new) {
-+				cpts->cc.mult = cpts->mult_new;
-+				cpts->mult_new = 0;
-+			}
- 			break;
- 		case CPTS_EV_TX:
- 			if (cpts_match_tx_ts(cpts, event)) {
-@@ -228,9 +232,9 @@ static int cpts_ptp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
+@@ -203,9 +203,13 @@ static u64 cpts_systim_read(const struct cyclecounter *cc)
+ 	return READ_ONCE(cpts->cur_timestamp);
+ }
+ 
+-static void cpts_update_cur_time(struct cpts *cpts, int match)
++static void cpts_update_cur_time(struct cpts *cpts, int match,
++				 struct ptp_system_timestamp *sts)
+ {
++	ptp_read_system_prets(sts);
+ 	cpts_write32(cpts, TS_PUSH, ts_push);
++	cpts_read32(cpts, ts_push);
++	ptp_read_system_postts(sts);
+ 
+ 	if (cpts_fifo_read(cpts, match) && match != -1)
+ 		dev_err(cpts->dev, "cpts: unable to obtain a time stamp\n");
+@@ -234,7 +238,7 @@ static int cpts_ptp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
+ 
+ 	cpts->mult_new = neg_adj ? mult - diff : mult + diff;
+ 
+-	cpts_update_cur_time(cpts, CPTS_EV_PUSH);
++	cpts_update_cur_time(cpts, CPTS_EV_PUSH, NULL);
+ 
+ 	spin_unlock_irqrestore(&cpts->lock, flags);
+ 
+@@ -253,15 +257,17 @@ static int cpts_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 	return 0;
+ }
+ 
+-static int cpts_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
++static int cpts_ptp_gettimeex(struct ptp_clock_info *ptp,
++			      struct timespec64 *ts,
++			      struct ptp_system_timestamp *sts)
+ {
+-	u64 ns;
+-	unsigned long flags;
+ 	struct cpts *cpts = container_of(ptp, struct cpts, info);
++	unsigned long flags;
++	u64 ns;
  
  	spin_lock_irqsave(&cpts->lock, flags);
  
 -	cpts_update_cur_time(cpts, CPTS_EV_PUSH);
-+	cpts->mult_new = neg_adj ? mult - diff : mult + diff;
++	cpts_update_cur_time(cpts, CPTS_EV_PUSH, sts);
  
--	cpts->cc.mult = neg_adj ? mult - diff : mult + diff;
-+	cpts_update_cur_time(cpts, CPTS_EV_PUSH);
- 
+ 	ns = timecounter_read(&cpts->tc);
  	spin_unlock_irqrestore(&cpts->lock, flags);
+@@ -302,7 +308,7 @@ static long cpts_overflow_check(struct ptp_clock_info *ptp)
  
-diff --git a/drivers/net/ethernet/ti/cpts.h b/drivers/net/ethernet/ti/cpts.h
-index 32ecd1ce4d3b..421630049ee7 100644
---- a/drivers/net/ethernet/ti/cpts.h
-+++ b/drivers/net/ethernet/ti/cpts.h
-@@ -116,6 +116,7 @@ struct cpts {
- 	unsigned long ov_check_period;
- 	struct sk_buff_head txq;
- 	u64 cur_timestamp;
-+	u32 mult_new;
- };
+ 	spin_lock_irqsave(&cpts->lock, flags);
  
- void cpts_rx_timestamp(struct cpts *cpts, struct sk_buff *skb);
+-	cpts_update_cur_time(cpts, -1);
++	cpts_update_cur_time(cpts, -1, NULL);
+ 
+ 	ns = timecounter_read(&cpts->tc);
+ 
+@@ -326,7 +332,7 @@ static const struct ptp_clock_info cpts_info = {
+ 	.pps		= 0,
+ 	.adjfreq	= cpts_ptp_adjfreq,
+ 	.adjtime	= cpts_ptp_adjtime,
+-	.gettime64	= cpts_ptp_gettime,
++	.gettimex64	= cpts_ptp_gettimeex,
+ 	.settime64	= cpts_ptp_settime,
+ 	.enable		= cpts_ptp_enable,
+ 	.do_aux_work	= cpts_overflow_check,
 -- 
 2.17.1
 
