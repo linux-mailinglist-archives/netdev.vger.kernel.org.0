@@ -2,141 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2333F18D8FC
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 21:25:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AE7518D950
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 21:29:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727101AbgCTUY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 16:24:58 -0400
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:40114 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726829AbgCTUY6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 16:24:58 -0400
-Received: by mail-qv1-f66.google.com with SMTP id cy12so3733583qvb.7;
-        Fri, 20 Mar 2020 13:24:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=o7SwPtKOPm+0Wb3fK59kuKPlfB1Jibqv6sRHYrNfJy8=;
-        b=i3OGO2CHpzlCVWcow5sUWOkqybpNiDyLoajYtZXGM/fJPGRvhjHbF3bHUSylRThfFL
-         XCbM0sjdWOlfijcUKjBEQeP3070iTrJOqpAiWf6e+py86fDDT4mLfvFn1AL8toARFr8+
-         kyd9viYdQEnpQQAH/pNxBaUR9omjdUyXyAcfs7hQjrBK4f9prayt4Y+SaQlziqf/jhVw
-         jkByPk8/XNoVGFIca8AWLE6wfHCH+m7oHnyufLxR9zxRnPXn86xYYrdd4VKxw3zhcje4
-         VQctZQxPLllErsB6LwfO33zWuQcXss+SR25mcyApuWnmwIeMx4qkNgWFGKU1mHJLFial
-         hrqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=o7SwPtKOPm+0Wb3fK59kuKPlfB1Jibqv6sRHYrNfJy8=;
-        b=H0ydwTtg79cTIJo9qmpv37H8X5W9q9HnhjbXrxldNIhjEJ+bX+u2YkOReeNUpWdVBo
-         0fULZzh1cYppgmjbm3486G03Wud1ZLbDWIdIO8Ry0aNHGy1QRb9reiU+iSFRDdu5T/qM
-         yQ2GzxbJotK0/+1myI/2llrOXO8wrBkwS9xRxqWqAn1HDY5PZktr3jp96PvHiMUR02dt
-         mzcWxFilQ7LNQsbbtd5H/ZWBubKJnbWhYeon8mZzjqTBFclVejWoB04Y30U5EYaXSNkm
-         UpJO+o3syPoOsvq9/4NAvOvo1Hp/bc2/ckcJAM+9SDLRXsmasUR/42ZoQdNeTTGSZntJ
-         52PQ==
-X-Gm-Message-State: ANhLgQ2N3Jooe/FMCievhVGyy66rkdXQ+4fq+vA6QF4gzBr+uC1R7B82
-        a3MDHBP4WsJE1rLqJTklYvd6bGxLswUsUcZqP8c=
-X-Google-Smtp-Source: ADFU+vvWj5F/vBmx15w6yLihdRAtwuckOPzczFMWZP4IAP8pAxTf0tVUBpdnBIAK6RPrQCqFi90dXOp7vkqQm05n1PU=
-X-Received: by 2002:a0c:f786:: with SMTP id s6mr10085742qvn.224.1584735896859;
- Fri, 20 Mar 2020 13:24:56 -0700 (PDT)
+        id S1727092AbgCTU3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 16:29:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49606 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726789AbgCTU3G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Mar 2020 16:29:06 -0400
+Received: from localhost (mobile-166-175-186-165.mycingular.net [166.175.186.165])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D7CAB2072C;
+        Fri, 20 Mar 2020 20:29:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584736146;
+        bh=CBE4Hpl5hWgtKq0+RxoHiNLqVoA/AcQ+0tzOzUVCEag=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=CXJDRjWdSHh7htiOtO28bb2i50AdEGQorWO8awQ1r89tsJUgDbe065O9MIhaCQ2mi
+         GqM/tIuXVv82Cn8sQM/vtiQo8zEDBtOwZyYV/XMJZpaz6VkdHTYEKG4D/vPNKTiDaN
+         vhPJNwdno569XIpqvuekBl9FBQaivQ+cn2CEs7Mo=
+Date:   Fri, 20 Mar 2020 15:29:04 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     linux-pci@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH net-next 06/11] PCI: Add new PCI_VPD_RO_KEYWORD_SERIALNO
+ macro
+Message-ID: <20200320202904.GA261671@google.com>
 MIME-Version: 1.0
-References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
- <158462359315.164779.13931660750493121404.stgit@toke.dk> <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN>
- <875zez76ph.fsf@toke.dk> <20200320103530.2853c573@kicinski-fedora-PC1C0HJN> <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
-In-Reply-To: <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 20 Mar 2020 13:24:45 -0700
-Message-ID: <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
- program when attaching XDP
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1584458204-29285-1-git-send-email-vasundhara-v.volam@broadcom.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 20, 2020 at 11:31 AM John Fastabend
-<john.fastabend@gmail.com> wrote:
->
-> Jakub Kicinski wrote:
-> > On Fri, 20 Mar 2020 09:48:10 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wro=
-te:
-> > > Jakub Kicinski <kuba@kernel.org> writes:
-> > > > On Thu, 19 Mar 2020 14:13:13 +0100 Toke H=C3=B8iland-J=C3=B8rgensen=
- wrote:
-> > > >> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> > > >>
-> > > >> While it is currently possible for userspace to specify that an ex=
-isting
-> > > >> XDP program should not be replaced when attaching to an interface,=
- there is
-> > > >> no mechanism to safely replace a specific XDP program with another=
-.
-> > > >>
-> > > >> This patch adds a new netlink attribute, IFLA_XDP_EXPECTED_FD, whi=
-ch can be
-> > > >> set along with IFLA_XDP_FD. If set, the kernel will check that the=
- program
-> > > >> currently loaded on the interface matches the expected one, and fa=
-il the
-> > > >> operation if it does not. This corresponds to a 'cmpxchg' memory o=
-peration.
-> > > >>
-> > > >> A new companion flag, XDP_FLAGS_EXPECT_FD, is also added to explic=
-itly
-> > > >> request checking of the EXPECTED_FD attribute. This is needed for =
-userspace
-> > > >> to discover whether the kernel supports the new attribute.
-> > > >>
-> > > >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> > > >
-> > > > I didn't know we wanted to go ahead with this...
-> > >
-> > > Well, I'm aware of the bpf_link discussion, obviously. Not sure what'=
-s
-> > > happening with that, though. So since this is a straight-forward
-> > > extension of the existing API, that doesn't carry a high implementati=
-on
-> > > cost, I figured I'd just go ahead with this. Doesn't mean we can't ha=
-ve
-> > > something similar in bpf_link as well, of course.
-> >
-> > I'm not really in the loop, but from what I overheard - I think the
-> > bpf_link may be targeting something non-networking first.
->
-> My preference is to avoid building two different APIs one for XDP and ano=
-ther
-> for everything else. If we have userlands that already understand links a=
-nd
-> pinning support is on the way imo lets use these APIs for networking as w=
-ell.
+On Tue, Mar 17, 2020 at 08:46:44PM +0530, Vasundhara Volam wrote:
+> This patch adds a new macro for serial number keyword.
+> 
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 
-I agree here. And yes, I've been working on extending bpf_link into
-cgroup and then to XDP. We are still discussing some cgroup-specific
-details, but the patch is ready. I'm going to post it as an RFC to get
-the discussion started, before we do this for XDP.
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 
->
-> Would a link_swap() API (proposed by Andrii iirc) resolve this use case a=
-s
-> well? If not why? If it can it seems like the more general and consistent
-> solution. I can imagine swapping links is useful in tracing as well and
-> likely other cases I haven't thought about.
-
-Yes, that's the idea. Right now I have implementation for cgroups, but
-API itself is generic and should/will be extended to tracing and XDP.
+> ---
+>  include/linux/pci.h | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index fc54b89..a048fba 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -2184,6 +2184,7 @@ bool pci_acs_path_enabled(struct pci_dev *start,
+>  #define PCI_VPD_INFO_FLD_HDR_SIZE	3
+>  
+>  #define PCI_VPD_RO_KEYWORD_PARTNO	"PN"
+> +#define PCI_VPD_RO_KEYWORD_SERIALNO	"SN"
+>  #define PCI_VPD_RO_KEYWORD_MFR_ID	"MN"
+>  #define PCI_VPD_RO_KEYWORD_VENDOR0	"V0"
+>  #define PCI_VPD_RO_KEYWORD_CHKSUM	"RV"
+> -- 
+> 1.8.3.1
+> 
