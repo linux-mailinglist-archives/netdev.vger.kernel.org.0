@@ -2,81 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D66218D573
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 18:14:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B98CC18D575
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 18:14:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726912AbgCTROK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 13:14:10 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:46564 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726843AbgCTROJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 13:14:09 -0400
-Received: by mail-pg1-f193.google.com with SMTP id k191so2252884pgc.13
-        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 10:14:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=xW6AAlb0NSrViMGBoaS8CXAG+vAOOxYm2IIhxarIEbM=;
-        b=GW3HWwtSwcdg57QGsZbEO8yNkfaPd5xjMWpxRQG/R5b5QYy7oXr6Q91vSaeSCJ0RPF
-         AFlo5G8GVMFa8RKrMEkbwPHS7bpis3PnkmZ1kyQTMSihJb2G6Cg2VQR8bcye7q0KPSIC
-         DeiWWcbq9YBbZWHK6CscQeheXzoOogrOyK6/0EMn2Di6vsMxLQODPzL6hn9yh1pfBBck
-         Na8Wj61sCdvZ43+ngw8Vr6uM6W7mWV3FGmJ4MqGQ1DpoQhlKJfOoTk6RWcHUk/QM69Mp
-         qWJrFxbiP0If0sg5d6CArp/zA8QxkHkUJnzwu8g2M/rVkPIdJ0clbNOIdk3sYJ73KAn1
-         s+BA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xW6AAlb0NSrViMGBoaS8CXAG+vAOOxYm2IIhxarIEbM=;
-        b=rCosbIJTMbeiKeYHQwTqY+QZogkcTKarn+W+867kPvzqnXBE6dADycTukH+DjQ39zD
-         q6dDzARhEln26WYFG1fg8rvXKQP4vYuPl4STmGnc5CrqJUnCYkDO+3SqayaLfyzi7T4m
-         o/cKbNTuseh4rYS1+HS+Zg8UoCAwBOXhc3y0wYeiFHMCB37Q3jfgRi3DbR1dDK7sDAAz
-         +mSWZS8k0lz7Ami3lhhTdDNIEHPW8YVN/dk1PcH2Hq0GN+eYM+b7ifIctUcYvaieZqGd
-         BB9r54+rkY7PKpD4nnfjxpFPza2MRzm0Swo2fpPl67wLP/AxS9hja+uOLrbIuxIzA3mx
-         XQ8w==
-X-Gm-Message-State: ANhLgQ2LtiB/le0noduj0jI3so10iA21Vsli4fNdzBFd+8IDLdpYe+f0
-        HEbNBTvvDl/jJbstmpHPjquuO1H9
-X-Google-Smtp-Source: ADFU+vumOkALjbaIJcS09xS+ZYfMLjyOmq/z41IndL8xzlmeSXPo9lQtAdqSSa37ggTxVWFe0odtkg==
-X-Received: by 2002:a63:3187:: with SMTP id x129mr9302572pgx.180.1584724448704;
-        Fri, 20 Mar 2020 10:14:08 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id e38sm5739342pgb.32.2020.03.20.10.14.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Mar 2020 10:14:07 -0700 (PDT)
-Subject: Re: [PATCH net] tcp: also NULL skb->dev when copy was needed
-To:     Florian Westphal <fw@strlen.de>, netdev@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>
-References: <20200320155202.25719-1-fw@strlen.de>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <cc8b3834-f9f4-d5e9-f2e7-7e40249e7609@gmail.com>
-Date:   Fri, 20 Mar 2020 10:14:06 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1726955AbgCTROy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 13:14:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46488 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726666AbgCTROx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Mar 2020 13:14:53 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E602F20709;
+        Fri, 20 Mar 2020 17:14:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584724493;
+        bh=wsQ9ZIqce6T8WDfwtxBoI75BeEpfI73B6LCZCTrvm/w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IGgZO4Tp0PQoYjFdDoTxzR4cUBZnGSxq3ZW8acBlBIdX/EFaIjI06SirfpHAr3wv3
+         Y6mToxghV0maF4ICA5FRQDH19eR0yYxGv08XRyQL0nEQMP3dMipKQtZjgo0LZcmX3D
+         1pvps0uPSBRlpuFfG19YqwGGQXnLGSRwSBQnyIrg=
+Date:   Fri, 20 Mar 2020 10:14:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sunil Kovvuri <sunil.kovvuri@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Linux Netdev List <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Leon Romanovsky <leon@kernel.org>,
+        Tomasz Duszynski <tduszynski@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>
+Subject: Re: [PATCH v3 net-next 4/8] octeontx2-vf: Ethtool support
+Message-ID: <20200320101451.0036a8cc@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <CA+sq2Cf_enB_wKmoFtiHVFuT+eLeP07GRnzbioxfa=ND9n+_ig@mail.gmail.com>
+References: <1584623248-27508-1-git-send-email-sunil.kovvuri@gmail.com>
+        <1584623248-27508-5-git-send-email-sunil.kovvuri@gmail.com>
+        <20200319155631.GC27807@lunn.ch>
+        <20200319154211.4bf7cf01@kicinski-fedora-PC1C0HJN>
+        <CA+sq2Cf_enB_wKmoFtiHVFuT+eLeP07GRnzbioxfa=ND9n+_ig@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200320155202.25719-1-fw@strlen.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 3/20/20 8:52 AM, Florian Westphal wrote:
-> In rare cases retransmit logic will make a full skb copy, which will not
-> trigger the zeroing added in recent change
-> b738a185beaa ("tcp: ensure skb->dev is NULL before leaving TCP stack").
+On Fri, 20 Mar 2020 12:35:15 +0530 Sunil Kovvuri wrote:
+> On Fri, Mar 20, 2020 at 4:12 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Thu, 19 Mar 2020 16:56:31 +0100 Andrew Lunn wrote:  
+> > > On Thu, Mar 19, 2020 at 06:37:24PM +0530, sunil.kovvuri@gmail.com wrote:  
+> > > > From: Tomasz Duszynski <tduszynski@marvell.com>
+> > > >
+> > > > Added ethtool support for VF devices for
+> > > >  - Driver stats, Tx/Rx perqueue stats
+> > > >  - Set/show Rx/Tx queue count
+> > > >  - Set/show Rx/Tx ring sizes
+> > > >  - Set/show IRQ coalescing parameters
+> > > >  - RSS configuration etc
+> > > >
+> > > > It's the PF which owns the interface, hence VF
+> > > > cannot display underlying CGX interface stats.
+> > > > Except for this rest ethtool support reuses PF's
+> > > > APIs.
+> > > >
+> > > > Signed-off-by: Tomasz Duszynski <tduszynski@marvell.com>
+> > > > Signed-off-by: Sunil Goutham <sgoutham@marvell.com>  
+> > >
+> > > Reviewed-by: Andrew Lunn <andrew@lunn.ch>  
+> >
+> > But they didn't add static inlines, no? Don't the dependencies
+> > look strange?
+> >
+> > VF depends on PF code, but ethtool code (part of PF) also needs
+> > symbols from the VF..
+> >  
 > 
-> Cc: Eric Dumazet <edumazet@google.com>
-> Fixes: 75c119afe14f ("tcp: implement rb-tree based retransmit queue")
-> Fixes: 28f8bfd1ac94 ("netfilter: Support iif matches in POSTROUTING")
-> Signed-off-by: Florian Westphal <fw@strlen.de>
-> ---
+> ethtool code has no dependency on symbols from the VF driver.
+> PF driver compiles and module loads fine without enabling VF driver.
+> While getting rid of __weak fn()s i forgot to remove EXPORT symbols
+> from VF driver.
+> I will remove and resubmit.
 
-Good catch, thanks Florian !
-
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+I see. I saw the exports and assumed it gets called. Thanks.
