@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 92FC018D512
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 17:56:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A8D418D517
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 17:56:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727358AbgCTQ4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 12:56:16 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:50503 "EHLO
+        id S1727763AbgCTQ4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 12:56:22 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:51768 "EHLO
         us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727598AbgCTQ4Q (ORCPT
+        by vger.kernel.org with ESMTP id S1727636AbgCTQ4Q (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 12:56:16 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584723374;
+        s=mimecast20190719; t=1584723375;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=uWJEiu/Z2FQlJcrWSPoV5kXif2wXXa5HAsBAGFtr6yE=;
-        b=XMojtfyCiZ5ka5JPZxMKwNs1jKq8q2Tf4DWUVZeV7AyV8Pq+nSTdT7xo6dEqh9X1naXy2n
-        Aj5OxtOGbygmJIc85nLGvTte01eof4tmQaX9ZuWDjBt+rNwAr743did09y9fom5f0B47Uh
-        IGEA+TEy4y3srPrmnhX4tQWItHIJYEw=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-369-fXXcRJ3yM5eZx4Id7W3oZw-1; Fri, 20 Mar 2020 12:56:12 -0400
-X-MC-Unique: fXXcRJ3yM5eZx4Id7W3oZw-1
-Received: by mail-wr1-f71.google.com with SMTP id o9so2906592wrw.14
-        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 09:56:12 -0700 (PDT)
+        bh=/kUFoLbkDwJxBHQR60+eXJpgtbwabFaqSxr61HTPqBQ=;
+        b=OnG56IueNrkGCOhcs4pnMKU3/VcYZrShM/H9Qj1PkINm8Q8wPPrP8541F1H1Fpi/VQtC3l
+        Jkh01pSRORY9WnV4Whk/rH7Mj2jdKa2XHO+NDZD5Cpcv/Sb6AhLBTRI/WWjXmzAHhauPLR
+        ByCGSfihvWD7JArw8QaW7jjKptCjasE=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-116-JfQmE8B3PN2iZF6WsQXsHA-1; Fri, 20 Mar 2020 12:56:14 -0400
+X-MC-Unique: JfQmE8B3PN2iZF6WsQXsHA-1
+Received: by mail-wr1-f69.google.com with SMTP id d1so1760831wru.15
+        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 09:56:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=uWJEiu/Z2FQlJcrWSPoV5kXif2wXXa5HAsBAGFtr6yE=;
-        b=umOTSOb31NVTrNC+DG9VW92KMxo9Ebn1xi+R4uA5f9iDTO++MKhQqAKFJ2YiRrLBGH
-         c+q63axD/EibpOS7qRsYguogTvTK4jlkxQImdDMixdkBwQJV0hJOblow+scLZrq/o8Od
-         6MVM50Hz0iT09qlX3H9hYXyxbZCNgqedf6VFHL72W1j7v8Y/uJrDaG2qZiiN1TeGsMiR
-         8p7RapjRc/sJgkvGwRCPO7dO0SAhHQhxgimwFUHG3Nt2oHu5XXCCU+MCAh6qL/NHPJ/i
-         7ZruCf3SNoQr3QdlqvWHPw/zeC+YYgvXlsavnPkIRbeyxPRNQmVyCR0cUIFjz2T4B9cH
-         8ETA==
-X-Gm-Message-State: ANhLgQ2Zm+CUY81XusNtUROYfmb/6KXjM0VvoZXUy6NZnw7e3cPaYBEC
-        gZKFnzc4qSsS5NpZLXCFLcD6wdPJaZCZAq7OG9h4rOdLXWSKGiTWk5ifJgHfceKVq6MuR0L3RMB
-        cZLQqOKeWZMjSa3T9
-X-Received: by 2002:adf:e611:: with SMTP id p17mr12092548wrm.212.1584723371689;
-        Fri, 20 Mar 2020 09:56:11 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vt5dnElraEJukrxRAzOrRHyD+59sIcO9ulFVjI/M6bi9ifQambJe+0n3+1b74F6Lzxu/qzP6A==
-X-Received: by 2002:adf:e611:: with SMTP id p17mr12092512wrm.212.1584723371442;
-        Fri, 20 Mar 2020 09:56:11 -0700 (PDT)
+        bh=/kUFoLbkDwJxBHQR60+eXJpgtbwabFaqSxr61HTPqBQ=;
+        b=tuI2gkHnTGk48urIjJvHxoYX5oTVznPEo/dHLMHdyNv53GDTtE7Q9n45k0T+7ppEIw
+         IPx7uKPXgwbpP3JNYkVX6Mo0CSrMHQJB6XTw1Z6CXmVXrLlwd4ZnnsqKGkff7yKdvVv4
+         ko2D2g4VpKfVAmpDcM+wipEUcU5Flty1ZT82YHVRdXzbUJHlkHlsxjv7JB/OMf9jh1eZ
+         sKRcveAkZgRFZoxNVthdi37/arxVTD+KEHj5tVy+pJ6TEKQp8jIpbYVcIck3aT/yY0/h
+         LMsF5fkNB5ZTfD0lZ9UYVk+7VOfsRGCNZ8Dp7mejffs2i4ES1OxP09Z0H8t36Id0F52b
+         6Vww==
+X-Gm-Message-State: ANhLgQ25tASssXYuQnCcA7ajN1NRMBW37mWsocAKmpx80dvpOsRFo9Dw
+        ZztCZF2xwtiB2sSwLbccU3T2Tms8fjBHi2iFvWOJH3k7ge5wOpvLomx5+qK1S2206VSW4vB0Anu
+        svI9y5wsPV3VJHAgG
+X-Received: by 2002:a1c:a950:: with SMTP id s77mr11146310wme.176.1584723373328;
+        Fri, 20 Mar 2020 09:56:13 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vvMik0iRmwMBQj7DF+lo8d9S6Cpw8oix9vIJUrN9OJKTqhA7yQP5oBoFaedtovYEOzOwWkxaw==
+X-Received: by 2002:a1c:a950:: with SMTP id s77mr11146273wme.176.1584723373070;
+        Fri, 20 Mar 2020 09:56:13 -0700 (PDT)
 Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id 9sm8345504wmo.38.2020.03.20.09.56.10
+        by smtp.gmail.com with ESMTPSA id x24sm8328196wmc.36.2020.03.20.09.56.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Mar 2020 09:56:10 -0700 (PDT)
+        Fri, 20 Mar 2020 09:56:11 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BC07C180371; Fri, 20 Mar 2020 17:56:09 +0100 (CET)
-Subject: [PATCH bpf-next v2 2/4] tools: Add EXPECTED_FD-related definitions in
- if_link.h
+        id D3A0218038E; Fri, 20 Mar 2020 17:56:10 +0100 (CET)
+Subject: [PATCH bpf-next v2 3/4] libbpf: Add function to set link XDP fd while
+ specifying old fd
 From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Alexei Starovoitov <ast@kernel.org>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
@@ -67,8 +67,8 @@ Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Lorenz Bauer <lmb@cloudflare.com>,
         Andrey Ignatov <rdna@fb.com>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Date:   Fri, 20 Mar 2020 17:56:09 +0100
-Message-ID: <158472336968.296548.5222057372093911700.stgit@toke.dk>
+Date:   Fri, 20 Mar 2020 17:56:10 +0100
+Message-ID: <158472337077.296548.4666186362987360141.stgit@toke.dk>
 In-Reply-To: <158472336748.296548.5028326196275429565.stgit@toke.dk>
 References: <158472336748.296548.5028326196275429565.stgit@toke.dk>
 User-Agent: StGit/0.22
@@ -82,38 +82,84 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-This adds the IFLA_XDP_EXPECTED_FD netlink attribute definition and the
-XDP_FLAGS_EXPECT_FD flag to if_link.h in tools/include.
+This adds a new function to set the XDP fd while specifying the old fd to
+replace, using the newly added IFLA_XDP_EXPECTED_FD netlink parameter.
 
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- tools/include/uapi/linux/if_link.h |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/lib/bpf/libbpf.h   |    2 ++
+ tools/lib/bpf/libbpf.map |    1 +
+ tools/lib/bpf/netlink.c  |   22 +++++++++++++++++++++-
+ 3 files changed, 24 insertions(+), 1 deletion(-)
 
-diff --git a/tools/include/uapi/linux/if_link.h b/tools/include/uapi/linux/if_link.h
-index 024af2d1d0af..e5eced1c28f4 100644
---- a/tools/include/uapi/linux/if_link.h
-+++ b/tools/include/uapi/linux/if_link.h
-@@ -960,11 +960,12 @@ enum {
- #define XDP_FLAGS_SKB_MODE		(1U << 1)
- #define XDP_FLAGS_DRV_MODE		(1U << 2)
- #define XDP_FLAGS_HW_MODE		(1U << 3)
-+#define XDP_FLAGS_EXPECT_FD		(1U << 4)
- #define XDP_FLAGS_MODES			(XDP_FLAGS_SKB_MODE | \
- 					 XDP_FLAGS_DRV_MODE | \
- 					 XDP_FLAGS_HW_MODE)
- #define XDP_FLAGS_MASK			(XDP_FLAGS_UPDATE_IF_NOEXIST | \
--					 XDP_FLAGS_MODES)
-+					 XDP_FLAGS_MODES | XDP_FLAGS_EXPECT_FD)
- 
- /* These are stored into IFLA_XDP_ATTACHED on dump. */
- enum {
-@@ -984,6 +985,7 @@ enum {
- 	IFLA_XDP_DRV_PROG_ID,
- 	IFLA_XDP_SKB_PROG_ID,
- 	IFLA_XDP_HW_PROG_ID,
-+	IFLA_XDP_EXPECTED_FD,
- 	__IFLA_XDP_MAX,
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index d38d7a629417..b5ca4f741e28 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -445,6 +445,8 @@ struct xdp_link_info {
  };
  
+ LIBBPF_API int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags);
++LIBBPF_API int bpf_set_link_xdp_fd_replace(int ifindex, int fd, int old_fd,
++					   __u32 flags);
+ LIBBPF_API int bpf_get_link_xdp_id(int ifindex, __u32 *prog_id, __u32 flags);
+ LIBBPF_API int bpf_get_link_xdp_info(int ifindex, struct xdp_link_info *info,
+ 				     size_t info_size, __u32 flags);
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 5129283c0284..154f1d94fa63 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -244,4 +244,5 @@ LIBBPF_0.0.8 {
+ 		bpf_link__pin_path;
+ 		bpf_link__unpin;
+ 		bpf_program__set_attach_target;
++		bpf_set_link_xdp_fd_replace;
+ } LIBBPF_0.0.7;
+diff --git a/tools/lib/bpf/netlink.c b/tools/lib/bpf/netlink.c
+index 431bd25c6cdb..39bd0ead1546 100644
+--- a/tools/lib/bpf/netlink.c
++++ b/tools/lib/bpf/netlink.c
+@@ -132,7 +132,8 @@ static int bpf_netlink_recv(int sock, __u32 nl_pid, int seq,
+ 	return ret;
+ }
+ 
+-int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
++static int __bpf_set_link_xdp_fd_replace(int ifindex, int fd, int old_fd,
++					 __u32 flags)
+ {
+ 	int sock, seq = 0, ret;
+ 	struct nlattr *nla, *nla_xdp;
+@@ -178,6 +179,14 @@ int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
+ 		nla->nla_len += nla_xdp->nla_len;
+ 	}
+ 
++	if (flags & XDP_FLAGS_EXPECT_FD) {
++		nla_xdp = (struct nlattr *)((char *)nla + nla->nla_len);
++		nla_xdp->nla_type = IFLA_XDP_EXPECTED_FD;
++		nla_xdp->nla_len = NLA_HDRLEN + sizeof(int);
++		memcpy((char *)nla_xdp + NLA_HDRLEN, &old_fd, sizeof(old_fd));
++		nla->nla_len += nla_xdp->nla_len;
++	}
++
+ 	req.nh.nlmsg_len += NLA_ALIGN(nla->nla_len);
+ 
+ 	if (send(sock, &req, req.nh.nlmsg_len, 0) < 0) {
+@@ -191,6 +200,17 @@ int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
+ 	return ret;
+ }
+ 
++int bpf_set_link_xdp_fd_replace(int ifindex, int fd, int old_fd, __u32 flags)
++{
++	return __bpf_set_link_xdp_fd_replace(ifindex, fd, old_fd,
++					     flags | XDP_FLAGS_EXPECT_FD);
++}
++
++int bpf_set_link_xdp_fd(int ifindex, int fd, __u32 flags)
++{
++	return __bpf_set_link_xdp_fd_replace(ifindex, fd, -1, flags);
++}
++
+ static int __dump_link_nlmsg(struct nlmsghdr *nlh,
+ 			     libbpf_dump_nlmsg_t dump_link_nlmsg, void *cookie)
+ {
 
