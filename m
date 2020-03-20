@@ -2,83 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D311118CC4A
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 12:08:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DB16F18CC66
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 12:10:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727257AbgCTLIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 07:08:13 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:43806 "EHLO
-        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726912AbgCTLIN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 07:08:13 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02KB88I5035120;
-        Fri, 20 Mar 2020 06:08:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1584702488;
-        bh=9WUktMUqDa4d61QWvx1cJ9oQzyaLfT2wrs3FrV4yau0=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=qpHxPDQtSGCzq7nwtJi21Kj85nQAHGe1Ep4qiyAwoqZmfjavHAXJywIxnw69bkplA
-         ZTJYC0+T5z84AnmxIkPtCG2r8y7TSXz4jwSAhoSDJQc20sDzfVicV3nj3LhaUidYe1
-         B6mzr9v9NYFPL3QGuICcNZT+Fe3rp0n+jWSB8qr4=
-Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 02KB88kC047568
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 20 Mar 2020 06:08:08 -0500
-Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE108.ent.ti.com
- (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 20
- Mar 2020 06:08:07 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 20 Mar 2020 06:08:07 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02KB84gh053481;
-        Fri, 20 Mar 2020 06:08:05 -0500
-Subject: Re: [PATCH net-next v2 00/10] net: ethernet: ti: cpts: add irq and
- HW_TS_PUSH events
-To:     "David S . Miller" <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Tony Lindgren <tony@atomide.com>
-CC:     Sekhar Nori <nsekhar@ti.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        netdev <netdev@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20200319165802.30898-1-grygorii.strashko@ti.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <6975cb4d-8077-60ac-05b5-27a9aa67bf30@ti.com>
-Date:   Fri, 20 Mar 2020 13:07:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
-MIME-Version: 1.0
-In-Reply-To: <20200319165802.30898-1-grygorii.strashko@ti.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        id S1727337AbgCTLKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 07:10:07 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:34330 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726894AbgCTLKH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 07:10:07 -0400
+Received: by mail-pg1-f196.google.com with SMTP id t3so2929002pgn.1;
+        Fri, 20 Mar 2020 04:10:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=8DC0Aw490tAtEteDyenp5f58iML9PsV1SemgO6pMc4k=;
+        b=id84JLVQrc1pByXQ0kRoTprdf6KnYiB0t8lk6sCBFM9RdBrAOUPfbvVMzV9qiaL87i
+         Wvp0xRICCAcPHoCFnMV8StTu3kzu2Ft7+QZOs/hvVTDp5jVlpx8UGbuABCSV+viP2YNC
+         mRkOrLWy6XA1ndOvPPBf3ObeCBzPs4nSgMonij7C0tCECY+ai9NEJSlOfTAmCYY7HowQ
+         ypNdhiNr1c38NknrwPv2fPDaonMx/BfmL48kL+8o3LrdM6Fc0w3969as+h8J+OwPzxsa
+         HnPzBg+fibzVhbE8FTsCvmqAH8+x9IkWTNoFBL3QbbE2qNdzuWnBsNsWef+oiodFcD1e
+         9u1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=8DC0Aw490tAtEteDyenp5f58iML9PsV1SemgO6pMc4k=;
+        b=om4pd303E0mgA1BPEs76WWotfJpBWkwFrcgK7xyoelHDpjpVsJ2JZw0iMmcVq+nlJu
+         +gCQI0PDrbgb6amHrjhs9kn1X3mcFtZPz8BVbIJWey2KfHnzBU6Bkn1sHEci1H2ehHru
+         B9JEfMx1ttJoBBAXdlpmb4pylRxHYqwLP10CuUzURjEvkglvkBziDWWzyH5A2EKClFj1
+         kGGZdYH0gJEjLaqtss/zLf1mBTONyD9NE5J7NYOhqzaoSUq7N06mbnneuvSRkDmh0PQV
+         b/Rg2ucj3kuxpBUJYECCS+81X7bQZasOcyzrDY0WDlNR6iwvCcmNhYcPA/CufCaVhYom
+         WYGg==
+X-Gm-Message-State: ANhLgQ2JKfDZxtRw9RH0SYH4wXJrpfiueMatf5FKmY6fOp0nBKxqSXiY
+        83Gpc0F5nk/aUdPacOWjQIwcU/TOHCkWlg==
+X-Google-Smtp-Source: ADFU+vuVlMHmABpQyheyAcx3cY1cUhb6lfIhNDQ0xBjDWcqim11OoGyYbBSUhx+SgoDYa54pUcjH7w==
+X-Received: by 2002:a62:d144:: with SMTP id t4mr1396205pfl.10.1584702605420;
+        Fri, 20 Mar 2020 04:10:05 -0700 (PDT)
+Received: from localhost ([161.117.239.120])
+        by smtp.gmail.com with ESMTPSA id u9sm5202984pfn.116.2020.03.20.04.10.04
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 20 Mar 2020 04:10:04 -0700 (PDT)
+From:   Qiujun Huang <hqjagain@gmail.com>
+To:     marcelo.leitner@gmail.com, davem@davemloft.net
+Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com, kuba@kernel.org,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, anenbupt@gmail.com,
+        Qiujun Huang <hqjagain@gmail.com>
+Subject: [PATCH v3] sctp: fix refcount bug in sctp_wfree
+Date:   Fri, 20 Mar 2020 19:09:59 +0800
+Message-Id: <20200320110959.2114-1-hqjagain@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Do accounting for skb's real sk.
+In some case skb->sk != asoc->base.sk:
 
+for the trouble SKB, it was in outq->transmitted queue
 
-On 19/03/2020 18:57, Grygorii Strashko wrote:
-> Hi Richard, All,
-> 
-> v2: no functional changes.
-> 
-> This is re-spin of patches to add CPSW IRQ and HW_TS_PUSH events support I've
-> sent long time ago [1]. In this series, I've tried to restructure and split changes,
-> and also add few additional optimizations comparing to initial RFC submission [1].
-> 
+sctp_outq_sack
+	sctp_check_transmitted
+		SKB was moved to outq->sack
+	then throw away the sack queue
+		SKB was deleted from outq->sack
+(but the datamsg held SKB at sctp_datamsg_to_asoc
+So, sctp_wfree was not called to destroy SKB)
 
-Pls, ignore this submission. Sent by mistake.
+then migrate happened
 
-Sorry for this.
+	sctp_for_each_tx_datachunk(
+	sctp_clear_owner_w);
+	sctp_assoc_migrate();
+	sctp_for_each_tx_datachunk(
+	sctp_set_owner_w);
+SKB was not in the outq, and was not changed to newsk
 
+finally
+
+__sctp_outq_teardown
+	sctp_chunk_put (for another skb)
+		sctp_datamsg_put
+			__kfree_skb(msg->frag_list)
+				sctp_wfree (for SKB)
+this case in sctp_wfree SKB->sk was oldsk.
+
+It looks only trouble here so handling it in sctp_wfree is enough.
+
+Reported-and-tested-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
+Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
+---
+ net/sctp/socket.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 1b56fc440606..5f5c28b30e25 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -9080,7 +9080,7 @@ static void sctp_wfree(struct sk_buff *skb)
+ {
+ 	struct sctp_chunk *chunk = skb_shinfo(skb)->destructor_arg;
+ 	struct sctp_association *asoc = chunk->asoc;
+-	struct sock *sk = asoc->base.sk;
++	struct sock *sk = skb->sk;
+ 
+ 	sk_mem_uncharge(sk, skb->truesize);
+ 	sk->sk_wmem_queued -= skb->truesize + sizeof(struct sctp_chunk);
+@@ -9109,7 +9109,7 @@ static void sctp_wfree(struct sk_buff *skb)
+ 	}
+ 
+ 	sock_wfree(skb);
+-	sctp_wake_up_waiters(sk, asoc);
++	sctp_wake_up_waiters(asoc->base.sk, asoc);
+ 
+ 	sctp_association_put(asoc);
+ }
 -- 
-Best regards,
-grygorii
+2.17.1
+
