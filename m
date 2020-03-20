@@ -2,54 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FA7418C68D
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 05:38:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B654018C68E
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 05:38:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726847AbgCTEiB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 00:38:01 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:46892 "EHLO
+        id S1726907AbgCTEie convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 20 Mar 2020 00:38:34 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:46900 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725883AbgCTEiB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 00:38:01 -0400
+        with ESMTP id S1725446AbgCTEid (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 00:38:33 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8E6D11590D672;
-        Thu, 19 Mar 2020 21:38:00 -0700 (PDT)
-Date:   Thu, 19 Mar 2020 21:38:00 -0700 (PDT)
-Message-Id: <20200319.213800.2199070365154062407.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com
-Subject: Re: [PATCH v2 net-next] net: dsa: sja1105: Avoid error message for
- unknown PHY mode on disabled ports
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id EFB171590D672;
+        Thu, 19 Mar 2020 21:38:32 -0700 (PDT)
+Date:   Thu, 19 Mar 2020 21:38:32 -0700 (PDT)
+Message-Id: <20200319.213832.2258629564733373153.davem@davemloft.net>
+To:     ilpo.jarvinen@cs.helsinki.fi
+Cc:     netdev@vger.kernel.org, ycheng@google.com, ncardwell@google.com,
+        eric.dumazet@gmail.com, olivier.tilmans@nokia-bell-labs.com
+Subject: Re: [RFC PATCH 00/28]: Accurate ECN for TCP
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200319201210.22824-1-olteanv@gmail.com>
-References: <20200319201210.22824-1-olteanv@gmail.com>
+In-Reply-To: <alpine.DEB.2.20.2003192222320.5256@whs-18.cs.helsinki.fi>
+References: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi>
+        <20200318.162958.1146893420208387579.davem@davemloft.net>
+        <alpine.DEB.2.20.2003192222320.5256@whs-18.cs.helsinki.fi>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 19 Mar 2020 21:38:00 -0700 (PDT)
+Content-Type: Text/Plain; charset=iso-8859-1
+Content-Transfer-Encoding: 8BIT
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 19 Mar 2020 21:38:33 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Thu, 19 Mar 2020 22:12:10 +0200
+From: "Ilpo Järvinen" <ilpo.jarvinen@cs.helsinki.fi>
+Date: Thu, 19 Mar 2020 22:25:23 +0200 (EET)
 
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> On Wed, 18 Mar 2020, David Miller wrote:
 > 
-> When sja1105_init_mii_settings iterates over the port list, it prints
-> this message for disabled ports, because they don't have a valid
-> phy-mode:
+>> From: Ilpo Järvinen <ilpo.jarvinen@helsinki.fi>
+>> Date: Wed, 18 Mar 2020 11:43:04 +0200
+>> 
+>> > Comments would be highly appreciated.
+>> 
+>> Two coding style comments which you should audit your entire submission
+>> for:
+>> 
+>> 1) Please order local variables in reverse christmas tree ordering (longest
+>>    to shortest long)
 > 
-> [    4.778702] sja1105 spi2.0: Unsupported PHY mode unknown!
-> 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Suggested-by: Vivien Didelot <vivien.didelot@gmail.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Does this apply also to the usual struct tcp_sock *tp = tcp_sk(sk); line
+> or can it be put first if there are some dependencies on it?
 
-Applied, thanks.
+Yes, please.  Put the assignment into the code lines if necessary.
