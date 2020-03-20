@@ -2,85 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5783418CE19
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 13:56:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C98A718CE12
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 13:55:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727002AbgCTMzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 08:55:47 -0400
-Received: from merlin.infradead.org ([205.233.59.134]:58656 "EHLO
-        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727279AbgCTMzr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 08:55:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=9sJuQlZdjTLh4p9vc8U/OzHYsApB7N+ztV93SXfUXTY=; b=S+msKOf2a1fh8blY+Rww+BWM12
-        nVEZN4NzwFV6andPM4+8lKK11q/OicWX2iQkylcgiiXoJXlNoBsNsuH3Hsp2RR8RDPZL2TdcCODPS
-        uXqwQjWFKzeQTHtaizkhr7Eo97mIjvh21zbrPXi93EqkofUUhGO+C6IK+RNwVwfqauDddv3GldqOZ
-        jfFfEHZEnFgz//yhDOiVCZfQldh+E+9GX+YRXaUAVYRX5jQUgr/PHWQVGE7cyWwVF36aIaotjD5Zk
-        0y7RVQesMd3sxQR2DC76m8acC4k0uK2OUV9rbi/RfYT8M2tZQ3jZP6DJGye+lpHGnC+0OB1EyRrvO
-        hrIvLsLg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jFHAv-0000xV-Ux; Fri, 20 Mar 2020 12:54:58 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 40E9C305C92;
-        Fri, 20 Mar 2020 13:54:55 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 0E42E2858D5B2; Fri, 20 Mar 2020 13:54:55 +0100 (CET)
-Date:   Fri, 20 Mar 2020 13:54:55 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Davidlohr Bueso <dave@stgolabs.net>
-Cc:     tglx@linutronix.de, arnd@arndb.de, balbi@kernel.org,
-        bhelgaas@google.com, bigeasy@linutronix.de, davem@davemloft.net,
-        gregkh@linuxfoundation.org, joel@joelfernandes.org,
-        kurt.schwemmer@microsemi.com, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, logang@deltatee.com,
-        mingo@kernel.org, mpe@ellerman.id.au, netdev@vger.kernel.org,
-        oleg@redhat.com, paulmck@kernel.org, rdunlap@infradead.org,
-        rostedt@goodmis.org, torvalds@linux-foundation.org,
-        will@kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Davidlohr Bueso <dbueso@suse.de>
-Subject: Re: [PATCH 18/15] kvm: Replace vcpu->swait with rcuwait
-Message-ID: <20200320125455.GE20696@hirez.programming.kicks-ass.net>
-References: <20200318204302.693307984@linutronix.de>
- <20200320085527.23861-1-dave@stgolabs.net>
- <20200320085527.23861-3-dave@stgolabs.net>
+        id S1727259AbgCTMzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 08:55:42 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:50460 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727002AbgCTMzm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 08:55:42 -0400
+Received: from mail-qv1-f69.google.com ([209.85.219.69])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <gpiccoli@canonical.com>)
+        id 1jFHBb-0006pJ-9V
+        for netdev@vger.kernel.org; Fri, 20 Mar 2020 12:55:39 +0000
+Received: by mail-qv1-f69.google.com with SMTP id o102so5628245qvo.14
+        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 05:55:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HQQYN18U+Ixm8K0qvV3C/c4kjknwZwojXBOMDo2RLAw=;
+        b=soPKLnqdA/0fAMhuPqjzX1YiNlxU+kivobQgUGO26B+OLqGe01Wow+Z7HI3dSzYDed
+         RDRWoMB5730xNC0CwyQgcK/CqkUpn/f8KYvCoKXm9wqgrZKbc9OJRQrbbXg/4TnlCuVK
+         NmcSN06JgYUCsvXPwp6LxLxqSJm/X1/vQTipmy334xGt07ow9K8Qdqj0xg675eQGpdOA
+         pA6rnHgisdXbFE8pGmvN5iUQgV+9I4ig6SEKMn21/yhL3986fb9iTzYRnMOM9cUleZl5
+         LDUxl9yYE0ix2NFKgs6xDjlEzYyqoKyHPXteLiySVlQrskzfM8RFLs8D5Ey/CLvRF87B
+         7DGw==
+X-Gm-Message-State: ANhLgQ2JL0jwF13J9enty1v2JoRcnIq75WfA5DoNJWKvRCuzSEewLaTM
+        eTttdd7pDz6Ka3P9NgT7KAtDcr2cOUMeG/HpkAoyTbz8gkhg8j+fyvkuEBiH4amSMtC627PXGmz
+        XyeKt8fsVZCEfvd+bEtqRwUasXpJrp6C81w==
+X-Received: by 2002:a0c:a993:: with SMTP id a19mr7898379qvb.201.1584708938346;
+        Fri, 20 Mar 2020 05:55:38 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vvh62xg1FvR6zDglPLyySL2qpCRC9G3j3ih9h3AnKlILMhXY2pAO0A6fhU1Dmott8ZxsnxvNw==
+X-Received: by 2002:a0c:a993:: with SMTP id a19mr7898351qvb.201.1584708938047;
+        Fri, 20 Mar 2020 05:55:38 -0700 (PDT)
+Received: from localhost (189-47-87-73.dsl.telesp.net.br. [189.47.87.73])
+        by smtp.gmail.com with ESMTPSA id u123sm4029979qkf.77.2020.03.20.05.55.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 20 Mar 2020 05:55:37 -0700 (PDT)
+From:   "Guilherme G. Piccoli" <gpiccoli@canonical.com>
+To:     netanel@amazon.com, akiyano@amazon.com, netdev@vger.kernel.org
+Cc:     gtzalik@amazon.com, saeedb@amazon.com, zorik@amazon.com,
+        gpiccoli@canonical.com, kernel@gpiccoli.net, gshan@redhat.com,
+        gavin.guo@canonical.com, jay.vosburgh@canonical.com,
+        pedro.principeza@canonical.com
+Subject: [PATCH] net: ena: Add PCI shutdown handler to allow safe kexec
+Date:   Fri, 20 Mar 2020 09:55:34 -0300
+Message-Id: <20200320125534.28966-1-gpiccoli@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200320085527.23861-3-dave@stgolabs.net>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 20, 2020 at 01:55:26AM -0700, Davidlohr Bueso wrote:
-> -	swait_event_interruptible_exclusive(*wq, ((!vcpu->arch.power_off) &&
-> -				       (!vcpu->arch.pause)));
-> +	rcuwait_wait_event(*wait,
-> +			   (!vcpu->arch.power_off) && (!vcpu->arch.pause),
-> +			   TASK_INTERRUPTIBLE);
+Currently ENA only provides the PCI remove() handler, used during rmmod
+for example. This is not called on shutdown/kexec path; we are potentially
+creating a failure scenario on kexec:
 
-> -	for (;;) {
-> -		prepare_to_swait_exclusive(&vcpu->wq, &wait, TASK_INTERRUPTIBLE);
-> -
-> -		if (kvm_vcpu_check_block(vcpu) < 0)
-> -			break;
-> -
-> -		waited = true;
-> -		schedule();
-> -	}
-> -
-> -	finish_swait(&vcpu->wq, &wait);
-> +	rcuwait_wait_event(&vcpu->wait,
-> +			   (block_check = kvm_vcpu_check_block(vcpu)) < 0,
-> +			   TASK_INTERRUPTIBLE);
+(a) Kexec is triggered, no shutdown() / remove() handler is called for ENA;
+instead pci_device_shutdown() clears the master bit of the PCI device,
+stopping all DMA transactions;
 
-Are these yet more instances that really want to be TASK_IDLE ?
+(b) Kexec reboot happens and the device gets enabled again, likely having
+its FW with that DMA transaction buffered; then it may trigger the (now
+invalid) memory operation in the new kernel, corrupting kernel memory area.
+
+This patch aims to prevent this, by implementing a shutdown() handler
+quite similar to the remove() one - the difference being the handling
+of the netdev, which is unregistered on remove(), but following the
+convention observed in other drivers, it's only detached on shutdown().
+
+This prevents an odd issue in AWS Nitro instances, in which after the 2nd
+kexec the next one will fail with an initrd corruption, caused by a wild
+DMA write to invalid kernel memory. The lspci output for the adapter
+present in my instance is:
+
+00:05.0 Ethernet controller [0200]: Amazon.com, Inc. Elastic Network
+Adapter (ENA) [1d0f:ec20]
+
+Suggested-by: Gavin Shan <gshan@redhat.com>
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@canonical.com>
+---
+
+
+The idea for this patch came from an informal conversation with my
+friend Gavin Shan, based on his past experience with similar issues.
+I'd like to thank him for the great suggestion!
+
+As a test metric, I've performed 1000 kexecs with this patch, whereas
+without this one, the 3rd kexec failed with initrd corruption. Also,
+one test that I've done before writing the patch was just to rmmod
+the driver before the kexecs, and it worked fine too.
+
+I suggest we add this patch in stable releases as well.
+Thanks in advance for reviews,
+
+Guilherme
+
+
+ drivers/net/ethernet/amazon/ena/ena_netdev.c | 51 ++++++++++++++++----
+ 1 file changed, 41 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index 0b2fd96b93d7..7a5c01ff2ee8 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -4325,13 +4325,15 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ /*****************************************************************************/
+ 
+-/* ena_remove - Device Removal Routine
++/* __ena_shutoff - Helper used in both PCI remove/shutdown routines
+  * @pdev: PCI device information struct
++ * @shutdown: Is it a shutdown operation? If false, means it is a removal
+  *
+- * ena_remove is called by the PCI subsystem to alert the driver
+- * that it should release a PCI device.
++ * __ena_shutoff is a helper routine that does the real work on shutdown and
++ * removal paths; the difference between those paths is with regards to whether
++ * dettach or unregister the netdevice.
+  */
+-static void ena_remove(struct pci_dev *pdev)
++static void __ena_shutoff(struct pci_dev *pdev, bool shutdown)
+ {
+ 	struct ena_adapter *adapter = pci_get_drvdata(pdev);
+ 	struct ena_com_dev *ena_dev;
+@@ -4350,13 +4352,17 @@ static void ena_remove(struct pci_dev *pdev)
+ 
+ 	cancel_work_sync(&adapter->reset_task);
+ 
+-	rtnl_lock();
++	rtnl_lock(); /* lock released inside the below if-else block */
+ 	ena_destroy_device(adapter, true);
+-	rtnl_unlock();
+-
+-	unregister_netdev(netdev);
+-
+-	free_netdev(netdev);
++	if (shutdown) {
++		netif_device_detach(netdev);
++		dev_close(netdev);
++		rtnl_unlock();
++	} else {
++		rtnl_unlock();
++		unregister_netdev(netdev);
++		free_netdev(netdev);
++	}
+ 
+ 	ena_com_rss_destroy(ena_dev);
+ 
+@@ -4371,6 +4377,30 @@ static void ena_remove(struct pci_dev *pdev)
+ 	vfree(ena_dev);
+ }
+ 
++/* ena_remove - Device Removal Routine
++ * @pdev: PCI device information struct
++ *
++ * ena_remove is called by the PCI subsystem to alert the driver
++ * that it should release a PCI device.
++ */
++
++static void ena_remove(struct pci_dev *pdev)
++{
++	__ena_shutoff(pdev, false);
++}
++
++/* ena_shutdown - Device Shutdown Routine
++ * @pdev: PCI device information struct
++ *
++ * ena_shutdown is called by the PCI subsystem to alert the driver that
++ * a shutdown/reboot (or kexec) is happening and device must be disabled.
++ */
++
++static void ena_shutdown(struct pci_dev *pdev)
++{
++	__ena_shutoff(pdev, true);
++}
++
+ #ifdef CONFIG_PM
+ /* ena_suspend - PM suspend callback
+  * @pdev: PCI device information struct
+@@ -4420,6 +4450,7 @@ static struct pci_driver ena_pci_driver = {
+ 	.id_table	= ena_pci_tbl,
+ 	.probe		= ena_probe,
+ 	.remove		= ena_remove,
++	.shutdown	= ena_shutdown,
+ #ifdef CONFIG_PM
+ 	.suspend    = ena_suspend,
+ 	.resume     = ena_resume,
+-- 
+2.25.1
 
