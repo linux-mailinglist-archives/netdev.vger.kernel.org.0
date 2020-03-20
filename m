@@ -2,88 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C254218CAAE
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 10:49:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DACD18CAE1
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 10:54:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727265AbgCTJtb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 05:49:31 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:35047 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727120AbgCTJtZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 05:49:25 -0400
-Received: from localhost ([127.0.0.1] helo=flow.W.breakpoint.cc)
-        by Galois.linutronix.de with esmtp (Exim 4.80)
-        (envelope-from <bigeasy@linutronix.de>)
-        id 1jFEH3-0000vL-DT; Fri, 20 Mar 2020 10:49:05 +0100
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     tglx@linutronix.de
-Cc:     arnd@arndb.de, balbi@kernel.org, bhelgaas@google.com,
-        bigeasy@linutronix.de, dave@stgolabs.net, davem@davemloft.net,
-        gregkh@linuxfoundation.org, joel@joelfernandes.org,
-        kurt.schwemmer@microsemi.com, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, logang@deltatee.com,
-        mingo@kernel.org, mpe@ellerman.id.au, netdev@vger.kernel.org,
-        oleg@redhat.com, paulmck@kernel.org, peterz@infradead.org,
-        rdunlap@infradead.org, rostedt@goodmis.org,
-        torvalds@linux-foundation.org, will@kernel.org,
-        Michal Simek <monstr@monstr.eu>,
-        kbuild test robot <lkp@intel.com>
-Subject: [PATCH 5/5] microblaze: Remove mm.h from asm/uaccess.h
-Date:   Fri, 20 Mar 2020 10:48:56 +0100
-Message-Id: <20200320094856.3453859-6-bigeasy@linutronix.de>
-X-Mailer: git-send-email 2.26.0.rc2
-In-Reply-To: <20200320094856.3453859-1-bigeasy@linutronix.de>
-References: <20200318204408.010461877@linutronix.de>
- <20200320094856.3453859-1-bigeasy@linutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+        id S1727178AbgCTJxx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 05:53:53 -0400
+Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:42770 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726602AbgCTJxw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 05:53:52 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id ACFF1C0F90;
+        Fri, 20 Mar 2020 09:53:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1584698031; bh=Iukq6WuoUVLoUcaK3eRq2H2/jc1iVUoBjvWnbKEYOt0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AxTAIJ8pEaPkEb+SNiR8hA9LUqZ/S+rlVVLQ5QpQSits94daVGK8oHaQJZA3t2fnv
+         3wBKqdJgFslChM547SFmxEZwdsUj7KUSsKKEBztzpjCK/KEd984hOIXNY+DMzFgwHA
+         nu94AnlnqdBHqETMpWOls+6XdUgSyvV70QIznBnLADEkUnE5NborqvQdLb8dM/pCFx
+         PFGUrOoQdjmbIo6VJ+PUX9YMwQ9k+VO+aRqRfITfKGUPhPdwjNeFLmYM6Ocigr12P5
+         OBDejrsPc/p7nC7fJ401FgCZO/+NKItSWLjXS+tM9qzVxxJ+IFxnSPEkJ53DomyYOG
+         vyEUQwjVatkMQ==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 44DABA005F;
+        Fri, 20 Mar 2020 09:53:47 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/4] net: phy: xpcs: Improvements for -next
+Date:   Fri, 20 Mar 2020 10:53:33 +0100
+Message-Id: <cover.1584697754.git.Jose.Abreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The defconfig compiles without linux/mm.h. With mm.h included the
-include chain leands to:
-|   CC      kernel/locking/percpu-rwsem.o
-| In file included from include/linux/huge_mm.h:8,
-|                  from include/linux/mm.h:567,
-|                  from arch/microblaze/include/asm/uaccess.h:,
-|                  from include/linux/uaccess.h:11,
-|                  from include/linux/sched/task.h:11,
-|                  from include/linux/sched/signal.h:9,
-|                  from include/linux/rcuwait.h:6,
-|                  from include/linux/percpu-rwsem.h:8,
-|                  from kernel/locking/percpu-rwsem.c:6:
-| include/linux/fs.h:1422:29: error: array type has incomplete element type=
- 'struct percpu_rw_semaphore'
-|  1422 |  struct percpu_rw_semaphore rw_sem[SB_FREEZE_LEVELS];
+Misc set of improvements for XPCS. All for net-next.
 
-once rcuwait.h includes linux/sched/signal.h.
+Patch 1/4, returns link error upon 10GKR faults are detected.
 
-Remove the linux/mm.h include.
+Patch 2/4, resets XPCS upon probe so that we start from well known state.
 
-Cc: Michal Simek <monstr@monstr.eu>
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Patch 3/4, sets Link as down if AutoNeg is enabled but did not finish with
+success.
+
+Patch 4/4, restarts AutoNeg process if previous outcome was not valid.
+
 ---
- arch/microblaze/include/asm/uaccess.h | 1 -
- 1 file changed, 1 deletion(-)
+Cc: Jose Abreu <Jose.Abreu@synopsys.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
 
-diff --git a/arch/microblaze/include/asm/uaccess.h b/arch/microblaze/includ=
-e/asm/uaccess.h
-index a1f206b90753a..4916d5fbea5e3 100644
---- a/arch/microblaze/include/asm/uaccess.h
-+++ b/arch/microblaze/include/asm/uaccess.h
-@@ -12,7 +12,6 @@
- #define _ASM_MICROBLAZE_UACCESS_H
-=20
- #include <linux/kernel.h>
--#include <linux/mm.h>
-=20
- #include <asm/mmu.h>
- #include <asm/page.h>
---=20
-2.26.0.rc2
+Jose Abreu (4):
+  net: phy: xpcs: Return error when 10GKR link errors are found
+  net: phy: xpcs: Reset XPCS upon probe
+  net: phy: xpcs: Set Link down if AutoNeg is enabled and did not finish
+  net: phy: xpcs: Restart AutoNeg if outcome was invalid
+
+ drivers/net/phy/mdio-xpcs.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+-- 
+2.7.4
 
