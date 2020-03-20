@@ -2,28 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8C9E18CF52
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 14:46:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48BBC18CF76
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 14:51:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727217AbgCTNqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 09:46:54 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:46446 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726843AbgCTNqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 09:46:54 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1jFHz9-00Ay9P-Ey; Fri, 20 Mar 2020 14:46:51 +0100
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211-next 2020-03-20
-Date:   Fri, 20 Mar 2020 14:46:41 +0100
-Message-Id: <20200320134642.87932-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1725446AbgCTNvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 09:51:42 -0400
+Received: from correo.us.es ([193.147.175.20]:41498 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726838AbgCTNvm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Mar 2020 09:51:42 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 2B451172C8A
+        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 14:51:08 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 1ACEBDA3A3
+        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 14:51:08 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 107B6DA3A9; Fri, 20 Mar 2020 14:51:08 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C3EFFDA788;
+        Fri, 20 Mar 2020 14:51:05 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 20 Mar 2020 14:51:05 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [90.77.255.23])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 9FE3242EE393;
+        Fri, 20 Mar 2020 14:51:05 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 0/4] Netfilter fixes for net
+Date:   Fri, 20 Mar 2020 14:51:30 +0100
+Message-Id: <20200320135134.436907-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -31,97 +50,48 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-Here's another set of changes for net-next, nothing really stands out,
-but see the description and shortlog below.
+The following patchset contains Netfilter fixes for net:
 
-Please pull and let me know if there's any problem.
+1) Refetch IP header pointer after pskb_may_pull() in flowtable,
+   from Haishuang Yan.
 
-Thanks,
-johannes
+2) Fix memleak in flowtable offload in nf_flow_table_free(),
+   from Paul Blakey.
 
+3) Set control.addr_type mask in flowtable offload, from Edward Cree.
 
+You can pull these changes from:
 
-The following changes since commit 74522e7baae2561870ea8ddf09dc6a126458cd7b:
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
 
-  net: sched: set the hw_stats_type in pedit loop (2020-03-16 02:13:43 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-net-next-2020-03-20
-
-for you to fetch changes up to 8fa180bb4aceaa25233ea61032eab5b025fb522f:
-
-  mac80211: driver can remain on channel if not using chan_ctx (2020-03-20 14:42:21 +0100)
+Thank you.
 
 ----------------------------------------------------------------
-Another set of changes:
- * HE ranging (fine timing measurement) API support
- * hwsim gets virtio support, for use with wmediumd,
-   to be able to simulate with multiple machines
- * eapol-over-nl80211 improvements to exclude preauth
- * IBSS reset support, to recover connections from
-   userspace
- * and various others.
+
+The following changes since commit 3c025b6317272ee8493ee20fa5035c087626af48:
+
+  Merge branch 'wireguard-fixes' (2020-03-18 18:51:43 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to 15ff197237e76c4dab06b7b518afaa4ebb1c43e0:
+
+  netfilter: flowtable: populate addr_type mask (2020-03-19 21:20:04 +0100)
 
 ----------------------------------------------------------------
-Avraham Stern (1):
-      nl80211/cfg80211: add support for non EDCA based ranging measurement
+Edward Cree (1):
+      netfilter: flowtable: populate addr_type mask
 
-Erel Geron (1):
-      mac80211_hwsim: add frame transmission support over virtio
+Haishuang Yan (2):
+      netfilter: flowtable: reload ip{v6}h in nf_flow_nat_ip{v6}
+      netfilter: flowtable: reload ip{v6}h in nf_flow_tuple_ip{v6}
 
-Johannes Berg (4):
-      cfg80211: fix documentation format
-      mac80211: don't leave skb->next/prev pointing to stack
-      mac80211: consider WLAN_EID_EXT_HE_OPERATION for parsing CRC
-      nl80211: clarify code in nl80211_del_station()
+Paul Blakey (1):
+      netfilter: flowtable: Fix flushing of offloaded flows on free
 
-Markus Theil (2):
-      nl80211: add no pre-auth attribute and ext. feature flag for ctrl. port
-      mac80211: handle no-preauth flag for control port
-
-Nicolas Cavallari (2):
-      cfg80211: Add support for userspace to reset stations in IBSS mode
-      mac80211: Allow deleting stations in ibss mode to reset their state
-
-Qiujun Huang (1):
-      mac80211: update documentation about tx power
-
-Seevalamuthu Mariappan (1):
-      mac80211: Read rx_stats with perCPU pointers
-
-Shaul Triebitz (3):
-      nl80211: pass HE operation element to the driver
-      mac80211: HE: set missing bss_conf fields in AP mode
-      nl80211: add PROTECTED_TWT nl80211 extended feature
-
-Taehee Yoo (1):
-      virt_wifi: implement ndo_get_iflink
-
-Veerendranath Jakkam (1):
-      cfg80211: Configure PMK lifetime and reauth threshold for PMKSA entries
-
-Yan-Hsuan Chuang (1):
-      mac80211: driver can remain on channel if not using chan_ctx
-
- drivers/net/wireless/mac80211_hwsim.c | 327 ++++++++++++++++++++++++++++++++--
- drivers/net/wireless/mac80211_hwsim.h |  21 +++
- drivers/net/wireless/virt_wifi.c      |  12 +-
- include/net/cfg80211.h                |  36 +++-
- include/net/mac80211.h                |   5 +
- include/uapi/linux/nl80211.h          |  73 +++++++-
- include/uapi/linux/virtio_ids.h       |   1 +
- net/mac80211/cfg.c                    |  16 +-
- net/mac80211/ieee80211_i.h            |   1 +
- net/mac80211/iface.c                  |   4 +
- net/mac80211/main.c                   |   8 +-
- net/mac80211/mlme.c                   |   1 +
- net/mac80211/rx.c                     |   3 +-
- net/mac80211/sta_info.c               |  35 +++-
- net/mac80211/tx.c                     |   6 +-
- net/mac80211/util.c                   |   6 +-
- net/wireless/core.c                   |   6 +
- net/wireless/nl80211.c                |  47 ++++-
- net/wireless/pmsr.c                   |  32 ++++
- 19 files changed, 596 insertions(+), 44 deletions(-)
-
+ net/netfilter/nf_flow_table_core.c    |  3 +++
+ net/netfilter/nf_flow_table_ip.c      | 14 ++++++++++----
+ net/netfilter/nf_flow_table_offload.c |  1 +
+ 3 files changed, 14 insertions(+), 4 deletions(-)
