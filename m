@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5927D18CF0A
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 14:35:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD4B418CF02
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 14:35:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727457AbgCTNfL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 09:35:11 -0400
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:37600 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727439AbgCTNfK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 09:35:10 -0400
-Received: by mail-pj1-f67.google.com with SMTP id ca13so2470433pjb.2;
-        Fri, 20 Mar 2020 06:35:09 -0700 (PDT)
+        id S1727501AbgCTNfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 09:35:16 -0400
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:37609 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727487AbgCTNfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 09:35:15 -0400
+Received: by mail-pj1-f68.google.com with SMTP id ca13so2470526pjb.2;
+        Fri, 20 Mar 2020 06:35:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=MYgs/zkr6hc7o1ozUKVcYW4sWfXlOXbWmqtVG3HO+jw=;
-        b=Zzb3Tlo1M7+SG+C768Whj1+P8aInEwGWMvUEdJV6m+xJC48pQZVusL6kj8Fo8pkSZ8
-         9nmVwdFTYo7CBUJGzVUUhsQP3BsJ76iZ0avpaV/cbRqQmVyTMsrmYIMIsl0mMchGS4XB
-         GbkA+5RwOgjZCdmqDrGXKaV/J6kbBabEo0bbftCmtjki25hdEvVybxQ2wQTQm1ECsz/K
-         AywYmJ4c9ZC0I1dWn9jxqxtKwOvC+9JPWEjtfX4fiR7CRiC+vYBwEF/r/zNxM+cRWHq8
-         pHNa2SpZFWyFPkDfs/Kppv5uacBw2f0u51SeWwxdaVSn6pZzdeE/fU11dnxBS7fJYvpO
-         GNCA==
+        bh=WfFHHS6jo8iZrY1Q3mVkHkvmg4vs2kPyprC/yFvbuKo=;
+        b=LJLBVt+OcyGdNCpEgRLEMVyl27HZA4JqEkvd9fTKBjqDQEmL8bCFp+/xZxf/B8LhK4
+         RbybovpDhlOVk3qhPBuUbhaFfdcddiEOLERWsz7eK93to4UCUFaDDLXdScfz/prgrxEl
+         fkgsjD/4/CPQ8tJNEfl/i4o+XDCp4L2c/MSs5Z8cC+eyfsjGRYCuLPr3fWEpLCdwQd7c
+         S0CCey2apNmqV+Yligu/+mubYSf07+vM/vQq9JrJbOEcIAAMeeZSJ/sdNcI9ZHVv5XFb
+         sRF+ch8kEK4GH0U1OQ4resR/fGkfS2Kowxc4csGh/U96Qj6AZw43HXcn5XpmJCXiXSen
+         cFhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=MYgs/zkr6hc7o1ozUKVcYW4sWfXlOXbWmqtVG3HO+jw=;
-        b=ZsqeReb+lSRH6IQYbkaal1QxDD1SunCwXIa89UXjjXkhkaNKyzIRrZKfPLMDG1bFZw
-         s/g5HJglW6gMxq1SSqzMG7cs66w7zaKsj0FJ65Q0RhTCjsdatbprO/vxTZEqUTM4SmO2
-         LqjWQAxXr7l11qtapMTwKWJf85zMFt+kvnbvHXSvAL7p8+M0P7jBNIEsBztKAMrM2ggJ
-         ffaMB6hZ0zj3zZO6cgWvRwpLi4gXtKVr6w6uuC9HSBbVFdQ8GkYorQhgHrm/ogQPGwM+
-         Oi02owRJwqddDfKSr2Olfna2nEv0gHPDoZMYxB4lsk+ixrOxuj4DlRIogEwvA8TYYglu
-         9t9g==
-X-Gm-Message-State: ANhLgQ1uocOb3hRmVVBOy9EuzMRT+6FuLIkKt7YW5ypMB8qRzbvvW78S
-        s7t1WB4zi2fJZfBqPd/Lspg=
-X-Google-Smtp-Source: ADFU+vvB3HdUq5aTm5FSckVkFEvQ/V41S5Axr/NDgBis6ch6qkBSRP77+8q0ZGDnIKJBiLIrtj6j0A==
-X-Received: by 2002:a17:90a:9f96:: with SMTP id o22mr9280844pjp.88.1584711308880;
-        Fri, 20 Mar 2020 06:35:08 -0700 (PDT)
+        bh=WfFHHS6jo8iZrY1Q3mVkHkvmg4vs2kPyprC/yFvbuKo=;
+        b=Q/3sD2XWbGXzTD9oJm9qdsoOjKiQojMwa5fqrWPZg6yZOW19xhbKUYtVzW5/7ZsIOp
+         tgsq6qt8pFrkbPuPak7y3AjxqENdlhnL2hrc2az2fS4nJkImlvEtyRw1E7eH+PUb4s/M
+         4svdSDc4hLNsLwK5R8aBJyJrSFHD+GQTwUByCABzOv/H9h9mZrU5fv6HuaaUCiJrQ8gh
+         1PnDIxC4T+01T9UoulGpEhkHJRq01383/Q24vPuNgPSa2LWJ094k3TvCKMamIegP+Pg6
+         7FniPo13oSd0LVM7xHbpJ4i4M9oh15Cn1Aaas5KBYIWLumRuAUYATN9IfhArLIyuJ1Si
+         U7qQ==
+X-Gm-Message-State: ANhLgQ2cmixxl1dUFdZR1clvCoPoSpi9FeLq9NjK4dG8Ca1vxKi5UDYc
+        j5TKk8ubh0xnAGll1VDHciI=
+X-Google-Smtp-Source: ADFU+vsnkwyQlAetIoZw3jesRuNLUue3PcnvCMHt7xVuySpu+fuLVeOqLt1d0lrtKgBvfb1euVeJFA==
+X-Received: by 2002:a17:90a:d205:: with SMTP id o5mr9307963pju.46.1584711313701;
+        Fri, 20 Mar 2020 06:35:13 -0700 (PDT)
 Received: from localhost (216.24.188.11.16clouds.com. [216.24.188.11])
-        by smtp.gmail.com with ESMTPSA id 11sm5582857pfv.43.2020.03.20.06.35.07
+        by smtp.gmail.com with ESMTPSA id c128sm5526246pfa.11.2020.03.20.06.35.12
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 20 Mar 2020 06:35:08 -0700 (PDT)
+        Fri, 20 Mar 2020 06:35:13 -0700 (PDT)
 From:   Dejin Zheng <zhengdejin5@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         linux@armlinux.org.uk, davem@davemloft.net, allison@lohutok.net,
@@ -51,9 +51,9 @@ To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         tglx@linutronix.de, mchehab+samsung@kernel.org,
         netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH net-next v2 6/7] net: phy: introduce phy_read_poll_timeout macro
-Date:   Fri, 20 Mar 2020 21:34:30 +0800
-Message-Id: <20200320133431.9354-7-zhengdejin5@gmail.com>
+Subject: [PATCH net-next v2 7/7] net: phy: use phy_read_poll_timeout() to simplify the code
+Date:   Fri, 20 Mar 2020 21:34:31 +0800
+Message-Id: <20200320133431.9354-8-zhengdejin5@gmail.com>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200320133431.9354-1-zhengdejin5@gmail.com>
 References: <20200320133431.9354-1-zhengdejin5@gmail.com>
@@ -64,45 +64,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-it is sometimes necessary to poll a phy register by phy_read()
-function until its value satisfies some condition. introduce
-phy_read_poll_timeout() macros that do this.
+use phy_read_poll_timeout() to replace the poll codes for
+simplify the code in phy_poll_reset() function.
 
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 ---
 v1 -> v2:
-	- pass a phydev and a regnum to replace args... parameter in
-	  the phy_read_poll_timeout(), and also handle the
-	  phy_read() function's return error.
- 
- include/linux/phy.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+	- remove the handle of phy_read()'s return error.
 
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index bb351f8b8769..ecee7e436f89 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -714,6 +714,19 @@ static inline int phy_read(struct phy_device *phydev, u32 regnum)
- 	return mdiobus_read(phydev->mdio.bus, phydev->mdio.addr, regnum);
+ drivers/net/phy/phy_device.c | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index a585faf8b844..0de4f03ba90c 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1059,23 +1059,15 @@ EXPORT_SYMBOL(phy_disconnect);
+ static int phy_poll_reset(struct phy_device *phydev)
+ {
+ 	/* Poll until the reset bit clears (50ms per retry == 0.6 sec) */
+-	unsigned int retries = 12;
+-	int ret;
+-
+-	do {
+-		msleep(50);
+-		ret = phy_read(phydev, MII_BMCR);
+-		if (ret < 0)
+-			return ret;
+-	} while (ret & BMCR_RESET && --retries);
+-	if (ret & BMCR_RESET)
+-		return -ETIMEDOUT;
++	int ret, val;
+ 
++	ret = phy_read_poll_timeout(val, !(val & BMCR_RESET), 50000, 600000,
++				    phydev, MII_BMCR);
+ 	/* Some chips (smsc911x) may still need up to another 1ms after the
+ 	 * BMCR_RESET bit is cleared before they are usable.
+ 	 */
+ 	msleep(1);
+-	return 0;
++	return ret;
  }
  
-+#define phy_read_poll_timeout(val, cond, sleep_us, timeout_us, phydev, regnum) \
-+({ \
-+	int ret = 0; \
-+	ret = read_poll_timeout(phy_read, val, cond || val < 0, sleep_us, \
-+				timeout_us, phydev, regnum); \
-+	if (val <  0) \
-+		ret = val; \
-+	if (ret) \
-+		phydev_err(phydev, "%s failed: %d\n", __func__, ret); \
-+	ret; \
-+})
-+
-+
- /**
-  * __phy_read - convenience function for reading a given PHY register
-  * @phydev: the phy_device struct
+ int phy_init_hw(struct phy_device *phydev)
 -- 
 2.25.0
 
