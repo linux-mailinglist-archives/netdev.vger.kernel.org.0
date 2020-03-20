@@ -2,129 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9356718CAFD
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 10:59:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9354C18CB3B
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 11:09:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726805AbgCTJ7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 05:59:39 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36825 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726527AbgCTJ7j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 05:59:39 -0400
-Received: by mail-wr1-f66.google.com with SMTP id 31so640596wrs.3
-        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 02:59:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=SiY9kDBs0z0Nf5mCC8x4/v3oQIlWffcoo0vCUWZ9XJE=;
-        b=OMpxMtQeCEiun6T3I2vJJZtXZtc41T/G+fPrARuxuFZec7xeLVrMloFvOMrzkOL+25
-         gDgPtSt+gVHdDy2oydOAr9ICMtUOTU0Tm4UqaOAyT8M9a2jjzqmT0bc1PjKw85dl0tBu
-         C1dsdNcfTOg0MOBGdr1QjUm9oAyviBSqV/oAFQ2DSDP+U/b5PUwgrIMkbr0LZFXcyq4I
-         m9VTh3pQ+e9SlfrkSDzuhHQkWz+RALenkHu3SYPUVxBji/xxnJwpKdIPIkK1h6TlcT39
-         g6eNrZ7dahix4w1cJ9vV5qHVnyIWFHLDi/SjeS3ESJwejVfVeVuGqRSdJZEi3Lzife7U
-         S0RA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SiY9kDBs0z0Nf5mCC8x4/v3oQIlWffcoo0vCUWZ9XJE=;
-        b=YGKpsZzK2fvsY4z2ClYq4MfApEMQ5XOLdlGr3J3v67jQbBhMQSv7M/2hnn1H/78ZAG
-         PRoWo9VIqE0XJAE9cjR+bBSXlwH7F3in+SY2nldRnzt8d78AYrR+UY1zxAPXPo1FTQcl
-         qEXyEBZ7QvwK8TPGA9mIwoAJDF1gUj4hY4S73/uB4PwbgPut6q3npF8/I7HGnlnTPM4z
-         g3MDPHqOWj2TSduKMW6pu/3N5NdNrndjj0oe6vBD6oRIL6C8sD89h6KdP6T3oEYo+4pr
-         KnvFAVLkEG2WZbBA1DV7K2VzzwqMKcgFLKeoGG68CSPwLYZCfkcJsOYYTFu6C8JeWe5t
-         5H0A==
-X-Gm-Message-State: ANhLgQ32JcL/MjHNIWzg/KI/EsCbPL6iPe3j10U2goqQ+mvzG5TTVBkT
-        RzN1VJvCbJwdfA90Ha5rcjn9+A==
-X-Google-Smtp-Source: ADFU+vvea117yggrIKDrghp/sxYMHEZD0Kw7kb9SZND4GkraQp2eMkAvym16Eu07udF5076EEfA0PQ==
-X-Received: by 2002:adf:ea4c:: with SMTP id j12mr9715892wrn.167.1584698375233;
-        Fri, 20 Mar 2020 02:59:35 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id s131sm7081010wmf.35.2020.03.20.02.59.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Mar 2020 02:59:34 -0700 (PDT)
-Date:   Fri, 20 Mar 2020 10:59:34 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        mlxsw@mellanox.com
-Subject: Re: [patch iproute2/net-next v5] tc: m_action: introduce support for
- hw stats type
-Message-ID: <20200320095934.GH11304@nanopsycho.orion>
-References: <20200314092548.27793-1-jiri@resnulli.us>
- <ee32e79b-5db3-f6e0-cb89-f19b078ca3d5@gmail.com>
+        id S1727113AbgCTKJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 06:09:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47032 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726527AbgCTKJ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Mar 2020 06:09:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=tAYPRm4IJac7W+8neIju/63yEbVYeH5eneKaf19WKEM=; b=tjLnoMEycQl+PY5k8MsaF3UQsc
+        aoBPNM4AZBRZNU2l9gOyf1s5nFJrRVwyOw1LQm4LXg0TBd9isvzD9/GFIkN+xbNrK41G5DA3B54v0
+        cBLHoqyHH2oNZMW72xBRqbI2DoM3xZoE0Bn7FscrLQR4Q0tQFSzgcp2eRxCKXY6OR4y0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jFEaj-0004lE-EH; Fri, 20 Mar 2020 11:09:25 +0100
+Date:   Fri, 20 Mar 2020 11:09:25 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, antoine.tenart@bootlin.com
+Subject: Re: [PATCH net-next 1/4] net: phy: mscc: rename enum
+ rgmii_rx_clock_delay to rgmii_clock_delay
+Message-ID: <20200320100925.GB16662@lunn.ch>
+References: <20200319211649.10136-1-olteanv@gmail.com>
+ <20200319211649.10136-2-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <ee32e79b-5db3-f6e0-cb89-f19b078ca3d5@gmail.com>
+In-Reply-To: <20200319211649.10136-2-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Mar 20, 2020 at 12:56:08AM CET, dsahern@gmail.com wrote:
->On 3/14/20 3:25 AM, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> Introduce support for per-action hw stats type config.
->> 
->> This patch allows user to specify one of the following types of HW
->> stats for added action:
->> immediate - queried during dump time
->> delayed - polled from HW periodically or sent by HW in async manner
->> disabled - no stats needed
->> 
->> Note that if "hw_stats" option is not passed, user does not care about
->> the type, just expects any type of stats.
->> 
->> Examples:
->> $ tc filter add dev enp0s16np28 ingress proto ip handle 1 pref 1 flower skip_sw dst_ip 192.168.1.1 action drop hw_stats disabled
->
->...
->
->> @@ -149,6 +150,59 @@ new_cmd(char **argv)
->>  		(matches(*argv, "add") == 0);
->>  }
->>  
->> +static const struct hw_stats_type_item {
->> +	const char *str;
->> +	__u8 type;
->> +} hw_stats_type_items[] = {
->> +	{ "immediate", TCA_ACT_HW_STATS_TYPE_IMMEDIATE },
->> +	{ "delayed", TCA_ACT_HW_STATS_TYPE_DELAYED },
->> +	{ "disabled", 0 }, /* no bit set */
->> +};
->> +
->> +static void print_hw_stats(const struct rtattr *arg)
->> +{
->> +	struct nla_bitfield32 *hw_stats_type_bf = RTA_DATA(arg);
->> +	__u8 hw_stats_type;
->> +	int i;
->> +
->> +	hw_stats_type = hw_stats_type_bf->value & hw_stats_type_bf->selector;
->> +	print_string(PRINT_FP, NULL, "\t", NULL);
->> +	open_json_array(PRINT_ANY, "hw_stats");
->
->I still do not understand how the type can be multiple. The command line
->is an 'or' : immediate, delayed, or disabled. Further, the filter is
+On Thu, Mar 19, 2020 at 11:16:46PM +0200, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> There is nothing RX-specific about these clock skew values. So remove
+> "RX" from the name in preparation for the next patch where TX delays are
+> also going to be configured.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  drivers/net/phy/mscc/mscc.h      | 18 +++++++++---------
+>  drivers/net/phy/mscc/mscc_main.c |  2 +-
+>  2 files changed, 10 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
+> index 29ccb2c9c095..56feb14838f3 100644
+> --- a/drivers/net/phy/mscc/mscc.h
+> +++ b/drivers/net/phy/mscc/mscc.h
+> @@ -12,15 +12,15 @@
+>  #include "mscc_macsec.h"
+>  #endif
+>  
+> -enum rgmii_rx_clock_delay {
+> -	RGMII_RX_CLK_DELAY_0_2_NS = 0,
+> -	RGMII_RX_CLK_DELAY_0_8_NS = 1,
+> -	RGMII_RX_CLK_DELAY_1_1_NS = 2,
+> -	RGMII_RX_CLK_DELAY_1_7_NS = 3,
+> -	RGMII_RX_CLK_DELAY_2_0_NS = 4,
+> -	RGMII_RX_CLK_DELAY_2_3_NS = 5,
+> -	RGMII_RX_CLK_DELAY_2_6_NS = 6,
+> -	RGMII_RX_CLK_DELAY_3_4_NS = 7
+> +enum rgmii_clock_delay {
+> +	RGMII_CLK_DELAY_0_2_NS = 0,
+> +	RGMII_CLK_DELAY_0_8_NS = 1,
+> +	RGMII_CLK_DELAY_1_1_NS = 2,
+> +	RGMII_CLK_DELAY_1_7_NS = 3,
+> +	RGMII_CLK_DELAY_2_0_NS = 4,
+> +	RGMII_CLK_DELAY_2_3_NS = 5,
+> +	RGMII_CLK_DELAY_2_6_NS = 6,
+> +	RGMII_CLK_DELAY_3_4_NS = 7
+>  };
 
-The cmd line is "or". The uapi is bitfield as requested by kernel
-reviewers. I originally had that as "or" too.
+Can this be shared?
 
+https://www.spinics.net/lists/netdev/msg638747.html
 
->added to a specific device which has a single driver. Seems like at
+Looks to be the same values?
 
-Nope, may be multiple drivers if the block is shared.
+Can some of the implementation be consolidated?
 
-
->install / config time the user is explicitly stating a single type.
-
-
-Basically using tc with this patch, you cannot achieve to have multiple
-values in this output. However, in general. It could be.
-
-Also, I wanted to have this as array because when I introduce the "used
-hw stats" which would indicate which type is actually used (in case you
-pass any for example), there might be multiple values, when offloaded to
-multiple drivers.
+    Andrew
