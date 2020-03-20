@@ -2,183 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A92F518DBD0
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 00:23:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AEEA18DC1B
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 00:35:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbgCTXXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 19:23:00 -0400
-Received: from mail-vs1-f66.google.com ([209.85.217.66]:34162 "EHLO
-        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726738AbgCTXXA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 19:23:00 -0400
-Received: by mail-vs1-f66.google.com with SMTP id t10so5126546vsp.1
-        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 16:23:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=OXBHwBnIhfZbgmJ5fMzfXXPx9bbYrAMnt/qGmt3CjnU=;
-        b=VHAEapM0zjuNKIO3AA6W6/IEpI6sTQpcey+ZyjsvHak2NhreZVlohxBwpyTkzvs9kC
-         NV6BNFGvZg5/CzaV0JaOwKN9fxFnEGrGulWRLlMEpYhi9OVSchYFwKXaRRR0FsaDlhaR
-         k00IuVqsfnpfK7raDmlQO0PcGsRper64w/DAm6qxYfIbGZiI1OWVOxzs5dsuTNda6qRL
-         OJ2SjUFXqnGG0lN7pRCEoWvNsemQRBAYOVV8hG9vz7WCoAltdl4zFx7UCGKTdYgDx6AA
-         6S5S9iB7C77EFXUjxW/IxJKlKHPXbeCfdj2jYoIK/hnfFt19a3/LdZeOF21RRsVft0WO
-         3SQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OXBHwBnIhfZbgmJ5fMzfXXPx9bbYrAMnt/qGmt3CjnU=;
-        b=V7VNFiBVSAbaqKFlL+BXfh7QXOsADinXhwxaI9b6GJRr69XU2iCQScq65YjxEJok/U
-         TBxbCUEixlzF50CpBVtq6wSWqddqtUgY8I30xdt+uMSVNe0jtPxguMkEnbypazc0e2ds
-         TxijY39MzhMQDSjb8u1Jx/GVs4BO0zWubszMx1WDmYwt/fr1WxrbaxwO3jZ2pDL3ktXw
-         d+wbkrQjdftVAJ72Simq0hzfySrJcAW0RdlcxUVdlWuHzuAl2TOZ/omCU30T3DGVaRPj
-         bqtBAiQydqj6AS9v02RtQOE8EEWS2f4Hm1GcJgM3mLlr9OBudSoizeS+pGnTMf3057Lh
-         tuqw==
-X-Gm-Message-State: ANhLgQ3+6bLTxFFXmN2buTCuUsV/43xtFd0oJ9hc7oJr4nEZtQNu9qCz
-        OvJvhAG7zgAjI0BwVhOy//8Qy6F140iFsLjrkT52+g==
-X-Google-Smtp-Source: ADFU+vsQgHeEbJdvG0B/4PaEfS8+dSu+iFsd8bWqw5SYdJYX6rghkk7BHzbIdd7mLmjB3cRh8kbSRxbkjRaENeb9Yjk=
-X-Received: by 2002:a67:70c2:: with SMTP id l185mr7457947vsc.123.1584746579104;
- Fri, 20 Mar 2020 16:22:59 -0700 (PDT)
+        id S1727427AbgCTXfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 19:35:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44466 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726738AbgCTXfR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Mar 2020 19:35:17 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0335320714;
+        Fri, 20 Mar 2020 23:35:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584747316;
+        bh=rhwn6qeTqAe225E+kLoz/+4Ql4VI3OGBbm8jRVxHZDY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=saJBFcmjrpm5m5RSTNjxDpbEgRDHcUYXF9OLIuCQtJvmxJV4JjjSHJPe1PQESuBuw
+         Tk4xSOISYaaqD0cyJQUYg2WrdYwF8wIDRAoVuC6xGgP2eHq7VNWVah2An+g3t1+Yf7
+         Zh5jHoxt3kxBCdDaUzrRsGmdbWPtLIViSHulVfs0=
+Date:   Fri, 20 Mar 2020 16:35:14 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Andrey Ignatov <rdna@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
+ program when attaching XDP
+Message-ID: <20200320163514.5f26d547@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <3aca04e2-4034-f41a-8e98-f40471601dff@iogearbox.net>
+References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
+        <158462359315.164779.13931660750493121404.stgit@toke.dk>
+        <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN>
+        <875zez76ph.fsf@toke.dk>
+        <ad09e018-377f-9864-60eb-cf4291f49d41@iogearbox.net>
+        <80235a44-8f01-6733-0638-c70c51cd1b90@iogearbox.net>
+        <20200320143014.4dde2868@kicinski-fedora-PC1C0HJN>
+        <3aca04e2-4034-f41a-8e98-f40471601dff@iogearbox.net>
 MIME-Version: 1.0
-References: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi>
- <1584524612-24470-29-git-send-email-ilpo.jarvinen@helsinki.fi>
- <CAA93jw7_YG-KMns8UP-aTPHNjPG+A_rwWUWbt1+8i4+UNhALnA@mail.gmail.com> <alpine.DEB.2.20.2003202348250.21767@whs-18.cs.helsinki.fi>
-In-Reply-To: <alpine.DEB.2.20.2003202348250.21767@whs-18.cs.helsinki.fi>
-From:   Yuchung Cheng <ycheng@google.com>
-Date:   Fri, 20 Mar 2020 16:22:22 -0700
-Message-ID: <CAK6E8=f=tB1Dw-ns5hOysvSbQ1VGJJ1-nLQXtxC6rfZbr5Tnww@mail.gmail.com>
-Subject: Re: [RFC PATCH 28/28] tcp: AccECN sysctl documentation
-To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@cs.helsinki.fi>
-Cc:     Dave Taht <dave.taht@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 20, 2020 at 3:40 PM Ilpo J=C3=A4rvinen
-<ilpo.jarvinen@cs.helsinki.fi> wrote:
->
-> On Thu, 19 Mar 2020, Dave Taht wrote:
->
-> > On Wed, Mar 18, 2020 at 2:44 AM Ilpo J=C3=A4rvinen <ilpo.jarvinen@helsi=
-nki.fi> wrote:
-> > >
-> > > From: Ilpo J=C3=A4rvinen <ilpo.jarvinen@cs.helsinki.fi>
-> > >
-> > > Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@cs.helsinki.fi>
-> > > ---
-> > >  Documentation/networking/ip-sysctl.txt | 12 +++++++++---
-> > >  1 file changed, 9 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/n=
-etworking/ip-sysctl.txt
-> > > index 5f53faff4e25..ecca6e1d6bea 100644
-> > > --- a/Documentation/networking/ip-sysctl.txt
-> > > +++ b/Documentation/networking/ip-sysctl.txt
-> > > @@ -301,15 +301,21 @@ tcp_ecn - INTEGER
-> > >                 0 Disable ECN.  Neither initiate nor accept ECN.
-> > >                 1 Enable ECN when requested by incoming connections a=
-nd
-> > >                   also request ECN on outgoing connection attempts.
-> > > -               2 Enable ECN when requested by incoming connections
-> > > +               2 Enable ECN or AccECN when requested by incoming con=
-nections
-> > >                   but do not request ECN on outgoing connections.
-> >
-> > Changing existing user-behavior for this default seems to be overly
-> > optimistic. Useful for testing, but...
->
-> I disagree.
->
-> The kernel default on ECN is/has been "do nothing" like forever. Yet,
-> passively allowing ECN on servers is a low risk operation because nothing
-> will change before client actively asks for it. However, it was obvious
-> that the servers didn't do that. The servers could have set tcp_ecn to 1
-> (before 2 was there) which is low risk for _servers_ (unlike for clients)
-> but only very very few did. I don't believe servers would now
-> intentionally pick 2 when they clearly didn't pick 1 earlier either.
->
-> Adding 2 is/was an attempt to side-step the need for both ends to make
-> conscious decision by setting the sysctl (which servers didn't want to
-> do). That is, 2 gives decision on what to do into the hands of the client
-> side which was the true intent of 2 (in case you don't know, I made that
-> change).
-What can a server configure to process only RFC3168 ECN if it prefers to?
+On Fri, 20 Mar 2020 22:55:43 +0100 Daniel Borkmann wrote:
+> >> Another aspect that falls into this atomic replacement is also that the programs can
+> >> actually be atomically replaced at runtime. Last time I looked, some drivers still do
+> >> a down/up cycle on replacement and hence traffic would be interrupted. I would argue
+> >> that such /atomic/ swap operation on bpf_link would cover a guarantee of not having to
+> >> perform this as well (workaround today would be a simple tail call map as entry point).  
+> > 
+> > I don't think that's the case. Drivers generally have a fast path
+> > for the active-active replace.
+> > 
+> > Up/Down is only done to remap DMA buffers and change RX buffer
+> > allocation scheme. That's when program is installed or removed,
+> > not replaced.  
+> 
+> I know; though it seems not all adhere to that scheme sadly. I don't have that HW so can
+> only judge on the code, but one example that looked suspicious enough to me is qede_xdp().
+> It calls qede_xdp_set(), which does a qede_reload() for /every/ prog update. The latter
+> basically does ...
+> 
+>      if (edev->state == QEDE_STATE_OPEN) {
+>          qede_unload(edev, QEDE_UNLOAD_NORMAL, true);
+>          if (args)
+>              args->func(edev, args);               <-- prog replace here
+>          qede_load(edev, QEDE_LOAD_RELOAD, true);
+>          [...]
+>      }
 
->
-> Allowing the client side to make the decision alone has proven successful
-> approach. We now have significant passive RFC3168 ECN server deployment.
-> It is wide-spread enough that Apple found it useful enough for their
-> client side, experimented with it and worked to fix the issues where they
-> discovered something in the network was incompatible with ECN. I don't
-> believe it would have happened without leaving the decision into the hand=
-s
-> of the clients.
->
-> Similarly, passively allowing the client to decide to use AccECN is
-> low risk thing. ...As with RFC 3168 ECN, "do nothing" applies also for
-> Accurate ECN here unless the client asks for it.
->
-> > > +               3 Enable AccECN when requested by incoming connection=
-s and
-> > > +                 also request AccECN on outgoing connection attempts=
-.
-> > > +           0x102 Enable AccECN in optionless mode for incoming conne=
-ctions.
-> > > +           0x103 Enable AccECN in optionless mode for incoming and o=
-utgoing
-> > > +                 connections.
-> >
-> > In terms of the logic bits here, it might make more sense
-> >
-> > 0: disable ecn
-> > 1: enable std ecn on in or out
-> > 2: enable std ecn when requested on in (the default)
-> > 3: essentially unused
-> > 4: enable accecn when requested on in
-> > 5: enable std ecn and accecn on in or out
-> > 6: enable accecn and ecn on in but not out
->
-> If "full control" is the way to go, I think it should be made using flags
-> instead, along these lines:
->
-> 1: Enable RFC 3168 ECN in+out
-> 2: Enable RFC 3168 ECN in (default on)
-> 4: Enable Accurate ECN in (default on)
-> 8: Enable Accurate ECN in+out
->
-> Note that I intentionally reversed the in and in/out order for 4&8
-> (something that couldn't be done with 1&2 to preserve meaning of 1).
->
-> I think it's a bit complicated though but if this is what most people
-> want, I can of course change it to flags.
->
-> > Do we have any data on how often the tcp ns bit is a source of
-> > firewalling problems yet?
-> >
-> > 0x102 strikes me as a bit more magical than required
->
-> To me it compares to some fast open cookie things that are similarly usin=
-g
-> higher order bits in flag like manner.
->
-> > and I don't know
-> > what optionless means in this context.
->
-> Do you mean that "optionless" is not a good word to use here? (I'm not
-> a native speaker but I can imagine it might sound like "futureless"?)
-> I meant that AccECN operates then w/o sending any AccECN option (rx side
-> still processes the options if the peer chooses to send them despite not
-> getting any back).
->
-> Thanks.
->
-> --
->  i.
+Ack, one day maybe we can restructure things enough so that drivers
+don't have to copy/paste this dance :(
+
+> ... now that is one driver. I haven't checked all the others (aside from i40e/ixgbe/mlx4/
+> mlx5/nfp), but in any case it's also fixable in the driver w/o the extra need for bpf_link.
+
+Agreed
