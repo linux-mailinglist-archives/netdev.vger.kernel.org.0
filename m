@@ -2,80 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47BDB18DA74
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 22:35:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B96318DA80
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 22:44:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726997AbgCTVdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 17:33:19 -0400
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:53498 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726783AbgCTVdS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 17:33:18 -0400
-Received: by mail-pj1-f66.google.com with SMTP id l36so3067710pjb.3
-        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 14:33:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=TU2T6ZpLINjsN0NPDwk9LFYRhL6nv6T9Pj1rk4Fvgws=;
-        b=ZngJrysM1xXorW7zcL8RRdLTgvsh8baMVjy2WjSb3Tlqu3Y3WfBqYiJxkPtGhlwMFw
-         gcyG9gv/4jqR3qsXlAvzSdy1kx1VguJoz+6LdMZruz9WvUfBeYGWTzPWCA4RG6MCsPXz
-         Wdr7Y1jqdfClPrw6c4o5qc/Wv3nxDkSGyt4tmLYUFD3Io8xrUOuBcc53VuFkjvNE4lqA
-         iUGTKSlcz/f1ZUV52bt3+NjUCU1j/f2Yx+hPQYKu8HEaCq7juNap2mF4V66DtaY//wZQ
-         ePx0srok7JGhH/Y6W8PToAW63KED8yNX6MDZHWePdBMNbrXWGxsnaen7Kh1wQzuwb7ux
-         RHDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=TU2T6ZpLINjsN0NPDwk9LFYRhL6nv6T9Pj1rk4Fvgws=;
-        b=o2xkxkA3+QggxLssIa/ot5qCnaANMg9ISyiTFxaNXL7hTgMOxdtPZULzgXlxk8QK+8
-         Gd69Syzc7jWG7jAMKFSXP7R8jQWKK6zaqz24jmIw9fpTdZ6pPWeLIJhhGeRZLIf98shf
-         BHkRGpg7XW5PEvi0DOiuE5T5cmPR8WY1yEUyTd6umMjqf5sLBzex/TZfMY8w1wxQxOAx
-         9Ao35BSCMmOu/D02qjz0iVfMTB3oFrI1F9vtRt2FAk3MCa/8HYd4LLEtjt9VnigAaQam
-         0dsD7vKX2sAFsdCuvMygTDZlprl3u9W6sRuCsZzLcIGKFEu+YMSOBxHaa+ak/WdKhayz
-         FgqQ==
-X-Gm-Message-State: ANhLgQ0BKUcLMFRx3I6yKnSgvc6Ov6z/Dxk2t2qoUaGStfRx8kox5Slh
-        GM2H5rNLEE3+9Lkmm+4fDfj7NfZncOk=
-X-Google-Smtp-Source: ADFU+vvnWAei4cQJJYAi95fr3AY6Ha6YpQA+nmxexdMSFSnYsOJojq6pn1eKeR48kRER+fOR67vbGQ==
-X-Received: by 2002:a17:902:8a81:: with SMTP id p1mr10353607plo.284.1584739997755;
-        Fri, 20 Mar 2020 14:33:17 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id l67sm5756255pjb.23.2020.03.20.14.33.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Mar 2020 14:33:17 -0700 (PDT)
-Date:   Fri, 20 Mar 2020 14:33:16 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH bpf-next 3/6] bpf: implement bpf_link-based cgroup BPF
- program attachment
-Message-ID: <20200320213316.GA2708166@mini-arch.hsd1.ca.comcast.net>
-References: <20200320203615.1519013-1-andriin@fb.com>
- <20200320203615.1519013-4-andriin@fb.com>
+        id S1727041AbgCTVo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 17:44:58 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:33645 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726666AbgCTVo5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 17:44:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584740697;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=k69Kk/yJiTdB+wPNOXE0GF+G6akiLz5FJqSc975Xp4c=;
+        b=Zte1Is7YUw/qNHDdYI0g+24Zpu4Xu7R7M8y3tZN+qJnRhC4keJGZDnOiEG1mVaCiqZtZkk
+        qUq0bvjDTlsJkDXcCLj5/d6vAGB/SbgloIg2uEMzjACRdmNRZadJjIgPsCfSdiSHFS1uLp
+        z1ZuNTB3NBB9hhbfbS8dTni5UyXms04=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-335-zjsG1ZNLOr6_zNDspxWOmg-1; Fri, 20 Mar 2020 17:44:52 -0400
+X-MC-Unique: zjsG1ZNLOr6_zNDspxWOmg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3B03718A6EC2;
+        Fri, 20 Mar 2020 21:44:49 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D283A5C219;
+        Fri, 20 Mar 2020 21:44:40 +0000 (UTC)
+Date:   Fri, 20 Mar 2020 22:44:37 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        "Jubran, Samih" <sameehj@amazon.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
+        zorik@amazon.com, akiyano@amazon.com, gtzalik@amazon.com,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4?= =?UTF-8?B?cmdlbnNlbg==?= 
+        <toke@toke.dk>, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        kuba@kernel.org, brouer@redhat.com
+Subject: Re: [PATCH RFC v1 05/15] ixgbe: add XDP frame size to driver
+Message-ID: <20200320224437.10ef858c@carbon>
+In-Reply-To: <CAKgT0UeV7OHsu=E11QVrQ-HvUe83-ZL2Mo+CKg5Bw4v8REEoew@mail.gmail.com>
+References: <158446612466.702578.2795159620575737080.stgit@firesoul>
+        <158446617307.702578.17057660405507953624.stgit@firesoul>
+        <20200318200300.GA18295@ranger.igk.intel.com>
+        <CAKgT0UeV7OHsu=E11QVrQ-HvUe83-ZL2Mo+CKg5Bw4v8REEoew@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200320203615.1519013-4-andriin@fb.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03/20, Andrii Nakryiko wrote:
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index 5d01c5c7e598..fad9f79bb8f1 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -111,6 +111,7 @@ enum bpf_cmd {
->  	BPF_MAP_LOOKUP_AND_DELETE_BATCH,
->  	BPF_MAP_UPDATE_BATCH,
->  	BPF_MAP_DELETE_BATCH,
-[..]
-> +	BPF_LINK_CREATE,
-Curious, why did you decide to add new command versus reusing existing
-BPF_PROG_ATTACH/BPF_PROG_DETACH pair? Can we have a new flag like
-BPF_F_NOT_OWNED that we can set when calling BPF_PROG_ATTACH to trigger
-all these new bpf_link properties (like cgroup not holding an extra ref)?
+On Wed, 18 Mar 2020 14:23:09 -0700
+Alexander Duyck <alexander.duyck@gmail.com> wrote:
+
+> On Wed, Mar 18, 2020 at 1:04 PM Maciej Fijalkowski
+> <maciej.fijalkowski@intel.com> wrote:
+> >
+> > On Tue, Mar 17, 2020 at 06:29:33PM +0100, Jesper Dangaard Brouer wrote:  
+> > > The ixgbe driver uses different memory models depending on PAGE_SIZE at
+> > > compile time. For PAGE_SIZE 4K it uses page splitting, meaning for
+> > > normal MTU frame size is 2048 bytes (and headroom 192 bytes).  
+> >
+> > To be clear the 2048 is the size of buffer given to HW and we slice it up
+> > in a following way:
+> > - 192 bytes dedicated for headroom
+> > - 1500 is max allowed MTU for this setup
+> > - 320 bytes for tailroom (skb shinfo)
+> >
+> > In case you go with higher MTU then 3K buffer would be used and it would
+> > came from order1 page and we still do the half split. Just FYI all of this
+> > is for PAGE_SIZE == 4k and L1$ size == 64.  
+> 
+> True, but for most people this is the most common case since these are
+> the standard for x86.
+> 
+> > > For PAGE_SIZE larger than 4K, driver advance its rx_buffer->page_offset
+> > > with the frame size "truesize".  
+> >
+> > Alex, couldn't we base the truesize here somehow on ixgbe_rx_bufsz() since
+> > these are the sizes that we are passing to hw? I must admit I haven't been
+> > in touch with systems with PAGE_SIZE > 4K.  
+> 
+> With a page size greater than 4K we can actually get many more uses
+> out of a page by using the frame size to determine the truesize of the
+> packet. The truesize is the memory footprint currently being held by
+> the packet. So once the packet is filled we just have to add the
+> headroom and tailroom to whatever the hardware wrote instead of having
+> to use what we gave to the hardware. That gives us better efficiency,
+> if we used ixgbe_rx_bufsz() we would penalize small packets and that
+> in turn would likely hurt performance.
+> 
+> > >
+> > > When driver enable XDP it uses build_skb() which provides the necessary
+> > > tailroom for XDP-redirect.  
+> >
+> > We still allow to load XDP prog when ring is not using build_skb(). I have
+> > a feeling that we should drop this case now.
+> >
+> > Alex/John/Bjorn WDYT?  
+> 
+> The comment Jesper had about using using build_skb() when XDP is in
+> use is incorrect. The two are not correlated. The underlying buffer is
+> the same, however we drop the headroom and tailroom if we are in
+> _RX_LEGACY mode. We default to build_skb and the option of switching
+> to legacy Rx is controlled via the device private flags.
+
+Thanks for catching that.
+
+> However with that said the change itself is mostly harmless, and
+> likely helps to resolve issues that would be seen if somebody were to
+> enable XDP while having the RX_LEGACY flag set.
+
+So what is the path forward(?).  Are you/Intel okay with disallowing
+XDP when the RX_LEGACY flag is set?
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
