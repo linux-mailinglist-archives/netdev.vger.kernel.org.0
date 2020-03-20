@@ -2,155 +2,1134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37CF818C80E
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 08:14:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32CE918C845
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 08:36:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726912AbgCTHOP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 03:14:15 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:56494 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726778AbgCTHOO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 03:14:14 -0400
-Received: by mail-il1-f200.google.com with SMTP id 191so4180940ilb.23
-        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 00:14:14 -0700 (PDT)
+        id S1726801AbgCTHgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 03:36:02 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:36234 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726614AbgCTHgB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 03:36:01 -0400
+Received: by mail-wr1-f67.google.com with SMTP id 31so183204wrs.3
+        for <netdev@vger.kernel.org>; Fri, 20 Mar 2020 00:35:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TDiuqOlBrr4hcyz2z2TpUIjXvxZJZggJQ8XD12V3KCU=;
+        b=miuEnhVoIk9ZU79wUycoZetZzWgjHP1onYC8w02LIiyeboJDvnjK4Tz7vPYwcPtvZF
+         cHaKuVEzLIRdy8IQ4jPvv/kOHnTOfK2ub5qUDRR2sLwwVQsXLChzzzwOJ7I1VDg9CnXR
+         oiK1N+3WUmt5TRI5MQq+daUYxt48ytX8LqXAln8b6wfqn1vh3t2J8KUbVMG/e66aw0Q4
+         XG8lNxcT8gV30BIXJlUYnO25BD2mzqHMZ4C4RzvWpTNLbI5lei0Xd+GMHlMclk6p/U7R
+         B28qzLhQxIaHzpRblqF1ked/zQmRDMX7rt8pNUSSCeXJhPIf884H2FJ5E9nuFEY1fHZ/
+         j+aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=y/7OFkTqlcH2sU9QydtVhaMn6LXHA7sVeaTw6bwwdfs=;
-        b=aShrWVeeoH/CiByRsoj6YY+z/iM//4hV9IhK142bpieQxgtt7OVR1zAjWVNWOMXP+v
-         kxwpg4LHII/K46OejRA0lhlxFPxAlj/BLJ489yhq5/jFRJ7AoigaNcJqEg6OzL129J14
-         QsUbf9qvO3BR6iVoy4u3DoRtsvrk2+qnwp3yx5Tf5qN6v10llkOVHxXebQnMPoGgpSFF
-         1QfthamkxM8mSHIWlubT1qvJZljVZRxX09QLMWRdhJAgBj8L3yZB9mLKkoJFAkiuXNgS
-         gVQ72+fZVjV2mN5XTp/gqLQ8N35z61aWCqDNS0AnaxneuuiKZPXZg8u7VMucB3W5tOC7
-         uynA==
-X-Gm-Message-State: ANhLgQ3K023jE62pVvGrTcIl7c+Mk8oXpnVUASNj7LUIsIGZiR7oswWx
-        N7cTqnubkcPG0qkzDtrsq3MZhrzXdGoLPqqXxqFLFEF55S6W
-X-Google-Smtp-Source: ADFU+vuj9UsKauUlK7sqRqFQFc1lqdDk8OCKvMoEPI9rtvxl4pB2NVA6QZWhiLuAT8qUKHyhtXMiv18N46NLA16e2KZefJ/YJTar
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TDiuqOlBrr4hcyz2z2TpUIjXvxZJZggJQ8XD12V3KCU=;
+        b=Pj3LNaPo0qkqeCTCeRIwSPfmQC90DcApogF15BepMFoUX+Dl8gnjDJAwHMxjqAd5/K
+         b5qifmoZkTek50fVkz5/IjPXW4h+DU5ZMIo96hYrbAaXugVWBBruVeinkI8GrEw7TVh3
+         TtDpGg9I22+RbtQqzXVSWcvGVwB2XMMBqrqt2VCdg4Oxi4RjjMt+R4GblxcIPQWvMTKJ
+         33oDQpYrTmKlvF0pga/pZ7xw5MlU3j8AZTHHbkN+jdE6SO9dFl5o7aajis9f7J7Fpj0d
+         3tJ0AoJJl8zEU5B/Fj4tPeqBYDSfaPYp0j7Yko+80a4hHsbDXRwmJ0jyrwpC8Nw5usSY
+         lIxQ==
+X-Gm-Message-State: ANhLgQ1eQ99aO6o0LqbojQOCBuE+L3gqtLduMcKDvh6jXfzVT/17r6FU
+        j4oQ41elrHrXLSY/rpIP7WOcMQ==
+X-Google-Smtp-Source: ADFU+vu9hcq7NZqanA0UIFOiHbXn3RuDUWWG3SmtVSo18MDjSVSkRh/7WSZzkHx37FLkZG9xF6FCMQ==
+X-Received: by 2002:adf:db02:: with SMTP id s2mr1522391wri.273.1584689757109;
+        Fri, 20 Mar 2020 00:35:57 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id s15sm7590021wrr.45.2020.03.20.00.35.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Mar 2020 00:35:56 -0700 (PDT)
+Date:   Fri, 20 Mar 2020 08:35:55 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, parav@mellanox.com,
+        yuvalav@mellanox.com, jgg@ziepe.ca, saeedm@mellanox.com,
+        leon@kernel.org, andrew.gospodarek@broadcom.com,
+        michael.chan@broadcom.com, moshe@mellanox.com, ayal@mellanox.com,
+        eranbe@mellanox.com, vladbu@mellanox.com, kliteyn@mellanox.com,
+        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
+        tariqt@mellanox.com, oss-drivers@netronome.com,
+        snelson@pensando.io, drivers@pensando.io, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
+        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
+        jacob.e.keller@intel.com, valex@mellanox.com,
+        linyunsheng@huawei.com, lihong.yang@intel.com,
+        vikas.gupta@broadcom.com
+Subject: Re: [RFC] current devlink extension plan for NICs
+Message-ID: <20200320073555.GE11304@nanopsycho.orion>
+References: <20200319192719.GD11304@nanopsycho.orion>
+ <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
 MIME-Version: 1.0
-X-Received: by 2002:a92:5fc5:: with SMTP id i66mr6755410ill.303.1584688453786;
- Fri, 20 Mar 2020 00:14:13 -0700 (PDT)
-Date:   Fri, 20 Mar 2020 00:14:13 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005e238a05a14408e4@google.com>
-Subject: general protection fault in hsr_addr_is_self (2)
-From:   syzbot <syzbot+fcf5dd39282ceb27108d@syzkaller.appspotmail.com>
-To:     ap420073@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, m-karicheri2@ti.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Fri, Mar 20, 2020 at 04:32:53AM CET, kuba@kernel.org wrote:
+>On Thu, 19 Mar 2020 20:27:19 +0100 Jiri Pirko wrote:
+>> Hi all.
+>> 
+>> First, I would like to apologize for very long email. But I think it
+>> would be beneficial to the see the whole picture, where we are going.
+>> 
+>> Currently in Mellanox we are working on several features with need of
+>> extension of the current devlink infrastructure. I took a stab at
+>> putting it all together in a single txt file, inlined below.
+>
+>Does it make sense to transcribe this (modulo discussion) 
+>as documentation? I noticed you don't use rst notation.
 
-syzbot found the following crash on:
-
-HEAD commit:    cd607737 Merge tag '5.6-rc6-smb3-fixes' of git://git.samba..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=17f4561de00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=9f894bd92023de02
-dashboard link: https://syzkaller.appspot.com/bug?extid=fcf5dd39282ceb27108d
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+fcf5dd39282ceb27108d@syzkaller.appspotmail.com
-
-general protection fault, probably for non-canonical address 0xdffffc0000000006: 0000 [#1] PREEMPT SMP KASAN
-KASAN: null-ptr-deref in range [0x0000000000000030-0x0000000000000037]
-CPU: 1 PID: 9421 Comm: udevd Not tainted 5.6.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:__read_once_size include/linux/compiler.h:199 [inline]
-RIP: 0010:hsr_addr_is_self+0x70/0x2e0 net/hsr/hsr_framereg.c:44
-Code: 34 c7 00 f1 f1 f1 f1 c7 40 04 00 f3 f3 f3 65 48 8b 04 25 28 00 00 00 48 89 44 24 58 31 c0 e8 f7 23 c2 f9 4c 89 e8 48 c1 e8 03 <42> 80 3c 30 00 0f 85 3e 02 00 00 48 8b 43 30 49 39 c5 48 89 44 24
-RSP: 0018:ffffc90000da8a90 EFLAGS: 00010206
-RAX: 0000000000000006 RBX: 0000000000000000 RCX: ffffffff87b0901a
-RDX: 0000000000000100 RSI: ffffffff87b00129 RDI: 0000000000000000
-RBP: ffff8880a40d7448 R08: ffff8880917d4580 R09: ffffed1015ce7074
-R10: ffffed1015ce7073 R11: ffff8880ae73839b R12: 1ffff920001b5152
-R13: 0000000000000030 R14: dffffc0000000000 R15: 0000000000000000
-FS:  00007f387c3777a0(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f387c37e000 CR3: 0000000095237000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <IRQ>
- hsr_handle_frame+0x2d1/0x650 net/hsr/hsr_slave.c:33
- __netif_receive_skb_core+0xfbc/0x30b0 net/core/dev.c:5088
- __netif_receive_skb_one_core+0x99/0x160 net/core/dev.c:5185
- __netif_receive_skb+0x27/0x1c0 net/core/dev.c:5301
- process_backlog+0x21e/0x7a0 net/core/dev.c:6133
- napi_poll net/core/dev.c:6571 [inline]
- net_rx_action+0x4c2/0x1070 net/core/dev.c:6639
- __do_softirq+0x26c/0x99d kernel/softirq.c:292
- invoke_softirq kernel/softirq.c:373 [inline]
- irq_exit+0x192/0x1d0 kernel/softirq.c:413
- exiting_irq arch/x86/include/asm/apic.h:546 [inline]
- smp_apic_timer_interrupt+0x19e/0x600 arch/x86/kernel/apic/apic.c:1146
- apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
- </IRQ>
-RIP: 0010:arch_local_irq_restore arch/x86/include/asm/paravirt.h:759 [inline]
-RIP: 0010:lock_acquire+0x209/0x420 kernel/locking/lockdep.c:4487
-Code: 94 08 00 00 00 00 00 00 48 c1 e8 03 80 3c 10 00 0f 85 de 01 00 00 48 83 3d a3 0f 1b 08 00 0f 84 5a 01 00 00 48 8b 3c 24 57 9d <0f> 1f 44 00 00 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e 41 5f c3 65 8b
-RSP: 0018:ffffc900020d7800 EFLAGS: 00000286 ORIG_RAX: ffffffffffffff13
-RAX: 1ffffffff12e7698 RBX: ffff8880917d4580 RCX: 0000000000004cd1
-RDX: dffffc0000000000 RSI: 1ffff9200041aee9 RDI: 0000000000000286
-RBP: ffff8880a8369070 R08: ffffffff8c04d188 R09: fffffbfff180e577
-R10: fffffbfff180e576 R11: ffffffff8c072bb7 R12: 0000000000000000
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
- __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
- _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
- spin_lock include/linux/spinlock.h:338 [inline]
- copy_pte_range mm/memory.c:816 [inline]
- copy_pmd_range mm/memory.c:892 [inline]
- copy_pud_range mm/memory.c:926 [inline]
- copy_p4d_range mm/memory.c:948 [inline]
- copy_page_range+0xa6a/0x1f30 mm/memory.c:1010
- dup_mmap kernel/fork.c:604 [inline]
- dup_mm+0x9cf/0x1340 kernel/fork.c:1360
- copy_mm kernel/fork.c:1416 [inline]
- copy_process+0x2987/0x7290 kernel/fork.c:2081
- _do_fork+0x12d/0x1010 kernel/fork.c:2430
- __do_sys_clone kernel/fork.c:2585 [inline]
- __se_sys_clone kernel/fork.c:2566 [inline]
- __x64_sys_clone+0x182/0x210 kernel/fork.c:2566
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x7f387ba5af46
-Code: f7 d8 64 89 04 25 d4 02 00 00 64 4c 8b 14 25 10 00 00 00 31 d2 49 81 c2 d0 02 00 00 31 f6 bf 11 00 20 01 b8 38 00 00 00 0f 05 <48> 3d 00 f0 ff ff 0f 87 31 01 00 00 85 c0 41 89 c4 0f 85 3b 01 00
-RSP: 002b:00007ffff9bfad00 EFLAGS: 00000246 ORIG_RAX: 0000000000000038
-RAX: ffffffffffffffda RBX: 00007ffff9bfad00 RCX: 00007f387ba5af46
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000001200011
-RBP: 00007ffff9bfad60 R08: 00000000000024cd R09: 00000000000024cd
-R10: 00007f387c377a70 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffff9bfad20 R14: 0000000000000005 R15: 0000000000000005
-Modules linked in:
----[ end trace 3228e95e3491c130 ]---
-RIP: 0010:__read_once_size include/linux/compiler.h:199 [inline]
-RIP: 0010:hsr_addr_is_self+0x70/0x2e0 net/hsr/hsr_framereg.c:44
-Code: 34 c7 00 f1 f1 f1 f1 c7 40 04 00 f3 f3 f3 65 48 8b 04 25 28 00 00 00 48 89 44 24 58 31 c0 e8 f7 23 c2 f9 4c 89 e8 48 c1 e8 03 <42> 80 3c 30 00 0f 85 3e 02 00 00 48 8b 43 30 49 39 c5 48 89 44 24
-RSP: 0018:ffffc90000da8a90 EFLAGS: 00010206
-RAX: 0000000000000006 RBX: 0000000000000000 RCX: ffffffff87b0901a
-RDX: 0000000000000100 RSI: ffffffff87b00129 RDI: 0000000000000000
-RBP: ffff8880a40d7448 R08: ffff8880917d4580 R09: ffffed1015ce7074
-R10: ffffed1015ce7073 R11: ffff8880ae73839b R12: 1ffff920001b5152
-R13: 0000000000000030 R14: dffffc0000000000 R15: 0000000000000000
-FS:  00007f387c3777a0(0000) GS:ffff8880ae700000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f387c37e000 CR3: 0000000095237000 CR4: 00000000001406e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+That is a plan. I want to convert it in parts to the documentation.
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+>> Most of the stuff is based on a new object called "slice" (called
+>> "subdev" originally in Yuval's patchsets sent some while ago).
+>> 
+>> The text describes how things should behave and provides a draft
+>> of user facing console input/outputs. I think it is important to clear
+>> that up before we go in and implement the devlink core and
+>> driver pieces.
+>> 
+>> I would like to ask you to read this and comment. Especially, I would
+>> like to ask vendors if what is described fits the needs of your
+>> NIC/e-switch.
+>> 
+>> Please note that something is already implemented, but most of this
+>> isn't (see "what needs to be implemented" section).
+>> 
+>> 
+>> 
+>> 
+>> ==================================================================
+>> ||                                                              ||
+>> ||            Overall illustration of example setup             ||
+>> ||                                                              ||
+>> ==================================================================
+>> 
+>> Note that there are 2 hosts in the picture. Host A may be the smartnic host,
+>> Host B may be one of the hosts which gets PF. Also, you might omit
+>> the Host B and just see Host A like an ordinary nic in a host.
+>
+>Could you enumerate the use scenarios for the SmartNIC?
+>
+>Is SmartNIC always "in-line", i.e. separating the host from the network?
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+As far as I know, it is. The host is always given a PF which is a leg of
+eswitch managed on the SmartNIC.
+
+
+>
+>Do we need a distinction based on whether the SmartNIC controls Host's
+>eswitch vs just the Host in its entirety (i.e. VF switching vs bare
+>metal)?
+
+I have this described in the "PFs" section. Basically we need to have a
+toggle to say "host is managing it's own nested eswitch.
+
+
+>
+>I find it really useful to be able to list use cases, and constraints
+>first. Then go onto the design.
+>
+>> Note that the PF is merged with physical port representor.
+>> That is due to simpler and flawless transition from legacy mode and back.
+>> The devlink_ports and netdevs for physical ports are staying during
+>> the transition.
+>
+>When users put an interface under bridge or a bond they have to move 
+>IP addresses etc. onto the bond. Changing mode to "switchdev" is a more
+>destructive operation and there should be no expectation that
+>configuration survives.
+
+Yeah, I was saying the same thing when our arch came up with this, but
+I now think it is just fine. It is drivers responsibility to do the
+shift. And the entities representing the uplink port: netdevs and
+devlink_port instances. They can easily stay during the transition. The
+transition only applies to the eswitch and VF entities.
+
+
+>
+>The merging of the PF with the physical port representor is flawed.
+
+Why?
+
+
+>
+>People push Qdisc offloads into devlink because of design shortcuts
+>like this.
+
+Could you please explain how it is related to "Qdisc offloads"
+
+
+>
+>>                         +-----------+
+>>                         |phys port 2+-----------------------------------+
+>>                         +-----------+                                   |
+>>                         +-----------+                                   |
+>>                         |phys port 1+---------------------------------+ |
+>>                         +-----------+                                 | |
+>>                                                                       | |
+>> +------------------------------------------------------------------+  | |
+>> |  devlink instance for the whole ASIC                   HOST A    |  | |
+>> |                                                                  |  | |
+>> |  pci/0000:06:00.0  (devlink dev)                                 |  | |
+>> |  +->health reporters, params, info, sb, dpipe,                   |  | |
+>> |  |  resource, traps                                              |  | |
+>> |  |                                                               |  | |
+>> |  +-+port_pci/0000:06:00.0/0+-----------------------+-------------|--+ |
+>> |  | |  flavour physical pfnum 0  (phys port and pf) ^             |    |
+>
+>Please no.
+
+What exactly "no"?
+
+
+>
+>> |  | |  netdev enp6s0f0np1                           |             |    |
+>> |  | +->health reporters, params                     |             |    |
+>> |  | |                                               |             |    |
+>> |  | +->slice_pci/0000:06:00.0/0+--------------------+             |    |
+>> |  |       flavour physical                                        |    |
+>> |  |                                                               |    |
+>> |  +-+port_pci/0000:06:00.0/1+-----------------------+-------------|----+
+>> |  | |  flavour physical pfnum 1  (phys port and pf) |             |
+>> |  | |  netdev enp6s0f0np2                           |             |
+>> |  | +->health reporters, params                     |             |
+>> |  | |                                               |             |
+>> |  | +->slice_pci/0000:06:00.0/1+--------------------+             |
+>> |  |       flavour physical                                        |
+>> |  |                                                               |
+>> |  +-+-+port_pci/0000:06:00.0/2+-----------+-------------------+   |
+>> |  | | |  flavour pcipf pfnum 2            ^                   |   |
+>> |  | | |  netdev enp6s0f0pf2               |                   |   |
+>> |  | + +->params                           |                   |   |
+>> |  | |                                     |                   |   |
+>> |  | +->slice_pci/0000:06:00.0/2+----------+                   |   |
+>> |  |       flavour pcipf                                       |   |
+>> |  |                                                           |   |
+>> |  +-+-+port_pci/0000:06:00.0/3+-----------+----------------+  |   |
+>> |  | | |  flavour pcivf pfnum 2 vfnum 0    ^                |  |   |
+>> |  | | |  netdev enp6s0pf2vf0              |                |  |   |
+>> |  | | +->params                           |                |  |   |
+>> |  | |                                     |                |  |   |
+>> |  | +-+slice_pci/0000:06:00.0/3+----------+                |  |   |
+>> |  |   |   flavour pcivf                                    |  |   |
+>> |  |   +->rate (qos), mpgroup, mac                          |  |   |
+>> |  |                                                        |  |   |
+>> |  +-+-+port_pci/0000:06:00.0/4+-----------+-------------+  |  |   |
+>> |  | | |  flavour pcivf pfnum 0 vfnum 0    ^             |  |  |   |
+>
+>So PF 0 is both on the SmartNIC where it is physical and on the Hosts?
+>Is this just error in the diagram?
+
+I think it is error in the reading. This is the VF representation
+of VF pci/0000:06:00.1, on the same host A, which is the SmartNIC host.
+
+
+>
+>> |  | | |  netdev enp6s0pf0vf0              |             |  |  |   |
+>> |  | | +->params                           |             |  |  |   |
+>> |  | |                                     |             |  |  |   |
+>> |  | +-+slice_pci/0000:06:00.0/4+----------+             |  |  |   |
+>> |  |   |   flavour pcivf                                 |  |  |   |
+>> |  |   +->rate (qos), mpgroup, mac                       |  |  |   |
+>> |  |                                                     |  |  |   |
+>> |  +-+-+port_pci/0000:06:00.0/5+-----------+----------+  |  |  |   |
+>> |  | | |  flavour pcisf pfnum 0 sfnum 1    ^          |  |  |  |   |
+>> |  | | |  netdev enp6s0pf0sf1              |          |  |  |  |   |
+>> |  | | +->params                           |          |  |  |  |   |
+>> |  | |                                     |          |  |  |  |   |
+>> |  | +-+slice_pci/0000:06:00.0/5+----------+          |  |  |  |   |
+>> |  |   |   flavour pcisf                              |  |  |  |   |
+>> |  |   +->rate (qos), mpgroup, mac                    |  |  |  |   |
+>> |  |                                                  |  |  |  |   |
+>> |  +-+slice_pci/0000:06:00.0/6+--------------------+  |  |  |  |   |
+>> |        flavour pcivf pfnum 0 vfnum 1             |  |  |  |  |   |
+>> |            (non-ethernet (IB, NVE)               |  |  |  |  |   |
+>> |                                                  |  |  |  |  |   |
+>> +------------------------------------------------------------------+
+>>                                                    |  |  |  |  |
+>>                                                    |  |  |  |  |
+>>                                                    |  |  |  |  |
+>> +----------------------------------------------+   |  |  |  |  |
+>> |  devlink instance PF (other host)    HOST B  |   |  |  |  |  |
+>> |                                              |   |  |  |  |  |
+>> |  pci/0000:10:00.0  (devlink dev)             |   |  |  |  |  |
+>> |  +->health reporters, info                   |   |  |  |  |  |
+>> |  |                                           |   |  |  |  |  |
+>> |  +-+port_pci/0000:10:00.0/1+---------------------------------+
+>> |    |  flavour virtual                        |   |  |  |  |
+>> |    |  netdev enp16s0f0                       |   |  |  |  |
+>> |    +->health reporters                       |   |  |  |  |
+>> |                                              |   |  |  |  |
+>> +----------------------------------------------+   |  |  |  |
+>>                                                    |  |  |  |
+>> +----------------------------------------------+   |  |  |  |
+>> |  devlink instance VF (other host)    HOST B  |   |  |  |  |
+>> |                                              |   |  |  |  |
+>> |  pci/0000:10:00.1  (devlink dev)             |   |  |  |  |
+>> |  +->health reporters, info                   |   |  |  |  |
+>> |  |                                           |   |  |  |  |
+>> |  +-+port_pci/0000:10:00.1/1+------------------------------+
+>> |    |  flavour virtual                        |   |  |  |
+>> |    |  netdev enp16s0f0v0                     |   |  |  |
+>> |    +->health reporters                       |   |  |  |
+>> |                                              |   |  |  |
+>> +----------------------------------------------+   |  |  |
+>>                                                    |  |  |
+>> +----------------------------------------------+   |  |  |
+>> |  devlink instance VF                 HOST A  |   |  |  |
+>> |                                              |   |  |  |
+>> |  pci/0000:06:00.1  (devlink dev)             |   |  |  |
+>> |  +->health reporters, info                   |   |  |  |
+>> |  |                                           |   |  |  |
+>> |  +-+port_pci/0000:06:00.1/1+---------------------------+
+>> |    |  flavour virtual                        |   |  |
+>> |    |  netdev enp6s0f0v0                      |   |  |
+>> |    +->health reporters                       |   |  |
+>> |                                              |   |  |
+>> +----------------------------------------------+   |  |
+>>                                                    |  |
+>> +----------------------------------------------+   |  |
+>> |  devlink instance SF                 HOST A  |   |  |
+>> |                                              |   |  |
+>> |  pci/0000:06:00.0%sf1    (devlink dev)       |   |  |
+>> |  +->health reporters, info                   |   |  |
+>> |  |                                           |   |  |
+>> |  +-+port_pci/0000:06:00.0%sf1/1+--------------------+
+>> |    |  flavour virtual                        |   |
+>> |    |  netdev enp6s0f0s1                      |   |
+>> |    +->health reporters                       |   |
+>> |                                              |   |
+>> +----------------------------------------------+   |
+>>                                                    |
+>> +----------------------------------------------+   |
+>> |  devlink instance VF                 HOST A  |   |
+>> |                                              |   |
+>> |  pci/0000:06:00.2  (devlink dev)+----------------+
+>> |  +->health reporters, info                   |
+>> |                                              |
+>> +----------------------------------------------+
+>> 
+>> 
+>> 
+>> 
+>> ==================================================================
+>> ||                                                              ||
+>> ||                 what needs to be implemented                 ||
+>> ||                                                              ||
+>> ==================================================================
+>> 
+>> 1) physical port "pfnum". When PF and physical port representor
+>>    are merged, the instance of devlink_port representing the physical port
+>>    and PF needs to have "pfnum" attribute to be in sync
+>>    with other PF port representors.
+>
+>See above.
+>
+>> 2) per-port health reporters are not implemented yet.
+>
+>Which health reports are visible on a SmartNIC port? 
+
+I think there is usecase for SmartNIC uplink/pf port health reporters.
+Those are the ones which we have for TX/RX queues on devlink instance
+now (that was a mistake). 
+
+>
+>The Host ones or the SmartNIC ones?
+
+In the host, I think there is a usecase for VF/SF devlink_port health
+reporters - also for TX/RX queues.
+
+
+>
+>I think queue reporters should be per-queue, see below.
+
+Depends. There are reporters, like "fw" that are per-asic.
+
+
+>
+>> 3) devlink_port instance in PF/VF/SF flavour "virtual". In PF/VF/SF devlink
+>>    instance (in VM for example), there would make sense to have devlink_port
+>>    instance. At least to carry link to netdevice name (otherwise we have
+>>    no easy way to find out devlink instance and netdevice belong to each other).
+>>    I was thinking about flavour name, we have to distinguish from eswitch
+>>    devlink port flavours "pcipf, pcivf, pcisf".
+>
+>Virtual is the flavor for the VF port, IIUC, so what's left to name?
+>Do you mean pick a phys_port_name format?
+
+No. "virtual" is devlink_port flavour in the host in the VF devlink
+instance. See port_pci/0000:10:00.0/1 above for example.
+
+
+>
+>>    This was recently implemented by Parav:
+>> commit 0a303214f8cb8e2043a03f7b727dba620e07e68d
+>> Merge: c04d102ba56e 162add8cbae4
+>> Author: David S. Miller <davem@davemloft.net>
+>> Date:   Tue Mar 3 15:40:40 2020 -0800
+>> 
+>>     Merge branch 'devlink-virtual-port'
+>> 
+>>    What is missing is the "virtual" flavour for nested PF.
+>> 
+>> 4) slice is not implemented yet. This is the original "vdev/subdev" concept.
+>>    See below section "Slice user cmdline API draft".
+>> 
+>> 5) SFs are not implemented.
+>>    See below section "SF (subfunction) user cmdline API draft".
+>> 
+>> 6) rate for slice are not implemented yet.
+>>    See below section "Slice rate user cmdline API draft".
+>> 
+>> 7) mpgroup for slice is not implemented yet.
+>>    See below section "Slice mpgroup user cmdline API draft".
+>> 
+>> 8) VF manual creation using devlink is not implemented yet.
+>>    See below section "VF manual creation and activation user cmdline API draft".
+>>  
+>> 9) PF aliasing. One devlink instance and multiple PFs sharing it as they have one
+>>    merged e-switch.
+>> 
+>> 
+>> 
+>> ==================================================================
+>> ||                                                              ||
+>> ||                  Issues/open questions                       ||
+>> ||                                                              ||
+>> ==================================================================
+>> 
+>> 1) "pfnum" has to be per-asic(/devlink instance), not per-host.
+>>    That means that in smartNIC scenario, we cannot have "pfnum 0"
+>>    for smartNIC and "pfnum 0" for host as well.
+>
+>Right, exactly, NFP already does that.
+>
+>> 2) Q: for TX, RX queues reporters, should it be bound to devlink_port?
+>>    For which flavours this might make sense?
+>>    Most probably for flavours "physical"/"virtual".
+>>    How about the reporters in VF/SF?
+>
+>I think with the work Magnus is doing we should have queues as first
+
+Can you point me to the "work"?
+
+
+>class citizens to be able to allocate them to ports.
+>
+>Would this mean we can hang reporters off queues?
+
+Yes, If we have a "queue object", the per-queue reporter would make sense.
+
+
+>
+>> 3) How the management of nested switch is handled. The PFs created dynamically
+>>    or the ones in hosts in smartnic scenario may themselves be each a manager
+>>    of nested e-switch. How to toggle this capability?
+>>    During creation by a cmdline option?
+>>    During lifetime in case the PF does not have any childs (VFs/SFs)?
+>
+>Maybe the grouping of functions into devlink instances would help? 
+>SmartNIC could control if the host can perform switching between
+>functions by either putting them in the same Host side devlink 
+>instance or not.
+
+I'm not sure I follow. There is a number of PFs created "on probe".
+Those are fixed and driver knows where to put them.
+The comment was about possible "dynamic PF" created by user in the same
+was he creates SF, by devlink cmdline.
+
+Now the PF itself can have a "nested eswitch" to manage. The "parent
+eswitch" where the PF was created would only see one leg to the "nested
+eswitch".
+
+This "nested eswitch management" might or might not be required. Depends
+on a usecare. The question was, how to configure that I as a user
+want this or not.
+
+
+>
+>> ==================================================================
+>> ||                                                              ||
+>> ||                Slice user cmdline API draft                  ||
+>> ||                                                              ||
+>> ==================================================================
+>> 
+>> Note that some of the "devlink port" attributes may be forgotten or misordered.
+>> 
+>> Slices and ports are created together by device driver. The driver defines
+>> the relationships during creation.
+>> 
+>> 
+>> $ devlink port show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 type eth netdev enp6s0pf0vf0 slice 0
+>> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1 type eth netdev enp6s0pf0vf1 slice 1
+>> pci/0000:06:00.0/4: flavour pcivf pfnum 1 vfnum 0 type eth netdev enp6s0pf1vf0 slice 2
+>> pci/0000:06:00.0/5: flavour pcivf pfnum 1 vfnum 1 type eth netdev enp6s0pf1vf1 slice 3
+>> 
+>> $ devlink slice show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66 state active
+>> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1 port 3 hw_addr 10:22:33:44:55:77 state active
+>> pci/0000:06:00.0/4: flavour pcivf pfnum 1 vfnum 0 port 4 hw_addr 10:22:33:44:55:88 state active
+>> pci/0000:06:00.0/5: flavour pcivf pfnum 1 vfnum 1 port 5 hw_addr 10:22:33:44:55:99 state active
+>> pci/0000:06:00.0/6: flavour pcivf pfnum 1 vfnum 2
+>> 
+>> In these 2 outputs you can see the relationships. Attributes "slice" and "port"
+>> indicate the slice-port pairs.
+>> 
+>> Also, there is a fixed "state" attribute with value "active". This is by
+>> default as the VFs are always created active. In future, it is planned
+>> to implement manual VF creation and activation, similar to what is below
+>> described for SFs.
+>> 
+>> Note that for non-ethernet slice (the last one) does not have any
+>> related port port. It can be for example NVE or IB. But since
+>> the "hw_addr" attribute is also omitted, it isn't IB.
+>> 
+>>  
+>> Now set a different MAC address for VF1 on PF0:
+>> $ devlink slice set pci/0000:06:00.0/3 hw_addr aa:bb:cc:dd:ee:ff
+>> 
+>> $ devlink slice show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66 state active
+>> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1 port 3 hw_addr aa:bb:cc:dd:ee:ff state active
+>> pci/0000:06:00.0/4: flavour pcivf pfnum 1 vfnum 0 port 4 hw_addr 10:22:33:44:55:88 state active
+>> pci/0000:06:00.0/5: flavour pcivf pfnum 1 vfnum 1 port 5 hw_addr 10:22:33:44:55:99 state active
+>> pci/0000:06:00.0/6: flavour pcivf pfnum 1 vfnum 2
+>
+>What are slices?
+
+Slice is basically a piece of ASIC. pf/vf/sf. They serve for
+configuration of the "other side of the wire". Like the mac. Hypervizor
+admin can use the slite to set the mac address of a VF which is in the
+virtual machine. Basically this should be a replacement of "ip vf"
+command.
+
+
+>
+>> ==================================================================
+>> ||                                                              ||
+>> ||          SF (subfunction) user cmdline API draft             ||
+>> ||                                                              ||
+>> ==================================================================
+>> 
+>> Note that some of the "devlink port" attributes may be forgotten or misordered.
+>> 
+>> Note that some of the "devlink slice" attributes in show commands
+>> are omitted on purpose.
+>> 
+>> $ devlink port show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 type eth netdev enp6s0pf0vf0 slice 2
+>> 
+>> $ devlink slice show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66
+>> 
+>> There is one VF on the NIC.
+>> 
+>> 
+>> Now create subfunction of SF0 on PF1, index of the slice is going to be 100
+>> and hw_address aa:bb:cc:aa:bb:cc.
+>> 
+>> $ devlink slice add pci/0000.06.00.0/100 flavour pcisf pfnum 1 sfnum 10 hw_addr aa:bb:cc:aa:bb:cc
+>
+>Why is the SF number specified by the user rather than allocated?
+
+Because it is snown in representor netdevice name. And you need to have
+it predetermined: enp6s0pf1sf10
+
+
+>
+>> The devlink kernel code calls down to device driver (devlink op) and asks
+>> it to create a slice with particular attributes. Driver then instatiates
+>> the slice and port in the same way it is done for VF:
+>> 
+>> $ devlink port show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 type eth netdev enp6s0pf0vf0 slice 2
+>> pci/0000:06:00.0/3: flavour pcisf pfnum 1 sfnum 10 type eth netdev enp6s0pf1sf10 slice 100
+>> 
+>> $ devlink slice show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66
+>> pci/0000:06:00.0/100: flavour pcisf pfnum 1 sfnum 10 port 3 hw_addr aa:bb:cc:aa:bb:cc state inactive
+>> 
+>> Note that the SF slice is created but not active. That means the
+>> entities are created on devlink side, the e-switch port representor
+>> is created, but the SF device itself it not yet out there (same host
+>> or different, depends on where the parent PF is - in this case the same host).
+>> User might use e-switch port representor enp6s0pf1sf10 to do settings,
+>> putting it into bridge, adding TC rules, etc.
+>> It's like the cable is unplugged on the other side.
+>
+>If it's just "cable unplugged" can't we just use the fact the
+>representor is down to indicate no traffic can flow?
+
+It is not "cable unplugged". This "state inactive/action" is admin
+state. You as a eswitch admin say, "I'm done with configuring a slice
+(MAC) and a representor (bridge, TC, etc) for this particular SF and
+I want the HOST to instantiate the SF instance (with the configured
+MAC).
+
+
+>
+>> Now we activate (deploy) the SF:
+>> $ devlink slice set pci/0000:06:00.0/100 state active
+>> 
+>> $ devlink slice show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66
+>> pci/0000:06:00.0/100: flavour pcisf pfnum 1 sfnum 10 port 3 hw_addr aa:bb:cc:aa:bb:cc state active
+>> 
+>> Upon the activation, the device driver asks the device to instantiate
+>> the actual SF device on particular PF. Does not matter if that is
+>> on the same host or not.
+>> 
+>> On the other side, the PF driver instance gets the event from device
+>> that particular SF was activated. It's the cue to put the device on bus
+>> probe it and instantiate netdev and devlink instances for it.
+>
+>Seems backwards. It's the PF that wants the new function, why can't it
+>just create it and either get an error from the other side or never get
+>link up?
+
+We discussed that many times internally. I think it makes sense that
+the SF is created by the same entity that manages the related eswitch
+SF-representor. In other words, the "devlink slice" and related "devlink
+port" object are under the same devlink instance.
+
+If the PF in host manages nested switch, it can create the SF inside and
+manages the neste eswitch SF-representor as you describe.
+
+It is a matter of "nested eswitch manager on/off" configuration.
+
+I think this is clean model and it is known who has what
+responsibilities.
+
+
+>
+>> For every SF a device is created on wirtbus with an ID assigned by the
+>> virtbus code. For example:
+>> /sys/bus/virtbus/devices/mlx5_sf.1
+>> 
+>> $ cat /sys/bus/virtbus/devices/mlx5_sf.1/sfnum
+>> 10
+>> 
+>> /sys/bus/virtbus/devices/mlx5_sf.1 is a symlink to:
+>> ../../../devices/pci0000:00/0000:00:03.0/0000:06:00.0/mlx5_sf.1
+>> 
+>> New devlink instance is named using alias:
+>> $ devlink dev show
+>> pci/0000:06:00.0%sf10
+>> 
+>> $ devlink port show
+>> pci/0000:06:00.0%sf10/0: flavour virtual type eth netdev netdev enp6s0f0s10
+>> 
+>> You see that the udev used the sysfs files and symlink to assemble netdev name.
+>> 
+>> Note that this kind of aliasing is not implemented. Needs to be done in
+>> devlink code in kernel. During SF devlink instance creation, there should
+>> be passed parent PF device pointer and sfnum from which the alias dev_name
+>> is assembled. This ensures persistent naming consistent in both smartnic
+>> and host usecase.
+>> 
+>> If the user on smartnic or host does not want the virtbus device to get
+>> probed automatically (for any reason), he can do it by:
+>> 
+>> $ echo "0" > /sys/bus/virtbus/drivers_autoprobe
+>> 
+>> This is enabled by default.
+>> 
+>> 
+>> User can deactivate the slice by:
+>> 
+>> $ devlink slice set pci/0000:06:00.0/100 state inactive
+>> 
+>> This eventually leads to event delivered to PF driver, which is a
+>> cue to remove the SF device from virtbus and remove all related devlink
+>> and netdev instances.
+>> 
+>> The slice may be activated again.
+>> 
+>> Now on the teardown process, user might either remove the SF slice
+>> right away, without deactivation. However, it is possible to remove
+>> deactivated SF too. To remove the SF, user should do:
+>> 
+>> $ devlink slice del pci/0000:06:00.0/100
+>> 
+>> $ devlink port show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 type eth netdev enp6s0pf0vf0 slice 2
+>> 
+>> $ devlink slice show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66
+>
+>The destruction also seems wrong way around. Could you explain why it
+>makes sense to create from SmartNIC side?
+
+See above.
+
+
+>
+>> ==================================================================
+>> ||                                                              ||
+>> ||   VF manual creation and activation user cmdline API draft   ||
+>> ||                                                              ||
+>> ==================================================================
+>> 
+>> To enter manual mode, the user has to turn off VF dummies creation:
+>> $ devlink dev set pci/0000:06:00.0 vf_dummies disabled
+>> $ devlink dev show
+>> pci/0000:06:00.0: vf_dummies disabled
+>> 
+>> It is "enabled" by default in order not to break existing users.
+>> 
+>> By setting the "vf_dummies" attribute to "disabled", the driver
+>> removes all dummy VFs. Only physical ports are present:
+>> 
+>> $ devlink port show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
+>> 
+>> Then the user is able to create them in a similar way as SFs:
+>> 
+>> $ devlink slice add pci/0000:06:00.0/99 flavour pcivf pfnum 1 vfnum 8 hw_addr aa:bb:cc:aa:bb:cc
+>> 
+>> The devlink kernel code calls down to device driver (devlink op) and asks
+>> it to create a slice with particular attributes. Driver then instatiates
+>> the slice and port:
+>> 
+>> $ devlink port show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 1 vfnum 8 type eth netdev enp6s0pf1vf0 slice 99
+>> 
+>> $ devlink slice show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> pci/0000:06:00.0/99: flavour pcivf pfnum 1 vfnum 8 port 2 hw_addr aa:bb:cc:aa:bb:cc state inactive
+>> 
+>> Now we activate (deploy) the VF:
+>> $ devlink slice set pci/0000:06:00.0/99 state active
+>> 
+>> $ devlink slice show
+>> pci/0000:06:00.0/99: flavour pcivf pfnum 1 vfnum 8 port 2 hw_addr aa:bb:cc:aa:bb:cc state active
+>> 
+>> ==================================================================
+>> ||                                                              ||
+>> ||                             PFs                              ||
+>> ||                                                              ||
+>> ==================================================================
+>> 
+>> There are 2 flavours of PFs:
+>> 1) Parent PF. That is coupled with uplink port. The slice flavour is
+>>    therefore "physical", to be in sync of the flavour of the uplink port.
+>>    In case this Parent PF is actually a leg of upstream embedded switch,
+>>    the slice flavour is "virtual" (same as the port flavour).
+>> 
+>>    $ devlink port show
+>>    pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1 slice 0
+>> 
+>>    $ devlink slice show
+>>    pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> 
+>>    This slice is shown in both "switchdev" and "legacy" modes.
+>> 
+>>    If there is another parent PF, say "0000:06:00.1", that share the
+>>    same embedded switch, the aliasing is established for devlink handles.
+>> 
+>>    The user can use devlink handles:
+>>    pci/0000:06:00.0
+>>    pci/0000:06:00.1
+>>    as equivalents, pointing to the same devlink instance.
+>> 
+>>    Parent PFs are the ones that may be in control of managing
+>>    embedded switch, on any hierarchy level.
+>> 
+>> 2) Child PF. This is a leg of a PF put to the parent PF. It is
+>>    represented by a slice, and a port (with a netdevice):
+>> 
+>>    $ devlink port show
+>>    pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1 slice 0
+>>    pci/0000:06:00.0/1: flavour pcipf pfnum 2 type eth netdev enp6s0f0pf2 slice 20
+>> 
+>>    $ devlink slice show
+>>    pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>>    pci/0000:06:00.0/20: flavour pcipf pfnum 1 port 1 hw_addr aa:bb:cc:aa:bb:87 state active  <<<<<<<<<<
+>> 
+>>    This is a typical smartnic scenario. You would see this list on
+>>    the smartnic CPU. The slice pci/0000:06:00.0/20 is a leg to
+>>    one of the hosts. If you send packets to enp6s0f0pf2, they will
+>>    go to he host.
+>> 
+>>    Note that inside the host, the PF is represented again as "Parent PF"
+>>    and may be used to configure nested embedded switch.
+>
+>This parent/child PF I don't understand. Does it stem from some HW
+>limitations you have?
+
+No limitation. It's just a name for 2 roles. I didn't know how else to
+name it for the documentation purposes. Perhaps you can help me.
+
+The child can simply manage a "nested eswich". The "parent eswitch"
+would see one leg (pf representor) one way or another. Only in case the
+"nested eswitch" is there, the child would manage it - have separate
+representors for vfs/sfs under its devlink instance.
+
+
+>
+>> ==================================================================
+>> ||                                                              ||
+>> ||               Slice operational state extension              ||
+>> ||                                                              ||
+>> ==================================================================
+>> 
+>> In addition to the "state" attribute that serves for the purpose
+>> of setting the "admin state", there is "opstate" attribute added to
+>> reflect the operational state of the slice:
+>> 
+>> 
+>>     opstate                description
+>>     -----------            ------------
+>>     1. attached    State when slice device is bound to the host
+>>                    driver. When the slice device is unbound from the
+>>                    host driver, slice device exits this state and
+>>                    enters detaching state.
+>> 
+>>     2. detaching   State when host is notified to deactivate the
+>>                    slice device and slice device may be undergoing
+>>                    detachment from host driver. When slice device is
+>>                    fully detached from the host driver, slice exits
+>>                    this state and enters detached state.
+>> 
+>>     3. detached    State when driver is fully unbound, it enters
+>>                    into detached state.
+>> 
+>> slice state machine:
+>> --------------------
+>>                                slice state set inactive
+>>                               ----<------------------<---
+>>                               | or  slice delete        |
+>>                               |                         |
+>>   __________              ____|_______              ____|_______
+>>  |          | slice add  |            |slice state |            |
+>>  |          |-------->---|            |------>-----|            |
+>>  | invalid  |            |  inactive  | set active |   active   |
+>>  |          | slice del  |            |            |            |
+>>  |__________|--<---------|____________|            |____________|
+>> 
+>> slice device operational state machine:
+>> ---------------------------------------
+>>   __________                ____________              ___________
+>>  |          | slice state  |            |driver bus  |           |
+>>  | invalid  |-------->-----|  detached  |------>-----| attached  |
+>>  |          | set active   |            | probe()    |           |
+>>  |__________|              |____________|            |___________|
+>>                                  |                        |
+>>                                  ^                    slice set
+>>                                  |                    set inactive
+>>                             successful detach             |
+>>                               or pf reset                 |
+>>                              ____|_______                 |
+>>                             |            | driver bus     |
+>>                  -----------| detaching  |---<-------------
+>>                  |          |            | remove()
+>>                  ^          |____________|
+>>                  |   timeout      |
+>>                  --<---------------
+>> 
+>> 
+>> 
+>> ==================================================================
+>> ||                                                              ||
+>> ||             Slice rate user cmdline API draft                ||
+>> ||                                                              ||
+>> ==================================================================
+>> 
+>> Note that some of the "devlink slice" attributes in show commands
+>> are omitted on purpose.
+>> 
+>> 
+>> $ devlink slice show
+>> pci/0000:06:00.0/0: flavour physical pfnum
+>> pci/0000:06:00.0/1: flavour pcivf pfnum 0 vfnum 1
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0
+>> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1
+>> pci/0000:06:00.0/4: flavour pcisf pfnum 0 sfnum 1
+>> 
+>> Slice object is extended with new rate object.
+>> 
+>> 
+>> $ devlink slice rate
+>> pci/0000:06:00.0/1: type leaf
+>> pci/0000:06:00.0/2: type leaf
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> 
+>> This shows the leafs created by default alongside with slice objects. No min or
+>> max tx rates were set, so their values are omitted.
+>> 
+>> 
+>> Now create new node rate object:
+>> 
+>> $ devlink slice rate add pci/0000:06:00.0/somerategroup
+>> 
+>> $ devlink slice rate
+>> pci/0000:06:00.0/1: type leaf
+>> pci/0000:06:00.0/2: type leaf
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/somerategroup: type node
+>> 
+>> New node rate object was created - the last line.
+>> 
+>> 
+>> Now create another new node object was created, this time with some attributes:
+>> 
+>> $ devlink slice rate add pci/0000:06:00.0/secondrategroup min_tx_rate 20 max_tx_rate 1000
+>> 
+>> $ devlink slice rate
+>> pci/0000:06:00.0/1: type leaf
+>> pci/0000:06:00.0/2: type leaf
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/somerategroup: type node
+>> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
+>> 
+>> Another new node object was created - the last line. The object has min and max
+>> tx rates set, so they are displayed after the object type.
+>> 
+>> 
+>> Now set node named somerategroup min/max rate using rate object:
+>> 
+>> $ devlink slice rate set pci/0000:06:00.0/somerategroup min_tx_rate 50 max_tx_rate 5000
+>> 
+>> $ devlink slice rate
+>> pci/0000:06:00.0/1: type leaf
+>> pci/0000:06:00.0/2: type leaf
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
+>> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
+>> 
+>> 
+>> Now set leaf slice rate using rate object:
+>> 
+>> $ devlink slice rate set pci/0000:06:00.0/2 min_tx_rate 10 max_tx_rate 10000
+>> 
+>> $ devlink slice rate
+>> pci/0000:06:00.0/1: type leaf
+>> pci/0000:06:00.0/2: type leaf min_tx_rate 10 max_tx_rate 10000
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
+>> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
+>> 
+>> 
+>> Now set leaf slice with index 2 parent node using rate object:
+>> 
+>> $ devlink slice rate set pci/0000:06:00.0/2 parent somerategroup
+>> 
+>> $ devlink slice rate
+>> pci/0000:06:00.0/1: type leaf
+>> pci/0000:06:00.0/2: type leaf min_tx_rate 10 max_tx_rate 10000 parent somerategroup
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
+>> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
+>> 
+>> 
+>> Now set leaf slice with index 1 parent node using rate object:
+>> 
+>> $ devlink slice rate set pci/0000:06:00.0/1 parent somerategroup
+>> 
+>> $ devlink slice rate
+>> pci/0000:06:00.0/1: type leaf parent somerategroup
+>> pci/0000:06:00.0/2: type leaf min_tx_rate 10 max_tx_rate 10000 parent somerategroup
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
+>> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
+>> 
+>> 
+>> Now unset leaf slice with index 1 parent node using rate object:
+>> 
+>> $ devlink slice rate set pci/0000:06:00.0/1 noparent
+>> 
+>> $ devlink slice rate
+>> pci/0000:06:00.0/1: type leaf
+>> pci/0000:06:00.0/2: type leaf min_tx_rate 10 max_tx_rate 10000 parent somerategroup
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
+>> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
+>> 
+>> 
+>> Now delete node object:
+>> 
+>> $ devlink slice rate del pci/0000:06:00.0/somerategroup
+>> 
+>> $ devlink slice rate
+>> pci/0000:06:00.0/1: type leaf
+>> pci/0000:06:00.0/2: type leaf
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> 
+>> Rate node object was removed and its only child pci/0000:06:00.0/2 automatically
+>> detached.
+>
+>Tomorrow we will support CoDel, ECN or any other queuing construct. 
+>How many APIs do we want to have to configure the same thing? :/
+
+Rigth, I don't see other way. Please help me to figure out this
+differently. Note this is for configuring HW limits on the TX side of VF.
+
+We have only devlink_port and related netdev as representor of the VF
+eswitch port. We cannot use this netdev to configure qdisc on RX.
+
+
+>
+>> ==================================================================
+>> ||                                                              ||
+>> ||            Slice ib groupping user cmdline API draft         ||
+>> ||                                                              ||
+>> ==================================================================
+>> 
+>> Note that some of the "devlink slice" attributes in show commands
+>> are omitted on purpose.
+>> 
+>> The reason for this IB groupping is that the VFs inside virtual machine
+>> get information (via device) about which two of more VF devices should
+>> be combined together to form one multi-port IB device. In the virtual
+>> machine it is driver's responsibility to setup the combined
+>> multi-port IB devices.
+>> 
+>> Consider following setup:
+>> 
+>> $ devlink slice show
+>> pci/0000:06:00.0/0: flavour physical pfnum 0
+>> pci/0000:06:00.0/1: flavour physical pfnum 1
+>> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0
+>> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1
+>> pci/0000:06:00.0/4: flavour pcivf pfnum 1 vfnum 0
+>> pci/0000:06:00.0/5: flavour pcivf pfnum 1 vfnum 1
+>> 
+>> 
+>> Each VF/SF slice has IB leaf object related to it:
+>> 
+>> $ devlink slice ib
+>> pci/0000:06:00.0/2: type leaf
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/5: type leaf
+>> 
+>> You see that by default, each slice is marked as a leaf.
+>> There is no groupping set.
+>> 
+>> 
+>> User may add a ib group node by issuing following command:
+>> 
+>> $ devlink slice ib add pci/0000:06:00.0/somempgroup1
+>> 
+>> $ devlink slice ib
+>> pci/0000:06:00.0/2: type leaf
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/5: type leaf
+>> pci/0000:06:00.0/someibgroup1: type node
+>> 
+>> New node ib node object was created - the last line.
+>> 
+>> 
+>> Now set leaf slice with index 2 parent node using ib object:
+>> 
+>> $ devlink slice ib set pci/0000:06:00.0/2 parent someibgroup1
+>> 
+>> $ devlink slice ib
+>> pci/0000:06:00.0/2: type leaf parent someibgroup1
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/5: type leaf
+>> pci/0000:06:00.0/someibgroup1: type node
+>> 
+>> 
+>> Now set leaf slice with index 5 parent node using ib object:
+>> 
+>> $ devlink slice ib set pci/0000:06:00.0/5 parent someibgroup1
+>> 
+>> $ devlink slice ib
+>> pci/0000:06:00.0/2: type leaf parent someibgroup1
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/5: type leaf parent someibgroup1
+>> pci/0000:06:00.0/someibgroup1: type node
+>> 
+>> Now you can see there are 2 leaf devices configured to have one parent.
+>> 
+>> 
+>> To remove the parent link, user should issue following command:
+>> 
+>> $ devlink slice ib set pci/0000:06:00.0/5 noparent
+>> 
+>> $ devlink slice ib
+>> pci/0000:06:00.0/2: type leaf parent someibgroup1
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/5: type leaf
+>> pci/0000:06:00.0/someibgroup1: type node
+>> 
+>> 
+>> Now delete node object:
+>> 
+>> $ devlink slice ib del pci/0000:06:00.0/somempgroup1
+>> $ devlink slice ib
+>> pci/0000:06:00.0/2: type leaf
+>> pci/0000:06:00.0/3: type leaf
+>> pci/0000:06:00.0/4: type leaf
+>> pci/0000:06:00.0/5: type leaf
+>> 
+>> Node object was removed and its only child pci/0000:06:00.0/2 automatically
+>> detached.
+>> 
+>> 
+>> It is not possible to delete leafs:
+>> 
+>> $ devlink slice ib del pci/0000:06:00.0/2
+>> devlink answers: Operation not supported
+>> 
+>> 
+>> 
+>> ==================================================================
+>> ||                                                              ||
+>> ||            Dynamic PFs user cmdline API draft                ||
+>> ||                                                              ||
+>> ==================================================================
+>> 
+>> User might want to create another PF, similar as VF.
+>> TODO
+>
