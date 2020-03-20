@@ -2,67 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2F0618D8D5
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 21:07:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A19318D8D7
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 21:08:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727054AbgCTUHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 16:07:50 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39388 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726738AbgCTUHu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 16:07:50 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jFNvm-0006X1-NO; Fri, 20 Mar 2020 21:07:46 +0100
-Received: from [85.7.42.192] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jFNvm-000BST-9W; Fri, 20 Mar 2020 21:07:46 +0100
-Subject: Re: [PATCH] bpf: explicitly memset some bpf info structures declared
- on the stack
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Alexander Potapenko <glider@google.com>,
-        Alistair Delva <adelva@google.com>
-References: <20200320094813.GA421650@kroah.com>
- <3bcf52da-0930-a27f-60f9-28a40e639949@iogearbox.net>
- <20200320154518.GA765793@kroah.com>
- <d55983b3-0f94-cc7f-2055-a0b4ab8075ed@iogearbox.net>
- <20200320161515.GA778529@kroah.com> <20200320162258.GA794295@kroah.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <f413a861-32cc-9ca7-f780-4c208ec34ffc@iogearbox.net>
-Date:   Fri, 20 Mar 2020 21:07:45 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727101AbgCTUIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 16:08:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43596 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726738AbgCTUIb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 20 Mar 2020 16:08:31 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C5BBE20409;
+        Fri, 20 Mar 2020 20:08:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584734911;
+        bh=FZedNL8Cl/bgJh41b12pTNuCgSwVdFCY5IHluLIq2Lc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pS9Qq/TLQWRbo9N4/CGYW8h5Y0OOWC82+h9f+zUFgNWKnuaUQBgCh38rx/Pd/42oF
+         7A7+RHbhxxfXoiyQ4oPJmRWV47qCuj6o/Yt27D9Mlma8L227MhURhFBiQfuH9ovrUz
+         KNTI95v30cd2ah6MnzP/p8ydW+A6XqWWkl+Z4QDs=
+Date:   Fri, 20 Mar 2020 13:08:29 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        stephen@networkplumber.org, mlxsw@mellanox.com
+Subject: Re: [patch iproute2/net-next v5] tc: m_action: introduce support
+ for hw stats type
+Message-ID: <20200320130829.54233457@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <ef67d2db-47a0-a725-5a9a-33986bcc07b4@gmail.com>
+References: <20200314092548.27793-1-jiri@resnulli.us>
+        <ef67d2db-47a0-a725-5a9a-33986bcc07b4@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200320162258.GA794295@kroah.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25757/Fri Mar 20 14:13:59 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/20/20 5:22 PM, Greg Kroah-Hartman wrote:
-> Trying to initialize a structure with "= {};" will not always clean out
-> all padding locations in a structure.  So be explicit and call memset to
-> initialize everything for a number of bpf information structures that
-> are then copied from userspace, sometimes from smaller memory locations
-> than the size of the structure.
+On Fri, 20 Mar 2020 10:34:04 -0600 David Ahern wrote:
+> On 3/14/20 3:25 AM, Jiri Pirko wrote:
+> > @@ -200,6 +208,29 @@ which indicates that action is expected to have minimal software data-path
+> >  traffic and doesn't need to allocate stat counters with percpu allocator.
+> >  This option is intended to be used by hardware-offloaded actions.
+> >  
+> > +.TP
+> > +.BI hw_stats " HW_STATS"
+> > +Speficies the type of HW stats of new action. If omitted, any stats counter type  
 > 
-> Reported-by: Daniel Borkmann <daniel@iogearbox.net
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Fixed the spelling and applied to iproute2-next.
 
-Applied, thanks!
+Just a heads up that the kernel uAPI is getting slightly renamed, you'll
+need to do a s/HW_STATS_TYPE/HW_STATS/ the rename lands. Do you want me
+to send a patch for that?
