@@ -2,63 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC5F818D585
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 18:16:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 02BDB18D5BF
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 18:28:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727093AbgCTRQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 Mar 2020 13:16:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47284 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726867AbgCTRQd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 20 Mar 2020 13:16:33 -0400
-Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 69DD320709;
-        Fri, 20 Mar 2020 17:16:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584724592;
-        bh=pA35YsYyEzh7J5AFrQ+55ycCcMb0kGjl2SvJtIqc/vE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=elcBt5UVGQVmY4n+ynRa71jo2zh+TtsQGqha1xdIrb3RDS54qCYOVCAkgq2hN2XCW
-         s5fezh1wVbG/1IRw5bKOlMS2XgzWB+gfy6LHKTdQjp4cvFrlZgloAO1zjPa8DozsLt
-         /Jr8wKN+KMVvsqpxe90UFnJ8ZJA+g03pzP6lghr4=
-Date:   Fri, 20 Mar 2020 10:16:30 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shannon Nelson <snelson@pensando.io>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net
-Subject: Re: [PATCH net-next 4/6] ionic: ignore eexist on rx filter add
-Message-ID: <20200320101630.13d80223@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <e681ace5-bd70-4f7b-144f-3d5c0d140d12@pensando.io>
-References: <20200320023153.48655-1-snelson@pensando.io>
-        <20200320023153.48655-5-snelson@pensando.io>
-        <20200319204358.7e141f1a@kicinski-fedora-PC1C0HJN>
-        <e681ace5-bd70-4f7b-144f-3d5c0d140d12@pensando.io>
+        id S1726973AbgCTR2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 13:28:37 -0400
+Received: from relay1-d.mail.gandi.net ([217.70.183.193]:4781 "EHLO
+        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725446AbgCTR2h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 13:28:37 -0400
+X-Originating-IP: 86.202.105.35
+Received: from localhost (lfbn-lyo-1-9-35.w86-202.abo.wanadoo.fr [86.202.105.35])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id BF196240003;
+        Fri, 20 Mar 2020 17:28:31 +0000 (UTC)
+Date:   Fri, 20 Mar 2020 18:28:31 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Yangbo Lu <yangbo.lu@nxp.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH 2/6] MAINTAINERS: add entry for Microsemi Ocelot PTP
+ driver
+Message-ID: <20200320172831.GS5504@piout.net>
+References: <20200320103726.32559-1-yangbo.lu@nxp.com>
+ <20200320103726.32559-3-yangbo.lu@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200320103726.32559-3-yangbo.lu@nxp.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 Mar 2020 22:21:35 -0700 Shannon Nelson wrote:
-> On 3/19/20 8:43 PM, Jakub Kicinski wrote:
-> > On Thu, 19 Mar 2020 19:31:51 -0700 Shannon Nelson wrote:  
-> >> Don't worry if the rx filter add firmware request fails on
-> >> EEXIST, at least we know the filter is there.  Same for
-> >> the delete request, at least we know it isn't there.
-> >>
-> >> Fixes: 2a654540be10 ("ionic: Add Rx filter and rx_mode ndo support")
-> >> Signed-off-by: Shannon Nelson <snelson@pensando.io>  
-> > Why could the filter be there? Seems like the FW shouldn't have filters
-> > the driver didn't add, could a flush/reset command help to start from
-> > clean state?
-> >
-> > Just curious.  
-> Because there are use cases where the device is configured by an 
-> external centralized agent and may have already stuck the appropriate 
-> filters into the its list.
+Hi,
 
-Thanks, seems a little leaky for the host to be able to probe the state
-installed by the agent, but it does explain the need.
+On 20/03/2020 18:37:22+0800, Yangbo Lu wrote:
+> Add entry for Microsemi Ocelot PTP driver.
+> 
+> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+> ---
+>  MAINTAINERS | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 5dbee41..8da6fc1 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -11115,6 +11115,15 @@ S:	Supported
+>  F:	drivers/net/ethernet/mscc/
+>  F:	include/soc/mscc/ocelot*
+>  
+> +MICROSEMI OCELOT PTP CLOCK DRIVER
+> +M:	Alexandre Belloni <alexandre.belloni@bootlin.com>
+
+I'm open to not be listed here as I'm not the main author of the code
+and I'm not actively working on ptp for ocelot...
+
+> +M:	Yangbo Lu <yangbo.lu@nxp.com>
+> +M:	Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+
+...as long as you keep that address.
+
+> +L:	netdev@vger.kernel.org
+> +S:	Supported
+> +F:	drivers/ptp/ptp_ocelot.c
+> +F:	include/soc/mscc/ptp_ocelot.h
+> +
+>  MICROSOFT SURFACE PRO 3 BUTTON DRIVER
+>  M:	Chen Yu <yu.c.chen@intel.com>
+>  L:	platform-driver-x86@vger.kernel.org
+> -- 
+> 2.7.4
+> 
+
+-- 
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
