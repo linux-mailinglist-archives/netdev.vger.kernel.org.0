@@ -2,106 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0549D18CC23
-	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 12:05:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D311118CC4A
+	for <lists+netdev@lfdr.de>; Fri, 20 Mar 2020 12:08:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727272AbgCTLFC convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 20 Mar 2020 07:05:02 -0400
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:55131 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726821AbgCTLFB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 07:05:01 -0400
-X-Originating-IP: 90.76.143.236
-Received: from localhost (lfbn-tou-1-1075-236.w90-76.abo.wanadoo.fr [90.76.143.236])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id BB551E0015;
-        Fri, 20 Mar 2020 11:04:57 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1727257AbgCTLIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 Mar 2020 07:08:13 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:43806 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726912AbgCTLIN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 Mar 2020 07:08:13 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02KB88I5035120;
+        Fri, 20 Mar 2020 06:08:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1584702488;
+        bh=9WUktMUqDa4d61QWvx1cJ9oQzyaLfT2wrs3FrV4yau0=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=qpHxPDQtSGCzq7nwtJi21Kj85nQAHGe1Ep4qiyAwoqZmfjavHAXJywIxnw69bkplA
+         ZTJYC0+T5z84AnmxIkPtCG2r8y7TSXz4jwSAhoSDJQc20sDzfVicV3nj3LhaUidYe1
+         B6mzr9v9NYFPL3QGuICcNZT+Fe3rp0n+jWSB8qr4=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 02KB88kC047568
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 20 Mar 2020 06:08:08 -0500
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 20
+ Mar 2020 06:08:07 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Fri, 20 Mar 2020 06:08:07 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02KB84gh053481;
+        Fri, 20 Mar 2020 06:08:05 -0500
+Subject: Re: [PATCH net-next v2 00/10] net: ethernet: ti: cpts: add irq and
+ HW_TS_PUSH events
+To:     "David S . Miller" <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Tony Lindgren <tony@atomide.com>
+CC:     Sekhar Nori <nsekhar@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        netdev <netdev@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20200319165802.30898-1-grygorii.strashko@ti.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <6975cb4d-8077-60ac-05b5-27a9aa67bf30@ti.com>
+Date:   Fri, 20 Mar 2020 13:07:58 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <CA+h21hrvsfwspGE6z37p-fwso3oD0pXijh+fZZfEEUEv6bySHQ@mail.gmail.com>
-References: <20200319211649.10136-1-olteanv@gmail.com> <20200319211649.10136-2-olteanv@gmail.com> <20200320100925.GB16662@lunn.ch> <CA+h21hrvsfwspGE6z37p-fwso3oD0pXijh+fZZfEEUEv6bySHQ@mail.gmail.com>
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next 1/4] net: phy: mscc: rename enum rgmii_rx_clock_delay to rgmii_clock_delay
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <158470229183.43774.8932556125293087780@kwain>
-Date:   Fri, 20 Mar 2020 12:04:53 +0100
+In-Reply-To: <20200319165802.30898-1-grygorii.strashko@ti.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-Quoting Vladimir Oltean (2020-03-20 11:38:05)
-> On Fri, 20 Mar 2020 at 12:09, Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > On Thu, Mar 19, 2020 at 11:16:46PM +0200, Vladimir Oltean wrote:
-> > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > >
-> > > There is nothing RX-specific about these clock skew values. So remove
-> > > "RX" from the name in preparation for the next patch where TX delays are
-> > > also going to be configured.
-> > >
-> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > ---
-> > >  drivers/net/phy/mscc/mscc.h      | 18 +++++++++---------
-> > >  drivers/net/phy/mscc/mscc_main.c |  2 +-
-> > >  2 files changed, 10 insertions(+), 10 deletions(-)
-> > >
-> > > diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-> > > index 29ccb2c9c095..56feb14838f3 100644
-> > > --- a/drivers/net/phy/mscc/mscc.h
-> > > +++ b/drivers/net/phy/mscc/mscc.h
-> > > @@ -12,15 +12,15 @@
-> > >  #include "mscc_macsec.h"
-> > >  #endif
-> > >
-> > > -enum rgmii_rx_clock_delay {
-> > > -     RGMII_RX_CLK_DELAY_0_2_NS = 0,
-> > > -     RGMII_RX_CLK_DELAY_0_8_NS = 1,
-> > > -     RGMII_RX_CLK_DELAY_1_1_NS = 2,
-> > > -     RGMII_RX_CLK_DELAY_1_7_NS = 3,
-> > > -     RGMII_RX_CLK_DELAY_2_0_NS = 4,
-> > > -     RGMII_RX_CLK_DELAY_2_3_NS = 5,
-> > > -     RGMII_RX_CLK_DELAY_2_6_NS = 6,
-> > > -     RGMII_RX_CLK_DELAY_3_4_NS = 7
-> > > +enum rgmii_clock_delay {
-> > > +     RGMII_CLK_DELAY_0_2_NS = 0,
-> > > +     RGMII_CLK_DELAY_0_8_NS = 1,
-> > > +     RGMII_CLK_DELAY_1_1_NS = 2,
-> > > +     RGMII_CLK_DELAY_1_7_NS = 3,
-> > > +     RGMII_CLK_DELAY_2_0_NS = 4,
-> > > +     RGMII_CLK_DELAY_2_3_NS = 5,
-> > > +     RGMII_CLK_DELAY_2_6_NS = 6,
-> > > +     RGMII_CLK_DELAY_3_4_NS = 7
-> > >  };
-> >
-> > Can this be shared?
-> >
-> > https://www.spinics.net/lists/netdev/msg638747.html
-> >
-> > Looks to be the same values?
-> >
-> > Can some of the implementation be consolidated?
 
-> - That patch is writing to MSCC_PHY_RGMII_SETTINGS (defined to 18).
-> This one is writing to MSCC_PHY_RGMII_CNTL (defined to 20). And since
-> I have no documentation to understand why, I'm back to square 1.
+On 19/03/2020 18:57, Grygorii Strashko wrote:
+> Hi Richard, All,
+> 
+> v2: no functional changes.
+> 
+> This is re-spin of patches to add CPSW IRQ and HW_TS_PUSH events support I've
+> sent long time ago [1]. In this series, I've tried to restructure and split changes,
+> and also add few additional optimizations comparing to initial RFC submission [1].
+> 
 
-These are two different registers, using similar values. I guess the
-register was moved around as those PHYs are from the same family; but
-I'm not sure if it's correct to consolidate it as we do not know for
-sure. (Practically speaking the same values are used, so why not).
+Pls, ignore this submission. Sent by mistake.
 
-Thanks,
-Antoine
+Sorry for this.
 
 -- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Best regards,
+grygorii
