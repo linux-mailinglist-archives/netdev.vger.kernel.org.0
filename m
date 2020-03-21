@@ -2,65 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EDDB18E195
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 14:38:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD1618E1AB
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 15:00:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727008AbgCUNiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 09:38:52 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:38028 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726592AbgCUNiw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 09:38:52 -0400
-Received: by mail-pg1-f196.google.com with SMTP id x7so4560359pgh.5
-        for <netdev@vger.kernel.org>; Sat, 21 Mar 2020 06:38:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=sHJC5sylVggAzkwnsCH0x/9ilPJbbsLJTNlX2Wpg48g=;
-        b=DjjS2xixbJdzn+T/CZOuXJDRRyFG4SKc7Jhk4PWwyhPRA9e5Exff4wPzwndDz64XW6
-         rDjV7oqmpjBUG/2py+lH0QO3wf4dqaYjGI3aEFuo+JtaJbBF3oKxC+dZ6gDoGhs619MK
-         LUaYE2VkDXz1ObqmLmsUU0RA64fNPrH0mpOtRt7jnhveqkl5T9PsJRLMBC6X+JiP5bXj
-         nXWdspdq4ck4+3qonY7EeBFV9gcPHReBjY7FKAK7uoP5Qek/cxZzK/Hkl1RigHFujGT/
-         puSbH+FCG3UV/v/jX8pEwpC4jwgXJB48b6PnRoNP5Cf5xIEuYZGp3P8mdOyOPYqLKTCH
-         uZVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=sHJC5sylVggAzkwnsCH0x/9ilPJbbsLJTNlX2Wpg48g=;
-        b=mwwLjG2wR7arxncqOi4bW+z3GggIdarnNzeO51UhnlmKboKiqpBpxvhMJAST8bx6ad
-         Sf7EXh7Lq9UjiL5chwsK16B8VfOKVZKdDEqzDozs5YwFX0Z6E1wl1O5kZ3XNMycIUN9+
-         H8yi6GdeQmamVrdi45MXS4ukmCYpGhvzjjscuXQym2Oqo08A/vCe6CJOP8BYPv40ZPkB
-         xpcEozJv7+f6mi69ny7H5b2slWuu/wx+5XFErceWKL9VAVb6kBzmEImyixbhp0IQ27QY
-         FloRO+ZgBNh734BYX9TOJ9fsayrZOXZg7kjsOWHQgYaWogO9+DKltFhW5Mkxf2XbY9HQ
-         jQAQ==
-X-Gm-Message-State: ANhLgQ3MU2za6LlKyIYchleS4Du5Rrj4fJy2C0JewXy5Qaqde5ZPCr+d
-        nqkbCt8AiX4AXE+zEZi3JxI=
-X-Google-Smtp-Source: ADFU+vtt/2qgtcFKyiEPpIFwSyEFJpay/SAk6/PlhIlOS83GjvUaCJINlz96ot8gdXz72HI0PA5/BA==
-X-Received: by 2002:a63:5859:: with SMTP id i25mr13020392pgm.74.1584797931533;
-        Sat, 21 Mar 2020 06:38:51 -0700 (PDT)
-Received: from [192.168.1.18] (i223-218-245-204.s42.a013.ap.plala.or.jp. [223.218.245.204])
-        by smtp.googlemail.com with ESMTPSA id z37sm1656792pgl.68.2020.03.21.06.38.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 Mar 2020 06:38:51 -0700 (PDT)
-Subject: Re: [PATCH net-next 4/5] veth: introduce more xdp counters
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, brouer@redhat.com,
-        dsahern@gmail.com, lorenzo.bianconi@redhat.com, toke@redhat.com
-References: <cover.1584635611.git.lorenzo@kernel.org>
- <0763c17646523acb4dc15aaec01decb4efe11eac.1584635611.git.lorenzo@kernel.org>
- <a3555c02-6cb1-c40c-65bb-12378439b12f@gmail.com>
- <20200320133737.GA2329672@lore-desk-wlan>
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-Message-ID: <04ca75e8-1291-4f25-3ad4-18ca5d6c6ddb@gmail.com>
-Date:   Sat, 21 Mar 2020 22:38:46 +0900
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+        id S1726995AbgCUOAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 10:00:46 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.165]:20019 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726192AbgCUOAq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 10:00:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1584799242;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=s0czIst+WW+j2/qCI7TgrMDLfOaTf0kM9P2DhBCjtAQ=;
+        b=mpUL6sss6XHmDOR652UKiV/Mx58Z7utOIrDeGk/QfEBipCf3EVRLkGi/G1n9Jc2m70
+        IxZwEIoFbvd8G20FOYquVx1ptrZNAFhmgu7tz3X/vSN4ZLxWsvHfYxPxygn0TfLTrsXB
+        VeCOzErI9rbpvwlOrIoEY0oSmx25VZ5fHqKzzTrsKWT2BcSN4ac+T/A38PGwFZVVFeC9
+        oIaXn9w+VbwtnOeXbCu0klt+D5jgIH/G2NNaFnRO+GOt37J9dFR4vMykwWqO9TEyORaL
+        ZwVmXl7vTIf5AUS9f9b5cYDRFPZm28hC6em5EC4ILgfi4Qge5qG5Pu7UoMkqNt+q0ghz
+        KUZA==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMGXsh6kk/L"
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.50.177]
+        by smtp.strato.de (RZmta 46.2.1 DYNA|AUTH)
+        with ESMTPSA id R0105bw2LE0U6ff
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Sat, 21 Mar 2020 15:00:30 +0100 (CET)
+Subject: Re: [PATCH] bonding: do not enslave CAN devices
+To:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        David Miller <davem@davemloft.net>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        syzbot+c3ea30e1e2485573f953@syzkaller.appspotmail.com,
+        dvyukov@google.com, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, stable@vger.kernel.org
+References: <d6d9368d-b468-3946-ac63-abedf6758154@hartkopp.net>
+ <20200302.111249.471862054833131096.davem@davemloft.net>
+ <03ff979e-a621-c9a3-9be3-13677c147f91@pengutronix.de>
+ <20200306.211320.1410615421373955488.davem@davemloft.net>
+ <d69b4a32-5d3e-d100-78d3-d713b97eb2ff@pengutronix.de>
+ <20200313095610.x3iorvdotry54vb4@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <42aee2fd-b6d4-fa28-27fc-f8faab32c73f@hartkopp.net>
+Date:   Sat, 21 Mar 2020 15:00:30 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200320133737.GA2329672@lore-desk-wlan>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+In-Reply-To: <20200313095610.x3iorvdotry54vb4@pengutronix.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -68,70 +60,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/03/20 22:37, Lorenzo Bianconi wrote:
->> On 2020/03/20 1:41, Lorenzo Bianconi wrote:
->>> Introduce xdp_xmit counter in order to distinguish between XDP_TX and
->>> ndo_xdp_xmit stats. Introduce the following ethtool counters:
->>> - rx_xdp_tx
->>> - rx_xdp_tx_errors
->>> - tx_xdp_xmit
->>> - tx_xdp_xmit_errors
->>> - rx_xdp_redirect
++ Sabrina Dubroca (takes care of team driver which has the same issue)
+
+On 13/03/2020 10.56, Oleksij Rempel wrote:
+> On Mon, Mar 09, 2020 at 11:25:50AM +0100, Marc Kleine-Budde wrote:
+>> On 3/7/20 6:13 AM, David Miller wrote:
+
+>>> Like this:
+>>>
+>>> if (netdev->ops != &can_netdev_ops)
+>>> 	return;
 >>
->> Thank you for working on this!
->>
->>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->>> ---
->> ...
->>> @@ -395,7 +404,8 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
->>>    	}
->>>    	rcv_priv = netdev_priv(rcv);
->>> -	rq = &rcv_priv->rq[veth_select_rxq(rcv)];
->>> +	qidx = veth_select_rxq(rcv);
->>> +	rq = &rcv_priv->rq[qidx];
->>>    	/* Non-NULL xdp_prog ensures that xdp_ring is initialized on receive
->>>    	 * side. This means an XDP program is loaded on the peer and the peer
->>>    	 * device is up.
->>> @@ -424,6 +434,17 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
->>>    	if (flags & XDP_XMIT_FLUSH)
->>>    		__veth_xdp_flush(rq);
->>> +	rq = &priv->rq[qidx];
->>
->> I think there is no guarantee that this rq exists. Qidx is less than
->> rcv->real_num_rx_queues, but not necessarily less than
->> dev->real_num_rx_queues.
->>
->>> +	u64_stats_update_begin(&rq->stats.syncp);
->>
->> So this can cuase NULL pointer dereference.
+>> There is no single can_netdev_ops. The netdev_ops are per CAN-network
+>> driver. But the ml_priv is used in the generic CAN code.
 > 
-> oh right, thanks for spotting this.
-> I think we can recompute qidx for tx netdevice in this case, doing something
-> like:
+> ping,
 > 
-> qidx = veth_select_rxq(dev);
-> rq = &priv->rq[qidx];
-> 
-> what do you think?
+> are there any other ways or ideas how to solve this issue?
 
-This would not cause NULL pointer deref, but I wonder what counters 
-you've added mean.
+Well, IMO the patch from
+https://marc.info/?l=linux-can&m=158039108004683
+is still valid.
 
-- rx_xdp_redirect, rx_xdp_drops, rx_xdp_tx
+Although the attribution that commit 8df9ffb888c ("can: make use of 
+preallocated can_ml_priv for per device struct can_dev_rcv_lists")
+introduced the problem could be removed.
 
-These counters names will be rx_queue_[i]_rx_xdp_[redirect|drops|tx].
-"rx_" in their names looks redundant.
-Also it looks like there is not "rx[i]_xdp_tx" counter but there is 
-"rx[i]_xdp_tx_xmit" in mlx5 from this page.
-https://community.mellanox.com/s/article/understanding-mlx5-ethtool-counters
+Even before this commit dev->ml_priv of CAN interfaces has been used to 
+store the filter lists. And either the bonding and the team driver do 
+not take care of ml_priv.
 
-- tx_xdp_xmit, tx_xdp_xmit_errors
+They pretend to be CAN interfaces by faking dev->type to be ARPHRD_CAN - 
+but they are not. When we dereference dev->ml_priv in (badly) faked CAN 
+devices we run into the reported issue.
 
-These counters names will be rx_queue_[i]_tx_xdp_[xmit|xmit_errors].
-Are these rx counters or tx counters?
-If tx, currently there is no storage to store these tx counters so 
-adding these would not be simple.
-If rx, I guess you should use peer rx queue counters instead of dev rx 
-queue counters.
+So the approach is to tell bonding and team driver to keep the fingers 
+away from CAN interfaces like we do with some ARPHRD_INFINIBAND setups 
+in bond_enslave() too.
 
-Toshiaki Makita
+Regards,
+Oliver
