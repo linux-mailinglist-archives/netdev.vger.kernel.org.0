@@ -2,389 +2,367 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48B0418DE9F
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 09:10:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B9A918DEF5
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 10:07:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728201AbgCUIKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 04:10:35 -0400
-Received: from mga14.intel.com ([192.55.52.115]:33283 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728142AbgCUIKe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Mar 2020 04:10:34 -0400
-IronPort-SDR: eWY3Ejp13UXicgUEqMdcMMyMa/XaBLAQF3cIWzJ1olvyNRrLCeLBZKPXrW1Fb3ZGoon1eW0DbA
- Y6v39HOBSVZQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2020 01:10:31 -0700
-IronPort-SDR: VM3eGVbbSbugnS3clA0Ji1Xmu137TmTg1uFjguUJVDBireF2ODYFCmzIf3bhDQrLbgKyH51CJv
- Sf6INKgOxBFw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,287,1580803200"; 
-   d="scan'208";a="234737973"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
-  by orsmga007.jf.intel.com with ESMTP; 21 Mar 2020 01:10:30 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 9/9] ice: add board identifier info to devlink .info_get
-Date:   Sat, 21 Mar 2020 01:10:28 -0700
-Message-Id: <20200321081028.2763550-10-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200321081028.2763550-1-jeffrey.t.kirsher@intel.com>
-References: <20200321081028.2763550-1-jeffrey.t.kirsher@intel.com>
+        id S1728088AbgCUJHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 05:07:41 -0400
+Received: from mail-eopbgr140047.outbound.protection.outlook.com ([40.107.14.47]:19334
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728040AbgCUJHl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Mar 2020 05:07:41 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ehi+wqT2z6M0Sqens8OMdojNQkGHTnv/fYs2EnZSY5oA+ry1/ddgoXd4yHMXuYrf6Vuja13XXjEiYp3UHCO+dFopw3+17ZQIqbm4HajjPYxbAoRTKtIFqT2Ul82cw4k0t1CHX9uJ8B5fCXHAtGE+ruKwMTHp774X243bj5jfM4y98PeMi6E4vPtyY85oMo0GDTCfPKzMwuy7dmRnv2UfOviNLN/ectlFaBYsVK/Qmzm1qpIibUveokv/RDrnH55tfDfg+vdYqh4NMbuatCMbRIAyvL3fKShMCoZ6R+Km6ilDM3LSy0vX1i7Gh9uTXcFGqdilwww+ChXkV7yTW8QyoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jyzOFv+X54H988d5hJJjBDVG1DDq9qP0L2j/37894Ik=;
+ b=HDoVRDnwVODwY1lSvzMz4eWS+QaOdejsacPV2F6tic5fP/QRSh40K488r24F196IupjG4q6nS8luR6iOq3jLRoOu+IsWExidfads0VBbZ9YKU/4d3sD4oFLdXqLcPE3FFnyqDlwQn+Ivme43P2WTa8foVbPNbd+PhxQ8iLIVVeVARQvdc9kJl/T6Z5QHS9cST4uXEkCSxQOBayMx8/0MquzNbC/nDIpyHoesgI65x0Zv1dkPjVCcvUhPUz7EIQkFWNGcLzR3RQ0sR2+lFaKjr1XxC2Uw+xl0pZjP3fDEriUdSnB+OCAISjeGEr8Am4SdRTDsVmrbYpRXMmqmYOCtIA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jyzOFv+X54H988d5hJJjBDVG1DDq9qP0L2j/37894Ik=;
+ b=QiQsQyrv5DnorXvhNOzLCAhUJhJDJBh3/lLjhf/yjsiKsgnyIGb8lQTT51nO7arX3NYW221zic7IXkIUKY+Hozuh2dJOVF/EGN/MEUR1egL+q6zXPjuxn4PkrPq4Y9EIRMBwE9WucGuFkK1xPzcuCgKPiJu8Y7AKxBTTrYyDrlM=
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
+ AM0PR05MB5618.eurprd05.prod.outlook.com (20.178.112.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2835.20; Sat, 21 Mar 2020 09:07:30 +0000
+Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::8c4:e45b:ecdc:e02b]) by AM0PR05MB4866.eurprd05.prod.outlook.com
+ ([fe80::8c4:e45b:ecdc:e02b%7]) with mapi id 15.20.2814.025; Sat, 21 Mar 2020
+ 09:07:30 +0000
+From:   Parav Pandit <parav@mellanox.com>
+To:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Yuval Avnery <yuvalav@mellanox.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Aya Levin <ayal@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Yevgeny Kliteynik <kliteyn@mellanox.com>,
+        "dchickles@marvell.com" <dchickles@marvell.com>,
+        "sburla@marvell.com" <sburla@marvell.com>,
+        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
+        "snelson@pensando.io" <snelson@pensando.io>,
+        "drivers@pensando.io" <drivers@pensando.io>,
+        "aelior@marvell.com" <aelior@marvell.com>,
+        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
+        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
+        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
+        Alex Vesker <valex@mellanox.com>,
+        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
+        "lihong.yang@intel.com" <lihong.yang@intel.com>,
+        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>
+Subject: Re: [RFC] current devlink extension plan for NICs
+Thread-Topic: [RFC] current devlink extension plan for NICs
+Thread-Index: AQHV/iRsiKU58im38Um7T8fyNtLerKhQ1DGAgABD54CAAOeuAIAAxDyA
+Date:   Sat, 21 Mar 2020 09:07:30 +0000
+Message-ID: <997dbf25-a3e1-168c-c756-b33e79e7c51e@mellanox.com>
+References: <20200319192719.GD11304@nanopsycho.orion>
+ <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
+ <20200320073555.GE11304@nanopsycho.orion>
+ <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.2
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=parav@mellanox.com; 
+x-originating-ip: [122.181.51.74]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 058b6dfe-3f61-44b4-7ffa-08d7cd774927
+x-ms-traffictypediagnostic: AM0PR05MB5618:|AM0PR05MB5618:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM0PR05MB5618CE00B0AB7E84ABA0DA14D1F20@AM0PR05MB5618.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 034902F5BC
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(39860400002)(346002)(366004)(136003)(199004)(81156014)(31686004)(6486002)(81166006)(8676002)(8936002)(6512007)(30864003)(4326008)(71200400001)(7416002)(31696002)(86362001)(478600001)(64756008)(316002)(66556008)(110136005)(54906003)(2616005)(36756003)(2906002)(76116006)(66946007)(91956017)(66476007)(26005)(66446008)(186003)(53546011)(5660300002)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5618;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: aVKU0P8vo6rJuBoVuG87b3bgZ0TF1hdQIul6q3yPmST0YMWPoDb0XNdDyTe7YYmmosK1bCX4HkYBL0NavoSzLORwIh0dgGROwaWFt2sWAWM3bPd1htgvkhNMX4W4FJQB8z18N1Rgu0HBK/uW4ok8kSD1pwTbqin+M+gZ6WW7bUEcCeVr1uc8NpZz9oECwPaYyWOVcx5WPyg9DgZNIJvhY91JSsB/O+gVe9GU0OLyNbrwgd/GqTqfEq6tDWBl1oIYNvLVSc63dDvXPxleJdIa3IYMICSc8yNYxzYfp2QzmqADfLfiBvYxD1J+Zxc5pATvl5qDr1KGA2NG5ikjBmHCAfid49KWZYiXsu3gAsxeY4BcJY2fxctYguXGrAiZ5oD8TlpdYkLTAn+6n1pk7IjJy3BVZloil2VjTCPcN1QJPCcrmFdGa6SgWs4W2Ln7WPuE
+x-ms-exchange-antispam-messagedata: FC96hY74U4OOaESDCKBHlYrYWivjNq5NzuomjortYI7YtOxbARYP5TCKZvYaPW6NNatnoMNzgy4giIXW1blr0oJJG4zJr9Ygkxy7+c6RdF+EPRtvzYgmcE81ZomB3Q8giFWLpBpRnOPehWupHgq9zw==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F483492DD5DAFB43847F2378BAFAE415@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 058b6dfe-3f61-44b4-7ffa-08d7cd774927
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Mar 2020 09:07:30.6523
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5O1z9h8WYQOweM2jWA4Cu4vr5Z8Dhuh1Y0Y1iB8MnLJOA2K1JTOkHGHIr3D8iNGNgmXAXs71kOpAHsCu07O7LQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5618
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
-
-Export a unique board identifier using "board.id" for devlink's
-.info_get command.
-
-Obtain this by reading the NVM for the PBA identification string.
-
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Acked-by: Jakub Kicinski <kuba@kernel.org>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- Documentation/networking/devlink/ice.rst     |   4 +
- drivers/net/ethernet/intel/ice/ice_common.c  |  66 ----------
- drivers/net/ethernet/intel/ice/ice_common.h  |   3 -
- drivers/net/ethernet/intel/ice/ice_devlink.c |  16 ++-
- drivers/net/ethernet/intel/ice/ice_nvm.c     | 125 +++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_nvm.h     |   5 +
- drivers/net/ethernet/intel/ice/ice_type.h    |   1 +
- 7 files changed, 150 insertions(+), 70 deletions(-)
-
-diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
-index 56739a51cdfe..37fbbd40a5e5 100644
---- a/Documentation/networking/devlink/ice.rst
-+++ b/Documentation/networking/devlink/ice.rst
-@@ -19,6 +19,10 @@ The ``ice`` driver reports the following versions
-       - Type
-       - Example
-       - Description
-+    * - ``board.id``
-+      - fixed
-+      - K65390-000
-+      - The Product Board Assembly (PBA) identifier of the board.
-     * - ``fw.mgmt``
-       - running
-       - 2.1.7
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 6691e45367b3..2c0d8fd3d5cd 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -934,72 +934,6 @@ enum ice_status ice_reset(struct ice_hw *hw, enum ice_reset_req req)
- 	return ice_check_reset(hw);
- }
- 
--/**
-- * ice_get_pfa_module_tlv - Reads sub module TLV from NVM PFA
-- * @hw: pointer to hardware structure
-- * @module_tlv: pointer to module TLV to return
-- * @module_tlv_len: pointer to module TLV length to return
-- * @module_type: module type requested
-- *
-- * Finds the requested sub module TLV type from the Preserved Field
-- * Area (PFA) and returns the TLV pointer and length. The caller can
-- * use these to read the variable length TLV value.
-- */
--enum ice_status
--ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
--		       u16 module_type)
--{
--	enum ice_status status;
--	u16 pfa_len, pfa_ptr;
--	u16 next_tlv;
--
--	status = ice_read_sr_word(hw, ICE_SR_PFA_PTR, &pfa_ptr);
--	if (status) {
--		ice_debug(hw, ICE_DBG_INIT, "Preserved Field Array pointer.\n");
--		return status;
--	}
--	status = ice_read_sr_word(hw, pfa_ptr, &pfa_len);
--	if (status) {
--		ice_debug(hw, ICE_DBG_INIT, "Failed to read PFA length.\n");
--		return status;
--	}
--	/* Starting with first TLV after PFA length, iterate through the list
--	 * of TLVs to find the requested one.
--	 */
--	next_tlv = pfa_ptr + 1;
--	while (next_tlv < pfa_ptr + pfa_len) {
--		u16 tlv_sub_module_type;
--		u16 tlv_len;
--
--		/* Read TLV type */
--		status = ice_read_sr_word(hw, next_tlv, &tlv_sub_module_type);
--		if (status) {
--			ice_debug(hw, ICE_DBG_INIT, "Failed to read TLV type.\n");
--			break;
--		}
--		/* Read TLV length */
--		status = ice_read_sr_word(hw, next_tlv + 1, &tlv_len);
--		if (status) {
--			ice_debug(hw, ICE_DBG_INIT, "Failed to read TLV length.\n");
--			break;
--		}
--		if (tlv_sub_module_type == module_type) {
--			if (tlv_len) {
--				*module_tlv = next_tlv;
--				*module_tlv_len = tlv_len;
--				return 0;
--			}
--			return ICE_ERR_INVAL_SIZE;
--		}
--		/* Check next TLV, i.e. current TLV pointer + length + 2 words
--		 * (for current TLV's type and length)
--		 */
--		next_tlv = next_tlv + tlv_len + 2;
--	}
--	/* Module does not exist */
--	return ICE_ERR_DOES_NOT_EXIST;
--}
--
- /**
-  * ice_copy_rxq_ctx_to_hw
-  * @hw: pointer to the hardware structure
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
-index 06fcd3b55570..8104f3d64d96 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.h
-+++ b/drivers/net/ethernet/intel/ice/ice_common.h
-@@ -15,9 +15,6 @@ enum ice_status ice_nvm_validate_checksum(struct ice_hw *hw);
- 
- enum ice_status ice_init_hw(struct ice_hw *hw);
- void ice_deinit_hw(struct ice_hw *hw);
--enum ice_status
--ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
--		       u16 module_type);
- enum ice_status ice_check_reset(struct ice_hw *hw);
- enum ice_status ice_reset(struct ice_hw *hw, enum ice_reset_req req);
- enum ice_status ice_create_all_ctrlq(struct ice_hw *hw);
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index 410e2b531e5d..27c5034c039a 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -19,6 +19,18 @@ static int ice_info_get_dsn(struct ice_pf *pf, char *buf, size_t len)
- 	return 0;
- }
- 
-+static int ice_info_pba(struct ice_pf *pf, char *buf, size_t len)
-+{
-+	struct ice_hw *hw = &pf->hw;
-+	enum ice_status status;
-+
-+	status = ice_read_pba_string(hw, (u8 *)buf, len);
-+	if (status)
-+		return -EIO;
-+
-+	return 0;
-+}
-+
- static int ice_info_fw_mgmt(struct ice_pf *pf, char *buf, size_t len)
- {
- 	struct ice_hw *hw = &pf->hw;
-@@ -93,6 +105,7 @@ static int ice_info_ddp_pkg_version(struct ice_pf *pf, char *buf, size_t len)
- 	return 0;
- }
- 
-+#define fixed(key, getter) { ICE_VERSION_FIXED, key, getter }
- #define running(key, getter) { ICE_VERSION_RUNNING, key, getter }
- 
- enum ice_version_type {
-@@ -106,6 +119,7 @@ static const struct ice_devlink_version {
- 	const char *key;
- 	int (*getter)(struct ice_pf *pf, char *buf, size_t len);
- } ice_devlink_versions[] = {
-+	fixed(DEVLINK_INFO_VERSION_GENERIC_BOARD_ID, ice_info_pba),
- 	running(DEVLINK_INFO_VERSION_GENERIC_FW_MGMT, ice_info_fw_mgmt),
- 	running("fw.mgmt.api", ice_info_fw_api),
- 	running("fw.mgmt.build", ice_info_fw_build),
-@@ -125,7 +139,7 @@ static const struct ice_devlink_version {
-  * Callback for the devlink .info_get operation. Reports information about the
-  * device.
-  *
-- * @returns zero on success or an error code on failure.
-+ * Return: zero on success or an error code on failure.
-  */
- static int ice_devlink_info_get(struct devlink *devlink,
- 				struct devlink_info_req *req,
-diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
-index 08909d1c7cce..8beb675d676b 100644
---- a/drivers/net/ethernet/intel/ice/ice_nvm.c
-+++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
-@@ -185,6 +185,131 @@ enum ice_status ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data)
- 	return status;
- }
- 
-+/**
-+ * ice_get_pfa_module_tlv - Reads sub module TLV from NVM PFA
-+ * @hw: pointer to hardware structure
-+ * @module_tlv: pointer to module TLV to return
-+ * @module_tlv_len: pointer to module TLV length to return
-+ * @module_type: module type requested
-+ *
-+ * Finds the requested sub module TLV type from the Preserved Field
-+ * Area (PFA) and returns the TLV pointer and length. The caller can
-+ * use these to read the variable length TLV value.
-+ */
-+enum ice_status
-+ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
-+		       u16 module_type)
-+{
-+	enum ice_status status;
-+	u16 pfa_len, pfa_ptr;
-+	u16 next_tlv;
-+
-+	status = ice_read_sr_word(hw, ICE_SR_PFA_PTR, &pfa_ptr);
-+	if (status) {
-+		ice_debug(hw, ICE_DBG_INIT, "Preserved Field Array pointer.\n");
-+		return status;
-+	}
-+	status = ice_read_sr_word(hw, pfa_ptr, &pfa_len);
-+	if (status) {
-+		ice_debug(hw, ICE_DBG_INIT, "Failed to read PFA length.\n");
-+		return status;
-+	}
-+	/* Starting with first TLV after PFA length, iterate through the list
-+	 * of TLVs to find the requested one.
-+	 */
-+	next_tlv = pfa_ptr + 1;
-+	while (next_tlv < pfa_ptr + pfa_len) {
-+		u16 tlv_sub_module_type;
-+		u16 tlv_len;
-+
-+		/* Read TLV type */
-+		status = ice_read_sr_word(hw, next_tlv, &tlv_sub_module_type);
-+		if (status) {
-+			ice_debug(hw, ICE_DBG_INIT, "Failed to read TLV type.\n");
-+			break;
-+		}
-+		/* Read TLV length */
-+		status = ice_read_sr_word(hw, next_tlv + 1, &tlv_len);
-+		if (status) {
-+			ice_debug(hw, ICE_DBG_INIT, "Failed to read TLV length.\n");
-+			break;
-+		}
-+		if (tlv_sub_module_type == module_type) {
-+			if (tlv_len) {
-+				*module_tlv = next_tlv;
-+				*module_tlv_len = tlv_len;
-+				return 0;
-+			}
-+			return ICE_ERR_INVAL_SIZE;
-+		}
-+		/* Check next TLV, i.e. current TLV pointer + length + 2 words
-+		 * (for current TLV's type and length)
-+		 */
-+		next_tlv = next_tlv + tlv_len + 2;
-+	}
-+	/* Module does not exist */
-+	return ICE_ERR_DOES_NOT_EXIST;
-+}
-+
-+/**
-+ * ice_read_pba_string - Reads part number string from NVM
-+ * @hw: pointer to hardware structure
-+ * @pba_num: stores the part number string from the NVM
-+ * @pba_num_size: part number string buffer length
-+ *
-+ * Reads the part number string from the NVM.
-+ */
-+enum ice_status
-+ice_read_pba_string(struct ice_hw *hw, u8 *pba_num, u32 pba_num_size)
-+{
-+	u16 pba_tlv, pba_tlv_len;
-+	enum ice_status status;
-+	u16 pba_word, pba_size;
-+	u16 i;
-+
-+	status = ice_get_pfa_module_tlv(hw, &pba_tlv, &pba_tlv_len,
-+					ICE_SR_PBA_BLOCK_PTR);
-+	if (status) {
-+		ice_debug(hw, ICE_DBG_INIT, "Failed to read PBA Block TLV.\n");
-+		return status;
-+	}
-+
-+	/* pba_size is the next word */
-+	status = ice_read_sr_word(hw, (pba_tlv + 2), &pba_size);
-+	if (status) {
-+		ice_debug(hw, ICE_DBG_INIT, "Failed to read PBA Section size.\n");
-+		return status;
-+	}
-+
-+	if (pba_tlv_len < pba_size) {
-+		ice_debug(hw, ICE_DBG_INIT, "Invalid PBA Block TLV size.\n");
-+		return ICE_ERR_INVAL_SIZE;
-+	}
-+
-+	/* Subtract one to get PBA word count (PBA Size word is included in
-+	 * total size)
-+	 */
-+	pba_size--;
-+	if (pba_num_size < (((u32)pba_size * 2) + 1)) {
-+		ice_debug(hw, ICE_DBG_INIT, "Buffer too small for PBA data.\n");
-+		return ICE_ERR_PARAM;
-+	}
-+
-+	for (i = 0; i < pba_size; i++) {
-+		status = ice_read_sr_word(hw, (pba_tlv + 2 + 1) + i, &pba_word);
-+		if (status) {
-+			ice_debug(hw, ICE_DBG_INIT, "Failed to read PBA Block word %d.\n", i);
-+			return status;
-+		}
-+
-+		pba_num[(i * 2)] = (pba_word >> 8) & 0xFF;
-+		pba_num[(i * 2) + 1] = pba_word & 0xFF;
-+	}
-+	pba_num[(pba_size * 2)] = '\0';
-+
-+	return status;
-+}
-+
- /**
-  * ice_get_orom_ver_info - Read Option ROM version information
-  * @hw: pointer to the HW struct
-diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.h b/drivers/net/ethernet/intel/ice/ice_nvm.h
-index 7375f6b96919..999f273ba6ad 100644
---- a/drivers/net/ethernet/intel/ice/ice_nvm.h
-+++ b/drivers/net/ethernet/intel/ice/ice_nvm.h
-@@ -10,6 +10,11 @@ void ice_release_nvm(struct ice_hw *hw);
- enum ice_status
- ice_read_flat_nvm(struct ice_hw *hw, u32 offset, u32 *length, u8 *data,
- 		  bool read_shadow_ram);
-+enum ice_status
-+ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
-+		       u16 module_type);
-+enum ice_status
-+ice_read_pba_string(struct ice_hw *hw, u8 *pba_num, u32 pba_num_size);
- enum ice_status ice_init_nvm(struct ice_hw *hw);
- enum ice_status ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data);
- #endif /* _ICE_NVM_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index b6a20670e915..4ce5f92fca4a 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -636,6 +636,7 @@ struct ice_hw_port_stats {
- /* Checksum and Shadow RAM pointers */
- #define ICE_SR_BOOT_CFG_PTR		0x132
- #define ICE_NVM_OROM_VER_OFF		0x02
-+#define ICE_SR_PBA_BLOCK_PTR		0x16
- #define ICE_SR_NVM_DEV_STARTER_VER	0x18
- #define ICE_SR_NVM_EETRACK_LO		0x2D
- #define ICE_SR_NVM_EETRACK_HI		0x2E
--- 
-2.25.1
-
+T24gMy8yMS8yMDIwIDI6NTUgQU0sIEpha3ViIEtpY2luc2tpIHdyb3RlOg0KPiBPbiBGcmksIDIw
+IE1hciAyMDIwIDA4OjM1OjU1ICswMTAwIEppcmkgUGlya28gd3JvdGU6DQo+PiBGcmksIE1hciAy
+MCwgMjAyMCBhdCAwNDozMjo1M0FNIENFVCwga3ViYUBrZXJuZWwub3JnIHdyb3RlOg0KPj4+IE9u
+IFRodSwgMTkgTWFyIDIwMjAgMjA6Mjc6MTkgKzAxMDAgSmlyaSBQaXJrbyB3cm90ZTogIA0KDQo+
+PiBJJ20gbm90IHN1cmUgSSBmb2xsb3cuIFRoZXJlIGlzIGEgbnVtYmVyIG9mIFBGcyBjcmVhdGVk
+ICJvbiBwcm9iZSIuDQo+PiBUaG9zZSBhcmUgZml4ZWQgYW5kIGRyaXZlciBrbm93cyB3aGVyZSB0
+byBwdXQgdGhlbS4NCj4+IFRoZSBjb21tZW50IHdhcyBhYm91dCBwb3NzaWJsZSAiZHluYW1pYyBQ
+RiIgY3JlYXRlZCBieSB1c2VyIGluIHRoZSBzYW1lDQo+PiB3YXMgaGUgY3JlYXRlcyBTRiwgYnkg
+ZGV2bGluayBjbWRsaW5lLg0KPiANCj4gSG93IGRvZXMgdGhlIGRyaXZlciBkaWZmZXJlbnRpYXRl
+IGJldHdlZW4gYSBkeW5hbWljIGFuZCBzdGF0aWMgUEYsIA0KPiBhbmQgd2h5IGFyZSB0aGV5IGRp
+ZmZlcmVudCBpbiB0aGUgZmlyc3QgcGxhY2U/IDpTDQo+IA0KDQpJIGRvbid0IHNlZSBhIG5lZWQg
+b2YgUEYgZHJpdmVyIHRvIGRpZmZlcmVudGlhdGUgdGhlbSBhcyBzdGF0aWMvZHluYW1pYy4NCklu
+IGVpdGhlciBjYXNlIHBjaSBwcm9iZSgpLCByZW1vdmUoKSBhcmUgdHJpZ2dlcmVkIHJlZ2FyZGxl
+c3MuDQoNClRoZXkgYXJlIGRpZmZlcmVudCBiZWNhdXNlIGEgc21hcnRuaWMgYWRtaW5pc3RyYXRv
+ciB3YW50cyB0byBjcmVhdGUgdGhlbQ0KZHluYW1pY2FsbHkgb24gdXNlciByZXF1ZXN0IGFuZCBw
+cm92aWRlIHRvIHRoZSBzeXN0ZW0gd2hlcmUgdGhpcw0Kc21hcnRuaWMgaXMgY29ubmVjdGVkLg0K
+DQo+IEFsc28sIG9uY2UgdGhlIFBGcyBhcmUgY3JlYXRlZCB1c2VyIG1heSB3YW50IHRvIHVzZSB0
+aGVtIHRvZ2V0aGVyIA0KDQo+Pj4+ICQgZGV2bGluayBwb3J0IHNob3cNCj4+Pj4gcGNpLzAwMDA6
+MDY6MDAuMC8wOiBmbGF2b3VyIHBoeXNpY2FsIHBmbnVtIDAgdHlwZSBldGggbmV0ZGV2IGVucDZz
+MGYwbnAxDQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMTogZmxhdm91ciBwaHlzaWNhbCBwZm51bSAx
+IHR5cGUgZXRoIG5ldGRldiBlbnA2czBmMG5wMg0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzI6IGZs
+YXZvdXIgcGNpdmYgcGZudW0gMCB2Zm51bSAwIHR5cGUgZXRoIG5ldGRldiBlbnA2czBwZjB2ZjAg
+c2xpY2UgMA0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzM6IGZsYXZvdXIgcGNpdmYgcGZudW0gMCB2
+Zm51bSAxIHR5cGUgZXRoIG5ldGRldiBlbnA2czBwZjB2ZjEgc2xpY2UgMQ0KPj4+PiBwY2kvMDAw
+MDowNjowMC4wLzQ6IGZsYXZvdXIgcGNpdmYgcGZudW0gMSB2Zm51bSAwIHR5cGUgZXRoIG5ldGRl
+diBlbnA2czBwZjF2ZjAgc2xpY2UgMg0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzU6IGZsYXZvdXIg
+cGNpdmYgcGZudW0gMSB2Zm51bSAxIHR5cGUgZXRoIG5ldGRldiBlbnA2czBwZjF2ZjEgc2xpY2Ug
+Mw0KPj4+Pg0KPj4+PiAkIGRldmxpbmsgc2xpY2Ugc2hvdw0KPj4+PiBwY2kvMDAwMDowNjowMC4w
+LzA6IGZsYXZvdXIgcGh5c2ljYWwgcGZudW0gMCBwb3J0IDAgc3RhdGUgYWN0aXZlDQo+Pj4+IHBj
+aS8wMDAwOjA2OjAwLjAvMTogZmxhdm91ciBwaHlzaWNhbCBwZm51bSAxIHBvcnQgMSBzdGF0ZSBh
+Y3RpdmUNCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8yOiBmbGF2b3VyIHBjaXZmIHBmbnVtIDAgdmZu
+dW0gMCBwb3J0IDIgaHdfYWRkciAxMDoyMjozMzo0NDo1NTo2NiBzdGF0ZSBhY3RpdmUNCj4+Pj4g
+cGNpLzAwMDA6MDY6MDAuMC8zOiBmbGF2b3VyIHBjaXZmIHBmbnVtIDAgdmZudW0gMSBwb3J0IDMg
+aHdfYWRkciAxMDoyMjozMzo0NDo1NTo3NyBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6MDY6
+MDAuMC80OiBmbGF2b3VyIHBjaXZmIHBmbnVtIDEgdmZudW0gMCBwb3J0IDQgaHdfYWRkciAxMDoy
+MjozMzo0NDo1NTo4OCBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC81OiBmbGF2
+b3VyIHBjaXZmIHBmbnVtIDEgdmZudW0gMSBwb3J0IDUgaHdfYWRkciAxMDoyMjozMzo0NDo1NTo5
+OSBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC82OiBmbGF2b3VyIHBjaXZmIHBm
+bnVtIDEgdmZudW0gMg0KPj4+Pg0KPj4+PiBJbiB0aGVzZSAyIG91dHB1dHMgeW91IGNhbiBzZWUg
+dGhlIHJlbGF0aW9uc2hpcHMuIEF0dHJpYnV0ZXMgInNsaWNlIiBhbmQgInBvcnQiDQo+Pj4+IGlu
+ZGljYXRlIHRoZSBzbGljZS1wb3J0IHBhaXJzLg0KPj4+Pg0KPj4+PiBBbHNvLCB0aGVyZSBpcyBh
+IGZpeGVkICJzdGF0ZSIgYXR0cmlidXRlIHdpdGggdmFsdWUgImFjdGl2ZSIuIFRoaXMgaXMgYnkN
+Cj4+Pj4gZGVmYXVsdCBhcyB0aGUgVkZzIGFyZSBhbHdheXMgY3JlYXRlZCBhY3RpdmUuIEluIGZ1
+dHVyZSwgaXQgaXMgcGxhbm5lZA0KPj4+PiB0byBpbXBsZW1lbnQgbWFudWFsIFZGIGNyZWF0aW9u
+IGFuZCBhY3RpdmF0aW9uLCBzaW1pbGFyIHRvIHdoYXQgaXMgYmVsb3cNCj4+Pj4gZGVzY3JpYmVk
+IGZvciBTRnMuDQo+Pj4+DQo+Pj4+IE5vdGUgdGhhdCBmb3Igbm9uLWV0aGVybmV0IHNsaWNlICh0
+aGUgbGFzdCBvbmUpIGRvZXMgbm90IGhhdmUgYW55DQo+Pj4+IHJlbGF0ZWQgcG9ydCBwb3J0LiBJ
+dCBjYW4gYmUgZm9yIGV4YW1wbGUgTlZFIG9yIElCLiBCdXQgc2luY2UNCj4+Pj4gdGhlICJod19h
+ZGRyIiBhdHRyaWJ1dGUgaXMgYWxzbyBvbWl0dGVkLCBpdCBpc24ndCBJQi4NCj4+Pj4NCj4+Pj4g
+IA0KPj4+PiBOb3cgc2V0IGEgZGlmZmVyZW50IE1BQyBhZGRyZXNzIGZvciBWRjEgb24gUEYwOg0K
+Pj4+PiAkIGRldmxpbmsgc2xpY2Ugc2V0IHBjaS8wMDAwOjA2OjAwLjAvMyBod19hZGRyIGFhOmJi
+OmNjOmRkOmVlOmZmDQo+Pj4+DQo+Pj4+ICQgZGV2bGluayBzbGljZSBzaG93DQo+Pj4+IHBjaS8w
+MDAwOjA2OjAwLjAvMDogZmxhdm91ciBwaHlzaWNhbCBwZm51bSAwIHBvcnQgMCBzdGF0ZSBhY3Rp
+dmUNCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8xOiBmbGF2b3VyIHBoeXNpY2FsIHBmbnVtIDEgcG9y
+dCAxIHN0YXRlIGFjdGl2ZQ0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzI6IGZsYXZvdXIgcGNpdmYg
+cGZudW0gMCB2Zm51bSAwIHBvcnQgMiBod19hZGRyIDEwOjIyOjMzOjQ0OjU1OjY2IHN0YXRlIGFj
+dGl2ZQ0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzM6IGZsYXZvdXIgcGNpdmYgcGZudW0gMCB2Zm51
+bSAxIHBvcnQgMyBod19hZGRyIGFhOmJiOmNjOmRkOmVlOmZmIHN0YXRlIGFjdGl2ZQ0KPj4+PiBw
+Y2kvMDAwMDowNjowMC4wLzQ6IGZsYXZvdXIgcGNpdmYgcGZudW0gMSB2Zm51bSAwIHBvcnQgNCBo
+d19hZGRyIDEwOjIyOjMzOjQ0OjU1Ojg4IHN0YXRlIGFjdGl2ZQ0KPj4+PiBwY2kvMDAwMDowNjow
+MC4wLzU6IGZsYXZvdXIgcGNpdmYgcGZudW0gMSB2Zm51bSAxIHBvcnQgNSBod19hZGRyIDEwOjIy
+OjMzOjQ0OjU1Ojk5IHN0YXRlIGFjdGl2ZQ0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzY6IGZsYXZv
+dXIgcGNpdmYgcGZudW0gMSB2Zm51bSAyICANCj4+Pg0KPj4+IFdoYXQgYXJlIHNsaWNlcz8gIA0K
+Pj4NCj4+IFNsaWNlIGlzIGJhc2ljYWxseSBhIHBpZWNlIG9mIEFTSUMuIHBmL3ZmL3NmLiBUaGV5
+IHNlcnZlIGZvcg0KPj4gY29uZmlndXJhdGlvbiBvZiB0aGUgIm90aGVyIHNpZGUgb2YgdGhlIHdp
+cmUiLiBMaWtlIHRoZSBtYWMuIEh5cGVydml6b3INCj4+IGFkbWluIGNhbiB1c2UgdGhlIHNsaXRl
+IHRvIHNldCB0aGUgbWFjIGFkZHJlc3Mgb2YgYSBWRiB3aGljaCBpcyBpbiB0aGUNCj4+IHZpcnR1
+YWwgbWFjaGluZS4gQmFzaWNhbGx5IHRoaXMgc2hvdWxkIGJlIGEgcmVwbGFjZW1lbnQgb2YgImlw
+IHZmIg0KPj4gY29tbWFuZC4NCj4gDQo+IEkgbG9zdCBteSBtYWlsIGFyY2hpdmUgYnV0IGRpZG4n
+dCB3ZSBhbHJlYWR5IGhhdmUgYSBsb25nIHRocmVhZCB3aXRoDQo+IFBhcmF2IGFib3V0IHRoaXM/
+DQo+DQoNCkkgaGF2ZSBtb3JlIHZlcmJvc2UgUkZDIHRoYXQgdGFsa3MgYWJvdXQgbW90aXZhdGlv
+biBvZiBzbGljZSBhbmQgc2ltaWxhcg0KZXhhbXBsZXMgd2hpY2ggSSB3aWxsIHBvc3QgYWxvbmcg
+d2l0aCBhY3R1YWwgcGF0Y2hlcy4NCg0KQnV0IEkgdGhpbmsgSmlyaSBjYXB0dXJlZCB0aGllIGpp
+c3QgYWxyZWFkeSBoZXJlLCBpLmUuIHNsaWNlIGRyaXZlcyB0aGUNCmRldmljZSBsaWZlIGN5Y2xl
+ICh3aXRoL3dpdGhvdXQgZXN3aXRjaCkuDQoNCnNsaWNlIGRldmljZSBhY3RpdmF0aW9uIG1vZGVs
+IGlzIG1vcmUgdGhhbiBqdXN0IHBvcnQgdW5wbHVnL3BsdWcgZXZlbnQuDQpmb3Igd2hpY2ggd2Ug
+c2hvdWxkbid0IG92ZXJsb2FkIHRoZSBkZXZsaW5rIHBvcnQgd2hpY2ggZG9lc24ndCB1bmRlcmdv
+DQpzdGF0ZSB0cmFuc2l0aW9uIGV4cGxhaW5lZCBmb3Igc2xpY2UuDQoNCj4+Pj4gPT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+DQo+Pj4+IHx8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICB8fA0KPj4+PiB8fCAgICAgICAgICBTRiAoc3ViZnVuY3Rpb24pIHVzZXIg
+Y21kbGluZSBBUEkgZHJhZnQgICAgICAgICAgICAgfHwNCj4+Pj4gfHwgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHx8DQo+Pj4+ID09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PQ0KPj4+Pg0KPj4+PiBOb3RlIHRoYXQgc29tZSBvZiB0aGUgImRldmxpbmsgcG9ydCIg
+YXR0cmlidXRlcyBtYXkgYmUgZm9yZ290dGVuIG9yIG1pc29yZGVyZWQuDQo+Pj4+DQo+Pj4+IE5v
+dGUgdGhhdCBzb21lIG9mIHRoZSAiZGV2bGluayBzbGljZSIgYXR0cmlidXRlcyBpbiBzaG93IGNv
+bW1hbmRzDQo+Pj4+IGFyZSBvbWl0dGVkIG9uIHB1cnBvc2UuDQo+Pj4+DQo+Pj4+ICQgZGV2bGlu
+ayBwb3J0IHNob3cNCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8wOiBmbGF2b3VyIHBoeXNpY2FsIHBm
+bnVtIDAgdHlwZSBldGggbmV0ZGV2IGVucDZzMGYwbnAxDQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAv
+MTogZmxhdm91ciBwaHlzaWNhbCBwZm51bSAxIHR5cGUgZXRoIG5ldGRldiBlbnA2czBmMG5wMg0K
+Pj4+PiBwY2kvMDAwMDowNjowMC4wLzI6IGZsYXZvdXIgcGNpdmYgcGZudW0gMCB2Zm51bSAwIHR5
+cGUgZXRoIG5ldGRldiBlbnA2czBwZjB2ZjAgc2xpY2UgMg0KPj4+Pg0KPj4+PiAkIGRldmxpbmsg
+c2xpY2Ugc2hvdw0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzA6IGZsYXZvdXIgcGh5c2ljYWwgcGZu
+dW0gMCBwb3J0IDAgc3RhdGUgYWN0aXZlDQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMTogZmxhdm91
+ciBwaHlzaWNhbCBwZm51bSAxIHBvcnQgMSBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6MDY6
+MDAuMC8yOiBmbGF2b3VyIHBjaXZmIHBmbnVtIDAgdmZudW0gMCBwb3J0IDIgaHdfYWRkciAxMDoy
+MjozMzo0NDo1NTo2Ng0KPj4+Pg0KPj4+PiBUaGVyZSBpcyBvbmUgVkYgb24gdGhlIE5JQy4NCj4+
+Pj4NCj4+Pj4NCj4+Pj4gTm93IGNyZWF0ZSBzdWJmdW5jdGlvbiBvZiBTRjAgb24gUEYxLCBpbmRl
+eCBvZiB0aGUgc2xpY2UgaXMgZ29pbmcgdG8gYmUgMTAwDQo+Pj4+IGFuZCBod19hZGRyZXNzIGFh
+OmJiOmNjOmFhOmJiOmNjLg0KPj4+Pg0KPj4+PiAkIGRldmxpbmsgc2xpY2UgYWRkIHBjaS8wMDAw
+LjA2LjAwLjAvMTAwIGZsYXZvdXIgcGNpc2YgcGZudW0gMSBzZm51bSAxMCBod19hZGRyIGFhOmJi
+OmNjOmFhOmJiOmNjICANCj4+Pg0KPj4+IFdoeSBpcyB0aGUgU0YgbnVtYmVyIHNwZWNpZmllZCBi
+eSB0aGUgdXNlciByYXRoZXIgdGhhbiBhbGxvY2F0ZWQ/ICANCj4+DQoNCj4+IEJlY2F1c2UgaXQg
+aXMgc25vd24gaW4gcmVwcmVzZW50b3IgbmV0ZGV2aWNlIG5hbWUuIEFuZCB5b3UgbmVlZCB0byBo
+YXZlDQo+PiBpdCBwcmVkZXRlcm1pbmVkOiBlbnA2czBwZjFzZjEwDQo+IA0KPiBJJ2QgdGhpbmsg
+eW91IG5lZWQgdG8ga25vdyB3aGF0IHdhcyBhc3NpZ25lZCwgbm90IG5lY2Vzc2FyaWx5IHBpY2sN
+Cj4gdXBmcm9udC4uIEkgZmVlbCBsaWtlIHdlIGhhZCB0aGlzIGNvbnZlcnNhdGlvbiBiZWZvcmUg
+YXMgd2VsbC4NCj4gDQpBc3NpZ25pbmcgYnkgdXNlciBlbnN1cmVzIHRoYXQgbmV0ZGV2IGFuZC9v
+ciByZG1hIGRldmljZSBvZiBhIHNsaWNlIChzdWINCmZ1bmN0aW9uKSwgaXRzIHJlcHJlc2VudG9y
+LCBoZWFsdGggcmVwb3J0ZXJzLCBkZXZsaW5rIGluc3RhbmNlIG9mIHRoZQ0Kc2xpY2UgZ2V0cyBw
+cmVkaWN0YWJsZSBpZGVudGl0eS4NCg0KPj4+PiBUaGUgZGV2bGluayBrZXJuZWwgY29kZSBjYWxs
+cyBkb3duIHRvIGRldmljZSBkcml2ZXIgKGRldmxpbmsgb3ApIGFuZCBhc2tzDQo+Pj4+IGl0IHRv
+IGNyZWF0ZSBhIHNsaWNlIHdpdGggcGFydGljdWxhciBhdHRyaWJ1dGVzLiBEcml2ZXIgdGhlbiBp
+bnN0YXRpYXRlcw0KPj4+PiB0aGUgc2xpY2UgYW5kIHBvcnQgaW4gdGhlIHNhbWUgd2F5IGl0IGlz
+IGRvbmUgZm9yIFZGOg0KPj4+Pg0KPj4+PiAkIGRldmxpbmsgcG9ydCBzaG93DQo+Pj4+IHBjaS8w
+MDAwOjA2OjAwLjAvMDogZmxhdm91ciBwaHlzaWNhbCBwZm51bSAwIHR5cGUgZXRoIG5ldGRldiBl
+bnA2czBmMG5wMQ0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzE6IGZsYXZvdXIgcGh5c2ljYWwgcGZu
+dW0gMSB0eXBlIGV0aCBuZXRkZXYgZW5wNnMwZjBucDINCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8y
+OiBmbGF2b3VyIHBjaXZmIHBmbnVtIDAgdmZudW0gMCB0eXBlIGV0aCBuZXRkZXYgZW5wNnMwcGYw
+dmYwIHNsaWNlIDINCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8zOiBmbGF2b3VyIHBjaXNmIHBmbnVt
+IDEgc2ZudW0gMTAgdHlwZSBldGggbmV0ZGV2IGVucDZzMHBmMXNmMTAgc2xpY2UgMTAwDQo+Pj4+
+DQo+Pj4+ICQgZGV2bGluayBzbGljZSBzaG93DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMDogZmxh
+dm91ciBwaHlzaWNhbCBwZm51bSAwIHBvcnQgMCBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6
+MDY6MDAuMC8xOiBmbGF2b3VyIHBoeXNpY2FsIHBmbnVtIDEgcG9ydCAxIHN0YXRlIGFjdGl2ZQ0K
+Pj4+PiBwY2kvMDAwMDowNjowMC4wLzI6IGZsYXZvdXIgcGNpdmYgcGZudW0gMCB2Zm51bSAwIHBv
+cnQgMiBod19hZGRyIDEwOjIyOjMzOjQ0OjU1OjY2DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMTAw
+OiBmbGF2b3VyIHBjaXNmIHBmbnVtIDEgc2ZudW0gMTAgcG9ydCAzIGh3X2FkZHIgYWE6YmI6Y2M6
+YWE6YmI6Y2Mgc3RhdGUgaW5hY3RpdmUNCj4+Pj4NCj4+Pj4gTm90ZSB0aGF0IHRoZSBTRiBzbGlj
+ZSBpcyBjcmVhdGVkIGJ1dCBub3QgYWN0aXZlLiBUaGF0IG1lYW5zIHRoZQ0KPj4+PiBlbnRpdGll
+cyBhcmUgY3JlYXRlZCBvbiBkZXZsaW5rIHNpZGUsIHRoZSBlLXN3aXRjaCBwb3J0IHJlcHJlc2Vu
+dG9yDQo+Pj4+IGlzIGNyZWF0ZWQsIGJ1dCB0aGUgU0YgZGV2aWNlIGl0c2VsZiBpdCBub3QgeWV0
+IG91dCB0aGVyZSAoc2FtZSBob3N0DQo+Pj4+IG9yIGRpZmZlcmVudCwgZGVwZW5kcyBvbiB3aGVy
+ZSB0aGUgcGFyZW50IFBGIGlzIC0gaW4gdGhpcyBjYXNlIHRoZSBzYW1lIGhvc3QpLg0KPj4+PiBV
+c2VyIG1pZ2h0IHVzZSBlLXN3aXRjaCBwb3J0IHJlcHJlc2VudG9yIGVucDZzMHBmMXNmMTAgdG8g
+ZG8gc2V0dGluZ3MsDQo+Pj4+IHB1dHRpbmcgaXQgaW50byBicmlkZ2UsIGFkZGluZyBUQyBydWxl
+cywgZXRjLg0KPj4+PiBJdCdzIGxpa2UgdGhlIGNhYmxlIGlzIHVucGx1Z2dlZCBvbiB0aGUgb3Ro
+ZXIgc2lkZS4gIA0KPj4+DQo+Pj4gSWYgaXQncyBqdXN0ICJjYWJsZSB1bnBsdWdnZWQiIGNhbid0
+IHdlIGp1c3QgdXNlIHRoZSBmYWN0IHRoZQ0KPj4+IHJlcHJlc2VudG9yIGlzIGRvd24gdG8gaW5k
+aWNhdGUgbm8gdHJhZmZpYyBjYW4gZmxvdz8gIA0KPj4NCj4+IEl0IGlzIG5vdCAiY2FibGUgdW5w
+bHVnZ2VkIi4gVGhpcyAic3RhdGUgaW5hY3RpdmUvYWN0aW9uIiBpcyBhZG1pbg0KPj4gc3RhdGUu
+IFlvdSBhcyBhIGVzd2l0Y2ggYWRtaW4gc2F5LCAiSSdtIGRvbmUgd2l0aCBjb25maWd1cmluZyBh
+IHNsaWNlDQo+PiAoTUFDKSBhbmQgYSByZXByZXNlbnRvciAoYnJpZGdlLCBUQywgZXRjKSBmb3Ig
+dGhpcyBwYXJ0aWN1bGFyIFNGIGFuZA0KPj4gSSB3YW50IHRoZSBIT1NUIHRvIGluc3RhbnRpYXRl
+IHRoZSBTRiBpbnN0YW5jZSAod2l0aCB0aGUgY29uZmlndXJlZA0KPj4gTUFDKS4NCj4gDQo+IEkn
+bSBub3Qgb3Bwb3NlZCwgSSBqdXN0IGRvbid0IHVuZGVyc3RhbmQgdGhlIG5lZWQuIElmIEFTSUMg
+d2lsbCBub3QgDQo+IFJYIG9yIFRYIGFueSB0cmFmZmljIGZyb20vdG8gdGhpcyBuZXcgZW50aXR5
+IHVudGlsIHJlcHIgaXMgYnJvdWdodCB1cA0KPiB0aGVyZSBzaG91bGQgYmUgbm8gcHJvYmxlbS4N
+Cj4gDQpZb3UgbWF5IHN0aWxsIHdhbnQgZGV2aWNlIHRvIGJlIGFjdGl2ZSBhbmQgdW5wbHVnIHRo
+ZSBjYWJsZSBvciBwbHVnIHRoZQ0KY2FibGUgbGF0ZXIgb24uDQoNCkFkZGl0aW9uYWxseSwgb25j
+ZSBhIHNsaWNlIGlzIGluYWN0aXZhdGVkLCBwb3J0aW9uIG9mIHRoZSBQQ0kgQkFSIHNwYWNlDQpz
+aG91bGQgYmUgaW5hY3RpdmF0ZWQgdG9vIHVzZWQgYnkgdGhpcyBzbGljZSwgc28gdGhhdCBhIGRl
+dmljZS9mdyBjYW4NCmRyb3Agc3VjaCBhY2Nlc3MgYnkgYW4gdW50cnVzdGVkIHNvZnR3YXJlIHRo
+YXQgbWF5IGhhcHBlbiBldmVuIGFmdGVyDQppbmFjdGl2YXRpbmcgdGhlIHNsaWNlLg0KDQo+Pj4+
+IE5vdyB3ZSBhY3RpdmF0ZSAoZGVwbG95KSB0aGUgU0Y6DQo+Pj4+ICQgZGV2bGluayBzbGljZSBz
+ZXQgcGNpLzAwMDA6MDY6MDAuMC8xMDAgc3RhdGUgYWN0aXZlDQo+Pj4+DQo+Pj4+ICQgZGV2bGlu
+ayBzbGljZSBzaG93DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMDogZmxhdm91ciBwaHlzaWNhbCBw
+Zm51bSAwIHBvcnQgMCBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8xOiBmbGF2
+b3VyIHBoeXNpY2FsIHBmbnVtIDEgcG9ydCAxIHN0YXRlIGFjdGl2ZQ0KPj4+PiBwY2kvMDAwMDow
+NjowMC4wLzI6IGZsYXZvdXIgcGNpdmYgcGZudW0gMCB2Zm51bSAwIHBvcnQgMiBod19hZGRyIDEw
+OjIyOjMzOjQ0OjU1OjY2DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMTAwOiBmbGF2b3VyIHBjaXNm
+IHBmbnVtIDEgc2ZudW0gMTAgcG9ydCAzIGh3X2FkZHIgYWE6YmI6Y2M6YWE6YmI6Y2Mgc3RhdGUg
+YWN0aXZlDQo+Pj4+DQo+Pj4+IFVwb24gdGhlIGFjdGl2YXRpb24sIHRoZSBkZXZpY2UgZHJpdmVy
+IGFza3MgdGhlIGRldmljZSB0byBpbnN0YW50aWF0ZQ0KPj4+PiB0aGUgYWN0dWFsIFNGIGRldmlj
+ZSBvbiBwYXJ0aWN1bGFyIFBGLiBEb2VzIG5vdCBtYXR0ZXIgaWYgdGhhdCBpcw0KPj4+PiBvbiB0
+aGUgc2FtZSBob3N0IG9yIG5vdC4NCj4+Pj4NCj4+Pj4gT24gdGhlIG90aGVyIHNpZGUsIHRoZSBQ
+RiBkcml2ZXIgaW5zdGFuY2UgZ2V0cyB0aGUgZXZlbnQgZnJvbSBkZXZpY2UNCj4+Pj4gdGhhdCBw
+YXJ0aWN1bGFyIFNGIHdhcyBhY3RpdmF0ZWQuIEl0J3MgdGhlIGN1ZSB0byBwdXQgdGhlIGRldmlj
+ZSBvbiBidXMNCj4+Pj4gcHJvYmUgaXQgYW5kIGluc3RhbnRpYXRlIG5ldGRldiBhbmQgZGV2bGlu
+ayBpbnN0YW5jZXMgZm9yIGl0LiAgDQo+Pj4NCj4+PiBTZWVtcyBiYWNrd2FyZHMuIEl0J3MgdGhl
+IFBGIHRoYXQgd2FudHMgdGhlIG5ldyBmdW5jdGlvbiwgd2h5IGNhbid0IGl0DQo+Pj4ganVzdCBj
+cmVhdGUgaXQgYW5kIGVpdGhlciBnZXQgYW4gZXJyb3IgZnJvbSB0aGUgb3RoZXIgc2lkZSBvciBu
+ZXZlciBnZXQNCj4+PiBsaW5rIHVwPyAgDQo+Pg0KPj4gV2UgZGlzY3Vzc2VkIHRoYXQgbWFueSB0
+aW1lcyBpbnRlcm5hbGx5LiBJIHRoaW5rIGl0IG1ha2VzIHNlbnNlIHRoYXQNCj4+IHRoZSBTRiBp
+cyBjcmVhdGVkIGJ5IHRoZSBzYW1lIGVudGl0eSB0aGF0IG1hbmFnZXMgdGhlIHJlbGF0ZWQgZXN3
+aXRjaA0KPj4gU0YtcmVwcmVzZW50b3IuIEluIG90aGVyIHdvcmRzLCB0aGUgImRldmxpbmsgc2xp
+Y2UiIGFuZCByZWxhdGVkICJkZXZsaW5rDQo+PiBwb3J0IiBvYmplY3QgYXJlIHVuZGVyIHRoZSBz
+YW1lIGRldmxpbmsgaW5zdGFuY2UuDQo+Pg0KPj4gSWYgdGhlIFBGIGluIGhvc3QgbWFuYWdlcyBu
+ZXN0ZWQgc3dpdGNoLCBpdCBjYW4gY3JlYXRlIHRoZSBTRiBpbnNpZGUgYW5kDQo+PiBtYW5hZ2Vz
+IHRoZSBuZXN0ZSBlc3dpdGNoIFNGLXJlcHJlc2VudG9yIGFzIHlvdSBkZXNjcmliZS4NCj4+DQo+
+PiBJdCBpcyBhIG1hdHRlciBvZiAibmVzdGVkIGVzd2l0Y2ggbWFuYWdlciBvbi9vZmYiIGNvbmZp
+Z3VyYXRpb24uDQo+Pg0KPj4gSSB0aGluayB0aGlzIGlzIGNsZWFuIG1vZGVsIGFuZCBpdCBpcyBr
+bm93biB3aG8gaGFzIHdoYXQNCj4+IHJlc3BvbnNpYmlsaXRpZXMuDQo+IA0KPiBJIHNlZSBzbyB5
+b3Ugd2FudCB0aGUgY3JlYXRpb24gdG8gYmUgY29udHJvbGxlZCBieSB0aGUgc2FtZSBlbnRpdHkg
+dGhhdA0KPiBjb250cm9scyB0aGUgZXN3aXRjaC4uDQo+IA0KPiBUbyBtZSB0aGUgY3JlYXRpb24g
+c2hvdWxkIGJlIG9uIHRoZSBzaWRlIHRoYXQgYWN0dWFsbHkgbmVlZHMvd2lsbCB1c2UNCj4gdGhl
+IG5ldyBwb3J0LiBBbmQgaWYgaXQncyBub3QgZXN3aXRjaCBtYW5hZ2VyIHRoZW4gZXN3aXRjaCBt
+YW5hZ2VyDQo+IG5lZWRzIHRvIGFjayBpdC4NCj4NCg0KVGhlcmUgYXJlIGZldyByZWFzb25zIHRv
+IGNyZWF0ZSB0aGVtIG9uIGVzd2l0Y2ggbWFuYWdlciBzeXN0ZW0gYXMgYmVsb3cuDQoNCjEuIENy
+ZWF0aW9uIGFuZCBkZWxldGlvbiBvbiBvbmUgc3lzdGVtIGFuZCBzeW5jaHJvbml6aW5nIGl0IHdp
+dGggZXN3aXRjaA0Kc3lzdGVtIHJlcXVpcmVzIG11bHRpcGxlIGJhY2stbi1mb3J0aCBjYWxscyBi
+ZXR3ZWVuIHR3byBzeXN0ZW1zLg0KDQoyLiBXaGVuIHRoaXMgaGFwcGVucywgc3lzdGVtIHdoZXJl
+IGl0cyBjcmVhdGVkLCBkb2Vzbid0IGtub3cgd2hlbiBpcyB0aGUNCnJpZ2h0IHRpbWUgdG8gcHJv
+dmlzaW9uIHRvIGEgVk0gb3IgdG8gYSBhcHBsaWNhdGlvbi4NCnVkZXYvc3lzdGVtZC9OZXR3b3Jr
+IE1hbmFnZXIgYW5kIG90aGVycyBzdWNoIHNvZnR3YXJlIG1pZ2h0IGFscmVhZHkNCnN0YXJ0IGlu
+aXRpYWxpemluZyBpdCBkb2luZyBESENQIGJ1dCBpdHMgc3dpdGNoIHNpZGUgaXMgbm90IHlldCBy
+ZWFkeS4NCg0KU28gaXQgaXMgZGVzaXJlZCB0byBtYWtlIHN1cmUgdGhhdCBvbmNlIGRldmljZSBp
+cyBmdWxseQ0KcmVhZHkvY29uZmlndXJlZCwgaXRzIGFjdGl2YXRlZC4NCg0KMy4gQWRkaXRpb25h
+bGx5IGl0IGRvZXNuJ3QgZm9sbG93IG1pcnJvciBzZXF1ZW5jZSBkdXJpbmcgZGVsZXRpb24gd2hl
+bg0KY3JlYXRlZCBvbiBob3N0Lg0KDQo0LiBlc3dpdGNoIGFkbWluaXN0cmF0b3Igc2ltcGx5IGRv
+ZXNuJ3QgaGF2ZSBkaXJlY3QgYWNjZXNzIHRvIHRoZSBzeXN0ZW0NCndoZXJlIHRoaXMgZGV2aWNl
+IGlzIHVzZWQuIFNvIGl0IGp1c3QgY2Fubm90IGJlIGNyZWF0ZWQgdGhlcmUgYnkgZXN3aXRjaA0K
+YWRtaW5pc3RyYXRvci4NCg0KPiBUaGUgcHJlY2VkZW5jZSBpcyBwcm9iYWJseSBub3QgYSBzdHJv
+bmcgYXJndW1lbnQsIGJ1dCB0aGF0J2QgYmUgdGhlDQo+IHNhbWUgd2F5IFZGcyB3b3JrLi4gSSBk
+b24ndCB0aGluayB5b3UgY2FuIGNoYW5nZSBob3cgVkZzIHdvcmssIHJpZ2h0Pw0KPg0KDQpBdCBs
+ZWFzdCBub3Qgd2l0aCB0aGUgZXhpc3RpbmcgYXZhaWxhYmxlIG1seDUgZGV2aWNlcy4gQnV0IHRo
+aXMgbW9kZWwNCmVuYWJsZXMgZnV0dXJlIFZGIGRldmljZXMgdG8gb3BlcmF0ZSBpbiBzYW1lIHdh
+eSBhcyBTRi4NCg0KPj4+PiA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT0NCj4+Pj4gfHwgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHx8DQo+Pj4+IHx8ICAgVkYg
+bWFudWFsIGNyZWF0aW9uIGFuZCBhY3RpdmF0aW9uIHVzZXIgY21kbGluZSBBUEkgZHJhZnQgICB8
+fA0KPj4+PiB8fCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgfHwNCj4+Pj4gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQo+Pj4+DQo+Pj4+IFRvIGVudGVyIG1h
+bnVhbCBtb2RlLCB0aGUgdXNlciBoYXMgdG8gdHVybiBvZmYgVkYgZHVtbWllcyBjcmVhdGlvbjoN
+Cj4+Pj4gJCBkZXZsaW5rIGRldiBzZXQgcGNpLzAwMDA6MDY6MDAuMCB2Zl9kdW1taWVzIGRpc2Fi
+bGVkDQo+Pj4+ICQgZGV2bGluayBkZXYgc2hvdw0KPj4+PiBwY2kvMDAwMDowNjowMC4wOiB2Zl9k
+dW1taWVzIGRpc2FibGVkDQo+Pj4+DQo+Pj4+IEl0IGlzICJlbmFibGVkIiBieSBkZWZhdWx0IGlu
+IG9yZGVyIG5vdCB0byBicmVhayBleGlzdGluZyB1c2Vycy4NCj4+Pj4NCj4+Pj4gQnkgc2V0dGlu
+ZyB0aGUgInZmX2R1bW1pZXMiIGF0dHJpYnV0ZSB0byAiZGlzYWJsZWQiLCB0aGUgZHJpdmVyDQo+
+Pj4+IHJlbW92ZXMgYWxsIGR1bW15IFZGcy4gT25seSBwaHlzaWNhbCBwb3J0cyBhcmUgcHJlc2Vu
+dDoNCj4+Pj4NCj4+Pj4gJCBkZXZsaW5rIHBvcnQgc2hvdw0KPj4+PiBwY2kvMDAwMDowNjowMC4w
+LzA6IGZsYXZvdXIgcGh5c2ljYWwgcGZudW0gMCB0eXBlIGV0aCBuZXRkZXYgZW5wNnMwZjBucDEN
+Cj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8xOiBmbGF2b3VyIHBoeXNpY2FsIHBmbnVtIDEgdHlwZSBl
+dGggbmV0ZGV2IGVucDZzMGYwbnAyDQo+Pj4+DQo+Pj4+IFRoZW4gdGhlIHVzZXIgaXMgYWJsZSB0
+byBjcmVhdGUgdGhlbSBpbiBhIHNpbWlsYXIgd2F5IGFzIFNGczoNCj4+Pj4NCj4+Pj4gJCBkZXZs
+aW5rIHNsaWNlIGFkZCBwY2kvMDAwMDowNjowMC4wLzk5IGZsYXZvdXIgcGNpdmYgcGZudW0gMSB2
+Zm51bSA4IGh3X2FkZHIgYWE6YmI6Y2M6YWE6YmI6Y2MNCj4+Pj4NCj4+Pj4gVGhlIGRldmxpbmsg
+a2VybmVsIGNvZGUgY2FsbHMgZG93biB0byBkZXZpY2UgZHJpdmVyIChkZXZsaW5rIG9wKSBhbmQg
+YXNrcw0KPj4+PiBpdCB0byBjcmVhdGUgYSBzbGljZSB3aXRoIHBhcnRpY3VsYXIgYXR0cmlidXRl
+cy4gRHJpdmVyIHRoZW4gaW5zdGF0aWF0ZXMNCj4+Pj4gdGhlIHNsaWNlIGFuZCBwb3J0Og0KPj4+
+Pg0KPj4+PiAkIGRldmxpbmsgcG9ydCBzaG93DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMDogZmxh
+dm91ciBwaHlzaWNhbCBwZm51bSAwIHR5cGUgZXRoIG5ldGRldiBlbnA2czBmMG5wMQ0KPj4+PiBw
+Y2kvMDAwMDowNjowMC4wLzE6IGZsYXZvdXIgcGh5c2ljYWwgcGZudW0gMSB0eXBlIGV0aCBuZXRk
+ZXYgZW5wNnMwZjBucDINCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8yOiBmbGF2b3VyIHBjaXZmIHBm
+bnVtIDEgdmZudW0gOCB0eXBlIGV0aCBuZXRkZXYgZW5wNnMwcGYxdmYwIHNsaWNlIDk5DQo+Pj4+
+DQo+Pj4+ICQgZGV2bGluayBzbGljZSBzaG93DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMDogZmxh
+dm91ciBwaHlzaWNhbCBwZm51bSAwIHBvcnQgMCBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6
+MDY6MDAuMC8xOiBmbGF2b3VyIHBoeXNpY2FsIHBmbnVtIDEgcG9ydCAxIHN0YXRlIGFjdGl2ZQ0K
+Pj4+PiBwY2kvMDAwMDowNjowMC4wLzk5OiBmbGF2b3VyIHBjaXZmIHBmbnVtIDEgdmZudW0gOCBw
+b3J0IDIgaHdfYWRkciBhYTpiYjpjYzphYTpiYjpjYyBzdGF0ZSBpbmFjdGl2ZQ0KPj4+Pg0KPj4+
+PiBOb3cgd2UgYWN0aXZhdGUgKGRlcGxveSkgdGhlIFZGOg0KPj4+PiAkIGRldmxpbmsgc2xpY2Ug
+c2V0IHBjaS8wMDAwOjA2OjAwLjAvOTkgc3RhdGUgYWN0aXZlDQo+Pj4+DQo+Pj4+ICQgZGV2bGlu
+ayBzbGljZSBzaG93DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvOTk6IGZsYXZvdXIgcGNpdmYgcGZu
+dW0gMSB2Zm51bSA4IHBvcnQgMiBod19hZGRyIGFhOmJiOmNjOmFhOmJiOmNjIHN0YXRlIGFjdGl2
+ZQ0K
