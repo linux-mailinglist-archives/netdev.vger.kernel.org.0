@@ -2,113 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B996E18E40E
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 20:43:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2976418E435
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 21:25:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727761AbgCUTnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 15:43:53 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:46402 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727028AbgCUTnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 15:43:53 -0400
-Received: by mail-qk1-f196.google.com with SMTP id f28so10920437qkk.13;
-        Sat, 21 Mar 2020 12:43:52 -0700 (PDT)
+        id S1727296AbgCUUZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 16:25:09 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:42028 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726539AbgCUUZJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 16:25:09 -0400
+Received: by mail-lf1-f66.google.com with SMTP id t21so7179296lfe.9
+        for <netdev@vger.kernel.org>; Sat, 21 Mar 2020 13:25:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8X1nssZkX3zE36HSGSKw4pjFMAwkKO3h6A7s6TzL6sg=;
-        b=QM3sQ4nzW+ZZ2vvk6bH+H5qKOjZqOguoJrsIbMowx6oOUKbcGwlxx/0zNo+WPc22EW
-         SkE6HPfpYMB4N5SXVWn7BsreBFc59jYneewMVbAeN0zmpmKld4wsINeJES853hx48jhs
-         Hi1tJm5KcFQKEKvkR/CxdATFen4dQEYDJt2X3UPQk9TjaEcxVy/7zr6MEAwgrZysiOV4
-         GNiU1M805ZRBfUhS3wRouqie7vDrl2LDyLTaAylHxxw8bafnCDh0zgbYFGRPfOwYexIB
-         FLoa9uHwqVPQnAD5/AbqqpQoA9KvNMrnVg8Hx/jrNPk37TLu/GdQ+TRdVAeUu11jIMr1
-         8GWA==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:organization;
+        bh=RrRlxSA5JH5KL9KpSVlg+eWTNkhtjgbo6CYW0I8MPLM=;
+        b=VPEIPYKyIrc18kA0NUiuROjW7ab5PDRYQNVUvTthWv6+m6kvLOtsIypOj3nnNDu3EU
+         5KuDWm5eif/OJED7qv+SjGDUqCKcHZXorQ2XpUMySgMPnYPbeY4nWXmD/k+bhuBEQ66O
+         RnkHGXjd1Sgi3PQ5eo9UpO9NHuG+p5myez6wlDwDfvYb++uudYtFQUeDaU24g9v9NM6m
+         yWK4hxJqGMndVKoFN62Yayv6gutOgXjq2vLyinWIoAcNQYD9jIlm7sH495Tz8fB8yA18
+         GvXoUewzenCqNRfzpB/4SOqU6o8f7Rr/aqHPjqseSuR2/8abRgxzEMy1+9sm8OVk7eN8
+         4iug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8X1nssZkX3zE36HSGSKw4pjFMAwkKO3h6A7s6TzL6sg=;
-        b=kdjeA2Yafc4bai8LK8nG7ej2yxoO3HPneKKCtw6slJNn5/ziVXRVf9in7SJ84kKhvg
-         +cHJ8CZJUAYC10XIPJvCjlcEtBO30jty8SE6cUiEvQLkxc5odAXyKn44+uV70zUeYWth
-         zleyKA4CCcRQ7t8nJnn4pdErWEfgX/xi9bp97GvizWcelGp7bM5le75VRh+ARjuJXYqW
-         uaknJ65LKo9ATSkQhI75yja7eczP1f10B68VNOGzsFhXsnjWzaFOLdzZCOdxBfMjbWSk
-         Q9vi66MlOkrbjyvO5I20K4I7gigahbNiNqjn223ErsI7s4NT/WPQwGKIQ2w09aLjTvUE
-         7qVg==
-X-Gm-Message-State: ANhLgQ3zkCeO0lVw4IK/ndPfNCzGlXC3UhDrwHYL+v5gi2d47ecm1nyJ
-        VhsZz0YOwpc8c7C9tKq5bL6htVC+fuZcpkvjAZA=
-X-Google-Smtp-Source: ADFU+vviphwOi87GrpQ2PO4bA4AsZGiWxAw1kQpNFJW4HSm1xb2bYdrJQvdp/a3WfbWi0CZ7H+SAnI+1+aRaHMcIecQ=
-X-Received: by 2002:a37:454c:: with SMTP id s73mr2758212qka.92.1584819832189;
- Sat, 21 Mar 2020 12:43:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200321100424.1593964-1-danieltimlee@gmail.com> <20200321100424.1593964-3-danieltimlee@gmail.com>
-In-Reply-To: <20200321100424.1593964-3-danieltimlee@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sat, 21 Mar 2020 12:43:41 -0700
-Message-ID: <CAEf4BzbTYyBG4=Muj5EOqtNxkivtT9Bn5+ibmp3e-BLBybQO1A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 2/2] samples: bpf: refactor perf_event user
- program with libbpf bpf_link
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:organization;
+        bh=RrRlxSA5JH5KL9KpSVlg+eWTNkhtjgbo6CYW0I8MPLM=;
+        b=NBbCaqQKCvAxuYIjJELDQDgGa3lX3EkneQPiXLu8Zz+yUWCHE5WU1EwwKemJlrizMU
+         P+VueLpzUsPsBBndnX2x+o/Ci9RZ0KpEUtN3w4JpNWpGB24tM+7VMJB0QckaZ0P70Xq8
+         07sgcFTUbZGqRg8qjCBbxs7Yrd11dpdDUD/2THLa++XbSu6kjs6eg0CdAy9P9/5t9Skc
+         AVYMUoBHMkyoA3j0oX9QpNDGUuLOocyK6p+j0Ek35h31Md21dzrM5oQXTzupRqnz9eJT
+         fj+xAnZsdVdIH/GhVX6/KzZsx428yZtWE6jZjXvDqsiszLeEiG36UGWuMP1S4qpDvSQU
+         mJtg==
+X-Gm-Message-State: ANhLgQ1wbclO+pcTiGzwiBD4vhFbJJCR0ilrXSA1rzNVmOMNeocnYwcr
+        DhFTsXziLVF11Sos9Qv2OW09DQ==
+X-Google-Smtp-Source: ADFU+vuSw1c/gt1iuSiXjvfqYV9ZyyFKHJfdbmQCzdE4OkD/qC7mUs6o3Fcxhe46zVbN+wJoPFZiQA==
+X-Received: by 2002:ac2:5de1:: with SMTP id z1mr8631238lfq.95.1584822304413;
+        Sat, 21 Mar 2020 13:25:04 -0700 (PDT)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id p25sm5847334ljg.85.2020.03.21.13.25.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Mar 2020 13:25:03 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, linux-usb@vger.kernel.org
+Subject: [PATCH v3 1/2] dt-bindings: net: add marvell usb to mdio bindings
+Date:   Sat, 21 Mar 2020 21:24:42 +0100
+Message-Id: <20200321202443.15352-1-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.17.1
+Organization: Westermo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 21, 2020 at 3:04 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
->
-> The bpf_program__attach of libbpf(using bpf_link) is much more intuitive
-> than the previous method using ioctl.
->
-> bpf_program__attach_perf_event manages the enable of perf_event and
-> attach of BPF programs to it, so there's no neeed to do this
-> directly with ioctl.
->
-> In addition, bpf_link provides consistency in the use of API because it
-> allows disable (detach, destroy) for multiple events to be treated as
-> one bpf_link__destroy. Also, bpf_link__destroy manages the close() of
-> perf_event fd.
->
-> This commit refactors samples that attach the bpf program to perf_event
-> by using libbbpf instead of ioctl. Also the bpf_load in the samples were
-> removed and migrated to use libbbpf API.
->
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
->
-> ---
+Describe how the USB to MDIO controller can optionally use device tree
+bindings to reference attached devices such as switches.
 
-LGTM.
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+---
+ .../bindings/net/marvell,mvusb.yaml           | 65 +++++++++++++++++++
+ MAINTAINERS                                   |  6 ++
+ 2 files changed, 71 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/marvell,mvusb.yaml
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+diff --git a/Documentation/devicetree/bindings/net/marvell,mvusb.yaml b/Documentation/devicetree/bindings/net/marvell,mvusb.yaml
+new file mode 100644
+index 000000000000..9458f6659be1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/marvell,mvusb.yaml
+@@ -0,0 +1,65 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/marvell,mvusb.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Marvell USB to MDIO Controller
++
++maintainers:
++  - Tobias Waldekranz <tobias@waldekranz.com>
++
++description: |+
++  This controller is mounted on development boards for Marvell's Link Street
++  family of Ethernet switches. It allows you to configure the switch's registers
++  using the standard MDIO interface.
++
++  Since the device is connected over USB, there is no strict requirement of
++  having a device tree representation of the device. But in order to use it with
++  the mv88e6xxx driver, you need a device tree node in which to place the switch
++  definition.
++
++allOf:
++  - $ref: "mdio.yaml#"
++
++properties:
++  compatible:
++    const: usb1286,1fa4
++  reg:
++    maxItems: 1
++    description: The USB port number on the host controller
++
++required:
++  - compatible
++  - reg
++  - "#address-cells"
++  - "#size-cells"
++
++examples:
++  - |
++    /* USB host controller */
++    &usb1 {
++            mvusb: mdio@1 {
++                    compatible = "usb1286,1fa4";
++                    reg = <1>;
++                    #address-cells = <1>;
++                    #size-cells = <0>;
++            };
++    };
++
++    /* MV88E6390X devboard */
++    &mvusb {
++            switch@0 {
++                    compatible = "marvell,mv88e6190";
++                    status = "ok";
++                    reg = <0x0>;
++
++                    ports {
++                            /* Port definitions */
++                    };
++
++                    mdio {
++                            /* PHY definitions */
++                    };
++            };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 97dce264bc7c..ff35669f8712 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -10101,6 +10101,12 @@ M:	Nicolas Pitre <nico@fluxnic.net>
+ S:	Odd Fixes
+ F:	drivers/mmc/host/mvsdio.*
+ 
++MARVELL USB MDIO CONTROLLER DRIVER
++M:	Tobias Waldekranz <tobias@waldekranz.com>
++L:	netdev@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/net/marvell,mvusb.yaml
++
+ MARVELL XENON MMC/SD/SDIO HOST CONTROLLER DRIVER
+ M:	Hu Ziji <huziji@marvell.com>
+ L:	linux-mmc@vger.kernel.org
+-- 
+2.17.1
 
-> Changes in v2:
->  - check memory allocation is successful
->  - clean up allocated memory on error
->
-> Changes in v3:
->  - Improve pointer error check (IS_ERR())
->  - change to calloc for easier destroy of bpf_link
->  - remove perf_event fd list since bpf_link handles fd
->  - use newer bpf_object__{open/load} API instead of bpf_prog_load
->  - perf_event for _SC_NPROCESSORS_ONLN instead of _SC_NPROCESSORS_CONF
->  - find program with name explicitly instead of bpf_program__next
->  - unconditional bpf_link__destroy() on cleanup
->
-> Changes in v4:
->  - bpf_link *, bpf_object * set NULL on init & err for easier destroy
->  - close bpf object with bpf_object__close()
->
-> Changes in v5:
->  - on error, return error code with exit
->
->  samples/bpf/Makefile           |   4 +-
->  samples/bpf/sampleip_user.c    |  98 +++++++++++++++--------
->  samples/bpf/trace_event_user.c | 139 ++++++++++++++++++++++-----------
->  3 files changed, 159 insertions(+), 82 deletions(-)
->
-
-[...]
