@@ -2,33 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EFF5518DF63
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 11:19:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA76A18DF69
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 11:26:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728239AbgCUKT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 06:19:29 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:37946 "EHLO
+        id S1728368AbgCUK0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 06:26:54 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:37966 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726652AbgCUKT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 06:19:29 -0400
+        with ESMTP id S1726652AbgCUK0x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 06:26:53 -0400
 Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1jFbDt-0001PS-Al; Sat, 21 Mar 2020 11:19:21 +0100
+        id 1jFbKR-0001Rx-D7; Sat, 21 Mar 2020 11:26:07 +0100
 Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id CDD53FFC8D; Sat, 21 Mar 2020 11:19:20 +0100 (CET)
+        id C6E72FFC8D; Sat, 21 Mar 2020 11:26:06 +0100 (CET)
 From:   Thomas Gleixner <tglx@linutronix.de>
-To:     syzbot <syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com>,
-        davem@davemloft.net, jhs@mojatatu.com, jiri@resnulli.us,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Subject: Re: WARNING: ODEBUG bug in tcindex_destroy_work (3)
-In-Reply-To: <000000000000742e9e05a10170bc@google.com>
-References: <000000000000742e9e05a10170bc@google.com>
-Date:   Sat, 21 Mar 2020 11:19:20 +0100
-Message-ID: <87a74arown.fsf@nanos.tec.linutronix.de>
+To:     paulmck@kernel.org
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [patch V2 08/15] Documentation: Add lock ordering and nesting documentation
+In-Reply-To: <20200321022930.GU3199@paulmck-ThinkPad-P72>
+References: <20200320160145.GN3199@paulmck-ThinkPad-P72> <87mu8apzxr.fsf@nanos.tec.linutronix.de> <20200320210243.GT3199@paulmck-ThinkPad-P72> <874kuipsbw.fsf@nanos.tec.linutronix.de> <20200321022930.GU3199@paulmck-ThinkPad-P72>
+Date:   Sat, 21 Mar 2020 11:26:06 +0100
+Message-ID: <875zeyrold.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Linutronix-Spam-Score: -1.0
@@ -39,50 +55,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot <syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com> writes:
-> syzbot has found a reproducer for the following crash on:
+"Paul E. McKenney" <paulmck@kernel.org> writes:
+> On Fri, Mar 20, 2020 at 11:36:03PM +0100, Thomas Gleixner wrote:
+>> I agree that what I tried to express is hard to parse, but it's at least
+>> halfways correct :)
 >
-> HEAD commit:    74522e7b net: sched: set the hw_stats_type in pedit loop
-> git tree:       net-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=14c85173e00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=b5acf5ac38a50651
-> dashboard link: https://syzkaller.appspot.com/bug?extid=46f513c3033d592409d2
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17bfff65e00000
+> Apologies!  That is what I get for not looking it up in the source.  :-/
 >
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com
+> OK, so I am stupid enough not only to get it wrong, but also to try again:
 >
-> ------------[ cut here ]------------
-> ODEBUG: free active (active state 0) object type: work_struct hint: tcindex_destroy_rexts_work+0x0/0x20 net/sched/cls_tcindex.c:143
-...
->  __debug_check_no_obj_freed lib/debugobjects.c:967 [inline]
->  debug_check_no_obj_freed+0x2e1/0x445 lib/debugobjects.c:998
->  kfree+0xf6/0x2b0 mm/slab.c:3756
->  tcindex_destroy_work+0x2e/0x70 net/sched/cls_tcindex.c:231
+>    ... Other types of wakeups would normally unconditionally set the
+>    task state to RUNNING, but that does not work here because the task
+>    must remain blocked until the lock becomes available.  Therefore,
+>    when a non-lock wakeup attempts to awaken a task blocked waiting
+>    for a spinlock, it instead sets the saved state to RUNNING.  Then,
+>    when the lock acquisition completes, the lock wakeup sets the task
+>    state to the saved state, in this case setting it to RUNNING.
+>
+> Is that better?
 
-So this is:
+Definitely!
 
-	kfree(p->perfect);
+Thanks for all the editorial work!
 
-Looking at the place which queues that work:
-
-tcindex_destroy()
-
-   if (p->perfect) {
-        if (tcf_exts_get_net(&r->exts))
-            tcf_queue_work(&r-rwork, tcindex_destroy_rexts_work);
-        else
-            __tcindex_destroy_rexts(r)
-   }
-
-   .....
-   
-   tcf_queue_work(&p->rwork, tcindex_destroy_work);
-   
-So obviously if tcindex_destroy_work() runs before
-tcindex_destroy_rexts_work() then the above happens.
-
-Thanks,
-
-        tglx
+       tglx
