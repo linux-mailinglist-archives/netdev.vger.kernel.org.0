@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C481F18E02F
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:36:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1E6A18E082
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:37:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728635AbgCULe7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 07:34:59 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:38490 "EHLO
+        id S1728690AbgCULhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 07:37:04 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:38466 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728497AbgCULe5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:34:57 -0400
+        with ESMTP id S1727028AbgCULe4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:34:56 -0400
 Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1jFcOR-0001zT-Eh; Sat, 21 Mar 2020 12:34:19 +0100
+        id 1jFcOR-0001zU-F0; Sat, 21 Mar 2020 12:34:19 +0100
 Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id 74A94FFBBF;
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id B80C01039FD;
         Sat, 21 Mar 2020 12:34:18 +0100 (CET)
-Message-Id: <20200321113241.246190285@linutronix.de>
+Message-Id: <20200321113241.339289758@linutronix.de>
 User-Agent: quilt/0.65
-Date:   Sat, 21 Mar 2020 12:25:49 +0100
+Date:   Sat, 21 Mar 2020 12:25:50 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -31,26 +31,27 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Joel Fernandes <joel@joelfernandes.org>,
         Oleg Nesterov <oleg@redhat.com>,
         Davidlohr Bueso <dave@stgolabs.net>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        platform-driver-x86@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        linux-pci@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
-        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         kbuild test robot <lkp@intel.com>,
         Nick Hu <nickhu@andestech.com>,
         Greentime Hu <green.hu@gmail.com>,
         Vincent Chen <deanbo422@gmail.com>,
-        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
-        Brian Cain <bcain@codeaurora.org>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        linux-pci@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        platform-driver-x86@vger.kernel.org,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+        linux-acpi@vger.kernel.org, Guo Ren <guoren@kernel.org>,
+        linux-csky@vger.kernel.org, Brian Cain <bcain@codeaurora.org>,
         linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
         Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
         Michal Simek <monstr@monstr.eu>,
@@ -62,7 +63,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Jonathan Corbet <corbet@lwn.net>,
         Randy Dunlap <rdunlap@infradead.org>,
         Davidlohr Bueso <dbueso@suse.de>
-Subject: [patch V3 05/20] acpi: Remove header dependency
+Subject: [patch V3 06/20] nds32: Remove mm.h from asm/uaccess.h
 References: <20200321112544.878032781@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -75,70 +76,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-In order to avoid future header hell, remove the inclusion of
-proc_fs.h from acpi_bus.h. All it needs is a forward declaration of a
-struct.
+The defconfig compiles without linux/mm.h. With mm.h included the
+include chain leands to:
+|   CC      kernel/locking/percpu-rwsem.o
+| In file included from include/linux/huge_mm.h:8,
+|                  from include/linux/mm.h:567,
+|                  from arch/nds32/include/asm/uaccess.h:,
+|                  from include/linux/uaccess.h:11,
+|                  from include/linux/sched/task.h:11,
+|                  from include/linux/sched/signal.h:9,
+|                  from include/linux/rcuwait.h:6,
+|                  from include/linux/percpu-rwsem.h:8,
+|                  from kernel/locking/percpu-rwsem.c:6:
+| include/linux/fs.h:1422:29: error: array type has incomplete element type 'struct percpu_rw_semaphore'
+|  1422 |  struct percpu_rw_semaphore rw_sem[SB_FREEZE_LEVELS];
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+once rcuwait.h includes linux/sched/signal.h.
+
+Remove the linux/mm.h include.
+
+Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Darren Hart <dvhart@infradead.org>
-Cc: Andy Shevchenko <andy@infradead.org>
-Cc: platform-driver-x86@vger.kernel.org
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Zhang Rui <rui.zhang@intel.com>
-Cc: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Cc: linux-pm@vger.kernel.org
-Cc: Len Brown <lenb@kernel.org>
-Cc: linux-acpi@vger.kernel.org
+Cc: Nick Hu <nickhu@andestech.com>
+Cc: Greentime Hu <green.hu@gmail.com>
+Cc: Vincent Chen <deanbo422@gmail.com>
 ---
- drivers/platform/x86/dell-smo8800.c                      |    1 +
- drivers/platform/x86/wmi.c                               |    1 +
- drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c |    1 +
- include/acpi/acpi_bus.h                                  |    2 +-
- 4 files changed, 4 insertions(+), 1 deletion(-)
+V3: New patch
+---
+ arch/nds32/include/asm/uaccess.h | 1 -
+ 1 file changed, 1 deletion(-)
 
---- a/drivers/platform/x86/dell-smo8800.c
-+++ b/drivers/platform/x86/dell-smo8800.c
-@@ -16,6 +16,7 @@
- #include <linux/interrupt.h>
- #include <linux/miscdevice.h>
- #include <linux/uaccess.h>
-+#include <linux/fs.h>
+diff --git a/arch/nds32/include/asm/uaccess.h b/arch/nds32/include/asm/uaccess.h
+index 8916ad9f9f139..3a9219f53ee0d 100644
+--- a/arch/nds32/include/asm/uaccess.h
++++ b/arch/nds32/include/asm/uaccess.h
+@@ -11,7 +11,6 @@
+ #include <asm/errno.h>
+ #include <asm/memory.h>
+ #include <asm/types.h>
+-#include <linux/mm.h>
  
- struct smo8800_device {
- 	u32 irq;                     /* acpi device irq */
---- a/drivers/platform/x86/wmi.c
-+++ b/drivers/platform/x86/wmi.c
-@@ -29,6 +29,7 @@
- #include <linux/uaccess.h>
- #include <linux/uuid.h>
- #include <linux/wmi.h>
-+#include <linux/fs.h>
- #include <uapi/linux/wmi.h>
+ #define __asmeq(x, y)  ".ifnc " x "," y " ; .err ; .endif\n\t"
  
- ACPI_MODULE_NAME("wmi");
---- a/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c
-+++ b/drivers/thermal/intel/int340x_thermal/acpi_thermal_rel.c
-@@ -19,6 +19,7 @@
- #include <linux/acpi.h>
- #include <linux/uaccess.h>
- #include <linux/miscdevice.h>
-+#include <linux/fs.h>
- #include "acpi_thermal_rel.h"
- 
- static acpi_handle acpi_thermal_rel_handle;
---- a/include/acpi/acpi_bus.h
-+++ b/include/acpi/acpi_bus.h
-@@ -80,7 +80,7 @@ bool acpi_dev_present(const char *hid, c
- 
- #ifdef CONFIG_ACPI
- 
--#include <linux/proc_fs.h>
-+struct proc_dir_entry;
- 
- #define ACPI_BUS_FILE_ROOT	"acpi"
- extern struct proc_dir_entry *acpi_root_dir;
+-- 
+2.26.0.rc2
 
 
