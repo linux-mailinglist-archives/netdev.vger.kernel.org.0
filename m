@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD1AF18E08F
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:37:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCDA518E004
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:35:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728935AbgCULhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 07:37:14 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:38472 "EHLO
+        id S1728699AbgCULfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 07:35:02 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:38511 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727100AbgCULe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:34:56 -0400
+        with ESMTP id S1728589AbgCULfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:35:00 -0400
 Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1jFcOS-0001zZ-4Y; Sat, 21 Mar 2020 12:34:20 +0100
+        id 1jFcOX-0001ze-CH; Sat, 21 Mar 2020 12:34:25 +0100
 Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id 4AC801039FF;
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id 88BED104084;
         Sat, 21 Mar 2020 12:34:19 +0100 (CET)
-Message-Id: <20200321113241.531525286@linutronix.de>
+Message-Id: <20200321113241.624070289@linutronix.de>
 User-Agent: quilt/0.65
-Date:   Sat, 21 Mar 2020 12:25:52 +0100
+Date:   Sat, 21 Mar 2020 12:25:53 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -32,8 +32,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Oleg Nesterov <oleg@redhat.com>,
         Davidlohr Bueso <dave@stgolabs.net>,
         kbuild test robot <lkp@intel.com>,
-        Brian Cain <bcain@codeaurora.org>,
-        linux-hexagon@vger.kernel.org,
+        Tony Luck <tony.luck@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
         Logan Gunthorpe <logang@deltatee.com>,
         Bjorn Helgaas <bhelgaas@google.com>,
         Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
@@ -53,9 +53,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Greentime Hu <green.hu@gmail.com>,
         Vincent Chen <deanbo422@gmail.com>,
         Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
-        Tony Luck <tony.luck@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
-        Michal Simek <monstr@monstr.eu>,
+        Brian Cain <bcain@codeaurora.org>,
+        linux-hexagon@vger.kernel.org, Michal Simek <monstr@monstr.eu>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Arnd Bergmann <arnd@arndb.de>,
         Geoff Levand <geoff@infradead.org>,
@@ -64,7 +63,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Jonathan Corbet <corbet@lwn.net>,
         Randy Dunlap <rdunlap@infradead.org>,
         Davidlohr Bueso <dbueso@suse.de>
-Subject: [patch V3 08/20] hexagon: Remove mm.h from asm/uaccess.h
+Subject: [patch V3 09/20] ia64: Remove mm.h from asm/uaccess.h
 References: <20200321112544.878032781@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -84,7 +83,7 @@ include chain leands to:
 |   CC      kernel/locking/percpu-rwsem.o
 | In file included from include/linux/huge_mm.h:8,
 |                  from include/linux/mm.h:567,
-|                  from arch/hexagon/include/asm/uaccess.h:,
+|                  from arch/ia64/include/asm/uaccess.h:,
 |                  from include/linux/uaccess.h:11,
 |                  from include/linux/sched/task.h:11,
 |                  from include/linux/sched/signal.h:9,
@@ -101,26 +100,50 @@ Remove the linux/mm.h include.
 Reported-by: kbuild test robot <lkp@intel.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Brian Cain <bcain@codeaurora.org>
-Cc: linux-hexagon@vger.kernel.org
+Cc: Tony Luck <tony.luck@intel.com>
+Cc: Fenghua Yu <fenghua.yu@intel.com>
+Cc: linux-ia64@vger.kernel.org
 ---
 V3: New patch
 ---
- arch/hexagon/include/asm/uaccess.h | 1 -
- 1 file changed, 1 deletion(-)
+ arch/ia64/include/asm/uaccess.h | 1 -
+ arch/ia64/kernel/process.c      | 1 +
+ arch/ia64/mm/ioremap.c          | 1 +
+ 3 files changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/hexagon/include/asm/uaccess.h b/arch/hexagon/include/asm/uaccess.h
-index 00cb38faad0c4..c1019a736ff13 100644
---- a/arch/hexagon/include/asm/uaccess.h
-+++ b/arch/hexagon/include/asm/uaccess.h
-@@ -10,7 +10,6 @@
- /*
-  * User space memory access functions
-  */
--#include <linux/mm.h>
- #include <asm/sections.h>
+diff --git a/arch/ia64/include/asm/uaccess.h b/arch/ia64/include/asm/uaccess.h
+index 89782ad3fb887..5c7e79eccaeed 100644
+--- a/arch/ia64/include/asm/uaccess.h
++++ b/arch/ia64/include/asm/uaccess.h
+@@ -35,7 +35,6 @@
  
- /*
+ #include <linux/compiler.h>
+ #include <linux/page-flags.h>
+-#include <linux/mm.h>
+ 
+ #include <asm/intrinsics.h>
+ #include <asm/pgtable.h>
+diff --git a/arch/ia64/kernel/process.c b/arch/ia64/kernel/process.c
+index 968b5f33e725e..743aaf5283278 100644
+--- a/arch/ia64/kernel/process.c
++++ b/arch/ia64/kernel/process.c
+@@ -681,3 +681,4 @@ machine_power_off (void)
+ 	machine_halt();
+ }
+ 
++EXPORT_SYMBOL(ia64_delay_loop);
+diff --git a/arch/ia64/mm/ioremap.c b/arch/ia64/mm/ioremap.c
+index a09cfa0645369..55fd3eb753ff9 100644
+--- a/arch/ia64/mm/ioremap.c
++++ b/arch/ia64/mm/ioremap.c
+@@ -8,6 +8,7 @@
+ #include <linux/module.h>
+ #include <linux/efi.h>
+ #include <linux/io.h>
++#include <linux/mm.h>
+ #include <linux/vmalloc.h>
+ #include <asm/io.h>
+ #include <asm/meminit.h>
 -- 
 2.26.0.rc2
 
