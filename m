@@ -2,76 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD43518E361
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 18:41:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 543E618E375
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 18:46:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727262AbgCURls (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 13:41:48 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:37412 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726961AbgCURlr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 13:41:47 -0400
-Received: by mail-lj1-f193.google.com with SMTP id r24so10002628ljd.4
-        for <netdev@vger.kernel.org>; Sat, 21 Mar 2020 10:41:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=l/YyKtMjSFEbJma+JMWyuZRcQRGW5JZxNPUfP4y/LSk=;
-        b=FBGWdEtuyuvlUymnoqMmQAeWcR1AydZFXWW5KRaAhvX3Z+AtCzShqFUfAdbFGzM+fK
-         YtvNAdYceHkbxJvI9dsZIXuKVscuri+mpG/JPj8sUpMPjHw9bQF4Oyk1NeV4z49Wdgjv
-         WZKGXtwnziUanIyVQAgMmvQFRJKgZOBIzBrjIVRqwt61dmLbSbgOoUiOPLlCH5dAlqOr
-         ZE0f4yO0E4XwdEq2iSTz5C32sR2SuUPuaABz6gbnLK/2PbYeP5g0zHsHSnO2iiD5Fn6T
-         IYmty4JNZPE9ekjDlsHwkUZ6D+XVXYSnJU+ZvFRSm52qlM8YBgoAvKcCYnzxpdS6Oh33
-         xB4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=l/YyKtMjSFEbJma+JMWyuZRcQRGW5JZxNPUfP4y/LSk=;
-        b=uKlPrgdzE+MircKryYdo+c8u7XjK1UuAp659G1jO/CIIKryiWiTgyCpBgSoQVBP8cx
-         p244nxgaztlIEKtkmifMo4lFWNU/XMtwTNIkWWSPNQagCSZLJHgy1YojLOlAtn+jrAuN
-         Pp+//picnVrGdqd2rEfEyjXLcywIisbk2kW4+wf8PkaJNU+h/E0mH7XAvychv8U6c0tI
-         rF6J2c04LP9/NkgWDXuDnMujNltsrPNnLzfpL15PaFmUeIWmngThJyESWncV9fPFNyM9
-         mwMYi1IOJUdFoI3fqOPTGRO1iD2J2MA87g23m2jkfmeWkTpLLchiGjhMOGw3ghZHpAo7
-         Ud3Q==
-X-Gm-Message-State: ANhLgQ2uHNRuOzY5OJodYy/V54CV9WNE00QGWz+ozrlT2l1g6VDcgyVU
-        ktw2QDljpRfDWN/bqAEZqjsAddv+uNWQyVRySq4=
-X-Google-Smtp-Source: ADFU+vsmPfDBY8p9pMdUOg6gtebewIROotCC0mfnEey8CJdjBTr8Jpo9jF0ph644RRgdfYgf1fCskHqv3UNZcNeLLnE=
-X-Received: by 2002:a2e:8798:: with SMTP id n24mr8965681lji.114.1584812505911;
- Sat, 21 Mar 2020 10:41:45 -0700 (PDT)
+        id S1727841AbgCURqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 13:46:22 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:39226 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726961AbgCURqV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 13:46:21 -0400
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1jFiBn-0007G4-JJ; Sat, 21 Mar 2020 18:45:39 +0100
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+        id E02A21040D4; Sat, 21 Mar 2020 18:45:38 +0100 (CET)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     Davidlohr Bueso <dave@stgolabs.net>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Sebastian Siewior <bigeasy@linutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        linux-pci@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        platform-driver-x86@vger.kernel.org,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+        linux-acpi@vger.kernel.org, kbuild test robot <lkp@intel.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
+        Brian Cain <bcain@codeaurora.org>,
+        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
+        Michal Simek <monstr@monstr.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geoff Levand <geoff@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Davidlohr Bueso <dbueso@suse.de>
+Subject: Re: [patch V3 00/20] Lock ordering documentation and annotation for lockdep
+In-Reply-To: <20200321171902.xxlnpikc65wd3b4m@linux-p48b>
+References: <20200321112544.878032781@linutronix.de> <20200321171902.xxlnpikc65wd3b4m@linux-p48b>
+Date:   Sat, 21 Mar 2020 18:45:38 +0100
+Message-ID: <87mu89r48t.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Received: by 2002:ac2:5e25:0:0:0:0:0 with HTTP; Sat, 21 Mar 2020 10:41:45
- -0700 (PDT)
-Reply-To: clarkrobinson44444@gmail.com
-From:   Clark Robinson <majoralanedward082@gmail.com>
-Date:   Sat, 21 Mar 2020 10:41:45 -0700
-Message-ID: <CADmPr8bNXHCMDDKZ6Po9+zLj4VKY6R4b-22vO6N8whcXNdEvtg@mail.gmail.com>
-Subject: LOAN OFFER
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
+Davidlohr Bueso <dave@stgolabs.net> writes:
 
+> On Sat, 21 Mar 2020, Thomas Gleixner wrote:
+>
+>>This is the third and hopefully final version of this work. The second one
+>>can be found here:
+>
+> Would you rather I send in a separate series with the kvm changes, or
+> should I just send a v2 with the fixes here again?
 
-Do you need a loan to start your business? Do you need a loan to pay
-with your bills ? At the moment we offer Education loan , business
-loan , mortgage, agricultural credit , personal loan , auto loan ,
-etc. , if you need a loan with specific interest so we can send more
-information to You .We Give Out Loans For 3% Interest Rate And We
-Offer Loans From $5,000 To $50,000,000.00 USD
+Send a separate series please. These nested threads are hard to follow.
 
-    Contact us by email: clarkrobinson44444@gmail.com
+Thanks,
 
-CREDIT APPLICATION
-
-Full Name:
-Country:
-Telephone No :
-Amount of the loan Needed :
-DURATION:
-
-Contact us by email: clarkrobinson44444@gmail.com
+        tglx
