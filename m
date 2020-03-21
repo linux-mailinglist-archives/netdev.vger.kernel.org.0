@@ -2,82 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BEFE918DF80
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 11:42:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65E0D18DFC4
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:23:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728437AbgCUKmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 06:42:15 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:37993 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726607AbgCUKmP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 06:42:15 -0400
-Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1jFbZX-0001a5-00; Sat, 21 Mar 2020 11:41:43 +0100
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id 5D7DDFFC8D; Sat, 21 Mar 2020 11:41:42 +0100 (CET)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        linux-pci@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        netdev@vger.kernel.org, Joel Fernandes <joel@joelfernandes.org>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@kernel.org>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [patch V2 07/15] powerpc/ps3: Convert half completion to rcuwait
-In-Reply-To: <20200319100459.GA18506@infradead.org>
-References: <20200318204302.693307984@linutronix.de> <20200318204408.102694393@linutronix.de> <20200319100459.GA18506@infradead.org>
-Date:   Sat, 21 Mar 2020 11:41:42 +0100
-Message-ID: <8736a2rnvd.fsf@nanos.tec.linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+        id S1727110AbgCULXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 07:23:55 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:37175 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725932AbgCULXz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:23:55 -0400
+Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 02LBNjkt021088;
+        Sat, 21 Mar 2020 04:23:46 -0700
+From:   Rohit Maheshwari <rohitm@chelsio.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Cc:     borisp@mellanox.com, secdev@chelsio.com,
+        Rohit Maheshwari <rohitm@chelsio.com>
+Subject: [PATCH net-next] cxgb4/chcr: nic-tls stats in ethtool
+Date:   Sat, 21 Mar 2020 16:53:36 +0530
+Message-Id: <20200321112336.8771-1-rohitm@chelsio.com>
+X-Mailer: git-send-email 2.18.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christoph Hellwig <hch@infradead.org> writes:
+Included nic tls statistics in ethtool stats.
 
-> On Wed, Mar 18, 2020 at 09:43:09PM +0100, Thomas Gleixner wrote:
->> The PS3 notification interrupt and kthread use a hacked up completion to
->> communicate. Since we're wanting to change the completion implementation and
->> this is abuse anyway, replace it with a simple rcuwait since there is only ever
->> the one waiter.
->> 
->> AFAICT the kthread uses TASK_INTERRUPTIBLE to not increase loadavg, kthreads
->> cannot receive signals by default and this one doesn't look different. Use
->> TASK_IDLE instead.
->
-> I think the right fix here is to jut convert the thing to a threaded
-> interrupt handler and kill off the stupid kthread.
+Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
+---
+ .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    | 57 +++++++++++++++++++
+ 1 file changed, 57 insertions(+)
 
-That'd be a major surgery.
-
-> But I wonder how alive the whole PS3 support is to start with..
-
-There seem to be a few enthusiast left which have a Other-OS capable PS3
-
-Thanks,
-
-        tglx
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
+index 398ade42476c..4998f1d1e218 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
+@@ -134,6 +134,28 @@ static char loopback_stats_strings[][ETH_GSTRING_LEN] = {
+ 	"bg3_frames_trunc       ",
+ };
+ 
++#ifdef CONFIG_CHELSIO_TLS_DEVICE
++struct chcr_tls_stats {
++	u64 tx_tls_encrypted_packets;
++	u64 tx_tls_encrypted_bytes;
++	u64 tx_tls_ctx;
++	u64 tx_tls_ooo;
++	u64 tx_tls_skip_no_sync_data;
++	u64 tx_tls_drop_no_sync_data;
++	u64 tx_tls_drop_bypass_req;
++};
++
++static char chcr_tls_stats_strings[][ETH_GSTRING_LEN] = {
++	"tx_tls_encrypted_pkts  ",
++	"tx_tls_encrypted_bytes ",
++	"tx_tls_ctx             ",
++	"tx_tls_ooo             ",
++	"tx_tls_skip_nosync_data",
++	"tx_tls_drop_nosync_data",
++	"tx_tls_drop_bypass_req ",
++};
++#endif
++
+ static const char cxgb4_priv_flags_strings[][ETH_GSTRING_LEN] = {
+ 	[PRIV_FLAG_PORT_TX_VM_BIT] = "port_tx_vm_wr",
+ };
+@@ -144,6 +166,9 @@ static int get_sset_count(struct net_device *dev, int sset)
+ 	case ETH_SS_STATS:
+ 		return ARRAY_SIZE(stats_strings) +
+ 		       ARRAY_SIZE(adapter_stats_strings) +
++#ifdef CONFIG_CHELSIO_TLS_DEVICE
++		       ARRAY_SIZE(chcr_tls_stats_strings) +
++#endif
+ 		       ARRAY_SIZE(loopback_stats_strings);
+ 	case ETH_SS_PRIV_FLAGS:
+ 		return ARRAY_SIZE(cxgb4_priv_flags_strings);
+@@ -204,6 +229,11 @@ static void get_strings(struct net_device *dev, u32 stringset, u8 *data)
+ 		memcpy(data, adapter_stats_strings,
+ 		       sizeof(adapter_stats_strings));
+ 		data += sizeof(adapter_stats_strings);
++#ifdef CONFIG_CHELSIO_TLS_DEVICE
++		memcpy(data, chcr_tls_stats_strings,
++		       sizeof(chcr_tls_stats_strings));
++		data += sizeof(chcr_tls_stats_strings);
++#endif
+ 		memcpy(data, loopback_stats_strings,
+ 		       sizeof(loopback_stats_strings));
+ 	} else if (stringset == ETH_SS_PRIV_FLAGS) {
+@@ -289,6 +319,29 @@ static void collect_adapter_stats(struct adapter *adap, struct adapter_stats *s)
+ 	}
+ }
+ 
++#ifdef CONFIG_CHELSIO_TLS_DEVICE
++static void collect_chcr_tls_stats(struct adapter *adap,
++				   struct chcr_tls_stats *s)
++{
++	struct chcr_stats_debug *stats = &adap->chcr_stats;
++
++	memset(s, 0, sizeof(*s));
++
++	s->tx_tls_encrypted_packets =
++		atomic64_read(&stats->ktls_tx_encrypted_packets);
++	s->tx_tls_encrypted_bytes =
++		atomic64_read(&stats->ktls_tx_encrypted_bytes);
++	s->tx_tls_ctx = atomic64_read(&stats->ktls_tx_ctx);
++	s->tx_tls_ooo = atomic64_read(&stats->ktls_tx_ooo);
++	s->tx_tls_skip_no_sync_data =
++		atomic64_read(&stats->ktls_tx_skip_no_sync_data);
++	s->tx_tls_drop_no_sync_data =
++		atomic64_read(&stats->ktls_tx_drop_no_sync_data);
++	s->tx_tls_drop_bypass_req =
++		atomic64_read(&stats->ktls_tx_drop_bypass_req);
++}
++#endif
++
+ static void get_stats(struct net_device *dev, struct ethtool_stats *stats,
+ 		      u64 *data)
+ {
+@@ -307,6 +360,10 @@ static void get_stats(struct net_device *dev, struct ethtool_stats *stats,
+ 	data += sizeof(struct queue_port_stats) / sizeof(u64);
+ 	collect_adapter_stats(adapter, (struct adapter_stats *)data);
+ 	data += sizeof(struct adapter_stats) / sizeof(u64);
++#ifdef CONFIG_CHELSIO_TLS_DEVICE
++	collect_chcr_tls_stats(adapter, (struct chcr_tls_stats *)data);
++	data += sizeof(struct chcr_tls_stats) / sizeof(u64);
++#endif
+ 
+ 	*data++ = (u64)pi->port_id;
+ 	memset(&s, 0, sizeof(s));
+-- 
+2.18.1
 
