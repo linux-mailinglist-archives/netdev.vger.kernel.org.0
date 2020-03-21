@@ -2,76 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 16A6818E175
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 14:09:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E263A18E182
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 14:23:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727039AbgCUNJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 09:09:08 -0400
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.220]:26217 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726823AbgCUNJI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 09:09:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1584796146;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
-        Subject:Sender;
-        bh=Bwk1OApukrJ9RA4OD9GidqxuDPWVuaVLTTLE5xru0uw=;
-        b=sPbhomknLLD7StPSnw3L53EYqfmR1jl5Q709QZ2mVMvnCU2FahVql5WoT0Gh3F0wpf
-        HH6SDQmYJ0vmU8pVhcAA4LR28P1M4zfgdTYgEtAPP+xX77LLbZqoEoeFjAogBzVXuQbA
-        nFQ2gzlBDELp0SLUJlTURzL14TTMUa+ecDBQ9oy2BIo2I0IwYdVW5V5etbdgKHl/2v2X
-        32QhPltF8FVpEb35QiHUPpjB9K1aKtCgNA1wU4ccDy8ExI67RH2EB7ADNzVBygH3W22V
-        CP0xxpvlkCDHpV7wg6Jw1KO8RL1d8YNBZN2F8lrIAdiToGGRirT/cxDDhxNzeCk63rAU
-        Yxug==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS0lO8DsfULo/S2TWr5zH4="
-X-RZG-CLASS-ID: mo00
-Received: from silver.lan
-        by smtp.strato.de (RZmta 46.2.1 DYNA|AUTH)
-        with ESMTPSA id R0105bw2LD8t6c1
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Sat, 21 Mar 2020 14:08:55 +0100 (CET)
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-To:     netdev@vger.kernel.org
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        yangerkun <yangerkun@huawei.com>
-Subject: [PATCH net] slcan: not call free_netdev before rtnl_unlock in slcan_open
-Date:   Sat, 21 Mar 2020 14:08:29 +0100
-Message-Id: <20200321130829.12859-1-socketcan@hartkopp.net>
-X-Mailer: git-send-email 2.20.1
+        id S1727463AbgCUNXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 09:23:07 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:38630 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726192AbgCUNXH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 09:23:07 -0400
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1jFe4i-0003bB-3f; Sat, 21 Mar 2020 14:22:04 +0100
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+        id 6F881FFC8D; Sat, 21 Mar 2020 14:22:03 +0100 (CET)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Sebastian Siewior <bigeasy@linutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geoff Levand <geoff@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        linux-pci@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        platform-driver-x86@vger.kernel.org,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+        linux-acpi@vger.kernel.org, kbuild test robot <lkp@intel.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
+        Brian Cain <bcain@codeaurora.org>,
+        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
+        Michal Simek <monstr@monstr.eu>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Davidlohr Bueso <dbueso@suse.de>
+Subject: Re: [patch V3 12/20] powerpc/ps3: Convert half completion to rcuwait
+In-Reply-To: <20200321113241.930037873@linutronix.de>
+References: <20200321112544.878032781@linutronix.de> <20200321113241.930037873@linutronix.de>
+Date:   Sat, 21 Mar 2020 14:22:03 +0100
+Message-ID: <87v9mxrgg4.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As the description before netdev_run_todo, we cannot call free_netdev
-before rtnl_unlock, fix it by reorder the code.
+Thomas Gleixner <tglx@linutronix.de> writes:
 
-This patch is a 1:1 copy of upstream slip.c commit f596c87005f7
-("slip: not call free_netdev before rtnl_unlock in slip_open").
+> From: Thomas Gleixner <tglx@linutronix.de>
 
-Reported-by: yangerkun <yangerkun@huawei.com>
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
----
- drivers/net/can/slcan.c | 3 +++
- 1 file changed, 3 insertions(+)
+That's obviously bogus and wants to be:
 
-diff --git a/drivers/net/can/slcan.c b/drivers/net/can/slcan.c
-index 2f5c287eac95..a3664281a33f 100644
---- a/drivers/net/can/slcan.c
-+++ b/drivers/net/can/slcan.c
-@@ -625,7 +625,10 @@ static int slcan_open(struct tty_struct *tty)
- 	tty->disc_data = NULL;
- 	clear_bit(SLF_INUSE, &sl->flags);
- 	slc_free_netdev(sl->dev);
-+	/* do not call free_netdev before rtnl_unlock */
-+	rtnl_unlock();
- 	free_netdev(sl->dev);
-+	return err;
- 
- err_exit:
- 	rtnl_unlock();
--- 
-2.20.1
+From: Peter Zijlstra (Intel) <peterz@infradead.org>
 
