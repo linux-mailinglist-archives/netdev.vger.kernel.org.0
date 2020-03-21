@@ -2,97 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E05A918E0F2
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 13:05:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 517FE18E0FC
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 13:09:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727054AbgCUMFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 08:05:30 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:41300 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726192AbgCUMFa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 08:05:30 -0400
-Received: by mail-wr1-f67.google.com with SMTP id h9so10621777wrc.8;
-        Sat, 21 Mar 2020 05:05:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=EfodRmW2l478YoUF/NEMb3epOdAHJYA9K519pesBxmk=;
-        b=i9zi7vf2mSwVRJeZGA7d3dFGu2uoE6XGrfBngyYBxngyzvwSCZKgcH7gd8W8uH9YPa
-         fUGjBd1Z92kvMPBYwVqcuIQPlYYg/fa8ASYL89cDISg0HiXxxi7NAR8nXLubPl0A57vT
-         h/Ws/GRLKAT120f8/62vnRzasDbb3528SspE8a6pyOCQsqgemnnAGJKfFAXeE1Do/Knu
-         VIl3dcRdH4zxaw3fXIifN4LEOzIO8YVycMxLLW7ILxMsz4HV/xnwC/j/YW517O6TeZmO
-         v8Zzog4st9TkZN3RQczcPto+8RKQeKgNzEjt4jMxJT3GC8bsr6AqRNSpe2kpxwFQgg4H
-         XqRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=EfodRmW2l478YoUF/NEMb3epOdAHJYA9K519pesBxmk=;
-        b=MXzUijT/WUjV5uStyCS6aKRy2DbraPJ5EHU2za3TYvxU6jCOAefbFedi9SQNGRpyW0
-         QTF8BvjifRDoMBwjNAggmIQM6Vf1Xm7/QTXk7QGGL8gmAcI3x/CMalNb8DpW2WCDQcWF
-         5+yZ3HGmP/qeLS5N60HT1KMfxVAM48YyqwFYcSDWkWpfGXdM61sipg9flhl1n0lM9K4H
-         DVt7lzLqPfuNtrQLzIZj05z32SKjACe40huhdecO832FSX85B4FZgqeGFgA2gdj0ICfZ
-         v7XmI02BqTN+3f/QcVAZ6BVCPmCAdBATLtWX/MoZG5Qne14NcuEgudzd55Y1CPSeZGH1
-         6pkw==
-X-Gm-Message-State: ANhLgQ1sMMOmTG8n9TxeWUP10JXdlvdNr9+xcmqT1JQQqJou5Rs0KHyi
-        GzfR1e4UZOD70EBoROlDXDk=
-X-Google-Smtp-Source: ADFU+vsKwO+JvuQBHLV7YV3cVJhZb0IeN24HEx0xAO/6OxzgxPpmQRlsCvam2SAHP0OnLpdk86PP7g==
-X-Received: by 2002:a5d:52d0:: with SMTP id r16mr16496453wrv.379.1584792326004;
-        Sat, 21 Mar 2020 05:05:26 -0700 (PDT)
-Received: from felia.fritz.box ([2001:16b8:2d49:b100:e503:a7c7:f4c6:1aab])
-        by smtp.gmail.com with ESMTPSA id c4sm12246120wml.7.2020.03.21.05.05.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Mar 2020 05:05:25 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org
-Cc:     linux-spdx@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] ionic: make spdxcheck.py happy
-Date:   Sat, 21 Mar 2020 13:05:14 +0100
-Message-Id: <20200321120514.10464-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727229AbgCUMI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 08:08:58 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:38570 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726192AbgCUMI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 08:08:57 -0400
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1jFcvN-00035h-He; Sat, 21 Mar 2020 13:08:21 +0100
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+        id E1F47FFC8D; Sat, 21 Mar 2020 13:08:20 +0100 (CET)
+To:     Guo Ren <guoren@kernel.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Arnd Bergmann <arnd@arndb.de>, balbi@kernel.org,
+        bhelgaas@google.com, dave@stgolabs.net,
+        David Miller <davem@davemloft.net>, gregkh@linuxfoundation.org,
+        joel@joelfernandes.org, kurt.schwemmer@microsemi.com,
+        kvalo@codeaurora.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-pci@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        logang@deltatee.com, mingo@kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
+        oleg@redhat.com, paulmck@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        torvalds@linux-foundation.org, Will Deacon <will@kernel.org>,
+        linux-csky@vger.kernel.org, kbuild test robot <lkp@intel.com>
+Subject: Re: [PATCH 2/5] csky: Remove mm.h from asm/uaccess.h
+In-Reply-To: <CAJF2gTQDvmSdJB3R0By0Q6d9ganVBV1FBm3urL8Jf1fyiEi+1A@mail.gmail.com>
+References: <20200318204408.010461877@linutronix.de> <20200320094856.3453859-1-bigeasy@linutronix.de> <20200320094856.3453859-3-bigeasy@linutronix.de> <CAJF2gTQDvmSdJB3R0By0Q6d9ganVBV1FBm3urL8Jf1fyiEi+1A@mail.gmail.com>
+ From: Thomas Gleixner <tglx@linutronix.de>
+From:   Thomas Gleixner <tglx@linutronix.de>
+Date:   Sat, 21 Mar 2020 13:08:20 +0100
+Message-ID: <87zhc9rjuz.fsf@nanos.tec.linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Headers ionic_if.h and ionic_regs.h are licensed under three alternative
-licenses and the used SPDX-License-Identifier expression makes
-./scripts/spdxcheck.py complain:
+Guo Ren <guoren@kernel.org> writes:
 
-drivers/net/ethernet/pensando/ionic/ionic_if.h: 1:52 Syntax error: OR
-drivers/net/ethernet/pensando/ionic/ionic_regs.h: 1:52 Syntax error: OR
+> Tested and Acked by me.
+>
+> Queued for next pull request, thx
 
-As OR is associative, it is irrelevant if the parentheses are put around
-the first or the second OR-expression.
+Can we please route that with the rcuwait changes to avoid breakage
+unless you ship it to Linus right away?
 
-Simply add parentheses to make spdxcheck.py happy.
+Thanks,
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
- drivers/net/ethernet/pensando/ionic/ionic_if.h   | 2 +-
- drivers/net/ethernet/pensando/ionic/ionic_regs.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net/ethernet/pensando/ionic/ionic_if.h
-index 54547d53b0f2..51adf5059834 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB OR BSD-2-Clause */
-+/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
- /* Copyright (c) 2017-2019 Pensando Systems, Inc.  All rights reserved. */
- 
- #ifndef _IONIC_IF_H_
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_regs.h b/drivers/net/ethernet/pensando/ionic/ionic_regs.h
-index 03ee5a36472b..2e174f45c030 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_regs.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_regs.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB OR BSD-2-Clause */
-+/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
- /* Copyright (c) 2018-2019 Pensando Systems, Inc.  All rights reserved. */
- 
- #ifndef IONIC_REGS_H
--- 
-2.17.1
-
+        tglx
