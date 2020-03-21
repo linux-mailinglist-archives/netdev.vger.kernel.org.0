@@ -2,59 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E844418DFD5
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:29:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F8D718E092
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:37:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728484AbgCUL3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 07:29:37 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:47584 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726995AbgCUL3h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:29:37 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 2D31C411A4;
-        Sat, 21 Mar 2020 19:29:19 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     pablo@netfilter.org, paulb@mellanox.com
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH nf-next 3/3] net/sched: act_ct: add nf_conn_acct for SW act_ct flowtable offload
-Date:   Sat, 21 Mar 2020 19:29:18 +0800
-Message-Id: <1584790158-9752-4-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1584790158-9752-1-git-send-email-wenxu@ucloud.cn>
-References: <1584790158-9752-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVklVSkxLS0tLSEpPTEpJTklZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Mgg6Dzo4NzgrOBMTKRAfIQ0#
-        NygaCg1VSlVKTkNPTEJLSk5CSUxKVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUpOSUw3Bg++
-X-HM-Tid: 0a70fcdabf602086kuqy2d31c411a4
+        id S1728553AbgCULe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 07:34:56 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:38418 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725932AbgCULex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:34:53 -0400
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1jFcOQ-0001zF-3g; Sat, 21 Mar 2020 12:34:18 +0100
+Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id 2A835FFBBF;
+        Sat, 21 Mar 2020 12:34:17 +0100 (CET)
+Message-Id: <20200321112544.878032781@linutronix.de>
+User-Agent: quilt/0.65
+Date:   Sat, 21 Mar 2020 12:25:44 +0100
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Sebastian Siewior <bigeasy@linutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        linux-pci@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        platform-driver-x86@vger.kernel.org,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+        linux-acpi@vger.kernel.org, kbuild test robot <lkp@intel.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
+        Brian Cain <bcain@codeaurora.org>,
+        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
+        Michal Simek <monstr@monstr.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geoff Levand <geoff@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Davidlohr Bueso <dbueso@suse.de>
+Subject: [patch V3 00/20] Lock ordering documentation and annotation for lockdep
+Content-transfer-encoding: 8-bit
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+This is the third and hopefully final version of this work. The second one
+can be found here:
 
-Add nf_conn_acct counter for the software act_ct flowtable offload
+   https://lore.kernel.org/r/20200318204302.693307984@linutronix.de
 
-Signed-off-by: wenxu <wenxu@ucloud.cn>
----
- net/sched/act_ct.c | 1 +
- 1 file changed, 1 insertion(+)
+Changes since V2:
 
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 56b66d2..0386c6b 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -536,6 +536,7 @@ static bool tcf_ct_flow_table_lookup(struct tcf_ct_params *p,
- 	flow_offload_refresh(nf_ft, flow);
- 	nf_conntrack_get(&ct->ct_general);
- 	nf_ct_set(skb, ct, ctinfo);
-+	flow_offload_update_acct(flow, 1, skb->len, dir);
- 
- 	return true;
- }
--- 
-1.8.3.1
+  - Included the arch/XXX fixups for the rcuwait changes (Sebastian)
+
+  - Folded the init fix for the PS3 change (Sebastian)
+
+  - Addressed feedback on documentation (Paul, Davidlohr, Jonathan)
+
+  - Picked up acks and reviewed tags
+
+Thanks,
+
+	tglx
 
