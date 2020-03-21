@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA76A18DF69
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 11:26:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEFE918DF80
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 11:42:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728368AbgCUK0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 06:26:54 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:37966 "EHLO
+        id S1728437AbgCUKmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 06:42:15 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:37993 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726652AbgCUK0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 06:26:53 -0400
+        with ESMTP id S1726607AbgCUKmP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 06:42:15 -0400
 Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1jFbKR-0001Rx-D7; Sat, 21 Mar 2020 11:26:07 +0100
+        id 1jFbZX-0001a5-00; Sat, 21 Mar 2020 11:41:43 +0100
 Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id C6E72FFC8D; Sat, 21 Mar 2020 11:26:06 +0100 (CET)
+        id 5D7DDFFC8D; Sat, 21 Mar 2020 11:41:42 +0100 (CET)
 From:   Thomas Gleixner <tglx@linutronix.de>
-To:     paulmck@kernel.org
+To:     Christoph Hellwig <hch@infradead.org>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
         Randy Dunlap <rdunlap@infradead.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-pci@vger.kernel.org,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        netdev@vger.kernel.org, Joel Fernandes <joel@joelfernandes.org>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@kernel.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
         Logan Gunthorpe <logang@deltatee.com>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
         Felipe Balbi <balbi@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
         Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [patch V2 08/15] Documentation: Add lock ordering and nesting documentation
-In-Reply-To: <20200321022930.GU3199@paulmck-ThinkPad-P72>
-References: <20200320160145.GN3199@paulmck-ThinkPad-P72> <87mu8apzxr.fsf@nanos.tec.linutronix.de> <20200320210243.GT3199@paulmck-ThinkPad-P72> <874kuipsbw.fsf@nanos.tec.linutronix.de> <20200321022930.GU3199@paulmck-ThinkPad-P72>
-Date:   Sat, 21 Mar 2020 11:26:06 +0100
-Message-ID: <875zeyrold.fsf@nanos.tec.linutronix.de>
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [patch V2 07/15] powerpc/ps3: Convert half completion to rcuwait
+In-Reply-To: <20200319100459.GA18506@infradead.org>
+References: <20200318204302.693307984@linutronix.de> <20200318204408.102694393@linutronix.de> <20200319100459.GA18506@infradead.org>
+Date:   Sat, 21 Mar 2020 11:41:42 +0100
+Message-ID: <8736a2rnvd.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Linutronix-Spam-Score: -1.0
@@ -55,27 +56,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Paul E. McKenney" <paulmck@kernel.org> writes:
-> On Fri, Mar 20, 2020 at 11:36:03PM +0100, Thomas Gleixner wrote:
->> I agree that what I tried to express is hard to parse, but it's at least
->> halfways correct :)
->
-> Apologies!  That is what I get for not looking it up in the source.  :-/
->
-> OK, so I am stupid enough not only to get it wrong, but also to try again:
->
->    ... Other types of wakeups would normally unconditionally set the
->    task state to RUNNING, but that does not work here because the task
->    must remain blocked until the lock becomes available.  Therefore,
->    when a non-lock wakeup attempts to awaken a task blocked waiting
->    for a spinlock, it instead sets the saved state to RUNNING.  Then,
->    when the lock acquisition completes, the lock wakeup sets the task
->    state to the saved state, in this case setting it to RUNNING.
->
-> Is that better?
+Christoph Hellwig <hch@infradead.org> writes:
 
-Definitely!
+> On Wed, Mar 18, 2020 at 09:43:09PM +0100, Thomas Gleixner wrote:
+>> The PS3 notification interrupt and kthread use a hacked up completion to
+>> communicate. Since we're wanting to change the completion implementation and
+>> this is abuse anyway, replace it with a simple rcuwait since there is only ever
+>> the one waiter.
+>> 
+>> AFAICT the kthread uses TASK_INTERRUPTIBLE to not increase loadavg, kthreads
+>> cannot receive signals by default and this one doesn't look different. Use
+>> TASK_IDLE instead.
+>
+> I think the right fix here is to jut convert the thing to a threaded
+> interrupt handler and kill off the stupid kthread.
 
-Thanks for all the editorial work!
+That'd be a major surgery.
 
-       tglx
+> But I wonder how alive the whole PS3 support is to start with..
+
+There seem to be a few enthusiast left which have a Other-OS capable PS3
+
+Thanks,
+
+        tglx
+
