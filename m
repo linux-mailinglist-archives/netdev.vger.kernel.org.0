@@ -2,151 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5737518E0A6
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:37:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E05A918E0F2
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 13:05:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728534AbgCULez (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 07:34:55 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:38423 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726652AbgCULex (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:34:53 -0400
-Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1jFcOZ-0002Re-66; Sat, 21 Mar 2020 12:34:27 +0100
-Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id 692651040CC;
-        Sat, 21 Mar 2020 12:34:22 +0100 (CET)
-Message-Id: <20200321113242.751182723@linutronix.de>
-User-Agent: quilt/0.65
-Date:   Sat, 21 Mar 2020 12:26:04 +0100
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Sebastian Siewior <bigeasy@linutronix.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        linux-pci@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        platform-driver-x86@vger.kernel.org,
-        Zhang Rui <rui.zhang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, kbuild test robot <lkp@intel.com>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
-        Brian Cain <bcain@codeaurora.org>,
-        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
-        Michal Simek <monstr@monstr.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Geoff Levand <geoff@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Davidlohr Bueso <dbueso@suse.de>
-Subject: [patch V3 20/20] lockdep: Add posixtimer context tracing bits
-References: <20200321112544.878032781@linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8-bit
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+        id S1727054AbgCUMFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 08:05:30 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:41300 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726192AbgCUMFa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 08:05:30 -0400
+Received: by mail-wr1-f67.google.com with SMTP id h9so10621777wrc.8;
+        Sat, 21 Mar 2020 05:05:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=EfodRmW2l478YoUF/NEMb3epOdAHJYA9K519pesBxmk=;
+        b=i9zi7vf2mSwVRJeZGA7d3dFGu2uoE6XGrfBngyYBxngyzvwSCZKgcH7gd8W8uH9YPa
+         fUGjBd1Z92kvMPBYwVqcuIQPlYYg/fa8ASYL89cDISg0HiXxxi7NAR8nXLubPl0A57vT
+         h/Ws/GRLKAT120f8/62vnRzasDbb3528SspE8a6pyOCQsqgemnnAGJKfFAXeE1Do/Knu
+         VIl3dcRdH4zxaw3fXIifN4LEOzIO8YVycMxLLW7ILxMsz4HV/xnwC/j/YW517O6TeZmO
+         v8Zzog4st9TkZN3RQczcPto+8RKQeKgNzEjt4jMxJT3GC8bsr6AqRNSpe2kpxwFQgg4H
+         XqRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=EfodRmW2l478YoUF/NEMb3epOdAHJYA9K519pesBxmk=;
+        b=MXzUijT/WUjV5uStyCS6aKRy2DbraPJ5EHU2za3TYvxU6jCOAefbFedi9SQNGRpyW0
+         QTF8BvjifRDoMBwjNAggmIQM6Vf1Xm7/QTXk7QGGL8gmAcI3x/CMalNb8DpW2WCDQcWF
+         5+yZ3HGmP/qeLS5N60HT1KMfxVAM48YyqwFYcSDWkWpfGXdM61sipg9flhl1n0lM9K4H
+         DVt7lzLqPfuNtrQLzIZj05z32SKjACe40huhdecO832FSX85B4FZgqeGFgA2gdj0ICfZ
+         v7XmI02BqTN+3f/QcVAZ6BVCPmCAdBATLtWX/MoZG5Qne14NcuEgudzd55Y1CPSeZGH1
+         6pkw==
+X-Gm-Message-State: ANhLgQ1sMMOmTG8n9TxeWUP10JXdlvdNr9+xcmqT1JQQqJou5Rs0KHyi
+        GzfR1e4UZOD70EBoROlDXDk=
+X-Google-Smtp-Source: ADFU+vsKwO+JvuQBHLV7YV3cVJhZb0IeN24HEx0xAO/6OxzgxPpmQRlsCvam2SAHP0OnLpdk86PP7g==
+X-Received: by 2002:a5d:52d0:: with SMTP id r16mr16496453wrv.379.1584792326004;
+        Sat, 21 Mar 2020 05:05:26 -0700 (PDT)
+Received: from felia.fritz.box ([2001:16b8:2d49:b100:e503:a7c7:f4c6:1aab])
+        by smtp.gmail.com with ESMTPSA id c4sm12246120wml.7.2020.03.21.05.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Mar 2020 05:05:25 -0700 (PDT)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Shannon Nelson <snelson@pensando.io>, netdev@vger.kernel.org
+Cc:     linux-spdx@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] ionic: make spdxcheck.py happy
+Date:   Sat, 21 Mar 2020 13:05:14 +0100
+Message-Id: <20200321120514.10464-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Headers ionic_if.h and ionic_regs.h are licensed under three alternative
+licenses and the used SPDX-License-Identifier expression makes
+./scripts/spdxcheck.py complain:
 
-Splitting run_posix_cpu_timers() into two parts is work in progress which
-is stuck on other entry code related problems. The heavy lifting which
-involves locking of sighand lock will be moved into task context so the
-necessary execution time is burdened on the task and not on interrupt
-context.
+drivers/net/ethernet/pensando/ionic/ionic_if.h: 1:52 Syntax error: OR
+drivers/net/ethernet/pensando/ionic/ionic_regs.h: 1:52 Syntax error: OR
 
-Until this work completes lockdep with the spinlock nesting rules enabled
-would emit warnings for this known context.
+As OR is associative, it is irrelevant if the parentheses are put around
+the first or the second OR-expression.
 
-Prevent it by setting "->irq_config = 1" for the invocation of
-run_posix_cpu_timers() so lockdep does not complain when sighand lock is
-acquried. This will be removed once the split is completed.
+Simply add parentheses to make spdxcheck.py happy.
 
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 ---
- include/linux/irqflags.h       |   12 ++++++++++++
- kernel/time/posix-cpu-timers.c |    6 +++++-
- 2 files changed, 17 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/pensando/ionic/ionic_if.h   | 2 +-
+ drivers/net/ethernet/pensando/ionic/ionic_regs.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
---- a/include/linux/irqflags.h
-+++ b/include/linux/irqflags.h
-@@ -69,6 +69,16 @@ do {						\
- 			current->irq_config = 0;	\
- 	  } while (0)
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+index 54547d53b0f2..51adf5059834 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB OR BSD-2-Clause */
++/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
+ /* Copyright (c) 2017-2019 Pensando Systems, Inc.  All rights reserved. */
  
-+# define lockdep_posixtimer_enter()				\
-+	  do {							\
-+		  current->irq_config = 1;			\
-+	  } while (0)
-+
-+# define lockdep_posixtimer_exit()				\
-+	  do {							\
-+		  current->irq_config = 0;			\
-+	  } while (0)
-+
- # define lockdep_irq_work_enter(__work)					\
- 	  do {								\
- 		  if (!(atomic_read(&__work->flags) & IRQ_WORK_HARD_IRQ))\
-@@ -94,6 +104,8 @@ do {						\
- # define lockdep_softirq_exit()		do { } while (0)
- # define lockdep_hrtimer_enter(__hrtimer)		do { } while (0)
- # define lockdep_hrtimer_exit(__hrtimer)		do { } while (0)
-+# define lockdep_posixtimer_enter()		do { } while (0)
-+# define lockdep_posixtimer_exit()		do { } while (0)
- # define lockdep_irq_work_enter(__work)		do { } while (0)
- # define lockdep_irq_work_exit(__work)		do { } while (0)
- #endif
---- a/kernel/time/posix-cpu-timers.c
-+++ b/kernel/time/posix-cpu-timers.c
-@@ -1126,8 +1126,11 @@ void run_posix_cpu_timers(void)
- 	if (!fastpath_timer_check(tsk))
- 		return;
+ #ifndef _IONIC_IF_H_
+diff --git a/drivers/net/ethernet/pensando/ionic/ionic_regs.h b/drivers/net/ethernet/pensando/ionic/ionic_regs.h
+index 03ee5a36472b..2e174f45c030 100644
+--- a/drivers/net/ethernet/pensando/ionic/ionic_regs.h
++++ b/drivers/net/ethernet/pensando/ionic/ionic_regs.h
+@@ -1,4 +1,4 @@
+-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB OR BSD-2-Clause */
++/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
+ /* Copyright (c) 2018-2019 Pensando Systems, Inc.  All rights reserved. */
  
--	if (!lock_task_sighand(tsk, &flags))
-+	lockdep_posixtimer_enter();
-+	if (!lock_task_sighand(tsk, &flags)) {
-+		lockdep_posixtimer_exit();
- 		return;
-+	}
- 	/*
- 	 * Here we take off tsk->signal->cpu_timers[N] and
- 	 * tsk->cpu_timers[N] all the timers that are firing, and
-@@ -1169,6 +1172,7 @@ void run_posix_cpu_timers(void)
- 			cpu_timer_fire(timer);
- 		spin_unlock(&timer->it_lock);
- 	}
-+	lockdep_posixtimer_exit();
- }
- 
- /*
+ #ifndef IONIC_REGS_H
+-- 
+2.17.1
 
