@@ -2,134 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65E0D18DFC4
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:23:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2287B18DFCB
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:24:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727110AbgCULXz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 07:23:55 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:37175 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725932AbgCULXz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:23:55 -0400
-Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 02LBNjkt021088;
-        Sat, 21 Mar 2020 04:23:46 -0700
-From:   Rohit Maheshwari <rohitm@chelsio.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Cc:     borisp@mellanox.com, secdev@chelsio.com,
-        Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [PATCH net-next] cxgb4/chcr: nic-tls stats in ethtool
-Date:   Sat, 21 Mar 2020 16:53:36 +0530
-Message-Id: <20200321112336.8771-1-rohitm@chelsio.com>
-X-Mailer: git-send-email 2.18.1
+        id S1728478AbgCULYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 07:24:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42466 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725932AbgCULYs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Mar 2020 07:24:48 -0400
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4582120781;
+        Sat, 21 Mar 2020 11:24:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584789887;
+        bh=CC3xOqOiOw/KfVSwNgtZdj47dfsfwOj+jNh3hAafy6c=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=lDApgz56lPs8ToQFcVEV8+EAX/cT7ThAz8oOMnFXG8qYrmNZ5gW9RuxrD3cdYMP+d
+         EpFlQOtu+zsTlEW62aFEcbsjVO524POgi7mDnhK9rdBsngAYtCCQspKslzDLNakkr5
+         d/tt/FiudZbBtX1px0ShZU4kWAH25eldMhL1gJJY=
+Received: by mail-lj1-f170.google.com with SMTP id s13so9322749ljm.1;
+        Sat, 21 Mar 2020 04:24:47 -0700 (PDT)
+X-Gm-Message-State: ANhLgQ10woSUGrDYANPeWdTcxECTfnh+db2nPFnRxyhepZ9bb9z8/0Xa
+        xOM+J5j+X3+LBCHNrgemeV07c9Rb4U7/Qv7xyCU=
+X-Google-Smtp-Source: ADFU+vs0LzUeDMqhkyCRijtr/5jU1zll2VnT5GvJNspUkA5NWoImJ8IywkeIYEIKk4vGhOkK87FxiOUyuzZGlcUMAFM=
+X-Received: by 2002:a2e:3818:: with SMTP id f24mr8239133lja.53.1584789885358;
+ Sat, 21 Mar 2020 04:24:45 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200318204408.010461877@linutronix.de> <20200320094856.3453859-1-bigeasy@linutronix.de>
+ <20200320094856.3453859-3-bigeasy@linutronix.de>
+In-Reply-To: <20200320094856.3453859-3-bigeasy@linutronix.de>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Sat, 21 Mar 2020 19:24:34 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTQDvmSdJB3R0By0Q6d9ganVBV1FBm3urL8Jf1fyiEi+1A@mail.gmail.com>
+Message-ID: <CAJF2gTQDvmSdJB3R0By0Q6d9ganVBV1FBm3urL8Jf1fyiEi+1A@mail.gmail.com>
+Subject: Re: [PATCH 2/5] csky: Remove mm.h from asm/uaccess.h
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>, balbi@kernel.org,
+        bhelgaas@google.com, dave@stgolabs.net,
+        David Miller <davem@davemloft.net>, gregkh@linuxfoundation.org,
+        joel@joelfernandes.org, kurt.schwemmer@microsemi.com,
+        kvalo@codeaurora.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-pci@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        logang@deltatee.com, mingo@kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
+        oleg@redhat.com, paulmck@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        torvalds@linux-foundation.org, Will Deacon <will@kernel.org>,
+        linux-csky@vger.kernel.org, kbuild test robot <lkp@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Included nic tls statistics in ethtool stats.
+Tested and Acked by me.
 
-Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
----
- .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    | 57 +++++++++++++++++++
- 1 file changed, 57 insertions(+)
+Queued for next pull request, thx
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-index 398ade42476c..4998f1d1e218 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-@@ -134,6 +134,28 @@ static char loopback_stats_strings[][ETH_GSTRING_LEN] = {
- 	"bg3_frames_trunc       ",
- };
- 
-+#ifdef CONFIG_CHELSIO_TLS_DEVICE
-+struct chcr_tls_stats {
-+	u64 tx_tls_encrypted_packets;
-+	u64 tx_tls_encrypted_bytes;
-+	u64 tx_tls_ctx;
-+	u64 tx_tls_ooo;
-+	u64 tx_tls_skip_no_sync_data;
-+	u64 tx_tls_drop_no_sync_data;
-+	u64 tx_tls_drop_bypass_req;
-+};
-+
-+static char chcr_tls_stats_strings[][ETH_GSTRING_LEN] = {
-+	"tx_tls_encrypted_pkts  ",
-+	"tx_tls_encrypted_bytes ",
-+	"tx_tls_ctx             ",
-+	"tx_tls_ooo             ",
-+	"tx_tls_skip_nosync_data",
-+	"tx_tls_drop_nosync_data",
-+	"tx_tls_drop_bypass_req ",
-+};
-+#endif
-+
- static const char cxgb4_priv_flags_strings[][ETH_GSTRING_LEN] = {
- 	[PRIV_FLAG_PORT_TX_VM_BIT] = "port_tx_vm_wr",
- };
-@@ -144,6 +166,9 @@ static int get_sset_count(struct net_device *dev, int sset)
- 	case ETH_SS_STATS:
- 		return ARRAY_SIZE(stats_strings) +
- 		       ARRAY_SIZE(adapter_stats_strings) +
-+#ifdef CONFIG_CHELSIO_TLS_DEVICE
-+		       ARRAY_SIZE(chcr_tls_stats_strings) +
-+#endif
- 		       ARRAY_SIZE(loopback_stats_strings);
- 	case ETH_SS_PRIV_FLAGS:
- 		return ARRAY_SIZE(cxgb4_priv_flags_strings);
-@@ -204,6 +229,11 @@ static void get_strings(struct net_device *dev, u32 stringset, u8 *data)
- 		memcpy(data, adapter_stats_strings,
- 		       sizeof(adapter_stats_strings));
- 		data += sizeof(adapter_stats_strings);
-+#ifdef CONFIG_CHELSIO_TLS_DEVICE
-+		memcpy(data, chcr_tls_stats_strings,
-+		       sizeof(chcr_tls_stats_strings));
-+		data += sizeof(chcr_tls_stats_strings);
-+#endif
- 		memcpy(data, loopback_stats_strings,
- 		       sizeof(loopback_stats_strings));
- 	} else if (stringset == ETH_SS_PRIV_FLAGS) {
-@@ -289,6 +319,29 @@ static void collect_adapter_stats(struct adapter *adap, struct adapter_stats *s)
- 	}
- }
- 
-+#ifdef CONFIG_CHELSIO_TLS_DEVICE
-+static void collect_chcr_tls_stats(struct adapter *adap,
-+				   struct chcr_tls_stats *s)
-+{
-+	struct chcr_stats_debug *stats = &adap->chcr_stats;
-+
-+	memset(s, 0, sizeof(*s));
-+
-+	s->tx_tls_encrypted_packets =
-+		atomic64_read(&stats->ktls_tx_encrypted_packets);
-+	s->tx_tls_encrypted_bytes =
-+		atomic64_read(&stats->ktls_tx_encrypted_bytes);
-+	s->tx_tls_ctx = atomic64_read(&stats->ktls_tx_ctx);
-+	s->tx_tls_ooo = atomic64_read(&stats->ktls_tx_ooo);
-+	s->tx_tls_skip_no_sync_data =
-+		atomic64_read(&stats->ktls_tx_skip_no_sync_data);
-+	s->tx_tls_drop_no_sync_data =
-+		atomic64_read(&stats->ktls_tx_drop_no_sync_data);
-+	s->tx_tls_drop_bypass_req =
-+		atomic64_read(&stats->ktls_tx_drop_bypass_req);
-+}
-+#endif
-+
- static void get_stats(struct net_device *dev, struct ethtool_stats *stats,
- 		      u64 *data)
- {
-@@ -307,6 +360,10 @@ static void get_stats(struct net_device *dev, struct ethtool_stats *stats,
- 	data += sizeof(struct queue_port_stats) / sizeof(u64);
- 	collect_adapter_stats(adapter, (struct adapter_stats *)data);
- 	data += sizeof(struct adapter_stats) / sizeof(u64);
-+#ifdef CONFIG_CHELSIO_TLS_DEVICE
-+	collect_chcr_tls_stats(adapter, (struct chcr_tls_stats *)data);
-+	data += sizeof(struct chcr_tls_stats) / sizeof(u64);
-+#endif
- 
- 	*data++ = (u64)pi->port_id;
- 	memset(&s, 0, sizeof(s));
+On Fri, Mar 20, 2020 at 5:49 PM Sebastian Andrzej Siewior
+<bigeasy@linutronix.de> wrote:
+>
+> The defconfig compiles without linux/mm.h. With mm.h included the
+> include chain leands to:
+> |   CC      kernel/locking/percpu-rwsem.o
+> | In file included from include/linux/huge_mm.h:8,
+> |                  from include/linux/mm.h:567,
+> |                  from arch/csky/include/asm/uaccess.h:,
+> |                  from include/linux/uaccess.h:11,
+> |                  from include/linux/sched/task.h:11,
+> |                  from include/linux/sched/signal.h:9,
+> |                  from include/linux/rcuwait.h:6,
+> |                  from include/linux/percpu-rwsem.h:8,
+> |                  from kernel/locking/percpu-rwsem.c:6:
+> | include/linux/fs.h:1422:29: error: array type has incomplete element type 'struct percpu_rw_semaphore'
+> |  1422 |  struct percpu_rw_semaphore rw_sem[SB_FREEZE_LEVELS];
+>
+> once rcuwait.h includes linux/sched/signal.h.
+>
+> Remove the linux/mm.h include.
+>
+> Cc: Guo Ren <guoren@kernel.org>
+> Cc: linux-csky@vger.kernel.org
+> Reported-by: kbuild test robot <lkp@intel.com>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> ---
+>  arch/csky/include/asm/uaccess.h | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/arch/csky/include/asm/uaccess.h b/arch/csky/include/asm/uaccess.h
+> index eaa1c3403a424..abefa125b93cf 100644
+> --- a/arch/csky/include/asm/uaccess.h
+> +++ b/arch/csky/include/asm/uaccess.h
+> @@ -11,7 +11,6 @@
+>  #include <linux/errno.h>
+>  #include <linux/types.h>
+>  #include <linux/sched.h>
+> -#include <linux/mm.h>
+>  #include <linux/string.h>
+>  #include <linux/version.h>
+>  #include <asm/segment.h>
+> --
+> 2.26.0.rc2
+>
+
+
 -- 
-2.18.1
+Best Regards
+ Guo Ren
 
+ML: https://lore.kernel.org/linux-csky/
