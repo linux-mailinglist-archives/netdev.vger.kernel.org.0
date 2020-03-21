@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8D718E092
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:37:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD4C618E026
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:35:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728553AbgCULe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 07:34:56 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:38418 "EHLO
+        id S1728815AbgCULfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 07:35:46 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:38509 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725932AbgCULex (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:34:53 -0400
+        with ESMTP id S1728584AbgCULfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:35:00 -0400
 Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1jFcOQ-0001zF-3g; Sat, 21 Mar 2020 12:34:18 +0100
+        id 1jFcOQ-0001zG-FR; Sat, 21 Mar 2020 12:34:18 +0100
 Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id 2A835FFBBF;
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id 6AF95FFC8D;
         Sat, 21 Mar 2020 12:34:17 +0100 (CET)
-Message-Id: <20200321112544.878032781@linutronix.de>
+Message-Id: <20200321113240.841963112@linutronix.de>
 User-Agent: quilt/0.65
-Date:   Sat, 21 Mar 2020 12:25:44 +0100
+Date:   Sat, 21 Mar 2020 12:25:45 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -63,7 +63,11 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Jonathan Corbet <corbet@lwn.net>,
         Randy Dunlap <rdunlap@infradead.org>,
         Davidlohr Bueso <dbueso@suse.de>
-Subject: [patch V3 00/20] Lock ordering documentation and annotation for lockdep
+Subject: [patch V3 01/20] PCI/switchtec: Fix init_completion race condition
+ with poll_wait()
+References: <20200321112544.878032781@linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-transfer-encoding: 8-bit
 X-Linutronix-Spam-Score: -1.0
 X-Linutronix-Spam-Level: -
@@ -73,22 +77,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the third and hopefully final version of this work. The second one
-can be found here:
+From: Logan Gunthorpe <logang@deltatee.com>
 
-   https://lore.kernel.org/r/20200318204302.693307984@linutronix.de
+The call to init_completion() in mrpc_queue_cmd() can theoretically
+race with the call to poll_wait() in switchtec_dev_poll().
 
-Changes since V2:
+  poll()			write()
+    switchtec_dev_poll()   	  switchtec_dev_write()
+      poll_wait(&s->comp.wait);      mrpc_queue_cmd()
+			               init_completion(&s->comp)
+				         init_waitqueue_head(&s->comp.wait)
 
-  - Included the arch/XXX fixups for the rcuwait changes (Sebastian)
+To my knowledge, no one has hit this bug.
 
-  - Folded the init fix for the PS3 change (Sebastian)
+Fix this by using reinit_completion() instead of init_completion() in
+mrpc_queue_cmd().
 
-  - Addressed feedback on documentation (Paul, Davidlohr, Jonathan)
+Fixes: 080b47def5e5 ("MicroSemi Switchtec management interface driver")
+Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Kurt Schwemmer <kurt.schwemmer@microsemi.com>
+Cc: linux-pci@vger.kernel.org
+Link: https://lkml.kernel.org/r/20200313183608.2646-1-logang@deltatee.com
 
-  - Picked up acks and reviewed tags
+---
+ drivers/pci/switch/switchtec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
+diff --git a/drivers/pci/switch/switchtec.c b/drivers/pci/switch/switchtec.c
+index a823b4b8ef8a..81dc7ac01381 100644
+--- a/drivers/pci/switch/switchtec.c
++++ b/drivers/pci/switch/switchtec.c
+@@ -175,7 +175,7 @@ static int mrpc_queue_cmd(struct switchtec_user *stuser)
+ 	kref_get(&stuser->kref);
+ 	stuser->read_len = sizeof(stuser->data);
+ 	stuser_set_state(stuser, MRPC_QUEUED);
+-	init_completion(&stuser->comp);
++	reinit_completion(&stuser->comp);
+ 	list_add_tail(&stuser->list, &stdev->mrpc_queue);
+ 
+ 	mrpc_cmd_submit(stdev);
+-- 
+2.20.1
 
-	tglx
+
 
