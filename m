@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73AAA18DEA7
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 09:10:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48B0418DE9F
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 09:10:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728227AbgCUIKt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 04:10:49 -0400
+        id S1728201AbgCUIKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 04:10:35 -0400
 Received: from mga14.intel.com ([192.55.52.115]:33283 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727961AbgCUIKe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728142AbgCUIKe (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 21 Mar 2020 04:10:34 -0400
-IronPort-SDR: uTbL+IvZyxllNsx9lH9+CPknKIlfTnBagD9Zpldimx14SkfC/VvnTPedmkKx7zS3ncOm6MDgAD
- n+D0FRqL7POw==
+IronPort-SDR: eWY3Ejp13UXicgUEqMdcMMyMa/XaBLAQF3cIWzJ1olvyNRrLCeLBZKPXrW1Fb3ZGoon1eW0DbA
+ Y6v39HOBSVZQ==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2020 01:10:31 -0700
-IronPort-SDR: BMzOECUz1skz16xSKvLyYIvCQrLvRiB4EpXYvUZDzvHzt8JDdaSgBWIuQKZ0W+eehB4KXNzVoy
- +yid7/iQdo+A==
+IronPort-SDR: VM3eGVbbSbugnS3clA0Ji1Xmu137TmTg1uFjguUJVDBireF2ODYFCmzIf3bhDQrLbgKyH51CJv
+ Sf6INKgOxBFw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,287,1580803200"; 
-   d="scan'208";a="234737971"
+   d="scan'208";a="234737973"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga007.jf.intel.com with ESMTP; 21 Mar 2020 01:10:30 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
 Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
         nhorman@redhat.com, sassmann@redhat.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 8/9] ice: add basic handler for devlink .info_get
-Date:   Sat, 21 Mar 2020 01:10:27 -0700
-Message-Id: <20200321081028.2763550-9-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 9/9] ice: add board identifier info to devlink .info_get
+Date:   Sat, 21 Mar 2020 01:10:28 -0700
+Message-Id: <20200321081028.2763550-10-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200321081028.2763550-1-jeffrey.t.kirsher@intel.com>
 References: <20200321081028.2763550-1-jeffrey.t.kirsher@intel.com>
@@ -46,354 +47,344 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-The devlink .info_get callback allows the driver to report detailed
-version information. The following devlink versions are reported with
-this initial implementation:
+Export a unique board identifier using "board.id" for devlink's
+.info_get command.
 
- "fw.mgmt" -> The version of the firmware that controls PHY, link, etc
- "fw.mgmt.api" -> API version of interface exposed over the AdminQ
- "fw.mgmt.build" -> Unique build id of the source for the management fw
- "fw.undi" -> Version of the Option ROM containing the UEFI driver
- "fw.psid.api" -> Version of the NVM image format.
- "fw.bundle_id" -> Unique identifier for the combined flash image.
- "fw.app.name" -> The name of the active DDP package.
- "fw.app" -> The version of the active DDP package.
-
-With this, devlink dev info can report at least as much information as
-is reported by ETHTOOL_GDRVINFO.
-
-Compare the output from ethtool vs from devlink:
-
-  $ ethtool -i ens785s0
-  driver: ice
-  version: 0.8.1-k
-  firmware-version: 0.80 0x80002ec0 1.2581.0
-  expansion-rom-version:
-  bus-info: 0000:3b:00.0
-  supports-statistics: yes
-  supports-test: yes
-  supports-eeprom-access: yes
-  supports-register-dump: yes
-  supports-priv-flags: yes
-
-  $ devlink dev info pci/0000:3b:00.0
-  pci/0000:3b:00.0:
-  driver ice
-  serial number 00-01-ab-ff-ff-ca-05-68
-  versions:
-      running:
-        fw.mgmt 2.1.7
-        fw.mgmt.api 1.5
-        fw.mgmt.build 0x305d955f
-        fw.undi 1.2581.0
-        fw.psid.api 0.80
-        fw.bundle_id 0x80002ec0
-        fw.app.name ICE OS Default Package
-        fw.app 1.3.1.0
-
-More pieces of information can be displayed, each version is kept
-separate instead of munged together, and each version has an identifier
-which comes with associated documentation.
+Obtain this by reading the NVM for the PBA identification string.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Acked-by: Jakub Kicinski <kuba@kernel.org>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- Documentation/networking/devlink/ice.rst     |  67 +++++++
- Documentation/networking/devlink/index.rst   |   1 +
- drivers/net/ethernet/intel/ice/ice_devlink.c | 189 +++++++++++++++++++
- 3 files changed, 257 insertions(+)
- create mode 100644 Documentation/networking/devlink/ice.rst
+ Documentation/networking/devlink/ice.rst     |   4 +
+ drivers/net/ethernet/intel/ice/ice_common.c  |  66 ----------
+ drivers/net/ethernet/intel/ice/ice_common.h  |   3 -
+ drivers/net/ethernet/intel/ice/ice_devlink.c |  16 ++-
+ drivers/net/ethernet/intel/ice/ice_nvm.c     | 125 +++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_nvm.h     |   5 +
+ drivers/net/ethernet/intel/ice/ice_type.h    |   1 +
+ 7 files changed, 150 insertions(+), 70 deletions(-)
 
 diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
-new file mode 100644
-index 000000000000..56739a51cdfe
---- /dev/null
+index 56739a51cdfe..37fbbd40a5e5 100644
+--- a/Documentation/networking/devlink/ice.rst
 +++ b/Documentation/networking/devlink/ice.rst
-@@ -0,0 +1,67 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+===================
-+ice devlink support
-+===================
-+
-+This document describes the devlink features implemented by the ``ice``
-+device driver.
-+
-+Info versions
-+=============
-+
-+The ``ice`` driver reports the following versions
-+
-+.. list-table:: devlink info versions implemented
-+    :widths: 5 5 5 90
-+
-+    * - Name
-+      - Type
-+      - Example
-+      - Description
-+    * - ``fw.mgmt``
-+      - running
-+      - 2.1.7
-+      - 3-digit version number of the management firmware that controls the
-+        PHY, link, etc.
-+    * - ``fw.mgmt.api``
-+      - running
-+      - 1.5
-+      - 2-digit version number of the API exported over the AdminQ by the
-+        management firmware. Used by the driver to identify what commands
-+        are supported.
-+    * - ``fw.mgmt.build``
-+      - running
-+      - 0x305d955f
-+      - Unique identifier of the source for the management firmware.
-+    * - ``fw.undi``
-+      - running
-+      - 1.2581.0
-+      - Version of the Option ROM containing the UEFI driver. The version is
-+        reported in ``major.minor.patch`` format. The major version is
-+        incremented whenever a major breaking change occurs, or when the
-+        minor version would overflow. The minor version is incremented for
-+        non-breaking changes and reset to 1 when the major version is
-+        incremented. The patch version is normally 0 but is incremented when
-+        a fix is delivered as a patch against an older base Option ROM.
-+    * - ``fw.psid.api``
-+      - running
-+      - 0.80
-+      - Version defining the format of the flash contents.
-+    * - ``fw.bundle_id``
-+      - running
-+      - 0x80002ec0
-+      - Unique identifier of the firmware image file that was loaded onto
-+        the device. Also referred to as the EETRACK identifier of the NVM.
-+    * - ``fw.app.name``
-+      - running
-+      - ICE OS Default Package
-+      - The name of the DDP package that is active in the device. The DDP
-+        package is loaded by the driver during initialization. Each varation
-+        of DDP package shall have a unique name.
-+    * - ``fw.app``
-+      - running
-+      - 1.3.1.0
-+      - The version of the DDP package that is active in the device. Note
-+        that both the name (as reported by ``fw.app.name``) and version are
-+        required to uniquely identify the package.
-diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
-index 087ff54d53fc..272509cd9215 100644
---- a/Documentation/networking/devlink/index.rst
-+++ b/Documentation/networking/devlink/index.rst
-@@ -32,6 +32,7 @@ parameters, info versions, and other features it supports.
+@@ -19,6 +19,10 @@ The ``ice`` driver reports the following versions
+       - Type
+       - Example
+       - Description
++    * - ``board.id``
++      - fixed
++      - K65390-000
++      - The Product Board Assembly (PBA) identifier of the board.
+     * - ``fw.mgmt``
+       - running
+       - 2.1.7
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 6691e45367b3..2c0d8fd3d5cd 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -934,72 +934,6 @@ enum ice_status ice_reset(struct ice_hw *hw, enum ice_reset_req req)
+ 	return ice_check_reset(hw);
+ }
  
-    bnxt
-    ionic
-+   ice
-    mlx4
-    mlx5
-    mlxsw
+-/**
+- * ice_get_pfa_module_tlv - Reads sub module TLV from NVM PFA
+- * @hw: pointer to hardware structure
+- * @module_tlv: pointer to module TLV to return
+- * @module_tlv_len: pointer to module TLV length to return
+- * @module_type: module type requested
+- *
+- * Finds the requested sub module TLV type from the Preserved Field
+- * Area (PFA) and returns the TLV pointer and length. The caller can
+- * use these to read the variable length TLV value.
+- */
+-enum ice_status
+-ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
+-		       u16 module_type)
+-{
+-	enum ice_status status;
+-	u16 pfa_len, pfa_ptr;
+-	u16 next_tlv;
+-
+-	status = ice_read_sr_word(hw, ICE_SR_PFA_PTR, &pfa_ptr);
+-	if (status) {
+-		ice_debug(hw, ICE_DBG_INIT, "Preserved Field Array pointer.\n");
+-		return status;
+-	}
+-	status = ice_read_sr_word(hw, pfa_ptr, &pfa_len);
+-	if (status) {
+-		ice_debug(hw, ICE_DBG_INIT, "Failed to read PFA length.\n");
+-		return status;
+-	}
+-	/* Starting with first TLV after PFA length, iterate through the list
+-	 * of TLVs to find the requested one.
+-	 */
+-	next_tlv = pfa_ptr + 1;
+-	while (next_tlv < pfa_ptr + pfa_len) {
+-		u16 tlv_sub_module_type;
+-		u16 tlv_len;
+-
+-		/* Read TLV type */
+-		status = ice_read_sr_word(hw, next_tlv, &tlv_sub_module_type);
+-		if (status) {
+-			ice_debug(hw, ICE_DBG_INIT, "Failed to read TLV type.\n");
+-			break;
+-		}
+-		/* Read TLV length */
+-		status = ice_read_sr_word(hw, next_tlv + 1, &tlv_len);
+-		if (status) {
+-			ice_debug(hw, ICE_DBG_INIT, "Failed to read TLV length.\n");
+-			break;
+-		}
+-		if (tlv_sub_module_type == module_type) {
+-			if (tlv_len) {
+-				*module_tlv = next_tlv;
+-				*module_tlv_len = tlv_len;
+-				return 0;
+-			}
+-			return ICE_ERR_INVAL_SIZE;
+-		}
+-		/* Check next TLV, i.e. current TLV pointer + length + 2 words
+-		 * (for current TLV's type and length)
+-		 */
+-		next_tlv = next_tlv + tlv_len + 2;
+-	}
+-	/* Module does not exist */
+-	return ICE_ERR_DOES_NOT_EXIST;
+-}
+-
+ /**
+  * ice_copy_rxq_ctx_to_hw
+  * @hw: pointer to the hardware structure
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index 06fcd3b55570..8104f3d64d96 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -15,9 +15,6 @@ enum ice_status ice_nvm_validate_checksum(struct ice_hw *hw);
+ 
+ enum ice_status ice_init_hw(struct ice_hw *hw);
+ void ice_deinit_hw(struct ice_hw *hw);
+-enum ice_status
+-ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
+-		       u16 module_type);
+ enum ice_status ice_check_reset(struct ice_hw *hw);
+ enum ice_status ice_reset(struct ice_hw *hw, enum ice_reset_req req);
+ enum ice_status ice_create_all_ctrlq(struct ice_hw *hw);
 diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index cedd9d02299e..410e2b531e5d 100644
+index 410e2b531e5d..27c5034c039a 100644
 --- a/drivers/net/ethernet/intel/ice/ice_devlink.c
 +++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -2,9 +2,198 @@
- /* Copyright (c) 2020, Intel Corporation. */
+@@ -19,6 +19,18 @@ static int ice_info_get_dsn(struct ice_pf *pf, char *buf, size_t len)
+ 	return 0;
+ }
  
- #include "ice.h"
-+#include "ice_lib.h"
- #include "ice_devlink.h"
++static int ice_info_pba(struct ice_pf *pf, char *buf, size_t len)
++{
++	struct ice_hw *hw = &pf->hw;
++	enum ice_status status;
++
++	status = ice_read_pba_string(hw, (u8 *)buf, len);
++	if (status)
++		return -EIO;
++
++	return 0;
++}
++
+ static int ice_info_fw_mgmt(struct ice_pf *pf, char *buf, size_t len)
+ {
+ 	struct ice_hw *hw = &pf->hw;
+@@ -93,6 +105,7 @@ static int ice_info_ddp_pkg_version(struct ice_pf *pf, char *buf, size_t len)
+ 	return 0;
+ }
  
-+static int ice_info_get_dsn(struct ice_pf *pf, char *buf, size_t len)
++#define fixed(key, getter) { ICE_VERSION_FIXED, key, getter }
+ #define running(key, getter) { ICE_VERSION_RUNNING, key, getter }
+ 
+ enum ice_version_type {
+@@ -106,6 +119,7 @@ static const struct ice_devlink_version {
+ 	const char *key;
+ 	int (*getter)(struct ice_pf *pf, char *buf, size_t len);
+ } ice_devlink_versions[] = {
++	fixed(DEVLINK_INFO_VERSION_GENERIC_BOARD_ID, ice_info_pba),
+ 	running(DEVLINK_INFO_VERSION_GENERIC_FW_MGMT, ice_info_fw_mgmt),
+ 	running("fw.mgmt.api", ice_info_fw_api),
+ 	running("fw.mgmt.build", ice_info_fw_build),
+@@ -125,7 +139,7 @@ static const struct ice_devlink_version {
+  * Callback for the devlink .info_get operation. Reports information about the
+  * device.
+  *
+- * @returns zero on success or an error code on failure.
++ * Return: zero on success or an error code on failure.
+  */
+ static int ice_devlink_info_get(struct devlink *devlink,
+ 				struct devlink_info_req *req,
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
+index 08909d1c7cce..8beb675d676b 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.c
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
+@@ -185,6 +185,131 @@ enum ice_status ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data)
+ 	return status;
+ }
+ 
++/**
++ * ice_get_pfa_module_tlv - Reads sub module TLV from NVM PFA
++ * @hw: pointer to hardware structure
++ * @module_tlv: pointer to module TLV to return
++ * @module_tlv_len: pointer to module TLV length to return
++ * @module_type: module type requested
++ *
++ * Finds the requested sub module TLV type from the Preserved Field
++ * Area (PFA) and returns the TLV pointer and length. The caller can
++ * use these to read the variable length TLV value.
++ */
++enum ice_status
++ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
++		       u16 module_type)
 +{
-+	u8 dsn[8];
++	enum ice_status status;
++	u16 pfa_len, pfa_ptr;
++	u16 next_tlv;
 +
-+	/* Copy the DSN into an array in Big Endian format */
-+	put_unaligned_be64(pci_get_dsn(pf->pdev), dsn);
++	status = ice_read_sr_word(hw, ICE_SR_PFA_PTR, &pfa_ptr);
++	if (status) {
++		ice_debug(hw, ICE_DBG_INIT, "Preserved Field Array pointer.\n");
++		return status;
++	}
++	status = ice_read_sr_word(hw, pfa_ptr, &pfa_len);
++	if (status) {
++		ice_debug(hw, ICE_DBG_INIT, "Failed to read PFA length.\n");
++		return status;
++	}
++	/* Starting with first TLV after PFA length, iterate through the list
++	 * of TLVs to find the requested one.
++	 */
++	next_tlv = pfa_ptr + 1;
++	while (next_tlv < pfa_ptr + pfa_len) {
++		u16 tlv_sub_module_type;
++		u16 tlv_len;
 +
-+	snprintf(buf, len, "%02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x",
-+		 dsn[0], dsn[1], dsn[2], dsn[3],
-+		 dsn[4], dsn[5], dsn[6], dsn[7]);
-+
-+	return 0;
++		/* Read TLV type */
++		status = ice_read_sr_word(hw, next_tlv, &tlv_sub_module_type);
++		if (status) {
++			ice_debug(hw, ICE_DBG_INIT, "Failed to read TLV type.\n");
++			break;
++		}
++		/* Read TLV length */
++		status = ice_read_sr_word(hw, next_tlv + 1, &tlv_len);
++		if (status) {
++			ice_debug(hw, ICE_DBG_INIT, "Failed to read TLV length.\n");
++			break;
++		}
++		if (tlv_sub_module_type == module_type) {
++			if (tlv_len) {
++				*module_tlv = next_tlv;
++				*module_tlv_len = tlv_len;
++				return 0;
++			}
++			return ICE_ERR_INVAL_SIZE;
++		}
++		/* Check next TLV, i.e. current TLV pointer + length + 2 words
++		 * (for current TLV's type and length)
++		 */
++		next_tlv = next_tlv + tlv_len + 2;
++	}
++	/* Module does not exist */
++	return ICE_ERR_DOES_NOT_EXIST;
 +}
-+
-+static int ice_info_fw_mgmt(struct ice_pf *pf, char *buf, size_t len)
-+{
-+	struct ice_hw *hw = &pf->hw;
-+
-+	snprintf(buf, len, "%u.%u.%u", hw->fw_maj_ver, hw->fw_min_ver,
-+		 hw->fw_patch);
-+
-+	return 0;
-+}
-+
-+static int ice_info_fw_api(struct ice_pf *pf, char *buf, size_t len)
-+{
-+	struct ice_hw *hw = &pf->hw;
-+
-+	snprintf(buf, len, "%u.%u", hw->api_maj_ver, hw->api_min_ver);
-+
-+	return 0;
-+}
-+
-+static int ice_info_fw_build(struct ice_pf *pf, char *buf, size_t len)
-+{
-+	struct ice_hw *hw = &pf->hw;
-+
-+	snprintf(buf, len, "0x%08x", hw->fw_build);
-+
-+	return 0;
-+}
-+
-+static int ice_info_orom_ver(struct ice_pf *pf, char *buf, size_t len)
-+{
-+	struct ice_orom_info *orom = &pf->hw.nvm.orom;
-+
-+	snprintf(buf, len, "%u.%u.%u", orom->major, orom->build, orom->patch);
-+
-+	return 0;
-+}
-+
-+static int ice_info_nvm_ver(struct ice_pf *pf, char *buf, size_t len)
-+{
-+	struct ice_nvm_info *nvm = &pf->hw.nvm;
-+
-+	snprintf(buf, len, "%x.%02x", nvm->major_ver, nvm->minor_ver);
-+
-+	return 0;
-+}
-+
-+static int ice_info_eetrack(struct ice_pf *pf, char *buf, size_t len)
-+{
-+	struct ice_nvm_info *nvm = &pf->hw.nvm;
-+
-+	snprintf(buf, len, "0x%08x", nvm->eetrack);
-+
-+	return 0;
-+}
-+
-+static int ice_info_ddp_pkg_name(struct ice_pf *pf, char *buf, size_t len)
-+{
-+	struct ice_hw *hw = &pf->hw;
-+
-+	snprintf(buf, len, "%s", hw->active_pkg_name);
-+
-+	return 0;
-+}
-+
-+static int ice_info_ddp_pkg_version(struct ice_pf *pf, char *buf, size_t len)
-+{
-+	struct ice_pkg_ver *pkg = &pf->hw.active_pkg_ver;
-+
-+	snprintf(buf, len, "%u.%u.%u.%u", pkg->major, pkg->minor, pkg->update,
-+		 pkg->draft);
-+
-+	return 0;
-+}
-+
-+#define running(key, getter) { ICE_VERSION_RUNNING, key, getter }
-+
-+enum ice_version_type {
-+	ICE_VERSION_FIXED,
-+	ICE_VERSION_RUNNING,
-+	ICE_VERSION_STORED,
-+};
-+
-+static const struct ice_devlink_version {
-+	enum ice_version_type type;
-+	const char *key;
-+	int (*getter)(struct ice_pf *pf, char *buf, size_t len);
-+} ice_devlink_versions[] = {
-+	running(DEVLINK_INFO_VERSION_GENERIC_FW_MGMT, ice_info_fw_mgmt),
-+	running("fw.mgmt.api", ice_info_fw_api),
-+	running("fw.mgmt.build", ice_info_fw_build),
-+	running(DEVLINK_INFO_VERSION_GENERIC_FW_UNDI, ice_info_orom_ver),
-+	running("fw.psid.api", ice_info_nvm_ver),
-+	running(DEVLINK_INFO_VERSION_GENERIC_FW_BUNDLE_ID, ice_info_eetrack),
-+	running("fw.app.name", ice_info_ddp_pkg_name),
-+	running(DEVLINK_INFO_VERSION_GENERIC_FW_APP, ice_info_ddp_pkg_version),
-+};
 +
 +/**
-+ * ice_devlink_info_get - .info_get devlink handler
-+ * @devlink: devlink instance structure
-+ * @req: the devlink info request
-+ * @extack: extended netdev ack structure
++ * ice_read_pba_string - Reads part number string from NVM
++ * @hw: pointer to hardware structure
++ * @pba_num: stores the part number string from the NVM
++ * @pba_num_size: part number string buffer length
 + *
-+ * Callback for the devlink .info_get operation. Reports information about the
-+ * device.
-+ *
-+ * @returns zero on success or an error code on failure.
++ * Reads the part number string from the NVM.
 + */
-+static int ice_devlink_info_get(struct devlink *devlink,
-+				struct devlink_info_req *req,
-+				struct netlink_ext_ack *extack)
++enum ice_status
++ice_read_pba_string(struct ice_hw *hw, u8 *pba_num, u32 pba_num_size)
 +{
-+	struct ice_pf *pf = devlink_priv(devlink);
-+	char buf[100];
-+	size_t i;
-+	int err;
++	u16 pba_tlv, pba_tlv_len;
++	enum ice_status status;
++	u16 pba_word, pba_size;
++	u16 i;
 +
-+	err = devlink_info_driver_name_put(req, KBUILD_MODNAME);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unable to set driver name");
-+		return err;
++	status = ice_get_pfa_module_tlv(hw, &pba_tlv, &pba_tlv_len,
++					ICE_SR_PBA_BLOCK_PTR);
++	if (status) {
++		ice_debug(hw, ICE_DBG_INIT, "Failed to read PBA Block TLV.\n");
++		return status;
 +	}
 +
-+	err = ice_info_get_dsn(pf, buf, sizeof(buf));
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unable to obtain serial number");
-+		return err;
++	/* pba_size is the next word */
++	status = ice_read_sr_word(hw, (pba_tlv + 2), &pba_size);
++	if (status) {
++		ice_debug(hw, ICE_DBG_INIT, "Failed to read PBA Section size.\n");
++		return status;
 +	}
 +
-+	err = devlink_info_serial_number_put(req, buf);
-+	if (err) {
-+		NL_SET_ERR_MSG_MOD(extack, "Unable to set serial number");
-+		return err;
++	if (pba_tlv_len < pba_size) {
++		ice_debug(hw, ICE_DBG_INIT, "Invalid PBA Block TLV size.\n");
++		return ICE_ERR_INVAL_SIZE;
 +	}
 +
-+	for (i = 0; i < ARRAY_SIZE(ice_devlink_versions); i++) {
-+		enum ice_version_type type = ice_devlink_versions[i].type;
-+		const char *key = ice_devlink_versions[i].key;
++	/* Subtract one to get PBA word count (PBA Size word is included in
++	 * total size)
++	 */
++	pba_size--;
++	if (pba_num_size < (((u32)pba_size * 2) + 1)) {
++		ice_debug(hw, ICE_DBG_INIT, "Buffer too small for PBA data.\n");
++		return ICE_ERR_PARAM;
++	}
 +
-+		err = ice_devlink_versions[i].getter(pf, buf, sizeof(buf));
-+		if (err) {
-+			NL_SET_ERR_MSG_MOD(extack, "Unable to obtain version info");
-+			return err;
++	for (i = 0; i < pba_size; i++) {
++		status = ice_read_sr_word(hw, (pba_tlv + 2 + 1) + i, &pba_word);
++		if (status) {
++			ice_debug(hw, ICE_DBG_INIT, "Failed to read PBA Block word %d.\n", i);
++			return status;
 +		}
 +
-+		switch (type) {
-+		case ICE_VERSION_FIXED:
-+			err = devlink_info_version_fixed_put(req, key, buf);
-+			if (err) {
-+				NL_SET_ERR_MSG_MOD(extack, "Unable to set fixed version");
-+				return err;
-+			}
-+			break;
-+		case ICE_VERSION_RUNNING:
-+			err = devlink_info_version_running_put(req, key, buf);
-+			if (err) {
-+				NL_SET_ERR_MSG_MOD(extack, "Unable to set running version");
-+				return err;
-+			}
-+			break;
-+		case ICE_VERSION_STORED:
-+			err = devlink_info_version_stored_put(req, key, buf);
-+			if (err) {
-+				NL_SET_ERR_MSG_MOD(extack, "Unable to set stored version");
-+				return err;
-+			}
-+			break;
-+		}
++		pba_num[(i * 2)] = (pba_word >> 8) & 0xFF;
++		pba_num[(i * 2) + 1] = pba_word & 0xFF;
 +	}
++	pba_num[(pba_size * 2)] = '\0';
 +
-+	return 0;
++	return status;
 +}
 +
- static const struct devlink_ops ice_devlink_ops = {
-+	.info_get = ice_devlink_info_get,
- };
- 
- static void ice_devlink_free(void *devlink_ptr)
+ /**
+  * ice_get_orom_ver_info - Read Option ROM version information
+  * @hw: pointer to the HW struct
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.h b/drivers/net/ethernet/intel/ice/ice_nvm.h
+index 7375f6b96919..999f273ba6ad 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.h
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.h
+@@ -10,6 +10,11 @@ void ice_release_nvm(struct ice_hw *hw);
+ enum ice_status
+ ice_read_flat_nvm(struct ice_hw *hw, u32 offset, u32 *length, u8 *data,
+ 		  bool read_shadow_ram);
++enum ice_status
++ice_get_pfa_module_tlv(struct ice_hw *hw, u16 *module_tlv, u16 *module_tlv_len,
++		       u16 module_type);
++enum ice_status
++ice_read_pba_string(struct ice_hw *hw, u8 *pba_num, u32 pba_num_size);
+ enum ice_status ice_init_nvm(struct ice_hw *hw);
+ enum ice_status ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data);
+ #endif /* _ICE_NVM_H_ */
+diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
+index b6a20670e915..4ce5f92fca4a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_type.h
++++ b/drivers/net/ethernet/intel/ice/ice_type.h
+@@ -636,6 +636,7 @@ struct ice_hw_port_stats {
+ /* Checksum and Shadow RAM pointers */
+ #define ICE_SR_BOOT_CFG_PTR		0x132
+ #define ICE_NVM_OROM_VER_OFF		0x02
++#define ICE_SR_PBA_BLOCK_PTR		0x16
+ #define ICE_SR_NVM_DEV_STARTER_VER	0x18
+ #define ICE_SR_NVM_EETRACK_LO		0x2D
+ #define ICE_SR_NVM_EETRACK_HI		0x2E
 -- 
 2.25.1
 
