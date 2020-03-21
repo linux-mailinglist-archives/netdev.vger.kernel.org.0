@@ -2,57 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD7F218E31B
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 18:01:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C8A518E32E
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 18:20:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727745AbgCURBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 13:01:49 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49196 "EHLO vps0.lunn.ch"
+        id S1727714AbgCURUV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 13:20:21 -0400
+Received: from mx2.suse.de ([195.135.220.15]:52394 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726961AbgCURBt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Mar 2020 13:01:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=64MMgAHQznGOH5Y++tpY7qj4XY7szKSqHJzx+oRG19o=; b=mU8z4ONygm4uHja8MGibs0kmMy
-        ab8CaKD15ORC78IpMmHD8j4Q54DWGEu0AxoXN29EBsKuWKhTcPeY5LYCXB6bW2YT0oD/BRfj0lPxv
-        K6jVd8J/f30oB0uzadxo6hPtcdqEhtNAoj006Uq/fMUZjy6V4d1I+js6cN6eY5EhZXAs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jFhVK-0006E1-AJ; Sat, 21 Mar 2020 18:01:46 +0100
-Date:   Sat, 21 Mar 2020 18:01:46 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        id S1726961AbgCURUU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Mar 2020 13:20:20 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id C70F9ABD7;
+        Sat, 21 Mar 2020 17:20:14 +0000 (UTC)
+Date:   Sat, 21 Mar 2020 10:19:02 -0700
+From:   Davidlohr Bueso <dave@stgolabs.net>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Sebastian Siewior <bigeasy@linutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        linux-pci@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next 1/4] net: phy: mscc: rename enum
- rgmii_rx_clock_delay to rgmii_clock_delay
-Message-ID: <20200321170146.GF22639@lunn.ch>
-References: <20200319211649.10136-1-olteanv@gmail.com>
- <20200319211649.10136-2-olteanv@gmail.com>
- <20200320100925.GB16662@lunn.ch>
- <CA+h21hrvsfwspGE6z37p-fwso3oD0pXijh+fZZfEEUEv6bySHQ@mail.gmail.com>
- <158470229183.43774.8932556125293087780@kwain>
- <CA+h21ho4aqgCSjgPTJ10cVeUow_RAUTNd9NSrVPJJVEqjAws9g@mail.gmail.com>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        platform-driver-x86@vger.kernel.org,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+        linux-acpi@vger.kernel.org, kbuild test robot <lkp@intel.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
+        Brian Cain <bcain@codeaurora.org>,
+        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
+        Michal Simek <monstr@monstr.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geoff Levand <geoff@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Davidlohr Bueso <dbueso@suse.de>
+Subject: Re: [patch V3 00/20] Lock ordering documentation and annotation for
+ lockdep
+Message-ID: <20200321171902.xxlnpikc65wd3b4m@linux-p48b>
+References: <20200321112544.878032781@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <CA+h21ho4aqgCSjgPTJ10cVeUow_RAUTNd9NSrVPJJVEqjAws9g@mail.gmail.com>
+In-Reply-To: <20200321112544.878032781@linutronix.de>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> And to add to that: without documentation, I don't really know what
-> I'm consolidating.
+On Sat, 21 Mar 2020, Thomas Gleixner wrote:
 
-It looked like the defines for the delays could be shared. But if you
-are not happy with this, lets leave it as is.
+>This is the third and hopefully final version of this work. The second one
+>can be found here:
 
-    Andrew
+Would you rather I send in a separate series with the kvm changes, or
+should I just send a v2 with the fixes here again?
+
+Thanks,
+Davidlohr
