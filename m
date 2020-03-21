@@ -2,90 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 543E618E375
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 18:46:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F0A2718E387
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 19:00:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727841AbgCURqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 13:46:22 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:39226 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726961AbgCURqV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 13:46:21 -0400
-Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1jFiBn-0007G4-JJ; Sat, 21 Mar 2020 18:45:39 +0100
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id E02A21040D4; Sat, 21 Mar 2020 18:45:38 +0100 (CET)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     Davidlohr Bueso <dave@stgolabs.net>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Sebastian Siewior <bigeasy@linutronix.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        linux-pci@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        platform-driver-x86@vger.kernel.org,
-        Zhang Rui <rui.zhang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, kbuild test robot <lkp@intel.com>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
-        Brian Cain <bcain@codeaurora.org>,
-        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
-        Michal Simek <monstr@monstr.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Geoff Levand <geoff@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Davidlohr Bueso <dbueso@suse.de>
-Subject: Re: [patch V3 00/20] Lock ordering documentation and annotation for lockdep
-In-Reply-To: <20200321171902.xxlnpikc65wd3b4m@linux-p48b>
-References: <20200321112544.878032781@linutronix.de> <20200321171902.xxlnpikc65wd3b4m@linux-p48b>
-Date:   Sat, 21 Mar 2020 18:45:38 +0100
-Message-ID: <87mu89r48t.fsf@nanos.tec.linutronix.de>
+        id S1728002AbgCUSA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 14:00:29 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:34002 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727939AbgCUSA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 14:00:28 -0400
+Received: by mail-oi1-f196.google.com with SMTP id e9so1831363oii.1;
+        Sat, 21 Mar 2020 11:00:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ivkv2AjL6EXVAa1JYs7mqBfNjeboYRMwbrEQs14HIno=;
+        b=XbhPjDLqCGh82zEUMZDThrIXKM7go6EERt4wwRUgHEGU7U891rzFc+8rx1jwxWr/WY
+         rS/phtqOqkTNUHrk5ojBOjv/5vNPCpBT0KoeVft/J48L62wicEj7hhJQ8Rbttajorukz
+         b/ZStvRxaw7GRDvzZuXtik8U00GV8gZbsG8i0OOrCDtnLdMjIInV6GIT1dwb6rel1QQN
+         9EmD3cUnXfY3dv70d5u9e5g8AhsXkMqGVBFCJORy88Z7KqJKNh4vutBJi27m1Fipv27m
+         3U2Oh7A/yV+qW2alfABnunrQ/RLTGpLaWXFYyS5u1z4VjA+ZyRxgf6clZCjhyR37+pjb
+         EHsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=ivkv2AjL6EXVAa1JYs7mqBfNjeboYRMwbrEQs14HIno=;
+        b=i4xZBW4dBJONjY+K7DV0iiC/ee7FD++3vc8pcFEm1BPedBvCOMGyUfdJaxLqFLTZJV
+         Yoqt6OtvUNOyda/iKrivDwiHk6oORRzXrAF2feKXQATYkYsVI7FxEk918FrFI3r+P+49
+         GAeXZ1G4YLiJwBLfE3EGWioIfORhiGFsoXGYFP6p1+6P3Q/1AMV/SFyZSbrRCWxXYeE1
+         lGsQQ46Sir8/5wo35DdwZ+sc/LTda2aYBJ3RMWFp+WasH3XM8FsMjTAtYX3U7lgAgFmf
+         VQElhbNDPyiIs9Cccwh3UWNjqCWaf0dRCXegaEUE7FmL3ln/cCbBECJIZPNyRDtPlZiE
+         MAqw==
+X-Gm-Message-State: ANhLgQ38a7deP32iTM/wRPOoJOWachuN12pEvr+8z1Dds3ZzlebGS8b0
+        OzRG1PF0YV3qE+FFaxLXbGg=
+X-Google-Smtp-Source: ADFU+vvd8OsdGBH2mOLpXI2e8IcKhXNKHRWEkIyD5UCURhyds+ifrpf9jikBmOCbTbWagq8VEVX+OQ==
+X-Received: by 2002:aca:54ca:: with SMTP id i193mr11471900oib.163.1584813627142;
+        Sat, 21 Mar 2020 11:00:27 -0700 (PDT)
+Received: from localhost.localdomain (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
+        by smtp.gmail.com with ESMTPSA id u199sm3323892oif.25.2020.03.21.11.00.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Mar 2020 11:00:26 -0700 (PDT)
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+To:     gregkh@linuxfoundation.org
+Cc:     netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        kovi <zraetn@gmail.com>, Stable <stable@vger.kernel.org>
+Subject: [PATCH] staging: rtl8188eu: Add ASUS USB-N10 Nano B1 to device table
+Date:   Sat, 21 Mar 2020 13:00:11 -0500
+Message-Id: <20200321180011.26153-1-Larry.Finger@lwfinger.net>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Davidlohr Bueso <dave@stgolabs.net> writes:
+The ASUS USB-N10 Nano B1 has been reported as a new RTL8188EU device.
+Add it to the device tables.
 
-> On Sat, 21 Mar 2020, Thomas Gleixner wrote:
->
->>This is the third and hopefully final version of this work. The second one
->>can be found here:
->
-> Would you rather I send in a separate series with the kvm changes, or
-> should I just send a v2 with the fixes here again?
+Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+Reported-by: kovi <zraetn@gmail.com>
+Cc: Stable <stable@vger.kernel.org>
+---
+ drivers/staging/rtl8188eu/os_dep/usb_intf.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Send a separate series please. These nested threads are hard to follow.
+diff --git a/drivers/staging/rtl8188eu/os_dep/usb_intf.c b/drivers/staging/rtl8188eu/os_dep/usb_intf.c
+index b5d42f411dd8..b7f65026dba8 100644
+--- a/drivers/staging/rtl8188eu/os_dep/usb_intf.c
++++ b/drivers/staging/rtl8188eu/os_dep/usb_intf.c
+@@ -32,6 +32,7 @@ static const struct usb_device_id rtw_usb_id_tbl[] = {
+ 	/****** 8188EUS ********/
+ 	{USB_DEVICE(0x056e, 0x4008)}, /* Elecom WDC-150SU2M */
+ 	{USB_DEVICE(0x07b8, 0x8179)}, /* Abocom - Abocom */
++	{USB_DEVICE(0x0B05, 0x18F0)}, /* ASUS USB-N10 Nano B1 */
+ 	{USB_DEVICE(0x2001, 0x330F)}, /* DLink DWA-125 REV D1 */
+ 	{USB_DEVICE(0x2001, 0x3310)}, /* Dlink DWA-123 REV D1 */
+ 	{USB_DEVICE(0x2001, 0x3311)}, /* DLink GO-USB-N150 REV B1 */
+-- 
+2.25.1
 
-Thanks,
-
-        tglx
