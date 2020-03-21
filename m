@@ -2,108 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7847718E3BD
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 19:47:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE44018E3C3
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 19:50:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727323AbgCUSre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 14:47:34 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:36856 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727028AbgCUSre (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 14:47:34 -0400
-Received: by mail-pl1-f195.google.com with SMTP id g2so3978900plo.3
-        for <netdev@vger.kernel.org>; Sat, 21 Mar 2020 11:47:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=AnR6hfXloIQv8auYA+GHfwp/m7H+vf5QROD5gpqvvmg=;
-        b=10EtXnXim5Hg4Cpui4GMpkO0QIfiWEDtP+YwkxpeF+mQBy8yZZ8KHf60FeUTd3kP4q
-         8FIVPRoaEf+I/FCmeBRJvcgxNMsttS1OXFLHq2D9SsOdmuZAHpzZPS4/RwiYRU6EudO/
-         NW9UrDy5GfDQo24rXziWK4S9VwzL+VmFFwAnxFxn/mStyBMamUc5hWvIQYXJMXCLoCzW
-         7rto2tts0ZQPJSO8fzCXrsCJOuBBeSL8eU9AMr9FJkbNXhzHvjQwXrvihdGmOoTjZoSy
-         qxHKPmo7PhXOjQTt1O3NX5bRN2FrAZkQFlX0W/HEh+YwAsnNejyYchQKKlhPEPiO8iN5
-         I4AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=AnR6hfXloIQv8auYA+GHfwp/m7H+vf5QROD5gpqvvmg=;
-        b=aWmJN5VZflO0Mp2wloZ7z6hfGfgERCxixv4UsOkLfn1wAQonON7CWqVcpnIjPxch2/
-         NyaP/GiuTDi4bh7IwxlsE+L+53rkJfOVnod2in8Z52Mggu9EfWYJXlIVS9q1V+kyYNn4
-         LceLFp8NPk2JeqU7iYZa/fVhbU5Ebr+1d0dw3z9qgh7MGhAc1JEjGztHjhB2LXfLS6pZ
-         K7yPIUbZxCmhMIjbzjEIkyl2oK8l4IK7hDqLc9l74G6qVZ0JycdmDGOvbzf2bmbVKz0T
-         XnZxrfrJ/GuUvh5UDiuwslcjIzadnq4AHEKLSr/Pm4ynHWUcQK82vTqfDITZsrL0O7In
-         VhjQ==
-X-Gm-Message-State: ANhLgQ3+K/ZSWojb+R3zB5BAVPv61wJIZ80YGJ3CLq2Vyyev4h6Gmt2m
-        XacByPtR+fKdoQLOgStzTkY1mw==
-X-Google-Smtp-Source: ADFU+vs0FwNwvYJsQkFQFEcpXFJzigfrsVLfelXzkPadvRe0lL/cnt4AkOx4y/HBFYRg/dis9wEHwA==
-X-Received: by 2002:a17:902:34f:: with SMTP id 73mr13708424pld.50.1584816453585;
-        Sat, 21 Mar 2020 11:47:33 -0700 (PDT)
-Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
-        by smtp.gmail.com with ESMTPSA id f15sm6924004pfq.100.2020.03.21.11.47.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 Mar 2020 11:47:33 -0700 (PDT)
-Subject: Re: [PATCH] ionic: make spdxcheck.py happy
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>, netdev@vger.kernel.org
-Cc:     linux-spdx@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200321120514.10464-1-lukas.bulwahn@gmail.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <0c80a012-738e-dddc-4287-35a6a90fda86@pensando.io>
-Date:   Sat, 21 Mar 2020 11:47:31 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <20200321120514.10464-1-lukas.bulwahn@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+        id S1727028AbgCUSt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 14:49:58 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:55540 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727314AbgCUSt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 14:49:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584816595;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=EBobcy5p19pfVFwT04GgwLMeWoFXAU5zKzV3TA6Y6aA=;
+        b=bM0uJbMzsdZanh5aeMpcKcu8YvP7teryaVNeso5e9jljdJXgUrn4qO76fK9k6TdMkCh0zf
+        R786FmvOreWvPhptjKeMVHDLOxpyx0paEKHJA7+CUuG3YTXjhTjblP3Tym6PqarAIVSTOQ
+        91H7RKAHzy8eztC8hOolwSHPSg+JzZs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-355-kkYwLqIpN7Ct-I1AJ2ovTQ-1; Sat, 21 Mar 2020 14:49:52 -0400
+X-MC-Unique: kkYwLqIpN7Ct-I1AJ2ovTQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CABD113E2;
+        Sat, 21 Mar 2020 18:49:49 +0000 (UTC)
+Received: from llong.com (ovpn-112-193.rdu2.redhat.com [10.10.112.193])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7871D1001DDE;
+        Sat, 21 Mar 2020 18:49:43 +0000 (UTC)
+From:   Waiman Long <longman@redhat.com>
+To:     David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
+        James Morris <jmorris@namei.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-integrity@vger.kernel.org, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org, Sumit Garg <sumit.garg@linaro.org>,
+        Jerry Snitselaar <jsnitsel@redhat.com>,
+        Roberto Sassu <roberto.sassu@huawei.com>,
+        Eric Biggers <ebiggers@google.com>,
+        Chris von Recklinghausen <crecklin@redhat.com>,
+        Waiman Long <longman@redhat.com>
+Subject: [PATCH v7 0/2] KEYS: Read keys to internal buffer & then copy to userspace
+Date:   Sat, 21 Mar 2020 14:49:30 -0400
+Message-Id: <20200321184932.16579-1-longman@redhat.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/21/20 5:05 AM, Lukas Bulwahn wrote:
-> Headers ionic_if.h and ionic_regs.h are licensed under three alternative
-> licenses and the used SPDX-License-Identifier expression makes
-> ./scripts/spdxcheck.py complain:
->
-> drivers/net/ethernet/pensando/ionic/ionic_if.h: 1:52 Syntax error: OR
-> drivers/net/ethernet/pensando/ionic/ionic_regs.h: 1:52 Syntax error: OR
->
-> As OR is associative, it is irrelevant if the parentheses are put around
-> the first or the second OR-expression.
->
-> Simply add parentheses to make spdxcheck.py happy.
->
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+v7:
+ - Restructure code in keyctl_read_key() to reduce nesting.
+ - Restructure patch 2 to use loop instead of backward jump as suggested
+   by Jarkko.
 
-Acked-by: Shannon Nelson <snelson@pensando.io>
+v6:
+ - Make some variable name changes and revise comments as suggested by
+   Jarkko. No functional change from v5.
 
-> ---
->   drivers/net/ethernet/pensando/ionic/ionic_if.h   | 2 +-
->   drivers/net/ethernet/pensando/ionic/ionic_regs.h | 2 +-
->   2 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net/ethernet/pensando/ionic/ionic_if.h
-> index 54547d53b0f2..51adf5059834 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
-> @@ -1,4 +1,4 @@
-> -/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB OR BSD-2-Clause */
-> +/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
->   /* Copyright (c) 2017-2019 Pensando Systems, Inc.  All rights reserved. */
->   
->   #ifndef _IONIC_IF_H_
-> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_regs.h b/drivers/net/ethernet/pensando/ionic/ionic_regs.h
-> index 03ee5a36472b..2e174f45c030 100644
-> --- a/drivers/net/ethernet/pensando/ionic/ionic_regs.h
-> +++ b/drivers/net/ethernet/pensando/ionic/ionic_regs.h
-> @@ -1,4 +1,4 @@
-> -/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB OR BSD-2-Clause */
-> +/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
->   /* Copyright (c) 2018-2019 Pensando Systems, Inc.  All rights reserved. */
->   
->   #ifndef IONIC_REGS_H
+v5:
+ - Merge v4 patches 2 and 3 into 1 to avoid sparse warning. Merge some of 
+   commit logs into patch 1 as well. There is no further change.
+
+v4:
+ - Remove the __user annotation from big_key_read() and user_read() in
+   patch 1.
+ - Add a new patch 2 to remove __user annotation from rxrpc_read().
+ - Add a new patch 3 to remove __user annotation from dns_resolver_read().
+ - Merge the original patches 2 and 3 into a single patch 4 and refactor
+   it as suggested by Jarkko and Eric.
+
+The current security key read methods are called with the key semaphore
+held.  The methods then copy out the key data to userspace which is
+subjected to page fault and may acquire the mmap semaphore. That can
+result in circular lock dependency and hence a chance to get into
+deadlock.
+
+To avoid such a deadlock, an internal buffer is now allocated for getting
+out the necessary data first. After releasing the key semaphore, the
+key data are then copied out to userspace sidestepping the circular
+lock dependency.
+
+The keyutils test suite was run and the test passed with these patchset
+applied without any falure.
+
+
+Waiman Long (2):
+  KEYS: Don't write out to userspace while holding key semaphore
+  KEYS: Avoid false positive ENOMEM error on key read
+
+ include/keys/big_key-type.h               |   2 +-
+ include/keys/user-type.h                  |   3 +-
+ include/linux/key-type.h                  |   2 +-
+ net/dns_resolver/dns_key.c                |   2 +-
+ net/rxrpc/key.c                           |  27 ++----
+ security/keys/big_key.c                   |  11 +--
+ security/keys/encrypted-keys/encrypted.c  |   7 +-
+ security/keys/internal.h                  |  12 +++
+ security/keys/keyctl.c                    | 104 ++++++++++++++++++----
+ security/keys/keyring.c                   |   6 +-
+ security/keys/request_key_auth.c          |   7 +-
+ security/keys/trusted-keys/trusted_tpm1.c |  14 +--
+ security/keys/user_defined.c              |   5 +-
+ 13 files changed, 126 insertions(+), 76 deletions(-)
+
+Code diff from v6:
+
+diff --git a/security/keys/keyctl.c b/security/keys/keyctl.c
+index ded69108db0d..2f72bbe2962b 100644
+--- a/security/keys/keyctl.c
++++ b/security/keys/keyctl.c
+@@ -827,26 +827,28 @@ long keyctl_read_key(key_serial_t keyid, char __user *buffer, size_t buflen)
+ 	struct key *key;
+ 	key_ref_t key_ref;
+ 	long ret;
++	char *key_data = NULL;
++	size_t key_data_len;
+ 
+ 	/* find the key first */
+ 	key_ref = lookup_user_key(keyid, 0, 0);
+ 	if (IS_ERR(key_ref)) {
+ 		ret = -ENOKEY;
+-		goto error;
++		goto out;
+ 	}
+ 
+ 	key = key_ref_to_ptr(key_ref);
+ 
+ 	ret = key_read_state(key);
+ 	if (ret < 0)
+-		goto error2; /* Negatively instantiated */
++		goto key_put_out; /* Negatively instantiated */
+ 
+ 	/* see if we can read it directly */
+ 	ret = key_permission(key_ref, KEY_NEED_READ);
+ 	if (ret == 0)
+ 		goto can_read_key;
+ 	if (ret != -EACCES)
+-		goto error2;
++		goto key_put_out;
+ 
+ 	/* we can't; see if it's searchable from this process's keyrings
+ 	 * - we automatically take account of the fact that it may be
+@@ -854,75 +856,77 @@ long keyctl_read_key(key_serial_t keyid, char __user *buffer, size_t buflen)
+ 	 */
+ 	if (!is_key_possessed(key_ref)) {
+ 		ret = -EACCES;
+-		goto error2;
++		goto key_put_out;
+ 	}
+ 
+ 	/* the key is probably readable - now try to read it */
+ can_read_key:
+ 	if (!key->type->read) {
+ 		ret = -EOPNOTSUPP;
+-		goto error2;
++		goto key_put_out;
+ 	}
+ 
+ 	if (!buffer || !buflen) {
+ 		/* Get the key length from the read method */
+ 		ret = __keyctl_read_key(key, NULL, 0);
+-	} else {
+-
+-		/*
+-		 * Read the data with the semaphore held (since we might sleep)
+-		 * to protect against the key being updated or revoked.
+-		 *
+-		 * Allocating a temporary buffer to hold the keys before
+-		 * transferring them to user buffer to avoid potential
+-		 * deadlock involving page fault and mmap_sem.
+-		 */
+-		char *key_data = NULL;
+-		size_t key_data_len = buflen;
++		goto key_put_out;
++	}
+ 
+-		/*
+-		 * When the user-supplied key length is larger than
+-		 * PAGE_SIZE, we get the actual key length first before
+-		 * allocating a right-sized key data buffer.
+-		 */
+-		if (buflen <= PAGE_SIZE) {
+-allocbuf:
++	/*
++	 * Read the data with the semaphore held (since we might sleep)
++	 * to protect against the key being updated or revoked.
++	 *
++	 * Allocating a temporary buffer to hold the keys before
++	 * transferring them to user buffer to avoid potential
++	 * deadlock involving page fault and mmap_sem.
++	 *
++	 * key_data_len = (buflen <= PAGE_SIZE)
++	 *		? buflen : actual length of key data
++	 *
++	 * This prevents allocating arbitrary large buffer which can
++	 * be much larger than the actual key length. In the latter case,
++	 * at least 2 passes of this loop is required.
++	 */
++	key_data_len = (buflen <= PAGE_SIZE) ? buflen : 0;
++	do {
++		if (key_data_len) {
+ 			key_data = kvmalloc(key_data_len, GFP_KERNEL);
+ 			if (!key_data) {
+ 				ret = -ENOMEM;
+-				goto error2;
++				goto key_put_out;
+ 			}
+ 		}
++
+ 		ret = __keyctl_read_key(key, key_data, key_data_len);
+ 
+ 		/*
+-		 * Read methods will just return the required length
+-		 * without any copying if the provided length isn't big
+-		 * enough.
++		 * Read methods will just return the required length without
++		 * any copying if the provided length isn't large enough.
+ 		 */
+-		if (ret > 0 && ret <= buflen) {
+-			/*
+-			 * The key may change (unlikely) in between 2
+-			 * consecutive __keyctl_read_key() calls. We will
+-			 * need to allocate a larger buffer and redo the key
+-			 * read when key_data_len < ret <= buflen.
+-			 */
+-			if (!key_data || unlikely(ret > key_data_len)) {
+-				if (unlikely(key_data))
+-					__kvzfree(key_data, key_data_len);
+-				key_data_len = ret;
+-				goto allocbuf;
+-			}
++		if (ret <= 0 || ret > buflen)
++			break;
+ 
+-			if (copy_to_user(buffer, key_data, ret))
+-				ret = -EFAULT;
++		/*
++		 * The key may change (unlikely) in between 2 consecutive
++		 * __keyctl_read_key() calls. In this case, we reallocate
++		 * a larger buffer and redo the key read when
++		 * key_data_len < ret <= buflen.
++		 */
++		if (ret > key_data_len) {
++			if (unlikely(key_data))
++				__kvzfree(key_data, key_data_len);
++			key_data_len = ret;
++			continue;	/* Allocate buffer */
+ 		}
+-		__kvzfree(key_data, key_data_len);
+-	}
+ 
+-error2:
++		if (copy_to_user(buffer, key_data, ret))
++			ret = -EFAULT;
++	} while (0);
++	__kvzfree(key_data, key_data_len);
++
++key_put_out:
+ 	key_put(key);
+-error:
++out:
+ 	return ret;
+ }
+ 
+-- 
+2.18.1
 
