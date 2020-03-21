@@ -2,1073 +2,565 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0E2518DF2E
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 10:35:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86DDC18DF36
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 10:40:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728266AbgCUJfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 05:35:34 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:38243 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726995AbgCUJfe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 05:35:34 -0400
-Received: by mail-wm1-f68.google.com with SMTP id l20so8901674wmi.3
-        for <netdev@vger.kernel.org>; Sat, 21 Mar 2020 02:35:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xN2eSxKQkeHYBucrPZl5vaIOeTv+iuuT8mbNGENZ/Es=;
-        b=ceoVOXanIka59yWx1k3z400xZEaBeIG6z8nwz2/97N+aNPMwg0lCotsDLyMWVcu+zK
-         3ej6V4rkSCl6R4BpQ3TkTO0f612uiEwu2Fd0GcKTvhLkFL+A1PtN9SVa2VclXyFItz5C
-         +9dhvC5HEhRZnI282yCiANo+KByzRTl8kXnb9dG6XJvSTetvkWelmquDu7WHHGRTD49A
-         lL2j4dG7gaLI81WAABiMn9nro0QE+6XoG4vj4P4O3nt8Vxy7qZqitIdWbv2LbgMHP1Kx
-         tX5Qo2+ry+Av+QRigLBUrh6P4Ri+VU4TK84H+u1QqgK+9ZmdkXWeuKTtPv7DBDYxbkcf
-         LX7g==
+        id S1728360AbgCUJkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 05:40:17 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:54327 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727451AbgCUJkP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 05:40:15 -0400
+Received: by mail-io1-f72.google.com with SMTP id f20so357297iof.21
+        for <netdev@vger.kernel.org>; Sat, 21 Mar 2020 02:40:12 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xN2eSxKQkeHYBucrPZl5vaIOeTv+iuuT8mbNGENZ/Es=;
-        b=au/dzmYYH8gD8Za8J9ehmYrzT5QJJk82tYAESwUpvt44E8GNbV6/qDY8ubk9uGH/3c
-         OR92YAmdwrZG6x7DrWudHmeD16q0whUzISnAjNBTfZJZqQ2SwUbldH5aOmqXCOQhJzRv
-         kFao9VPn9y3mgmpg6muXqlRAWrkAU7lGH0MqfMedzVh4dLpBOlFA4GipwKoShdOboiR0
-         iIj3fOPfIVgNzdoBX7LhlCOKpFNdbsApnfxWw1H8O51WtLb4RL3oHRlxJLK6ycBW/A82
-         Y9jdj8Upn6JgLO7bCmFby8vviHUxb6jqr1IVFI2FvcPDMNWmyUM75kQLqAWJeKlhiQKN
-         ScSw==
-X-Gm-Message-State: ANhLgQ3JjHr83WlThA4voU83YIWpkPDWmPMYRBATz+u5lPNyzBbLEec7
-        22TaKjJ/L915f63oQ32oxpoT8w==
-X-Google-Smtp-Source: ADFU+vv42kJfcBWnn68GOtZi2nodveSS1/Vzm6CzzTQa/otlNwQADh8Nftjd9UhDB1PRXzTHxLI5vQ==
-X-Received: by 2002:a7b:c458:: with SMTP id l24mr14965609wmi.120.1584783327623;
-        Sat, 21 Mar 2020 02:35:27 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id o4sm12404449wrp.84.2020.03.21.02.35.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 Mar 2020 02:35:27 -0700 (PDT)
-Date:   Sat, 21 Mar 2020 10:35:25 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, parav@mellanox.com,
-        yuvalav@mellanox.com, jgg@ziepe.ca, saeedm@mellanox.com,
-        leon@kernel.org, andrew.gospodarek@broadcom.com,
-        michael.chan@broadcom.com, moshe@mellanox.com, ayal@mellanox.com,
-        eranbe@mellanox.com, vladbu@mellanox.com, kliteyn@mellanox.com,
-        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
-        tariqt@mellanox.com, oss-drivers@netronome.com,
-        snelson@pensando.io, drivers@pensando.io, aelior@marvell.com,
-        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
-        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
-        jacob.e.keller@intel.com, valex@mellanox.com,
-        linyunsheng@huawei.com, lihong.yang@intel.com,
-        vikas.gupta@broadcom.com, magnus.karlsson@intel.com
-Subject: Re: [RFC] current devlink extension plan for NICs
-Message-ID: <20200321093525.GJ11304@nanopsycho.orion>
-References: <20200319192719.GD11304@nanopsycho.orion>
- <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
- <20200320073555.GE11304@nanopsycho.orion>
- <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=KmxQnGJBLUSsjJd4YIqhEUdYIXRrtUNA9oq90lM0pIQ=;
+        b=eJYNm4MZJgUQqJTxgtEs5IWFrQUsj/CDo1ts73qnpS5rK0U4T34Jj4UAWyeK9zlvmA
+         lQr9g9t8CBXZlC1OK2OM4sAOiXfUvM0MmCSJ75R5N+6UU1YruDvSn88MxjEmrZkNLXFd
+         cXYs97nMupOsYpDZoUfs8MQ6qyIB1o6zyNfvK1mhcwb1MkSFMXbJtwPFtcy2whEPMocg
+         wmmpPn0f0FFIwR0R9+2DAYAKTH66f2JnBg9s/yKzHH2EawAM6gcOnciGpMZvt9Z7cpxE
+         vj4D4SnyaKsQi+xknGt7AfKQfAgffVxkqsK2Q3tM1hc54yOtOn9j8aFc7xc++BhEWBMw
+         e9Fw==
+X-Gm-Message-State: ANhLgQ0ikm1mGjSM67fU9uFF62cwQNpKk5g78uZzQ103EgK5Zcgv9Cti
+        IpR89CAlcRlp7kfgvB8kNykv/2VRFxQSPI5ACzYN3gwT2FW8
+X-Google-Smtp-Source: ADFU+vvbE4xKWA+UphocEErEuGNP+43V2BUsjb+m7Yo2JQ82kLdFE7pxA7j9Ywa3LfifIaF4QxuYVMRm0NqaU0BvM4VKv16XgLov
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
+X-Received: by 2002:a02:90d0:: with SMTP id c16mr12190017jag.22.1584783612132;
+ Sat, 21 Mar 2020 02:40:12 -0700 (PDT)
+Date:   Sat, 21 Mar 2020 02:40:12 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003f417405a15a30cd@google.com>
+Subject: possible deadlock in peernet2id_alloc
+From:   syzbot <syzbot+3f960c64a104eaa2c813@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com, edumazet@google.com,
+        gnault@redhat.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, nicolas.dichtel@6wind.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Mar 20, 2020 at 10:25:08PM CET, kuba@kernel.org wrote:
->On Fri, 20 Mar 2020 08:35:55 +0100 Jiri Pirko wrote:
->> Fri, Mar 20, 2020 at 04:32:53AM CET, kuba@kernel.org wrote:
->> >On Thu, 19 Mar 2020 20:27:19 +0100 Jiri Pirko wrote:  
->> >> ==================================================================
->> >> ||                                                              ||
->> >> ||            Overall illustration of example setup             ||
->> >> ||                                                              ||
->> >> ==================================================================
->> >> 
->> >> Note that there are 2 hosts in the picture. Host A may be the smartnic host,
->> >> Host B may be one of the hosts which gets PF. Also, you might omit
->> >> the Host B and just see Host A like an ordinary nic in a host.  
->> >
->> >Could you enumerate the use scenarios for the SmartNIC?
->> >
->> >Is SmartNIC always "in-line", i.e. separating the host from the network?  
->> 
->> As far as I know, it is. The host is always given a PF which is a leg of
->> eswitch managed on the SmartNIC.
->
->Cool, I was hoping that's the case. One less configuration mode :)
->
->> >Do we need a distinction based on whether the SmartNIC controls Host's
->> >eswitch vs just the Host in its entirety (i.e. VF switching vs bare
->> >metal)?  
->> 
->> I have this described in the "PFs" section. Basically we need to have a
->> toggle to say "host is managing it's own nested eswitch.
->> 
->> >I find it really useful to be able to list use cases, and constraints
->> >first. Then go onto the design.
->> >  
->> >> Note that the PF is merged with physical port representor.
->> >> That is due to simpler and flawless transition from legacy mode and back.
->> >> The devlink_ports and netdevs for physical ports are staying during
->> >> the transition.  
->> >
->> >When users put an interface under bridge or a bond they have to move 
->> >IP addresses etc. onto the bond. Changing mode to "switchdev" is a more
->> >destructive operation and there should be no expectation that
->> >configuration survives.  
->> 
->> Yeah, I was saying the same thing when our arch came up with this, but
->> I now think it is just fine. It is drivers responsibility to do the
->> shift. And the entities representing the uplink port: netdevs and
->> devlink_port instances. They can easily stay during the transition. The
->> transition only applies to the eswitch and VF entities.
->
->If PF is split from the uplink I think the MAC address should stay with
->the PF, not the uplink (which becomes just a repr in a Host case).
->
->> >The merging of the PF with the physical port representor is flawed.  
->> 
->> Why?
->
->See below.
->
->> >People push Qdisc offloads into devlink because of design shortcuts
->> >like this.  
->> 
->> Could you please explain how it is related to "Qdisc offloads"
->
->Certain users have designed with constrained PCIe bandwidth in the
->server. Meaning NIC needs to do buffering much like a switch would.
->So we need to separate the uplink from the PF to attach the Qdisc
->offload for configuring details of PCIe queuing.
+Hello,
 
-Hmm, I'm not sure I understand. Then PF and uplink is the same entity,
-you can still attach the qdisc to this entity, right? What prevents the
-same functionality as with the "split"?
+syzbot found the following crash on:
 
+HEAD commit:    86e85bf6 sfc: fix XDP-redirect in this driver
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=111eda1de00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b5acf5ac38a50651
+dashboard link: https://syzkaller.appspot.com/bug?extid=3f960c64a104eaa2c813
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
->
->> >>                         +-----------+
->> >>                         |phys port 2+-----------------------------------+
->> >>                         +-----------+                                   |
->> >>                         +-----------+                                   |
->> >>                         |phys port 1+---------------------------------+ |
->> >>                         +-----------+                                 | |
->> >>                                                                       | |
->> >> +------------------------------------------------------------------+  | |
->> >> |  devlink instance for the whole ASIC                   HOST A    |  | |
->> >> |                                                                  |  | |
->> >> |  pci/0000:06:00.0  (devlink dev)                                 |  | |
->> >> |  +->health reporters, params, info, sb, dpipe,                   |  | |
->> >> |  |  resource, traps                                              |  | |
->> >> |  |                                                               |  | |
->> >> |  +-+port_pci/0000:06:00.0/0+-----------------------+-------------|--+ |
->> >> |  | |  flavour physical pfnum 0  (phys port and pf) ^             |    |  
->> >
->> >Please no.  
->> 
->> What exactly "no"?
->
->Dual flavorness, and PF being phys port.
+Unfortunately, I don't have any reproducer for this crash yet.
 
-I see.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+3f960c64a104eaa2c813@syzkaller.appspotmail.com
 
+bridge1: port 1(macsec0) entered blocking state
+bridge1: port 1(macsec0) entered disabled state
+device macsec0 entered promiscuous mode
+=====================================================
+WARNING: SOFTIRQ-safe -> SOFTIRQ-unsafe lock order detected
+5.6.0-rc5-syzkaller #0 Not tainted
+-----------------------------------------------------
+syz-executor.1/11771 [HC0[0]:SC0[4]:HE1:SE0] is trying to acquire:
+ffff8880714700e8 (&(&net->nsid_lock)->rlock){+.+.}, at: spin_lock include/linux/spinlock.h:338 [inline]
+ffff8880714700e8 (&(&net->nsid_lock)->rlock){+.+.}, at: peernet2id_alloc+0xcd/0x3f0 net/core/net_namespace.c:240
 
->
->> >> |  | |  netdev enp6s0f0np1                           |             |    |
->> >> |  | +->health reporters, params                     |             |    |
->> >> |  | |                                               |             |    |
->> >> |  | +->slice_pci/0000:06:00.0/0+--------------------+             |    |
->> >> |  |       flavour physical                                        |    |
->> >> |  |                                                               |    |
->> >> |  +-+port_pci/0000:06:00.0/1+-----------------------+-------------|----+
->> >> |  | |  flavour physical pfnum 1  (phys port and pf) |             |
->> >> |  | |  netdev enp6s0f0np2                           |             |
->> >> |  | +->health reporters, params                     |             |
->> >> |  | |                                               |             |
->> >> |  | +->slice_pci/0000:06:00.0/1+--------------------+             |
->> >> |  |       flavour physical                                        |
->> >> |  |                                                               |
->> >> |  +-+-+port_pci/0000:06:00.0/2+-----------+-------------------+   |
->> >> |  | | |  flavour pcipf pfnum 2            ^                   |   |
->> >> |  | | |  netdev enp6s0f0pf2               |                   |   |
->> >> |  | + +->params                           |                   |   |
->> >> |  | |                                     |                   |   |
->> >> |  | +->slice_pci/0000:06:00.0/2+----------+                   |   |
->> >> |  |       flavour pcipf                                       |   |
->> >> |  |                                                           |   |
->> >> |  +-+-+port_pci/0000:06:00.0/3+-----------+----------------+  |   |
->> >> |  | | |  flavour pcivf pfnum 2 vfnum 0    ^                |  |   |
->> >> |  | | |  netdev enp6s0pf2vf0              |                |  |   |
->> >> |  | | +->params                           |                |  |   |
->> >> |  | |                                     |                |  |   |
->> >> |  | +-+slice_pci/0000:06:00.0/3+----------+                |  |   |
->> >> |  |   |   flavour pcivf                                    |  |   |
->> >> |  |   +->rate (qos), mpgroup, mac                          |  |   |
->> >> |  |                                                        |  |   |
->> >> |  +-+-+port_pci/0000:06:00.0/4+-----------+-------------+  |  |   |
->> >> |  | | |  flavour pcivf pfnum 0 vfnum 0    ^             |  |  |   |  
->> >
->> >So PF 0 is both on the SmartNIC where it is physical and on the Hosts?
->> >Is this just error in the diagram?  
->> 
->> I think it is error in the reading. This is the VF representation
->> of VF pci/0000:06:00.1, on the same host A, which is the SmartNIC host.
->
->Hm, I see pf 0 as the first port that has a line to uplink,
->and here pf 0 vf 0 has a line to Host B.
+and this task is already holding:
+ffff888060822280 (&dev->addr_list_lock_key#188){+...}, at: spin_lock_bh include/linux/spinlock.h:343 [inline]
+ffff888060822280 (&dev->addr_list_lock_key#188){+...}, at: netif_addr_lock_bh include/linux/netdevice.h:4163 [inline]
+ffff888060822280 (&dev->addr_list_lock_key#188){+...}, at: dev_uc_add+0x1f/0xb0 net/core/dev_addr_lists.c:588
+which would create a new lock dependency:
+ (&dev->addr_list_lock_key#188){+...} -> (&(&net->nsid_lock)->rlock){+.+.}
 
-No. The lane is to "Host A"
+but this new dependency connects a SOFTIRQ-irq-safe lock:
+ (&(&mc->mca_lock)->rlock){+.-.}
 
->
->The VF above is "pfnum 2 vfnum 0" which makes sense, PF 2 is 
->Host B's PF. So VF 0 of PF 2 is also on Host B.
->
->> >> |  | | |  netdev enp6s0pf0vf0              |             |  |  |   |
->> >> |  | | +->params                           |             |  |  |   |
->> >> |  | |                                     |             |  |  |   |
->> >> |  | +-+slice_pci/0000:06:00.0/4+----------+             |  |  |   |
->> >> |  |   |   flavour pcivf                                 |  |  |   |
->> >> |  |   +->rate (qos), mpgroup, mac                       |  |  |   |
->> >> |  |                                                     |  |  |   |
->> >> |  +-+-+port_pci/0000:06:00.0/5+-----------+----------+  |  |  |   |
->> >> |  | | |  flavour pcisf pfnum 0 sfnum 1    ^          |  |  |  |   |
->> >> |  | | |  netdev enp6s0pf0sf1              |          |  |  |  |   |
->> >> |  | | +->params                           |          |  |  |  |   |
->> >> |  | |                                     |          |  |  |  |   |
->> >> |  | +-+slice_pci/0000:06:00.0/5+----------+          |  |  |  |   |
->> >> |  |   |   flavour pcisf                              |  |  |  |   |
->> >> |  |   +->rate (qos), mpgroup, mac                    |  |  |  |   |
->> >> |  |                                                  |  |  |  |   |
->> >> |  +-+slice_pci/0000:06:00.0/6+--------------------+  |  |  |  |   |
->> >> |        flavour pcivf pfnum 0 vfnum 1             |  |  |  |  |   |
->> >> |            (non-ethernet (IB, NVE)               |  |  |  |  |   |
->> >> |                                                  |  |  |  |  |   |
->> >> +------------------------------------------------------------------+
->> >>                                                    |  |  |  |  |
->> >>                                                    |  |  |  |  |
->> >>                                                    |  |  |  |  |
->> >> +----------------------------------------------+   |  |  |  |  |
->> >> |  devlink instance PF (other host)    HOST B  |   |  |  |  |  |
->> >> |                                              |   |  |  |  |  |
->> >> |  pci/0000:10:00.0  (devlink dev)             |   |  |  |  |  |
->> >> |  +->health reporters, info                   |   |  |  |  |  |
->> >> |  |                                           |   |  |  |  |  |
->> >> |  +-+port_pci/0000:10:00.0/1+---------------------------------+
->> >> |    |  flavour virtual                        |   |  |  |  |
->> >> |    |  netdev enp16s0f0                       |   |  |  |  |
->> >> |    +->health reporters                       |   |  |  |  |
->> >> |                                              |   |  |  |  |
->> >> +----------------------------------------------+   |  |  |  |
->> >>                                                    |  |  |  |
->> >> +----------------------------------------------+   |  |  |  |
->> >> |  devlink instance VF (other host)    HOST B  |   |  |  |  |
->> >> |                                              |   |  |  |  |
->> >> |  pci/0000:10:00.1  (devlink dev)             |   |  |  |  |
->> >> |  +->health reporters, info                   |   |  |  |  |
->> >> |  |                                           |   |  |  |  |
->> >> |  +-+port_pci/0000:10:00.1/1+------------------------------+
->> >> |    |  flavour virtual                        |   |  |  |
->> >> |    |  netdev enp16s0f0v0                     |   |  |  |
->> >> |    +->health reporters                       |   |  |  |
->> >> |                                              |   |  |  |
->> >> +----------------------------------------------+   |  |  |
->> >>                                                    |  |  |
->> >> +----------------------------------------------+   |  |  |
->> >> |  devlink instance VF                 HOST A  |   |  |  |
->> >> |                                              |   |  |  |
->> >> |  pci/0000:06:00.1  (devlink dev)             |   |  |  |
->> >> |  +->health reporters, info                   |   |  |  |
->> >> |  |                                           |   |  |  |
->> >> |  +-+port_pci/0000:06:00.1/1+---------------------------+
->> >> |    |  flavour virtual                        |   |  |
->> >> |    |  netdev enp6s0f0v0                      |   |  |
->> >> |    +->health reporters                       |   |  |
->> >> |                                              |   |  |
->> >> +----------------------------------------------+   |  |
->> >>                                                    |  |
->> >> +----------------------------------------------+   |  |
->> >> |  devlink instance SF                 HOST A  |   |  |
->> >> |                                              |   |  |
->> >> |  pci/0000:06:00.0%sf1    (devlink dev)       |   |  |
->> >> |  +->health reporters, info                   |   |  |
->> >> |  |                                           |   |  |
->> >> |  +-+port_pci/0000:06:00.0%sf1/1+--------------------+
->> >> |    |  flavour virtual                        |   |
->> >> |    |  netdev enp6s0f0s1                      |   |
->> >> |    +->health reporters                       |   |
->> >> |                                              |   |
->> >> +----------------------------------------------+   |
->> >>                                                    |
->> >> +----------------------------------------------+   |
->> >> |  devlink instance VF                 HOST A  |   |
->> >> |                                              |   |
->> >> |  pci/0000:06:00.2  (devlink dev)+----------------+
->> >> |  +->health reporters, info                   |
->> >> |                                              |
->> >> +----------------------------------------------+
->> >> 
->> >> 
->> >> 
->> >> 
->> >> ==================================================================
->> >> ||                                                              ||
->> >> ||                 what needs to be implemented                 ||
->> >> ||                                                              ||
->> >> ==================================================================
->> >> 
->> >> 1) physical port "pfnum". When PF and physical port representor
->> >>    are merged, the instance of devlink_port representing the physical port
->> >>    and PF needs to have "pfnum" attribute to be in sync
->> >>    with other PF port representors.  
->> >
->> >See above.
->> >  
->> >> 2) per-port health reporters are not implemented yet.  
->> >
->> >Which health reports are visible on a SmartNIC port?   
->> 
->> I think there is usecase for SmartNIC uplink/pf port health reporters.
->> Those are the ones which we have for TX/RX queues on devlink instance
->> now (that was a mistake). 
->> 
->> >
->> >The Host ones or the SmartNIC ones?  
->> 
->> In the host, I think there is a usecase for VF/SF devlink_port health
->> reporters - also for TX/RX queues.
->> 
->> >I think queue reporters should be per-queue, see below.  
->> 
->> Depends. There are reporters, like "fw" that are per-asic.
->> 
->> 
->> >  
->> >> 3) devlink_port instance in PF/VF/SF flavour "virtual". In PF/VF/SF devlink
->> >>    instance (in VM for example), there would make sense to have devlink_port
->> >>    instance. At least to carry link to netdevice name (otherwise we have
->> >>    no easy way to find out devlink instance and netdevice belong to each other).
->> >>    I was thinking about flavour name, we have to distinguish from eswitch
->> >>    devlink port flavours "pcipf, pcivf, pcisf".  
->> >
->> >Virtual is the flavor for the VF port, IIUC, so what's left to name?
->> >Do you mean pick a phys_port_name format?  
->> 
->> No. "virtual" is devlink_port flavour in the host in the VF devlink
->
->Yeah, I'm not 100% sure what you're describing as missing.
->
->Perhaps you could rephrase this point?
+... which became SOFTIRQ-irq-safe at:
+  lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+  __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+  _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
+  spin_lock_bh include/linux/spinlock.h:343 [inline]
+  mld_send_cr net/ipv6/mcast.c:1953 [inline]
+  mld_ifc_timer_expire+0x2b5/0x920 net/ipv6/mcast.c:2477
+  call_timer_fn+0x195/0x760 kernel/time/timer.c:1404
+  expire_timers kernel/time/timer.c:1449 [inline]
+  __run_timers kernel/time/timer.c:1773 [inline]
+  __run_timers kernel/time/timer.c:1740 [inline]
+  run_timer_softirq+0x623/0x1600 kernel/time/timer.c:1786
+  __do_softirq+0x26c/0x99d kernel/softirq.c:292
+  invoke_softirq kernel/softirq.c:373 [inline]
+  irq_exit+0x192/0x1d0 kernel/softirq.c:413
+  exiting_irq arch/x86/include/asm/apic.h:546 [inline]
+  smp_apic_timer_interrupt+0x19e/0x600 arch/x86/kernel/apic/apic.c:1146
+  apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
+  arch_local_irq_restore arch/x86/include/asm/paravirt.h:759 [inline]
+  kmem_cache_free+0xa4/0x320 mm/slab.c:3695
+  putname+0xe1/0x120 fs/namei.c:259
+  filename_lookup+0x282/0x3e0 fs/namei.c:2475
+  user_path_at include/linux/namei.h:58 [inline]
+  vfs_statx+0x119/0x1e0 fs/stat.c:197
+  vfs_stat include/linux/fs.h:3271 [inline]
+  __do_sys_newstat+0x96/0x120 fs/stat.c:351
+  do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
-If you look at the example above. See:
-pci/0000:10:00.0
-That is a devlink instance in host B. It has a port:
-pci/0000:10:00.0/1
-with flavour "virtual"
-that tells the user that this is a virtual link, to the parent eswitch.
+to a SOFTIRQ-irq-unsafe lock:
+ (&(&net->nsid_lock)->rlock){+.+.}
 
+... which became SOFTIRQ-irq-unsafe at:
+...
+  lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+  __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+  _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+  spin_lock include/linux/spinlock.h:338 [inline]
+  peernet2id_alloc+0xcd/0x3f0 net/core/net_namespace.c:240
+  dev_change_net_namespace+0x2a6/0xd30 net/core/dev.c:10066
+  do_setlink+0x18b/0x35e0 net/core/rtnetlink.c:2501
+  __rtnl_newlink+0xad5/0x1590 net/core/rtnetlink.c:3252
+  rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3377
+  rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5440
+  netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+  netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+  netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+  netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+  sock_sendmsg_nosec net/socket.c:652 [inline]
+  sock_sendmsg+0xcf/0x120 net/socket.c:672
+  ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
+  ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+  __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
+  do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
->
->> >>    This was recently implemented by Parav:
->> >> commit 0a303214f8cb8e2043a03f7b727dba620e07e68d
->> >> Merge: c04d102ba56e 162add8cbae4
->> >> Author: David S. Miller <davem@davemloft.net>
->> >> Date:   Tue Mar 3 15:40:40 2020 -0800
->> >> 
->> >>     Merge branch 'devlink-virtual-port'
->> >> 
->> >>    What is missing is the "virtual" flavour for nested PF.
->> >> 
->> >> 4) slice is not implemented yet. This is the original "vdev/subdev" concept.
->> >>    See below section "Slice user cmdline API draft".
->> >> 
->> >> 5) SFs are not implemented.
->> >>    See below section "SF (subfunction) user cmdline API draft".
->> >> 
->> >> 6) rate for slice are not implemented yet.
->> >>    See below section "Slice rate user cmdline API draft".
->> >> 
->> >> 7) mpgroup for slice is not implemented yet.
->> >>    See below section "Slice mpgroup user cmdline API draft".
->> >> 
->> >> 8) VF manual creation using devlink is not implemented yet.
->> >>    See below section "VF manual creation and activation user cmdline API draft".
->> >>  
->> >> 9) PF aliasing. One devlink instance and multiple PFs sharing it as they have one
->> >>    merged e-switch.
->> >> 
->> >> 
->> >> 
->> >> ==================================================================
->> >> ||                                                              ||
->> >> ||                  Issues/open questions                       ||
->> >> ||                                                              ||
->> >> ==================================================================
->> >> 
->> >> 1) "pfnum" has to be per-asic(/devlink instance), not per-host.
->> >>    That means that in smartNIC scenario, we cannot have "pfnum 0"
->> >>    for smartNIC and "pfnum 0" for host as well.  
->> >
->> >Right, exactly, NFP already does that.
->> >  
->> >> 2) Q: for TX, RX queues reporters, should it be bound to devlink_port?
->> >>    For which flavours this might make sense?
->> >>    Most probably for flavours "physical"/"virtual".
->> >>    How about the reporters in VF/SF?  
->> >
->> >I think with the work Magnus is doing we should have queues as first  
->> 
->> Can you point me to the "work"?
->
->There was a presentation at LPC last year, and some API proposal
->circulated off-list :( Let's CC Magnus.
+other info that might help us debug this:
 
-Ok.
+Chain exists of:
+  &(&mc->mca_lock)->rlock --> &dev->addr_list_lock_key#188 --> &(&net->nsid_lock)->rlock
+
+ Possible interrupt unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&(&net->nsid_lock)->rlock);
+                               local_irq_disable();
+                               lock(&(&mc->mca_lock)->rlock);
+                               lock(&dev->addr_list_lock_key#188);
+  <Interrupt>
+    lock(&(&mc->mca_lock)->rlock);
+
+ *** DEADLOCK ***
+
+3 locks held by syz-executor.1/11771:
+ #0: ffffffff8a34fbc0 (rtnl_mutex){+.+.}, at: rtnl_lock net/core/rtnetlink.c:72 [inline]
+ #0: ffffffff8a34fbc0 (rtnl_mutex){+.+.}, at: rtnetlink_rcv_msg+0x3f9/0xad0 net/core/rtnetlink.c:5437
+ #1: ffff8880607f4bd0 (&(&br->hash_lock)->rlock){+.-.}, at: spin_lock_bh include/linux/spinlock.h:343 [inline]
+ #1: ffff8880607f4bd0 (&(&br->hash_lock)->rlock){+.-.}, at: br_fdb_insert+0x24/0x50 net/bridge/br_fdb.c:553
+ #2: ffff888060822280 (&dev->addr_list_lock_key#188){+...}, at: spin_lock_bh include/linux/spinlock.h:343 [inline]
+ #2: ffff888060822280 (&dev->addr_list_lock_key#188){+...}, at: netif_addr_lock_bh include/linux/netdevice.h:4163 [inline]
+ #2: ffff888060822280 (&dev->addr_list_lock_key#188){+...}, at: dev_uc_add+0x1f/0xb0 net/core/dev_addr_lists.c:588
+
+the dependencies between SOFTIRQ-irq-safe lock and the holding lock:
+ -> (&(&mc->mca_lock)->rlock){+.-.} {
+    HARDIRQ-ON-W at:
+                      lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+                      __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+                      _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
+                      spin_lock_bh include/linux/spinlock.h:343 [inline]
+                      mld_del_delrec+0x344/0x570 net/ipv6/mcast.c:786
+                      __ipv6_dev_mc_inc+0x80c/0xc90 net/ipv6/mcast.c:930
+                      ipv6_add_dev net/ipv6/addrconf.c:453 [inline]
+                      ipv6_add_dev+0xa2e/0x10b0 net/ipv6/addrconf.c:363
+                      addrconf_init+0xd3/0x39a net/ipv6/addrconf.c:7067
+                      inet6_init+0x368/0x6dc net/ipv6/af_inet6.c:1071
+                      do_one_initcall+0x10a/0x7d0 init/main.c:1152
+                      do_initcall_level init/main.c:1225 [inline]
+                      do_initcalls init/main.c:1241 [inline]
+                      do_basic_setup init/main.c:1261 [inline]
+                      kernel_init_freeable+0x501/0x5ae init/main.c:1445
+                      kernel_init+0xd/0x1bb init/main.c:1352
+                      ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+    IN-SOFTIRQ-W at:
+                      lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+                      __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+                      _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
+                      spin_lock_bh include/linux/spinlock.h:343 [inline]
+                      mld_send_cr net/ipv6/mcast.c:1953 [inline]
+                      mld_ifc_timer_expire+0x2b5/0x920 net/ipv6/mcast.c:2477
+                      call_timer_fn+0x195/0x760 kernel/time/timer.c:1404
+                      expire_timers kernel/time/timer.c:1449 [inline]
+                      __run_timers kernel/time/timer.c:1773 [inline]
+                      __run_timers kernel/time/timer.c:1740 [inline]
+                      run_timer_softirq+0x623/0x1600 kernel/time/timer.c:1786
+                      __do_softirq+0x26c/0x99d kernel/softirq.c:292
+                      invoke_softirq kernel/softirq.c:373 [inline]
+                      irq_exit+0x192/0x1d0 kernel/softirq.c:413
+                      exiting_irq arch/x86/include/asm/apic.h:546 [inline]
+                      smp_apic_timer_interrupt+0x19e/0x600 arch/x86/kernel/apic/apic.c:1146
+                      apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
+                      arch_local_irq_restore arch/x86/include/asm/paravirt.h:759 [inline]
+                      kmem_cache_free+0xa4/0x320 mm/slab.c:3695
+                      putname+0xe1/0x120 fs/namei.c:259
+                      filename_lookup+0x282/0x3e0 fs/namei.c:2475
+                      user_path_at include/linux/namei.h:58 [inline]
+                      vfs_statx+0x119/0x1e0 fs/stat.c:197
+                      vfs_stat include/linux/fs.h:3271 [inline]
+                      __do_sys_newstat+0x96/0x120 fs/stat.c:351
+                      do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+                      entry_SYSCALL_64_after_hwframe+0x49/0xbe
+    INITIAL USE at:
+                     lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+                     __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+                     _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
+                     spin_lock_bh include/linux/spinlock.h:343 [inline]
+                     mld_del_delrec+0x344/0x570 net/ipv6/mcast.c:786
+                     __ipv6_dev_mc_inc+0x80c/0xc90 net/ipv6/mcast.c:930
+                     ipv6_add_dev net/ipv6/addrconf.c:453 [inline]
+                     ipv6_add_dev+0xa2e/0x10b0 net/ipv6/addrconf.c:363
+                     addrconf_init+0xd3/0x39a net/ipv6/addrconf.c:7067
+                     inet6_init+0x368/0x6dc net/ipv6/af_inet6.c:1071
+                     do_one_initcall+0x10a/0x7d0 init/main.c:1152
+                     do_initcall_level init/main.c:1225 [inline]
+                     do_initcalls init/main.c:1241 [inline]
+                     do_basic_setup init/main.c:1261 [inline]
+                     kernel_init_freeable+0x501/0x5ae init/main.c:1445
+                     kernel_init+0xd/0x1bb init/main.c:1352
+                     ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+  }
+  ... key      at: [<ffffffff8cf734a0>] __key.78637+0x0/0x40
+  ... acquired at:
+   __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+   _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
+   spin_lock_bh include/linux/spinlock.h:343 [inline]
+   netif_addr_lock_bh include/linux/netdevice.h:4163 [inline]
+   __dev_mc_add+0x28/0xd0 net/core/dev_addr_lists.c:765
+   igmp6_group_added+0x375/0x420 net/ipv6/mcast.c:672
+   __ipv6_dev_mc_inc+0x814/0xc90 net/ipv6/mcast.c:931
+   ipv6_add_dev net/ipv6/addrconf.c:456 [inline]
+   ipv6_add_dev+0xa3d/0x10b0 net/ipv6/addrconf.c:363
+   addrconf_notify+0x960/0x2310 net/ipv6/addrconf.c:3497
+   notifier_call_chain+0xc0/0x230 kernel/notifier.c:83
+   call_netdevice_notifiers_info net/core/dev.c:1948 [inline]
+   call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1933
+   call_netdevice_notifiers_extack net/core/dev.c:1960 [inline]
+   call_netdevice_notifiers net/core/dev.c:1974 [inline]
+   register_netdevice+0x69f/0xfc0 net/core/dev.c:9401
+   macsec_newlink+0x2d4/0x1070 drivers/net/macsec.c:3875
+   __rtnl_newlink+0xf18/0x1590 net/core/rtnetlink.c:3319
+   rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3377
+   rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5440
+   netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+   netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+   netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+   netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+   sock_sendmsg_nosec net/socket.c:652 [inline]
+   sock_sendmsg+0xcf/0x120 net/socket.c:672
+   __sys_sendto+0x21a/0x330 net/socket.c:1998
+   __do_sys_sendto net/socket.c:2010 [inline]
+   __se_sys_sendto net/socket.c:2006 [inline]
+   __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2006
+   do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+-> (&dev->addr_list_lock_key#188){+...} {
+   HARDIRQ-ON-W at:
+                    lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+                    __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+                    _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
+                    spin_lock_bh include/linux/spinlock.h:343 [inline]
+                    netif_addr_lock_bh include/linux/netdevice.h:4163 [inline]
+                    __dev_mc_add+0x28/0xd0 net/core/dev_addr_lists.c:765
+                    igmp6_group_added+0x375/0x420 net/ipv6/mcast.c:672
+                    __ipv6_dev_mc_inc+0x814/0xc90 net/ipv6/mcast.c:931
+                    ipv6_add_dev net/ipv6/addrconf.c:456 [inline]
+                    ipv6_add_dev+0xa3d/0x10b0 net/ipv6/addrconf.c:363
+                    addrconf_notify+0x960/0x2310 net/ipv6/addrconf.c:3497
+                    notifier_call_chain+0xc0/0x230 kernel/notifier.c:83
+                    call_netdevice_notifiers_info net/core/dev.c:1948 [inline]
+                    call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1933
+                    call_netdevice_notifiers_extack net/core/dev.c:1960 [inline]
+                    call_netdevice_notifiers net/core/dev.c:1974 [inline]
+                    register_netdevice+0x69f/0xfc0 net/core/dev.c:9401
+                    macsec_newlink+0x2d4/0x1070 drivers/net/macsec.c:3875
+                    __rtnl_newlink+0xf18/0x1590 net/core/rtnetlink.c:3319
+                    rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3377
+                    rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5440
+                    netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+                    netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+                    netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+                    netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+                    sock_sendmsg_nosec net/socket.c:652 [inline]
+                    sock_sendmsg+0xcf/0x120 net/socket.c:672
+                    __sys_sendto+0x21a/0x330 net/socket.c:1998
+                    __do_sys_sendto net/socket.c:2010 [inline]
+                    __se_sys_sendto net/socket.c:2006 [inline]
+                    __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2006
+                    do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+                    entry_SYSCALL_64_after_hwframe+0x49/0xbe
+   INITIAL USE at:
+                   lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+                   __raw_spin_lock_bh include/linux/spinlock_api_smp.h:135 [inline]
+                   _raw_spin_lock_bh+0x2f/0x40 kernel/locking/spinlock.c:175
+                   spin_lock_bh include/linux/spinlock.h:343 [inline]
+                   netif_addr_lock_bh include/linux/netdevice.h:4163 [inline]
+                   __dev_mc_add+0x28/0xd0 net/core/dev_addr_lists.c:765
+                   igmp6_group_added+0x375/0x420 net/ipv6/mcast.c:672
+                   __ipv6_dev_mc_inc+0x814/0xc90 net/ipv6/mcast.c:931
+                   ipv6_add_dev net/ipv6/addrconf.c:456 [inline]
+                   ipv6_add_dev+0xa3d/0x10b0 net/ipv6/addrconf.c:363
+                   addrconf_notify+0x960/0x2310 net/ipv6/addrconf.c:3497
+                   notifier_call_chain+0xc0/0x230 kernel/notifier.c:83
+                   call_netdevice_notifiers_info net/core/dev.c:1948 [inline]
+                   call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:1933
+                   call_netdevice_notifiers_extack net/core/dev.c:1960 [inline]
+                   call_netdevice_notifiers net/core/dev.c:1974 [inline]
+                   register_netdevice+0x69f/0xfc0 net/core/dev.c:9401
+                   macsec_newlink+0x2d4/0x1070 drivers/net/macsec.c:3875
+                   __rtnl_newlink+0xf18/0x1590 net/core/rtnetlink.c:3319
+                   rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3377
+                   rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5440
+                   netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+                   netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+                   netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+                   netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+                   sock_sendmsg_nosec net/socket.c:652 [inline]
+                   sock_sendmsg+0xcf/0x120 net/socket.c:672
+                   __sys_sendto+0x21a/0x330 net/socket.c:1998
+                   __do_sys_sendto net/socket.c:2010 [inline]
+                   __se_sys_sendto net/socket.c:2006 [inline]
+                   __x64_sys_sendto+0xdd/0x1b0 net/socket.c:2006
+                   do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+                   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+ }
+ ... key      at: [<ffff888060822b48>] 0xffff888060822b48
+ ... acquired at:
+   lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+   __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+   _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+   spin_lock include/linux/spinlock.h:338 [inline]
+   peernet2id_alloc+0xcd/0x3f0 net/core/net_namespace.c:240
+   rtnl_fill_link_netnsid net/core/rtnetlink.c:1565 [inline]
+   rtnl_fill_ifinfo+0x1e7c/0x39b0 net/core/rtnetlink.c:1751
+   rtmsg_ifinfo_build_skb+0xcd/0x1a0 net/core/rtnetlink.c:3685
+   rtmsg_ifinfo_event.part.0+0x49/0xe0 net/core/rtnetlink.c:3717
+   rtmsg_ifinfo_event net/core/rtnetlink.c:3728 [inline]
+   rtmsg_ifinfo+0x7f/0xa0 net/core/rtnetlink.c:3726
+   __dev_notify_flags+0x235/0x2c0 net/core/dev.c:8177
+   __dev_set_promiscuity+0x191/0x210 net/core/dev.c:7953
+   dev_set_promiscuity+0x4f/0xe0 net/core/dev.c:7973
+   macsec_dev_change_rx_flags+0x13b/0x170 drivers/net/macsec.c:3423
+   dev_change_rx_flags net/core/dev.c:7906 [inline]
+   __dev_set_promiscuity.cold+0x2e3/0x340 net/core/dev.c:7950
+   __dev_set_rx_mode+0x21f/0x300 net/core/dev.c:8055
+   dev_uc_add+0xa1/0xb0 net/core/dev_addr_lists.c:592
+   fdb_add_hw_addr+0xf3/0x280 net/bridge/br_fdb.c:165
+   fdb_insert+0x173/0x1c0 net/bridge/br_fdb.c:542
+   br_fdb_insert+0x35/0x50 net/bridge/br_fdb.c:554
+   br_add_if+0xca2/0x1800 net/bridge/br_if.c:648
+   do_set_master net/core/rtnetlink.c:2468 [inline]
+   do_set_master+0x1d7/0x230 net/core/rtnetlink.c:2441
+   do_setlink+0xaa2/0x35e0 net/core/rtnetlink.c:2603
+   __rtnl_newlink+0xad5/0x1590 net/core/rtnetlink.c:3252
+   rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3377
+   rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5440
+   netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+   netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+   netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+   netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+   sock_sendmsg_nosec net/socket.c:652 [inline]
+   sock_sendmsg+0xcf/0x120 net/socket.c:672
+   ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
+   ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+   __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
+   do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+   entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
 
->
->> >class citizens to be able to allocate them to ports.
->> >
->> >Would this mean we can hang reporters off queues?  
->> 
->> Yes, If we have a "queue object", the per-queue reporter would make sense.
->> 
->> 
->> >  
->> >> 3) How the management of nested switch is handled. The PFs created dynamically
->> >>    or the ones in hosts in smartnic scenario may themselves be each a manager
->> >>    of nested e-switch. How to toggle this capability?
->> >>    During creation by a cmdline option?
->> >>    During lifetime in case the PF does not have any childs (VFs/SFs)?  
->> >
->> >Maybe the grouping of functions into devlink instances would help? 
->> >SmartNIC could control if the host can perform switching between
->> >functions by either putting them in the same Host side devlink 
->> >instance or not.  
->> 
->> I'm not sure I follow. There is a number of PFs created "on probe".
->> Those are fixed and driver knows where to put them.
->> The comment was about possible "dynamic PF" created by user in the same
->> was he creates SF, by devlink cmdline.
->
->How does the driver differentiate between a dynamic and static PF, 
->and why are they different in the first place? :S
-
-They are not different. The driver just has to know to instantiate the
-static ones on probe, so in SmartNIC case each host has a PF.
-
-
->
->Also, once the PFs are created user may want to use them together 
->or delegate to a VM/namespace. So when I was thinking we'd need some 
->sort of a secure handshake between PFs and FW for the host to prove 
->to FW that the PFs belong to the same domain of control, and their
->resources (and eswitches) can be pooled.
->
->I'm digressing..
-
-Yeah. This needs to be sorted out.
-
-
->
->> Now the PF itself can have a "nested eswitch" to manage. The "parent
->> eswitch" where the PF was created would only see one leg to the "nested
->> eswitch".
->> 
->> This "nested eswitch management" might or might not be required. Depends
->> on a usecare. The question was, how to configure that I as a user
->> want this or not.
->
->Ack. I'm extending your question. I think the question is not only who
->controls the eswitch but also which PFs share the eswitch.
-
-Yes.
-
->
->I think eswitch is just one capability, but SmartNIC will want to
->control which ports see what capabilities in general. crypto offloads
->and such.
->
->I presume in your model if host controls eswitch the smartNIC sees just
-
-host may control the "nested eswitch" in the SmartNIC case.
-
-
->what what comes out of Hosts single "uplink"? What if SmartNIC wants
->the host to be able to control the forwarding but not loose the ability
->to tap the VF to VF traffic?
-
-You mean that the VF representors would be in both SmartNIC host and
-host? I don't know how that could work. I think it has to be either
-there or there.
-
-
-
->
->> >> ==================================================================
->> >> ||                                                              ||
->> >> ||                Slice user cmdline API draft                  ||
->> >> ||                                                              ||
->> >> ==================================================================
->> >> 
->> >> Note that some of the "devlink port" attributes may be forgotten or misordered.
->> >> 
->> >> Slices and ports are created together by device driver. The driver defines
->> >> the relationships during creation.
->> >> 
->> >> 
->> >> $ devlink port show
->> >> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
->> >> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
->> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 type eth netdev enp6s0pf0vf0 slice 0
->> >> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1 type eth netdev enp6s0pf0vf1 slice 1
->> >> pci/0000:06:00.0/4: flavour pcivf pfnum 1 vfnum 0 type eth netdev enp6s0pf1vf0 slice 2
->> >> pci/0000:06:00.0/5: flavour pcivf pfnum 1 vfnum 1 type eth netdev enp6s0pf1vf1 slice 3
->> >> 
->> >> $ devlink slice show
->> >> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
->> >> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
->> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66 state active
->> >> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1 port 3 hw_addr 10:22:33:44:55:77 state active
->> >> pci/0000:06:00.0/4: flavour pcivf pfnum 1 vfnum 0 port 4 hw_addr 10:22:33:44:55:88 state active
->> >> pci/0000:06:00.0/5: flavour pcivf pfnum 1 vfnum 1 port 5 hw_addr 10:22:33:44:55:99 state active
->> >> pci/0000:06:00.0/6: flavour pcivf pfnum 1 vfnum 2
->> >> 
->> >> In these 2 outputs you can see the relationships. Attributes "slice" and "port"
->> >> indicate the slice-port pairs.
->> >> 
->> >> Also, there is a fixed "state" attribute with value "active". This is by
->> >> default as the VFs are always created active. In future, it is planned
->> >> to implement manual VF creation and activation, similar to what is below
->> >> described for SFs.
->> >> 
->> >> Note that for non-ethernet slice (the last one) does not have any
->> >> related port port. It can be for example NVE or IB. But since
->> >> the "hw_addr" attribute is also omitted, it isn't IB.
->> >> 
->> >>  
->> >> Now set a different MAC address for VF1 on PF0:
->> >> $ devlink slice set pci/0000:06:00.0/3 hw_addr aa:bb:cc:dd:ee:ff
->> >> 
->> >> $ devlink slice show
->> >> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
->> >> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
->> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66 state active
->> >> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1 port 3 hw_addr aa:bb:cc:dd:ee:ff state active
->> >> pci/0000:06:00.0/4: flavour pcivf pfnum 1 vfnum 0 port 4 hw_addr 10:22:33:44:55:88 state active
->> >> pci/0000:06:00.0/5: flavour pcivf pfnum 1 vfnum 1 port 5 hw_addr 10:22:33:44:55:99 state active
->> >> pci/0000:06:00.0/6: flavour pcivf pfnum 1 vfnum 2  
->> >
->> >What are slices?  
->> 
->> Slice is basically a piece of ASIC. pf/vf/sf. They serve for
->> configuration of the "other side of the wire". Like the mac. Hypervizor
->> admin can use the slite to set the mac address of a VF which is in the
->> virtual machine. Basically this should be a replacement of "ip vf"
->> command.
->
->I lost my mail archive but didn't we already have a long thread with
->Parav about this?
-
-I believe so.
+the dependencies between the lock to be acquired
+ and SOFTIRQ-irq-unsafe lock:
+-> (&(&net->nsid_lock)->rlock){+.+.} {
+   HARDIRQ-ON-W at:
+                    lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+                    __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+                    _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+                    spin_lock include/linux/spinlock.h:338 [inline]
+                    peernet2id_alloc+0xcd/0x3f0 net/core/net_namespace.c:240
+                    dev_change_net_namespace+0x2a6/0xd30 net/core/dev.c:10066
+                    do_setlink+0x18b/0x35e0 net/core/rtnetlink.c:2501
+                    __rtnl_newlink+0xad5/0x1590 net/core/rtnetlink.c:3252
+                    rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3377
+                    rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5440
+                    netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+                    netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+                    netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+                    netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+                    sock_sendmsg_nosec net/socket.c:652 [inline]
+                    sock_sendmsg+0xcf/0x120 net/socket.c:672
+                    ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
+                    ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+                    __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
+                    do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+                    entry_SYSCALL_64_after_hwframe+0x49/0xbe
+   SOFTIRQ-ON-W at:
+                    lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+                    __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+                    _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+                    spin_lock include/linux/spinlock.h:338 [inline]
+                    peernet2id_alloc+0xcd/0x3f0 net/core/net_namespace.c:240
+                    dev_change_net_namespace+0x2a6/0xd30 net/core/dev.c:10066
+                    do_setlink+0x18b/0x35e0 net/core/rtnetlink.c:2501
+                    __rtnl_newlink+0xad5/0x1590 net/core/rtnetlink.c:3252
+                    rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3377
+                    rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5440
+                    netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+                    netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+                    netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+                    netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+                    sock_sendmsg_nosec net/socket.c:652 [inline]
+                    sock_sendmsg+0xcf/0x120 net/socket.c:672
+                    ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
+                    ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+                    __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
+                    do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+                    entry_SYSCALL_64_after_hwframe+0x49/0xbe
+   INITIAL USE at:
+                   lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+                   __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+                   _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+                   spin_lock include/linux/spinlock.h:338 [inline]
+                   peernet2id_alloc+0xcd/0x3f0 net/core/net_namespace.c:240
+                   dev_change_net_namespace+0x2a6/0xd30 net/core/dev.c:10066
+                   do_setlink+0x18b/0x35e0 net/core/rtnetlink.c:2501
+                   __rtnl_newlink+0xad5/0x1590 net/core/rtnetlink.c:3252
+                   rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3377
+                   rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5440
+                   netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+                   netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+                   netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+                   netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+                   sock_sendmsg_nosec net/socket.c:652 [inline]
+                   sock_sendmsg+0xcf/0x120 net/socket.c:672
+                   ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
+                   ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+                   __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
+                   do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+                   entry_SYSCALL_64_after_hwframe+0x49/0xbe
+ }
+ ... key      at: [<ffffffff8cf4d8c0>] __key.69268+0x0/0x40
+ ... acquired at:
+   lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+   __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+   _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+   spin_lock include/linux/spinlock.h:338 [inline]
+   peernet2id_alloc+0xcd/0x3f0 net/core/net_namespace.c:240
+   rtnl_fill_link_netnsid net/core/rtnetlink.c:1565 [inline]
+   rtnl_fill_ifinfo+0x1e7c/0x39b0 net/core/rtnetlink.c:1751
+   rtmsg_ifinfo_build_skb+0xcd/0x1a0 net/core/rtnetlink.c:3685
+   rtmsg_ifinfo_event.part.0+0x49/0xe0 net/core/rtnetlink.c:3717
+   rtmsg_ifinfo_event net/core/rtnetlink.c:3728 [inline]
+   rtmsg_ifinfo+0x7f/0xa0 net/core/rtnetlink.c:3726
+   __dev_notify_flags+0x235/0x2c0 net/core/dev.c:8177
+   __dev_set_promiscuity+0x191/0x210 net/core/dev.c:7953
+   dev_set_promiscuity+0x4f/0xe0 net/core/dev.c:7973
+   macsec_dev_change_rx_flags+0x13b/0x170 drivers/net/macsec.c:3423
+   dev_change_rx_flags net/core/dev.c:7906 [inline]
+   __dev_set_promiscuity.cold+0x2e3/0x340 net/core/dev.c:7950
+   __dev_set_rx_mode+0x21f/0x300 net/core/dev.c:8055
+   dev_uc_add+0xa1/0xb0 net/core/dev_addr_lists.c:592
+   fdb_add_hw_addr+0xf3/0x280 net/bridge/br_fdb.c:165
+   fdb_insert+0x173/0x1c0 net/bridge/br_fdb.c:542
+   br_fdb_insert+0x35/0x50 net/bridge/br_fdb.c:554
+   br_add_if+0xca2/0x1800 net/bridge/br_if.c:648
+   do_set_master net/core/rtnetlink.c:2468 [inline]
+   do_set_master+0x1d7/0x230 net/core/rtnetlink.c:2441
+   do_setlink+0xaa2/0x35e0 net/core/rtnetlink.c:2603
+   __rtnl_newlink+0xad5/0x1590 net/core/rtnetlink.c:3252
+   rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3377
+   rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5440
+   netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+   netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+   netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+   netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+   sock_sendmsg_nosec net/socket.c:652 [inline]
+   sock_sendmsg+0xcf/0x120 net/socket.c:672
+   ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
+   ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+   __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
+   do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+   entry_SYSCALL_64_after_hwframe+0x49/0xbe
 
 
->
->> >> ==================================================================
->> >> ||                                                              ||
->> >> ||          SF (subfunction) user cmdline API draft             ||
->> >> ||                                                              ||
->> >> ==================================================================
->> >> 
->> >> Note that some of the "devlink port" attributes may be forgotten or misordered.
->> >> 
->> >> Note that some of the "devlink slice" attributes in show commands
->> >> are omitted on purpose.
->> >> 
->> >> $ devlink port show
->> >> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
->> >> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
->> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 type eth netdev enp6s0pf0vf0 slice 2
->> >> 
->> >> $ devlink slice show
->> >> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
->> >> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
->> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66
->> >> 
->> >> There is one VF on the NIC.
->> >> 
->> >> 
->> >> Now create subfunction of SF0 on PF1, index of the slice is going to be 100
->> >> and hw_address aa:bb:cc:aa:bb:cc.
->> >> 
->> >> $ devlink slice add pci/0000.06.00.0/100 flavour pcisf pfnum 1 sfnum 10 hw_addr aa:bb:cc:aa:bb:cc  
->> >
->> >Why is the SF number specified by the user rather than allocated?  
->> 
->> Because it is snown in representor netdevice name. And you need to have
->> it predetermined: enp6s0pf1sf10
->
->I'd think you need to know what was assigned, not necessarily pick
->upfront.. I feel like we had this conversation before as well.
-
-Yeah. For the scripting sake, always when you create something, you can
-directly use it later in the script. Like if you create a bridge, you
-assign it a name so you can use it.
-
-The "what was assigned" would mean that the assigne
-value has to be somehow returned from the kernel and passed to the
-script. Not sure how. Do you have any example where this is happening in
-networking?
-
-I think it is very clear to pass a handle to the command so you can
-later on use this handle to manipulate the entity.
-
-+ I don't see the benefit of the auto-allocation. Do you?
-
-
->
->> >> The devlink kernel code calls down to device driver (devlink op) and asks
->> >> it to create a slice with particular attributes. Driver then instatiates
->> >> the slice and port in the same way it is done for VF:
->> >> 
->> >> $ devlink port show
->> >> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
->> >> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
->> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 type eth netdev enp6s0pf0vf0 slice 2
->> >> pci/0000:06:00.0/3: flavour pcisf pfnum 1 sfnum 10 type eth netdev enp6s0pf1sf10 slice 100
->> >> 
->> >> $ devlink slice show
->> >> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
->> >> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
->> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66
->> >> pci/0000:06:00.0/100: flavour pcisf pfnum 1 sfnum 10 port 3 hw_addr aa:bb:cc:aa:bb:cc state inactive
->> >> 
->> >> Note that the SF slice is created but not active. That means the
->> >> entities are created on devlink side, the e-switch port representor
->> >> is created, but the SF device itself it not yet out there (same host
->> >> or different, depends on where the parent PF is - in this case the same host).
->> >> User might use e-switch port representor enp6s0pf1sf10 to do settings,
->> >> putting it into bridge, adding TC rules, etc.
->> >> It's like the cable is unplugged on the other side.  
->> >
->> >If it's just "cable unplugged" can't we just use the fact the
->> >representor is down to indicate no traffic can flow?  
->> 
->> It is not "cable unplugged". This "state inactive/action" is admin
->> state. You as a eswitch admin say, "I'm done with configuring a slice
->> (MAC) and a representor (bridge, TC, etc) for this particular SF and
->> I want the HOST to instantiate the SF instance (with the configured
->> MAC).
->
->I'm not opposed, I just don't understand the need. If ASIC will not 
->RX or TX any traffic from/to this new entity until repr is brought up
->there should be no problem.
-
-The only need I see is that the eswitch manager can configure things for
-the slice and representor until the "activation kick" makes the device
-appear on the host. What you suggest is to do the "activation kick" by
-representor netdevice admin_up. There is a connection from slice to
-netdevice, but it is indirect:
-devlink_slice->devlink_port->netdev.
-Also, some slices may not have netdev (IB/NVE/etc).
+stack backtrace:
+CPU: 0 PID: 11771 Comm: syz-executor.1 Not tainted 5.6.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ print_bad_irq_dependency kernel/locking/lockdep.c:2094 [inline]
+ check_irq_usage.cold+0x586/0x6fe kernel/locking/lockdep.c:2292
+ check_prev_add kernel/locking/lockdep.c:2479 [inline]
+ check_prevs_add kernel/locking/lockdep.c:2580 [inline]
+ validate_chain kernel/locking/lockdep.c:2970 [inline]
+ __lock_acquire+0x2033/0x3ca0 kernel/locking/lockdep.c:3954
+ lock_acquire+0x197/0x420 kernel/locking/lockdep.c:4484
+ __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+ _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+ spin_lock include/linux/spinlock.h:338 [inline]
+ peernet2id_alloc+0xcd/0x3f0 net/core/net_namespace.c:240
+ rtnl_fill_link_netnsid net/core/rtnetlink.c:1565 [inline]
+ rtnl_fill_ifinfo+0x1e7c/0x39b0 net/core/rtnetlink.c:1751
+ rtmsg_ifinfo_build_skb+0xcd/0x1a0 net/core/rtnetlink.c:3685
+ rtmsg_ifinfo_event.part.0+0x49/0xe0 net/core/rtnetlink.c:3717
+ rtmsg_ifinfo_event net/core/rtnetlink.c:3728 [inline]
+ rtmsg_ifinfo+0x7f/0xa0 net/core/rtnetlink.c:3726
+ __dev_notify_flags+0x235/0x2c0 net/core/dev.c:8177
+ __dev_set_promiscuity+0x191/0x210 net/core/dev.c:7953
+ dev_set_promiscuity+0x4f/0xe0 net/core/dev.c:7973
+ macsec_dev_change_rx_flags+0x13b/0x170 drivers/net/macsec.c:3423
+ dev_change_rx_flags net/core/dev.c:7906 [inline]
+ __dev_set_promiscuity.cold+0x2e3/0x340 net/core/dev.c:7950
+ __dev_set_rx_mode+0x21f/0x300 net/core/dev.c:8055
+ dev_uc_add+0xa1/0xb0 net/core/dev_addr_lists.c:592
+ fdb_add_hw_addr+0xf3/0x280 net/bridge/br_fdb.c:165
+ fdb_insert+0x173/0x1c0 net/bridge/br_fdb.c:542
+ br_fdb_insert+0x35/0x50 net/bridge/br_fdb.c:554
+ br_add_if+0xca2/0x1800 net/bridge/br_if.c:648
+ do_set_master net/core/rtnetlink.c:2468 [inline]
+ do_set_master+0x1d7/0x230 net/core/rtnetlink.c:2441
+ do_setlink+0xaa2/0x35e0 net/core/rtnetlink.c:2603
+ __rtnl_newlink+0xad5/0x1590 net/core/rtnetlink.c:3252
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3377
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5440
+ netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+ __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x45c849
+Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007efdbe996c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007efdbe9976d4 RCX: 000000000045c849
+RDX: 0000000000000000 RSI: 0000000020000000 RDI: 0000000000000006
+RBP: 000000000076bfa0 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
+R13: 00000000000009f9 R14: 00000000004ccb17 R15: 000000000076bfac
 
 
->
->> >> Now we activate (deploy) the SF:
->> >> $ devlink slice set pci/0000:06:00.0/100 state active
->> >> 
->> >> $ devlink slice show
->> >> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
->> >> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
->> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66
->> >> pci/0000:06:00.0/100: flavour pcisf pfnum 1 sfnum 10 port 3 hw_addr aa:bb:cc:aa:bb:cc state active
->> >> 
->> >> Upon the activation, the device driver asks the device to instantiate
->> >> the actual SF device on particular PF. Does not matter if that is
->> >> on the same host or not.
->> >> 
->> >> On the other side, the PF driver instance gets the event from device
->> >> that particular SF was activated. It's the cue to put the device on bus
->> >> probe it and instantiate netdev and devlink instances for it.  
->> >
->> >Seems backwards. It's the PF that wants the new function, why can't it
->> >just create it and either get an error from the other side or never get
->> >link up?  
->> 
->> We discussed that many times internally. I think it makes sense that
->> the SF is created by the same entity that manages the related eswitch
->> SF-representor. In other words, the "devlink slice" and related "devlink
->> port" object are under the same devlink instance.
->> 
->> If the PF in host manages nested switch, it can create the SF inside and
->> manages the neste eswitch SF-representor as you describe.
->> 
->> It is a matter of "nested eswitch manager on/off" configuration.
->> 
->> I think this is clean model and it is known who has what
->> responsibilities.
->
->I see so you want the creation to be controlled by the same entity that
->controls the eswitch..
->
->To me the creation should be on the side that actually needs/will use
->the new port. And if it's not eswitch manager then eswitch manager
->needs to ack it.
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-Hmm. The question is, is it worth to complicate things in this way?
-I don't know. I see a lot of potential misunderstandings :/
-
-
->
->The precedence is probably not a strong argument, but that'd be the
->same way VFs work.. I don't think you can change how VFs work, right?
-
-You can't, but since the VF model is not optimal as it turned out, do we
-want to stick with it for the SFs too? And perhaps the "furute VF
-implementation" can be done in a way this fits - that is described in
-the "VF manual creation and activation user cmdline API draft" section
-below.
-
-You see that there are "dummies" created by default. I think that Jason
-argued that these dummies should be created for max_vfs. That way the
-eswitch manager can configure all possible VF representors, no matter
-when the host decides to spawn them.
-
-
->
->> >> ==================================================================
->> >> ||                                                              ||
->> >> ||   VF manual creation and activation user cmdline API draft   ||
->> >> ||                                                              ||
->> >> ==================================================================
->> >> 
->> >> To enter manual mode, the user has to turn off VF dummies creation:
->> >> $ devlink dev set pci/0000:06:00.0 vf_dummies disabled
->> >> $ devlink dev show
->> >> pci/0000:06:00.0: vf_dummies disabled
->> >> 
->> >> It is "enabled" by default in order not to break existing users.
->> >> 
->> >> By setting the "vf_dummies" attribute to "disabled", the driver
->> >> removes all dummy VFs. Only physical ports are present:
->> >> 
->> >> $ devlink port show
->> >> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
->> >> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
->> >> 
->> >> Then the user is able to create them in a similar way as SFs:
->> >> 
->> >> $ devlink slice add pci/0000:06:00.0/99 flavour pcivf pfnum 1 vfnum 8 hw_addr aa:bb:cc:aa:bb:cc
->> >> 
->> >> The devlink kernel code calls down to device driver (devlink op) and asks
->> >> it to create a slice with particular attributes. Driver then instatiates
->> >> the slice and port:
->> >> 
->> >> $ devlink port show
->> >> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
->> >> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
->> >> pci/0000:06:00.0/2: flavour pcivf pfnum 1 vfnum 8 type eth netdev enp6s0pf1vf0 slice 99
->> >> 
->> >> $ devlink slice show
->> >> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
->> >> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
->> >> pci/0000:06:00.0/99: flavour pcivf pfnum 1 vfnum 8 port 2 hw_addr aa:bb:cc:aa:bb:cc state inactive
->> >> 
->> >> Now we activate (deploy) the VF:
->> >> $ devlink slice set pci/0000:06:00.0/99 state active
->> >> 
->> >> $ devlink slice show
->> >> pci/0000:06:00.0/99: flavour pcivf pfnum 1 vfnum 8 port 2 hw_addr aa:bb:cc:aa:bb:cc state active
->> >> 
->> >> ==================================================================
->> >> ||                                                              ||
->> >> ||                             PFs                              ||
->> >> ||                                                              ||
->> >> ==================================================================
->> >> 
->> >> There are 2 flavours of PFs:
->> >> 1) Parent PF. That is coupled with uplink port. The slice flavour is
->> >>    therefore "physical", to be in sync of the flavour of the uplink port.
->> >>    In case this Parent PF is actually a leg of upstream embedded switch,
->> >>    the slice flavour is "virtual" (same as the port flavour).
->> >> 
->> >>    $ devlink port show
->> >>    pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1 slice 0
->> >> 
->> >>    $ devlink slice show
->> >>    pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
->> >> 
->> >>    This slice is shown in both "switchdev" and "legacy" modes.
->> >> 
->> >>    If there is another parent PF, say "0000:06:00.1", that share the
->> >>    same embedded switch, the aliasing is established for devlink handles.
->> >> 
->> >>    The user can use devlink handles:
->> >>    pci/0000:06:00.0
->> >>    pci/0000:06:00.1
->> >>    as equivalents, pointing to the same devlink instance.
->> >> 
->> >>    Parent PFs are the ones that may be in control of managing
->> >>    embedded switch, on any hierarchy level.
->> >> 
->> >> 2) Child PF. This is a leg of a PF put to the parent PF. It is
->> >>    represented by a slice, and a port (with a netdevice):
->> >> 
->> >>    $ devlink port show
->> >>    pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1 slice 0
->> >>    pci/0000:06:00.0/1: flavour pcipf pfnum 2 type eth netdev enp6s0f0pf2 slice 20
->> >> 
->> >>    $ devlink slice show
->> >>    pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
->> >>    pci/0000:06:00.0/20: flavour pcipf pfnum 1 port 1 hw_addr aa:bb:cc:aa:bb:87 state active  <<<<<<<<<<
->> >> 
->> >>    This is a typical smartnic scenario. You would see this list on
->> >>    the smartnic CPU. The slice pci/0000:06:00.0/20 is a leg to
->> >>    one of the hosts. If you send packets to enp6s0f0pf2, they will
->> >>    go to he host.
->> >> 
->> >>    Note that inside the host, the PF is represented again as "Parent PF"
->> >>    and may be used to configure nested embedded switch.  
->> >
->> >This parent/child PF I don't understand. Does it stem from some HW
->> >limitations you have?  
->> 
->> No limitation. It's just a name for 2 roles. I didn't know how else to
->> name it for the documentation purposes. Perhaps you can help me.
->> 
->> The child can simply manage a "nested eswich". The "parent eswitch"
->> would see one leg (pf representor) one way or another. Only in case the
->> "nested eswitch" is there, the child would manage it - have separate
->> representors for vfs/sfs under its devlink instance.
->
->I see! I wouldn't use the term PF. I think we need a notion of 
->a "virtual" port within the NIC to model the eswitch being managed 
->by the Host.
-
-But it is a PF (or maybe VF). The fact that it may or may not have
-nested switch inside does not change the view of the parent eswitch
-manager instance. Why would it?
-
-
->
->If Host manages the Eswitch - SmartNIC will no longer deal with its
->PCIe ports, but only with its virtual uplink.
-
-What do you mean by "PCIe ports"?
-
-
->
->> >> ==================================================================
->> >> ||                                                              ||
->> >> ||               Slice operational state extension              ||
->> >> ||                                                              ||
->> >> ==================================================================
->> >> 
->> >> In addition to the "state" attribute that serves for the purpose
->> >> of setting the "admin state", there is "opstate" attribute added to
->> >> reflect the operational state of the slice:
->> >> 
->> >> 
->> >>     opstate                description
->> >>     -----------            ------------
->> >>     1. attached    State when slice device is bound to the host
->> >>                    driver. When the slice device is unbound from the
->> >>                    host driver, slice device exits this state and
->> >>                    enters detaching state.
->> >> 
->> >>     2. detaching   State when host is notified to deactivate the
->> >>                    slice device and slice device may be undergoing
->> >>                    detachment from host driver. When slice device is
->> >>                    fully detached from the host driver, slice exits
->> >>                    this state and enters detached state.
->> >> 
->> >>     3. detached    State when driver is fully unbound, it enters
->> >>                    into detached state.
->> >> 
->> >> slice state machine:
->> >> --------------------
->> >>                                slice state set inactive
->> >>                               ----<------------------<---
->> >>                               | or  slice delete        |
->> >>                               |                         |
->> >>   __________              ____|_______              ____|_______
->> >>  |          | slice add  |            |slice state |            |
->> >>  |          |-------->---|            |------>-----|            |
->> >>  | invalid  |            |  inactive  | set active |   active   |
->> >>  |          | slice del  |            |            |            |
->> >>  |__________|--<---------|____________|            |____________|
->> >> 
->> >> slice device operational state machine:
->> >> ---------------------------------------
->> >>   __________                ____________              ___________
->> >>  |          | slice state  |            |driver bus  |           |
->> >>  | invalid  |-------->-----|  detached  |------>-----| attached  |
->> >>  |          | set active   |            | probe()    |           |
->> >>  |__________|              |____________|            |___________|
->> >>                                  |                        |
->> >>                                  ^                    slice set
->> >>                                  |                    set inactive
->> >>                             successful detach             |
->> >>                               or pf reset                 |
->> >>                              ____|_______                 |
->> >>                             |            | driver bus     |
->> >>                  -----------| detaching  |---<-------------
->> >>                  |          |            | remove()
->> >>                  ^          |____________|
->> >>                  |   timeout      |
->> >>                  --<---------------
->> >> 
->> >> 
->> >> 
->> >> ==================================================================
->> >> ||                                                              ||
->> >> ||             Slice rate user cmdline API draft                ||
->> >> ||                                                              ||
->> >> ==================================================================
->> >> 
->> >> Note that some of the "devlink slice" attributes in show commands
->> >> are omitted on purpose.
->> >> 
->> >> 
->> >> $ devlink slice show
->> >> pci/0000:06:00.0/0: flavour physical pfnum
->> >> pci/0000:06:00.0/1: flavour pcivf pfnum 0 vfnum 1
->> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0
->> >> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1
->> >> pci/0000:06:00.0/4: flavour pcisf pfnum 0 sfnum 1
->> >> 
->> >> Slice object is extended with new rate object.
->> >> 
->> >> 
->> >> $ devlink slice rate
->> >> pci/0000:06:00.0/1: type leaf
->> >> pci/0000:06:00.0/2: type leaf
->> >> pci/0000:06:00.0/3: type leaf
->> >> pci/0000:06:00.0/4: type leaf
->> >> 
->> >> This shows the leafs created by default alongside with slice objects. No min or
->> >> max tx rates were set, so their values are omitted.
->> >> 
->> >> 
->> >> Now create new node rate object:
->> >> 
->> >> $ devlink slice rate add pci/0000:06:00.0/somerategroup
->> >> 
->> >> $ devlink slice rate
->> >> pci/0000:06:00.0/1: type leaf
->> >> pci/0000:06:00.0/2: type leaf
->> >> pci/0000:06:00.0/3: type leaf
->> >> pci/0000:06:00.0/4: type leaf
->> >> pci/0000:06:00.0/somerategroup: type node
->> >> 
->> >> New node rate object was created - the last line.
->> >> 
->> >> 
->> >> Now create another new node object was created, this time with some attributes:
->> >> 
->> >> $ devlink slice rate add pci/0000:06:00.0/secondrategroup min_tx_rate 20 max_tx_rate 1000
->> >> 
->> >> $ devlink slice rate
->> >> pci/0000:06:00.0/1: type leaf
->> >> pci/0000:06:00.0/2: type leaf
->> >> pci/0000:06:00.0/3: type leaf
->> >> pci/0000:06:00.0/4: type leaf
->> >> pci/0000:06:00.0/somerategroup: type node
->> >> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
->> >> 
->> >> Another new node object was created - the last line. The object has min and max
->> >> tx rates set, so they are displayed after the object type.
->> >> 
->> >> 
->> >> Now set node named somerategroup min/max rate using rate object:
->> >> 
->> >> $ devlink slice rate set pci/0000:06:00.0/somerategroup min_tx_rate 50 max_tx_rate 5000
->> >> 
->> >> $ devlink slice rate
->> >> pci/0000:06:00.0/1: type leaf
->> >> pci/0000:06:00.0/2: type leaf
->> >> pci/0000:06:00.0/3: type leaf
->> >> pci/0000:06:00.0/4: type leaf
->> >> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
->> >> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
->> >> 
->> >> 
->> >> Now set leaf slice rate using rate object:
->> >> 
->> >> $ devlink slice rate set pci/0000:06:00.0/2 min_tx_rate 10 max_tx_rate 10000
->> >> 
->> >> $ devlink slice rate
->> >> pci/0000:06:00.0/1: type leaf
->> >> pci/0000:06:00.0/2: type leaf min_tx_rate 10 max_tx_rate 10000
->> >> pci/0000:06:00.0/3: type leaf
->> >> pci/0000:06:00.0/4: type leaf
->> >> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
->> >> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
->> >> 
->> >> 
->> >> Now set leaf slice with index 2 parent node using rate object:
->> >> 
->> >> $ devlink slice rate set pci/0000:06:00.0/2 parent somerategroup
->> >> 
->> >> $ devlink slice rate
->> >> pci/0000:06:00.0/1: type leaf
->> >> pci/0000:06:00.0/2: type leaf min_tx_rate 10 max_tx_rate 10000 parent somerategroup
->> >> pci/0000:06:00.0/3: type leaf
->> >> pci/0000:06:00.0/4: type leaf
->> >> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
->> >> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
->> >> 
->> >> 
->> >> Now set leaf slice with index 1 parent node using rate object:
->> >> 
->> >> $ devlink slice rate set pci/0000:06:00.0/1 parent somerategroup
->> >> 
->> >> $ devlink slice rate
->> >> pci/0000:06:00.0/1: type leaf parent somerategroup
->> >> pci/0000:06:00.0/2: type leaf min_tx_rate 10 max_tx_rate 10000 parent somerategroup
->> >> pci/0000:06:00.0/3: type leaf
->> >> pci/0000:06:00.0/4: type leaf
->> >> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
->> >> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
->> >> 
->> >> 
->> >> Now unset leaf slice with index 1 parent node using rate object:
->> >> 
->> >> $ devlink slice rate set pci/0000:06:00.0/1 noparent
->> >> 
->> >> $ devlink slice rate
->> >> pci/0000:06:00.0/1: type leaf
->> >> pci/0000:06:00.0/2: type leaf min_tx_rate 10 max_tx_rate 10000 parent somerategroup
->> >> pci/0000:06:00.0/3: type leaf
->> >> pci/0000:06:00.0/4: type leaf
->> >> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
->> >> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
->> >> 
->> >> 
->> >> Now delete node object:
->> >> 
->> >> $ devlink slice rate del pci/0000:06:00.0/somerategroup
->> >> 
->> >> $ devlink slice rate
->> >> pci/0000:06:00.0/1: type leaf
->> >> pci/0000:06:00.0/2: type leaf
->> >> pci/0000:06:00.0/3: type leaf
->> >> pci/0000:06:00.0/4: type leaf
->> >> 
->> >> Rate node object was removed and its only child pci/0000:06:00.0/2 automatically
->> >> detached.  
->> >
->> >Tomorrow we will support CoDel, ECN or any other queuing construct. 
->> >How many APIs do we want to have to configure the same thing? :/  
->> 
->> Rigth, I don't see other way. Please help me to figure out this
->> differently. Note this is for configuring HW limits on the TX side of VF.
->> 
->> We have only devlink_port and related netdev as representor of the VF
->> eswitch port. We cannot use this netdev to configure qdisc on RX.
->
->Ah, right. This is the TX case we abuse act_police for in OvS offload :S
->Yeah, we don't have an API for that.
-
-Yeah :/
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
