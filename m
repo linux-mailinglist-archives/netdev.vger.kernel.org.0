@@ -2,367 +2,1073 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B9A918DEF5
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 10:07:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0E2518DF2E
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 10:35:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728088AbgCUJHl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 05:07:41 -0400
-Received: from mail-eopbgr140047.outbound.protection.outlook.com ([40.107.14.47]:19334
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728040AbgCUJHl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Mar 2020 05:07:41 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ehi+wqT2z6M0Sqens8OMdojNQkGHTnv/fYs2EnZSY5oA+ry1/ddgoXd4yHMXuYrf6Vuja13XXjEiYp3UHCO+dFopw3+17ZQIqbm4HajjPYxbAoRTKtIFqT2Ul82cw4k0t1CHX9uJ8B5fCXHAtGE+ruKwMTHp774X243bj5jfM4y98PeMi6E4vPtyY85oMo0GDTCfPKzMwuy7dmRnv2UfOviNLN/ectlFaBYsVK/Qmzm1qpIibUveokv/RDrnH55tfDfg+vdYqh4NMbuatCMbRIAyvL3fKShMCoZ6R+Km6ilDM3LSy0vX1i7Gh9uTXcFGqdilwww+ChXkV7yTW8QyoA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jyzOFv+X54H988d5hJJjBDVG1DDq9qP0L2j/37894Ik=;
- b=HDoVRDnwVODwY1lSvzMz4eWS+QaOdejsacPV2F6tic5fP/QRSh40K488r24F196IupjG4q6nS8luR6iOq3jLRoOu+IsWExidfads0VBbZ9YKU/4d3sD4oFLdXqLcPE3FFnyqDlwQn+Ivme43P2WTa8foVbPNbd+PhxQ8iLIVVeVARQvdc9kJl/T6Z5QHS9cST4uXEkCSxQOBayMx8/0MquzNbC/nDIpyHoesgI65x0Zv1dkPjVCcvUhPUz7EIQkFWNGcLzR3RQ0sR2+lFaKjr1XxC2Uw+xl0pZjP3fDEriUdSnB+OCAISjeGEr8Am4SdRTDsVmrbYpRXMmqmYOCtIA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jyzOFv+X54H988d5hJJjBDVG1DDq9qP0L2j/37894Ik=;
- b=QiQsQyrv5DnorXvhNOzLCAhUJhJDJBh3/lLjhf/yjsiKsgnyIGb8lQTT51nO7arX3NYW221zic7IXkIUKY+Hozuh2dJOVF/EGN/MEUR1egL+q6zXPjuxn4PkrPq4Y9EIRMBwE9WucGuFkK1xPzcuCgKPiJu8Y7AKxBTTrYyDrlM=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB5618.eurprd05.prod.outlook.com (20.178.112.147) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.20; Sat, 21 Mar 2020 09:07:30 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::8c4:e45b:ecdc:e02b]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::8c4:e45b:ecdc:e02b%7]) with mapi id 15.20.2814.025; Sat, 21 Mar 2020
- 09:07:30 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Yuval Avnery <yuvalav@mellanox.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Aya Levin <ayal@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Yevgeny Kliteynik <kliteyn@mellanox.com>,
-        "dchickles@marvell.com" <dchickles@marvell.com>,
-        "sburla@marvell.com" <sburla@marvell.com>,
-        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
-        "snelson@pensando.io" <snelson@pensando.io>,
-        "drivers@pensando.io" <drivers@pensando.io>,
-        "aelior@marvell.com" <aelior@marvell.com>,
-        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>,
-        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
-        Alex Vesker <valex@mellanox.com>,
-        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
-        "lihong.yang@intel.com" <lihong.yang@intel.com>,
-        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>
+        id S1728266AbgCUJfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 05:35:34 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:38243 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726995AbgCUJfe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 05:35:34 -0400
+Received: by mail-wm1-f68.google.com with SMTP id l20so8901674wmi.3
+        for <netdev@vger.kernel.org>; Sat, 21 Mar 2020 02:35:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xN2eSxKQkeHYBucrPZl5vaIOeTv+iuuT8mbNGENZ/Es=;
+        b=ceoVOXanIka59yWx1k3z400xZEaBeIG6z8nwz2/97N+aNPMwg0lCotsDLyMWVcu+zK
+         3ej6V4rkSCl6R4BpQ3TkTO0f612uiEwu2Fd0GcKTvhLkFL+A1PtN9SVa2VclXyFItz5C
+         +9dhvC5HEhRZnI282yCiANo+KByzRTl8kXnb9dG6XJvSTetvkWelmquDu7WHHGRTD49A
+         lL2j4dG7gaLI81WAABiMn9nro0QE+6XoG4vj4P4O3nt8Vxy7qZqitIdWbv2LbgMHP1Kx
+         tX5Qo2+ry+Av+QRigLBUrh6P4Ri+VU4TK84H+u1QqgK+9ZmdkXWeuKTtPv7DBDYxbkcf
+         LX7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xN2eSxKQkeHYBucrPZl5vaIOeTv+iuuT8mbNGENZ/Es=;
+        b=au/dzmYYH8gD8Za8J9ehmYrzT5QJJk82tYAESwUpvt44E8GNbV6/qDY8ubk9uGH/3c
+         OR92YAmdwrZG6x7DrWudHmeD16q0whUzISnAjNBTfZJZqQ2SwUbldH5aOmqXCOQhJzRv
+         kFao9VPn9y3mgmpg6muXqlRAWrkAU7lGH0MqfMedzVh4dLpBOlFA4GipwKoShdOboiR0
+         iIj3fOPfIVgNzdoBX7LhlCOKpFNdbsApnfxWw1H8O51WtLb4RL3oHRlxJLK6ycBW/A82
+         Y9jdj8Upn6JgLO7bCmFby8vviHUxb6jqr1IVFI2FvcPDMNWmyUM75kQLqAWJeKlhiQKN
+         ScSw==
+X-Gm-Message-State: ANhLgQ3JjHr83WlThA4voU83YIWpkPDWmPMYRBATz+u5lPNyzBbLEec7
+        22TaKjJ/L915f63oQ32oxpoT8w==
+X-Google-Smtp-Source: ADFU+vv42kJfcBWnn68GOtZi2nodveSS1/Vzm6CzzTQa/otlNwQADh8Nftjd9UhDB1PRXzTHxLI5vQ==
+X-Received: by 2002:a7b:c458:: with SMTP id l24mr14965609wmi.120.1584783327623;
+        Sat, 21 Mar 2020 02:35:27 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id o4sm12404449wrp.84.2020.03.21.02.35.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Mar 2020 02:35:27 -0700 (PDT)
+Date:   Sat, 21 Mar 2020 10:35:25 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, parav@mellanox.com,
+        yuvalav@mellanox.com, jgg@ziepe.ca, saeedm@mellanox.com,
+        leon@kernel.org, andrew.gospodarek@broadcom.com,
+        michael.chan@broadcom.com, moshe@mellanox.com, ayal@mellanox.com,
+        eranbe@mellanox.com, vladbu@mellanox.com, kliteyn@mellanox.com,
+        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
+        tariqt@mellanox.com, oss-drivers@netronome.com,
+        snelson@pensando.io, drivers@pensando.io, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
+        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
+        jacob.e.keller@intel.com, valex@mellanox.com,
+        linyunsheng@huawei.com, lihong.yang@intel.com,
+        vikas.gupta@broadcom.com, magnus.karlsson@intel.com
 Subject: Re: [RFC] current devlink extension plan for NICs
-Thread-Topic: [RFC] current devlink extension plan for NICs
-Thread-Index: AQHV/iRsiKU58im38Um7T8fyNtLerKhQ1DGAgABD54CAAOeuAIAAxDyA
-Date:   Sat, 21 Mar 2020 09:07:30 +0000
-Message-ID: <997dbf25-a3e1-168c-c756-b33e79e7c51e@mellanox.com>
+Message-ID: <20200321093525.GJ11304@nanopsycho.orion>
 References: <20200319192719.GD11304@nanopsycho.orion>
  <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
  <20200320073555.GE11304@nanopsycho.orion>
  <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [122.181.51.74]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 058b6dfe-3f61-44b4-7ffa-08d7cd774927
-x-ms-traffictypediagnostic: AM0PR05MB5618:|AM0PR05MB5618:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB5618CE00B0AB7E84ABA0DA14D1F20@AM0PR05MB5618.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 034902F5BC
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(39860400002)(346002)(366004)(136003)(199004)(81156014)(31686004)(6486002)(81166006)(8676002)(8936002)(6512007)(30864003)(4326008)(71200400001)(7416002)(31696002)(86362001)(478600001)(64756008)(316002)(66556008)(110136005)(54906003)(2616005)(36756003)(2906002)(76116006)(66946007)(91956017)(66476007)(26005)(66446008)(186003)(53546011)(5660300002)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB5618;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: aVKU0P8vo6rJuBoVuG87b3bgZ0TF1hdQIul6q3yPmST0YMWPoDb0XNdDyTe7YYmmosK1bCX4HkYBL0NavoSzLORwIh0dgGROwaWFt2sWAWM3bPd1htgvkhNMX4W4FJQB8z18N1Rgu0HBK/uW4ok8kSD1pwTbqin+M+gZ6WW7bUEcCeVr1uc8NpZz9oECwPaYyWOVcx5WPyg9DgZNIJvhY91JSsB/O+gVe9GU0OLyNbrwgd/GqTqfEq6tDWBl1oIYNvLVSc63dDvXPxleJdIa3IYMICSc8yNYxzYfp2QzmqADfLfiBvYxD1J+Zxc5pATvl5qDr1KGA2NG5ikjBmHCAfid49KWZYiXsu3gAsxeY4BcJY2fxctYguXGrAiZ5oD8TlpdYkLTAn+6n1pk7IjJy3BVZloil2VjTCPcN1QJPCcrmFdGa6SgWs4W2Ln7WPuE
-x-ms-exchange-antispam-messagedata: FC96hY74U4OOaESDCKBHlYrYWivjNq5NzuomjortYI7YtOxbARYP5TCKZvYaPW6NNatnoMNzgy4giIXW1blr0oJJG4zJr9Ygkxy7+c6RdF+EPRtvzYgmcE81ZomB3Q8giFWLpBpRnOPehWupHgq9zw==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F483492DD5DAFB43847F2378BAFAE415@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 058b6dfe-3f61-44b4-7ffa-08d7cd774927
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Mar 2020 09:07:30.6523
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5O1z9h8WYQOweM2jWA4Cu4vr5Z8Dhuh1Y0Y1iB8MnLJOA2K1JTOkHGHIr3D8iNGNgmXAXs71kOpAHsCu07O7LQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5618
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMy8yMS8yMDIwIDI6NTUgQU0sIEpha3ViIEtpY2luc2tpIHdyb3RlOg0KPiBPbiBGcmksIDIw
-IE1hciAyMDIwIDA4OjM1OjU1ICswMTAwIEppcmkgUGlya28gd3JvdGU6DQo+PiBGcmksIE1hciAy
-MCwgMjAyMCBhdCAwNDozMjo1M0FNIENFVCwga3ViYUBrZXJuZWwub3JnIHdyb3RlOg0KPj4+IE9u
-IFRodSwgMTkgTWFyIDIwMjAgMjA6Mjc6MTkgKzAxMDAgSmlyaSBQaXJrbyB3cm90ZTogIA0KDQo+
-PiBJJ20gbm90IHN1cmUgSSBmb2xsb3cuIFRoZXJlIGlzIGEgbnVtYmVyIG9mIFBGcyBjcmVhdGVk
-ICJvbiBwcm9iZSIuDQo+PiBUaG9zZSBhcmUgZml4ZWQgYW5kIGRyaXZlciBrbm93cyB3aGVyZSB0
-byBwdXQgdGhlbS4NCj4+IFRoZSBjb21tZW50IHdhcyBhYm91dCBwb3NzaWJsZSAiZHluYW1pYyBQ
-RiIgY3JlYXRlZCBieSB1c2VyIGluIHRoZSBzYW1lDQo+PiB3YXMgaGUgY3JlYXRlcyBTRiwgYnkg
-ZGV2bGluayBjbWRsaW5lLg0KPiANCj4gSG93IGRvZXMgdGhlIGRyaXZlciBkaWZmZXJlbnRpYXRl
-IGJldHdlZW4gYSBkeW5hbWljIGFuZCBzdGF0aWMgUEYsIA0KPiBhbmQgd2h5IGFyZSB0aGV5IGRp
-ZmZlcmVudCBpbiB0aGUgZmlyc3QgcGxhY2U/IDpTDQo+IA0KDQpJIGRvbid0IHNlZSBhIG5lZWQg
-b2YgUEYgZHJpdmVyIHRvIGRpZmZlcmVudGlhdGUgdGhlbSBhcyBzdGF0aWMvZHluYW1pYy4NCklu
-IGVpdGhlciBjYXNlIHBjaSBwcm9iZSgpLCByZW1vdmUoKSBhcmUgdHJpZ2dlcmVkIHJlZ2FyZGxl
-c3MuDQoNClRoZXkgYXJlIGRpZmZlcmVudCBiZWNhdXNlIGEgc21hcnRuaWMgYWRtaW5pc3RyYXRv
-ciB3YW50cyB0byBjcmVhdGUgdGhlbQ0KZHluYW1pY2FsbHkgb24gdXNlciByZXF1ZXN0IGFuZCBw
-cm92aWRlIHRvIHRoZSBzeXN0ZW0gd2hlcmUgdGhpcw0Kc21hcnRuaWMgaXMgY29ubmVjdGVkLg0K
-DQo+IEFsc28sIG9uY2UgdGhlIFBGcyBhcmUgY3JlYXRlZCB1c2VyIG1heSB3YW50IHRvIHVzZSB0
-aGVtIHRvZ2V0aGVyIA0KDQo+Pj4+ICQgZGV2bGluayBwb3J0IHNob3cNCj4+Pj4gcGNpLzAwMDA6
-MDY6MDAuMC8wOiBmbGF2b3VyIHBoeXNpY2FsIHBmbnVtIDAgdHlwZSBldGggbmV0ZGV2IGVucDZz
-MGYwbnAxDQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMTogZmxhdm91ciBwaHlzaWNhbCBwZm51bSAx
-IHR5cGUgZXRoIG5ldGRldiBlbnA2czBmMG5wMg0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzI6IGZs
-YXZvdXIgcGNpdmYgcGZudW0gMCB2Zm51bSAwIHR5cGUgZXRoIG5ldGRldiBlbnA2czBwZjB2ZjAg
-c2xpY2UgMA0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzM6IGZsYXZvdXIgcGNpdmYgcGZudW0gMCB2
-Zm51bSAxIHR5cGUgZXRoIG5ldGRldiBlbnA2czBwZjB2ZjEgc2xpY2UgMQ0KPj4+PiBwY2kvMDAw
-MDowNjowMC4wLzQ6IGZsYXZvdXIgcGNpdmYgcGZudW0gMSB2Zm51bSAwIHR5cGUgZXRoIG5ldGRl
-diBlbnA2czBwZjF2ZjAgc2xpY2UgMg0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzU6IGZsYXZvdXIg
-cGNpdmYgcGZudW0gMSB2Zm51bSAxIHR5cGUgZXRoIG5ldGRldiBlbnA2czBwZjF2ZjEgc2xpY2Ug
-Mw0KPj4+Pg0KPj4+PiAkIGRldmxpbmsgc2xpY2Ugc2hvdw0KPj4+PiBwY2kvMDAwMDowNjowMC4w
-LzA6IGZsYXZvdXIgcGh5c2ljYWwgcGZudW0gMCBwb3J0IDAgc3RhdGUgYWN0aXZlDQo+Pj4+IHBj
-aS8wMDAwOjA2OjAwLjAvMTogZmxhdm91ciBwaHlzaWNhbCBwZm51bSAxIHBvcnQgMSBzdGF0ZSBh
-Y3RpdmUNCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8yOiBmbGF2b3VyIHBjaXZmIHBmbnVtIDAgdmZu
-dW0gMCBwb3J0IDIgaHdfYWRkciAxMDoyMjozMzo0NDo1NTo2NiBzdGF0ZSBhY3RpdmUNCj4+Pj4g
-cGNpLzAwMDA6MDY6MDAuMC8zOiBmbGF2b3VyIHBjaXZmIHBmbnVtIDAgdmZudW0gMSBwb3J0IDMg
-aHdfYWRkciAxMDoyMjozMzo0NDo1NTo3NyBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6MDY6
-MDAuMC80OiBmbGF2b3VyIHBjaXZmIHBmbnVtIDEgdmZudW0gMCBwb3J0IDQgaHdfYWRkciAxMDoy
-MjozMzo0NDo1NTo4OCBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC81OiBmbGF2
-b3VyIHBjaXZmIHBmbnVtIDEgdmZudW0gMSBwb3J0IDUgaHdfYWRkciAxMDoyMjozMzo0NDo1NTo5
-OSBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC82OiBmbGF2b3VyIHBjaXZmIHBm
-bnVtIDEgdmZudW0gMg0KPj4+Pg0KPj4+PiBJbiB0aGVzZSAyIG91dHB1dHMgeW91IGNhbiBzZWUg
-dGhlIHJlbGF0aW9uc2hpcHMuIEF0dHJpYnV0ZXMgInNsaWNlIiBhbmQgInBvcnQiDQo+Pj4+IGlu
-ZGljYXRlIHRoZSBzbGljZS1wb3J0IHBhaXJzLg0KPj4+Pg0KPj4+PiBBbHNvLCB0aGVyZSBpcyBh
-IGZpeGVkICJzdGF0ZSIgYXR0cmlidXRlIHdpdGggdmFsdWUgImFjdGl2ZSIuIFRoaXMgaXMgYnkN
-Cj4+Pj4gZGVmYXVsdCBhcyB0aGUgVkZzIGFyZSBhbHdheXMgY3JlYXRlZCBhY3RpdmUuIEluIGZ1
-dHVyZSwgaXQgaXMgcGxhbm5lZA0KPj4+PiB0byBpbXBsZW1lbnQgbWFudWFsIFZGIGNyZWF0aW9u
-IGFuZCBhY3RpdmF0aW9uLCBzaW1pbGFyIHRvIHdoYXQgaXMgYmVsb3cNCj4+Pj4gZGVzY3JpYmVk
-IGZvciBTRnMuDQo+Pj4+DQo+Pj4+IE5vdGUgdGhhdCBmb3Igbm9uLWV0aGVybmV0IHNsaWNlICh0
-aGUgbGFzdCBvbmUpIGRvZXMgbm90IGhhdmUgYW55DQo+Pj4+IHJlbGF0ZWQgcG9ydCBwb3J0LiBJ
-dCBjYW4gYmUgZm9yIGV4YW1wbGUgTlZFIG9yIElCLiBCdXQgc2luY2UNCj4+Pj4gdGhlICJod19h
-ZGRyIiBhdHRyaWJ1dGUgaXMgYWxzbyBvbWl0dGVkLCBpdCBpc24ndCBJQi4NCj4+Pj4NCj4+Pj4g
-IA0KPj4+PiBOb3cgc2V0IGEgZGlmZmVyZW50IE1BQyBhZGRyZXNzIGZvciBWRjEgb24gUEYwOg0K
-Pj4+PiAkIGRldmxpbmsgc2xpY2Ugc2V0IHBjaS8wMDAwOjA2OjAwLjAvMyBod19hZGRyIGFhOmJi
-OmNjOmRkOmVlOmZmDQo+Pj4+DQo+Pj4+ICQgZGV2bGluayBzbGljZSBzaG93DQo+Pj4+IHBjaS8w
-MDAwOjA2OjAwLjAvMDogZmxhdm91ciBwaHlzaWNhbCBwZm51bSAwIHBvcnQgMCBzdGF0ZSBhY3Rp
-dmUNCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8xOiBmbGF2b3VyIHBoeXNpY2FsIHBmbnVtIDEgcG9y
-dCAxIHN0YXRlIGFjdGl2ZQ0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzI6IGZsYXZvdXIgcGNpdmYg
-cGZudW0gMCB2Zm51bSAwIHBvcnQgMiBod19hZGRyIDEwOjIyOjMzOjQ0OjU1OjY2IHN0YXRlIGFj
-dGl2ZQ0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzM6IGZsYXZvdXIgcGNpdmYgcGZudW0gMCB2Zm51
-bSAxIHBvcnQgMyBod19hZGRyIGFhOmJiOmNjOmRkOmVlOmZmIHN0YXRlIGFjdGl2ZQ0KPj4+PiBw
-Y2kvMDAwMDowNjowMC4wLzQ6IGZsYXZvdXIgcGNpdmYgcGZudW0gMSB2Zm51bSAwIHBvcnQgNCBo
-d19hZGRyIDEwOjIyOjMzOjQ0OjU1Ojg4IHN0YXRlIGFjdGl2ZQ0KPj4+PiBwY2kvMDAwMDowNjow
-MC4wLzU6IGZsYXZvdXIgcGNpdmYgcGZudW0gMSB2Zm51bSAxIHBvcnQgNSBod19hZGRyIDEwOjIy
-OjMzOjQ0OjU1Ojk5IHN0YXRlIGFjdGl2ZQ0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzY6IGZsYXZv
-dXIgcGNpdmYgcGZudW0gMSB2Zm51bSAyICANCj4+Pg0KPj4+IFdoYXQgYXJlIHNsaWNlcz8gIA0K
-Pj4NCj4+IFNsaWNlIGlzIGJhc2ljYWxseSBhIHBpZWNlIG9mIEFTSUMuIHBmL3ZmL3NmLiBUaGV5
-IHNlcnZlIGZvcg0KPj4gY29uZmlndXJhdGlvbiBvZiB0aGUgIm90aGVyIHNpZGUgb2YgdGhlIHdp
-cmUiLiBMaWtlIHRoZSBtYWMuIEh5cGVydml6b3INCj4+IGFkbWluIGNhbiB1c2UgdGhlIHNsaXRl
-IHRvIHNldCB0aGUgbWFjIGFkZHJlc3Mgb2YgYSBWRiB3aGljaCBpcyBpbiB0aGUNCj4+IHZpcnR1
-YWwgbWFjaGluZS4gQmFzaWNhbGx5IHRoaXMgc2hvdWxkIGJlIGEgcmVwbGFjZW1lbnQgb2YgImlw
-IHZmIg0KPj4gY29tbWFuZC4NCj4gDQo+IEkgbG9zdCBteSBtYWlsIGFyY2hpdmUgYnV0IGRpZG4n
-dCB3ZSBhbHJlYWR5IGhhdmUgYSBsb25nIHRocmVhZCB3aXRoDQo+IFBhcmF2IGFib3V0IHRoaXM/
-DQo+DQoNCkkgaGF2ZSBtb3JlIHZlcmJvc2UgUkZDIHRoYXQgdGFsa3MgYWJvdXQgbW90aXZhdGlv
-biBvZiBzbGljZSBhbmQgc2ltaWxhcg0KZXhhbXBsZXMgd2hpY2ggSSB3aWxsIHBvc3QgYWxvbmcg
-d2l0aCBhY3R1YWwgcGF0Y2hlcy4NCg0KQnV0IEkgdGhpbmsgSmlyaSBjYXB0dXJlZCB0aGllIGpp
-c3QgYWxyZWFkeSBoZXJlLCBpLmUuIHNsaWNlIGRyaXZlcyB0aGUNCmRldmljZSBsaWZlIGN5Y2xl
-ICh3aXRoL3dpdGhvdXQgZXN3aXRjaCkuDQoNCnNsaWNlIGRldmljZSBhY3RpdmF0aW9uIG1vZGVs
-IGlzIG1vcmUgdGhhbiBqdXN0IHBvcnQgdW5wbHVnL3BsdWcgZXZlbnQuDQpmb3Igd2hpY2ggd2Ug
-c2hvdWxkbid0IG92ZXJsb2FkIHRoZSBkZXZsaW5rIHBvcnQgd2hpY2ggZG9lc24ndCB1bmRlcmdv
-DQpzdGF0ZSB0cmFuc2l0aW9uIGV4cGxhaW5lZCBmb3Igc2xpY2UuDQoNCj4+Pj4gPT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-DQo+Pj4+IHx8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICB8fA0KPj4+PiB8fCAgICAgICAgICBTRiAoc3ViZnVuY3Rpb24pIHVzZXIg
-Y21kbGluZSBBUEkgZHJhZnQgICAgICAgICAgICAgfHwNCj4+Pj4gfHwgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHx8DQo+Pj4+ID09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PQ0KPj4+Pg0KPj4+PiBOb3RlIHRoYXQgc29tZSBvZiB0aGUgImRldmxpbmsgcG9ydCIg
-YXR0cmlidXRlcyBtYXkgYmUgZm9yZ290dGVuIG9yIG1pc29yZGVyZWQuDQo+Pj4+DQo+Pj4+IE5v
-dGUgdGhhdCBzb21lIG9mIHRoZSAiZGV2bGluayBzbGljZSIgYXR0cmlidXRlcyBpbiBzaG93IGNv
-bW1hbmRzDQo+Pj4+IGFyZSBvbWl0dGVkIG9uIHB1cnBvc2UuDQo+Pj4+DQo+Pj4+ICQgZGV2bGlu
-ayBwb3J0IHNob3cNCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8wOiBmbGF2b3VyIHBoeXNpY2FsIHBm
-bnVtIDAgdHlwZSBldGggbmV0ZGV2IGVucDZzMGYwbnAxDQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAv
-MTogZmxhdm91ciBwaHlzaWNhbCBwZm51bSAxIHR5cGUgZXRoIG5ldGRldiBlbnA2czBmMG5wMg0K
-Pj4+PiBwY2kvMDAwMDowNjowMC4wLzI6IGZsYXZvdXIgcGNpdmYgcGZudW0gMCB2Zm51bSAwIHR5
-cGUgZXRoIG5ldGRldiBlbnA2czBwZjB2ZjAgc2xpY2UgMg0KPj4+Pg0KPj4+PiAkIGRldmxpbmsg
-c2xpY2Ugc2hvdw0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzA6IGZsYXZvdXIgcGh5c2ljYWwgcGZu
-dW0gMCBwb3J0IDAgc3RhdGUgYWN0aXZlDQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMTogZmxhdm91
-ciBwaHlzaWNhbCBwZm51bSAxIHBvcnQgMSBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6MDY6
-MDAuMC8yOiBmbGF2b3VyIHBjaXZmIHBmbnVtIDAgdmZudW0gMCBwb3J0IDIgaHdfYWRkciAxMDoy
-MjozMzo0NDo1NTo2Ng0KPj4+Pg0KPj4+PiBUaGVyZSBpcyBvbmUgVkYgb24gdGhlIE5JQy4NCj4+
-Pj4NCj4+Pj4NCj4+Pj4gTm93IGNyZWF0ZSBzdWJmdW5jdGlvbiBvZiBTRjAgb24gUEYxLCBpbmRl
-eCBvZiB0aGUgc2xpY2UgaXMgZ29pbmcgdG8gYmUgMTAwDQo+Pj4+IGFuZCBod19hZGRyZXNzIGFh
-OmJiOmNjOmFhOmJiOmNjLg0KPj4+Pg0KPj4+PiAkIGRldmxpbmsgc2xpY2UgYWRkIHBjaS8wMDAw
-LjA2LjAwLjAvMTAwIGZsYXZvdXIgcGNpc2YgcGZudW0gMSBzZm51bSAxMCBod19hZGRyIGFhOmJi
-OmNjOmFhOmJiOmNjICANCj4+Pg0KPj4+IFdoeSBpcyB0aGUgU0YgbnVtYmVyIHNwZWNpZmllZCBi
-eSB0aGUgdXNlciByYXRoZXIgdGhhbiBhbGxvY2F0ZWQ/ICANCj4+DQoNCj4+IEJlY2F1c2UgaXQg
-aXMgc25vd24gaW4gcmVwcmVzZW50b3IgbmV0ZGV2aWNlIG5hbWUuIEFuZCB5b3UgbmVlZCB0byBo
-YXZlDQo+PiBpdCBwcmVkZXRlcm1pbmVkOiBlbnA2czBwZjFzZjEwDQo+IA0KPiBJJ2QgdGhpbmsg
-eW91IG5lZWQgdG8ga25vdyB3aGF0IHdhcyBhc3NpZ25lZCwgbm90IG5lY2Vzc2FyaWx5IHBpY2sN
-Cj4gdXBmcm9udC4uIEkgZmVlbCBsaWtlIHdlIGhhZCB0aGlzIGNvbnZlcnNhdGlvbiBiZWZvcmUg
-YXMgd2VsbC4NCj4gDQpBc3NpZ25pbmcgYnkgdXNlciBlbnN1cmVzIHRoYXQgbmV0ZGV2IGFuZC9v
-ciByZG1hIGRldmljZSBvZiBhIHNsaWNlIChzdWINCmZ1bmN0aW9uKSwgaXRzIHJlcHJlc2VudG9y
-LCBoZWFsdGggcmVwb3J0ZXJzLCBkZXZsaW5rIGluc3RhbmNlIG9mIHRoZQ0Kc2xpY2UgZ2V0cyBw
-cmVkaWN0YWJsZSBpZGVudGl0eS4NCg0KPj4+PiBUaGUgZGV2bGluayBrZXJuZWwgY29kZSBjYWxs
-cyBkb3duIHRvIGRldmljZSBkcml2ZXIgKGRldmxpbmsgb3ApIGFuZCBhc2tzDQo+Pj4+IGl0IHRv
-IGNyZWF0ZSBhIHNsaWNlIHdpdGggcGFydGljdWxhciBhdHRyaWJ1dGVzLiBEcml2ZXIgdGhlbiBp
-bnN0YXRpYXRlcw0KPj4+PiB0aGUgc2xpY2UgYW5kIHBvcnQgaW4gdGhlIHNhbWUgd2F5IGl0IGlz
-IGRvbmUgZm9yIFZGOg0KPj4+Pg0KPj4+PiAkIGRldmxpbmsgcG9ydCBzaG93DQo+Pj4+IHBjaS8w
-MDAwOjA2OjAwLjAvMDogZmxhdm91ciBwaHlzaWNhbCBwZm51bSAwIHR5cGUgZXRoIG5ldGRldiBl
-bnA2czBmMG5wMQ0KPj4+PiBwY2kvMDAwMDowNjowMC4wLzE6IGZsYXZvdXIgcGh5c2ljYWwgcGZu
-dW0gMSB0eXBlIGV0aCBuZXRkZXYgZW5wNnMwZjBucDINCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8y
-OiBmbGF2b3VyIHBjaXZmIHBmbnVtIDAgdmZudW0gMCB0eXBlIGV0aCBuZXRkZXYgZW5wNnMwcGYw
-dmYwIHNsaWNlIDINCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8zOiBmbGF2b3VyIHBjaXNmIHBmbnVt
-IDEgc2ZudW0gMTAgdHlwZSBldGggbmV0ZGV2IGVucDZzMHBmMXNmMTAgc2xpY2UgMTAwDQo+Pj4+
-DQo+Pj4+ICQgZGV2bGluayBzbGljZSBzaG93DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMDogZmxh
-dm91ciBwaHlzaWNhbCBwZm51bSAwIHBvcnQgMCBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6
-MDY6MDAuMC8xOiBmbGF2b3VyIHBoeXNpY2FsIHBmbnVtIDEgcG9ydCAxIHN0YXRlIGFjdGl2ZQ0K
-Pj4+PiBwY2kvMDAwMDowNjowMC4wLzI6IGZsYXZvdXIgcGNpdmYgcGZudW0gMCB2Zm51bSAwIHBv
-cnQgMiBod19hZGRyIDEwOjIyOjMzOjQ0OjU1OjY2DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMTAw
-OiBmbGF2b3VyIHBjaXNmIHBmbnVtIDEgc2ZudW0gMTAgcG9ydCAzIGh3X2FkZHIgYWE6YmI6Y2M6
-YWE6YmI6Y2Mgc3RhdGUgaW5hY3RpdmUNCj4+Pj4NCj4+Pj4gTm90ZSB0aGF0IHRoZSBTRiBzbGlj
-ZSBpcyBjcmVhdGVkIGJ1dCBub3QgYWN0aXZlLiBUaGF0IG1lYW5zIHRoZQ0KPj4+PiBlbnRpdGll
-cyBhcmUgY3JlYXRlZCBvbiBkZXZsaW5rIHNpZGUsIHRoZSBlLXN3aXRjaCBwb3J0IHJlcHJlc2Vu
-dG9yDQo+Pj4+IGlzIGNyZWF0ZWQsIGJ1dCB0aGUgU0YgZGV2aWNlIGl0c2VsZiBpdCBub3QgeWV0
-IG91dCB0aGVyZSAoc2FtZSBob3N0DQo+Pj4+IG9yIGRpZmZlcmVudCwgZGVwZW5kcyBvbiB3aGVy
-ZSB0aGUgcGFyZW50IFBGIGlzIC0gaW4gdGhpcyBjYXNlIHRoZSBzYW1lIGhvc3QpLg0KPj4+PiBV
-c2VyIG1pZ2h0IHVzZSBlLXN3aXRjaCBwb3J0IHJlcHJlc2VudG9yIGVucDZzMHBmMXNmMTAgdG8g
-ZG8gc2V0dGluZ3MsDQo+Pj4+IHB1dHRpbmcgaXQgaW50byBicmlkZ2UsIGFkZGluZyBUQyBydWxl
-cywgZXRjLg0KPj4+PiBJdCdzIGxpa2UgdGhlIGNhYmxlIGlzIHVucGx1Z2dlZCBvbiB0aGUgb3Ro
-ZXIgc2lkZS4gIA0KPj4+DQo+Pj4gSWYgaXQncyBqdXN0ICJjYWJsZSB1bnBsdWdnZWQiIGNhbid0
-IHdlIGp1c3QgdXNlIHRoZSBmYWN0IHRoZQ0KPj4+IHJlcHJlc2VudG9yIGlzIGRvd24gdG8gaW5k
-aWNhdGUgbm8gdHJhZmZpYyBjYW4gZmxvdz8gIA0KPj4NCj4+IEl0IGlzIG5vdCAiY2FibGUgdW5w
-bHVnZ2VkIi4gVGhpcyAic3RhdGUgaW5hY3RpdmUvYWN0aW9uIiBpcyBhZG1pbg0KPj4gc3RhdGUu
-IFlvdSBhcyBhIGVzd2l0Y2ggYWRtaW4gc2F5LCAiSSdtIGRvbmUgd2l0aCBjb25maWd1cmluZyBh
-IHNsaWNlDQo+PiAoTUFDKSBhbmQgYSByZXByZXNlbnRvciAoYnJpZGdlLCBUQywgZXRjKSBmb3Ig
-dGhpcyBwYXJ0aWN1bGFyIFNGIGFuZA0KPj4gSSB3YW50IHRoZSBIT1NUIHRvIGluc3RhbnRpYXRl
-IHRoZSBTRiBpbnN0YW5jZSAod2l0aCB0aGUgY29uZmlndXJlZA0KPj4gTUFDKS4NCj4gDQo+IEkn
-bSBub3Qgb3Bwb3NlZCwgSSBqdXN0IGRvbid0IHVuZGVyc3RhbmQgdGhlIG5lZWQuIElmIEFTSUMg
-d2lsbCBub3QgDQo+IFJYIG9yIFRYIGFueSB0cmFmZmljIGZyb20vdG8gdGhpcyBuZXcgZW50aXR5
-IHVudGlsIHJlcHIgaXMgYnJvdWdodCB1cA0KPiB0aGVyZSBzaG91bGQgYmUgbm8gcHJvYmxlbS4N
-Cj4gDQpZb3UgbWF5IHN0aWxsIHdhbnQgZGV2aWNlIHRvIGJlIGFjdGl2ZSBhbmQgdW5wbHVnIHRo
-ZSBjYWJsZSBvciBwbHVnIHRoZQ0KY2FibGUgbGF0ZXIgb24uDQoNCkFkZGl0aW9uYWxseSwgb25j
-ZSBhIHNsaWNlIGlzIGluYWN0aXZhdGVkLCBwb3J0aW9uIG9mIHRoZSBQQ0kgQkFSIHNwYWNlDQpz
-aG91bGQgYmUgaW5hY3RpdmF0ZWQgdG9vIHVzZWQgYnkgdGhpcyBzbGljZSwgc28gdGhhdCBhIGRl
-dmljZS9mdyBjYW4NCmRyb3Agc3VjaCBhY2Nlc3MgYnkgYW4gdW50cnVzdGVkIHNvZnR3YXJlIHRo
-YXQgbWF5IGhhcHBlbiBldmVuIGFmdGVyDQppbmFjdGl2YXRpbmcgdGhlIHNsaWNlLg0KDQo+Pj4+
-IE5vdyB3ZSBhY3RpdmF0ZSAoZGVwbG95KSB0aGUgU0Y6DQo+Pj4+ICQgZGV2bGluayBzbGljZSBz
-ZXQgcGNpLzAwMDA6MDY6MDAuMC8xMDAgc3RhdGUgYWN0aXZlDQo+Pj4+DQo+Pj4+ICQgZGV2bGlu
-ayBzbGljZSBzaG93DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMDogZmxhdm91ciBwaHlzaWNhbCBw
-Zm51bSAwIHBvcnQgMCBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8xOiBmbGF2
-b3VyIHBoeXNpY2FsIHBmbnVtIDEgcG9ydCAxIHN0YXRlIGFjdGl2ZQ0KPj4+PiBwY2kvMDAwMDow
-NjowMC4wLzI6IGZsYXZvdXIgcGNpdmYgcGZudW0gMCB2Zm51bSAwIHBvcnQgMiBod19hZGRyIDEw
-OjIyOjMzOjQ0OjU1OjY2DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMTAwOiBmbGF2b3VyIHBjaXNm
-IHBmbnVtIDEgc2ZudW0gMTAgcG9ydCAzIGh3X2FkZHIgYWE6YmI6Y2M6YWE6YmI6Y2Mgc3RhdGUg
-YWN0aXZlDQo+Pj4+DQo+Pj4+IFVwb24gdGhlIGFjdGl2YXRpb24sIHRoZSBkZXZpY2UgZHJpdmVy
-IGFza3MgdGhlIGRldmljZSB0byBpbnN0YW50aWF0ZQ0KPj4+PiB0aGUgYWN0dWFsIFNGIGRldmlj
-ZSBvbiBwYXJ0aWN1bGFyIFBGLiBEb2VzIG5vdCBtYXR0ZXIgaWYgdGhhdCBpcw0KPj4+PiBvbiB0
-aGUgc2FtZSBob3N0IG9yIG5vdC4NCj4+Pj4NCj4+Pj4gT24gdGhlIG90aGVyIHNpZGUsIHRoZSBQ
-RiBkcml2ZXIgaW5zdGFuY2UgZ2V0cyB0aGUgZXZlbnQgZnJvbSBkZXZpY2UNCj4+Pj4gdGhhdCBw
-YXJ0aWN1bGFyIFNGIHdhcyBhY3RpdmF0ZWQuIEl0J3MgdGhlIGN1ZSB0byBwdXQgdGhlIGRldmlj
-ZSBvbiBidXMNCj4+Pj4gcHJvYmUgaXQgYW5kIGluc3RhbnRpYXRlIG5ldGRldiBhbmQgZGV2bGlu
-ayBpbnN0YW5jZXMgZm9yIGl0LiAgDQo+Pj4NCj4+PiBTZWVtcyBiYWNrd2FyZHMuIEl0J3MgdGhl
-IFBGIHRoYXQgd2FudHMgdGhlIG5ldyBmdW5jdGlvbiwgd2h5IGNhbid0IGl0DQo+Pj4ganVzdCBj
-cmVhdGUgaXQgYW5kIGVpdGhlciBnZXQgYW4gZXJyb3IgZnJvbSB0aGUgb3RoZXIgc2lkZSBvciBu
-ZXZlciBnZXQNCj4+PiBsaW5rIHVwPyAgDQo+Pg0KPj4gV2UgZGlzY3Vzc2VkIHRoYXQgbWFueSB0
-aW1lcyBpbnRlcm5hbGx5LiBJIHRoaW5rIGl0IG1ha2VzIHNlbnNlIHRoYXQNCj4+IHRoZSBTRiBp
-cyBjcmVhdGVkIGJ5IHRoZSBzYW1lIGVudGl0eSB0aGF0IG1hbmFnZXMgdGhlIHJlbGF0ZWQgZXN3
-aXRjaA0KPj4gU0YtcmVwcmVzZW50b3IuIEluIG90aGVyIHdvcmRzLCB0aGUgImRldmxpbmsgc2xp
-Y2UiIGFuZCByZWxhdGVkICJkZXZsaW5rDQo+PiBwb3J0IiBvYmplY3QgYXJlIHVuZGVyIHRoZSBz
-YW1lIGRldmxpbmsgaW5zdGFuY2UuDQo+Pg0KPj4gSWYgdGhlIFBGIGluIGhvc3QgbWFuYWdlcyBu
-ZXN0ZWQgc3dpdGNoLCBpdCBjYW4gY3JlYXRlIHRoZSBTRiBpbnNpZGUgYW5kDQo+PiBtYW5hZ2Vz
-IHRoZSBuZXN0ZSBlc3dpdGNoIFNGLXJlcHJlc2VudG9yIGFzIHlvdSBkZXNjcmliZS4NCj4+DQo+
-PiBJdCBpcyBhIG1hdHRlciBvZiAibmVzdGVkIGVzd2l0Y2ggbWFuYWdlciBvbi9vZmYiIGNvbmZp
-Z3VyYXRpb24uDQo+Pg0KPj4gSSB0aGluayB0aGlzIGlzIGNsZWFuIG1vZGVsIGFuZCBpdCBpcyBr
-bm93biB3aG8gaGFzIHdoYXQNCj4+IHJlc3BvbnNpYmlsaXRpZXMuDQo+IA0KPiBJIHNlZSBzbyB5
-b3Ugd2FudCB0aGUgY3JlYXRpb24gdG8gYmUgY29udHJvbGxlZCBieSB0aGUgc2FtZSBlbnRpdHkg
-dGhhdA0KPiBjb250cm9scyB0aGUgZXN3aXRjaC4uDQo+IA0KPiBUbyBtZSB0aGUgY3JlYXRpb24g
-c2hvdWxkIGJlIG9uIHRoZSBzaWRlIHRoYXQgYWN0dWFsbHkgbmVlZHMvd2lsbCB1c2UNCj4gdGhl
-IG5ldyBwb3J0LiBBbmQgaWYgaXQncyBub3QgZXN3aXRjaCBtYW5hZ2VyIHRoZW4gZXN3aXRjaCBt
-YW5hZ2VyDQo+IG5lZWRzIHRvIGFjayBpdC4NCj4NCg0KVGhlcmUgYXJlIGZldyByZWFzb25zIHRv
-IGNyZWF0ZSB0aGVtIG9uIGVzd2l0Y2ggbWFuYWdlciBzeXN0ZW0gYXMgYmVsb3cuDQoNCjEuIENy
-ZWF0aW9uIGFuZCBkZWxldGlvbiBvbiBvbmUgc3lzdGVtIGFuZCBzeW5jaHJvbml6aW5nIGl0IHdp
-dGggZXN3aXRjaA0Kc3lzdGVtIHJlcXVpcmVzIG11bHRpcGxlIGJhY2stbi1mb3J0aCBjYWxscyBi
-ZXR3ZWVuIHR3byBzeXN0ZW1zLg0KDQoyLiBXaGVuIHRoaXMgaGFwcGVucywgc3lzdGVtIHdoZXJl
-IGl0cyBjcmVhdGVkLCBkb2Vzbid0IGtub3cgd2hlbiBpcyB0aGUNCnJpZ2h0IHRpbWUgdG8gcHJv
-dmlzaW9uIHRvIGEgVk0gb3IgdG8gYSBhcHBsaWNhdGlvbi4NCnVkZXYvc3lzdGVtZC9OZXR3b3Jr
-IE1hbmFnZXIgYW5kIG90aGVycyBzdWNoIHNvZnR3YXJlIG1pZ2h0IGFscmVhZHkNCnN0YXJ0IGlu
-aXRpYWxpemluZyBpdCBkb2luZyBESENQIGJ1dCBpdHMgc3dpdGNoIHNpZGUgaXMgbm90IHlldCBy
-ZWFkeS4NCg0KU28gaXQgaXMgZGVzaXJlZCB0byBtYWtlIHN1cmUgdGhhdCBvbmNlIGRldmljZSBp
-cyBmdWxseQ0KcmVhZHkvY29uZmlndXJlZCwgaXRzIGFjdGl2YXRlZC4NCg0KMy4gQWRkaXRpb25h
-bGx5IGl0IGRvZXNuJ3QgZm9sbG93IG1pcnJvciBzZXF1ZW5jZSBkdXJpbmcgZGVsZXRpb24gd2hl
-bg0KY3JlYXRlZCBvbiBob3N0Lg0KDQo0LiBlc3dpdGNoIGFkbWluaXN0cmF0b3Igc2ltcGx5IGRv
-ZXNuJ3QgaGF2ZSBkaXJlY3QgYWNjZXNzIHRvIHRoZSBzeXN0ZW0NCndoZXJlIHRoaXMgZGV2aWNl
-IGlzIHVzZWQuIFNvIGl0IGp1c3QgY2Fubm90IGJlIGNyZWF0ZWQgdGhlcmUgYnkgZXN3aXRjaA0K
-YWRtaW5pc3RyYXRvci4NCg0KPiBUaGUgcHJlY2VkZW5jZSBpcyBwcm9iYWJseSBub3QgYSBzdHJv
-bmcgYXJndW1lbnQsIGJ1dCB0aGF0J2QgYmUgdGhlDQo+IHNhbWUgd2F5IFZGcyB3b3JrLi4gSSBk
-b24ndCB0aGluayB5b3UgY2FuIGNoYW5nZSBob3cgVkZzIHdvcmssIHJpZ2h0Pw0KPg0KDQpBdCBs
-ZWFzdCBub3Qgd2l0aCB0aGUgZXhpc3RpbmcgYXZhaWxhYmxlIG1seDUgZGV2aWNlcy4gQnV0IHRo
-aXMgbW9kZWwNCmVuYWJsZXMgZnV0dXJlIFZGIGRldmljZXMgdG8gb3BlcmF0ZSBpbiBzYW1lIHdh
-eSBhcyBTRi4NCg0KPj4+PiA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT0NCj4+Pj4gfHwgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHx8DQo+Pj4+IHx8ICAgVkYg
-bWFudWFsIGNyZWF0aW9uIGFuZCBhY3RpdmF0aW9uIHVzZXIgY21kbGluZSBBUEkgZHJhZnQgICB8
-fA0KPj4+PiB8fCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgfHwNCj4+Pj4gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09DQo+Pj4+DQo+Pj4+IFRvIGVudGVyIG1h
-bnVhbCBtb2RlLCB0aGUgdXNlciBoYXMgdG8gdHVybiBvZmYgVkYgZHVtbWllcyBjcmVhdGlvbjoN
-Cj4+Pj4gJCBkZXZsaW5rIGRldiBzZXQgcGNpLzAwMDA6MDY6MDAuMCB2Zl9kdW1taWVzIGRpc2Fi
-bGVkDQo+Pj4+ICQgZGV2bGluayBkZXYgc2hvdw0KPj4+PiBwY2kvMDAwMDowNjowMC4wOiB2Zl9k
-dW1taWVzIGRpc2FibGVkDQo+Pj4+DQo+Pj4+IEl0IGlzICJlbmFibGVkIiBieSBkZWZhdWx0IGlu
-IG9yZGVyIG5vdCB0byBicmVhayBleGlzdGluZyB1c2Vycy4NCj4+Pj4NCj4+Pj4gQnkgc2V0dGlu
-ZyB0aGUgInZmX2R1bW1pZXMiIGF0dHJpYnV0ZSB0byAiZGlzYWJsZWQiLCB0aGUgZHJpdmVyDQo+
-Pj4+IHJlbW92ZXMgYWxsIGR1bW15IFZGcy4gT25seSBwaHlzaWNhbCBwb3J0cyBhcmUgcHJlc2Vu
-dDoNCj4+Pj4NCj4+Pj4gJCBkZXZsaW5rIHBvcnQgc2hvdw0KPj4+PiBwY2kvMDAwMDowNjowMC4w
-LzA6IGZsYXZvdXIgcGh5c2ljYWwgcGZudW0gMCB0eXBlIGV0aCBuZXRkZXYgZW5wNnMwZjBucDEN
-Cj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8xOiBmbGF2b3VyIHBoeXNpY2FsIHBmbnVtIDEgdHlwZSBl
-dGggbmV0ZGV2IGVucDZzMGYwbnAyDQo+Pj4+DQo+Pj4+IFRoZW4gdGhlIHVzZXIgaXMgYWJsZSB0
-byBjcmVhdGUgdGhlbSBpbiBhIHNpbWlsYXIgd2F5IGFzIFNGczoNCj4+Pj4NCj4+Pj4gJCBkZXZs
-aW5rIHNsaWNlIGFkZCBwY2kvMDAwMDowNjowMC4wLzk5IGZsYXZvdXIgcGNpdmYgcGZudW0gMSB2
-Zm51bSA4IGh3X2FkZHIgYWE6YmI6Y2M6YWE6YmI6Y2MNCj4+Pj4NCj4+Pj4gVGhlIGRldmxpbmsg
-a2VybmVsIGNvZGUgY2FsbHMgZG93biB0byBkZXZpY2UgZHJpdmVyIChkZXZsaW5rIG9wKSBhbmQg
-YXNrcw0KPj4+PiBpdCB0byBjcmVhdGUgYSBzbGljZSB3aXRoIHBhcnRpY3VsYXIgYXR0cmlidXRl
-cy4gRHJpdmVyIHRoZW4gaW5zdGF0aWF0ZXMNCj4+Pj4gdGhlIHNsaWNlIGFuZCBwb3J0Og0KPj4+
-Pg0KPj4+PiAkIGRldmxpbmsgcG9ydCBzaG93DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMDogZmxh
-dm91ciBwaHlzaWNhbCBwZm51bSAwIHR5cGUgZXRoIG5ldGRldiBlbnA2czBmMG5wMQ0KPj4+PiBw
-Y2kvMDAwMDowNjowMC4wLzE6IGZsYXZvdXIgcGh5c2ljYWwgcGZudW0gMSB0eXBlIGV0aCBuZXRk
-ZXYgZW5wNnMwZjBucDINCj4+Pj4gcGNpLzAwMDA6MDY6MDAuMC8yOiBmbGF2b3VyIHBjaXZmIHBm
-bnVtIDEgdmZudW0gOCB0eXBlIGV0aCBuZXRkZXYgZW5wNnMwcGYxdmYwIHNsaWNlIDk5DQo+Pj4+
-DQo+Pj4+ICQgZGV2bGluayBzbGljZSBzaG93DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvMDogZmxh
-dm91ciBwaHlzaWNhbCBwZm51bSAwIHBvcnQgMCBzdGF0ZSBhY3RpdmUNCj4+Pj4gcGNpLzAwMDA6
-MDY6MDAuMC8xOiBmbGF2b3VyIHBoeXNpY2FsIHBmbnVtIDEgcG9ydCAxIHN0YXRlIGFjdGl2ZQ0K
-Pj4+PiBwY2kvMDAwMDowNjowMC4wLzk5OiBmbGF2b3VyIHBjaXZmIHBmbnVtIDEgdmZudW0gOCBw
-b3J0IDIgaHdfYWRkciBhYTpiYjpjYzphYTpiYjpjYyBzdGF0ZSBpbmFjdGl2ZQ0KPj4+Pg0KPj4+
-PiBOb3cgd2UgYWN0aXZhdGUgKGRlcGxveSkgdGhlIFZGOg0KPj4+PiAkIGRldmxpbmsgc2xpY2Ug
-c2V0IHBjaS8wMDAwOjA2OjAwLjAvOTkgc3RhdGUgYWN0aXZlDQo+Pj4+DQo+Pj4+ICQgZGV2bGlu
-ayBzbGljZSBzaG93DQo+Pj4+IHBjaS8wMDAwOjA2OjAwLjAvOTk6IGZsYXZvdXIgcGNpdmYgcGZu
-dW0gMSB2Zm51bSA4IHBvcnQgMiBod19hZGRyIGFhOmJiOmNjOmFhOmJiOmNjIHN0YXRlIGFjdGl2
-ZQ0K
+Fri, Mar 20, 2020 at 10:25:08PM CET, kuba@kernel.org wrote:
+>On Fri, 20 Mar 2020 08:35:55 +0100 Jiri Pirko wrote:
+>> Fri, Mar 20, 2020 at 04:32:53AM CET, kuba@kernel.org wrote:
+>> >On Thu, 19 Mar 2020 20:27:19 +0100 Jiri Pirko wrote:  
+>> >> ==================================================================
+>> >> ||                                                              ||
+>> >> ||            Overall illustration of example setup             ||
+>> >> ||                                                              ||
+>> >> ==================================================================
+>> >> 
+>> >> Note that there are 2 hosts in the picture. Host A may be the smartnic host,
+>> >> Host B may be one of the hosts which gets PF. Also, you might omit
+>> >> the Host B and just see Host A like an ordinary nic in a host.  
+>> >
+>> >Could you enumerate the use scenarios for the SmartNIC?
+>> >
+>> >Is SmartNIC always "in-line", i.e. separating the host from the network?  
+>> 
+>> As far as I know, it is. The host is always given a PF which is a leg of
+>> eswitch managed on the SmartNIC.
+>
+>Cool, I was hoping that's the case. One less configuration mode :)
+>
+>> >Do we need a distinction based on whether the SmartNIC controls Host's
+>> >eswitch vs just the Host in its entirety (i.e. VF switching vs bare
+>> >metal)?  
+>> 
+>> I have this described in the "PFs" section. Basically we need to have a
+>> toggle to say "host is managing it's own nested eswitch.
+>> 
+>> >I find it really useful to be able to list use cases, and constraints
+>> >first. Then go onto the design.
+>> >  
+>> >> Note that the PF is merged with physical port representor.
+>> >> That is due to simpler and flawless transition from legacy mode and back.
+>> >> The devlink_ports and netdevs for physical ports are staying during
+>> >> the transition.  
+>> >
+>> >When users put an interface under bridge or a bond they have to move 
+>> >IP addresses etc. onto the bond. Changing mode to "switchdev" is a more
+>> >destructive operation and there should be no expectation that
+>> >configuration survives.  
+>> 
+>> Yeah, I was saying the same thing when our arch came up with this, but
+>> I now think it is just fine. It is drivers responsibility to do the
+>> shift. And the entities representing the uplink port: netdevs and
+>> devlink_port instances. They can easily stay during the transition. The
+>> transition only applies to the eswitch and VF entities.
+>
+>If PF is split from the uplink I think the MAC address should stay with
+>the PF, not the uplink (which becomes just a repr in a Host case).
+>
+>> >The merging of the PF with the physical port representor is flawed.  
+>> 
+>> Why?
+>
+>See below.
+>
+>> >People push Qdisc offloads into devlink because of design shortcuts
+>> >like this.  
+>> 
+>> Could you please explain how it is related to "Qdisc offloads"
+>
+>Certain users have designed with constrained PCIe bandwidth in the
+>server. Meaning NIC needs to do buffering much like a switch would.
+>So we need to separate the uplink from the PF to attach the Qdisc
+>offload for configuring details of PCIe queuing.
+
+Hmm, I'm not sure I understand. Then PF and uplink is the same entity,
+you can still attach the qdisc to this entity, right? What prevents the
+same functionality as with the "split"?
+
+
+>
+>> >>                         +-----------+
+>> >>                         |phys port 2+-----------------------------------+
+>> >>                         +-----------+                                   |
+>> >>                         +-----------+                                   |
+>> >>                         |phys port 1+---------------------------------+ |
+>> >>                         +-----------+                                 | |
+>> >>                                                                       | |
+>> >> +------------------------------------------------------------------+  | |
+>> >> |  devlink instance for the whole ASIC                   HOST A    |  | |
+>> >> |                                                                  |  | |
+>> >> |  pci/0000:06:00.0  (devlink dev)                                 |  | |
+>> >> |  +->health reporters, params, info, sb, dpipe,                   |  | |
+>> >> |  |  resource, traps                                              |  | |
+>> >> |  |                                                               |  | |
+>> >> |  +-+port_pci/0000:06:00.0/0+-----------------------+-------------|--+ |
+>> >> |  | |  flavour physical pfnum 0  (phys port and pf) ^             |    |  
+>> >
+>> >Please no.  
+>> 
+>> What exactly "no"?
+>
+>Dual flavorness, and PF being phys port.
+
+I see.
+
+
+>
+>> >> |  | |  netdev enp6s0f0np1                           |             |    |
+>> >> |  | +->health reporters, params                     |             |    |
+>> >> |  | |                                               |             |    |
+>> >> |  | +->slice_pci/0000:06:00.0/0+--------------------+             |    |
+>> >> |  |       flavour physical                                        |    |
+>> >> |  |                                                               |    |
+>> >> |  +-+port_pci/0000:06:00.0/1+-----------------------+-------------|----+
+>> >> |  | |  flavour physical pfnum 1  (phys port and pf) |             |
+>> >> |  | |  netdev enp6s0f0np2                           |             |
+>> >> |  | +->health reporters, params                     |             |
+>> >> |  | |                                               |             |
+>> >> |  | +->slice_pci/0000:06:00.0/1+--------------------+             |
+>> >> |  |       flavour physical                                        |
+>> >> |  |                                                               |
+>> >> |  +-+-+port_pci/0000:06:00.0/2+-----------+-------------------+   |
+>> >> |  | | |  flavour pcipf pfnum 2            ^                   |   |
+>> >> |  | | |  netdev enp6s0f0pf2               |                   |   |
+>> >> |  | + +->params                           |                   |   |
+>> >> |  | |                                     |                   |   |
+>> >> |  | +->slice_pci/0000:06:00.0/2+----------+                   |   |
+>> >> |  |       flavour pcipf                                       |   |
+>> >> |  |                                                           |   |
+>> >> |  +-+-+port_pci/0000:06:00.0/3+-----------+----------------+  |   |
+>> >> |  | | |  flavour pcivf pfnum 2 vfnum 0    ^                |  |   |
+>> >> |  | | |  netdev enp6s0pf2vf0              |                |  |   |
+>> >> |  | | +->params                           |                |  |   |
+>> >> |  | |                                     |                |  |   |
+>> >> |  | +-+slice_pci/0000:06:00.0/3+----------+                |  |   |
+>> >> |  |   |   flavour pcivf                                    |  |   |
+>> >> |  |   +->rate (qos), mpgroup, mac                          |  |   |
+>> >> |  |                                                        |  |   |
+>> >> |  +-+-+port_pci/0000:06:00.0/4+-----------+-------------+  |  |   |
+>> >> |  | | |  flavour pcivf pfnum 0 vfnum 0    ^             |  |  |   |  
+>> >
+>> >So PF 0 is both on the SmartNIC where it is physical and on the Hosts?
+>> >Is this just error in the diagram?  
+>> 
+>> I think it is error in the reading. This is the VF representation
+>> of VF pci/0000:06:00.1, on the same host A, which is the SmartNIC host.
+>
+>Hm, I see pf 0 as the first port that has a line to uplink,
+>and here pf 0 vf 0 has a line to Host B.
+
+No. The lane is to "Host A"
+
+>
+>The VF above is "pfnum 2 vfnum 0" which makes sense, PF 2 is 
+>Host B's PF. So VF 0 of PF 2 is also on Host B.
+>
+>> >> |  | | |  netdev enp6s0pf0vf0              |             |  |  |   |
+>> >> |  | | +->params                           |             |  |  |   |
+>> >> |  | |                                     |             |  |  |   |
+>> >> |  | +-+slice_pci/0000:06:00.0/4+----------+             |  |  |   |
+>> >> |  |   |   flavour pcivf                                 |  |  |   |
+>> >> |  |   +->rate (qos), mpgroup, mac                       |  |  |   |
+>> >> |  |                                                     |  |  |   |
+>> >> |  +-+-+port_pci/0000:06:00.0/5+-----------+----------+  |  |  |   |
+>> >> |  | | |  flavour pcisf pfnum 0 sfnum 1    ^          |  |  |  |   |
+>> >> |  | | |  netdev enp6s0pf0sf1              |          |  |  |  |   |
+>> >> |  | | +->params                           |          |  |  |  |   |
+>> >> |  | |                                     |          |  |  |  |   |
+>> >> |  | +-+slice_pci/0000:06:00.0/5+----------+          |  |  |  |   |
+>> >> |  |   |   flavour pcisf                              |  |  |  |   |
+>> >> |  |   +->rate (qos), mpgroup, mac                    |  |  |  |   |
+>> >> |  |                                                  |  |  |  |   |
+>> >> |  +-+slice_pci/0000:06:00.0/6+--------------------+  |  |  |  |   |
+>> >> |        flavour pcivf pfnum 0 vfnum 1             |  |  |  |  |   |
+>> >> |            (non-ethernet (IB, NVE)               |  |  |  |  |   |
+>> >> |                                                  |  |  |  |  |   |
+>> >> +------------------------------------------------------------------+
+>> >>                                                    |  |  |  |  |
+>> >>                                                    |  |  |  |  |
+>> >>                                                    |  |  |  |  |
+>> >> +----------------------------------------------+   |  |  |  |  |
+>> >> |  devlink instance PF (other host)    HOST B  |   |  |  |  |  |
+>> >> |                                              |   |  |  |  |  |
+>> >> |  pci/0000:10:00.0  (devlink dev)             |   |  |  |  |  |
+>> >> |  +->health reporters, info                   |   |  |  |  |  |
+>> >> |  |                                           |   |  |  |  |  |
+>> >> |  +-+port_pci/0000:10:00.0/1+---------------------------------+
+>> >> |    |  flavour virtual                        |   |  |  |  |
+>> >> |    |  netdev enp16s0f0                       |   |  |  |  |
+>> >> |    +->health reporters                       |   |  |  |  |
+>> >> |                                              |   |  |  |  |
+>> >> +----------------------------------------------+   |  |  |  |
+>> >>                                                    |  |  |  |
+>> >> +----------------------------------------------+   |  |  |  |
+>> >> |  devlink instance VF (other host)    HOST B  |   |  |  |  |
+>> >> |                                              |   |  |  |  |
+>> >> |  pci/0000:10:00.1  (devlink dev)             |   |  |  |  |
+>> >> |  +->health reporters, info                   |   |  |  |  |
+>> >> |  |                                           |   |  |  |  |
+>> >> |  +-+port_pci/0000:10:00.1/1+------------------------------+
+>> >> |    |  flavour virtual                        |   |  |  |
+>> >> |    |  netdev enp16s0f0v0                     |   |  |  |
+>> >> |    +->health reporters                       |   |  |  |
+>> >> |                                              |   |  |  |
+>> >> +----------------------------------------------+   |  |  |
+>> >>                                                    |  |  |
+>> >> +----------------------------------------------+   |  |  |
+>> >> |  devlink instance VF                 HOST A  |   |  |  |
+>> >> |                                              |   |  |  |
+>> >> |  pci/0000:06:00.1  (devlink dev)             |   |  |  |
+>> >> |  +->health reporters, info                   |   |  |  |
+>> >> |  |                                           |   |  |  |
+>> >> |  +-+port_pci/0000:06:00.1/1+---------------------------+
+>> >> |    |  flavour virtual                        |   |  |
+>> >> |    |  netdev enp6s0f0v0                      |   |  |
+>> >> |    +->health reporters                       |   |  |
+>> >> |                                              |   |  |
+>> >> +----------------------------------------------+   |  |
+>> >>                                                    |  |
+>> >> +----------------------------------------------+   |  |
+>> >> |  devlink instance SF                 HOST A  |   |  |
+>> >> |                                              |   |  |
+>> >> |  pci/0000:06:00.0%sf1    (devlink dev)       |   |  |
+>> >> |  +->health reporters, info                   |   |  |
+>> >> |  |                                           |   |  |
+>> >> |  +-+port_pci/0000:06:00.0%sf1/1+--------------------+
+>> >> |    |  flavour virtual                        |   |
+>> >> |    |  netdev enp6s0f0s1                      |   |
+>> >> |    +->health reporters                       |   |
+>> >> |                                              |   |
+>> >> +----------------------------------------------+   |
+>> >>                                                    |
+>> >> +----------------------------------------------+   |
+>> >> |  devlink instance VF                 HOST A  |   |
+>> >> |                                              |   |
+>> >> |  pci/0000:06:00.2  (devlink dev)+----------------+
+>> >> |  +->health reporters, info                   |
+>> >> |                                              |
+>> >> +----------------------------------------------+
+>> >> 
+>> >> 
+>> >> 
+>> >> 
+>> >> ==================================================================
+>> >> ||                                                              ||
+>> >> ||                 what needs to be implemented                 ||
+>> >> ||                                                              ||
+>> >> ==================================================================
+>> >> 
+>> >> 1) physical port "pfnum". When PF and physical port representor
+>> >>    are merged, the instance of devlink_port representing the physical port
+>> >>    and PF needs to have "pfnum" attribute to be in sync
+>> >>    with other PF port representors.  
+>> >
+>> >See above.
+>> >  
+>> >> 2) per-port health reporters are not implemented yet.  
+>> >
+>> >Which health reports are visible on a SmartNIC port?   
+>> 
+>> I think there is usecase for SmartNIC uplink/pf port health reporters.
+>> Those are the ones which we have for TX/RX queues on devlink instance
+>> now (that was a mistake). 
+>> 
+>> >
+>> >The Host ones or the SmartNIC ones?  
+>> 
+>> In the host, I think there is a usecase for VF/SF devlink_port health
+>> reporters - also for TX/RX queues.
+>> 
+>> >I think queue reporters should be per-queue, see below.  
+>> 
+>> Depends. There are reporters, like "fw" that are per-asic.
+>> 
+>> 
+>> >  
+>> >> 3) devlink_port instance in PF/VF/SF flavour "virtual". In PF/VF/SF devlink
+>> >>    instance (in VM for example), there would make sense to have devlink_port
+>> >>    instance. At least to carry link to netdevice name (otherwise we have
+>> >>    no easy way to find out devlink instance and netdevice belong to each other).
+>> >>    I was thinking about flavour name, we have to distinguish from eswitch
+>> >>    devlink port flavours "pcipf, pcivf, pcisf".  
+>> >
+>> >Virtual is the flavor for the VF port, IIUC, so what's left to name?
+>> >Do you mean pick a phys_port_name format?  
+>> 
+>> No. "virtual" is devlink_port flavour in the host in the VF devlink
+>
+>Yeah, I'm not 100% sure what you're describing as missing.
+>
+>Perhaps you could rephrase this point?
+
+If you look at the example above. See:
+pci/0000:10:00.0
+That is a devlink instance in host B. It has a port:
+pci/0000:10:00.0/1
+with flavour "virtual"
+that tells the user that this is a virtual link, to the parent eswitch.
+
+
+>
+>> >>    This was recently implemented by Parav:
+>> >> commit 0a303214f8cb8e2043a03f7b727dba620e07e68d
+>> >> Merge: c04d102ba56e 162add8cbae4
+>> >> Author: David S. Miller <davem@davemloft.net>
+>> >> Date:   Tue Mar 3 15:40:40 2020 -0800
+>> >> 
+>> >>     Merge branch 'devlink-virtual-port'
+>> >> 
+>> >>    What is missing is the "virtual" flavour for nested PF.
+>> >> 
+>> >> 4) slice is not implemented yet. This is the original "vdev/subdev" concept.
+>> >>    See below section "Slice user cmdline API draft".
+>> >> 
+>> >> 5) SFs are not implemented.
+>> >>    See below section "SF (subfunction) user cmdline API draft".
+>> >> 
+>> >> 6) rate for slice are not implemented yet.
+>> >>    See below section "Slice rate user cmdline API draft".
+>> >> 
+>> >> 7) mpgroup for slice is not implemented yet.
+>> >>    See below section "Slice mpgroup user cmdline API draft".
+>> >> 
+>> >> 8) VF manual creation using devlink is not implemented yet.
+>> >>    See below section "VF manual creation and activation user cmdline API draft".
+>> >>  
+>> >> 9) PF aliasing. One devlink instance and multiple PFs sharing it as they have one
+>> >>    merged e-switch.
+>> >> 
+>> >> 
+>> >> 
+>> >> ==================================================================
+>> >> ||                                                              ||
+>> >> ||                  Issues/open questions                       ||
+>> >> ||                                                              ||
+>> >> ==================================================================
+>> >> 
+>> >> 1) "pfnum" has to be per-asic(/devlink instance), not per-host.
+>> >>    That means that in smartNIC scenario, we cannot have "pfnum 0"
+>> >>    for smartNIC and "pfnum 0" for host as well.  
+>> >
+>> >Right, exactly, NFP already does that.
+>> >  
+>> >> 2) Q: for TX, RX queues reporters, should it be bound to devlink_port?
+>> >>    For which flavours this might make sense?
+>> >>    Most probably for flavours "physical"/"virtual".
+>> >>    How about the reporters in VF/SF?  
+>> >
+>> >I think with the work Magnus is doing we should have queues as first  
+>> 
+>> Can you point me to the "work"?
+>
+>There was a presentation at LPC last year, and some API proposal
+>circulated off-list :( Let's CC Magnus.
+
+Ok.
+
+
+>
+>> >class citizens to be able to allocate them to ports.
+>> >
+>> >Would this mean we can hang reporters off queues?  
+>> 
+>> Yes, If we have a "queue object", the per-queue reporter would make sense.
+>> 
+>> 
+>> >  
+>> >> 3) How the management of nested switch is handled. The PFs created dynamically
+>> >>    or the ones in hosts in smartnic scenario may themselves be each a manager
+>> >>    of nested e-switch. How to toggle this capability?
+>> >>    During creation by a cmdline option?
+>> >>    During lifetime in case the PF does not have any childs (VFs/SFs)?  
+>> >
+>> >Maybe the grouping of functions into devlink instances would help? 
+>> >SmartNIC could control if the host can perform switching between
+>> >functions by either putting them in the same Host side devlink 
+>> >instance or not.  
+>> 
+>> I'm not sure I follow. There is a number of PFs created "on probe".
+>> Those are fixed and driver knows where to put them.
+>> The comment was about possible "dynamic PF" created by user in the same
+>> was he creates SF, by devlink cmdline.
+>
+>How does the driver differentiate between a dynamic and static PF, 
+>and why are they different in the first place? :S
+
+They are not different. The driver just has to know to instantiate the
+static ones on probe, so in SmartNIC case each host has a PF.
+
+
+>
+>Also, once the PFs are created user may want to use them together 
+>or delegate to a VM/namespace. So when I was thinking we'd need some 
+>sort of a secure handshake between PFs and FW for the host to prove 
+>to FW that the PFs belong to the same domain of control, and their
+>resources (and eswitches) can be pooled.
+>
+>I'm digressing..
+
+Yeah. This needs to be sorted out.
+
+
+>
+>> Now the PF itself can have a "nested eswitch" to manage. The "parent
+>> eswitch" where the PF was created would only see one leg to the "nested
+>> eswitch".
+>> 
+>> This "nested eswitch management" might or might not be required. Depends
+>> on a usecare. The question was, how to configure that I as a user
+>> want this or not.
+>
+>Ack. I'm extending your question. I think the question is not only who
+>controls the eswitch but also which PFs share the eswitch.
+
+Yes.
+
+>
+>I think eswitch is just one capability, but SmartNIC will want to
+>control which ports see what capabilities in general. crypto offloads
+>and such.
+>
+>I presume in your model if host controls eswitch the smartNIC sees just
+
+host may control the "nested eswitch" in the SmartNIC case.
+
+
+>what what comes out of Hosts single "uplink"? What if SmartNIC wants
+>the host to be able to control the forwarding but not loose the ability
+>to tap the VF to VF traffic?
+
+You mean that the VF representors would be in both SmartNIC host and
+host? I don't know how that could work. I think it has to be either
+there or there.
+
+
+
+>
+>> >> ==================================================================
+>> >> ||                                                              ||
+>> >> ||                Slice user cmdline API draft                  ||
+>> >> ||                                                              ||
+>> >> ==================================================================
+>> >> 
+>> >> Note that some of the "devlink port" attributes may be forgotten or misordered.
+>> >> 
+>> >> Slices and ports are created together by device driver. The driver defines
+>> >> the relationships during creation.
+>> >> 
+>> >> 
+>> >> $ devlink port show
+>> >> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>> >> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
+>> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 type eth netdev enp6s0pf0vf0 slice 0
+>> >> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1 type eth netdev enp6s0pf0vf1 slice 1
+>> >> pci/0000:06:00.0/4: flavour pcivf pfnum 1 vfnum 0 type eth netdev enp6s0pf1vf0 slice 2
+>> >> pci/0000:06:00.0/5: flavour pcivf pfnum 1 vfnum 1 type eth netdev enp6s0pf1vf1 slice 3
+>> >> 
+>> >> $ devlink slice show
+>> >> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> >> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66 state active
+>> >> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1 port 3 hw_addr 10:22:33:44:55:77 state active
+>> >> pci/0000:06:00.0/4: flavour pcivf pfnum 1 vfnum 0 port 4 hw_addr 10:22:33:44:55:88 state active
+>> >> pci/0000:06:00.0/5: flavour pcivf pfnum 1 vfnum 1 port 5 hw_addr 10:22:33:44:55:99 state active
+>> >> pci/0000:06:00.0/6: flavour pcivf pfnum 1 vfnum 2
+>> >> 
+>> >> In these 2 outputs you can see the relationships. Attributes "slice" and "port"
+>> >> indicate the slice-port pairs.
+>> >> 
+>> >> Also, there is a fixed "state" attribute with value "active". This is by
+>> >> default as the VFs are always created active. In future, it is planned
+>> >> to implement manual VF creation and activation, similar to what is below
+>> >> described for SFs.
+>> >> 
+>> >> Note that for non-ethernet slice (the last one) does not have any
+>> >> related port port. It can be for example NVE or IB. But since
+>> >> the "hw_addr" attribute is also omitted, it isn't IB.
+>> >> 
+>> >>  
+>> >> Now set a different MAC address for VF1 on PF0:
+>> >> $ devlink slice set pci/0000:06:00.0/3 hw_addr aa:bb:cc:dd:ee:ff
+>> >> 
+>> >> $ devlink slice show
+>> >> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> >> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66 state active
+>> >> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1 port 3 hw_addr aa:bb:cc:dd:ee:ff state active
+>> >> pci/0000:06:00.0/4: flavour pcivf pfnum 1 vfnum 0 port 4 hw_addr 10:22:33:44:55:88 state active
+>> >> pci/0000:06:00.0/5: flavour pcivf pfnum 1 vfnum 1 port 5 hw_addr 10:22:33:44:55:99 state active
+>> >> pci/0000:06:00.0/6: flavour pcivf pfnum 1 vfnum 2  
+>> >
+>> >What are slices?  
+>> 
+>> Slice is basically a piece of ASIC. pf/vf/sf. They serve for
+>> configuration of the "other side of the wire". Like the mac. Hypervizor
+>> admin can use the slite to set the mac address of a VF which is in the
+>> virtual machine. Basically this should be a replacement of "ip vf"
+>> command.
+>
+>I lost my mail archive but didn't we already have a long thread with
+>Parav about this?
+
+I believe so.
+
+
+>
+>> >> ==================================================================
+>> >> ||                                                              ||
+>> >> ||          SF (subfunction) user cmdline API draft             ||
+>> >> ||                                                              ||
+>> >> ==================================================================
+>> >> 
+>> >> Note that some of the "devlink port" attributes may be forgotten or misordered.
+>> >> 
+>> >> Note that some of the "devlink slice" attributes in show commands
+>> >> are omitted on purpose.
+>> >> 
+>> >> $ devlink port show
+>> >> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>> >> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
+>> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 type eth netdev enp6s0pf0vf0 slice 2
+>> >> 
+>> >> $ devlink slice show
+>> >> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> >> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66
+>> >> 
+>> >> There is one VF on the NIC.
+>> >> 
+>> >> 
+>> >> Now create subfunction of SF0 on PF1, index of the slice is going to be 100
+>> >> and hw_address aa:bb:cc:aa:bb:cc.
+>> >> 
+>> >> $ devlink slice add pci/0000.06.00.0/100 flavour pcisf pfnum 1 sfnum 10 hw_addr aa:bb:cc:aa:bb:cc  
+>> >
+>> >Why is the SF number specified by the user rather than allocated?  
+>> 
+>> Because it is snown in representor netdevice name. And you need to have
+>> it predetermined: enp6s0pf1sf10
+>
+>I'd think you need to know what was assigned, not necessarily pick
+>upfront.. I feel like we had this conversation before as well.
+
+Yeah. For the scripting sake, always when you create something, you can
+directly use it later in the script. Like if you create a bridge, you
+assign it a name so you can use it.
+
+The "what was assigned" would mean that the assigne
+value has to be somehow returned from the kernel and passed to the
+script. Not sure how. Do you have any example where this is happening in
+networking?
+
+I think it is very clear to pass a handle to the command so you can
+later on use this handle to manipulate the entity.
+
++ I don't see the benefit of the auto-allocation. Do you?
+
+
+>
+>> >> The devlink kernel code calls down to device driver (devlink op) and asks
+>> >> it to create a slice with particular attributes. Driver then instatiates
+>> >> the slice and port in the same way it is done for VF:
+>> >> 
+>> >> $ devlink port show
+>> >> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>> >> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
+>> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 type eth netdev enp6s0pf0vf0 slice 2
+>> >> pci/0000:06:00.0/3: flavour pcisf pfnum 1 sfnum 10 type eth netdev enp6s0pf1sf10 slice 100
+>> >> 
+>> >> $ devlink slice show
+>> >> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> >> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66
+>> >> pci/0000:06:00.0/100: flavour pcisf pfnum 1 sfnum 10 port 3 hw_addr aa:bb:cc:aa:bb:cc state inactive
+>> >> 
+>> >> Note that the SF slice is created but not active. That means the
+>> >> entities are created on devlink side, the e-switch port representor
+>> >> is created, but the SF device itself it not yet out there (same host
+>> >> or different, depends on where the parent PF is - in this case the same host).
+>> >> User might use e-switch port representor enp6s0pf1sf10 to do settings,
+>> >> putting it into bridge, adding TC rules, etc.
+>> >> It's like the cable is unplugged on the other side.  
+>> >
+>> >If it's just "cable unplugged" can't we just use the fact the
+>> >representor is down to indicate no traffic can flow?  
+>> 
+>> It is not "cable unplugged". This "state inactive/action" is admin
+>> state. You as a eswitch admin say, "I'm done with configuring a slice
+>> (MAC) and a representor (bridge, TC, etc) for this particular SF and
+>> I want the HOST to instantiate the SF instance (with the configured
+>> MAC).
+>
+>I'm not opposed, I just don't understand the need. If ASIC will not 
+>RX or TX any traffic from/to this new entity until repr is brought up
+>there should be no problem.
+
+The only need I see is that the eswitch manager can configure things for
+the slice and representor until the "activation kick" makes the device
+appear on the host. What you suggest is to do the "activation kick" by
+representor netdevice admin_up. There is a connection from slice to
+netdevice, but it is indirect:
+devlink_slice->devlink_port->netdev.
+Also, some slices may not have netdev (IB/NVE/etc).
+
+
+>
+>> >> Now we activate (deploy) the SF:
+>> >> $ devlink slice set pci/0000:06:00.0/100 state active
+>> >> 
+>> >> $ devlink slice show
+>> >> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> >> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0 port 2 hw_addr 10:22:33:44:55:66
+>> >> pci/0000:06:00.0/100: flavour pcisf pfnum 1 sfnum 10 port 3 hw_addr aa:bb:cc:aa:bb:cc state active
+>> >> 
+>> >> Upon the activation, the device driver asks the device to instantiate
+>> >> the actual SF device on particular PF. Does not matter if that is
+>> >> on the same host or not.
+>> >> 
+>> >> On the other side, the PF driver instance gets the event from device
+>> >> that particular SF was activated. It's the cue to put the device on bus
+>> >> probe it and instantiate netdev and devlink instances for it.  
+>> >
+>> >Seems backwards. It's the PF that wants the new function, why can't it
+>> >just create it and either get an error from the other side or never get
+>> >link up?  
+>> 
+>> We discussed that many times internally. I think it makes sense that
+>> the SF is created by the same entity that manages the related eswitch
+>> SF-representor. In other words, the "devlink slice" and related "devlink
+>> port" object are under the same devlink instance.
+>> 
+>> If the PF in host manages nested switch, it can create the SF inside and
+>> manages the neste eswitch SF-representor as you describe.
+>> 
+>> It is a matter of "nested eswitch manager on/off" configuration.
+>> 
+>> I think this is clean model and it is known who has what
+>> responsibilities.
+>
+>I see so you want the creation to be controlled by the same entity that
+>controls the eswitch..
+>
+>To me the creation should be on the side that actually needs/will use
+>the new port. And if it's not eswitch manager then eswitch manager
+>needs to ack it.
+
+Hmm. The question is, is it worth to complicate things in this way?
+I don't know. I see a lot of potential misunderstandings :/
+
+
+>
+>The precedence is probably not a strong argument, but that'd be the
+>same way VFs work.. I don't think you can change how VFs work, right?
+
+You can't, but since the VF model is not optimal as it turned out, do we
+want to stick with it for the SFs too? And perhaps the "furute VF
+implementation" can be done in a way this fits - that is described in
+the "VF manual creation and activation user cmdline API draft" section
+below.
+
+You see that there are "dummies" created by default. I think that Jason
+argued that these dummies should be created for max_vfs. That way the
+eswitch manager can configure all possible VF representors, no matter
+when the host decides to spawn them.
+
+
+>
+>> >> ==================================================================
+>> >> ||                                                              ||
+>> >> ||   VF manual creation and activation user cmdline API draft   ||
+>> >> ||                                                              ||
+>> >> ==================================================================
+>> >> 
+>> >> To enter manual mode, the user has to turn off VF dummies creation:
+>> >> $ devlink dev set pci/0000:06:00.0 vf_dummies disabled
+>> >> $ devlink dev show
+>> >> pci/0000:06:00.0: vf_dummies disabled
+>> >> 
+>> >> It is "enabled" by default in order not to break existing users.
+>> >> 
+>> >> By setting the "vf_dummies" attribute to "disabled", the driver
+>> >> removes all dummy VFs. Only physical ports are present:
+>> >> 
+>> >> $ devlink port show
+>> >> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>> >> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
+>> >> 
+>> >> Then the user is able to create them in a similar way as SFs:
+>> >> 
+>> >> $ devlink slice add pci/0000:06:00.0/99 flavour pcivf pfnum 1 vfnum 8 hw_addr aa:bb:cc:aa:bb:cc
+>> >> 
+>> >> The devlink kernel code calls down to device driver (devlink op) and asks
+>> >> it to create a slice with particular attributes. Driver then instatiates
+>> >> the slice and port:
+>> >> 
+>> >> $ devlink port show
+>> >> pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1
+>> >> pci/0000:06:00.0/1: flavour physical pfnum 1 type eth netdev enp6s0f0np2
+>> >> pci/0000:06:00.0/2: flavour pcivf pfnum 1 vfnum 8 type eth netdev enp6s0pf1vf0 slice 99
+>> >> 
+>> >> $ devlink slice show
+>> >> pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> >> pci/0000:06:00.0/1: flavour physical pfnum 1 port 1 state active
+>> >> pci/0000:06:00.0/99: flavour pcivf pfnum 1 vfnum 8 port 2 hw_addr aa:bb:cc:aa:bb:cc state inactive
+>> >> 
+>> >> Now we activate (deploy) the VF:
+>> >> $ devlink slice set pci/0000:06:00.0/99 state active
+>> >> 
+>> >> $ devlink slice show
+>> >> pci/0000:06:00.0/99: flavour pcivf pfnum 1 vfnum 8 port 2 hw_addr aa:bb:cc:aa:bb:cc state active
+>> >> 
+>> >> ==================================================================
+>> >> ||                                                              ||
+>> >> ||                             PFs                              ||
+>> >> ||                                                              ||
+>> >> ==================================================================
+>> >> 
+>> >> There are 2 flavours of PFs:
+>> >> 1) Parent PF. That is coupled with uplink port. The slice flavour is
+>> >>    therefore "physical", to be in sync of the flavour of the uplink port.
+>> >>    In case this Parent PF is actually a leg of upstream embedded switch,
+>> >>    the slice flavour is "virtual" (same as the port flavour).
+>> >> 
+>> >>    $ devlink port show
+>> >>    pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1 slice 0
+>> >> 
+>> >>    $ devlink slice show
+>> >>    pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> >> 
+>> >>    This slice is shown in both "switchdev" and "legacy" modes.
+>> >> 
+>> >>    If there is another parent PF, say "0000:06:00.1", that share the
+>> >>    same embedded switch, the aliasing is established for devlink handles.
+>> >> 
+>> >>    The user can use devlink handles:
+>> >>    pci/0000:06:00.0
+>> >>    pci/0000:06:00.1
+>> >>    as equivalents, pointing to the same devlink instance.
+>> >> 
+>> >>    Parent PFs are the ones that may be in control of managing
+>> >>    embedded switch, on any hierarchy level.
+>> >> 
+>> >> 2) Child PF. This is a leg of a PF put to the parent PF. It is
+>> >>    represented by a slice, and a port (with a netdevice):
+>> >> 
+>> >>    $ devlink port show
+>> >>    pci/0000:06:00.0/0: flavour physical pfnum 0 type eth netdev enp6s0f0np1 slice 0
+>> >>    pci/0000:06:00.0/1: flavour pcipf pfnum 2 type eth netdev enp6s0f0pf2 slice 20
+>> >> 
+>> >>    $ devlink slice show
+>> >>    pci/0000:06:00.0/0: flavour physical pfnum 0 port 0 state active
+>> >>    pci/0000:06:00.0/20: flavour pcipf pfnum 1 port 1 hw_addr aa:bb:cc:aa:bb:87 state active  <<<<<<<<<<
+>> >> 
+>> >>    This is a typical smartnic scenario. You would see this list on
+>> >>    the smartnic CPU. The slice pci/0000:06:00.0/20 is a leg to
+>> >>    one of the hosts. If you send packets to enp6s0f0pf2, they will
+>> >>    go to he host.
+>> >> 
+>> >>    Note that inside the host, the PF is represented again as "Parent PF"
+>> >>    and may be used to configure nested embedded switch.  
+>> >
+>> >This parent/child PF I don't understand. Does it stem from some HW
+>> >limitations you have?  
+>> 
+>> No limitation. It's just a name for 2 roles. I didn't know how else to
+>> name it for the documentation purposes. Perhaps you can help me.
+>> 
+>> The child can simply manage a "nested eswich". The "parent eswitch"
+>> would see one leg (pf representor) one way or another. Only in case the
+>> "nested eswitch" is there, the child would manage it - have separate
+>> representors for vfs/sfs under its devlink instance.
+>
+>I see! I wouldn't use the term PF. I think we need a notion of 
+>a "virtual" port within the NIC to model the eswitch being managed 
+>by the Host.
+
+But it is a PF (or maybe VF). The fact that it may or may not have
+nested switch inside does not change the view of the parent eswitch
+manager instance. Why would it?
+
+
+>
+>If Host manages the Eswitch - SmartNIC will no longer deal with its
+>PCIe ports, but only with its virtual uplink.
+
+What do you mean by "PCIe ports"?
+
+
+>
+>> >> ==================================================================
+>> >> ||                                                              ||
+>> >> ||               Slice operational state extension              ||
+>> >> ||                                                              ||
+>> >> ==================================================================
+>> >> 
+>> >> In addition to the "state" attribute that serves for the purpose
+>> >> of setting the "admin state", there is "opstate" attribute added to
+>> >> reflect the operational state of the slice:
+>> >> 
+>> >> 
+>> >>     opstate                description
+>> >>     -----------            ------------
+>> >>     1. attached    State when slice device is bound to the host
+>> >>                    driver. When the slice device is unbound from the
+>> >>                    host driver, slice device exits this state and
+>> >>                    enters detaching state.
+>> >> 
+>> >>     2. detaching   State when host is notified to deactivate the
+>> >>                    slice device and slice device may be undergoing
+>> >>                    detachment from host driver. When slice device is
+>> >>                    fully detached from the host driver, slice exits
+>> >>                    this state and enters detached state.
+>> >> 
+>> >>     3. detached    State when driver is fully unbound, it enters
+>> >>                    into detached state.
+>> >> 
+>> >> slice state machine:
+>> >> --------------------
+>> >>                                slice state set inactive
+>> >>                               ----<------------------<---
+>> >>                               | or  slice delete        |
+>> >>                               |                         |
+>> >>   __________              ____|_______              ____|_______
+>> >>  |          | slice add  |            |slice state |            |
+>> >>  |          |-------->---|            |------>-----|            |
+>> >>  | invalid  |            |  inactive  | set active |   active   |
+>> >>  |          | slice del  |            |            |            |
+>> >>  |__________|--<---------|____________|            |____________|
+>> >> 
+>> >> slice device operational state machine:
+>> >> ---------------------------------------
+>> >>   __________                ____________              ___________
+>> >>  |          | slice state  |            |driver bus  |           |
+>> >>  | invalid  |-------->-----|  detached  |------>-----| attached  |
+>> >>  |          | set active   |            | probe()    |           |
+>> >>  |__________|              |____________|            |___________|
+>> >>                                  |                        |
+>> >>                                  ^                    slice set
+>> >>                                  |                    set inactive
+>> >>                             successful detach             |
+>> >>                               or pf reset                 |
+>> >>                              ____|_______                 |
+>> >>                             |            | driver bus     |
+>> >>                  -----------| detaching  |---<-------------
+>> >>                  |          |            | remove()
+>> >>                  ^          |____________|
+>> >>                  |   timeout      |
+>> >>                  --<---------------
+>> >> 
+>> >> 
+>> >> 
+>> >> ==================================================================
+>> >> ||                                                              ||
+>> >> ||             Slice rate user cmdline API draft                ||
+>> >> ||                                                              ||
+>> >> ==================================================================
+>> >> 
+>> >> Note that some of the "devlink slice" attributes in show commands
+>> >> are omitted on purpose.
+>> >> 
+>> >> 
+>> >> $ devlink slice show
+>> >> pci/0000:06:00.0/0: flavour physical pfnum
+>> >> pci/0000:06:00.0/1: flavour pcivf pfnum 0 vfnum 1
+>> >> pci/0000:06:00.0/2: flavour pcivf pfnum 0 vfnum 0
+>> >> pci/0000:06:00.0/3: flavour pcivf pfnum 0 vfnum 1
+>> >> pci/0000:06:00.0/4: flavour pcisf pfnum 0 sfnum 1
+>> >> 
+>> >> Slice object is extended with new rate object.
+>> >> 
+>> >> 
+>> >> $ devlink slice rate
+>> >> pci/0000:06:00.0/1: type leaf
+>> >> pci/0000:06:00.0/2: type leaf
+>> >> pci/0000:06:00.0/3: type leaf
+>> >> pci/0000:06:00.0/4: type leaf
+>> >> 
+>> >> This shows the leafs created by default alongside with slice objects. No min or
+>> >> max tx rates were set, so their values are omitted.
+>> >> 
+>> >> 
+>> >> Now create new node rate object:
+>> >> 
+>> >> $ devlink slice rate add pci/0000:06:00.0/somerategroup
+>> >> 
+>> >> $ devlink slice rate
+>> >> pci/0000:06:00.0/1: type leaf
+>> >> pci/0000:06:00.0/2: type leaf
+>> >> pci/0000:06:00.0/3: type leaf
+>> >> pci/0000:06:00.0/4: type leaf
+>> >> pci/0000:06:00.0/somerategroup: type node
+>> >> 
+>> >> New node rate object was created - the last line.
+>> >> 
+>> >> 
+>> >> Now create another new node object was created, this time with some attributes:
+>> >> 
+>> >> $ devlink slice rate add pci/0000:06:00.0/secondrategroup min_tx_rate 20 max_tx_rate 1000
+>> >> 
+>> >> $ devlink slice rate
+>> >> pci/0000:06:00.0/1: type leaf
+>> >> pci/0000:06:00.0/2: type leaf
+>> >> pci/0000:06:00.0/3: type leaf
+>> >> pci/0000:06:00.0/4: type leaf
+>> >> pci/0000:06:00.0/somerategroup: type node
+>> >> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
+>> >> 
+>> >> Another new node object was created - the last line. The object has min and max
+>> >> tx rates set, so they are displayed after the object type.
+>> >> 
+>> >> 
+>> >> Now set node named somerategroup min/max rate using rate object:
+>> >> 
+>> >> $ devlink slice rate set pci/0000:06:00.0/somerategroup min_tx_rate 50 max_tx_rate 5000
+>> >> 
+>> >> $ devlink slice rate
+>> >> pci/0000:06:00.0/1: type leaf
+>> >> pci/0000:06:00.0/2: type leaf
+>> >> pci/0000:06:00.0/3: type leaf
+>> >> pci/0000:06:00.0/4: type leaf
+>> >> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
+>> >> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
+>> >> 
+>> >> 
+>> >> Now set leaf slice rate using rate object:
+>> >> 
+>> >> $ devlink slice rate set pci/0000:06:00.0/2 min_tx_rate 10 max_tx_rate 10000
+>> >> 
+>> >> $ devlink slice rate
+>> >> pci/0000:06:00.0/1: type leaf
+>> >> pci/0000:06:00.0/2: type leaf min_tx_rate 10 max_tx_rate 10000
+>> >> pci/0000:06:00.0/3: type leaf
+>> >> pci/0000:06:00.0/4: type leaf
+>> >> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
+>> >> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
+>> >> 
+>> >> 
+>> >> Now set leaf slice with index 2 parent node using rate object:
+>> >> 
+>> >> $ devlink slice rate set pci/0000:06:00.0/2 parent somerategroup
+>> >> 
+>> >> $ devlink slice rate
+>> >> pci/0000:06:00.0/1: type leaf
+>> >> pci/0000:06:00.0/2: type leaf min_tx_rate 10 max_tx_rate 10000 parent somerategroup
+>> >> pci/0000:06:00.0/3: type leaf
+>> >> pci/0000:06:00.0/4: type leaf
+>> >> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
+>> >> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
+>> >> 
+>> >> 
+>> >> Now set leaf slice with index 1 parent node using rate object:
+>> >> 
+>> >> $ devlink slice rate set pci/0000:06:00.0/1 parent somerategroup
+>> >> 
+>> >> $ devlink slice rate
+>> >> pci/0000:06:00.0/1: type leaf parent somerategroup
+>> >> pci/0000:06:00.0/2: type leaf min_tx_rate 10 max_tx_rate 10000 parent somerategroup
+>> >> pci/0000:06:00.0/3: type leaf
+>> >> pci/0000:06:00.0/4: type leaf
+>> >> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
+>> >> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
+>> >> 
+>> >> 
+>> >> Now unset leaf slice with index 1 parent node using rate object:
+>> >> 
+>> >> $ devlink slice rate set pci/0000:06:00.0/1 noparent
+>> >> 
+>> >> $ devlink slice rate
+>> >> pci/0000:06:00.0/1: type leaf
+>> >> pci/0000:06:00.0/2: type leaf min_tx_rate 10 max_tx_rate 10000 parent somerategroup
+>> >> pci/0000:06:00.0/3: type leaf
+>> >> pci/0000:06:00.0/4: type leaf
+>> >> pci/0000:06:00.0/somerategroup: type node min_tx_rate 50 max_tx_rate 5000
+>> >> pci/0000:06:00.0/secondrategroup: type node min_tx_rate 20 max_tx_rate 1000
+>> >> 
+>> >> 
+>> >> Now delete node object:
+>> >> 
+>> >> $ devlink slice rate del pci/0000:06:00.0/somerategroup
+>> >> 
+>> >> $ devlink slice rate
+>> >> pci/0000:06:00.0/1: type leaf
+>> >> pci/0000:06:00.0/2: type leaf
+>> >> pci/0000:06:00.0/3: type leaf
+>> >> pci/0000:06:00.0/4: type leaf
+>> >> 
+>> >> Rate node object was removed and its only child pci/0000:06:00.0/2 automatically
+>> >> detached.  
+>> >
+>> >Tomorrow we will support CoDel, ECN or any other queuing construct. 
+>> >How many APIs do we want to have to configure the same thing? :/  
+>> 
+>> Rigth, I don't see other way. Please help me to figure out this
+>> differently. Note this is for configuring HW limits on the TX side of VF.
+>> 
+>> We have only devlink_port and related netdev as representor of the VF
+>> eswitch port. We cannot use this netdev to configure qdisc on RX.
+>
+>Ah, right. This is the TX case we abuse act_police for in OvS offload :S
+>Yeah, we don't have an API for that.
+
+Yeah :/
