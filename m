@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCDA518E004
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:35:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C05F18E05F
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:36:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728699AbgCULfC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 07:35:02 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:38511 "EHLO
+        id S1728891AbgCULgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 07:36:36 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:38489 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728589AbgCULfA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:35:00 -0400
+        with ESMTP id S1728493AbgCULe5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:34:57 -0400
 Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1jFcOX-0001ze-CH; Sat, 21 Mar 2020 12:34:25 +0100
+        id 1jFcOX-0001zf-CX; Sat, 21 Mar 2020 12:34:25 +0100
 Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id 88BED104084;
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id C92BE1040A1;
         Sat, 21 Mar 2020 12:34:19 +0100 (CET)
-Message-Id: <20200321113241.624070289@linutronix.de>
+Message-Id: <20200321113241.719022171@linutronix.de>
 User-Agent: quilt/0.65
-Date:   Sat, 21 Mar 2020 12:25:53 +0100
+Date:   Sat, 21 Mar 2020 12:25:54 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -32,8 +32,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Oleg Nesterov <oleg@redhat.com>,
         Davidlohr Bueso <dave@stgolabs.net>,
         kbuild test robot <lkp@intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
+        Michal Simek <monstr@monstr.eu>,
         Logan Gunthorpe <logang@deltatee.com>,
         Bjorn Helgaas <bhelgaas@google.com>,
         Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
@@ -54,7 +53,8 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Vincent Chen <deanbo422@gmail.com>,
         Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
         Brian Cain <bcain@codeaurora.org>,
-        linux-hexagon@vger.kernel.org, Michal Simek <monstr@monstr.eu>,
+        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
         Michael Ellerman <mpe@ellerman.id.au>,
         Arnd Bergmann <arnd@arndb.de>,
         Geoff Levand <geoff@infradead.org>,
@@ -63,7 +63,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Jonathan Corbet <corbet@lwn.net>,
         Randy Dunlap <rdunlap@infradead.org>,
         Davidlohr Bueso <dbueso@suse.de>
-Subject: [patch V3 09/20] ia64: Remove mm.h from asm/uaccess.h
+Subject: [patch V3 10/20] microblaze: Remove mm.h from asm/uaccess.h
 References: <20200321112544.878032781@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -83,7 +83,7 @@ include chain leands to:
 |   CC      kernel/locking/percpu-rwsem.o
 | In file included from include/linux/huge_mm.h:8,
 |                  from include/linux/mm.h:567,
-|                  from arch/ia64/include/asm/uaccess.h:,
+|                  from arch/microblaze/include/asm/uaccess.h:,
 |                  from include/linux/uaccess.h:11,
 |                  from include/linux/sched/task.h:11,
 |                  from include/linux/sched/signal.h:9,
@@ -100,50 +100,25 @@ Remove the linux/mm.h include.
 Reported-by: kbuild test robot <lkp@intel.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Tony Luck <tony.luck@intel.com>
-Cc: Fenghua Yu <fenghua.yu@intel.com>
-Cc: linux-ia64@vger.kernel.org
+Cc: Michal Simek <monstr@monstr.eu>
 ---
-V3: New patch
+V3; New patch
 ---
- arch/ia64/include/asm/uaccess.h | 1 -
- arch/ia64/kernel/process.c      | 1 +
- arch/ia64/mm/ioremap.c          | 1 +
- 3 files changed, 2 insertions(+), 1 deletion(-)
+ arch/microblaze/include/asm/uaccess.h | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/ia64/include/asm/uaccess.h b/arch/ia64/include/asm/uaccess.h
-index 89782ad3fb887..5c7e79eccaeed 100644
---- a/arch/ia64/include/asm/uaccess.h
-+++ b/arch/ia64/include/asm/uaccess.h
-@@ -35,7 +35,6 @@
+diff --git a/arch/microblaze/include/asm/uaccess.h b/arch/microblaze/include/asm/uaccess.h
+index a1f206b90753a..4916d5fbea5e3 100644
+--- a/arch/microblaze/include/asm/uaccess.h
++++ b/arch/microblaze/include/asm/uaccess.h
+@@ -12,7 +12,6 @@
+ #define _ASM_MICROBLAZE_UACCESS_H
  
- #include <linux/compiler.h>
- #include <linux/page-flags.h>
+ #include <linux/kernel.h>
 -#include <linux/mm.h>
  
- #include <asm/intrinsics.h>
- #include <asm/pgtable.h>
-diff --git a/arch/ia64/kernel/process.c b/arch/ia64/kernel/process.c
-index 968b5f33e725e..743aaf5283278 100644
---- a/arch/ia64/kernel/process.c
-+++ b/arch/ia64/kernel/process.c
-@@ -681,3 +681,4 @@ machine_power_off (void)
- 	machine_halt();
- }
- 
-+EXPORT_SYMBOL(ia64_delay_loop);
-diff --git a/arch/ia64/mm/ioremap.c b/arch/ia64/mm/ioremap.c
-index a09cfa0645369..55fd3eb753ff9 100644
---- a/arch/ia64/mm/ioremap.c
-+++ b/arch/ia64/mm/ioremap.c
-@@ -8,6 +8,7 @@
- #include <linux/module.h>
- #include <linux/efi.h>
- #include <linux/io.h>
-+#include <linux/mm.h>
- #include <linux/vmalloc.h>
- #include <asm/io.h>
- #include <asm/meminit.h>
+ #include <asm/mmu.h>
+ #include <asm/page.h>
 -- 
 2.26.0.rc2
 
