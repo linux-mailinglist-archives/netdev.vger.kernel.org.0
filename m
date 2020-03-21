@@ -2,122 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE75718E55D
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 00:04:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D113F18E574
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 00:35:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727700AbgCUXER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 19:04:17 -0400
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:41828 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726755AbgCUXER (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 19:04:17 -0400
-Received: by mail-yb1-f193.google.com with SMTP id d5so4773796ybs.8;
-        Sat, 21 Mar 2020 16:04:16 -0700 (PDT)
+        id S1728096AbgCUXaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 19:30:03 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:52443 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728012AbgCUXaC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 19:30:02 -0400
+Received: by mail-wm1-f65.google.com with SMTP id z18so1588621wmk.2
+        for <netdev@vger.kernel.org>; Sat, 21 Mar 2020 16:30:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yKwVDcJTc5OYl4qzqMEeBAMQqTUE8Dy2xO4au+/6vDg=;
-        b=s+rKcv6ki5eKZyqMg2bIh5SNrDYr31656rsq2vgC8lrwJwBoemQgfvoDP1EALwK9WH
-         R10+90HltsorVO4sPT/IeD0WxT5a1MFTu/Px6D7Q/cJJ3Edble+4I7OWMPVIDRDQThbh
-         Lpc5BOlQZCOWi3s7l/6v55QtS4FO7l2kAVyD0PuTJ6RbIqlXBs1npMqaBK+aPQmZUaj1
-         5xydSNle2/Dx6ShJH2MPul+Prrk0arulUM+XGhruclkAGaX8aU53jH1tBhA18cN/tkA3
-         4LUNXM6Fsuk5aGMX0COaaKtrah8gTWYqnzLMcAjy7YJpE7Xq1A4IwoEup07whRX1qfI3
-         cbGQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pCececYyUKX0Dl2ZPEMbe6UxZs4Z6GF1p33hg7vvG5g=;
+        b=DLsTNNJQyI7tPJtc4CfRWdxoxZHPnUnLcvsHLfWk0e5XWvKyMG0EJBp42Q4kdecqCy
+         ZvoihV92JQfXt8uMzNKAHxb09MTTnIG7+isvNRipJa16VQ/w8TlOhjsBXMa026LtQ2Z7
+         7j5zRtewCFwJZNgk4NzipVaKndhp80zfXJ9+Py9pMwNsgol64oIGAlPr99BDIDbaqIBh
+         BONBhRkrLXOBeiBK2d8VR8i6m2pd3yscvd6/D5FQ1qqGOsdvHLvvyrWRxRURnzp4Xn62
+         F+0J/YwLxAFXdTWDehwq3sga3weGySCbsF2PcmSAeMaftshGuKtb04f+IM2yc2pkb3PG
+         OcxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yKwVDcJTc5OYl4qzqMEeBAMQqTUE8Dy2xO4au+/6vDg=;
-        b=HTsl23sw9sbQZpXn+qyeT+22cKE8VqAPyVqXhc/8TUDgeQD5UJzj2fGE3DMiWf1VSp
-         b3c1gNDS7ZlGJBilKJcZj2RcHZmYWROWJy/MpKiIFBHortKNbIOBfIw5riag4XV/bYHX
-         gOfbAbD7KUaBYeEuH32JUGoXj1B2MUllok6JsUh1fH7cP4HbO1MvuSyD4SJN9teBn73g
-         MsLHSmIkp0l9vKloZWycMbZgYB76oYeUT5hqxJS0yltRBW4jiz1HiDKyy0IncazymSbN
-         OftZhSWdWg2KIjkG5MtgQcjjo1A3gjBtBY3OB7oQ8/W1/vNeiwS0ny3n924Bo3x2fibe
-         /VRg==
-X-Gm-Message-State: ANhLgQ17PxdjWFJ4eAKA8HsbsZLrp0ifbDorcqI4y01Dux3seBHR0q4u
-        moJxbsLlROutkonIelppvnZLmJ1MlGKne7gC+S8xEE7EZ4RnbrM=
-X-Google-Smtp-Source: ADFU+vsT3/Cskft+q40iRMRORcO9BPukQLWXjAMsKcgZHMSv8A2+ON3IokMs3jjGwQ4WijnD08VV9UAOtyaQEwMyM2M=
-X-Received: by 2002:a25:684:: with SMTP id 126mr24406132ybg.164.1584831855783;
- Sat, 21 Mar 2020 16:04:15 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pCececYyUKX0Dl2ZPEMbe6UxZs4Z6GF1p33hg7vvG5g=;
+        b=NyO/X2FbZGnVDzVDXS++Io1ZTJgZmZwO5qcDBQiXucoTXkVdoY6xup/u5vTCdiWrtJ
+         /UHAq3AyiaABtkDCNlLd/BXDqXpMV08UbYM1GDcdw5S2GA0rcGX3jeZzWhZ5F7PlIhDe
+         N9jErOOKWkR05ZPlSdaImldFsMXcCqve7TVbUgyAgwhvJkhJ+BsTkL8JPF4DnLQXdGo4
+         qr6RLyJpOgmJT/U+SOul0rKkr1KFmQF/ndwdg1t2TkbYiBLyvijl6n4rXKd8GDAk7OK3
+         7kaERxZKLFXcE6lJ7eXWuAyY7K7ekXAuSjNGO2OhMdLJ5p0KB5G+D35TvyO1MaFuNWuN
+         hdYA==
+X-Gm-Message-State: ANhLgQ2EPwrU5vBRu3wjZHaclKwNKv+rgJKIcr8sww1/EgN7+kGWBClg
+        drgAmji13aXjQ9fK8MrQjP8nKYjZ
+X-Google-Smtp-Source: ADFU+vubn+SDNwwuIMSimMv3tZLAftMXlZaGIMc8V8B7vxeWuGa5fiZ/oU0YcNuvosnJoVpOQyLKyg==
+X-Received: by 2002:a05:600c:44c:: with SMTP id s12mr9997505wmb.127.1584833400324;
+        Sat, 21 Mar 2020 16:30:00 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:156c:1d7d:2d87:4798? (p200300EA8F296000156C1D7D2D874798.dip0.t-ipconnect.de. [2003:ea:8f29:6000:156c:1d7d:2d87:4798])
+        by smtp.googlemail.com with ESMTPSA id k133sm15446640wma.11.2020.03.21.16.29.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 21 Mar 2020 16:29:59 -0700 (PDT)
+Subject: Re: [PATCH net-next] r8169: add new helper rtl8168g_enable_gphy_10m
+To:     Joe Perches <joe@perches.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <743a1fd7-e1b2-d548-1c22-7c1a2e3b268e@gmail.com>
+ <8906876a59cfd1db917953fbf49475c9efc67023.camel@perches.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <792711d6-6c35-02b3-2df6-1af02c581ef3@gmail.com>
+Date:   Sun, 22 Mar 2020 00:29:51 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <20200321100424.1593964-1-danieltimlee@gmail.com>
- <20200321100424.1593964-3-danieltimlee@gmail.com> <CAEf4BzbTYyBG4=Muj5EOqtNxkivtT9Bn5+ibmp3e-BLBybQO1A@mail.gmail.com>
-In-Reply-To: <CAEf4BzbTYyBG4=Muj5EOqtNxkivtT9Bn5+ibmp3e-BLBybQO1A@mail.gmail.com>
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-Date:   Sun, 22 Mar 2020 08:03:59 +0900
-Message-ID: <CAEKGpzjpHGiR3NQwcW_-z=_p2TBc=_qU6XQspF8wBE=ez6oMNw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 2/2] samples: bpf: refactor perf_event user
- program with libbpf bpf_link
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <8906876a59cfd1db917953fbf49475c9efc67023.camel@perches.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thank you for your time and effort for the review :)
+On 21.03.2020 19:55, Joe Perches wrote:
+> On Sat, 2020-03-21 at 19:08 +0100, Heiner Kallweit wrote:
+>> Factor out setting GPHY 10M to new helper rtl8168g_enable_gphy_10m.
+> []
+>> diff --git a/drivers/net/ethernet/realtek/r8169_phy_config.c b/drivers/net/ethernet/realtek/r8169_phy_config.c
+> []
+>> @@ -796,6 +796,11 @@ static void rtl8168g_disable_aldps(struct phy_device *phydev)
+>>  	phy_modify_paged(phydev, 0x0a43, 0x10, BIT(2), 0);
+>>  }
+>>  
+>> +static void rtl8168g_enable_gphy_10m(struct phy_device *phydev)
+>> +{
+>> +	phy_modify_paged(phydev, 0x0a44, 0x11, 0, BIT(11));
+>> +}
+> 
+> Perhaps this should be some generic to set characteristics like:
+> 
+> enum rtl8168g_char {
+> 	...
+> }
+> 
+> static void rtl8168g_enable_char(struct phy_device *phydev,
+> 				 enum rtl8168g_char type)
+> {
+> 	switch (type) {
+> 	case FOO:
+> 		etc...
+> 	}
+> 
+> 
 
-Best,
-Daniel
-
-On Sun, Mar 22, 2020 at 4:43 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Sat, Mar 21, 2020 at 3:04 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
-> >
-> > The bpf_program__attach of libbpf(using bpf_link) is much more intuitive
-> > than the previous method using ioctl.
-> >
-> > bpf_program__attach_perf_event manages the enable of perf_event and
-> > attach of BPF programs to it, so there's no neeed to do this
-> > directly with ioctl.
-> >
-> > In addition, bpf_link provides consistency in the use of API because it
-> > allows disable (detach, destroy) for multiple events to be treated as
-> > one bpf_link__destroy. Also, bpf_link__destroy manages the close() of
-> > perf_event fd.
-> >
-> > This commit refactors samples that attach the bpf program to perf_event
-> > by using libbbpf instead of ioctl. Also the bpf_load in the samples were
-> > removed and migrated to use libbbpf API.
-> >
-> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> >
-> > ---
->
-> LGTM.
->
-> Acked-by: Andrii Nakryiko <andriin@fb.com>
->
-> > Changes in v2:
-> >  - check memory allocation is successful
-> >  - clean up allocated memory on error
-> >
-> > Changes in v3:
-> >  - Improve pointer error check (IS_ERR())
-> >  - change to calloc for easier destroy of bpf_link
-> >  - remove perf_event fd list since bpf_link handles fd
-> >  - use newer bpf_object__{open/load} API instead of bpf_prog_load
-> >  - perf_event for _SC_NPROCESSORS_ONLN instead of _SC_NPROCESSORS_CONF
-> >  - find program with name explicitly instead of bpf_program__next
-> >  - unconditional bpf_link__destroy() on cleanup
-> >
-> > Changes in v4:
-> >  - bpf_link *, bpf_object * set NULL on init & err for easier destroy
-> >  - close bpf object with bpf_object__close()
-> >
-> > Changes in v5:
-> >  - on error, return error code with exit
-> >
-> >  samples/bpf/Makefile           |   4 +-
-> >  samples/bpf/sampleip_user.c    |  98 +++++++++++++++--------
-> >  samples/bpf/trace_event_user.c | 139 ++++++++++++++++++++++-----------
-> >  3 files changed, 159 insertions(+), 82 deletions(-)
-> >
->
-> [...]
+Then we'd need one more such generic to disable characteristics like
+in rtl8168g_disable_aldps(). Also we have existing functions like
+rtl8168g_phy_adjust_10m_aldps() that change a characteristic, and
+the function name is used to describe what the function does.
+So yes, it would be an option, but I don't see that we would gain
+anything. More the opposite, it would add overhead and we'd have a
+mix of fct_what_it_does() and fct_generic(WHAT_IT_DOES).
