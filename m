@@ -2,77 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C6CD18E1B9
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 15:11:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 935A218E1D5
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 15:30:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727330AbgCUOLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 10:11:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54738 "EHLO mail.kernel.org"
+        id S1727405AbgCUOaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 10:30:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35716 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726823AbgCUOLT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Mar 2020 10:11:19 -0400
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726607AbgCUOaU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 21 Mar 2020 10:30:20 -0400
+Received: from lore-desk-wlan (unknown [151.48.139.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6A7A220842;
-        Sat, 21 Mar 2020 14:11:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E48AC20409;
+        Sat, 21 Mar 2020 14:30:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584799878;
-        bh=z3bsHcwPw1dy+MZ69yHRllkviwuFf+1W8mJ1Vq6tZx8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=U6uraq1+O/wBDq9BdnirqCkla8fi4hhFooa9u8EOGpG/NUK8KcAg8m6t2KHRzRSTZ
-         U1tt2IsiTDMVS0ltxGzSghSwm0SPd3Ix8AtBnYo+moOc67e2fIk/ICATj9ELG9zqHj
-         KWOd3QQR+qDycpEtfRl0ifl4E+I1zEKfB5l1H1GU=
-Received: by mail-lf1-f53.google.com with SMTP id t21so6707987lfe.9;
-        Sat, 21 Mar 2020 07:11:18 -0700 (PDT)
-X-Gm-Message-State: ANhLgQ2NRbh5XueagTwvvEpfNbQrjY3WjmYWsExYRuD9ZYsKAjI5eANG
-        5wC7rxeybWBIdvZuJtjEJiBY448WImtO3Cpbfzs=
-X-Google-Smtp-Source: ADFU+vt7yzzoIODXTl3pSLaF05QHM7NQajznhAWuFfmnjqd/dl0IS02TuRz56P5ko6Q0w3g4sq26da7i2uTfuhqRlWs=
-X-Received: by 2002:a05:6512:1116:: with SMTP id l22mr8128251lfg.70.1584799876421;
- Sat, 21 Mar 2020 07:11:16 -0700 (PDT)
+        s=default; t=1584801019;
+        bh=oxvIvbGRYTOKOqqKKH5yfXFmtngMjzN+EPT+kVjjJ6s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=udxn4K6lArFbvEDD9KmXjtTXowyv0U6PFjncVIS5x8zbkksDvx+9jIkZFQ+9lxSrl
+         leQ58gGiU68kwyMC6nhxV2hbYDEk5kMBS1Qws0v5MHmKUOBsRYASgU/jGzK9IOAUEw
+         qCG0nqXfDS33YtHOG7tmXvGRIk9ClDuOLYG3c9Cc=
+Date:   Sat, 21 Mar 2020 15:30:13 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, brouer@redhat.com,
+        dsahern@gmail.com, lorenzo.bianconi@redhat.com, toke@redhat.com
+Subject: Re: [PATCH net-next 4/5] veth: introduce more xdp counters
+Message-ID: <20200321143013.GA3251815@lore-desk-wlan>
+References: <cover.1584635611.git.lorenzo@kernel.org>
+ <0763c17646523acb4dc15aaec01decb4efe11eac.1584635611.git.lorenzo@kernel.org>
+ <a3555c02-6cb1-c40c-65bb-12378439b12f@gmail.com>
+ <20200320133737.GA2329672@lore-desk-wlan>
+ <04ca75e8-1291-4f25-3ad4-18ca5d6c6ddb@gmail.com>
 MIME-Version: 1.0
-References: <20200318204408.010461877@linutronix.de> <20200320094856.3453859-1-bigeasy@linutronix.de>
- <20200320094856.3453859-3-bigeasy@linutronix.de> <tglx@linutronix.de>
- <CAJF2gTQDvmSdJB3R0By0Q6d9ganVBV1FBm3urL8Jf1fyiEi+1A@mail.gmail.com> <87zhc9rjuz.fsf@nanos.tec.linutronix.de>
-In-Reply-To: <87zhc9rjuz.fsf@nanos.tec.linutronix.de>
-From:   Guo Ren <guoren@kernel.org>
-Date:   Sat, 21 Mar 2020 22:11:05 +0800
-X-Gmail-Original-Message-ID: <CAJF2gTTTFYSwFYZArmJRkVJOKL2pWWgLj9nAQ_EdH2rU3jTdbw@mail.gmail.com>
-Message-ID: <CAJF2gTTTFYSwFYZArmJRkVJOKL2pWWgLj9nAQ_EdH2rU3jTdbw@mail.gmail.com>
-Subject: Re: [PATCH 2/5] csky: Remove mm.h from asm/uaccess.h
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>, balbi@kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>, dave@stgolabs.net,
-        David Miller <davem@davemloft.net>, gregkh@linuxfoundation.org,
-        joel@joelfernandes.org, kurt.schwemmer@microsemi.com,
-        kvalo@codeaurora.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-pci@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        logang@deltatee.com, mingo@kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
-        oleg@redhat.com, paulmck@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        torvalds@linux-foundation.org, Will Deacon <will@kernel.org>,
-        linux-csky@vger.kernel.org, kbuild test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="n8g4imXOkfNTN/H1"
+Content-Disposition: inline
+In-Reply-To: <04ca75e8-1291-4f25-3ad4-18ca5d6c6ddb@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 21, 2020 at 8:08 PM Thomas Gleixner <tglx@linutronix.de> wrote:
->
-> Guo Ren <guoren@kernel.org> writes:
->
-> > Tested and Acked by me.
-> >
-> > Queued for next pull request, thx
->
-> Can we please route that with the rcuwait changes to avoid breakage
-> unless you ship it to Linus right away?
 
-Ok, I won't queue it.
+--n8g4imXOkfNTN/H1
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+> On 2020/03/20 22:37, Lorenzo Bianconi wrote:
+> > > On 2020/03/20 1:41, Lorenzo Bianconi wrote:
+> > > > Introduce xdp_xmit counter in order to distinguish between XDP_TX a=
+nd
+> > > > ndo_xdp_xmit stats. Introduce the following ethtool counters:
+> > > > - rx_xdp_tx
+> > > > - rx_xdp_tx_errors
+> > > > - tx_xdp_xmit
+> > > > - tx_xdp_xmit_errors
+> > > > - rx_xdp_redirect
+> > >=20
+> > > Thank you for working on this!
+> > >=20
+> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > > ---
+> > > ...
+> > > > @@ -395,7 +404,8 @@ static int veth_xdp_xmit(struct net_device *dev=
+, int n,
+> > > >    	}
+> > > >    	rcv_priv =3D netdev_priv(rcv);
+> > > > -	rq =3D &rcv_priv->rq[veth_select_rxq(rcv)];
+> > > > +	qidx =3D veth_select_rxq(rcv);
+> > > > +	rq =3D &rcv_priv->rq[qidx];
+> > > >    	/* Non-NULL xdp_prog ensures that xdp_ring is initialized on re=
+ceive
+> > > >    	 * side. This means an XDP program is loaded on the peer and th=
+e peer
+> > > >    	 * device is up.
+> > > > @@ -424,6 +434,17 @@ static int veth_xdp_xmit(struct net_device *de=
+v, int n,
+> > > >    	if (flags & XDP_XMIT_FLUSH)
+> > > >    		__veth_xdp_flush(rq);
+> > > > +	rq =3D &priv->rq[qidx];
+> > >=20
+> > > I think there is no guarantee that this rq exists. Qidx is less than
+> > > rcv->real_num_rx_queues, but not necessarily less than
+> > > dev->real_num_rx_queues.
+> > >=20
+> > > > +	u64_stats_update_begin(&rq->stats.syncp);
+> > >=20
+> > > So this can cuase NULL pointer dereference.
+> >=20
+> > oh right, thanks for spotting this.
+> > I think we can recompute qidx for tx netdevice in this case, doing some=
+thing
+> > like:
+> >=20
+> > qidx =3D veth_select_rxq(dev);
+> > rq =3D &priv->rq[qidx];
+> >=20
+> > what do you think?
+>=20
+> This would not cause NULL pointer deref, but I wonder what counters you've
+> added mean.
+>=20
+> - rx_xdp_redirect, rx_xdp_drops, rx_xdp_tx
+>=20
+> These counters names will be rx_queue_[i]_rx_xdp_[redirect|drops|tx].
+> "rx_" in their names looks redundant.
+
+yes, we can drop the "rx" prefix in the stats name for them.
+
+> Also it looks like there is not "rx[i]_xdp_tx" counter but there is
+> "rx[i]_xdp_tx_xmit" in mlx5 from this page.
+> https://community.mellanox.com/s/article/understanding-mlx5-ethtool-count=
+ers
+
+rx[i]_xdp_tx_xmit and rx_xdp_tx are the same, we decided to use rx_xdp_tx f=
+or
+it since it seems more clear
+
+>=20
+> - tx_xdp_xmit, tx_xdp_xmit_errors
+>=20
+> These counters names will be rx_queue_[i]_tx_xdp_[xmit|xmit_errors].
+> Are these rx counters or tx counters?
+
+tx_xdp_xmit[_errors] are used to count ndo_xmit stats so they are tx counte=
+rs.
+I reused veth_stats for it just for convenience. Probably we can show them =
+without
+rx suffix so it is clear they are transmitted by the current device.
+Another approach would be create per_cput struct to collect all tx stats.
+What do you think?
+
+Regards,
+Lorenzo
+
+> If tx, currently there is no storage to store these tx counters so adding
+> these would not be simple.
+> If rx, I guess you should use peer rx queue counters instead of dev rx qu=
+eue
+> counters.
+>=20
+> Toshiaki Makita
+
+--n8g4imXOkfNTN/H1
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXnYk8wAKCRA6cBh0uS2t
+rNZRAP0aygnTDutO5Eo/aK5WX62rVeUwHKBD3zqJtsDZ/NvA1QD9HKOuWKqUdcnl
+ni1SV5SJjJKZuq8YWee17cZLpkpllQs=
+=oGcP
+-----END PGP SIGNATURE-----
+
+--n8g4imXOkfNTN/H1--
