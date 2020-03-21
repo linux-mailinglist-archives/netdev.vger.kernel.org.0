@@ -2,137 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0335718E393
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 19:08:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7847718E3BD
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 19:47:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727262AbgCUSIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 14:08:21 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:33482 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727192AbgCUSIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 14:08:21 -0400
-Received: by mail-wm1-f68.google.com with SMTP id r7so9816586wmg.0
-        for <netdev@vger.kernel.org>; Sat, 21 Mar 2020 11:08:19 -0700 (PDT)
+        id S1727323AbgCUSre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 14:47:34 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:36856 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727028AbgCUSre (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 14:47:34 -0400
+Received: by mail-pl1-f195.google.com with SMTP id g2so3978900plo.3
+        for <netdev@vger.kernel.org>; Sat, 21 Mar 2020 11:47:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=L9svU/9aDp1KNKfrQaICmvKF6NU9sK246somfvaZjj0=;
-        b=YpAdbMoS7xAdghnM9OaTlvFMlK1uF9qdBgOemnlkDq2nLW3HFTfGCryprDdnQOSXNL
-         YNlPz07KJtjiXli+kbkxJe+jGnREICRAYa0EXAELS3Epzyu+dfxCJlXwbXiwDsQhLH24
-         pUY2wx0bFxAfmXmPIYT27Wxa6XbzEB7/WeBfBiKe1mrhEESl+gPub4zApsoIoMXMBjwR
-         xHFxPATnbUv3JvxzAcQ7Kwo3iMtHrN87fO9fBn7GzHAbpNVrlpMphJIneCu8gsGaDhZv
-         YZUv1KXIQ6LMUiSZESR8hpFM3Mp2cEg3JHzvUjXK5DGd61xNQcnX+ht2lF3ntD9RyVcS
-         fF+Q==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=AnR6hfXloIQv8auYA+GHfwp/m7H+vf5QROD5gpqvvmg=;
+        b=10EtXnXim5Hg4Cpui4GMpkO0QIfiWEDtP+YwkxpeF+mQBy8yZZ8KHf60FeUTd3kP4q
+         8FIVPRoaEf+I/FCmeBRJvcgxNMsttS1OXFLHq2D9SsOdmuZAHpzZPS4/RwiYRU6EudO/
+         NW9UrDy5GfDQo24rXziWK4S9VwzL+VmFFwAnxFxn/mStyBMamUc5hWvIQYXJMXCLoCzW
+         7rto2tts0ZQPJSO8fzCXrsCJOuBBeSL8eU9AMr9FJkbNXhzHvjQwXrvihdGmOoTjZoSy
+         qxHKPmo7PhXOjQTt1O3NX5bRN2FrAZkQFlX0W/HEh+YwAsnNejyYchQKKlhPEPiO8iN5
+         I4AA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=L9svU/9aDp1KNKfrQaICmvKF6NU9sK246somfvaZjj0=;
-        b=J32wN8o81YdxTfkAZMznrfnPgDCUZ9jBbd3bRBIfUxxcNZ9nWIhHJBpGbmwxqBivVN
-         7s1UxOBpyyAZtew3U9n3nWQ2WO1B33mt72wYE0nt0NYRmA51hV7mfSY940wMNT27Vkc1
-         xL0aTZAch4XoHc0Ld1Nhe6G0yU1JdvibOLbyGUjEe+bMMy9q36Q0Vig2grmz2DbTmNpQ
-         LEVAwrsAS7iw8ugsy6o+4SoUtm4FCY07WTBkV/ziUVOiSKF4kZ1rBjDMXtDn6dvmni9o
-         G9o3pdWmoWmjXEe8rFodDojJyeMMcbRGX+rZoTQMXc7ZY1OtiIJxtV+WsKiRtM9GytOv
-         iJ4A==
-X-Gm-Message-State: ANhLgQ2Kg1VjujECGQOOjrUtn0wg1EwXeBVema2+9RQUqre4yK0e2v0U
-        W/7Z6EODPT+9wlVUzfayp4QkiVb9
-X-Google-Smtp-Source: ADFU+vt8GSrRZ0TSTge2+YGKkHRZqDjHXk61Y4SOxXChyBcw7jCY0c8tmQngh0iIsAGMSkY8sSWBIA==
-X-Received: by 2002:a1c:2285:: with SMTP id i127mr17968822wmi.152.1584814097574;
-        Sat, 21 Mar 2020 11:08:17 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:e44a:a16c:158d:8e2c? (p200300EA8F296000E44AA16C158D8E2C.dip0.t-ipconnect.de. [2003:ea:8f29:6000:e44a:a16c:158d:8e2c])
-        by smtp.googlemail.com with ESMTPSA id q4sm13881816wro.56.2020.03.21.11.08.16
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=AnR6hfXloIQv8auYA+GHfwp/m7H+vf5QROD5gpqvvmg=;
+        b=aWmJN5VZflO0Mp2wloZ7z6hfGfgERCxixv4UsOkLfn1wAQonON7CWqVcpnIjPxch2/
+         NyaP/GiuTDi4bh7IwxlsE+L+53rkJfOVnod2in8Z52Mggu9EfWYJXlIVS9q1V+kyYNn4
+         LceLFp8NPk2JeqU7iYZa/fVhbU5Ebr+1d0dw3z9qgh7MGhAc1JEjGztHjhB2LXfLS6pZ
+         K7yPIUbZxCmhMIjbzjEIkyl2oK8l4IK7hDqLc9l74G6qVZ0JycdmDGOvbzf2bmbVKz0T
+         XnZxrfrJ/GuUvh5UDiuwslcjIzadnq4AHEKLSr/Pm4ynHWUcQK82vTqfDITZsrL0O7In
+         VhjQ==
+X-Gm-Message-State: ANhLgQ3+K/ZSWojb+R3zB5BAVPv61wJIZ80YGJ3CLq2Vyyev4h6Gmt2m
+        XacByPtR+fKdoQLOgStzTkY1mw==
+X-Google-Smtp-Source: ADFU+vs0FwNwvYJsQkFQFEcpXFJzigfrsVLfelXzkPadvRe0lL/cnt4AkOx4y/HBFYRg/dis9wEHwA==
+X-Received: by 2002:a17:902:34f:: with SMTP id 73mr13708424pld.50.1584816453585;
+        Sat, 21 Mar 2020 11:47:33 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local (static-50-53-47-17.bvtn.or.frontiernet.net. [50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id f15sm6924004pfq.100.2020.03.21.11.47.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 Mar 2020 11:08:17 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: add new helper rtl8168g_enable_gphy_10m
-Message-ID: <743a1fd7-e1b2-d548-1c22-7c1a2e3b268e@gmail.com>
-Date:   Sat, 21 Mar 2020 19:08:09 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        Sat, 21 Mar 2020 11:47:33 -0700 (PDT)
+Subject: Re: [PATCH] ionic: make spdxcheck.py happy
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>, netdev@vger.kernel.org
+Cc:     linux-spdx@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200321120514.10464-1-lukas.bulwahn@gmail.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <0c80a012-738e-dddc-4287-35a6a90fda86@pensando.io>
+Date:   Sat, 21 Mar 2020 11:47:31 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+In-Reply-To: <20200321120514.10464-1-lukas.bulwahn@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Factor out setting GPHY 10M to new helper rtl8168g_enable_gphy_10m.
+On 3/21/20 5:05 AM, Lukas Bulwahn wrote:
+> Headers ionic_if.h and ionic_regs.h are licensed under three alternative
+> licenses and the used SPDX-License-Identifier expression makes
+> ./scripts/spdxcheck.py complain:
+>
+> drivers/net/ethernet/pensando/ionic/ionic_if.h: 1:52 Syntax error: OR
+> drivers/net/ethernet/pensando/ionic/ionic_regs.h: 1:52 Syntax error: OR
+>
+> As OR is associative, it is irrelevant if the parentheses are put around
+> the first or the second OR-expression.
+>
+> Simply add parentheses to make spdxcheck.py happy.
+>
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- .../net/ethernet/realtek/r8169_phy_config.c    | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+Acked-by: Shannon Nelson <snelson@pensando.io>
 
-diff --git a/drivers/net/ethernet/realtek/r8169_phy_config.c b/drivers/net/ethernet/realtek/r8169_phy_config.c
-index e367e77c7..b73f7d023 100644
---- a/drivers/net/ethernet/realtek/r8169_phy_config.c
-+++ b/drivers/net/ethernet/realtek/r8169_phy_config.c
-@@ -796,6 +796,11 @@ static void rtl8168g_disable_aldps(struct phy_device *phydev)
- 	phy_modify_paged(phydev, 0x0a43, 0x10, BIT(2), 0);
- }
- 
-+static void rtl8168g_enable_gphy_10m(struct phy_device *phydev)
-+{
-+	phy_modify_paged(phydev, 0x0a44, 0x11, 0, BIT(11));
-+}
-+
- static void rtl8168g_phy_adjust_10m_aldps(struct phy_device *phydev)
- {
- 	phy_modify_paged(phydev, 0x0bcc, 0x14, BIT(8), 0);
-@@ -904,8 +909,7 @@ static void rtl8168h_1_hw_phy_config(struct rtl8169_private *tp,
- 	r8168g_phy_param(phydev, 0x0811, 0x0000, 0x0800);
- 	phy_modify_paged(phydev, 0x0a42, 0x16, 0x0000, 0x0002);
- 
--	/* enable GPHY 10M */
--	phy_modify_paged(phydev, 0x0a44, 0x11, 0, BIT(11));
-+	rtl8168g_enable_gphy_10m(phydev);
- 
- 	/* SAR ADC performance */
- 	phy_modify_paged(phydev, 0x0bca, 0x17, BIT(12) | BIT(13), BIT(14));
-@@ -940,8 +944,7 @@ static void rtl8168h_2_hw_phy_config(struct rtl8169_private *tp,
- 	r8168g_phy_param(phydev, 0x0811, 0x0000, 0x0800);
- 	phy_modify_paged(phydev, 0x0a42, 0x16, 0x0000, 0x0002);
- 
--	/* enable GPHY 10M */
--	phy_modify_paged(phydev, 0x0a44, 0x11, 0, BIT(11));
-+	rtl8168g_enable_gphy_10m(phydev);
- 
- 	ioffset = rtl8168h_2_get_adc_bias_ioffset(tp);
- 	if (ioffset != 0xffff)
-@@ -1063,8 +1066,7 @@ static void rtl8117_hw_phy_config(struct rtl8169_private *tp,
- 
- 	r8168g_phy_param(phydev, 0x8011, 0x0000, 0x0800);
- 
--	/* enable GPHY 10M */
--	phy_modify_paged(phydev, 0x0a44, 0x11, 0, BIT(11));
-+	rtl8168g_enable_gphy_10m(phydev);
- 
- 	r8168g_phy_param(phydev, 0x8016, 0x0000, 0x0400);
- 
-@@ -1171,7 +1173,7 @@ static void rtl8125_1_hw_phy_config(struct rtl8169_private *tp,
- 	phy_write_paged(phydev, 0xbc3, 0x12, 0x5555);
- 	phy_modify_paged(phydev, 0xbf0, 0x15, 0x0e00, 0x0a00);
- 	phy_modify_paged(phydev, 0xa5c, 0x10, 0x0400, 0x0000);
--	phy_modify_paged(phydev, 0xa44, 0x11, 0x0000, 0x0800);
-+	rtl8168g_enable_gphy_10m(phydev);
- 
- 	rtl8125_config_eee_phy(phydev);
- }
-@@ -1236,7 +1238,7 @@ static void rtl8125_2_hw_phy_config(struct rtl8169_private *tp,
- 	phy_modify_paged(phydev, 0xa5d, 0x12, 0x0000, 0x0020);
- 	phy_modify_paged(phydev, 0xad4, 0x17, 0x0010, 0x0000);
- 	phy_modify_paged(phydev, 0xa86, 0x15, 0x0001, 0x0000);
--	phy_modify_paged(phydev, 0xa44, 0x11, 0x0000, 0x0800);
-+	rtl8168g_enable_gphy_10m(phydev);
- 
- 	rtl8125_config_eee_phy(phydev);
- }
--- 
-2.25.2
+> ---
+>   drivers/net/ethernet/pensando/ionic/ionic_if.h   | 2 +-
+>   drivers/net/ethernet/pensando/ionic/ionic_regs.h | 2 +-
+>   2 files changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_if.h b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+> index 54547d53b0f2..51adf5059834 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_if.h
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_if.h
+> @@ -1,4 +1,4 @@
+> -/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB OR BSD-2-Clause */
+> +/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
+>   /* Copyright (c) 2017-2019 Pensando Systems, Inc.  All rights reserved. */
+>   
+>   #ifndef _IONIC_IF_H_
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_regs.h b/drivers/net/ethernet/pensando/ionic/ionic_regs.h
+> index 03ee5a36472b..2e174f45c030 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_regs.h
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_regs.h
+> @@ -1,4 +1,4 @@
+> -/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB OR BSD-2-Clause */
+> +/* SPDX-License-Identifier: (GPL-2.0 OR Linux-OpenIB) OR BSD-2-Clause */
+>   /* Copyright (c) 2018-2019 Pensando Systems, Inc.  All rights reserved. */
+>   
+>   #ifndef IONIC_REGS_H
 
