@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A38618E047
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:36:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1B8118E018
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 12:35:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728845AbgCULgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 07:36:19 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:38497 "EHLO
+        id S1728678AbgCULfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 07:35:01 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:38487 "EHLO
         Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728526AbgCULe6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:34:58 -0400
+        with ESMTP id S1728492AbgCULe5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 07:34:57 -0400
 Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
         by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
         (Exim 4.80)
         (envelope-from <tglx@linutronix.de>)
-        id 1jFcOb-0002LP-6D; Sat, 21 Mar 2020 12:34:29 +0100
+        id 1jFcOd-0002LQ-Fh; Sat, 21 Mar 2020 12:34:31 +0100
 Received: from nanos.tec.linutronix.de (localhost [IPv6:::1])
-        by nanos.tec.linutronix.de (Postfix) with ESMTP id E04FC1040C9;
-        Sat, 21 Mar 2020 12:34:21 +0100 (CET)
-Message-Id: <20200321113242.534508206@linutronix.de>
+        by nanos.tec.linutronix.de (Postfix) with ESMTP id 2B9001040CB;
+        Sat, 21 Mar 2020 12:34:22 +0100 (CET)
+Message-Id: <20200321113242.643576700@linutronix.de>
 User-Agent: quilt/0.65
-Date:   Sat, 21 Mar 2020 12:26:02 +0100
+Date:   Sat, 21 Mar 2020 12:26:03 +0100
 From:   Thomas Gleixner <tglx@linutronix.de>
 To:     LKML <linux-kernel@vger.kernel.org>
 Cc:     Peter Zijlstra <peterz@infradead.org>,
@@ -63,7 +63,7 @@ Cc:     Peter Zijlstra <peterz@infradead.org>,
         Jonathan Corbet <corbet@lwn.net>,
         Randy Dunlap <rdunlap@infradead.org>,
         Davidlohr Bueso <dbueso@suse.de>
-Subject: [patch V3 18/20] lockdep: Add hrtimer context tracing bits
+Subject: [patch V3 19/20] lockdep: Annotate irq_work
 References: <20200321112544.878032781@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -78,98 +78,94 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Set current->irq_config = 1 for hrtimers which are not marked to expire in
-hard interrupt context during hrtimer_init(). These timers will expire in
-softirq context on PREEMPT_RT.
+Mark irq_work items with IRQ_WORK_HARD_IRQ which should be invoked in
+hardirq context even on PREEMPT_RT. IRQ_WORK without this flag will be
+invoked in softirq context on PREEMPT_RT.
 
-Setting this allows lockdep to differentiate these timers. If a timer is
-marked to expire in hard interrupt context then the timer callback is not
-supposed to acquire a regular spinlock instead of a raw_spinlock in the
-expiry callback.
+Set ->irq_config to 1 for the IRQ_WORK items which are invoked in softirq
+context so lockdep knows that these can safely acquire a spinlock_t.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
- include/linux/irqflags.h |   15 +++++++++++++++
- include/linux/sched.h    |    1 +
- kernel/locking/lockdep.c |    2 +-
- kernel/time/hrtimer.c    |    6 +++++-
- 4 files changed, 22 insertions(+), 2 deletions(-)
+ include/linux/irq_work.h |    2 ++
+ include/linux/irqflags.h |   13 +++++++++++++
+ kernel/irq_work.c        |    2 ++
+ kernel/rcu/tree.c        |    1 +
+ kernel/time/tick-sched.c |    1 +
+ 5 files changed, 19 insertions(+)
 
+--- a/include/linux/irq_work.h
++++ b/include/linux/irq_work.h
+@@ -18,6 +18,8 @@
+ 
+ /* Doesn't want IPI, wait for tick: */
+ #define IRQ_WORK_LAZY		BIT(2)
++/* Run hard IRQ context, even on RT */
++#define IRQ_WORK_HARD_IRQ	BIT(3)
+ 
+ #define IRQ_WORK_CLAIMED	(IRQ_WORK_PENDING | IRQ_WORK_BUSY)
+ 
 --- a/include/linux/irqflags.h
 +++ b/include/linux/irqflags.h
-@@ -56,6 +56,19 @@ do {						\
- do {						\
- 	current->softirq_context--;		\
- } while (0)
-+
-+# define lockdep_hrtimer_enter(__hrtimer)		\
-+	  do {						\
-+		  if (!__hrtimer->is_hard)		\
-+			current->irq_config = 1;	\
+@@ -69,6 +69,17 @@ do {						\
+ 			current->irq_config = 0;	\
+ 	  } while (0)
+ 
++# define lockdep_irq_work_enter(__work)					\
++	  do {								\
++		  if (!(atomic_read(&__work->flags) & IRQ_WORK_HARD_IRQ))\
++			current->irq_config = 1;			\
 +	  } while (0)
-+
-+# define lockdep_hrtimer_exit(__hrtimer)		\
-+	  do {						\
-+		  if (!__hrtimer->is_hard)		\
-+			current->irq_config = 0;	\
++# define lockdep_irq_work_exit(__work)					\
++	  do {								\
++		  if (!(atomic_read(&__work->flags) & IRQ_WORK_HARD_IRQ))\
++			current->irq_config = 0;			\
 +	  } while (0)
 +
  #else
  # define trace_hardirqs_on()		do { } while (0)
  # define trace_hardirqs_off()		do { } while (0)
-@@ -68,6 +81,8 @@ do {						\
- # define trace_hardirq_exit()		do { } while (0)
- # define lockdep_softirq_enter()	do { } while (0)
+@@ -83,6 +94,8 @@ do {						\
  # define lockdep_softirq_exit()		do { } while (0)
-+# define lockdep_hrtimer_enter(__hrtimer)		do { } while (0)
-+# define lockdep_hrtimer_exit(__hrtimer)		do { } while (0)
+ # define lockdep_hrtimer_enter(__hrtimer)		do { } while (0)
+ # define lockdep_hrtimer_exit(__hrtimer)		do { } while (0)
++# define lockdep_irq_work_enter(__work)		do { } while (0)
++# define lockdep_irq_work_exit(__work)		do { } while (0)
  #endif
  
  #if defined(CONFIG_IRQSOFF_TRACER) || \
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -983,6 +983,7 @@ struct task_struct {
- 	unsigned int			softirq_enable_event;
- 	int				softirqs_enabled;
- 	int				softirq_context;
-+	int				irq_config;
- #endif
- 
- #ifdef CONFIG_LOCKDEP
---- a/kernel/locking/lockdep.c
-+++ b/kernel/locking/lockdep.c
-@@ -3759,7 +3759,7 @@ static int check_wait_context(struct tas
- 		/*
- 		 * Check if force_irqthreads will run us threaded.
+--- a/kernel/irq_work.c
++++ b/kernel/irq_work.c
+@@ -153,7 +153,9 @@ static void irq_work_run_list(struct lli
  		 */
--		if (curr->hardirq_threaded)
-+		if (curr->hardirq_threaded || curr->irq_config)
- 			curr_inner = LD_WAIT_CONFIG;
- 		else
- 			curr_inner = LD_WAIT_SPIN;
---- a/kernel/time/hrtimer.c
-+++ b/kernel/time/hrtimer.c
-@@ -1404,7 +1404,7 @@ static void __hrtimer_init(struct hrtime
- 	base = softtimer ? HRTIMER_MAX_CLOCK_BASES / 2 : 0;
- 	base += hrtimer_clockid_to_base(clock_id);
- 	timer->is_soft = softtimer;
--	timer->is_hard = !softtimer;
-+	timer->is_hard = !!(mode & HRTIMER_MODE_HARD);
- 	timer->base = &cpu_base->clock_base[base];
- 	timerqueue_init(&timer->node);
- }
-@@ -1514,7 +1514,11 @@ static void __run_hrtimer(struct hrtimer
- 	 */
- 	raw_spin_unlock_irqrestore(&cpu_base->lock, flags);
- 	trace_hrtimer_expire_entry(timer, now);
-+	lockdep_hrtimer_enter(timer);
-+
- 	restart = fn(timer);
-+
-+	lockdep_hrtimer_exit(timer);
- 	trace_hrtimer_expire_exit(timer);
- 	raw_spin_lock_irq(&cpu_base->lock);
+ 		flags = atomic_fetch_andnot(IRQ_WORK_PENDING, &work->flags);
  
++		lockdep_irq_work_enter(work);
+ 		work->func(work);
++		lockdep_irq_work_exit(work);
+ 		/*
+ 		 * Clear the BUSY bit and return to the free state if
+ 		 * no-one else claimed it meanwhile.
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -1113,6 +1113,7 @@ static int rcu_implicit_dynticks_qs(stru
+ 		    !rdp->rcu_iw_pending && rdp->rcu_iw_gp_seq != rnp->gp_seq &&
+ 		    (rnp->ffmask & rdp->grpmask)) {
+ 			init_irq_work(&rdp->rcu_iw, rcu_iw_handler);
++			atomic_set(&rdp->rcu_iw.flags, IRQ_WORK_HARD_IRQ);
+ 			rdp->rcu_iw_pending = true;
+ 			rdp->rcu_iw_gp_seq = rnp->gp_seq;
+ 			irq_work_queue_on(&rdp->rcu_iw, rdp->cpu);
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -245,6 +245,7 @@ static void nohz_full_kick_func(struct i
+ 
+ static DEFINE_PER_CPU(struct irq_work, nohz_full_kick_work) = {
+ 	.func = nohz_full_kick_func,
++	.flags = ATOMIC_INIT(IRQ_WORK_HARD_IRQ),
+ };
+ 
+ /*
 
 
