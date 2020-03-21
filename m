@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B68318DEA4
+	by mail.lfdr.de (Postfix) with ESMTP id 31E2618DEA3
 	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 09:10:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728222AbgCUIKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 04:10:41 -0400
-Received: from mga14.intel.com ([192.55.52.115]:33285 "EHLO mga14.intel.com"
+        id S1728218AbgCUIKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 04:10:38 -0400
+Received: from mga14.intel.com ([192.55.52.115]:33283 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728195AbgCUIKf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728199AbgCUIKf (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 21 Mar 2020 04:10:35 -0400
-IronPort-SDR: lYjJsCTWQlOpqzqW6usF7MrEbbG883C41AgXynwLTEOX6fuhjYGEcOrWagkeLQc/Q0lYZxtxmA
- MhwpXRGRg46g==
+IronPort-SDR: 3ElIq1K6j4lrGwB/FL0buS6NoI3KUu2Fp6exKTpZew1LhD9lkod6eq+tsNT1Wm+PX59KL8Z8mt
+ lELtQcCSr10A==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2020 01:10:30 -0700
-IronPort-SDR: tldpKgqzCXZQEjsn4MFgyTowyFRYAgo+2Jm6ciGoRNx/oKONWwLBclM8Nh61PeDnI/FRmQTYqO
- rdfhPqQrW89A==
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2020 01:10:31 -0700
+IronPort-SDR: TB390WN0ObCWHISbtvwy2Xck2QEFDQ5k9vOcNmdP4abBuOwhjPBTbW+00rVQzZTwG6PtUqjIfN
+ D9WOBMWD2mtQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,287,1580803200"; 
-   d="scan'208";a="234737955"
+   d="scan'208";a="234737958"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga007.jf.intel.com with ESMTP; 21 Mar 2020 01:10:30 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
@@ -31,9 +31,9 @@ Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 3/9] ice: store NVM version info in extracted format
-Date:   Sat, 21 Mar 2020 01:10:22 -0700
-Message-Id: <20200321081028.2763550-4-jeffrey.t.kirsher@intel.com>
+Subject: [net-next 4/9] ice: discover and store size of available flash
+Date:   Sat, 21 Mar 2020 01:10:23 -0700
+Message-Id: <20200321081028.2763550-5-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200321081028.2763550-1-jeffrey.t.kirsher@intel.com>
 References: <20200321081028.2763550-1-jeffrey.t.kirsher@intel.com>
@@ -46,314 +46,157 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jacob Keller <jacob.e.keller@intel.com>
 
-The NVM version and Option ROM version information is stored within the
-struct ice_nvm_ver_info structure. The data for the NVM is stored as
-a 2byte value with the major and minor versions each using one byte from
-the field. The Option ROM is stored as a 4byte value that contains
-a major, build, and patch number.
+When reading from the NVM using a flat address, it is useful to know the
+upper bound on the size of the flash contents. This value is not stored
+within the NVM.
 
-Modify the code to immediately extract the version values and store them
-in a new struct ice_orom_info. Remove the now unnecessary
-ice_get_nvm_version function.
+We can determine the size by performing a bisection between upper and
+lower bounds. It is known that the size cannot exceed 16 MB (offset of
+0xFFFFFF).
 
-Update ice_ethtool.c to use the new fields directly from the structured
-data.
+Use a while loop to bisect the upper and lower bounds by reading one
+byte at a time. On a failed read, lower the maximum bound. On
+a successful read, increase the lower bound.
 
-This reduces complexity of the code that prints these versions in
-ice_ethtool.c
+Save this as the flash_size in the ice_nvm_info structure that contains
+data related to the NVM.
 
-Update the macro definitions and variable names to use the term "orom"
-instead of "oem" for the Option ROM version. This helps increase the
-clarity of the Option ROM version code.
+The size will be used in a future patch for implementing full NVM read
+via ethtool's GEEPROM command.
+
+The maximum possible size for the flash is bounded by the size limit for
+the NVM AdminQ commands. Add a new macro, ICE_AQC_NVM_MAX_OFFSET, which
+can be used to represent this upper bound.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_common.c  | 23 -----
- drivers/net/ethernet/intel/ice/ice_common.h  |  3 -
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 13 +--
- drivers/net/ethernet/intel/ice/ice_nvm.c     | 94 +++++++++++++-------
- drivers/net/ethernet/intel/ice/ice_type.h    | 30 ++++---
- 5 files changed, 88 insertions(+), 75 deletions(-)
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  2 +
+ drivers/net/ethernet/intel/ice/ice_nvm.c      | 62 ++++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_type.h     |  1 +
+ 3 files changed, 63 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index e574a70fcc99..6691e45367b3 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -614,29 +614,6 @@ static void ice_get_itr_intrl_gran(struct ice_hw *hw)
- 	}
- }
- 
--/**
-- * ice_get_nvm_version - get cached NVM version data
-- * @hw: pointer to the hardware structure
-- * @oem_ver: 8 bit NVM version
-- * @oem_build: 16 bit NVM build number
-- * @oem_patch: 8 NVM patch number
-- * @ver_hi: high 8 bits of the NVM version
-- * @ver_lo: low 8 bits of the NVM version
-- */
--void
--ice_get_nvm_version(struct ice_hw *hw, u8 *oem_ver, u16 *oem_build,
--		    u8 *oem_patch, u8 *ver_hi, u8 *ver_lo)
--{
--	struct ice_nvm_info *nvm = &hw->nvm;
--
--	*oem_ver = (u8)((nvm->oem_ver & ICE_OEM_VER_MASK) >> ICE_OEM_VER_SHIFT);
--	*oem_patch = (u8)(nvm->oem_ver & ICE_OEM_VER_PATCH_MASK);
--	*oem_build = (u16)((nvm->oem_ver & ICE_OEM_VER_BUILD_MASK) >>
--			   ICE_OEM_VER_BUILD_SHIFT);
--	*ver_hi = (nvm->ver & ICE_NVM_VER_HI_MASK) >> ICE_NVM_VER_HI_SHIFT;
--	*ver_lo = (nvm->ver & ICE_NVM_VER_LO_MASK) >> ICE_NVM_VER_LO_SHIFT;
--}
--
- /**
-  * ice_init_hw - main hardware initialization routine
-  * @hw: pointer to the hardware structure
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
-index f9fc005d35a7..8fb29657e316 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.h
-+++ b/drivers/net/ethernet/intel/ice/ice_common.h
-@@ -153,9 +153,6 @@ ice_stat_update40(struct ice_hw *hw, u32 reg, bool prev_stat_loaded,
- void
- ice_stat_update32(struct ice_hw *hw, u32 reg, bool prev_stat_loaded,
- 		  u64 *prev_stat, u64 *cur_stat);
--void
--ice_get_nvm_version(struct ice_hw *hw, u8 *oem_ver, u16 *oem_build,
--		    u8 *oem_patch, u8 *ver_hi, u8 *ver_lo);
- enum ice_status
- ice_sched_query_elem(struct ice_hw *hw, u32 node_teid,
- 		     struct ice_aqc_get_elem *buf);
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index e3d148f12aac..75970bcfa6c0 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -167,11 +167,14 @@ static void
- ice_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
- {
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
--	u8 oem_ver, oem_patch, nvm_ver_hi, nvm_ver_lo;
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_pf *pf = vsi->back;
- 	struct ice_hw *hw = &pf->hw;
--	u16 oem_build;
-+	struct ice_orom_info *orom;
-+	struct ice_nvm_info *nvm;
-+
-+	nvm = &hw->nvm;
-+	orom = &nvm->orom;
- 
- 	strscpy(drvinfo->driver, KBUILD_MODNAME, sizeof(drvinfo->driver));
- 	strscpy(drvinfo->version, ice_drv_ver, sizeof(drvinfo->version));
-@@ -179,11 +182,9 @@ ice_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
- 	/* Display NVM version (from which the firmware version can be
- 	 * determined) which contains more pertinent information.
- 	 */
--	ice_get_nvm_version(hw, &oem_ver, &oem_build, &oem_patch,
--			    &nvm_ver_hi, &nvm_ver_lo);
- 	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
--		 "%x.%02x 0x%x %d.%d.%d", nvm_ver_hi, nvm_ver_lo,
--		 hw->nvm.eetrack, oem_ver, oem_build, oem_patch);
-+		 "%x.%02x 0x%x %d.%d.%d", nvm->major_ver, nvm->minor_ver,
-+		 nvm->eetrack, orom->major, orom->build, orom->patch);
- 
- 	strscpy(drvinfo->bus_info, pci_name(pf->pdev),
- 		sizeof(drvinfo->bus_info));
+diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+index 33017d37ea33..2381b4014ed6 100644
+--- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
++++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
+@@ -1232,6 +1232,7 @@ struct ice_aqc_sff_eeprom {
+  * NVM Update commands (indirect 0x0703)
+  */
+ struct ice_aqc_nvm {
++#define ICE_AQC_NVM_MAX_OFFSET		0xFFFFFF
+ 	__le16 offset_low;
+ 	u8 offset_high;
+ 	u8 cmd_flags;
+@@ -1766,6 +1767,7 @@ enum ice_aq_err {
+ 	ICE_AQ_RC_ENOMEM	= 9,  /* Out of memory */
+ 	ICE_AQ_RC_EBUSY		= 12, /* Device or resource busy */
+ 	ICE_AQ_RC_EEXIST	= 13, /* Object already exists */
++	ICE_AQ_RC_EINVAL	= 14, /* Invalid argument */
+ 	ICE_AQ_RC_ENOSPC	= 16, /* No space left or allocation failure */
+ 	ICE_AQ_RC_ENOSYS	= 17, /* Function not implemented */
+ 	ICE_AQ_RC_ENOSEC	= 24, /* Missing security manifest */
 diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
-index 97aaf75379ae..ef68fa989a57 100644
+index ef68fa989a57..4cdce0370963 100644
 --- a/drivers/net/ethernet/intel/ice/ice_nvm.c
 +++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
-@@ -307,6 +307,62 @@ enum ice_status ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data)
- 	return status;
+@@ -26,8 +26,7 @@ ice_aq_read_nvm(struct ice_hw *hw, u16 module_typeid, u32 offset, u16 length,
+ 
+ 	cmd = &desc.params.nvm;
+ 
+-	/* In offset the highest byte must be zeroed. */
+-	if (offset & 0xFF000000)
++	if (offset > ICE_AQC_NVM_MAX_OFFSET)
+ 		return ICE_ERR_PARAM;
+ 
+ 	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_nvm_read);
+@@ -363,6 +362,58 @@ static enum ice_status ice_get_orom_ver_info(struct ice_hw *hw)
+ 	return 0;
  }
  
 +/**
-+ * ice_get_orom_ver_info - Read Option ROM version information
++ * ice_discover_flash_size - Discover the available flash size.
 + * @hw: pointer to the HW struct
 + *
-+ * Read the Combo Image version data from the Boot Configuration TLV and fill
-+ * in the option ROM version data.
++ * The device flash could be up to 16MB in size. However, it is possible that
++ * the actual size is smaller. Use bisection to determine the accessible size
++ * of flash memory.
 + */
-+static enum ice_status ice_get_orom_ver_info(struct ice_hw *hw)
++static enum ice_status ice_discover_flash_size(struct ice_hw *hw)
 +{
-+	u16 combo_hi, combo_lo, boot_cfg_tlv, boot_cfg_tlv_len;
-+	struct ice_orom_info *orom = &hw->nvm.orom;
++	u32 min_size = 0, max_size = ICE_AQC_NVM_MAX_OFFSET + 1;
 +	enum ice_status status;
-+	u32 combo_ver;
 +
-+	status = ice_get_pfa_module_tlv(hw, &boot_cfg_tlv, &boot_cfg_tlv_len,
-+					ICE_SR_BOOT_CFG_PTR);
-+	if (status) {
-+		ice_debug(hw, ICE_DBG_INIT,
-+			  "Failed to read Boot Configuration Block TLV.\n");
++	status = ice_acquire_nvm(hw, ICE_RES_READ);
++	if (status)
 +		return status;
++
++	while ((max_size - min_size) > 1) {
++		u32 offset = (max_size + min_size) / 2;
++		u32 len = 1;
++		u8 data;
++
++		status = ice_read_flat_nvm(hw, offset, &len, &data, false);
++		if (status == ICE_ERR_AQ_ERROR &&
++		    hw->adminq.sq_last_status == ICE_AQ_RC_EINVAL) {
++			ice_debug(hw, ICE_DBG_NVM,
++				  "%s: New upper bound of %u bytes\n",
++				  __func__, offset);
++			status = 0;
++			max_size = offset;
++		} else if (!status) {
++			ice_debug(hw, ICE_DBG_NVM,
++				  "%s: New lower bound of %u bytes\n",
++				  __func__, offset);
++			min_size = offset;
++		} else {
++			/* an unexpected error occurred */
++			goto err_read_flat_nvm;
++		}
 +	}
 +
-+	/* Boot Configuration Block must have length at least 2 words
-+	 * (Combo Image Version High and Combo Image Version Low)
-+	 */
-+	if (boot_cfg_tlv_len < 2) {
-+		ice_debug(hw, ICE_DBG_INIT,
-+			  "Invalid Boot Configuration Block TLV size.\n");
-+		return ICE_ERR_INVAL_SIZE;
-+	}
++	ice_debug(hw, ICE_DBG_NVM,
++		  "Predicted flash size is %u bytes\n", max_size);
 +
-+	status = ice_read_sr_word(hw, (boot_cfg_tlv + ICE_NVM_OROM_VER_OFF),
-+				  &combo_hi);
-+	if (status) {
-+		ice_debug(hw, ICE_DBG_INIT, "Failed to read OROM_VER hi.\n");
-+		return status;
-+	}
++	hw->nvm.flash_size = max_size;
 +
-+	status = ice_read_sr_word(hw, (boot_cfg_tlv + ICE_NVM_OROM_VER_OFF + 1),
-+				  &combo_lo);
-+	if (status) {
-+		ice_debug(hw, ICE_DBG_INIT, "Failed to read OROM_VER lo.\n");
-+		return status;
-+	}
++err_read_flat_nvm:
++	ice_release_nvm(hw);
 +
-+	combo_ver = ((u32)combo_hi << 16) | combo_lo;
-+
-+	orom->major = (u8)((combo_ver & ICE_OROM_VER_MASK) >>
-+			   ICE_OROM_VER_SHIFT);
-+	orom->patch = (u8)(combo_ver & ICE_OROM_VER_PATCH_MASK);
-+	orom->build = (u16)((combo_ver & ICE_OROM_VER_BUILD_MASK) >>
-+			    ICE_OROM_VER_BUILD_SHIFT);
-+
-+	return 0;
++	return status;
 +}
 +
  /**
   * ice_init_nvm - initializes NVM setting
   * @hw: pointer to the HW struct
-@@ -316,9 +372,8 @@ enum ice_status ice_read_sr_word(struct ice_hw *hw, u16 offset, u16 *data)
-  */
- enum ice_status ice_init_nvm(struct ice_hw *hw)
- {
--	u16 oem_hi, oem_lo, boot_cfg_tlv, boot_cfg_tlv_len;
- 	struct ice_nvm_info *nvm = &hw->nvm;
--	u16 eetrack_lo, eetrack_hi;
-+	u16 eetrack_lo, eetrack_hi, ver;
- 	enum ice_status status;
- 	u32 fla, gens_stat;
- 	u8 sr_size;
-@@ -344,12 +399,14 @@ enum ice_status ice_init_nvm(struct ice_hw *hw)
- 		return ICE_ERR_NVM_BLANK_MODE;
- 	}
+@@ -421,6 +472,13 @@ enum ice_status ice_init_nvm(struct ice_hw *hw)
  
--	status = ice_read_sr_word(hw, ICE_SR_NVM_DEV_STARTER_VER, &nvm->ver);
-+	status = ice_read_sr_word(hw, ICE_SR_NVM_DEV_STARTER_VER, &ver);
- 	if (status) {
- 		ice_debug(hw, ICE_DBG_INIT,
- 			  "Failed to read DEV starter version.\n");
- 		return status;
- 	}
-+	nvm->major_ver = (ver & ICE_NVM_VER_HI_MASK) >> ICE_NVM_VER_HI_SHIFT;
-+	nvm->minor_ver = (ver & ICE_NVM_VER_LO_MASK) >> ICE_NVM_VER_LO_SHIFT;
+ 	nvm->eetrack = (eetrack_hi << 16) | eetrack_lo;
  
- 	status = ice_read_sr_word(hw, ICE_SR_NVM_EETRACK_LO, &eetrack_lo);
- 	if (status) {
-@@ -390,39 +447,12 @@ enum ice_status ice_init_nvm(struct ice_hw *hw)
- 		break;
- 	}
- 
--	status = ice_get_pfa_module_tlv(hw, &boot_cfg_tlv, &boot_cfg_tlv_len,
--					ICE_SR_BOOT_CFG_PTR);
-+	status = ice_get_orom_ver_info(hw);
- 	if (status) {
--		ice_debug(hw, ICE_DBG_INIT,
--			  "Failed to read Boot Configuration Block TLV.\n");
-+		ice_debug(hw, ICE_DBG_INIT, "Failed to read Option ROM info.\n");
- 		return status;
- 	}
- 
--	/* Boot Configuration Block must have length at least 2 words
--	 * (Combo Image Version High and Combo Image Version Low)
--	 */
--	if (boot_cfg_tlv_len < 2) {
--		ice_debug(hw, ICE_DBG_INIT,
--			  "Invalid Boot Configuration Block TLV size.\n");
--		return ICE_ERR_INVAL_SIZE;
--	}
--
--	status = ice_read_sr_word(hw, (boot_cfg_tlv + ICE_NVM_OEM_VER_OFF),
--				  &oem_hi);
--	if (status) {
--		ice_debug(hw, ICE_DBG_INIT, "Failed to read OEM_VER hi.\n");
--		return status;
--	}
--
--	status = ice_read_sr_word(hw, (boot_cfg_tlv + ICE_NVM_OEM_VER_OFF + 1),
--				  &oem_lo);
--	if (status) {
--		ice_debug(hw, ICE_DBG_INIT, "Failed to read OEM_VER lo.\n");
--		return status;
--	}
--
--	nvm->oem_ver = ((u32)oem_hi << 16) | oem_lo;
--
- 	return 0;
- }
- 
++	status = ice_discover_flash_size(hw);
++	if (status) {
++		ice_debug(hw, ICE_DBG_NVM,
++			  "NVM init error: failed to discover flash size.\n");
++		return status;
++	}
++
+ 	switch (hw->device_id) {
+ 	/* the following devices do not have boot_cfg_tlv yet */
+ 	case ICE_DEV_ID_E823C_BACKPLANE:
 diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index db0ef6ba907f..5bc94217778e 100644
+index 5bc94217778e..b6a20670e915 100644
 --- a/drivers/net/ethernet/intel/ice/ice_type.h
 +++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -239,12 +239,20 @@ struct ice_fc_info {
- 	enum ice_fc_mode req_mode;	/* FC mode requested by caller */
- };
- 
-+/* Option ROM version information */
-+struct ice_orom_info {
-+	u8 major;			/* Major version of OROM */
-+	u8 patch;			/* Patch version of OROM */
-+	u16 build;			/* Build version of OROM */
-+};
-+
- /* NVM Information */
- struct ice_nvm_info {
--	u32 eetrack;              /* NVM data version */
--	u32 oem_ver;              /* OEM version info */
--	u16 sr_words;             /* Shadow RAM size in words */
--	u16 ver;                  /* NVM package version */
-+	struct ice_orom_info orom;	/* Option ROM version info */
-+	u32 eetrack;			/* NVM data version */
-+	u16 sr_words;			/* Shadow RAM size in words */
-+	u8 major_ver;			/* major version of NVM package */
-+	u8 minor_ver;			/* minor version of dev starter */
+@@ -251,6 +251,7 @@ struct ice_nvm_info {
+ 	struct ice_orom_info orom;	/* Option ROM version info */
+ 	u32 eetrack;			/* NVM data version */
+ 	u16 sr_words;			/* Shadow RAM size in words */
++	u32 flash_size;			/* Size of available flash in bytes */
+ 	u8 major_ver;			/* major version of NVM package */
+ 	u8 minor_ver;			/* minor version of dev starter */
  	u8 blank_nvm_mode;        /* is NVM empty (no FW present) */
- };
- 
-@@ -626,7 +634,7 @@ struct ice_hw_port_stats {
- 
- /* Checksum and Shadow RAM pointers */
- #define ICE_SR_BOOT_CFG_PTR		0x132
--#define ICE_NVM_OEM_VER_OFF		0x02
-+#define ICE_NVM_OROM_VER_OFF		0x02
- #define ICE_SR_NVM_DEV_STARTER_VER	0x18
- #define ICE_SR_NVM_EETRACK_LO		0x2D
- #define ICE_SR_NVM_EETRACK_HI		0x2E
-@@ -634,12 +642,12 @@ struct ice_hw_port_stats {
- #define ICE_NVM_VER_LO_MASK		(0xff << ICE_NVM_VER_LO_SHIFT)
- #define ICE_NVM_VER_HI_SHIFT		12
- #define ICE_NVM_VER_HI_MASK		(0xf << ICE_NVM_VER_HI_SHIFT)
--#define ICE_OEM_VER_PATCH_SHIFT		0
--#define ICE_OEM_VER_PATCH_MASK		(0xff << ICE_OEM_VER_PATCH_SHIFT)
--#define ICE_OEM_VER_BUILD_SHIFT		8
--#define ICE_OEM_VER_BUILD_MASK		(0xffff << ICE_OEM_VER_BUILD_SHIFT)
--#define ICE_OEM_VER_SHIFT		24
--#define ICE_OEM_VER_MASK		(0xff << ICE_OEM_VER_SHIFT)
-+#define ICE_OROM_VER_PATCH_SHIFT	0
-+#define ICE_OROM_VER_PATCH_MASK		(0xff << ICE_OROM_VER_PATCH_SHIFT)
-+#define ICE_OROM_VER_BUILD_SHIFT	8
-+#define ICE_OROM_VER_BUILD_MASK		(0xffff << ICE_OROM_VER_BUILD_SHIFT)
-+#define ICE_OROM_VER_SHIFT		24
-+#define ICE_OROM_VER_MASK		(0xff << ICE_OROM_VER_SHIFT)
- #define ICE_SR_PFA_PTR			0x40
- #define ICE_SR_SECTOR_SIZE_IN_WORDS	0x800
- #define ICE_SR_WORDS_IN_1KB		512
 -- 
 2.25.1
 
