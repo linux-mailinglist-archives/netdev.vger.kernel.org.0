@@ -2,101 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA71A18E341
-	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 18:23:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2358B18E358
+	for <lists+netdev@lfdr.de>; Sat, 21 Mar 2020 18:28:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727959AbgCURXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 13:23:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50970 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727548AbgCURXH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 21 Mar 2020 13:23:07 -0400
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8AE9120767;
-        Sat, 21 Mar 2020 17:23:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584811386;
-        bh=xECwvu3Zm1NEgzqD5GrnBGLFCYYFmNZsamemFqiM8NY=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=0uZasLyYOOcy2Jn3NQfpB2UAWhjp74rz1TUNHg9BhAjwPgKnZR60zmujqnihmxQ4W
-         7foxJjnQ0xMcW011TdKCXLYocZvyg8MDtNv8kWqj8WW3VxI5OcNV2Y2TQfkKR5STHK
-         tsXIa2UPcdd8dIM4hV5/+BQQoln4Cxe0PVsX+CFA=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 8D6D435226C1; Sat, 21 Mar 2020 10:23:05 -0700 (PDT)
-Date:   Sat, 21 Mar 2020 10:23:05 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [patch V2 08/15] Documentation: Add lock ordering and nesting
- documentation
-Message-ID: <20200321172305.GW3199@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200320160145.GN3199@paulmck-ThinkPad-P72>
- <87mu8apzxr.fsf@nanos.tec.linutronix.de>
- <20200320210243.GT3199@paulmck-ThinkPad-P72>
- <874kuipsbw.fsf@nanos.tec.linutronix.de>
- <20200321022930.GU3199@paulmck-ThinkPad-P72>
- <875zeyrold.fsf@nanos.tec.linutronix.de>
+        id S1727405AbgCUR2j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 13:28:39 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:39009 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727128AbgCUR2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 13:28:39 -0400
+Received: by mail-ed1-f67.google.com with SMTP id a43so11058733edf.6
+        for <netdev@vger.kernel.org>; Sat, 21 Mar 2020 10:28:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kwWoOqKP35zop+F72DWbVtRp/nMdp8PZ8UIKLzpbLkU=;
+        b=hQv9xBoPj+DdaDi463DZ52DsBCTJufp/dHLKenvFgK+8L+LqG+z/WaGrHSiH+O4Zwq
+         9Cc6AdZL+dmdHt8HRI+YAUsn/ehHU7cqubjv/Es9x/Dzi0nG6LXGrunYQJvuAGe3r5WX
+         CYSIAfJUOGfPLyn2BpfH359Q8VDfJedMuTkxLY9gW/+OsLMAYYwXXIA8GYjVimSKTiAG
+         hXLOZ9YIweSHuXvggz85w6jMZVNmhZ0MXdQwD008Hu58SXo059Y25Jivdv3lk6NnHgAA
+         B7txB9UTcHAb5iB55fZvPPKTvh1/jp868wfOfRgJ7TXSSLyegakQAHGf3VNgVxMVRWZP
+         8nVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kwWoOqKP35zop+F72DWbVtRp/nMdp8PZ8UIKLzpbLkU=;
+        b=CHKTGA6TSatFu2ejW2P+K4ljUbMwC8imBBowwCAjOlAUjgPrwojVmq98PAYZoeqrJN
+         FPvNwW2nm+2vebqe+aSbRisvmjIziaDlB9HIAI+Y34DVCv0H7LsNsPVSIHgEE1eKZmMU
+         lchVniPfplXzCXHRqg+cy3fXC7mU/2rZQ5W1PeeDOuA9zgPBOCohgcV1S3D6Vo6Od1kO
+         pXwc9TDjeHRaDVRbnYRMB0iwKOX9Xo/icGI/aEEcE5Lh5fNSku5A6V5zZZWvEvEyf+05
+         dhePxBS34tuHVACFNHunsXj+ZhogVAvpQ8kC90cl1CVx9/sVwTjCODleYR/iYFwwT6d+
+         yQiQ==
+X-Gm-Message-State: ANhLgQ3/UANVNMtPu9XBeh6Yht2eyp/zn0E+7qG+79Lt8z0HgoHcB32m
+        nhqoQ6SE7RG4SFzTqHhSXAthB1iX1HwqlCmvCbA=
+X-Google-Smtp-Source: ADFU+vuTy5ZUNFuGLPfb4vyFSQ/4Rs2ZVkF/jRNDyDNWrwVvy/NNMIcC0NyNlzBMiWAw1a4FpJLxj+eDIpG2E7OHYRY=
+X-Received: by 2002:a50:d5da:: with SMTP id g26mr14247694edj.179.1584811716231;
+ Sat, 21 Mar 2020 10:28:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <875zeyrold.fsf@nanos.tec.linutronix.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20200319211649.10136-1-olteanv@gmail.com> <20200319211649.10136-2-olteanv@gmail.com>
+ <20200320100925.GB16662@lunn.ch> <CA+h21hrvsfwspGE6z37p-fwso3oD0pXijh+fZZfEEUEv6bySHQ@mail.gmail.com>
+ <158470229183.43774.8932556125293087780@kwain> <CA+h21ho4aqgCSjgPTJ10cVeUow_RAUTNd9NSrVPJJVEqjAws9g@mail.gmail.com>
+ <20200321170146.GF22639@lunn.ch>
+In-Reply-To: <20200321170146.GF22639@lunn.ch>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sat, 21 Mar 2020 19:28:25 +0200
+Message-ID: <CA+h21hqVEgq-bnj-9E+75eXOVWmc4zoDKos1g8UXV12SjgSemg@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/4] net: phy: mscc: rename enum
+ rgmii_rx_clock_delay to rgmii_clock_delay
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 21, 2020 at 11:26:06AM +0100, Thomas Gleixner wrote:
-> "Paul E. McKenney" <paulmck@kernel.org> writes:
-> > On Fri, Mar 20, 2020 at 11:36:03PM +0100, Thomas Gleixner wrote:
-> >> I agree that what I tried to express is hard to parse, but it's at least
-> >> halfways correct :)
-> >
-> > Apologies!  That is what I get for not looking it up in the source.  :-/
-> >
-> > OK, so I am stupid enough not only to get it wrong, but also to try again:
-> >
-> >    ... Other types of wakeups would normally unconditionally set the
-> >    task state to RUNNING, but that does not work here because the task
-> >    must remain blocked until the lock becomes available.  Therefore,
-> >    when a non-lock wakeup attempts to awaken a task blocked waiting
-> >    for a spinlock, it instead sets the saved state to RUNNING.  Then,
-> >    when the lock acquisition completes, the lock wakeup sets the task
-> >    state to the saved state, in this case setting it to RUNNING.
-> >
-> > Is that better?
-> 
-> Definitely!
-> 
-> Thanks for all the editorial work!
+On Sat, 21 Mar 2020 at 19:01, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > And to add to that: without documentation, I don't really know what
+> > I'm consolidating.
+>
+> It looked like the defines for the delays could be shared. But if you
+> are not happy with this, lets leave it as is.
+>
+>     Andrew
 
-NP, and glad you like it!
+To be honest, the reason why I'm not happy respinning is that I'll
+need to backport these patches to a 5.4 kernel. I have nothing against
+sending some further consolidation patches with Antoine's work, but
+respinning this series would mean that I'd also need to backport
+Antoine's patches.
 
-But I felt even more stupid sometime in the middle of the night.  Why on
-earth didn't I work in your nice examples?  :-/
-
-I will pull them in later.  Time to go hike!!!
-
-							Thanx, Paul
+Thanks,
+-Vladimir
