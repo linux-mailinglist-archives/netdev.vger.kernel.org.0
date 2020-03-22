@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FBE918E642
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 04:23:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5781118E65E
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 05:12:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728274AbgCVDXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 23:23:34 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:34496 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726566AbgCVDXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 23:23:33 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3DF1915AC42B0;
-        Sat, 21 Mar 2020 20:23:33 -0700 (PDT)
-Date:   Sat, 21 Mar 2020 20:23:32 -0700 (PDT)
-Message-Id: <20200321.202332.1124475628215113570.davem@davemloft.net>
-To:     alan.maguire@oracle.com
-Cc:     kuba@kernel.org, shuah@kernel.org, netdev@vger.kernel.org,
-        posk@google.com, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] selftests/net: add definition for SOL_DCCP to fix
- compilation errors for old libc
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1584557601-25202-1-git-send-email-alan.maguire@oracle.com>
-References: <1584557601-25202-1-git-send-email-alan.maguire@oracle.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 21 Mar 2020 20:23:33 -0700 (PDT)
+        id S1725791AbgCVEMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 00:12:13 -0400
+Received: from mail-vk1-f194.google.com ([209.85.221.194]:39535 "EHLO
+        mail-vk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725271AbgCVEMM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 00:12:12 -0400
+Received: by mail-vk1-f194.google.com with SMTP id r129so2881773vkr.6;
+        Sat, 21 Mar 2020 21:12:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SZhbSsWH3Nd28xNaH9H1iKoB8x/tihaQFiafijcYuWo=;
+        b=dpEJQIKP7FWxh6J4Z1n90Vtb2qSU4QCUF6i/YKT2t7xjElB3L5Zp70CJNvV7s5wlqE
+         z0HL8fqQsSztYtyU9ngFAo/b+XfJ7gUBv2NGeY9j6/UfBLSf6TGxuo5jinv5R0m8RlTC
+         Ym+yvMLf59g0FfI6xVlZ6FNY4cpzxOvdd1EQUGwMF/MVjPwbwbhxNx6P5Xcr63h4kIV3
+         GT2PFZFhNQ3l3rAJTqd0tvXP8+BtD4SkP3zIQaE3KN7v2mn7SZwFf3cWL5167jq49o1o
+         4s3YCTvrQEk4Yu3wDXoqUstsfa49ODDj1ulNNiR3MFKu4QL1ESWZte75FCF07w5R9GSi
+         jXFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SZhbSsWH3Nd28xNaH9H1iKoB8x/tihaQFiafijcYuWo=;
+        b=rVZ2R7ybJRtuTINLzn40Ck3wrkcxbim1QRXR4GDBhazMUQbVfW1NbinoO4hS+vSfJ/
+         ffWrofkPBOgMl1LsV0b1GOqt3K0eCUFHFmf42Zp4WzsAWY/GwzooPykLPjXSUDEkQwwt
+         bEvGENI6IzVbXHjOab5LAI3HJdw9QjKydvHKfqmOeA8cnmV2axGtilIkY+uy4Wx4hEfW
+         ysAVIcETHBpG5AAZtTvClpwmw4fwr9FBI1SwDOzn+so2RbbwAuy0XN4vYW+B1O3jIjsP
+         GGwWfunO6hhdxZB4Pt2f9CUcLVyz+09Mt+74kuNHWnpadmzZZckXGAi/yrjKScwYcSg3
+         KQqA==
+X-Gm-Message-State: ANhLgQ3aSNPizu2Kfa2WTMOWdmiQiVg/ebXjx7Gs0pdOUD2FfDi9MGsP
+        UVUAiQ4g/EX+Sck2amwxxWNyb6ba9twP57euWRE=
+X-Google-Smtp-Source: ADFU+vsS91fN7bZOUZ7YiLvDMR/ru1lFo1M5djZemNARcBG+g71rMTCsKgNqksfgobUXwrvgRR3rujBIRAxxZVumqD8=
+X-Received: by 2002:ac5:c1ca:: with SMTP id g10mr11197264vkk.16.1584850331664;
+ Sat, 21 Mar 2020 21:12:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <00000000000088452f05a07621d2@google.com>
+In-Reply-To: <00000000000088452f05a07621d2@google.com>
+From:   Qiujun Huang <anenbupt@gmail.com>
+Date:   Sun, 22 Mar 2020 12:11:58 +0800
+Message-ID: <CADG63jB59ZXWSUFKieXKGGEbPT9=z5OPARBjGqMgfh+K-k4-yQ@mail.gmail.com>
+Subject: Re: WARNING: refcount bug in sctp_wfree
+To:     syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alan Maguire <alan.maguire@oracle.com>
-Date: Wed, 18 Mar 2020 18:53:21 +0000
-
-> Many systems build/test up-to-date kernels with older libcs, and
-> an older glibc (2.17) lacks the definition of SOL_DCCP in
-> /usr/include/bits/socket.h (it was added in the 4.6 timeframe).
-> 
-> Adding the definition to the test program avoids a compilation
-> failure that gets in the way of building tools/testing/selftests/net.
-> The test itself will work once the definition is added; either
-> skipping due to DCCP not being configured in the kernel under test
-> or passing, so there are no other more up-to-date glibc dependencies
-> here it seems beyond that missing definition.
-> 
-> Fixes: 11fb60d1089f ("selftests: net: reuseport_addr_any: add DCCP")
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-
-Applied.
+#syz test: https://github.com/hqj/hqjagain_test.git sctp_for_each_tx_datachunk
