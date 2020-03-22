@@ -2,99 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3242518ED03
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 23:34:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E652D18ED65
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 00:58:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbgCVWd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 18:33:59 -0400
-Received: from merlin.infradead.org ([205.233.59.134]:47612 "EHLO
-        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726809AbgCVWd7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 18:33:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=zS+FVq9GRAqW8korIhuLbfacLrfQT3Nbm32pK6UBBgc=; b=RJgvyIj2PxYSWCGVEpK6gTGg/s
-        +rX4ZIHdy8MbnOdAOy+rdpiPLxePo/GhIpvRmhZXSuedinY7g+jwczuq4zxIFOEtJ1A2k/TjaZ1FV
-        SSHl7aBwkGX2nuyzzrjOwQEKStsafORwWMAC+D3Hybly/JkJqi9szuvm1yO4WzRzOWoVuhbcmSV5I
-        wd7LHXncK1GOiQFEW/enb9ikH6MpnZtEHhRTb1ocvVPi91KT81dtipHRnm4xXq7/trST69peXntw1
-        06xaLNePQu7/8kLriu1ISEBmE0y5MwH6O0omcRd6kkDkNotJlRm1OHXgIlelr8GRS8n3gPaiYhtQA
-        aI33aYOA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jG99N-0001i9-0j; Sun, 22 Mar 2020 22:32:57 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id A35803010CF;
-        Sun, 22 Mar 2020 23:32:49 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 6464C299F245C; Sun, 22 Mar 2020 23:32:49 +0100 (CET)
-Date:   Sun, 22 Mar 2020 23:32:49 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Davidlohr Bueso <dave@stgolabs.net>
-Cc:     tglx@linutronix.de, arnd@arndb.de, balbi@kernel.org,
-        bhelgaas@google.com, bigeasy@linutronix.de, davem@davemloft.net,
-        gregkh@linuxfoundation.org, joel@joelfernandes.org,
-        kurt.schwemmer@microsemi.com, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, logang@deltatee.com,
-        mingo@kernel.org, mpe@ellerman.id.au, netdev@vger.kernel.org,
-        oleg@redhat.com, paulmck@kernel.org, rdunlap@infradead.org,
-        rostedt@goodmis.org, torvalds@linux-foundation.org,
-        will@kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Davidlohr Bueso <dbueso@suse.de>
-Subject: Re: [PATCH 18/15] kvm: Replace vcpu->swait with rcuwait
-Message-ID: <20200322223249.GK20696@hirez.programming.kicks-ass.net>
-References: <20200318204302.693307984@linutronix.de>
- <20200320085527.23861-1-dave@stgolabs.net>
- <20200320085527.23861-3-dave@stgolabs.net>
- <20200320125455.GE20696@hirez.programming.kicks-ass.net>
- <20200322163317.mh4sygr7xcjptmjp@linux-p48b>
+        id S1726936AbgCVX6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 19:58:11 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:40826 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726880AbgCVX6L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 19:58:11 -0400
+Received: by mail-ed1-f68.google.com with SMTP id w26so7994335edu.7;
+        Sun, 22 Mar 2020 16:58:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=16n5W71pgyT6GLbXOW01rJLBzPo7sl4nqjxN9D4dB2g=;
+        b=MUWX8hEIe2xtcWw5PGoYP41lapbLjFNAQ5MwKfKtOqvT8ALEsxnOJtpJkwHDCApYIR
+         yIi0d7E0FFRCNJ70LAd49zcszL/tVjZkPP8HZSAwkD8sUzIUxsZGdvzh8PPocI/ihEC4
+         eDDudVlNJEJJTt9wWsez6yE2BM7W7ASQctkuhBTqAqhcdrWiUmfm0fPM5GlsMwjwh4Vp
+         GCMKtMPAS6y7qGZaqqS3QWOpBnW3XmVqdgNc6lPV6M2dRjg1i+cwNpFfW/wbbl0FRFfq
+         DkddZhhAzx6nWtdKVlBnKYIB3bIo9Rx2bfE6D7dTTQQXR4HT9WY5+1CNjS/t20LCvnkz
+         ovlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=16n5W71pgyT6GLbXOW01rJLBzPo7sl4nqjxN9D4dB2g=;
+        b=Vbq3Npqr/AbOlZJ7tteEUxrFJ2UUtxNN37nTKDzC6pqsMaqWWgCViiovJeEP7F8PQs
+         qE+Do62ZlXDPiqr/dHWseFRW8RwvDC1HrM6JhTxEhxv4aMINJQSxXCtJG+FH3nYpbDGr
+         pke7wXncPmAIqjZBIkraNrnNl4VtKCY4f7dYHxdVZPq72MZOFm8Kl3xBf99gPeqQAM8I
+         bdK7t7Rco/1gcETyyNXIgkbB7FRvYm9LlbWXX1gMR4TJ9WtFPRw01DZ6lB1Jj9YQkpgq
+         Z+pKo/8WlVTA378iMyqERGilFeXmDCA1C3nguMMgb7uIkWfuaFgu7AHjuFpXrd8r6J4Q
+         Mf0A==
+X-Gm-Message-State: ANhLgQ2uGNOYP+3Wibr9dON5SQRBq3ptKA82N1w3KCXIujye6mRv9UY6
+        peztLYJq9ah5DTCayAv6dtizNav3alhn9rxHRLc=
+X-Google-Smtp-Source: ADFU+vszdzmENHtwsaq4alTfUpwKBMZhf2fMVh/X2IJgdcPXWfW4LIPeYm2Ir/FxfjTfYe4DrU3ivo+G8vBz95Jx+0I=
+X-Received: by 2002:a50:aca3:: with SMTP id x32mr19159147edc.368.1584921488688;
+ Sun, 22 Mar 2020 16:58:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200322163317.mh4sygr7xcjptmjp@linux-p48b>
+References: <20200322210957.3940-1-f.fainelli@gmail.com>
+In-Reply-To: <20200322210957.3940-1-f.fainelli@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Mon, 23 Mar 2020 01:57:57 +0200
+Message-ID: <CA+h21ho5tVuRSOfFXLDdexNcqz3BtH0st0zwrhJBR-hb4rZKkg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: Implement flow dissection for tag_brcm.c
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Alexander Lobakin <alobakin@dlink.ru>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 22, 2020 at 09:33:17AM -0700, Davidlohr Bueso wrote:
-> On Fri, 20 Mar 2020, Peter Zijlstra wrote:
-> 
-> > On Fri, Mar 20, 2020 at 01:55:26AM -0700, Davidlohr Bueso wrote:
-> > > -	swait_event_interruptible_exclusive(*wq, ((!vcpu->arch.power_off) &&
-> > > -				       (!vcpu->arch.pause)));
-> > > +	rcuwait_wait_event(*wait,
-> > > +			   (!vcpu->arch.power_off) && (!vcpu->arch.pause),
-> > > +			   TASK_INTERRUPTIBLE);
-> > 
-> > > -	for (;;) {
-> > > -		prepare_to_swait_exclusive(&vcpu->wq, &wait, TASK_INTERRUPTIBLE);
-> > > -
-> > > -		if (kvm_vcpu_check_block(vcpu) < 0)
-> > > -			break;
-> > > -
-> > > -		waited = true;
-> > > -		schedule();
-> > > -	}
-> > > -
-> > > -	finish_swait(&vcpu->wq, &wait);
-> > > +	rcuwait_wait_event(&vcpu->wait,
-> > > +			   (block_check = kvm_vcpu_check_block(vcpu)) < 0,
-> > > +			   TASK_INTERRUPTIBLE);
-> > 
-> > Are these yet more instances that really want to be TASK_IDLE ?
-> 
-> Hmm probably as it makes sense for a blocked vcpu not to be contributing to
-> the loadavg. So if this is the only reason to use interruptible, then yes we
-> ought to change it.
-> 
-> However, I'll make this a separate patch, given this (ab)use isn't as obvious
-> as the PS3 case, which is a kthread and therefore signals are masked.
+On Sun, 22 Mar 2020 at 23:10, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+> Provide a flow_dissect callback which returns the network offset and
+> where to find the skb protocol, given the tags structure a common
+> function works for both tagging formats that are supported.
+>
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
 
-The thing that was a dead give-away was that the return value of the
-interruptible wait wasn't used.
+Looks good to me.
+
+>  net/dsa/tag_brcm.c | 23 +++++++++++++++++++++++
+>  1 file changed, 23 insertions(+)
+>
+> diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
+> index 9c3114179690..0d3f796d14a3 100644
+> --- a/net/dsa/tag_brcm.c
+> +++ b/net/dsa/tag_brcm.c
+> @@ -142,6 +142,27 @@ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
+>
+>         return skb;
+>  }
+> +
+> +static int brcm_tag_flow_dissect(const struct sk_buff *skb, __be16 *proto,
+> +                                int *offset)
+> +{
+> +       /* We have been called on the DSA master network device after
+> +        * eth_type_trans() which pulled the Ethernet header already.
+> +        * Frames have one of these two layouts:
+> +        * -----------------------------------
+> +        * | MAC DA | MAC SA | 4b tag | Type | DSA_TAG_PROTO_BRCM
+> +        * -----------------------------------
+> +        * -----------------------------------
+> +        * | 4b tag | MAC DA | MAC SA | Type | DSA_TAG_PROTO_BRCM_PREPEND
+> +        * -----------------------------------
+> +        * skb->data points 2 bytes before the actual Ethernet type field and
+> +        * we have an offset of 4bytes between where skb->data and where the
+> +        * payload starts.
+> +        */
+> +       *offset = BRCM_TAG_LEN;
+> +       *proto = ((__be16 *)skb->data)[1];
+> +       return 0;
+> +}
+>  #endif
+>
+>  #if IS_ENABLED(CONFIG_NET_DSA_TAG_BRCM)
+> @@ -177,6 +198,7 @@ static const struct dsa_device_ops brcm_netdev_ops = {
+>         .xmit   = brcm_tag_xmit,
+>         .rcv    = brcm_tag_rcv,
+>         .overhead = BRCM_TAG_LEN,
+> +       .flow_dissect = brcm_tag_flow_dissect,
+>  };
+>
+>  DSA_TAG_DRIVER(brcm_netdev_ops);
+> @@ -205,6 +227,7 @@ static const struct dsa_device_ops brcm_prepend_netdev_ops = {
+>         .xmit   = brcm_tag_xmit_prepend,
+>         .rcv    = brcm_tag_rcv_prepend,
+>         .overhead = BRCM_TAG_LEN,
+> +       .flow_dissect = brcm_tag_flow_dissect,
+>  };
+>
+>  DSA_TAG_DRIVER(brcm_prepend_netdev_ops);
+> --
+> 2.19.1
+>
+
+Regards,
+-Vladimir
