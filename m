@@ -2,108 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 721EA18E73A
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 07:56:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6590818E753
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 08:18:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727119AbgCVG4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 02:56:40 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:45786 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727107AbgCVG4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 02:56:39 -0400
-Received: by mail-pl1-f193.google.com with SMTP id b9so4429131pls.12;
-        Sat, 21 Mar 2020 23:56:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GdjHs4uUTEBEfa5bLl7pWyzl+sdKTsngOqpzF9tHKx0=;
-        b=B+Fb7vYa1OwSqi53f2jHu81D4h+fKGweze3oPxYIxntMpACPtg8c6IVdrUzsN3Qt59
-         KCa7HLHaRC0RB+g/F1i3eGEefWIF9V3hH+hhkdk2QUHoRKAVpEr5Y0moCxYkhkzx3Rz3
-         gxJxTu8ZPssy1pCuDJCT3OOqMs4sFj85MN67xE7ry9iBO092b2JxPi7o3or4BSi9s1mo
-         BQ/CUbJ33LUnRJ09cnm8byNn41awi8rsPjbq7vOSyeY/RJ2Nag7gDS9JIhtZjbD8KvMj
-         n+ePhGdSpwKdPKDBrck1l/upp3oDXkNJi1e+WAG4f3ZHVUwJlN654HKPYOUja9gDBilG
-         laNw==
+        id S1726583AbgCVHSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 03:18:05 -0400
+Received: from mail-io1-f71.google.com ([209.85.166.71]:41505 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725769AbgCVHSF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 03:18:05 -0400
+Received: by mail-io1-f71.google.com with SMTP id n15so8557042iog.8
+        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 00:18:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GdjHs4uUTEBEfa5bLl7pWyzl+sdKTsngOqpzF9tHKx0=;
-        b=hT3k06J5c2XUnQLkQpsCTYUUA8R7eQ9NjJHhBYfanDSH666niIKqZYXK4/ipF7+VVL
-         HSsrUzeSf1pc6ZAa/Prry0ZQS0qeVjsuQ8RqmXkr99T/u/lTfOUGBBDR9MiKvxPSBjsg
-         LSY2t7lX0uqWqQtknU3CdQev9xhEjooWfMGM2Duz2E1UpnMXHaiG75tWvdqYiN07WFfR
-         M897BcnmCvuL+IfHVLeHhst4xi54jQ3E7C6VxJh39q4aKxL6bZRqVGtxP7mgGn2M4kaR
-         9HuoZK/egg9Bv30o6tWv3oLVzJGjClkwTHAtuDaU/Aa9xMQinjj/yspHfUQiRjNhdYJM
-         wYZg==
-X-Gm-Message-State: ANhLgQ00kUjeMHQGAejSlrCu6gH4GgPEpX+c7A+WlEAjCiQfUeYd+otR
-        VPfLukWqnTfpcJ08+Unujg0=
-X-Google-Smtp-Source: ADFU+vv0+KJgfK6kHs0v647YRfmLYrRdEqeK5RAmb2w2EnOCUK3b8p8EaGlUogz99eMAbeNRekNTjg==
-X-Received: by 2002:a17:90b:1889:: with SMTP id mn9mr17983892pjb.85.1584860198569;
-        Sat, 21 Mar 2020 23:56:38 -0700 (PDT)
-Received: from localhost (216.24.188.11.16clouds.com. [216.24.188.11])
-        by smtp.gmail.com with ESMTPSA id r14sm8877530pjj.48.2020.03.21.23.56.37
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 21 Mar 2020 23:56:38 -0700 (PDT)
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net,
-        gregkh@linuxfoundation.org, broonie@kernel.org,
-        alexios.zavras@intel.com, tglx@linutronix.de,
-        mchehab+samsung@kernel.org, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH net-next v4 9/9] net: phy: tja11xx: use phy_read_poll_timeout() to simplify the code
-Date:   Sun, 22 Mar 2020 14:55:55 +0800
-Message-Id: <20200322065555.17742-10-zhengdejin5@gmail.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200322065555.17742-1-zhengdejin5@gmail.com>
-References: <20200322065555.17742-1-zhengdejin5@gmail.com>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=8H+ZxvVVLEf1sn4M+jADRlnacqoZ3lSMMd7kp5U9RKI=;
+        b=KPefFhCSMqVrAiq8necLdC+x6LCbTlhtfXDKz5oy5/N31q2zaEApzhxq6AekUHsQRz
+         Qxa/2ZyVV93BsRXn+QING7UQ+G8ARMlh5XiFR7jXULx4yXePeSOnXfUECkyOG3d7chtv
+         0sj0wH9RVSLX01pikmt3cON+zp4Rsbk+G4ZV+3UfsJtg2x+CKfIAc+tmLSLsAGJwnq1E
+         qa6JaxIChkKQkdH4uZPSyRxMvOf+Vi8z2aX6FAMliBKvJat8MotWDws/WOeqU3bEoigY
+         pjg4SfJSuGaTCJ50/hjmsS0YtWsdbcZPc0HKArEdaK69GgLJUETS32Lsu9HTNXLPqiUx
+         bBqA==
+X-Gm-Message-State: ANhLgQ2zSMCIIlnh4g1g6gwZaRz0VOZZI+IMzbL2x+IiiLIM3waQQyws
+        KXF7MohStw2wjjpIC65ACaBZe5sPP38p+AfVEiPLahefrXNy
+X-Google-Smtp-Source: ADFU+vvIFTtvKwJU396waC62o4+9tlw5aZYfAr7eL4DgL4YwSOJjDROpLIdkgAFOw9HEhlZhSWC/8N4NpyRvDPpo0+fwEiVh790Z
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a92:8dc3:: with SMTP id w64mr14333976ill.68.1584861484221;
+ Sun, 22 Mar 2020 00:18:04 -0700 (PDT)
+Date:   Sun, 22 Mar 2020 00:18:04 -0700
+In-Reply-To: <CADG63jCpZWBjtJH_rjzBjTyTfYV0z9SHf1CzT9ic0-VY5C4AiQ@mail.gmail.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c909b405a16c5105@google.com>
+Subject: Re: WARNING: refcount bug in sctp_wfree
+From:   syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>
+To:     anenbupt@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
+        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
+        nhorman@tuxdriver.com, syzkaller-bugs@googlegroups.com,
+        vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-use phy_read_poll_timeout() to replace the poll codes for
-simplify tja11xx_check() function.
+Hello,
 
-Suggested-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
----
-v3 -> v4:
-	- add this patch by Andrew's suggestion. Thanks Andrew!
+syzbot has tested the proposed patch and the reproducer did not trigger crash:
 
- drivers/net/phy/nxp-tja11xx.c | 16 +++-------------
- 1 file changed, 3 insertions(+), 13 deletions(-)
+Reported-and-tested-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
 
-diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-index b705d0bd798b..32ef32a4af3c 100644
---- a/drivers/net/phy/nxp-tja11xx.c
-+++ b/drivers/net/phy/nxp-tja11xx.c
-@@ -72,20 +72,10 @@ static struct tja11xx_phy_stats tja11xx_hw_stats[] = {
- 
- static int tja11xx_check(struct phy_device *phydev, u8 reg, u16 mask, u16 set)
- {
--	int i, ret;
--
--	for (i = 0; i < 200; i++) {
--		ret = phy_read(phydev, reg);
--		if (ret < 0)
--			return ret;
--
--		if ((ret & mask) == set)
--			return 0;
--
--		usleep_range(100, 150);
--	}
-+	int val;
- 
--	return -ETIMEDOUT;
-+	return phy_read_poll_timeout(phydev, reg, val, (val & mask) == set,
-+				     150, 30000);
- }
- 
- static int phy_modify_check(struct phy_device *phydev, u8 reg,
--- 
-2.25.0
+Tested on:
 
+commit:         573a2520 datamsg_list
+git tree:       https://github.com/hqj/hqjagain_test.git datamsg_list
+kernel config:  https://syzkaller.appspot.com/x/.config?x=6dfa02302d6db985
+dashboard link: https://syzkaller.appspot.com/bug?extid=cea71eec5d6de256d54d
+compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+
+Note: testing is done by a robot and is best-effort only.
