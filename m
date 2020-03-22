@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7920B18EB1B
+	by mail.lfdr.de (Postfix) with ESMTP id 048DA18EB1A
 	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 18:51:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727068AbgCVRuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727100AbgCVRuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sun, 22 Mar 2020 13:50:15 -0400
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:54332 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727036AbgCVRuJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 13:50:09 -0400
-Received: by mail-pj1-f67.google.com with SMTP id np9so5010962pjb.4;
-        Sun, 22 Mar 2020 10:50:08 -0700 (PDT)
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:36510 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726810AbgCVRuN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 13:50:13 -0400
+Received: by mail-pj1-f66.google.com with SMTP id nu11so4956397pjb.1;
+        Sun, 22 Mar 2020 10:50:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=EW5XLK9JrPHqzxs/NVCXKQ0OXP2FtbApwSHVemtiYBc=;
-        b=Scc6yoHCUc5Ttdxmq8ORfcZ3QQR97YVqSsWSGI35vQORCr7dzC/8/k0S0O+PzF3Wgk
-         NRgLWfbIfLTWhWKFMLWpoGhZKFp4buRqQrHvMSmbcTjUkiq1m3ycPx8PWpjqDyqxrr6S
-         BbH85S5DrTpneMigsd6oP4jSgLvRtz64G21PeiU7Liwmv4qfWR7LYnc3mjVGDLKg2QyZ
-         yqzWSAC7SXIehzyky8JkvvlUxEfABJVYqRMfP4UprNOb/7q/dLczCm6w1MdHlFPw8xkg
-         oDwc2YTY1i1ZIXT4y3+iCTX6AgmPvE2gbU7VPUh8df5eHhvgk79RY0CMs8IhdLQEZwKi
-         1V8Q==
+        bh=n2XYXavZMeYoAHc5mBv6tNDgFoTw76pNiSWNX3EEa9Q=;
+        b=pcxm9UqZ/HAL0OwPYcs8XshKDVUzxHE5vqSAML7ZGwDWBL87tX9LzqHPxf0Vr9ROoP
+         fAsu/S9YFGMA2SkRtG68jKO1/HLH76jlrqZws/qJM5AI1PnjFXYLGdd9QahqogxEHgAt
+         i8Uzzb2ffn35pW1gFKRQNkoe9jIYY4t6d0d07+a7wNK8hoscfFFmnSVkbY9gv1fdJ1Y8
+         vMO0skSFZ/HJnd+/S4PdIiPV/YSUSffvpNfYFXsuxgW6ocqKUEOaiR/k79Oi42VQyP2Y
+         Q93DMXy7n3V+Kv3RrcTZaZViZDsRHRRaGx55jufJwy9vPIXMSMqQ2pkFDpCY/fRGytmV
+         F0iA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=EW5XLK9JrPHqzxs/NVCXKQ0OXP2FtbApwSHVemtiYBc=;
-        b=RGHxVktoSDT99MhQ6j+pTa/9iiSPXZIuCVjr1N/NxFOJKjNv6OTDNUili9BE15Ymv3
-         99DZrUtoDuW3ZKSGU6MoRRxJ3B+TKgID7/3sKY/rhei4Ww7rygjtik8gjoaNzUHSYC4b
-         mfQmPjFf5LVneFd7DAzSS2ydd7Qcg1d3XnuPIAnBFYJUy6XRwrFalHyDAKc18UzhGV8H
-         TwG5dFeSP3NavYh6i5ScX+fCcHxNkM70Z9FCIRJ6Ss7kfdtlovYzu4YenThJ4ZiL1dzb
-         GLr3ocptpRYH9PwQoOyICbmNUpNeemi04CJoDJV1LVV+aiVEpmrNqXTOmK8wkS7tzBCu
-         XOpw==
-X-Gm-Message-State: ANhLgQ3LuP/CA/ANuRlJ5AdkYg10bOt0ISz4km/mjxvK8zM89nMasXck
-        bx4TsFlp73+JkFvHwyWFo58=
-X-Google-Smtp-Source: ADFU+vt6phtugyviM9LoZ112CZOqpzA/IfsyBe5FY8nK/4NTIvqci95/BX6rOYgi4+B7yFs9HDOHpQ==
-X-Received: by 2002:a17:902:7d97:: with SMTP id a23mr16462613plm.31.1584899408179;
-        Sun, 22 Mar 2020 10:50:08 -0700 (PDT)
-Received: from localhost ([216.24.188.11])
-        by smtp.gmail.com with ESMTPSA id s15sm11168314pfd.164.2020.03.22.10.50.07
+        bh=n2XYXavZMeYoAHc5mBv6tNDgFoTw76pNiSWNX3EEa9Q=;
+        b=IuvIB8dkMoy3ivp0cLdfHl6nOZyWlrT4Oah9Yb4wn0Ym4Yn+4ePiotG/L9OhUOJUuG
+         Pg/ew2jmptsKxZV0JIemLWDA2h7D6HrWuQ5vtvzZKEhwC8ecmSyuPfB8u24V4bWbLTx2
+         8wD1mo0/W52rJw6kED4bMoO1/KcNBL2mY0MMv4Ht/a6ICHB+Agy0H+toHLkUq8h+GCPN
+         mxceKJZuO0n6FLWP8tGJubuVM5NZNoasSbDwi/I/iPmlV87ut61F4izoKemT3dN9ZJQJ
+         Df6bbEZ7VUZ0LtWL3Q0S/Zt4gbd8ZSntOBDAUKj9iKdEbmSLsc40ZeCIWAX6HQIRm3f+
+         Cpvw==
+X-Gm-Message-State: ANhLgQ3KAUIqX8cIlCPnTH6nZKhLGxaBGEkehcwnEzR99JjkRNAUOGcw
+        q6Wg1x8JT9MBJYYlHXn6IzA=
+X-Google-Smtp-Source: ADFU+vvZo/GquTPYaiXgc6x6RKv+XMsH+z54GAX/IH3g5frJzPtJbDNf3qiNbeVAxAk3xrIiVwV54Q==
+X-Received: by 2002:a17:90a:8806:: with SMTP id s6mr21311160pjn.141.1584899412228;
+        Sun, 22 Mar 2020 10:50:12 -0700 (PDT)
+Received: from localhost (216.24.188.11.16clouds.com. [216.24.188.11])
+        by smtp.gmail.com with ESMTPSA id nk12sm1366666pjb.41.2020.03.22.10.50.11
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 22 Mar 2020 10:50:07 -0700 (PDT)
+        Sun, 22 Mar 2020 10:50:11 -0700 (PDT)
 From:   Dejin Zheng <zhengdejin5@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         linux@armlinux.org.uk, davem@davemloft.net,
@@ -51,9 +51,9 @@ To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         gregkh@linuxfoundation.org, broonie@kernel.org, tglx@linutronix.de,
         netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH net-next v5 04/10] net: phy: bcm84881: use phy_read_mmd_poll_timeout() to simplify the code
-Date:   Mon, 23 Mar 2020 01:49:37 +0800
-Message-Id: <20200322174943.26332-5-zhengdejin5@gmail.com>
+Subject: [PATCH net-next v5 05/10] net: phy: aquantia: use phy_read_mmd_poll_timeout() to simplify the code
+Date:   Mon, 23 Mar 2020 01:49:38 +0800
+Message-Id: <20200322174943.26332-6-zhengdejin5@gmail.com>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200322174943.26332-1-zhengdejin5@gmail.com>
 References: <20200322174943.26332-1-zhengdejin5@gmail.com>
@@ -65,7 +65,7 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 use phy_read_mmd_poll_timeout() to replace the poll codes for
-simplify bcm84881_wait_init() function.
+simplify aqr107_wait_reset_complete() function.
 
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
@@ -80,48 +80,34 @@ v2 -> v3:
 v1 -> v2:
 	- remove the handle of phy_read_mmd's return error.
 
- drivers/net/phy/bcm84881.c | 27 ++++-----------------------
- 1 file changed, 4 insertions(+), 23 deletions(-)
+ drivers/net/phy/aquantia_main.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/phy/bcm84881.c b/drivers/net/phy/bcm84881.c
-index 14d55a77eb28..b70be775909c 100644
---- a/drivers/net/phy/bcm84881.c
-+++ b/drivers/net/phy/bcm84881.c
-@@ -22,30 +22,11 @@ enum {
- 
- static int bcm84881_wait_init(struct phy_device *phydev)
+diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_main.c
+index 31927b2c7d5a..db3e20938729 100644
+--- a/drivers/net/phy/aquantia_main.c
++++ b/drivers/net/phy/aquantia_main.c
+@@ -451,16 +451,11 @@ static int aqr107_set_tunable(struct phy_device *phydev,
+  */
+ static int aqr107_wait_reset_complete(struct phy_device *phydev)
  {
--	unsigned int tries = 20;
--	int ret, val;
+-	int val, retries = 100;
 -
 -	do {
--		val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1);
--		if (val < 0) {
--			ret = val;
--			break;
--		}
--		if (!(val & MDIO_CTRL1_RESET)) {
--			ret = 0;
--			break;
--		}
--		if (!--tries) {
--			ret = -ETIMEDOUT;
--			break;
--		}
--		msleep(100);
--	} while (1);
+-		val = phy_read_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_FW_ID);
+-		if (val < 0)
+-			return val;
+-		msleep(20);
+-	} while (!val && --retries);
 +	int val;
  
--	if (ret)
--		phydev_err(phydev, "%s failed: %d\n", __func__, ret);
--
--	return ret;
-+	return phy_read_mmd_poll_timeout(phydev, MDIO_MMD_PMAPMD, MDIO_CTRL1,
-+					 val, !(val & MDIO_CTRL1_RESET),
-+					 100000, 2000000);
+-	return val ? 0 : -ETIMEDOUT;
++	return phy_read_mmd_poll_timeout(phydev, MDIO_MMD_VEND1,
++					 VEND1_GLOBAL_FW_ID, val,
++					 val != 0, 20000, 2000000);
  }
  
- static int bcm84881_config_init(struct phy_device *phydev)
+ static void aqr107_chip_info(struct phy_device *phydev)
 -- 
 2.25.0
 
