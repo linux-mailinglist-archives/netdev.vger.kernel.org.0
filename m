@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7075518EBA3
+	by mail.lfdr.de (Postfix) with ESMTP id E198D18EBA4
 	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 19:50:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbgCVSuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 14:50:23 -0400
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:54605 "EHLO
+        id S1726843AbgCVSu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 14:50:26 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:54005 "EHLO
         out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726781AbgCVSuW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 14:50:22 -0400
+        by vger.kernel.org with ESMTP id S1726816AbgCVSuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 14:50:23 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 5B1FC5C0184;
-        Sun, 22 Mar 2020 14:50:21 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 155EC5C018A;
+        Sun, 22 Mar 2020 14:50:23 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Sun, 22 Mar 2020 14:50:21 -0400
+  by compute4.internal (MEProxy); Sun, 22 Mar 2020 14:50:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=gKSRLccwuawaBEtabKkT8qPkcTOwDwlIPXlH9lzDgls=; b=h44dgODN
-        3b/a6CNLvrm7oM2KR6RegSOjhKQtHYC1KEj1ZS/+Q4GoVq+5vkbAtdvJ/rhZ74g2
-        +STEe8HZKSVjO430eHBLM7JY4b9X8uKPXpHtOjDncvV8/BHQrw0bTwcbvQVgs7/u
-        +FLIBxIdBol2+knjCxpWgofUONSWVgJCusQZ5AJX1zs2Kmyj2kErhkAP7GMGr8It
-        FhXVqydHH+kLbWStPeh6He23loOiql1IjrfnJzCjzCsgmgidM/YFRMt5QTaV1SS3
-        cZxUXvQtKCWRhtqjHT6YWdMJWdEZ8WKSpF+Qv/uG7qJQynL90IcZxowRiP+0molN
-        aTshTlaxhjNyqg==
-X-ME-Sender: <xms:bbN3XklHDRz8ceJkFB8zaYT51kAEGRlNuQBZ5dakfMdfG6O3fZ-bsg>
+        fm2; bh=dHEPcc01oQJnt4NsTA+REvUxuKYTuSCMdprnGIX4gdM=; b=JOqv2wNE
+        hHH2dPjyCPMXh7eRMhEy8K5/NPb1u8dd4tMsnPZQ8sBraUSqMTs8ug5GYVClOFRU
+        oU3VJgcabaHRa25Vhb3TKmJBqMbThToTTHKhY2H9kTn5CpyLzD+oVP68ji9QoEeT
+        TmqABBlwPzG1xLBeiIEj+AmQ8XwHSmfCJa/BsUOURA87K5PwOFkpvLALT09o9OvM
+        l7AyHUOojmJoVonvm6EeT3Nw9D/uJYbDNmpZX8kpxuvbOBykGInhinekPLv6JzIa
+        ma4rese4p4nY3FV1bja7BLn5sUInYAUsTpcWGPY0NwtV/rJsYLhq6NgZOSbidqFC
+        SJoMu7X8GClOoA==
+X-ME-Sender: <xms:brN3Xsarc6ynHR4h5u0BmDJ1bUdnln_AU4ksVv2B0cy8T--sHCrpHg>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudegiedguddvtdcutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
@@ -35,20 +35,20 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudegiedguddvtdcutefuodetgg
     ohhstghhrdhorhhgqeenucfkphepjeelrddukedtrdelgedrvddvheenucevlhhushhtvg
     hrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhs
     tghhrdhorhhg
-X-ME-Proxy: <xmx:bbN3Xkm_dEtriXtNZEzK3Y4Ni_xTbktpx0Nhm1CEnkyVyXqYQkTbcA>
-    <xmx:bbN3XuwmDTm8LCBABTqe3UOjqMyh3jCZ8i15pKKhaEXDeUh-t8aU9Q>
-    <xmx:bbN3XhoRKrN4FpXUQbG0E_ISu6D_pUdUeKBvhPVFZXkQHCbd_UIeug>
-    <xmx:bbN3XtZT4iI3cptufTWdq0V7tu_Svl1ieU_6iMEIlhpWrUMT7xSo0w>
+X-ME-Proxy: <xmx:brN3Xk6365dCNZudVzC79hR-bCPm-T2c31HHUynPB12hZgWppogpiQ>
+    <xmx:brN3XjA2aiAgOluMXx88_xkSDXUPzJEFB-aeVhul66ZahOnlrZ_qeQ>
+    <xmx:brN3Xj4amWwFaKLItGSK5oZfz9cSazue6scn_iRTGlY6aetKzniIZg>
+    <xmx:b7N3XlleAdBvLTLhAGehqj54-CReEt8G4M6pOzRjh1iTWGlxWKUSIQ>
 Received: from splinter.mtl.com (bzq-79-180-94-225.red.bezeqint.net [79.180.94.225])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 176AC3280063;
-        Sun, 22 Mar 2020 14:50:19 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 8BC84328005A;
+        Sun, 22 Mar 2020 14:50:21 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, kuba@kernel.org,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 2/5] mlxsw: spectrum_trap: Explicitly register packet trap groups
-Date:   Sun, 22 Mar 2020 20:48:27 +0200
-Message-Id: <20200322184830.1254104-3-idosch@idosch.org>
+Subject: [PATCH net-next 3/5] netdevsim: Explicitly register packet trap groups
+Date:   Sun, 22 Mar 2020 20:48:28 +0200
+Message-Id: <20200322184830.1254104-4-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200322184830.1254104-1-idosch@idosch.org>
 References: <20200322184830.1254104-1-idosch@idosch.org>
@@ -69,72 +69,63 @@ associated policer identifier.
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 30 +++++++++++++++++--
- 1 file changed, 27 insertions(+), 3 deletions(-)
+ drivers/net/netdevsim/dev.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 9c300d625e04..cf3891609d5c 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -165,6 +165,13 @@ static void mlxsw_sp_rx_exception_listener(struct sk_buff *skb, u8 local_port,
- 	MLXSW_RXL(mlxsw_sp_rx_exception_listener, _id,			      \
- 		   _action, false, SP_##_group_id, SET_FW_DEFAULT)
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index f81c47377f32..edeb61ddc8bc 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -397,6 +397,13 @@ enum {
+ 			    DEVLINK_TRAP_GROUP_GENERIC(_group_id),	      \
+ 			    NSIM_TRAP_METADATA)
  
-+static const struct devlink_trap_group mlxsw_sp_trap_groups_arr[] = {
++static const struct devlink_trap_group nsim_trap_groups_arr[] = {
 +	DEVLINK_TRAP_GROUP_GENERIC(L2_DROPS),
 +	DEVLINK_TRAP_GROUP_GENERIC(L3_DROPS),
-+	DEVLINK_TRAP_GROUP_GENERIC(TUNNEL_DROPS),
++	DEVLINK_TRAP_GROUP_GENERIC(BUFFER_DROPS),
 +	DEVLINK_TRAP_GROUP_GENERIC(ACL_DROPS),
 +};
 +
- static const struct devlink_trap mlxsw_sp_traps_arr[] = {
- 	MLXSW_SP_TRAP_DROP(SMAC_MC, L2_DROPS),
- 	MLXSW_SP_TRAP_DROP(VLAN_TAG_MISMATCH, L2_DROPS),
-@@ -318,6 +325,7 @@ static int mlxsw_sp_trap_dummy_group_init(struct mlxsw_sp *mlxsw_sp)
+ static const struct devlink_trap nsim_traps_arr[] = {
+ 	NSIM_TRAP_DROP(SMAC_MC, L2_DROPS),
+ 	NSIM_TRAP_DROP(VLAN_TAG_MISMATCH, L2_DROPS),
+@@ -556,10 +563,15 @@ static int nsim_dev_traps_init(struct devlink *devlink)
+ 	nsim_trap_data->nsim_dev = nsim_dev;
+ 	nsim_dev->trap_data = nsim_trap_data;
  
- int mlxsw_sp_devlink_traps_init(struct mlxsw_sp *mlxsw_sp)
- {
-+	size_t groups_count = ARRAY_SIZE(mlxsw_sp_trap_groups_arr);
- 	struct devlink *devlink = priv_to_devlink(mlxsw_sp->core);
- 	int err;
- 
-@@ -333,17 +341,33 @@ int mlxsw_sp_devlink_traps_init(struct mlxsw_sp *mlxsw_sp)
- 		    ARRAY_SIZE(mlxsw_sp_listeners_arr)))
- 		return -EINVAL;
- 
--	return devlink_traps_register(devlink, mlxsw_sp_traps_arr,
--				      ARRAY_SIZE(mlxsw_sp_traps_arr),
--				      mlxsw_sp);
-+	err = devlink_trap_groups_register(devlink, mlxsw_sp_trap_groups_arr,
-+					   groups_count);
++	err = devlink_trap_groups_register(devlink, nsim_trap_groups_arr,
++					   ARRAY_SIZE(nsim_trap_groups_arr));
 +	if (err)
-+		return err;
++		goto err_trap_items_free;
 +
-+	err = devlink_traps_register(devlink, mlxsw_sp_traps_arr,
-+				     ARRAY_SIZE(mlxsw_sp_traps_arr), mlxsw_sp);
-+	if (err)
-+		goto err_traps_register;
-+
-+	return 0;
-+
-+err_traps_register:
-+	devlink_trap_groups_unregister(devlink, mlxsw_sp_trap_groups_arr,
-+				       groups_count);
-+	return err;
+ 	err = devlink_traps_register(devlink, nsim_traps_arr,
+ 				     ARRAY_SIZE(nsim_traps_arr), NULL);
+ 	if (err)
+-		goto err_trap_items_free;
++		goto err_trap_groups_unregister;
+ 
+ 	INIT_DELAYED_WORK(&nsim_dev->trap_data->trap_report_dw,
+ 			  nsim_dev_trap_report_work);
+@@ -568,6 +580,9 @@ static int nsim_dev_traps_init(struct devlink *devlink)
+ 
+ 	return 0;
+ 
++err_trap_groups_unregister:
++	devlink_trap_groups_unregister(devlink, nsim_trap_groups_arr,
++				       ARRAY_SIZE(nsim_trap_groups_arr));
+ err_trap_items_free:
+ 	kfree(nsim_trap_data->trap_items_arr);
+ err_trap_data_free:
+@@ -582,6 +597,8 @@ static void nsim_dev_traps_exit(struct devlink *devlink)
+ 	cancel_delayed_work_sync(&nsim_dev->trap_data->trap_report_dw);
+ 	devlink_traps_unregister(devlink, nsim_traps_arr,
+ 				 ARRAY_SIZE(nsim_traps_arr));
++	devlink_trap_groups_unregister(devlink, nsim_trap_groups_arr,
++				       ARRAY_SIZE(nsim_trap_groups_arr));
+ 	kfree(nsim_dev->trap_data->trap_items_arr);
+ 	kfree(nsim_dev->trap_data);
  }
- 
- void mlxsw_sp_devlink_traps_fini(struct mlxsw_sp *mlxsw_sp)
- {
-+	size_t groups_count = ARRAY_SIZE(mlxsw_sp_trap_groups_arr);
- 	struct devlink *devlink = priv_to_devlink(mlxsw_sp->core);
- 
- 	devlink_traps_unregister(devlink, mlxsw_sp_traps_arr,
- 				 ARRAY_SIZE(mlxsw_sp_traps_arr));
-+	devlink_trap_groups_unregister(devlink, mlxsw_sp_trap_groups_arr,
-+				       groups_count);
- }
- 
- int mlxsw_sp_trap_init(struct mlxsw_core *mlxsw_core,
 -- 
 2.24.1
 
