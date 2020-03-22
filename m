@@ -2,117 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A54D418EC09
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 20:54:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 330C318EC14
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 21:16:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726843AbgCVTyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 15:54:05 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:41943 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726756AbgCVTyE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 15:54:04 -0400
-Received: by mail-ed1-f68.google.com with SMTP id v6so13921219edw.8
-        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 12:54:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=M56HRF7yj/zQ5PGc20FmyrfbsQ5EgKKx23a3WTtVBJQ=;
-        b=XcmGVj1hrdeLjEKSi5tQOUnu7ERBEz+ZF6JdVlt4uRHYtwyferdXLe66o5dGOHHDep
-         eyecV7GiWp9JvL82R8AHqwrhdu0yjeQOrVMatDskha/rVKoIGyHsanNi5n/C5CGclEJb
-         FouOB+HIoYUAuW+akQdJ0YDP6kTRjoX1U/BpzlWhtL8GTIeP/OOHxsR87RXI0aMNpVaC
-         h3MGruOIwZg8aUI1TSNCy57x6QqSBPmHf3HNFboT4xu5ht0dY1DsSpD9jofUrEeL6K3s
-         OqWVioVGM8anUn3iejw1mbpfy9VRuP7lYc+4xEnVEOTIcaGFg/yrZbSAmIl3wfeQsjbx
-         Wp9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=M56HRF7yj/zQ5PGc20FmyrfbsQ5EgKKx23a3WTtVBJQ=;
-        b=GjtDRExtabNbIAtJO+75VJ4leD1OA/IwOMTAR5Z0sqd+Ed7PyXeJM0Ys4n/sZ/WZ3D
-         c/nff9UkQrxVCraHRW5Efem+oLn3qDDSMJmiZh5njMw8b/pMLMSRVUA9b9r0cu0ilmLp
-         n2Rd5TkedbPykD3RE61+9w5gkvzUVY5EGp5qHOMjukZQahecrSyFhz0D8hyAtJUQ9Mx6
-         sKNWoTQvenMiZlPSPOwsuNI3HMTDTdLiz9/aLhb6PUEEEQgOWY9m5YF6u0nMCDctdIQo
-         nLqwlgBFZaOECBw/OZGLekHvL3kC4bPSfqtATcAFrwRu/vUIWwe7EBIkck5+9W74AgS4
-         6MDQ==
-X-Gm-Message-State: ANhLgQ1aIJgnprrPQH+NkCTPQLVIZyHDNCy+9J0bcExZq0H5E0HeAodq
-        L67ZffjznihPPmNhjJmuik6cyZPZRMTud9qru8xuLzIYp2o=
-X-Google-Smtp-Source: ADFU+vt0zBK4ShOMlyQXa7bRCXWxpXFFTK3Dg8a3Jxf0CA/rX4o0oGGXp3bi7QC1H9DdbJO8Ims9vEB2TwGXaxT+wqA=
-X-Received: by 2002:a05:6402:1a27:: with SMTP id be7mr2029437edb.241.1584906842303;
- Sun, 22 Mar 2020 12:54:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200228.120150.302053489768447737.davem@davemloft.net>
- <1583131910-29260-1-git-send-email-kyk.segfault@gmail.com>
- <CABGOaVRdsw=4nqBMR0h8JPEiunOEpHR+02H=HRbgt_TxhVviiA@mail.gmail.com>
- <945f6cafc86b4f1bb18fa40e60d5c113@AcuMS.aculab.com> <CABGOaVQMq-AxwQOJ5DdDY6yLBOXqBg6G7qC_MdOYj_z4y-QQiw@mail.gmail.com>
- <de1012794ec54314b6fe790c01dee60b@AcuMS.aculab.com> <CABGOaVSddVL-T-Sz_GPuRoZbKM_HsZND84rJUm2G9RRw6cUwCQ@mail.gmail.com>
- <CA+FuTSc5QVF_kv8FNs03obXGbf6axrG5umCipE=LXvqQ_-hDAA@mail.gmail.com>
- <817a6418ac8742e6bb872992711beb47@AcuMS.aculab.com> <91fafe40-7856-8b22-c279-55df5d06ca39@gmail.com>
- <e8b84bcaee634b53bee797aa041824a4@AcuMS.aculab.com>
-In-Reply-To: <e8b84bcaee634b53bee797aa041824a4@AcuMS.aculab.com>
-From:   Tom Herbert <tom@herbertland.com>
-Date:   Sun, 22 Mar 2020 12:53:50 -0700
-Message-ID: <CALx6S342XSFnZqFJ_jMKuAshSg0g-gcj3eSerADvWi14t+gCiw@mail.gmail.com>
-Subject: Re: [PATCH v2] net: Make skb_segment not to compute checksum if
- network controller supports checksumming
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726797AbgCVUPz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 16:15:55 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42990 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726623AbgCVUPz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Mar 2020 16:15:55 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id DFBABAC92;
+        Sun, 22 Mar 2020 20:15:52 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id E11BAE0FD3; Sun, 22 Mar 2020 21:15:51 +0100 (CET)
+From:   Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH net] ethtool: fix reference leak in some *_SET handlers
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org
+Message-Id: <20200322201551.E11BAE0FD3@unicorn.suse.cz>
+Date:   Sun, 22 Mar 2020 21:15:51 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 6, 2020 at 9:12 AM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Eric Dumazet
-> > Sent: 05 March 2020 17:20
-> >
-> > On 3/5/20 9:00 AM, David Laight wrote:
-> > > From: Willem de Bruijn
-> > >> Sent: 05 March 2020 16:07
-> > > ..
-> > >> It seems do_csum is called because csum_partial_copy executes the
-> > >> two operations independently:
-> > >>
-> > >> __wsum
-> > >> csum_partial_copy(const void *src, void *dst, int len, __wsum sum)
-> > >> {
-> > >>         memcpy(dst, src, len);
-> > >>         return csum_partial(dst, len, sum);
-> > >> }
-> > >
-> > > And do_csum() is superbly horrid.
-> > > Not the least because it is 32bit on 64bit systems.
-> >
-> > There are many versions, which one is discussed here ?
-> >
-> > At least the current one seems to be 64bit optimized.
-> >
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5777eaed566a1d63e344d3dd
-> > 8f2b5e33be20643e
->
-> I was looking at the generic one in $(SRC)/lib/checksum.c.
->
-> FWIW I suspect the fastest code on pre sandy bridge 64bit intel cpus
-> (where adc is 2 clocks) is to do a normal 'add', shift the carries
-> into a 64bit register and do a software 'popcnt' every 512 bytes.
-> That may run at 8 bytes/clock + the popcnt.
+Andrew noticed that some handlers for *_SET commands leak a netdev
+reference if required ethtool_ops callbacks do not exist. A simple
+reproducer would be e.g.
 
-A while back, I had proposed an optimized x86 checksum function using
-unrolled addq a while back https://lwn.net/Articles/679137/. Also,
-this tries to optimize from small checksum like over header when doing
-skb_postpull_rcsum.
+  ip link add veth1 type veth peer name veth2
+  ethtool -s veth1 wol g
+  ip link del veth1
 
-Tom
+Make sure dev_put() is called when ethtool_ops check fails.
 
->
->         David
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
+Reported-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+---
+ net/ethtool/debug.c     | 4 +++-
+ net/ethtool/linkinfo.c  | 4 +++-
+ net/ethtool/linkmodes.c | 4 +++-
+ net/ethtool/wol.c       | 4 +++-
+ 4 files changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/net/ethtool/debug.c b/net/ethtool/debug.c
+index aaef4843e6ba..92599ad7b3c2 100644
+--- a/net/ethtool/debug.c
++++ b/net/ethtool/debug.c
+@@ -107,8 +107,9 @@ int ethnl_set_debug(struct sk_buff *skb, struct genl_info *info)
+ 	if (ret < 0)
+ 		return ret;
+ 	dev = req_info.dev;
++	ret = -EOPNOTSUPP;
+ 	if (!dev->ethtool_ops->get_msglevel || !dev->ethtool_ops->set_msglevel)
+-		return -EOPNOTSUPP;
++		goto out_dev;
+ 
+ 	rtnl_lock();
+ 	ret = ethnl_ops_begin(dev);
+@@ -129,6 +130,7 @@ int ethnl_set_debug(struct sk_buff *skb, struct genl_info *info)
+ 	ethnl_ops_complete(dev);
+ out_rtnl:
+ 	rtnl_unlock();
++out_dev:
+ 	dev_put(dev);
+ 	return ret;
+ }
+diff --git a/net/ethtool/linkinfo.c b/net/ethtool/linkinfo.c
+index 5d16cb4e8693..6e9e0b590bb5 100644
+--- a/net/ethtool/linkinfo.c
++++ b/net/ethtool/linkinfo.c
+@@ -126,9 +126,10 @@ int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info)
+ 	if (ret < 0)
+ 		return ret;
+ 	dev = req_info.dev;
++	ret = -EOPNOTSUPP;
+ 	if (!dev->ethtool_ops->get_link_ksettings ||
+ 	    !dev->ethtool_ops->set_link_ksettings)
+-		return -EOPNOTSUPP;
++		goto out_dev;
+ 
+ 	rtnl_lock();
+ 	ret = ethnl_ops_begin(dev);
+@@ -162,6 +163,7 @@ int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info)
+ 	ethnl_ops_complete(dev);
+ out_rtnl:
+ 	rtnl_unlock();
++out_dev:
+ 	dev_put(dev);
+ 	return ret;
+ }
+diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
+index 96f20be64553..18cc37be2d9c 100644
+--- a/net/ethtool/linkmodes.c
++++ b/net/ethtool/linkmodes.c
+@@ -338,9 +338,10 @@ int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info)
+ 	if (ret < 0)
+ 		return ret;
+ 	dev = req_info.dev;
++	ret = -EOPNOTSUPP;
+ 	if (!dev->ethtool_ops->get_link_ksettings ||
+ 	    !dev->ethtool_ops->set_link_ksettings)
+-		return -EOPNOTSUPP;
++		goto out_dev;
+ 
+ 	rtnl_lock();
+ 	ret = ethnl_ops_begin(dev);
+@@ -370,6 +371,7 @@ int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info)
+ 	ethnl_ops_complete(dev);
+ out_rtnl:
+ 	rtnl_unlock();
++out_dev:
+ 	dev_put(dev);
+ 	return ret;
+ }
+diff --git a/net/ethtool/wol.c b/net/ethtool/wol.c
+index e1b8a65b64c4..55e1ecaaf739 100644
+--- a/net/ethtool/wol.c
++++ b/net/ethtool/wol.c
+@@ -128,8 +128,9 @@ int ethnl_set_wol(struct sk_buff *skb, struct genl_info *info)
+ 	if (ret < 0)
+ 		return ret;
+ 	dev = req_info.dev;
++	ret = -EOPNOTSUPP;
+ 	if (!dev->ethtool_ops->get_wol || !dev->ethtool_ops->set_wol)
+-		return -EOPNOTSUPP;
++		goto out_dev;
+ 
+ 	rtnl_lock();
+ 	ret = ethnl_ops_begin(dev);
+@@ -172,6 +173,7 @@ int ethnl_set_wol(struct sk_buff *skb, struct genl_info *info)
+ 	ethnl_ops_complete(dev);
+ out_rtnl:
+ 	rtnl_unlock();
++out_dev:
+ 	dev_put(dev);
+ 	return ret;
+ }
+-- 
+2.25.1
+
