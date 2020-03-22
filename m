@@ -2,131 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0ECF18EC62
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 22:03:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6967518EC69
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 22:06:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726847AbgCVVDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 17:03:55 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:45744 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726623AbgCVVDy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 17:03:54 -0400
-Received: by mail-pg1-f196.google.com with SMTP id m15so6071537pgv.12;
-        Sun, 22 Mar 2020 14:03:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tIQRWeGBWUxyXabzpdtg+h5FwOjl7zanXR55nlwRkHI=;
-        b=C65FRSUnZW8YgeHep/cksVgsbA9HwkVg7bgIbJ3eHCBNj6FVH9OsYJd9uNfrF46fvd
-         hbTTz56T1BujVjtukonPP1zIzOb4vwDiZ8Be2NEHIX0Qd1yf/A++VXQJkNGel2i/eGyF
-         zxI3/YD4kDqhV7D9IuSWYnVkJAhXEp4iqnmb9vb3rJzpJPL3af8X33xmcMii+vva0oa0
-         KxzfoKZhZN1tho5hTNMFAM1M3hzb3ZAfOKzy39n8WIehvrjCSJEfPjUTvYPQXm0sV/yf
-         KgMyiQIF+vDeMifqfyNBYBqgJeUpIQcQOTFgJ/HSd7cDnZ1CpEmQkzMaPVo0SBkNQ21v
-         6iKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=tIQRWeGBWUxyXabzpdtg+h5FwOjl7zanXR55nlwRkHI=;
-        b=V7yaI/YCUe4HjY0NM+cNKcnnyZlbrPebmixqKBhmGGfmtDwFf6ilJ8tb9Z292Ry6N7
-         erj920FLkD3WcjpGB8puIv2hvF9D53DvzS8YT6yqV8UR+f66XZXrrQedD2XxKX7jqQvM
-         EVMe/hl5L/nxo8NYsenRfMpLh6SebECRDApgdQAxqc12hFiKVDQQfOEbvwAeMlNGTOPA
-         Z/i99r/4gWs2BSV864MbVcAFagUI/KqkUspAc8IxHhQ0ZaxHIcLvK8tCJDRtlHKqLr5S
-         JmcGItArkWHmrGG6sIWzrFfyDDikYDqiq94xlhVMh6s1//vRKRB93lFjNYGIl/7oxoQO
-         beiQ==
-X-Gm-Message-State: ANhLgQ3dH6VtNqVEdRqa3nd7bNLKyZdSrQsyg7lubpxp/PsK0xToOthX
-        koqNWR4Ua8Mc8eDHHPThYLHitvxP
-X-Google-Smtp-Source: ADFU+vuP/3Wgl/7V4YZndoGNsLAPQPGxqmBSTj+1w60JUzqE1+a+ZPiL08o+V5JGhgl1XwGhN7MsuQ==
-X-Received: by 2002:aa7:96f8:: with SMTP id i24mr20993832pfq.321.1584911032969;
-        Sun, 22 Mar 2020 14:03:52 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id j21sm3077959pff.39.2020.03.22.14.03.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 Mar 2020 14:03:52 -0700 (PDT)
-Subject: Re: [PATCH v3 1/2] dt-bindings: net: add marvell usb to mdio bindings
-To:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux-usb@vger.kernel.org
-References: <20200321202443.15352-1-tobias@waldekranz.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <6a7fed40-b609-6f01-cd5f-cfda6aeb202e@gmail.com>
-Date:   Sun, 22 Mar 2020 14:03:51 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.6.0
+        id S1726871AbgCVVGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 17:06:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60696 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726741AbgCVVGZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Mar 2020 17:06:25 -0400
+Received: from kicinski-fedora-PC1C0HJN (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CC45920658;
+        Sun, 22 Mar 2020 21:06:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584911185;
+        bh=tRJ4p7lKYiN6wX+ALChAuCV0TylJs+y6wN/8sB1COwo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gT6DVqwXG6yLiPzou40rj+Z1VEwlqihyMU06pRPfCfRyUk1ddJn3Gk4H87N47oTm+
+         Zy8pT0eVNZu0wu3040m8kefDmZeanKVdGIVN9DImzZYxpffMlY3gFf+5NLU0fs0naU
+         97Wb0Y8d+71NvFeK37zooQERZcA2i7z7pU8sVi2Q=
+Date:   Sun, 22 Mar 2020 14:06:23 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] ethtool: fix reference leak in some *_SET handlers
+Message-ID: <20200322140623.633d3446@kicinski-fedora-PC1C0HJN>
+In-Reply-To: <20200322205109.GF31519@unicorn.suse.cz>
+References: <20200322201551.E11BAE0FD3@unicorn.suse.cz>
+        <20200322134356.55f7d9b8@kicinski-fedora-PC1C0HJN>
+        <20200322205109.GF31519@unicorn.suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <20200321202443.15352-1-tobias@waldekranz.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 3/21/2020 1:24 PM, Tobias Waldekranz wrote:
-> Describe how the USB to MDIO controller can optionally use device tree
-> bindings to reference attached devices such as switches.
+On Sun, 22 Mar 2020 21:51:09 +0100 Michal Kubecek wrote:
+> On Sun, Mar 22, 2020 at 01:43:56PM -0700, Jakub Kicinski wrote:
+> > On Sun, 22 Mar 2020 21:15:51 +0100 (CET) Michal Kubecek wrote:  
+> > > Andrew noticed that some handlers for *_SET commands leak a netdev
+> > > reference if required ethtool_ops callbacks do not exist. A simple
+> > > reproducer would be e.g.
+> > > 
+> > >   ip link add veth1 type veth peer name veth2
+> > >   ethtool -s veth1 wol g
+> > >   ip link del veth1
+> > > 
+> > > Make sure dev_put() is called when ethtool_ops check fails.  
+> > 
+> > Fixes: e54d04e3afea ("ethtool: set message mask with DEBUG_SET request")
+> > Fixes: a53f3d41e4d3 ("ethtool: set link settings with LINKINFO_SET request")
+> > Fixes: bfbcfe2032e7 ("ethtool: set link modes related data with LINKMODES_SET request")
+> > Fixes: 8d425b19b305 ("ethtool: set wake-on-lan settings with WOL_SET request")  
 > 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> Yes, thank you, I forgot about Fixes tags.
+> 
+> Should I resubmit or will patchworks pick the tags from your reply?
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Patchwork sees them, I think, but I don't think it adds them to the
+patch as downloaded by git-pw. Probably easiest to repost.
+
+> > > Reported-by: Andrew Lunn <andrew@lunn.ch>
+> > > Signed-off-by: Michal Kubecek <mkubecek@suse.cz>  
+> > 
+> > Reviewed-by: Jakub Kicinski <kuba@kernel.org>  
+
