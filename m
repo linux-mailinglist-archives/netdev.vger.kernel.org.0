@@ -2,122 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4320B18EC26
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 21:29:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A41E218EC32
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 21:40:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726781AbgCVU3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 16:29:22 -0400
-Received: from mail.aboehler.at ([176.9.113.11]:40622 "EHLO mail.aboehler.at"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726664AbgCVU3W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Mar 2020 16:29:22 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.aboehler.at (Postfix) with ESMTP id CDD74618087E;
-        Sun, 22 Mar 2020 21:29:20 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at aboehler.at
-Received: from mail.aboehler.at ([127.0.0.1])
-        by localhost (aboehler.at [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id qx54ZkCYH61F; Sun, 22 Mar 2020 21:29:19 +0100 (CET)
-Received: from [192.168.17.123] (194-166-175-239.adsl.highway.telekom.at [194.166.175.239])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: andreas@aboehler.at)
-        by mail.aboehler.at (Postfix) with ESMTPSA id F3517618087D;
-        Sun, 22 Mar 2020 21:29:18 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aboehler.at;
-        s=default; t=1584908959;
-        bh=N5/uQZ3MrsyRCx6FrObCdxY9dkhONBvA//kCOhEPgZ0=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=JKPne4akLFQgLFqMUSYJnhcp+j6GGc2YgXpAZ+C5XPEfNRaAYT6meLFoEDOi4hOZn
-         sc8RnattXP8f/YGs3zc/cDw/a3vnrzDt77ry8EtTZZxcAY77QXO9z6FP9lYx7BrZZ8
-         HM2VBt3fXFWNx4CmWj5S4z5BXyp7WwRcj3QYlBco=
-Subject: Re: [RFC] MDIO firmware upload for offloading CPU
-To:     Andrew Lunn <andrew@lunn.ch>
+        id S1726836AbgCVUkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 16:40:37 -0400
+Received: from mail-pg1-f175.google.com ([209.85.215.175]:35390 "EHLO
+        mail-pg1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726741AbgCVUkh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 16:40:37 -0400
+Received: by mail-pg1-f175.google.com with SMTP id 7so6088094pgr.2
+        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 13:40:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=CWuzFcqJV8Ls6188bHkyUnbjA6dvrGLM0dQLoMTDzjg=;
+        b=gtyxbFyZaPs/2mmOSlwUdUWbdbgv/4swbIqgh+HN2QA0yBNbo2V3v8ruu1tMSbx7/q
+         3aQpdZSM9xUIcMeMNp7i0NU41epTzIn3N7J+99BmqWue4KAZn3Fyk76VrPJBYKkcWLYl
+         1/zvH/Qd/KxOrbG5GDHhpSExgOwhe6xAcUIik=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=CWuzFcqJV8Ls6188bHkyUnbjA6dvrGLM0dQLoMTDzjg=;
+        b=efN1oZ0r/ihpJuzEYAh6cm78tLHFlYjfvxYOkww/27PMcEYwtCR9IeMWcCxxGVDQa5
+         QAwRXWcErJu0VwN1lKL9XghyxMYgGenTni7faSwjrFn8+A0keswtLUlJm0iCW1EqbJ58
+         3L9CjbQ9Qrj0JYRgoa4BQgtjkXYZl2K9yLKC2fl3ygPdeh8I1IzQTV8FpBcJoGk7ow0z
+         zMAoILTwuVTQ9OfHlD4LU9MHHs4JtXVqRyfpQPCU/0Ajml530NjcxMk6GNCfglyX5J2R
+         6qSbWOd84VP1Ltz3ase7cNOg4PY2/9FovNu4IqpsMtXtPpgYLmdgkRprgVMTgsUu4E2S
+         lGwg==
+X-Gm-Message-State: ANhLgQ2heB6EV4Jij7dEzR/NxyqtAtEQUsIhh+o+AUjwJAb7gGtTLC0e
+        dlLtKdsj3Mih/v3nY3q/gUfjVbXWQ7A=
+X-Google-Smtp-Source: ADFU+vuXj7kDUtZ8hfjAYQJ6wSo5AWoihbIAh21TdpCggiSUQ33pXk/d3oZ/uQgq/ePh8axf2729YQ==
+X-Received: by 2002:a63:d143:: with SMTP id c3mr18323851pgj.171.1584909635695;
+        Sun, 22 Mar 2020 13:40:35 -0700 (PDT)
+Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y131sm11575843pfb.78.2020.03.22.13.40.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 22 Mar 2020 13:40:35 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org
-References: <27780925-4a60-f922-e1ed-e8e43a9cc8a2@aboehler.at>
- <20200322144306.GI11481@lunn.ch>
-From:   =?UTF-8?Q?Andreas_B=c3=b6hler?= <news@aboehler.at>
-Message-ID: <96bfdd47-80ce-b7fd-75f7-d2ad0705f8bb@aboehler.at>
-Date:   Sun, 22 Mar 2020 21:29:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200322144306.GI11481@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-AT
-Content-Transfer-Encoding: 8bit
+Subject: [PATCH net 0/5] bnxt_en: Bug fixes.
+Date:   Sun, 22 Mar 2020 16:40:00 -0400
+Message-Id: <1584909605-19161-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/03/2020 15:43, Andrew Lunn wrote:
-> On Sun, Mar 22, 2020 at 02:56:40PM +0100, Andreas Böhler wrote:
->> Hi,
->>
->> I'm working on support for AVM FRITZ!Box routers, specifically the 3390
->> and 3490. Both contain two SoCs: A Lantiq VDSL SoC that handles VDSL and
->> Ethernet connections and an Atheros SoC for WiFi. Only the Lantiq has
->> access to flash memory, the Atheros SoC requires firmware to be uploaded.
->>
->> AVM has implemented a two-stage firmware upload: The stage 1 firmware is
->> transferred via MDIO (there is no PHY), the stage 2 firmware is uploaded
->> via Ethernet. I've got basic support up and running, but I'm unsure how
->> to proceed:
->>
->> I implemented a user space utility that uses ioctls to upload the
->> firmware via MDIO. However, this only works when the switch
->> driver/ethernet driver is patched to allow MDIO writes to a fixed PHY
->> (actually, it now allows MDIO writes to an arbitrary address; I patched
->> the out-of-tree xrx200 driver for now). It is important to note that no
->> PHY probing must be done, as this confuses the target.
->>
->> 1. How should firmware uploads via MDIO be performed? Preferably in
->> userspace or in kernel space? Please keep in mind that the protocol is
->> entirely reverse-engineered.
->>
->> 2. If the firmware upload can/should be done in userspace, how do I best
->> get access to the MDIO bus?
->>
->> 3. What would be a suitable way to implement it?
-> 
-> Hi Andreas
-> 
-> You say there is no PHY. So is the MDIO bus used for anything other
-> than firmware upload?
+5 bug fix patches covering an indexing bug for priority counters, memory
+leak when retrieving DCB ETS settings, error path return code, proper
+disabling of PCI before freeing context memory, and proper ring accounting
+in error path.
 
-Yes - there are four other PHYs on the bus, everything is attached to
-the Lantiq Gigabit switch. I wasn't clear enough in this regard.
+Please also apply these to -stable.  Thanks.
 
-> You can control scanning of the MDIO bus using mdio->phy_mask. If you
-> set it to ~0, no scanning will be performed. It will then only probe
-> for devices you have in device tree. If there are no devices on the
-> bus, no probing will happen.
+Edwin Peer (1):
+  bnxt_en: fix memory leaks in bnxt_dcbnl_ieee_getets()
 
-That sounds good.
+Michael Chan (3):
+  bnxt_en: Fix Priority Bytes and Packets counters in ethtool -S.
+  bnxt_en: Return error if bnxt_alloc_ctx_mem() fails.
+  bnxt_en: Free context memory after disabling PCI in probe error path.
 
-> This two stage firmware upload is messy. If it had been just MDIO i
-> would of said do it from the kernel, as part of the Atheros SoC WiFi
-> driver. MDIO is a nice simple interface. Sending Ethernet frames is a
-> bit harder. Still, if you can do it all in the wifi driver, i
-> would. You can use phandle's to get references to the MDIO bus and the
-> Ehernet interface. There are examples of this in net/dsa/dsa2.c.
+Vasundhara Volam (1):
+  bnxt_en: Reset rings if ring reservation fails during open()
 
-A bit more info on the two-stage firmware upload: The Atheros SoC is a
-complete AR9342 or QCA9558 SoC with 64MB or 128MB RAM. The stage 1
-firmware only initializes the Ethernet connection and waits for the
-stage 2 firmware. The latter consists in the vendor implementation of a
-Linux kernel and minimal user space, the wireless cards are then somehow
-"exported" over Ethernet to the Lantiq SoC. On the Lantiq, they look
-like local Atheros interfaces  - it looks a lot like ath9k-htc with a
-different transport
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 28 ++++++++++++++++-------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c     | 15 ++++++++----
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  8 +++----
+ 4 files changed, 35 insertions(+), 18 deletions(-)
 
-My current approach consists of a standalone Linux distribution (OpenWrt
-based) that receives its configuration via Ethernet as stage 2 firmware.
-This makes the second SoC quite capable.
+-- 
+2.5.1
 
-To sum up: I've got two devices on one PCB where only one has access to
-flash memory. The communication is entirely based on MDIO and Ethernet.
-
-Regards,
-Andreas
