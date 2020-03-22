@@ -2,64 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6590818E753
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 08:18:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9BE218E75C
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 08:40:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726583AbgCVHSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 03:18:05 -0400
-Received: from mail-io1-f71.google.com ([209.85.166.71]:41505 "EHLO
-        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725769AbgCVHSF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 03:18:05 -0400
-Received: by mail-io1-f71.google.com with SMTP id n15so8557042iog.8
-        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 00:18:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=8H+ZxvVVLEf1sn4M+jADRlnacqoZ3lSMMd7kp5U9RKI=;
-        b=KPefFhCSMqVrAiq8necLdC+x6LCbTlhtfXDKz5oy5/N31q2zaEApzhxq6AekUHsQRz
-         Qxa/2ZyVV93BsRXn+QING7UQ+G8ARMlh5XiFR7jXULx4yXePeSOnXfUECkyOG3d7chtv
-         0sj0wH9RVSLX01pikmt3cON+zp4Rsbk+G4ZV+3UfsJtg2x+CKfIAc+tmLSLsAGJwnq1E
-         qa6JaxIChkKQkdH4uZPSyRxMvOf+Vi8z2aX6FAMliBKvJat8MotWDws/WOeqU3bEoigY
-         pjg4SfJSuGaTCJ50/hjmsS0YtWsdbcZPc0HKArEdaK69GgLJUETS32Lsu9HTNXLPqiUx
-         bBqA==
-X-Gm-Message-State: ANhLgQ2zSMCIIlnh4g1g6gwZaRz0VOZZI+IMzbL2x+IiiLIM3waQQyws
-        KXF7MohStw2wjjpIC65ACaBZe5sPP38p+AfVEiPLahefrXNy
-X-Google-Smtp-Source: ADFU+vvIFTtvKwJU396waC62o4+9tlw5aZYfAr7eL4DgL4YwSOJjDROpLIdkgAFOw9HEhlZhSWC/8N4NpyRvDPpo0+fwEiVh790Z
+        id S1726561AbgCVHkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 03:40:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60488 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725769AbgCVHkK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 22 Mar 2020 03:40:10 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D93C620753;
+        Sun, 22 Mar 2020 07:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584862809;
+        bh=6OTETLA2Lkag+u/aimImFI5ux+gfx2ImiFuEDDe3dk0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=e19y4T+ODpyqOzHH4FP8h8Ti2ztK3Ecj9Rk9WmTUNiSRMOc8sG7Ybn5g5Yibp2YxL
+         tRUwMvufRiX0wSvfzGLI6GSJWvIupCFwJTREHuq7inZBAaTNk3h+HnsqM5fpZFZsXg
+         1L93YSRZv4Iq897VWMOisEDBIfXwpnbg3KWlEo4Q=
+Date:   Sun, 22 Mar 2020 08:40:06 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, andrew@lunn.ch,
+        f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] net: phy: add marvell usb to mdio controller
+Message-ID: <20200322074006.GB64528@kroah.com>
+References: <20200321202443.15352-1-tobias@waldekranz.com>
+ <20200321202443.15352-2-tobias@waldekranz.com>
 MIME-Version: 1.0
-X-Received: by 2002:a92:8dc3:: with SMTP id w64mr14333976ill.68.1584861484221;
- Sun, 22 Mar 2020 00:18:04 -0700 (PDT)
-Date:   Sun, 22 Mar 2020 00:18:04 -0700
-In-Reply-To: <CADG63jCpZWBjtJH_rjzBjTyTfYV0z9SHf1CzT9ic0-VY5C4AiQ@mail.gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c909b405a16c5105@google.com>
-Subject: Re: WARNING: refcount bug in sctp_wfree
-From:   syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>
-To:     anenbupt@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
-        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
-        nhorman@tuxdriver.com, syzkaller-bugs@googlegroups.com,
-        vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200321202443.15352-2-tobias@waldekranz.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Sat, Mar 21, 2020 at 09:24:43PM +0100, Tobias Waldekranz wrote:
+> An MDIO controller present on development boards for Marvell switches
+> from the Link Street (88E6xxx) family.
+> 
+> Using this module, you can use the following setup as a development
+> platform for switchdev and DSA related work.
+> 
+>    .-------.      .-----------------.
+>    |      USB----USB                |
+>    |  SoC  |      |  88E6390X-DB  ETH1-10
+>    |      ETH----ETH0               |
+>    '-------'      '-----------------'
+> 
+> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> ---
+> 
+> Hi linux-usb,
+> 
+> This is my first ever USB driver, therefore I would really appreciate
+> it if someone could have a look at it from a USB perspective before it
+> is (hopefully) pulled into net-next.
 
-syzbot has tested the proposed patch and the reproducer did not trigger crash:
+From a USB point of view, it looks sane, only one question:
 
-Reported-and-tested-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
+> +static int mvusb_mdio_probe(struct usb_interface *interface,
+> +			    const struct usb_device_id *id)
+> +{
+> +	struct device *dev = &interface->dev;
+> +	struct mvusb_mdio *mvusb;
+> +	struct mii_bus *mdio;
+> +
+> +	mdio = devm_mdiobus_alloc_size(dev, sizeof(*mvusb));
 
-Tested on:
+You allocate a bigger buffer here than the original pointer thinks it is
+pointing to?
 
-commit:         573a2520 datamsg_list
-git tree:       https://github.com/hqj/hqjagain_test.git datamsg_list
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6dfa02302d6db985
-dashboard link: https://syzkaller.appspot.com/bug?extid=cea71eec5d6de256d54d
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+> +	if (!mdio)
+> +		return -ENOMEM;
+> +
+> +	mvusb = mdio->priv;
 
-Note: testing is done by a robot and is best-effort only.
+And then you set this pointer here?
+
+If that's the way this is supposed to work, that's fine, just feels like
+the math is wrong somewhere...
+
+thanks,
+
+greg k-h
