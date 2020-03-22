@@ -2,93 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2E3518E630
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 04:03:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B885218E631
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 04:06:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728295AbgCVDDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 23:03:07 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:46990 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726409AbgCVDDH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 23:03:07 -0400
-Received: by mail-pl1-f194.google.com with SMTP id r3so4295864pls.13;
-        Sat, 21 Mar 2020 20:03:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WMhY0cWXzJNSFE+R5ZlYq8GhanMI8L49EmbBfXYaPc8=;
-        b=t/KT82Ga7Yn3Ujoty56BWTvXREr8JeoHrRRp0wr96qCQfuukSu6qUfuN/qu7BD0NlU
-         yielUgMlLLPY5gfg1Lm3E6IVvpx3DpdV0JzIDQ2xJIRX+Wo9rXJlKL/aoMezchjLyuQH
-         zs1fIVg2qw5nhX7voYVx4UM0ns8zUKsYf+2CF2y/syPLx9TDf55C/3HGPXlawY3fk0E1
-         8+hy72wJHxbVlE1afRfA4m+B7Z3F99RpF/Q9DUutltJ3wljaPbkODrOvV6whOwKVQNMK
-         z6ptX8bpuuio0P2rCK4KNvHX5YT47sS/PlgPKmCWEE0/qyRuBfTNjfYyaQOb3yqtTgcI
-         6Idg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WMhY0cWXzJNSFE+R5ZlYq8GhanMI8L49EmbBfXYaPc8=;
-        b=lSvFG1RRk1672B3RuWSiBDQHKmMRxg5UHXYSRc8q49ZvUYpyhyx+iMXBuTtao6trOG
-         orpDAKYWPEShB/8cCUbRr1Oz4Diw4wgjg/La9tWFq+6VqJvY2iOL4v3Yi+x5I18AEaOn
-         waEKCyWMK4MSKMH8+z48ECZMxrHzj52VKPsCpwlIfGDNdy1Jq9mb4I5OryK+kSaM/aKj
-         JHgszFK3yV2I2es9jnyv8OqmRejNnbEu5ctCFXNYOBRvnYFpkMnyEmHwYR8VdF1xRiJZ
-         scLWPsuNSR+j2mRLd2J9+Nfb8u+Sy29lZW8YL8G+aP5d+r3fekgC2QB5C6F1e8TZn7ng
-         3Ilg==
-X-Gm-Message-State: ANhLgQ0t9hQUK7uBIj4DPgIt83RRLHpm+LAVFV4+3i2G3qzvpOW9zBsG
-        d4n+T2PF5qcy+GHHtwtklnw=
-X-Google-Smtp-Source: ADFU+vshITSurdtD2KIngwe4FgygSTH20ImwzSQ745/COUEW0AiScZmFJalbWz00XwlxWtc9zdvSqA==
-X-Received: by 2002:a17:90a:25c6:: with SMTP id k64mr17610781pje.9.1584846186091;
-        Sat, 21 Mar 2020 20:03:06 -0700 (PDT)
-Received: from localhost ([216.24.188.11])
-        by smtp.gmail.com with ESMTPSA id a19sm9733964pfk.110.2020.03.21.20.03.05
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 21 Mar 2020 20:03:05 -0700 (PDT)
-Date:   Sun, 22 Mar 2020 11:03:01 +0800
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, allison@lohutok.net, corbet@lwn.net,
-        alexios.zavras@intel.com, broonie@kernel.org, tglx@linutronix.de,
-        mchehab+samsung@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 0/7] introduce read_poll_timeout
-Message-ID: <20200322030301.GA31541@nuc8i5>
-References: <20200320133431.9354-1-zhengdejin5@gmail.com>
- <20200321165014.GD22639@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200321165014.GD22639@lunn.ch>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1728096AbgCVDGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 23:06:36 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:34366 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726409AbgCVDGg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 23:06:36 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5337F15AC0C33;
+        Sat, 21 Mar 2020 20:06:35 -0700 (PDT)
+Date:   Sat, 21 Mar 2020 20:06:34 -0700 (PDT)
+Message-Id: <20200321.200634.534398039682553516.davem@davemloft.net>
+To:     kyk.segfault@gmail.com
+Cc:     David.Laight@aculab.com, eric.dumazet@gmail.com,
+        netdev@vger.kernel.org, willemdebruijn.kernel@gmail.com
+Subject: Re: [PATCH v3] net: Make skb_segment not to compute checksum if
+ network controller supports checksumming
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1584434318-27980-1-git-send-email-kyk.segfault@gmail.com>
+References: <20200313.110542.570427563998639331.davem@davemloft.net>
+        <1584434318-27980-1-git-send-email-kyk.segfault@gmail.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sat, 21 Mar 2020 20:06:35 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 21, 2020 at 05:50:14PM +0100, Andrew Lunn wrote:
-> On Fri, Mar 20, 2020 at 09:34:24PM +0800, Dejin Zheng wrote:
-> > This patch sets is introduce read_poll_timeout macro, it is an extension
-> > of readx_poll_timeout macro. the accessor function op just supports only
-> > one parameter in the readx_poll_timeout macro, but this macro can
-> > supports multiple variable parameters for it. so functions like
-> > phy_read(struct phy_device *phydev, u32 regnum) and
-> > phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum) can
-> > use this poll timeout framework.
-> > 
-> > the first patch introduce read_poll_timeout macro, and the second patch
-> > redefined readx_poll_timeout macro by read_poll_timeout(), and the other
-> > patches are examples using read_poll_timeout macro.
-> 
-> You missed lan87xx_read_status(), tja11xx_check(), and mv3310_reset().
-> 
-> If you convert all these, your diffstat might look better.
-> 
->    Andrew
-Hi Andrew:
+From: Yadu Kishore <kyk.segfault@gmail.com>
+Date: Tue, 17 Mar 2020 14:08:38 +0530
 
-ok, Thanks for your reminder, I will do it.
+> 
+>> I think you can rebase and submit against net-next.
+> 
+>> If your patch isn't active in the networking development patchwork instance,
+>> it is not pending to be applied and you must resend it.
+> 
+> Rebasing the patch on net-next and resending it.
+> 
+> Problem:
+> TCP checksum in the output path is not being offloaded during GSO
+> in the following case:
+> The network driver does not support scatter-gather but supports
+> checksum offload with NETIF_F_HW_CSUM.
+> 
+> Cause:
+> skb_segment calls skb_copy_and_csum_bits if the network driver
+> does not announce NETIF_F_SG. It does not check if the driver
+> supports NETIF_F_HW_CSUM.
+> So for devices which might want to offload checksum but do not support SG
+> there is currently no way to do so if GSO is enabled.
+> 
+> Solution:
+> In skb_segment check if the network controller does checksum and if so
+> call skb_copy_bits instead of skb_copy_and_csum_bits.
+> 
+> Testing:
+> Without the patch, ran iperf TCP traffic with NETIF_F_HW_CSUM enabled
+> in the network driver. Observed the TCP checksum offload is not happening
+> since the skbs received by the driver in the output path have
+> skb->ip_summed set to CHECKSUM_NONE.
+> 
+> With the patch ran iperf TCP traffic and observed that TCP checksum
+> is being offloaded with skb->ip_summed set to CHECKSUM_PARTIAL.
+> Also tested with the patch by disabling NETIF_F_HW_CSUM in the driver
+> to cover the newly introduced if-else code path in skb_segment.
+> 
+> Link: https://lore.kernel.org/netdev/CA+FuTSeYGYr3Umij+Mezk9CUcaxYwqEe5sPSuXF8jPE2yMFJAw@mail.gmail.com
+> Signed-off-by: Yadu Kishore <kyk.segfault@gmail.com>
 
-BR,
-Dejin
+Willem, please review and ACK/NACK.
 
+Thank you.
