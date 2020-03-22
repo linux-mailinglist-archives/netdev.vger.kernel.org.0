@@ -2,72 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C86B18E94E
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 15:08:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BC7A18E952
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 15:09:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726783AbgCVOIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 10:08:40 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50212 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725785AbgCVOIj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Mar 2020 10:08:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=/gYOxpupD88wMd0YFCOuEya0uthdMDOWSDl9BR6hXgM=; b=UvsKUUN0c1Bstha/22trqWMeOt
-        +l1WxkRfztCovV7VL3Efg68a9aibsOuKzXyYrIFe5enlWQXqxWnZPP8dj+WG3Of6O5WouTWd66A/s
-        2UobSWScfF9AXJA4Z93tfuGOfaa010JZz6K55/hgTWwrZS6xZtD4xh5EBOOsf2+iYr48=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jG1HJ-0008Uq-0R; Sun, 22 Mar 2020 15:08:37 +0100
-Date:   Sun, 22 Mar 2020 15:08:37 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] ethtool: remove XCVR_DUMMY entries
-Message-ID: <20200322140837.GG11481@lunn.ch>
-References: <44908ff8-22dd-254e-16f8-f45f64e8e98e@gmail.com>
+        id S1726897AbgCVOJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 10:09:16 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:42539 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725785AbgCVOJP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 10:09:15 -0400
+Received: by mail-ed1-f67.google.com with SMTP id b21so13201824edy.9;
+        Sun, 22 Mar 2020 07:09:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pBi9Z1+WU4iatz2iMB4jF1UwMBCBTv6eef7cooUFzms=;
+        b=TJIxq9L5ba4cEhBvxABO8RbqK99o+J/uKW5K1NX4zXF9+ccmgGCPN9xMUi3ODDtmLB
+         PBcy2vAXjGmcFRLGDazaFjQZvbJh+C9y+uSB775OZQa/Bt5Ggi0yydC2VFFqBXH7gj52
+         LqUsLpN7NtK+REuoB0Nv2mBg0qVXg+k4aMoRmFVo+m6xiMAgWrlFo8W/hI4JadSMvf7J
+         bhqnmhjnGg9m1dsznfGJ6HxlhaTKBtn0UWLHwW+Ec8zCodR4zlWgkqxU1ENYrBPSsQ9d
+         UHQONLyRmz2kJCTh6MrOG+d2qEE7dNmpMg8y2pJLEqAK5KvYotdGwiZn02+j2embB16p
+         W3UA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pBi9Z1+WU4iatz2iMB4jF1UwMBCBTv6eef7cooUFzms=;
+        b=J1DcsnXm0zWPVxh2lHFMBcVbWxxwbsnarohsNTjO6RrtJGuYFTwtJGs/2OhcfrXOzS
+         RlBS/Omeza/s6TmtostNIrP4t8e4q39hZlIu8FqEhfA4Wq7VyIEw+kr5JUZlK2eCb2mq
+         SG0EDCTNrQ8BteQJK99BuqMQY4d6k24rJlTYSXPi7UeB0GEWifl8NOMDTu1n3JHXKEJG
+         dm8ZVyS3G7q2cszI2bhGCtIv8lN9JNFwrbBXZyaVBAEjNi0mvQl8rVwy2z3tb8nMvKjg
+         VocdeRbzbMI+JFHC5A7yxaeYsN5z2+aIIZPtnFgadOazp0T1XWQKx/QrCRCaK7TaXHwl
+         eWjQ==
+X-Gm-Message-State: ANhLgQ3D/unUw2dHkkCNc5RqTAWsiaaVgPNebeYhYgcNOu1H/e8JtZ6M
+        DOI7I/rhScA+JTHebTqELMV66jGgG14=
+X-Google-Smtp-Source: ADFU+vuhSK4TFcDIFhTkZwOxUmu0pr1ErNd/GgOB/C6SQTrQ+k1F8Ju8FjeneoUiS7JIUf/BaHIP1g==
+X-Received: by 2002:a17:906:34db:: with SMTP id h27mr15609447ejb.111.1584886152225;
+        Sun, 22 Mar 2020 07:09:12 -0700 (PDT)
+Received: from localhost.localdomain ([2a02:21b0:9002:6131:e6f7:db0e:d6e9:e56e])
+        by smtp.googlemail.com with ESMTPSA id q21sm223858ejb.47.2020.03.22.07.09.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 22 Mar 2020 07:09:11 -0700 (PDT)
+From:   Jean-Philippe Menil <jpmenil@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, jpmenil@gmail.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] bpf: fix build warning - missing prototype
+Date:   Sun, 22 Mar 2020 15:08:44 +0100
+Message-Id: <20200322140844.4674-1-jpmenil@gmail.com>
+X-Mailer: git-send-email 2.25.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <44908ff8-22dd-254e-16f8-f45f64e8e98e@gmail.com>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 22, 2020 at 02:14:20PM +0100, Heiner Kallweit wrote:
-> The transceiver dummy entries are not used any longer, so remove them.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
->  include/uapi/linux/ethtool.h | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-> index d586ee5e1..77721ea36 100644
-> --- a/include/uapi/linux/ethtool.h
-> +++ b/include/uapi/linux/ethtool.h
-> @@ -1673,9 +1673,6 @@ static inline int ethtool_validate_duplex(__u8 duplex)
->  /* Which transceiver to use. */
->  #define XCVR_INTERNAL		0x00 /* PHY and MAC are in the same package */
->  #define XCVR_EXTERNAL		0x01 /* PHY and MAC are in different packages */
-> -#define XCVR_DUMMY1		0x02
-> -#define XCVR_DUMMY2		0x03
-> -#define XCVR_DUMMY3		0x04
+Fix build warning when building net/bpf/test_run.o with W=1 due
+to missing prototype for bpf_fentry_test{1..6}.
 
-Hi Heiner
+These functions are only used in test_run.c so just make them static.
+Therefore inline keyword should sit between storage class and type.
 
-We need to be careful here. This is a UAPI header. The kernel might
-not use them, but is there any user space code using them?
+Signed-off-by: Jean-Philippe Menil <jpmenil@gmail.com>
+---
+ net/bpf/test_run.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-A quick search found:
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index d555c0d8657d..c0dcd29f682c 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -113,32 +113,32 @@ static int bpf_test_finish(const union bpf_attr *kattr,
+  * architecture dependent calling conventions. 7+ can be supported in the
+  * future.
+  */
+-int noinline bpf_fentry_test1(int a)
++static noinline int bpf_fentry_test1(int a)
+ {
+ 	return a + 1;
+ }
+ 
+-int noinline bpf_fentry_test2(int a, u64 b)
++static noinline int bpf_fentry_test2(int a, u64 b)
+ {
+ 	return a + b;
+ }
+ 
+-int noinline bpf_fentry_test3(char a, int b, u64 c)
++static noinline int bpf_fentry_test3(char a, int b, u64 c)
+ {
+ 	return a + b + c;
+ }
+ 
+-int noinline bpf_fentry_test4(void *a, char b, int c, u64 d)
++static noinline int bpf_fentry_test4(void *a, char b, int c, u64 d)
+ {
+ 	return (long)a + b + c + d;
+ }
+ 
+-int noinline bpf_fentry_test5(u64 a, void *b, short c, int d, u64 e)
++static noinline int bpf_fentry_test5(u64 a, void *b, short c, int d, u64 e)
+ {
+ 	return a + (long)b + c + d + e;
+ }
+ 
+-int noinline bpf_fentry_test6(u64 a, void *b, short c, int d, void *e, u64 f)
++static noinline int bpf_fentry_test6(u64 a, void *b, short c, int d, void *e, u64 f)
+ {
+ 	return a + (long)b + c + d + (long)e + f;
+ }
+-- 
+2.25.2
 
-http://www.infradead.org/~tgr/libnl/doc/api/ethtool_8c_source.html
-
-	Andrew
