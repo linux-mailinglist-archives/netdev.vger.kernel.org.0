@@ -2,159 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06A0518EC5A
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 21:57:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B82B618EC5C
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 21:58:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726809AbgCVU52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 16:57:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59550 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726741AbgCVU52 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 22 Mar 2020 16:57:28 -0400
-Received: from kicinski-fedora-PC1C0HJN (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 61F732072D;
-        Sun, 22 Mar 2020 20:57:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584910647;
-        bh=xBvP7Mp+pIHzZ93/dMcpBy8F5PSodaSobgfh0uLPEk8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WtEr6VHXTRjFlG33SYqFSRXXBVc/m3Xif14qnxtNFV0BegVte9pDAUwNwIcksbAl+
-         DjsKQY4TIBmOZZCI8Jzy2C8ym4MEoJNI2wga1RdSR68e5k2FPQ8aC2QvAPiwcrOvck
-         19EQhi2T54Cynr3Qz9GMPN1bAYrng9n45klv0Y/Q=
-Date:   Sun, 22 Mar 2020 13:57:25 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rohit Maheshwari <rohitm@chelsio.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, borisp@mellanox.com,
-        secdev@chelsio.com
-Subject: Re: [PATCH net-next] cxgb4/chcr: nic-tls stats in ethtool
-Message-ID: <20200322135725.6cdc37a8@kicinski-fedora-PC1C0HJN>
-In-Reply-To: <20200321112336.8771-1-rohitm@chelsio.com>
-References: <20200321112336.8771-1-rohitm@chelsio.com>
+        id S1726832AbgCVU6z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 16:58:55 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:37094 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726623AbgCVU6y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 16:58:54 -0400
+Received: by mail-pf1-f194.google.com with SMTP id h72so4222422pfe.4;
+        Sun, 22 Mar 2020 13:58:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IMLZ0a9yOMPWblnaLAzqlRWLtf88wPfDqhG37gOQNuk=;
+        b=WFBT/z8CFtQm6phPQKTIUyucFaGdgTlt1q6FYa2RgS53JvXz3p8S+h1i3stjYASVn+
+         IaMp0ZiEGCAd/XY8zXCGaENsX5ZyCV4WZQCz4K8qVKVbBgDHKH2+GXULD6qVYgktwk1e
+         /+If0+yG1z25xHA+4XFIF2ee5sIX8Oz1G2OmY8xgb+90tuQn/PnMAMNdMewXnQ8Xn8z0
+         MQ/mLP5yWjV2D4py9QTxuPLxAbElOpQFT97xH9tH+9v3/XTNvZs7zhuBYJLa8d4hvsNl
+         3wtkDaPynNmxQ9cz1LaMO7+3A/FzpeDJf+CBRsNMcTQjECIqVL2QOfSnmo+oqhy8d++o
+         qVmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IMLZ0a9yOMPWblnaLAzqlRWLtf88wPfDqhG37gOQNuk=;
+        b=e+O5ix/KtfgzLPq9attDSiuoOQoqy22xY8b38qqWGU6YV0s46LNwJ/kp/0dCF+S89Y
+         nLc2GqesMkZNaqyLE5eGsZdB3f4UseBpioGnTEmMDUKgTYsrp/1v2bWBcoFmsZA67lAh
+         yI1FH2QEL0GCLjd5iejOKW+rYHX3LgRz2atYpIkxrBWWNUjwxi4VpcgIGWbfD2vcOZQ6
+         dH4yfwv7iqHeXQllrZSQOjR0WAgHicFaOgxhdHfuuK3m5Jv2UuWNWVtG0oMx+NdUrScZ
+         P5+a5MFaOL6vkWP7bigdEKfELFFIFDLQr61VxnopQFkq0+Kw69kvbkevTgQfTzfnuawC
+         G1gQ==
+X-Gm-Message-State: ANhLgQ3f+B2RiJiwUmMwwl6mGqzDTLFiPvMz3xWNAahnOOKA+RMc0AXh
+        ou19RTVrhlUcWKPvffgAvubkhyes
+X-Google-Smtp-Source: ADFU+vubUoT94x3ckJ7qc7+kP0RGJgWfhd+AumkXJVpebYPtdxAW+Bexws6df+e+JF8xmM39zWZo9Q==
+X-Received: by 2002:a63:30c4:: with SMTP id w187mr19493066pgw.239.1584910733300;
+        Sun, 22 Mar 2020 13:58:53 -0700 (PDT)
+Received: from localhost.localdomain (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id f127sm11105342pfa.112.2020.03.22.13.58.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 Mar 2020 13:58:52 -0700 (PDT)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     mbizon@freebox.fr, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net] net: dsa: Fix duplicate frames flooded by learning
+Date:   Sun, 22 Mar 2020 13:58:50 -0700
+Message-Id: <20200322205850.3528-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 21 Mar 2020 16:53:36 +0530 Rohit Maheshwari wrote:
-> Included nic tls statistics in ethtool stats.
-> 
-> Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
-> ---
->  .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    | 57 +++++++++++++++++++
->  1 file changed, 57 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-> index 398ade42476c..4998f1d1e218 100644
-> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
-> @@ -134,6 +134,28 @@ static char loopback_stats_strings[][ETH_GSTRING_LEN] = {
->  	"bg3_frames_trunc       ",
->  };
->  
-> +#ifdef CONFIG_CHELSIO_TLS_DEVICE
-> +struct chcr_tls_stats {
-> +	u64 tx_tls_encrypted_packets;
-> +	u64 tx_tls_encrypted_bytes;
-> +	u64 tx_tls_ctx;
-> +	u64 tx_tls_ooo;
-> +	u64 tx_tls_skip_no_sync_data;
-> +	u64 tx_tls_drop_no_sync_data;
-> +	u64 tx_tls_drop_bypass_req;
+When both the switch and the bridge are learning about new addresses,
+switch ports attached to the bridge would see duplicate ARP frames
+because both entities would attempt to send them.
 
-I don't understand why you need to have a structure for this, and then
-you memset it to 0, unnecessarily, but I guess that's just a matter of
-taste.
+Fixes: 5037d532b83d ("net: dsa: add Broadcom tag RX/TX handler")
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ net/dsa/tag_brcm.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-> +};
-> +
-> +static char chcr_tls_stats_strings[][ETH_GSTRING_LEN] = {
-> +	"tx_tls_encrypted_pkts  ",
-> +	"tx_tls_encrypted_bytes ",
-> +	"tx_tls_ctx             ",
-> +	"tx_tls_ooo             ",
-> +	"tx_tls_skip_nosync_data",
-> +	"tx_tls_drop_nosync_data",
-> +	"tx_tls_drop_bypass_req ",
-
-These, however, are not correct - please remove the spaces at the end,
-otherwise your names are different than for other vendors. And there is
-an underscore in the middle of "no_sync".
-
-When you're told to adhere to API recommendation, please adhere to it
-exactly.
-
-> +};
-> +#endif
-> +
->  static const char cxgb4_priv_flags_strings[][ETH_GSTRING_LEN] = {
->  	[PRIV_FLAG_PORT_TX_VM_BIT] = "port_tx_vm_wr",
->  };
-> @@ -144,6 +166,9 @@ static int get_sset_count(struct net_device *dev, int sset)
->  	case ETH_SS_STATS:
->  		return ARRAY_SIZE(stats_strings) +
->  		       ARRAY_SIZE(adapter_stats_strings) +
-> +#ifdef CONFIG_CHELSIO_TLS_DEVICE
-> +		       ARRAY_SIZE(chcr_tls_stats_strings) +
-> +#endif
->  		       ARRAY_SIZE(loopback_stats_strings);
->  	case ETH_SS_PRIV_FLAGS:
->  		return ARRAY_SIZE(cxgb4_priv_flags_strings);
-> @@ -204,6 +229,11 @@ static void get_strings(struct net_device *dev, u32 stringset, u8 *data)
->  		memcpy(data, adapter_stats_strings,
->  		       sizeof(adapter_stats_strings));
->  		data += sizeof(adapter_stats_strings);
-> +#ifdef CONFIG_CHELSIO_TLS_DEVICE
-> +		memcpy(data, chcr_tls_stats_strings,
-> +		       sizeof(chcr_tls_stats_strings));
-> +		data += sizeof(chcr_tls_stats_strings);
-> +#endif
->  		memcpy(data, loopback_stats_strings,
->  		       sizeof(loopback_stats_strings));
->  	} else if (stringset == ETH_SS_PRIV_FLAGS) {
-> @@ -289,6 +319,29 @@ static void collect_adapter_stats(struct adapter *adap, struct adapter_stats *s)
->  	}
->  }
->  
-> +#ifdef CONFIG_CHELSIO_TLS_DEVICE
-> +static void collect_chcr_tls_stats(struct adapter *adap,
-> +				   struct chcr_tls_stats *s)
-> +{
-> +	struct chcr_stats_debug *stats = &adap->chcr_stats;
-> +
-> +	memset(s, 0, sizeof(*s));
-> +
-> +	s->tx_tls_encrypted_packets =
-> +		atomic64_read(&stats->ktls_tx_encrypted_packets);
-> +	s->tx_tls_encrypted_bytes =
-> +		atomic64_read(&stats->ktls_tx_encrypted_bytes);
-> +	s->tx_tls_ctx = atomic64_read(&stats->ktls_tx_ctx);
-> +	s->tx_tls_ooo = atomic64_read(&stats->ktls_tx_ooo);
-> +	s->tx_tls_skip_no_sync_data =
-> +		atomic64_read(&stats->ktls_tx_skip_no_sync_data);
-> +	s->tx_tls_drop_no_sync_data =
-> +		atomic64_read(&stats->ktls_tx_drop_no_sync_data);
-> +	s->tx_tls_drop_bypass_req =
-> +		atomic64_read(&stats->ktls_tx_drop_bypass_req);
-> +}
-> +#endif
-> +
->  static void get_stats(struct net_device *dev, struct ethtool_stats *stats,
->  		      u64 *data)
->  {
-> @@ -307,6 +360,10 @@ static void get_stats(struct net_device *dev, struct ethtool_stats *stats,
->  	data += sizeof(struct queue_port_stats) / sizeof(u64);
->  	collect_adapter_stats(adapter, (struct adapter_stats *)data);
->  	data += sizeof(struct adapter_stats) / sizeof(u64);
-> +#ifdef CONFIG_CHELSIO_TLS_DEVICE
-> +	collect_chcr_tls_stats(adapter, (struct chcr_tls_stats *)data);
-> +	data += sizeof(struct chcr_tls_stats) / sizeof(u64);
-> +#endif
->  
->  	*data++ = (u64)pi->port_id;
->  	memset(&s, 0, sizeof(s));
+diff --git a/net/dsa/tag_brcm.c b/net/dsa/tag_brcm.c
+index 9c3114179690..9169b63a89e3 100644
+--- a/net/dsa/tag_brcm.c
++++ b/net/dsa/tag_brcm.c
+@@ -140,6 +140,8 @@ static struct sk_buff *brcm_tag_rcv_ll(struct sk_buff *skb,
+ 	/* Remove Broadcom tag and update checksum */
+ 	skb_pull_rcsum(skb, BRCM_TAG_LEN);
+ 
++	skb->offload_fwd_mark = 1;
++
+ 	return skb;
+ }
+ #endif
+-- 
+2.19.1
 
