@@ -2,218 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58ECA18E5B8
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 02:11:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BE0818E5D3
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 02:36:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728335AbgCVBLs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 21:11:48 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:54855 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728226AbgCVBLr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 21:11:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584839506;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:in-reply-to:in-reply-to:references:references;
-        bh=68srroxVO8t4m8KDSzYFB9tDrvV53dK+58Y/C/+aWXU=;
-        b=TQP9wLO4xOD33ONWIQpB5/QZmuI4RtVKi1lXMCXag0oR/S8Re8GFNSltgxq2HhdY6IeKMH
-        8rw2pt+wllmbGoq2r+QUre1Uy2P/9JiwZ0tmDTaM6RmdinfkgasUWWtQzhC+6bdTcL3uYN
-        nGjtRxMa52q11NxU4aZkEpwt2foprCg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-449-YolrCFwmMKqfpQy_rCz9MA-1; Sat, 21 Mar 2020 21:11:44 -0400
-X-MC-Unique: YolrCFwmMKqfpQy_rCz9MA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E88841857BF4;
-        Sun, 22 Mar 2020 01:11:41 +0000 (UTC)
-Received: from llong.com (ovpn-112-193.rdu2.redhat.com [10.10.112.193])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 137D99B90A;
-        Sun, 22 Mar 2020 01:11:39 +0000 (UTC)
-From:   Waiman Long <longman@redhat.com>
-To:     David Howells <dhowells@redhat.com>,
-        Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
+        id S1728288AbgCVBg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 21:36:28 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:35569 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728291AbgCVBg2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 21:36:28 -0400
+Received: by mail-qk1-f194.google.com with SMTP id d8so11588756qka.2
+        for <netdev@vger.kernel.org>; Sat, 21 Mar 2020 18:36:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Ubq/qZnX/ujKaYfjOueGLD6Nqh5QSMEUH2vduTkKjHA=;
+        b=PL1RyTyq/WRZKZrEHqL4R/7W0dJU38ey6RtLKNXSwKxSkIN9TA8rk+1XHkXSB34Z3U
+         +hT8qUXMqZjtKTftKJLwunclFMXbCFua88wGTvXHtsD23zMsiUUWyiPeyIJ6vgtbThHW
+         gFwhM+xyJWfZ3VhmNgEQUPD4gXknbn5mHpUV8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Ubq/qZnX/ujKaYfjOueGLD6Nqh5QSMEUH2vduTkKjHA=;
+        b=QMoOIJwt8BZ1/3lgbugSrgZj8EzxYk//yvv6zszGZIMBi34tmvht/cPwXOT9EtEvmj
+         zJ2obZzNsnN0MElVIBFmIYUGS49DTNrVwxr04Hpm42Wx0C7w7G/JwInBC6WPGMt2cPie
+         ZYovZ5ecf4P0oOR27V9rRdqWXEohqOD1Odp719QbagdYt5l+XEArmlt7eCvOqfLrSvHM
+         Vg2RRIPgj2P+IOaJ3alHmWWM0OGnooytyGpxDjN5JZGPiOp9qD9qzKTQZ12i2vu/Otty
+         P7R5yNBOie9vckV6uDnPpCX4FPh0/6uYhCXZa29w9wQ/m8aEb7PReOIx0WK2uz44ojxT
+         OY1w==
+X-Gm-Message-State: ANhLgQ2NlEsqRys91SnWwjTDo0DjD6eIc083YtNKGk+w/Y50n1YNa0Ba
+        G7M15n+QYQ1N87lB1syPDUH2NQ==
+X-Google-Smtp-Source: ADFU+vu+Jf1CVw4GQOx5dNoxGTymqpn5p1dmtyWCTiwwU99STlnO5FKSrpzUOQTz2PYCKmBpD/vEgA==
+X-Received: by 2002:a37:db0a:: with SMTP id e10mr2637693qki.273.1584840985412;
+        Sat, 21 Mar 2020 18:36:25 -0700 (PDT)
+Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
+        by smtp.gmail.com with ESMTPSA id w18sm7979664qkw.130.2020.03.21.18.36.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Mar 2020 18:36:24 -0700 (PDT)
+Date:   Sat, 21 Mar 2020 21:36:24 -0400
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>, Will Deacon <will@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     keyrings@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org, netdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, Sumit Garg <sumit.garg@linaro.org>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>,
-        Eric Biggers <ebiggers@google.com>,
-        Chris von Recklinghausen <crecklin@redhat.com>,
-        Waiman Long <longman@redhat.com>
-Subject: [PATCH v8 2/2] KEYS: Avoid false positive ENOMEM error on key read
-Date:   Sat, 21 Mar 2020 21:11:25 -0400
-Message-Id: <20200322011125.24327-3-longman@redhat.com>
-In-Reply-To: <20200322011125.24327-1-longman@redhat.com>
-References: <20200322011125.24327-1-longman@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [patch V2 08/15] Documentation: Add lock ordering and nesting
+ documentation
+Message-ID: <20200322013624.GA161885@google.com>
+References: <20200318204302.693307984@linutronix.de>
+ <20200318204408.211530902@linutronix.de>
+ <20200321212144.GA6475@google.com>
+ <874kuhqsz3.fsf@nanos.tec.linutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <874kuhqsz3.fsf@nanos.tec.linutronix.de>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-By allocating a kernel buffer with a user-supplied buffer length, it
-is possible that a false positive ENOMEM error may be returned because
-the user-supplied length is just too large even if the system do have
-enough memory to hold the actual key data.
+On Sat, Mar 21, 2020 at 10:49:04PM +0100, Thomas Gleixner wrote:
+[...] 
+> >> +rwsems have grown interfaces which allow non owner release for special
+> >> +purposes. This usage is problematic on PREEMPT_RT because PREEMPT_RT
+> >> +substitutes all locking primitives except semaphores with RT-mutex based
+> >> +implementations to provide priority inheritance for all lock types except
+> >> +the truly spinning ones. Priority inheritance on ownerless locks is
+> >> +obviously impossible.
+> >> +
+> >> +For now the rwsem non-owner release excludes code which utilizes it from
+> >> +being used on PREEMPT_RT enabled kernels.
+> >
+> > I could not parse the last sentence here, but I think you meant "For now,
+> > PREEMPT_RT enabled kernels disable code that perform a non-owner release of
+> > an rwsem". Correct me if I'm wrong.
+> 
+> Right, that's what I wanted to say :)
+> 
+> Care to send a delta patch?
 
-Moreover, if the buffer length is larger than the maximum amount of
-memory that can be returned by kmalloc() (2^(MAX_ORDER-1) number of
-pages), a warning message will also be printed.
+Absolutely, doing that now. :-)
 
-To reduce this possibility, we set a threshold (PAGE_SIZE) over which we
-do check the actual key length first before allocating a buffer of the
-right size to hold it. The threshold is arbitrary, it is just used to
-trigger a buffer length check. It does not limit the actual key length
-as long as there is enough memory to satisfy the memory request.
+thanks,
 
-To further avoid large buffer allocation failure due to page
-fragmentation, kvmalloc() is used to allocate the buffer so that vmapped
-pages can be used when there is not a large enough contiguous set of
-pages available for allocation.
-
-In the extremely unlikely scenario that the key keeps on being changed
-and made longer (still <= buflen) in between 2 __keyctl_read_key()
-calls, the __keyctl_read_key() calling loop in keyctl_read_key() may
-have to be iterated a large number of times, but definitely not infinite.
-
-Signed-off-by: Waiman Long <longman@redhat.com>
----
- security/keys/internal.h | 12 +++++++++
- security/keys/keyctl.c   | 58 +++++++++++++++++++++++++++++-----------
- 2 files changed, 55 insertions(+), 15 deletions(-)
-
-diff --git a/security/keys/internal.h b/security/keys/internal.h
-index ba3e2da14cef..6d0ca48ae9a5 100644
---- a/security/keys/internal.h
-+++ b/security/keys/internal.h
-@@ -16,6 +16,8 @@
- #include <linux/keyctl.h>
- #include <linux/refcount.h>
- #include <linux/compat.h>
-+#include <linux/mm.h>
-+#include <linux/vmalloc.h>
- 
- struct iovec;
- 
-@@ -349,4 +351,14 @@ static inline void key_check(const struct key *key)
- 
- #endif
- 
-+/*
-+ * Helper function to clear and free a kvmalloc'ed memory object.
-+ */
-+static inline void __kvzfree(const void *addr, size_t len)
-+{
-+	if (addr) {
-+		memset((void *)addr, 0, len);
-+		kvfree(addr);
-+	}
-+}
- #endif /* _INTERNAL_H */
-diff --git a/security/keys/keyctl.c b/security/keys/keyctl.c
-index 434ed9defd3a..0062e422e0fd 100644
---- a/security/keys/keyctl.c
-+++ b/security/keys/keyctl.c
-@@ -339,7 +339,7 @@ long keyctl_update_key(key_serial_t id,
- 	payload = NULL;
- 	if (plen) {
- 		ret = -ENOMEM;
--		payload = kmalloc(plen, GFP_KERNEL);
-+		payload = kvmalloc(plen, GFP_KERNEL);
- 		if (!payload)
- 			goto error;
- 
-@@ -360,7 +360,7 @@ long keyctl_update_key(key_serial_t id,
- 
- 	key_ref_put(key_ref);
- error2:
--	kzfree(payload);
-+	__kvzfree(payload, plen);
- error:
- 	return ret;
- }
-@@ -827,7 +827,8 @@ long keyctl_read_key(key_serial_t keyid, char __user *buffer, size_t buflen)
- 	struct key *key;
- 	key_ref_t key_ref;
- 	long ret;
--	char *key_data;
-+	char *key_data = NULL;
-+	size_t key_data_len;
- 
- 	/* find the key first */
- 	key_ref = lookup_user_key(keyid, 0, 0);
-@@ -878,24 +879,51 @@ long keyctl_read_key(key_serial_t keyid, char __user *buffer, size_t buflen)
- 	 * Allocating a temporary buffer to hold the keys before
- 	 * transferring them to user buffer to avoid potential
- 	 * deadlock involving page fault and mmap_sem.
-+	 *
-+	 * key_data_len = (buflen <= PAGE_SIZE)
-+	 *		? buflen : actual length of key data
-+	 *
-+	 * This prevents allocating arbitrary large buffer which can
-+	 * be much larger than the actual key length. In the latter case,
-+	 * at least 2 passes of this loop is required.
- 	 */
--	key_data = kmalloc(buflen, GFP_KERNEL);
-+	key_data_len = (buflen <= PAGE_SIZE) ? buflen : 0;
-+	for (;;) {
-+		if (key_data_len) {
-+			key_data = kvmalloc(key_data_len, GFP_KERNEL);
-+			if (!key_data) {
-+				ret = -ENOMEM;
-+				goto key_put_out;
-+			}
-+		}
- 
--	if (!key_data) {
--		ret = -ENOMEM;
--		goto key_put_out;
--	}
--	ret = __keyctl_read_key(key, key_data, buflen);
-+		ret = __keyctl_read_key(key, key_data, key_data_len);
-+
-+		/*
-+		 * Read methods will just return the required length without
-+		 * any copying if the provided length isn't large enough.
-+		 */
-+		if (ret <= 0 || ret > buflen)
-+			break;
-+
-+		/*
-+		 * The key may change (unlikely) in between 2 consecutive
-+		 * __keyctl_read_key() calls. In this case, we reallocate
-+		 * a larger buffer and redo the key read when
-+		 * key_data_len < ret <= buflen.
-+		 */
-+		if (ret > key_data_len) {
-+			if (unlikely(key_data))
-+				__kvzfree(key_data, key_data_len);
-+			key_data_len = ret;
-+			continue;	/* Allocate buffer */
-+		}
- 
--	/*
--	 * Read methods will just return the required length without
--	 * any copying if the provided length isn't large enough.
--	 */
--	if (ret > 0 && ret <= buflen) {
- 		if (copy_to_user(buffer, key_data, ret))
- 			ret = -EFAULT;
-+		break;
- 	}
--	kzfree(key_data);
-+	__kvzfree(key_data, key_data_len);
- 
- key_put_out:
- 	key_put(key);
--- 
-2.18.1
+ - Joel
 
