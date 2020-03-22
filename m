@@ -2,32 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7661818E58E
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 01:31:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A0DC18E5A4
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 01:46:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728096AbgCVAb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 Mar 2020 20:31:29 -0400
-Received: from www262.sakura.ne.jp ([202.181.97.72]:57359 "EHLO
-        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727296AbgCVAb3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 20:31:29 -0400
-Received: from fsav303.sakura.ne.jp (fsav303.sakura.ne.jp [153.120.85.134])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 02M0VQKJ025665;
-        Sun, 22 Mar 2020 09:31:26 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav303.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav303.sakura.ne.jp);
- Sun, 22 Mar 2020 09:31:26 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav303.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 02M0VLN8025536
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-SHA bits=256 verify=NO);
-        Sun, 22 Mar 2020 09:31:26 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+        id S1728227AbgCVAqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 Mar 2020 20:46:44 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:21082 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728178AbgCVAqo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 Mar 2020 20:46:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1584838003;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qXvBGWf4H3tlxTPY3JL9NJZyGrJzCSjYj7K4kPcMwd8=;
+        b=MI8sjx3xD22xWitANNr5GPdz6PROB/MNQlPUiUdmZrUXr3hDhO/lui/XtFxcxQ/cR5MKKm
+        +qK3K4bXsvYrq4Qx25rhd2mlNne5NTMWgj9S1OZfR4rXfyE4gujkTDESbhAaNW4IvAcna1
+        uDA1SOU3m0NoV+ij+bkYKoqo77rZbPw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-359-I8Rx9gchNNiov0sHixcL3w-1; Sat, 21 Mar 2020 20:46:39 -0400
+X-MC-Unique: I8Rx9gchNNiov0sHixcL3w-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 32D37100550E;
+        Sun, 22 Mar 2020 00:46:36 +0000 (UTC)
+Received: from llong.remote.csb (ovpn-112-193.rdu2.redhat.com [10.10.112.193])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 79FD91000325;
+        Sun, 22 Mar 2020 00:46:33 +0000 (UTC)
 Subject: Re: [PATCH v7 2/2] KEYS: Avoid false positive ENOMEM error on key
  read
-To:     Waiman Long <longman@redhat.com>
+To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
 Cc:     David Howells <dhowells@redhat.com>,
         Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
         James Morris <jmorris@namei.org>,
@@ -45,57 +53,37 @@ Cc:     David Howells <dhowells@redhat.com>,
         Chris von Recklinghausen <crecklin@redhat.com>
 References: <20200321184932.16579-1-longman@redhat.com>
  <20200321184932.16579-3-longman@redhat.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Message-ID: <e3d7a227-8915-5c00-cd34-fe2db7fc7121@I-love.SAKURA.ne.jp>
-Date:   Sun, 22 Mar 2020 09:31:21 +0900
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+ <e3d7a227-8915-5c00-cd34-fe2db7fc7121@I-love.SAKURA.ne.jp>
+From:   Waiman Long <longman@redhat.com>
+Organization: Red Hat
+Message-ID: <03c0c59e-a84b-bd75-6b3f-7f6467d806e2@redhat.com>
+Date:   Sat, 21 Mar 2020 20:46:33 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20200321184932.16579-3-longman@redhat.com>
+In-Reply-To: <e3d7a227-8915-5c00-cd34-fe2db7fc7121@I-love.SAKURA.ne.jp>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/03/22 3:49, Waiman Long wrote:
-> +	do {
+On 3/21/20 8:31 PM, Tetsuo Handa wrote:
+> On 2020/03/22 3:49, Waiman Long wrote:
+>> +	do {
+>> +		if (ret > key_data_len) {
+>> +			if (unlikely(key_data))
+>> +				__kvzfree(key_data, key_data_len);
+>> +			key_data_len = ret;
+>> +			continue;	/* Allocate buffer */
+> Excuse me, but "continue;" inside "do { ... } while (0);" means "break;"
+> because "while (0)" is evaluated before continuing the loop.
 
-> +		if (ret > key_data_len) {
-> +			if (unlikely(key_data))
-> +				__kvzfree(key_data, key_data_len);
-> +			key_data_len = ret;
-> +			continue;	/* Allocate buffer */
+You are right. My mistake. Will send out a new one for patch 2.
 
-Excuse me, but "continue;" inside "do { ... } while (0);" means "break;"
-because "while (0)" is evaluated before continuing the loop.
+-Longman
 
-----------
-#include <stdio.h>
 
-int main(int argc, char *argv[])
-{
-        do {
-                printf("step 1\n");
-                if (1) {
-                        printf("step 2\n");
-                        continue;
-                }
-                printf("step 3\n");
-        } while (0);
-        printf("step 4\n");
-        return 0;
-}
-----------
-
-----------
-step 1
-step 2
-step 4
-----------
-
-> +		}
-
-> +	} while (0);
