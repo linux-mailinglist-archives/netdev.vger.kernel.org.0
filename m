@@ -2,80 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAD8C18E966
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 15:38:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 298D718E969
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 15:41:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726786AbgCVOix (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 10:38:53 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:39174 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725785AbgCVOiw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 10:38:52 -0400
-Received: by mail-lj1-f195.google.com with SMTP id a2so11631945ljk.6
-        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 07:38:50 -0700 (PDT)
+        id S1726822AbgCVOkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 10:40:42 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:36323 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726623AbgCVOkm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 10:40:42 -0400
+Received: by mail-qt1-f193.google.com with SMTP id m33so9433521qtb.3
+        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 07:40:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=content-transfer-encoding:in-reply-to:originaldate:originalfrom
-         :original:date:from:to:cc:subject:message-id;
-        bh=g4BO/O3DF8m2HwgtSn6CUsf7iPwwOjlw6LLp0F39/rs=;
-        b=LKiGJxFOM3i9/cX/3zirJyEslWs2xh0mfuNuZ575yMfg2WsVknQIpxf/bOgoqJ2uJB
-         vjILEtLbB+5i9Rv9I0yATozKSCdy+zAnIJgwiGzHu5cASq6ygZw9KWumbgyS0+BfOVdB
-         11vJVeZ0y1APi4p+n1O/EGV+9FRdKHeNxrxBIHeCsbdCfWj05ck16By5hjoAdutENE7D
-         ctwSNcIctXu+OHOugbWHsFQ1ArE6YfJKjnVGsPfkShrmJThjK8oC+I3VAw7SGVi3Stxs
-         XoB9hnGgUwU2kWw09sKyLWprIjDkVLyteC7j72onXoV3RCmVX2u5fCePbkvSCrVQkpLy
-         EMkA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jbuzn9SLw2NUrqeprI9MBPQMWBaefdhL42AZ9dMd5wA=;
+        b=s5VBw+AfjmQPlT58+yFQGkDe+SVKoZCGkJwmmWPie18VOyHUwBpyg2xDVY9HA5vEmG
+         suE0IBpIkQwJ1kEZF9vUMBAID6MjmGlZnyajmUqu8W1StjyhyRX3qFHVv+6UIzKwbLia
+         XYOAWe4oFtbCkZu4tWzIXO36HfwvH+V3brLP1QF7q1l4qIcsuqcLdMV79I6tNgPTopKc
+         2uIhk2y3ldZ41CbcGdFOF7aQdeYIdoAxYNX0Ge8iDtAYB54ZL8b8YU4VhSKm+g6b9bOm
+         zXA6Qzwenv+RDI99qyfFhpo1BQ0qfATOD3ZDGDp2fOhTZtY/kuvGaKdPYsyQTPWeIZFh
+         bHzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:content-transfer-encoding:in-reply-to
-         :originaldate:originalfrom:original:date:from:to:cc:subject
-         :message-id;
-        bh=g4BO/O3DF8m2HwgtSn6CUsf7iPwwOjlw6LLp0F39/rs=;
-        b=g1WXCPHypoAugPyZzU3LKeEgoTEMrqP+ow5aK1WFSmrLlVbpS0/6o8H2JlpKkQb6wq
-         EQE3gCGMoeUIJ4MdxKQRKeYJY4JbyqWTOg/x5c5OvN6cyRpYchPvWXbqDKyC5lqmTtqU
-         2lfq7gVMlPsa13ELbvEtC0nRl2lfJ5qmQECImtYP44C4gRNvcKyiIkakaaMk0eIesbEw
-         riFFKUUUY6gb3YusqiOl+zK9axoF4K6EoZE8SpIV9ei/NaJdl2K6yEQy5G6KSz5n+cMi
-         g3B1wSjyp7284Wk7HOtsLyR3hk/mkBVP0ZwX7uHugMfuMgzCp1inmshvd0PEqYS+fW0D
-         Shhg==
-X-Gm-Message-State: ANhLgQ0zIv9hEG/fS391yBqesfA6nV1UldGfdyi8Mpd/8Oag5mYr/pYx
-        iWTahXZpIvMmgh6NZfVh4r22ag==
-X-Google-Smtp-Source: ADFU+vugiUKsaQhxX96ctjwy3yFNeCoRai6rGsiF5uwkDQgIzI/RKK+ST6KgogEK42c7FIxuv7BW3w==
-X-Received: by 2002:a2e:151e:: with SMTP id s30mr11303049ljd.92.1584887930182;
-        Sun, 22 Mar 2020 07:38:50 -0700 (PDT)
-Received: from localhost (h-50-180.A259.priv.bahnhof.se. [155.4.50.180])
-        by smtp.gmail.com with ESMTPSA id m6sm4514030ljj.78.2020.03.22.07.38.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 22 Mar 2020 07:38:49 -0700 (PDT)
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-In-Reply-To: <20200322133546.GD11481@lunn.ch>
-Originaldate: Sun Mar 22, 2020 at 2:35 PM
-Originalfrom: "Andrew Lunn" <andrew@lunn.ch>
-Original: =?utf-8?q?On_Sat,_Mar_21,_2020_at_09:24:42PM_+0100,_Tobias_Waldekranz_wro?= =?utf-8?q?te:=0D=0A>_Describe_how_the_USB_to_MDIO_controller_can_optional?= =?utf-8?q?ly_use_device_tree=0D=0A>_bindings_to_reference_attached_device?= =?utf-8?q?s_such_as_switches.=0D=0A>_=0D=0A>_Signed-off-by:_Tobias_Waldek?= =?utf-8?q?ranz_<tobias@waldekranz.com>=0D=0A=0D=0AHi_Tobias=0D=0A=0D=0AA_?= =?utf-8?q?few_process_things.=0D=0A=0D=0AThe_subject_line_should_be_"[PAT?= =?utf-8?q?CH_net-next]_..."_to_indicate_which=0D=0Atree_this_is_for.=0D?= =?utf-8?q?=0A=0D=0AFor_a_patch_set,_please_always_include_a_cover_note._g?= =?utf-8?q?it_format-patch=0D=0Awill_generate_the_template_and_then_includ?= =?utf-8?q?e_text_about_the_patch=0D=0Aseries_as_a_whole.=0D=0A=0D=0Ahttps?= =?utf-8?q?://www.kernel.org/doc/Documentation/networking/netdev-FAQ.txt?= =?utf-8?q?=0D=0A=0D=0A=09Andrew=0D=0A?=
-Date:   Sun, 22 Mar 2020 15:38:48 +0100
-From:   "Tobias Waldekranz" <tobias@waldekranz.com>
-To:     "Andrew Lunn" <andrew@lunn.ch>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
-        <linux-usb@vger.kernel.org>
-Subject: Re: [PATCH v3 1/2] dt-bindings: net: add marvell usb to mdio
- bindings
-Message-Id: <C1HFVR4KD34A.XPDBX1LM9SPV@wkz-x280>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jbuzn9SLw2NUrqeprI9MBPQMWBaefdhL42AZ9dMd5wA=;
+        b=AWx0OhtcfXRjmhYea0mxcXEzbVU9qsQRHo83Ogy6maUiHDL0Lfd13wG3DVmn4G4E3x
+         NbGc8v/b2wYjJVED23lREVTl0gWJjlw2WCLBhr660ktqcAMrQzgc5erN87055qxRT8K9
+         7ZBtlDiK5t8hNkvmnZhyQIKNW0d2W6+nICvODrtxMJ3txI2VUKw9xKUsjygX3ECGl0ek
+         U3HQXYRy4P2/r0xwo3RqzMr23yI8eIx4Exkdqsnlc8pZ/LTcLR/nQiuGJoJHV4kKgh3L
+         hVxfb6vaOsZu0Sw49bdwPE4XUzIhFsx64b97htFbxd4Y/tAIdz8SnXOMc1+BYTLo5RN0
+         VUrw==
+X-Gm-Message-State: ANhLgQ3kp3uaIvikqgdIRKD4ExuNffTVvUv7M+mmLHkz+9xm59VwoZAV
+        geBeZlJGpnmXO4KQSN9D4DYFJQNE
+X-Google-Smtp-Source: ADFU+vup2+EecBsi+GIhjZRTWfaqka68QpMttlYp6J6znwOurJTWkIf6owW/XgO42Wmpk7iBeK6eog==
+X-Received: by 2002:ac8:33d2:: with SMTP id d18mr16439536qtb.325.1584888038924;
+        Sun, 22 Mar 2020 07:40:38 -0700 (PDT)
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com. [209.85.219.175])
+        by smtp.gmail.com with ESMTPSA id t43sm9911902qtc.14.2020.03.22.07.40.37
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 22 Mar 2020 07:40:37 -0700 (PDT)
+Received: by mail-yb1-f175.google.com with SMTP id g206so5514467ybg.11
+        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 07:40:37 -0700 (PDT)
+X-Received: by 2002:a25:ef06:: with SMTP id g6mr26300259ybd.53.1584888036856;
+ Sun, 22 Mar 2020 07:40:36 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200313.110542.570427563998639331.davem@davemloft.net> <1584434318-27980-1-git-send-email-kyk.segfault@gmail.com>
+In-Reply-To: <1584434318-27980-1-git-send-email-kyk.segfault@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sun, 22 Mar 2020 10:40:00 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSc0Acy4J8yTraD+_yS4juWVBFjOk4cgqaB7jzOuq_9sig@mail.gmail.com>
+Message-ID: <CA+FuTSc0Acy4J8yTraD+_yS4juWVBFjOk4cgqaB7jzOuq_9sig@mail.gmail.com>
+Subject: Re: [PATCH v3] net: Make skb_segment not to compute checksum if
+ network controller supports checksumming
+To:     Yadu Kishore <kyk.segfault@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        David Laight <David.Laight@aculab.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Tom Herbert <tom@herbertland.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun Mar 22, 2020 at 2:35 PM, Andrew Lunn wrote:
-> The subject line should be "[PATCH net-next] ..." to indicate which
-> tree this is for.
+On Tue, Mar 17, 2020 at 4:39 AM Yadu Kishore <kyk.segfault@gmail.com> wrote:
+>
+>
+> > I think you can rebase and submit against net-next.
+>
+> > If your patch isn't active in the networking development patchwork instance,
+> > it is not pending to be applied and you must resend it.
+>
+> Rebasing the patch on net-next and resending it.
+>
+> Problem:
+> TCP checksum in the output path is not being offloaded during GSO
+> in the following case:
+> The network driver does not support scatter-gather but supports
+> checksum offload with NETIF_F_HW_CSUM.
+>
+> Cause:
+> skb_segment calls skb_copy_and_csum_bits if the network driver
+> does not announce NETIF_F_SG. It does not check if the driver
+> supports NETIF_F_HW_CSUM.
+> So for devices which might want to offload checksum but do not support SG
+> there is currently no way to do so if GSO is enabled.
+>
+> Solution:
+> In skb_segment check if the network controller does checksum and if so
+> call skb_copy_bits instead of skb_copy_and_csum_bits.
+>
+> Testing:
+> Without the patch, ran iperf TCP traffic with NETIF_F_HW_CSUM enabled
+> in the network driver. Observed the TCP checksum offload is not happening
+> since the skbs received by the driver in the output path have
+> skb->ip_summed set to CHECKSUM_NONE.
+>
+> With the patch ran iperf TCP traffic and observed that TCP checksum
+> is being offloaded with skb->ip_summed set to CHECKSUM_PARTIAL.
+> Also tested with the patch by disabling NETIF_F_HW_CSUM in the driver
+> to cover the newly introduced if-else code path in skb_segment.
+>
+> Link: https://lore.kernel.org/netdev/CA+FuTSeYGYr3Umij+Mezk9CUcaxYwqEe5sPSuXF8jPE2yMFJAw@mail.gmail.com
+> Signed-off-by: Yadu Kishore <kyk.segfault@gmail.com>
 
-Right, my bad.
+Acked-by: Willem de Bruijn <willemb@google.com>
 
-> For a patch set, please always include a cover note. git format-patch
-> will generate the template and then include text about the patch
-> series as a whole.
+Given that there are multiple micro architectures on which this is
+apparently a win, it makes sense (even if we should also optimize
+those arch specific csum codes).
 
-Roger that. Do you want a v4 with these changes, or just things to
-keep in mind for the future?
+The tricky part here is not the basic operation, but how this behaves
+with the skb_gso_cb infra for handling multiple checksums, some of
+which may be computed in software, such as with remote checksum
+offload.
 
-Thank you for your patience
+In the case of CHECKSUM_PARTIAL the csum is not computed. Inner
+most segmentation protocols (tcp/udp) will call gso_reset_checksum on
+return from skb_segment to set up these skb_gso_cb fields. So this
+looks correct to me.
