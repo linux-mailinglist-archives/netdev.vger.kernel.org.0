@@ -2,116 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DF2F18EBE4
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 20:19:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A54D418EC09
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 20:54:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726741AbgCVTSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 15:18:54 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:40278 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbgCVTSy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 15:18:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=RIAHvjZgxomQVpQmFNUiVpDvO2IIucaa9jhgrsz8pG4=; b=saMGtVA/YKdtAqF7xH6b7rV0u
-        l7FOMTkOsflESbP4bX4ej2nf+wfqjZGyiGYiIVL6d3pXfZLLcnmojQS1QcLWE5iTGK3pvVRMiRd3L
-        dOBa+fxaWc4tyC7gShu+LORrP04YDnaOKsyjFZ6ZRxEAwbpMD+lxLZthMc7MbAt7Nx4DPBt5e9VRx
-        SQhQlrBjLA7huji+msBOUFlvnRKGRXe58xfBzmYqGaIwuBp6KpGOE8/f6Tg/RvoCE7PgUyETbztli
-        2VNWtXvD9g8IJUNyUlXYnfNVR960sgEAfkx1QGoSyIPoqJdolWa7QrI49fBFvXLWSf2CxSrTVtAQK
-        HN2SXpfgw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:35850)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jG67I-0005AM-5m; Sun, 22 Mar 2020 19:18:36 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jG67E-0007yZ-4A; Sun, 22 Mar 2020 19:18:32 +0000
-Date:   Sun, 22 Mar 2020 19:18:32 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Dejin Zheng <zhengdejin5@gmail.com>
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        davem@davemloft.net, mchehab+samsung@kernel.org, corbet@lwn.net,
-        gregkh@linuxfoundation.org, broonie@kernel.org, tglx@linutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v5 08/10] net: phy: use phy_read_poll_timeout()
- to simplify the code
-Message-ID: <20200322191832.GW25745@shell.armlinux.org.uk>
-References: <20200322174943.26332-1-zhengdejin5@gmail.com>
- <20200322174943.26332-9-zhengdejin5@gmail.com>
+        id S1726843AbgCVTyF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 15:54:05 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:41943 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726756AbgCVTyE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 15:54:04 -0400
+Received: by mail-ed1-f68.google.com with SMTP id v6so13921219edw.8
+        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 12:54:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=herbertland-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=M56HRF7yj/zQ5PGc20FmyrfbsQ5EgKKx23a3WTtVBJQ=;
+        b=XcmGVj1hrdeLjEKSi5tQOUnu7ERBEz+ZF6JdVlt4uRHYtwyferdXLe66o5dGOHHDep
+         eyecV7GiWp9JvL82R8AHqwrhdu0yjeQOrVMatDskha/rVKoIGyHsanNi5n/C5CGclEJb
+         FouOB+HIoYUAuW+akQdJ0YDP6kTRjoX1U/BpzlWhtL8GTIeP/OOHxsR87RXI0aMNpVaC
+         h3MGruOIwZg8aUI1TSNCy57x6QqSBPmHf3HNFboT4xu5ht0dY1DsSpD9jofUrEeL6K3s
+         OqWVioVGM8anUn3iejw1mbpfy9VRuP7lYc+4xEnVEOTIcaGFg/yrZbSAmIl3wfeQsjbx
+         Wp9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=M56HRF7yj/zQ5PGc20FmyrfbsQ5EgKKx23a3WTtVBJQ=;
+        b=GjtDRExtabNbIAtJO+75VJ4leD1OA/IwOMTAR5Z0sqd+Ed7PyXeJM0Ys4n/sZ/WZ3D
+         c/nff9UkQrxVCraHRW5Efem+oLn3qDDSMJmiZh5njMw8b/pMLMSRVUA9b9r0cu0ilmLp
+         n2Rd5TkedbPykD3RE61+9w5gkvzUVY5EGp5qHOMjukZQahecrSyFhz0D8hyAtJUQ9Mx6
+         sKNWoTQvenMiZlPSPOwsuNI3HMTDTdLiz9/aLhb6PUEEEQgOWY9m5YF6u0nMCDctdIQo
+         nLqwlgBFZaOECBw/OZGLekHvL3kC4bPSfqtATcAFrwRu/vUIWwe7EBIkck5+9W74AgS4
+         6MDQ==
+X-Gm-Message-State: ANhLgQ1aIJgnprrPQH+NkCTPQLVIZyHDNCy+9J0bcExZq0H5E0HeAodq
+        L67ZffjznihPPmNhjJmuik6cyZPZRMTud9qru8xuLzIYp2o=
+X-Google-Smtp-Source: ADFU+vt0zBK4ShOMlyQXa7bRCXWxpXFFTK3Dg8a3Jxf0CA/rX4o0oGGXp3bi7QC1H9DdbJO8Ims9vEB2TwGXaxT+wqA=
+X-Received: by 2002:a05:6402:1a27:: with SMTP id be7mr2029437edb.241.1584906842303;
+ Sun, 22 Mar 2020 12:54:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200322174943.26332-9-zhengdejin5@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200228.120150.302053489768447737.davem@davemloft.net>
+ <1583131910-29260-1-git-send-email-kyk.segfault@gmail.com>
+ <CABGOaVRdsw=4nqBMR0h8JPEiunOEpHR+02H=HRbgt_TxhVviiA@mail.gmail.com>
+ <945f6cafc86b4f1bb18fa40e60d5c113@AcuMS.aculab.com> <CABGOaVQMq-AxwQOJ5DdDY6yLBOXqBg6G7qC_MdOYj_z4y-QQiw@mail.gmail.com>
+ <de1012794ec54314b6fe790c01dee60b@AcuMS.aculab.com> <CABGOaVSddVL-T-Sz_GPuRoZbKM_HsZND84rJUm2G9RRw6cUwCQ@mail.gmail.com>
+ <CA+FuTSc5QVF_kv8FNs03obXGbf6axrG5umCipE=LXvqQ_-hDAA@mail.gmail.com>
+ <817a6418ac8742e6bb872992711beb47@AcuMS.aculab.com> <91fafe40-7856-8b22-c279-55df5d06ca39@gmail.com>
+ <e8b84bcaee634b53bee797aa041824a4@AcuMS.aculab.com>
+In-Reply-To: <e8b84bcaee634b53bee797aa041824a4@AcuMS.aculab.com>
+From:   Tom Herbert <tom@herbertland.com>
+Date:   Sun, 22 Mar 2020 12:53:50 -0700
+Message-ID: <CALx6S342XSFnZqFJ_jMKuAshSg0g-gcj3eSerADvWi14t+gCiw@mail.gmail.com>
+Subject: Re: [PATCH v2] net: Make skb_segment not to compute checksum if
+ network controller supports checksumming
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Yadu Kishore <kyk.segfault@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 23, 2020 at 01:49:41AM +0800, Dejin Zheng wrote:
-> use phy_read_poll_timeout() to replace the poll codes for
-> simplify the code in phy_poll_reset() function.
-> 
-> Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
-> ---
-> v4 -> v5:
-> 	- it can add msleep before call phy_read_poll_timeout()
-> 	  to keep the code more similar. so add it.
-> v3 -> v4:
-> 	- drop it.
-> v2 -> v3:
-> 	- adapt to it after modifying the parameter order of the
-> 	  newly added function
-> v1 -> v2:
-> 	- remove the handle of phy_read()'s return error.
-> 
-> 
->  drivers/net/phy/phy_device.c | 17 +++++------------
->  1 file changed, 5 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index a585faf8b844..24297ee7f626 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -1059,23 +1059,16 @@ EXPORT_SYMBOL(phy_disconnect);
->  static int phy_poll_reset(struct phy_device *phydev)
->  {
->  	/* Poll until the reset bit clears (50ms per retry == 0.6 sec) */
-> -	unsigned int retries = 12;
-> -	int ret;
+On Fri, Mar 6, 2020 at 9:12 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Eric Dumazet
+> > Sent: 05 March 2020 17:20
+> >
+> > On 3/5/20 9:00 AM, David Laight wrote:
+> > > From: Willem de Bruijn
+> > >> Sent: 05 March 2020 16:07
+> > > ..
+> > >> It seems do_csum is called because csum_partial_copy executes the
+> > >> two operations independently:
+> > >>
+> > >> __wsum
+> > >> csum_partial_copy(const void *src, void *dst, int len, __wsum sum)
+> > >> {
+> > >>         memcpy(dst, src, len);
+> > >>         return csum_partial(dst, len, sum);
+> > >> }
+> > >
+> > > And do_csum() is superbly horrid.
+> > > Not the least because it is 32bit on 64bit systems.
+> >
+> > There are many versions, which one is discussed here ?
+> >
+> > At least the current one seems to be 64bit optimized.
+> >
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=5777eaed566a1d63e344d3dd
+> > 8f2b5e33be20643e
+>
+> I was looking at the generic one in $(SRC)/lib/checksum.c.
+>
+> FWIW I suspect the fastest code on pre sandy bridge 64bit intel cpus
+> (where adc is 2 clocks) is to do a normal 'add', shift the carries
+> into a 64bit register and do a software 'popcnt' every 512 bytes.
+> That may run at 8 bytes/clock + the popcnt.
+
+A while back, I had proposed an optimized x86 checksum function using
+unrolled addq a while back https://lwn.net/Articles/679137/. Also,
+this tries to optimize from small checksum like over header when doing
+skb_postpull_rcsum.
+
+Tom
+
+>
+>         David
+>
 > -
-> -	do {
-> -		msleep(50);
-> -		ret = phy_read(phydev, MII_BMCR);
-> -		if (ret < 0)
-> -			return ret;
-> -	} while (ret & BMCR_RESET && --retries);
-> -	if (ret & BMCR_RESET)
-> -		return -ETIMEDOUT;
-> +	int ret, val;
->  
-> +	msleep(50);
-> +	ret = phy_read_poll_timeout(phydev, MII_BMCR, val, !(val & BMCR_RESET),
-> +				    50000, 550000);
->  	/* Some chips (smsc911x) may still need up to another 1ms after the
->  	 * BMCR_RESET bit is cleared before they are usable.
->  	 */
->  	msleep(1);
-> -	return 0;
-> +	return ret;
-
-This isn't actually equivaent behaviour.  If the read timed out, the old
-code didn't wait 1ms.  Your new code does.  However, since we've waited
-about 600ms already, it probably doesn't matter.
-
-These sorts of things should be documented in the commit log, IMHO, so
-it's obvious that it's been considered.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
