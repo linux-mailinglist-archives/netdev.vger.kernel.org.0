@@ -2,225 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD46E18E7B6
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 10:04:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77FA918E7BE
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 10:09:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726843AbgCVJEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 05:04:32 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:35806 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725987AbgCVJEc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 05:04:32 -0400
-Received: by mail-pl1-f194.google.com with SMTP id g6so4518752plt.2;
-        Sun, 22 Mar 2020 02:04:31 -0700 (PDT)
+        id S1726913AbgCVJJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 05:09:34 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:35461 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725987AbgCVJJd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 05:09:33 -0400
+Received: by mail-lj1-f195.google.com with SMTP id u12so11182707ljo.2
+        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 02:09:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=kOrH9obYAhAAUwDoWxwdeahbQ3EMm25sPBi4jccaRMc=;
-        b=b1uHgD+jdr8UXfkUYkXDIjYA3jRFUdWw5/l0hKKavJOIBXbuc9y66BYBLEa5ZlbbDr
-         4XTEgEroryedhvhz7lfcV1v17NWfVvJ8wpdQnsNtuzGh0s7ZDF7TKbo+fxeSG8AAmr+x
-         fMRfI9N7PFCgdcSpaoJjzSez/75Ds0q4laPiuXQLHSE5FQE97GwUv6fpTiWWdIkLoz29
-         L22f20CWYGAF/I1SRxesN6qZbOGe5fhzGZcn5NoBL319ZDDS3t61rf4GGfTBApHvwjVP
-         StSqlzCvOO8GCTPVUmJf4VtEZM3vBZrn/H0b20n1/ZnlPp7rpZhX9x1xAs/orSzNCygw
-         GZzg==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=content-transfer-encoding:in-reply-to:originaldate:originalfrom
+         :original:date:to:cc:subject:from:message-id;
+        bh=6N1PewsqX7bxn4cNlKsJJ2jMwwLZDPNv5uU0i+2HQAo=;
+        b=oQkWJ6gkx/xU1ds4yrCPVzhx5iq6+OiXEuh/PC7G7dnvgCzCwCpCh+oaJhObu0CawM
+         ZedQByP4mG+PERJojGDOxBSvpXVq4JeDBPPcFYFwvdgk4jBsfT3yl0XPFQGQXjP5wMO1
+         16N3e284ATPOH+ci4bFf6HdlXPK0viMCHtwg9+/iKbpP4vczpLCXRTpx/EzUdBgVZf7Y
+         TvdCsEE4CyoX/VxZir6YUdVcKxCKU8tOITG+2YFnjY/Q8fb2jcy0b6uA2tkcHFSPOh26
+         Wa2/zlaGbeEkSkzEwWArewBVMThaDzPS9IFq5OIpJfxA4q+pRtt6JChMi7JIzSFi/sHU
+         dNzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=kOrH9obYAhAAUwDoWxwdeahbQ3EMm25sPBi4jccaRMc=;
-        b=G55+hmRhVHAYAUj2MArHuIuO8bub52QjJJTUgKyq1lDFpPFQPcg61hiQ5iomvza59u
-         6HCcxU9iIpO5t4I0BHluZLKaaJu8b5LivWXRvXbVfzAH5gcS+kJSIjwkVavPE71h7ALu
-         eySK7GiIyJ6WoTaPi9Id6di/V1gWcazCmOa1Mezh9/wJbIFI5Ix0ni/sn3Sao1IB41Tb
-         aT/4crARfph6KNqGsHctL6ILQoHbtPzT/csM9BR2DIJESAXymgLS/Mq2cIWjzYUKQCHE
-         L8h5cOtnLKmqf7y4/R8xeCVk9q9JKZDDkwt5yB6/SiPWNFNkTYK1DsyplKoe5iIF/1oK
-         DZzQ==
-X-Gm-Message-State: ANhLgQ3X7Qj6KYCUzn4bRf65g1cXxTOHfqreGVCwXpmf2VA3o1Dfrkd6
-        F714IEV0uplTVImt/ANUMi4=
-X-Google-Smtp-Source: ADFU+vtAGBlHwd72iLAZq7XB4NlHgv1KiyK/Y2sA9AklismBOMr/rZecQtNXuJfnNAu+UEbOQsnF0g==
-X-Received: by 2002:a17:90a:c392:: with SMTP id h18mr6937339pjt.89.1584867870863;
-        Sun, 22 Mar 2020 02:04:30 -0700 (PDT)
-Received: from localhost ([161.117.239.120])
-        by smtp.gmail.com with ESMTPSA id y9sm5948074pfo.135.2020.03.22.02.04.29
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 22 Mar 2020 02:04:30 -0700 (PDT)
-From:   Qiujun Huang <hqjagain@gmail.com>
-To:     marcelo.leitner@gmail.com, davem@davemloft.net
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com, kuba@kernel.org,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, anenbupt@gmail.com,
-        Qiujun Huang <hqjagain@gmail.com>
-Subject: [PATCH v4] sctp: fix refcount bug in sctp_wfree
-Date:   Sun, 22 Mar 2020 17:04:25 +0800
-Message-Id: <20200322090425.6253-1-hqjagain@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:content-transfer-encoding:in-reply-to
+         :originaldate:originalfrom:original:date:to:cc:subject:from
+         :message-id;
+        bh=6N1PewsqX7bxn4cNlKsJJ2jMwwLZDPNv5uU0i+2HQAo=;
+        b=rJqnv5d2gRnaGqbicKbhSkF3GRLRz70dNipwbsaHjXG1K1V2Ib4zekzK0MTB7riKvo
+         uzrA9s4gVe5aJxvHI7ZPKOu5AiZsDScqkyQbnXuzki0TDn/kstQZ1NfwDlx9qNM7Qfg+
+         JzuzNIKCS7sa0kw0s0D9RdfkgeVGJXRVFBr9r8mBuDIhdUnWjddmnpC0oEBjkiGE7roE
+         NA9GZ3IPVktZwRZSCAtODhddDpv+cgHcFsysOZeKPh2iCkMt9csd6uld8QOWAtbihnHp
+         gVY4CpCXd9bF7qdOHWbWexNyPZTYo+DQj1oSSgj9GwwMiKbi3vmB1rwGJ74rDg/ncCJ6
+         Pmmg==
+X-Gm-Message-State: ANhLgQ0YwDKr9LY5Wvbe/45yqmQw3iOu5W50S/uD5zmkG6cVOUf13q+D
+        RC7Z7x74CQUMRcBpzi/hipEu5lXsOXojiQ==
+X-Google-Smtp-Source: ADFU+vtN8YagwYhKrQ7munflZRExsaO+eOyr8Ek0+mnv5gApHGcJv+FjGAN3rpLcqRSs7m2Yn9FxDA==
+X-Received: by 2002:a2e:b88b:: with SMTP id r11mr10496183ljp.116.1584868169837;
+        Sun, 22 Mar 2020 02:09:29 -0700 (PDT)
+Received: from localhost (h-50-180.A259.priv.bahnhof.se. [155.4.50.180])
+        by smtp.gmail.com with ESMTPSA id n17sm836160ljc.76.2020.03.22.02.09.28
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 22 Mar 2020 02:09:29 -0700 (PDT)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20200322074006.GB64528@kroah.com>
+Originaldate: Sun Mar 22, 2020 at 8:40 AM
+Originalfrom: "Greg KH" <gregkh@linuxfoundation.org>
+Original: =?utf-8?q?On_Sat,_Mar_21,_2020_at_09:24:43PM_+0100,_Tobias_Waldekranz_wro?= =?utf-8?q?te:=0D=0A>_An_MDIO_controller_present_on_development_boards_for?= =?utf-8?q?_Marvell_switches=0D=0A>_from_the_Link_Street_(88E6xxx)_family.?= =?utf-8?q?=0D=0A>_=0D=0A>_Using_this_module,_you_can_use_the_following_se?= =?utf-8?q?tup_as_a_development=0D=0A>_platform_for_switchdev_and_DSA_rela?= =?utf-8?q?ted_work.=0D=0A>_=0D=0A>____.-------.______.-----------------.?= =?utf-8?q?=0D=0A>____|______USB----USB________________|=0D=0A>____|__SoC_?= =?utf-8?q?_|______|__88E6390X-DB__ETH1-10=0D=0A>____|______ETH----ETH0___?= =?utf-8?q?____________|=0D=0A>____'-------'______'-----------------'=0D?= =?utf-8?q?=0A>_=0D=0A>_Signed-off-by:_Tobias_Waldekranz_<tobias@waldekran?= =?utf-8?q?z.com>=0D=0A>_---=0D=0A>_=0D=0A>_Hi_linux-usb,=0D=0A>_=0D=0A>_T?= =?utf-8?q?his_is_my_first_ever_USB_driver,_therefore_I_would_really_appre?= =?utf-8?q?ciate=0D=0A>_it_if_someone_could_have_a_look_at_it_from_a_USB_p?=
+ =?utf-8?q?erspective_before_it=0D=0A>_is_(hopefully)_pulled_into_net-next?=
+ =?utf-8?q?.=0D=0A=0D=0AFrom_a_USB_point_of_view,_it_looks_sane,_only_one_?=
+ =?utf-8?q?question:=0D=0A=0D=0A>_+static_int_mvusb=5Fmdio=5Fprobe(struct_?=
+ =?utf-8?q?usb=5Finterface_*interface,=0D=0A>_+=09=09=09____const_struct_u?=
+ =?utf-8?q?sb=5Fdevice=5Fid_*id)=0D=0A>_+{=0D=0A>_+=09struct_device_*dev_?=
+ =?utf-8?q?=3D_&interface->dev;=0D=0A>_+=09struct_mvusb=5Fmdio_*mvusb;=0D?=
+ =?utf-8?q?=0A>_+=09struct_mii=5Fbus_*mdio;=0D=0A>_+=0D=0A>_+=09mdio_=3D_d?=
+ =?utf-8?q?evm=5Fmdiobus=5Falloc=5Fsize(dev,_sizeof(*mvusb));=0D=0A=0D=0AY?=
+ =?utf-8?q?ou_allocate_a_bigger_buffer_here_than_the_original_pointer_thin?=
+ =?utf-8?q?ks_it_is=0D=0Apointing_to=3F=0D=0A=0D=0A>_+=09if_(!mdio)=0D=0A>?=
+ =?utf-8?q?_+=09=09return_-ENOMEM;=0D=0A>_+=0D=0A>_+=09mvusb_=3D_mdio->pri?=
+ =?utf-8?q?v;=0D=0A=0D=0AAnd_then_you_set_this_pointer_here=3F=0D=0A=0D=0A?=
+ =?utf-8?q?If_that's_the_way_this_is_supposed_to_work,_that's_fine,_just_f?=
+ =?utf-8?q?eels_like=0D=0Athe_math_is_wrong_somewhere...=0D=0A=0D=0Athanks?=
+ =?utf-8?q?,=0D=0A=0D=0Agreg_k-h=0D=0A?=
+Date:   Sun, 22 Mar 2020 10:09:28 +0100
+To:     "Greg KH" <gregkh@linuxfoundation.org>
+Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>, <andrew@lunn.ch>,
+        <f.fainelli@gmail.com>, <hkallweit1@gmail.com>,
+        <linux-usb@vger.kernel.org>
+Subject: Re: [PATCH v3 2/2] net: phy: add marvell usb to mdio controller
+From:   "Tobias Waldekranz" <tobias@waldekranz.com>
+Message-Id: <C1H8VLGMUEEC.3BCHVI0HO90KD@wkz-x280>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sctp_sock_migrate should iterate over the datamsgs to modify
-all trunks(skbs) to newsk. For this, out_msg_list is added to
-sctp_outq to maintain datamsgs list.
+On Sun Mar 22, 2020 at 8:40 AM, Greg KH wrote:
+> From a USB point of view, it looks sane, only one question:
 
-The following case cause the bug:
+Great, thanks for the review.
 
-for the trouble SKB, it was in outq->transmitted list
+> > +static int mvusb_mdio_probe(struct usb_interface *interface,
+> > +			    const struct usb_device_id *id)
+> > +{
+> > +	struct device *dev =3D &interface->dev;
+> > +	struct mvusb_mdio *mvusb;
+> > +	struct mii_bus *mdio;
+> > +
+> > +	mdio =3D devm_mdiobus_alloc_size(dev, sizeof(*mvusb));
+>
+>=20
+> You allocate a bigger buffer here than the original pointer thinks it is
+> pointing to?
 
-sctp_outq_sack
-        sctp_check_transmitted
-                SKB was moved to outq->sacked list
-        then throw away the sack queue
-                SKB was deleted from outq->sacked
-(but it was held by datamsg at sctp_datamsg_to_asoc
-So, sctp_wfree was not called here)
+Yes. I've seen this pattern in a couple of places in the kernel,
+e.g. alloc_netdev also does this. The object is extended with the
+requested size, and the offset is stored somewhere for later use by
+the driver.
 
-then migrate happened
+> > +	if (!mdio)
+> > +		return -ENOMEM;
+> > +
+> > +	mvusb =3D mdio->priv;
+>
+>=20
+> And then you set this pointer here?
 
-        sctp_for_each_tx_datachunk(
-        sctp_clear_owner_w);
-        sctp_assoc_migrate();
-        sctp_for_each_tx_datachunk(
-        sctp_set_owner_w);
-SKB was not in the outq, and was not changed to newsk
+...in this case in the priv member.
 
-finally
+https://code.woboq.org/linux/linux/drivers/net/phy/mdio_bus.c.html#143
 
-__sctp_outq_teardown
-        sctp_chunk_put (for another skb)
-                sctp_datamsg_put
-                        __kfree_skb(msg->frag_list)
-                                sctp_wfree (for SKB)
-	SKB->sk was still oldsk (skb->sk != asoc->base.sk).
-
-Reported-and-tested-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
-Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
----
- include/net/sctp/structs.h |  5 +++++
- net/sctp/chunk.c           |  4 ++++
- net/sctp/outqueue.c        |  1 +
- net/sctp/sm_sideeffect.c   |  1 +
- net/sctp/socket.c          | 27 +++++++--------------------
- 5 files changed, 18 insertions(+), 20 deletions(-)
-
-diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
-index 314a2fa21d6b..f72ba7418230 100644
---- a/include/net/sctp/structs.h
-+++ b/include/net/sctp/structs.h
-@@ -522,6 +522,8 @@ struct sctp_pf {
- struct sctp_datamsg {
- 	/* Chunks waiting to be submitted to lower layer. */
- 	struct list_head chunks;
-+	/* List in outq. */
-+	struct list_head list;
- 	/* Reference counting. */
- 	refcount_t refcnt;
- 	/* When is this message no longer interesting to the peer? */
-@@ -1063,6 +1065,9 @@ struct sctp_outq {
- 	/* Data pending that has never been transmitted.  */
- 	struct list_head out_chunk_list;
- 
-+	/* Data msg list. */
-+	struct list_head out_msg_list;
-+
- 	/* Stream scheduler being used */
- 	struct sctp_sched_ops *sched;
- 
-diff --git a/net/sctp/chunk.c b/net/sctp/chunk.c
-index ab6a997e222f..17b38e9a8a7b 100644
---- a/net/sctp/chunk.c
-+++ b/net/sctp/chunk.c
-@@ -41,6 +41,7 @@ static void sctp_datamsg_init(struct sctp_datamsg *msg)
- 	msg->abandoned = 0;
- 	msg->expires_at = 0;
- 	INIT_LIST_HEAD(&msg->chunks);
-+	INIT_LIST_HEAD(&msg->list);
- }
- 
- /* Allocate and initialize datamsg. */
-@@ -111,6 +112,9 @@ static void sctp_datamsg_destroy(struct sctp_datamsg *msg)
- 		sctp_chunk_put(chunk);
- 	}
- 
-+	if (!list_empty(&msg->list))
-+		list_del_init(&msg->list);
-+
- 	SCTP_DBG_OBJCNT_DEC(datamsg);
- 	kfree(msg);
- }
-diff --git a/net/sctp/outqueue.c b/net/sctp/outqueue.c
-index 577e3bc4ee6f..3bbcb140c887 100644
---- a/net/sctp/outqueue.c
-+++ b/net/sctp/outqueue.c
-@@ -194,6 +194,7 @@ void sctp_outq_init(struct sctp_association *asoc, struct sctp_outq *q)
- 
- 	q->asoc = asoc;
- 	INIT_LIST_HEAD(&q->out_chunk_list);
-+	INIT_LIST_HEAD(&q->out_msg_list);
- 	INIT_LIST_HEAD(&q->control_chunk_list);
- 	INIT_LIST_HEAD(&q->retransmit);
- 	INIT_LIST_HEAD(&q->sacked);
-diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
-index 2bc29463e1dc..93cc911256f6 100644
---- a/net/sctp/sm_sideeffect.c
-+++ b/net/sctp/sm_sideeffect.c
-@@ -1099,6 +1099,7 @@ static void sctp_cmd_send_msg(struct sctp_association *asoc,
- 	list_for_each_entry(chunk, &msg->chunks, frag_list)
- 		sctp_outq_tail(&asoc->outqueue, chunk, gfp);
- 
-+	list_add_tail(&msg->list, &asoc->outqueue.out_msg_list);
- 	asoc->outqueue.sched->enqueue(&asoc->outqueue, msg);
- }
- 
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 1b56fc440606..32f6111bccbf 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -147,29 +147,16 @@ static void sctp_clear_owner_w(struct sctp_chunk *chunk)
- 	skb_orphan(chunk->skb);
- }
- 
--static void sctp_for_each_tx_datachunk(struct sctp_association *asoc,
--				       void (*cb)(struct sctp_chunk *))
-+static void sctp_for_each_tx_datamsg(struct sctp_association *asoc,
-+				     void (*cb)(struct sctp_chunk *))
- 
- {
--	struct sctp_outq *q = &asoc->outqueue;
--	struct sctp_transport *t;
- 	struct sctp_chunk *chunk;
-+	struct sctp_datamsg *msg;
- 
--	list_for_each_entry(t, &asoc->peer.transport_addr_list, transports)
--		list_for_each_entry(chunk, &t->transmitted, transmitted_list)
-+	list_for_each_entry(msg, &asoc->outqueue.out_msg_list, list)
-+		list_for_each_entry(chunk, &msg->chunks, frag_list)
- 			cb(chunk);
--
--	list_for_each_entry(chunk, &q->retransmit, transmitted_list)
--		cb(chunk);
--
--	list_for_each_entry(chunk, &q->sacked, transmitted_list)
--		cb(chunk);
--
--	list_for_each_entry(chunk, &q->abandoned, transmitted_list)
--		cb(chunk);
--
--	list_for_each_entry(chunk, &q->out_chunk_list, list)
--		cb(chunk);
- }
- 
- static void sctp_for_each_rx_skb(struct sctp_association *asoc, struct sock *sk,
-@@ -9574,9 +9561,9 @@ static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
- 	 * paths won't try to lock it and then oldsk.
- 	 */
- 	lock_sock_nested(newsk, SINGLE_DEPTH_NESTING);
--	sctp_for_each_tx_datachunk(assoc, sctp_clear_owner_w);
-+	sctp_for_each_tx_datamsg(assoc, sctp_clear_owner_w);
- 	sctp_assoc_migrate(assoc, newsk);
--	sctp_for_each_tx_datachunk(assoc, sctp_set_owner_w);
-+	sctp_for_each_tx_datamsg(assoc, sctp_set_owner_w);
- 
- 	/* If the association on the newsk is already closed before accept()
- 	 * is called, set RCV_SHUTDOWN flag.
--- 
-2.17.1
+Thanks
 
