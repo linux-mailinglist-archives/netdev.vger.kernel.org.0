@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 048F218EC34
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 21:40:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DC0718EC35
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 21:40:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726896AbgCVUkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 16:40:41 -0400
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:36675 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726741AbgCVUkk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 16:40:40 -0400
-Received: by mail-pj1-f66.google.com with SMTP id nu11so5073055pjb.1
-        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 13:40:40 -0700 (PDT)
+        id S1726912AbgCVUkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 16:40:43 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:39297 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726741AbgCVUkm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 16:40:42 -0400
+Received: by mail-pf1-f193.google.com with SMTP id d25so6404417pfn.6
+        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 13:40:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=kEbnuwwIX51XTwIXZxTvJJMhY2aomi8Xj5zi66we3fU=;
-        b=iOImKVoJOIgYrRyCzzyQ6PwUcxu4QWUhycf4qA/IgH7E8jWeR/LmWIKyssskRs4svj
-         IGCqf7uDJ7mPebvUB+9RMn+PNcdW3xPCe0Xsdwv3WYhbQM+tBLjZpfKZFOP2m5qv4ybH
-         upmLU1rXepwGOuRiboH9r/Toh7cx2/FA2JSv4=
+        bh=T9HVlQ8lTXeZ2isQQq1S688+mHKaEmwWE+YdSKsQQhU=;
+        b=Zy5jMdh0IO1ryc8b+vaKRxMjd/IEVKi/XGx6hpz5t+QHhugIWmXiK3joCvIuIbZ/CR
+         3HbgY3KHkF+SKV4ts+16LUiRe+aW7oSrB4jhRKrM0ASQJVR+hd2ZVTBGz0EfEddskqdt
+         thAHGMjfQPNjaaKP/BYK0LOyneYgGDpSNvG+c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=kEbnuwwIX51XTwIXZxTvJJMhY2aomi8Xj5zi66we3fU=;
-        b=MjPQOivVUkNoiyDQ8WebvCk9YyrPV1j09Wtk5MP6/E2hnY1edzIEO38ss0XDwsqJ0o
-         4uKSuz2ZLHMEvd/hb1RI0zEl+IzD57JSV4QX1T4oN6w8V79Kc6wLdXKhCc/NuEzpMdoE
-         iTQ7tXL7xPkHRePUYcuvMkufPyz1QHAe18uGq265UIlMGV82G9j9aN+Y3e9tx77l0esh
-         1awOSa4r7czSOkpvNlFKJXNNwYTfaseYeQeMFXOFs2ui57TskRZ/3pSY4T7i7CiF4oOi
-         ak7q2lJFz4lR6k501qVF1veiv7sv9PaJFu/yKPzir28dG7GN94YNwcmO0PMjtrsujYdO
-         Fv/A==
-X-Gm-Message-State: ANhLgQ1ZxSExgKL7mfoF/jeL4viAxJ7dPq15IB9wTrPzAe+BToz/34tJ
-        lUDe9C76ICjoab0Lij+t0TEjc0SibDQ=
-X-Google-Smtp-Source: ADFU+vu/duawI0rWEXH9hXNiXaZpZV+7Xm/PcVxCN5ITlJAQQt2EfB8gT66WIfcOVjshSkm7uUwriw==
-X-Received: by 2002:a17:90b:1954:: with SMTP id nk20mr21731080pjb.69.1584909639823;
-        Sun, 22 Mar 2020 13:40:39 -0700 (PDT)
+        bh=T9HVlQ8lTXeZ2isQQq1S688+mHKaEmwWE+YdSKsQQhU=;
+        b=T0Fbos8NFItetImRLgZNThvMbPG8D2jL94uC+T0bMT1ksHVXcWZKZdtBundQUmIm5B
+         OPRvqx9cRMuphGFil/VUCEcjd9rOGH3iUdBop7lJsLcLUy+zkt2xhS/0fMgLMQJxTKwo
+         +VKr+buaDNXAAS5MV4gAi9e3hx0CTdhWNhni3l/tck4un5HAw9QUcYZ6fMYujPVyMuzA
+         o7Xq8cHfnP/cef1s6+NmiLa0IJViYJsjKyJhoxaGo1tNWKD1YsP2iN3eId/LTdVp9iBr
+         LGbUbHMhWyH7I/e1CAJUZzxcmpjIdX6bc/94IfKJKvnKi2HwbxUFdPu5pCdZKpGWMAfv
+         FZAg==
+X-Gm-Message-State: ANhLgQ1uOtS2fk43a2arpVmZ6h7+VqsMIz6VZQPxLPzO61Pwfd6tBXHc
+        kdSlVtQGxwquhztNimXOyoyKrc8eewI=
+X-Google-Smtp-Source: ADFU+vtH/4U8i3ur+B6hb6Y3J3f1PV431OLLRx5oAMWxRGKL0o/0Z5FiFHzYo0F8zPiCMK0n6Jao+w==
+X-Received: by 2002:a63:f447:: with SMTP id p7mr18822607pgk.326.1584909641873;
+        Sun, 22 Mar 2020 13:40:41 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id y131sm11575843pfb.78.2020.03.22.13.40.38
+        by smtp.gmail.com with ESMTPSA id y131sm11575843pfb.78.2020.03.22.13.40.40
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 22 Mar 2020 13:40:39 -0700 (PDT)
+        Sun, 22 Mar 2020 13:40:41 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net 2/5] bnxt_en: fix memory leaks in bnxt_dcbnl_ieee_getets()
-Date:   Sun, 22 Mar 2020 16:40:02 -0400
-Message-Id: <1584909605-19161-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 3/5] bnxt_en: Return error if bnxt_alloc_ctx_mem() fails.
+Date:   Sun, 22 Mar 2020 16:40:03 -0400
+Message-Id: <1584909605-19161-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1584909605-19161-1-git-send-email-michael.chan@broadcom.com>
 References: <1584909605-19161-1-git-send-email-michael.chan@broadcom.com>
@@ -54,70 +54,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+The current code ignores the return value from
+bnxt_hwrm_func_backing_store_cfg(), causing the driver to proceed in
+the init path even when this vital firmware call has failed.  Fix it
+by propagating the error code to the caller.
 
-The allocated ieee_ets structure goes out of scope without being freed,
-leaking memory. Appropriate result codes should be returned so that
-callers do not rely on invalid data passed by reference.
-
-Also cache the ETS config retrieved from the device so that it doesn't
-need to be freed. The balance of the code was clearly written with the
-intent of having the results of querying the hardware cached in the
-device structure. The commensurate store was evidently missed though.
-
-Fixes: 7df4ae9fe855 ("bnxt_en: Implement DCBNL to support host-based DCBX.")
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Fixes: 1b9394e5a2ad ("bnxt_en: Configure context memory on new devices.")
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
-index fb6f30d..b1511bc 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_dcb.c
-@@ -479,24 +479,26 @@ static int bnxt_dcbnl_ieee_getets(struct net_device *dev, struct ieee_ets *ets)
- {
- 	struct bnxt *bp = netdev_priv(dev);
- 	struct ieee_ets *my_ets = bp->ieee_ets;
-+	int rc;
- 
- 	ets->ets_cap = bp->max_tc;
- 
- 	if (!my_ets) {
--		int rc;
--
- 		if (bp->dcbx_cap & DCB_CAP_DCBX_HOST)
- 			return 0;
- 
- 		my_ets = kzalloc(sizeof(*my_ets), GFP_KERNEL);
- 		if (!my_ets)
--			return 0;
-+			return -ENOMEM;
- 		rc = bnxt_hwrm_queue_cos2bw_qcfg(bp, my_ets);
- 		if (rc)
--			return 0;
-+			goto error;
- 		rc = bnxt_hwrm_queue_pri2cos_qcfg(bp, my_ets);
- 		if (rc)
--			return 0;
-+			goto error;
-+
-+		/* cache result */
-+		bp->ieee_ets = my_ets;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index b66ee1d..0628a6a 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -6880,12 +6880,12 @@ static int bnxt_alloc_ctx_mem(struct bnxt *bp)
  	}
- 
- 	ets->cbs = my_ets->cbs;
-@@ -505,6 +507,9 @@ static int bnxt_dcbnl_ieee_getets(struct net_device *dev, struct ieee_ets *ets)
- 	memcpy(ets->tc_tsa, my_ets->tc_tsa, sizeof(ets->tc_tsa));
- 	memcpy(ets->prio_tc, my_ets->prio_tc, sizeof(ets->prio_tc));
+ 	ena |= FUNC_BACKING_STORE_CFG_REQ_DFLT_ENABLES;
+ 	rc = bnxt_hwrm_func_backing_store_cfg(bp, ena);
+-	if (rc)
++	if (rc) {
+ 		netdev_err(bp->dev, "Failed configuring context mem, rc = %d.\n",
+ 			   rc);
+-	else
+-		ctx->flags |= BNXT_CTX_FLAG_INITED;
+-
++		return rc;
++	}
++	ctx->flags |= BNXT_CTX_FLAG_INITED;
  	return 0;
-+error:
-+	kfree(my_ets);
-+	return rc;
  }
  
- static int bnxt_dcbnl_ieee_setets(struct net_device *dev, struct ieee_ets *ets)
 -- 
 2.5.1
 
