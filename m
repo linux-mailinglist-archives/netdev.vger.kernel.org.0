@@ -2,90 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4198318ECBD
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 22:43:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB08718ECD1
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 23:10:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726872AbgCVVnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 17:43:21 -0400
-Received: from mail-il1-f194.google.com ([209.85.166.194]:43225 "EHLO
-        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726756AbgCVVnV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 17:43:21 -0400
-Received: by mail-il1-f194.google.com with SMTP id g15so2178601ilj.10
-        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 14:43:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1CHo0x7Wfa4qJuuhN1bUA7KIQ3CQGNq7ky+pcnD/4Uo=;
-        b=CEsmlKBOQmY99DNo8MbwuwxfPrxPANZ5DyeJnrNTY6rqzRcRltn7VGm2LybgyxP9vo
-         G1EoYAP1hqSmjQ7QDXoXiN/BomPjTgSpEFzTJy0NZ+bpPhDWsIpBN9Gfv94kct1k2cL/
-         LiTBjvD1hrYoec1zGrPE1uyeibj2WeWxfm6czZy6wCKkUYQuqx/7CMNVswBHq30SFoSn
-         Hr3bU+34lJGLF8XS5oWwX7YLmaGBtbmoeSVslC2XrB/FDZZjOpN2kBk0mjZ5Kx6O62W5
-         DNIiVD4d4sVQODAFrggBupgdM076o1LaOj6YzC3wGJHMNXorzuDrGHEoniG9LSqDA03X
-         xLaA==
+        id S1726955AbgCVWKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 18:10:17 -0400
+Received: from mail-io1-f69.google.com ([209.85.166.69]:55473 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726809AbgCVWKQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 18:10:16 -0400
+Received: by mail-io1-f69.google.com with SMTP id k5so10032162ioa.22
+        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 15:10:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=1CHo0x7Wfa4qJuuhN1bUA7KIQ3CQGNq7ky+pcnD/4Uo=;
-        b=VhOnLrrgq6iJ3vt0jUMc5yiWBnrxUQWSSIrNp3dDP1SecOUy5jzyIMVP2PtXM0Uxb4
-         cJ8v9RqPRNnpL8/lo6sISVy3O5id4ulGz50p9tOfYYsHU2y2OkkpNL3QIsT2PJRw3OPp
-         CSV7evF13Lw2a/byTDiSo+PMo6DODy+XVM0AjRH5vio7IW1A2Zok9UfNCkdhJ1bOR12w
-         zfzVFso9G78gZyvbXBBsJ4OAkBJTQGhgazYd2eQE/jbltCcgPRfvBQp3zQFpTaDtty/T
-         OwCJH3opOEHlRI6fxyEgdaRPdcWJ2LxCT8Oc6y6WE+S9oNrMKT6gAn4bM/obH9CgsqX3
-         RCuQ==
-X-Gm-Message-State: ANhLgQ16h+LGyMLLp+biUw11Mj5zHgrTTZ8xqstcXn8q1LjrzmxZ0SwS
-        Y5aBooT/D3OwjImHerYhQ5w=
-X-Google-Smtp-Source: ADFU+vs7h2tT00HbfKqb22pmXHjuWtkDwjK34tUHw82MfCDEz2XVI8KtTBcTRYnEgbCtPl7YUhd09Q==
-X-Received: by 2002:a92:c841:: with SMTP id b1mr18140904ilq.116.1584913400625;
-        Sun, 22 Mar 2020 14:43:20 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:1523:c157:28b9:614d? ([2601:282:803:7700:1523:c157:28b9:614d])
-        by smtp.googlemail.com with ESMTPSA id n26sm3784794ioo.9.2020.03.22.14.43.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 Mar 2020 14:43:19 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 2/2] tc: q_red: Support 'nodrop' flag
-To:     Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@gmail.com>
-References: <cover.1584533829.git.petrm@mellanox.com>
- <bb3146bd93e4c5f089033311e8a0418f93420447.1584533829.git.petrm@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <4ace5bb3-df27-44eb-dee7-6469deb0ec1b@gmail.com>
-Date:   Sun, 22 Mar 2020 15:43:18 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.6.0
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=B9V+9G16l/n/I5DhGTuXZFS/jqwZ2Fhm405AxG9r1pg=;
+        b=dtiXDktp1j2YkhrN61bpzXSk9wNL2qFHo9+A2jZQrWJPCQ1Q2aAgpXRt+ayEj3KNID
+         WK+wQvwIpPe2HU22n9QXdeVhisd5NQaTwaM71NKeFaGdGmmDm5lqCY+2m2dJzh2+Vw/r
+         Ad3zdOdwZvWzB3y94ojFD/g/ZLRWsNucK8pS15dhFqmXioJ+dEBmgibta+RPMkznn580
+         NiphnyGIMTKLcc7VYj8IGYKSOeH8FMjD023xLeEbWeylQpone+6ZRq94KwxSQUBJL8lr
+         blGUzoRslPUCmP7Uh5g78pTJFxOJ8aHIusyfzbluo+1XmnAouWvvLDu+HA+2S3q5nRMU
+         NALw==
+X-Gm-Message-State: ANhLgQ0vlKzkAyo4ohwhuum1IUF58hwvR7ZUudb9wnM5Ic9Co/U+NtM8
+        dPhIH+4AAusfNh9t9OTe+iy5PkdWIf37yHyWjVAXo9vXq7zA
+X-Google-Smtp-Source: ADFU+vuVzjeEae7o1I+HmgNwpk7n+z9OFE7PjR4XzqQ7rReEZvT7Bk7TowM0Ye8DlHwyauMrZFI30PW97b+EynOafYnyNSP79YIR
 MIME-Version: 1.0
-In-Reply-To: <bb3146bd93e4c5f089033311e8a0418f93420447.1584533829.git.petrm@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a92:6b0f:: with SMTP id g15mr12326695ilc.69.1584915013914;
+ Sun, 22 Mar 2020 15:10:13 -0700 (PDT)
+Date:   Sun, 22 Mar 2020 15:10:13 -0700
+In-Reply-To: <000000000000e9e518059fd84189@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006758f505a178c84f@google.com>
+Subject: Re: KASAN: use-after-free Write in hci_sock_bind (2)
+From:   syzbot <syzbot+04e804c8c2224b6a9497@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/18/20 6:18 AM, Petr Machata wrote:
-> @@ -154,6 +161,7 @@ static int red_parse_opt(struct qdisc_util *qu, int argc, char **argv,
->  	addattr_l(n, 1024, TCA_RED_STAB, sbuf, 256);
->  	max_P = probability * pow(2, 32);
->  	addattr_l(n, 1024, TCA_RED_MAX_P, &max_P, sizeof(max_P));
-> +	addattr_l(n, 1024, TCA_RED_FLAGS, &flags_bf, sizeof(flags_bf));
+syzbot has found a reproducer for the following crash on:
 
-the attr is a bitfield32 here ...
+HEAD commit:    770fbb32 Add linux-next specific files for 20200228
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=108618ade00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=576314276bce4ad5
+dashboard link: https://syzkaller.appspot.com/bug?extid=04e804c8c2224b6a9497
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11fc5e75e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10707013e00000
 
->  	addattr_nest_end(n, tail);
->  	return 0;
->  }
-> @@ -183,6 +191,10 @@ static int red_print_opt(struct qdisc_util *qu, FILE *f, struct rtattr *opt)
->  	    RTA_PAYLOAD(tb[TCA_RED_MAX_P]) >= sizeof(__u32))
->  		max_P = rta_getattr_u32(tb[TCA_RED_MAX_P]);
->  
-> +	if (tb[TCA_RED_FLAGS] &&
-> +	    RTA_PAYLOAD(tb[TCA_RED_FLAGS]) >= sizeof(__u32))
-> +		qopt->flags = rta_getattr_u32(tb[TCA_RED_FLAGS]);
-> +
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+04e804c8c2224b6a9497@syzkaller.appspotmail.com
 
-but a u32 here. These should be consistent.
+==================================================================
+BUG: KASAN: use-after-free in instrument_atomic_write include/linux/instrumented.h:71 [inline]
+BUG: KASAN: use-after-free in atomic_inc include/asm-generic/atomic-instrumented.h:240 [inline]
+BUG: KASAN: use-after-free in hci_sock_bind+0x591/0x1140 net/bluetooth/hci_sock.c:1250
+Write of size 4 at addr ffff888089679078 by task syz-executor918/10028
 
+CPU: 1 PID: 10028 Comm: syz-executor918 Not tainted 5.6.0-rc3-next-20200228-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd3/0x315 mm/kasan/report.c:374
+ __kasan_report.cold+0x1a/0x32 mm/kasan/report.c:506
+ kasan_report+0xe/0x20 mm/kasan/common.c:618
+ check_memory_region_inline mm/kasan/generic.c:185 [inline]
+ check_memory_region+0x128/0x190 mm/kasan/generic.c:192
+ instrument_atomic_write include/linux/instrumented.h:71 [inline]
+ atomic_inc include/asm-generic/atomic-instrumented.h:240 [inline]
+ hci_sock_bind+0x591/0x1140 net/bluetooth/hci_sock.c:1250
+ __sys_bind+0x20e/0x250 net/socket.c:1662
+ __do_sys_bind net/socket.c:1673 [inline]
+ __se_sys_bind net/socket.c:1671 [inline]
+ __x64_sys_bind+0x6f/0xb0 net/socket.c:1671
+ do_syscall_64+0xf6/0x790 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x4435a9
+Code: e8 1c e7 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 ab 06 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffd328c7b48 EFLAGS: 00000246 ORIG_RAX: 0000000000000031
+RAX: ffffffffffffffda RBX: 0000000000000006 RCX: 00000000004435a9
+RDX: 0000000000000006 RSI: 0000000020000080 RDI: 0000000000000006
+RBP: 0000000000000005 R08: 00000000000003e8 R09: 00000000000003e8
+R10: 00000000000003e8 R11: 0000000000000246 R12: 0000000000dc6914
+R13: 000000000000000b R14: 0000000000000000 R15: 0000000000000000
+
+Allocated by task 10029:
+ save_stack+0x1b/0x40 mm/kasan/common.c:49
+ set_track mm/kasan/common.c:57 [inline]
+ __kasan_kmalloc mm/kasan/common.c:492 [inline]
+ __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:465
+ kmem_cache_alloc_trace+0x153/0x7d0 mm/slab.c:3551
+ kmalloc include/linux/slab.h:555 [inline]
+ kzalloc include/linux/slab.h:669 [inline]
+ hci_alloc_dev+0x3e/0x1e20 net/bluetooth/hci_core.c:3249
+ __vhci_create_device+0x100/0x5b0 drivers/bluetooth/hci_vhci.c:99
+ vhci_create_device drivers/bluetooth/hci_vhci.c:148 [inline]
+ vhci_get_user drivers/bluetooth/hci_vhci.c:205 [inline]
+ vhci_write+0x2bf/0x450 drivers/bluetooth/hci_vhci.c:285
+ call_write_iter include/linux/fs.h:1901 [inline]
+ new_sync_write+0x49c/0x700 fs/read_write.c:483
+ __vfs_write+0xc9/0x100 fs/read_write.c:496
+ vfs_write+0x262/0x5c0 fs/read_write.c:558
+ ksys_write+0x127/0x250 fs/read_write.c:611
+ do_syscall_64+0xf6/0x790 arch/x86/entry/common.c:295
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Freed by task 10029:
+ save_stack+0x1b/0x40 mm/kasan/common.c:49
+ set_track mm/kasan/common.c:57 [inline]
+ kasan_set_free_info mm/kasan/common.c:314 [inline]
+ __kasan_slab_free+0xf7/0x140 mm/kasan/common.c:453
+ __cache_free mm/slab.c:3426 [inline]
+ kfree+0x109/0x2b0 mm/slab.c:3757
+ bt_host_release+0x15/0x20 net/bluetooth/hci_sysfs.c:86
+ device_release+0x71/0x200 drivers/base/core.c:1358
+ kobject_cleanup lib/kobject.c:693 [inline]
+ kobject_release lib/kobject.c:722 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ kobject_put+0x1e7/0x2e0 lib/kobject.c:739
+ put_device+0x1b/0x30 drivers/base/core.c:2586
+ vhci_release+0x78/0xe0 drivers/bluetooth/hci_vhci.c:341
+ __fput+0x2da/0x850 fs/file_table.c:280
+ task_work_run+0x13f/0x1b0 kernel/task_work.c:113
+ tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+ exit_to_usermode_loop+0x2fa/0x360 arch/x86/entry/common.c:165
+ prepare_exit_to_usermode arch/x86/entry/common.c:196 [inline]
+ syscall_return_slowpath arch/x86/entry/common.c:279 [inline]
+ do_syscall_64+0x672/0x790 arch/x86/entry/common.c:305
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+The buggy address belongs to the object at ffff888089678000
+ which belongs to the cache kmalloc-8k of size 8192
+The buggy address is located 4216 bytes inside of
+ 8192-byte region [ffff888089678000, ffff88808967a000)
+The buggy address belongs to the page:
+page:ffffea0002259e00 refcount:1 mapcount:0 mapping:00000000baf255d8 index:0x0 head:ffffea0002259e00 order:2 compound_mapcount:0 compound_pincount:0
+flags: 0xfffe0000010200(slab|head)
+raw: 00fffe0000010200 ffffea0002a19608 ffffea0002500e08 ffff8880aa0021c0
+raw: 0000000000000000 ffff888089678000 0000000100000001 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff888089678f00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888089678f80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff888089679000: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                                                                ^
+ ffff888089679080: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff888089679100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
