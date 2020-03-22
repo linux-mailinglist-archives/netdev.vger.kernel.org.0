@@ -2,100 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E45A218EA00
-	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 17:04:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7957D18EA38
+	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 17:18:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726752AbgCVQEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 12:04:55 -0400
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:38110 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726137AbgCVQEz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 12:04:55 -0400
-Received: by mail-qv1-f66.google.com with SMTP id p60so5875591qva.5
-        for <netdev@vger.kernel.org>; Sun, 22 Mar 2020 09:04:54 -0700 (PDT)
+        id S1726925AbgCVQSW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 12:18:22 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:39613 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726502AbgCVQSV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 12:18:21 -0400
+Received: by mail-pg1-f195.google.com with SMTP id b22so5863467pgb.6;
+        Sun, 22 Mar 2020 09:18:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3S/mcHuqke0bXrgqAMvn4in8E/znQrsYqjYUb8zphDc=;
-        b=pNpUrjq3eMIls+sR4PIv9Cj5COnVpIta+sBaf7iGLOYNP3D9KpV8BWa6y+eS4Gc6oM
-         ZjMXyV9x33B5u7yED8b05OvjIQGnYZX9k4qrBFNPborxnP4hM6aeaYWard9ZUfdPS3uV
-         x9EBrdxULGqIS3/fsyeCOgLrRBt6CZUTQRBuY2rkVpY5j54y/OnjnYiE5fEAGNWTkpB6
-         TbIjSKLd2Tw2tqlsxaHiu0p64qwCzpk0cOkGViR5DIg+qKSVbIO0t0Ai1gi2zez7E/CP
-         qPQwhTguoYCyTeHp+2SEUFexYyNdMd+KJfVnNReb3bbVRWsyFiy6thiWv1da2B/GTBuC
-         DrFQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=ZgXf5QsLU8moUeFbGruEqUCy/5/OEI1y7w06IrP82bU=;
+        b=RtLaXqzwZI9+/JGvMRZAHdpZi8i8pV0EDDKeoyZeKUR7X0F+Y1CGzGNtCwdlSZ9zFs
+         rparodvlt1pi2kMcwA5cPjdY0AcEzgJATpDsoqFG4THrRz1v+uu8xSMMQeio5I//Kj/q
+         +l2BnGahK6KoX+vGIsJXyNFdOZez5GO8F5bjNesohBbplmNsbHabWf9+u14bZ4PcJFWL
+         HcFmxfGwB15OdcFUPVxtmFDLAamB/tx7MvVaWb+mORSFuhmEcO3ZX4Pslz17xzB1TerA
+         Hb8WBZdzu68ADjptzoZgwSdD2X//RkO1YwTcPekPY+BuRd8y04QJWJLnIySslbUU6EEG
+         7u0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3S/mcHuqke0bXrgqAMvn4in8E/znQrsYqjYUb8zphDc=;
-        b=p6YbYSEaOfFweGmIFil+yygGp6cbp88Auq1udFhuJkhe2hdYWwnGC0thBTrUDcjUBt
-         Q0drFygwwrzIk1xnY0kMdCc9BNEOn7C/KqE60nXw47FyWz+Wu4MoUKYmPl/Q1/9E/dpK
-         gLxpUulbyzf45yNzsyegXEgKECIG0+coigT+daZcHvA6uhsf4P6NxH/cmS7hCBYMSs6y
-         a5fxXuI75sYvoxx9Az1YWRSLRvY/ejrpzSQqUd6Xj7/yY74KyjzKlvR5EdnTO6+uxpT+
-         31Lf5zWp6YZDU6Byz6JTvmXO3aipjl5X7/C7O+423fgH7hb9zBdkber3fyRGEoZ15gM5
-         C+EA==
-X-Gm-Message-State: ANhLgQ3JhceMhDT/e7hbWWsX5LC2LwaUZrbaWjoGsgLVqAIGhhlNtLBg
-        PleIQPy2+tmWr9LW4jh8mbBpko0M
-X-Google-Smtp-Source: ADFU+vvl4BxXB+cuLxZb0EGYTvmIt7lKwNyx2FNFza2z0+BlgKK0Fxy9IlrFgtL1QwGODcZYu2+ZDw==
-X-Received: by 2002:a05:6214:1449:: with SMTP id b9mr17349605qvy.217.1584893093478;
-        Sun, 22 Mar 2020 09:04:53 -0700 (PDT)
-Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:8798:f98:652b:63f1])
-        by smtp.gmail.com with ESMTPSA id l188sm8928042qkc.106.2020.03.22.09.04.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Mar 2020 09:04:52 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, sd@queasysnail.net,
-        Willem de Bruijn <willemb@google.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] macsec: restrict to ethernet devices
-Date:   Sun, 22 Mar 2020 12:04:49 -0400
-Message-Id: <20200322160449.79185-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.25.1.696.g5e7596f4ac-goog
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ZgXf5QsLU8moUeFbGruEqUCy/5/OEI1y7w06IrP82bU=;
+        b=PjUDgJkjIidbUvKY3QTyG+4l+fkSpP11DpvL5Y2P3lsOZ5/+z5ZdTCq4CfrQ5JpG6J
+         12zSEwBTnVzRQele+7HuSGJiqg3R5/3z/CeuxnuN2gmjSlkWLD2INnaFcjPxAHlPao25
+         Ptj7Qe2TWcWArtvGsH7pcBP5ZOmOmfQDNqZfBpfOa4zwn8RvAtsfGJLmc23MJJA2O4sM
+         A6Q0qkl/qfkXIZa5YO/ym9HuFMxlSLsGf2zhT6rmnDp+4vJyE6a/VIy5vAP8eDgu7Zgl
+         BiaWXYJUzLv7zzz5q2V4F5dMgGOjC9Mpeh5OapMJG0sucRdoHSIADKPrEAG+VGBJOLz5
+         rCIg==
+X-Gm-Message-State: ANhLgQ2imhliaLRtci4jyEfKhmjSBaoXAIrnhSfRdTpDH1TeD8TfKxHY
+        +rtbCQbZTQx/6F6vzfBX4RU=
+X-Google-Smtp-Source: ADFU+vvan0sQfqD07F/TK9MP8hmyuLR1qMO7rFAedZvxNYSgKXU619VndCDd+iPYT9613B2mXnn6Pg==
+X-Received: by 2002:a63:1e57:: with SMTP id p23mr18544525pgm.316.1584893899795;
+        Sun, 22 Mar 2020 09:18:19 -0700 (PDT)
+Received: from localhost (216.24.188.11.16clouds.com. [216.24.188.11])
+        by smtp.gmail.com with ESMTPSA id mq18sm10682596pjb.6.2020.03.22.09.18.18
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 22 Mar 2020 09:18:19 -0700 (PDT)
+Date:   Mon, 23 Mar 2020 00:18:14 +0800
+From:   Dejin Zheng <zhengdejin5@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, gregkh@linuxfoundation.org,
+        broonie@kernel.org, alexios.zavras@intel.com, tglx@linutronix.de,
+        mchehab+samsung@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v4 6/9] net: phy: marvell10g: use
+ phy_read_mmd_poll_timeout() to simplify the code
+Message-ID: <20200322161814.GA20189@nuc8i5>
+References: <20200322065555.17742-1-zhengdejin5@gmail.com>
+ <20200322065555.17742-7-zhengdejin5@gmail.com>
+ <20200322153659.GO11481@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200322153659.GO11481@lunn.ch>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
-
-Only attach macsec to ethernet devices.
-
-Syzbot was able able trigger a KMSAN warning in macsec_handle_frame
-by attaching to a phonet device.
-
-Macvlan has a similar check in macvlan_port_create.
-
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- drivers/net/macsec.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 6ec6fc191a6e..92bc2b2df660 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -19,6 +19,7 @@
- #include <net/gro_cells.h>
- #include <net/macsec.h>
- #include <linux/phy.h>
-+#include <linux/if_arp.h>
- 
- #include <uapi/linux/if_macsec.h>
- 
-@@ -3665,6 +3666,8 @@ static int macsec_newlink(struct net *net, struct net_device *dev,
- 	real_dev = __dev_get_by_index(net, nla_get_u32(tb[IFLA_LINK]));
- 	if (!real_dev)
- 		return -ENODEV;
-+	if (real_dev->type != ARPHRD_ETHER)
-+		return -EINVAL;
- 
- 	dev->priv_flags |= IFF_MACSEC;
- 
--- 
-2.25.1.696.g5e7596f4ac-goog
+On Sun, Mar 22, 2020 at 04:36:59PM +0100, Andrew Lunn wrote:
+> > --- a/drivers/net/phy/marvell10g.c
+> > +++ b/drivers/net/phy/marvell10g.c
+> > @@ -241,22 +241,17 @@ static int mv3310_power_up(struct phy_device *phydev)
+> >  
+> >  static int mv3310_reset(struct phy_device *phydev, u32 unit)
+> >  {
+> > -	int retries, val, err;
+> > +	int val, err;
+> >  
+> >  	err = phy_modify_mmd(phydev, MDIO_MMD_PCS, unit + MDIO_CTRL1,
+> >  			     MDIO_CTRL1_RESET, MDIO_CTRL1_RESET);
+> >  	if (err < 0)
+> >  		return err;
+> >  
+> > -	retries = 20;
+> > -	do {
+> > -		msleep(5);
+> > -		val = phy_read_mmd(phydev, MDIO_MMD_PCS, unit + MDIO_CTRL1);
+> > -		if (val < 0)
+> > -			return val;
+> > -	} while (val & MDIO_CTRL1_RESET && --retries);
+> 
+> This is another example of the sleep happening first. To keep the code
+> more similar, you probably should add an msleep(5) before calling
+> phy_read_mmd_poll_timeout().
+> 
+> 	Andrew
+Andrew, you're right, do it right away. Thank you for helping me so
+patiently!
 
