@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 094B618EB18
+	by mail.lfdr.de (Postfix) with ESMTP id 83F8C18EB19
 	for <lists+netdev@lfdr.de>; Sun, 22 Mar 2020 18:51:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726897AbgCVRtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 13:49:53 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:38005 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726869AbgCVRtx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 13:49:53 -0400
-Received: by mail-pl1-f196.google.com with SMTP id w3so4863886plz.5;
-        Sun, 22 Mar 2020 10:49:51 -0700 (PDT)
+        id S1726974AbgCVRt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 13:49:59 -0400
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:52484 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726786AbgCVRt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 13:49:57 -0400
+Received: by mail-pj1-f66.google.com with SMTP id ng8so5010009pjb.2;
+        Sun, 22 Mar 2020 10:49:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eBI1fOyFAnh9kYunzCXwVSyGJl58uc4POnZ1ZNbJnhI=;
-        b=HWbNwU4beCX3e6YY3C3JucuQ0Lf1/KuM7c2PM+v6sPA//MlFTMHYP7fByddN78jS0o
-         7uNscZPdT61JQLjJVsPmFedAEGxOqjCWnj5ENKsfRFUnrEwbutCOMhR+xPlJUfvdo6/P
-         9xozdPXPdrxWa7h+6iN28CNNgAH0o7qSr0BUhQk332P/JRj5WhwMe5FAbfAuHVlJdvKN
-         4G3DuEbmXzKVG/FRKif2JhrjHFNBQLrvnlle9LttE1EAWCB5aQsLuHO8DhaNkFUz00Om
-         5pcqwjYWcmI96XDe6joDNmPdtbFxz9oaGcHI9P9uTiVNlP0U/eUmNU4y9TqEY3Lq4kxz
-         To2w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Y6ygVFYqMzt2De4r6GDL67AxV7bnQMxmtxe+tWMMmbQ=;
+        b=pN3Mim6muNyc7udwZzmuWD4AWAHO1zuyiiRdb8q4cMnhpuyYzy+HaI0thchVjCDY6S
+         ISwG8zZpspUERPG94L+4Og2NZOc3+XMO7pDCRTrZ45FDkKKdOLb83BJlUOz3bQ627V7k
+         xHs6gEyVCskuDdnge0odpvqj2xxZAVqzhFLmFZCnrRMrlMRizz5CUA8dJCRa5nZQFZAJ
+         coL8+1kKuSgiCHdAFf7sZoPapYgr8EBwep5OmSeZd/0AoYYMnC7K+CwOs6IK33ufufQJ
+         91+e5sn6es0QOpSsYks16FEIVthfCXZFDxiET5vIwff5h29dW17GaXsB/9LfT1IX4Y/h
+         k3Kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eBI1fOyFAnh9kYunzCXwVSyGJl58uc4POnZ1ZNbJnhI=;
-        b=TGV8erUImv0vm2XyYLZLdj5zkoq0IueubvwhTrCT2cOhhK4r5dbqKcUjkb5XGbESuj
-         0Tk7iY5/RKboBXZYPOavtcjAQAjq+tK/B/ie8xhICwI8ec0ylNy2e3qCvi6eSRLnoQOD
-         ZVz5e6KAESeek9oBG2zAPu3AcnE/jfM65OfzLVwtOVDmV9R1RDbohIkL14N7db9p/wBP
-         bmr8qy/faHxMtukRoaZkuSj8MHc2bHKWnGAR2UKhfatbZ8QSlG0kLmF7ox0R5Rzb/aCB
-         GoWjl9phjpL7N9njPcfhwL5tCCgAxOC9LwlD0m8dsju//B+Jslg0Zn03XFRXmry9DHKW
-         0eLg==
-X-Gm-Message-State: ANhLgQ0XQSmLp/HRBy2mKWNiGKGeWuZ3l8qLsPMmwDSCN6EPcWg3/TPX
-        XoneWo259h5DvK6bXKArTWk=
-X-Google-Smtp-Source: ADFU+vt+qWs5qCqT4eTDA7QOL5+LyYtp81v7eRas/d3P1xroRdbp0/pBSSxiHFMSYW46YuEDpvVtIg==
-X-Received: by 2002:a17:90a:a40f:: with SMTP id y15mr21922925pjp.143.1584899390870;
-        Sun, 22 Mar 2020 10:49:50 -0700 (PDT)
-Received: from localhost ([216.24.188.11])
-        by smtp.gmail.com with ESMTPSA id a3sm10965055pfg.172.2020.03.22.10.49.49
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Y6ygVFYqMzt2De4r6GDL67AxV7bnQMxmtxe+tWMMmbQ=;
+        b=glhOSRLOIaZobhu+HAEnhoZh8z+ye3/gFle+BOQuaJ9TnY7Hpz8S0V9EN73r/WIYfK
+         WvY6GtgZZNieHd3zbccLuCXMavtuLywHdxZGolcytSvBnZz6dykR+wKDEKACC+0qMbVk
+         D1T9mWiwVyycGuYBOzSgGqEFS7Uca6ig0UDmR5c8riqxT5DBQ9N0i49kwUHmP5M5psQ1
+         mjUs0GHpvkLdtkgawYf9u5cJr0DwAfP78qLhr3hxvWJdz7c5uSHIiuUXHZ/kh02P4v7Z
+         x+zW4DFrL8LdI/XIfGBkkM0RsUjhTjFYZyIqeYvkFVVzm44e8FxsAKwH7nAlEu+MZLHP
+         6axQ==
+X-Gm-Message-State: ANhLgQ22LAnNbKo2JERtSjssq/wmdWI/IRiWFE0+uKMCkluQ+vHxi0GF
+        DzkKdHG5udV/IhbPciBn+TA=
+X-Google-Smtp-Source: ADFU+vt6T37tW8x+Rkrx3qm7lQ1EZuux4e1WSMCSr2mC6XYMjjTJaSm5Z3KbPrqVO+Ce2SmNOXIoqg==
+X-Received: by 2002:a17:90a:5805:: with SMTP id h5mr9098496pji.175.1584899396035;
+        Sun, 22 Mar 2020 10:49:56 -0700 (PDT)
+Received: from localhost (216.24.188.11.16clouds.com. [216.24.188.11])
+        by smtp.gmail.com with ESMTPSA id s4sm3121073pgm.18.2020.03.22.10.49.55
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 22 Mar 2020 10:49:50 -0700 (PDT)
+        Sun, 22 Mar 2020 10:49:55 -0700 (PDT)
 From:   Dejin Zheng <zhengdejin5@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         linux@armlinux.org.uk, davem@davemloft.net,
@@ -51,10 +51,12 @@ To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         gregkh@linuxfoundation.org, broonie@kernel.org, tglx@linutronix.de,
         netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH net-next v5 00/10] introduce read_poll_timeout
-Date:   Mon, 23 Mar 2020 01:49:33 +0800
-Message-Id: <20200322174943.26332-1-zhengdejin5@gmail.com>
+Subject: [PATCH net-next v5 01/10] iopoll: introduce read_poll_timeout macro
+Date:   Mon, 23 Mar 2020 01:49:34 +0800
+Message-Id: <20200322174943.26332-2-zhengdejin5@gmail.com>
 X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200322174943.26332-1-zhengdejin5@gmail.com>
+References: <20200322174943.26332-1-zhengdejin5@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -62,79 +64,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch sets is introduce read_poll_timeout macro, it is an extension
-of readx_poll_timeout macro. the accessor function op just supports only
-one parameter in the readx_poll_timeout macro, but this macro can
-supports multiple variable parameters for it. so functions like
-phy_read(struct phy_device *phydev, u32 regnum) and
-phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum) can
-use this poll timeout framework.
+this macro is an extension of readx_poll_timeout macro. the accessor
+function op just supports only one parameter in the readx_poll_timeout
+macro, but this macro can supports multiple variable parameters for
+it. so functions like phy_read(struct phy_device *phydev, u32 regnum)
+and phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum) can
+also use this poll timeout framework.
 
-the first patch introduce read_poll_timeout macro, and the second patch
-redefined readx_poll_timeout macro by read_poll_timeout(), and the other
-patches are examples using read_poll_timeout macro.
-
+Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+---
 v4 -> v5:
-	- add some msleep() before call phy_read_mmd_poll_timeout() to
-	  keep the code more similar in patch 6 and patch 9.
-	- add a patch of drop by v4, it can add msleep before call
-	  phy_read_poll_timeout() to keep the code more similar.
+	- no changed
 v3 -> v4:
-	- add 3 examples of using new functions.
-	- deal with precedence issues for parameter cond.
-	- drop a patch about phy_poll_reset() function.
+	- no changed
 v2 -> v3:
-	- modify the parameter order of newly added functions.
-	  phy_read_mmd_poll_timeout(val, cond, sleep_us, timeout_us, \
-				     phydev, devaddr, regnum)
-				||
-				\/
-	  phy_read_mmd_poll_timeout(phydev, devaddr regnum, val, cond, \
-				    sleep_us, timeout_us)
-
-	  phy_read_poll_timeout(val, cond, sleep_us, timeout_us, \
-				phydev, regnum)
-				||
-				\/
-	  phy_read_poll_timeout(phydev, regnum, val, cond, sleep_us, \
-				timeout_us)
+	- no changed
 v1 -> v2:
-	- passed a phydev, device address and a reg to replace args...
-	  parameter in phy_read_mmd_poll_timeout() by Andrew Lunn 's
-	  suggestion in patch 3. Andrew Lunn <andrew@lunn.ch>, Thanks
-	  very much for your help!
-	- also in patch 3, handle phy_read_mmd return an error(the return
-	  value < 0) in phy_read_mmd_poll_timeout(). Thanks Andrew
-	  again.
-	- in patch 6, pass a phydev and a reg to replace args...
-	  parameter in phy_read_poll_timeout(), and also handle the
-	  phy_read() function's return error.
+	- no changed
 
-Dejin Zheng (10):
-  iopoll: introduce read_poll_timeout macro
-  iopoll: redefined readx_poll_timeout macro to simplify the code
-  net: phy: introduce phy_read_mmd_poll_timeout macro
-  net: phy: bcm84881: use phy_read_mmd_poll_timeout() to simplify the
-    code
-  net: phy: aquantia: use phy_read_mmd_poll_timeout() to simplify the
-    code
-  net: phy: marvell10g: use phy_read_mmd_poll_timeout() to simplify the
-    code
-  net: phy: introduce phy_read_poll_timeout macro
-  net: phy: use phy_read_poll_timeout() to simplify the code
-  net: phy: smsc: use phy_read_poll_timeout() to simplify the code
-  net: phy: tja11xx: use phy_read_poll_timeout() to simplify the code
+ include/linux/iopoll.h | 40 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
- drivers/net/phy/aquantia_main.c | 13 ++++--------
- drivers/net/phy/bcm84881.c      | 27 ++++---------------------
- drivers/net/phy/marvell10g.c    | 16 ++++++---------
- drivers/net/phy/nxp-tja11xx.c   | 16 +++------------
- drivers/net/phy/phy_device.c    | 17 +++++-----------
- drivers/net/phy/smsc.c          | 17 ++++++----------
- include/linux/iopoll.h          | 36 ++++++++++++++++++++++++++-------
- include/linux/phy.h             | 28 +++++++++++++++++++++++++
- 8 files changed, 85 insertions(+), 85 deletions(-)
-
+diff --git a/include/linux/iopoll.h b/include/linux/iopoll.h
+index 35e15dfd4155..7d44a2e20267 100644
+--- a/include/linux/iopoll.h
++++ b/include/linux/iopoll.h
+@@ -13,6 +13,46 @@
+ #include <linux/errno.h>
+ #include <linux/io.h>
+ 
++/**
++ * read_poll_timeout - Periodically poll an address until a condition is
++ *			met or a timeout occurs
++ * @op: accessor function (takes @args as its arguments)
++ * @val: Variable to read the value into
++ * @cond: Break condition (usually involving @val)
++ * @sleep_us: Maximum time to sleep between reads in us (0
++ *            tight-loops).  Should be less than ~20ms since usleep_range
++ *            is used (see Documentation/timers/timers-howto.rst).
++ * @timeout_us: Timeout in us, 0 means never timeout
++ * @args: arguments for @op poll
++ *
++ * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
++ * case, the last read value at @args is stored in @val. Must not
++ * be called from atomic context if sleep_us or timeout_us are used.
++ *
++ * When available, you'll probably want to use one of the specialized
++ * macros defined below rather than this macro directly.
++ */
++#define read_poll_timeout(op, val, cond, sleep_us, timeout_us, args...)	\
++({ \
++	u64 __timeout_us = (timeout_us); \
++	unsigned long __sleep_us = (sleep_us); \
++	ktime_t __timeout = ktime_add_us(ktime_get(), __timeout_us); \
++	might_sleep_if((__sleep_us) != 0); \
++	for (;;) { \
++		(val) = op(args); \
++		if (cond) \
++			break; \
++		if (__timeout_us && \
++		    ktime_compare(ktime_get(), __timeout) > 0) { \
++			(val) = op(args); \
++			break; \
++		} \
++		if (__sleep_us) \
++			usleep_range((__sleep_us >> 2) + 1, __sleep_us); \
++	} \
++	(cond) ? 0 : -ETIMEDOUT; \
++})
++
+ /**
+  * readx_poll_timeout - Periodically poll an address until a condition is met or a timeout occurs
+  * @op: accessor function (takes @addr as its only argument)
 -- 
 2.25.0
 
