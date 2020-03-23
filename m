@@ -2,135 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8C2A18F579
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 14:15:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B95618F5CA
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 14:34:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728495AbgCWNP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 09:15:26 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:12316 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728426AbgCWNP0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 09:15:26 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02ND6OGd010599;
-        Mon, 23 Mar 2020 06:15:22 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=4tRVerfTUmvExULVhvv03GDgv4tbrQtjBQEwIX/LA9Q=;
- b=kNdCotXmmPxnXQpd0/1/uSq9zLi1xut9+o4hG9KvhqvnsUGzrl8mWFuF2BGlBlJLCUJs
- YdSxBpELVtq5UT9TSyJ5fW1lesKFsXLBio+8vwRTGHD7E6XIX8hx36mmRjXloTPP8V2V
- NZ9Frv+PW6H6xrLQ4fm/H9KWnmLjobss+BrFjOj8VrKSdTZ2k7Km9C7KM5krJgjKkNhN
- qeV4M95oQyd7y+SuFmLUT/4UyMV7kd61XBtqLuUHnvQCem6XOC/qJrDmFICk8nbIYBQr
- lhI5XVBbdigsce0kI97RVEwqfc5k2q+mEC/LrOBivz8ycZ5I5OF1dCwDYIXMf6FRsiRH mw== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2ywg9nefsm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 23 Mar 2020 06:15:22 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 23 Mar
- 2020 06:15:21 -0700
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 23 Mar
- 2020 06:15:20 -0700
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 23 Mar 2020 06:15:20 -0700
-Received: from localhost.localdomain (unknown [10.9.16.91])
-        by maili.marvell.com (Postfix) with ESMTP id ED32C3F703F;
-        Mon, 23 Mar 2020 06:15:18 -0700 (PDT)
-From:   Igor Russkikh <irusskikh@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     Mark Starovoytov <mstarovoitov@marvell.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        "Igor Russkikh" <irusskikh@marvell.com>
-Subject: [PATCH net-next 17/17] net: atlantic: add XPN handling
-Date:   Mon, 23 Mar 2020 16:13:48 +0300
-Message-ID: <20200323131348.340-18-irusskikh@marvell.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200323131348.340-1-irusskikh@marvell.com>
-References: <20200323131348.340-1-irusskikh@marvell.com>
+        id S1728434AbgCWNev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 09:34:51 -0400
+Received: from script.cs.helsinki.fi ([128.214.11.1]:60594 "EHLO
+        script.cs.helsinki.fi" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728407AbgCWNev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 09:34:51 -0400
+X-DKIM: Courier DKIM Filter v0.50+pk-2017-10-25 mail.cs.helsinki.fi Mon, 23 Mar 2020 15:34:40 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cs.helsinki.fi;
+         h=date:from:to:cc:subject:in-reply-to:message-id:references
+        :mime-version:content-type; s=dkim20130528; bh=WtvmLsM9AN1IIyOYJ
+        uWzjEvieT5KXChUvNYf99oxXYI=; b=MdBd7SsiUlwyGSZxydhysNtVO/Ov/++6p
+        iUxqvQjs9JkmY/sDkXu8NYQwu+zjuG4tty3vXV7tFS9WVJWLjhrflshtBJuCluxr
+        WwllvwJhTIW4dRJqriRC4giTYinmM0/M31FKyOILKdO5yNt8Aqnb8e4aa1gIRD4o
+        wYUrm+rxeU=
+Received: from whs-18.cs.helsinki.fi (whs-18.cs.helsinki.fi [128.214.166.46])
+  (TLS: TLSv1/SSLv3,256bits,AES256-GCM-SHA384)
+  by mail.cs.helsinki.fi with ESMTPS; Mon, 23 Mar 2020 15:34:40 +0200
+  id 00000000005A01CB.000000005E78BAF0.00005EC5
+Date:   Mon, 23 Mar 2020 15:34:40 +0200 (EET)
+From:   "=?ISO-8859-15?Q?Ilpo_J=E4rvinen?=" <ilpo.jarvinen@cs.helsinki.fi>
+X-X-Sender: ijjarvin@whs-18.cs.helsinki.fi
+To:     Yuchung Cheng <ycheng@google.com>
+cc:     Dave Taht <dave.taht@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
+Subject: Re: [RFC PATCH 28/28] tcp: AccECN sysctl documentation
+In-Reply-To: <CAK6E8=f=tB1Dw-ns5hOysvSbQ1VGJJ1-nLQXtxC6rfZbr5Tnww@mail.gmail.com>
+Message-ID: <alpine.DEB.2.20.2003231528460.32422@whs-18.cs.helsinki.fi>
+References: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi> <1584524612-24470-29-git-send-email-ilpo.jarvinen@helsinki.fi> <CAA93jw7_YG-KMns8UP-aTPHNjPG+A_rwWUWbt1+8i4+UNhALnA@mail.gmail.com> <alpine.DEB.2.20.2003202348250.21767@whs-18.cs.helsinki.fi>
+ <CAK6E8=f=tB1Dw-ns5hOysvSbQ1VGJJ1-nLQXtxC6rfZbr5Tnww@mail.gmail.com>
+User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
- definitions=2020-03-23_04:2020-03-21,2020-03-23 signatures=0
+Content-Type: multipart/mixed; boundary="=_script-24287-1584970480-0001-2"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mark Starovoytov <mstarovoitov@marvell.com>
+This is a MIME-formatted message.  If you see this text it means that your
+E-mail software does not support MIME-formatted messages.
 
-This patch adds XPN handling.
-Our driver doesn't support XPN, but we should still update a couple
-of places in the code, because the size of 'next_pn' field has
-changed.
+--=_script-24287-1584970480-0001-2
+Content-Type: text/plain; charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
----
- drivers/net/ethernet/aquantia/atlantic/aq_macsec.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+On Fri, 20 Mar 2020, Yuchung Cheng wrote:
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
-index dc1da79b8b26..bc23b8bf4a72 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
-@@ -461,6 +461,9 @@ static int aq_mdo_add_secy(struct macsec_context *ctx)
- 	u32 txsc_idx;
- 	int ret = 0;
- 
-+	if (secy->xpn)
-+		return -EOPNOTSUPP;
-+
- 	sc_sa = sc_sa_from_num_an(MACSEC_NUM_AN);
- 	if (sc_sa == aq_macsec_sa_sc_not_used)
- 		return -EINVAL;
-@@ -567,6 +570,7 @@ static int aq_update_txsa(struct aq_nic_s *nic, const unsigned int sc_idx,
- 			  const struct macsec_tx_sa *tx_sa,
- 			  const unsigned char *key, const unsigned char an)
- {
-+	const u32 next_pn = tx_sa->next_pn_halves.lower;
- 	struct aq_mss_egress_sakey_record key_rec;
- 	const unsigned int sa_idx = sc_idx | an;
- 	struct aq_mss_egress_sa_record sa_rec;
-@@ -574,12 +578,12 @@ static int aq_update_txsa(struct aq_nic_s *nic, const unsigned int sc_idx,
- 	int ret = 0;
- 
- 	netdev_dbg(nic->ndev, "set tx_sa %d: active=%d, next_pn=%d\n", an,
--		   tx_sa->active, tx_sa->next_pn);
-+		   tx_sa->active, next_pn);
- 
- 	memset(&sa_rec, 0, sizeof(sa_rec));
- 	sa_rec.valid = tx_sa->active;
- 	sa_rec.fresh = 1;
--	sa_rec.next_pn = tx_sa->next_pn;
-+	sa_rec.next_pn = next_pn;
- 
- 	ret = aq_mss_set_egress_sa_record(hw, &sa_rec, sa_idx);
- 	if (ret) {
-@@ -941,18 +945,19 @@ static int aq_update_rxsa(struct aq_nic_s *nic, const unsigned int sc_idx,
- 			  const unsigned char *key, const unsigned char an)
- {
- 	struct aq_mss_ingress_sakey_record sa_key_record;
-+	const u32 next_pn = rx_sa->next_pn_halves.lower;
- 	struct aq_mss_ingress_sa_record sa_record;
- 	struct aq_hw_s *hw = nic->aq_hw;
- 	const int sa_idx = sc_idx | an;
- 	int ret = 0;
- 
- 	netdev_dbg(nic->ndev, "set rx_sa %d: active=%d, next_pn=%d\n", an,
--		   rx_sa->active, rx_sa->next_pn);
-+		   rx_sa->active, next_pn);
- 
- 	memset(&sa_record, 0, sizeof(sa_record));
- 	sa_record.valid = rx_sa->active;
- 	sa_record.fresh = 1;
--	sa_record.next_pn = rx_sa->next_pn;
-+	sa_record.next_pn = next_pn;
- 
- 	ret = aq_mss_set_ingress_sa_record(hw, &sa_record, sa_idx);
- 	if (ret) {
--- 
-2.17.1
+> On Fri, Mar 20, 2020 at 3:40 PM Ilpo J=E4rvinen
+> <ilpo.jarvinen@cs.helsinki.fi> wrote:
+> >
+> > On Thu, 19 Mar 2020, Dave Taht wrote:
+> >
+> > > On Wed, Mar 18, 2020 at 2:44 AM Ilpo J=E4rvinen <ilpo.jarvinen@hels=
+inki.fi> wrote:
+> > > >
+> > > > From: Ilpo J=E4rvinen <ilpo.jarvinen@cs.helsinki.fi>
+> > > >
+> > > > Signed-off-by: Ilpo J=E4rvinen <ilpo.jarvinen@cs.helsinki.fi>
+> > > > ---
+> > > >  Documentation/networking/ip-sysctl.txt | 12 +++++++++---
+> > > >  1 file changed, 9 insertions(+), 3 deletions(-)
+> > > >
+> > > > diff --git a/Documentation/networking/ip-sysctl.txt b/Documentati=
+on/networking/ip-sysctl.txt
+> > > > index 5f53faff4e25..ecca6e1d6bea 100644
+> > > > --- a/Documentation/networking/ip-sysctl.txt
+> > > > +++ b/Documentation/networking/ip-sysctl.txt
+> > > > @@ -301,15 +301,21 @@ tcp_ecn - INTEGER
+> > > >                 0 Disable ECN.  Neither initiate nor accept ECN.
+> > > >                 1 Enable ECN when requested by incoming connectio=
+ns and
+> > > >                   also request ECN on outgoing connection attempt=
+s.
+> > > > -               2 Enable ECN when requested by incoming connectio=
+ns
+> > > > +               2 Enable ECN or AccECN when requested by incoming =
+connections
+> > > >                   but do not request ECN on outgoing connections.
+> > >
+> > > Changing existing user-behavior for this default seems to be overly
+> > > optimistic. Useful for testing, but...
+> >
+> > I disagree.
+> >
+> > The kernel default on ECN is/has been "do nothing" like forever. Yet,
+> > passively allowing ECN on servers is a low risk operation because not=
+hing
+> > will change before client actively asks for it. However, it was obvio=
+us
+> > that the servers didn't do that. The servers could have set tcp_ecn t=
+o 1
+> > (before 2 was there) which is low risk for _servers_ (unlike for clie=
+nts)
+> > but only very very few did. I don't believe servers would now
+> > intentionally pick 2 when they clearly didn't pick 1 earlier either.
+> >
+> > Adding 2 is/was an attempt to side-step the need for both ends to mak=
+e
+> > conscious decision by setting the sysctl (which servers didn't want t=
+o
+> > do). That is, 2 gives decision on what to do into the hands of the cl=
+ient
+> > side which was the true intent of 2 (in case you don't know, I made t=
+hat
+> > change).
+> What can a server configure to process only RFC3168 ECN if it prefers t=
+o?
 
+That's why I suggested the flag-based approach?
+
+> > If "full control" is the way to go, I think it should be made using f=
+lags
+> > instead, along these lines:
+> >
+> > 1: Enable RFC 3168 ECN in+out
+> > 2: Enable RFC 3168 ECN in (default on)
+> > 4: Enable Accurate ECN in (default on)
+> > 8: Enable Accurate ECN in+out
+> >
+> > Note that I intentionally reversed the in and in/out order for 4&8
+> > (something that couldn't be done with 1&2 to preserve meaning of 1).
+
+It should address any except "out" but no "in" (the meaning of 1 cannot=20
+be changed I think). But out w/o in doesn't sound very useful.
+
+--
+ i.
+
+--=_script-24287-1584970480-0001-2--
