@@ -2,95 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A29B718FE78
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 21:11:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FA8318FE9D
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 21:18:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725953AbgCWULm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 16:11:42 -0400
-Received: from smtprelay0085.hostedemail.com ([216.40.44.85]:44634 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725830AbgCWULm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 16:11:42 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay03.hostedemail.com (Postfix) with ESMTP id B46D3837F24D;
-        Mon, 23 Mar 2020 20:11:40 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2525:2560:2563:2682:2685:2828:2859:2892:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3871:3872:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:5007:6117:6691:7688:7903:8957:9025:10004:10400:10471:10848:11026:11232:11658:11914:12043:12295:12296:12297:12438:12740:12760:12895:13019:13069:13071:13255:13311:13357:13439:14096:14097:14180:14181:14659:14721:14775:21060:21080:21627:30054:30055:30060:30075:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: blood13_2b83efc501e40
-X-Filterd-Recvd-Size: 3004
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf05.hostedemail.com (Postfix) with ESMTPA;
-        Mon, 23 Mar 2020 20:11:38 +0000 (UTC)
-Message-ID: <03547be94c4944ca672c7aef2dd38b0fb1eedc84.camel@perches.com>
-Subject: Re: [PATCH v1 1/2] Bluetooth: btusb: Indicate Microsoft vendor
- extension for Intel 9460/9560 and 9160/9260
-From:   Joe Perches <joe@perches.com>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Miao-chen Chou <mcchou@chromium.org>,
-        Bluetooth Kernel Mailing List 
-        <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Date:   Mon, 23 Mar 2020 13:09:50 -0700
-In-Reply-To: <57C56801-7F3B-478A-83E9-1D2376C60666@holtmann.org>
-References: <20200323072824.254495-1-mcchou@chromium.org>
-         <20200323002820.v1.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
-         <04021BE3-63F7-4B19-9F0E-145785594E8C@holtmann.org>
-         <421d27670f2736c88e8c0693e3ff7c0dcfceb40b.camel@perches.com>
-         <57C56801-7F3B-478A-83E9-1D2376C60666@holtmann.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
+        id S1727138AbgCWUSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 16:18:36 -0400
+Received: from mail-il1-f196.google.com ([209.85.166.196]:34132 "EHLO
+        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727026AbgCWUSd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 16:18:33 -0400
+Received: by mail-il1-f196.google.com with SMTP id t11so4760598ils.1
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 13:18:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YLK+0MXB1YCUxEYtc8f13Y1fsHrfKc3dAmXJsyrL2Do=;
+        b=MGvfT/ZCDfekdgX8JfbS9dRhNv7TsWG45BVuA7cScrf/g2hAtpZMDVOH4JFd9FmJIz
+         UNq2Ctb9kX0KkGRMqGdKuQLxEpr7eObJYYK7K8HYUH04od7/EUHF/Xkm1SJxcyvYr82x
+         vZ44Kwvp1Zi49aSESmABiuDDl9lZXcwE13wak=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YLK+0MXB1YCUxEYtc8f13Y1fsHrfKc3dAmXJsyrL2Do=;
+        b=HTZFVPXLO2kzptTJDkPGMj6IPHEjekPSgjdhpC2PHKavNawmAAkJmQ88u4FgvWJS7e
+         tZ1Gi0P6x2xoEli1xtS3JdRFMRR4DLA9S0rc3nkI4ZCIZqzQP5igDp2oYNBBAJRjVtdU
+         K69NcR+06Vo2UERNPL0k3RpGE66HmG2/3x5gODnSEoU2fqpjNN/viHYhBxDha+ns6LsA
+         VyxGSBCZ150/0ug9fmXSG7MBaXhtnfPFnsceKZrexcie9pSlM1plLe7bTFvFz3JSdelb
+         uqNWreCUOhOUyGFxWj4mrt26ETq0ipJSzc2nKkaJ0vMRhWULANF7QhhjsS7Zqjj5qlaP
+         tZuQ==
+X-Gm-Message-State: ANhLgQ1pMqQiJ+C7U/0x+KiSgrOz6mTcSkVWDOlwKqYO2ia5G1NZo09N
+        e/fOkzNFqO7I0cFI2XMbzaWnWA==
+X-Google-Smtp-Source: ADFU+vu3Y3DQH33iLh270INKEB5slnS+0DWkO38NONLJhYtp9IFpWkBQ72+D2lCkujplpJK+kPlHeA==
+X-Received: by 2002:a92:91da:: with SMTP id e87mr21546890ill.183.1584994711567;
+        Mon, 23 Mar 2020 13:18:31 -0700 (PDT)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
+        by smtp.gmail.com with ESMTPSA id a5sm3363352ioq.43.2020.03.23.13.18.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Mar 2020 13:18:30 -0700 (PDT)
+Subject: Re: [PATCH v3] selftests: Fix seccomp to support relocatable build
+ (O=objdir)
+To:     Michael Ellerman <mpe@ellerman.id.au>,
+        Kees Cook <keescook@chromium.org>
+Cc:     shuah@kernel.org, luto@amacapital.net, wad@chromium.org,
+        daniel@iogearbox.net, kafai@fb.com, yhs@fb.com, andriin@fb.com,
+        gregkh@linuxfoundation.org, tglx@linutronix.de,
+        khilman@baylibre.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20200313212404.24552-1-skhan@linuxfoundation.org>
+ <8736a8qz06.fsf@mpe.ellerman.id.au> <202003161404.934CCE0@keescook>
+ <87h7yldohs.fsf@mpe.ellerman.id.au>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <eb90dd83-7988-b3ac-1ee6-bf16c0aacc10@linuxfoundation.org>
+Date:   Mon, 23 Mar 2020 14:18:29 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
 MIME-Version: 1.0
+In-Reply-To: <87h7yldohs.fsf@mpe.ellerman.id.au>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-03-23 at 19:48 +0100, Marcel Holtmann wrote:
-> Hi Joe,
+Hi Michael and Kees,
 
-Hello Marcel.
-
-> > > > This adds a bit mask of driver_info for Microsoft vendor extension and
-> > > > indicates the support for Intel 9460/9560 and 9160/9260. See
-> > > > https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
-> > > > microsoft-defined-bluetooth-hci-commands-and-events for more information
-> > > > about the extension. This was verified with Intel ThunderPeak BT controller
-> > > > where msft_vnd_ext_opcode is 0xFC1E.
-> > []
-> > > > diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-> > []
-> > > > @@ -315,6 +315,10 @@ struct hci_dev {
-> > > > 	__u8		ssp_debug_mode;
-> > > > 	__u8		hw_error_code;
-> > > > 	__u32		clock;
-> > > > +	__u16		msft_vnd_ext_opcode;
-> > > > +	__u64		msft_vnd_ext_features;
-> > > > +	__u8		msft_vnd_ext_evt_prefix_len;
-> > > > +	void		*msft_vnd_ext_evt_prefix;
-> > 
-> > msft is just another vendor.
-> > 
-> > If there are to be vendor extensions, this should
-> > likely use a blank line above and below and not
-> > be prefixed with msft_
+On 3/18/20 9:15 PM, Michael Ellerman wrote:
+> Kees Cook <keescook@chromium.org> writes:
+>> On Mon, Mar 16, 2020 at 11:12:57PM +1100, Michael Ellerman wrote:
+>>> Shuah Khan <skhan@linuxfoundation.org> writes:
+>>>> Fix seccomp relocatable builds. This is a simple fix to use the right
+>>>> lib.mk variable TEST_GEN_PROGS with dependency on kselftest_harness.h
+>>>> header, and defining LDFLAGS for pthread lib.
+>>>>
+>>>> Removes custom clean rule which is no longer necessary with the use of
+>>>> TEST_GEN_PROGS.
+>>>>
+>>>> Uses $(OUTPUT) defined in lib.mk to handle build relocation.
+>>>>
+>>>> The following use-cases work with this change:
+>>>>
+>>>> In seccomp directory:
+>>>> make all and make clean
+>>>>
+>>>>  From top level from main Makefile:
+>>>> make kselftest-install O=objdir ARCH=arm64 HOSTCC=gcc \
+>>>>   CROSS_COMPILE=aarch64-linux-gnu- TARGETS=seccomp
+>>>>
+>>>> Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+>>>> ---
+>>>>
+>>>> Changes since v2:
+>>>> -- Using TEST_GEN_PROGS is sufficient to generate objects.
+>>>>     Addresses review comments from Kees Cook.
+>>>>
+>>>>   tools/testing/selftests/seccomp/Makefile | 18 ++++++++----------
+>>>>   1 file changed, 8 insertions(+), 10 deletions(-)
+>>>>
+>>>> diff --git a/tools/testing/selftests/seccomp/Makefile b/tools/testing/selftests/seccomp/Makefile
+>>>> index 1760b3e39730..a0388fd2c3f2 100644
+>>>> --- a/tools/testing/selftests/seccomp/Makefile
+>>>> +++ b/tools/testing/selftests/seccomp/Makefile
+>>>> @@ -1,17 +1,15 @@
+>>>>   # SPDX-License-Identifier: GPL-2.0
+>>>> -all:
+>>>> -
+>>>> -include ../lib.mk
+>>>> +CFLAGS += -Wl,-no-as-needed -Wall
+>>>> +LDFLAGS += -lpthread
+>>>>   
+>>>>   .PHONY: all clean
+>>>>   
+>>>> -BINARIES := seccomp_bpf seccomp_benchmark
+>>>> -CFLAGS += -Wl,-no-as-needed -Wall
+>>>> +include ../lib.mk
+>>>> +
+>>>> +# OUTPUT set by lib.mk
+>>>> +TEST_GEN_PROGS := $(OUTPUT)/seccomp_bpf $(OUTPUT)/seccomp_benchmark
+>>>>   
+>>>> -seccomp_bpf: seccomp_bpf.c ../kselftest_harness.h
+>>>> -	$(CC) $(CFLAGS) $(LDFLAGS) $< -lpthread -o $@
+>>>> +$(TEST_GEN_PROGS): ../kselftest_harness.h
+>>>>   
+>>>> -TEST_PROGS += $(BINARIES)
+>>>> -EXTRA_CLEAN := $(BINARIES)
+>>>> +all: $(TEST_GEN_PROGS)
+>>>>   
+>>>> -all: $(BINARIES)
+>>>
+>>>
+>>> It shouldn't be that complicated. We just need to define TEST_GEN_PROGS
+>>> before including lib.mk, and then add the dependency on the harness
+>>> after we include lib.mk (so that TEST_GEN_PROGS has been updated to
+>>> prefix $(OUTPUT)).
+>>>
+>>> eg:
+>>>
+>>>    # SPDX-License-Identifier: GPL-2.0
+>>>    CFLAGS += -Wl,-no-as-needed -Wall
+>>>    LDFLAGS += -lpthread
+>>>    
+>>>    TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
+>>>    
+>>>    include ../lib.mk
+>>>    
+>>>    $(TEST_GEN_PROGS): ../kselftest_harness.h
+>>
+>> Exactly. This (with an extra comment) is precisely what I suggested during
+>> v2 review:
+>> https://lore.kernel.org/lkml/202003041815.B8C73DEC@keescook/
 > 
-> there are other vendors, but all of them are different. So this needs to be prefixed with msft_ actually. But I agree that having empty lines above and below makes it more readable.
+> Oh sorry, I missed that.
 
-So struct hci_dev should become a clutter
-of random vendor extensions?
+Sorry. I missed it as well.
 
-Perhaps there should instead be something like
-an array of char at the end of the struct and
-various vendor specific extensions could be
-overlaid on that array or just add a void *
-to whatever info that vendors require.
+> 
+> OK so I think we know what the right solution is.
+> 
 
+I am picking this back up after time off.
+
+The proposed change by you works for seccomp. There are at least 10+
+tests that have dependencies on kselftest_harness.h and several that
+have dependency on kselftest.h and kselftest_module.h
+
+Enforcing this local header dependency in lib.mk makes sense so we
+don't have to change the test make files.
+
+Add dependency to libk.mk on local headers. This enforces the dependency
+blindly even when a test doesn't include the file, with the benefit of a
+simpler enforcement without requiring individual tests to have special
+rule for it.
+
+The following two changes work. You both have better make foo than
+I do. Can you see any issues with this proposal? I can send patch
+to do this, so we can do a larger test.
+
+--------------------------------------------------------------
+diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
+index 3ed0134a764d..54caa9a4ec8a 100644
+--- a/tools/testing/selftests/lib.mk
++++ b/tools/testing/selftests/lib.mk
+@@ -137,7 +137,7 @@ endif
+  # Selftest makefiles can override those targets by setting
+  # OVERRIDE_TARGETS = 1.
+  ifeq ($(OVERRIDE_TARGETS),)
+-$(OUTPUT)/%:%.c
++$(OUTPUT)/%:%.c ../kselftest_harness.h ../kselftest.h
+         $(LINK.c) $^ $(LDLIBS) -o $@
+
+  $(OUTPUT)/%.o:%.S
+
+
+diff --git a/tools/testing/selftests/seccomp/Makefile 
+b/tools/testing/selftests/seccomp/Makefile
+index a0388fd2c3f2..0ebfe8b0e147 100644
+--- a/tools/testing/selftests/seccomp/Makefile
++++ b/tools/testing/selftests/seccomp/Makefile
+@@ -2,14 +2,5 @@
+  CFLAGS += -Wl,-no-as-needed -Wall
+  LDFLAGS += -lpthread
+
+-.PHONY: all clean
+-
++TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
+  include ../lib.mk
+-
+-# OUTPUT set by lib.mk
+-TEST_GEN_PROGS := $(OUTPUT)/seccomp_bpf $(OUTPUT)/seccomp_benchmark
+-
+-$(TEST_GEN_PROGS): ../kselftest_harness.h
+-
+-all: $(TEST_GEN_PROGS)
+-
+--------------------------------------------------------------
+
+thanks,
+-- Shuah
 
 
