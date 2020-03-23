@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B22618EE65
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 04:17:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB2F818EE69
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 04:18:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727112AbgCWDRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 23:17:14 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:43869 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726979AbgCWDRN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 23:17:13 -0400
-Received: by mail-wr1-f65.google.com with SMTP id b2so15156258wrj.10;
-        Sun, 22 Mar 2020 20:17:12 -0700 (PDT)
+        id S1727191AbgCWDRz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 23:17:55 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:37283 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726979AbgCWDRz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 23:17:55 -0400
+Received: by mail-wr1-f68.google.com with SMTP id w10so15201513wrm.4;
+        Sun, 22 Mar 2020 20:17:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dtxTS/97c31zOqg+WSxXgtzKLrDVP+iIc7/kxlF3aUo=;
-        b=QVh26ofxUpTF++w7GF0oVbrOzJI3hKMf8ehON/crciS2l8S/XXbtGCvhmmoa+4VIHN
-         GDdjF04vXN2Ef73DKpkOnBX8IYmxfXnuWi+Gu/1SYY5dEMUHihPU06GC0zO6/2o/38bG
-         kYa+wdgDrsrouWMZTPCZjOWNm8Np/Z1TJzFFvBreb/nx9guL95JTSU/4W6DQu8OEL5j5
-         /NZHYpbmNsw9ES8zMn00CZPa1+E0nAPkFPCv8psG5xClaHIU38ydfHdIcFzxhy/Bmpdb
-         GKOPbDYSlq6igyZ8J87EfaBfBnUmccmX83Sr6D3v4L3N/scunYvdqatFegKcD5mxxF5L
-         7onw==
+        bh=ADbIUm07Jo+6o0WZFLpwcGFfQa7iZ4Cd0fx6zgYPrcE=;
+        b=GSd8CU4xIgZTbRom4yNM0u0nYg8ZNSgGsedl5NQLSk5EpnbkpcU/afXPMjB9WPXIL+
+         cRnsXo4QvRVNtbOIt4P9k5a6WyrSFEbyOAW1QMhDhoCJe+gqOwJibDwEiC3nnCx3vze0
+         2ehY1aA1o4vDtLpXGmagerNQJYUw2iqJSgFFq5M4WvEjTTWqbO0O7Xz+LUqpv7zlc1e3
+         Ckq8nRSFELORWjOORxTUib8qcY+LvE2LJFHM2g8Sl4fv1CrRrqMd8afDmE++G4eMDROK
+         TXWMMZkuTNYpeJOfbmtchf+1xDmAvbs3c4nZg4qzYfa8EpCkR6hPehYEAwciSBs2D/7D
+         QqPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=dtxTS/97c31zOqg+WSxXgtzKLrDVP+iIc7/kxlF3aUo=;
-        b=Dt1HY4VJ/nux1zHxWPbRppsCKKwgUDejEOwvUc0eNS0ibBE97bSeULZ2w8wb3pIG1+
-         AOe/wdSr3J/+1f5bcXFIyzdt6zf/ecTCJJxuQdegOWjZrYvOyQHos3dgOEmNK/lWoRRA
-         AQvP/ETqFoN/mOPQn3H/mVeHSimfuHGROW7a/OJ9/8WH7lJtR+XjVWGl/WrerTMQUFAA
-         /yBNcWW6Tghj7zfQ8CE/CDlvb/H7ENg9MZcKqiG33MDnFiy34xkEcah7N9cL2pr3B9LI
-         D4eCsImWLWC7p64oWOBAwAO5YH8rds70l7B983aMm+Ox1BJg5H/UnscYquvGXJWN3dR0
-         WPag==
-X-Gm-Message-State: ANhLgQ14xAs/NuyeLzxnM0ocQ8k2lxZaPc82mPnAHQpnQqIZexrUp4Qk
-        JmocmLHIzzm36aByHD3tvJt7GOuT
-X-Google-Smtp-Source: ADFU+vvWpqNVucjF8WV3wwm79+u2X3OcsqAD92KIQD11d27glmi0E99cuhvmngWiiSgvzRW8pzeK8g==
-X-Received: by 2002:adf:e345:: with SMTP id n5mr28073102wrj.220.1584933431523;
-        Sun, 22 Mar 2020 20:17:11 -0700 (PDT)
+        bh=ADbIUm07Jo+6o0WZFLpwcGFfQa7iZ4Cd0fx6zgYPrcE=;
+        b=GsY/tqJ3algSB+7d1VSDCh5YvAloUb5FANpIANTgQyKtFUwwA5J5kQsLXxfuEdTVUP
+         U0Dfrl3TJ0B4tBWDFRVp6vSzC5TlihDbNTbkFfIuB8M9kinydc6oJPEcrNbZzcuZ0gL5
+         NXlnhmaojFWt88waZ3Ww20As4RF3BhsPqfUOgdZQyRAXryHkPIh+FQK0aljpTeV83li1
+         6aMkietNOYUbqwNShS83L4wHR+/4b2MU0mbq1S3Txzrib4yvOnfKdfI0CmKfZ2fUIV8a
+         9JPvue57FgR+vDV3Pz9185esIJLITJr0t3x/eTAge1BTJ9B9syiapdubIESiDOYDrjLP
+         /X/g==
+X-Gm-Message-State: ANhLgQ1hAzHR2IBaQ1GFrjs0nvA1JaP93XrJ2Ho1LfuElIo+bRhiWOPC
+        RxexlVNsWxWMNFcPD/HRksXf90OA
+X-Google-Smtp-Source: ADFU+vsl9d9NgucvDrZzhZ67r6uCRFI61d07LglGRlahh2yGlE1aGsP9U5PM9dcPxVHT17ummrLhtw==
+X-Received: by 2002:adf:90ee:: with SMTP id i101mr26498989wri.417.1584933472045;
+        Sun, 22 Mar 2020 20:17:52 -0700 (PDT)
 Received: from [10.230.186.223] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id v2sm22569916wrt.58.2020.03.22.20.17.08
+        by smtp.gmail.com with ESMTPSA id f10sm21366023wrw.96.2020.03.22.20.17.49
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 Mar 2020 20:17:10 -0700 (PDT)
-Subject: Re: [PATCH net-next v6 10/10] net: phy: tja11xx: use
+        Sun, 22 Mar 2020 20:17:51 -0700 (PDT)
+Subject: Re: [PATCH net-next v6 09/10] net: phy: smsc: use
  phy_read_poll_timeout() to simplify the code
 To:     Dejin Zheng <zhengdejin5@gmail.com>, andrew@lunn.ch,
         hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
@@ -53,7 +53,7 @@ To:     Dejin Zheng <zhengdejin5@gmail.com>, andrew@lunn.ch,
         broonie@kernel.org, tglx@linutronix.de, netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org
 References: <20200323025633.6069-1-zhengdejin5@gmail.com>
- <20200323025633.6069-11-zhengdejin5@gmail.com>
+ <20200323025633.6069-10-zhengdejin5@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -109,12 +109,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <5bd2dc5f-dac4-3eee-6b60-210395fcb811@gmail.com>
-Date:   Sun, 22 Mar 2020 20:17:07 -0700
+Message-ID: <50e68879-adf3-52f4-1b0b-334dd02ef85a@gmail.com>
+Date:   Sun, 22 Mar 2020 20:17:47 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200323025633.6069-11-zhengdejin5@gmail.com>
+In-Reply-To: <20200323025633.6069-10-zhengdejin5@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -127,10 +127,19 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On 3/22/2020 7:56 PM, Dejin Zheng wrote:
 > use phy_read_poll_timeout() to replace the poll codes for
-> simplify tja11xx_check() function.
+> simplify lan87xx_read_status() function.
+> 
+> it should be add msleep(10) before call phy_read_poll_timeout()
+> to keep the code more similar, but it will report that warning, so
+> modify it to msleep(20).
+> 
+> ./scripts/checkpatch.pl
+> v5-0009-net-phy-smsc-use-phy_read_poll_timeout-to-simplif.patch
+> WARNING: msleep < 20ms can sleep for up to 20ms; see Documentation/timers/timers-howto.rst
+> #42: FILE: drivers/net/phy/smsc.c:126:
+> +		msleep(10);
 > 
 > Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 > Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
