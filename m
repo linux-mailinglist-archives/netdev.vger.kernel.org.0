@@ -2,73 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7C8118F858
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 16:14:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A227D18F868
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 16:20:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727257AbgCWPOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 11:14:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52098 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726049AbgCWPOb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 11:14:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=1m+OiC3y42SS9da+Tcx1VksIIwVDt7LFueQm6zuxGVo=; b=XURddeuh+RoTABs816IckUXkfW
-        egzgUGPHZht3RdSInSrJYSrt7X9WDAhCHamL4zw3CVNk1yNkmg8mPClDl87yQBxh1ptYvfaoEDUbw
-        Axs5liIRIXS3Nl3+tBfKHmEpVjiBJ/o8J0AiUUjo1zF+QiGToIJBQ4ZHZi7to6N0iFXI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jGOmV-0000ni-Na; Mon, 23 Mar 2020 16:14:23 +0100
-Date:   Mon, 23 Mar 2020 16:14:23 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Christian Herber <christian.herber@nxp.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Marek Vasut <marex@denx.de>, netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
+        id S1727357AbgCWPUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 11:20:49 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:41746 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727127AbgCWPUs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 11:20:48 -0400
+Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
+        (envelope-from <bigeasy@linutronix.de>)
+        id 1jGOsF-000148-59; Mon, 23 Mar 2020 16:20:19 +0100
+Date:   Mon, 23 Mar 2020 16:20:19 +0100
+From:   Sebastian Siewior <bigeasy@linutronix.de>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Davidlohr Bueso <dbueso@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        linux-pci@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
+        linux-usb@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: Re: [PATCH v4 1/4] dt-bindings: net: phy: Add support for NXP
- TJA11xx
-Message-ID: <20200323151423.GA32387@lunn.ch>
-References: <AM0PR04MB70413A974A2152D27CAADFAC86F00@AM0PR04MB7041.eurprd04.prod.outlook.com>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        platform-driver-x86@vger.kernel.org,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+        linux-acpi@vger.kernel.org, kbuild test robot <lkp@intel.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
+        Brian Cain <bcain@codeaurora.org>,
+        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
+        Michal Simek <monstr@monstr.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geoff Levand <geoff@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH] completion: Use lockdep_assert_RT_in_threaded_ctx() in
+ complete_all()
+Message-ID: <20200323152019.4qjwluldohuh3by5@linutronix.de>
+References: <20200321112544.878032781@linutronix.de>
+ <20200321113242.317954042@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <AM0PR04MB70413A974A2152D27CAADFAC86F00@AM0PR04MB7041.eurprd04.prod.outlook.com>
+In-Reply-To: <20200321113242.317954042@linutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Yes, it is one device with two address. This is if you call the entire IC a device. If you look at it from a PHY perspective, it is two devices with 1 address.
-> If you just look at it as a single device, it gets difficult to add PHY specific properties in the future, e.g. master/slave selection.
+The warning was intended to spot complete_all() users from hardirq
+context on PREEMPT_RT. The warning as-is will also trigger in interrupt
+handlers, which are threaded on PREEMPT_RT, which was not intended.
 
-> In my opinion its important to have some kind of container for the
-> entire IC, but likewise for the individual PHYs.
+Use lockdep_assert_RT_in_threaded_ctx() which triggers in non-preemptive
+context on PREEMPT_RT.
 
-Yes, we need some sort of representation of two devices.
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Reported-by: kernel test robot <rong.a.chen@intel.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/lockdep.h   | 15 +++++++++++++++
+ kernel/sched/completion.c |  2 +-
+ 2 files changed, 16 insertions(+), 1 deletion(-)
 
-Logically, the two PHYs are on the same MDIO bus, so you could have
-two nodes on the main bus.
+diff --git a/include/linux/lockdep.h b/include/linux/lockdep.h
+index 425b4ceb7cd07..206774ac69460 100644
+--- a/include/linux/lockdep.h
++++ b/include/linux/lockdep.h
+@@ -711,6 +711,21 @@ do {									\
+ # define lockdep_assert_in_irq() do { } while (0)
+ #endif
+ 
++#ifdef CONFIG_PROVE_RAW_LOCK_NESTING
++
++# define lockdep_assert_RT_in_threaded_ctx() do {			\
++		WARN_ONCE(debug_locks && !current->lockdep_recursion &&	\
++			  current->hardirq_context &&			\
++			  !(current->hardirq_threaded || current->irq_config),	\
++			  "Not in threaded context on PREEMPT_RT as expected\n");	\
++} while (0)
++
++#else
++
++# define lockdep_assert_RT_in_threaded_ctx() do { } while (0)
++
++#endif
++
+ #ifdef CONFIG_LOCKDEP
+ void lockdep_rcu_suspicious(const char *file, const int line, const char *s);
+ #else
+diff --git a/kernel/sched/completion.c b/kernel/sched/completion.c
+index f15e96164ff1e..a778554f9dad7 100644
+--- a/kernel/sched/completion.c
++++ b/kernel/sched/completion.c
+@@ -58,7 +58,7 @@ void complete_all(struct completion *x)
+ {
+ 	unsigned long flags;
+ 
+-	WARN_ON(irqs_disabled());
++	lockdep_assert_RT_in_threaded_ctx();
+ 
+ 	raw_spin_lock_irqsave(&x->wait.lock, flags);
+ 	x->done = UINT_MAX;
+-- 
+2.26.0.rc2
 
-Or you consider the secondary PHY as being on an internal MDIO bus
-which is transparently bridged to the main bus. This is what was
-proposed in the last patchset.
-
-Because this bridge is transparent, the rest of the PHY/MDIO framework
-has no idea about it. So i prefer that we keep with two PHY nodes on
-the main bus. But i still think we need the master PHY to register the
-secondary PHY, due to the missing PHY ID, and the other constrains
-like resets which the master PHY has to handle.
-
-     Andrew
