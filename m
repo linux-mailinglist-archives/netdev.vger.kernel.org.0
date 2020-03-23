@@ -2,135 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1435E18F02F
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 08:22:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCCF218F03E
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 08:28:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727399AbgCWHWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 03:22:04 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:12176 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727164AbgCWHWD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 03:22:03 -0400
-Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 24D25A297C5B469D6335;
-        Mon, 23 Mar 2020 15:21:52 +0800 (CST)
-Received: from [127.0.0.1] (10.173.223.234) by DGGEMS413-HUB.china.huawei.com
- (10.3.19.213) with Microsoft SMTP Server id 14.3.487.0; Mon, 23 Mar 2020
- 15:21:46 +0800
-Subject: Re: [PATCH v2] xfrm: policy: Fix doulbe free in xfrm_policy_timer
-To:     Timo Teras <timo.teras@iki.fi>
-References: <20200318034839.57996-1-yuehaibing@huawei.com>
- <20200323014155.56376-1-yuehaibing@huawei.com>
- <20200323085311.35aefe10@vostro.wlan>
-CC:     <steffen.klassert@secunet.com>, <herbert@gondor.apana.org.au>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-From:   Yuehaibing <yuehaibing@huawei.com>
-Message-ID: <832e03ea-2511-eb7f-49d1-3cda6c9e6d18@huawei.com>
-Date:   Mon, 23 Mar 2020 15:21:45 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.2.0
+        id S1727455AbgCWH2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 03:28:37 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:42081 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727164AbgCWH2d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 03:28:33 -0400
+Received: by mail-pg1-f196.google.com with SMTP id h8so6750162pgs.9
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 00:28:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NFyWVs+kduv2j1R2/60e64VqrdzsP1HRwFGN/XYNDZo=;
+        b=LILNAYyQ8szwFEkmyAgot0buT6BbWuPaMeqDEzmHEOA82yWb/7h8Q1ltu1+n4qIVYR
+         O2Syb3UEtgrn7LHNXVqQ8SQP+A6KGKhI/dmNJPdCV3I9w9RtZ+Kwtt4abirzJXyz0Kxg
+         i5i1XGp0OXMn/kN8stG1yga7zw/nZMIFMjc5M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NFyWVs+kduv2j1R2/60e64VqrdzsP1HRwFGN/XYNDZo=;
+        b=ezrq0bCmqOR86XUGbffQ90ugb1uVFT0Mu5AtaUYwN+fOlj/gNH6oxLmUI4T6cdUd8z
+         tQohsx+pSTjinXaOcsOmY9ZOCSnh8o0o9ElP45hRk1Dea0sZdpWAnArqPyblXE/23GR1
+         Dx9TSLJruxE00tJYOLK0rLAykc1VvtS5niVo5ko1gema/1XSlzA+WCqxP0W+00c2FoTv
+         1i0+rV2RGbms5niVftCDW7Fb+K6jRAeDRB6YLqTQuMRFbIMM3Rxow2efTSLVXbjc6OzD
+         HMWo2r/s9MueUiqCW6KkCg+rLRxp9DnHTZxyg0qpvhD+m6vzv7xMh8pd17mvFaETZCCH
+         nh5Q==
+X-Gm-Message-State: ANhLgQ02q9EWnquII3XRmgxxLXEvhOgLWoHGY65ZThkZ8lNcg6AtstqC
+        TM8V7ExKH3OJSzRcq+e2pW/1nQ==
+X-Google-Smtp-Source: ADFU+vvfZ+qhit8yI7fVEav4nHdqfpAwVAeCiMKsf3LZMu/WqYHyCiYaU+G01pALbh0CUrK9KNHGHw==
+X-Received: by 2002:a63:3d48:: with SMTP id k69mr19784007pga.395.1584948511935;
+        Mon, 23 Mar 2020 00:28:31 -0700 (PDT)
+Received: from mcchou0.mtv.corp.google.com ([2620:15c:202:201:b46:ac84:1014:9555])
+        by smtp.gmail.com with ESMTPSA id z16sm12645399pfr.138.2020.03.23.00.28.30
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 23 Mar 2020 00:28:31 -0700 (PDT)
+From:   Miao-chen Chou <mcchou@chromium.org>
+To:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>
+Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Alain Michaud <alainm@chromium.org>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v1 0/2] btusb: Introduce the use of vendor extension(s)
+Date:   Mon, 23 Mar 2020 00:28:22 -0700
+Message-Id: <20200323072824.254495-1-mcchou@chromium.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <20200323085311.35aefe10@vostro.wlan>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.173.223.234]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/3/23 14:53, Timo Teras wrote:
-> Hi
-> 
-> On Mon, 23 Mar 2020 09:41:55 +0800
-> YueHaibing <yuehaibing@huawei.com> wrote:
-> 
->> After xfrm_add_policy add a policy, its ref is 2, then
->>
->>                              xfrm_policy_timer
->>                                read_lock
->>                                xp->walk.dead is 0
->>                                ....
->>                                mod_timer()
->> xfrm_policy_kill
->>   policy->walk.dead = 1
->>   ....
->>   del_timer(&policy->timer)
->>     xfrm_pol_put //ref is 1
->>   xfrm_pol_put  //ref is 0
->>     xfrm_policy_destroy
->>       call_rcu
->>                                  xfrm_pol_hold //ref is 1
->>                                read_unlock
->>                                xfrm_pol_put //ref is 0
->>                                  xfrm_policy_destroy
->>                                   call_rcu
->>
->> xfrm_policy_destroy is called twice, which may leads to
->> double free.
-> 
-> I believe the timer changes were added later in commit e7d8f6cb2f which
-> added holding a reference when timer is running. I think it fails to
-> properly account for concurrently running timer in xfrm_policy_kill().
+Hi Marcel and Luiz,
 
-commit e7d8f6cb2f hold a reference when &pq->hold_timer is armed,
-in my case, it's policy->timer, and hold_timer is not armed.
-> 
-> The time when commit ea2dea9dacc2 was done this was not the case.
-> 
-> I think it would be preferable if the concurrency issue could be solved
-> without additional locking.
-> 
->> Call Trace:
->> RIP: 0010:refcount_warn_saturate+0x161/0x210
->> ...
->>  xfrm_policy_timer+0x522/0x600
->>  call_timer_fn+0x1b3/0x5e0
->>  ? __xfrm_decode_session+0x2990/0x2990
->>  ? msleep+0xb0/0xb0
->>  ? _raw_spin_unlock_irq+0x24/0x40
->>  ? __xfrm_decode_session+0x2990/0x2990
->>  ? __xfrm_decode_session+0x2990/0x2990
->>  run_timer_softirq+0x5c5/0x10e0
->>
->> Fix this by use write_lock_bh in xfrm_policy_kill.
->>
->> Fixes: ea2dea9dacc2 ("xfrm: remove policy lock when accessing
->> policy->walk.dead") Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> 
-> Should be instead:
-> Fixes: e7d8f6cb2f ("xfrm: Add refcount handling to queued policies")
-> 
->> ---
->> v2:  Fix typo 'write_lock_bh'--> 'write_unlock_bh' while unlocking
->> ---
->>  net/xfrm/xfrm_policy.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
->> index dbda08ec566e..ae0689174bbf 100644
->> --- a/net/xfrm/xfrm_policy.c
->> +++ b/net/xfrm/xfrm_policy.c
->> @@ -434,6 +434,7 @@ EXPORT_SYMBOL(xfrm_policy_destroy);
->>  
->>  static void xfrm_policy_kill(struct xfrm_policy *policy)
->>  {
->> +	write_lock_bh(&policy->lock);
->>  	policy->walk.dead = 1;
->>  
->>  	atomic_inc(&policy->genid);
->> @@ -445,6 +446,7 @@ static void xfrm_policy_kill(struct xfrm_policy
->> *policy) if (del_timer(&policy->timer))
->>  		xfrm_pol_put(policy);
->>  
->> +	write_unlock_bh(&policy->lock);
->>  	xfrm_pol_put(policy);
->>  }
->>  
-> 
-> 
-> .
-> 
+The standard HCI does not provide commands/events regarding to
+advertisement monitoring with content filter while there are few vendors
+providing this feature. Chrome OS BT would like to introduce the use of
+vendor specific features where Microsoft vendor extension is targeted at
+this moment.
+
+Chrome OS BT would like to utilize Microsoft vendor extension's
+advertisement monitoring feature which is not yet a part of standard
+Bluetooth specification. This series introduces the driver information for
+Microsoft vendor extension, and this was verified with kernel 4.4 on Atlas
+Chromebook.
+
+Thanks
+Miao
+
+Changes in v1:
+- Add a bit mask of driver_info for Microsoft vendor extension.
+- Indicates the support of Microsoft vendor extension for Intel
+9460/9560 and 9160/9260.
+- Add fields to struct hci_dev to facilitate the support of Microsoft
+vendor extension.
+- Add vendor_hci.h to facilitate opcodes and packet structures of vendor
+extension(s).
+- Add opcode for the HCI_VS_MSFT_Read_Supported_Features command from
+Microsoft vendor extension.
+- Issue a HCI_VS_MSFT_Read_Supported_Features command upon
+hci_dev_do_open and save the return values.
+
+Miao-chen Chou (2):
+  Bluetooth: btusb: Indicate Microsoft vendor extension for Intel
+    9460/9560 and 9160/9260
+  Bluetooth: btusb: Read the supported features of Microsoft vendor
+    extension
+
+ drivers/bluetooth/btusb.c          | 18 +++++++++--
+ include/net/bluetooth/hci.h        |  2 ++
+ include/net/bluetooth/hci_core.h   |  5 +++
+ include/net/bluetooth/vendor_hci.h | 51 ++++++++++++++++++++++++++++++
+ net/bluetooth/hci_core.c           | 30 ++++++++++++++++++
+ net/bluetooth/hci_event.c          | 49 +++++++++++++++++++++++++++-
+ 6 files changed, 152 insertions(+), 3 deletions(-)
+ create mode 100644 include/net/bluetooth/vendor_hci.h
+
+-- 
+2.24.1
 
