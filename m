@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39D5218FA80
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 17:54:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CBD4218FA9C
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 17:58:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727797AbgCWQys (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 12:54:48 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:53994 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727718AbgCWQys (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 12:54:48 -0400
+        id S1727889AbgCWQ6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 12:58:00 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:36953 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727067AbgCWQ6A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 12:58:00 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584982487; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1584982679; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=QaNi5PgBPQT7mV29wyn9uiRG2F8mlGwKl+vuakLp+88=;
- b=Aju9KPTAkKxcX/VL6eGYc48YPbXM3OUhWEsMUNHFoB288PhY5SMy3A2c+2k+iGImdQC7ocYp
- P3tzK1wQJtt7uqwVQPZ3kdepq636WLs5l9zKZUnebBfR6i2F03F+FoX+0MY6RSeol0xbXrRD
- Au1sK82twO7z7bH33qFU1ZDl4Og=
-X-Mailgun-Sending-Ip: 104.130.122.27
+ Content-Type: Sender; bh=RzTd9yidaJNPKPYdkuKLeB4afMPdW8B9UycwLsO6lGA=;
+ b=MHhXEETWgVGQu3I+zvxOW1orVBY+E67p6ybfM+6u8rM0pECMmKtIm9zLI05ckbV5An0HgUxc
+ 2bhUzZITBymKWWAlFOq7xQBlvIVReVDetEC9md30KHB6reabSBSTEw2FMjwUan9vuMpkVeFO
+ xBP1J5keIEKnyYNYWla0BWHrTWw=
+X-Mailgun-Sending-Ip: 104.130.122.26
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e78e9d4.7fd3983289d0-smtp-out-n03;
- Mon, 23 Mar 2020 16:54:44 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e78ea85.7f772ce14ab0-smtp-out-n04;
+ Mon, 23 Mar 2020 16:57:41 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 71AEDC433CB; Mon, 23 Mar 2020 16:54:43 +0000 (UTC)
+        id CE56BC432C2; Mon, 23 Mar 2020 16:57:41 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -35,30 +35,27 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id F0667C433D2;
-        Mon, 23 Mar 2020 16:54:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org F0667C433D2
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id F268AC433CB;
+        Mon, 23 Mar 2020 16:57:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org F268AC433CB
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][next] wireless: realtek: Replace zero-length array with
+Subject: Re: [PATCH][next] wireless: ti: Replace zero-length array with
  flexible-array member
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200225002746.GA26789@embeddedor>
-References: <20200225002746.GA26789@embeddedor>
+In-Reply-To: <20200225003408.GA28675@embeddedor>
+References: <20200225003408.GA28675@embeddedor>
 To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Jes Sorensen <Jes.Sorensen@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <yhchuang@realtek.com>,
+Cc:     "David S. Miller" <davem@davemloft.net>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200323165443.71AEDC433CB@smtp.codeaurora.org>
-Date:   Mon, 23 Mar 2020 16:54:43 +0000 (UTC)
+Message-Id: <20200323165741.CE56BC432C2@smtp.codeaurora.org>
+Date:   Mon, 23 Mar 2020 16:57:41 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -98,9 +95,9 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-a1b7714b72fd wireless: realtek: Replace zero-length array with flexible-array member
+398978f7dfa5 wireless: ti: Replace zero-length array with flexible-array member
 
 -- 
-https://patchwork.kernel.org/patch/11402315/
+https://patchwork.kernel.org/patch/11402335/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
