@@ -2,117 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C64318F9CB
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 17:35:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 647BB18FA4A
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 17:47:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727487AbgCWQfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 12:35:21 -0400
-Received: from mars.blocktrron.ovh ([51.254.112.43]:41252 "EHLO
-        mail.blocktrron.ovh" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727277AbgCWQfV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 12:35:21 -0400
-X-Greylist: delayed 460 seconds by postgrey-1.27 at vger.kernel.org; Mon, 23 Mar 2020 12:35:20 EDT
-Received: from dbauer-t470.home.david-bauer.net (p200300E53F051400556931CCC843E1C6.dip0.t-ipconnect.de [IPv6:2003:e5:3f05:1400:5569:31cc:c843:e1c6])
+        id S1727547AbgCWQrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 12:47:05 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:24034 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727281AbgCWQrF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 12:47:05 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1584982024; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=Xb2zinDQGO+onzyW77lJl6Bc9KqowAWzCfieud9lBEI=; b=N95mVFGzsTNjSsZIHkgStVkgSuzlkwHytk6V7QcWWorpMjgkuFjaY6PLQmwPibBhA1hFTgH8
+ BPHjOGlNzD/RgmE4yhotFHii2HmghnhaCCW+maRRmG/y0qelFuq/bOvaiwaaylpUYMmOG9ay
+ /YEBesgsbfwd7BoQdbtqzsvw9Gc=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e78e7fa.7fb8e14e5768-smtp-out-n03;
+ Mon, 23 Mar 2020 16:46:50 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 5EAC4C4478C; Mon, 23 Mar 2020 16:46:50 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
+        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.blocktrron.ovh (Postfix) with ESMTPSA id 235A91E1CF
-        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 17:27:38 +0100 (CET)
-From:   David Bauer <mail@david-bauer.net>
-To:     netdev@vger.kernel.org
-Subject: [PATCH] net: phy: at803x: select correct page on initialization
-Date:   Mon, 23 Mar 2020 17:27:30 +0100
-Message-Id: <20200323162730.88236-1-mail@david-bauer.net>
-X-Mailer: git-send-email 2.25.2
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 39E75C433CB;
+        Mon, 23 Mar 2020 16:46:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 39E75C433CB
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     Jes Sorensen <jes.sorensen@gmail.com>,
+        Joe Perches <joe@perches.com>,
+        Ulrich Kunitz <kune@deine-taler.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH][next] zd1211rw/zd_usb.h: Replace zero-length array with flexible-array member
+References: <20200305111216.GA24982@embeddedor>
+        <87k13yq2jo.fsf@kamboji.qca.qualcomm.com>
+        <256881484c5db07e47c611a56550642a6f6bd8e9.camel@perches.com>
+        <87blpapyu5.fsf@kamboji.qca.qualcomm.com>
+        <1bb7270f-545b-23ca-aa27-5b3c52fba1be@embeddedor.com>
+        <87r1y0nwip.fsf@kamboji.qca.qualcomm.com>
+        <48ff1333-0a14-36d8-9565-a7f13a06c974@embeddedor.com>
+        <021d1125-3ffd-39ef-395a-b796c527bde4@gmail.com>
+        <fb3395d7-e932-10ac-1feb-ab2ceb63424e@embeddedor.com>
+        <361da904-5adf-eb0c-e937-c5d2f69ac8be@gmail.com>
+        <e4cfda6c-37f0-3c28-f50b-32200a67d856@embeddedor.com>
+        <9700b2c9-1029-60b0-c5d2-684bdcede354@gmail.com>
+        <948ec681-c4ee-3479-8d8b-5aa1e358ec04@embeddedor.com>
+Date:   Mon, 23 Mar 2020 18:46:45 +0200
+In-Reply-To: <948ec681-c4ee-3479-8d8b-5aa1e358ec04@embeddedor.com> (Gustavo A.
+        R. Silva's message of "Tue, 10 Mar 2020 17:36:39 -0500")
+Message-ID: <87h7yfauiy.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Atheros AR8031 and AR8033 expose different registers for SGMII/Fiber
-as well as the copper side of the PHY depending on the BT_BX_REG_SEL bit
-in the chip configure register.
+"Gustavo A. R. Silva" <gustavo@embeddedor.com> writes:
 
-The driver assumes the copper side is selected on probe, but this might
-not be the case depending which page was last selected by the
-bootloader.
+> On 3/10/20 5:34 PM, Jes Sorensen wrote:
+>> On 3/10/20 6:31 PM, Gustavo A. R. Silva wrote:
+>>>
+>>>
+>>> On 3/10/20 5:20 PM, Jes Sorensen wrote:
+>>>> On 3/10/20 6:13 PM, Gustavo A. R. Silva wrote:
+>>>>>
+>>>>>
+>>>>> On 3/10/20 5:07 PM, Jes Sorensen wrote:
+>>>>>> As I stated in my previous answer, this seems more code churn than an
+>>>>>> actual fix. If this is a real problem, shouldn't the work be put into
+>>>>>> fixing the compiler to handle foo[0] instead? It seems that is where the
+>>>>>> real value would be.
+>>>>>
+>>>>> Yeah. But, unfortunately, I'm not a compiler guy, so I'm not able to fix the
+>>>>> compiler as you suggest. And I honestly don't see what is so annoying/disturbing
+>>>>> about applying a patch that removes the 0 from foo[0] when it brings benefit
+>>>>> to the whole codebase.
+>>>>
+>>>> My point is that it adds what seems like unnecessary churn, which is not
+>>>> a benefit, and it doesn't improve the generated code.
+>>>>
+>>>
+>>> As an example of one of the benefits of this is that the compiler won't trigger
+>>> a warning in the following case:
+>>>
+>>> struct boo {
+>>> 	int stuff;
+>>> 	struct foo array[0];
+>>> 	int morestuff;
+>>> };
+>>>
+>>> The result of the code above is an undefined behavior.
+>>>
+>>> On the other hand in the case below, the compiles does trigger a warning:
+>>>
+>>> struct boo {
+>>> 	int stuff;
+>>> 	struct foo array[];
+>>> 	int morestuff;
+>>> };
+>> 
+>> Right, this just underlines my prior argument, that this should be fixed
+>> in the compiler.
+>> 
+>
+> In the meantime it's not at all harmful to do something about it in the codebase.
 
-Select the copper page when initializing the configuration to circumvent
-this.
+Cleanup patches are not always harmful, at least they can create bugs
+and conflicts. But I think in this case there are clear benefits for the
+churn so I'm going to apply these.
 
-Signed-off-by: David Bauer <mail@david-bauer.net>
----
- drivers/net/phy/at803x.c | 28 ++++++++++++++++++++++++++--
- 1 file changed, 26 insertions(+), 2 deletions(-)
+Sorry Jes :)
 
-diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
-index 481cf48c9b9e..c027ae820a6a 100644
---- a/drivers/net/phy/at803x.c
-+++ b/drivers/net/phy/at803x.c
-@@ -103,6 +103,9 @@
- #define AT803X_CLK_OUT_STRENGTH_HALF		1
- #define AT803X_CLK_OUT_STRENGTH_QUARTER		2
- 
-+#define AT803X_PAGE_COPPER		0
-+#define AT803X_PAGE_FIBER		1
-+
- #define ATH9331_PHY_ID 0x004dd041
- #define ATH8030_PHY_ID 0x004dd076
- #define ATH8031_PHY_ID 0x004dd074
-@@ -160,6 +163,21 @@ static int at803x_debug_reg_mask(struct phy_device *phydev, u16 reg,
- 	return phy_write(phydev, AT803X_DEBUG_DATA, val);
- }
- 
-+static int at803x_switch_page(struct phy_device *phydev, u8 page)
-+{
-+	int ccr = phy_read(phydev, AT803X_REG_CHIP_CONFIG);
-+
-+	if (ccr < 0)
-+		return ccr;
-+
-+	if (page == AT803X_PAGE_COPPER)
-+		ccr = ccr | AT803X_BT_BX_REG_SEL;
-+	else
-+		ccr = ccr & ~AT803X_BT_BX_REG_SEL;
-+
-+	return phy_write(phydev, AT803X_REG_CHIP_CONFIG, ccr);
-+}
-+
- static int at803x_enable_rx_delay(struct phy_device *phydev)
- {
- 	return at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_0, 0,
-@@ -534,6 +552,12 @@ static int at803x_config_init(struct phy_device *phydev)
- {
- 	int ret;
- 
-+	if (at803x_match_phy_id(phydev, ATH8031_PHY_ID)) {
-+		ret = at803x_switch_page(phydev, AT803X_PAGE_COPPER);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	/* The RX and TX delay default is:
- 	 *   after HW reset: RX delay enabled and TX delay disabled
- 	 *   after SW reset: RX delay enabled, while TX delay retains the
-@@ -641,7 +665,7 @@ static int at803x_aneg_done(struct phy_device *phydev)
- 		return aneg_done;
- 
- 	/* switch to SGMII/fiber page */
--	phy_write(phydev, AT803X_REG_CHIP_CONFIG, ccr & ~AT803X_BT_BX_REG_SEL);
-+	at803x_switch_page(phydev, AT803X_PAGE_FIBER);
- 
- 	/* check if the SGMII link is OK. */
- 	if (!(phy_read(phydev, AT803X_PSSR) & AT803X_PSSR_MR_AN_COMPLETE)) {
-@@ -649,7 +673,7 @@ static int at803x_aneg_done(struct phy_device *phydev)
- 		aneg_done = 0;
- 	}
- 	/* switch back to copper page */
--	phy_write(phydev, AT803X_REG_CHIP_CONFIG, ccr | AT803X_BT_BX_REG_SEL);
-+	at803x_switch_page(phydev, AT803X_PAGE_COPPER);
- 
- 	return aneg_done;
- }
 -- 
-2.25.2
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
