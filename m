@@ -2,106 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B9BA18FCA1
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 19:24:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0269B18FCAE
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 19:28:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727771AbgCWSYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 14:24:01 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:34481 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727658AbgCWSXw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 14:23:52 -0400
-Received: by mail-qt1-f194.google.com with SMTP id 10so12601795qtp.1
-        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 11:23:50 -0700 (PDT)
+        id S1727324AbgCWS2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 14:28:03 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:35132 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726643AbgCWS2D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 14:28:03 -0400
+Received: by mail-qk1-f196.google.com with SMTP id k13so4663157qki.2;
+        Mon, 23 Mar 2020 11:28:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=F/E2v/x0pD9S4co1rTwzqU5wtimX1Afhqg2gi2bulTI=;
-        b=FH2qRmBSbSJZwB+BSXSQMYNKeGdg7FKsSXSb1K9JlVNhBvCRpF35Y1/cWbC8uK2uBj
-         sxGBJGFMVlcJsfQa8mZ95ubQaEtjdmQCqtEE3Q92O2nL8F41seejAlpR8I49wXqAeU/B
-         eqkpUOGxjScSYfB1LTpqwq4PRjJgwkCS4B5OA=
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=3wB0xVpulcp40RTW3vhxAgoqjUdCApY2I0xSALST5l8=;
+        b=iWId/kub+Jrlo1bcvpBVEXxR/ZG9PWIncegc9idzjaRroBA4JrJJ7Y70UOECdbDiXd
+         B3BoZpqvZqkcN/ptpNHuT5/3TLthAFgGaho6+/ig0Vfx7Qs5qQCOc4Ho8Pb9lN1nauQt
+         kgk4+kYQNe4WhXNz8IrpJnBIpyqJ8XUKKreavbZIChnXotm1ncu8tKQq0WMIhb5sG7qq
+         UHK83Nbfhdv5+rJRg0rHUhDc+PS/H0vu0HNYlKTWumJKnBJWdy0LnSBXfbLkPhg4gx31
+         qZtjm9LrumSQNjIEWpF8rDb4W9R00pSh1/m5cEKdlG46L5RzvhSyCjwVW6jw7vsUqqvX
+         7Iuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=F/E2v/x0pD9S4co1rTwzqU5wtimX1Afhqg2gi2bulTI=;
-        b=WokvGxbWcYyv4K9urQ8p1+A1ED5XA72nc0lvyMTkEwTvidg3kl0rD/w6HlkNfcqpma
-         LawI5Q30VoS7trKeBc7HoH99pbGqoItg8u9iX3Ep3Z6u5nLbHDQ7CH67+RCoIix4mSx/
-         JGv/VFsKMzQlOyWTJghRnRjzxnrOwjYLAUTsSmaEShZ4EGHl0KtbCbw43zLHx3Bw/MJB
-         U8An9rp3DGm9EYV+EZOHgdKSUSXp44P60X7P89sKRP2sEdSaQ8dcZ4NwMDGouPRBeQ3x
-         51FgWOyA4FQ8LalDWGkFL4rPQIDZLCke/W4aLd+P/kZwqMqhWuR19CC9QAMeZCRG5Th+
-         xCgw==
-X-Gm-Message-State: ANhLgQ0OIbck2bOSfejWH2fNAQjvQhRJNtlwsjTYkdHby2i2UdPPStrP
-        +v0OTN0vZgzRX3eK1KT27PKO3Q==
-X-Google-Smtp-Source: ADFU+vva33T81FQrImBGAaIoEJK5Y8QnH9XQzRThIpIuh9LK6narFxQkMI+JxtK3VLi/dxYocOD3FA==
-X-Received: by 2002:ac8:140e:: with SMTP id k14mr22547629qtj.222.1584987830199;
-        Mon, 23 Mar 2020 11:23:50 -0700 (PDT)
-Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id 85sm9774863qke.128.2020.03.23.11.23.49
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=3wB0xVpulcp40RTW3vhxAgoqjUdCApY2I0xSALST5l8=;
+        b=NtAXmLPvHbbhhIhhigxj9UHO3JhHTDe9ek9VRZFZps6wqsceOnnkJRlNVqVh4JSRfc
+         eY4VSVMxSCzHFk7hPsk61Vch2aZCvpMG8lqtVgOBSDOfYwUIR6/0Vg5wWAouURICOcWO
+         IpJq4l+7s0VtgpR0OGmAImhX6gPrDYCxdz63OtDBwd/rLjDCm4FyNx7HH1o6A97EvToL
+         iTr23bYLR5DmCgTi4Na2g/DJzIEvGNZCjkEIqjS1Lhgu43ap4BgXw8JMAPXRTVMt3VJ4
+         /fx6bp7WU9Qw/liVhms9QGCVO/qHmhDYPYThKAARRL7qGC4/PrGoEfE/jEOmkjbkjz+W
+         eERA==
+X-Gm-Message-State: ANhLgQ0DZx04FuOhSniPOxzfCYUbIPzHF0hEKXKyZsFtXRtybAWVskMc
+        rG4ROSZFlPqMWP8mb6rewd4=
+X-Google-Smtp-Source: ADFU+vthjZL644J49K7lhCku/51veVNw3keoxJgU51g8G/2TuPtgYFtuz1OgXoV5uQVkESY/vVx3BQ==
+X-Received: by 2002:a37:8d81:: with SMTP id p123mr9768397qkd.17.1584988082030;
+        Mon, 23 Mar 2020 11:28:02 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id n4sm12146258qti.55.2020.03.23.11.28.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2020 11:23:49 -0700 (PDT)
-Date:   Mon, 23 Mar 2020 14:23:49 -0400
-From:   Joel Fernandes <joel@joelfernandes.org>
-To:     Kalle Valo <kvalo@codeaurora.org>
-Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "linux-pci@vger.kernel.org Felipe Balbi" <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mon, 23 Mar 2020 11:28:01 -0700 (PDT)
+Date:   Mon, 23 Mar 2020 14:28:00 -0400
+Message-ID: <20200323142800.GD4041079@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, alobakin@dlink.ru, olteanv@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH] Documentation: Clarify better about the rwsem non-owner
- release issue
-Message-ID: <20200323182349.GA203600@google.com>
-References: <20200322021938.175736-1-joel@joelfernandes.org>
- <87a748khlo.fsf@kamboji.qca.qualcomm.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: dsa: Implement flow dissection for
+ tag_brcm.c
+In-Reply-To: <20200322210957.3940-1-f.fainelli@gmail.com>
+References: <20200322210957.3940-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <87a748khlo.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 22, 2020 at 08:51:15AM +0200, Kalle Valo wrote:
-> "Joel Fernandes (Google)" <joel@joelfernandes.org> writes:
+On Sun, 22 Mar 2020 14:09:57 -0700, Florian Fainelli <f.fainelli@gmail.com> wrote:
+> Provide a flow_dissect callback which returns the network offset and
+> where to find the skb protocol, given the tags structure a common
+> function works for both tagging formats that are supported.
 > 
-> > Reword and clarify better about the rwsem non-owner release issue.
-> >
-> > Link: https://lore.kernel.org/linux-pci/20200321212144.GA6475@google.com/
-> >
-> > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> 
-> There's something wrong with your linux-pci and linux-usb addresses:
-> 
-> 	"linux-pci@vger.kernel.org Felipe Balbi" <balbi@kernel.org>,
-> 
-> 
-> 	"linux-usb@vger.kernel.org Kalle Valo" <kvalo@codeaurora.org>,
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 
-Not sure. It appears fine in the archive. Thomas, let me know if you wanted
-me to resend the diff patch. Hopefully it squashed fine into your original
-patch.
-
-thanks,
-
- - Joel
-
+Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
