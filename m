@@ -2,63 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF3F418FBA5
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 18:39:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CA1F18FBBD
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 18:47:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727806AbgCWRjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 13:39:07 -0400
-Received: from mail-ot1-f48.google.com ([209.85.210.48]:37468 "EHLO
-        mail-ot1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727739AbgCWRjG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 13:39:06 -0400
-Received: by mail-ot1-f48.google.com with SMTP id i12so14278767otp.4;
-        Mon, 23 Mar 2020 10:39:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dD9qGn/FmD1rIVTC9XP6vGVct8WmBBkX3v6FBswGPLo=;
-        b=THXfYa3e6ysgx56bVbZpmupyp0Ih36h05qzY94R5KTQAHDQ3WB+re4Cb0Ty/PAT5nY
-         LcowIYaX7nnuvC1EEnzTwl31LTuJHtIK4zj4HRTGTICWr99w69jT/H3W3NmkgZn5oOqo
-         /9F8BVRY8+SQsCB5CcCVZ9GuOk3Q69p6f1gU8/3YzpUwyv+YKwBQApQDJfy8tO0GKsPO
-         i8xuUh0W6mNuXfDorGeuqo/WMhujS/eLb/1IrwnGnulz8ZRE6p1tBpJwUT4kyWKwgDUF
-         XwslHHCpbsgKM8jqe6iupr31Pm8iovMzwxzAxIZttUUWaU8TvGkiBsQuLzXBwa9lFfE1
-         oPmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dD9qGn/FmD1rIVTC9XP6vGVct8WmBBkX3v6FBswGPLo=;
-        b=HeP61D+hZYsyQOfShDXlqiwdWE+TvgKtI/ZEWhtHvLNah7FRIRawn6jp4PDqOhfope
-         WqHSAUYGN9KV6vhtjsglSgXFA/vbCZFFGIh5TKpgp2DfhcrpunSxt8H2KdRqdOoCfxG4
-         klzoOS0N7ERhT67BNvP5C3E/mkQuxVsZXjDO4isT/D+hlbt/dovOrJo49wgQa5EFjMcl
-         hyJmIb0vzQ9Qjprh5Ap/p+ZGSwr6Xufw65hgGfGGG+m7BIO/rrdaDX8LWwDYbt0N/Qfd
-         splQcqXAZynM0Wr2D03vzh+aBJ9XEJVTVyh8ay/sgBFGBqqc1teRPAIMWVygmY6lri6A
-         pWkg==
-X-Gm-Message-State: ANhLgQ3675cPwdjUeP9o4uTETyu2IOmYU+aZBaD87af8421mGxYzU3NI
-        +RGz7G1OrBIuvmmxG2KitU9HU7Ns7pS1g2XNDVc=
-X-Google-Smtp-Source: ADFU+vt09Bb6TZc4dAiUj2Yj1Ykjp5oxtvNzfnZBIcbKFT3ggFudWr7fyO8Qfcocz929/9D2y6WanTdMdQppixdYBBA=
-X-Received: by 2002:a05:6830:1e96:: with SMTP id n22mr18243768otr.189.1584985145809;
- Mon, 23 Mar 2020 10:39:05 -0700 (PDT)
+        id S1727090AbgCWRrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 13:47:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59126 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725880AbgCWRrQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Mar 2020 13:47:16 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6519020714;
+        Mon, 23 Mar 2020 17:47:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584985635;
+        bh=BUv2Z30FSVqIgeZp/8OHWMjY7R6pYb4AOYvZbdSkCDE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mKlUTiKppp0ozfgWUVx21js2vJ7SeNo0SmNOVntoeJzYj9uR+sGj/Ns7pFQymXDq2
+         W+jbFPHP7ziFOgHwkqWJy2SekUce5ueWhWPz1mjYAZKjz9Zz9UUXFX3hvohp+pIZko
+         3RZIQCoH3U80UDTAYmRzpxRRZxst98oCnw5TTY5A=
+Date:   Mon, 23 Mar 2020 10:47:13 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Zh-yuan Ye <ye.zh-yuan@socionext.com>
+Cc:     netdev@vger.kernel.org, okamoto.satoru@socionext.com,
+        kojima.masahisa@socionext.com, vinicius.gomes@intel.com
+Subject: Re: [PATCH net v2] net: cbs: Fix software cbs to consider packet
+ sending time
+Message-ID: <20200323104713.50d32643@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200323061709.1881-1-ye.zh-yuan@socionext.com>
+References: <20200323061709.1881-1-ye.zh-yuan@socionext.com>
 MIME-Version: 1.0
-References: <00000000000088d4fd05a182e5c9@google.com>
-In-Reply-To: <00000000000088d4fd05a182e5c9@google.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 23 Mar 2020 10:38:54 -0700
-Message-ID: <CAM_iQpU+ins6nTYbAdhwiGjaGj0NOdKAk36uKaehwr8T26mgHA@mail.gmail.com>
-Subject: Re: general protection fault in hfsc_unbind_tcf
-To:     syzbot <syzbot+05e596c4433eae36069b@syzkaller.appspotmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-#syz fix: net_sched: cls_route: remove the right filter from hashtable
+Minor comments, while waiting for more in-depth review from Vinicius :)
+
+On Mon, 23 Mar 2020 15:17:09 +0900 Zh-yuan Ye wrote:
+> Currently the software CBS does not consider the packet sending time
+> when depleting the credits. It caused the throughput to be
+> Idleslope[kbps] * (Port transmit rate[kbps] / |Sendslope[kbps]|) where
+> Idleslope * (Port transmit rate / (Idleslope + |Sendslope|)) = Idleslope
+> is expected. In order to fix the issue above, this patch takes the time
+> when the packet sending completes into account by moving the anchor time
+> variable "last" ahead to the send completion time upon transmission and
+> adding wait when the next dequeue request comes before the send
+> completion time of the previous packet.
+
+Please add a Fixes tag.
+
+> Signed-off-by: Zh-yuan Ye <ye.zh-yuan@socionext.com>
+> ---
+> changes in v2:
+>  - combine variable "send_completed" into "last"
+>  - add the comment for estimate of the packet sending
+
+You can keep those inside the commit message for networking patches
+
+> diff --git a/net/sched/sch_cbs.c b/net/sched/sch_cbs.c
+> index b2905b03a432..20f95f0b9d5b 100644
+> --- a/net/sched/sch_cbs.c
+> +++ b/net/sched/sch_cbs.c
+> @@ -181,6 +181,11 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
+>  	s64 credits;
+>  	int len;
+>  
+> +	/* The previous packet is still being sent */
+> +	if (now < q->last) {
+> +		qdisc_watchdog_schedule_ns(&q->watchdog, q->last);
+> +		return NULL;
+> +	}
+>  	if (q->credits < 0) {
+>  		credits = timediff_to_credits(now - q->last, q->idleslope);
+>  
+> @@ -192,7 +197,6 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
+>  
+>  			delay = delay_from_credits(q->credits, q->idleslope);
+>  			qdisc_watchdog_schedule_ns(&q->watchdog, now + delay);
+> -
+
+Please don't do whitespace cleanup like this in a bug fix. Bug fixes
+should be minimal to avoid conflicts.
+
+>  			q->last = now;
+>  
+>  			return NULL;
+> @@ -212,7 +216,9 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
+>  	credits += q->credits;
+>  
+>  	q->credits = max_t(s64, credits, q->locredit);
+> -	q->last = now;
+> +	/* Estimate of the transmission of the last byte of the packet in ns */
+> +	q->last = now + div64_s64(len * NSEC_PER_SEC,
+> +				  atomic64_read(&q->port_rate));
+
+credits_from_len() checks if port_rate is 0 before division. Can you double check 
+it's unnecessary?
+
+>  
+>  	return skb;
+>  }
+
