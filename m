@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7579618EE45
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 03:57:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77E6C18EE46
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 03:58:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727328AbgCWC5u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 22:57:50 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:42500 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726983AbgCWC5u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 22:57:50 -0400
-Received: by mail-pg1-f196.google.com with SMTP id h8so6438194pgs.9;
-        Sun, 22 Mar 2020 19:57:49 -0700 (PDT)
+        id S1727347AbgCWC54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 22:57:56 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:39674 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726983AbgCWC54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 22:57:56 -0400
+Received: by mail-pg1-f193.google.com with SMTP id b22so6444488pgb.6;
+        Sun, 22 Mar 2020 19:57:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2RzrjnjlFsoE4gKq8dQtt+6wyLVwzt/6FPHXx4r1hZA=;
-        b=nzeGKEcWF80+UA+29o2nRKvtsVKO7NLrB2Fs8rln3kn/f9OuoDarpGeRXZhqQXWHYZ
-         FlM0huwSRiS9tNjMmd9kFCdLKBD/85rZynKRWnVgzZdOrUI8Dc4bvvnz59BUuCyNZ5xA
-         5FX964y6HwMDCRKZyI+0oZ/iMo/iXuMiSiKNKdmfPxUlrG8YoVFq+yYtjN8Lo0xaewjG
-         ElDJEH1fVcLTcL8+0qqZ755FZKVFHWlghv8FczyHHjX0DjVEtlwb85EGwD6t06vHXs+Y
-         Rhup4Uu7yVmNBFkqyTxlX84/dSqHIUi3uIR9xRYHeOAa/mJmMqoMAPXeIVai6JkXXMys
-         2bWg==
+        bh=LCNpzOTbUE/HzR4l3Qcur0n2Jb8EBfncTh7DRzPIDl8=;
+        b=EgCuRl9Pz9lTYHbOjBhWf1PDvq3QaqoDlyNkJbE2XjpwonjwuS5uXsoMD3X0UtsYET
+         v3mHQxzbIvQQmUn4jkkavpShyYpp49a76b9hh5BGZvhlNaWpzDOA6aoBHBkrN8gFHjIG
+         rjXo9oPVTDfQ/VJT3oM/3w+xmbzHciKJ+2g6lB1joU8qdzTcW4/WQsK/FgV+Z13LNuEu
+         5bFCxRob4RlcHGNYBldBd3X05pKm5GVw7LWQnzGPQEEOOYv2aWeWI+n1Z/F6vN5yu5Ya
+         BBIm4u+9ogA9RV8xmNCvBrgj/K4VnXu+E4CsmpHvdRp/ymM+sDFazxRXWlRg7tOfMOB3
+         swPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2RzrjnjlFsoE4gKq8dQtt+6wyLVwzt/6FPHXx4r1hZA=;
-        b=N0sLGz27LIbbdOwWOvDKsbzJiGAHc6uyLIlfEjRfzJXL8u8BLuVaEcPEzZDhQ0KRsv
-         j4GoCgTKxKK+c9mdUtKFp56ZhmHYdyCDq/clRb+2uSNOmv1a8OWg1LpOrRsEZ6rEZm+R
-         bjJRcQFeNXWHUwkabQZHh3c+7vf9EV+spiJ1GHHlIbAK7hp1MT5DdBKZMN8HJYje2I7B
-         qoV9vHQzM4Zde1Wvg6ORbuR0GOJeEC3a1HBNspd85wEBo8qLI2CqH/cL09NZPGnFAe7e
-         Yf6nUiLzBYCEOUH51iUvtrWJaS0MqgDauylyh+UkJmkhe7Z+DIkLxC8kVUIAAjC8EXBH
-         ifSA==
-X-Gm-Message-State: ANhLgQ3BbFlag7VAenpWmdwWkxkB9WFMqX4O10i6EfYsMx5BjskzoLT7
-        3BWiZ6rfdW9QVekydImBnXI=
-X-Google-Smtp-Source: ADFU+vtcDRozhnR3XI1zbXILvCGDDVn8CYx431KkNfHnlOhfzRnvMYK0f0sW9XeYw1IzeFXJ5Nkbmg==
-X-Received: by 2002:aa7:94a5:: with SMTP id a5mr22524685pfl.67.1584932268481;
-        Sun, 22 Mar 2020 19:57:48 -0700 (PDT)
+        bh=LCNpzOTbUE/HzR4l3Qcur0n2Jb8EBfncTh7DRzPIDl8=;
+        b=GhGSUFQJiZ06CffYc7grnTVm7W03oI95US+fXmJIQjtt64MnZkA5mZa4CdrmPHDZ4O
+         7S/8CG5EriUi8bFOp9ki6CzNN63gzzYyHNMDX+h9QmTSmF3C3J+0tq5KYkt3urcuoyMz
+         UGNRxBc9jip1u00kPlBBIw5r7dHqbP9UJrzB/jCXdcosDMHoG2pk2Tvv+Ea1o+vn1rqD
+         Y44egZAJuHi/xWTqNIjoRc+92/SlVYlqHW3wpCQD+2eM5VG1UyHUq9taGTDOpmRwV8TD
+         /IlJHo0bGmq3sNUHwu5407s4VZkqEG3iCijtKJRmq78r9Yj0WwCQg8wlVnDEvKCbYi6w
+         EA3g==
+X-Gm-Message-State: ANhLgQ14fuSdO+57dG614jXZFlbWMrnhEk6LiVbqQx+WzXjgKzOrK1kg
+        XwE7yHbaYRPtqRRKXQdizQk=
+X-Google-Smtp-Source: ADFU+vsKVn9fYwahIqa36/dtMadogMhOYktoHnEoNnZ/iBtmTv/Lyly09Mn24qErmVRoZ6LWrgAs2A==
+X-Received: by 2002:aa7:962d:: with SMTP id r13mr23109263pfg.244.1584932275229;
+        Sun, 22 Mar 2020 19:57:55 -0700 (PDT)
 Received: from localhost (104.128.80.227.16clouds.com. [104.128.80.227])
-        by smtp.gmail.com with ESMTPSA id z17sm11762499pff.12.2020.03.22.19.57.46
+        by smtp.gmail.com with ESMTPSA id v38sm10838374pjb.1.2020.03.22.19.57.53
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 22 Mar 2020 19:57:48 -0700 (PDT)
+        Sun, 22 Mar 2020 19:57:54 -0700 (PDT)
 From:   Dejin Zheng <zhengdejin5@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         linux@armlinux.org.uk, davem@davemloft.net,
         mchehab+samsung@kernel.org, gregkh@linuxfoundation.org,
         broonie@kernel.org, tglx@linutronix.de, netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH net-next v6 09/10] net: phy: smsc: use phy_read_poll_timeout() to simplify the code
-Date:   Mon, 23 Mar 2020 10:56:32 +0800
-Message-Id: <20200323025633.6069-10-zhengdejin5@gmail.com>
+Subject: [PATCH net-next v6 10/10] net: phy: tja11xx: use phy_read_poll_timeout() to simplify the code
+Date:   Mon, 23 Mar 2020 10:56:33 +0800
+Message-Id: <20200323025633.6069-11-zhengdejin5@gmail.com>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200323025633.6069-1-zhengdejin5@gmail.com>
 References: <20200323025633.6069-1-zhengdejin5@gmail.com>
@@ -64,67 +64,50 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 use phy_read_poll_timeout() to replace the poll codes for
-simplify lan87xx_read_status() function.
-
-it should be add msleep(10) before call phy_read_poll_timeout()
-to keep the code more similar, but it will report that warning, so
-modify it to msleep(20).
-
-./scripts/checkpatch.pl
-v5-0009-net-phy-smsc-use-phy_read_poll_timeout-to-simplif.patch
-WARNING: msleep < 20ms can sleep for up to 20ms; see Documentation/timers/timers-howto.rst
-#42: FILE: drivers/net/phy/smsc.c:126:
-+		msleep(10);
+simplify tja11xx_check() function.
 
 Suggested-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 ---
 v5 -> v6:
 	- no changed.
 v4 -> v5:
-	- add msleep before phy_read_poll_timeout() to keep the
-	  code more similar
+	- no changed.
 v3 -> v4:
 	- add this patch by Andrew's suggestion. Thanks Andrew!
 
- drivers/net/phy/smsc.c | 17 ++++++-----------
- 1 file changed, 6 insertions(+), 11 deletions(-)
+ drivers/net/phy/nxp-tja11xx.c | 16 +++-------------
+ 1 file changed, 3 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
-index b73298250793..f888523086ed 100644
---- a/drivers/net/phy/smsc.c
-+++ b/drivers/net/phy/smsc.c
-@@ -112,8 +112,6 @@ static int lan87xx_read_status(struct phy_device *phydev)
- 	int err = genphy_read_status(phydev);
+diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
+index b705d0bd798b..32ef32a4af3c 100644
+--- a/drivers/net/phy/nxp-tja11xx.c
++++ b/drivers/net/phy/nxp-tja11xx.c
+@@ -72,20 +72,10 @@ static struct tja11xx_phy_stats tja11xx_hw_stats[] = {
  
- 	if (!phydev->link && priv->energy_enable) {
--		int i;
+ static int tja11xx_check(struct phy_device *phydev, u8 reg, u16 mask, u16 set)
+ {
+-	int i, ret;
 -
- 		/* Disable EDPD to wake up PHY */
- 		int rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
- 		if (rc < 0)
-@@ -125,15 +123,12 @@ static int lan87xx_read_status(struct phy_device *phydev)
- 			return rc;
+-	for (i = 0; i < 200; i++) {
+-		ret = phy_read(phydev, reg);
+-		if (ret < 0)
+-			return ret;
+-
+-		if ((ret & mask) == set)
+-			return 0;
+-
+-		usleep_range(100, 150);
+-	}
++	int val;
  
- 		/* Wait max 640 ms to detect energy */
--		for (i = 0; i < 64; i++) {
--			/* Sleep to allow link test pulses to be sent */
--			msleep(10);
--			rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
--			if (rc < 0)
--				return rc;
--			if (rc & MII_LAN83C185_ENERGYON)
--				break;
--		}
-+		msleep(20);
-+		phy_read_poll_timeout(phydev, MII_LAN83C185_CTRL_STATUS, rc,
-+				      rc & MII_LAN83C185_ENERGYON, 10000,
-+				      620000);
-+		if (rc < 0)
-+			return rc;
+-	return -ETIMEDOUT;
++	return phy_read_poll_timeout(phydev, reg, val, (val & mask) == set,
++				     150, 30000);
+ }
  
- 		/* Re-enable EDPD */
- 		rc = phy_read(phydev, MII_LAN83C185_CTRL_STATUS);
+ static int phy_modify_check(struct phy_device *phydev, u8 reg,
 -- 
 2.25.0
 
