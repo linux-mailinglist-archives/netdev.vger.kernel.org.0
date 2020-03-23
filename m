@@ -2,102 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBD4218FA9C
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 17:58:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 650AD18FAA2
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 17:58:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727889AbgCWQ6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 12:58:00 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:36953 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727067AbgCWQ6A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 12:58:00 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584982679; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=RzTd9yidaJNPKPYdkuKLeB4afMPdW8B9UycwLsO6lGA=;
- b=MHhXEETWgVGQu3I+zvxOW1orVBY+E67p6ybfM+6u8rM0pECMmKtIm9zLI05ckbV5An0HgUxc
- 2bhUzZITBymKWWAlFOq7xQBlvIVReVDetEC9md30KHB6reabSBSTEw2FMjwUan9vuMpkVeFO
- xBP1J5keIEKnyYNYWla0BWHrTWw=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e78ea85.7f772ce14ab0-smtp-out-n04;
- Mon, 23 Mar 2020 16:57:41 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id CE56BC432C2; Mon, 23 Mar 2020 16:57:41 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id F268AC433CB;
-        Mon, 23 Mar 2020 16:57:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org F268AC433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1727560AbgCWQ6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 12:58:45 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:48312 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727374AbgCWQ6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 12:58:45 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-167-GzfuyjbyN3-G2xGQwmdVDQ-1; Mon, 23 Mar 2020 16:58:42 +0000
+X-MC-Unique: GzfuyjbyN3-G2xGQwmdVDQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 23 Mar 2020 16:58:42 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 23 Mar 2020 16:58:42 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'David Ahern' <dsahern@gmail.com>,
+        Network Development <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next] Remove DST_HOST
+Thread-Topic: [PATCH net-next] Remove DST_HOST
+Thread-Index: AdYBH4gs8HTGreJ2SnCmnalhRsiIuQADrm8AAAFcQ3A=
+Date:   Mon, 23 Mar 2020 16:58:41 +0000
+Message-ID: <3316a66b025a4823887e4c34c6e2fe7e@AcuMS.aculab.com>
+References: <746901f88f174ea8bda66e37f92961e6@AcuMS.aculab.com>
+ <1daa5b45-1507-5899-609c-1ebbc7816db1@gmail.com>
+In-Reply-To: <1daa5b45-1507-5899-609c-1ebbc7816db1@gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][next] wireless: ti: Replace zero-length array with
- flexible-array member
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200225003408.GA28675@embeddedor>
-References: <20200225003408.GA28675@embeddedor>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200323165741.CE56BC432C2@smtp.codeaurora.org>
-Date:   Mon, 23 Mar 2020 16:57:41 +0000 (UTC)
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
+RnJvbTogRGF2aWQgQWhlcm4NCj4gU2VudDogMjMgTWFyY2ggMjAyMCAxNjoxNQ0KPiBPbiAzLzIz
+LzIwIDg6MzEgQU0sIERhdmlkIExhaWdodCB3cm90ZToNCj4gPiBQcmV2aW91cyBjaGFuZ2VzIHRv
+IHRoZSBJUCByb3V0aW5nIGNvZGUgaGF2ZSByZW1vdmVkIGFsbCB0aGUNCj4gPiB0ZXN0cyBmb3Ig
+dGhlIERTX0hPU1Qgcm91dGUgZmxhZy4NCj4gPiBSZW1vdmUgdGhlIGZsYWdzIGFuZCBhbGwgdGhl
+IGNvZGUgdGhhdCBzZXRzIGl0Lg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogRGF2aWQgTGFpZ2h0
+IDxkYXZpZC5sYWlnaHRAYWN1bGFiLmNvbT4NCj4gPiAtLS0NCj4gPiBBRkFJQ1QgdGhlIERTVF9I
+T1NUIGZsYWcgaW4gcm91dGUgdGFibGUgZW50cmllcyBoYXNuJ3QgYmVlbg0KPiA+IGxvb2tlZCBh
+dCBzaW5jZSB2NC4yLXJjMS4NCj4gDQo+IGV2ZW4gYmFjayBpbiA0LjE0IGl0IHdhcyBzZXQgYW5k
+IG9ubHkgY2hlY2tlZCBpbiBvbmUgc3BvdCAtDQo+IGZpYjZfY29tbWl0X21ldHJpY3MuDQo+IA0K
+PiA+DQo+ID4gQSBxdWljayBzZWFyY2ggZmFpbGVkIHRvIGZpbmQgdGhlIGNvbW1pdCB0aGF0IHJl
+bW92ZWQgdGhlDQo+ID4gdGVzdHMgZm9yIGl0IGZyb20gaXB2Ni9yb3V0ZS5jDQo+ID4gSSBzdXNw
+ZWN0IG90aGVyIGNoYW5nZXMgZ290IGFkZGVkIG9uIHRvcC4NCj4gDQo+IGJlZW4gb24gbXkgdG8t
+ZG8gbGlzdCB0byB2ZXJpZnkgaXQgd2FzIG5vIGxvbmdlciBuZWVkZWQuIHRoYW5rcyBmb3Igc2Vu
+ZGluZy4NCg0KSSB3YXMgdHJ5aW5nIHRvIHVucmF2ZWwgdGhhdCBjb2RlIGEgYml0IHRvIGZpbmQg
+b3V0IHdoZXRoZXINCnJhdyBzb2NrZXRzIHdpdGggJ2hkcmluY2wnIGxvb2tlZCB1cCB0aGUgY29y
+cmVjdCByb3V0ZSAoaWUNCnRoZSBvbmUgZnJvbSB0aGUgc2VuZHRvICdkZXN0aW5hdGlvbiBhZGRy
+ZXNzJyByYXRoZXIgdGhhbg0KYW55dGhpbmcgaW4gdGhlIHN1cHBsaWVkIGlwIGhlYWRlcikuDQpU
+aGUgdGVtcG9yYXJ5ICdkc3QnIHN0cnVjdHVyZXMgYXJlIGV4cGVuc2l2ZScuDQpJZiBub3RoaW5n
+IGVsc2UgdGhleSBjYW4gYmUgZnJlZWQgaW1tZWRpYXRlbHkgcmF0aGVyIHRoYW4NCmFmdGVyIHJj
+dS4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBS
+b2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9u
+IE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
-> The current codebase makes use of the zero-length array language
-> extension to the C90 standard, but the preferred mechanism to declare
-> variable-length types such as these ones is a flexible array member[1][2],
-> introduced in C99:
-> 
-> struct foo {
->         int stuff;
->         struct boo array[];
-> };
-> 
-> By making use of the mechanism above, we will get a compiler warning
-> in case the flexible array does not occur last in the structure, which
-> will help us prevent some kind of undefined behavior bugs from being
-> inadvertently introduced[3] to the codebase from now on.
-> 
-> Also, notice that, dynamic memory allocations won't be affected by
-> this change:
-> 
-> "Flexible array members have incomplete type, and so the sizeof operator
-> may not be applied. As a quirk of the original implementation of
-> zero-length arrays, sizeof evaluates to zero."[1]
-> 
-> This issue was found with the help of Coccinelle.
-> 
-> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> [2] https://github.com/KSPP/linux/issues/21
-> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-
-Patch applied to wireless-drivers-next.git, thanks.
-
-398978f7dfa5 wireless: ti: Replace zero-length array with flexible-array member
-
--- 
-https://patchwork.kernel.org/patch/11402335/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
