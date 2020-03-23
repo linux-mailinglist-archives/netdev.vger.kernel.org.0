@@ -2,219 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5F7A18F605
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 14:44:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCE1018F68E
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 15:09:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728514AbgCWNoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 09:44:17 -0400
-Received: from mail-eopbgr50088.outbound.protection.outlook.com ([40.107.5.88]:16612
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728434AbgCWNoQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 09:44:16 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fJLRHJoWwbzsCoKa2C2/cG0qrhS1cnA2Zjjqg39qmzXXDu41PXtdolNPVF3X8+2Q/d2NST4TgqW+Q/axL6j200MPdzCBU1r6i4RzSAzbXXQGS+e0JXBZWIFMOUDuwjh8TOuFizJaF3DNvxTBPPVoR6Nls9xjypz+7Ku8qG0tWtWvSSRE7sQoVlTtbAb6CLZbXdSdQ/KJljOnW/ZL9GnOcVR6G+cgAqCOZcrunWru3GrnfHZdVqZWX+mMtOTn+zbqVOstenaifWK435X9a1pxA/02dZv4asJtr+4dsnd6gUm53qlFtvY42lcyHJitlsYjYUpShnKBX8wiDaX6mAed4w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TLF0+vLlaPDa24FhyToXtQf1uIPhXXUW7x6snbU1o0Y=;
- b=X4i17JrS4mF2NWawMsPj1SNFdFPO+NYQQ6O8vQTIfZIU2bO+nUDZZligMGv0WyIjgUN++8/seMMn9GNofhk7Tfdjb3K2F7ILl4tqnzwb2o0tcHy51L23YEcZM6vWCau8HcNQ/LoaY4qfoOwFG5AQexf5FOOL87RGF6tR5uMtSX5d31mJSFi1HUOvO34Z0DLuNpUJrhS/W0pA1AxSk5D4ZFSY9dNzFzYo1WNt01ds5mIqgoNLKVSWqmc/hWurXiznc/B1d2DSiOPvYtOZAYJo/vC+TxNwscVd9kCU9Cndb1U4hA/EYSjyKD2j6BeMP53STtHGTQ6xZpHf4GRWq4i97g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TLF0+vLlaPDa24FhyToXtQf1uIPhXXUW7x6snbU1o0Y=;
- b=ezr7LOD71GHQYIV9gzDsH+8j0RCNHCn5/1e64Zie2J1NQa0cI/d88VnXQxrLEyf1a2Yad3zWPUPH4kcXXgwTDQV68F/5NzV3ymMbDrbRG1GTxcRUVTpQR1v+2nM8/DH/jSIZjktxZUSUCzCidYy4VEMEVprMTU3zxxSm56Bnqec=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-Received: from VI1PR05MB3359.eurprd05.prod.outlook.com (10.170.238.32) by
- VI1PR05MB3215.eurprd05.prod.outlook.com (10.175.245.15) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.22; Mon, 23 Mar 2020 13:44:13 +0000
-Received: from VI1PR05MB3359.eurprd05.prod.outlook.com
- ([fe80::cd2b:cd2:d07a:1db4]) by VI1PR05MB3359.eurprd05.prod.outlook.com
- ([fe80::cd2b:cd2:d07a:1db4%7]) with mapi id 15.20.2835.021; Mon, 23 Mar 2020
- 13:44:13 +0000
-References: <1584765584-4168-1-git-send-email-wenxu@ucloud.cn> <1584765584-4168-2-git-send-email-wenxu@ucloud.cn>
-User-agent: mu4e 1.2.0; emacs 26.2.90
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     wenxu@ucloud.cn
-Cc:     saeedm@mellanox.com, paulb@mellanox.com, vladbu@mellanox.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3 1/2] net/mlx5e: refactor indr setup block
-In-reply-to: <1584765584-4168-2-git-send-email-wenxu@ucloud.cn>
-Date:   Mon, 23 Mar 2020 15:44:10 +0200
-Message-ID: <vbf8sjrnq39.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: PR0P264CA0099.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:19::15) To VI1PR05MB3359.eurprd05.prod.outlook.com
- (2603:10a6:802:1c::32)
+        id S1728531AbgCWOJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 10:09:33 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:55688 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728378AbgCWOJc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 10:09:32 -0400
+Received: from mail-qk1-f199.google.com ([209.85.222.199])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <gpiccoli@canonical.com>)
+        id 1jGNli-0006Ed-HY
+        for netdev@vger.kernel.org; Mon, 23 Mar 2020 14:09:30 +0000
+Received: by mail-qk1-f199.google.com with SMTP id g25so2449291qka.0
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 07:09:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=uD9UTB4eUqzPpXhU/pSICGzXLIkypVUoDRfT0epdLnI=;
+        b=Gfe1xkGm6MK7pfb6tEyKQRGBMny0OHwfphRHsKeRL0/gA7gqH9VGhvVD/hRnuVQp6f
+         cynSBJvTWJhod8vKXD+lAjU8JNHwAbIAlBiDqOWzS8ALivuBOqzOAhLIV/NQEl7ujzHW
+         ooRyCZczsQc7CYVJ29M3pkKmwMnfvKWwN2478cZAAI2UD483oyvBDgqTofCuRGq3F3Ze
+         /3tZ60c5SWJV+AJVdY6DDDwf7PK2LeNRSGCU6UGNKgRd+tRbpILgmrd35PR9LnI1pcR2
+         dqvHpE2WPo2C4Ru96nIoewhBnGfzM7lak598eaJE8CRrRxLsULHUR8HlvnZWQWloR6FN
+         gM6w==
+X-Gm-Message-State: ANhLgQ2rSOZJD6zaRM5fCiDjmj9jpZ1vmDUJfGIlWSMtZa5LP1Ma0h91
+        KsScbjzZbIk9LdRdOmaVEo2wYq5ZYjihxqz/ZaQkfev48ZGaFJOFMKuvDi/H+JJbMhCX7LJRTa7
+        U49zK+T/5bBgv4ZZdDYQRcquFjXeBOCMBmg==
+X-Received: by 2002:a37:8502:: with SMTP id h2mr21413376qkd.223.1584972569654;
+        Mon, 23 Mar 2020 07:09:29 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vuJqPJB4iEIpQYb0jon939GQGBMkOlpP233dLHl8r+JSPyVQOYX67MfhwKqqmMWJkFdyVYwvA==
+X-Received: by 2002:a37:8502:: with SMTP id h2mr21413345qkd.223.1584972569409;
+        Mon, 23 Mar 2020 07:09:29 -0700 (PDT)
+Received: from [192.168.1.75] (189-47-87-73.dsl.telesp.net.br. [189.47.87.73])
+        by smtp.gmail.com with ESMTPSA id c40sm12694113qtk.18.2020.03.23.07.09.25
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 23 Mar 2020 07:09:28 -0700 (PDT)
+Subject: Re: [PATCH] net: ena: Add PCI shutdown handler to allow safe kexec
+To:     "Jubran, Samih" <sameehj@amazon.com>
+Cc:     "Belgazal, Netanel" <netanel@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
+        "gshan@redhat.com" <gshan@redhat.com>,
+        "gavin.guo@canonical.com" <gavin.guo@canonical.com>,
+        "jay.vosburgh@canonical.com" <jay.vosburgh@canonical.com>,
+        "pedro.principeza@canonical.com" <pedro.principeza@canonical.com>
+References: <f350a2ee513f4e3fb2a2cfa633dc0806@EX13D11EUB003.ant.amazon.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@canonical.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=gpiccoli@canonical.com; prefer-encrypt=mutual; keydata=
+ mQENBFpVBxcBCADPNKmu2iNKLepiv8+Ssx7+fVR8lrL7cvakMNFPXsXk+f0Bgq9NazNKWJIn
+ Qxpa1iEWTZcLS8ikjatHMECJJqWlt2YcjU5MGbH1mZh+bT3RxrJRhxONz5e5YILyNp7jX+Vh
+ 30rhj3J0vdrlIhPS8/bAt5tvTb3ceWEic9mWZMsosPavsKVcLIO6iZFlzXVu2WJ9cov8eQM/
+ irIgzvmFEcRyiQ4K+XUhuA0ccGwgvoJv4/GWVPJFHfMX9+dat0Ev8HQEbN/mko/bUS4Wprdv
+ 7HR5tP9efSLucnsVzay0O6niZ61e5c97oUa9bdqHyApkCnGgKCpg7OZqLMM9Y3EcdMIJABEB
+ AAG0LUd1aWxoZXJtZSBHLiBQaWNjb2xpIDxncGljY29saUBjYW5vbmljYWwuY29tPokBNwQT
+ AQgAIQUCWmClvQIbAwULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRDOR5EF9K/7Gza3B/9d
+ 5yczvEwvlh6ksYq+juyuElLvNwMFuyMPsvMfP38UslU8S3lf+ETukN1S8XVdeq9yscwtsRW/
+ 4YoUwHinJGRovqy8gFlm3SAtjfdqysgJqUJwBmOtcsHkmvFXJmPPGVoH9rMCUr9s6VDPox8f
+ q2W5M7XE9YpsfchS/0fMn+DenhQpV3W6pbLtuDvH/81GKrhxO8whSEkByZbbc+mqRhUSTdN3
+ iMpRL0sULKPVYbVMbQEAnfJJ1LDkPqlTikAgt3peP7AaSpGs1e3pFzSEEW1VD2jIUmmDku0D
+ LmTHRl4t9KpbU/H2/OPZkrm7809QovJGRAxjLLPcYOAP7DUeltveuQENBFpVBxcBCADbxD6J
+ aNw/KgiSsbx5Sv8nNqO1ObTjhDR1wJw+02Bar9DGuFvx5/qs3ArSZkl8qX0X9Vhptk8rYnkn
+ pfcrtPBYLoux8zmrGPA5vRgK2ItvSc0WN31YR/6nqnMfeC4CumFa/yLl26uzHJa5RYYQ47jg
+ kZPehpc7IqEQ5IKy6cCKjgAkuvM1rDP1kWQ9noVhTUFr2SYVTT/WBHqUWorjhu57/OREo+Tl
+ nxI1KrnmW0DbF52tYoHLt85dK10HQrV35OEFXuz0QPSNrYJT0CZHpUprkUxrupDgkM+2F5LI
+ bIcaIQ4uDMWRyHpDbczQtmTke0x41AeIND3GUc+PQ4hWGp9XABEBAAGJAR8EGAEIAAkFAlpV
+ BxcCGwwACgkQzkeRBfSv+xv1wwgAj39/45O3eHN5pK0XMyiRF4ihH9p1+8JVfBoSQw7AJ6oU
+ 1Hoa+sZnlag/l2GTjC8dfEGNoZd3aRxqfkTrpu2TcfT6jIAsxGjnu+fUCoRNZzmjvRziw3T8
+ egSPz+GbNXrTXB8g/nc9mqHPPprOiVHDSK8aGoBqkQAPZDjUtRwVx112wtaQwArT2+bDbb/Y
+ Yh6gTrYoRYHo6FuQl5YsHop/fmTahpTx11IMjuh6IJQ+lvdpdfYJ6hmAZ9kiVszDF6pGFVkY
+ kHWtnE2Aa5qkxnA2HoFpqFifNWn5TyvJFpyqwVhVI8XYtXyVHub/WbXLWQwSJA4OHmqU8gDl
+ X18zwLgdiQ==
+Message-ID: <408dd4c7-9f84-3314-1123-f308098e53e4@canonical.com>
+Date:   Mon, 23 Mar 2020 11:09:23 -0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from reg-r-vrt-018-180.mellanox.com (37.142.13.130) by PR0P264CA0099.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:19::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.19 via Frontend Transport; Mon, 23 Mar 2020 13:44:11 +0000
-X-Originating-IP: [37.142.13.130]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: cf19cbdd-f345-49fc-4f5c-08d7cf30456f
-X-MS-TrafficTypeDiagnostic: VI1PR05MB3215:|VI1PR05MB3215:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB3215BAE84FC7BBE00D8D81A4ADF00@VI1PR05MB3215.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2043;
-X-Forefront-PRVS: 0351D213B3
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(39860400002)(346002)(136003)(366004)(199004)(956004)(66476007)(66556008)(36756003)(66946007)(5660300002)(478600001)(81156014)(8676002)(8936002)(81166006)(4326008)(86362001)(2616005)(2906002)(16526019)(186003)(316002)(6916009)(7696005)(52116002)(26005)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3215;H:VI1PR05MB3359.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: S2pFCSP2oSp9R0y9+N3TL+iEb087HWCROCVxqCn0NQ81OpAk0iKlzRZ/vWNDBeieen/3bj+FgwE+WkMFHsTa41AmmUUwWql7zwD2vWWFbTENQKgu9ps0F2d6+0xBE/dIAR4kZ+Ryju7qZy5ROB2O/aUHhQps9BiZK87MXZ9LlhKgGUcRaeqI0B0MGXgtFGBXauvauicD/8l09cdjMeXnJId7Pw55lAZ1E/7JeafzZ7T+0nCPov1z1taKGsBsW4dbfvsWp9MW7cEIkEXlomeehdxsjboXw31Is9LAYCfMgTxfBTXg+vsr9PtfS/dYiljVNA5o+7g92VIVCFrfpNAzKMwOrCmnK62MqFjT7d3+3t30EUQLtWy64tx7GZkz8hC5jtiQwWN0KtTpqHIyLnvvQIpbWeHTvHwaZrWqpnakk/eTI41veKBw7h/hM+gc0Y6M
-X-MS-Exchange-AntiSpam-MessageData: pfQ5o8B3+or7+103xq1eSnCfYiEsuij+F5DH823K0ejbTT633OWnDzkp/XFfIM3OKWHXYUEqAWHoozXkZX+jrNV1vWY7zZxz2gHFI851zWhYoJulV9Tl2qU0yyJdyh5vTQ29c400AiyRREUY8iOyyQ==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cf19cbdd-f345-49fc-4f5c-08d7cf30456f
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2020 13:44:12.8226
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: z5gAatzWpKV6//CpjC5AJyv9j2UUrxeNDQhcH1bz0hxv0uOV2BUFRfqNVR/HBRCFfRuuPt5XAiZnjPC3Cwb2DQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3215
+In-Reply-To: <f350a2ee513f4e3fb2a2cfa633dc0806@EX13D11EUB003.ant.amazon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> [...] 
+> 
+> Hi 
+> Guilherme,
+> 
+> Thank you for the patch, we are currently looking into your patch and testing it.
+> 
+> Thanks,
+> Sameeh
+> 
 
-On Sat 21 Mar 2020 at 06:39, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
->
-> Refactor indr setup block for support ft indr setup in the
-> next patch
+Thanks a lot Sameeh! If you have any suggestions, let me know and I can
+quickly respin a V2.
 
-Description of why this refactoring is needed and details of the change
-would be nice.
+Cheers,
 
->
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
-> v3: no change
->
->  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 42 ++++++++++++------------
->  1 file changed, 21 insertions(+), 21 deletions(-)
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> index a33d151..057f5f9 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> @@ -694,9 +694,9 @@ static void mlx5e_rep_indr_clean_block_privs(struct mlx5e_rep_priv *rpriv)
->  static int
->  mlx5e_rep_indr_offload(struct net_device *netdev,
->  		       struct flow_cls_offload *flower,
-> -		       struct mlx5e_rep_indr_block_priv *indr_priv)
-> +		       struct mlx5e_rep_indr_block_priv *indr_priv,
-> +		       unsigned long flags)
->  {
-> -	unsigned long flags = MLX5_TC_FLAG(EGRESS) | MLX5_TC_FLAG(ESW_OFFLOAD);
->  	struct mlx5e_priv *priv = netdev_priv(indr_priv->rpriv->netdev);
->  	int err = 0;
->  
-> @@ -717,20 +717,22 @@ static void mlx5e_rep_indr_clean_block_privs(struct mlx5e_rep_priv *rpriv)
->  	return err;
->  }
->  
-> -static int mlx5e_rep_indr_setup_block_cb(enum tc_setup_type type,
-> -					 void *type_data, void *indr_priv)
-> +static int mlx5e_rep_indr_setup_tc_cb(enum tc_setup_type type,
-> +				      void *type_data, void *indr_priv)
->  {
-> +	unsigned long flags = MLX5_TC_FLAG(EGRESS) | MLX5_TC_FLAG(ESW_OFFLOAD);
->  	struct mlx5e_rep_indr_block_priv *priv = indr_priv;
->  
->  	switch (type) {
->  	case TC_SETUP_CLSFLOWER:
-> -		return mlx5e_rep_indr_offload(priv->netdev, type_data, priv);
-> +		return mlx5e_rep_indr_offload(priv->netdev, type_data, priv,
-> +					      flags);
->  	default:
->  		return -EOPNOTSUPP;
->  	}
->  }
->  
-> -static void mlx5e_rep_indr_tc_block_unbind(void *cb_priv)
-> +static void mlx5e_rep_indr_block_unbind(void *cb_priv)
->  {
->  	struct mlx5e_rep_indr_block_priv *indr_priv = cb_priv;
->  
-> @@ -741,9 +743,10 @@ static void mlx5e_rep_indr_tc_block_unbind(void *cb_priv)
->  static LIST_HEAD(mlx5e_block_cb_list);
->  
->  static int
-> -mlx5e_rep_indr_setup_tc_block(struct net_device *netdev,
-> -			      struct mlx5e_rep_priv *rpriv,
-> -			      struct flow_block_offload *f)
-> +mlx5e_rep_indr_setup_block(struct net_device *netdev,
-> +			   struct mlx5e_rep_priv *rpriv,
-> +			   struct flow_block_offload *f,
-> +			   flow_setup_cb_t *setup_cb)
->  {
->  	struct mlx5e_rep_indr_block_priv *indr_priv;
->  	struct flow_block_cb *block_cb;
-> @@ -769,9 +772,8 @@ static void mlx5e_rep_indr_tc_block_unbind(void *cb_priv)
->  		list_add(&indr_priv->list,
->  			 &rpriv->uplink_priv.tc_indr_block_priv_list);
->  
-> -		block_cb = flow_block_cb_alloc(mlx5e_rep_indr_setup_block_cb,
-> -					       indr_priv, indr_priv,
-> -					       mlx5e_rep_indr_tc_block_unbind);
-> +		block_cb = flow_block_cb_alloc(setup_cb, indr_priv, indr_priv,
-> +					       mlx5e_rep_indr_block_unbind);
->  		if (IS_ERR(block_cb)) {
->  			list_del(&indr_priv->list);
->  			kfree(indr_priv);
-> @@ -786,9 +788,7 @@ static void mlx5e_rep_indr_tc_block_unbind(void *cb_priv)
->  		if (!indr_priv)
->  			return -ENOENT;
->  
-> -		block_cb = flow_block_cb_lookup(f->block,
-> -						mlx5e_rep_indr_setup_block_cb,
-> -						indr_priv);
-> +		block_cb = flow_block_cb_lookup(f->block, setup_cb, indr_priv);
->  		if (!block_cb)
->  			return -ENOENT;
->  
-> @@ -802,13 +802,13 @@ static void mlx5e_rep_indr_tc_block_unbind(void *cb_priv)
->  }
->  
->  static
-> -int mlx5e_rep_indr_setup_tc_cb(struct net_device *netdev, void *cb_priv,
-> -			       enum tc_setup_type type, void *type_data)
-> +int mlx5e_rep_indr_setup_cb(struct net_device *netdev, void *cb_priv,
-> +			    enum tc_setup_type type, void *type_data)
->  {
->  	switch (type) {
->  	case TC_SETUP_BLOCK:
-> -		return mlx5e_rep_indr_setup_tc_block(netdev, cb_priv,
-> -						      type_data);
-> +		return mlx5e_rep_indr_setup_block(netdev, cb_priv, type_data,
-> +						  mlx5e_rep_indr_setup_tc_cb);
->  	default:
->  		return -EOPNOTSUPP;
->  	}
-> @@ -820,7 +820,7 @@ static int mlx5e_rep_indr_register_block(struct mlx5e_rep_priv *rpriv,
->  	int err;
->  
->  	err = __flow_indr_block_cb_register(netdev, rpriv,
-> -					    mlx5e_rep_indr_setup_tc_cb,
-> +					    mlx5e_rep_indr_setup_cb,
->  					    rpriv);
->  	if (err) {
->  		struct mlx5e_priv *priv = netdev_priv(rpriv->netdev);
-> @@ -834,7 +834,7 @@ static int mlx5e_rep_indr_register_block(struct mlx5e_rep_priv *rpriv,
->  static void mlx5e_rep_indr_unregister_block(struct mlx5e_rep_priv *rpriv,
->  					    struct net_device *netdev)
->  {
-> -	__flow_indr_block_cb_unregister(netdev, mlx5e_rep_indr_setup_tc_cb,
-> +	__flow_indr_block_cb_unregister(netdev, mlx5e_rep_indr_setup_cb,
->  					rpriv);
->  }
 
+Guilherme
