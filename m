@@ -2,79 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F92618FB99
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 18:36:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D93D18FBA0
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 18:38:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727758AbgCWRgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 13:36:36 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:24671 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727000AbgCWRgf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 13:36:35 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584984994; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=sMKzO7VMmSiDEKm+iag8bUI3yWB0fYYk5tZ+Aj8NAxQ=;
- b=mPAeF4SF5ukHYeBr6Tdi2kFMwvbaqgLXSZzZ3bDOJy/KOlu38/yUURWmSUuMdSlIp0SUzQKN
- 2pJkBRMbBIpPF+umCCSrgUkC00LgAuP4naD6UC2+JXWZxDCu5l6BsGKxCEP/4oJD+Dgo6eIQ
- 7jU7cWo8jiMxUx8IR1ZHoJCkv4M=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e78f38a.7fd0d5675f48-smtp-out-n05;
- Mon, 23 Mar 2020 17:36:10 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 12273C44791; Mon, 23 Mar 2020 17:36:08 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 46C9AC433D2;
-        Mon, 23 Mar 2020 17:36:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 46C9AC433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1727624AbgCWRiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 13:38:02 -0400
+Received: from mail-ot1-f53.google.com ([209.85.210.53]:46074 "EHLO
+        mail-ot1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727000AbgCWRiC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 13:38:02 -0400
+Received: by mail-ot1-f53.google.com with SMTP id c9so4086679otl.12;
+        Mon, 23 Mar 2020 10:38:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dD9qGn/FmD1rIVTC9XP6vGVct8WmBBkX3v6FBswGPLo=;
+        b=bC5UhptYgtbbDlWbU1n91QCCT5Tl3F4HyRqvOVej/yWh9rfjkQ7q/ELO7xqpwZz8L3
+         dCJd8s+ZsTxjwYOUejEJaxiANNHTaDWfk8rzn+UWhGKYl/VxkJMpE1Nff+Dpz5MyPaeE
+         GG1kIvNQrOjpxKjizYgOlrHsqwbI62HNEKmMSwA52xYB5nPaXw0wuHh29vVsNYWdnN4r
+         vL1iDcEWOGB2Z+GgsQaVgXOz2hWElDuUgwlT9YbOaloOIy3EFr77Jn0OjZlTcZIEgc4x
+         nOQsS0hUxmmZrzcrSprEWan7EE1YjAD+CIonZpgWLBcpWiSojK5hHGkwh70jm5Vub3+6
+         LyZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dD9qGn/FmD1rIVTC9XP6vGVct8WmBBkX3v6FBswGPLo=;
+        b=P5x+/YcypsNdx/KCzOpDOSXNpo9NQgSjUdP3wVFWz5d+47o/EEjiMzQB5qOLb/Wrcb
+         c65TAU6FNwuprSz1ksqKZ/55yppLZBeglC2pyPYgWPz+ZZK3Qy9Ze12zLsIMAhoK6f4+
+         TREsFB6bUFHXCBXEC/XzUqBEiZsY9rCduBtSbXW49bgNvbTikZCJgfUw718BnBaGst8+
+         uvVCus11JfvMt0jnl0HnFWezJeC8u98ThHxseCW/uPo4XoqDfGkbUj8K1Uhx6N1fOjMJ
+         VjcY6IY+04zw5VhLjsa+OHKrxfapeHT6++1iyQSqR/50S8m7BKRPo1O4VOEEK53/GfNb
+         PPiA==
+X-Gm-Message-State: ANhLgQ1bjuNgKETodu10+F/0l/y+M4lYCP3fDe7SZ5Z8IN7fNHWFKoid
+        ejFSUUY7Mqbp0THjJ4d8Hs2cYSvvXHY1LzYE0knTivc9JLE=
+X-Google-Smtp-Source: ADFU+vtY5BuUG08awkgHy74vpXHheRICUH8sGnleTk1N+m0gvVWzjl+iL9yd+Fermo30XPv0ebF0jhoMLaVre8nngwA=
+X-Received: by 2002:a9d:53c4:: with SMTP id i4mr19951523oth.48.1584985080193;
+ Mon, 23 Mar 2020 10:38:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtl8xxxu: Fix sparse warning: cast from restricted __le16
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200319064341.49500-1-chiu@endlessm.com>
-References: <20200319064341.49500-1-chiu@endlessm.com>
-To:     Chris Chiu <chiu@endlessm.com>
-Cc:     Jes.Sorensen@gmail.com, davem@davemloft.net,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@endlessm.com,
-        kbuild test robot <lkp@intel.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200323173609.12273C44791@smtp.codeaurora.org>
-Date:   Mon, 23 Mar 2020 17:36:08 +0000 (UTC)
+References: <000000000000183b7e05a188fd79@google.com>
+In-Reply-To: <000000000000183b7e05a188fd79@google.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 23 Mar 2020 10:37:49 -0700
+Message-ID: <CAM_iQpUW1rqttQnN9df7FX8H2R+2xTZDrSYDN11hOLRK8=ZhNA@mail.gmail.com>
+Subject: Re: WARNING: ODEBUG bug in __init_work
+To:     syzbot <syzbot+5470940d8c65601e282f@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Chris Chiu <chiu@endlessm.com> wrote:
-
-> Fix the warning reported by sparse as:
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:4819:17: sparse: sparse: cast from restricted __le16
->  drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c:4892:17: sparse: sparse: cast from restricted __le16
-> 
-> Signed-off-by: Chris Chiu <chiu@endlessm.com>
-> Reported-by: kbuild test robot <lkp@intel.com>
-> Acked-by: Jes Sorensen <jes@trained-monkey.org>
-
-Patch applied to wireless-drivers-next.git, thanks.
-
-8d4ccd7770e7 rtl8xxxu: Fix sparse warning: cast from restricted __le16
-
--- 
-https://patchwork.kernel.org/patch/11446567/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+#syz fix: net_sched: cls_route: remove the right filter from hashtable
