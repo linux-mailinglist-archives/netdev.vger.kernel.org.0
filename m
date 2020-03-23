@@ -2,103 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2483F1901D6
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 00:26:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E52061901E3
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 00:32:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727050AbgCWX0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 19:26:54 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:34330 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726982AbgCWX0y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 19:26:54 -0400
-Received: by mail-pg1-f194.google.com with SMTP id t3so8038309pgn.1
-        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 16:26:51 -0700 (PDT)
+        id S1726987AbgCWXcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 19:32:12 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:35405 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726203AbgCWXcL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 19:32:11 -0400
+Received: by mail-wr1-f65.google.com with SMTP id d5so6981086wrn.2
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 16:32:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=greyhouse-net.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=oeCK/P7Vf7agbJreaxV5dmA7cMhPfIVzkRcH3J13yEU=;
-        b=gXZD1PjqRDAqfPYcWfKY+5Q9nysmZCSHHoT1DM2M9949vFeq5AMXfg3XBwLPUjv3mC
-         y/gVmR/Cc8NL5aklotbWjNDVTCGvvY3fvCspnwkIoSZjFNx6RvZCQEJFhrFCfiH7Z0YT
-         Ezu7v/LUeIVk9ZGGtXdDToU9YsNkJ3Kb5V08rUnM8utBhuYwF72hL3Tq+HyHHyx9DNhW
-         snlRXZX52zepUuU2EafGC/sHNPpn7gs8NEno0IesaXSjlG63iCFK2JRIrylbgNRhvfbP
-         qklJZMi5dIrdXiRTxBjGuPw70GmpRFDTLvboyiy1No2q0ply+C2kGOHZroYls0Q6+Npu
-         Bmmw==
+         :content-disposition:in-reply-to;
+        bh=FmUnb5yoFNj3fmP68Je1AGik/in+cu9VGqz4KWMCf90=;
+        b=E6BXiw+cOMPaa84WMLwtyIRRYMo5KkWkCnyKgaxW6mV/hQI1LJ7cosFFmKFF+mReMB
+         zWTZ2GBl+0iTsMbg7ZSeKoZ8SrtoL6JBOgc/4Kzv56bPVZfxnXJmomRzGSw4xItNBqWh
+         woeNes3WP47saLLyI6Ijte2UIVZj9O9SZvds60H5Z47d3CH5Tid3p0sAakYa5rUlvw/k
+         eALYlL2PeFIuMIvWBMtxdVtYRPEboCeZE4PqbBh+k4RLtI2dwy6te/ZZVcSZ3eSw1syB
+         mzmGOtQXh4a/clQdiQpejkXgJjZb61tTQqOiI2LmJc3ENXiuavQ/pdkyWB9atL0JThDt
+         sk5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=oeCK/P7Vf7agbJreaxV5dmA7cMhPfIVzkRcH3J13yEU=;
-        b=rQWSTtF6/PEEUrwmqiMJ97FckSKI+OcAdxdTpNbnAW1GEyzzKJhDa9byjAomGjHzAP
-         EP3jMNHKNWCzzFo3uvJEK7l7p7q8cBABrN3p0cUjs20obccZrbUsqdaR4JxxtC8mH5yb
-         ATpcw7xzPt57AOavTcu93RZNd4aKt5ckMqNOCD3uVgInyeua3vh7Zcm8190D8+K5HKzt
-         EiR1lr1zbTucXZe9A9ns6bOLx+axTf6X6TumHG6+GvfhMlrEhd8pbMFnR7o7ZuwGi1Vy
-         wC5hhZy7vxwNIzTmZundLPQgV+ywXwwLFiwxAziS+hDYQbSOxniqM3xe+1BkKUDnZhxW
-         BtwA==
-X-Gm-Message-State: ANhLgQ3TvNImCbRZwnKG6zsR/Yscg055bsxP3DD1xB2AE+a4XoFmkWTy
-        je+G/5LtDan2Hj0JiHSDAzHt3phg
-X-Google-Smtp-Source: ADFU+vupj6wz71RNy1GO7qP8OVH4joSeBlLfM+kq+H1OSVDxf9rwV0l8jdudCycRlYjY0v4O/u10oQ==
-X-Received: by 2002:a63:c050:: with SMTP id z16mr23615520pgi.177.1585006011337;
-        Mon, 23 Mar 2020 16:26:51 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id d23sm14529733pfq.210.2020.03.23.16.26.49
+         :mime-version:content-disposition:in-reply-to;
+        bh=FmUnb5yoFNj3fmP68Je1AGik/in+cu9VGqz4KWMCf90=;
+        b=b94v1GACGRBC2hBKOEF7BzweqAHDFxUlsMXf6Piu1N/UmOrPc8Y5mPdG07RRA0nkAO
+         mF1VI1rj0cvqTs5ZtBvenFyxJffxdK2ftz8SOIy5FDiSYI+Lex676RQ4DBalRtWTMKnd
+         MhshmR7urIfwBz+tsYttb+N1goFfikc4uve1Jf3gF7D0aqsU0fUT3lovqDHzKMUg49CQ
+         u+8/t+Jue4efgIRMoXWYjxCWPyV82IHBP21Gtheu8KLltAZAk4JFPmzyVWo/9JuiSlEQ
+         Gvc6UOZSyrd/HYjThtjAkcHMWFO9XLu9bpxdgAJgNJxjWnroMzep9dxKT25yCfWgQXrn
+         TexA==
+X-Gm-Message-State: ANhLgQ1W56TTJC2rzLyCH0Wc3H1M3XK8G3VAnqxp/TSCM5p2uOWVpawz
+        JuPDj5h9ZtQiByQa6yPRnrjYtw==
+X-Google-Smtp-Source: ADFU+vuOHEFXDTbHaLGGSFJa90vrQIXo+FW3KVzrULpsxWFYYNDV7LCi1W4DoAr21inrZlHXKs4kzA==
+X-Received: by 2002:adf:efc9:: with SMTP id i9mr12351788wrp.23.1585006328091;
+        Mon, 23 Mar 2020 16:32:08 -0700 (PDT)
+Received: from C02YVCJELVCG.greyhouse.net ([192.19.231.250])
+        by smtp.gmail.com with ESMTPSA id o4sm25557734wrp.84.2020.03.23.16.32.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2020 16:26:50 -0700 (PDT)
-Date:   Mon, 23 Mar 2020 16:26:48 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch, christian.herber@nxp.com,
-        yangbo.lu@nxp.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 4/4] net: dsa: sja1105: configure the PTP_CLK
- pin as EXT_TS or PER_OUT
-Message-ID: <20200323232648.GC9140@localhost>
-References: <20200323225924.14347-1-olteanv@gmail.com>
- <20200323225924.14347-5-olteanv@gmail.com>
+        Mon, 23 Mar 2020 16:32:07 -0700 (PDT)
+Date:   Mon, 23 Mar 2020 19:32:00 -0400
+From:   Andy Gospodarek <andy@greyhouse.net>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, parav@mellanox.com, yuvalav@mellanox.com,
+        jgg@ziepe.ca, saeedm@mellanox.com, leon@kernel.org,
+        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
+        moshe@mellanox.com, ayal@mellanox.com, eranbe@mellanox.com,
+        vladbu@mellanox.com, kliteyn@mellanox.com, dchickles@marvell.com,
+        sburla@marvell.com, fmanlunas@marvell.com, tariqt@mellanox.com,
+        oss-drivers@netronome.com, snelson@pensando.io,
+        drivers@pensando.io, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
+        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
+        jacob.e.keller@intel.com, valex@mellanox.com,
+        linyunsheng@huawei.com, lihong.yang@intel.com,
+        vikas.gupta@broadcom.com, magnus.karlsson@intel.com
+Subject: Re: [RFC] current devlink extension plan for NICs
+Message-ID: <20200323233200.GD21532@C02YVCJELVCG.greyhouse.net>
+References: <20200319192719.GD11304@nanopsycho.orion>
+ <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
+ <20200320073555.GE11304@nanopsycho.orion>
+ <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
+ <20200321093525.GJ11304@nanopsycho.orion>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200323225924.14347-5-olteanv@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200321093525.GJ11304@nanopsycho.orion>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 12:59:24AM +0200, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Sat, Mar 21, 2020 at 10:35:25AM +0100, Jiri Pirko wrote:
+> Fri, Mar 20, 2020 at 10:25:08PM CET, kuba@kernel.org wrote:
+> >On Fri, 20 Mar 2020 08:35:55 +0100 Jiri Pirko wrote:
+> >> Fri, Mar 20, 2020 at 04:32:53AM CET, kuba@kernel.org wrote:
+> >> >On Thu, 19 Mar 2020 20:27:19 +0100 Jiri Pirko wrote:  
+[...]
+> >
+> >Also, once the PFs are created user may want to use them together 
+> >or delegate to a VM/namespace. So when I was thinking we'd need some 
+> >sort of a secure handshake between PFs and FW for the host to prove 
+> >to FW that the PFs belong to the same domain of control, and their
+> >resources (and eswitches) can be pooled.
+> >
+> >I'm digressing..
 > 
-> The SJA1105 switch family has a PTP_CLK pin which emits a signal with
-> fixed 50% duty cycle, but variable frequency and programmable start time.
+> Yeah. This needs to be sorted out.
 > 
-> On the second generation (P/Q/R/S) switches, this pin supports even more
-> functionality. The use case described by the hardware documents talks
-> about synchronization via oneshot pulses: given 2 sja1105 switches,
-> arbitrarily designated as a master and a slave, the master emits a
-> single pulse on PTP_CLK, while the slave is configured to timestamp this
-> pulse received on its PTP_CLK pin (which must obviously be configured as
-> input). The difference between the timestamps then exactly becomes the
-> slave offset to the master.
 > 
-> The only trouble with the above is that the hardware is very much tied
-> into this use case only, and not very generic beyond that:
->  - When emitting a oneshot pulse, instead of being told when to emit it,
->    the switch just does it "now" and tells you later what time it was,
->    via the PTPSYNCTS register. [ Incidentally, this is the same register
->    that the slave uses to collect the ext_ts timestamp from, too. ]
->  - On the sync slave, there is no interrupt mechanism on reception of a
->    new extts, and no FIFO to buffer them, because in the foreseen use
->    case, software is in control of both the master and the slave pins,
->    so it "knows" when there's something to collect.
+> >
+> >> Now the PF itself can have a "nested eswitch" to manage. The "parent
+> >> eswitch" where the PF was created would only see one leg to the "nested
+> >> eswitch".
+> >> 
+> >> This "nested eswitch management" might or might not be required. Depends
+> >> on a usecare. The question was, how to configure that I as a user
+> >> want this or not.
+> >
+> >Ack. I'm extending your question. I think the question is not only who
+> >controls the eswitch but also which PFs share the eswitch.
 > 
-> These 2 problems mean that:
->  - We don't support (at least yet) the quirky oneshot mode exposed by
->    the hardware, just normal periodic output.
->  - We abuse the hardware a little bit when we expose generic extts.
->    Because there's no interrupt mechanism, we need to poll at double the
->    frequency we expect to receive a pulse. Currently that means a
->    non-configurable "twice a second".
+> Yes.
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Acked-by: Richard Cochran <richardcochran@gmail.com>
+So we have implemented the notion of an 'adminstrative PF.'  This is a
+gross simplification, but the idea is that the PCI domain (or CPU
+complex) that contains this PF is the one that is 'in-charge' of the
+eSwitch and the rest of the resources (firmware/phycode update) and
+might also be the one that gets the VF representors when VFs are created
+on any other PCI host/domains.
+
+I'm not sure we need a kernel API to set it as I would leave this as
+something that might be burned into the hardware in some manner.
+
+> >
+> >I think eswitch is just one capability, but SmartNIC will want to
+> >control which ports see what capabilities in general. crypto offloads
+> >and such.
+> >
+> >I presume in your model if host controls eswitch the smartNIC sees just
+> 
+> host may control the "nested eswitch" in the SmartNIC case.
+> 
+
+I'm not sure programming the eswitch in a nested manner is realistic.
+Sure we can make hardware do it, but it's probably more trouble than
+it's worth.  If a smartnic wants to give control of flows to the host
+then it makes more sense to allow some communication at a higher layer
+so that requests for hardware offload can be easily validated against
+some sort of policy set forth by the admin of the smartnic.
+
+> >what what comes out of Hosts single "uplink"? What if SmartNIC wants
+> >the host to be able to control the forwarding but not loose the ability
+> >to tap the VF to VF traffic?
+> 
+> You mean that the VF representors would be in both SmartNIC host and
+> host? I don't know how that could work. I think it has to be either
+> there or there.
+> 
+
+Agreed.  The VF reps should probably appear on whichever host/domain has
+the Admin PF.
+
