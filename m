@@ -2,86 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 381E818FCF7
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 19:46:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D48618FCFB
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 19:46:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727747AbgCWSqB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 14:46:01 -0400
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:37493 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727272AbgCWSqB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 14:46:01 -0400
-Received: by mail-yb1-f194.google.com with SMTP id f17so7681284ybp.4
-        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 11:46:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZD7/ATruuR8NRvdfBN7+Qi9sh7ywUUPfAO2yyzLIz1E=;
-        b=kvfXmaOwoZFGrOh5aIUvAhTBITelayYfPkSLj1cRrvga94U8gaH693Py6Vo/ajX4Q1
-         9SwZZA2arAeuJE7ZjjIhlJlG4fYIr/KtnJ/i+HFNrlwcelTOYajzoHFGNAuT/OY23gsA
-         yqk7TP2umuK5l/+P+IeCqqGJDJDkMn0pAkRqvz/VHDzeQjZn++d6tHWxC53L+cgjOyAF
-         X7gokJAZENM+xW82kmIID+8i+KfximdguGF6G/73QgQD/EAEhllf9muwVv74xqOTSKjY
-         iGiJvE9CgrWZ8Htnzd91hy1JeFozaq5y0jkLBysGRMmIwZiATvN2nDMS3Eb7ZzkYlo+e
-         IjgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZD7/ATruuR8NRvdfBN7+Qi9sh7ywUUPfAO2yyzLIz1E=;
-        b=pY7hJ+IPA6Sc1s/la4fTz0VjmCP+IXZh0ZQ2PdQtf8/aVWYdRIRsAJQ/1QcAse12fu
-         5pU6OHJ+rbAPRjLDap48Mbmh34yVPD2ZUXIP0j9pOxHSVbHWheufFhIPbS+CDT0XDlYb
-         DHPJTY3gdeOte4VO5f/EBO3C2SZiUmfbGyHKLeRs4If9lu33dyQPtEzOp0ctNwd53P7u
-         I0a5m5OH3Xtz38ILCrRfNmQZ3SrIQoc/UyiJcM+cBXJvkvNK+fimkdTIR/213YNSVFLQ
-         0tEt1t7v5QlrhUO0V5SZkJx6KIxINHzQq8MYfq0vSqJurZ/I1D19DebwI9olgMEGgLsG
-         EcCA==
-X-Gm-Message-State: ANhLgQ1vNwEagEfnpdCLwpMcOVDvAv5B0pDrMALM2IPOPkbrX9ZFXcb9
-        qKiM3wd7IbsGgp36jc3tt4qeCyt0My2o2VT4dKRDeg==
-X-Google-Smtp-Source: ADFU+vvBrruOh4WIZciJ6/BEzpsNg721CBLrFVfaFXtvnnk1x2jc6X3b6gzNPONGIUjhpi99zU2HV6CCIwxvjG34syg=
-X-Received: by 2002:a25:6cc5:: with SMTP id h188mr34935921ybc.520.1584989159878;
- Mon, 23 Mar 2020 11:45:59 -0700 (PDT)
+        id S1727425AbgCWSqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 14:46:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51118 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727188AbgCWSqv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Mar 2020 14:46:51 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EF60A205ED;
+        Mon, 23 Mar 2020 18:46:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584989211;
+        bh=IJ4jRM0rHp+ywTbnVfShze7DpeZADv+8OWKIPIYHqGA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hMFWZLR7/248ZwC4IP+UuQK8Al6zgJI1Ie1q11A/0IYkoPFDifFMvVQlhhjJ8EwLS
+         8GsNRJZe90PJpYVm+Y2bRyqMRdjd+5HRqr/NO/sVPOdE6HxqfQaXiJpM/8ZYVQ55tH
+         4GoYl8QLc2OHC18qMrRhIfHat7HUOZiV9SiaQhNk=
+Date:   Mon, 23 Mar 2020 11:46:48 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 0/5] devlink: Preparations for trap policers
+ support
+Message-ID: <20200323114648.192e4bef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200322184830.1254104-1-idosch@idosch.org>
+References: <20200322184830.1254104-1-idosch@idosch.org>
 MIME-Version: 1.0
-References: <20200323181814.87661-1-kuniyu@amazon.co.jp> <20200323181814.87661-2-kuniyu@amazon.co.jp>
-In-Reply-To: <20200323181814.87661-2-kuniyu@amazon.co.jp>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 23 Mar 2020 11:45:48 -0700
-Message-ID: <CANn89iJzxqF8j6uUO9BqmMY0tVh+intVj-v-tygXc_8r6-wjkg@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] tcp/dccp: Move initialisation of refcounted
- into if block.
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        dccp@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        osa-contribution-log@amazon.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 23, 2020 at 11:18 AM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
->
-> The refcounted is initialised at most three times.
->
->   - __inet_lookup_skb() sets it true.
->   - skb_steal_sock() is false and __inet_lookup() sets it true.
->   - __inet_lookup_established() is false and __inet_lookup() sets it false.
->
-> We do not need to initialise refcounted again and again, so we should do
-> it just before return.
->
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> ---
+On Sun, 22 Mar 2020 20:48:25 +0200 Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> This patch set prepares the code for devlink-trap policer support in a
+> follow-up patch set [1][2]. No functional changes intended.
+> 
+> Policers are going to be added as attributes of packet trap groups,
+> which are entities used to aggregate logically related packet traps.
+> This will allow users, for example, to limit all the packets that
+> encountered an exception during routing to 10Kpps.
+> 
+> However, currently, device drivers register their packet trap groups
+> implicitly when they register their packet traps via
+> devlink_traps_register(). This makes it difficult to pass additional
+> attributes for the groups. For example, the policer bound to the group.
+> 
+> Therefore, this patch set converts device drivers to explicitly register
+> their packet trap groups. This will later allow these drivers to
+> register the group with additional attributes, if any.
 
-Well, I do not believe this patch (and the following one) makes things
-more readable.
-
-I doubt setting a boolean in a register or a stack variable has any cost,
-I prefer letting the compiler optimize this.
-
-The ehash lookup cost is at least 2 or 3 cache lines, this is the
-major contribution.
+Acked-by: Jakub Kicinski <kuba@kernel.org>
