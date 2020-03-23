@@ -2,103 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6727A18FABC
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 18:02:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28F3318FAF6
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 18:09:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727805AbgCWRCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 13:02:06 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:27668 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727406AbgCWRCF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 13:02:05 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584982925; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=/S3FxZxwMnCPDh1zMu//EAzMLRoMSA/nuK3xKadAUaI=;
- b=vQPodHA2J4ozg/Z9xMq74ubKpwXO2lxlxpS/qrKKXWHKWsrdlKz2/rJoas0zprAs3ip0pEJi
- /dtZ1jZcELrkAAlQicqVIx12d0y2qdYcNn6v1V5w/EfC1QKLH8ffQb9lEjeFqV30tNpvGUzX
- zsEwlq7JGXWvYgbUdeW1BOFgn4w=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e78eb73.7f0d3ec0edc0-smtp-out-n04;
- Mon, 23 Mar 2020 17:01:39 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 544CEC44788; Mon, 23 Mar 2020 17:01:38 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        id S1727163AbgCWRJo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 13:09:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47906 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727111AbgCWRJo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Mar 2020 13:09:44 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 23639C433D2;
-        Mon, 23 Mar 2020 17:01:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 23639C433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        by mail.kernel.org (Postfix) with ESMTPSA id 660BF2074D;
+        Mon, 23 Mar 2020 17:09:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584983383;
+        bh=1dnvyJOrvMFxDje/OdG35CnwFZtIRCLPyyaglUPRwsI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=P7VPgRxXxxZMnimbKmXg5NTzZNecbejqgJU71NTDISVgBA7GoofIH/FWfqL0Maypv
+         TRegBTUHtplm59lpiwVzvJi7sTFC5ZTq/SAxRDZW6wem7J4NcuILyDr04ZdnxG0+ED
+         j3z0jq6dCzU7h5vrj/8IvgSJuwWQbwmSRMJpApwc=
+Date:   Mon, 23 Mar 2020 10:09:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, Jacob Keller <jacob.e.keller@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
+Subject: Re: [net-next 6/9] ice: enable initial devlink support
+Message-ID: <20200323100941.2043b224@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200321081028.2763550-7-jeffrey.t.kirsher@intel.com>
+References: <20200321081028.2763550-1-jeffrey.t.kirsher@intel.com>
+        <20200321081028.2763550-7-jeffrey.t.kirsher@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][next] p54: Replace zero-length array with flexible-array
- member
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200225011846.GA2773@embeddedor>
-References: <20200225011846.GA2773@embeddedor>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Christian Lamparter <chunkeey@googlemail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200323170138.544CEC44788@smtp.codeaurora.org>
-Date:   Mon, 23 Mar 2020 17:01:38 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
+On Sat, 21 Mar 2020 01:10:25 -0700 Jeff Kirsher wrote:
+> From: Jacob Keller <jacob.e.keller@intel.com>
+> 
+> Begin implementing support for the devlink interface with the ice
+> driver.
+> 
+> The pf structure is currently memory managed through devres, via
+> a devm_alloc. To mimic this behavior, after allocating the devlink
+> pointer, use devm_add_action to add a teardown action for releasing the
+> devlink memory on exit.
+> 
+> The ice hardware is a multi-function PCIe device. Thus, each physical
+> function will get its own devlink instance. This means that each
+> function will be treated independently, with its own parameters and
+> configuration. This is done because the ice driver loads a separate
+> instance for each function.
+> 
+> Due to this, the implementation does not enable devlink to manage
+> device-wide resources or configuration, as each physical function will
+> be treated independently. This is done for simplicity, as managing
+> a devlink instance across multiple driver instances would significantly
+> increase the complexity for minimal gain.
+> 
+> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+> Reviewed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 
-> The current codebase makes use of the zero-length array language
-> extension to the C90 standard, but the preferred mechanism to declare
-> variable-length types such as these ones is a flexible array member[1][2],
-> introduced in C99:
-> 
-> struct foo {
->         int stuff;
->         struct boo array[];
-> };
-> 
-> By making use of the mechanism above, we will get a compiler warning
-> in case the flexible array does not occur last in the structure, which
-> will help us prevent some kind of undefined behavior bugs from being
-> inadvertently introduced[3] to the codebase from now on.
-> 
-> Also, notice that, dynamic memory allocations won't be affected by
-> this change:
-> 
-> "Flexible array members have incomplete type, and so the sizeof operator
-> may not be applied. As a quirk of the original implementation of
-> zero-length arrays, sizeof evaluates to zero."[1]
-> 
-> This issue was found with the help of Coccinelle.
-> 
-> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> [2] https://github.com/KSPP/linux/issues/21
-> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 
-Patch applied to wireless-drivers-next.git, thanks.
-
-7b9307134058 p54: Replace zero-length array with flexible-array member
-
--- 
-https://patchwork.kernel.org/patch/11402365/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Thanks for posting these!
