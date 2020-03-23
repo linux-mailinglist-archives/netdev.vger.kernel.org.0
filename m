@@ -2,59 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B4F718FA6D
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 17:53:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27A9D18FA6F
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 17:54:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727547AbgCWQxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 12:53:47 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52232 "EHLO vps0.lunn.ch"
+        id S1727579AbgCWQyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 12:54:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38530 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727164AbgCWQxr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 12:53:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=++z2CRK0gXpZoL10K6qxW/9324/513wsRgfOJfb5xyo=; b=CmqyHGZ/ocZ6tJuNr5AI//JEhB
-        tpk9hhMmujhhNmONDJFm2imneT+JyEMaNuy5902fOqOqLtYQTuyhx+ybRFreph2ouCPvBbO0rBpEV
-        yT9V58bLmF41RRGg2sdFD8qTUicExv29PtuhVUka1G0UqqiSp0gmfR6IiKTXYE+VDaHU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jGQKf-0001QZ-6N; Mon, 23 Mar 2020 17:53:45 +0100
-Date:   Mon, 23 Mar 2020 17:53:45 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Bauer <mail@david-bauer.net>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH] net: phy: at803x: select correct page on initialization
-Message-ID: <20200323165345.GE32387@lunn.ch>
-References: <20200323162730.88236-1-mail@david-bauer.net>
+        id S1727164AbgCWQyP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Mar 2020 12:54:15 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3B27B20714;
+        Mon, 23 Mar 2020 16:54:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584982454;
+        bh=tlDkm10q/JLbAgD8F/jTvMTQNejG9n0yp9Rtz9MQ+WI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jK4LwzXS6QybTuMwzGKk5anPNOUh0xSSSyWb+GeMHj3G7k3aQnwSZivJDDTh/nle+
+         qotGUsO8xCUwF0OPgJJh79tnZMB9zuzNLacMu9+8rMZ75xJMNdeceP6fAvPivuR5PT
+         HVVTTV6PSW0E4tWhU2ZeF3UYnzhDVjhJunSdJ4r4=
+Date:   Mon, 23 Mar 2020 09:54:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Andrey Ignatov <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
+ program when attaching XDP
+Message-ID: <20200323095412.15bff0cd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87tv2f48lp.fsf@toke.dk>
+References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
+        <158462359315.164779.13931660750493121404.stgit@toke.dk>
+        <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN>
+        <875zez76ph.fsf@toke.dk>
+        <20200320103530.2853c573@kicinski-fedora-PC1C0HJN>
+        <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
+        <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
+        <87tv2f48lp.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200323162730.88236-1-mail@david-bauer.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 23, 2020 at 05:27:30PM +0100, David Bauer wrote:
-> The Atheros AR8031 and AR8033 expose different registers for SGMII/Fiber
-> as well as the copper side of the PHY depending on the BT_BX_REG_SEL bit
-> in the chip configure register.
-> 
-> The driver assumes the copper side is selected on probe, but this might
-> not be the case depending which page was last selected by the
-> bootloader.
-> 
-> Select the copper page when initializing the configuration to circumvent
-> this.
+On Mon, 23 Mar 2020 12:24:34 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> Well, my reason for being skeptic about bpf_link and proposing the
+> netlink-based API is actually exactly this, but in reverse: With
+> bpf_link we will be in the situation that everything related to a netdev
+> is configured over netlink *except* XDP.
 
-Hi David
-
-You might want to look at phy_read_paged(), phy_write_paged(), etc,
-depending on your needs. There can be locking issues, which these
-functions address.
-
-	  Andrew
++1
