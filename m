@@ -2,128 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1B0818FC8A
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 19:19:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E523618FC85
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 19:18:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727451AbgCWSTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 14:19:31 -0400
-Received: from smtprelay0109.hostedemail.com ([216.40.44.109]:46896 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727149AbgCWSTb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 14:19:31 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id C06C6183E603E;
-        Mon, 23 Mar 2020 18:19:29 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:305:355:379:599:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2559:2562:2828:3138:3139:3140:3141:3142:3354:3622:3865:3866:3867:3868:3870:3871:3872:4250:4321:4384:5007:6119:10004:10400:10848:11026:11232:11473:11657:11658:11914:12043:12296:12297:12438:12740:12760:12895:13019:13101:13439:14659:14721:21080:21627:21740:21966:21990:30054:30069:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: horn36_5245a80256a1d
-X-Filterd-Recvd-Size: 3527
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf08.hostedemail.com (Postfix) with ESMTPA;
-        Mon, 23 Mar 2020 18:19:25 +0000 (UTC)
-Message-ID: <4150e0930415966768ca2fa4621194e475c25235.camel@perches.com>
-Subject: Re: [PATCH net-next 14/17] net: atlantic: MACSec ingress offload
- implementation
-From:   Joe Perches <joe@perches.com>
-To:     Igor Russkikh <irusskikh@marvell.com>, netdev@vger.kernel.org
-Cc:     Mark Starovoytov <mstarovoitov@marvell.com>,
-        Sabrina Dubroca <sd@queasysnail.net>,
-        Antoine Tenart <antoine.tenart@bootlin.com>
-Date:   Mon, 23 Mar 2020 11:17:34 -0700
-In-Reply-To: <20200323131348.340-15-irusskikh@marvell.com>
-References: <20200323131348.340-1-irusskikh@marvell.com>
-         <20200323131348.340-15-irusskikh@marvell.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
+        id S1727389AbgCWSSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 14:18:01 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:42521 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727011AbgCWSSB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 14:18:01 -0400
+Received: by mail-oi1-f194.google.com with SMTP id e4so2191270oig.9
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 11:18:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=jYAxmfZ/v7ROdGlJTYxbTuYhqOJ+uPVs8CUXh+vm5HM=;
+        b=qLJgYP1n4eWjFuk516x/edfm5D43yHApN18s1TohcyUkWNLgSl+pl7TPCBrZ+9J1m3
+         gPkRd2cqYBEjAv9P7yZQxF11r5mZrj2fu0cXjbAnuSiEbMZi7Jq2Lwn2Rj08h6UKGUSV
+         wfYPCJm2+eHPe8ZVxopEosWE/2my21n2YbTKf9fMva/ds/poE7fGekww5fEJhP7IoWPQ
+         eolkNLLO0Al8diz3ffP8u3v7tUhqjX5fMlisPo6IzjxKPrjafOnG60S47tmx+QTQQMCI
+         JUqaNyUxMDlLsc4CX+Az6cSC+AhGpVz3v1uZln9IMTcqN2K7ocznkFKyNosbivlI2WmA
+         8eKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=jYAxmfZ/v7ROdGlJTYxbTuYhqOJ+uPVs8CUXh+vm5HM=;
+        b=NOupT+8O7WlmeYNWuGlex3f3BeNwsP8WaOKwqeJReoJQ/VYtTSeqNxkSJvWte/hf8/
+         VXxe8t4aC+mo2/UQL/ERFLhVanXS6tFKyGh+2TYo7Kjk89HZvX4tQtBnbhz9a/+bsHW0
+         3BRYEN8dK0UBUg1cLsawkrq+2T7uk+V8/Lquyz0qvt2Lb5eXRyg2EotbS+MWZvIqY4nU
+         u5UjivVR44duQmhCQfYSLksXJs10gusIwS4yecDiuBxIUnpmigh++xbD10mOCnzxRYwF
+         n5AYVAlBtqzKDvnw8aKT35JpIc5ECjPy9uiu9VoOJtidOalpbgEQO3Y9hB1kkXn8CrST
+         eFsw==
+X-Gm-Message-State: ANhLgQ08b1r7q83ZwjLwhIQRuT5Pj/kZEaWFq/yBZhSpdeEcocHz+4Ch
+        7Ct3DaFDpvLWfG1xsvy5CJXLUZN3RqbZjx1gExE6INz+
+X-Google-Smtp-Source: ADFU+vueCfJokYQuQje5OlqlOZH9imVpGv3YxaURmvKR0Xy5PcbttwAGS6hLZokaRx1gM5Gmtgo1wOncVCHn5NMh+Ic=
+X-Received: by 2002:aca:4b56:: with SMTP id y83mr517190oia.142.1584987479835;
+ Mon, 23 Mar 2020 11:17:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
+In-Reply-To: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 23 Mar 2020 11:17:49 -0700
+Message-ID: <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
+Subject: Re: iproute2: tc deletion freezes whole server
+To:     =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-03-23 at 16:13 +0300, Igor Russkikh wrote:
-> This patch adds support for MACSec ingress HW offloading on Atlantic
-> network cards.
+Hello,
 
-Just random notes, I haven't looked at much of the patch set.
+On Sun, Mar 22, 2020 at 11:07 AM V=C3=A1clav Zindulka
+<vaclav.zindulka@tlapnet.cz> wrote:
+>
+> Hello,
+...
 
-> diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
-[]
-> +static int aq_rxsc_validate_frames(const enum macsec_validation_type validate)
-> +{
-> +	switch (validate) {
-> +	case MACSEC_VALIDATE_DISABLED:
-> +		return 2;
-> +	case MACSEC_VALIDATE_CHECK:
-> +		return 1;
-> +	case MACSEC_VALIDATE_STRICT:
-> +		return 0;
-> +	default:
-> +		break;
-> +	}
-> +
-> +	/* should never be here */
-> +	WARN_ON(true);
+> Recently I discovered the existence of perf tool and discovered that
+> delay was between tc and kernel. This is perf trace of tc qdisc del
+> dev enp1s0f0 root. Notice the 11s delay at the end. (Similar problem
+> is during deletion of minor tc class and qdiscs) This was done on
+> fresh Debian Stretch installation, but mostly the delay is much
+> greater. This problem is not limited to Debian Stretch. It happens
+> with Debian Buster and even with Ubuntu 19.10. It happens on kernels
+> 4.9, 4.19, 5.1.2, 5.2.3, 5.4.6 as far as I've tested. It is not caused
+> by one manufacturer or device driver. We mostly use dual port Intel
+> 82599ES cards made by SuperMicro and I've tried kernel drivers as well
+> as latest ixgbe driver. Exactly the same problem is with dual port
+> Mellanox ConnectX-4 LX, Myricom 10G-PCIE-8B cards too. Whole network
+> adapter resets after the deletion of rules.
+>
+> perf trace tc qdisc del dev enp1s0f0 root
 
-If this is ever reached at all, this should likely
-be a WARN_ONCE to avoid log spam.
+Can you capture a `perf record` for kernel functions too? We
+need to know where kernel spent time on during this 11s delay.
 
-> +	return 0;
-> +}
-> +
-> +static int aq_set_rxsc(struct aq_nic_s *nic, const u32 rxsc_idx)
-> +{
-> +	const struct aq_macsec_rxsc *aq_rxsc =
-> +		&nic->macsec_cfg->aq_rxsc[rxsc_idx];
-> +	struct aq_mss_ingress_preclass_record pre_class_record;
-> +	const struct macsec_rx_sc *rx_sc = aq_rxsc->sw_rxsc;
-> +	const struct macsec_secy *secy = aq_rxsc->sw_secy;
-> +	const u32 hw_sc_idx = aq_rxsc->hw_sc_idx;
-> +	struct aq_mss_ingress_sc_record sc_record;
-> +	struct aq_hw_s *hw = nic->aq_hw;
-> +	__be64 nsci;
-> +	int ret = 0;
-> +
-> +	netdev_dbg(nic->ndev,
-> +		   "set rx_sc: rxsc_idx=%d, sci %#llx, hw_sc_idx=%d\n",
-
-Could use __func__ or just remove as ftrace works.
-
-> +		   rxsc_idx, rx_sc->sci, hw_sc_idx);
-> +
-> +	memset(&pre_class_record, 0, sizeof(pre_class_record));
-> +	nsci = cpu_to_be64((__force u64)rx_sc->sci);
-> +	memcpy(pre_class_record.sci, &nsci, sizeof(nsci));
-
-put_unaligned_be64
-
-> +	pre_class_record.sci_mask = 0xff;
-> +	/* match all MACSEC ethertype packets */
-> +	pre_class_record.eth_type = ETH_P_MACSEC;
-> +	pre_class_record.eth_type_mask = 0x3;
-> +
-> +	aq_ether_addr_to_mac(pre_class_record.mac_sa, (char *)&rx_sc->sci);
-> +	pre_class_record.sa_mask = 0x3f;
-> +
-> +	pre_class_record.an_mask = nic->macsec_cfg->sc_sa;
-> +	pre_class_record.sc_idx = hw_sc_idx;
-> +	/* strip SecTAG & forward for decryption */
-> +	pre_class_record.action = 0x0;
-> +	pre_class_record.valid = 1;
-> +
-> +	ret = aq_mss_set_ingress_preclass_record(hw, &pre_class_record,
-> +						 2 * rxsc_idx + 1);
-> +	if (ret) {
-> +		netdev_err(nic->ndev,
-> +			"aq_mss_set_ingress_preclass_record failed with %d\n",
-> +			ret);
-
-Every return of this function emits netdev_err on error.
-
-Why not put the err in the function itself and likely
-use a ratelimit on it too?
+>
+> When I call this command on ifb interface or RJ45 interface everything
+> is done within one second.
 
 
+Do they have the same tc configuration and same workload?
 
+
+> My testing setup consists of approx. 18k tc class rules and approx.
+> 13k tc qdisc rules and was altered only with different interface name.
+> Everything works OK with ifb interfaces and with metallic interfaces.
+> I don't know how to diagnose the problem further. It is most likely
+> that it will work with regular network cards. All problems begin with
+> SFP+ interfaces. I do a lot of dynamic operations and I modify shaping
+> tree according to real situation and changes in network so I'm doing
+> deletion of tc rules regularly. It is a matter of hours or days before
+> the whole server freezes due to tc deletion problem. I have reproducer
+> batches for tc ready if anybody will be willing to have a look at this
+> issue. I may offer one server which has this problem every time to
+> debug and test it. Or at least I would appreciate some advice on how
+> to diagnose process of tc deletion further.
+
+Please share you tc configurations (tc -s -d qd show dev ..., tc
+-s -d filter show dev...).
+
+Also, it would be great if you can provide a minimal reproducer.
+
+Thanks.
