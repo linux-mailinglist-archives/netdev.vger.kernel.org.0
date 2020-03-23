@@ -2,95 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2D6A18FAB4
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 18:01:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6727A18FABC
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 18:02:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727769AbgCWRB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 13:01:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41918 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727333AbgCWRB2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 13:01:28 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        id S1727805AbgCWRCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 13:02:06 -0400
+Received: from mail27.static.mailgun.info ([104.130.122.27]:27668 "EHLO
+        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727406AbgCWRCF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 13:02:05 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1584982925; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=/S3FxZxwMnCPDh1zMu//EAzMLRoMSA/nuK3xKadAUaI=;
+ b=vQPodHA2J4ozg/Z9xMq74ubKpwXO2lxlxpS/qrKKXWHKWsrdlKz2/rJoas0zprAs3ip0pEJi
+ /dtZ1jZcELrkAAlQicqVIx12d0y2qdYcNn6v1V5w/EfC1QKLH8ffQb9lEjeFqV30tNpvGUzX
+ zsEwlq7JGXWvYgbUdeW1BOFgn4w=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e78eb73.7f0d3ec0edc0-smtp-out-n04;
+ Mon, 23 Mar 2020 17:01:39 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 544CEC44788; Mon, 23 Mar 2020 17:01:38 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A941720735;
-        Mon, 23 Mar 2020 17:01:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584982887;
-        bh=7tmCZHVG0haQMMfQaXKGfvCkeQtsMbpAmACMnqoUcJM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kGiiBBvcbC+wBP57HVIVlQn9O8FxUIf5wwRNqVgJmBatptsJfWcctZJTbUOnoJzs/
-         30xLVvPzDTYS29PuhSU35RxrN1QDFgsGAiKRUssZEPJaz/nbtei6rtRWEor++WXomF
-         ESTgXW1dasRoQG2/yFbz6U70cjvZ+s9QS1E6aRSY=
-Date:   Mon, 23 Mar 2020 10:01:24 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Roi Dayan <roid@mellanox.com>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] net/mlx5e: Fix actions_match_supported()
- return
-Message-ID: <20200323100124.0a07236f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200323100215.GB26299@kadam>
-References: <20200320132305.GB95012@mwanda>
-        <35fcb57643c0522b051318e75b106100422fb1dc.camel@mellanox.com>
-        <20200323100215.GB26299@kadam>
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 23639C433D2;
+        Mon, 23 Mar 2020 17:01:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 23639C433D2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH][next] p54: Replace zero-length array with flexible-array
+ member
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200225011846.GA2773@embeddedor>
+References: <20200225011846.GA2773@embeddedor>
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     Christian Lamparter <chunkeey@googlemail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20200323170138.544CEC44788@smtp.codeaurora.org>
+Date:   Mon, 23 Mar 2020 17:01:38 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 23 Mar 2020 13:02:16 +0300 Dan Carpenter wrote:
-> On Sat, Mar 21, 2020 at 02:43:08AM +0000, Saeed Mahameed wrote:
-> > On Fri, 2020-03-20 at 16:23 +0300, Dan Carpenter wrote:  
-> > > The actions_match_supported() function returns a bool, true for
-> > > success
-> > > and false for failure.  This error path is returning a negative which
-> > > is cast to true but it should return false.
-> > > 
-> > > Fixes: 4c3844d9e97e ("net/mlx5e: CT: Introduce connection tracking")
-> > > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > > ---
-> > >  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > > b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > > index 044891a03be3..e5de7d2bac2b 100644
-> > > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-> > > @@ -3058,7 +3058,7 @@ static bool actions_match_supported(struct
-> > > mlx5e_priv *priv,
-> > >  			 */
-> > >  			NL_SET_ERR_MSG_MOD(extack,
-> > >  					   "Can't offload mirroring
-> > > with action ct");
-> > > -			return -EOPNOTSUPP;
-> > > +			return false;
-> > >  		}
-> > >  	} else {
-> > >  		actions = flow->nic_attr->action;  
-> > 
-> > applied to net-next-mlx5   
+"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
+
+> The current codebase makes use of the zero-length array language
+> extension to the C90 standard, but the preferred mechanism to declare
+> variable-length types such as these ones is a flexible array member[1][2],
+> introduced in C99:
 > 
-> I can never figure out which tree these are supposed to be applied to.
-> :(  Is there a trick to it?
+> struct foo {
+>         int stuff;
+>         struct boo array[];
+> };
+> 
+> By making use of the mechanism above, we will get a compiler warning
+> in case the flexible array does not occur last in the structure, which
+> will help us prevent some kind of undefined behavior bugs from being
+> inadvertently introduced[3] to the codebase from now on.
+> 
+> Also, notice that, dynamic memory allocations won't be affected by
+> this change:
+> 
+> "Flexible array members have incomplete type, and so the sizeof operator
+> may not be applied. As a quirk of the original implementation of
+> zero-length arrays, sizeof evaluates to zero."[1]
+> 
+> This issue was found with the help of Coccinelle.
+> 
+> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
+> [2] https://github.com/KSPP/linux/issues/21
+> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
+> 
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 
-Not as far as I know :/ Upstream maintainers usually know which
-sub-maintainers like to take patches into their own tree first.
+Patch applied to wireless-drivers-next.git, thanks.
 
-Tagging things as "net-next" is perfectly fine in this case.
+7b9307134058 p54: Replace zero-length array with flexible-array member
 
-We could ask all maintainers who want to funnel patches via their own
-trees to add T: entries in MAINTAINERS, but I'm not sure how practical
-that is.
+-- 
+https://patchwork.kernel.org/patch/11402365/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
