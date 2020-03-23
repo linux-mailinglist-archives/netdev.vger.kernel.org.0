@@ -2,98 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34B1318EFBB
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 07:16:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60FCE18EFCB
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 07:29:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727191AbgCWGQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 02:16:31 -0400
-Received: from mx.socionext.com ([202.248.49.38]:3310 "EHLO mx.socionext.com"
+        id S1727295AbgCWG3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 02:29:45 -0400
+Received: from helcar.hmeau.com ([216.24.177.18]:56914 "EHLO fornost.hmeau.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726059AbgCWGQb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 02:16:31 -0400
-Received: from unknown (HELO kinkan-ex.css.socionext.com) ([172.31.9.52])
-  by mx.socionext.com with ESMTP; 23 Mar 2020 15:16:27 +0900
-Received: from mail.mfilter.local (m-filter-2 [10.213.24.62])
-        by kinkan-ex.css.socionext.com (Postfix) with ESMTP id 89975180BCB;
-        Mon, 23 Mar 2020 15:16:27 +0900 (JST)
-Received: from 172.31.9.51 (172.31.9.51) by m-FILTER with ESMTP; Mon, 23 Mar 2020 15:16:27 +0900
-Received: from yuzu.css.socionext.com (yuzu [172.31.8.45])
-        by kinkan.css.socionext.com (Postfix) with ESMTP id 42AC91A0E67;
-        Mon, 23 Mar 2020 15:16:27 +0900 (JST)
-Received: from ptp-master.e01.socionext.com (unknown [10.213.95.142])
-        by yuzu.css.socionext.com (Postfix) with ESMTP id 3679D12013D;
-        Mon, 23 Mar 2020 15:16:27 +0900 (JST)
-From:   Zh-yuan Ye <ye.zh-yuan@socionext.com>
-To:     netdev@vger.kernel.org
-Cc:     okamoto.satoru@socionext.com, kojima.masahisa@socionext.com,
-        vinicius.gomes@intel.com, Zh-yuan Ye <ye.zh-yuan@socionext.com>
-Subject: [PATCH net v2] net: cbs: Fix software cbs to consider packet sending time
-Date:   Mon, 23 Mar 2020 15:17:09 +0900
-Message-Id: <20200323061709.1881-1-ye.zh-yuan@socionext.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726059AbgCWG3p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Mar 2020 02:29:45 -0400
+Received: from gwarestrin.me.apana.org.au ([192.168.0.7] helo=gwarestrin.arnor.me.apana.org.au)
+        by fornost.hmeau.com with smtp (Exim 4.89 #2 (Debian))
+        id 1jGGaI-0004Wx-IH; Mon, 23 Mar 2020 17:29:15 +1100
+Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Mon, 23 Mar 2020 17:29:14 +1100
+Date:   Mon, 23 Mar 2020 17:29:14 +1100
+From:   Herbert Xu <herbert@gondor.apana.org.au>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     steffen.klassert@secunet.com, davem@davemloft.net, kuba@kernel.org,
+        timo.teras@iki.fi, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] xfrm: policy: Fix doulbe free in xfrm_policy_timer
+Message-ID: <20200323062914.GA5811@gondor.apana.org.au>
+References: <20200318034839.57996-1-yuehaibing@huawei.com>
+ <20200323014155.56376-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200323014155.56376-1-yuehaibing@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the software CBS does not consider the packet sending time
-when depleting the credits. It caused the throughput to be
-Idleslope[kbps] * (Port transmit rate[kbps] / |Sendslope[kbps]|) where
-Idleslope * (Port transmit rate / (Idleslope + |Sendslope|)) = Idleslope
-is expected. In order to fix the issue above, this patch takes the time
-when the packet sending completes into account by moving the anchor time
-variable "last" ahead to the send completion time upon transmission and
-adding wait when the next dequeue request comes before the send
-completion time of the previous packet.
+On Mon, Mar 23, 2020 at 09:41:55AM +0800, YueHaibing wrote:
+>
+> diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+> index dbda08ec566e..ae0689174bbf 100644
+> --- a/net/xfrm/xfrm_policy.c
+> +++ b/net/xfrm/xfrm_policy.c
+> @@ -434,6 +434,7 @@ EXPORT_SYMBOL(xfrm_policy_destroy);
+>  
+>  static void xfrm_policy_kill(struct xfrm_policy *policy)
+>  {
+> +	write_lock_bh(&policy->lock);
+>  	policy->walk.dead = 1;
+>  
+>  	atomic_inc(&policy->genid);
+> @@ -445,6 +446,7 @@ static void xfrm_policy_kill(struct xfrm_policy *policy)
+>  	if (del_timer(&policy->timer))
+>  		xfrm_pol_put(policy);
+>  
+> +	write_unlock_bh(&policy->lock);
 
-Signed-off-by: Zh-yuan Ye <ye.zh-yuan@socionext.com>
+Why did you expand the critical section? Can't you just undo the
+patch in xfrm_policy_kill?
 
----
-changes in v2:
- - combine variable "send_completed" into "last"
- - add the comment for estimate of the packet sending
-
----
- net/sched/sch_cbs.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/net/sched/sch_cbs.c b/net/sched/sch_cbs.c
-index b2905b03a432..20f95f0b9d5b 100644
---- a/net/sched/sch_cbs.c
-+++ b/net/sched/sch_cbs.c
-@@ -181,6 +181,11 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
- 	s64 credits;
- 	int len;
- 
-+	/* The previous packet is still being sent */
-+	if (now < q->last) {
-+		qdisc_watchdog_schedule_ns(&q->watchdog, q->last);
-+		return NULL;
-+	}
- 	if (q->credits < 0) {
- 		credits = timediff_to_credits(now - q->last, q->idleslope);
- 
-@@ -192,7 +197,6 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
- 
- 			delay = delay_from_credits(q->credits, q->idleslope);
- 			qdisc_watchdog_schedule_ns(&q->watchdog, now + delay);
--
- 			q->last = now;
- 
- 			return NULL;
-@@ -212,7 +216,9 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
- 	credits += q->credits;
- 
- 	q->credits = max_t(s64, credits, q->locredit);
--	q->last = now;
-+	/* Estimate of the transmission of the last byte of the packet in ns */
-+	q->last = now + div64_s64(len * NSEC_PER_SEC,
-+				  atomic64_read(&q->port_rate));
- 
- 	return skb;
- }
+Cheers,
 -- 
-2.20.1
-
+Email: Herbert Xu <herbert@gondor.apana.org.au>
+Home Page: http://gondor.apana.org.au/~herbert/
+PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
