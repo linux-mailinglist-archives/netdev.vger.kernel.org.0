@@ -2,86 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 39B5918F970
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 17:15:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 499A218F996
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 17:23:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727458AbgCWQP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 12:15:28 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:35074 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727209AbgCWQP1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 12:15:27 -0400
-Received: by mail-qk1-f195.google.com with SMTP id k13so4106135qki.2
-        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 09:15:27 -0700 (PDT)
+        id S1727473AbgCWQXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 12:23:19 -0400
+Received: from mail-qv1-f67.google.com ([209.85.219.67]:36663 "EHLO
+        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727194AbgCWQXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 12:23:19 -0400
+Received: by mail-qv1-f67.google.com with SMTP id z13so7503317qvw.3
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 09:23:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=rwNGBtSTqaJJ72a3OAj4cNUqgR9c72chx5KZmMySeqQ=;
-        b=Ce8vkN56aIGlWyFkouqguG1JMdSyYt5uVKTz0vffBFToBE++TWV4wHeWMY8W45A0SD
-         bcLoPFLCsUdHHs/ZIYxxH9NzIPmtFh36GEjoeWGM3BpBkzvVlGlYYSSwueaIx64Q6q/v
-         DSlrk8pZDpxSzn8xr49NMwnrjZBA8ULqGl+fARD2c9/p9aKC7vBlZmvER/xShFM2Nq3H
-         eTgOZhQc7VmTwmX6XOrmtGYTxYkBgeR6a9buGF/wp5Zaa22CDfWb6w1LDVzr7laRGKez
-         Wg4flSBQreIA8R3Pv+OivfBB7pjJz31yIJH/GbeC1TQvu6+2i+HsFSLYNnNyPctNJXUh
-         U8Gg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=83wTzwPdsIpcTAKeXt5oH4H5u4ukd+PG3JtpSwuzVhI=;
+        b=anyYSfOVILqSsoEOu8fZehocnY8IZ8yLnCNtvLbNW/0gzxI1XW59lIJ38TBbM6ba8N
+         umxsmYYfonPknQQFsaTkPDPVdmhZDBuXqksedA9V5TK33vQnGSZ0+JON783iqwN2oAeA
+         24Tdd1+mDgJ9oyZvA7zc1vA2EuqNFsVSiyamprdioggRXKUhiv+fSbuluKYi7RmBd0Gi
+         tFiRUTKt1xbycyJns1l/87hRMyBzecIVucdWbO9VexYTy5+uMf2KbGypNhOiguPpktE1
+         KLOHB2DKZ1W+lZfCY+sUWHYqMfbtgcygQ24sBsiuGgKqokEZr1SsRP0Q3SAnMyvoJWWb
+         B+jA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=rwNGBtSTqaJJ72a3OAj4cNUqgR9c72chx5KZmMySeqQ=;
-        b=arql5V4qF3ig/+dgGJmdS1CNU7FVUhVZpabuAaLtFUrTPBAnZ2oRFCeCzZ1OqpiW+e
-         wytNAgOON2Y/rCEetwLqnwn2WPPROONgZ+m7RcBJOl7mmtmp7B3seMKAJ0ODDMhH6Osj
-         yVQVQG7qFJGeJvIF3t0Xw8MwOwfJLLKEqTn2qlmxrZ3Yd0f5XzkfPGKOpVzqCCbPmKjc
-         1jRfUhzzKR6knTqEo5OdISZukC3FeVIT9S0LWJEJQNwDNCgoElBzGgFReX8wuZmzSUvj
-         t+1nL94hSoi7oUwWZbs6ZuloK+RHTe53A4JmsuJAKc3GH98YXrBKuLmnxkROzJEdWrH1
-         Z3dg==
-X-Gm-Message-State: ANhLgQ1btONlNUG1RezwbZzdt706/a7OFm34jTQsn/HDAHvYbQvKp0+r
-        Uf/4WYxoh9hfFxBktHnDEM+QXRsp
-X-Google-Smtp-Source: ADFU+vsCllsUWztWhAqQ4QnElaAalRY5DmZy7UYwN593fZuFEfhx1At5PMCp+sDmSZWTM/HANF2yxQ==
-X-Received: by 2002:a37:4c8d:: with SMTP id z135mr20780322qka.128.1584980126416;
-        Mon, 23 Mar 2020 09:15:26 -0700 (PDT)
+        bh=83wTzwPdsIpcTAKeXt5oH4H5u4ukd+PG3JtpSwuzVhI=;
+        b=T13RmB7cqz5XrwKrlEIjCe6zpEonPQtXTj8km2gdFSIZ3BAANw6xyuPb+1yppbPdrW
+         HUIYPHJb8mA/ixmPy/1fUJUWBfYSLcWxeS7dUrtBTx5c/Xv18m6vNmQI+1eVwfTBy255
+         hqCYOZkEaWdJPAAkshzAEyn0tUX5eZJVeFax3CGHA8tySw1nT5ZFnjJzgvuW6OfDvy8l
+         bWLEdJcsub4GSNwM4KkwVVMhey+1/5GB2dPNVvpVw7H5FcMqifWtgPPWjyKgHpqAwAbe
+         NyELbqJz34SL9eDK783Bs8Uyn5oNx/yCm77w+/6PjHj6d4qy0hxcsmp0ReQy4Zsh1jXQ
+         bLHQ==
+X-Gm-Message-State: ANhLgQ19RJkcWfTXM9/MVIB8q21N7O772WocpKw0TQaTaLYkdLEpC4lT
+        L9Tu4nW0vhjFOjKDVM47hehDWcbQ
+X-Google-Smtp-Source: ADFU+vvBvdog/9ahg1fbzuLYtL0QG96Z//u3uXsnhVJuw/knscb/QpdjJHb7KifN1D9Ob7LLb4W4gQ==
+X-Received: by 2002:a0c:a998:: with SMTP id a24mr21248399qvb.141.1584980597470;
+        Mon, 23 Mar 2020 09:23:17 -0700 (PDT)
 Received: from ?IPv6:2601:282:803:7700:ec36:91c:efc1:e971? ([2601:282:803:7700:ec36:91c:efc1:e971])
-        by smtp.googlemail.com with ESMTPSA id 128sm11493349qki.103.2020.03.23.09.15.25
+        by smtp.googlemail.com with ESMTPSA id d19sm11487489qkc.14.2020.03.23.09.23.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Mar 2020 09:15:25 -0700 (PDT)
-Subject: Re: [PATCH net-next] Remove DST_HOST
-To:     David Laight <David.Laight@ACULAB.COM>,
-        Network Development <netdev@vger.kernel.org>
-References: <746901f88f174ea8bda66e37f92961e6@AcuMS.aculab.com>
+        Mon, 23 Mar 2020 09:23:16 -0700 (PDT)
+Subject: Re: VRF: All router multicast entry(FF02:2) not added to VRF Dev but
+ added on VLAN Dev
+To:     Sukumar Gopalakrishnan <sukumarg1973@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Cc:     netdev@vger.kernel.org
+References: <CADiZnkQiZSEpk5CWtNWk35+Cg=zHfpSpTe3kAhuvKvVrGjFCpw@mail.gmail.com>
+ <ea4a8fbe-70c9-ead6-62b0-0be90959ccd8@gmail.com>
+ <CADiZnkQusFraECtHx_PYf_NDM9fn29dZkFV1-US5TL+3J5-wSg@mail.gmail.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <1daa5b45-1507-5899-609c-1ebbc7816db1@gmail.com>
-Date:   Mon, 23 Mar 2020 10:15:24 -0600
+Message-ID: <e43259f6-fa2a-f181-da6d-9a338ee4d0cf@gmail.com>
+Date:   Mon, 23 Mar 2020 10:23:15 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <746901f88f174ea8bda66e37f92961e6@AcuMS.aculab.com>
+In-Reply-To: <CADiZnkQusFraECtHx_PYf_NDM9fn29dZkFV1-US5TL+3J5-wSg@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/23/20 8:31 AM, David Laight wrote:
-> Previous changes to the IP routing code have removed all the
-> tests for the DS_HOST route flag.
-> Remove the flags and all the code that sets it.
+On 3/23/20 12:00 AM, Sukumar Gopalakrishnan wrote:
+> As per the kernel version 4.14.170, skb->dev is changing to vrf_dev even
+> if need_strict is TRUE except few types of ndisc packets..
 > 
-> Signed-off-by: David Laight <david.laight@aculab.com>
-> ---
-> AFAICT the DST_HOST flag in route table entries hasn't been
-> looked at since v4.2-rc1.
-
-even back in 4.14 it was set and only checked in one spot -
-fib6_commit_metrics.
-
+> static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
+>                                    struct sk_buff *skb)
+> {
+>         int orig_iif = skb->skb_iif;
+>         bool need_strict = rt6_need_strict(&ipv6_hdr(skb)->daddr);
+>         bool is_ndisc = ipv6_ndisc_frame(skb);
 > 
-> A quick search failed to find the commit that removed the
-> tests for it from ipv6/route.c
-> I suspect other changes got added on top.
+>         /* loopback, multicast & non-ND link-local traffic; do not push
+> through
+>          * packet taps again. Reset pkt_type for upper layers to process skb
+>          */
+>         if (skb->pkt_type == PACKET_LOOPBACK || (need_strict &&
+> !is_ndisc)) {
+>                 skb->dev = vrf_dev;
+>                 skb->skb_iif = vrf_dev->ifindex;
+>                 IP6CB(skb)->flags |= IP6SKB_L3SLAVE;
+>                 if (skb->pkt_type == PACKET_LOOPBACK)
+>                         skb->pkt_type = PACKET_HOST;
+>                 goto out;
+>         }
+> 
 
-been on my to-do list to verify it was no longer needed. thanks for sending.
+This 4.14 patch needs to be reverted:
 
-Acked-by: David Ahern <dsahern@gmail.com>
+commit 2271c9500434af2a26b2c9eadeb3c0b075409fb5
+Author: Mike Manning <mmanning@vyatta.att-mail.com>
+Date:   Wed Nov 7 15:36:07 2018 +0000
+
+    vrf: mark skb for multicast or link-local as enslaved to VRF
+
+    [ Upstream commit 6f12fa775530195a501fb090d092c637f32d0cc5 ]
+
+
+The upstream commit should not have been backported.
+
+Sasha: can you revert?
