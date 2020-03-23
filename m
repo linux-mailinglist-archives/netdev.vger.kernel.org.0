@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9ECA18EE79
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 04:21:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE3B118EE7F
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 04:22:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727199AbgCWDVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 23:21:32 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:36746 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727129AbgCWDVc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 23:21:32 -0400
-Received: by mail-wr1-f65.google.com with SMTP id 31so9177789wrs.3;
-        Sun, 22 Mar 2020 20:21:30 -0700 (PDT)
+        id S1727149AbgCWDWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 23:22:39 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46561 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726979AbgCWDWj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 23:22:39 -0400
+Received: by mail-wr1-f67.google.com with SMTP id j17so11783591wru.13;
+        Sun, 22 Mar 2020 20:22:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=w6j/kF9PDS0eyLgzuYkg/yjd0Jv3eCEJKR0IZRA7g8g=;
-        b=PQo5aAg92NfsVvV6872DQg1831pwbyAeRH/Sjkz7Za4Fhcvs7fMR6dlNBCfO3411W/
-         /gSKVE4G0+u4MmzxAcPnXe/HNusboo6UDod3/CRfjRwLqFnJZjRxwCUBo9lgiVHMXfa6
-         MxbCke1K+Bf+zpVcNhVgljOe7i5O5lVmAaLx3lkuWRMN5yQXSezmeRQC3SFAxwFpwOAj
-         2LjWowPUvJViB4e5ZmvnRElxCfbvN4rAjdAsVeIfvPxPrfSujDpcE7iku27nxiqRZlrV
-         CUKbHagR8OGizIVU6IFT9MV3mr42xupAHBq31Giw5OwA8zCur4LbHy9/iWm9qwcVoDek
-         NqoQ==
+        bh=VsMaEuE4otRmywpkizf3yHfTomfE+NOHUo1cXMGiEyI=;
+        b=r6orrjgF5NOSMYyaEwQx1qTv7WG4e2RE7EgacZNGJtpnWfARVKRPXVg/2PNYctAMS4
+         W/ZAc8jGHqiQ8L9alyv/LRrNAZ8mdcD+egmqfWg0EXiyWjr+9WThAD8EgUIESqJouf8I
+         vD1AcdshjHO9CScEUC/rDJTVuXgJEWXH7P9lIbrAHiosNh8tuUrha9NPQkIGFCWxCymF
+         URcjcVKLmm0FH1fkTF3S+SuBy91DpIYe74rI3tNB0NcNl7NPA8wKEiWd2yIPxlpJW4fq
+         pWhdWXoChPsqHLQ66cVBX5OOvxslCSVbpq+asOF2sX5/Cl0fH+8+vnF4dEF9+zmvX5M2
+         Mbow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=w6j/kF9PDS0eyLgzuYkg/yjd0Jv3eCEJKR0IZRA7g8g=;
-        b=OtCqVA2B1BuNHsVNSOlAgJEOwPBN5UNIRItD/lPfdBZxwAAPXhasT+HQdK72o8q4Z4
-         uoxLYhDS+Y8nW/c43gSGRwN4aDNyNKrc5y53oIRjgqr7mPl6uDH2XmubOLQPkdZtO6F0
-         I3tTdwx3ngFtyW7WDLqEp9ap8QhHWA6vVTi2wCmopfYjClwHUs1ZtiQcWxAEBOwCCMBR
-         bEv5QVEZYsQCJNua8j4MlPGpY9+eRcfXkEJRGs3OAwtU1vbXgtl6FlWT029g2xAQ3Col
-         W3qXyXubWaiwXktyrufhg5whlVSaDY5GRbqZkV4k5klSgti747V6vqv0dGb/qN0whRyb
-         qHmQ==
-X-Gm-Message-State: ANhLgQ0JrxbyqzSUr9/b4JCIZ1Hv0ZuEdU2cOKaIqW5hHzZKfHjKKM5L
-        uiFlfZY0Gjz7ukpL9xe8Fw5jgWYp
-X-Google-Smtp-Source: ADFU+vsbLLzZ6KSIlpsYl4VFu2ZTCVH+6m2RgUxN0rTOeO+eyqzTcMYcJktI5aRwm/cwqA59HqUOfQ==
-X-Received: by 2002:adf:f8cd:: with SMTP id f13mr13125726wrq.119.1584933689108;
-        Sun, 22 Mar 2020 20:21:29 -0700 (PDT)
+        bh=VsMaEuE4otRmywpkizf3yHfTomfE+NOHUo1cXMGiEyI=;
+        b=cgR5WXsd0DYzNEPnMfZTTBFuV5sSusffiwVPMFlw8prieJ86gc7zGFT2snRFsQ0OuS
+         Ksd7SWioCddAMV3Bn3GVH5cUeWFFCPMCuvtsClhD8PommC1YitP4qYRxzroshfp5xGE6
+         JAfC0l2gGv0lSk9HgNU2O5aVl9zNTQ1utUEi/A8LREQbl8+d1S1VyvOc4XhBp/XQiYdR
+         c5NZRHjA/dkaEgPllmlUaMFIS06CF0Cympq0ubGe+Hlqhu0z0HAStVVb9c9yI365Je9y
+         ZTWtG946uaNayKPh1TnXOXcyBkkCuh5Zhbu0Z1Ita+8YAE05TfnVUmYBuMKiqyV+1/Vx
+         E44A==
+X-Gm-Message-State: ANhLgQ0/89A8Ndh3AyUROxk9pNmLIDfxFENxIlzKyOn3DM4rvJLHGaaI
+        jWMcny6cUBtOW4zHt/bCIk5uis2v
+X-Google-Smtp-Source: ADFU+vsLIs9/zQvuXb/gp1kupe2IftdL2rpNL/MFLctrDWoEOsxovKNmUEz55KzFNtBHauOGMi0+uQ==
+X-Received: by 2002:a5d:4111:: with SMTP id l17mr28632960wrp.271.1584933755105;
+        Sun, 22 Mar 2020 20:22:35 -0700 (PDT)
 Received: from [10.230.186.223] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id v11sm2604475wrm.43.2020.03.22.20.21.25
+        by smtp.gmail.com with ESMTPSA id y187sm10367071wmd.0.2020.03.22.20.22.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 Mar 2020 20:21:28 -0700 (PDT)
-Subject: Re: [PATCH net-next v6 03/10] net: phy: introduce
- phy_read_mmd_poll_timeout macro
+        Sun, 22 Mar 2020 20:22:34 -0700 (PDT)
+Subject: Re: [PATCH net-next v6 08/10] net: phy: use phy_read_poll_timeout()
+ to simplify the code
 To:     Dejin Zheng <zhengdejin5@gmail.com>, andrew@lunn.ch,
         hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
         mchehab+samsung@kernel.org, gregkh@linuxfoundation.org,
         broonie@kernel.org, tglx@linutronix.de, netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org
 References: <20200323025633.6069-1-zhengdejin5@gmail.com>
- <20200323025633.6069-4-zhengdejin5@gmail.com>
+ <20200323025633.6069-9-zhengdejin5@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -109,12 +109,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <f96d381e-652a-3862-f76c-05ea34fab092@gmail.com>
-Date:   Sun, 22 Mar 2020 20:21:24 -0700
+Message-ID: <61c8c11d-2aa8-cb6e-9e7a-99aea94d78b9@gmail.com>
+Date:   Sun, 22 Mar 2020 20:22:30 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200323025633.6069-4-zhengdejin5@gmail.com>
+In-Reply-To: <20200323025633.6069-9-zhengdejin5@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -126,71 +126,57 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 3/22/2020 7:56 PM, Dejin Zheng wrote:
-> it is sometimes necessary to poll a phy register by phy_read_mmd()
-> function until its value satisfies some condition. introduce
-> phy_read_mmd_poll_timeout() macros that do this.
+> use phy_read_poll_timeout() to replace the poll codes for
+> simplify the code in phy_poll_reset() function.
 > 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
 > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 > Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 > ---
 > v5 -> v6:
-> 	- no changed
+> 	- add some check for keep the code more similar.
 > v4 -> v5:
-> 	- no changed
+> 	- it can add msleep before call phy_read_poll_timeout()
+> 	  to keep the code more similar. so add it.
 > v3 -> v4:
-> 	- deal with precedence issues for parameter cond.
+> 	- drop it.
 > v2 -> v3:
-> 	- modify the parameter order of newly added functions.
-> 	  phy_read_mmd_poll_timeout(val, cond, sleep_us, timeout_us, \
-> 				     phydev, devaddr, regnum)
-> 				||
-> 				\/
-> 	  phy_read_mmd_poll_timeout(phydev, devaddr regnum, val, cond, \
-> 				    sleep_us, timeout_us)
+> 	- adapt to it after modifying the parameter order of the
+> 	  newly added function
 > v1 -> v2:
-> 	- passed a phydev, device address and a reg to replace args...
-> 	  parameter in phy_read_mmd_poll_timeout() by Andrew Lunn 's
-> 	  suggestion. Andrew Lunn <andrew@lunn.ch>, Thanks very much for
-> 	  your help!
-> 	- handle phy_read_mmd return an error(the return value < 0) in
-> 	  phy_read_mmd_poll_timeout(). Thanks Andrew again.
+> 	- remove the handle of phy_read()'s return error.
 > 
+>  drivers/net/phy/phy_device.c | 17 ++++++-----------
+>  1 file changed, 6 insertions(+), 11 deletions(-)
 > 
->  include/linux/phy.h | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
-> 
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index 36d9dea04016..42a5ec9288d5 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -24,6 +24,7 @@
->  #include <linux/mod_devicetable.h>
->  #include <linux/u64_stats_sync.h>
->  #include <linux/irqreturn.h>
-> +#include <linux/iopoll.h>
+> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> index a585faf8b844..eb1b177a9878 100644
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -1059,18 +1059,13 @@ EXPORT_SYMBOL(phy_disconnect);
+>  static int phy_poll_reset(struct phy_device *phydev)
+>  {
+>  	/* Poll until the reset bit clears (50ms per retry == 0.6 sec) */
+> -	unsigned int retries = 12;
+> -	int ret;
+> -
+> -	do {
+> -		msleep(50);
+> -		ret = phy_read(phydev, MII_BMCR);
+> -		if (ret < 0)
+> -			return ret;
+> -	} while (ret & BMCR_RESET && --retries);
+> -	if (ret & BMCR_RESET)
+> -		return -ETIMEDOUT;
+> +	int ret, val;
 >  
->  #include <linux/atomic.h>
->  
-> @@ -784,6 +785,20 @@ static inline int __phy_modify_changed(struct phy_device *phydev, u32 regnum,
->   */
->  int phy_read_mmd(struct phy_device *phydev, int devad, u32 regnum);
->  
-> +#define phy_read_mmd_poll_timeout(phydev, devaddr, regnum, val, cond, \
-> +				  sleep_us, timeout_us) \
-> +({ \
-> +	int ret = 0; \
-> +	ret = read_poll_timeout(phy_read_mmd, val, (cond) || val < 0, \
-> +				sleep_us, timeout_us, phydev, devaddr, \
-> +				regnum); \
-> +	if (val <  0) \
-> +		ret = val; \
-> +	if (ret) \
-> +		phydev_err(phydev, "%s failed: %d\n", __func__, ret); \
+> +	msleep(50);
+> +	ret = phy_read_poll_timeout(phydev, MII_BMCR, val, !(val & BMCR_RESET),
+> +				    50000, 550000);
+> +	if (ret)
+> +		return ret;
 
-Likewise, you may consider declaring ret as __ret to avoid any possible
-shadowing/re-declaration. With that:
-
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+You may consider creating a special variant of phy_read_poll_timeout()
+which sleeps before checking the condition, since there are at least two
+occurrences of this here and within marvell10g.c?
 -- 
 Florian
