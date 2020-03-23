@@ -2,134 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A05E118F235
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 10:54:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5506B18F254
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 11:02:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727798AbgCWJyr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 05:54:47 -0400
-Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:33396 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727737AbgCWJyq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 05:54:46 -0400
-Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id F061EC04CE;
-        Mon, 23 Mar 2020 09:54:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1584957285; bh=OXX0CLAiESutixt4vvsP5RxceHVf/uXL+RPkEt+wnuc=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=WMZPh9ZMpF1wHv+02kYp1ys5v+5rMhY7Ky1hOCHN4xqxYKAVuJHOwCc9dtlW7DH3S
-         ykBQH8IvMK/MHdhWPijk9zIM1xcBbBHyqf+JPoOr+HyjJ/Bd5wg1I922fVyYn1N7tq
-         En7s9AmOG1+0KeZ1cZKvBypwNQt2Yo+q/Or50UrUD0iYuMmmOy1p3VgHuWJsxdnv+/
-         XR0IYk9MeoIrMakBZh3ET9qV4gola4ryc/sP7VO1LQb4GGmZanAbVJnYdYbnvtouoj
-         MJD+d4IzyOPO/4p2ewYwjoTx9KoWH9sc1qjsBNm65n4GsOzassskG8N+GG8NTrDdNK
-         SI1QL+KwFaldQ==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id B256AA0085;
-        Mon, 23 Mar 2020 09:54:39 +0000 (UTC)
-Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Mon, 23 Mar 2020 02:54:39 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (10.202.3.67) by
- mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
- 14.3.408.0; Mon, 23 Mar 2020 02:54:39 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SiGPr06UdJlTkQhk00P+VinaDE+iVTK/6LGM878d/O9wQs2TmGxuWeTYDVGrDp4yNsh7dK+LwB+XJOy87nqS8cNVFV1ifunKPLmOj+X2V6/uHUNSELYvekXWWqapExu54+8uyEg2MgYO1vUGeUsXWHPqIpJPyOrDYQD2c5qmB/3smi/fYilqYm/XxbKwgUPoZGnJf8iJDqua+cI3ir0alFZhQw/6c2qg/n4YpvoZog0WUfVfaG+TWGv2CgBoeWF0te7PpfO9xUkNnmRkL61voJUeRWT5jn/O6C4mZScr8c/i5Ta5qg8BKQu5UfgSnYaUwzLTHZCI+8Ci1BZOMNpOQQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OXX0CLAiESutixt4vvsP5RxceHVf/uXL+RPkEt+wnuc=;
- b=Y18nQfnBXQeGQfb0Ds34HTeXqmpKTJZjdpoo1CHG0zm+0y1jujRtdDWHcaHBNdSrwfFDVy2NqlttwTMqYLrdBufTUYwC+AdI5UWNHNcXVJgW2WCUH4HyoNZw9RTgxobWGbpO9dRUQH6D0U8M24TMV6nwDJRI+VEvWGr7LgyUbWKBZSS08xPRpQI1HP7hJh8DvmXz8qaPh3rkIY/05pU6FgPeoH79QeInmDg633BrKf1xEnGhViop40TG7mmfpJFeAkWQBrn7NjqcdwWX192tzrXB08CO6t1C9gp/Xtf4wvcwwjZ7hLsRQoWo4K1MlVBnaIFQrnPeMWt1VWAhRquqMQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OXX0CLAiESutixt4vvsP5RxceHVf/uXL+RPkEt+wnuc=;
- b=RCfcRfvxlppLc4plC4Nf7jnUqYqq5tnZLp2tZBpU5gyhCZ5Tyq8A2vTRgXdLNu2od58KusUAzpb4DwoMcLPf3OMXBXtxcSzDiMjTyZ032+endan5hUve1CA3uLR8KOkQjCUuXOyJNcdfGClEODdqzElb5IMW9P/iKM3ujlNDXY0=
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com (2603:10b6:408:6e::17)
- by BN8PR12MB3571.namprd12.prod.outlook.com (2603:10b6:408:62::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.20; Mon, 23 Mar
- 2020 09:54:37 +0000
-Received: from BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::c9ed:b08e:f3c5:42fa]) by BN8PR12MB3266.namprd12.prod.outlook.com
- ([fe80::c9ed:b08e:f3c5:42fa%7]) with mapi id 15.20.2835.021; Mon, 23 Mar 2020
- 09:54:37 +0000
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     Voon Weifeng <weifeng.voon@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: RE: [net-next,v1, 0/3] Add additional EHL PCI info and PCI ID
-Thread-Topic: [net-next,v1, 0/3] Add additional EHL PCI info and PCI ID
-Thread-Index: AQHV/td2/oAH68ZDTEGE4kkUdhEJt6hV8/OQ
-Date:   Mon, 23 Mar 2020 09:54:37 +0000
-Message-ID: <BN8PR12MB3266C3C3CE39D141DF15AA76D3F00@BN8PR12MB3266.namprd12.prod.outlook.com>
-References: <20200320164825.14200-1-weifeng.voon@intel.com>
-In-Reply-To: <20200320164825.14200-1-weifeng.voon@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=joabreu@synopsys.com; 
-x-originating-ip: [198.182.37.200]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 623ddfff-c1ce-46af-9ff2-08d7cf1032f2
-x-ms-traffictypediagnostic: BN8PR12MB3571:
-x-microsoft-antispam-prvs: <BN8PR12MB3571E79B1C9DEE971C80F111D3F00@BN8PR12MB3571.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0351D213B3
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(376002)(366004)(396003)(39850400004)(346002)(199004)(4744005)(64756008)(66556008)(66476007)(66946007)(26005)(66446008)(2906002)(76116006)(33656002)(478600001)(86362001)(71200400001)(7696005)(4326008)(8936002)(52536014)(110136005)(8676002)(186003)(54906003)(316002)(6506007)(9686003)(81156014)(5660300002)(55016002)(81166006)(142933001);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3571;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-received-spf: None (protection.outlook.com: synopsys.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: nlRp6lq+wJKKUXd+KCOCBeCZltyeO13pdK3D084KYFzUCJhXCOaV523s3djIY6Fhx6jMACx3KJvKsEfuE8t+OTpeLb17qpqlX46zD4f+NSJQlJcqiPd57FY2TrFSpGzx8YwnN94+b/tnYPQ1XuH+d9sc2swA+gLK9SK4dE+tMDuii59XIgLAJMHIKNNYc/vS+PquG8+o5kEMdctdYQdyv8u5kjA+hLRwJFsbHX8o8T3tJjImjfnW7VWnsqqmwLkxJKQxGPP9nujDiIX5w/1VterwSGQ/w9Va0xLKirTud+MghqUtYjgJEOi42iZcCdtJWqPkHAn9mxqj3V3I56VjnGC0+UBGTP/1kDuBMVRs5I78XF9ya+uj/tLv3VVpjUtAytV1EEcW2+DHsIY6qVmblmpQ9xtW8kuh1l19MROscR0J8Rp0omVs4NjtXiOc4P/sYZywLRPSUsYQYoVFDP6eEsBCwRxXTkVsSVIyOhJWa+akkQaZUvCQEFb0lBgvi+S3
-x-ms-exchange-antispam-messagedata: aireonCaBXdzVNlO9zpe1pA86wqRJq5E06npndnUeWO1x2sWwhYLMZAkaVWIjJq2L52cRi1B0vVtnnoOityDPasPIaLjYesFuTfFaD9uvTSuK2ewxr8G9zdRxZAeHURTUkir2baclIGYKFVx+uoYDw==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727854AbgCWKCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 06:02:35 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:51942 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727809AbgCWKCf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 06:02:35 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02N9tfgU009650;
+        Mon, 23 Mar 2020 10:02:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=mMG7dvfUB+0AmeYy+0Q1hFybzDI3+DQAX7xSQz0D3zc=;
+ b=VCB/lLjYyK8y7TE7SsuQ/NDDW1xWI5mqzqE7Q8oI0yspCLaayurNU8YfgM2VcraEh6jg
+ lT/we+UI4VN7fsbGzFCf62rv8KU8RQWi9xTr+y0OijSh55CtzF6hSEzaiJYutz6fM80m
+ rgj/t1FXqS2R4nlFtU0QljZ4MQhWq5eeZZ0ZKstNzF7vp9Y5xsQPIFx/StIb1okS0twq
+ AChygfUI9kFeutE7uN3Qr8263/2HO+Kxs1e470hEsfupd14jqugoR7DeEZggbHcel1Sm
+ YM5XAzLtcvjdGUC6hvuYw/TrG0rCOg2OTfCEWl0btBl17XZf1hNc02jMp3vDajNssn36 xA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2130.oracle.com with ESMTP id 2ywabqwp4s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 Mar 2020 10:02:26 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02N9quXq024518;
+        Mon, 23 Mar 2020 10:02:25 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 2ywwuhqayr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 23 Mar 2020 10:02:25 +0000
+Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 02NA2Onl013398;
+        Mon, 23 Mar 2020 10:02:24 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 23 Mar 2020 03:02:23 -0700
+Date:   Mon, 23 Mar 2020 13:02:16 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     Paul Blakey <paulb@mellanox.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Roi Dayan <roid@mellanox.com>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] net/mlx5e: Fix actions_match_supported() return
+Message-ID: <20200323100215.GB26299@kadam>
+References: <20200320132305.GB95012@mwanda>
+ <35fcb57643c0522b051318e75b106100422fb1dc.camel@mellanox.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 623ddfff-c1ce-46af-9ff2-08d7cf1032f2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Mar 2020 09:54:37.6402
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nkM/mNF8TbKf8S7BNuVF/STd0dEJcCaf3nIQQaI3eYS7KviSPnizxoSJAgsY+8o9WJSuM02FzcsBArHCJNh7iQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3571
-X-OriginatorOrg: synopsys.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <35fcb57643c0522b051318e75b106100422fb1dc.camel@mellanox.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9568 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=0 spamscore=0
+ mlxlogscore=999 malwarescore=0 mlxscore=0 bulkscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
+ definitions=main-2003230058
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9568 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=0
+ lowpriorityscore=0 malwarescore=0 phishscore=0 priorityscore=1501
+ clxscore=1015 adultscore=0 mlxscore=0 mlxlogscore=999 bulkscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003230058
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Voon Weifeng <weifeng.voon@intel.com>
-Date: Mar/20/2020, 16:48:22 (UTC+00:00)
+On Sat, Mar 21, 2020 at 02:43:08AM +0000, Saeed Mahameed wrote:
+> On Fri, 2020-03-20 at 16:23 +0300, Dan Carpenter wrote:
+> > The actions_match_supported() function returns a bool, true for
+> > success
+> > and false for failure.  This error path is returning a negative which
+> > is cast to true but it should return false.
+> > 
+> > Fixes: 4c3844d9e97e ("net/mlx5e: CT: Introduce connection tracking")
+> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > ---
+> >  drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> > b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> > index 044891a03be3..e5de7d2bac2b 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+> > @@ -3058,7 +3058,7 @@ static bool actions_match_supported(struct
+> > mlx5e_priv *priv,
+> >  			 */
+> >  			NL_SET_ERR_MSG_MOD(extack,
+> >  					   "Can't offload mirroring
+> > with action ct");
+> > -			return -EOPNOTSUPP;
+> > +			return false;
+> >  		}
+> >  	} else {
+> >  		actions = flow->nic_attr->action;
+> 
+> applied to net-next-mlx5 
 
-> Intel EHL consist of 3 identical MAC. 2 are located in the Intel(R)
-> Programmable Services Engine (Intel(R) PSE) and 1 is located in the
-> platform Controller Hub (PCH). Each MAC consist of 3 PCI IDs which are
-> differentiated by MII and speed.
+I can never figure out which tree these are supposed to be applied to.
+:(  Is there a trick to it?
 
-This stmmac_pci.c is getting bigger and bigger ... Can you consider adding=
-=20
-your own PCI driver (dwmac-intel.c) to stmmac tree ?
+regards,
+dan carpenter
 
-You could even submit a patch for MAINTAINERS for this particular driver=20
-as it's already done for others.
-
----
-Thanks,
-Jose Miguel Abreu
