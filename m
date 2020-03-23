@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BB0B18F577
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 14:15:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C91218F578
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 14:15:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728484AbgCWNPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 09:15:24 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:31738 "EHLO
+        id S1728489AbgCWNPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 09:15:25 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:25318 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728426AbgCWNPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 09:15:23 -0400
+        by vger.kernel.org with ESMTP id S1728476AbgCWNPY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 09:15:24 -0400
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02ND6MSv019129;
-        Mon, 23 Mar 2020 06:15:20 -0700
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02ND6MJ6019116;
+        Mon, 23 Mar 2020 06:15:21 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=HDcbYsbNH+/hxb90mkIljaU4dc1s6p3yCGBLkKjM15k=;
- b=Gf6rMuk+eKAlwBdOMwf4GhuDZfkCKBtSN9t1lciu4AdL8zSOuLrrvJekf/b7Vh7e3i2G
- TVPz8BBNtggUMBCOUCyMYhcQMoT+1iffMy1/nFsDu3QmbzgRCZmx2NY80tJqCsR4LZ/E
- 0VNIUH/82RhyiMwcDlfr6ASwvNxeDLjw3maUo6CDVToX3JbELwoavR+QX8sGtDHC4i6b
- 6PvrRtdgewzgvkNx+ubxKqdKliW9VneosCXMozJwP2O7sN1oiZjOEbUn8jSdtZ89OZW7
- C4+/ypB4UHMluHBhkqkK+XA2BGnjrFGCo8SruLuyRDnOI6CNfUv1JTl1BNmsXe8KXRyd pA== 
-Received: from sc-exch04.marvell.com ([199.233.58.184])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2ywvkqmn59-1
+ content-type; s=pfpt0818; bh=GA/MYnArUCen/y9BmKNY11lF2AC6IMvGCdwn0wkbcLo=;
+ b=qdkq/WNB0OIOhfDMmL33QnReh/8iu/GxObyl2gAFCsIveWmLpxy2qsd51YeVgInRxdTP
+ qiE98gwOD8wUfTKmVGl/wnXdR9xSSx+7BUhIFBJFXbbgoLFjtzglqLDHmYf+o/L549BJ
+ YOmnGzzSs96WdFpR2b48IzgOJgGLbAaU/zvi/I8l/348JHx2wY1+I3sm78lVmDwiT02I
+ +RKQf/OWGvz6lv6HZCmb7aIcIdoA7LwZuyucUQF7mh5YmNAcMqjs0AgtPtgDxJuYnx1a
+ 95qd2KrsIPI01+PsxesfdZh5vpkyT8gRZmK5tXRGyhvcpAqUmEx5LlyePlQhe1Q9tXhp RQ== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2ywvkqmn5f-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 23 Mar 2020 06:15:18 -0700
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 23 Mar
- 2020 06:15:15 -0700
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 23 Mar 2020 06:15:15 -0700
+        Mon, 23 Mar 2020 06:15:20 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 23 Mar
+ 2020 06:15:18 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 23 Mar 2020 06:15:18 -0700
 Received: from localhost.localdomain (unknown [10.9.16.91])
-        by maili.marvell.com (Postfix) with ESMTP id CCC213F703F;
-        Mon, 23 Mar 2020 06:15:13 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 6E4A33F704D;
+        Mon, 23 Mar 2020 06:15:16 -0700 (PDT)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     Mark Starovoytov <mstarovoitov@marvell.com>,
@@ -42,9 +42,9 @@ CC:     Mark Starovoytov <mstarovoitov@marvell.com>,
         Antoine Tenart <antoine.tenart@bootlin.com>,
         "Dmitry Bogdanov" <dbogdanov@marvell.com>,
         Igor Russkikh <irusskikh@marvell.com>
-Subject: [PATCH net-next 15/17] net: atlantic: MACSec offload statistics HW bindings
-Date:   Mon, 23 Mar 2020 16:13:46 +0300
-Message-ID: <20200323131348.340-16-irusskikh@marvell.com>
+Subject: [PATCH net-next 16/17] net: atlantic: MACSec offload statistics implementation
+Date:   Mon, 23 Mar 2020 16:13:47 +0300
+Message-ID: <20200323131348.340-17-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200323131348.340-1-irusskikh@marvell.com>
 References: <20200323131348.340-1-irusskikh@marvell.com>
@@ -59,856 +59,972 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dmitry Bogdanov <dbogdanov@marvell.com>
 
-This patch adds the Atlantic HW-specific bindings for MACSec statistics,
-e.g. register addresses / structs, helper function, etc, which will be
-used by actual callback implementations.
+This patch adds support for MACSec statistics on Atlantic network cards.
 
 Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
 Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- .../aquantia/atlantic/macsec/macsec_api.c     | 545 ++++++++++++++++++
- .../aquantia/atlantic/macsec/macsec_api.h     |  47 ++
- .../aquantia/atlantic/macsec/macsec_struct.h  | 214 +++++++
- 3 files changed, 806 insertions(+)
+ .../ethernet/aquantia/atlantic/aq_ethtool.c   | 160 ++++-
+ .../ethernet/aquantia/atlantic/aq_macsec.c    | 545 ++++++++++++++++++
+ .../ethernet/aquantia/atlantic/aq_macsec.h    |  73 +++
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   |   5 +-
+ .../net/ethernet/aquantia/atlantic/aq_nic.h   |   2 +-
+ 5 files changed, 766 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.c b/drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.c
-index f2316d965715..cdf87c40ed8c 100644
---- a/drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.c
-@@ -2277,6 +2277,551 @@ int aq_mss_get_egress_sakey_record(struct aq_hw_s *hw,
- 	return AQ_API_CALL_SAFE(get_egress_sakey_record, hw, rec, table_index);
- }
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
+index 6781256a318a..23c1e021e15c 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ethtool.c
+@@ -11,6 +11,7 @@
+ #include "aq_vec.h"
+ #include "aq_ptp.h"
+ #include "aq_filters.h"
++#include "aq_macsec.h"
  
-+static int get_egress_sc_counters(struct aq_hw_s *hw,
-+				  struct aq_mss_egress_sc_counters *counters,
-+				  u16 sc_index)
-+{
-+	u16 packed_record[4];
-+	int ret;
-+
-+	if (sc_index >= NUMROWS_EGRESSSCRECORD)
-+		return -EINVAL;
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, sc_index * 8 + 4);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->sc_protected_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->sc_protected_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, sc_index * 8 + 5);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->sc_encrypted_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->sc_encrypted_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, sc_index * 8 + 6);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->sc_protected_octets[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->sc_protected_octets[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, sc_index * 8 + 7);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->sc_encrypted_octets[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->sc_encrypted_octets[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	return 0;
-+}
-+
-+int aq_mss_get_egress_sc_counters(struct aq_hw_s *hw,
-+				  struct aq_mss_egress_sc_counters *counters,
-+				  u16 sc_index)
-+{
-+	memset(counters, 0, sizeof(*counters));
-+
-+	return AQ_API_CALL_SAFE(get_egress_sc_counters, hw, counters, sc_index);
-+}
-+
-+static int get_egress_sa_counters(struct aq_hw_s *hw,
-+				  struct aq_mss_egress_sa_counters *counters,
-+				  u16 sa_index)
-+{
-+	u16 packed_record[4];
-+	int ret;
-+
-+	if (sa_index >= NUMROWS_EGRESSSARECORD)
-+		return -EINVAL;
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, sa_index * 8 + 0);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->sa_hit_drop_redirect[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->sa_hit_drop_redirect[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, sa_index * 8 + 1);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->sa_protected2_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->sa_protected2_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, sa_index * 8 + 2);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->sa_protected_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->sa_protected_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, sa_index * 8 + 3);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->sa_encrypted_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->sa_encrypted_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	return 0;
-+}
-+
-+int aq_mss_get_egress_sa_counters(struct aq_hw_s *hw,
-+				  struct aq_mss_egress_sa_counters *counters,
-+				  u16 sa_index)
-+{
-+	memset(counters, 0, sizeof(*counters));
-+
-+	return AQ_API_CALL_SAFE(get_egress_sa_counters, hw, counters, sa_index);
-+}
-+
-+static int
-+get_egress_common_counters(struct aq_hw_s *hw,
-+			   struct aq_mss_egress_common_counters *counters)
-+{
-+	u16 packed_record[4];
-+	int ret;
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, 256 + 0);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->ctl_pkt[0] = packed_record[0] | (packed_record[1] << 16);
-+	counters->ctl_pkt[1] = packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, 256 + 1);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->unknown_sa_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->unknown_sa_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, 256 + 2);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->untagged_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->untagged_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, 256 + 3);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->too_long[0] = packed_record[0] | (packed_record[1] << 16);
-+	counters->too_long[1] = packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, 256 + 4);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->ecc_error_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->ecc_error_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_egress_record(hw, packed_record, 4, 3, 256 + 5);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->unctrl_hit_drop_redir[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->unctrl_hit_drop_redir[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	return 0;
-+}
-+
-+int aq_mss_get_egress_common_counters(struct aq_hw_s *hw,
-+	struct aq_mss_egress_common_counters *counters)
-+{
-+	memset(counters, 0, sizeof(*counters));
-+
-+	return AQ_API_CALL_SAFE(get_egress_common_counters, hw, counters);
-+}
-+
-+static int clear_egress_counters(struct aq_hw_s *hw)
-+{
-+	struct mss_egress_ctl_register ctl_reg;
-+	int ret;
-+
-+	memset(&ctl_reg, 0, sizeof(ctl_reg));
-+
-+	ret = aq_mss_mdio_read(hw, MDIO_MMD_VEND1, MSS_EGRESS_CTL_REGISTER_ADDR,
-+			       &ctl_reg.word_0);
-+	if (unlikely(ret))
-+		return ret;
-+	ret = aq_mss_mdio_read(hw, MDIO_MMD_VEND1,
-+			       MSS_EGRESS_CTL_REGISTER_ADDR + 4,
-+			       &ctl_reg.word_1);
-+	if (unlikely(ret))
-+		return ret;
-+
-+	/* Toggle the Egress MIB clear bit 0->1->0 */
-+	ctl_reg.bits_0.clear_counter = 0;
-+	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
-+				MSS_EGRESS_CTL_REGISTER_ADDR, ctl_reg.word_0);
-+	if (unlikely(ret))
-+		return ret;
-+	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
-+				MSS_EGRESS_CTL_REGISTER_ADDR + 4,
-+				ctl_reg.word_1);
-+	if (unlikely(ret))
-+		return ret;
-+
-+	ctl_reg.bits_0.clear_counter = 1;
-+	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
-+				MSS_EGRESS_CTL_REGISTER_ADDR, ctl_reg.word_0);
-+	if (unlikely(ret))
-+		return ret;
-+	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
-+				MSS_EGRESS_CTL_REGISTER_ADDR + 4,
-+				ctl_reg.word_1);
-+	if (unlikely(ret))
-+		return ret;
-+
-+	ctl_reg.bits_0.clear_counter = 0;
-+	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
-+				MSS_EGRESS_CTL_REGISTER_ADDR, ctl_reg.word_0);
-+	if (unlikely(ret))
-+		return ret;
-+	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
-+				MSS_EGRESS_CTL_REGISTER_ADDR + 4,
-+				ctl_reg.word_1);
-+	if (unlikely(ret))
-+		return ret;
-+
-+	return 0;
-+}
-+
-+int aq_mss_clear_egress_counters(struct aq_hw_s *hw)
-+{
-+	return AQ_API_CALL_SAFE(clear_egress_counters, hw);
-+}
-+
-+static int get_ingress_sa_counters(struct aq_hw_s *hw,
-+				   struct aq_mss_ingress_sa_counters *counters,
-+				   u16 sa_index)
-+{
-+	u16 packed_record[4];
-+	int ret;
-+
-+	if (sa_index >= NUMROWS_INGRESSSARECORD)
-+		return -EINVAL;
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6,
-+				     sa_index * 12 + 0);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->untagged_hit_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->untagged_hit_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6,
-+				     sa_index * 12 + 1);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->ctrl_hit_drop_redir_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->ctrl_hit_drop_redir_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6,
-+				     sa_index * 12 + 2);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->not_using_sa[0] = packed_record[0] | (packed_record[1] << 16);
-+	counters->not_using_sa[1] = packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6,
-+				     sa_index * 12 + 3);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->unused_sa[0] = packed_record[0] | (packed_record[1] << 16);
-+	counters->unused_sa[1] = packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6,
-+				     sa_index * 12 + 4);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->not_valid_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->not_valid_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6,
-+				     sa_index * 12 + 5);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->invalid_pkts[0] = packed_record[0] | (packed_record[1] << 16);
-+	counters->invalid_pkts[1] = packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6,
-+				     sa_index * 12 + 6);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->ok_pkts[0] = packed_record[0] | (packed_record[1] << 16);
-+	counters->ok_pkts[1] = packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6,
-+				     sa_index * 12 + 7);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->late_pkts[0] = packed_record[0] | (packed_record[1] << 16);
-+	counters->late_pkts[1] = packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6,
-+				     sa_index * 12 + 8);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->delayed_pkts[0] = packed_record[0] | (packed_record[1] << 16);
-+	counters->delayed_pkts[1] = packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6,
-+				     sa_index * 12 + 9);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->unchecked_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->unchecked_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6,
-+				     sa_index * 12 + 10);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->validated_octets[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->validated_octets[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6,
-+				     sa_index * 12 + 11);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->decrypted_octets[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->decrypted_octets[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	return 0;
-+}
-+
-+int aq_mss_get_ingress_sa_counters(struct aq_hw_s *hw,
-+				   struct aq_mss_ingress_sa_counters *counters,
-+				   u16 sa_index)
-+{
-+	memset(counters, 0, sizeof(*counters));
-+
-+	return AQ_API_CALL_SAFE(get_ingress_sa_counters, hw, counters,
-+				sa_index);
-+}
-+
-+static int
-+get_ingress_common_counters(struct aq_hw_s *hw,
-+			    struct aq_mss_ingress_common_counters *counters)
-+{
-+	u16 packed_record[4];
-+	int ret;
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 0);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->ctl_pkts[0] = packed_record[0] | (packed_record[1] << 16);
-+	counters->ctl_pkts[1] = packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 1);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->tagged_miss_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->tagged_miss_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 2);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->untagged_miss_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->untagged_miss_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 3);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->notag_pkts[0] = packed_record[0] | (packed_record[1] << 16);
-+	counters->notag_pkts[1] = packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 4);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->untagged_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->untagged_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 5);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->bad_tag_pkts[0] = packed_record[0] | (packed_record[1] << 16);
-+	counters->bad_tag_pkts[1] = packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 6);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->no_sci_pkts[0] = packed_record[0] | (packed_record[1] << 16);
-+	counters->no_sci_pkts[1] = packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 7);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->unknown_sci_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->unknown_sci_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 8);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->ctrl_prt_pass_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->ctrl_prt_pass_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 9);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->unctrl_prt_pass_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->unctrl_prt_pass_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 10);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->ctrl_prt_fail_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->ctrl_prt_fail_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 11);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->unctrl_prt_fail_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->unctrl_prt_fail_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 12);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->too_long_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->too_long_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 13);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->igpoc_ctl_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->igpoc_ctl_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 14);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->ecc_error_pkts[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->ecc_error_pkts[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	ret = get_raw_ingress_record(hw, packed_record, 4, 6, 385 + 15);
-+	if (unlikely(ret))
-+		return ret;
-+	counters->unctrl_hit_drop_redir[0] =
-+		packed_record[0] | (packed_record[1] << 16);
-+	counters->unctrl_hit_drop_redir[1] =
-+		packed_record[2] | (packed_record[3] << 16);
-+
-+	return 0;
-+}
-+
-+int aq_mss_get_ingress_common_counters(struct aq_hw_s *hw,
-+	struct aq_mss_ingress_common_counters *counters)
-+{
-+	memset(counters, 0, sizeof(*counters));
-+
-+	return AQ_API_CALL_SAFE(get_ingress_common_counters, hw, counters);
-+}
-+
-+static int clear_ingress_counters(struct aq_hw_s *hw)
-+{
-+	struct mss_ingress_ctl_register ctl_reg;
-+	int ret;
-+
-+	memset(&ctl_reg, 0, sizeof(ctl_reg));
-+
-+	ret = aq_mss_mdio_read(hw, MDIO_MMD_VEND1,
-+			       MSS_INGRESS_CTL_REGISTER_ADDR, &ctl_reg.word_0);
-+	if (unlikely(ret))
-+		return ret;
-+	ret = aq_mss_mdio_read(hw, MDIO_MMD_VEND1,
-+			       MSS_INGRESS_CTL_REGISTER_ADDR + 4,
-+			       &ctl_reg.word_1);
-+	if (unlikely(ret))
-+		return ret;
-+
-+	/* Toggle the Ingress MIB clear bit 0->1->0 */
-+	ctl_reg.bits_0.clear_count = 0;
-+	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
-+				MSS_INGRESS_CTL_REGISTER_ADDR, ctl_reg.word_0);
-+	if (unlikely(ret))
-+		return ret;
-+	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
-+				MSS_INGRESS_CTL_REGISTER_ADDR + 4,
-+				ctl_reg.word_1);
-+	if (unlikely(ret))
-+		return ret;
-+
-+	ctl_reg.bits_0.clear_count = 1;
-+	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
-+				MSS_INGRESS_CTL_REGISTER_ADDR, ctl_reg.word_0);
-+	if (unlikely(ret))
-+		return ret;
-+	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
-+				MSS_INGRESS_CTL_REGISTER_ADDR + 4,
-+				ctl_reg.word_1);
-+	if (unlikely(ret))
-+		return ret;
-+
-+	ctl_reg.bits_0.clear_count = 0;
-+	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
-+				MSS_INGRESS_CTL_REGISTER_ADDR, ctl_reg.word_0);
-+	if (unlikely(ret))
-+		return ret;
-+	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
-+				MSS_INGRESS_CTL_REGISTER_ADDR + 4,
-+				ctl_reg.word_1);
-+	if (unlikely(ret))
-+		return ret;
-+
-+	return 0;
-+}
-+
-+int aq_mss_clear_ingress_counters(struct aq_hw_s *hw)
-+{
-+	return AQ_API_CALL_SAFE(clear_ingress_counters, hw);
-+}
-+
- static int get_egress_sa_expired(struct aq_hw_s *hw, u32 *expired)
- {
- 	u16 val;
-diff --git a/drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.h b/drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.h
-index ab5415f99a32..ff03cc462a37 100644
---- a/drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.h
-@@ -262,6 +262,53 @@ int aq_mss_set_ingress_postctlf_record(struct aq_hw_s *hw,
- 	const struct aq_mss_ingress_postctlf_record *rec,
- 	u16 table_index);
+ #include <linux/ptp_clock_kernel.h>
  
-+/*!  Read the counters for the specified SC, and unpack them into the
-+ *   fields of counters.
-+ *  counters - [OUT] The raw table row data will be unpacked here.
-+ *  sc_index - The table row to read (max 31).
-+ */
-+int aq_mss_get_egress_sc_counters(struct aq_hw_s *hw,
-+				  struct aq_mss_egress_sc_counters *counters,
-+				  u16 sc_index);
-+
-+/*!  Read the counters for the specified SA, and unpack them into the
-+ *   fields of counters.
-+ *  counters - [OUT] The raw table row data will be unpacked here.
-+ *  sa_index - The table row to read (max 31).
-+ */
-+int aq_mss_get_egress_sa_counters(struct aq_hw_s *hw,
-+				  struct aq_mss_egress_sa_counters *counters,
-+				  u16 sa_index);
-+
-+/*!  Read the counters for the common egress counters, and unpack them
-+ *   into the fields of counters.
-+ *  counters - [OUT] The raw table row data will be unpacked here.
-+ */
-+int aq_mss_get_egress_common_counters(struct aq_hw_s *hw,
-+	struct aq_mss_egress_common_counters *counters);
-+
-+/*!  Clear all Egress counters to 0.*/
-+int aq_mss_clear_egress_counters(struct aq_hw_s *hw);
-+
-+/*!  Read the counters for the specified SA, and unpack them into the
-+ *   fields of counters.
-+ *  counters - [OUT] The raw table row data will be unpacked here.
-+ *  sa_index - The table row to read (max 31).
-+ */
-+int aq_mss_get_ingress_sa_counters(struct aq_hw_s *hw,
-+				   struct aq_mss_ingress_sa_counters *counters,
-+				   u16 sa_index);
-+
-+/*!  Read the counters for the common ingress counters, and unpack them
-+ *   into the fields of counters.
-+ *  counters - [OUT] The raw table row data will be unpacked here.
-+ */
-+int aq_mss_get_ingress_common_counters(struct aq_hw_s *hw,
-+	struct aq_mss_ingress_common_counters *counters);
-+
-+/*!  Clear all Ingress counters to 0. */
-+int aq_mss_clear_ingress_counters(struct aq_hw_s *hw);
-+
- /*!  Get Egress SA expired. */
- int aq_mss_get_egress_sa_expired(struct aq_hw_s *hw, u32 *expired);
- /*!  Get Egress SA threshold expired. */
-diff --git a/drivers/net/ethernet/aquantia/atlantic/macsec/macsec_struct.h b/drivers/net/ethernet/aquantia/atlantic/macsec/macsec_struct.h
-index 8c38a3470518..b6119dcc3bb9 100644
---- a/drivers/net/ethernet/aquantia/atlantic/macsec/macsec_struct.h
-+++ b/drivers/net/ethernet/aquantia/atlantic/macsec/macsec_struct.h
-@@ -697,4 +697,218 @@ struct aq_mss_ingress_postctlf_record {
- 	u32 action;
+@@ -96,6 +97,62 @@ static const char aq_ethtool_queue_stat_names[][ETH_GSTRING_LEN] = {
+ 	"Queue[%d] InErrors",
  };
  
-+/*! Represents the Egress MIB counters for a single SC. Counters are
-+ *  64 bits, lower 32 bits in field[0].
-+ */
-+struct aq_mss_egress_sc_counters {
-+	/*! The number of integrity protected but not encrypted packets
-+	 *  for this transmitting SC.
-+	 */
-+	u32 sc_protected_pkts[2];
-+	/*! The number of integrity protected and encrypted packets for
-+	 *  this transmitting SC.
-+	 */
-+	u32 sc_encrypted_pkts[2];
-+	/*! The number of plain text octets that are integrity protected
-+	 *  but not encrypted on the transmitting SC.
-+	 */
-+	u32 sc_protected_octets[2];
-+	/*! The number of plain text octets that are integrity protected
-+	 *  and encrypted on the transmitting SC.
-+	 */
-+	u32 sc_encrypted_octets[2];
++#if IS_ENABLED(CONFIG_MACSEC)
++static const char aq_macsec_stat_names[][ETH_GSTRING_LEN] = {
++	"MACSec InCtlPackets",
++	"MACSec InTaggedMissPackets",
++	"MACSec InUntaggedMissPackets",
++	"MACSec InNotagPackets",
++	"MACSec InUntaggedPackets",
++	"MACSec InBadTagPackets",
++	"MACSec InNoSciPackets",
++	"MACSec InUnknownSciPackets",
++	"MACSec InCtrlPortPassPackets",
++	"MACSec InUnctrlPortPassPackets",
++	"MACSec InCtrlPortFailPackets",
++	"MACSec InUnctrlPortFailPackets",
++	"MACSec InTooLongPackets",
++	"MACSec InIgpocCtlPackets",
++	"MACSec InEccErrorPackets",
++	"MACSec InUnctrlHitDropRedir",
++	"MACSec OutCtlPackets",
++	"MACSec OutUnknownSaPackets",
++	"MACSec OutUntaggedPackets",
++	"MACSec OutTooLong",
++	"MACSec OutEccErrorPackets",
++	"MACSec OutUnctrlHitDropRedir",
 +};
 +
-+/*! Represents the Egress MIB counters for a single SA. Counters are
-+ *  64 bits, lower 32 bits in field[0].
-+ */
-+struct aq_mss_egress_sa_counters {
-+	/*! The number of dropped packets for this transmitting SA. */
-+	u32 sa_hit_drop_redirect[2];
-+	/*! TODO */
-+	u32 sa_protected2_pkts[2];
-+	/*! The number of integrity protected but not encrypted packets
-+	 *  for this transmitting SA.
-+	 */
-+	u32 sa_protected_pkts[2];
-+	/*! The number of integrity protected and encrypted packets for
-+	 *  this transmitting SA.
-+	 */
-+	u32 sa_encrypted_pkts[2];
++static const char aq_macsec_txsc_stat_names[][ETH_GSTRING_LEN + 1] = {
++	"MACSecTXSC%d ProtectedPkts\0",
++	"MACSecTXSC%d EncryptedPkts\0",
++	"MACSecTXSC%d ProtectedOctets\0",
++	"MACSecTXSC%d EncryptedOctets\0",
 +};
 +
-+/*! Represents the common Egress MIB counters; the counter not
-+ *  associated with a particular SC/SA. Counters are 64 bits, lower 32
-+ *  bits in field[0].
-+ */
-+struct aq_mss_egress_common_counters {
-+	/*! The number of transmitted packets classified as MAC_CTL packets. */
-+	u32 ctl_pkt[2];
-+	/*! The number of transmitted packets that did not match any rows
-+	 *  in the Egress Packet Classifier table.
-+	 */
-+	u32 unknown_sa_pkts[2];
-+	/*! The number of transmitted packets where the SC table entry has
-+	 *  protect=0 (so packets are forwarded unchanged).
-+	 */
-+	u32 untagged_pkts[2];
-+	/*! The number of transmitted packets discarded because the packet
-+	 *  length is greater than the ifMtu of the Common Port interface.
-+	 */
-+	u32 too_long[2];
-+	/*! The number of transmitted packets for which table memory was
-+	 *  affected by an ECC error during processing.
-+	 */
-+	u32 ecc_error_pkts[2];
-+	/*! The number of transmitted packets for where the matched row in
-+	 *  the Egress Packet Classifier table has action=drop.
-+	 */
-+	u32 unctrl_hit_drop_redir[2];
++static const char aq_macsec_txsa_stat_names[][ETH_GSTRING_LEN + 1] = {
++	"MACSecTXSC%dSA%d HitDropRedirect\0",
++	"MACSecTXSC%dSA%d Protected2Pkts\0",
++	"MACSecTXSC%dSA%d ProtectedPkts\0",
++	"MACSecTXSC%dSA%d EncryptedPkts\0",
 +};
 +
-+/*! Represents the Ingress MIB counters for a single SA. Counters are
-+ *  64 bits, lower 32 bits in field[0].
-+ */
-+struct aq_mss_ingress_sa_counters {
-+	/*! For this SA, the number of received packets without a SecTAG. */
-+	u32 untagged_hit_pkts[2];
-+	/*! For this SA, the number of received packets that were dropped. */
-+	u32 ctrl_hit_drop_redir_pkts[2];
-+	/*! For this SA which is not currently in use, the number of
-+	 *  received packets that have been discarded, and have either the
-+	 *  packets encrypted or the matched row in the Ingress SC Lookup
-+	 *  table has validate_frames=Strict.
-+	 */
-+	u32 not_using_sa[2];
-+	/*! For this SA which is not currently in use, the number of
-+	 *  received, unencrypted, packets with the matched row in the
-+	 *  Ingress SC Lookup table has validate_frames!=Strict.
-+	 */
-+	u32 unused_sa[2];
-+	/*! For this SA, the number discarded packets with the condition
-+	 *  that the packets are not valid and one of the following
-+	 *  conditions are true: either the matched row in the Ingress SC
-+	 *  Lookup table has validate_frames=Strict or the packets
-+	 *  encrypted.
-+	 */
-+	u32 not_valid_pkts[2];
-+	/*! For this SA, the number of packets with the condition that the
-+	 *  packets are not valid and the matched row in the Ingress SC
-+	 *  Lookup table has validate_frames=Check.
-+	 */
-+	u32 invalid_pkts[2];
-+	/*! For this SA, the number of validated packets. */
-+	u32 ok_pkts[2];
-+	/*! For this SC, the number of received packets that have been
-+	 *  discarded with the condition: the matched row in the Ingress
-+	 *  SC Lookup table has replay_protect=1 and the PN of the packet
-+	 *  is lower than the lower bound replay check PN.
-+	 */
-+	u32 late_pkts[2];
-+	/*! For this SA, the number of packets with the condition that the
-+	 *  PN of the packets is lower than the lower bound replay
-+	 *  protection PN.
-+	 */
-+	u32 delayed_pkts[2];
-+	/*! For this SC, the number of packets with the following condition:
-+	 *  - the matched row in the Ingress SC Lookup table has
-+	 *    replay_protect=0 or
-+	 *  - the matched row in the Ingress SC Lookup table has
-+	 *    replay_protect=1 and the packet is not encrypted and the
-+	 *    integrity check has failed or
-+	 *  - the matched row in the Ingress SC Lookup table has
-+	 *    replay_protect=1 and the packet is encrypted and integrity
-+	 *    check has failed.
-+	 */
-+	u32 unchecked_pkts[2];
-+	/*! The number of octets of plaintext recovered from received
-+	 *  packets that were integrity protected but not encrypted.
-+	 */
-+	u32 validated_octets[2];
-+	/*! The number of octets of plaintext recovered from received
-+	 *  packets that were integrity protected and encrypted.
-+	 */
-+	u32 decrypted_octets[2];
++static const char aq_macsec_rxsa_stat_names[][ETH_GSTRING_LEN + 1] = {
++	"MACSecRXSC%dSA%d UntaggedHitPkts\0",
++	"MACSecRXSC%dSA%d CtrlHitDrpRedir\0",
++	"MACSecRXSC%dSA%d NotUsingSa\0",
++	"MACSecRXSC%dSA%d UnusedSa\0",
++	"MACSecRXSC%dSA%d NotValidPkts\0",
++	"MACSecRXSC%dSA%d InvalidPkts\0",
++	"MACSecRXSC%dSA%d OkPkts\0",
++	"MACSecRXSC%dSA%d LatePkts\0",
++	"MACSecRXSC%dSA%d DelayedPkts\0",
++	"MACSecRXSC%dSA%d UncheckedPkts\0",
++	"MACSecRXSC%dSA%d ValidatedOctets\0",
++	"MACSecRXSC%dSA%d DecryptedOctets\0",
++};
++#endif
++
+ static const char aq_ethtool_priv_flag_names[][ETH_GSTRING_LEN] = {
+ 	"DMASystemLoopback",
+ 	"PKTSystemLoopback",
+@@ -104,18 +161,38 @@ static const char aq_ethtool_priv_flag_names[][ETH_GSTRING_LEN] = {
+ 	"PHYExternalLoopback",
+ };
+ 
++static u32 aq_ethtool_n_stats(struct net_device *ndev)
++{
++	struct aq_nic_s *nic = netdev_priv(ndev);
++	struct aq_nic_cfg_s *cfg = aq_nic_get_cfg(nic);
++	u32 n_stats = ARRAY_SIZE(aq_ethtool_stat_names) +
++		      ARRAY_SIZE(aq_ethtool_queue_stat_names) * cfg->vecs;
++
++#if IS_ENABLED(CONFIG_MACSEC)
++	if (nic->macsec_cfg) {
++		n_stats += ARRAY_SIZE(aq_macsec_stat_names) +
++			   ARRAY_SIZE(aq_macsec_txsc_stat_names) *
++				   aq_macsec_tx_sc_cnt(nic) +
++			   ARRAY_SIZE(aq_macsec_txsa_stat_names) *
++				   aq_macsec_tx_sa_cnt(nic) +
++			   ARRAY_SIZE(aq_macsec_rxsa_stat_names) *
++				   aq_macsec_rx_sa_cnt(nic);
++	}
++#endif
++
++	return n_stats;
++}
++
+ static void aq_ethtool_stats(struct net_device *ndev,
+ 			     struct ethtool_stats *stats, u64 *data)
+ {
+ 	struct aq_nic_s *aq_nic = netdev_priv(ndev);
+-	struct aq_nic_cfg_s *cfg;
+ 
+-	cfg = aq_nic_get_cfg(aq_nic);
+-
+-	memset(data, 0, (ARRAY_SIZE(aq_ethtool_stat_names) +
+-			 ARRAY_SIZE(aq_ethtool_queue_stat_names) *
+-			 cfg->vecs) * sizeof(u64));
+-	aq_nic_get_stats(aq_nic, data);
++	memset(data, 0, aq_ethtool_n_stats(ndev) * sizeof(u64));
++	data = aq_nic_get_stats(aq_nic, data);
++#if IS_ENABLED(CONFIG_MACSEC)
++	data = aq_macsec_get_stats(aq_nic, data);
++#endif
+ }
+ 
+ static void aq_ethtool_get_drvinfo(struct net_device *ndev,
+@@ -123,11 +200,9 @@ static void aq_ethtool_get_drvinfo(struct net_device *ndev,
+ {
+ 	struct pci_dev *pdev = to_pci_dev(ndev->dev.parent);
+ 	struct aq_nic_s *aq_nic = netdev_priv(ndev);
+-	struct aq_nic_cfg_s *cfg;
+ 	u32 firmware_version;
+ 	u32 regs_count;
+ 
+-	cfg = aq_nic_get_cfg(aq_nic);
+ 	firmware_version = aq_nic_get_fw_version(aq_nic);
+ 	regs_count = aq_nic_get_regs_count(aq_nic);
+ 
+@@ -139,8 +214,7 @@ static void aq_ethtool_get_drvinfo(struct net_device *ndev,
+ 
+ 	strlcpy(drvinfo->bus_info, pdev ? pci_name(pdev) : "",
+ 		sizeof(drvinfo->bus_info));
+-	drvinfo->n_stats = ARRAY_SIZE(aq_ethtool_stat_names) +
+-		cfg->vecs * ARRAY_SIZE(aq_ethtool_queue_stat_names);
++	drvinfo->n_stats = aq_ethtool_n_stats(ndev);
+ 	drvinfo->testinfo_len = 0;
+ 	drvinfo->regdump_len = regs_count;
+ 	drvinfo->eedump_len = 0;
+@@ -153,6 +227,9 @@ static void aq_ethtool_get_strings(struct net_device *ndev,
+ 	struct aq_nic_cfg_s *cfg;
+ 	u8 *p = data;
+ 	int i, si;
++#if IS_ENABLED(CONFIG_MACSEC)
++	int sa;
++#endif
+ 
+ 	cfg = aq_nic_get_cfg(aq_nic);
+ 
+@@ -170,6 +247,60 @@ static void aq_ethtool_get_strings(struct net_device *ndev,
+ 				p += ETH_GSTRING_LEN;
+ 			}
+ 		}
++#if IS_ENABLED(CONFIG_MACSEC)
++		if (!aq_nic->macsec_cfg)
++			break;
++
++		memcpy(p, aq_macsec_stat_names, sizeof(aq_macsec_stat_names));
++		p = p + sizeof(aq_macsec_stat_names);
++		for (i = 0; i < AQ_MACSEC_MAX_SC; i++) {
++			struct aq_macsec_txsc *aq_txsc;
++
++			if (!(test_bit(i, &aq_nic->macsec_cfg->txsc_idx_busy)))
++				continue;
++
++			for (si = 0;
++				si < ARRAY_SIZE(aq_macsec_txsc_stat_names);
++				si++) {
++				snprintf(p, ETH_GSTRING_LEN,
++					 aq_macsec_txsc_stat_names[si], i);
++				p += ETH_GSTRING_LEN;
++			}
++			aq_txsc = &aq_nic->macsec_cfg->aq_txsc[i];
++			for (sa = 0; sa < MACSEC_NUM_AN; sa++) {
++				if (!(test_bit(sa, &aq_txsc->tx_sa_idx_busy)))
++					continue;
++				for (si = 0;
++				     si < ARRAY_SIZE(aq_macsec_txsa_stat_names);
++				     si++) {
++					snprintf(p, ETH_GSTRING_LEN,
++						 aq_macsec_txsa_stat_names[si],
++						 i, sa);
++					p += ETH_GSTRING_LEN;
++				}
++			}
++		}
++		for (i = 0; i < AQ_MACSEC_MAX_SC; i++) {
++			struct aq_macsec_rxsc *aq_rxsc;
++
++			if (!(test_bit(i, &aq_nic->macsec_cfg->rxsc_idx_busy)))
++				continue;
++
++			aq_rxsc = &aq_nic->macsec_cfg->aq_rxsc[i];
++			for (sa = 0; sa < MACSEC_NUM_AN; sa++) {
++				if (!(test_bit(sa, &aq_rxsc->rx_sa_idx_busy)))
++					continue;
++				for (si = 0;
++				     si < ARRAY_SIZE(aq_macsec_rxsa_stat_names);
++				     si++) {
++					snprintf(p, ETH_GSTRING_LEN,
++						 aq_macsec_rxsa_stat_names[si],
++						 i, sa);
++					p += ETH_GSTRING_LEN;
++				}
++			}
++		}
++#endif
+ 		break;
+ 	case ETH_SS_PRIV_FLAGS:
+ 		memcpy(p, aq_ethtool_priv_flag_names,
+@@ -209,16 +340,11 @@ static int aq_ethtool_set_phys_id(struct net_device *ndev,
+ 
+ static int aq_ethtool_get_sset_count(struct net_device *ndev, int stringset)
+ {
+-	struct aq_nic_s *aq_nic = netdev_priv(ndev);
+-	struct aq_nic_cfg_s *cfg;
+ 	int ret = 0;
+ 
+-	cfg = aq_nic_get_cfg(aq_nic);
+-
+ 	switch (stringset) {
+ 	case ETH_SS_STATS:
+-		ret = ARRAY_SIZE(aq_ethtool_stat_names) +
+-			cfg->vecs * ARRAY_SIZE(aq_ethtool_queue_stat_names);
++		ret = aq_ethtool_n_stats(ndev);
+ 		break;
+ 	case ETH_SS_PRIV_FLAGS:
+ 		ret = ARRAY_SIZE(aq_ethtool_priv_flag_names);
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
+index 92244184659e..dc1da79b8b26 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
+@@ -127,6 +127,166 @@ static void aq_rotate_keys(u32 (*key)[8], const int key_len)
+ 	}
+ }
+ 
++#define STATS_2x32_TO_64(stat_field)                                           \
++	(((u64)stat_field[1] << 32) | stat_field[0])
++
++static int aq_get_macsec_common_stats(struct aq_hw_s *hw,
++				      struct aq_macsec_common_stats *stats)
++{
++	struct aq_mss_ingress_common_counters ingress_counters;
++	struct aq_mss_egress_common_counters egress_counters;
++	int ret;
++
++	/* MACSEC counters */
++	ret = aq_mss_get_ingress_common_counters(hw, &ingress_counters);
++	if (unlikely(ret))
++		return ret;
++
++	stats->in.ctl_pkts = STATS_2x32_TO_64(ingress_counters.ctl_pkts);
++	stats->in.tagged_miss_pkts =
++		STATS_2x32_TO_64(ingress_counters.tagged_miss_pkts);
++	stats->in.untagged_miss_pkts =
++		STATS_2x32_TO_64(ingress_counters.untagged_miss_pkts);
++	stats->in.notag_pkts = STATS_2x32_TO_64(ingress_counters.notag_pkts);
++	stats->in.untagged_pkts =
++		STATS_2x32_TO_64(ingress_counters.untagged_pkts);
++	stats->in.bad_tag_pkts =
++		STATS_2x32_TO_64(ingress_counters.bad_tag_pkts);
++	stats->in.no_sci_pkts = STATS_2x32_TO_64(ingress_counters.no_sci_pkts);
++	stats->in.unknown_sci_pkts =
++		STATS_2x32_TO_64(ingress_counters.unknown_sci_pkts);
++	stats->in.ctrl_prt_pass_pkts =
++		STATS_2x32_TO_64(ingress_counters.ctrl_prt_pass_pkts);
++	stats->in.unctrl_prt_pass_pkts =
++		STATS_2x32_TO_64(ingress_counters.unctrl_prt_pass_pkts);
++	stats->in.ctrl_prt_fail_pkts =
++		STATS_2x32_TO_64(ingress_counters.ctrl_prt_fail_pkts);
++	stats->in.unctrl_prt_fail_pkts =
++		STATS_2x32_TO_64(ingress_counters.unctrl_prt_fail_pkts);
++	stats->in.too_long_pkts =
++		STATS_2x32_TO_64(ingress_counters.too_long_pkts);
++	stats->in.igpoc_ctl_pkts =
++		STATS_2x32_TO_64(ingress_counters.igpoc_ctl_pkts);
++	stats->in.ecc_error_pkts =
++		STATS_2x32_TO_64(ingress_counters.ecc_error_pkts);
++	stats->in.unctrl_hit_drop_redir =
++		STATS_2x32_TO_64(ingress_counters.unctrl_hit_drop_redir);
++
++	ret = aq_mss_get_egress_common_counters(hw, &egress_counters);
++	if (unlikely(ret))
++		return ret;
++	stats->out.ctl_pkts = STATS_2x32_TO_64(egress_counters.ctl_pkt);
++	stats->out.unknown_sa_pkts =
++		STATS_2x32_TO_64(egress_counters.unknown_sa_pkts);
++	stats->out.untagged_pkts =
++		STATS_2x32_TO_64(egress_counters.untagged_pkts);
++	stats->out.too_long = STATS_2x32_TO_64(egress_counters.too_long);
++	stats->out.ecc_error_pkts =
++		STATS_2x32_TO_64(egress_counters.ecc_error_pkts);
++	stats->out.unctrl_hit_drop_redir =
++		STATS_2x32_TO_64(egress_counters.unctrl_hit_drop_redir);
++
++	return 0;
++}
++
++static int aq_get_rxsa_stats(struct aq_hw_s *hw, const int sa_idx,
++			     struct aq_macsec_rx_sa_stats *stats)
++{
++	struct aq_mss_ingress_sa_counters i_sa_counters;
++	int ret;
++
++	ret = aq_mss_get_ingress_sa_counters(hw, &i_sa_counters, sa_idx);
++	if (unlikely(ret))
++		return ret;
++
++	stats->untagged_hit_pkts =
++		STATS_2x32_TO_64(i_sa_counters.untagged_hit_pkts);
++	stats->ctrl_hit_drop_redir_pkts =
++		STATS_2x32_TO_64(i_sa_counters.ctrl_hit_drop_redir_pkts);
++	stats->not_using_sa = STATS_2x32_TO_64(i_sa_counters.not_using_sa);
++	stats->unused_sa = STATS_2x32_TO_64(i_sa_counters.unused_sa);
++	stats->not_valid_pkts = STATS_2x32_TO_64(i_sa_counters.not_valid_pkts);
++	stats->invalid_pkts = STATS_2x32_TO_64(i_sa_counters.invalid_pkts);
++	stats->ok_pkts = STATS_2x32_TO_64(i_sa_counters.ok_pkts);
++	stats->late_pkts = STATS_2x32_TO_64(i_sa_counters.late_pkts);
++	stats->delayed_pkts = STATS_2x32_TO_64(i_sa_counters.delayed_pkts);
++	stats->unchecked_pkts = STATS_2x32_TO_64(i_sa_counters.unchecked_pkts);
++	stats->validated_octets =
++		STATS_2x32_TO_64(i_sa_counters.validated_octets);
++	stats->decrypted_octets =
++		STATS_2x32_TO_64(i_sa_counters.decrypted_octets);
++
++	return 0;
++}
++
++static int aq_get_txsa_stats(struct aq_hw_s *hw, const int sa_idx,
++			     struct aq_macsec_tx_sa_stats *stats)
++{
++	struct aq_mss_egress_sa_counters e_sa_counters;
++	int ret;
++
++	ret = aq_mss_get_egress_sa_counters(hw, &e_sa_counters, sa_idx);
++	if (unlikely(ret))
++		return ret;
++
++	stats->sa_hit_drop_redirect =
++		STATS_2x32_TO_64(e_sa_counters.sa_hit_drop_redirect);
++	stats->sa_protected2_pkts =
++		STATS_2x32_TO_64(e_sa_counters.sa_protected2_pkts);
++	stats->sa_protected_pkts =
++		STATS_2x32_TO_64(e_sa_counters.sa_protected_pkts);
++	stats->sa_encrypted_pkts =
++		STATS_2x32_TO_64(e_sa_counters.sa_encrypted_pkts);
++
++	return 0;
++}
++
++static int aq_get_txsa_next_pn(struct aq_hw_s *hw, const int sa_idx, u32 *pn)
++{
++	struct aq_mss_egress_sa_record sa_rec;
++	int ret;
++
++	ret = aq_mss_get_egress_sa_record(hw, &sa_rec, sa_idx);
++	if (likely(!ret))
++		*pn = sa_rec.next_pn;
++
++	return ret;
++}
++
++static int aq_get_rxsa_next_pn(struct aq_hw_s *hw, const int sa_idx, u32 *pn)
++{
++	struct aq_mss_ingress_sa_record sa_rec;
++	int ret;
++
++	ret = aq_mss_get_ingress_sa_record(hw, &sa_rec, sa_idx);
++	if (likely(!ret))
++		*pn = (!sa_rec.sat_nextpn) ? sa_rec.next_pn : 0;
++
++	return ret;
++}
++
++static int aq_get_txsc_stats(struct aq_hw_s *hw, const int sc_idx,
++			     struct aq_macsec_tx_sc_stats *stats)
++{
++	struct aq_mss_egress_sc_counters e_sc_counters;
++	int ret;
++
++	ret = aq_mss_get_egress_sc_counters(hw, &e_sc_counters, sc_idx);
++	if (unlikely(ret))
++		return ret;
++
++	stats->sc_protected_pkts =
++		STATS_2x32_TO_64(e_sc_counters.sc_protected_pkts);
++	stats->sc_encrypted_pkts =
++		STATS_2x32_TO_64(e_sc_counters.sc_encrypted_pkts);
++	stats->sc_protected_octets =
++		STATS_2x32_TO_64(e_sc_counters.sc_protected_octets);
++	stats->sc_encrypted_octets =
++		STATS_2x32_TO_64(e_sc_counters.sc_encrypted_octets);
++
++	return 0;
++}
++
+ static int aq_mdo_dev_open(struct macsec_context *ctx)
+ {
+ 	struct aq_nic_s *nic = netdev_priv(ctx->netdev);
+@@ -936,6 +1096,191 @@ static int aq_mdo_del_rxsa(struct macsec_context *ctx)
+ 	return ret;
+ }
+ 
++static int aq_mdo_get_dev_stats(struct macsec_context *ctx)
++{
++	struct aq_nic_s *nic = netdev_priv(ctx->netdev);
++	struct aq_macsec_common_stats *stats = &nic->macsec_cfg->stats;
++	struct aq_hw_s *hw = nic->aq_hw;
++
++	if (ctx->prepare)
++		return 0;
++
++	aq_get_macsec_common_stats(hw, stats);
++
++	ctx->stats.dev_stats->OutPktsUntagged = stats->out.untagged_pkts;
++	ctx->stats.dev_stats->InPktsUntagged = stats->in.untagged_pkts;
++	ctx->stats.dev_stats->OutPktsTooLong = stats->out.too_long;
++	ctx->stats.dev_stats->InPktsNoTag = stats->in.notag_pkts;
++	ctx->stats.dev_stats->InPktsBadTag = stats->in.bad_tag_pkts;
++	ctx->stats.dev_stats->InPktsUnknownSCI = stats->in.unknown_sci_pkts;
++	ctx->stats.dev_stats->InPktsNoSCI = stats->in.no_sci_pkts;
++	ctx->stats.dev_stats->InPktsOverrun = 0;
++
++	return 0;
++}
++
++static int aq_mdo_get_tx_sc_stats(struct macsec_context *ctx)
++{
++	struct aq_nic_s *nic = netdev_priv(ctx->netdev);
++	struct aq_macsec_tx_sc_stats *stats;
++	struct aq_hw_s *hw = nic->aq_hw;
++	struct aq_macsec_txsc *aq_txsc;
++	int txsc_idx;
++
++	txsc_idx = aq_get_txsc_idx_from_secy(nic->macsec_cfg, ctx->secy);
++	if (txsc_idx < 0)
++		return -ENOENT;
++
++	if (ctx->prepare)
++		return 0;
++
++	aq_txsc = &nic->macsec_cfg->aq_txsc[txsc_idx];
++	stats = &aq_txsc->stats;
++	aq_get_txsc_stats(hw, aq_txsc->hw_sc_idx, stats);
++
++	ctx->stats.tx_sc_stats->OutPktsProtected = stats->sc_protected_pkts;
++	ctx->stats.tx_sc_stats->OutPktsEncrypted = stats->sc_encrypted_pkts;
++	ctx->stats.tx_sc_stats->OutOctetsProtected = stats->sc_protected_octets;
++	ctx->stats.tx_sc_stats->OutOctetsEncrypted = stats->sc_encrypted_octets;
++
++	return 0;
++}
++
++static int aq_mdo_get_tx_sa_stats(struct macsec_context *ctx)
++{
++	struct aq_nic_s *nic = netdev_priv(ctx->netdev);
++	struct aq_macsec_cfg *cfg = nic->macsec_cfg;
++	struct aq_macsec_tx_sa_stats *stats;
++	struct aq_hw_s *hw = nic->aq_hw;
++	const struct macsec_secy *secy;
++	struct aq_macsec_txsc *aq_txsc;
++	struct macsec_tx_sa *tx_sa;
++	unsigned int sa_idx;
++	int txsc_idx;
++	u32 next_pn;
++	int ret;
++
++	txsc_idx = aq_get_txsc_idx_from_secy(cfg, ctx->secy);
++	if (txsc_idx < 0)
++		return -EINVAL;
++
++	if (ctx->prepare)
++		return 0;
++
++	aq_txsc = &cfg->aq_txsc[txsc_idx];
++	sa_idx = aq_txsc->hw_sc_idx | ctx->sa.assoc_num;
++	stats = &aq_txsc->tx_sa_stats[ctx->sa.assoc_num];
++	ret = aq_get_txsa_stats(hw, sa_idx, stats);
++	if (ret)
++		return ret;
++
++	ctx->stats.tx_sa_stats->OutPktsProtected = stats->sa_protected_pkts;
++	ctx->stats.tx_sa_stats->OutPktsEncrypted = stats->sa_encrypted_pkts;
++
++	secy = aq_txsc->sw_secy;
++	tx_sa = rcu_dereference_bh(secy->tx_sc.sa[ctx->sa.assoc_num]);
++	ret = aq_get_txsa_next_pn(hw, sa_idx, &next_pn);
++	if (ret == 0) {
++		spin_lock_bh(&tx_sa->lock);
++		tx_sa->next_pn = next_pn;
++		spin_unlock_bh(&tx_sa->lock);
++	}
++
++	return ret;
++}
++
++static int aq_mdo_get_rx_sc_stats(struct macsec_context *ctx)
++{
++	struct aq_nic_s *nic = netdev_priv(ctx->netdev);
++	struct aq_macsec_cfg *cfg = nic->macsec_cfg;
++	struct aq_macsec_rx_sa_stats *stats;
++	struct aq_hw_s *hw = nic->aq_hw;
++	struct aq_macsec_rxsc *aq_rxsc;
++	unsigned int sa_idx;
++	int rxsc_idx;
++	int ret = 0;
++	int i;
++
++	rxsc_idx = aq_get_rxsc_idx_from_rxsc(cfg, ctx->rx_sc);
++	if (rxsc_idx < 0)
++		return -ENOENT;
++
++	if (ctx->prepare)
++		return 0;
++
++	aq_rxsc = &cfg->aq_rxsc[rxsc_idx];
++	for (i = 0; i < MACSEC_NUM_AN; i++) {
++		if (!test_bit(i, &aq_rxsc->rx_sa_idx_busy))
++			continue;
++
++		stats = &aq_rxsc->rx_sa_stats[i];
++		sa_idx = aq_rxsc->hw_sc_idx | i;
++		ret = aq_get_rxsa_stats(hw, sa_idx, stats);
++		if (ret)
++			break;
++
++		ctx->stats.rx_sc_stats->InOctetsValidated +=
++			stats->validated_octets;
++		ctx->stats.rx_sc_stats->InOctetsDecrypted +=
++			stats->decrypted_octets;
++		ctx->stats.rx_sc_stats->InPktsUnchecked +=
++			stats->unchecked_pkts;
++		ctx->stats.rx_sc_stats->InPktsDelayed += stats->delayed_pkts;
++		ctx->stats.rx_sc_stats->InPktsOK += stats->ok_pkts;
++		ctx->stats.rx_sc_stats->InPktsInvalid += stats->invalid_pkts;
++		ctx->stats.rx_sc_stats->InPktsLate += stats->late_pkts;
++		ctx->stats.rx_sc_stats->InPktsNotValid += stats->not_valid_pkts;
++		ctx->stats.rx_sc_stats->InPktsNotUsingSA += stats->not_using_sa;
++		ctx->stats.rx_sc_stats->InPktsUnusedSA += stats->unused_sa;
++	}
++
++	return ret;
++}
++
++static int aq_mdo_get_rx_sa_stats(struct macsec_context *ctx)
++{
++	struct aq_nic_s *nic = netdev_priv(ctx->netdev);
++	struct aq_macsec_cfg *cfg = nic->macsec_cfg;
++	struct aq_macsec_rx_sa_stats *stats;
++	struct aq_hw_s *hw = nic->aq_hw;
++	struct aq_macsec_rxsc *aq_rxsc;
++	struct macsec_rx_sa *rx_sa;
++	unsigned int sa_idx;
++	int rxsc_idx;
++	u32 next_pn;
++	int ret;
++
++	rxsc_idx = aq_get_rxsc_idx_from_rxsc(cfg, ctx->rx_sc);
++	if (rxsc_idx < 0)
++		return -EINVAL;
++
++	if (ctx->prepare)
++		return 0;
++
++	aq_rxsc = &cfg->aq_rxsc[rxsc_idx];
++	stats = &aq_rxsc->rx_sa_stats[ctx->sa.assoc_num];
++	sa_idx = aq_rxsc->hw_sc_idx | ctx->sa.assoc_num;
++	ret = aq_get_rxsa_stats(hw, sa_idx, stats);
++	if (ret)
++		return ret;
++
++	ctx->stats.rx_sa_stats->InPktsOK = stats->ok_pkts;
++	ctx->stats.rx_sa_stats->InPktsInvalid = stats->invalid_pkts;
++	ctx->stats.rx_sa_stats->InPktsNotValid = stats->not_valid_pkts;
++	ctx->stats.rx_sa_stats->InPktsNotUsingSA = stats->not_using_sa;
++	ctx->stats.rx_sa_stats->InPktsUnusedSA = stats->unused_sa;
++
++	rx_sa = rcu_dereference_bh(aq_rxsc->sw_rxsc->sa[ctx->sa.assoc_num]);
++	ret = aq_get_rxsa_next_pn(hw, sa_idx, &next_pn);
++	if (ret == 0) {
++		spin_lock_bh(&rx_sa->lock);
++		rx_sa->next_pn = next_pn;
++		spin_unlock_bh(&rx_sa->lock);
++	}
++
++	return ret;
++}
++
+ static int apply_txsc_cfg(struct aq_nic_s *nic, const int txsc_idx)
+ {
+ 	struct aq_macsec_txsc *aq_txsc = &nic->macsec_cfg->aq_txsc[txsc_idx];
+@@ -1179,6 +1524,11 @@ const struct macsec_ops aq_macsec_ops = {
+ 	.mdo_add_txsa = aq_mdo_add_txsa,
+ 	.mdo_upd_txsa = aq_mdo_upd_txsa,
+ 	.mdo_del_txsa = aq_mdo_del_txsa,
++	.mdo_get_dev_stats = aq_mdo_get_dev_stats,
++	.mdo_get_tx_sc_stats = aq_mdo_get_tx_sc_stats,
++	.mdo_get_tx_sa_stats = aq_mdo_get_tx_sa_stats,
++	.mdo_get_rx_sc_stats = aq_mdo_get_rx_sc_stats,
++	.mdo_get_rx_sa_stats = aq_mdo_get_rx_sa_stats,
+ };
+ 
+ int aq_macsec_init(struct aq_nic_s *nic)
+@@ -1288,3 +1638,198 @@ void aq_macsec_work(struct aq_nic_s *nic)
+ 	aq_check_txsa_expiration(nic);
+ 	rtnl_unlock();
+ }
++
++int aq_macsec_rx_sa_cnt(struct aq_nic_s *nic)
++{
++	struct aq_macsec_cfg *cfg = nic->macsec_cfg;
++	int i, cnt = 0;
++
++	if (!cfg)
++		return 0;
++
++	for (i = 0; i < AQ_MACSEC_MAX_SC; i++) {
++		if (!test_bit(i, &cfg->rxsc_idx_busy))
++			continue;
++		cnt += hweight_long(cfg->aq_rxsc[i].rx_sa_idx_busy);
++	}
++
++	return cnt;
++}
++
++int aq_macsec_tx_sc_cnt(struct aq_nic_s *nic)
++{
++	if (!nic->macsec_cfg)
++		return 0;
++
++	return hweight_long(nic->macsec_cfg->txsc_idx_busy);
++}
++
++int aq_macsec_tx_sa_cnt(struct aq_nic_s *nic)
++{
++	struct aq_macsec_cfg *cfg = nic->macsec_cfg;
++	int i, cnt = 0;
++
++	if (!cfg)
++		return 0;
++
++	for (i = 0; i < AQ_MACSEC_MAX_SC; i++) {
++		if (!test_bit(i, &cfg->txsc_idx_busy))
++			continue;
++		cnt += hweight_long(cfg->aq_txsc[i].tx_sa_idx_busy);
++	}
++
++	return cnt;
++}
++
++static int aq_macsec_update_stats(struct aq_nic_s *nic)
++{
++	struct aq_macsec_cfg *cfg = nic->macsec_cfg;
++	struct aq_hw_s *hw = nic->aq_hw;
++	struct aq_macsec_txsc *aq_txsc;
++	struct aq_macsec_rxsc *aq_rxsc;
++	int i, sa_idx, assoc_num;
++	int ret = 0;
++
++	aq_get_macsec_common_stats(hw, &cfg->stats);
++
++	for (i = 0; i < AQ_MACSEC_MAX_SC; i++) {
++		if (!(cfg->txsc_idx_busy & BIT(i)))
++			continue;
++		aq_txsc = &cfg->aq_txsc[i];
++
++		ret = aq_get_txsc_stats(hw, aq_txsc->hw_sc_idx,
++					&aq_txsc->stats);
++		if (ret)
++			return ret;
++
++		for (assoc_num = 0; assoc_num < MACSEC_NUM_AN; assoc_num++) {
++			if (!test_bit(assoc_num, &aq_txsc->tx_sa_idx_busy))
++				continue;
++			sa_idx = aq_txsc->hw_sc_idx | assoc_num;
++			ret = aq_get_txsa_stats(hw, sa_idx,
++					      &aq_txsc->tx_sa_stats[assoc_num]);
++			if (ret)
++				return ret;
++		}
++	}
++
++	for (i = 0; i < AQ_MACSEC_MAX_SC; i++) {
++		if (!(test_bit(i, &cfg->rxsc_idx_busy)))
++			continue;
++		aq_rxsc = &cfg->aq_rxsc[i];
++
++		for (assoc_num = 0; assoc_num < MACSEC_NUM_AN; assoc_num++) {
++			if (!test_bit(assoc_num, &aq_rxsc->rx_sa_idx_busy))
++				continue;
++			sa_idx = aq_rxsc->hw_sc_idx | assoc_num;
++
++			ret = aq_get_rxsa_stats(hw, sa_idx,
++					      &aq_rxsc->rx_sa_stats[assoc_num]);
++			if (ret)
++				return ret;
++		}
++	}
++
++	return ret;
++}
++
++u64 *aq_macsec_get_stats(struct aq_nic_s *nic, u64 *data)
++{
++	struct aq_macsec_cfg *cfg = nic->macsec_cfg;
++	struct aq_macsec_common_stats *common_stats;
++	struct aq_macsec_tx_sc_stats *txsc_stats;
++	struct aq_macsec_tx_sa_stats *txsa_stats;
++	struct aq_macsec_rx_sa_stats *rxsa_stats;
++	struct aq_macsec_txsc *aq_txsc;
++	struct aq_macsec_rxsc *aq_rxsc;
++	unsigned int assoc_num;
++	unsigned int sc_num;
++	unsigned int i = 0U;
++
++	if (!cfg)
++		return data;
++
++	aq_macsec_update_stats(nic);
++
++	common_stats = &cfg->stats;
++	data[i] = common_stats->in.ctl_pkts;
++	data[++i] = common_stats->in.tagged_miss_pkts;
++	data[++i] = common_stats->in.untagged_miss_pkts;
++	data[++i] = common_stats->in.notag_pkts;
++	data[++i] = common_stats->in.untagged_pkts;
++	data[++i] = common_stats->in.bad_tag_pkts;
++	data[++i] = common_stats->in.no_sci_pkts;
++	data[++i] = common_stats->in.unknown_sci_pkts;
++	data[++i] = common_stats->in.ctrl_prt_pass_pkts;
++	data[++i] = common_stats->in.unctrl_prt_pass_pkts;
++	data[++i] = common_stats->in.ctrl_prt_fail_pkts;
++	data[++i] = common_stats->in.unctrl_prt_fail_pkts;
++	data[++i] = common_stats->in.too_long_pkts;
++	data[++i] = common_stats->in.igpoc_ctl_pkts;
++	data[++i] = common_stats->in.ecc_error_pkts;
++	data[++i] = common_stats->in.unctrl_hit_drop_redir;
++	data[++i] = common_stats->out.ctl_pkts;
++	data[++i] = common_stats->out.unknown_sa_pkts;
++	data[++i] = common_stats->out.untagged_pkts;
++	data[++i] = common_stats->out.too_long;
++	data[++i] = common_stats->out.ecc_error_pkts;
++	data[++i] = common_stats->out.unctrl_hit_drop_redir;
++
++	for (sc_num = 0; sc_num < AQ_MACSEC_MAX_SC; sc_num++) {
++		if (!(test_bit(sc_num, &cfg->txsc_idx_busy)))
++			continue;
++
++		aq_txsc = &cfg->aq_txsc[sc_num];
++		txsc_stats = &aq_txsc->stats;
++
++		data[++i] = txsc_stats->sc_protected_pkts;
++		data[++i] = txsc_stats->sc_encrypted_pkts;
++		data[++i] = txsc_stats->sc_protected_octets;
++		data[++i] = txsc_stats->sc_encrypted_octets;
++
++		for (assoc_num = 0; assoc_num < MACSEC_NUM_AN; assoc_num++) {
++			if (!test_bit(assoc_num, &aq_txsc->tx_sa_idx_busy))
++				continue;
++
++			txsa_stats = &aq_txsc->tx_sa_stats[assoc_num];
++
++			data[++i] = txsa_stats->sa_hit_drop_redirect;
++			data[++i] = txsa_stats->sa_protected2_pkts;
++			data[++i] = txsa_stats->sa_protected_pkts;
++			data[++i] = txsa_stats->sa_encrypted_pkts;
++		}
++	}
++
++	for (sc_num = 0; sc_num < AQ_MACSEC_MAX_SC; sc_num++) {
++		if (!(test_bit(sc_num, &cfg->rxsc_idx_busy)))
++			continue;
++
++		aq_rxsc = &cfg->aq_rxsc[sc_num];
++
++		for (assoc_num = 0; assoc_num < MACSEC_NUM_AN; assoc_num++) {
++			if (!test_bit(assoc_num, &aq_rxsc->rx_sa_idx_busy))
++				continue;
++
++			rxsa_stats = &aq_rxsc->rx_sa_stats[assoc_num];
++
++			data[++i] = rxsa_stats->untagged_hit_pkts;
++			data[++i] = rxsa_stats->ctrl_hit_drop_redir_pkts;
++			data[++i] = rxsa_stats->not_using_sa;
++			data[++i] = rxsa_stats->unused_sa;
++			data[++i] = rxsa_stats->not_valid_pkts;
++			data[++i] = rxsa_stats->invalid_pkts;
++			data[++i] = rxsa_stats->ok_pkts;
++			data[++i] = rxsa_stats->late_pkts;
++			data[++i] = rxsa_stats->delayed_pkts;
++			data[++i] = rxsa_stats->unchecked_pkts;
++			data[++i] = rxsa_stats->validated_octets;
++			data[++i] = rxsa_stats->decrypted_octets;
++		}
++	}
++
++	i++;
++
++	data += i;
++
++	return data;
++}
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.h b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.h
+index b8485c1cb667..f5fba8b8cdea 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_macsec.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_macsec.h
+@@ -23,11 +23,77 @@ enum aq_macsec_sc_sa {
+ 	aq_macsec_sa_sc_1sa_32sc,
+ };
+ 
++struct aq_macsec_common_stats {
++	/* Ingress Common Counters */
++	struct {
++		u64 ctl_pkts;
++		u64 tagged_miss_pkts;
++		u64 untagged_miss_pkts;
++		u64 notag_pkts;
++		u64 untagged_pkts;
++		u64 bad_tag_pkts;
++		u64 no_sci_pkts;
++		u64 unknown_sci_pkts;
++		u64 ctrl_prt_pass_pkts;
++		u64 unctrl_prt_pass_pkts;
++		u64 ctrl_prt_fail_pkts;
++		u64 unctrl_prt_fail_pkts;
++		u64 too_long_pkts;
++		u64 igpoc_ctl_pkts;
++		u64 ecc_error_pkts;
++		u64 unctrl_hit_drop_redir;
++	} in;
++
++	/* Egress Common Counters */
++	struct {
++		u64 ctl_pkts;
++		u64 unknown_sa_pkts;
++		u64 untagged_pkts;
++		u64 too_long;
++		u64 ecc_error_pkts;
++		u64 unctrl_hit_drop_redir;
++	} out;
 +};
 +
-+/*! Represents the common Ingress MIB counters; the counter not
-+ *  associated with a particular SA. Counters are 64 bits, lower 32
-+ *  bits in field[0].
-+ */
-+struct aq_mss_ingress_common_counters {
-+	/*! The number of received packets classified as MAC_CTL packets. */
-+	u32 ctl_pkts[2];
-+	/*! The number of received packets with the MAC security tag
-+	 *  (SecTAG), not matching any rows in the Ingress Pre-MACSec
-+	 *  Packet Classifier table.
-+	 */
-+	u32 tagged_miss_pkts[2];
-+	/*! The number of received packets without the MAC security tag
-+	 *  (SecTAG), not matching any rows in the Ingress Pre-MACSec
-+	 *  Packet Classifier table.
-+	 */
-+	u32 untagged_miss_pkts[2];
-+	/*! The number of received packets discarded without the MAC
-+	 *  security tag (SecTAG) and with the matched row in the Ingress
-+	 *  SC Lookup table having validate_frames=Strict.
-+	 */
-+	u32 notag_pkts[2];
-+	/*! The number of received packets without the MAC security tag
-+	 *  (SecTAG) and with the matched row in the Ingress SC Lookup
-+	 *  table having validate_frames!=Strict.
-+	 */
-+	u32 untagged_pkts[2];
-+	/*! The number of received packets discarded with an invalid
-+	 *  SecTAG or a zero value PN or an invalid ICV.
-+	 */
-+	u32 bad_tag_pkts[2];
-+	/*! The number of received packets discarded with unknown SCI
-+	 *  information with the condition:
-+	 *  the matched row in the Ingress SC Lookup table has
-+	 *  validate_frames=Strict or the C bit in the SecTAG is set.
-+	 */
-+	u32 no_sci_pkts[2];
-+	/*! The number of received packets with unknown SCI with the condition:
-+	 *  The matched row in the Ingress SC Lookup table has
-+	 *  validate_frames!=Strict and the C bit in the SecTAG is not set.
-+	 */
-+	u32 unknown_sci_pkts[2];
-+	/*! The number of received packets by the controlled port service
-+	 *  that passed the Ingress Post-MACSec Packet Classifier table
-+	 *  check.
-+	 */
-+	u32 ctrl_prt_pass_pkts[2];
-+	/*! The number of received packets by the uncontrolled port
-+	 *  service that passed the Ingress Post-MACSec Packet Classifier
-+	 *  table check.
-+	 */
-+	u32 unctrl_prt_pass_pkts[2];
-+	/*! The number of received packets by the controlled port service
-+	 *  that failed the Ingress Post-MACSec Packet Classifier table
-+	 *  check.
-+	 */
-+	u32 ctrl_prt_fail_pkts[2];
-+	/*! The number of received packets by the uncontrolled port
-+	 *  service that failed the Ingress Post-MACSec Packet Classifier
-+	 *  table check.
-+	 */
-+	u32 unctrl_prt_fail_pkts[2];
-+	/*! The number of received packets discarded because the packet
-+	 *  length is greater than the ifMtu of the Common Port interface.
-+	 */
-+	u32 too_long_pkts[2];
-+	/*! The number of received packets classified as MAC_CTL by the
-+	 *  Ingress Post-MACSec CTL Filter table.
-+	 */
-+	u32 igpoc_ctl_pkts[2];
-+	/*! The number of received packets for which table memory was
-+	 *  affected by an ECC error during processing.
-+	 */
-+	u32 ecc_error_pkts[2];
-+	/*! The number of received packets by the uncontrolled port
-+	 *  service that were dropped.
-+	 */
-+	u32 unctrl_hit_drop_redir[2];
++/* Ingress SA Counters */
++struct aq_macsec_rx_sa_stats {
++	u64 untagged_hit_pkts;
++	u64 ctrl_hit_drop_redir_pkts;
++	u64 not_using_sa;
++	u64 unused_sa;
++	u64 not_valid_pkts;
++	u64 invalid_pkts;
++	u64 ok_pkts;
++	u64 late_pkts;
++	u64 delayed_pkts;
++	u64 unchecked_pkts;
++	u64 validated_octets;
++	u64 decrypted_octets;
 +};
 +
++/* Egress SA Counters */
++struct aq_macsec_tx_sa_stats {
++	u64 sa_hit_drop_redirect;
++	u64 sa_protected2_pkts;
++	u64 sa_protected_pkts;
++	u64 sa_encrypted_pkts;
++};
++
++/* Egress SC Counters */
++struct aq_macsec_tx_sc_stats {
++	u64 sc_protected_pkts;
++	u64 sc_encrypted_pkts;
++	u64 sc_protected_octets;
++	u64 sc_encrypted_octets;
++};
++
+ struct aq_macsec_txsc {
+ 	u32 hw_sc_idx;
+ 	unsigned long tx_sa_idx_busy;
+ 	const struct macsec_secy *sw_secy;
+ 	u8 tx_sa_key[MACSEC_NUM_AN][MACSEC_KEYID_LEN];
++	struct aq_macsec_tx_sc_stats stats;
++	struct aq_macsec_tx_sa_stats tx_sa_stats[MACSEC_NUM_AN];
+ };
+ 
+ struct aq_macsec_rxsc {
+@@ -36,6 +102,7 @@ struct aq_macsec_rxsc {
+ 	const struct macsec_secy *sw_secy;
+ 	const struct macsec_rx_sc *sw_rxsc;
+ 	u8 rx_sa_key[MACSEC_NUM_AN][MACSEC_KEYID_LEN];
++	struct aq_macsec_rx_sa_stats rx_sa_stats[MACSEC_NUM_AN];
+ };
+ 
+ struct aq_macsec_cfg {
+@@ -46,6 +113,8 @@ struct aq_macsec_cfg {
+ 	/* Ingress channel configuration */
+ 	unsigned long rxsc_idx_busy;
+ 	struct aq_macsec_rxsc aq_rxsc[AQ_MACSEC_MAX_SC];
++	/* Statistics / counters */
++	struct aq_macsec_common_stats stats;
+ };
+ 
+ extern const struct macsec_ops aq_macsec_ops;
+@@ -54,6 +123,10 @@ int aq_macsec_init(struct aq_nic_s *nic);
+ void aq_macsec_free(struct aq_nic_s *nic);
+ int aq_macsec_enable(struct aq_nic_s *nic);
+ void aq_macsec_work(struct aq_nic_s *nic);
++u64 *aq_macsec_get_stats(struct aq_nic_s *nic, u64 *data);
++int aq_macsec_rx_sa_cnt(struct aq_nic_s *nic);
++int aq_macsec_tx_sc_cnt(struct aq_nic_s *nic);
++int aq_macsec_tx_sa_cnt(struct aq_nic_s *nic);
+ 
  #endif
+ 
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+index 5d4c16d637c7..a369705a786a 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -781,7 +781,7 @@ int aq_nic_get_regs_count(struct aq_nic_s *self)
+ 	return self->aq_nic_cfg.aq_hw_caps->mac_regs_count;
+ }
+ 
+-void aq_nic_get_stats(struct aq_nic_s *self, u64 *data)
++u64 *aq_nic_get_stats(struct aq_nic_s *self, u64 *data)
+ {
+ 	struct aq_vec_s *aq_vec = NULL;
+ 	struct aq_stats_s *stats;
+@@ -831,7 +831,10 @@ void aq_nic_get_stats(struct aq_nic_s *self, u64 *data)
+ 		aq_vec_get_sw_stats(aq_vec, data, &count);
+ 	}
+ 
++	data += count;
++
+ err_exit:;
++	return data;
+ }
+ 
+ static void aq_nic_update_ndev_stats(struct aq_nic_s *self)
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
+index 011db4094c93..0663b8d0220d 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.h
+@@ -158,7 +158,7 @@ unsigned int aq_nic_map_skb(struct aq_nic_s *self, struct sk_buff *skb,
+ int aq_nic_xmit(struct aq_nic_s *self, struct sk_buff *skb);
+ int aq_nic_get_regs(struct aq_nic_s *self, struct ethtool_regs *regs, void *p);
+ int aq_nic_get_regs_count(struct aq_nic_s *self);
+-void aq_nic_get_stats(struct aq_nic_s *self, u64 *data);
++u64 *aq_nic_get_stats(struct aq_nic_s *self, u64 *data);
+ int aq_nic_stop(struct aq_nic_s *self);
+ void aq_nic_deinit(struct aq_nic_s *self, bool link_down);
+ void aq_nic_set_power(struct aq_nic_s *self);
 -- 
 2.17.1
 
