@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A6B018EE70
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 04:19:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A9D4A18EE72
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 04:20:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727102AbgCWDTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 23:19:22 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:34318 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726979AbgCWDTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 23:19:21 -0400
-Received: by mail-wr1-f67.google.com with SMTP id z15so15188851wrl.1;
-        Sun, 22 Mar 2020 20:19:20 -0700 (PDT)
+        id S1727118AbgCWDUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 23:20:13 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54240 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727050AbgCWDUN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 23:20:13 -0400
+Received: by mail-wm1-f68.google.com with SMTP id b12so63291wmj.3;
+        Sun, 22 Mar 2020 20:20:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=VYjOnw4JRlmf/F2mqTP3BcxXE5fQSq0zqEnwZ+i7Jnk=;
-        b=ewQCxULR3yNz7BraH8Y0xuNyjzZy0TiIj9Y5qJli9nMlI7bnQiJXCZSZqba5VLDwsU
-         2u94/nEPnLhMmhlOfdxrueUGpRHcwXqrbcs9vCCoccfliqVBDboAhVoNxOh4VDOVOgeU
-         o6F5CK28xNxA90Mg79SWOib9JcJ05+CH338GjAADOwX9RKtiRiZaLqSGyOxgE2DbGz1M
-         04GpZO071BdC7fMAE6Rmt+AuNxCQH5XvwZbbsMr09HrTxr7clK1l8jq7JCEEDcTR/yiJ
-         vTg16cW/5I+Da7M9PjeC9xLtfxViN4LltJ0rNjbZS8GiCnzMhLReLxe5vV5JNwGSalQy
-         8yOw==
+        bh=fWIady9YCh2NvW0M+v2oghno3wztnmtnMJZB0wnwBvs=;
+        b=EqiivmjwKKecr2O5Q4R7DWeSs/Y04sZRTHpr9GX4NSWPW/jA8rYDD4oNISA0gzzihQ
+         P8Cn0vFMAQPPZTUewLJFgAXTBqDMddFTtQvmR7bYh9sweHtJRod48z317Nc3U8aW3q62
+         MqVnWVG/RQB+SD7BE23Gye3f1E95GGRjjf9WRXw0TeeVcIc8zsqhCdCRPeS5O5gL9uCM
+         EnWUa787aAc5iuWl/U9OyVgrhxS9kv9NRxKkhTHiQ2ZhPcqV75x5FIq87WmJLybZTXQf
+         2SuD2zeQdThd1CC09N8lQJgr4GXe6CI7HaeDDV6w2eJDqIsyGYiaR7A8xzsXz28drJI/
+         jFsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=VYjOnw4JRlmf/F2mqTP3BcxXE5fQSq0zqEnwZ+i7Jnk=;
-        b=tJgVg/8lZoq+ffLzv04WeSFaqf4DHvxp6bgEtSKkVdp26mH4KBvxaV7X7Ji4OtvbtE
-         rwghVozYI6sKDSGe3zbT9gjfZqnFkkqlRoVxIB87nvHLYxmtHucrLQvDmh5FSd45Whgm
-         JRqQMyWISlniDJOTSj9vos9Rl3r/BL59Hf9bfD/eirDQoQ5EAreV+eMhjfrrFbpA2w8D
-         UacrML/BEXl9KjMFtSyK7TwPeF2jwJmk2V/NIzvhipVgcPH5IWWkKT5FRDeCg8ZeSnRI
-         rovK8ksczoLa5zC+QH6PvYS3npAJzrS91FJQeAROsx5ALO2b7EeEZ2dqF8Lu9NCGrciC
-         o4Ow==
-X-Gm-Message-State: ANhLgQ20dld9riw5e2ejrZgeizmmQfG+ja5ynx0QB/D1SwC+7qscC+G8
-        stAsnZ/5g7lCgZQ1HeoVLiiZHlW2
-X-Google-Smtp-Source: ADFU+vtPttvqaE3eT/iH3rNbd6AldOat2Nf4zCDArjsulC9RI9rNKxE0rfewUDcgJtgfBkxrk+N2/A==
-X-Received: by 2002:adf:fc82:: with SMTP id g2mr28090305wrr.117.1584933559486;
-        Sun, 22 Mar 2020 20:19:19 -0700 (PDT)
+        bh=fWIady9YCh2NvW0M+v2oghno3wztnmtnMJZB0wnwBvs=;
+        b=Z/kyAAnNBKPFEzy6/mNZonG0kwXhh81BMAdAled7WPr05IGSvYaVrREp0/Z1SydDxO
+         TXnw6XNtPAYDWq5+7SNtsmbF57bj5j/yqWvexTvnBEloFX+AjiTrJ2byCbuMsUaMQfe5
+         UmcwL7v8a/419/V0Jb50dfr8C2X9GCxK2f6f3Jbug5rVRKucP2tAoW/RVDe8Z1b/zDI5
+         MZiwryuuPRkY+XG1H/n+cVkqHIGhwyIe6AwM9O/RskEGDBJ+kt7u7SiDBC1QXFTp80PK
+         PMIWQTyP6THD7uqiHojbhfOgsK4R95Mbb4UX4sI0SEyrUHwZBIbROSKbfCju7Plj9VgN
+         HI9A==
+X-Gm-Message-State: ANhLgQ3T8+yGv7ns4GRiX6rR0he3qu4KZvyV0pDw97g0+R5kBmt7v8/A
+        XHHXtHPBQE0/AuW0mohT5rA5PvaN
+X-Google-Smtp-Source: ADFU+vuRbtghFi85GzROpgCLc5mP/ASgx17Me973h974rfCgsYzksx4EfnSmds/0a5EHD1S5QHeetQ==
+X-Received: by 2002:a05:600c:10ce:: with SMTP id l14mr9717523wmd.161.1584933610836;
+        Sun, 22 Mar 2020 20:20:10 -0700 (PDT)
 Received: from [10.230.186.223] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id y11sm21263778wrd.65.2020.03.22.20.19.16
+        by smtp.gmail.com with ESMTPSA id a8sm11382021wmb.39.2020.03.22.20.20.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 Mar 2020 20:19:18 -0700 (PDT)
-Subject: Re: [PATCH net-next v6 07/10] net: phy: introduce
- phy_read_poll_timeout macro
+        Sun, 22 Mar 2020 20:20:10 -0700 (PDT)
+Subject: Re: [PATCH net-next v6 05/10] net: phy: aquantia: use
+ phy_read_mmd_poll_timeout() to simplify the code
 To:     Dejin Zheng <zhengdejin5@gmail.com>, andrew@lunn.ch,
         hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
         mchehab+samsung@kernel.org, gregkh@linuxfoundation.org,
         broonie@kernel.org, tglx@linutronix.de, netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org
 References: <20200323025633.6069-1-zhengdejin5@gmail.com>
- <20200323025633.6069-8-zhengdejin5@gmail.com>
+ <20200323025633.6069-6-zhengdejin5@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -109,12 +109,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <f2772f58-a5f1-7a8d-c98a-8c901b434397@gmail.com>
-Date:   Sun, 22 Mar 2020 20:19:15 -0700
+Message-ID: <1a0661f5-3806-6565-54ac-e1a7532e5a58@gmail.com>
+Date:   Sun, 22 Mar 2020 20:20:06 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200323025633.6069-8-zhengdejin5@gmail.com>
+In-Reply-To: <20200323025633.6069-6-zhengdejin5@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -126,56 +126,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 3/22/2020 7:56 PM, Dejin Zheng wrote:
-> it is sometimes necessary to poll a phy register by phy_read()
-> function until its value satisfies some condition. introduce
-> phy_read_poll_timeout() macros that do this.
+> use phy_read_mmd_poll_timeout() to replace the poll codes for
+> simplify aqr107_wait_reset_complete() function.
 > 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
 > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 > Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
-> ---
-> v5 -> v6:
-> 	- no changed.
-> v4 -> v5:
-> 	- no changed.
-> v3 -> v4:
-> 	- deal with precedence issues for parameter cond.
-> v2 -> v3:
-> 	- modify the parameter order of newly added functions.
-> 	  phy_read_poll_timeout(val, cond, sleep_us, timeout_us, \
-> 				phydev, regnum)
-> 				||
-> 				\/
-> 	  phy_read_poll_timeout(phydev, regnum, val, cond, sleep_us, \
-> 				timeout_us)
-> v1 -> v2:
-> 	- pass a phydev and a regnum to replace args... parameter in
-> 	  the phy_read_poll_timeout(), and also handle the
-> 	  phy_read() function's return error.
->  
->  include/linux/phy.h | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-> 
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index 42a5ec9288d5..f2e0aea13a2f 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -714,6 +714,19 @@ static inline int phy_read(struct phy_device *phydev, u32 regnum)
->  	return mdiobus_read(phydev->mdio.bus, phydev->mdio.addr, regnum);
->  }
->  
-> +#define phy_read_poll_timeout(phydev, regnum, val, cond, sleep_us, timeout_us) \
-> +({ \
-> +	int ret = 0; \
-> +	ret = read_poll_timeout(phy_read, val, (cond) || val < 0, sleep_us, \
-> +				timeout_us, phydev, regnum); \
-> +	if (val <  0) \
-> +		ret = val; \
-> +	if (ret) \
-> +		phydev_err(phydev, "%s failed: %d\n", __func__, ret); \> +	ret; \
 
-Those variable names are likely going to be clashing with existing
-variables within a function, I would recommend you prefix with double
-underscores: __ret, __val to avoid any variable re-declaration or shadowing.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
