@@ -2,117 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83E5618FBA2
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 18:39:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BF3F418FBA5
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 18:39:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727718AbgCWRjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 13:39:05 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:35751 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727095AbgCWRjE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 13:39:04 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1584985144; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=9lPNjkDMRM0Q3Ns6VRdg5nypoUormOtZGmZvJKo/sI8=;
- b=nIRdW2+Bbza8TmTvuzYAtpIMeWmvIBxDulrhZaQ3PDFypRkZ323XpOxg4mdMD00FcNHRgITz
- fRVtBt7WPqz8sszOvYxw3GpgoMJOYbJ93mdvTviHWesWRSaOJEu2YNjqvnLsdi+lTzrUnZ3S
- FpSk2pW8IBXWgf7CBV2tR+p7cXw=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e78f42a.7fca18faa6f8-smtp-out-n03;
- Mon, 23 Mar 2020 17:38:50 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 90FADC4478C; Mon, 23 Mar 2020 17:38:48 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0B64EC433CB;
-        Mon, 23 Mar 2020 17:38:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0B64EC433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1727806AbgCWRjH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 13:39:07 -0400
+Received: from mail-ot1-f48.google.com ([209.85.210.48]:37468 "EHLO
+        mail-ot1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727739AbgCWRjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 13:39:06 -0400
+Received: by mail-ot1-f48.google.com with SMTP id i12so14278767otp.4;
+        Mon, 23 Mar 2020 10:39:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dD9qGn/FmD1rIVTC9XP6vGVct8WmBBkX3v6FBswGPLo=;
+        b=THXfYa3e6ysgx56bVbZpmupyp0Ih36h05qzY94R5KTQAHDQ3WB+re4Cb0Ty/PAT5nY
+         LcowIYaX7nnuvC1EEnzTwl31LTuJHtIK4zj4HRTGTICWr99w69jT/H3W3NmkgZn5oOqo
+         /9F8BVRY8+SQsCB5CcCVZ9GuOk3Q69p6f1gU8/3YzpUwyv+YKwBQApQDJfy8tO0GKsPO
+         i8xuUh0W6mNuXfDorGeuqo/WMhujS/eLb/1IrwnGnulz8ZRE6p1tBpJwUT4kyWKwgDUF
+         XwslHHCpbsgKM8jqe6iupr31Pm8iovMzwxzAxIZttUUWaU8TvGkiBsQuLzXBwa9lFfE1
+         oPmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dD9qGn/FmD1rIVTC9XP6vGVct8WmBBkX3v6FBswGPLo=;
+        b=HeP61D+hZYsyQOfShDXlqiwdWE+TvgKtI/ZEWhtHvLNah7FRIRawn6jp4PDqOhfope
+         WqHSAUYGN9KV6vhtjsglSgXFA/vbCZFFGIh5TKpgp2DfhcrpunSxt8H2KdRqdOoCfxG4
+         klzoOS0N7ERhT67BNvP5C3E/mkQuxVsZXjDO4isT/D+hlbt/dovOrJo49wgQa5EFjMcl
+         hyJmIb0vzQ9Qjprh5Ap/p+ZGSwr6Xufw65hgGfGGG+m7BIO/rrdaDX8LWwDYbt0N/Qfd
+         splQcqXAZynM0Wr2D03vzh+aBJ9XEJVTVyh8ay/sgBFGBqqc1teRPAIMWVygmY6lri6A
+         pWkg==
+X-Gm-Message-State: ANhLgQ3675cPwdjUeP9o4uTETyu2IOmYU+aZBaD87af8421mGxYzU3NI
+        +RGz7G1OrBIuvmmxG2KitU9HU7Ns7pS1g2XNDVc=
+X-Google-Smtp-Source: ADFU+vt09Bb6TZc4dAiUj2Yj1Ykjp5oxtvNzfnZBIcbKFT3ggFudWr7fyO8Qfcocz929/9D2y6WanTdMdQppixdYBBA=
+X-Received: by 2002:a05:6830:1e96:: with SMTP id n22mr18243768otr.189.1584985145809;
+ Mon, 23 Mar 2020 10:39:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][next] ath: Replace zero-length array with flexible-array
- member
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20200224165952.GA9377@embeddedor>
-References: <20200224165952.GA9377@embeddedor>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Maya Erez <merez@codeaurora.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ath11k@lists.infradead.org,
-        wcn36xx@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, wil6210@qti.qualcomm.com,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20200323173848.90FADC4478C@smtp.codeaurora.org>
-Date:   Mon, 23 Mar 2020 17:38:48 +0000 (UTC)
+References: <00000000000088d4fd05a182e5c9@google.com>
+In-Reply-To: <00000000000088d4fd05a182e5c9@google.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 23 Mar 2020 10:38:54 -0700
+Message-ID: <CAM_iQpU+ins6nTYbAdhwiGjaGj0NOdKAk36uKaehwr8T26mgHA@mail.gmail.com>
+Subject: Re: general protection fault in hfsc_unbind_tcf
+To:     syzbot <syzbot+05e596c4433eae36069b@syzkaller.appspotmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
-
-> The current codebase makes use of the zero-length array language
-> extension to the C90 standard, but the preferred mechanism to declare
-> variable-length types such as these ones is a flexible array member[1][2],
-> introduced in C99:
-> 
-> struct foo {
->         int stuff;
->         struct boo array[];
-> };
-> 
-> By making use of the mechanism above, we will get a compiler warning
-> in case the flexible array does not occur last in the structure, which
-> will help us prevent some kind of undefined behavior bugs from being
-> inadvertently introduced[3] to the codebase from now on.
-> 
-> Also, notice that, dynamic memory allocations won't be affected by
-> this change:
-> 
-> "Flexible array members have incomplete type, and so the sizeof operator
-> may not be applied. As a quirk of the original implementation of
-> zero-length arrays, sizeof evaluates to zero."[1]
-> 
-> This issue was detected with the help of Coccinelle.
-> 
-> [1] https://gcc.gnu.org/onlinedocs/gcc/Zero-Length.html
-> [2] https://github.com/KSPP/linux/issues/21
-> [3] commit 76497732932f ("cxgb3/l2t: Fix undefined behaviour")
-> 
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-
-Fails to apply, please rebase on top of my ath.git master branch.
-
-error: patch failed: drivers/net/wireless/ath/ath10k/core.h:1223
-error: drivers/net/wireless/ath/ath10k/core.h: patch does not apply
-error: patch failed: drivers/net/wireless/ath/ath11k/debug.h:65
-error: drivers/net/wireless/ath/ath11k/debug.h: patch does not apply
-error: patch failed: drivers/net/wireless/ath/ath11k/rx_desc.h:1206
-error: drivers/net/wireless/ath/ath11k/rx_desc.h: patch does not apply
-stg import: Diff does not apply cleanly
-
-Patch set to Changes Requested.
-
--- 
-https://patchwork.kernel.org/patch/11401227/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+#syz fix: net_sched: cls_route: remove the right filter from hashtable
