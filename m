@@ -2,137 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B95618F5CA
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 14:34:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8226C18F5F0
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 14:42:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728434AbgCWNev (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 09:34:51 -0400
-Received: from script.cs.helsinki.fi ([128.214.11.1]:60594 "EHLO
-        script.cs.helsinki.fi" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728407AbgCWNev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 09:34:51 -0400
-X-DKIM: Courier DKIM Filter v0.50+pk-2017-10-25 mail.cs.helsinki.fi Mon, 23 Mar 2020 15:34:40 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cs.helsinki.fi;
-         h=date:from:to:cc:subject:in-reply-to:message-id:references
-        :mime-version:content-type; s=dkim20130528; bh=WtvmLsM9AN1IIyOYJ
-        uWzjEvieT5KXChUvNYf99oxXYI=; b=MdBd7SsiUlwyGSZxydhysNtVO/Ov/++6p
-        iUxqvQjs9JkmY/sDkXu8NYQwu+zjuG4tty3vXV7tFS9WVJWLjhrflshtBJuCluxr
-        WwllvwJhTIW4dRJqriRC4giTYinmM0/M31FKyOILKdO5yNt8Aqnb8e4aa1gIRD4o
-        wYUrm+rxeU=
-Received: from whs-18.cs.helsinki.fi (whs-18.cs.helsinki.fi [128.214.166.46])
-  (TLS: TLSv1/SSLv3,256bits,AES256-GCM-SHA384)
-  by mail.cs.helsinki.fi with ESMTPS; Mon, 23 Mar 2020 15:34:40 +0200
-  id 00000000005A01CB.000000005E78BAF0.00005EC5
-Date:   Mon, 23 Mar 2020 15:34:40 +0200 (EET)
-From:   "=?ISO-8859-15?Q?Ilpo_J=E4rvinen?=" <ilpo.jarvinen@cs.helsinki.fi>
-X-X-Sender: ijjarvin@whs-18.cs.helsinki.fi
-To:     Yuchung Cheng <ycheng@google.com>
-cc:     Dave Taht <dave.taht@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
-Subject: Re: [RFC PATCH 28/28] tcp: AccECN sysctl documentation
-In-Reply-To: <CAK6E8=f=tB1Dw-ns5hOysvSbQ1VGJJ1-nLQXtxC6rfZbr5Tnww@mail.gmail.com>
-Message-ID: <alpine.DEB.2.20.2003231528460.32422@whs-18.cs.helsinki.fi>
-References: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi> <1584524612-24470-29-git-send-email-ilpo.jarvinen@helsinki.fi> <CAA93jw7_YG-KMns8UP-aTPHNjPG+A_rwWUWbt1+8i4+UNhALnA@mail.gmail.com> <alpine.DEB.2.20.2003202348250.21767@whs-18.cs.helsinki.fi>
- <CAK6E8=f=tB1Dw-ns5hOysvSbQ1VGJJ1-nLQXtxC6rfZbr5Tnww@mail.gmail.com>
-User-Agent: Alpine 2.20 (DEB 67 2015-01-07)
+        id S1728468AbgCWNmR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 09:42:17 -0400
+Received: from mail-eopbgr50070.outbound.protection.outlook.com ([40.107.5.70]:25516
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727649AbgCWNmR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Mar 2020 09:42:17 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kI57FTd+p+8sTz56GkQovoHKIlqVkPKfXdZHuYrEdDK0QMN4/Y/rgPxZf5L9lGQDXKOszlTqwqaZEeuH7klvdXKWKzLd4SD8ShIfLijd46Wq06QFnahikceFVYh98dzSK++uLP6A1a+gUnHWGLuvxs+R9JjJsab0x+lONEN0P6qlsT8xUPXY4EwJfA9sS740MR0/O4RsDLhHjt5+HQkH8NUmb2kYJgDcVIoy0K070PE0gw62wVNEXOhb/54IFxV8+RNlIE4SMENNzyFk4ZzthCyQI4RlP3Yd4xWpKipVx9tcAqApLj1YBVAcb/t1IUSlQ33GEa3nocb+cRWGEosKeg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GibuhyV3q1aaJifR0jWJBjN9A0YyQkbyC9d7jZ0Mrao=;
+ b=jDQ0s7ZrBwJSZATSH+6DXunZEXcA/1miiajNba6vVWCukgS0xR8bLfjeQuQK+6/CeR2tAcCfT3SGGCopPS8VT+qcT1gXPnQDVUqthZb0KlMQLZf4i10FDoyDuSTvIiVaJiudSt4n9y7cbdBZSGnVhfOxkxA47vH8qTsKtorOPkomvSclphl6IDzQsDCRtnPR7xMALI38enJudYkEgaeCxgVu15w3Ll5KM6m38eu8Uqvpqosfg55w26iPYtGmTthqfrZOt3na1TfKAtff6SJSGpGWRIEaM1vRKvQCr7NuFvlM8zDcKVuaFuK9jbU+kvJPQTSvwLP0hG9Nv+I0NHpXSQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GibuhyV3q1aaJifR0jWJBjN9A0YyQkbyC9d7jZ0Mrao=;
+ b=XJ/XXaH66r9KsWAfgrV1824qyqGMUGbvMlqyiNxXvZ4Tz+gFpVHYsmYuFRL7PN7JA7U9SQUKvDAkRbXlleu0sKdyqMFG2v4yoegVu+3nGKHTdlfIq8eTo4MJBV+RoKn020NydLRGligFfT6vetkklJl9J+XE7VKyUE1ZePIleUo=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=vladbu@mellanox.com; 
+Received: from VI1PR05MB3359.eurprd05.prod.outlook.com (10.170.238.32) by
+ VI1PR05MB3215.eurprd05.prod.outlook.com (10.175.245.15) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2835.22; Mon, 23 Mar 2020 13:42:14 +0000
+Received: from VI1PR05MB3359.eurprd05.prod.outlook.com
+ ([fe80::cd2b:cd2:d07a:1db4]) by VI1PR05MB3359.eurprd05.prod.outlook.com
+ ([fe80::cd2b:cd2:d07a:1db4%7]) with mapi id 15.20.2835.021; Mon, 23 Mar 2020
+ 13:42:14 +0000
+References: <1584765584-4168-1-git-send-email-wenxu@ucloud.cn>
+User-agent: mu4e 1.2.0; emacs 26.2.90
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     wenxu@ucloud.cn
+Cc:     saeedm@mellanox.com, paulb@mellanox.com, vladbu@mellanox.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3 0/2] net/mlx5e: add indr block support in the FT mode
+In-reply-to: <1584765584-4168-1-git-send-email-wenxu@ucloud.cn>
+Date:   Mon, 23 Mar 2020 15:42:10 +0200
+Message-ID: <vbfa747nq6l.fsf@mellanox.com>
+Content-Type: text/plain
+X-ClientProxiedBy: PR0P264CA0077.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:100:18::17) To VI1PR05MB3359.eurprd05.prod.outlook.com
+ (2603:10a6:802:1c::32)
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="=_script-24287-1584970480-0001-2"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from reg-r-vrt-018-180.mellanox.com (37.142.13.130) by PR0P264CA0077.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:18::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.19 via Frontend Transport; Mon, 23 Mar 2020 13:42:13 +0000
+X-Originating-IP: [37.142.13.130]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 8966922e-fdae-45ea-8eec-08d7cf2ffe8d
+X-MS-TrafficTypeDiagnostic: VI1PR05MB3215:|VI1PR05MB3215:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB3215AFF31DCC219E463B3BD7ADF00@VI1PR05MB3215.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-Forefront-PRVS: 0351D213B3
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(376002)(39860400002)(346002)(136003)(366004)(199004)(956004)(66476007)(66556008)(36756003)(66946007)(5660300002)(4744005)(478600001)(81156014)(8676002)(8936002)(81166006)(4326008)(86362001)(2616005)(2906002)(16526019)(186003)(316002)(6916009)(7696005)(52116002)(26005)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3215;H:VI1PR05MB3359.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: E2ntZwO7u4J8BDNjcQOTemFm+Sh+VpHnOG/+HUMSBJ2+0gOaw7OW8aZXSmGco2BuQTzDuCmrdx/Prat6eLrrnKVCZhImSM6O8jKaaJLnxdWbaJTxu/ACQyhiGhg431QjSzdcL2r0xvh2VCWFQdVfdrFg6UQ0Rno1FY9wW/KHvFuYx9GTrQ+lzrPQn4wp4BuLfg4OUN8M7QRBpv4I+UZ74X8rsPTKwSXoicMltfZmx8duYqgcjs6eVvi8s0GyMZiJT2nVIee5+ogOpv+w0GLgda2SDe9X/APvEMLfcfIxViwEb5skHbR9vOoEeyY6h/QoKZlSeQXhjR4WinRCDfPA96J70WP90pE34HKl8874lgR+b3iORmBEP96UJMMCJKsP6vFBf8ErLTylX7y9WA66NvDL0hvT4DgcCvFaQ9wd+b9L6Tew4DAXfx7mLJ4F4Vz7
+X-MS-Exchange-AntiSpam-MessageData: dHEY00sxhY5ANB4kiMz7i+Pks/8kB9Gz6w1ZwFMq03yKIT851gUIz4gDQULWAq2+8KEfiot4HYZgVMa3NM7m4P45d13FP4vg4Q7/tHoFPfgTxuLYCBZlPIBLzv7M6DWvRtRDDSQvAY+zFKu6lV6uKQ==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8966922e-fdae-45ea-8eec-08d7cf2ffe8d
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2020 13:42:14.1064
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: T14zYDufi2ROX3ECRMgC3HlHQhSwbEb/WlphzRuFaO9ZSO1Kdnv4U+oUxb3mOZTs/fo1IztfA8Z7jVCdLmJKqg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3215
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a MIME-formatted message.  If you see this text it means that your
-E-mail software does not support MIME-formatted messages.
+On Sat 21 Mar 2020 at 06:39, wenxu@ucloud.cn wrote:
+> From: wenxu <wenxu@ucloud.cn>
 
---=_script-24287-1584970480-0001-2
-Content-Type: text/plain; charset="iso-8859-15"
-Content-Transfer-Encoding: quoted-printable
+Hi wenxu,
 
-On Fri, 20 Mar 2020, Yuchung Cheng wrote:
+Can you please provide some description for this functionality and
+example commands that can be used to test it?
 
-> On Fri, Mar 20, 2020 at 3:40 PM Ilpo J=E4rvinen
-> <ilpo.jarvinen@cs.helsinki.fi> wrote:
-> >
-> > On Thu, 19 Mar 2020, Dave Taht wrote:
-> >
-> > > On Wed, Mar 18, 2020 at 2:44 AM Ilpo J=E4rvinen <ilpo.jarvinen@hels=
-inki.fi> wrote:
-> > > >
-> > > > From: Ilpo J=E4rvinen <ilpo.jarvinen@cs.helsinki.fi>
-> > > >
-> > > > Signed-off-by: Ilpo J=E4rvinen <ilpo.jarvinen@cs.helsinki.fi>
-> > > > ---
-> > > >  Documentation/networking/ip-sysctl.txt | 12 +++++++++---
-> > > >  1 file changed, 9 insertions(+), 3 deletions(-)
-> > > >
-> > > > diff --git a/Documentation/networking/ip-sysctl.txt b/Documentati=
-on/networking/ip-sysctl.txt
-> > > > index 5f53faff4e25..ecca6e1d6bea 100644
-> > > > --- a/Documentation/networking/ip-sysctl.txt
-> > > > +++ b/Documentation/networking/ip-sysctl.txt
-> > > > @@ -301,15 +301,21 @@ tcp_ecn - INTEGER
-> > > >                 0 Disable ECN.  Neither initiate nor accept ECN.
-> > > >                 1 Enable ECN when requested by incoming connectio=
-ns and
-> > > >                   also request ECN on outgoing connection attempt=
-s.
-> > > > -               2 Enable ECN when requested by incoming connectio=
-ns
-> > > > +               2 Enable ECN or AccECN when requested by incoming =
-connections
-> > > >                   but do not request ECN on outgoing connections.
-> > >
-> > > Changing existing user-behavior for this default seems to be overly
-> > > optimistic. Useful for testing, but...
-> >
-> > I disagree.
-> >
-> > The kernel default on ECN is/has been "do nothing" like forever. Yet,
-> > passively allowing ECN on servers is a low risk operation because not=
-hing
-> > will change before client actively asks for it. However, it was obvio=
-us
-> > that the servers didn't do that. The servers could have set tcp_ecn t=
-o 1
-> > (before 2 was there) which is low risk for _servers_ (unlike for clie=
-nts)
-> > but only very very few did. I don't believe servers would now
-> > intentionally pick 2 when they clearly didn't pick 1 earlier either.
-> >
-> > Adding 2 is/was an attempt to side-step the need for both ends to mak=
-e
-> > conscious decision by setting the sysctl (which servers didn't want t=
-o
-> > do). That is, 2 gives decision on what to do into the hands of the cl=
-ient
-> > side which was the true intent of 2 (in case you don't know, I made t=
-hat
-> > change).
-> What can a server configure to process only RFC3168 ECN if it prefers t=
-o?
-
-That's why I suggested the flag-based approach?
-
-> > If "full control" is the way to go, I think it should be made using f=
-lags
-> > instead, along these lines:
-> >
-> > 1: Enable RFC 3168 ECN in+out
-> > 2: Enable RFC 3168 ECN in (default on)
-> > 4: Enable Accurate ECN in (default on)
-> > 8: Enable Accurate ECN in+out
-> >
-> > Note that I intentionally reversed the in and in/out order for 4&8
-> > (something that couldn't be done with 1&2 to preserve meaning of 1).
-
-It should address any except "out" but no "in" (the meaning of 1 cannot=20
-be changed I think). But out w/o in doesn't sound very useful.
-
---
- i.
-
---=_script-24287-1584970480-0001-2--
+>
+>
+> wenxu (2):
+>   net/mlx5e: refactor indr setup block
+>   net/mlx5e: add mlx5e_rep_indr_setup_ft_cb support
+>
+>  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 94 ++++++++++++++++++------
+>  1 file changed, 73 insertions(+), 21 deletions(-)
