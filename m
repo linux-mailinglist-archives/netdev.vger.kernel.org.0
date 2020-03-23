@@ -2,113 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B61C18FFCB
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 21:49:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24FC018FFD9
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 21:50:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727120AbgCWUtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 16:49:01 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:27507 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726173AbgCWUtA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 16:49:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1584996539;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YusDrJHgpQYBMdm47W+/18/y89tRNu/kM9vUiAgJIuU=;
-        b=ac33ep1LK+DSU811Ub9slodt07ci/N9o2qzmepVPFMEWZzaiiQEUbjOddGnFAfQv45b6s1
-        /46yUtlLX21YCGDMdHfV/93bQCiyCXrM8qnZL/KXsW5zosODWvEMTiEmsrSzevJivY50cm
-        EifoBHvmxcICP8KrPYsB3o39+ZHmE84=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-261-Vkk_CHQWOLK1Agm8DHgnxg-1; Mon, 23 Mar 2020 16:48:57 -0400
-X-MC-Unique: Vkk_CHQWOLK1Agm8DHgnxg-1
-Received: by mail-wr1-f70.google.com with SMTP id d17so7980687wrs.7
-        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 13:48:57 -0700 (PDT)
+        id S1727116AbgCWUuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 16:50:46 -0400
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:51130 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725861AbgCWUun (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 16:50:43 -0400
+Received: by mail-pj1-f65.google.com with SMTP id v13so420874pjb.0
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 13:50:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hVA5WFXfcSWFBT+VwkoItIgOSovnhFyDBfNLUc16ltY=;
+        b=Cb/Ut8t5j5U9ZSrmpgK4Hc35/SB/HQR3AaW8HaRMJpRnnHQzGumwoA9BhXetM9RYdP
+         suyJdbcuUw6/JZxbpBtAH+ixVdlVblyYh1uABTd/iwGmKnvTLkV1qfask1oy1b0aE8EH
+         21pob6zeYptdpdlOUZYFkpkqBGPKR85sHxdQc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=YusDrJHgpQYBMdm47W+/18/y89tRNu/kM9vUiAgJIuU=;
-        b=PXuoXk4sLyba15bRS0qXoEJfX/lo5eOiqXHhP/9vlkfLeabLZey9+c/Dqf7+HxahL9
-         LOJlj2Xn37ypBYUKoJ5L+zfB3Q8jAow3wq115LVM8le3hIIVfnJHqTQkPV2uMhzOSa1L
-         HOQyIhx7JZP1Xz1ozQONpL+70XKk9Pf7q4SWwdlf99WCR+i+PPVNjdksqvMfr1ruvD4z
-         69PNK9pp1V65BAPWx0KkpxwDszSmTjMXgr4KY3dvYDre+28617M+wYc2MqarAQ4BU3TB
-         pcErzECTMH7INCl6VqOFFPpjHnEfjNAcx+V9oacrebngP2YakS4v3Lrw84wzhGjdZKZq
-         DC4Q==
-X-Gm-Message-State: ANhLgQ0x13ALv4nhag83t3cDOIvyHjQP6Dq4YhZjBHKDM4tlOwueRfcw
-        ydCsBoT0D8XWjvVhFAVb0NUQWfoj6RR1WOkKXMKtOBITdbsbOg1+B1EQDl9i0PqMU5BlSpfJO+1
-        Hw9RqUt8hxsVerF44
-X-Received: by 2002:adf:fa85:: with SMTP id h5mr6806679wrr.63.1584996536431;
-        Mon, 23 Mar 2020 13:48:56 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vuF399OftZU7Uwj9+P3HzHWVNXViaK3rhvjWVCMVM83ODrG9kdEcufqo62hvpKTTcDu+d5vFA==
-X-Received: by 2002:adf:fa85:: with SMTP id h5mr6806659wrr.63.1584996536185;
-        Mon, 23 Mar 2020 13:48:56 -0700 (PDT)
-Received: from pc-3.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
-        by smtp.gmail.com with ESMTPSA id i12sm25873362wro.46.2020.03.23.13.48.55
+        bh=hVA5WFXfcSWFBT+VwkoItIgOSovnhFyDBfNLUc16ltY=;
+        b=S26GvvlAd1R+RImMwZUhYQxQN4X8TGjgTXr3PQSKFVY4/6PdtG4I/Y3ZzZQhiUWGBH
+         3xw9MxBlABVhpAxCaULg1MKwTprPsuULjtzbKNh5ZuCMW0GVLwu6KOVQMS0o9xMKqGSB
+         IbpF2zMyVFSOQrismWUUYGM0ssRwT3rfmL2wPbx5DFrU3DO0L9aLSxJX70CsZsDct71Z
+         3YlmXhOQgL0t2T5pgIQgtnXnvkRL3eDWD/EqR3iF9FZjOBM1eHooCC8TSF1nA8b5uqgU
+         fYwBNQ/o3CvL/khwmQU/y9goa15AGiTvdLzM16XvVsOMonE1gQaC0bOaZat4pUwcGi0n
+         Krag==
+X-Gm-Message-State: ANhLgQ2vRJ57CSgKA5pQ3vpfLhh/WXoFRW3AOLuvujUF6tnq6U4HeG1j
+        90SLY9iXsY/OBs3dfwzvJok8LA==
+X-Google-Smtp-Source: ADFU+vuPWJ/WfsTkWtT/rKYT1M+d6KQlDHHSdKIi/yfEXSwGRnlEhvvpNdXovsRxWb85LN65KOC2IQ==
+X-Received: by 2002:a17:90b:3851:: with SMTP id nl17mr1285269pjb.59.1584996641683;
+        Mon, 23 Mar 2020 13:50:41 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id e7sm14338395pfj.97.2020.03.23.13.50.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2020 13:48:55 -0700 (PDT)
-Date:   Mon, 23 Mar 2020 21:48:53 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: [PATCH net-next 4/4] cls_flower: Add extack support for flags key
-Message-ID: <c9a0bd844581d7762f430be68c2f020d275f187b.1584995986.git.gnault@redhat.com>
-References: <cover.1584995986.git.gnault@redhat.com>
+        Mon, 23 Mar 2020 13:50:40 -0700 (PDT)
+Date:   Mon, 23 Mar 2020 13:50:39 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Shuah Khan <skhan@linuxfoundation.org>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>, shuah@kernel.org,
+        luto@amacapital.net, wad@chromium.org, daniel@iogearbox.net,
+        kafai@fb.com, yhs@fb.com, andriin@fb.com,
+        gregkh@linuxfoundation.org, tglx@linutronix.de,
+        khilman@baylibre.com, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH v3] selftests: Fix seccomp to support relocatable build
+ (O=objdir)
+Message-ID: <202003231346.2D1FF7E0C3@keescook>
+References: <20200313212404.24552-1-skhan@linuxfoundation.org>
+ <8736a8qz06.fsf@mpe.ellerman.id.au>
+ <202003161404.934CCE0@keescook>
+ <87h7yldohs.fsf@mpe.ellerman.id.au>
+ <eb90dd83-7988-b3ac-1ee6-bf16c0aacc10@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1584995986.git.gnault@redhat.com>
+In-Reply-To: <eb90dd83-7988-b3ac-1ee6-bf16c0aacc10@linuxfoundation.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pass extack down to fl_set_key_flags() and set message on error.
+On Mon, Mar 23, 2020 at 02:18:29PM -0600, Shuah Khan wrote:
+> The following two changes work. You both have better make foo than
+> I do. Can you see any issues with this proposal? I can send patch
+> to do this, so we can do a larger test.
+> 
+> --------------------------------------------------------------
+> diff --git a/tools/testing/selftests/lib.mk b/tools/testing/selftests/lib.mk
+> index 3ed0134a764d..54caa9a4ec8a 100644
+> --- a/tools/testing/selftests/lib.mk
+> +++ b/tools/testing/selftests/lib.mk
+> @@ -137,7 +137,7 @@ endif
+>  # Selftest makefiles can override those targets by setting
+>  # OVERRIDE_TARGETS = 1.
+>  ifeq ($(OVERRIDE_TARGETS),)
+> -$(OUTPUT)/%:%.c
+> +$(OUTPUT)/%:%.c ../kselftest_harness.h ../kselftest.h
+>         $(LINK.c) $^ $(LDLIBS) -o $@
 
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- net/sched/cls_flower.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+I don't think this will work because some tests are in subdirectories.
+The Makefile needs to know what the top-level directory of the selftest
+tree is (which I think is $(selfdir) ?) I think this might be more
+complete:
 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 5811dd971ee5..9b6acd736dc8 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -856,14 +856,16 @@ static void fl_set_key_flag(u32 flower_key, u32 flower_mask,
- 	}
- }
- 
--static int fl_set_key_flags(struct nlattr **tb,
--			    u32 *flags_key, u32 *flags_mask)
-+static int fl_set_key_flags(struct nlattr **tb, u32 *flags_key,
-+			    u32 *flags_mask, struct netlink_ext_ack *extack)
- {
- 	u32 key, mask;
- 
- 	/* mask is mandatory for flags */
--	if (!tb[TCA_FLOWER_KEY_FLAGS_MASK])
-+	if (!tb[TCA_FLOWER_KEY_FLAGS_MASK]) {
-+		NL_SET_ERR_MSG(extack, "Missing flags mask");
- 		return -EINVAL;
-+	}
- 
- 	key = be32_to_cpu(nla_get_u32(tb[TCA_FLOWER_KEY_FLAGS]));
- 	mask = be32_to_cpu(nla_get_u32(tb[TCA_FLOWER_KEY_FLAGS_MASK]));
-@@ -1474,7 +1476,8 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
- 		return ret;
- 
- 	if (tb[TCA_FLOWER_KEY_FLAGS])
--		ret = fl_set_key_flags(tb, &key->control.flags, &mask->control.flags);
-+		ret = fl_set_key_flags(tb, &key->control.flags,
-+				       &mask->control.flags, extack);
- 
- 	return ret;
- }
+$(OUTPUT)/%: %.c $(selfdir)/kselftest_harness.h $(selfdir)/kselftest.h
+	$(LINK.c) $^ $(LDLIBS) -o $@
+
+> diff --git a/tools/testing/selftests/seccomp/Makefile
+> b/tools/testing/selftests/seccomp/Makefile
+> index a0388fd2c3f2..0ebfe8b0e147 100644
+> --- a/tools/testing/selftests/seccomp/Makefile
+> +++ b/tools/testing/selftests/seccomp/Makefile
+> @@ -2,14 +2,5 @@
+>  CFLAGS += -Wl,-no-as-needed -Wall
+>  LDFLAGS += -lpthread
+> 
+> -.PHONY: all clean
+> -
+> +TEST_GEN_PROGS := seccomp_bpf seccomp_benchmark
+>  include ../lib.mk
+> -
+> -# OUTPUT set by lib.mk
+> -TEST_GEN_PROGS := $(OUTPUT)/seccomp_bpf $(OUTPUT)/seccomp_benchmark
+> -
+> -$(TEST_GEN_PROGS): ../kselftest_harness.h
+> -
+> -all: $(TEST_GEN_PROGS)
+> -
+
+This part looks right. :)
+
 -- 
-2.21.1
-
+Kees Cook
