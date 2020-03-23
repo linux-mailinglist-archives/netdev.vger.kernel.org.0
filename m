@@ -2,72 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 650AD18FAA2
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 17:58:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B452418FAA6
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 17:59:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727560AbgCWQ6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 12:58:45 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:48312 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727374AbgCWQ6p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 12:58:45 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-167-GzfuyjbyN3-G2xGQwmdVDQ-1; Mon, 23 Mar 2020 16:58:42 +0000
-X-MC-Unique: GzfuyjbyN3-G2xGQwmdVDQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Mon, 23 Mar 2020 16:58:42 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 23 Mar 2020 16:58:42 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'David Ahern' <dsahern@gmail.com>,
-        Network Development <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next] Remove DST_HOST
-Thread-Topic: [PATCH net-next] Remove DST_HOST
-Thread-Index: AdYBH4gs8HTGreJ2SnCmnalhRsiIuQADrm8AAAFcQ3A=
-Date:   Mon, 23 Mar 2020 16:58:41 +0000
-Message-ID: <3316a66b025a4823887e4c34c6e2fe7e@AcuMS.aculab.com>
-References: <746901f88f174ea8bda66e37f92961e6@AcuMS.aculab.com>
- <1daa5b45-1507-5899-609c-1ebbc7816db1@gmail.com>
-In-Reply-To: <1daa5b45-1507-5899-609c-1ebbc7816db1@gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1727562AbgCWQ71 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 12:59:27 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:44580 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727164AbgCWQ70 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 12:59:26 -0400
+Received: by mail-pf1-f196.google.com with SMTP id b72so7758881pfb.11
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 09:59:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0Yz3aCtfs/NmJpk29XMbsItf5utDQd9JiRR8EbPIQxE=;
+        b=wPwACC9/U3hgmHfDEX/maP0v/3kGU5BlP4UJu+jRZqzcMPJ5AcHAsbNRRBeCu4AEnS
+         mWqrxTdvHjhCg2JtZvvv+GFR4wxnmrnHdTNUYDcywVsOkYUMonVDNJlWNO2gFBhDQnFR
+         5NUos6C9yEvhCTO6tu00VxEip5/IctaGTam9655bLoe+PJHcR436cmiamXaLEzCuJtpU
+         1K6d0BYPRAG6ttOyVYck6guZJ6/yAw+DEbQf58Hk7V7WgLdd19sd2ZiTfCC+BDgZ1x7m
+         nfBlz5vTH/j0rJi6itHIs+e28Vipc30/4bX02+KV4Y1Dcmq8qjdJZXJjcirRt8pkisNW
+         rPqg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0Yz3aCtfs/NmJpk29XMbsItf5utDQd9JiRR8EbPIQxE=;
+        b=WIo/0fYahXkOtp1zzSBS5Qi07P3KDl9dtflWvn2RXybWxTTYaf9kvuDzx0ml8SaCeN
+         FPfftdhlnRdU8ndUL/DilPHFH87zE6dMZ/GvOdsMHjGT+5SAtooPuvsFSHtuYPhxcAwm
+         d3IL8YL7TPc04FVoHmTRzRu7lN++WsOFHDzkhepEM0ssCQv5AfO28HZ0YtBV5b7O/HO4
+         NlQdWZC6ZQ3ObLgPB+qYfo3IOKl96sglComW6tDbXno852iVdruuwSS1Q9V6q2vTCK71
+         0S++7DslvAydyXFV+znBeEu1L4YpvCjA2jTbUjEaRk2KKGDMtqMBRTnia+iYqhR8nxJ1
+         GbJQ==
+X-Gm-Message-State: ANhLgQ342e6E3XIXzRMay6a4XPglL/ogXt4yGq8t+JjwsN/FXwGb8fnj
+        AWfTruJrtXQBuQb+j6DpnxKBuFclf0Y=
+X-Google-Smtp-Source: ADFU+vtXeKcQWLY+dA2JLgzKrkbYlsnbb6px0eh+Tw2qRtCcEt0hfKTwy0N7ahGHcBPaoBsP8MNyUg==
+X-Received: by 2002:a63:1003:: with SMTP id f3mr23221873pgl.450.1584982763979;
+        Mon, 23 Mar 2020 09:59:23 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id q13sm12570922pgh.30.2020.03.23.09.59.23
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Mar 2020 09:59:23 -0700 (PDT)
+Date:   Mon, 23 Mar 2020 09:59:18 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 206919] New: Very bad performance of sendto function
+Message-ID: <20200323095918.1f6d6400@hermes.lan>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRGF2aWQgQWhlcm4NCj4gU2VudDogMjMgTWFyY2ggMjAyMCAxNjoxNQ0KPiBPbiAzLzIz
-LzIwIDg6MzEgQU0sIERhdmlkIExhaWdodCB3cm90ZToNCj4gPiBQcmV2aW91cyBjaGFuZ2VzIHRv
-IHRoZSBJUCByb3V0aW5nIGNvZGUgaGF2ZSByZW1vdmVkIGFsbCB0aGUNCj4gPiB0ZXN0cyBmb3Ig
-dGhlIERTX0hPU1Qgcm91dGUgZmxhZy4NCj4gPiBSZW1vdmUgdGhlIGZsYWdzIGFuZCBhbGwgdGhl
-IGNvZGUgdGhhdCBzZXRzIGl0Lg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogRGF2aWQgTGFpZ2h0
-IDxkYXZpZC5sYWlnaHRAYWN1bGFiLmNvbT4NCj4gPiAtLS0NCj4gPiBBRkFJQ1QgdGhlIERTVF9I
-T1NUIGZsYWcgaW4gcm91dGUgdGFibGUgZW50cmllcyBoYXNuJ3QgYmVlbg0KPiA+IGxvb2tlZCBh
-dCBzaW5jZSB2NC4yLXJjMS4NCj4gDQo+IGV2ZW4gYmFjayBpbiA0LjE0IGl0IHdhcyBzZXQgYW5k
-IG9ubHkgY2hlY2tlZCBpbiBvbmUgc3BvdCAtDQo+IGZpYjZfY29tbWl0X21ldHJpY3MuDQo+IA0K
-PiA+DQo+ID4gQSBxdWljayBzZWFyY2ggZmFpbGVkIHRvIGZpbmQgdGhlIGNvbW1pdCB0aGF0IHJl
-bW92ZWQgdGhlDQo+ID4gdGVzdHMgZm9yIGl0IGZyb20gaXB2Ni9yb3V0ZS5jDQo+ID4gSSBzdXNw
-ZWN0IG90aGVyIGNoYW5nZXMgZ290IGFkZGVkIG9uIHRvcC4NCj4gDQo+IGJlZW4gb24gbXkgdG8t
-ZG8gbGlzdCB0byB2ZXJpZnkgaXQgd2FzIG5vIGxvbmdlciBuZWVkZWQuIHRoYW5rcyBmb3Igc2Vu
-ZGluZy4NCg0KSSB3YXMgdHJ5aW5nIHRvIHVucmF2ZWwgdGhhdCBjb2RlIGEgYml0IHRvIGZpbmQg
-b3V0IHdoZXRoZXINCnJhdyBzb2NrZXRzIHdpdGggJ2hkcmluY2wnIGxvb2tlZCB1cCB0aGUgY29y
-cmVjdCByb3V0ZSAoaWUNCnRoZSBvbmUgZnJvbSB0aGUgc2VuZHRvICdkZXN0aW5hdGlvbiBhZGRy
-ZXNzJyByYXRoZXIgdGhhbg0KYW55dGhpbmcgaW4gdGhlIHN1cHBsaWVkIGlwIGhlYWRlcikuDQpU
-aGUgdGVtcG9yYXJ5ICdkc3QnIHN0cnVjdHVyZXMgYXJlIGV4cGVuc2l2ZScuDQpJZiBub3RoaW5n
-IGVsc2UgdGhleSBjYW4gYmUgZnJlZWQgaW1tZWRpYXRlbHkgcmF0aGVyIHRoYW4NCmFmdGVyIHJj
-dS4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBS
-b2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9u
-IE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+There maybe something here but probably not.
 
+Begin forwarded message:
+
+Date: Sun, 22 Mar 2020 11:22:46 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 206919] New: Very bad performance of sendto function
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=206919
+
+            Bug ID: 206919
+           Summary: Very bad performance of sendto function
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.4.13
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: bernat.arlandis@gmail.com
+        Regression: No
+
+Created attachment 288007
+  --> https://bugzilla.kernel.org/attachment.cgi?id=288007&action=edit  
+Sysprof capture file
+
+Hi,
+
+I have a case where the sendto function is slowing down the software I'm trying
+to use. Sysprof capture file attached.
+
+It's probably being called at a high frequency and the __netlink_dump_start
+function spends a lot of time in the mutex lock, then also in the netlink_dump
+call.
+
+This is causing the threads calling the function to stall. At least this is my
+interpretation of the profiling session.
+
+I don't have any knowledge about the way networking code works. I'd like to
+know if the flaw is in the user-space software or in the kernel. Can I provide
+any more info or do some test to help determine what's happening? I'd like to
+help fix it.
+
+My NIC: Intel Corporation I211 Gigabit Network Connection (rev 03)
+
+My system: Debian 10 with kernel 5.4.13.
+
+Thanks.
+
+-- 
+You are receiving this mail because:
+You are the assignee for the bug.
