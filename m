@@ -2,116 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BCE1018F68E
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 15:09:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8023E18F6AD
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 15:18:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728531AbgCWOJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 10:09:33 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:55688 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728378AbgCWOJc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 10:09:32 -0400
-Received: from mail-qk1-f199.google.com ([209.85.222.199])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <gpiccoli@canonical.com>)
-        id 1jGNli-0006Ed-HY
-        for netdev@vger.kernel.org; Mon, 23 Mar 2020 14:09:30 +0000
-Received: by mail-qk1-f199.google.com with SMTP id g25so2449291qka.0
-        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 07:09:30 -0700 (PDT)
+        id S1728583AbgCWOSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 10:18:51 -0400
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:56188 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728446AbgCWOSv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 10:18:51 -0400
+Received: by mail-pj1-f68.google.com with SMTP id mj6so6237537pjb.5
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 07:18:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=greyhouse-net.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=M3Wr65lLh2kuudYsljJta3QzD+9lmM4JGNQEJrj4vfw=;
+        b=wdaXZz96KWSJIRQEj84GB/eYRmqlJYown71CEZEmDQdlGKN01lMn+JGqnq+iV/LezL
+         pxXbwWT/IKgMnH+IVNI4AzmES4i8AfRtzc+Jv2eCve5wSLZwFGDbgDVpoqX9xMxPI8sG
+         ht1k4j1Tx91FGmorzdec5maEt450XPR5pb2qcYA95CAoG5ThkUQEi3DpgJMaMv1bKkWa
+         2ciuzEbTDguXQFZN3f08vKC0WoFS+Qak9+3FIfNL7v8tDoOnoxHBHm9q6InuEZfywrZp
+         EdDyLnxG/UbpLWmVDk3PNRUb4aF1BGF6rVDfx99LICH1B4DXtTyb/sBhhIlT6gBZMLK6
+         vUcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=uD9UTB4eUqzPpXhU/pSICGzXLIkypVUoDRfT0epdLnI=;
-        b=Gfe1xkGm6MK7pfb6tEyKQRGBMny0OHwfphRHsKeRL0/gA7gqH9VGhvVD/hRnuVQp6f
-         cynSBJvTWJhod8vKXD+lAjU8JNHwAbIAlBiDqOWzS8ALivuBOqzOAhLIV/NQEl7ujzHW
-         ooRyCZczsQc7CYVJ29M3pkKmwMnfvKWwN2478cZAAI2UD483oyvBDgqTofCuRGq3F3Ze
-         /3tZ60c5SWJV+AJVdY6DDDwf7PK2LeNRSGCU6UGNKgRd+tRbpILgmrd35PR9LnI1pcR2
-         dqvHpE2WPo2C4Ru96nIoewhBnGfzM7lak598eaJE8CRrRxLsULHUR8HlvnZWQWloR6FN
-         gM6w==
-X-Gm-Message-State: ANhLgQ2rSOZJD6zaRM5fCiDjmj9jpZ1vmDUJfGIlWSMtZa5LP1Ma0h91
-        KsScbjzZbIk9LdRdOmaVEo2wYq5ZYjihxqz/ZaQkfev48ZGaFJOFMKuvDi/H+JJbMhCX7LJRTa7
-        U49zK+T/5bBgv4ZZdDYQRcquFjXeBOCMBmg==
-X-Received: by 2002:a37:8502:: with SMTP id h2mr21413376qkd.223.1584972569654;
-        Mon, 23 Mar 2020 07:09:29 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vuJqPJB4iEIpQYb0jon939GQGBMkOlpP233dLHl8r+JSPyVQOYX67MfhwKqqmMWJkFdyVYwvA==
-X-Received: by 2002:a37:8502:: with SMTP id h2mr21413345qkd.223.1584972569409;
-        Mon, 23 Mar 2020 07:09:29 -0700 (PDT)
-Received: from [192.168.1.75] (189-47-87-73.dsl.telesp.net.br. [189.47.87.73])
-        by smtp.gmail.com with ESMTPSA id c40sm12694113qtk.18.2020.03.23.07.09.25
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 23 Mar 2020 07:09:28 -0700 (PDT)
-Subject: Re: [PATCH] net: ena: Add PCI shutdown handler to allow safe kexec
-To:     "Jubran, Samih" <sameehj@amazon.com>
-Cc:     "Belgazal, Netanel" <netanel@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
-        "gshan@redhat.com" <gshan@redhat.com>,
-        "gavin.guo@canonical.com" <gavin.guo@canonical.com>,
-        "jay.vosburgh@canonical.com" <jay.vosburgh@canonical.com>,
-        "pedro.principeza@canonical.com" <pedro.principeza@canonical.com>
-References: <f350a2ee513f4e3fb2a2cfa633dc0806@EX13D11EUB003.ant.amazon.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@canonical.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=gpiccoli@canonical.com; prefer-encrypt=mutual; keydata=
- mQENBFpVBxcBCADPNKmu2iNKLepiv8+Ssx7+fVR8lrL7cvakMNFPXsXk+f0Bgq9NazNKWJIn
- Qxpa1iEWTZcLS8ikjatHMECJJqWlt2YcjU5MGbH1mZh+bT3RxrJRhxONz5e5YILyNp7jX+Vh
- 30rhj3J0vdrlIhPS8/bAt5tvTb3ceWEic9mWZMsosPavsKVcLIO6iZFlzXVu2WJ9cov8eQM/
- irIgzvmFEcRyiQ4K+XUhuA0ccGwgvoJv4/GWVPJFHfMX9+dat0Ev8HQEbN/mko/bUS4Wprdv
- 7HR5tP9efSLucnsVzay0O6niZ61e5c97oUa9bdqHyApkCnGgKCpg7OZqLMM9Y3EcdMIJABEB
- AAG0LUd1aWxoZXJtZSBHLiBQaWNjb2xpIDxncGljY29saUBjYW5vbmljYWwuY29tPokBNwQT
- AQgAIQUCWmClvQIbAwULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAAKCRDOR5EF9K/7Gza3B/9d
- 5yczvEwvlh6ksYq+juyuElLvNwMFuyMPsvMfP38UslU8S3lf+ETukN1S8XVdeq9yscwtsRW/
- 4YoUwHinJGRovqy8gFlm3SAtjfdqysgJqUJwBmOtcsHkmvFXJmPPGVoH9rMCUr9s6VDPox8f
- q2W5M7XE9YpsfchS/0fMn+DenhQpV3W6pbLtuDvH/81GKrhxO8whSEkByZbbc+mqRhUSTdN3
- iMpRL0sULKPVYbVMbQEAnfJJ1LDkPqlTikAgt3peP7AaSpGs1e3pFzSEEW1VD2jIUmmDku0D
- LmTHRl4t9KpbU/H2/OPZkrm7809QovJGRAxjLLPcYOAP7DUeltveuQENBFpVBxcBCADbxD6J
- aNw/KgiSsbx5Sv8nNqO1ObTjhDR1wJw+02Bar9DGuFvx5/qs3ArSZkl8qX0X9Vhptk8rYnkn
- pfcrtPBYLoux8zmrGPA5vRgK2ItvSc0WN31YR/6nqnMfeC4CumFa/yLl26uzHJa5RYYQ47jg
- kZPehpc7IqEQ5IKy6cCKjgAkuvM1rDP1kWQ9noVhTUFr2SYVTT/WBHqUWorjhu57/OREo+Tl
- nxI1KrnmW0DbF52tYoHLt85dK10HQrV35OEFXuz0QPSNrYJT0CZHpUprkUxrupDgkM+2F5LI
- bIcaIQ4uDMWRyHpDbczQtmTke0x41AeIND3GUc+PQ4hWGp9XABEBAAGJAR8EGAEIAAkFAlpV
- BxcCGwwACgkQzkeRBfSv+xv1wwgAj39/45O3eHN5pK0XMyiRF4ihH9p1+8JVfBoSQw7AJ6oU
- 1Hoa+sZnlag/l2GTjC8dfEGNoZd3aRxqfkTrpu2TcfT6jIAsxGjnu+fUCoRNZzmjvRziw3T8
- egSPz+GbNXrTXB8g/nc9mqHPPprOiVHDSK8aGoBqkQAPZDjUtRwVx112wtaQwArT2+bDbb/Y
- Yh6gTrYoRYHo6FuQl5YsHop/fmTahpTx11IMjuh6IJQ+lvdpdfYJ6hmAZ9kiVszDF6pGFVkY
- kHWtnE2Aa5qkxnA2HoFpqFifNWn5TyvJFpyqwVhVI8XYtXyVHub/WbXLWQwSJA4OHmqU8gDl
- X18zwLgdiQ==
-Message-ID: <408dd4c7-9f84-3314-1123-f308098e53e4@canonical.com>
-Date:   Mon, 23 Mar 2020 11:09:23 -0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=M3Wr65lLh2kuudYsljJta3QzD+9lmM4JGNQEJrj4vfw=;
+        b=mtwciTLTTxU6ia3khWKc47oKfyfbbxUqtWqz1j3GXasK4qRFG9/dolJxAUeQOE5LEl
+         wsXp1CX+oDVDROFFz2m6GimG6ihIhPybDlPuLlS57bsfFe+ix6b1lil6ia47fHDVrw54
+         RCjvwXtFbhzU/UIwIdX0kk0ZfmRsxmxUH4nS4fsHRXEzxctidHV07N1NkJIeFEUJRZ6T
+         PkZ1y6DuMzygbuw64UAYs7WavzG/LYITkDayJcqlLcxBIPERId3sZjFsc7unpBfm9wbO
+         rVqEgkBnaImaaxcdqShiCEDIwS+0EJBu+oqvVFQNjnpJWhnQpZFtiV5clXQfQq3AUeQY
+         3jhA==
+X-Gm-Message-State: ANhLgQ1CptKSs967l6MO+yvcsLdKMh4bTTdAu3EsjZi+tGmzcN5JR4Cn
+        nj5aA4aZA8r3etwIa1tgq8OR7Q==
+X-Google-Smtp-Source: ADFU+vvaQlEY2gL2y6UV1On9B7WtP2wMY2UQhM5xItVGcZ4odh9Y1yyKVJUdqeacFDfkLUQW52fsBA==
+X-Received: by 2002:a17:90a:8087:: with SMTP id c7mr6755789pjn.148.1584973128533;
+        Mon, 23 Mar 2020 07:18:48 -0700 (PDT)
+Received: from C02YVCJELVCG.greyhouse.net ([192.19.231.250])
+        by smtp.gmail.com with ESMTPSA id h64sm13080739pfg.191.2020.03.23.07.18.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Mar 2020 07:18:47 -0700 (PDT)
+Date:   Mon, 23 Mar 2020 10:18:33 -0400
+From:   Andy Gospodarek <andy@greyhouse.net>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     sameehj@amazon.com, Michael Chan <michael.chan@broadcom.com>,
+        Andy Gospodarek <andrew.gospodarek@broadcom.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, zorik@amazon.com,
+        akiyano@amazon.com, gtzalik@amazon.com,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@toke.dk>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>
+Subject: Re: [PATCH RFC v1 03/15] bnxt: add XDP frame size to driver
+Message-ID: <20200323141833.GB21532@C02YVCJELVCG.greyhouse.net>
+References: <158446612466.702578.2795159620575737080.stgit@firesoul>
+ <158446616289.702578.7889111879119296431.stgit@firesoul>
 MIME-Version: 1.0
-In-Reply-To: <f350a2ee513f4e3fb2a2cfa633dc0806@EX13D11EUB003.ant.amazon.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <158446616289.702578.7889111879119296431.stgit@firesoul>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> [...] 
-> 
-> Hi 
-> Guilherme,
-> 
-> Thank you for the patch, we are currently looking into your patch and testing it.
-> 
-> Thanks,
-> Sameeh
-> 
+On Tue, Mar 17, 2020 at 06:29:22PM +0100, Jesper Dangaard Brouer wrote:
+> This driver uses full PAGE_SIZE pages when XDP is enabled.
 
-Thanks a lot Sameeh! If you have any suggestions, let me know and I can
-quickly respin a V2.
+Talked with Jesper about this some more on IRC and he clarified
+something for me that was bugging me.
 
-Cheers,
+> Cc: Michael Chan <michael.chan@broadcom.com>
+> Cc: Andy Gospodarek <andrew.gospodarek@broadcom.com>
 
+I know this is only an RFC, but feel free to add:
 
-Guilherme
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+
+to this patch.  Thanks for your work on this!
+
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+> index c6f6f2033880..5e3b4a3b69ea 100644
+> --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+> +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+> @@ -138,6 +138,7 @@ bool bnxt_rx_xdp(struct bnxt *bp, struct bnxt_rx_ring_info *rxr, u16 cons,
+>  	xdp_set_data_meta_invalid(&xdp);
+>  	xdp.data_end = *data_ptr + *len;
+>  	xdp.rxq = &rxr->xdp_rxq;
+> +	xdp.frame_sz = PAGE_SIZE; /* BNXT_RX_PAGE_MODE(bp) when XDP enabled */
+>  	orig_data = xdp.data;
+>  
+>  	rcu_read_lock();
+> 
+> 
