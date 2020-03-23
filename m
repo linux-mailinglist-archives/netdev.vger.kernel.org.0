@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBFC018F56D
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 14:14:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A69318F56E
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 14:15:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728404AbgCWNO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 09:14:56 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:55298 "EHLO
+        id S1728415AbgCWNPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 09:15:00 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:59648 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728240AbgCWNOz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 09:14:55 -0400
+        by vger.kernel.org with ESMTP id S1728240AbgCWNO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 09:14:57 -0400
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02ND6OGY010599;
-        Mon, 23 Mar 2020 06:14:52 -0700
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02ND60gF010448;
+        Mon, 23 Mar 2020 06:14:54 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=AfJvl4YQkpPHf0YXHp9mM8O4lFNcbvonW9a0wXBuoLo=;
- b=K2OZJhzQJUgdFzx+MPzLWGMBrfhxCqEzvYyITI/9122gLZrQHYLY9AHv29sF71cjTL5w
- LCD0jK4TxgcLPCKYbciXVUJ9nb09wp7h4ymS5IkI2vKwC/IYaar3ncUrmZ/bQiipM2wD
- NvJXoN63TG0JWlIe58UQwEakGhoJpZjqDgCYUDnxMd0v2QYgnz23xu2UDyoX49pPnf4l
- IeOJPff9gzRbq3cyVUGjEJ4+Ii3hgM4bmJ7YyLy5/AFyUOCHKY9GFTOUhO8nCtwdl8K/
- csijgjSCFpVK6+CEXD8nIixTeKmwnIPAcz/9DILBsjW7aDnTzXFEXNA0IIC/Tdd4G56e lQ== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0a-0016f401.pphosted.com with ESMTP id 2ywg9nefqg-1
+ content-type; s=pfpt0818; bh=LGHAe7/enz9me2vEW0hbX8i3qEJ3Pta9KLhuY2SE+V8=;
+ b=hLg3uvYZuIqaSWB7N5lS2H2L3sHfBNTXDiVB88ZYMThVyl4BqvoPuJ8vGR8MGbjCcszG
+ VxRDpUAkfcaPtM64QDRTNwz+DTwvUpg/pdNH3jl7NRgpjSIrGs7U4AnSQJDuh5jlYDIF
+ 7M2NmHGrvDJ3zlTbK3PWKBfSN2FohRJlz6Y6kDPeTtS/DytcpQpF7DNRTouWCen2oLN8
+ YgJTzKCi0xmNjsiXPBkmRZIJ6townZ/BV0uMmZhZUBQng9MQAHTfqd8t4TJB2f9te0j/
+ u0hYyw0WKEohwXL1qomKyYAw8snUYb2sgcJXHTj2oPvfLRvYJK4tBb/JJIYXvJwv3Dzn uw== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2ywg9nefqr-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 23 Mar 2020 06:14:52 -0700
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 23 Mar
- 2020 06:14:50 -0700
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 23 Mar 2020 06:14:50 -0700
+        Mon, 23 Mar 2020 06:14:54 -0700
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 23 Mar
+ 2020 06:14:53 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 23 Mar 2020 06:14:53 -0700
 Received: from localhost.localdomain (unknown [10.9.16.91])
-        by maili.marvell.com (Postfix) with ESMTP id 1E2813F7041;
-        Mon, 23 Mar 2020 06:14:48 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 6C0E93F703F;
+        Mon, 23 Mar 2020 06:14:51 -0700 (PDT)
 From:   Igor Russkikh <irusskikh@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     Mark Starovoytov <mstarovoitov@marvell.com>,
@@ -42,9 +42,9 @@ CC:     Mark Starovoytov <mstarovoitov@marvell.com>,
         Antoine Tenart <antoine.tenart@bootlin.com>,
         "Dmitry Bogdanov" <dbogdanov@marvell.com>,
         Igor Russkikh <irusskikh@marvell.com>
-Subject: [PATCH net-next 05/17] net: macsec: init secy pointer in macsec_context
-Date:   Mon, 23 Mar 2020 16:13:36 +0300
-Message-ID: <20200323131348.340-6-irusskikh@marvell.com>
+Subject: [PATCH net-next 06/17] net: macsec: allow multiple macsec devices with offload
+Date:   Mon, 23 Mar 2020 16:13:37 +0300
+Message-ID: <20200323131348.340-7-irusskikh@marvell.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200323131348.340-1-irusskikh@marvell.com>
 References: <20200323131348.340-1-irusskikh@marvell.com>
@@ -59,128 +59,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Dmitry Bogdanov <dbogdanov@marvell.com>
 
-This patch adds secy pointer initialization in the macsec_context.
-It will be used by MAC drivers in offloading operations.
+Offload engine can setup several SecY. Each macsec interface shall have
+its own mac address. It will filter a traffic by dest mac address.
 
 Signed-off-by: Dmitry Bogdanov <dbogdanov@marvell.com>
 Signed-off-by: Mark Starovoytov <mstarovoitov@marvell.com>
 Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
 ---
- drivers/net/macsec.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ drivers/net/macsec.c | 25 +------------------------
+ 1 file changed, 1 insertion(+), 24 deletions(-)
 
 diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index c4d5f609871e..0f6808f3ff91 100644
+index 0f6808f3ff91..5d1564cda7fe 100644
 --- a/drivers/net/macsec.c
 +++ b/drivers/net/macsec.c
-@@ -1793,6 +1793,7 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 
- 		ctx.sa.assoc_num = assoc_num;
- 		ctx.sa.rx_sa = rx_sa;
-+		ctx.secy = secy;
- 		memcpy(ctx.sa.key, nla_data(tb_sa[MACSEC_SA_ATTR_KEY]),
- 		       MACSEC_KEYID_LEN);
- 
-@@ -1840,6 +1841,7 @@ static int macsec_add_rxsc(struct sk_buff *skb, struct genl_info *info)
+@@ -2552,11 +2552,10 @@ static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
+ 	enum macsec_offload offload, prev_offload;
+ 	int (*func)(struct macsec_context *ctx);
  	struct nlattr **attrs = info->attrs;
- 	struct macsec_rx_sc *rx_sc;
- 	struct nlattr *tb_rxsc[MACSEC_RXSC_ATTR_MAX + 1];
-+	struct macsec_secy *secy;
- 	bool was_active;
+-	struct net_device *dev, *loop_dev;
++	struct net_device *dev;
+ 	const struct macsec_ops *ops;
+ 	struct macsec_context ctx;
+ 	struct macsec_dev *macsec;
+-	struct net *loop_net;
  	int ret;
  
-@@ -1859,6 +1861,7 @@ static int macsec_add_rxsc(struct sk_buff *skb, struct genl_info *info)
- 		return PTR_ERR(dev);
- 	}
+ 	if (!attrs[MACSEC_ATTR_IFINDEX])
+@@ -2584,28 +2583,6 @@ static int macsec_upd_offload(struct sk_buff *skb, struct genl_info *info)
+ 	    !macsec_check_offload(offload, macsec))
+ 		return -EOPNOTSUPP;
  
-+	secy = &macsec_priv(dev)->secy;
- 	sci = nla_get_sci(tb_rxsc[MACSEC_RXSC_ATTR_SCI]);
- 
- 	rx_sc = create_rx_sc(dev, sci);
-@@ -1882,6 +1885,7 @@ static int macsec_add_rxsc(struct sk_buff *skb, struct genl_info *info)
- 		}
- 
- 		ctx.rx_sc = rx_sc;
-+		ctx.secy = secy;
- 
- 		ret = macsec_offload(ops->mdo_add_rxsc, &ctx);
- 		if (ret)
-@@ -2031,6 +2035,7 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 
- 		ctx.sa.assoc_num = assoc_num;
- 		ctx.sa.tx_sa = tx_sa;
-+		ctx.secy = secy;
- 		memcpy(ctx.sa.key, nla_data(tb_sa[MACSEC_SA_ATTR_KEY]),
- 		       MACSEC_KEYID_LEN);
- 
-@@ -2106,6 +2111,7 @@ static int macsec_del_rxsa(struct sk_buff *skb, struct genl_info *info)
- 
- 		ctx.sa.assoc_num = assoc_num;
- 		ctx.sa.rx_sa = rx_sa;
-+		ctx.secy = secy;
- 
- 		ret = macsec_offload(ops->mdo_del_rxsa, &ctx);
- 		if (ret)
-@@ -2171,6 +2177,7 @@ static int macsec_del_rxsc(struct sk_buff *skb, struct genl_info *info)
- 		}
- 
- 		ctx.rx_sc = rx_sc;
-+		ctx.secy = secy;
- 		ret = macsec_offload(ops->mdo_del_rxsc, &ctx);
- 		if (ret)
- 			goto cleanup;
-@@ -2229,6 +2236,7 @@ static int macsec_del_txsa(struct sk_buff *skb, struct genl_info *info)
- 
- 		ctx.sa.assoc_num = assoc_num;
- 		ctx.sa.tx_sa = tx_sa;
-+		ctx.secy = secy;
- 
- 		ret = macsec_offload(ops->mdo_del_txsa, &ctx);
- 		if (ret)
-@@ -2340,6 +2348,7 @@ static int macsec_upd_txsa(struct sk_buff *skb, struct genl_info *info)
- 
- 		ctx.sa.assoc_num = assoc_num;
- 		ctx.sa.tx_sa = tx_sa;
-+		ctx.secy = secy;
- 
- 		ret = macsec_offload(ops->mdo_upd_txsa, &ctx);
- 		if (ret)
-@@ -2432,6 +2441,7 @@ static int macsec_upd_rxsa(struct sk_buff *skb, struct genl_info *info)
- 
- 		ctx.sa.assoc_num = assoc_num;
- 		ctx.sa.rx_sa = rx_sa;
-+		ctx.secy = secy;
- 
- 		ret = macsec_offload(ops->mdo_upd_rxsa, &ctx);
- 		if (ret)
-@@ -2502,6 +2512,7 @@ static int macsec_upd_rxsc(struct sk_buff *skb, struct genl_info *info)
- 		}
- 
- 		ctx.rx_sc = rx_sc;
-+		ctx.secy = secy;
- 
- 		ret = macsec_offload(ops->mdo_upd_rxsc, &ctx);
- 		if (ret)
-@@ -3369,6 +3380,7 @@ static int macsec_dev_open(struct net_device *dev)
- 			goto clear_allmulti;
- 		}
- 
-+		ctx.secy = &macsec->secy;
- 		err = macsec_offload(ops->mdo_dev_open, &ctx);
- 		if (err)
- 			goto clear_allmulti;
-@@ -3400,8 +3412,10 @@ static int macsec_dev_stop(struct net_device *dev)
- 		struct macsec_context ctx;
- 
- 		ops = macsec_get_ops(macsec, &ctx);
--		if (ops)
-+		if (ops) {
-+			ctx.secy = &macsec->secy;
- 			macsec_offload(ops->mdo_dev_stop, &ctx);
-+		}
- 	}
- 
- 	dev_mc_unsync(real_dev, dev);
+-	if (offload == MACSEC_OFFLOAD_OFF)
+-		goto skip_limitation;
+-
+-	/* Check the physical interface isn't offloading another interface
+-	 * first.
+-	 */
+-	for_each_net(loop_net) {
+-		for_each_netdev(loop_net, loop_dev) {
+-			struct macsec_dev *priv;
+-
+-			if (!netif_is_macsec(loop_dev))
+-				continue;
+-
+-			priv = macsec_priv(loop_dev);
+-
+-			if (priv->real_dev == macsec->real_dev &&
+-			    priv->offload != MACSEC_OFFLOAD_OFF)
+-				return -EBUSY;
+-		}
+-	}
+-
+-skip_limitation:
+ 	/* Check if the net device is busy. */
+ 	if (netif_running(dev))
+ 		return -EBUSY;
 -- 
 2.17.1
 
