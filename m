@@ -2,142 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CF3918F064
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 08:42:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E834418F06B
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 08:46:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727461AbgCWHmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 03:42:51 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38619 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727430AbgCWHmv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 03:42:51 -0400
-Received: by mail-wr1-f65.google.com with SMTP id s1so15619593wrv.5;
-        Mon, 23 Mar 2020 00:42:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UZh37ycoXEQPJvIa8TQQD4wS32qVanpxbiaipTPYPv4=;
-        b=VVQvLgWT8eeBqcR18iurqJfr5XafnB3FvZhL24uObshAdADJo6ReTy467QzsXVgXJi
-         uyg/c7WimX6uOBVdq3J79hkpu4KM84XT1MLjiUhTCggHFO5cjZZX7WVjXAaGq/IOcRgH
-         lQL6tH4h6mItv8MJ5O/5cOeBjbNaZ+xAPQ81qpIG0p7GPBXbQJ9PuIK3X2KFykT96N4c
-         9wblwjAzlTysTBvlUo7yrkpOK+ofL9/sCglExcYwgdoFQr1rtX0O7DOsK9VHyYygN9dV
-         lRVKnItn8J3EIEvGoA85GpVVeXxLZct4suN75z8zbXbZFOj/0xlH8QJJj8AKrihMZocA
-         EM2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UZh37ycoXEQPJvIa8TQQD4wS32qVanpxbiaipTPYPv4=;
-        b=HwOHjaNrLUQRt6B6m4gQyiUa29F4+Fg32+Zybx/LZ4i5Bk7obxyogo0/GBP1qNsXcf
-         465Rj+02CnGkwJOLngvQrPd9YnFR0HDZAZ+62bmr7N1xav4pZWGUDGKixMf/ryvYPAgu
-         BlOvKoVKMz5SxBgyG20dTKlHVG9k9JBBaQEoLQVOdBK899HhuzF2XRlGbh2ps0Xy/qnu
-         f9vpJFxNggQAg2hXwJWxccxQKgEVhrz3Oqqu6NKXc12jmeza2guoxNyE3UyfzjMQ0CYI
-         6UsxsMnk2niYzVPs+Q50M0oWMkSy53OVtvIwnPlck4BaRIOmp0wk6Xr9QRsnoUVyJAvK
-         zhzQ==
-X-Gm-Message-State: ANhLgQ1YsZQKhnwXvuToIWXbQlaTMOj+5SiE9vpsqs2v1KY0F+LNuLNS
-        FwOYXE9SDxHzB4YcnzyQOjg=
-X-Google-Smtp-Source: ADFU+vvFxqhBpEkdLzntmJHaBKuQ5PAxGVV3+E6+Y/U7zr7en2fbwBanlcdD4rH097js1JSaE/37og==
-X-Received: by 2002:a5d:63d2:: with SMTP id c18mr6797923wrw.385.1584949368405;
-        Mon, 23 Mar 2020 00:42:48 -0700 (PDT)
-Received: from localhost ([2a02:21b0:9002:6131:e6f7:db0e:d6e9:e56e])
-        by smtp.gmail.com with ESMTPSA id b7sm1569052wrn.67.2020.03.23.00.42.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2020 00:42:47 -0700 (PDT)
-Date:   Mon, 23 Mar 2020 08:42:47 +0100
-From:   Jean-Philippe Menil <jpmenil@gmail.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] bpf: fix build warning - missing prototype
-Message-ID: <20200323074247.wdkfualyvf3n6vlo@macbook>
-References: <20200322140844.4674-1-jpmenil@gmail.com>
- <b08375c6-81ce-b96d-0b87-299f966f4d84@fb.com>
+        id S1727457AbgCWHqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 03:46:47 -0400
+Received: from smtprelay-out1.synopsys.com ([149.117.73.133]:37174 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727422AbgCWHqq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 03:46:46 -0400
+Received: from mailhost.synopsys.com (badc-mailhost2.synopsys.com [10.192.0.18])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 63E21401B2;
+        Mon, 23 Mar 2020 07:46:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1584949605; bh=zY4v6gkIXM8sd+hrgkVj2SPnVx2+xHLtAfCyBTUStq0=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=maqMTIiLx1PgoZFd/Nrur9O7qjAsbUPShIMqksq7Q2A8o6fmvRejy40t1PD6ZeCpA
+         MJ0+1xuyBnAU9Z2pwCT7fA2XBI3aRfr2AFnTO8aIWuSfWhX4FxYiqHQ9VrZXo9Rziq
+         l/J/njaA/5sJhl5m1nEWGA3nb9CFrtV9rcos1pCjwD2bnNXF47PuObaio6RjCsv2Ni
+         9Rrvxw9zeV3ouSsMVh7DiIHVTzdFyq4CLdWtTzBYjrp+afeFeKZq5Eg8cvOmBCRmre
+         UCV7zfTiiDhUtwg5s5IpDxTnLDLoYlZtbHq9gOJgMc556K6Q60KR37IOvauOenXAkq
+         +4JtdsfzcPE/w==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 78A4DA006C;
+        Mon, 23 Mar 2020 07:46:41 +0000 (UTC)
+Received: from US01HYBRID2.internal.synopsys.com (10.15.246.24) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Mon, 23 Mar 2020 00:46:41 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (10.202.3.67) by
+ mrs.synopsys.com (10.15.246.24) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Mon, 23 Mar 2020 00:46:41 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PD+y+xSeGJt1Lxn8A7QeUeCzs/WNC3/E/uwQCRuqlrosgZjjNLBunz5IYj3mGsFrW8ZFD1qK57fh5LPkl3Vdhi3dDej0JdJv3mT0+5E4cRqnFMC0bb7mzNRWj7j08dd9y0BsBHExQaQFKn8ltgFSdjeQMmowAwmRGKtTSBZU7I923BYkzPz8u/gHi0Y4ly88G97sjkrI3pLx4YAY1O4MNXa6OcizQNmWMzOAKm+Vv0R7TkXI7scgTBiYBfT3LzX4x2NhFy9n4PZntDyi+agroy2iP8Nd2ynTVauVZHDWVV0DnJwOKYwL9vn5nG4lnJml769NTwUBOP6z6K+zJ57KZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=znBL8FCMzfUCfOlXPMEUGibGT+B999s+uBKzRxM6f0o=;
+ b=YQUewbnEZEO4htpx02jHpzuT7qwVDAi9vZnELgcJe11yug5X6O5DI0mnnjmwZy3i7HDaP4zuQA/JsuC6ktj2XqQbz6jCKoBO6TMttHXJnZBSMVOc3gSoY400lwckRe7a3SEoGG0Ksmf2tr3HTUG5fJdRZnCoiFrCJpQHyZU/x6ya87XFdRZgN4IimgMnDItFDq08HVMa6i11jQLjUyeGRO7KBikdr5i3hp6A4hp8LwT8Ynf4oRLADHxw9RkLm7lalCu50cgwB/4gmOKt8wds8kDMJJn92LEi3Omg0Y/3s1yqumvlkFeN5TkvNYZ8biq1Hhi8vlQoidyl8S1rinc9mg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=znBL8FCMzfUCfOlXPMEUGibGT+B999s+uBKzRxM6f0o=;
+ b=ANPS+DoQcHNxfEMVAdlmCbOt4nKijtCZBpq4eoXuWTTBRy3v9peTXVmhwo+sAjPY3nko8FB3BQlWaBtPF7D/zv7Cxs+inmV6ySAeGbu9LOQOzN2lg3s+Nf1jffvDnDDUv6zjvOIDzzuI8KVqrTmpWiDCs2kwHPquSQx1Q1n+HTA=
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com (2603:10b6:408:6e::17)
+ by BN8PR12MB3153.namprd12.prod.outlook.com (2603:10b6:408:69::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.20; Mon, 23 Mar
+ 2020 07:46:40 +0000
+Received: from BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::c9ed:b08e:f3c5:42fa]) by BN8PR12MB3266.namprd12.prod.outlook.com
+ ([fe80::c9ed:b08e:f3c5:42fa%7]) with mapi id 15.20.2835.021; Mon, 23 Mar 2020
+ 07:46:40 +0000
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     Voon Weifeng <weifeng.voon@intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Giuseppe Cavallaro" <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+Subject: RE: [RFC,net-next,v1, 1/1] net: stmmac: Enable SERDES power up/down
+ sequence
+Thread-Topic: [RFC,net-next,v1, 1/1] net: stmmac: Enable SERDES power up/down
+ sequence
+Thread-Index: AQHWAE03JZEV2gP9CkiKXaQcDq7OzahVzGeA
+Date:   Mon, 23 Mar 2020 07:46:39 +0000
+Message-ID: <BN8PR12MB3266ACFFA4808A133BB72F9DD3F00@BN8PR12MB3266.namprd12.prod.outlook.com>
+References: <20200322132342.2687-1-weifeng.voon@intel.com>
+ <20200322132342.2687-2-weifeng.voon@intel.com>
+In-Reply-To: <20200322132342.2687-2-weifeng.voon@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=joabreu@synopsys.com; 
+x-originating-ip: [82.155.99.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3d97721e-3255-4b3e-45de-08d7cefe52aa
+x-ms-traffictypediagnostic: BN8PR12MB3153:
+x-microsoft-antispam-prvs: <BN8PR12MB315351C657186FA9C8018F86D3F00@BN8PR12MB3153.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0351D213B3
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(366004)(346002)(39850400004)(396003)(376002)(199004)(2906002)(5660300002)(9686003)(55016002)(33656002)(81156014)(81166006)(8676002)(8936002)(478600001)(316002)(71200400001)(110136005)(54906003)(6506007)(26005)(186003)(86362001)(4326008)(66556008)(66476007)(66946007)(66446008)(64756008)(7696005)(76116006)(52536014)(142933001);DIR:OUT;SFP:1102;SCL:1;SRVR:BN8PR12MB3153;H:BN8PR12MB3266.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: NJXNLhjffBmzHWO+jXzI/wMfimKn3yRH6QNodJbDrvwpDuotZSM42e5TXWJOMpKx1zlRqcrnLlAFHaw7HzhE3Pm01yleB3TjrKz131X616CRpQ9klu/kwtOFHmnKtbQj5j/Akple9iMWjEMlKgJaG0ylxzwj+PIMVhvuW6pOXTLtzJKtlYoDEkfpnm4xzC6IWO6Cuf6SnSR/R0z39GPM5UNQKfbXYLNovurDeBaZA3P2mXcdm8GlmXOKeyAyTZSzHukfcnSHK9F2iqoPy2UMqlTsmK6OWw8eJFraKm0l3mbMGUambSixVPlswU3RUOF7CX2bLg59xoIlokmJdFR13VpSOkI5Sb9Ak2EBIopACwSCvEiHQKbIVfEEaQ3E5UhOoTbVgj91IHs5NGkgjxRgEOTdWC56MDKZzLQvkqWiRsQOYgvB6CaV5kvgd1iy0/KOAFwHUUL2ucsrckTi5839TUjaL3DRx/x5LW0LFmEYiV23IPCT5zwdvXRZ7XJ317n6
+x-ms-exchange-antispam-messagedata: KwmNZHGEvCDlaCAM6Szum+SfOrQbLQoNh4pU9k1zrtAZZsYQAMlEb9eF/qrQg4VNHAUXTmWcvq1mfKhsWJ0Z/gtYURA2qSyuPnccM8BuOZrF/WUC/02znPu6g2Q4Cd15QdJEfNQEX5DY2PLE7FlWCw==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-In-Reply-To: <b08375c6-81ce-b96d-0b87-299f966f4d84@fb.com>
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3d97721e-3255-4b3e-45de-08d7cefe52aa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Mar 2020 07:46:39.9230
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: f8k//LO87II/nejQhcWL/7MkZCcPjTJWemyISI/tW7hAKSGPDhDTEbiX8/zeMBKvsTG0kMhPFNMwIkhwryx5Og==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR12MB3153
+X-OriginatorOrg: synopsys.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/03/20 at 10:32pm, Yonghong Song wrote:
->
->
->On 3/22/20 7:08 AM, Jean-Philippe Menil wrote:
->>Fix build warning when building net/bpf/test_run.o with W=1 due
->>to missing prototype for bpf_fentry_test{1..6}.
->>
->>These functions are only used in test_run.c so just make them static.
->>Therefore inline keyword should sit between storage class and type.
->
->This won't work. These functions are intentionally global functions
->so that their definitions will be in vmlinux BTF and fentry/fexit kernel
->selftests can run against them.
->
->See file 
->linux/tools/testing/selftests/bpf/progs/{fentry_test.c,fexit_test.c}.
->
+From: Voon Weifeng <weifeng.voon@intel.com>
+Date: Mar/22/2020, 13:23:42 (UTC+00:00)
 
-I can see now, thanks for the pointer.
-I totally missed that.
+> This patch is to enable Intel SERDES power up/down sequence. The SERDES
+> converts 8/10 bits data to SGMII signal. Below is an example of
+> HW configuration for SGMII mode. The SERDES is located in the PHY IF
+> in the diagram below.
+>=20
+> <-----------------GBE Controller---------->|<--External PHY chip-->
+> +----------+         +----+            +---+           +----------+
+> |   EQoS   | <-GMII->| DW | < ------ > |PHY| <-SGMII-> | External |
+> |   MAC    |         |xPCS|            |IF |           | PHY      |
+> +----------+         +----+            +---+           +----------+
+>        ^               ^                 ^                ^
+>        |               |                 |                |
+>        +---------------------MDIO-------------------------+
+>=20
+> PHY IF configuration and status registers are accessible through
+> mdio address 0x15 which is defined as intel_adhoc_addr. During D0,
+> The driver will need to power up PHY IF by changing the power state
+> to P0. Likewise, for D3, the driver sets PHY IF power state to P3.
 
-So, in order to fix the warnings, better to declare the prototypes?
-(compiling with W=1 may be a bit unusual).
+I don't think this is the right approach.
 
->>
->>Signed-off-by: Jean-Philippe Menil <jpmenil@gmail.com>
->>---
->>  net/bpf/test_run.c | 12 ++++++------
->>  1 file changed, 6 insertions(+), 6 deletions(-)
->>
->>diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
->>index d555c0d8657d..c0dcd29f682c 100644
->>--- a/net/bpf/test_run.c
->>+++ b/net/bpf/test_run.c
->>@@ -113,32 +113,32 @@ static int bpf_test_finish(const union bpf_attr *kattr,
->>   * architecture dependent calling conventions. 7+ can be supported in the
->>   * future.
->>   */
->>-int noinline bpf_fentry_test1(int a)
->>+static noinline int bpf_fentry_test1(int a)
->>  {
->>  	return a + 1;
->>  }
->>-int noinline bpf_fentry_test2(int a, u64 b)
->>+static noinline int bpf_fentry_test2(int a, u64 b)
->>  {
->>  	return a + b;
->>  }
->>-int noinline bpf_fentry_test3(char a, int b, u64 c)
->>+static noinline int bpf_fentry_test3(char a, int b, u64 c)
->>  {
->>  	return a + b + c;
->>  }
->>-int noinline bpf_fentry_test4(void *a, char b, int c, u64 d)
->>+static noinline int bpf_fentry_test4(void *a, char b, int c, u64 d)
->>  {
->>  	return (long)a + b + c + d;
->>  }
->>-int noinline bpf_fentry_test5(u64 a, void *b, short c, int d, u64 e)
->>+static noinline int bpf_fentry_test5(u64 a, void *b, short c, int d, u64 e)
->>  {
->>  	return a + (long)b + c + d + e;
->>  }
->>-int noinline bpf_fentry_test6(u64 a, void *b, short c, int d, void *e, u64 f)
->>+static noinline int bpf_fentry_test6(u64 a, void *b, short c, int d, void *e, u64 f)
->>  {
->>  	return a + (long)b + c + d + (long)e + f;
->>  }
->>
+You could just add a new "mdio-intel-serdes" to phy/ folder just like I=20
+did with XPCS because this is mostly related with PHY settings rather than=
+=20
+EQoS.
 
--- 
-Jean-Philippe Menil
+Perhaps Andrew has better insight on this.
+
+BTW, are you using the standard XPCS helpers in phy/ folder ? Is it=20
+working fine for you ?
+
+---
+Thanks,
+Jose Miguel Abreu
