@@ -2,64 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60FCE18EFCB
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 07:29:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8FC918EFE8
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 07:48:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727295AbgCWG3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 02:29:45 -0400
-Received: from helcar.hmeau.com ([216.24.177.18]:56914 "EHLO fornost.hmeau.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726059AbgCWG3p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 02:29:45 -0400
-Received: from gwarestrin.me.apana.org.au ([192.168.0.7] helo=gwarestrin.arnor.me.apana.org.au)
-        by fornost.hmeau.com with smtp (Exim 4.89 #2 (Debian))
-        id 1jGGaI-0004Wx-IH; Mon, 23 Mar 2020 17:29:15 +1100
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Mon, 23 Mar 2020 17:29:14 +1100
-Date:   Mon, 23 Mar 2020 17:29:14 +1100
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     steffen.klassert@secunet.com, davem@davemloft.net, kuba@kernel.org,
-        timo.teras@iki.fi, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] xfrm: policy: Fix doulbe free in xfrm_policy_timer
-Message-ID: <20200323062914.GA5811@gondor.apana.org.au>
-References: <20200318034839.57996-1-yuehaibing@huawei.com>
- <20200323014155.56376-1-yuehaibing@huawei.com>
+        id S1727334AbgCWGsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 02:48:20 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:56286 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726142AbgCWGsT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Mar 2020 02:48:19 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 7B578D4A8DDD5F88AC1A;
+        Mon, 23 Mar 2020 14:48:11 +0800 (CST)
+Received: from huawei.com (10.175.113.25) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.487.0; Mon, 23 Mar 2020
+ 14:48:04 +0800
+From:   Zheng Zengkai <zhengzengkai@huawei.com>
+To:     <sgoutham@marvell.com>, <rrichter@marvell.com>,
+        <davem@davemloft.net>, <ast@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <zhengzengkai@huawei.com>
+Subject: [PATCH net-next] net: thunderx: remove set but not used variable 'tail'
+Date:   Mon, 23 Mar 2020 14:51:16 +0800
+Message-ID: <20200323065116.45399-1-zhengzengkai@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200323014155.56376-1-yuehaibing@huawei.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 23, 2020 at 09:41:55AM +0800, YueHaibing wrote:
->
-> diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-> index dbda08ec566e..ae0689174bbf 100644
-> --- a/net/xfrm/xfrm_policy.c
-> +++ b/net/xfrm/xfrm_policy.c
-> @@ -434,6 +434,7 @@ EXPORT_SYMBOL(xfrm_policy_destroy);
->  
->  static void xfrm_policy_kill(struct xfrm_policy *policy)
->  {
-> +	write_lock_bh(&policy->lock);
->  	policy->walk.dead = 1;
->  
->  	atomic_inc(&policy->genid);
-> @@ -445,6 +446,7 @@ static void xfrm_policy_kill(struct xfrm_policy *policy)
->  	if (del_timer(&policy->timer))
->  		xfrm_pol_put(policy);
->  
-> +	write_unlock_bh(&policy->lock);
+From: Zheng zengkai <zhengzengkai@huawei.com>
 
-Why did you expand the critical section? Can't you just undo the
-patch in xfrm_policy_kill?
+Fixes gcc '-Wunused-but-set-variable' warning:
 
-Cheers,
+drivers/net/ethernet/cavium/thunder/nicvf_queues.c: In function nicvf_sq_free_used_descs:
+drivers/net/ethernet/cavium/thunder/nicvf_queues.c:1182:12: warning:
+ variable tail set but not used [-Wunused-but-set-variable]
+
+It's not used since commit 4863dea3fab01("net: Adding support for Cavium ThunderX network controller"),
+so remove it.
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Zheng zengkai <zhengzengkai@huawei.com>
+---
+ drivers/net/ethernet/cavium/thunder/nicvf_queues.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
+index 4ab57d33a87e..069e7413f1ef 100644
+--- a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
++++ b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
+@@ -1179,13 +1179,12 @@ void nicvf_sq_disable(struct nicvf *nic, int qidx)
+ void nicvf_sq_free_used_descs(struct net_device *netdev, struct snd_queue *sq,
+ 			      int qidx)
+ {
+-	u64 head, tail;
++	u64 head;
+ 	struct sk_buff *skb;
+ 	struct nicvf *nic = netdev_priv(netdev);
+ 	struct sq_hdr_subdesc *hdr;
+ 
+ 	head = nicvf_queue_reg_read(nic, NIC_QSET_SQ_0_7_HEAD, qidx) >> 4;
+-	tail = nicvf_queue_reg_read(nic, NIC_QSET_SQ_0_7_TAIL, qidx) >> 4;
+ 	while (sq->head != head) {
+ 		hdr = (struct sq_hdr_subdesc *)GET_SQ_DESC(sq, sq->head);
+ 		if (hdr->subdesc_type != SQ_DESC_TYPE_HEADER) {
 -- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+2.18.1
+
