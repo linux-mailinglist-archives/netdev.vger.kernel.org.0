@@ -2,252 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A446318F168
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 10:06:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B84AE18F186
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 10:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727665AbgCWJGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 05:06:05 -0400
-Received: from smtp-fw-9101.amazon.com ([207.171.184.25]:29478 "EHLO
-        smtp-fw-9101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727587AbgCWJGE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 05:06:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1584954363; x=1616490363;
-  h=from:to:cc:subject:date:message-id:
-   content-transfer-encoding:mime-version;
-  bh=eTRwEewhiVGCSfPF/aa4t8zypabQkvkyXc1TZjKXH6A=;
-  b=JTwwMAnMd5S06e8UtObhpdbH4ywDHlVlKiXvMWXkGWO0dFNA3uwGIZ9h
-   ee4BK+BhsAbNJZDsr8uoTd/7Oy3kMCw80lbVaJeWqukF+HHHJg8Z/JtKY
-   6pU/iSoRACycxYVpo0ViQlEhg8bUUYbtS0TFEzxNbIxBM6ldIyTLLmSXJ
-   c=;
-IronPort-SDR: ealZ3JvDS8GWSlcnrHuVqy+hJmt1W/63+vs0R2vAOpy3gy9C+/Sfr+grI0ksIIH+eLeiWV5cKL
- sVZfaDftZz9Q==
-X-IronPort-AV: E=Sophos;i="5.72,295,1580774400"; 
-   d="scan'208";a="24498837"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1a-821c648d.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9101.sea19.amazon.com with ESMTP; 23 Mar 2020 09:06:01 +0000
-Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan3.iad.amazon.com [10.40.159.166])
-        by email-inbound-relay-1a-821c648d.us-east-1.amazon.com (Postfix) with ESMTPS id 0BC1DA2241;
-        Mon, 23 Mar 2020 09:05:58 +0000 (UTC)
-Received: from EX13D08EUB003.ant.amazon.com (10.43.166.117) by
- EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
- id 15.0.1236.3; Mon, 23 Mar 2020 09:05:58 +0000
-Received: from EX13D11EUB003.ant.amazon.com (10.43.166.58) by
- EX13D08EUB003.ant.amazon.com (10.43.166.117) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 23 Mar 2020 09:05:57 +0000
-Received: from EX13D11EUB003.ant.amazon.com ([10.43.166.58]) by
- EX13D11EUB003.ant.amazon.com ([10.43.166.58]) with mapi id 15.00.1497.006;
- Mon, 23 Mar 2020 09:05:57 +0000
-From:   "Jubran, Samih" <sameehj@amazon.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@canonical.com>,
-        "Belgazal, Netanel" <netanel@amazon.com>,
-        "Kiyanovski, Arthur" <akiyano@amazon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "Tzalik, Guy" <gtzalik@amazon.com>,
-        "Bshara, Saeed" <saeedb@amazon.com>,
-        "Machulsky, Zorik" <zorik@amazon.com>,
-        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
-        "gshan@redhat.com" <gshan@redhat.com>,
-        "gavin.guo@canonical.com" <gavin.guo@canonical.com>,
-        "jay.vosburgh@canonical.com" <jay.vosburgh@canonical.com>,
-        "pedro.principeza@canonical.com" <pedro.principeza@canonical.com>
-Subject: RE: [PATCH] net: ena: Add PCI shutdown handler to allow safe kexec
-Thread-Topic: [PATCH] net: ena: Add PCI shutdown handler to allow safe kexec
-Thread-Index: AdYA8dKoipYPYd26QRuHLaWYX/mvCA==
-Date:   Mon, 23 Mar 2020 09:05:34 +0000
-Deferred-Delivery: Mon, 23 Mar 2020 09:04:27 +0000
-Message-ID: <f350a2ee513f4e3fb2a2cfa633dc0806@EX13D11EUB003.ant.amazon.com>
-Accept-Language: en-US
+        id S1727690AbgCWJPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 05:15:53 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:49404 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726037AbgCWJPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 05:15:52 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-89-kuuXMC7xMwSCEULD3Hl2XQ-1; Mon, 23 Mar 2020 09:15:46 +0000
+X-MC-Unique: kuuXMC7xMwSCEULD3Hl2XQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Mon, 23 Mar 2020 09:15:45 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 23 Mar 2020 09:15:45 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Tom Herbert' <tom@herbertland.com>
+CC:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Yadu Kishore <kyk.segfault@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>
+Subject: RE: [PATCH v2] net: Make skb_segment not to compute checksum if
+ network controller supports checksumming
+Thread-Topic: [PATCH v2] net: Make skb_segment not to compute checksum if
+ network controller supports checksumming
+Thread-Index: AQHV8G6boeAUqLyQLkCRyXn9e/JzBKg1V/WQgAE/qgCAAAaz0IADkSRugAAGsUCAAA2BgIAABmFwgBrcUACAANlnUA==
+Date:   Mon, 23 Mar 2020 09:15:45 +0000
+Message-ID: <88d43a6e2a7b497b9b1e448bf7ae068a@AcuMS.aculab.com>
+References: <20200228.120150.302053489768447737.davem@davemloft.net>
+ <1583131910-29260-1-git-send-email-kyk.segfault@gmail.com>
+ <CABGOaVRdsw=4nqBMR0h8JPEiunOEpHR+02H=HRbgt_TxhVviiA@mail.gmail.com>
+ <945f6cafc86b4f1bb18fa40e60d5c113@AcuMS.aculab.com>
+ <CABGOaVQMq-AxwQOJ5DdDY6yLBOXqBg6G7qC_MdOYj_z4y-QQiw@mail.gmail.com>
+ <de1012794ec54314b6fe790c01dee60b@AcuMS.aculab.com>
+ <CABGOaVSddVL-T-Sz_GPuRoZbKM_HsZND84rJUm2G9RRw6cUwCQ@mail.gmail.com>
+ <CA+FuTSc5QVF_kv8FNs03obXGbf6axrG5umCipE=LXvqQ_-hDAA@mail.gmail.com>
+ <817a6418ac8742e6bb872992711beb47@AcuMS.aculab.com>
+ <91fafe40-7856-8b22-c279-55df5d06ca39@gmail.com>
+ <e8b84bcaee634b53bee797aa041824a4@AcuMS.aculab.com>
+ <CALx6S342XSFnZqFJ_jMKuAshSg0g-gcj3eSerADvWi14t+gCiw@mail.gmail.com>
+In-Reply-To: <CALx6S342XSFnZqFJ_jMKuAshSg0g-gcj3eSerADvWi14t+gCiw@mail.gmail.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-X-MS-Has-Attach: 
+X-MS-Has-Attach: yes
 X-MS-TNEF-Correlator: 
 x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.164.198]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Type: multipart/mixed;
+        boundary="_002_88d43a6e2a7b497b9b1e448bf7ae068aAcuMSaculabcom_"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--_002_88d43a6e2a7b497b9b1e448bf7ae068aAcuMSaculabcom_
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 
+RnJvbTogVG9tIEhlcmJlcnQNCj4gU2VudDogMjIgTWFyY2ggMjAyMCAxOTo1NA0KLi4uDQo+IEEg
+d2hpbGUgYmFjaywgSSBoYWQgcHJvcG9zZWQgYW4gb3B0aW1pemVkIHg4NiBjaGVja3N1bSBmdW5j
+dGlvbiB1c2luZw0KPiB1bnJvbGxlZCBhZGRxIGEgd2hpbGUgYmFjayBodHRwczovL2x3bi5uZXQv
+QXJ0aWNsZXMvNjc5MTM3Ly4gQWxzbywNCj4gdGhpcyB0cmllcyB0byBvcHRpbWl6ZSBmcm9tIHNt
+YWxsIGNoZWNrc3VtIGxpa2Ugb3ZlciBoZWFkZXIgd2hlbiBkb2luZw0KPiBza2JfcG9zdHB1bGxf
+cmNzdW0uDQoNCkxvb2sgZm9yIHRoZSBwYXRjaCBJIHN1Ym1pdHRlZCBhIGZldyB3ZWVrcyBiYWNr
+Lg0KQXR0YWNoZWQsIGxvb3AgYm9keSBpczoNCg0KKyAgICAgICBhc20oICAgICIgICAgICAgYnQg
+ICAgJDQsICVbbGVuXVxuIg0KKyAgICAgICAgICAgICAgICIgICAgICAgam5jICAgMTBmXG4iDQor
+ICAgICAgICAgICAgICAgIiAgICAgICBhZGQgICAoJVtidWZmXSwgJVtsZW5dKSwgJVtzdW1fMF1c
+biINCisgICAgICAgICAgICAgICAiICAgICAgIGFkYyAgIDgoJVtidWZmXSwgJVtsZW5dKSwgJVtz
+dW1fMV1cbiINCisgICAgICAgICAgICAgICAiICAgICAgIGxlYSAgIDE2KCVbbGVuXSksICVbbGVu
+XVxuIg0KKyAgICAgICAgICAgICAgICIxMDogICAgamVjeHogMjBmXG4iDQorICAgICAgICAgICAg
+ICAgIiAgICAgICBhZGMgICAoJVtidWZmXSwgJVtsZW5dKSwgJVtzdW1fMF1cbiINCisgICAgICAg
+ICAgICAgICAiICAgICAgIGFkYyAgIDgoJVtidWZmXSwgJVtsZW5dKSwgJVtzdW1fMV1cbiINCisg
+ICAgICAgICAgICAgICAiICAgICAgIGxlYSAgIDMyKCVbbGVuXSksICVbbGVuX3RtcF1cbiINCisg
+ICAgICAgICAgICAgICAiICAgICAgIGFkYyAgIDE2KCVbYnVmZl0sICVbbGVuXSksICVbc3VtXzBd
+XG4iDQorICAgICAgICAgICAgICAgIiAgICAgICBhZGMgICAyNCglW2J1ZmZdLCAlW2xlbl0pLCAl
+W3N1bV8xXVxuIg0KKyAgICAgICAgICAgICAgICIgICAgICAgbW92ICAgJVtsZW5fdG1wXSwgJVts
+ZW5dXG4iDQorICAgICAgICAgICAgICAgIiAgICAgICBqbXAgICAxMGJcbiINCisgICAgICAgICAg
+ICAgICAiMjA6ICAgIGFkYyAgICVbc3VtXzBdLCAlW3N1bV1cbiINCisgICAgICAgICAgICAgICAi
+ICAgICAgIGFkYyAgICVbc3VtXzFdLCAlW3N1bV1cbiINCisgICAgICAgICAgICAgICAiICAgICAg
+IGFkYyAgICQwLCAlW3N1bV1cbiINCisgICAgICAgICAgIDogW3N1bV0gIismciIgKHN1bSksIFtz
+dW1fMF0gIismciIgKHN1bV8wKSwgW3N1bV8xXSAiKyZyIiAoc3VtXzEpLA0KKyAgICAgICAgICAg
+ICAgIFtsZW5dICIrJmMiIChsZW4pLCBbbGVuX3RtcF0gIj0mciIgKGxlbl90bXApDQorICAgICAg
+ICAgICA6IFtidWZmXSAiciIgKGJ1ZmYpDQorICAgICAgICAgICA6ICJtZW1vcnkiICk7DQoNCllv
+dSBkb24ndCBuZWVkIGEgdmVyeSB1bnJvbGxlZCBsb29wIC0ganVzdCBhIGxvb3AgdGhhdCBkb2Vz
+bid0DQpoYXZlIGRlcGVuZGVuY2llcyBvbiBwYXJ0cyBvZiB0aGUgZmxhZ3MgcmVnaXN0ZXINCihp
+biBwYXJ0aWN1bGFyIGRvbnQgcmVxdWlyZSAnZGVjJyB0byBwcmVzZXJ2ZSBjYXJyeSkuDQpZb3Ug
+YWxzbyBuZWVkIHRvIGFkYyB0byBhbHRlcm5hdGluZyBkZXN0aW5hdGlvbnMgZm9yIHNvbWUgY2hp
+cHMuDQoNCldpdGggdGhlIGZhc3QgJ3JlcCBtb3ZzJyBvbiBtb2Rlcm4gY3B1IEkgc3VzcGVjdCB0
+aGF0IHRyeWluZw0KdG8gZG8gdGhlIGNvcHkgYXQgdGhlIHNhbWUgdGltZSBhcyB0aGUgY2hlY2tz
+dW0gaXMgYSBsb3NzLg0KDQpUaGUgJ2FkYyBtZW1vcnknIGlzIG9uZSBpbnN0cnVjdGlvbiBhbmQg
+Mi11b3BzLg0KRmFpcmx5IGVhc3kgdG8gZXhlY3V0ZSBhIDEvY2xvY2suDQpJSVJDIG9uIEhhc3dl
+bGwgeW91IGRvbid0IG5lZWQgdG8gdW5yb2xsIHRoZSBsb29wIGF0IGFsbC4NCihZb3UgY2FuIHVz
+ZSBkZWMgYW5kIGFkYykuDQpBIGNoZWNrc3VtK2NvcHkgbG9vcCBpcyBsb2FkK2FkYytzdG9yZSB3
+aGljaCBpcyAzIGluc3RydWN0aW9ucw0KYW5kIDUgdW9wcyAtIHN0YXJ0cyBoaXR0aW5nIHRoZSBs
+aW1pdHMgb24gdW9wcy9jbG9jaw0KYW5kIHJldGlyZW1lbnQsIHNvIHdvbid0IHJ1biBpbiAxIGNs
+b2NrIGFuZCB0aGUgbG9vcCB3aWxsDQphbHdheXMgYmUgZXh0cmEuDQpXaGVyZWFzIGEgJ3JlcCBt
+b3ZzJyBpcyBsaWtlbHkgdG8gbW92ZSAxIGNhY2hlIGxpbmUvY2xvY2suDQpJU1RSICdyZXAgbW92
+cScgaXMgZmFzdGVyIHRoYW4gOCBieXRlcy9jbG9jayBvbiBteSAnaXZ5IGJyaWRnZScuDQoNCk9u
+IEhhc3dlbGwgeW91IGNhbiBhcHByb2FjaCAxNiBieXRlcy9jbG9jayB1c2luZyBhZFtvY114Lg0K
+QnV0IGl0IGlzIHBhaW5mdWwsIGFuZCBJJ20gbm90IHN1cmUgdGhhdCBhbGwgY3B1IHRoYXQgc3Vw
+cG9ydA0KdGhlIGluc3RydWN0aW9ucyBhY3R1YWxseSBleGVjdXRlIHRoZW0gcXVpY2tseS4NCg0K
+SWYgeW91IGNhbid0IHVzZSBhZGMgKGVnIGluIEMgb3IgTUlQUykgdGhlcmUgYXJlIHR3bw0Kb2J2
+aW91cyBzb2x1dGlvbnM6DQoNCjEpIEFkZCAzMmJpdCB3b3JkcyB0byBhIDY0Yml0IHJlZ2lzdGVy
+Lg0KICAgT24geDg2IHRoaXMgaXMgYXMgZmFzdCBhcyBhZGMgb24gZXZlcnl0aGluZyBwcmlvciB0
+byBzYW5keSBicmlkZ2UhDQoNCjIpIEFkZCA2NGJpdCB3b3JkcyB0byBhIDY0Yml0IHJlZyBhbmQg
+KHdvcmQgPj4gMzIpIHRvIGEgc2Vjb25kLg0KICAgRml4dXAgZm9yIHRoZSBtaXNzaW5nIGNhcnJ5
+IChjaGVjayBoaWdoIGJpdCBvZiBtYWluIHN1bSBtYXRjaGVzDQogICByZWxldmFudCBiaXQgb2Yg
+c2hpZnRlZCBzdW0pLg0KICAgVGhpcyBjb3VsZCBiZSBmYXN0ZXIgdGhhbiB0aGUgaG9ycmlkIGFy
+bTY0IGFzbSBjb2RlLg0KICAgMSBtZW1vcnkgbG9hZCwgMSBhZGQsIDEgJ3NoaWZ0ICsgYWRkJyBw
+ZXIgOCBieXRlcy4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwg
+QnJhbWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVn
+aXN0cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
+--_002_88d43a6e2a7b497b9b1e448bf7ae068aAcuMSaculabcom_
+Content-Type: application/octet-stream;
+	name="0001-Optimise-x86-IP-checksum-code.patch"
+Content-Description: 0001-Optimise-x86-IP-checksum-code.patch
+Content-Disposition: attachment;
+	filename="0001-Optimise-x86-IP-checksum-code.patch"; size=7395;
+	creation-date="Tue, 03 Dec 2019 11:38:12 GMT";
+	modification-date="Tue, 03 Dec 2019 11:38:12 GMT"
+Content-Transfer-Encoding: base64
 
-> -----Original Message-----
-> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org>
-> On Behalf Of Guilherme G. Piccoli <gpiccoli@canonical.com>
-> Sent: Friday, March 20, 2020 2:56 PM
-> To: netanel@amazon.com; akiyano@amazon.com; netdev@vger.kernel.org
-> Cc: gtzalik@amazon.com; saeedb@amazon.com; zorik@amazon.com;
-> gpiccoli@canonical.com; kernel@gpiccoli.net; gshan@redhat.com;
-> gavin.guo@canonical.com; jay.vosburgh@canonical.com;
-> pedro.principeza@canonical.com
-> Subject: [PATCH] net: ena: Add PCI shutdown handler to allow safe kexec
->=20
-> Currently ENA only provides the PCI remove() handler, used during rmmod
-> for example. This is not called on shutdown/kexec path; we are potentiall=
-y
-> creating a failure scenario on kexec:
->=20
-> (a) Kexec is triggered, no shutdown() / remove() handler is called for EN=
-A;
-> instead pci_device_shutdown() clears the master bit of the PCI device,
-> stopping all DMA transactions;
->=20
-> (b) Kexec reboot happens and the device gets enabled again, likely having=
- its
-> FW with that DMA transaction buffered; then it may trigger the (now
-> invalid) memory operation in the new kernel, corrupting kernel memory
-> area.
->=20
-> This patch aims to prevent this, by implementing a shutdown() handler qui=
-te
-> similar to the remove() one - the difference being the handling of the
-> netdev, which is unregistered on remove(), but following the convention
-> observed in other drivers, it's only detached on shutdown().
->=20
-> This prevents an odd issue in AWS Nitro instances, in which after the 2nd
-> kexec the next one will fail with an initrd corruption, caused by a wild =
-DMA
-> write to invalid kernel memory. The lspci output for the adapter present =
-in
-> my instance is:
->=20
-> 00:05.0 Ethernet controller [0200]: Amazon.com, Inc. Elastic Network Adap=
-ter
-> (ENA) [1d0f:ec20]
->=20
-> Suggested-by: Gavin Shan <gshan@redhat.com>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@canonical.com>
-> ---
->=20
->=20
-> The idea for this patch came from an informal conversation with my friend
-> Gavin Shan, based on his past experience with similar issues.
-> I'd like to thank him for the great suggestion!
->=20
-> As a test metric, I've performed 1000 kexecs with this patch, whereas
-> without this one, the 3rd kexec failed with initrd corruption. Also, one =
-test
-> that I've done before writing the patch was just to rmmod the driver befo=
-re
-> the kexecs, and it worked fine too.
->=20
-> I suggest we add this patch in stable releases as well.
-> Thanks in advance for reviews,
->=20
-> Guilherme
->=20
->=20
->  drivers/net/ethernet/amazon/ena/ena_netdev.c | 51 ++++++++++++++++-
-> ---
->  1 file changed, 41 insertions(+), 10 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> index 0b2fd96b93d7..7a5c01ff2ee8 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> @@ -4325,13 +4325,15 @@ static int ena_probe(struct pci_dev *pdev, const
-> struct pci_device_id *ent)
->=20
->=20
-> /**********************************************************
-> *******************/
->=20
-> -/* ena_remove - Device Removal Routine
-> +/* __ena_shutoff - Helper used in both PCI remove/shutdown routines
->   * @pdev: PCI device information struct
-> + * @shutdown: Is it a shutdown operation? If false, means it is a
-> + removal
->   *
-> - * ena_remove is called by the PCI subsystem to alert the driver
-> - * that it should release a PCI device.
-> + * __ena_shutoff is a helper routine that does the real work on
-> + shutdown and
-> + * removal paths; the difference between those paths is with regards to
-> + whether
-> + * dettach or unregister the netdevice.
->   */
-> -static void ena_remove(struct pci_dev *pdev)
-> +static void __ena_shutoff(struct pci_dev *pdev, bool shutdown)
->  {
->  	struct ena_adapter *adapter =3D pci_get_drvdata(pdev);
->  	struct ena_com_dev *ena_dev;
-> @@ -4350,13 +4352,17 @@ static void ena_remove(struct pci_dev *pdev)
->=20
->  	cancel_work_sync(&adapter->reset_task);
->=20
-> -	rtnl_lock();
-> +	rtnl_lock(); /* lock released inside the below if-else block */
->  	ena_destroy_device(adapter, true);
-> -	rtnl_unlock();
-> -
-> -	unregister_netdev(netdev);
-> -
-> -	free_netdev(netdev);
-> +	if (shutdown) {
-> +		netif_device_detach(netdev);
-> +		dev_close(netdev);
-> +		rtnl_unlock();
-> +	} else {
-> +		rtnl_unlock();
-> +		unregister_netdev(netdev);
-> +		free_netdev(netdev);
-> +	}
->=20
->  	ena_com_rss_destroy(ena_dev);
->=20
-> @@ -4371,6 +4377,30 @@ static void ena_remove(struct pci_dev *pdev)
->  	vfree(ena_dev);
->  }
->=20
-> +/* ena_remove - Device Removal Routine
-> + * @pdev: PCI device information struct
-> + *
-> + * ena_remove is called by the PCI subsystem to alert the driver
-> + * that it should release a PCI device.
-> + */
-> +
-> +static void ena_remove(struct pci_dev *pdev) {
-> +	__ena_shutoff(pdev, false);
-> +}
-> +
-> +/* ena_shutdown - Device Shutdown Routine
-> + * @pdev: PCI device information struct
-> + *
-> + * ena_shutdown is called by the PCI subsystem to alert the driver that
-> + * a shutdown/reboot (or kexec) is happening and device must be disabled=
-.
-> + */
-> +
-> +static void ena_shutdown(struct pci_dev *pdev) {
-> +	__ena_shutoff(pdev, true);
-> +}
-> +
->  #ifdef CONFIG_PM
->  /* ena_suspend - PM suspend callback
->   * @pdev: PCI device information struct @@ -4420,6 +4450,7 @@ static
-> struct pci_driver ena_pci_driver =3D {
->  	.id_table	=3D ena_pci_tbl,
->  	.probe		=3D ena_probe,
->  	.remove		=3D ena_remove,
-> +	.shutdown	=3D ena_shutdown,
->  #ifdef CONFIG_PM
->  	.suspend    =3D ena_suspend,
->  	.resume     =3D ena_resume,
-> --
-> 2.25.1
->=20
-
-
-Hi=20
-Guilherme,
-
-Thank you for the patch, we are currently looking into your patch and testi=
-ng it.
-
-Thanks,
-Sameeh
+RnJvbSBiMjMyYTk2NTU2YzkyZGJhMmU0YTg1NmNmYzJiMGIwZGY5ZjRmNDRiIE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBEYXZpZCBMYWlnaHQgPGRhdmlkLmxhaWdodEBhY3VsYWIuY29t
+PgpEYXRlOiBUdWUsIDMgRGVjIDIwMTkgMTA6NDE6MDMgKzAwMDAKU3ViamVjdDogW1BBVENIXSBP
+cHRpbWlzZSB4ODYgSVAgY2hlY2tzdW0gY29kZS4KClBlcmZvcm1hbmNlIGltcHJvdmVtZW50cyB0
+byB0aGUgYW1kNjQgSVAgY2hlY2tzdW0gY29kZS4KU3VtbWluZyB0byBhbHRlcm5hdGUgcmVnaXN0
+ZXJzIGFsbW9zdCBkb3VibGVzIHRoZSBwZXJmb3JtYW5jZQoocHJvYmFibHkgNCB0byA2LjIgYnl0
+ZXMvY2xvY2spIG9uIEl2eSBCcmlkZ2UgY3B1LgpMb29wIGNhcnJ5aW5nIHRoZSBjYXJyeSBmbGFn
+IGltcHJvdmVzIEhhc3dlbGwgZnJvbSA3IHRvIDggYnl0ZXMvY2xvY2suCk9sZGVyIGNwdSB3aWxs
+IHN0aWxsIGFwcHJvYWNoIDQgYnl0ZXMvY2xvY2suCkFsbCBhY2hpZXZlZCB3aXRoIGEgbGVzcyBs
+b29wIHVucm9sbGluZyAtIGltcHJvdmluZyB0aGUgcGVyZm9ybWFuY2UKZm9yIHNtYWxsIGJ1ZmZl
+cnMgdGhhdCBhcmUgbm90IGEgbXVsdGlwbGUgb2YgdGhlIGxvb3Agc3Bhbi4KClNpZ25lZC1vZmYt
+Ynk6IERhdmlkIExhaWdodCA8ZGF2aWQubGFpZ2h0QGFjdWxhYi5jb20+Ci0tLQogYXJjaC94ODYv
+bGliL2NzdW0tcGFydGlhbF82NC5jIHwgMTkyICsrKysrKysrKysrKysrKysrKysrKy0tLS0tLS0t
+LS0tLS0tLS0tLS0tCiAxIGZpbGUgY2hhbmdlZCwgOTggaW5zZXJ0aW9ucygrKSwgOTQgZGVsZXRp
+b25zKC0pCgpkaWZmIC0tZ2l0IGEvYXJjaC94ODYvbGliL2NzdW0tcGFydGlhbF82NC5jIGIvYXJj
+aC94ODYvbGliL2NzdW0tcGFydGlhbF82NC5jCmluZGV4IGU3OTI1ZDYuLjdmMjVhYjIgMTAwNjQ0
+Ci0tLSBhL2FyY2gveDg2L2xpYi9jc3VtLXBhcnRpYWxfNjQuYworKysgYi9hcmNoL3g4Ni9saWIv
+Y3N1bS1wYXJ0aWFsXzY0LmMKQEAgLTEwLDExMyArMTAsMTE4IEBACiAjaW5jbHVkZSA8bGludXgv
+ZXhwb3J0Lmg+CiAjaW5jbHVkZSA8YXNtL2NoZWNrc3VtLmg+CiAKLXN0YXRpYyBpbmxpbmUgdW5z
+aWduZWQgc2hvcnQgZnJvbTMydG8xNih1bnNpZ25lZCBhKSAKLXsKLQl1bnNpZ25lZCBzaG9ydCBi
+ID0gYSA+PiAxNjsgCi0JYXNtKCJhZGR3ICV3MiwldzBcblx0IgotCSAgICAiYWRjdyAkMCwldzBc
+biIgCi0JICAgIDogIj1yIiAoYikKLQkgICAgOiAiMCIgKGIpLCAiciIgKGEpKTsKLQlyZXR1cm4g
+YjsKLX0KLQogLyoKICAqIERvIGEgNjQtYml0IGNoZWNrc3VtIG9uIGFuIGFyYml0cmFyeSBtZW1v
+cnkgYXJlYS4KICAqIFJldHVybnMgYSAzMmJpdCBjaGVja3N1bS4KICAqCiAgKiBUaGlzIGlzbid0
+IGFzIHRpbWUgY3JpdGljYWwgYXMgaXQgdXNlZCB0byBiZSBiZWNhdXNlIG1hbnkgTklDcwogICog
+ZG8gaGFyZHdhcmUgY2hlY2tzdW1taW5nIHRoZXNlIGRheXMuCisgKgorICogQWxsIEludGVsIGNw
+dXMgcHJpb3IgdG8gSXZ5IEJyaWRnZSAobWF5YnkgU2FuZHkgQnJpZGdlKSBoYXZlIGEgMiBjbG9j
+aworICogbGF0ZW5jeSBvbiB0aGUgcmVzdWx0IG9mIGFkYy4KKyAqIFRoaXMgbGltaXRzIGFueSBh
+ZGMgbG9vcCB0byA0IGJ5dGVzL2Nsb2NrIC0gdGhlIHNhbWUgYXMgYSBDIGxvb3AKKyAqIHRoYXQg
+YWRkcyAzMiBiaXQgdmFsdWVzIHRvIGEgNjQgYml0IHJlZ2lzdGVyLgorICogT24gSXZ5IGJyaWRn
+ZSB0aGUgYWRjIHJlc3VsdCBsYXRlbmN5IGlzIHN0aWxsIDIgY2xvY2tzLCBidXQgdGhlIGNhcnJ5
+CisgKiBsYXRlbmN5IGlzIHJlZHVjZWQgdG8gMSBjbG9jay4KKyAqIFNvIHN1bW1pbmcgdG8gYWx0
+ZXJuYXRlIHJlZ2lzdGVycyBpbmNyZWFzZXMgdGhlIHRocm91Z2hwdXQgdG8gYXBwcm9hY2hpbmcK
+KyAqIDggYnl0ZXMvY2xvY2suCisgKiBPbGRlciBjcHUgKGVnIGNvcmUgMikgaGF2ZSBhIDYrIGNs
+b2NrIGRlbGF5IGFjY2Vzc2luZyBhbnkgb2YgdGhlIGZsYWdzCisgKiBhZnRlciBhIHBhcnRpYWwg
+dXBkYXRlIChlZyBhZGMgYWZ0ZXIgaW5jKS4KKyAqIFRoZSBzdGFuZ2UgJ2plY3h6JyBsb29wIGF2
+b2lkcyB0aGlzLgorICogVGhlIEl2eSBicmlkZ2UgdGhlbiBuZWVkcyB0aGUgbG9vcCB1bnJvbGxp
+bmcgb25jZSBtb3JlIHRvIGFwcHJvYWNoCisgKiA4IGJ5dGVzIHBlciBjbG9jay4KICAqIAotICog
+VGhpbmdzIHRyaWVkIGFuZCBmb3VuZCB0byBub3QgbWFrZSBpdCBmYXN0ZXI6Ci0gKiBNYW51YWwg
+UHJlZmV0Y2hpbmcKLSAqIFVucm9sbGluZyB0byBhbiAxMjggYnl0ZXMgaW5uZXIgbG9vcC4KLSAq
+IFVzaW5nIGludGVybGVhdmluZyB3aXRoIG1vcmUgcmVnaXN0ZXJzIHRvIGJyZWFrIHRoZSBjYXJy
+eSBjaGFpbnMuCisgKiBPbiA3dGggZ2VuIGNwdSB1c2luZyBhZG94L2Fkb2MgY2FuIGdldCAxMiBi
+eXRlcy9jbG9jayAobWF5YmUgMTY/KQorICogcHJvdmlkZWQgdGhlIGxvb3AgaXMgdW5yb2xsZWQg
+ZnVydGhlciB0aGFuIHRoZSBvbmUgYmVsb3cuCisgKiBCdXQgc29tZSBvdGhlciBjcHUgdGhhdCBz
+dXBwb3J0IHRoZSBhZHggdGFrZSA2IGNsb2NrcyBmb3IgZWFjaC4KKyAqCisgKiBUaGUgJ3N1bScg
+dmFsdWUgb24gZW50cnkgaXMgYWRkZWQgaW4sIGl0IGNhbiBleGNlZWQgMzIgYml0cyBidXQKKyAq
+IG11c3Qgbm90IGdldCB0byA1NiBiaXRzLgogICovCi1zdGF0aWMgdW5zaWduZWQgZG9fY3N1bShj
+b25zdCB1bnNpZ25lZCBjaGFyICpidWZmLCB1bnNpZ25lZCBsZW4pCitzdGF0aWMgdW5zaWduZWQg
+ZG9fY3N1bShjb25zdCB1bnNpZ25lZCBjaGFyICpidWZmLCBsb25nIGxlbiwgdTY0IHN1bSkKIHsK
+LQl1bnNpZ25lZCBvZGQsIGNvdW50OwotCXVuc2lnbmVkIGxvbmcgcmVzdWx0ID0gMDsKKwl1bnNp
+Z25lZCBpbnQgc3JjX2FsaWduOworCXU2NCBzdW1fMCA9IDAsIHN1bV8xOworCWxvbmcgbGVuX3Rt
+cDsKKwlib29sIG9kZCA9IGZhbHNlOwogCi0JaWYgKHVubGlrZWx5KGxlbiA9PSAwKSkKLQkJcmV0
+dXJuIHJlc3VsdDsgCi0Jb2RkID0gMSAmICh1bnNpZ25lZCBsb25nKSBidWZmOwotCWlmICh1bmxp
+a2VseShvZGQpKSB7Ci0JCXJlc3VsdCA9ICpidWZmIDw8IDg7Ci0JCWxlbi0tOwotCQlidWZmKys7
+Ci0JfQotCWNvdW50ID0gbGVuID4+IDE7CQkvKiBuciBvZiAxNi1iaXQgd29yZHMuLiAqLwotCWlm
+IChjb3VudCkgewotCQlpZiAoMiAmICh1bnNpZ25lZCBsb25nKSBidWZmKSB7Ci0JCQlyZXN1bHQg
+Kz0gKih1bnNpZ25lZCBzaG9ydCAqKWJ1ZmY7Ci0JCQljb3VudC0tOwotCQkJbGVuIC09IDI7Ci0J
+CQlidWZmICs9IDI7CisJLyogNjRiaXQgYWxpZ24gdGhlIGJhc2UgYWRkcmVzcyAqLworCXNyY19h
+bGlnbiA9ICh1bnNpZ25lZCBsb25nKWJ1ZmYgJiA3OworCWlmIChzcmNfYWxpZ24pIHsKKwkJaWYg
+KHVubGlrZWx5KHNyY19hbGlnbiAmIDEpKSB7CisJCQlzdW0gPDw9IDg7CisJCQkvKiBUaGUgZXh0
+cmEgZmxhZyBnZW5lcmF0ZXMgYmV0dGVyIGNvZGUhICovCisJCQlvZGQgPSB0cnVlOwogCQl9Ci0J
+CWNvdW50ID4+PSAxOwkJLyogbnIgb2YgMzItYml0IHdvcmRzLi4gKi8KLQkJaWYgKGNvdW50KSB7
+Ci0JCQl1bnNpZ25lZCBsb25nIHplcm87Ci0JCQl1bnNpZ25lZCBjb3VudDY0OwotCQkJaWYgKDQg
+JiAodW5zaWduZWQgbG9uZykgYnVmZikgewotCQkJCXJlc3VsdCArPSAqKHVuc2lnbmVkIGludCAq
+KSBidWZmOwotCQkJCWNvdW50LS07Ci0JCQkJbGVuIC09IDQ7Ci0JCQkJYnVmZiArPSA0OwotCQkJ
+fQotCQkJY291bnQgPj49IDE7CS8qIG5yIG9mIDY0LWJpdCB3b3Jkcy4uICovCisJCWJ1ZmYgLT0g
+c3JjX2FsaWduOworCQlsZW4gKz0gc3JjX2FsaWduOworCQlpZiAobGlrZWx5KHNyY19hbGlnbiA9
+PSA0KSkKKwkJCXN1bV8wID0gKih1MzIgKikoYnVmZiArIDQpOworCQllbHNlCisJCQkvKiBNYXNr
+IG9mZiB1bndhbnRlZCBsb3cgYnl0ZXMgZnJvbSBmdWxsIDY0Yml0IHdvcmQgKi8KKwkJCXN1bV8w
+ID0gKih1NjQgKilidWZmICYgKH4wdWxsIDw8IChzcmNfYWxpZ24gKiA4KSk7CisJCWlmICh1bmxp
+a2VseShsZW4gPCA4KSkgeworCQkJLyogTWFzayBvZmYgdGhlIHVud2FudGVkIGhpZ2ggYnl0ZXMg
+Ki8KKwkJCXN1bSArPSBzdW1fMCAmIH4ofjB1bGwgPDwgKGxlbiAqIDgpKTsKKwkJCWdvdG8gcmVk
+dWNlXzMyOworCQl9CisJCWxlbiAtPSA4OworCQlidWZmICs9IDg7CisJfQogCi0JCQkvKiBtYWlu
+IGxvb3AgdXNpbmcgNjRieXRlIGJsb2NrcyAqLwotCQkJemVybyA9IDA7Ci0JCQljb3VudDY0ID0g
+Y291bnQgPj4gMzsKLQkJCXdoaWxlIChjb3VudDY0KSB7IAotCQkJCWFzbSgiYWRkcSAwKjgoJVtz
+cmNdKSwlW3Jlc11cblx0IgotCQkJCSAgICAiYWRjcSAxKjgoJVtzcmNdKSwlW3Jlc11cblx0Igot
+CQkJCSAgICAiYWRjcSAyKjgoJVtzcmNdKSwlW3Jlc11cblx0IgotCQkJCSAgICAiYWRjcSAzKjgo
+JVtzcmNdKSwlW3Jlc11cblx0IgotCQkJCSAgICAiYWRjcSA0KjgoJVtzcmNdKSwlW3Jlc11cblx0
+IgotCQkJCSAgICAiYWRjcSA1KjgoJVtzcmNdKSwlW3Jlc11cblx0IgotCQkJCSAgICAiYWRjcSA2
+KjgoJVtzcmNdKSwlW3Jlc11cblx0IgotCQkJCSAgICAiYWRjcSA3KjgoJVtzcmNdKSwlW3Jlc11c
+blx0IgotCQkJCSAgICAiYWRjcSAlW3plcm9dLCVbcmVzXSIKLQkJCQkgICAgOiBbcmVzXSAiPXIi
+IChyZXN1bHQpCi0JCQkJICAgIDogW3NyY10gInIiIChidWZmKSwgW3plcm9dICJyIiAoemVybyks
+Ci0JCQkJICAgICJbcmVzXSIgKHJlc3VsdCkpOwotCQkJCWJ1ZmYgKz0gNjQ7Ci0JCQkJY291bnQ2
+NC0tOwotCQkJfQorCS8qIFJlYWQgZmlyc3QgOCBieXRlcyB0byAxNiBieXRlIGFsaWduIHRoZSBs
+b29wIGJlbG93ICovCisJc3VtXzEgPSBsZW4gJiA4ID8gKih1NjQgKilidWZmIDogMDsKIAotCQkJ
+LyogbGFzdCB1cCB0byA3IDhieXRlIGJsb2NrcyAqLwotCQkJY291bnQgJT0gODsgCi0JCQl3aGls
+ZSAoY291bnQpIHsgCi0JCQkJYXNtKCJhZGRxICUxLCUwXG5cdCIKLQkJCQkgICAgImFkY3EgJTIs
+JTBcbiIgCi0JCQkJCSAgICA6ICI9ciIgKHJlc3VsdCkKLQkJCQkgICAgOiAibSIgKCoodW5zaWdu
+ZWQgbG9uZyAqKWJ1ZmYpLCAKLQkJCQkgICAgInIiICh6ZXJvKSwgICIwIiAocmVzdWx0KSk7Ci0J
+CQkJLS1jb3VudDsgCi0JCQkJYnVmZiArPSA4OwotCQkJfQotCQkJcmVzdWx0ID0gYWRkMzJfd2l0
+aF9jYXJyeShyZXN1bHQ+PjMyLAotCQkJCQkJICByZXN1bHQmMHhmZmZmZmZmZik7IAorCS8qIFRo
+ZSBtYWluIGxvb3AgdXNlcyBuZWdhdGl2ZSBvZmZzZXRzIGZyb20gdGhlIGVuZCBvZiB0aGUgYnVm
+ZmVyICovCisJYnVmZiArPSBsZW47CiAKLQkJCWlmIChsZW4gJiA0KSB7Ci0JCQkJcmVzdWx0ICs9
+ICoodW5zaWduZWQgaW50ICopIGJ1ZmY7Ci0JCQkJYnVmZiArPSA0OwotCQkJfQotCQl9Ci0JCWlm
+IChsZW4gJiAyKSB7Ci0JCQlyZXN1bHQgKz0gKih1bnNpZ25lZCBzaG9ydCAqKSBidWZmOwotCQkJ
+YnVmZiArPSAyOwotCQl9CisJLyogQWRkIGluIHRyYWlsaW5nIGJ5dGVzIHRvIDY0Yml0IGFsaWdu
+IHRoZSBsZW5ndGggKi8KKwlpZiAobGVuICYgNykgeworCQl1bnNpZ25lZCBpbnQgdGFpbF9sZW4g
+PSBsZW4gJiA3OworCQlidWZmIC09IHRhaWxfbGVuOworCQlpZiAobGlrZWx5KHRhaWxfbGVuID09
+IDQpKQorCQkJc3VtICs9ICoodTMyICopYnVmZjsKKwkJZWxzZQorCQkJLyogTWFzayBvZmYgdGhl
+IHVud2FudGVkIGhpZ2ggYnl0ZXMgKi8KKwkJCXN1bSArPSAqKHU2NCAqKWJ1ZmYgJiB+KH4wdWxs
+IDw8ICh0YWlsX2xlbiAqIDgpKTsKIAl9Ci0JaWYgKGxlbiAmIDEpCi0JCXJlc3VsdCArPSAqYnVm
+ZjsKLQlyZXN1bHQgPSBhZGQzMl93aXRoX2NhcnJ5KHJlc3VsdD4+MzIsIHJlc3VsdCAmIDB4ZmZm
+ZmZmZmYpOyAKLQlpZiAodW5saWtlbHkob2RkKSkgeyAKLQkJcmVzdWx0ID0gZnJvbTMydG8xNihy
+ZXN1bHQpOwotCQlyZXN1bHQgPSAoKHJlc3VsdCA+PiA4KSAmIDB4ZmYpIHwgKChyZXN1bHQgJiAw
+eGZmKSA8PCA4KTsKLQl9Ci0JcmV0dXJuIHJlc3VsdDsKKworCS8qIEFsaWduIGFuZCBuZWdhdGUg
+bGVuIHNvIHRoYXQgd2UgbmVlZCB0byBzdW0gW2J1ZmZbbGVuXS4uYnVmWzBdKSAqLworCWxlbiA9
+IC0obGVuICYgfjE1KTsKKworCS8qCisJICogQWxpZ24gdGhlIGJ5dGUgY291bnQgdG8gYSBtdWx0
+aXBsZSBvZiAxNiB0aGVuCisJICogYWRkIDY0IGJpdCB3b3JkcyB0byBhbHRlcm5hdGluZyByZWdp
+c3RlcnMuCisJICogRmluYWxseSByZWR1Y2UgdG8gNjQgYml0cy4KKwkgKi8KKwlhc20oCSIJYnQg
+ICAgJDQsICVbbGVuXVxuIgorCQkiCWpuYyAgIDEwZlxuIgorCQkiCWFkZCAgICglW2J1ZmZdLCAl
+W2xlbl0pLCAlW3N1bV8wXVxuIgorCQkiCWFkYyAgIDgoJVtidWZmXSwgJVtsZW5dKSwgJVtzdW1f
+MV1cbiIKKwkJIglsZWEgICAxNiglW2xlbl0pLCAlW2xlbl1cbiIKKwkJIjEwOglqZWN4eiAyMGZc
+biIKKwkJIglhZGMgICAoJVtidWZmXSwgJVtsZW5dKSwgJVtzdW1fMF1cbiIKKwkJIglhZGMgICA4
+KCVbYnVmZl0sICVbbGVuXSksICVbc3VtXzFdXG4iCisJCSIJbGVhICAgMzIoJVtsZW5dKSwgJVts
+ZW5fdG1wXVxuIgorCQkiCWFkYyAgIDE2KCVbYnVmZl0sICVbbGVuXSksICVbc3VtXzBdXG4iCisJ
+CSIJYWRjICAgMjQoJVtidWZmXSwgJVtsZW5dKSwgJVtzdW1fMV1cbiIKKwkJIgltb3YgICAlW2xl
+bl90bXBdLCAlW2xlbl1cbiIKKwkJIglqbXAgICAxMGJcbiIKKwkJIjIwOglhZGMgICAlW3N1bV8w
+XSwgJVtzdW1dXG4iCisJCSIJYWRjICAgJVtzdW1fMV0sICVbc3VtXVxuIgorCQkiCWFkYyAgICQw
+LCAlW3N1bV1cbiIKKwkgICAgOiBbc3VtXSAiKyZyIiAoc3VtKSwgW3N1bV8wXSAiKyZyIiAoc3Vt
+XzApLCBbc3VtXzFdICIrJnIiIChzdW1fMSksCisJICAgIAlbbGVuXSAiKyZjIiAobGVuKSwgW2xl
+bl90bXBdICI9JnIiIChsZW5fdG1wKQorCSAgICA6IFtidWZmXSAiciIgKGJ1ZmYpCisJICAgIDog
+Im1lbW9yeSIgKTsKKworcmVkdWNlXzMyOgorCXN1bSA9IGFkZDMyX3dpdGhfY2Fycnkoc3VtPj4z
+Miwgc3VtICYgMHhmZmZmZmZmZik7IAorCisJaWYgKHVubGlrZWx5KG9kZCkpCisJCXJldHVybiBf
+X2J1aWx0aW5fYnN3YXAzMihzdW0pOworCisJcmV0dXJuIHN1bTsKIH0KIAogLyoKQEAgLTEzMyw4
+ICsxMzgsNyBAQCBzdGF0aWMgdW5zaWduZWQgZG9fY3N1bShjb25zdCB1bnNpZ25lZCBjaGFyICpi
+dWZmLCB1bnNpZ25lZCBsZW4pCiAgKi8KIF9fd3N1bSBjc3VtX3BhcnRpYWwoY29uc3Qgdm9pZCAq
+YnVmZiwgaW50IGxlbiwgX193c3VtIHN1bSkKIHsKLQlyZXR1cm4gKF9fZm9yY2UgX193c3VtKWFk
+ZDMyX3dpdGhfY2FycnkoZG9fY3N1bShidWZmLCBsZW4pLAotCQkJCQkJKF9fZm9yY2UgdTMyKXN1
+bSk7CisJcmV0dXJuIGRvX2NzdW0oYnVmZiwgbGVuLCAoX19mb3JjZSB1MzIpc3VtKTsKIH0KIEVY
+UE9SVF9TWU1CT0woY3N1bV9wYXJ0aWFsKTsKIAotLSAKMS44LjEuMgoK
+--_002_88d43a6e2a7b497b9b1e448bf7ae068aAcuMSaculabcom_--
 
