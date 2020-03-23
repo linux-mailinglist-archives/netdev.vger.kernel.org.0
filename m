@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1BA118EE3C
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 03:57:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1DCF18EE3F
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 03:57:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727259AbgCWC5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 Mar 2020 22:57:25 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:35380 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726983AbgCWC5Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 22:57:24 -0400
-Received: by mail-pg1-f195.google.com with SMTP id 7so6460764pgr.2;
-        Sun, 22 Mar 2020 19:57:23 -0700 (PDT)
+        id S1727273AbgCWC5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 Mar 2020 22:57:30 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:46162 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726983AbgCWC53 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 Mar 2020 22:57:29 -0400
+Received: by mail-pl1-f195.google.com with SMTP id r3so5276497pls.13;
+        Sun, 22 Mar 2020 19:57:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Mifl2ikKJNKf9Y0+MA8EZLncr03EmrnFMDIlWtiHq4E=;
-        b=vNb/KEz3bAt7X6kr6oAgcFWun+PsRezIj3xzygvRXA4JOwqsNnVMvncVjBwZCTMMNL
-         T7AciISiKpIB6GnGz2uz87D6u6350q5Q/iPjrOxqOv5D9hYbSbWy0N1mW0xo/2AKy4zk
-         6dhhuWui6UydKJ4AJ4RWuBoPWOp4um2YzKIqiZaSapX9qXbOnZ3+3DMBQvMxugEFG+sd
-         EKanBHoEC8oQ7qEGcYqakGHmaBcIMVYF98IboJ3iWoMD1e3mbmN83jgRjcfM/yzt9XM7
-         PiBvcNIiriX4TIUi0ogk+VlKgeLan5WNVZblMsXn34ryvhQFeJSQpdDt5dit2z9Y/5sx
-         vKxw==
+        bh=Wf+vH9t8xqDaM0zERvmm5OJNRuJUj0RTS8Tt8FdtJX0=;
+        b=NUV78+bdWs2ov2/LGKno5Gr3IKthQJ2brX6ImVASTAXbJWAaVYWXspxpnTYXdOiQu7
+         tYd88j7LNd6RaN/SMoGOQPkNZo05fF+QQsi6N3pVZ+uSc4NSkrF22UPnW34Ak4qF9vfD
+         +pwcoIPUBdf70gDYpm/Jml5ny0fzgXG/sOgYl7jCPinrjRwIehEIU4M3WqL/CbTvDirv
+         8/UeskC0pSiXQV6tH6GSJuQ1Ud0LIL+E3D1micygksIQhVjDsWhIQHGCP7GW05JBePwb
+         mbjPy3s9JKPd806LdoMMKNrDSChmquTdOHrnsRY3QQYYV/+Bk/yHhvIXlk309BfYesJD
+         xodA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Mifl2ikKJNKf9Y0+MA8EZLncr03EmrnFMDIlWtiHq4E=;
-        b=P+PwHB8XxbImrZxq7RctS7alvwxkqPQhbGiKe9BXB3MWWvw+ChKQkXAYlWf03CWxtT
-         5sAbuRec0ZHO/+RnL1Y5SI1WVMU0eRXNJhYlXe3ryWG4+QOQ6hqlLDMZA+drU9AxgEdU
-         4V078ZUJ3VFVpla8LzriqQ0mKHuj4pqS9QZNr7e7ekPJ/E1TiKNEOEnuIz/6vZFWCjok
-         0qqTjycW2prie3bk9MhYByNJMXxLA7jUiMzzmXAhupbnGYDf9lHDF8sw58CE9vPqwrwa
-         8iAhvmvCI86q2y3pEygNy9JSJxbvrNa7jsjDr/R1cg5OvO37JN2ujvmG/I4hbGoGPOJd
-         Lfng==
-X-Gm-Message-State: ANhLgQ3cDB0ciqwhghfB4KGUMO/QI/1lTePfSDwyLX7HNTcP0bCDREzK
-        grQLYmYEdwCzFWtvhbHetcY=
-X-Google-Smtp-Source: ADFU+vvtJ6VVES5MpYj5dXV9cn4A/doa2f+0gxiUXwDoDU5wJ5cJuNPYTV9PlIHyavJHr5zb55o1PQ==
-X-Received: by 2002:a62:6807:: with SMTP id d7mr22401640pfc.230.1584932243020;
-        Sun, 22 Mar 2020 19:57:23 -0700 (PDT)
+        bh=Wf+vH9t8xqDaM0zERvmm5OJNRuJUj0RTS8Tt8FdtJX0=;
+        b=gld0wI/FdAhHMvrcHPNYXUleCvyLAwh3RQvb5gVRWFWV5ILfuiiZmza7J3wCpXj/XO
+         9dWHE3BeSaGm+MXZd4tQj/Y0DnPeVaRSBf3J1iZhSoSHKYr8k+dKHP51hnfkdf0svLEs
+         CmBnab2/ytvUkbIKmiNpEnEsy2ldGzaBFvpL+3b8xnylmTV1w2KWVVvxJFccpBiQ+uSC
+         yWRtd5AADfN5deQaPIDnmEl1QPCoSSTRbw10x7Dl2uf02Se6LlLA/M2BquoXcLnj6Xmc
+         EMZPvDDi3Ey3Qzsj0y3sbBhLrFRYXn1W/VoBe+dpm86TIVhZIq/dUne3Ir/dhM4bJpVx
+         caug==
+X-Gm-Message-State: ANhLgQ1ZJ9EOck5E2Fp1iWv4hXpn5WOEKEEc/gi4GnRdAz3ABFwKVwqm
+        ETLjENJc3YzZ2eCCUs9x/NhLUBpH
+X-Google-Smtp-Source: ADFU+vsvYEEZXZx2s4n6yefrm4pNY7xmE1t7oePVaYEVLSsVNDhOM+Kx/q72ByjVvJDT1FcJEHZsyw==
+X-Received: by 2002:a17:90a:a484:: with SMTP id z4mr6008122pjp.77.1584932247774;
+        Sun, 22 Mar 2020 19:57:27 -0700 (PDT)
 Received: from localhost (104.128.80.227.16clouds.com. [104.128.80.227])
-        by smtp.gmail.com with ESMTPSA id c15sm5600915pfo.139.2020.03.22.19.57.21
+        by smtp.gmail.com with ESMTPSA id l2sm10696030pjn.27.2020.03.22.19.57.26
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 22 Mar 2020 19:57:22 -0700 (PDT)
+        Sun, 22 Mar 2020 19:57:27 -0700 (PDT)
 From:   Dejin Zheng <zhengdejin5@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
         linux@armlinux.org.uk, davem@davemloft.net,
         mchehab+samsung@kernel.org, gregkh@linuxfoundation.org,
         broonie@kernel.org, tglx@linutronix.de, netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH net-next v6 05/10] net: phy: aquantia: use phy_read_mmd_poll_timeout() to simplify the code
-Date:   Mon, 23 Mar 2020 10:56:28 +0800
-Message-Id: <20200323025633.6069-6-zhengdejin5@gmail.com>
+Subject: [PATCH net-next v6 06/10] net: phy: marvell10g: use phy_read_mmd_poll_timeout() to simplify the code
+Date:   Mon, 23 Mar 2020 10:56:29 +0800
+Message-Id: <20200323025633.6069-7-zhengdejin5@gmail.com>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200323025633.6069-1-zhengdejin5@gmail.com>
 References: <20200323025633.6069-1-zhengdejin5@gmail.com>
@@ -64,52 +64,66 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 use phy_read_mmd_poll_timeout() to replace the poll codes for
-simplify aqr107_wait_reset_complete() function.
+simplify mv3310_reset() function.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+it should be add msleep(5) before call phy_read_mmd_poll_timeout()
+to keep the code more similar, but it will report that warning, so
+modify it to msleep(20).
+
+./scripts/checkpatch.pl
+v5-0006-net-phy-marvell10g-use-phy_read_mmd_poll_timeout-.patch
+WARNING: msleep < 20ms can sleep for up to 20ms; see Documentation/timers/timers-howto.rst
+#41: FILE: drivers/net/phy/marvell10g.c:251:
++	msleep(5);
+
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 ---
 v5 -> v6:
-	- no changed
+	- no changed.
 v4 -> v5:
-	- no changed
+	- add msleep() to before call phy_read_mmd_poll_timeout()
+	  to keep the code more similar.
 v3 -> v4:
-	- no changed
-v2 -> v3:
-	- adapt to it after modifying the parameter order of the
-	  newly added function
-v1 -> v2:
-	- remove the handle of phy_read_mmd's return error.
+	- add this patch by Andrew's suggestion. Thanks Andrew!
 
 
- drivers/net/phy/aquantia_main.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
+ drivers/net/phy/marvell10g.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/phy/aquantia_main.c b/drivers/net/phy/aquantia_main.c
-index 31927b2c7d5a..db3e20938729 100644
---- a/drivers/net/phy/aquantia_main.c
-+++ b/drivers/net/phy/aquantia_main.c
-@@ -451,16 +451,11 @@ static int aqr107_set_tunable(struct phy_device *phydev,
-  */
- static int aqr107_wait_reset_complete(struct phy_device *phydev)
+diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
+index 7e05b92504f0..c0fb8391c75b 100644
+--- a/drivers/net/phy/marvell10g.c
++++ b/drivers/net/phy/marvell10g.c
+@@ -241,22 +241,18 @@ static int mv3310_power_up(struct phy_device *phydev)
+ 
+ static int mv3310_reset(struct phy_device *phydev, u32 unit)
  {
--	int val, retries = 100;
--
+-	int retries, val, err;
++	int val, err;
+ 
+ 	err = phy_modify_mmd(phydev, MDIO_MMD_PCS, unit + MDIO_CTRL1,
+ 			     MDIO_CTRL1_RESET, MDIO_CTRL1_RESET);
+ 	if (err < 0)
+ 		return err;
+ 
+-	retries = 20;
 -	do {
--		val = phy_read_mmd(phydev, MDIO_MMD_VEND1, VEND1_GLOBAL_FW_ID);
+-		msleep(5);
+-		val = phy_read_mmd(phydev, MDIO_MMD_PCS, unit + MDIO_CTRL1);
 -		if (val < 0)
 -			return val;
--		msleep(20);
--	} while (!val && --retries);
-+	int val;
- 
--	return val ? 0 : -ETIMEDOUT;
-+	return phy_read_mmd_poll_timeout(phydev, MDIO_MMD_VEND1,
-+					 VEND1_GLOBAL_FW_ID, val,
-+					 val != 0, 20000, 2000000);
+-	} while (val & MDIO_CTRL1_RESET && --retries);
+-
+-	return val & MDIO_CTRL1_RESET ? -ETIMEDOUT : 0;
++	msleep(20);
++	return phy_read_mmd_poll_timeout(phydev, MDIO_MMD_PCS,
++					 unit + MDIO_CTRL1, val,
++					 !(val & MDIO_CTRL1_RESET),
++					 5000, 80000);
  }
  
- static void aqr107_chip_info(struct phy_device *phydev)
+ static int mv3310_get_edpd(struct phy_device *phydev, u16 *edpd)
 -- 
 2.25.0
 
