@@ -2,222 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 540F118FD28
-	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 19:59:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 447C618FD39
+	for <lists+netdev@lfdr.de>; Mon, 23 Mar 2020 20:04:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727664AbgCWS7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 14:59:31 -0400
-Received: from mail-am6eur05on2051.outbound.protection.outlook.com ([40.107.22.51]:6538
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727179AbgCWS7b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 14:59:31 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=O0qAKLHbxqbR+A9AG+LAfoAC+iwPZQj74lfKhaS7cCjYsXYHFdNYqHosyjNit5LqKA2PZScjnVpa84osa7mAPhd0jy0vBQwUNsCWI0wZ+mbXYkUqMX4JK8l9hzWSm8dCMYCXqeoETuLNb0LQf9ByLfPyiBTrWvHIUVcKpfkbdhsRf0sZNGze9kouzBGAcwkmFwhzm+iLV6ctlpx9gSFH53KlClXagZTuKibUzt6cwNaybbmubgww//aav17dZcsS/8xM2QBiESGsbA3y3UsBRL6Fe3VRGjhFHJ/jKsKfzYFoNKXeF0LarWIbt/QfkACLCEtFPyxNEV1D7HHMrDHpBQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TT7zh85Rhyxd+pINjq2uY27yXx9YEcHhxz9JZvLKbpw=;
- b=ggOpf0rDUSrTtDumwcO/b9zED+lmEEiJTGapsHjDb/9Onvi4nCPSMS/jJaNAFp+lb0l1bZ/Yqccy4E12juMczwQtV3ynBm23o1kGJYXmQhbTxfS6kkxRgUG5RY6IvxCbwGKat89+D5VvDNCggFjP2oXBNnIZsCj6UY+6SqbeK8Znfj6vG3DxeLztCDPLVLa8zQhyKiQE7lv3G5jdjHsCKLsFjclS08ghRX+n9NGac7nmjeEMVbGXIkRl79Wow8gNB+xGwt3O2WZXa8tafq/1KaoXw0L5ykhsZslCJ28N7ZerT8LbaB8Of2fSdkEDhfbGbZ2lbgX4Z8feA0JnO+pJqg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TT7zh85Rhyxd+pINjq2uY27yXx9YEcHhxz9JZvLKbpw=;
- b=GRdGmWz36sZ8LmWnUPfA9qEvQAKyg8weNmfJt9OqKlo2m4HW0ME/bx2plvpqOf66ih0rHhkz13fny4zwA5hIwXo++MfFW7pjV4TF+7WesbI4LcRFiaeV1wb+leMZCq5Mb3AQtCZahWo1uQbeXhSUpBGl2TDw+eP4x/40qqeEXRw=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-Received: from VI1PR05MB3359.eurprd05.prod.outlook.com (10.170.238.32) by
- VI1PR05MB6941.eurprd05.prod.outlook.com (20.181.34.216) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.18; Mon, 23 Mar 2020 18:59:27 +0000
-Received: from VI1PR05MB3359.eurprd05.prod.outlook.com
- ([fe80::cd2b:cd2:d07a:1db4]) by VI1PR05MB3359.eurprd05.prod.outlook.com
- ([fe80::cd2b:cd2:d07a:1db4%7]) with mapi id 15.20.2835.021; Mon, 23 Mar 2020
- 18:59:27 +0000
-References: <1584973629-18728-1-git-send-email-wenxu@ucloud.cn> <1584973629-18728-2-git-send-email-wenxu@ucloud.cn>
-User-agent: mu4e 1.2.0; emacs 26.2.90
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     wenxu@ucloud.cn
-Cc:     saeedm@mellanox.com, paulb@mellanox.com, vladbu@mellanox.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v4 1/2] net/mlx5e: refactor indr setup block
-In-reply-to: <1584973629-18728-2-git-send-email-wenxu@ucloud.cn>
-Date:   Mon, 23 Mar 2020 20:59:22 +0200
-Message-ID: <vbfv9muyk1h.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: PR2P264CA0036.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:101:1::24) To VI1PR05MB3359.eurprd05.prod.outlook.com
- (2603:10a6:802:1c::32)
+        id S1727646AbgCWTEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 15:04:07 -0400
+Received: from mail-vs1-f65.google.com ([209.85.217.65]:38725 "EHLO
+        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727468AbgCWTEH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 15:04:07 -0400
+Received: by mail-vs1-f65.google.com with SMTP id x206so9540451vsx.5
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 12:04:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=NDYOXFTMDWIdsCkfyyirGcOsGcwZtinXqJlRoDSoqTo=;
+        b=YNued+IkDlOLvZGJuYI1titjTXU2zN02Oe5Xt+lLRBOnsagazRi+5torcb9UcgRvP+
+         Bhn8OKR5qSK0o3VYkPH3sKWwUKyp1dpOydpbkNbIxJaEw7ljU1wLBdHw+abLd0E6vTHc
+         1PC9n4iFll/L0aR+NNIAqglYSHxdFwo7P9DTLi6O+KviZsHw+vn5+BljoUl4d/eu09Az
+         z9MYR+m1ckdq38eyaUOdSMc3X72vI2fsZt8XJtqV0htBG3MJpIbiNt9NOyi6ap0MeBw5
+         XHB1oEIM6kehU/ZSyUjAwjHoK1KmNgFT6bltH+O/fmSigAs18KPy9Z3h4NLh66g7nyBq
+         mnlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NDYOXFTMDWIdsCkfyyirGcOsGcwZtinXqJlRoDSoqTo=;
+        b=WeRYejLQb1U4nLuL+A/gR7RHxzFgQYmOzqV7EpFhifWAJNGKV+/saPn/lLj2xMpgjf
+         OxQeCV8OXSNhhdYDUUCpvtqiK3VVxJtdRnbg2ofPkKumw1GqWkwIPY/Qnv6m36K5MsOn
+         37qbA/u1LFtkBsiapuhad0NqCWkFgZjPQHSjXkUhhaqEORrZ/upmw46a6OzFAJPPlZCE
+         GmMjr/QQBODVzbSj1mfpBMEgmv8Ryw1LAIr3PgNSu0mCdkgeso8TC1TDVFe88gEFkTKl
+         VAiTai0aSi9mEaM1CMxaECDfeZYRLoEW6w5bzlcNpDt+G4QoMTW2iQxoJA9yuyDqY3mj
+         ZGyw==
+X-Gm-Message-State: ANhLgQ0rxlPHrV6+UouHgjVaf9ek/Fr1Nh8aRf9CrNgVRbSfnYGblcG5
+        eiZMfoBHfA9AzNJXBgq1RR4a1PayJ2HrBT8J38862Q==
+X-Google-Smtp-Source: ADFU+vtzYXgtcShoih79dwSCyf4uy/B4YvUs9zTgh3btpuUpChoUKIr6zYLUYEP7ynwvFy4m9Hk38dc0rzQ8GoScTPc=
+X-Received: by 2002:a67:cb07:: with SMTP id b7mr15906739vsl.104.1584990245584;
+ Mon, 23 Mar 2020 12:04:05 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from reg-r-vrt-018-180.mellanox.com (37.142.13.130) by PR2P264CA0036.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101:1::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.18 via Frontend Transport; Mon, 23 Mar 2020 18:59:26 +0000
-X-Originating-IP: [37.142.13.130]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 437df81c-e9bc-4555-a0c6-08d7cf5c4f6c
-X-MS-TrafficTypeDiagnostic: VI1PR05MB6941:|VI1PR05MB6941:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB6941CD69D73E2AE4001D3CA5ADF00@VI1PR05MB6941.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:185;
-X-Forefront-PRVS: 0351D213B3
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(366004)(39860400002)(376002)(136003)(199004)(66556008)(8676002)(81166006)(81156014)(66476007)(66946007)(478600001)(2616005)(316002)(4326008)(956004)(7696005)(26005)(186003)(52116002)(86362001)(5660300002)(6666004)(2906002)(8936002)(36756003)(6916009)(16526019)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6941;H:VI1PR05MB3359.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: n8lBOFDc8dxW2dpbqVJH0CKsxpqhoFDcE8O1AJK3I7PlLmuDR8dEe8Qaxr/IKnkYCAUGC7/mxk/eZ69a70AwsBDU5v7NWxMkbjTFeQKnc9uo2CjSXmonKY92B/dWD/2/9WNipwJw1X/evhz2gN95SYEJHNd0bhiw/uyvFxQlYdL0x3HelmdyIaHSmyPyrDcExD66Yk/ztqDF+QDx2eirWR8VIzzrWdz2KFjUfvAue7J/s3lz+2zk7nc7oaAbaBOHe0G1bRU9nvEJeEF0JuJN77fXunQ0k1zqxjslaAkDVU5uYLmg6jkCoDqXqGBVc7VyErh/aBbkeRqOTC+WDZOtIvyLmagjkQw7RD40BEcIt70MhYqIPunTkQ83WgfHdaYJiY13IWTcFD1wYmVxHOYKWzvmc7dJHhUPDoHOsarYSK9HuYgeJywQs5KcUbimpBci
-X-MS-Exchange-AntiSpam-MessageData: 3PyT1W8XbKiPExo+LOKHGqiPFNnTJqGhqre6QBYHXDaxQgEsEWNR99kgPfcBNEVFepmAfW23pb47R7bpaLcmt7vVUPfeM8w3HIHchDp7OFxNijc9VhD8qlU0ymk9VV3hI316Ro9E9ho8xUmbbTy5MA==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 437df81c-e9bc-4555-a0c6-08d7cf5c4f6c
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2020 18:59:27.4953
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WnA6lUegMcVomjVDlqcCU5G1InkLloAf0irsSf/9DHqhJZ0tisTu8VOUNqG11l99Ed2W1wCbSYWBK+xhNU0MIg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6941
+References: <1584524612-24470-1-git-send-email-ilpo.jarvinen@helsinki.fi>
+ <1584524612-24470-29-git-send-email-ilpo.jarvinen@helsinki.fi>
+ <CAA93jw7_YG-KMns8UP-aTPHNjPG+A_rwWUWbt1+8i4+UNhALnA@mail.gmail.com>
+ <alpine.DEB.2.20.2003202348250.21767@whs-18.cs.helsinki.fi>
+ <CAK6E8=f=tB1Dw-ns5hOysvSbQ1VGJJ1-nLQXtxC6rfZbr5Tnww@mail.gmail.com> <alpine.DEB.2.20.2003231528460.32422@whs-18.cs.helsinki.fi>
+In-Reply-To: <alpine.DEB.2.20.2003231528460.32422@whs-18.cs.helsinki.fi>
+From:   Yuchung Cheng <ycheng@google.com>
+Date:   Mon, 23 Mar 2020 12:03:29 -0700
+Message-ID: <CAK6E8=cBiTo+3M4y6Jn8mEtfwjGBRLNF0-CqXZtqcSNwUE6FGw@mail.gmail.com>
+Subject: Re: [RFC PATCH 28/28] tcp: AccECN sysctl documentation
+To:     =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@cs.helsinki.fi>
+Cc:     Dave Taht <dave.taht@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Olivier Tilmans <olivier.tilmans@nokia-bell-labs.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Mon 23 Mar 2020 at 16:27, wenxu@ucloud.cn wrote:
-> From: wenxu <wenxu@ucloud.cn>
+On Mon, Mar 23, 2020 at 6:34 AM Ilpo J=C3=A4rvinen
+<ilpo.jarvinen@cs.helsinki.fi> wrote:
 >
-> Refactor indr setup block for support ft indr setup in the
-> next patch. The mlx5e_rep_indr_setup_block can be used for
-> both tc and ft subsystem.
+> On Fri, 20 Mar 2020, Yuchung Cheng wrote:
+>
+> > On Fri, Mar 20, 2020 at 3:40 PM Ilpo J=C3=A4rvinen
+> > <ilpo.jarvinen@cs.helsinki.fi> wrote:
+> > >
+> > > On Thu, 19 Mar 2020, Dave Taht wrote:
+> > >
+> > > > On Wed, Mar 18, 2020 at 2:44 AM Ilpo J=C3=A4rvinen <ilpo.jarvinen@h=
+elsinki.fi> wrote:
+> > > > >
+> > > > > From: Ilpo J=C3=A4rvinen <ilpo.jarvinen@cs.helsinki.fi>
+> > > > >
+> > > > > Signed-off-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@cs.helsinki.fi>
+> > > > > ---
+> > > > >  Documentation/networking/ip-sysctl.txt | 12 +++++++++---
+> > > > >  1 file changed, 9 insertions(+), 3 deletions(-)
+> > > > >
+> > > > > diff --git a/Documentation/networking/ip-sysctl.txt b/Documentati=
+on/networking/ip-sysctl.txt
+> > > > > index 5f53faff4e25..ecca6e1d6bea 100644
+> > > > > --- a/Documentation/networking/ip-sysctl.txt
+> > > > > +++ b/Documentation/networking/ip-sysctl.txt
+> > > > > @@ -301,15 +301,21 @@ tcp_ecn - INTEGER
+> > > > >                 0 Disable ECN.  Neither initiate nor accept ECN.
+> > > > >                 1 Enable ECN when requested by incoming connectio=
+ns and
+> > > > >                   also request ECN on outgoing connection attempt=
+s.
+> > > > > -               2 Enable ECN when requested by incoming connectio=
+ns
+> > > > > +               2 Enable ECN or AccECN when requested by incoming=
+ connections
+> > > > >                   but do not request ECN on outgoing connections.
+> > > >
+> > > > Changing existing user-behavior for this default seems to be overly
+> > > > optimistic. Useful for testing, but...
+> > >
+> > > I disagree.
+> > >
+> > > The kernel default on ECN is/has been "do nothing" like forever. Yet,
+> > > passively allowing ECN on servers is a low risk operation because not=
+hing
+> > > will change before client actively asks for it. However, it was obvio=
+us
+> > > that the servers didn't do that. The servers could have set tcp_ecn t=
+o 1
+> > > (before 2 was there) which is low risk for _servers_ (unlike for clie=
+nts)
+> > > but only very very few did. I don't believe servers would now
+> > > intentionally pick 2 when they clearly didn't pick 1 earlier either.
+> > >
+> > > Adding 2 is/was an attempt to side-step the need for both ends to mak=
+e
+> > > conscious decision by setting the sysctl (which servers didn't want t=
+o
+> > > do). That is, 2 gives decision on what to do into the hands of the cl=
+ient
+> > > side which was the true intent of 2 (in case you don't know, I made t=
+hat
+> > > change).
+> > What can a server configure to process only RFC3168 ECN if it prefers t=
+o?
+>
+> That's why I suggested the flag-based approach?
 
-This doesn't really explain what is going on in this patch. For example,
-it seems you are exposing 'flags' in order set additional flag for FT in
-patch 2 of this series. I can only guess because commit message doesn't
-provide any explanation.
+That's assuming an admin that has control of sysctls can also change
+individual applications (easily). In reality it often is not the case.
+The default sysctl choices in this patch seem risky to me.
+
+
 
 >
-> Signed-off-by: wenxu <wenxu@ucloud.cn>
-> ---
-> v3: add some comments
+> > > If "full control" is the way to go, I think it should be made using f=
+lags
+> > > instead, along these lines:
+> > >
+> > > 1: Enable RFC 3168 ECN in+out
+> > > 2: Enable RFC 3168 ECN in (default on)
+> > > 4: Enable Accurate ECN in (default on)
+> > > 8: Enable Accurate ECN in+out
+> > >
+> > > Note that I intentionally reversed the in and in/out order for 4&8
+> > > (something that couldn't be done with 1&2 to preserve meaning of 1).
 >
->  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 42 ++++++++++++------------
->  1 file changed, 21 insertions(+), 21 deletions(-)
+> It should address any except "out" but no "in" (the meaning of 1 cannot
+> be changed I think). But out w/o in doesn't sound very useful.
 >
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> index a33d151..057f5f9 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> @@ -694,9 +694,9 @@ static void mlx5e_rep_indr_clean_block_privs(struct mlx5e_rep_priv *rpriv)
->  static int
->  mlx5e_rep_indr_offload(struct net_device *netdev,
->  		       struct flow_cls_offload *flower,
-> -		       struct mlx5e_rep_indr_block_priv *indr_priv)
-> +		       struct mlx5e_rep_indr_block_priv *indr_priv,
-> +		       unsigned long flags)
->  {
-> -	unsigned long flags = MLX5_TC_FLAG(EGRESS) | MLX5_TC_FLAG(ESW_OFFLOAD);
->  	struct mlx5e_priv *priv = netdev_priv(indr_priv->rpriv->netdev);
->  	int err = 0;
->  
-> @@ -717,20 +717,22 @@ static void mlx5e_rep_indr_clean_block_privs(struct mlx5e_rep_priv *rpriv)
->  	return err;
->  }
->  
-> -static int mlx5e_rep_indr_setup_block_cb(enum tc_setup_type type,
-> -					 void *type_data, void *indr_priv)
-> +static int mlx5e_rep_indr_setup_tc_cb(enum tc_setup_type type,
-> +				      void *type_data, void *indr_priv)
->  {
-> +	unsigned long flags = MLX5_TC_FLAG(EGRESS) | MLX5_TC_FLAG(ESW_OFFLOAD);
->  	struct mlx5e_rep_indr_block_priv *priv = indr_priv;
->  
->  	switch (type) {
->  	case TC_SETUP_CLSFLOWER:
-> -		return mlx5e_rep_indr_offload(priv->netdev, type_data, priv);
-> +		return mlx5e_rep_indr_offload(priv->netdev, type_data, priv,
-> +					      flags);
->  	default:
->  		return -EOPNOTSUPP;
->  	}
->  }
->  
-> -static void mlx5e_rep_indr_tc_block_unbind(void *cb_priv)
-> +static void mlx5e_rep_indr_block_unbind(void *cb_priv)
->  {
->  	struct mlx5e_rep_indr_block_priv *indr_priv = cb_priv;
->  
-> @@ -741,9 +743,10 @@ static void mlx5e_rep_indr_tc_block_unbind(void *cb_priv)
->  static LIST_HEAD(mlx5e_block_cb_list);
->  
->  static int
-> -mlx5e_rep_indr_setup_tc_block(struct net_device *netdev,
-> -			      struct mlx5e_rep_priv *rpriv,
-> -			      struct flow_block_offload *f)
-> +mlx5e_rep_indr_setup_block(struct net_device *netdev,
-> +			   struct mlx5e_rep_priv *rpriv,
-> +			   struct flow_block_offload *f,
-> +			   flow_setup_cb_t *setup_cb)
->  {
->  	struct mlx5e_rep_indr_block_priv *indr_priv;
->  	struct flow_block_cb *block_cb;
-> @@ -769,9 +772,8 @@ static void mlx5e_rep_indr_tc_block_unbind(void *cb_priv)
->  		list_add(&indr_priv->list,
->  			 &rpriv->uplink_priv.tc_indr_block_priv_list);
->  
-> -		block_cb = flow_block_cb_alloc(mlx5e_rep_indr_setup_block_cb,
-> -					       indr_priv, indr_priv,
-> -					       mlx5e_rep_indr_tc_block_unbind);
-> +		block_cb = flow_block_cb_alloc(setup_cb, indr_priv, indr_priv,
-> +					       mlx5e_rep_indr_block_unbind);
->  		if (IS_ERR(block_cb)) {
->  			list_del(&indr_priv->list);
->  			kfree(indr_priv);
-> @@ -786,9 +788,7 @@ static void mlx5e_rep_indr_tc_block_unbind(void *cb_priv)
->  		if (!indr_priv)
->  			return -ENOENT;
->  
-> -		block_cb = flow_block_cb_lookup(f->block,
-> -						mlx5e_rep_indr_setup_block_cb,
-> -						indr_priv);
-> +		block_cb = flow_block_cb_lookup(f->block, setup_cb, indr_priv);
->  		if (!block_cb)
->  			return -ENOENT;
->  
-> @@ -802,13 +802,13 @@ static void mlx5e_rep_indr_tc_block_unbind(void *cb_priv)
->  }
->  
->  static
-> -int mlx5e_rep_indr_setup_tc_cb(struct net_device *netdev, void *cb_priv,
-> -			       enum tc_setup_type type, void *type_data)
-> +int mlx5e_rep_indr_setup_cb(struct net_device *netdev, void *cb_priv,
-> +			    enum tc_setup_type type, void *type_data)
->  {
->  	switch (type) {
->  	case TC_SETUP_BLOCK:
-> -		return mlx5e_rep_indr_setup_tc_block(netdev, cb_priv,
-> -						      type_data);
-> +		return mlx5e_rep_indr_setup_block(netdev, cb_priv, type_data,
-> +						  mlx5e_rep_indr_setup_tc_cb);
->  	default:
->  		return -EOPNOTSUPP;
->  	}
-> @@ -820,7 +820,7 @@ static int mlx5e_rep_indr_register_block(struct mlx5e_rep_priv *rpriv,
->  	int err;
->  
->  	err = __flow_indr_block_cb_register(netdev, rpriv,
-> -					    mlx5e_rep_indr_setup_tc_cb,
-> +					    mlx5e_rep_indr_setup_cb,
->  					    rpriv);
->  	if (err) {
->  		struct mlx5e_priv *priv = netdev_priv(rpriv->netdev);
-> @@ -834,7 +834,7 @@ static int mlx5e_rep_indr_register_block(struct mlx5e_rep_priv *rpriv,
->  static void mlx5e_rep_indr_unregister_block(struct mlx5e_rep_priv *rpriv,
->  					    struct net_device *netdev)
->  {
-> -	__flow_indr_block_cb_unregister(netdev, mlx5e_rep_indr_setup_tc_cb,
-> +	__flow_indr_block_cb_unregister(netdev, mlx5e_rep_indr_setup_cb,
->  					rpriv);
->  }
-
+> --
+>  i.
