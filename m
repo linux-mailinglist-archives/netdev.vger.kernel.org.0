@@ -2,80 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CFE3191A24
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 20:40:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42236191A38
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 20:43:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726618AbgCXTkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 15:40:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52942 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725835AbgCXTkU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 15:40:20 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B599420714;
-        Tue, 24 Mar 2020 19:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585078819;
-        bh=I+ePW0nru6Tw53B8JC1lGLGEq614UcNeE3ra5Buwg2E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=zFe05V7tlCMcosmLPppv7M8UN2MRm6kdbF4Ep486jkmJcHnBvE6Oj0o3pOp4rTp27
-         wUocnH+raXKgIXuFZs5Jg20Zhhvyj05zwWyGpnNyApGmEwk6wbAHWJ7mMD78vWpyNT
-         CdogY8CS0jnaueZziTzby8y/yy3SNVi77o5Z3d3w=
-Date:   Tue, 24 Mar 2020 12:40:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>, Andrey Ignatov <rdna@fb.com>
-Subject: Re: [PATCH bpf-next v3 1/4] xdp: Support specifying expected
- existing program when attaching XDP
-Message-ID: <20200324124016.17d39c42@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <158507357313.6925.9859587430926258691.stgit@toke.dk>
-References: <158507357205.6925.17804771242752938867.stgit@toke.dk>
-        <158507357313.6925.9859587430926258691.stgit@toke.dk>
+        id S1727061AbgCXTnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 15:43:40 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:36755 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725835AbgCXTnj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 15:43:39 -0400
+Received: by mail-oi1-f196.google.com with SMTP id k18so19728652oib.3;
+        Tue, 24 Mar 2020 12:43:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=v0Lb179Xsvu+pLNHsFIahOHyMAoUJr1uLEfB5vqXXMM=;
+        b=ruDc8SuvLVcsBTW3zKpfpxzuqp4x7GDsF50RjqtpN7Z/X0f9q9YstwV4Vgnxf9DP+7
+         MNDp+WAEB2gKLbRcOIbywTwd1zpJgjcLjDfXuI7GJUm6lvPyFQNzwTWy2YAX2XUiSqxi
+         LeuHtet8IQMM9PI1iVsPXyLi/cvsBjBLIMgdSU9RmTs1hnNms0GEJMWFwrXn0RvMkMtc
+         DKk98KD2D2S7ZFwm4NRtUEqidf/qgMVj5QQp3xJ2hMzFB/7H1/8Fwc6IqdDPAGGnjBg+
+         i9D5sK8KOvqTPQZq9ywIlYH43MpqFkMkcqSKjsSPuUHXUYk4WDb1Kggfqj4Qlc+zIca1
+         aPmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=v0Lb179Xsvu+pLNHsFIahOHyMAoUJr1uLEfB5vqXXMM=;
+        b=qboqbPzmXkBx9bj1JGt/UA0nt84rMPOIwbFcyiG+eM2BGDWF1CbXL6AelC/PkusdTx
+         SAZcmbVG4jYm9eFEFuCAqQXPctyGIN2sXgJZg9KNInpuqSecFHU9bGL7iq3IDBk0dcxX
+         uiJjp0hs1HXnNLsq1Qwuzi4XPIGMJcxkgdHWzteI2TMVvqdvoOYFJGa+3jI7U8MUp+cR
+         iA3i4EBTnDjwW7r2DBy8VlzpC/vCDL3X+LL6XNWISCJmQahcQpFibngdD/L5sPwXqvXC
+         0r6H9LOTPqP5f2PLIITf3yIUpWqiKu+BEKepq4QrpnlwadCUB7Iu0oMAdfcYF3hV2R9K
+         EGfA==
+X-Gm-Message-State: ANhLgQ3G+921WophAVxHq+3uiuEY7BSdnMTS7IbzSIIPZl48TgKcPidd
+        D6//M576/T1mga6sDV6YNeo=
+X-Google-Smtp-Source: ADFU+vtZVcKOXuht2eESgZdnD2MDhbi4oXJHnGGTpgfoHAPYp/e9rYAIxsXcrOu9EgDkSnHGEyRf2Q==
+X-Received: by 2002:aca:b5c3:: with SMTP id e186mr4511758oif.114.1585079018625;
+        Tue, 24 Mar 2020 12:43:38 -0700 (PDT)
+Received: from ubuntu-m2-xlarge-x86 ([2604:1380:4111:8b00::1])
+        by smtp.gmail.com with ESMTPSA id n20sm6360504ota.54.2020.03.24.12.43.37
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 24 Mar 2020 12:43:37 -0700 (PDT)
+Date:   Tue, 24 Mar 2020 12:43:36 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Michal Marek <michal.lkml@markovi.net>,
+        clang-built-linux@googlegroups.com
+Subject: Re: [PATCH 3/3] kbuild: remove AS variable
+Message-ID: <20200324194336.GA15310@ubuntu-m2-xlarge-x86>
+References: <20200324161539.7538-1-masahiroy@kernel.org>
+ <20200324161539.7538-3-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200324161539.7538-3-masahiroy@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Mar 2020 19:12:53 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
->=20
-> While it is currently possible for userspace to specify that an existing
-> XDP program should not be replaced when attaching to an interface, there =
-is
-> no mechanism to safely replace a specific XDP program with another.
->=20
-> This patch adds a new netlink attribute, IFLA_XDP_EXPECTED_ID, which can =
-be
-> set along with IFLA_XDP_FD. If set, the kernel will check that the program
-> currently loaded on the interface matches the expected one, and fail the
-> operation if it does not. This corresponds to a 'cmpxchg' memory operatio=
-n.
-> Setting the new attribute with a negative value means that no program is
-> expected to be attached, which corresponds to setting the UPDATE_IF_NOEXI=
-ST
-> flag.
->=20
-> A new companion flag, XDP_FLAGS_EXPECT_ID, is also added to explicitly
-> request checking of the EXPECTED_ID attribute. This is needed for userspa=
-ce
-> to discover whether the kernel supports the new attribute.
->=20
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+On Wed, Mar 25, 2020 at 01:15:39AM +0900, Masahiro Yamada wrote:
+> As commit 5ef872636ca7 ("kbuild: get rid of misleading $(AS) from
+> documents") noted, we rarely use $(AS) in the kernel build.
+> 
+> Now that the only/last user of $(AS) in drivers/net/wan/Makefile was
+> converted to $(CC), $(AS) is no longer used in the build process.
+> 
+> You can still pass in AS=clang, which is just a switch to turn on
+> the LLVM integrated assembler.
+> 
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-
-Thanks!
+Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
