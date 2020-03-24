@@ -2,128 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BE4319190B
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 19:26:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DA48191942
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 19:35:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727509AbgCXS0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 14:26:05 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:37709 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727398AbgCXS0E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 14:26:04 -0400
-Received: by mail-qk1-f195.google.com with SMTP id x3so8810580qki.4
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 11:26:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=joelfernandes.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=iEmpsAyt9B1Qcdkh4hlRJzHYHPiVdMatdhGGO+kX6u0=;
-        b=XviXDdgRMR3A1ee54Wowb70vIsLpggnUxurOugFzJ+rMRbEWy19ZdXhIQG8po0nuoq
-         +zQF77o09zsBvEAMrLmPfUbOj/iB/K7nHwJmK5u3waH0Ns6p9BDbathMFtZ6NE3rNO/a
-         eUJzkjun1iZzOBflcQHA8PWiD8khlP9p5A0R0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=iEmpsAyt9B1Qcdkh4hlRJzHYHPiVdMatdhGGO+kX6u0=;
-        b=OFdRBpXV/6bJnn0j41K+7cdEl9gC0LB0JO2Rr0SRnYt1z8T1vA8LR2QRfAtx9lrbjH
-         mU0RFJKEb+qpfz6N3uqLVJjWhO+t42AipN8zMwtbEUpZWKaZ5xGzHgxsYKPmluWrZqK8
-         WJnkNkMhzdG2iuZTUj7AGjU1ZLrrYueAJSjGMLFRrRSMcJ49dITE+P3iyujGNALxFkf7
-         og96WMj6fFrna0nduspwgsy2kQl/02XsR6s8T+1PzfpNzPHoOp/qUW2Gi4DY1X3kUATP
-         0GrWq9SNgCeD48zsGa2YZLkw6i7V+LNT1nkxz5zdmvEAOcONut6F0RC4QuUwPe4V9H9Q
-         IH8Q==
-X-Gm-Message-State: ANhLgQ1H8mkj5WLzTT9ALCu3K2FN+ZtZxKZdKY1ZKIAybQxQUY0ezxbt
-        t2hBpVxOE2Chzto7wOuizk2bXQ==
-X-Google-Smtp-Source: ADFU+vsDFgrzlLzo7PWHXfC4Na59e1GjR7LhLOqmWSGaiqojVW66Z6eiEsCwPhPF2x51Legtscepqg==
-X-Received: by 2002:a05:620a:1250:: with SMTP id a16mr12752127qkl.497.1585074361932;
-        Tue, 24 Mar 2020 11:26:01 -0700 (PDT)
-Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
-        by smtp.gmail.com with ESMTPSA id y5sm14014261qkb.123.2020.03.24.11.26.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Mar 2020 11:26:01 -0700 (PDT)
-Date:   Tue, 24 Mar 2020 14:26:01 -0400
-From:   Joel Fernandes <joel@joelfernandes.org>
-To:     Will Deacon <will@kernel.org>
-Cc:     Kalle Valo <kvalo@codeaurora.org>, linux-kernel@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "linux-pci@vger.kernel.org Felipe Balbi" <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        id S1727869AbgCXSfU convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 24 Mar 2020 14:35:20 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:42502 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727398AbgCXSfU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 14:35:20 -0400
+Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id C8009CECBE;
+        Tue, 24 Mar 2020 19:44:49 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: [PATCH v1 1/2] Bluetooth: btusb: Indicate Microsoft vendor
+ extension for Intel 9460/9560 and 9160/9260
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <CALWDO_U5Cnt3_Ss2QQNhtuKS_8qq7oyNH4d97J68pmbmQMe=3w@mail.gmail.com>
+Date:   Tue, 24 Mar 2020 19:35:17 +0100
+Cc:     Joe Perches <joe@perches.com>,
+        Miao-chen Chou <mcchou@chromium.org>,
+        Bluetooth Kernel Mailing List 
+        <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Alain Michaud <alainm@chromium.org>,
         "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH] Documentation: Clarify better about the rwsem non-owner
- release issue
-Message-ID: <20200324182601.GC257597@google.com>
-References: <20200322021938.175736-1-joel@joelfernandes.org>
- <87a748khlo.fsf@kamboji.qca.qualcomm.com>
- <20200323182349.GA203600@google.com>
- <20200324081538.GA8696@willie-the-truck>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200324081538.GA8696@willie-the-truck>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <643C6020-2FC5-4EEA-8F64-5D4B7F9258A4@holtmann.org>
+References: <20200323072824.254495-1-mcchou@chromium.org>
+ <20200323002820.v1.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
+ <04021BE3-63F7-4B19-9F0E-145785594E8C@holtmann.org>
+ <421d27670f2736c88e8c0693e3ff7c0dcfceb40b.camel@perches.com>
+ <57C56801-7F3B-478A-83E9-1D2376C60666@holtmann.org>
+ <03547be94c4944ca672c7aef2dd38b0fb1eedc84.camel@perches.com>
+ <CALWDO_U5Cnt3_Ss2QQNhtuKS_8qq7oyNH4d97J68pmbmQMe=3w@mail.gmail.com>
+To:     Alain Michaud <alainmichaud@google.com>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 08:15:39AM +0000, Will Deacon wrote:
-> On Mon, Mar 23, 2020 at 02:23:49PM -0400, Joel Fernandes wrote:
-> > On Sun, Mar 22, 2020 at 08:51:15AM +0200, Kalle Valo wrote:
-> > > "Joel Fernandes (Google)" <joel@joelfernandes.org> writes:
-> > > 
-> > > > Reword and clarify better about the rwsem non-owner release issue.
-> > > >
-> > > > Link: https://lore.kernel.org/linux-pci/20200321212144.GA6475@google.com/
-> > > >
-> > > > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
-> > > 
-> > > There's something wrong with your linux-pci and linux-usb addresses:
-> > > 
-> > > 	"linux-pci@vger.kernel.org Felipe Balbi" <balbi@kernel.org>,
-> > > 
-> > > 
-> > > 	"linux-usb@vger.kernel.org Kalle Valo" <kvalo@codeaurora.org>,
-> > 
-> > Not sure. It appears fine in the archive.
-> 
-> Hmm, I don't think it does. Here's the copy from LKML:
-> 
-> https://lore.kernel.org/lkml/20200322021938.175736-1-joel@joelfernandes.org/
-> 
-> Which works because it's in the To: correctly. But both linux-pci and
-> linux-usb were *not* CC'd:
-> 
-> "linux-usb@vger.kernel.org Kalle Valo" <kvalo@codeaurora.org>
-> "linux-pci@vger.kernel.org Felipe Balbi" <balbi@kernel.org>
-> 
-> and searching for the message in the linux-pci archives doesn't find it:
-> 
-> https://lore.kernel.org/linux-pci/?q=Reword+and+clarify+better+about+the+rwsem+non-owner+release+issue
-> 
-> So it looks like there is an issue with your mail setup.
+Hi Alain,
 
-Hi Will and Kalle,
-Thank you for confirming it. You are right, the archive shows the issue. I
-will double check my client and see what's going on.
+>>>>>> This adds a bit mask of driver_info for Microsoft vendor extension and
+>>>>>> indicates the support for Intel 9460/9560 and 9160/9260. See
+>>>>>> https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
+>>>>>> microsoft-defined-bluetooth-hci-commands-and-events for more information
+>>>>>> about the extension. This was verified with Intel ThunderPeak BT controller
+>>>>>> where msft_vnd_ext_opcode is 0xFC1E.
+>>>> []
+>>>>>> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+>>>> []
+>>>>>> @@ -315,6 +315,10 @@ struct hci_dev {
+>>>>>>        __u8            ssp_debug_mode;
+>>>>>>        __u8            hw_error_code;
+>>>>>>        __u32           clock;
+>>>>>> +       __u16           msft_vnd_ext_opcode;
+>>>>>> +       __u64           msft_vnd_ext_features;
+>>>>>> +       __u8            msft_vnd_ext_evt_prefix_len;
+>>>>>> +       void            *msft_vnd_ext_evt_prefix;
+>>>> 
+>>>> msft is just another vendor.
+>>>> 
+>>>> If there are to be vendor extensions, this should
+>>>> likely use a blank line above and below and not
+>>>> be prefixed with msft_
+>>> 
+>>> there are other vendors, but all of them are different. So this needs to be prefixed with msft_ actually. But I agree that having empty lines above and below makes it more readable.
+>> 
+>> So struct hci_dev should become a clutter
+>> of random vendor extensions?
+>> 
+>> Perhaps there should instead be something like
+>> an array of char at the end of the struct and
+>> various vendor specific extensions could be
+>> overlaid on that array or just add a void *
+>> to whatever info that vendors require.
+> I don't particularly like trailing buffers, but I agree we could
+> possibly organize this a little better by with a struct.  something
+> like:
+> 
+> struct msft_vnd_ext {
+>    bool              supported; // <-- Clearly calls out if the
+> extension is supported.
+>    __u16           msft_vnd_ext_opcode; // <-- Note that this also
+> needs to be provided by the driver.  I don't recommend we have this
+> read from the hardware since we just cause an extra redirection that
+> isn't necessary.  Ideally, this should come from the usb_table const.
 
-thanks,
+Actually supported == false is the same as opcode == 0x0000. And supported == true is opcode != 0x0000.
 
- - Joel
+>    __u64           msft_vnd_ext_features;
+>    __u8             msft_vnd_ext_evt_prefix_len;
+>    void             *msft_vnd_ext_evt_prefix;
+> };
+> 
+> And then simply add the struct msft_vnd_ext (and any others) to hci_dev.
+
+Anyway, Lets keep these for now as hci_dev->msft_vnd_ext_*. We can fix this up later without any impact.
+
+Regards
+
+Marcel
 
