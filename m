@@ -2,85 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C7EC19046B
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 05:19:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDDA919046D
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 05:20:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726524AbgCXETZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 00:19:25 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:58587 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725923AbgCXETY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 00:19:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585023563;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=Hi/88CwN5ak09GkxfVlq0cgk2+svSD4/AYQ4P2AgxU0=;
-        b=Cn43S2HqnN87juGho7Jp79mhWuMMDrdvs/Q+v4euQlBO2CXO+0l4EF/sZj6bLQRc1NonQF
-        MWqM9fd1+UUn8hS0GGuinGFZvL4zivGi8PbUhacOX0Wt2bQTGDNoYttxrG+RYU1FHxLOV3
-        lwyVQkj4s2RCzEPayZ/sGTirEi0Tyqc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-316-JTiFlLUyO7Gk8TvKhFJ9Xg-1; Tue, 24 Mar 2020 00:19:19 -0400
-X-MC-Unique: JTiFlLUyO7Gk8TvKhFJ9Xg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 02BDE800D50;
-        Tue, 24 Mar 2020 04:19:18 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.53])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EEE27BBBCE;
-        Tue, 24 Mar 2020 04:19:13 +0000 (UTC)
-Date:   Tue, 24 Mar 2020 05:19:20 +0100
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        "Dmitry V. Levin" <ldv@altlinux.org>
-Subject: [PATCH net-next] taprio: do not use BIT() in TCA_TAPRIO_ATTR_FLAG_*
- definitions
-Message-ID: <20200324041920.GA7068@asgard.redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+        id S1726090AbgCXEUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 00:20:10 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:56092 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725784AbgCXEUJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 00:20:09 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 701E71571F9CA;
+        Mon, 23 Mar 2020 21:20:09 -0700 (PDT)
+Date:   Mon, 23 Mar 2020 21:20:08 -0700 (PDT)
+Message-Id: <20200323.212008.1786774265459415637.davem@davemloft.net>
+To:     mkubecek@suse.cz
+Cc:     kuba@kernel.org, netdev@vger.kernel.org, johannes@sipsolutions.net,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2] netlink: check for null extack in cookie helpers
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200320234650.E3383E0FD3@unicorn.suse.cz>
+References: <20200320234650.E3383E0FD3@unicorn.suse.cz>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 23 Mar 2020 21:20:09 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BIT() macro definition is internal to the Linux kernel and is not
-to be used in UAPI headers; replace its usage with the _BITUL() macro
-that is already used elsewhere in the header.
+From: Michal Kubecek <mkubecek@suse.cz>
+Date: Sat, 21 Mar 2020 00:46:50 +0100 (CET)
 
-Cc: <stable@vger.kernel.org> # v5.4+
-Fixes: 9c66d1564676 ("taprio: Add support for hardware offloading")
-Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
----
- include/uapi/linux/pkt_sched.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> Unlike NL_SET_ERR_* macros, nl_set_extack_cookie_u64() and
+> nl_set_extack_cookie_u32() helpers do not check extack argument for null
+> and neither do their callers, as syzbot recently discovered for
+> ethnl_parse_header().
+> 
+> Instead of fixing the callers and leaving the trap in place, add check of
+> null extack to both helpers to make them consistent with NL_SET_ERR_*
+> macros.
+> 
+> v2: drop incorrect second Fixes tag
+> 
+> Fixes: 2363d73a2f3e ("ethtool: reject unrecognized request flags")
+> Reported-by: syzbot+258a9089477493cea67b@syzkaller.appspotmail.com
+> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 
-diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-index bbe791b..0e43f67 100644
---- a/include/uapi/linux/pkt_sched.h
-+++ b/include/uapi/linux/pkt_sched.h
-@@ -1197,8 +1197,8 @@ enum {
-  *       [TCA_TAPRIO_ATTR_SCHED_ENTRY_INTERVAL]
-  */
- 
--#define TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST	BIT(0)
--#define TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD	BIT(1)
-+#define TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST	_BITUL(0)
-+#define TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD	_BITUL(1)
- 
- enum {
- 	TCA_TAPRIO_ATTR_UNSPEC,
--- 
-2.1.4
-
+Applied, thanks Michal.
