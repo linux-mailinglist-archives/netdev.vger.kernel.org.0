@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 884411917D5
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 18:40:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB91E1917DC
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 18:40:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727717AbgCXRkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 13:40:11 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:46062 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727223AbgCXRkL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 13:40:11 -0400
-Received: by mail-pg1-f195.google.com with SMTP id o26so2874295pgc.12;
-        Tue, 24 Mar 2020 10:40:09 -0700 (PDT)
+        id S1727775AbgCXRkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 13:40:33 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:46017 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727266AbgCXRkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 13:40:33 -0400
+Received: by mail-pl1-f195.google.com with SMTP id b9so7678724pls.12;
+        Tue, 24 Mar 2020 10:40:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=SRgQi1yMuseYBwVWxPnOfPzlkltS46MTnR9winZRfXY=;
-        b=GB8cQNXyunz4yMh8d2IqEkh4LuVaFet36SwZEMAlqlBEItLF1oxF0TaWZ3AtyON1C9
-         nJgXpcyvn5e9K2e+MFHLVAwYJH0Wl3747sRzmDwLeO9NFAZO+bOmwTHSPjXNJkZr0PLM
-         9+8YfPXpjUU02+7oZXB8+AWjkiFtxh7+Am/vU1UJDTxkWaQu2v9DhA9oTyLIbd1VCQVa
-         By0eLa2qMXk0gET89rYpsBkf8valh/BOXHj9HTjTLdWkL1bz8cKLDmokP/YKtrinZTbx
-         q6ZJ6kBb1XqRSOXnrr/Q7w8U4kbWdbTb/Zu856i0RPsdGSuNFKTgOZItpMcLt5O/NDws
-         tFpw==
+        bh=Ck0AiSEShsYY51eI4io64RTsZCIc8FycLmmK1k8i8KY=;
+        b=TNQWoRo/BKO/Kglo/IjI6b2BnIK2akAajJsWExL68j9JCfaAS8+AQ0hEoDnnH0iKlm
+         GTbug+Eh6SKH7/MAWz1/SvreeMVdly+sFqES+z2yI9iLW7ng6s4KLT3MTGB3UW+uVwbR
+         2Psmt6mgna3b8HUd29BwPjx/J894hl4rUvZyzFC77sPwEvriBXCyEPBgJ9+/xd3I9SqP
+         L85aIGvarRMYQxs4quyLcmF7wWBM6X1vz37kG8JpCGmxtsb+ubxxsGfragU7Kc8HxnWR
+         vqs6RAYWkdZV2sbyNnVwhOi87WMYEVpRHmyublgT7H389VdvLd42i12DX4s18W4iR3Rp
+         vZ2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=SRgQi1yMuseYBwVWxPnOfPzlkltS46MTnR9winZRfXY=;
-        b=I2uCJVKvU+2bgcG1C0MSDvDvP5Pw/pipnVtkkBnqs3vpJ0Kq9elRA4yUx1eqtSykcW
-         UNW3Kxaf6Ou7GCAPPhTq0++4K9bexgP/bwZtdpjBGKON6KOiEOYuH9LbuOi+l0kghfMt
-         h+vJGLye85BsLsXVYncTJkuZG13By7G9JUGjDQYrPpSoalunuTg0EpQ/gGHYtiFPXZZz
-         9PhrrErO6BobX+JNbx4Ai1O7A5Gpr8sWDobXZbywuVGqExlM9gtkA5zbAQ9/8SJ2pvyj
-         bUDV1sDeUyBnJDBGzaetlC5Vv6FqC2+7Na8M8lXvUQ5SBwfNgXuBOuXz+p6cRATmbxd/
-         NX6Q==
-X-Gm-Message-State: ANhLgQ3ofHNW6XklfNNMJ9MmZeibMa0o+x5sYezCDzNrCXEuasfUWz/x
-        gWwWMPsdl1uwVJbWlvfSMl4=
-X-Google-Smtp-Source: ADFU+vsNolvOt+10m4bsspjEIdaNryGz3+LTNygFWIRuXyeVgChpPLG8trPAv5YhQxwGM0G8hkYeew==
-X-Received: by 2002:a63:2e49:: with SMTP id u70mr27843237pgu.202.1585071608594;
-        Tue, 24 Mar 2020 10:40:08 -0700 (PDT)
+        bh=Ck0AiSEShsYY51eI4io64RTsZCIc8FycLmmK1k8i8KY=;
+        b=nwecEYweuJ/shTrKoLBddMezfGvvafxUUqksUajZqbdridY+JCUUPTgkAbYPGpQiEQ
+         viTSQ8db+B6wqlLKVTOwx1kBeePmbGi6KMbEllXyzRWse4FL4SVPaPRHweOS1Uyd157+
+         AwoiSC2OG2ytW4qQch1Qi/1Vo34Ldg1sz/ESAiU3TblrnYkEEUTv1wXHGVvvQjvFOGMK
+         fStQ8O/rB8oLH0AN3ee2Dq1HMZsqBORjR8yzd/CIz2O6bhLUYj1b4ySzdwLXMH2L5ron
+         IR5Uc6I2y+tMUUDMCrAZugjfiaM3rYwBTCw/uLvEu6Bj9h0cFm46R4nvInlCCnHZBu1p
+         GB3g==
+X-Gm-Message-State: ANhLgQ2G9J9hqUvIgOumSAmw4gyN6TBxgQeisTVnLEE9T/TQWbQOesxn
+        aphyg+E+5liJKEsGvgWFl5k=
+X-Google-Smtp-Source: ADFU+vsTZFTltyjY5DCZeZcZmfJQJ8B6HIfW1dsKrXi1g4EbmbGK2bvVKdLok2BhzOi0qWMQoWyvMQ==
+X-Received: by 2002:a17:90a:1946:: with SMTP id 6mr6927190pjh.42.1585071629957;
+        Tue, 24 Mar 2020 10:40:29 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id ck23sm2828948pjb.14.2020.03.24.10.40.00
+        by smtp.gmail.com with ESMTPSA id e10sm16586773pfm.121.2020.03.24.10.40.20
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 24 Mar 2020 10:40:08 -0700 (PDT)
-Subject: [bpf-next PATCH 07/10] bpf: test_verifier,
- bpf_get_stack return value add <0
+        Tue, 24 Mar 2020 10:40:29 -0700 (PDT)
+Subject: [bpf-next PATCH 08/10] bpf: test_verifier,
+ #70 error message updates for 32-bit right shift
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     ecree@solarflare.com, yhs@fb.com, alexei.starovoitov@gmail.com,
         daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         john.fastabend@gmail.com
-Date:   Tue, 24 Mar 2020 10:39:55 -0700
-Message-ID: <158507159511.15666.6943798089263377114.stgit@john-Precision-5820-Tower>
+Date:   Tue, 24 Mar 2020 10:40:14 -0700
+Message-ID: <158507161475.15666.3061518385241144063.stgit@john-Precision-5820-Tower>
 In-Reply-To: <158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower>
 References: <158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
@@ -64,110 +64,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With current ALU32 subreg handling and retval refine fix from last
-patches we see an expected failure in test_verifier. With verbose
-verifier state being printed at each step for clarity we have the
-following relavent lines [I omit register states that are not
-necessarily useful to see failure cause],
+After changes to add update_reg_bounds after ALU ops and adding ALU32
+bounds tracking the error message is changed in the 32-bit right shift
+tests.
 
-#101/p bpf_get_stack return R0 within range FAIL
-Failed to load prog 'Success'!
-[..]
-14: (85) call bpf_get_stack#67
- R0_w=map_value(id=0,off=0,ks=8,vs=48,imm=0)
- R3_w=inv48
-15:
- R0=inv(id=0,smax_value=48,var32_off=(0x0; 0xffffffff))
-15: (b7) r1 = 0
-16:
- R0=inv(id=0,smax_value=48,var32_off=(0x0; 0xffffffff))
- R1_w=inv0
-16: (bf) r8 = r0
-17:
- R0=inv(id=0,smax_value=48,var32_off=(0x0; 0xffffffff))
- R1_w=inv0
- R8_w=inv(id=0,smax_value=48,var32_off=(0x0; 0xffffffff))
-17: (67) r8 <<= 32
-18:
- R0=inv(id=0,smax_value=48,var32_off=(0x0; 0xffffffff))
- R1_w=inv0
- R8_w=inv(id=0,smax_value=9223372032559808512,
-               umax_value=18446744069414584320,
-               var_off=(0x0; 0xffffffff00000000),
-               s32_min_value=0,
-               s32_max_value=0,
-               u32_max_value=0,
-               var32_off=(0x0; 0x0))
-18: (c7) r8 s>>= 32
-19
- R0=inv(id=0,smax_value=48,var32_off=(0x0; 0xffffffff))
- R1_w=inv0
- R8_w=inv(id=0,smin_value=-2147483648,
-               smax_value=2147483647,
-               var32_off=(0x0; 0xffffffff))
-19: (cd) if r1 s< r8 goto pc+16
- R0=inv(id=0,smax_value=48,var32_off=(0x0; 0xffffffff))
- R1_w=inv0
- R8_w=inv(id=0,smin_value=-2147483648,
-               smax_value=0,
-               var32_off=(0x0; 0xffffffff))
-20:
- R0=inv(id=0,smax_value=48,var32_off=(0x0; 0xffffffff))
- R1_w=inv0
- R8_w=inv(id=0,smin_value=-2147483648,
-               smax_value=0,
- R9=inv48
-20: (1f) r9 -= r8
-21: (bf) r2 = r7
-22:
- R2_w=map_value(id=0,off=0,ks=8,vs=48,imm=0)
-22: (0f) r2 += r8
-value -2147483648 makes map_value pointer be out of bounds
+Test "#70/u bounds check after 32-bit right shift with 64-bit input FAIL"
+now fails with,
 
-After call bpf_get_stack() on line 14 and some moves we have at line 16
-an r8 bound with max_value 48 but an unknown min value. This is to be
-expected bpf_get_stack call can only return a max of the input size but
-is free to return any negative error in the 32-bit register space.
-And further C signature returns 'int' which provides no guarantee on
-the upper 32-bits of the register.
+Unexpected error message!
+	EXP: R0 invalid mem access
+	RES: func#0 @0
 
-Lines 17 and 18 clear the top 32 bits with a left/right shift but use
-ARSH so we still have worst case min bound before line 19 of -2147483648.
-At this point the signed check 'r1 s< r8' meant to protect the addition
-on line 22 where dst reg is a map_value pointer may very well return
-true with a large negative number. Then the final line 22 will detect
-this as an invalid operation and fail the program.
+7: (b7) r1 = 2
+8: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=invP2 R10=fp0 fp-8_w=mmmmmmmm
+8: (67) r1 <<= 31
+9: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=invP4294967296 R10=fp0 fp-8_w=mmmmmmmm
+9: (74) w1 >>= 31
+10: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=invP0 R10=fp0 fp-8_w=mmmmmmmm
+10: (14) w1 -= 2
+11: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=invP4294967294 R10=fp0 fp-8_w=mmmmmmmm
+11: (0f) r0 += r1
+math between map_value pointer and 4294967294 is not allowed
 
-To fix add a signed less than check to ensure r8 is greater than 0 at
-line 19 so the bounds check works as expected. Programs _must_ check
-for negative return codes or they will fail to load now. But on the
-other hand they were buggy before so for correctness the check really
-is needed.
+And test "#70/p bounds check after 32-bit right shift with 64-bit input
+FAIL" now fails with,
+
+Unexpected error message!
+	EXP: R0 invalid mem access
+	RES: func#0 @0
+
+7: (b7) r1 = 2
+8: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=inv2 R10=fp0 fp-8_w=mmmmmmmm
+8: (67) r1 <<= 31
+9: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=inv4294967296 R10=fp0 fp-8_w=mmmmmmmm
+9: (74) w1 >>= 31
+10: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=inv0 R10=fp0 fp-8_w=mmmmmmmm
+10: (14) w1 -= 2
+11: R0_w=map_value(id=0,off=0,ks=8,vs=8,imm=0) R1_w=inv4294967294 R10=fp0 fp-8_w=mmmmmmmm
+11: (0f) r0 += r1
+last_idx 11 first_idx 0
+regs=2 stack=0 before 10: (14) w1 -= 2
+regs=2 stack=0 before 9: (74) w1 >>= 31
+regs=2 stack=0 before 8: (67) r1 <<= 31
+regs=2 stack=0 before 7: (b7) r1 = 2
+math between map_value pointer and 4294967294 is not allowed
+
+Before this series we did not trip the "math between map_value pointer..."
+error because check_reg_sane_offset is never called in
+adjust_ptr_min_max_vals(). Instead we have a register state that looks
+like this at line 11*,
+
+11: R0_w=map_value(id=0,off=0,ks=8,vs=8,
+                   smin_value=0,smax_value=0,
+                   umin_value=0,umax_value=0,
+                   var_off=(0x0; 0x0))
+    R1_w=invP(id=0,
+              smin_value=0,smax_value=4294967295,
+              umin_value=0,umax_value=4294967295,
+              var_off=(0xfffffffe; 0x0))
+    R10=fp(id=0,off=0,
+           smin_value=0,smax_value=0,
+           umin_value=0,umax_value=0,
+           var_off=(0x0; 0x0)) fp-8_w=mmmmmmmm
+11: (0f) r0 += r1
+
+In R1 'smin_val != smax_val' yet we have a tnum_const as seen
+by 'var_off(0xfffffffe; 0x0))' with a 0x0 mask. So we hit this check
+in adjust_ptr_min_max_vals()
+
+ if ((known && (smin_val != smax_val || umin_val != umax_val)) ||
+      smin_val > smax_val || umin_val > umax_val) {
+       /* Taint dst register if offset had invalid bounds derived from
+        * e.g. dead branches.
+        */
+       __mark_reg_unknown(env, dst_reg);
+       return 0;
+ }
+
+So we don't throw an error here and instead only throw an error
+later in the verification when the memory access is made.
+
+The root cause in verifier without alu32 bounds tracking is having
+'umin_value = 0' and 'umax_value = U64_MAX' from BPF_SUB which we set
+when 'umin_value < umax_val' here,
+
+ if (dst_reg->umin_value < umax_val) {
+    /* Overflow possible, we know nothing */
+    dst_reg->umin_value = 0;
+    dst_reg->umax_value = U64_MAX;
+ } else { ...}
+
+Later in adjust_calar_min_max_vals we previously did a
+coerce_reg_to_size() which will clamp the U64_MAX to U32_MAX by
+truncating to 32bits. But either way without a call to update_reg_bounds
+the less precise bounds tracking will fall out of the alu op
+verification.
+
+After latest changes we now exit adjust_scalar_min_max_vals with the
+more precise umin value, due to zero extension propogating bounds from
+alu32 bounds into alu64 bounds and then calling update_reg_bounds.
+This then causes the verifier to trigger an earlier error and we get
+the error in the output above.
+
+This patch updates tests to reflect new error message.
+
+* I have a local patch to print entire verifier state regardless if we
+ believe it is a constant so we can get a full picture of the state.
+ Usually if tnum_is_const() then bounds are also smin=smax, etc. but
+ this is not always true and is a bit subtle. Being able to see these
+ states helps understand dataflow imo. Let me know if we want something
+ similar upstream.
 
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- .../testing/selftests/bpf/verifier/bpf_get_stack.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/verifier/bounds.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/verifier/bpf_get_stack.c b/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
-index f24d50f..24aa6a0 100644
---- a/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
-+++ b/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
-@@ -7,7 +7,7 @@
- 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
- 	BPF_LD_MAP_FD(BPF_REG_1, 0),
- 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
--	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 28),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 29),
- 	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
- 	BPF_MOV64_IMM(BPF_REG_9, sizeof(struct test_val)),
- 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
-@@ -16,6 +16,7 @@
- 	BPF_MOV64_IMM(BPF_REG_4, 256),
- 	BPF_EMIT_CALL(BPF_FUNC_get_stack),
- 	BPF_MOV64_IMM(BPF_REG_1, 0),
-+	BPF_JMP32_REG(BPF_JSLT, BPF_REG_0, BPF_REG_1, 20),
- 	BPF_MOV64_REG(BPF_REG_8, BPF_REG_0),
- 	BPF_ALU64_IMM(BPF_LSH, BPF_REG_8, 32),
- 	BPF_ALU64_IMM(BPF_ARSH, BPF_REG_8, 32),
+diff --git a/tools/testing/selftests/bpf/verifier/bounds.c b/tools/testing/selftests/bpf/verifier/bounds.c
+index d55f476..7c9b659 100644
+--- a/tools/testing/selftests/bpf/verifier/bounds.c
++++ b/tools/testing/selftests/bpf/verifier/bounds.c
+@@ -411,16 +411,14 @@
+ 	BPF_ALU32_IMM(BPF_RSH, BPF_REG_1, 31),
+ 	/* r1 = 0xffff'fffe (NOT 0!) */
+ 	BPF_ALU32_IMM(BPF_SUB, BPF_REG_1, 2),
+-	/* computes OOB pointer */
++	/* error on computing OOB pointer */
+ 	BPF_ALU64_REG(BPF_ADD, BPF_REG_0, BPF_REG_1),
+-	/* OOB access */
+-	BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_0, 0),
+ 	/* exit */
+ 	BPF_MOV64_IMM(BPF_REG_0, 0),
+ 	BPF_EXIT_INSN(),
+ 	},
+ 	.fixup_map_hash_8b = { 3 },
+-	.errstr = "R0 invalid mem access",
++	.errstr = "math between map_value pointer and 4294967294 is not allowed",
+ 	.result = REJECT,
+ },
+ {
 
