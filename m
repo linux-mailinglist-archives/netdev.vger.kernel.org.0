@@ -2,112 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58542190E60
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 14:09:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25064190F19
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 14:19:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727164AbgCXNJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 09:09:23 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:60223 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726188AbgCXNJX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 09:09:23 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 48ms5r1Fhbz1qs3g;
-        Tue, 24 Mar 2020 14:09:20 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 48ms5r0f7Fz1qqkB;
-        Tue, 24 Mar 2020 14:09:20 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id WjJuordWpAVq; Tue, 24 Mar 2020 14:09:19 +0100 (CET)
-X-Auth-Info: 3oXUA7kA7yMXmIKg1+aoaSXJU/xBYxEQbmCqbM3EHr8=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Tue, 24 Mar 2020 14:09:18 +0100 (CET)
-Subject: Re: [PATCH 07/14] net: ks8851: Use 16-bit writes to program MAC
- address
-To:     Lukas Wunner <lukas@wunner.de>, Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-References: <20200323234303.526748-1-marex@denx.de>
- <20200323234303.526748-8-marex@denx.de>
- <20200324081311.ww6p7dmijbddi5jm@wunner.de> <20200324122553.GS3819@lunn.ch>
- <20200324123623.vvvcoiza6ehuecf6@wunner.de>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <be4c96dc-87ab-27a9-cf51-c1e54853b528@denx.de>
-Date:   Tue, 24 Mar 2020 14:09:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200324123623.vvvcoiza6ehuecf6@wunner.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1728608AbgCXNRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 09:17:33 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:47538 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728575AbgCXNRc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 09:17:32 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 24 Mar 2020 15:17:29 +0200
+Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02ODHSYs030372;
+        Tue, 24 Mar 2020 15:17:28 +0200
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Paul Blakey <paulb@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Majd Dibbiny <majd@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>, netdev@vger.kernel.org,
+        Saeed Mahameed <saeedm@mellanox.com>
+Cc:     netfilter-devel@vger.kernel.org
+Subject: [PATCH net-next 3/3] net/mlx5: CT: Use rhashtable's ct entries instead of a seperate list
+Date:   Tue, 24 Mar 2020 15:17:21 +0200
+Message-Id: <1585055841-14256-4-git-send-email-paulb@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
+In-Reply-To: <1585055841-14256-1-git-send-email-paulb@mellanox.com>
+References: <1585055841-14256-1-git-send-email-paulb@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/24/20 1:36 PM, Lukas Wunner wrote:
-> On Tue, Mar 24, 2020 at 01:25:53PM +0100, Andrew Lunn wrote:
->> On Tue, Mar 24, 2020 at 09:13:11AM +0100, Lukas Wunner wrote:
->>> On Tue, Mar 24, 2020 at 12:42:56AM +0100, Marek Vasut wrote:
->>>> On the SPI variant of KS8851, the MAC address can be programmed with
->>>> either 8/16/32-bit writes. To make it easier to support the 16-bit
->>>> parallel option of KS8851 too, switch both the MAC address programming
->>>> and readout to 16-bit operations.
->>> [...]
->>>>  static int ks8851_write_mac_addr(struct net_device *dev)
->>>>  {
->>>>  	struct ks8851_net *ks = netdev_priv(dev);
->>>> +	u16 val;
->>>>  	int i;
->>>>  
->>>>  	mutex_lock(&ks->lock);
->>>> @@ -358,8 +329,12 @@ static int ks8851_write_mac_addr(struct net_device *dev)
->>>>  	 * the first write to the MAC address does not take effect.
->>>>  	 */
->>>>  	ks8851_set_powermode(ks, PMECR_PM_NORMAL);
->>>> -	for (i = 0; i < ETH_ALEN; i++)
->>>> -		ks8851_wrreg8(ks, KS_MAR(i), dev->dev_addr[i]);
->>>> +
->>>> +	for (i = 0; i < ETH_ALEN; i += 2) {
->>>> +		val = (dev->dev_addr[i] << 8) | dev->dev_addr[i + 1];
->>>> +		ks8851_wrreg16(ks, KS_MAR(i + 1), val);
->>>> +	}
->>>> +
->>>
->>> This looks like it won't work on little-endian machines:  The MAC bytes
->>> are stored in dev->dev_addr as 012345, but in the EEPROM they're stored
->>> as 543210.  The first 16-bit value that you write is 10 on big-endian
->>> and 01 on little-endian if I'm not mistaken.
->>>
->>> By only writing 8-bit values, the original author elegantly sidestepped
->>> this issue.
->>>
->>> Maybe the simplest and most readable solution is something like:
->>>
->>>       u8 val[2];
->>>       ...
->>>       val[0] = dev->dev_addr[i+1];
->>>       val[1] = dev->dev_addr;
->>>
->>> Then cast val to a u16 when passing it to ks8851_wrreg16().
->>>
->>> Alternatively, use cpu_to_be16().
->>
->> There is a cpu_to_be16() inside ks8851_wrreg16(). Something i already
->> checked, because i wondered about endianess issues as well.
-> 
-> There's a cpu_to_le16() in ks8851_wrreg16(), not a cpu_to_be16().
+CT entries list is only used while freeing a ct zone flow table to
+go over all the ct entries offloaded on that zone/table, and flush
+the table.
 
-I have a feeling this whole thing might be more messed up then we
-thought. At least the KS8851-16MLL has an "endian mode" bit in the CCR
-register, the SPI variant does not.
+Rhashtable already provides an api to go over all the inserted entries.
+Use it instead, and remove the list.
 
-So what I think you need to do here is write exactly the registers
-0x14/0x12/0x10 and let the accessors swap the endianness as needed.
+Signed-off-by: Paul Blakey <paulb@mellanox.com>
+Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+index a22ad6b..afc8ac3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+@@ -67,11 +67,9 @@ struct mlx5_ct_ft {
+ 	struct nf_flowtable *nf_ft;
+ 	struct mlx5_tc_ct_priv *ct_priv;
+ 	struct rhashtable ct_entries_ht;
+-	struct list_head ct_entries_list;
+ };
+ 
+ struct mlx5_ct_entry {
+-	struct list_head list;
+ 	u16 zone;
+ 	struct rhash_head node;
+ 	struct flow_rule *flow_rule;
+@@ -617,8 +615,6 @@ struct mlx5_ct_entry {
+ 	if (err)
+ 		goto err_insert;
+ 
+-	list_add(&entry->list, &ft->ct_entries_list);
+-
+ 	return 0;
+ 
+ err_insert:
+@@ -646,7 +642,6 @@ struct mlx5_ct_entry {
+ 	WARN_ON(rhashtable_remove_fast(&ft->ct_entries_ht,
+ 				       &entry->node,
+ 				       cts_ht_params));
+-	list_del(&entry->list);
+ 	kfree(entry);
+ 
+ 	return 0;
+@@ -817,7 +812,6 @@ struct mlx5_ct_entry {
+ 	ft->zone = zone;
+ 	ft->nf_ft = nf_ft;
+ 	ft->ct_priv = ct_priv;
+-	INIT_LIST_HEAD(&ft->ct_entries_list);
+ 	refcount_set(&ft->refcount, 1);
+ 
+ 	err = rhashtable_init(&ft->ct_entries_ht, &cts_ht_params);
+@@ -846,12 +840,12 @@ struct mlx5_ct_entry {
+ }
+ 
+ static void
+-mlx5_tc_ct_flush_ft(struct mlx5_tc_ct_priv *ct_priv, struct mlx5_ct_ft *ft)
++mlx5_tc_ct_flush_ft_entry(void *ptr, void *arg)
+ {
+-	struct mlx5_ct_entry *entry;
++	struct mlx5_tc_ct_priv *ct_priv = arg;
++	struct mlx5_ct_entry *entry = ptr;
+ 
+-	list_for_each_entry(entry, &ft->ct_entries_list, list)
+-		mlx5_tc_ct_entry_del_rules(ft->ct_priv, entry);
++	mlx5_tc_ct_entry_del_rules(ct_priv, entry);
+ }
+ 
+ static void
+@@ -862,9 +856,10 @@ struct mlx5_ct_entry {
+ 
+ 	nf_flow_table_offload_del_cb(ft->nf_ft,
+ 				     mlx5_tc_ct_block_flow_offload, ft);
+-	mlx5_tc_ct_flush_ft(ct_priv, ft);
+ 	rhashtable_remove_fast(&ct_priv->zone_ht, &ft->node, zone_params);
+-	rhashtable_destroy(&ft->ct_entries_ht);
++	rhashtable_free_and_destroy(&ft->ct_entries_ht,
++				    mlx5_tc_ct_flush_ft_entry,
++				    ct_priv);
+ 	kfree(ft);
+ }
+ 
+-- 
+1.8.3.1
+
