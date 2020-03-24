@@ -2,83 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 178CB190611
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 08:08:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B64D4190625
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 08:17:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727372AbgCXHIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 03:08:04 -0400
-Received: from bmailout1.hostsharing.net ([83.223.95.100]:34049 "EHLO
-        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725869AbgCXHIE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 03:08:04 -0400
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id E61A530004525;
-        Tue, 24 Mar 2020 08:08:01 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id BEE8FA2372; Tue, 24 Mar 2020 08:08:01 +0100 (CET)
-Date:   Tue, 24 Mar 2020 08:08:01 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Marek Vasut <marex@denx.de>, netdev@vger.kernel.org,
+        id S1727372AbgCXHRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 03:17:09 -0400
+Received: from mx2.suse.de ([195.135.220.15]:48632 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725905AbgCXHRI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 03:17:08 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 58C58AD77;
+        Tue, 24 Mar 2020 07:17:07 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 12D3DE0FD3; Tue, 24 Mar 2020 08:17:06 +0100 (CET)
+Date:   Tue, 24 Mar 2020 08:17:06 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>,
         "David S . Miller" <davem@davemloft.net>,
-        Petr Stetiar <ynezz@true.cz>,
+        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
         YueHaibing <yuehaibing@huawei.com>
-Subject: Re: [PATCH 03/14] net: ks8851: Pass device pointer into
- ks8851_init_mac()
-Message-ID: <20200324070801.uybzsgip46vqktk6@wunner.de>
+Subject: Re: [PATCH 07/14] net: ks8851: Use 16-bit writes to program MAC
+ address
+Message-ID: <20200324071706.GI31519@unicorn.suse.cz>
 References: <20200323234303.526748-1-marex@denx.de>
- <20200323234303.526748-4-marex@denx.de>
- <20200324010622.GH3819@lunn.ch>
+ <20200323234303.526748-8-marex@denx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200324010622.GH3819@lunn.ch>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20200323234303.526748-8-marex@denx.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 02:06:22AM +0100, Andrew Lunn wrote:
-> On Tue, Mar 24, 2020 at 12:42:52AM +0100, Marek Vasut wrote:
-> > Since the driver probe function already has a struct device *dev pointer,
-> > pass it as a parameter to ks8851_init_mac() to avoid fishing it out via
-> > ks->spidev. This is the only reference to spidev in the function, so get
-> > rid of it. This is done in preparation for unifying the KS8851 SPI and
-> > parallel drivers.
+On Tue, Mar 24, 2020 at 12:42:56AM +0100, Marek Vasut wrote:
+> On the SPI variant of KS8851, the MAC address can be programmed with
+> either 8/16/32-bit writes. To make it easier to support the 16-bit
+> parallel option of KS8851 too, switch both the MAC address programming
+> and readout to 16-bit operations.
+> 
+> Remove ks8851_wrreg8() as it is not used anywhere anymore.
+> 
+> There should be no functional change.
+> 
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Lukas Wunner <lukas@wunner.de>
+> Cc: Petr Stetiar <ynezz@true.cz>
+> Cc: YueHaibing <yuehaibing@huawei.com>
+> ---
 [...]
-> > -static void ks8851_init_mac(struct ks8851_net *ks)
-> > +static void ks8851_init_mac(struct ks8851_net *ks, struct device *ddev)
-> >  {
-> >  	struct net_device *dev = ks->netdev;
-> >  	const u8 *mac_addr;
-> >  
-> > -	mac_addr = of_get_mac_address(ks->spidev->dev.of_node);
-> > +	mac_addr = of_get_mac_address(ddev->of_node);
-> 
-> The name ddev is a bit odd. Looking at the code, i see why. dev is
-> normally a struct net_device, which this function already has.
-> 
-> You could avoid this oddness by directly passing of_node.
+> +
+> +	for (i = 0; i < ETH_ALEN; i += 2) {
+> +		val = (dev->dev_addr[i] << 8) | dev->dev_addr[i + 1];
+> +		ks8851_wrreg16(ks, KS_MAR(i + 1), val);
+> +	}
+[...]
+> +	for (i = 0; i < ETH_ALEN; i += 2) {
+> +		reg = ks8851_rdreg16(ks, KS_MAR(i + 1));
+> +		dev->dev_addr[i] = reg & 0xff;
+> +		dev->dev_addr[i + 1] = reg >> 8;
+> +	}
 
-Actually after adding the invocation of of_get_mac_address() with
-commit 566bd54b067d ("net: ks8851: Support DT-provided MAC address")
-I've had regrets that I should have used device_get_mac_address()
-instead since it's platform-agnostic, hence would work with ACPI
-as well as DT-based systems.
+I know nothing about the hardware but this seems inconsistent: while
+writing, you put addr[i] into upper part of the 16-bit value and
+addr[i+1] into lower but for read you do the opposite. Is it correct?
 
-device_get_mac_address() needs a struct device, so I'd prefer
-using that instead of passing an of_node.
-
-I agree that "ddev" is somewhat odd.  Some drivers name it "device"
-or "pdev" (which however collides with the naming of platform_devices).
-Another idea would be to move the handy ndev_to_dev() static inline
-from apm/xgene/xgene_enet_main.h to include/linux/netdevice.h and
-use that with "struct net_device *dev", which we already have in
-ks8851_init_mac().
-
-Thanks,
-
-Lukas
+Michal Kubecek
