@@ -2,108 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 496C5190C66
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 12:27:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E855190C91
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 12:33:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727323AbgCXL04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 07:26:56 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:34102 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727201AbgCXL04 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 07:26:56 -0400
-Received: by mail-pg1-f196.google.com with SMTP id t3so8892584pgn.1;
-        Tue, 24 Mar 2020 04:26:55 -0700 (PDT)
+        id S1727324AbgCXLdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 07:33:50 -0400
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:23955 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727217AbgCXLdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 07:33:50 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FrbvE2+XGpAbkhd83eQ/l+A4H9hHet3Hf7AqA26edfw=;
-        b=G4FstDptw0ertkuwcrfdpUKzgqLUAfdH03n/zKcG4Ozvq8Dl8sViuWhFe+jF8bY3p4
-         C5IhT4IM8x+w0OrS5smYwsOmHL0U4MGo/7gU+JHPzCsLqAyICNBFJfsyP8dIXToM2yWI
-         8H3WXTsB42phpRuA8wknt/1fCK0elvX5CNYHcB46tfU3R+ZohLAbKEnYR+t1RgqPoHWB
-         XU2iR+BexF3hBrzKIieVTkwozV21Ow7j7vyWZbr/JNMtrnENEeUeKFpuK0UOWUAX8a+T
-         pKTdPeArgQOfS6YxM+Shx85MJL4fWCl5ho/hAn3hRhKfsMhFvhy++WXVhdbctj3aTgVS
-         tKZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FrbvE2+XGpAbkhd83eQ/l+A4H9hHet3Hf7AqA26edfw=;
-        b=rNkrxtgGh8UfZOPEZcjAiO8SZb0/XLPtNnZGpsyKrVpmBX32paNyn0lgecJj/H4dox
-         s+0CsJIp8yH+JSH8G7pfwcDaUGxT/u1pXkYJXiCa4QlUxiyXBUhAhlyYUTf8i6Ks3X8X
-         RAq2sHNC6NLHavwDSnpD85ReZ9hYpEYBSBnk///lg3KoaCGCyMpnU8NvBQOEVy2xcBVW
-         0fM3nfCpiixHFX5DC3v7zzh/jMqrrzF+Yb2tavus8Znuo5TmakvzEepVHTrnNHhzEKB4
-         mARWYcWhInfxy2/zwytlb5rUCQaLQ/7svavelo41XGNQABs8UG/ORRNF78g1iIXwnoRz
-         w84A==
-X-Gm-Message-State: ANhLgQ2Mh40vZM14wMsvS0PuWgGtAOSdOFVDwHdtgioFjZrhr+0K9gRD
-        V3JLjlBQKDL9x0ECOUxx4k0=
-X-Google-Smtp-Source: ADFU+vt1jg56FUPmc2UWey6QkZhMBdlnJxDKePswGVYyeaouJxVkEEvb+rFCGkFiDg5fOd6lYt/O3g==
-X-Received: by 2002:a62:170f:: with SMTP id 15mr28277644pfx.12.1585049215248;
-        Tue, 24 Mar 2020 04:26:55 -0700 (PDT)
-Received: from localhost ([144.34.194.51])
-        by smtp.gmail.com with ESMTPSA id n30sm8070278pgc.36.2020.03.24.04.26.54
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 24 Mar 2020 04:26:54 -0700 (PDT)
-From:   Dejin Zheng <zhengdejin5@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, rjui@broadcom.com,
-        sbranden@broadcom.com, bcm-kernel-feedback-list@broadcom.com,
-        netdev@vger.kernel.org
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Dejin Zheng <zhengdejin5@gmail.com>
-Subject: [PATCH net-next] net: phy: mdio-mux-bcm-iproc: use readl_poll_timeout() to simplify code
-Date:   Tue, 24 Mar 2020 19:26:47 +0800
-Message-Id: <20200324112647.27237-1-zhengdejin5@gmail.com>
-X-Mailer: git-send-email 2.25.0
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1585049629; x=1616585629;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=9Ca8dxUm7ddOgL9H0BytUrqBfOqUJSO10FidWuQnzRA=;
+  b=R2xyLRHYSJOFYIiZA6wsr46OZn4w3pS4S42AnNwIKg9abj4CRJYfOQE8
+   HFmYZDeT9BM1nOEE8BQ7qyvIeaiDAjz8iv6P32jDSzLRmI4Idg/NbQZHF
+   J9vtSqfIiVLFFzUrqlAo3JgHnuriklLI8yX5HiNnbDsox7D640KXh9SvM
+   I=;
+IronPort-SDR: QnF62z297fYXRXx1KIkRqDqrIE2/W//r9kSMn3Fkf7x1LnhXOfy4YhiqlpBd8ZO5TpVbL6kwrF
+ BPOOBpSbYzXg==
+X-IronPort-AV: E=Sophos;i="5.72,300,1580774400"; 
+   d="scan'208";a="33113906"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1a-16acd5e0.us-east-1.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 24 Mar 2020 11:33:47 +0000
+Received: from EX13MTAUWA001.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1a-16acd5e0.us-east-1.amazon.com (Postfix) with ESMTPS id 39E42A21A0;
+        Tue, 24 Mar 2020 11:33:46 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
+ id 15.0.1367.3; Tue, 24 Mar 2020 11:33:45 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.160.27) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 24 Mar 2020 11:33:41 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Gerrit Renker <gerrit@erg.abdn.ac.uk>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        "Hideaki YOSHIFUJI" <yoshfuji@linux-ipv6.org>
+CC:     <dccp@vger.kernel.org>, <netdev@vger.kernel.org>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        <osa-contribution-log@amazon.com>
+Subject: [PATCH v2 net-next] tcp/dccp: Move initialisation of refcounted into if block.
+Date:   Tue, 24 Mar 2020 20:33:31 +0900
+Message-ID: <20200324113331.29031-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.27]
+X-ClientProxiedBy: EX13D18UWC003.ant.amazon.com (10.43.162.237) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-use readl_poll_timeout() to replace the poll codes for simplify
-iproc_mdio_wait_for_idle() function
+The refcounted seems to be initialised at most three times, but the
+complier can optimize that and the refcounted is initialised only at once.
 
-Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
+  - __inet_lookup_skb() sets it true.
+  - skb_steal_sock() is false and __inet_lookup() sets it true.
+  - __inet_lookup_established() is false and __inet_lookup() sets it false.
+
+The code is bit confusing, so this patch makes it more readable so that no
+one doubt about the complier optimization.
+
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 ---
- drivers/net/phy/mdio-mux-bcm-iproc.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ include/net/inet6_hashtables.h | 11 +++++++----
+ include/net/inet_hashtables.h  | 11 +++++++----
+ 2 files changed, 14 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/phy/mdio-mux-bcm-iproc.c b/drivers/net/phy/mdio-mux-bcm-iproc.c
-index aad6809ebe39..42fb5f166136 100644
---- a/drivers/net/phy/mdio-mux-bcm-iproc.c
-+++ b/drivers/net/phy/mdio-mux-bcm-iproc.c
-@@ -10,6 +10,7 @@
- #include <linux/phy.h>
- #include <linux/mdio-mux.h>
- #include <linux/delay.h>
-+#include <linux/iopoll.h>
- 
- #define MDIO_RATE_ADJ_EXT_OFFSET	0x000
- #define MDIO_RATE_ADJ_INT_OFFSET	0x004
-@@ -78,18 +79,11 @@ static void mdio_mux_iproc_config(struct iproc_mdiomux_desc *md)
- 
- static int iproc_mdio_wait_for_idle(void __iomem *base, bool result)
+diff --git a/include/net/inet6_hashtables.h b/include/net/inet6_hashtables.h
+index fe96bf247aac..9b6c97100d54 100644
+--- a/include/net/inet6_hashtables.h
++++ b/include/net/inet6_hashtables.h
+@@ -70,9 +70,11 @@ static inline struct sock *__inet6_lookup(struct net *net,
+ 	struct sock *sk = __inet6_lookup_established(net, hashinfo, saddr,
+ 						     sport, daddr, hnum,
+ 						     dif, sdif);
+-	*refcounted = true;
+-	if (sk)
++	if (sk) {
++		*refcounted = true;
+ 		return sk;
++	}
++
+ 	*refcounted = false;
+ 	return inet6_lookup_listener(net, hashinfo, skb, doff, saddr, sport,
+ 				     daddr, hnum, dif, sdif);
+@@ -87,9 +89,10 @@ static inline struct sock *__inet6_lookup_skb(struct inet_hashinfo *hashinfo,
  {
--	unsigned int timeout = 1000; /* loop for 1s */
- 	u32 val;
+ 	struct sock *sk = skb_steal_sock(skb);
  
--	do {
--		val = readl(base + MDIO_STAT_OFFSET);
--		if ((val & MDIO_STAT_DONE) == result)
--			return 0;
--
--		usleep_range(1000, 2000);
--	} while (timeout--);
--
--	return -ETIMEDOUT;
-+	return readl_poll_timeout(base + MDIO_STAT_OFFSET, val,
-+				  (val & MDIO_STAT_DONE) == result,
-+				  2000, 1000000);
- }
+-	*refcounted = true;
+-	if (sk)
++	if (sk) {
++		*refcounted = true;
+ 		return sk;
++	}
  
- /* start_miim_ops- Program and start MDIO transaction over mdio bus.
+ 	return __inet6_lookup(dev_net(skb_dst(skb)->dev), hashinfo, skb,
+ 			      doff, &ipv6_hdr(skb)->saddr, sport,
+diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+index d0019d3395cf..aa859bf8607b 100644
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -345,9 +345,11 @@ static inline struct sock *__inet_lookup(struct net *net,
+ 
+ 	sk = __inet_lookup_established(net, hashinfo, saddr, sport,
+ 				       daddr, hnum, dif, sdif);
+-	*refcounted = true;
+-	if (sk)
++	if (sk) {
++		*refcounted = true;
+ 		return sk;
++	}
++
+ 	*refcounted = false;
+ 	return __inet_lookup_listener(net, hashinfo, skb, doff, saddr,
+ 				      sport, daddr, hnum, dif, sdif);
+@@ -382,9 +384,10 @@ static inline struct sock *__inet_lookup_skb(struct inet_hashinfo *hashinfo,
+ 	struct sock *sk = skb_steal_sock(skb);
+ 	const struct iphdr *iph = ip_hdr(skb);
+ 
+-	*refcounted = true;
+-	if (sk)
++	if (sk) {
++		*refcounted = true;
+ 		return sk;
++	}
+ 
+ 	return __inet_lookup(dev_net(skb_dst(skb)->dev), hashinfo, skb,
+ 			     doff, iph->saddr, sport,
 -- 
-2.25.0
+2.17.2 (Apple Git-113)
 
