@@ -2,66 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7E2190E1B
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 13:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9ED7190DFD
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 13:48:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727548AbgCXMwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 08:52:08 -0400
-Received: from mail-out.m-online.net ([212.18.0.10]:59832 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727267AbgCXMwH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 08:52:07 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 48mrjy3VN7z1rsXY;
-        Tue, 24 Mar 2020 13:52:05 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 48mrjw6RnZz1r0bv;
-        Tue, 24 Mar 2020 13:52:04 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id MaPhXCu5LVWg; Tue, 24 Mar 2020 13:52:02 +0100 (CET)
-X-Auth-Info: 5OuzpDb+tIijIBuY3ZjdsVcw6kObknAnZQm3z2Q6OdE=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Tue, 24 Mar 2020 13:52:02 +0100 (CET)
-Subject: Re: [PATCH 08/14] net: ks8851: Use 16-bit read of RXFC register
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>, Andrew Lunn <andrew@lunn.ch>
-References: <20200323234303.526748-1-marex@denx.de>
- <20200323234303.526748-9-marex@denx.de>
- <20200324104102.axlr6txhbgxhhw7k@wunner.de>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <199d9c7a-5a71-5c2d-267f-c0dfce317f79@denx.de>
-Date:   Tue, 24 Mar 2020 13:42:45 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1727681AbgCXMsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 08:48:03 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54230 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727671AbgCXMsC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 08:48:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=b0iBI1cc2tZNm5/8uDcBP6+/M1WQDfg4ylMZdebmF7w=; b=Oyy3r90z9xt3/YwskzsK2QPyII
+        bYHCoCe6nX7gd5WNSJGrLTKKxwI6ZwS23FM/t9lc4mCSi9C9ENDDMn2M5ZYh1S6sMhJO8clPsvmM/
+        Cbe7VQE3a/rLZ1Vp/1MwZNGKcNfsuGyodnddelVWX1vQO4oKlULYO8fCTyTI5EtOc7Qk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jGiyJ-0001hK-Lx; Tue, 24 Mar 2020 13:47:55 +0100
+Date:   Tue, 24 Mar 2020 13:47:55 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dejin Zheng <zhengdejin5@gmail.com>
+Cc:     f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, rjui@broadcom.com, sbranden@broadcom.com,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: mdio-mux-bcm-iproc: use
+ readl_poll_timeout() to simplify code
+Message-ID: <20200324124755.GV3819@lunn.ch>
+References: <20200324112647.27237-1-zhengdejin5@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200324104102.axlr6txhbgxhhw7k@wunner.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200324112647.27237-1-zhengdejin5@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/24/20 11:41 AM, Lukas Wunner wrote:
-> On Tue, Mar 24, 2020 at 12:42:57AM +0100, Marek Vasut wrote:
->> The RXFC register is the only one being read using 8-bit accessors.
->> To make it easier to support the 16-bit accesses used by the parallel
->> bus variant of KS8851, use 16-bit accessor to read RXFC register as
->> well as neighboring RXFCTR register.
+On Tue, Mar 24, 2020 at 07:26:47PM +0800, Dejin Zheng wrote:
+> use readl_poll_timeout() to replace the poll codes for simplify
+> iproc_mdio_wait_for_idle() function
 > 
-> This means that an additional 8 bits need to be transferred over the
-> SPI bus whenever a set of packets is read from the RX queue.  This
-> should be avoided.  I'd suggest adding a separate hook to read RXFC
-> and thus keep the 8-bit read function for the SPI variant.
+> Signed-off-by: Dejin Zheng <zhengdejin5@gmail.com>
 
-See my comment about the 32bit read and regmap. It is slightly less
-efficient, but it also makes the conversion much easier. Can you check
-on the real hardware whether the is measurable performance impact ?
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
