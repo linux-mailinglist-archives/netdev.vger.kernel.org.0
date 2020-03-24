@@ -2,111 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A799919073E
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 09:13:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3381B190762
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 09:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727161AbgCXINO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 04:13:14 -0400
-Received: from bmailout1.hostsharing.net ([83.223.95.100]:59075 "EHLO
-        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727148AbgCXINN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 04:13:13 -0400
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        id S1727164AbgCXIPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 04:15:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36458 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725922AbgCXIPr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 04:15:47 -0400
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 9557B30001EA0;
-        Tue, 24 Mar 2020 09:13:11 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 668A4109E4C; Tue, 24 Mar 2020 09:13:11 +0100 (CET)
-Date:   Tue, 24 Mar 2020 09:13:11 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH 07/14] net: ks8851: Use 16-bit writes to program MAC
- address
-Message-ID: <20200324081311.ww6p7dmijbddi5jm@wunner.de>
-References: <20200323234303.526748-1-marex@denx.de>
- <20200323234303.526748-8-marex@denx.de>
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6C8562080C;
+        Tue, 24 Mar 2020 08:15:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585037746;
+        bh=95HDZEYr73gkVtFgHb5F5HQmWSnntZ5l5/JwKg88mxM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xwfUgmUW53dw91LyETvme5Ib+IkARacfJ/JGnvaqYPF7KvGq9wcyRwgOSVkigeg6u
+         6gNg54OWfTL/gN8MKPjHsVbYCUIxndvuuLvaC/p9N+EC0u8/B9gnt/rPjt7yX+VOVg
+         gYylIFtZ5mAQ2ZpK5nN5CxQyo23RsvgrW3gWI45M=
+Date:   Tue, 24 Mar 2020 08:15:39 +0000
+From:   Will Deacon <will@kernel.org>
+To:     Joel Fernandes <joel@joelfernandes.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>, linux-kernel@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org Felipe Balbi" <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH] Documentation: Clarify better about the rwsem non-owner
+ release issue
+Message-ID: <20200324081538.GA8696@willie-the-truck>
+References: <20200322021938.175736-1-joel@joelfernandes.org>
+ <87a748khlo.fsf@kamboji.qca.qualcomm.com>
+ <20200323182349.GA203600@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200323234303.526748-8-marex@denx.de>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20200323182349.GA203600@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 12:42:56AM +0100, Marek Vasut wrote:
-> On the SPI variant of KS8851, the MAC address can be programmed with
-> either 8/16/32-bit writes. To make it easier to support the 16-bit
-> parallel option of KS8851 too, switch both the MAC address programming
-> and readout to 16-bit operations.
-[...]
->  static int ks8851_write_mac_addr(struct net_device *dev)
->  {
->  	struct ks8851_net *ks = netdev_priv(dev);
-> +	u16 val;
->  	int i;
->  
->  	mutex_lock(&ks->lock);
-> @@ -358,8 +329,12 @@ static int ks8851_write_mac_addr(struct net_device *dev)
->  	 * the first write to the MAC address does not take effect.
->  	 */
->  	ks8851_set_powermode(ks, PMECR_PM_NORMAL);
-> -	for (i = 0; i < ETH_ALEN; i++)
-> -		ks8851_wrreg8(ks, KS_MAR(i), dev->dev_addr[i]);
-> +
-> +	for (i = 0; i < ETH_ALEN; i += 2) {
-> +		val = (dev->dev_addr[i] << 8) | dev->dev_addr[i + 1];
-> +		ks8851_wrreg16(ks, KS_MAR(i + 1), val);
-> +	}
-> +
+On Mon, Mar 23, 2020 at 02:23:49PM -0400, Joel Fernandes wrote:
+> On Sun, Mar 22, 2020 at 08:51:15AM +0200, Kalle Valo wrote:
+> > "Joel Fernandes (Google)" <joel@joelfernandes.org> writes:
+> > 
+> > > Reword and clarify better about the rwsem non-owner release issue.
+> > >
+> > > Link: https://lore.kernel.org/linux-pci/20200321212144.GA6475@google.com/
+> > >
+> > > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> > 
+> > There's something wrong with your linux-pci and linux-usb addresses:
+> > 
+> > 	"linux-pci@vger.kernel.org Felipe Balbi" <balbi@kernel.org>,
+> > 
+> > 
+> > 	"linux-usb@vger.kernel.org Kalle Valo" <kvalo@codeaurora.org>,
+> 
+> Not sure. It appears fine in the archive.
 
-This looks like it won't work on little-endian machines:  The MAC bytes
-are stored in dev->dev_addr as 012345, but in the EEPROM they're stored
-as 543210.  The first 16-bit value that you write is 10 on big-endian
-and 01 on little-endian if I'm not mistaken.
+Hmm, I don't think it does. Here's the copy from LKML:
 
-By only writing 8-bit values, the original author elegantly sidestepped
-this issue.
+https://lore.kernel.org/lkml/20200322021938.175736-1-joel@joelfernandes.org/
 
-Maybe the simplest and most readable solution is something like:
+Which works because it's in the To: correctly. But both linux-pci and
+linux-usb were *not* CC'd:
 
-      u8 val[2];
-      ...
-      val[0] = dev->dev_addr[i+1];
-      val[1] = dev->dev_addr;
+"linux-usb@vger.kernel.org Kalle Valo" <kvalo@codeaurora.org>
+"linux-pci@vger.kernel.org Felipe Balbi" <balbi@kernel.org>
 
-Then cast val to a u16 when passing it to ks8851_wrreg16().
+and searching for the message in the linux-pci archives doesn't find it:
 
-Alternatively, use cpu_to_be16().
+https://lore.kernel.org/linux-pci/?q=Reword+and+clarify+better+about+the+rwsem+non-owner+release+issue
 
+So it looks like there is an issue with your mail setup.
 
->  static void ks8851_read_mac_addr(struct net_device *dev)
->  {
->  	struct ks8851_net *ks = netdev_priv(dev);
-> +	u16 reg;
->  	int i;
->  
->  	mutex_lock(&ks->lock);
->  
-> -	for (i = 0; i < ETH_ALEN; i++)
-> -		dev->dev_addr[i] = ks8851_rdreg8(ks, KS_MAR(i));
-> +	for (i = 0; i < ETH_ALEN; i += 2) {
-> +		reg = ks8851_rdreg16(ks, KS_MAR(i + 1));
-> +		dev->dev_addr[i] = reg & 0xff;
-> +		dev->dev_addr[i + 1] = reg >> 8;
-> +	}
-
-Same here.
-
-These seem to be the only two places where KS_MAR() is used.
-You may want to adjust that macro so that you don't have to add 1
-in each of the two places.
-
-Thanks,
-
-Lukas
+Will
