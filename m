@@ -2,108 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F16AA19070C
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 09:08:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A799919073E
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 09:13:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727031AbgCXIIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 04:08:13 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:45837 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725922AbgCXIIM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 04:08:12 -0400
-Received: by mail-il1-f200.google.com with SMTP id p15so11293543ils.12
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 01:08:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=hHXlzX2YhutrAXAO/2d9zPrQ+gr2qIaq8tPdZuhbzNc=;
-        b=q2jLcnOAGn/+0wmyjlS87OT3FqZ0iUin2JYGUcb5/+ybTM5fmcXkvrKZ+aRzEZ7nyz
-         puAgbtHBln5gsI28gAae+S3ik9wA1wSo83UgKIRLfRyPrr3VFjzwijL4dylWQkJHAaLX
-         N+OLUwwxS59jI0pyAQX5oBI/7bCw+h7ikseD+miYCkyoQZBSq6nGMOWRdzrW1DlGc9An
-         GpvXAFQSKfsiIY8yVo/AKG84RrP352TirNHsvw/4aAoQRIdkum/WHE17+tSyDC9Mph2V
-         UUsNuTRd+nDbD+GWVNAP3mXFZl0p2goQqm4sb13izgoK8qFAzUo9AgVa7ZXHmF0kbQZK
-         qN8w==
-X-Gm-Message-State: ANhLgQ2RLEihnc5yX556ZRnk+slJ8PGBc1ek9LyAUQjQTAGT9huuj2Mt
-        7IcSD/XtaKxszWih2r2mEz8R5ZojtuPNFTo+1psVrvx+F7EA
-X-Google-Smtp-Source: ADFU+vveVCtjZFe00P8L3XaLLQqnYWVVmmBwqGMbFCFoBQ1tSt95B7Zv+mSEhz6cOYO8MKdGXim2hF2cI87+uh34wivVtdtgOkSM
+        id S1727161AbgCXINO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 04:13:14 -0400
+Received: from bmailout1.hostsharing.net ([83.223.95.100]:59075 "EHLO
+        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727148AbgCXINN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 04:13:13 -0400
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 9557B30001EA0;
+        Tue, 24 Mar 2020 09:13:11 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 668A4109E4C; Tue, 24 Mar 2020 09:13:11 +0100 (CET)
+Date:   Tue, 24 Mar 2020 09:13:11 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>, Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH 07/14] net: ks8851: Use 16-bit writes to program MAC
+ address
+Message-ID: <20200324081311.ww6p7dmijbddi5jm@wunner.de>
+References: <20200323234303.526748-1-marex@denx.de>
+ <20200323234303.526748-8-marex@denx.de>
 MIME-Version: 1.0
-X-Received: by 2002:a02:3808:: with SMTP id b8mr24506069jaa.136.1585037291793;
- Tue, 24 Mar 2020 01:08:11 -0700 (PDT)
-Date:   Tue, 24 Mar 2020 01:08:11 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000bbb17d05a19540cd@google.com>
-Subject: KCSAN: data-race in decode_data.part.0 / sixpack_receive_buf
-From:   syzbot <syzbot+673c2668e8c71c021637@syzkaller.appspotmail.com>
-To:     ajk@comnets.uni-bremen.de, davem@davemloft.net, elver@google.com,
-        linux-hams@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200323234303.526748-8-marex@denx.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Mar 24, 2020 at 12:42:56AM +0100, Marek Vasut wrote:
+> On the SPI variant of KS8851, the MAC address can be programmed with
+> either 8/16/32-bit writes. To make it easier to support the 16-bit
+> parallel option of KS8851 too, switch both the MAC address programming
+> and readout to 16-bit operations.
+[...]
+>  static int ks8851_write_mac_addr(struct net_device *dev)
+>  {
+>  	struct ks8851_net *ks = netdev_priv(dev);
+> +	u16 val;
+>  	int i;
+>  
+>  	mutex_lock(&ks->lock);
+> @@ -358,8 +329,12 @@ static int ks8851_write_mac_addr(struct net_device *dev)
+>  	 * the first write to the MAC address does not take effect.
+>  	 */
+>  	ks8851_set_powermode(ks, PMECR_PM_NORMAL);
+> -	for (i = 0; i < ETH_ALEN; i++)
+> -		ks8851_wrreg8(ks, KS_MAR(i), dev->dev_addr[i]);
+> +
+> +	for (i = 0; i < ETH_ALEN; i += 2) {
+> +		val = (dev->dev_addr[i] << 8) | dev->dev_addr[i + 1];
+> +		ks8851_wrreg16(ks, KS_MAR(i + 1), val);
+> +	}
+> +
 
-syzbot found the following crash on:
+This looks like it won't work on little-endian machines:  The MAC bytes
+are stored in dev->dev_addr as 012345, but in the EEPROM they're stored
+as 543210.  The first 16-bit value that you write is 10 on big-endian
+and 01 on little-endian if I'm not mistaken.
 
-HEAD commit:    245a4300 Merge branch 'rcu/kcsan' into tip/locking/kcsan
-git tree:       https://github.com/google/ktsan.git kcsan
-console output: https://syzkaller.appspot.com/x/log.txt?x=16543101e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a4b9db179318d21f
-dashboard link: https://syzkaller.appspot.com/bug?extid=673c2668e8c71c021637
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+By only writing 8-bit values, the original author elegantly sidestepped
+this issue.
 
-Unfortunately, I don't have any reproducer for this crash yet.
+Maybe the simplest and most readable solution is something like:
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+673c2668e8c71c021637@syzkaller.appspotmail.com
+      u8 val[2];
+      ...
+      val[0] = dev->dev_addr[i+1];
+      val[1] = dev->dev_addr;
 
-==================================================================
-BUG: KCSAN: data-race in decode_data.part.0 / sixpack_receive_buf
+Then cast val to a u16 when passing it to ks8851_wrreg16().
 
-read to 0xffff8880a68aa8f6 of 1 bytes by task 8699 on cpu 1:
- decode_data.part.0+0x8d/0x120 drivers/net/hamradio/6pack.c:846
- decode_data drivers/net/hamradio/6pack.c:965 [inline]
- sixpack_decode drivers/net/hamradio/6pack.c:968 [inline]
- sixpack_receive_buf+0x901/0xb90 drivers/net/hamradio/6pack.c:458
- tiocsti drivers/tty/tty_io.c:2200 [inline]
- tty_ioctl+0xb75/0xe10 drivers/tty/tty_io.c:2576
- vfs_ioctl fs/ioctl.c:47 [inline]
- file_ioctl fs/ioctl.c:545 [inline]
- do_vfs_ioctl+0x84f/0xcf0 fs/ioctl.c:732
- ksys_ioctl+0xbd/0xe0 fs/ioctl.c:749
- __do_sys_ioctl fs/ioctl.c:756 [inline]
- __se_sys_ioctl fs/ioctl.c:754 [inline]
- __x64_sys_ioctl+0x4c/0x60 fs/ioctl.c:754
- do_syscall_64+0xcc/0x3a0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-write to 0xffff8880a68aa8f6 of 1 bytes by task 8154 on cpu 0:
- decode_data drivers/net/hamradio/6pack.c:837 [inline]
- sixpack_decode drivers/net/hamradio/6pack.c:968 [inline]
- sixpack_receive_buf+0x40e/0xb90 drivers/net/hamradio/6pack.c:458
- tty_ldisc_receive_buf+0xeb/0xf0 drivers/tty/tty_buffer.c:465
- tty_port_default_receive_buf+0x87/0xd0 drivers/tty/tty_port.c:38
- receive_buf drivers/tty/tty_buffer.c:481 [inline]
- flush_to_ldisc+0x1d5/0x260 drivers/tty/tty_buffer.c:533
- process_one_work+0x3d4/0x890 kernel/workqueue.c:2264
- worker_thread+0xa0/0x800 kernel/workqueue.c:2410
- kthread+0x1d4/0x200 drivers/block/aoe/aoecmd.c:1253
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:352
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 0 PID: 8154 Comm: kworker/u4:5 Not tainted 5.5.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events_unbound flush_to_ldisc
-==================================================================
+Alternatively, use cpu_to_be16().
 
 
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+>  static void ks8851_read_mac_addr(struct net_device *dev)
+>  {
+>  	struct ks8851_net *ks = netdev_priv(dev);
+> +	u16 reg;
+>  	int i;
+>  
+>  	mutex_lock(&ks->lock);
+>  
+> -	for (i = 0; i < ETH_ALEN; i++)
+> -		dev->dev_addr[i] = ks8851_rdreg8(ks, KS_MAR(i));
+> +	for (i = 0; i < ETH_ALEN; i += 2) {
+> +		reg = ks8851_rdreg16(ks, KS_MAR(i + 1));
+> +		dev->dev_addr[i] = reg & 0xff;
+> +		dev->dev_addr[i + 1] = reg >> 8;
+> +	}
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Same here.
+
+These seem to be the only two places where KS_MAR() is used.
+You may want to adjust that macro so that you don't have to add 1
+in each of the two places.
+
+Thanks,
+
+Lukas
