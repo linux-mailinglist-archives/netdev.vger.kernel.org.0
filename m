@@ -2,119 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DB2B7190A15
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 11:01:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19D8F190A76
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 11:16:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727257AbgCXKBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 06:01:52 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:41831 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726563AbgCXKBw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 06:01:52 -0400
-Received: by mail-wr1-f66.google.com with SMTP id h9so20601236wrc.8
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 03:01:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YXwXXyf4FFoH6g7bKxTH+XMwT8dvCco8fnyGy8BbH0U=;
-        b=QDAlHA9bG8dxJapJMUVdl7SSfzjRwftlM0jT/kCptr/tZzU0kY2soxUAM3ezP1rj/K
-         NLWi5HDGR2pSC0+mTbUvx3FNzvBl6v4EJo03KBnlB1svpO4emsIa8635EHUgU9/1iOGe
-         Po5VJK/wDQ/keZp1zbUujB4U5LdA/uzELiJlako/i0PxNdyYZU7HFbGz/7woBdChgpWh
-         wKHuLwTYxPKxdy76wZie4l6JXj1pfcUCW1iXMfAhrl/kNTsXubyLICwVmXHTouEsreeJ
-         sVYV5p6rX6yW2GfD+w+zg7pwq8J3EqXT2rRKwfkk8HORngkZ8bW6OVP8FXTLoUHE2wLF
-         X8GQ==
+        id S1727217AbgCXKQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 06:16:13 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:58419 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727152AbgCXKQN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 06:16:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585044971;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/1wY4En0yDB+cGvUu+J0YQ/O0nGvtOSgxUaiPAKKcj4=;
+        b=OEvILK6vglIlkeFk2jW8z+5SeqPqXG5Ipe/NVtyH3H+ZO2jNytwWkGKpYi6KWIUluFQDdz
+        qpXv8uEnLlGlISdGHG00HQ16dj7YLYqZuq4Eh+JuVKmWxohm7dMLqo9QKy7AnMuETeD3jC
+        aFbAjf512cwYe/TzT4Ni//4du64DZcg=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-211-shpClZs6OQWnYImXPnQNzg-1; Tue, 24 Mar 2020 06:16:10 -0400
+X-MC-Unique: shpClZs6OQWnYImXPnQNzg-1
+Received: by mail-wm1-f70.google.com with SMTP id w9so1098731wmi.2
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 03:16:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YXwXXyf4FFoH6g7bKxTH+XMwT8dvCco8fnyGy8BbH0U=;
-        b=IH69hu0PCXOBrG3AiuQWr9/hAsEkw0+AtN1mgKeJKoxgP7KoStD6bwytpkZe8B6/8M
-         mFyv8NwcEphX0ndNFQYlwW6+CqupUTwHLIA3utCTEyv1HexEfaq68acEb2Kl7Q6Y7B7g
-         kxLhbUzTyciYN5Q1oLxiBA4KMYCStmkbYs3H7ye2Ib+HqmiohleqF5xOtNVY7w2z67dt
-         YACOcWN+cDky9RACytwPMnm8K58ye1o5PJUa+CybZYxDdMgsaWUb5ZVMcd2M/09nxN44
-         6Re70PDNovymnIjePL6q2H8AfSlL0alYQIxucyXLQ2RP4CJaaCWWiE3evVzmlgQ5QWnb
-         lPLg==
-X-Gm-Message-State: ANhLgQ3NiliVnF0WPPGnFqmpgxyo8w6b3fP45z16xtj22In4DrikirVL
-        NEYaChy9D0sAjygbcRu2DKRu4w==
-X-Google-Smtp-Source: ADFU+vs+oZMrTA+XjIVihEjmm3kkuM0VpBBT6FouF1t7AnwQf9AWhrAkOA5fgdwclkEuWXDSzOly8A==
-X-Received: by 2002:adf:9dc6:: with SMTP id q6mr34986704wre.70.1585044109070;
-        Tue, 24 Mar 2020 03:01:49 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id t81sm3607126wmb.15.2020.03.24.03.01.47
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=/1wY4En0yDB+cGvUu+J0YQ/O0nGvtOSgxUaiPAKKcj4=;
+        b=n2PaH5PE2qR0yWX6hOXch473Jiut8SwVtwsPx2xQLyjFi93pdg6w/afX5HQSTNXZRx
+         6PyqHYrKsyo1WWnjdx10W31bMm1lOozUn3+FPpigJv0viAQ9xWzTJBJUhWwpyaRJVqhw
+         lIn1PKseOAt4htsc3mKOdHIKEMJjDzJDzvit90QjRSbre48FLb21Lk2AXtxV/2Su9lDl
+         56oEzMeL3OAc59gEHWjlDFZtD42VdBdPM/9MZnIQ2h3ytdzkV1m4a0OdL3yLhawyBtEm
+         mwGb15FqsVyQyek8qInWhuRRaq7m0+aNWyLHLD5CJqv8dwAhypQARqQnCJJZNng4D1CE
+         pLww==
+X-Gm-Message-State: ANhLgQ0shgUIWkg9M1uJRks84fQU5D+jVfcsgr9uGWHsLL4/x0KKg4WS
+        y8gE7B3OIPkf+pRndWjEYY/+CtScn3eZdMfVReLj+2xBG2S8ohVnVOYO9VriM9ZR8KRf18CPJn0
+        bhY9TfwmLHkeu1lhZ
+X-Received: by 2002:a5d:6045:: with SMTP id j5mr34114905wrt.401.1585044969082;
+        Tue, 24 Mar 2020 03:16:09 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vt4fxw3WQlcrSpfYVY6EUzmKWp+2/hFVX/ZlQ7yZFHspc85MIgrLtEPxWoN8Rr5x79q54R6OQ==
+X-Received: by 2002:a5d:6045:: with SMTP id j5mr34114878wrt.401.1585044968861;
+        Tue, 24 Mar 2020 03:16:08 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id u13sm11839118wru.88.2020.03.24.03.16.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Mar 2020 03:01:47 -0700 (PDT)
-Date:   Tue, 24 Mar 2020 11:01:46 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Po Liu <Po.Liu@nxp.com>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, vinicius.gomes@intel.com,
-        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
-        alexandru.marginean@nxp.com, xiaoliang.yang_1@nxp.com,
-        roy.zang@nxp.com, mingkai.hu@nxp.com, jerry.huang@nxp.com,
-        leoyang.li@nxp.com, michael.chan@broadcom.com, vishal@chelsio.com,
-        saeedm@mellanox.com, leon@kernel.org, jiri@mellanox.com,
-        idosch@mellanox.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, kuba@kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, simon.horman@netronome.com,
-        pablo@netfilter.org, moshe@mellanox.com, m-karicheri2@ti.com,
-        andre.guedes@linux.intel.com, stephen@networkplumber.org
-Subject: Re: [v1,net-next  1/5] net: qos offload add flow status with dropped
- count
-Message-ID: <20200324100146.GR11304@nanopsycho.orion>
-References: <20200306125608.11717-11-Po.Liu@nxp.com>
- <20200324034745.30979-1-Po.Liu@nxp.com>
- <20200324034745.30979-2-Po.Liu@nxp.com>
+        Tue, 24 Mar 2020 03:16:07 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 29A13180371; Tue, 24 Mar 2020 11:16:06 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrey Ignatov <rdna@fb.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing program when attaching XDP
+In-Reply-To: <20200323235441.GA33093@rdna-mbp>
+References: <158462359206.164779.15902346296781033076.stgit@toke.dk> <158462359315.164779.13931660750493121404.stgit@toke.dk> <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN> <875zez76ph.fsf@toke.dk> <CAEf4BzYGZz7hdd-_x+uyE0OF8h_3vJxNjF-Qkd5QhOWpaB8bbQ@mail.gmail.com> <87r1xj48ko.fsf@toke.dk> <20200323235441.GA33093@rdna-mbp>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 24 Mar 2020 11:16:06 +0100
+Message-ID: <87369y2h3t.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200324034745.30979-2-Po.Liu@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Mar 24, 2020 at 04:47:39AM CET, Po.Liu@nxp.com wrote:
->Add the hardware tc flower offloading with dropped frame counter for
->status update. action ops->stats_update only loaded by the
->tcf_exts_stats_update() and tcf_exts_stats_update() only loaded by
->matchall and tc flower hardware filter. But the stats_update only set
->the dropped count as default false in the ops->stats_update. This
->patch add the dropped counter to action stats update. Its dropped counter
->update by the hardware offloading driver.
->This is changed by replacing the drop flag with dropped frame counter.
+Andrey Ignatov <rdna@fb.com> writes:
 
-I just read this paragraph 3 times, I'm unable to decypher :(
-
-
-
+> Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> [Mon, 2020-03-23 04:25=
+ -0700]:
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>=20
+>> > On Fri, Mar 20, 2020 at 1:48 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
+@redhat.com> wrote:
+>> >>
+>> >> Jakub Kicinski <kuba@kernel.org> writes:
+>> >>
+>> >> > On Thu, 19 Mar 2020 14:13:13 +0100 Toke H=C3=B8iland-J=C3=B8rgensen=
+ wrote:
+>> >> >> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> >> >>
+>> >> >> While it is currently possible for userspace to specify that an ex=
+isting
+>> >> >> XDP program should not be replaced when attaching to an interface,=
+ there is
+>> >> >> no mechanism to safely replace a specific XDP program with another.
+>> >> >>
+>> >> >> This patch adds a new netlink attribute, IFLA_XDP_EXPECTED_FD, whi=
+ch can be
+>> >> >> set along with IFLA_XDP_FD. If set, the kernel will check that the=
+ program
+>> >> >> currently loaded on the interface matches the expected one, and fa=
+il the
+>> >> >> operation if it does not. This corresponds to a 'cmpxchg' memory o=
+peration.
+>> >> >>
+>> >> >> A new companion flag, XDP_FLAGS_EXPECT_FD, is also added to explic=
+itly
+>> >> >> request checking of the EXPECTED_FD attribute. This is needed for =
+userspace
+>> >> >> to discover whether the kernel supports the new attribute.
+>> >> >>
+>> >> >> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> >> >
+>> >> > I didn't know we wanted to go ahead with this...
+>> >>
+>> >> Well, I'm aware of the bpf_link discussion, obviously. Not sure what's
+>> >> happening with that, though. So since this is a straight-forward
+>> >> extension of the existing API, that doesn't carry a high implementati=
+on
+>> >> cost, I figured I'd just go ahead with this. Doesn't mean we can't ha=
+ve
+>> >> something similar in bpf_link as well, of course.
+>> >>
+>> >> > If we do please run this thru checkpatch, set .strict_start_type,
+>> >>
+>> >> Will do.
+>> >>
+>> >> > and make the expected fd unsigned. A negative expected fd makes no
+>> >> > sense.
+>> >>
+>> >> A negative expected_fd corresponds to setting the UPDATE_IF_NOEXIST
+>> >> flag. I guess you could argue that since we have that flag, setting a
+>> >> negative expected_fd is not strictly needed. However, I thought it was
+>> >> weird to have a "this is what I expect" API that did not support
+>> >> expressing "I expect no program to be attached".
+>> >
+>> > For BPF syscall it seems the typical approach when optional FD is
+>> > needed is to have extra flag (e.g., BPF_F_REPLACE for cgroups) and if
+>> > it's not specified - enforce zero for that optional fd. That handles
+>> > backwards compatibility cases well as well.
+>>=20
+>> Never did understand how that is supposed to square with 0 being a valid
+>> fd number?
 >
->Driver side should update how many "packets" it filtered and how many
->"dropped" in those "packets".
+> In BPF_F_REPLACE case (since it was used as an example in this thread)
+> it's all pretty clear:
 >
+> * if the flag is set, use fd from attr.replace_bpf_fd that can be anything
+>   (incl. zero, since indeed it's valid fd) no problem with that;
+> * if flag is not set, ignore replace_bpf_fd completely.
+>
+> It's descirbed in commit log in 7dd68b3279f1:
+>
+>     ...
+>
+>     BPF_F_REPLACE is introduced to make the user intent clear, since
+>     replace_bpf_fd alone can't be used for this (its default value, 0, is=
+ a
+>     valid fd). BPF_F_REPLACE also makes it possible to extend the API in =
+the
+>     future (e.g. add BPF_F_BEFORE and BPF_F_AFTER if needed).
+>
+>     ...
+>
+> , i.e. flag presense is important, not the fd attribute being zero.
+>
+> Hope it clarifies.
 
-[...]
+Yup, it does, thanks! My confusion stemmed from having seen '!=3D 0' tests
+for FDs in various places and wondered how that was supposed to work.
+Didn't realise this was handled by way of an accompanying flag, that
+does make sense :)
 
+-Toke
 
-> 	return action;
-> }
-> 
->-static void tcf_gact_stats_update(struct tc_action *a, u64 bytes, u32 packets,
->-				  u64 lastuse, bool hw)
->+static void tcf_gact_stats_update(struct tc_action *a, u64 bytes, u64 packets,
->+				  u64 lastuse, u64 dropped, bool hw)
-> {
-> 	struct tcf_gact *gact = to_gact(a);
-> 	int action = READ_ONCE(gact->tcf_action);
-> 	struct tcf_t *tm = &gact->tcf_tm;
-> 
->-	tcf_action_update_stats(a, bytes, packets, action == TC_ACT_SHOT, hw);
->+	tcf_action_update_stats(a, bytes, packets,
->+				(action == TC_ACT_SHOT) ? packets : 0, hw);
-
-Avoid ()s here.
-
-
-> 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
-> }
-> 
