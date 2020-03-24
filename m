@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CD62191A18
+	by mail.lfdr.de (Postfix) with ESMTP id D27DD191A19
 	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 20:37:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726943AbgCXTgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 15:36:37 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:48321 "EHLO
+        id S1727025AbgCXTgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 15:36:42 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:37555 "EHLO
         new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725835AbgCXTgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 15:36:37 -0400
+        by vger.kernel.org with ESMTP id S1725835AbgCXTgl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 15:36:41 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 308D658023A;
-        Tue, 24 Mar 2020 15:36:36 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 6C1025800EB;
+        Tue, 24 Mar 2020 15:36:40 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Tue, 24 Mar 2020 15:36:36 -0400
+  by compute4.internal (MEProxy); Tue, 24 Mar 2020 15:36:40 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=Qc6sXErN2iS64T5bsNvrtGJhKXPtE+roMCtnlxI9l5o=; b=n09x0jDy
-        80g1QTBAlgbJUDJKN1Dr26bP3O1sSywtxzMYeBbgelCnCMAuKkRqMTTwbCwU5Xws
-        dJPaj89lHqjJCCI5eIEN9xFQGV42CqHuKpcTnUNd+PDXBeXQUekIuIVCt4Jte2LG
-        a8qo+W1ZawYRW0m9xAG7ZAw2W/xBoqhS/1LBVhS6ISkLgqhm4SW0XJ/4RsNJd7zq
-        KZnyLU52vRAbRIX5eX38rj9sOqX1oqzc5thJCok1fXab3hcKRfKZrmNdTR4BWtmm
-        X9+cqOMJrNsDizwugP3d+8ly1bGeGjKcg3LcyI1RbWUcULB6DJ9Ojuput23vO+m5
-        PyR98ZOiJ4ruGg==
-X-ME-Sender: <xms:RGF6Xkg8nX54U6F-NlvtVnED4YnHFQ9hBFqRdsh9EbayapYhho1lVA>
+        fm2; bh=i3dVnUb16UOnqhSvwXG1T0HoFeUB/vhBKcKUBKI+oDM=; b=yxLx7Uf+
+        WZi6z/EjNypm1WB312NLSfJFe5qz/APCQ1LHdxMwxEjggJjbVh5ZHxfThoa4SmBA
+        u91WnjfBebAoJI7T1AB2s3NuLC3Pgg0DianFahmnpCcZOkp8G1+VUmDB0uXsfSJs
+        Ghfo++8ZqIQNrXAK2QH2Fs5pWOaKjoiCdYyAfVhuCAKeG04FJLzFaENEtxqUtUOS
+        Mn4s/EmwU4LuZWfN6Jx4tyPIhYDku48gKG6v5qQE1HjeVDBVrroaV3YARI2JYRQQ
+        hf3kAnD7H8/o0WjYcGLGPSFP3L0t5leOYewZOZOiIIUgcXe5PieVzQbnm1eqb3jj
+        BdsiAUUntqE6uQ==
+X-ME-Sender: <xms:SGF6XgCzc78qeKj4AdWN9ELDHB3jjPoETzZ98pQ9g86ihWrWM8FHgQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudehuddgleeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,22 +35,22 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudehuddgleeiucetufdoteggod
     shgthhdrohhrgheqnecukfhppeejledrudektddrleegrddvvdehnecuvehluhhsthgvrh
     fuihiivgepjeenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
     hhdrohhrgh
-X-ME-Proxy: <xmx:RGF6Xuq5inPF1OFR5P3jZng7NfCwVDohIKjvbi58vux_skYYqSnENQ>
-    <xmx:RGF6XqwOw8jVGFOuLZdZVtLlslCsJaCQy66_oHehN-PJTwzGwiiFqQ>
-    <xmx:RGF6XtwewyBbKAYNvb5VQAdFl8FlZ38ET9r_DP1e2J4fJNyN9ckFKQ>
-    <xmx:RGF6XlreCcrFmdefnYhUNxOqPTPlVsmMNEHgB4FnMBuRaglCmwKO2w>
+X-ME-Proxy: <xmx:SGF6XmdgfiCX64w8VTsPakGiajUbyyzYiRuIBjxy6jFAcMwDfbjWsg>
+    <xmx:SGF6XsqUktCPQl5g1sKZZEdq4I_4doig_Q1EuovJBYnM0xAGmNHzuA>
+    <xmx:SGF6XvRd9Y57HexrMC102oMy84kspKRr3IfHnhB-BRTUKEuvbpVRow>
+    <xmx:SGF6Xh30EKaWJxYNCN9DFB4edZuKJXbtwn4atVSprfH6DDFPXvFxag>
 Received: from splinter.mtl.com (bzq-79-180-94-225.red.bezeqint.net [79.180.94.225])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 11AC33280064;
-        Tue, 24 Mar 2020 15:36:31 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 8AD443280063;
+        Tue, 24 Mar 2020 15:36:36 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     dsahern@gmail.com, jiri@mellanox.com, kuba@kernel.org,
         andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH iproute2-next 1/2] devlink: Add devlink trap policer set and show commands
-Date:   Tue, 24 Mar 2020 21:36:00 +0200
-Message-Id: <20200324193601.1322252-2-idosch@idosch.org>
+Subject: [PATCH iproute2-next 2/2] devlink: Add ability to bind policer to trap group
+Date:   Tue, 24 Mar 2020 21:36:01 +0200
+Message-Id: <20200324193601.1322252-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200324193601.1322252-1-idosch@idosch.org>
 References: <20200324193601.1322252-1-idosch@idosch.org>
@@ -63,28 +63,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-The trap policer set command allows the user to set the parameters of
-the packet trap policer, such as rate and burst size. Example:
+Add ability to associate a policer with a trap group. The policer can be
+unbound by using the 'nopolicer' keyword. In which case, the value
+encoded in the 'DEVLINK_ATTR_TRAP_POLICER_ID' attribute will be '0'.
+This is consistent with ip-link 'nomaster' keyword and the 'IFLA_MASTER'
+attribute.
 
-# devlink trap policer set netdevsim/netdevsim10 policer 1 rate 1000 burst 32
+Example:
 
-The trap policer show command allows the user to get the current
-parameters of an individual policer or a dump of all policers in case
-one is not specified. When '-s' is specified the policer's statistics
-are shown. Example:
-
-# devlink -jps trap policer show netdevsim/netdevsim10 policer 1
+# devlink trap group set netdevsim/netdevsim10 group l3_drops policer 2
+# devlink -jp trap group show netdevsim/netdevsim10 group l3_drops
 {
-    "trap_policer": {
+    "trap_group": {
         "netdevsim/netdevsim10": [ {
-                "policer": 1,
-                "rate": 1000,
-                "burst": 32,
-                "stats": {
-                    "rx": {
-                        "dropped": 53
-                    }
-                }
+                "name": "l3_drops",
+                "generic": true,
+                "policer": 2
+            } ]
+    }
+}
+
+# devlink trap group set netdevsim/netdevsim10 group l3_drops nopolicer
+# devlink -jp trap group show netdevsim/netdevsim10 group l3_drops
+{
+    "trap_group": {
+        "netdevsim/netdevsim10": [ {
+                "name": "l3_drops",
+                "generic": true
             } ]
     }
 }
@@ -92,378 +97,83 @@ are shown. Example:
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- devlink/devlink.c          | 174 ++++++++++++++++++++++++++++++++++++-
- man/man8/devlink-monitor.8 |   2 +-
- man/man8/devlink-trap.8    |  40 +++++++++
- 3 files changed, 213 insertions(+), 3 deletions(-)
+ devlink/devlink.c       | 11 ++++++++++-
+ man/man8/devlink-trap.8 | 12 ++++++++++++
+ 2 files changed, 22 insertions(+), 1 deletion(-)
 
 diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 67e6e64181f9..9380792ad423 100644
+index 9380792ad423..6405d4be760f 100644
 --- a/devlink/devlink.c
 +++ b/devlink/devlink.c
-@@ -262,6 +262,9 @@ static void ifname_map_free(struct ifname_map *ifname_map)
- #define DL_OPT_TRAP_ACTION		BIT(31)
- #define DL_OPT_TRAP_GROUP_NAME		BIT(32)
- #define DL_OPT_NETNS	BIT(33)
-+#define DL_OPT_TRAP_POLICER_ID		BIT(34)
-+#define DL_OPT_TRAP_POLICER_RATE	BIT(35)
-+#define DL_OPT_TRAP_POLICER_BURST	BIT(36)
- 
- struct dl_opts {
- 	uint64_t present; /* flags of present items */
-@@ -303,6 +306,9 @@ struct dl_opts {
- 	enum devlink_trap_action trap_action;
- 	bool netns_is_pid;
- 	uint32_t netns;
-+	uint32_t trap_policer_id;
-+	uint64_t trap_policer_rate;
-+	uint64_t trap_policer_burst;
- };
- 
- struct dl {
-@@ -506,12 +512,16 @@ static const enum mnl_attr_data_type devlink_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_TRAP_METADATA] = MNL_TYPE_NESTED,
- 	[DEVLINK_ATTR_TRAP_GROUP_NAME] = MNL_TYPE_STRING,
- 	[DEVLINK_ATTR_RELOAD_FAILED] = MNL_TYPE_U8,
-+	[DEVLINK_ATTR_TRAP_POLICER_ID] = MNL_TYPE_U32,
-+	[DEVLINK_ATTR_TRAP_POLICER_RATE] = MNL_TYPE_U64,
-+	[DEVLINK_ATTR_TRAP_POLICER_BURST] = MNL_TYPE_U64,
- };
- 
- static const enum mnl_attr_data_type
- devlink_stats_policy[DEVLINK_ATTR_STATS_MAX + 1] = {
- 	[DEVLINK_ATTR_STATS_RX_PACKETS] = MNL_TYPE_U64,
- 	[DEVLINK_ATTR_STATS_RX_BYTES] = MNL_TYPE_U64,
-+	[DEVLINK_ATTR_STATS_RX_DROPPED] = MNL_TYPE_U64,
- };
- 
- static int attr_cb(const struct nlattr *attr, void *data)
-@@ -1490,6 +1500,27 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
- 				opts->netns_is_pid = true;
- 			}
- 			o_found |= DL_OPT_NETNS;
-+		} else if (dl_argv_match(dl, "policer") &&
+@@ -1507,6 +1507,11 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
+ 			if (err)
+ 				return err;
+ 			o_found |= DL_OPT_TRAP_POLICER_ID;
++		} else if (dl_argv_match(dl, "nopolicer") &&
 +			   (o_all & DL_OPT_TRAP_POLICER_ID)) {
 +			dl_arg_inc(dl);
-+			err = dl_argv_uint32_t(dl, &opts->trap_policer_id);
-+			if (err)
-+				return err;
++			opts->trap_policer_id = 0;
 +			o_found |= DL_OPT_TRAP_POLICER_ID;
-+		} else if (dl_argv_match(dl, "rate") &&
-+			   (o_all & DL_OPT_TRAP_POLICER_RATE)) {
-+			dl_arg_inc(dl);
-+			err = dl_argv_uint64_t(dl, &opts->trap_policer_rate);
-+			if (err)
-+				return err;
-+			o_found |= DL_OPT_TRAP_POLICER_RATE;
-+		} else if (dl_argv_match(dl, "burst") &&
-+			   (o_all & DL_OPT_TRAP_POLICER_BURST)) {
-+			dl_arg_inc(dl);
-+			err = dl_argv_uint64_t(dl, &opts->trap_policer_burst);
-+			if (err)
-+				return err;
-+			o_found |= DL_OPT_TRAP_POLICER_BURST;
- 		} else {
- 			pr_err("Unknown option \"%s\"\n", dl_argv(dl));
- 			return -EINVAL;
-@@ -1617,6 +1648,15 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
- 				 opts->netns_is_pid ? DEVLINK_ATTR_NETNS_PID :
- 						      DEVLINK_ATTR_NETNS_FD,
- 				 opts->netns);
-+	if (opts->present & DL_OPT_TRAP_POLICER_ID)
-+		mnl_attr_put_u32(nlh, DEVLINK_ATTR_TRAP_POLICER_ID,
-+				 opts->trap_policer_id);
-+	if (opts->present & DL_OPT_TRAP_POLICER_RATE)
-+		mnl_attr_put_u64(nlh, DEVLINK_ATTR_TRAP_POLICER_RATE,
-+				 opts->trap_policer_rate);
-+	if (opts->present & DL_OPT_TRAP_POLICER_BURST)
-+		mnl_attr_put_u64(nlh, DEVLINK_ATTR_TRAP_POLICER_BURST,
-+				 opts->trap_policer_burst);
- }
- 
- static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
-@@ -2058,6 +2098,9 @@ static void pr_out_stats(struct dl *dl, struct nlattr *nla_stats)
- 	if (tb[DEVLINK_ATTR_STATS_RX_PACKETS])
- 		pr_out_u64(dl, "packets",
- 			   mnl_attr_get_u64(tb[DEVLINK_ATTR_STATS_RX_PACKETS]));
-+	if (tb[DEVLINK_ATTR_STATS_RX_DROPPED])
-+		pr_out_u64(dl, "dropped",
-+			   mnl_attr_get_u64(tb[DEVLINK_ATTR_STATS_RX_DROPPED]));
- 	pr_out_object_end(dl);
- 	pr_out_object_end(dl);
- }
-@@ -4141,6 +4184,10 @@ static const char *cmd_name(uint8_t cmd)
- 	case DEVLINK_CMD_TRAP_GROUP_SET: return "set";
- 	case DEVLINK_CMD_TRAP_GROUP_NEW: return "new";
- 	case DEVLINK_CMD_TRAP_GROUP_DEL: return "del";
-+	case DEVLINK_CMD_TRAP_POLICER_GET: return "get";
-+	case DEVLINK_CMD_TRAP_POLICER_SET: return "set";
-+	case DEVLINK_CMD_TRAP_POLICER_NEW: return "new";
-+	case DEVLINK_CMD_TRAP_POLICER_DEL: return "del";
- 	default: return "<unknown cmd>";
- 	}
- }
-@@ -4185,6 +4232,11 @@ static const char *cmd_obj(uint8_t cmd)
- 	case DEVLINK_CMD_TRAP_GROUP_NEW:
- 	case DEVLINK_CMD_TRAP_GROUP_DEL:
- 		return "trap-group";
-+	case DEVLINK_CMD_TRAP_POLICER_GET:
-+	case DEVLINK_CMD_TRAP_POLICER_SET:
-+	case DEVLINK_CMD_TRAP_POLICER_NEW:
-+	case DEVLINK_CMD_TRAP_POLICER_DEL:
-+		return "trap-policer";
- 	default: return "<unknown obj>";
- 	}
- }
-@@ -4239,6 +4291,7 @@ static void pr_out_region(struct dl *dl, struct nlattr **tb);
- static void pr_out_health(struct dl *dl, struct nlattr **tb_health);
- static void pr_out_trap(struct dl *dl, struct nlattr **tb, bool array);
- static void pr_out_trap_group(struct dl *dl, struct nlattr **tb, bool array);
-+static void pr_out_trap_policer(struct dl *dl, struct nlattr **tb, bool array);
- 
- static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- {
-@@ -4339,6 +4392,19 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 		pr_out_mon_header(genl->cmd);
- 		pr_out_trap_group(dl, tb, false);
- 		break;
-+	case DEVLINK_CMD_TRAP_POLICER_GET: /* fall through */
-+	case DEVLINK_CMD_TRAP_POLICER_SET: /* fall through */
-+	case DEVLINK_CMD_TRAP_POLICER_NEW: /* fall through */
-+	case DEVLINK_CMD_TRAP_POLICER_DEL: /* fall through */
-+		mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-+		if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
-+		    !tb[DEVLINK_ATTR_TRAP_POLICER_ID] ||
-+		    !tb[DEVLINK_ATTR_TRAP_POLICER_RATE] ||
-+		    !tb[DEVLINK_ATTR_TRAP_POLICER_BURST])
-+			return MNL_CB_ERROR;
-+		pr_out_mon_header(genl->cmd);
-+		pr_out_trap_policer(dl, tb, false);
-+		break;
- 	}
- 	return MNL_CB_OK;
- }
-@@ -4355,7 +4421,8 @@ static int cmd_mon_show(struct dl *dl)
- 		    strcmp(cur_obj, "port") != 0 &&
- 		    strcmp(cur_obj, "health") != 0 &&
- 		    strcmp(cur_obj, "trap") != 0 &&
--		    strcmp(cur_obj, "trap-group") != 0) {
-+		    strcmp(cur_obj, "trap-group") != 0 &&
-+		    strcmp(cur_obj, "trap-policer") != 0) {
- 			pr_err("Unknown object \"%s\"\n", cur_obj);
- 			return -EINVAL;
- 		}
-@@ -4372,7 +4439,7 @@ static int cmd_mon_show(struct dl *dl)
- static void cmd_mon_help(void)
- {
- 	pr_err("Usage: devlink monitor [ all | OBJECT-LIST ]\n"
--	       "where  OBJECT-LIST := { dev | port | health | trap | trap-group }\n");
-+	       "where  OBJECT-LIST := { dev | port | health | trap | trap-group | trap-policer }\n");
- }
- 
- static int cmd_mon(struct dl *dl)
-@@ -7002,6 +7069,8 @@ static void cmd_trap_help(void)
+ 		} else if (dl_argv_match(dl, "rate") &&
+ 			   (o_all & DL_OPT_TRAP_POLICER_RATE)) {
+ 			dl_arg_inc(dl);
+@@ -7068,6 +7073,7 @@ static void cmd_trap_help(void)
+ 	pr_err("Usage: devlink trap set DEV trap TRAP [ action { trap | drop } ]\n");
  	pr_err("       devlink trap show [ DEV trap TRAP ]\n");
  	pr_err("       devlink trap group set DEV group GROUP [ action { trap | drop } ]\n");
++	pr_err("                              [ policer POLICER ] [ nopolicer ]\n");
  	pr_err("       devlink trap group show [ DEV group GROUP ]\n");
-+	pr_err("       devlink trap policer set DEV policer POLICER [ rate RATE ] [ burst BURST ]\n");
-+	pr_err("       devlink trap policer show DEV policer POLICER\n");
+ 	pr_err("       devlink trap policer set DEV policer POLICER [ rate RATE ] [ burst BURST ]\n");
+ 	pr_err("       devlink trap policer show DEV policer POLICER\n");
+@@ -7125,6 +7131,9 @@ static void pr_out_trap_group(struct dl *dl, struct nlattr **tb, bool array)
+ 	print_string(PRINT_ANY, "name", "name %s",
+ 		     mnl_attr_get_str(tb[DEVLINK_ATTR_TRAP_GROUP_NAME]));
+ 	print_bool(PRINT_ANY, "generic", " generic %s", !!tb[DEVLINK_ATTR_TRAP_GENERIC]);
++	if (tb[DEVLINK_ATTR_TRAP_POLICER_ID])
++		print_uint(PRINT_ANY, "policer", " policer %u",
++			   mnl_attr_get_u32(tb[DEVLINK_ATTR_TRAP_POLICER_ID]));
+ 	pr_out_stats(dl, tb[DEVLINK_ATTR_STATS]);
+ 	pr_out_handle_end(dl);
  }
+@@ -7181,7 +7190,7 @@ static int cmd_trap_group_set(struct dl *dl)
  
- static int cmd_trap_show(struct dl *dl)
-@@ -7136,6 +7205,104 @@ static int cmd_trap_group(struct dl *dl)
- 	return -ENOENT;
- }
+ 	err = dl_argv_parse_put(nlh, dl,
+ 				DL_OPT_HANDLE | DL_OPT_TRAP_GROUP_NAME,
+-				DL_OPT_TRAP_ACTION);
++				DL_OPT_TRAP_ACTION | DL_OPT_TRAP_POLICER_ID);
+ 	if (err)
+ 		return err;
  
-+static void pr_out_trap_policer(struct dl *dl, struct nlattr **tb, bool array)
-+{
-+	if (array)
-+		pr_out_handle_start_arr(dl, tb);
-+	else
-+		__pr_out_handle_start(dl, tb, true, false);
-+
-+	check_indent_newline(dl);
-+	print_uint(PRINT_ANY, "policer", "policer %u",
-+		   mnl_attr_get_u32(tb[DEVLINK_ATTR_TRAP_POLICER_ID]));
-+	print_u64(PRINT_ANY, "rate", " rate %llu",
-+		   mnl_attr_get_u64(tb[DEVLINK_ATTR_TRAP_POLICER_RATE]));
-+	print_u64(PRINT_ANY, "burst", " burst %llu",
-+		   mnl_attr_get_u64(tb[DEVLINK_ATTR_TRAP_POLICER_BURST]));
-+	if (tb[DEVLINK_ATTR_STATS])
-+		pr_out_stats(dl, tb[DEVLINK_ATTR_STATS]);
-+	pr_out_handle_end(dl);
-+}
-+
-+static int cmd_trap_policer_show_cb(const struct nlmsghdr *nlh, void *data)
-+{
-+	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
-+	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
-+	struct dl *dl = data;
-+
-+	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-+	if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
-+	    !tb[DEVLINK_ATTR_TRAP_POLICER_ID] ||
-+	    !tb[DEVLINK_ATTR_TRAP_POLICER_RATE] ||
-+	    !tb[DEVLINK_ATTR_TRAP_POLICER_BURST])
-+		return MNL_CB_ERROR;
-+
-+	pr_out_trap_policer(dl, tb, true);
-+
-+	return MNL_CB_OK;
-+}
-+
-+static int cmd_trap_policer_show(struct dl *dl)
-+{
-+	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	if (dl_argc(dl) == 0)
-+		flags |= NLM_F_DUMP;
-+
-+	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_TRAP_POLICER_GET, flags);
-+
-+	if (dl_argc(dl) > 0) {
-+		err = dl_argv_parse_put(nlh, dl,
-+					DL_OPT_HANDLE | DL_OPT_TRAP_POLICER_ID,
-+					0);
-+		if (err)
-+			return err;
-+	}
-+
-+	pr_out_section_start(dl, "trap_policer");
-+	err = _mnlg_socket_sndrcv(dl->nlg, nlh, cmd_trap_policer_show_cb, dl);
-+	pr_out_section_end(dl);
-+
-+	return err;
-+}
-+
-+static int cmd_trap_policer_set(struct dl *dl)
-+{
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_TRAP_POLICER_SET,
-+			       NLM_F_REQUEST | NLM_F_ACK);
-+
-+	err = dl_argv_parse_put(nlh, dl,
-+				DL_OPT_HANDLE | DL_OPT_TRAP_POLICER_ID,
-+				DL_OPT_TRAP_POLICER_RATE |
-+				DL_OPT_TRAP_POLICER_BURST);
-+	if (err)
-+		return err;
-+
-+	return _mnlg_socket_sndrcv(dl->nlg, nlh, NULL, NULL);
-+}
-+
-+static int cmd_trap_policer(struct dl *dl)
-+{
-+	if (dl_argv_match(dl, "help")) {
-+		cmd_trap_help();
-+		return 0;
-+	} else if (dl_argv_match(dl, "show") ||
-+		   dl_argv_match(dl, "list") || dl_no_arg(dl)) {
-+		dl_arg_inc(dl);
-+		return cmd_trap_policer_show(dl);
-+	} else if (dl_argv_match(dl, "set")) {
-+		dl_arg_inc(dl);
-+		return cmd_trap_policer_set(dl);
-+	}
-+	pr_err("Command \"%s\" not found\n", dl_argv(dl));
-+	return -ENOENT;
-+}
-+
- static int cmd_trap(struct dl *dl)
- {
- 	if (dl_argv_match(dl, "help")) {
-@@ -7151,6 +7318,9 @@ static int cmd_trap(struct dl *dl)
- 	} else if (dl_argv_match(dl, "group")) {
- 		dl_arg_inc(dl);
- 		return cmd_trap_group(dl);
-+	} else if (dl_argv_match(dl, "policer")) {
-+		dl_arg_inc(dl);
-+		return cmd_trap_policer(dl);
- 	}
- 	pr_err("Command \"%s\" not found\n", dl_argv(dl));
- 	return -ENOENT;
-diff --git a/man/man8/devlink-monitor.8 b/man/man8/devlink-monitor.8
-index a96d350f4241..de351f32a1e5 100644
---- a/man/man8/devlink-monitor.8
-+++ b/man/man8/devlink-monitor.8
-@@ -21,7 +21,7 @@ command is the first in the command line and then the object list.
- .I OBJECT-LIST
- is the list of object types that we want to monitor.
- It may contain
--.BR dev ", " port ", " health ", " trap ", " trap-group .
-+.BR dev ", " port ", " health ", " trap ", " trap-group ", " trap-policer .
- 
- .B devlink
- opens Devlink Netlink socket, listens on it and dumps state changes.
 diff --git a/man/man8/devlink-trap.8 b/man/man8/devlink-trap.8
-index db19fe4c7452..113eda4ac790 100644
+index 113eda4ac790..f01f831759c4 100644
 --- a/man/man8/devlink-trap.8
 +++ b/man/man8/devlink-trap.8
-@@ -38,6 +38,13 @@ devlink-trap \- devlink trap configuration
+@@ -37,6 +37,10 @@ devlink-trap \- devlink trap configuration
+ .ti -8
  .BI "devlink trap group set " DEV " group " GROUP
  .RB "[ " action " { " trap " | " drop " } ]"
++.br
++.RB "[ " policer
++.IB "POLICER " ]
++.RB "[ " nopolicer " ]"
  
-+.ti -8
-+.BI "devlink trap policer set " DEV " policer " POLICER
-+.RB "[ " rate
-+.IR "RATE " ]
-+.RB "[ " burst
-+.IR "BURST " ]
-+
  .ti -8
- .B devlink trap help
- 
-@@ -102,6 +109,24 @@ packet trap action. The action is set for all the packet traps member in the
+ .BI "devlink trap policer set " DEV " policer " POLICER
+@@ -109,6 +113,14 @@ packet trap action. The action is set for all the packet traps member in the
  trap group. The actions of non-drop traps cannot be changed and are thus
  skipped.
  
-+.SS devlink trap policer set - set attributes of packet trap policer
++.TP
++.BI policer " POLICER"
++packet trap policer. The policer to bind to the packet trap group.
 +
-+.PP
-+.I "DEV"
-+- specifies the devlink device the packet trap policer belongs to.
++.TP
++.B nopolicer
++Unbind packet trap policer from the packet trap group.
 +
-+.PP
-+.BI "policer " POLICER
-+- specifies the packet trap policer.
-+
-+.PP
-+.BI rate " RATE "
-+- packet trap policer rate in packets per second.
-+
-+.PP
-+.BI burst " BURST "
-+- packet trap policer burst size in packets.
-+
- .SH "EXAMPLES"
- .PP
- devlink trap show
-@@ -128,6 +153,21 @@ devlink trap set pci/0000:01:00.0 trap source_mac_is_multicast action trap
- .RS 4
- Set the action of a specific packet trap to 'trap'.
- .RE
-+.PP
-+devlink trap policer show
-+.RS 4
-+List available packet trap policers.
-+.RE
-+.PP
-+devlink -s trap policer show pci/0000:01:00.0 policer 1
-+.RS 4
-+Show attributes and statistics of a specific packet trap policer.
-+.RE
-+.PP
-+devlink trap policer set pci/0000:01:00.0 policer 1 rate 1000 burst 128
-+.RS 4
-+Set the rate and burst size of a specific packet trap policer.
-+.RE
+ .SS devlink trap policer set - set attributes of packet trap policer
  
- .SH SEE ALSO
- .BR devlink (8),
+ .PP
 -- 
 2.24.1
 
