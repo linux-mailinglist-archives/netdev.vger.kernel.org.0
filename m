@@ -2,112 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC7351918FB
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 19:25:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BE4319190B
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 19:26:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728047AbgCXSZH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 14:25:07 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:43934 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727928AbgCXSZF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 14:25:05 -0400
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02OI434H114837
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 14:25:03 -0400
-Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2ywewudvdv-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 14:25:03 -0400
-Received: from localhost
-        by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
-        Tue, 24 Mar 2020 18:24:59 -0000
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
-        by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Tue, 24 Mar 2020 18:24:56 -0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 02OIOvTR41484450
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 24 Mar 2020 18:24:58 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E3DF5A405B;
-        Tue, 24 Mar 2020 18:24:57 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AD0A7A405C;
-        Tue, 24 Mar 2020 18:24:57 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 24 Mar 2020 18:24:57 +0000 (GMT)
-From:   Julian Wiedmann <jwi@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <heiko.carstens@de.ibm.com>,
-        Ursula Braun <ubraun@linux.ibm.com>,
-        Julian Wiedmann <jwi@linux.ibm.com>
-Subject: [PATCH net-next 11/11] s390/qeth: modernize two list helpers
-Date:   Tue, 24 Mar 2020 19:24:48 +0100
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200324182448.95362-1-jwi@linux.ibm.com>
-References: <20200324182448.95362-1-jwi@linux.ibm.com>
-X-TM-AS-GCONF: 00
-x-cbid: 20032418-0020-0000-0000-000003BA4DAA
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 20032418-0021-0000-0000-00002212CFCF
-Message-Id: <20200324182448.95362-12-jwi@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
- definitions=2020-03-24_05:2020-03-23,2020-03-24 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- suspectscore=2 spamscore=0 clxscore=1015 malwarescore=0 impostorscore=0
- bulkscore=0 phishscore=0 mlxscore=0 adultscore=0 mlxlogscore=950
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2003240090
+        id S1727509AbgCXS0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 14:26:05 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:37709 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727398AbgCXS0E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 14:26:04 -0400
+Received: by mail-qk1-f195.google.com with SMTP id x3so8810580qki.4
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 11:26:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=joelfernandes.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=iEmpsAyt9B1Qcdkh4hlRJzHYHPiVdMatdhGGO+kX6u0=;
+        b=XviXDdgRMR3A1ee54Wowb70vIsLpggnUxurOugFzJ+rMRbEWy19ZdXhIQG8po0nuoq
+         +zQF77o09zsBvEAMrLmPfUbOj/iB/K7nHwJmK5u3waH0Ns6p9BDbathMFtZ6NE3rNO/a
+         eUJzkjun1iZzOBflcQHA8PWiD8khlP9p5A0R0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=iEmpsAyt9B1Qcdkh4hlRJzHYHPiVdMatdhGGO+kX6u0=;
+        b=OFdRBpXV/6bJnn0j41K+7cdEl9gC0LB0JO2Rr0SRnYt1z8T1vA8LR2QRfAtx9lrbjH
+         mU0RFJKEb+qpfz6N3uqLVJjWhO+t42AipN8zMwtbEUpZWKaZ5xGzHgxsYKPmluWrZqK8
+         WJnkNkMhzdG2iuZTUj7AGjU1ZLrrYueAJSjGMLFRrRSMcJ49dITE+P3iyujGNALxFkf7
+         og96WMj6fFrna0nduspwgsy2kQl/02XsR6s8T+1PzfpNzPHoOp/qUW2Gi4DY1X3kUATP
+         0GrWq9SNgCeD48zsGa2YZLkw6i7V+LNT1nkxz5zdmvEAOcONut6F0RC4QuUwPe4V9H9Q
+         IH8Q==
+X-Gm-Message-State: ANhLgQ1H8mkj5WLzTT9ALCu3K2FN+ZtZxKZdKY1ZKIAybQxQUY0ezxbt
+        t2hBpVxOE2Chzto7wOuizk2bXQ==
+X-Google-Smtp-Source: ADFU+vsDFgrzlLzo7PWHXfC4Na59e1GjR7LhLOqmWSGaiqojVW66Z6eiEsCwPhPF2x51Legtscepqg==
+X-Received: by 2002:a05:620a:1250:: with SMTP id a16mr12752127qkl.497.1585074361932;
+        Tue, 24 Mar 2020 11:26:01 -0700 (PDT)
+Received: from localhost ([2620:15c:6:12:9c46:e0da:efbf:69cc])
+        by smtp.gmail.com with ESMTPSA id y5sm14014261qkb.123.2020.03.24.11.26.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Mar 2020 11:26:01 -0700 (PDT)
+Date:   Tue, 24 Mar 2020 14:26:01 -0400
+From:   Joel Fernandes <joel@joelfernandes.org>
+To:     Will Deacon <will@kernel.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>, linux-kernel@vger.kernel.org,
+        Ingo Molnar <mingo@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org Felipe Balbi" <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH] Documentation: Clarify better about the rwsem non-owner
+ release issue
+Message-ID: <20200324182601.GC257597@google.com>
+References: <20200322021938.175736-1-joel@joelfernandes.org>
+ <87a748khlo.fsf@kamboji.qca.qualcomm.com>
+ <20200323182349.GA203600@google.com>
+ <20200324081538.GA8696@willie-the-truck>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200324081538.GA8696@willie-the-truck>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace list_for_each() with list_for_each_entry(), and
-list_entry(head.next) with list_first_entry().
+On Tue, Mar 24, 2020 at 08:15:39AM +0000, Will Deacon wrote:
+> On Mon, Mar 23, 2020 at 02:23:49PM -0400, Joel Fernandes wrote:
+> > On Sun, Mar 22, 2020 at 08:51:15AM +0200, Kalle Valo wrote:
+> > > "Joel Fernandes (Google)" <joel@joelfernandes.org> writes:
+> > > 
+> > > > Reword and clarify better about the rwsem non-owner release issue.
+> > > >
+> > > > Link: https://lore.kernel.org/linux-pci/20200321212144.GA6475@google.com/
+> > > >
+> > > > Signed-off-by: Joel Fernandes (Google) <joel@joelfernandes.org>
+> > > 
+> > > There's something wrong with your linux-pci and linux-usb addresses:
+> > > 
+> > > 	"linux-pci@vger.kernel.org Felipe Balbi" <balbi@kernel.org>,
+> > > 
+> > > 
+> > > 	"linux-usb@vger.kernel.org Kalle Valo" <kvalo@codeaurora.org>,
+> > 
+> > Not sure. It appears fine in the archive.
+> 
+> Hmm, I don't think it does. Here's the copy from LKML:
+> 
+> https://lore.kernel.org/lkml/20200322021938.175736-1-joel@joelfernandes.org/
+> 
+> Which works because it's in the To: correctly. But both linux-pci and
+> linux-usb were *not* CC'd:
+> 
+> "linux-usb@vger.kernel.org Kalle Valo" <kvalo@codeaurora.org>
+> "linux-pci@vger.kernel.org Felipe Balbi" <balbi@kernel.org>
+> 
+> and searching for the message in the linux-pci archives doesn't find it:
+> 
+> https://lore.kernel.org/linux-pci/?q=Reword+and+clarify+better+about+the+rwsem+non-owner+release+issue
+> 
+> So it looks like there is an issue with your mail setup.
 
-Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
----
- drivers/s390/net/qeth_core_main.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+Hi Will and Kalle,
+Thank you for confirming it. You are right, the archive shows the issue. I
+will double check my client and see what's going on.
 
-diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
-index 4940e4fb556e..79a92761e50a 100644
---- a/drivers/s390/net/qeth_core_main.c
-+++ b/drivers/s390/net/qeth_core_main.c
-@@ -2629,15 +2629,13 @@ static void qeth_initialize_working_pool_list(struct qeth_card *card)
- static struct qeth_buffer_pool_entry *qeth_find_free_buffer_pool_entry(
- 					struct qeth_card *card)
- {
--	struct list_head *plh;
- 	struct qeth_buffer_pool_entry *entry;
- 	int i, free;
- 
- 	if (list_empty(&card->qdio.in_buf_pool.entry_list))
- 		return NULL;
- 
--	list_for_each(plh, &card->qdio.in_buf_pool.entry_list) {
--		entry = list_entry(plh, struct qeth_buffer_pool_entry, list);
-+	list_for_each_entry(entry, &card->qdio.in_buf_pool.entry_list, list) {
- 		free = 1;
- 		for (i = 0; i < QETH_MAX_BUFFER_ELEMENTS(card); ++i) {
- 			if (page_count(entry->elements[i]) > 1) {
-@@ -2652,8 +2650,8 @@ static struct qeth_buffer_pool_entry *qeth_find_free_buffer_pool_entry(
- 	}
- 
- 	/* no free buffer in pool so take first one and swap pages */
--	entry = list_entry(card->qdio.in_buf_pool.entry_list.next,
--			struct qeth_buffer_pool_entry, list);
-+	entry = list_first_entry(&card->qdio.in_buf_pool.entry_list,
-+				 struct qeth_buffer_pool_entry, list);
- 	for (i = 0; i < QETH_MAX_BUFFER_ELEMENTS(card); ++i) {
- 		if (page_count(entry->elements[i]) > 1) {
- 			struct page *page = dev_alloc_page();
--- 
-2.17.1
+thanks,
+
+ - Joel
 
