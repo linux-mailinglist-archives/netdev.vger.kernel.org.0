@@ -2,121 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F03EC19028D
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 01:13:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD8011902AF
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 01:17:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727590AbgCXALv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 20:11:51 -0400
-Received: from mail-eopbgr130077.outbound.protection.outlook.com ([40.107.13.77]:36067
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727299AbgCXALv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 20:11:51 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DY6FG4aIv1Uu+jImDQSqGkrxNXJ0u5jwAP+BLZEGEySbpIleb+OLhj60T+aP5z6GkhyFK2MBgOZPD0ZDFJ0fhFpydnSxHvzyxNoQUPvPHRKAi/tEyu+deocz5zSxzCNl77EkxYb+OuokJ0edv+8ia7p7OR5AbgQJssgCuIsPHB1vCjaJ8DQjwzV8oqoKeoE0mB5dqeNe+fP1fYoqpXhg4ADCUV0LEyNvfdsCatUGYW9WmjNqN2ceZXe/5Eef5KAk9oNS4Uy2E5zVUTYM1AOaPGqCawtAAe0y6DB/ZX+a2QQ5Ejd3Zats/rv7YgOI+IZFWK3EfOoTqWAaiPE1Kxd21A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gVpa+nNUa3wqoYPktPe/0ot2xql0mKMvBGcA+UzjOMU=;
- b=mWMrdh0jGNvXF0aUdOdAoV2/Zx9g3l8J1sg0DeyUatlUGVTG6LQj1bbcuQMlUZPNNOIcd53st4yYKLOUaDW1nluZ34ZDkpnN5HQpuQKlG3Hnsv4Gw+2gtSSNYPk251zfeCZ6tA08RZ6DiipuUy+lHvvudOMg1Ke7oonkVWKmC6wsMFgZe2DNc4tnG6pombR33cVWYs09ymVXK77YwauyQ8YROFSlygopFfrR45RkGGcqnZj5eKD97IH7gecZRXKq6cdiR0VMfucYLBNLhK9wqFnKF5oqZdGcCOLzmN74gVzQE2lnEsoBgp/4J90ruIgr4YkiDZjXbQfztac4YwMaCQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gVpa+nNUa3wqoYPktPe/0ot2xql0mKMvBGcA+UzjOMU=;
- b=oK1WzpNpEBAIppdIt5ngGn5+98IGJlQEFgpzCEBW4we6wJ97xW8RxPiCG2bIwDLbYafb2O7U97LSqAtL9Pryt4lJp4zk2sbBXgxIpYmHq+ZESQC8XMgDLiBb11rM1ALVIa1Ozkkys/MSAkz57DOya4GkIODLqq+nzfofn18QpjU=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=jgg@mellanox.com; 
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (52.133.14.15) by
- VI1PR05MB3166.eurprd05.prod.outlook.com (10.170.237.147) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.22; Tue, 24 Mar 2020 00:11:47 +0000
-Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::18d2:a9ea:519:add3]) by VI1PR05MB4141.eurprd05.prod.outlook.com
- ([fe80::18d2:a9ea:519:add3%7]) with mapi id 15.20.2835.021; Tue, 24 Mar 2020
- 00:11:47 +0000
-Date:   Mon, 23 Mar 2020 21:11:43 -0300
-From:   Jason Gunthorpe <jgg@mellanox.com>
-To:     Andy Gospodarek <andy@greyhouse.net>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, davem@davemloft.net, parav@mellanox.com,
-        yuvalav@mellanox.com, saeedm@mellanox.com, leon@kernel.org,
-        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
-        moshe@mellanox.com, ayal@mellanox.com, eranbe@mellanox.com,
-        vladbu@mellanox.com, kliteyn@mellanox.com, dchickles@marvell.com,
-        sburla@marvell.com, fmanlunas@marvell.com, tariqt@mellanox.com,
-        oss-drivers@netronome.com, snelson@pensando.io,
-        drivers@pensando.io, aelior@marvell.com,
-        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
-        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
-        jacob.e.keller@intel.com, valex@mellanox.com,
-        linyunsheng@huawei.com, lihong.yang@intel.com,
-        vikas.gupta@broadcom.com, magnus.karlsson@intel.com
-Subject: Re: [RFC] current devlink extension plan for NICs
-Message-ID: <20200324001143.GG20941@ziepe.ca>
-References: <20200319192719.GD11304@nanopsycho.orion>
- <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
- <20200320073555.GE11304@nanopsycho.orion>
- <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
- <20200321093525.GJ11304@nanopsycho.orion>
- <20200323233200.GD21532@C02YVCJELVCG.greyhouse.net>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200323233200.GD21532@C02YVCJELVCG.greyhouse.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: BL0PR02CA0030.namprd02.prod.outlook.com
- (2603:10b6:207:3c::43) To VI1PR05MB4141.eurprd05.prod.outlook.com
- (2603:10a6:803:44::15)
+        id S1727439AbgCXAQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 20:16:54 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:39542 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727577AbgCXAQx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 20:16:53 -0400
+Received: by mail-ed1-f68.google.com with SMTP id a43so18639868edf.6
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 17:16:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=d/2Y64PABVXdc9ONlMpskyvi+SAnumMA7Crj5Bt/DBQ=;
+        b=Pw/jLYEtjS/ATrpjcImP2D5HPDWiFMBcBAxJVSOwIOaspT/epTOM9IydWFzxho9yua
+         oazmW6QWguLgtIbfTk74PkycIDjFDPzKqyzaoh+DhJAVrmkuDU/uAM53LPP8DVs9E40Q
+         tUZMoTzJY+STJT3ur0XbLBaDl6VIvIN8N0+HMJRRBPnxJx3Fysg9dQsHduc19AT8XqUR
+         Z+R5dqyHsad39E8wBrmCN6RWKFaLpPh9SfxtI2Y1DRQLG2Yf+1AwZidHAvD5ViWXYqSy
+         a907RgFuMp40UgoEATMPqB/Btt7FRTYbwdl5UG8XBt+aLoRiYnvjPwNK2Qw9OiPVrwLO
+         +WDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d/2Y64PABVXdc9ONlMpskyvi+SAnumMA7Crj5Bt/DBQ=;
+        b=tCetvq7A7Bzw4KVXbkyhk6O70mlLXr7j008fbHTzuUepUFLr8nX3OTSDSOoZoQjzcX
+         qPUlqZpw4rcRuv8Dw07qUubejAQ3YmOWZaEmfeYWtTz8snH1Y94TzhtA7p2q7TLLDGNu
+         gv3PKrP+H26hoA+R9aGKOMAF11pR0OyMILpLtQ5XvEyKAAHDPgZ8a19x8oMOKegd/1hr
+         /j9by4VBGHdJXyMFGBYpTDxKsUEjSG32GXaZqUC5QbHy/QTkqkjTe+uVt5wh1iHZFice
+         Bk3L5wgFlavQ4gS/8SMHNMYKyb0yK6h5NGulNP5bi2q3IVZvdBY3Zgbh29suQWhhhz37
+         GMgg==
+X-Gm-Message-State: ANhLgQ2b2GIArrB6d4V5MKNTSl88T0+zZsz0ogh2Y1Jg7QLk1I2jVwaD
+        qia8iEA/zj5GDsgRzyAXZQhh3A7NdiIjZiB43arr
+X-Google-Smtp-Source: ADFU+vsjQok/w3GcfT1LJO6k41X3syl3c/RCvqnEbN1LGDpZdSJHQ9PBkLkvozzz1CLw+59ARBWSon4cJDwpW8rrY9U=
+X-Received: by 2002:a17:906:4b52:: with SMTP id j18mr13098102ejv.272.1585009010419;
+ Mon, 23 Mar 2020 17:16:50 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.68.57.212) by BL0PR02CA0030.namprd02.prod.outlook.com (2603:10b6:207:3c::43) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.19 via Frontend Transport; Tue, 24 Mar 2020 00:11:46 +0000
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1jGXAV-0001rS-1V; Mon, 23 Mar 2020 21:11:43 -0300
-X-Originating-IP: [142.68.57.212]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 604a018d-7b2c-4ce5-7400-08d7cf87f0d6
-X-MS-TrafficTypeDiagnostic: VI1PR05MB3166:|VI1PR05MB3166:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB3166F856ED8AB41F4DDC20D5CFF10@VI1PR05MB3166.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 03524FBD26
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(346002)(136003)(366004)(39860400002)(4744005)(2906002)(1076003)(4326008)(7416002)(33656002)(86362001)(6916009)(316002)(186003)(36756003)(478600001)(54906003)(9786002)(66946007)(66556008)(66476007)(9746002)(9686003)(8936002)(81156014)(81166006)(8676002)(5660300002)(52116002)(26005)(24400500001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3166;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eQLehE2JFsi+ErrDZ9uwEfQ2FlnFgs/yVK1nWKFrSFFWa+t5aSQq1aZPZWKf3Wj/VgN5U1WfuGkKtHxCr1NZXtC5MVHPWk1ZlRyHwHphLexKsuBTDjssaunlp4genId1uTANAyhXpcNQ03m3pNvQ9tk2Okb8D6fImNIEZMbaAkd7M2R+e1XjExFEtnm5pFYY8A/z35cLMtNgBKtjymHObA3RBIzGEZ7VslfMHqSne6f43toL1E2hLuAyEiCTCF++8P7yGmMPRFg9hTTp6ALNF9HayeQWGslJXweGNp6X8OKo8a1Q+Iz1ma/5iAbLY5vOL7G71L7BVwpgEkqNpAe+XgkSQpPKwkA/2mbCgtR7o0YS2g84CQsmRF562iXxFrK1J7CBspF/+XtkZHWs6YSZNhkjVyQ+TBEfwF5nw8BBTYbD6pAXCeGXLR5SkvFs+eXPgv1XPGcAizQFUtC3Y5dOOR3pyc5yliRYKCPG2XNF9LTf3mPHR5j4iV4wlMNQV+9Q
-X-MS-Exchange-AntiSpam-MessageData: ILFkF7lHqTX65apy0QfQJgpNLbqbtXc0vLRwlGFaICA5e/FbMuw79ktBlwqk8jE7N2eCNHYyHMH2reDgwyZ4gk3MoDJuGgLB4dIdg9skDGgs1A8k3Oa7LrELE858XStuHrPs7N9beGb+zv8i3980zg==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 604a018d-7b2c-4ce5-7400-08d7cf87f0d6
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2020 00:11:47.2700
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: e0GkdIPmlwZbun0sg8HVNs7/WD712a24ScgvB42QwcuPksLsSs2cS/mComowi4dT8tryi0mPVCwhcGaSuzUZ7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3166
+References: <CAHC9VhTiCHQbp2SwK0Xb1QgpUZxOQ26JKKPsVGT0ZvMqx28oPQ@mail.gmail.com>
+ <CAHC9VhS09b_fM19tn7pHZzxfyxcHnK+PJx80Z9Z1hn8-==4oLA@mail.gmail.com>
+ <20200312193037.2tb5f53yeisfq4ta@madcap2.tricolour.ca> <CAHC9VhQoVOzy_b9W6h+kmizKr1rPkC4cy5aYoKT2i0ZgsceNDg@mail.gmail.com>
+ <20200313185900.y44yvrfm4zxa5lfk@madcap2.tricolour.ca> <CAHC9VhR2zCCE5bjH75rSwfLC7TJGFj4RBnrtcOoUiqVp9q5TaA@mail.gmail.com>
+ <20200318212630.mw2geg4ykhnbtr3k@madcap2.tricolour.ca> <CAHC9VhRYvGAru3aOMwWKCCWDktS+2pGr+=vV4SjHW_0yewD98A@mail.gmail.com>
+ <20200318215550.es4stkjwnefrfen2@madcap2.tricolour.ca> <CAHC9VhSdDDP7Ec-w61NhGxZG5ZiekmrBCAg=Y=VJvEZcgQh46g@mail.gmail.com>
+ <20200319220249.jyr6xmwvflya5mks@madcap2.tricolour.ca>
+In-Reply-To: <20200319220249.jyr6xmwvflya5mks@madcap2.tricolour.ca>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 23 Mar 2020 20:16:38 -0400
+Message-ID: <CAHC9VhR84aN72yNB_j61zZgrQV1y6yvrBLNY7jp7BqQiEDL+cw@mail.gmail.com>
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
+ the audit daemon
+To:     Richard Guy Briggs <rgb@redhat.com>
+Cc:     Steve Grubb <sgrubb@redhat.com>, linux-audit@redhat.com,
+        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 23, 2020 at 07:32:00PM -0400, Andy Gospodarek wrote:
+On Thu, Mar 19, 2020 at 6:03 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> On 2020-03-18 18:06, Paul Moore wrote:
 
-> If a smartnic wants to give control of flows to the host
-> then it makes more sense to allow some communication at a higher layer
-> so that requests for hardware offload can be easily validated against
-> some sort of policy set forth by the admin of the smartnic.
+...
 
-The important rule is that a PF/VF/SF is always constrained by its
-representor. It doesn't matter how it handles the packets internally,
-via a tx/rx ring, via an eswitch offload, RDMA, iscsi, etc, it is all
-the same as far as the representor is concerned..
+> > I hope we can do better than string manipulations in the kernel.  I'd
+> > much rather defer generating the ACID list (if possible), than
+> > generating a list only to keep copying and editing it as the record is
+> > sent.
+>
+> At the moment we are stuck with a string-only format.
 
-Since eswitch is a powerful offload capability it makes sense to
-directly nest it.
+Yes, we are.  That is another topic, and another set of changes I've
+been deferring so as to not disrupt the audit container ID work.
 
-Jason
+I was thinking of what we do inside the kernel between when the record
+triggering event happens and when we actually emit the record to
+userspace.  Perhaps we collect the ACID information while the event is
+occurring, but we defer generating the record until later when we have
+a better understanding of what should be included in the ACID list.
+It is somewhat similar (but obviously different) to what we do for
+PATH records (we collect the pathname info when the path is being
+resolved).
 
+-- 
+paul moore
+www.paul-moore.com
