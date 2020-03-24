@@ -2,71 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF2C3190411
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 05:04:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD46C19041C
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 05:06:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725873AbgCXEEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 00:04:46 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:55904 "EHLO
+        id S1726182AbgCXEGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 00:06:00 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:55918 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725798AbgCXEEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 00:04:46 -0400
+        with ESMTP id S1725798AbgCXEGA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 00:06:00 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3446D15535441;
-        Mon, 23 Mar 2020 21:04:45 -0700 (PDT)
-Date:   Mon, 23 Mar 2020 21:04:44 -0700 (PDT)
-Message-Id: <20200323.210444.2145186350378871245.davem@davemloft.net>
-To:     gpiccoli@canonical.com
-Cc:     netanel@amazon.com, akiyano@amazon.com, netdev@vger.kernel.org,
-        gtzalik@amazon.com, saeedb@amazon.com, zorik@amazon.com,
-        kernel@gpiccoli.net, gshan@redhat.com, gavin.guo@canonical.com,
-        jay.vosburgh@canonical.com, pedro.principeza@canonical.com
-Subject: Re: [PATCH] net: ena: Add PCI shutdown handler to allow safe kexec
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D8C77155371C6;
+        Mon, 23 Mar 2020 21:05:59 -0700 (PDT)
+Date:   Mon, 23 Mar 2020 21:05:58 -0700 (PDT)
+Message-Id: <20200323.210558.579490999359919534.davem@davemloft.net>
+To:     dan.carpenter@oracle.com
+Cc:     kstewart@linuxfoundation.org, robert.dolca@intel.com,
+        gregkh@linuxfoundation.org, gustavo@embeddedor.com,
+        sameo@linux.intel.com, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] NFC: fdp: Fix a signedness bug in
+ fdp_nci_send_patch()
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200320125534.28966-1-gpiccoli@canonical.com>
-References: <20200320125534.28966-1-gpiccoli@canonical.com>
+In-Reply-To: <20200320132117.GA95012@mwanda>
+References: <20200320132117.GA95012@mwanda>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 23 Mar 2020 21:04:45 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 23 Mar 2020 21:06:00 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Guilherme G. Piccoli" <gpiccoli@canonical.com>
-Date: Fri, 20 Mar 2020 09:55:34 -0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+Date: Fri, 20 Mar 2020 16:21:17 +0300
 
-> Currently ENA only provides the PCI remove() handler, used during rmmod
-> for example. This is not called on shutdown/kexec path; we are potentially
-> creating a failure scenario on kexec:
+> The nci_conn_max_data_pkt_payload_size() function sometimes returns
+> -EPROTO so "max_size" needs to be signed for the error handling to
+> work.  We can make "payload_size" an int as well.
 > 
-> (a) Kexec is triggered, no shutdown() / remove() handler is called for ENA;
-> instead pci_device_shutdown() clears the master bit of the PCI device,
-> stopping all DMA transactions;
-> 
-> (b) Kexec reboot happens and the device gets enabled again, likely having
-> its FW with that DMA transaction buffered; then it may trigger the (now
-> invalid) memory operation in the new kernel, corrupting kernel memory area.
-> 
-> This patch aims to prevent this, by implementing a shutdown() handler
-> quite similar to the remove() one - the difference being the handling
-> of the netdev, which is unregistered on remove(), but following the
-> convention observed in other drivers, it's only detached on shutdown().
-> 
-> This prevents an odd issue in AWS Nitro instances, in which after the 2nd
-> kexec the next one will fail with an initrd corruption, caused by a wild
-> DMA write to invalid kernel memory. The lspci output for the adapter
-> present in my instance is:
-> 
-> 00:05.0 Ethernet controller [0200]: Amazon.com, Inc. Elastic Network
-> Adapter (ENA) [1d0f:ec20]
-> 
-> Suggested-by: Gavin Shan <gshan@redhat.com>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@canonical.com>
+> Fixes: a06347c04c13 ("NFC: Add Intel Fields Peak NFC solution driver")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Amazon folks, please review.
+Applied and queued up for -stable, thanks Dan.
