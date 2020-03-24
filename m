@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D2E9191A0B
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 20:35:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AA11191A0C
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 20:35:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727753AbgCXTep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 15:34:45 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:33415 "EHLO
+        id S1727769AbgCXTet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 15:34:49 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:33431 "EHLO
         new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727091AbgCXTeo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 15:34:44 -0400
+        by vger.kernel.org with ESMTP id S1725927AbgCXTet (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 15:34:49 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 1605E580061;
-        Tue, 24 Mar 2020 15:34:44 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 3ADE9580061;
+        Tue, 24 Mar 2020 15:34:48 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 24 Mar 2020 15:34:44 -0400
+  by compute4.internal (MEProxy); Tue, 24 Mar 2020 15:34:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=d5dqqq4+JRSruG8MdNY/+dRGmd6WlR5XDZ1CkbtpNc0=; b=1aLtJggV
-        CgC4/tIKXDmCeozPaB9G2jWk/BZAgMDR0Pqt7Rzt8dEoRNEQ/R0/P9AmSWHYNxJk
-        DIqJ3/N4INDxR8Oy5uQfS0QjhRmSsIpqkXrYbrjSUhoKIUvIT2C86MBIVJ/u0VbJ
-        CqRcDzoQI3mLbUSftIbtGPBlmzHHQeZlY0oV0vN8gL5lntDqSdys5TtFvJRwjZgr
-        zxa+88+gbMZbkJ6Z1PSURQrAZsWBovcownyOigmX7pCQn+77Oqm4nPgOX2mnVrzT
-        jCz9SlTiBDW8I4nOSaQ28yXna9HKJVyCuKwVgg7etMsrGQbQKL+3xiQeTr4dOkdU
-        o/OIYSFR25kSPg==
-X-ME-Sender: <xms:02B6XpCaGMI6Ax27UjDFHO06rw3SxAN5WbzjdB_5UeoO6lS2F8cduQ>
+        fm2; bh=p8xEN/IVc0nGFTSURlCFzXRCaNgjODMF/rRZFIltLC4=; b=XREeZEc+
+        KcVZepJdzGyVeZ2Orp/INDSX2yqBdGyI/rVtFYlWXUrey5spILjhD8wbulU/V6mn
+        jMDPqy741E0Mqq89JGZV0S/uheqRWw/PDLExfiROCfkXnPCa4WkIaI61OcxY2bXq
+        2evVFvUUV5tpW9HYHJxZ96MKKTSYH9ExsHBuQ2tPTsanPBEvHAMKdbaGMYhp/SfL
+        UiVril/6JHvqIAk6qPzg+mJZJQbRI9wT+deDJZl9LYS5QAlKac+93+xhSOJeykU6
+        5D//yVl5OgRVcosM9HVlHUGEkzZ8XO0W2SuHswU7pxHLnwI9LtoPi1R4wVQZHmZc
+        LCaAb5P4dOdPow==
+X-ME-Sender: <xms:2GB6XiZMJI_34IpXaN91NbGJiADbnNZmDcuf440TbqiOvvd51_j-RA>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudehuddgleeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecukfhppeejledrudektddrleegrddvvdehnecuvehluhhsthgvrh
-    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
+    fuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
     hhdrohhrgh
-X-ME-Proxy: <xmx:02B6Xl8s2u9xI-VoNXytoSMDHcI_PdUdrlDWWxkc1q7UQoQf5oYtXg>
-    <xmx:02B6XnXJC4pmfTHKc7XvU8jr1qF_ANH7vMlS7X7ges-nAEo6QK-1-A>
-    <xmx:02B6XomqVuPR1U_KjqTAnKgPqUPvHr04o4B_WurOzxs692A-hvI0WA>
-    <xmx:1GB6XgrJ8pxwIWQPAqzbEhnE6RN4SMpSYK13SU8EPT2TmIewQhjNbQ>
+X-ME-Proxy: <xmx:2GB6XqvFWYCJN_O5jjDScgMje3GNVmcbmDqIQxQCDD-7Y3kIQpGDGg>
+    <xmx:2GB6XpDDQi4NIeFGI9o7sDnECDjxRO72GfpqD24iBBUPPcEoOoI8ZQ>
+    <xmx:2GB6XhOHbbTcLEw-HQaNpDn2hWLM2jyDZLh67_6Y42qcDe2si9pWZg>
+    <xmx:2GB6XsP25IS5e0u2EqeGGvEyzqDFDgeIuhuKa0e4WuyXDtIdUrb8aA>
 Received: from splinter.mtl.com (bzq-79-180-94-225.red.bezeqint.net [79.180.94.225])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 4CC083065E1B;
-        Tue, 24 Mar 2020 15:34:40 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 8B62B306551D;
+        Tue, 24 Mar 2020 15:34:44 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jiri@mellanox.com, kuba@kernel.org,
         andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 09/15] mlxsw: spectrum: Track used packet trap policer IDs
-Date:   Tue, 24 Mar 2020 21:32:44 +0200
-Message-Id: <20200324193250.1322038-10-idosch@idosch.org>
+Subject: [PATCH net-next 10/15] mlxsw: spectrum_trap: Prepare policers for registration with devlink
+Date:   Tue, 24 Mar 2020 21:32:45 +0200
+Message-Id: <20200324193250.1322038-11-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200324193250.1322038-1-idosch@idosch.org>
 References: <20200324193250.1322038-1-idosch@idosch.org>
@@ -63,160 +63,147 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-During initialization the driver configures various packet trap groups
-and binds policers to them.
+Prepare an array of policer IDs to register with devlink and their
+associated parameters.
 
-Currently, most of these groups are not exposed to user space and
-therefore their policers should not be exposed as well. Otherwise, user
-space will be able to alter policer parameters without knowing which
-packet traps are policed by the policer.
-
-Use a bitmap to track the used policer IDs so that these policers will
-not be registered with devlink in a subsequent patch.
+The array is composed from both policers that are currently bound to
+exposed trap groups and policers that are not bound to any trap group.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum.c    | 26 ++++++++++++++++---
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  1 +
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   |  2 ++
- .../ethernet/mellanox/mlxsw/spectrum_trap.h   | 12 +++++++++
- 4 files changed, 38 insertions(+), 3 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.h
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 63 ++++++++++++++++++-
+ .../ethernet/mellanox/mlxsw/spectrum_trap.h   |  4 ++
+ 2 files changed, 66 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 35d3a68ef4fd..a109ecbb62b9 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -43,6 +43,7 @@
- #include "spectrum_acl_flex_actions.h"
- #include "spectrum_span.h"
- #include "spectrum_ptp.h"
-+#include "spectrum_trap.h"
- #include "../mlxfw/mlxfw.h"
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+index 6a77bf236c22..5a92a1de6086 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+ /* Copyright (c) 2019 Mellanox Technologies. All rights reserved */
  
- #define MLXSW_SP1_FWREV_MAJOR 13
-@@ -4556,6 +4557,7 @@ static const struct mlxsw_listener mlxsw_sp1_listener[] = {
++#include <linux/bitops.h>
+ #include <linux/kernel.h>
+ #include <net/devlink.h>
+ #include <uapi/linux/devlink.h>
+@@ -166,6 +167,11 @@ static void mlxsw_sp_rx_exception_listener(struct sk_buff *skb, u8 local_port,
+ 	MLXSW_RXL(mlxsw_sp_rx_exception_listener, _id,			      \
+ 		   _action, false, SP_##_group_id, SET_FW_DEFAULT)
  
- static int mlxsw_sp_cpu_policers_set(struct mlxsw_core *mlxsw_core)
- {
-+	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
- 	char qpcr_pl[MLXSW_REG_QPCR_LEN];
- 	enum mlxsw_reg_qpcr_ir_units ir_units;
- 	int max_cpu_policers;
-@@ -4619,6 +4621,7 @@ static int mlxsw_sp_cpu_policers_set(struct mlxsw_core *mlxsw_core)
- 			continue;
- 		}
- 
-+		__set_bit(i, mlxsw_sp->trap->policers_usage);
- 		mlxsw_reg_qpcr_pack(qpcr_pl, i, ir_units, is_bytes, rate,
- 				    burst_size);
- 		err = mlxsw_reg_write(mlxsw_core, MLXSW_REG(qpcr), qpcr_pl);
-@@ -4747,20 +4750,32 @@ static void mlxsw_sp_traps_unregister(struct mlxsw_sp *mlxsw_sp,
- 
- static int mlxsw_sp_traps_init(struct mlxsw_sp *mlxsw_sp)
- {
-+	struct mlxsw_sp_trap *trap;
-+	u64 max_policers;
- 	int err;
- 
-+	if (!MLXSW_CORE_RES_VALID(mlxsw_sp->core, MAX_CPU_POLICERS))
-+		return -EIO;
-+	max_policers = MLXSW_CORE_RES_GET(mlxsw_sp->core, MAX_CPU_POLICERS);
-+	trap = kzalloc(struct_size(trap, policers_usage,
-+				   BITS_TO_LONGS(max_policers)), GFP_KERNEL);
-+	if (!trap)
-+		return -ENOMEM;
-+	trap->max_policers = max_policers;
-+	mlxsw_sp->trap = trap;
++/* Ordered by policer identifier */
++static const struct devlink_trap_policer mlxsw_sp_trap_policers_arr[] = {
++	DEVLINK_TRAP_POLICER(1, 10 * 1024, 128),
++};
 +
- 	err = mlxsw_sp_cpu_policers_set(mlxsw_sp->core);
+ static const struct devlink_trap_group mlxsw_sp_trap_groups_arr[] = {
+ 	DEVLINK_TRAP_GROUP_GENERIC(L2_DROPS, 0),
+ 	DEVLINK_TRAP_GROUP_GENERIC(L3_DROPS, 0),
+@@ -325,6 +331,54 @@ static int mlxsw_sp_trap_dummy_group_init(struct mlxsw_sp *mlxsw_sp)
+ 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(htgt), htgt_pl);
+ }
+ 
++static int mlxsw_sp_trap_policers_init(struct mlxsw_sp *mlxsw_sp)
++{
++	struct mlxsw_sp_trap *trap = mlxsw_sp->trap;
++	u64 free_policers = 0;
++	u32 last_id = 0;
++	int i;
++
++	for_each_clear_bit(i, trap->policers_usage, trap->max_policers)
++		free_policers++;
++
++	if (ARRAY_SIZE(mlxsw_sp_trap_policers_arr) > free_policers) {
++		dev_err(mlxsw_sp->bus_info->dev, "Exceeded number of supported packet trap policers\n");
++		return -ENOBUFS;
++	}
++
++	trap->policers_arr = kcalloc(free_policers,
++				     sizeof(struct devlink_trap_policer),
++				     GFP_KERNEL);
++	if (!trap->policers_arr)
++		return -ENOMEM;
++
++	trap->policers_count = free_policers;
++
++	for (i = 0; i < free_policers; i++) {
++		const struct devlink_trap_policer *policer;
++
++		if (i < ARRAY_SIZE(mlxsw_sp_trap_policers_arr)) {
++			policer = &mlxsw_sp_trap_policers_arr[i];
++			trap->policers_arr[i] = *policer;
++			last_id = policer->id;
++		} else {
++			/* Use default parameters */
++			trap->policers_arr[i].id = ++last_id;
++			trap->policers_arr[i].init_rate = 1;
++			trap->policers_arr[i].init_burst = 16;
++		}
++	}
++
++	return 0;
++}
++
++static void mlxsw_sp_trap_policers_fini(struct mlxsw_sp *mlxsw_sp)
++{
++	struct mlxsw_sp_trap *trap = mlxsw_sp->trap;
++
++	kfree(trap->policers_arr);
++}
++
+ int mlxsw_sp_devlink_traps_init(struct mlxsw_sp *mlxsw_sp)
+ {
+ 	size_t groups_count = ARRAY_SIZE(mlxsw_sp_trap_groups_arr);
+@@ -343,10 +397,14 @@ int mlxsw_sp_devlink_traps_init(struct mlxsw_sp *mlxsw_sp)
+ 		    ARRAY_SIZE(mlxsw_sp_listeners_arr)))
+ 		return -EINVAL;
+ 
++	err = mlxsw_sp_trap_policers_init(mlxsw_sp);
++	if (err)
++		return err;
++
+ 	err = devlink_trap_groups_register(devlink, mlxsw_sp_trap_groups_arr,
+ 					   groups_count);
  	if (err)
 -		return err;
-+		goto err_cpu_policers_set;
++		goto err_trap_groups_register;
  
- 	err = mlxsw_sp_trap_groups_set(mlxsw_sp->core);
- 	if (err)
--		return err;
-+		goto err_trap_groups_set;
- 
- 	err = mlxsw_sp_traps_register(mlxsw_sp, mlxsw_sp_listener,
- 				      ARRAY_SIZE(mlxsw_sp_listener));
- 	if (err)
--		return err;
-+		goto err_traps_register;
- 
- 	err = mlxsw_sp_traps_register(mlxsw_sp, mlxsw_sp->listeners,
- 				      mlxsw_sp->listeners_count);
-@@ -4772,6 +4787,10 @@ static int mlxsw_sp_traps_init(struct mlxsw_sp *mlxsw_sp)
- err_extra_traps_init:
- 	mlxsw_sp_traps_unregister(mlxsw_sp, mlxsw_sp_listener,
- 				  ARRAY_SIZE(mlxsw_sp_listener));
-+err_traps_register:
-+err_trap_groups_set:
-+err_cpu_policers_set:
-+	kfree(trap);
+ 	err = devlink_traps_register(devlink, mlxsw_sp_traps_arr,
+ 				     ARRAY_SIZE(mlxsw_sp_traps_arr), mlxsw_sp);
+@@ -358,6 +416,8 @@ int mlxsw_sp_devlink_traps_init(struct mlxsw_sp *mlxsw_sp)
+ err_traps_register:
+ 	devlink_trap_groups_unregister(devlink, mlxsw_sp_trap_groups_arr,
+ 				       groups_count);
++err_trap_groups_register:
++	mlxsw_sp_trap_policers_fini(mlxsw_sp);
  	return err;
  }
  
-@@ -4781,6 +4800,7 @@ static void mlxsw_sp_traps_fini(struct mlxsw_sp *mlxsw_sp)
- 				  mlxsw_sp->listeners_count);
- 	mlxsw_sp_traps_unregister(mlxsw_sp, mlxsw_sp_listener,
- 				  ARRAY_SIZE(mlxsw_sp_listener));
-+	kfree(mlxsw_sp->trap);
+@@ -370,6 +430,7 @@ void mlxsw_sp_devlink_traps_fini(struct mlxsw_sp *mlxsw_sp)
+ 				 ARRAY_SIZE(mlxsw_sp_traps_arr));
+ 	devlink_trap_groups_unregister(devlink, mlxsw_sp_trap_groups_arr,
+ 				       groups_count);
++	mlxsw_sp_trap_policers_fini(mlxsw_sp);
  }
  
- #define MLXSW_SP_LAG_SEED_INIT 0xcafecafe
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index bbd8bec8fee4..fd1acc855b73 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -176,6 +176,7 @@ struct mlxsw_sp {
- 	struct mlxsw_sp_ptp_state *ptp_state;
- 	struct mlxsw_sp_counter_pool *counter_pool;
- 	struct mlxsw_sp_span *span;
-+	struct mlxsw_sp_trap *trap;
- 	const struct mlxsw_fw_rev *req_rev;
- 	const char *fw_filename;
- 	const struct mlxsw_sp_kvdl_ops *kvdl_ops;
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 24f15345ba84..6a77bf236c22 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -8,6 +8,7 @@
- #include "core.h"
- #include "reg.h"
- #include "spectrum.h"
-+#include "spectrum_trap.h"
- 
- /* All driver-specific traps must be documented in
-  * Documentation/networking/devlink/mlxsw.rst
-@@ -309,6 +310,7 @@ static int mlxsw_sp_trap_cpu_policers_set(struct mlxsw_sp *mlxsw_sp)
- 	/* The purpose of "thin" policer is to drop as many packets
- 	 * as possible. The dummy group is using it.
- 	 */
-+	__set_bit(MLXSW_SP_THIN_POLICER_ID, mlxsw_sp->trap->policers_usage);
- 	mlxsw_reg_qpcr_pack(qpcr_pl, MLXSW_SP_THIN_POLICER_ID,
- 			    MLXSW_REG_QPCR_IR_UNITS_M, false, 1, 4);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(qpcr), qpcr_pl);
+ int mlxsw_sp_trap_init(struct mlxsw_core *mlxsw_core,
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.h
-new file mode 100644
-index 000000000000..12c5641b2165
---- /dev/null
+index 12c5641b2165..05bb652b1a76 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.h
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.h
-@@ -0,0 +1,12 @@
-+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-+/* Copyright (c) 2020 Mellanox Technologies. All rights reserved */
+@@ -4,7 +4,11 @@
+ #ifndef _MLXSW_SPECTRUM_TRAP_H
+ #define _MLXSW_SPECTRUM_TRAP_H
+ 
++#include <net/devlink.h>
 +
-+#ifndef _MLXSW_SPECTRUM_TRAP_H
-+#define _MLXSW_SPECTRUM_TRAP_H
-+
-+struct mlxsw_sp_trap {
-+	u64 max_policers;
-+	unsigned long policers_usage[]; /* Usage bitmap */
-+};
-+
-+#endif
+ struct mlxsw_sp_trap {
++	struct devlink_trap_policer *policers_arr; /* Registered policers */
++	u64 policers_count; /* Number of registered policers */
+ 	u64 max_policers;
+ 	unsigned long policers_usage[]; /* Usage bitmap */
+ };
 -- 
 2.24.1
 
