@@ -2,78 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2C2190D61
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 13:28:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9080C190D68
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 13:30:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727491AbgCXM1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 08:27:46 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:54180 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727112AbgCXM1p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 08:27:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=BnWuafZlsgV90Vbh07U10Pb9Zl+lPp5dBlQCByTadNU=; b=y+Dw2zRWca5WsnupU0yG9ObajZ
-        OUWZ2V7YrjtWrPFvUiCb3YDi6AFUZm3yI7FmJ1V7WVQZwDrkNQgkHihwJH2mu/7ll7FMCdQgI8+p6
-        p/vpKIfjVoBKfXjpE1ifBU+JeOBvr1tA6I/3XeZlkVG4FNhd4PdeptZCwSx0K4jFzJNc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jGiel-0001Wn-IV; Tue, 24 Mar 2020 13:27:43 +0100
-Date:   Tue, 24 Mar 2020 13:27:43 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Marek Vasut <marex@denx.de>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: Re: [PATCH 09/14] net: ks8851: Split out SPI specific entries in
- struct ks8851_net
-Message-ID: <20200324122743.GT3819@lunn.ch>
-References: <20200323234303.526748-1-marex@denx.de>
- <20200323234303.526748-10-marex@denx.de>
- <20200324104919.djfirlzgwpjr52tk@wunner.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200324104919.djfirlzgwpjr52tk@wunner.de>
+        id S1727529AbgCXMav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 08:30:51 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:42083 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727283AbgCXMau (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 08:30:50 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 22so5607605pfa.9;
+        Tue, 24 Mar 2020 05:30:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=AomG1PxVMQy2uJ0CQrO8q+2Jd5FtFdpWBMBCz71R9bA=;
+        b=emWAw3c3Z3l+vLxuQEDk2/MhYt7ZXCRCdghq7XVq4rKrz2fhoEpV7e1oqZige7eWU2
+         m1vQBgCk3H7MuCiUC2z+1QeN/X5K1MtWXVnUfxXNp+dA04uibuL7EFeH50XJQKdIrKa5
+         10smy6XCfZ5GudAF8YO9tDFDQMVnbB4embEHcgPxoGlNV4ylLUimYc6Cf22FVVwQZ/2X
+         BXDZHClTEuw9LlSkLtkB3YM8zM9V0BvRU5HJyQD+CbeBIRRQ+1RoAM41PvIZukabpT0S
+         daOahxZJyqdiovsl3Bt6nswiTiA0r4d6DdfAY60UPCDQhunvi3DYsgZ/xeJEh9gT5wRU
+         1Jsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=AomG1PxVMQy2uJ0CQrO8q+2Jd5FtFdpWBMBCz71R9bA=;
+        b=UB6hT/qfNHTlE9SgU+zJy4WnyTC8irwBYZhSGJM2q4b/pgTQ0Z8o1VXwUb6xLmvbIy
+         9ZiZlt5zLg/s3TRTAq93Ua62d4z5iCrS1/TSW62VdP8XX7mpEFeIaD5TOPCNlKTzAQK6
+         mwCPov/cxlh3e6W3GtlzbDcVwnMcJGOkehaJ8tBGG6pxGqFZnO2AmLz/gSJm96coCtP8
+         5b/Pbsi6bSgIsXhGwvWld1eFEbSdHWIDzA3mAgHEj7QoHqwI7IRWCpq/nlQ6U3Cjxw2K
+         XfAzrvQ9WFg//7RfEWumG18DkaihOvYPCuY3Wg4HQpoGum6iDjigkZXP2efLqikcw5br
+         OwNA==
+X-Gm-Message-State: ANhLgQ0FB2+uS/q9f16YfonRLLZkIMVeUwGoRRTeXxCgfYTXSkUBVqI2
+        WxE2+zO3kEZkbAZKuwHFpCg=
+X-Google-Smtp-Source: ADFU+vtisFHlmrRHkVlX2/zo73z2wp/UecvD7A36s81dUTt4r1aYp9VeC1+URs7iahDg2bbvx0dJeA==
+X-Received: by 2002:a63:a65:: with SMTP id z37mr26395712pgk.31.1585053049065;
+        Tue, 24 Mar 2020 05:30:49 -0700 (PDT)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id c83sm15759395pfb.44.2020.03.24.05.30.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Mar 2020 05:30:47 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        rafael@kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     ap420073@gmail.com, mitch.a.williams@intel.com
+Subject: [PATCH net 0/3] net: core: avoid unexpected situation in namespace change routine
+Date:   Tue, 24 Mar 2020 12:30:41 +0000
+Message-Id: <20200324123041.18825-1-ap420073@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 11:49:19AM +0100, Lukas Wunner wrote:
-> On Tue, Mar 24, 2020 at 12:42:58AM +0100, Marek Vasut wrote:
-> > +/**
-> > + * struct ks8851_net_spi - KS8851 SPI driver private data
-> > + * @ks8851: KS8851 driver common private data
-> > + * @spidev: The spi device we're bound to.
-> > + * @spi_msg1: pre-setup SPI transfer with one message, @spi_xfer1.
-> > + * @spi_msg2: pre-setup SPI transfer with two messages, @spi_xfer2.
-> 
-> You need to remove these kerneldoc entries further up from struct ks8851_net.
-> 
-> 
-> > +struct ks8851_net_spi {
-> > +	struct ks8851_net	ks8851;	/* Must be first */
-> > +	struct spi_device	*spidev;
-> > +	struct spi_message	spi_msg1;
-> > +	struct spi_message	spi_msg2;
-> > +	struct spi_transfer	spi_xfer1;
-> > +	struct spi_transfer	spi_xfer2[2];
-> > +};
-> > +
-> > +#define to_ks8851_spi(ks) container_of((ks), struct ks8851_net_spi, ks8851)
-> 
-> Since it's always the first entry in the struct, a cast instead of
-> container_of() would seem to be sufficient.
+This patchset is to avoid an unexpected situation when an interface's
+namespace is being changed.
 
-Hi Lukus
+When interface's namespace is being changed, dev_change_net_namespace()
+is called. This removes and re-allocates many resources that include
+sysfs files. The "/net/class/net/<interface name>" is one of them.
+If the sysfs creation routine(device_rename()) found duplicate sysfs
+file name, it warns about it and fails. But unfortunately, at that point,
+dev_change_net_namespace() doesn't return fail because rollback cost
+is too high.
+So, the interface can't have a sysfs file.
 
-That is bad practice. container_of() will always get it correct,
-making it safer.
+The approach of this patchset is to find the duplicate sysfs file as
+fast as possible. If it found that, dev_change_net_namespace() returns
+fail immediately with zero rollback cost.
 
-       Andrew
+1. The first patch is to add class_find_and_get_file_ns() helper function.
+That function will be used for checking the existence of duplicate
+sysfs file.
+2. The second patch is to add netdev_class_has_file_ns().
+That function is to check whether duplicate sysfs file in
+the "/sys/class/net*" using class_find_and_get_file_ns().
+3. The last patch is to avoid an unexpected situation.
+a) If duplicate sysfs is existing, it fails as fast as possible in
+the dev_change_net_namespace()
+b) Acquire rtnl_lock() in both bond_create_sysfs() and bond_destroy_sysfs()
+to avoid race condition.
+c) Do not remove "/sys/class/net/bonding_masters" sysfs file by
+bond_destroy_sysfs() if the file wasn't created by bond_create_sysfs().
+
+Test commands#1:
+    ip netns add nst 
+    ip link add bonding_masters type dummy
+    modprobe bonding
+    ip link set bonding_masters netns nst 
+
+Test commands#2:
+    ip link add bonding_masters type dummy
+    ls /sys/class/net
+    modprobe bonding
+    modprobe -rv bonding
+    ls /sys/class/net
+
+After removing the bonding module, we can see the "bonding_masters"
+interface's sysfs will be removed.
+This is an unexpected situation.
+
+Taehee Yoo (3):
+  class: add class_find_and_get_file_ns() helper function
+  net: core: add netdev_class_has_file_ns() helper function
+  net: core: avoid warning in dev_change_net_namespace()
+
+ drivers/base/class.c             | 12 ++++++++++++
+ drivers/net/bonding/bond_sysfs.c | 13 ++++++++++++-
+ include/linux/device/class.h     |  4 +++-
+ include/linux/netdevice.h        |  2 +-
+ include/net/bonding.h            |  1 +
+ net/core/dev.c                   |  4 ++++
+ net/core/net-sysfs.c             | 13 +++++++++++++
+ 7 files changed, 46 insertions(+), 3 deletions(-)
+
+-- 
+2.17.1
+
