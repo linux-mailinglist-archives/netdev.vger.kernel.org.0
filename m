@@ -2,84 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 937B2190381
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 03:10:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC1821903AE
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 03:47:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727102AbgCXCKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 22:10:52 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:38185 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727050AbgCXCKv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 22:10:51 -0400
-Received: by mail-io1-f66.google.com with SMTP id m15so11484522iob.5
-        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 19:10:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=0bMu/YGPL04y7QZoPKkunPzPNSKt6kZavxIm4S3iV4s=;
-        b=rMVhqfiFUu84/8EcUEXqzXFIJJjtf2TwXrCy/+u/7haco8yYwW+AVfVsDlXxRtgt3v
-         yu7dlQYL15fSsjBG0rHZiFLrjp9+5THumPccnlSvOVzQA+oZlN3A9KFlzx232H1kgrKw
-         /MxMxVC3x3pur3FiBo5hyheizuTCw/38iAPM5oejN8qN/osfU8BAeWGUwQMWvYax76/o
-         V2vnsn78C9MHKDBknVSSTA8h8GC0hfo1LOr2bybLUPF3JOwCW+ivEhqAw8oo379XnRrH
-         xIKZ1pRvMQq0nQvslFox6sE6I9+WtZWMsBw13HxMOoVzk294qJIwI/jfO0TyO/Twio8B
-         s+8w==
+        id S1727243AbgCXCrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 22:47:08 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:35108 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727229AbgCXCrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 22:47:06 -0400
+Received: by mail-io1-f72.google.com with SMTP id c10so7121864ioc.2
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 19:47:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=0bMu/YGPL04y7QZoPKkunPzPNSKt6kZavxIm4S3iV4s=;
-        b=lstoHynJ14ESZUEc5VhzLJ4N5j8x9Y+MIWdULChLGdmoLPeMI3Edrhn6+/vFh4iTmx
-         wYaywN05tNXRjopQY3L0U0Ocebg1D1Pi1sbm6EnZlJcYMEyD74HmO1m5c4kgYH0tsllD
-         tHzDzoehFbaaRjApuOIrwDhE0dEq/3aMnjVxCpm5WYRnzcV3c1atS+TZVW092rjKo85L
-         A6/Wc5aHncBR8cJ12ETE6ww/HL8+3GhDnAYNyJTaLAIoyvoJ4Laz0Tg2oX8e8p/XVCI2
-         wurTQFZFnbp1+W5Y4KjGjdwy/aK0OfrqzpvAEYCFoOc5endZYgBcjnAg2bv8gTqQDlwT
-         M2Ng==
-X-Gm-Message-State: ANhLgQ3ZhRqiBKfFvOIvcdSx2lyhZtltzjk98QcwPC3fP+H2IxxIp8e0
-        7p1/ZxLYtLYf5B3AonOTv6/0IcliPq1WwJuteiZz5lBB2AA=
-X-Google-Smtp-Source: ADFU+vulm1386gmyMpo8S7bnD3LMUTgQq68MyL7Id3sshcR2hg+SU7LgpZ5+lyE5+rg6c66KSmFVhDmcLx8EptVfTXw=
-X-Received: by 2002:a6b:8f11:: with SMTP id r17mr20665780iod.92.1585015850762;
- Mon, 23 Mar 2020 19:10:50 -0700 (PDT)
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=LOv2WyxOQNJMMiel1AjLpQJL3nLG4+bZfZZebAkOi9k=;
+        b=NoGVzbSKUM8KdOFbW8UnClOF7Rnjz7XIM9sO/YCYe9qDC4s5QQynR65bP1aDZ2cCWJ
+         j79Ec7H8NxLt7xBRlGUPYx1G12u4zUH1Q11/42mCAVJYXxhzObPLtFOTcimhkj5qVTDw
+         ENRKJNOm1UxvB4S3L9RD3Z9+Rd6CFFeScKKEuBGcRYmFhJLhbbelEayxw2H2M+5EvFjl
+         AyXfFDfzbSdFXFiNnco4ejqQH0lPFepZTvI5CX5kZC8ssFFKV3VXy/KWGnETmVXHveta
+         UBCCLDES9O2d4wrCfOATJ+RBHu36y5HLCmi/+6cNru3n+DRpwISO372gfUhtLVLa967j
+         k5VA==
+X-Gm-Message-State: ANhLgQ165MC4ZbhcZVewM0EpjJt/n9DrRy3LdDzkL8hT0dX6trgaTnQ5
+        qWDAhtjnGhAQWOZAElYk6UqDM7gMhYbClZ4AiEtPCY7lBX3V
+X-Google-Smtp-Source: ADFU+vstiI7NkY8P0sLiaAwA1tlgY+DAUVfkvxxrtQc1GUcIriiMD4ZAGZsTUHBhY7pwHk2p3ulODfmE2r7ZpymGWtd3GqW4WeUB
 MIME-Version: 1.0
-References: <20200324011019.248392-1-zenczykowski@gmail.com>
-In-Reply-To: <20200324011019.248392-1-zenczykowski@gmail.com>
-From:   Lorenzo Colitti <lorenzo@google.com>
-Date:   Tue, 24 Mar 2020 11:10:39 +0900
-Message-ID: <CAKD1Yr2xAkr4=2tdPCtCPtFve0UQz2sbs2bYCr7kJnqc2VQ54w@mail.gmail.com>
-Subject: Re: [PATCH] net-ipv6-ndisc: add support for 'PREF64' dns64 prefix identifier
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>, Erik Kline <ek@google.com>,
-        Jen Linkova <furry@google.com>, Michael Haro <mharo@google.com>
+X-Received: by 2002:a02:6cd5:: with SMTP id w204mr22866930jab.43.1585018023533;
+ Mon, 23 Mar 2020 19:47:03 -0700 (PDT)
+Date:   Mon, 23 Mar 2020 19:47:03 -0700
+In-Reply-To: <000000000000a6f2030598bbe38c@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004162e805a190c456@google.com>
+Subject: Re: WARNING in wp_page_copy
+From:   syzbot <syzbot+9301f2f33873407d5b33@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, andriin@fb.com, ast@kernel.org,
+        bjorn.topel@intel.com, bpf@vger.kernel.org,
+        catalin.marinas@arm.com, daniel@iogearbox.net, davem@davemloft.net,
+        hawk@kernel.org, jakub.kicinski@netronome.com, jmoyer@redhat.com,
+        john.fastabend@gmail.com, jonathan.lemon@gmail.com,
+        justin.he@arm.com, kafai@fb.com, kirill.shutemov@linux.intel.com,
+        kirill@shutemov.name, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, magnus.karlsson@gmail.com,
+        magnus.karlsson@intel.com, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        torvalds@linux-foundation.org, yhs@fb.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 10:10 AM Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
-> As specified in draft-ietf-6man-ra-pref64-09 (while it is still a draft,
-> it is purely waiting on the RFC Editor for cleanups and publishing):
->   PREF64 option contains lifetime and a (up to) 96-bit IPv6 prefix.
+syzbot suspects this bug was fixed by commit:
 
-Right. The number is assigned by IANA and the draft is in the RFC
-editor queue, so this number will not change.
+commit c3e5ea6ee574ae5e845a40ac8198de1fb63bb3ab
+Author: Kirill A. Shutemov <kirill@shutemov.name>
+Date:   Fri Mar 6 06:28:32 2020 +0000
 
-> diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-> index 4a3feccd5b10..6ffa153e5166 100644
-> --- a/net/ipv6/ndisc.c
-> +++ b/net/ipv6/ndisc.c
-> @@ -197,6 +197,7 @@ static inline int ndisc_is_useropt(const struct net_d=
-evice *dev,
->         return opt->nd_opt_type =3D=3D ND_OPT_RDNSS ||
->                 opt->nd_opt_type =3D=3D ND_OPT_DNSSL ||
->                 opt->nd_opt_type =3D=3D ND_OPT_CAPTIVE_PORTAL ||
-> +               opt->nd_opt_type =3D=3D ND_OPT_PREF64 ||
->                 ndisc_ops_is_useropt(dev, opt->nd_opt_type);
->  }
+    mm: avoid data corruption on CoW fault into PFN-mapped VMA
 
-Acked-By: Lorenzo Colitti <lorenzo@google.com>
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1170c813e00000
+start commit:   e31736d9 Merge tag 'nios2-v5.5-rc2' of git://git.kernel.or..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=79f79de2a27d3e3d
+dashboard link: https://syzkaller.appspot.com/bug?extid=9301f2f33873407d5b33
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10fd9fb1e00000
+
+If the result looks correct, please mark the bug fixed by replying with:
+
+#syz fix: mm: avoid data corruption on CoW fault into PFN-mapped VMA
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
