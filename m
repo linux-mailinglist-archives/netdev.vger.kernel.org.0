@@ -2,59 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE3F1190364
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 02:51:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B34AB190373
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 02:55:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727189AbgCXBuq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 21:50:46 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53286 "EHLO vps0.lunn.ch"
+        id S1727121AbgCXBz2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 21:55:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:53302 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727050AbgCXBup (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 21:50:45 -0400
+        id S1727050AbgCXBz2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 23 Mar 2020 21:55:28 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=X8eOYh8U+SAUyVMLYIeB5WW0gAe8+eI9Xw4DGhrAeeo=; b=WSIQMlZHaYEZzORPN0cHU35VX8
-        cyn96AoiefhBXEXIHBrZQ8eBQ/f0/EuCYGVd3dJ+qPYKdzL1Yx2MJCw7lVCWqMJZBZSNFEV6BCbOJ
-        FFG03vtyVupsJzDnlMuSHJkY1pqDsTJy8R8Gg5XaB3zd1XvEDvgHWtyzgpSXbdW0wM7M=;
+        bh=YSLX10TLalxC08fYPRSYFNteoOyTZpAwAi7YZ+C4kG8=; b=gkJNJsmkHhxZKGQWFrmCiutKKg
+        PlpwaAJh7lLxX4jwQON16mIZyFN2toAQ+PMzQwm6fwLe+0OQ/+1PCjjiRM1e7bwLT2VZy0UCYSltP
+        WyyTns+bjfoj4WTJ1UEAx+AEmo6gk78SSSPDLZsuejCtB1an0UUGdMCjCZtnWjZbWksY=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
         (envelope-from <andrew@lunn.ch>)
-        id 1jGYiH-0005g4-7p; Tue, 24 Mar 2020 02:50:41 +0100
-Date:   Tue, 24 Mar 2020 02:50:41 +0100
+        id 1jGYms-0005id-5R; Tue, 24 Mar 2020 02:55:26 +0100
+Date:   Tue, 24 Mar 2020 02:55:26 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Marek Vasut <marex@denx.de>
 Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
         YueHaibing <yuehaibing@huawei.com>
-Subject: Re: [PATCH 08/14] net: ks8851: Use 16-bit read of RXFC register
-Message-ID: <20200324015041.GO3819@lunn.ch>
+Subject: Re: [PATCH 09/14] net: ks8851: Split out SPI specific entries in
+ struct ks8851_net
+Message-ID: <20200324015526.GP3819@lunn.ch>
 References: <20200323234303.526748-1-marex@denx.de>
- <20200323234303.526748-9-marex@denx.de>
+ <20200323234303.526748-10-marex@denx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200323234303.526748-9-marex@denx.de>
+In-Reply-To: <20200323234303.526748-10-marex@denx.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -470,7 +455,7 @@ static void ks8851_rx_pkts(struct ks8851_net *ks)
->  	unsigned rxstat;
->  	u8 *rxpkt;
->  
-> -	rxfc = ks8851_rdreg8(ks, KS_RXFC);
-> +	rxfc = (ks8851_rdreg16(ks, KS_RXFCTR) >> 8) & 0xff;
+> + * struct ks8851_net_spi - KS8851 SPI driver private data
+> + * @ks8851: KS8851 driver common private data
+> + * @spidev: The spi device we're bound to.
+> + * @spi_msg1: pre-setup SPI transfer with one message, @spi_xfer1.
+> + * @spi_msg2: pre-setup SPI transfer with two messages, @spi_xfer2.
+> + */
+> +struct ks8851_net_spi {
+> +	struct ks8851_net	ks8851;	/* Must be first */
+> +	struct spi_device	*spidev;
+> +	struct spi_message	spi_msg1;
+> +	struct spi_message	spi_msg2;
+> +	struct spi_transfer	spi_xfer1;
+> +	struct spi_transfer	spi_xfer2[2];
+> +};
+> +
+> +#define to_ks8851_spi(ks) container_of((ks), struct ks8851_net_spi, ks8851)
 
-The datasheet says:
+Since you are using container_of(), ks8851 does not need to be first.
 
-2. When software driver reads back Receive Frame Count (RXFCTR)
-Register; the KSZ8851 will update both Receive Frame Header Status and
-Byte Count Registers (RXFHSR/RXFHBCR)
-
-Are you sure there is no side affect here?
-
-    Andrew
+      Andrew
