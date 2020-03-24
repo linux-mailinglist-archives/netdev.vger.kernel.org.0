@@ -2,295 +2,320 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9896190578
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 07:04:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 330AD190592
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 07:11:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727340AbgCXGD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 02:03:57 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:46370 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727290AbgCXGD4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 02:03:56 -0400
-Received: by mail-oi1-f196.google.com with SMTP id q204so9585556oia.13;
-        Mon, 23 Mar 2020 23:03:55 -0700 (PDT)
+        id S1727468AbgCXGLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 02:11:39 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:41499 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727431AbgCXGLg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 02:11:36 -0400
+Received: by mail-pg1-f194.google.com with SMTP id b1so8498565pgm.8
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 23:11:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aXQM/Z3C9ha9QAmAw435ry6xAMlfP4zDG5mwMXzRu3g=;
-        b=gNyrtl15zm/hO468YqsyQhJEAQyPObRHT8I0nVnAgRS0W9k0+BGmVnC4oL6ah2oZ9t
-         6nHXrVkgY5pJGL/gyiwen7KZfyI0vp5wtyUJimFoEZ2In2OJWklpem2Sk0sBgopNzx0N
-         w8hN3cn6T6LwjnqCK6DxmY3CsA4P0PkSUMrCzC9GRqyVOje+5/7wegQqXSbZ/c62L/II
-         WrnMhgg6MredeAKtniUKBY8kMrGAS2qAsQg876Y54YM/0m88mMk55+fyrJx+TDrZLBMQ
-         nBbk6DmHfu4C3NdgnK0nwF0NG0Jt/Ln03nHgfrFamkovOa9Os7Ud3dxz8DQ6HafiB50X
-         /g2g==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=ze2ItdsI6wPt5v1O8KEFX204MaoLii8v3eVvbrQAdcg=;
+        b=dsNFxkTXE8D/BQHaXdFb+SWKr0yvc0saXT0cLxFGUJfHrxFer5CneCCXWrdYodwoJZ
+         qNOyZGnC3HV/pBPsLXarnAUjxzBdkQeBAei3oktwF32vejHHTG73NCSO062SBt2KIR/O
+         24roE0QIokr6KkYstMNlulQiYQV3nqsSCyAwhywSOYjq6XZTKxHv44nwe2TtLn7IZQsT
+         +6kAEwVh+ZUtogvvrn62Au6gM7qIVuHE87h9x3MiynuEcseO6Y24qOfMLYXkw5YHHjcr
+         +SrttKtV8uGHv7HG+x3CBmribMx2YQvKpbXi2lwey8NEB2C1IJKVVQbuuWNpGKRWu1oG
+         jQ7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aXQM/Z3C9ha9QAmAw435ry6xAMlfP4zDG5mwMXzRu3g=;
-        b=c1SDqntxGhwB73NV9fpT0c4XDFJ9gLPPgPgmz+/KhgwGrrXgl628uDZ2PrZgMNkuU6
-         GyDxNv5OTJkeWnvbAXK+VLe6IwaOW5KZI44oYA6cFxLx5UP6BL58QIichJ51aRi9LfBj
-         4jlPG23CEfhtmQrjTl4+FUOVzGf9nmnFnacGQtT1LgM/+DpjH/Vkao6LaXNE2Q6m7BOW
-         b3O+4ZFJJ7AoKykq9NaOBu6YGGptxR53xzpzXneaTsnw8O+CrBah5S8eJGGPDa33damq
-         ErfQQvYh5E7gDbaelIYeCq2rMSoZnA96z6sMQYm9Y12Yk2ptqctYvlkfQMW70muc9CbN
-         6Tow==
-X-Gm-Message-State: ANhLgQ0a+G7nTvWSFHYud+zfKr6WIpEGeBoolfQKJPF35j5xZGutGxrk
-        FT2vvxHlS3Ul5hhI9azDgc56TxJ5JJLwLi7FmQc=
-X-Google-Smtp-Source: ADFU+vu7falTnsahQ3umrzlRN0AwhFE8EjYM5c+7pXlH9L9V86/xRBkpsnoUNyQUeg73t1CI2yMuRiVmOtIqGCbdqJo=
-X-Received: by 2002:a54:4e13:: with SMTP id a19mr2343456oiy.108.1585029835381;
- Mon, 23 Mar 2020 23:03:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200320231928.137720-1-abhishekpandit@chromium.org>
- <20200320161922.v2.1.I17e2220fd0c0822c76a15ef89b882fb4cfe3fe89@changeid>
- <C09DCA09-A2C9-4675-B17B-05CE0B5DE172@holtmann.org> <CANFp7mXG1HXKNQKn2YTsEOX6puNz=8WY6AHWac4UOiVMVQyEkg@mail.gmail.com>
-In-Reply-To: <CANFp7mXG1HXKNQKn2YTsEOX6puNz=8WY6AHWac4UOiVMVQyEkg@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 23 Mar 2020 23:03:43 -0700
-Message-ID: <CABBYNZLBvyjDnLpH40u1Vq9DftyC0dty2NMf9QEsazas9Ktwvw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/1] Bluetooth: Prioritize SCO traffic
-To:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Bluetooth Kernel Mailing List 
-        <linux-bluetooth@vger.kernel.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=ze2ItdsI6wPt5v1O8KEFX204MaoLii8v3eVvbrQAdcg=;
+        b=qv5CYEvg/TqqMnn2yi4KWyiXNaEFfxVHZOlB95+cOS2v2AayKhfgZWJylZ1i7BeUJQ
+         I1YbAanDiwx9XalTCX6FlwIuPmEOkJjxSdolePLc8Z/9RWMKIWnSWuKt+ucHqJ8FQTNW
+         iZlbqOqBAUBysXBOO4XePrhgBJUg+/a57ZJezaFuSkPhkQ7l2eE7CYP7OZ9t2K3kRvCC
+         RI08TeZhzhGxq9EdH18jAR+v6nOIX+cr81Zam8gji1elXKU74sE8mPmCJv9eXrm3TTPH
+         H49z5CRfMYSBFVQzIoS/CCw+3MfUK0wUKNBhZPvzgrBvZQZc40P3rwL3lesZwB9+sNm5
+         WNJQ==
+X-Gm-Message-State: ANhLgQ2SapUHsOKh2zZCw0lY8/zbSeEZFqPazb/oFDk/6HL+WSC7+GPu
+        73t1xvETVlKU2peTLRHhDaS9
+X-Google-Smtp-Source: ADFU+vs3EbahL/k9ZQfYLcHPyNuXXaKepXG1+OjDqsxyu1WMz23vGBXvGVFx4jefmct9P3m8cmOb6Q==
+X-Received: by 2002:aa7:83ce:: with SMTP id j14mr14610372pfn.310.1585030294445;
+        Mon, 23 Mar 2020 23:11:34 -0700 (PDT)
+Received: from localhost.localdomain ([2409:4072:59b:91e:2dd6:dffe:3569:b473])
+        by smtp.gmail.com with ESMTPSA id d3sm1198230pjc.42.2020.03.23.23.11.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Mar 2020 23:11:33 -0700 (PDT)
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     gregkh@linuxfoundation.org, davem@davemloft.net
+Cc:     smohanad@codeaurora.org, jhugo@codeaurora.org,
+        kvalo@codeaurora.org, bjorn.andersson@linaro.org,
+        hemantk@codeaurora.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        netdev@vger.kernel.org
+Subject: [PATCH v3 6/7] net: qrtr: Add MHI transport layer
+Date:   Tue, 24 Mar 2020 11:40:49 +0530
+Message-Id: <20200324061050.14845-7-manivannan.sadhasivam@linaro.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200324061050.14845-1-manivannan.sadhasivam@linaro.org>
+References: <20200324061050.14845-1-manivannan.sadhasivam@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Abhishek, Marcel,
+MHI is the transport layer used for communicating to the external modems.
+Hence, this commit adds MHI transport layer support to QRTR for
+transferring the QMI messages over IPC Router.
 
-On Mon, Mar 23, 2020 at 12:12 PM Abhishek Pandit-Subedi
-<abhishekpandit@chromium.org> wrote:
->
-> On Mon, Mar 23, 2020 at 11:58 AM Marcel Holtmann <marcel@holtmann.org> wrote:
-> >
-> > Hi Abhishek,
-> >
-> > > When scheduling TX packets, send all SCO/eSCO packets first, check for
-> > > pending SCO/eSCO packets after every ACL/LE packet and send them if any
-> > > are pending.  This is done to make sure that we can meet SCO deadlines
-> > > on slow interfaces like UART.
-> > >
-> > > If we were to queue up multiple ACL packets without checking for a SCO
-> > > packet, we might miss the SCO timing. For example:
-> > >
-> > > The time it takes to send a maximum size ACL packet (1024 bytes):
-> > > t = 10/8 * 1024 bytes * 8 bits/byte * 1 packet / baudrate
-> > >        where 10/8 is uart overhead due to start/stop bits per byte
-> > >
-> > > Replace t = 3.75ms (SCO deadline), which gives us a baudrate of 2730666.
-> > >
-> > > At a baudrate of 3000000, if we didn't check for SCO packets within 1024
-> > > bytes, we would miss the 3.75ms timing window.
-> > >
-> > > Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> > > ---
-> > >
-> > > Changes in v2:
-> > > * Refactor to check for SCO/eSCO after each ACL/LE packet sent
-> > > * Enabled SCO priority all the time and removed the sched_limit variable
-> > >
-> > > net/bluetooth/hci_core.c | 111 +++++++++++++++++++++------------------
-> > > 1 file changed, 61 insertions(+), 50 deletions(-)
-> > >
-> > > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> > > index dbd2ad3a26ed..a29177e1a9d0 100644
-> > > --- a/net/bluetooth/hci_core.c
-> > > +++ b/net/bluetooth/hci_core.c
-> > > @@ -4239,6 +4239,60 @@ static void __check_timeout(struct hci_dev *hdev, unsigned int cnt)
-> > >       }
-> > > }
-> > >
-> > > +/* Schedule SCO */
-> > > +static void hci_sched_sco(struct hci_dev *hdev)
-> > > +{
-> > > +     struct hci_conn *conn;
-> > > +     struct sk_buff *skb;
-> > > +     int quote;
-> > > +
-> > > +     BT_DBG("%s", hdev->name);
-> > > +
-> > > +     if (!hci_conn_num(hdev, SCO_LINK))
-> > > +             return;
-> > > +
-> > > +     while (hdev->sco_cnt && (conn = hci_low_sent(hdev, SCO_LINK, &quote))) {
-> > > +             while (quote-- && (skb = skb_dequeue(&conn->data_q))) {
-> > > +                     BT_DBG("skb %p len %d", skb, skb->len);
-> > > +                     hci_send_frame(hdev, skb);
-> > > +
-> > > +                     conn->sent++;
-> > > +                     if (conn->sent == ~0)
-> > > +                             conn->sent = 0;
-> > > +             }
-> > > +     }
-> > > +}
-> > > +
-> > > +static void hci_sched_esco(struct hci_dev *hdev)
-> > > +{
-> > > +     struct hci_conn *conn;
-> > > +     struct sk_buff *skb;
-> > > +     int quote;
-> > > +
-> > > +     BT_DBG("%s", hdev->name);
-> > > +
-> > > +     if (!hci_conn_num(hdev, ESCO_LINK))
-> > > +             return;
-> > > +
-> > > +     while (hdev->sco_cnt && (conn = hci_low_sent(hdev, ESCO_LINK,
-> > > +                                                  &quote))) {
-> > > +             while (quote-- && (skb = skb_dequeue(&conn->data_q))) {
-> > > +                     BT_DBG("skb %p len %d", skb, skb->len);
-> > > +                     hci_send_frame(hdev, skb);
-> > > +
-> > > +                     conn->sent++;
-> > > +                     if (conn->sent == ~0)
-> > > +                             conn->sent = 0;
-> > > +             }
-> > > +     }
-> > > +}
-> > > +
-> > > +static void hci_sched_sync(struct hci_dev *hdev)
-> > > +{
-> > > +     hci_sched_sco(hdev);
-> > > +     hci_sched_esco(hdev);
-> > > +}
-> > > +
-> >
-> > scrap this function. It has almost zero benefit.
->
-> Done.
->
-> >
-> > > static void hci_sched_acl_pkt(struct hci_dev *hdev)
-> > > {
-> > >       unsigned int cnt = hdev->acl_cnt;
-> > > @@ -4270,6 +4324,9 @@ static void hci_sched_acl_pkt(struct hci_dev *hdev)
-> > >                       hdev->acl_cnt--;
-> > >                       chan->sent++;
-> > >                       chan->conn->sent++;
-> > > +
-> > > +                     /* Send pending SCO packets right away */
-> > > +                     hci_sched_sync(hdev);
-> >
-> >                         hci_sched_esco();
-> >                         hci_sched_sco();
-> >
-> > >               }
-> > >       }
-> > >
-> > > @@ -4354,54 +4411,6 @@ static void hci_sched_acl(struct hci_dev *hdev)
-> > >       }
-> > > }
-> > >
-> > > -/* Schedule SCO */
-> > > -static void hci_sched_sco(struct hci_dev *hdev)
-> > > -{
-> > > -     struct hci_conn *conn;
-> > > -     struct sk_buff *skb;
-> > > -     int quote;
-> > > -
-> > > -     BT_DBG("%s", hdev->name);
-> > > -
-> > > -     if (!hci_conn_num(hdev, SCO_LINK))
-> > > -             return;
-> > > -
-> > > -     while (hdev->sco_cnt && (conn = hci_low_sent(hdev, SCO_LINK, &quote))) {
-> > > -             while (quote-- && (skb = skb_dequeue(&conn->data_q))) {
-> > > -                     BT_DBG("skb %p len %d", skb, skb->len);
-> > > -                     hci_send_frame(hdev, skb);
-> > > -
-> > > -                     conn->sent++;
-> > > -                     if (conn->sent == ~0)
-> > > -                             conn->sent = 0;
-> > > -             }
-> > > -     }
-> > > -}
-> > > -
-> > > -static void hci_sched_esco(struct hci_dev *hdev)
-> > > -{
-> > > -     struct hci_conn *conn;
-> > > -     struct sk_buff *skb;
-> > > -     int quote;
-> > > -
-> > > -     BT_DBG("%s", hdev->name);
-> > > -
-> > > -     if (!hci_conn_num(hdev, ESCO_LINK))
-> > > -             return;
-> > > -
-> > > -     while (hdev->sco_cnt && (conn = hci_low_sent(hdev, ESCO_LINK,
-> > > -                                                  &quote))) {
-> > > -             while (quote-- && (skb = skb_dequeue(&conn->data_q))) {
-> > > -                     BT_DBG("skb %p len %d", skb, skb->len);
-> > > -                     hci_send_frame(hdev, skb);
-> > > -
-> > > -                     conn->sent++;
-> > > -                     if (conn->sent == ~0)
-> > > -                             conn->sent = 0;
-> > > -             }
-> > > -     }
-> > > -}
-> > > -
-> > > static void hci_sched_le(struct hci_dev *hdev)
-> > > {
-> > >       struct hci_chan *chan;
-> > > @@ -4436,6 +4445,9 @@ static void hci_sched_le(struct hci_dev *hdev)
-> > >                       cnt--;
-> > >                       chan->sent++;
-> > >                       chan->conn->sent++;
-> > > +
-> > > +                     /* Send pending SCO packets right away */
-> > > +                     hci_sched_sync(hdev);
-> >
-> > Same as above. Just call the two functions.
->
-> Done
->
-> >
-> > >               }
-> > >       }
-> > >
-> > > @@ -4458,9 +4470,8 @@ static void hci_tx_work(struct work_struct *work)
-> > >
-> > >       if (!hci_dev_test_flag(hdev, HCI_USER_CHANNEL)) {
-> > >               /* Schedule queues and send stuff to HCI driver */
-> > > +             hci_sched_sync(hdev);
-> > >               hci_sched_acl(hdev);
-> > > -             hci_sched_sco(hdev);
-> > > -             hci_sched_esco(hdev);
-> > >               hci_sched_le(hdev);
-> >
-> > I would actually just move _le up after _acl and then keep _sco and _esco at the bottom. The calls here are just for the case there are no ACL nor LE packets.
->
-> Then we would send at least 1 ACL/LE packet before SCO even if there
-> were SCO pending when we entered this function. I think it is still
-> better to keep SCO/eSCO at the top.
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+---
+ net/qrtr/Kconfig  |   7 ++
+ net/qrtr/Makefile |   2 +
+ net/qrtr/mhi.c    | 208 ++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 217 insertions(+)
+ create mode 100644 net/qrtr/mhi.c
 
-I wonder it wouldn't be better to have such prioritization done by the
-driver though, since this might just be spending extra cpu cycles in
-case there is enough bandwidth at the transport chances are the
-reordering here just doesn't make any difference in the end, you
-probably don't even need any changes to the core in order for the
-driver to detect what type of frame it is based on the skb, I recall
-we do already have such information in the driver so it just a matter
-to reorder the frames as needed there.
-
->
-> >
-> > Regards
-> >
-> > Marcel
-> >
-
-
-
+diff --git a/net/qrtr/Kconfig b/net/qrtr/Kconfig
+index 63f89cc6e82c..8eb876471564 100644
+--- a/net/qrtr/Kconfig
++++ b/net/qrtr/Kconfig
+@@ -29,4 +29,11 @@ config QRTR_TUN
+ 	  implement endpoints of QRTR, for purpose of tunneling data to other
+ 	  hosts or testing purposes.
+ 
++config QRTR_MHI
++	tristate "MHI IPC Router channels"
++	depends on MHI_BUS
++	help
++	  Say Y here to support MHI based ipcrouter channels. MHI is the
++	  transport used for communicating to external modems.
++
+ endif # QRTR
+diff --git a/net/qrtr/Makefile b/net/qrtr/Makefile
+index 1c6d6c120fb7..3dc0a7c9d455 100644
+--- a/net/qrtr/Makefile
++++ b/net/qrtr/Makefile
+@@ -5,3 +5,5 @@ obj-$(CONFIG_QRTR_SMD) += qrtr-smd.o
+ qrtr-smd-y	:= smd.o
+ obj-$(CONFIG_QRTR_TUN) += qrtr-tun.o
+ qrtr-tun-y	:= tun.o
++obj-$(CONFIG_QRTR_MHI) += qrtr-mhi.o
++qrtr-mhi-y	:= mhi.o
+diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
+new file mode 100644
+index 000000000000..90af208f34c1
+--- /dev/null
++++ b/net/qrtr/mhi.c
+@@ -0,0 +1,208 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
++ */
++
++#include <linux/mhi.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/skbuff.h>
++#include <net/sock.h>
++
++#include "qrtr.h"
++
++struct qrtr_mhi_dev {
++	struct qrtr_endpoint ep;
++	struct mhi_device *mhi_dev;
++	struct device *dev;
++	spinlock_t ul_lock;		/* lock to protect ul_pkts */
++	struct list_head ul_pkts;
++	atomic_t in_reset;
++};
++
++struct qrtr_mhi_pkt {
++	struct list_head node;
++	struct sk_buff *skb;
++	struct kref refcount;
++	struct completion done;
++};
++
++static void qrtr_mhi_pkt_release(struct kref *ref)
++{
++	struct qrtr_mhi_pkt *pkt = container_of(ref, struct qrtr_mhi_pkt,
++						refcount);
++	struct sock *sk = pkt->skb->sk;
++
++	consume_skb(pkt->skb);
++	if (sk)
++		sock_put(sk);
++
++	kfree(pkt);
++}
++
++/* From MHI to QRTR */
++static void qcom_mhi_qrtr_dl_callback(struct mhi_device *mhi_dev,
++				      struct mhi_result *mhi_res)
++{
++	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
++	int rc;
++
++	if (!qdev || mhi_res->transaction_status)
++		return;
++
++	rc = qrtr_endpoint_post(&qdev->ep, mhi_res->buf_addr,
++				mhi_res->bytes_xferd);
++	if (rc == -EINVAL)
++		dev_err(qdev->dev, "invalid ipcrouter packet\n");
++}
++
++/* From QRTR to MHI */
++static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
++				      struct mhi_result *mhi_res)
++{
++	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
++	struct qrtr_mhi_pkt *pkt;
++	unsigned long flags;
++
++	spin_lock_irqsave(&qdev->ul_lock, flags);
++	pkt = list_first_entry(&qdev->ul_pkts, struct qrtr_mhi_pkt, node);
++	list_del(&pkt->node);
++	complete_all(&pkt->done);
++
++	kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
++	spin_unlock_irqrestore(&qdev->ul_lock, flags);
++}
++
++static void qcom_mhi_qrtr_status_callback(struct mhi_device *mhi_dev,
++					  enum mhi_callback mhi_cb)
++{
++	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
++	struct qrtr_mhi_pkt *pkt;
++	unsigned long flags;
++
++	if (mhi_cb != MHI_CB_FATAL_ERROR)
++		return;
++
++	atomic_inc(&qdev->in_reset);
++	spin_lock_irqsave(&qdev->ul_lock, flags);
++	list_for_each_entry(pkt, &qdev->ul_pkts, node)
++		complete_all(&pkt->done);
++	spin_unlock_irqrestore(&qdev->ul_lock, flags);
++}
++
++/* Send data over MHI */
++static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
++{
++	struct qrtr_mhi_dev *qdev = container_of(ep, struct qrtr_mhi_dev, ep);
++	struct qrtr_mhi_pkt *pkt;
++	int rc;
++
++	rc = skb_linearize(skb);
++	if (rc) {
++		kfree_skb(skb);
++		return rc;
++	}
++
++	pkt = kzalloc(sizeof(*pkt), GFP_KERNEL);
++	if (!pkt) {
++		kfree_skb(skb);
++		return -ENOMEM;
++	}
++
++	init_completion(&pkt->done);
++	kref_init(&pkt->refcount);
++	kref_get(&pkt->refcount);
++	pkt->skb = skb;
++
++	spin_lock_bh(&qdev->ul_lock);
++	list_add_tail(&pkt->node, &qdev->ul_pkts);
++	rc = mhi_queue_skb(qdev->mhi_dev, DMA_TO_DEVICE, skb, skb->len,
++			   MHI_EOT);
++	if (rc) {
++		list_del(&pkt->node);
++		/* Reference count needs to be dropped 2 times */
++		kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
++		kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
++		kfree_skb(skb);
++		spin_unlock_bh(&qdev->ul_lock);
++		return rc;
++	}
++
++	spin_unlock_bh(&qdev->ul_lock);
++	if (skb->sk)
++		sock_hold(skb->sk);
++
++	rc = wait_for_completion_interruptible_timeout(&pkt->done, HZ * 5);
++	if (atomic_read(&qdev->in_reset))
++		rc = -ECONNRESET;
++	else if (rc == 0)
++		rc = -ETIMEDOUT;
++	else if (rc > 0)
++		rc = 0;
++
++	kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
++
++	return rc;
++}
++
++static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
++			       const struct mhi_device_id *id)
++{
++	struct qrtr_mhi_dev *qdev;
++	u32 net_id;
++	int rc;
++
++	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
++	if (!qdev)
++		return -ENOMEM;
++
++	qdev->mhi_dev = mhi_dev;
++	qdev->dev = &mhi_dev->dev;
++	qdev->ep.xmit = qcom_mhi_qrtr_send;
++	atomic_set(&qdev->in_reset, 0);
++
++	net_id = QRTR_EP_NID_AUTO;
++
++	INIT_LIST_HEAD(&qdev->ul_pkts);
++	spin_lock_init(&qdev->ul_lock);
++
++	dev_set_drvdata(&mhi_dev->dev, qdev);
++	rc = qrtr_endpoint_register(&qdev->ep, net_id);
++	if (rc)
++		return rc;
++
++	dev_dbg(qdev->dev, "Qualcomm MHI QRTR driver probed\n");
++
++	return 0;
++}
++
++static void qcom_mhi_qrtr_remove(struct mhi_device *mhi_dev)
++{
++	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
++
++	qrtr_endpoint_unregister(&qdev->ep);
++	dev_set_drvdata(&mhi_dev->dev, NULL);
++}
++
++static const struct mhi_device_id qcom_mhi_qrtr_id_table[] = {
++	{ .chan = "IPCR" },
++	{}
++};
++MODULE_DEVICE_TABLE(mhi, qcom_mhi_qrtr_id_table);
++
++static struct mhi_driver qcom_mhi_qrtr_driver = {
++	.probe = qcom_mhi_qrtr_probe,
++	.remove = qcom_mhi_qrtr_remove,
++	.dl_xfer_cb = qcom_mhi_qrtr_dl_callback,
++	.ul_xfer_cb = qcom_mhi_qrtr_ul_callback,
++	.status_cb = qcom_mhi_qrtr_status_callback,
++	.id_table = qcom_mhi_qrtr_id_table,
++	.driver = {
++		.name = "qcom_mhi_qrtr",
++	},
++};
++
++module_mhi_driver(qcom_mhi_qrtr_driver);
++
++MODULE_DESCRIPTION("Qualcomm IPC-Router MHI interface driver");
++MODULE_LICENSE("GPL v2");
 -- 
-Luiz Augusto von Dentz
+2.17.1
+
