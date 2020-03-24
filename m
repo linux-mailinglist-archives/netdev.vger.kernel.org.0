@@ -2,88 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CDF2191538
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 16:45:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99E6C1915B3
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 17:10:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727916AbgCXPoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 11:44:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39420 "EHLO mail.kernel.org"
+        id S1727972AbgCXQKS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 12:10:18 -0400
+Received: from foss.arm.com ([217.140.110.172]:37608 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727702AbgCXPoy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 11:44:54 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2993C2076F;
-        Tue, 24 Mar 2020 15:44:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585064693;
-        bh=Xcme7gvaoaEler/5XOMTCI6mA3soOPviGtN4FCyopho=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qF9LrS4kelpe748kQlZ5E8wVhuGMgtSb4SMICjdzWOLop+7bwmwbLk1wgw5XTOVJC
-         G0aaPPPVVqJ9s9DLzTw1nhQynvTrJJgUgGPocEx927cPJD2fe5etKi9WJrFqxA2G3D
-         /KpZY85qQteOcCtoWrWzNLXzVhPxpXNuw41LHihU=
-Date:   Tue, 24 Mar 2020 16:44:49 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, rafael@kernel.org,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mitch.a.williams@intel.com
-Subject: Re: [PATCH RESEND net 1/3] class: add class_find_and_get_file_ns()
- helper function
-Message-ID: <20200324154449.GC2513347@kroah.com>
-References: <20200324141722.21308-1-ap420073@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200324141722.21308-1-ap420073@gmail.com>
+        id S1727545AbgCXQKS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 12:10:18 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A9B31FB;
+        Tue, 24 Mar 2020 09:10:18 -0700 (PDT)
+Received: from donnerap.arm.com (donnerap.cambridge.arm.com [10.1.197.25])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D99F33F52E;
+        Tue, 24 Mar 2020 09:10:16 -0700 (PDT)
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
+Subject: [PATCH] net: PHY: bcm-unimac: Fix clock handling
+Date:   Tue, 24 Mar 2020 16:10:10 +0000
+Message-Id: <20200324161010.81107-1-andre.przywara@arm.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 02:17:22PM +0000, Taehee Yoo wrote:
-> The new helper function is to find and get a class file.
-> This function is useful for checking whether the class file is existing
-> or not. This function will be used by networking stack to
-> check "/sys/class/net/*" file.
-> 
-> Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
-> Fixes: b76cdba9cdb2 ("[PATCH] bonding: add sysfs functionality to bonding (large)")
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-> ---
->  drivers/base/class.c         | 12 ++++++++++++
->  include/linux/device/class.h |  4 +++-
->  2 files changed, 15 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/base/class.c b/drivers/base/class.c
-> index bcd410e6d70a..dedf41f32f0d 100644
-> --- a/drivers/base/class.c
-> +++ b/drivers/base/class.c
-> @@ -105,6 +105,17 @@ void class_remove_file_ns(struct class *cls, const struct class_attribute *attr,
->  		sysfs_remove_file_ns(&cls->p->subsys.kobj, &attr->attr, ns);
->  }
->  
-> +struct kernfs_node *class_find_and_get_file_ns(struct class *cls,
-> +					       const char *name,
-> +					       const void *ns)
-> +{
-> +	struct kernfs_node *kn = NULL;
-> +
-> +	if (cls)
-> +		kn = kernfs_find_and_get_ns(cls->p->subsys.kobj.sd, name, ns);
-> +	return kn;
-> +}
-> +
+The DT binding for this PHY describes an *optional* clock property.
+Due to a bug in the error handling logic, we are actually ignoring this
+clock *all* of the time so far.
 
-You can put the EXPORT_SYMBOL_GPL() under here.
+Fix this by using devm_clk_get_optional() to handle this clock properly.
 
-And can you document what this function actually is in some kerneldoc?
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+---
+ drivers/net/phy/mdio-bcm-unimac.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-But, returning a kernfs_node from a driver core is _REALLY_ odd.  Why do
-you need this and who cares about kernfs here?
+diff --git a/drivers/net/phy/mdio-bcm-unimac.c b/drivers/net/phy/mdio-bcm-unimac.c
+index 4a28fb29adaa..fbd36891ee64 100644
+--- a/drivers/net/phy/mdio-bcm-unimac.c
++++ b/drivers/net/phy/mdio-bcm-unimac.c
+@@ -242,11 +242,9 @@ static int unimac_mdio_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	}
+ 
+-	priv->clk = devm_clk_get(&pdev->dev, NULL);
+-	if (PTR_ERR(priv->clk) == -EPROBE_DEFER)
++	priv->clk = devm_clk_get_optional(&pdev->dev, NULL);
++	if (IS_ERR(priv->clk))
+ 		return PTR_ERR(priv->clk);
+-	else
+-		priv->clk = NULL;
+ 
+ 	ret = clk_prepare_enable(priv->clk);
+ 	if (ret)
+-- 
+2.17.1
 
-thanks,
-
-greg k-h
