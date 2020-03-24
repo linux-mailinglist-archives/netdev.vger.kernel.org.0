@@ -2,196 +2,269 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5154B191359
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 15:37:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3B3E19135E
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 15:37:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727868AbgCXOg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 10:36:27 -0400
-Received: from mail-eopbgr30060.outbound.protection.outlook.com ([40.107.3.60]:12341
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727363AbgCXOg0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 10:36:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gNOhK5/5DytWTWx4JkCVTMHcmboLjSjsIma/7ftjcQUcYz6arM+62rZW/m/IG51jBREdvvi0/VXtXiS8dygj1mLizjJJ5Q93r1XWBQCXYCo6pSdDE3b7teMy79rPmtI95rqueSEGC+N+n11lvEaiy+KIaZQAOANQ5BCR1luO/ZIY8/YTOFGlFhEBe/6Trydpj/4g+su6uoTnPk2MBqFoyB2e2uHoGnTBejQRgcwAG+UqVan8vfnZTTymIOls3bdViDF18L0qhuia21sjkaXJDMskls2YUKBNtnKOpg/iIHrp7cmfWhSFhHsDCQRl7c6OFWl3VGxcu837NdBuXtb9gg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wxzm8LEuoXJoFRkphmFy89XplEsvbX+d+ax1JY4meS4=;
- b=OCWAEQVdehLrSbcbJCBJZNKItf+mdfOIWkKVm6PaXLuK8kqRCZvjG4QTcjxDHbwBgWX9GYYNIvxwzD3q1tR07fZOcho0EVVTAyIQCYevSzJvHyDii3FlZxBM5VRPgwSF4ZmDbgh6QFklm43fZSWCqWjbK/+2dfvc8IKwXSnS/ZNHOC9Kp5DIj7cG4DHaqexL2QUpDtuX2Mi0UkANjGZkppHMI0fQ9sf/iQuIHdmFO3hD83oAwcX2BdyPy0rxE+Jb91cAokmH/Pqosc48VwYq1bcWlNC2+Ig/zjSbzhKyHnydLRD2F+qX7FZx/xHSINYMbW8wQNfvXHTLfmZDxaYbGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wxzm8LEuoXJoFRkphmFy89XplEsvbX+d+ax1JY4meS4=;
- b=iues4TNBkIYYPFzOs2jtF51Nw6AqLchReFeJvGCqjzk/16GTVIltxZXEsXbo7Ddgwqhq0EJNgZaegBonbuQ6m8YtEKzSsP+a6et633gI1JqXRr7+rhbnJy7okMTJbSK6fo+3C/Lx0+TU5AqNZym7j38ybmanNVCLH2nafNsTrJ8=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-Received: from VI1PR05MB3359.eurprd05.prod.outlook.com (10.170.238.32) by
- VI1PR05MB5296.eurprd05.prod.outlook.com (20.178.9.204) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.20; Tue, 24 Mar 2020 14:36:20 +0000
-Received: from VI1PR05MB3359.eurprd05.prod.outlook.com
- ([fe80::cd2b:cd2:d07a:1db4]) by VI1PR05MB3359.eurprd05.prod.outlook.com
- ([fe80::cd2b:cd2:d07a:1db4%7]) with mapi id 15.20.2835.021; Tue, 24 Mar 2020
- 14:36:20 +0000
-References: <1585007097-28475-1-git-send-email-wenxu@ucloud.cn> <1585007097-28475-3-git-send-email-wenxu@ucloud.cn> <vbfimiudklj.fsf@mellanox.com> <d6e75961-1098-1dc4-b1ea-fa733aeb37c0@ucloud.cn>
-User-agent: mu4e 1.2.0; emacs 26.2.90
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     wenxu <wenxu@ucloud.cn>
-Cc:     Vlad Buslov <vladbu@mellanox.com>, saeedm@mellanox.com,
-        paulb@mellanox.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v5 2/2] net/mlx5e: add mlx5e_rep_indr_setup_ft_cb support
-In-reply-to: <d6e75961-1098-1dc4-b1ea-fa733aeb37c0@ucloud.cn>
-Date:   Tue, 24 Mar 2020 16:36:16 +0200
-Message-ID: <vbfh7ydes67.fsf@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: PR2P264CA0007.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::19)
- To VI1PR05MB3359.eurprd05.prod.outlook.com (2603:10a6:802:1c::32)
+        id S1727705AbgCXOhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 10:37:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39802 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727186AbgCXOhM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 10:37:12 -0400
+Received: from lore-desk-wlan (unknown [151.48.139.19])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A61812074D;
+        Tue, 24 Mar 2020 14:37:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585060631;
+        bh=JViDWrzm9JqL1epeb2x8f9v2QwzKvGrXIa+OQab+vSU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FkqmhTqjipF5TnjPz9c2amVYH7qKEaqQs74UaZucrzU8mDxJu0QE7TvQFQeqdBtbV
+         EBIfchLYN3KzfxmAcnqtTl6jIviZIAP2dlXaW3jfn8tnaUSxSYaKu89ff9Nr0RnXOG
+         /Hj/00cjeP2+H3GHdGu8jd9Qu0Rd/qJ40JU+ToJg=
+Date:   Tue, 24 Mar 2020 15:36:58 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, brouer@redhat.com,
+        dsahern@gmail.com, lorenzo.bianconi@redhat.com, toke@redhat.com
+Subject: Re: [PATCH net-next 4/5] veth: introduce more xdp counters
+Message-ID: <20200324143658.GB1477940@lore-desk-wlan>
+References: <cover.1584635611.git.lorenzo@kernel.org>
+ <0763c17646523acb4dc15aaec01decb4efe11eac.1584635611.git.lorenzo@kernel.org>
+ <a3555c02-6cb1-c40c-65bb-12378439b12f@gmail.com>
+ <20200320133737.GA2329672@lore-desk-wlan>
+ <04ca75e8-1291-4f25-3ad4-18ca5d6c6ddb@gmail.com>
+ <20200321143013.GA3251815@lore-desk-wlan>
+ <d8ccb8c7-0501-dc88-d2b2-ca594df885cb@gmail.com>
+ <20200323173113.GA300262@lore-desk-wlan>
+ <075a675c-a2c4-7189-9339-c71d53421855@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from reg-r-vrt-018-180.mellanox.com (37.142.13.130) by PR2P264CA0007.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.15 via Frontend Transport; Tue, 24 Mar 2020 14:36:19 +0000
-X-Originating-IP: [37.142.13.130]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 1445e197-188f-498b-f0a3-08d7d000b822
-X-MS-TrafficTypeDiagnostic: VI1PR05MB5296:|VI1PR05MB5296:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB529613C1026F840C39124020ADF10@VI1PR05MB5296.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2000;
-X-Forefront-PRVS: 03524FBD26
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(376002)(346002)(39860400002)(366004)(4326008)(6916009)(66556008)(6666004)(66476007)(6486002)(36756003)(2906002)(16526019)(316002)(186003)(66946007)(478600001)(8676002)(7696005)(8936002)(956004)(86362001)(5660300002)(2616005)(26005)(81166006)(52116002)(81156014);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB5296;H:VI1PR05MB3359.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EnuF9MuJ0ra+hbVtlczWGlT28BECl6Urs4xKCzQwqSCFBBpc3Op/40dF/dpaJMN+OS7rR8bTxRvnYo6z2ozSFNpTjjfxPun2eqETi/bWwocrUjqKflZ7r3FD7Qq6Zvcum61Ap/ysbyOBDzRJTG6lBzsPRC7lNhqciqC2SW9j+H+dY7wCOuROlaSbuQBBLzqz72L2yrkwS6bVMqCTV79JDwdl3tjtTX0HL6ZAZmgGmkXU16tomdO7L3MGv5B9aHpdtdboyLl6Mx9KI6Iv7TkuDNIr3AH5iZ3IYeoZYs3TG4VVk4rYb+v9ZEy0C0jAlOR8POPEG11qgr76sDjji7gckr0vFgFwCtznCglHMsvKxvEfmvZ0P5vRjt1kHCjUvNwg3uXTSXr1Asa5S2ekjrFBYbgw30gU3J/KVEX32uIVeZ9xRs6ZwaCrQajqpYoF47ea
-X-MS-Exchange-AntiSpam-MessageData: my9fRcCY5+GukRKKrbEJH71u9ZBjItIw32gguxT5ZlRqCvnBth3U9tCRHi/XGUJj06aspHVCmBeHIWBIQamS/g8io2du5ADxhXN4++XKJHFrTGlr/eqJoLVNntxBc6mReGnuJt6Ef8oinnByrabfcw==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1445e197-188f-498b-f0a3-08d7d000b822
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2020 14:36:20.6068
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Pqa2Lk8bnMIJGc68MW40dTY2UJrZjT9M5y1s0w0wWDmnNHwj10ZXMSSQdf9P3Dg7gYqkRLYg6nPmY7cDWNCOeA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5296
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="UHN/qo2QbUvPLonB"
+Content-Disposition: inline
+In-Reply-To: <075a675c-a2c4-7189-9339-c71d53421855@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On Tue 24 Mar 2020 at 14:49, wenxu <wenxu@ucloud.cn> wrote:
-> =E5=9C=A8 2020/3/24 20:05, Vlad Buslov =E5=86=99=E9=81=93:
->> On Tue 24 Mar 2020 at 01:44, wenxu@ucloud.cn wrote:
->>> From: wenxu <wenxu@ucloud.cn>
->>>
->>> Add mlx5e_rep_indr_setup_ft_cb to support indr block setup
->>> in FT mode.
->>>
->>> Signed-off-by: wenxu <wenxu@ucloud.cn>
->>> ---
->>> v5: no change
->>>
->>>   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 52 +++++++++++++++=
-+++++++++
->>>   1 file changed, 52 insertions(+)
->>>
->>> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers=
-/net/ethernet/mellanox/mlx5/core/en_rep.c
->>> index 057f5f9..30c81c3 100644
->>> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
->>> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
->>> @@ -732,6 +732,55 @@ static int mlx5e_rep_indr_setup_tc_cb(enum tc_setu=
-p_type type,
->>>   	}
->>>   }
->>>
->>> +static int mlx5e_rep_indr_setup_ft_cb(enum tc_setup_type type,
->>> +				      void *type_data, void *indr_priv)
->>> +{
->>> +	struct mlx5e_rep_indr_block_priv *priv =3D indr_priv;
->>> +	struct flow_cls_offload *f =3D type_data;
->>> +	struct flow_cls_offload tmp;
->>> +	struct mlx5e_priv *mpriv;
->>> +	struct mlx5_eswitch *esw;
->>> +	unsigned long flags;
->>> +	int err;
->>> +
->>> +	mpriv =3D netdev_priv(priv->rpriv->netdev);
->>> +	esw =3D mpriv->mdev->priv.eswitch;
->>> +
->>> +	flags =3D MLX5_TC_FLAG(EGRESS) |
->>> +		MLX5_TC_FLAG(ESW_OFFLOAD) |
->>> +		MLX5_TC_FLAG(FT_OFFLOAD);
->>> +
->>> +	switch (type) {
->>> +	case TC_SETUP_CLSFLOWER:
->>> +		memcpy(&tmp, f, sizeof(*f));
->>> +
->>> +		if (!mlx5_esw_chains_prios_supported(esw))
->>> +			return -EOPNOTSUPP;
->>> +
->>> +		/* Re-use tc offload path by moving the ft flow to the
->>> +		 * reserved ft chain.
->>> +		 *
->>> +		 * FT offload can use prio range [0, INT_MAX], so we normalize
->>> +		 * it to range [1, mlx5_esw_chains_get_prio_range(esw)]
->>> +		 * as with tc, where prio 0 isn't supported.
->>> +		 *
->>> +		 * We only support chain 0 of FT offload.
->>> +		 */
->>> +		if (tmp.common.prio >=3D mlx5_esw_chains_get_prio_range(esw))
->>> +			return -EOPNOTSUPP;
->>> +		if (tmp.common.chain_index !=3D 0)
->>> +			return -EOPNOTSUPP;
->>> +
->>> +		tmp.common.chain_index =3D mlx5_esw_chains_get_ft_chain(esw);
->>> +		tmp.common.prio++;
->>> +		err =3D mlx5e_rep_indr_offload(priv->netdev, &tmp, priv, flags);
->>> +		memcpy(&f->stats, &tmp.stats, sizeof(f->stats));
->> Why do you need to create temporary copy of flow_cls_offload struct and
->> then copy parts of tmp back to the original? Again, this info should
->> probably be in the commit message.
->
-> This FT mode using the specficed chain_index which changed by driver adnd
->
-> using only in driver. It will move the flow table rules to their steering
-> domain.
->
-> This scenario just follow the mlx5e_rep_setup_ft_cb which did offload in =
-FT
-> mode.
->
-> So it's an old scenario, Is it necessary to add to the commit message?
+--UHN/qo2QbUvPLonB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Well, without knowing the reasoning it is hard to understand if the
-original scenario is applicable in this case.
 
->
->>
->>> +		return err;
->>> +	default:
->>> +		return -EOPNOTSUPP;
->>> +	}
->>> +}
->>> +
->>>   static void mlx5e_rep_indr_block_unbind(void *cb_priv)
->>>   {
->>>   	struct mlx5e_rep_indr_block_priv *indr_priv =3D cb_priv;
->>> @@ -809,6 +858,9 @@ int mlx5e_rep_indr_setup_cb(struct net_device *netd=
-ev, void *cb_priv,
->>>   	case TC_SETUP_BLOCK:
->>>   		return mlx5e_rep_indr_setup_block(netdev, cb_priv, type_data,
->>>   						  mlx5e_rep_indr_setup_tc_cb);
->>> +	case TC_SETUP_FT:
->>> +		return mlx5e_rep_indr_setup_block(netdev, cb_priv, type_data,
->>> +						  mlx5e_rep_indr_setup_ft_cb);
->>>   	default:
->>>   		return -EOPNOTSUPP;
->>>   	}
+[...]
 
+> > > }
+> >=20
+> > actually I have a different idea..what about account tx stats on the pe=
+er rx
+> > queue as a result of XDP_TX or ndo_xdp_xmit and properly report this in=
+fo in
+> > the ethool stats? In this way we do not have any locking issue and we s=
+till use
+> > the per-queue stats approach. Could you please take a look to the follo=
+wing patch?
+>=20
+> Thanks I think your idea is nice.
+>=20
+> > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> > index b6505a6c7102..f2acd2ee6287 100644
+> > --- a/drivers/net/veth.c
+> > +++ b/drivers/net/veth.c
+> > @@ -92,17 +92,22 @@ struct veth_q_stat_desc {
+> >   static const struct veth_q_stat_desc veth_rq_stats_desc[] =3D {
+> >   	{ "xdp_packets",	VETH_RQ_STAT(xdp_packets) },
+> >   	{ "xdp_bytes",		VETH_RQ_STAT(xdp_bytes) },
+> > -	{ "rx_drops",		VETH_RQ_STAT(rx_drops) },
+> > -	{ "rx_xdp_redirect",	VETH_RQ_STAT(xdp_redirect) },
+> > -	{ "rx_xdp_drops",	VETH_RQ_STAT(xdp_drops) },
+> > -	{ "rx_xdp_tx",		VETH_RQ_STAT(xdp_tx) },
+> > -	{ "rx_xdp_tx_errors",	VETH_RQ_STAT(xdp_tx_err) },
+> > -	{ "tx_xdp_xmit",	VETH_RQ_STAT(xdp_xmit) },
+> > -	{ "tx_xdp_xmit_errors",	VETH_RQ_STAT(xdp_xmit_err) },
+> > +	{ "drops",		VETH_RQ_STAT(rx_drops) },
+> > +	{ "xdp_redirect",	VETH_RQ_STAT(xdp_redirect) },
+> > +	{ "xdp_drops",		VETH_RQ_STAT(xdp_drops) },
+> >   };
+> >   #define VETH_RQ_STATS_LEN	ARRAY_SIZE(veth_rq_stats_desc)
+> > +static const struct veth_q_stat_desc veth_tq_stats_desc[] =3D {
+> > +	{ "xdp_tx",		VETH_RQ_STAT(xdp_tx) },
+> > +	{ "xdp_tx_errors",	VETH_RQ_STAT(xdp_tx_err) },
+>=20
+> I'm wondering why xdp_tx is not accounted in rx_queue?
+> You can count xdp_tx/tx_error somewhere in rx path like veth_xdp_flush_bq=
+().
+> xdp_redirect and xdp_drops are similar actions and in rx stats.
+
+Hi,
+
+thanks for the review :)
+
+I moved the accounting of xdp_tx/tx_error in veth_xdp_xmit for two reason:
+1- veth_xdp_tx in veth_xdp_rcv_one or veth_xdp_rcv_skb returns an error
+   for XDP_TX just if xdp_frame pointer is invalid but the packet can be
+   discarded in veth_xdp_xmit if the device is 'under-pressure' (and this c=
+an
+   be a problem since in XDP there are no queueing mechanisms so far)
+2- to be symmetric  with ndo_xdp_xmit
+
+>=20
+> > +	{ "xdp_xmit",		VETH_RQ_STAT(xdp_xmit) },
+> > +	{ "xdp_xmit_errors",	VETH_RQ_STAT(xdp_xmit_err) },
+> > +};
+> > +
+> > +#define VETH_TQ_STATS_LEN	ARRAY_SIZE(veth_tq_stats_desc)
+> > +
+> >   static struct {
+> >   	const char string[ETH_GSTRING_LEN];
+> >   } ethtool_stats_keys[] =3D {
+> > @@ -142,6 +147,14 @@ static void veth_get_strings(struct net_device *de=
+v, u32 stringset, u8 *buf)
+> >   				p +=3D ETH_GSTRING_LEN;
+> >   			}
+> >   		}
+> > +		for (i =3D 0; i < dev->real_num_tx_queues; i++) {
+> > +			for (j =3D 0; j < VETH_TQ_STATS_LEN; j++) {
+> > +				snprintf(p, ETH_GSTRING_LEN,
+> > +					 "tx_queue_%u_%.18s",
+> > +					 i, veth_tq_stats_desc[j].desc);
+> > +				p +=3D ETH_GSTRING_LEN;
+> > +			}
+> > +		}
+> >   		break;
+> >   	}
+> >   }
+> > @@ -151,7 +164,8 @@ static int veth_get_sset_count(struct net_device *d=
+ev, int sset)
+> >   	switch (sset) {
+> >   	case ETH_SS_STATS:
+> >   		return ARRAY_SIZE(ethtool_stats_keys) +
+> > -		       VETH_RQ_STATS_LEN * dev->real_num_rx_queues;
+> > +		       VETH_RQ_STATS_LEN * dev->real_num_rx_queues +
+> > +		       VETH_TQ_STATS_LEN * dev->real_num_tx_queues;
+> >   	default:
+> >   		return -EOPNOTSUPP;
+> >   	}
+> > @@ -160,7 +174,7 @@ static int veth_get_sset_count(struct net_device *d=
+ev, int sset)
+> >   static void veth_get_ethtool_stats(struct net_device *dev,
+> >   		struct ethtool_stats *stats, u64 *data)
+> >   {
+> > -	struct veth_priv *priv =3D netdev_priv(dev);
+> > +	struct veth_priv *rcv_priv, *priv =3D netdev_priv(dev);
+> >   	struct net_device *peer =3D rtnl_dereference(priv->peer);
+> >   	int i, j, idx;
+> > @@ -181,6 +195,26 @@ static void veth_get_ethtool_stats(struct net_devi=
+ce *dev,
+> >   		} while (u64_stats_fetch_retry_irq(&rq_stats->syncp, start));
+> >   		idx +=3D VETH_RQ_STATS_LEN;
+> >   	}
+> > +
+> > +	if (!peer)
+> > +		return;
+> > +
+> > +	rcv_priv =3D netdev_priv(peer);
+> > +	for (i =3D 0; i < peer->real_num_rx_queues; i++) {
+> > +		const struct veth_rq_stats *rq_stats =3D &rcv_priv->rq[i].stats;
+> > +		const void *stats_base =3D (void *)&rq_stats->vs;
+> > +		unsigned int start, tx_idx;
+> > +		size_t offset;
+> > +
+> > +		tx_idx =3D (i % dev->real_num_tx_queues) * VETH_TQ_STATS_LEN;
+>=20
+> I'm a bit concerned that this can fold multiple rx queue counters into one
+> tx counter. But I cannot think of a better idea provided that we want to
+> align XDP stats between drivers. So I'm OK with this.
+
+Since peer->real_num_rx_queues can be greater than dev->real_num_tx_queues,
+right? IIUC the only guarantee we have is:
+
+peer->real_num_tx_queues < dev->real_num_rx_queues
+
+If you are fine with that approach, I will post a patch before net-next
+closure.
+
+Regards,
+Lorenzo
+
+
+>=20
+> Toshiaki Makita
+>=20
+> > +		do {
+> > +			start =3D u64_stats_fetch_begin_irq(&rq_stats->syncp);
+> > +			for (j =3D 0; j < VETH_TQ_STATS_LEN; j++) {
+> > +				offset =3D veth_tq_stats_desc[j].offset;
+> > +				data[tx_idx + idx + j] +=3D *(u64 *)(stats_base + offset);
+> > +			}
+> > +		} while (u64_stats_fetch_retry_irq(&rq_stats->syncp, start));
+> > +	}
+> >   }
+> >   static const struct ethtool_ops veth_ethtool_ops =3D {
+> > @@ -340,8 +374,7 @@ static void veth_get_stats64(struct net_device *dev,
+> >   	tot->tx_packets =3D packets;
+> >   	veth_stats_rx(&rx, dev);
+> > -	tot->tx_dropped +=3D rx.xdp_xmit_err + rx.xdp_tx_err;
+> > -	tot->rx_dropped =3D rx.rx_drops;
+> > +	tot->rx_dropped =3D rx.rx_drops + rx.xdp_tx_err + rx.xdp_xmit_err;
+> >   	tot->rx_bytes =3D rx.xdp_bytes;
+> >   	tot->rx_packets =3D rx.xdp_packets;
+> > @@ -353,7 +386,7 @@ static void veth_get_stats64(struct net_device *dev,
+> >   		tot->rx_packets +=3D packets;
+> >   		veth_stats_rx(&rx, peer);
+> > -		tot->rx_dropped +=3D rx.xdp_xmit_err + rx.xdp_tx_err;
+> > +		tot->tx_dropped +=3D rx.xdp_xmit_err + rx.xdp_tx_err;
+> >   		tot->tx_bytes +=3D rx.xdp_bytes;
+> >   		tot->tx_packets +=3D rx.xdp_packets;
+> >   	}
+> > @@ -394,9 +427,9 @@ static int veth_xdp_xmit(struct net_device *dev, in=
+t n,
+> >   			 u32 flags, bool ndo_xmit)
+> >   {
+> >   	struct veth_priv *rcv_priv, *priv =3D netdev_priv(dev);
+> > -	unsigned int qidx, max_len;
+> >   	struct net_device *rcv;
+> >   	int i, ret, drops =3D n;
+> > +	unsigned int max_len;
+> >   	struct veth_rq *rq;
+> >   	rcu_read_lock();
+> > @@ -414,8 +447,7 @@ static int veth_xdp_xmit(struct net_device *dev, in=
+t n,
+> >   	}
+> >   	rcv_priv =3D netdev_priv(rcv);
+> > -	qidx =3D veth_select_rxq(rcv);
+> > -	rq =3D &rcv_priv->rq[qidx];
+> > +	rq =3D &rcv_priv->rq[veth_select_rxq(rcv)];
+> >   	/* Non-NULL xdp_prog ensures that xdp_ring is initialized on receive
+> >   	 * side. This means an XDP program is loaded on the peer and the peer
+> >   	 * device is up.
+> > @@ -446,7 +478,6 @@ static int veth_xdp_xmit(struct net_device *dev, in=
+t n,
+> >   	ret =3D n - drops;
+> >   drop:
+> > -	rq =3D &priv->rq[qidx];
+> >   	u64_stats_update_begin(&rq->stats.syncp);
+> >   	if (ndo_xmit) {
+> >   		rq->stats.vs.xdp_xmit +=3D n - drops;
+> >=20
+> > >=20
+> > > Thoughts?
+> > >=20
+> > > Toshiaki Makita
+
+--UHN/qo2QbUvPLonB
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXnobBwAKCRA6cBh0uS2t
+rKhhAQC9mxhdPYGSOEhZqTSEvshJcfDVTesXlOU3WUkeY+BdZgEAu2EDVxoa6aUZ
+3Mdtz4lqYmYRKgD3s26usysvTtHF9gQ=
+=0OsS
+-----END PGP SIGNATURE-----
+
+--UHN/qo2QbUvPLonB--
