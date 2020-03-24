@@ -2,63 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33FE019035B
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 02:40:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1792F19035C
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 02:41:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727164AbgCXBkD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 21:40:03 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53254 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727064AbgCXBkD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 21:40:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=yyJHkxxGFMVCEvDUsgTqwAsjjJ3fxb9UD7AsdyFNx4w=; b=oq+Ji3pOYgkwi7zYES+cKFSzlE
-        vUnB2VhyjgkF+mAx58JROpXQ9UdQAqt/enYOtw3emOhVIYOQNOMOzqh/NWZhsBmfPFZktXUlqHB8n
-        RjZ1usJxc6UWZEQ9ZW4sACjoL46kP/BnVTGDEmf9Z+TOGS97pXOznQMD5V5ulxS+vxAU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jGYXx-0005am-9V; Tue, 24 Mar 2020 02:40:01 +0100
-Date:   Tue, 24 Mar 2020 02:40:01 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: Re: [PATCH 07/14] net: ks8851: Use 16-bit writes to program MAC
- address
-Message-ID: <20200324014001.GN3819@lunn.ch>
-References: <20200323234303.526748-1-marex@denx.de>
- <20200323234303.526748-8-marex@denx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200323234303.526748-8-marex@denx.de>
+        id S1727149AbgCXBlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 21:41:37 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:55256 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727064AbgCXBlh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 21:41:37 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 15DC415B487A8;
+        Mon, 23 Mar 2020 18:41:37 -0700 (PDT)
+Date:   Mon, 23 Mar 2020 18:41:36 -0700 (PDT)
+Message-Id: <20200323.184136.2138892627319154558.davem@davemloft.net>
+To:     saeedm@mellanox.com
+Cc:     netdev@vger.kernel.org
+Subject: Re: [pull request][net 0/5] Mellanox, mlx5 fixes 2020-03-05
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <2495edeb580e5a4b072bda6e72e4808c281b0f2e.camel@mellanox.com>
+References: <20200305231739.227618-1-saeedm@mellanox.com>
+        <20200306.224333.609016114112242678.davem@davemloft.net>
+        <2495edeb580e5a4b072bda6e72e4808c281b0f2e.camel@mellanox.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 23 Mar 2020 18:41:37 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 12:42:56AM +0100, Marek Vasut wrote:
-> On the SPI variant of KS8851, the MAC address can be programmed with
-> either 8/16/32-bit writes. To make it easier to support the 16-bit
-> parallel option of KS8851 too, switch both the MAC address programming
-> and readout to 16-bit operations.
-> 
-> Remove ks8851_wrreg8() as it is not used anywhere anymore.
-> 
-> There should be no functional change.
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Lukas Wunner <lukas@wunner.de>
-> Cc: Petr Stetiar <ynezz@true.cz>
-> Cc: YueHaibing <yuehaibing@huawei.com>
+From: Saeed Mahameed <saeedm@mellanox.com>
+Date: Mon, 23 Mar 2020 22:57:32 +0000
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> i don't see this pull request merged into your net tree, 
+> what am i missing ? 
+> 
+> I am preparing a new fixes pull request, should i re-include these
+> patches and start over ? I don't mind .. 
 
-    Andrew
+I left it build tested on my laptop but not pushed out, sorry :-)
+
+It's in the tree now.
+
+Thanks.
