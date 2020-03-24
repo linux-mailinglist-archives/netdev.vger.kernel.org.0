@@ -2,112 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A18EE190537
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 06:33:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47C7319053A
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 06:34:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726026AbgCXFdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 01:33:32 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:54710 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725923AbgCXFdb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 01:33:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=EAPcl74ab/jhGYJyIHynqPNANGgXmZYdDhLdbmdpCgo=; b=qhzPsFlVHFsqMBJcNYvh1JOHhB
-        9kM3XghwWJTnSQ4K1f2OGpW12+GHxO11Acw/nITbB7IyzBejllTZLE7UFyXrjI1PoCwCSnMuwS84u
-        iSxhztwdiS74SCNAG0w2gMJOzLn6/e8z0KehR3FWmsdKj3W7eW5pGOkjyBL2zEFCwj0wjBv26fjDj
-        6aF8j2J17yBezv5S613b3ZdQgJCf/bPtTbKoOdKSlA42xqzS/IXF5N80cDf6kEGdI16OshfAXh4pC
-        eO7n8yKbfcBP0AIk0843OAqo19mgX9DRC+MtfEQ7Z6LGBeb7Ri/GrGgYWDHaMaiE+Pd79CldzCu7i
-        en4w19ig==;
-Received: from [2601:1c0:6280:3f0::19c2]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jGcBr-00046O-Ki; Tue, 24 Mar 2020 05:33:27 +0000
-Subject: Re: [PATCH net-next v2] devlink: expand the devlink-info
- documentation
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com, eugenem@fb.com,
-        jacob.e.keller@intel.com, jiri@resnulli.us,
-        michael.chan@broadcom.com, snelson@pensando.io,
-        jesse.brandeburg@intel.com, vasundhara-v.volam@broadcom.com
-References: <20200324041548.87488-1-kuba@kernel.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <fa91cf18-8d2c-bc11-b3d3-bd8671318e7f@infradead.org>
-Date:   Mon, 23 Mar 2020 22:33:26 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1727205AbgCXFeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 01:34:12 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45996 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725923AbgCXFeJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 01:34:09 -0400
+Received: by mail-pf1-f196.google.com with SMTP id j10so8721956pfi.12
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 22:34:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=/TSTUAS7pvP0ZmRkI5IZvXuFAdhabZBDiE+44x81ou8=;
+        b=ljrX+nzB2f3s76SBq9xehg+/86QsQkGMnIcSoYGsEbZa7O8l06KpvQs/FF5BMctmtL
+         mrEflGYwhfaLEK3EDeOTjWAMQWrjqfh9NPYq9yON4sVXTWqXM+Iceg9/797A0I5e89qT
+         mnPRpe0yvfHOvR7jQlWZBuB7+wAqCW8DOvXj2Z4nk2/xvQTNB6kNQ6ko9cQEQbtbQ6JF
+         oPMlyINi0QmmPZOMAea/auJ8fCBCTrPSjJ5ZePOaGazbmA5Ozs+UM65slt/JhpEIHzwD
+         j7D1qK1VSW2wg2UoQnUia+vKzkiVgcDDSFlIBUQrIji8z77ynhThUyhFshMMLf+AzDOY
+         sIcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/TSTUAS7pvP0ZmRkI5IZvXuFAdhabZBDiE+44x81ou8=;
+        b=DFzJNLXkC/zvKJDxWtMha4YU8A/rrfMu/pNZcqTjn8Y13hhO7irJoiauqH8ejstO4Y
+         E4AAGB0uJRvd3w2ScdCRT6Wt6R2m3cmtqxlkMrhAUQuH6MApUjXyVippFLuiK3NiI062
+         5Bjqxe32ghe0j/ugV0Dkz8an+q3fCqO1fwOOeka3Pv6/jY7RAfBdlvdULpGyJOxW9+m0
+         YzRR1RzxeybGolarmKlX9aS9PdK/cJgaq1A9T19eoEeucDkBm2pxvBxOxDosxoQH83CV
+         6Lfd/1TEbEKazOXL8wqTqXvlEleas9J9vlP9jm2m1nH2t0qslFcJpDZhHa3n4iQnTlIM
+         pNrg==
+X-Gm-Message-State: ANhLgQ36ETcukiqPNXCv2+qnxCnswtorHCg5gmJmm0YVkNKsFzceTaaF
+        P/T2lnYVe/MWYI3Hzv7nd4jC
+X-Google-Smtp-Source: ADFU+vvV0RUr88miCiQV1V7USfVHQnRUiV1da952qkZQH9yh+rNWjmRGD4aM1dM2OiD4dtIoOuuDfQ==
+X-Received: by 2002:a62:e107:: with SMTP id q7mr11066372pfh.190.1585028047098;
+        Mon, 23 Mar 2020 22:34:07 -0700 (PDT)
+Received: from Mani-XPS-13-9360 ([2409:4072:59b:91e:2dd6:dffe:3569:b473])
+        by smtp.gmail.com with ESMTPSA id z12sm16163241pfj.144.2020.03.23.22.34.00
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 23 Mar 2020 22:34:06 -0700 (PDT)
+Date:   Tue, 24 Mar 2020 11:03:58 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     gregkh@linuxfoundation.org, davem@davemloft.net,
+        smohanad@codeaurora.org, jhugo@codeaurora.org,
+        bjorn.andersson@linaro.org, hemantk@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2 7/7] net: qrtr: Do not depend on ARCH_QCOM
+Message-ID: <20200324053358.GA11834@Mani-XPS-13-9360>
+References: <20200323123102.13992-1-manivannan.sadhasivam@linaro.org>
+ <20200323123102.13992-8-manivannan.sadhasivam@linaro.org>
+ <87lfnravao.fsf@kamboji.qca.qualcomm.com>
 MIME-Version: 1.0
-In-Reply-To: <20200324041548.87488-1-kuba@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87lfnravao.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/23/20 9:15 PM, Jakub Kicinski wrote:
-> We are having multiple review cycles with all vendors trying
-> to implement devlink-info. Let's expand the documentation with
-> more information about what's implemented and motivation behind
-> this interface in an attempt to make the implementations easier.
+On Mon, Mar 23, 2020 at 06:30:07PM +0200, Kalle Valo wrote:
+> Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org> writes:
 > 
-> Describe what each info section is supposed to contain, and make
-> some references to other HW interfaces (PCI caps).
+> > IPC Router protocol is also used by external modems for exchanging the QMI
+> > messages. Hence, it doesn't always depend on Qualcomm platforms. One such
+> > instance is the QCA6390 modem connected to x86 machine.
 > 
-> Document how firmware management is expected to look, to make
-> it clear how devlink-info and devlink-flash work in concert.
-> 
-> Name some future work.
-> 
-> v2: - improve wording
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-Hi Jakub,
-
-One minor edit below, and
-
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
-
-
-> ---
->  .../networking/devlink/devlink-flash.rst      |  93 ++++++++++++
->  .../networking/devlink/devlink-info.rst       | 133 +++++++++++++++---
->  .../networking/devlink/devlink-params.rst     |   2 +
->  Documentation/networking/devlink/index.rst    |   1 +
->  4 files changed, 213 insertions(+), 16 deletions(-)
->  create mode 100644 Documentation/networking/devlink/devlink-flash.rst
+> QCA6390 is not a modem, it's a Wi-Fi 6 (802.11ax) device :)
 > 
 
+Ah, yes ;) Will fix it in next revision.
 
-> diff --git a/Documentation/networking/devlink/devlink-info.rst b/Documentation/networking/devlink/devlink-info.rst
-> index 70981dd1b981..8d47289a5844 100644
-> --- a/Documentation/networking/devlink/devlink-info.rst
-> +++ b/Documentation/networking/devlink/devlink-info.rst
-> @@ -5,34 +5,119 @@ Devlink Info
+Thanks,
+Mani
 
-[snip]
-
->  Generic Versions
->  ================
->  
->  It is expected that drivers use the following generic names for exporting
-> -version information. Other information may be exposed using driver-specific
-> -names, but these should be documented in the driver-specific file.
-> +version information. If a generic name for a given component doesn't exist, yet,
-
-                                                                        exist yet,
-
-> +driver authors should consult existing driver-specific versions and attempt
-> +reuse. As last resort, if a component is truly unique, using driver-specific
-> +names is allowed, but these should be documented in the driver-specific file.
-> +
-> +All versions should try to use the following terminology:
-
-
-cheers.
--- 
-~Randy
-
+> -- 
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
