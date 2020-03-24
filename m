@@ -2,135 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DFC0190D22
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 13:14:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00BDE190D5A
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 13:27:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727490AbgCXMOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 08:14:32 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:37079 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725767AbgCXMOb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 08:14:31 -0400
-Received: by mail-wr1-f67.google.com with SMTP id w10so21157463wrm.4
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 05:14:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9cH/I+t9PFd3u2vbahwfiKP9qNEMIBaetJ3OV+SCdAE=;
-        b=N7KpoxrPz6E2B6wkVEQ8p7AzGW2dwOWElV7hmrCHCcUYwM6ghb4/uWMEO19/YbkS9v
-         HbbnROsj57t+b7XNEhv0jG0oh4RiYpwkms+atnHpSKwVk4fr+CtlCHKr0dr5rctRT/FC
-         z3ZNF55T1ggoQZVFkWDhJJ52gysV9yPhnc7ZfHsM9tLtskJ9yXSxy4kBfsmRQJpowdY3
-         Dmr+VLCe15KUnBfD4VlsNCFlcR/ads2IehfQOVYgL8J5HcHIRBdDo9NfHaRZ5um4PYhM
-         kXKJVY7CwdXaWYUfgi/TzCKc7YW3JS88YrMr/ACtc3cNQsbISJOCneShks/8w3JzPh7X
-         efKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9cH/I+t9PFd3u2vbahwfiKP9qNEMIBaetJ3OV+SCdAE=;
-        b=LvqDXM240VLzOwIIlZEml885TePdGVnBgrxVspmPfwc9Z+/cToszs//uMZKPBrOWVE
-         HC0wiHXz8Dsd6vMjShnUnaSm8hJYtpjziZ/SnyRwLgDBKhwRDfiuKKQZknualhlg3Cwp
-         O/O7YOwcN94VIs95pXrofktj7CKeZ1TWHHasS8+6plT0ePCUcmUQYKVvp6Kgq8YLmHgn
-         CAuMdgiuUYpcjzssyriWK+UD+HInUnrxU497MLIvrLNfDgmUito0jI4q7J6Zs6RxGV84
-         2dlC+K+Hkvm0TEYd+LY3LYX2T7Hf14lfroDPZqy9NPTQokpfj+L1BLImld8EXvSj/OES
-         SYEA==
-X-Gm-Message-State: ANhLgQ0goHTyzaospeU4zL1sYBGNBFZNU26+h0MPddpwVaNgGU8G9xxD
-        YpvM2leY6jNibu4hEGLaYOG16Q==
-X-Google-Smtp-Source: ADFU+vszswxXGxDV0gh3cD3DJLBtCQsNeMc4YTtzIkebuK6qtx+9BV4UMVSVInSWXvKzAiQ9JyO1bg==
-X-Received: by 2002:a5d:6581:: with SMTP id q1mr20647675wru.17.1585052070328;
-        Tue, 24 Mar 2020 05:14:30 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id k15sm5741157wrm.55.2020.03.24.05.14.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Mar 2020 05:14:29 -0700 (PDT)
-Date:   Tue, 24 Mar 2020 13:14:28 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Po Liu <Po.Liu@nxp.com>
-Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, vinicius.gomes@intel.com,
-        claudiu.manoil@nxp.com, vladimir.oltean@nxp.com,
-        alexandru.marginean@nxp.com, xiaoliang.yang_1@nxp.com,
-        roy.zang@nxp.com, mingkai.hu@nxp.com, jerry.huang@nxp.com,
-        leoyang.li@nxp.com, michael.chan@broadcom.com, vishal@chelsio.com,
-        saeedm@mellanox.com, leon@kernel.org, jiri@mellanox.com,
-        idosch@mellanox.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, kuba@kernel.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, simon.horman@netronome.com,
-        pablo@netfilter.org, moshe@mellanox.com, m-karicheri2@ti.com,
-        andre.guedes@linux.intel.com, stephen@networkplumber.org
-Subject: Re: [v1,net-next  4/5] net: enetc: add hw tc hw offload features for
- PSPF capability
-Message-ID: <20200324121428.GT11304@nanopsycho.orion>
-References: <20200306125608.11717-11-Po.Liu@nxp.com>
- <20200324034745.30979-1-Po.Liu@nxp.com>
- <20200324034745.30979-5-Po.Liu@nxp.com>
+        id S1727379AbgCXMZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 08:25:59 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54166 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727066AbgCXMZ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 08:25:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=frYvSxVVyxhRF8P9ql5UtqwqlnhxPhI595pMmbY74tg=; b=VvPjB+Gp8kHT2LoLc8BG56K+9d
+        zOdvYBa4d8I55ut4ae/ggJLHkpgTM7JwICaj54ufsSo9qz1FfWBcNuHpP/uPfrCwZaFJS6YVYJ4aX
+        t3CAcFZ5Xkzvq83AOx8h4MLVeYk2Abs9LsHDvKN/lK4mhM4kKBpcCk0uRKw7y8IyM8wY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jGicz-0001Vl-H0; Tue, 24 Mar 2020 13:25:53 +0100
+Date:   Tue, 24 Mar 2020 13:25:53 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Marek Vasut <marex@denx.de>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: Re: [PATCH 07/14] net: ks8851: Use 16-bit writes to program MAC
+ address
+Message-ID: <20200324122553.GS3819@lunn.ch>
+References: <20200323234303.526748-1-marex@denx.de>
+ <20200323234303.526748-8-marex@denx.de>
+ <20200324081311.ww6p7dmijbddi5jm@wunner.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200324034745.30979-5-Po.Liu@nxp.com>
+In-Reply-To: <20200324081311.ww6p7dmijbddi5jm@wunner.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Mar 24, 2020 at 04:47:42AM CET, Po.Liu@nxp.com wrote:
+On Tue, Mar 24, 2020 at 09:13:11AM +0100, Lukas Wunner wrote:
+> On Tue, Mar 24, 2020 at 12:42:56AM +0100, Marek Vasut wrote:
+> > On the SPI variant of KS8851, the MAC address can be programmed with
+> > either 8/16/32-bit writes. To make it easier to support the 16-bit
+> > parallel option of KS8851 too, switch both the MAC address programming
+> > and readout to 16-bit operations.
+> [...]
+> >  static int ks8851_write_mac_addr(struct net_device *dev)
+> >  {
+> >  	struct ks8851_net *ks = netdev_priv(dev);
+> > +	u16 val;
+> >  	int i;
+> >  
+> >  	mutex_lock(&ks->lock);
+> > @@ -358,8 +329,12 @@ static int ks8851_write_mac_addr(struct net_device *dev)
+> >  	 * the first write to the MAC address does not take effect.
+> >  	 */
+> >  	ks8851_set_powermode(ks, PMECR_PM_NORMAL);
+> > -	for (i = 0; i < ETH_ALEN; i++)
+> > -		ks8851_wrreg8(ks, KS_MAR(i), dev->dev_addr[i]);
+> > +
+> > +	for (i = 0; i < ETH_ALEN; i += 2) {
+> > +		val = (dev->dev_addr[i] << 8) | dev->dev_addr[i + 1];
+> > +		ks8851_wrreg16(ks, KS_MAR(i + 1), val);
+> > +	}
+> > +
+> 
+> This looks like it won't work on little-endian machines:  The MAC bytes
+> are stored in dev->dev_addr as 012345, but in the EEPROM they're stored
+> as 543210.  The first 16-bit value that you write is 10 on big-endian
+> and 01 on little-endian if I'm not mistaken.
+> 
+> By only writing 8-bit values, the original author elegantly sidestepped
+> this issue.
+> 
+> Maybe the simplest and most readable solution is something like:
+> 
+>       u8 val[2];
+>       ...
+>       val[0] = dev->dev_addr[i+1];
+>       val[1] = dev->dev_addr;
+> 
+> Then cast val to a u16 when passing it to ks8851_wrreg16().
+> 
+> Alternatively, use cpu_to_be16().
 
-[...]
+Hi Lukas
 
+There is a cpu_to_be16() inside ks8851_wrreg16(). Something i already
+checked, because i wondered about endianess issues as well.
 
->@@ -289,9 +300,53 @@ int enetc_setup_tc_taprio(struct net_device *ndev, void *type_data);
-> void enetc_sched_speed_set(struct net_device *ndev);
-> int enetc_setup_tc_cbs(struct net_device *ndev, void *type_data);
-> int enetc_setup_tc_txtime(struct net_device *ndev, void *type_data);
->+
->+static inline void enetc_get_max_cap(struct enetc_ndev_priv *priv)
->+{
->+	u32 reg = 0;
-
-Pointless init.
-
-
->+
->+	reg = enetc_port_rd(&priv->si->hw, ENETC_PSIDCAPR);
->+	priv->psfp_cap.max_streamid = reg & ENETC_PSIDCAPR_MSK;
->+	/* Port stream filter capability */
->+	reg = enetc_port_rd(&priv->si->hw, ENETC_PSFCAPR);
->+	priv->psfp_cap.max_psfp_filter = reg & ENETC_PSFCAPR_MSK;
->+	/* Port stream gate capability */
->+	reg = enetc_port_rd(&priv->si->hw, ENETC_PSGCAPR);
->+	priv->psfp_cap.max_psfp_gate = (reg & ENETC_PSGCAPR_SGIT_MSK);
->+	priv->psfp_cap.max_psfp_gatelist = (reg & ENETC_PSGCAPR_GCL_MSK) >> 16;
->+	/* Port flow meter capability */
->+	reg = enetc_port_rd(&priv->si->hw, ENETC_PFMCAPR);
->+	priv->psfp_cap.max_psfp_meter = reg & ENETC_PFMCAPR_MSK;
->+}
->+
->+static inline void enetc_psfp_enable(struct enetc_hw *hw)
->+{
->+	enetc_wr(hw, ENETC_PPSFPMR, enetc_rd(hw, ENETC_PPSFPMR)
->+		 | ENETC_PPSFPMR_PSFPEN | ENETC_PPSFPMR_VS
-
-Hmm, I think it is better to have "|" at the end of the line".
-
-
->+		 | ENETC_PPSFPMR_PVC | ENETC_PPSFPMR_PVZC);
->+}
->+
->+static inline void enetc_psfp_disable(struct enetc_hw *hw)
->+{
->+	enetc_wr(hw, ENETC_PPSFPMR, enetc_rd(hw, ENETC_PPSFPMR)
->+		 & ~ENETC_PPSFPMR_PSFPEN & ~ENETC_PPSFPMR_VS
-
-Same here.
-
-
->+		 & ~ENETC_PPSFPMR_PVC & ~ENETC_PPSFPMR_PVZC);
->+}
-> #else
-> #define enetc_setup_tc_taprio(ndev, type_data) -EOPNOTSUPP
-> #define enetc_sched_speed_set(ndev) (void)0
-> #define enetc_setup_tc_cbs(ndev, type_data) -EOPNOTSUPP
-> #define enetc_setup_tc_txtime(ndev, type_data) -EOPNOTSUPP
-
-[...]
+	 Andrew
