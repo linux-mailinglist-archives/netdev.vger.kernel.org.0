@@ -2,125 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28604191379
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 15:44:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 654C4191381
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 15:45:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728021AbgCXOoM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 10:44:12 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:60769 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727289AbgCXOoL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 10:44:11 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 48mvCF2wPMz1qs4C;
-        Tue, 24 Mar 2020 15:44:05 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 48mvC95tszz1qqkB;
-        Tue, 24 Mar 2020 15:44:05 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id j68Vve-KVJMe; Tue, 24 Mar 2020 15:44:04 +0100 (CET)
-X-Auth-Info: GSpCfzg0jTac3xBKXYPoSuMuv3lZYMTw9ufvUAxzSmw=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Tue, 24 Mar 2020 15:44:04 +0100 (CET)
-Subject: Re: [PATCH 11/14] net: ks8851: Implement register and FIFO accessor
- callbacks
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>, Andrew Lunn <andrew@lunn.ch>
-References: <20200323234303.526748-1-marex@denx.de>
- <20200323234303.526748-12-marex@denx.de>
- <20200324134555.wgtvj4owmkw3jup4@wunner.de>
- <a071d1a4-c627-f2e2-d689-4663671d97d9@denx.de>
- <20200324142929.dfs2cdmj3na27oo5@wunner.de>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <c89bf616-2936-6ebd-452f-e680859b2963@denx.de>
-Date:   Tue, 24 Mar 2020 15:44:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200324142929.dfs2cdmj3na27oo5@wunner.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1727784AbgCXOoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 10:44:55 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:63669 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728088AbgCXOoz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 10:44:55 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id A18994169C;
+        Tue, 24 Mar 2020 22:44:19 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     saeedm@mellanox.com
+Cc:     paulb@mellanox.com, vladbu@mellanox.com, netdev@vger.kernel.org
+Subject: [PATCH net-next v6 0/2] net/mlx5e: add indr block support in the FT mode
+Date:   Tue, 24 Mar 2020 22:44:17 +0800
+Message-Id: <1585061059-6591-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVPSkpCQkJCT0tDTElKQllXWShZQU
+        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6KxQ6Kyo5IzgzEhIVEjo1SB0u
+        TBQaCT9VSlVKTkNOS01KS01LQ0JNVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUlCSkI3Bg++
+X-HM-Tid: 0a710d005c5d2086kuqya18994169c
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/24/20 3:29 PM, Lukas Wunner wrote:
-> On Tue, Mar 24, 2020 at 03:10:59PM +0100, Marek Vasut wrote:
->> On 3/24/20 2:45 PM, Lukas Wunner wrote:
->>> On Tue, Mar 24, 2020 at 12:43:00AM +0100, Marek Vasut wrote:
->>>> The register and FIFO accessors are bus specific. Implement callbacks so
->>>> that each variant of the KS8851 can implement matching accessors and use
->>>> the rest of the common code.
->>> [...]
->>>> +	unsigned int		(*rdreg16)(struct ks8851_net *ks,
->>>> +					   unsigned int reg);
->>>> +	void			(*wrreg16)(struct ks8851_net *ks,
->>>> +					   unsigned int reg, unsigned int val);
->>>> +	void			(*rdfifo)(struct ks8851_net *ks, u8 *buff,
->>>> +					  unsigned int len);
->>>> +	void			(*wrfifo)(struct ks8851_net *ks,
->>>> +					  struct sk_buff *txp, bool irq);
->>>
->>> Using callbacks entails a dereference for each invocation.
->>
->> Yes indeed, the SPI stack which you use to talk to the KS8851 SPI is
->> also full of those.
-> 
-> Apples and oranges.  Low-level SPI drivers provide callbacks to the
-> SPI core because it would be too expensive (space-wise) to link the
-> SPI core into every low-level driver.  Whereas in this case, you're
-> generating two separate modules anyway, so there's no need at all
-> to use callbacks.
-> 
-> 
->>> A cheaper approach is to just declare the function signatures
->>> in ks8851.h and provide non-static implementations in
->>> ks8851_spi.c and ks8851_mll.c, so I'd strongly prefer that.
->>>
->>> Even better, since this only concerns the register accessors
->>> (which are inlined anyway by the compiler), it would be best
->>> to have them in header files (e.g. ks8851_spi.h / ks8851_par.h)
->>> which are included by the common ks8851.c based on the target
->>> which is being compiled.  That involves a bit of kbuild magic
->>> though to generate two different .o from the same .c file,
->>> each with specific "-include ..." CFLAGS.
->>
->> Before we go down the complex and ugly path, can you check whether this
->> actually has performance impact ? I would expect that since this is an
->> SPI-connected device, this here shouldn't have that much impact. But I
->> might be wrong, I don't have the hardware.
-> 
-> I can test it, but the devices are in the office, I won't return there
-> before Thursday.  That said, I don't think it's a proper approach to
-> make the code more expensive even though it's perfectly possible to
-> avoid any performance impact, and shrug off concerns with the argument
-> that the impact should be measured first.
+From: wenxu <wenxu@ucloud.cn>
 
-I cannot measure the impact on the SPI device, but I would like to know
-the numbers to see whether it's worth it all, before I start creating a
-more complex solution.
+Indr block supported in FT mode can offload the tunnel device in the
+flowtables of nftable.
 
-Since the SPI bus is limited to 40 MHz per datasheet, I don't think the
-pointer dereference is gonna introduce any performance problem.
+The netfilter patches:
+http://patchwork.ozlabs.org/cover/1242812/
 
-I can at least try skipping the dereference on the parallel bus option
-and see if it makes a difference.
+Test with mlx driver as following with nft:
 
->> Also note that having this dereference in place, it permits me to easily
->> implement accessors for both LE and BE variant of the parallel bus device.
-> 
-> My understanding is that you're supposed to configure the chip to use
-> the native endianness of your architecture on ->probe() such that
-> conversions become unnecessary and the same accessor can be used for
-> LE and BE.  So why do you need two accessors?
+ip link add user1 type vrf table 1
+ip l set user1 up 
+ip l set dev mlx_pf0vf0 down
+ip l set dev mlx_pf0vf0 master user1
+ifconfig mlx_pf0vf0 10.0.0.1/24 up
 
-Because I have a device here which is configured the "wrong" way thus far.
+ifconfig mlx_p0 172.168.152.75/24 up
+
+ip l add dev tun1 type gretap key 1000
+ip l set dev tun1 master user1
+ifconfig tun1 10.0.1.1/24 up
+
+ip r r 10.0.1.241 encap ip id 1000 dst 172.168.152.241 key dev tun1 table 1
+
+nft add table firewall
+nft add chain firewall zones { type filter hook prerouting priority - 300 \; }
+nft add rule firewall zones counter ct zone set iif map { "tun1" : 1, "mlx_pf0vf0" : 1 }
+nft add chain firewall rule-1000-ingress
+nft add rule firewall rule-1000-ingress ct zone 1 ct state established,related counter accept
+nft add rule firewall rule-1000-ingress ct zone 1 ct state invalid counter drop
+nft add rule firewall rule-1000-ingress ct zone 1 tcp dport 5001 ct state new counter accept
+nft add rule firewall rule-1000-ingress ct zone 1 udp dport 5001 ct state new counter accept
+nft add rule firewall rule-1000-ingress ct zone 1 tcp dport 22 ct state new counter accept
+nft add rule firewall rule-1000-ingress ct zone 1 ip protocol icmp ct state new counter accept
+nft add rule firewall rule-1000-ingress counter drop
+nft add chain firewall rules-all { type filter hook prerouting priority - 150 \; }
+nft add rule firewall rules-all meta iifkind "vrf" counter accept
+nft add rule firewall rules-all iif vmap { "tun1" : jump rule-1000-ingress }
+
+nft add flowtable firewall fb1 { hook ingress priority 2 \; devices = { tun1, mlx_pf0vf0 } \; }
+nft add chain firewall ftb-all {type filter hook forward priority 0 \; policy accept \; }
+nft add rule firewall ftb-all ct zone 1 ip protocol tcp flow offload @fb1
+nft add rule firewall ftb-all ct zone 1 ip protocol udp flow offload @fb1
+
+
+wenxu (2):
+  net/mlx5e: refactor indr setup block
+  net/mlx5e: add mlx5e_rep_indr_setup_ft_cb support
+
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 94 ++++++++++++++++++------
+ 1 file changed, 73 insertions(+), 21 deletions(-)
+
+-- 
+1.8.3.1
+
