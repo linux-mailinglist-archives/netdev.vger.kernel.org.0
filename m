@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 398741912BC
+	by mail.lfdr.de (Postfix) with ESMTP id AAC601912BD
 	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 15:21:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728021AbgCXOTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 10:19:38 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:60316 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727223AbgCXOTh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 10:19:37 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02OEAiCo017480;
-        Tue, 24 Mar 2020 07:19:35 -0700
+        id S1728055AbgCXOTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 10:19:39 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:35336 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727769AbgCXOTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 10:19:38 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02OEARi7015523;
+        Tue, 24 Mar 2020 07:19:37 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=StYw9Nn+QHHnHMBdWEp4CPugOfAxI4/0dSupbp2sta4=;
- b=OUWtuR6y4Z+R1iEk4sme/zBkmp+tKQwxET7RH0ze0WC0DsEDPv7YJT2RaqTjM9UGdVTw
- EkB4ob4jyPRHmtkedCeBUzfKMTybq1GvOMpBhilxPTu1QTUaqe/P/Wp3U3lJ2X9JF/6X
- mSLg71/8tal/tkM96tig/hYyMCKmI+eCxp+POKgZ1gNkhmL8e2wsS9D1/+ljG3VE2Hq1
- H0z8X1ZsN7YtpmuOZu9evLkhoB02OjykU0ekm+2yLmicQWglzRN0khOvFzR48vZe1Go1
- 1R7gELQ+6S7jOoVQzyxU+vAjWpl7AI8K2RtdLVESPyz2fqqoGQODXKQk8AEUA6nX5VxB qA== 
-Received: from sc-exch01.marvell.com ([199.233.58.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 2ywvkqsq11-1
+ content-type; s=pfpt0818; bh=tz+0Oy1oseAKyHRCMNHycaB+NEa39ZNWpwVHfTPN4u0=;
+ b=kUTS6cv4drNENMYBiEGQaFrBrEeT6npOgw4IH4RCeFxbbmlBAZGrxNpECM8qrBiUen/F
+ 5oQq7PJJwZoRARNlYmnerfr487EaUyB/7fIwmKsoBnaHTqvRmZWRAzDKwADG41bWW3ck
+ PujS5/KqnPbvUab443afhJxn7OTBHNosQZfYRyX4xct1ZGdyGlXGgWnN/1U6dZrtl7bF
+ fk8P879hgIh11cEGT/pay9nbwZ5m4+9+jIzS8WUdHwFZUfoggeADcs99eOCnSgoDPvIn
+ CDr2R8tveHVAkcNv0MVUCGq+cbkFokxjdrAp//aQrTiLUaCdjUyHtvBxRKdGh3SmLqb0 8Q== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2ywg9nkhbb-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 24 Mar 2020 07:19:35 -0700
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 24 Mar
- 2020 07:19:33 -0700
+        Tue, 24 Mar 2020 07:19:37 -0700
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 24 Mar
+ 2020 07:19:36 -0700
 Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
  (10.93.176.83) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 24 Mar 2020 07:19:33 -0700
+ Transport; Tue, 24 Mar 2020 07:19:36 -0700
 Received: from lb-tlvb-ybason.il.qlogic.org (unknown [10.5.221.176])
-        by maili.marvell.com (Postfix) with ESMTP id 84EC43F703F;
-        Tue, 24 Mar 2020 07:19:32 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id BB8883F703F;
+        Tue, 24 Mar 2020 07:19:34 -0700 (PDT)
 From:   Yuval Basson <ybason@marvell.com>
 To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
 CC:     Yuval Basson <ybason@marvell.com>,
         Denis Bolotin <dbolotin@marvell.com>
-Subject: [PATCH net-next 1/3] qed: Replace wq_active Boolean with an atomic QED_SLOWPATH_ACTIVE flag
-Date:   Tue, 24 Mar 2020 16:13:46 +0200
-Message-ID: <20200324141348.7897-2-ybason@marvell.com>
+Subject: [PATCH net-next 2/3] qed: Add a flag for rescheduling the slowpath task
+Date:   Tue, 24 Mar 2020 16:13:47 +0200
+Message-ID: <20200324141348.7897-3-ybason@marvell.com>
 X-Mailer: git-send-email 2.14.5
 In-Reply-To: <20200324141348.7897-1-ybason@marvell.com>
 References: <20200324141348.7897-1-ybason@marvell.com>
@@ -54,76 +54,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The atomic opertaion might prevent a potential race condition.
+Rechedule delayed work in case ptt_acquire failed.
+Since it is the same task don't reset task's flags.
 
 Signed-off-by: Yuval Basson <ybason@marvell.com>
 Signed-off-by: Denis Bolotin <dbolotin@marvell.com>
 ---
- drivers/net/ethernet/qlogic/qed/qed.h      | 2 +-
- drivers/net/ethernet/qlogic/qed/qed_main.c | 9 +++++----
- 2 files changed, 6 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/qlogic/qed/qed.h      |  1 +
+ drivers/net/ethernet/qlogic/qed/qed_main.c | 15 +++++++++------
+ 2 files changed, 10 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/ethernet/qlogic/qed/qed.h b/drivers/net/ethernet/qlogic/qed/qed.h
-index fa41bf0..ca866c2 100644
+index ca866c2..e3b238e 100644
 --- a/drivers/net/ethernet/qlogic/qed/qed.h
 +++ b/drivers/net/ethernet/qlogic/qed/qed.h
-@@ -565,6 +565,7 @@ struct qed_simd_fp_handler {
- enum qed_slowpath_wq_flag {
+@@ -566,6 +566,7 @@ enum qed_slowpath_wq_flag {
  	QED_SLOWPATH_MFW_TLV_REQ,
  	QED_SLOWPATH_PERIODIC_DB_REC,
-+	QED_SLOWPATH_ACTIVE,
+ 	QED_SLOWPATH_ACTIVE,
++	QED_SLOWPATH_RESCHEDULE,
  };
  
  struct qed_hwfn {
-@@ -700,7 +701,6 @@ struct qed_hwfn {
- 	unsigned long iov_task_flags;
- #endif
- 	struct z_stream_s *stream;
--	bool slowpath_wq_active;
- 	struct workqueue_struct *slowpath_wq;
- 	struct delayed_work slowpath_task;
- 	unsigned long slowpath_task_flags;
 diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
-index 2c189c6..016d658 100644
+index 016d658..fb13863 100644
 --- a/drivers/net/ethernet/qlogic/qed/qed_main.c
 +++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
-@@ -1095,7 +1095,7 @@ static int qed_slowpath_delayed_work(struct qed_hwfn *hwfn,
- 				     enum qed_slowpath_wq_flag wq_flag,
- 				     unsigned long delay)
- {
--	if (!hwfn->slowpath_wq_active)
-+	if (!test_bit(QED_SLOWPATH_ACTIVE, &hwfn->slowpath_task_flags))
+@@ -1098,10 +1098,13 @@ static int qed_slowpath_delayed_work(struct qed_hwfn *hwfn,
+ 	if (!test_bit(QED_SLOWPATH_ACTIVE, &hwfn->slowpath_task_flags))
  		return -EINVAL;
  
- 	/* Memory barrier for setting atomic bit */
-@@ -1133,7 +1133,8 @@ static void qed_slowpath_wq_stop(struct qed_dev *cdev)
- 			continue;
- 
- 		/* Stop queuing new delayed works */
--		cdev->hwfns[i].slowpath_wq_active = false;
-+		clear_bit(QED_SLOWPATH_ACTIVE,
-+			  &cdev->hwfns[i].slowpath_task_flags);
- 
- 		/* Wait until the last periodic doorbell recovery is executed */
- 		while (test_bit(QED_SLOWPATH_PERIODIC_DB_REC,
-@@ -1153,7 +1154,7 @@ static void qed_slowpath_task(struct work_struct *work)
- 	struct qed_ptt *ptt = qed_ptt_acquire(hwfn);
- 
- 	if (!ptt) {
--		if (hwfn->slowpath_wq_active)
-+		if (test_bit(QED_SLOWPATH_ACTIVE, &hwfn->slowpath_task_flags))
- 			queue_delayed_work(hwfn->slowpath_wq,
- 					   &hwfn->slowpath_task, 0);
- 
-@@ -1199,7 +1200,7 @@ static int qed_slowpath_wq_start(struct qed_dev *cdev)
- 		}
- 
- 		INIT_DELAYED_WORK(&hwfn->slowpath_task, qed_slowpath_task);
--		hwfn->slowpath_wq_active = true;
-+		set_bit(QED_SLOWPATH_ACTIVE, &hwfn->slowpath_task_flags);
- 	}
+-	/* Memory barrier for setting atomic bit */
+-	smp_mb__before_atomic();
+-	set_bit(wq_flag, &hwfn->slowpath_task_flags);
+-	smp_mb__after_atomic();
++	if (wq_flag != QED_SLOWPATH_RESCHEDULE) {
++		/* Memory barrier for setting atomic bit */
++		smp_mb__before_atomic();
++		set_bit(wq_flag, &hwfn->slowpath_task_flags);
++		smp_mb__after_atomic();
++	}
++
+ 	queue_delayed_work(hwfn->slowpath_wq, &hwfn->slowpath_task, delay);
  
  	return 0;
+@@ -1155,8 +1158,8 @@ static void qed_slowpath_task(struct work_struct *work)
+ 
+ 	if (!ptt) {
+ 		if (test_bit(QED_SLOWPATH_ACTIVE, &hwfn->slowpath_task_flags))
+-			queue_delayed_work(hwfn->slowpath_wq,
+-					   &hwfn->slowpath_task, 0);
++			qed_slowpath_delayed_work(hwfn,
++						  QED_SLOWPATH_RESCHEDULE, 0);
+ 
+ 		return;
+ 	}
 -- 
 1.8.3.1
 
