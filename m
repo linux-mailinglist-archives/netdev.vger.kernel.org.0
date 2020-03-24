@@ -2,89 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 577D4191635
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 17:25:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EE9E19165A
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 17:27:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727709AbgCXQYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 12:24:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49654 "EHLO mail.kernel.org"
+        id S1728992AbgCXQ1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 12:27:15 -0400
+Received: from foss.arm.com ([217.140.110.172]:37914 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727133AbgCXQYx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 12:24:53 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4E8BC20774;
-        Tue, 24 Mar 2020 16:24:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585067092;
-        bh=CyeZI5q6pGu5wzW1/2PIpZcFnB5xOU9rhWTk0PMxim4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MwVZUl+R0IJDpX+M0chGF/CwJ5HBBSK8ZaUTiD3HiPbJiVh+sekft5+IYmZNq7NXu
-         0+S9LfIaw4l4PLQAvegHFK8DklyBMB3+Gx6etfsGYp5PCL0YrWIJOkGzRiVMzf4AJb
-         uvhlk+yADie0UKFMc1mf68tbs1BCnMZyQ1KBZw18=
-Date:   Tue, 24 Mar 2020 09:24:50 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kernel-team@fb.com,
-        eugenem@fb.com, jacob.e.keller@intel.com, jiri@resnulli.us,
-        michael.chan@broadcom.com, snelson@pensando.io,
-        jesse.brandeburg@intel.com, vasundhara-v.volam@broadcom.com
-Subject: Re: [PATCH net-next v2] devlink: expand the devlink-info
- documentation
-Message-ID: <20200324092450.33ec1d3f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <fa91cf18-8d2c-bc11-b3d3-bd8671318e7f@infradead.org>
-References: <20200324041548.87488-1-kuba@kernel.org>
-        <fa91cf18-8d2c-bc11-b3d3-bd8671318e7f@infradead.org>
+        id S1728796AbgCXQ0x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 12:26:53 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 637081FB;
+        Tue, 24 Mar 2020 09:26:48 -0700 (PDT)
+Received: from [192.168.3.111] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3BCEC3F52E;
+        Tue, 24 Mar 2020 09:26:47 -0700 (PDT)
+Subject: Re: [PATCH] net: PHY: bcm-unimac: Fix clock handling
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Doug Berger <opendmb@gmail.com>
+References: <20200324161010.81107-1-andre.przywara@arm.com>
+ <20200324161739.GE14512@lunn.ch>
+From:   =?UTF-8?Q?Andr=c3=a9_Przywara?= <andre.przywara@arm.com>
+Organization: ARM Ltd.
+Message-ID: <5852f0e7-aea8-7af8-3a88-5e4fcdc6e5d4@arm.com>
+Date:   Tue, 24 Mar 2020 16:26:19 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200324161739.GE14512@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 23 Mar 2020 22:33:26 -0700 Randy Dunlap wrote:
-> On 3/23/20 9:15 PM, Jakub Kicinski wrote:
-> > We are having multiple review cycles with all vendors trying
-> > to implement devlink-info. Let's expand the documentation with
-> > more information about what's implemented and motivation behind
-> > this interface in an attempt to make the implementations easier.
-> > 
-> > Describe what each info section is supposed to contain, and make
-> > some references to other HW interfaces (PCI caps).
-> > 
-> > Document how firmware management is expected to look, to make
-> > it clear how devlink-info and devlink-flash work in concert.
-> > 
-> > Name some future work.
-> > 
-> > v2: - improve wording
-> > 
-> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>  
-> 
-> Hi Jakub,
-> 
-> One minor edit below, and
-> 
-> Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+On 24/03/2020 16:17, Andrew Lunn wrote:
 
-Will fix, thanks!
+Hi,
 
-> >  Generic Versions
-> >  ================
-> >  
-> >  It is expected that drivers use the following generic names for exporting
-> > -version information. Other information may be exposed using driver-specific
-> > -names, but these should be documented in the driver-specific file.
-> > +version information. If a generic name for a given component doesn't exist, yet,  
+> On Tue, Mar 24, 2020 at 04:10:10PM +0000, Andre Przywara wrote:
+>> The DT binding for this PHY describes an *optional* clock property.
+>> Due to a bug in the error handling logic, we are actually ignoring this
+>> clock *all* of the time so far.
+>>
+>> Fix this by using devm_clk_get_optional() to handle this clock properly.
+>>
+>> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
 > 
->                                                                         exist yet,
+> Hi Andre
 > 
-> > +driver authors should consult existing driver-specific versions and attempt
-> > +reuse. As last resort, if a component is truly unique, using driver-specific
-> > +names is allowed, but these should be documented in the driver-specific file.
-> > +
-> > +All versions should try to use the following terminology:  
+> Do you have a fixes: tag for this?
 
+Should be:
+Fixes: b78ac6ecd1b6b ("net: phy: mdio-bcm-unimac: Allow configuring MDIO
+clock divider")
 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+Thanks for that!
+
+Cheers,
+Andre
