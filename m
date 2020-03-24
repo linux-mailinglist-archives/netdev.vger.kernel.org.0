@@ -2,104 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2938F191A1B
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 20:38:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F09C191A20
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 20:39:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726034AbgCXTiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 15:38:23 -0400
-Received: from mga05.intel.com ([192.55.52.43]:63798 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725835AbgCXTiX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 15:38:23 -0400
-IronPort-SDR: erS7VRQhMP+1CiSzJsYlHdNz5nDwV1NQvT+xKaefGAJeTJ38Q+0edBa3WfOacubKWZrYtXL0Dn
- Aeh30IdtA/jQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2020 12:38:23 -0700
-IronPort-SDR: JGvBLPEwDzu7crDz4YyCCqokMHH/XsvWmViKSFWwT8gdGqzWo1y6CTX94nkgr7+WYrm4miu1Qy
- JbWJ/rkegoKA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,301,1580803200"; 
-   d="scan'208";a="448001100"
-Received: from lrugelex-mobl.amr.corp.intel.com (HELO ellie) ([10.134.41.192])
-  by fmsmga006.fm.intel.com with ESMTP; 24 Mar 2020 12:38:22 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Zh-yuan Ye <ye.zh-yuan@socionext.com>, netdev@vger.kernel.org
-Cc:     okamoto.satoru@socionext.com, kojima.masahisa@socionext.com,
-        kuba@kernel.org, Zh-yuan Ye <ye.zh-yuan@socionext.com>
-Subject: Re: [PATCH net v3] net: cbs: Fix software cbs to consider packet sending time
-In-Reply-To: <20200324082825.3095-1-ye.zh-yuan@socionext.com>
-References: <20200324082825.3095-1-ye.zh-yuan@socionext.com>
-Date:   Tue, 24 Mar 2020 12:38:22 -0700
-Message-ID: <87k139czm9.fsf@intel.com>
+        id S1727099AbgCXTjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 15:39:04 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:40533 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725835AbgCXTjD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 15:39:03 -0400
+Received: by mail-pf1-f193.google.com with SMTP id l184so9836928pfl.7
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 12:39:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FqoMGUJll9Veg+MpF7sippdoesIw0FFxb5gCdl/JcEs=;
+        b=EJwuHni+oQ+OeokhHY9gt6Q8ZdryeMdfB7u++030DzDcuw1WPX98OZn3DFqtn5duew
+         OkmR0nDFow+56mh1f+ZQ9+Rv+WbcAjhJII/oEoSC9rXixsk/WADTgV4/d/c5x0UWNHEO
+         VYONcP9gnCTPA9oS+Yx8evMkSLdjLOKrYuePBVZHCcepkppIXY//vJCUZievm3oxeZNB
+         cgtFFnC9j7wUiEPodlBB2YdgCThG4sgw85gWFPUGffcIIcjfiNSyjKF6gnvHIiazV/oL
+         U+/vvuNAWx7IjMD/XJd4ZqNn6mTMnS9LaL7ziCQotnTUXXcfkQlSyav2aWMeSftTB1D+
+         jaaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FqoMGUJll9Veg+MpF7sippdoesIw0FFxb5gCdl/JcEs=;
+        b=k86WP4M4HLDTyWIBW0lprmqtHFabEpmw6hqvoOrNv1AJk0nP0W9ycXRf4KSgA8Y6eq
+         hjRHcHvlU2EDwmk1jy1vmoa3nWn9EaeQPoKnaFq4QZUUvgd3vlw4yTo0sVVnPdwcWqon
+         RvgX3yH4vtZqyq5DdRU9BKPUAwaMG9Pbg071JOD6u7J1hV3Dy2LeYrEJB7XvUbFtp+Vd
+         35VQb6qDYoq26HICcinv82fw3FhE2UufqqD9F40X7Ti/rGgjUlupyHD5MGqpw9kA6tGH
+         Fq+h8/biZVROtM6BnYkpbL5DDo29E0N1scuX5/29fVfPpGcnzQB6B0gbVwJt2t77z8GA
+         N+sA==
+X-Gm-Message-State: ANhLgQ3WLRSN1TTZz9dLPeNuc2mTjysS0/106O10cGX3GcTK7/vZiiqC
+        7ZIcBo0JdOJzXODSyQ7eTiq0EoXzCK2HDTXpZb0FBRJXkSw=
+X-Google-Smtp-Source: ADFU+vuHCD6vCekZmASrJxBY4B7NrbsOlMmxgEx10j62oseaS81t5zvPERXGOe/446iPRII0JyXqNAJUBjBWa9/qJmE=
+X-Received: by 2002:a63:a34d:: with SMTP id v13mr7687220pgn.10.1585078741157;
+ Tue, 24 Mar 2020 12:39:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20200324161539.7538-1-masahiroy@kernel.org> <20200324161539.7538-3-masahiroy@kernel.org>
+In-Reply-To: <20200324161539.7538-3-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Tue, 24 Mar 2020 12:38:50 -0700
+Message-ID: <CAKwvOdkjiyyt8Ju2j2O4cm1sB34rb_FTgjCRzEiXM6KL4muO_w@mail.gmail.com>
+Subject: Re: [PATCH 3/3] kbuild: remove AS variable
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Zh-yuan Ye <ye.zh-yuan@socionext.com> writes:
+On Tue, Mar 24, 2020 at 9:16 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> As commit 5ef872636ca7 ("kbuild: get rid of misleading $(AS) from
+> documents") noted, we rarely use $(AS) in the kernel build.
+>
+> Now that the only/last user of $(AS) in drivers/net/wan/Makefile was
+> converted to $(CC), $(AS) is no longer used in the build process.
 
-> Currently the software CBS does not consider the packet sending time
-> when depleting the credits. It caused the throughput to be
-> Idleslope[kbps] * (Port transmit rate[kbps] / |Sendslope[kbps]|) where
-> Idleslope * (Port transmit rate / (Idleslope + |Sendslope|)) = Idleslope
-> is expected. In order to fix the issue above, this patch takes the time
-> when the packet sending completes into account by moving the anchor time
-> variable "last" ahead to the send completion time upon transmission and
-> adding wait when the next dequeue request comes before the send
-> completion time of the previous packet.
+TIL that we don't actually invoke the assembler at all for out of line
+assembly files, but rather use the compiler as the "driver".
+scripts/Makefile.build:
+329 quiet_cmd_as_o_S = AS $(quiet_modtag)  $@
+330       cmd_as_o_S = $(CC) $(a_flags) -c -o $@ $<
+
+Though I am personally conflicted, as
+commit 055efab3120b ("kbuild: drop support for cc-ldoption")
+since we do the opposite for the linker (we do not use the compiler as
+the driver for the linker using -Wl,-foo flags).  I wish we were
+consistent in this regard (and not using the compiler as the driver),
+but that is a yak-shave+bikeshed (I typed out yakshed without
+thinking; maybe a new entry for Linux kernel urban dictionary or The
+Jargon File) for another day.
+
+$ grep -nR --include="Makefile" '(AS)' .
+Turned up only this change and the above referenced wan driver.
+
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Tested-by: Nick Desaulniers <ndesaulniers@google.com>
+
+
 >
-> changelog:
-> V2->V3:
->  - remove unnecessary whitespace cleanup
->  - add the checks if port_rate is 0 before division
+> You can still pass in AS=clang, which is just a switch to turn on
+> the LLVM integrated assembler.
 >
-> V1->V2:
->  - combine variable "send_completed" into "last"
->  - add the comment for estimate of the packet sending
->
-> Fixes: 585d763af09c ("net/sched: Introduce Credit Based Shaper (CBS) qdisc")
-> Signed-off-by: Zh-yuan Ye <ye.zh-yuan@socionext.com>
-> Reviewed-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 > ---
->  net/sched/sch_cbs.c | 12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
 >
-> diff --git a/net/sched/sch_cbs.c b/net/sched/sch_cbs.c
-> index b2905b03a432..2eaac2ff380f 100644
-> --- a/net/sched/sch_cbs.c
-> +++ b/net/sched/sch_cbs.c
-> @@ -181,6 +181,11 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
->  	s64 credits;
->  	int len;
->  
-> +	/* The previous packet is still being sent */
-> +	if (now < q->last) {
-> +		qdisc_watchdog_schedule_ns(&q->watchdog, q->last);
-> +		return NULL;
-> +	}
->  	if (q->credits < 0) {
->  		credits = timediff_to_credits(now - q->last, q->idleslope);
->  
-> @@ -212,7 +217,12 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
->  	credits += q->credits;
->  
->  	q->credits = max_t(s64, credits, q->locredit);
-> -	q->last = now;
-> +	/* Estimate of the transmission of the last byte of the packet in ns */
-> +	if (unlikely(atomic64_read(&q->port_rate) == 0))
+>  Makefile | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/Makefile b/Makefile
+> index 16d8271192d1..339e8c51a10b 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -405,7 +405,6 @@ KBUILD_HOSTLDFLAGS  := $(HOST_LFS_LDFLAGS) $(HOSTLDFLAGS)
+>  KBUILD_HOSTLDLIBS   := $(HOST_LFS_LIBS) $(HOSTLDLIBS)
+>
+>  # Make variables (CC, etc...)
+> -AS             = $(CROSS_COMPILE)as
+>  LD             = $(CROSS_COMPILE)ld
+>  CC             = $(CROSS_COMPILE)gcc
+>  CPP            = $(CC) -E
+> @@ -472,7 +471,7 @@ KBUILD_LDFLAGS :=
+>  GCC_PLUGINS_CFLAGS :=
+>  CLANG_FLAGS :=
+>
+> -export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE AS LD CC
+> +export ARCH SRCARCH CONFIG_SHELL BASH HOSTCC KBUILD_HOSTCFLAGS CROSS_COMPILE LD CC
+>  export CPP AR NM STRIP OBJCOPY OBJDUMP OBJSIZE READELF PAHOLE LEX YACC AWK INSTALLKERNEL
+>  export PERL PYTHON PYTHON3 CHECK CHECKFLAGS MAKE UTS_MACHINE HOSTCXX
+>  export KBUILD_HOSTCXXFLAGS KBUILD_HOSTLDFLAGS KBUILD_HOSTLDLIBS LDFLAGS_MODULE
+> --
 
-Minor suggestion. I would only move 'atomic64_read()' to outside the
-condition, so reading 'q->port_rate' is done only once.
-
-It's looking good. When I saw the problems that the software mode
-had with larger packets I should have thought of something like this.
-Thanks for solving this.
-
-
-Cheers,
 -- 
-Vinicius
+Thanks,
+~Nick Desaulniers
