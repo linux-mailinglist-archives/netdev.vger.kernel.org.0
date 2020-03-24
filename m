@@ -2,106 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE6DF19165F
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 17:27:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68D56191667
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 17:28:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729026AbgCXQ1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 12:27:34 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:43096 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728180AbgCXQ1d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 12:27:33 -0400
-Received: by mail-qt1-f196.google.com with SMTP id a5so8239898qtw.10
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 09:27:32 -0700 (PDT)
+        id S1728718AbgCXQ2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 12:28:33 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:39762 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728534AbgCXQ2d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 12:28:33 -0400
+Received: by mail-lj1-f195.google.com with SMTP id i20so7195954ljn.6;
+        Tue, 24 Mar 2020 09:28:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tlapnet.cz; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BWu1zcR/bT21mohqpxDblPAYHiybhVc6xLLKtFFb1E0=;
-        b=EeBAIYNpWsxWeFE9nfoAAuXrQoZyNiQ4AJ7LYdYJRwAOV1R5mevYiH9oe0YQZlZr7l
-         V1Q6AWFvOkn42rMli7QZp4vqlhVhwLO2iMZ/sJfFweF01fOv0a2jb3k+mZzmZ7BOJQVc
-         PUXOPLPZrz9lBuXzwl1hlsqittRdVJJli0VAXQCMTd6c01CT5aRIow3KPISlFaX99673
-         qLWamqu8XdpoQ25EnTnA7spuETLsPN1syIsWzRwzw+O7vznQTYFhUNtKDVhcbCWhtfgb
-         hGGGYIohVT38KtFiVIxzIlRAppb04Fj7RWSEoEWKPGUlDaUxD8XaX2PKdUkuGjB9fUtd
-         JQPw==
+        bh=F4RDqLUZsSxRiEPC5uE5/znG8mVAMvfJqVjLtVuPTYI=;
+        b=LuLLrr4er+BSGhKQjssI8NHtdlFNa4e25P6w8rHTsubuRQi9V8BqJQzt40rl89NpJi
+         TUFxBSyW6blqX9rxpUa8KALUUkOoERwYy5okleCaFKiPS0eQF8mhZD9ELr4U2+vm0XX4
+         zklFKOFjLfGXBjbaY4siIbb7tsK0BeShh2w9R9D2j4oRvUrlLNo5C+7cH4FfYF7qeTuo
+         kWZlk5UGv8ZOZ7Uf+O9C0DnHXMpMwb52fs0BZ91dCysjWGpBPMMSB5X89iAYaUNt09Vd
+         /ORqgTrpH2BznN/YlN+4p0bojHgjD4pZuFa+J9wq1OISsSbwcln0MlvDPICDXdRFXC0R
+         P0bQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BWu1zcR/bT21mohqpxDblPAYHiybhVc6xLLKtFFb1E0=;
-        b=LUeoSExi3bHf5vd+JKF3CAGNpaGh9/1x5SIe+i6KE9mrao6C3xZXgdOf6BfxtkS59T
-         ml6ngut2azcjGsu1QaSzU9xdtZLBZ7ouxRrKCrIsddjcTxlAYcZfijnfzXoxiYRyzB/E
-         sITkbkUmdF3dpPKc6OFCkulz4kEFad2cFUgnW+iNIL07GLUPNnrOdNFaUQdsD9PttTiT
-         6Pn88rIk8vaW3zdo/902a+iEO457vlmEYqpxJ8Re6eToe2+A0PCw/igUkSzgenRVKYeX
-         DKZeqwJGZDi4SATkwaM9wJTRxLsv4Fo6NMAnPGOb2+475C4/hmR9NKZKHcnAopoxcMo2
-         2SoA==
-X-Gm-Message-State: ANhLgQ2zymmozjD0ZWy0yo/XGlLdl/BL58/U0N3Qw2c/h+tNLNQhOGPj
-        L0THFOnIxWGv28ob/LFQU9Je2NeJAO7V0skY5o6dDA==
-X-Google-Smtp-Source: ADFU+vtOdo+8kCKdJs/8iS33yKteeXAIAlIyaOaX3GYnNwXfxny0JJ1A8NNyQfPawv4XyNnTiAXOTHmUhOkvo+tN5Eg=
-X-Received: by 2002:ac8:2939:: with SMTP id y54mr26909043qty.160.1585067252011;
- Tue, 24 Mar 2020 09:27:32 -0700 (PDT)
+        bh=F4RDqLUZsSxRiEPC5uE5/znG8mVAMvfJqVjLtVuPTYI=;
+        b=Rqdc2w2j1wuV8UklJAjDa2LslBNdS0HeYJNOI6fyCHLa4U7m83ckokXSgKufpl83UL
+         qU6dGxlXjZjT3JVxUuHMYr+e2GDLCBQ+w0J+saKHZhJ0HbKLy8wPTouBcRZRF4n7kp3j
+         KjVHN/DS2AnF28vHScrukt7bHo2/DV9eLojDlPofpmZe7cn9eKUFciuWisTgVNlE/A7b
+         nLB9K3idOIG+zo3khqEV7u1U4n/FexIIrFeeW4fbz2Es1mO3YIJORL01/seaVFU8nhRP
+         f1zUd4mH/a3byPPYm2xP8X8xp+DHHQ7J0QeSQZEDvaxeObvb3osT1XnxXtz0N3Y3rdD1
+         LMWg==
+X-Gm-Message-State: ANhLgQ2wdz185UIvCj5xLr/zhgqIC2qTBnt6iL1dlEf6WrV49gvJIo0w
+        zn3XdC7SHduja0IF7yLZ5FUMYp606quljsGfhaA=
+X-Google-Smtp-Source: ADFU+vv3dG23NpLsI31feEsoXfT8VQ+G9TfKP8XIgS8J/aJehLJHzaIF4s5x+DNyat0Dt1V6dnQNgBL+w6VWcAfNkJM=
+X-Received: by 2002:a2e:9949:: with SMTP id r9mr18249406ljj.135.1585067309896;
+ Tue, 24 Mar 2020 09:28:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
- <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
-In-Reply-To: <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
-From:   =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
-Date:   Tue, 24 Mar 2020 17:27:20 +0100
-Message-ID: <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
-Subject: Re: iproute2: tc deletion freezes whole server
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+References: <20200324141722.21308-1-ap420073@gmail.com> <20200324154449.GC2513347@kroah.com>
+In-Reply-To: <20200324154449.GC2513347@kroah.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+Date:   Wed, 25 Mar 2020 01:28:18 +0900
+Message-ID: <CAMArcTVhqxgZ1X+TgruDSGPEXbZS0M86h6y-4WAB8z8OOSgLzg@mail.gmail.com>
+Subject: Re: [PATCH RESEND net 1/3] class: add class_find_and_get_file_ns()
+ helper function
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, rafael@kernel.org,
+        j.vosburgh@gmail.com, vfalico@gmail.com,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, mitch.a.williams@intel.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, 25 Mar 2020 at 00:44, Greg KH <gregkh@linuxfoundation.org> wrote:
+>
 
-Thank you for the reply!
+Hi Greg,
+Thank you for the review!
 
-On Mon, Mar 23, 2020 at 7:18 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> On Tue, Mar 24, 2020 at 02:17:22PM +0000, Taehee Yoo wrote:
+> > The new helper function is to find and get a class file.
+> > This function is useful for checking whether the class file is existing
+> > or not. This function will be used by networking stack to
+> > check "/sys/class/net/*" file.
 > >
-> > perf trace tc qdisc del dev enp1s0f0 root
+> > Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
+> > Fixes: b76cdba9cdb2 ("[PATCH] bonding: add sysfs functionality to bonding (large)")
+> > Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> > ---
+> >  drivers/base/class.c         | 12 ++++++++++++
+> >  include/linux/device/class.h |  4 +++-
+> >  2 files changed, 15 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/base/class.c b/drivers/base/class.c
+> > index bcd410e6d70a..dedf41f32f0d 100644
+> > --- a/drivers/base/class.c
+> > +++ b/drivers/base/class.c
+> > @@ -105,6 +105,17 @@ void class_remove_file_ns(struct class *cls, const struct class_attribute *attr,
+> >               sysfs_remove_file_ns(&cls->p->subsys.kobj, &attr->attr, ns);
+> >  }
+> >
+> > +struct kernfs_node *class_find_and_get_file_ns(struct class *cls,
+> > +                                            const char *name,
+> > +                                            const void *ns)
+> > +{
+> > +     struct kernfs_node *kn = NULL;
+> > +
+> > +     if (cls)
+> > +             kn = kernfs_find_and_get_ns(cls->p->subsys.kobj.sd, name, ns);
+> > +     return kn;
+> > +}
+> > +
 >
-> Can you capture a `perf record` for kernel functions too? We
-> need to know where kernel spent time on during this 11s delay.
-
-See perd.data.{ifb0, enp1s0f0} here
-https://github.com/zvalcav/tc-kernel/tree/master/20200324. I hope it
-is the output you wanted. If you need anything else, let me know.
-
-> > When I call this command on ifb interface or RJ45 interface everything
-> > is done within one second.
+> You can put the EXPORT_SYMBOL_GPL() under here.
 >
+
+Okay, I will change this.
+
+> And can you document what this function actually is in some kerneldoc?
 >
-> Do they have the same tc configuration and same workload?
 
-Yes, both reproducers are exactly the same, interfaces are configured
-in a similar way. I have the most of the offloading turned off for
-physical interfaces. Yet metallic interfaces don't cause that big
-delay and SFP+ dual port cards do, yet not all of them. Only
-difference in reproducers is the interface name. See git repository
-above, tc-interface_name-upload/download.txt files. I have altered my
-whole setup in daemon I'm working on to change interfaces used. The
-only difference is the existence of ingress tc filter rules to
-redirect traffic to ifb interfaces in production setup. I don't use tc
-filter classification in current setup. I use nftables' ability to
-classify traffic. There is no traffic on interfaces except ssh
-session. It behaves similar way with and without traffic.
+Thanks, I will add some kernel-doc comment.
 
-> > My testing setup consists of approx. 18k tc class rules and approx.
-> > 13k tc qdisc rules and was altered only with different interface name....
+> But, returning a kernfs_node from a driver core is _REALLY_ odd.  Why do
+> you need this and who cares about kernfs here?
 >
-> Please share you tc configurations (tc -s -d qd show dev ..., tc
-> -s -d filter show dev...).
 
-I've placed whole reproducers into repository. Do you need exports of rules too?
+I fully agree with that.
+My previous version of this function was here:
 
-> Also, it would be great if you can provide a minimal reproducer.
+bool class_has_file_ns(struct class *cls, const char *name,
+                       const void *ns)
+{
+        struct kernfs_node *kn = NULL;
 
-I'm afraid that minor reproducer won't cause the problem. This was
-happening mostly on servers with large tc rule setups. I was trying to
-create small reproducer for nftables developer many times without
-success. I can try to create reproducer as small as possible, but it
-may still consist of thousands of rules.
+        if (cls) {
+                kn = kernfs_find_and_get_ns(cls->p->subsys.kobj.sd, name, ns);
+                if (kn) {
+                        kernfs_put(kn);
+                        return true;
+                }
+        }
+        return false;
+}
+
+I wanted this function could be used in general cases.
+But I thought this function couldn't be used in general cases.
+So, I made class_find_and_get_file_ns() but I couldn't find
+a more appropriate return type.
+I think I'd rather to use class_has_file_ns() instead of
+class_find_and_get_file_ns() because of an awkward return type.
+How do you think about it?
+
+> thanks,
+>
+> greg k-h
+
+Thanks a lot,
+Taehee Yoo
