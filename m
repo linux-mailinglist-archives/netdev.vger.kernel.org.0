@@ -2,124 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C868190880
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 10:07:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDC1A190984
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 10:25:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbgCXJHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 05:07:43 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:34714 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726129AbgCXJHm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 05:07:42 -0400
-Received: by mail-ed1-f67.google.com with SMTP id i24so19885087eds.1
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 02:07:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bQnFnqK7h413XXIlxDFzP8O+9cc8lrJac9qTaZqSQS0=;
-        b=t1ujTDW4YTE8dsigKUO/VxsVS71b+LcGHAa5fRY2Ki9+PZKuk8gs/S9VLwcHoqYr77
-         YutV/9XW+56IBaxB3akURPJBWnklIlR4ebslz2VWBMZxbx+fMeRRFEGkfA6vYKyR0Cpn
-         2HBHyrjt6EC+gY/hhExusyHuczht2y35+zbxUnZt5BBzNGTMVdq87XvHJQQE/H8tqjpi
-         +19cdxR73dls9jeYq7Sk4GEEWOuQgJNJvltj8nmjSyt76hrmQG2ZrpYxDQqBVRC2Kz2Q
-         i8c3tRxcWEX4qGlLyNsPUlzUvL5eV5K7VycMnMEkSSsJcbtHcAqeAWD45GYbwZJHg0J6
-         yDyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bQnFnqK7h413XXIlxDFzP8O+9cc8lrJac9qTaZqSQS0=;
-        b=Ehm44uZO+g67i9dFq8BGsgZ+RpY4mgM2UYfG3z3oOu1d11ogk5qdwtFkgHSTfDSc4Z
-         6/X3irO9ga4nhi4Vq5CZQOXLBH6ekViUW8z5SsEI7TWp1tBsnMylBrNj/RCv04GaEu84
-         cmXj9yQYYABCUCXMdl8PtxtD/MlAoFd85tK4oqs5C8EPr+Rpadq3tQk5+2VoTUrj27n3
-         tT66g5vci/LsIUgSDn8HZ69jNHGB6ndfHu7Rp+IjXyVOvm5AnSkuUMhn++R9+Ju7Y+pF
-         k7olE4tLQhbwMxgONUVcgsfxh9DACxLlcsxREP7KCuXlPKUQBu8mln8eqrt/L4+JoEuN
-         FBRQ==
-X-Gm-Message-State: ANhLgQ1IGVDFzQ7D70q78nqqkTO8dFilQ1NTT7pOoXhgH89lCyYf0a7C
-        uZy0XhCbi0s91ZIdP08qv3kE6OOx8E/PveJH/bE=
-X-Google-Smtp-Source: ADFU+vuLsLUlkj+xdqR+8T9NP9P6V/s1H655YtyTm+ioSTeRtVj1chfvo1mf4n0oTNq3eTYbC35R908beiFAS29pCog=
-X-Received: by 2002:a17:906:d286:: with SMTP id ay6mr22001028ejb.113.1585040860143;
- Tue, 24 Mar 2020 02:07:40 -0700 (PDT)
+        id S1727186AbgCXJYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 05:24:39 -0400
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:44566 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727050AbgCXJYi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 05:24:38 -0400
+IronPort-SDR: 9rNACHU5GfjfbxS52CSXzX4cpJYA2I123pBps2yVbW5cCG9XrQZadfkYQLVQE5HkzsT7qi2Prc
+ zypdd4Rm+Giodg0ZhLNvpP4lfPWaA0AKUxSbOPTum/ZqpP9tF5hNdyW/ggINTBONSRcj6iPJNR
+ nMdMpnAUGKnTocalTYMixM4ihZSeNlcY612xGuU0r/e1oznQ0Q7XdCjtFwvMz3Hn5Hk63mFjaE
+ qPhMKejNa7wmLV1BCgaMJYba67d7Guq3q454J3MBscuHCleDlb+ibA8iGfwbd9IP1UiVFz1AL1
+ eW0=
+X-IronPort-AV: E=Sophos;i="5.72,299,1580799600"; 
+   d="scan'208";a="70035298"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 Mar 2020 02:24:38 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 24 Mar 2020 02:24:36 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Tue, 24 Mar 2020 02:24:37 -0700
+Date:   Tue, 24 Mar 2020 10:24:36 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Yangbo Lu <yangbo.lu@nxp.com>, lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Richard Cochran" <richardcochran@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "Andrew Lunn" <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH 6/6] ptp_ocelot: support 4 programmable pins
+Message-ID: <20200324092436.stq25qac2h4rm3il@soft-dev3.microsemi.net>
+References: <20200320103726.32559-1-yangbo.lu@nxp.com>
+ <20200320103726.32559-7-yangbo.lu@nxp.com>
+ <CA+h21hoBwDuWCFbO70u1FAERB8zc5F+H5URBkn=2_bpRRRz1oA@mail.gmail.com>
 MIME-Version: 1.0
-References: <AM0PR04MB7041125938BF9A9225B5A8B286F10@AM0PR04MB7041.eurprd04.prod.outlook.com>
-In-Reply-To: <AM0PR04MB7041125938BF9A9225B5A8B286F10@AM0PR04MB7041.eurprd04.prod.outlook.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 24 Mar 2020 11:07:29 +0200
-Message-ID: <CA+h21hpwEV8dwZPWSRpKzt1UocVfv+N_JOj7ZYWG9egcJZ9Rpw@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/4] net: dsa: sja1105: unconditionally set
- DESTMETA and SRCMETA in AVB table
-To:     Christian Herber <christian.herber@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>, "Y.b. Lu" <yangbo.lu@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <CA+h21hoBwDuWCFbO70u1FAERB8zc5F+H5URBkn=2_bpRRRz1oA@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christian,
+Hi Vladimir,
 
-On Tue, 24 Mar 2020 at 09:39, Christian Herber <christian.herber@nxp.com> wrote:
->
-> >+static int sja1105_init_avb_params(struct sja1105_private *priv)
-> >+{
-> >+       struct sja1105_avb_params_entry *avb;
-> >+       struct sja1105_table *table;
-> >+
-> >+       table = &priv->static_config.tables[BLK_IDX_AVB_PARAMS];
-> >+
-> >+       /* Discard previous AVB Parameters Table */
-> >+       if (table->entry_count) {
-> >+               kfree(table->entries);
-> >+               table->entry_count = 0;
-> >+       }
-> >+
-> >+       table->entries = kcalloc(SJA1105_MAX_AVB_PARAMS_COUNT,
-> >+                                table->ops->unpacked_entry_size, GFP_KERNEL);
-> >+       if (!table->entries)
-> >+               return -ENOMEM;
-> >+
-> >+       table->entry_count = SJA1105_MAX_AVB_PARAMS_COUNT;
-> >+
-> >+       avb = table->entries;
-> >+
-> >+       /* Configure the MAC addresses for meta frames */
-> >+       avb->destmeta = SJA1105_META_DMAC;
-> >+       avb->srcmeta  = SJA1105_META_SMAC;
-> >+
-> >+       return 0;
-> >+}
-> >+
->
-> Would it be possible to use the MAC address of the connected eth as destination? This is nicer also when going over multiple cascaded switches.
->
-> Christian
+The 03/20/2020 15:20, Vladimir Oltean wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> Hi Yangbo,
+> 
+> On Fri, 20 Mar 2020 at 12:42, Yangbo Lu <yangbo.lu@nxp.com> wrote:
+> >
+> > Support 4 programmable pins for only one function periodic
+> > signal for now. Since the hardware is not able to support
+> > absolute start time, driver starts periodic signal immediately.
+> >
+> 
+> Are you absolutely sure it doesn't support absolute start time?
+> Because that would mean it's pretty useless if the phase of the PTP
+> clock signal is out of control.
 
-The current destination MAC is 01:80:C2:00:00:0E, which is already a
-bridge link-local multicast address that switches are supposed to trap
-towards the CPU and not forward.
-The way things work right now is that the driver assumes user space
-will add the multicast MAC addresses required for PTP operation on the
-slave net device, and DSA will propagate those addresses to the master
-port as well.
-I think your suggestion might make a difference when the PTP user
-space stack exits, and the slave ports are operating in standalone
-(non-bridged) mode. There is an issue in that case, where the switch
-still sends RX timestamps (since nobody disabled RX timestamping via
-the ioctl), but the multicast MAC address is no longer in the DSA
-master's RX filter. So the kernel log is spammed by the state machine
-in net/dsa/tag_sja1105.c getting upset about meta frames being
-expected but not received.
-If anything, I'm a bit worried about the source MAC address (currently
-22:22:22:22:22:22) which is potentially non-unique, although I need to
-do more testing to see if this is actually a problem. I have a board
-with a DSA switch acting as 3 DSA masters on 3 ports, on each port
-having cascaded a sja1105 switch, and source address learning (of
-22:22:22:22:22:22) on the top-level DSA switch is what concerns me.
+It looks like there is no support for absolute start time. But you
+should be able to control the phase using the register
+PIN_WF_LOW_PERIOD.
 
-Thanks,
--Vladimir
+> 
+> I tested your patch on the LS1028A-RDB board using the following commands:
+> 
+> # Select PEROUT function and assign a channel to each of pins
+> SWITCH_1588_DAT0 and SWITCH_1588_DAT1
+> echo '2 0' > /sys/class/ptp/ptp1/pins/switch_1588_dat0
+> echo '2 1' > /sys/class/ptp/ptp1/pins/switch_1588_dat1
+> # Generate pulses with 1 second period on channel 0
+> echo '0 0 0 1 0' > /sys/class/ptp/ptp1/period
+> # Generate pulses with 1 second period on channel 1
+> echo '1 0 0 1 0' > /sys/class/ptp/ptp1/period
+> 
+> And here is what I get:
+> https://drive.google.com/open?id=1ErWufJL0TWv6hKDQdF1pRL5gn4hn4X-r
+> 
+> So the periodic output really starts 'now' just like the print says,
+> so the output from DAT0 is not even in sync with DAT1.
+> 
+> > Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
+> > ---
+> 
+> Thanks,
+> -Vladimir
+
+-- 
+/Horatiu
