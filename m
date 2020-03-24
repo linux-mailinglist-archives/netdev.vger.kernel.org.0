@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9CEA1917C8
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 18:40:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49FA41917CB
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 18:40:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727501AbgCXRiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 13:38:11 -0400
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:40010 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727223AbgCXRiK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 13:38:10 -0400
-Received: by mail-pj1-f66.google.com with SMTP id kx8so1778158pjb.5;
-        Tue, 24 Mar 2020 10:38:09 -0700 (PDT)
+        id S1727585AbgCXRid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 13:38:33 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:33330 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727223AbgCXRid (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 13:38:33 -0400
+Received: by mail-pf1-f195.google.com with SMTP id j1so6959357pfe.0;
+        Tue, 24 Mar 2020 10:38:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=jyjUeD6zuoXyhDLMSL9cDCavDT6zPCUdtuDCvs0xSJc=;
-        b=CBRtrL9nVmoJgfeqndPjSJJlxNOcupvUQqCEG3UKI9QGIEEJxsiHFEU81GBjE0RQ3s
-         Q8M9kFhJ5KBnocrqtjomGRTRO2y8cpVHfoFo75BvFigdkVsijuA/wD+f5VeS/cn9Eesy
-         PPbCiXf1DnKOhOrDcLcirFcLy24NdBeTLYLd/YVd936+oCxyE854Iqt1pK9+iMb5NbEu
-         TSlFtPyeZ9kMPFwD+jj4l6KP13/+jHBoJ9L9KgeK06uvhLheOsGOSrfGVWm8iJ0obnrA
-         jVmuTKm+5ASTuXqGdciItQyZeXtzzPHux2EC2BuAF+/HDQ62IkeWOU8lh/OFj6EYs8cd
-         DiGw==
+        bh=WTCXwSsC7t7WD/G15nSkk8o9lACVYGriK/Rn9p7mHlU=;
+        b=jcRPSsTe/WZcuTmKN4MYnoTlHFXwRyHO9DqWyWulPfh6a3l2/YRtos0+RidwjG0ity
+         5U7lH1aY/qYlTh39+4jjE/uRagto+L1CD+DXO2x04LIj6uuN2C5uGsXsqvrRkuc3gBuo
+         oJ1KPMS/wombzA2w9ZP07On1QNw7MOQ6kn7AAR+ONyr9GdjCmrssyiRoCR33QSvBEgKx
+         gC0FggQl2yRFXOOP5d5WcMJ99JZso6X0zRSAoFk1v3czJ6QT85daC3Q6z1UCK7t1K9gP
+         B3R8m7UbKjbTy51wvfZtEAZwo0+/aQQaaUyMAhgM3MrxqNVPlmUGzo54cvJA/sPz/rhC
+         eL7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=jyjUeD6zuoXyhDLMSL9cDCavDT6zPCUdtuDCvs0xSJc=;
-        b=GWrwgD5os+DqVXLWT41+tT/MUd1mTeb3IGYak2ui49qIsThDm0q7jwlDYroVoaA4MT
-         9H4Y1jYUmaWSDHb1a15PErAuj60h61GmvOOvUpDiREiVeWPg1xHhLreW3g5fYMe1pYRt
-         vO5u9TH5E58LXnJKInA7trV6n7IJK0JHiAh03B6UsE09vUf+jO/TtyaWPD4ETJWa4Ahf
-         GViVJZRauqKIjaZwbnlFI8Zh4zRy+YfOwIGCxeORHM0yRxMFGEN+oI+rmYoXbK5cVMY3
-         7gYSryG5zB3oCTZpTxOY6OpZSCIQwLS86uAKk23HIW7shy3LAyHHC8tqyWdnqM5XbWAm
-         f4Ug==
-X-Gm-Message-State: ANhLgQ3OVbHKrA8X2nX9Cs2j7Dk4Epm/3TzXEUWji3+M2m7DbAKAQZf8
-        FBh6zcWLw4dNCajqQngH4hA=
-X-Google-Smtp-Source: ADFU+vslUzmlB9AI4iTqG9J52w4DCNiuO97FpQC7Nvrg0YEc99CNFz987dZB36DvVshtJNNAU5lvqg==
-X-Received: by 2002:a17:90b:3d1:: with SMTP id go17mr6012724pjb.99.1585071489030;
-        Tue, 24 Mar 2020 10:38:09 -0700 (PDT)
+        bh=WTCXwSsC7t7WD/G15nSkk8o9lACVYGriK/Rn9p7mHlU=;
+        b=o0kMqRjflqCzkm6aXqM9wF0UiwrmUSLwenQHlAij5Xp/YBZB3kYpNIynBTCNL+nnyk
+         xFsGOTdT3+N67OqLVr8TAAOTAqOV53O4/zUgZtsGDuXSCIMWQhnWBZ5Nhhqw4tiZ0Cqb
+         VPMYnKjDKwbfxgKxmJ7nnLhPF5nZPu3T2lKGE4BqHEIm5saWzhjFHUamRbiOHMZxWPVt
+         2GZlznoNyWLg28kY58JHHgZ+u0YPs3roA1jxEiDozOS1JrLOcGELYmQdR/plSlLz1I7x
+         kCmxvCLrAydhMaOXuXQKvrQ5iCkvb8td8dlO6BxK7oU9yaSdsCjXNwtU77Q14ZaCV2KL
+         iDLQ==
+X-Gm-Message-State: ANhLgQ2gDgydhNCErBaCGXV9SIZNnyt7iDqmztzOvlaBpkTovPUyHK2k
+        8G17nDArCXjPHoXlqX5RUQU=
+X-Google-Smtp-Source: ADFU+vumqVtp5NBvhKclo4L0rSd0BhbIGzAwPKqIFkRnQtytflvMomAGdljmo2X5B+VDCeySdigfwA==
+X-Received: by 2002:a62:7911:: with SMTP id u17mr29809666pfc.305.1585071509518;
+        Tue, 24 Mar 2020 10:38:29 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id s137sm13574105pfs.45.2020.03.24.10.37.59
+        by smtp.gmail.com with ESMTPSA id c207sm16445517pfb.47.2020.03.24.10.38.20
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 24 Mar 2020 10:38:08 -0700 (PDT)
-Subject: [bpf-next PATCH 01/10] bpf: verifier,
- do_refine_retval_range may clamp umin to 0 incorrectly
+        Tue, 24 Mar 2020 10:38:29 -0700 (PDT)
+Subject: [bpf-next PATCH 02/10] bpf: verifer,
+ refactor adjust_scalar_min_max_vals
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     ecree@solarflare.com, yhs@fb.com, alexei.starovoitov@gmail.com,
         daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         john.fastabend@gmail.com
-Date:   Tue, 24 Mar 2020 10:37:54 -0700
-Message-ID: <158507147386.15666.12903539309039973826.stgit@john-Precision-5820-Tower>
+Date:   Tue, 24 Mar 2020 10:38:15 -0700
+Message-ID: <158507149518.15666.15672349629329072411.stgit@john-Precision-5820-Tower>
 In-Reply-To: <158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower>
 References: <158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
@@ -64,145 +64,478 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-do_refine_retval_range() is called to refine return values from specified
-helpers, probe_read_str and get_stack at the moment, the reasoning is
-because both have a max value as part of their input arguments and
-because the helper ensure the return value will not be larger than this
-we can set smax values of the return register, r0.
+Pull per op ALU logic into individual functions. We are about to add
+u32 versions of each of these by pull them out the code gets a bit
+more readable here and nicer in the next patch.
 
-However, the return value is a signed integer so setting umax is incorrect
-It leads to further confusion when the do_refine_retval_range() then calls,
-__reg_deduce_bounds() which will see a umax value as meaning the value is
-unsigned and then assuming it is unsigned set the smin = umin which in this
-case results in 'smin = 0' and an 'smax = X' where X is the input argument
-from the helper call.
-
-Here are the comments from _reg_deduce_bounds() on why this would be safe
-to do.
-
- /* Learn sign from unsigned bounds.  Signed bounds cross the sign
-  * boundary, so we must be careful.
-  */
- if ((s64)reg->umax_value >= 0) {
-	/* Positive.  We can't learn anything from the smin, but smax
-	 * is positive, hence safe.
-	 */
-	reg->smin_value = reg->umin_value;
-	reg->smax_value = reg->umax_value = min_t(u64, reg->smax_value,
-						  reg->umax_value);
-
-But now we incorrectly have a return value with type int with the
-signed bounds (0,X). Suppose the return value is negative, which is
-possible the we have the verifier and reality out of sync. Among other
-things this may result in any error handling code being falsely detected
-as dead-code and removed. For instance the example below shows using
-bpf_probe_read_str() causes the error path to be identified as dead
-code and removed.
-
->>From the 'llvm-object -S' dump,
-
- r2 = 100
- call 45
- if r0 s< 0 goto +4
- r4 = *(u32 *)(r7 + 0)
-
-But from dump xlate
-
-  (b7) r2 = 100
-  (85) call bpf_probe_read_compat_str#-96768
-  (61) r4 = *(u32 *)(r7 +0)  <-- dropped if goto
-
-Due to verifier state after call being
-
- R0=inv(id=0,umax_value=100,var_off=(0x0; 0x7f))
-
-To fix omit setting the umax value because its not safe. The only
-actual bounds we know is the smax. This results in the correct bounds
-(SMIN, X) where X is the max length from the helper. After this the
-new verifier state looks like the following after call 45.
-
-R0=inv(id=0,smax_value=100)
-
-Then xlated version no longer removed dead code giving the expected
-result,
-
-  (b7) r2 = 100
-  (85) call bpf_probe_read_compat_str#-96768
-  (c5) if r0 s< 0x0 goto pc+4
-  (61) r4 = *(u32 *)(r7 +0)
-
-Note, bpf_probe_read_* calls are root only so we wont hit this case
-with non-root bpf users.
-
-v3: comment had some documentation about meta set to null case which
-is not relevant here and confusing to include in the comment.
-
-v2 note: In original version we set msize_smax_value from check_func_arg()
-and propagated this into smax of retval. The logic was smax is the bound
-on the retval we set and because the type in the helper is ARG_CONST_SIZE
-we know that the reg is a positive tnum_const() so umax=smax. Alexei
-pointed out though this is a bit odd to read because the register in
-check_func_arg() has a C type of u32 and the umax bound would be the
-normally relavent bound here. Pulling in extra knowledge about future
-checks makes reading the code a bit tricky. Further having a signed
-meta data that can only ever be positive is also a bit odd. So dropped
-the msize_smax_value metadata and made it a u64 msize_max_value to
-indicate its unsigned. And additionally save bound from umax value in
-check_arg_funcs which is the same as smax due to as noted above tnumx_cont
-and negative check but reads better. By my analysis nothing functionally
-changes in v2 but it does get easier to read so that is win.
-
-Fixes: 849fa50662fbc ("bpf/verifier: refine retval R0 state for bpf_get_stack helper")
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- kernel/bpf/verifier.c |   19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ kernel/bpf/verifier.c |  403 +++++++++++++++++++++++++++++--------------------
+ 1 file changed, 239 insertions(+), 164 deletions(-)
 
 diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 745f3cfd..57d3351 100644
+index 57d3351..f7a34b1 100644
 --- a/kernel/bpf/verifier.c
 +++ b/kernel/bpf/verifier.c
-@@ -228,8 +228,7 @@ struct bpf_call_arg_meta {
- 	bool pkt_access;
- 	int regno;
- 	int access_size;
--	s64 msize_smax_value;
--	u64 msize_umax_value;
-+	u64 msize_max_value;
- 	int ref_obj_id;
- 	int func_id;
- 	u32 btf_id;
-@@ -3577,11 +3576,15 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 regno,
- 	} else if (arg_type_is_mem_size(arg_type)) {
- 		bool zero_size_allowed = (arg_type == ARG_CONST_SIZE_OR_ZERO);
- 
--		/* remember the mem_size which may be used later
--		 * to refine return values.
-+		/* This is used to refine r0 return value bounds for helpers
-+		 * that enforce this value as an upper bound on return values.
-+		 * See do_refine_retval_range() for helpers that can refine
-+		 * the return value. C type of helper is u32 so we pull register
-+		 * bound from umax_value however, if negative verifier errors
-+		 * out. Only upper bounds can be learned because retval is an
-+		 * int type and negative retvals are allowed.
- 		 */
--		meta->msize_smax_value = reg->smax_value;
--		meta->msize_umax_value = reg->umax_value;
-+		meta->msize_max_value = reg->umax_value;
- 
- 		/* The register is SCALAR_VALUE; the access check
- 		 * happens using its boundaries.
-@@ -4124,10 +4127,10 @@ static void do_refine_retval_range(struct bpf_reg_state *regs, int ret_type,
- 	     func_id != BPF_FUNC_probe_read_str))
- 		return;
- 
--	ret_reg->smax_value = meta->msize_smax_value;
--	ret_reg->umax_value = meta->msize_umax_value;
-+	ret_reg->smax_value = meta->msize_max_value;
- 	__reg_deduce_bounds(ret_reg);
- 	__reg_bound_offset(ret_reg);
-+	__update_reg_bounds(ret_reg);
+@@ -4846,6 +4846,237 @@ static int adjust_ptr_min_max_vals(struct bpf_verifier_env *env,
+ 	return 0;
  }
  
- static int
++static void scalar_min_max_add(struct bpf_reg_state *dst_reg,
++			       struct bpf_reg_state *src_reg)
++{
++	s64 smin_val = src_reg->smin_value;
++	s64 smax_val = src_reg->smax_value;
++	u64 umin_val = src_reg->umin_value;
++	u64 umax_val = src_reg->umax_value;
++
++	if (signed_add_overflows(dst_reg->smin_value, smin_val) ||
++	    signed_add_overflows(dst_reg->smax_value, smax_val)) {
++		dst_reg->smin_value = S64_MIN;
++		dst_reg->smax_value = S64_MAX;
++	} else {
++		dst_reg->smin_value += smin_val;
++		dst_reg->smax_value += smax_val;
++	}
++	if (dst_reg->umin_value + umin_val < umin_val ||
++	    dst_reg->umax_value + umax_val < umax_val) {
++		dst_reg->umin_value = 0;
++		dst_reg->umax_value = U64_MAX;
++	} else {
++		dst_reg->umin_value += umin_val;
++		dst_reg->umax_value += umax_val;
++	}
++	dst_reg->var_off = tnum_add(dst_reg->var_off, src_reg->var_off);
++}
++
++static void scalar_min_max_sub(struct bpf_reg_state *dst_reg,
++			       struct bpf_reg_state *src_reg)
++{
++	s64 smin_val = src_reg->smin_value;
++	s64 smax_val = src_reg->smax_value;
++	u64 umin_val = src_reg->umin_value;
++	u64 umax_val = src_reg->umax_value;
++
++	if (signed_sub_overflows(dst_reg->smin_value, smax_val) ||
++	    signed_sub_overflows(dst_reg->smax_value, smin_val)) {
++		/* Overflow possible, we know nothing */
++		dst_reg->smin_value = S64_MIN;
++		dst_reg->smax_value = S64_MAX;
++	} else {
++		dst_reg->smin_value -= smax_val;
++		dst_reg->smax_value -= smin_val;
++	}
++	if (dst_reg->umin_value < umax_val) {
++		/* Overflow possible, we know nothing */
++		dst_reg->umin_value = 0;
++		dst_reg->umax_value = U64_MAX;
++	} else {
++		/* Cannot overflow (as long as bounds are consistent) */
++		dst_reg->umin_value -= umax_val;
++		dst_reg->umax_value -= umin_val;
++	}
++	dst_reg->var_off = tnum_sub(dst_reg->var_off, src_reg->var_off);
++}
++
++static void scalar_min_max_mul(struct bpf_reg_state *dst_reg,
++			       struct bpf_reg_state *src_reg)
++{
++	s64 smin_val = src_reg->smin_value;
++	u64 umin_val = src_reg->umin_value;
++	u64 umax_val = src_reg->umax_value;
++
++	dst_reg->var_off = tnum_mul(dst_reg->var_off, src_reg->var_off);
++	if (smin_val < 0 || dst_reg->smin_value < 0) {
++		/* Ain't nobody got time to multiply that sign */
++		__mark_reg_unbounded(dst_reg);
++		__update_reg_bounds(dst_reg);
++		return;
++	}
++	/* Both values are positive, so we can work with unsigned and
++	 * copy the result to signed (unless it exceeds S64_MAX).
++	 */
++	if (umax_val > U32_MAX || dst_reg->umax_value > U32_MAX) {
++		/* Potential overflow, we know nothing */
++		__mark_reg_unbounded(dst_reg);
++		/* (except what we can learn from the var_off) */
++		__update_reg_bounds(dst_reg);
++		return;
++	}
++	dst_reg->umin_value *= umin_val;
++	dst_reg->umax_value *= umax_val;
++	if (dst_reg->umax_value > S64_MAX) {
++		/* Overflow possible, we know nothing */
++		dst_reg->smin_value = S64_MIN;
++		dst_reg->smax_value = S64_MAX;
++	} else {
++		dst_reg->smin_value = dst_reg->umin_value;
++		dst_reg->smax_value = dst_reg->umax_value;
++	}
++}
++
++static void scalar_min_max_and(struct bpf_reg_state *dst_reg,
++			       struct bpf_reg_state *src_reg)
++{
++	s64 smin_val = src_reg->smin_value;
++	u64 umax_val = src_reg->umax_value;
++
++	/* We get our minimum from the var_off, since that's inherently
++	 * bitwise.  Our maximum is the minimum of the operands' maxima.
++	 */
++	dst_reg->var_off = tnum_and(dst_reg->var_off, src_reg->var_off);
++	dst_reg->umin_value = dst_reg->var_off.value;
++	dst_reg->umax_value = min(dst_reg->umax_value, umax_val);
++	if (dst_reg->smin_value < 0 || smin_val < 0) {
++		/* Lose signed bounds when ANDing negative numbers,
++		 * ain't nobody got time for that.
++		 */
++		dst_reg->smin_value = S64_MIN;
++		dst_reg->smax_value = S64_MAX;
++	} else {
++		/* ANDing two positives gives a positive, so safe to
++		 * cast result into s64.
++		 */
++		dst_reg->smin_value = dst_reg->umin_value;
++		dst_reg->smax_value = dst_reg->umax_value;
++	}
++	/* We may learn something more from the var_off */
++	__update_reg_bounds(dst_reg);
++}
++
++static void scalar_min_max_or(struct bpf_reg_state *dst_reg,
++			      struct bpf_reg_state *src_reg)
++{
++	s64 smin_val = src_reg->smin_value;
++	u64 umin_val = src_reg->umin_value;
++
++	/* We get our maximum from the var_off, and our minimum is the
++	 * maximum of the operands' minima
++	 */
++	dst_reg->var_off = tnum_or(dst_reg->var_off, src_reg->var_off);
++	dst_reg->umin_value = max(dst_reg->umin_value, umin_val);
++	dst_reg->umax_value = dst_reg->var_off.value | dst_reg->var_off.mask;
++	if (dst_reg->smin_value < 0 || smin_val < 0) {
++		/* Lose signed bounds when ORing negative numbers,
++		 * ain't nobody got time for that.
++		 */
++		dst_reg->smin_value = S64_MIN;
++		dst_reg->smax_value = S64_MAX;
++	} else {
++		/* ORing two positives gives a positive, so safe to
++		 * cast result into s64.
++		 */
++		dst_reg->smin_value = dst_reg->umin_value;
++		dst_reg->smax_value = dst_reg->umax_value;
++	}
++	/* We may learn something more from the var_off */
++	__update_reg_bounds(dst_reg);
++}
++
++static void scalar_min_max_lsh(struct bpf_reg_state *dst_reg,
++			       struct bpf_reg_state *src_reg)
++{
++	u64 umax_val = src_reg->umax_value;
++	u64 umin_val = src_reg->umin_value;
++
++	/* We lose all sign bit information (except what we can pick
++	 * up from var_off)
++	 */
++	dst_reg->smin_value = S64_MIN;
++	dst_reg->smax_value = S64_MAX;
++	/* If we might shift our top bit out, then we know nothing */
++	if (dst_reg->umax_value > 1ULL << (63 - umax_val)) {
++		dst_reg->umin_value = 0;
++		dst_reg->umax_value = U64_MAX;
++	} else {
++		dst_reg->umin_value <<= umin_val;
++		dst_reg->umax_value <<= umax_val;
++	}
++	dst_reg->var_off = tnum_lshift(dst_reg->var_off, umin_val);
++	/* We may learn something more from the var_off */
++	__update_reg_bounds(dst_reg);
++}
++
++static void scalar_min_max_rsh(struct bpf_reg_state *dst_reg,
++			       struct bpf_reg_state *src_reg)
++{
++	u64 umax_val = src_reg->umax_value;
++	u64 umin_val = src_reg->umin_value;
++
++	/* BPF_RSH is an unsigned shift.  If the value in dst_reg might
++	 * be negative, then either:
++	 * 1) src_reg might be zero, so the sign bit of the result is
++	 *    unknown, so we lose our signed bounds
++	 * 2) it's known negative, thus the unsigned bounds capture the
++	 *    signed bounds
++	 * 3) the signed bounds cross zero, so they tell us nothing
++	 *    about the result
++	 * If the value in dst_reg is known nonnegative, then again the
++	 * unsigned bounts capture the signed bounds.
++	 * Thus, in all cases it suffices to blow away our signed bounds
++	 * and rely on inferring new ones from the unsigned bounds and
++	 * var_off of the result.
++	 */
++	dst_reg->smin_value = S64_MIN;
++	dst_reg->smax_value = S64_MAX;
++	dst_reg->var_off = tnum_rshift(dst_reg->var_off, umin_val);
++	dst_reg->umin_value >>= umax_val;
++	dst_reg->umax_value >>= umin_val;
++	/* We may learn something more from the var_off */
++	__update_reg_bounds(dst_reg);
++}
++
++static void scalar_min_max_arsh(struct bpf_reg_state *dst_reg,
++			        struct bpf_reg_state *src_reg,
++				u64 insn_bitness)
++{
++	u64 umin_val = src_reg->umin_value;
++
++	/* Upon reaching here, src_known is true and
++	 * umax_val is equal to umin_val.
++	 */
++	if (insn_bitness == 32) {
++		dst_reg->smin_value = (u32)(((s32)dst_reg->smin_value) >> umin_val);
++		dst_reg->smax_value = (u32)(((s32)dst_reg->smax_value) >> umin_val);
++	} else {
++		dst_reg->smin_value >>= umin_val;
++		dst_reg->smax_value >>= umin_val;
++	}
++
++	dst_reg->var_off = tnum_arshift(dst_reg->var_off, umin_val,
++					insn_bitness);
++
++	/* blow away the dst_reg umin_value/umax_value and rely on
++	 * dst_reg var_off to refine the result.
++	 */
++	dst_reg->umin_value = 0;
++	dst_reg->umax_value = U64_MAX;
++	__update_reg_bounds(dst_reg);
++}
++
+ /* WARNING: This function does calculations on 64-bit values, but the actual
+  * execution may occur on 32-bit values. Therefore, things like bitshifts
+  * need extra checks in the 32-bit case.
+@@ -4902,23 +5133,7 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+ 			verbose(env, "R%d tried to add from different pointers or scalars\n", dst);
+ 			return ret;
+ 		}
+-		if (signed_add_overflows(dst_reg->smin_value, smin_val) ||
+-		    signed_add_overflows(dst_reg->smax_value, smax_val)) {
+-			dst_reg->smin_value = S64_MIN;
+-			dst_reg->smax_value = S64_MAX;
+-		} else {
+-			dst_reg->smin_value += smin_val;
+-			dst_reg->smax_value += smax_val;
+-		}
+-		if (dst_reg->umin_value + umin_val < umin_val ||
+-		    dst_reg->umax_value + umax_val < umax_val) {
+-			dst_reg->umin_value = 0;
+-			dst_reg->umax_value = U64_MAX;
+-		} else {
+-			dst_reg->umin_value += umin_val;
+-			dst_reg->umax_value += umax_val;
+-		}
+-		dst_reg->var_off = tnum_add(dst_reg->var_off, src_reg.var_off);
++		scalar_min_max_add(dst_reg, &src_reg);
+ 		break;
+ 	case BPF_SUB:
+ 		ret = sanitize_val_alu(env, insn);
+@@ -4926,54 +5141,10 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+ 			verbose(env, "R%d tried to sub from different pointers or scalars\n", dst);
+ 			return ret;
+ 		}
+-		if (signed_sub_overflows(dst_reg->smin_value, smax_val) ||
+-		    signed_sub_overflows(dst_reg->smax_value, smin_val)) {
+-			/* Overflow possible, we know nothing */
+-			dst_reg->smin_value = S64_MIN;
+-			dst_reg->smax_value = S64_MAX;
+-		} else {
+-			dst_reg->smin_value -= smax_val;
+-			dst_reg->smax_value -= smin_val;
+-		}
+-		if (dst_reg->umin_value < umax_val) {
+-			/* Overflow possible, we know nothing */
+-			dst_reg->umin_value = 0;
+-			dst_reg->umax_value = U64_MAX;
+-		} else {
+-			/* Cannot overflow (as long as bounds are consistent) */
+-			dst_reg->umin_value -= umax_val;
+-			dst_reg->umax_value -= umin_val;
+-		}
+-		dst_reg->var_off = tnum_sub(dst_reg->var_off, src_reg.var_off);
++		scalar_min_max_sub(dst_reg, &src_reg);
+ 		break;
+ 	case BPF_MUL:
+-		dst_reg->var_off = tnum_mul(dst_reg->var_off, src_reg.var_off);
+-		if (smin_val < 0 || dst_reg->smin_value < 0) {
+-			/* Ain't nobody got time to multiply that sign */
+-			__mark_reg_unbounded(dst_reg);
+-			__update_reg_bounds(dst_reg);
+-			break;
+-		}
+-		/* Both values are positive, so we can work with unsigned and
+-		 * copy the result to signed (unless it exceeds S64_MAX).
+-		 */
+-		if (umax_val > U32_MAX || dst_reg->umax_value > U32_MAX) {
+-			/* Potential overflow, we know nothing */
+-			__mark_reg_unbounded(dst_reg);
+-			/* (except what we can learn from the var_off) */
+-			__update_reg_bounds(dst_reg);
+-			break;
+-		}
+-		dst_reg->umin_value *= umin_val;
+-		dst_reg->umax_value *= umax_val;
+-		if (dst_reg->umax_value > S64_MAX) {
+-			/* Overflow possible, we know nothing */
+-			dst_reg->smin_value = S64_MIN;
+-			dst_reg->smax_value = S64_MAX;
+-		} else {
+-			dst_reg->smin_value = dst_reg->umin_value;
+-			dst_reg->smax_value = dst_reg->umax_value;
+-		}
++		scalar_min_max_mul(dst_reg, &src_reg);
+ 		break;
+ 	case BPF_AND:
+ 		if (src_known && dst_known) {
+@@ -4981,27 +5152,7 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+ 						  src_reg.var_off.value);
+ 			break;
+ 		}
+-		/* We get our minimum from the var_off, since that's inherently
+-		 * bitwise.  Our maximum is the minimum of the operands' maxima.
+-		 */
+-		dst_reg->var_off = tnum_and(dst_reg->var_off, src_reg.var_off);
+-		dst_reg->umin_value = dst_reg->var_off.value;
+-		dst_reg->umax_value = min(dst_reg->umax_value, umax_val);
+-		if (dst_reg->smin_value < 0 || smin_val < 0) {
+-			/* Lose signed bounds when ANDing negative numbers,
+-			 * ain't nobody got time for that.
+-			 */
+-			dst_reg->smin_value = S64_MIN;
+-			dst_reg->smax_value = S64_MAX;
+-		} else {
+-			/* ANDing two positives gives a positive, so safe to
+-			 * cast result into s64.
+-			 */
+-			dst_reg->smin_value = dst_reg->umin_value;
+-			dst_reg->smax_value = dst_reg->umax_value;
+-		}
+-		/* We may learn something more from the var_off */
+-		__update_reg_bounds(dst_reg);
++		scalar_min_max_and(dst_reg, &src_reg);
+ 		break;
+ 	case BPF_OR:
+ 		if (src_known && dst_known) {
+@@ -5009,28 +5160,7 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+ 						  src_reg.var_off.value);
+ 			break;
+ 		}
+-		/* We get our maximum from the var_off, and our minimum is the
+-		 * maximum of the operands' minima
+-		 */
+-		dst_reg->var_off = tnum_or(dst_reg->var_off, src_reg.var_off);
+-		dst_reg->umin_value = max(dst_reg->umin_value, umin_val);
+-		dst_reg->umax_value = dst_reg->var_off.value |
+-				      dst_reg->var_off.mask;
+-		if (dst_reg->smin_value < 0 || smin_val < 0) {
+-			/* Lose signed bounds when ORing negative numbers,
+-			 * ain't nobody got time for that.
+-			 */
+-			dst_reg->smin_value = S64_MIN;
+-			dst_reg->smax_value = S64_MAX;
+-		} else {
+-			/* ORing two positives gives a positive, so safe to
+-			 * cast result into s64.
+-			 */
+-			dst_reg->smin_value = dst_reg->umin_value;
+-			dst_reg->smax_value = dst_reg->umax_value;
+-		}
+-		/* We may learn something more from the var_off */
+-		__update_reg_bounds(dst_reg);
++		scalar_min_max_or(dst_reg, &src_reg);
+ 		break;
+ 	case BPF_LSH:
+ 		if (umax_val >= insn_bitness) {
+@@ -5040,22 +5170,7 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+ 			mark_reg_unknown(env, regs, insn->dst_reg);
+ 			break;
+ 		}
+-		/* We lose all sign bit information (except what we can pick
+-		 * up from var_off)
+-		 */
+-		dst_reg->smin_value = S64_MIN;
+-		dst_reg->smax_value = S64_MAX;
+-		/* If we might shift our top bit out, then we know nothing */
+-		if (dst_reg->umax_value > 1ULL << (63 - umax_val)) {
+-			dst_reg->umin_value = 0;
+-			dst_reg->umax_value = U64_MAX;
+-		} else {
+-			dst_reg->umin_value <<= umin_val;
+-			dst_reg->umax_value <<= umax_val;
+-		}
+-		dst_reg->var_off = tnum_lshift(dst_reg->var_off, umin_val);
+-		/* We may learn something more from the var_off */
+-		__update_reg_bounds(dst_reg);
++		scalar_min_max_lsh(dst_reg, &src_reg);
+ 		break;
+ 	case BPF_RSH:
+ 		if (umax_val >= insn_bitness) {
+@@ -5065,27 +5180,7 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+ 			mark_reg_unknown(env, regs, insn->dst_reg);
+ 			break;
+ 		}
+-		/* BPF_RSH is an unsigned shift.  If the value in dst_reg might
+-		 * be negative, then either:
+-		 * 1) src_reg might be zero, so the sign bit of the result is
+-		 *    unknown, so we lose our signed bounds
+-		 * 2) it's known negative, thus the unsigned bounds capture the
+-		 *    signed bounds
+-		 * 3) the signed bounds cross zero, so they tell us nothing
+-		 *    about the result
+-		 * If the value in dst_reg is known nonnegative, then again the
+-		 * unsigned bounts capture the signed bounds.
+-		 * Thus, in all cases it suffices to blow away our signed bounds
+-		 * and rely on inferring new ones from the unsigned bounds and
+-		 * var_off of the result.
+-		 */
+-		dst_reg->smin_value = S64_MIN;
+-		dst_reg->smax_value = S64_MAX;
+-		dst_reg->var_off = tnum_rshift(dst_reg->var_off, umin_val);
+-		dst_reg->umin_value >>= umax_val;
+-		dst_reg->umax_value >>= umin_val;
+-		/* We may learn something more from the var_off */
+-		__update_reg_bounds(dst_reg);
++		scalar_min_max_rsh(dst_reg, &src_reg);
+ 		break;
+ 	case BPF_ARSH:
+ 		if (umax_val >= insn_bitness) {
+@@ -5095,27 +5190,7 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
+ 			mark_reg_unknown(env, regs, insn->dst_reg);
+ 			break;
+ 		}
+-
+-		/* Upon reaching here, src_known is true and
+-		 * umax_val is equal to umin_val.
+-		 */
+-		if (insn_bitness == 32) {
+-			dst_reg->smin_value = (u32)(((s32)dst_reg->smin_value) >> umin_val);
+-			dst_reg->smax_value = (u32)(((s32)dst_reg->smax_value) >> umin_val);
+-		} else {
+-			dst_reg->smin_value >>= umin_val;
+-			dst_reg->smax_value >>= umin_val;
+-		}
+-
+-		dst_reg->var_off = tnum_arshift(dst_reg->var_off, umin_val,
+-						insn_bitness);
+-
+-		/* blow away the dst_reg umin_value/umax_value and rely on
+-		 * dst_reg var_off to refine the result.
+-		 */
+-		dst_reg->umin_value = 0;
+-		dst_reg->umax_value = U64_MAX;
+-		__update_reg_bounds(dst_reg);
++		scalar_min_max_arsh(dst_reg, &src_reg, insn_bitness);
+ 		break;
+ 	default:
+ 		mark_reg_unknown(env, regs, insn->dst_reg);
 
