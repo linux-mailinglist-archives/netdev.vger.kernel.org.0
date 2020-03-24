@@ -2,377 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 895C71917A6
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 18:32:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA0881917C6
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 18:40:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727384AbgCXRa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 13:30:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58224 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727223AbgCXRa1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 13:30:27 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 658CB2076E;
-        Tue, 24 Mar 2020 17:30:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585071025;
-        bh=HrM4p0+PCXztswvRe+IC2agv0SpvUIRxrh46BeJhBsk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=J1fXfaNUsPOUB3YzGudvF0I/e42WDLjsgvZJmLWfznFyuecr6fdS46TsQtpuTqOBD
-         mu4x7KhtnUI4svwmPekKGLxOErYYsDMf3wYVhxSYUDNl37adclK/IMmXIrzqeH2b3v
-         MgOgv3KRMroyL0af4BUYYhmLaJbSjxN3Tq7vsEF0=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com, eugenem@fb.com,
-        jacob.e.keller@intel.com, jiri@resnulli.us,
-        michael.chan@broadcom.com, snelson@pensando.io,
-        jesse.brandeburg@intel.com, rdunlap@infradead.org,
-        vasundhara-v.volam@broadcom.com, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v3] devlink: expand the devlink-info documentation
-Date:   Tue, 24 Mar 2020 10:30:16 -0700
-Message-Id: <20200324173016.135105-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        id S1727417AbgCXRhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 13:37:50 -0400
+Received: from mail-pj1-f43.google.com ([209.85.216.43]:33736 "EHLO
+        mail-pj1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727223AbgCXRhu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 13:37:50 -0400
+Received: by mail-pj1-f43.google.com with SMTP id jz1so1392399pjb.0;
+        Tue, 24 Mar 2020 10:37:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=u4lf1PHYRg4zYxbp68UEi0BJs20RNiGheCb8mlcFBus=;
+        b=NtlVvA1t8v9OlCRTWjjQHqbXAWRhdsFYRngjUBx/Vy9vSQiqbTlYGCXt2bz1VAmAGT
+         jXVb85i/19wWwHpTh0udfyqVbNSa3PS1df7cMwDdop4MKOgE4KhTLJYdEolo4rCzv32N
+         A7JU2RV0GMbxJxqATOJh/iDKBRLP33Wtp4g/PiTwR08/7ZDuKu0LCH0gH3LgUjeVfPRq
+         vBcjPU1Az3ONI8MCNKj2Kt7AU78On3MK3V2TkDYbCpVyztd0SIBpTsOhiUgst3uLs1Je
+         +RgaLxFtIH5nMuMlauPnJwDQj81JJ6Ekym62SvP6FTrYlRjTNvm31QHBKw+b5YQPMmTM
+         BSxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=u4lf1PHYRg4zYxbp68UEi0BJs20RNiGheCb8mlcFBus=;
+        b=bDpXhZqZdUt7yMxzOiNYosR9E0h9A/JARSxJsFjaH/etKwvzp1jzDEImsvPLSuggLh
+         ONapyExthlbvDPB3YWBZUlXb3M8P2Vli0bAJro/WyFeZw3//aXl2SHncIt1XFVDZz+13
+         8pwQjTIt0laR0Bt1AK+27GwwYWMpDf6X0knWQuYMiervfM2KbKQXHZ/ih4WBAH7XJIbU
+         vIJ8wTVYJofFFW518kio+nd8zjJJY9T4XvzZXZ+mx6TE7+cwU0DmebD5Zlg2hm/L5U7q
+         n001Z86ooEmdqEqDmTCV19+YsxikikQ5Kmca6tOn+yvTUSdwdW+SKOBqAtIljRuF7WUv
+         HIKw==
+X-Gm-Message-State: ANhLgQ0eSknV6QoMk+tyRWap4XJJ1d2rvJ/Cgm4jH7sM8DS9PvjPZFol
+        5Do+zYYL5HwsNf6uHKhnTco=
+X-Google-Smtp-Source: ADFU+vuNK/wf80tPeiY0tX55OdH6ymGOhYH/1qljmMzS9E4s7VQI4Yn2woSvGGVgOvkrnUjSxFm3Pw==
+X-Received: by 2002:a17:90a:1acf:: with SMTP id p73mr6585816pjp.53.1585071467706;
+        Tue, 24 Mar 2020 10:37:47 -0700 (PDT)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id 26sm15039680pgs.85.2020.03.24.10.37.39
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 24 Mar 2020 10:37:47 -0700 (PDT)
+Subject: [bpf-next PATCH 00/10] ALU32 bounds tracking support 
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     ecree@solarflare.com, yhs@fb.com, alexei.starovoitov@gmail.com,
+        daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        john.fastabend@gmail.com
+Date:   Tue, 24 Mar 2020 10:37:34 -0700
+Message-ID: <158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We are having multiple review cycles with all vendors trying
-to implement devlink-info. Let's expand the documentation with
-more information about what's implemented and motivation behind
-this interface in an attempt to make the implementations easier.
+This series adds ALU32 signed and unsigned min/max bounds.
 
-Describe what each info section is supposed to contain, and make
-some references to other HW interfaces (PCI caps).
+The origins of this work is to fix do_refine_retval_range() which before
+this series clamps the return value bounds to [0, max]. However, this
+is not correct because its possible these functions may return negative
+errors so the correct bound is [*MIN, max]. Where *MIN is the signed
+and unsigned min values U64_MIN and S64_MIN. And 'max' here is the max
+positive value returned by this routine.
 
-Document how firmware management is expected to look, to make
-it clear how devlink-info and devlink-flash work in concert.
+Patch 1 changes the do_refine_retval_range() to return the correct bounds
+but this breaks existing programs that were depending on the old incorrect
+bound. To repair these old programs we add ALU32 bounds to properly track
+the return values from these helpers. The ALU32 bounds are needed because
+clang realizes these helepers return 'int' type and will use jmp32 ops
+with the return value.  With current state of things this does little to
+help 64bit bounds and with patch 1 applied will cause many programs to
+fail verifier pass. See patch 4 for trace details on how this happens.
+ 
+Patch 2, 3 and 4 do the ALU32 addition in three steps. Patch 2 does some
+refactoring and should not have any functional change. Patch 3 is a one
+liner to more aggressively do update_reg_bounds for ALU ops. This improves
+the bounds for ADD, SUB, MUL cases. Its not clear to me why it was omitted
+in the before this so please review. My guess is unlike in bitwise ops
+the bounds are good enough usually so it wasn't strictly needed. Patch 4
+is the bulk of the changes it adds the new bounds and populates them
+through the verifier. Design note, initially a var32 was added but as
+pointed out by Alexei and Edward it is not strictly needed so it was
+removed here. This worked out nicely.
 
-Name some future work.
+Patch 5 notes that int return types may have arbitrary bits set in
+the upper 32bits of the register. To reflect this we can only put a
+bounds on the 32bit subreg so we further tighten the initial work in
+patch 1 but changing the return value max bound to the signed 32bit
+max bound added in patch 4.
 
-v2: - improve wording
-v3: - improve wording
+Patches 6 adds a C test case to test_progs which will cause the verifier
+to fail if new 32bit and do_refine_retval_range() is incorrect.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Reviewed-by: Randy Dunlap <rdunlap@infradead.org>
+Patches 7,8, and 9 fix test cases that broke after refining the return
+values from helpers. I attempted to be explicit about each failure and
+why we need the change. Patch 7 adds a missing <0 check on a return
+value. Its not correct to use return values otherwise in this case. Patches
+8 and 9 address error string changes in tests now that we have better
+bounds checking.
+
+Patch 10 adds some bounds check tests to ensure bounds checking when
+mixing alu32, alu64 and jmp32 ops together.
+
+Thanks to Alexei, Edward, and Daniel for initial feedback it helped clean
+this up a lot. That said this is a pretty large rework from initial RFC
+so please review.
+
+This is a fix but its really too large to land in bpf tree in an rc7.
+We want some time for folks to review this and let the automation tools
+fuzz, build test, etc. So pushing at bpf-next if we slip past 5.6 release
+we can target bpf tree early in the release cycle.
+
 ---
-Hopefully all is good now :)
 
-Dave, I was hoping this would just apply to net if you preferred to apply
-there, but with Jake's recent addition there is a minor conflict and v3
-no longer applies to net cleanly :(
+John Fastabend (10):
+      bpf: verifier, do_refine_retval_range may clamp umin to 0 incorrectly
+      bpf: verifer, refactor adjust_scalar_min_max_vals
+      bpf: verifer, adjust_scalar_min_max_vals to always call update_reg_bounds()
+      bpf: verifier, do explicit ALU32 bounds tracking
+      bpf: verifier, return value is an int in do_refine_retval_range
+      bpf: test_progs, add test to catch retval refine error handling
+      bpf: test_verifier, bpf_get_stack return value add <0
+      bpf: test_verifier, #70 error message updates for 32-bit right shift
+      bpf: test_verifier, #65 error message updates for trunc of boundary-cross
+      bpf: test_verifier, add alu32 bounds tracking tests
 
- .../networking/devlink/devlink-flash.rst      |  93 ++++++++++++
- .../networking/devlink/devlink-info.rst       | 133 +++++++++++++++---
- .../networking/devlink/devlink-params.rst     |   2 +
- Documentation/networking/devlink/index.rst    |   1 +
- 4 files changed, 213 insertions(+), 16 deletions(-)
- create mode 100644 Documentation/networking/devlink/devlink-flash.rst
 
-diff --git a/Documentation/networking/devlink/devlink-flash.rst b/Documentation/networking/devlink/devlink-flash.rst
-new file mode 100644
-index 000000000000..40a87c0222cb
---- /dev/null
-+++ b/Documentation/networking/devlink/devlink-flash.rst
-@@ -0,0 +1,93 @@
-+.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+
-+.. _devlink_flash:
-+
-+=============
-+Devlink Flash
-+=============
-+
-+The ``devlink-flash`` API allows updating device firmware. It replaces the
-+older ``ethtool-flash`` mechanism, and doesn't require taking any
-+networking locks in the kernel to perform the flash update. Example use::
-+
-+  $ devlink dev flash pci/0000:05:00.0 file flash-boot.bin
-+
-+Note that the file name is a path relative to the firmware loading path
-+(usually ``/lib/firmware/``). Drivers may send status updates to inform
-+user space about the progress of the update operation.
-+
-+Firmware Loading
-+================
-+
-+Devices which require firmware to operate usually store it in non-volatile
-+memory on the board, e.g. flash. Some devices store only basic firmware on
-+the board, and the driver loads the rest from disk during probing.
-+``devlink-info`` allows users to query firmware information (loaded
-+components and versions).
-+
-+In other cases the device can both store the image on the board, load from
-+disk, or automatically flash a new image from disk. The ``fw_load_policy``
-+devlink parameter can be used to control this behavior
-+(:ref:`Documentation/networking/devlink/devlink-params.rst <devlink_params_generic>`).
-+
-+On-disk firmware files are usually stored in ``/lib/firmware/``.
-+
-+Firmware Version Management
-+===========================
-+
-+Drivers are expected to implement ``devlink-flash`` and ``devlink-info``
-+functionality, which together allow for implementing vendor-independent
-+automated firmware update facilities.
-+
-+``devlink-info`` exposes the ``driver`` name and three version groups
-+(``fixed``, ``running``, ``stored``).
-+
-+The ``driver`` attribute and ``fixed`` group identify the specific device
-+design, e.g. for looking up applicable firmware updates. This is why
-+``serial_number`` is not part of the ``fixed`` versions (even though it
-+is fixed) - ``fixed`` versions should identify the design, not a single
-+device.
-+
-+``running`` and ``stored`` firmware versions identify the firmware running
-+on the device, and firmware which will be activated after reboot or device
-+reset.
-+
-+The firmware update agent is supposed to be able to follow this simple
-+algorithm to update firmware contents, regardless of the device vendor:
-+
-+.. code-block:: sh
-+
-+  # Get unique HW design identifier
-+  $hw_id = devlink-dev-info['fixed']
-+
-+  # Find out which FW flash we want to use for this NIC
-+  $want_flash_vers = some-db-backed.lookup($hw_id, 'flash')
-+
-+  # Update flash if necessary
-+  if $want_flash_vers != devlink-dev-info['stored']:
-+      $file = some-db-backed.download($hw_id, 'flash')
-+      devlink-dev-flash($file)
-+
-+  # Find out the expected overall firmware versions
-+  $want_fw_vers = some-db-backed.lookup($hw_id, 'all')
-+
-+  # Update on-disk file if necessary
-+  if $want_fw_vers != devlink-dev-info['running']:
-+      $file = some-db-backed.download($hw_id, 'disk')
-+      write($file, '/lib/firmware/')
-+
-+  # Try device reset, if available
-+  if $want_fw_vers != devlink-dev-info['running']:
-+     devlink-reset()
-+
-+  # Reboot, if reset wasn't enough
-+  if $want_fw_vers != devlink-dev-info['running']:
-+     reboot()
-+
-+Note that each reference to ``devlink-dev-info`` in this pseudo-code
-+is expected to fetch up-to-date information from the kernel.
-+
-+For the convenience of identifying firmware files some vendors add
-+``bundle_id`` information to the firmware versions. This meta-version covers
-+multiple per-component versions and can be used e.g. in firmware file names
-+(all component versions could get rather long.)
-diff --git a/Documentation/networking/devlink/devlink-info.rst b/Documentation/networking/devlink/devlink-info.rst
-index b701899b7f42..e5e5e89f8f7a 100644
---- a/Documentation/networking/devlink/devlink-info.rst
-+++ b/Documentation/networking/devlink/devlink-info.rst
-@@ -5,34 +5,119 @@ Devlink Info
- ============
- 
- The ``devlink-info`` mechanism enables device drivers to report device
--information in a generic fashion. It is extensible, and enables exporting
--even device or driver specific information.
-+(hardware and firmware) information in a standard, extensible fashion.
- 
--devlink supports representing the following types of versions
-+The original motivation for the ``devlink-info`` API was twofold:
- 
--.. list-table:: List of version types
-+ - making it possible to automate device and firmware management in a fleet
-+   of machines in a vendor-independent fashion (see also
-+   :ref:`Documentation/networking/devlink/devlink-flash.rst <devlink_flash>`);
-+ - name the per component FW versions (as opposed to the crowded ethtool
-+   version string).
-+
-+``devlink-info`` supports reporting multiple types of objects. Reporting driver
-+versions is generally discouraged - here, and via any other Linux API.
-+
-+.. list-table:: List of top level info objects
-    :widths: 5 95
- 
--   * - Type
-+   * - Name
-      - Description
-+   * - ``driver``
-+     - Name of the currently used device driver, also available through sysfs.
-+
-+   * - ``serial_number``
-+     - Serial number of the device.
-+
-+       This is usually the serial number of the ASIC, also often available
-+       in PCI config space of the device in the *Device Serial Number*
-+       capability.
-+
-+       The serial number should be unique per physical device.
-+       Sometimes the serial number of the device is only 48 bits long (the
-+       length of the Ethernet MAC address), and since PCI DSN is 64 bits long
-+       devices pad or encode additional information into the serial number.
-+       One example is adding port ID or PCI interface ID in the extra two bytes.
-+       Drivers should make sure to strip or normalize any such padding
-+       or interface ID, and report only the part of the serial number
-+       which uniquely identifies the hardware. In other words serial number
-+       reported for two ports of the same device or on two hosts of
-+       a multi-host device should be identical.
-+
-+       .. note:: ``devlink-info`` API should be extended with a new field
-+	  if devices want to report board/product serial number (often
-+	  reported in PCI *Vital Product Data* capability).
-+
-    * - ``fixed``
--     - Represents fixed versions, which cannot change. For example,
-+     - Group for hardware identifiers, and versions of components
-+       which are not field-updatable.
-+
-+       Versions in this section identify the device design. For example,
-        component identifiers or the board version reported in the PCI VPD.
-+       Data in ``devlink-info`` should be broken into the smallest logical
-+       components, e.g. PCI VPD may concatenate various information
-+       to form the Part Number string, while in ``devlink-info`` all parts
-+       should be reported as separate items.
-+
-+       This group must not contain any frequently changing identifiers,
-+       such as serial numbers. See
-+       :ref:`Documentation/networking/devlink/devlink-flash.rst <devlink_flash>`
-+       to understand why.
-+
-    * - ``running``
--     - Represents the version of the currently running component. For
--       example the running version of firmware. These versions generally
--       only update after a reboot.
-+     - Group for information about currently running software/firmware.
-+       These versions often only update after a reboot, sometimes device reset.
-+
-    * - ``stored``
--     - Represents the version of a component as stored, such as after a
--       flash update. Stored values should update to reflect changes in the
--       flash even if a reboot has not yet occurred.
-+     - Group for software/firmware versions in device flash.
-+
-+       Stored values must update to reflect changes in the flash even
-+       if reboot has not yet occurred. If device is not capable of updating
-+       ``stored`` versions when new software is flashed, it must not report
-+       them.
-+
-+Each version can be reported at most once in each version group. Firmware
-+components stored on the flash should feature in both the ``running`` and
-+``stored`` sections, if device is capable of reporting ``stored`` versions
-+(see :ref:`Documentation/networking/devlink/devlink-flash.rst <devlink_flash>`).
-+In case software/firmware components are loaded from the disk (e.g.
-+``/lib/firmware``) only the running version should be reported via
-+the kernel API.
- 
- Generic Versions
- ================
- 
- It is expected that drivers use the following generic names for exporting
--version information. Other information may be exposed using driver-specific
--names, but these should be documented in the driver-specific file.
-+version information. If a generic name for a given component doesn't exist yet,
-+driver authors should consult existing driver-specific versions and attempt
-+reuse. As last resort, if a component is truly unique, using driver-specific
-+names is allowed, but these should be documented in the driver-specific file.
-+
-+All versions should try to use the following terminology:
-+
-+.. list-table:: List of common version suffixes
-+   :widths: 10 90
-+
-+   * - Name
-+     - Description
-+   * - ``id``, ``revision``
-+     - Identifiers of designs and revision, mostly used for hardware versions.
-+
-+   * - ``api``
-+     - Version of API between components. API items are usually of limited
-+       value to the user, and can be inferred from other versions by the vendor,
-+       so adding API versions is generally discouraged as noise.
-+
-+   * - ``bundle_id``
-+     - Identifier of a distribution package which was flashed onto the device.
-+       This is an attribute of a firmware package which covers multiple versions
-+       for ease of managing firmware images (see
-+       :ref:`Documentation/networking/devlink/devlink-flash.rst <devlink_flash>`).
-+
-+       ``bundle_id`` can appear in both ``running`` and ``stored`` versions,
-+       but it must not be reported if any of the components covered by the
-+       ``bundle_id`` was changed and no longer matches the version from
-+       the bundle.
- 
- board.id
- --------
-@@ -52,7 +137,7 @@ ASIC design identifier.
- asic.rev
- --------
- 
--ASIC design revision.
-+ASIC design revision/stepping.
- 
- board.manufacture
- -----------------
-@@ -91,7 +176,8 @@ Network Controller Sideband Interface.
- fw.psid
- -------
- 
--Unique identifier of the firmware parameter set.
-+Unique identifier of the firmware parameter set. These are usually
-+parameters of a particular board, defined at manufacturing time.
- 
- fw.roce
- -------
-@@ -103,3 +189,18 @@ fw.bundle_id
- ------------
- 
- Unique identifier of the entire firmware bundle.
-+
-+Future work
-+===========
-+
-+The following extensions could be useful:
-+
-+ - product serial number - NIC boards often get labeled with a board serial
-+   number rather than ASIC serial number; it'd be useful to add board serial
-+   numbers to the API if they can be retrieved from the device;
-+
-+ - on-disk firmware file names - drivers list the file names of firmware they
-+   may need to load onto devices via the ``MODULE_FIRMWARE()`` macro. These,
-+   however, are per module, rather than per device. It'd be useful to list
-+   the names of firmware files the driver will try to load for a given device,
-+   in order of priority.
-diff --git a/Documentation/networking/devlink/devlink-params.rst b/Documentation/networking/devlink/devlink-params.rst
-index da2f85c0fa21..d075fd090b3d 100644
---- a/Documentation/networking/devlink/devlink-params.rst
-+++ b/Documentation/networking/devlink/devlink-params.rst
-@@ -41,6 +41,8 @@ In order for ``driverinit`` parameters to take effect, the driver must
- support reloading via the ``devlink-reload`` command. This command will
- request a reload of the device driver.
- 
-+.. _devlink_params_generic:
-+
- Generic configuration parameters
- ================================
- The following is a list of generic configuration parameters that drivers may
-diff --git a/Documentation/networking/devlink/index.rst b/Documentation/networking/devlink/index.rst
-index 272509cd9215..c536db2cc0f9 100644
---- a/Documentation/networking/devlink/index.rst
-+++ b/Documentation/networking/devlink/index.rst
-@@ -16,6 +16,7 @@ general.
-    devlink-dpipe
-    devlink-health
-    devlink-info
-+   devlink-flash
-    devlink-params
-    devlink-region
-    devlink-resource
--- 
-2.25.1
+ include/linux/bpf_verifier.h                       |    4 
+ include/linux/limits.h                             |    1 
+ include/linux/tnum.h                               |   12 
+ kernel/bpf/tnum.c                                  |   15 
+ kernel/bpf/verifier.c                              | 1625 ++++++++++++++------
+ .../selftests/bpf/prog_tests/get_stack_raw_tp.c    |    5 
+ .../selftests/bpf/progs/test_get_stack_rawtp_err.c |   26 
+ tools/testing/selftests/bpf/verifier/bounds.c      |   57 +
+ .../testing/selftests/bpf/verifier/bpf_get_stack.c |    3 
+ 9 files changed, 1257 insertions(+), 491 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_get_stack_rawtp_err.c
 
+--
+Signature
