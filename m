@@ -2,121 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9E8819085E
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 09:56:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C868190880
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 10:07:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727112AbgCXI4K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 04:56:10 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:35968 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726524AbgCXI4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 04:56:09 -0400
-Received: by mail-ed1-f66.google.com with SMTP id b18so19845118edu.3;
-        Tue, 24 Mar 2020 01:56:07 -0700 (PDT)
+        id S1726944AbgCXJHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 05:07:43 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:34714 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726129AbgCXJHm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 05:07:42 -0400
+Received: by mail-ed1-f67.google.com with SMTP id i24so19885087eds.1
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 02:07:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=O2/2BeGLfOXUYC+AjdgCFRQqF06zHm6BUh3zIA84yC4=;
-        b=rloMJQCzcKN/KWDmwLQrsQutxGlUJgYqDAzryx/3G4oOZC2N1awjEZzucypp+QD61U
-         TvkYuCH7ljj+rELuWdmCC5U10/Q5u34SoS1BoE70sglMcdEj19wYjWyj0MHjTDtUxWIr
-         QKro/WjjMZq4b7wyrpVqOIGOiI5KmjRFqHb0KAIcHINkDB9jI5Lmp9WXZsBytza30CCx
-         BNc68v6x2p04dm1qZaXQLBnIEgBENOiWB5HMIkyfprpOY30mb/CSU4hjhAOIpCEbuRyN
-         tj+aVfHZmApijYKIKJS1fI0mlinmIvT30agCkMa9wa7zqhZAaupAypnePtZoXWz2OBK1
-         sM3g==
+        bh=bQnFnqK7h413XXIlxDFzP8O+9cc8lrJac9qTaZqSQS0=;
+        b=t1ujTDW4YTE8dsigKUO/VxsVS71b+LcGHAa5fRY2Ki9+PZKuk8gs/S9VLwcHoqYr77
+         YutV/9XW+56IBaxB3akURPJBWnklIlR4ebslz2VWBMZxbx+fMeRRFEGkfA6vYKyR0Cpn
+         2HBHyrjt6EC+gY/hhExusyHuczht2y35+zbxUnZt5BBzNGTMVdq87XvHJQQE/H8tqjpi
+         +19cdxR73dls9jeYq7Sk4GEEWOuQgJNJvltj8nmjSyt76hrmQG2ZrpYxDQqBVRC2Kz2Q
+         i8c3tRxcWEX4qGlLyNsPUlzUvL5eV5K7VycMnMEkSSsJcbtHcAqeAWD45GYbwZJHg0J6
+         yDyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=O2/2BeGLfOXUYC+AjdgCFRQqF06zHm6BUh3zIA84yC4=;
-        b=OrnC010OPrZaKUW65TEL0sKvyqORKHvN+LZ0GFuuCbeYaPZL9RBCoR4M5czJReXMRB
-         ZEjPNBVJa0/MYMYIwMJ2n//IbCvfS1faiwXMKo6mBtbe6hikxnaFRX1Obx5SWyAG+Mjc
-         YCAuNQ3ogvEwNcqrDUDECfUyISHAyxt5OPBZHo2LHkBzx45W0Hl63STOYRfXC/AloLEM
-         gZOKv+7rJW8+Xjakain3geRdyMorTT3qeO+hiGllU0r00rO6/tROqoLpxj9B18kVeWwX
-         d04lhHl1TdIxoWabS3ADcX01FKEsFvKSpjkFVOYyoDhVBZEE9/S9ySeT6lJ0oPfEv5DY
-         skkQ==
-X-Gm-Message-State: ANhLgQ2zZ4JIytNUVa07RpHhix2c8Wjm7w9jUbNgLLLnD5ayfW+ca/6j
-        XuQNTMSgx6mwIgcnEgVGB6k1Hk1oa0xxVgf/rjo=
-X-Google-Smtp-Source: ADFU+vvsP5HOedXd+hegnFMtwBS/teEifGoBsmUf55otvjlxomK8pkefcU1jQBRm2y+tXxXqlpA0ZrwxShfpB5I+sAA=
-X-Received: by 2002:a05:6402:1c0c:: with SMTP id ck12mr25647923edb.145.1585040166289;
- Tue, 24 Mar 2020 01:56:06 -0700 (PDT)
+        bh=bQnFnqK7h413XXIlxDFzP8O+9cc8lrJac9qTaZqSQS0=;
+        b=Ehm44uZO+g67i9dFq8BGsgZ+RpY4mgM2UYfG3z3oOu1d11ogk5qdwtFkgHSTfDSc4Z
+         6/X3irO9ga4nhi4Vq5CZQOXLBH6ekViUW8z5SsEI7TWp1tBsnMylBrNj/RCv04GaEu84
+         cmXj9yQYYABCUCXMdl8PtxtD/MlAoFd85tK4oqs5C8EPr+Rpadq3tQk5+2VoTUrj27n3
+         tT66g5vci/LsIUgSDn8HZ69jNHGB6ndfHu7Rp+IjXyVOvm5AnSkuUMhn++R9+Ju7Y+pF
+         k7olE4tLQhbwMxgONUVcgsfxh9DACxLlcsxREP7KCuXlPKUQBu8mln8eqrt/L4+JoEuN
+         FBRQ==
+X-Gm-Message-State: ANhLgQ1IGVDFzQ7D70q78nqqkTO8dFilQ1NTT7pOoXhgH89lCyYf0a7C
+        uZy0XhCbi0s91ZIdP08qv3kE6OOx8E/PveJH/bE=
+X-Google-Smtp-Source: ADFU+vuLsLUlkj+xdqR+8T9NP9P6V/s1H655YtyTm+ioSTeRtVj1chfvo1mf4n0oTNq3eTYbC35R908beiFAS29pCog=
+X-Received: by 2002:a17:906:d286:: with SMTP id ay6mr22001028ejb.113.1585040860143;
+ Tue, 24 Mar 2020 02:07:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200324041920.GA7068@asgard.redhat.com>
-In-Reply-To: <20200324041920.GA7068@asgard.redhat.com>
+References: <AM0PR04MB7041125938BF9A9225B5A8B286F10@AM0PR04MB7041.eurprd04.prod.outlook.com>
+In-Reply-To: <AM0PR04MB7041125938BF9A9225B5A8B286F10@AM0PR04MB7041.eurprd04.prod.outlook.com>
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 24 Mar 2020 10:55:55 +0200
-Message-ID: <CA+h21hrB6JUcM87Lv_V-gMdyVOCncJ9yhRmtVGgWt6eB0MhSow@mail.gmail.com>
-Subject: Re: [PATCH net-next] taprio: do not use BIT() in TCA_TAPRIO_ATTR_FLAG_*
- definitions
-To:     Eugene Syromiatnikov <esyr@redhat.com>
-Cc:     lkml <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        "Dmitry V. Levin" <ldv@altlinux.org>
+Date:   Tue, 24 Mar 2020 11:07:29 +0200
+Message-ID: <CA+h21hpwEV8dwZPWSRpKzt1UocVfv+N_JOj7ZYWG9egcJZ9Rpw@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/4] net: dsa: sja1105: unconditionally set
+ DESTMETA and SRCMETA in AVB table
+To:     Christian Herber <christian.herber@nxp.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>, "Y.b. Lu" <yangbo.lu@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eugene,
+Hi Christian,
 
-On Tue, 24 Mar 2020 at 06:19, Eugene Syromiatnikov <esyr@redhat.com> wrote:
+On Tue, 24 Mar 2020 at 09:39, Christian Herber <christian.herber@nxp.com> wrote:
 >
-> BIT() macro definition is internal to the Linux kernel and is not
-> to be used in UAPI headers; replace its usage with the _BITUL() macro
-> that is already used elsewhere in the header.
+> >+static int sja1105_init_avb_params(struct sja1105_private *priv)
+> >+{
+> >+       struct sja1105_avb_params_entry *avb;
+> >+       struct sja1105_table *table;
+> >+
+> >+       table = &priv->static_config.tables[BLK_IDX_AVB_PARAMS];
+> >+
+> >+       /* Discard previous AVB Parameters Table */
+> >+       if (table->entry_count) {
+> >+               kfree(table->entries);
+> >+               table->entry_count = 0;
+> >+       }
+> >+
+> >+       table->entries = kcalloc(SJA1105_MAX_AVB_PARAMS_COUNT,
+> >+                                table->ops->unpacked_entry_size, GFP_KERNEL);
+> >+       if (!table->entries)
+> >+               return -ENOMEM;
+> >+
+> >+       table->entry_count = SJA1105_MAX_AVB_PARAMS_COUNT;
+> >+
+> >+       avb = table->entries;
+> >+
+> >+       /* Configure the MAC addresses for meta frames */
+> >+       avb->destmeta = SJA1105_META_DMAC;
+> >+       avb->srcmeta  = SJA1105_META_SMAC;
+> >+
+> >+       return 0;
+> >+}
+> >+
 >
-> Cc: <stable@vger.kernel.org> # v5.4+
-> Fixes: 9c66d1564676 ("taprio: Add support for hardware offloading")
-> Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
-> ---
-
-I see this mirrors what was done in commit
-
-commit 9903c8dc734265689d5770ff28c84a7228fe5890
-Author: Vedang Patel <vedang.patel@intel.com>
-Date:   Tue Jun 25 15:07:13 2019 -0700
-
-    etf: Don't use BIT() in UAPI headers.
-
-    The BIT() macro isn't exported as part of the UAPI interface. So, the
-    compile-test to ensure they are self contained fails. So, use _BITUL()
-    instead.
-
-    Signed-off-by: Vedang Patel <vedang.patel@intel.com>
-    Signed-off-by: David S. Miller <davem@davemloft.net>
-
-so
-
-Acked-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-
->  include/uapi/linux/pkt_sched.h | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Would it be possible to use the MAC address of the connected eth as destination? This is nicer also when going over multiple cascaded switches.
 >
-> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
-> index bbe791b..0e43f67 100644
-> --- a/include/uapi/linux/pkt_sched.h
-> +++ b/include/uapi/linux/pkt_sched.h
-> @@ -1197,8 +1197,8 @@ enum {
->   *       [TCA_TAPRIO_ATTR_SCHED_ENTRY_INTERVAL]
->   */
->
-> -#define TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST     BIT(0)
-> -#define TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD      BIT(1)
-> +#define TCA_TAPRIO_ATTR_FLAG_TXTIME_ASSIST     _BITUL(0)
-> +#define TCA_TAPRIO_ATTR_FLAG_FULL_OFFLOAD      _BITUL(1)
->
->  enum {
->         TCA_TAPRIO_ATTR_UNSPEC,
-> --
-> 2.1.4
->
+> Christian
 
-Regards,
+The current destination MAC is 01:80:C2:00:00:0E, which is already a
+bridge link-local multicast address that switches are supposed to trap
+towards the CPU and not forward.
+The way things work right now is that the driver assumes user space
+will add the multicast MAC addresses required for PTP operation on the
+slave net device, and DSA will propagate those addresses to the master
+port as well.
+I think your suggestion might make a difference when the PTP user
+space stack exits, and the slave ports are operating in standalone
+(non-bridged) mode. There is an issue in that case, where the switch
+still sends RX timestamps (since nobody disabled RX timestamping via
+the ioctl), but the multicast MAC address is no longer in the DSA
+master's RX filter. So the kernel log is spammed by the state machine
+in net/dsa/tag_sja1105.c getting upset about meta frames being
+expected but not received.
+If anything, I'm a bit worried about the source MAC address (currently
+22:22:22:22:22:22) which is potentially non-unique, although I need to
+do more testing to see if this is actually a problem. I have a board
+with a DSA switch acting as 3 DSA masters on 3 ports, on each port
+having cascaded a sja1105 switch, and source address learning (of
+22:22:22:22:22:22) on the top-level DSA switch is what concerns me.
+
+Thanks,
 -Vladimir
