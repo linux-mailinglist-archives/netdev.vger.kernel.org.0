@@ -2,122 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9080C190D68
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 13:30:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51918190D6E
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 13:31:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727529AbgCXMav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 08:30:51 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:42083 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727283AbgCXMau (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 08:30:50 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 22so5607605pfa.9;
-        Tue, 24 Mar 2020 05:30:49 -0700 (PDT)
+        id S1727578AbgCXMbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 08:31:02 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38084 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727256AbgCXMbB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 08:31:01 -0400
+Received: by mail-pf1-f195.google.com with SMTP id z25so4867447pfa.5;
+        Tue, 24 Mar 2020 05:31:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=AomG1PxVMQy2uJ0CQrO8q+2Jd5FtFdpWBMBCz71R9bA=;
-        b=emWAw3c3Z3l+vLxuQEDk2/MhYt7ZXCRCdghq7XVq4rKrz2fhoEpV7e1oqZige7eWU2
-         m1vQBgCk3H7MuCiUC2z+1QeN/X5K1MtWXVnUfxXNp+dA04uibuL7EFeH50XJQKdIrKa5
-         10smy6XCfZ5GudAF8YO9tDFDQMVnbB4embEHcgPxoGlNV4ylLUimYc6Cf22FVVwQZ/2X
-         BXDZHClTEuw9LlSkLtkB3YM8zM9V0BvRU5HJyQD+CbeBIRRQ+1RoAM41PvIZukabpT0S
-         daOahxZJyqdiovsl3Bt6nswiTiA0r4d6DdfAY60UPCDQhunvi3DYsgZ/xeJEh9gT5wRU
-         1Jsw==
+        bh=nqAcdWRnqSA/uVQmjWL4caKhzvHsEqccflrG15Mc1BU=;
+        b=rjcQwrEEwd38HKXiiRHyTNtX0owKMWahas2q3bAKpZ1vIA4OUp3hbVUqW1LGfxqMZr
+         erGnJNkhR3tAMGTxniU/ZRotGBQvYFEQEFFDqSzeUTi0ZszrjcoraZE5ZTxWCYUZTmaY
+         I8B9Htzw5eYOpCrniauwt4bO7n72EQtSYl9GjjcCR/KvuI0vLJZiIIQ/9fO5bOZnby0g
+         3xnh2OnRis2zvZvVO/eeX59k5mwLZhLkV7EZbngbRoTb4nYOi1d8u18WdzfUd5z1KNKd
+         yCWqU799wMfom4lGqpgo+ycYYv+YBAhE5C0/KiK2sKK5rc/0Rln9FPd61TFroyHQZ7mP
+         hEwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=AomG1PxVMQy2uJ0CQrO8q+2Jd5FtFdpWBMBCz71R9bA=;
-        b=UB6hT/qfNHTlE9SgU+zJy4WnyTC8irwBYZhSGJM2q4b/pgTQ0Z8o1VXwUb6xLmvbIy
-         9ZiZlt5zLg/s3TRTAq93Ua62d4z5iCrS1/TSW62VdP8XX7mpEFeIaD5TOPCNlKTzAQK6
-         mwCPov/cxlh3e6W3GtlzbDcVwnMcJGOkehaJ8tBGG6pxGqFZnO2AmLz/gSJm96coCtP8
-         5b/Pbsi6bSgIsXhGwvWld1eFEbSdHWIDzA3mAgHEj7QoHqwI7IRWCpq/nlQ6U3Cjxw2K
-         XfAzrvQ9WFg//7RfEWumG18DkaihOvYPCuY3Wg4HQpoGum6iDjigkZXP2efLqikcw5br
-         OwNA==
-X-Gm-Message-State: ANhLgQ0FB2+uS/q9f16YfonRLLZkIMVeUwGoRRTeXxCgfYTXSkUBVqI2
-        WxE2+zO3kEZkbAZKuwHFpCg=
-X-Google-Smtp-Source: ADFU+vtisFHlmrRHkVlX2/zo73z2wp/UecvD7A36s81dUTt4r1aYp9VeC1+URs7iahDg2bbvx0dJeA==
-X-Received: by 2002:a63:a65:: with SMTP id z37mr26395712pgk.31.1585053049065;
-        Tue, 24 Mar 2020 05:30:49 -0700 (PDT)
+        bh=nqAcdWRnqSA/uVQmjWL4caKhzvHsEqccflrG15Mc1BU=;
+        b=l+KECkUuPi4c2AZw+tTQFF2RQYogbCY9wT6x2OCmwjcnFmZtrQv6daOS30OsuCAGFU
+         5g68YZXGatUA+WWJBRiroROeFUcLioAH/VvViYxDdOhs/GmwX3pf+I29EVlI3o6scphE
+         AL+5h4EleqsK+B7OlBzwDt3UNZJmR41A6wgTdRjnIkOUuDv2mqN2cmaHlmg6wp4V528E
+         WPw/QS+/V9GSnO94OUStqod7eOivY/H9i0gh3MtsGi4NsxJ2o9wOabIoUb3WDyh+9dWk
+         7Qwr6FVBvfXCGC4VGn3bNQSigtDsk0/4PmxTpNpC4Ofg9oouYHwGc3b6G5AdjgsLitNN
+         zHTg==
+X-Gm-Message-State: ANhLgQ34aae9IL2Kf4KSIHzObJM2rQ8oICtr8IoHxPBvqnwoNDLJOprm
+        l3PwFph2isHec2myixGwdyA=
+X-Google-Smtp-Source: ADFU+vvf33TJmQrGUFdzHUfRsPxkmjO7EFt1Uq5CQXRJ7pqbjC9tsRCv1U6/9456hIJojqhMXy9JPA==
+X-Received: by 2002:a63:fd0d:: with SMTP id d13mr23986197pgh.302.1585053059651;
+        Tue, 24 Mar 2020 05:30:59 -0700 (PDT)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id c83sm15759395pfb.44.2020.03.24.05.30.45
+        by smtp.gmail.com with ESMTPSA id v26sm2966546pfn.51.2020.03.24.05.30.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Mar 2020 05:30:47 -0700 (PDT)
+        Tue, 24 Mar 2020 05:30:58 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
         rafael@kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
         andy@greyhouse.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     ap420073@gmail.com, mitch.a.williams@intel.com
-Subject: [PATCH net 0/3] net: core: avoid unexpected situation in namespace change routine
-Date:   Tue, 24 Mar 2020 12:30:41 +0000
-Message-Id: <20200324123041.18825-1-ap420073@gmail.com>
+Subject: [PATCH net 1/3] class: add class_find_and_get_file_ns() helper function
+Date:   Tue, 24 Mar 2020 12:30:52 +0000
+Message-Id: <20200324123052.18904-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset is to avoid an unexpected situation when an interface's
-namespace is being changed.
+The new helper function is to find and get a class file.
+This function is useful for checking whether the class file is existing
+or not. This function will be used by networking stack to
+check "/sys/class/net/*" file.
 
-When interface's namespace is being changed, dev_change_net_namespace()
-is called. This removes and re-allocates many resources that include
-sysfs files. The "/net/class/net/<interface name>" is one of them.
-If the sysfs creation routine(device_rename()) found duplicate sysfs
-file name, it warns about it and fails. But unfortunately, at that point,
-dev_change_net_namespace() doesn't return fail because rollback cost
-is too high.
-So, the interface can't have a sysfs file.
+Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
+Fixes: b76cdba9cdb2 ("[PATCH] bonding: add sysfs functionality to bonding (large)")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
+ drivers/base/class.c         | 12 ++++++++++++
+ include/linux/device/class.h |  4 +++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
 
-The approach of this patchset is to find the duplicate sysfs file as
-fast as possible. If it found that, dev_change_net_namespace() returns
-fail immediately with zero rollback cost.
-
-1. The first patch is to add class_find_and_get_file_ns() helper function.
-That function will be used for checking the existence of duplicate
-sysfs file.
-2. The second patch is to add netdev_class_has_file_ns().
-That function is to check whether duplicate sysfs file in
-the "/sys/class/net*" using class_find_and_get_file_ns().
-3. The last patch is to avoid an unexpected situation.
-a) If duplicate sysfs is existing, it fails as fast as possible in
-the dev_change_net_namespace()
-b) Acquire rtnl_lock() in both bond_create_sysfs() and bond_destroy_sysfs()
-to avoid race condition.
-c) Do not remove "/sys/class/net/bonding_masters" sysfs file by
-bond_destroy_sysfs() if the file wasn't created by bond_create_sysfs().
-
-Test commands#1:
-    ip netns add nst 
-    ip link add bonding_masters type dummy
-    modprobe bonding
-    ip link set bonding_masters netns nst 
-
-Test commands#2:
-    ip link add bonding_masters type dummy
-    ls /sys/class/net
-    modprobe bonding
-    modprobe -rv bonding
-    ls /sys/class/net
-
-After removing the bonding module, we can see the "bonding_masters"
-interface's sysfs will be removed.
-This is an unexpected situation.
-
-Taehee Yoo (3):
-  class: add class_find_and_get_file_ns() helper function
-  net: core: add netdev_class_has_file_ns() helper function
-  net: core: avoid warning in dev_change_net_namespace()
-
- drivers/base/class.c             | 12 ++++++++++++
- drivers/net/bonding/bond_sysfs.c | 13 ++++++++++++-
- include/linux/device/class.h     |  4 +++-
- include/linux/netdevice.h        |  2 +-
- include/net/bonding.h            |  1 +
- net/core/dev.c                   |  4 ++++
- net/core/net-sysfs.c             | 13 +++++++++++++
- 7 files changed, 46 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/base/class.c b/drivers/base/class.c
+index bcd410e6d70a..dedf41f32f0d 100644
+--- a/drivers/base/class.c
++++ b/drivers/base/class.c
+@@ -105,6 +105,17 @@ void class_remove_file_ns(struct class *cls, const struct class_attribute *attr,
+ 		sysfs_remove_file_ns(&cls->p->subsys.kobj, &attr->attr, ns);
+ }
+ 
++struct kernfs_node *class_find_and_get_file_ns(struct class *cls,
++					       const char *name,
++					       const void *ns)
++{
++	struct kernfs_node *kn = NULL;
++
++	if (cls)
++		kn = kernfs_find_and_get_ns(cls->p->subsys.kobj.sd, name, ns);
++	return kn;
++}
++
+ static struct class *class_get(struct class *cls)
+ {
+ 	if (cls)
+@@ -580,6 +591,7 @@ int __init classes_init(void)
+ 
+ EXPORT_SYMBOL_GPL(class_create_file_ns);
+ EXPORT_SYMBOL_GPL(class_remove_file_ns);
++EXPORT_SYMBOL_GPL(class_find_and_get_file_ns);
+ EXPORT_SYMBOL_GPL(class_unregister);
+ EXPORT_SYMBOL_GPL(class_destroy);
+ 
+diff --git a/include/linux/device/class.h b/include/linux/device/class.h
+index e8d470c457d1..230cf2ce6d3f 100644
+--- a/include/linux/device/class.h
++++ b/include/linux/device/class.h
+@@ -209,7 +209,9 @@ extern int __must_check class_create_file_ns(struct class *class,
+ extern void class_remove_file_ns(struct class *class,
+ 				 const struct class_attribute *attr,
+ 				 const void *ns);
+-
++struct kernfs_node *class_find_and_get_file_ns(struct class *cls,
++					       const char *name,
++					       const void *ns);
+ static inline int __must_check class_create_file(struct class *class,
+ 					const struct class_attribute *attr)
+ {
 -- 
 2.17.1
 
