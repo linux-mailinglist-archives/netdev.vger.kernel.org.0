@@ -2,238 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51BE7191291
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 15:14:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11D6D1912A0
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 15:17:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727639AbgCXOOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 10:14:18 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:54707 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726988AbgCXOOS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 10:14:18 -0400
-Received: by mail-wm1-f68.google.com with SMTP id c81so3361014wmd.4
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 07:14:14 -0700 (PDT)
+        id S1727548AbgCXORd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 10:17:33 -0400
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:55158 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727282AbgCXORd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 10:17:33 -0400
+Received: by mail-pj1-f65.google.com with SMTP id np9so1543413pjb.4;
+        Tue, 24 Mar 2020 07:17:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=1iBFFgLcJmT0udFPOHTPwJoN0ZRAA1zD3fe/aZ74L+4=;
-        b=fzBd3Ux/vB6083aN//0mc2HUklcg048w2teniWx4e3DAVcx97IZGCPTKjHdoA0UIYY
-         hUTnp75HauP/IuAeeNYRBc/7KLxGi5+C4vRzeykVZXiJ/y3DFZaWNIzQL21TqEZSo19J
-         YJYDq3E+UeszqnKWgzLq4xsCJh+xWK0lF0DnJXEpQ/rRkFUB1cv821MgWk/4bpCeSSaN
-         mFdZOMgRdpzgYPPTmzQrzKLdVf/nrTCv1p/EJC9xLrjiPYartEvePwyRKja96UdcN/qd
-         dRUWsjAxl1E07xTF3Rf9Zvkfz+XpSBmFnylZ7Q3/TpOBAFK8a1fh4kIzR+f/kGWrx1kd
-         4jxQ==
+        bh=nqAcdWRnqSA/uVQmjWL4caKhzvHsEqccflrG15Mc1BU=;
+        b=i+R3w8tyBBRz7DPLdorBhqwkmJr0che8ngK6INjQt9Dj6plsw9cPLB9/2oL+Ru2Phu
+         EJ1NEWAtawVzsfxWiDf6mPWQ2QVA6l74wvA1wYnt8AuOHHJ9XcQEv4KXa9BnlsrTp7xP
+         X7Y3+pHhYiIBwCbGIVt25dnRGWiYKM0D244lbl7iwbmLPU5XCzvOtJukJXN8MTRcHN0f
+         ypa56lPmgFOS1rviBKXsY3G2+GeKCmst6Wfh2ISNAGqLtX8JEL2BDKa0+BM8onFimw3g
+         Lf7ARAbwGniGWHYWllahoFtg/Ds90+rhgRNTrQ2GceBy5sV18StFxyCic0gb6e49Y1Sz
+         boBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=1iBFFgLcJmT0udFPOHTPwJoN0ZRAA1zD3fe/aZ74L+4=;
-        b=o3zAGD3RWVfAO5n7caaS/ST43nCRxIQsWgSqaF60l/Ka9gRbXtzWq92nfWoNP9PAK/
-         7QKz1gT6YxcEDbTGFOwuB/CTKsqS6zQ7q6BzQ3mECoKgzZdNLoRwKeXYK3t+E3xwR6kG
-         qNumABILCvmwxuQiP/0hmc6KF61lv5mvuhcdeiopl004ScbkR25X3XYvOTHKOeKYH/kz
-         Qy+rVbBkOTYk+FyJLqXsSWdReu9rna9zq0oZNsDQtK9c3la5CKZO8Z/sGuY9YpO9IVyP
-         EcCOXGOVW5F/tvQsDk/wS5cI9F9AQw1GzoQV/GHq89DXBcaHhNtEWkoXnItNFhlgbjmz
-         FR0g==
-X-Gm-Message-State: ANhLgQ3i+ueAhja9AotK8KXtnH4ZhY6PbK4SxYJaXGqNbAtvOTObiZlf
-        rRtaqf1IyhiMgmMZ2UvdLMI=
-X-Google-Smtp-Source: ADFU+vucxMhS57jNODqfb59llD+SUqWYXKC9veQjwPdcFn4C0tNYpnoY38wFf5CMRbh4sD6srv/HQw==
-X-Received: by 2002:a1c:c3c3:: with SMTP id t186mr6054053wmf.118.1585059253763;
-        Tue, 24 Mar 2020 07:14:13 -0700 (PDT)
-Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id t126sm4702871wmb.27.2020.03.24.07.14.12
+        bh=nqAcdWRnqSA/uVQmjWL4caKhzvHsEqccflrG15Mc1BU=;
+        b=BwgWn8j1eN/y6D31AyQ9y5X3rsL1fFbyNgd+YKmjLlxjXQBW1L1E8D43YAIcVweoXN
+         eaz8EFYpm7Dl9ui8WuM7jSV+a5igU8SNFEg58/IfvTqz2VDKVF96M28Eb/Cx3wGc/1UN
+         aJba6fNk5ldPZ+cBZtZ2p55VDY4mq8g/U4Ae4cSGq62+di5Im8pCp6OOFRo3EHkvAsv6
+         2lJmIesdPSQBnFcXU3MT0VxIQG93c8RAhT2sGrSBD2qHIc9hnlVmDdHbA/8+K2jq/po8
+         63C2ZGNuUYs6l7oZQcVsVV+cE9ZFw8YvkmndmSRRdwVC53MIuRSXzGiK/EY1NjXUbhxN
+         MgbA==
+X-Gm-Message-State: ANhLgQ24GKiNGMobF5Wl+GZEg7/dOGsqZ7N7JNp126wDtJIMcK0eZCek
+        fQBxMqUsplhltiCTxCmgy/Q=
+X-Google-Smtp-Source: ADFU+vvCSoe1U89aWWTI8mNMwOh7QdhrRFV/bChepi0T+tjxcwIiOwaHnOhN/sgcgKEl4/URYv0CGQ==
+X-Received: by 2002:a17:902:7248:: with SMTP id c8mr12760121pll.243.1585059451710;
+        Tue, 24 Mar 2020 07:17:31 -0700 (PDT)
+Received: from localhost.localdomain ([180.70.143.152])
+        by smtp.gmail.com with ESMTPSA id y3sm16256642pfy.158.2020.03.24.07.17.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Mar 2020 07:14:13 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, antoine.tenart@bootlin.com
-Subject: [PATCH net-next] net: phy: mscc: consolidate a common RGMII delay implementation
-Date:   Tue, 24 Mar 2020 16:13:58 +0200
-Message-Id: <20200324141358.4341-1-olteanv@gmail.com>
+        Tue, 24 Mar 2020 07:17:30 -0700 (PDT)
+From:   Taehee Yoo <ap420073@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        rafael@kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     ap420073@gmail.com, mitch.a.williams@intel.com
+Subject: [PATCH RESEND net 1/3] class: add class_find_and_get_file_ns() helper function
+Date:   Tue, 24 Mar 2020 14:17:22 +0000
+Message-Id: <20200324141722.21308-1-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+The new helper function is to find and get a class file.
+This function is useful for checking whether the class file is existing
+or not. This function will be used by networking stack to
+check "/sys/class/net/*" file.
 
-It looks like the VSC8584 PHY driver is rolling its own RGMII delay
-configuration code, despite the fact that the logic is mostly the same.
-
-In fact only the register layout and position for the RGMII controls has
-changed. So we need to adapt and parameterize the PHY-dependent bit
-fields when calling the new generic function.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reported-by: syzbot+830c6dbfc71edc4f0b8f@syzkaller.appspotmail.com
+Fixes: b76cdba9cdb2 ("[PATCH] bonding: add sysfs functionality to bonding (large)")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
-Changes in v2:
-Added back a comment containing the information from Antoine's patch.
+ drivers/base/class.c         | 12 ++++++++++++
+ include/linux/device/class.h |  4 +++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
 
- drivers/net/phy/mscc/mscc.h      | 28 ++++--------
- drivers/net/phy/mscc/mscc_main.c | 78 ++++++++++++++++----------------
- 2 files changed, 49 insertions(+), 57 deletions(-)
-
-diff --git a/drivers/net/phy/mscc/mscc.h b/drivers/net/phy/mscc/mscc.h
-index d983d3af66d6..030bf8b600df 100644
---- a/drivers/net/phy/mscc/mscc.h
-+++ b/drivers/net/phy/mscc/mscc.h
-@@ -161,25 +161,15 @@ enum rgmii_clock_delay {
- /* Extended Page 2 Registers */
- #define MSCC_PHY_CU_PMD_TX_CNTL		  16
- 
--#define MSCC_PHY_RGMII_SETTINGS		  18
--#define RGMII_SKEW_RX_POS		  1
--#define RGMII_SKEW_TX_POS		  4
--
--/* RGMII skew values, in ns */
--#define VSC8584_RGMII_SKEW_0_2		  0
--#define VSC8584_RGMII_SKEW_0_8		  1
--#define VSC8584_RGMII_SKEW_1_1		  2
--#define VSC8584_RGMII_SKEW_1_7		  3
--#define VSC8584_RGMII_SKEW_2_0		  4
--#define VSC8584_RGMII_SKEW_2_3		  5
--#define VSC8584_RGMII_SKEW_2_6		  6
--#define VSC8584_RGMII_SKEW_3_4		  7
--
--#define MSCC_PHY_RGMII_CNTL		  20
--#define RGMII_RX_CLK_DELAY_MASK		  0x0070
--#define RGMII_RX_CLK_DELAY_POS		  4
--#define RGMII_TX_CLK_DELAY_MASK		  0x0007
--#define RGMII_TX_CLK_DELAY_POS		  0
-+/* RGMII setting controls at address 18E2, for VSC8572 and similar */
-+#define VSC8572_RGMII_CNTL		  18
-+#define VSC8572_RGMII_RX_DELAY_MASK	  0x000E
-+#define VSC8572_RGMII_TX_DELAY_MASK	  0x0070
-+
-+/* RGMII controls at address 20E2, for VSC8502 and similar */
-+#define VSC8502_RGMII_CNTL		  20
-+#define VSC8502_RGMII_RX_DELAY_MASK	  0x0070
-+#define VSC8502_RGMII_TX_DELAY_MASK	  0x0007
- 
- #define MSCC_PHY_WOL_LOWER_MAC_ADDR	  21
- #define MSCC_PHY_WOL_MID_MAC_ADDR	  22
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index 19603081dd14..acddef79f4e8 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -520,28 +520,34 @@ static int vsc85xx_mac_if_set(struct phy_device *phydev,
- 	return rc;
+diff --git a/drivers/base/class.c b/drivers/base/class.c
+index bcd410e6d70a..dedf41f32f0d 100644
+--- a/drivers/base/class.c
++++ b/drivers/base/class.c
+@@ -105,6 +105,17 @@ void class_remove_file_ns(struct class *cls, const struct class_attribute *attr,
+ 		sysfs_remove_file_ns(&cls->p->subsys.kobj, &attr->attr, ns);
  }
  
--static int vsc85xx_default_config(struct phy_device *phydev)
-+/* Set the RGMII RX and TX clock skews individually, according to the PHY
-+ * interface type, to:
-+ *  * 0.2 ns (their default, and lowest, hardware value) if delays should
-+ *    not be enabled
-+ *  * 2.0 ns (which causes the data to be sampled at exactly half way between
-+ *    clock transitions at 1000 Mbps) if delays should be enabled
-+ */
-+static int vsc85xx_rgmii_set_skews(struct phy_device *phydev, u32 rgmii_cntl,
-+				   u16 rgmii_rx_delay_mask,
-+				   u16 rgmii_tx_delay_mask)
- {
-+	u16 rgmii_rx_delay_pos = ffs(rgmii_rx_delay_mask) - 1;
-+	u16 rgmii_tx_delay_pos = ffs(rgmii_tx_delay_mask) - 1;
- 	u16 reg_val = 0;
- 	int rc;
- 
--	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
--
--	if (!phy_interface_mode_is_rgmii(phydev->interface))
--		return 0;
--
- 	mutex_lock(&phydev->lock);
- 
- 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
- 	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
--		reg_val |= RGMII_CLK_DELAY_2_0_NS << RGMII_RX_CLK_DELAY_POS;
-+		reg_val |= RGMII_CLK_DELAY_2_0_NS << rgmii_rx_delay_pos;
- 	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID ||
- 	    phydev->interface == PHY_INTERFACE_MODE_RGMII_ID)
--		reg_val |= RGMII_CLK_DELAY_2_0_NS << RGMII_TX_CLK_DELAY_POS;
-+		reg_val |= RGMII_CLK_DELAY_2_0_NS << rgmii_tx_delay_pos;
- 
- 	rc = phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_2,
--			      MSCC_PHY_RGMII_CNTL,
--			      RGMII_RX_CLK_DELAY_MASK | RGMII_TX_CLK_DELAY_MASK,
-+			      rgmii_cntl,
-+			      rgmii_rx_delay_mask | rgmii_tx_delay_mask,
- 			      reg_val);
- 
- 	mutex_unlock(&phydev->lock);
-@@ -549,6 +555,23 @@ static int vsc85xx_default_config(struct phy_device *phydev)
- 	return rc;
- }
- 
-+static int vsc85xx_default_config(struct phy_device *phydev)
++struct kernfs_node *class_find_and_get_file_ns(struct class *cls,
++					       const char *name,
++					       const void *ns)
 +{
-+	int rc;
++	struct kernfs_node *kn = NULL;
 +
-+	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
-+
-+	if (phy_interface_mode_is_rgmii(phydev->interface)) {
-+		rc = vsc85xx_rgmii_set_skews(phydev, VSC8502_RGMII_CNTL,
-+					     VSC8502_RGMII_RX_DELAY_MASK,
-+					     VSC8502_RGMII_TX_DELAY_MASK);
-+		if (rc)
-+			return rc;
-+	}
-+
-+	return 0;
++	if (cls)
++		kn = kernfs_find_and_get_ns(cls->p->subsys.kobj.sd, name, ns);
++	return kn;
 +}
 +
- static int vsc85xx_get_tunable(struct phy_device *phydev,
- 			       struct ethtool_tunable *tuna, void *data)
+ static struct class *class_get(struct class *cls)
  {
-@@ -1301,32 +1324,6 @@ static bool vsc8584_is_pkg_init(struct phy_device *phydev, bool reversed)
- 	return false;
- }
+ 	if (cls)
+@@ -580,6 +591,7 @@ int __init classes_init(void)
  
--static void vsc8584_rgmii_set_skews(struct phy_device *phydev)
--{
--	u32 skew_rx, skew_tx;
+ EXPORT_SYMBOL_GPL(class_create_file_ns);
+ EXPORT_SYMBOL_GPL(class_remove_file_ns);
++EXPORT_SYMBOL_GPL(class_find_and_get_file_ns);
+ EXPORT_SYMBOL_GPL(class_unregister);
+ EXPORT_SYMBOL_GPL(class_destroy);
+ 
+diff --git a/include/linux/device/class.h b/include/linux/device/class.h
+index e8d470c457d1..230cf2ce6d3f 100644
+--- a/include/linux/device/class.h
++++ b/include/linux/device/class.h
+@@ -209,7 +209,9 @@ extern int __must_check class_create_file_ns(struct class *class,
+ extern void class_remove_file_ns(struct class *class,
+ 				 const struct class_attribute *attr,
+ 				 const void *ns);
 -
--	/* We first set the Rx and Tx skews to their default value in h/w
--	 * (0.2 ns).
--	 */
--	skew_rx = VSC8584_RGMII_SKEW_0_2;
--	skew_tx = VSC8584_RGMII_SKEW_0_2;
--
--	/* We then set the skews based on the interface mode. */
--	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--	    phydev->interface == PHY_INTERFACE_MODE_RGMII_RXID)
--		skew_rx = VSC8584_RGMII_SKEW_2_0;
--	if (phydev->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--	    phydev->interface == PHY_INTERFACE_MODE_RGMII_TXID)
--		skew_tx = VSC8584_RGMII_SKEW_2_0;
--
--	/* Finally we apply the skews configuration. */
--	phy_modify_paged(phydev, MSCC_PHY_PAGE_EXTENDED_2,
--			 MSCC_PHY_RGMII_SETTINGS,
--			 (0x7 << RGMII_SKEW_RX_POS) | (0x7 << RGMII_SKEW_TX_POS),
--			 (skew_rx << RGMII_SKEW_RX_POS) |
--			 (skew_tx << RGMII_SKEW_TX_POS));
--}
--
- static int vsc8584_config_init(struct phy_device *phydev)
++struct kernfs_node *class_find_and_get_file_ns(struct class *cls,
++					       const char *name,
++					       const void *ns);
+ static inline int __must_check class_create_file(struct class *class,
+ 					const struct class_attribute *attr)
  {
- 	struct vsc8531_private *vsc8531 = phydev->priv;
-@@ -1461,8 +1458,13 @@ static int vsc8584_config_init(struct phy_device *phydev)
- 	if (ret)
- 		return ret;
- 
--	if (phy_interface_is_rgmii(phydev))
--		vsc8584_rgmii_set_skews(phydev);
-+	if (phy_interface_is_rgmii(phydev)) {
-+		ret = vsc85xx_rgmii_set_skews(phydev, VSC8572_RGMII_CNTL,
-+					      VSC8572_RGMII_RX_DELAY_MASK,
-+					      VSC8572_RGMII_TX_DELAY_MASK);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	ret = genphy_soft_reset(phydev);
- 	if (ret)
 -- 
 2.17.1
 
