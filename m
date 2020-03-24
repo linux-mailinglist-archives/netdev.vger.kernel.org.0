@@ -2,113 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DA48191942
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 19:35:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F189D19197D
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 19:54:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727869AbgCXSfU convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 24 Mar 2020 14:35:20 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:42502 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727398AbgCXSfU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 14:35:20 -0400
-Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id C8009CECBE;
-        Tue, 24 Mar 2020 19:44:49 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
-Subject: Re: [PATCH v1 1/2] Bluetooth: btusb: Indicate Microsoft vendor
- extension for Intel 9460/9560 and 9160/9260
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <CALWDO_U5Cnt3_Ss2QQNhtuKS_8qq7oyNH4d97J68pmbmQMe=3w@mail.gmail.com>
-Date:   Tue, 24 Mar 2020 19:35:17 +0100
-Cc:     Joe Perches <joe@perches.com>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Bluetooth Kernel Mailing List 
-        <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Alain Michaud <alainm@chromium.org>,
+        id S1727657AbgCXSxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 14:53:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59090 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727379AbgCXSxw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 14:53:52 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 40D5B2074D;
+        Tue, 24 Mar 2020 18:53:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585076031;
+        bh=zbUjVqmOQpHgft4VC/u9Z+h3ICSYIu6L90BtbphGNPA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hYFW9dgn4FhW7wsomQPnDyFo1ndJIRyy/GrXFbGR1cMpHFb1A3U5iBg6hKB4joVq7
+         URoi5mmYwdT+ZRaSNM7KIGwUdexvd8IqCUaPJuk9vuYaRNy1y+crtDvUyn4TT4+yZ4
+         x/GnvREx191KhJcE55V7oekwk9p1YIt9lb4n/DNc=
+Date:   Tue, 24 Mar 2020 11:53:49 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <643C6020-2FC5-4EEA-8F64-5D4B7F9258A4@holtmann.org>
-References: <20200323072824.254495-1-mcchou@chromium.org>
- <20200323002820.v1.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
- <04021BE3-63F7-4B19-9F0E-145785594E8C@holtmann.org>
- <421d27670f2736c88e8c0693e3ff7c0dcfceb40b.camel@perches.com>
- <57C56801-7F3B-478A-83E9-1D2376C60666@holtmann.org>
- <03547be94c4944ca672c7aef2dd38b0fb1eedc84.camel@perches.com>
- <CALWDO_U5Cnt3_Ss2QQNhtuKS_8qq7oyNH4d97J68pmbmQMe=3w@mail.gmail.com>
-To:     Alain Michaud <alainmichaud@google.com>
-X-Mailer: Apple Mail (2.3608.60.0.2.5)
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Andrey Ignatov <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
+ program when attaching XDP
+Message-ID: <20200324115349.6447f99b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87tv2e10ly.fsf@toke.dk>
+References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
+        <158462359315.164779.13931660750493121404.stgit@toke.dk>
+        <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN>
+        <875zez76ph.fsf@toke.dk>
+        <20200320103530.2853c573@kicinski-fedora-PC1C0HJN>
+        <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
+        <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
+        <87tv2f48lp.fsf@toke.dk>
+        <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com>
+        <87h7ye3mf3.fsf@toke.dk>
+        <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
+        <87tv2e10ly.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alain,
+On Tue, 24 Mar 2020 11:57:45 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+> > If everyone is using libbpf, does kernel system (bpf syscall vs
+> > netlink) matter all that much? =20
+>=20
+> This argument works the other way as well, though: If libbpf can
+> abstract the subsystem differences and provide a consistent interface to
+> "the BPF world", why does BPF need to impose its own syscall API on the
+> networking subsystem?
 
->>>>>> This adds a bit mask of driver_info for Microsoft vendor extension and
->>>>>> indicates the support for Intel 9460/9560 and 9160/9260. See
->>>>>> https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
->>>>>> microsoft-defined-bluetooth-hci-commands-and-events for more information
->>>>>> about the extension. This was verified with Intel ThunderPeak BT controller
->>>>>> where msft_vnd_ext_opcode is 0xFC1E.
->>>> []
->>>>>> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
->>>> []
->>>>>> @@ -315,6 +315,10 @@ struct hci_dev {
->>>>>>        __u8            ssp_debug_mode;
->>>>>>        __u8            hw_error_code;
->>>>>>        __u32           clock;
->>>>>> +       __u16           msft_vnd_ext_opcode;
->>>>>> +       __u64           msft_vnd_ext_features;
->>>>>> +       __u8            msft_vnd_ext_evt_prefix_len;
->>>>>> +       void            *msft_vnd_ext_evt_prefix;
->>>> 
->>>> msft is just another vendor.
->>>> 
->>>> If there are to be vendor extensions, this should
->>>> likely use a blank line above and below and not
->>>> be prefixed with msft_
->>> 
->>> there are other vendors, but all of them are different. So this needs to be prefixed with msft_ actually. But I agree that having empty lines above and below makes it more readable.
->> 
->> So struct hci_dev should become a clutter
->> of random vendor extensions?
->> 
->> Perhaps there should instead be something like
->> an array of char at the end of the struct and
->> various vendor specific extensions could be
->> overlaid on that array or just add a void *
->> to whatever info that vendors require.
-> I don't particularly like trailing buffers, but I agree we could
-> possibly organize this a little better by with a struct.  something
-> like:
-> 
-> struct msft_vnd_ext {
->    bool              supported; // <-- Clearly calls out if the
-> extension is supported.
->    __u16           msft_vnd_ext_opcode; // <-- Note that this also
-> needs to be provided by the driver.  I don't recommend we have this
-> read from the hardware since we just cause an extra redirection that
-> isn't necessary.  Ideally, this should come from the usb_table const.
+Hitting the nail on the head there, again :)
 
-Actually supported == false is the same as opcode == 0x0000. And supported == true is opcode != 0x0000.
+Once upon a time when we were pushing for libbpf focus & unification,
+one of my main motivations was that a solid library that most people
+use give us the ability to provide user space abstractions.
 
->    __u64           msft_vnd_ext_features;
->    __u8             msft_vnd_ext_evt_prefix_len;
->    void             *msft_vnd_ext_evt_prefix;
-> };
-> 
-> And then simply add the struct msft_vnd_ext (and any others) to hci_dev.
-
-Anyway, Lets keep these for now as hci_dev->msft_vnd_ext_*. We can fix this up later without any impact.
-
-Regards
-
-Marcel
-
+As much as adding new kernel interfaces "to rule them all" is fun, it
+has a real cost.
