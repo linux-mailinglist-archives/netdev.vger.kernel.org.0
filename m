@@ -2,74 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B64D4190625
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 08:17:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5284F19062B
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 08:22:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727372AbgCXHRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 03:17:09 -0400
-Received: from mx2.suse.de ([195.135.220.15]:48632 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725905AbgCXHRI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 03:17:08 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 58C58AD77;
-        Tue, 24 Mar 2020 07:17:07 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 12D3DE0FD3; Tue, 24 Mar 2020 08:17:06 +0100 (CET)
-Date:   Tue, 24 Mar 2020 08:17:06 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
+        id S1727324AbgCXHWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 03:22:22 -0400
+Received: from bmailout2.hostsharing.net ([83.223.78.240]:59413 "EHLO
+        bmailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726697AbgCXHWV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 03:22:21 -0400
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by bmailout2.hostsharing.net (Postfix) with ESMTPS id D5DC02800A267;
+        Tue, 24 Mar 2020 08:22:19 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 9DC4110D0DD; Tue, 24 Mar 2020 08:22:19 +0100 (CET)
+Date:   Tue, 24 Mar 2020 08:22:19 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Petr Stetiar <ynezz@true.cz>,
         YueHaibing <yuehaibing@huawei.com>
-Subject: Re: [PATCH 07/14] net: ks8851: Use 16-bit writes to program MAC
- address
-Message-ID: <20200324071706.GI31519@unicorn.suse.cz>
+Subject: Re: [PATCH 06/14] net: ks8851: Remove ks8851_rdreg32()
+Message-ID: <20200324072219.wochifgdx2mz6orx@wunner.de>
 References: <20200323234303.526748-1-marex@denx.de>
- <20200323234303.526748-8-marex@denx.de>
+ <20200323234303.526748-7-marex@denx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200323234303.526748-8-marex@denx.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200323234303.526748-7-marex@denx.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 12:42:56AM +0100, Marek Vasut wrote:
-> On the SPI variant of KS8851, the MAC address can be programmed with
-> either 8/16/32-bit writes. To make it easier to support the 16-bit
-> parallel option of KS8851 too, switch both the MAC address programming
-> and readout to 16-bit operations.
-> 
-> Remove ks8851_wrreg8() as it is not used anywhere anymore.
-> 
-> There should be no functional change.
-> 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Lukas Wunner <lukas@wunner.de>
-> Cc: Petr Stetiar <ynezz@true.cz>
-> Cc: YueHaibing <yuehaibing@huawei.com>
-> ---
-[...]
-> +
-> +	for (i = 0; i < ETH_ALEN; i += 2) {
-> +		val = (dev->dev_addr[i] << 8) | dev->dev_addr[i + 1];
-> +		ks8851_wrreg16(ks, KS_MAR(i + 1), val);
-> +	}
-[...]
-> +	for (i = 0; i < ETH_ALEN; i += 2) {
-> +		reg = ks8851_rdreg16(ks, KS_MAR(i + 1));
-> +		dev->dev_addr[i] = reg & 0xff;
-> +		dev->dev_addr[i + 1] = reg >> 8;
-> +	}
+On Tue, Mar 24, 2020 at 12:42:55AM +0100, Marek Vasut wrote:
+> The ks8851_rdreg32() is used only in one place, to read two registers
+> using a single read. To make it easier to support 16-bit accesses via
+> parallel bus later on, replace this single read with two 16-bit reads
+> from each of the registers and drop the ks8851_rdreg32() altogether.
 
-I know nothing about the hardware but this seems inconsistent: while
-writing, you put addr[i] into upper part of the 16-bit value and
-addr[i+1] into lower but for read you do the opposite. Is it correct?
+This doubles the SPI transactions necessary to read the RX queue status,
+which happens for each received packet, so I expect the performance
+impact to be noticeable.  Can you keep the 32-bit variant for SPI
+and instead just introduce a 32-bit read for the MLL chip which performs
+two 16-bit reads internally?
 
-Michal Kubecek
+Thanks,
+
+Lukas
