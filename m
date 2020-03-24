@@ -2,77 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F28B191146
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 14:40:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DA91619114E
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 14:41:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727509AbgCXNip (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 09:38:45 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:36623 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726190AbgCXNip (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 09:38:45 -0400
-Received: by mail-pg1-f194.google.com with SMTP id j29so2154943pgl.3;
-        Tue, 24 Mar 2020 06:38:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=VBUiQeQGfbe8m2l40UxLUa/kv9A6NhKT5KCGe27ow+8=;
-        b=WYsgIh1n5JIAK81ordTHdR/AxVf/kv+FGkkNkouvpEK4dg+KJDc6LSzJv7opLcQjjr
-         TAAFU84ryji0ojTaNkoHl++YY2F7es7YZkFMYsqb1amYVN0pWRVM+9uXzpGgF82f+57Z
-         LLXV6lza0hs2+s4SLpULbRNTHxVu24mOYBIVrKwr+7LkZzn6fvJ3bar0gjBNpxkxa7Y+
-         b6DXeeCYZm4tBzZF2cQCVtP6iaTsV6muP1qpez3Z7W5q97xuRTQA8Gi3UNhLGifqDj6F
-         dj+QXv7ZsafkI7pKv803Wk0A5tbCYQ7NO+ipgy/7sqrx3DCYyfujyUqhz73yFJJzShT7
-         AKvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VBUiQeQGfbe8m2l40UxLUa/kv9A6NhKT5KCGe27ow+8=;
-        b=IGNBFwcJrLpV5YUGKa8vEOJ77G3I8F3q9kqEANnWX8iffXqSbPuwYTdlxnqOz2LBKN
-         IsioW0+92VwU0dskZawImnRfjW/eu99wiXCrRw6Tapdz4lEQY2BrWLlvK1Mi7ZAPMUvL
-         rGXJM/Uolg3wPffseNL9YK4xCpxzncFZqCvEfNg2U5Rc19HaZ2CfqC9phPDIKraqgmx/
-         xxWIcWJQMOrkGUmZKhE3LvBAbeEs9n4nsZN7kuDfg0Uy9CGfxw1ScMvbbBgrSWB3tb0X
-         tZV8x6LakiMIjNBa8csOxDJQgZEBdgiD7lggK4lCo9EMrv9wVtpXF0CTg5//WkjQvYpk
-         kVew==
-X-Gm-Message-State: ANhLgQ3gs8oiqMt2lqvUdqf7A90/DJRGT+4SKzHwl+U2HeD7trQ+yWta
-        clrA0ZTmKwz1UkA4zlXCm5lDM1WY
-X-Google-Smtp-Source: ADFU+vsIe4Fpzy8sKjAqkFakHApgf5NUUwRM9dTOixpmaJ2WbWd/cY0pU0nHKo8mn0YepHQmGpsmdg==
-X-Received: by 2002:a62:1dd3:: with SMTP id d202mr29893622pfd.47.1585057123911;
-        Tue, 24 Mar 2020 06:38:43 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id e14sm15849294pfn.196.2020.03.24.06.38.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Mar 2020 06:38:43 -0700 (PDT)
-Date:   Tue, 24 Mar 2020 06:38:41 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Tony Lindgren <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        netdev <netdev@vger.kernel.org>, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 00/11] net: ethernet: ti: cpts: add irq and
- HW_TS_PUSH events
-Message-ID: <20200324133841.GC18149@localhost>
-References: <20200320194244.4703-1-grygorii.strashko@ti.com>
+        id S1727466AbgCXNku (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 09:40:50 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54454 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726802AbgCXNku (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 09:40:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=uRf8ofosAVV+2HpIIxy+2T25i84wUEcrYiHqS9WyV00=; b=LA+IJa2bRHrK/h8xVdBiOaa/nv
+        Kqf9S3ikB0EaIILneLrAnc3ZB4yNfsJ6JCkG7e3/mT7FgZilA6i8cy67UuL/IaGktG08b0+TlO/MB
+        Nq2HnK0UFoTKe+MpyZRK7MbFC/GfiF3ivUgHQJErCfX+OjsjFcmikTajOe02X/B/g6pM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jGjnT-0002Ld-CI; Tue, 24 Mar 2020 14:40:47 +0100
+Date:   Tue, 24 Mar 2020 14:40:47 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, antoine.tenart@bootlin.com
+Subject: Re: [PATCH net-next] net: phy: mscc: consolidate a common RGMII
+ delay implementation
+Message-ID: <20200324134047.GY3819@lunn.ch>
+References: <20200324124837.21556-1-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200320194244.4703-1-grygorii.strashko@ti.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200324124837.21556-1-olteanv@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 20, 2020 at 09:42:33PM +0200, Grygorii Strashko wrote:
-> Main changes comparing to initial submission:
-> - both RX/TX timestamp processing deferred to ptp worker
+On Tue, Mar 24, 2020 at 02:48:37PM +0200, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> It looks like the VSC8584 PHY driver is rolling its own RGMII delay
+> configuration code, despite the fact that the logic is mostly the same.
+> 
+> In fact only the register layout and position for the RGMII controls has
+> changed. So we need to adapt and parameterize the PHY-dependent bit
+> fields when calling the new generic function.
 
-I can't see any benefit in delaying Rx time stamps.
-What is the reason for this change?
+Nice.
 
-Thanks,
-Richard
+> -static void vsc8584_rgmii_set_skews(struct phy_device *phydev)
+> -{
+> -	u32 skew_rx, skew_tx;
+> -
+> -	/* We first set the Rx and Tx skews to their default value in h/w
+> -	 * (0.2 ns).
+> -	 */
+
+I like seeing this comment. It makes it clear that
+PHY_INTERFACE_MODE_RGMII does not actually mean 0ns, but 0.2ns.  It
+also makes it clear that if PHY_INTERFACE_MODE_RGMII_ID,
+PHY_INTERFACE_MODE_RGMII_RXID or PHY_INTERFACE_MODE_RGMII_TXID is not
+given, the delay is set to something. We have had PHY drivers which
+get this wrong and leave the bootloader/strapping value in place.
+
+So if you can keep the comment in some form, that would be good.
+
+Thanks
+	Andrew
