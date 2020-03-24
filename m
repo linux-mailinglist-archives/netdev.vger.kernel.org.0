@@ -2,120 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 35FCF19140E
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 16:20:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D8CC19141B
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 16:20:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728181AbgCXPTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 11:19:17 -0400
-Received: from smtprelay0081.hostedemail.com ([216.40.44.81]:39096 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727561AbgCXPTR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 11:19:17 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 881B2181396EB;
-        Tue, 24 Mar 2020 15:19:15 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2525:2553:2560:2563:2682:2685:2828:2859:2892:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3355:3622:3865:3866:3867:3868:3871:3872:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:4605:5007:6117:6691:7688:7875:7903:8957:9025:9121:10004:10400:10471:10848:11026:11232:11658:11914:12043:12295:12296:12297:12438:12740:12760:12895:13019:13255:13439:14096:14097:14180:14181:14659:14721:21060:21080:21627:30054:30055:30060:30075:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: arch16_165b868a3cd01
-X-Filterd-Recvd-Size: 4437
-Received: from XPS-9350.home (unknown [47.151.136.130])
-        (Authenticated sender: joe@perches.com)
-        by omf02.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 24 Mar 2020 15:19:13 +0000 (UTC)
-Message-ID: <b7b6e52eccca921ccea16b7679789eb3e2115871.camel@perches.com>
-Subject: Re: [PATCH v1 1/2] Bluetooth: btusb: Indicate Microsoft vendor
- extension for Intel 9460/9560 and 9160/9260
-From:   Joe Perches <joe@perches.com>
-To:     Alain Michaud <alainmichaud@google.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        Bluetooth Kernel Mailing List 
-        <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Date:   Tue, 24 Mar 2020 08:17:23 -0700
-In-Reply-To: <CALWDO_U5Cnt3_Ss2QQNhtuKS_8qq7oyNH4d97J68pmbmQMe=3w@mail.gmail.com>
-References: <20200323072824.254495-1-mcchou@chromium.org>
-         <20200323002820.v1.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
-         <04021BE3-63F7-4B19-9F0E-145785594E8C@holtmann.org>
-         <421d27670f2736c88e8c0693e3ff7c0dcfceb40b.camel@perches.com>
-         <57C56801-7F3B-478A-83E9-1D2376C60666@holtmann.org>
-         <03547be94c4944ca672c7aef2dd38b0fb1eedc84.camel@perches.com>
-         <CALWDO_U5Cnt3_Ss2QQNhtuKS_8qq7oyNH4d97J68pmbmQMe=3w@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.34.1-2 
+        id S1728227AbgCXPUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 11:20:50 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:47857 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727589AbgCXPUu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 11:20:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585063249;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+JTcpVfOw/bmfScdEMgRwUs3s3EW2/WgRaQGfv5rQsY=;
+        b=QOmNLagyGqwBakN3mmaRtnVdSFkNdyJAdn/3/1gvkJyzKtMcBoIDtAk8hFErgTkdyQO7gk
+        yiIRYOkRJPhy8KIzf0/sv/LZHDhZpWz7Fan1TH0vDGICwm5I8U6ShReMCNse5k9Ht6eSm6
+        372nZnM1RzG2JJrbO/Ql+mc0DcD7TsM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-166-UZPWCj5QOJmuIrOmf1PGFw-1; Tue, 24 Mar 2020 11:20:47 -0400
+X-MC-Unique: UZPWCj5QOJmuIrOmf1PGFw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 13454107ACC9;
+        Tue, 24 Mar 2020 15:20:46 +0000 (UTC)
+Received: from ovpn-114-145.ams2.redhat.com (ovpn-114-145.ams2.redhat.com [10.36.114.145])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 03807A0A63;
+        Tue, 24 Mar 2020 15:20:10 +0000 (UTC)
+Message-ID: <fc891ad2dd19edf7a11da0a62ca40c53581fa85e.camel@redhat.com>
+Subject: Re: [PATCH net-next 04/17] mptcp: Add handling of outgoing MP_JOIN
+ requests
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        netdev@vger.kernel.org
+Cc:     Peter Krystad <peter.krystad@linux.intel.com>,
+        eric.dumazet@gmail.com, Florian Westphal <fw@strlen.de>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Date:   Tue, 24 Mar 2020 16:20:09 +0100
+In-Reply-To: <20200323212642.34104-5-mathew.j.martineau@linux.intel.com>
+References: <20200323212642.34104-1-mathew.j.martineau@linux.intel.com>
+         <20200323212642.34104-5-mathew.j.martineau@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-03-24 at 11:10 -0400, Alain Michaud wrote:
-> On Mon, Mar 23, 2020 at 4:11 PM Joe Perches <joe@perches.com> wrote:
-> > On Mon, 2020-03-23 at 19:48 +0100, Marcel Holtmann wrote:
-> > > Hi Joe,
-> > 
-> > Hello Marcel.
-> > 
-> > > > > > This adds a bit mask of driver_info for Microsoft vendor extension and
-> > > > > > indicates the support for Intel 9460/9560 and 9160/9260. See
-> > > > > > https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
-> > > > > > microsoft-defined-bluetooth-hci-commands-and-events for more information
-> > > > > > about the extension. This was verified with Intel ThunderPeak BT controller
-> > > > > > where msft_vnd_ext_opcode is 0xFC1E.
-> > > > []
-> > > > > > diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-> > > > []
-> > > > > > @@ -315,6 +315,10 @@ struct hci_dev {
-> > > > > >         __u8            ssp_debug_mode;
-> > > > > >         __u8            hw_error_code;
-> > > > > >         __u32           clock;
-> > > > > > +       __u16           msft_vnd_ext_opcode;
-> > > > > > +       __u64           msft_vnd_ext_features;
-> > > > > > +       __u8            msft_vnd_ext_evt_prefix_len;
-> > > > > > +       void            *msft_vnd_ext_evt_prefix;
-> > > > 
-> > > > msft is just another vendor.
-> > > > 
-> > > > If there are to be vendor extensions, this should
-> > > > likely use a blank line above and below and not
-> > > > be prefixed with msft_
-> > > 
-> > > there are other vendors, but all of them are different. So this needs to be prefixed with msft_ actually. But I agree that having empty lines above and below makes it more readable.
-> > 
-> > So struct hci_dev should become a clutter
-> > of random vendor extensions?
-> > 
-> > Perhaps there should instead be something like
-> > an array of char at the end of the struct and
-> > various vendor specific extensions could be
-> > overlaid on that array or just add a void *
-> > to whatever info that vendors require.
-> I don't particularly like trailing buffers, but I agree we could
-> possibly organize this a little better by with a struct.  something
-> like:
-> 
-> struct msft_vnd_ext {
->     bool              supported; // <-- Clearly calls out if the
-> extension is supported.
->     __u16           msft_vnd_ext_opcode; // <-- Note that this also
-> needs to be provided by the driver.  I don't recommend we have this
-> read from the hardware since we just cause an extra redirection that
-> isn't necessary.  Ideally, this should come from the usb_table const.
->     __u64           msft_vnd_ext_features;
->     __u8             msft_vnd_ext_evt_prefix_len;
->     void             *msft_vnd_ext_evt_prefix;
-> };
-> 
-> And then simply add the struct msft_vnd_ext (and any others) to hci_dev.
+On Mon, 2020-03-23 at 14:26 -0700, Mat Martineau wrote:
+> @@ -131,6 +149,7 @@ static void subflow_init_req(struct request_sock *req,
+>  
+>  		subflow_req->ssn_offset = TCP_SKB_CB(skb)->seq;
+>  	} else if (rx_opt.mptcp.mp_join && listener->request_mptcp) {
+> +		subflow_req->ssn_offset = TCP_SKB_CB(skb)->seq;
+>  		subflow_req->mp_join = 1;
+>  		subflow_req->backup = rx_opt.mptcp.backup;
+>  		subflow_req->remote_id = rx_opt.mptcp.join_id;
+> @@ -169,13 +188,35 @@ static void subflow_v6_init_req(struct request_sock *req,
+>  }
+>  #endif
+>  
+> +/* validate received truncated hmac and create hmac for third ACK */
+> +static bool subflow_thmac_valid(struct mptcp_subflow_context *subflow)
+> +{
+> +	u8 hmac[MPTCPOPT_HMAC_LEN];
+> +	u64 thmac;
+> +
+> +	subflow_generate_hmac(subflow->remote_key, subflow->local_key,
+> +			      subflow->remote_nonce, subflow->local_nonce,
+> +			      hmac);
+> +
+> +	thmac = get_unaligned_be64(hmac);
+> +	pr_debug("subflow=%p, token=%u, thmac=%llu, subflow->thmac=%llu\n",
+> +		 subflow, subflow->token,
+> +		 (unsigned long long)thmac,
+> +		 (unsigned long long)subflow->thmac);
+> +
+> +	return thmac == subflow->thmac;
+> +}
+> +
+>  static void subflow_finish_connect(struct sock *sk, const struct sk_buff *skb)
+>  {
+>  	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+>  
+>  	subflow->icsk_af_ops->sk_rx_dst_set(sk, skb);
+>  
+> -	if (!subflow->conn_finished) {
+> +	if (subflow->conn_finished || !tcp_sk(sk)->is_mptcp)
+> +		return;
+> +
+> +	if (subflow->mp_capable) {
+>  		pr_debug("subflow=%p, remote_key=%llu", mptcp_subflow_ctx(sk),
+>  			 subflow->remote_key);
+>  		mptcp_finish_connect(sk);
 
-Or use an anonymous union
+This chunk conflicts with commit c3c123d16c0ed4a81b9b18d3759a31c58b2fe504.
 
+The next iteration will address such conflict.
+
+Thanks,
+
+Paolo
 
 
