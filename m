@@ -2,244 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C462019060B
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 08:05:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 178CB190611
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 08:08:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727401AbgCXHFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 03:05:55 -0400
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:42452 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725905AbgCXHFz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 03:05:55 -0400
-Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02O6vigS009120;
-        Tue, 24 Mar 2020 08:05:34 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=STMicroelectronics;
- bh=TJ6WtYr21VD5PFcLOhb9jJ6FrGqugiINsfYyYW1YSXQ=;
- b=UO3yxKThrXUCp5oUiRs+I2KJM1eCkcsOTQt3i/irJgTF5yfs8GAUQmmi/e19pim6ezgD
- d+Sjv/ylEYhi+cVoNF5lL9k2S/6JQmda3N+2S3qCNFAxdx/KAvhhTRUiisfxg1a5XPJU
- dnp8Kq03QFTMHXzmIQN+AHt5YBFBb0dtX3X58ICVCVuroDivd+BYveb3tdr02BXYiFCk
- WgYNLp8jxEUABLl1QXhDA+wnOyKjhKLCxISsinTI9s95FHORYE4006JxatRou8GdoGRQ
- va0U0L7wqzfR3qzAJ+BWxLAptox6+JZ8+eMRsiC5hFKmgDSPDwrufddl7kZgMNUl51BW 5A== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2yw995dw7f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 24 Mar 2020 08:05:34 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 43B1D100051;
-        Tue, 24 Mar 2020 08:05:28 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag3node2.st.com [10.75.127.8])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 2B94F2123A8;
-        Tue, 24 Mar 2020 08:05:28 +0100 (CET)
-Received: from SFHDAG5NODE3.st.com (10.75.127.15) by SFHDAG3NODE2.st.com
- (10.75.127.8) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue, 24 Mar
- 2020 08:05:27 +0100
-Received: from SFHDAG5NODE3.st.com ([fe80::7c09:5d6b:d2c7:5f47]) by
- SFHDAG5NODE3.st.com ([fe80::7c09:5d6b:d2c7:5f47%20]) with mapi id
- 15.00.1473.003; Tue, 24 Mar 2020 08:05:27 +0100
-From:   Christophe ROULLIER <christophe.roullier@st.com>
-To:     "robh@kernel.org" <robh@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "joabreu@synopsys.com" <joabreu@synopsys.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "mcoquelin.stm32@gmail.com" <mcoquelin.stm32@gmail.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
-        Peppe CAVALLARO <peppe.cavallaro@st.com>
-CC:     "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>
-Subject: Re: [PATCHv2 1/1] net: ethernet: stmmac: simplify phy modes
- management for stm32
-Thread-Topic: [PATCHv2 1/1] net: ethernet: stmmac: simplify phy modes
- management for stm32
-Thread-Index: AQHV+3KcsJPnUGhLZUuQ86OpgL2bwKhXTYaA
-Date:   Tue, 24 Mar 2020 07:05:27 +0000
-Message-ID: <9525b2f3-3ef6-48f0-7183-a8d531945b17@st.com>
-References: <20200316090907.18488-1-christophe.roullier@st.com>
-In-Reply-To: <20200316090907.18488-1-christophe.roullier@st.com>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.75.127.51]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <8C57BBC1A4029645A55F6C9855D57595@st.com>
-Content-Transfer-Encoding: base64
+        id S1727372AbgCXHIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 03:08:04 -0400
+Received: from bmailout1.hostsharing.net ([83.223.95.100]:34049 "EHLO
+        bmailout1.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725869AbgCXHIE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 03:08:04 -0400
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id E61A530004525;
+        Tue, 24 Mar 2020 08:08:01 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id BEE8FA2372; Tue, 24 Mar 2020 08:08:01 +0100 (CET)
+Date:   Tue, 24 Mar 2020 08:08:01 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Marek Vasut <marex@denx.de>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: Re: [PATCH 03/14] net: ks8851: Pass device pointer into
+ ks8851_init_mac()
+Message-ID: <20200324070801.uybzsgip46vqktk6@wunner.de>
+References: <20200323234303.526748-1-marex@denx.de>
+ <20200323234303.526748-4-marex@denx.de>
+ <20200324010622.GH3819@lunn.ch>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
- definitions=2020-03-24_01:2020-03-23,2020-03-24 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200324010622.GH3819@lunn.ch>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGksDQoNCkdlbnRsZSByZW1pbmRlcg0KDQpUaGFua3MgaW4gYWR2YW5jZS4NCkNocmlzdG9waGUu
-DQoNCg0KDQpPbiAxNi8wMy8yMDIwIDEwOjA5LCBDaHJpc3RvcGhlIFJvdWxsaWVyIHdyb3RlOg0K
-PiBObyBuZXcgZmVhdHVyZSwganVzdCB0byBzaW1wbGlmeSBzdG0zMiBwYXJ0IHRvIGJlIGVhc2ll
-ciB0byB1c2UuDQo+IEFkZCBieSBkZWZhdWx0IGFsbCBFdGhlcm5ldCBjbG9ja3MgaW4gRFQsIGFu
-ZCBhY3RpdmF0ZSBvciBub3QgaW4gZnVuY3Rpb24NCj4gb2YgcGh5IG1vZGUsIGNsb2NrIGZyZXF1
-ZW5jeSwgaWYgcHJvcGVydHkgInN0LGV4dC1waHljbGsiIGlzIHNldCBvciBub3QuDQo+IEtlZXAg
-YmFja3dhcmQgY29tcGF0aWJpbGl0eQ0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiB8UEhZX01PREUgfCBO
-b3JtYWwgfCBQSFkgd28gY3J5c3RhbHwgICBQSFkgd28gY3J5c3RhbCAgIHwgIE5vIDEyNU1oeiAg
-fA0KPiB8ICAgICAgICAgfCAgICAgICAgfCAgICAgIDI1TUh6ICAgIHwgICAgICAgIDUwTUh6ICAg
-ICAgIHwgIGZyb20gUEhZICAgfA0KPiAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiB8ICBNSUkgICAgfAkgLSAg
-ICB8ICAgICBldGgtY2sgICAgfCAgICAgICBuL2EgICAgICAgICAgfAkgICAgbi9hICB8DQo+IHwg
-ICAgICAgICB8ICAgICAgICB8IHN0LGV4dC1waHljbGsgfCAgICAgICAgICAgICAgICAgICAgfCAg
-ICAgICAgICAgICB8DQo+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IHwgIEdNSUkgICB8CSAtICAgIHwgICAg
-IGV0aC1jayAgICB8ICAgICAgIG4vYSAgICAgICAgICB8CSAgICBuL2EgIHwNCj4gfCAgICAgICAg
-IHwgICAgICAgIHwgc3QsZXh0LXBoeWNsayB8ICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAg
-ICAgIHwNCj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gfCBSR01JSSAgIHwJIC0gICAgfCAgICAgZXRoLWNr
-ICAgIHwgICAgICAgbi9hICAgICAgICAgIHwgICAgICBldGgtY2sgIHwNCj4gfCAgICAgICAgIHwg
-ICAgICAgIHwgc3QsZXh0LXBoeWNsayB8ICAgICAgICAgICAgICAgICAgICB8c3QsZXRoLWNsay1z
-ZWx8DQo+IHwgICAgICAgICB8ICAgICAgICB8ICAgICAgICAgICAgICAgfCAgICAgICAgICAgICAg
-ICAgICAgfCAgICAgICBvciAgICAgfA0KPiB8ICAgICAgICAgfCAgICAgICAgfCAgICAgICAgICAg
-ICAgIHwgICAgICAgICAgICAgICAgICAgIHwgc3QsZXh0LXBoeWNsa3wNCj4gLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tDQo+IHwgUk1JSSAgICB8CSAtICAgIHwgICAgIGV0aC1jayAgICB8ICAgICAgZXRoLWNrICAg
-ICAgICB8CSAgICAgbi9hICB8DQo+IHwgICAgICAgICB8ICAgICAgICB8IHN0LGV4dC1waHljbGsg
-fCBzdCxldGgtcmVmLWNsay1zZWwgfCAgICAgICAgICAgICAgfA0KPiB8ICAgICAgICAgfCAgICAg
-ICAgfCAgICAgICAgICAgICAgIHwgb3Igc3QsZXh0LXBoeWNsayAgIHwgICAgICAgICAgICAgIHwN
-Cj4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tDQo+DQo+IFNpZ25lZC1vZmYtYnk6IENocmlzdG9waGUgUm91bGxp
-ZXIgPGNocmlzdG9waGUucm91bGxpZXJAc3QuY29tPg0KPg0KPiAtLS0NCj4gICAuLi4vbmV0L2V0
-aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFjLXN0bTMyLmMgfCA3NCArKysrKysrKysrKy0tLS0t
-LS0tDQo+ICAgMSBmaWxlIGNoYW5nZWQsIDQ0IGluc2VydGlvbnMoKyksIDMwIGRlbGV0aW9ucygt
-KQ0KPg0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1tYWMv
-ZHdtYWMtc3RtMzIuYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFj
-LXN0bTMyLmMNCj4gaW5kZXggYjJkYzk5Mjg5Njg3Li41ZDRkZjRjNTI1NGUgMTAwNjQ0DQo+IC0t
-LSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFjLXN0bTMyLmMNCj4g
-KysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1tYWMvZHdtYWMtc3RtMzIuYw0K
-PiBAQCAtMjksNiArMjksMTEgQEANCj4gICAjZGVmaW5lIFNZU0NGR19QTUNSX0VUSF9DTEtfU0VM
-CQlCSVQoMTYpDQo+ICAgI2RlZmluZSBTWVNDRkdfUE1DUl9FVEhfUkVGX0NMS19TRUwJQklUKDE3
-KQ0KPiAgIA0KPiArLyogQ0xPQ0sgZmVlZCB0byBQSFkqLw0KPiArI2RlZmluZSBFVEhfQ0tfRl8y
-NU0JMjUwMDAwMDANCj4gKyNkZWZpbmUgRVRIX0NLX0ZfNTBNCTUwMDAwMDAwDQo+ICsjZGVmaW5l
-IEVUSF9DS19GXzEyNU0JMTI1MDAwMDAwDQo+ICsNCj4gICAvKiAgRXRoZXJuZXQgUEhZIGludGVy
-ZmFjZSBzZWxlY3Rpb24gaW4gcmVnaXN0ZXIgU1lTQ0ZHIENvbmZpZ3VyYXRpb24NCj4gICAgKi0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiAgICAqIHNyYwkgfEJJ
-VCgyMyl8IEJJVCgyMil8IEJJVCgyMSl8QklUKDIwKXwNCj4gQEAgLTU4LDMzICs2MywyMCBAQA0K
-PiAgICAqfCAgICAgICAgIHwgICAgICAgIHwgICAgICAyNU1IeiAgICB8ICAgICAgICA1ME1IeiAg
-ICAgICB8ICAgICAgICAgICAgICAgICAgfA0KPiAgICAqIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiAg
-ICAqfCAgTUlJICAgIHwJIC0gICB8ICAgICBldGgtY2sgICAgfAkgICAgICBuL2EJICB8CSAgbi9h
-ICAgICAgICB8DQo+IC0gKnwgICAgICAgICB8ICAgICAgICB8CQkgICAgIHwgICAgICAgICAgICAg
-ICAgICAgIHwJCSAgICAgfA0KPiArICp8ICAgICAgICAgfCAgICAgICAgfCBzdCxleHQtcGh5Y2xr
-IHwgICAgICAgICAgICAgICAgICAgIHwJCSAgICAgfA0KPiAgICAqIC0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LQ0KPiAgICAqfCAgR01JSSAgIHwJIC0gICB8ICAgICBldGgtY2sgICAgfAkgICAgICBuL2EJICB8
-CSAgbi9hICAgICAgICB8DQo+IC0gKnwgICAgICAgICB8ICAgICAgICB8ICAgICAgICAgICAgICAg
-fCAgICAgICAgICAgICAgICAgICAgfAkJICAgICB8DQo+ICsgKnwgICAgICAgICB8ICAgICAgICB8
-IHN0LGV4dC1waHljbGsgfCAgICAgICAgICAgICAgICAgICAgfAkJICAgICB8DQo+ICAgICogLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tDQo+IC0gKnwgUkdNSUkgICB8CSAtICAgfCAgICAgZXRoLWNrICAgIHwJ
-ICAgICAgbi9hCSAgfCAgZXRoLWNrIChubyBwaW4pIHwNCj4gLSAqfCAgICAgICAgIHwgICAgICAg
-IHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICB8ICBzdCxldGgtY2xrLXNlbCAg
-fA0KPiArICp8IFJHTUlJICAgfAkgLSAgIHwgICAgIGV0aC1jayAgICB8CSAgICAgIG4vYQkgIHwg
-ICAgICBldGgtY2sgICAgICB8DQo+ICsgKnwgICAgICAgICB8ICAgICAgICB8IHN0LGV4dC1waHlj
-bGsgfCAgICAgICAgICAgICAgICAgICAgfCBzdCxldGgtY2xrLXNlbCBvcnwNCj4gKyAqfCAgICAg
-ICAgIHwgICAgICAgIHwgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAgICAgICB8IHN0LGV4
-dC1waHljbGsgICAgfA0KPiAgICAqIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiAgICAqfCBSTUlJICAg
-IHwJIC0gICB8ICAgICBldGgtY2sgICAgfAkgICAgZXRoLWNrICAgICAgICB8CSAgbi9hICAgICAg
-ICB8DQo+IC0gKnwgICAgICAgICB8ICAgICAgICB8CQkgICAgIHwgc3QsZXRoLXJlZi1jbGstc2Vs
-IHwJCSAgICAgfA0KPiArICp8ICAgICAgICAgfCAgICAgICAgfCBzdCxleHQtcGh5Y2xrIHwgc3Qs
-ZXRoLXJlZi1jbGstc2VsIHwJCSAgICAgfA0KPiArICp8ICAgICAgICAgfCAgICAgICAgfCAgICAg
-ICAgICAgICAgIHwgb3Igc3QsZXh0LXBoeWNsayAgIHwJCSAgICAgfA0KPiAgICAqIC0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLQ0KPiAgICAqDQo+IC0gKiBCSVQoMTcpIDogc2V0IHRoaXMgYml0IGluIFJNSUkg
-bW9kZSB3aGVuIHlvdSBoYXZlIFBIWSB3aXRob3V0IGNyeXN0YWwgNTBNSHoNCj4gLSAqIEJJVCgx
-NikgOiBzZXQgdGhpcyBiaXQgaW4gR01JSS9SR01JSSBQSFkgd2hlbiB5b3UgZG8gbm90IHdhbnQg
-dXNlIDEyNU1oeg0KPiAtICogZnJvbSBQSFkNCj4gLSAqLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NCj4gLSAqIHNyYwkgfCAgICAgICAgIEJJVCgx
-NykgICAgICAgfCAgICAgICBCSVQoMTYpICAgICAgfA0KPiAtICotLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KPiAtICogTUlJICAgfCAgICAgICAg
-ICAgbi9hCSB8ICAgICAgICAgbi9hICAgICAgICB8DQo+IC0gKi0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IC0gKiBHTUlJICB8ICAgICAgICAg
-ICBuL2EgICAgICAgICB8ICAgc3QsZXRoLWNsay1zZWwgICB8DQo+IC0gKi0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IC0gKiBSR01JSSB8ICAg
-ICAgICAgICBuL2EgICAgICAgICB8ICAgc3QsZXRoLWNsay1zZWwgICB8DQo+IC0gKi0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IC0gKiBSTUlJ
-ICB8ICAgc3QsZXRoLXJlZi1jbGstc2VsCSB8ICAgICAgICAgbi9hICAgICAgICB8DQo+IC0gKi0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IC0g
-Kg0KPiAgICAqLw0KPiAgIA0KPiAgIHN0cnVjdCBzdG0zMl9kd21hYyB7DQo+IEBAIC05Myw2ICs4
-NSw4IEBAIHN0cnVjdCBzdG0zMl9kd21hYyB7DQo+ICAgCXN0cnVjdCBjbGsgKmNsa19ldGhfY2s7
-DQo+ICAgCXN0cnVjdCBjbGsgKmNsa19ldGhzdHA7DQo+ICAgCXN0cnVjdCBjbGsgKnN5c2NmZ19j
-bGs7DQo+ICsJaW50IGV4dF9waHljbGs7DQo+ICsJaW50IGVuYWJsZV9ldGhfY2s7DQo+ICAgCWlu
-dCBldGhfY2xrX3NlbF9yZWc7DQo+ICAgCWludCBldGhfcmVmX2Nsa19zZWxfcmVnOw0KPiAgIAlp
-bnQgaXJxX3B3cl93YWtldXA7DQo+IEBAIC0xNTUsMTQgKzE0OSwxNyBAQCBzdGF0aWMgaW50IHN0
-bTMybXAxX2Nsa19wcmVwYXJlKHN0cnVjdCBzdG0zMl9kd21hYyAqZHdtYWMsIGJvb2wgcHJlcGFy
-ZSkNCj4gICAJCXJldCA9IGNsa19wcmVwYXJlX2VuYWJsZShkd21hYy0+c3lzY2ZnX2Nsayk7DQo+
-ICAgCQlpZiAocmV0KQ0KPiAgIAkJCXJldHVybiByZXQ7DQo+IC0JCXJldCA9IGNsa19wcmVwYXJl
-X2VuYWJsZShkd21hYy0+Y2xrX2V0aF9jayk7DQo+IC0JCWlmIChyZXQpIHsNCj4gLQkJCWNsa19k
-aXNhYmxlX3VucHJlcGFyZShkd21hYy0+c3lzY2ZnX2Nsayk7DQo+IC0JCQlyZXR1cm4gcmV0Ow0K
-PiArCQlpZiAoZHdtYWMtPmVuYWJsZV9ldGhfY2spIHsNCj4gKwkJCXJldCA9IGNsa19wcmVwYXJl
-X2VuYWJsZShkd21hYy0+Y2xrX2V0aF9jayk7DQo+ICsJCQlpZiAocmV0KSB7DQo+ICsJCQkJY2xr
-X2Rpc2FibGVfdW5wcmVwYXJlKGR3bWFjLT5zeXNjZmdfY2xrKTsNCj4gKwkJCQlyZXR1cm4gcmV0
-Ow0KPiArCQkJfQ0KPiAgIAkJfQ0KPiAgIAl9IGVsc2Ugew0KPiAgIAkJY2xrX2Rpc2FibGVfdW5w
-cmVwYXJlKGR3bWFjLT5zeXNjZmdfY2xrKTsNCj4gLQkJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGR3
-bWFjLT5jbGtfZXRoX2NrKTsNCj4gKwkJaWYgKGR3bWFjLT5lbmFibGVfZXRoX2NrKQ0KPiArCQkJ
-Y2xrX2Rpc2FibGVfdW5wcmVwYXJlKGR3bWFjLT5jbGtfZXRoX2NrKTsNCj4gICAJfQ0KPiAgIAly
-ZXR1cm4gcmV0Ow0KPiAgIH0NCj4gQEAgLTE3MCwyNCArMTY3LDM0IEBAIHN0YXRpYyBpbnQgc3Rt
-MzJtcDFfY2xrX3ByZXBhcmUoc3RydWN0IHN0bTMyX2R3bWFjICpkd21hYywgYm9vbCBwcmVwYXJl
-KQ0KPiAgIHN0YXRpYyBpbnQgc3RtMzJtcDFfc2V0X21vZGUoc3RydWN0IHBsYXRfc3RtbWFjZW5l
-dF9kYXRhICpwbGF0X2RhdCkNCj4gICB7DQo+ICAgCXN0cnVjdCBzdG0zMl9kd21hYyAqZHdtYWMg
-PSBwbGF0X2RhdC0+YnNwX3ByaXY7DQo+IC0JdTMyIHJlZyA9IGR3bWFjLT5tb2RlX3JlZzsNCj4g
-Kwl1MzIgcmVnID0gZHdtYWMtPm1vZGVfcmVnLCBjbGtfcmF0ZTsNCj4gICAJaW50IHZhbDsNCj4g
-ICANCj4gKwljbGtfcmF0ZSA9IGNsa19nZXRfcmF0ZShkd21hYy0+Y2xrX2V0aF9jayk7DQo+ICsJ
-ZHdtYWMtPmVuYWJsZV9ldGhfY2sgPSBmYWxzZTsNCj4gICAJc3dpdGNoIChwbGF0X2RhdC0+aW50
-ZXJmYWNlKSB7DQo+ICAgCWNhc2UgUEhZX0lOVEVSRkFDRV9NT0RFX01JSToNCj4gKwkJaWYgKGNs
-a19yYXRlID09IEVUSF9DS19GXzI1TSAmJiBkd21hYy0+ZXh0X3BoeWNsaykNCj4gKwkJCWR3bWFj
-LT5lbmFibGVfZXRoX2NrID0gdHJ1ZTsNCj4gICAJCXZhbCA9IFNZU0NGR19QTUNSX0VUSF9TRUxf
-TUlJOw0KPiAgIAkJcHJfZGVidWcoIlNZU0NGRyBpbml0IDogUEhZX0lOVEVSRkFDRV9NT0RFX01J
-SVxuIik7DQo+ICAgCQlicmVhazsNCj4gICAJY2FzZSBQSFlfSU5URVJGQUNFX01PREVfR01JSToN
-Cj4gICAJCXZhbCA9IFNZU0NGR19QTUNSX0VUSF9TRUxfR01JSTsNCj4gLQkJaWYgKGR3bWFjLT5l
-dGhfY2xrX3NlbF9yZWcpDQo+ICsJCWlmIChjbGtfcmF0ZSA9PSBFVEhfQ0tfRl8yNU0gJiYNCj4g
-KwkJICAgIChkd21hYy0+ZXRoX2Nsa19zZWxfcmVnIHx8IGR3bWFjLT5leHRfcGh5Y2xrKSkgew0K
-PiArCQkJZHdtYWMtPmVuYWJsZV9ldGhfY2sgPSB0cnVlOw0KPiAgIAkJCXZhbCB8PSBTWVNDRkdf
-UE1DUl9FVEhfQ0xLX1NFTDsNCj4gKwkJfQ0KPiAgIAkJcHJfZGVidWcoIlNZU0NGRyBpbml0IDog
-UEhZX0lOVEVSRkFDRV9NT0RFX0dNSUlcbiIpOw0KPiAgIAkJYnJlYWs7DQo+ICAgCWNhc2UgUEhZ
-X0lOVEVSRkFDRV9NT0RFX1JNSUk6DQo+ICAgCQl2YWwgPSBTWVNDRkdfUE1DUl9FVEhfU0VMX1JN
-SUk7DQo+IC0JCWlmIChkd21hYy0+ZXRoX3JlZl9jbGtfc2VsX3JlZykNCj4gKwkJaWYgKChjbGtf
-cmF0ZSA9PSBFVEhfQ0tfRl8yNU0gfHwgY2xrX3JhdGUgPT0gRVRIX0NLX0ZfNTBNKSAmJg0KPiAr
-CQkgICAgKGR3bWFjLT5ldGhfcmVmX2Nsa19zZWxfcmVnIHx8IGR3bWFjLT5leHRfcGh5Y2xrKSkg
-ew0KPiArCQkJZHdtYWMtPmVuYWJsZV9ldGhfY2sgPSB0cnVlOw0KPiAgIAkJCXZhbCB8PSBTWVND
-RkdfUE1DUl9FVEhfUkVGX0NMS19TRUw7DQo+ICsJCX0NCj4gICAJCXByX2RlYnVnKCJTWVNDRkcg
-aW5pdCA6IFBIWV9JTlRFUkZBQ0VfTU9ERV9STUlJXG4iKTsNCj4gICAJCWJyZWFrOw0KPiAgIAlj
-YXNlIFBIWV9JTlRFUkZBQ0VfTU9ERV9SR01JSToNCj4gQEAgLTE5NSw4ICsyMDIsMTEgQEAgc3Rh
-dGljIGludCBzdG0zMm1wMV9zZXRfbW9kZShzdHJ1Y3QgcGxhdF9zdG1tYWNlbmV0X2RhdGEgKnBs
-YXRfZGF0KQ0KPiAgIAljYXNlIFBIWV9JTlRFUkZBQ0VfTU9ERV9SR01JSV9SWElEOg0KPiAgIAlj
-YXNlIFBIWV9JTlRFUkZBQ0VfTU9ERV9SR01JSV9UWElEOg0KPiAgIAkJdmFsID0gU1lTQ0ZHX1BN
-Q1JfRVRIX1NFTF9SR01JSTsNCj4gLQkJaWYgKGR3bWFjLT5ldGhfY2xrX3NlbF9yZWcpDQo+ICsJ
-CWlmICgoY2xrX3JhdGUgPT0gRVRIX0NLX0ZfMjVNIHx8IGNsa19yYXRlID09IEVUSF9DS19GXzEy
-NU0pICYmDQo+ICsJCSAgICAoZHdtYWMtPmV0aF9jbGtfc2VsX3JlZyB8fCBkd21hYy0+ZXh0X3Bo
-eWNsaykpIHsNCj4gKwkJCWR3bWFjLT5lbmFibGVfZXRoX2NrID0gdHJ1ZTsNCj4gICAJCQl2YWwg
-fD0gU1lTQ0ZHX1BNQ1JfRVRIX0NMS19TRUw7DQo+ICsJCX0NCj4gICAJCXByX2RlYnVnKCJTWVND
-RkcgaW5pdCA6IFBIWV9JTlRFUkZBQ0VfTU9ERV9SR01JSVxuIik7DQo+ICAgCQlicmVhazsNCj4g
-ICAJZGVmYXVsdDoNCj4gQEAgLTI5NCw2ICszMDQsOSBAQCBzdGF0aWMgaW50IHN0bTMybXAxX3Bh
-cnNlX2RhdGEoc3RydWN0IHN0bTMyX2R3bWFjICpkd21hYywNCj4gICAJc3RydWN0IGRldmljZV9u
-b2RlICpucCA9IGRldi0+b2Zfbm9kZTsNCj4gICAJaW50IGVyciA9IDA7DQo+ICAgDQo+ICsJLyog
-RXRoZXJuZXQgUEhZIGhhdmUgbm8gY3J5c3RhbCAqLw0KPiArCWR3bWFjLT5leHRfcGh5Y2xrID0g
-b2ZfcHJvcGVydHlfcmVhZF9ib29sKG5wLCAic3QsZXh0LXBoeWNsayIpOw0KPiArDQo+ICAgCS8q
-IEdpZ2FiaXQgRXRoZXJuZXQgMTI1TUh6IGNsb2NrIHNlbGVjdGlvbi4gKi8NCj4gICAJZHdtYWMt
-PmV0aF9jbGtfc2VsX3JlZyA9IG9mX3Byb3BlcnR5X3JlYWRfYm9vbChucCwgInN0LGV0aC1jbGst
-c2VsIik7DQo+ICAgDQo+IEBAIC00MzEsNyArNDQ0LDggQEAgc3RhdGljIGludCBzdG0zMm1wMV9z
-dXNwZW5kKHN0cnVjdCBzdG0zMl9kd21hYyAqZHdtYWMpDQo+ICAgDQo+ICAgCWNsa19kaXNhYmxl
-X3VucHJlcGFyZShkd21hYy0+Y2xrX3R4KTsNCj4gICAJY2xrX2Rpc2FibGVfdW5wcmVwYXJlKGR3
-bWFjLT5zeXNjZmdfY2xrKTsNCj4gLQljbGtfZGlzYWJsZV91bnByZXBhcmUoZHdtYWMtPmNsa19l
-dGhfY2spOw0KPiArCWlmIChkd21hYy0+ZW5hYmxlX2V0aF9jaykNCj4gKwkJY2xrX2Rpc2FibGVf
-dW5wcmVwYXJlKGR3bWFjLT5jbGtfZXRoX2NrKTsNCj4gICANCj4gICAJcmV0dXJuIHJldDsNCj4g
-ICB9
+On Tue, Mar 24, 2020 at 02:06:22AM +0100, Andrew Lunn wrote:
+> On Tue, Mar 24, 2020 at 12:42:52AM +0100, Marek Vasut wrote:
+> > Since the driver probe function already has a struct device *dev pointer,
+> > pass it as a parameter to ks8851_init_mac() to avoid fishing it out via
+> > ks->spidev. This is the only reference to spidev in the function, so get
+> > rid of it. This is done in preparation for unifying the KS8851 SPI and
+> > parallel drivers.
+[...]
+> > -static void ks8851_init_mac(struct ks8851_net *ks)
+> > +static void ks8851_init_mac(struct ks8851_net *ks, struct device *ddev)
+> >  {
+> >  	struct net_device *dev = ks->netdev;
+> >  	const u8 *mac_addr;
+> >  
+> > -	mac_addr = of_get_mac_address(ks->spidev->dev.of_node);
+> > +	mac_addr = of_get_mac_address(ddev->of_node);
+> 
+> The name ddev is a bit odd. Looking at the code, i see why. dev is
+> normally a struct net_device, which this function already has.
+> 
+> You could avoid this oddness by directly passing of_node.
+
+Actually after adding the invocation of of_get_mac_address() with
+commit 566bd54b067d ("net: ks8851: Support DT-provided MAC address")
+I've had regrets that I should have used device_get_mac_address()
+instead since it's platform-agnostic, hence would work with ACPI
+as well as DT-based systems.
+
+device_get_mac_address() needs a struct device, so I'd prefer
+using that instead of passing an of_node.
+
+I agree that "ddev" is somewhat odd.  Some drivers name it "device"
+or "pdev" (which however collides with the naming of platform_devices).
+Another idea would be to move the handy ndev_to_dev() static inline
+from apm/xgene/xgene_enet_main.h to include/linux/netdevice.h and
+use that with "struct net_device *dev", which we already have in
+ks8851_init_mac().
+
+Thanks,
+
+Lukas
