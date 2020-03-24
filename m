@@ -2,135 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87DBC19037D
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 03:05:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 937B2190381
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 03:10:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727110AbgCXCFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 22:05:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58338 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727032AbgCXCFF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 22:05:05 -0400
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 545A62051A;
-        Tue, 24 Mar 2020 02:05:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585015504;
-        bh=ts0X52FH1oa59KdqdB95tDAVKxMN7apo6ZkPMxfzJwc=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=YMG1YxTBHYmxYMPc5hqXy5baZgL40j1vUEKM6ScoAhOQA9q0iHioB/fjIwyGvL57N
-         bTzqbxT6E3HoT6a4kxtS+mdFfluLeBlpb3fr/0ZeIlOH25SBL9qsA5/xCY3FBnMhER
-         qLuHikr73g8vqt+oCqXsL544aw9O/ZPh0NiPZKZ8=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 2694835226D5; Mon, 23 Mar 2020 19:05:04 -0700 (PDT)
-Date:   Mon, 23 Mar 2020 19:05:04 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        syzbot <syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: WARNING: ODEBUG bug in tcindex_destroy_work (3)
-Message-ID: <20200324020504.GR3199@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <000000000000742e9e05a10170bc@google.com>
- <87a74arown.fsf@nanos.tec.linutronix.de>
- <CAM_iQpV3S0xv5xzSrA5COYa3uyy_TBGpDA9Wcj9Qt_vn1n3jBQ@mail.gmail.com>
- <87ftdypyec.fsf@nanos.tec.linutronix.de>
- <CAM_iQpVR8Ve3Jy8bb9VB6RcQ=p22ZTyTqjxJxL11RZmO7rkWeg@mail.gmail.com>
- <875zeuftwm.fsf@nanos.tec.linutronix.de>
+        id S1727102AbgCXCKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 22:10:52 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:38185 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727050AbgCXCKv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 22:10:51 -0400
+Received: by mail-io1-f66.google.com with SMTP id m15so11484522iob.5
+        for <netdev@vger.kernel.org>; Mon, 23 Mar 2020 19:10:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=0bMu/YGPL04y7QZoPKkunPzPNSKt6kZavxIm4S3iV4s=;
+        b=rMVhqfiFUu84/8EcUEXqzXFIJJjtf2TwXrCy/+u/7haco8yYwW+AVfVsDlXxRtgt3v
+         yu7dlQYL15fSsjBG0rHZiFLrjp9+5THumPccnlSvOVzQA+oZlN3A9KFlzx232H1kgrKw
+         /MxMxVC3x3pur3FiBo5hyheizuTCw/38iAPM5oejN8qN/osfU8BAeWGUwQMWvYax76/o
+         V2vnsn78C9MHKDBknVSSTA8h8GC0hfo1LOr2bybLUPF3JOwCW+ivEhqAw8oo379XnRrH
+         xIKZ1pRvMQq0nQvslFox6sE6I9+WtZWMsBw13HxMOoVzk294qJIwI/jfO0TyO/Twio8B
+         s+8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=0bMu/YGPL04y7QZoPKkunPzPNSKt6kZavxIm4S3iV4s=;
+        b=lstoHynJ14ESZUEc5VhzLJ4N5j8x9Y+MIWdULChLGdmoLPeMI3Edrhn6+/vFh4iTmx
+         wYaywN05tNXRjopQY3L0U0Ocebg1D1Pi1sbm6EnZlJcYMEyD74HmO1m5c4kgYH0tsllD
+         tHzDzoehFbaaRjApuOIrwDhE0dEq/3aMnjVxCpm5WYRnzcV3c1atS+TZVW092rjKo85L
+         A6/Wc5aHncBR8cJ12ETE6ww/HL8+3GhDnAYNyJTaLAIoyvoJ4Laz0Tg2oX8e8p/XVCI2
+         wurTQFZFnbp1+W5Y4KjGjdwy/aK0OfrqzpvAEYCFoOc5endZYgBcjnAg2bv8gTqQDlwT
+         M2Ng==
+X-Gm-Message-State: ANhLgQ3ZhRqiBKfFvOIvcdSx2lyhZtltzjk98QcwPC3fP+H2IxxIp8e0
+        7p1/ZxLYtLYf5B3AonOTv6/0IcliPq1WwJuteiZz5lBB2AA=
+X-Google-Smtp-Source: ADFU+vulm1386gmyMpo8S7bnD3LMUTgQq68MyL7Id3sshcR2hg+SU7LgpZ5+lyE5+rg6c66KSmFVhDmcLx8EptVfTXw=
+X-Received: by 2002:a6b:8f11:: with SMTP id r17mr20665780iod.92.1585015850762;
+ Mon, 23 Mar 2020 19:10:50 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <875zeuftwm.fsf@nanos.tec.linutronix.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20200324011019.248392-1-zenczykowski@gmail.com>
+In-Reply-To: <20200324011019.248392-1-zenczykowski@gmail.com>
+From:   Lorenzo Colitti <lorenzo@google.com>
+Date:   Tue, 24 Mar 2020 11:10:39 +0900
+Message-ID: <CAKD1Yr2xAkr4=2tdPCtCPtFve0UQz2sbs2bYCr7kJnqc2VQ54w@mail.gmail.com>
+Subject: Re: [PATCH] net-ipv6-ndisc: add support for 'PREF64' dns64 prefix identifier
+To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>, Erik Kline <ek@google.com>,
+        Jen Linkova <furry@google.com>, Michael Haro <mharo@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 02:01:13AM +0100, Thomas Gleixner wrote:
-> Cong Wang <xiyou.wangcong@gmail.com> writes:
-> > On Mon, Mar 23, 2020 at 2:14 PM Thomas Gleixner <tglx@linutronix.de> wrote:
-> >> > We use an ordered workqueue for tc filters, so these two
-> >> > works are executed in the same order as they are queued.
-> >>
-> >> The workqueue is ordered, but look how the work is queued on the work
-> >> queue:
-> >>
-> >> tcf_queue_work()
-> >>   queue_rcu_work()
-> >>     call_rcu(&rwork->rcu, rcu_work_rcufn);
-> >>
-> >> So after the grace period elapses rcu_work_rcufn() queues it in the
-> >> actual work queue.
-> >>
-> >> Now tcindex_destroy() is invoked via tcf_proto_destroy() which can be
-> >> invoked from preemtible context. Now assume the following:
-> >>
-> >> CPU0
-> >>   tcf_queue_work()
-> >>     tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
-> >>
-> >> -> Migration
-> >>
-> >> CPU1
-> >>    tcf_queue_work(&p->rwork, tcindex_destroy_work);
-> >>
-> >> So your RCU callbacks can be placed on different CPUs which obviously
-> >> has no ordering guarantee at all. See also:
-> >
-> > Good catch!
-> >
-> > I thought about this when I added this ordered workqueue, but it
-> > seems I misinterpret max_active, so despite we have max_active==1,
-> > more than 1 work could still be queued on different CPU's here.
-> 
-> The workqueue is not the problem. it works perfectly fine. The way how
-> the work gets queued is the issue.
-> 
-> > I don't know how to fix this properly, I think essentially RCU work
-> > should be guaranteed the same ordering with regular work. But this
-> > seems impossible unless RCU offers some API to achieve that.
-> 
-> I don't think that's possible w/o putting constraints on the flexibility
-> of RCU (Paul of course might disagree).
+On Tue, Mar 24, 2020 at 10:10 AM Maciej =C5=BBenczykowski
+<zenczykowski@gmail.com> wrote:
+> As specified in draft-ietf-6man-ra-pref64-09 (while it is still a draft,
+> it is purely waiting on the RFC Editor for cleanups and publishing):
+>   PREF64 option contains lifetime and a (up to) 96-bit IPv6 prefix.
 
-It is possible, but it does not come for free.
+Right. The number is assigned by IANA and the draft is in the RFC
+editor queue, so this number will not change.
 
-From an RCU/workqueues perspective, if I understand the scenario, you
-can do the following:
+> diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+> index 4a3feccd5b10..6ffa153e5166 100644
+> --- a/net/ipv6/ndisc.c
+> +++ b/net/ipv6/ndisc.c
+> @@ -197,6 +197,7 @@ static inline int ndisc_is_useropt(const struct net_d=
+evice *dev,
+>         return opt->nd_opt_type =3D=3D ND_OPT_RDNSS ||
+>                 opt->nd_opt_type =3D=3D ND_OPT_DNSSL ||
+>                 opt->nd_opt_type =3D=3D ND_OPT_CAPTIVE_PORTAL ||
+> +               opt->nd_opt_type =3D=3D ND_OPT_PREF64 ||
+>                 ndisc_ops_is_useropt(dev, opt->nd_opt_type);
+>  }
 
-	tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
-
-	rcu_barrier(); // Wait for the RCU callback.
-	flush_work(...); // Wait for the workqueue handler.
-			 // But maybe for quite a few of them...
-
-	// All the earlier handlers have completed.
-	tcf_queue_work(&p->rwork, tcindex_destroy_work);
-
-This of course introduces overhead and latency.  Maybe that is not a
-problem at teardown time, or maybe the final tcf_queue_work() can itself
-be dumped into a workqueue in order to get it off of the critical path.
-
-However, depending on your constraints ...
-
-> I assume that the filters which hang of tcindex_data::perfect and
-> tcindex_data:p must be freed before tcindex_data, right?
-> 
-> Refcounting of tcindex_data should do the trick. I.e. any element which
-> you add to a tcindex_data instance takes a refcount and when that is
-> destroyed then the rcu/work callback drops a reference which once it
-> reaches 0 triggers tcindex_data to be freed.
-
-... reference counts might work much better for you.
-
-							Thanx, Paul
+Acked-By: Lorenzo Colitti <lorenzo@google.com>
