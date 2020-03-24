@@ -2,235 +2,379 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6665D191A78
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 21:05:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9CE0191B2E
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 21:40:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727664AbgCXUEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 16:04:36 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:40291 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725927AbgCXUEg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 16:04:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585080275;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qkmq7er3eCoaZjtoomf3dK9L84sbORuAfwSguGA5Rok=;
-        b=N4ktDJTLWXZx1gURYVvcCMKP9LXFcoO9j9wbQm42Mn5OuYc5lzsOXQwmmVPCv7Q7HJJX67
-        cR1xn5UFH1LD/d6djBJRr47bKHblotksEeb75FsI2Zso3nFPuhyAxwySMt1HHdUeQlazD2
-        LyDTLRjhrdxahYzbMH0sKcRM6AypsWY=
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
- [209.85.210.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-438-Y8x3kMkuPhGY4JJ1JvaxKw-1; Tue, 24 Mar 2020 16:04:31 -0400
-X-MC-Unique: Y8x3kMkuPhGY4JJ1JvaxKw-1
-Received: by mail-pf1-f199.google.com with SMTP id b204so19894pfb.11
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 13:04:30 -0700 (PDT)
+        id S1727781AbgCXUj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 16:39:58 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:44471 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727061AbgCXUj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 16:39:58 -0400
+Received: by mail-pl1-f193.google.com with SMTP id h11so7893208plr.11
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 13:39:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=AchiROZ1qH+L08TJpKjISOOVOXOStkcgxe1wjoszpbs=;
+        b=r0st62iOSmGxMm+qfpPheG4IYx104WRDgw9y2c+eWJqpw6zgXcx+uz7sOLKRal+sHR
+         DjMPaphDa3OOsCRiHzXaGoYkeU3AhSIupETKaX12UblI+q4lZBge1V8WtFGQiLbJBloY
+         EmvEIIcCRYaOE8HEJAI1lmaznGABdzKmi9P7OSghRERyclG+dmD2BCMkaixelD2eo6ed
+         qKEXgH5Tg+JDgDQ7FFFQ9SI4yY6ugcwNaspieqyc13aVAkzmtzZ2ABn/I+LJ8evEG+bZ
+         Pq3kKpAqQCbES2SLLst3NSQ5oBGAmLaV9GD0SF07tm5wdNAPcnuoqTRMOlYOb2+dZvzc
+         3m5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qkmq7er3eCoaZjtoomf3dK9L84sbORuAfwSguGA5Rok=;
-        b=D9esmTiyCEaek9aTRPupzbK0AmYyuhzSn1OEUEHE19maJZvuBHUIDZaLqqC1EfuuIK
-         hZJvP18Ev9yWmLtgGRf52JX3qukVXd9WUliDZL4ee36idpzbg14TNs1EPErUDYkqmvXM
-         ZklltOoMKEGGqYkTvJBkBBaV59amIGDTtSdZ6o0gR1kYPeBl/XxZwGiEE+R9v5p/i4EN
-         eCv/c5qpIt177CEWTd2uv0tPE3XUW4G3Wx+2v5uy86i1TP3lzrCEyVcNIUvXg/dNKSNZ
-         Nq2dv7IYkKoTVcml1zeCZdQZoOpueQFR5vNLWe+W8Wlw5bWP7EVXY9Uo78lulSCkihrL
-         VU3w==
-X-Gm-Message-State: ANhLgQ0ONWO2T4fL4+lUBUkfPREUtcEP16dE/nKXIgQYdj+WheRsVTjo
-        rPNsZc8DP/gD9LYSA04uVO2noBqcyt9kpM+a78pvEeu92TvgoMTN4EqKdSeo5N3lT53ru+rWIWY
-        TRnhkpwvFciTTCF/3
-X-Received: by 2002:a17:902:26a:: with SMTP id 97mr29382058plc.82.1585080269533;
-        Tue, 24 Mar 2020 13:04:29 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vsyOGIjc60c4MgECptbLF0UNxAB30jAaEzMf0zT9RpdeoPb71CGh8sLyUb2Agt061ZVx6+xuA==
-X-Received: by 2002:a17:902:26a:: with SMTP id 97mr29382023plc.82.1585080269164;
-        Tue, 24 Mar 2020 13:04:29 -0700 (PDT)
-Received: from localhost.localdomain ([122.177.157.194])
-        by smtp.gmail.com with ESMTPSA id bx1sm3040427pjb.5.2020.03.24.13.04.21
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 24 Mar 2020 13:04:28 -0700 (PDT)
-Subject: Re: [PATCH] net: ena: Add PCI shutdown handler to allow safe kexec
-To:     "Guilherme G. Piccoli" <gpiccoli@canonical.com>,
-        netanel@amazon.com, akiyano@amazon.com, netdev@vger.kernel.org
-Cc:     gtzalik@amazon.com, saeedb@amazon.com, zorik@amazon.com,
-        kernel@gpiccoli.net, gshan@redhat.com, gavin.guo@canonical.com,
-        jay.vosburgh@canonical.com, pedro.principeza@canonical.com,
-        "kexec@lists.infradead.org" <kexec@lists.infradead.org>,
-        bhsharma@redhat.com
-References: <20200320125534.28966-1-gpiccoli@canonical.com>
-From:   Bhupesh Sharma <bhsharma@redhat.com>
-Message-ID: <e6101601-3fb1-7551-3027-1701bda0fa33@redhat.com>
-Date:   Wed, 25 Mar 2020 01:34:19 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AchiROZ1qH+L08TJpKjISOOVOXOStkcgxe1wjoszpbs=;
+        b=c/W5L2P9EkDtC9pwZF5Jub85RQryfS/VEJA3etcJTG0edvHQz68pl9KjlhhW802er0
+         TODcU4Z2HEV85N7iFA89Y6i7r2NKcoIG/lsfZoR5R22TIV6K7O6CF6Dg7U/lf5seN62e
+         Nq4CUd2m12iN/IZUXB5Lu3nPT2ABfNNWagsuSNwpDPVTutGTNkbAietIKA3e1e13cm0v
+         di9NqQnmOaQwPD9UNs+MTZueJncEvXMO/TBadM3Imq5QJrMowvnsmiB+/GPCvcZCrlvK
+         vMdOl6Foge6jQ90RptL9GyohBKr7WmtVjDOUe7mUN8Bc8r2kH7VQIRnzdOWN8qKlgLm8
+         bQfg==
+X-Gm-Message-State: ANhLgQ21bKFnZnG0gjdGyQpmm+py6eJfxigoQtn7uojCYmXyBM0gxr+8
+        G68ArL4JyDJ0N0dCnElnyIkNAA==
+X-Google-Smtp-Source: ADFU+vud8Vsb+h0uacUnY/KjbuZs8bsWOz7x3iMR2p/ALNP8vbDuaIpkn8U1D4K3WkF+W/lMUKK4QA==
+X-Received: by 2002:a17:902:b948:: with SMTP id h8mr19870530pls.155.1585082395952;
+        Tue, 24 Mar 2020 13:39:55 -0700 (PDT)
+Received: from minitux (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
+        by smtp.gmail.com with ESMTPSA id q61sm3039205pja.2.2020.03.24.13.39.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Mar 2020 13:39:55 -0700 (PDT)
+Date:   Tue, 24 Mar 2020 13:39:52 -0700
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Cc:     gregkh@linuxfoundation.org, davem@davemloft.net,
+        smohanad@codeaurora.org, jhugo@codeaurora.org,
+        kvalo@codeaurora.org, hemantk@codeaurora.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v3 6/7] net: qrtr: Add MHI transport layer
+Message-ID: <20200324203952.GC119913@minitux>
+References: <20200324061050.14845-1-manivannan.sadhasivam@linaro.org>
+ <20200324061050.14845-7-manivannan.sadhasivam@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <20200320125534.28966-1-gpiccoli@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200324061050.14845-7-manivannan.sadhasivam@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Guilherme,
+On Mon 23 Mar 23:10 PDT 2020, Manivannan Sadhasivam wrote:
 
-On 03/20/2020 06:25 PM, Guilherme G. Piccoli wrote:
-> Currently ENA only provides the PCI remove() handler, used during rmmod
-> for example. This is not called on shutdown/kexec path; we are potentially
-> creating a failure scenario on kexec:
+> MHI is the transport layer used for communicating to the external modems.
+> Hence, this commit adds MHI transport layer support to QRTR for
+> transferring the QMI messages over IPC Router.
 > 
-> (a) Kexec is triggered, no shutdown() / remove() handler is called for ENA;
-> instead pci_device_shutdown() clears the master bit of the PCI device,
-> stopping all DMA transactions;
-> 
-> (b) Kexec reboot happens and the device gets enabled again, likely having
-> its FW with that DMA transaction buffered; then it may trigger the (now
-> invalid) memory operation in the new kernel, corrupting kernel memory area.
-> 
-> This patch aims to prevent this, by implementing a shutdown() handler
-> quite similar to the remove() one - the difference being the handling
-> of the netdev, which is unregistered on remove(), but following the
-> convention observed in other drivers, it's only detached on shutdown().
-> 
-> This prevents an odd issue in AWS Nitro instances, in which after the 2nd
-> kexec the next one will fail with an initrd corruption, caused by a wild
-> DMA write to invalid kernel memory. The lspci output for the adapter
-> present in my instance is:
-> 
-> 00:05.0 Ethernet controller [0200]: Amazon.com, Inc. Elastic Network
-> Adapter (ENA) [1d0f:ec20]
-
-Thanks for the patch.
-
-> Suggested-by: Gavin Shan <gshan@redhat.com>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@canonical.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 > ---
+>  net/qrtr/Kconfig  |   7 ++
+>  net/qrtr/Makefile |   2 +
+>  net/qrtr/mhi.c    | 208 ++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 217 insertions(+)
+>  create mode 100644 net/qrtr/mhi.c
 > 
-> 
-> The idea for this patch came from an informal conversation with my
-> friend Gavin Shan, based on his past experience with similar issues.
-> I'd like to thank him for the great suggestion!
-> 
-> As a test metric, I've performed 1000 kexecs with this patch, whereas
-> without this one, the 3rd kexec failed with initrd corruption. Also,
-> one test that I've done before writing the patch was just to rmmod
-> the driver before the kexecs, and it worked fine too.
-> 
-> I suggest we add this patch in stable releases as well.
-> Thanks in advance for reviews,
+> diff --git a/net/qrtr/Kconfig b/net/qrtr/Kconfig
+> index 63f89cc6e82c..8eb876471564 100644
+> --- a/net/qrtr/Kconfig
+> +++ b/net/qrtr/Kconfig
+> @@ -29,4 +29,11 @@ config QRTR_TUN
+>  	  implement endpoints of QRTR, for purpose of tunneling data to other
+>  	  hosts or testing purposes.
+>  
+> +config QRTR_MHI
+> +	tristate "MHI IPC Router channels"
+> +	depends on MHI_BUS
+> +	help
+> +	  Say Y here to support MHI based ipcrouter channels. MHI is the
+> +	  transport used for communicating to external modems.
+> +
+>  endif # QRTR
+> diff --git a/net/qrtr/Makefile b/net/qrtr/Makefile
+> index 1c6d6c120fb7..3dc0a7c9d455 100644
+> --- a/net/qrtr/Makefile
+> +++ b/net/qrtr/Makefile
+> @@ -5,3 +5,5 @@ obj-$(CONFIG_QRTR_SMD) += qrtr-smd.o
+>  qrtr-smd-y	:= smd.o
+>  obj-$(CONFIG_QRTR_TUN) += qrtr-tun.o
+>  qrtr-tun-y	:= tun.o
+> +obj-$(CONFIG_QRTR_MHI) += qrtr-mhi.o
+> +qrtr-mhi-y	:= mhi.o
+> diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
+> new file mode 100644
+> index 000000000000..90af208f34c1
+> --- /dev/null
+> +++ b/net/qrtr/mhi.c
+> @@ -0,0 +1,208 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
+> + */
+> +
+> +#include <linux/mhi.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+> +#include <linux/skbuff.h>
+> +#include <net/sock.h>
+> +
+> +#include "qrtr.h"
+> +
+> +struct qrtr_mhi_dev {
+> +	struct qrtr_endpoint ep;
+> +	struct mhi_device *mhi_dev;
+> +	struct device *dev;
+> +	spinlock_t ul_lock;		/* lock to protect ul_pkts */
+> +	struct list_head ul_pkts;
+> +	atomic_t in_reset;
+> +};
+> +
+> +struct qrtr_mhi_pkt {
+> +	struct list_head node;
+> +	struct sk_buff *skb;
+> +	struct kref refcount;
+> +	struct completion done;
+> +};
+> +
+> +static void qrtr_mhi_pkt_release(struct kref *ref)
+> +{
+> +	struct qrtr_mhi_pkt *pkt = container_of(ref, struct qrtr_mhi_pkt,
+> +						refcount);
+> +	struct sock *sk = pkt->skb->sk;
+> +
+> +	consume_skb(pkt->skb);
+> +	if (sk)
+> +		sock_put(sk);
+> +
+> +	kfree(pkt);
+> +}
+> +
+> +/* From MHI to QRTR */
+> +static void qcom_mhi_qrtr_dl_callback(struct mhi_device *mhi_dev,
+> +				      struct mhi_result *mhi_res)
+> +{
+> +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
+> +	int rc;
+> +
+> +	if (!qdev || mhi_res->transaction_status)
+> +		return;
+> +
+> +	rc = qrtr_endpoint_post(&qdev->ep, mhi_res->buf_addr,
+> +				mhi_res->bytes_xferd);
+> +	if (rc == -EINVAL)
+> +		dev_err(qdev->dev, "invalid ipcrouter packet\n");
 
-This patch fixes the repetitive kexec reboot issues that I was facing 
-for some time on the aws nitro (t3) machines. Normally the kexec reboots 
-would not runs more than ~ 3 to 5 times on the machine.
+Perhaps this should be a debug print, perhaps rate limited. But either
+way it's relevant for any transport, so I think you should skip it here
+- and potentially move it into qrtr_endpoint_post() in some form.
 
-Now with this patch, I can runs hundreds of repetitive nested kexec 
-reboots on the aws nitro machines without any failure.
+> +}
+> +
+> +/* From QRTR to MHI */
+> +static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
+> +				      struct mhi_result *mhi_res)
+> +{
+> +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
+> +	struct qrtr_mhi_pkt *pkt;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&qdev->ul_lock, flags);
+> +	pkt = list_first_entry(&qdev->ul_pkts, struct qrtr_mhi_pkt, node);
+> +	list_del(&pkt->node);
+> +	complete_all(&pkt->done);
 
-So, I think this is a really good patch and should be applied to stable 
-trees as well.
+You should be able to release the lock after popping the item off the
+list, then complete and refcount it.
 
-Please feel free to add:
+> +
+> +	kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
+> +	spin_unlock_irqrestore(&qdev->ul_lock, flags);
+> +}
+> +
+> +static void qcom_mhi_qrtr_status_callback(struct mhi_device *mhi_dev,
+> +					  enum mhi_callback mhi_cb)
+> +{
+> +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
+> +	struct qrtr_mhi_pkt *pkt;
+> +	unsigned long flags;
+> +
+> +	if (mhi_cb != MHI_CB_FATAL_ERROR)
+> +		return;
+> +
+> +	atomic_inc(&qdev->in_reset);
 
-Tested-and-Reviewed-by: Bhupesh Sharma <bhsharma@redhat.com>
+You have ul_lock close at hand in both places where you access in_reset,
+so I think it would be better to just use that, instead of an atomic.
 
-Thanks,
-Bhupesh
-
-> Guilherme
-> 
-> 
->   drivers/net/ethernet/amazon/ena/ena_netdev.c | 51 ++++++++++++++++----
->   1 file changed, 41 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> index 0b2fd96b93d7..7a5c01ff2ee8 100644
-> --- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> +++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
-> @@ -4325,13 +4325,15 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->   
->   /*****************************************************************************/
->   
-> -/* ena_remove - Device Removal Routine
-> +/* __ena_shutoff - Helper used in both PCI remove/shutdown routines
->    * @pdev: PCI device information struct
-> + * @shutdown: Is it a shutdown operation? If false, means it is a removal
->    *
-> - * ena_remove is called by the PCI subsystem to alert the driver
-> - * that it should release a PCI device.
-> + * __ena_shutoff is a helper routine that does the real work on shutdown and
-> + * removal paths; the difference between those paths is with regards to whether
-> + * dettach or unregister the netdevice.
->    */
-> -static void ena_remove(struct pci_dev *pdev)
-> +static void __ena_shutoff(struct pci_dev *pdev, bool shutdown)
->   {
->   	struct ena_adapter *adapter = pci_get_drvdata(pdev);
->   	struct ena_com_dev *ena_dev;
-> @@ -4350,13 +4352,17 @@ static void ena_remove(struct pci_dev *pdev)
->   
->   	cancel_work_sync(&adapter->reset_task);
->   
-> -	rtnl_lock();
-> +	rtnl_lock(); /* lock released inside the below if-else block */
->   	ena_destroy_device(adapter, true);
-> -	rtnl_unlock();
-> -
-> -	unregister_netdev(netdev);
-> -
-> -	free_netdev(netdev);
-> +	if (shutdown) {
-> +		netif_device_detach(netdev);
-> +		dev_close(netdev);
-> +		rtnl_unlock();
-> +	} else {
-> +		rtnl_unlock();
-> +		unregister_netdev(netdev);
-> +		free_netdev(netdev);
+> +	spin_lock_irqsave(&qdev->ul_lock, flags);
+> +	list_for_each_entry(pkt, &qdev->ul_pkts, node)
+> +		complete_all(&pkt->done);
+> +	spin_unlock_irqrestore(&qdev->ul_lock, flags);
+> +}
+> +
+> +/* Send data over MHI */
+> +static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
+> +{
+> +	struct qrtr_mhi_dev *qdev = container_of(ep, struct qrtr_mhi_dev, ep);
+> +	struct qrtr_mhi_pkt *pkt;
+> +	int rc;
+> +
+> +	rc = skb_linearize(skb);
+> +	if (rc) {
+> +		kfree_skb(skb);
+> +		return rc;
 > +	}
->   
->   	ena_com_rss_destroy(ena_dev);
->   
-> @@ -4371,6 +4377,30 @@ static void ena_remove(struct pci_dev *pdev)
->   	vfree(ena_dev);
->   }
->   
-> +/* ena_remove - Device Removal Routine
-> + * @pdev: PCI device information struct
-> + *
-> + * ena_remove is called by the PCI subsystem to alert the driver
-> + * that it should release a PCI device.
-> + */
 > +
-> +static void ena_remove(struct pci_dev *pdev)
-> +{
-> +	__ena_shutoff(pdev, false);
-> +}
+> +	pkt = kzalloc(sizeof(*pkt), GFP_KERNEL);
+> +	if (!pkt) {
+> +		kfree_skb(skb);
+> +		return -ENOMEM;
+> +	}
 > +
-> +/* ena_shutdown - Device Shutdown Routine
-> + * @pdev: PCI device information struct
-> + *
-> + * ena_shutdown is called by the PCI subsystem to alert the driver that
-> + * a shutdown/reboot (or kexec) is happening and device must be disabled.
-> + */
+> +	init_completion(&pkt->done);
+> +	kref_init(&pkt->refcount);
+> +	kref_get(&pkt->refcount);
+> +	pkt->skb = skb;
 > +
-> +static void ena_shutdown(struct pci_dev *pdev)
-> +{
-> +	__ena_shutoff(pdev, true);
-> +}
-> +
->   #ifdef CONFIG_PM
->   /* ena_suspend - PM suspend callback
->    * @pdev: PCI device information struct
-> @@ -4420,6 +4450,7 @@ static struct pci_driver ena_pci_driver = {
->   	.id_table	= ena_pci_tbl,
->   	.probe		= ena_probe,
->   	.remove		= ena_remove,
-> +	.shutdown	= ena_shutdown,
->   #ifdef CONFIG_PM
->   	.suspend    = ena_suspend,
->   	.resume     = ena_resume,
-> 
+> +	spin_lock_bh(&qdev->ul_lock);
+> +	list_add_tail(&pkt->node, &qdev->ul_pkts);
+> +	rc = mhi_queue_skb(qdev->mhi_dev, DMA_TO_DEVICE, skb, skb->len,
+> +			   MHI_EOT);
 
+Do you want to continue doing this when qdev->in_reset? Wouldn't it be
+better to bail early if the remote end is dying?
+
+> +	if (rc) {
+> +		list_del(&pkt->node);
+> +		/* Reference count needs to be dropped 2 times */
+> +		kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
+> +		kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
+> +		kfree_skb(skb);
+> +		spin_unlock_bh(&qdev->ul_lock);
+> +		return rc;
+> +	}
+> +
+> +	spin_unlock_bh(&qdev->ul_lock);
+> +	if (skb->sk)
+> +		sock_hold(skb->sk);
+> +
+> +	rc = wait_for_completion_interruptible_timeout(&pkt->done, HZ * 5);
+> +	if (atomic_read(&qdev->in_reset))
+> +		rc = -ECONNRESET;
+> +	else if (rc == 0)
+> +		rc = -ETIMEDOUT;
+
+Is this recoverable? The message will remain on the list and may be
+delivered at a later point(?), but qrtr and the app will learn that the
+message was lost - which is presumably considered fatal.
+
+Is it guaranteed that qcom_mhi_qrtr_ul_callback() will happen later and
+find the head of the list?
+
+
+The reason for my question is that without this you have one of two
+scenarios;
+1) the message is put on the list, decremented in
+qcom_mhi_qrtr_ul_callback() then we get back here and decrement it
+again.
+2) the message is put on the list, then qcom_mhi_qrtr_status_callback()
+happens and all messages are released - presumably then
+qcom_mhi_qrtr_ul_callback() won't happen.
+
+
+So if the third case (where we return here and then later
+qcom_mhi_qrtr_ul_callback() must find this particular packet at the
+front of the queue) can't happen, then you can just skip the entire
+refcounting.
+
+Further more, you could carry qrtr_mhi_pkt on the stack.
+
+
+...or to flip this around, is there a reason to wait here at all? What
+would happen if you just return immediately after calling
+mhi_queue_skb()? Wouldn't that provide you better throughput?
+
+> +	else if (rc > 0)
+> +		rc = 0;
+> +
+> +	kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
+> +
+> +	return rc;
+> +}
+> +
+> +static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
+> +			       const struct mhi_device_id *id)
+> +{
+> +	struct qrtr_mhi_dev *qdev;
+> +	u32 net_id;
+> +	int rc;
+> +
+> +	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
+> +	if (!qdev)
+> +		return -ENOMEM;
+> +
+> +	qdev->mhi_dev = mhi_dev;
+> +	qdev->dev = &mhi_dev->dev;
+> +	qdev->ep.xmit = qcom_mhi_qrtr_send;
+> +	atomic_set(&qdev->in_reset, 0);
+> +
+> +	net_id = QRTR_EP_NID_AUTO;
+
+Just pass QRTR_EP_NID_AUTO directly in the function call below.
+
+Regards,
+Bjorn
+
+> +
+> +	INIT_LIST_HEAD(&qdev->ul_pkts);
+> +	spin_lock_init(&qdev->ul_lock);
+> +
+> +	dev_set_drvdata(&mhi_dev->dev, qdev);
+> +	rc = qrtr_endpoint_register(&qdev->ep, net_id);
+> +	if (rc)
+> +		return rc;
+> +
+> +	dev_dbg(qdev->dev, "Qualcomm MHI QRTR driver probed\n");
+> +
+> +	return 0;
+> +}
+> +
+> +static void qcom_mhi_qrtr_remove(struct mhi_device *mhi_dev)
+> +{
+> +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
+> +
+> +	qrtr_endpoint_unregister(&qdev->ep);
+> +	dev_set_drvdata(&mhi_dev->dev, NULL);
+> +}
+> +
+> +static const struct mhi_device_id qcom_mhi_qrtr_id_table[] = {
+> +	{ .chan = "IPCR" },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(mhi, qcom_mhi_qrtr_id_table);
+> +
+> +static struct mhi_driver qcom_mhi_qrtr_driver = {
+> +	.probe = qcom_mhi_qrtr_probe,
+> +	.remove = qcom_mhi_qrtr_remove,
+> +	.dl_xfer_cb = qcom_mhi_qrtr_dl_callback,
+> +	.ul_xfer_cb = qcom_mhi_qrtr_ul_callback,
+> +	.status_cb = qcom_mhi_qrtr_status_callback,
+> +	.id_table = qcom_mhi_qrtr_id_table,
+> +	.driver = {
+> +		.name = "qcom_mhi_qrtr",
+> +	},
+> +};
+> +
+> +module_mhi_driver(qcom_mhi_qrtr_driver);
+> +
+> +MODULE_DESCRIPTION("Qualcomm IPC-Router MHI interface driver");
+> +MODULE_LICENSE("GPL v2");
+> -- 
+> 2.17.1
+> 
