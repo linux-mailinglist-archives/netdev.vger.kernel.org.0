@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C778190421
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 05:08:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C42A190425
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 05:09:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726081AbgCXEIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 00:08:11 -0400
-Received: from mail-eopbgr130070.outbound.protection.outlook.com ([40.107.13.70]:62438
+        id S1726351AbgCXEI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 00:08:28 -0400
+Received: from mail-eopbgr130051.outbound.protection.outlook.com ([40.107.13.51]:30567
         "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725784AbgCXEIL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 00:08:11 -0400
+        id S1725827AbgCXEI1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 00:08:27 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l43ucXddk1kxcRj1wLH9WDBLddBBkuwQRnlAi1jlR3li3D/+RuqhgcUz7Ed5QuoKFsIYl6H5GeZBKlG+3xK3KvjE+B8Ad5pGg5dDCLW7hsJ3z/96CXsGtGyAWW8zMlUcsmGYv0Pmr7kNtO7yt6dA408Sywx6ILkDbegPOso2Kro7d5DKgJ7rkqu37+ZMUsaAtZBtfVB5DgptRg13U0oXp1JLlzGvZ+2pfZI/q953Kg3iEK9qKRZ9DLlygf1QGzz5MgIkvmM7VmVoxEnOVK8OQDabMROPUqergB91qD64oQsBdemUL0MzJ2XUuIoecRqj5vI3nuPju414PsMr6ZcCaQ==
+ b=UAqjK5WE1JRki4R+agoUI7IfxgvHtR2v9SJPQ7E35EY8AEVp0GDlgsIB4CnI90eDf7Wj/vO9p8vmzjs/AZC+2N5LqDSuS/spPHSDwld9xY29TKXkgXXWzfrtPYDyDeeisftuTEY4CrspO9ck6Gj0Pd3hF0CZTIZ00HWD3eqFe8HLpWsRm7PuA5TKyGwEqEKgoyiKbDttp9Whml159p+OEceB05ddGmxGQ95op6BxPtvNZXEC+y/XwoWvTgK3SDivkJeJMg3gBbP5iFnjGv9kuPyWytZCEyEMLHKKUSHn8ZdEAMmLk87prIsCGmOqO48QZEjc4kFsGegi1WAmXe0djA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ahJkev7xepEXzNgGe15+m6LmTNhZBVbDOg6WV664PmI=;
- b=LG1PCG5lUZUgBuv5VZtvQa4HrWIp9s7UG84fUHIWHw7RXdapfqTifYFlj2+CUTjrahiJ4ka5ArrYYmFhNjg2tpV5kCo6i77OMlViCtDFYGtHABY8JBNuPmGqmcMGr28hW8IZO1qkfWehJwV2rFzwkpOdjXiUCCGCWapTsxUOOXiD//svjKnnG8Vo1tvECI/NFRr0+k7chwbOuEfyTMMamp50OaIxiegBze8w3aBJrJwFsRnUH42XJ7FOLdkAReGGvT8jJrnHF0FM0s5dPpXg/yzY27B861DaA0Ku3xJvAKnpUukbqIa3Jw2Lv1+l9hj54h2vn6nIWuhgPhtcBfjn3Q==
+ bh=VhhNrfnlNrJsKoUCOml4SThGzFqJnU0c5XoOcvU5e4o=;
+ b=NrbcHcej978AVh4cvrHaEaZ4DWx0hbdUVDWCdmThp3PAGnjtZTemXWupr8JxzsbGGBRNshnXhTf7S+S1Y3K53Ic+htVH8CUUcjMPuhdVE+FrzUtzSXpXpm4Pmy/XqdhNVbkCD+Ji6/3j/7JP/d+XrTHHCuil6HkQ5WFEX23VMxBIzBKwavZKAtO4DUHhUzVdlRS5GA+oUGWf298sAi0amI9OMjvIMXT9RtP2oEFph+DWcvYYhlOMpZq19VvRPjPT7x4wtB1weQJlRIW/8de00zpOoml82TLoBpjJ38dAz1rONmvYwhetbuGNnk0dEFEjr8UaLlmCQFa+UrE2jhzViQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ahJkev7xepEXzNgGe15+m6LmTNhZBVbDOg6WV664PmI=;
- b=W6iZY87LIy5aILgcawjIzZxfuF56kOQG2bzeXBqiMp2PzvjLB6oMEKajG7v0LgjMpLldqcIzNyVwUjAAC6L+oArw4YOoHoKRP/aRgoUvL8Z7bxrm0QoldjHsNEkoNwPSG9nYprFf1hh+c0leGLSJiLxpixCxjuiNrmbqvt1+h+4=
+ bh=VhhNrfnlNrJsKoUCOml4SThGzFqJnU0c5XoOcvU5e4o=;
+ b=j8JCbAJxPJNCKQoMxzUrv3bA/FAqahVr35CqJXbUjlQFw5fAy+qoOSF2edpsbV/OCiCgUM3okZszKx6cHkf+GxySXfmwN+Qdo1hgS8wqbDcMuBUhm7FHi1LhQSRK1QaLlNdJgdQovawTC8WJMJnpsvSFzDZzbqdYOQ22iPo6/Ow=
 Authentication-Results: spf=none (sender IP is ) smtp.mailfrom=po.liu@nxp.com; 
 Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (20.179.232.221) by
  VE1PR04MB6413.eurprd04.prod.outlook.com (20.179.232.94) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.22; Tue, 24 Mar 2020 04:07:26 +0000
+ 15.20.2835.22; Tue, 24 Mar 2020 04:07:35 +0000
 Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
  ([fe80::8cb8:5c41:d843:b66d]) by VE1PR04MB6496.eurprd04.prod.outlook.com
  ([fe80::8cb8:5c41:d843:b66d%5]) with mapi id 15.20.2835.021; Tue, 24 Mar 2020
- 04:07:26 +0000
+ 04:07:35 +0000
 From:   Po Liu <Po.Liu@nxp.com>
 To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
@@ -50,9 +50,9 @@ Cc:     vinicius.gomes@intel.com, po.liu@nxp.com, claudiu.manoil@nxp.com,
         moshe@mellanox.com, m-karicheri2@ti.com,
         andre.guedes@linux.intel.com, stephen@networkplumber.org,
         Po Liu <Po.Liu@nxp.com>
-Subject: [v1,net-next  1/5] net: qos offload add flow status with dropped count
-Date:   Tue, 24 Mar 2020 11:47:39 +0800
-Message-Id: <20200324034745.30979-2-Po.Liu@nxp.com>
+Subject: [v1,net-next  2/5] net: qos: introduce a gate control flow action
+Date:   Tue, 24 Mar 2020 11:47:40 +0800
+Message-Id: <20200324034745.30979-3-Po.Liu@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200324034745.30979-1-Po.Liu@nxp.com>
 References: <20200306125608.11717-11-Po.Liu@nxp.com>
@@ -62,441 +62,929 @@ X-ClientProxiedBy: SG2PR06CA0204.apcprd06.prod.outlook.com (2603:1096:4:1::36)
  To VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.73) by SG2PR06CA0204.apcprd06.prod.outlook.com (2603:1096:4:1::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.20 via Frontend Transport; Tue, 24 Mar 2020 04:07:17 +0000
+Received: from localhost.localdomain (119.31.174.73) by SG2PR06CA0204.apcprd06.prod.outlook.com (2603:1096:4:1::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.20 via Frontend Transport; Tue, 24 Mar 2020 04:07:26 +0000
 X-Mailer: git-send-email 2.17.1
 X-Originating-IP: [119.31.174.73]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 4adc7294-ae13-4c12-64a0-08d7cfa8dc69
+X-MS-Office365-Filtering-Correlation-Id: a2254b2b-cd96-43c7-9b56-08d7cfa8e212
 X-MS-TrafficTypeDiagnostic: VE1PR04MB6413:|VE1PR04MB6413:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VE1PR04MB64137949A58D98D4E971BCD992F10@VE1PR04MB6413.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2399;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB6413D782C8A03BF2A4F76A0E92F10@VE1PR04MB6413.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-Forefront-PRVS: 03524FBD26
 X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(396003)(136003)(39860400002)(346002)(16526019)(30864003)(26005)(86362001)(69590400007)(1076003)(478600001)(52116002)(6506007)(186003)(4326008)(7416002)(6512007)(6486002)(8936002)(81166006)(8676002)(81156014)(2906002)(316002)(66556008)(6666004)(956004)(66476007)(5660300002)(66946007)(36756003)(2616005);DIR:OUT;SFP:1101;SCL:1;SRVR:VE1PR04MB6413;H:VE1PR04MB6496.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;
 Received-SPF: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Rl5d6ADXbgiLuitGHEvc+ZI5zwYuFefd85o4mlQpEKWmpaMcxRCf86yFwRiOppQ+d3RpSyCNuFBHbfNcQ8DHEb+WMdQGukJh2Q6mdNeyx3wZ1tXlPgoQtVN9wcYYQibiaVaDNuovljNP3ERjaOFGcbxMeSCVKemOEBXABhGEE5VqKt8mqdCqtQqSKUJk+hxC7GWEJGZ82ocUWo4lcUPt8JU+cWyPYzNL93YEC9q7tBs1a/9PLRSL3eckP0VLLPkynHaX40hOmX5YA5VTv3prbzs110F+H9+2flsS4y0t+lKDs07lj/XCeH2HmYby5oujQQCG25AwLYcNikjZyYoYrxRVWewnZQ6PHr56ZlzGpDHWL4bL2H7d058MmD6cdSgBYxUmlftg0USH10z81w5C/4KWzjeZys/Y1TsjMItAQdDoSVXVR8omImNOy1RFBUaHCfOlRL+2pn7JlC7+Yyvbz42PXNLoF4BqquxNIt6qx7D1jjC7jhsT08H/F2QtjIUR
-X-MS-Exchange-AntiSpam-MessageData: TvgxQySItPMfKGkThEj9iVPQGQmeIvd55439yCU9pwy5IIaKdKX2I735aXovdGWPOm4qeHFyO+CjvE2ePudCjxnWs/JphG6CdnjV7z0As8FWn2VptB3a2e9JQwRhrDH7TsIykhFpmg+KbOidmaXDmw==
+X-Microsoft-Antispam-Message-Info: cE07VgphFyuWRv70CA8zVYzg/WUEcpb1GauxfSwVlCBB9+T+D6m/94pk4KRpBQcWP3mZG4sIXjD1BVsQUobWD6hX2y3C8X0Vx8/tDpRNWD1kzXO/0WrfZXZGSk1QPFkozq9Ihq5dovicjuzl61ZhJm/RpW7hth7U5Wq3OW7izd7wz8lXoSKdSJB7DhcL5RpoT8+JSkyA/06XtItMjtC9oaNyY9rTbJqadSPl68P7aUKxFfULqjuMOg2qQpF7mQMIO9EMLVlqOkxfJAJGddhKPAodFdpAo3+qhjEo/zaRNPYqFEe0P5Jfo8Uo33knjG96c/z2Yc+LRBLXsoERA3nIf0rCTPiyaapgyPiEtAwXbqYOXBzLE/5YK47n8+xdRTVpl9yqGUe3RJPsTBPwdrHyg6Pot+OHrQkGBhaJHR9WkQ5CE1xK0tNcQ6yQ8KNp2/2kS0iHjj3O7kZHC9uUYpcjnayhzhgkUkKBqCN/wjGow/bFrHXA/fHw8DDTw5Ica1Cf
+X-MS-Exchange-AntiSpam-MessageData: UFsf3vfQr5wcWItgERQvR6qEcJjxilqlqWOP3HScX+oZJwSzEa7VuFtpEGiDyOZdRnX91PSmEdwrVhxFMrie6WrtLD5/e2PyNkTiesBVZpM5v6iCNjEhf77AgrtFMqB/h8KQWj2cv3qLkgmo6rZfSQ==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4adc7294-ae13-4c12-64a0-08d7cfa8dc69
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2020 04:07:26.1131
+X-MS-Exchange-CrossTenant-Network-Message-Id: a2254b2b-cd96-43c7-9b56-08d7cfa8e212
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2020 04:07:35.7706
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PeRjdwAALFM7OwbUloQVWlIUv+4WplLmHeR1t5ipDmos6zTnATUNyKeL4wj9ajXu
+X-MS-Exchange-CrossTenant-UserPrincipalName: xmhN38c56lid9cuV0Sl9Y7abtNtKf4OeVREWI15aHcImLj86nOAX04r1Qz2Uy1OR
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6413
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the hardware tc flower offloading with dropped frame counter for
-status update. action ops->stats_update only loaded by the
-tcf_exts_stats_update() and tcf_exts_stats_update() only loaded by
-matchall and tc flower hardware filter. But the stats_update only set
-the dropped count as default false in the ops->stats_update. This
-patch add the dropped counter to action stats update. Its dropped counter
-update by the hardware offloading driver.
-This is changed by replacing the drop flag with dropped frame counter.
+Introduce a ingress frame gate control flow action. tc create a gate
+action would provide a gate list to control when open/close state. when
+the gate open state, the flow could pass but not when gate state is
+close. The driver would repeat the gate list cyclically. User also could
+assign a time point to start the gate list by the basetime parameter. if
+the basetime has passed current time, start time would calculate by the
+cycletime of the gate list.
+The action gate behavior try to keep according to the IEEE 802.1Qci spec.
+For the software simulation, require the user input the clock type.
 
-Driver side should update how many "packets" it filtered and how many
-"dropped" in those "packets".
+Below is the setting example in user space. Tc filter a stream source ip
+address is 192.168.0.20 and gate action own two time slots. One is last
+200ms gate open let frame pass another is last 100ms gate close let
+frames dropped. When the passed total frames over 8000000 bytes, it will
+dropped in one 200000000ns time slot.
+
+> tc qdisc add dev eth0 ingress
+
+> tc filter add dev eth0 parent ffff: protocol ip \
+	   flower src_ip 192.168.0.20 \
+	   action gate index 2 clockid CLOCK_TAI \
+	   sched-entry OPEN 200000000 -1 8000000 \
+	   sched-entry CLOSE 100000000 -1 -1
+
+> tc chain del dev eth0 ingress chain 0
+
+"sched-entry" follow the name taprio style. gate state is
+"OPEN"/"CLOSE". Follow the period nanosecond. Then next item is internal
+priority value means which ingress queue should put. "-1" means
+wildcard. The last value optional specifies the maximum number of
+MSDU octets that are permitted to pass the gate during the specified
+time interval.
+Base-time is not set will be as 0 as default, as result start time would
+be ((N + 1) * cycletime) which is the minimal of future time.
+
+Below example shows filtering a stream with destination mac address is
+10:00:80:00:00:00 and ip type is ICMP, follow the action gate. The gate
+action would run with one close time slot which means always keep close.
+The time cycle is total 200000000ns. The base-time would calculate by:
+
+ 1357000000000 + (N + 1) * cycletime
+
+When the total value is the future time, it will be the start time.
+The cycletime here would be 200000000ns for this case.
+
+> tc filter add dev eth0 parent ffff:  protocol ip \
+	   flower skip_hw ip_proto icmp dst_mac 10:00:80:00:00:00 \
+	   action gate index 12 base-time 1357000000000 \
+	   sched-entry CLOSE 200000000 -1 -1 \
+	   clockid CLOCK_TAI
+
+NOTE: This software simulator version not separate the admin/operation
+state machine. Update setting would overwrite stop the previos setting
+and waiting new cycle start.
 
 Signed-off-by: Po Liu <Po.Liu@nxp.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c         |  2 +-
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c |  2 +-
- .../net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c   |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c      |  4 ++--
- .../net/ethernet/mellanox/mlxsw/spectrum_flower.c    |  2 +-
- drivers/net/ethernet/mscc/ocelot_flower.c            |  2 +-
- drivers/net/ethernet/netronome/nfp/flower/offload.c  |  2 +-
- drivers/net/ethernet/netronome/nfp/flower/qos_conf.c |  2 +-
- include/net/act_api.h                                | 11 ++++++-----
- include/net/flow_offload.h                           |  5 ++++-
- include/net/pkt_cls.h                                |  5 +++--
- net/sched/act_api.c                                  | 12 ++++++------
- net/sched/act_ct.c                                   |  6 +++---
- net/sched/act_gact.c                                 |  7 ++++---
- net/sched/act_mirred.c                               |  6 +++---
- net/sched/act_police.c                               |  6 +++---
- net/sched/act_vlan.c                                 |  6 +++---
- net/sched/cls_flower.c                               |  3 ++-
- net/sched/cls_matchall.c                             |  3 ++-
- 19 files changed, 48 insertions(+), 40 deletions(-)
+Changes from RFC:
+ - fix kfree lead ack by Jakub Kicinski and Cong Wang
+ - License fix from Jakub Kicinski and Stephen Hemminger
+ - Update example in commit acked by Vinicius Costa Gomes
+ - Fix the rcu protect in tcf_gate_act() acked by Vinicius
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index b19be7549aad..d14b33fe745c 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -1639,7 +1639,7 @@ static int bnxt_tc_get_flow_stats(struct bnxt *bp,
- 	spin_unlock(&flow->stats_lock);
- 
- 	flow_stats_update(&tc_flow_cmd->stats, stats.bytes, stats.packets,
--			  lastused);
-+			  lastused, 0);
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
-index aec9b90313e7..c0d9bc9e6cb7 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
-@@ -903,7 +903,7 @@ int cxgb4_tc_flower_stats(struct net_device *dev,
- 			ofld_stats->last_used = jiffies;
- 		flow_stats_update(&cls->stats, bytes - ofld_stats->byte_count,
- 				  packets - ofld_stats->packet_count,
--				  ofld_stats->last_used);
-+				  ofld_stats->last_used, 0);
- 
- 		ofld_stats->packet_count = packets;
- 		ofld_stats->byte_count = bytes;
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
-index 8a5ae8bc9b7d..d2451836d5fd 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
-@@ -346,7 +346,7 @@ int cxgb4_tc_matchall_stats(struct net_device *dev,
- 		flow_stats_update(&cls_matchall->stats,
- 				  bytes - tc_port_matchall->ingress.bytes,
- 				  packets - tc_port_matchall->ingress.packets,
--				  tc_port_matchall->ingress.last_used);
-+				  tc_port_matchall->ingress.last_used, 0);
- 
- 		tc_port_matchall->ingress.packets = packets;
- 		tc_port_matchall->ingress.bytes = bytes;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 901f88a886c8..ca1b694d13d4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -4467,7 +4467,7 @@ int mlx5e_stats_flower(struct net_device *dev, struct mlx5e_priv *priv,
- no_peer_counter:
- 	mlx5_devcom_release_peer_data(devcom, MLX5_DEVCOM_ESW_OFFLOADS);
- out:
--	flow_stats_update(&f->stats, bytes, packets, lastuse);
-+	flow_stats_update(&f->stats, bytes, packets, lastuse, 0);
- 	trace_mlx5e_stats_flower(f);
- errout:
- 	mlx5e_flow_put(priv, flow);
-@@ -4584,7 +4584,7 @@ void mlx5e_tc_stats_matchall(struct mlx5e_priv *priv,
- 	dpkts = cur_stats.rx_packets - rpriv->prev_vf_vport_stats.rx_packets;
- 	dbytes = cur_stats.rx_bytes - rpriv->prev_vf_vport_stats.rx_bytes;
- 	rpriv->prev_vf_vport_stats = cur_stats;
--	flow_stats_update(&ma->stats, dpkts, dbytes, jiffies);
-+	flow_stats_update(&ma->stats, dpkts, dbytes, jiffies, 0);
- }
- 
- static void mlx5e_tc_hairpin_update_dead_peer(struct mlx5e_priv *priv,
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-index 1cb023955d8f..f1d90ffa5eae 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
-@@ -578,7 +578,7 @@ int mlxsw_sp_flower_stats(struct mlxsw_sp *mlxsw_sp,
- 	if (err)
- 		goto err_rule_get_stats;
- 
--	flow_stats_update(&f->stats, bytes, packets, lastuse);
-+	flow_stats_update(&f->stats, bytes, packets, lastuse, 0);
- 
- 	mlxsw_sp_acl_ruleset_put(mlxsw_sp, ruleset);
- 	return 0;
-diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index 873a9944fbfb..6cbca9b05520 100644
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -224,7 +224,7 @@ int ocelot_cls_flower_stats(struct ocelot *ocelot, int port,
- 	if (ret)
- 		return ret;
- 
--	flow_stats_update(&f->stats, 0x0, ace.stats.pkts, 0x0);
-+	flow_stats_update(&f->stats, 0x0, ace.stats.pkts, 0x0, 0x0);
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(ocelot_cls_flower_stats);
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 7ca5c1becfcf..053f647c1ec6 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -1490,7 +1490,7 @@ nfp_flower_get_stats(struct nfp_app *app, struct net_device *netdev,
- 		nfp_flower_update_merge_stats(app, nfp_flow);
- 
- 	flow_stats_update(&flow->stats, priv->stats[ctx_id].bytes,
--			  priv->stats[ctx_id].pkts, priv->stats[ctx_id].used);
-+			  priv->stats[ctx_id].pkts, priv->stats[ctx_id].used, 0);
- 
- 	priv->stats[ctx_id].pkts = 0;
- 	priv->stats[ctx_id].bytes = 0;
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c b/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
-index 124a43dc136a..354d64edbec0 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
-@@ -320,7 +320,7 @@ nfp_flower_stats_rate_limiter(struct nfp_app *app, struct net_device *netdev,
- 	spin_unlock_bh(&fl_priv->qos_stats_lock);
- 
- 	flow_stats_update(&flow->stats, diff_bytes, diff_pkts,
--			  repr_priv->qos_table.last_update);
-+			  repr_priv->qos_table.last_update, 0);
- 	return 0;
- }
- 
-diff --git a/include/net/act_api.h b/include/net/act_api.h
-index 41337c7fc728..7bb03ee2f747 100644
---- a/include/net/act_api.h
-+++ b/include/net/act_api.h
-@@ -103,7 +103,7 @@ struct tc_action_ops {
- 			struct netlink_callback *, int,
- 			const struct tc_action_ops *,
- 			struct netlink_ext_ack *);
--	void	(*stats_update)(struct tc_action *, u64, u32, u64, bool);
-+	void	(*stats_update)(struct tc_action *, u64, u64, u64, u64, bool);
- 	size_t  (*get_fill_size)(const struct tc_action *act);
- 	struct net_device *(*get_dev)(const struct tc_action *a,
- 				      tc_action_priv_destructor *destructor);
-@@ -229,8 +229,8 @@ static inline void tcf_action_inc_overlimit_qstats(struct tc_action *a)
- 	spin_unlock(&a->tcfa_lock);
- }
- 
--void tcf_action_update_stats(struct tc_action *a, u64 bytes, u32 packets,
--			     bool drop, bool hw);
-+void tcf_action_update_stats(struct tc_action *a, u64 bytes, u64 packets,
-+			     u64 dropped, bool hw);
- int tcf_action_copy_stats(struct sk_buff *, struct tc_action *, int);
- 
- int tcf_action_check_ctrlact(int action, struct tcf_proto *tp,
-@@ -241,13 +241,14 @@ struct tcf_chain *tcf_action_set_ctrlact(struct tc_action *a, int action,
- #endif /* CONFIG_NET_CLS_ACT */
- 
- static inline void tcf_action_stats_update(struct tc_action *a, u64 bytes,
--					   u64 packets, u64 lastuse, bool hw)
-+					   u64 packets, u64 lastuse,
-+					   u64 dropped, bool hw)
- {
- #ifdef CONFIG_NET_CLS_ACT
- 	if (!a->ops->stats_update)
- 		return;
- 
--	a->ops->stats_update(a, bytes, packets, lastuse, hw);
-+	a->ops->stats_update(a, bytes, packets, lastuse, dropped, hw);
- #endif
- }
- 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index 51b9893d4ccb..cae3658a1844 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -369,14 +369,17 @@ struct flow_stats {
- 	u64	pkts;
- 	u64	bytes;
- 	u64	lastused;
-+	u64	dropped;
+
+ include/net/tc_act/tc_gate.h        |  54 +++
+ include/uapi/linux/pkt_cls.h        |   1 +
+ include/uapi/linux/tc_act/tc_gate.h |  47 ++
+ net/sched/Kconfig                   |  15 +
+ net/sched/Makefile                  |   1 +
+ net/sched/act_gate.c                | 647 ++++++++++++++++++++++++++++
+ 6 files changed, 765 insertions(+)
+ create mode 100644 include/net/tc_act/tc_gate.h
+ create mode 100644 include/uapi/linux/tc_act/tc_gate.h
+ create mode 100644 net/sched/act_gate.c
+
+diff --git a/include/net/tc_act/tc_gate.h b/include/net/tc_act/tc_gate.h
+new file mode 100644
+index 000000000000..b0ace55b2aaa
+--- /dev/null
++++ b/include/net/tc_act/tc_gate.h
+@@ -0,0 +1,54 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/* Copyright 2020 NXP */
++
++#ifndef __NET_TC_GATE_H
++#define __NET_TC_GATE_H
++
++#include <net/act_api.h>
++#include <linux/tc_act/tc_gate.h>
++
++struct tcfg_gate_entry {
++	int			index;
++	u8			gate_state;
++	u32			interval;
++	s32			ipv;
++	s32			maxoctets;
++	struct list_head	list;
++};
++
++struct tcf_gate_params {
++	s32			tcfg_priority;
++	u64			tcfg_basetime;
++	u64			tcfg_cycletime;
++	u64			tcfg_cycletime_ext;
++	u32			tcfg_flags;
++	s32			tcfg_clockid;
++	size_t			num_entries;
++	struct list_head	entries;
++};
++
++#define GATE_ACT_GATE_OPEN	BIT(0)
++#define GATE_ACT_PENDING	BIT(1)
++struct gate_action {
++	struct tcf_gate_params param;
++	spinlock_t entry_lock;
++	u8 current_gate_status;
++	ktime_t current_close_time;
++	u32 current_entry_octets;
++	s32 current_max_octets;
++	struct tcfg_gate_entry __rcu *next_entry;
++	struct hrtimer hitimer;
++	enum tk_offsets tk_offset;
++	struct rcu_head rcu;
++};
++
++struct tcf_gate {
++	struct tc_action		common;
++	struct gate_action __rcu	*actg;
++};
++#define to_gate(a) ((struct tcf_gate *)a)
++
++#define get_gate_param(act) ((struct tcf_gate_params *)act)
++#define get_gate_action(p) ((struct gate_action *)p)
++
++#endif
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index 81cc1a869588..aaa8fb214b28 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -134,6 +134,7 @@ enum tca_id {
+ 	TCA_ID_CTINFO,
+ 	TCA_ID_MPLS,
+ 	TCA_ID_CT,
++	TCA_ID_GATE,
+ 	/* other actions go here */
+ 	__TCA_ID_MAX = 255
  };
- 
- static inline void flow_stats_update(struct flow_stats *flow_stats,
--				     u64 bytes, u64 pkts, u64 lastused)
-+				     u64 bytes, u64 pkts,
-+				     u64 lastused, u64 dropped)
- {
- 	flow_stats->pkts	+= pkts;
- 	flow_stats->bytes	+= bytes;
- 	flow_stats->lastused	= max_t(u64, flow_stats->lastused, lastused);
-+	flow_stats->dropped	+= dropped;
- }
- 
- enum flow_block_command {
-diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-index 1db8b27d4515..4d12d3edeb71 100644
---- a/include/net/pkt_cls.h
-+++ b/include/net/pkt_cls.h
-@@ -262,7 +262,7 @@ static inline void tcf_exts_put_net(struct tcf_exts *exts)
- 
- static inline void
- tcf_exts_stats_update(const struct tcf_exts *exts,
--		      u64 bytes, u64 packets, u64 lastuse)
-+		      u64 bytes, u64 packets, u64 lastuse, u64 dropped)
- {
- #ifdef CONFIG_NET_CLS_ACT
- 	int i;
-@@ -272,7 +272,8 @@ tcf_exts_stats_update(const struct tcf_exts *exts,
- 	for (i = 0; i < exts->nr_actions; i++) {
- 		struct tc_action *a = exts->actions[i];
- 
--		tcf_action_stats_update(a, bytes, packets, lastuse, true);
-+		tcf_action_stats_update(a, bytes, packets,
-+					lastuse, dropped, true);
- 	}
- 
- 	preempt_enable();
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index aa7b737fed2e..83ffb3fb63f4 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -1053,14 +1053,13 @@ int tcf_action_init(struct net *net, struct tcf_proto *tp, struct nlattr *nla,
- 	return err;
- }
- 
--void tcf_action_update_stats(struct tc_action *a, u64 bytes, u32 packets,
--			     bool drop, bool hw)
-+void tcf_action_update_stats(struct tc_action *a, u64 bytes, u64 packets,
-+			     u64 dropped, bool hw)
- {
- 	if (a->cpu_bstats) {
- 		_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats), bytes, packets);
- 
--		if (drop)
--			this_cpu_ptr(a->cpu_qstats)->drops += packets;
-+		this_cpu_ptr(a->cpu_qstats)->drops += dropped;
- 
- 		if (hw)
- 			_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats_hw),
-@@ -1069,8 +1068,9 @@ void tcf_action_update_stats(struct tc_action *a, u64 bytes, u32 packets,
- 	}
- 
- 	_bstats_update(&a->tcfa_bstats, bytes, packets);
--	if (drop)
--		a->tcfa_qstats.drops += packets;
+diff --git a/include/uapi/linux/tc_act/tc_gate.h b/include/uapi/linux/tc_act/tc_gate.h
+new file mode 100644
+index 000000000000..f214b3a6d44f
+--- /dev/null
++++ b/include/uapi/linux/tc_act/tc_gate.h
+@@ -0,0 +1,47 @@
++/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
++/* Copyright 2020 NXP */
 +
-+	a->tcfa_qstats.drops += dropped;
++#ifndef __LINUX_TC_GATE_H
++#define __LINUX_TC_GATE_H
 +
- 	if (hw)
- 		_bstats_update(&a->tcfa_bstats_hw, bytes, packets);
- }
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 56b66d215a89..f8eda414537c 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -1445,12 +1445,12 @@ static int tcf_ct_search(struct net *net, struct tc_action **a, u32 index)
- 	return tcf_idr_search(tn, a, index);
- }
++#include <linux/pkt_cls.h>
++
++struct tc_gate {
++	tc_gen;
++};
++
++enum {
++	TCA_GATE_ENTRY_UNSPEC,
++	TCA_GATE_ENTRY_INDEX,
++	TCA_GATE_ENTRY_GATE,
++	TCA_GATE_ENTRY_INTERVAL,
++	TCA_GATE_ENTRY_IPV,
++	TCA_GATE_ENTRY_MAX_OCTETS,
++	__TCA_GATE_ENTRY_MAX,
++};
++#define TCA_GATE_ENTRY_MAX (__TCA_GATE_ENTRY_MAX - 1)
++
++enum {
++	TCA_GATE_ONE_ENTRY_UNSPEC,
++	TCA_GATE_ONE_ENTRY,
++	__TCA_GATE_ONE_ENTRY_MAX,
++};
++#define TCA_GATE_ONE_ENTRY_MAX (__TCA_GATE_ONE_ENTRY_MAX - 1)
++
++enum {
++	TCA_GATE_UNSPEC,
++	TCA_GATE_TM,
++	TCA_GATE_PARMS,
++	TCA_GATE_PAD,
++	TCA_GATE_PRIORITY,
++	TCA_GATE_ENTRY_LIST,
++	TCA_GATE_BASE_TIME,
++	TCA_GATE_CYCLE_TIME,
++	TCA_GATE_CYCLE_TIME_EXT,
++	TCA_GATE_FLAGS,
++	TCA_GATE_CLOCKID,
++	__TCA_GATE_MAX,
++};
++#define TCA_GATE_MAX (__TCA_GATE_MAX - 1)
++
++#endif
+diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+index bfbefb7bff9d..320471a0a21d 100644
+--- a/net/sched/Kconfig
++++ b/net/sched/Kconfig
+@@ -981,6 +981,21 @@ config NET_ACT_CT
+ 	  To compile this code as a module, choose M here: the
+ 	  module will be called act_ct.
  
--static void tcf_stats_update(struct tc_action *a, u64 bytes, u32 packets,
--			     u64 lastuse, bool hw)
-+static void tcf_stats_update(struct tc_action *a, u64 bytes, u64 packets,
-+			     u64 lastuse, u64 dropped, bool hw)
- {
- 	struct tcf_ct *c = to_ct(a);
- 
--	tcf_action_update_stats(a, bytes, packets, false, hw);
-+	tcf_action_update_stats(a, bytes, packets, dropped, hw);
- 	c->tcf_tm.lastuse = max_t(u64, c->tcf_tm.lastuse, lastuse);
- }
- 
-diff --git a/net/sched/act_gact.c b/net/sched/act_gact.c
-index 416065772719..173908368dcc 100644
---- a/net/sched/act_gact.c
-+++ b/net/sched/act_gact.c
-@@ -171,14 +171,15 @@ static int tcf_gact_act(struct sk_buff *skb, const struct tc_action *a,
- 	return action;
- }
- 
--static void tcf_gact_stats_update(struct tc_action *a, u64 bytes, u32 packets,
--				  u64 lastuse, bool hw)
-+static void tcf_gact_stats_update(struct tc_action *a, u64 bytes, u64 packets,
++config NET_ACT_GATE
++	tristate "Frame gate list control tc action"
++	depends on NET_CLS_ACT
++	help
++	  Say Y here to allow the control the ingress flow by the gate list
++	  control. The frame policing by the time gate list control open/close
++	  cycle time. The manipulation will simulate the IEEE 802.1Qci stream
++	  gate control behavior. The action could be offload by the tc flower
++	  to hardware driver which the hardware own the capability of IEEE
++	  802.1Qci.
++
++	  If unsure, say N.
++	  To compile this code as a module, choose M here: the
++	  module will be called act_gate.
++
+ config NET_IFE_SKBMARK
+ 	tristate "Support to encoding decoding skb mark on IFE action"
+ 	depends on NET_ACT_IFE
+diff --git a/net/sched/Makefile b/net/sched/Makefile
+index 31c367a6cd09..66bbf9a98f9e 100644
+--- a/net/sched/Makefile
++++ b/net/sched/Makefile
+@@ -30,6 +30,7 @@ obj-$(CONFIG_NET_IFE_SKBPRIO)	+= act_meta_skbprio.o
+ obj-$(CONFIG_NET_IFE_SKBTCINDEX)	+= act_meta_skbtcindex.o
+ obj-$(CONFIG_NET_ACT_TUNNEL_KEY)+= act_tunnel_key.o
+ obj-$(CONFIG_NET_ACT_CT)	+= act_ct.o
++obj-$(CONFIG_NET_ACT_GATE)	+= act_gate.o
+ obj-$(CONFIG_NET_SCH_FIFO)	+= sch_fifo.o
+ obj-$(CONFIG_NET_SCH_CBQ)	+= sch_cbq.o
+ obj-$(CONFIG_NET_SCH_HTB)	+= sch_htb.o
+diff --git a/net/sched/act_gate.c b/net/sched/act_gate.c
+new file mode 100644
+index 000000000000..a70dadc4213b
+--- /dev/null
++++ b/net/sched/act_gate.c
+@@ -0,0 +1,647 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/* Copyright 2020 NXP */
++
++#include <linux/module.h>
++#include <linux/types.h>
++#include <linux/kernel.h>
++#include <linux/string.h>
++#include <linux/errno.h>
++#include <linux/skbuff.h>
++#include <linux/rtnetlink.h>
++#include <linux/init.h>
++#include <linux/slab.h>
++#include <net/act_api.h>
++#include <net/netlink.h>
++#include <net/pkt_cls.h>
++#include <net/tc_act/tc_gate.h>
++
++static unsigned int gate_net_id;
++static struct tc_action_ops act_gate_ops;
++
++static ktime_t gate_get_time(struct gate_action *gact)
++{
++	ktime_t mono = ktime_get();
++
++	switch (gact->tk_offset) {
++	case TK_OFFS_MAX:
++		return mono;
++	default:
++		return ktime_mono_to_any(mono, gact->tk_offset);
++	}
++
++	return KTIME_MAX;
++}
++
++static int gate_get_start_time(struct gate_action *gact, ktime_t *start)
++{
++	struct tcf_gate_params *param = get_gate_param(gact);
++	ktime_t now, base, cycle;
++	u64 n;
++
++	base = ns_to_ktime(param->tcfg_basetime);
++	now = gate_get_time(gact);
++
++	if (ktime_after(base, now)) {
++		*start = base;
++		return 0;
++	}
++
++	cycle = param->tcfg_cycletime;
++
++	/* cycle time should not be zero */
++	if (WARN_ON(!cycle))
++		return -EFAULT;
++
++	n = div64_u64(ktime_sub_ns(now, base), cycle);
++	*start = ktime_add_ns(base, (n + 1) * cycle);
++	return 0;
++}
++
++static void gate_start_timer(struct gate_action *gact, ktime_t start)
++{
++	ktime_t expires;
++
++	expires = hrtimer_get_expires(&gact->hitimer);
++	if (expires == 0)
++		expires = KTIME_MAX;
++
++	start = min_t(ktime_t, start, expires);
++
++	hrtimer_start(&gact->hitimer, start, HRTIMER_MODE_ABS);
++}
++
++static enum hrtimer_restart gate_timer_func(struct hrtimer *timer)
++{
++	struct gate_action *gact = container_of(timer, struct gate_action,
++						hitimer);
++	struct tcf_gate_params *p = get_gate_param(gact);
++	struct tcfg_gate_entry *next;
++	ktime_t close_time, now;
++
++	spin_lock(&gact->entry_lock);
++
++	next = rcu_dereference_protected(gact->next_entry,
++					 lockdep_is_held(&gact->entry_lock));
++
++	/* cycle start, clear pending bit, clear total octets */
++	gact->current_gate_status = next->gate_state ? GATE_ACT_GATE_OPEN : 0;
++	gact->current_entry_octets = 0;
++	gact->current_max_octets = next->maxoctets;
++
++	gact->current_close_time = ktime_add_ns(gact->current_close_time,
++						next->interval);
++
++	close_time = gact->current_close_time;
++
++	if (list_is_last(&next->list, &p->entries))
++		next = list_first_entry(&p->entries,
++					struct tcfg_gate_entry, list);
++	else
++		next = list_next_entry(next, list);
++
++	now = gate_get_time(gact);
++
++	if (ktime_after(now, close_time)) {
++		ktime_t cycle, base;
++		u64 n;
++
++		cycle = p->tcfg_cycletime;
++		base = ns_to_ktime(p->tcfg_basetime);
++		n = div64_u64(ktime_sub_ns(now, base), cycle);
++		close_time = ktime_add_ns(base, (n + 1) * cycle);
++	}
++
++	rcu_assign_pointer(gact->next_entry, next);
++	spin_unlock(&gact->entry_lock);
++
++	hrtimer_set_expires(&gact->hitimer, close_time);
++
++	return HRTIMER_RESTART;
++}
++
++static int tcf_gate_act(struct sk_buff *skb, const struct tc_action *a,
++			struct tcf_result *res)
++{
++	struct tcf_gate *g = to_gate(a);
++	struct gate_action *gact;
++	int action;
++
++	tcf_lastuse_update(&g->tcf_tm);
++	bstats_cpu_update(this_cpu_ptr(g->common.cpu_bstats), skb);
++
++	action = READ_ONCE(g->tcf_action);
++	rcu_read_lock();
++	gact = rcu_dereference_bh(g->actg);
++	if (unlikely(gact->current_gate_status & GATE_ACT_PENDING)) {
++		rcu_read_unlock();
++		return action;
++	}
++
++	if (!(gact->current_gate_status & GATE_ACT_GATE_OPEN))
++		goto drop;
++
++	if (gact->current_max_octets >= 0) {
++		gact->current_entry_octets += qdisc_pkt_len(skb);
++		if (gact->current_entry_octets > gact->current_max_octets) {
++			qstats_overlimit_inc(this_cpu_ptr(g->common.cpu_qstats));
++			goto drop;
++		}
++	}
++	rcu_read_unlock();
++
++	return action;
++drop:
++	rcu_read_unlock();
++	qstats_drop_inc(this_cpu_ptr(g->common.cpu_qstats));
++	return TC_ACT_SHOT;
++}
++
++static const struct nla_policy entry_policy[TCA_GATE_ENTRY_MAX + 1] = {
++	[TCA_GATE_ENTRY_INDEX]		= { .type = NLA_U32 },
++	[TCA_GATE_ENTRY_GATE]		= { .type = NLA_FLAG },
++	[TCA_GATE_ENTRY_INTERVAL]	= { .type = NLA_U32 },
++	[TCA_GATE_ENTRY_IPV]		= { .type = NLA_S32 },
++	[TCA_GATE_ENTRY_MAX_OCTETS]	= { .type = NLA_S32 },
++};
++
++static const struct nla_policy gate_policy[TCA_GATE_MAX + 1] = {
++	[TCA_GATE_PARMS]		= { .len = sizeof(struct tc_gate),
++					    .type = NLA_EXACT_LEN },
++	[TCA_GATE_PRIORITY]		= { .type = NLA_S32 },
++	[TCA_GATE_ENTRY_LIST]		= { .type = NLA_NESTED },
++	[TCA_GATE_BASE_TIME]		= { .type = NLA_U64 },
++	[TCA_GATE_CYCLE_TIME]		= { .type = NLA_U64 },
++	[TCA_GATE_CYCLE_TIME_EXT]	= { .type = NLA_U64 },
++	[TCA_GATE_FLAGS]		= { .type = NLA_U32 },
++	[TCA_GATE_CLOCKID]		= { .type = NLA_S32 },
++};
++
++static int fill_gate_entry(struct nlattr **tb, struct tcfg_gate_entry *entry,
++			   struct netlink_ext_ack *extack)
++{
++	u32 interval = 0;
++
++	entry->gate_state = nla_get_flag(tb[TCA_GATE_ENTRY_GATE]);
++
++	if (tb[TCA_GATE_ENTRY_INTERVAL])
++		interval = nla_get_u32(tb[TCA_GATE_ENTRY_INTERVAL]);
++
++	if (interval == 0) {
++		NL_SET_ERR_MSG(extack, "Invalid interval for schedule entry");
++		return -EINVAL;
++	}
++
++	entry->interval = interval;
++
++	if (tb[TCA_GATE_ENTRY_IPV])
++		entry->ipv = nla_get_s32(tb[TCA_GATE_ENTRY_IPV]);
++	else
++		entry->ipv = -1;
++
++	if (tb[TCA_GATE_ENTRY_MAX_OCTETS])
++		entry->maxoctets = nla_get_s32(tb[TCA_GATE_ENTRY_MAX_OCTETS]);
++	else
++		entry->maxoctets = -1;
++
++	return 0;
++}
++
++static int parse_gate_entry(struct nlattr *n, struct  tcfg_gate_entry *entry,
++			    int index, struct netlink_ext_ack *extack)
++{
++	struct nlattr *tb[TCA_GATE_ENTRY_MAX + 1] = { };
++	int err;
++
++	err = nla_parse_nested(tb, TCA_GATE_ENTRY_MAX, n, entry_policy, extack);
++	if (err < 0) {
++		NL_SET_ERR_MSG(extack, "Could not parse nested entry");
++		return -EINVAL;
++	}
++
++	entry->index = index;
++
++	return fill_gate_entry(tb, entry, extack);
++}
++
++static int parse_gate_list(struct nlattr *list_attr,
++			   struct tcf_gate_params *sched,
++			   struct netlink_ext_ack *extack)
++{
++	struct tcfg_gate_entry *entry, *e;
++	struct nlattr *n;
++	int err, rem;
++	int i = 0;
++
++	if (!list_attr)
++		return -EINVAL;
++
++	nla_for_each_nested(n, list_attr, rem) {
++		if (nla_type(n) != TCA_GATE_ONE_ENTRY) {
++			NL_SET_ERR_MSG(extack, "Attribute isn't type 'entry'");
++			continue;
++		}
++
++		entry = kzalloc(sizeof(*entry), GFP_KERNEL);
++		if (!entry) {
++			NL_SET_ERR_MSG(extack, "Not enough memory for entry");
++			err = -ENOMEM;
++			goto release_list;
++		}
++
++		err = parse_gate_entry(n, entry, i, extack);
++		if (err < 0) {
++			kfree(entry);
++			goto release_list;
++		}
++
++		list_add_tail(&entry->list, &sched->entries);
++		i++;
++	}
++
++	sched->num_entries = i;
++
++	return i;
++
++release_list:
++	list_for_each_entry_safe(entry, e, &sched->entries, list) {
++		list_del(&entry->list);
++		kfree(entry);
++	}
++
++	return err;
++}
++
++static int tcf_gate_init(struct net *net, struct nlattr *nla,
++			 struct nlattr *est, struct tc_action **a,
++			 int ovr, int bind, bool rtnl_held,
++			 struct tcf_proto *tp, u32 flags,
++			 struct netlink_ext_ack *extack)
++{
++	struct tc_action_net *tn = net_generic(net, gate_net_id);
++	enum tk_offsets tk_offset = TK_OFFS_TAI;
++	struct nlattr *tb[TCA_GATE_MAX + 1];
++	struct tcf_chain *goto_ch = NULL;
++	struct tcfg_gate_entry *next;
++	struct tcf_gate_params *p;
++	struct gate_action *gact;
++	s32 clockid = CLOCK_TAI;
++	struct tc_gate *parm;
++	struct tcf_gate *g;
++	int ret = 0, err;
++	u64 basetime = 0;
++	u32 gflags = 0;
++	s32 prio = -1;
++	ktime_t start;
++	u32 index;
++
++	if (!nla)
++		return -EINVAL;
++
++	err = nla_parse_nested(tb, TCA_GATE_MAX, nla, gate_policy, extack);
++	if (err < 0)
++		return err;
++
++	if (!tb[TCA_GATE_PARMS])
++		return -EINVAL;
++	parm = nla_data(tb[TCA_GATE_PARMS]);
++	index = parm->index;
++	err = tcf_idr_check_alloc(tn, &index, a, bind);
++	if (err < 0)
++		return err;
++
++	if (err && bind)
++		return 0;
++
++	if (!err) {
++		ret = tcf_idr_create_from_flags(tn, index, est, a,
++						&act_gate_ops, bind, flags);
++		if (ret) {
++			tcf_idr_cleanup(tn, index);
++			return ret;
++		}
++
++		ret = ACT_P_CREATED;
++	} else if (!ovr) {
++		tcf_idr_release(*a, bind);
++		return -EEXIST;
++	}
++
++	if (tb[TCA_GATE_PRIORITY])
++		prio = nla_get_s32(tb[TCA_GATE_PRIORITY]);
++
++	if (tb[TCA_GATE_BASE_TIME])
++		basetime = nla_get_u64(tb[TCA_GATE_BASE_TIME]);
++
++	if (tb[TCA_GATE_FLAGS])
++		gflags = nla_get_u32(tb[TCA_GATE_FLAGS]);
++
++	if (tb[TCA_GATE_CLOCKID]) {
++		clockid = nla_get_s32(tb[TCA_GATE_CLOCKID]);
++		switch (clockid) {
++		case CLOCK_REALTIME:
++			tk_offset = TK_OFFS_REAL;
++			break;
++		case CLOCK_MONOTONIC:
++			tk_offset = TK_OFFS_MAX;
++			break;
++		case CLOCK_BOOTTIME:
++			tk_offset = TK_OFFS_BOOT;
++			break;
++		case CLOCK_TAI:
++			tk_offset = TK_OFFS_TAI;
++			break;
++		default:
++			NL_SET_ERR_MSG(extack, "Invalid 'clockid'");
++			goto release_idr;
++		}
++	}
++
++	err = tcf_action_check_ctrlact(parm->action, tp, &goto_ch, extack);
++	if (err < 0)
++		goto release_idr;
++
++	g = to_gate(*a);
++
++	gact = kzalloc(sizeof(*gact), GFP_KERNEL);
++	if (!gact) {
++		err = -ENOMEM;
++		goto put_chain;
++	}
++
++	p = get_gate_param(gact);
++
++	INIT_LIST_HEAD(&p->entries);
++	if (tb[TCA_GATE_ENTRY_LIST]) {
++		err = parse_gate_list(tb[TCA_GATE_ENTRY_LIST], p, extack);
++		if (err < 0)
++			goto release_mem;
++	}
++
++	if (tb[TCA_GATE_CYCLE_TIME]) {
++		p->tcfg_cycletime = nla_get_u64(tb[TCA_GATE_CYCLE_TIME]);
++	} else {
++		struct tcfg_gate_entry *entry;
++		ktime_t cycle = 0;
++
++		list_for_each_entry(entry, &p->entries, list)
++			cycle = ktime_add_ns(cycle, entry->interval);
++		p->tcfg_cycletime = cycle;
++	}
++
++	if (tb[TCA_GATE_CYCLE_TIME_EXT])
++		p->tcfg_cycletime_ext =
++			nla_get_u64(tb[TCA_GATE_CYCLE_TIME_EXT]);
++
++	p->tcfg_priority = prio;
++	p->tcfg_basetime = basetime;
++	p->tcfg_clockid = clockid;
++	p->tcfg_flags = gflags;
++
++	gact->tk_offset = tk_offset;
++	spin_lock_init(&gact->entry_lock);
++	hrtimer_init(&gact->hitimer, clockid, HRTIMER_MODE_ABS);
++	gact->hitimer.function = gate_timer_func;
++
++	err = gate_get_start_time(gact, &start);
++	if (err < 0) {
++		NL_SET_ERR_MSG(extack,
++			       "Internal error: failed get start time");
++		goto release_mem;
++	}
++
++	gact->current_close_time = start;
++	gact->current_gate_status = GATE_ACT_GATE_OPEN | GATE_ACT_PENDING;
++
++	next = list_first_entry(&p->entries, struct tcfg_gate_entry, list);
++	rcu_assign_pointer(gact->next_entry, next);
++
++	gate_start_timer(gact, start);
++
++	spin_lock_bh(&g->tcf_lock);
++	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
++	gact = rcu_replace_pointer(g->actg, gact,
++				   lockdep_is_held(&g->tcf_lock));
++	spin_unlock_bh(&g->tcf_lock);
++
++	if (goto_ch)
++		tcf_chain_put_by_act(goto_ch);
++	if (gact)
++		kfree_rcu(gact, rcu);
++
++	if (ret == ACT_P_CREATED)
++		tcf_idr_insert(tn, *a);
++	return ret;
++
++release_mem:
++	kfree(gact);
++put_chain:
++	if (goto_ch)
++		tcf_chain_put_by_act(goto_ch);
++release_idr:
++	tcf_idr_release(*a, bind);
++	return err;
++}
++
++static void tcf_gate_cleanup(struct tc_action *a)
++{
++	struct tcf_gate *g = to_gate(a);
++	struct tcfg_gate_entry *entry, *n;
++	struct tcf_gate_params *p;
++	struct gate_action *gact;
++
++	spin_lock_bh(&g->tcf_lock);
++	gact = rcu_dereference_protected(g->actg,
++					 lockdep_is_held(&g->tcf_lock));
++	hrtimer_cancel(&gact->hitimer);
++
++	p = get_gate_param(gact);
++	list_for_each_entry_safe(entry, n, &p->entries, list) {
++		list_del(&entry->list);
++		kfree(entry);
++	}
++	spin_unlock_bh(&g->tcf_lock);
++
++	kfree_rcu(gact, rcu);
++}
++
++static int dumping_entry(struct sk_buff *skb,
++			 struct tcfg_gate_entry *entry)
++{
++	struct nlattr *item;
++
++	item = nla_nest_start_noflag(skb, TCA_GATE_ONE_ENTRY);
++	if (!item)
++		return -ENOSPC;
++
++	if (nla_put_u32(skb, TCA_GATE_ENTRY_INDEX, entry->index))
++		goto nla_put_failure;
++
++	if (entry->gate_state && nla_put_flag(skb, TCA_GATE_ENTRY_GATE))
++		goto nla_put_failure;
++
++	if (nla_put_u32(skb, TCA_GATE_ENTRY_INTERVAL, entry->interval))
++		goto nla_put_failure;
++
++	if (nla_put_s32(skb, TCA_GATE_ENTRY_MAX_OCTETS, entry->maxoctets))
++		goto nla_put_failure;
++
++	if (nla_put_s32(skb, TCA_GATE_ENTRY_IPV, entry->ipv))
++		goto nla_put_failure;
++
++	return nla_nest_end(skb, item);
++
++nla_put_failure:
++	nla_nest_cancel(skb, item);
++	return -1;
++}
++
++static int tcf_gate_dump(struct sk_buff *skb, struct tc_action *a,
++			 int bind, int ref)
++{
++	unsigned char *b = skb_tail_pointer(skb);
++	struct tcf_gate *g = to_gate(a);
++	struct tc_gate opt = {
++		.index    = g->tcf_index,
++		.refcnt   = refcount_read(&g->tcf_refcnt) - ref,
++		.bindcnt  = atomic_read(&g->tcf_bindcnt) - bind,
++	};
++	struct tcfg_gate_entry *entry;
++	struct gate_action *gact;
++	struct tcf_gate_params *p;
++	struct nlattr *entry_list;
++	struct tcf_t t;
++
++	spin_lock_bh(&g->tcf_lock);
++	opt.action = g->tcf_action;
++	gact = rcu_dereference_protected(g->actg,
++					 lockdep_is_held(&g->tcf_lock));
++
++	p = get_gate_param(gact);
++
++	if (nla_put(skb, TCA_GATE_PARMS, sizeof(opt), &opt))
++		goto nla_put_failure;
++
++	if (nla_put_u64_64bit(skb, TCA_GATE_BASE_TIME,
++			      p->tcfg_basetime, TCA_GATE_PAD))
++		goto nla_put_failure;
++
++	if (nla_put_u64_64bit(skb, TCA_GATE_CYCLE_TIME,
++			      p->tcfg_cycletime, TCA_GATE_PAD))
++		goto nla_put_failure;
++
++	if (nla_put_u64_64bit(skb, TCA_GATE_CYCLE_TIME_EXT,
++			      p->tcfg_cycletime_ext, TCA_GATE_PAD))
++		goto nla_put_failure;
++
++	if (nla_put_s32(skb, TCA_GATE_CLOCKID, p->tcfg_clockid))
++		goto nla_put_failure;
++
++	if (nla_put_u32(skb, TCA_GATE_FLAGS, p->tcfg_flags))
++		goto nla_put_failure;
++
++	if (nla_put_s32(skb, TCA_GATE_PRIORITY, p->tcfg_priority))
++		goto nla_put_failure;
++
++	entry_list = nla_nest_start_noflag(skb, TCA_GATE_ENTRY_LIST);
++	if (!entry_list)
++		goto nla_put_failure;
++
++	list_for_each_entry(entry, &p->entries, list) {
++		if (dumping_entry(skb, entry) < 0)
++			goto nla_put_failure;
++	}
++
++	nla_nest_end(skb, entry_list);
++
++	tcf_tm_dump(&t, &g->tcf_tm);
++	if (nla_put_64bit(skb, TCA_GATE_TM, sizeof(t), &t, TCA_GATE_PAD))
++		goto nla_put_failure;
++	spin_unlock_bh(&g->tcf_lock);
++
++	return skb->len;
++
++nla_put_failure:
++	spin_unlock_bh(&g->tcf_lock);
++	nlmsg_trim(skb, b);
++	return -1;
++}
++
++static int tcf_gate_walker(struct net *net, struct sk_buff *skb,
++			   struct netlink_callback *cb, int type,
++			   const struct tc_action_ops *ops,
++			   struct netlink_ext_ack *extack)
++{
++	struct tc_action_net *tn = net_generic(net, gate_net_id);
++
++	return tcf_generic_walker(tn, skb, cb, type, ops, extack);
++}
++
++static void tcf_gate_stats_update(struct tc_action *a, u64 bytes, u64 packets,
 +				  u64 lastuse, u64 dropped, bool hw)
- {
- 	struct tcf_gact *gact = to_gact(a);
- 	int action = READ_ONCE(gact->tcf_action);
- 	struct tcf_t *tm = &gact->tcf_tm;
- 
--	tcf_action_update_stats(a, bytes, packets, action == TC_ACT_SHOT, hw);
-+	tcf_action_update_stats(a, bytes, packets,
-+				(action == TC_ACT_SHOT) ? packets : 0, hw);
- 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
- }
- 
-diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-index 1ad300e6dbc0..1c56f59e86a8 100644
---- a/net/sched/act_mirred.c
-+++ b/net/sched/act_mirred.c
-@@ -314,13 +314,13 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
- 	return retval;
- }
- 
--static void tcf_stats_update(struct tc_action *a, u64 bytes, u32 packets,
--			     u64 lastuse, bool hw)
-+static void tcf_stats_update(struct tc_action *a, u64 bytes, u64 packets,
-+			     u64 lastuse, u64 dropped, bool hw)
- {
- 	struct tcf_mirred *m = to_mirred(a);
- 	struct tcf_t *tm = &m->tcf_tm;
- 
--	tcf_action_update_stats(a, bytes, packets, false, hw);
++{
++	struct tcf_gate *g = to_gate(a);
++	struct tcf_t *tm = &g->tcf_tm;
++
 +	tcf_action_update_stats(a, bytes, packets, dropped, hw);
- 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
- }
- 
-diff --git a/net/sched/act_police.c b/net/sched/act_police.c
-index 8b7a0ac96c51..7dcc418043fc 100644
---- a/net/sched/act_police.c
-+++ b/net/sched/act_police.c
-@@ -288,13 +288,13 @@ static void tcf_police_cleanup(struct tc_action *a)
- }
- 
- static void tcf_police_stats_update(struct tc_action *a,
--				    u64 bytes, u32 packets,
--				    u64 lastuse, bool hw)
-+				    u64 bytes, u64 packets,
-+				    u64 lastuse, u64 dropped, bool hw)
- {
- 	struct tcf_police *police = to_police(a);
- 	struct tcf_t *tm = &police->tcf_tm;
- 
--	tcf_action_update_stats(a, bytes, packets, false, hw);
-+	tcf_action_update_stats(a, bytes, packets, dropped, hw);
- 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
- }
- 
-diff --git a/net/sched/act_vlan.c b/net/sched/act_vlan.c
-index c91d3958fcbb..d579ce23b479 100644
---- a/net/sched/act_vlan.c
-+++ b/net/sched/act_vlan.c
-@@ -302,13 +302,13 @@ static int tcf_vlan_walker(struct net *net, struct sk_buff *skb,
- 	return tcf_generic_walker(tn, skb, cb, type, ops, extack);
- }
- 
--static void tcf_vlan_stats_update(struct tc_action *a, u64 bytes, u32 packets,
--				  u64 lastuse, bool hw)
-+static void tcf_vlan_stats_update(struct tc_action *a, u64 bytes, u64 packets,
-+				  u64 lastuse, u64 dropped, bool hw)
- {
- 	struct tcf_vlan *v = to_vlan(a);
- 	struct tcf_t *tm = &v->tcf_tm;
- 
--	tcf_action_update_stats(a, bytes, packets, false, hw);
-+	tcf_action_update_stats(a, bytes, packets, dropped, hw);
- 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
- }
- 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 258dc45ab7e3..8afaaabef15d 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -492,7 +492,8 @@ static void fl_hw_update_stats(struct tcf_proto *tp, struct cls_fl_filter *f,
- 
- 	tcf_exts_stats_update(&f->exts, cls_flower.stats.bytes,
- 			      cls_flower.stats.pkts,
--			      cls_flower.stats.lastused);
-+			      cls_flower.stats.lastused,
-+			      cls_flower.stats.dropped);
- }
- 
- static void __fl_put(struct cls_fl_filter *f)
-diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
-index a34b36adb9b7..606c131d4df7 100644
---- a/net/sched/cls_matchall.c
-+++ b/net/sched/cls_matchall.c
-@@ -338,7 +338,8 @@ static void mall_stats_hw_filter(struct tcf_proto *tp,
- 	tc_setup_cb_call(block, TC_SETUP_CLSMATCHALL, &cls_mall, false, true);
- 
- 	tcf_exts_stats_update(&head->exts, cls_mall.stats.bytes,
--			      cls_mall.stats.pkts, cls_mall.stats.lastused);
-+			      cls_mall.stats.pkts, cls_mall.stats.lastused,
-+			      cls_mall.stats.dropped);
- }
- 
- static int mall_dump(struct net *net, struct tcf_proto *tp, void *fh,
++	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
++}
++
++static int tcf_gate_search(struct net *net, struct tc_action **a, u32 index)
++{
++	struct tc_action_net *tn = net_generic(net, gate_net_id);
++
++	return tcf_idr_search(tn, a, index);
++}
++
++static size_t tcf_gate_get_fill_size(const struct tc_action *act)
++{
++	return nla_total_size(sizeof(struct tc_gate));
++}
++
++static struct tc_action_ops act_gate_ops = {
++	.kind		=	"gate",
++	.id		=	TCA_ID_GATE,
++	.owner		=	THIS_MODULE,
++	.act		=	tcf_gate_act,
++	.dump		=	tcf_gate_dump,
++	.init		=	tcf_gate_init,
++	.cleanup	=	tcf_gate_cleanup,
++	.walk		=	tcf_gate_walker,
++	.stats_update	=	tcf_gate_stats_update,
++	.get_fill_size	=	tcf_gate_get_fill_size,
++	.lookup		=	tcf_gate_search,
++	.size		=	sizeof(struct gate_action),
++};
++
++static __net_init int gate_init_net(struct net *net)
++{
++	struct tc_action_net *tn = net_generic(net, gate_net_id);
++
++	return tc_action_net_init(net, tn, &act_gate_ops);
++}
++
++static void __net_exit gate_exit_net(struct list_head *net_list)
++{
++	tc_action_net_exit(net_list, gate_net_id);
++}
++
++static struct pernet_operations gate_net_ops = {
++	.init = gate_init_net,
++	.exit_batch = gate_exit_net,
++	.id   = &gate_net_id,
++	.size = sizeof(struct tc_action_net),
++};
++
++static int __init gate_init_module(void)
++{
++	return tcf_register_action(&act_gate_ops, &gate_net_ops);
++}
++
++static void __exit gate_cleanup_module(void)
++{
++	tcf_unregister_action(&act_gate_ops, &gate_net_ops);
++}
++
++module_init(gate_init_module);
++module_exit(gate_cleanup_module);
++MODULE_LICENSE("GPL v2");
 -- 
 2.17.1
 
