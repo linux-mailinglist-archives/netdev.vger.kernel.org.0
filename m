@@ -2,96 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A09C191703
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 17:54:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A1F4D191728
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 18:04:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727478AbgCXQyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 12:54:20 -0400
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:38267 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727273AbgCXQyU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 12:54:20 -0400
-Received: by mail-pj1-f67.google.com with SMTP id m15so1715412pje.3;
-        Tue, 24 Mar 2020 09:54:17 -0700 (PDT)
+        id S1727611AbgCXRD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 13:03:27 -0400
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:3917 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726962AbgCXRD0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 13:03:26 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rPZBl+QbGFAFlz2fLf98Z5n8K3I+qd2EtNADkBNRMLw=;
-        b=UWo5YyX/rz4iT22TlUFvMncYW1HL4F8dFNN2Pn6WdGpvsGKs7lRciWnF92mV3MrHXt
-         g9G8ed0fy9z8RVLHDli/tFxC3mdwGVVW2GsLGtBC5d37nzjvaMo+9ZOdpDp96qeNtqrs
-         CsVV5RX+XdgMbCB2HOYg5pK+q2Nyab6kDG8jbCUdlceMncwfXrCuJDlTFiiPfa2PBEkt
-         eKWxH0c0T5nOS+/UvxLM5qEVXPEbvWXIUFX3aVPP1L/BO7ZYnwewjGGZxW79s7XV/y1z
-         Hif8WRbKqmEisX7as5ZgPCdUdDXUY9bUHS9/9w+BegZ6VvoWfR0NiMIeh/K0Tmyxg5y5
-         UCpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rPZBl+QbGFAFlz2fLf98Z5n8K3I+qd2EtNADkBNRMLw=;
-        b=q0dOQgLdBal38HyppEhhlO8qoTULaTS1JwtPGaxxoDRg/018UYRW02WvQVpAIWM/Cc
-         Nprz+JrFhTFhhsS7WUAT3jQAbvI7CKT/4MbfsjUiChNvFao7NGSX7h7oBFgjgvXnVK+N
-         XYkFiQv+YNqadLu5iL0jylGCovjso+7DjX1EVRT27fSvgUYaV7FqP2xcb4kNZL6y7QHx
-         Df6gYcYHAt9CBhOJFGU23GdS2l3vpkWOadZdrM0Ap7u5XpgAQGEHgED7IFDKrI5AcYXZ
-         CKV14kEeTmdzgYBzqwYwXtRYvcLYJVScmAx5kMP6fsNkZHuOEQZ7RB1e+m/SQRUbMAAF
-         yMmA==
-X-Gm-Message-State: ANhLgQ2rfRzXXMbNf8ZjP4L6CNooEJKQMWT4Jwm+Um4fwHcepZu5muqS
-        dk6H8/IwLvkT45cUrIjTbaU=
-X-Google-Smtp-Source: ADFU+vvVT3/hBoL79iWLOhKZfIHg0UIA7zdlV4T9CvIkuEaERJ0ookWRmQeJVoKdWNDIJKR+yO5Owg==
-X-Received: by 2002:a17:90a:bd0c:: with SMTP id y12mr6554330pjr.82.1585068857320;
-        Tue, 24 Mar 2020 09:54:17 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id n30sm8678428pgc.36.2020.03.24.09.54.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Mar 2020 09:54:16 -0700 (PDT)
-Date:   Tue, 24 Mar 2020 09:54:14 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Tony Lindgren <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        netdev <netdev@vger.kernel.org>, linux-omap@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 08/11] net: ethernet: ti: cpts: move rx
- timestamp processing to ptp worker only
-Message-ID: <20200324165414.GA30483@localhost>
-References: <20200320194244.4703-1-grygorii.strashko@ti.com>
- <20200320194244.4703-9-grygorii.strashko@ti.com>
- <20200324134343.GD18149@localhost>
- <13dd9d58-7417-2f39-aa7d-dceae946482c@ti.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1585069407; x=1616605407;
+  h=from:to:cc:subject:date:message-id:
+   content-transfer-encoding:mime-version;
+  bh=cseszdOsxfD1nX0W8vhYeWuspINh8AbHgWvCC5KwW04=;
+  b=oIcTUSazb+ld+l/hlzY9ud/ZsEDG4BXBBt0CxcgtuTvZ7Isfp55Ydskb
+   KB9T6x0dptx6/bQq/X0DTqGRIuaD8NoltRX+NdCQJlpwuf8/RtbusDOh1
+   2jyiimWUbVUHWRVL4vX44iN+owSNBiqD3E+xCbniQ7ER4zeYGgY/AGh3Y
+   Q=;
+IronPort-SDR: T3UO1Iam/4UTM6N6mdgpuf0nTABag+H72vKeNHpaFh7I8mJhzeY4jePxbZyAFPJGO6owmOLbZf
+ tah7ygCrW1nQ==
+X-IronPort-AV: E=Sophos;i="5.72,301,1580774400"; 
+   d="scan'208";a="23984780"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1d-f273de60.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-6001.iad6.amazon.com with ESMTP; 24 Mar 2020 17:02:58 +0000
+Received: from EX13MTAUEA002.ant.amazon.com (iad55-ws-svc-p15-lb9-vlan2.iad.amazon.com [10.40.159.162])
+        by email-inbound-relay-1d-f273de60.us-east-1.amazon.com (Postfix) with ESMTPS id 689C8A2E9E;
+        Tue, 24 Mar 2020 17:02:56 +0000 (UTC)
+Received: from EX13D08EUB003.ant.amazon.com (10.43.166.117) by
+ EX13MTAUEA002.ant.amazon.com (10.43.61.77) with Microsoft SMTP Server (TLS)
+ id 15.0.1236.3; Tue, 24 Mar 2020 17:02:55 +0000
+Received: from EX13D11EUB003.ant.amazon.com (10.43.166.58) by
+ EX13D08EUB003.ant.amazon.com (10.43.166.117) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 24 Mar 2020 17:02:54 +0000
+Received: from EX13D11EUB003.ant.amazon.com ([10.43.166.58]) by
+ EX13D11EUB003.ant.amazon.com ([10.43.166.58]) with mapi id 15.00.1497.006;
+ Tue, 24 Mar 2020 17:02:54 +0000
+From:   "Jubran, Samih" <sameehj@amazon.com>
+To:     David Miller <davem@davemloft.net>,
+        "gpiccoli@canonical.com" <gpiccoli@canonical.com>
+CC:     "Belgazal, Netanel" <netanel@amazon.com>,
+        "Kiyanovski, Arthur" <akiyano@amazon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Tzalik, Guy" <gtzalik@amazon.com>,
+        "Bshara, Saeed" <saeedb@amazon.com>,
+        "Machulsky, Zorik" <zorik@amazon.com>,
+        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
+        "gshan@redhat.com" <gshan@redhat.com>,
+        "gavin.guo@canonical.com" <gavin.guo@canonical.com>,
+        "jay.vosburgh@canonical.com" <jay.vosburgh@canonical.com>,
+        "pedro.principeza@canonical.com" <pedro.principeza@canonical.com>
+Subject: RE: Re: [PATCH] net: ena: Add PCI shutdown handler to allow safe
+ kexec
+Thread-Topic: Re: [PATCH] net: ena: Add PCI shutdown handler to allow safe
+ kexec
+Thread-Index: AdYB/A9gUHrWytm4Shy+qOrUZLrOXw==
+Date:   Tue, 24 Mar 2020 17:02:49 +0000
+Deferred-Delivery: Tue, 24 Mar 2020 17:01:20 +0000
+Message-ID: <13726ba604c5439cb2a88bad83d7dec6@EX13D11EUB003.ant.amazon.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.43.165.171]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <13dd9d58-7417-2f39-aa7d-dceae946482c@ti.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 05:34:34PM +0200, Grygorii Strashko wrote:
-> I tested both ways and kept this version as i'v not seen any degradation,
-> but, of course, i'll redo the test (or may be you can advise what test to run).
 
-Measure the time delay from when the frame arrives in the stack until
-that frame+RxTimestamp arrives in the application.  I expect the round
-about way via kthread takes longer. 
- 
-> My thoughts were - network stack might not immediately deliver packet to the application
 
-The network stack always delivers the packet, but you artificially
-delay that delivery by calling netif_receive_skb() later on from
-cpts_match_rx_ts().
+> -----Original Message-----
+> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org>
+> On Behalf Of David Miller <davem@davemloft.net>
+> Sent: Tuesday, March 24, 2020 6:05 AM
+> To: gpiccoli@canonical.com
+> Cc: netanel@amazon.com; akiyano@amazon.com; netdev@vger.kernel.org;
+> gtzalik@amazon.com; saeedb@amazon.com; zorik@amazon.com;
+> kernel@gpiccoli.net; gshan@redhat.com; gavin.guo@canonical.com;
+> jay.vosburgh@canonical.com; pedro.principeza@canonical.com
+> Subject: Re: [PATCH] net: ena: Add PCI shutdown handler to allow safe kex=
+ec
+>=20
+> From: "Guilherme G. Piccoli" <gpiccoli@canonical.com>
+> Date: Fri, 20 Mar 2020 09:55:34 -0300
+>=20
+> > Currently ENA only provides the PCI remove() handler, used during
+> > rmmod for example. This is not called on shutdown/kexec path; we are
+> > potentially creating a failure scenario on kexec:
+> >
+> > (a) Kexec is triggered, no shutdown() / remove() handler is called for
+> > ENA; instead pci_device_shutdown() clears the master bit of the PCI
+> > device, stopping all DMA transactions;
+> >
+> > (b) Kexec reboot happens and the device gets enabled again, likely
+> > having its FW with that DMA transaction buffered; then it may trigger
+> > the (now
+> > invalid) memory operation in the new kernel, corrupting kernel memory
+> area.
+> >
+> > This patch aims to prevent this, by implementing a shutdown() handler
+> > quite similar to the remove() one - the difference being the handling
+> > of the netdev, which is unregistered on remove(), but following the
+> > convention observed in other drivers, it's only detached on shutdown().
+> >
+> > This prevents an odd issue in AWS Nitro instances, in which after the
+> > 2nd kexec the next one will fail with an initrd corruption, caused by
+> > a wild DMA write to invalid kernel memory. The lspci output for the
+> > adapter present in my instance is:
+> >
+> > 00:05.0 Ethernet controller [0200]: Amazon.com, Inc. Elastic Network
+> > Adapter (ENA) [1d0f:ec20]
+> >
+> > Suggested-by: Gavin Shan <gshan@redhat.com>
+> > Signed-off-by: Guilherme G. Piccoli <gpiccoli@canonical.com>
+>=20
+> Amazon folks, please review.
 
-> and PTP worker can be tuned (pri and smp_affinity),
-
-That won't avoid the net softirq.
-
-> resulted code will be more structured,
-
-I am afraid people will copy this pattern in new drivers.  It really
-does not make much sense.
-
-Thanks,
-Richard
+The patch is still under review we will reply as soon as we have finished t=
+esting it,
+Thanks
