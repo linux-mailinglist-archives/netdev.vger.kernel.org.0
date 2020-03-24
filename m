@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD7E01917D1
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 18:40:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D7871917D3
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 18:40:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727697AbgCXRjb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 13:39:31 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:34373 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727223AbgCXRjb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 13:39:31 -0400
-Received: by mail-pg1-f194.google.com with SMTP id t3so9396920pgn.1;
-        Tue, 24 Mar 2020 10:39:30 -0700 (PDT)
+        id S1727709AbgCXRju (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 13:39:50 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:41379 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727223AbgCXRju (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 13:39:50 -0400
+Received: by mail-pg1-f193.google.com with SMTP id b1so9376347pgm.8;
+        Tue, 24 Mar 2020 10:39:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=vzoGBdCQrWjbiBxQI1MbFOzqtYhJmJc0P7ozXlXz9qI=;
-        b=D613SQE6h7Cw/TSLnVvPAAD97YGFHq6MsQAszfYdOtXXHssa/oLBp5YQCF2PiQnHnr
-         4JfBNiQMgPJqxE4SkSoEN76HUWOuCJiwrpUuR8wh9M0Dg0spD878Res/CK+Q2ARv+cym
-         V52waf6yQHfcQoXAUifeE9Yrfsl98wAuLPSINYbtnXK2hJEV3ROom2IOctyZcSlmFv30
-         OyTB6vT7xPQjDIG89oblYENUAUldLWFI+/q3Vizkm1YhTcdo3u0doaksZEvM5teKHZ3A
-         nZSAmGY/54qchKVd2HQbhJ3+g1oHQxAcxC75L7HuYAsYJ+D6DCT+BnWf1RLu5OVjm1zH
-         LRTg==
+        bh=JtO83ZOEmpDTgyFaqWGVdceCzq4R0vbr8mPKFhkjTNs=;
+        b=nfvuE4nSrcAn5exWiIFY9djR8WDtzwpIH1hwDqYVMJNJFdxYWEi4WjJcSUTGXsxmLK
+         Uf/67SJQXp/6hUFgFjTF4v4SQrvvf0T2MlbpqeiVVxrgm/o5wJyehKPnErpBRkXKHfdi
+         EfzoqqXvBuHaqVu5N3MNdDgC8lZx8XRJAae3Re6/dAZkdAWnTvt8bo/3986KxqFQuy/W
+         0vNh2kqQSpZSMHeUqS2vDP9MEnebkECc/eJs5Alct8jwetTj7JkLprgaK4BqzMf14Vkh
+         2JxH7aOvDpJ8oyKYvla+WbTVFVaI8uGAfjY062ZzU2cKZSi0YnYqEiqXGhmRyUtBOz8O
+         YXUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=vzoGBdCQrWjbiBxQI1MbFOzqtYhJmJc0P7ozXlXz9qI=;
-        b=t3hFsjGZGq7RnD0TVk/xmCBRZRxB/NTgS3bE8+suUxCCDroxsilmGq7ahhZ5WDdMWm
-         pnBf9n7nSM53YMfZ2YgDBcAxXeY8emNsIlhLeQHEXzAQlo34pzIt7lA1AV7PnSkh5AMW
-         IeJDH9KKxEFW7vkK44UUbC6KdF8h674HuVJHypBr6wKj0+KnA9eLGXOkhNsECd2PS2SB
-         I5wwV1vRJUxYeMPoO6NxY9XK0bf5fMTdBIQcaz+PWISUBSV7ZL/U+OYtqKwuJNVN2tUQ
-         wSmV/SoH+wsZFfOCBD5P14KR8gpiHlNz5R8WLEffgUPIsbixH+OLALmhqyXueHW9uep7
-         ggzg==
-X-Gm-Message-State: ANhLgQ2uVo4C5+a2QLRZRoQ3IoZAz2XEQ/z+pgHNtl0kE2L9Ng3mSWEN
-        mJMCFcy9WX/46XtB8TF7RdI=
-X-Google-Smtp-Source: ADFU+vv+MY6NBAIiW2RtGB/J/MW8LwgTbsvqVKhBWuImsJmomCVSPMpNm316aCx+PmH2IhOgJRwT7Q==
-X-Received: by 2002:a63:f447:: with SMTP id p7mr28447554pgk.326.1585071569892;
-        Tue, 24 Mar 2020 10:39:29 -0700 (PDT)
+        bh=JtO83ZOEmpDTgyFaqWGVdceCzq4R0vbr8mPKFhkjTNs=;
+        b=qMyZoZxAoDKtOXlHZvY5AVylK8TLR+rOnHq/+bj9y4RzA3XZbPHzHCs6cj0brD3BoO
+         EyzhOrnfDlz2dBU8sqLD3ZCpTZat36SXXtEcIpjl/Z341mldsQJw4i75mvciUaNspyNa
+         9xgTAgHzkdmBzpzzwhcLyIsjewLWR8ZBAyXg4V+APGVBQkYU8ERvSNgcDnP0n8VSII1/
+         demjk4kMN7zjAMAtEgC6LljctiILk+zZXMrfcOZFsOtCm6Xylj9NSgPJkwznDKXMk3rL
+         YUlPQ3SmZSLthRpxiIic4cst3bj+pV82WL4AU+z28QUD2WIVkhAYYU/9L6HAGQTboAdy
+         UBXQ==
+X-Gm-Message-State: ANhLgQ3JRK1J888q5p+CeK03xJ3n9CUwWr6ZF+K7quRxedULPLJ3FDdv
+        NdmQHbwsus2NnC8Ue2Z8VV4=
+X-Google-Smtp-Source: ADFU+vt/Axe4Zmj+hAQKE5AUQHabqC5TgU1tV0+prvbpd9LOFHUS0JhU1+awD4Vti8Q3JFyE3d0dJA==
+X-Received: by 2002:aa7:94a5:: with SMTP id a5mr31276990pfl.67.1585071588793;
+        Tue, 24 Mar 2020 10:39:48 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id y131sm16657505pfg.25.2020.03.24.10.39.22
+        by smtp.gmail.com with ESMTPSA id z6sm16411239pfn.212.2020.03.24.10.39.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 24 Mar 2020 10:39:29 -0700 (PDT)
-Subject: [bpf-next PATCH 05/10] bpf: verifier,
- return value is an int in do_refine_retval_range
+        Tue, 24 Mar 2020 10:39:48 -0700 (PDT)
+Subject: [bpf-next PATCH 06/10] bpf: test_progs,
+ add test to catch retval refine error handling
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     ecree@solarflare.com, yhs@fb.com, alexei.starovoitov@gmail.com,
         daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         john.fastabend@gmail.com
-Date:   Tue, 24 Mar 2020 10:39:16 -0700
-Message-ID: <158507155667.15666.4189866174878249746.stgit@john-Precision-5820-Tower>
+Date:   Tue, 24 Mar 2020 10:39:36 -0700
+Message-ID: <158507157618.15666.3720338936586861726.stgit@john-Precision-5820-Tower>
 In-Reply-To: <158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower>
 References: <158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
@@ -64,32 +64,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mark 32-bit subreg region with max value because do_refine_retval_range()
-catches functions with int return type (We will assume here that int is
-a 32-bit type). Marking 64-bit region could be dangerous if upper bits
-are not zero which could be possible.
+Before this series the verifier would clamp return bounds of
+bpf_get_stack() to [0, X] and this led the verifier to believe
+that a JMP_JSLT 0 would be false and so would prune that path.
 
-Two reasons to pull this out of original patch. First it makes the original
-fix impossible to backport. And second I've not seen this as being problematic
-in practice unlike the other case.
+The result is anything hidden behind that JSLT would be unverified.
+Add a test to catch this case by hiding an goto pc-1 behind the
+check which will cause an infinite loop if not rejected.
 
-Fixes: 849fa50662fbc ("bpf/verifier: refine retval R0 state for bpf_get_stack helper")
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- kernel/bpf/verifier.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../selftests/bpf/prog_tests/get_stack_raw_tp.c    |    5 ++++
+ .../selftests/bpf/progs/test_get_stack_rawtp_err.c |   26 ++++++++++++++++++++
+ 2 files changed, 31 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_get_stack_rawtp_err.c
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 6372fa4..3731109 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -4328,7 +4328,7 @@ static void do_refine_retval_range(struct bpf_reg_state *regs, int ret_type,
- 	     func_id != BPF_FUNC_probe_read_str))
- 		return;
+diff --git a/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c b/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
+index eba9a97..9257222 100644
+--- a/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
++++ b/tools/testing/selftests/bpf/prog_tests/get_stack_raw_tp.c
+@@ -82,6 +82,7 @@ static void get_stack_print_output(void *ctx, int cpu, void *data, __u32 size)
+ void test_get_stack_raw_tp(void)
+ {
+ 	const char *file = "./test_get_stack_rawtp.o";
++	const char *file_err = "./test_get_stack_rawtp_err.o";
+ 	const char *prog_name = "raw_tracepoint/sys_enter";
+ 	int i, err, prog_fd, exp_cnt = MAX_CNT_RAWTP;
+ 	struct perf_buffer_opts pb_opts = {};
+@@ -93,6 +94,10 @@ void test_get_stack_raw_tp(void)
+ 	struct bpf_map *map;
+ 	cpu_set_t cpu_set;
  
--	ret_reg->smax_value = meta->msize_max_value;
-+	ret_reg->s32_max_value = meta->msize_max_value;
- 	__reg_deduce_bounds(ret_reg);
- 	__reg_bound_offset(ret_reg);
- 	__update_reg_bounds(ret_reg);
++	err = bpf_prog_load(file_err, BPF_PROG_TYPE_RAW_TRACEPOINT, &obj, &prog_fd);
++	if (CHECK(err >= 0, "prog_load raw tp", "err %d errno %d\n", err, errno))
++		return;
++
+ 	err = bpf_prog_load(file, BPF_PROG_TYPE_RAW_TRACEPOINT, &obj, &prog_fd);
+ 	if (CHECK(err, "prog_load raw tp", "err %d errno %d\n", err, errno))
+ 		return;
+diff --git a/tools/testing/selftests/bpf/progs/test_get_stack_rawtp_err.c b/tools/testing/selftests/bpf/progs/test_get_stack_rawtp_err.c
+new file mode 100644
+index 0000000..8941a41
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_get_stack_rawtp_err.c
+@@ -0,0 +1,26 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++
++#define MAX_STACK_RAWTP 10
++
++SEC("raw_tracepoint/sys_enter")
++int bpf_prog2(void *ctx)
++{
++	__u64 stack[MAX_STACK_RAWTP];
++	int error;
++
++	/* set all the flags which should return -EINVAL */
++	error = bpf_get_stack(ctx, stack, 0, -1);
++	if (error < 0)
++		goto loop;
++
++	return error;
++loop:
++	while (1) {
++		error++;
++	}
++}
++
++char _license[] SEC("license") = "GPL";
 
