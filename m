@@ -2,252 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13E6A190F37
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 14:19:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6CD9190F8F
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 14:29:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728741AbgCXNSf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 09:18:35 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:52818 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728735AbgCXNSc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 09:18:32 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1jGjRt-0000Da-Qt; Tue, 24 Mar 2020 14:18:29 +0100
-Date:   Tue, 24 Mar 2020 14:18:29 +0100
-From:   Florian Westphal <fw@strlen.de>
-To:     Martin Zaharinov <micron10@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: Bug URGENT Report with new kernel 5.5.10-5.6-rc6
-Message-ID: <20200324131829.GF3305@breakpoint.cc>
-References: <20200319003823.3b709ad8@elisabeth>
- <CALidq=Xow0EkAP4LkqvQiDOmVDduEwLKa4c-A54or3GMj6+qVw@mail.gmail.com>
- <20200319103438.GO979@breakpoint.cc>
- <20200319104750.x2zz7negjbm6lwch@salvia>
- <20200319105248.GP979@breakpoint.cc>
- <fff10500-8b87-62f0-ec89-49453cf9ae57@gmail.com>
- <4d9f339c-b0a7-1861-7d76-e0f2cee92b8c@gmail.com>
- <CALidq=VJuhEPO-FWOuUdSG+-VO+h7VHfmtQiAxikxH+vMB+vdQ@mail.gmail.com>
- <CALidq=Wq3FaGPbbjDvcjvw3V=yPWNMPDeFFy-bDL6fffdjb2rw@mail.gmail.com>
- <CALidq=VYSt3WbtapwL-n8cG71=ysYDJTo3L---xj4U1rEC63KQ@mail.gmail.com>
+        id S1728973AbgCXNUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 09:20:53 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:37193 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728966AbgCXNUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 09:20:52 -0400
+Received: by mail-qk1-f193.google.com with SMTP id x3so7592482qki.4
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 06:20:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=4R8qSVTBNNHdFHDNVrbWEN3e/oAFsZ7M/WE+NPN40eo=;
+        b=dAR3M3rPoWwLhMS6bdiPfzw7v7jr3TwqqezLwj4wkLB2LX8cMkXjAFiwJHdhu4P3qE
+         tt4hu5n607bT0IjzEPCVcwMgrhdshwVVpV/OtAMx+pewsgg2J06qCUzcwW69tdJTlzK7
+         Arq3exap+B9mDapLSLyM+7XNgF3LlkXwGvjTOqE+Y739ZLE869V0izZfFp+JtjrTSFcU
+         LxXFJnWgq3jeHfj0nypBMhft6QpPebyNraeoDomhuU1j20SvAQA+1n4a74k+Uq0eLb5m
+         aN64hPI3tJShboDvikzOXWAsYf/cxwNKirtTFhVUMJIS4bZWKA4GNCpZ4+I8PNnHEz+X
+         HSBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=4R8qSVTBNNHdFHDNVrbWEN3e/oAFsZ7M/WE+NPN40eo=;
+        b=SX2gcgOsx5OnzALTAbzoSJfs2fPeKaJbydmzO3KHNalcgNFXN1BWU4SyGcBA/xPrce
+         PEG/4DX06tWpJCebOZ/+02ecteBPhmniVJ/MWPnlINxrEhzPk7k/tLd1oxpWG8XWqwDE
+         3MB2bzzwENv/9N2bl6dUvZWSBWWA2MCjtDLSUnor5FVqdI/IRK9dfSXOULmD2+cYi3b5
+         dt3zEBhc2spIrck2RXifTSHFSo8zJhUZAMceX3K3S5YW9CrSe2uEDTCsHwN2cXIiGIxG
+         Bo/+ip4HycZlQrapNGn4u6eSUhJ37PrdyfeWROzEV7vEHQEVdlRc50XoSDNBoYJth2Vb
+         HA8Q==
+X-Gm-Message-State: ANhLgQ3U5EPoHfLCfr1hBWm4pxGNxQrbX98rCr/oszrUtRYwT9kbxXQG
+        MuxB9yPgV1hOZoz2oslIZl9XRg==
+X-Google-Smtp-Source: ADFU+vu0PONrlLa6lKdUyLPhin05s/vNsZkrmFTNA6w2C48eTxB6ardHyu5381DXZoAJUDgo+Twceg==
+X-Received: by 2002:a05:620a:84d:: with SMTP id u13mr25686494qku.94.1585056046270;
+        Tue, 24 Mar 2020 06:20:46 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id d2sm1531258qkl.98.2020.03.24.06.20.45
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 24 Mar 2020 06:20:45 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1jGjU4-0002IK-RG; Tue, 24 Mar 2020 10:20:44 -0300
+Date:   Tue, 24 Mar 2020 10:20:44 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        davem@davemloft.net, parav@mellanox.com, yuvalav@mellanox.com,
+        saeedm@mellanox.com, leon@kernel.org,
+        andrew.gospodarek@broadcom.com, michael.chan@broadcom.com,
+        moshe@mellanox.com, ayal@mellanox.com, eranbe@mellanox.com,
+        vladbu@mellanox.com, kliteyn@mellanox.com, dchickles@marvell.com,
+        sburla@marvell.com, fmanlunas@marvell.com, tariqt@mellanox.com,
+        oss-drivers@netronome.com, snelson@pensando.io,
+        drivers@pensando.io, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
+        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
+        jacob.e.keller@intel.com, valex@mellanox.com,
+        linyunsheng@huawei.com, lihong.yang@intel.com,
+        vikas.gupta@broadcom.com, magnus.karlsson@intel.com
+Subject: Re: [RFC] current devlink extension plan for NICs
+Message-ID: <20200324132044.GI20941@ziepe.ca>
+References: <20200319192719.GD11304@nanopsycho.orion>
+ <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
+ <20200320073555.GE11304@nanopsycho.orion>
+ <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
+ <20200321093525.GJ11304@nanopsycho.orion>
+ <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200323220605.GE20941@ziepe.ca>
+ <20200323205619.2f957f1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALidq=VYSt3WbtapwL-n8cG71=ysYDJTo3L---xj4U1rEC63KQ@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200323205619.2f957f1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Martin Zaharinov <micron10@gmail.com> wrote:
-> Hi All
-> More information :
+On Mon, Mar 23, 2020 at 08:56:19PM -0700, Jakub Kicinski wrote:
+> On Mon, 23 Mar 2020 19:06:05 -0300 Jason Gunthorpe wrote:
+> > On Mon, Mar 23, 2020 at 12:21:23PM -0700, Jakub Kicinski wrote:
+> > > > >I see so you want the creation to be controlled by the same entity that
+> > > > >controls the eswitch..
+> > > > >
+> > > > >To me the creation should be on the side that actually needs/will use
+> > > > >the new port. And if it's not eswitch manager then eswitch manager
+> > > > >needs to ack it.    
+> > > > 
+> > > > Hmm. The question is, is it worth to complicate things in this way?
+> > > > I don't know. I see a lot of potential misunderstandings :/  
+> > > 
+> > > I'd see requesting SFs over devlink/sysfs as simplification, if
+> > > anything.  
+> > 
+> > We looked at it for a while, working the communication such that the
+> > 'untrusted' side could request a port be created with certain
+> > parameters and the 'secure eswitch' could know those parameters to
+> > authorize and wire it up was super complicated and very hard to do
+> > without races.
+> > 
+> > Since it is a security sensitive operation it seems like a much more
+> > secure design to have the secure side do all the creation and present
+> > the fully operational object to the insecure side.
+> > 
+> > To draw a parallel to qemu & kvm, the untrusted guest VM can't request
+> > that qemu create a virtio-net for it. Those are always hot plugged in
+> > by the secure side. Same flow here.
 > 
-> After this bug one of cpu goin lock and load on 100%
-> After reboot machine start and work fine but after go to load time night
-> when user is online machine get in dmesg same crash log and go to lock
-> other cpu
-> Hear is bug report :
-> 
-> 
-> [21542.828151] ------------[ cut here ]------------
-> [21542.828979] refcount_t: underflow; use-after-free.
-> [21542.829840] WARNING: CPU: 52 PID: 0 at lib/refcount.c:28
-> refcount_warn_saturate+0xd8/0xe0
-> [21542.831211] Modules linked in: udp_diag raw_diag unix_diag
-> af_packet_diag sch_hfsc iptable_filter xt_IMQ iptable_mangle xt_addrtype
-> xt_nat xt_MASQUERADE iptable_nat ip_tables bpfilter  sch_fq_pie sch_pie
-> netconsole imq r8169 realtek tg3 igb i2c_algo_bit ixgbe mdio libphy
-> nf_nat_sip nf_conntrack_sip nf_nat_pptp nf_conntrack_pptp nf_nat_tftp
-> nf_conntrack_tftp nf_nat_ftp nf_conntrack_ftp nf_nat nf_conntrack
-> nf_defrag_ipv6 nf_defrag_ipv4 pppoe pptp gre pppox ppp_mppe ppp_generic
-> slhc libarc4 tun megaraid_sas ipmi_si ipmi_devintf ipmi_msghandler
-> sch_fq_codel
+> Could you tell us a little more about the races? Other than the
+> communication channel what changes between issuing from cloud API
+> vs devlink?
 
-Does this patch help?
+If I recall the problems came when trying to work with existing cloud
+infrastructure that doesn't assume this operating model. You need to
+somehow adapt an async APIs of secure/insecure communication with an
+async API inside the cloud world. It was a huge mess.
 
-diff --git a/include/net/netfilter/nf_queue.h b/include/net/netfilter/nf_queue.h
---- a/include/net/netfilter/nf_queue.h
-+++ b/include/net/netfilter/nf_queue.h
-@@ -14,7 +14,10 @@ struct nf_queue_entry {
- 	struct sk_buff		*skb;
- 	unsigned int		id;
- 	unsigned int		hook_index;	/* index in hook_entries->hook[] */
--
-+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
-+	struct net_device	*physin;
-+	struct net_device	*physout;
-+#endif
- 	struct nf_hook_state	state;
- 	u16			size; /* sizeof(entry) + saved route keys */
- 
-@@ -35,7 +38,7 @@ void nf_unregister_queue_handler(struct net *net);
- void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict);
- 
- void nf_queue_entry_get_refs(struct nf_queue_entry *entry);
--void nf_queue_entry_release_refs(struct nf_queue_entry *entry);
-+void nf_queue_entry_free(struct nf_queue_entry *entry);
- 
- static inline void init_hashrandom(u32 *jhash_initval)
- {
-diff --git a/net/netfilter/nf_queue.c b/net/netfilter/nf_queue.c
---- a/net/netfilter/nf_queue.c
-+++ b/net/netfilter/nf_queue.c
-@@ -46,25 +46,7 @@ void nf_unregister_queue_handler(struct net *net)
- }
- EXPORT_SYMBOL(nf_unregister_queue_handler);
- 
--static void nf_queue_entry_release_br_nf_refs(struct sk_buff *skb)
--{
--#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
--	struct nf_bridge_info *nf_bridge = nf_bridge_info_get(skb);
--
--	if (nf_bridge) {
--		struct net_device *physdev;
--
--		physdev = nf_bridge_get_physindev(skb);
--		if (physdev)
--			dev_put(physdev);
--		physdev = nf_bridge_get_physoutdev(skb);
--		if (physdev)
--			dev_put(physdev);
--	}
--#endif
--}
--
--void nf_queue_entry_release_refs(struct nf_queue_entry *entry)
-+static void nf_queue_entry_release_refs(struct nf_queue_entry *entry)
- {
- 	struct nf_hook_state *state = &entry->state;
- 
-@@ -76,24 +58,34 @@ void nf_queue_entry_release_refs(struct nf_queue_entry *entry)
- 	if (state->sk)
- 		sock_put(state->sk);
- 
--	nf_queue_entry_release_br_nf_refs(entry->skb);
-+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
-+	if (entry->physin)
-+		dev_put(entry->physin);
-+	if (entry->physout)
-+		dev_put(entry->physout);
-+#endif
- }
--EXPORT_SYMBOL_GPL(nf_queue_entry_release_refs);
- 
--static void nf_queue_entry_get_br_nf_refs(struct sk_buff *skb)
-+void nf_queue_entry_free(struct nf_queue_entry *entry)
-+{
-+	nf_queue_entry_release_refs(entry);
-+	kfree(entry);
-+}
-+EXPORT_SYMBOL_GPL(nf_queue_entry_free);
-+
-+static void __nf_queue_entry_init_physdevs(struct nf_queue_entry *entry)
- {
- #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
--	struct nf_bridge_info *nf_bridge = nf_bridge_info_get(skb);
-+	const struct sk_buff *skb = entry->skb;
-+	struct nf_bridge_info *nf_bridge;
- 
-+	nf_bridge = nf_bridge_info_get(skb);
- 	if (nf_bridge) {
--		struct net_device *physdev;
--
--		physdev = nf_bridge_get_physindev(skb);
--		if (physdev)
--			dev_hold(physdev);
--		physdev = nf_bridge_get_physoutdev(skb);
--		if (physdev)
--			dev_hold(physdev);
-+		entry->physin = nf_bridge_get_physindev(skb);
-+		entry->physout = nf_bridge_get_physoutdev(skb);
-+	} else {
-+		entry->physin = NULL;
-+		entry->physout = NULL;
- 	}
- #endif
- }
-@@ -110,7 +102,12 @@ void nf_queue_entry_get_refs(struct nf_queue_entry *entry)
- 	if (state->sk)
- 		sock_hold(state->sk);
- 
--	nf_queue_entry_get_br_nf_refs(entry->skb);
-+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
-+	if (entry->physin)
-+		dev_hold(entry->physin);
-+	if (entry->physout)
-+		dev_hold(entry->physout);
-+#endif
- }
- EXPORT_SYMBOL_GPL(nf_queue_entry_get_refs);
- 
-@@ -201,6 +198,8 @@ static int __nf_queue(struct sk_buff *skb, const struct nf_hook_state *state,
- 		.size	= sizeof(*entry) + route_key_size,
- 	};
- 
-+	__nf_queue_entry_init_physdevs(entry);
-+
- 	nf_queue_entry_get_refs(entry);
- 
- 	switch (entry->state.pf) {
-@@ -304,12 +303,10 @@ void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict)
- 
- 	hooks = nf_hook_entries_head(net, pf, entry->state.hook);
- 
--	nf_queue_entry_release_refs(entry);
--
- 	i = entry->hook_index;
- 	if (WARN_ON_ONCE(!hooks || i >= hooks->num_hook_entries)) {
- 		kfree_skb(skb);
--		kfree(entry);
-+		nf_queue_entry_free(entry);
- 		return;
- 	}
- 
-@@ -348,6 +345,6 @@ void nf_reinject(struct nf_queue_entry *entry, unsigned int verdict)
- 		kfree_skb(skb);
- 	}
- 
--	kfree(entry);
-+	nf_queue_entry_free(entry);
- }
- EXPORT_SYMBOL(nf_reinject);
-diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-index 76535fd9278c..3243a31f6e82 100644
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -737,12 +737,6 @@ static void nf_bridge_adjust_segmented_data(struct sk_buff *skb)
- #define nf_bridge_adjust_segmented_data(s) do {} while (0)
- #endif
- 
--static void free_entry(struct nf_queue_entry *entry)
--{
--	nf_queue_entry_release_refs(entry);
--	kfree(entry);
--}
--
- static int
- __nfqnl_enqueue_packet_gso(struct net *net, struct nfqnl_instance *queue,
- 			   struct sk_buff *skb, struct nf_queue_entry *entry)
-@@ -768,7 +762,7 @@ __nfqnl_enqueue_packet_gso(struct net *net, struct nfqnl_instance *queue,
- 		entry_seg->skb = skb;
- 		ret = __nfqnl_enqueue_packet(net, queue, entry_seg);
- 		if (ret)
--			free_entry(entry_seg);
-+			nf_queue_entry_free(entry_seg);
- 	}
- 	return ret;
- }
-@@ -827,7 +821,7 @@ nfqnl_enqueue_packet(struct nf_queue_entry *entry, unsigned int queuenum)
- 
- 	if (queued) {
- 		if (err) /* some segments are already queued */
--			free_entry(entry);
-+			nf_queue_entry_free(entry);
- 		kfree_skb(skb);
- 		return 0;
- 	}
+> Side note - there is no communication channel between VM and hypervisor
+> right now, which is the cause for weird designs e.g. the failover/auto
+> bond mechanism.
+
+Right, and considering the security concerns building one hidden
+inside a driver seems like a poor idea..
+
+> > The VF model is poor because the VF is just a dummy stub until the
+> > representor/eswitch side is fully configured. There is no way for the
+> > Linux driver to know if the VF is operational or not, so we get weird
+> > artifacts where we sometimes bind a driver to a VF (and get a
+> > non-working ethXX) and sometimes we don't. 
+> 
+> Sounds like an implementation issue :S
+
+How so?
+
+> > The only reason it is like this is because of how SRIOV requires
+> > everything to be preallocated.
+> 
+> SF also requires pre-allocated resources, so you're not talking about
+> PCI mem space etc. here I assume.
+
+It isn't pre-allocated, the usage of the BAR space is dynamic.
+
+> > The SFs can't even exist until they are configured, so there is no
+> > state where a driver is connected to an inoperative SF.
+> 
+> You mean it doesn't exist in terms of sysfs device entry?
+
+I mean literally do not exist at the HW level.
+
+Jason
