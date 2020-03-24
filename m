@@ -2,124 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E867A191380
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 15:45:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3BAF19138A
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 15:47:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728130AbgCXOod (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 10:44:33 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:63673 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727962AbgCXOoc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 10:44:32 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 094B241841;
-        Tue, 24 Mar 2020 22:44:21 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     saeedm@mellanox.com
-Cc:     paulb@mellanox.com, vladbu@mellanox.com, netdev@vger.kernel.org
-Subject: [PATCH net-next v6 2/2] net/mlx5e: add mlx5e_rep_indr_setup_ft_cb support
-Date:   Tue, 24 Mar 2020 22:44:19 +0800
-Message-Id: <1585061059-6591-3-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1585061059-6591-1-git-send-email-wenxu@ucloud.cn>
-References: <1585061059-6591-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVS0JNQkJCTE1PT09JT09ZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Kxg6Lio4CzgwLBJKAjgLSB0Y
-        QjoaCz1VSlVKTkNOS01KS01KS0NPVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUhNQk83Bg++
-X-HM-Tid: 0a710d0061bc2086kuqy094b241841
+        id S1727966AbgCXOrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 10:47:12 -0400
+Received: from bmailout3.hostsharing.net ([176.9.242.62]:38337 "EHLO
+        bmailout3.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727784AbgCXOrM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 10:47:12 -0400
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id A0261100FBFE8;
+        Tue, 24 Mar 2020 15:47:10 +0100 (CET)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 3E317AF8E3; Tue, 24 Mar 2020 15:47:10 +0100 (CET)
+Date:   Tue, 24 Mar 2020 15:47:10 +0100
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Marek Vasut <marex@denx.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: Re: [PATCH 07/14] net: ks8851: Use 16-bit writes to program MAC
+ address
+Message-ID: <20200324144710.bw2q7q7c7yiv7nf7@wunner.de>
+References: <20200323234303.526748-1-marex@denx.de>
+ <20200323234303.526748-8-marex@denx.de>
+ <20200324081311.ww6p7dmijbddi5jm@wunner.de>
+ <20200324122553.GS3819@lunn.ch>
+ <20200324123623.vvvcoiza6ehuecf6@wunner.de>
+ <be4c96dc-87ab-27a9-cf51-c1e54853b528@denx.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <be4c96dc-87ab-27a9-cf51-c1e54853b528@denx.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+On Tue, Mar 24, 2020 at 02:09:18PM +0100, Marek Vasut wrote:
+> I have a feeling this whole thing might be more messed up then we
+> thought. At least the KS8851-16MLL has an "endian mode" bit in the CCR
+> register, the SPI variant does not.
 
-Add mlx5e_rep_indr_setup_ft_cb to support indr block setup
-in FT mode. 
-Both tc rules and flow table rules are of the same format,
-It can re-use tc parsing for that, and move the flow table rules
-to their steering domain(the specific chain_index), the indr
-block offload in FT also follow this scenario.
+On the MLL variant of this chip, pin 10 can be pulled up to force it
+into big endian mode, otherwise it's in little-endian mode.  Obviously
+this should be configured by the board designer such that it matches
+the CPU's endianness.
 
-Signed-off-by: wenxu <wenxu@ucloud.cn>
----
-v6: modify the comments
+Of course we *could* support inverted endianness in case the hardware
+engineer botched the board layout.  Not sure if we have to.
 
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 52 ++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+In the CCR register that you mention, you can determine whether the
+pin is pulled up or not.  If it is in big-endian mode and you're
+on a little-endian CPU, you're hosed and the only option that you've
+got is to invert endianness in software, i.e. in the accessors.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 057f5f9..30c81c3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -732,6 +732,55 @@ static int mlx5e_rep_indr_setup_tc_cb(enum tc_setup_type type,
- 	}
- }
- 
-+static int mlx5e_rep_indr_setup_ft_cb(enum tc_setup_type type,
-+				      void *type_data, void *indr_priv)
-+{
-+	struct mlx5e_rep_indr_block_priv *priv = indr_priv;
-+	struct flow_cls_offload *f = type_data;
-+	struct flow_cls_offload tmp;
-+	struct mlx5e_priv *mpriv;
-+	struct mlx5_eswitch *esw;
-+	unsigned long flags;
-+	int err;
-+
-+	mpriv = netdev_priv(priv->rpriv->netdev);
-+	esw = mpriv->mdev->priv.eswitch;
-+
-+	flags = MLX5_TC_FLAG(EGRESS) |
-+		MLX5_TC_FLAG(ESW_OFFLOAD) |
-+		MLX5_TC_FLAG(FT_OFFLOAD);
-+
-+	switch (type) {
-+	case TC_SETUP_CLSFLOWER:
-+		memcpy(&tmp, f, sizeof(*f));
-+
-+		if (!mlx5_esw_chains_prios_supported(esw))
-+			return -EOPNOTSUPP;
-+
-+		/* Re-use tc offload path by moving the ft flow to the
-+		 * reserved ft chain.
-+		 *
-+		 * FT offload can use prio range [0, INT_MAX], so we normalize
-+		 * it to range [1, mlx5_esw_chains_get_prio_range(esw)]
-+		 * as with tc, where prio 0 isn't supported.
-+		 *
-+		 * We only support chain 0 of FT offload.
-+		 */
-+		if (tmp.common.prio >= mlx5_esw_chains_get_prio_range(esw))
-+			return -EOPNOTSUPP;
-+		if (tmp.common.chain_index != 0)
-+			return -EOPNOTSUPP;
-+
-+		tmp.common.chain_index = mlx5_esw_chains_get_ft_chain(esw);
-+		tmp.common.prio++;
-+		err = mlx5e_rep_indr_offload(priv->netdev, &tmp, priv, flags);
-+		memcpy(&f->stats, &tmp.stats, sizeof(f->stats));
-+		return err;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
- static void mlx5e_rep_indr_block_unbind(void *cb_priv)
- {
- 	struct mlx5e_rep_indr_block_priv *indr_priv = cb_priv;
-@@ -809,6 +858,9 @@ int mlx5e_rep_indr_setup_cb(struct net_device *netdev, void *cb_priv,
- 	case TC_SETUP_BLOCK:
- 		return mlx5e_rep_indr_setup_block(netdev, cb_priv, type_data,
- 						  mlx5e_rep_indr_setup_tc_cb);
-+	case TC_SETUP_FT:
-+		return mlx5e_rep_indr_setup_block(netdev, cb_priv, type_data,
-+						  mlx5e_rep_indr_setup_ft_cb);
- 	default:
- 		return -EOPNOTSUPP;
- 	}
--- 
-1.8.3.1
+If the pin is pulled to ground or not connected (again, can be
+determined from CCR) then you're able to switch the endianness by
+setting bit 11 in the RXFDPR register.  No need to convert it in
+the accessors in this case.
 
+Thanks,
+
+Lukas
