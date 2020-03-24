@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B43F191CD1
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 23:33:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0195A191CB3
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 23:32:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728878AbgCXWdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 18:33:18 -0400
-Received: from correo.us.es ([193.147.175.20]:34612 "EHLO mail.us.es"
+        id S1728690AbgCXWcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 18:32:31 -0400
+Received: from correo.us.es ([193.147.175.20]:34614 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728618AbgCXWc3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 18:32:29 -0400
+        id S1728644AbgCXWca (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 18:32:30 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id DB78CFB36B
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 23:31:51 +0100 (CET)
+        by mail.us.es (Postfix) with ESMTP id 992FFFB36F
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 23:31:52 +0100 (CET)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id CE3D0DA3A9
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 23:31:51 +0100 (CET)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 85857DA38F
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 23:31:52 +0100 (CET)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id C3AA0DA3A4; Tue, 24 Mar 2020 23:31:51 +0100 (CET)
+        id 7B34FDA3A0; Tue, 24 Mar 2020 23:31:52 +0100 (CET)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id F3838DA840;
-        Tue, 24 Mar 2020 23:31:49 +0100 (CET)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A1E21DA38F;
+        Tue, 24 Mar 2020 23:31:50 +0100 (CET)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 24 Mar 2020 23:31:49 +0100 (CET)
+ Tue, 24 Mar 2020 23:31:50 +0100 (CET)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from salvia.here (unknown [90.77.255.23])
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id C605642EF42B;
-        Tue, 24 Mar 2020 23:31:49 +0100 (CET)
+        by entrada.int (Postfix) with ESMTPA id 7D96B42EF42B;
+        Tue, 24 Mar 2020 23:31:50 +0100 (CET)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 1/7] netfilter: nf_tables: Allow set back-ends to report partial overlaps on insertion
-Date:   Tue, 24 Mar 2020 23:32:14 +0100
-Message-Id: <20200324223220.12119-2-pablo@netfilter.org>
+Subject: [PATCH 2/7] netfilter: nft_set_pipapo: Separate partial and complete overlap cases on insertion
+Date:   Tue, 24 Mar 2020 23:32:15 +0100
+Message-Id: <20200324223220.12119-3-pablo@netfilter.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20200324223220.12119-1-pablo@netfilter.org>
 References: <20200324223220.12119-1-pablo@netfilter.org>
@@ -50,41 +50,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, the -EEXIST return code of ->insert() callbacks is ambiguous: it
-might indicate that a given element (including intervals) already exists as
-such, or that the new element would clash with existing ones.
+From: Stefano Brivio <sbrivio@redhat.com>
 
-If identical elements already exist, the front-end is ignoring this without
-returning error, in case NLM_F_EXCL is not set. However, if the new element
-can't be inserted due an overlap, we should report this to the user.
-
-To this purpose, allow set back-ends to return -ENOTEMPTY on collision with
-existing elements, translate that to -EEXIST, and return that to userspace,
-no matter if NLM_F_EXCL was set.
+...and return -ENOTEMPTY to the front-end on collision, -EEXIST if
+an identical element already exists. Together with the previous patch,
+element collision will now be returned to the user as -EEXIST.
 
 Reported-by: Phil Sutter <phil@nwl.cc>
 Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_tables_api.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/netfilter/nft_set_pipapo.c | 34 +++++++++++++++++++++++++++-------
+ 1 file changed, 27 insertions(+), 7 deletions(-)
 
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 38c680f28f15..d11f1a74d43c 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -5082,6 +5082,11 @@ static int nft_add_set_elem(struct nft_ctx *ctx, struct nft_set *set,
- 				err = -EBUSY;
- 			else if (!(nlmsg_flags & NLM_F_EXCL))
- 				err = 0;
-+		} else if (err == -ENOTEMPTY) {
-+			/* ENOTEMPTY reports overlapping between this element
-+			 * and an existing one.
-+			 */
-+			err = -EEXIST;
+diff --git a/net/netfilter/nft_set_pipapo.c b/net/netfilter/nft_set_pipapo.c
+index 4fc0c924ed5d..ef7e8ad2e344 100644
+--- a/net/netfilter/nft_set_pipapo.c
++++ b/net/netfilter/nft_set_pipapo.c
+@@ -1098,21 +1098,41 @@ static int nft_pipapo_insert(const struct net *net, const struct nft_set *set,
+ 	struct nft_pipapo_field *f;
+ 	int i, bsize_max, err = 0;
+ 
++	if (nft_set_ext_exists(ext, NFT_SET_EXT_KEY_END))
++		end = (const u8 *)nft_set_ext_key_end(ext)->data;
++	else
++		end = start;
++
+ 	dup = pipapo_get(net, set, start, genmask);
+-	if (PTR_ERR(dup) == -ENOENT) {
+-		if (nft_set_ext_exists(ext, NFT_SET_EXT_KEY_END)) {
+-			end = (const u8 *)nft_set_ext_key_end(ext)->data;
+-			dup = pipapo_get(net, set, end, nft_genmask_next(net));
+-		} else {
+-			end = start;
++	if (!IS_ERR(dup)) {
++		/* Check if we already have the same exact entry */
++		const struct nft_data *dup_key, *dup_end;
++
++		dup_key = nft_set_ext_key(&dup->ext);
++		if (nft_set_ext_exists(&dup->ext, NFT_SET_EXT_KEY_END))
++			dup_end = nft_set_ext_key_end(&dup->ext);
++		else
++			dup_end = dup_key;
++
++		if (!memcmp(start, dup_key->data, sizeof(*dup_key->data)) &&
++		    !memcmp(end, dup_end->data, sizeof(*dup_end->data))) {
++			*ext2 = &dup->ext;
++			return -EEXIST;
  		}
- 		goto err_element_clash;
++
++		return -ENOTEMPTY;
++	}
++
++	if (PTR_ERR(dup) == -ENOENT) {
++		/* Look for partially overlapping entries */
++		dup = pipapo_get(net, set, end, nft_genmask_next(net));
  	}
+ 
+ 	if (PTR_ERR(dup) != -ENOENT) {
+ 		if (IS_ERR(dup))
+ 			return PTR_ERR(dup);
+ 		*ext2 = &dup->ext;
+-		return -EEXIST;
++		return -ENOTEMPTY;
+ 	}
+ 
+ 	/* Validate */
 -- 
 2.11.0
 
