@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A785190442
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 05:16:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AC99190440
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 05:16:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727145AbgCXEPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 00:15:40 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:24385 "EHLO
+        id S1726243AbgCXEPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 00:15:38 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:20029 "EHLO
         us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727050AbgCXEPk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 00:15:40 -0400
+        by vger.kernel.org with ESMTP id S1725905AbgCXEPh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 00:15:37 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585023339;
+        s=mimecast20190719; t=1585023336;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=/axwIiBryEcrWRjK7QlRFkT8Que8Kl7fqB8RtGBmu4Q=;
-        b=H572TFt4XiCHZvc+qUcGI3UK7ikdZPRPzOOMKzJDm0yZ+mH2Y95IEPdf84UnYYN8oGrPk6
-        06sy9Zi6eyO0XFUX6QbRSZtO4s1WTc/g8Nr2VPRNUoYhZQBUNIn8hrc/AGTxTMl1XdxQ34
-        SzuKeJSRKMyYaW3YeJobRK0koi9MrSA=
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Qv2sf5ZLe8MVzng446R1oQxVfhG/+fRJUSulJ/I8CAY=;
+        b=aL5lu379qXvhhAx911v8N551sPtzaohvtQ5heki/Pu/DZBJFEpu9sKkCz4ZAQ0onoFmta8
+        OCzoKqxxrWjEc25wWNSneNwLdpnkgB5igGHIR6dWi4oQ/VBUm8VuC/gBdD2yWZiuDqDbhR
+        nsJtybwBxH18MWbkHZ4ODXEODGnpIIU=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-310-GlINFfSdNKGQdEIE3IYZYA-1; Tue, 24 Mar 2020 00:15:23 -0400
-X-MC-Unique: GlINFfSdNKGQdEIE3IYZYA-1
+ us-mta-90-b4EsYO9ZPkG9IT8PsAlemg-1; Tue, 24 Mar 2020 00:15:34 -0400
+X-MC-Unique: b4EsYO9ZPkG9IT8PsAlemg-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 103EC189F760;
-        Tue, 24 Mar 2020 04:15:20 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2303B13F5;
+        Tue, 24 Mar 2020 04:15:32 +0000 (UTC)
 Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-13-216.pek2.redhat.com [10.72.13.216])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F26EF10002A9;
-        Tue, 24 Mar 2020 04:15:00 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 122291001B2B;
+        Tue, 24 Mar 2020 04:15:20 +0000 (UTC)
 From:   Jason Wang <jasowang@redhat.com>
 To:     mst@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
@@ -44,11 +45,12 @@ Cc:     jgg@mellanox.com, maxime.coquelin@redhat.com,
         jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
         mhabets@solarflare.com, gdawar@xilinx.com, saugatm@xilinx.com,
         vmireyno@marvell.com, Jason Wang <jasowang@redhat.com>
-Subject: [PATCH V7 0/8] vDPA support
-Date:   Tue, 24 Mar 2020 12:14:50 +0800
-Message-Id: <20200324041458.27384-1-jasowang@redhat.com>
+Subject: [PATCH V7 1/8] vhost: allow per device message handler
+Date:   Tue, 24 Mar 2020 12:14:51 +0800
+Message-Id: <20200324041458.27384-2-jasowang@redhat.com>
+In-Reply-To: <20200324041458.27384-1-jasowang@redhat.com>
+References: <20200324041458.27384-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
@@ -56,234 +58,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all:
+This patch allow device to register its own message handler during
+vhost_dev_init(). vDPA device will use it to implement its own DMA
+mapping logic.
 
-This is an update version of vDPA support in kernel.
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+ drivers/vhost/net.c   |  3 ++-
+ drivers/vhost/scsi.c  |  2 +-
+ drivers/vhost/vhost.c | 12 ++++++++++--
+ drivers/vhost/vhost.h |  6 +++++-
+ drivers/vhost/vsock.c |  2 +-
+ 5 files changed, 19 insertions(+), 6 deletions(-)
 
-vDPA device is a device that uses a datapath which complies with the
-virtio specifications with vendor specific control path. vDPA devices
-can be both physically located on the hardware or emulated by
-software. vDPA hardware devices are usually implemented through PCIE
-with the following types:
-
-- PF (Physical Function) - A single Physical Function
-- VF (Virtual Function) - Device that supports single root I/O
-  virtualization (SR-IOV). Its Virtual Function (VF) represents a
-  virtualized instance of the device that can be assigned to different
-  partitions
-- ADI (Assignable Device Interface) and its equivalents - With
-  technologies such as Intel Scalable IOV, a virtual device (VDEV)
-  composed by host OS utilizing one or more ADIs. Or its equivalent
-  like SF (Sub function) from Mellanox.
-
-From a driver's perspective, depends on how and where the DMA
-translation is done, vDPA devices are split into two types:
-
-- Platform specific DMA translation - From the driver's perspective,
-  the device can be used on a platform where device access to data in
-  memory is limited and/or translated. An example is a PCIE vDPA whose
-  DMA request was tagged via a bus (e.g PCIE) specific way. DMA
-  translation and protection are done at PCIE bus IOMMU level.
-- Device specific DMA translation - The device implements DMA
-  isolation and protection through its own logic. An example is a vDPA
-  device which uses on-chip IOMMU.
-
-To hide the differences and complexity of the above types for a vDPA
-device/IOMMU options and in order to present a generic virtio device
-to the upper layer, a device agnostic framework is required.
-
-This series introduces a software vDPA bus which abstracts the
-common attributes of vDPA device, vDPA bus driver and the
-communication method, the bus operations (vdpa_config_ops) between the
-vDPA device abstraction and the vDPA bus driver. This allows multiple
-types of drivers to be used for vDPA device like the virtio_vdpa and
-vhost_vdpa driver to operate on the bus and allow vDPA device could be
-used by either kernel virtio driver or userspace vhost drivers as:
-
-   virtio drivers  vhost drivers
-          |             |
-    [virtio bus]   [vhost uAPI]
-          |             |
-   virtio device   vhost device
-   virtio_vdpa drv vhost_vdpa drv
-             \       /
-            [vDPA bus]
-                 |
-            vDPA device
-            hardware drv
-                 |
-            [hardware bus]
-                 |
-            vDPA hardware
-
-virtio_vdpa driver is a transport implementation for kernel virtio
-drivers on top of vDPA bus operations. An alternative is to refactor
-virtio bus which is sub-optimal since the bus and drivers are designed
-to be use by kernel subsystem, a non-trivial major refactoring is
-needed which may impact a brunches of drivers and devices
-implementation inside the kernel. Using a new transport may grealy
-simply both the design and changes.
-
-vhost_vdpa driver is a new type of vhost device which allows userspace
-vhost drivers to use vDPA devices via vhost uAPI (with minor
-extension). This help to minimize the changes of existed vhost drivers
-for using vDPA devices.
-
-With the abstraction of vDPA bus and vDPA bus operations, the
-difference and complexity of the under layer hardware is hidden from
-upper layer. The vDPA bus drivers on top can use a unified
-vdpa_config_ops to control different types of vDPA device.
-
-Two drivers were implemented with the framework introduced in this
-series:
-
-- Intel IFC VF driver which depends on the platform IOMMU for DMA
-  translation
-- VDPA simulator which is a software test device with an emulated
-  onchip IOMMU
-
-Future work:
-
-- direct doorbell mapping support
-- control virtqueue support
-- dirty page tracking support
-- direct interrupt support
-- management API (devlink)
-
-Please review.
-
-Thanks
-
-Changes from V6:
-
-- vdpa_alloc_device() will allocate parent strcture (Jason)
-- remove the vdpa core dev info in IFCVF patch (Jason)
-- provide a free method in the vdpa bus operations for drivet to free
-  private data
-- switch to use new layout in vdapsim and IFCVF
-- make IFCVF depends on PCI_MSI (kbuild)
-- some tweaks on the IFCVF driver
-
-Changes from V5:
-
-- include Intel IFCVF driver and vhost-vdpa drivers
-- add the platform IOMMU support for vhost-vdpa
-- check the return value of dev_set_name() (Jason)
-- various tweaks and fixes
-
-Changes from V4:
-
-- use put_device() instead of kfree when fail to register virtio
-  device (Jason)
-- simplify the error handling when allocating vdpasim device (Jason)
-- don't use device_for_each_child() during module exit (Jason)
-- correct the error checking for vdpa_alloc_device() (Harpreet, Lingshan)
-
-Changes from V3:
-
-- various Kconfig fixes (Randy)
-
-Changes from V2:
-
-- release idr in the release function for put_device() unwind (Jason)
-- don't panic when fail to register vdpa bus (Jason)
-- use unsigned int instead of int for ida (Jason)
-- fix the wrong commit log in virito_vdpa patches (Jason)
-- make vdpa_sim depends on RUNTIME_TESTING_MENU (Michael)
-- provide a bus release function for vDPA device (Jason)
-- fix the wrong unwind when creating devices for vDPA simulator (Jason)
-- move vDPA simulator to a dedicated directory (Lingshan)
-- cancel the work before release vDPA simulator
-
-Changes from V1:
-
-- drop sysfs API, leave the management interface to future development
-  (Michael)
-- introduce incremental DMA ops (dma_map/dma_unmap) (Michael)
-- introduce dma_device and use it instead of parent device for doing
-  IOMMU or DMA from bus driver (Michael, Jason, Ling Shan, Tiwei)
-- accept parent device and dma device when register vdpa device
-- coding style and compile fixes (Randy)
-- using vdpa_xxx instead of xxx_vdpa (Jason)
-- ove vDPA accessors to header and make it static inline (Jason)
-- split vdp_register_device() into two helpers vdpa_init_device() and
-  vdpa_register_device() which allows intermediate step to be done (Jason=
-)
-- warn on invalidate queue state when fail to creating virtqueue (Jason)
-- make to_virtio_vdpa_device() static (Jason)
-- use kmalloc/kfree instead of devres for virtio vdpa device (Jason)
-- avoid using cast in vdpa bus function (Jason)
-- introduce module_vdpa_driver and fix module refcnt (Jason)
-- fix returning freed address in vdapsim coherent DMA addr allocation (Da=
-n)
-- various other fixes and tweaks
-
-V6: https://lkml.org/lkml/2020/3/18/88
-V5: https://lkml.org/lkml/2020/2/26/58
-V4: https://lkml.org/lkml/2020/2/20/59
-V3: https://lkml.org/lkml/2020/2/19/1347
-V2: https://lkml.org/lkml/2020/2/9/275
-V1: https://lkml.org/lkml/2020/1/16/353
-
-Jason Wang (6):
-  vhost: allow per device message handler
-  vhost: factor out IOTLB
-  vringh: IOTLB support
-  vDPA: introduce vDPA bus
-  virtio: introduce a vDPA based transport
-  vdpasim: vDPA device simulator
-
-Tiwei Bie (1):
-  vhost: introduce vDPA-based backend
-
-Zhu Lingshan (1):
-  virtio: Intel IFC VF driver for VDPA
-
- MAINTAINERS                             |   2 +
- drivers/vhost/Kconfig                   |  17 +
- drivers/vhost/Kconfig.vringh            |   1 +
- drivers/vhost/Makefile                  |   6 +
- drivers/vhost/iotlb.c                   | 177 +++++
- drivers/vhost/net.c                     |   5 +-
- drivers/vhost/scsi.c                    |   2 +-
- drivers/vhost/vdpa.c                    | 883 ++++++++++++++++++++++++
- drivers/vhost/vhost.c                   | 233 +++----
- drivers/vhost/vhost.h                   |  45 +-
- drivers/vhost/vringh.c                  | 421 ++++++++++-
- drivers/vhost/vsock.c                   |   2 +-
- drivers/virtio/Kconfig                  |  15 +
- drivers/virtio/Makefile                 |   2 +
- drivers/virtio/vdpa/Kconfig             |  35 +
- drivers/virtio/vdpa/Makefile            |   4 +
- drivers/virtio/vdpa/ifcvf/Makefile      |   3 +
- drivers/virtio/vdpa/ifcvf/ifcvf_base.c  | 386 +++++++++++
- drivers/virtio/vdpa/ifcvf/ifcvf_base.h  | 132 ++++
- drivers/virtio/vdpa/ifcvf/ifcvf_main.c  | 474 +++++++++++++
- drivers/virtio/vdpa/vdpa.c              | 180 +++++
- drivers/virtio/vdpa/vdpa_sim/Makefile   |   2 +
- drivers/virtio/vdpa/vdpa_sim/vdpa_sim.c | 629 +++++++++++++++++
- drivers/virtio/virtio_vdpa.c            | 396 +++++++++++
- include/linux/vdpa.h                    | 247 +++++++
- include/linux/vhost_iotlb.h             |  47 ++
- include/linux/vringh.h                  |  36 +
- include/uapi/linux/vhost.h              |  24 +
- include/uapi/linux/vhost_types.h        |   8 +
- 29 files changed, 4204 insertions(+), 210 deletions(-)
- create mode 100644 drivers/vhost/iotlb.c
- create mode 100644 drivers/vhost/vdpa.c
- create mode 100644 drivers/virtio/vdpa/Kconfig
- create mode 100644 drivers/virtio/vdpa/Makefile
- create mode 100644 drivers/virtio/vdpa/ifcvf/Makefile
- create mode 100644 drivers/virtio/vdpa/ifcvf/ifcvf_base.c
- create mode 100644 drivers/virtio/vdpa/ifcvf/ifcvf_base.h
- create mode 100644 drivers/virtio/vdpa/ifcvf/ifcvf_main.c
- create mode 100644 drivers/virtio/vdpa/vdpa.c
- create mode 100644 drivers/virtio/vdpa/vdpa_sim/Makefile
- create mode 100644 drivers/virtio/vdpa/vdpa_sim/vdpa_sim.c
- create mode 100644 drivers/virtio/virtio_vdpa.c
- create mode 100644 include/linux/vdpa.h
- create mode 100644 include/linux/vhost_iotlb.h
-
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index e158159671fa..c8ab8d83b530 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -1324,7 +1324,8 @@ static int vhost_net_open(struct inode *inode, stru=
+ct file *f)
+ 	}
+ 	vhost_dev_init(dev, vqs, VHOST_NET_VQ_MAX,
+ 		       UIO_MAXIOV + VHOST_NET_BATCH,
+-		       VHOST_NET_PKT_WEIGHT, VHOST_NET_WEIGHT);
++		       VHOST_NET_PKT_WEIGHT, VHOST_NET_WEIGHT,
++		       NULL);
+=20
+ 	vhost_poll_init(n->poll + VHOST_NET_VQ_TX, handle_tx_net, EPOLLOUT, dev=
+);
+ 	vhost_poll_init(n->poll + VHOST_NET_VQ_RX, handle_rx_net, EPOLLIN, dev)=
+;
+diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
+index 0b949a14bce3..7653667a8cdc 100644
+--- a/drivers/vhost/scsi.c
++++ b/drivers/vhost/scsi.c
+@@ -1628,7 +1628,7 @@ static int vhost_scsi_open(struct inode *inode, str=
+uct file *f)
+ 		vs->vqs[i].vq.handle_kick =3D vhost_scsi_handle_kick;
+ 	}
+ 	vhost_dev_init(&vs->dev, vqs, VHOST_SCSI_MAX_VQ, UIO_MAXIOV,
+-		       VHOST_SCSI_WEIGHT, 0);
++		       VHOST_SCSI_WEIGHT, 0, NULL);
+=20
+ 	vhost_scsi_init_inflight(vs, NULL);
+=20
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index f44340b41494..8e9e2341e40a 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -457,7 +457,9 @@ static size_t vhost_get_desc_size(struct vhost_virtqu=
+eue *vq,
+=20
+ void vhost_dev_init(struct vhost_dev *dev,
+ 		    struct vhost_virtqueue **vqs, int nvqs,
+-		    int iov_limit, int weight, int byte_weight)
++		    int iov_limit, int weight, int byte_weight,
++		    int (*msg_handler)(struct vhost_dev *dev,
++				       struct vhost_iotlb_msg *msg))
+ {
+ 	struct vhost_virtqueue *vq;
+ 	int i;
+@@ -473,6 +475,7 @@ void vhost_dev_init(struct vhost_dev *dev,
+ 	dev->iov_limit =3D iov_limit;
+ 	dev->weight =3D weight;
+ 	dev->byte_weight =3D byte_weight;
++	dev->msg_handler =3D msg_handler;
+ 	init_llist_head(&dev->work_list);
+ 	init_waitqueue_head(&dev->wait);
+ 	INIT_LIST_HEAD(&dev->read_list);
+@@ -1178,7 +1181,12 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev=
+,
+ 		ret =3D -EINVAL;
+ 		goto done;
+ 	}
+-	if (vhost_process_iotlb_msg(dev, &msg)) {
++
++	if (dev->msg_handler)
++		ret =3D dev->msg_handler(dev, &msg);
++	else
++		ret =3D vhost_process_iotlb_msg(dev, &msg);
++	if (ret) {
+ 		ret =3D -EFAULT;
+ 		goto done;
+ 	}
+diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+index a123fd70847e..f9d1a03dd153 100644
+--- a/drivers/vhost/vhost.h
++++ b/drivers/vhost/vhost.h
+@@ -174,11 +174,15 @@ struct vhost_dev {
+ 	int weight;
+ 	int byte_weight;
+ 	u64 kcov_handle;
++	int (*msg_handler)(struct vhost_dev *dev,
++			   struct vhost_iotlb_msg *msg);
+ };
+=20
+ bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int tota=
+l_len);
+ void vhost_dev_init(struct vhost_dev *, struct vhost_virtqueue **vqs,
+-		    int nvqs, int iov_limit, int weight, int byte_weight);
++		    int nvqs, int iov_limit, int weight, int byte_weight,
++		    int (*msg_handler)(struct vhost_dev *dev,
++				       struct vhost_iotlb_msg *msg));
+ long vhost_dev_set_owner(struct vhost_dev *dev);
+ bool vhost_dev_has_owner(struct vhost_dev *dev);
+ long vhost_dev_check_owner(struct vhost_dev *);
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index c2d7d57e98cf..97669484a3f6 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -621,7 +621,7 @@ static int vhost_vsock_dev_open(struct inode *inode, =
+struct file *file)
+=20
+ 	vhost_dev_init(&vsock->dev, vqs, ARRAY_SIZE(vsock->vqs),
+ 		       UIO_MAXIOV, VHOST_VSOCK_PKT_WEIGHT,
+-		       VHOST_VSOCK_WEIGHT);
++		       VHOST_VSOCK_WEIGHT, NULL);
+=20
+ 	file->private_data =3D vsock;
+ 	spin_lock_init(&vsock->send_pkt_list_lock);
 --=20
 2.20.1
 
