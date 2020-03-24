@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B6AE19041F
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 05:07:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C778190421
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 05:08:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725923AbgCXEHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 00:07:21 -0400
-Received: from mail-eopbgr130059.outbound.protection.outlook.com ([40.107.13.59]:1860
+        id S1726081AbgCXEIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 00:08:11 -0400
+Received: from mail-eopbgr130070.outbound.protection.outlook.com ([40.107.13.70]:62438
         "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725847AbgCXEHV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 00:07:21 -0400
+        id S1725784AbgCXEIL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 00:08:11 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AWLOB2XxtLz4xJ2fVUnaq0QQzOnWO5ndTvaezZKPjcEcgGdGy1UzVLIzZKKXsMAg0eeB9/w00wkAp30uqe3vnTM7Gppv7PBuPWGmtstVmGAaMq0HUS8vY2sbJtZzECv1lf2UnftM4rYhNwhehw8r0H8y3/SFBA5mRS9uimLsMu8ikfm5JMn0HqeQIHJZI8+S7oOAOKmomu/Ii7tctubS9jflsvhsFyze7aKoCte94TqOFrSvtWhBVjVc1j3INoYDGpsyd8UbQlQBQwpjCLj3bYS909Aehh98YTa0IJWMjXQAbVwFFRZuQAQ45PXJSImoyG4KzWKo5Szuq058MSkQGQ==
+ b=l43ucXddk1kxcRj1wLH9WDBLddBBkuwQRnlAi1jlR3li3D/+RuqhgcUz7Ed5QuoKFsIYl6H5GeZBKlG+3xK3KvjE+B8Ad5pGg5dDCLW7hsJ3z/96CXsGtGyAWW8zMlUcsmGYv0Pmr7kNtO7yt6dA408Sywx6ILkDbegPOso2Kro7d5DKgJ7rkqu37+ZMUsaAtZBtfVB5DgptRg13U0oXp1JLlzGvZ+2pfZI/q953Kg3iEK9qKRZ9DLlygf1QGzz5MgIkvmM7VmVoxEnOVK8OQDabMROPUqergB91qD64oQsBdemUL0MzJ2XUuIoecRqj5vI3nuPju414PsMr6ZcCaQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/bhk/iUg1GZpfmp5OcMflWaISwtoM413PVZnU49oRTg=;
- b=Xpkui/z9XRiZha1TWr0AXfzMClpJKj4iw7zCXnlWwmRR/pH8c7Q+u+XlYvJ2kAlxorp6g7EPYVRsi1vjsaNXPfo6XXO/cOHKyVIrW+g9mQiUNLFSGwnOJluG8qoLVPafEGrOxMM0eLYsFg1Vt4LtmF81TC61LnF4WOnmzcPgU34DDVFNrZkmC3ZUrNo7RyH848utRYIyM5Pg2UmVim+ia/rJ8CJMof59BVRvmJMUs59Xa2aV+2OrwJJICpHUocKEfBOMN0dJoSPQ5hS/uJpwQ61omQ6lOizpK3gINhlJXx6EZ9exiNBrZyEMyCWAqSTNMjHh5fMYpD0FSOrEl8Kjcg==
+ bh=ahJkev7xepEXzNgGe15+m6LmTNhZBVbDOg6WV664PmI=;
+ b=LG1PCG5lUZUgBuv5VZtvQa4HrWIp9s7UG84fUHIWHw7RXdapfqTifYFlj2+CUTjrahiJ4ka5ArrYYmFhNjg2tpV5kCo6i77OMlViCtDFYGtHABY8JBNuPmGqmcMGr28hW8IZO1qkfWehJwV2rFzwkpOdjXiUCCGCWapTsxUOOXiD//svjKnnG8Vo1tvECI/NFRr0+k7chwbOuEfyTMMamp50OaIxiegBze8w3aBJrJwFsRnUH42XJ7FOLdkAReGGvT8jJrnHF0FM0s5dPpXg/yzY27B861DaA0Ku3xJvAKnpUukbqIa3Jw2Lv1+l9hj54h2vn6nIWuhgPhtcBfjn3Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/bhk/iUg1GZpfmp5OcMflWaISwtoM413PVZnU49oRTg=;
- b=gV7k5pTTvWUrRgBQk8KVyUmYWeYlTUTXQPWRhrHaTLWNP2ke06LuVmtn+zsXWTUEClYBUjU/6Hl9cgFNyP/lbPZAil3+oCAvfNV8WLaC7VQJ3asrqIbda4fVSPMhwiN41kU9VrTg0S7s3BmzahgZ1lNqaHajreZ5L4GjbYnlSvw=
+ bh=ahJkev7xepEXzNgGe15+m6LmTNhZBVbDOg6WV664PmI=;
+ b=W6iZY87LIy5aILgcawjIzZxfuF56kOQG2bzeXBqiMp2PzvjLB6oMEKajG7v0LgjMpLldqcIzNyVwUjAAC6L+oArw4YOoHoKRP/aRgoUvL8Z7bxrm0QoldjHsNEkoNwPSG9nYprFf1hh+c0leGLSJiLxpixCxjuiNrmbqvt1+h+4=
 Authentication-Results: spf=none (sender IP is ) smtp.mailfrom=po.liu@nxp.com; 
 Received: from VE1PR04MB6496.eurprd04.prod.outlook.com (20.179.232.221) by
  VE1PR04MB6413.eurprd04.prod.outlook.com (20.179.232.94) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.22; Tue, 24 Mar 2020 04:07:16 +0000
+ 15.20.2835.22; Tue, 24 Mar 2020 04:07:26 +0000
 Received: from VE1PR04MB6496.eurprd04.prod.outlook.com
  ([fe80::8cb8:5c41:d843:b66d]) by VE1PR04MB6496.eurprd04.prod.outlook.com
  ([fe80::8cb8:5c41:d843:b66d%5]) with mapi id 15.20.2835.021; Tue, 24 Mar 2020
- 04:07:16 +0000
+ 04:07:26 +0000
 From:   Po Liu <Po.Liu@nxp.com>
 To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
@@ -50,154 +50,453 @@ Cc:     vinicius.gomes@intel.com, po.liu@nxp.com, claudiu.manoil@nxp.com,
         moshe@mellanox.com, m-karicheri2@ti.com,
         andre.guedes@linux.intel.com, stephen@networkplumber.org,
         Po Liu <Po.Liu@nxp.com>
-Subject: [v1,net-next  0/5] Introduce a flow gate control action and apply IEEE
-Date:   Tue, 24 Mar 2020 11:47:38 +0800
-Message-Id: <20200324034745.30979-1-Po.Liu@nxp.com>
+Subject: [v1,net-next  1/5] net: qos offload add flow status with dropped count
+Date:   Tue, 24 Mar 2020 11:47:39 +0800
+Message-Id: <20200324034745.30979-2-Po.Liu@nxp.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200306125608.11717-11-Po.Liu@nxp.com>
+In-Reply-To: <20200324034745.30979-1-Po.Liu@nxp.com>
 References: <20200306125608.11717-11-Po.Liu@nxp.com>
+ <20200324034745.30979-1-Po.Liu@nxp.com>
 Content-Type: text/plain
 X-ClientProxiedBy: SG2PR06CA0204.apcprd06.prod.outlook.com (2603:1096:4:1::36)
  To VE1PR04MB6496.eurprd04.prod.outlook.com (2603:10a6:803:11c::29)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (119.31.174.73) by SG2PR06CA0204.apcprd06.prod.outlook.com (2603:1096:4:1::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.20 via Frontend Transport; Tue, 24 Mar 2020 04:07:07 +0000
+Received: from localhost.localdomain (119.31.174.73) by SG2PR06CA0204.apcprd06.prod.outlook.com (2603:1096:4:1::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.20 via Frontend Transport; Tue, 24 Mar 2020 04:07:17 +0000
 X-Mailer: git-send-email 2.17.1
 X-Originating-IP: [119.31.174.73]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 9bc359b8-00a5-406e-8069-08d7cfa8d681
+X-MS-Office365-Filtering-Correlation-Id: 4adc7294-ae13-4c12-64a0-08d7cfa8dc69
 X-MS-TrafficTypeDiagnostic: VE1PR04MB6413:|VE1PR04MB6413:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VE1PR04MB6413C8AA60CEC3ED5CBAA98292F10@VE1PR04MB6413.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <VE1PR04MB64137949A58D98D4E971BCD992F10@VE1PR04MB6413.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2399;
 X-Forefront-PRVS: 03524FBD26
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(396003)(136003)(39860400002)(346002)(16526019)(26005)(86362001)(69590400007)(1076003)(478600001)(52116002)(6506007)(186003)(4326008)(7416002)(6512007)(6486002)(8936002)(81166006)(8676002)(81156014)(2906002)(316002)(66556008)(6666004)(956004)(66476007)(5660300002)(66946007)(36756003)(2616005);DIR:OUT;SFP:1101;SCL:1;SRVR:VE1PR04MB6413;H:VE1PR04MB6496.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(396003)(136003)(39860400002)(346002)(16526019)(30864003)(26005)(86362001)(69590400007)(1076003)(478600001)(52116002)(6506007)(186003)(4326008)(7416002)(6512007)(6486002)(8936002)(81166006)(8676002)(81156014)(2906002)(316002)(66556008)(6666004)(956004)(66476007)(5660300002)(66946007)(36756003)(2616005);DIR:OUT;SFP:1101;SCL:1;SRVR:VE1PR04MB6413;H:VE1PR04MB6496.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;
 Received-SPF: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: whkaPui6VE5KqyxKIIpA2bHgKcrwmBaopwxe+m/AqiV0y15YepnPaMepF1vp8GqRdNWk+85aqeJ/GUsD6eDNJu0L4YDy+QvKe0NFm8dvrdoizd7Vm76biLg1f2BtoqFyjBQOGmJzp1KjEDG80PNjHENGBZwIySQ1kMVrskvkYmD8pVVf0dBwBUDNyJhqzDAHS0WwRLQjPsDFUCMgDrMpXKgAmEWlBFT+xuadyiZhRw4qKvcnqDpGlzOCtieECcCXqQfhsgAdwWdgX5RRj0TYePMXerS1pfC+n8TaOmW5d0sB+z62iu+i+jvw9gemkgjdBUbu5gA8msvEVeIpTrSS4kC6nxj1Zxnf2p9585wfy4P32YrAZf+WCABhZTO7/FFn/+blEoEj5W7Uygwov02Gmc9Mm8mR9pYUbaYQYtimKng34RJ/vOe11M46Jy1fBV9Gpe8gJti5PRSMMlfs2Fbxgp4XOJovpcAZF55rQnJSA2iWEAGjQMxudbOMagFB6+XX
-X-MS-Exchange-AntiSpam-MessageData: m53AivwPJKqzTpjKHRuOuZVFtcAYCHkPxPM9IUqbzgKup1p4m1NE95EKZREVBQM0i7CblNxHrER7c4bvfIaK7dtKGIc8CvZSqz5Cq4cmHNJsVggyHuP1hx0m6aYRBJjEnIkZPxNtOmspmEPFH6UQLA==
+X-Microsoft-Antispam-Message-Info: Rl5d6ADXbgiLuitGHEvc+ZI5zwYuFefd85o4mlQpEKWmpaMcxRCf86yFwRiOppQ+d3RpSyCNuFBHbfNcQ8DHEb+WMdQGukJh2Q6mdNeyx3wZ1tXlPgoQtVN9wcYYQibiaVaDNuovljNP3ERjaOFGcbxMeSCVKemOEBXABhGEE5VqKt8mqdCqtQqSKUJk+hxC7GWEJGZ82ocUWo4lcUPt8JU+cWyPYzNL93YEC9q7tBs1a/9PLRSL3eckP0VLLPkynHaX40hOmX5YA5VTv3prbzs110F+H9+2flsS4y0t+lKDs07lj/XCeH2HmYby5oujQQCG25AwLYcNikjZyYoYrxRVWewnZQ6PHr56ZlzGpDHWL4bL2H7d058MmD6cdSgBYxUmlftg0USH10z81w5C/4KWzjeZys/Y1TsjMItAQdDoSVXVR8omImNOy1RFBUaHCfOlRL+2pn7JlC7+Yyvbz42PXNLoF4BqquxNIt6qx7D1jjC7jhsT08H/F2QtjIUR
+X-MS-Exchange-AntiSpam-MessageData: TvgxQySItPMfKGkThEj9iVPQGQmeIvd55439yCU9pwy5IIaKdKX2I735aXovdGWPOm4qeHFyO+CjvE2ePudCjxnWs/JphG6CdnjV7z0As8FWn2VptB3a2e9JQwRhrDH7TsIykhFpmg+KbOidmaXDmw==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9bc359b8-00a5-406e-8069-08d7cfa8d681
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2020 04:07:16.4216
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4adc7294-ae13-4c12-64a0-08d7cfa8dc69
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2020 04:07:26.1131
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TK4mjiaZtPmnER9tZ5izHPBul6a+pHzUEI0L3a2KffvFKsV7zRJA7s9SQm7Cpj8p
+X-MS-Exchange-CrossTenant-UserPrincipalName: PeRjdwAALFM7OwbUloQVWlIUv+4WplLmHeR1t5ipDmos6zTnATUNyKeL4wj9ajXu
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6413
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changes from RFC:
-0000: Reduce to 5 patches and remove the 4 max frame size offload and
-flow metering in the policing offload action, Only keep gate action
-offloading implementation.
-0001: No changes.
-0002: 
- - fix kfree lead ack by Jakub Kicinski and Cong Wang
- - License fix from Jakub Kicinski and Stephen Hemminger
- - Update example in commit acked by Vinicius Costa Gomes
- - Fix the rcu protect in tcf_gate_act() acked by Vinicius
+Add the hardware tc flower offloading with dropped frame counter for
+status update. action ops->stats_update only loaded by the
+tcf_exts_stats_update() and tcf_exts_stats_update() only loaded by
+matchall and tc flower hardware filter. But the stats_update only set
+the dropped count as default false in the ops->stats_update. This
+patch add the dropped counter to action stats update. Its dropped counter
+update by the hardware offloading driver.
+This is changed by replacing the drop flag with dropped frame counter.
 
-0003: No changes
-0004: No changes
-0005:
- Acked by Vinicius Costa Gomes
- - Use refcount kernel lib
- - Update stream gate check code position
- - Update reduce ref names more clear
+Driver side should update how many "packets" it filtered and how many
+"dropped" in those "packets".
 
-iprout2 command patches:
-0000: Update license expression and add gate id
-0001: Add tc action gate man page
+Signed-off-by: Po Liu <Po.Liu@nxp.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c         |  2 +-
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c |  2 +-
+ .../net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c   |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c      |  4 ++--
+ .../net/ethernet/mellanox/mlxsw/spectrum_flower.c    |  2 +-
+ drivers/net/ethernet/mscc/ocelot_flower.c            |  2 +-
+ drivers/net/ethernet/netronome/nfp/flower/offload.c  |  2 +-
+ drivers/net/ethernet/netronome/nfp/flower/qos_conf.c |  2 +-
+ include/net/act_api.h                                | 11 ++++++-----
+ include/net/flow_offload.h                           |  5 ++++-
+ include/net/pkt_cls.h                                |  5 +++--
+ net/sched/act_api.c                                  | 12 ++++++------
+ net/sched/act_ct.c                                   |  6 +++---
+ net/sched/act_gact.c                                 |  7 ++++---
+ net/sched/act_mirred.c                               |  6 +++---
+ net/sched/act_police.c                               |  6 +++---
+ net/sched/act_vlan.c                                 |  6 +++---
+ net/sched/cls_flower.c                               |  3 ++-
+ net/sched/cls_matchall.c                             |  3 ++-
+ 19 files changed, 48 insertions(+), 40 deletions(-)
 
-This patch set is trying to intruduce a way to add tc flower offload
-for the enetc IEEE 802.1Qci (PSFP) function. There are four main feature
-parts in PSFP to implement the flow policing and filtering for ingress
-flow with IEEE 802.1Qci features. They are stream identify(this is defined
-in the P802.1cb exactly but needed by 802.1Qci), stream filtering, stream
-gate and flow metering.
-
-The stream gate function is the important part in the features. But
-there is no compare actions in the qdisc filter part. The second patch
-introduce a ingress frame gate control flow action. tc create a gate
-action would provide a gate list to control class open/close state. when
-the gate open state, the flow could pass but not when gate state is
-close. The driver would repeat the gate list periodic. User also could
-assign a time point to start the gate list by the basetime parameter. if
-the basetime has passed current time, start time would calculate by the
-cycletime of the gate list. And it is introduce a software simulator
-gate control method.
-
-The first patch is fix a flow offload can't provide dropped frame count
-number issue. This would be used for getting the hardware offload dropped
-frame.
-
-The third patch is to adding the gate flow offloading.
-
-The fourth patch is to add tc offload command in enetc. This is to
-control the on/off for the tc flower offloading.
-
-Now the enetc driver would got the gate control list and filter mac
-address etc. So enetc would collected the parameters and create the
-stream identify entry and stream gate control entry. Then driver would
-create a stream filter entry by these inputs. Driver would maintain the
-flow chain list. The fifth patch implement the stream gate and stream
-filter and stream identify functions in driver by the tc flower actions
-and tc filter parameters.
-
-The iproute2 test patch need to upload to:
-
-git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
-
-Po Liu (5):
-  net: qos offload add flow status with dropped count
-  net: qos: introduce a gate control flow action
-  net: schedule: add action gate offloading
-  net: enetc: add hw tc hw offload features for PSPF capability
-  net: enetc: add tc flower psfp offload driver
-
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c  |    2 +-
- .../ethernet/chelsio/cxgb4/cxgb4_tc_flower.c  |    2 +-
- .../chelsio/cxgb4/cxgb4_tc_matchall.c         |    2 +-
- drivers/net/ethernet/freescale/enetc/enetc.c  |   34 +-
- drivers/net/ethernet/freescale/enetc/enetc.h  |   86 ++
- .../net/ethernet/freescale/enetc/enetc_hw.h   |  159 +++
- .../net/ethernet/freescale/enetc/enetc_pf.c   |    6 +
- .../net/ethernet/freescale/enetc/enetc_qos.c  | 1074 +++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   |    4 +-
- .../ethernet/mellanox/mlxsw/spectrum_flower.c |    2 +-
- drivers/net/ethernet/mscc/ocelot_flower.c     |    2 +-
- .../ethernet/netronome/nfp/flower/offload.c   |    2 +-
- .../ethernet/netronome/nfp/flower/qos_conf.c  |    2 +-
- include/net/act_api.h                         |   11 +-
- include/net/flow_offload.h                    |   15 +-
- include/net/pkt_cls.h                         |    5 +-
- include/net/tc_act/tc_gate.h                  |  169 +++
- include/uapi/linux/pkt_cls.h                  |    1 +
- include/uapi/linux/tc_act/tc_gate.h           |   47 +
- net/sched/Kconfig                             |   15 +
- net/sched/Makefile                            |    1 +
- net/sched/act_api.c                           |   12 +-
- net/sched/act_ct.c                            |    6 +-
- net/sched/act_gact.c                          |    7 +-
- net/sched/act_gate.c                          |  647 ++++++++++
- net/sched/act_mirred.c                        |    6 +-
- net/sched/act_police.c                        |    6 +-
- net/sched/act_vlan.c                          |    6 +-
- net/sched/cls_api.c                           |   33 +
- net/sched/cls_flower.c                        |    3 +-
- net/sched/cls_matchall.c                      |    3 +-
- 31 files changed, 2329 insertions(+), 41 deletions(-)
- create mode 100644 include/net/tc_act/tc_gate.h
- create mode 100644 include/uapi/linux/tc_act/tc_gate.h
- create mode 100644 net/sched/act_gate.c
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+index b19be7549aad..d14b33fe745c 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
+@@ -1639,7 +1639,7 @@ static int bnxt_tc_get_flow_stats(struct bnxt *bp,
+ 	spin_unlock(&flow->stats_lock);
+ 
+ 	flow_stats_update(&tc_flow_cmd->stats, stats.bytes, stats.packets,
+-			  lastused);
++			  lastused, 0);
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
+index aec9b90313e7..c0d9bc9e6cb7 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_flower.c
+@@ -903,7 +903,7 @@ int cxgb4_tc_flower_stats(struct net_device *dev,
+ 			ofld_stats->last_used = jiffies;
+ 		flow_stats_update(&cls->stats, bytes - ofld_stats->byte_count,
+ 				  packets - ofld_stats->packet_count,
+-				  ofld_stats->last_used);
++				  ofld_stats->last_used, 0);
+ 
+ 		ofld_stats->packet_count = packets;
+ 		ofld_stats->byte_count = bytes;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
+index 8a5ae8bc9b7d..d2451836d5fd 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_matchall.c
+@@ -346,7 +346,7 @@ int cxgb4_tc_matchall_stats(struct net_device *dev,
+ 		flow_stats_update(&cls_matchall->stats,
+ 				  bytes - tc_port_matchall->ingress.bytes,
+ 				  packets - tc_port_matchall->ingress.packets,
+-				  tc_port_matchall->ingress.last_used);
++				  tc_port_matchall->ingress.last_used, 0);
+ 
+ 		tc_port_matchall->ingress.packets = packets;
+ 		tc_port_matchall->ingress.bytes = bytes;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 901f88a886c8..ca1b694d13d4 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -4467,7 +4467,7 @@ int mlx5e_stats_flower(struct net_device *dev, struct mlx5e_priv *priv,
+ no_peer_counter:
+ 	mlx5_devcom_release_peer_data(devcom, MLX5_DEVCOM_ESW_OFFLOADS);
+ out:
+-	flow_stats_update(&f->stats, bytes, packets, lastuse);
++	flow_stats_update(&f->stats, bytes, packets, lastuse, 0);
+ 	trace_mlx5e_stats_flower(f);
+ errout:
+ 	mlx5e_flow_put(priv, flow);
+@@ -4584,7 +4584,7 @@ void mlx5e_tc_stats_matchall(struct mlx5e_priv *priv,
+ 	dpkts = cur_stats.rx_packets - rpriv->prev_vf_vport_stats.rx_packets;
+ 	dbytes = cur_stats.rx_bytes - rpriv->prev_vf_vport_stats.rx_bytes;
+ 	rpriv->prev_vf_vport_stats = cur_stats;
+-	flow_stats_update(&ma->stats, dpkts, dbytes, jiffies);
++	flow_stats_update(&ma->stats, dpkts, dbytes, jiffies, 0);
+ }
+ 
+ static void mlx5e_tc_hairpin_update_dead_peer(struct mlx5e_priv *priv,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
+index 1cb023955d8f..f1d90ffa5eae 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_flower.c
+@@ -578,7 +578,7 @@ int mlxsw_sp_flower_stats(struct mlxsw_sp *mlxsw_sp,
+ 	if (err)
+ 		goto err_rule_get_stats;
+ 
+-	flow_stats_update(&f->stats, bytes, packets, lastuse);
++	flow_stats_update(&f->stats, bytes, packets, lastuse, 0);
+ 
+ 	mlxsw_sp_acl_ruleset_put(mlxsw_sp, ruleset);
+ 	return 0;
+diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
+index 873a9944fbfb..6cbca9b05520 100644
+--- a/drivers/net/ethernet/mscc/ocelot_flower.c
++++ b/drivers/net/ethernet/mscc/ocelot_flower.c
+@@ -224,7 +224,7 @@ int ocelot_cls_flower_stats(struct ocelot *ocelot, int port,
+ 	if (ret)
+ 		return ret;
+ 
+-	flow_stats_update(&f->stats, 0x0, ace.stats.pkts, 0x0);
++	flow_stats_update(&f->stats, 0x0, ace.stats.pkts, 0x0, 0x0);
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(ocelot_cls_flower_stats);
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+index 7ca5c1becfcf..053f647c1ec6 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
+@@ -1490,7 +1490,7 @@ nfp_flower_get_stats(struct nfp_app *app, struct net_device *netdev,
+ 		nfp_flower_update_merge_stats(app, nfp_flow);
+ 
+ 	flow_stats_update(&flow->stats, priv->stats[ctx_id].bytes,
+-			  priv->stats[ctx_id].pkts, priv->stats[ctx_id].used);
++			  priv->stats[ctx_id].pkts, priv->stats[ctx_id].used, 0);
+ 
+ 	priv->stats[ctx_id].pkts = 0;
+ 	priv->stats[ctx_id].bytes = 0;
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c b/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
+index 124a43dc136a..354d64edbec0 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/qos_conf.c
+@@ -320,7 +320,7 @@ nfp_flower_stats_rate_limiter(struct nfp_app *app, struct net_device *netdev,
+ 	spin_unlock_bh(&fl_priv->qos_stats_lock);
+ 
+ 	flow_stats_update(&flow->stats, diff_bytes, diff_pkts,
+-			  repr_priv->qos_table.last_update);
++			  repr_priv->qos_table.last_update, 0);
+ 	return 0;
+ }
+ 
+diff --git a/include/net/act_api.h b/include/net/act_api.h
+index 41337c7fc728..7bb03ee2f747 100644
+--- a/include/net/act_api.h
++++ b/include/net/act_api.h
+@@ -103,7 +103,7 @@ struct tc_action_ops {
+ 			struct netlink_callback *, int,
+ 			const struct tc_action_ops *,
+ 			struct netlink_ext_ack *);
+-	void	(*stats_update)(struct tc_action *, u64, u32, u64, bool);
++	void	(*stats_update)(struct tc_action *, u64, u64, u64, u64, bool);
+ 	size_t  (*get_fill_size)(const struct tc_action *act);
+ 	struct net_device *(*get_dev)(const struct tc_action *a,
+ 				      tc_action_priv_destructor *destructor);
+@@ -229,8 +229,8 @@ static inline void tcf_action_inc_overlimit_qstats(struct tc_action *a)
+ 	spin_unlock(&a->tcfa_lock);
+ }
+ 
+-void tcf_action_update_stats(struct tc_action *a, u64 bytes, u32 packets,
+-			     bool drop, bool hw);
++void tcf_action_update_stats(struct tc_action *a, u64 bytes, u64 packets,
++			     u64 dropped, bool hw);
+ int tcf_action_copy_stats(struct sk_buff *, struct tc_action *, int);
+ 
+ int tcf_action_check_ctrlact(int action, struct tcf_proto *tp,
+@@ -241,13 +241,14 @@ struct tcf_chain *tcf_action_set_ctrlact(struct tc_action *a, int action,
+ #endif /* CONFIG_NET_CLS_ACT */
+ 
+ static inline void tcf_action_stats_update(struct tc_action *a, u64 bytes,
+-					   u64 packets, u64 lastuse, bool hw)
++					   u64 packets, u64 lastuse,
++					   u64 dropped, bool hw)
+ {
+ #ifdef CONFIG_NET_CLS_ACT
+ 	if (!a->ops->stats_update)
+ 		return;
+ 
+-	a->ops->stats_update(a, bytes, packets, lastuse, hw);
++	a->ops->stats_update(a, bytes, packets, lastuse, dropped, hw);
+ #endif
+ }
+ 
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 51b9893d4ccb..cae3658a1844 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -369,14 +369,17 @@ struct flow_stats {
+ 	u64	pkts;
+ 	u64	bytes;
+ 	u64	lastused;
++	u64	dropped;
+ };
+ 
+ static inline void flow_stats_update(struct flow_stats *flow_stats,
+-				     u64 bytes, u64 pkts, u64 lastused)
++				     u64 bytes, u64 pkts,
++				     u64 lastused, u64 dropped)
+ {
+ 	flow_stats->pkts	+= pkts;
+ 	flow_stats->bytes	+= bytes;
+ 	flow_stats->lastused	= max_t(u64, flow_stats->lastused, lastused);
++	flow_stats->dropped	+= dropped;
+ }
+ 
+ enum flow_block_command {
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index 1db8b27d4515..4d12d3edeb71 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -262,7 +262,7 @@ static inline void tcf_exts_put_net(struct tcf_exts *exts)
+ 
+ static inline void
+ tcf_exts_stats_update(const struct tcf_exts *exts,
+-		      u64 bytes, u64 packets, u64 lastuse)
++		      u64 bytes, u64 packets, u64 lastuse, u64 dropped)
+ {
+ #ifdef CONFIG_NET_CLS_ACT
+ 	int i;
+@@ -272,7 +272,8 @@ tcf_exts_stats_update(const struct tcf_exts *exts,
+ 	for (i = 0; i < exts->nr_actions; i++) {
+ 		struct tc_action *a = exts->actions[i];
+ 
+-		tcf_action_stats_update(a, bytes, packets, lastuse, true);
++		tcf_action_stats_update(a, bytes, packets,
++					lastuse, dropped, true);
+ 	}
+ 
+ 	preempt_enable();
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index aa7b737fed2e..83ffb3fb63f4 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -1053,14 +1053,13 @@ int tcf_action_init(struct net *net, struct tcf_proto *tp, struct nlattr *nla,
+ 	return err;
+ }
+ 
+-void tcf_action_update_stats(struct tc_action *a, u64 bytes, u32 packets,
+-			     bool drop, bool hw)
++void tcf_action_update_stats(struct tc_action *a, u64 bytes, u64 packets,
++			     u64 dropped, bool hw)
+ {
+ 	if (a->cpu_bstats) {
+ 		_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats), bytes, packets);
+ 
+-		if (drop)
+-			this_cpu_ptr(a->cpu_qstats)->drops += packets;
++		this_cpu_ptr(a->cpu_qstats)->drops += dropped;
+ 
+ 		if (hw)
+ 			_bstats_cpu_update(this_cpu_ptr(a->cpu_bstats_hw),
+@@ -1069,8 +1068,9 @@ void tcf_action_update_stats(struct tc_action *a, u64 bytes, u32 packets,
+ 	}
+ 
+ 	_bstats_update(&a->tcfa_bstats, bytes, packets);
+-	if (drop)
+-		a->tcfa_qstats.drops += packets;
++
++	a->tcfa_qstats.drops += dropped;
++
+ 	if (hw)
+ 		_bstats_update(&a->tcfa_bstats_hw, bytes, packets);
+ }
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index 56b66d215a89..f8eda414537c 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -1445,12 +1445,12 @@ static int tcf_ct_search(struct net *net, struct tc_action **a, u32 index)
+ 	return tcf_idr_search(tn, a, index);
+ }
+ 
+-static void tcf_stats_update(struct tc_action *a, u64 bytes, u32 packets,
+-			     u64 lastuse, bool hw)
++static void tcf_stats_update(struct tc_action *a, u64 bytes, u64 packets,
++			     u64 lastuse, u64 dropped, bool hw)
+ {
+ 	struct tcf_ct *c = to_ct(a);
+ 
+-	tcf_action_update_stats(a, bytes, packets, false, hw);
++	tcf_action_update_stats(a, bytes, packets, dropped, hw);
+ 	c->tcf_tm.lastuse = max_t(u64, c->tcf_tm.lastuse, lastuse);
+ }
+ 
+diff --git a/net/sched/act_gact.c b/net/sched/act_gact.c
+index 416065772719..173908368dcc 100644
+--- a/net/sched/act_gact.c
++++ b/net/sched/act_gact.c
+@@ -171,14 +171,15 @@ static int tcf_gact_act(struct sk_buff *skb, const struct tc_action *a,
+ 	return action;
+ }
+ 
+-static void tcf_gact_stats_update(struct tc_action *a, u64 bytes, u32 packets,
+-				  u64 lastuse, bool hw)
++static void tcf_gact_stats_update(struct tc_action *a, u64 bytes, u64 packets,
++				  u64 lastuse, u64 dropped, bool hw)
+ {
+ 	struct tcf_gact *gact = to_gact(a);
+ 	int action = READ_ONCE(gact->tcf_action);
+ 	struct tcf_t *tm = &gact->tcf_tm;
+ 
+-	tcf_action_update_stats(a, bytes, packets, action == TC_ACT_SHOT, hw);
++	tcf_action_update_stats(a, bytes, packets,
++				(action == TC_ACT_SHOT) ? packets : 0, hw);
+ 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
+ }
+ 
+diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+index 1ad300e6dbc0..1c56f59e86a8 100644
+--- a/net/sched/act_mirred.c
++++ b/net/sched/act_mirred.c
+@@ -314,13 +314,13 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+ 	return retval;
+ }
+ 
+-static void tcf_stats_update(struct tc_action *a, u64 bytes, u32 packets,
+-			     u64 lastuse, bool hw)
++static void tcf_stats_update(struct tc_action *a, u64 bytes, u64 packets,
++			     u64 lastuse, u64 dropped, bool hw)
+ {
+ 	struct tcf_mirred *m = to_mirred(a);
+ 	struct tcf_t *tm = &m->tcf_tm;
+ 
+-	tcf_action_update_stats(a, bytes, packets, false, hw);
++	tcf_action_update_stats(a, bytes, packets, dropped, hw);
+ 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
+ }
+ 
+diff --git a/net/sched/act_police.c b/net/sched/act_police.c
+index 8b7a0ac96c51..7dcc418043fc 100644
+--- a/net/sched/act_police.c
++++ b/net/sched/act_police.c
+@@ -288,13 +288,13 @@ static void tcf_police_cleanup(struct tc_action *a)
+ }
+ 
+ static void tcf_police_stats_update(struct tc_action *a,
+-				    u64 bytes, u32 packets,
+-				    u64 lastuse, bool hw)
++				    u64 bytes, u64 packets,
++				    u64 lastuse, u64 dropped, bool hw)
+ {
+ 	struct tcf_police *police = to_police(a);
+ 	struct tcf_t *tm = &police->tcf_tm;
+ 
+-	tcf_action_update_stats(a, bytes, packets, false, hw);
++	tcf_action_update_stats(a, bytes, packets, dropped, hw);
+ 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
+ }
+ 
+diff --git a/net/sched/act_vlan.c b/net/sched/act_vlan.c
+index c91d3958fcbb..d579ce23b479 100644
+--- a/net/sched/act_vlan.c
++++ b/net/sched/act_vlan.c
+@@ -302,13 +302,13 @@ static int tcf_vlan_walker(struct net *net, struct sk_buff *skb,
+ 	return tcf_generic_walker(tn, skb, cb, type, ops, extack);
+ }
+ 
+-static void tcf_vlan_stats_update(struct tc_action *a, u64 bytes, u32 packets,
+-				  u64 lastuse, bool hw)
++static void tcf_vlan_stats_update(struct tc_action *a, u64 bytes, u64 packets,
++				  u64 lastuse, u64 dropped, bool hw)
+ {
+ 	struct tcf_vlan *v = to_vlan(a);
+ 	struct tcf_t *tm = &v->tcf_tm;
+ 
+-	tcf_action_update_stats(a, bytes, packets, false, hw);
++	tcf_action_update_stats(a, bytes, packets, dropped, hw);
+ 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
+ }
+ 
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index 258dc45ab7e3..8afaaabef15d 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -492,7 +492,8 @@ static void fl_hw_update_stats(struct tcf_proto *tp, struct cls_fl_filter *f,
+ 
+ 	tcf_exts_stats_update(&f->exts, cls_flower.stats.bytes,
+ 			      cls_flower.stats.pkts,
+-			      cls_flower.stats.lastused);
++			      cls_flower.stats.lastused,
++			      cls_flower.stats.dropped);
+ }
+ 
+ static void __fl_put(struct cls_fl_filter *f)
+diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
+index a34b36adb9b7..606c131d4df7 100644
+--- a/net/sched/cls_matchall.c
++++ b/net/sched/cls_matchall.c
+@@ -338,7 +338,8 @@ static void mall_stats_hw_filter(struct tcf_proto *tp,
+ 	tc_setup_cb_call(block, TC_SETUP_CLSMATCHALL, &cls_mall, false, true);
+ 
+ 	tcf_exts_stats_update(&head->exts, cls_mall.stats.bytes,
+-			      cls_mall.stats.pkts, cls_mall.stats.lastused);
++			      cls_mall.stats.pkts, cls_mall.stats.lastused,
++			      cls_mall.stats.dropped);
+ }
+ 
+ static int mall_dump(struct net *net, struct tcf_proto *tp, void *fh,
 -- 
 2.17.1
 
