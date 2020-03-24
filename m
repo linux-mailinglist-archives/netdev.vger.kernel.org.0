@@ -2,61 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65044190353
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 02:30:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3E70190355
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 02:31:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727110AbgCXBaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 Mar 2020 21:30:46 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53230 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727022AbgCXBaq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 23 Mar 2020 21:30:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ZQkqlmlfZE1RpGe3iGDC+9gadkPvO2+JvsgsVdqc7fs=; b=EnYPsIK5+338uuzams2xr0udxJ
-        7UGFVzfiAH03+szFJpZr5JJI3F96hRFNvm3Lxy7wqJ0hu11Etyb7WSZ43M3TPPYIkAmpPV56QTD2+
-        vT2oEGEQBQnQTzuCpG9dECYqlZFDHofwsjApZxQG6LcIZGa4iXK19D8tf8aQjZULCOSo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jGYOy-0005VS-8b; Tue, 24 Mar 2020 02:30:44 +0100
-Date:   Tue, 24 Mar 2020 02:30:44 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: Re: [PATCH 06/14] net: ks8851: Remove ks8851_rdreg32()
-Message-ID: <20200324013044.GM3819@lunn.ch>
-References: <20200323234303.526748-1-marex@denx.de>
- <20200323234303.526748-7-marex@denx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200323234303.526748-7-marex@denx.de>
+        id S1727159AbgCXBbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 Mar 2020 21:31:19 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:55194 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727022AbgCXBbT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 Mar 2020 21:31:19 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9C02015B47E47;
+        Mon, 23 Mar 2020 18:31:18 -0700 (PDT)
+Date:   Mon, 23 Mar 2020 18:31:15 -0700 (PDT)
+Message-Id: <20200323.183115.1544256233598523357.davem@davemloft.net>
+To:     grygorii.strashko@ti.com
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, dmurphy@ti.com,
+        hkallweit1@gmail.com, netdev@vger.kernel.org, nsekhar@ti.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: dp83867: w/a for fld detect threshold
+ bootstrapping issue
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <e2f46a8d-b544-e31c-c994-672012bea866@ti.com>
+References: <20200317180454.22393-1-grygorii.strashko@ti.com>
+        <20200321.201022.719210614219273669.davem@davemloft.net>
+        <e2f46a8d-b544-e31c-c994-672012bea866@ti.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 23 Mar 2020 18:31:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -527,9 +507,8 @@ static void ks8851_rx_pkts(struct ks8851_net *ks)
->  	 */
->  
->  	for (; rxfc != 0; rxfc--) {
-> -		rxh = ks8851_rdreg32(ks, KS_RXFHSR);
-> -		rxstat = rxh & 0xffff;
-> -		rxlen = (rxh >> 16) & 0xfff;
-> +		rxstat = ks8851_rdreg16(ks, KS_RXFHSR);
-> +		rxlen = ks8851_rdreg16(ks, KS_RXFHBCR) & RXFHBCR_CNT_MASK;
+From: Grygorii Strashko <grygorii.strashko@ti.com>
+Date: Mon, 23 Mar 2020 22:36:32 +0200
 
-Hi Marek
+> On 22/03/2020 05:10, David Miller wrote:
+>> Let me know if I should queue this up for -stable.
+>> 
+> 
+> yes, please, as there are real link instability issues were observed
+> without this change.
 
-Is there anything in the datasheet about these registers? Does reading
-them clear an interrupt etc? A 32bit read is i assume one SPI
-transaction, where as this is now two transactions, so no longer
-atomic.
-
-	Andrew
+Ok, done.
