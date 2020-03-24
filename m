@@ -2,111 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BF139191CA7
-	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 23:31:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD22B191CCF
+	for <lists+netdev@lfdr.de>; Tue, 24 Mar 2020 23:33:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728367AbgCXWbK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 18:31:10 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:46771 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728227AbgCXWbK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 18:31:10 -0400
-Received: by mail-qk1-f196.google.com with SMTP id u4so346608qkj.13;
-        Tue, 24 Mar 2020 15:31:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ZVBNkmQ6KNSiQ9imF34wczZJOjW1q9SSGP6SBaBKNY4=;
-        b=R1Om5kXeha14u6MpD7gSO8OM7ArVvPGInc7J6L8AyaCrZrWFLKoMjLaEic/E80CeZ3
-         ZUapHQXdHT6vgcuNDz321Y2SQeJlpGdk5+pSOG3kitHzyGervHVBvBzxck6dApmQ+W4M
-         N6e7ZMeoGHZss02j80DFwWEzUo93m/N+6Qul1r0xy2tOQGl7RM/XEZu7k0HdgTdym1md
-         mfLZZu/viVB9/JX+qtS1Ad/WmEne7wUk1lF6rdR7wmK0vu1t5v18eOKIB8I4QQ0m1lCp
-         9oKwSJhd2h6+AQGTsnHDvvbsd48EmBzfvsah4fwY8CsHiNB6TTDPmLHIUxwrqRJzepWj
-         63Pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ZVBNkmQ6KNSiQ9imF34wczZJOjW1q9SSGP6SBaBKNY4=;
-        b=E9pwPjJEqicBXPvqQhp/WErWvXoGKVISMBUTGXoXMDvDTyc58XqwpWTLBbhnUlrStM
-         njlm0+83n4/bxIOHCijzwTpWTJ4HJIjR9TTyPGPiJIIkM3JzQ8dtQAZUqqgzkhgvfS8y
-         GC/Gu5YMeM1/87TVAWWqCBvfrQuGwFD2Y6nRqORNVTQNHnB62i18KxMX4ApmAf7rmLBP
-         p3crY1DdT+Q8TZ9a+kISRR8iBvvIYiplDcyKmtUJJYJaEgmBI+tyMtimvy1upw+s0wSB
-         ex0G/WXQzQv+FdEpqhNz8FF0sAi3O0SS4jxBpNHJ4skmasRkyqSGdoChvcU1wLrmJy8f
-         M0dg==
-X-Gm-Message-State: ANhLgQ3h0KZt4IMIn7EhbqfYEo4T3l3+fmEa7R3PQstZ2akntPm+ZIRh
-        gjaPAzCZ8SKRYjXvjbNm516iISaHPDdx2BUcUTw=
-X-Google-Smtp-Source: ADFU+vt7jbWpWic5LSgwTwL2UxAfd9oqqaxeMFJfScwEx/yIjufmLZBcmPAg+yTYu/z2iu8OIgsF6jcyZbv2XcvL+Bg=
-X-Received: by 2002:a37:e40d:: with SMTP id y13mr152356qkf.39.1585089069087;
- Tue, 24 Mar 2020 15:31:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
- <158462359315.164779.13931660750493121404.stgit@toke.dk> <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN>
- <875zez76ph.fsf@toke.dk> <20200320103530.2853c573@kicinski-fedora-PC1C0HJN>
- <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
- <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
- <87tv2f48lp.fsf@toke.dk> <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com>
- <87h7ye3mf3.fsf@toke.dk> <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
- <87tv2e10ly.fsf@toke.dk> <20200324115349.6447f99b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200324115349.6447f99b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 24 Mar 2020 15:30:58 -0700
-Message-ID: <CAEf4Bzb=FuVVw1wwLbGW1LU05heAFoUiJjm71=Qqxr+dS78qyQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
- program when attaching XDP
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        id S1728640AbgCXWc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 18:32:29 -0400
+Received: from correo.us.es ([193.147.175.20]:34594 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728590AbgCXWc2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 18:32:28 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 8656AFB373
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 23:31:49 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 75AA5DA7B6
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 23:31:49 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 6AEF5DA736; Tue, 24 Mar 2020 23:31:49 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7F7D3DA390;
+        Tue, 24 Mar 2020 23:31:47 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 24 Mar 2020 23:31:47 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [90.77.255.23])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 57D9042EF42C;
+        Tue, 24 Mar 2020 23:31:47 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 0/7] Netfilter fixes for net
+Date:   Tue, 24 Mar 2020 23:32:13 +0100
+Message-Id: <20200324223220.12119-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 11:53 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 24 Mar 2020 11:57:45 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wrote=
-:
-> > > If everyone is using libbpf, does kernel system (bpf syscall vs
-> > > netlink) matter all that much?
-> >
-> > This argument works the other way as well, though: If libbpf can
-> > abstract the subsystem differences and provide a consistent interface t=
-o
-> > "the BPF world", why does BPF need to impose its own syscall API on the
-> > networking subsystem?
->
-> Hitting the nail on the head there, again :)
->
-> Once upon a time when we were pushing for libbpf focus & unification,
-> one of my main motivations was that a solid library that most people
-> use give us the ability to provide user space abstractions.
+Hi,
 
-Yes, but bpf_link is not a user-space abstraction only anymore. It
-started that way and we quickly realized that we still will need
-kernel support. Not everything can be abstracted in user-space only.
-So I don't see any contradiction here, that's still libbpf focus.
+The following patchset contains Netfilter fixes for net:
 
->
-> As much as adding new kernel interfaces "to rule them all" is fun, it
-> has a real cost.
+1) A new selftest for nf_queue, from Florian Westphal. This test
+   covers two recent fixes: 07f8e4d0fddb ("tcp: also NULL skb->dev
+   when copy was needed") and b738a185beaa ("tcp: ensure skb->dev is
+   NULL before leaving TCP stack").
 
-We are adding kernel interface regardless of XDP (for cgroups and
-tracing, then perf_events, etc). The real point and real cost here is
-to not have another duplication of same functionality just for XDP use
-case. That's the real cost, not the other way around. Don't know how
-to emphasize this further.
+2) The fwd action breaks with ifb. For safety in next extensions,
+   make sure the fwd action only runs from ingress until it is extended
+   to be used from a different hook.
 
-And there is very little fun involved from my side, believe it or not...
+3) The pipapo set type now reports EEXIST in case of subrange overlaps.
+   Update the rbtree set to validate range overlaps, so far this
+   validation is only done only from userspace. From Stefano Brivio.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thank you.
+
+----------------------------------------------------------------
+
+The following changes since commit 749f6f6843115b424680f1aada3c0dd613ad807c:
+
+  net: phy: dp83867: w/a for fld detect threshold bootstrapping issue (2020-03-21 20:09:57 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to a64d558d8cf98424cc5eb9ae6631782cd8bf789c:
+
+  selftests: netfilter: add nfqueue test case (2020-03-24 20:00:12 +0100)
+
+----------------------------------------------------------------
+Florian Westphal (1):
+      selftests: netfilter: add nfqueue test case
+
+Pablo Neira Ayuso (3):
+      netfilter: nf_tables: Allow set back-ends to report partial overlaps on insertion
+      netfilter: nft_fwd_netdev: validate family and chain type
+      netfilter: nft_fwd_netdev: allow to redirect to ifb via ingress
+
+Stefano Brivio (3):
+      netfilter: nft_set_pipapo: Separate partial and complete overlap cases on insertion
+      netfilter: nft_set_rbtree: Introduce and use nft_rbtree_interval_start()
+      netfilter: nft_set_rbtree: Detect partial overlaps on insertion
+
+ net/netfilter/nf_tables_api.c                  |   5 +
+ net/netfilter/nft_fwd_netdev.c                 |  13 +
+ net/netfilter/nft_set_pipapo.c                 |  34 ++-
+ net/netfilter/nft_set_rbtree.c                 |  87 +++++-
+ tools/testing/selftests/netfilter/Makefile     |   6 +-
+ tools/testing/selftests/netfilter/config       |   6 +
+ tools/testing/selftests/netfilter/nf-queue.c   | 352 +++++++++++++++++++++++++
+ tools/testing/selftests/netfilter/nft_queue.sh | 332 +++++++++++++++++++++++
+ 8 files changed, 818 insertions(+), 17 deletions(-)
+ create mode 100644 tools/testing/selftests/netfilter/nf-queue.c
+ create mode 100755 tools/testing/selftests/netfilter/nft_queue.sh
