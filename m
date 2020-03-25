@@ -2,111 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73EA0192D8B
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 16:56:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F40F0192D95
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 16:58:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727953AbgCYP4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 11:56:03 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:33838 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727912AbgCYP4D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 11:56:03 -0400
-Received: by mail-qt1-f195.google.com with SMTP id 10so2595568qtp.1
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 08:56:02 -0700 (PDT)
+        id S1727912AbgCYP6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 11:58:06 -0400
+Received: from mail-pg1-f173.google.com ([209.85.215.173]:39716 "EHLO
+        mail-pg1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727448AbgCYP6F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 11:58:05 -0400
+Received: by mail-pg1-f173.google.com with SMTP id b22so1333509pgb.6
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 08:58:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lca.pw; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5LjboPnDfMYr+D+3numlwyKRNovhORGQjxZDfSq6m9Y=;
-        b=hUPBtEbERszA+YII5Yxm3jnhf4gWvrQeMIUx7nRUKWsaVY/hTEbkcVwZ824Se5rjur
-         x16y9PSdBsh167UfAZB5rT8bdfE8B41JnUCsPalmpfBxfrdDF/j6w9juDr9y/qiY8f1h
-         pNQfeGBclLRBzT/fGnw6z3HBUlqE3UAo1M36/bqz9zfViGSlGkvioTbJiS2pCU7VlNop
-         OQdFs/PIbIFnGIxs+zlMC8scqnUkRuWE0TWt3fVrW/7JpC5dxhnn5niw6m4tH5ntSp8s
-         qpps1r0bF2/oiW3GuFKkRAgQUlhbibiMzAZHDiUoxY2kjLYpzPOqOSgyvIRDqfhyupYy
-         4Vew==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=27MI+pxeAlEIMfPvPMDpujJi+ZohPaDk0S/nX9CW4io=;
+        b=RzQrhhO2SxrollGwhERO7/Dd3pfuxr6CA8FFWFuBFYkeS/rtyMWlS9oJIuZsJCfpza
+         z2NhH8BrC30c4WpUyZOduWbBTEZfqCrnJ6BZyFvLDHJ/fZJE4Iuj1kKcsJMYENL9RzDI
+         ifObwgvU/Qs4gFDXSX1Xpd0gie+6VwquI0WBRRocjFSMk3xTLblrcxWLRPLsV2ALSmwq
+         QeTSKWdK5oxULe/1HHPKNemKK/oaiGcvw3sTaYf7/Y/gwFmXjcMoL+K6Y8797glqIB95
+         b7Sh7hki1QxuoxF117b8pg3BUNQfTe3z80hc68J2XJaQu46biHZmvSDPlPdq6qY9qzU8
+         hn7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=5LjboPnDfMYr+D+3numlwyKRNovhORGQjxZDfSq6m9Y=;
-        b=UHy0f7o5o4PutCCEi37fiA1KGz9cBLHCRuNzny0AQypUFrh1MaroIIPALlGc2moIkF
-         Xslnq9bGiFvNc2TkaRKuJJZ+dmZNs0CqFZRiTkPVOHaTTTBwta3nALnhwC/rztXsw3Mu
-         MnoZmtzXJD1VOOz8rp/DH+lHlLI9dEB9Lyhwj55M6UCxrc51kWDWEf878xB4ZqfQRMSj
-         dyepueXePZYljaFuSQFf+CvXQYUjd3t96WVtCR8IP6yAcnQ6HUtRNxkNjHaV+yih7C+0
-         COTbdn0xiyoGyQxGVFwLPmmzhYGFMNr/i7/+7v+nsXOogjpoZ1VpuN/uXeEZVNEPLdUL
-         /3pA==
-X-Gm-Message-State: ANhLgQ2trx0rM2gdytzVMmX3C5l8QIGZRHJZVeUqR2Dm/NZsUS+T8XFh
-        Nr7Y/scKEMelpAoU+o2YTqRZbAIhFImngA==
-X-Google-Smtp-Source: ADFU+vsnGtXHOB3Q1SbOrengVFBDEEpEz+h2e/kMJ6fU6G+kU2YhLUoG6gF8c+vYKIE7feOWLDUscQ==
-X-Received: by 2002:ac8:346f:: with SMTP id v44mr3526427qtb.205.1585151761950;
-        Wed, 25 Mar 2020 08:56:01 -0700 (PDT)
-Received: from ovpn-66-69.rdu2.redhat.com (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
-        by smtp.gmail.com with ESMTPSA id t23sm17931750qtj.63.2020.03.25.08.55.46
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 25 Mar 2020 08:55:47 -0700 (PDT)
-From:   Qian Cai <cai@lca.pw>
-To:     davem@davemloft.net
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Qian Cai <cai@lca.pw>
-Subject: [PATCH] ipv4: fix a RCU-list lock in fib_triestat_seq_show
-Date:   Wed, 25 Mar 2020 11:55:32 -0400
-Message-Id: <20200325155532.7238-1-cai@lca.pw>
-X-Mailer: git-send-email 2.21.0 (Apple Git-122.2)
+        bh=27MI+pxeAlEIMfPvPMDpujJi+ZohPaDk0S/nX9CW4io=;
+        b=my/Y9BOmyLN8gKaNz/4sV/+h4IbibDuxRmacXHj+If/TqUUUd27AP/nuvsnU/jHFlL
+         nCgEowJoo1ztcfCDkfrKZzRans7lbBfl3mbsAZloG24/XfoNfkdulL9beHLQ8rQ5QgSi
+         5JUHoDiICYa8OTGSZ0W8Dd5dUkaG+YB0mAdS9zGvM9uKizr1SfnyVQYO3ZVs/j/E2Yx/
+         1FWY9u2zvOFmaKvin/Dk+936+8gyIZcUlg1au0uIcF4SuRuEfoZI7C8tf1h1hRGQbEtr
+         4/b6KiZL57CxwFJGDAW+t96/mrkwVZJzUOxfMAm3kvwSK5cZZlKsNnmzz1sm5o/ST8cE
+         6UcA==
+X-Gm-Message-State: ANhLgQ3R4iV9Kgtz31AsCW9R5bmBBMqIrrCzZQsNBH2/vFuMKaIw9RJf
+        naCGGD+owWEyVIrqyCiacjHfaO6T
+X-Google-Smtp-Source: ADFU+vvaFOyTc1FOq35h7H9yu/fKraP7m/jhQiGu0cVvN+ueishoT9tdJdnI0vgBpKZxsFxJefEL6Q==
+X-Received: by 2002:a63:3d44:: with SMTP id k65mr3873766pga.349.1585151884420;
+        Wed, 25 Mar 2020 08:58:04 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id c62sm18602072pfc.136.2020.03.25.08.58.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 Mar 2020 08:58:03 -0700 (PDT)
+Subject: Re: Fw: [Bug 206943] New: Forcing IP fragmentation on TCP segments
+ maliciously
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org, fengxw18@mails.tsinghua.edu.cn
+References: <20200325082638.60188be0@hermes.lan>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <b0505775-913f-79d2-fac8-d81184233a05@gmail.com>
+Date:   Wed, 25 Mar 2020 08:58:02 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200325082638.60188be0@hermes.lan>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fib_triestat_seq_show() calls hlist_for_each_entry_rcu(tb, head,
-tb_hlist) without rcu_read_lock() will trigger a warning,
 
- net/ipv4/fib_trie.c:2579 RCU-list traversed in non-reader section!!
 
- other info that might help us debug this:
+On 3/25/20 8:26 AM, Stephen Hemminger wrote:
+> 
+> 
+> Begin forwarded message:
+> 
+> Date: Wed, 25 Mar 2020 08:37:58 +0000
+> From: bugzilla-daemon@bugzilla.kernel.org
+> To: stephen@networkplumber.org
+> Subject: [Bug 206943] New: Forcing IP fragmentation on TCP segments maliciously
+> 
+> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=206943
+> 
+>             Bug ID: 206943
+>            Summary: Forcing IP fragmentation on TCP segments maliciously
+>            Product: Networking
+>            Version: 2.5
+>     Kernel Version: version 3.9
+>           Hardware: All
+>                 OS: Linux
+>               Tree: Mainline
+>             Status: NEW
+>           Severity: high
+>           Priority: P1
+>          Component: IPV4
+>           Assignee: stephen@networkplumber.org
+>           Reporter: fengxw18@mails.tsinghua.edu.cn
+>         Regression: No
+> 
+> A forged ICMP "Fragmentation Needed" message embedded with an echo reply data
+> can be used to defer the feedback of path MTU, thus tricking a Linux-based host
+> (version 3.9 and higher) into fragmenting TCP segments, even if the host
+> performs Path MTU discovery (PMTUD). Hence, an off-path attacker can poison the
+> TCP data via IP fragmentation.
 
- rcu_scheduler_active = 2, debug_locks = 1
- 1 lock held by proc01/115277:
-  #0: c0000014507acf00 (&p->lock){+.+.}-{3:3}, at: seq_read+0x58/0x670
 
- Call Trace:
-  dump_stack+0xf4/0x164 (unreliable)
-  lockdep_rcu_suspicious+0x140/0x164
-  fib_triestat_seq_show+0x750/0x880
-  seq_read+0x1a0/0x670
-  proc_reg_read+0x10c/0x1b0
-  __vfs_read+0x3c/0x70
-  vfs_read+0xac/0x170
-  ksys_read+0x7c/0x140
-  system_call+0x5c/0x68
+Usually, researchers finding stuff like that start a private communication
+with involved parties.
 
-Signed-off-by: Qian Cai <cai@lca.pw>
----
- net/ipv4/fib_trie.c | 2 ++
- 1 file changed, 2 insertions(+)
+Please send us the thesis or the details so that we can assess if the bug is critical
+or not, considering the troubled time we live.
 
-diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
-index ff0c24371e33..73fa37476f03 100644
---- a/net/ipv4/fib_trie.c
-+++ b/net/ipv4/fib_trie.c
-@@ -2577,6 +2577,7 @@ static int fib_triestat_seq_show(struct seq_file *seq, void *v)
- 		   " %zd bytes, size of tnode: %zd bytes.\n",
- 		   LEAF_SIZE, TNODE_SIZE(0));
- 
-+	rcu_read_lock();
- 	for (h = 0; h < FIB_TABLE_HASHSZ; h++) {
- 		struct hlist_head *head = &net->ipv4.fib_table_hash[h];
- 		struct fib_table *tb;
-@@ -2597,6 +2598,7 @@ static int fib_triestat_seq_show(struct seq_file *seq, void *v)
- #endif
- 		}
- 	}
-+	rcu_read_unlock();
- 
- 	return 0;
- }
--- 
-2.21.0 (Apple Git-122.2)
+Thanks.
 
