@@ -2,492 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C4DE1925B7
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 11:35:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 510A71925C8
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 11:37:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727569AbgCYKfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 06:35:41 -0400
-Received: from mail-oi1-f175.google.com ([209.85.167.175]:43291 "EHLO
-        mail-oi1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726043AbgCYKfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 06:35:40 -0400
-Received: by mail-oi1-f175.google.com with SMTP id p125so1593250oif.10
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 03:35:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nfKvC8e+76RqAz7eX5sIQjaC5NJqhdNkxxHEsOjnayM=;
-        b=AC+n5IzFhCaepZ0HQ5mbasTLbO/rUMoW+kjmQoETWdUpe485AdM9/3AFfL3Kk8lzlK
-         gnuNz2opvHoBc3ZN/4Y6R7PaC6/exLCc/AdZiOYOvt1vBG9JH83k25NSncbo3NpjRC/D
-         s6M/YK6TlZcUTbSxk6UKw+Cil4+CGBx1w8hM8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nfKvC8e+76RqAz7eX5sIQjaC5NJqhdNkxxHEsOjnayM=;
-        b=JFGpqRYwZPti8ty9X74OZ62xLBhhEXL4lQdngMR0WvVHgak1R9D+FXmkTLUC+HvgNc
-         nHHGLuYOQFujiPnQjBl5tlEFgaBCyhYVDkw3keUgS/CnF6lJBuL1MiRgbxWvoV/U6WTU
-         ZtzEwVrVLdLzVUGTtEXFp8REz+PVmJEZ9k1qIpTVBIjVjMa930ukI4l5rudHmf4fRRiS
-         nvBK3DqVXGbbN+5pMVNNRUC7wZXSRDhvLmpvtJTa98Qla/a5NzyE0WZTG9CTHMeKTzQX
-         H3a1O7RZfvg/qCzSowDrrbUHuabzkghP8aiyf5vktUgx2qMCtEUGRVZIQ6kHzT47VSJN
-         DQsg==
-X-Gm-Message-State: ANhLgQ1opO/pYMKZJHnOfEYIAuaa998gNquetIrzvKPqrhyXsUGawDmy
-        vHmHo6PkzSQPStYL8PHiSPE4t2Eu7srWOpxXQiGKig==
-X-Google-Smtp-Source: ADFU+vt7Y0toogTN1fd7pBkQQLMAwD/oez2ENz5ejon+2MoWf2Jt7XrKGnJL8tUkh2R/pwMuK8bGf16WLj1hMi8VIDE=
-X-Received: by 2002:a05:6808:8f:: with SMTP id s15mr2046012oic.110.1585132539952;
- Wed, 25 Mar 2020 03:35:39 -0700 (PDT)
+        id S1727430AbgCYKhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 06:37:51 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:47283 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726262AbgCYKhv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 06:37:51 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 2BB2B58033B;
+        Wed, 25 Mar 2020 06:37:49 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Wed, 25 Mar 2020 06:37:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=x9QMyL
+        Qkwf7i74hjhqgDmwsJXqnwgFCRdWNTh0pd8kg=; b=FUC45Dx9kW5pXt1kLKpJhP
+        wwBjaaEgYN3GPjopd4UlazIWl+3lwDDvwY1xLBTvqlh1sfvAdy345mlzyVVHBw9P
+        QuLWyy94p5JR4y11Zco0m26Zd/nN39TTvECGpkbeNpTpBrPZnn9uYJBx807S0KOz
+        DdHY6ZFtI6n6vRA4fMt9A0VICNpWIQAXKqDHRLIciMeSVNuMRgJfVsYmE0XnCTar
+        5nm+GS4v4Fqv01gqYQZqMRNtL5i/vF66UfuuvcSmpgKhV1t1DqeBYs6wsWiQmPog
+        /fOtL9dtN2hlwcF9MvyAUekAgdVjCwkZ3iKHTfFRbzIWDZglNr7jv2ZrzYXbciuQ
+        ==
+X-ME-Sender: <xms:ejR7Xi_VY51FTb46uExlmsB45HjC4rKzQCsJPGGx163URl4WqodPRQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudehfedgudeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecukfhppeejledrudektddrleegrddvvdehnecuvehluhhsthgvrh
+    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
+    hhdrohhrgh
+X-ME-Proxy: <xmx:ejR7XspElZ99vcrJRMN5c0S5bZNcUaecZb68TrQVjg2LbXnBFKYUvw>
+    <xmx:ejR7Xp7PcrwPyRIBHCgpOwTxGqbcWHxL5JUouhEqIYIiHL4uUEjSDg>
+    <xmx:ejR7Xl7ZGaPVMMc-iGb1s1dUAWsxloF0rrJtwjUhH3SUfOp0luE1tQ>
+    <xmx:fTR7XuJH31GxEh68ZRJBvzz0SQcTA1PUHJpOxrTEP8G_anQAuTkyNg>
+Received: from localhost (bzq-79-180-94-225.red.bezeqint.net [79.180.94.225])
+        by mail.messagingengine.com (Postfix) with ESMTPA id EDB103066145;
+        Wed, 25 Mar 2020 06:37:45 -0400 (EDT)
+Date:   Wed, 25 Mar 2020 12:37:43 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 05/15] devlink: Allow setting of packet trap
+ group parameters
+Message-ID: <20200325103743.GC1332836@splinter>
+References: <20200324193250.1322038-1-idosch@idosch.org>
+ <20200324193250.1322038-6-idosch@idosch.org>
+ <20200324205314.2d2ba2fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20200325055745.10710-1-joe@wand.net.nz> <20200325055745.10710-6-joe@wand.net.nz>
-In-Reply-To: <20200325055745.10710-6-joe@wand.net.nz>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Wed, 25 Mar 2020 10:35:28 +0000
-Message-ID: <CACAyw9-jJiAAci8dNsGGH7gf6QQCsybC2RAaSq18qsQDgaR4CQ@mail.gmail.com>
-Subject: Re: [PATCHv2 bpf-next 5/5] selftests: bpf: add test for sk_assign
-To:     Joe Stringer <joe@wand.net.nz>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Martin Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200324205314.2d2ba2fd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Mar 2020 at 05:58, Joe Stringer <joe@wand.net.nz> wrote:
->
-> From: Lorenz Bauer <lmb@cloudflare.com>
->
-> Attach a tc direct-action classifier to lo in a fresh network
-> namespace, and rewrite all connection attempts to localhost:4321
-> to localhost:1234 (for port tests) and connections to unreachable
-> IPv4/IPv6 IPs to the local socket (for address tests).
+On Tue, Mar 24, 2020 at 08:53:14PM -0700, Jakub Kicinski wrote:
+> On Tue, 24 Mar 2020 21:32:40 +0200 Ido Schimmel wrote:
+> > From: Ido Schimmel <idosch@mellanox.com>
+> > 
+> > The previous patch allowed device drivers to publish their default
+> > binding between packet trap policers and packet trap groups. However,
+> > some users might not be content with this binding and would like to
+> > change it.
+> > 
+> > In case user space passed a packet trap policer identifier when setting
+> > a packet trap group, invoke the appropriate device driver callback and
+> > pass the new policer identifier.
+> > 
+> > Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> > Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> > ---
+> >  include/net/devlink.h |  9 +++++++++
+> >  net/core/devlink.c    | 43 +++++++++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 52 insertions(+)
+> > 
+> > diff --git a/include/net/devlink.h b/include/net/devlink.h
+> > index 84c28e0f2d90..dea3c3fd9634 100644
+> > --- a/include/net/devlink.h
+> > +++ b/include/net/devlink.h
+> > @@ -847,6 +847,15 @@ struct devlink_ops {
+> >  	 */
+> >  	int (*trap_group_init)(struct devlink *devlink,
+> >  			       const struct devlink_trap_group *group);
+> > +	/**
+> > +	 * @trap_group_set: Trap group parameters set function.
+> > +	 *
+> > +	 * Note: @policer can be NULL when a policer is being unbound from
+> > +	 * @group.
+> > +	 */
+> > +	int (*trap_group_set)(struct devlink *devlink,
+> > +			      const struct devlink_trap_group *group,
+> > +			      const struct devlink_trap_policer *policer);
+> >  	/**
+> >  	 * @trap_policer_init: Trap policer initialization function.
+> >  	 *
+> > diff --git a/net/core/devlink.c b/net/core/devlink.c
+> > index 4ec7c7578709..e3042e131c1f 100644
+> > --- a/net/core/devlink.c
+> > +++ b/net/core/devlink.c
+> > @@ -6039,6 +6039,45 @@ devlink_trap_group_action_set(struct devlink *devlink,
+> >  	return 0;
+> >  }
+> >  
+> > +static int devlink_trap_group_set(struct devlink *devlink,
+> > +				  struct devlink_trap_group_item *group_item,
+> > +				  struct genl_info *info)
+> > +{
+> > +	struct devlink_trap_policer_item *policer_item;
+> > +	struct netlink_ext_ack *extack = info->extack;
+> > +	const struct devlink_trap_policer *policer;
+> > +	struct nlattr **attrs = info->attrs;
+> > +	int err;
+> > +
+> 
+> Why not:
+> 
+> 	if (!attrs[DEVLINK_ATTR_TRAP_POLICER_ID])
+> 		return 0?
 
-Can you extend this to cover UDP as well?
+Trying to come up with a good reason why I didn't do it, but don't have
+any :p
 
->
-> Keep in mind that both client to server and server to client traffic
-> passes the classifier.
->
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> Co-authored-by: Joe Stringer <joe@wand.net.nz>
-> Signed-off-by: Joe Stringer <joe@wand.net.nz>
-> ---
-> v2: Rebase onto test_progs infrastructure
-> v1: Initial commit
-> ---
->  tools/testing/selftests/bpf/Makefile          |   2 +-
->  .../selftests/bpf/prog_tests/sk_assign.c      | 244 ++++++++++++++++++
->  .../selftests/bpf/progs/test_sk_assign.c      | 127 +++++++++
->  3 files changed, 372 insertions(+), 1 deletion(-)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/sk_assign.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_sk_assign.c
->
-> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> index 7729892e0b04..4f7f83d059ca 100644
-> --- a/tools/testing/selftests/bpf/Makefile
-> +++ b/tools/testing/selftests/bpf/Makefile
-> @@ -76,7 +76,7 @@ TEST_PROGS_EXTENDED := with_addr.sh \
->  # Compile but not part of 'make run_tests'
->  TEST_GEN_PROGS_EXTENDED = test_sock_addr test_skb_cgroup_id_user \
->         flow_dissector_load test_flow_dissector test_tcp_check_syncookie_user \
-> -       test_lirc_mode2_user xdping test_cpp runqslower
-> +       test_lirc_mode2_user xdping test_cpp runqslower test_sk_assign
->
->  TEST_CUSTOM_PROGS = urandom_read
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/sk_assign.c b/tools/testing/selftests/bpf/prog_tests/sk_assign.c
-> new file mode 100644
-> index 000000000000..1f0afcc20c48
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/sk_assign.c
-> @@ -0,0 +1,244 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Copyright (c) 2018 Facebook
-> +// Copyright (c) 2019 Cloudflare
-> +// Copyright (c) 2020 Isovalent, Inc.
-> +/*
-> + * Test that the socket assign program is able to redirect traffic towards a
-> + * socket, regardless of whether the port or address destination of the traffic
-> + * matches the port.
-> + */
-> +
-> +#define _GNU_SOURCE
-> +#include <fcntl.h>
-> +#include <signal.h>
-> +#include <stdlib.h>
-> +#include <unistd.h>
-> +
-> +#include "test_progs.h"
-> +
-> +#define TEST_DPORT 4321
-> +#define TEST_DADDR (0xC0A80203)
-> +#define NS_SELF "/proc/self/ns/net"
-> +
-> +static __u32 duration;
-> +
-> +static bool configure_stack(int self_net)
-> +{
-> +       /* Move to a new networking namespace */
-> +       if (CHECK_FAIL(unshare(CLONE_NEWNET)))
-> +               return false;
-> +
-> +       /* Configure necessary links, routes */
-> +       if (CHECK_FAIL(system("ip link set dev lo up")))
-> +               return false;
-> +       if (CHECK_FAIL(system("ip route add local default dev lo")))
-> +               return false;
-> +       if (CHECK_FAIL(system("ip -6 route add local default dev lo")))
-> +               return false;
-> +
-> +       /* Load qdisc, BPF program */
-> +       if (CHECK_FAIL(system("tc qdisc add dev lo clsact")))
-> +               return false;
-> +       if (CHECK_FAIL(system("tc filter add dev lo ingress bpf direct-action "
-> +                    "object-file ./test_sk_assign.o section sk_assign_test")))
-> +               return false;
-> +
-> +       return true;
-> +}
-> +
-> +static int start_server(const struct sockaddr *addr, socklen_t len)
-> +{
-> +       int fd;
-> +
-> +       fd = socket(addr->sa_family, SOCK_STREAM, 0);
-> +       if (CHECK_FAIL(fd == -1))
-> +               goto out;
-> +       if (CHECK_FAIL(bind(fd, addr, len) == -1))
-> +               goto close_out;
-> +       if (CHECK_FAIL(listen(fd, 128) == -1))
-> +               goto close_out;
-> +
-> +       goto out;
-> +
-> +close_out:
-> +       close(fd);
-> +       fd = -1;
-> +out:
-> +       return fd;
-> +}
-> +
-> +static void handle_timeout(int signum)
-> +{
-> +       if (signum == SIGALRM)
-> +               fprintf(stderr, "Timed out while connecting to server\n");
-> +       kill(0, SIGKILL);
-> +}
-> +
-> +static struct sigaction timeout_action = {
-> +       .sa_handler = handle_timeout,
-> +};
-> +
-> +static int connect_to_server(const struct sockaddr *addr, socklen_t len)
-> +{
-> +       int fd = -1;
-> +
-> +       fd = socket(addr->sa_family, SOCK_STREAM, 0);
-> +       if (CHECK_FAIL(fd == -1))
-> +               goto out;
-> +       if (CHECK_FAIL(sigaction(SIGALRM, &timeout_action, NULL)))
-> +               goto out;
-> +       alarm(3);
-> +       if (CHECK_FAIL(connect(fd, addr, len) == -1))
-> +               goto close_out;
-> +
-> +       goto out;
-> +
-> +close_out:
-> +       close(fd);
-> +       fd = -1;
-> +out:
-> +       return fd;
-> +}
-> +
-> +static in_port_t get_port(int fd)
-> +{
-> +       struct sockaddr_storage name;
-> +       socklen_t len;
-> +       in_port_t port = 0;
-> +
-> +       len = sizeof(name);
-> +       if (CHECK_FAIL(getsockname(fd, (struct sockaddr *)&name, &len)))
-> +               return port;
-> +
-> +       switch (name.ss_family) {
-> +       case AF_INET:
-> +               port = ((struct sockaddr_in *)&name)->sin_port;
-> +               break;
-> +       case AF_INET6:
-> +               port = ((struct sockaddr_in6 *)&name)->sin6_port;
-> +               break;
-> +       default:
-> +               CHECK(1, "Invalid address family", "%d\n", name.ss_family);
-> +       }
-> +       return port;
-> +}
-> +
-> +static int run_test(int server_fd, const struct sockaddr *addr, socklen_t len)
-> +{
-> +       int client = -1, srv_client = -1;
-> +       char buf[] = "testing";
-> +       in_port_t port;
-> +       int ret = 1;
-> +
-> +       client = connect_to_server(addr, len);
-> +       if (client == -1) {
-> +               perror("Cannot connect to server");
-> +               goto out;
-> +       }
-> +
-> +       srv_client = accept(server_fd, NULL, NULL);
-> +       if (CHECK_FAIL(srv_client == -1)) {
-> +               perror("Can't accept connection");
-> +               goto out;
-> +       }
-> +       if (CHECK_FAIL(write(client, buf, sizeof(buf)) != sizeof(buf))) {
-> +               perror("Can't write on client");
-> +               goto out;
-> +       }
-> +       if (CHECK_FAIL(read(srv_client, buf, sizeof(buf)) != sizeof(buf))) {
-> +               perror("Can't read on server");
-> +               goto out;
-> +       }
-> +
-> +       port = get_port(srv_client);
-> +       if (CHECK_FAIL(!port))
-> +               goto out;
-> +       if (CHECK(port != htons(TEST_DPORT), "Expected", "port %u but got %u",
-> +                 TEST_DPORT, ntohs(port)))
-> +               goto out;
-> +
-> +       ret = 0;
-> +out:
-> +       close(client);
-> +       close(srv_client);
-> +       return ret;
-> +}
-> +
-> +static int do_sk_assign(void)
-> +{
-> +       struct sockaddr_in addr4;
-> +       struct sockaddr_in6 addr6;
-> +       int server = -1;
-> +       int server_v6 = -1;
-> +       int err = 1;
-> +
-> +       memset(&addr4, 0, sizeof(addr4));
-> +       addr4.sin_family = AF_INET;
-> +       addr4.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-> +       addr4.sin_port = htons(1234);
-> +
-> +       memset(&addr6, 0, sizeof(addr6));
-> +       addr6.sin6_family = AF_INET6;
-> +       addr6.sin6_addr = in6addr_loopback;
-> +       addr6.sin6_port = htons(1234);
-> +
-> +       server = start_server((const struct sockaddr *)&addr4, sizeof(addr4));
-> +       if (server == -1)
-> +               goto out;
-> +
-> +       server_v6 = start_server((const struct sockaddr *)&addr6,
-> +                                sizeof(addr6));
-> +       if (server_v6 == -1)
-> +               goto out;
-> +
-> +       /* Connect to unbound ports */
-> +       addr4.sin_port = htons(TEST_DPORT);
-> +       addr6.sin6_port = htons(TEST_DPORT);
-> +
-> +       test__start_subtest("ipv4 port redir");
-> +       if (run_test(server, (const struct sockaddr *)&addr4, sizeof(addr4)))
-> +               goto out;
-> +
-> +       test__start_subtest("ipv6 port redir");
-> +       if (run_test(server_v6, (const struct sockaddr *)&addr6, sizeof(addr6)))
-> +               goto out;
-> +
-> +       /* Connect to unbound addresses */
-> +       addr4.sin_addr.s_addr = htonl(TEST_DADDR);
-> +       addr6.sin6_addr.s6_addr32[3] = htonl(TEST_DADDR);
-> +
-> +       test__start_subtest("ipv4 addr redir");
-> +       if (run_test(server, (const struct sockaddr *)&addr4, sizeof(addr4)))
-> +               goto out;
-> +
-> +       test__start_subtest("ipv6 addr redir");
-> +       if (run_test(server_v6, (const struct sockaddr *)&addr6, sizeof(addr6)))
-> +               goto out;
-> +
-> +       err = 0;
-> +out:
-> +       close(server);
-> +       close(server_v6);
-> +       return err;
-> +}
-> +
-> +void test_sk_assign(void)
-> +{
-> +       int self_net;
-> +
-> +       self_net = open(NS_SELF, O_RDONLY);
-> +       if (CHECK_FAIL(self_net < 0)) {
-> +               perror("Unable to open "NS_SELF);
-> +               return;
-> +       }
-> +
-> +       if (!configure_stack(self_net)) {
-> +               perror("configure_stack");
-> +               goto cleanup;
-> +       }
-> +
-> +       do_sk_assign();
-> +
-> +cleanup:
-> +       close(self_net);
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/test_sk_assign.c b/tools/testing/selftests/bpf/progs/test_sk_assign.c
-> new file mode 100644
-> index 000000000000..7de30ad3f594
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_sk_assign.c
-> @@ -0,0 +1,127 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +// Copyright (c) 2019 Cloudflare Ltd.
-> +
-> +#include <stddef.h>
-> +#include <stdbool.h>
-> +#include <string.h>
-> +#include <linux/bpf.h>
-> +#include <linux/if_ether.h>
-> +#include <linux/in.h>
-> +#include <linux/ip.h>
-> +#include <linux/ipv6.h>
-> +#include <linux/pkt_cls.h>
-> +#include <linux/tcp.h>
-> +#include <sys/socket.h>
-> +#include <bpf/bpf_helpers.h>
-> +#include <bpf/bpf_endian.h>
-> +
-> +int _version SEC("version") = 1;
-> +char _license[] SEC("license") = "GPL";
-> +
-> +/* Fill 'tuple' with L3 info, and attempt to find L4. On fail, return NULL. */
-> +static struct bpf_sock_tuple *get_tuple(void *data, __u64 nh_off,
-> +                                       void *data_end, __u16 eth_proto,
-> +                                       bool *ipv4)
-> +{
-> +       struct bpf_sock_tuple *result;
-> +       __u8 proto = 0;
-> +       __u64 ihl_len;
-> +
-> +       if (eth_proto == bpf_htons(ETH_P_IP)) {
-> +               struct iphdr *iph = (struct iphdr *)(data + nh_off);
-> +
-> +               if (iph + 1 > data_end)
-> +                       return NULL;
-> +               if (iph->ihl != 5)
-> +                       /* Options are not supported */
-> +                       return NULL;
-> +               ihl_len = iph->ihl * 4;
-> +               proto = iph->protocol;
-> +               *ipv4 = true;
-> +               result = (struct bpf_sock_tuple *)&iph->saddr;
-> +       } else if (eth_proto == bpf_htons(ETH_P_IPV6)) {
-> +               struct ipv6hdr *ip6h = (struct ipv6hdr *)(data + nh_off);
-> +
-> +               if (ip6h + 1 > data_end)
-> +                       return NULL;
-> +               ihl_len = sizeof(*ip6h);
-> +               proto = ip6h->nexthdr;
-> +               *ipv4 = false;
-> +               result = (struct bpf_sock_tuple *)&ip6h->saddr;
-> +       } else {
-> +               return NULL;
-> +       }
-> +
-> +       if (result + 1 > data_end || proto != IPPROTO_TCP)
-> +               return NULL;
-> +
-> +       return result;
-> +}
-> +
-> +SEC("sk_assign_test")
-> +int bpf_sk_assign_test(struct __sk_buff *skb)
-> +{
-> +       void *data_end = (void *)(long)skb->data_end;
-> +       void *data = (void *)(long)skb->data;
-> +       struct ethhdr *eth = (struct ethhdr *)(data);
-> +       struct bpf_sock_tuple *tuple, ln = {0};
-> +       struct bpf_sock *sk;
-> +       int tuple_len;
-> +       bool ipv4;
-> +       int ret;
-> +
-> +       if (eth + 1 > data_end)
-> +               return TC_ACT_SHOT;
-> +
-> +       tuple = get_tuple(data, sizeof(*eth), data_end, eth->h_proto, &ipv4);
-> +       if (!tuple)
-> +               return TC_ACT_SHOT;
-> +
-> +       tuple_len = ipv4 ? sizeof(tuple->ipv4) : sizeof(tuple->ipv6);
-> +       sk = bpf_skc_lookup_tcp(skb, tuple, tuple_len, BPF_F_CURRENT_NETNS, 0);
-> +       if (sk) {
-> +               if (sk->state != BPF_TCP_LISTEN)
-> +                       goto assign;
-> +
-> +               bpf_sk_release(sk);
-> +       }
-> +
-> +       if (ipv4) {
-> +               if (tuple->ipv4.dport != bpf_htons(4321))
-> +                       return TC_ACT_OK;
-> +
-> +               ln.ipv4.daddr = bpf_htonl(0x7f000001);
-> +               ln.ipv4.dport = bpf_htons(1234);
-> +
-> +               sk = bpf_skc_lookup_tcp(skb, &ln, sizeof(ln.ipv4),
-> +                                       BPF_F_CURRENT_NETNS, 0);
-> +       } else {
-> +               if (tuple->ipv6.dport != bpf_htons(4321))
-> +                       return TC_ACT_OK;
-> +
-> +               /* Upper parts of daddr are already zero. */
-> +               ln.ipv6.daddr[3] = bpf_htonl(0x1);
-> +               ln.ipv6.dport = bpf_htons(1234);
-> +
-> +               sk = bpf_skc_lookup_tcp(skb, &ln, sizeof(ln.ipv6),
-> +                                       BPF_F_CURRENT_NETNS, 0);
-> +       }
-> +
-> +       /* We can't do a single skc_lookup_tcp here, because then the compiler
-> +        * will likely spill tuple_len to the stack. This makes it lose all
-> +        * bounds information in the verifier, which then rejects the call as
-> +        * unsafe.
-> +        */
-> +       if (!sk)
-> +               return TC_ACT_SHOT;
-> +
-> +       if (sk->state != BPF_TCP_LISTEN) {
-> +               bpf_sk_release(sk);
-> +               return TC_ACT_SHOT;
-> +       }
-> +
-> +assign:
-> +       ret = bpf_sk_assign(skb, sk, 0);
-> +       bpf_sk_release(sk);
-> +       return ret == 0 ? TC_ACT_OK : TC_ACT_SHOT;
-> +}
-> --
-> 2.20.1
->
+> 
+> > +	if (!devlink->ops->trap_group_set) {
+> > +		if (attrs[DEVLINK_ATTR_TRAP_POLICER_ID])
+> > +			return -EOPNOTSUPP;
+> > +		return 0;
+> > +	}
+> > +
+> > +	policer_item = group_item->policer_item;
+> > +	if (attrs[DEVLINK_ATTR_TRAP_POLICER_ID]) {
+> > +		u32 policer_id;
+> > +
+> > +		policer_id = nla_get_u32(attrs[DEVLINK_ATTR_TRAP_POLICER_ID]);
+> > +		policer_item = devlink_trap_policer_item_lookup(devlink,
+> > +								policer_id);
+> > +		if (policer_id && !policer_item) {
+> > +			NL_SET_ERR_MSG_MOD(extack, "Device did not register this trap policer");
+> 
+> nit: is KBUILD_MODNAME still set if devlink can only be built-in now?
 
+It seems fine:
 
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+NL_SET_ERR_MSG_MOD:
 
-www.cloudflare.com
+# devlink trap policer set pci/0000:01:00.0 policer 1337
+Error: devlink: Device did not register this trap policer.
+devlink answers: No such file or directory
+
+NL_SET_ERR_MSG:
+
+# devlink trap policer set pci/0000:01:00.0 policer 1337
+Error: Device did not register this trap policer.
+devlink answers: No such file or directory
+
+> 
+> > +			return -ENOENT;
+> > +		}
+> > +	}
+> > +	policer = policer_item ? policer_item->policer : NULL;
+> > +
+> > +	err = devlink->ops->trap_group_set(devlink, group_item->group, policer);
+> > +	if (err)
+> > +		return err;
+> > +
+> > +	group_item->policer_item = policer_item;
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >  static int devlink_nl_cmd_trap_group_set_doit(struct sk_buff *skb,
+> >  					      struct genl_info *info)
+> >  {
+> > @@ -6060,6 +6099,10 @@ static int devlink_nl_cmd_trap_group_set_doit(struct sk_buff *skb,
+> >  	if (err)
+> >  		return err;
+> >  
+> > +	err = devlink_trap_group_set(devlink, group_item, info);
+> > +	if (err)
+> > +		return err;
+> 
+> Should this unwind the action changes? Are the changes supposed to be
+> atomic? :S 
+
+I used do_setlink() as reference and it seems that it does not unwind
+the changes. I can add extack message in case we did set action and
+devlink_trap_group_set() failed.
+
+> Also could it potentially be a problem if trap is being enabled and
+> policer applied - if we enable first the CPU may get overloaded and it
+> may be hard to apply the policer? Making sure the ordering is right
+> requires some careful checking, so IDK if its worth it..
+
+I'm not sure it's really an issue, but I can flip the order just to be
+on the safe side.
+
+> 
+> >  	return 0;
+> >  }
+> >  
+> 
