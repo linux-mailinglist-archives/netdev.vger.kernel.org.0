@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 559A3192999
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 14:27:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2285D192998
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 14:27:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727286AbgCYN1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 09:27:01 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38213 "EHLO
+        id S1727402AbgCYN1C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 09:27:02 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:34091 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726842AbgCYN1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 09:27:01 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from eranbe@mellanox.com)
+        with ESMTP id S1726969AbgCYN1C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 09:27:02 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from eranbe@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 25 Mar 2020 15:26:58 +0200
 Received: from dev-l-vrt-198.mtl.labs.mlnx (dev-l-vrt-198.mtl.labs.mlnx [10.134.198.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02PDQwW3010156;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02PDQwW4010156;
         Wed, 25 Mar 2020 15:26:58 +0200
 From:   Eran Ben Elisha <eranbe@mellanox.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
@@ -23,38 +23,192 @@ To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Saeed Mahameed <saeedm@mellanox.com>
 Cc:     Eran Ben Elisha <eranbe@mellanox.com>
-Subject: [PATCH net-next 0/2] Devlink health auto attributes refactor
-Date:   Wed, 25 Mar 2020 15:26:22 +0200
-Message-Id: <1585142784-10517-1-git-send-email-eranbe@mellanox.com>
+Subject: [PATCH net-next 1/2] devlink: Implicitly set auto recover flag when registering health reporter
+Date:   Wed, 25 Mar 2020 15:26:23 +0200
+Message-Id: <1585142784-10517-2-git-send-email-eranbe@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
+In-Reply-To: <1585142784-10517-1-git-send-email-eranbe@mellanox.com>
+References: <1585142784-10517-1-git-send-email-eranbe@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset refactors the auto-recover health reporter flag to be
-explicitly set by the devlink core.
-In addition, add another flag to control auto-dump attribute, also
-to be explicitly set by the devlink core.
+When health reporter is registered to devlink, devlink will implicitly set
+auto recover if and only if the reporter has a recover method. No reason
+to explicitly get the auto recover flag from the driver.
 
-After reporter registration, both flags can be altered be administrator
-only.
+Remove this flag from all drivers that called
+devlink_health_reporter_create.
 
-Eran Ben Elisha (2):
-  devlink: Implicitly set auto recover flag when registering health
-    reporter
-  devlink: Add auto dump flag to health reporter
+Yet, administrator can unset auto recover via netlink command as prior to
+this patch.
 
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |  6 ++--
- .../mellanox/mlx5/core/en/reporter_rx.c       |  2 +-
- .../mellanox/mlx5/core/en/reporter_tx.c       |  2 +-
- .../net/ethernet/mellanox/mlx5/core/health.c  |  4 +--
- drivers/net/netdevsim/health.c                |  4 +--
- include/net/devlink.h                         |  3 +-
- include/uapi/linux/devlink.h                  |  2 ++
- net/core/devlink.c                            | 35 +++++++++++++------
- 8 files changed, 37 insertions(+), 21 deletions(-)
+Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c        | 6 +++---
+ drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/health.c         | 4 ++--
+ drivers/net/netdevsim/health.c                           | 4 ++--
+ include/net/devlink.h                                    | 3 +--
+ net/core/devlink.c                                       | 9 +++------
+ 7 files changed, 13 insertions(+), 17 deletions(-)
 
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index d3c93ccee86a..c4c0d2259304 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -150,7 +150,7 @@ void bnxt_dl_fw_reporters_create(struct bnxt *bp)
+ 	health->fw_reset_reporter =
+ 		devlink_health_reporter_create(bp->dl,
+ 					       &bnxt_dl_fw_reset_reporter_ops,
+-					       0, true, bp);
++					       0, bp);
+ 	if (IS_ERR(health->fw_reset_reporter)) {
+ 		netdev_warn(bp->dev, "Failed to create FW fatal health reporter, rc = %ld\n",
+ 			    PTR_ERR(health->fw_reset_reporter));
+@@ -166,7 +166,7 @@ void bnxt_dl_fw_reporters_create(struct bnxt *bp)
+ 		health->fw_reporter =
+ 			devlink_health_reporter_create(bp->dl,
+ 						       &bnxt_dl_fw_reporter_ops,
+-						       0, false, bp);
++						       0, bp);
+ 		if (IS_ERR(health->fw_reporter)) {
+ 			netdev_warn(bp->dev, "Failed to create FW health reporter, rc = %ld\n",
+ 				    PTR_ERR(health->fw_reporter));
+@@ -182,7 +182,7 @@ void bnxt_dl_fw_reporters_create(struct bnxt *bp)
+ 	health->fw_fatal_reporter =
+ 		devlink_health_reporter_create(bp->dl,
+ 					       &bnxt_dl_fw_fatal_reporter_ops,
+-					       0, true, bp);
++					       0, bp);
+ 	if (IS_ERR(health->fw_fatal_reporter)) {
+ 		netdev_warn(bp->dev, "Failed to create FW fatal health reporter, rc = %ld\n",
+ 			    PTR_ERR(health->fw_fatal_reporter));
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+index ce2b41c61090..09fcd843f808 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_rx.c
+@@ -571,7 +571,7 @@ int mlx5e_reporter_rx_create(struct mlx5e_priv *priv)
+ 	reporter = devlink_health_reporter_create(devlink,
+ 						  &mlx5_rx_reporter_ops,
+ 						  MLX5E_REPORTER_RX_GRACEFUL_PERIOD,
+-						  true, priv);
++						  priv);
+ 	if (IS_ERR(reporter)) {
+ 		netdev_warn(priv->netdev, "Failed to create rx reporter, err = %ld\n",
+ 			    PTR_ERR(reporter));
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+index 2028ce9b151f..9805fc085512 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
+@@ -416,7 +416,7 @@ int mlx5e_reporter_tx_create(struct mlx5e_priv *priv)
+ 	reporter =
+ 		devlink_health_reporter_create(devlink, &mlx5_tx_reporter_ops,
+ 					       MLX5_REPORTER_TX_GRACEFUL_PERIOD,
+-					       true, priv);
++					       priv);
+ 	if (IS_ERR(reporter)) {
+ 		netdev_warn(priv->netdev,
+ 			    "Failed to create tx reporter, err = %ld\n",
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/health.c b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+index d9f4e8c59c1f..fa1665caac46 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/health.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/health.c
+@@ -627,7 +627,7 @@ static void mlx5_fw_reporters_create(struct mlx5_core_dev *dev)
+ 
+ 	health->fw_reporter =
+ 		devlink_health_reporter_create(devlink, &mlx5_fw_reporter_ops,
+-					       0, false, dev);
++					       0, dev);
+ 	if (IS_ERR(health->fw_reporter))
+ 		mlx5_core_warn(dev, "Failed to create fw reporter, err = %ld\n",
+ 			       PTR_ERR(health->fw_reporter));
+@@ -636,7 +636,7 @@ static void mlx5_fw_reporters_create(struct mlx5_core_dev *dev)
+ 		devlink_health_reporter_create(devlink,
+ 					       &mlx5_fw_fatal_reporter_ops,
+ 					       MLX5_REPORTER_FW_GRACEFUL_PERIOD,
+-					       true, dev);
++					       dev);
+ 	if (IS_ERR(health->fw_fatal_reporter))
+ 		mlx5_core_warn(dev, "Failed to create fw fatal reporter, err = %ld\n",
+ 			       PTR_ERR(health->fw_fatal_reporter));
+diff --git a/drivers/net/netdevsim/health.c b/drivers/net/netdevsim/health.c
+index ba8d9ad60feb..62958b238d50 100644
+--- a/drivers/net/netdevsim/health.c
++++ b/drivers/net/netdevsim/health.c
+@@ -271,14 +271,14 @@ int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink)
+ 	health->empty_reporter =
+ 		devlink_health_reporter_create(devlink,
+ 					       &nsim_dev_empty_reporter_ops,
+-					       0, false, health);
++					       0, health);
+ 	if (IS_ERR(health->empty_reporter))
+ 		return PTR_ERR(health->empty_reporter);
+ 
+ 	health->dummy_reporter =
+ 		devlink_health_reporter_create(devlink,
+ 					       &nsim_dev_dummy_reporter_ops,
+-					       0, false, health);
++					       0, health);
+ 	if (IS_ERR(health->dummy_reporter)) {
+ 		err = PTR_ERR(health->dummy_reporter);
+ 		goto err_empty_reporter_destroy;
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 37230e23b5b0..28381763bd94 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -1023,8 +1023,7 @@ int devlink_fmsg_binary_pair_put(struct devlink_fmsg *fmsg, const char *name,
+ struct devlink_health_reporter *
+ devlink_health_reporter_create(struct devlink *devlink,
+ 			       const struct devlink_health_reporter_ops *ops,
+-			       u64 graceful_period, bool auto_recover,
+-			       void *priv);
++			       u64 graceful_period, void *priv);
+ void
+ devlink_health_reporter_destroy(struct devlink_health_reporter *reporter);
+ 
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 73bb8fbe3393..ad69379747ef 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4872,14 +4872,12 @@ devlink_health_reporter_find_by_name(struct devlink *devlink,
+  *	@devlink: devlink
+  *	@ops: ops
+  *	@graceful_period: to avoid recovery loops, in msecs
+- *	@auto_recover: auto recover when error occurs
+  *	@priv: priv
+  */
+ struct devlink_health_reporter *
+ devlink_health_reporter_create(struct devlink *devlink,
+ 			       const struct devlink_health_reporter_ops *ops,
+-			       u64 graceful_period, bool auto_recover,
+-			       void *priv)
++			       u64 graceful_period, void *priv)
+ {
+ 	struct devlink_health_reporter *reporter;
+ 
+@@ -4889,8 +4887,7 @@ devlink_health_reporter_create(struct devlink *devlink,
+ 		goto unlock;
+ 	}
+ 
+-	if (WARN_ON(auto_recover && !ops->recover) ||
+-	    WARN_ON(graceful_period && !ops->recover)) {
++	if (WARN_ON(graceful_period && !ops->recover)) {
+ 		reporter = ERR_PTR(-EINVAL);
+ 		goto unlock;
+ 	}
+@@ -4905,7 +4902,7 @@ devlink_health_reporter_create(struct devlink *devlink,
+ 	reporter->ops = ops;
+ 	reporter->devlink = devlink;
+ 	reporter->graceful_period = graceful_period;
+-	reporter->auto_recover = auto_recover;
++	reporter->auto_recover = !!ops->recover;
+ 	mutex_init(&reporter->dump_lock);
+ 	refcount_set(&reporter->refcount, 1);
+ 	list_add_tail(&reporter->list, &devlink->reporter_list);
 -- 
 2.17.1
 
