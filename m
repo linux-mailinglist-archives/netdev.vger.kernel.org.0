@@ -2,281 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 967BA1925EC
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 11:40:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E64D71925F9
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 11:41:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727421AbgCYKkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 06:40:08 -0400
-Received: from correo.us.es ([193.147.175.20]:40248 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727372AbgCYKkH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 06:40:07 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 7D038E8B63
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 11:39:27 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 6619FFC5EF
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 11:39:27 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 63E5BFC5EE; Wed, 25 Mar 2020 11:39:27 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 307A1DA72F;
-        Wed, 25 Mar 2020 11:39:25 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 25 Mar 2020 11:39:25 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 0797E42EF42B;
-        Wed, 25 Mar 2020 11:39:24 +0100 (CET)
-Date:   Wed, 25 Mar 2020 11:40:01 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-next@vger.kernel.org
-Subject: Re: [PATCH] netfilter: nft_fwd_netdev: Fix CONFIG_NET_CLS_ACT=n build
-Message-ID: <20200325104001.yekvtbrw3lvkhvta@salvia>
-References: <20200325093300.5455-1-geert@linux-m68k.org>
+        id S1727177AbgCYKlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 06:41:49 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:43823 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726073AbgCYKlt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 06:41:49 -0400
+Received: by mail-wr1-f66.google.com with SMTP id b2so2283583wrj.10
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 03:41:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=neOGMMS8i5KRkPfaWBr21mXvahj1YdK4pGNYSNow6FQ=;
+        b=hqaswIQ5hJ2/F/7k3C1M5Q5idCUG9kUi8+PPiKdl2677rm22jfFQyP3EQnxotgOvi9
+         4L4vrHt6IU+DwUF283g0svAD+zKOLQryFA1MViz6SLDQcaabhXZQEVoVng8NejqgSt1F
+         FiynwgD0RzIxEBOgEaH7quBoVDsRFC6l9BfKOR2lTpP8KIkuE59q1YdVnhxATUshlZZ7
+         x5gfJLuRH7ReuWyf9GT6LR2ZCyH2z2Ba+rLWdvZJrfKZS9mwB1NVk1+Q+3h07aA0j9Ae
+         Fl9kvA9ZueiyrAKU/ODfMrhjRq9Cn5zKnFGZLewRTgOBcSoGsI9JE3ayAfpLfXIuTlPh
+         3+Ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=neOGMMS8i5KRkPfaWBr21mXvahj1YdK4pGNYSNow6FQ=;
+        b=X1yDPVfV7fKLpPLRCLJbPYcDa2U+m8M3KA7cM6w+KOommhCbSGgvN1v6yI0UtkhK4L
+         tra7P4eK7i5V9LHVVMbUfrm1aW/scr2zEHlEcw+c5WN0zNdt0IjGiS69GEqgKH29xRJV
+         AlK8rTWIj3CVjFoljXuLERfJ1UiGGxIN6OgMXHTiMRp0t8PbRCSKD6LOz2IcKE0fwpJ0
+         +49PvzoHw4T0RnZLMX6anj7HZtv3C99oEGH6esx85/syiBqpqF8j3uQwMpIVTwSlp2w5
+         YGqzF7eb63NqyDGl9cOTmnmEydXztDTcTxNb1iLCxnMfikDkBMjwa963IIXTprkOC8nx
+         zkhQ==
+X-Gm-Message-State: ANhLgQ3Lwj7rhj1c5eOOwQX4/+lch3TONArbIy2oUFqTvXJdP1ski9DY
+        +SwTjMF+k6mkPqTPChg+D7moDA==
+X-Google-Smtp-Source: ADFU+vttVGKF5WS1i+ZET6Aa5dBM1Yeu2yLRJZtzbxobGABcmtmXURD2v+hRMCd3Uo02mblNil4YqQ==
+X-Received: by 2002:adf:ce0d:: with SMTP id p13mr2694715wrn.8.1585132907507;
+        Wed, 25 Mar 2020 03:41:47 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id w66sm1255661wma.38.2020.03.25.03.41.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Mar 2020 03:41:46 -0700 (PDT)
+Date:   Wed, 25 Mar 2020 11:41:46 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, jiri@mellanox.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 01/15] devlink: Add packet trap policers support
+Message-ID: <20200325104146.GU11304@nanopsycho.orion>
+References: <20200324193250.1322038-1-idosch@idosch.org>
+ <20200324193250.1322038-2-idosch@idosch.org>
+ <20200324203109.71e1efc6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200325094143.GA1332836@splinter>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="bbqnkrzhohussjgz"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200325093300.5455-1-geert@linux-m68k.org>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20200325094143.GA1332836@splinter>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Wed, Mar 25, 2020 at 10:41:43AM CET, idosch@idosch.org wrote:
+>On Tue, Mar 24, 2020 at 08:31:09PM -0700, Jakub Kicinski wrote:
+>> On Tue, 24 Mar 2020 21:32:36 +0200 Ido Schimmel wrote:
+>> > +/**
+>> > + * devlink_trap_policers_register - Register packet trap policers with devlink.
+>> > + * @devlink: devlink.
+>> > + * @policers: Packet trap policers.
+>> > + * @policers_count: Count of provided packet trap policers.
+>> > + *
+>> > + * Return: Non-zero value on failure.
+>> > + */
+>> > +int
+>> > +devlink_trap_policers_register(struct devlink *devlink,
+>> > +			       const struct devlink_trap_policer *policers,
+>> > +			       size_t policers_count)
+>> > +{
+>> > +	int i, err;
+>> > +
+>> > +	mutex_lock(&devlink->lock);
+>> > +	for (i = 0; i < policers_count; i++) {
+>> > +		const struct devlink_trap_policer *policer = &policers[i];
+>> > +
+>> > +		if (WARN_ON(policer->id == 0)) {
+>> > +			err = -EINVAL;
+>> > +			goto err_trap_policer_verify;
+>> > +		}
+>> > +
+>> > +		err = devlink_trap_policer_register(devlink, policer);
+>> > +		if (err)
+>> > +			goto err_trap_policer_register;
+>> > +	}
+>> > +	mutex_unlock(&devlink->lock);
+>> > +
+>> > +	return 0;
+>> > +
+>> > +err_trap_policer_register:
+>> > +err_trap_policer_verify:
+>> 
+>> nit: as you probably know the label names are not really in compliance
+>> with:
+>> https://www.kernel.org/doc/html/latest/process/coding-style.html#centralized-exiting-of-functions
+>> ;)
+>
+>Hi Jakub, thanks for the thorough review!
+>
+>I assume you're referring to the fact that the label does not say what
+>the goto does? It seems that the coding style guide also allows for
+>labels that indicate why the label exists: "Choose label names which say
+>what the goto does or why the goto exists".
+>
+>This is the form I'm used to, but I do adjust the names in code that
+>uses the other form (such as in netdevsim).
+>
+>I already used this form in previous devlink submissions, so I would
+>like to stick to it unless you/Jiri have strong preference here.
 
---bbqnkrzhohussjgz
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Yeah, let's have this per-code. In devlink, this is how it's done. Let's
+be consistent.
 
-On Wed, Mar 25, 2020 at 10:33:00AM +0100, Geert Uytterhoeven wrote:
-> If CONFIG_NET_CLS_ACT=n:
-> 
->     net/netfilter/nft_fwd_netdev.c: In function ‘nft_fwd_netdev_eval’:
->     net/netfilter/nft_fwd_netdev.c:32:10: error: ‘struct sk_buff’ has no member named ‘tc_redirected’
->       pkt->skb->tc_redirected = 1;
-> 	      ^~
->     net/netfilter/nft_fwd_netdev.c:33:10: error: ‘struct sk_buff’ has no member named ‘tc_from_ingress’
->       pkt->skb->tc_from_ingress = 1;
-> 	      ^~
-> 
-> Fix this by protecting this code hunk with the appropriate #ifdef.
 
-Sorry about this, and thank you for fixing up this so fast.
-
-I'm attaching an alternative fix to avoid a dependency on tc from
-netfilter. Still testing, if fine and no objections I'll formally
-submit this.
-
---bbqnkrzhohussjgz
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="x.patch"
-
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 25a8f9387d5a..db8884ad6d40 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -149,6 +149,7 @@ config NET_FC
- config IFB
- 	tristate "Intermediate Functional Block support"
- 	depends on NET_CLS_ACT
-+	select NET_REDIRECT
- 	---help---
- 	  This is an intermediate driver that allows sharing of
- 	  resources.
-diff --git a/drivers/net/ifb.c b/drivers/net/ifb.c
-index 242b9b0943f8..7fe306e76281 100644
---- a/drivers/net/ifb.c
-+++ b/drivers/net/ifb.c
-@@ -75,7 +75,7 @@ static void ifb_ri_tasklet(unsigned long _txp)
- 	}
- 
- 	while ((skb = __skb_dequeue(&txp->tq)) != NULL) {
--		skb->tc_redirected = 0;
-+		skb->redirected = 0;
- 		skb->tc_skip_classify = 1;
- 
- 		u64_stats_update_begin(&txp->tsync);
-@@ -96,7 +96,7 @@ static void ifb_ri_tasklet(unsigned long _txp)
- 		rcu_read_unlock();
- 		skb->skb_iif = txp->dev->ifindex;
- 
--		if (!skb->tc_from_ingress) {
-+		if (!skb->from_ingress) {
- 			dev_queue_xmit(skb);
- 		} else {
- 			skb_pull_rcsum(skb, skb->mac_len);
-@@ -243,7 +243,7 @@ static netdev_tx_t ifb_xmit(struct sk_buff *skb, struct net_device *dev)
- 	txp->rx_bytes += skb->len;
- 	u64_stats_update_end(&txp->rsync);
- 
--	if (!skb->tc_redirected || !skb->skb_iif) {
-+	if (!skb->redirected || !skb->skb_iif) {
- 		dev_kfree_skb(skb);
- 		dev->stats.rx_dropped++;
- 		return NETDEV_TX_OK;
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 5b50278c4bc8..42e1ffc25d32 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -848,8 +848,10 @@ struct sk_buff {
- #ifdef CONFIG_NET_CLS_ACT
- 	__u8			tc_skip_classify:1;
- 	__u8			tc_at_ingress:1;
--	__u8			tc_redirected:1;
--	__u8			tc_from_ingress:1;
-+#endif
-+#ifdef CONFIG_NET_REDIRECT
-+	__u8			redirected:1;
-+	__u8			from_ingress:1;
- #endif
- #ifdef CONFIG_TLS_DEVICE
- 	__u8			decrypted:1;
-@@ -4579,5 +4581,31 @@ static inline __wsum lco_csum(struct sk_buff *skb)
- 	return csum_partial(l4_hdr, csum_start - l4_hdr, partial);
- }
- 
-+static inline bool skb_is_redirected(const struct sk_buff *skb)
-+{
-+#ifdef CONFIG_NET_REDIRECT
-+	return skb->redirected;
-+#else
-+	return false;
-+#endif
-+}
-+
-+static inline void skb_set_redirected(struct sk_buff *skb, bool from_ingress)
-+{
-+#ifdef CONFIG_NET_REDIRECT
-+	skb->redirected = 1;
-+	skb->from_ingress = from_ingress;
-+	if (skb->from_ingress)
-+		skb->tstamp = 0;
-+#endif
-+}
-+
-+static inline void skb_reset_redirect(struct sk_buff *skb)
-+{
-+#ifdef CONFIG_NET_REDIRECT
-+	skb->redirected = 0;
-+#endif
-+}
-+
- #endif	/* __KERNEL__ */
- #endif	/* _LINUX_SKBUFF_H */
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 151208704ed2..c30f914867e6 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -675,22 +675,6 @@ void __qdisc_calculate_pkt_len(struct sk_buff *skb,
- 			       const struct qdisc_size_table *stab);
- int skb_do_redirect(struct sk_buff *);
- 
--static inline void skb_reset_tc(struct sk_buff *skb)
--{
--#ifdef CONFIG_NET_CLS_ACT
--	skb->tc_redirected = 0;
--#endif
--}
--
--static inline bool skb_is_tc_redirected(const struct sk_buff *skb)
--{
--#ifdef CONFIG_NET_CLS_ACT
--	return skb->tc_redirected;
--#else
--	return false;
--#endif
--}
--
- static inline bool skb_at_tc_ingress(const struct sk_buff *skb)
- {
- #ifdef CONFIG_NET_CLS_ACT
-diff --git a/net/Kconfig b/net/Kconfig
-index 2eeb0e55f7c9..df8d8c9bd021 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -52,6 +52,9 @@ config NET_INGRESS
- config NET_EGRESS
- 	bool
- 
-+config NET_REDIRECT
-+	bool
-+
- config SKB_EXTENSIONS
- 	bool
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 402a986659cf..500bba8874b0 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4516,7 +4516,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 	/* Reinjected packets coming from act_mirred or similar should
- 	 * not get XDP generic processing.
- 	 */
--	if (skb_is_tc_redirected(skb))
-+	if (skb_is_redirected(skb))
- 		return XDP_PASS;
- 
- 	/* XDP packets must be linear and must have sufficient headroom
-@@ -5063,7 +5063,7 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
- 			goto out;
- 	}
- #endif
--	skb_reset_tc(skb);
-+	skb_reset_redirect(skb);
- skip_classify:
- 	if (pfmemalloc && !skb_pfmemalloc_protocol(skb))
- 		goto drop;
-diff --git a/net/netfilter/nft_fwd_netdev.c b/net/netfilter/nft_fwd_netdev.c
-index 74f050ba6bad..3087e23297db 100644
---- a/net/netfilter/nft_fwd_netdev.c
-+++ b/net/netfilter/nft_fwd_netdev.c
-@@ -28,9 +28,8 @@ static void nft_fwd_netdev_eval(const struct nft_expr *expr,
- 	struct nft_fwd_netdev *priv = nft_expr_priv(expr);
- 	int oif = regs->data[priv->sreg_dev];
- 
--	/* These are used by ifb only. */
--	pkt->skb->tc_redirected = 1;
--	pkt->skb->tc_from_ingress = 1;
-+	/* This is used by ifb only. */
-+	skb_set_redirected(pkt->skb, true);
- 
- 	nf_fwd_netdev_egress(pkt, oif);
- 	regs->verdict.code = NF_STOLEN;
-diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-index 1ad300e6dbc0..83dd82fc9f40 100644
---- a/net/sched/act_mirred.c
-+++ b/net/sched/act_mirred.c
-@@ -284,10 +284,8 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
- 
- 	/* mirror is always swallowed */
- 	if (is_redirect) {
--		skb2->tc_redirected = 1;
--		skb2->tc_from_ingress = skb2->tc_at_ingress;
--		if (skb2->tc_from_ingress)
--			skb2->tstamp = 0;
-+		skb_set_redirected(skb2, skb2->tc_at_ingress);
-+
- 		/* let's the caller reinsert the packet, if possible */
- 		if (use_reinsert) {
- 			res->ingress = want_ingress;
-
---bbqnkrzhohussjgz--
+>
+>> 
+>> > +	for (i--; i >= 0; i--)
+>> > +		devlink_trap_policer_unregister(devlink, &policers[i]);
+>> > +	mutex_unlock(&devlink->lock);
+>> > +	return err;
+>> > +}
+>> > +EXPORT_SYMBOL_GPL(devlink_trap_policers_register);
