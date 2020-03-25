@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0523619216A
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 07:59:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 974B6192167
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 07:59:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725939AbgCYG7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 02:59:41 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:15050 "EHLO
+        id S1726102AbgCYG7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 02:59:38 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:53524 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725907AbgCYG7i (ORCPT
+        by vger.kernel.org with ESMTP id S1725911AbgCYG7i (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 02:59:38 -0400
 Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02P6wrkw006731
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02P6wrkx006731
         for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 23:59:37 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=TIP5YKzDJ8AN2ByqCGv0FhNrLUtimv+i+/tXVxcy3Dc=;
- b=eo37ebo6y6/Vqdb6YuQe8heIDGaFbzCV2M1srLLym8LwssgKX9B39HNqpXDLPm9Yeejf
- vgDyn9rZbbfQl2BleyYvbbxk1UXQvGEpHEHnHH38/xYCSFn2s9LsCeeDKdI2nDM2m5c8
- 3O35HCIc2XRTZMmqI3tUdByWmCCCVDwVUa0= 
+ content-type; s=facebook; bh=Z3SY+JmABAHgg0NODEo2+2c0yyWwsRBYA2ipAg5I3iE=;
+ b=kZykJD3957Fb+/KhnKvZdBuBzYkb6YYDI1Ww21Guf5h69v3GGKBEllYZWXxCy5VrCNHC
+ 11AY9tR8VoRErgXDccehOngqLVpOFxYEfRgSVXupsHByZi7MN6c0ZmKa9aizOFhnPPDl
+ eRZvXk8ExwYMchnWz2HO9ld+SxfJ4CF310s= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yx2ue6qnd-1
+        by mx0a-00082601.pphosted.com with ESMTP id 2yx2ue6qnd-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
         for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 23:59:37 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::11) by
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:108::8) by
  mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.1847.3; Tue, 24 Mar 2020 23:59:36 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id C93A82EC34F3; Tue, 24 Mar 2020 23:59:31 -0700 (PDT)
+        id 018952EC34F3; Tue, 24 Mar 2020 23:59:33 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 1/6] bpf: factor out cgroup storages operations
-Date:   Tue, 24 Mar 2020 23:57:41 -0700
-Message-ID: <20200325065746.640559-2-andriin@fb.com>
+Subject: [PATCH v2 bpf-next 2/6] bpf: factor out attach_type to prog_type mapping for attach/detach
+Date:   Tue, 24 Mar 2020 23:57:42 -0700
+Message-ID: <20200325065746.640559-3-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200325065746.640559-1-andriin@fb.com>
 References: <20200325065746.640559-1-andriin@fb.com>
@@ -51,238 +51,250 @@ X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
  definitions=2020-03-25_01:2020-03-23,2020-03-25 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
  lowpriorityscore=0 bulkscore=0 clxscore=1015 phishscore=0
- priorityscore=1501 impostorscore=0 adultscore=0 mlxlogscore=820 mlxscore=0
- spamscore=0 suspectscore=25 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2003250058
+ priorityscore=1501 impostorscore=0 adultscore=0 mlxlogscore=979 mlxscore=0
+ spamscore=0 suspectscore=8 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003250058
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Refactor cgroup attach/detach code to abstract away common operations
-performed on all types of cgroup storages. This makes high-level logic more
-apparent, plus allows to reuse more code across multiple functions.
+Factor out logic mapping expected program attach type to program type and
+subsequent handling of program attach/detach. Also list out all supported
+cgroup BPF program types explicitly to prevent accidental bugs once more
+program types are added to a mapping. Do the same for prog_query API.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- kernel/bpf/cgroup.c | 118 +++++++++++++++++++++++++++-----------------
- 1 file changed, 72 insertions(+), 46 deletions(-)
+ kernel/bpf/syscall.c | 153 +++++++++++++++++++------------------------
+ 1 file changed, 66 insertions(+), 87 deletions(-)
 
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index 9a500fadbef5..9c8472823a7f 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -28,6 +28,58 @@ void cgroup_bpf_offline(struct cgroup *cgrp)
- 	percpu_ref_kill(&cgrp->bpf.refcnt);
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 85567a6ea5f9..fd4181939064 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -2535,36 +2535,18 @@ static int bpf_prog_attach_check_attach_type(const struct bpf_prog *prog,
+ 	}
  }
  
-+static void bpf_cgroup_storages_free(struct bpf_cgroup_storage *storages[])
-+{
-+	enum bpf_cgroup_storage_type stype;
-+
-+	for_each_cgroup_storage_type(stype)
-+		bpf_cgroup_storage_free(storages[stype]);
-+}
-+
-+static int bpf_cgroup_storages_alloc(struct bpf_cgroup_storage *storages[],
-+				     struct bpf_prog *prog)
-+{
-+	enum bpf_cgroup_storage_type stype;
-+
-+	for_each_cgroup_storage_type(stype) {
-+		storages[stype] = bpf_cgroup_storage_alloc(prog, stype);
-+		if (IS_ERR(storages[stype])) {
-+			storages[stype] = NULL;
-+			bpf_cgroup_storages_free(storages);
-+			return -ENOMEM;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static void bpf_cgroup_storages_assign(struct bpf_cgroup_storage *dst[],
-+				       struct bpf_cgroup_storage *src[])
-+{
-+	enum bpf_cgroup_storage_type stype;
-+
-+	for_each_cgroup_storage_type(stype)
-+		dst[stype] = src[stype];
-+}
-+
-+static void bpf_cgroup_storages_link(struct bpf_cgroup_storage *storages[],
-+				     struct cgroup* cgrp,
-+				     enum bpf_attach_type attach_type)
-+{
-+	enum bpf_cgroup_storage_type stype;
-+
-+	for_each_cgroup_storage_type(stype)
-+		bpf_cgroup_storage_link(storages[stype], cgrp, attach_type);
-+}
-+
-+static void bpf_cgroup_storages_unlink(struct bpf_cgroup_storage *storages[])
-+{
-+	enum bpf_cgroup_storage_type stype;
-+
-+	for_each_cgroup_storage_type(stype)
-+		bpf_cgroup_storage_unlink(storages[stype]);
-+}
-+
- /**
-  * cgroup_bpf_release() - put references of all bpf programs and
-  *                        release all cgroup bpf data
-@@ -37,7 +89,6 @@ static void cgroup_bpf_release(struct work_struct *work)
- {
- 	struct cgroup *p, *cgrp = container_of(work, struct cgroup,
- 					       bpf.release_work);
--	enum bpf_cgroup_storage_type stype;
- 	struct bpf_prog_array *old_array;
- 	unsigned int type;
- 
-@@ -50,10 +101,8 @@ static void cgroup_bpf_release(struct work_struct *work)
- 		list_for_each_entry_safe(pl, tmp, progs, node) {
- 			list_del(&pl->node);
- 			bpf_prog_put(pl->prog);
--			for_each_cgroup_storage_type(stype) {
--				bpf_cgroup_storage_unlink(pl->storage[stype]);
--				bpf_cgroup_storage_free(pl->storage[stype]);
--			}
-+			bpf_cgroup_storages_unlink(pl->storage);
-+			bpf_cgroup_storages_free(pl->storage);
- 			kfree(pl);
- 			static_branch_dec(&cgroup_bpf_enabled_key);
- 		}
-@@ -138,7 +187,7 @@ static int compute_effective_progs(struct cgroup *cgrp,
- 				   enum bpf_attach_type type,
- 				   struct bpf_prog_array **array)
- {
--	enum bpf_cgroup_storage_type stype;
-+	struct bpf_prog_array_item *item;
- 	struct bpf_prog_array *progs;
- 	struct bpf_prog_list *pl;
- 	struct cgroup *p = cgrp;
-@@ -166,10 +215,10 @@ static int compute_effective_progs(struct cgroup *cgrp,
- 			if (!pl->prog)
- 				continue;
- 
--			progs->items[cnt].prog = pl->prog;
--			for_each_cgroup_storage_type(stype)
--				progs->items[cnt].cgroup_storage[stype] =
--					pl->storage[stype];
-+			item = &progs->items[cnt];
-+			item->prog = pl->prog;
-+			bpf_cgroup_storages_assign(item->cgroup_storage,
-+						   pl->storage);
- 			cnt++;
- 		}
- 	} while ((p = cgroup_parent(p)));
-@@ -305,7 +354,6 @@ int __cgroup_bpf_attach(struct cgroup *cgrp, struct bpf_prog *prog,
- 	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE],
- 		*old_storage[MAX_BPF_CGROUP_STORAGE_TYPE] = {NULL};
- 	struct bpf_prog_list *pl, *replace_pl = NULL;
--	enum bpf_cgroup_storage_type stype;
- 	int err;
- 
- 	if (((flags & BPF_F_ALLOW_OVERRIDE) && (flags & BPF_F_ALLOW_MULTI)) ||
-@@ -341,37 +389,25 @@ int __cgroup_bpf_attach(struct cgroup *cgrp, struct bpf_prog *prog,
- 		replace_pl = list_first_entry(progs, typeof(*pl), node);
- 	}
- 
--	for_each_cgroup_storage_type(stype) {
--		storage[stype] = bpf_cgroup_storage_alloc(prog, stype);
--		if (IS_ERR(storage[stype])) {
--			storage[stype] = NULL;
--			for_each_cgroup_storage_type(stype)
--				bpf_cgroup_storage_free(storage[stype]);
--			return -ENOMEM;
--		}
--	}
-+	if (bpf_cgroup_storages_alloc(storage, prog))
-+		return -ENOMEM;
- 
- 	if (replace_pl) {
- 		pl = replace_pl;
- 		old_prog = pl->prog;
--		for_each_cgroup_storage_type(stype) {
--			old_storage[stype] = pl->storage[stype];
--			bpf_cgroup_storage_unlink(old_storage[stype]);
--		}
-+		bpf_cgroup_storages_unlink(pl->storage);
-+		bpf_cgroup_storages_assign(old_storage, pl->storage);
- 	} else {
- 		pl = kmalloc(sizeof(*pl), GFP_KERNEL);
- 		if (!pl) {
--			for_each_cgroup_storage_type(stype)
--				bpf_cgroup_storage_free(storage[stype]);
-+			bpf_cgroup_storages_free(storage);
- 			return -ENOMEM;
- 		}
- 		list_add_tail(&pl->node, progs);
- 	}
- 
- 	pl->prog = prog;
--	for_each_cgroup_storage_type(stype)
--		pl->storage[stype] = storage[stype];
+-#define BPF_PROG_ATTACH_LAST_FIELD replace_bpf_fd
 -
-+	bpf_cgroup_storages_assign(pl->storage, storage);
- 	cgrp->bpf.flags[type] = saved_flags;
- 
- 	err = update_effective_progs(cgrp, type);
-@@ -379,27 +415,20 @@ int __cgroup_bpf_attach(struct cgroup *cgrp, struct bpf_prog *prog,
- 		goto cleanup;
- 
- 	static_branch_inc(&cgroup_bpf_enabled_key);
--	for_each_cgroup_storage_type(stype) {
--		if (!old_storage[stype])
--			continue;
--		bpf_cgroup_storage_free(old_storage[stype]);
--	}
-+	bpf_cgroup_storages_free(old_storage);
- 	if (old_prog) {
- 		bpf_prog_put(old_prog);
- 		static_branch_dec(&cgroup_bpf_enabled_key);
- 	}
--	for_each_cgroup_storage_type(stype)
--		bpf_cgroup_storage_link(storage[stype], cgrp, type);
-+	bpf_cgroup_storages_link(storage, cgrp, type);
- 	return 0;
- 
- cleanup:
- 	/* and cleanup the prog list */
- 	pl->prog = old_prog;
--	for_each_cgroup_storage_type(stype) {
--		bpf_cgroup_storage_free(pl->storage[stype]);
--		pl->storage[stype] = old_storage[stype];
--		bpf_cgroup_storage_link(old_storage[stype], cgrp, type);
--	}
-+	bpf_cgroup_storages_free(pl->storage);
-+	bpf_cgroup_storages_assign(pl->storage, old_storage);
-+	bpf_cgroup_storages_link(pl->storage, cgrp, type);
- 	if (!replace_pl) {
- 		list_del(&pl->node);
- 		kfree(pl);
-@@ -420,7 +449,6 @@ int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 			enum bpf_attach_type type)
+-#define BPF_F_ATTACH_MASK \
+-	(BPF_F_ALLOW_OVERRIDE | BPF_F_ALLOW_MULTI | BPF_F_REPLACE)
+-
+-static int bpf_prog_attach(const union bpf_attr *attr)
++static enum bpf_prog_type
++attach_type_to_prog_type(enum bpf_attach_type attach_type)
  {
- 	struct list_head *progs = &cgrp->bpf.progs[type];
--	enum bpf_cgroup_storage_type stype;
- 	u32 flags = cgrp->bpf.flags[type];
- 	struct bpf_prog *old_prog = NULL;
- 	struct bpf_prog_list *pl;
-@@ -467,10 +495,8 @@ int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+-	enum bpf_prog_type ptype;
+-	struct bpf_prog *prog;
+-	int ret;
+-
+-	if (!capable(CAP_NET_ADMIN))
+-		return -EPERM;
+-
+-	if (CHECK_ATTR(BPF_PROG_ATTACH))
+-		return -EINVAL;
+-
+-	if (attr->attach_flags & ~BPF_F_ATTACH_MASK)
+-		return -EINVAL;
+-
+-	switch (attr->attach_type) {
++	switch (attach_type) {
+ 	case BPF_CGROUP_INET_INGRESS:
+ 	case BPF_CGROUP_INET_EGRESS:
+-		ptype = BPF_PROG_TYPE_CGROUP_SKB;
++		return BPF_PROG_TYPE_CGROUP_SKB;
+ 		break;
+ 	case BPF_CGROUP_INET_SOCK_CREATE:
+ 	case BPF_CGROUP_INET4_POST_BIND:
+ 	case BPF_CGROUP_INET6_POST_BIND:
+-		ptype = BPF_PROG_TYPE_CGROUP_SOCK;
+-		break;
++		return BPF_PROG_TYPE_CGROUP_SOCK;
+ 	case BPF_CGROUP_INET4_BIND:
+ 	case BPF_CGROUP_INET6_BIND:
+ 	case BPF_CGROUP_INET4_CONNECT:
+@@ -2573,37 +2555,53 @@ static int bpf_prog_attach(const union bpf_attr *attr)
+ 	case BPF_CGROUP_UDP6_SENDMSG:
+ 	case BPF_CGROUP_UDP4_RECVMSG:
+ 	case BPF_CGROUP_UDP6_RECVMSG:
+-		ptype = BPF_PROG_TYPE_CGROUP_SOCK_ADDR;
+-		break;
++		return BPF_PROG_TYPE_CGROUP_SOCK_ADDR;
+ 	case BPF_CGROUP_SOCK_OPS:
+-		ptype = BPF_PROG_TYPE_SOCK_OPS;
+-		break;
++		return BPF_PROG_TYPE_SOCK_OPS;
+ 	case BPF_CGROUP_DEVICE:
+-		ptype = BPF_PROG_TYPE_CGROUP_DEVICE;
+-		break;
++		return BPF_PROG_TYPE_CGROUP_DEVICE;
+ 	case BPF_SK_MSG_VERDICT:
+-		ptype = BPF_PROG_TYPE_SK_MSG;
+-		break;
++		return BPF_PROG_TYPE_SK_MSG;
+ 	case BPF_SK_SKB_STREAM_PARSER:
+ 	case BPF_SK_SKB_STREAM_VERDICT:
+-		ptype = BPF_PROG_TYPE_SK_SKB;
+-		break;
++		return BPF_PROG_TYPE_SK_SKB;
+ 	case BPF_LIRC_MODE2:
+-		ptype = BPF_PROG_TYPE_LIRC_MODE2;
+-		break;
++		return BPF_PROG_TYPE_LIRC_MODE2;
+ 	case BPF_FLOW_DISSECTOR:
+-		ptype = BPF_PROG_TYPE_FLOW_DISSECTOR;
+-		break;
++		return BPF_PROG_TYPE_FLOW_DISSECTOR;
+ 	case BPF_CGROUP_SYSCTL:
+-		ptype = BPF_PROG_TYPE_CGROUP_SYSCTL;
+-		break;
++		return BPF_PROG_TYPE_CGROUP_SYSCTL;
+ 	case BPF_CGROUP_GETSOCKOPT:
+ 	case BPF_CGROUP_SETSOCKOPT:
+-		ptype = BPF_PROG_TYPE_CGROUP_SOCKOPT;
+-		break;
++		return BPF_PROG_TYPE_CGROUP_SOCKOPT;
+ 	default:
+-		return -EINVAL;
++		return BPF_PROG_TYPE_UNSPEC;
+ 	}
++}
++
++#define BPF_PROG_ATTACH_LAST_FIELD replace_bpf_fd
++
++#define BPF_F_ATTACH_MASK \
++	(BPF_F_ALLOW_OVERRIDE | BPF_F_ALLOW_MULTI | BPF_F_REPLACE)
++
++static int bpf_prog_attach(const union bpf_attr *attr)
++{
++	enum bpf_prog_type ptype;
++	struct bpf_prog *prog;
++	int ret;
++
++	if (!capable(CAP_NET_ADMIN))
++		return -EPERM;
++
++	if (CHECK_ATTR(BPF_PROG_ATTACH))
++		return -EINVAL;
++
++	if (attr->attach_flags & ~BPF_F_ATTACH_MASK)
++		return -EINVAL;
++
++	ptype = attach_type_to_prog_type(attr->attach_type);
++	if (ptype == BPF_PROG_TYPE_UNSPEC)
++		return -EINVAL;
  
- 	/* now can actually delete it from this cgroup list */
- 	list_del(&pl->node);
--	for_each_cgroup_storage_type(stype) {
--		bpf_cgroup_storage_unlink(pl->storage[stype]);
--		bpf_cgroup_storage_free(pl->storage[stype]);
--	}
-+	bpf_cgroup_storages_unlink(pl->storage);
-+	bpf_cgroup_storages_free(pl->storage);
- 	kfree(pl);
- 	if (list_empty(progs))
- 		/* last program was detached, reset flags to zero */
+ 	prog = bpf_prog_get_type(attr->attach_bpf_fd, ptype);
+ 	if (IS_ERR(prog))
+@@ -2625,8 +2623,17 @@ static int bpf_prog_attach(const union bpf_attr *attr)
+ 	case BPF_PROG_TYPE_FLOW_DISSECTOR:
+ 		ret = skb_flow_dissector_bpf_prog_attach(attr, prog);
+ 		break;
+-	default:
++	case BPF_PROG_TYPE_CGROUP_DEVICE:
++	case BPF_PROG_TYPE_CGROUP_SKB:
++	case BPF_PROG_TYPE_CGROUP_SOCK:
++	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
++	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
++	case BPF_PROG_TYPE_CGROUP_SYSCTL:
++	case BPF_PROG_TYPE_SOCK_OPS:
+ 		ret = cgroup_bpf_prog_attach(attr, ptype, prog);
++		break;
++	default:
++		ret = -EINVAL;
+ 	}
+ 
+ 	if (ret)
+@@ -2646,53 +2653,27 @@ static int bpf_prog_detach(const union bpf_attr *attr)
+ 	if (CHECK_ATTR(BPF_PROG_DETACH))
+ 		return -EINVAL;
+ 
+-	switch (attr->attach_type) {
+-	case BPF_CGROUP_INET_INGRESS:
+-	case BPF_CGROUP_INET_EGRESS:
+-		ptype = BPF_PROG_TYPE_CGROUP_SKB;
+-		break;
+-	case BPF_CGROUP_INET_SOCK_CREATE:
+-	case BPF_CGROUP_INET4_POST_BIND:
+-	case BPF_CGROUP_INET6_POST_BIND:
+-		ptype = BPF_PROG_TYPE_CGROUP_SOCK;
+-		break;
+-	case BPF_CGROUP_INET4_BIND:
+-	case BPF_CGROUP_INET6_BIND:
+-	case BPF_CGROUP_INET4_CONNECT:
+-	case BPF_CGROUP_INET6_CONNECT:
+-	case BPF_CGROUP_UDP4_SENDMSG:
+-	case BPF_CGROUP_UDP6_SENDMSG:
+-	case BPF_CGROUP_UDP4_RECVMSG:
+-	case BPF_CGROUP_UDP6_RECVMSG:
+-		ptype = BPF_PROG_TYPE_CGROUP_SOCK_ADDR;
+-		break;
+-	case BPF_CGROUP_SOCK_OPS:
+-		ptype = BPF_PROG_TYPE_SOCK_OPS;
+-		break;
+-	case BPF_CGROUP_DEVICE:
+-		ptype = BPF_PROG_TYPE_CGROUP_DEVICE;
+-		break;
+-	case BPF_SK_MSG_VERDICT:
+-		return sock_map_get_from_fd(attr, NULL);
+-	case BPF_SK_SKB_STREAM_PARSER:
+-	case BPF_SK_SKB_STREAM_VERDICT:
++	ptype = attach_type_to_prog_type(attr->attach_type);
++
++	switch (ptype) {
++	case BPF_PROG_TYPE_SK_MSG:
++	case BPF_PROG_TYPE_SK_SKB:
+ 		return sock_map_get_from_fd(attr, NULL);
+-	case BPF_LIRC_MODE2:
++	case BPF_PROG_TYPE_LIRC_MODE2:
+ 		return lirc_prog_detach(attr);
+-	case BPF_FLOW_DISSECTOR:
++	case BPF_PROG_TYPE_FLOW_DISSECTOR:
+ 		return skb_flow_dissector_bpf_prog_detach(attr);
+-	case BPF_CGROUP_SYSCTL:
+-		ptype = BPF_PROG_TYPE_CGROUP_SYSCTL;
+-		break;
+-	case BPF_CGROUP_GETSOCKOPT:
+-	case BPF_CGROUP_SETSOCKOPT:
+-		ptype = BPF_PROG_TYPE_CGROUP_SOCKOPT;
+-		break;
++	case BPF_PROG_TYPE_CGROUP_DEVICE:
++	case BPF_PROG_TYPE_CGROUP_SKB:
++	case BPF_PROG_TYPE_CGROUP_SOCK:
++	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
++	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
++	case BPF_PROG_TYPE_CGROUP_SYSCTL:
++	case BPF_PROG_TYPE_SOCK_OPS:
++		return cgroup_bpf_prog_detach(attr, ptype);
+ 	default:
+ 		return -EINVAL;
+ 	}
+-
+-	return cgroup_bpf_prog_detach(attr, ptype);
+ }
+ 
+ #define BPF_PROG_QUERY_LAST_FIELD query.prog_cnt
+@@ -2726,7 +2707,7 @@ static int bpf_prog_query(const union bpf_attr *attr,
+ 	case BPF_CGROUP_SYSCTL:
+ 	case BPF_CGROUP_GETSOCKOPT:
+ 	case BPF_CGROUP_SETSOCKOPT:
+-		break;
++		return cgroup_bpf_prog_query(attr, uattr);
+ 	case BPF_LIRC_MODE2:
+ 		return lirc_prog_query(attr, uattr);
+ 	case BPF_FLOW_DISSECTOR:
+@@ -2734,8 +2715,6 @@ static int bpf_prog_query(const union bpf_attr *attr,
+ 	default:
+ 		return -EINVAL;
+ 	}
+-
+-	return cgroup_bpf_prog_query(attr, uattr);
+ }
+ 
+ #define BPF_PROG_TEST_RUN_LAST_FIELD test.ctx_out
 -- 
 2.17.1
 
