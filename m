@@ -2,125 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A3178192792
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 12:52:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B66B192793
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 12:53:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727339AbgCYLwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 07:52:19 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:57871 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726313AbgCYLwT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 07:52:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585137139;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PBZkzrTe8hsWABY61jl0I0I4VYbXO2XzznSQcF07yms=;
-        b=gwd7ijpmY4ZCPr7hD6hTqYVRh+k/HwfN6y94zV99Fcz3XlAdi0veUCF0zJoWh97Fq0O33t
-        q+l5akE6VqWWY4c7Hgtsn4h8BPgwY4GSFOhdjRkKHruiOPHeU5WkXFvesoqw2FLrbzvmfT
-        VhgqphauvbYjZXWYfv3apqIRArN2scM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-124-r-Wh4TwsP6CoCr9lTjP60g-1; Wed, 25 Mar 2020 07:52:15 -0400
-X-MC-Unique: r-Wh4TwsP6CoCr9lTjP60g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 613978017CE;
-        Wed, 25 Mar 2020 11:52:14 +0000 (UTC)
-Received: from ovpn-114-87.ams2.redhat.com (ovpn-114-87.ams2.redhat.com [10.36.114.87])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E296C5DA7C;
-        Wed, 25 Mar 2020 11:52:12 +0000 (UTC)
-Message-ID: <ace8e72488fbf2473efaed9fc0680886897939ab.camel@redhat.com>
-Subject: Re: [PATCH net-next] net: use indirect call wrappers for
- skb_copy_datagram_iter()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Date:   Wed, 25 Mar 2020 12:52:11 +0100
-In-Reply-To: <20200325022321.21944-1-edumazet@google.com>
-References: <20200325022321.21944-1-edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1727286AbgCYLxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 07:53:14 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:20526 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726313AbgCYLxN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 07:53:13 -0400
+Received: from r10.asicdesigners.com (r10.asicdesigners.com [10.192.194.10])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 02PBrB1Z005183;
+        Wed, 25 Mar 2020 04:53:11 -0700
+From:   Rahul Kundu <rahul.kundu@chelsio.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     nirranjan@chelsio.com, dt@chelsio.com,
+        Raju Rangoju <rajur@chelsio.com>
+Subject: [PATCH net] cxgb4: Add support to catch bits set in INT_CAUSE5
+Date:   Wed, 25 Mar 2020 04:53:09 -0700
+Message-Id: <4908cdd761d1eec90abd7b6815e07be1d243e5cd.1585137120.git.rahul.kundu@chelsio.com>
+X-Mailer: git-send-email 2.23.0.256.g4c86140027f4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-03-24 at 19:23 -0700, Eric Dumazet wrote:
-> TCP recvmsg() calls skb_copy_datagram_iter(), which
-> calls an indirect function (cb pointing to simple_copy_to_iter())
-> for every MSS (fragment) present in the skb.
-> 
-> CONFIG_RETPOLINE=y forces a very expensive operation
-> that we can avoid thanks to indirect call wrappers.
-> 
-> This patch gives a 13% increase of performance on
-> a single flow, if the bottleneck is the thread reading
-> the TCP socket.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> ---
->  net/core/datagram.c | 14 +++++++++++---
->  1 file changed, 11 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/core/datagram.c b/net/core/datagram.c
-> index 4213081c6ed3d4fda69501641a8c76e041f26b42..639745d4f3b94a248da9a685f45158410a85bec7 100644
-> --- a/net/core/datagram.c
-> +++ b/net/core/datagram.c
-> @@ -51,6 +51,7 @@
->  #include <linux/slab.h>
->  #include <linux/pagemap.h>
->  #include <linux/uio.h>
-> +#include <linux/indirect_call_wrapper.h>
->  
->  #include <net/protocol.h>
->  #include <linux/skbuff.h>
-> @@ -403,6 +404,11 @@ int skb_kill_datagram(struct sock *sk, struct sk_buff *skb, unsigned int flags)
->  }
->  EXPORT_SYMBOL(skb_kill_datagram);
->  
-> +INDIRECT_CALLABLE_DECLARE(static size_t simple_copy_to_iter(const void *addr,
-> +						size_t bytes,
-> +						void *data __always_unused,
-> +						struct iov_iter *i));
-> +
->  static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
->  			       struct iov_iter *to, int len, bool fault_short,
->  			       size_t (*cb)(const void *, size_t, void *,
-> @@ -416,7 +422,8 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
->  	if (copy > 0) {
->  		if (copy > len)
->  			copy = len;
-> -		n = cb(skb->data + offset, copy, data, to);
-> +		n = INDIRECT_CALL_1(cb, simple_copy_to_iter,
-> +				    skb->data + offset, copy, data, to);
->  		offset += n;
->  		if (n != copy)
->  			goto short_copy;
-> @@ -438,8 +445,9 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
->  
->  			if (copy > len)
->  				copy = len;
-> -			n = cb(vaddr + skb_frag_off(frag) + offset - start,
-> -			       copy, data, to);
-> +			n = INDIRECT_CALL_1(cb, simple_copy_to_iter,
-> +					vaddr + skb_frag_off(frag) + offset - start,
-> +					copy, data, to);
->  			kunmap(page);
->  			offset += n;
->  			if (n != copy)
+This commit adds support to catch any bits set in SGE_INT_CAUSE5 for Parity Errors.
+F_ERR_T_RXCRC flag is used to ignore that particular bit as it is not considered as fatal.
+So, we clear out the bit before looking for error.
+This patch now read and report separately all three registers(Cause1, Cause2, Cause5).
+Also, checks for errors if any.
 
-I wondered if we could add a second argument for
-'csum_and_copy_to_iter', but I guess that is a slower path anyway and
-more datapoint would be needed. The patch LGTM, thanks!
+Signed-off-by: Raju Rangoju <rajur@chelsio.com>
+Signed-off-by: Rahul Kundu <rahul.kundu@chelsio.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/t4_hw.c   | 32 +++++++++++++++-----
+ drivers/net/ethernet/chelsio/cxgb4/t4_regs.h |  6 ++++
+ 2 files changed, 30 insertions(+), 8 deletions(-)
 
-Acked-by: Paolo Abeni <pabeni@redhat.com>
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+index 844fdcf55118..18379602a58d 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+@@ -4480,7 +4480,7 @@ static void tp_intr_handler(struct adapter *adapter)
+  */
+ static void sge_intr_handler(struct adapter *adapter)
+ {
+-	u64 v;
++	u32 v = 0, perr;
+ 	u32 err;
+ 
+ 	static const struct intr_info sge_intr_info[] = {
+@@ -4515,13 +4515,29 @@ static void sge_intr_handler(struct adapter *adapter)
+ 		{ 0 }
+ 	};
+ 
+-	v = (u64)t4_read_reg(adapter, SGE_INT_CAUSE1_A) |
+-		((u64)t4_read_reg(adapter, SGE_INT_CAUSE2_A) << 32);
+-	if (v) {
+-		dev_alert(adapter->pdev_dev, "SGE parity error (%#llx)\n",
+-				(unsigned long long)v);
+-		t4_write_reg(adapter, SGE_INT_CAUSE1_A, v);
+-		t4_write_reg(adapter, SGE_INT_CAUSE2_A, v >> 32);
++	perr = t4_read_reg(adapter, SGE_INT_CAUSE1_A);
++	if (perr) {
++		v |= perr;
++		dev_alert(adapter->pdev_dev, "SGE Cause1 Parity Error %#x\n",
++			  perr);
++	}
++
++	perr = t4_read_reg(adapter, SGE_INT_CAUSE2_A);
++	if (perr) {
++		v |= perr;
++		dev_alert(adapter->pdev_dev, "SGE Cause2 Parity Error %#x\n",
++			  perr);
++	}
++
++	if (CHELSIO_CHIP_VERSION(adapter->params.chip) >= CHELSIO_T5) {
++		perr = t4_read_reg(adapter, SGE_INT_CAUSE5_A);
++		/* Parity error (CRC) for err_T_RxCRC is trivial, ignore it */
++		perr &= ~ERR_T_RXCRC_F;
++		if (perr) {
++			v |= perr;
++			dev_alert(adapter->pdev_dev,
++				  "SGE Cause5 Parity Error %#x\n", perr);
++		}
+ 	}
+ 
+ 	v |= t4_handle_intr_status(adapter, SGE_INT_CAUSE3_A, sge_intr_info);
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h b/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
+index a957a6e4d4c4..bb20e50ddb84 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_regs.h
+@@ -487,6 +487,12 @@
+ #define ERROR_QID_M    0x1ffffU
+ #define ERROR_QID_G(x) (((x) >> ERROR_QID_S) & ERROR_QID_M)
+ 
++#define SGE_INT_CAUSE5_A        0x110c
++
++#define ERR_T_RXCRC_S    31
++#define ERR_T_RXCRC_V(x) ((x) << ERR_T_RXCRC_S)
++#define ERR_T_RXCRC_F    ERR_T_RXCRC_V(1U)
++
+ #define HP_INT_THRESH_S    28
+ #define HP_INT_THRESH_M    0xfU
+ #define HP_INT_THRESH_V(x) ((x) << HP_INT_THRESH_S)
+-- 
+2.23.0.256.g4c86140027f4
 
