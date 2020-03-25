@@ -2,99 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F10811922D8
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 09:35:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 237C01922EE
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 09:38:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727530AbgCYIfC convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 25 Mar 2020 04:35:02 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:47823 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726262AbgCYIfB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 04:35:01 -0400
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jH1Uy-0003At-S7; Wed, 25 Mar 2020 09:34:52 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jH1Uv-00047B-MV; Wed, 25 Mar 2020 09:34:49 +0100
-Date:   Wed, 25 Mar 2020 09:34:49 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     David Miller <davem@davemloft.net>
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        mark.rutland@arm.com, robh+dt@kernel.org, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        marex@denx.de, david@protonic.nl, devicetree@vger.kernel.org,
-        linux@armlinux.org.uk, olteanv@gmail.com
-Subject: user space interface for configuring T1 PHY management mode
- (master/slave)
-Message-ID: <20200325083449.GA8404@pengutronix.de>
+        id S1727459AbgCYIiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 04:38:10 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:39011 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726105AbgCYIiJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 04:38:09 -0400
+Received: by mail-lj1-f194.google.com with SMTP id i20so1515419ljn.6;
+        Wed, 25 Mar 2020 01:38:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=u1JHVU3RAXWpWzxoEBTeSB/vNLewo28StJEFtqtyLoU=;
+        b=atWEsClArOzGKdLN4osuAk7d+XSEIi82gzITfDKHYSAZ1c+WEd3Ip/J9eETstflnDX
+         LqQd2q6Qz/8hg3HTYMLWyI1r/uM72eIqZfUXxCdkYr7yZws3ErK2kSKYsVGHg9Cm/mtf
+         X32RT6WFx/DxNfiiCaK5OWiM6W7e7JeJWoOEDUpgi05XVpNAtJvKJtyzJhblBES6Z/65
+         eVjEoRNppJWoaSaLMrUSnZYRRo6sbYBlTHOOD7K3R3s4Elu3PeBJ5C7L2ulwEL9qqsKz
+         nUa//b6Qd9KEX8nStmeRXzWQurXqzw+nAWyASHspx5uRQOtfM4KAnUAZ5r+BnFZwaD/D
+         axHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:in-reply-to:references
+         :date:message-id:mime-version;
+        bh=u1JHVU3RAXWpWzxoEBTeSB/vNLewo28StJEFtqtyLoU=;
+        b=UlVntKbe2jveYAAErnG5iWKhUbUaX0C/TvBgjuMlKDyQEPPkxpGN3GdsTnB65720L1
+         d5rR+NchMvMqgSFrYiYuF9jiQpLhsSVwX4bFIajSRfZ5u6X2TOV15nzk4FCaciwb7uAM
+         pzaut6vDU9Ax7BZriZz4OQG5mevW2jMd84s+Wm9GKJgoOb9T6imGzftlVxgsGYVuYzG8
+         F1GcK3sh/LeiAcc8oSMl5dpDJGWbiImiz1q3Tv6u1ub8esq+Pftx3IKJXybeS0Wo8vak
+         +tFExSslAm6150TWtYDFuhhm7HKdypD0qICRbTivdoLXHJYqQGGmmeHcF/i33cKk0Frw
+         9zKg==
+X-Gm-Message-State: ANhLgQ2IJyFH9Zyb4SesupW4iuvopgcCAPdAQ2bgb5qvMDxBeX/FEbtC
+        xD49I2AmH/9G/tEGg0NQmYs=
+X-Google-Smtp-Source: APiQypL8bMjMZDQevXNQgwWPs9QVjiJXOb2ocQYyMJ5E3G+qtV0tyxn/wNi26nCLubp8d+GA3TyEPA==
+X-Received: by 2002:a2e:9797:: with SMTP id y23mr1235851lji.183.1585125484852;
+        Wed, 25 Mar 2020 01:38:04 -0700 (PDT)
+Received: from saruman (91-155-214-58.elisa-laajakaista.fi. [91.155.214.58])
+        by smtp.gmail.com with ESMTPSA id f7sm522142ljj.4.2020.03.25.01.38.01
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 25 Mar 2020 01:38:03 -0700 (PDT)
+From:   Felipe Balbi <balbi@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Sebastian Siewior <bigeasy@linutronix.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Logan Gunthorpe <logang@deltatee.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        linux-pci@vger.kernel.org, Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        platform-driver-x86@vger.kernel.org,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+        linux-acpi@vger.kernel.org, kbuild test robot <lkp@intel.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
+        Brian Cain <bcain@codeaurora.org>,
+        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
+        Michal Simek <monstr@monstr.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geoff Levand <geoff@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Davidlohr Bueso <dbueso@suse.de>
+Subject: Re: [patch V3 03/20] usb: gadget: Use completion interface instead of open coding it
+In-Reply-To: <20200321113241.043380271@linutronix.de>
+References: <20200321112544.878032781@linutronix.de> <20200321113241.043380271@linutronix.de>
+Date:   Wed, 25 Mar 2020 10:37:57 +0200
+Message-ID: <87blokde3e.fsf@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 09:27:16 up 195 days, 21:15, 449 users,  load average: 0.25, 0.32,
- 0.69
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha256; protocol="application/pgp-signature"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-I'm working on mainlining of NXP1102 PHY (BroadR Reach/802.3bw) support.
+Thomas Gleixner <tglx@linutronix.de> writes:
 
-Basic functionality is working and support with mainline kernel. Now it is time
-to extend it. According to the specification, each PHY can be master or slave.
+> From: Thomas Gleixner <tglx@linutronix.de>
+>
+> ep_io() uses a completion on stack and open codes the waiting with:
+>
+>   wait_event_interruptible (done.wait, done.done);
+> and
+>   wait_event (done.wait, done.done);
+>
+> This waits in non-exclusive mode for complete(), but there is no reason to
+> do so because the completion can only be waited for by the task itself and
+> complete() wakes exactly one exlusive waiter.
+>
+> Replace the open coded implementation with the corresponding
+> wait_for_completion*() functions.
+>
+> No functional change.
+>
+> Reported-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Felipe Balbi <balbi@kernel.org>
+> Cc: linux-usb@vger.kernel.org
 
-The HW can be pre configured via bootstrap pins or fuses to have a default
-configuration. But in some cases we still need to be able to configure the PHY
-in a different mode: 
---------------------------------------------------------------------------------
-http://www.ieee802.org/3/1TPCESG/public/BroadR_Reach_Automotive_Spec_V3.0.pdf
+Do you want to carry it via your tree? If so:
 
-6.1 MASTER-SLAVE configuration resolution
+Acked-by: Felipe Balbi <balbi@kernel.org>
 
-All BroadR-Reach PHYs will default to configure as SLAVE upon power up or reset
-until a management system (for example, processor/microcontroller) configures
-it to be MASTER. MASTER-SLAVE assignment for each link configuration is
-necessary for establishing the timing control of each PHY.
+Otherwise, let me know and I'll pick this patch.
 
-6.2 PHY-Initialization
+=2D-=20
+balbi
 
-Both PHYs sharing a link segment are capable of being MASTER or SLAVE. In IEEE
-802.3-2012, MASTER-SLAVE resolution is attained during the Auto-Negotiation
-process (see IEEE 802.3-2012 Clause 28). However, the latency for this process
-is not acceptable for automotive application. A forced assignment scheme is
-employed depending on the physical deployment of the PHY within the car. This
-process is conducted at the power-up or reset condition. The station management
-system manually configures the BroadR-Reach PHY to be MASTER (before the link
-acquisition process starts) while the link partner defaults to SLAVE
-(un-managed).
---------------------------------------------------------------------------------
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Should phylink be involved in this configuration? What's the proper user
-space interface to use for this kind of configuration?  ethtool or ip
-comes into mind. Further having a Device Tree property to configure a
-default mode to overwrite the boot strap pins would be nice to have.
+-----BEGIN PGP SIGNATURE-----
 
-
-Regards,
-Oleksij
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+iQIzBAEBCAAdFiEElLzh7wn96CXwjh2IzL64meEamQYFAl57GGUACgkQzL64meEa
+mQY/phAAyKS/jK6b1hVevAPsOBS5Zyk+RBQmkmps/3C2lTyyturSmqT3TAMZyTZo
+/HPtsvyUYn8RBI5Pa62mvcnGi+/Lmk76YzmUqn/VJRe+J8kjuFI6IoyT4uDxdUsB
+qGTiuQ5qbV7Ft3fvLoEEbuyPZeDc/pbfFyK78ajdAYec4MGS8r12tWzhRZTRyRAG
+4fb/PjPcfk8/9eTkdgnjgINZTiwT9YN7HWpEfajl3MhlYK9pZh/J7swRaYwZULBo
++eVd6a6ZYt0YLC8wVQ/kJ9Q3EttmWBwPJB4FIXMzYDkXx2Z898ZUKeIJ8IXlwKSh
+CynbYGL7rNJQ+UDpVA8/y5Mqqnu3pAht/csgfrBxm/ukjkMphIDjpzuUaODgH5W3
+Eb4EXNgvgspzEMgz6pv9INgPPh2tWRmBQex8qOLrs1xups+ZmhFSHGKCUs8hxlDj
+Zk0U6Mce6mopXiCf2iVgrv9ItHlp4myA/HwWEub+LwOJi8tCt+vCjzXloWMx4Ha+
+TNyxLHrqLaeTQoYgl1wJQMjIhmcrb9UMBaJ5FhKdaXAGfAeicPSzVqVHG/yl6nds
+Z2cTMhW5kIxJDMAOuemeYZLY8PMzXrG5xHT7Da3yOzurIOmp2rhvhjpt9TpjKDLE
+3qsBCaxpICoolHqV8bAov175RPtyVvv5zdyXWulMD/1c2kVYiiY=
+=IAgh
+-----END PGP SIGNATURE-----
+--=-=-=--
