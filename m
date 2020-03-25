@@ -2,86 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF3B3192F0C
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 18:20:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90C52192F13
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 18:23:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727473AbgCYRUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 13:20:41 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:54979 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727320AbgCYRUl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 13:20:41 -0400
-Received: by mail-wm1-f68.google.com with SMTP id c81so3351045wmd.4
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 10:20:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QLVI8zNSxLrIxX34m4YI2cXgsrHOX77w+svMWnf5/Qc=;
-        b=Cbgcy5r960teBvyqrVmQ00sl/OQrzmo0yYQv+HbcgasKXOHsNkgVzFXjdjHB/sfkkd
-         EfbquMVzZn/3geDAHYbG4Ykw9rmnW3JxqAC6plBV0TDyl+TUECaplYfX8tSLoaiTojfP
-         +fpr9tk5UL0BsRsa5pa7eO8BPjmU2fP5QTF0Z5OX3pJiF+VReM/J0EqAIKFcclcoUUy7
-         8QcfAjp1XkTcewiESeHWwkmBcUnrjkdwFWeg3BQoSrWY95URz3r58/f05mJOQlrUbODR
-         CFjLTUCTKXxFz/3F+SFjOIJ16Io3OH+ol32CFlophP2KPAWlfmARpI0LFjPs7KP8OOSX
-         OkKg==
+        id S1727708AbgCYRXb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 13:23:31 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:55802 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727402AbgCYRXb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 13:23:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585157010;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ITiPYjFKTZt+q+w1K95YcV+C6+CVqFjp7kaW3PsE8LI=;
+        b=a43XzW/RuQdCqKElY2SxobCnyNiQxbF/KT0UuNgyq3wCIllFiBNLlraKQm/j1Tu8qVLLGt
+        tqrtLGE5vc7A7bzYdwt9Sw1foEae+rSMGjkilYm92oXNoEruiBIKMrWPa8GKbBPbAUj9ci
+        V9/7KH1jYnfALMDW7NTvHIgdwpZrmgc=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-87-dy26i6pjOy6dPBe4pZ4MOA-1; Wed, 25 Mar 2020 13:23:28 -0400
+X-MC-Unique: dy26i6pjOy6dPBe4pZ4MOA-1
+Received: by mail-lf1-f71.google.com with SMTP id f27so1105271lfj.16
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 10:23:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QLVI8zNSxLrIxX34m4YI2cXgsrHOX77w+svMWnf5/Qc=;
-        b=i0XuWD0kmfwol6SrNNWpSAJMo5nj65egGeOOjyeiFoiwG2jSpy4SC0n/Nd8jbO0d4W
-         vz6zdq+MOwN/YHxiqvN6SEQaLXfpHx1KQMjvyF3UbbIFXR5zvzqopW5mFJFjJyBCc3rH
-         /erdQUa4rarHxmfSTUX8AUqB0+SkuC2VWXffZi5AqYzhDAVWpK2QJg1S6qOqMUfVpbX0
-         Xyfyz31JbRUNr7E8+jSqADTebxQbUDnC3U46QGjkB59G6RQPNnOJUERjE7hhHaF48jwa
-         vrDDkWR9FSPyAbwA8/GYWUIVy9/7GWhzOIYFzfI1xo6Mj4NuhVW4ZZ4DbUHE2trSLCjF
-         i7Ng==
-X-Gm-Message-State: ANhLgQ1hCqtdtnhSPtS50UTWYRVgfykNAuUcFxslOGS3pZPBTrZlJBWF
-        ba1+ovAhAqycb/gO6PcQvDvbeg==
-X-Google-Smtp-Source: ADFU+vufnzsE5fqlRLNc1x8i/NusCRtbtfPH0DHcXCGVXF8FGvDGFrXDN/8jQ58VjP0DyCuYrfpWAw==
-X-Received: by 2002:a1c:ba04:: with SMTP id k4mr4511775wmf.165.1585156837826;
-        Wed, 25 Mar 2020 10:20:37 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id b5sm34032164wrj.1.2020.03.25.10.20.37
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=ITiPYjFKTZt+q+w1K95YcV+C6+CVqFjp7kaW3PsE8LI=;
+        b=bI3BZTjDD2snC4xkTDj4d+orC18bf7wRiY0sUXDgEDHxXc8NcC2CUnCep2I7Og7kHa
+         n1hlHfkbWO8SeS5m25sxrQvTxG3ZwdZV55aNMtMWuNy3bemBFAqrRx5cCptThWvtfhEy
+         6sWwqk/eVsc8nVPOnCQqxkSIgAt//pcppoU0EMi/mJmsHPc2FS57oN2BZSTLy7GReB0n
+         KJI5nySZu73P/Toms3MjVQrcet/RK9XVqDpX8f+KHKDS6wFsOwiFbpNuCpga9wAa1p+X
+         GbebRvDliJaFCAHjLiZau0TZKRqlb0HjjjA189Awg9VIR8bpITvXYrKCyeDGW7ZFY2v8
+         UjGQ==
+X-Gm-Message-State: ANhLgQ2v2m2xhktrbv5cz1w59lTRrbsJLL5+0SpzJ/oOtliW5sa/e7nG
+        9U80NggzeOw0B03VeD7o/TPHNvwypwj4BoutCgn7hVfjzzJ8p1bPW20vk+/fbmD9vfrnXbizIYk
+        +bzvXyyRSLMgBxFs1
+X-Received: by 2002:a2e:8015:: with SMTP id j21mr2501374ljg.165.1585157007217;
+        Wed, 25 Mar 2020 10:23:27 -0700 (PDT)
+X-Google-Smtp-Source: APiQypIKiQhQJmAxRXHGX9rrAdTeaZce2lL1FiJy8kZSwzv96C/XMUUO72YLhPbDAtJIsWTB3J8iMg==
+X-Received: by 2002:a2e:8015:: with SMTP id j21mr2501354ljg.165.1585157006865;
+        Wed, 25 Mar 2020 10:23:26 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id v19sm5463366lfg.9.2020.03.25.10.23.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2020 10:20:37 -0700 (PDT)
-Date:   Wed, 25 Mar 2020 18:20:36 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH 08/10] devlink: implement DEVLINK_CMD_REGION_NEW
-Message-ID: <20200325172036.GC11304@nanopsycho.orion>
-References: <20200324223445.2077900-1-jacob.e.keller@intel.com>
- <20200324223445.2077900-9-jacob.e.keller@intel.com>
- <20200325164622.GZ11304@nanopsycho.orion>
- <20200325101804.09db32af@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Wed, 25 Mar 2020 10:23:26 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 6177918158B; Wed, 25 Mar 2020 18:23:25 +0100 (CET)
+Subject: [PATCH bpf-next v4 0/4] XDP: Support atomic replacement of XDP
+ interface attachments
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>, Andrey Ignatov <rdna@fb.com>
+Date:   Wed, 25 Mar 2020 18:23:25 +0100
+Message-ID: <158515700529.92963.17609642163080084530.stgit@toke.dk>
+User-Agent: StGit/0.22
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200325101804.09db32af@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Mar 25, 2020 at 06:18:04PM CET, kuba@kernel.org wrote:
->On Wed, 25 Mar 2020 17:46:22 +0100 Jiri Pirko wrote:
->> >+	err = region->ops->snapshot(devlink, info->extack, &data);
->> >+	if (err)
->> >+		goto err_decrement_snapshot_count;
->> >+
->> >+	err = __devlink_region_snapshot_create(region, data, snapshot_id);
->> >+	if (err)
->> >+		goto err_free_snapshot_data;
->> >+
->> >+	return 0;
->> >+
->> >+err_decrement_snapshot_count:
->> >+	__devlink_snapshot_id_decrement(devlink, snapshot_id);
->> >+err_free_snapshot_data:  
->> 
->> In devlink the error labers are named according to actions that failed.
->
->Can we leave this to the author of the code to decide?
+This series adds support for atomically replacing the XDP program loaded on an
+interface. This is achieved by means of a new netlink attribute that can specify
+the expected previous program to replace on the interface. If set, the kernel
+will compare this "expected id" attribute with the program currently loaded on
+the interface, and reject the operation if it does not match.
 
-Well, if you look at 1 .c file, the reader should see one style. So...
+With this primitive, userspace applications can avoid stepping on each other's
+toes when simultaneously updating the loaded XDP program.
+
+Changelog:
+
+v4:
+- Switch back to passing FD instead of ID (Andrii)
+- Rename flag to XDP_FLAGS_REPLACE (for consistency with other similar uses)
+
+v3:
+- Pass existing ID instead of FD (Jakub)
+- Use opts struct for new libbpf function (Andrii)
+
+v2:
+- Fix checkpatch nits and add .strict_start_type to netlink policy (Jakub)
+
+---
+
+Toke Høiland-Jørgensen (4):
+      xdp: Support specifying expected existing program when attaching XDP
+      tools: Add EXPECTED_FD-related definitions in if_link.h
+      libbpf: Add function to set link XDP fd while specifying old program
+      selftests/bpf: Add tests for attaching XDP programs
+
+
+ include/linux/netdevice.h                          |  2 +-
+ include/uapi/linux/if_link.h                       |  4 +-
+ net/core/dev.c                                     | 26 +++++++--
+ net/core/rtnetlink.c                               | 14 +++++
+ tools/include/uapi/linux/if_link.h                 |  4 +-
+ tools/lib/bpf/libbpf.h                             |  8 +++
+ tools/lib/bpf/libbpf.map                           |  1 +
+ tools/lib/bpf/netlink.c                            | 34 +++++++++++-
+ .../testing/selftests/bpf/prog_tests/xdp_attach.c  | 62 ++++++++++++++++++++++
+ 9 files changed, 146 insertions(+), 9 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_attach.c
 
