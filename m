@@ -2,112 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABFDC192E79
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 17:43:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF992192E87
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 17:43:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727505AbgCYQnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 12:43:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41442 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727395AbgCYQnI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 12:43:08 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DD9962073E;
-        Wed, 25 Mar 2020 16:43:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585154587;
-        bh=7TMtuySruvHHcchF36FPpNb2QqP1TWDds4GwT4C/1HQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nQ6K429B3smQECECGxav7S/4s34FmU7p9PzZXUnC4qJxn8J8Ei06gNIPZ99OS2GPN
-         kUERmV5VjEl/1J0HwUJIFWckXoIhDtf2hvTgXyzKJkmz7CKJOj390Z0UHMfWPYzENs
-         ICV9HPOqtJZkMfobLSTrvgszOKUEcba0I1Qy1sM8=
-Date:   Wed, 25 Mar 2020 09:43:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 01/15] devlink: Add packet trap policers
- support
-Message-ID: <20200325094305.15f9ea24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200325094143.GA1332836@splinter>
-References: <20200324193250.1322038-1-idosch@idosch.org>
-        <20200324193250.1322038-2-idosch@idosch.org>
-        <20200324203109.71e1efc6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200325094143.GA1332836@splinter>
+        id S1727639AbgCYQn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 12:43:56 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:39764 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727406AbgCYQn4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 12:43:56 -0400
+Received: by mail-qt1-f195.google.com with SMTP id f20so2728397qtq.6
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 09:43:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Qji6itQwxRkmja6wPCvEJQPDtOccya6nrzgkTEzIwCQ=;
+        b=lsQVWdRAKcZT9lmyfr3YJebo1SJUc1mpwLYc2JqsjpdlyPcVnIGxu4jKZYnUypF0GE
+         F7BM6Mqek5hZa7bABHhEIldf73FwtQDxb8kfDEmLoAZt6KwEPbLuyDAftPhtn6HXEzP/
+         lhJz8Jqzgs8eHr1sqVvstYGamjgWE+sCunCrRmgJvrOiS+liCF3z+2toZMhBuGfgLQx8
+         Tk8Qd7kkMWQTo8LtNmeMzJxVXLmYcV4R/Vdw2o4oE4zC1ig39XzczrqkFv2WIjuMR5A0
+         1IoMNVis0BSeOtufNFeQQtccpsXE4v9TuktV+pUafWFFijSQjgfrLqhVxsj7+2wvkJTw
+         s8iQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Qji6itQwxRkmja6wPCvEJQPDtOccya6nrzgkTEzIwCQ=;
+        b=YmtetbQrnUjGYCPjYcKoMfeuiGkMnEEYmophjNfjZbNrlg0K78fVlb7hFjEEM2aTqV
+         W2v7FyfR1wX4x0ATXPC1xYk2nrIUTRTVDZ7DWoW0qMYIUIndR1a/903BakPS1VNv3L+H
+         lx0gwEgtJw1UE1yzt9yomg+RB9KWvKDud8WqR0HWN6FJiLpB/DGUOseBRi5UvTmT0cTn
+         b9zZDjVRDS2VOXrStgjQpFdFgzaWf46q+lKMlQdl6g5PWmcgNLW3neirU4YVOHY9ziP4
+         FT2nJzKDptU0lL8XD8Flg55Kab1t1bpsMgmW4EckochkGuR4W+OVMJu0JffifjQjt+zp
+         PNAw==
+X-Gm-Message-State: ANhLgQ1xsYBfL9I3o73ToK1FDZKAmpl0Kdl6GGKuaZEtbedIGA4cRGwG
+        gfNr3OMKeEnG3BeuT+tYXyguEcJN
+X-Google-Smtp-Source: ADFU+vsysfAsEOtfD3k13Y/JtSlMfhs47yWevrsRC7D02R7GPVmoWPuUSBuyjdDEUG0scpo2OinBJg==
+X-Received: by 2002:ac8:4e24:: with SMTP id d4mr3869688qtw.307.1585154635480;
+        Wed, 25 Mar 2020 09:43:55 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:5593:7720:faa1:dac9? ([2601:282:803:7700:5593:7720:faa1:dac9])
+        by smtp.googlemail.com with ESMTPSA id t53sm17681019qth.70.2020.03.25.09.43.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 Mar 2020 09:43:54 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] tc: m_action: rename hw stats type uAPI
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        jiri@resnulli.us
+References: <4e960372-2a5e-5a38-b2ae-843957f0cd67@gmail.com>
+ <20200320202145.149844-1-kuba@kernel.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <26b5c7e8-b92d-d887-6f70-0b3938eb45d7@gmail.com>
+Date:   Wed, 25 Mar 2020 10:43:53 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20200320202145.149844-1-kuba@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Mar 2020 11:41:43 +0200 Ido Schimmel wrote:
-> On Tue, Mar 24, 2020 at 08:31:09PM -0700, Jakub Kicinski wrote:
-> > On Tue, 24 Mar 2020 21:32:36 +0200 Ido Schimmel wrote:  
-> > > +/**
-> > > + * devlink_trap_policers_register - Register packet trap policers with devlink.
-> > > + * @devlink: devlink.
-> > > + * @policers: Packet trap policers.
-> > > + * @policers_count: Count of provided packet trap policers.
-> > > + *
-> > > + * Return: Non-zero value on failure.
-> > > + */
-> > > +int
-> > > +devlink_trap_policers_register(struct devlink *devlink,
-> > > +			       const struct devlink_trap_policer *policers,
-> > > +			       size_t policers_count)
-> > > +{
-> > > +	int i, err;
-> > > +
-> > > +	mutex_lock(&devlink->lock);
-> > > +	for (i = 0; i < policers_count; i++) {
-> > > +		const struct devlink_trap_policer *policer = &policers[i];
-> > > +
-> > > +		if (WARN_ON(policer->id == 0)) {
-> > > +			err = -EINVAL;
-> > > +			goto err_trap_policer_verify;
-> > > +		}
-> > > +
-> > > +		err = devlink_trap_policer_register(devlink, policer);
-> > > +		if (err)
-> > > +			goto err_trap_policer_register;
-> > > +	}
-> > > +	mutex_unlock(&devlink->lock);
-> > > +
-> > > +	return 0;
-> > > +
-> > > +err_trap_policer_register:
-> > > +err_trap_policer_verify:  
-> > 
-> > nit: as you probably know the label names are not really in compliance
-> > with:
-> > https://www.kernel.org/doc/html/latest/process/coding-style.html#centralized-exiting-of-functions
-> > ;)  
+On 3/20/20 2:21 PM, Jakub Kicinski wrote:
+> Follow the kernel rename to shorten the identifiers.
+> Rename hw_stats_type to hw_stats.
 > 
-> Hi Jakub, thanks for the thorough review!
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  tc/m_action.c | 39 +++++++++++++++++++--------------------
+>  1 file changed, 19 insertions(+), 20 deletions(-)
 > 
-> I assume you're referring to the fact that the label does not say what
-> the goto does? It seems that the coding style guide also allows for
-> labels that indicate why the label exists: "Choose label names which say
-> what the goto does or why the goto exists".
 
-Hm, why the label exists to me does not mean identify the source of the
-jump. It's quite logical to name the label after the target, because
-then you can just read the body of the function, and validate the jumps
-undo the right things based on their names. Is the reason to name
-labels after source so that the label doesn't have to be renamed if
-steps are inserted in the middle? Can't think of anything else.
+applied to iproute2-next. Thanks
 
-Anyway, it's not a big deal, but please be prepared for me to keep
-bringing this up :)
 
-> This is the form I'm used to, but I do adjust the names in code that
-> uses the other form (such as in netdevsim).
-> 
-> I already used this form in previous devlink submissions, so I would
-> like to stick to it unless you/Jiri have strong preference here.
