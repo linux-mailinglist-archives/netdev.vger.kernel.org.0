@@ -2,305 +2,305 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F14C192294
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 09:25:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6338C1922A2
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 09:28:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726906AbgCYIZP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 25 Mar 2020 04:25:15 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:50636 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726105AbgCYIZP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 04:25:15 -0400
-Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 7398FCECCA;
-        Wed, 25 Mar 2020 09:34:45 +0100 (CET)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
-Subject: Re: [PATCH v2 2/2] Bluetooth: btusb: Read the supported features of
- Microsoft vendor extension
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200325000332.v2.2.I4e01733fa5b818028dc9188ca91438fc54aa5028@changeid>
-Date:   Wed, 25 Mar 2020 09:25:13 +0100
-Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <32026740-96FE-4377-B5A1-2AEE324880D0@holtmann.org>
-References: <20200325070336.1097-1-mcchou@chromium.org>
- <20200325000332.v2.2.I4e01733fa5b818028dc9188ca91438fc54aa5028@changeid>
-To:     Miao-chen Chou <mcchou@chromium.org>
-X-Mailer: Apple Mail (2.3608.60.0.2.5)
+        id S1726313AbgCYI21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 04:28:27 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:51786 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726105AbgCYI21 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 04:28:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585124905;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=TFygb80jlF4QeDh0UcQJf4z7lxP0GjHs8oBGU5kZ/LY=;
+        b=DgSLI2gD92rAher9NpkjKhTFLxQxip5kSW+2Iax8ugH9F3P+k+fkFkdC3G8DnaGkhnpaV7
+        Ye7EMJRZVAa5NdoKSwceZalwcfDjMTyCZe+y81yVZ6y3rzoFNuXsqxaNWVmRGPbRQMgjtJ
+        33KLuzaCaNXqutvz1gj3FiLL3ag5GaM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-398--wrucZ-_OuGjWFyt-5Vxzw-1; Wed, 25 Mar 2020 04:28:08 -0400
+X-MC-Unique: -wrucZ-_OuGjWFyt-5Vxzw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E2AFC1902EA2;
+        Wed, 25 Mar 2020 08:28:05 +0000 (UTC)
+Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-14-13.pek2.redhat.com [10.72.14.13])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C0023CFC5;
+        Wed, 25 Mar 2020 08:27:20 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     mst@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     jgg@mellanox.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        lingshan.zhu@intel.com, eperezma@redhat.com, lulu@redhat.com,
+        parav@mellanox.com, kevin.tian@intel.com, stefanha@redhat.com,
+        rdunlap@infradead.org, hch@infradead.org, aadam@redhat.com,
+        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
+        mhabets@solarflare.com, gdawar@xilinx.com, saugatm@xilinx.com,
+        vmireyno@marvell.com, Jason Wang <jasowang@redhat.com>
+Subject: [PATCH V8 0/9] vDPA support
+Date:   Wed, 25 Mar 2020 16:27:02 +0800
+Message-Id: <20200325082711.1107-1-jasowang@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Miao-chen,
+Hi all:
 
-> This adds a new header to facilitate the opcode and packet structures of
-> vendor extension(s). For now, we add only the
-> HCI_VS_MSFT_Read_Supported_Features command from Microsoft vendor
-> extension. See https://docs.microsoft.com/en-us/windows-hardware/drivers/
-> bluetooth/microsoft-defined-bluetooth-hci-commands-and-events#
-> microsoft-defined-bluetooth-hci-events for more details.
-> Upon initialization of a hci_dev, we issue a
-> HCI_VS_MSFT_Read_Supported_Features command to read the supported features
-> of Microsoft vendor extension if the opcode of Microsoft vendor extension
-> is valid. See https://docs.microsoft.com/en-us/windows-hardware/drivers/
-> bluetooth/microsoft-defined-bluetooth-hci-commands-and-events#
-> hci_vs_msft_read_supported_features for more details.
-> This was verified on a device with Intel ThhunderPeak BT controller where
-> the Microsoft vendor extension features are 0x000000000000003f.
-> 
-> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
-> ---
-> 
-> Changes in v2:
-> - Issue a HCI_VS_MSFT_Read_Supported_Features command with
-> __hci_cmd_sync() instead of constructing a request.
-> 
-> drivers/bluetooth/btusb.c          |  3 ++
-> include/net/bluetooth/hci_core.h   |  4 ++
-> include/net/bluetooth/vendor_hci.h | 51 +++++++++++++++++++
-> net/bluetooth/hci_core.c           | 78 ++++++++++++++++++++++++++++++
-> 4 files changed, 136 insertions(+)
-> create mode 100644 include/net/bluetooth/vendor_hci.h
-> 
-> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-> index 4c49f394f174..410d50dbd4e2 100644
-> --- a/drivers/bluetooth/btusb.c
-> +++ b/drivers/bluetooth/btusb.c
-> @@ -3738,6 +3738,9 @@ static int btusb_probe(struct usb_interface *intf,
-> 	hdev->notify = btusb_notify;
-> 
-> 	hdev->msft_ext.opcode = HCI_OP_NOP;
-> +	hdev->msft_ext.features = 0;
-> +	hdev->msft_ext.evt_prefix_len = 0;
-> +	hdev->msft_ext.evt_prefix = NULL;
+This is an update version of vDPA support in kernel.
 
-as noted in the other review, let hci_alloc_dev and hci_free_dev deal with this.
+vDPA device is a device that uses a datapath which complies with the
+virtio specifications with vendor specific control path. vDPA devices
+can be both physically located on the hardware or emulated by
+software. vDPA hardware devices are usually implemented through PCIE
+with the following types:
 
-> 
-> #ifdef CONFIG_PM
-> 	err = btusb_config_oob_wake(hdev);
-> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-> index 0ec3d9b41d81..f2876c5067a4 100644
-> --- a/include/net/bluetooth/hci_core.h
-> +++ b/include/net/bluetooth/hci_core.h
-> @@ -30,6 +30,7 @@
-> 
-> #include <net/bluetooth/hci.h>
-> #include <net/bluetooth/hci_sock.h>
-> +#include <net/bluetooth/vendor_hci.h>
-> 
-> /* HCI priority */
-> #define HCI_PRIO_MAX	7
-> @@ -246,6 +247,9 @@ struct amp_assoc {
-> 
-> struct msft_vnd_ext {
-> 	__u16	opcode;
-> +	__u64	features;
-> +	__u8	evt_prefix_len;
-> +	void	*evt_prefix;
-> };
-> 
-> struct hci_dev {
-> diff --git a/include/net/bluetooth/vendor_hci.h b/include/net/bluetooth/vendor_hci.h
-> new file mode 100644
-> index 000000000000..89a6795e672c
-> --- /dev/null
-> +++ b/include/net/bluetooth/vendor_hci.h
-> @@ -0,0 +1,51 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +/*
-> + * BlueZ - Bluetooth protocol stack for Linux
-> + * Copyright (C) 2020 Google Corporation
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation;
-> + *
-> + * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-> + * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-> + * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
-> + * IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
-> + * CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
-> + * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
-> + * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
-> + * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-> + *
-> + * ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
-> + * COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
-> + * SOFTWARE IS DISCLAIMED.
-> + */
-> +
-> +#ifndef __VENDOR_HCI_H
-> +#define __VENDOR_HCI_H
-> +
-> +#define MSFT_EVT_PREFIX_MAX_LEN			255
-> +
-> +struct msft_cmd_cmp_info {
-> +	__u8 status;
-> +	__u8 sub_opcode;
-> +} __packed;
-> +
-> +/* Microsoft Vendor HCI subcommands */
-> +#define MSFT_OP_READ_SUPPORTED_FEATURES		0x00
-> +#define MSFT_FEATURE_MASK_RSSI_MONITOR_BREDR_CONN	0x0000000000000001
-> +#define MSFT_FEATURE_MASK_RSSI_MONITOR_LE_CONN		0x0000000000000002
-> +#define MSFT_FEATURE_MASK_RSSI_MONITOR_LE_ADV		0x0000000000000004
-> +#define MSFT_FEATURE_MASK_ADV_MONITOR_LE_ADV		0x0000000000000008
-> +#define MSFT_FEATURE_MASK_VERIFY_CURVE			0x0000000000000010
-> +#define MSFT_FEATURE_MASK_CONCURRENT_ADV_MONITOR	0x0000000000000020
-> +struct msft_cp_read_supported_features {
-> +	__u8 sub_opcode;
-> +} __packed;
-> +struct msft_rp_read_supported_features {
-> +	__u64 features;
-> +	__u8  evt_prefix_len;
-> +	__u8  evt_prefix[0];
-> +} __packed;
-> +
-> +#endif /* __VENDOR_HCI_H */
+- PF (Physical Function) - A single Physical Function
+- VF (Virtual Function) - Device that supports single root I/O
+  virtualization (SR-IOV). Its Virtual Function (VF) represents a
+  virtualized instance of the device that can be assigned to different
+  partitions
+- ADI (Assignable Device Interface) and its equivalents - With
+  technologies such as Intel Scalable IOV, a virtual device (VDEV)
+  composed by host OS utilizing one or more ADIs. Or its equivalent
+  like SF (Sub function) from Mellanox.
 
-Lets put this all in net/bluetooth/msft.c for now.
+From a driver's perspective, depends on how and where the DMA
+translation is done, vDPA devices are split into two types:
 
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index dbd2ad3a26ed..1ea32d10ed08 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -1407,6 +1407,76 @@ static void hci_dev_get_bd_addr_from_property(struct hci_dev *hdev)
-> 	bacpy(&hdev->public_addr, &ba);
-> }
-> 
-> +static void process_msft_vnd_ext_cmd_complete(struct hci_dev *hdev,
-> +					      struct sk_buff *skb)
-> +{
-> +	struct msft_cmd_cmp_info *info = (void *)skb->data;
-> +	const u8 status = info->status;
-> +	const u16 sub_opcode = __le16_to_cpu(info->sub_opcode);
-> +
-> +	skb_pull(skb, sizeof(*info));
-> +
-> +	if (IS_ERR(skb)) {
-> +		BT_WARN("%s: Microsoft extension response packet invalid",
-> +			hdev->name);
-> +		return;
-> +	}
-> +
-> +	if (status) {
-> +		BT_WARN("%s: Microsoft extension sub command 0x%2.2x failed",
-> +			hdev->name, sub_opcode);
-> +		return;
-> +	}
-> +
-> +	BT_DBG("%s: status 0x%2.2x sub opcode 0x%2.2x", hdev->name, status,
-> +	       sub_opcode);
-> +
-> +	switch (sub_opcode) {
-> +	case MSFT_OP_READ_SUPPORTED_FEATURES: {
-> +		struct msft_rp_read_supported_features *rp = (void *)skb->data;
-> +		u8 prefix_len = rp->evt_prefix_len;
-> +
-> +		hdev->msft_ext.features = __le64_to_cpu(rp->features);
-> +		hdev->msft_ext.evt_prefix_len = prefix_len;
-> +		hdev->msft_ext.evt_prefix = kmalloc(prefix_len, GFP_ATOMIC);
+- Platform specific DMA translation - From the driver's perspective,
+  the device can be used on a platform where device access to data in
+  memory is limited and/or translated. An example is a PCIE vDPA whose
+  DMA request was tagged via a bus (e.g PCIE) specific way. DMA
+  translation and protection are done at PCIE bus IOMMU level.
+- Device specific DMA translation - The device implements DMA
+  isolation and protection through its own logic. An example is a vDPA
+  device which uses on-chip IOMMU.
 
-Are we really in interrupt context here? I don’t think there is a need for GFP_ATOMIC.
+To hide the differences and complexity of the above types for a vDPA
+device/IOMMU options and in order to present a generic virtio device
+to the upper layer, a device agnostic framework is required.
 
-> +		if (!hdev->msft_ext.evt_prefix) {
-> +			BT_WARN("%s: Microsoft extension invalid event prefix",
-> +				hdev->name);
+This series introduces a software vDPA bus which abstracts the
+common attributes of vDPA device, vDPA bus driver and the
+communication method, the bus operations (vdpa_config_ops) between the
+vDPA device abstraction and the vDPA bus driver. This allows multiple
+types of drivers to be used for vDPA device like the virtio_vdpa and
+vhost_vdpa driver to operate on the bus and allow vDPA device could be
+used by either kernel virtio driver or userspace vhost drivers as:
 
-Please start using bt_dev_warn etc.
+   virtio drivers  vhost drivers
+          |             |
+    [virtio bus]   [vhost uAPI]
+          |             |
+   virtio device   vhost device
+   virtio_vdpa drv vhost_vdpa drv
+             \       /
+            [vDPA bus]
+                 |
+            vDPA device
+            hardware drv
+                 |
+            [hardware bus]
+                 |
+            vDPA hardware
 
-> +			return;
-> +		}
-> +
-> +		memcpy(hdev->msft_ext.evt_prefix, rp->evt_prefix, prefix_len);
-> +		BT_INFO("%s: Microsoft extension features 0x%016llx",
-> +			hdev->name, hdev->msft_ext.features);
-> +		break;
-> +	}
-> +	default:
-> +		BT_WARN("%s: Microsoft extension unknown sub opcode 0x%2.2x",
-> +			hdev->name, sub_opcode);
-> +		break;
-> +	}
-> +}
-> +
-> +static void read_vendor_extension_features(struct hci_dev *hdev)
-> +{
-> +	struct sk_buff *skb;
-> +	const u16 msft_opcode = hdev->msft_ext.opcode;
-> +
-> +	if (msft_opcode !=  HCI_OP_NOP) {
+virtio_vdpa driver is a transport implementation for kernel virtio
+drivers on top of vDPA bus operations. An alternative is to refactor
+virtio bus which is sub-optimal since the bus and drivers are designed
+to be use by kernel subsystem, a non-trivial major refactoring is
+needed which may impact a brunches of drivers and devices
+implementation inside the kernel. Using a new transport may grealy
+simply both the design and changes.
 
-I really prefer it this way
+vhost_vdpa driver is a new type of vhost device which allows userspace
+vhost drivers to use vDPA devices via vhost uAPI (with minor
+extension). This help to minimize the changes of existed vhost drivers
+for using vDPA devices.
 
-	if (!something_supported)
-		return;
+With the abstraction of vDPA bus and vDPA bus operations, the
+difference and complexity of the under layer hardware is hidden from
+upper layer. The vDPA bus drivers on top can use a unified
+vdpa_config_ops to control different types of vDPA device.
 
-> +		struct msft_cp_read_supported_features cp;
-> +
-> +		cp.sub_opcode = MSFT_OP_READ_SUPPORTED_FEATURES;
-> +		skb = __hci_cmd_sync(hdev, msft_opcode, sizeof(cp), &cp,
-> +				     HCI_CMD_TIMEOUT);
-> +
-> +		process_msft_vnd_ext_cmd_complete(hdev, skb);
-> +		if (skb) {
-> +			kfree_skb(skb);
-> +			skb = NULL;
-> +		}
-> +	}
-> +}
-> +
-> static int hci_dev_do_open(struct hci_dev *hdev)
-> {
-> 	int ret = 0;
-> @@ -1554,6 +1624,11 @@ static int hci_dev_do_open(struct hci_dev *hdev)
-> 		}
-> 	}
-> 
-> +	/* Check features supported by HCI extensions after the init procedure
-> +	 * completed.
-> +	 */
-> +	read_vendor_extension_features(hdev);
-> +
+Two drivers were implemented with the framework introduced in this
+series:
 
-	msft_do_open(hdev);
+- Intel IFC VF driver which depends on the platform IOMMU for DMA
+  translation
+- VDPA simulator which is a software test device with an emulated
+  onchip IOMMU
 
+Future work:
 
-> 	/* If the HCI Reset command is clearing all diagnostic settings,
-> 	 * then they need to be reprogrammed after the init procedure
-> 	 * completed.
-> @@ -1733,6 +1808,9 @@ int hci_dev_do_close(struct hci_dev *hdev)
-> 			cancel_delayed_work_sync(&adv_instance->rpa_expired_cb);
-> 	}
-> 
-> +	kfree(hdev->msft_ext.evt_prefix);
-> +	hdev->msft_ext.evt_prefix = NULL;
-> +
+- direct doorbell mapping support
+- control virtqueue support
+- dirty page tracking support
+- direct interrupt support
+- management API (devlink)
 
-	msft_do_close(hdev);
+Please review.
 
+Thanks
 
-And let these two function clear, init, free etc. everything except hdev->msft_ext.opcode
+Changes from V7:
 
-That said, I would actually also introduce a wrapper msft_set_opcode(hdev, opcode); so that the driver doesn’t have to know the internal on how that opcode is stored.
+- refine kconfig to solve the dependency issues on archs that lacks of
+  CONFIG_VIRTUALIZATION (kbuild)
 
-We can also keep the struct msft_ext internal to msft.c and don’t have to expose the internal details. So all stay confined in net/bluetooth/msft.c.
+Changes from V6:
 
-> 	/* Avoid potential lockdep warnings from the *_flush() calls by
-> 	 * ensuring the workqueue is empty up front.
-> 	 */
+- vdpa_alloc_device() will allocate parent strcture (Jason)
+- remove the vdpa core dev info in IFCVF patch (Jason)
+- provide a free method in the vdpa bus operations for drivet to free
+  private data
+- switch to use new layout in vdapsim and IFCVF
+- make IFCVF depends on PCI_MSI (kbuild)
+- some tweaks on the IFCVF driver
 
-Regards
+Changes from V5:
 
-Marcel
+- include Intel IFCVF driver and vhost-vdpa drivers
+- add the platform IOMMU support for vhost-vdpa
+- check the return value of dev_set_name() (Jason)
+- various tweaks and fixes
+
+Changes from V4:
+
+- use put_device() instead of kfree when fail to register virtio
+  device (Jason)
+- simplify the error handling when allocating vdpasim device (Jason)
+- don't use device_for_each_child() during module exit (Jason)
+- correct the error checking for vdpa_alloc_device() (Harpreet, Lingshan)
+
+Changes from V3:
+
+- various Kconfig fixes (Randy)
+
+Changes from V2:
+
+- release idr in the release function for put_device() unwind (Jason)
+- don't panic when fail to register vdpa bus (Jason)
+- use unsigned int instead of int for ida (Jason)
+- fix the wrong commit log in virito_vdpa patches (Jason)
+- make vdpa_sim depends on RUNTIME_TESTING_MENU (Michael)
+- provide a bus release function for vDPA device (Jason)
+- fix the wrong unwind when creating devices for vDPA simulator (Jason)
+- move vDPA simulator to a dedicated directory (Lingshan)
+- cancel the work before release vDPA simulator
+
+Changes from V1:
+
+- drop sysfs API, leave the management interface to future development
+  (Michael)
+- introduce incremental DMA ops (dma_map/dma_unmap) (Michael)
+- introduce dma_device and use it instead of parent device for doing
+  IOMMU or DMA from bus driver (Michael, Jason, Ling Shan, Tiwei)
+- accept parent device and dma device when register vdpa device
+- coding style and compile fixes (Randy)
+- using vdpa_xxx instead of xxx_vdpa (Jason)
+- ove vDPA accessors to header and make it static inline (Jason)
+- split vdp_register_device() into two helpers vdpa_init_device() and
+  vdpa_register_device() which allows intermediate step to be done (Jason=
+)
+- warn on invalidate queue state when fail to creating virtqueue (Jason)
+- make to_virtio_vdpa_device() static (Jason)
+- use kmalloc/kfree instead of devres for virtio vdpa device (Jason)
+- avoid using cast in vdpa bus function (Jason)
+- introduce module_vdpa_driver and fix module refcnt (Jason)
+- fix returning freed address in vdapsim coherent DMA addr allocation (Da=
+n)
+- various other fixes and tweaks
+
+V7: https://lkml.org/lkml/2020/3/24/21
+V6: https://lkml.org/lkml/2020/3/18/88
+V5: https://lkml.org/lkml/2020/2/26/58
+V4: https://lkml.org/lkml/2020/2/20/59
+V3: https://lkml.org/lkml/2020/2/19/1347
+V2: https://lkml.org/lkml/2020/2/9/275
+V1: https://lkml.org/lkml/2020/1/16/353
+
+Jason Wang (7):
+  vhost: refine vhost and vringh kconfig
+  vhost: allow per device message handler
+  vhost: factor out IOTLB
+  vringh: IOTLB support
+  vDPA: introduce vDPA bus
+  virtio: introduce a vDPA based transport
+  vdpasim: vDPA device simulator
+
+Tiwei Bie (1):
+  vhost: introduce vDPA-based backend
+
+Zhu Lingshan (1):
+  virtio: Intel IFC VF driver for VDPA
+
+ MAINTAINERS                             |   2 +
+ arch/arm/kvm/Kconfig                    |   2 -
+ arch/arm64/kvm/Kconfig                  |   2 -
+ arch/mips/kvm/Kconfig                   |   2 -
+ arch/powerpc/kvm/Kconfig                |   2 -
+ arch/s390/kvm/Kconfig                   |   4 -
+ arch/x86/kvm/Kconfig                    |   4 -
+ drivers/Kconfig                         |   2 +
+ drivers/misc/mic/Kconfig                |   4 -
+ drivers/net/caif/Kconfig                |   4 -
+ drivers/vhost/Kconfig                   |  42 +-
+ drivers/vhost/Kconfig.vringh            |   6 -
+ drivers/vhost/Makefile                  |   6 +
+ drivers/vhost/iotlb.c                   | 177 +++++
+ drivers/vhost/net.c                     |   5 +-
+ drivers/vhost/scsi.c                    |   2 +-
+ drivers/vhost/vdpa.c                    | 883 ++++++++++++++++++++++++
+ drivers/vhost/vhost.c                   | 233 +++----
+ drivers/vhost/vhost.h                   |  45 +-
+ drivers/vhost/vringh.c                  | 421 ++++++++++-
+ drivers/vhost/vsock.c                   |   2 +-
+ drivers/virtio/Kconfig                  |  15 +
+ drivers/virtio/Makefile                 |   2 +
+ drivers/virtio/vdpa/Kconfig             |  37 +
+ drivers/virtio/vdpa/Makefile            |   4 +
+ drivers/virtio/vdpa/ifcvf/Makefile      |   3 +
+ drivers/virtio/vdpa/ifcvf/ifcvf_base.c  | 386 +++++++++++
+ drivers/virtio/vdpa/ifcvf/ifcvf_base.h  | 132 ++++
+ drivers/virtio/vdpa/ifcvf/ifcvf_main.c  | 474 +++++++++++++
+ drivers/virtio/vdpa/vdpa.c              | 180 +++++
+ drivers/virtio/vdpa/vdpa_sim/Makefile   |   2 +
+ drivers/virtio/vdpa/vdpa_sim/vdpa_sim.c | 629 +++++++++++++++++
+ drivers/virtio/virtio_vdpa.c            | 396 +++++++++++
+ include/linux/vdpa.h                    | 247 +++++++
+ include/linux/vhost_iotlb.h             |  47 ++
+ include/linux/vringh.h                  |  36 +
+ include/uapi/linux/vhost.h              |  24 +
+ include/uapi/linux/vhost_types.h        |   8 +
+ 38 files changed, 4224 insertions(+), 248 deletions(-)
+ delete mode 100644 drivers/vhost/Kconfig.vringh
+ create mode 100644 drivers/vhost/iotlb.c
+ create mode 100644 drivers/vhost/vdpa.c
+ create mode 100644 drivers/virtio/vdpa/Kconfig
+ create mode 100644 drivers/virtio/vdpa/Makefile
+ create mode 100644 drivers/virtio/vdpa/ifcvf/Makefile
+ create mode 100644 drivers/virtio/vdpa/ifcvf/ifcvf_base.c
+ create mode 100644 drivers/virtio/vdpa/ifcvf/ifcvf_base.h
+ create mode 100644 drivers/virtio/vdpa/ifcvf/ifcvf_main.c
+ create mode 100644 drivers/virtio/vdpa/vdpa.c
+ create mode 100644 drivers/virtio/vdpa/vdpa_sim/Makefile
+ create mode 100644 drivers/virtio/vdpa/vdpa_sim/vdpa_sim.c
+ create mode 100644 drivers/virtio/virtio_vdpa.c
+ create mode 100644 include/linux/vdpa.h
+ create mode 100644 include/linux/vhost_iotlb.h
+
+--=20
+2.20.1
 
