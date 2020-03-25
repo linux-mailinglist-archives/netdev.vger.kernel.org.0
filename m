@@ -2,32 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F74A191E91
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 02:25:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E149A191E9B
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 02:36:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727229AbgCYBZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 21:25:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43034 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727196AbgCYBZn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 21:25:43 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4CE1620719;
-        Wed, 25 Mar 2020 01:25:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585099542;
-        bh=6TzA+BtOtrGQQQwsWQV9wKptD9SCYw1ump4lGExrYdU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UgWLmPLeuJBHyyf0UoCEFgztX+jkuspr5GcR3YPnHtGdvogl2At/23EpoXCtN57Yo
-         02YbqfZHO7ivkpxAlMdvugewxMP1eQRmy8d4xzuZ4LovFFV8hGHC8bZgSO7pA3SCfO
-         gh7xY3iiXgVFwpyfoqbmSTfPjnEHANcWezPpDr7Y=
-Date:   Tue, 24 Mar 2020 18:25:40 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
+        id S1727272AbgCYBgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 21:36:38 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:45948 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727229AbgCYBgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 21:36:38 -0400
+Received: by mail-pl1-f193.google.com with SMTP id b9so148672pls.12;
+        Tue, 24 Mar 2020 18:36:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uW/iRwUJZKsD7olxJkP9vaD4PA48xnp6VBM3+xZ/VKs=;
+        b=rtcD6LvLmVsn6Tc7WJB4KpeW+XOVIYIPVkRnM3sKtK18iTkDs73fbVU9bEmDXgAuf7
+         R7sH0Gk0xxxQYwHNBuvc9EZuLVPCpc9YRNjahg3itW9tT3YPYhj9wMTiqvjEhh/zslm8
+         8o6quzaI2UBW1qrhZxEPbhrQ45hI9r97ZFwGQ1a7twDUHQFfGlvJ9NZ2Lv/2iWDQxcme
+         yV7mgXcgeohFr7jn5ADnpzkEJCBydALowk3c7ygiZQq6eEQpWN66NafIZfJVhxUvhI7Z
+         03FyWhzcD4opgTs97ujgXKCHHLs4VA9tj7GbrHyd3ayliDnGw36ELMF2D9oZ+q1tkdt/
+         HdEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uW/iRwUJZKsD7olxJkP9vaD4PA48xnp6VBM3+xZ/VKs=;
+        b=R/ZkFTQaJ7O5QoStM9MYw0glbH5t9l1F9466nvNSbCry8aJgwUwSqAL6mpuuuq1L0S
+         QywCFuBMSLecKS73Pl0aVjTY36e9/rz/3f4XiDDw8Uv45fPMMS9sfoLhnYqEXaeySb8T
+         q0Zyy3oZo5zTrUcZnjk2Y/EdazGlD5ydft0kymzH2L70k280sZuAzCopqOV4MBI4K7p4
+         K/UAgyxhKeicXTW/A/RbzPb9xSRCUH2TatfwZrQ817kRb6ZGat0wE/XL0BNAwa2CNkx5
+         ENNEPfPh0PJxJKzCp46oc+72FiwLt7jeX21wneQRPvmEA4r1Us9DQJgNuDggjHHmHbvL
+         juvQ==
+X-Gm-Message-State: ANhLgQ2Y4t9O4QpDP1M2r9KnAipOssyBq3qYPDHBLbOaanmytUyI5jXA
+        stOVP+rV7GF82hkhpEuRc6Q=
+X-Google-Smtp-Source: ADFU+vvYQzlIaLKblrDn/NtAYu6pWx7/hAlTrXeMSaV0dNhmwSFqLM38cJQlVEjbQRZwdW1SPwAiYQ==
+X-Received: by 2002:a17:90b:2318:: with SMTP id mt24mr903833pjb.66.1585100196416;
+        Tue, 24 Mar 2020 18:36:36 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:8308])
+        by smtp.gmail.com with ESMTPSA id 144sm15788590pgc.25.2020.03.24.18.36.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Mar 2020 18:36:35 -0700 (PDT)
+Date:   Tue, 24 Mar 2020 18:36:31 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
@@ -40,72 +62,70 @@ Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
  program when attaching XDP
-Message-ID: <20200324182540.5b3c7307@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAEf4Bzb=FuVVw1wwLbGW1LU05heAFoUiJjm71=Qqxr+dS78qyQ@mail.gmail.com>
-References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
-        <158462359315.164779.13931660750493121404.stgit@toke.dk>
-        <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN>
-        <875zez76ph.fsf@toke.dk>
-        <20200320103530.2853c573@kicinski-fedora-PC1C0HJN>
-        <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
-        <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
-        <87tv2f48lp.fsf@toke.dk>
-        <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com>
-        <87h7ye3mf3.fsf@toke.dk>
-        <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
-        <87tv2e10ly.fsf@toke.dk>
-        <20200324115349.6447f99b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAEf4Bzb=FuVVw1wwLbGW1LU05heAFoUiJjm71=Qqxr+dS78qyQ@mail.gmail.com>
+Message-ID: <20200325013631.vuncsvkivexdb3fr@ast-mbp>
+References: <875zez76ph.fsf@toke.dk>
+ <20200320103530.2853c573@kicinski-fedora-PC1C0HJN>
+ <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
+ <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
+ <87tv2f48lp.fsf@toke.dk>
+ <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com>
+ <87h7ye3mf3.fsf@toke.dk>
+ <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
+ <87tv2e10ly.fsf@toke.dk>
+ <5e7a5e07d85e8_74a82ad21f7a65b88d@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5e7a5e07d85e8_74a82ad21f7a65b88d@john-XPS-13-9370.notmuch>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Mar 2020 15:30:58 -0700 Andrii Nakryiko wrote:
-> On Tue, Mar 24, 2020 at 11:53 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Tue, 24 Mar 2020 11:57:45 +0100 Toke H=C3=B8iland-J=C3=B8rgensen wro=
-te: =20
-> > > > If everyone is using libbpf, does kernel system (bpf syscall vs
-> > > > netlink) matter all that much? =20
-> > >
-> > > This argument works the other way as well, though: If libbpf can
-> > > abstract the subsystem differences and provide a consistent interface=
- to
-> > > "the BPF world", why does BPF need to impose its own syscall API on t=
-he
-> > > networking subsystem? =20
-> >
-> > Hitting the nail on the head there, again :)
-> >
-> > Once upon a time when we were pushing for libbpf focus & unification,
-> > one of my main motivations was that a solid library that most people
-> > use give us the ability to provide user space abstractions. =20
->=20
-> Yes, but bpf_link is not a user-space abstraction only anymore. It
-> started that way and we quickly realized that we still will need
-> kernel support. Not everything can be abstracted in user-space only.
-> So I don't see any contradiction here, that's still libbpf focus.
->
-> > As much as adding new kernel interfaces "to rule them all" is fun, it
-> > has a real cost. =20
->=20
-> We are adding kernel interface regardless of XDP (for cgroups and
-> tracing, then perf_events, etc). The real point and real cost here is
-> to not have another duplication of same functionality just for XDP use
-> case. That's the real cost, not the other way around. Don't know how
-> to emphasize this further.
+On Tue, Mar 24, 2020 at 12:22:47PM -0700, John Fastabend wrote:
+> > 
+> > Well, I wasn't talking about any of those subsystems, I was talking
+> > about networking :)
+> 
+> My experience has been that networking in the strict sense of XDP no
+> longer exists on its own without cgroups, flow dissector, sockops,
+> sockmap, tracing, etc. All of these pieces are built, patched, loaded,
+> pinned and otherwise managed and manipulated as BPF objects via libbpf.
+> 
+> Because I have all this infra in place for other items its a bit odd
+> imo to drop out of BPF apis to then swap a program differently in the
+> XDP case from how I would swap a program in any other place. I'm
+> assuming ability to swap links will be enabled at some point.
+> 
+> Granted it just means I have some extra functions on the side to manage
+> the swap similar to how 'qdisc' would be handled today but still not as
+> nice an experience in my case as if it was handled natively.
+> 
+> Anyways the netlink API is going to have to call into the BPF infra
+> on the kernel side for verification, etc so its already not pure
+> networking.
+> 
+> > 
+> > In particular, networking already has a consistent and fairly
+> > well-designed configuration mechanism (i.e., netlink) that we are
+> > generally trying to move more functionality *towards* not *away from*
+> > (see, e.g., converting ethtool to use netlink).
+> 
+> True. But BPF programs are going to exist and interop with other
+> programs not exactly in the networking space. Actually library calls
+> might be used in tracing, cgroups, and XDP side. It gets a bit more
+> interesting if the "same" object file (with some patching) runs in both
+> XDP and sockops land for example.
 
-Toke's change is net 30 lines of kernel code while retaining full netlink
-compliance and abilities. The integration with libbpf is pretty trivial
-as well. He has an actual project which needs this functionality, and
-for which his change is sufficient.
-
-Neither LoC/maintenance burden nor use cases are in favor of bpf_link
-to put it mildly.
-
-> And there is very little fun involved from my side, believe it or not...
-
+Thanks John for summarizing it very well.
+It looks to me that netlink proponents fail to realize that "bpf for
+networking" goes way beyond what netlink is doing and capable of doing in the
+future. BPF_*_INET_* progs do core networking without any smell of netlink
+anywhere. "But, but, but, netlink is the way to configure networking"... is
+simply not true. Even in years before BPF sockets and syscalls were the way to
+do it. netlink has plenty of awesome properties, but arguing that it's the
+only true way to do networking is not matching the reality.
+Details are important and every case is different. So imo:
+converting ethtool to netlink - great stuff.
+converting netdev irq/queue management to netlink - great stuff too.
+adding more netlink api for xdp - really bad idea.
