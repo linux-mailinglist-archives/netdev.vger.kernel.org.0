@@ -2,184 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C560192867
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 13:30:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B501192869
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 13:30:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727670AbgCYM31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 08:29:27 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:22929 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727444AbgCYM3Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 08:29:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585139364;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=900raWR46tgHDOfPc5pVs6kpLXnkZj9aN4sQMIHjlas=;
-        b=F53y2BvTnhbV68xP0lARhyQVSZI8ri1we41aXcG75zW1RWl77ne6YpwjzCuNITi9AIVpFC
-        PNqThyeR5+munUTG41uD5tbxVssO2bWnPYLDnXEWnNNkycEdc2+9j0FJHDK9ezsPM39Sxv
-        sOf/B2Z076oiTltC1E3QGU6CeWelCLY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-298-3SWSe-XBO72xPJI1ZEIDOA-1; Wed, 25 Mar 2020 08:29:20 -0400
-X-MC-Unique: 3SWSe-XBO72xPJI1ZEIDOA-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 607A7149C0;
-        Wed, 25 Mar 2020 12:29:18 +0000 (UTC)
-Received: from madcap2.tricolour.ca (unknown [10.10.110.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 189C192F80;
-        Wed, 25 Mar 2020 12:29:05 +0000 (UTC)
-Date:   Wed, 25 Mar 2020 08:29:03 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Steve Grubb <sgrubb@redhat.com>, linux-audit@redhat.com,
-        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
-        containers@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
-        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
-        simo@redhat.com, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
-Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
- the audit daemon
-Message-ID: <20200325122903.obkpyog7fjabzrpf@madcap2.tricolour.ca>
-References: <3142237.YMNxv0uec1@x2>
- <CAHC9VhTiCHQbp2SwK0Xb1QgpUZxOQ26JKKPsVGT0ZvMqx28oPQ@mail.gmail.com>
- <20200312202733.7kli64zsnqc4mrd2@madcap2.tricolour.ca>
- <CAHC9VhS9DtxJ4gvOfMRnzoo6ccGJVKL+uZYe6qqH+SPqD8r01Q@mail.gmail.com>
- <20200313192306.wxey3wn2h4htpccm@madcap2.tricolour.ca>
- <CAHC9VhQKOpVWxDg-tWuCWV22QRu8P_NpFKme==0Ot1RQKa_DWA@mail.gmail.com>
- <20200318214154.ycxy5dl4pxno6fvi@madcap2.tricolour.ca>
- <CAHC9VhSuMnd3-ci2Bx-xJ0yscQ=X8ZqFAcNPKpbh_ZWN3FJcuQ@mail.gmail.com>
- <20200319214759.qgxt2sfkmd6srdol@madcap2.tricolour.ca>
- <CAHC9VhTp25OAaTO5UMft0OzUZ=oQpZFjebkjjQP0-NrPp0bNAg@mail.gmail.com>
-MIME-Version: 1.0
+        id S1727549AbgCYM36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 08:29:58 -0400
+Received: from mail-eopbgr00046.outbound.protection.outlook.com ([40.107.0.46]:4315
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727046AbgCYM35 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Mar 2020 08:29:57 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LkE1f86/zVDqiu/oxO3BoLImJjH1rmLUVmAZY2+u3RPa0B1qxJMOg2ZMcrrLKOvSNiiDXq0ZB0QY6W0H6nN+q762NB8/wHT+g4vNno9UJbu2ZiNVjJO7Ve/rmPa62k9QKQKRviWW6uaYrg5wAHqCCKRWypcPzM7NAPJvi5HuZxh0O7KMhaJrWUqRWDbhY5q6xFM9Grd6/mAIZZR19BrT7ySjEYm9Rdq9kO9AiC5q1AF1H6sWU/O5BTuEjRolTCvivOETRAVUqD2eJ7IjIwae1HYgSypDo1mk8dCrpxryzRo8UJHhOVFd7IQPa9R6ViZJMVv1vQ9qu5ASP/+UKmNdHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B4t0K9EjkPeuZFuPUph0eo9tlaSIDwMFN6ti1U0DoQo=;
+ b=IQJgbla4IEFFAgxPsPEZ0hH1oQ9gdexw2j3O8Nnq775B+aM4D4XhVg2gSp3Bk+u8bycq4RYYpwU4CInUAJStsd68awKYOBzm2kMvZLPgD8jDA61XkmZX+UqYDyITmglJhY9cTCB2ulQCDNCWpLDwrAAMZ8XBBhbM+8WRAxyolVbKiGiVsb1WElSbAQaSAhqKJLq0gRTJHW4Ax73V2D/sapZQCaF3uX3NJPFYWCtQRISQGP6I4rKZigmzYSPhbAfe40FeXNK0bn7mm8qHheNrMYwcryEH1nVbppViKRE4bc09fXDdDlEccvfFEEy5dUbHMn8Dn+FOboaqP2i0lntMvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B4t0K9EjkPeuZFuPUph0eo9tlaSIDwMFN6ti1U0DoQo=;
+ b=QCCnCkwtt56ISeKD+0h4dh4fvGQJPpw5Nba62lEmfQni2l0oHDiDA4EnazvMymsoYulnKIUPr3TFUfrrapGcRMT+DCybYfcevcYGobzte433BxAzNcmCmu8cW0rhqYJSXGxhe+WZEcVqN6YJIuiMlUgSyyqHiVufRjC6RGObGpw=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=jgg@mellanox.com; 
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (52.133.14.15) by
+ VI1PR05MB6704.eurprd05.prod.outlook.com (10.141.128.23) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2835.19; Wed, 25 Mar 2020 12:29:53 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::18d2:a9ea:519:add3]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::18d2:a9ea:519:add3%7]) with mapi id 15.20.2835.023; Wed, 25 Mar 2020
+ 12:29:53 +0000
+Date:   Wed, 25 Mar 2020 09:29:49 -0300
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, lingshan.zhu@intel.com, eperezma@redhat.com,
+        lulu@redhat.com, parav@mellanox.com, kevin.tian@intel.com,
+        stefanha@redhat.com, rdunlap@infradead.org, hch@infradead.org,
+        aadam@redhat.com, jiri@mellanox.com, shahafs@mellanox.com,
+        hanand@xilinx.com, mhabets@solarflare.com, gdawar@xilinx.com,
+        saugatm@xilinx.com, vmireyno@marvell.com
+Subject: Re: [PATCH V8 5/9] vDPA: introduce vDPA bus
+Message-ID: <20200325122949.GW13183@mellanox.com>
+References: <20200325082711.1107-1-jasowang@redhat.com>
+ <20200325082711.1107-6-jasowang@redhat.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHC9VhTp25OAaTO5UMft0OzUZ=oQpZFjebkjjQP0-NrPp0bNAg@mail.gmail.com>
-User-Agent: NeoMutt/20180716
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+In-Reply-To: <20200325082711.1107-6-jasowang@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: MN2PR13CA0006.namprd13.prod.outlook.com
+ (2603:10b6:208:160::19) To VI1PR05MB4141.eurprd05.prod.outlook.com
+ (2603:10a6:803:44::15)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.68.57.212) by MN2PR13CA0006.namprd13.prod.outlook.com (2603:10b6:208:160::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.9 via Frontend Transport; Wed, 25 Mar 2020 12:29:52 +0000
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1jH5AL-0006F0-1U; Wed, 25 Mar 2020 09:29:49 -0300
+X-Originating-IP: [142.68.57.212]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 0d9fe0c7-eb7c-4b90-9069-08d7d0b837ff
+X-MS-TrafficTypeDiagnostic: VI1PR05MB6704:|VI1PR05MB6704:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB6704C5FDBDAE585C27F89242CFCE0@VI1PR05MB6704.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Forefront-PRVS: 0353563E2B
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(136003)(366004)(346002)(376002)(2616005)(36756003)(26005)(52116002)(81166006)(81156014)(8936002)(66946007)(66476007)(316002)(66556008)(8676002)(9786002)(4326008)(9746002)(478600001)(6916009)(186003)(5660300002)(33656002)(1076003)(4744005)(7416002)(2906002)(86362001)(24400500001);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6704;H:VI1PR05MB4141.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9k9aO0yVB/ogXbrjmH55++nlJZl8TT2C9x/PladI+n6nYmnMuTNxhox6FSmRHXKlvtKITDu6rP7S9JFdESK2kjmPdLDjEKLegG9r+V47CPaH1KuwyFcG5hVuFSPVk4qWQ8DaOJEF7im/VRQCvfpeIJbdQS3TEcZtw1ec72hzlGBQL4gKQFKKHWppbVgQcNQ7AAGM5pZTwhRCFbcVYG9Tfn6yCNkt9JX+bwpA4zlcBLb8yvvMZ3RPrPuEvn+M9uli16b43lR4xhrWSU4uSSSktMStBRFFLWXbO74YDyONWS2b1bgzwymeEOJuOOPgQcmBq9iq3dYMnsv287sFFDo+91RZGcMwTxkoPBGEs7/Gmy5XzUI3a5vXtZ2uoI6NXlTVn3Yyh5b8OZ/WZ8pTp/l3m0+kmILKOyNxgzAFXtKFLCro0CIA1aQG0hbdzWMYtfUPuyCvMGQO2sfkJhu7INsAtXJG7UDCeTNdXQy32vjGAtp/73L9/iVmmugmjuH6yqEE
+X-MS-Exchange-AntiSpam-MessageData: dWcCjkhYoMMP60CLaxaT0iYo+7g0pjrx9ySgB8t/NZ6fpbajg6y5iwAk5h19M2VcQOnxKNr5oYskxpFyexeLG7KAxAI+bvE7F6TayB2RT3dC/aNzSG2AxAWrJD53FdK5QLQQYFcpHtOmsNqLKitmkw==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d9fe0c7-eb7c-4b90-9069-08d7d0b837ff
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2020 12:29:52.9779
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: yOBACnTHppzZfKksoj68pP8+E/k3KI0xa3ateAEc0S96ursxjbHElBdBtsSX4fNC6YvwxY3ifrlTEuWI2iXnzg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6704
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-03-20 17:56, Paul Moore wrote:
-> On Thu, Mar 19, 2020 at 5:48 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > On 2020-03-18 17:47, Paul Moore wrote:
-> > > On Wed, Mar 18, 2020 at 5:42 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > > On 2020-03-18 17:01, Paul Moore wrote:
-> > > > > On Fri, Mar 13, 2020 at 3:23 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > > > > On 2020-03-13 12:42, Paul Moore wrote:
-> > > > >
-> > > > > ...
-> > > > >
-> > > > > > > The thread has had a lot of starts/stops, so I may be repeating a
-> > > > > > > previous suggestion, but one idea would be to still emit a "death
-> > > > > > > record" when the final task in the audit container ID does die, but
-> > > > > > > block the particular audit container ID from reuse until it the
-> > > > > > > SIGNAL2 info has been reported.  This gives us the timely ACID death
-> > > > > > > notification while still preventing confusion and ambiguity caused by
-> > > > > > > potentially reusing the ACID before the SIGNAL2 record has been sent;
-> > > > > > > there is a small nit about the ACID being present in the SIGNAL2
-> > > > > > > *after* its death, but I think that can be easily explained and
-> > > > > > > understood by admins.
-> > > > > >
-> > > > > > Thinking quickly about possible technical solutions to this, maybe it
-> > > > > > makes sense to have two counters on a contobj so that we know when the
-> > > > > > last process in that container exits and can issue the death
-> > > > > > certificate, but we still block reuse of it until all further references
-> > > > > > to it have been resolved.  This will likely also make it possible to
-> > > > > > report the full contid chain in SIGNAL2 records.  This will eliminate
-> > > > > > some of the issues we are discussing with regards to passing a contobj
-> > > > > > vs a contid to the audit_log_contid function, but won't eliminate them
-> > > > > > all because there are still some contids that won't have an object
-> > > > > > associated with them to make it impossible to look them up in the
-> > > > > > contobj lists.
-> > > > >
-> > > > > I'm not sure you need a full second counter, I imagine a simple flag
-> > > > > would be okay.  I think you just something to indicate that this ACID
-> > > > > object is marked as "dead" but it still being held for sanity reasons
-> > > > > and should not be reused.
-> > > >
-> > > > Ok, I see your point.  This refcount can be changed to a flag easily
-> > > > enough without change to the api if we can be sure that more than one
-> > > > signal can't be delivered to the audit daemon *and* collected by sig2.
-> > > > I'll have a more careful look at the audit daemon code to see if I can
-> > > > determine this.
-> > >
-> > > Maybe I'm not understanding your concern, but this isn't really
-> > > different than any of the other things we track for the auditd signal
-> > > sender, right?  If we are worried about multiple signals being sent
-> > > then it applies to everything, not just the audit container ID.
-> >
-> > Yes, you are right.  In all other cases the information is simply
-> > overwritten.  In the case of the audit container identifier any
-> > previous value is put before a new one is referenced, so only the last
-> > signal is kept.  So, we only need a flag.  Does a flag implemented with
-> > a rcu-protected refcount sound reasonable to you?
-> 
-> Well, if I recall correctly you still need to fix the locking in this
-> patchset so until we see what that looks like it is hard to say for
-> certain.  Just make sure that the flag is somehow protected from
-> races; it is probably a lot like the "valid" flags you sometimes see
-> with RCU protected lists.
+On Wed, Mar 25, 2020 at 04:27:07PM +0800, Jason Wang wrote:
+> +struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+> +					const struct vdpa_config_ops *config,
+> +					size_t size);
+> +
+> +#define vdpa_alloc_device(dev_struct, member, parent, config)   \
+> +			  container_of(__vdpa_alloc_device( \
+> +				       parent, config, \
+> +				       sizeof(struct dev_struct) + \
+> +				       BUILD_BUG_ON_ZERO(offsetof( \
+> +				       struct dev_struct, member))), \
+> +				       struct dev_struct, member)
 
-This is like looking for a needle in a haystack.  Can you point me to
-some code that does "valid" flags with RCU protected lists.
+This all looks robust now, one minor remark is to not do 'struct
+dev_struct' here so the caller has to do
 
-> > > > Another question occurs to me is that what if the audit daemon is sent a
-> > > > signal and it cannot or will not collect the sig2 information from the
-> > > > kernel (SIGKILL?)?  Does that audit container identifier remain dead
-> > > > until reboot, or do we institute some other form of reaping, possibly
-> > > > time-based?
-> > >
-> > > In order to preserve the integrity of the audit log that ACID value
-> > > would need to remain unavailable until the ACID which contains the
-> > > associated auditd is "dead" (no one can request the signal sender's
-> > > info if that container is dead).
-> >
-> > I don't understand why it would be associated with the contid of the
-> > audit daemon process rather than with the audit daemon process itself.
-> > How does the signal collection somehow get transferred or delegated to
-> > another member of that audit daemon's container?
-> 
-> Presumably once we support multiple audit daemons we will need a
-> struct to contain the associated connection state, with at most one
-> struct (and one auditd) allowed for a given ACID.  I would expect that
-> the signal sender info would be part of that state included in that
-> struct.  If a task sent a signal to it's associated auditd, and no one
-> ever queried the signal information stored in the per-ACID state
-> struct, I would expect that the refcount/flag/whatever would remain
-> held for the signal sender's ACID until the auditd state's ACID died
-> (the struct would be reaped as part of the ACID death).  In cases
-> where the container orchestrator blocks sending signals across ACID
-> boundaries this really isn't an issue as it will all be the same ACID,
-> but since we don't want to impose any restrictions on what a container
-> *could* be it is important to make sure we handle the case where the
-> signal sender's ACID may be different from the associated auditd's
-> ACID.
-> 
-> > Thinking aloud here, the audit daemon's exit when it calls audit_free()
-> > needs to ..._put_sig and cancel that audit_sig_cid (which in the future
-> > will be allocated per auditd rather than the global it is now since
-> > there is only one audit daemon).
-> >
-> > > paul moore
-> >
-> > - RGB
-> 
-> paul moore
+   vdpa_alloc_device(struct foo, vpda, ...)
 
-- RGB
+Which suggests to the reader something unusual is happening
 
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
-
+Jason
