@@ -2,120 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 769D8193474
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 00:18:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9902E193481
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 00:21:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727547AbgCYXSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 19:18:03 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:36712 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727389AbgCYXSC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 19:18:02 -0400
-Received: by mail-wr1-f67.google.com with SMTP id 31so5648052wrs.3
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 16:18:01 -0700 (PDT)
+        id S1727498AbgCYXVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 19:21:55 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:39361 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727389AbgCYXVz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 19:21:55 -0400
+Received: by mail-wr1-f65.google.com with SMTP id p10so5647001wrt.6
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 16:21:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+        h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wJLaxZjvwz4ZmEf5AEc/TkUdJ6JAI3SX3VvTrU2wpJs=;
-        b=ppKsJNmTyqjSr6Y+ClNzWj9OX7/k3ATDMC9xoyy3qZ1fbX+LyuIyPzUjCoLnB/xQmm
-         QD4YDORSe5/MCn/ymYuS3Qm9Hys5B02s6/Bfrk8p6dOa5DLMiVtcDBZuKNlLWfWCo3Oh
-         y6879ypgqnQP0VQNiGNyAZT1modqkaHDJ+uolitUHlKi7DScPfrkUvHu4H5hhl2/Bna6
-         sqOkpIGTOBNC4ef/UCUwAy02RhXmZRI+ZozjEFqQda+4KDZU6b0QqIE+SiElX6CbLurE
-         nHlmQfv1zqi1mbSOvhTzh0ykirklVnPUP697c7mKQBO+Z54XWKX3gDQYFcLdG8w9rQjU
-         NA6Q==
+        bh=S+jH2eiKfN+WQNk03Ej74RnfmlcrpGydeOjmlJLZ8DM=;
+        b=b9w77pgaHd+qI1CkEkrVeqV7tFN6QRoJYvx5H7gHC47OO9PpfVzdgoeh2h45X8iXV0
+         iqKiJ1ZMKoPVVe9PsaNpAorTnhZCWq6M66t3hNdTDAvDseafmF0K4o5K5MyK6ux8Gew8
+         V5CiMmxeW6fHu4Y01PMpgFgGldQW2IbhHHrYYdSKeVF+P3h8zHnI40Vk5oHuFDndXe6f
+         HkNtldWrGT1orUH/gMP9LMo6AAWNInuDTmr6gSI1p7EE+XhCeUC98nCisiShncWUbOQu
+         HaXZ7PdInmruUVZ4pNap1h0ZwAnTLiZjiDT+pNpNsXr++LDgnJpyWPRf8WcYWIEb06Ea
+         dkww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=wJLaxZjvwz4ZmEf5AEc/TkUdJ6JAI3SX3VvTrU2wpJs=;
-        b=eVxUjkmfuhwZEyeH3MTm7Zwqv0ElLywgqMrYy/AV6X+u8UfACuPh+7b5mMjJ5gzloG
-         T0NfozWUZE8T4ZRRkD+q6hnI90/nr5nm2TMbCwXOcgplAUe73I22hlnAaIbw9qegN/1g
-         zqfvV4N4U8PPozylmigHb8LZgqcnJ0Xe8lnT+ha4Ogtvtf51RaLXKhhRSuAK/AnTV1Y0
-         7Sml4Qdtpc701NxG0Z/aFn9sxrRblHOLqRUbYcsYsU1doNae/ipB9iZF+ngvZ04o09or
-         RIdK+LMrKCWg5QdVODQfEB4os28rSuwmyl6+o+rzap9R2lBQhIVUU3lKIQaPVsEIr4WF
-         PEPQ==
-X-Gm-Message-State: ANhLgQ14zNHOFr7EudX2TICipVTeqWm+i13dwU0vd8I4Bh44iSJvYhSe
-        UiBhJQczWQOhkIFNhoCwvc5I3n+0
-X-Google-Smtp-Source: ADFU+vuIKcmBW7DdG9k2MWBZih9nrr8Z/kgyGPfTACKh9SRsb8jOnpraDLQaVl2qsy4OZG8W1++oGw==
-X-Received: by 2002:adf:e48c:: with SMTP id i12mr5894314wrm.173.1585178280119;
-        Wed, 25 Mar 2020 16:18:00 -0700 (PDT)
-Received: from [10.230.1.220] ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id h81sm871796wme.42.2020.03.25.16.17.56
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=S+jH2eiKfN+WQNk03Ej74RnfmlcrpGydeOjmlJLZ8DM=;
+        b=ulzkH26VQmO8S8bvAoW0LDL42hZE/gSa/Lap/PjDOpBLYdXLYQI9Jdg1xPkGDVJMxG
+         aHC3tKgP+RBuNZEBAu4I1pdkTfEvVWUsXtwgDGYYut+KNL+MWpbz3y0cpLQGRwPpe4d3
+         PLP6UGh1UISjUrB4Ps9fhrzBw72UaDWK4u8h5znWRKB7X/WNYwcp5WFqB7jFH1xV+ZdH
+         8n5nWO1IK+gXw+1AnebrhYcqoabMSvVxHTdMbLheWNZtgRN0jsnioJWk/uw5rD8q/L7e
+         4ZvLxhrXX4LgLWuXNtgOM83RH80WICJ8nmlM1TOj0eFUXtIcvA6d91bLvVxXu7AV9qdE
+         rjXQ==
+X-Gm-Message-State: ANhLgQ0VCALskH3CgHpp/3OoJvFgAfVxTz04wWk/ljz67RDVbl3kh3+G
+        vyPB5MIP/BInZYVsNdSmajCGG8tY
+X-Google-Smtp-Source: ADFU+vvvIdfl85H9o5pxsV4UyP6zuI4L87fL7zcVuTzmHoUxsfxoNNpzaltNJnD+kC49tmc96b0dmg==
+X-Received: by 2002:adf:9cca:: with SMTP id h10mr5839310wre.167.1585178513123;
+        Wed, 25 Mar 2020 16:21:53 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:7875:5b5d:92c0:cb32? (p200300EA8F29600078755B5D92C0CB32.dip0.t-ipconnect.de. [2003:ea:8f29:6000:7875:5b5d:92c0:cb32])
+        by smtp.googlemail.com with ESMTPSA id r3sm753703wrm.35.2020.03.25.16.21.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Mar 2020 16:17:59 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 10/10] net: bridge: implement
- auto-normalization of MTU for hardware datapath
-To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
-        vivien.didelot@gmail.com, davem@davemloft.net,
-        jakub.kicinski@netronome.com
-Cc:     murali.policharla@broadcom.com, stephen@networkplumber.org,
-        jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
-        nikolay@cumulusnetworks.com, netdev@vger.kernel.org
+        Wed, 25 Mar 2020 16:21:52 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 02/10] net: phy: bcm7xx: Add jumbo frame
+ configuration to PHY
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        murali.policharla@broadcom.com,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ido Schimmel <idosch@idosch.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        netdev <netdev@vger.kernel.org>
 References: <20200325152209.3428-1-olteanv@gmail.com>
- <20200325152209.3428-11-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <8d2d819c-328c-9b2a-d25b-dccc85b93735@gmail.com>
-Date:   Wed, 25 Mar 2020 16:17:54 -0700
+ <20200325152209.3428-3-olteanv@gmail.com>
+ <ec070d0f-3712-8663-f39f-124b7f802450@gmail.com>
+ <CA+h21hrJyxDX98dzY0TbySKqXvC1+jkNJb0z+17LPOSN8=WeqA@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <36655415-551d-11e7-a834-10bb6f07b2d0@gmail.com>
+Date:   Thu, 26 Mar 2020 00:21:45 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.6.0
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200325152209.3428-11-olteanv@gmail.com>
+In-Reply-To: <CA+h21hrJyxDX98dzY0TbySKqXvC1+jkNJb0z+17LPOSN8=WeqA@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,87 +79,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 25.03.2020 23:45, Vladimir Oltean wrote:
+> On Wed, 25 Mar 2020 at 17:44, Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>>
+>> On 25.03.2020 16:22, Vladimir Oltean wrote:
+>>> From: Murali Krishna Policharla <murali.policharla@broadcom.com>
+>>>
+>>> Add API to configure jumbo frame settings in PHY during initial PHY
+>>> configuration.
+>>>
+>>> Signed-off-by: Murali Krishna Policharla <murali.policharla@broadcom.com>
+>>> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+>>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+>>> ---
+>>>  drivers/net/phy/bcm-phy-lib.c | 28 ++++++++++++++++++++++++++++
+>>>  drivers/net/phy/bcm-phy-lib.h |  1 +
+>>>  drivers/net/phy/bcm7xxx.c     |  4 ++++
+>>>  include/linux/brcmphy.h       |  1 +
+>>>  4 files changed, 34 insertions(+)
+>>>
+>>> diff --git a/drivers/net/phy/bcm-phy-lib.c b/drivers/net/phy/bcm-phy-lib.c
+>>> index e0d3310957ff..a26c80e13b43 100644
+>>> --- a/drivers/net/phy/bcm-phy-lib.c
+>>> +++ b/drivers/net/phy/bcm-phy-lib.c
+>>> @@ -423,6 +423,34 @@ int bcm_phy_28nm_a0b0_afe_config_init(struct phy_device *phydev)
+>>>  }
+>>>  EXPORT_SYMBOL_GPL(bcm_phy_28nm_a0b0_afe_config_init);
+>>>
+>>> +int bcm_phy_enable_jumbo(struct phy_device *phydev)
+>>> +{
+>>> +     int val = 0, ret = 0;
+>>> +
+>>> +     ret = phy_write(phydev, MII_BCM54XX_AUX_CTL,
+>>> +                     MII_BCM54XX_AUXCTL_SHDWSEL_MISC);
+>>> +     if (ret < 0)
+>>> +             return ret;
+>>> +
+>>> +     val = phy_read(phydev, MII_BCM54XX_AUX_CTL);
+>>> +
+>>> +     /* Enable extended length packet reception */
+>>> +     val |= MII_BCM54XX_AUXCTL_ACTL_EXT_PKT_LEN;
+>>> +     ret = phy_write(phydev, MII_BCM54XX_AUX_CTL, val);
+>>> +
+>>
+>> There are different helpers already in bcm-phy-lib,
+>> e.g. bcm54xx_auxctl_read. Also bcm_phy_write_misc()
+>> has has quite something in common with your new function.
+>> It would be good if a helper could be used here.
+>>
+> 
+> Thanks Heiner.
+> I'm not quite sure the operation is performed correctly though? My
+> books are telling me that the "Receive Extended Packet Length" field
+> is accessible via the Auxiliary Control Register 0x18 when the shadow
+> value is 000, not 111 as this patch is doing. At least for BCM54xxx in
+> terms of which the macros are defined. Am I wrong?
+> 
 
+I didn't check the datasheet, so I can't really comment on whether the
+patch does what it is supposed to do. My point was that the following
+pattern occurs several times in the driver:
+phy_write(phydev, MII_BCM54XX_AUX_CTL, VAL_1);
+phy_modify(phydev, MII_BCM54XX_AUX_CTL, VAL_2, VAL_3)
+(or phy_clear_bits/phy_set_bits instead of phy_modify)
 
-On 3/25/2020 8:22 AM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> In the initial attempt to add MTU configuration for DSA:
-> 
-> https://patchwork.ozlabs.org/cover/1199868/
-> 
-> Florian raised a concern about the bridge MTU normalization logic (when
-> you bridge an interface with MTU 9000 and one with MTU 1500). His
-> expectation was that the bridge would automatically change the MTU of
-> all its slave ports to the minimum MTU, if those slaves are part of the
-> same hardware bridge. However, it doesn't do that, and for good reason,
-> I think. What br_mtu_auto_adjust() does is it adjusts the MTU of the
-> bridge net device itself, and not that of any slave port.  If it were to
-> modify the MTU of the slave ports, the effect would be that the user
-> wouldn't be able to increase the MTU of any bridge slave port as long as
-> it was part of the bridge, which would be a bit annoying to say the
-> least.
-> 
-> The idea behind this behavior is that normal termination from Linux over
-> the L2 forwarding domain described by DSA should happen over the bridge
-> net device, which _is_ properly limited by the minimum MTU. And
-> termination over individual slave device is possible even if those are
-> bridged. But that is not "forwarding", so there's no reason to do
-> normalization there, since only a single interface sees that packet.
-> 
-> The real problem is with the offloaded data path, where of course, the
-> bridge net device MTU is ignored. So a packet received on an interface
-> with MTU 9000 would still be forwarded to an interface with MTU 1500.
-> And that is exactly what this patch is trying to prevent from happening.
-> 
-> Florian's idea was that all hardware ports having the same
-> netdev_port_same_parent_id should be adjusted to have the same MTU.
-> The MTU that we attempt to configure the ports to is the most recently
-> modified MTU. The attempt is to follow user intention as closely as
-> possible and not be annoying at that.
-> 
-> So there are 2 cases really:
-> 
-> ip link set dev sw0p0 master br0
-> ip link set dev sw0p1 mtu 1400
-> ip link set dev sw0p1 master br0
-> 
-> The above sequence will make sw0p0 inherit MTU 1400 as well.
-> 
-> The second case:
-> 
-> ip link set dev sw0p0 master br0
-> ip link set dev sw0p1 master br0
-> ip link set dev sw0p0 mtu 1400
-> 
-> This sequence will make sw0p1 inherit MTU 1400 from sw0p0.
-> 
-> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  net/bridge/br.c         |  1 +
->  net/bridge/br_if.c      | 93 +++++++++++++++++++++++++++++++++++++++++
->  net/bridge/br_private.h |  1 +
->  3 files changed, 95 insertions(+)
-> 
-> diff --git a/net/bridge/br.c b/net/bridge/br.c
-> index b6fe30e3768f..5f05380df1ee 100644
-> --- a/net/bridge/br.c
-> +++ b/net/bridge/br.c
-> @@ -57,6 +57,7 @@ static int br_device_event(struct notifier_block *unused, unsigned long event, v
->  
->  	switch (event) {
->  	case NETDEV_CHANGEMTU:
-> +		br_mtu_normalization(br, dev);
+Therefore a generic helper could make sense, or it could at least be
+written as such a two-liner always.
 
-I do not remember if you are allowed to sleep in a netdevice notifier, I
-believe not, so you may need to pass a gfp_t to br_mtu_normalization for
-allocations to be GFP_ATOMIC when called from that context, and
-GFP_KERNEL from br_add_if().
+>>> +     if (ret < 0)
+>>> +             return ret;
+>>> +
+>>> +     val = phy_read(phydev, MII_BCM54XX_ECR);
+>>> +
+>>> +     /* Enable 10K byte packet length reception */
+>>> +     val |= BIT(0);
+>>> +     ret =  phy_write(phydev, MII_BCM54XX_ECR, val);
+>>> +
+>>
+>> Why not use phy_set_bits() ?
+>>
+> 
+> Well, the reason is that I didn't write the patch. I'll simplify it.
+> 
+>>> +     return ret;
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(bcm_phy_enable_jumbo);
+>>> +
+>>>  MODULE_DESCRIPTION("Broadcom PHY Library");
+>>>  MODULE_LICENSE("GPL v2");
+>>>  MODULE_AUTHOR("Broadcom Corporation");
+>>> diff --git a/drivers/net/phy/bcm-phy-lib.h b/drivers/net/phy/bcm-phy-lib.h
+>>> index c86fb9d1240c..129df819be8c 100644
+>>> --- a/drivers/net/phy/bcm-phy-lib.h
+>>> +++ b/drivers/net/phy/bcm-phy-lib.h
+>>> @@ -65,5 +65,6 @@ void bcm_phy_get_stats(struct phy_device *phydev, u64 *shadow,
+>>>                      struct ethtool_stats *stats, u64 *data);
+>>>  void bcm_phy_r_rc_cal_reset(struct phy_device *phydev);
+>>>  int bcm_phy_28nm_a0b0_afe_config_init(struct phy_device *phydev);
+>>> +int bcm_phy_enable_jumbo(struct phy_device *phydev);
+>>>
+>>>  #endif /* _LINUX_BCM_PHY_LIB_H */
+>>> diff --git a/drivers/net/phy/bcm7xxx.c b/drivers/net/phy/bcm7xxx.c
+>>> index af8eabe7a6d4..692048d86ab1 100644
+>>> --- a/drivers/net/phy/bcm7xxx.c
+>>> +++ b/drivers/net/phy/bcm7xxx.c
+>>> @@ -178,6 +178,10 @@ static int bcm7xxx_28nm_config_init(struct phy_device *phydev)
+>>>               break;
+>>>       }
+>>>
+>>> +     if (ret)
+>>> +             return ret;
+>>> +
+>>> +     ret =  bcm_phy_enable_jumbo(phydev);
+>>>       if (ret)
+>>>               return ret;
+>>>
+>>> diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+>>> index b475e7f20d28..19bd86019e93 100644
+>>> --- a/include/linux/brcmphy.h
+>>> +++ b/include/linux/brcmphy.h
+>>> @@ -119,6 +119,7 @@
+>>>  #define MII_BCM54XX_AUXCTL_SHDWSEL_AUXCTL    0x00
+>>>  #define MII_BCM54XX_AUXCTL_ACTL_TX_6DB               0x0400
+>>>  #define MII_BCM54XX_AUXCTL_ACTL_SMDSP_ENA    0x0800
+>>> +#define MII_BCM54XX_AUXCTL_ACTL_EXT_PKT_LEN  0x4000
+>>>
+>>>  #define MII_BCM54XX_AUXCTL_SHDWSEL_MISC                      0x07
+>>>  #define MII_BCM54XX_AUXCTL_SHDWSEL_MISC_WIRESPEED_EN 0x0010
+>>>
+>>
+> 
+> Regards,
+> -Vladimir
+> .
+> 
 
-It would be nice if we could avoid doing these allocations when called
-from the netdev notifier though, could we just keep the information
-around since the br_hw_port follows the same lifetime as the
-net_bridge_port structure. Other than that, this looks good to me, thanks!
--- 
-Florian
