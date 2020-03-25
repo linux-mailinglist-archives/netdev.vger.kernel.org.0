@@ -2,134 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C230192D57
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 16:49:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73EA0192D8B
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 16:56:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728113AbgCYPtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 11:49:11 -0400
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:36069 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727840AbgCYPtJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 11:49:09 -0400
-Received: from [192.168.0.2] (ip5f5af719.dynamic.kabel-deutschland.de [95.90.247.25])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 16137202254DE;
-        Wed, 25 Mar 2020 16:49:06 +0100 (CET)
-Subject: Re: [Intel-wired-lan] [PATCH] e1000e: bump up timeout to wait when ME
- un-configure ULP mode
-To:     Sasha Neftin <sasha.neftin@intel.com>,
-        Aaron Ma <aaron.ma@canonical.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org,
-        David Miller <davem@davemloft.net>,
-        Rex Tsai <rex.tsai@intel.com>
-References: <20200323191639.48826-1-aaron.ma@canonical.com>
- <EC4F7F0B-90F8-4325-B170-84C65D8BBBB8@canonical.com>
- <2c765c59-556e-266b-4d0d-a4602db94476@intel.com>
- <899895bc-fb88-a97d-a629-b514ceda296d@canonical.com>
- <750ad0ad-816a-5896-de2f-7e034d2a2508@intel.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Message-ID: <f9dc1980-fa8b-7df9-6460-b0944c7ebc43@molgen.mpg.de>
-Date:   Wed, 25 Mar 2020 16:49:05 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1727953AbgCYP4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 11:56:03 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:33838 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727912AbgCYP4D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 11:56:03 -0400
+Received: by mail-qt1-f195.google.com with SMTP id 10so2595568qtp.1
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 08:56:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lca.pw; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5LjboPnDfMYr+D+3numlwyKRNovhORGQjxZDfSq6m9Y=;
+        b=hUPBtEbERszA+YII5Yxm3jnhf4gWvrQeMIUx7nRUKWsaVY/hTEbkcVwZ824Se5rjur
+         x16y9PSdBsh167UfAZB5rT8bdfE8B41JnUCsPalmpfBxfrdDF/j6w9juDr9y/qiY8f1h
+         pNQfeGBclLRBzT/fGnw6z3HBUlqE3UAo1M36/bqz9zfViGSlGkvioTbJiS2pCU7VlNop
+         OQdFs/PIbIFnGIxs+zlMC8scqnUkRuWE0TWt3fVrW/7JpC5dxhnn5niw6m4tH5ntSp8s
+         qpps1r0bF2/oiW3GuFKkRAgQUlhbibiMzAZHDiUoxY2kjLYpzPOqOSgyvIRDqfhyupYy
+         4Vew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5LjboPnDfMYr+D+3numlwyKRNovhORGQjxZDfSq6m9Y=;
+        b=UHy0f7o5o4PutCCEi37fiA1KGz9cBLHCRuNzny0AQypUFrh1MaroIIPALlGc2moIkF
+         Xslnq9bGiFvNc2TkaRKuJJZ+dmZNs0CqFZRiTkPVOHaTTTBwta3nALnhwC/rztXsw3Mu
+         MnoZmtzXJD1VOOz8rp/DH+lHlLI9dEB9Lyhwj55M6UCxrc51kWDWEf878xB4ZqfQRMSj
+         dyepueXePZYljaFuSQFf+CvXQYUjd3t96WVtCR8IP6yAcnQ6HUtRNxkNjHaV+yih7C+0
+         COTbdn0xiyoGyQxGVFwLPmmzhYGFMNr/i7/+7v+nsXOogjpoZ1VpuN/uXeEZVNEPLdUL
+         /3pA==
+X-Gm-Message-State: ANhLgQ2trx0rM2gdytzVMmX3C5l8QIGZRHJZVeUqR2Dm/NZsUS+T8XFh
+        Nr7Y/scKEMelpAoU+o2YTqRZbAIhFImngA==
+X-Google-Smtp-Source: ADFU+vsnGtXHOB3Q1SbOrengVFBDEEpEz+h2e/kMJ6fU6G+kU2YhLUoG6gF8c+vYKIE7feOWLDUscQ==
+X-Received: by 2002:ac8:346f:: with SMTP id v44mr3526427qtb.205.1585151761950;
+        Wed, 25 Mar 2020 08:56:01 -0700 (PDT)
+Received: from ovpn-66-69.rdu2.redhat.com (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
+        by smtp.gmail.com with ESMTPSA id t23sm17931750qtj.63.2020.03.25.08.55.46
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 25 Mar 2020 08:55:47 -0700 (PDT)
+From:   Qian Cai <cai@lca.pw>
+To:     davem@davemloft.net
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Qian Cai <cai@lca.pw>
+Subject: [PATCH] ipv4: fix a RCU-list lock in fib_triestat_seq_show
+Date:   Wed, 25 Mar 2020 11:55:32 -0400
+Message-Id: <20200325155532.7238-1-cai@lca.pw>
+X-Mailer: git-send-email 2.21.0 (Apple Git-122.2)
 MIME-Version: 1.0
-In-Reply-To: <750ad0ad-816a-5896-de2f-7e034d2a2508@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Linux folks,
+fib_triestat_seq_show() calls hlist_for_each_entry_rcu(tb, head,
+tb_hlist) without rcu_read_lock() will trigger a warning,
 
+ net/ipv4/fib_trie.c:2579 RCU-list traversed in non-reader section!!
 
-Am 25.03.20 um 14:58 schrieb Neftin, Sasha:
-> On 3/25/2020 08:43, Aaron Ma wrote:
+ other info that might help us debug this:
 
->> On 3/25/20 2:36 PM, Neftin, Sasha wrote:
->>> On 3/25/2020 06:17, Kai-Heng Feng wrote:
+ rcu_scheduler_active = 2, debug_locks = 1
+ 1 lock held by proc01/115277:
+  #0: c0000014507acf00 (&p->lock){+.+.}-{3:3}, at: seq_read+0x58/0x670
 
->>>>> On Mar 24, 2020, at 03:16, Aaron Ma <aaron.ma@canonical.com> wrote:
->>>>>
->>>>> ME takes 2+ seconds to un-configure ULP mode done after resume
->>>>> from s2idle on some ThinkPad laptops.
->>>>> Without enough wait, reset and re-init will fail with error.
->>>>
->>>> Thanks, this patch solves the issue. We can drop the DMI quirk in
->>>> favor of this patch.
->>>>
->>>>> Fixes: f15bb6dde738cc8fa0 ("e1000e: Add support for S0ix")
->>>>> BugLink: https://bugs.launchpad.net/bugs/1865570
->>>>> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
->>>>> ---
->>>>> drivers/net/ethernet/intel/e1000e/ich8lan.c | 4 ++--
->>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
->>>>>
->>>>> diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c
->>>>> b/drivers/net/ethernet/intel/e1000e/ich8lan.c
->>>>> index b4135c50e905..147b15a2f8b3 100644
->>>>> --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
->>>>> +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
->>>>> @@ -1240,9 +1240,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct
->>>>> e1000_hw *hw, bool force)
->>>>>              ew32(H2ME, mac_reg);
->>>>>          }
->>>>>
->>>>> -        /* Poll up to 300msec for ME to clear ULP_CFG_DONE. */
->>>>> +        /* Poll up to 2.5sec for ME to clear ULP_CFG_DONE. */
->>>>>          while (er32(FWSM) & E1000_FWSM_ULP_CFG_DONE) {
->>>>> -            if (i++ == 30) {
->>>>> +            if (i++ == 250) {
->>>>>                  ret_val = -E1000_ERR_PHY;
->>>>>                  goto out;
->>>>>              }
->>>>
->>>> The return value was not caught by the caller, so the error ends up
->>>> unnoticed.
->>>> Maybe let the caller check the return value of
->>>> e1000_disable_ulp_lpt_lp()?
+ Call Trace:
+  dump_stack+0xf4/0x164 (unreliable)
+  lockdep_rcu_suspicious+0x140/0x164
+  fib_triestat_seq_show+0x750/0x880
+  seq_read+0x1a0/0x670
+  proc_reg_read+0x10c/0x1b0
+  __vfs_read+0x3c/0x70
+  vfs_read+0xac/0x170
+  ksys_read+0x7c/0x140
+  system_call+0x5c/0x68
 
->>> I a bit confused. In our previous conversation you told ME not running.
->>> let me shimming in. Increasing delay won't be solve the problem and just
->>> mask it. We need to understand why ME take too much time. What is
->>> problem with this specific system?
->>> So, basically no ME system should works for you.
->>
->> Some laptops ME work that's why only reproduce issue on some laptops.
->> In this issue i219 is controlled by ME.
->
-> Who can explain - why ME required too much time on this system?
-> Probably need work with ME/BIOS vendor and understand it.
-> Delay will just mask the real problem - we need to find root cause.
->> Quirk is only for 1 model type. But issue is reproduced by more models.
->> So it won't work.
+Signed-off-by: Qian Cai <cai@lca.pw>
+---
+ net/ipv4/fib_trie.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-(Where is Aaron’s reply? It wasn’t delivered to me yet.)
-
-As this is clearly a regression, please revert the commit for now, and 
-then find a way to correctly implement S0ix support. Linux’ regression 
-policy demands that as no fix has been found since v5.5-rc1. Changing 
-Intel ME settings, even if it would work around the issue, is not an 
-acceptable solution. Delaying the resume time is also not a solution.
-
-Regarding Intel Management Engine, only Intel knows what it does and 
-what the error is, as the ME firmware is proprietary and closed.
-
-Lastly, there is no way to fully disable the Intel Management Engine. 
-The HAP stuff claims to stop the Intel ME execution, but nobody knows, 
-if it’s successful.
-
-Aaron, Kai-Hang, can you send the revert?
-
-
-Kind regards,
-
-Paul
-
+diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+index ff0c24371e33..73fa37476f03 100644
+--- a/net/ipv4/fib_trie.c
++++ b/net/ipv4/fib_trie.c
+@@ -2577,6 +2577,7 @@ static int fib_triestat_seq_show(struct seq_file *seq, void *v)
+ 		   " %zd bytes, size of tnode: %zd bytes.\n",
+ 		   LEAF_SIZE, TNODE_SIZE(0));
+ 
++	rcu_read_lock();
+ 	for (h = 0; h < FIB_TABLE_HASHSZ; h++) {
+ 		struct hlist_head *head = &net->ipv4.fib_table_hash[h];
+ 		struct fib_table *tb;
+@@ -2597,6 +2598,7 @@ static int fib_triestat_seq_show(struct seq_file *seq, void *v)
+ #endif
+ 		}
+ 	}
++	rcu_read_unlock();
+ 
+ 	return 0;
+ }
+-- 
+2.21.0 (Apple Git-122.2)
 
