@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E65C4191FC2
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 04:31:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CDD8191FCB
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 04:33:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727279AbgCYDbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 23:31:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55650 "EHLO mail.kernel.org"
+        id S1727325AbgCYDdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 23:33:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56286 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727253AbgCYDbM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 23:31:12 -0400
+        id S1727262AbgCYDdw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 23:33:52 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DE98320724;
-        Wed, 25 Mar 2020 03:31:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0408720724;
+        Wed, 25 Mar 2020 03:33:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585107071;
-        bh=rOlKHbNH2NIOCD5rD5efm2BHNUx8T4kkNTCjUHISaA8=;
+        s=default; t=1585107231;
+        bh=f0oI14hIMWg3+DqdLYVpol8h1Wn03ZJ5vcr1jkyf+Ec=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VFEBvTF38dngbWKGfCmwPED5ssBMPfhRG/W2eyF6wtz+31RHwKZ+YjrNQUW42JtjZ
-         O5kQ3zgsaN00eS06s1V+iFuwR/ESCBZ4P755Ni+mrDZvp7tglKDemsM2s9Y5/0qp7Y
-         jqSGNZqS9oPGtFgscZujVRVfM9YDZteKXu1skpXA=
-Date:   Tue, 24 Mar 2020 20:31:09 -0700
+        b=03fQkTOt+zsDQ2YlK1etkfEa5BlFzj+LfNKH1sQKGve9vfOz2qOPrFWanChOfO0Gn
+         LMfi1NHwDuimDzCTmfY8RbZsTKeYJffYwro8li9NmU2Kll6TOFZ+Pd1WsjnFT3rV8r
+         CWHVR9N+7uBD2tcoyyVWks9UAhjIzD2kCH6LhCqk=
+Date:   Tue, 24 Mar 2020 20:33:49 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Ido Schimmel <idosch@idosch.org>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
         andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 01/15] devlink: Add packet trap policers
- support
-Message-ID: <20200324203109.71e1efc6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200324193250.1322038-2-idosch@idosch.org>
+Subject: Re: [PATCH net-next 11/15] mlxsw: spectrum_trap: Add devlink-trap
+ policer support
+Message-ID: <20200324203349.6a76e581@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200324193250.1322038-12-idosch@idosch.org>
 References: <20200324193250.1322038-1-idosch@idosch.org>
-        <20200324193250.1322038-2-idosch@idosch.org>
+        <20200324193250.1322038-12-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,50 +44,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Mar 2020 21:32:36 +0200 Ido Schimmel wrote:
-> +/**
-> + * devlink_trap_policers_register - Register packet trap policers with devlink.
-> + * @devlink: devlink.
-> + * @policers: Packet trap policers.
-> + * @policers_count: Count of provided packet trap policers.
-> + *
-> + * Return: Non-zero value on failure.
-> + */
-> +int
-> +devlink_trap_policers_register(struct devlink *devlink,
-> +			       const struct devlink_trap_policer *policers,
-> +			       size_t policers_count)
+On Tue, 24 Mar 2020 21:32:46 +0200 Ido Schimmel wrote:
+> +static int mlxsw_sp_trap_policer_params_check(u64 rate, u64 burst,
+> +					      u8 *p_burst_size,
+> +					      struct netlink_ext_ack *extack)
 > +{
-> +	int i, err;
+> +	int bs = fls64(burst);
 > +
-> +	mutex_lock(&devlink->lock);
-> +	for (i = 0; i < policers_count; i++) {
-> +		const struct devlink_trap_policer *policer = &policers[i];
-> +
-> +		if (WARN_ON(policer->id == 0)) {
-> +			err = -EINVAL;
-> +			goto err_trap_policer_verify;
-> +		}
-> +
-> +		err = devlink_trap_policer_register(devlink, policer);
-> +		if (err)
-> +			goto err_trap_policer_register;
+> +	if (rate < MLXSW_REG_QPCR_LOWEST_CIR) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Policer rate lower than limit");
+> +		return -EINVAL;
 > +	}
-> +	mutex_unlock(&devlink->lock);
+> +
+> +	if (rate > MLXSW_REG_QPCR_HIGHEST_CIR) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Policer rate higher than limit");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!bs) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Policer burst size lower than limit");
+> +		return -EINVAL;
+> +	}
+> +
+> +	--bs;
+> +
+> +	if (burst != (1 << bs)) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Policer burst size is not power of two");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (bs < MLXSW_REG_QPCR_LOWEST_CBS) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Policer burst size lower than limit");
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (bs > MLXSW_REG_QPCR_HIGHEST_CBS) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Policer burst size higher than limit");
+> +		return -EINVAL;
+> +	}
+
+Any chance we could make the min/max values part of the policer itself?
+Are they dynamic? Seems like most drivers will have to repeat this
+checking against constants while maybe core could have done it?
+
+> +
+> +	*p_burst_size = bs;
 > +
 > +	return 0;
-> +
-> +err_trap_policer_register:
-> +err_trap_policer_verify:
-
-nit: as you probably know the label names are not really in compliance
-with:
-https://www.kernel.org/doc/html/latest/process/coding-style.html#centralized-exiting-of-functions
-;)
-
-> +	for (i--; i >= 0; i--)
-> +		devlink_trap_policer_unregister(devlink, &policers[i]);
-> +	mutex_unlock(&devlink->lock);
-> +	return err;
 > +}
-> +EXPORT_SYMBOL_GPL(devlink_trap_policers_register);
