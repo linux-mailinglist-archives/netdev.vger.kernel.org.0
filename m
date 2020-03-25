@@ -2,50 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE021191DF6
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 01:21:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5662A191E06
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 01:27:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727113AbgCYAVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 20:21:12 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:38394 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727090AbgCYAVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 20:21:12 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2ECA9159FB7E4;
-        Tue, 24 Mar 2020 17:21:12 -0700 (PDT)
-Date:   Tue, 24 Mar 2020 17:21:09 -0700 (PDT)
-Message-Id: <20200324.172109.2235442797829637868.davem@davemloft.net>
-To:     hkallweit1@gmail.com
-Cc:     nic_swsd@realtek.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net] r8169: re-enable MSI on RTL8168c
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <d99291a4-aea0-6670-0a64-1103337c2906@gmail.com>
-References: <d99291a4-aea0-6670-0a64-1103337c2906@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 24 Mar 2020 17:21:12 -0700 (PDT)
+        id S1727217AbgCYA12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 20:27:28 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:33313 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727099AbgCYA12 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 20:27:28 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 6CD74415E2;
+        Wed, 25 Mar 2020 08:27:23 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     saeedm@mellanox.com
+Cc:     paulb@mellanox.com, vladbu@mellanox.com, netdev@vger.kernel.org
+Subject: [PATCH net-next v7 0/2] net/mlx5e: add indr block support in the FT mode
+Date:   Wed, 25 Mar 2020 08:27:20 +0800
+Message-Id: <1585096042-1800-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZSVVOSk5CQkJMQk9LS01ITllXWShZQU
+        lCN1dZLVlBSVdZCQ4XHghZQVk1NCk2OjckKS43PlkG
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PjY6Sio*PTgyLBIePzhNNj8a
+        Mh4aCRVVSlVKTkNOS0JNS09PSkpLVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUlCSkI3Bg++
+X-HM-Tid: 0a710f162bca2086kuqy6cd74415e2
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
-Date: Tue, 24 Mar 2020 20:58:29 +0100
+From: wenxu <wenxu@ucloud.cn>
 
-> The original change fixed an issue on RTL8168b by mimicking the vendor
-> driver behavior to disable MSI on chip versions before RTL8168d.
-> This however now caused an issue on a system with RTL8168c, see [0].
-> Therefore leave MSI disabled on RTL8168b, but re-enable it on RTL8168c.
-> 
-> [0] https://bugzilla.redhat.com/show_bug.cgi?id=1792839
-> 
-> Fixes: 003bd5b4a7b4 ("r8169: don't use MSI before RTL8168d")
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Indr block supported in FT mode can offload the tunnel device in the
+flowtables of nftable.
 
-Applied and queued up for -stable, thanks.
+The netfilter patches:
+http://patchwork.ozlabs.org/cover/1242812/
+
+Test with mlx driver as following with nft:
+
+ip link add user1 type vrf table 1
+ip l set user1 up 
+ip l set dev mlx_pf0vf0 down
+ip l set dev mlx_pf0vf0 master user1
+ifconfig mlx_pf0vf0 10.0.0.1/24 up
+
+ifconfig mlx_p0 172.168.152.75/24 up
+
+ip l add dev tun1 type gretap key 1000
+ip l set dev tun1 master user1
+ifconfig tun1 10.0.1.1/24 up
+
+ip r r 10.0.1.241 encap ip id 1000 dst 172.168.152.241 key dev tun1 table 1
+
+nft add table firewall
+nft add chain firewall zones { type filter hook prerouting priority - 300 \; }
+nft add rule firewall zones counter ct zone set iif map { "tun1" : 1, "mlx_pf0vf0" : 1 }
+nft add chain firewall rule-1000-ingress
+nft add rule firewall rule-1000-ingress ct zone 1 ct state established,related counter accept
+nft add rule firewall rule-1000-ingress ct zone 1 ct state invalid counter drop
+nft add rule firewall rule-1000-ingress ct zone 1 tcp dport 5001 ct state new counter accept
+nft add rule firewall rule-1000-ingress ct zone 1 udp dport 5001 ct state new counter accept
+nft add rule firewall rule-1000-ingress ct zone 1 tcp dport 22 ct state new counter accept
+nft add rule firewall rule-1000-ingress ct zone 1 ip protocol icmp ct state new counter accept
+nft add rule firewall rule-1000-ingress counter drop
+nft add chain firewall rules-all { type filter hook prerouting priority - 150 \; }
+nft add rule firewall rules-all meta iifkind "vrf" counter accept
+nft add rule firewall rules-all iif vmap { "tun1" : jump rule-1000-ingress }
+
+nft add flowtable firewall fb1 { hook ingress priority 2 \; devices = { tun1, mlx_pf0vf0 } \; }
+nft add chain firewall ftb-all {type filter hook forward priority 0 \; policy accept \; }
+nft add rule firewall ftb-all ct zone 1 ip protocol tcp flow offload @fb1
+nft add rule firewall ftb-all ct zone 1 ip protocol udp flow offload @fb1
+
+
+wenxu (2):
+  net/mlx5e: refactor indr setup block
+  net/mlx5e: add mlx5e_rep_indr_setup_ft_cb support
+
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 94 ++++++++++++++++++------
+ 1 file changed, 73 insertions(+), 21 deletions(-)
+
+-- 
+1.8.3.1
+
