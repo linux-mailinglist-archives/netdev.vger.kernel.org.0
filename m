@@ -2,119 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AECCF192AD9
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 15:13:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E826B192B13
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 15:25:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727606AbgCYONF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 10:13:05 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:33402 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727546AbgCYONE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 10:13:04 -0400
-Received: by mail-lj1-f196.google.com with SMTP id f20so2649224ljm.0
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 07:13:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=ZwW24+4pVyVTdc4hTZ9bgyJklHJBzgAw8V7+P6HiMuE=;
-        b=llFVJ0Ec03Z/stVzpEXsmuptCiP6vCWWcAEA3z6t6EvusuuAz6jO++NWmdXYkutjKp
-         8uUVwLlSf0Dn+Wla5iZ5GnNaWy+e4MWR0pwO15pmai9mv1VAIO1CMFSQyGpdGCZDGsnK
-         iOwyd3Bm7hSFgKDI++WQ+CIiw0g/rxmvEUDpJ56GVwFw7ECYQr7bSttkCKvkymHr3B8H
-         qoSMn6g5BS4lCS3um7XNLbbL5cGdLeo0sbTc5XGuGFcxEhASdu8UJ/iMolr6t5sLNPVn
-         eU/CtMf/20yc5VH5vfQAmyQjrzEMa8dJV2pIlekq3qh9p7KkK0+YT8BfVwBu3nh/Kngk
-         0Gkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=ZwW24+4pVyVTdc4hTZ9bgyJklHJBzgAw8V7+P6HiMuE=;
-        b=qWCmhkAgGwmuU1xjyN7iarSgMTwTBMTBnb/2jc4thR+BzmZzVurtqYQoYyqFitFXAb
-         c9tQirxbE9aEc4edur3fQXq43h4D3Qkqa3ajCSMpzX18mrQQtsgyxrD7s9ZySenvfcR+
-         Myb7dwXsYj201cBWp0QiE3m5jzQhS8AUxa84pEqdchN2SU1PJh/SbnOuL6lLqFPV+Paj
-         9nq7qZuC3FAo6p94L4yEqK6zbmnqyrH0knf53xLojFDT+QOSDgTuBGzD1dVFlHa5pNOw
-         76W9NvHt4NMHSOcwNDYPdVfCrsYNhcDIoSlc9NUNFap4QYTcxqsBeikkzKscHs6o4SaM
-         Yyzg==
-X-Gm-Message-State: ANhLgQ0nHyAPA+qyBR9jphlxVhs4YzZQBEkISdqbMh3/ziy/1N933GUo
-        nq+aYQze6TGC/LFAJHmo0K7tD7v2I84=
-X-Google-Smtp-Source: ADFU+vtWN0UHzyVYmcRwNlCg9uLOwulM9G/LE3xh55sLvZxVEaE6oUpa+K2pMRsIPmziplXdH6Vgnw==
-X-Received: by 2002:a2e:818e:: with SMTP id e14mr2136610ljg.225.1585145581601;
-        Wed, 25 Mar 2020 07:13:01 -0700 (PDT)
-Received: from centos7-pv-guest.localdomain ([5.35.40.234])
-        by smtp.gmail.com with ESMTPSA id b23sm11824862lff.64.2020.03.25.07.13.00
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 25 Mar 2020 07:13:01 -0700 (PDT)
-From:   Denis Kirjanov <kda@linux-powerpc.org>
+        id S1727718AbgCYOZ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 10:25:57 -0400
+Received: from mail-out.m-online.net ([212.18.0.10]:52926 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727701AbgCYOZ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 10:25:57 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 48nVlj3L02z1rtyS;
+        Wed, 25 Mar 2020 15:25:52 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 48nVlh4QLTz1qqkL;
+        Wed, 25 Mar 2020 15:25:52 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id 4IiR2WJ4rxXc; Wed, 25 Mar 2020 15:25:51 +0100 (CET)
+X-Auth-Info: xGtY6wJcdIrptKmF2AWLQPmmJHt2noMdGsVbxlgWqV8=
+Received: from desktop.lan (ip-86-49-35-8.net.upcbroadband.cz [86.49.35.8])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Wed, 25 Mar 2020 15:25:51 +0100 (CET)
+From:   Marek Vasut <marex@denx.de>
 To:     netdev@vger.kernel.org
-Cc:     hawk@kernel.org, ilias.apalodimas@linaro.org,
-        Denis Kirjanov <kda@linux-powerpc.org>
-Subject: [PATCH net-next] net: page pool: allow to pass zero flags to page_pool_init()
-Date:   Wed, 25 Mar 2020 17:12:55 +0300
-Message-Id: <1585145575-14477-1-git-send-email-kda@linux-powerpc.org>
-X-Mailer: git-send-email 1.8.3.1
+Cc:     Marek Vasut <marex@denx.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] net: ks8851-ml: Fix IO operations, again
+Date:   Wed, 25 Mar 2020 15:25:47 +0100
+Message-Id: <20200325142547.45393-1-marex@denx.de>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-page pool API can be useful for non-DMA cases like
-xen-netfront driver so let's allow to pass zero flags to
-page pool flags.
+This patch reverts 58292104832f ("net: ks8851-ml: Fix 16-bit IO operation")
+and edacb098ea9c ("net: ks8851-ml: Fix 16-bit data access"), because it
+turns out these were only necessary due to buggy hardware. This patch adds
+a check for such a buggy hardware to prevent any such mistakes again.
 
-Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+While working further on the KS8851 driver, it came to light that the
+KS8851-16MLL is capable of switching bus endianness by a hardware strap,
+EESK pin. If this strap is incorrect, the IO accesses require such endian
+swapping as is being reverted by this patch. Such swapping also impacts
+the performance significantly.
+
+Hence, in addition to removing it, detect that the hardware is broken,
+report to user, and fail to bind with such hardware.
+
+Fixes: 58292104832f ("net: ks8851-ml: Fix 16-bit IO operation")
+Fixes: edacb098ea9c ("net: ks8851-ml: Fix 16-bit data access")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Lukas Wunner <lukas@wunner.de>
+Cc: Petr Stetiar <ynezz@true.cz>
+Cc: YueHaibing <yuehaibing@huawei.com>
 ---
- net/core/page_pool.c | 36 +++++++++++++++++++-----------------
- 1 file changed, 19 insertions(+), 17 deletions(-)
+NOTE: I tested this with KS8851-16MLL in both EESK settings, sorry for
+      the problems these previous patches caused.
+---
+ drivers/net/ethernet/micrel/ks8851_mll.c | 56 ++++++++++++++++++++++--
+ 1 file changed, 52 insertions(+), 4 deletions(-)
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 10d2b25..eeeb0d9 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -39,27 +39,29 @@ static int page_pool_init(struct page_pool *pool,
- 	if (ring_qsize > 32768)
- 		return -E2BIG;
+diff --git a/drivers/net/ethernet/micrel/ks8851_mll.c b/drivers/net/ethernet/micrel/ks8851_mll.c
+index 58579baf3f7a..45cc840d8e2e 100644
+--- a/drivers/net/ethernet/micrel/ks8851_mll.c
++++ b/drivers/net/ethernet/micrel/ks8851_mll.c
+@@ -156,6 +156,50 @@ static int msg_enable;
+  * chip is busy transferring packet data (RX/TX FIFO accesses).
+  */
  
--	/* DMA direction is either DMA_FROM_DEVICE or DMA_BIDIRECTIONAL.
--	 * DMA_BIDIRECTIONAL is for allowing page used for DMA sending,
--	 * which is the XDP_TX use-case.
--	 */
--	if ((pool->p.dma_dir != DMA_FROM_DEVICE) &&
--	    (pool->p.dma_dir != DMA_BIDIRECTIONAL))
--		return -EINVAL;
--
--	if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV) {
--		/* In order to request DMA-sync-for-device the page
--		 * needs to be mapped
-+	if (pool->p.flags) {
-+		/* DMA direction is either DMA_FROM_DEVICE or DMA_BIDIRECTIONAL.
-+		 * DMA_BIDIRECTIONAL is for allowing page used for DMA sending,
-+		 * which is the XDP_TX use-case.
- 		 */
--		if (!(pool->p.flags & PP_FLAG_DMA_MAP))
-+		if ((pool->p.dma_dir != DMA_FROM_DEVICE) &&
-+		    (pool->p.dma_dir != DMA_BIDIRECTIONAL))
- 			return -EINVAL;
- 
--		if (!pool->p.max_len)
--			return -EINVAL;
-+		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV) {
-+			/* In order to request DMA-sync-for-device the page
-+			 * needs to be mapped
-+			 */
-+			if (!(pool->p.flags & PP_FLAG_DMA_MAP))
-+				return -EINVAL;
- 
--		/* pool->p.offset has to be set according to the address
--		 * offset used by the DMA engine to start copying rx data
--		 */
-+			if (!pool->p.max_len)
-+				return -EINVAL;
++/**
++ * ks_check_endian - Check whether endianness of the bus is correct
++ * @ks	  : The chip information
++ *
++ * The KS8851-16MLL EESK pin allows selecting the endianness of the 16bit
++ * bus. To maintain optimum performance, the bus endianness should be set
++ * such that it matches the endianness of the CPU.
++ */
 +
-+			/* pool->p.offset has to be set according to the address
-+			 * offset used by the DMA engine to start copying rx data
-+			 */
-+		}
++static int ks_check_endian(struct ks_net *ks)
++{
++	u16 cider;
++
++	/*
++	 * Read CIDER register first, however read it the "wrong" way around.
++	 * If the endian strap on the KS8851-16MLL in incorrect and the chip
++	 * is operating in different endianness than the CPU, then the meaning
++	 * of BE[3:0] byte-enable bits is also swapped such that:
++	 *    BE[3,2,1,0] becomes BE[1,0,3,2]
++	 *
++	 * Luckily for us, the byte-enable bits are the top four MSbits of
++	 * the address register and the CIDER register is at offset 0xc0.
++	 * Hence, by reading address 0xc0c0, which is not impacted by endian
++	 * swapping, we assert either BE[3:2] or BE[1:0] while reading the
++	 * CIDER register.
++	 *
++	 * If the bus configuration is correct, reading 0xc0c0 asserts
++	 * BE[3:2] and this read returns 0x0000, because to read register
++	 * with bottom two LSbits of address set to 0, BE[1:0] must be
++	 * asserted.
++	 *
++	 * If the bus configuration is NOT correct, reading 0xc0c0 asserts
++	 * BE[1:0] and this read returns non-zero 0x8872 value.
++	 */
++	iowrite16(BE3 | BE2 | KS_CIDER, ks->hw_addr_cmd);
++	cider = ioread16(ks->hw_addr);
++	if (!cider)
++		return 0;
++
++	netdev_err(ks->netdev, "incorrect EESK endian strap setting\n");
++
++	return -EINVAL;
++}
++
+ /**
+  * ks_rdreg16 - read 16 bit register from device
+  * @ks	  : The chip information
+@@ -166,7 +210,7 @@ static int msg_enable;
+ 
+ static u16 ks_rdreg16(struct ks_net *ks, int offset)
+ {
+-	ks->cmd_reg_cache = (u16)offset | ((BE3 | BE2) >> (offset & 0x02));
++	ks->cmd_reg_cache = (u16)offset | ((BE1 | BE0) << (offset & 0x02));
+ 	iowrite16(ks->cmd_reg_cache, ks->hw_addr_cmd);
+ 	return ioread16(ks->hw_addr);
+ }
+@@ -181,7 +225,7 @@ static u16 ks_rdreg16(struct ks_net *ks, int offset)
+ 
+ static void ks_wrreg16(struct ks_net *ks, int offset, u16 value)
+ {
+-	ks->cmd_reg_cache = (u16)offset | ((BE3 | BE2) >> (offset & 0x02));
++	ks->cmd_reg_cache = (u16)offset | ((BE1 | BE0) << (offset & 0x02));
+ 	iowrite16(ks->cmd_reg_cache, ks->hw_addr_cmd);
+ 	iowrite16(value, ks->hw_addr);
+ }
+@@ -197,7 +241,7 @@ static inline void ks_inblk(struct ks_net *ks, u16 *wptr, u32 len)
+ {
+ 	len >>= 1;
+ 	while (len--)
+-		*wptr++ = be16_to_cpu(ioread16(ks->hw_addr));
++		*wptr++ = (u16)ioread16(ks->hw_addr);
+ }
+ 
+ /**
+@@ -211,7 +255,7 @@ static inline void ks_outblk(struct ks_net *ks, u16 *wptr, u32 len)
+ {
+ 	len >>= 1;
+ 	while (len--)
+-		iowrite16(cpu_to_be16(*wptr++), ks->hw_addr);
++		iowrite16(*wptr++, ks->hw_addr);
+ }
+ 
+ static void ks_disable_int(struct ks_net *ks)
+@@ -1218,6 +1262,10 @@ static int ks8851_probe(struct platform_device *pdev)
+ 		goto err_free;
  	}
  
- 	if (ptr_ring_init(&pool->ring, ring_qsize, GFP_KERNEL) < 0)
++	err = ks_check_endian(ks);
++	if (err)
++		goto err_free;
++
+ 	netdev->irq = platform_get_irq(pdev, 0);
+ 
+ 	if ((int)netdev->irq < 0) {
 -- 
-1.8.3.1
+2.25.1
 
