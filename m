@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E92DE193435
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 00:08:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4A19193436
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 00:09:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727406AbgCYXIu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 19:08:50 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:40953 "EHLO
+        id S1727460AbgCYXJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 19:09:28 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:36707 "EHLO
         mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727358AbgCYXIu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 19:08:50 -0400
-Received: by mail-wm1-f65.google.com with SMTP id a81so5093450wmf.5
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 16:08:49 -0700 (PDT)
+        with ESMTP id S1727358AbgCYXJ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 19:09:28 -0400
+Received: by mail-wm1-f65.google.com with SMTP id g62so5128563wme.1
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 16:09:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XuNyogltgm8YWnjDV5Q5BoOhCT8WEhOVoDnB9WptN/M=;
-        b=lh3GvrnXfF0CtHCmSk+cdIyGmcVzGBIIl5nP0dLJyGRt0MBmo7s2ndSZ6m4AjoWmWc
-         7iNSxq5TVZVasxAgegIwKpQcPOk+COpJ/pUKuMq+HKXgw0MBebAlOxIHQVGIdGtL8CCc
-         vvaEilWP6PlamD5fNboAPD2qKvB2vWmNZ7ke4ZJaUUfZTcWSDGYzgY2vDVPlwvsYHXkx
-         VBdzvJWBTPBu75++2oDVisTd9k/YappO1Vo9a5Y5luikFdQrnWlfXldMcn8TVZSLCyJN
-         7qdG6kbNYfSl3JSKnWP1WAQkbh7F/0u+DkHipdz2yrHXv6FOPhR6S5QseUl0a6qlDWxZ
-         nLHw==
+        bh=3ijpdx1VS10Hsu4toWBo9zorseIQW+BUHAQFTmyXBRw=;
+        b=cjZh68FnyZ/JSOvdn9yQbQcVNafVzFkeJlxCmMFu/u9Z21UBHIbHaZj5+pxfP3SKm2
+         V4XUF49zSydYXgBcIbvVE4ReeBwj5J1P0IsJsH90vILTb1DTUedrUamcMVbqPNIkAtZu
+         QIOGPoOUKiCSs0hBamgAkRTvulQXXQa26y4KNTJrg10Mjc9eHlgQD+7eAW/cunqwI9mg
+         P/zhrpSyL/p9YZzRrjOhX1hID76hm7ZtrlOEm+AMi3La334NbaqVIa7F6ZoY2FVXqO00
+         1M0xl9ousqrX7OeowZXwFLi2O8sEgEOJ3wb97jKXesUcAk5OQjCriRj1nccOTchekVmy
+         o90Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=XuNyogltgm8YWnjDV5Q5BoOhCT8WEhOVoDnB9WptN/M=;
-        b=t8lgp8hTNhIOisszwPFZwzVj2ea1osBAPnMuOz+GLbRoRMUrVR5T3UJY6/UcJkyLqr
-         +m3Jf2mrb9Z1SVFIgk6oav8RtwnwkaV2NeAu5fELJuHy60YOfcyeBgQgPCX3HvVzGPQB
-         kRA0I/n432pOAMWZYmHvMNQiRjurBoxVFw4JtY+yLoKG+IHa8utfsn7HzdhR21vvK96D
-         Nxm70U98TMfmh4PAisAHFCuSXmZ1+PgPYGuj9DWQlNjNrpO/DwPryDj2Fk/4qelSqtHA
-         grrDr7UjSos201U8Tg1U/ksyvnIzMVg8UZqy4JiRZ/a9ag/BW2kO8Qc+dwrCw81yEo0n
-         wusA==
-X-Gm-Message-State: ANhLgQ3SdK+7/T7MJNEngDIIC+2qn93j9iAVpMlFDGiQFwH/+YzPh3sK
-        75EAtgkTpcw3gL8X2Rel1fjZo/Ca
-X-Google-Smtp-Source: ADFU+vtyrx/us2QHoVMMGEeMrwHgrvF7Es9xTU0WGlImdrXviU54mhhlDoib6yYqB8DLfrR57zz40Q==
-X-Received: by 2002:a7b:c194:: with SMTP id y20mr5488771wmi.163.1585177728091;
-        Wed, 25 Mar 2020 16:08:48 -0700 (PDT)
+        bh=3ijpdx1VS10Hsu4toWBo9zorseIQW+BUHAQFTmyXBRw=;
+        b=MPmND21gWxg1s485bWP//1sYEa3pXynDweCTRtbi242VplLOSKKmW3PjjKUMkAck1z
+         0mW9RR17xyd0wvLhw8yG0p08ry0AhyziqGfXv3AllqD6K6HOwXllHLhM4JU1c0YNs9Sc
+         3PCrDykuTp26VNvy9sH3UMYl9lKqE+OF6934ElaHdUzmogtEW8z2V2Md+wB75wXkLKpX
+         3yZFJkERk7pKmBPC9kQkA0hRHok7DFn3/JPOpvPrUZTP4OrF7Msd2QeK0+DFSmTBWQA+
+         /uT9fjtE432Zu4Aasuhk6ErOcoPTNoesGdg+bgBYEEjAx0PWhQNYXOd7OYRYYAXgtJ0f
+         THIA==
+X-Gm-Message-State: ANhLgQ0Oyhmlt0OzFJXVQu90txZpVYPznCiDnOy4JpaeBQO9u5qrJex7
+        YRNWARKdAfKRrA2rmzbQPq7thRoa
+X-Google-Smtp-Source: ADFU+vuLZh7zimxPV5kmVDDevLAiN4rlZWBf/P7NVNfDj0qvATiNqF1HMf+ciie8Hk/WRHn/+DwlDw==
+X-Received: by 2002:a1c:cc11:: with SMTP id h17mr5767012wmb.39.1585177762925;
+        Wed, 25 Mar 2020 16:09:22 -0700 (PDT)
 Received: from [10.230.1.220] ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id a14sm813309wmj.6.2020.03.25.16.08.45
+        by smtp.gmail.com with ESMTPSA id t16sm694536wra.17.2020.03.25.16.09.19
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Mar 2020 16:08:47 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 07/10] net: dsa: sja1105: Implement the port
- MTU callbacks
+        Wed, 25 Mar 2020 16:09:22 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 08/10] net: dsa: vsc73xx: Make the MTU
+ configurable
 To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
         vivien.didelot@gmail.com, davem@davemloft.net,
         jakub.kicinski@netronome.com
@@ -54,7 +54,7 @@ Cc:     murali.policharla@broadcom.com, stephen@networkplumber.org,
         jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
         nikolay@cumulusnetworks.com, netdev@vger.kernel.org
 References: <20200325152209.3428-1-olteanv@gmail.com>
- <20200325152209.3428-8-olteanv@gmail.com>
+ <20200325152209.3428-9-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -110,12 +110,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <6b8f1573-10e7-0e48-5602-8b345525ef80@gmail.com>
-Date:   Wed, 25 Mar 2020 16:08:42 -0700
+Message-ID: <77b9d369-19b9-8775-199d-b48a39820a57@gmail.com>
+Date:   Wed, 25 Mar 2020 16:09:17 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200325152209.3428-8-olteanv@gmail.com>
+In-Reply-To: <20200325152209.3428-9-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,24 +129,10 @@ X-Mailing-List: netdev@vger.kernel.org
 On 3/25/2020 8:22 AM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> On this switch, the frame length enforcements are performed by the
-> ingress policers. There are 2 types of those: regular L2 (also called
-> best-effort) and Virtual Link policers (an ARINC664/AFDX concept for
-> defining L2 streams with certain QoS abilities). To avoid future
-> confusion, I prefer to call the reset reason "Best-effort policers",
-> even though the VL policers are not yet supported.
+> Instead of hardcoding the MTU to the maximum value allowed by the
+> hardware, obey the value known by the operating system.
 > 
-> We also need to change the setup of the initial static config, such that
-> DSA calls to .change_mtu (which are expensive) become no-ops and don't
-> reset the switch 5 times.
-> 
-> A driver-level decision is to unconditionally allow single VLAN-tagged
-> traffic on all ports. The CPU port must accept an additional VLAN header
-> for the DSA tag, which is again a driver-level decision.
-> 
-> The policers actually count bytes not only from the SDU, but also from
-> the Ethernet header and FCS, so those need to be accounted for as well.
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
