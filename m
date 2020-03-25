@@ -2,171 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FF06193095
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 19:45:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6E9E1930B3
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 19:54:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727469AbgCYSpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 14:45:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52408 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727027AbgCYSpc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 14:45:32 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5F42B2074D;
-        Wed, 25 Mar 2020 18:45:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585161931;
-        bh=jvikHo9pUH9Rll6SzlHNTOYD2szmtyLRw8t6mrR8p5g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uVDt1d8hT/uhic48qJd0p2ZsfgInuYeTNvKk9rGrPvC00JqshvKj0WYyJqzLdaoyx
-         lPq0ScnC0eLkWFoZj/MmnFQ3119tKTUnM0FJbBzWf8251MoVg+Ia06q7ZED6HBTEso
-         bAspWGpDMZ63br+TrQE9hxYAh7YNY/cmGPoU/9nI=
-Date:   Wed, 25 Mar 2020 11:45:29 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eran Ben Elisha <eranbe@mellanox.com>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH net-next 2/2] devlink: Add auto dump flag to health
- reporter
-Message-ID: <20200325114529.3f4179c1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1585142784-10517-3-git-send-email-eranbe@mellanox.com>
-References: <1585142784-10517-1-git-send-email-eranbe@mellanox.com>
-        <1585142784-10517-3-git-send-email-eranbe@mellanox.com>
+        id S1727607AbgCYSyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 14:54:04 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:34217 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727006AbgCYSyE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 14:54:04 -0400
+Received: by mail-oi1-f193.google.com with SMTP id e9so3154595oii.1;
+        Wed, 25 Mar 2020 11:54:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cWw78govt1jCZMTOGm30sOUc8tNMV0QPWqlJNzfJWWI=;
+        b=Xql09Nf2OOJO07fx1b8npRsZZ63dIc7zbOgp7/7cw4DPczOSwwt7hip7Pt5bKKQFqS
+         dKBg1mYXV1eQHi3seyBWSkTymITneF9jgWjHz/vmmuPG9jGrNITskAaUhCKofzG6tTm4
+         6Juu/hopTUYaKE++RhnZSiigR8kkddc3saJVx15ToDA3/jGgtqFnH5nLTRjmKBBI9sdA
+         0PFScrCb1UWVLwbbiCHjtScw1Jd0ogQOudJD7fRYW6XCjxVW20pBfVYHYCdBZnV9x1IV
+         iAf9j+8fXyseidEFtNJXVrPF7Bd5XMFeogiPXKsfmDI2u5Fu5BwsJ4TlI682HtrCn8+i
+         LgdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cWw78govt1jCZMTOGm30sOUc8tNMV0QPWqlJNzfJWWI=;
+        b=nyqtdJMnWwcLfHyEMMjLKKMYf3UtcqTvjFkInTOQaNp8KnAwQXdeFIH1xMhISgT3jc
+         X1w5e8XjmqgsgJyS+dyQraYcfaUuLF4Uip+C+qjTyra1J0hOIpLXux1gAUFisc4IInUz
+         RTt7FH0dszXAzVWxdk4a1EkWRMBR5LA5WABB8oiCmCHBee7xlu0byE5e8Armb3GOlTXS
+         hhFZJ1z8wobCuZFqwy8dcm4c3C+cIuva/oQAUK85hy4deKOxH4hpmMm4USLPKWvVmWOd
+         r34uVQ8o2uV9T9dlwfP4AuTWWCeuMU2JUDxHlYxWxIXdWf0ENIFA4IkmNqOEomaVnvic
+         NKWA==
+X-Gm-Message-State: ANhLgQ3ugppc8TEM5NOxlX4CL3e+xJGw1RDBT2qGvdNC/ADZNO4LW0kW
+        Np6Kc+JK8JVHcTt1KwtAN9/4Ag/o6uRJldAlrZI=
+X-Google-Smtp-Source: ADFU+vthgnztGDzpqeOyOwWxg1D8ByJOoiqbKapZiuDqO3A3t7/JHbTDNJA1rqd5w+Jg5H2jliyGGIKSTVS+BihGYRo=
+X-Received: by 2002:aca:4b56:: with SMTP id y83mr3616037oia.142.1585162443547;
+ Wed, 25 Mar 2020 11:54:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <000000000000742e9e05a10170bc@google.com> <87a74arown.fsf@nanos.tec.linutronix.de>
+ <CAM_iQpV3S0xv5xzSrA5COYa3uyy_TBGpDA9Wcj9Qt_vn1n3jBQ@mail.gmail.com>
+ <87ftdypyec.fsf@nanos.tec.linutronix.de> <CAM_iQpVR8Ve3Jy8bb9VB6RcQ=p22ZTyTqjxJxL11RZmO7rkWeg@mail.gmail.com>
+ <875zeuftwm.fsf@nanos.tec.linutronix.de> <20200324020504.GR3199@paulmck-ThinkPad-P72>
+In-Reply-To: <20200324020504.GR3199@paulmck-ThinkPad-P72>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 25 Mar 2020 11:53:51 -0700
+Message-ID: <CAM_iQpVK5tNrer3UnnBVU82cRcdNAVtn5bxCm4rDVZM1_ffPAQ@mail.gmail.com>
+Subject: Re: WARNING: ODEBUG bug in tcindex_destroy_work (3)
+To:     "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        syzbot <syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Mar 2020 15:26:24 +0200 Eran Ben Elisha wrote:
-> On low memory system, run time dumps can consume too much memory. Add
-> administrator ability to disable auto dumps per reporter as part of the
-> error flow handle routine.
-> 
-> This attribute is not relevant while executing
-> DEVLINK_CMD_HEALTH_REPORTER_DUMP_GET.
-> 
-> By default, auto dump is activated for any reporter that has a dump method,
-> as part of the reporter registration to devlink.
-> 
-> Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
-> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-> ---
->  include/uapi/linux/devlink.h |  2 ++
->  net/core/devlink.c           | 26 ++++++++++++++++++++++----
->  2 files changed, 24 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-> index dfdffc42e87d..e7891d1d2ebd 100644
-> --- a/include/uapi/linux/devlink.h
-> +++ b/include/uapi/linux/devlink.h
-> @@ -429,6 +429,8 @@ enum devlink_attr {
->  	DEVLINK_ATTR_NETNS_FD,			/* u32 */
->  	DEVLINK_ATTR_NETNS_PID,			/* u32 */
->  	DEVLINK_ATTR_NETNS_ID,			/* u32 */
-> +
-> +	DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP,	/* u8 */
->  	/* add new attributes above here, update the policy in devlink.c */
->  
->  	__DEVLINK_ATTR_MAX,
-> diff --git a/net/core/devlink.c b/net/core/devlink.c
-> index ad69379747ef..e14bf3052289 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -4837,6 +4837,7 @@ struct devlink_health_reporter {
->  	struct mutex dump_lock; /* lock parallel read/write from dump buffers */
->  	u64 graceful_period;
->  	bool auto_recover;
-> +	bool auto_dump;
->  	u8 health_state;
->  	u64 dump_ts;
->  	u64 dump_real_ts;
-> @@ -4903,6 +4904,7 @@ devlink_health_reporter_create(struct devlink *devlink,
->  	reporter->devlink = devlink;
->  	reporter->graceful_period = graceful_period;
->  	reporter->auto_recover = !!ops->recover;
-> +	reporter->auto_dump = !!ops->dump;
->  	mutex_init(&reporter->dump_lock);
->  	refcount_set(&reporter->refcount, 1);
->  	list_add_tail(&reporter->list, &devlink->reporter_list);
-> @@ -4983,6 +4985,10 @@ devlink_nl_health_reporter_fill(struct sk_buff *msg,
->  	    nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS_NS,
->  			      reporter->dump_real_ts, DEVLINK_ATTR_PAD))
->  		goto reporter_nest_cancel;
-> +	if (reporter->ops->dump &&
-> +	    nla_put_u8(msg, DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP,
-> +		       reporter->auto_dump))
-> +		goto reporter_nest_cancel;
+On Mon, Mar 23, 2020 at 7:05 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+>
+> On Tue, Mar 24, 2020 at 02:01:13AM +0100, Thomas Gleixner wrote:
+> > Cong Wang <xiyou.wangcong@gmail.com> writes:
+> > > On Mon, Mar 23, 2020 at 2:14 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+> > >> > We use an ordered workqueue for tc filters, so these two
+> > >> > works are executed in the same order as they are queued.
+> > >>
+> > >> The workqueue is ordered, but look how the work is queued on the work
+> > >> queue:
+> > >>
+> > >> tcf_queue_work()
+> > >>   queue_rcu_work()
+> > >>     call_rcu(&rwork->rcu, rcu_work_rcufn);
+> > >>
+> > >> So after the grace period elapses rcu_work_rcufn() queues it in the
+> > >> actual work queue.
+> > >>
+> > >> Now tcindex_destroy() is invoked via tcf_proto_destroy() which can be
+> > >> invoked from preemtible context. Now assume the following:
+> > >>
+> > >> CPU0
+> > >>   tcf_queue_work()
+> > >>     tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
+> > >>
+> > >> -> Migration
+> > >>
+> > >> CPU1
+> > >>    tcf_queue_work(&p->rwork, tcindex_destroy_work);
+> > >>
+> > >> So your RCU callbacks can be placed on different CPUs which obviously
+> > >> has no ordering guarantee at all. See also:
+> > >
+> > > Good catch!
+> > >
+> > > I thought about this when I added this ordered workqueue, but it
+> > > seems I misinterpret max_active, so despite we have max_active==1,
+> > > more than 1 work could still be queued on different CPU's here.
+> >
+> > The workqueue is not the problem. it works perfectly fine. The way how
+> > the work gets queued is the issue.
+> >
+> > > I don't know how to fix this properly, I think essentially RCU work
+> > > should be guaranteed the same ordering with regular work. But this
+> > > seems impossible unless RCU offers some API to achieve that.
+> >
+> > I don't think that's possible w/o putting constraints on the flexibility
+> > of RCU (Paul of course might disagree).
+>
+> It is possible, but it does not come for free.
+>
+> From an RCU/workqueues perspective, if I understand the scenario, you
+> can do the following:
+>
+>         tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
+>
+>         rcu_barrier(); // Wait for the RCU callback.
+>         flush_work(...); // Wait for the workqueue handler.
+>                          // But maybe for quite a few of them...
+>
+>         // All the earlier handlers have completed.
+>         tcf_queue_work(&p->rwork, tcindex_destroy_work);
+>
+> This of course introduces overhead and latency.  Maybe that is not a
+> problem at teardown time, or maybe the final tcf_queue_work() can itself
+> be dumped into a workqueue in order to get it off of the critical path.
 
-Since you're making it a u8 - does it make sense to indicate to user
-space whether the dump is disabled or not supported?
+I personally agree, but nowadays NIC vendors care about tc filter
+slow path performance as well. :-/
 
-Right now no attribute means either old kernel or dump not possible..
 
->  	nla_nest_end(msg, reporter_attr);
->  	genlmsg_end(msg, hdr);
-> @@ -5129,10 +5135,12 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
->  
->  	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
->  
-> -	mutex_lock(&reporter->dump_lock);
-> -	/* store current dump of current error, for later analysis */
-> -	devlink_health_do_dump(reporter, priv_ctx, NULL);
-> -	mutex_unlock(&reporter->dump_lock);
-> +	if (reporter->auto_dump) {
-> +		mutex_lock(&reporter->dump_lock);
-> +		/* store current dump of current error, for later analysis */
-> +		devlink_health_do_dump(reporter, priv_ctx, NULL);
-> +		mutex_unlock(&reporter->dump_lock);
-> +	}
->  
->  	if (reporter->auto_recover)
->  		return devlink_health_reporter_recover(reporter,
-> @@ -5306,6 +5314,11 @@ devlink_nl_cmd_health_reporter_set_doit(struct sk_buff *skb,
->  		err = -EOPNOTSUPP;
->  		goto out;
->  	}
-> +	if (!reporter->ops->dump &&
-> +	    info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP]) {
+>
+> However, depending on your constraints ...
+>
+> > I assume that the filters which hang of tcindex_data::perfect and
+> > tcindex_data:p must be freed before tcindex_data, right?
+> >
+> > Refcounting of tcindex_data should do the trick. I.e. any element which
+> > you add to a tcindex_data instance takes a refcount and when that is
+> > destroyed then the rcu/work callback drops a reference which once it
+> > reaches 0 triggers tcindex_data to be freed.
+>
+> ... reference counts might work much better for you.
+>
 
-... and then this behavior may have to change, I think?
+I need to think about how much work is needed for refcnting, given
+other filters have the same assumption.
 
-> +		err = -EOPNOTSUPP;
-> +		goto out;
-> +	}
->  
->  	if (info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_GRACEFUL_PERIOD])
->  		reporter->graceful_period =
-> @@ -5315,6 +5328,10 @@ devlink_nl_cmd_health_reporter_set_doit(struct sk_buff *skb,
->  		reporter->auto_recover =
->  			nla_get_u8(info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_RECOVER]);
->  
-> +	if (info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP])
-> +		reporter->auto_dump =
-> +		nla_get_u8(info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP]);
-> +
->  	devlink_health_reporter_put(reporter);
->  	return 0;
->  out:
-> @@ -6053,6 +6070,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
->  	[DEVLINK_ATTR_HEALTH_REPORTER_NAME] = { .type = NLA_NUL_STRING },
->  	[DEVLINK_ATTR_HEALTH_REPORTER_GRACEFUL_PERIOD] = { .type = NLA_U64 },
->  	[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_RECOVER] = { .type = NLA_U8 },
-> +	[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP] = { .type = NLA_U8 },
-
-I'd suggest we keep the attrs in order of definition, because we should
-set .strict_start_type, and then it matters which are before and which
-are after.
-
-Also please set max value of 1.
-
->  	[DEVLINK_ATTR_FLASH_UPDATE_FILE_NAME] = { .type = NLA_NUL_STRING },
->  	[DEVLINK_ATTR_FLASH_UPDATE_COMPONENT] = { .type = NLA_NUL_STRING },
->  	[DEVLINK_ATTR_TRAP_NAME] = { .type = NLA_NUL_STRING },
-
+Thanks.
