@@ -2,107 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D2EB192C3A
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 16:23:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ED6B192C3F
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 16:24:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727866AbgCYPXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 11:23:05 -0400
-Received: from mail-db8eur05on2118.outbound.protection.outlook.com ([40.107.20.118]:13921
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727399AbgCYPXF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 11:23:05 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nI2jhqccTu55TlH7PWsKEiApYWMAR6IuGZd9JQXkL3fKjnnaTWI3ZFzKHiL0SmLFtWgZGiGZqYvjwIl52DHmYbubK563Vj9fUXeC4Xpi6l+MGOnq6qPsT7Tm9rp9LHlv0hsvkAPq6XAbJ1lUGl9DdVMc64vhsP+9dqqTuBT9qNVqTGY6g6Y2g4l5pnZ4k+ud5uHhi+RMEze38xTCkMbV2eWRmFpsYkMs4AyvLnx5AR+52C2ot7rR3FtL/X0VLnpHDlqYVs5UXBlqWg4fci4I+3DfPkDAOi1QD8Efkpgj0wSLyTiYSHfoepstwRBcQmICd9veoJN/AOvIlEsjquBXIw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ADqrYjh7QTTgwqTRaa3YR2uTJZGI4IOiulN9NSBnVwM=;
- b=Yo+1pK715HuObvW5OQoLzjoCnVV+YYlyFX2Wo7sWus3+RX5IMIEdHvSAdXCT1ja5wNrdilVfL217kIXylJELItwYvnyuXOGMacaLUaDwHsUtkO59yF+/fLfoJCAmlCVJpqYd6dDdIO8vDK0+2lddTgTuDC/1aOROFIclj1CwJmGVStLSkXgJRJUZyze2Stlo1+Won2h6QH7Ib21LJXch8BB7q29k3dpvbpHQYLoTm3g3S8Pr15A074itn/HG+67zIrBzpnOtS9ClXD1Ar/LvhlCMJZFq/9gKvPfxbLtaXY/qKoQv7HvtiU+OJSCgj3WiDXwATQQP6ou5vZQp13sfCw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=criteo.com; dmarc=pass action=none header.from=criteo.com;
- dkim=pass header.d=criteo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=criteo.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ADqrYjh7QTTgwqTRaa3YR2uTJZGI4IOiulN9NSBnVwM=;
- b=cLL4FMNr/2ZjYj4vzfSrndLJQXkH0sdTgpIKAhJUWdP+PUjtEZJkVTP6w+1CsemRWlJnhzbHqwuCC4FW+htv/HYvGGHBtL5E1i12KlenvBBsLbqrd9t8183gJxpSLVdpdLLfWkk/1dgQnoDpAag/yfWJSV/lHJWs8zKrnWpdWVA=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=w.dauchy@criteo.com; 
-Received: from DB3PR0402MB3914.eurprd04.prod.outlook.com (52.134.71.157) by
- DB3PR0402MB3930.eurprd04.prod.outlook.com (52.134.71.161) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.22; Wed, 25 Mar 2020 15:23:01 +0000
-Received: from DB3PR0402MB3914.eurprd04.prod.outlook.com
- ([fe80::adc7:fc68:a912:5f46]) by DB3PR0402MB3914.eurprd04.prod.outlook.com
- ([fe80::adc7:fc68:a912:5f46%2]) with mapi id 15.20.2835.023; Wed, 25 Mar 2020
- 15:23:01 +0000
-X-Gm-Message-State: ANhLgQ1j/8ORowKd0gIirYx1eJFe9VwOGvkrGDpmbpSY8J+dot6lM7DQ
-        mC6wF9dZsa90hLXSr2wrRX8+mpy+nxL9wft/Peg=
-X-Google-Smtp-Source: ADFU+vsg2NFzstDm4MdoZuoBRtyyRDHYRc95k120b/cGZVvOD89v8+DiBY6ObfBl7VABiHKTKsJLOJYq17YaGxc6NwQ=
-X-Received: by 2002:a05:6512:3bc:: with SMTP id v28mr2613431lfp.39.1585149780039;
- Wed, 25 Mar 2020 08:23:00 -0700 (PDT)
-References: <20200325150304.5506-1-w.dauchy@criteo.com>
-In-Reply-To: <20200325150304.5506-1-w.dauchy@criteo.com>
-From:   William Dauchy <w.dauchy@criteo.com>
-Date:   Wed, 25 Mar 2020 16:22:47 +0100
-X-Gmail-Original-Message-ID: <CAJ75kXZG9A4Fm6AOMe1B_SKyrbXPw6Q3V3PQOgEzuq1pcJfKmA@mail.gmail.com>
-Message-ID: <CAJ75kXZG9A4Fm6AOMe1B_SKyrbXPw6Q3V3PQOgEzuq1pcJfKmA@mail.gmail.com>
-Subject: Re: [PATCH net] net, ip_tunnel: fix interface lookup with no key
-To:     William Dauchy <w.dauchy@criteo.com>
-Cc:     NETDEV <netdev@vger.kernel.org>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Pravin B Shelar <pshelar@nicira.com>
-Content-Type: text/plain; charset="UTF-8"
-X-ClientProxiedBy: AM4P190CA0005.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:200:56::15) To DB3PR0402MB3914.eurprd04.prod.outlook.com
- (2603:10a6:8:f::29)
+        id S1727722AbgCYPYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 11:24:10 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:33557 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726838AbgCYPYJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 11:24:09 -0400
+Received: by mail-wm1-f65.google.com with SMTP id w25so2383185wmi.0;
+        Wed, 25 Mar 2020 08:24:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ZMzufbtndIxfQmBLHm23V9WfnXjvY8mO2yqPIZB5gDU=;
+        b=BWx3uxsIk3pmb2jYX66+b2iKsIcsASs+LIcGSs6TBhRMhO4d47dl5rADijn3UGRvhG
+         8SbW3uZcnKsVSII2ZWj3H0gpUbkVkXH5erKpe37NtGfwZgfStOHNHEfhnGACSkzQgyEz
+         +B0zcyCDoE2S2hxXdvLrgOFeE5LRidNP56uniTd4uImISpjt/58IUPOpu/uh6ENksJQg
+         Tl0ndJnxVQbDI4e1ab/e0zr7Y5Bx/dnfRn2UXDSjAbFh3DI1nmLWOsMA4t+ulkynzqRK
+         JR5qnSmRrbE+4C++d7xOu4FP/98FEZ3n24yXMUfIQFf+bL407buCybsBVsB33auHrnMn
+         jiHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZMzufbtndIxfQmBLHm23V9WfnXjvY8mO2yqPIZB5gDU=;
+        b=q3e7scXMd05fIngk1zLlrX1u5BJ4yJBrnLfZkAhOvdMsGcBelohGZuv/UGp+BhKwy4
+         ENcCIXQ1ZSm+vo114BWA7OIR7WyOolK85q4+Udy2555H8s62QSKfCSdFp+eHLzIZStTm
+         dF3M73MnotW0XInKVvWH57T+6HugUnGdeqkC2sEMX0g3+Svus31XkWsxyW/dKvKwUJv5
+         fNFcT/ZADaeYZLF3awsefIqiKAHIvhpuvdAVM71i9HjMHXxaxrsKOSbSo1mC4n/wC+0N
+         iK1y+vOEB1j3CPPRpOvFRY3/t6gH1VNyiwJKeDLoXdCOJ9/tvdRspUb1jeP6ajLH50+W
+         +fKA==
+X-Gm-Message-State: ANhLgQ1BbprszxZjM/uomUZFfryR7UZWAPMwRiVI55+ioxs5w2v0zIBs
+        PC7PLn2j62P+9udQjilCf24=
+X-Google-Smtp-Source: ADFU+vsWlzfyvxWYK0fqQ9xx/KR19mVEHdF1RmHNZrFAbD14EJSxOKx23xH5kcAD+ENM2oOknweSgw==
+X-Received: by 2002:a1c:4d7:: with SMTP id 206mr3847830wme.5.1585149847168;
+        Wed, 25 Mar 2020 08:24:07 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:f4a0:1b38:2faf:56e9? (p200300EA8F296000F4A01B382FAF56E9.dip0.t-ipconnect.de. [2003:ea:8f29:6000:f4a0:1b38:2faf:56e9])
+        by smtp.googlemail.com with ESMTPSA id o16sm35397700wrs.44.2020.03.25.08.24.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 Mar 2020 08:24:06 -0700 (PDT)
+Subject: Re: [PATCH 1/2] net: phy: micrel.c: add rgmii interface delay
+ possibility to ksz9131
+To:     Philippe Schenker <philippe.schenker@toradex.com>, andrew@lunn.ch,
+        f.fainelli@gmail.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, robh+dt@kernel.org,
+        devicetree@vger.kernel.org, shawnguo@kernel.org,
+        mark.rutland@arm.com
+Cc:     o.rempel@pengutronix.de, linux-kernel@vger.kernel.org,
+        silvan.murer@gmail.com, s.hauer@pengutronix.de,
+        a.fatoum@pengutronix.de, "David S. Miller" <davem@davemloft.net>
+References: <20200325150329.228329-1-philippe.schenker@toradex.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <d1067087-2cb8-f7c7-7929-2c4c9d2a4cb3@gmail.com>
+Date:   Wed, 25 Mar 2020 16:24:00 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mail-lf1-f45.google.com (209.85.167.45) by AM4P190CA0005.EURP190.PROD.OUTLOOK.COM (2603:10a6:200:56::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.18 via Frontend Transport; Wed, 25 Mar 2020 15:23:01 +0000
-Received: by mail-lf1-f45.google.com with SMTP id t16so1309445lfl.2        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 08:23:00 -0700 (PDT)
-X-Gm-Message-State: ANhLgQ1j/8ORowKd0gIirYx1eJFe9VwOGvkrGDpmbpSY8J+dot6lM7DQ
-        mC6wF9dZsa90hLXSr2wrRX8+mpy+nxL9wft/Peg=
-X-Google-Smtp-Source: ADFU+vsg2NFzstDm4MdoZuoBRtyyRDHYRc95k120b/cGZVvOD89v8+DiBY6ObfBl7VABiHKTKsJLOJYq17YaGxc6NwQ=
-X-Received: by 2002:a05:6512:3bc:: with SMTP id
- v28mr2613431lfp.39.1585149780039; Wed, 25 Mar 2020 08:23:00 -0700 (PDT)
-X-Gmail-Original-Message-ID: <CAJ75kXZG9A4Fm6AOMe1B_SKyrbXPw6Q3V3PQOgEzuq1pcJfKmA@mail.gmail.com>
-X-Originating-IP: [209.85.167.45]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 009070f3-54e0-4a2f-519c-08d7d0d067d8
-X-MS-TrafficTypeDiagnostic: DB3PR0402MB3930:
-X-Microsoft-Antispam-PRVS: <DB3PR0402MB3930A58D6D489C0AD1A68664E8CE0@DB3PR0402MB3930.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-Forefront-PRVS: 0353563E2B
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(136003)(396003)(346002)(366004)(39860400002)(376002)(558084003)(6200100001)(66476007)(53546011)(66556008)(81166006)(55446002)(2906002)(478600001)(81156014)(8936002)(66946007)(86362001)(6666004)(8676002)(26005)(316002)(4326008)(5660300002)(107886003)(6862004)(54906003)(9686003)(186003)(42186006)(52116002);DIR:OUT;SFP:1102;SCL:1;SRVR:DB3PR0402MB3930;H:DB3PR0402MB3914.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;
-Received-SPF: None (protection.outlook.com: criteo.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oSNI6GcJECemhZRhTxeqb8aQyIhxA/g1fRs2oXVGJkJl/bJZXbMuVG9sZSCHGxof/JYeQH1XJtordNwddA3b9EBurxG84fCgH7YYYIy8B2JSqvLdP4GXKziHtQofJ8T25kNSs6GU5nXHX0EVtz91+gWkrTT+Pvnat9iogV73w/u8FU9TIXnhCFEmMZWIes37KEo9ma1DjjcWNxtx17BER4GxElgX6SoP72n4eCciz1eYiCb/nR9T081XydtwcFdERyoBzEPCETD/k+khzxqYFQuUHMIeHEbBBFbBRfEMgq3+gXg2wgHz9XQoI3pLmMsD2gIchnC9eVQvSHTyjVc745vViWA22bvuefvJkmAFb1kLUrDFm6HmGHAcJYh6wf0F01XDEEXV7qV3Q6/6STU3OsCe+Yx/Py1+DgOopNA4G18oGdiC2sid4DqvNY/2vZLY
-X-MS-Exchange-AntiSpam-MessageData: 2tMdFIFcW96hX4v/3yce5A1KM+GB2V5e5Ja66T6+C9QfkPTw9VrReSLNcd74X4s/HpimHFyATdJlPVj2i4SLktU+NDdvU84O2fEOCtT1PVlj3x18AEiNdmvdMNgfUcQcUNLJOCUl0srFO2h4+41xCA==
-X-OriginatorOrg: criteo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 009070f3-54e0-4a2f-519c-08d7d0d067d8
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2020 15:23:01.2498
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 2a35d8fd-574d-48e3-927c-8c398e225a01
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ahSQVkTTZPIg3ftey3RB8R8Sag01hFGdXLh8IN0KJ5CjeegdnR8MgOYxvkNpmfhzWk0QOuTQERdmQPzsMvRXqg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3930
+In-Reply-To: <20200325150329.228329-1-philippe.schenker@toradex.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 25, 2020 at 4:03 PM William Dauchy <w.dauchy@criteo.com> wrote:
-> -       if (flags & TUNNEL_NO_KEY)
-> -               goto skip_key_lookup;
+On 25.03.2020 16:03, Philippe Schenker wrote:
+> The KSZ9131 provides DLL controlled delays on RXC and TXC lines. This
+> patch makes use of those delays. The information which delays should
+> be enabled or disabled comes from the interface names, documented in
+> ethernet-controller.yaml:
+> 
+> rgmii:      Disable RXC and TXC delays
+> rgmii-id:   Enable RXC and TXC delays
+> rgmii-txid: Enable only TXC delay, disable RXC delay
+> rgmii-rxid: Enable onlx RXC delay, disable TXC delay
+> 
+> Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
+> ---
+> 
+>  drivers/net/phy/micrel.c | 45 ++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 45 insertions(+)
+> 
+> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> index 63dedec0433d..d3ad09774847 100644
+> --- a/drivers/net/phy/micrel.c
+> +++ b/drivers/net/phy/micrel.c
+> @@ -704,6 +704,48 @@ static int ksz9131_of_load_skew_values(struct phy_device *phydev,
+>  	return phy_write_mmd(phydev, 2, reg, newval);
+>  }
+>  
+> +/* MMD Address 0x2 */
+> +#define KSZ9131RN_RXC_DLL_CTRL		76
+> +#define KSZ9131RN_TXC_DLL_CTRL		77
+> +#define KSZ9131RN_DLL_CTRL_BYPASS	BIT_MASK(12)
+> +#define KSZ9131RN_DLL_ENABLE_DELAY	0
+> +#define KSZ9131RN_DLL_DISABLE_DELAY	BIT(12)
+> +
+> +static int ksz9131_config_rgmii_delay(struct phy_device *phydev)
+> +{
+> +	int ret;
+> +	u16 rxcdll_val, txcdll_val;
+> +
 
-I later realised I would also need to remove the `skip_key_lookup`
-below, but waiting for feedback to see whether this is a good
-approach.
+Reverse xmas tree order please.
 
-Thanks,
--- 
-William
+> +	switch (phydev->interface) {
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +		rxcdll_val = KSZ9131RN_DLL_DISABLE_DELAY;
+> +		txcdll_val = KSZ9131RN_DLL_DISABLE_DELAY;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII_ID:
+> +		rxcdll_val = KSZ9131RN_DLL_ENABLE_DELAY;
+> +		txcdll_val = KSZ9131RN_DLL_ENABLE_DELAY;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII_RXID:
+> +		rxcdll_val = KSZ9131RN_DLL_ENABLE_DELAY;
+> +		txcdll_val = KSZ9131RN_DLL_DISABLE_DELAY;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII_TXID:
+> +		rxcdll_val = KSZ9131RN_DLL_DISABLE_DELAY;
+> +		txcdll_val = KSZ9131RN_DLL_ENABLE_DELAY;
+> +		break;
+> +	default:
+> +		return 0;
+> +	}
+> +
+> +	ret = phy_modify_mmd_changed(phydev, 2, KSZ9131RN_RXC_DLL_CTRL,
+> +				     KSZ9131RN_DLL_CTRL_BYPASS, rxcdll_val);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return phy_modify_mmd_changed(phydev, 2, KSZ9131RN_TXC_DLL_CTRL,
+> +				     KSZ9131RN_DLL_CTRL_BYPASS, txcdll_val);
+
+phy_modify_mmd_changed() returns 1 if the register value was changed,
+and that's not what you want here. Simply use phy_modify_mmd() in both
+occurrences. And your function has a return value, but it's not used by
+the caller.
+
+> +}
+> +
+>  static int ksz9131_config_init(struct phy_device *phydev)
+>  {
+>  	const struct device *dev = &phydev->mdio.dev;
+> @@ -730,6 +772,9 @@ static int ksz9131_config_init(struct phy_device *phydev)
+>  	if (!of_node)
+>  		return 0;
+>  
+> +	if (phy_interface_is_rgmii(phydev))
+> +		ksz9131_config_rgmii_delay(phydev);
+> +
+>  	ret = ksz9131_of_load_skew_values(phydev, of_node,
+>  					  MII_KSZ9031RN_CLK_PAD_SKEW, 5,
+>  					  clk_skews, 2);
+> 
+
