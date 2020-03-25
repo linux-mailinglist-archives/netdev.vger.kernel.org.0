@@ -2,137 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1200A192E57
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 17:39:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ABFDC192E79
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 17:43:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727732AbgCYQjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 12:39:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39030 "EHLO mail.kernel.org"
+        id S1727505AbgCYQnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 12:43:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41442 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727464AbgCYQjU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 12:39:20 -0400
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
+        id S1727395AbgCYQnI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Mar 2020 12:43:08 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6311D2073E;
-        Wed, 25 Mar 2020 16:39:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DD9962073E;
+        Wed, 25 Mar 2020 16:43:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585154359;
-        bh=A1GPX4wlECfGGG7gTSHHrGt3spoxTdKZ1xy9utwV/BA=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=APOdz2w7EH+7D58vqGoNgP8mOHfbNma8Ty1WIG8jpBICPSinl9OycWqb0OdtxkciV
-         gxpkAVRwhIe+WxIGCYwXBH73yF99ZY9v+QEk7Sp75Ev8c6B1ujrOAxGnV4ZUKw4afx
-         Pt8nI6CO51v4M2JmrHTqBAusgH99DwWPqLUsLFTU=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 325E9352094D; Wed, 25 Mar 2020 09:39:19 -0700 (PDT)
-Date:   Wed, 25 Mar 2020 09:39:19 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Sebastian Siewior <bigeasy@linutronix.de>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        linux-pci@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        platform-driver-x86@vger.kernel.org,
-        Zhang Rui <rui.zhang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, kbuild test robot <lkp@intel.com>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
-        Brian Cain <bcain@codeaurora.org>,
-        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
-        Michal Simek <monstr@monstr.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Geoff Levand <geoff@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org, Davidlohr Bueso <dbueso@suse.de>
-Subject: Re: Documentation/locking/locktypes: Further clarifications and
- wordsmithing
-Message-ID: <20200325163919.GU19865@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200323025501.GE3199@paulmck-ThinkPad-P72>
- <87r1xhz6qp.fsf@nanos.tec.linutronix.de>
- <20200325002811.GO19865@paulmck-ThinkPad-P72>
- <87wo78y5yy.fsf@nanos.tec.linutronix.de>
- <20200325160212.oavrni7gmzudnczv@linutronix.de>
+        s=default; t=1585154587;
+        bh=7TMtuySruvHHcchF36FPpNb2QqP1TWDds4GwT4C/1HQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nQ6K429B3smQECECGxav7S/4s34FmU7p9PzZXUnC4qJxn8J8Ei06gNIPZ99OS2GPN
+         kUERmV5VjEl/1J0HwUJIFWckXoIhDtf2hvTgXyzKJkmz7CKJOj390Z0UHMfWPYzENs
+         ICV9HPOqtJZkMfobLSTrvgszOKUEcba0I1Qy1sM8=
+Date:   Wed, 25 Mar 2020 09:43:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 01/15] devlink: Add packet trap policers
+ support
+Message-ID: <20200325094305.15f9ea24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200325094143.GA1332836@splinter>
+References: <20200324193250.1322038-1-idosch@idosch.org>
+        <20200324193250.1322038-2-idosch@idosch.org>
+        <20200324203109.71e1efc6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200325094143.GA1332836@splinter>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200325160212.oavrni7gmzudnczv@linutronix.de>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 25, 2020 at 05:02:12PM +0100, Sebastian Siewior wrote:
-> On 2020-03-25 13:27:49 [+0100], Thomas Gleixner wrote:
-> > The documentation of rw_semaphores is wrong as it claims that the non-owner
-> > reader release is not supported by RT. That's just history biased memory
-> > distortion.
+On Wed, 25 Mar 2020 11:41:43 +0200 Ido Schimmel wrote:
+> On Tue, Mar 24, 2020 at 08:31:09PM -0700, Jakub Kicinski wrote:
+> > On Tue, 24 Mar 2020 21:32:36 +0200 Ido Schimmel wrote:  
+> > > +/**
+> > > + * devlink_trap_policers_register - Register packet trap policers with devlink.
+> > > + * @devlink: devlink.
+> > > + * @policers: Packet trap policers.
+> > > + * @policers_count: Count of provided packet trap policers.
+> > > + *
+> > > + * Return: Non-zero value on failure.
+> > > + */
+> > > +int
+> > > +devlink_trap_policers_register(struct devlink *devlink,
+> > > +			       const struct devlink_trap_policer *policers,
+> > > +			       size_t policers_count)
+> > > +{
+> > > +	int i, err;
+> > > +
+> > > +	mutex_lock(&devlink->lock);
+> > > +	for (i = 0; i < policers_count; i++) {
+> > > +		const struct devlink_trap_policer *policer = &policers[i];
+> > > +
+> > > +		if (WARN_ON(policer->id == 0)) {
+> > > +			err = -EINVAL;
+> > > +			goto err_trap_policer_verify;
+> > > +		}
+> > > +
+> > > +		err = devlink_trap_policer_register(devlink, policer);
+> > > +		if (err)
+> > > +			goto err_trap_policer_register;
+> > > +	}
+> > > +	mutex_unlock(&devlink->lock);
+> > > +
+> > > +	return 0;
+> > > +
+> > > +err_trap_policer_register:
+> > > +err_trap_policer_verify:  
 > > 
-> > Split the 'Owner semantics' section up and add separate sections for
-> > semaphore and rw_semaphore to reflect reality.
-> > 
-> > Aside of that the following updates are done:
-> > 
-> >  - Add pseudo code to document the spinlock state preserving mechanism on
-> >    PREEMPT_RT
-> > 
-> >  - Wordsmith the bitspinlock and lock nesting sections
-> > 
-> > Co-developed-by: Paul McKenney <paulmck@kernel.org>
-> > Signed-off-by: Paul McKenney <paulmck@kernel.org>
-> > Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> > nit: as you probably know the label names are not really in compliance
+> > with:
+> > https://www.kernel.org/doc/html/latest/process/coding-style.html#centralized-exiting-of-functions
+> > ;)  
 > 
-> > --- a/Documentation/locking/locktypes.rst
-> > +++ b/Documentation/locking/locktypes.rst
-> …
-> > +rw_semaphore
-> > +============
-> > +
-> > +rw_semaphore is a multiple readers and single writer lock mechanism.
-> > +
-> > +On non-PREEMPT_RT kernels the implementation is fair, thus preventing
-> > +writer starvation.
-> > +
-> > +rw_semaphore complies by default with the strict owner semantics, but there
-> > +exist special-purpose interfaces that allow non-owner release for readers.
-> > +These work independent of the kernel configuration.
+> Hi Jakub, thanks for the thorough review!
 > 
-> This reads funny, could be my English. "This works independent …" maybe?
+> I assume you're referring to the fact that the label does not say what
+> the goto does? It seems that the coding style guide also allows for
+> labels that indicate why the label exists: "Choose label names which say
+> what the goto does or why the goto exists".
 
-The "These" refers to "interfaces", which is plural, so "These" rather
-than "This".  But yes, it is a bit awkward, because you have to skip
-back past "readers", "release", and "non-owner" to find the implied
-subject of that last sentence.
+Hm, why the label exists to me does not mean identify the source of the
+jump. It's quite logical to name the label after the target, because
+then you can just read the body of the function, and validate the jumps
+undo the right things based on their names. Is the reason to name
+labels after source so that the label doesn't have to be renamed if
+steps are inserted in the middle? Can't think of anything else.
 
-So how about this instead, making the implied subject explicit?
+Anyway, it's not a big deal, but please be prepared for me to keep
+bringing this up :)
 
-rw_semaphore complies by default with the strict owner semantics, but there
-exist special-purpose interfaces that allow non-owner release for readers.
-These interfaces work independent of the kernel configuration.
-
-							Thanx, Paul
+> This is the form I'm used to, but I do adjust the names in code that
+> uses the other form (such as in netdevsim).
+> 
+> I already used this form in previous devlink submissions, so I would
+> like to stick to it unless you/Jiri have strong preference here.
