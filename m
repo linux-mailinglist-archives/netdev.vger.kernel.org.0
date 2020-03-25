@@ -2,78 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 40CA1192EA6
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 17:49:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BEC7192EA7
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 17:50:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727485AbgCYQty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 12:49:54 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:36889 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727357AbgCYQty (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 12:49:54 -0400
-Received: by mail-qk1-f195.google.com with SMTP id x3so3283477qki.4
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 09:49:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=0A+2lYiNIEXZRek/zk2Xml63CdHnnUNXYwFqnqSF2hQ=;
-        b=BtfzNoYPMEQVjr6dFUPabUHYeb/U/V3GGuZAIlkfu98DXhzMSuBJ/ChHEtuSvNP2yj
-         zSY1kTkcGXtYDBh5UusUlF6wT/BOfymI3892fLZ5hZTGOarPBEU4DWzh0iIKSIiLPULf
-         g4vJUNslX/buPvcVk+x0fegGVgUoO0fVbGOtcV0sYG8TvFSjSFuw4l6sLr8NPD6Ktx9+
-         YE+uWqhRo8GLH2FoaFB2cpHIFpkVO8X2uJT+tukyEDmZQYx88bmY8DuX2U46bQEU3yXW
-         Z1tCCdzDzcYAhbpSE39x0/e0kUIGlTfOCKzVye7K5jkski+dYo0+ChEmmlkNuSRBpjrA
-         1RgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=0A+2lYiNIEXZRek/zk2Xml63CdHnnUNXYwFqnqSF2hQ=;
-        b=umMSBBjGLspLeUxLCUiqb0TNEYQZ8DK+BFwL3z1/pYDtLA+E7iwvmexqYIk9cxdHZE
-         +Tz3mkXkybqj50snpMrqWKMn10sjozeCQjbpPAFC31TgD9FPHL6Uy0UtY37HztR6xm1B
-         BINI0WpkmyILtPJgpEMdTwE8oGRM3v5Wt0kMX32hmuKXvzxd0rPJ1PPaYIbkvBy49bA2
-         oYhNjBMY8xHNznizoOhZPCgjYCYCDG/k0O/uiPwVsXIjybENQNX8YA4o93GjaeiCziFG
-         Y++TPsfbEO8PVzvkms2vvmRgIJ5PX8VfA5VhNvaBI2nzvj7ToP5XpilR/1SmjoGNdlVQ
-         HNjA==
-X-Gm-Message-State: ANhLgQ0m7B019IPnjr7owlrFYZWmUF6yKi1iMJNGWxPbK4IMMwU94N6X
-        U6b48MMgbVO8YeSnlx0T8ms=
-X-Google-Smtp-Source: ADFU+vvby/ZRu/fNzZJotREkGNB+kRXenA7zqla3A6RTTLMUfv4R9VavoneKSEyAnHatkDcFK4lIrA==
-X-Received: by 2002:a37:cc1:: with SMTP id 184mr3907402qkm.430.1585154993384;
-        Wed, 25 Mar 2020 09:49:53 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:5593:7720:faa1:dac9? ([2601:282:803:7700:5593:7720:faa1:dac9])
-        by smtp.googlemail.com with ESMTPSA id d24sm16031155qkl.8.2020.03.25.09.49.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Mar 2020 09:49:52 -0700 (PDT)
-Subject: Re: [PATCH net] selftests/net: add missing tests to Makefile
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>
-References: <20200325080701.14940-1-liuhangbin@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <bc75ccde-a1f3-7631-9636-ca387561a4cc@gmail.com>
-Date:   Wed, 25 Mar 2020 10:49:51 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.6.0
+        id S1727634AbgCYQuB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 12:50:01 -0400
+Received: from mx2.suse.de ([195.135.220.15]:44612 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727357AbgCYQuB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Mar 2020 12:50:01 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 35A68ABC7;
+        Wed, 25 Mar 2020 16:49:59 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id BE3D0E0FD3; Wed, 25 Mar 2020 17:49:58 +0100 (CET)
+Date:   Wed, 25 Mar 2020 17:49:58 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>, o.rempel@pengutronix.de,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
+Subject: RFC: future of ethtool tunables (Re: [RFC][PATCH 1/2] ethtool: Add
+ BroadRReach Master/Slave PHY tunable)
+Message-ID: <20200325164958.GZ31519@unicorn.suse.cz>
+References: <20200325101736.2100-1-marex@denx.de>
 MIME-Version: 1.0
-In-Reply-To: <20200325080701.14940-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200325101736.2100-1-marex@denx.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/25/20 2:07 AM, Hangbin Liu wrote:
-> Find some tests are missed in Makefile by running:
-> for file in $(ls *.sh); do grep -q $file Makefile || echo $file; done
-> 
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  tools/testing/selftests/net/Makefile | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
+On Wed, Mar 25, 2020 at 11:17:35AM +0100, Marek Vasut wrote:
+> Add a PHY tunable to select BroadRReach PHY Master/Slave mode.
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+IMHO this should be preceded by more general discussion about future of
+ethtool tunables so I changed the subject and added people who were most
+active in review of the ethtool netlink interface.
 
+The way the ethtool tunables are designed rather feels like a workaround
+for lack of extensibility of the ioctl interface. And at least in one
+case (PFC stall timeout) it was actually the case:
 
+  http://lkml.kernel.org/r/CAKHjkjkGWoeeGXBSNZCcAND3bYaNhna-q1UAp=8UeeuBAN1=fQ@mail.gmail.com
+
+Thus it's natural to ask if we want to preserve the idea of assorted
+tunables in the netlink interface and add more or if we rather prefer
+adding new attributes and finding suitable place for existing tunables.
+Personally, I like the latter more.
+
+What might be useful, on the other hand, would be device specific
+tunables: an interface allowing device drivers to define a list of
+tunables and their types for each device. It would be a generalization
+of private flags. There is, of course, the risk that we could end up
+with multiple NIC vendors defining the same parameters, each under
+a different name and with slightly different semantics.
+
+Ideas and opinions are welcome.
+
+Michal
