@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4A19193436
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 00:09:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D51ED193439
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 00:10:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727460AbgCYXJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 19:09:28 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:36707 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727358AbgCYXJ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 19:09:28 -0400
-Received: by mail-wm1-f65.google.com with SMTP id g62so5128563wme.1
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 16:09:26 -0700 (PDT)
+        id S1727402AbgCYXK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 19:10:29 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:52756 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727358AbgCYXK3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 19:10:29 -0400
+Received: by mail-wm1-f66.google.com with SMTP id z18so4661983wmk.2
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 16:10:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3ijpdx1VS10Hsu4toWBo9zorseIQW+BUHAQFTmyXBRw=;
-        b=cjZh68FnyZ/JSOvdn9yQbQcVNafVzFkeJlxCmMFu/u9Z21UBHIbHaZj5+pxfP3SKm2
-         V4XUF49zSydYXgBcIbvVE4ReeBwj5J1P0IsJsH90vILTb1DTUedrUamcMVbqPNIkAtZu
-         QIOGPoOUKiCSs0hBamgAkRTvulQXXQa26y4KNTJrg10Mjc9eHlgQD+7eAW/cunqwI9mg
-         P/zhrpSyL/p9YZzRrjOhX1hID76hm7ZtrlOEm+AMi3La334NbaqVIa7F6ZoY2FVXqO00
-         1M0xl9ousqrX7OeowZXwFLi2O8sEgEOJ3wb97jKXesUcAk5OQjCriRj1nccOTchekVmy
-         o90Q==
+        bh=UBSuWYuNWlQAf81iY/BvznvNC5+ZEVvQkGyUkupGRM8=;
+        b=NCE3NKd4kZh/3DrMemOQdMqgBcWdW3Sf59lXWU8Fdi/sGDi3BsKncQwyswy6hVWpaF
+         zTv5GB5cxddiS0x9kppQGvrqIWTraP1OeFMNTy+Yd69iA8eFRH3KcEuIdSq9OqVGTt2U
+         LNbjv6ajNe0swOhLRlwX2rsPBFWoxbRAdqx0nWS+CkMEGZYrsSKHQTQ2akfhUdxXcrBH
+         Wmc3FQMLcxgjcEcBWtWxl3/0JlgkigUaJPqmNshH/HvA5wbbaO67xGD0W4UE8rKILwk6
+         l1AHx6Pdq3FOZyBoNne3oWGNXdLqfhZCnPpH/TBDbVVYI9kFqIyTtTMUISQouQGfKTGs
+         xfug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=3ijpdx1VS10Hsu4toWBo9zorseIQW+BUHAQFTmyXBRw=;
-        b=MPmND21gWxg1s485bWP//1sYEa3pXynDweCTRtbi242VplLOSKKmW3PjjKUMkAck1z
-         0mW9RR17xyd0wvLhw8yG0p08ry0AhyziqGfXv3AllqD6K6HOwXllHLhM4JU1c0YNs9Sc
-         3PCrDykuTp26VNvy9sH3UMYl9lKqE+OF6934ElaHdUzmogtEW8z2V2Md+wB75wXkLKpX
-         3yZFJkERk7pKmBPC9kQkA0hRHok7DFn3/JPOpvPrUZTP4OrF7Msd2QeK0+DFSmTBWQA+
-         /uT9fjtE432Zu4Aasuhk6ErOcoPTNoesGdg+bgBYEEjAx0PWhQNYXOd7OYRYYAXgtJ0f
-         THIA==
-X-Gm-Message-State: ANhLgQ0Oyhmlt0OzFJXVQu90txZpVYPznCiDnOy4JpaeBQO9u5qrJex7
-        YRNWARKdAfKRrA2rmzbQPq7thRoa
-X-Google-Smtp-Source: ADFU+vuLZh7zimxPV5kmVDDevLAiN4rlZWBf/P7NVNfDj0qvATiNqF1HMf+ciie8Hk/WRHn/+DwlDw==
-X-Received: by 2002:a1c:cc11:: with SMTP id h17mr5767012wmb.39.1585177762925;
-        Wed, 25 Mar 2020 16:09:22 -0700 (PDT)
+        bh=UBSuWYuNWlQAf81iY/BvznvNC5+ZEVvQkGyUkupGRM8=;
+        b=TKSA2KbgtF+4a/Me6/kCMC6jNmpHRC7fja3KsnX+fA59olJU9FcT9fVZDSrHnMgWaF
+         e5MjoBZjwfqoxdfYeLflYGYoj/FWojeBulqDkWDShUb55oCaje9yjjhnkrbEGAk3DNi4
+         9cN+IL2B47KBrvtwMv2RgBj7k8W9SVd9cmjIep4HFT9GbGlwywfK0b7dKDGkV1Gul6Kh
+         fGnAP3t5gO2ssoRRHr4BqxvzU1Q697E8patU4HETL2xOGDEU3uJTMnsk/yHT0MOu7Y52
+         id22Gl13iT3d4DERBcA5/pz0mp0Emv/ArlCwOHgWGKdjbW1JNPmqrDkjEAOROleiTNAJ
+         BGnQ==
+X-Gm-Message-State: ANhLgQ1/qw+PiqKR+RHmTpfqw179jPuPDdA+odO0xw8MjVEtz4g5B2FG
+        3tRjtOEQ0aMJq/HzNeuASxeCTzgq
+X-Google-Smtp-Source: ADFU+vuBdTafM3Ddj+K96SS53zSb/2j6G1loLn5sZsIyMZynE6VpJ+anDq1K+xdLUxapP5kewd10Mw==
+X-Received: by 2002:a1c:9c49:: with SMTP id f70mr5653555wme.15.1585177826348;
+        Wed, 25 Mar 2020 16:10:26 -0700 (PDT)
 Received: from [10.230.1.220] ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id t16sm694536wra.17.2020.03.25.16.09.19
+        by smtp.gmail.com with ESMTPSA id a73sm688570wme.47.2020.03.25.16.10.23
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Mar 2020 16:09:22 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 08/10] net: dsa: vsc73xx: Make the MTU
- configurable
+        Wed, 25 Mar 2020 16:10:25 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 09/10] net: dsa: felix: support changing the
+ MTU
 To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
         vivien.didelot@gmail.com, davem@davemloft.net,
         jakub.kicinski@netronome.com
@@ -54,7 +54,7 @@ Cc:     murali.policharla@broadcom.com, stephen@networkplumber.org,
         jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
         nikolay@cumulusnetworks.com, netdev@vger.kernel.org
 References: <20200325152209.3428-1-olteanv@gmail.com>
- <20200325152209.3428-9-olteanv@gmail.com>
+ <20200325152209.3428-10-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -110,12 +110,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <77b9d369-19b9-8775-199d-b48a39820a57@gmail.com>
-Date:   Wed, 25 Mar 2020 16:09:17 -0700
+Message-ID: <2c36c451-209e-575a-be72-4177aaf1341b@gmail.com>
+Date:   Wed, 25 Mar 2020 16:10:21 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200325152209.3428-9-olteanv@gmail.com>
+In-Reply-To: <20200325152209.3428-10-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,8 +129,13 @@ X-Mailing-List: netdev@vger.kernel.org
 On 3/25/2020 8:22 AM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Instead of hardcoding the MTU to the maximum value allowed by the
-> hardware, obey the value known by the operating system.
+> Changing the MTU for this switch means altering the
+> DEV_GMII:MAC_CFG_STATUS:MAC_MAXLEN_CFG field MAX_LEN, which in turn
+> limits the size of frames that can be received.
+> 
+> Special accounting needs to be done for the DSA CPU port (NPI port in
+> hardware terms). The NPI port configuration needs to be held inside the
+> private ocelot structure, since it is now accessed from multiple places.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
