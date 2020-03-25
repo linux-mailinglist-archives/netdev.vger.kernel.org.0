@@ -2,147 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ABE0192996
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 14:27:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DF1F1929BB
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 14:33:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727356AbgCYN1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 09:27:01 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38211 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727027AbgCYN1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 09:27:01 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from eranbe@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 25 Mar 2020 15:26:58 +0200
-Received: from dev-l-vrt-198.mtl.labs.mlnx (dev-l-vrt-198.mtl.labs.mlnx [10.134.198.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02PDQwW5010156;
-        Wed, 25 Mar 2020 15:26:58 +0200
-From:   Eran Ben Elisha <eranbe@mellanox.com>
-To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Cc:     Eran Ben Elisha <eranbe@mellanox.com>
-Subject: [PATCH net-next 2/2] devlink: Add auto dump flag to health reporter
-Date:   Wed, 25 Mar 2020 15:26:24 +0200
-Message-Id: <1585142784-10517-3-git-send-email-eranbe@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1585142784-10517-1-git-send-email-eranbe@mellanox.com>
-References: <1585142784-10517-1-git-send-email-eranbe@mellanox.com>
+        id S1727290AbgCYNd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 09:33:27 -0400
+Received: from mail-qk1-f173.google.com ([209.85.222.173]:34205 "EHLO
+        mail-qk1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727021AbgCYNd1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 09:33:27 -0400
+Received: by mail-qk1-f173.google.com with SMTP id i6so2506132qke.1
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 06:33:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tlapnet.cz; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=kprv2m0+xH6rw6KMPHdQkJlrvY3jozE/Ui8LMp4/cxU=;
+        b=AuD8Fe5X60A4FBfq0yINhuH4fVh8O9zOuAVn4ixMyBOKfVhSpyh8BSa05qbIzGsBEs
+         jbWWQ41wozVfcdT5yh4S4BHKXlz9z7t9UOAuaEvvR51wKcRFoTo1wSfkl+AJqkMT3lVW
+         BJa81gR0B3pMqaLV7WN4DaAunEyhEwAuQTG08HAKU40vFMJtbbV9e0nwXlsFFYH0sNDA
+         1JVaiNCH0M45ggqjG8jBTIJYqD4vDWC+smw4e0PtuP9SotT32IqS4tmh/FicqQ791GME
+         4znc1/rtKO/vcjV97kwlad431nZHnSBWK4+kYHjr80/mTFFxzMALkPjTjuxQ/gj+ndOi
+         migg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=kprv2m0+xH6rw6KMPHdQkJlrvY3jozE/Ui8LMp4/cxU=;
+        b=ZD3O6K5dlVhNb8yXkRZRDPO0pL8Rg8QJm03fswzNv04JBsY3HlY2e6/qw8gholUqiC
+         2rMjQxsidzmtFmpGJWhFg9UGibWzP6JoX2fNHNBaS9QzrgJoMptG7S1IKjqyegj+cNNR
+         uy+xhqeHbP7S5FUksy4pu8WxrYTbal3ERTOMSYrKLczf9LaNIWSZ1qTRenqehlTwHO6r
+         eCGxtqnb4xNg2wxtXkFQZME89fnhNdoPB53mYMMnpZ5RRiPqarbVg8n8RNkiwbbbe6sL
+         ElBYe64lTiLbyEzhjfyLFOdCz+JvZJqMe5Kkvpi5uBQL7D+EWelUjn/EZdV2XgOdQ1Wr
+         KWfg==
+X-Gm-Message-State: ANhLgQ18p/VrWyJUEJDnPA7EOmb1O0VSfFfz6e62VR0SCu1YI6MS7mDl
+        q/iElyU83YbWQfF2yvzz5537aeiSpXf3k1XvP7rAPA==
+X-Google-Smtp-Source: ADFU+vtUmRcpCaZhN/lUsx95//G2YmdM1GOs6nu9QG/5L1ZMzvYQ0R/30Kt3PSkycA7cM9YjMd3q8WqxVI29uhQfUlA=
+X-Received: by 2002:a05:620a:109c:: with SMTP id g28mr2849398qkk.409.1585143205314;
+ Wed, 25 Mar 2020 06:33:25 -0700 (PDT)
+MIME-Version: 1.0
+References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
+ <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
+ <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
+ <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com> <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
+In-Reply-To: <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
+From:   =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
+Date:   Wed, 25 Mar 2020 14:33:13 +0100
+Message-ID: <CANxWus_xL7ztXZpLcc+eMCyysgokHnnAD_vwS0jDEz=Pr-VqXw@mail.gmail.com>
+Subject: Re: iproute2: tc deletion freezes whole server
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On low memory system, run time dumps can consume too much memory. Add
-administrator ability to disable auto dumps per reporter as part of the
-error flow handle routine.
+On Wed, Mar 25, 2020 at 12:27 PM V=C3=A1clav Zindulka
+<vaclav.zindulka@tlapnet.cz> wrote:
+> > > > > My testing setup consists of approx. 18k tc class rules and appro=
+x.
+> > > > > 13k tc qdisc rules and was altered only with different interface =
+name....
+> > > >
+> > > > Please share you tc configurations (tc -s -d qd show dev ..., tc
+> > > > -s -d filter show dev...).
+> > >
+> > > I've placed whole reproducers into repository. Do you need exports of=
+ rules too?
+> > >
+> > > > Also, it would be great if you can provide a minimal reproducer.
+> > >
+> > > I'm afraid that minor reproducer won't cause the problem. This was
+> > > happening mostly on servers with large tc rule setups. I was trying t=
+o
+> > > create small reproducer for nftables developer many times without
+> > > success. I can try to create reproducer as small as possible, but it
+> > > may still consist of thousands of rules.
+> >
+> > Yeah, this problem is probably TC specific, as we clean up from
+> > the top qdisc down to each class and each filter.
+>
+> As I mentioned earlier, this happens even with specific deletion of
+> smaller number of rules. Yet I don't oppose it may be caused by tc.
+> Just inability to process any packets is strange and I'm not sure it
+> is pure tc problem.
+>
+> > Can you try to reproduce the number of TC classes, for example,
+> > down to half, to see if the problem is gone? This could confirm
+> > whether it is related to the number of TC classes/filters.
+>
+> Sure. I'll try to reduce the size of tc rule set and test the problem fur=
+ther.
 
-This attribute is not relevant while executing
-DEVLINK_CMD_HEALTH_REPORTER_DUMP_GET.
+I've tested it. Delay shortens and extends according to number of
+rules to delete.
 
-By default, auto dump is activated for any reporter that has a dump method,
-as part of the reporter registration to devlink.
+with approx. 3500 rules it took 2364ms
+with approx. 7000 rules it took 5526ms
+with approx. 14000 rules it took 11641ms
+with approx. 18000 rules it took 13302ms
+with approx. 31000 rules it took 22880ms
 
-Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
----
- include/uapi/linux/devlink.h |  2 ++
- net/core/devlink.c           | 26 ++++++++++++++++++++++----
- 2 files changed, 24 insertions(+), 4 deletions(-)
-
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index dfdffc42e87d..e7891d1d2ebd 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -429,6 +429,8 @@ enum devlink_attr {
- 	DEVLINK_ATTR_NETNS_FD,			/* u32 */
- 	DEVLINK_ATTR_NETNS_PID,			/* u32 */
- 	DEVLINK_ATTR_NETNS_ID,			/* u32 */
-+
-+	DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP,	/* u8 */
- 	/* add new attributes above here, update the policy in devlink.c */
- 
- 	__DEVLINK_ATTR_MAX,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index ad69379747ef..e14bf3052289 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -4837,6 +4837,7 @@ struct devlink_health_reporter {
- 	struct mutex dump_lock; /* lock parallel read/write from dump buffers */
- 	u64 graceful_period;
- 	bool auto_recover;
-+	bool auto_dump;
- 	u8 health_state;
- 	u64 dump_ts;
- 	u64 dump_real_ts;
-@@ -4903,6 +4904,7 @@ devlink_health_reporter_create(struct devlink *devlink,
- 	reporter->devlink = devlink;
- 	reporter->graceful_period = graceful_period;
- 	reporter->auto_recover = !!ops->recover;
-+	reporter->auto_dump = !!ops->dump;
- 	mutex_init(&reporter->dump_lock);
- 	refcount_set(&reporter->refcount, 1);
- 	list_add_tail(&reporter->list, &devlink->reporter_list);
-@@ -4983,6 +4985,10 @@ devlink_nl_health_reporter_fill(struct sk_buff *msg,
- 	    nla_put_u64_64bit(msg, DEVLINK_ATTR_HEALTH_REPORTER_DUMP_TS_NS,
- 			      reporter->dump_real_ts, DEVLINK_ATTR_PAD))
- 		goto reporter_nest_cancel;
-+	if (reporter->ops->dump &&
-+	    nla_put_u8(msg, DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP,
-+		       reporter->auto_dump))
-+		goto reporter_nest_cancel;
- 
- 	nla_nest_end(msg, reporter_attr);
- 	genlmsg_end(msg, hdr);
-@@ -5129,10 +5135,12 @@ int devlink_health_report(struct devlink_health_reporter *reporter,
- 
- 	reporter->health_state = DEVLINK_HEALTH_REPORTER_STATE_ERROR;
- 
--	mutex_lock(&reporter->dump_lock);
--	/* store current dump of current error, for later analysis */
--	devlink_health_do_dump(reporter, priv_ctx, NULL);
--	mutex_unlock(&reporter->dump_lock);
-+	if (reporter->auto_dump) {
-+		mutex_lock(&reporter->dump_lock);
-+		/* store current dump of current error, for later analysis */
-+		devlink_health_do_dump(reporter, priv_ctx, NULL);
-+		mutex_unlock(&reporter->dump_lock);
-+	}
- 
- 	if (reporter->auto_recover)
- 		return devlink_health_reporter_recover(reporter,
-@@ -5306,6 +5314,11 @@ devlink_nl_cmd_health_reporter_set_doit(struct sk_buff *skb,
- 		err = -EOPNOTSUPP;
- 		goto out;
- 	}
-+	if (!reporter->ops->dump &&
-+	    info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP]) {
-+		err = -EOPNOTSUPP;
-+		goto out;
-+	}
- 
- 	if (info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_GRACEFUL_PERIOD])
- 		reporter->graceful_period =
-@@ -5315,6 +5328,10 @@ devlink_nl_cmd_health_reporter_set_doit(struct sk_buff *skb,
- 		reporter->auto_recover =
- 			nla_get_u8(info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_RECOVER]);
- 
-+	if (info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP])
-+		reporter->auto_dump =
-+		nla_get_u8(info->attrs[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP]);
-+
- 	devlink_health_reporter_put(reporter);
- 	return 0;
- out:
-@@ -6053,6 +6070,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_HEALTH_REPORTER_NAME] = { .type = NLA_NUL_STRING },
- 	[DEVLINK_ATTR_HEALTH_REPORTER_GRACEFUL_PERIOD] = { .type = NLA_U64 },
- 	[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_RECOVER] = { .type = NLA_U8 },
-+	[DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP] = { .type = NLA_U8 },
- 	[DEVLINK_ATTR_FLASH_UPDATE_FILE_NAME] = { .type = NLA_NUL_STRING },
- 	[DEVLINK_ATTR_FLASH_UPDATE_COMPONENT] = { .type = NLA_NUL_STRING },
- 	[DEVLINK_ATTR_TRAP_NAME] = { .type = NLA_NUL_STRING },
--- 
-2.17.1
-
+Do you want me to test it with ifb interface too?
