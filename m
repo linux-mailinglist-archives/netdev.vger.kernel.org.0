@@ -2,316 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FCC91928D3
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 13:47:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EE661928E9
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 13:53:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727374AbgCYMr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 08:47:27 -0400
-Received: from correo.us.es ([193.147.175.20]:58764 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727177AbgCYMr1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 08:47:27 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 1324B1176A8
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 13:46:48 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 049D3DA390
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 13:46:48 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id EDA6ADA3C4; Wed, 25 Mar 2020 13:46:47 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id D56F2DA72F;
-        Wed, 25 Mar 2020 13:46:45 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 25 Mar 2020 13:46:45 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (unknown [90.77.255.23])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id AC53F42EF42A;
-        Wed, 25 Mar 2020 13:46:45 +0100 (CET)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, geert@linux-m68k.org
-Subject: [PATCH net] net: Fix CONFIG_NET_CLS_ACT=n and CONFIG_NFT_FWD_NETDEV={y,m} build
-Date:   Wed, 25 Mar 2020 13:47:18 +0100
-Message-Id: <20200325124718.77151-1-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
+        id S1727325AbgCYMw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 08:52:58 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:5546 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726998AbgCYMw6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 08:52:58 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02PCp9W4014712;
+        Wed, 25 Mar 2020 05:52:55 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=Kmmvf4/FT3YQ9/4nTycrCWCzvVVoH5n8j5Huy6jgq60=;
+ b=O50GS0Cjq1j6Kc40dKLiJDHh0Yev5/jAocvD7t35Ad/QfhQhdPUmt3Jik/yJoAH5TLUC
+ dmTNn2VWNpY7qDaCLRPZe+FNdycFkHmquIyk3OsK7MlkC7heOrUhJIXnURL5j6LLZzVV
+ EK1X4ctQt3/m4kwGXBqLbnnjPLhfTIaBN9hBd6Vm07KqX2Bm4b7PQZd8nBPw76gcbhCb
+ zxnCbDch6nnLp/SZTc6RqXtzRsgHGQTHnR8EQpabLpPqGc4Zn5yYl/uiLgA900lHu0HW
+ fS0EPSGUYDE39RgFiKq3JEw5FDjhCbuHqTOSDh51Rm1Z31OxvCPD7EIWxGe3bNgcqXU/ 5Q== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 3006xkr5n9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 25 Mar 2020 05:52:55 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 25 Mar
+ 2020 05:52:53 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 25 Mar 2020 05:52:53 -0700
+Received: from localhost.localdomain (unknown [10.9.16.55])
+        by maili.marvell.com (Postfix) with ESMTP id DC2BB3F703F;
+        Wed, 25 Mar 2020 05:52:51 -0700 (PDT)
+From:   Igor Russkikh <irusskikh@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     Mark Starovoytov <mstarovoitov@marvell.com>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        "Igor Russkikh" <irusskikh@marvell.com>
+Subject: [PATCH v2 net-next 00/17] net: atlantic: MACSec support for AQC devices
+Date:   Wed, 25 Mar 2020 15:52:29 +0300
+Message-ID: <20200325125246.987-1-irusskikh@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-25_05:2020-03-24,2020-03-25 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-net/netfilter/nft_fwd_netdev.c: In function ‘nft_fwd_netdev_eval’:
-    net/netfilter/nft_fwd_netdev.c:32:10: error: ‘struct sk_buff’ has no member named ‘tc_redirected’
-      pkt->skb->tc_redirected = 1;
-              ^~
-    net/netfilter/nft_fwd_netdev.c:33:10: error: ‘struct sk_buff’ has no member named ‘tc_from_ingress’
-      pkt->skb->tc_from_ingress = 1;
-              ^~
+This patchset introduces MACSec HW offloading support in
+Marvell(Aquantia) AQC atlantic driver.
 
-To avoid a direct dependency with tc actions from netfilter, wrap the
-redirect bits around CONFIG_NET_REDIRECT and move helpers to
-include/linux/skbuff.h. Turn on this toggle from the ifb driver, the
-only existing client of these bits in the tree.
+This implementation is a joint effort of Marvell developers on top of
+the work started by Antoine Tenart.
 
-This patch adds skb_set_redirected() that sets on the redirected bit
-on the skbuff, it specifies if the packet was redirect from ingress
-and resets the timestamp (timestamp reset was originally missing in the
-netfilter bugfix).
+v2:
+ * clean up the generated code (removed useless bit operations);
+ * use WARN_ONCE to avoid log spam;
+ * use put_unaligned_be64;
+ * removed trailing \0 and length limit for format strings;
 
-Fixes: bcfabee1afd99484 ("netfilter: nft_fwd_netdev: allow to redirect to ifb via ingress")
-Reported-by: noreply@ellerman.id.au
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- drivers/net/Kconfig              |  1 +
- drivers/net/ifb.c                |  6 +++---
- drivers/net/wireguard/queueing.h |  2 +-
- include/linux/skbuff.h           | 36 ++++++++++++++++++++++++++++++++----
- include/net/sch_generic.h        | 16 ----------------
- net/Kconfig                      |  3 +++
- net/core/dev.c                   |  4 ++--
- net/core/pktgen.c                |  2 +-
- net/netfilter/nft_fwd_netdev.c   |  5 ++---
- net/sched/act_mirred.c           |  6 ++----
- 10 files changed, 47 insertions(+), 34 deletions(-)
+v1: https://patchwork.ozlabs.org/cover/1259998/
 
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 25a8f9387d5a..db8884ad6d40 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -149,6 +149,7 @@ config NET_FC
- config IFB
- 	tristate "Intermediate Functional Block support"
- 	depends on NET_CLS_ACT
-+	select NET_REDIRECT
- 	---help---
- 	  This is an intermediate driver that allows sharing of
- 	  resources.
-diff --git a/drivers/net/ifb.c b/drivers/net/ifb.c
-index 242b9b0943f8..7fe306e76281 100644
---- a/drivers/net/ifb.c
-+++ b/drivers/net/ifb.c
-@@ -75,7 +75,7 @@ static void ifb_ri_tasklet(unsigned long _txp)
- 	}
- 
- 	while ((skb = __skb_dequeue(&txp->tq)) != NULL) {
--		skb->tc_redirected = 0;
-+		skb->redirected = 0;
- 		skb->tc_skip_classify = 1;
- 
- 		u64_stats_update_begin(&txp->tsync);
-@@ -96,7 +96,7 @@ static void ifb_ri_tasklet(unsigned long _txp)
- 		rcu_read_unlock();
- 		skb->skb_iif = txp->dev->ifindex;
- 
--		if (!skb->tc_from_ingress) {
-+		if (!skb->from_ingress) {
- 			dev_queue_xmit(skb);
- 		} else {
- 			skb_pull_rcsum(skb, skb->mac_len);
-@@ -243,7 +243,7 @@ static netdev_tx_t ifb_xmit(struct sk_buff *skb, struct net_device *dev)
- 	txp->rx_bytes += skb->len;
- 	u64_stats_update_end(&txp->rsync);
- 
--	if (!skb->tc_redirected || !skb->skb_iif) {
-+	if (!skb->redirected || !skb->skb_iif) {
- 		dev_kfree_skb(skb);
- 		dev->stats.rx_dropped++;
- 		return NETDEV_TX_OK;
-diff --git a/drivers/net/wireguard/queueing.h b/drivers/net/wireguard/queueing.h
-index cf1e0e2376d8..3432232afe06 100644
---- a/drivers/net/wireguard/queueing.h
-+++ b/drivers/net/wireguard/queueing.h
-@@ -100,8 +100,8 @@ static inline void wg_reset_packet(struct sk_buff *skb)
- 	skb->dev = NULL;
- #ifdef CONFIG_NET_SCHED
- 	skb->tc_index = 0;
--	skb_reset_tc(skb);
- #endif
-+	skb_reset_redirect(skb);
- 	skb->hdr_len = skb_headroom(skb);
- 	skb_reset_mac_header(skb);
- 	skb_reset_network_header(skb);
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 5b50278c4bc8..e59620234415 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -645,8 +645,8 @@ typedef unsigned char *sk_buff_data_t;
-  *	@offload_l3_fwd_mark: Packet was L3-forwarded in hardware
-  *	@tc_skip_classify: do not classify packet. set by IFB device
-  *	@tc_at_ingress: used within tc_classify to distinguish in/egress
-- *	@tc_redirected: packet was redirected by a tc action
-- *	@tc_from_ingress: if tc_redirected, tc_at_ingress at time of redirect
-+ *	@redirected: packet was redirected by packet classifier
-+ *	@from_ingress: packet was redirected from the ingress path
-  *	@peeked: this packet has been seen already, so stats have been
-  *		done for it, don't do them again
-  *	@nf_trace: netfilter packet trace flag
-@@ -848,8 +848,10 @@ struct sk_buff {
- #ifdef CONFIG_NET_CLS_ACT
- 	__u8			tc_skip_classify:1;
- 	__u8			tc_at_ingress:1;
--	__u8			tc_redirected:1;
--	__u8			tc_from_ingress:1;
-+#endif
-+#ifdef CONFIG_NET_REDIRECT
-+	__u8			redirected:1;
-+	__u8			from_ingress:1;
- #endif
- #ifdef CONFIG_TLS_DEVICE
- 	__u8			decrypted:1;
-@@ -4579,5 +4581,31 @@ static inline __wsum lco_csum(struct sk_buff *skb)
- 	return csum_partial(l4_hdr, csum_start - l4_hdr, partial);
- }
- 
-+static inline bool skb_is_redirected(const struct sk_buff *skb)
-+{
-+#ifdef CONFIG_NET_REDIRECT
-+	return skb->redirected;
-+#else
-+	return false;
-+#endif
-+}
-+
-+static inline void skb_set_redirected(struct sk_buff *skb, bool from_ingress)
-+{
-+#ifdef CONFIG_NET_REDIRECT
-+	skb->redirected = 1;
-+	skb->from_ingress = from_ingress;
-+	if (skb->from_ingress)
-+		skb->tstamp = 0;
-+#endif
-+}
-+
-+static inline void skb_reset_redirect(struct sk_buff *skb)
-+{
-+#ifdef CONFIG_NET_REDIRECT
-+	skb->redirected = 0;
-+#endif
-+}
-+
- #endif	/* __KERNEL__ */
- #endif	/* _LINUX_SKBUFF_H */
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 151208704ed2..c30f914867e6 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -675,22 +675,6 @@ void __qdisc_calculate_pkt_len(struct sk_buff *skb,
- 			       const struct qdisc_size_table *stab);
- int skb_do_redirect(struct sk_buff *);
- 
--static inline void skb_reset_tc(struct sk_buff *skb)
--{
--#ifdef CONFIG_NET_CLS_ACT
--	skb->tc_redirected = 0;
--#endif
--}
--
--static inline bool skb_is_tc_redirected(const struct sk_buff *skb)
--{
--#ifdef CONFIG_NET_CLS_ACT
--	return skb->tc_redirected;
--#else
--	return false;
--#endif
--}
--
- static inline bool skb_at_tc_ingress(const struct sk_buff *skb)
- {
- #ifdef CONFIG_NET_CLS_ACT
-diff --git a/net/Kconfig b/net/Kconfig
-index 2eeb0e55f7c9..df8d8c9bd021 100644
---- a/net/Kconfig
-+++ b/net/Kconfig
-@@ -52,6 +52,9 @@ config NET_INGRESS
- config NET_EGRESS
- 	bool
- 
-+config NET_REDIRECT
-+	bool
-+
- config SKB_EXTENSIONS
- 	bool
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 402a986659cf..500bba8874b0 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4516,7 +4516,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
- 	/* Reinjected packets coming from act_mirred or similar should
- 	 * not get XDP generic processing.
- 	 */
--	if (skb_is_tc_redirected(skb))
-+	if (skb_is_redirected(skb))
- 		return XDP_PASS;
- 
- 	/* XDP packets must be linear and must have sufficient headroom
-@@ -5063,7 +5063,7 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
- 			goto out;
- 	}
- #endif
--	skb_reset_tc(skb);
-+	skb_reset_redirect(skb);
- skip_classify:
- 	if (pfmemalloc && !skb_pfmemalloc_protocol(skb))
- 		goto drop;
-diff --git a/net/core/pktgen.c b/net/core/pktgen.c
-index acc849df60b5..d0641bba6b81 100644
---- a/net/core/pktgen.c
-+++ b/net/core/pktgen.c
-@@ -3362,7 +3362,7 @@ static void pktgen_xmit(struct pktgen_dev *pkt_dev)
- 			/* skb was 'freed' by stack, so clean few
- 			 * bits and reuse it
- 			 */
--			skb_reset_tc(skb);
-+			skb_reset_redirect(skb);
- 		} while (--burst > 0);
- 		goto out; /* Skips xmit_mode M_START_XMIT */
- 	} else if (pkt_dev->xmit_mode == M_QUEUE_XMIT) {
-diff --git a/net/netfilter/nft_fwd_netdev.c b/net/netfilter/nft_fwd_netdev.c
-index 74f050ba6bad..3087e23297db 100644
---- a/net/netfilter/nft_fwd_netdev.c
-+++ b/net/netfilter/nft_fwd_netdev.c
-@@ -28,9 +28,8 @@ static void nft_fwd_netdev_eval(const struct nft_expr *expr,
- 	struct nft_fwd_netdev *priv = nft_expr_priv(expr);
- 	int oif = regs->data[priv->sreg_dev];
- 
--	/* These are used by ifb only. */
--	pkt->skb->tc_redirected = 1;
--	pkt->skb->tc_from_ingress = 1;
-+	/* This is used by ifb only. */
-+	skb_set_redirected(pkt->skb, true);
- 
- 	nf_fwd_netdev_egress(pkt, oif);
- 	regs->verdict.code = NF_STOLEN;
-diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
-index 1ad300e6dbc0..83dd82fc9f40 100644
---- a/net/sched/act_mirred.c
-+++ b/net/sched/act_mirred.c
-@@ -284,10 +284,8 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
- 
- 	/* mirror is always swallowed */
- 	if (is_redirect) {
--		skb2->tc_redirected = 1;
--		skb2->tc_from_ingress = skb2->tc_at_ingress;
--		if (skb2->tc_from_ingress)
--			skb2->tstamp = 0;
-+		skb_set_redirected(skb2, skb2->tc_at_ingress);
-+
- 		/* let's the caller reinsert the packet, if possible */
- 		if (use_reinsert) {
- 			res->ingress = want_ingress;
+RFC v2: https://patchwork.ozlabs.org/cover/1252204/
+
+RFC v1: https://patchwork.ozlabs.org/cover/1238082/
+
+Several patches introduce backward-incompatible changes and are
+subject for discussion/drop:
+
+1) patch 0007:
+  multicast/broadcast when offloading is needed to handle ARP requests,
+  because they have broadcast destination address;
+  With this patch we also match and encrypt/decrypt packets between macsec
+  hw and realdev based on device's mac address.
+  This can potentially be used to support multiple macsec offloaded
+  interfaces on top of one realdev.
+  However in some environments this could lead to problems, e.g. the
+  'bridge over macsec' configuration will expect the packets with unknown
+  src MAC should come through macsec.
+  The patch is questionable, we've used it because our current hw setup
+  and requirements both assume that the decryption is done based on mac
+  address match only.
+  This could be changed by encrypting/decripting all the traffic (except
+  control).
+
+2) patch 0009:
+  real_dev features are now propagated to macsec device (when HW
+  offloading is enabled), otherwise feature set might lead to HW
+  reconfiguration during MACSec configuration.
+  Also, HW offloaded macsec should be able to keep LRO LSO features,
+  since they are transparent for macsec engine (at least in our hardware).
+
+Antoine Tenart (4):
+  net: introduce the MACSEC netdev feature
+  net: add a reference to MACsec ops in net_device
+  net: macsec: allow to reference a netdev from a MACsec context
+  net: macsec: add support for offloading to the MAC
+
+Dmitry Bogdanov (8):
+  net: macsec: init secy pointer in macsec_context
+  net: macsec: allow multiple macsec devices with offload
+  net: macsec: add support for getting offloaded stats
+  net: atlantic: MACSec offload skeleton
+  net: atlantic: MACSec egress offload HW bindings
+  net: atlantic: MACSec egress offload implementation
+  net: atlantic: MACSec offload statistics HW bindings
+  net: atlantic: MACSec offload statistics implementation
+
+Mark Starovoytov (5):
+  net: macsec: support multicast/broadcast when offloading
+  net: macsec: report real_dev features when HW offloading is enabled
+  net: atlantic: MACSec ingress offload HW bindings
+  net: atlantic: MACSec ingress offload implementation
+  net: atlantic: add XPN handling
+
+ drivers/net/ethernet/aquantia/Kconfig         |    1 +
+ .../net/ethernet/aquantia/atlantic/Makefile   |    7 +-
+ .../ethernet/aquantia/atlantic/aq_ethtool.c   |  160 +-
+ .../net/ethernet/aquantia/atlantic/aq_hw.h    |    6 +
+ .../ethernet/aquantia/atlantic/aq_macsec.c    | 1777 ++++++++++++
+ .../ethernet/aquantia/atlantic/aq_macsec.h    |  133 +
+ .../net/ethernet/aquantia/atlantic/aq_nic.c   |   21 +-
+ .../net/ethernet/aquantia/atlantic/aq_nic.h   |    6 +-
+ .../ethernet/aquantia/atlantic/aq_pci_func.c  |    5 +
+ .../aquantia/atlantic/hw_atl/hw_atl_utils.h   |   51 +-
+ .../atlantic/hw_atl/hw_atl_utils_fw2x.c       |   69 +
+ .../atlantic/macsec/MSS_Egress_registers.h    |   73 +
+ .../atlantic/macsec/MSS_Ingress_registers.h   |   77 +
+ .../aquantia/atlantic/macsec/macsec_api.c     | 2473 +++++++++++++++++
+ .../aquantia/atlantic/macsec/macsec_api.h     |  323 +++
+ .../aquantia/atlantic/macsec/macsec_struct.h  |  914 ++++++
+ drivers/net/macsec.c                          |  452 ++-
+ include/linux/netdev_features.h               |    3 +
+ include/linux/netdevice.h                     |    9 +
+ include/net/macsec.h                          |   29 +-
+ include/uapi/linux/if_link.h                  |    1 +
+ net/ethtool/common.c                          |    1 +
+ tools/include/uapi/linux/if_link.h            |    1 +
+ 23 files changed, 6411 insertions(+), 181 deletions(-)
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/aq_macsec.h
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/macsec/MSS_Egress_registers.h
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/macsec/MSS_Ingress_registers.h
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.c
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/macsec/macsec_api.h
+ create mode 100644 drivers/net/ethernet/aquantia/atlantic/macsec/macsec_struct.h
+
 -- 
-2.11.0
+2.17.1
 
