@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C490F192C38
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 16:22:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 590CC192C2D
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 16:22:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727854AbgCYPWm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 11:22:42 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:34857 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727721AbgCYPWV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 11:22:21 -0400
-Received: by mail-wm1-f65.google.com with SMTP id m3so3184069wmi.0
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 08:22:19 -0700 (PDT)
+        id S1727829AbgCYPW0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 11:22:26 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:54605 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727751AbgCYPWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 11:22:23 -0400
+Received: by mail-wm1-f67.google.com with SMTP id c81so2902956wmd.4
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 08:22:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=qkBkSQlmZBtW+3eOW+ETmspoEdY7TQLubAkc5GH2IOU=;
-        b=QvHUvYHXou95eNd3IIz3RiTOJexJbmDCfWw0pI+74k3a4r+hpp7zJCqZDBDq+5Qk02
-         +bJJAFzH4fN2ksVc04H8Ih0jnwCVmSZhFunuWSZhdGV1dcEFVA3IjOnVixRxkw12kxAF
-         JVc+onxd4KyNdkxEhbZW2l7kiOnSNTEI+WSVlaFMXLcBUdg3kr7Ac0tdiBibiDL7MZZE
-         XpQYqaPLJbbGkepxBDn+15L5L607zNDFSkOckYL0ztoYzAq/G+LbNLr5re6KzFleydG6
-         BSmF+2jt9ozvsyC74tLXudfHvOkiO4wtVMSKSt5miKoLctRtLSxpsWwY/XYzKkShoPcw
-         qDEQ==
+        bh=JLymD2YDtsJoQzONTyDrYjpbzC4xrXQOzwSHXU9sgYo=;
+        b=QzYFQ1JiCPGx65MPOxjyKdK15bCyfa/8RzlmoSSwKZPluaU+DmP+okdL5U0F+8oD5L
+         Ywnl0FihWlCSYZbiJWRlj+A5U9biUDCaL4xsQQfPFW4PilFwkpp5Nio+oOCd3Fd3v4LJ
+         2qyACPopWGFWklqEvyiAazAjB8+VbCfLU3RRtD9G8IBAQGu0uf9ZfcuuiWUI1a7EdYjO
+         IdfKKDhl9/YArKbJIZMaB72no9SAGhft4+OYF7BnGY3kwsIpS68FKxZXmdk3y6y3+4Or
+         3OuzoclKoiI7Kg02fOMPl2Z7lSVgdIcUODrWDQwcZaZ3N5KFu4cmRcLHdb4nBtT1Vgoq
+         ixTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=qkBkSQlmZBtW+3eOW+ETmspoEdY7TQLubAkc5GH2IOU=;
-        b=tl/3He36I4rkuc4wueQmuhB+q42uHMc7yKBQknmNyajKWipId3PDBpkvKAkZFLnrQG
-         Dx+F/D90q8PFLfD+cW5i0swTC9Gz4ufG7ke1LKYVYeT8aymDUB86qAyhJs8XEhK5h011
-         q2kQBaJb2ySdzb27i65Ohuhl6mKNtB7LSPreZNKCac77OAWCuRS6/IOrnv1l+JqgKubS
-         Lur1MFwU7vyUYZmmIyfnR9wf3kWCF73q5rxl72u4ISqGbaRglrhEyVCTgt3yNRLWwOf3
-         gKIN1PZOSc/I1fJgVR5XLmnfShIwMkeJkTEYQD2BvT1LX/Ztcmhrrm56PQqJF4He6NxN
-         yhmQ==
-X-Gm-Message-State: ANhLgQ1HS1kNHUcBxkE40kz3JtaBkAGQKdWq6t8sANqMwkG2fMDKCr7s
-        IvrF0H3Jm7/kjVNJtLswZlU=
-X-Google-Smtp-Source: ADFU+vtuPe5sxIxBFrCu68o7ZLAVrW0RmYx4HerxH72zlvbY2sr24dIh6FE3DeJTgqWwPGWFs29Ryg==
-X-Received: by 2002:a1c:2056:: with SMTP id g83mr3890892wmg.179.1585149738793;
-        Wed, 25 Mar 2020 08:22:18 -0700 (PDT)
+        bh=JLymD2YDtsJoQzONTyDrYjpbzC4xrXQOzwSHXU9sgYo=;
+        b=Hv9FrM3l2fcaPqs2D+muD0lczpM56DMCJU+VteRlBbC512w6zcm8Oa827hoPK05HMS
+         o6Ms+sIIDgDny6zG30DEnfSFP4yrT5GIBSueDUmJZa8ddhCnk0WOuqmSKZ0slUE2xdGJ
+         PAIrnR/b0R/7rS+nENdyXuH/bZNEPrxiNUf5viSkulyV/Xu+0TPe7ANndCdvH+6ItqKB
+         /kBBXE3VE7yth+8B1V2VEKBfVP72denqb6SThD6q0kp/zkU93J8F9WhKFa7VHZ2yfO9x
+         /EKM4YdTnweH2PNE/SpIbopplZapRXImv1Ut2sClTn+y5Tsx62gjQyiZMjiC6OQ4wYSI
+         HEAA==
+X-Gm-Message-State: ANhLgQ0L7pQ7ijEE3hOXOWqTYgnKRDuEmClp1B5778xzuGUKGh1vDmyz
+        hYQ6IJNSALwsX2C0nfEfO68=
+X-Google-Smtp-Source: ADFU+vss+/mILGFjQGrpVv6MJld6HiJzWFLvrXhCUXKmT+3JZZiaQ0NJABc5yzF7C5cvR54nMxkKQw==
+X-Received: by 2002:a1c:63c4:: with SMTP id x187mr3938501wmb.124.1585149740000;
+        Wed, 25 Mar 2020 08:22:20 -0700 (PDT)
 Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id n9sm6309165wru.50.2020.03.25.08.22.17
+        by smtp.gmail.com with ESMTPSA id n9sm6309165wru.50.2020.03.25.08.22.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2020 08:22:18 -0700 (PDT)
+        Wed, 25 Mar 2020 08:22:19 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         davem@davemloft.net, jakub.kicinski@netronome.com
 Cc:     murali.policharla@broadcom.com, stephen@networkplumber.org,
         jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
         nikolay@cumulusnetworks.com, netdev@vger.kernel.org
-Subject: [PATCH v2 net-next 03/10] bgmac: Add support for Jumbo frames
-Date:   Wed, 25 Mar 2020 17:22:02 +0200
-Message-Id: <20200325152209.3428-4-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 04/10] bgmac: Add MTU configuration support to the driver
+Date:   Wed, 25 Mar 2020 17:22:03 +0200
+Message-Id: <20200325152209.3428-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200325152209.3428-1-olteanv@gmail.com>
 References: <20200325152209.3428-1-olteanv@gmail.com>
@@ -62,29 +62,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Murali Krishna Policharla <murali.policharla@broadcom.com>
 
-Max frame length updated to enable support for jumbo frames.
+Add bgmac_change_mtu API to configure new mtu settings in bgmac driver.
 
 Signed-off-by: Murali Krishna Policharla <murali.policharla@broadcom.com>
-Reviewed-by: Ray Jui <ray.jui@broadcom.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/broadcom/bgmac.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bgmac.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac.h b/drivers/net/ethernet/broadcom/bgmac.h
-index 40d02fec2747..041ad069b5c8 100644
---- a/drivers/net/ethernet/broadcom/bgmac.h
-+++ b/drivers/net/ethernet/broadcom/bgmac.h
-@@ -366,7 +366,8 @@
- #define BGMAC_RX_FRAME_OFFSET			30		/* There are 2 unused bytes between header and real data */
- #define BGMAC_RX_BUF_OFFSET			(NET_SKB_PAD + NET_IP_ALIGN - \
- 						 BGMAC_RX_FRAME_OFFSET)
--#define BGMAC_RX_MAX_FRAME_SIZE			1536		/* Copied from b44/tg3 */
-+/* Jumbo frame size */
-+#define BGMAC_RX_MAX_FRAME_SIZE			9720
- #define BGMAC_RX_BUF_SIZE			(BGMAC_RX_FRAME_OFFSET + BGMAC_RX_MAX_FRAME_SIZE)
- #define BGMAC_RX_ALLOC_SIZE			(SKB_DATA_ALIGN(BGMAC_RX_BUF_SIZE + BGMAC_RX_BUF_OFFSET) + \
- 						 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
+diff --git a/drivers/net/ethernet/broadcom/bgmac.c b/drivers/net/ethernet/broadcom/bgmac.c
+index 1bb07a5d82c9..c530dff0353b 100644
+--- a/drivers/net/ethernet/broadcom/bgmac.c
++++ b/drivers/net/ethernet/broadcom/bgmac.c
+@@ -1248,6 +1248,14 @@ static int bgmac_set_mac_address(struct net_device *net_dev, void *addr)
+ 	return 0;
+ }
+ 
++static int bgmac_change_mtu(struct net_device *net_dev, int mtu)
++{
++	struct bgmac *bgmac = netdev_priv(net_dev);
++
++	bgmac_write(bgmac, BGMAC_RXMAX_LENGTH, 32 + mtu);
++	return 0;
++}
++
+ static const struct net_device_ops bgmac_netdev_ops = {
+ 	.ndo_open		= bgmac_open,
+ 	.ndo_stop		= bgmac_stop,
+@@ -1256,6 +1264,7 @@ static const struct net_device_ops bgmac_netdev_ops = {
+ 	.ndo_set_mac_address	= bgmac_set_mac_address,
+ 	.ndo_validate_addr	= eth_validate_addr,
+ 	.ndo_do_ioctl           = phy_do_ioctl_running,
++	.ndo_change_mtu		= bgmac_change_mtu,
+ };
+ 
+ /**************************************************
+@@ -1529,6 +1538,7 @@ int bgmac_enet_probe(struct bgmac *bgmac)
+ 	net_dev->features = NETIF_F_SG | NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
+ 	net_dev->hw_features = net_dev->features;
+ 	net_dev->vlan_features = net_dev->features;
++	net_dev->max_mtu = BGMAC_RX_MAX_FRAME_SIZE;
+ 
+ 	err = register_netdev(bgmac->net_dev);
+ 	if (err) {
 -- 
 2.17.1
 
