@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51BC1192174
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 08:00:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFC67192171
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 08:00:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727285AbgCYHAE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 03:00:04 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:61426 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726319AbgCYHAD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 03:00:03 -0400
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02P6xxjc005678
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 00:00:02 -0700
+        id S1726998AbgCYHAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 03:00:01 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:20758 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726276AbgCYHAA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 03:00:00 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02P6xupK021220
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 23:59:59 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=jqSb1wk77OH6WwEaem0EVwhlB7otAbSHi3a2I+4sJ7U=;
- b=N9JrnszvtllyKSr6OaNwtwXZNfRO7vlnd8I8eMEdHmqZzF+HGA4ceyqgYyjT+pgGYvVi
- u1VvR0SKvvGrrkQyyXz5Ih0sPS9A4rs78dmkcNlgidSsPYDpb6t24apKXorfQB74xbBz
- TS8ol8DgAw9Xl5igE2c/lEehujcSg0sYBc0= 
+ content-type; s=facebook; bh=RzE9UvIqCYbVFLOutFlDQ3wZl1ZLbwB6zxX6UXOel5M=;
+ b=jQVouuEZSRGcizau+InzcuCu4G3THdGtEvRlVk6ttaDE43SBjn7FKWqesOCKcdxXQj4J
+ 3phVo6wKCbaQRqvX9Ii3EQRnnFlkFsUKyOevFTzp0/XPn7AUpKBnSYPbgKFyi39vqECY
+ 1xsc6vSvg/yPup90sd0Tz4xDsagA/JBx/IA= 
 Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 2yx2r4xjyr-4
+        by mx0a-00082601.pphosted.com with ESMTP id 2yy3gy7t82-10
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 00:00:01 -0700
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:21d::7) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 23:59:59 -0700
+Received: from intmgw004.03.ash8.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Tue, 24 Mar 2020 23:59:42 -0700
+ 15.1.1847.3; Tue, 24 Mar 2020 23:59:44 -0700
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 5B4812EC34F3; Tue, 24 Mar 2020 23:59:38 -0700 (PDT)
+        id 7BF5B2EC34F3; Tue, 24 Mar 2020 23:59:40 -0700 (PDT)
 Smtp-Origin-Hostprefix: devbig
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 4/6] bpf: implement bpf_prog replacement for an active bpf_cgroup_link
-Date:   Tue, 24 Mar 2020 23:57:44 -0700
-Message-ID: <20200325065746.640559-5-andriin@fb.com>
+Subject: [PATCH v2 bpf-next 5/6] libbpf: add support for bpf_link-based cgroup attachment
+Date:   Tue, 24 Mar 2020 23:57:45 -0700
+Message-ID: <20200325065746.640559-6-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200325065746.640559-1-andriin@fb.com>
 References: <20200325065746.640559-1-andriin@fb.com>
@@ -49,83 +49,43 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
  definitions=2020-03-25_01:2020-03-23,2020-03-25 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- adultscore=0 mlxscore=0 phishscore=0 lowpriorityscore=0 spamscore=0
- priorityscore=1501 clxscore=1015 impostorscore=0 suspectscore=8
- mlxlogscore=999 bulkscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2003250058
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ bulkscore=0 adultscore=0 mlxscore=0 phishscore=0 lowpriorityscore=0
+ clxscore=1015 malwarescore=0 mlxlogscore=999 spamscore=0 suspectscore=25
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003250058
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add new operation (LINK_UPDATE), which allows to replace active bpf_prog from
-under given bpf_link. Currently this is only supported for bpf_cgroup_link,
-but will be extended to other kinds of bpf_links in follow-up patches.
+Add bpf_program__attach_cgroup(), which uses BPF_LINK_CREATE subcommand to
+create an FD-based kernel bpf_link. Also add low-level bpf_link_create() API.
 
-For bpf_cgroup_link, implemented functionality matches existing semantics for
-direct bpf_prog attachment (including BPF_F_REPLACE flag). User can either
-unconditionally set new bpf_prog regardless of which bpf_prog is currently
-active under given bpf_link, or, optionally, can specify expected active
-bpf_prog. If active bpf_prog doesn't match expected one, no changes are
-performed, old bpf_link stays intact and attached, operation returns
-a failure.
+If expected_attach_type is not specified explicitly with
+bpf_program__set_expected_attach_type(), libbpf will try to determine proper
+attach type from BPF program's section definition.
 
-cgroup_bpf_replace() operation is resolving race between auto-detachment and
-bpf_prog update in the same fashion as it's done for bpf_link detachment,
-except in this case update has no way of succeeding because of target cgroup
-marked as dying. So in this case error is returned.
+Also add support for bpf_link's underlying BPF program replacement:
+  - unconditional through high-level bpf_link__update_program() API;
+  - cmpxchg-like with specifying expected current BPF program through
+    low-level bpf_link_update() API.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 ---
- include/linux/bpf-cgroup.h | 11 ++++++
- include/uapi/linux/bpf.h   | 12 ++++++
- kernel/bpf/cgroup.c        | 80 ++++++++++++++++++++++++++++++++++++++
- kernel/bpf/syscall.c       | 52 +++++++++++++++++++++++++
- kernel/cgroup/cgroup.c     | 27 +++++++++++++
- 5 files changed, 182 insertions(+)
+ tools/include/uapi/linux/bpf.h | 12 +++++++++
+ tools/lib/bpf/bpf.c            | 35 ++++++++++++++++++++++++
+ tools/lib/bpf/bpf.h            | 20 ++++++++++++++
+ tools/lib/bpf/libbpf.c         | 49 ++++++++++++++++++++++++++++++++++
+ tools/lib/bpf/libbpf.h         |  9 ++++++-
+ tools/lib/bpf/libbpf.map       |  4 +++
+ 6 files changed, 128 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-index d2d969669564..a8d78efd3cea 100644
---- a/include/linux/bpf-cgroup.h
-+++ b/include/linux/bpf-cgroup.h
-@@ -100,6 +100,8 @@ int __cgroup_bpf_attach(struct cgroup *cgrp,
- int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 			struct bpf_cgroup_link *link,
- 			enum bpf_attach_type type);
-+int __cgroup_bpf_replace(struct cgroup *cgrp, struct bpf_cgroup_link *link,
-+			 struct bpf_prog *new_prog);
- int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
- 		       union bpf_attr __user *uattr);
- 
-@@ -110,6 +112,8 @@ int cgroup_bpf_attach(struct cgroup *cgrp,
- 		      u32 flags);
- int cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 		      enum bpf_attach_type type);
-+int cgroup_bpf_replace(struct bpf_link *link, struct bpf_prog *old_prog,
-+		       struct bpf_prog *new_prog);
- int cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
- 		     union bpf_attr __user *uattr);
- 
-@@ -373,6 +377,13 @@ static inline int cgroup_bpf_link_attach(const union bpf_attr *attr,
- 	return -EINVAL;
- }
- 
-+static inline int cgroup_bpf_replace(struct bpf_link *link,
-+				     struct bpf_prog *old_prog,
-+				     struct bpf_prog *new_prog)
-+{
-+	return -EINVAL;
-+}
-+
- static inline int cgroup_bpf_prog_query(const union bpf_attr *attr,
- 					union bpf_attr __user *uattr)
- {
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
 index 948ebbfd401b..d7583483fca5 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
 @@ -112,6 +112,7 @@ enum bpf_cmd {
  	BPF_MAP_UPDATE_BATCH,
  	BPF_MAP_DELETE_BATCH,
@@ -152,205 +112,195 @@ index 948ebbfd401b..d7583483fca5 100644
  } __attribute__((aligned(8)));
  
  /* The description below is an attempt at providing documentation to eBPF
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index c5cedc8c3428..2c70e2c95cb7 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -506,6 +506,86 @@ int __cgroup_bpf_attach(struct cgroup *cgrp,
- 	return err;
+diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+index c6dafe563176..b5eecb390c0c 100644
+--- a/tools/lib/bpf/bpf.c
++++ b/tools/lib/bpf/bpf.c
+@@ -584,6 +584,41 @@ int bpf_prog_detach2(int prog_fd, int target_fd, enum bpf_attach_type type)
+ 	return sys_bpf(BPF_PROG_DETACH, &attr, sizeof(attr));
  }
  
-+/* Swap updated BPF program for given link in effective program arrays across
-+ * all descendant cgroups. This function is guaranteed to succeed.
-+ */
-+static void replace_effective_prog(struct cgroup *cgrp,
-+				   enum bpf_attach_type type,
-+				   struct bpf_cgroup_link *link)
++int bpf_link_create(int prog_fd, int target_fd,
++		    enum bpf_attach_type attach_type,
++		    const struct bpf_link_create_opts *opts)
 +{
-+	struct bpf_prog_array_item *item;
-+	struct cgroup_subsys_state *css;
-+	struct bpf_prog_array *progs;
-+	struct bpf_prog_list *pl;
-+	struct list_head *head;
-+	struct cgroup *cg;
-+	int pos;
++	union bpf_attr attr;
 +
-+	css_for_each_descendant_pre(css, &cgrp->self) {
-+		struct cgroup *desc = container_of(css, struct cgroup, self);
-+
-+		if (percpu_ref_is_zero(&desc->bpf.refcnt))
-+			continue;
-+
-+		/* found position of link in effective progs array */
-+		for (pos = 0, cg = desc; cg; cg = cgroup_parent(cg)) {
-+			if (pos && !(cg->bpf.flags[type] & BPF_F_ALLOW_MULTI))
-+				continue;
-+
-+			head = &cg->bpf.progs[type];
-+			list_for_each_entry(pl, head, node) {
-+				if (!prog_list_prog(pl))
-+					continue;
-+				if (pl->link == link)
-+					goto found;
-+				pos++;
-+			}
-+		}
-+found:
-+		BUG_ON(!cg);
-+		progs = rcu_dereference_protected(
-+				desc->bpf.effective[type],
-+				lockdep_is_held(&cgroup_mutex));
-+		item = &progs->items[pos];
-+		WRITE_ONCE(item->prog, link->link.prog);
-+	}
-+}
-+
-+/**
-+ * __cgroup_bpf_replace() - Replace link's program and propagate the change
-+ *                          to descendants
-+ * @cgrp: The cgroup which descendants to traverse
-+ * @link: A link for which to replace BPF program
-+ * @type: Type of attach operation
-+ *
-+ * Must be called with cgroup_mutex held.
-+ */
-+int __cgroup_bpf_replace(struct cgroup *cgrp, struct bpf_cgroup_link *link,
-+			 struct bpf_prog *new_prog)
-+{
-+	struct list_head *progs = &cgrp->bpf.progs[link->type];
-+	struct bpf_prog *old_prog;
-+	struct bpf_prog_list *pl;
-+	bool found = false;
-+
-+	if (link->link.prog->type != new_prog->type)
++	if (!OPTS_VALID(opts, bpf_link_create_opts))
 +		return -EINVAL;
 +
-+	list_for_each_entry(pl, progs, node) {
-+		if (pl->link == link) {
-+			found = true;
-+			break;
-+		}
-+	}
-+	if (!found)
-+		return -ENOENT;
++	memset(&attr, 0, sizeof(attr));
++	attr.link_create.prog_fd = prog_fd;
++	attr.link_create.target_fd = target_fd;
++	attr.link_create.attach_type = attach_type;
++	attr.link_create.flags = OPTS_GET(opts, flags, 0);
 +
-+	old_prog = xchg(&link->link.prog, new_prog);
-+	replace_effective_prog(cgrp, link->type, link);
-+	bpf_prog_put(old_prog);
-+	return 0;
++	return sys_bpf(BPF_LINK_CREATE, &attr, sizeof(attr));
 +}
 +
- static struct bpf_prog_list *find_detach_entry(struct list_head *progs,
- 					       struct bpf_prog *prog,
- 					       struct bpf_cgroup_link *link,
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 638ec8b54741..a52426e1e0df 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -3572,6 +3572,55 @@ static int link_create(union bpf_attr *attr)
- 	return ret;
++int bpf_link_update(int link_fd, int new_prog_fd,
++		    const struct bpf_link_update_opts *opts)
++{
++	union bpf_attr attr;
++
++	if (!OPTS_VALID(opts, bpf_link_update_opts))
++		return -EINVAL;
++
++	memset(&attr, 0, sizeof(attr));
++	attr.link_update.link_fd = link_fd;
++	attr.link_update.new_prog_fd = new_prog_fd;
++	attr.link_update.flags = OPTS_GET(opts, flags, 0);
++	attr.link_update.old_prog_fd = OPTS_GET(opts, old_prog_fd, 0);
++
++	return sys_bpf(BPF_LINK_UPDATE, &attr, sizeof(attr));
++}
++
+ int bpf_prog_query(int target_fd, enum bpf_attach_type type, __u32 query_flags,
+ 		   __u32 *attach_flags, __u32 *prog_ids, __u32 *prog_cnt)
+ {
+diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
+index b976e77316cc..880879f4e434 100644
+--- a/tools/lib/bpf/bpf.h
++++ b/tools/lib/bpf/bpf.h
+@@ -168,6 +168,26 @@ LIBBPF_API int bpf_prog_detach(int attachable_fd, enum bpf_attach_type type);
+ LIBBPF_API int bpf_prog_detach2(int prog_fd, int attachable_fd,
+ 				enum bpf_attach_type type);
+ 
++struct bpf_link_create_opts {
++	size_t sz; /* size of this struct for forward/backward compatibility */
++	__u32 flags;
++};
++#define bpf_link_create_opts__last_field flags
++
++LIBBPF_API int bpf_link_create(int prog_fd, int target_fd,
++			       enum bpf_attach_type attach_type,
++			       const struct bpf_link_create_opts *opts);
++
++struct bpf_link_update_opts {
++	size_t sz; /* size of this struct for forward/backward compatibility */
++	__u32 flags;	   /* extra flags */
++	__u32 old_prog_fd; /* expected old program FD */
++};
++#define bpf_link_update_opts__last_field old_prog_fd
++
++LIBBPF_API int bpf_link_update(int link_fd, int new_prog_fd,
++			       const struct bpf_link_update_opts *opts);
++
+ struct bpf_prog_test_run_attr {
+ 	int prog_fd;
+ 	int repeat;
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 085e41f9b68e..09055fcb3c33 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -6951,6 +6951,12 @@ struct bpf_link {
+ 	bool disconnected;
+ };
+ 
++/* Replace link's underlying BPF program with the new one */
++int bpf_link__update_program(struct bpf_link *link, struct bpf_program *prog)
++{
++	return bpf_link_update(bpf_link__fd(link), bpf_program__fd(prog), NULL);
++}
++
+ /* Release "ownership" of underlying BPF resource (typically, BPF program
+  * attached to some BPF hook, e.g., tracepoint, kprobe, etc). Disconnected
+  * link, when destructed through bpf_link__destroy() call won't attempt to
+@@ -7489,6 +7495,49 @@ static struct bpf_link *attach_trace(const struct bpf_sec_def *sec,
+ 	return bpf_program__attach_trace(prog);
  }
  
-+#define BPF_LINK_UPDATE_LAST_FIELD link_update.old_prog_fd
-+
-+static int link_update(union bpf_attr *attr)
++struct bpf_link *bpf_program__attach_cgroup(struct bpf_program *prog,
++					    int cgroup_fd, __u32 flags)
 +{
-+	struct bpf_prog *old_prog = NULL, *new_prog;
++	DECLARE_LIBBPF_OPTS(bpf_link_create_opts, opts);
++	const struct bpf_sec_def *sec_def;
++	enum bpf_attach_type attach_type;
++	char errmsg[STRERR_BUFSIZE];
 +	struct bpf_link *link;
-+	u32 flags;
-+	int ret;
++	int prog_fd, link_fd;
 +
-+	if (CHECK_ATTR(BPF_LINK_UPDATE))
-+		return -EINVAL;
 +
-+	flags = attr->link_update.flags;
-+	if (flags & ~BPF_F_REPLACE)
-+		return -EINVAL;
-+
-+	link = bpf_link_get_from_fd(attr->link_update.link_fd);
-+	if (IS_ERR(link))
-+		return PTR_ERR(link);
-+
-+	new_prog = bpf_prog_get(attr->link_update.new_prog_fd);
-+	if (IS_ERR(new_prog))
-+		return PTR_ERR(new_prog);
-+
-+	if (flags & BPF_F_REPLACE) {
-+		old_prog = bpf_prog_get(attr->link_update.old_prog_fd);
-+		if (IS_ERR(old_prog)) {
-+			ret = PTR_ERR(old_prog);
-+			old_prog = NULL;
-+			goto out_put_progs;
-+		}
++	prog_fd = bpf_program__fd(prog);
++	if (prog_fd < 0) {
++		pr_warn("program '%s': can't attach before loaded\n",
++			bpf_program__title(prog, false));
++		return ERR_PTR(-EINVAL);
 +	}
 +
-+#ifdef CONFIG_CGROUP_BPF
-+	if (link->ops == &bpf_cgroup_link_lops) {
-+		ret = cgroup_bpf_replace(link, old_prog, new_prog);
-+		goto out_put_progs;
-+	}
-+#endif
-+	ret = -EINVAL;
++	link = calloc(1, sizeof(*link));
++	if (!link)
++		return ERR_PTR(-ENOMEM);
++	link->detach = &bpf_link__detach_fd;
 +
-+out_put_progs:
-+	if (old_prog)
-+		bpf_prog_put(old_prog);
-+	if (ret)
-+		bpf_prog_put(new_prog);
-+	return ret;
++	attach_type = bpf_program__get_expected_attach_type(prog);
++	if (!attach_type) {
++		sec_def = find_sec_def(bpf_program__title(prog, false));
++		if (sec_def)
++			attach_type = sec_def->attach_type;
++	}
++	opts.flags = flags;
++	link_fd = bpf_link_create(prog_fd, cgroup_fd, attach_type, &opts);
++	if (link_fd < 0) {
++		link_fd = -errno;
++		free(link);
++		pr_warn("program '%s': failed to attach to cgroup: %s\n",
++			bpf_program__title(prog, false),
++			libbpf_strerror_r(link_fd, errmsg, sizeof(errmsg)));
++		return ERR_PTR(link_fd);
++	}
++	link->fd = link_fd;
++	return link;
 +}
 +
- SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, size)
+ struct bpf_link *bpf_program__attach(struct bpf_program *prog)
  {
- 	union bpf_attr attr = {};
-@@ -3685,6 +3734,9 @@ SYSCALL_DEFINE3(bpf, int, cmd, union bpf_attr __user *, uattr, unsigned int, siz
- 	case BPF_LINK_CREATE:
- 		err = link_create(&attr);
- 		break;
-+	case BPF_LINK_UPDATE:
-+		err = link_update(&attr);
-+		break;
- 	default:
- 		err = -EINVAL;
- 		break;
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index 219624fba9ba..915dda3f7f19 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -6317,6 +6317,33 @@ int cgroup_bpf_attach(struct cgroup *cgrp,
- 	return ret;
- }
+ 	const struct bpf_sec_def *sec_def;
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index d38d7a629417..38288e8709b6 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -224,6 +224,8 @@ LIBBPF_API int bpf_link__fd(const struct bpf_link *link);
+ LIBBPF_API const char *bpf_link__pin_path(const struct bpf_link *link);
+ LIBBPF_API int bpf_link__pin(struct bpf_link *link, const char *path);
+ LIBBPF_API int bpf_link__unpin(struct bpf_link *link);
++LIBBPF_API int bpf_link__update_program(struct bpf_link *link,
++					struct bpf_program *prog);
+ LIBBPF_API void bpf_link__disconnect(struct bpf_link *link);
+ LIBBPF_API int bpf_link__destroy(struct bpf_link *link);
  
-+int cgroup_bpf_replace(struct bpf_link *link, struct bpf_prog *old_prog,
-+		       struct bpf_prog *new_prog)
-+{
-+	struct bpf_cgroup_link *cg_link;
-+	int ret;
+@@ -245,11 +247,16 @@ bpf_program__attach_tracepoint(struct bpf_program *prog,
+ LIBBPF_API struct bpf_link *
+ bpf_program__attach_raw_tracepoint(struct bpf_program *prog,
+ 				   const char *tp_name);
+-
+ LIBBPF_API struct bpf_link *
+ bpf_program__attach_trace(struct bpf_program *prog);
++LIBBPF_API struct bpf_link *
++bpf_program__attach_cgroup(struct bpf_program *prog, int cgroup_fd,
++			   __u32 flags);
 +
-+	if (link->ops != &bpf_cgroup_link_lops)
-+		return -EINVAL;
+ struct bpf_map;
 +
-+	cg_link = container_of(link, struct bpf_cgroup_link, link);
+ LIBBPF_API struct bpf_link *bpf_map__attach_struct_ops(struct bpf_map *map);
 +
-+	mutex_lock(&cgroup_mutex);
-+	/* link might have been auto-released by dying cgroup, so fail */
-+	if (!cg_link->cgroup) {
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+	if (old_prog && link->prog != old_prog) {
-+		ret = -EPERM;
-+		goto out_unlock;
-+	}
-+	ret = __cgroup_bpf_replace(cg_link->cgroup, cg_link, new_prog);
-+out_unlock:
-+	mutex_unlock(&cgroup_mutex);
-+	return ret;
-+}
-+
- int cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 		      enum bpf_attach_type type)
- {
+ struct bpf_insn;
+ 
+ /*
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 5129283c0284..793c5af07b23 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -243,5 +243,9 @@ LIBBPF_0.0.8 {
+ 		bpf_link__pin;
+ 		bpf_link__pin_path;
+ 		bpf_link__unpin;
++		bpf_link__update_program;
++		bpf_link_create;
++		bpf_link_update;
++		bpf_program__attach_cgroup;
+ 		bpf_program__set_attach_target;
+ } LIBBPF_0.0.7;
 -- 
 2.17.1
 
