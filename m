@@ -2,107 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DF1F1929BB
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 14:33:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBF56192A38
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 14:38:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727290AbgCYNd1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 09:33:27 -0400
-Received: from mail-qk1-f173.google.com ([209.85.222.173]:34205 "EHLO
-        mail-qk1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727021AbgCYNd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 09:33:27 -0400
-Received: by mail-qk1-f173.google.com with SMTP id i6so2506132qke.1
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 06:33:25 -0700 (PDT)
+        id S1727868AbgCYNh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 09:37:27 -0400
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:33150 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727601AbgCYNhH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 09:37:07 -0400
+Received: by mail-qv1-f65.google.com with SMTP id p19so1027613qve.0;
+        Wed, 25 Mar 2020 06:37:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tlapnet.cz; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=kprv2m0+xH6rw6KMPHdQkJlrvY3jozE/Ui8LMp4/cxU=;
-        b=AuD8Fe5X60A4FBfq0yINhuH4fVh8O9zOuAVn4ixMyBOKfVhSpyh8BSa05qbIzGsBEs
-         jbWWQ41wozVfcdT5yh4S4BHKXlz9z7t9UOAuaEvvR51wKcRFoTo1wSfkl+AJqkMT3lVW
-         BJa81gR0B3pMqaLV7WN4DaAunEyhEwAuQTG08HAKU40vFMJtbbV9e0nwXlsFFYH0sNDA
-         1JVaiNCH0M45ggqjG8jBTIJYqD4vDWC+smw4e0PtuP9SotT32IqS4tmh/FicqQ791GME
-         4znc1/rtKO/vcjV97kwlad431nZHnSBWK4+kYHjr80/mTFFxzMALkPjTjuxQ/gj+ndOi
-         migg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=tN/ZPWPzljaBn2rqxyHaIgez0Svs63lNRlNuag6Lwkg=;
+        b=YtPdVHoYkid5LBxxRbreBIW13G0QhmwwPLbMVmsMjAF7LfKpLjnzwl0zwGqgG/RDne
+         lu3e4a4DQgp5TCeNfI2uMlh475/4OZUl4tDtGy5zDQz3qsloLYYh1IWAxhR/CHfoTiV5
+         5cBTpsy//7TQ7Plx23fiFE/7t5JQgMhQTnRFOizkrID1LP3IOyLfx7GXqbqmjpB0uZvn
+         85CwR72sf0goRJOhDOAAzkFDqkSOeqvQ/2/dKaj6n0zbfvTDP18i1HlRvI/iRRb3iBC+
+         kfqshoc1N4HUIVHHIkLsqRox9nT6WPsyXlIigRcwQ3xH6u3uVsa1s7q5kw/efCAfu047
+         qVXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=kprv2m0+xH6rw6KMPHdQkJlrvY3jozE/Ui8LMp4/cxU=;
-        b=ZD3O6K5dlVhNb8yXkRZRDPO0pL8Rg8QJm03fswzNv04JBsY3HlY2e6/qw8gholUqiC
-         2rMjQxsidzmtFmpGJWhFg9UGibWzP6JoX2fNHNBaS9QzrgJoMptG7S1IKjqyegj+cNNR
-         uy+xhqeHbP7S5FUksy4pu8WxrYTbal3ERTOMSYrKLczf9LaNIWSZ1qTRenqehlTwHO6r
-         eCGxtqnb4xNg2wxtXkFQZME89fnhNdoPB53mYMMnpZ5RRiPqarbVg8n8RNkiwbbbe6sL
-         ElBYe64lTiLbyEzhjfyLFOdCz+JvZJqMe5Kkvpi5uBQL7D+EWelUjn/EZdV2XgOdQ1Wr
-         KWfg==
-X-Gm-Message-State: ANhLgQ18p/VrWyJUEJDnPA7EOmb1O0VSfFfz6e62VR0SCu1YI6MS7mDl
-        q/iElyU83YbWQfF2yvzz5537aeiSpXf3k1XvP7rAPA==
-X-Google-Smtp-Source: ADFU+vtUmRcpCaZhN/lUsx95//G2YmdM1GOs6nu9QG/5L1ZMzvYQ0R/30Kt3PSkycA7cM9YjMd3q8WqxVI29uhQfUlA=
-X-Received: by 2002:a05:620a:109c:: with SMTP id g28mr2849398qkk.409.1585143205314;
- Wed, 25 Mar 2020 06:33:25 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=tN/ZPWPzljaBn2rqxyHaIgez0Svs63lNRlNuag6Lwkg=;
+        b=eO9j8X5Uka1n+u//p6URmqdmq+UvBppDz7vf9pMhBbB2bSf+HvekrlXZNBRRvXf4zO
+         Lpv9DP5RZlE8cYmAT7rN/GJX2nVw+giWsFPdKbAJkSbZ6PY04V1hRSVkZ5LscF1MwDfx
+         FR3Bw6/zyFuimjiKOhjIhrV1W+Eq/sIwEI6UrxWzj/8DhPHpqk+ONbBLlS9oojtm5l1M
+         lgWsitK+Muf0YXS0SEe6Gb9nAh7MqFAz1qMyKfrXn6GIFVRjlIlBzxoQjTKN9g55hiUH
+         vAC1fqaPssfUl4TTs7VQVhNE2FXJ1b864ebAuqkRdoCUich9J5A/CbTvmYJr3S9Qrcsv
+         n2Bw==
+X-Gm-Message-State: ANhLgQ2JhU6v437xs++m/tA/K9WivDysL1rBIyrqxTYpEWkszMXoVk97
+        XbRbY4fT/7+iSe08PCeXhqU=
+X-Google-Smtp-Source: ADFU+vtHafOL0/sDxDC/TwiX6k+vDPa/lK62NYZWZkmpJKFqNlueQF7L2fnunE76gsTyK49g4NE+Ng==
+X-Received: by 2002:a0c:a8e2:: with SMTP id h34mr3037807qvc.22.1585143426984;
+        Wed, 25 Mar 2020 06:37:06 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id g6sm16397956qtd.85.2020.03.25.06.37.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Mar 2020 06:37:06 -0700 (PDT)
+Date:   Wed, 25 Mar 2020 21:37:00 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Vadym Kochan <vadym.kochan@plvision.eu>
+Cc:     netdev@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org, David Miller <davem@davemloft.net>
+Subject: Re: [PATCH net] selftests/net/forwarding: define libs as
+ TEST_PROGS_EXTENDED
+Message-ID: <20200325133700.GE2159@dhcp-12-139.nay.redhat.com>
+References: <20200325084101.9156-1-liuhangbin@gmail.com>
+ <20200325102633.GA6391@plvision.eu>
 MIME-Version: 1.0
-References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
- <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
- <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
- <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com> <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
-In-Reply-To: <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
-From:   =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
-Date:   Wed, 25 Mar 2020 14:33:13 +0100
-Message-ID: <CANxWus_xL7ztXZpLcc+eMCyysgokHnnAD_vwS0jDEz=Pr-VqXw@mail.gmail.com>
-Subject: Re: iproute2: tc deletion freezes whole server
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200325102633.GA6391@plvision.eu>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 25, 2020 at 12:27 PM V=C3=A1clav Zindulka
-<vaclav.zindulka@tlapnet.cz> wrote:
-> > > > > My testing setup consists of approx. 18k tc class rules and appro=
-x.
-> > > > > 13k tc qdisc rules and was altered only with different interface =
-name....
-> > > >
-> > > > Please share you tc configurations (tc -s -d qd show dev ..., tc
-> > > > -s -d filter show dev...).
-> > >
-> > > I've placed whole reproducers into repository. Do you need exports of=
- rules too?
-> > >
-> > > > Also, it would be great if you can provide a minimal reproducer.
-> > >
-> > > I'm afraid that minor reproducer won't cause the problem. This was
-> > > happening mostly on servers with large tc rule setups. I was trying t=
-o
-> > > create small reproducer for nftables developer many times without
-> > > success. I can try to create reproducer as small as possible, but it
-> > > may still consist of thousands of rules.
-> >
-> > Yeah, this problem is probably TC specific, as we clean up from
-> > the top qdisc down to each class and each filter.
->
-> As I mentioned earlier, this happens even with specific deletion of
-> smaller number of rules. Yet I don't oppose it may be caused by tc.
-> Just inability to process any packets is strange and I'm not sure it
-> is pure tc problem.
->
-> > Can you try to reproduce the number of TC classes, for example,
-> > down to half, to see if the problem is gone? This could confirm
-> > whether it is related to the number of TC classes/filters.
->
-> Sure. I'll try to reduce the size of tc rule set and test the problem fur=
-ther.
+On Wed, Mar 25, 2020 at 12:26:33PM +0200, Vadym Kochan wrote:
+> Hi Hangbin Liu,
+> 
+> On Wed, Mar 25, 2020 at 04:41:01PM +0800, Hangbin Liu wrote:
+> > The lib files should not be defined as TEST_PROGS, or we will run them
+> > in run_kselftest.sh.
+> > 
+> > Also remove ethtool_lib.sh exec permission.
+> > 
+> > Fixes: 81573b18f26d ("selftests/net/forwarding: add Makefile to install tests")
+> > Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> Thanks for fixing it, sorry for my mistake. Actually forwarding tests
+> requires interfaces list as runtime parameter or if it is defined in 
+> forwarding.config file, so may be they should not run by run_kselftest
+> at all and only added via TEST_PROGS_EXTENDED ?
 
-I've tested it. Delay shortens and extends according to number of
-rules to delete.
+Before I run forwarding test, I usually do
+`cp forwarding.config.sample forwarding.config` first. I think the runner
+should aware of this.
 
-with approx. 3500 rules it took 2364ms
-with approx. 7000 rules it took 5526ms
-with approx. 14000 rules it took 11641ms
-with approx. 18000 rules it took 13302ms
-with approx. 31000 rules it took 22880ms
-
-Do you want me to test it with ifb interface too?
+Thanks
+Hangbin
