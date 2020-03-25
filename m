@@ -2,83 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE4161934A3
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 00:34:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A72F1934B8
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 00:42:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727600AbgCYXeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 19:34:13 -0400
-Received: from onstation.org ([52.200.56.107]:42750 "EHLO onstation.org"
+        id S1727540AbgCYXmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 19:42:33 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38222 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727395AbgCYXeM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 19:34:12 -0400
-Received: from localhost (c-98-239-145-235.hsd1.wv.comcast.net [98.239.145.235])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: masneyb)
-        by onstation.org (Postfix) with ESMTPSA id D9ADB3E993;
-        Wed, 25 Mar 2020 23:34:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=onstation.org;
-        s=default; t=1585179251;
-        bh=UmMfQfL2Dh6nfn2syBX2sC1MPLmcaAcwUvfWVe3vkpM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BPWtzEWeaE0xPqB52s39r4KFFu9CAc2XWbyWEeiYjMFFp4zI3Jnc7Ce1qomgad3+i
-         Zssb5erETKV/5tFlC9CDhOpLk9pnxg2NCChpeKVZIiBN8eTPwpTU1e5qXBz7i2qmMi
-         ohX+2HrLcdpwIAUyrpKCZpDJiGxTBey+OAukZuAo=
-Date:   Wed, 25 Mar 2020 19:34:09 -0400
-From:   Brian Masney <masneyb@onstation.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Guillaume La Roque <glaroque@baylibre.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Zhang Rui <rui.zhang@intel.com>,
-        dri-devel@lists.freedesktop.org, linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 2/4] dt-bindings: sram: qcom: Clean-up 'ranges' and child
- node names
-Message-ID: <20200325233409.GB16767@onstation.org>
-References: <20200325220542.19189-1-robh@kernel.org>
- <20200325220542.19189-3-robh@kernel.org>
+        id S1727402AbgCYXmd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Mar 2020 19:42:33 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id A3B39AD72;
+        Wed, 25 Mar 2020 23:42:31 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 99506E0FD3; Thu, 26 Mar 2020 00:42:30 +0100 (CET)
+Date:   Thu, 26 Mar 2020 00:42:30 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Marek Vasut <marex@denx.de>,
+        o.rempel@pengutronix.de, Guenter Roeck <linux@roeck-us.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: RFC: future of ethtool tunables (Re: [RFC][PATCH 1/2] ethtool:
+ Add BroadRReach Master/Slave PHY tunable)
+Message-ID: <20200325234230.GD31519@unicorn.suse.cz>
+References: <20200325101736.2100-1-marex@denx.de>
+ <20200325164958.GZ31519@unicorn.suse.cz>
+ <20200325215538.GB27427@lunn.ch>
+ <2b3973d0-0c41-c986-5f72-e03a5fddce55@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200325220542.19189-3-robh@kernel.org>
+In-Reply-To: <2b3973d0-0c41-c986-5f72-e03a5fddce55@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 25, 2020 at 04:05:39PM -0600, Rob Herring wrote:
-> The regex for child nodes doesn't match the example. This wasn't flagged
-> with 'additionalProperties: false' missing. The child node schema was also
-> incorrect with 'ranges' property as it applies to child nodes and should
-> be moved up to the parent node.
+On Wed, Mar 25, 2020 at 03:04:07PM -0700, Florian Fainelli wrote:
 > 
-> Fixes: 957fd69d396b ("dt-bindings: soc: qcom: add On Chip MEMory (OCMEM) bindings")
-> Cc: Brian Masney <masneyb@onstation.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: linux-arm-msm@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
+> 
+> On 3/25/2020 2:55 PM, Andrew Lunn wrote:
+> >> What might be useful, on the other hand, would be device specific
+> >> tunables: an interface allowing device drivers to define a list of
+> >> tunables and their types for each device. It would be a generalization
+> >> of private flags. There is, of course, the risk that we could end up
+> >> with multiple NIC vendors defining the same parameters, each under
+> >> a different name and with slightly different semantics.
+> >  
+> > Hi Michal
+> > 
+> > I'm not too happy to let PHY drivers do whatever they want. So far,
+> > all PHY tunables have been generic. Any T1 PHY can implement control
+> > of master/slave, and there is no reason for each PHY to do it
+> > different to any other PHY. Downshift is a generic concept, multiple
+> > PHYs have implemented it, and they all implement it the same. Only
+> > Marvell currently supports fast link down, but the API is generic
+> > enough that other PHYs could implement it, if the hardware supports
+> > it.
+> > 
+> > I don't however mind if it gets a different name, or a different tool,
+> > etc.
+> 
+> BroadRReach is a standard feature that is available on other PHYs for
+> instance (Broadcom at least has it too) so defining a common name for
+> this particular tunable knob here would make sense.
+> 
+> If we are to create vendor/device specific tunables, can we agree on a
+> namespace to use, something like:
+> 
+> <vendor>:<device>:<parameter name>
 
-Reviewed-by: Brian Masney <masneyb@onstation.org>
+That's not exactly what wanted to know. From my point of view, the most
+important question is if we want to preserve the concept of tunables as
+assorted parameters of various types, add netlink requests for querying
+and setting them (plus notifications) and keep adding new tunables. Or
+if we rather see them as a temporary workaround for the lack of
+extensibility and handle all future parameters through regular command
+line arguments and netlink attributes.
+
+For the record, I can imagine that the answer might be different for
+(netdev) tunables and for PHY tunables.
+
+Michal
