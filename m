@@ -2,68 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2EA919341D
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 00:03:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1514B193432
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 00:07:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727574AbgCYXC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 19:02:59 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:43223 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727504AbgCYXC5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 19:02:57 -0400
-Received: by mail-wr1-f65.google.com with SMTP id b2so5557397wrj.10
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 16:02:56 -0700 (PDT)
+        id S1727469AbgCYXHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 19:07:10 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:37487 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727384AbgCYXHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 19:07:10 -0400
+Received: by mail-wr1-f68.google.com with SMTP id w10so5644160wrm.4
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 16:07:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=G6hp76k+sJ8OIFLwcZN/syhvrZfA0UKfx17z10q7+R0=;
-        b=ueqWHdHT4upcZzDxLP2EdsMLfwt2TrLRM5bGL7hvbKCiy4OOssMazvFbNGAF/kKKot
-         ZwxqrucBijqhRcbMThx7qtQCJ7/iyduD7+yxJ7gaty58/NYqRQ1E6ijMIB3JENixxqrz
-         YbdFnivAH83CHlaXNFsAkNB/Ksp/QAlkpUMTEe5sHGPY4JV9hL4xNpzJhgyDXVUMgzV6
-         ewWfajn+/SAH8Wd5s1Dbbcea241H/JCvt1CTAwU3o5qgwjWNXSD1bh/hUt8aSINWIW1Q
-         QsZk04GsdqilhRbBHrArQJrGnndH5NrnFMT+QX02rGW+O6Rr0GrCygZy04D6bLk+XIao
-         XDxg==
+        bh=8vwKSMJvvVexnQSg7yZDUJjTK8KkK0wOm3qzK9Tlx/A=;
+        b=t5+ka26dzs48e4oCC0x0Q4LF5yeyGT9H1ilTX+M802SqOwLiF5es4BzHqpLHtWJ1Vy
+         hy+bjBlymkUVCHaQTsZcfsELCd5045Ml7kAqe1tV6+4qQVgiesFIAIZY8T0W22Zrzgdk
+         Tt54/3PfNdOmH5KAdMrgsj7JoaacYdFZ/0OH04YYdWu+EPLSZ2KzZywzM+9rEJCxQrX6
+         jFfMZ2kEDIhIdUGMQUfzZ2nLwKBdDcdJcrW/FBvFIi1lJ13a/DXHpllCMSYqEj0Mrund
+         VqVMvsKf90H/+8PEkaql4tNWhWVUczXlsW1LvB2wwkmdrNY8alkpfFZLyXuLls1FfUD4
+         pCGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=G6hp76k+sJ8OIFLwcZN/syhvrZfA0UKfx17z10q7+R0=;
-        b=neOz4jWLo7Ve3hAj175/rGcv7Bc0ydswMAc2HaXqxf2kHT7xXC7FYeIpGb5O7S7lg2
-         muUySIyzjX4SQ27fTt0XfTFJ4zQIW+M8koyrmUualFhneNxOzyPQTbMYwiypNfAji5rW
-         q8NSC1n5V5NGPCT1rqXMPo4AXo2ASPZ2ocx1q/06bbAUv/fMBPdZ0Kj3MB/qKk61x2oq
-         DUeaB9fzeajHQKgzSRftwP1iBuN/NVawcDIqpFnp2ndUyuOiPUamkLgLr7og92KY9+lL
-         28Jxa7x2wdkQVawVGKqqUaHTaWhn05X0SxOODbCY81VzjF+HAwcZ5ahKNmJ6enNqgjv9
-         vqgA==
-X-Gm-Message-State: ANhLgQ26JkDt/VdElms1/uA98JM/70Yqge7nre6B1RGmPrFmOUlfl5ZQ
-        6kLZaL3bFGePePjDKVl/3s7cyaxK
-X-Google-Smtp-Source: ADFU+vsxs3Il0nYt8WpRKugiqdAmXFxqBBD1g0EKIIDKnuBcQdHt8US6BHtLctRCNmqE98VI6UeUhw==
-X-Received: by 2002:adf:d84d:: with SMTP id k13mr5825876wrl.298.1585177375283;
-        Wed, 25 Mar 2020 16:02:55 -0700 (PDT)
+        bh=8vwKSMJvvVexnQSg7yZDUJjTK8KkK0wOm3qzK9Tlx/A=;
+        b=k+F/YGMzcr84mVlfZB8g0igWoNzK/pmaTdBU4+UyBlfFvvdvB3soYm/DnG31fCsh7Q
+         sbGm/PpRcoDCb1FwzoI3oixuSYfCsZwNcSjp8c+LkmWqxmTs2QOKb3Jdq2KD4R38hC/W
+         2ZOx2t6mq4yHWyB86OOBqVHnKsj5YlaKrmqAdjf/vYrSp8Ftqv0DUUUoO/VIHuIw70Oz
+         aV2cgGgrACJowVCRYmGwuyEnQ03bmwL8yTFOsoobNYl1R0diKcYO5Yet7S3IjF8Q5jAB
+         GEyg+CNXj5r2aELr+NsLfD084dEh/ltd8E+Awnx6tAUZmgRFXT8BJAJ9cgOXh1H8g3uT
+         N3Tg==
+X-Gm-Message-State: ANhLgQ1yoAhvApnBvtQpcZH3apYb6D6Whih3iPD2d34ZL9YUo5avMQWu
+        BWCXDhXHvU1BmbJlat5SDSFNNHOp
+X-Google-Smtp-Source: ADFU+vs6l3S1SAunPqkJaERrzlljYh4eGoKidEfGLiacnxHjB629mdinsqaVik8WEMnLMhjZ+9Lp+Q==
+X-Received: by 2002:adf:84c2:: with SMTP id 60mr5930699wrg.399.1585177627355;
+        Wed, 25 Mar 2020 16:07:07 -0700 (PDT)
 Received: from [10.230.1.220] ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id l12sm631476wrt.73.2020.03.25.16.02.47
+        by smtp.gmail.com with ESMTPSA id w11sm681667wrv.86.2020.03.25.16.07.04
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Mar 2020 16:02:54 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 02/10] net: phy: bcm7xx: Add jumbo frame
- configuration to PHY
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        murali.policharla@broadcom.com
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        netdev <netdev@vger.kernel.org>
+        Wed, 25 Mar 2020 16:07:06 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 05/10] bgmac: Add DMA support to handle frames
+ beyond 8192 bytes
+To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
+        vivien.didelot@gmail.com, davem@davemloft.net,
+        jakub.kicinski@netronome.com
+Cc:     murali.policharla@broadcom.com, stephen@networkplumber.org,
+        jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
+        nikolay@cumulusnetworks.com, netdev@vger.kernel.org
 References: <20200325152209.3428-1-olteanv@gmail.com>
- <20200325152209.3428-3-olteanv@gmail.com>
- <ec070d0f-3712-8663-f39f-124b7f802450@gmail.com>
- <CA+h21hrJyxDX98dzY0TbySKqXvC1+jkNJb0z+17LPOSN8=WeqA@mail.gmail.com>
+ <20200325152209.3428-6-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -119,15 +110,15 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <4db60ac7-9ad5-deb0-5285-11198c9ca4b5@gmail.com>
-Date:   Wed, 25 Mar 2020 16:02:45 -0700
+Message-ID: <da3fbacb-11be-8a6b-dd30-d5bc116f03a0@gmail.com>
+Date:   Wed, 25 Mar 2020 16:07:02 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <CA+h21hrJyxDX98dzY0TbySKqXvC1+jkNJb0z+17LPOSN8=WeqA@mail.gmail.com>
+In-Reply-To: <20200325152209.3428-6-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -135,67 +126,18 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 3/25/2020 3:45 PM, Vladimir Oltean wrote:
-> On Wed, 25 Mar 2020 at 17:44, Heiner Kallweit <hkallweit1@gmail.com> wrote:
->>
->> On 25.03.2020 16:22, Vladimir Oltean wrote:
->>> From: Murali Krishna Policharla <murali.policharla@broadcom.com>
->>>
->>> Add API to configure jumbo frame settings in PHY during initial PHY
->>> configuration.
->>>
->>> Signed-off-by: Murali Krishna Policharla <murali.policharla@broadcom.com>
->>> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
->>> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
->>> ---
->>>  drivers/net/phy/bcm-phy-lib.c | 28 ++++++++++++++++++++++++++++
->>>  drivers/net/phy/bcm-phy-lib.h |  1 +
->>>  drivers/net/phy/bcm7xxx.c     |  4 ++++
->>>  include/linux/brcmphy.h       |  1 +
->>>  4 files changed, 34 insertions(+)
->>>
->>> diff --git a/drivers/net/phy/bcm-phy-lib.c b/drivers/net/phy/bcm-phy-lib.c
->>> index e0d3310957ff..a26c80e13b43 100644
->>> --- a/drivers/net/phy/bcm-phy-lib.c
->>> +++ b/drivers/net/phy/bcm-phy-lib.c
->>> @@ -423,6 +423,34 @@ int bcm_phy_28nm_a0b0_afe_config_init(struct phy_device *phydev)
->>>  }
->>>  EXPORT_SYMBOL_GPL(bcm_phy_28nm_a0b0_afe_config_init);
->>>
->>> +int bcm_phy_enable_jumbo(struct phy_device *phydev)
->>> +{
->>> +     int val = 0, ret = 0;
->>> +
->>> +     ret = phy_write(phydev, MII_BCM54XX_AUX_CTL,
->>> +                     MII_BCM54XX_AUXCTL_SHDWSEL_MISC);
->>> +     if (ret < 0)
->>> +             return ret;
->>> +
->>> +     val = phy_read(phydev, MII_BCM54XX_AUX_CTL);
->>> +
->>> +     /* Enable extended length packet reception */
->>> +     val |= MII_BCM54XX_AUXCTL_ACTL_EXT_PKT_LEN;
->>> +     ret = phy_write(phydev, MII_BCM54XX_AUX_CTL, val);
->>> +
->>
->> There are different helpers already in bcm-phy-lib,
->> e.g. bcm54xx_auxctl_read. Also bcm_phy_write_misc()
->> has has quite something in common with your new function.
->> It would be good if a helper could be used here.
->>
+On 3/25/2020 8:22 AM, Vladimir Oltean wrote:
+> From: Murali Krishna Policharla <murali.policharla@broadcom.com>
 > 
-> Thanks Heiner.
-> I'm not quite sure the operation is performed correctly though? My
-> books are telling me that the "Receive Extended Packet Length" field
-> is accessible via the Auxiliary Control Register 0x18 when the shadow
-> value is 000, not 111 as this patch is doing. At least for BCM54xxx in
-> terms of which the macros are defined. Am I wrong?
+> Add DMA support in driver to handle jumbo frames beyond 8192 bytes.
+> Also update jumbo frame max size to include FCS, the DMA packet length
+> received includes FCS.
+> 
+> Signed-off-by: Murali Krishna Policharla <murali.policharla@broadcom.com>
+> Reviewed-by: Arun Parameswaran <arun.parameswaran@broadcom.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-I can confirm that for the BCM54810 PHY as well, the extended packet
-length is in register 0x18 shadow 0b000.
-
-Murali, which datsheet did you use as a reference? The internal document
-for the 28nm EGPHY which is what this driver is supposed to drive is
-also indicating the same thing.
+This patch and the previous one should probably be squashed together. I
+will try to get this tested on a Northstar platform.
 -- 
 Florian
