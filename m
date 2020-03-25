@@ -2,105 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E5E0193049
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 19:24:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D40B519306A
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 19:31:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727386AbgCYSYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 14:24:07 -0400
-Received: from mail-qt1-f182.google.com ([209.85.160.182]:47070 "EHLO
-        mail-qt1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727006AbgCYSYH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 14:24:07 -0400
-Received: by mail-qt1-f182.google.com with SMTP id g7so3009817qtj.13
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 11:24:06 -0700 (PDT)
+        id S1727641AbgCYSbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 14:31:31 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:41970 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727027AbgCYSbb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 14:31:31 -0400
+Received: by mail-pl1-f194.google.com with SMTP id t16so1128767plr.8;
+        Wed, 25 Mar 2020 11:31:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tlapnet.cz; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=qDLnUtbgC2zkMMgMhmhGvpjskgGnO5ZqHVVyspKy71s=;
-        b=H6aw9+wQLpuL9cLNXLPGGW4LYQPwu/RKkOax8jon+Z0gYiaRNfHxEWUhjTT0z6PQeX
-         DLkf7n6L4zzyUeLuzokH6u8wVd8cE+WCR+9mx2tKTfav7Tdn/uMWVO58Z21e0QZNT8rb
-         Hj4fTqw975g+JjG2vPWzhuhBLO9OmzcVAyknJ3s701Zd2NSHxPACNmD6uCxm6aw4Gtzg
-         ifxvbG7hujJqNg/I4FqYkNUvvQf/JNLjfYYz7YUebzoBcwaRFAXl04GUzUPkgMzR4xLm
-         ewKgAfyd6WZWn5iM4c2Rs8XN84kwP4x2YOLsZZH/tYMJ6VIDwezWhPMAsGkl2huQf/Df
-         UWNA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=M66oudythcBmFzgaHHj4NT8FrhMNeWSRLde1HiyDOR8=;
+        b=HdIw1VMtWl2/2v1yXgAGAvreoa07Z20PO0djS3sVwAtLM+I7s5xRzIEe35oeHcvOrG
+         cwFVGXVUQOJJqneRGY67rC3nCMlhstYrxOCNk0weqkxLAfMWJIviyvLxqy0I/2HLvESk
+         44NlcSXlhfC7jowxQIX3LQowQDc9nZyNP4risf6//MlSbccq3ynTm7352WA9eUVpDATC
+         VNVcFYALK9g0a+YKJshkj2j6qvZZMMcbQEZn8FyGqUGQJqxMEjOOMWR2ZVKhmKo2jB/+
+         nBbJJba1GA0gzI0fFguMwUaZAwc7vQJZYUsuEJUD4ugU390rpOwLqqR97Dwl5LVzGmFv
+         SAUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=qDLnUtbgC2zkMMgMhmhGvpjskgGnO5ZqHVVyspKy71s=;
-        b=P2VCX/tT6KRkm9Y+jzm0/dq5IpZMPq71GLFwG6C7JE2Z81E4jUS1yswKQlX9Ri/3jb
-         +tShE7WhuVlSX32/VDK/iv5gWSIP2/Y6F7ieVFnRl9BfLDzRIZqNwdQGsPu8Ixg0vPB1
-         nXymnUp3TgFJgPZp/mJF33IeeFzJ+47I+aVdp/OeVOzS0cAYmosN3+ONOsQxipH7sFm8
-         pfvAPpdcelpnpWqdCxPkEc0CNGlkACFC2lsPmTon7h2dwimupt4JHw9/r/La9Xx7iyHN
-         Z43Q++q9CZvko7X1ChqyE/NLv5POKP1yWDai3/KMCeNdMAjJtbXKRBmfP+5+/nMrkNKI
-         Y8dg==
-X-Gm-Message-State: ANhLgQ239aUSOSPTU7WF7UJGmCDkqZSCyiLVWyDCpTDCrKdSRcJw3/Nt
-        iufU6Ixm9VxGGZV9GEF/RxyzN8n6CkCqGwfuunW8Dw==
-X-Google-Smtp-Source: ADFU+vs79xrKFor2HvcB6PMiFh30xv9AuvOeaNEW0k8ISGVPIPqHa2M7fE6GlONDiCTiy37HG16PajOZYDCRpW5Aomg=
-X-Received: by 2002:ac8:2939:: with SMTP id y54mr4312932qty.160.1585160645634;
- Wed, 25 Mar 2020 11:24:05 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=M66oudythcBmFzgaHHj4NT8FrhMNeWSRLde1HiyDOR8=;
+        b=Oh5nx/KlzV1eGnZowLrn192fpIYPgAq8k2NIkd04Sdu93DN8hMewDnMNK4GdoLIFpm
+         xWLm0IFr7KxWVeTuCMeFRq8gVpwNAEM2mILlAgOCtlF8BhGRlqgSofy1Gj+kn/rety/e
+         erSPKynoGySVkSOef1YH/2+3pi2uIdhji9JXNnkZoPiHX80mtWI/HTOi/V473yDBFroP
+         oHaRTCno8Q6ibcVoj1fp/DwP7EJzKH2DHaAfR0iZdoU+Ay9a8NHJFDkifPx1x59LcN1n
+         VntGTqXcskMmkUx0QCgOKn1PPtvqmUwQnDovaGFVFZ7rLD0Pzs1Q0BaAW59B9IkNAdz9
+         khqA==
+X-Gm-Message-State: ANhLgQ1sPMWVed55N7+M9SN0qI4+TmZ0jpW323lshkamdlm/cOEpH2fa
+        lSvsCHCpNkAFyT3nHyKypRXiRt2r
+X-Google-Smtp-Source: ADFU+vssZ5U0bJU3qIeF4S+sN+yu4Z4W+PRBw9CRTewhGgo1Cmv7BvqExtGeQsOKVqHQSE5cQnk4fw==
+X-Received: by 2002:a17:902:a9cc:: with SMTP id b12mr4365819plr.177.1585161089735;
+        Wed, 25 Mar 2020 11:31:29 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id c15sm17083869pgk.66.2020.03.25.11.31.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 Mar 2020 11:31:28 -0700 (PDT)
+Subject: Re: [PATCH] ipv4: fix a RCU-list lock in fib_triestat_seq_show
+To:     Qian Cai <cai@lca.pw>, Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <5e2ed86a-23bc-d3e5-05ad-4e7ed147539c@gmail.com>
+ <92C7474D-4592-44BF-B0ED-26253196511E@lca.pw>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <8ae16be2-9c64-245e-0997-805f48078432@gmail.com>
+Date:   Wed, 25 Mar 2020 11:31:27 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
- <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
- <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
- <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com>
- <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com> <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com>
-In-Reply-To: <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com>
-From:   =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
-Date:   Wed, 25 Mar 2020 19:23:54 +0100
-Message-ID: <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com>
-Subject: Re: iproute2: tc deletion freezes whole server
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <92C7474D-4592-44BF-B0ED-26253196511E@lca.pw>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 25, 2020 at 6:43 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Wed, Mar 25, 2020 at 4:28 AM V=C3=A1clav Zindulka
-> <vaclav.zindulka@tlapnet.cz> wrote:
-> >
-> > On Tue, Mar 24, 2020 at 11:57 PM Cong Wang <xiyou.wangcong@gmail.com> w=
-rote:
-> > > Hm, my bad, please also run `perf report -g` after you record them,
-> > > we need the text output with stack traces.
-> >
-> > No problem. I've created reports on two servers with different cards.
-> > See here https://github.com/zvalcav/tc-kernel/tree/master/20200325
->
-> That is great!
->
-> Your kernel log does not show anything useful, so it did not lead to
-> any kernel hang or crash etc. at all. (This also means you do not need
-> to try kdump.)
 
-Ok.
 
->
-> Are you able to test an experimental patch attached in this email?
+On 3/25/20 10:34 AM, Qian Cai wrote:
+> 
+> 
+>> On Mar 25, 2020, at 12:13 PM, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>>
+>> I would prefer :
+>>
+>> diff --git a/net/ipv4/fib_trie.c b/net/ipv4/fib_trie.c
+>> index ff0c24371e3309b3068980f46d1ed743337d2a3e..4b98ffb27136d3b43f179d6b1b42fe84586acc06 100644
+>> --- a/net/ipv4/fib_trie.c
+>> +++ b/net/ipv4/fib_trie.c
+>> @@ -2581,6 +2581,7 @@ static int fib_triestat_seq_show(struct seq_file *seq, void *v)
+>>                struct hlist_head *head = &net->ipv4.fib_table_hash[h];
+>>                struct fib_table *tb;
+>>
+>> +               rcu_read_lock();
+>>                hlist_for_each_entry_rcu(tb, head, tb_hlist) {
+>>                        struct trie *t = (struct trie *) tb->tb_data;
+>>                        struct trie_stat stat;
+>> @@ -2596,6 +2597,7 @@ static int fib_triestat_seq_show(struct seq_file *seq, void *v)
+>>                        trie_show_usage(seq, t->stats);
+>> #endif
+>>                }
+>> +               rcu_read_unlock();
+>>        }
+>>
+>>        return 0;
+> 
+> I have no strong opinion either way. My initial thought was to save 255 extra lock/unlock with a single lock/unlock, but I am not sure how time-consuming for each iteration of the outer loop could be. If it could take a bit too long, it does make a lot of sense to reduce the critical section.
+> 
 
-Sure. I'll compile new kernel tomorrow. Thank you for quick patch.
-I'll let you know as soon as I have anything.
 
-> It looks like your kernel spent too much time in fq_codel_reset(),
-> most of it are unnecessary as it is going to be destroyed right after
-> resetting.
+This file could be quite big in some setups.
 
-Yeah, I noticed it too.
+Alternatively you could use cond_resched_rcu()
 
-> Note: please do not judge the patch, it is merely for testing purpose.
-> It is obviously ugly and is only a proof of concept. A complete one
-> should be passing a boolean parameter down to each ->reset(),
-> but it would be much larger.
-
-No judging at all. I totally understand this as prototype ;-)
-
->
-> Thanks for testing!
-
-I thank you! It may allow me to finally deploy a year of my work time.
