@@ -2,166 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E20F192018
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 05:22:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BB1F192060
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 06:18:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725939AbgCYEWU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 00:22:20 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:41789 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725263AbgCYEWU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 00:22:20 -0400
-Received: by mail-pl1-f193.google.com with SMTP id t16so309226plr.8
-        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 21:22:19 -0700 (PDT)
+        id S1726225AbgCYFSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 01:18:47 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:33512 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725878AbgCYFSq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 01:18:46 -0400
+Received: by mail-lj1-f194.google.com with SMTP id f20so1140680ljm.0
+        for <netdev@vger.kernel.org>; Tue, 24 Mar 2020 22:18:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=MTXh/uYVhTcxkMvcajDj8d0iLHQvl7uo7VgVFRoUGGw=;
-        b=avRZHdOp3t8l3502MZ+mk3EGtUNJ8nGQ3MCxnAPpirMrV33ouYGxY21YZJKv0tKa4Z
-         LgOyQwFuI/6d1MLjztSFJn1j7K7g9mLEiFA7FXr4kezdeh/Z+KeZxyEelOix4nJxDR7C
-         0I0DUGcx16RMEZPfiAR9HlqXw1/nZteztn/XVxglgD3rcbJbf0FZlJ06MrItj/4MPJTS
-         TppXaCa94TjAH5qeiYnrOnmyKlkf3Ba3/ByEKr3xvZnJmyBGHog9J+BhURbXHtDm+Zhb
-         au5DwVIjCKnC1NyXoqWPOIm9PyDTM3AFv0wHxgswZSXeuSEBxN3fSOKWuWzNSFFmjE8p
-         n3YA==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZPdsfolAYBymNTtjFbWm1sGcSl3euUAzGo5gu/sysho=;
+        b=HV62cuaHNm0sLpPBqbW77tm1j9IRBrwfwZQ4V4KalwZ9pz83sNLLlOl3wYB9F2NPq1
+         /AthsNfbxYNA4nrE4JWW/CpN92ffFxD4pd1T5KrGlDua3N7tZB7vVnbvlrENLcqEpdxk
+         ksjMcj8hQuXbDYbzP0/lFfLqTvRT3epWfBpN4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=MTXh/uYVhTcxkMvcajDj8d0iLHQvl7uo7VgVFRoUGGw=;
-        b=dknGJAuwrDVzsdS9kyrHudEwEn2wjmWSARKj5HXyMvjYCe4UBZ3Sn/hUQuNSFSiELX
-         J57uDDDsv+1uHriO2GzCeJS7vcpD2naFeXJL7sbYqqdNU0NMo3T6CCs28cFigHDwS3rI
-         zNA3BdtZiwFaXF8F7zy1icBoSIyTp4oqqNHQko+MOmeHK96h71dMip+DDNKYti8Iuo4U
-         /niS46OxcSUg6WLiFQ6n91/vzGYwKjt4Ylgcm6xOOKLI+gGwGSheEz+z1N+rZZ9WI+20
-         DMFkodcR3b65DWEljdk9LX2hy7U/BRyGLTJNk0owAu8qCHekmMUNj3jYXqqnW0XfqKre
-         2N7Q==
-X-Gm-Message-State: ANhLgQ3QjARt9MYot88q2TFzOz0Xc0lJLmUSMsHgDt22wAlyPhS1xVyR
-        xJLniswNDbqCYflsYSOwkqY=
-X-Google-Smtp-Source: ADFU+vvRU93t0BqGBD6/k0xC9jdz7KOzP9+RDJfxvLn3TQYhemuRpQKIHIoCqhdEihJlHF6zmqFEVQ==
-X-Received: by 2002:a17:90a:3328:: with SMTP id m37mr1472372pjb.158.1585110139228;
-        Tue, 24 Mar 2020 21:22:19 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id x3sm16886583pfp.167.2020.03.24.21.22.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Mar 2020 21:22:17 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: use indirect call wrappers for
- skb_copy_datagram_iter()
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Sagi Grimberg <sagi@lightbitslabs.com>
-References: <20200325022321.21944-1-edumazet@google.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <19793d41-acbc-e289-7728-6b77a2f1962c@gmail.com>
-Date:   Tue, 24 Mar 2020 21:22:16 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZPdsfolAYBymNTtjFbWm1sGcSl3euUAzGo5gu/sysho=;
+        b=JTyYr55AG5g22tztiyAnISvqnVQOlw8OpI93DPEZJZpZnm8SqYUxeEd3rsq81oUHzh
+         XsJKnKJIMfZsvQCIu6LqbUCo1fhxfcD9PqS3eRj2AiCPLHfpm43oNoS6F0lZCNQJLj1w
+         OZ3kAznmCU5D9U1Qoq0wgx/tTTmPBiw0MsqdvRxdCGaKGNo0nVNvBH4Tgb3Pyt7A1KPk
+         QwIsPfQGK7I8iyob+vcdNJE9PCybLFKBrOdIBwclWbRBECfBBmNL83+zZluR/i9F4B43
+         14bgIa9otwUxLZOh8pyjz1o8j9h/K6lzUTzxN1oJdKIyFfqg0sfdLxPdcadobNxWRGmm
+         j+jQ==
+X-Gm-Message-State: AGi0PuY9/+Gv4HvL46yyB/v6njCQQhy4Sk0rFlevHylpMWsy/eWxJ0bM
+        t1GSWLzUx58E/4Os6FrDrWdO6Ba9AXU+DAe48R1Xig==
+X-Google-Smtp-Source: ADFU+vtZD1HGvN+DQ13pTWzYdoo8gG5ct+mgTQBTtLRVyqiOPrMAUEgQcPZ2Lj1ENhxI54Gu7sGwUdrwP8XwGF26SXE=
+X-Received: by 2002:a2e:a551:: with SMTP id e17mr822190ljn.86.1585113522357;
+ Tue, 24 Mar 2020 22:18:42 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200325022321.21944-1-edumazet@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200323072824.254495-1-mcchou@chromium.org> <20200323002820.v1.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
+ <04021BE3-63F7-4B19-9F0E-145785594E8C@holtmann.org> <421d27670f2736c88e8c0693e3ff7c0dcfceb40b.camel@perches.com>
+ <57C56801-7F3B-478A-83E9-1D2376C60666@holtmann.org> <03547be94c4944ca672c7aef2dd38b0fb1eedc84.camel@perches.com>
+ <CALWDO_U5Cnt3_Ss2QQNhtuKS_8qq7oyNH4d97J68pmbmQMe=3w@mail.gmail.com>
+ <643C6020-2FC5-4EEA-8F64-5D4B7F9258A4@holtmann.org> <CALWDO_Uc6brpXmVfoUd+jgyy_F0-WSrYb1+hXtXm498dGzCOSg@mail.gmail.com>
+In-Reply-To: <CALWDO_Uc6brpXmVfoUd+jgyy_F0-WSrYb1+hXtXm498dGzCOSg@mail.gmail.com>
+From:   Miao-chen Chou <mcchou@chromium.org>
+Date:   Tue, 24 Mar 2020 22:18:31 -0700
+Message-ID: <CABmPvSF7xLihcnk9bd3ZeK6Nr_DsQq2ypXV7wn8bU4UnQ0sKUg@mail.gmail.com>
+Subject: Re: [PATCH v1 1/2] Bluetooth: btusb: Indicate Microsoft vendor
+ extension for Intel 9460/9560 and 9160/9260
+To:     Alain Michaud <alainmichaud@google.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Joe Perches <joe@perches.com>,
+        Bluetooth Kernel Mailing List 
+        <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 3/24/20 7:23 PM, Eric Dumazet wrote:
-> TCP recvmsg() calls skb_copy_datagram_iter(), which
-> calls an indirect function (cb pointing to simple_copy_to_iter())
-> for every MSS (fragment) present in the skb.
-> 
-> CONFIG_RETPOLINE=y forces a very expensive operation
-> that we can avoid thanks to indirect call wrappers.
-> 
-> This patch gives a 13% increase of performance on
-> a single flow, if the bottleneck is the thread reading
-> the TCP socket.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-
-
-BTW, the expensive indirect call came with :
-
-So we could also add a Fixes: tag eventually
-
-Fixes: 950fcaecd5cc ("datagram: consolidate datagram copy to iter helpers")
-
-commit 950fcaecd5cc6c014bb96506fd0652a501c85276
-Author: Sagi Grimberg <sagi@lightbitslabs.com>
-Date:   Mon Dec 3 17:52:08 2018 -0800
-
-    datagram: consolidate datagram copy to iter helpers
-    
-    skb_copy_datagram_iter and skb_copy_and_csum_datagram are essentialy
-    the same but with a couple of differences: The first is the copy
-    operation used which either a simple copy or a csum_and_copy, and the
-    second are the behavior on the "short copy" path where simply copy
-    needs to return the number of bytes successfully copied while csum_and_copy
-    needs to fault immediately as the checksum is partial.
-    
-    Introduce __skb_datagram_iter that additionally accepts:
-    1. copy operation function pointer
-    2. private data that goes with the copy operation
-    3. fault_short flag to indicate the action on short copy
-    
-    Suggested-by: David S. Miller <davem@davemloft.net>
-    Acked-by: David S. Miller <davem@davemloft.net>
-    Signed-off-by: Sagi Grimberg <sagi@lightbitslabs.com>
-    Signed-off-by: Christoph Hellwig <hch@lst.de>
-
-> ---
->  net/core/datagram.c | 14 +++++++++++---
->  1 file changed, 11 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/core/datagram.c b/net/core/datagram.c
-> index 4213081c6ed3d4fda69501641a8c76e041f26b42..639745d4f3b94a248da9a685f45158410a85bec7 100644
-> --- a/net/core/datagram.c
-> +++ b/net/core/datagram.c
-> @@ -51,6 +51,7 @@
->  #include <linux/slab.h>
->  #include <linux/pagemap.h>
->  #include <linux/uio.h>
-> +#include <linux/indirect_call_wrapper.h>
->  
->  #include <net/protocol.h>
->  #include <linux/skbuff.h>
-> @@ -403,6 +404,11 @@ int skb_kill_datagram(struct sock *sk, struct sk_buff *skb, unsigned int flags)
->  }
->  EXPORT_SYMBOL(skb_kill_datagram);
->  
-> +INDIRECT_CALLABLE_DECLARE(static size_t simple_copy_to_iter(const void *addr,
-> +						size_t bytes,
-> +						void *data __always_unused,
-> +						struct iov_iter *i));
-> +
->  static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
->  			       struct iov_iter *to, int len, bool fault_short,
->  			       size_t (*cb)(const void *, size_t, void *,
-> @@ -416,7 +422,8 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
->  	if (copy > 0) {
->  		if (copy > len)
->  			copy = len;
-> -		n = cb(skb->data + offset, copy, data, to);
-> +		n = INDIRECT_CALL_1(cb, simple_copy_to_iter,
-> +				    skb->data + offset, copy, data, to);
->  		offset += n;
->  		if (n != copy)
->  			goto short_copy;
-> @@ -438,8 +445,9 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
->  
->  			if (copy > len)
->  				copy = len;
-> -			n = cb(vaddr + skb_frag_off(frag) + offset - start,
-> -			       copy, data, to);
-> +			n = INDIRECT_CALL_1(cb, simple_copy_to_iter,
-> +					vaddr + skb_frag_off(frag) + offset - start,
-> +					copy, data, to);
->  			kunmap(page);
->  			offset += n;
->  			if (n != copy)
-> 
+On Tue, Mar 24, 2020 at 12:32 PM Alain Michaud <alainmichaud@google.com> wrote:
+>
+> On Tue, Mar 24, 2020 at 2:35 PM Marcel Holtmann <marcel@holtmann.org> wrote:
+> >
+> > Hi Alain,
+> >
+> > >>>>>> This adds a bit mask of driver_info for Microsoft vendor extension and
+> > >>>>>> indicates the support for Intel 9460/9560 and 9160/9260. See
+> > >>>>>> https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
+> > >>>>>> microsoft-defined-bluetooth-hci-commands-and-events for more information
+> > >>>>>> about the extension. This was verified with Intel ThunderPeak BT controller
+> > >>>>>> where msft_vnd_ext_opcode is 0xFC1E.
+> > >>>> []
+> > >>>>>> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+> > >>>> []
+> > >>>>>> @@ -315,6 +315,10 @@ struct hci_dev {
+> > >>>>>>        __u8            ssp_debug_mode;
+> > >>>>>>        __u8            hw_error_code;
+> > >>>>>>        __u32           clock;
+> > >>>>>> +       __u16           msft_vnd_ext_opcode;
+> > >>>>>> +       __u64           msft_vnd_ext_features;
+> > >>>>>> +       __u8            msft_vnd_ext_evt_prefix_len;
+> > >>>>>> +       void            *msft_vnd_ext_evt_prefix;
+> > >>>>
+> > >>>> msft is just another vendor.
+> > >>>>
+> > >>>> If there are to be vendor extensions, this should
+> > >>>> likely use a blank line above and below and not
+> > >>>> be prefixed with msft_
+> > >>>
+> > >>> there are other vendors, but all of them are different. So this needs to be prefixed with msft_ actually. But I agree that having empty lines above and below makes it more readable.
+> > >>
+> > >> So struct hci_dev should become a clutter
+> > >> of random vendor extensions?
+> > >>
+> > >> Perhaps there should instead be something like
+> > >> an array of char at the end of the struct and
+> > >> various vendor specific extensions could be
+> > >> overlaid on that array or just add a void *
+> > >> to whatever info that vendors require.
+> > > I don't particularly like trailing buffers, but I agree we could
+> > > possibly organize this a little better by with a struct.  something
+> > > like:
+> > >
+> > > struct msft_vnd_ext {
+> > >    bool              supported; // <-- Clearly calls out if the
+> > > extension is supported.
+> > >    __u16           msft_vnd_ext_opcode; // <-- Note that this also
+> > > needs to be provided by the driver.  I don't recommend we have this
+> > > read from the hardware since we just cause an extra redirection that
+> > > isn't necessary.  Ideally, this should come from the usb_table const.
+> >
+> > Actually supported == false is the same as opcode == 0x0000. And supported == true is opcode != 0x0000.
+> I was thinking of a more generic way to check if the extension is
+> supported so the higher level doesn't need to understand that
+> opcode==0 means it's not supported.  For the android extension for
+> example, this would be a simple boolean (there isn't any opcodes).
+> >
+> > >    __u64           msft_vnd_ext_features;
+> > >    __u8             msft_vnd_ext_evt_prefix_len;
+> > >    void             *msft_vnd_ext_evt_prefix;
+> > > };
+> > >
+> > > And then simply add the struct msft_vnd_ext (and any others) to hci_dev.
+> >
+> > Anyway, Lets keep these for now as hci_dev->msft_vnd_ext_*. We can fix this up later without any impact.
+> I agree, this doesn't have a whole lot of long term consequences,
+> although some will want to cherry-pick this to older kernels so if
+> there is something we can do now, it will reduce burden on some
+> products.
+Thanks for all your inputs. I will group these msft_vnd_ext_* into a
+struct msft_vnd_ext with future refactoring in mind if new extensions
+are introduced.
