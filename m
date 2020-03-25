@@ -2,108 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1863E191E3B
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 01:40:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5605F191E50
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 02:00:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727253AbgCYAkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 20:40:23 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:53419 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727099AbgCYAkX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 24 Mar 2020 20:40:23 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 48n8R80zKKz9sPk;
-        Wed, 25 Mar 2020 11:40:19 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1585096820;
-        bh=Bai3sk8CLodeWGRu1CYGl+WPcRwjBXEwTh1ZqVH0/F0=;
-        h=Date:From:To:Cc:Subject:From;
-        b=SZuiJWZjueCoU/j2ge/QJZn5TO8/hbxrbvdGMY0tdUQznTjEXROCYx90KhZvK2r7S
-         AZUcYE3j69ONyJTPgm9k8VBQy+GRwJZOsS/n4xnyoeQR2YsMa/369Yw7+zT1pGktLq
-         cRbYBsWkQMwALGn+8J8xmqVFff5+8zUqedVzBK/W0eJBuLkKE+hvI27U2Uix83qAq/
-         bOVKLD2xjNYjAYsjBaujQaAT54kSwVI77/lzCNRG1nERhmv+8IL56VwN81LpHb6XW7
-         8q0sJ8JCVqDovfkLeLMOQLU4r+jIZIu3Dk0nQ/dTo9W6AVvRIyPJ8MWvHslbQMRlCL
-         +WJ1WbwJLx8eA==
-Date:   Wed, 25 Mar 2020 11:40:16 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Era Mayflower <mayflowerera@gmail.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20200325114016.156768f2@canb.auug.org.au>
+        id S1727196AbgCYBAO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 21:00:14 -0400
+Received: from mail-qv1-f67.google.com ([209.85.219.67]:34791 "EHLO
+        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727113AbgCYBAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 21:00:13 -0400
+Received: by mail-qv1-f67.google.com with SMTP id o18so199504qvf.1;
+        Tue, 24 Mar 2020 18:00:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=jUB+tM0BFQZQdvpsyfwXsGAJ6YkiGjbSHP9EKj3nthY=;
+        b=neDqIkxzrSmoJ/poPG3UWh3/Cn5KAuOiNLTdQb5Yw3DnffQ0tCDpq2qJf3m9TdPtaQ
+         GloUCQqMTfKN8hn9veU4gdkU6Wo3uxZ5DbYY14x/Gvet4ksmzgqCaz+JMI3vBU8yG1yx
+         PffIubn3JFcUNqyrvETDcmIsrBwC9evV43n1ff9uFwkkFRQZugPy5Z1Il7fE7+apUBcP
+         y0H492laHbHHk9sucQqEI3HjxEkk1us4auxziF+3P0CW1B7X9QwsQYC8/WeXfomx5lSk
+         5jUQh5Z2KTUCmFPBBKD0WoejbPu9ktUbgiL2Fee9XcJsBAXarMkkzDBpbdHXo8shiHno
+         z7RQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=jUB+tM0BFQZQdvpsyfwXsGAJ6YkiGjbSHP9EKj3nthY=;
+        b=MfiRgP+OkqPUja9RQE0YYn8rGvexnERPguqsLfcg92jOhYzireitk7x7Ot+eyo/tUe
+         9u18p+dlOOnDQKOBRhe9KREsGpsDETMKx5hEPu6wwDKy3yY6MYtoe1nwt9o7z8JPnyZH
+         E4m5dWF9CVnzsj5za8ZINwp+CBBJ2dOIeVF8ne/+ZZ8q/Kcw/RZa6uc9u82UlzmTyD5K
+         1PoMUZ0GrtefTRBGT/lYUAyTOuzLgXjj3JuYgOub0e4OC8SJhC+rbd62C1XIw0rF5jkx
+         C7uOLIDb3qcAzmeicOaJJuFjd94KS0J3SmJ+rymqRNkchbiFS/CvIL9vUxeDUBca+EA9
+         Z5NA==
+X-Gm-Message-State: ANhLgQ2sgf3Qi9fkEyANLNbtbmpqdGYteFlLrjyNi2R4Z/huHplEPwXV
+        oW4slps8qxxHRPAl6BnV6WA9WiAkMPu/UqZrjHwDfp4v
+X-Google-Smtp-Source: ADFU+vvGW+v0pw42jPWnw2VMbH/UkWRIV/8in3Xz4c6T3eg19TNfaNnzq0CXKziyCLhTefcmKp30m+0feS6JJkgS9xc=
+X-Received: by 2002:a0c:8444:: with SMTP id l62mr889092qva.239.1585097658979;
+ Tue, 24 Mar 2020 17:54:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/sv3AX7jQUXkgO=e5bapi3NH";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <158507357205.6925.17804771242752938867.stgit@toke.dk> <158507357313.6925.9859587430926258691.stgit@toke.dk>
+In-Reply-To: <158507357313.6925.9859587430926258691.stgit@toke.dk>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 24 Mar 2020 17:54:07 -0700
+Message-ID: <CAEf4BzaXvTx5-bp8QygxScwEKjq8LYZqU4dgxo2C9USqHpGxKg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/4] xdp: Support specifying expected existing
+ program when attaching XDP
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>, Andrey Ignatov <rdna@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/sv3AX7jQUXkgO=e5bapi3NH
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, Mar 24, 2020 at 11:13 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+>
+> From: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>
+> While it is currently possible for userspace to specify that an existing
+> XDP program should not be replaced when attaching to an interface, there =
+is
+> no mechanism to safely replace a specific XDP program with another.
+>
+> This patch adds a new netlink attribute, IFLA_XDP_EXPECTED_ID, which can =
+be
+> set along with IFLA_XDP_FD. If set, the kernel will check that the progra=
+m
+> currently loaded on the interface matches the expected one, and fail the
+> operation if it does not. This corresponds to a 'cmpxchg' memory operatio=
+n.
+> Setting the new attribute with a negative value means that no program is
+> expected to be attached, which corresponds to setting the UPDATE_IF_NOEXI=
+ST
+> flag.
+>
+> A new companion flag, XDP_FLAGS_EXPECT_ID, is also added to explicitly
+> request checking of the EXPECTED_ID attribute. This is needed for userspa=
+ce
+> to discover whether the kernel supports the new attribute.
 
-Hi all,
+Doesn't it feel inconsistent in UAPI that FD is used to specify XDP
+program to be attached, but ID is used to specify expected XDP
+program? Especially that the same cgroup use case is using
+(consistently) prog FDs. Or is it another case where XDP needs its own
+special way?
 
-Today's linux-next merge of the net-next tree got a conflict in:
+>
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> ---
+>  include/linux/netdevice.h    |    2 +-
+>  include/uapi/linux/if_link.h |    4 +++-
+>  net/core/dev.c               |   14 +++++++++-----
+>  net/core/rtnetlink.c         |   13 +++++++++++++
+>  4 files changed, 26 insertions(+), 7 deletions(-)
+>
 
-  drivers/net/macsec.c
-
-between commit:
-
-  b06d072ccc4b ("macsec: restrict to ethernet devices")
-
-from the net tree and commit:
-
-  a21ecf0e0338 ("macsec: Support XPN frame handling - IEEE 802.1AEbw")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/macsec.c
-index 92bc2b2df660,49b138e7aeac..000000000000
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@@ -19,7 -19,7 +19,8 @@@
-  #include <net/gro_cells.h>
-  #include <net/macsec.h>
-  #include <linux/phy.h>
- +#include <linux/if_arp.h>
-+ #include <linux/byteorder/generic.h>
- =20
-  #include <uapi/linux/if_macsec.h>
- =20
-
---Sig_/sv3AX7jQUXkgO=e5bapi3NH
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl56qHAACgkQAVBC80lX
-0Gxt/Qf9H8xBjtaPori8bP7C7ScBjmtat11519pOpi5LyDdlD1TjEQNV93SmAi/h
-TsfTKpq63rLgfQuEdY7qX4HCfFZtjgfLENbt7Q4ManjoDBmtPTjUz9B7FA+q7nrI
-2bAUjLmapVq1WAK5C5B5kd1wsoVl77FEi7KU29lsYA8K0cgD7JsipSqEDQUldU78
-C2fRFgyde4XbCL+9VnPZmoWDA79qFINZZiYzPXk29lB8MGuE6EeAbYQDoYg7I5Eh
-eVShEytRIEbACpIyYotW8ucJLvOednmCYq1vldaw7BcSuUSlm2pxqbyp04gaMDIy
-A9TUG1Puw6EaisLvHAiLmhTzosv6ew==
-=nL9v
------END PGP SIGNATURE-----
-
---Sig_/sv3AX7jQUXkgO=e5bapi3NH--
+[...]
