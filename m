@@ -2,58 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AD1B192FF4
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 18:56:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 382DF192FF6
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 18:57:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727316AbgCYR4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 13:56:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38002 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726102AbgCYR4L (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 13:56:11 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6409E206F6;
-        Wed, 25 Mar 2020 17:56:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585158970;
-        bh=YwPjdZJNqrQcjC1PKVYfHeOg+tRZT+OKwQ21NuDgRGg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ambj0ETkawa8Halt9b2sXA6MPyKMrC+W9IpZynEyXCd+c/1owoL9gellkfa3EPE+3
-         n+Z/viPRGrwTKVujVIhnFmskEwqzeN72zLrajghcNlRazEcosmBLaadnBq6sE/C04/
-         SWt4l0WEAuFP0s2LmXdx3bp4Y1J4E9Ka5uH6u4yw=
-Date:   Wed, 25 Mar 2020 10:56:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH 04/10] devlink: add function to take snapshot while
- locked
-Message-ID: <20200325105608.13077942@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200324223445.2077900-5-jacob.e.keller@intel.com>
-References: <20200324223445.2077900-1-jacob.e.keller@intel.com>
-        <20200324223445.2077900-5-jacob.e.keller@intel.com>
+        id S1727554AbgCYR5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 13:57:04 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:35681 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727357AbgCYR5D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 13:57:03 -0400
+Received: by mail-pl1-f193.google.com with SMTP id g6so1106557plt.2;
+        Wed, 25 Mar 2020 10:57:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=LcnFLGNBmm0IVLGhfPKr1/VuZRnu6FpgzCF+UvqP0dg=;
+        b=PJPXcwrs1iBQ1K6mKKHgQyRGiROzE6kyMNZhGg2cDVCU7kiEafl+1O7Qhv3DPSIz8p
+         Xmai1C2uEmOPLBPJ+I4SsZ2xDYM+eWewEDVUKZCwlEPAv7SSIqYfscn/sW7/d+5i+4IX
+         xNWNWVrZDm8dPLm+J1sWqdMqP7rSiY5Ci53HJcwjUuaYX1nFaEYKWa2XV7CeQBCfzykv
+         eMS4GRn0MKb1EyoprRgCk+X+I3bjO9LcJPKMrDrQN7wjKa8SoH6n3atjxeX2bFvI4BlV
+         wE8xR/RnpU5HAncKphVv2vXTj10fzofC96NWpniNRWImw5agEv9jJz/exrhKNNEH3Qkq
+         1GVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=LcnFLGNBmm0IVLGhfPKr1/VuZRnu6FpgzCF+UvqP0dg=;
+        b=JQzSFx5BC9u8yUPDmf814EP9ps0Fq41b2fS1BLrvK3Xww4utvoGG2txRCaxm4yRyDx
+         XOb/TwLuzUf7TUwQjN/IgNZRGuMaCYKc88EN1X9eT+VIMO83souc9N8HRqUfJxSdYjRa
+         NGItdrCaJ3/zVBSWsMYULbxRHO26+k/v9KDIOeQaMifSqZJXnyWc9j+qym3QlCZZEq/K
+         Pv+0rWewURrricWWbeSAtrh5f61BWfE/dDJgrXYRb56siTzeg1a6oC9ys8ZgFjJNgnzQ
+         sNJThgbumdpKrjsYr/U8taerhh4PSH6LcX3HXgnPAjnfPm4IhGscYsyyw4C80DobprqI
+         poag==
+X-Gm-Message-State: ANhLgQ2bvpvlEkXPsPZAY+ONPRlh6XIDof+GRoQsH9KZN3LwgTaTN5Mf
+        W9BrU/yHLMNhnkSZeeaz4Zk=
+X-Google-Smtp-Source: ADFU+vvAbOxqcKt5RF7xOVnMxNSR4YmyrH64+IGiP1Bw17oAl7edlNDS7MO9MmbmG8Iwy66ff8TsXg==
+X-Received: by 2002:a17:90a:14f:: with SMTP id z15mr4888654pje.137.1585159019204;
+        Wed, 25 Mar 2020 10:56:59 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:b339])
+        by smtp.gmail.com with ESMTPSA id g30sm630952pgn.40.2020.03.25.10.56.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Mar 2020 10:56:57 -0700 (PDT)
+Date:   Wed, 25 Mar 2020 10:56:54 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Andrey Ignatov <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
+ program when attaching XDP
+Message-ID: <20200325175654.i4cyhtauyogvzvgf@ast-mbp>
+References: <20200320103530.2853c573@kicinski-fedora-PC1C0HJN>
+ <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
+ <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
+ <87tv2f48lp.fsf@toke.dk>
+ <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com>
+ <87h7ye3mf3.fsf@toke.dk>
+ <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
+ <87tv2e10ly.fsf@toke.dk>
+ <5e7a5e07d85e8_74a82ad21f7a65b88d@john-XPS-13-9370.notmuch>
+ <87zhc4pw08.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87zhc4pw08.fsf@toke.dk>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 24 Mar 2020 15:34:39 -0700 Jacob Keller wrote:
-> A future change is going to add a new devlink command to request
-> a snapshot on demand. This function will want to call the
-> devlink_region_snapshot_create function while already holding the
-> devlink instance lock.
+On Wed, Mar 25, 2020 at 11:30:15AM +0100, Toke Høiland-Jørgensen wrote:
 > 
-> Extract the logic of this function into a static function prefixed by
-> `__` to indicate that it is an internal helper function. Modify the
-> original function to be implemented in terms of the new locked
-> function.
-> 
-> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+> From a BPF application developer PoV I can totally understand the desire
+> for unified APIs. But that unification can still be achieved at the
+> libbpf level, while keeping network interface configuration done through
+> netlink.
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+it cannot be done at libbpf level. The kernel is missing the ownership concept.
+netlink vs other is irrelevant.
