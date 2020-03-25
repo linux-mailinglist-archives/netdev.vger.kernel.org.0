@@ -2,112 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65920191EB2
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 02:46:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 42590191EE3
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 03:15:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727281AbgCYBq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 Mar 2020 21:46:28 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:44924 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727189AbgCYBq1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 Mar 2020 21:46:27 -0400
-Received: by mail-pg1-f196.google.com with SMTP id 142so353133pgf.11;
-        Tue, 24 Mar 2020 18:46:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=Q00wK/evMOzaEHdxPK0u8vlS+HxhMRr0kSu9Z/o6YUc=;
-        b=vhG+CoeUTYNSI9zAjK+hhpX2BkhFSndC1pkQ9PjsBkFNi+BsjRsBuLyDw9Og46PTCy
-         seQPlbUcIB356def41k7JHVz8Xc5993l0jLq67uBow5ppNw0136vWeJzETOi+M3OQt2J
-         vwv+tJL7KclSTiYetHR7YyU5QHkrHCvdrFWBBVofknW0dGNUfC0oETO6Xo5kQjE4Wlti
-         WZytY1UDqPJnFru4UieG5Qd/wXr8NoyN/0pi4B5/UD+LG+Rci40OWkL0zZEhMvI4GJ6T
-         Zq67xosgGPHdp4uCtmgNbptOqPP5aXvLxPr72ohirgQG2bfHUiXq3T5sDDzWxg5pLBb9
-         E40w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=Q00wK/evMOzaEHdxPK0u8vlS+HxhMRr0kSu9Z/o6YUc=;
-        b=FdDfqSG+9F6Q8viUz8f8PXH3PjDu3mKdAF+ZlevP4b3RrBtVFNDK8PEP27gQ43jUxA
-         sI0w0xxOWu832/VBaNqD3qXxa14MLxwBOJFTfK055E+ThsGJVjDHwf61eSvyuCkovGab
-         bTPDr3NnazdU1lMccFjjkcRmzwMWdAimMQ2ra7eZPabAuArcxbDJTTkkAplVDXHuT6BY
-         hY8qoCpY/KBMuqvvwJPZXxtnaizO5mqTI7+kjQZlXhuz0Gpf1ZHbMxZoSx4/r65UbelR
-         RlFaEgLVW9zD/ASJtW3LrHuFwM1v/YCw0260vs98WNS9oZ74v388s/zbCHgNH4ae8QEz
-         lwaA==
-X-Gm-Message-State: ANhLgQ36QfZwjEopjB+jVhDF1FSk0bvxCMo4Ecig5DRCmuUtw7jzKQ9O
-        hobA9MX/oUDI4Df7XkjhAjI=
-X-Google-Smtp-Source: ADFU+vtVJtk+wfaEch5OWCOaEb7w6NqJBoPgRfTMeB3wMCNc0VQygxb89PqwVYaILQx5ATww0dOYmQ==
-X-Received: by 2002:a62:520a:: with SMTP id g10mr720673pfb.271.1585100786045;
-        Tue, 24 Mar 2020 18:46:26 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:8308])
-        by smtp.gmail.com with ESMTPSA id c190sm17014302pfa.66.2020.03.24.18.46.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Mar 2020 18:46:25 -0700 (PDT)
-Date:   Tue, 24 Mar 2020 18:46:22 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        id S1727320AbgCYCP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 Mar 2020 22:15:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33188 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727249AbgCYCP5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 24 Mar 2020 22:15:57 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8F43820722;
+        Wed, 25 Mar 2020 02:15:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585102556;
+        bh=54tljddbiTenKuvzACM/r2jigUZKNxNknkxOF7SY7wI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kL91OI67FQzAhwcCnz1cXPx14Fu8RBWLiNY4Bk6O1AGSL/yD++jdMtuiUeglKcN0+
+         Pk0f3uYeXRGfpN0Xwv1wIjWepdd5wsmbpZ1Mq9TyQrIIgimezW6gFbYKdadCFFhbHS
+         52+JHucebSUimCorJUnsow5aFEkeJuBtlh2LlLJE=
+Date:   Tue, 24 Mar 2020 19:15:54 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQt?= =?UTF-8?B?SsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>, Andrii Nakryiko <andrii.nakryiko@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andriin@fb.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>, Andrey Ignatov <rdna@fb.com>
-Subject: Re: [PATCH bpf-next v3 1/4] xdp: Support specifying expected
- existing program when attaching XDP
-Message-ID: <20200325014622.ilhqpfdwgb65jpnq@ast-mbp>
-References: <158507357205.6925.17804771242752938867.stgit@toke.dk>
- <158507357313.6925.9859587430926258691.stgit@toke.dk>
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Andrey Ignatov <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
+ program when attaching XDP
+Message-ID: <20200324191554.46a7e0c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200325013631.vuncsvkivexdb3fr@ast-mbp>
+References: <875zez76ph.fsf@toke.dk>
+        <20200320103530.2853c573@kicinski-fedora-PC1C0HJN>
+        <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
+        <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
+        <87tv2f48lp.fsf@toke.dk>
+        <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com>
+        <87h7ye3mf3.fsf@toke.dk>
+        <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
+        <87tv2e10ly.fsf@toke.dk>
+        <5e7a5e07d85e8_74a82ad21f7a65b88d@john-XPS-13-9370.notmuch>
+        <20200325013631.vuncsvkivexdb3fr@ast-mbp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <158507357313.6925.9859587430926258691.stgit@toke.dk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 07:12:53PM +0100, Toke Høiland-Jørgensen wrote:
-> From: Toke Høiland-Jørgensen <toke@redhat.com>
+On Tue, 24 Mar 2020 18:36:31 -0700 Alexei Starovoitov wrote:
+> On Tue, Mar 24, 2020 at 12:22:47PM -0700, John Fastabend wrote:
+> > > Well, I wasn't talking about any of those subsystems, I was talking
+> > > about networking :)  
+> > 
+> > My experience has been that networking in the strict sense of XDP no
+> > longer exists on its own without cgroups, flow dissector, sockops,
+> > sockmap, tracing, etc. All of these pieces are built, patched, loaded,
+> > pinned and otherwise managed and manipulated as BPF objects via libbpf.
+> > 
+> > Because I have all this infra in place for other items its a bit odd
+> > imo to drop out of BPF apis to then swap a program differently in the
+> > XDP case from how I would swap a program in any other place. I'm
+> > assuming ability to swap links will be enabled at some point.
+> > 
+> > Granted it just means I have some extra functions on the side to manage
+> > the swap similar to how 'qdisc' would be handled today but still not as
+> > nice an experience in my case as if it was handled natively.
+> > 
+> > Anyways the netlink API is going to have to call into the BPF infra
+> > on the kernel side for verification, etc so its already not pure
+> > networking.
+> >   
+> > > 
+> > > In particular, networking already has a consistent and fairly
+> > > well-designed configuration mechanism (i.e., netlink) that we are
+> > > generally trying to move more functionality *towards* not *away from*
+> > > (see, e.g., converting ethtool to use netlink).  
+> > 
+> > True. But BPF programs are going to exist and interop with other
+> > programs not exactly in the networking space. Actually library calls
+> > might be used in tracing, cgroups, and XDP side. It gets a bit more
+> > interesting if the "same" object file (with some patching) runs in both
+> > XDP and sockops land for example.  
 > 
-> While it is currently possible for userspace to specify that an existing
-> XDP program should not be replaced when attaching to an interface, there is
-> no mechanism to safely replace a specific XDP program with another.
-> 
-> This patch adds a new netlink attribute, IFLA_XDP_EXPECTED_ID, which can be
-> set along with IFLA_XDP_FD. If set, the kernel will check that the program
-> currently loaded on the interface matches the expected one, and fail the
-> operation if it does not. This corresponds to a 'cmpxchg' memory operation.
-> Setting the new attribute with a negative value means that no program is
-> expected to be attached, which corresponds to setting the UPDATE_IF_NOEXIST
-> flag.
-> 
-> A new companion flag, XDP_FLAGS_EXPECT_ID, is also added to explicitly
-> request checking of the EXPECTED_ID attribute. This is needed for userspace
-> to discover whether the kernel supports the new attribute.
-> 
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> Thanks John for summarizing it very well.
+> It looks to me that netlink proponents fail to realize that "bpf for
+> networking" goes way beyond what netlink is doing and capable of doing in the
+> future. BPF_*_INET_* progs do core networking without any smell of netlink
+> anywhere. "But, but, but, netlink is the way to configure networking"... is
+> simply not true. Even in years before BPF sockets and syscalls were the way to
+> do it. netlink has plenty of awesome properties, but arguing that it's the
+> only true way to do networking is not matching the reality.
 
-Over the years of defining apis to attach bpf progs to different kernel
-components the key mistake we made is that we tried to use corresponding
-subsystem way of doing thing and it failed every time. What made the problem
-worse that this failure we only learned after many years. Attaching xdp via
-netlink felt great back then. Attaching clsbpf via tc felt awesome too. Doing
-cgroup-bpf via bpf syscall with three different attaching ways also felt great.
-All of these attaching things turned out to be broken because all of them
-failed to provide the concept of ownership of the attachment. Which caused 10k
-clsbpf progs on one netdev, 64 cgroup-bpf progs in one cgroup, nuked xdp progs.
-Hence we have to add the ownership model first. Doing mini extensions to
-existing apis is not addressing the giant issue of existing apis.
+It is the way to configure XDP today, so it's only natural to
+scrutinize the attempts to replace it. 
 
-The idea of this patch is to do atomic replacement of xdp prog. It's a good
-idea and useful feature, but I don't want to extend existing broken apis to do
-add this feature. atomic replacement has to come with thought through owner
-model first.
+Also I personally don't think you'd see this much push back trying to
+add bpf_link-based stuff to cls_bpf, that's an add-on. XDP is
+integrated very fundamentally with the networking stack at this point.
+
+> Details are important and every case is different. So imo:
+> converting ethtool to netlink - great stuff.
+> converting netdev irq/queue management to netlink - great stuff too.
+> adding more netlink api for xdp - really bad idea.
+
+Why is it a bad idea?
+
+There are plenty things which will only be available over netlink.
+Configuring the interface so installing the XDP program is possible
+(disabling features, configuring queues etc.). Chances are user gets
+the ifindex of the interface to attach to over netlink in the first
+place. The queue configuration (which you agree belongs in netlink)
+will definitely get more complex to allow REDIRECTs to work more
+smoothly. AF_XDP needs all sort of netlink stuff.
+
+Netlink gives us the notification mechanism which is how we solve
+coordination across daemons (something that BPF subsystem is only 
+now trying to solve).
+
+BPF subsystem has a proven track record of reimplementing things devs
+don't like or haven't studied (bpftool net, netlink library). So it is
+a real concern to allow duplicating parts of the kernel netlink API.
