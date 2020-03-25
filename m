@@ -2,77 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70ED9192E92
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 17:46:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E161B192E95
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 17:46:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727792AbgCYQqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 12:46:10 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:34251 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725812AbgCYQqJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 12:46:09 -0400
-Received: by mail-qk1-f196.google.com with SMTP id i6so3292875qke.1
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 09:46:07 -0700 (PDT)
+        id S1727826AbgCYQq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 12:46:27 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:42366 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727794AbgCYQq1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 12:46:27 -0400
+Received: by mail-yb1-f195.google.com with SMTP id s17so1516364ybk.9
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 09:46:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=X06tsSI5Kzb28+BZI8/YNITti/1/GemGG9r5AbFCAvs=;
-        b=KLqC3J57uyf7O5+qg3EtMMgsxkrBkwjfNWaJBY2EiMTF562ageWgm3yqHqEXCrkD7y
-         G86WjJWE8Bf6BMNfHKbb3MR2m/AqZnz98GweM8V+sXHZp2ylG8EVZRhz43OcDfayY0kS
-         WXYu7Ux88DsS6NxrhAxp6Tp3TpiERE9TjISSWoQsrjb4314qu6olWn2DHSl1YkxTUMHN
-         R1bcFw4KVTf0fjIMosJlDRvc4m+4qNRgEB+7yd8P8CZlyEYcNwpG1sgyFfuNC9Y5xE9M
-         8qjzE/rCB5lQSX4n+jY0VtbBltf+JZ2J5ydK1k8dyAwjhgZ5CI/CAlWGgUzHH6bg3PfR
-         i77w==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=I+akRU2VhueJNYQXNmWSll18d9xFQZl/cvCmxHcTQ5I=;
+        b=OSXwpd7SUNBnIvikawwt5vl4J3TeBpg39716tTK39tz7EAjA1IXzJJt2Bq0zAXQr7n
+         Iz834FKEuD1HRfJ8EJXTETG3QLwP5Qe+w+neVdMFFCaCk4Hyw/AERyzvLVtgX0YQWUou
+         uZ1dJ9Lsm3Y+fxyvMbMCw4K30DMH0QsOXFtGGq6cGDtwSOUACz4q0YZtMQdwSScV3p1K
+         /w8hH8uAIaZyU1rXR5FpLDJdowNZDDbvOl3kKFerwM0clzr/4H9wsxMcOvy7D7ftnEOs
+         6szDKRZYS0sTERYF7VNh+KLukMBUkYBTCof1iLzxC4tsmeozRqioTTulEmGAyG6dFns9
+         GFAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=X06tsSI5Kzb28+BZI8/YNITti/1/GemGG9r5AbFCAvs=;
-        b=uXWzVug71ySK+mU34olyXQm9PvqpOjQHi9VVokFVbKFBhQEqr4JjGe0AO96swd5f2r
-         UydelfLfuL8MwWlEdI6O3ti8Z02QEBWbUW5q5Vm/W8KMsaFhF8nAM9NZ+F0TcLIowWut
-         thRy5dGQhlpnhH4lp9Ayv7R9wCxAYrudUOtmL5oh+lRyX3f8J1JQ34ozyalfmU06R041
-         EYVGX/+KTh0CNS8Ha/a2/LYU+ZkzdJ3VZPWZ8t+eCAU4s+Gsfj8RqUloVYDswlhRDkqC
-         n52l8x4LG/gFDEOe7jYMrrDJQdobLKMtfGEdFvnSUgrxhYRH2hUsfvZSNTjDVTyxZuEh
-         4WgA==
-X-Gm-Message-State: ANhLgQ2jtE6cdm6Wuzw0JrAxHFb+SzIvW3r+NiboMq5/dEwyB2My4Tja
-        Ushm7Zsqi0AjANmtXCnw3iYAaAs2
-X-Google-Smtp-Source: ADFU+vviuv+ULuHzjP0k/tMKs+7ivaT3N4vc3ZYYWdffKVpWNGBugVgEmA6LVnh83lWmMkAfbeGSlg==
-X-Received: by 2002:a05:620a:14d:: with SMTP id e13mr3930931qkn.470.1585154766410;
-        Wed, 25 Mar 2020 09:46:06 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:5593:7720:faa1:dac9? ([2601:282:803:7700:5593:7720:faa1:dac9])
-        by smtp.googlemail.com with ESMTPSA id r46sm17580563qtb.87.2020.03.25.09.46.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Mar 2020 09:46:05 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v2 2/2] tc: q_red: Support 'nodrop' flag
-To:     Petr Machata <petrm@mellanox.com>, netdev@vger.kernel.org
-References: <cover.1584979543.git.petrm@mellanox.com>
- <00c7299b47f6b089e79245040484de106254016e.1584979543.git.petrm@mellanox.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <ba43843c-5528-9807-c225-b67dfe2a4788@gmail.com>
-Date:   Wed, 25 Mar 2020 10:46:04 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=I+akRU2VhueJNYQXNmWSll18d9xFQZl/cvCmxHcTQ5I=;
+        b=pJh/gCJFPl9z2aXqnc4tNnGYtcxaIfzZ9sU1zW6GxBHQZ21hsLUW8cCMzCGVyfXA6C
+         Dwe+IzWyLhy/+Z/gUnZKTJ4P2mt+JQlBevBtDI2gPkZ9uRQUopBUc/qqg3T4dY68Ps78
+         7WWysDXEfxuAQ87ATKiQ5e5kp6gUMHdxtmkjmX8c588/Nvsp5zCttrV6R0aZcXmcYy51
+         4LqPikOjXrvfFS3cFqS88OGTEO/hlMKgBRJy/VKiOtAhHbVH/7XzXhUohtQHFCC5Kt4Z
+         QE7yf1WYQAA1Kv/rwvccpokhSQKkfFvmsKOOAkuu99h4XGDbh8S+19sOGztEE7CAW77C
+         9BjA==
+X-Gm-Message-State: ANhLgQ3CFLJBUGNb01FgNrv24acE4GlcaZYkEFpwTsVPfJZo5i7j3Y4V
+        SnpENytk0r1fpZ6lZ2Zi4sgRxaUK+neln7LcmWzLUA==
+X-Google-Smtp-Source: ADFU+vt9Hn21TGPD2XPBw+Pj1xuDjDNq1RwSnwwuxMx+B5jh6oBtwG+IXAWKltmFtjW8Foo8fiZI1cTE+KI3nunZqB8=
+X-Received: by 2002:a25:b7c7:: with SMTP id u7mr7159189ybj.173.1585154784685;
+ Wed, 25 Mar 2020 09:46:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <00c7299b47f6b089e79245040484de106254016e.1584979543.git.petrm@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200325022321.21944-1-edumazet@google.com> <ace8e72488fbf2473efaed9fc0680886897939ab.camel@redhat.com>
+ <CA+FuTSdO_WBhrRj5PNdXppywDNkMKJ4hLry+3oSvy8mavnxw0g@mail.gmail.com>
+ <2b5f096a143f4dea9c9a2896913d8ca79688b00f.camel@redhat.com>
+ <0f5c5e35-fc51-19c3-2ce3-c8ac17887c6c@gmail.com> <7e385f0c1edca94a882bdadf46f4ddb97d59a64a.camel@redhat.com>
+ <CANn89iKotU9Tkd6KBgyicHFV72K9gZ+eeKwkPU097=gZZYCjrA@mail.gmail.com>
+In-Reply-To: <CANn89iKotU9Tkd6KBgyicHFV72K9gZ+eeKwkPU097=gZZYCjrA@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 25 Mar 2020 09:46:13 -0700
+Message-ID: <CANn89i+pQQe1tvZ70jyzi-6+FFDuhBpGx_D0Ni89LhbyjH+4Vg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: use indirect call wrappers for skb_copy_datagram_iter()
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/23/20 10:12 AM, Petr Machata wrote:
-> Recognize the new configuration option of the RED Qdisc, "nodrop". Add
-> support for passing flags through TCA_RED_FLAGS, and use it when passing
-> TC_RED_NODROP flag.
-> 
-> Signed-off-by: Petr Machata <petrm@mellanox.com>
-> ---
-> 
-
-applied to iproute2-next. Thanks
+Resend without HTML encoding
 
 
+On Wed, Mar 25, 2020 at 9:41 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+>
+>
+> On Wed, Mar 25, 2020 at 9:24 AM Paolo Abeni <pabeni@redhat.com> wrote:
+>>
+>>
+>> Just out of sheer curiosity, why don't you set NET_SCH_DEFAULT?
+>>
+>
+> Because we have boot-time scripts setting optimal configs, and since we need
+> to set XPS properly to get correct NUMA allocations, we have to perform the qdisc
+> allocations after some other stuff.
+>
+> (Look for netdev_queue_numa_node_read() calls)
+>
+> Also, some users still expect pfifo_fast to be used when a tun device is created :)
+>
+>
