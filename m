@@ -2,120 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29FC71923CA
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 10:13:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4852E1923EB
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 10:21:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726225AbgCYJM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 05:12:57 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:36149 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725873AbgCYJM4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 05:12:56 -0400
-Received: by mail-ot1-f67.google.com with SMTP id l23so1264498otf.3;
-        Wed, 25 Mar 2020 02:12:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gz93DcG7Dz2tFD+p9ycJ3JCHnMtIcY7SzR3oKARZebY=;
-        b=W8eQ9jgYBxTqYOA99RvjSZSj8z7HIKo24AeBXrL0BmmL9ukEF23b+HOmBs/4miPf+V
-         qLR3Z1q0vjLv+pRo9rEvTPFi+z8h7uIOCWlZCZFmR8zbitECypBAR6EsCvI5fhRuchO1
-         9JYkmrSOXwHZSD7TCPNNvKJKBXCi29R6Bkagw+wLHnjQeDnYhdIZlnqTMib49G2+QVhY
-         VLPAxeT5we99FonE9zoN5qfeaSi3kRQ+jdwWC4qc7le6Aq0dbpC7ETvim7hH1yTizkUM
-         bg9QnSGRqV8WcQ3roj+nbigs9EpcagpxOkVeChqP+fPEl7cG3jmrXzbcVDEapVRkuIwV
-         dfkg==
-X-Gm-Message-State: ANhLgQ046ubfCWd7RbP39gICGgBDJQc2L1XOSGmFShcpMZieUBBg4zIE
-        8jqSK3uh9Ca+qkwlgOuzKZvpciIFUDlIfNEG61A=
-X-Google-Smtp-Source: ADFU+vvQhHUfMDl51KjMOop/re3P3z/uwXKVl6Pn2is5x/6Hk6ukY0mwXIYDd716VvToctFXK+bVAnjHkHoT8uUYi+M=
-X-Received: by 2002:a9d:5c0c:: with SMTP id o12mr1727378otk.145.1585127575893;
- Wed, 25 Mar 2020 02:12:55 -0700 (PDT)
+        id S1726264AbgCYJVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 05:21:02 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:3626 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726116AbgCYJVC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 05:21:02 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02P94Hje097770
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 05:21:01 -0400
+Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2ywf3g3t6u-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 05:21:00 -0400
+Received: from localhost
+        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Wed, 25 Mar 2020 09:20:55 -0000
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 25 Mar 2020 09:20:52 -0000
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 02P9Ks7M50987034
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 25 Mar 2020 09:20:54 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 946F14C04A;
+        Wed, 25 Mar 2020 09:20:54 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 56B9C4C044;
+        Wed, 25 Mar 2020 09:20:54 +0000 (GMT)
+Received: from [9.145.13.124] (unknown [9.145.13.124])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 25 Mar 2020 09:20:54 +0000 (GMT)
+Subject: Re: [PATCH net-next 01/11] s390/qeth: simplify RX buffer tracking
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, ubraun@linux.ibm.com
+References: <20200324182448.95362-1-jwi@linux.ibm.com>
+ <20200324182448.95362-2-jwi@linux.ibm.com>
+ <20200324.164326.639594724461733845.davem@davemloft.net>
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+Date:   Wed, 25 Mar 2020 10:20:54 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-References: <20200324161539.7538-1-masahiroy@kernel.org> <CAMuHMdWPNFRhUVGb0J27MZg2CrWWm06N9OQjQsGLMZkNXJktAg@mail.gmail.com>
- <CAK7LNAQFbcfK=q4eYW_dQUqe-sqbjpxSpQBeCkp0Vr4P3HJc7A@mail.gmail.com>
- <CAMuHMdXeOUu_zxKHXnNoLwyExy1GTp6N5UP2Neqyc8M3w2B8KQ@mail.gmail.com> <CAK7LNAST-ygeLAAneKRhr-uMdSW0V_V1s9AvN6VJSqfWfN4Otg@mail.gmail.com>
-In-Reply-To: <CAK7LNAST-ygeLAAneKRhr-uMdSW0V_V1s9AvN6VJSqfWfN4Otg@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 25 Mar 2020 10:12:45 +0100
-Message-ID: <CAMuHMdUMhPg2Du9_EowsKL9b8fpz8ymc_8E2VLybWs7mpN2DDg@mail.gmail.com>
-Subject: Re: [PATCH 1/3] net: wan: wanxl: use $(CC68K) instead of $(AS68K) for
- rebuilding firmware
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild <linux-kbuild@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200324.164326.639594724461733845.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+x-cbid: 20032509-4275-0000-0000-000003B2A562
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20032509-4276-0000-0000-000038C7E2D0
+Message-Id: <30d06ab8-ee58-0c58-aab2-f68254d9a232@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-25_01:2020-03-23,2020-03-25 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 phishscore=0
+ priorityscore=1501 adultscore=0 mlxscore=0 mlxlogscore=987 impostorscore=0
+ bulkscore=0 lowpriorityscore=0 malwarescore=0 spamscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
+ definitions=main-2003250072
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yamada-san,
+On 25.03.20 00:43, David Miller wrote:
+> From: Julian Wiedmann <jwi@linux.ibm.com>
+> Date: Tue, 24 Mar 2020 19:24:38 +0100
+> 
+>> +#define QDIO_ELEMENT_NO(buf, element)	(element - &buf->element[0])
+> 
+> Maybe this works, but I would strongly suggest against using a CPP
+> macro argument that is the same name for the singleton element on
+> the left branch of the expression as the struct member name on
+> the right side of the element.
 
-On Wed, Mar 25, 2020 at 10:06 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> On Wed, Mar 25, 2020 at 4:53 PM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Wed, Mar 25, 2020 at 4:50 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> > > On Wed, Mar 25, 2020 at 2:47 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > > > On Tue, Mar 24, 2020 at 5:17 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> > > > > As far as I understood from the Kconfig help text, this build rule is
-> > > > > used to rebuild the driver firmware, which runs on the QUICC, m68k-based
-> > > > > Motorola 68360.
-> > > > >
-> > > > > The firmware source, wanxlfw.S, is currently compiled by the combo of
-> > > > > $(CPP) and $(AS68K). This is not what we usually do for compiling *.S
-> > > > > files. In fact, this is the only user of $(AS) in the kernel build.
-> > > > >
-> > > > > Moreover, $(CPP) is not likely to be a m68k tool because wanxl.c is a
-> > > > > PCI driver, but CONFIG_M68K does not select CONFIG_HAVE_PCI.
-> > > > > Instead of combining $(CPP) and (AS) from different tool sets, using
-> > > > > single $(CC68K) seems simpler, and saner.
-> > > > >
-> > > > > After this commit, the firmware rebuild will require cc68k instead of
-> > > > > as68k. I do not know how many people care about this, though.
-> > > > >
-> > > > > I do not have cc68k/ld68k in hand, but I was able to build it by using
-> > > > > the kernel.org m68k toolchain. [1]
-> > > >
-> > > > Would this work with a "standard" m68k-linux-gnu-gcc toolchain, like
-> > > > provided by Debian/Ubuntu, too?
-> > > >
-> > >
-> > > Yes, I did 'sudo apt install gcc-8-m68k-linux-gnu'
-> > > It successfully compiled this firmware.
-> >
-> > Thanks for checking!
-> >
-> > > In my understanding, the difference is that
-> > > the kernel.org ones lack libc,
-> > > so cannot link userspace programs.
-> > >
-> > > They do not make much difference for this case.
-> >
-> > Indeed.
-> >
-> > So perhaps it makes sense to replace cc68k and ld68k in the Makefile by
-> > m68k-linux-gnu-gcc and m68k-linux-gnu-ld, as these are easier to get hold
-> > of on a modern system?
->
-> If desired, I can do like this:
->
-> ifeq ($(ARCH),m68k)
->   CC_M68K = $(CC)
->   LD_M68K = $(LD)
-> else
->   CC_M68K = $(CROSS_COMPILE_M68K)gcc
->   LD_M68K = $(CROSS_COMPILE_M68K)ld
-> endif
+Right you are, this would look a lot less fragile with some underscores.
 
-Thanks, that looks good to me.
+> 
+> Furthermore, as far as I can tell this is only used in one location
+> in the code, and for such a simple expression that is excessive.
+> 
 
-Gr{oetje,eeting}s,
+This I flat out disagree with, but it's hardly worth arguing about.
+So let me fold that macro back in, and send you a v2.
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
