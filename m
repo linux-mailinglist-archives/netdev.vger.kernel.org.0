@@ -2,109 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9108B192EB5
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 17:54:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0FD2192EC3
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 17:56:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727751AbgCYQys convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 25 Mar 2020 12:54:48 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:48640 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727539AbgCYQyr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 12:54:47 -0400
-Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
-        (envelope-from <bigeasy@linutronix.de>)
-        id 1jH9IM-00061w-Lf; Wed, 25 Mar 2020 17:54:22 +0100
-Date:   Wed, 25 Mar 2020 17:54:22 +0100
-From:   Sebastian Siewior <bigeasy@linutronix.de>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        linux-pci@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        platform-driver-x86@vger.kernel.org,
-        Zhang Rui <rui.zhang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, kbuild test robot <lkp@intel.com>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
-        Brian Cain <bcain@codeaurora.org>,
-        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
-        Michal Simek <monstr@monstr.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Geoff Levand <geoff@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org, Davidlohr Bueso <dbueso@suse.de>
-Subject: Re: Documentation/locking/locktypes: Further clarifications and
- wordsmithing
-Message-ID: <20200325165422.hfxzkxcj3jhqcstr@linutronix.de>
-References: <20200323025501.GE3199@paulmck-ThinkPad-P72>
- <87r1xhz6qp.fsf@nanos.tec.linutronix.de>
- <20200325002811.GO19865@paulmck-ThinkPad-P72>
- <87wo78y5yy.fsf@nanos.tec.linutronix.de>
- <20200325160212.oavrni7gmzudnczv@linutronix.de>
- <20200325163919.GU19865@paulmck-ThinkPad-P72>
+        id S1727530AbgCYQ4p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 12:56:45 -0400
+Received: from mx2.suse.de ([195.135.220.15]:47590 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726102AbgCYQ4p (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Mar 2020 12:56:45 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 4CA98AB76;
+        Wed, 25 Mar 2020 16:56:43 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 04E12E0FD3; Wed, 25 Mar 2020 17:56:41 +0100 (CET)
+Date:   Wed, 25 Mar 2020 17:56:41 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: Re: [PATCH V2 08/14] net: ks8851: Use 16-bit writes to program MAC
+ address
+Message-ID: <20200325165640.GA31519@unicorn.suse.cz>
+References: <20200325150543.78569-1-marex@denx.de>
+ <20200325150543.78569-9-marex@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20200325163919.GU19865@paulmck-ThinkPad-P72>
+In-Reply-To: <20200325150543.78569-9-marex@denx.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-03-25 09:39:19 [-0700], Paul E. McKenney wrote:
-> > > --- a/Documentation/locking/locktypes.rst
-> > > +++ b/Documentation/locking/locktypes.rst
-> > …
-> > > +rw_semaphore
-> > > +============
-> > > +
-> > > +rw_semaphore is a multiple readers and single writer lock mechanism.
-> > > +
-> > > +On non-PREEMPT_RT kernels the implementation is fair, thus preventing
-> > > +writer starvation.
-> > > +
-> > > +rw_semaphore complies by default with the strict owner semantics, but there
-> > > +exist special-purpose interfaces that allow non-owner release for readers.
-> > > +These work independent of the kernel configuration.
-> > 
-> > This reads funny, could be my English. "This works independent …" maybe?
+On Wed, Mar 25, 2020 at 04:05:37PM +0100, Marek Vasut wrote:
+> On the SPI variant of KS8851, the MAC address can be programmed with
+> either 8/16/32-bit writes. To make it easier to support the 16-bit
+> parallel option of KS8851 too, switch both the MAC address programming
+> and readout to 16-bit operations.
 > 
-> The "These" refers to "interfaces", which is plural, so "These" rather
-> than "This".  But yes, it is a bit awkward, because you have to skip
-> back past "readers", "release", and "non-owner" to find the implied
-> subject of that last sentence.
+> Remove ks8851_wrreg8() as it is not used anywhere anymore.
 > 
-> So how about this instead, making the implied subject explicit?
+> There should be no functional change.
 > 
-> rw_semaphore complies by default with the strict owner semantics, but there
-> exist special-purpose interfaces that allow non-owner release for readers.
-> These interfaces work independent of the kernel configuration.
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: Lukas Wunner <lukas@wunner.de>
+> Cc: Petr Stetiar <ynezz@true.cz>
+> Cc: YueHaibing <yuehaibing@huawei.com>
+> ---
+> V2: Get rid of the KS_MAR(i + 1) by adjusting KS_MAR(x) macro
+> ---
+[...]
+> @@ -358,8 +329,12 @@ static int ks8851_write_mac_addr(struct net_device *dev)
+>  	 * the first write to the MAC address does not take effect.
+>  	 */
+>  	ks8851_set_powermode(ks, PMECR_PM_NORMAL);
+> -	for (i = 0; i < ETH_ALEN; i++)
+> -		ks8851_wrreg8(ks, KS_MAR(i), dev->dev_addr[i]);
+> +
+> +	for (i = 0; i < ETH_ALEN; i += 2) {
+> +		val = (dev->dev_addr[i] << 8) | dev->dev_addr[i + 1];
+> +		ks8851_wrreg16(ks, KS_MAR(i), val);
+> +	}
+> +
+>  	if (!netif_running(dev))
+>  		ks8851_set_powermode(ks, PMECR_PM_SOFTDOWN);
+>  
+> @@ -377,12 +352,16 @@ static int ks8851_write_mac_addr(struct net_device *dev)
+>  static void ks8851_read_mac_addr(struct net_device *dev)
+>  {
+>  	struct ks8851_net *ks = netdev_priv(dev);
+> +	u16 reg;
+>  	int i;
+>  
+>  	mutex_lock(&ks->lock);
+>  
+> -	for (i = 0; i < ETH_ALEN; i++)
+> -		dev->dev_addr[i] = ks8851_rdreg8(ks, KS_MAR(i));
+> +	for (i = 0; i < ETH_ALEN; i += 2) {
+> +		reg = ks8851_rdreg16(ks, KS_MAR(i));
+> +		dev->dev_addr[i] = reg & 0xff;
+> +		dev->dev_addr[i + 1] = reg >> 8;
+> +	}
+>  
+>  	mutex_unlock(&ks->lock);
+>  }
 
-Yes, perfect. Thank you.
+It seems my question from v1 went unnoticed and the inconsistency still
+seems to be there so let me ask again: when writing, you put addr[i]
+into upper part of the 16-bit value and addr[i+1] into lower but when 
+reading, you do the opposite. Is it correct?
 
-> 							Thanx, Paul
-
-Sebastian
+Michal Kubecek
