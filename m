@@ -2,439 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 482731925CE
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 11:38:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 967BA1925EC
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 11:40:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727604AbgCYKiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 06:38:08 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:37614 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727332AbgCYKiI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 06:38:08 -0400
-Received: by mail-pg1-f196.google.com with SMTP id a32so965859pga.4
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 03:38:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=GvPR5dtYN53423m8vLieKTgDKSgD+LkOgsBlNgdSxxU=;
-        b=yo8gmsGFFFMWbFZySl2oobWBrpOvInKMu/pJaHVYW+2E48DiI6zk4bVW4YkkKDVCKM
-         S8GqT8MFld4HhpVPTbkuXQq+VOXjTN/fU766YonO79Bhu0ogFyY3PQ0lAvegtVT83Vm8
-         UuQCoein0u0t+aaP6YkNsp0bcSCQnOKA4zrPiuSWCEHBDQJoXobmURJ4x9DFnh2vkTSs
-         nMk/IcGFj/Md6TBCWNrcTGY0q0UO+3WrAYNsBi6sQkQqEhOhXFtJ3DSWb5Ux8BqAPGuL
-         m5y5lOAV6zdXIcBhQUNnxgUxFnmgFPenypG9uRECJeQLt2KLFJ3jsE7vAC7kGwMCZvVE
-         dqqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=GvPR5dtYN53423m8vLieKTgDKSgD+LkOgsBlNgdSxxU=;
-        b=rgJz3jXLZZnRvjXbGJg006fCwRvKnsn9Iaxr0VJrpeoFfNIqTCex2V+n7iFAeNzKND
-         1/SjiVa4wpzMJ2YqzCbsZWOsxxeczj5hOZw0atD4LTn9GK+kO3t2k/3TyvLkqlPJa0GO
-         72ykj8ya2siH27SWrUfM1mkewE+bCNwCs02BvMLPuHpVBikEkLylphmPqOy72ySDHuNP
-         xYzBWjFVRd/rsKAiHq8+vc+v64RCyfaah7+xFGQ27Hx/Rm/kDnPrWP03TBjchNPD5Dwi
-         aWlZ/KRmEthoikZGvDJxiulbQ8CzPP8pJ1vJXAj2Innr0wXAhEEkxVNAZdxM0JWrH2Qc
-         ZcNQ==
-X-Gm-Message-State: ANhLgQ2yvYULmVdNyZBkhernyuneoqvXC4Fo0Pb3ykjQsn99ePX4g6Pu
-        nhi/OWZe+nnyhhSTJB8GL+wZ
-X-Google-Smtp-Source: ADFU+vvD9wFFBFlldRE0IEa3WNmA36ZmwXFW9rHCH800vQsTGan0Qhk1HRfuHZMid1Dy7QR48oeAkA==
-X-Received: by 2002:a62:e101:: with SMTP id q1mr2074266pfh.84.1585132685668;
-        Wed, 25 Mar 2020 03:38:05 -0700 (PDT)
-Received: from Mani-XPS-13-9360 ([2409:4072:6383:8a0b:590d:84c:5d74:d592])
-        by smtp.gmail.com with ESMTPSA id y142sm18865235pfc.53.2020.03.25.03.38.00
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 25 Mar 2020 03:38:04 -0700 (PDT)
-Date:   Wed, 25 Mar 2020 16:07:58 +0530
-From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>, clew@codeaurora.org
-Cc:     gregkh@linuxfoundation.org, davem@davemloft.net,
-        smohanad@codeaurora.org, jhugo@codeaurora.org,
-        kvalo@codeaurora.org, hemantk@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 6/7] net: qrtr: Add MHI transport layer
-Message-ID: <20200325103758.GA7216@Mani-XPS-13-9360>
-References: <20200324061050.14845-1-manivannan.sadhasivam@linaro.org>
- <20200324061050.14845-7-manivannan.sadhasivam@linaro.org>
- <20200324203952.GC119913@minitux>
+        id S1727421AbgCYKkI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 06:40:08 -0400
+Received: from correo.us.es ([193.147.175.20]:40248 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727372AbgCYKkH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Mar 2020 06:40:07 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 7D038E8B63
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 11:39:27 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 6619FFC5EF
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 11:39:27 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 63E5BFC5EE; Wed, 25 Mar 2020 11:39:27 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 307A1DA72F;
+        Wed, 25 Mar 2020 11:39:25 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 25 Mar 2020 11:39:25 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 0797E42EF42B;
+        Wed, 25 Mar 2020 11:39:24 +0100 (CET)
+Date:   Wed, 25 Mar 2020 11:40:01 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-next@vger.kernel.org
+Subject: Re: [PATCH] netfilter: nft_fwd_netdev: Fix CONFIG_NET_CLS_ACT=n build
+Message-ID: <20200325104001.yekvtbrw3lvkhvta@salvia>
+References: <20200325093300.5455-1-geert@linux-m68k.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/mixed; boundary="bbqnkrzhohussjgz"
 Content-Disposition: inline
-In-Reply-To: <20200324203952.GC119913@minitux>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200325093300.5455-1-geert@linux-m68k.org>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Bjorn,
 
-+ Chris Lew
+--bbqnkrzhohussjgz
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-On Tue, Mar 24, 2020 at 01:39:52PM -0700, Bjorn Andersson wrote:
-> On Mon 23 Mar 23:10 PDT 2020, Manivannan Sadhasivam wrote:
+On Wed, Mar 25, 2020 at 10:33:00AM +0100, Geert Uytterhoeven wrote:
+> If CONFIG_NET_CLS_ACT=n:
 > 
-> > MHI is the transport layer used for communicating to the external modems.
-> > Hence, this commit adds MHI transport layer support to QRTR for
-> > transferring the QMI messages over IPC Router.
-> > 
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: netdev@vger.kernel.org
-> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-> > ---
-> >  net/qrtr/Kconfig  |   7 ++
-> >  net/qrtr/Makefile |   2 +
-> >  net/qrtr/mhi.c    | 208 ++++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 217 insertions(+)
-> >  create mode 100644 net/qrtr/mhi.c
-> > 
-> > diff --git a/net/qrtr/Kconfig b/net/qrtr/Kconfig
-> > index 63f89cc6e82c..8eb876471564 100644
-> > --- a/net/qrtr/Kconfig
-> > +++ b/net/qrtr/Kconfig
-> > @@ -29,4 +29,11 @@ config QRTR_TUN
-> >  	  implement endpoints of QRTR, for purpose of tunneling data to other
-> >  	  hosts or testing purposes.
-> >  
-> > +config QRTR_MHI
-> > +	tristate "MHI IPC Router channels"
-> > +	depends on MHI_BUS
-> > +	help
-> > +	  Say Y here to support MHI based ipcrouter channels. MHI is the
-> > +	  transport used for communicating to external modems.
-> > +
-> >  endif # QRTR
-> > diff --git a/net/qrtr/Makefile b/net/qrtr/Makefile
-> > index 1c6d6c120fb7..3dc0a7c9d455 100644
-> > --- a/net/qrtr/Makefile
-> > +++ b/net/qrtr/Makefile
-> > @@ -5,3 +5,5 @@ obj-$(CONFIG_QRTR_SMD) += qrtr-smd.o
-> >  qrtr-smd-y	:= smd.o
-> >  obj-$(CONFIG_QRTR_TUN) += qrtr-tun.o
-> >  qrtr-tun-y	:= tun.o
-> > +obj-$(CONFIG_QRTR_MHI) += qrtr-mhi.o
-> > +qrtr-mhi-y	:= mhi.o
-> > diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
-> > new file mode 100644
-> > index 000000000000..90af208f34c1
-> > --- /dev/null
-> > +++ b/net/qrtr/mhi.c
-> > @@ -0,0 +1,208 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Copyright (c) 2018-2020, The Linux Foundation. All rights reserved.
-> > + */
-> > +
-> > +#include <linux/mhi.h>
-> > +#include <linux/mod_devicetable.h>
-> > +#include <linux/module.h>
-> > +#include <linux/skbuff.h>
-> > +#include <net/sock.h>
-> > +
-> > +#include "qrtr.h"
-> > +
-> > +struct qrtr_mhi_dev {
-> > +	struct qrtr_endpoint ep;
-> > +	struct mhi_device *mhi_dev;
-> > +	struct device *dev;
-> > +	spinlock_t ul_lock;		/* lock to protect ul_pkts */
-> > +	struct list_head ul_pkts;
-> > +	atomic_t in_reset;
-> > +};
-> > +
-> > +struct qrtr_mhi_pkt {
-> > +	struct list_head node;
-> > +	struct sk_buff *skb;
-> > +	struct kref refcount;
-> > +	struct completion done;
-> > +};
-> > +
-> > +static void qrtr_mhi_pkt_release(struct kref *ref)
-> > +{
-> > +	struct qrtr_mhi_pkt *pkt = container_of(ref, struct qrtr_mhi_pkt,
-> > +						refcount);
-> > +	struct sock *sk = pkt->skb->sk;
-> > +
-> > +	consume_skb(pkt->skb);
-> > +	if (sk)
-> > +		sock_put(sk);
-> > +
-> > +	kfree(pkt);
-> > +}
-> > +
-> > +/* From MHI to QRTR */
-> > +static void qcom_mhi_qrtr_dl_callback(struct mhi_device *mhi_dev,
-> > +				      struct mhi_result *mhi_res)
-> > +{
-> > +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
-> > +	int rc;
-> > +
-> > +	if (!qdev || mhi_res->transaction_status)
-> > +		return;
-> > +
-> > +	rc = qrtr_endpoint_post(&qdev->ep, mhi_res->buf_addr,
-> > +				mhi_res->bytes_xferd);
-> > +	if (rc == -EINVAL)
-> > +		dev_err(qdev->dev, "invalid ipcrouter packet\n");
+>     net/netfilter/nft_fwd_netdev.c: In function ‘nft_fwd_netdev_eval’:
+>     net/netfilter/nft_fwd_netdev.c:32:10: error: ‘struct sk_buff’ has no member named ‘tc_redirected’
+>       pkt->skb->tc_redirected = 1;
+> 	      ^~
+>     net/netfilter/nft_fwd_netdev.c:33:10: error: ‘struct sk_buff’ has no member named ‘tc_from_ingress’
+>       pkt->skb->tc_from_ingress = 1;
+> 	      ^~
 > 
-> Perhaps this should be a debug print, perhaps rate limited. But either
-> way it's relevant for any transport, so I think you should skip it here
-> - and potentially move it into qrtr_endpoint_post() in some form.
-> 
+> Fix this by protecting this code hunk with the appropriate #ifdef.
 
-I agree with moving this to qrtr_endpoint_post() but I don't think it is a
-good idea to make it as a debug print. It is an error log and should stay
-as it is. Only in this MHI transport driver, the return value is not getting
-used but in others it is.
+Sorry about this, and thank you for fixing up this so fast.
 
-> > +}
-> > +
-> > +/* From QRTR to MHI */
-> > +static void qcom_mhi_qrtr_ul_callback(struct mhi_device *mhi_dev,
-> > +				      struct mhi_result *mhi_res)
-> > +{
-> > +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
-> > +	struct qrtr_mhi_pkt *pkt;
-> > +	unsigned long flags;
-> > +
-> > +	spin_lock_irqsave(&qdev->ul_lock, flags);
-> > +	pkt = list_first_entry(&qdev->ul_pkts, struct qrtr_mhi_pkt, node);
-> > +	list_del(&pkt->node);
-> > +	complete_all(&pkt->done);
-> 
-> You should be able to release the lock after popping the item off the
-> list, then complete and refcount it.
-> 
+I'm attaching an alternative fix to avoid a dependency on tc from
+netfilter. Still testing, if fine and no objections I'll formally
+submit this.
 
-Okay.
+--bbqnkrzhohussjgz
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="x.patch"
 
-> > +
-> > +	kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
-> > +	spin_unlock_irqrestore(&qdev->ul_lock, flags);
-> > +}
-> > +
-> > +static void qcom_mhi_qrtr_status_callback(struct mhi_device *mhi_dev,
-> > +					  enum mhi_callback mhi_cb)
-> > +{
-> > +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
-> > +	struct qrtr_mhi_pkt *pkt;
-> > +	unsigned long flags;
-> > +
-> > +	if (mhi_cb != MHI_CB_FATAL_ERROR)
-> > +		return;
-> > +
-> > +	atomic_inc(&qdev->in_reset);
-> 
-> You have ul_lock close at hand in both places where you access in_reset,
-> so I think it would be better to just use that, instead of an atomic.
-> 
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index 25a8f9387d5a..db8884ad6d40 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -149,6 +149,7 @@ config NET_FC
+ config IFB
+ 	tristate "Intermediate Functional Block support"
+ 	depends on NET_CLS_ACT
++	select NET_REDIRECT
+ 	---help---
+ 	  This is an intermediate driver that allows sharing of
+ 	  resources.
+diff --git a/drivers/net/ifb.c b/drivers/net/ifb.c
+index 242b9b0943f8..7fe306e76281 100644
+--- a/drivers/net/ifb.c
++++ b/drivers/net/ifb.c
+@@ -75,7 +75,7 @@ static void ifb_ri_tasklet(unsigned long _txp)
+ 	}
+ 
+ 	while ((skb = __skb_dequeue(&txp->tq)) != NULL) {
+-		skb->tc_redirected = 0;
++		skb->redirected = 0;
+ 		skb->tc_skip_classify = 1;
+ 
+ 		u64_stats_update_begin(&txp->tsync);
+@@ -96,7 +96,7 @@ static void ifb_ri_tasklet(unsigned long _txp)
+ 		rcu_read_unlock();
+ 		skb->skb_iif = txp->dev->ifindex;
+ 
+-		if (!skb->tc_from_ingress) {
++		if (!skb->from_ingress) {
+ 			dev_queue_xmit(skb);
+ 		} else {
+ 			skb_pull_rcsum(skb, skb->mac_len);
+@@ -243,7 +243,7 @@ static netdev_tx_t ifb_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	txp->rx_bytes += skb->len;
+ 	u64_stats_update_end(&txp->rsync);
+ 
+-	if (!skb->tc_redirected || !skb->skb_iif) {
++	if (!skb->redirected || !skb->skb_iif) {
+ 		dev_kfree_skb(skb);
+ 		dev->stats.rx_dropped++;
+ 		return NETDEV_TX_OK;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 5b50278c4bc8..42e1ffc25d32 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -848,8 +848,10 @@ struct sk_buff {
+ #ifdef CONFIG_NET_CLS_ACT
+ 	__u8			tc_skip_classify:1;
+ 	__u8			tc_at_ingress:1;
+-	__u8			tc_redirected:1;
+-	__u8			tc_from_ingress:1;
++#endif
++#ifdef CONFIG_NET_REDIRECT
++	__u8			redirected:1;
++	__u8			from_ingress:1;
+ #endif
+ #ifdef CONFIG_TLS_DEVICE
+ 	__u8			decrypted:1;
+@@ -4579,5 +4581,31 @@ static inline __wsum lco_csum(struct sk_buff *skb)
+ 	return csum_partial(l4_hdr, csum_start - l4_hdr, partial);
+ }
+ 
++static inline bool skb_is_redirected(const struct sk_buff *skb)
++{
++#ifdef CONFIG_NET_REDIRECT
++	return skb->redirected;
++#else
++	return false;
++#endif
++}
++
++static inline void skb_set_redirected(struct sk_buff *skb, bool from_ingress)
++{
++#ifdef CONFIG_NET_REDIRECT
++	skb->redirected = 1;
++	skb->from_ingress = from_ingress;
++	if (skb->from_ingress)
++		skb->tstamp = 0;
++#endif
++}
++
++static inline void skb_reset_redirect(struct sk_buff *skb)
++{
++#ifdef CONFIG_NET_REDIRECT
++	skb->redirected = 0;
++#endif
++}
++
+ #endif	/* __KERNEL__ */
+ #endif	/* _LINUX_SKBUFF_H */
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 151208704ed2..c30f914867e6 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -675,22 +675,6 @@ void __qdisc_calculate_pkt_len(struct sk_buff *skb,
+ 			       const struct qdisc_size_table *stab);
+ int skb_do_redirect(struct sk_buff *);
+ 
+-static inline void skb_reset_tc(struct sk_buff *skb)
+-{
+-#ifdef CONFIG_NET_CLS_ACT
+-	skb->tc_redirected = 0;
+-#endif
+-}
+-
+-static inline bool skb_is_tc_redirected(const struct sk_buff *skb)
+-{
+-#ifdef CONFIG_NET_CLS_ACT
+-	return skb->tc_redirected;
+-#else
+-	return false;
+-#endif
+-}
+-
+ static inline bool skb_at_tc_ingress(const struct sk_buff *skb)
+ {
+ #ifdef CONFIG_NET_CLS_ACT
+diff --git a/net/Kconfig b/net/Kconfig
+index 2eeb0e55f7c9..df8d8c9bd021 100644
+--- a/net/Kconfig
++++ b/net/Kconfig
+@@ -52,6 +52,9 @@ config NET_INGRESS
+ config NET_EGRESS
+ 	bool
+ 
++config NET_REDIRECT
++	bool
++
+ config SKB_EXTENSIONS
+ 	bool
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 402a986659cf..500bba8874b0 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4516,7 +4516,7 @@ static u32 netif_receive_generic_xdp(struct sk_buff *skb,
+ 	/* Reinjected packets coming from act_mirred or similar should
+ 	 * not get XDP generic processing.
+ 	 */
+-	if (skb_is_tc_redirected(skb))
++	if (skb_is_redirected(skb))
+ 		return XDP_PASS;
+ 
+ 	/* XDP packets must be linear and must have sufficient headroom
+@@ -5063,7 +5063,7 @@ static int __netif_receive_skb_core(struct sk_buff *skb, bool pfmemalloc,
+ 			goto out;
+ 	}
+ #endif
+-	skb_reset_tc(skb);
++	skb_reset_redirect(skb);
+ skip_classify:
+ 	if (pfmemalloc && !skb_pfmemalloc_protocol(skb))
+ 		goto drop;
+diff --git a/net/netfilter/nft_fwd_netdev.c b/net/netfilter/nft_fwd_netdev.c
+index 74f050ba6bad..3087e23297db 100644
+--- a/net/netfilter/nft_fwd_netdev.c
++++ b/net/netfilter/nft_fwd_netdev.c
+@@ -28,9 +28,8 @@ static void nft_fwd_netdev_eval(const struct nft_expr *expr,
+ 	struct nft_fwd_netdev *priv = nft_expr_priv(expr);
+ 	int oif = regs->data[priv->sreg_dev];
+ 
+-	/* These are used by ifb only. */
+-	pkt->skb->tc_redirected = 1;
+-	pkt->skb->tc_from_ingress = 1;
++	/* This is used by ifb only. */
++	skb_set_redirected(pkt->skb, true);
+ 
+ 	nf_fwd_netdev_egress(pkt, oif);
+ 	regs->verdict.code = NF_STOLEN;
+diff --git a/net/sched/act_mirred.c b/net/sched/act_mirred.c
+index 1ad300e6dbc0..83dd82fc9f40 100644
+--- a/net/sched/act_mirred.c
++++ b/net/sched/act_mirred.c
+@@ -284,10 +284,8 @@ static int tcf_mirred_act(struct sk_buff *skb, const struct tc_action *a,
+ 
+ 	/* mirror is always swallowed */
+ 	if (is_redirect) {
+-		skb2->tc_redirected = 1;
+-		skb2->tc_from_ingress = skb2->tc_at_ingress;
+-		if (skb2->tc_from_ingress)
+-			skb2->tstamp = 0;
++		skb_set_redirected(skb2, skb2->tc_at_ingress);
++
+ 		/* let's the caller reinsert the packet, if possible */
+ 		if (use_reinsert) {
+ 			res->ingress = want_ingress;
 
-Okay.
-
-> > +	spin_lock_irqsave(&qdev->ul_lock, flags);
-> > +	list_for_each_entry(pkt, &qdev->ul_pkts, node)
-> > +		complete_all(&pkt->done);
-
-Chris, shouldn't we require list_del(&pkt->node) here?
-
-> > +	spin_unlock_irqrestore(&qdev->ul_lock, flags);
-> > +}
-> > +
-> > +/* Send data over MHI */
-> > +static int qcom_mhi_qrtr_send(struct qrtr_endpoint *ep, struct sk_buff *skb)
-> > +{
-> > +	struct qrtr_mhi_dev *qdev = container_of(ep, struct qrtr_mhi_dev, ep);
-> > +	struct qrtr_mhi_pkt *pkt;
-> > +	int rc;
-> > +
-> > +	rc = skb_linearize(skb);
-> > +	if (rc) {
-> > +		kfree_skb(skb);
-> > +		return rc;
-> > +	}
-> > +
-> > +	pkt = kzalloc(sizeof(*pkt), GFP_KERNEL);
-> > +	if (!pkt) {
-> > +		kfree_skb(skb);
-> > +		return -ENOMEM;
-> > +	}
-> > +
-> > +	init_completion(&pkt->done);
-> > +	kref_init(&pkt->refcount);
-> > +	kref_get(&pkt->refcount);
-> > +	pkt->skb = skb;
-> > +
-> > +	spin_lock_bh(&qdev->ul_lock);
-> > +	list_add_tail(&pkt->node, &qdev->ul_pkts);
-> > +	rc = mhi_queue_skb(qdev->mhi_dev, DMA_TO_DEVICE, skb, skb->len,
-> > +			   MHI_EOT);
-> 
-> Do you want to continue doing this when qdev->in_reset? Wouldn't it be
-> better to bail early if the remote end is dying?
-> 
-
-Now I'm thinking why we are not decrementing in_reset anywhere! Incase of
-SYS_ERR, the status_cb will get processed and in_reset will be set but
-it will stay so even when after MHI gets reset.
-
-Chris, can you please clarify?
-
-> > +	if (rc) {
-> > +		list_del(&pkt->node);
-> > +		/* Reference count needs to be dropped 2 times */
-> > +		kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
-> > +		kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
-> > +		kfree_skb(skb);
-> > +		spin_unlock_bh(&qdev->ul_lock);
-> > +		return rc;
-> > +	}
-> > +
-> > +	spin_unlock_bh(&qdev->ul_lock);
-> > +	if (skb->sk)
-> > +		sock_hold(skb->sk);
-> > +
-> > +	rc = wait_for_completion_interruptible_timeout(&pkt->done, HZ * 5);
-> > +	if (atomic_read(&qdev->in_reset))
-> > +		rc = -ECONNRESET;
-> > +	else if (rc == 0)
-> > +		rc = -ETIMEDOUT;
-> 
-> Is this recoverable? The message will remain on the list and may be
-> delivered at a later point(?), but qrtr and the app will learn that the
-> message was lost - which is presumably considered fatal.
-> 
-> Is it guaranteed that qcom_mhi_qrtr_ul_callback() will happen later and
-> find the head of the list?
-> 
-
-There are 2 scenarios:
-
-1. If the completion interrupt happens after timeout, ul_callback()
-will be called. But it will only try to fetch the current head of ul_pkts.
-In most cases, we can hope that the completion interrupt will happen before
-next queue_skb().
-
-2. If we don't get completion interrupt, timeout will happen and at the final
-stage (during mhi_driver_remove()), MHI stack will go over the pending TREs
-for all channels in queue and call ul_callback() with -ENOTCONN. But in the
-callback, we don't have any idea of the pkt which was not successfully
-transferred to the device and currently just fetching first entry.
-
-Now I'm seeing some issue here which I missed earlier. If the completion
-interrupt never happens then the corresponding pkt will never get freed and
-therefore we have a leak. Eventhough the ul_callback() will get called during
-mhi_driver_remove() for pending TREs, we don't exactly fetch the right pkt.
-
-Chris, our assumption of the ul_callback() gets called irrespective of
-transfer status is wrong. I think this code needs a bit of rework.
-
-> 
-> The reason for my question is that without this you have one of two
-> scenarios;
-> 1) the message is put on the list, decremented in
-> qcom_mhi_qrtr_ul_callback() then we get back here and decrement it
-> again.
-> 2) the message is put on the list, then qcom_mhi_qrtr_status_callback()
-> happens and all messages are released - presumably then
-> qcom_mhi_qrtr_ul_callback() won't happen.
-> 
-> 
-> So if the third case (where we return here and then later
-> qcom_mhi_qrtr_ul_callback() must find this particular packet at the
-> front of the queue) can't happen, then you can just skip the entire
-> refcounting.
-> 
-> Further more, you could carry qrtr_mhi_pkt on the stack.
-> 
-> 
-> ...or to flip this around, is there a reason to wait here at all? What
-> would happen if you just return immediately after calling
-> mhi_queue_skb()? Wouldn't that provide you better throughput?
-> 
-
-Chris would be best person to answer this question.
-
-> > +	else if (rc > 0)
-> > +		rc = 0;
-> > +
-> > +	kref_put(&pkt->refcount, qrtr_mhi_pkt_release);
-> > +
-> > +	return rc;
-> > +}
-> > +
-> > +static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
-> > +			       const struct mhi_device_id *id)
-> > +{
-> > +	struct qrtr_mhi_dev *qdev;
-> > +	u32 net_id;
-> > +	int rc;
-> > +
-> > +	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
-> > +	if (!qdev)
-> > +		return -ENOMEM;
-> > +
-> > +	qdev->mhi_dev = mhi_dev;
-> > +	qdev->dev = &mhi_dev->dev;
-> > +	qdev->ep.xmit = qcom_mhi_qrtr_send;
-> > +	atomic_set(&qdev->in_reset, 0);
-> > +
-> > +	net_id = QRTR_EP_NID_AUTO;
-> 
-> Just pass QRTR_EP_NID_AUTO directly in the function call below.
-> 
-
-Okay.
-
-Thanks,
-Mani
-
-> Regards,
-> Bjorn
-> 
-> > +
-> > +	INIT_LIST_HEAD(&qdev->ul_pkts);
-> > +	spin_lock_init(&qdev->ul_lock);
-> > +
-> > +	dev_set_drvdata(&mhi_dev->dev, qdev);
-> > +	rc = qrtr_endpoint_register(&qdev->ep, net_id);
-> > +	if (rc)
-> > +		return rc;
-> > +
-> > +	dev_dbg(qdev->dev, "Qualcomm MHI QRTR driver probed\n");
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static void qcom_mhi_qrtr_remove(struct mhi_device *mhi_dev)
-> > +{
-> > +	struct qrtr_mhi_dev *qdev = dev_get_drvdata(&mhi_dev->dev);
-> > +
-> > +	qrtr_endpoint_unregister(&qdev->ep);
-> > +	dev_set_drvdata(&mhi_dev->dev, NULL);
-> > +}
-> > +
-> > +static const struct mhi_device_id qcom_mhi_qrtr_id_table[] = {
-> > +	{ .chan = "IPCR" },
-> > +	{}
-> > +};
-> > +MODULE_DEVICE_TABLE(mhi, qcom_mhi_qrtr_id_table);
-> > +
-> > +static struct mhi_driver qcom_mhi_qrtr_driver = {
-> > +	.probe = qcom_mhi_qrtr_probe,
-> > +	.remove = qcom_mhi_qrtr_remove,
-> > +	.dl_xfer_cb = qcom_mhi_qrtr_dl_callback,
-> > +	.ul_xfer_cb = qcom_mhi_qrtr_ul_callback,
-> > +	.status_cb = qcom_mhi_qrtr_status_callback,
-> > +	.id_table = qcom_mhi_qrtr_id_table,
-> > +	.driver = {
-> > +		.name = "qcom_mhi_qrtr",
-> > +	},
-> > +};
-> > +
-> > +module_mhi_driver(qcom_mhi_qrtr_driver);
-> > +
-> > +MODULE_DESCRIPTION("Qualcomm IPC-Router MHI interface driver");
-> > +MODULE_LICENSE("GPL v2");
-> > -- 
-> > 2.17.1
-> > 
+--bbqnkrzhohussjgz--
