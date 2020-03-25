@@ -2,115 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32FBB192790
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 12:52:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3178192792
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 12:52:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727319AbgCYLwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 07:52:13 -0400
-Received: from mail-eopbgr130075.outbound.protection.outlook.com ([40.107.13.75]:34627
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726658AbgCYLwN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 07:52:13 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dlIB8VGfSZDFivPjQyJf8VvL4/y/uyDtZtPKYvFDoDaaOCiqpZ0BRtn1hxPNyAXwcEo4OI1e+cSDGmv4nwIcLiXrRm/nDN/EKuRxVJYb3YJeLWCuvJwn/znP3zsRZRVOB/jVsgFIIcwYWd0MCQ13WhWdg7d8MZ1VpXBARLKG436xX6bPCb0IMwSHX558G4ytJMTYzID+lzCj0f8K1s7pLhYeONsDSFrQvElxOliHgVy48UZq/5It2jNExQ/hPbNSrWmm2xvRTgqpPxx2BQcjtJ176yoFQX3hbkSjCJ3jQ9FG5Oo32i8MhObjB0tEnAnvMKQsOSypewkPJW23tMiNKg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qF6LgzV/S6iPBdHZlaO5uqB1rhJvasRXjIrr3iCMDZ8=;
- b=TcYwE+I0WjKnfD13avcPJLQ7mtsIf6KLHeybK4czT8y7f7E9jgMoN9ZYDaUXPp09EZj1SKPvlBQkGsQui0uF/UY9OY27MQUjt7FkRJTzsPb1UfRSjuoO8EOrp3dJ10sGvG5+VyIWS3jdo1YL4Ns1S77q4lVpVSWmgZpqwZYFOY5WRbf5MaCoLkWIT8sx+z94iPu+vTXnbgu6ZrIUtT+PkHMcqB2b9jPuxRjBWrhow0aFv0dn9KbOOl3vlrEcfvsVKvcGfGwO0z0oW/DNtIoQiRw5IfWp7PLkU+IDtOiUI5vyrT89rUrv+86xz1ZjXtqUVHp7Noq1o5RIASq83OHBWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qF6LgzV/S6iPBdHZlaO5uqB1rhJvasRXjIrr3iCMDZ8=;
- b=YIBQpfNW2h8SvFyc6KibyaMF41G29cefQf5yQgMW6ShQdRkqAop9BjFRMu4OPn+z/5UM1oOnbFXwPR4tbJVU6arpxCR8F4/zGm7Wr+X4xAmOh0tk4V9/jLvJ+jJ71fWyOprH/2ahNqedbL+vNIidP2RudVbcHIC4+JUtq1cdh04=
-Received: from AM6PR05MB5096.eurprd05.prod.outlook.com (20.177.36.78) by
- AM6PR05MB5813.eurprd05.prod.outlook.com (20.178.94.221) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.20; Wed, 25 Mar 2020 11:52:09 +0000
-Received: from AM6PR05MB5096.eurprd05.prod.outlook.com
- ([fe80::4d29:be06:e98f:c2b2]) by AM6PR05MB5096.eurprd05.prod.outlook.com
- ([fe80::4d29:be06:e98f:c2b2%7]) with mapi id 15.20.2835.023; Wed, 25 Mar 2020
- 11:52:09 +0000
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     Oz Shlomo <ozsh@mellanox.com>, Majd Dibbiny <majd@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>
-Subject: Re: [PATCH net-next] netfilter: flowtable: Fix accessing null dst
- entry
-Thread-Topic: [PATCH net-next] netfilter: flowtable: Fix accessing null dst
- entry
-Thread-Index: AQHWApOmQ6Cdxq/toEK6NfDhtcgdr6hZIpWAgAAP2iY=
-Date:   Wed, 25 Mar 2020 11:52:09 +0000
-Message-ID: <AM6PR05MB5096B0ACD2A2B4A7E1B75935CFCE0@AM6PR05MB5096.eurprd05.prod.outlook.com>
-References: <1585133608-25295-1-git-send-email-paulb@mellanox.com>,<20200325105517.exoasd3vbzx2r3qh@salvia>
-In-Reply-To: <20200325105517.exoasd3vbzx2r3qh@salvia>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=paulb@mellanox.com; 
-x-originating-ip: [5.29.240.93]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: b9462d7c-acaa-4869-5e50-08d7d0b2f324
-x-ms-traffictypediagnostic: AM6PR05MB5813:|AM6PR05MB5813:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR05MB5813D328E5C6305A711030F2CFCE0@AM6PR05MB5813.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:854;
-x-forefront-prvs: 0353563E2B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(39860400002)(136003)(376002)(366004)(346002)(55016002)(26005)(9686003)(4326008)(2906002)(6916009)(186003)(6506007)(33656002)(53546011)(86362001)(5660300002)(316002)(4744005)(7696005)(66946007)(478600001)(966005)(71200400001)(66446008)(64756008)(76116006)(66556008)(66476007)(8936002)(52536014)(54906003)(81166006)(81156014)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR05MB5813;H:AM6PR05MB5096.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +vlluEMjAV41SLOW5KmtK95YCBmerpbdWjN7O5ZQN4Q+iaQJoAVAHwXEbzJN7wfDrXMQTxUJ0kpz4DKz+qX9/6mJ3DUJ2/EdJyXbgDVuKRdmxN8DofLESg+pxPzKJq81xm9nE/x83qAABm/CCSMuaWO0BdcL2QqRke3rKN0UBahSKeWGbGAOdxGb8pujAbUs1EWNxNuHmZiO4fMSpvkESMxA+h3eMl5mhBTFUAOf+uN373OJfN3e2muKs51yQE7hQt9Ki32WJXQ7LcWZ99aXOZP32jjOGJUmv6g881Xf7RwdHgQDW2RSyANa9OkOb3OJviEt+/gaF01p7jiLNz3hUdRl9FvW4f9H6VMtWA7MQ9C1yWy+r5wEMhQoG17FuFhsNcoB54qwBAA6Kjui7wYRGHYMYmgKL0eTOf/Ybm0jlEBUUkGWhctZH+qQ7cfqPbG8uYqOOb73/+8xjWtacUJXHHaIBCQMqdFTBV/leajWuDyRYqdY7NPOVJEV9+O3XqfpJsjYVkQSTp8VwJl3/jm88A==
-x-ms-exchange-antispam-messagedata: ctmAFOFNPFzneKOkqHKLS2g818DPwImsZ9sEPCvnogIUm7JSjvLiDuyYgFY+f5c/7zl6/x1HJir8h/IWtqq6dVaQH57jcCXEuc9TNo+wymfatTi2swS2xIBtfyzYWzW5VneMDUtrINPGJmA1+OoTfg==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727339AbgCYLwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 07:52:19 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:57871 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726313AbgCYLwT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 07:52:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585137139;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PBZkzrTe8hsWABY61jl0I0I4VYbXO2XzznSQcF07yms=;
+        b=gwd7ijpmY4ZCPr7hD6hTqYVRh+k/HwfN6y94zV99Fcz3XlAdi0veUCF0zJoWh97Fq0O33t
+        q+l5akE6VqWWY4c7Hgtsn4h8BPgwY4GSFOhdjRkKHruiOPHeU5WkXFvesoqw2FLrbzvmfT
+        VhgqphauvbYjZXWYfv3apqIRArN2scM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-124-r-Wh4TwsP6CoCr9lTjP60g-1; Wed, 25 Mar 2020 07:52:15 -0400
+X-MC-Unique: r-Wh4TwsP6CoCr9lTjP60g-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 613978017CE;
+        Wed, 25 Mar 2020 11:52:14 +0000 (UTC)
+Received: from ovpn-114-87.ams2.redhat.com (ovpn-114-87.ams2.redhat.com [10.36.114.87])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E296C5DA7C;
+        Wed, 25 Mar 2020 11:52:12 +0000 (UTC)
+Message-ID: <ace8e72488fbf2473efaed9fc0680886897939ab.camel@redhat.com>
+Subject: Re: [PATCH net-next] net: use indirect call wrappers for
+ skb_copy_datagram_iter()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Date:   Wed, 25 Mar 2020 12:52:11 +0100
+In-Reply-To: <20200325022321.21944-1-edumazet@google.com>
+References: <20200325022321.21944-1-edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b9462d7c-acaa-4869-5e50-08d7d0b2f324
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Mar 2020 11:52:09.7398
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /DinIQ2eKpmkOUULWCTVBPq2oMdk6HwIoHVhpCcbvAa3dhyTGR8hTS72Nm/OvgJMVPX2Co8wfWYO8SvGIKr61A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR05MB5813
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pending patch seems fine.
+On Tue, 2020-03-24 at 19:23 -0700, Eric Dumazet wrote:
+> TCP recvmsg() calls skb_copy_datagram_iter(), which
+> calls an indirect function (cb pointing to simple_copy_to_iter())
+> for every MSS (fragment) present in the skb.
+> 
+> CONFIG_RETPOLINE=y forces a very expensive operation
+> that we can avoid thanks to indirect call wrappers.
+> 
+> This patch gives a 13% increase of performance on
+> a single flow, if the bottleneck is the thread reading
+> the TCP socket.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> ---
+>  net/core/datagram.c | 14 +++++++++++---
+>  1 file changed, 11 insertions(+), 3 deletions(-)
+> 
+> diff --git a/net/core/datagram.c b/net/core/datagram.c
+> index 4213081c6ed3d4fda69501641a8c76e041f26b42..639745d4f3b94a248da9a685f45158410a85bec7 100644
+> --- a/net/core/datagram.c
+> +++ b/net/core/datagram.c
+> @@ -51,6 +51,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/pagemap.h>
+>  #include <linux/uio.h>
+> +#include <linux/indirect_call_wrapper.h>
+>  
+>  #include <net/protocol.h>
+>  #include <linux/skbuff.h>
+> @@ -403,6 +404,11 @@ int skb_kill_datagram(struct sock *sk, struct sk_buff *skb, unsigned int flags)
+>  }
+>  EXPORT_SYMBOL(skb_kill_datagram);
+>  
+> +INDIRECT_CALLABLE_DECLARE(static size_t simple_copy_to_iter(const void *addr,
+> +						size_t bytes,
+> +						void *data __always_unused,
+> +						struct iov_iter *i));
+> +
+>  static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
+>  			       struct iov_iter *to, int len, bool fault_short,
+>  			       size_t (*cb)(const void *, size_t, void *,
+> @@ -416,7 +422,8 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
+>  	if (copy > 0) {
+>  		if (copy > len)
+>  			copy = len;
+> -		n = cb(skb->data + offset, copy, data, to);
+> +		n = INDIRECT_CALL_1(cb, simple_copy_to_iter,
+> +				    skb->data + offset, copy, data, to);
+>  		offset += n;
+>  		if (n != copy)
+>  			goto short_copy;
+> @@ -438,8 +445,9 @@ static int __skb_datagram_iter(const struct sk_buff *skb, int offset,
+>  
+>  			if (copy > len)
+>  				copy = len;
+> -			n = cb(vaddr + skb_frag_off(frag) + offset - start,
+> -			       copy, data, to);
+> +			n = INDIRECT_CALL_1(cb, simple_copy_to_iter,
+> +					vaddr + skb_frag_off(frag) + offset - start,
+> +					copy, data, to);
+>  			kunmap(page);
+>  			offset += n;
+>  			if (n != copy)
 
-________________________________________
-From: Pablo Neira Ayuso <pablo@netfilter.org>
-Sent: Wednesday, March 25, 2020 12:55 PM
-To: Paul Blakey
-Cc: Oz Shlomo; Majd Dibbiny; Roi Dayan; netdev@vger.kernel.org; Saeed Maham=
-eed; netfilter-devel@vger.kernel.org
-Subject: Re: [PATCH net-next] netfilter: flowtable: Fix accessing null dst =
-entry
+I wondered if we could add a second argument for
+'csum_and_copy_to_iter', but I guess that is a slower path anyway and
+more datapoint would be needed. The patch LGTM, thanks!
 
-On Wed, Mar 25, 2020 at 12:53:28PM +0200, Paul Blakey wrote:
-> Unlink nft flow table flows, flows from act_ct tables don't have route,
-> and so don't have a dst_entry. nf_flow_rule_match() tries to deref
-> this null dst_entry regardless.
->
-> Fix that by checking for dst entry exists, and if not, skip
-> tunnel match.
+Acked-by: Paolo Abeni <pabeni@redhat.com>
 
-This is fixed in nf-next:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git/commit/
-
-I'll get this merged into net-next asap.
