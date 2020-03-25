@@ -2,88 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F365192D9F
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 17:00:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 774BF192DAA
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 17:02:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727849AbgCYQAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 12:00:11 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:54450 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727538AbgCYQAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 12:00:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585152010;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=jx3fIM00QqkeK8qc5H/T95S4XN7fh+fI9pSZ3ndg7X0=;
-        b=B2/uL6C6xcFs9umLEIPc6gDTFKpN8FV4jeUy2YaVIJOnCxnAXEn//j430S+iGG44Fg3r31
-        2Nozte3RHx5md9xdzVVPOnFGardW5Gdb8cCV5JAECT3ymB9yHl+iFfiZOU3xKi1q4Bf7lT
-        IW76CtB4kVp/w6p5JezWgevNyl05XOo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-328-_DexzrpoNwewXgEa8Hgn2w-1; Wed, 25 Mar 2020 12:00:06 -0400
-X-MC-Unique: _DexzrpoNwewXgEa8Hgn2w-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 413AD800EBD;
-        Wed, 25 Mar 2020 16:00:05 +0000 (UTC)
-Received: from ovpn-114-87.ams2.redhat.com (ovpn-114-87.ams2.redhat.com [10.36.114.87])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7B080953AC;
-        Wed, 25 Mar 2020 16:00:03 +0000 (UTC)
-Message-ID: <2b5f096a143f4dea9c9a2896913d8ca79688b00f.camel@redhat.com>
-Subject: Re: [PATCH net-next] net: use indirect call wrappers for
- skb_copy_datagram_iter()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Date:   Wed, 25 Mar 2020 17:00:02 +0100
-In-Reply-To: <CA+FuTSdO_WBhrRj5PNdXppywDNkMKJ4hLry+3oSvy8mavnxw0g@mail.gmail.com>
-References: <20200325022321.21944-1-edumazet@google.com>
-         <ace8e72488fbf2473efaed9fc0680886897939ab.camel@redhat.com>
-         <CA+FuTSdO_WBhrRj5PNdXppywDNkMKJ4hLry+3oSvy8mavnxw0g@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1728002AbgCYQCt convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 25 Mar 2020 12:02:49 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:48461 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727768AbgCYQCs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 12:02:48 -0400
+Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
+        (envelope-from <bigeasy@linutronix.de>)
+        id 1jH8Ts-0005AG-4C; Wed, 25 Mar 2020 17:02:12 +0100
+Date:   Wed, 25 Mar 2020 17:02:12 +0100
+From:   Sebastian Siewior <bigeasy@linutronix.de>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     paulmck@kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Logan Gunthorpe <logang@deltatee.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
+        linux-pci@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        platform-driver-x86@vger.kernel.org,
+        Zhang Rui <rui.zhang@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
+        linux-acpi@vger.kernel.org, kbuild test robot <lkp@intel.com>,
+        Nick Hu <nickhu@andestech.com>,
+        Greentime Hu <green.hu@gmail.com>,
+        Vincent Chen <deanbo422@gmail.com>,
+        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
+        Brian Cain <bcain@codeaurora.org>,
+        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
+        Michal Simek <monstr@monstr.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Geoff Levand <geoff@infradead.org>,
+        linuxppc-dev@lists.ozlabs.org, Davidlohr Bueso <dbueso@suse.de>
+Subject: Re: Documentation/locking/locktypes: Further clarifications and
+ wordsmithing
+Message-ID: <20200325160212.oavrni7gmzudnczv@linutronix.de>
+References: <20200323025501.GE3199@paulmck-ThinkPad-P72>
+ <87r1xhz6qp.fsf@nanos.tec.linutronix.de>
+ <20200325002811.GO19865@paulmck-ThinkPad-P72>
+ <87wo78y5yy.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <87wo78y5yy.fsf@nanos.tec.linutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-03-25 at 10:55 -0400, Willem de Bruijn wrote:
-> On the UDP front this reminded me of another indirect function call
-> without indirect call wrapper: getfrag in __ip_append_data.
+On 2020-03-25 13:27:49 [+0100], Thomas Gleixner wrote:
+> The documentation of rw_semaphores is wrong as it claims that the non-owner
+> reader release is not supported by RT. That's just history biased memory
+> distortion.
 > 
-> That is called for each datagram once per linear + once per page. That
-> said, the noise in my quick RR test was too great to measure any
-> benefit from the following. 
+> Split the 'Owner semantics' section up and add separate sections for
+> semaphore and rw_semaphore to reflect reality.
+> 
+> Aside of that the following updates are done:
+> 
+>  - Add pseudo code to document the spinlock state preserving mechanism on
+>    PREEMPT_RT
+> 
+>  - Wordsmith the bitspinlock and lock nesting sections
+> 
+> Co-developed-by: Paul McKenney <paulmck@kernel.org>
+> Signed-off-by: Paul McKenney <paulmck@kernel.org>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Acked-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-Why an RR test ?
+> --- a/Documentation/locking/locktypes.rst
+> +++ b/Documentation/locking/locktypes.rst
+…
+> +rw_semaphore
+> +============
+> +
+> +rw_semaphore is a multiple readers and single writer lock mechanism.
+> +
+> +On non-PREEMPT_RT kernels the implementation is fair, thus preventing
+> +writer starvation.
+> +
+> +rw_semaphore complies by default with the strict owner semantics, but there
+> +exist special-purpose interfaces that allow non-owner release for readers.
+> +These work independent of the kernel configuration.
 
-I think you should be able to measure some raw tput improvement with
-large UDP GSO write towards a blackhole dst/or dropping ingress pkts
-with XDP (just to be sure the bottle-neck is on the sender side).
+This reads funny, could be my English. "This works independent …" maybe?
 
-> Paolo, did you happen to also look at that
-> when introducing the indirect callers? Seems like it won't hurt to
-> add.
-
-Nope, sorry I haven't experimented that.
-
-For the record, I have 2 others item on my list, I hope to have time to
-process some day: the ingress dst->input and the default ->enqueue  and
-->dequeue
-
-Cheers,
-
-Paolo
-
-p.s. feel free to move this on a different thread, as it fit you better
-
+Sebastian
