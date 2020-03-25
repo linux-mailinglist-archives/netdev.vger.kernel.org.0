@@ -2,100 +2,305 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC835192255
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 09:15:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F14C192294
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 09:25:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726239AbgCYIPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 04:15:41 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:54063 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725903AbgCYIPl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 04:15:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585124140;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hOKCgDt3MdkDi+eEQM/u9xHMiA/ynm2nLfPeOZVBaHM=;
-        b=ZLK1rRclR6XIIVfsjaLJzrCwQ2C+O1qiovpYWBrEOHmgDuJl9pRNtzgZZTLHuFcE+3E08w
-        VtDdn5dNc+5gSDfJEUH9OtKrxQPl5Z1o5OjvSchlJIIMX2m8dDZe1X4ty1wBvsxVw0cIF5
-        N78bar4vnVL4aPQDxAfzH91nm6Hgzzw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-468-dnKYzcUZNe-hkbmv6mqokg-1; Wed, 25 Mar 2020 04:15:35 -0400
-X-MC-Unique: dnKYzcUZNe-hkbmv6mqokg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BFAB418B5F6A;
-        Wed, 25 Mar 2020 08:15:33 +0000 (UTC)
-Received: from [10.72.14.13] (ovpn-14-13.pek2.redhat.com [10.72.14.13])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 41FE65DA7B;
-        Wed, 25 Mar 2020 08:15:21 +0000 (UTC)
-Subject: Re: [PATCH V7 7/8] vdpasim: vDPA device simulator
-To:     kbuild test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, mst@redhat.com,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <20200324041458.27384-8-jasowang@redhat.com>
- <202003251045.ncVINn70%lkp@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <26bc89b3-8e29-db25-18fc-64e309951a94@redhat.com>
-Date:   Wed, 25 Mar 2020 16:15:18 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <202003251045.ncVINn70%lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Content-Transfer-Encoding: quoted-printable
+        id S1726906AbgCYIZP convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 25 Mar 2020 04:25:15 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:50636 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726105AbgCYIZP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 04:25:15 -0400
+Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 7398FCECCA;
+        Wed, 25 Mar 2020 09:34:45 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.60.0.2.5\))
+Subject: Re: [PATCH v2 2/2] Bluetooth: btusb: Read the supported features of
+ Microsoft vendor extension
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20200325000332.v2.2.I4e01733fa5b818028dc9188ca91438fc54aa5028@changeid>
+Date:   Wed, 25 Mar 2020 09:25:13 +0100
+Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <32026740-96FE-4377-B5A1-2AEE324880D0@holtmann.org>
+References: <20200325070336.1097-1-mcchou@chromium.org>
+ <20200325000332.v2.2.I4e01733fa5b818028dc9188ca91438fc54aa5028@changeid>
+To:     Miao-chen Chou <mcchou@chromium.org>
+X-Mailer: Apple Mail (2.3608.60.0.2.5)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Miao-chen,
 
-On 2020/3/25 =E4=B8=8A=E5=8D=8810:25, kbuild test robot wrote:
-> I love your patch! Yet something to improve:
->
-> [auto build test ERROR on vhost/linux-next]
-> [also build test ERROR on linux/master linus/master v5.6-rc7 next-20200=
-324]
-> [if your patch is applied to the wrong git tree, please drop us a note =
-to help
-> improve the system. BTW, we also suggest to use '--base' option to spec=
-ify the
-> base tree in git format-patch, please seehttps://stackoverflow.com/a/37=
-406982]
->
-> url:https://github.com/0day-ci/linux/commits/Jason-Wang/vDPA-support/20=
-200324-142634
-> base:https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git  lin=
-ux-next
-> config: m68k-allyesconfig (attached as .config)
-> compiler: m68k-linux-gcc (GCC) 9.2.0
-> reproduce:
->          wgethttps://raw.githubusercontent.com/intel/lkp-tests/master/s=
-bin/make.cross  -O ~/bin/make.cross
->          chmod +x ~/bin/make.cross
->          # save the attached .config to linux build tree
->          GCC_VERSION=3D9.2.0 make.cross ARCH=3Dm68k
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kbuild test robot<lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
+> This adds a new header to facilitate the opcode and packet structures of
+> vendor extension(s). For now, we add only the
+> HCI_VS_MSFT_Read_Supported_Features command from Microsoft vendor
+> extension. See https://docs.microsoft.com/en-us/windows-hardware/drivers/
+> bluetooth/microsoft-defined-bluetooth-hci-commands-and-events#
+> microsoft-defined-bluetooth-hci-events for more details.
+> Upon initialization of a hci_dev, we issue a
+> HCI_VS_MSFT_Read_Supported_Features command to read the supported features
+> of Microsoft vendor extension if the opcode of Microsoft vendor extension
+> is valid. See https://docs.microsoft.com/en-us/windows-hardware/drivers/
+> bluetooth/microsoft-defined-bluetooth-hci-commands-and-events#
+> hci_vs_msft_read_supported_features for more details.
+> This was verified on a device with Intel ThhunderPeak BT controller where
+> the Microsoft vendor extension features are 0x000000000000003f.
+> 
+> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
+> ---
+> 
+> Changes in v2:
+> - Issue a HCI_VS_MSFT_Read_Supported_Features command with
+> __hci_cmd_sync() instead of constructing a request.
+> 
+> drivers/bluetooth/btusb.c          |  3 ++
+> include/net/bluetooth/hci_core.h   |  4 ++
+> include/net/bluetooth/vendor_hci.h | 51 +++++++++++++++++++
+> net/bluetooth/hci_core.c           | 78 ++++++++++++++++++++++++++++++
+> 4 files changed, 136 insertions(+)
+> create mode 100644 include/net/bluetooth/vendor_hci.h
+> 
+> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+> index 4c49f394f174..410d50dbd4e2 100644
+> --- a/drivers/bluetooth/btusb.c
+> +++ b/drivers/bluetooth/btusb.c
+> @@ -3738,6 +3738,9 @@ static int btusb_probe(struct usb_interface *intf,
+> 	hdev->notify = btusb_notify;
+> 
+> 	hdev->msft_ext.opcode = HCI_OP_NOP;
+> +	hdev->msft_ext.features = 0;
+> +	hdev->msft_ext.evt_prefix_len = 0;
+> +	hdev->msft_ext.evt_prefix = NULL;
+
+as noted in the other review, let hci_alloc_dev and hci_free_dev deal with this.
+
+> 
+> #ifdef CONFIG_PM
+> 	err = btusb_config_oob_wake(hdev);
+> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+> index 0ec3d9b41d81..f2876c5067a4 100644
+> --- a/include/net/bluetooth/hci_core.h
+> +++ b/include/net/bluetooth/hci_core.h
+> @@ -30,6 +30,7 @@
+> 
+> #include <net/bluetooth/hci.h>
+> #include <net/bluetooth/hci_sock.h>
+> +#include <net/bluetooth/vendor_hci.h>
+> 
+> /* HCI priority */
+> #define HCI_PRIO_MAX	7
+> @@ -246,6 +247,9 @@ struct amp_assoc {
+> 
+> struct msft_vnd_ext {
+> 	__u16	opcode;
+> +	__u64	features;
+> +	__u8	evt_prefix_len;
+> +	void	*evt_prefix;
+> };
+> 
+> struct hci_dev {
+> diff --git a/include/net/bluetooth/vendor_hci.h b/include/net/bluetooth/vendor_hci.h
+> new file mode 100644
+> index 000000000000..89a6795e672c
+> --- /dev/null
+> +++ b/include/net/bluetooth/vendor_hci.h
+> @@ -0,0 +1,51 @@
+> +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> +/*
+> + * BlueZ - Bluetooth protocol stack for Linux
+> + * Copyright (C) 2020 Google Corporation
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation;
+> + *
+> + * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+> + * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+> + * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY RIGHTS.
+> + * IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE FOR ANY
+> + * CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAMAGES
+> + * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+> + * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+> + * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+> + *
+> + * ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
+> + * COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
+> + * SOFTWARE IS DISCLAIMED.
+> + */
+> +
+> +#ifndef __VENDOR_HCI_H
+> +#define __VENDOR_HCI_H
+> +
+> +#define MSFT_EVT_PREFIX_MAX_LEN			255
+> +
+> +struct msft_cmd_cmp_info {
+> +	__u8 status;
+> +	__u8 sub_opcode;
+> +} __packed;
+> +
+> +/* Microsoft Vendor HCI subcommands */
+> +#define MSFT_OP_READ_SUPPORTED_FEATURES		0x00
+> +#define MSFT_FEATURE_MASK_RSSI_MONITOR_BREDR_CONN	0x0000000000000001
+> +#define MSFT_FEATURE_MASK_RSSI_MONITOR_LE_CONN		0x0000000000000002
+> +#define MSFT_FEATURE_MASK_RSSI_MONITOR_LE_ADV		0x0000000000000004
+> +#define MSFT_FEATURE_MASK_ADV_MONITOR_LE_ADV		0x0000000000000008
+> +#define MSFT_FEATURE_MASK_VERIFY_CURVE			0x0000000000000010
+> +#define MSFT_FEATURE_MASK_CONCURRENT_ADV_MONITOR	0x0000000000000020
+> +struct msft_cp_read_supported_features {
+> +	__u8 sub_opcode;
+> +} __packed;
+> +struct msft_rp_read_supported_features {
+> +	__u64 features;
+> +	__u8  evt_prefix_len;
+> +	__u8  evt_prefix[0];
+> +} __packed;
+> +
+> +#endif /* __VENDOR_HCI_H */
+
+Lets put this all in net/bluetooth/msft.c for now.
+
+> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> index dbd2ad3a26ed..1ea32d10ed08 100644
+> --- a/net/bluetooth/hci_core.c
+> +++ b/net/bluetooth/hci_core.c
+> @@ -1407,6 +1407,76 @@ static void hci_dev_get_bd_addr_from_property(struct hci_dev *hdev)
+> 	bacpy(&hdev->public_addr, &ba);
+> }
+> 
+> +static void process_msft_vnd_ext_cmd_complete(struct hci_dev *hdev,
+> +					      struct sk_buff *skb)
+> +{
+> +	struct msft_cmd_cmp_info *info = (void *)skb->data;
+> +	const u8 status = info->status;
+> +	const u16 sub_opcode = __le16_to_cpu(info->sub_opcode);
+> +
+> +	skb_pull(skb, sizeof(*info));
+> +
+> +	if (IS_ERR(skb)) {
+> +		BT_WARN("%s: Microsoft extension response packet invalid",
+> +			hdev->name);
+> +		return;
+> +	}
+> +
+> +	if (status) {
+> +		BT_WARN("%s: Microsoft extension sub command 0x%2.2x failed",
+> +			hdev->name, sub_opcode);
+> +		return;
+> +	}
+> +
+> +	BT_DBG("%s: status 0x%2.2x sub opcode 0x%2.2x", hdev->name, status,
+> +	       sub_opcode);
+> +
+> +	switch (sub_opcode) {
+> +	case MSFT_OP_READ_SUPPORTED_FEATURES: {
+> +		struct msft_rp_read_supported_features *rp = (void *)skb->data;
+> +		u8 prefix_len = rp->evt_prefix_len;
+> +
+> +		hdev->msft_ext.features = __le64_to_cpu(rp->features);
+> +		hdev->msft_ext.evt_prefix_len = prefix_len;
+> +		hdev->msft_ext.evt_prefix = kmalloc(prefix_len, GFP_ATOMIC);
+
+Are we really in interrupt context here? I don’t think there is a need for GFP_ATOMIC.
+
+> +		if (!hdev->msft_ext.evt_prefix) {
+> +			BT_WARN("%s: Microsoft extension invalid event prefix",
+> +				hdev->name);
+
+Please start using bt_dev_warn etc.
+
+> +			return;
+> +		}
+> +
+> +		memcpy(hdev->msft_ext.evt_prefix, rp->evt_prefix, prefix_len);
+> +		BT_INFO("%s: Microsoft extension features 0x%016llx",
+> +			hdev->name, hdev->msft_ext.features);
+> +		break;
+> +	}
+> +	default:
+> +		BT_WARN("%s: Microsoft extension unknown sub opcode 0x%2.2x",
+> +			hdev->name, sub_opcode);
+> +		break;
+> +	}
+> +}
+> +
+> +static void read_vendor_extension_features(struct hci_dev *hdev)
+> +{
+> +	struct sk_buff *skb;
+> +	const u16 msft_opcode = hdev->msft_ext.opcode;
+> +
+> +	if (msft_opcode !=  HCI_OP_NOP) {
+
+I really prefer it this way
+
+	if (!something_supported)
+		return;
+
+> +		struct msft_cp_read_supported_features cp;
+> +
+> +		cp.sub_opcode = MSFT_OP_READ_SUPPORTED_FEATURES;
+> +		skb = __hci_cmd_sync(hdev, msft_opcode, sizeof(cp), &cp,
+> +				     HCI_CMD_TIMEOUT);
+> +
+> +		process_msft_vnd_ext_cmd_complete(hdev, skb);
+> +		if (skb) {
+> +			kfree_skb(skb);
+> +			skb = NULL;
+> +		}
+> +	}
+> +}
+> +
+> static int hci_dev_do_open(struct hci_dev *hdev)
+> {
+> 	int ret = 0;
+> @@ -1554,6 +1624,11 @@ static int hci_dev_do_open(struct hci_dev *hdev)
+> 		}
+> 	}
+> 
+> +	/* Check features supported by HCI extensions after the init procedure
+> +	 * completed.
+> +	 */
+> +	read_vendor_extension_features(hdev);
+> +
+
+	msft_do_open(hdev);
 
 
-This is because VDPA_SIM selects VHOST_RING which selects VHOST_IOTLB=20
-which depends on VIRTULAIZATION but not defined in m68k.
+> 	/* If the HCI Reset command is clearing all diagnostic settings,
+> 	 * then they need to be reprogrammed after the init procedure
+> 	 * completed.
+> @@ -1733,6 +1808,9 @@ int hci_dev_do_close(struct hci_dev *hdev)
+> 			cancel_delayed_work_sync(&adv_instance->rpa_expired_cb);
+> 	}
+> 
+> +	kfree(hdev->msft_ext.evt_prefix);
+> +	hdev->msft_ext.evt_prefix = NULL;
+> +
 
-I think we should refine the vhost Kconfig and decouple it out of=20
-VIRTUALIZATION.
+	msft_do_close(hdev);
 
-Will send a new series with this shortly.
 
-Thanks
+And let these two function clear, init, free etc. everything except hdev->msft_ext.opcode
+
+That said, I would actually also introduce a wrapper msft_set_opcode(hdev, opcode); so that the driver doesn’t have to know the internal on how that opcode is stored.
+
+We can also keep the struct msft_ext internal to msft.c and don’t have to expose the internal details. So all stay confined in net/bluetooth/msft.c.
+
+> 	/* Avoid potential lockdep warnings from the *_flush() calls by
+> 	 * ensuring the workqueue is empty up front.
+> 	 */
+
+Regards
+
+Marcel
 
