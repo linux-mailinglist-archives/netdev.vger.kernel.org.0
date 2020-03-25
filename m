@@ -2,143 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4875F192601
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 11:43:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C35A8192631
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 11:51:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727325AbgCYKnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 06:43:04 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:42343 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726239AbgCYKnE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 06:43:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585132982;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PsY1afjqXUvOhhLtl0Ou26hpywvwcP5IhlNh1OY1bj4=;
-        b=UmB7Dqz8emVQnIVvB4pYMGVDrPeNULKLovT0rnDoNyDaAdXSyZ/yf/6hMV1ojBkJM4gq33
-        AZxFKFONVVOfWf+/vJAYGTsniEwP5fBql7yXCkDB+uS7tC7g3o9MYrnTpuoFXjnWsuh3ga
-        dHSmlarjfLYw5Vox8DwVUnqEW9Tvpko=
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-84-kPZUy7OgO_mto7q8PGaXMQ-1; Wed, 25 Mar 2020 06:43:01 -0400
-X-MC-Unique: kPZUy7OgO_mto7q8PGaXMQ-1
-Received: by mail-lj1-f199.google.com with SMTP id n3so225587ljg.16
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 03:43:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=PsY1afjqXUvOhhLtl0Ou26hpywvwcP5IhlNh1OY1bj4=;
-        b=pQEywp24z5g1wn7F0HPag2C5EsZ2zr7bPCVK0lWnRNhDRqBHCvP0CKB6IOY89yDBhU
-         cUV+mCLfiSm7pL5Hs9Otc4/ApVhlzH3QYKt0iU15oCHcJ0vPLljqdzd3ulFkyKhfjPFH
-         bjwvIkZwtlnj3KnzN/7Q0y2yaVzEHVz9K244XCJU4w5VISHxN7ZLisMfrjlDvOOVQYaR
-         O7WKlyFC1dc6baaJcinJTKlwTifwjdaXH+AaQERcWWyuKe3JJPSKacp/h5jAadHZR+yX
-         ZmUds8mSbkO9cBovhTJ9URIhL+0KVn4nwy3jy64H5PXhtCc1vtp+njE2vTbQwplzrlfS
-         epIg==
-X-Gm-Message-State: AGi0PubZOcNXM74C2smTjTuJn4lvic++rQmYJbS0vRG0HyLEUkm7Q04R
-        PPmGqIf2UPmh+nO3J+tJkZymu6AAFUYlw3BTKa9eAn/Xgr++dILwuq9IR/3rxcJTvh/ZnopkDCN
-        FawdGtBAx35lh4xyx
-X-Received: by 2002:a2e:b302:: with SMTP id o2mr1644038lja.289.1585132979220;
-        Wed, 25 Mar 2020 03:42:59 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJqC2CZ7MeUywLdP0GgN0NM9BSM6xSTLHdv9Tk+vvwIztLKJ8LVZLuGoJCCqFYxOSqlnHxvsQ==
-X-Received: by 2002:a2e:b302:: with SMTP id o2mr1644027lja.289.1585132978951;
-        Wed, 25 Mar 2020 03:42:58 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id q4sm13333841lfp.18.2020.03.25.03.42.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2020 03:42:58 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id A253C18158B; Wed, 25 Mar 2020 11:42:57 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing program when attaching XDP
-In-Reply-To: <20200325013631.vuncsvkivexdb3fr@ast-mbp>
-References: <875zez76ph.fsf@toke.dk> <20200320103530.2853c573@kicinski-fedora-PC1C0HJN> <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch> <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com> <87tv2f48lp.fsf@toke.dk> <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com> <87h7ye3mf3.fsf@toke.dk> <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com> <87tv2e10ly.fsf@toke.dk> <5e7a5e07d85e8_74a82ad21f7a65b88d@john-XPS-13-9370.notmuch> <20200325013631.vuncsvkivexdb3fr@ast-mbp>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 25 Mar 2020 11:42:57 +0100
-Message-ID: <87wo78pvf2.fsf@toke.dk>
+        id S1727046AbgCYKv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 06:51:27 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:45807 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726103AbgCYKv0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 06:51:26 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 813C1580092;
+        Wed, 25 Mar 2020 06:51:25 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Wed, 25 Mar 2020 06:51:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=BcCB9O
+        XpHgn65zXIZoqRcgnWnQhSPer2YSAb0AkPeQU=; b=YRiJH0p/j83COSeVngY2Ch
+        gMef0VXMy3/V0K98PKlVUihtao6KqdMv1ToRMFszDMg8Sezyt3xJa3t72bMaYy4M
+        p1UMPpm+9qEx5BdZT8iByG3yFS9n4JG+T/g1r9P4JNI704g2oDg16s69xUBgSD1T
+        SMrBv4P/hm0a2nxlJ5Mpodeq5a6Y/zEUqgZM7Ls3cCmK5JO6YUdw0js0gbYKVfiN
+        y8nt6EEo7m0luIB4I1YRaae/std+ToRw4165rXJ5GO7vYzt+SMR4U1MqBfegPzQa
+        FJTcLcW1CSOrLO3gcvYU/vKbpAijfMp0v+lTkvb9+BNvdbfwMyMUk3pHL17r6cHg
+        ==
+X-ME-Sender: <xms:qzd7XogoZ5dy85BHdDvlzN-vf2dpvaAUJN3ZLnHchCgFxoO1OZqmmg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudehfedgudelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujgesthdtre
+    dttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
+    shgthhdrohhrgheqnecukfhppeejledrudektddrleegrddvvdehnecuvehluhhsthgvrh
+    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
+    hhdrohhrgh
+X-ME-Proxy: <xmx:rDd7XlRn2xOvILgzVlQHBtvx8mnzbb1DH7otUqhssjKgXabOSB3Now>
+    <xmx:rDd7XrFjW25hh5-hbJ7hoCZdP8Fgf4GY3pQojrC-RhNDPGbexeLecQ>
+    <xmx:rDd7XtmBpYySAAK-h9lVJnb4KDqhzlp0cy8m6w3TFqbATb7YwnA1mQ>
+    <xmx:rTd7XvqpFv89UVLMKIvuXKOB2J7Z5mneU1yvLb9eMqLvvqAWo3CkOQ>
+Received: from localhost (bzq-79-180-94-225.red.bezeqint.net [79.180.94.225])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 974F73280065;
+        Wed, 25 Mar 2020 06:51:23 -0400 (EDT)
+Date:   Wed, 25 Mar 2020 12:51:21 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@mellanox.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next 11/15] mlxsw: spectrum_trap: Add devlink-trap
+ policer support
+Message-ID: <20200325105121.GD1332836@splinter>
+References: <20200324193250.1322038-1-idosch@idosch.org>
+ <20200324193250.1322038-12-idosch@idosch.org>
+ <20200324203349.6a76e581@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200324203349.6a76e581@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+On Tue, Mar 24, 2020 at 08:33:49PM -0700, Jakub Kicinski wrote:
+> On Tue, 24 Mar 2020 21:32:46 +0200 Ido Schimmel wrote:
+> > +static int mlxsw_sp_trap_policer_params_check(u64 rate, u64 burst,
+> > +					      u8 *p_burst_size,
+> > +					      struct netlink_ext_ack *extack)
+> > +{
+> > +	int bs = fls64(burst);
+> > +
+> > +	if (rate < MLXSW_REG_QPCR_LOWEST_CIR) {
+> > +		NL_SET_ERR_MSG_MOD(extack, "Policer rate lower than limit");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	if (rate > MLXSW_REG_QPCR_HIGHEST_CIR) {
+> > +		NL_SET_ERR_MSG_MOD(extack, "Policer rate higher than limit");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	if (!bs) {
+> > +		NL_SET_ERR_MSG_MOD(extack, "Policer burst size lower than limit");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	--bs;
+> > +
+> > +	if (burst != (1 << bs)) {
+> > +		NL_SET_ERR_MSG_MOD(extack, "Policer burst size is not power of two");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	if (bs < MLXSW_REG_QPCR_LOWEST_CBS) {
+> > +		NL_SET_ERR_MSG_MOD(extack, "Policer burst size lower than limit");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	if (bs > MLXSW_REG_QPCR_HIGHEST_CBS) {
+> > +		NL_SET_ERR_MSG_MOD(extack, "Policer burst size higher than limit");
+> > +		return -EINVAL;
+> > +	}
+> 
+> Any chance we could make the min/max values part of the policer itself?
+> Are they dynamic? Seems like most drivers will have to repeat this
+> checking against constants while maybe core could have done it?
 
-> On Tue, Mar 24, 2020 at 12:22:47PM -0700, John Fastabend wrote:
->> > 
->> > Well, I wasn't talking about any of those subsystems, I was talking
->> > about networking :)
->> 
->> My experience has been that networking in the strict sense of XDP no
->> longer exists on its own without cgroups, flow dissector, sockops,
->> sockmap, tracing, etc. All of these pieces are built, patched, loaded,
->> pinned and otherwise managed and manipulated as BPF objects via libbpf.
->> 
->> Because I have all this infra in place for other items its a bit odd
->> imo to drop out of BPF apis to then swap a program differently in the
->> XDP case from how I would swap a program in any other place. I'm
->> assuming ability to swap links will be enabled at some point.
->> 
->> Granted it just means I have some extra functions on the side to manage
->> the swap similar to how 'qdisc' would be handled today but still not as
->> nice an experience in my case as if it was handled natively.
->> 
->> Anyways the netlink API is going to have to call into the BPF infra
->> on the kernel side for verification, etc so its already not pure
->> networking.
->> 
->> > 
->> > In particular, networking already has a consistent and fairly
->> > well-designed configuration mechanism (i.e., netlink) that we are
->> > generally trying to move more functionality *towards* not *away from*
->> > (see, e.g., converting ethtool to use netlink).
->> 
->> True. But BPF programs are going to exist and interop with other
->> programs not exactly in the networking space. Actually library calls
->> might be used in tracing, cgroups, and XDP side. It gets a bit more
->> interesting if the "same" object file (with some patching) runs in both
->> XDP and sockops land for example.
->
-> Thanks John for summarizing it very well.
-> It looks to me that netlink proponents fail to realize that "bpf for
-> networking" goes way beyond what netlink is doing and capable of doing in the
-> future. BPF_*_INET_* progs do core networking without any smell of netlink
-> anywhere. "But, but, but, netlink is the way to configure networking"... is
-> simply not true.
+Yea, it's a good idea. We can also expose these values to user space,
+but I think it's not really necessary and I prefer not to extend uAPI
+unless we really have to.
 
-That was not what I was saying. Obviously there are other components to
-the networking stack than netlink.
-
-What I'm saying is that netlink is the interface the kernel uses to
-*configure network devices*. And that attaching an XDP program is a
-network device configuration operation. I mean, it:
-
-- Relies on the RTNL lock for synchronisation
-- Fundamentally alters the flow of network packets on the device
-- Potentially has side effects like link up/down, HWQ reconfig etc
-
-I'm wondering if there's a way to reconcile these views? Maybe making
-the bpf_link attachment work by passing the link fd to the netlink API?
-That would keep the network interface configuration over netlink, but
-would still allow a BPF application to swap out "its" programs via the
-bpf_link APIs?
-
--Toke
-
+> 
+> > +
+> > +	*p_burst_size = bs;
+> > +
+> > +	return 0;
+> > +}
