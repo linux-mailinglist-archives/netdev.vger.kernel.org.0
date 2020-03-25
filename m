@@ -2,72 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28A601932B1
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 22:32:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E8D4A1932E0
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 22:37:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727384AbgCYVcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 17:32:41 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:43577 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727357AbgCYVcl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 17:32:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585171960;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=pS0xjvpbRT2rkvzGCAvomy0d2K/R3wj7p9gmm6Y/jww=;
-        b=WkI2O+j6GcBICDqSI5DMgQrxQIP0CqE6/LHaqYkAlCwKEknGN9Q2WgsLU7qAXgTV2iZ9XD
-        l7NyejlbYbAM5Ov4leW9btH2slwqB7RS4TlfmH76QoxsBlzbJl4ydp84Q+ecFVen2Kb94D
-        Q7I0q6z+U8x2EBS/wMmyKZj8pGvKoLQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-31-SoXQA6RSO3iXroM3NA7Cog-1; Wed, 25 Mar 2020 17:32:37 -0400
-X-MC-Unique: SoXQA6RSO3iXroM3NA7Cog-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AC507477;
-        Wed, 25 Mar 2020 21:32:35 +0000 (UTC)
-Received: from carbon (unknown [10.40.208.16])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C18010002A7;
-        Wed, 25 Mar 2020 21:32:31 +0000 (UTC)
-Date:   Wed, 25 Mar 2020 22:32:29 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Denis Kirjanov <kda@linux-powerpc.org>
-Cc:     brouer@redhat.com, netdev@vger.kernel.org,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH v2 net-next] net: page pool: allow to pass zero flags to
- page_pool_init()
-Message-ID: <20200325223229.0d7b802e@carbon>
-In-Reply-To: <1585168528-2445-1-git-send-email-kda@linux-powerpc.org>
-References: <1585168528-2445-1-git-send-email-kda@linux-powerpc.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+        id S1727460AbgCYVhl convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 25 Mar 2020 17:37:41 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:60905 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726081AbgCYVhk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 17:37:40 -0400
+Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 73B3CCECD6;
+        Wed, 25 Mar 2020 22:47:10 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH v2 1/2] Bluetooth: btusb: Indicate Microsoft vendor
+ extension for Intel 9460/9560 and 9160/9260
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <CABmPvSFL_bkrZQJkAzUMck_bAY5aBZkL=5HGV_Syv2QRYfRLfw@mail.gmail.com>
+Date:   Wed, 25 Mar 2020 22:37:38 +0100
+Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <B2A2CFFE-8FC1-462B-9C7F-1CD584B6EB24@holtmann.org>
+References: <20200325070336.1097-1-mcchou@chromium.org>
+ <20200325000332.v2.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
+ <72699110-843A-4382-8FF1-20C5D4D557A2@holtmann.org>
+ <CABmPvSFL_bkrZQJkAzUMck_bAY5aBZkL=5HGV_Syv2QRYfRLfw@mail.gmail.com>
+To:     Miao-chen Chou <mcchou@chromium.org>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Mar 2020 23:35:28 +0300
-Denis Kirjanov <kda@linux-powerpc.org> wrote:
+Hi Miao-chen,
 
-> page pool API can be useful for non-DMA cases like
-> xen-netfront driver so let's allow to pass zero flags to
-> page pool flags.
-> 
-> v2: check DMA direction only if PP_FLAG_DMA_MAP is set
-> 
-> Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+>>> This adds a bit mask of driver_info for Microsoft vendor extension and
+>>> indicates the support for Intel 9460/9560 and 9160/9260. See
+>>> https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
+>>> microsoft-defined-bluetooth-hci-commands-and-events for more information
+>>> about the extension. This was verified with Intel ThunderPeak BT controller
+>>> where msft_vnd_ext_opcode is 0xFC1E.
+>>> 
+>>> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
+>>> ---
+>>> 
+>>> Changes in v2:
+>>> - Define struct msft_vnd_ext and add a field of this type to struct
+>>> hci_dev to facilitate the support of Microsoft vendor extension.
+>>> 
+>>> drivers/bluetooth/btusb.c        | 14 ++++++++++++--
+>>> include/net/bluetooth/hci_core.h |  6 ++++++
+>>> 2 files changed, 18 insertions(+), 2 deletions(-)
+>>> 
+>>> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+>>> index 3bdec42c9612..4c49f394f174 100644
+>>> --- a/drivers/bluetooth/btusb.c
+>>> +++ b/drivers/bluetooth/btusb.c
+>>> @@ -58,6 +58,7 @@ static struct usb_driver btusb_driver;
+>>> #define BTUSB_CW6622          0x100000
+>>> #define BTUSB_MEDIATEK                0x200000
+>>> #define BTUSB_WIDEBAND_SPEECH 0x400000
+>>> +#define BTUSB_MSFT_VND_EXT   0x800000
+>>> 
+>>> static const struct usb_device_id btusb_table[] = {
+>>>      /* Generic Bluetooth USB device */
+>>> @@ -335,7 +336,8 @@ static const struct usb_device_id blacklist_table[] = {
+>>> 
+>>>      /* Intel Bluetooth devices */
+>>>      { USB_DEVICE(0x8087, 0x0025), .driver_info = BTUSB_INTEL_NEW |
+>>> -                                                  BTUSB_WIDEBAND_SPEECH },
+>>> +                                                  BTUSB_WIDEBAND_SPEECH |
+>>> +                                                  BTUSB_MSFT_VND_EXT },
+>>>      { USB_DEVICE(0x8087, 0x0026), .driver_info = BTUSB_INTEL_NEW |
+>>>                                                   BTUSB_WIDEBAND_SPEECH },
+>>>      { USB_DEVICE(0x8087, 0x0029), .driver_info = BTUSB_INTEL_NEW |
+>>> @@ -348,7 +350,8 @@ static const struct usb_device_id blacklist_table[] = {
+>>>      { USB_DEVICE(0x8087, 0x0aa7), .driver_info = BTUSB_INTEL |
+>>>                                                   BTUSB_WIDEBAND_SPEECH },
+>>>      { USB_DEVICE(0x8087, 0x0aaa), .driver_info = BTUSB_INTEL_NEW |
+>>> -                                                  BTUSB_WIDEBAND_SPEECH },
+>>> +                                                  BTUSB_WIDEBAND_SPEECH |
+>>> +                                                  BTUSB_MSFT_VND_EXT },
+>>> 
+>>>      /* Other Intel Bluetooth devices */
+>>>      { USB_VENDOR_AND_INTERFACE_INFO(0x8087, 0xe0, 0x01, 0x01),
+>>> @@ -3734,6 +3737,8 @@ static int btusb_probe(struct usb_interface *intf,
+>>>      hdev->send   = btusb_send_frame;
+>>>      hdev->notify = btusb_notify;
+>>> 
+>>> +     hdev->msft_ext.opcode = HCI_OP_NOP;
+>>> +
+>> 
+>> do this in the hci_alloc_dev procedure for every driver. This doesn’t belong in the driver.
+> Thanks for the note, I will address this.
+>> 
+>>> #ifdef CONFIG_PM
+>>>      err = btusb_config_oob_wake(hdev);
+>>>      if (err)
+>>> @@ -3800,6 +3805,11 @@ static int btusb_probe(struct usb_interface *intf,
+>>>              set_bit(HCI_QUIRK_STRICT_DUPLICATE_FILTER, &hdev->quirks);
+>>>              set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
+>>>              set_bit(HCI_QUIRK_NON_PERSISTENT_DIAG, &hdev->quirks);
+>>> +
+>>> +             if (id->driver_info & BTUSB_MSFT_VND_EXT &&
+>>> +                     (id->idProduct == 0x0025 || id->idProduct == 0x0aaa)) {
+>> 
+>> Please scrap this extra check. You already selected out the PID with the blacklist_table. In addition, I do not want to add a PID in two places in the driver.
+> If we scrap the check around idProduct, how do we tell two controllers
+> apart if they use different opcode for Microsoft vendor extension?
 
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+for Intel controllers this is highly unlikely. If we really decide to change the opcode in newer firmware versions, we then deal with it at that point.
 
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+However for Intel controllers I have the feeling that we better do it after the Read the Intel version information and then do it based on hardware revision and firmware version.
+
+>> An alternative is to not use BTUSB_MSFT_VND_EXT and let the Intel code set it based on the hardware / firmware revision it finds. We might need to discuss which is the better approach for the Intel hardware since not all PIDs are unique.
+> We are expecting to indicate the vendor extension for non-Intel
+> controllers as well, and having BTUSB_MSFT_VND_EXT seems to be more
+> generic. What do you think?
+
+We don’t have to have one specific way of doing it. As I said, if we ever have Zephyr based controller with MSFT extension, we have a vendor command to determine the support and the opcode. So that will not require any extra quirks or alike.
+
+Anyhow, maybe we introduce BTUSB_MSFT_VND_EXT_FC1E that just says set the opcode to FC1E. For all other opcodes we will introduce similar constants. At most I assume we end up with 5-6 constants.
+
+>> 
+>>> +                     hdev->msft_ext.opcode = 0xFC1E;
+>>> +             }
+>>>      }
+
+Regards
+
+Marcel
 
