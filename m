@@ -2,63 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F31731920C8
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 06:56:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71CC81920CF
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 06:58:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727376AbgCYF4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 01:56:37 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:42653 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726065AbgCYF4g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 01:56:36 -0400
-Received: by mail-lj1-f194.google.com with SMTP id q19so1127117ljp.9;
-        Tue, 24 Mar 2020 22:56:35 -0700 (PDT)
+        id S1726065AbgCYF56 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 01:57:58 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:35771 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725781AbgCYF56 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 01:57:58 -0400
+Received: by mail-pf1-f195.google.com with SMTP id u68so531905pfb.2;
+        Tue, 24 Mar 2020 22:57:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=sender:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=KXLP0/H62Iyak+HWMvNxv2asCanHU5NDryMupzQljyQ=;
-        b=pZR9ei1vxMr3u8y5qL+mLZGwU/2WSStdK5WDY0E67329D/GFURPI717SH1LJJ8Pjl7
-         wUdOM8f3RY5tMwLxdZsfS2NcnGAlpDtHxYI0uxbPL6F9TO7dGiB4hByqOrnYTrxKfmTo
-         A9UGNoNuiQS8omgDrK2UzlP1gAqF/MB49ucMu7uZDJnyngiYbvPjENn2qXW3Rvwl/ggV
-         7Nsvzpj0Rsp1IIXZDXTPcAhvp88VuGFAb6uU8X7xM4ZAtLdxAZJUVQaP9mjst3dNvyH6
-         zUEeJAmo1krCrnnxTFUZrv9Vlh7c7wpu+5450YoGJZ1wXhHlZZaBDIF8ZrAWkm9SL/jK
-         8qWA==
+        bh=DhgMxg9/d4jZxJK2gCTztL66Uqlfg5HkLq6v1FdFCg0=;
+        b=Id/LMMY8Fb/MCPGxuZORARzbvPiuoa20rDbwXLZyJwdpHUNneG3se8PsL49Xhq9xHC
+         3tT59SoKrcIC5UtxCYfnQIpadjHePY7anjlh8kgiKzRZWLVlM0/4AcTHGZchILyizQWO
+         ck8G+YrJ1aJKZ+jips/RXApHkt23RpkmYPzB6OqyuYDGHLgaKWrYTdxjAoVWNBNmf7Mt
+         SJzpyMmiIY5oRT5C3uFXQFdVwavUIQYObhsSF3xkVIokWvVHkXvjf9vLWkut2WNXQ+zP
+         H+wppSdOHP7ctWFnyjocNGlVb+26yr8TZJuHLtRoy+2vMKVjFHdRKTHD/5vmaJPgko/C
+         ddCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=KXLP0/H62Iyak+HWMvNxv2asCanHU5NDryMupzQljyQ=;
-        b=I8xT6ZihSHIoVXxYazCLGFQIHPGwmAMWhIKTTOBzepjtgWNQaX5v173aN/3RNgxE1y
-         ruu6SEs73v85BBQ4q1aJzLDYIYfQc4vBfs34NL74LK8NPHINGlh6B+25nBHMPkFWE6dE
-         gijm81X/T4IF/sWkockwt9GNwzifR/GuMzPyyjBAu+U6q1vKwbGg/JSRCVme8F26By8K
-         kAOSe7CKWIR141bQDiFkO71PZsV8xL8JDJbEQ7JYRJxLnnlSArQTgxCepwB8SCJtXBzI
-         WvfFgdxYI/kj0KiEnHDmdoGs7vIklexno1d4d26DwRtd6onTEfsjinCq/MWcYUfp1qPK
-         uBwg==
-X-Gm-Message-State: AGi0Pub44ziro9PAxnXedMvzOawcPRqS1W7458umI1PQfRT6Ye4rW3bX
-        PR/z9rzHnnsXhMo2Favud0c=
-X-Google-Smtp-Source: ADFU+vu3fs9td+AZg+GfH8KE6sCDA0t03LRyFkKaskNvANi2tSXlhNrCU5zMzOlFPRoZLQ/GPlGnQg==
-X-Received: by 2002:a2e:878a:: with SMTP id n10mr885894lji.130.1585115794908;
-        Tue, 24 Mar 2020 22:56:34 -0700 (PDT)
-Received: from localhost.localdomain ([185.188.71.122])
-        by smtp.gmail.com with ESMTPSA id y20sm3453692ljy.100.2020.03.24.22.56.33
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=DhgMxg9/d4jZxJK2gCTztL66Uqlfg5HkLq6v1FdFCg0=;
+        b=AM/LLG7eM3v+/THAT6yaxNr9m/zSl1Q3XpA7WbowL/Y3y/gG3G0vj5kVgPxDA3xEo2
+         KtEg7ua03cRnfmAin6Wa8jGUYcBwvNeUnqQNbmL5zEtzEecPgkTBLONNOc7i1aeg7hQa
+         4Q/zpzdVuAqXWynGkBgqtrXd6Fg3s/8Ruon/z8g/E85T8Mx/usnSpXIwBTakPjlTeRU1
+         SjvCLjNmYFmy0y5qbu0UJGp3bGaaKgGx4ndcF1XI64DJanoUpUSfdl7qgRCIqsaUqmtd
+         58v3MUQZFFCjTvbca7sLKnIhVwBgmqFV0tySdX4OvG5d2AHUDv5Ec7Q5Yv4TP+LPzwWC
+         jcCg==
+X-Gm-Message-State: ANhLgQ0Hs0+znL7RcNPzikIw1eotk2mzzYtF+x0qtG0EV4llMkci4DDZ
+        A4DwGbKXvM9zqlibnlk1B5wNHBaZ
+X-Google-Smtp-Source: ADFU+vsYiM5pgnux73ARBjtr2cw3neM89imDuCw7sixRF3E3UzoO7RO5/V5B/bvMSpfrwCU9U5Cf/g==
+X-Received: by 2002:a63:b648:: with SMTP id v8mr1398589pgt.397.1585115876472;
+        Tue, 24 Mar 2020 22:57:56 -0700 (PDT)
+Received: from localhost.localdomain (c-73-93-5-123.hsd1.ca.comcast.net. [73.93.5.123])
+        by smtp.gmail.com with ESMTPSA id e10sm17605716pfm.121.2020.03.24.22.57.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Mar 2020 22:56:34 -0700 (PDT)
-From:   Pawel Dembicki <paweldembicki@gmail.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Pawel Dembicki <paweldembicki@gmail.com>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        Roy Luo <royluo@google.com>, Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] mt76: mt76x0: pci: add mt7610 PCI ID
-Date:   Wed, 25 Mar 2020 06:55:23 +0100
-Message-Id: <20200325055525.20279-1-paweldembicki@gmail.com>
+        Tue, 24 Mar 2020 22:57:55 -0700 (PDT)
+From:   Joe Stringer <joe@wand.net.nz>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        eric.dumazet@gmail.com, lmb@cloudflare.com, kafai@fb.com
+Subject: [PATCHv2 bpf-next 0/5] Add bpf_sk_assign eBPF helper
+Date:   Tue, 24 Mar 2020 22:57:40 -0700
+Message-Id: <20200325055745.10710-1-joe@wand.net.nz>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -67,28 +59,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add mt7610 PCI id found on D-Link DWR-960 to pci_device_id table.
+Introduce a new helper that allows assigning a previously-found socket
+to the skb as the packet is received towards the stack, to cause the
+stack to guide the packet towards that socket subject to local routing
+configuration.
 
-Run-tested on D-Link DWR-960 with no-name half-size mPCIE card
-with mt7610e.
+This series the successor to previous discussions on-list[0], in-person
+at LPC2019[1], and the previous version[2] to support TProxy use cases
+more directly from eBPF programs attached at TC ingress, to simplify and
+streamline Linux stack configuration in scale environments with Cilium.
 
-Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
----
- drivers/net/wireless/mediatek/mt76/mt76x0/pci.c | 1 +
- 1 file changed, 1 insertion(+)
+Normally in ip{,6}_rcv_core(), the skb will be orphaned, dropping any
+existing socket reference associated with the skb. Existing tproxy
+implementations in netfilter get around this restriction by running the
+tproxy logic after ip_rcv_core() in the PREROUTING table. However, this
+is not an option for TC-based logic (including eBPF programs attached at
+TC ingress).
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76x0/pci.c b/drivers/net/wireless/mediatek/mt76/mt76x0/pci.c
-index e2974e0ae1fc..3bd753cda190 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76x0/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76x0/pci.c
-@@ -215,6 +215,7 @@ mt76x0e_remove(struct pci_dev *pdev)
- }
- 
- static const struct pci_device_id mt76x0e_device_table[] = {
-+	{ PCI_DEVICE(0x14c3, 0x7610) },
- 	{ PCI_DEVICE(0x14c3, 0x7630) },
- 	{ PCI_DEVICE(0x14c3, 0x7650) },
- 	{ },
+This series introduces the BPF helper bpf_sk_assign() to associate the
+socket with the skb on the ingress path as the packet is passed up the
+stack. The initial patch in the series simply takes a reference on the
+socket to ensure safety, but later patches relax this for listen
+sockets.
+
+To ensure delivery to the relevant socket, we still consult the routing
+table, for full examples of how to configure see the tests in patch #5;
+the simplest form of the route would look like this:
+
+  $ ip route add local default dev lo
+
+This series is laid out as follows:
+* Patch 1 extends the eBPF API to add sk_assign() and defines a new
+  socket free function to allow the later paths to understand when the
+  socket associated with the skb should be kept through receive.
+* Patches 2-4 optimizate the receive path to prefetch the socket
+  destination and avoid taking a reference on listener sockets during
+  receive.
+* Patches 5 extends the selftests with examples of the new
+  functionality and validation of correct behaviour.
+
+Changes since v1:
+* Replace the metadata_dst approach with using the skb->destructor to
+  determine whether the socket has been prefetched. This is much
+  simpler.
+* Avoid taking a reference on listener sockets during receive
+* Restrict assigning sockets across namespaces
+* Restrict assigning SO_REUSEPORT sockets
+* Fix cookie usage for socket dst check
+* Rebase the tests against test_progs infrastructure
+* Tidy up commit messages
+
+[0] https://www.mail-archive.com/netdev@vger.kernel.org/msg303645.html
+[1] https://linuxplumbersconf.org/event/4/contributions/464/
+[2] https://lore.kernel.org/netdev/20200312233648.1767-1-joe@wand.net.nz/T/#m4028efa9381856049ae5633986ec562d6b94a146
+
+
+Joe Stringer (4):
+  bpf: Add socket assign support
+  bpf: Prefetch established socket destinations
+  net: Track socket refcounts in skb_steal_sock()
+  bpf: Don't refcount LISTEN sockets in sk_assign()
+
+Lorenz Bauer (1):
+  selftests: bpf: add test for sk_assign
+
+ include/net/inet6_hashtables.h                |   3 +-
+ include/net/inet_hashtables.h                 |   3 +-
+ include/net/sock.h                            |  42 ++-
+ include/uapi/linux/bpf.h                      |  25 +-
+ net/core/filter.c                             |  50 +++-
+ net/core/sock.c                               |  10 +
+ net/ipv4/ip_input.c                           |   3 +-
+ net/ipv4/udp.c                                |   6 +-
+ net/ipv6/ip6_input.c                          |   3 +-
+ net/ipv6/udp.c                                |   9 +-
+ net/sched/act_bpf.c                           |   2 +
+ tools/include/uapi/linux/bpf.h                |  25 +-
+ tools/testing/selftests/bpf/Makefile          |   2 +-
+ .../selftests/bpf/prog_tests/sk_assign.c      | 244 ++++++++++++++++++
+ .../selftests/bpf/progs/test_sk_assign.c      | 127 +++++++++
+ 15 files changed, 529 insertions(+), 25 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/sk_assign.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sk_assign.c
+
 -- 
 2.20.1
 
