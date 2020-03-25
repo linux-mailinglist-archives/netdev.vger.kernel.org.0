@@ -2,299 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 106EE192840
-	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 13:29:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C560192867
+	for <lists+netdev@lfdr.de>; Wed, 25 Mar 2020 13:30:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727518AbgCYM2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 08:28:31 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:47877 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727346AbgCYM2b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 08:28:31 -0400
-Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11] helo=nanos.tec.linutronix.de)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1jH58U-0001LV-Po; Wed, 25 Mar 2020 13:27:55 +0100
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
-        id 32D09100C51; Wed, 25 Mar 2020 13:27:49 +0100 (CET)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     paulmck@kernel.org
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Sebastian Siewior <bigeasy@linutronix.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Kurt Schwemmer <kurt.schwemmer@microsemi.com>,
-        linux-pci@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Felipe Balbi <balbi@kernel.org>, linux-usb@vger.kernel.org,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        platform-driver-x86@vger.kernel.org,
-        Zhang Rui <rui.zhang@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        linux-pm@vger.kernel.org, Len Brown <lenb@kernel.org>,
-        linux-acpi@vger.kernel.org, kbuild test robot <lkp@intel.com>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        Guo Ren <guoren@kernel.org>, linux-csky@vger.kernel.org,
-        Brian Cain <bcain@codeaurora.org>,
-        linux-hexagon@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-ia64@vger.kernel.org,
-        Michal Simek <monstr@monstr.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Geoff Levand <geoff@infradead.org>,
-        linuxppc-dev@lists.ozlabs.org, Davidlohr Bueso <dbueso@suse.de>
-Subject: Documentation/locking/locktypes: Further clarifications and wordsmithing
-In-Reply-To: <20200325002811.GO19865@paulmck-ThinkPad-P72>
-References: <20200323025501.GE3199@paulmck-ThinkPad-P72> <87r1xhz6qp.fsf@nanos.tec.linutronix.de> <20200325002811.GO19865@paulmck-ThinkPad-P72>
-Date:   Wed, 25 Mar 2020 13:27:49 +0100
-Message-ID: <87wo78y5yy.fsf@nanos.tec.linutronix.de>
+        id S1727670AbgCYM31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 08:29:27 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:22929 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727444AbgCYM3Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 08:29:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585139364;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=900raWR46tgHDOfPc5pVs6kpLXnkZj9aN4sQMIHjlas=;
+        b=F53y2BvTnhbV68xP0lARhyQVSZI8ri1we41aXcG75zW1RWl77ne6YpwjzCuNITi9AIVpFC
+        PNqThyeR5+munUTG41uD5tbxVssO2bWnPYLDnXEWnNNkycEdc2+9j0FJHDK9ezsPM39Sxv
+        sOf/B2Z076oiTltC1E3QGU6CeWelCLY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-298-3SWSe-XBO72xPJI1ZEIDOA-1; Wed, 25 Mar 2020 08:29:20 -0400
+X-MC-Unique: 3SWSe-XBO72xPJI1ZEIDOA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 607A7149C0;
+        Wed, 25 Mar 2020 12:29:18 +0000 (UTC)
+Received: from madcap2.tricolour.ca (unknown [10.10.110.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 189C192F80;
+        Wed, 25 Mar 2020 12:29:05 +0000 (UTC)
+Date:   Wed, 25 Mar 2020 08:29:03 -0400
+From:   Richard Guy Briggs <rgb@redhat.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Steve Grubb <sgrubb@redhat.com>, linux-audit@redhat.com,
+        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
+        containers@lists.linux-foundation.org,
+        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
+        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
+        simo@redhat.com, netdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
+        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
+Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
+ the audit daemon
+Message-ID: <20200325122903.obkpyog7fjabzrpf@madcap2.tricolour.ca>
+References: <3142237.YMNxv0uec1@x2>
+ <CAHC9VhTiCHQbp2SwK0Xb1QgpUZxOQ26JKKPsVGT0ZvMqx28oPQ@mail.gmail.com>
+ <20200312202733.7kli64zsnqc4mrd2@madcap2.tricolour.ca>
+ <CAHC9VhS9DtxJ4gvOfMRnzoo6ccGJVKL+uZYe6qqH+SPqD8r01Q@mail.gmail.com>
+ <20200313192306.wxey3wn2h4htpccm@madcap2.tricolour.ca>
+ <CAHC9VhQKOpVWxDg-tWuCWV22QRu8P_NpFKme==0Ot1RQKa_DWA@mail.gmail.com>
+ <20200318214154.ycxy5dl4pxno6fvi@madcap2.tricolour.ca>
+ <CAHC9VhSuMnd3-ci2Bx-xJ0yscQ=X8ZqFAcNPKpbh_ZWN3FJcuQ@mail.gmail.com>
+ <20200319214759.qgxt2sfkmd6srdol@madcap2.tricolour.ca>
+ <CAHC9VhTp25OAaTO5UMft0OzUZ=oQpZFjebkjjQP0-NrPp0bNAg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHC9VhTp25OAaTO5UMft0OzUZ=oQpZFjebkjjQP0-NrPp0bNAg@mail.gmail.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The documentation of rw_semaphores is wrong as it claims that the non-owner
-reader release is not supported by RT. That's just history biased memory
-distortion.
+On 2020-03-20 17:56, Paul Moore wrote:
+> On Thu, Mar 19, 2020 at 5:48 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > On 2020-03-18 17:47, Paul Moore wrote:
+> > > On Wed, Mar 18, 2020 at 5:42 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > On 2020-03-18 17:01, Paul Moore wrote:
+> > > > > On Fri, Mar 13, 2020 at 3:23 PM Richard Guy Briggs <rgb@redhat.com> wrote:
+> > > > > > On 2020-03-13 12:42, Paul Moore wrote:
+> > > > >
+> > > > > ...
+> > > > >
+> > > > > > > The thread has had a lot of starts/stops, so I may be repeating a
+> > > > > > > previous suggestion, but one idea would be to still emit a "death
+> > > > > > > record" when the final task in the audit container ID does die, but
+> > > > > > > block the particular audit container ID from reuse until it the
+> > > > > > > SIGNAL2 info has been reported.  This gives us the timely ACID death
+> > > > > > > notification while still preventing confusion and ambiguity caused by
+> > > > > > > potentially reusing the ACID before the SIGNAL2 record has been sent;
+> > > > > > > there is a small nit about the ACID being present in the SIGNAL2
+> > > > > > > *after* its death, but I think that can be easily explained and
+> > > > > > > understood by admins.
+> > > > > >
+> > > > > > Thinking quickly about possible technical solutions to this, maybe it
+> > > > > > makes sense to have two counters on a contobj so that we know when the
+> > > > > > last process in that container exits and can issue the death
+> > > > > > certificate, but we still block reuse of it until all further references
+> > > > > > to it have been resolved.  This will likely also make it possible to
+> > > > > > report the full contid chain in SIGNAL2 records.  This will eliminate
+> > > > > > some of the issues we are discussing with regards to passing a contobj
+> > > > > > vs a contid to the audit_log_contid function, but won't eliminate them
+> > > > > > all because there are still some contids that won't have an object
+> > > > > > associated with them to make it impossible to look them up in the
+> > > > > > contobj lists.
+> > > > >
+> > > > > I'm not sure you need a full second counter, I imagine a simple flag
+> > > > > would be okay.  I think you just something to indicate that this ACID
+> > > > > object is marked as "dead" but it still being held for sanity reasons
+> > > > > and should not be reused.
+> > > >
+> > > > Ok, I see your point.  This refcount can be changed to a flag easily
+> > > > enough without change to the api if we can be sure that more than one
+> > > > signal can't be delivered to the audit daemon *and* collected by sig2.
+> > > > I'll have a more careful look at the audit daemon code to see if I can
+> > > > determine this.
+> > >
+> > > Maybe I'm not understanding your concern, but this isn't really
+> > > different than any of the other things we track for the auditd signal
+> > > sender, right?  If we are worried about multiple signals being sent
+> > > then it applies to everything, not just the audit container ID.
+> >
+> > Yes, you are right.  In all other cases the information is simply
+> > overwritten.  In the case of the audit container identifier any
+> > previous value is put before a new one is referenced, so only the last
+> > signal is kept.  So, we only need a flag.  Does a flag implemented with
+> > a rcu-protected refcount sound reasonable to you?
+> 
+> Well, if I recall correctly you still need to fix the locking in this
+> patchset so until we see what that looks like it is hard to say for
+> certain.  Just make sure that the flag is somehow protected from
+> races; it is probably a lot like the "valid" flags you sometimes see
+> with RCU protected lists.
 
-Split the 'Owner semantics' section up and add separate sections for
-semaphore and rw_semaphore to reflect reality.
+This is like looking for a needle in a haystack.  Can you point me to
+some code that does "valid" flags with RCU protected lists.
 
-Aside of that the following updates are done:
+> > > > Another question occurs to me is that what if the audit daemon is sent a
+> > > > signal and it cannot or will not collect the sig2 information from the
+> > > > kernel (SIGKILL?)?  Does that audit container identifier remain dead
+> > > > until reboot, or do we institute some other form of reaping, possibly
+> > > > time-based?
+> > >
+> > > In order to preserve the integrity of the audit log that ACID value
+> > > would need to remain unavailable until the ACID which contains the
+> > > associated auditd is "dead" (no one can request the signal sender's
+> > > info if that container is dead).
+> >
+> > I don't understand why it would be associated with the contid of the
+> > audit daemon process rather than with the audit daemon process itself.
+> > How does the signal collection somehow get transferred or delegated to
+> > another member of that audit daemon's container?
+> 
+> Presumably once we support multiple audit daemons we will need a
+> struct to contain the associated connection state, with at most one
+> struct (and one auditd) allowed for a given ACID.  I would expect that
+> the signal sender info would be part of that state included in that
+> struct.  If a task sent a signal to it's associated auditd, and no one
+> ever queried the signal information stored in the per-ACID state
+> struct, I would expect that the refcount/flag/whatever would remain
+> held for the signal sender's ACID until the auditd state's ACID died
+> (the struct would be reaped as part of the ACID death).  In cases
+> where the container orchestrator blocks sending signals across ACID
+> boundaries this really isn't an issue as it will all be the same ACID,
+> but since we don't want to impose any restrictions on what a container
+> *could* be it is important to make sure we handle the case where the
+> signal sender's ACID may be different from the associated auditd's
+> ACID.
+> 
+> > Thinking aloud here, the audit daemon's exit when it calls audit_free()
+> > needs to ..._put_sig and cancel that audit_sig_cid (which in the future
+> > will be allocated per auditd rather than the global it is now since
+> > there is only one audit daemon).
+> >
+> > > paul moore
+> >
+> > - RGB
+> 
+> paul moore
 
- - Add pseudo code to document the spinlock state preserving mechanism on
-   PREEMPT_RT
+- RGB
 
- - Wordsmith the bitspinlock and lock nesting sections
+--
+Richard Guy Briggs <rgb@redhat.com>
+Sr. S/W Engineer, Kernel Security, Base Operating Systems
+Remote, Ottawa, Red Hat Canada
+IRC: rgb, SunRaycer
+Voice: +1.647.777.2635, Internal: (81) 32635
 
-Co-developed-by: Paul McKenney <paulmck@kernel.org>
-Signed-off-by: Paul McKenney <paulmck@kernel.org>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
----
- Documentation/locking/locktypes.rst |  150 +++++++++++++++++++++++-------------
- 1 file changed, 99 insertions(+), 51 deletions(-)
-
---- a/Documentation/locking/locktypes.rst
-+++ b/Documentation/locking/locktypes.rst
-@@ -67,6 +67,17 @@ Spinning locks implicitly disable preemp
-  _irqsave/restore()   Save and disable / restore interrupt disabled state
-  ===================  ====================================================
- 
-+Owner semantics
-+===============
-+
-+The aforementioned lock types except semaphores have strict owner
-+semantics:
-+
-+  The context (task) that acquired the lock must release it.
-+
-+rw_semaphores have a special interface which allows non-owner release for
-+readers.
-+
- 
- rtmutex
- =======
-@@ -83,6 +94,51 @@ interrupt handlers and soft interrupts.
- and rwlock_t to be implemented via RT-mutexes.
- 
- 
-+semaphore
-+=========
-+
-+semaphore is a counting semaphore implementation.
-+
-+Semaphores are often used for both serialization and waiting, but new use
-+cases should instead use separate serialization and wait mechanisms, such
-+as mutexes and completions.
-+
-+semaphores and PREEMPT_RT
-+----------------------------
-+
-+PREEMPT_RT does not change the semaphore implementation because counting
-+semaphores have no concept of owners, thus preventing PREEMPT_RT from
-+providing priority inheritance for semaphores.  After all, an unknown
-+owner cannot be boosted. As a consequence, blocking on semaphores can
-+result in priority inversion.
-+
-+
-+rw_semaphore
-+============
-+
-+rw_semaphore is a multiple readers and single writer lock mechanism.
-+
-+On non-PREEMPT_RT kernels the implementation is fair, thus preventing
-+writer starvation.
-+
-+rw_semaphore complies by default with the strict owner semantics, but there
-+exist special-purpose interfaces that allow non-owner release for readers.
-+These work independent of the kernel configuration.
-+
-+rw_semaphore and PREEMPT_RT
-+---------------------------
-+
-+PREEMPT_RT kernels map rw_semaphore to a separate rt_mutex-based
-+implementation, thus changing the fairness:
-+
-+ Because an rw_semaphore writer cannot grant its priority to multiple
-+ readers, a preempted low-priority reader will continue holding its lock,
-+ thus starving even high-priority writers.  In contrast, because readers
-+ can grant their priority to a writer, a preempted low-priority writer will
-+ have its priority boosted until it releases the lock, thus preventing that
-+ writer from starving readers.
-+
-+
- raw_spinlock_t and spinlock_t
- =============================
- 
-@@ -102,7 +158,7 @@ critical section is tiny, thus avoiding
- spinlock_t
- ----------
- 
--The semantics of spinlock_t change with the state of CONFIG_PREEMPT_RT.
-+The semantics of spinlock_t change with the state of PREEMPT_RT.
- 
- On a non PREEMPT_RT enabled kernel spinlock_t is mapped to raw_spinlock_t
- and has exactly the same semantics.
-@@ -140,7 +196,16 @@ On a PREEMPT_RT enabled kernel spinlock_
-    kernels leave task state untouched.  However, PREEMPT_RT must change
-    task state if the task blocks during acquisition.  Therefore, it saves
-    the current task state before blocking and the corresponding lock wakeup
--   restores it.
-+   restores it, as shown below::
-+
-+    task->state = TASK_INTERRUPTIBLE
-+     lock()
-+       block()
-+         task->saved_state = task->state
-+	 task->state = TASK_UNINTERRUPTIBLE
-+	 schedule()
-+					lock wakeup
-+					  task->state = task->saved_state
- 
-    Other types of wakeups would normally unconditionally set the task state
-    to RUNNING, but that does not work here because the task must remain
-@@ -148,7 +213,22 @@ On a PREEMPT_RT enabled kernel spinlock_
-    wakeup attempts to awaken a task blocked waiting for a spinlock, it
-    instead sets the saved state to RUNNING.  Then, when the lock
-    acquisition completes, the lock wakeup sets the task state to the saved
--   state, in this case setting it to RUNNING.
-+   state, in this case setting it to RUNNING::
-+
-+    task->state = TASK_INTERRUPTIBLE
-+     lock()
-+       block()
-+         task->saved_state = task->state
-+	 task->state = TASK_UNINTERRUPTIBLE
-+	 schedule()
-+					non lock wakeup
-+					  task->saved_state = TASK_RUNNING
-+
-+					lock wakeup
-+					  task->state = task->saved_state
-+
-+   This ensures that the real wakeup cannot be lost.
-+
- 
- rwlock_t
- ========
-@@ -228,17 +308,16 @@ while holding normal non-raw spinlocks b
- bit spinlocks
- -------------
- 
--Bit spinlocks are problematic for PREEMPT_RT as they cannot be easily
--substituted by an RT-mutex based implementation for obvious reasons.
--
--The semantics of bit spinlocks are preserved on PREEMPT_RT kernels and the
--caveats vs. raw_spinlock_t apply.
--
--Some bit spinlocks are substituted by regular spinlock_t for PREEMPT_RT but
--this requires conditional (#ifdef'ed) code changes at the usage site while
--the spinlock_t substitution is simply done by the compiler and the
--conditionals are restricted to header files and core implementation of the
--locking primitives and the usage sites do not require any changes.
-+PREEMPT_RT cannot substitute bit spinlocks because a single bit is too
-+small to accommodate an RT-mutex.  Therefore, the semantics of bit
-+spinlocks are preserved on PREEMPT_RT kernels, so that the raw_spinlock_t
-+caveats also apply to bit spinlocks.
-+
-+Some bit spinlocks are replaced with regular spinlock_t for PREEMPT_RT
-+using conditional (#ifdef'ed) code changes at the usage site.  In contrast,
-+usage-site changes are not needed for the spinlock_t substitution.
-+Instead, conditionals in header files and the core locking implemementation
-+enable the compiler to do the substitution transparently.
- 
- 
- Lock type nesting rules
-@@ -254,46 +333,15 @@ Lock type nesting rules
- 
-   - Spinning lock types can nest inside sleeping lock types.
- 
--These rules apply in general independent of CONFIG_PREEMPT_RT.
-+These constraints apply both in PREEMPT_RT and otherwise.
- 
--As PREEMPT_RT changes the lock category of spinlock_t and rwlock_t from
--spinning to sleeping this has obviously restrictions how they can nest with
--raw_spinlock_t.
--
--This results in the following nest ordering:
-+The fact that PREEMPT_RT changes the lock category of spinlock_t and
-+rwlock_t from spinning to sleeping means that they cannot be acquired while
-+holding a raw spinlock.  This results in the following nesting ordering:
- 
-   1) Sleeping locks
-   2) spinlock_t and rwlock_t
-   3) raw_spinlock_t and bit spinlocks
- 
--Lockdep is aware of these constraints to ensure that they are respected.
--
--
--Owner semantics
--===============
--
--Most lock types in the Linux kernel have strict owner semantics, i.e. the
--context (task) which acquires a lock has to release it.
--
--There are two exceptions:
--
--  - semaphores
--  - rwsems
--
--semaphores have no owner semantics for historical reason, and as such
--trylock and release operations can be called from any context. They are
--often used for both serialization and waiting purposes. That's generally
--discouraged and should be replaced by separate serialization and wait
--mechanisms, such as mutexes and completions.
--
--rwsems have grown interfaces which allow non owner release for special
--purposes. This usage is problematic on PREEMPT_RT because PREEMPT_RT
--substitutes all locking primitives except semaphores with RT-mutex based
--implementations to provide priority inheritance for all lock types except
--the truly spinning ones. Priority inheritance on ownerless locks is
--obviously impossible.
--
--For now the rwsem non-owner release excludes code which utilizes it from
--being used on PREEMPT_RT enabled kernels. In same cases this can be
--mitigated by disabling portions of the code, in other cases the complete
--functionality has to be disabled until a workable solution has been found.
-+Lockdep will complain if these constraints are violated, both in
-+PREEMPT_RT and otherwise.
