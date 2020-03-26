@@ -2,53 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B210193532
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 02:16:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46EE2193537
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 02:21:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727592AbgCZBQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 21:16:26 -0400
-Received: from mga06.intel.com ([134.134.136.31]:20899 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727539AbgCZBQZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 21:16:25 -0400
-IronPort-SDR: IH2SM44ojr5lpLredMiB/8qdUwxKrosZVsuBwci1aRAgDQLqozqIXxDqDlpb0QJ1gLtgN/gWMO
- Q4mqldTvY/Ig==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2020 18:16:21 -0700
-IronPort-SDR: KBqoU2CdgjTi3EoPkQsp21218k2Dc0wAYAWmKeruFPZAXwAdZqubO+T4SmdUrBfmh0pl0rAl7a
- 7m9dZ6VwBmRQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,306,1580803200"; 
-   d="scan'208";a="282329295"
-Received: from cdalvizo-mobl1.amr.corp.intel.com (HELO [10.252.133.80]) ([10.252.133.80])
-  by fmsmga002.fm.intel.com with ESMTP; 25 Mar 2020 18:16:20 -0700
-Subject: Re: [PATCH] devlink: track snapshot id usage count using an xarray
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-References: <20200324223445.2077900-1-jacob.e.keller@intel.com>
- <20200324223445.2077900-8-jacob.e.keller@intel.com>
- <20200325160832.GY11304@nanopsycho.orion>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <4be7f585-fdaf-a782-7bc1-1760cad60882@intel.com>
-Date:   Wed, 25 Mar 2020 18:16:19 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1727611AbgCZBVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 21:21:20 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:38525 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727556AbgCZBVU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 21:21:20 -0400
+Received: by mail-ed1-f66.google.com with SMTP id e5so5042781edq.5
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 18:21:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=13Twtrlp2dqGIuRVL4M357jiT/a8hCEy39HcluUM67M=;
+        b=LYIAJLDPMR/Dd7T/GxLYQvrUa6d8R994z/QwzTIjMiYZzzeSu8QGxLOd0Ti+5zoTg5
+         6wveR/6cxB3e8oTZtaUniuoZgFdEtaUGK5VCI5UpyFYzFxsjb9R5Q++9YqTau+T5wgsI
+         MQgEz0m5OxM+fcO07O2qZGtIbccEntF46RpJE7HTGsztpf7z943OcMdlnnyBEqpYmFM1
+         lhd18zm52ogmm3O2ceLcPxKa9Yy1v2r7xm+wjGISL8wUBslLY7M9nlwZzH1mw/Es0JNr
+         4aP7I85Jez01Y8g925PHo///Qh1WdIPSjPtoVyyEDid8Am0cyaS7BGEQqzVl2WeR1R6M
+         L6CA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=13Twtrlp2dqGIuRVL4M357jiT/a8hCEy39HcluUM67M=;
+        b=GYcNuPRmSaHn4M+FDNC/o9Vcp8W1vydnm/y/u26P3AR71a1FyRB258Tf8FbdSQCTEH
+         OMTDDZd0mIfi+7/TbWz6v2vo0Uzomg+tqL72IORCZXh0z41xZ+OHhIm6pSha4fWPp9M+
+         0qje7Kcopg/nmUD5hIB4SuRSrHfVHA7jB0Cq5wAc8P5jx+0ZwdlnDG9aC3HZSptN5I0b
+         jo5t7INDSQO2YrLfupYn7ONi9gZ8qf5ZDhJlolQO1ood+cK+6CVQVMb+u1iOWjyneL7W
+         tkS6mGCd1V/ZxMxGNuqAm5I3il7eHrEUd/gxbA58Pu+7zJmHuLiaAjh5hL1ic+STN3iv
+         U7+Q==
+X-Gm-Message-State: ANhLgQ32sMncdPhnMfaTjSVGpFSGoNCaq60CXZami8dj9S/zDxJQub0C
+        Yc/vA1I5aFQTBiFz3javvsQpD8vH75Vq3PDBq48=
+X-Google-Smtp-Source: ADFU+vt7SH/E698lSuaoRa8zVelIhpj6rCAAohmAl/4+xHHoVnmN4fcyt4Ie0Kuep+28XK7qJF3BOhzGmB77RSNTFkA=
+X-Received: by 2002:a05:6402:1a5a:: with SMTP id bf26mr5767377edb.42.1585185679113;
+ Wed, 25 Mar 2020 18:21:19 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200325160832.GY11304@nanopsycho.orion>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <2786b9598d534abf1f3d11357fa9b5f5@sslemail.net>
+ <CA+FuTSf5U_ndpmBisjqLMihx0q+wCrqndDAUT1vF3=1DXJnumw@mail.gmail.com> <25b83b5245104a30977b042a886aa674@inspur.com>
+In-Reply-To: <25b83b5245104a30977b042a886aa674@inspur.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 25 Mar 2020 21:20:41 -0400
+Message-ID: <CAF=yD-LAWc0POejfaB_xRW97BoVdLd6s6kjATyjDFBoK1aP-9Q@mail.gmail.com>
+Subject: =?UTF-8?Q?Re=3A_=5Bvger=2Ekernel=2Eorg=E4=BB=A3=E5=8F=91=5DRe=3A_=5BPATCH_net=2Dnext=5D_net=2F?=
+        =?UTF-8?Q?packet=3A_fix_TPACKET=5FV3_performance_issue_in_case_of_TSO?=
+To:     =?UTF-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
+        <yangyi01@inspur.com>
+Cc:     "yang_y_yi@163.com" <yang_y_yi@163.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "u9012063@gmail.com" <u9012063@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Mar 25, 2020 at 8:45 PM Yi Yang (=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=
+=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 <yangyi01@inspur.com> wrote:
+>
+> By the way, even if we used hrtimer, it can't ensure so high performance =
+improvement, the reason is every frame has different size, you can't know h=
+ow many microseconds one frame will be available, early timer firing will b=
+e an unnecessary waste, late timer firing will reduce performance, so I sti=
+ll think the way this patch used is best so far.
+>
 
+The key differentiating feature of TPACKET_V3 is the use of blocks to
+efficiently pack packets and amortize wake ups.
 
-On 3/25/2020 9:08 AM, Jiri Pirko wrote:
-> You somehow missed "07/10" from the subject :O
-
-Huh. I sent using git-send-email, so I'm not sure how that happened.
+If you want immediate notification for every packet, why not just use
+TPACKET_V2?
