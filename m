@@ -2,101 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 427D1194D86
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 00:51:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B405C194D92
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 00:54:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727505AbgCZXvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 19:51:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35664 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726067AbgCZXvm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Mar 2020 19:51:42 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DCE9420719;
-        Thu, 26 Mar 2020 23:51:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585266702;
-        bh=xvs3J/Q3U56ufpWe2nNulhSZHmwnqdMsJLW24ny5dnw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ECsPpRypgoIwypNaf98MZ++R/UYzxdswFKFKXsg5cf2IYXatZ95AvM0HsCX8lvrtU
-         SYHSFvNS6LSwfPDocGDSyqphmk+bn5F4xXsp8KpNZTtdLATNJsTzdEsuo4pdAYIgN8
-         x5+UxHC8UPL+87wyNJW/oKAyjeNB1b7oppGNx3v4=
-Date:   Thu, 26 Mar 2020 16:51:39 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 net-next 1/5] devlink: Add macro for "fw.api" to
- info_get cb.
-Message-ID: <20200326165139.4568f60a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <582ed17d-8776-2f83-413c-37cf132c5e59@intel.com>
-References: <1585224155-11612-1-git-send-email-vasundhara-v.volam@broadcom.com>
-        <1585224155-11612-2-git-send-email-vasundhara-v.volam@broadcom.com>
-        <20200326134025.2c2c94f8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CACKFLimJORgp2kmRLgZHWLY9E1DsbD8CSf+=9A-_DQhQG8kbqg@mail.gmail.com>
-        <582ed17d-8776-2f83-413c-37cf132c5e59@intel.com>
+        id S1727699AbgCZXyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 19:54:32 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:38488 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726067AbgCZXyc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 19:54:32 -0400
+Received: by mail-pg1-f196.google.com with SMTP id x7so3705602pgh.5;
+        Thu, 26 Mar 2020 16:54:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7CVUJ19v0pY389uYsPOimGpmTd+8zgk3ZoECLlak5lM=;
+        b=INFMJGFcMVQGmxapcKuRntC2Hu7Scihi/K2WIqPinYkE7x1TAkiXXc/d9BNnWaPns4
+         L5Yjl1/AowBiF15atWfviywBhgO0UTCApRKD1MEGRqOaNjJrO5D5tVfDDz4cE2trvw7l
+         bVlE0Rmf+Rh4whilo56Bl9iTZHvA/Je7qZtsq+R12rNvESruWl2DpeWOyGkOP8bTUtJl
+         /o2zXLz1MMGyJ7Kxl3bLSSodp3GyaoJKNprYHm99xSQEbaB3llKIkqNDETYReSsVx9nE
+         FnvPXwu9d7nsGvcDwKRbA8+6i5NN5ibUQbL2vPleW6nU335BCJvH52SJ0grrfZk7KwSi
+         8EvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7CVUJ19v0pY389uYsPOimGpmTd+8zgk3ZoECLlak5lM=;
+        b=WODTFPEOQnnMYBo9VCxkSA5i0evU3VthziUjDUZg9HUk6iR90FQZScpW/IQHZg/z6p
+         Pr+D5TiiAZGmq4ptlNOjqwfDdh5iUHFowZumTujom0Z15ApS+6iqYrg9CuLa7I+KIS9o
+         wnl1SzQOmmmK/jKI/AjZBKhNC7uL7BJJm+G4e2oe1uaGpRaU/8zGJM/cKRiB0WcXvn2M
+         NB0+m//El3bn13q+8lnbdSmGXB6ZVqHNtec2HhrZmRH0sGL/YoNh40THmareWlau5xUB
+         yIKGCD6Gv/MwyQxM5HbMNs3iX3exjExLe4wMya74QdS2YmT3DNTTxo5tVtJAyGjvshGq
+         8bkg==
+X-Gm-Message-State: ANhLgQ15N5sneQW/xMREsldks7Ms6CIYwaNux0ZMcDi5czpyLJ3LUibf
+        frirDRhqZOvZR3fBpx5MXok=
+X-Google-Smtp-Source: ADFU+vtHItp+nWzngvwdD8m8gR416+z5AIiqRHKH0JSJZuOyBE5OslhJKwILx7T9X+o7ZOXp/Dq6XA==
+X-Received: by 2002:a63:1517:: with SMTP id v23mr10800809pgl.89.1585266871010;
+        Thu, 26 Mar 2020 16:54:31 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:c7d9])
+        by smtp.gmail.com with ESMTPSA id p70sm2417463pjp.47.2020.03.26.16.54.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2020 16:54:30 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 16:54:26 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jean-Philippe Menil <jpmenil@gmail.com>
+Cc:     yhs@fb.com, kernel-janitors@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] bpf: fix build warning - missing prototype
+Message-ID: <20200326235426.ei6ae2z5ek6uq3tt@ast-mbp>
+References: <7c27e51f-6a64-7374-b705-450cad42146c@fb.com>
+ <20200324072231.5780-1-jpmenil@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200324072231.5780-1-jpmenil@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Mar 2020 16:39:31 -0700 Jacob Keller wrote:
-> On 3/26/2020 4:09 PM, Michael Chan wrote:
-> > On Thu, Mar 26, 2020 at 1:40 PM Jakub Kicinski <kuba@kernel.org> wrote:  
-> >>
-> >> On Thu, 26 Mar 2020 17:32:34 +0530 Vasundhara Volam wrote:  
-> >>> Add definition and documentation for the new generic info "fw.api".
-> >>> "fw.api" specifies the version of the software interfaces between
-> >>> driver and overall firmware.
-> >>>
-> >>> Cc: Jakub Kicinski <kuba@kernel.org>
-> >>> Cc: Jacob Keller <jacob.e.keller@intel.com>
-> >>> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
-> >>> Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-> >>> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-> >>> ---
-> >>> v1->v2: Rename macro to "fw.api" from "drv.spec".  
-> >>
-> >> I suggested "fw.mgmt.api", like Intel has. What else those this API
-> >> number covers beyond management? Do you negotiated descriptor formats
-> >> for the datapath?  
-> > 
-> > To us, "management" firmware usually means firmware such as IPMI that
-> > interfaces with the BMC.  Here, we're trying to convey the API between
-> > the driver and the main firmware.  Yes, this main firmware also
-> > "manages" things such as rings, MAC, the physical port, etc.  But
-> > again, we want to distinguish it from the platform management type of
-> > firmware.
-> >   
+On Tue, Mar 24, 2020 at 08:22:31AM +0100, Jean-Philippe Menil wrote:
+> Fix build warnings when building net/bpf/test_run.o with W=1 due
+> to missing prototype for bpf_fentry_test{1..6}.
 > 
-> Documentation for "fw.mgmt":
+> Declare prototypes in order to silence warnings.
 > 
-> fw.mgmt
-> -------
+> Signed-off-by: Jean-Philippe Menil <jpmenil@gmail.com>
+> ---
+>  net/bpf/test_run.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> Control unit firmware version. This firmware is responsible for house
-> keeping tasks, PHY control etc. but not the packet-by-packet data path
-> operation.
-> 
-> To me, platform management would need a new name, as the term "fw.mgmt"
-> has already been used by multiple drivers.
+> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> index d555c0d8657d..cdf87fb0b6eb 100644
+> --- a/net/bpf/test_run.c
+> +++ b/net/bpf/test_run.c
+> @@ -113,31 +113,37 @@ static int bpf_test_finish(const union bpf_attr *kattr,
+>   * architecture dependent calling conventions. 7+ can be supported in the
+>   * future.
+>   */
+> +int noinline bpf_fentry_test1(int a);
+>  int noinline bpf_fentry_test1(int a)
+>  {
+>  	return a + 1;
+>  }
+>  
+> +int noinline bpf_fentry_test2(int a, u64 b);
+>  int noinline bpf_fentry_test2(int a, u64 b)
+>  {
+>  	return a + b;
+>  }
+>  
+> +int noinline bpf_fentry_test3(char a, int b, u64 c);
+>  int noinline bpf_fentry_test3(char a, int b, u64 c)
+>  {
+>  	return a + b + c;
+>  }
+>  
+> +int noinline bpf_fentry_test4(void *a, char b, int c, u64 d);
+>  int noinline bpf_fentry_test4(void *a, char b, int c, u64 d)
+>  {
+>  	return (long)a + b + c + d;
+>  }
+>  
+> +int noinline bpf_fentry_test5(u64 a, void *b, short c, int d, u64 e);
+>  int noinline bpf_fentry_test5(u64 a, void *b, short c, int d, u64 e)
+>  {
+>  	return a + (long)b + c + d + e;
+>  }
+>  
+> +int noinline bpf_fentry_test6(u64 a, void *b, short c, int d, void *e, u64 f);
+>  int noinline bpf_fentry_test6(u64 a, void *b, short c, int d, void *e, u64 f)
 
-Right, we already have:
-
-fw.ncsi                                                                         
--------                                                                         
-                                                                                
-Version of the software responsible for supporting/handling the                 
-Network Controller Sideband Interface.
-
-
-Maybe something more broad is needed there, but let's keep mgmt's
-meaning. I know this may not fit existing vendor nomenclature, but
-that's kind of the point, we're trying to have common Linux naming..
+That's a bit too much of "watery water".
+Have you considered
+__diag_push();
+__diag_ignore(GCC, "-Wwhatever specific flag will shut up this warn")
+__diag_pop();
+approach ?
+It will be self documenting as well.
