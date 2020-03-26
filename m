@@ -2,101 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E04C193869
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:14:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 973AA19387B
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:19:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726346AbgCZGOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 02:14:50 -0400
-Received: from conssluserg-02.nifty.com ([210.131.2.81]:62855 "EHLO
-        conssluserg-02.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726213AbgCZGOu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:14:50 -0400
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181]) (authenticated)
-        by conssluserg-02.nifty.com with ESMTP id 02Q6ERNC010464;
-        Thu, 26 Mar 2020 15:14:27 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 02Q6ERNC010464
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1585203268;
-        bh=9JvGFXDbXf0WHwUuU/6/XuO+PW6RcH+NvJKjNlcv4ZM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=De9gZQ+3D+HbdIRAHlgDjfw4T2JvNYMxXm9IlpEJy1cYv/ooP/3e8iMk2RZdOc2x4
-         mLD92alU8mMLzIEt/ceThq8ZNHs6RiiEaszrxCC0LcLDXGGVc+0Wcd5VO+es2m5EXl
-         Ci71pbZZQzNnfaOHVNB2RkH8dighd+JP4B48cHPkTaq5iPnYTFuZjtAQWfPj56/bC3
-         xN6/rnG9V2/ZBgoyJUJA7zXkWMI8alq+0W94adSNYqQLmln/ZTnMGDK8dpFBdsFqaw
-         USQF4J4/ArsRS/f29dOdyzBGHm+B5qynMmscRX6HBi3iqHLtW9q26/HvbQagwftIlX
-         neFkPfwtjpvRw==
-X-Nifty-SrcIP: [209.85.221.181]
-Received: by mail-vk1-f181.google.com with SMTP id p123so1400484vkg.1;
-        Wed, 25 Mar 2020 23:14:27 -0700 (PDT)
-X-Gm-Message-State: ANhLgQ285ry1bZZ69SW2N9QpArMN5/EL0PGSwfCVbX0GmSjJGrT8HMRB
-        B6fGqXGNyh1cZv6vnco4qvEJ+ELM8Wfl9CoF9bQ=
-X-Google-Smtp-Source: ADFU+vtR1PkThEG5fof0BkpvSUODBLIJyFZ5IQflhtz2NMxdF8WuPUa/n0iZ8kRCvUgyaSGgVqW4CH7K0FGWSteFi80=
-X-Received: by 2002:a1f:3649:: with SMTP id d70mr3829330vka.12.1585203266653;
- Wed, 25 Mar 2020 23:14:26 -0700 (PDT)
+        id S1726270AbgCZGTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 02:19:51 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:17752 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726138AbgCZGTv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:19:51 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1585203591; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=8fHBnabYixGwE4XAz5kPWWZx2CunwgyaNZeFS6vGEXM=; b=qFyDC7WTVqdqJtqGwDLTo3ASJsTNLFdDVJEbp/BEoMy8zFIgmWAAYHd6eRF7nc/01vBB4ixS
+ siV+f2AuuhhCK+5bxps4K6LO2EeUyTPmfcK5udRjQkOXsbXhHhiMwJ4gt80Yt9zIInr+gf73
+ Lm8xMf0xCo5LNnCIW1k1mnkEPKI=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e7c4983.7fd93f8b33e8-smtp-out-n01;
+ Thu, 26 Mar 2020 06:19:47 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id AD05DC433BA; Thu, 26 Mar 2020 06:19:47 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 3B4E8C433F2;
+        Thu, 26 Mar 2020 06:19:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3B4E8C433F2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: Re: pull-request: wireless-drivers-2020-03-25
+References: <20200325195754.92C97C433D2@smtp.codeaurora.org>
+        <20200325.131250.822565965107597577.davem@davemloft.net>
+Date:   Thu, 26 Mar 2020 08:19:43 +0200
+In-Reply-To: <20200325.131250.822565965107597577.davem@davemloft.net> (David
+        Miller's message of "Wed, 25 Mar 2020 13:12:50 -0700 (PDT)")
+Message-ID: <87sghv3af4.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-References: <20200324161539.7538-1-masahiroy@kernel.org> <20200324161539.7538-3-masahiroy@kernel.org>
- <CAKwvOdkjiyyt8Ju2j2O4cm1sB34rb_FTgjCRzEiXM6KL4muO_w@mail.gmail.com> <CAKwvOdmWqAUhL5DRg9oQPXzFtogK-0Q-VZ=FWf=Cjm-RJgR4sw@mail.gmail.com>
-In-Reply-To: <CAKwvOdmWqAUhL5DRg9oQPXzFtogK-0Q-VZ=FWf=Cjm-RJgR4sw@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Thu, 26 Mar 2020 15:13:50 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAS+3gq-uL6HF=o2NbZ2udkr+dqAhsvs-XxFs0M9wShJbw@mail.gmail.com>
-Message-ID: <CAK7LNAS+3gq-uL6HF=o2NbZ2udkr+dqAhsvs-XxFs0M9wShJbw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] kbuild: remove AS variable
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nick,
+David Miller <davem@davemloft.net> writes:
 
-
-On Wed, Mar 25, 2020 at 4:59 AM Nick Desaulniers
-<ndesaulniers@google.com> wrote:
+> From: Kalle Valo <kvalo@codeaurora.org>
+> Date: Wed, 25 Mar 2020 19:57:54 +0000 (UTC)
 >
-> On Tue, Mar 24, 2020 at 12:38 PM Nick Desaulniers
-> <ndesaulniers@google.com> wrote:
-> > consistent in this regard (and not using the compiler as the driver),
+>> here's a pull request to net tree, more info below. Please let me know if there
+>> are any problems.
 >
-> Ah, the preprocessor; we need to preprocess the .S files, .s files are
-> fine (though we have .lds.S files that are not `-x
-> assembler-with-cpp`)
+> Pulled, thanks Kalle.
 
+Thanks. I forgot to remind in this pull request about the iwlwifi
+conflict when you merge net to net-next. Here are the instructions how
+to handle that:
 
-Right, there is no '*.s' source file in the kernel tree.
+  To solve that just drop the changes from commit cf52c8a776d1 in
+  wireless-drivers and take the hunk from wireless-drivers-next as is.
+  The list of specific subsystem device IDs are not necessary after
+  commit d6f2134a3831 (in wireless-drivers-next) anymore, the detection
+  is based on other characteristics of the devices.
 
-If we want to de-couple $(AS), we must the compilation
-before the assemble stage   ( $(CC) -S ), but
-doing so does not buy us.
-
-So, $(CC) always works as the front-end
-for compiling both .c and .S files.
-
-
-You can see the internal database by
-'make --print-data-base'.
-
-I see the following for  *.S -> *.o rule.
-
-# default
-COMPILE.S = $(CC) $(ASFLAGS) $(CPPFLAGS) $(TARGET_MACH) -c
-
-
-So, using $(CC) is the right thing.
-
-
-Even if we keep AS, we cannot do like AS=llvm-as
-since llvm-as is a different kind of tool
-that processes LLVM assembly (.ll) .
-
+  https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=5ef8c665416b9815113042e0edebe8ff66a45e2e
 
 -- 
-Best Regards
-Masahiro Yamada
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
