@@ -2,140 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5A9F193860
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:12:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C5CA193863
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:13:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726590AbgCZGMy convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 26 Mar 2020 02:12:54 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:57475 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725854AbgCZGMy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:12:54 -0400
-Received: from marcel-macpro.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 42F18CECDA;
-        Thu, 26 Mar 2020 07:22:24 +0100 (CET)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH v2 1/2] Bluetooth: btusb: Indicate Microsoft vendor
- extension for Intel 9460/9560 and 9160/9260
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <CABmPvSFwb1zu33fUog9hVK6y2R=PmKeGyOwkP3+=ZzE_qkX9yQ@mail.gmail.com>
-Date:   Thu, 26 Mar 2020 07:12:52 +0100
-Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Alain Michaud <alainm@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <B8FE9D19-4589-47C6-9C1F-2DC1146F53DA@holtmann.org>
-References: <20200325070336.1097-1-mcchou@chromium.org>
- <20200325000332.v2.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
- <72699110-843A-4382-8FF1-20C5D4D557A2@holtmann.org>
- <CABmPvSFL_bkrZQJkAzUMck_bAY5aBZkL=5HGV_Syv2QRYfRLfw@mail.gmail.com>
- <B2A2CFFE-8FC1-462B-9C7F-1CD584B6EB24@holtmann.org>
- <CABmPvSFwb1zu33fUog9hVK6y2R=PmKeGyOwkP3+=ZzE_qkX9yQ@mail.gmail.com>
-To:     Miao-chen Chou <mcchou@chromium.org>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
+        id S1726363AbgCZGNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 02:13:40 -0400
+Received: from mail-il1-f194.google.com ([209.85.166.194]:44286 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725854AbgCZGNk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:13:40 -0400
+Received: by mail-il1-f194.google.com with SMTP id j69so4269761ila.11;
+        Wed, 25 Mar 2020 23:13:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gPcEMXRPvJbPRuzCholrxluQ5t3A7xCzgVaJ5THOoRY=;
+        b=N9vzyOdwXAXB5WPGxkQ8W5+wvd2JsUkiSHY5539u40WEOuUUrxRMhPUtb6kU66COUv
+         qfbZqUxwjQmHwwjTRZ7WPqjhyUhuWKmOydrDoq80F7mT8OI2mEPPzzlK67GGPDogyZJ5
+         P4f67J9P0WKpdin9RGv6F56fc4aawSYbAUjRpIB+z0195YjoFz7P8TXIjyJ0O5HoQPZM
+         7+4rWoMTczd7EH0jvHZl+4DS677Jho2AuLwdBKjmpMWkYjFYd4fMPCV3z6128bhziuqV
+         oDgO4vTaq/3O8uE3dMCzmsgul6IzADL74gO7P55pE51lahiWGHb6AwVPaIAA7HrH2g5q
+         V8Aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gPcEMXRPvJbPRuzCholrxluQ5t3A7xCzgVaJ5THOoRY=;
+        b=si0tZuDi0cGUvl/KlAo3JUnRPZDZHAMihyL06DIW344v174vcLw258OjnughKqObHk
+         bAKZqT4qW68gsFNpf+6qNMAAwKwtfg6IGbMUHMEjNsbmJUFxS5YD34FvX3sYGOM4iPzl
+         PP3vxZZSdno2HSsX9F3y2yKXmeZNbA2YQK8zb5k2yj9I10U3uNki0ixIqU7hVTzqYNaR
+         sVfdVX9PMaxH5i7PazQvbnkHcy50LMNiHKIwcANv6UsN/SG/BFkvFez7MRh58IIXlfyy
+         HuEmdbS/Zii7D71tX9OY+Lu6C0IQatwo19A3jvLW96cQgfpHyRUbzw6eDO9CVkzbyasq
+         QtfA==
+X-Gm-Message-State: ANhLgQ3D9MU6cuZC/vtY/nlaRDAFMPJFtpDn0V3DzILcrXkD+UOrsT2u
+        U7EQqTPrTZRhpNufftoxrkYdp0TkenCuPi4eimw=
+X-Google-Smtp-Source: ADFU+vs6KETsoMXOKa6/Hpv8q6jFxVHOIR6dOWAk9pb9UfR3mTorNVVw5EKqX3tAq78npUgYNZswjF9f6dL3TSXDxf4=
+X-Received: by 2002:a92:5b56:: with SMTP id p83mr7258454ilb.70.1585203217463;
+ Wed, 25 Mar 2020 23:13:37 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200322090425.6253-1-hqjagain@gmail.com> <20200326001416.GH3756@localhost.localdomain>
+ <CAJRQjoeWUHj7Ep5ycTxVJVuxmhzrzXx=-rP_h=hCCrBvgTUNEg@mail.gmail.com> <20200326032252.GI3756@localhost.localdomain>
+In-Reply-To: <20200326032252.GI3756@localhost.localdomain>
+From:   Qiujun Huang <hqjagain@gmail.com>
+Date:   Thu, 26 Mar 2020 14:13:26 +0800
+Message-ID: <CAJRQjoc345azEnNK29Npmqco5CL8zL9zi_ZvKF-1bRm_eWsksQ@mail.gmail.com>
+Subject: Re: [PATCH v4] sctp: fix refcount bug in sctp_wfree
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, Jakub Kicinski <kuba@kernel.org>,
+        linux-sctp@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, anenbupt@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Miao-chen,
+On Thu, Mar 26, 2020 at 11:22 AM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Thu, Mar 26, 2020 at 09:30:08AM +0800, Qiujun Huang wrote:
+> > On Thu, Mar 26, 2020 at 8:14 AM Marcelo Ricardo Leitner
+> > <marcelo.leitner@gmail.com> wrote:
+> > >
+> > > On Sun, Mar 22, 2020 at 05:04:25PM +0800, Qiujun Huang wrote:
+> > > > sctp_sock_migrate should iterate over the datamsgs to modify
+> > > > all trunks(skbs) to newsk. For this, out_msg_list is added to
+> > >
+> > > s/trunks/chunks/
+> >
+> > My :p.
+> >
+> > >
+> > > > sctp_outq to maintain datamsgs list.
+> > >
+> > > It is an interesting approach. It speeds up the migration, yes, but it
+> > > will also use more memory per datamsg, for an operation that, when
+> > > performed, the socket is usually calm.
+> > >
+> > > It's also another list to be handled, and I'm not seeing the patch
+> > > here move the datamsg itself now to the new outq. It would need
+> > > something along these lines:
+> >
+> > Are all the rx chunks in the rx queues?
+>
+> Yes, even with GSO.
+>
+> >
+> > > sctp_sock_migrate()
+> > > {
+> > > ...
+> > >         /* Move any messages in the old socket's receive queue that are for the
+> > >          * peeled off association to the new socket's receive queue.
+> > >          */
+> > >         sctp_skb_for_each(skb, &oldsk->sk_receive_queue, tmp) {
+> > >                 event = sctp_skb2event(skb);
+> > > ...
+> > >                 /* Walk through the pd_lobby, looking for skbs that
+> > >                  * need moved to the new socket.
+> > >                  */
+> > >                 sctp_skb_for_each(skb, &oldsp->pd_lobby, tmp) {
+> > >                         event = sctp_skb2event(skb);
+> > >
+> > > That said, I don't think it's worth this new list.
+> >
+> > About this case:
+> > datamsg
+> >                    ->chunk0                       chunk1
+> >        chunk2
+> >  queue          ->transmitted                 ->retransmit
+> >  ->not in any queue
+>
+> We always can find it through the other chunks, otherwise it's freed.
+>
+> >
+> > Also need to maintain a datamsg list to record which datamsg is
+> > processed avoiding repetitive
+> > processing.
+>
+> Right, but for that we can add a simple check on
+> sctp_for_each_tx_datamsg() based on a parameter.
 
->>>>> This adds a bit mask of driver_info for Microsoft vendor extension and
->>>>> indicates the support for Intel 9460/9560 and 9160/9260. See
->>>>> https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
->>>>> microsoft-defined-bluetooth-hci-commands-and-events for more information
->>>>> about the extension. This was verified with Intel ThunderPeak BT controller
->>>>> where msft_vnd_ext_opcode is 0xFC1E.
->>>>> 
->>>>> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
->>>>> ---
->>>>> 
->>>>> Changes in v2:
->>>>> - Define struct msft_vnd_ext and add a field of this type to struct
->>>>> hci_dev to facilitate the support of Microsoft vendor extension.
->>>>> 
->>>>> drivers/bluetooth/btusb.c        | 14 ++++++++++++--
->>>>> include/net/bluetooth/hci_core.h |  6 ++++++
->>>>> 2 files changed, 18 insertions(+), 2 deletions(-)
->>>>> 
->>>>> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
->>>>> index 3bdec42c9612..4c49f394f174 100644
->>>>> --- a/drivers/bluetooth/btusb.c
->>>>> +++ b/drivers/bluetooth/btusb.c
->>>>> @@ -58,6 +58,7 @@ static struct usb_driver btusb_driver;
->>>>> #define BTUSB_CW6622          0x100000
->>>>> #define BTUSB_MEDIATEK                0x200000
->>>>> #define BTUSB_WIDEBAND_SPEECH 0x400000
->>>>> +#define BTUSB_MSFT_VND_EXT   0x800000
->>>>> 
->>>>> static const struct usb_device_id btusb_table[] = {
->>>>>     /* Generic Bluetooth USB device */
->>>>> @@ -335,7 +336,8 @@ static const struct usb_device_id blacklist_table[] = {
->>>>> 
->>>>>     /* Intel Bluetooth devices */
->>>>>     { USB_DEVICE(0x8087, 0x0025), .driver_info = BTUSB_INTEL_NEW |
->>>>> -                                                  BTUSB_WIDEBAND_SPEECH },
->>>>> +                                                  BTUSB_WIDEBAND_SPEECH |
->>>>> +                                                  BTUSB_MSFT_VND_EXT },
->>>>>     { USB_DEVICE(0x8087, 0x0026), .driver_info = BTUSB_INTEL_NEW |
->>>>>                                                  BTUSB_WIDEBAND_SPEECH },
->>>>>     { USB_DEVICE(0x8087, 0x0029), .driver_info = BTUSB_INTEL_NEW |
->>>>> @@ -348,7 +350,8 @@ static const struct usb_device_id blacklist_table[] = {
->>>>>     { USB_DEVICE(0x8087, 0x0aa7), .driver_info = BTUSB_INTEL |
->>>>>                                                  BTUSB_WIDEBAND_SPEECH },
->>>>>     { USB_DEVICE(0x8087, 0x0aaa), .driver_info = BTUSB_INTEL_NEW |
->>>>> -                                                  BTUSB_WIDEBAND_SPEECH },
->>>>> +                                                  BTUSB_WIDEBAND_SPEECH |
->>>>> +                                                  BTUSB_MSFT_VND_EXT },
->>>>> 
->>>>>     /* Other Intel Bluetooth devices */
->>>>>     { USB_VENDOR_AND_INTERFACE_INFO(0x8087, 0xe0, 0x01, 0x01),
->>>>> @@ -3734,6 +3737,8 @@ static int btusb_probe(struct usb_interface *intf,
->>>>>     hdev->send   = btusb_send_frame;
->>>>>     hdev->notify = btusb_notify;
->>>>> 
->>>>> +     hdev->msft_ext.opcode = HCI_OP_NOP;
->>>>> +
->>>> 
->>>> do this in the hci_alloc_dev procedure for every driver. This doesn’t belong in the driver.
->>> Thanks for the note, I will address this.
->>>> 
->>>>> #ifdef CONFIG_PM
->>>>>     err = btusb_config_oob_wake(hdev);
->>>>>     if (err)
->>>>> @@ -3800,6 +3805,11 @@ static int btusb_probe(struct usb_interface *intf,
->>>>>             set_bit(HCI_QUIRK_STRICT_DUPLICATE_FILTER, &hdev->quirks);
->>>>>             set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
->>>>>             set_bit(HCI_QUIRK_NON_PERSISTENT_DIAG, &hdev->quirks);
->>>>> +
->>>>> +             if (id->driver_info & BTUSB_MSFT_VND_EXT &&
->>>>> +                     (id->idProduct == 0x0025 || id->idProduct == 0x0aaa)) {
->>>> 
->>>> Please scrap this extra check. You already selected out the PID with the blacklist_table. In addition, I do not want to add a PID in two places in the driver.
->>> If we scrap the check around idProduct, how do we tell two controllers
->>> apart if they use different opcode for Microsoft vendor extension?
->> 
->> for Intel controllers this is highly unlikely. If we really decide to change the opcode in newer firmware versions, we then deal with it at that point.
->> 
->> However for Intel controllers I have the feeling that we better do it after the Read the Intel version information and then do it based on hardware revision and firmware version.
-> I would agree with you given that the FW loaded for the same HW can
-> differ, and different FW version may have different configuration in
-> terms of the use of extensions. But it's not clear to me how we can
-> tell whether an extension is supported based on a version number. Is
-> there any implication on the support of an extension given a FW
-> version (e.g. any FW version greater than 10 would support MSFT
-> extension)?
+Great! I get it, thanks!
 
-that is for us to figure out. I will get back to you on that.
-
-Regards
-
-Marcel
-
+>
+> > So, list it to outq. Maybe it will be used sometime.
+>
+> We can change it when the time comes. For now, if we can avoid growing
+> sctp_datamsg, it's better. With this patch, it grows from 40 to 56
+> bytes, leaving just 8 left before it starts using a slab of 128 bytes
+> for it.
+>
+>
+> The patched list_for_each_entry() can/should be factored out into
+> __sctp_for_each_tx_datachunk, whose first parameter then is the queue
+> instead the asoc.
+>
+> ---8<---
+>
+> diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+> index fed26a1e9518..62f401799709 100644
+> --- a/net/sctp/socket.c
+> +++ b/net/sctp/socket.c
+> @@ -148,19 +148,30 @@ static void sctp_clear_owner_w(struct sctp_chunk *chunk)
+>  }
+>
+>  static void sctp_for_each_tx_datachunk(struct sctp_association *asoc,
+> +                                      bool clear,
+>                                        void (*cb)(struct sctp_chunk *))
+>
+>  {
+> +       struct sctp_datamsg *msg, *prev_msg = NULL;
+>         struct sctp_outq *q = &asoc->outqueue;
+> +       struct sctp_chunk *chunk, *c;
+>         struct sctp_transport *t;
+> -       struct sctp_chunk *chunk;
+>
+>         list_for_each_entry(t, &asoc->peer.transport_addr_list, transports)
+>                 list_for_each_entry(chunk, &t->transmitted, transmitted_list)
+>                         cb(chunk);
+>
+> -       list_for_each_entry(chunk, &q->retransmit, transmitted_list)
+> -               cb(chunk);
+> +       list_for_each_entry(chunk, &q->sacked, transmitted_list) {
+> +               msg = chunk->msg;
+> +               if (msg == prev_msg)
+> +                       continue;
+> +               list_for_each_entry(c, &msg->chunks, frag_list) {
+> +                       if ((clear && asoc->base.sk == c->skb->sk) ||
+> +                           (!clear && asoc->base.sk != c->skb->sk))
+> +                               cb(c);
+> +               }
+> +               prev_msg = msg;
+> +       }
+>
+>         list_for_each_entry(chunk, &q->sacked, transmitted_list)
+>                 cb(chunk);
+> @@ -9574,9 +9585,9 @@ static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
+>          * paths won't try to lock it and then oldsk.
+>          */
+>         lock_sock_nested(newsk, SINGLE_DEPTH_NESTING);
+> -       sctp_for_each_tx_datachunk(assoc, sctp_clear_owner_w);
+> +       sctp_for_each_tx_datachunk(assoc, true, sctp_clear_owner_w);
+>         sctp_assoc_migrate(assoc, newsk);
+> -       sctp_for_each_tx_datachunk(assoc, sctp_set_owner_w);
+> +       sctp_for_each_tx_datachunk(assoc, false, sctp_set_owner_w);
+>
+>         /* If the association on the newsk is already closed before accept()
+>          * is called, set RCV_SHUTDOWN flag.
