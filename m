@@ -2,76 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECB89193858
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:10:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5A9F193860
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:12:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726260AbgCZGK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 02:10:29 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:45949 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725819AbgCZGK3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:10:29 -0400
-Received: by mail-pl1-f193.google.com with SMTP id b9so1735550pls.12;
-        Wed, 25 Mar 2020 23:10:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=41vVa28NJxXW3frZ8ek4ZKaeBQo5l+BXmc8fCo+GQhQ=;
-        b=jf7oxa+8ikWokbp3JZVIehonc4tqf4fzrQU0IEfqJz2gvbbhTAg43SkOMs2WBR32mB
-         UyeJIBFYpAc21pHcOfyn4/3pci0Ajb424PjlFKrOpMUPcWi/SM4DzUlcrC5tUGFY8QPc
-         20KHesOkykqOUeUzXyOfIoOOEwznyHYBUpP8gRvQsKWS5vaoIVa4EVIEdKHj4E6yuTmd
-         b6WLYgxC+/cK8tKKmKxp4j5Hdu2JqT6G1oUlcJpCsd7Ayo48vknsyORhO2SL7EQjhofZ
-         vCIS7+x0TFmxIpjVnhL7QY858sQWO87Ev2obW0K9AlixRk0sDydQYlLWgls/5GooFrup
-         Ht5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=41vVa28NJxXW3frZ8ek4ZKaeBQo5l+BXmc8fCo+GQhQ=;
-        b=T5nnj1IJWwdAKvCSjSqzrGiEBr7Tznjidfh5wCtj94fuZgVfjzpYfNdaDS8lv5bFYj
-         DIIQiQoiX4l7kfMYF+yF/FaEYlej2SkXAn008kLRdPBlUVHQW/lkacBJh5o95cbFtafH
-         s+Oa03LrfEiRvYw+zvBjjQlW0yFzVNmzSfuzgErxpbiTB2CgTkkajB/r/E50TtAW7lAG
-         7DWnAObbongPFhPtThqHYAaEtWBXMoTSFzXbq6b+cDH8dfLExBN2lUSn9pRryoLy/S+v
-         /wBQdu6vGXrhKbpqog5NvRsxtU80MDZSGnQ0Cb6wTLV8E8uxfjL51FPyDm/h546eK/7t
-         47xA==
-X-Gm-Message-State: ANhLgQ3FPd2kGGviLw4WlZ9ZiOApF4okTSiwZFZe6MzMB+z3IF0Mgu0E
-        8ye4GFN0r1VusKSTxyTlOvY=
-X-Google-Smtp-Source: ADFU+vukcXyhls4yVA1H7ILY3oCs/UmLj2IPLDJuQPLRaTJ0yCqiM0VjOEDIglXlARmlZyc3N6l9gQ==
-X-Received: by 2002:a17:902:aa97:: with SMTP id d23mr6691349plr.244.1585203026227;
-        Wed, 25 Mar 2020 23:10:26 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:5929])
-        by smtp.gmail.com with ESMTPSA id 11sm769566pfv.43.2020.03.25.23.10.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2020 23:10:24 -0700 (PDT)
-Date:   Wed, 25 Mar 2020 23:10:22 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     ecree@solarflare.com, yhs@fb.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [bpf-next PATCH 02/10] bpf: verifer, refactor
- adjust_scalar_min_max_vals
-Message-ID: <20200326061022.4c26jj6t6e7b4ilq@ast-mbp>
-References: <158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower>
- <158507149518.15666.15672349629329072411.stgit@john-Precision-5820-Tower>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <158507149518.15666.15672349629329072411.stgit@john-Precision-5820-Tower>
+        id S1726590AbgCZGMy convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 26 Mar 2020 02:12:54 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:57475 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725854AbgCZGMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:12:54 -0400
+Received: from marcel-macpro.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 42F18CECDA;
+        Thu, 26 Mar 2020 07:22:24 +0100 (CET)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH v2 1/2] Bluetooth: btusb: Indicate Microsoft vendor
+ extension for Intel 9460/9560 and 9160/9260
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <CABmPvSFwb1zu33fUog9hVK6y2R=PmKeGyOwkP3+=ZzE_qkX9yQ@mail.gmail.com>
+Date:   Thu, 26 Mar 2020 07:12:52 +0100
+Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <B8FE9D19-4589-47C6-9C1F-2DC1146F53DA@holtmann.org>
+References: <20200325070336.1097-1-mcchou@chromium.org>
+ <20200325000332.v2.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
+ <72699110-843A-4382-8FF1-20C5D4D557A2@holtmann.org>
+ <CABmPvSFL_bkrZQJkAzUMck_bAY5aBZkL=5HGV_Syv2QRYfRLfw@mail.gmail.com>
+ <B2A2CFFE-8FC1-462B-9C7F-1CD584B6EB24@holtmann.org>
+ <CABmPvSFwb1zu33fUog9hVK6y2R=PmKeGyOwkP3+=ZzE_qkX9yQ@mail.gmail.com>
+To:     Miao-chen Chou <mcchou@chromium.org>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 10:38:15AM -0700, John Fastabend wrote:
-> Pull per op ALU logic into individual functions. We are about to add
-> u32 versions of each of these by pull them out the code gets a bit
-> more readable here and nicer in the next patch.
-> 
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+Hi Miao-chen,
 
-Great stuff!
-I've applied this patch 2.
-Then patch 3 and patch 8.
+>>>>> This adds a bit mask of driver_info for Microsoft vendor extension and
+>>>>> indicates the support for Intel 9460/9560 and 9160/9260. See
+>>>>> https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
+>>>>> microsoft-defined-bluetooth-hci-commands-and-events for more information
+>>>>> about the extension. This was verified with Intel ThunderPeak BT controller
+>>>>> where msft_vnd_ext_opcode is 0xFC1E.
+>>>>> 
+>>>>> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
+>>>>> ---
+>>>>> 
+>>>>> Changes in v2:
+>>>>> - Define struct msft_vnd_ext and add a field of this type to struct
+>>>>> hci_dev to facilitate the support of Microsoft vendor extension.
+>>>>> 
+>>>>> drivers/bluetooth/btusb.c        | 14 ++++++++++++--
+>>>>> include/net/bluetooth/hci_core.h |  6 ++++++
+>>>>> 2 files changed, 18 insertions(+), 2 deletions(-)
+>>>>> 
+>>>>> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+>>>>> index 3bdec42c9612..4c49f394f174 100644
+>>>>> --- a/drivers/bluetooth/btusb.c
+>>>>> +++ b/drivers/bluetooth/btusb.c
+>>>>> @@ -58,6 +58,7 @@ static struct usb_driver btusb_driver;
+>>>>> #define BTUSB_CW6622          0x100000
+>>>>> #define BTUSB_MEDIATEK                0x200000
+>>>>> #define BTUSB_WIDEBAND_SPEECH 0x400000
+>>>>> +#define BTUSB_MSFT_VND_EXT   0x800000
+>>>>> 
+>>>>> static const struct usb_device_id btusb_table[] = {
+>>>>>     /* Generic Bluetooth USB device */
+>>>>> @@ -335,7 +336,8 @@ static const struct usb_device_id blacklist_table[] = {
+>>>>> 
+>>>>>     /* Intel Bluetooth devices */
+>>>>>     { USB_DEVICE(0x8087, 0x0025), .driver_info = BTUSB_INTEL_NEW |
+>>>>> -                                                  BTUSB_WIDEBAND_SPEECH },
+>>>>> +                                                  BTUSB_WIDEBAND_SPEECH |
+>>>>> +                                                  BTUSB_MSFT_VND_EXT },
+>>>>>     { USB_DEVICE(0x8087, 0x0026), .driver_info = BTUSB_INTEL_NEW |
+>>>>>                                                  BTUSB_WIDEBAND_SPEECH },
+>>>>>     { USB_DEVICE(0x8087, 0x0029), .driver_info = BTUSB_INTEL_NEW |
+>>>>> @@ -348,7 +350,8 @@ static const struct usb_device_id blacklist_table[] = {
+>>>>>     { USB_DEVICE(0x8087, 0x0aa7), .driver_info = BTUSB_INTEL |
+>>>>>                                                  BTUSB_WIDEBAND_SPEECH },
+>>>>>     { USB_DEVICE(0x8087, 0x0aaa), .driver_info = BTUSB_INTEL_NEW |
+>>>>> -                                                  BTUSB_WIDEBAND_SPEECH },
+>>>>> +                                                  BTUSB_WIDEBAND_SPEECH |
+>>>>> +                                                  BTUSB_MSFT_VND_EXT },
+>>>>> 
+>>>>>     /* Other Intel Bluetooth devices */
+>>>>>     { USB_VENDOR_AND_INTERFACE_INFO(0x8087, 0xe0, 0x01, 0x01),
+>>>>> @@ -3734,6 +3737,8 @@ static int btusb_probe(struct usb_interface *intf,
+>>>>>     hdev->send   = btusb_send_frame;
+>>>>>     hdev->notify = btusb_notify;
+>>>>> 
+>>>>> +     hdev->msft_ext.opcode = HCI_OP_NOP;
+>>>>> +
+>>>> 
+>>>> do this in the hci_alloc_dev procedure for every driver. This doesn’t belong in the driver.
+>>> Thanks for the note, I will address this.
+>>>> 
+>>>>> #ifdef CONFIG_PM
+>>>>>     err = btusb_config_oob_wake(hdev);
+>>>>>     if (err)
+>>>>> @@ -3800,6 +3805,11 @@ static int btusb_probe(struct usb_interface *intf,
+>>>>>             set_bit(HCI_QUIRK_STRICT_DUPLICATE_FILTER, &hdev->quirks);
+>>>>>             set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
+>>>>>             set_bit(HCI_QUIRK_NON_PERSISTENT_DIAG, &hdev->quirks);
+>>>>> +
+>>>>> +             if (id->driver_info & BTUSB_MSFT_VND_EXT &&
+>>>>> +                     (id->idProduct == 0x0025 || id->idProduct == 0x0aaa)) {
+>>>> 
+>>>> Please scrap this extra check. You already selected out the PID with the blacklist_table. In addition, I do not want to add a PID in two places in the driver.
+>>> If we scrap the check around idProduct, how do we tell two controllers
+>>> apart if they use different opcode for Microsoft vendor extension?
+>> 
+>> for Intel controllers this is highly unlikely. If we really decide to change the opcode in newer firmware versions, we then deal with it at that point.
+>> 
+>> However for Intel controllers I have the feeling that we better do it after the Read the Intel version information and then do it based on hardware revision and firmware version.
+> I would agree with you given that the FW loaded for the same HW can
+> differ, and different FW version may have different configuration in
+> terms of the use of extensions. But it's not clear to me how we can
+> tell whether an extension is supported based on a version number. Is
+> there any implication on the support of an extension given a FW
+> version (e.g. any FW version greater than 10 would support MSFT
+> extension)?
 
-The other patches need a bit more work will reply there.
+that is for us to figure out. I will get back to you on that.
+
+Regards
+
+Marcel
+
