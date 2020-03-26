@@ -2,89 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A524E1948A5
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 21:18:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DA3719492B
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 21:29:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728638AbgCZUS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 16:18:28 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:52352 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727879AbgCZUS1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 16:18:27 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02QKILlB035158;
-        Thu, 26 Mar 2020 15:18:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1585253901;
-        bh=acOH02zgrD/iIEWGjM+u8IbzyboIFHTfr8eulz18fTU=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=cb8aQenQF02vYBMSxaBaUe9B0YiviWLZtYdoBU8ddLTkhjiypDNsaonduB+5JI86i
-         oqHCySREE6ossz0gpkszNpmLlw4lPLVjOfeApVl5/hL6OBv7+73Veo4aMHILJbAEv+
-         xnZ3CUZkQamz6p/4xoyYxRQOd+62/O11krF6kE0c=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 02QKILW6013512
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 26 Mar 2020 15:18:21 -0500
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Thu, 26
- Mar 2020 15:18:21 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Thu, 26 Mar 2020 15:18:21 -0500
-Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02QKIII6080272;
-        Thu, 26 Mar 2020 15:18:19 -0500
-Subject: Re: [PATCH net-next v3 03/11] net: ethernet: ti: cpts: move tc mult
- update in cpts_fifo_read()
-To:     Richard Cochran <richardcochran@gmail.com>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Tony Lindgren <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
-        Murali Karicheri <m-karicheri2@ti.com>,
-        netdev <netdev@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20200320194244.4703-1-grygorii.strashko@ti.com>
- <20200320194244.4703-4-grygorii.strashko@ti.com>
- <20200326142049.GD20841@localhost>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <f91001c9-2b11-53ac-84a7-11e1e94c5dc9@ti.com>
-Date:   Thu, 26 Mar 2020 22:18:18 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1728774AbgCZU3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 16:29:22 -0400
+Received: from smtprelay0050.hostedemail.com ([216.40.44.50]:59896 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726363AbgCZU3W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 16:29:22 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 5365518033D30;
+        Thu, 26 Mar 2020 20:29:21 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:960:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2525:2560:2563:2682:2685:2691:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3870:3871:3872:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:5007:6742:8985:9025:10004:10400:10848:11026:11232:11658:11914:12043:12296:12297:12438:12740:12895:13018:13019:13069:13071:13311:13357:13439:13894:14180:14181:14659:14721:21060:21080:21627:21788:21990:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: bells46_513c0c0a8540a
+X-Filterd-Recvd-Size: 2293
+Received: from XPS-9350.home (unknown [47.151.136.130])
+        (Authenticated sender: joe@perches.com)
+        by omf04.hostedemail.com (Postfix) with ESMTPA;
+        Thu, 26 Mar 2020 20:29:18 +0000 (UTC)
+Message-ID: <bc4056226b76834aa3fc52cce2d96855afa2c440.camel@perches.com>
+Subject: Re: [PATCH net-next 7/9] net: phy: enable qoriq backplane support
+From:   Joe Perches <joe@perches.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     florinel.iordache@nxp.com, davem@davemloft.net,
+        netdev@vger.kernel.org, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, devicetree@vger.kernel.org,
+        linux-doc@vger.kernel.org, robh+dt@kernel.org,
+        mark.rutland@arm.com, kuba@kernel.org, corbet@lwn.net,
+        shawnguo@kernel.org, leoyang.li@nxp.com, madalin.bucur@oss.nxp.com,
+        ioana.ciornei@nxp.com, linux-kernel@vger.kernel.org
+Date:   Thu, 26 Mar 2020 13:27:26 -0700
+In-Reply-To: <20200326201310.GB11004@lunn.ch>
+References: <1585230682-24417-1-git-send-email-florinel.iordache@nxp.com>
+         <1585230682-24417-8-git-send-email-florinel.iordache@nxp.com>
+         <ba3b1a69496eb08cb071dace96fd385ff8f838e7.camel@perches.com>
+         <20200326201310.GB11004@lunn.ch>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.34.1-2 
 MIME-Version: 1.0
-In-Reply-To: <20200326142049.GD20841@localhost>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 26/03/2020 16:20, Richard Cochran wrote:
-> On Fri, Mar 20, 2020 at 09:42:36PM +0200, Grygorii Strashko wrote:
->> Now CPTS driver .adjfreq() generates request to read CPTS current time
->> (CPTS_EV_PUSH) with intention to process all pending event using previous
->> frequency adjustment values before switching to the new ones. So
->> CPTS_EV_PUSH works as a marker to switch to the new frequency adjustment
->> values. Current code assumes that all job is done in .adjfreq(), but after
->> enabling IRQ this will not be true any more.
->>
->> Hence save new frequency adjustment values (mult) and perform actual freq
->> adjustment in cpts_fifo_read() immediately after CPTS_EV_PUSH is received.
+On Thu, 2020-03-26 at 21:13 +0100, Andrew Lunn wrote:
+> > > +static int qoriq_backplane_config_init(struct phy_device *bpphy)
+> > > +{
+> > []
+> > > +	for (i = 0; i < bp_phy->num_lanes; i++) {
+> > []
+> > > +		ret = of_address_to_resource(lane_node, 0, &res);
+> > > +		if (ret) {
+> > > +			bpdev_err(bpphy,
+> > > +				  "could not obtain lane memory map for index=%d, ret = %d\n",
+> > > +				  i, ret);
+> > > +			return ret;
+> > 
+> > This could use the new vsprintf %pe extension:
 > 
-> Now THIS comment is much better!  The explanation here really should
-> be in the previous patch, to help poor reviewers like me.
+> Hi Joe
 
-I've been thinking to squash them. What's your opinion.
+Hello Andrew.
 
-Thank you.
+> Probably a FAQ. But is there plans to extend vsprintf to take an int
+> errno value, rather than having to do this ugly ERR_PTR(ret) every
+> time? Format string %de ?
 
--- 
-Best regards,
-grygorii
+Uwe Kleine-König proposed one a couple times.
+
+https://lkml.org/lkml/2019/8/27/1456
+
+Though I believe one %<type><extra> extension mechanism
+in vsprintf is enough.  At least the %p<foo> use is
+unlikely to ever have desired but dropped output after
+an output of %p.  It seems less true for %[diux].
+
+
+
+
