@@ -2,95 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53931193825
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 06:52:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CD81193848
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 06:59:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727590AbgCZFwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 01:52:07 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:58617 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726014AbgCZFwG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 01:52:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585201925;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=nHSCTCOpueCpiOWznPRR+Xn/UI1HYzEARRPs1NvUwTk=;
-        b=BPq/fVQd7hFlrh7J3PImINEcj6DIynvs81RwDTjals9U4xHi5PfvWpQo0QX4nhrk/Xv62y
-        T4NmdpWYpVytAlUxsDbcNvsF24wJR0jpTD6d2ZeYx1fAkjPfNByw1ZFh53P34ktBPdhIjx
-        q8JsoME61fYA+mSAingPA1jbr7YegFg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-106-3eHxDwQyNnWQi176UfAy4A-1; Thu, 26 Mar 2020 01:52:01 -0400
-X-MC-Unique: 3eHxDwQyNnWQi176UfAy4A-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CAF121005510;
-        Thu, 26 Mar 2020 05:51:58 +0000 (UTC)
-Received: from [10.72.13.193] (ovpn-13-193.pek2.redhat.com [10.72.13.193])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 149D2A0A87;
-        Thu, 26 Mar 2020 05:51:42 +0000 (UTC)
-Subject: Re: [PATCH V8 5/9] vDPA: introduce vDPA bus
-To:     Jason Gunthorpe <jgg@mellanox.com>
-Cc:     mst@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        maxime.coquelin@redhat.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, rob.miller@broadcom.com,
-        xiao.w.wang@intel.com, lingshan.zhu@intel.com, eperezma@redhat.com,
-        lulu@redhat.com, parav@mellanox.com, kevin.tian@intel.com,
-        stefanha@redhat.com, rdunlap@infradead.org, hch@infradead.org,
-        aadam@redhat.com, jiri@mellanox.com, shahafs@mellanox.com,
-        hanand@xilinx.com, mhabets@solarflare.com, gdawar@xilinx.com,
-        saugatm@xilinx.com, vmireyno@marvell.com
-References: <20200325082711.1107-1-jasowang@redhat.com>
- <20200325082711.1107-6-jasowang@redhat.com>
- <20200325122949.GW13183@mellanox.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <a1474a55-7525-7c3e-a806-e3f53850a590@redhat.com>
-Date:   Thu, 26 Mar 2020 13:51:41 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <20200325122949.GW13183@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Content-Transfer-Encoding: quoted-printable
+        id S1727721AbgCZF62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 01:58:28 -0400
+Received: from conuserg-10.nifty.com ([210.131.2.77]:47768 "EHLO
+        conuserg-10.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727575AbgCZF61 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 01:58:27 -0400
+Received: from pug.e01.socionext.com (p14092-ipngnfx01kyoto.kyoto.ocn.ne.jp [153.142.97.92]) (authenticated)
+        by conuserg-10.nifty.com with ESMTP id 02Q5ve94008573;
+        Thu, 26 Mar 2020 14:57:40 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 02Q5ve94008573
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1585202260;
+        bh=dX+mdRt8kcID48UqORTUMY5bdsGeWZDwRFh1lk4J+OY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=F+31nJQ4Cgf4gt9L3lAD0yTyZM6taU0HcwCkPUB81lu7qxiTtqk/tHtzkh/wAtjZ4
+         CF28DzVLBwEyskREvoR6rtnBx8mXTZBWq+C9GQPOET0lsVnrdIJzYYc7Mwy+J3+vPo
+         sAe7ySOYigImr3dYkXpLC7r2oa/fL48HjVwRCcUpTzCz38C5MBUGNEXpnrPl3LwCC/
+         wL+xhmfmA5VZEaIah5/GJP6AKqawr2QSCcnmWc7MOcELsG4uxWzU6MWRniddWyukwu
+         X8J5qiPn7XDM2rl5fMOAHkZSs1ow+LvVLFtQl7+EVuosUu0MJqcGIPwcOFq9Xax6en
+         epHo20x8scgLw==
+X-Nifty-SrcIP: [153.142.97.92]
+From:   Masahiro Yamada <masahiroy@kernel.org>
+To:     linux-kbuild@vger.kernel.org
+Cc:     clang-built-linux@googlegroups.com,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v2 1/4] net: wan: wanxl: use allow to pass CROSS_COMPILE_M68k for rebuilding firmware
+Date:   Thu, 26 Mar 2020 14:57:15 +0900
+Message-Id: <20200326055719.16755-1-masahiroy@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+As far as I understood from the Kconfig help text, this build rule is
+used to rebuild the driver firmware, which runs on an old m68k-based
+chip. So, you need m68k tools for the firmware rebuild.
 
-On 2020/3/25 =E4=B8=8B=E5=8D=888:29, Jason Gunthorpe wrote:
-> On Wed, Mar 25, 2020 at 04:27:07PM +0800, Jason Wang wrote:
->> +struct vdpa_device *__vdpa_alloc_device(struct device *parent,
->> +					const struct vdpa_config_ops *config,
->> +					size_t size);
->> +
->> +#define vdpa_alloc_device(dev_struct, member, parent, config)   \
->> +			  container_of(__vdpa_alloc_device( \
->> +				       parent, config, \
->> +				       sizeof(struct dev_struct) + \
->> +				       BUILD_BUG_ON_ZERO(offsetof( \
->> +				       struct dev_struct, member))), \
->> +				       struct dev_struct, member)
-> This all looks robust now, one minor remark is to not do 'struct
-> dev_struct' here so the caller has to do
->
->     vdpa_alloc_device(struct foo, vpda, ...)
->
-> Which suggests to the reader something unusual is happening
->
-> Jason
+wanxl.c is a PCI driver, but CONFIG_M68K does not select CONFIG_HAVE_PCI.
+So, you cannot enable CONFIG_WANXL_BUILD_FIRMWARE for ARCH=m68k. In other
+words, ifeq ($(ARCH),m68k) is false here.
 
+I am keeping the dead code for now, but rebuilding the firmware requires
+'as68k' and 'ld68k', which I do not have in hand.
 
-Yes, that's better.
+Instead, the kernel.org m68k GCC [1] successfully built it.
 
-But my understanding is that this can be done on top.
+Allowing a user to pass in CROSS_COMPILE_M68K= is handier.
 
-Thanks
+[1] https://mirrors.edge.kernel.org/pub/tools/crosstool/files/bin/x86_64/9.2.0/x86_64-gcc-9.2.0-nolibc-m68k-linux.tar.xz
+
+Suggested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+---
+
+Changes in v2:
+  - New patch
+
+ drivers/net/wan/Kconfig  |  2 +-
+ drivers/net/wan/Makefile | 12 ++++++------
+ 2 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/wan/Kconfig b/drivers/net/wan/Kconfig
+index 4530840e15ef..dbc0e3f7a3e2 100644
+--- a/drivers/net/wan/Kconfig
++++ b/drivers/net/wan/Kconfig
+@@ -200,7 +200,7 @@ config WANXL_BUILD_FIRMWARE
+ 	depends on WANXL && !PREVENT_FIRMWARE_BUILD
+ 	help
+ 	  Allows you to rebuild firmware run by the QUICC processor.
+-	  It requires as68k, ld68k and hexdump programs.
++	  It requires m68k toolchains and hexdump programs.
+ 
+ 	  You should never need this option, say N.
+ 
+diff --git a/drivers/net/wan/Makefile b/drivers/net/wan/Makefile
+index 701f5d2fe3b6..995277c657a1 100644
+--- a/drivers/net/wan/Makefile
++++ b/drivers/net/wan/Makefile
+@@ -40,17 +40,17 @@ $(obj)/wanxl.o:	$(obj)/wanxlfw.inc
+ 
+ ifeq ($(CONFIG_WANXL_BUILD_FIRMWARE),y)
+ ifeq ($(ARCH),m68k)
+-  AS68K = $(AS)
+-  LD68K = $(LD)
++  M68KAS = $(AS)
++  M68KLD = $(LD)
+ else
+-  AS68K = as68k
+-  LD68K = ld68k
++  M68KAS = $(CROSS_COMPILE_M68K)as
++  M68KLD = $(CROSS_COMPILE_M68K)ld
+ endif
+ 
+ quiet_cmd_build_wanxlfw = BLD FW  $@
+       cmd_build_wanxlfw = \
+-	$(CPP) -D__ASSEMBLY__ -Wp,-MD,$(depfile) -I$(srctree)/include/uapi $< | $(AS68K) -m68360 -o $(obj)/wanxlfw.o; \
+-	$(LD68K) --oformat binary -Ttext 0x1000 $(obj)/wanxlfw.o -o $(obj)/wanxlfw.bin; \
++	$(CPP) -D__ASSEMBLY__ -Wp,-MD,$(depfile) -I$(srctree)/include/uapi $< | $(M68KAS) -m68360 -o $(obj)/wanxlfw.o; \
++	$(M68KLD) --oformat binary -Ttext 0x1000 $(obj)/wanxlfw.o -o $(obj)/wanxlfw.bin; \
+ 	hexdump -ve '"\n" 16/1 "0x%02X,"' $(obj)/wanxlfw.bin | sed 's/0x  ,//g;1s/^/static const u8 firmware[]={/;$$s/,$$/\n};\n/' >$(obj)/wanxlfw.inc; \
+ 	rm -f $(obj)/wanxlfw.bin $(obj)/wanxlfw.o
+ 
+-- 
+2.17.1
 
