@@ -2,180 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D30291938AD
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:36:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CD4C1938B3
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:38:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgCZGgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 02:36:20 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:46114 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726014AbgCZGgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:36:20 -0400
-Received: by mail-pf1-f194.google.com with SMTP id q3so2269096pff.13
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 23:36:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=vmMfSlkNqtMhrnEKTmZxU1g5L1uebNhhkz4Zxjb7H8s=;
-        b=qD1vLorQ5c9WJpcglrQTkoZREJc5N2RB1FXf1KSR2jRr5lDAaJ7VIRVl5DuGAO3XsG
-         IVsG/iM4zTSylbxurEVjg/NwAsmKdtoIesC0rHiFKfSVd+7NtKwYveB91dXDi3cQmJyv
-         Swsi7QhziFmZZ913Tm23+YIXYVIDkBdPhEVcThp7eB/TrFpt35uZvitM7fl6LxStAbvi
-         KVYm+pgfmbJfXp5skAUgqa/utqp0Dlf6jOizd+VpQQHkUQYWYhUgWBQGHqVrnIO8Mvmz
-         WOcLw/DHmDbDnVnBSyxEE4dTXa0IWQB0NKrjCj1rj/UjWcCN099dbe1Uc0qY4MoBUydK
-         rnNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=vmMfSlkNqtMhrnEKTmZxU1g5L1uebNhhkz4Zxjb7H8s=;
-        b=LUUqC/QvhOdNm55QKpIPW6alEoYZglqzlnToupg2k9yyp1WYpmA0+Ytnq9trFaZ9U0
-         D/ggKoUnFyWIgLR1lkhF/mt/R6uxFBqKyZ1a3kh/BCTVgmSISXzUPx6bFqv+Rjb3DuBp
-         XTSEUWHlnmZUn8235dGC4N2zYkM6TbOQg8dTm1DHF4U2HAY0eMQeLZbVISjs1v7T2XxA
-         03b8ZmeyCKq2zmoYe53GHLFekgyN8I0owR0eHYoWjSpZwbRgMelamaR0bJVng7RxEDyM
-         yI2/SfWgxrP0N8+OntAUkRBEUU6LlsBRKTPCF8TL6dtiezaItJKFE2NVZ8YaKsuLawNf
-         s1Kg==
-X-Gm-Message-State: ANhLgQ0Kodz/j5qH+2tVxornbaoaAfK+xbCOI0kknIPvmFQiqsgDl/UQ
-        pOo9OJBUgAvzLNV2XOk6Lic=
-X-Google-Smtp-Source: ADFU+vu2ywsm9x3inhMro0xrREFSdSqtJdofLTkNk/Jcm3WYv1I6bIVWFGbrXmcA6m8D0kYWIFyaKQ==
-X-Received: by 2002:a05:6a00:2d0:: with SMTP id b16mr7760877pft.241.1585204578385;
-        Wed, 25 Mar 2020 23:36:18 -0700 (PDT)
-Received: from [192.168.1.18] (i223-218-245-204.s42.a013.ap.plala.or.jp. [223.218.245.204])
-        by smtp.googlemail.com with ESMTPSA id f68sm842691pje.0.2020.03.25.23.36.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Mar 2020 23:36:17 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/2] veth: rely on veth_rq in veth_xdp_flush_bq
- signature
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, brouer@redhat.com, dsahern@gmail.com,
-        lorenzo.bianconi@redhat.com, toke@redhat.com
-References: <cover.1585163874.git.lorenzo@kernel.org>
- <840c0c7fd83d78e47ed0136d5a032dccf7aef732.1585163874.git.lorenzo@kernel.org>
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-Message-ID: <fe753d30-b30b-4534-35c7-5ef06c609b96@gmail.com>
-Date:   Thu, 26 Mar 2020 15:36:14 +0900
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1726336AbgCZGic (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 02:38:32 -0400
+Received: from mail-eopbgr30065.outbound.protection.outlook.com ([40.107.3.65]:59543
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726014AbgCZGic (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Mar 2020 02:38:32 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d/J7TyJQXS8Zr/+kncVr/TBlyfVZ51xnBiW0BD/D1lowJ8BKltlv/D97X5Fwt4hLSl32ZZs+igZH1HlaTf1hMW3lUq6GfpZImYJatW5LxuIZkL2TN8mwvFtI6V5VHhe/plVQ5g1o15+nI9BOwEgrb3NEoOvouCqo4BwxJ1NQsZm6QQIggoayYQ4O4p1uMnjMbBqApsm/z9Y9473kyTOY0QVUbqm0YFEPnxbq7fwhLkJQ96073LsaaFanfycaUPcjBmn8FwF1zc7+/oKv9pWMs67ERW3JAurEEhBtUkU0L8x/7sk2iQ5bz3x4Ln1FEUiP3uKvEzxYSE2zD+36ldQ/FQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aeIwM51O/GkIGoOwaV9jJkcWjeVPhnziajy014h0qbg=;
+ b=KjUxIX9eM/KdS9L9Tc42drFw69da1Ax2Iik9ni1ft+m8t9BpHHheTueYaqQehCgkkex6wBagO06I8wSAT5IfCra2HHyhGtL1FOKB0uzrv85Hwi7MFQPZZaw13HFmSAjOKH3vxZTgdLHsua2dWx4yTA58Hs3JtRHL0sm1FooOUX6Fp75pPQyM36+EmqOgprQPJV1eAOEfNEApnBOexPYJQeb6k0B0JeL9YJSLUZTJ4xewBbGsD8aP5RrTt7HkrZ9cH3q10TGB5U/qr2nbdi+rEqCPTEHywn0s2YO3Sld9/q6py4jpaGKLdgwOfBgWTy417ExHad7q5bZDlvMYpI1tyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aeIwM51O/GkIGoOwaV9jJkcWjeVPhnziajy014h0qbg=;
+ b=b20LRGnbecsm87h6w+6BnfLb8vxX891yxm6CssDYMDV8WF5Da6W9nQkxqB929N7d3X7nlybxhyNOTg5mTOieKP9/G6MC4lqPF5WT7cvkJOlyo/H1B4RHBItTx0o2++b6JILGoltDldHF6AiyfokHE42PFVWl2e10Xow62Rnt+C0=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1PR05MB6479.eurprd05.prod.outlook.com (20.179.25.23) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2835.23; Thu, 26 Mar 2020 06:38:27 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2835.023; Thu, 26 Mar 2020
+ 06:38:27 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net-next 00/16] Mellanox, mlx5 updates 2020-03-25
+Date:   Wed, 25 Mar 2020 23:37:53 -0700
+Message-Id: <20200326063809.139919-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BYAPR03CA0020.namprd03.prod.outlook.com
+ (2603:10b6:a02:a8::33) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
 MIME-Version: 1.0
-In-Reply-To: <840c0c7fd83d78e47ed0136d5a032dccf7aef732.1585163874.git.lorenzo@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BYAPR03CA0020.namprd03.prod.outlook.com (2603:10b6:a02:a8::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.19 via Frontend Transport; Thu, 26 Mar 2020 06:38:25 +0000
+X-Mailer: git-send-email 2.25.1
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: f776f089-1d42-4cea-3d05-08d7d1504a55
+X-MS-TrafficTypeDiagnostic: VI1PR05MB6479:|VI1PR05MB6479:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB64793ACFCC680F93A0B46E23BECF0@VI1PR05MB6479.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 0354B4BED2
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(39860400002)(366004)(346002)(396003)(376002)(136003)(478600001)(107886003)(52116002)(6512007)(4326008)(86362001)(6486002)(8936002)(54906003)(6506007)(15650500001)(36756003)(1076003)(81156014)(81166006)(2906002)(316002)(8676002)(6666004)(66946007)(186003)(16526019)(66556008)(66476007)(26005)(5660300002)(2616005)(956004)(54420400002);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3+WBRjy/vkO46W9mtcHTp96njrVf5p2l05Hj7nFIN78Gd8ZkwKZgrrejOxx7msy2rxc4BfOtJq9vbQGWLl+i0w7aZLa1SDepK9ndDimUd0O7Flc0c7x1ulr3JZtO7WV2udIDO0VgcRXUQlU+THOE1yrDQ3wFpjOWhqB6pXCe2iRAiBxyQz/iag4pagmmUS4fZoF7oBRGvyoaqrh1RJxSqcOIO1MGh46DXoZ1VoKjQvhJMy5Vmh4KYvAxxPeUietK45T30A/JrzDHWkgo3LBiu2gJPZ9xamN6zX43ZlvXVdoS2XRvMf8LrriTxPlYa5rtHWxWo6K+UhRJU6bY1qoYFCl2XN9YFvNQcVtM3ACcDu2fp5d204cVtt1jrh007AbwWtZq0kzNgix0mVIDukrXzUzoRZsXXw6iofej/g+ehfY6VtrPyJhfkXrMVZQ+OtMXDb3WipZGFFKyEEDsRJmHRADATmOfKEfhrDy93vDxKXUedVCZpdtxjdeBHimNmnHq
+X-MS-Exchange-AntiSpam-MessageData: bQ2VDbJYQcFQ+qC/1zSQCIqsS2qfyFmyLEXgAjfhPAZCHaOTkjGokX5h56ow9SlFD2KHHy3V1itGd5PfBYrVaRSQPgJ3NfXsVppsu6X3NCXeVKBRst0zfvnlyJBPa7GWtpkFv9TI7nOb/qHkV9Nnqw==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f776f089-1d42-4cea-3d05-08d7d1504a55
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2020 06:38:27.2892
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: bDRe1w6vkeUKSsctinHgtATx66+gbRZb5xlyRic0ct7Q8Z5CXDBmE/ygNU40mTQST/+V9jwftOAxv4TEROdx9w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6479
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/03/26 4:22, Lorenzo Bianconi wrote:
-> Substitute net_device point with veth_rq one in veth_xdp_flush_bq,
-> veth_xdp_flush and veth_xdp_tx signature. This is a preliminary patch
-> to account xdp_xmit counter on 'receiving' veth_rq
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Hi Dave,
 
-Acked-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
+This series include mainly updates to mlx5 flow steering core and
+E-Switch.
 
-> ---
->   drivers/net/veth.c | 30 +++++++++++++++---------------
->   1 file changed, 15 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index b6505a6c7102..2041152da716 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -468,46 +468,46 @@ static int veth_ndo_xdp_xmit(struct net_device *dev, int n,
->   	return veth_xdp_xmit(dev, n, frames, flags, true);
->   }
->   
-> -static void veth_xdp_flush_bq(struct net_device *dev, struct veth_xdp_tx_bq *bq)
-> +static void veth_xdp_flush_bq(struct veth_rq *rq, struct veth_xdp_tx_bq *bq)
->   {
->   	int sent, i, err = 0;
->   
-> -	sent = veth_xdp_xmit(dev, bq->count, bq->q, 0, false);
-> +	sent = veth_xdp_xmit(rq->dev, bq->count, bq->q, 0, false);
->   	if (sent < 0) {
->   		err = sent;
->   		sent = 0;
->   		for (i = 0; i < bq->count; i++)
->   			xdp_return_frame(bq->q[i]);
->   	}
-> -	trace_xdp_bulk_tx(dev, sent, bq->count - sent, err);
-> +	trace_xdp_bulk_tx(rq->dev, sent, bq->count - sent, err);
->   
->   	bq->count = 0;
->   }
->   
-> -static void veth_xdp_flush(struct net_device *dev, struct veth_xdp_tx_bq *bq)
-> +static void veth_xdp_flush(struct veth_rq *rq, struct veth_xdp_tx_bq *bq)
->   {
-> -	struct veth_priv *rcv_priv, *priv = netdev_priv(dev);
-> +	struct veth_priv *rcv_priv, *priv = netdev_priv(rq->dev);
->   	struct net_device *rcv;
-> -	struct veth_rq *rq;
-> +	struct veth_rq *rcv_rq;
->   
->   	rcu_read_lock();
-> -	veth_xdp_flush_bq(dev, bq);
-> +	veth_xdp_flush_bq(rq, bq);
->   	rcv = rcu_dereference(priv->peer);
->   	if (unlikely(!rcv))
->   		goto out;
->   
->   	rcv_priv = netdev_priv(rcv);
-> -	rq = &rcv_priv->rq[veth_select_rxq(rcv)];
-> +	rcv_rq = &rcv_priv->rq[veth_select_rxq(rcv)];
->   	/* xdp_ring is initialized on receive side? */
-> -	if (unlikely(!rcu_access_pointer(rq->xdp_prog)))
-> +	if (unlikely(!rcu_access_pointer(rcv_rq->xdp_prog)))
->   		goto out;
->   
-> -	__veth_xdp_flush(rq);
-> +	__veth_xdp_flush(rcv_rq);
->   out:
->   	rcu_read_unlock();
->   }
->   
-> -static int veth_xdp_tx(struct net_device *dev, struct xdp_buff *xdp,
-> +static int veth_xdp_tx(struct veth_rq *rq, struct xdp_buff *xdp,
->   		       struct veth_xdp_tx_bq *bq)
->   {
->   	struct xdp_frame *frame = convert_to_xdp_frame(xdp);
-> @@ -516,7 +516,7 @@ static int veth_xdp_tx(struct net_device *dev, struct xdp_buff *xdp,
->   		return -EOVERFLOW;
->   
->   	if (unlikely(bq->count == VETH_XDP_TX_BULK_SIZE))
-> -		veth_xdp_flush_bq(dev, bq);
-> +		veth_xdp_flush_bq(rq, bq);
->   
->   	bq->q[bq->count++] = frame;
->   
-> @@ -559,7 +559,7 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
->   			orig_frame = *frame;
->   			xdp.data_hard_start = head;
->   			xdp.rxq->mem = frame->mem;
-> -			if (unlikely(veth_xdp_tx(rq->dev, &xdp, bq) < 0)) {
-> +			if (unlikely(veth_xdp_tx(rq, &xdp, bq) < 0)) {
->   				trace_xdp_exception(rq->dev, xdp_prog, act);
->   				frame = &orig_frame;
->   				stats->rx_drops++;
-> @@ -692,7 +692,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
->   		get_page(virt_to_page(xdp.data));
->   		consume_skb(skb);
->   		xdp.rxq->mem = rq->xdp_mem;
-> -		if (unlikely(veth_xdp_tx(rq->dev, &xdp, bq) < 0)) {
-> +		if (unlikely(veth_xdp_tx(rq, &xdp, bq) < 0)) {
->   			trace_xdp_exception(rq->dev, xdp_prog, act);
->   			stats->rx_drops++;
->   			goto err_xdp;
-> @@ -817,7 +817,7 @@ static int veth_poll(struct napi_struct *napi, int budget)
->   	}
->   
->   	if (stats.xdp_tx > 0)
-> -		veth_xdp_flush(rq->dev, &bq);
-> +		veth_xdp_flush(rq, &bq);
->   	if (stats.xdp_redirect > 0)
->   		xdp_do_flush();
->   	xdp_clear_return_frame_no_direct();
-> 
+For more information please see tag log below.
+
+Please pull and let me know if there is any problem.
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit 29f3490ba9d2399d3d1b20c4aa74592d92bd4e11:
+
+  net: use indirect call wrappers for skb_copy_datagram_iter() (2020-03-25 11:30:40 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2020-03-25
+
+for you to fetch changes up to 8e0aa4bc959c98c14ed0aaee522d77ca52690189:
+
+  net/mlx5: E-switch, Protect eswitch mode changes (2020-03-25 23:19:25 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2020-03-25
+
+1) Cleanups from Dan Carpenter and wenxu.
+
+2) Paul and Roi, Some minor updates and fixes to E-Switch to address
+issues introduced in the previous reg_c0 updates series.
+
+3) Eli Cohen simplifies and improves flow steering matching group searches
+and flow table entries version management.
+
+4) Parav Pandit, improves devlink eswitch mode changes thread safety.
+By making devlink rely on driver for thread safety and introducing mlx5
+eswitch mode change protection.
+
+----------------------------------------------------------------
+Dan Carpenter (1):
+      net/mlx5e: Fix actions_match_supported() return
+
+Eli Cohen (4):
+      net/mlx5: Simplify matching group searches
+      net/mlx5: Fix group version management
+      net/mlx5: Avoid incrementing FTE version
+      net/mlx5: Avoid group version scan when not necessary
+
+Parav Pandit (6):
+      net/mlx5: Simplify mlx5_register_device to return void
+      net/mlx5: Simplify mlx5_unload_one() and its callers
+      devlink: Rely on driver eswitch thread safety instead of devlink
+      net/mlx5: Split eswitch mode check to different helper function
+      net/mlx5: E-switch, Extend eswitch enable to handle num_vfs change
+      net/mlx5: E-switch, Protect eswitch mode changes
+
+Paul Blakey (2):
+      net/mlx5: E-Switch, Enable restore table only if reg_c1 is supported
+      net/mlx5: E-Switch, Enable chains only if regs loopback is enabled
+
+Roi Dayan (2):
+      net/mlx5: E-Switch, free flow_group_in after creating the restore table
+      net/mlx5: E-Switch, Use correct type for chain, prio and level values
+
+wenxu (1):
+      net/mlx5e: remove duplicated check chain_index in mlx5e_rep_setup_ft_cb
+
+ drivers/net/ethernet/mellanox/mlx5/core/dev.c      |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |   3 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  | 107 +++++++++++----
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  17 ++-
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c | 143 ++++++++++++++++-----
+ .../mellanox/mlx5/core/eswitch_offloads_chains.c   |  38 +++---
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  |  59 ++++-----
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  24 +---
+ .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/sriov.c    |   3 +-
+ net/core/devlink.c                                 |   3 +-
+ 13 files changed, 263 insertions(+), 147 deletions(-)
