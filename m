@@ -2,66 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DBBE194BA3
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 23:39:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36C88194BA6
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 23:41:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727585AbgCZWjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 18:39:22 -0400
-Received: from mga12.intel.com ([192.55.52.136]:38016 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726067AbgCZWjV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Mar 2020 18:39:21 -0400
-IronPort-SDR: pCY1fiuoo2euyUVHn5pIXqYw8Ia/0puaW00Ta5r8CMQioDkeBfJ2UaacnershhzjvQHUz5kPQQ
- e9LXdMkPn2KQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2020 15:39:21 -0700
-IronPort-SDR: CbGRbHx5FxUsTvFPh0ITjcnE0hZMIHPUuZ0/wEjbeMEYIezkBNz8AYlbvdktrD0OVjTSwJqngG
- 8EF6qQZLjYnA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,309,1580803200"; 
-   d="scan'208";a="240804376"
-Received: from alewando-mobl.ger.corp.intel.com ([10.252.40.24])
-  by fmsmga008.fm.intel.com with ESMTP; 26 Mar 2020 15:39:15 -0700
-Message-ID: <c3a91d6d572d4975a8a5d3dbf004e46d7f59be78.camel@linux.intel.com>
-Subject: Re: [PATCH v8 0/2] KEYS: Read keys to internal buffer & then copy
- to userspace
-From:   Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
-To:     David Howells <dhowells@redhat.com>,
-        David Miller <davem@davemloft.net>
-Cc:     longman@redhat.com, jmorris@namei.org, serge@hallyn.com,
-        zohar@linux.ibm.com, kuba@kernel.org, keyrings@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-integrity@vger.kernel.org, netdev@vger.kernel.org,
-        linux-afs@lists.infradead.org, sumit.garg@linaro.org,
-        jsnitsel@redhat.com, roberto.sassu@huawei.com, ebiggers@google.com,
-        crecklin@redhat.com
-In-Reply-To: <996368.1585246352@warthog.procyon.org.uk>
-References: <20200325.193056.1153970692429454819.davem@davemloft.net>
-         <20200322011125.24327-1-longman@redhat.com>
-         <996368.1585246352@warthog.procyon.org.uk>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160
- Espoo
-Content-Type: text/plain; charset="UTF-8"
-MIME-Version: 1.0
-Date:   Fri, 27 Mar 2020 00:37:30 +0200
-User-Agent: Evolution 3.35.92-1 
-Content-Transfer-Encoding: 7bit
+        id S1726954AbgCZWlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 18:41:04 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:38789 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726270AbgCZWlE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 18:41:04 -0400
+Received: by mail-wm1-f67.google.com with SMTP id f6so3442819wmj.3
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 15:41:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=7GjfuVWE6pe/5T94lJeKw2bc8fiAlXra4gpuV7vCwN4=;
+        b=I6fwoucigIVt7np3JwCrGtxiCVOKdITB/+NyWWCxSR7AwRah8qkMGU+WhTx0Zh22cY
+         wTYUF5JvFjMEIWlV/+X8ibOOLlX6iM/wwBcDBDPyuo5u6sRAOGkpWczn0U7woepxRXvF
+         7UNPLhlQ/zl8DDryA/rnynEasYi+rJZWvzaXD7fwWOuCGOVcspe2wPNYFIZhnDHnAGSW
+         vbtr8OREDxlnePsaxakfJhMzVWZyRbJ4Qo8CV1daJs/p3YVTl+j1LM/oVeEKEMhonG/z
+         fjLhq9d8uUg986HX/3YHa86LDaxkZqrIwIME1gT+5/lfZI6eiayV74iDZ8DBqYBcgJ+j
+         fRqA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=7GjfuVWE6pe/5T94lJeKw2bc8fiAlXra4gpuV7vCwN4=;
+        b=ByK4dlery8n/jGbB4gIhao1UJxbeWwpJpjQYraF5bl//35ov7HNj5ieQJ1bYZyAXaw
+         Cfo+9kSujo4KIln/y+UeB4/YVgbAehmepgrLY4FS96q9w9a6Zs4b90g9IGuar6c1nWp3
+         nGV4MbDX/XTOEHnsJB1lGznktV3ONzFLubeyiaEKpaiPnbxf9smkf57RQ4SSR4w/67nv
+         5Yc6DFiHzj9iIwlEAplX5GnorndT8KIGW+/EvEQC/isNxd6oWPD1RDcJIcRqxciXVvrV
+         +jwLF+IsOYxPqNFyVRpYNa7unWnGJSrj9TRL6gsoFTvhn7M/2uvvcCG+qUAddIoWs8Q1
+         Qyqg==
+X-Gm-Message-State: ANhLgQ33rBH6GkEGG36nBf+Xaj81RbEFY1gHNCaXhIZoUMp/EoVnGsPj
+        ZQZl8NCKtWI70wnESFCdmK4=
+X-Google-Smtp-Source: ADFU+vtZn210UeakTyn/Um66ovNOwlCalor8tCS95c+S/tZHIRxVXUjdbNuv0+/qmQ4bFrq3eXM3wA==
+X-Received: by 2002:a7b:cd89:: with SMTP id y9mr2310699wmj.142.1585262462090;
+        Thu, 26 Mar 2020 15:41:02 -0700 (PDT)
+Received: from localhost.localdomain ([79.115.60.40])
+        by smtp.gmail.com with ESMTPSA id t81sm5522783wmb.15.2020.03.26.15.41.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2020 15:41:01 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        davem@davemloft.net, jakub.kicinski@netronome.com
+Cc:     murali.policharla@broadcom.com, stephen@networkplumber.org,
+        jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
+        nikolay@cumulusnetworks.com, netdev@vger.kernel.org
+Subject: [PATCH v3 net-next 0/8] Configure the MTU on DSA switches
+Date:   Fri, 27 Mar 2020 00:40:32 +0200
+Message-Id: <20200326224040.32014-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-03-26 at 18:12 +0000, David Howells wrote:
-> David Miller <davem@davemloft.net> wrote:
-> 
-> > Who will integrate these changes?
-> 
-> I'll do it unless Jarkko wants to push it through his tree.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Please do.
+This series adds support for configuring the MTU on front-panel switch
+ports, while seamlessly adapting the CPU port and the DSA master to the
+largest value plus the tagger overhead.
 
-/Jarkko
+It also implements bridge MTU auto-normalization within the DSA core, as
+resulted after the feedback of the implementation of this feature inside
+the bridge driver in v2.
+
+Support was added for quite a number of switches, in the hope that this
+series would gain some traction:
+ - sja1105
+ - felix
+ - vsc73xx
+ - b53 and rest of the platform
+
+V2 of this series was submitted here:
+https://patchwork.ozlabs.org/cover/1261471/
+
+V1 of this series was submitted here:
+https://patchwork.ozlabs.org/cover/1199868/
+
+Murali Krishna Policharla (3):
+  net: phy: bcm7xx: add jumbo frame configuration to PHY
+  bgmac: configure MTU and add support for frames beyond 8192 byte size
+  net: dsa: b53: add MTU configuration support
+
+Vladimir Oltean (5):
+  net: dsa: configure the MTU for switch ports
+  net: dsa: implement auto-normalization of MTU for bridge hardware
+    datapath
+  net: dsa: sja1105: implement the port MTU callbacks
+  net: dsa: vsc73xx: make the MTU configurable
+  net: dsa: felix: support changing the MTU
+
+ drivers/net/dsa/b53/b53_common.c       |  27 ++-
+ drivers/net/dsa/ocelot/felix.c         |  19 +++
+ drivers/net/dsa/sja1105/sja1105.h      |   1 +
+ drivers/net/dsa/sja1105/sja1105_main.c |  50 +++++-
+ drivers/net/dsa/vitesse-vsc73xx-core.c |  30 ++--
+ drivers/net/ethernet/broadcom/bgmac.c  |  12 ++
+ drivers/net/ethernet/broadcom/bgmac.h  |   5 +-
+ drivers/net/ethernet/mscc/ocelot.c     |  45 +++--
+ drivers/net/phy/bcm-phy-lib.c          |  22 +++
+ drivers/net/phy/bcm-phy-lib.h          |   1 +
+ drivers/net/phy/bcm7xxx.c              |   4 +
+ include/linux/brcmphy.h                |   2 +
+ include/net/dsa.h                      |  16 ++
+ include/soc/mscc/ocelot.h              |   7 +
+ net/dsa/dsa2.c                         |   2 +-
+ net/dsa/dsa_priv.h                     |  15 ++
+ net/dsa/master.c                       |  23 +--
+ net/dsa/port.c                         |  13 ++
+ net/dsa/slave.c                        | 219 ++++++++++++++++++++++++-
+ net/dsa/switch.c                       |  37 +++++
+ 20 files changed, 502 insertions(+), 48 deletions(-)
+
+-- 
+2.17.1
 
