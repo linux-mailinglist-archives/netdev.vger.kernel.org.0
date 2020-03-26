@@ -2,67 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0F16194032
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 14:46:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23C91194042
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 14:48:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727817AbgCZNqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 09:46:35 -0400
-Received: from correo.us.es ([193.147.175.20]:41802 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727705AbgCZNqc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Mar 2020 09:46:32 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 051E1F2586
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 14:46:31 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id EAE13DA3AE
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 14:46:30 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id DAC8CDA38F; Thu, 26 Mar 2020 14:46:30 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 19A27DA3A4;
-        Thu, 26 Mar 2020 14:46:29 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 26 Mar 2020 14:46:29 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id EBE1F42EF4E0;
-        Thu, 26 Mar 2020 14:46:28 +0100 (CET)
-Date:   Thu, 26 Mar 2020 14:46:28 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Qian Cai <cai@lca.pw>
-Cc:     kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] netfilter/nf_tables: silence a RCU-list warning
-Message-ID: <20200326134628.4eluovllshxidcuu@salvia>
-References: <20200325143142.6955-1-cai@lca.pw>
+        id S1727647AbgCZNsg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 26 Mar 2020 09:48:36 -0400
+Received: from zimbra.alphalink.fr ([217.15.80.77]:33960 "EHLO
+        zimbra.alphalink.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727444AbgCZNsg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 09:48:36 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail-2-cbv2.admin.alphalink.fr (Postfix) with ESMTP id C2A4A2B52099;
+        Thu, 26 Mar 2020 14:48:33 +0100 (CET)
+Received: from zimbra.alphalink.fr ([127.0.0.1])
+        by localhost (mail-2-cbv2.admin.alphalink.fr [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id ac2um0AxUbXG; Thu, 26 Mar 2020 14:48:32 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+        by mail-2-cbv2.admin.alphalink.fr (Postfix) with ESMTP id 636222B52093;
+        Thu, 26 Mar 2020 14:48:32 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mail-2-cbv2.admin.alphalink.fr
+Received: from zimbra.alphalink.fr ([127.0.0.1])
+        by localhost (mail-2-cbv2.admin.alphalink.fr [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id x1hDRMRExKM6; Thu, 26 Mar 2020 14:48:32 +0100 (CET)
+Received: from Simons-MacBook-Pro.local (94-84-15-217.reverse.alphalink.fr [217.15.84.94])
+        by mail-2-cbv2.admin.alphalink.fr (Postfix) with ESMTPSA id EE2402B52099;
+        Thu, 26 Mar 2020 14:48:31 +0100 (CET)
+Subject: Re: [PATCH net-next] pppoe: new ioctl to extract per-channel stats
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Networking <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Guillaume Nault <gnault@redhat.com>
+References: <20200326103230.121447-1-s.chopin@alphalink.fr>
+ <CAK8P3a2THNOTcx=XMxXRH3RaNYBhsE7gMNx91M8p8D8qUdB-7A@mail.gmail.com>
+From:   Simon Chopin <s.chopin@alphalink.fr>
+Message-ID: <c70371c2-7783-b66a-3108-dbbda383673d@alphalink.fr>
+Date:   Thu, 26 Mar 2020 14:48:31 +0100
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200325143142.6955-1-cai@lca.pw>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <CAK8P3a2THNOTcx=XMxXRH3RaNYBhsE7gMNx91M8p8D8qUdB-7A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: fr
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 25, 2020 at 10:31:42AM -0400, Qian Cai wrote:
-> It is safe to traverse &net->nft.tables with &net->nft.commit_mutex
-> held using list_for_each_entry_rcu(). Silence the PROVE_RCU_LIST false
-> positive,
-> 
-> WARNING: suspicious RCU usage
-> net/netfilter/nf_tables_api.c:523 RCU-list traversed in non-reader section!!
+(Dropping Michal Ostrowski from the CC list as the address bounces for me)
 
-Applied, thanks.
+Le 26/03/2020 à 11:42, Arnd Bergmann a écrit :
+> On Thu, Mar 26, 2020 at 11:32 AM Simon Chopin <s.chopin@alphalink.fr> wrote:
+>> The PPP subsystem uses the abstractions of channels and units, the
+>> latter being an aggregate of the former, exported to userspace as a
+>> single network interface.  As such, it keeps traffic statistics at the
+>> unit level, but there are no statistics on the individual channels,
+>> partly because most PPP units only have one channel.
+>>
+>> However, it is sometimes useful to have statistics at the channel level,
+>> for instance to monitor multilink PPP connections. Such statistics
+>> already exist for PPPoL2TP via the PPPIOCGL2TPSTATS ioctl, this patch
+>> introduces a very similar mechanism for PPPoE via a new
+>> PPPIOCGPPPOESTATS ioctl.
+>>
+>> The contents of this patch were greatly inspired by the L2TP
+>> implementation, many thanks to its authors.
+> The patch looks fine from from an interface design perspective,
+> but I wonder if you could use a definition that matches the
+> structure layout and command number for PPPIOCGL2TPSTATS
+> exactly, rather than a "very similar mechanism" with a subset
+> of the fields. You would clearly have to pass down a number of
+> zero fields, but the implementation could be abstracted at a
+> higher level later.
+>
+>       Arnd
+
+This sounds like a good idea, indeed. Is what follows what you had in mind ?
+I'm not too sure about keeping the chan_priv field in this form, my knowledge
+of alignment issues being relatively superficial. As I understand it, the matching
+fields in l2tp_ioc_stats should always be packed to 8 bytes as they fall on natural
+boundaries, but I might be wrong ?
+
+  Simon
+
+
+diff --git a/include/uapi/linux/ppp-ioctl.h b/include/uapi/linux/ppp-ioctl.h
+index a0abc68eceb5..803cbe374fb2 100644
+--- a/include/uapi/linux/ppp-ioctl.h
++++ b/include/uapi/linux/ppp-ioctl.h
+@@ -79,14 +79,21 @@ struct pppol2tp_ioc_stats {
+        __aligned_u64   rx_errors;
+ };
+
+-/* For PPPIOCGPPPOESTATS */
+-struct pppoe_ioc_stats {
++struct pppchan_ioc_stats {
++       __u8            chan_priv[8];
+        __aligned_u64   tx_packets;
+        __aligned_u64   tx_bytes;
++       __aligned_u64   tx_errors;
+        __aligned_u64   rx_packets;
+        __aligned_u64   rx_bytes;
++       __aligned_u64   rx_seq_discards;
++       __aligned_u64   rx_oos_packets;
++       __aligned_u64   rx_errors;
+ };
+
++_Static_assert(sizeof(struct pppol2tp_ioc_stats) == sizeof(struct pppchan_ioc_stats), "same size");
++_Static_assert((size_t)&((struct pppol2tp_ioc_stats *)0)->tx_packets == (size_t)&((struct pppchan_ioc_stats *)0)->tx_packets, "same offset");
++
+ /*
+  * Ioctl definitions.
+  */
+@@ -123,7 +130,7 @@ struct pppoe_ioc_stats {
+ #define PPPIOCATTCHAN  _IOW('t', 56, int)      /* attach to ppp channel */
+ #define PPPIOCGCHAN    _IOR('t', 55, int)      /* get ppp channel number */
+ #define PPPIOCGL2TPSTATS _IOR('t', 54, struct pppol2tp_ioc_stats)
+-#define PPPIOCGPPPOESTATS _IOR('t', 53, struct pppoe_ioc_stats)
++#define PPPIOCGCHANSTATS _IOR('t', 54, struct pppchan_ioc_stats)
+
+ #define SIOCGPPPSTATS   (SIOCDEVPRIVATE + 0)
+ #define SIOCGPPPVER     (SIOCDEVPRIVATE + 1)   /* NEVER change this!! */
+
