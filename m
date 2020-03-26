@@ -2,135 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88AFC1938A5
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:33:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFA191938A9
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:34:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726298AbgCZGdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 02:33:42 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:35818 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726260AbgCZGdm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:33:42 -0400
-Received: by mail-pl1-f194.google.com with SMTP id g6so1777425plt.2;
-        Wed, 25 Mar 2020 23:33:40 -0700 (PDT)
+        id S1727590AbgCZGep (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 02:34:45 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:35997 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726260AbgCZGep (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:34:45 -0400
+Received: by mail-pf1-f195.google.com with SMTP id i13so2292818pfe.3;
+        Wed, 25 Mar 2020 23:34:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=mxlTXhOHwU2AiLnpR1pUDj+VY8aNMwn+PFRSWV6el4I=;
-        b=oo8V/MBwam+WqT5vj1sKYIuyTECneiX/6EjuZS2QyIS+2IIQ/8qzSdP48b0euVr0Bs
-         zIuQRQuyJ8ycWMqvdmHx37+4+6JBVI9Etpqjhzn8Qw55a/duAAslR110twE5X2BzUtVj
-         9PmfalZarbqC1f+se4t+pCMt8qtYtVspS38uYoW+p5D1LbKEGiPR6zsiMPTMGOQw22Cc
-         fImhtctI7ZA8k0tHyu+qlltSb3jJcr03kSHz9rtPrl9eB9UVY0iapas1wRmxpS6yvQ7t
-         5gUsORs3+D0x6/uFjqH/ubmUEFLxfJbIl+PLEoiPSw0IXw1uP10+D8mQW4bSIrt39FZg
-         XaPw==
+        bh=8Yp31voZWlVivg9kGYEITrYNynKJ5KaUpyuZtUu51uQ=;
+        b=RT3xnHvCGWEV0TWOMX6vqaa1p5KvabcHIB812s/x8VHWpRemFVAcdI4antoxrXLnC+
+         Tbi9RQSZm8eKUOCgQ5TnEq1UB2UA9A5P3CdcHL5JvPUh64phHTzJ73+Pp29TfXZlEfLh
+         P+N3/ADKawlAlu4cgOm1hpHpa63VGL7P8yw2KDtnmxTSba/J5v1l2wt0+Ec5ZigQOWG4
+         1ef6oDdNCWHgRi7eeOLgZ0js/SJ0HU3X53CgPKK+swpbWSNB3JblCab2X7a6VD0gUkHn
+         zcAtxiGLRn/1PjYx6IkrLOvxWaydtndG+T86cLAHIhvA6GSZPoGM0mGFghj4cQRmdEKy
+         MWCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=mxlTXhOHwU2AiLnpR1pUDj+VY8aNMwn+PFRSWV6el4I=;
-        b=lmfi8L728fA1q/sJQshlWofxJzdADOwYaT1aLJXrH72Rr75pqOLSXeZf6a+/VcfSpd
-         9/oIOdanHJVrDVI4kQV57OGlDK9KiIplfvQjhyDDNcXdKfVxn6nmQZ+fR7wsXqjqdetg
-         EFwWeoaoQFxHJ9K5/0MnN8tHs6+HLqYJtjjxMaRolX9lvTxxS8QyN29UVcE14MLkltdq
-         iGkJpXkPCaFuW5iHrlFSDMuRMg+2RH+wseG2hUXd4fRXVL80XJLDZQHmEUbTM8wNWF0l
-         TqsOj9klUI9nxS9u4WQXz6DfxSClXOMq6aVrSJGy87UYFYUXjxbRTksJBhg4rd7xGChL
-         ELyQ==
-X-Gm-Message-State: ANhLgQ1P6C+Y2OxqG2rALcZpFHpVwNONDHWMUx9P2l4WZzi+Y3/otDiE
-        TnOaG5OysN+fb9da1Eqtfsw=
-X-Google-Smtp-Source: ADFU+vv3tcYji5d8o4sGrYT7YdQaf6IyZZ17LVDZvSZ70+sDd+ALrPH43x21tR3nkvAU8qrN0p0XOQ==
-X-Received: by 2002:a17:90a:2dc2:: with SMTP id q2mr1445561pjm.146.1585204419530;
-        Wed, 25 Mar 2020 23:33:39 -0700 (PDT)
+        bh=8Yp31voZWlVivg9kGYEITrYNynKJ5KaUpyuZtUu51uQ=;
+        b=j8jFsnq7tR76Vn+z72Xf8q/d7gYk+K6dM3p0f0GlWzGRPaavn+hv6DCnquc84Nqs1j
+         Y5HebhxwlAL3L5poFD38ls6Giyw8OzSeJcAEhe4g2Du3CWVSamtht+czlIKHAJQt7tJ0
+         v1aXOUFpvIBciRiNlqNmeMjPqKuC0F356bE+9wkQNu4s48AEvJOW6UztBluKokbn1zFJ
+         QXITGxEnnwUfaBS08dl/Gxtnxj2dNH7zxP60fcwPQTK1rbE+AfA0TakvRZcY3DwKOLia
+         o7hZ7S62G+j6ve9xbNkSSqmlcUwAr5+39dZBpAbdcvLSxMSOpCklDXu2cT6bvrKXx5+S
+         6a1g==
+X-Gm-Message-State: ANhLgQ3ad38o8FhKiDlJxsfaaJrB7rpOnQRpymtboVEjy5scw21w9+FB
+        C2sFBt/GeWb9UGNJQqH6+A8=
+X-Google-Smtp-Source: ADFU+vsEozPuAJZ0JBU+YJWGR6hIPOtVjOwrapG+zB3wOabHNX22Y3b2KSy0yM5IXQ4nG9RqkpPPcQ==
+X-Received: by 2002:a62:686:: with SMTP id 128mr7144824pfg.152.1585204483982;
+        Wed, 25 Mar 2020 23:34:43 -0700 (PDT)
 Received: from ast-mbp ([2620:10d:c090:400::5:5929])
-        by smtp.gmail.com with ESMTPSA id c128sm834311pfa.11.2020.03.25.23.33.37
+        by smtp.gmail.com with ESMTPSA id y193sm799162pgd.87.2020.03.25.23.34.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2020 23:33:38 -0700 (PDT)
-Date:   Wed, 25 Mar 2020 23:33:36 -0700
+        Wed, 25 Mar 2020 23:34:43 -0700 (PDT)
+Date:   Wed, 25 Mar 2020 23:34:41 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     John Fastabend <john.fastabend@gmail.com>
 Cc:     ecree@solarflare.com, yhs@fb.com, daniel@iogearbox.net,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [bpf-next PATCH 07/10] bpf: test_verifier, bpf_get_stack return
- value add <0
-Message-ID: <20200326063336.do6mibb7b5xwofz2@ast-mbp>
+Subject: Re: [bpf-next PATCH 10/10] bpf: test_verifier, add alu32 bounds
+ tracking tests
+Message-ID: <20200326063441.ymitkh5z6sgevbm4@ast-mbp>
 References: <158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower>
- <158507159511.15666.6943798089263377114.stgit@john-Precision-5820-Tower>
+ <158507165554.15666.6019652542965367828.stgit@john-Precision-5820-Tower>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <158507159511.15666.6943798089263377114.stgit@john-Precision-5820-Tower>
+In-Reply-To: <158507165554.15666.6019652542965367828.stgit@john-Precision-5820-Tower>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 10:39:55AM -0700, John Fastabend wrote:
-> diff --git a/tools/testing/selftests/bpf/verifier/bpf_get_stack.c b/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
-> index f24d50f..24aa6a0 100644
-> --- a/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
-> +++ b/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
-> @@ -7,7 +7,7 @@
->  	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
->  	BPF_LD_MAP_FD(BPF_REG_1, 0),
->  	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
-> -	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 28),
-> +	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 29),
->  	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
->  	BPF_MOV64_IMM(BPF_REG_9, sizeof(struct test_val)),
->  	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
-> @@ -16,6 +16,7 @@
->  	BPF_MOV64_IMM(BPF_REG_4, 256),
->  	BPF_EMIT_CALL(BPF_FUNC_get_stack),
->  	BPF_MOV64_IMM(BPF_REG_1, 0),
-> +	BPF_JMP32_REG(BPF_JSLT, BPF_REG_0, BPF_REG_1, 20),
->  	BPF_MOV64_REG(BPF_REG_8, BPF_REG_0),
->  	BPF_ALU64_IMM(BPF_LSH, BPF_REG_8, 32),
->  	BPF_ALU64_IMM(BPF_ARSH, BPF_REG_8, 32),
+On Tue, Mar 24, 2020 at 10:40:55AM -0700, John Fastabend wrote:
+> Its possible to have divergent ALU32 and ALU64 bounds when using JMP32
+> instructins and ALU64 arithmatic operations. Sometimes the clang will
+> even generate this code. Because the case is a bit tricky lets add
+> a specific test for it.
+> 
+> Here is  pseudocode asm version to illustrate the idea,
+> 
+>  1 r0 = 0xffffffff00000001;
+>  2 if w0 > 1 goto %l[fail];
+>  3 r0 += 1
+>  5 if w0 > 2 goto %l[fail]
+>  6 exit
+> 
+> The intent here is the verifier will fail the load if the 32bit bounds
+> are not tracked correctly through ALU64 op. Similarly we can check the
+> 64bit bounds are correctly zero extended after ALU32 ops.
+> 
+>  1 r0 = 0xffffffff00000001;
+>  2 w0 += 1
+>  2 if r0 < 0xffffffff00000001 goto %l[fail];
 
-Yep. The test is wrong.
-But this is cheating ;)
-JSLT should be after shifts.
+This should be 3.
 
-The test should have been written as:
-diff --git a/tools/testing/selftests/bpf/verifier/bpf_get_stack.c b/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
-index f24d50f09dbe..be0758c1bfbd 100644
---- a/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
-+++ b/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
-@@ -19,7 +19,7 @@
-        BPF_MOV64_REG(BPF_REG_8, BPF_REG_0),
-        BPF_ALU64_IMM(BPF_LSH, BPF_REG_8, 32),
-        BPF_ALU64_IMM(BPF_ARSH, BPF_REG_8, 32),
--       BPF_JMP_REG(BPF_JSLT, BPF_REG_1, BPF_REG_8, 16),
-+       BPF_JMP_REG(BPF_JSGT, BPF_REG_1, BPF_REG_8, 16),
-        BPF_ALU64_REG(BPF_SUB, BPF_REG_9, BPF_REG_8),
-        BPF_MOV64_REG(BPF_REG_2, BPF_REG_7),
-        BPF_ALU64_REG(BPF_ADD, BPF_REG_2, BPF_REG_8),
-
-That was the intent of the test.
-But in such form it won't work with the current patch set,
-but it should.
-
-More so the patches 1 and 5 make test_progs pass,
-but test_progs-no_alu32 fails tests 20 and 61.
-Because clang generates the following:
-14: (85) call bpf_get_stack#67
-15: (b7) r1 = 0
-16: (bf) r8 = r0
-17: (67) r8 <<= 32
-18: (c7) r8 s>>= 32
-19: (6d) if r1 s> r8 goto pc+16
-
-(which is exactly what bpf_get_stack.c test tried to capture)
-
-I guess no_alu32 may be passing for you because you have that special
-clang optimization that replaces <<32 s>>32 with more efficient insn,
-but not everyone will be using new clang, so we have to teach verifier
-recognize <<32 s>>32.
-Thankfully with your new infra for s32 it should be easy to do.
-In scalar_min_max_lsh() we don't need to do dst_reg->smax_value = S64_MAX;
-When we have _positive_ s32_max_value
-we can set smax_value = s32_max_value << 32
-and I think that will be correct.
-scalar_min_max_arsh() shouldn't need any changes.
-And the verifier will restore valid smax_value after <<32 s>>32 sequence.
-And this test will pass (after fixing s/JSLT/JSGT/) and test_progs-no_alu32
-will do too. wdyt?
+> +	"bounds check mixed 32bit and 64bit arithmatic. test2",
+> +	.insns = {
+> +	BPF_MOV64_IMM(BPF_REG_0, 0),
+> +	BPF_MOV64_IMM(BPF_REG_1, -1),
+> +	BPF_ALU64_IMM(BPF_LSH, BPF_REG_1, 32),
+> +	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, 1),
+> +	/* r1 = 0xffffFFFF00000001 */
+> +	BPF_MOV64_IMM(BPF_REG_2, 3),
+> +	/* r1 = 0x2 */
+> +	BPF_ALU32_IMM(BPF_ADD, BPF_REG_1, 1),
+> +	/* check ALU32 op zero extends 64bit bounds */
+> +	BPF_JMP_REG(BPF_JGT, BPF_REG_1, BPF_REG_2, 1),
+> +	BPF_JMP_A(1),
+> +	/* invalid ldx if bounds are lost above */
+> +	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_0, -1),
+> +	BPF_EXIT_INSN(),
+> +	},
+> +	.result = ACCEPT
+> +},
+> 
