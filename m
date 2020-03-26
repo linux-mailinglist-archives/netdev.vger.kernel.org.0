@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 369AE194BA9
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 23:41:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DBD1194BAE
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 23:41:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727701AbgCZWlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 18:41:09 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:55481 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726296AbgCZWlI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 18:41:08 -0400
-Received: by mail-wm1-f66.google.com with SMTP id z5so9267214wml.5
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 15:41:06 -0700 (PDT)
+        id S1727714AbgCZWlL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 18:41:11 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:37505 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727653AbgCZWlK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 18:41:10 -0400
+Received: by mail-wm1-f67.google.com with SMTP id d1so10028181wmb.2
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 15:41:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=aeqrUSmRiwlLAmAko1o5hA7oAr99+hO0AL5xVy6VQzs=;
-        b=FhoUQs4u6yQI9KCWGgx1MOCkPnz7iw9SpXxrtUL6Iw4E9tKmMwldU66N+W+k4DTGOG
-         Iavt5TcXnkMmkO6TPwUs5ZtfAwQHBKZS5n/HYHqeaiHgWeUhRarM8jrR8pxFSj2uuBNZ
-         yuV9GIOS8PynoH1elA3rPa7oeuhle1pXfd4Q0V7CD2K1cKlIV+2pMCfo5CYwKfOlk9ny
-         vSSGRRCZA09iANOL8ftJlf5eo0YlDEi6XXgEJoBaSLEIRE8dFeuy4IO0oMBDR411Kv6e
-         OJuaS7pEjNGY0laVW/jnHHoBDBOT/xZMmrW0l3tn0eIn/MPJWE0wYePvt3x/mLGE3j3x
-         qtMg==
+        bh=rUteDh7DdTkIlhXlV0OFGvMqbK5Dy4HUc7Kj4D5RGpw=;
+        b=Seg51ZxMkYuMdLT5L+UqATPLbbmYUSb22a94fF+F3aqF9/axJZO1A/mTL1B8xwMMM7
+         4nNMKkK7GLBoPLEnVhcUpuZkHIDVj7mW9/rvTae2tMyOEdFza1HxzBlQJanzGudNxBEi
+         KZnbulBDJXl5FAbcJLDOV564/HTls7hKtSaAwVgKC7hElErLpemEaXyBkqbD2wbxtNiZ
+         hu0KwSeSS6+4aaRWTGkFmWtMJcZhAbYE5y77XLSutz7dB33j8H9FXSXyj8ok5y07qvBd
+         0eOnoiISsQrF1XgVji1G683eYbhBkbXdrxejZsSkJ6rhOsLKrUkI1jNHi5c5U88H8mFS
+         xZ8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=aeqrUSmRiwlLAmAko1o5hA7oAr99+hO0AL5xVy6VQzs=;
-        b=Q9wGHfV2QS56zYXThiJww745ez2V4VjDtK9DHtxK0aZTGfsnu86sG59ESZYSxGGcKC
-         fQsvF07ggXFY/Dih3q6IYZjE/hNZP8jOqev6/Paq8TpdxHGqe7BCt94Z0zCrvjNH5+bc
-         W6c50j1MtzFfFeAwea7LFIj4nGK09Z6gp0pF8RG799BVjo3CCb56zQvKxqJbpRSD+tWL
-         EzwOGHZ1hSm6xKsq1gFtBKOp2booLt1MCgqLg7kwA4SvMXp0ImhgTaNDo4Vl0btv4vmq
-         JcxQLTJGPUQjwpwXWfG5vOL8lOYMjWXodiCEopyk8NR3L5T+kY8LPUlaRdBt0H6PhQoI
-         DUdQ==
-X-Gm-Message-State: ANhLgQ3IvHJuLtogKGOzv9lzhR2qKmi7dLQO1uU5zwwTUz+9Hb0BOF35
-        fN+G8eaUqcZx9GS3v7HfFeg=
-X-Google-Smtp-Source: ADFU+vtW1zzxezEuSXi9Im0TnkxTiexXZ9+t3XDoZpPwqaHkgk4OTlS2nObo5Plq8NE60SJSUaZrTA==
-X-Received: by 2002:a5d:674f:: with SMTP id l15mr11477200wrw.196.1585262465887;
-        Thu, 26 Mar 2020 15:41:05 -0700 (PDT)
+        bh=rUteDh7DdTkIlhXlV0OFGvMqbK5Dy4HUc7Kj4D5RGpw=;
+        b=pAYVwGY8goxgbFEORw3xrXdi8m1ysyrXSqgZpcq6EM1AbSCxwIOGNeaqZnIjfZ0092
+         1Yf4Y3rLGwg9vN2ySsYxk4o7NIA/fGzmBd3NvXgiQ9D6/0aIXNSUWrDs02wHUp96RAxr
+         Vo8AnX4muo4u5RH4wqy2vQyMfkFQzMMR40CzirhKJHlNTWAn5paiBGaaTX/rKfwhUMHb
+         UvU+r2/PrHzJnsNqbNhQtSbvWIgJKSXA6JZjY3hQ6ru6gE0+AM3f1x+tf3FplNTJy0OE
+         Q5SHZM5kogWMnWnWImps2w93ftCqnZH5U9SCmhN4ZyqHKjLjkJbdSiiqWWfD/RyzYZPj
+         2xYA==
+X-Gm-Message-State: ANhLgQ2Qbo4CxMfus9aK+Zq5lozGV+jbLFeIqlOpl/jCKQqw/GmK76yy
+        vPxhykoQo2lpB4DupFbb/yE=
+X-Google-Smtp-Source: ADFU+vv2WzJcw5FQwxkJV+Ocy/G5mEZY8g9U8N24ApjOFrlQa+R4pwCwlHVZWaJR61Pkfy2eNTr1Hw==
+X-Received: by 2002:a5d:63d2:: with SMTP id c18mr11160587wrw.385.1585262467179;
+        Thu, 26 Mar 2020 15:41:07 -0700 (PDT)
 Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id t81sm5522783wmb.15.2020.03.26.15.41.04
+        by smtp.gmail.com with ESMTPSA id t81sm5522783wmb.15.2020.03.26.15.41.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 15:41:05 -0700 (PDT)
+        Thu, 26 Mar 2020 15:41:06 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         davem@davemloft.net, jakub.kicinski@netronome.com
 Cc:     murali.policharla@broadcom.com, stephen@networkplumber.org,
         jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
         nikolay@cumulusnetworks.com, netdev@vger.kernel.org
-Subject: [PATCH v3 net-next 3/8] net: dsa: configure the MTU for switch ports
-Date:   Fri, 27 Mar 2020 00:40:35 +0200
-Message-Id: <20200326224040.32014-4-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 4/8] net: dsa: implement auto-normalization of MTU for bridge hardware datapath
+Date:   Fri, 27 Mar 2020 00:40:36 +0200
+Message-Id: <20200326224040.32014-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200326224040.32014-1-olteanv@gmail.com>
 References: <20200326224040.32014-1-olteanv@gmail.com>
@@ -62,394 +62,273 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-It is useful be able to configure port policers on a switch to accept
-frames of various sizes:
+Many switches don't have an explicit knob for configuring the MTU
+(maximum transmission unit per interface).  Instead, they do the
+length-based packet admission checks on the ingress interface, for
+reasons that are easy to understand (why would you accept a packet in
+the queuing subsystem if you know you're going to drop it anyway).
 
-- Increase the MTU for better throughput from the default of 1500 if it
-  is known that there is no 10/100 Mbps device in the network.
-- Decrease the MTU to limit the latency of high-priority frames under
-  congestion, or work around various network segments that add extra
-  headers to packets which can't be fragmented.
+So it is actually the MRU that these switches permit configuring.
 
-For DSA slave ports, this is mostly a pass-through callback, called
-through the regular ndo ops and at probe time (to ensure consistency
-across all supported switches).
+In Linux there only exists the IFLA_MTU netlink attribute and the
+associated dev_set_mtu function. The comments like to play blind and say
+that it's changing the "maximum transfer unit", which is to say that
+there isn't any directionality in the meaning of the MTU word. So that
+is the interpretation that this patch is giving to things: MTU == MRU.
 
-The CPU port is called with an MTU equal to the largest configured MTU
-of the slave ports. The assumption is that the user might want to
-sustain a bidirectional conversation with a partner over any switch
-port.
+When 2 interfaces having different MTUs are bridged, the bridge driver
+MTU auto-adjustment logic kicks in: what br_mtu_auto_adjust() does is it
+adjusts the MTU of the bridge net device itself (and not that of the
+slave net devices) to the minimum value of all slave interfaces, in
+order for forwarded packets to not exceed the MTU regardless of the
+interface they are received and send on.
 
-The DSA master is configured the same as the CPU port, plus the tagger
-overhead. Since the MTU is by definition L2 payload (sans Ethernet
-header), it is up to each individual driver to figure out if it needs to
-do anything special for its frame tags on the CPU port (it shouldn't
-except in special cases). So the MTU does not contain the tagger
-overhead on the CPU port.
-However the MTU of the DSA master, minus the tagger overhead, is used as
-a proxy for the MTU of the CPU port, which does not have a net device.
-This is to avoid uselessly calling the .change_mtu function on the CPU
-port when nothing should change.
+The idea behind this behavior, and why the slave MTUs are not adjusted,
+is that normal termination from Linux over the L2 forwarding domain
+should happen over the bridge net device, which _is_ properly limited by
+the minimum MTU. And termination over individual slave devices is
+possible even if those are bridged. But that is not "forwarding", so
+there's no reason to do normalization there, since only a single
+interface sees that packet.
 
-So it is safe to assume that the DSA master and the CPU port MTUs are
-apart by exactly the tagger's overhead in bytes.
+The problem with those switches that can only control the MRU is with
+the offloaded data path, where a packet received on an interface with
+MRU 9000 would still be forwarded to an interface with MRU 1500. And the
+br_mtu_auto_adjust() function does not really help, since the MTU
+configured on the bridge net device is ignored.
 
-Some changes were made around dsa_master_set_mtu(), function which was
-now removed, for 2 reasons:
-  - dev_set_mtu() already calls dev_validate_mtu(), so it's redundant to
-    do the same thing in DSA
-  - __dev_set_mtu() returns 0 if ops->ndo_change_mtu is an absent method
-That is to say, there's no need for this function in DSA, we can safely
-call dev_set_mtu() directly, take the rtnl lock when necessary, and just
-propagate whatever errors get reported (since the user probably wants to
-be informed).
+In order to enforce the de-facto MTU == MRU rule for these switches, we
+need to do MTU normalization, which means: in order for no packet larger
+than the MTU configured on this port to be sent, then we need to limit
+the MRU on all ports that this packet could possibly come from. AKA
+since we are configuring the MRU via MTU, it means that all ports within
+a bridge forwarding domain should have the same MTU.
 
-Some inspiration (mainly in the MTU DSA notifier) was taken from a
-vaguely similar patch from Murali and Florian, who are credited as
-co-developers down below.
+And that is exactly what this patch is trying to do.
 
-Co-developed-by: Murali Krishna Policharla <murali.policharla@broadcom.com>
-Signed-off-by: Murali Krishna Policharla <murali.policharla@broadcom.com>
-Co-developed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+From an implementation perspective, we try to follow the intent of the
+user, otherwise there is a risk that we might livelock them (they try to
+change the MTU on an already-bridged interface, but we just keep
+changing it back in an attempt to keep the MTU normalized). So the MTU
+that the bridge is normalized to is either:
+
+ - The most recently changed one:
+
+   ip link set dev swp0 master br0
+   ip link set dev swp1 master br0
+   ip link set dev swp0 mtu 1400
+
+   This sequence will make swp1 inherit MTU 1400 from swp0.
+
+ - The one of the most recently added interface to the bridge:
+
+   ip link set dev swp0 master br0
+   ip link set dev swp1 mtu 1400
+   ip link set dev swp1 master br0
+
+   The above sequence will make swp0 inherit MTU 1400 as well.
+
+Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v3:
-- Introduced the propagate_upstream variable in the notifier structure
-  to prevent intermediate MTU configuration to be propagated upstream
-  when it is going to be overwritten anyway by the MTU setting on the
-  CPU port.
-- Refined the dsa_switch_mtu_match such that the CPU port on the local
-  switch does not match (it is explicitly programmed).
-- Removed the dsa_master_set_mtu function (explanation in commit
-  message).
+Moved the implementation to the DSA core (it was in the bridge driver
+previously).
+Added a variable by which drivers should denote if they require this
+behavior or not.
 
 Changes in v2:
-Introduced a DSA switch notifier for propagating the MTU setting towards
-upstream switches.
+Patch is new.
 
- include/net/dsa.h  |  10 +++++
- net/dsa/dsa_priv.h |  11 +++++
- net/dsa/master.c   |  23 ++++------
- net/dsa/port.c     |  13 ++++++
- net/dsa/slave.c    | 105 ++++++++++++++++++++++++++++++++++++++++++++-
- net/dsa/switch.c   |  37 ++++++++++++++++
- 6 files changed, 183 insertions(+), 16 deletions(-)
+ include/net/dsa.h  |   6 +++
+ net/dsa/dsa2.c     |   2 +-
+ net/dsa/dsa_priv.h |   4 ++
+ net/dsa/slave.c    | 114 +++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 125 insertions(+), 1 deletion(-)
 
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index beeb81a532e3..1bb1e0852e31 100644
+index 1bb1e0852e31..0f4e55543cf8 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -579,6 +579,16 @@ struct dsa_switch_ops {
- 				     struct devlink_param_gset_ctx *ctx);
- 	int	(*devlink_param_set)(struct dsa_switch *ds, u32 id,
- 				     struct devlink_param_gset_ctx *ctx);
-+
-+	/*
-+	 * MTU change functionality. Switches can also adjust their MRU through
-+	 * this method. By MTU, one understands the SDU, aka L2 payload length.
-+	 * If the switch needs to account for the DSA tag on the CPU port, this
-+	 * method needs to to do so privately.
+@@ -284,6 +284,12 @@ struct dsa_switch {
+ 	 */
+ 	bool			pcs_poll;
+ 
++	/* For switches that only have the MRU configurable. To ensure the
++	 * configured MTU is not exceeded, normalization of MRU on all bridged
++	 * interfaces is needed.
 +	 */
-+	int	(*port_change_mtu)(struct dsa_switch *ds, int port,
-+				   int new_mtu);
-+	int	(*port_max_mtu)(struct dsa_switch *ds, int port);
++	bool			mtu_enforcement_ingress;
++
+ 	size_t num_ports;
  };
  
- #define DSA_DEVLINK_PARAM_DRIVER(_id, _name, _type, _cmodes)		\
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index e7c30b472034..9a271a58a41d 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -18,8 +18,8 @@
+ 
+ #include "dsa_priv.h"
+ 
+-static LIST_HEAD(dsa_tree_list);
+ static DEFINE_MUTEX(dsa2_mutex);
++LIST_HEAD(dsa_tree_list);
+ 
+ static const struct devlink_ops dsa_devlink_ops = {
+ };
 diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 760e6ea3178a..da3be60beefe 100644
+index da3be60beefe..904cc7c9b882 100644
 --- a/net/dsa/dsa_priv.h
 +++ b/net/dsa/dsa_priv.h
-@@ -22,6 +22,7 @@ enum {
- 	DSA_NOTIFIER_MDB_DEL,
- 	DSA_NOTIFIER_VLAN_ADD,
- 	DSA_NOTIFIER_VLAN_DEL,
-+	DSA_NOTIFIER_MTU,
- };
- 
- /* DSA_NOTIFIER_AGEING_TIME */
-@@ -61,6 +62,14 @@ struct dsa_notifier_vlan_info {
- 	int port;
- };
- 
-+/* DSA_NOTIFIER_MTU */
-+struct dsa_notifier_mtu_info {
-+	bool propagate_upstream;
-+	int sw_index;
-+	int port;
-+	int mtu;
-+};
+@@ -194,4 +194,8 @@ dsa_slave_to_master(const struct net_device *dev)
+ /* switch.c */
+ int dsa_switch_register_notifier(struct dsa_switch *ds);
+ void dsa_switch_unregister_notifier(struct dsa_switch *ds);
 +
- struct dsa_slave_priv {
- 	/* Copy of CPU port xmit for faster access in slave transmit hot path */
- 	struct sk_buff *	(*xmit)(struct sk_buff *skb,
-@@ -127,6 +136,8 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
- 			    struct switchdev_trans *trans);
- int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock,
- 			 struct switchdev_trans *trans);
-+int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
-+			bool propagate_upstream);
- int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- 		     u16 vid);
- int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
-diff --git a/net/dsa/master.c b/net/dsa/master.c
-index bd44bde272f4..ee98d2d70cf5 100644
---- a/net/dsa/master.c
-+++ b/net/dsa/master.c
-@@ -314,20 +314,6 @@ static const struct attribute_group dsa_group = {
- 	.attrs	= dsa_slave_attrs,
- };
- 
--static void dsa_master_set_mtu(struct net_device *dev, struct dsa_port *cpu_dp)
--{
--	unsigned int mtu = ETH_DATA_LEN + cpu_dp->tag_ops->overhead;
--	int err;
--
--	rtnl_lock();
--	if (mtu <= dev->max_mtu) {
--		err = dev_set_mtu(dev, mtu);
--		if (err)
--			netdev_dbg(dev, "Unable to set MTU to include for DSA overheads\n");
--	}
--	rtnl_unlock();
--}
--
- static void dsa_master_reset_mtu(struct net_device *dev)
- {
- 	int err;
-@@ -344,7 +330,14 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
- {
- 	int ret;
- 
--	dsa_master_set_mtu(dev,  cpu_dp);
-+	rtnl_lock();
-+	ret = dev_set_mtu(dev, ETH_DATA_LEN + cpu_dp->tag_ops->overhead);
-+	rtnl_unlock();
-+	if (ret) {
-+		netdev_err(dev, "error %d setting MTU to include DSA overhead\n",
-+			   ret);
-+		return ret;
-+	}
- 
- 	/* If we use a tagging format that doesn't have an ethertype
- 	 * field, make sure that all packets from this point on get
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index a18e65a474a5..231b2d494f1c 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -297,6 +297,19 @@ int dsa_port_mrouter(struct dsa_port *dp, bool mrouter,
- 	return ds->ops->port_egress_floods(ds, port, true, mrouter);
- }
- 
-+int dsa_port_mtu_change(struct dsa_port *dp, int new_mtu,
-+			bool propagate_upstream)
-+{
-+	struct dsa_notifier_mtu_info info = {
-+		.sw_index = dp->ds->index,
-+		.propagate_upstream = propagate_upstream,
-+		.port = dp->index,
-+		.mtu = new_mtu,
-+	};
++/* dsa2.c */
++extern struct list_head dsa_tree_list;
 +
-+	return dsa_port_notify(dp, DSA_NOTIFIER_MTU, &info);
-+}
-+
- int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- 		     u16 vid)
- {
+ #endif
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 5f782fa3029f..1a99bbab0722 100644
+index 1a99bbab0722..8ced165a7908 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -1218,6 +1218,96 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
+@@ -1218,6 +1218,116 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
  	return dsa_port_vid_del(dp, vid);
  }
  
-+static int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
++struct dsa_hw_port {
++	struct list_head list;
++	struct net_device *dev;
++	int old_mtu;
++};
++
++static int dsa_hw_port_list_set_mtu(struct list_head *hw_port_list, int mtu)
 +{
-+	struct net_device *master = dsa_slave_to_master(dev);
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_slave_priv *p = netdev_priv(dev);
-+	struct dsa_switch *ds = p->dp->ds;
-+	struct dsa_port *cpu_dp;
-+	int port = p->dp->index;
-+	int largest_mtu = 0;
-+	int new_master_mtu;
-+	int old_master_mtu;
-+	int mtu_limit;
-+	int cpu_mtu;
-+	int err, i;
++	const struct dsa_hw_port *p;
++	int err;
 +
-+	if (!ds->ops->port_change_mtu)
-+		return -EOPNOTSUPP;
-+
-+	for (i = 0; i < ds->num_ports; i++) {
-+		int slave_mtu;
-+
-+		if (!dsa_is_user_port(ds, i))
++	list_for_each_entry(p, hw_port_list, list) {
++		if (p->dev->mtu == mtu)
 +			continue;
 +
-+		/* During probe, this function will be called for each slave
-+		 * device, while not all of them have been allocated. That's
-+		 * ok, it doesn't change what the maximum is, so ignore it.
-+		 */
-+		if (!dsa_to_port(ds, i)->slave)
-+			continue;
-+
-+		/* Pretend that we already applied the setting, which we
-+		 * actually haven't (still haven't done all integrity checks)
-+		 */
-+		if (i == port)
-+			slave_mtu = new_mtu;
-+		else
-+			slave_mtu = dsa_to_port(ds, i)->slave->mtu;
-+
-+		if (largest_mtu < slave_mtu)
-+			largest_mtu = slave_mtu;
-+	}
-+
-+	cpu_dp = dsa_to_port(ds, port)->cpu_dp;
-+
-+	mtu_limit = min_t(int, master->max_mtu, dev->max_mtu);
-+	old_master_mtu = master->mtu;
-+	new_master_mtu = largest_mtu + cpu_dp->tag_ops->overhead;
-+	if (new_master_mtu > mtu_limit)
-+		return -ERANGE;
-+
-+	/* If the master MTU isn't over limit, there's no need to check the CPU
-+	 * MTU, since that surely isn't either.
-+	 */
-+	cpu_mtu = largest_mtu;
-+
-+	/* Start applying stuff */
-+	if (new_master_mtu != old_master_mtu) {
-+		err = dev_set_mtu(master, new_master_mtu);
-+		if (err < 0)
-+			goto out_master_failed;
-+
-+		/* We only need to propagate the MTU of the CPU port to
-+		 * upstream switches.
-+		 */
-+		err = dsa_port_mtu_change(cpu_dp, cpu_mtu, true);
++		err = dev_set_mtu(p->dev, mtu);
 +		if (err)
-+			goto out_cpu_failed;
++			goto rollback;
 +	}
-+
-+	err = dsa_port_mtu_change(dp, new_mtu, false);
-+	if (err)
-+		goto out_port_failed;
-+
-+	dev->mtu = new_mtu;
 +
 +	return 0;
 +
-+out_port_failed:
-+	if (new_master_mtu != old_master_mtu)
-+		dsa_port_mtu_change(cpu_dp, old_master_mtu -
-+				    cpu_dp->tag_ops->overhead,
-+				    true);
-+out_cpu_failed:
-+	if (new_master_mtu != old_master_mtu)
-+		dev_set_mtu(master, old_master_mtu);
-+out_master_failed:
++rollback:
++	list_for_each_entry_continue_reverse(p, hw_port_list, list) {
++		if (p->dev->mtu == p->old_mtu)
++			continue;
++
++		if (dev_set_mtu(p->dev, p->old_mtu))
++			netdev_err(p->dev, "Failed to restore MTU\n");
++	}
++
 +	return err;
 +}
 +
- static const struct ethtool_ops dsa_slave_ethtool_ops = {
- 	.get_drvinfo		= dsa_slave_get_drvinfo,
- 	.get_regs_len		= dsa_slave_get_regs_len,
-@@ -1295,6 +1385,7 @@ static const struct net_device_ops dsa_slave_netdev_ops = {
- 	.ndo_vlan_rx_add_vid	= dsa_slave_vlan_rx_add_vid,
- 	.ndo_vlan_rx_kill_vid	= dsa_slave_vlan_rx_kill_vid,
- 	.ndo_get_devlink_port	= dsa_slave_get_devlink_port,
-+	.ndo_change_mtu		= dsa_slave_change_mtu,
- };
- 
- static struct device_type dsa_type = {
-@@ -1465,7 +1556,10 @@ int dsa_slave_create(struct dsa_port *port)
- 	slave_dev->priv_flags |= IFF_NO_QUEUE;
- 	slave_dev->netdev_ops = &dsa_slave_netdev_ops;
- 	slave_dev->min_mtu = 0;
--	slave_dev->max_mtu = ETH_MAX_MTU;
-+	if (ds->ops->port_max_mtu)
-+		slave_dev->max_mtu = ds->ops->port_max_mtu(ds, port->index);
-+	else
-+		slave_dev->max_mtu = ETH_MAX_MTU;
- 	SET_NETDEV_DEVTYPE(slave_dev, &dsa_type);
- 
- 	SET_NETDEV_DEV(slave_dev, port->ds->dev);
-@@ -1483,6 +1577,15 @@ int dsa_slave_create(struct dsa_port *port)
- 	p->xmit = cpu_dp->tag_ops->xmit;
- 	port->slave = slave_dev;
- 
-+	rtnl_lock();
-+	ret = dsa_slave_change_mtu(slave_dev, ETH_DATA_LEN);
-+	rtnl_unlock();
-+	if (ret && ret != -EOPNOTSUPP) {
-+		dev_err(ds->dev, "error %d setting MTU on port %d\n",
-+			ret, port->index);
-+		goto out_free;
-+	}
-+
- 	netif_carrier_off(slave_dev);
- 
- 	ret = dsa_slave_phy_setup(slave_dev);
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index df4abe897ed6..f3c32ff552b3 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -52,6 +52,40 @@ static int dsa_switch_ageing_time(struct dsa_switch *ds,
- 	return 0;
- }
- 
-+static bool dsa_switch_mtu_match(struct dsa_switch *ds, int port,
-+				 struct dsa_notifier_mtu_info *info)
++static void dsa_hw_port_list_free(struct list_head *hw_port_list)
 +{
-+	if (ds->index == info->sw_index)
-+		return (port == info->port) || dsa_is_dsa_port(ds, port);
++	struct dsa_hw_port *p, *n;
 +
-+	if (!info->propagate_upstream)
-+		return false;
-+
-+	if (dsa_is_dsa_port(ds, port) || dsa_is_cpu_port(ds, port))
-+		return true;
-+
-+	return false;
++	list_for_each_entry_safe(p, n, hw_port_list, list)
++		kfree(p);
 +}
 +
-+static int dsa_switch_mtu(struct dsa_switch *ds,
-+			  struct dsa_notifier_mtu_info *info)
++/* Make the hardware datapath to/from @dev limited to a common MTU */
++void dsa_bridge_mtu_normalization(struct dsa_port *dp)
 +{
-+	int port, ret;
++	struct list_head hw_port_list;
++	struct dsa_switch_tree *dst;
++	int min_mtu = ETH_MAX_MTU;
++	struct dsa_port *other_dp;
++	int err;
 +
-+	if (!ds->ops->port_change_mtu)
-+		return -EOPNOTSUPP;
++	if (!dp->ds->mtu_enforcement_ingress)
++		return;
 +
-+	for (port = 0; port < ds->num_ports; port++) {
-+		if (dsa_switch_mtu_match(ds, port, info)) {
-+			ret = ds->ops->port_change_mtu(ds, port, info->mtu);
-+			if (ret)
-+				return ret;
++	if (!dp->bridge_dev)
++		return;
++
++	INIT_LIST_HEAD(&hw_port_list);
++
++	/* Populate the list of ports that are part of the same bridge
++	 * as the newly added/modified port
++	 */
++	list_for_each_entry(dst, &dsa_tree_list, list) {
++		list_for_each_entry(other_dp, &dst->ports, list) {
++			struct dsa_hw_port *hw_port;
++			struct net_device *slave;
++
++			if (other_dp->type != DSA_PORT_TYPE_USER)
++				continue;
++
++			if (other_dp->bridge_dev != dp->bridge_dev)
++				continue;
++
++			if (!other_dp->ds->mtu_enforcement_ingress)
++				continue;
++
++			slave = other_dp->slave;
++
++			if (min_mtu > slave->mtu)
++				min_mtu = slave->mtu;
++
++			hw_port = kzalloc(sizeof(*hw_port), GFP_KERNEL);
++			if (!hw_port)
++				goto out;
++
++			hw_port->dev = slave;
++			hw_port->old_mtu = slave->mtu;
++
++			list_add(&hw_port->list, &hw_port_list);
 +		}
 +	}
 +
-+	return 0;
++	/* Attempt to configure the entire hardware bridge to the newly added
++	 * interface's MTU first, regardless of whether the intention of the
++	 * user was to raise or lower it.
++	 */
++	err = dsa_hw_port_list_set_mtu(&hw_port_list, dp->slave->mtu);
++	if (!err)
++		goto out;
++
++	/* Clearly that didn't work out so well, so just set the minimum MTU on
++	 * all hardware bridge ports now. If this fails too, then all ports will
++	 * still have their old MTU rolled back anyway.
++	 */
++	dsa_hw_port_list_set_mtu(&hw_port_list, min_mtu);
++
++out:
++	dsa_hw_port_list_free(&hw_port_list);
 +}
 +
- static int dsa_switch_bridge_join(struct dsa_switch *ds,
- 				  struct dsa_notifier_bridge_info *info)
+ static int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
  {
-@@ -328,6 +362,9 @@ static int dsa_switch_event(struct notifier_block *nb,
- 	case DSA_NOTIFIER_VLAN_DEL:
- 		err = dsa_switch_vlan_del(ds, info);
- 		break;
-+	case DSA_NOTIFIER_MTU:
-+		err = dsa_switch_mtu(ds, info);
-+		break;
- 	default:
- 		err = -EOPNOTSUPP;
- 		break;
+ 	struct net_device *master = dsa_slave_to_master(dev);
+@@ -1294,6 +1404,8 @@ static int dsa_slave_change_mtu(struct net_device *dev, int new_mtu)
+ 
+ 	dev->mtu = new_mtu;
+ 
++	dsa_bridge_mtu_normalization(dp);
++
+ 	return 0;
+ 
+ out_port_failed:
+@@ -1648,6 +1760,8 @@ static int dsa_slave_changeupper(struct net_device *dev,
+ 	if (netif_is_bridge_master(info->upper_dev)) {
+ 		if (info->linking) {
+ 			err = dsa_port_bridge_join(dp, info->upper_dev);
++			if (!err)
++				dsa_bridge_mtu_normalization(dp);
+ 			err = notifier_from_errno(err);
+ 		} else {
+ 			dsa_port_bridge_leave(dp, info->upper_dev);
 -- 
 2.17.1
 
