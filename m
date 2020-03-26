@@ -2,112 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F7DF194799
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 20:40:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8429319479F
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 20:41:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727851AbgCZTk5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 15:40:57 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:41503 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726067AbgCZTk5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 15:40:57 -0400
-Received: by mail-pl1-f196.google.com with SMTP id t16so2551628plr.8;
-        Thu, 26 Mar 2020 12:40:57 -0700 (PDT)
+        id S1728534AbgCZTlb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 15:41:31 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:44644 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726067AbgCZTla (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 15:41:30 -0400
+Received: by mail-lf1-f65.google.com with SMTP id j188so5907047lfj.11
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 12:41:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HPuxdzkNqLhQ3fR4K6trK8HciMyFIxhzicL4Cb7qcio=;
-        b=JOxBI8DCOorhzDHSsG5draNC3B3YA2fK+zQX1qhLKL34alNsnDK08uhQKkzUxYRam0
-         n3Z9W2Xhl/eSDxQ3aR4Fs75uAyjgnz+pyGmB/K1+razRUaJ7C6lCdk7bT+IYiS54Px9P
-         lllGtxE02SMC7BeDR/6EH5Uk4bwZmSVlVNCjLqSuESdxeXgrqJ/vS/Kd+GdfAiXJG5Rl
-         HiNsj7W0rpYbUrvXRWVkQHSFWGGzMWY4BQ+tFBSdCxTCZfWmtZkT9JvS+Y4Y65ht9Q49
-         TvUPY5fXsECNKsucFR6TrnycsuQzt8lDtIeaRUOchP1vcOOvQ09wmMtoEmKBsnjCYkaF
-         nLpg==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vs2klQOhe3JsohJnbJZt0gWInxdUjNgQKueZFn4x3cI=;
+        b=PNcpdTmx52cn87MvL9KCdJfPEvZKGSTCzxaZUjD3G4+EZpwqUix9PtGB5I5Fx8XQYk
+         qazfRIHynrdX1af+V1TgkGtheHFN8HhE1YlSojx2YfSbeF4F8tVDK+9MgDaubwORctJl
+         HtGuRttqbLArGXGM3IRGNXsklBZLi5umhe49U=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HPuxdzkNqLhQ3fR4K6trK8HciMyFIxhzicL4Cb7qcio=;
-        b=AplmewcnGk3RzVug5g3gbIGWWsHMWEwKwWS0By+iUviaGOaGpwCXWmyeEdMcoLLgAL
-         a7484/ceipiHFGe/D5ebNvJ+fkyuQIyLzafwj0UAt7mb1qCojk7uVrjz6D/h6J2FZFBA
-         btnEO8kTwfK/O/aY+MQ+FK9h00h5yuTfukZM4c2MKmK5j/Q0OwJc31xgh53Kw8/HfUli
-         zYujjwZbsCV89e6LDWgJF/TwH2FziKVga/A+0OcBsNuOzD5tFL8LZ/OowmMr83NEjikw
-         l3ptRw680CN1ut/U2xP5L4BRmBYZsN8Pbq3lHFNZGn9q+oxN+98yoLSqrdz1OsDNrOz1
-         KuLg==
-X-Gm-Message-State: ANhLgQ3TgTwQUL2dJXNWZXtbePt0TtwmeYZbLlygHS/XQ/ne1ghywIXc
-        K8M7t9y+Dacn9UZM2xErXsI=
-X-Google-Smtp-Source: ADFU+vv6mkckeowZNju+x2RhpAIHT1ILBxnCrIRu4fmAU14QnDRISc+beyxgPwlhEAsPwxDeTVqesA==
-X-Received: by 2002:a17:90a:5218:: with SMTP id v24mr1722611pjh.90.1585251654782;
-        Thu, 26 Mar 2020 12:40:54 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:c7d9])
-        by smtp.gmail.com with ESMTPSA id a71sm2364519pfa.162.2020.03.26.12.40.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 12:40:53 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 12:40:50 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vs2klQOhe3JsohJnbJZt0gWInxdUjNgQKueZFn4x3cI=;
+        b=MZjeWO+Ti7YlNTIgBI2h9qfvCAq2lM2kbMWtjSUi54/BRXcCkqEO5hM00VWEMySHqb
+         CsQNG6mNq+ZEwgdAt4v7lAKTpFTqeByRXlKgwaS7LscMPFgCpBF/VQ5SWs/rvDlJu/tf
+         p7TatcnsDDA1S1SmChb807DfO2/F/Zker0vdImq/YfhnRXKHoFvF8ofKBRz/I8Da+hkB
+         UAQPDrXaImu3HayXPqy+6sF9HO7Nto6m8pL0AUuhDNoLj3khO/cgQC928leQVdTdFv5Y
+         7UGJZHBnraa5PthjjLeVXAEEeJOdHD3InbarJhttjp2ddD4cUt++n33GYJyQPU53CdXO
+         RBkw==
+X-Gm-Message-State: ANhLgQ19UlAnpQ2pqD2cpxw6iBWG4LC7gOnPpI5DOlus6UPqx6y9is5s
+        vi4XUhx23IRwnzONTHSZ4PeeSWvaYmY=
+X-Google-Smtp-Source: ADFU+vtUmoEVJk89m4fDDtW2QVh2JoR2FNQuOfJ65ng3T77agAcwT0LReGFM04zLXtex1fYYjYVkFg==
+X-Received: by 2002:ac2:5f75:: with SMTP id c21mr6629676lfc.194.1585251687901;
+        Thu, 26 Mar 2020 12:41:27 -0700 (PDT)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id k23sm1897292ljk.40.2020.03.26.12.41.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Mar 2020 12:41:27 -0700 (PDT)
+Subject: Re: [PATCH v2 net-next 10/10] net: bridge: implement
+ auto-normalization of MTU for hardware datapath
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
- program when attaching XDP
-Message-ID: <20200326194050.d5cjetvhzlhyiesb@ast-mbp>
-References: <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
- <87tv2f48lp.fsf@toke.dk>
- <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com>
- <87h7ye3mf3.fsf@toke.dk>
- <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
- <87tv2e10ly.fsf@toke.dk>
- <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
- <87369wrcyv.fsf@toke.dk>
- <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
- <20200325221323.00459c8d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        murali.policharla@broadcom.com,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>
+References: <20200325152209.3428-1-olteanv@gmail.com>
+ <20200325152209.3428-11-olteanv@gmail.com>
+ <20200326101752.GA1362955@splinter>
+ <CA+h21hq2K__kY9Pi4-23x7aA+4TPXAV4evfi1tR=0bZRcZDiQA@mail.gmail.com>
+ <20200326113542.GA1383155@splinter>
+ <83375385-7881-53b7-c685-e166c8bdeba4@cumulusnetworks.com>
+ <CA+h21hoYUqWxVTHKixOKvtOebjC84AxcjoiDHXK75n+TpTL3Mw@mail.gmail.com>
+ <25bc3bf2-0dea-5667-8aae-c57a2a693bec@cumulusnetworks.com>
+ <CA+h21hp3LWA79WwAGhrL_SiaqZ=81=1P6HVO2a3WeLjcaTFgAg@mail.gmail.com>
+ <e68cbeb2-f8db-319c-9c4c-32eb3b91a7b9@cumulusnetworks.com>
+ <20200326114935.22885985@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <3614048c-18f5-4b6b-ad4f-4085b2b9e360@cumulusnetworks.com>
+Date:   Thu, 26 Mar 2020 21:41:25 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200325221323.00459c8d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200326114935.22885985@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 25, 2020 at 10:13:23PM -0700, Jakub Kicinski wrote:
-> >
-> > Now for XDP. It has same flawed model. And even if it seems to you
-> > that it's not a big issue, and even if Jakub thinks we are trying to
-> > solve non-existing problem, it is a real problem and a real concern
-> > from people that have to support XDP in production with many
+On 26/03/2020 20:49, Jakub Kicinski wrote:
+> On Thu, 26 Mar 2020 14:38:57 +0200 Nikolay Aleksandrov wrote:
+>> On 26/03/2020 14:25, Vladimir Oltean wrote:
+>>> On Thu, 26 Mar 2020 at 14:19, Nikolay Aleksandrov
+>>> <nikolay@cumulusnetworks.com> wrote:  
+>>>>
+>>>> On 26/03/2020 14:18, Vladimir Oltean wrote:  
+>>>>> On Thu, 26 Mar 2020 at 14:06, Nikolay Aleksandrov
+>>>>> <nikolay@cumulusnetworks.com> wrote:  
+>>>>>>
+>>>>>> On 26/03/2020 13:35, Ido Schimmel wrote:  
+>>>>>>> On Thu, Mar 26, 2020 at 12:25:20PM +0200, Vladimir Oltean wrote:  
+>>>>>>>> Hi Ido,
+>>>>>>>>
+>>>>>>>> On Thu, 26 Mar 2020 at 12:17, Ido Schimmel <idosch@idosch.org> wrote:  
+>>>>>>>>>  
+>>>>> [snip]  
+>>>>>>>
+>>>>>>> I think you should be more explicit about it. Did you consider listening
+>>>>>>> to 'NETDEV_PRECHANGEMTU' notifications in relevant drivers and vetoing
+>>>>>>> unsupported configurations with an appropriate extack message? If you
+>>>>>>> can't veto (in order not to break user space), you can still emit an
+>>>>>>> extack message.
+>>>>>>>  
+>>>>>>
+>>>>>> +1, this sounds more appropriate IMO
+>>>>>>  
+>>>>>
+>>>>> And what does vetoing gain me exactly? The practical inability to
+>>>>> change the MTU of any interface that is already bridged and applies
+>>>>> length check on RX?
+>>>>>  
+>>>>
+>>>> I was referring to moving the logic to NETDEV_PRECHANGEMTU, the rest is up to you.
+>>>>  
+>>>
+>>> If I'm not going to veto, then I don't see a lot of sense in listening
+>>> on this particular notifier either. I can do the normalization just
+>>> fine on NETDEV_CHANGEMTU.
+>>
+>> I should've been more explicit - I meant I agree that this change doesn't belong in
+>> the bridge, and handling it in a notifier in the driver seems like a better place.
+>> Yes - if it's not going to be a vetto, then CHANGEMTU is fine.
 > 
-> More than happy to talk to those folks, and see the tickets.
-
-Jakub, you repeatedly demonstrated lack of understanding of what
-bpf_link is despite multiple attempts from me, Andrii and others.
-At this point I don't believe in your good intent.
-Your repeated attacks on BPF in every thread are out of control.
-I kept ignoring your insults for long time, but I cannot do this anymore.
-Please find other threads to contribute your opinions.
-They are not welcomed here.
-
-> > well-meaning developers developing BPF applications independently.
+> I'm not sure pushing behavior decisions like that out to the drivers 
+> is ever a good idea. Linux should abstract HW differences after all,
+> we don't want different drivers to perform different magic behind
+> user's back. 
 > 
-> There is one single program which can be attached to the XDP hook, 
-> the "everybody attaches their program model" does not apply.
+> I'd think if HW is unable to apply given configuration vetoing is both
+> correct and expected..
 > 
-> TW agent should just listen on netlink notifications to see if someone
-> replaced its program.
 
-This is dumbest idea I've heard in a long time.
-May be kernel shouldn't have done ACLs and did notifications only
-when file is accessed by a task that shouldn't have accessed it?
-Same level of craziness.
+This change implements a policy and makes it default for all HW-offloaded devices, but
+not all of them have these restrictions or need it. Moreover MTU handling has always been
+a vendor/driver-specific problem.
+I do agree about the veto part, in my experience we've had countless problem reports
+due to the bridge auto-MTU adjusting, but it seems to me it's the driver authors' right
+to implement any policy they want as long as it doesn't affect everyone else.
+
+
+
+
