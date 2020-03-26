@@ -2,100 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F29701942D8
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 16:17:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF9AF1942DC
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 16:18:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728002AbgCZPRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 11:17:32 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:49488 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbgCZPRc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 11:17:32 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.93)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1jHUGA-00Bc7c-3P; Thu, 26 Mar 2020 16:17:30 +0100
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211 2020-03-26
-Date:   Thu, 26 Mar 2020 16:17:24 +0100
-Message-Id: <20200326151725.117792-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.25.1
+        id S1727938AbgCZPSD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 11:18:03 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:44527 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726270AbgCZPSD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 11:18:03 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585235881;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=lvxhivEZKDcTt1poeB5iwHQWHnaT/0gmsJdrcgOX2mc=;
+        b=N+UXD64sq0auuHiJcLB/5pviV6gpCTAL1Tg07nHRq6i9Q5uhuTbtXwADJgYjeF9liOcoRh
+        aOuJZ4adNFqj5dXCjKjcEM6MqTCE1GGwhLJCh3gXsL9mqKC8W63WA58aKk5Xq5OfugJ7Q9
+        sp7HKTC0vDgrYczzO+H5Wtf3ydspMnY=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-383-KLXTlt8_NF-0KoyM9pcbYQ-1; Thu, 26 Mar 2020 11:17:59 -0400
+X-MC-Unique: KLXTlt8_NF-0KoyM9pcbYQ-1
+Received: by mail-lj1-f199.google.com with SMTP id e8so752265ljk.23
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 08:17:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lvxhivEZKDcTt1poeB5iwHQWHnaT/0gmsJdrcgOX2mc=;
+        b=V8ENVy+2Lql3FKLyrw2Wd6oRKOjy8hzHXcnBvJgv72/44pbqauhG+wmsVDIkGmlb7l
+         5vswM+tk0I7IBCL0gApKzTpQ4csSiI+Ugjh7VdRtWYHDQy+Lz0rB0m81feYx7xQqcr4/
+         gyb97yqNzwZqdPRyYtTuci1MUxnqWJGhbN6EW8sqEBfDPZ/228dQkp5VC4xf58jtqEvq
+         6Hj8/tryZ8E/UYBiEXakCdlOIHvseGpCg9D83Y4EUoejX0BXIBEUiWr3b6uomh3g2bwG
+         JrM4oMVqQIwMDcy2HfC08AZo7NmUDKilpnU1ZA1f6CccCWXpaR1YnZ0mIHFEYiOEMTaK
+         pJKg==
+X-Gm-Message-State: ANhLgQ3MhI4CHixCtHY8kzE1pLrcOHmw+LsjaOwEJKd+GI/EleDrGh0Z
+        4HOvSZ/dA5eSCADe/yvUHHKak22zHVps9nYcc0Q0CXw9DvAjj3u4ajb1Eja8A1req8yrJE6f82k
+        dAow2ivHxv+St85kK
+X-Received: by 2002:a2e:a173:: with SMTP id u19mr5742108ljl.67.1585235877930;
+        Thu, 26 Mar 2020 08:17:57 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vsj7MerWWTlCWLvfp9Knj7RahTvIrsuIKrnRtePYCUeFUYHw465ZRV4s+GtGsN18WaxZVMntA==
+X-Received: by 2002:a2e:a173:: with SMTP id u19mr5742056ljl.67.1585235876746;
+        Thu, 26 Mar 2020 08:17:56 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id l11sm1726889lfg.87.2020.03.26.08.17.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2020 08:17:56 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 33D2918158B; Thu, 26 Mar 2020 16:17:53 +0100 (CET)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     daniel@iogearbox.net, ast@fb.com
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH bpf-next] libbpf: Add bpf_object__rodata getter function
+Date:   Thu, 26 Mar 2020 16:17:41 +0100
+Message-Id: <20200326151741.125427-1-toke@redhat.com>
+X-Mailer: git-send-email 2.26.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+This adds a new getter function to libbpf to get the rodata area of a bpf
+object. This is useful if a program wants to modify the rodata before
+loading the object. Any such modification needs to be done before loading,
+since libbpf freezes the backing map after populating it (to allow the
+kernel to do dead code elimination based on its contents).
 
-I don't know if you were planning to send another pull request to
-Linus, but at least if he doesn't release on Sunday then I still
-have a few security fixes - we (particularly Jouni) noticed that
-frames remaining in the queue may go out unencrypted when a client
-disconnects from a mac80211-based AP. We developed a few fixes for
-this, which I'm including here (with more description in the tag)
-along with a few small other fixes.
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ tools/lib/bpf/libbpf.c   | 13 +++++++++++++
+ tools/lib/bpf/libbpf.h   |  1 +
+ tools/lib/bpf/libbpf.map |  1 +
+ 3 files changed, 15 insertions(+)
 
-Please pull and let me know if there's any problem.
-
-Thanks,
-johannes
-
-
-
-The following changes since commit 2de9780f75076c1a1f122cbd39df0fa545284724:
-
-  net: core: dev.c: fix a documentation warning (2020-03-17 23:39:29 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-net-2020-03-26
-
-for you to fetch changes up to b95d2ccd2ccb834394d50347d0e40dc38a954e4a:
-
-  mac80211: set IEEE80211_TX_CTRL_PORT_CTRL_PROTO for nl80211 TX (2020-03-26 15:54:12 +0100)
-
-----------------------------------------------------------------
-We have the following fixes:
- * drop data packets if there's no key for them anymore, after
-   there had been one, to avoid sending them in clear when
-   hostapd removes the key before it removes the station and
-   the packets are still queued
- * check port authorization again after dequeue, to avoid
-   sending packets if the station is no longer authorized
- * actually remove the authorization flag before the key so
-   packets are also dropped properly because of this
- * fix nl80211 control port packet tagging to handle them as
-   packets allowed to go out without encryption
- * fix NL80211_ATTR_CHANNEL_WIDTH outgoing netlink attribute
-   width (should be 32 bits, not 8)
- * don't WARN in a CSA scenario that happens on some APs
- * fix HE spatial reuse element size calculation
-
-----------------------------------------------------------------
-Ilan Peer (1):
-      cfg80211: Do not warn on same channel at the end of CSA
-
-Johannes Berg (5):
-      nl80211: fix NL80211_ATTR_CHANNEL_WIDTH attribute type
-      ieee80211: fix HE SPR size calculation
-      mac80211: drop data frames without key on encrypted links
-      mac80211: mark station unauthorized before key removal
-      mac80211: set IEEE80211_TX_CTRL_PORT_CTRL_PROTO for nl80211 TX
-
-Jouni Malinen (1):
-      mac80211: Check port authorization in the ieee80211_tx_dequeue() case
-
- include/linux/ieee80211.h  |  4 ++--
- net/mac80211/debugfs_sta.c |  3 ++-
- net/mac80211/key.c         | 20 ++++++++++++--------
- net/mac80211/sta_info.c    |  7 ++++++-
- net/mac80211/sta_info.h    |  1 +
- net/mac80211/tx.c          | 39 +++++++++++++++++++++++++++++++++------
- net/wireless/nl80211.c     |  2 +-
- net/wireless/scan.c        |  6 +++++-
- 8 files changed, 62 insertions(+), 20 deletions(-)
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 085e41f9b68e..d3e3bbe12f78 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -1352,6 +1352,19 @@ bpf_object__init_internal_map(struct bpf_object *obj, enum libbpf_map_type type,
+ 	return 0;
+ }
+ 
++void *bpf_object__rodata(const struct bpf_object *obj, size_t *size)
++{
++	struct bpf_map *map;
++
++	bpf_object__for_each_map(map, obj) {
++		if (map->libbpf_type == LIBBPF_MAP_RODATA && map->mmaped) {
++			*size = map->def.value_size;
++			return map->mmaped;
++		}
++	}
++	return NULL;
++}
++
+ static int bpf_object__init_global_data_maps(struct bpf_object *obj)
+ {
+ 	int err;
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index d38d7a629417..d2a9beed7b8a 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -166,6 +166,7 @@ typedef void (*bpf_object_clear_priv_t)(struct bpf_object *, void *);
+ LIBBPF_API int bpf_object__set_priv(struct bpf_object *obj, void *priv,
+ 				    bpf_object_clear_priv_t clear_priv);
+ LIBBPF_API void *bpf_object__priv(const struct bpf_object *prog);
++LIBBPF_API void *bpf_object__rodata(const struct bpf_object *obj, size_t *size);
+ 
+ LIBBPF_API int
+ libbpf_prog_type_by_name(const char *name, enum bpf_prog_type *prog_type,
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index 5129283c0284..a248f4ff3a40 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -243,5 +243,6 @@ LIBBPF_0.0.8 {
+ 		bpf_link__pin;
+ 		bpf_link__pin_path;
+ 		bpf_link__unpin;
++		bpf_object__rodata;
+ 		bpf_program__set_attach_target;
+ } LIBBPF_0.0.7;
+-- 
+2.26.0
 
