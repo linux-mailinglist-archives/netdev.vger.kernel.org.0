@@ -2,91 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C97F219422F
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:58:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08F60194235
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:59:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727717AbgCZO6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 10:58:11 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:46670 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726318AbgCZO6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:58:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=mTjPEJu+QkU3fI0mJj42IMjiIlzgL6R60YMdQoKc3oc=; b=KIjfvbccPd2baQQYlJVF49MvG
-        g9s1orjCx5h/3/xipDgJJtLVOuqpcap6pyMWHLoUuVhKvcpIi3u38GZITMRx8Mf/7FezT6GCXnYCx
-        Xyl2JtXSsu87NBBjJrIRnEUWysSenbuiPkbX3OKU6U92BJxwuO+kpL70L4kJW2VlHRfrkN7PXtRmb
-        qEGiCA1wRmmmTnBO/6xQ8nxoU24GEiA5uw39wnArFcdzJTv7aae1h30QF/O00zKLio8oxWhKaTDK9
-        KMiz2vpoYrl3nHOj9v2ioAXz/eaD6rfMjZ+AO4Yj1RRE3h6/cp5r/yMqNr0V+7hbdjX4hgwyBE0zO
-        kz7Rmuhdg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41644)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jHTxI-0003zz-Ah; Thu, 26 Mar 2020 14:58:00 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jHTx8-0003Ih-PH; Thu, 26 Mar 2020 14:57:50 +0000
-Date:   Thu, 26 Mar 2020 14:57:50 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: [RFC net-next 0/2] split phylink PCS operations and add PCS
- support for dpaa2
-Message-ID: <20200326145750.GA25745@shell.armlinux.org.uk>
-References: <20200317144944.GP25745@shell.armlinux.org.uk>
+        id S1727806AbgCZO74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 10:59:56 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:35904 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726318AbgCZO74 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:59:56 -0400
+Received: by mail-wm1-f66.google.com with SMTP id g62so7392883wme.1
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 07:59:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Dm0T+YWOoJSyDk1JwjqcP0zrbPLG7oa0HEiHJymOdgo=;
+        b=hROVBXxa+h/UhwpjAywQGVDjL/X+Hh6JfWpufDP+2qwpHX0LPxMUuFZjYfRHGc2vaX
+         zOEp8mfi7Ux/ccrNvaAZ1cLeXaVCg0LW/pYjlBBVpq0efVsHhMJ4zoJn0/JIm3V109A1
+         KQL7xJr5FakNJ+ScxARF1pXGEwYC7F6VRogaziX20t2mDWD+RZB3cZo1EC1K6eVmmuUJ
+         acJamHaMSZTCgNuAfq/a+LYJSzsQ9VFg3VPCEwV+wgMYrzxzWsBMQ90FwOzEnw8cilmF
+         r7LW4aWU+2ML6UTeqT0AKNhShiUMACCrpP1PmuIDdOqq3N4P9LjSC1aqqXsw2DWlLUsH
+         Ctlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Dm0T+YWOoJSyDk1JwjqcP0zrbPLG7oa0HEiHJymOdgo=;
+        b=Ae8AOZmLiZvS9mNiiF0yT6TZY7UescbXTkvDh3rpC7jaWieQZQ5bpXD4+motGNkxSI
+         l54ww2/F+6bkR7zX0I93NCCU1/ncltGZK0JqGhyuWIcp1SsF0NAnUYyio8D3p+3GtKwC
+         j6lU71+4dtXMsQxtLPiLUrH34ldQM2Xigq36ZJBTAHpNinbo7PfKOzZ3cEh+UL7z3hDG
+         u4h8GYy3PhNOS4EWaVd2PAl/FI05nfu+yDTYLMcfuQLIeAMrcIifos7xocA6bcTl9bSZ
+         +4nih9XYeWkFn1sauvWURWShzgFesVc5c7NFPltodl+iM/UArGK/Y2iR9afthHbTYreZ
+         EZ4g==
+X-Gm-Message-State: ANhLgQ1dwu7fe9Yi/FBX7xyqSIVLUJyiMQBNi87Hq7VJurWEhB9qoi3+
+        IIopGILwe2slMMaX7NDXhNneZg==
+X-Google-Smtp-Source: ADFU+vv+q8FN0UCQT2toTqhTywrDKEReJ/fFgpUijUhx5w+cinTgtgIOMXHP5gTY36BxpT8F0IyBZw==
+X-Received: by 2002:a7b:c450:: with SMTP id l16mr348892wmi.9.1585234794947;
+        Thu, 26 Mar 2020 07:59:54 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id b187sm4075274wmc.14.2020.03.26.07.59.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2020 07:59:53 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 15:59:53 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, parav@mellanox.com,
+        yuvalav@mellanox.com, jgg@ziepe.ca, saeedm@mellanox.com,
+        leon@kernel.org, andrew.gospodarek@broadcom.com,
+        michael.chan@broadcom.com, moshe@mellanox.com, ayal@mellanox.com,
+        eranbe@mellanox.com, vladbu@mellanox.com, kliteyn@mellanox.com,
+        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
+        tariqt@mellanox.com, oss-drivers@netronome.com,
+        snelson@pensando.io, drivers@pensando.io, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
+        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
+        jacob.e.keller@intel.com, valex@mellanox.com,
+        linyunsheng@huawei.com, lihong.yang@intel.com,
+        vikas.gupta@broadcom.com, magnus.karlsson@intel.com
+Subject: Re: [RFC] current devlink extension plan for NICs
+Message-ID: <20200326145953.GY11304@nanopsycho.orion>
+References: <20200319192719.GD11304@nanopsycho.orion>
+ <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
+ <20200320073555.GE11304@nanopsycho.orion>
+ <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
+ <20200321093525.GJ11304@nanopsycho.orion>
+ <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200317144944.GP25745@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+>> >> >> $ devlink slice add pci/0000.06.00.0/100 flavour pcisf pfnum 1 sfnum 10 hw_addr aa:bb:cc:aa:bb:cc    
+>> >> >
+>> >> >Why is the SF number specified by the user rather than allocated?    
+>> >> 
+>> >> Because it is snown in representor netdevice name. And you need to have
+>> >> it predetermined: enp6s0pf1sf10  
+>> >
+>> >I'd think you need to know what was assigned, not necessarily pick
+>> >upfront.. I feel like we had this conversation before as well.  
+>> 
+>> Yeah. For the scripting sake, always when you create something, you can
+>> directly use it later in the script. Like if you create a bridge, you
+>> assign it a name so you can use it.
+>> 
+>> The "what was assigned" would mean that the assigne
+>> value has to be somehow returned from the kernel and passed to the
+>> script. Not sure how. Do you have any example where this is happening in
+>> networking?
+>
+>Not really, but when allocating objects it seems idiomatic to get the
+>id / handle / address of the new entity in response. Seems to me we're
+>not doing it because the infrastructure for it is not in place, but
+>it'd be a good extension.
+>
+>Times are a little crazy but I can take a poke at implementing
+>something along those lines once I find some time..
 
-Was there any conclusion on this 5 patch series, and whether I should
-submit it for net-next?
+I can't really see how is this supposed to work efficiently. Imagine a
+simple dummy script:
+devlink slice add pci/0000.06.00.0/100 flavour pcisf pfnum 1 sfnum 10
+devlink slice set pci/0000.06.00.0/100 hw_addr aa:bb:cc:aa:bb:cc
+devlink slice del pci/0000.06.00.0/100
 
-The discussion around patch 2 seems to have tailed off, and no one
-seems to have replied to patches 3 to 5.
+The handle is clear then, used for add/set/del. The same thing.
 
-Thanks.
 
-On Tue, Mar 17, 2020 at 02:49:44PM +0000, Russell King - ARM Linux admin wrote:
-> This series splits the phylink_mac_ops structure so that PCS can be
-> supported separately with their own PCS operations, and illustrates
-> the use of the helpers in the previous patch series (net: add phylink
-> support for PCS) in the DPAA2 driver.
-> 
-> This is prototype code, not intended to be merged yet, and is merely
-> being sent for illustrative purposes only.
-> 
->  arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi   | 144 +++++++++++++++
->  drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 226 ++++++++++++++++++++++-
->  drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.h |   1 +
->  drivers/net/phy/phylink.c                        | 102 ++++++----
->  include/linux/phylink.h                          |  11 ++
->  5 files changed, 446 insertions(+), 38 deletions(-)
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
-> 
+Now with dynamically allocated index that you suggest:
+devlink slice add pci/0000.06.00.0 flavour pcisf pfnum 1 sfnum 10
+#somehow get the 100 into variable $XXX
+XXX=???
+devlink slice set pci/0000.06.00.0/$XXX hw_addr aa:bb:cc:aa:bb:cc
+devlink slice del pci/0000.06.00.0/$XXX
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+there are two things I don't like about this:
+1) You use different handles for different actions.
+2) You need to somehow get the number into variable $XXX
+
+What is the benefit of this approach?
