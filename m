@@ -2,108 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFA191938A9
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:34:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D30291938AD
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:36:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727590AbgCZGep (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 02:34:45 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:35997 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726260AbgCZGep (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:34:45 -0400
-Received: by mail-pf1-f195.google.com with SMTP id i13so2292818pfe.3;
-        Wed, 25 Mar 2020 23:34:44 -0700 (PDT)
+        id S1726338AbgCZGgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 02:36:20 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:46114 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726014AbgCZGgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:36:20 -0400
+Received: by mail-pf1-f194.google.com with SMTP id q3so2269096pff.13
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 23:36:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8Yp31voZWlVivg9kGYEITrYNynKJ5KaUpyuZtUu51uQ=;
-        b=RT3xnHvCGWEV0TWOMX6vqaa1p5KvabcHIB812s/x8VHWpRemFVAcdI4antoxrXLnC+
-         Tbi9RQSZm8eKUOCgQ5TnEq1UB2UA9A5P3CdcHL5JvPUh64phHTzJ73+Pp29TfXZlEfLh
-         P+N3/ADKawlAlu4cgOm1hpHpa63VGL7P8yw2KDtnmxTSba/J5v1l2wt0+Ec5ZigQOWG4
-         1ef6oDdNCWHgRi7eeOLgZ0js/SJ0HU3X53CgPKK+swpbWSNB3JblCab2X7a6VD0gUkHn
-         zcAtxiGLRn/1PjYx6IkrLOvxWaydtndG+T86cLAHIhvA6GSZPoGM0mGFghj4cQRmdEKy
-         MWCA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vmMfSlkNqtMhrnEKTmZxU1g5L1uebNhhkz4Zxjb7H8s=;
+        b=qD1vLorQ5c9WJpcglrQTkoZREJc5N2RB1FXf1KSR2jRr5lDAaJ7VIRVl5DuGAO3XsG
+         IVsG/iM4zTSylbxurEVjg/NwAsmKdtoIesC0rHiFKfSVd+7NtKwYveB91dXDi3cQmJyv
+         Swsi7QhziFmZZ913Tm23+YIXYVIDkBdPhEVcThp7eB/TrFpt35uZvitM7fl6LxStAbvi
+         KVYm+pgfmbJfXp5skAUgqa/utqp0Dlf6jOizd+VpQQHkUQYWYhUgWBQGHqVrnIO8Mvmz
+         WOcLw/DHmDbDnVnBSyxEE4dTXa0IWQB0NKrjCj1rj/UjWcCN099dbe1Uc0qY4MoBUydK
+         rnNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8Yp31voZWlVivg9kGYEITrYNynKJ5KaUpyuZtUu51uQ=;
-        b=j8jFsnq7tR76Vn+z72Xf8q/d7gYk+K6dM3p0f0GlWzGRPaavn+hv6DCnquc84Nqs1j
-         Y5HebhxwlAL3L5poFD38ls6Giyw8OzSeJcAEhe4g2Du3CWVSamtht+czlIKHAJQt7tJ0
-         v1aXOUFpvIBciRiNlqNmeMjPqKuC0F356bE+9wkQNu4s48AEvJOW6UztBluKokbn1zFJ
-         QXITGxEnnwUfaBS08dl/Gxtnxj2dNH7zxP60fcwPQTK1rbE+AfA0TakvRZcY3DwKOLia
-         o7hZ7S62G+j6ve9xbNkSSqmlcUwAr5+39dZBpAbdcvLSxMSOpCklDXu2cT6bvrKXx5+S
-         6a1g==
-X-Gm-Message-State: ANhLgQ3ad38o8FhKiDlJxsfaaJrB7rpOnQRpymtboVEjy5scw21w9+FB
-        C2sFBt/GeWb9UGNJQqH6+A8=
-X-Google-Smtp-Source: ADFU+vsEozPuAJZ0JBU+YJWGR6hIPOtVjOwrapG+zB3wOabHNX22Y3b2KSy0yM5IXQ4nG9RqkpPPcQ==
-X-Received: by 2002:a62:686:: with SMTP id 128mr7144824pfg.152.1585204483982;
-        Wed, 25 Mar 2020 23:34:43 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:5929])
-        by smtp.gmail.com with ESMTPSA id y193sm799162pgd.87.2020.03.25.23.34.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2020 23:34:43 -0700 (PDT)
-Date:   Wed, 25 Mar 2020 23:34:41 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     ecree@solarflare.com, yhs@fb.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [bpf-next PATCH 10/10] bpf: test_verifier, add alu32 bounds
- tracking tests
-Message-ID: <20200326063441.ymitkh5z6sgevbm4@ast-mbp>
-References: <158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower>
- <158507165554.15666.6019652542965367828.stgit@john-Precision-5820-Tower>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vmMfSlkNqtMhrnEKTmZxU1g5L1uebNhhkz4Zxjb7H8s=;
+        b=LUUqC/QvhOdNm55QKpIPW6alEoYZglqzlnToupg2k9yyp1WYpmA0+Ytnq9trFaZ9U0
+         D/ggKoUnFyWIgLR1lkhF/mt/R6uxFBqKyZ1a3kh/BCTVgmSISXzUPx6bFqv+Rjb3DuBp
+         XTSEUWHlnmZUn8235dGC4N2zYkM6TbOQg8dTm1DHF4U2HAY0eMQeLZbVISjs1v7T2XxA
+         03b8ZmeyCKq2zmoYe53GHLFekgyN8I0owR0eHYoWjSpZwbRgMelamaR0bJVng7RxEDyM
+         yI2/SfWgxrP0N8+OntAUkRBEUU6LlsBRKTPCF8TL6dtiezaItJKFE2NVZ8YaKsuLawNf
+         s1Kg==
+X-Gm-Message-State: ANhLgQ0Kodz/j5qH+2tVxornbaoaAfK+xbCOI0kknIPvmFQiqsgDl/UQ
+        pOo9OJBUgAvzLNV2XOk6Lic=
+X-Google-Smtp-Source: ADFU+vu2ywsm9x3inhMro0xrREFSdSqtJdofLTkNk/Jcm3WYv1I6bIVWFGbrXmcA6m8D0kYWIFyaKQ==
+X-Received: by 2002:a05:6a00:2d0:: with SMTP id b16mr7760877pft.241.1585204578385;
+        Wed, 25 Mar 2020 23:36:18 -0700 (PDT)
+Received: from [192.168.1.18] (i223-218-245-204.s42.a013.ap.plala.or.jp. [223.218.245.204])
+        by smtp.googlemail.com with ESMTPSA id f68sm842691pje.0.2020.03.25.23.36.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 Mar 2020 23:36:17 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/2] veth: rely on veth_rq in veth_xdp_flush_bq
+ signature
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, brouer@redhat.com, dsahern@gmail.com,
+        lorenzo.bianconi@redhat.com, toke@redhat.com
+References: <cover.1585163874.git.lorenzo@kernel.org>
+ <840c0c7fd83d78e47ed0136d5a032dccf7aef732.1585163874.git.lorenzo@kernel.org>
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+Message-ID: <fe753d30-b30b-4534-35c7-5ef06c609b96@gmail.com>
+Date:   Thu, 26 Mar 2020 15:36:14 +0900
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <158507165554.15666.6019652542965367828.stgit@john-Precision-5820-Tower>
+In-Reply-To: <840c0c7fd83d78e47ed0136d5a032dccf7aef732.1585163874.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 10:40:55AM -0700, John Fastabend wrote:
-> Its possible to have divergent ALU32 and ALU64 bounds when using JMP32
-> instructins and ALU64 arithmatic operations. Sometimes the clang will
-> even generate this code. Because the case is a bit tricky lets add
-> a specific test for it.
+On 2020/03/26 4:22, Lorenzo Bianconi wrote:
+> Substitute net_device point with veth_rq one in veth_xdp_flush_bq,
+> veth_xdp_flush and veth_xdp_tx signature. This is a preliminary patch
+> to account xdp_xmit counter on 'receiving' veth_rq
 > 
-> Here is  pseudocode asm version to illustrate the idea,
-> 
->  1 r0 = 0xffffffff00000001;
->  2 if w0 > 1 goto %l[fail];
->  3 r0 += 1
->  5 if w0 > 2 goto %l[fail]
->  6 exit
-> 
-> The intent here is the verifier will fail the load if the 32bit bounds
-> are not tracked correctly through ALU64 op. Similarly we can check the
-> 64bit bounds are correctly zero extended after ALU32 ops.
-> 
->  1 r0 = 0xffffffff00000001;
->  2 w0 += 1
->  2 if r0 < 0xffffffff00000001 goto %l[fail];
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-This should be 3.
+Acked-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
 
-> +	"bounds check mixed 32bit and 64bit arithmatic. test2",
-> +	.insns = {
-> +	BPF_MOV64_IMM(BPF_REG_0, 0),
-> +	BPF_MOV64_IMM(BPF_REG_1, -1),
-> +	BPF_ALU64_IMM(BPF_LSH, BPF_REG_1, 32),
-> +	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, 1),
-> +	/* r1 = 0xffffFFFF00000001 */
-> +	BPF_MOV64_IMM(BPF_REG_2, 3),
-> +	/* r1 = 0x2 */
-> +	BPF_ALU32_IMM(BPF_ADD, BPF_REG_1, 1),
-> +	/* check ALU32 op zero extends 64bit bounds */
-> +	BPF_JMP_REG(BPF_JGT, BPF_REG_1, BPF_REG_2, 1),
-> +	BPF_JMP_A(1),
-> +	/* invalid ldx if bounds are lost above */
-> +	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_0, -1),
-> +	BPF_EXIT_INSN(),
-> +	},
-> +	.result = ACCEPT
-> +},
+> ---
+>   drivers/net/veth.c | 30 +++++++++++++++---------------
+>   1 file changed, 15 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index b6505a6c7102..2041152da716 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -468,46 +468,46 @@ static int veth_ndo_xdp_xmit(struct net_device *dev, int n,
+>   	return veth_xdp_xmit(dev, n, frames, flags, true);
+>   }
+>   
+> -static void veth_xdp_flush_bq(struct net_device *dev, struct veth_xdp_tx_bq *bq)
+> +static void veth_xdp_flush_bq(struct veth_rq *rq, struct veth_xdp_tx_bq *bq)
+>   {
+>   	int sent, i, err = 0;
+>   
+> -	sent = veth_xdp_xmit(dev, bq->count, bq->q, 0, false);
+> +	sent = veth_xdp_xmit(rq->dev, bq->count, bq->q, 0, false);
+>   	if (sent < 0) {
+>   		err = sent;
+>   		sent = 0;
+>   		for (i = 0; i < bq->count; i++)
+>   			xdp_return_frame(bq->q[i]);
+>   	}
+> -	trace_xdp_bulk_tx(dev, sent, bq->count - sent, err);
+> +	trace_xdp_bulk_tx(rq->dev, sent, bq->count - sent, err);
+>   
+>   	bq->count = 0;
+>   }
+>   
+> -static void veth_xdp_flush(struct net_device *dev, struct veth_xdp_tx_bq *bq)
+> +static void veth_xdp_flush(struct veth_rq *rq, struct veth_xdp_tx_bq *bq)
+>   {
+> -	struct veth_priv *rcv_priv, *priv = netdev_priv(dev);
+> +	struct veth_priv *rcv_priv, *priv = netdev_priv(rq->dev);
+>   	struct net_device *rcv;
+> -	struct veth_rq *rq;
+> +	struct veth_rq *rcv_rq;
+>   
+>   	rcu_read_lock();
+> -	veth_xdp_flush_bq(dev, bq);
+> +	veth_xdp_flush_bq(rq, bq);
+>   	rcv = rcu_dereference(priv->peer);
+>   	if (unlikely(!rcv))
+>   		goto out;
+>   
+>   	rcv_priv = netdev_priv(rcv);
+> -	rq = &rcv_priv->rq[veth_select_rxq(rcv)];
+> +	rcv_rq = &rcv_priv->rq[veth_select_rxq(rcv)];
+>   	/* xdp_ring is initialized on receive side? */
+> -	if (unlikely(!rcu_access_pointer(rq->xdp_prog)))
+> +	if (unlikely(!rcu_access_pointer(rcv_rq->xdp_prog)))
+>   		goto out;
+>   
+> -	__veth_xdp_flush(rq);
+> +	__veth_xdp_flush(rcv_rq);
+>   out:
+>   	rcu_read_unlock();
+>   }
+>   
+> -static int veth_xdp_tx(struct net_device *dev, struct xdp_buff *xdp,
+> +static int veth_xdp_tx(struct veth_rq *rq, struct xdp_buff *xdp,
+>   		       struct veth_xdp_tx_bq *bq)
+>   {
+>   	struct xdp_frame *frame = convert_to_xdp_frame(xdp);
+> @@ -516,7 +516,7 @@ static int veth_xdp_tx(struct net_device *dev, struct xdp_buff *xdp,
+>   		return -EOVERFLOW;
+>   
+>   	if (unlikely(bq->count == VETH_XDP_TX_BULK_SIZE))
+> -		veth_xdp_flush_bq(dev, bq);
+> +		veth_xdp_flush_bq(rq, bq);
+>   
+>   	bq->q[bq->count++] = frame;
+>   
+> @@ -559,7 +559,7 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+>   			orig_frame = *frame;
+>   			xdp.data_hard_start = head;
+>   			xdp.rxq->mem = frame->mem;
+> -			if (unlikely(veth_xdp_tx(rq->dev, &xdp, bq) < 0)) {
+> +			if (unlikely(veth_xdp_tx(rq, &xdp, bq) < 0)) {
+>   				trace_xdp_exception(rq->dev, xdp_prog, act);
+>   				frame = &orig_frame;
+>   				stats->rx_drops++;
+> @@ -692,7 +692,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
+>   		get_page(virt_to_page(xdp.data));
+>   		consume_skb(skb);
+>   		xdp.rxq->mem = rq->xdp_mem;
+> -		if (unlikely(veth_xdp_tx(rq->dev, &xdp, bq) < 0)) {
+> +		if (unlikely(veth_xdp_tx(rq, &xdp, bq) < 0)) {
+>   			trace_xdp_exception(rq->dev, xdp_prog, act);
+>   			stats->rx_drops++;
+>   			goto err_xdp;
+> @@ -817,7 +817,7 @@ static int veth_poll(struct napi_struct *napi, int budget)
+>   	}
+>   
+>   	if (stats.xdp_tx > 0)
+> -		veth_xdp_flush(rq->dev, &bq);
+> +		veth_xdp_flush(rq, &bq);
+>   	if (stats.xdp_redirect > 0)
+>   		xdp_do_flush();
+>   	xdp_clear_return_frame_no_direct();
 > 
