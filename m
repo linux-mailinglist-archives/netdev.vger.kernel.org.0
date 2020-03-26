@@ -2,93 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B39F119409F
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 14:59:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 250881940A2
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:00:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727800AbgCZN7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 09:59:46 -0400
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:34249 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727652AbgCZN7q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 09:59:46 -0400
-Received: by mail-pj1-f66.google.com with SMTP id q16so3377425pje.1;
-        Thu, 26 Mar 2020 06:59:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=79P2l9w6W7WmPQUzQ+lJdPeSs/MsFdNWFgy77EXy/Go=;
-        b=b4z01HGoSxY5I0/OAnoCK6nGMFAC1VJ4jxpk/xkeTi9zg7bhvnhhyw2bpS5KNad8k5
-         jQnuLCuT1XNyCftzpCICXIcXnLmXKtxoQpnET++j7lTEzxTyfYs1tRj39lGjDXBq4AX+
-         ywpMk5sxyBfx6DMCZQ/Xh0sPoi5rXhdEvifSk8t73g3vtI98JDi3YuV8Huwp2fjfExBa
-         bzUovrtfu+EScEwu7UROnDiHu1CD2L8OLseGYJmJZwmhd8cUYmhdoDDTkAQZVQi41m2l
-         jf90ann2F6O5y86kvfilisX7ozjs5RDMEySEOsIG1ysahwREQXizj2Yxylef1jWgzJK8
-         tyrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=79P2l9w6W7WmPQUzQ+lJdPeSs/MsFdNWFgy77EXy/Go=;
-        b=m8IpQ9j3XQ+cs3Mal6Pjuy33gxXu5GCplSVDPO/NhBnZqf0USWLMhOy5sTCLii/idT
-         PncLJ5vpmm4KhsMAvSclvhd5SAYhn+FCCdX4NBPjVx1wH8uZR74uCxM9vq91f/nzWLsL
-         4I9RHc22l+2FCTAU9/3A0vWBt/T2ZVzRpf3rGqfMWY84FFNAJM+ZM6ahRHB0nmGJzY/y
-         qW/Fc7hPHoZ4z3fYx8oqmCDGoKLN6Hz9aBHLpXicF7MB7y0VfitI1F3VwgELCXZqnR+K
-         r5gUxNxerteg4OldXU7LJ6Xvm68TNmEblIxb/2i4nSKgWK0CdkBMIwH6pK3MwBHliG04
-         El5g==
-X-Gm-Message-State: ANhLgQ31Egtv+pyANpWGHu3qSod0SoDd1P2v0oRaaYUSOY8qMliRJEeo
-        5p7khKFXXh2CX2nx0vlgu7lf3AZ2
-X-Google-Smtp-Source: ADFU+vsAZr6eD+eeAF+Sdv+/hG+glh6sOhao9VufpzChwNHCKOnD+wATO0o3BmrDtxASVd0N/wlhMA==
-X-Received: by 2002:a17:90a:2dc2:: with SMTP id q2mr146980pjm.146.1585231183920;
-        Thu, 26 Mar 2020 06:59:43 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id t4sm1772471pfb.156.2020.03.26.06.59.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 06:59:43 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 06:59:41 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     "Y.b. Lu" <yangbo.lu@nxp.com>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH 6/6] ptp_ocelot: support 4 programmable pins
-Message-ID: <20200326135941.GA20841@localhost>
-References: <20200320103726.32559-1-yangbo.lu@nxp.com>
- <20200320103726.32559-7-yangbo.lu@nxp.com>
- <20200324130733.GA18149@localhost>
- <AM7PR04MB688500546D0FC4A64F0DA19DF8CE0@AM7PR04MB6885.eurprd04.prod.outlook.com>
- <20200325134147.GB32284@localhost>
- <AM7PR04MB68853749A1196B30C917A232F8CF0@AM7PR04MB6885.eurprd04.prod.outlook.com>
+        id S1727845AbgCZOAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 10:00:03 -0400
+Received: from correo.us.es ([193.147.175.20]:49988 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727647AbgCZOAD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Mar 2020 10:00:03 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 9D13911EB36
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 15:00:01 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8FC82DA7B2
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 15:00:01 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 7CFDFDA39F; Thu, 26 Mar 2020 15:00:01 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 95941DA72F;
+        Thu, 26 Mar 2020 14:59:59 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 26 Mar 2020 14:59:59 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 7129B42EF4E0;
+        Thu, 26 Mar 2020 14:59:59 +0100 (CET)
+Date:   Thu, 26 Mar 2020 14:59:59 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
+        Florian Westphal <fw@strlen.de>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>, netfilter-devel@vger.kernel.org,
+        Chenbo Feng <fengc@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH] iptables: open eBPF programs in read only mode
+Message-ID: <20200326135959.tqy5i4qkxwcqgp5y@salvia>
+References: <20200320030015.195806-1-zenczykowski@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <AM7PR04MB68853749A1196B30C917A232F8CF0@AM7PR04MB6885.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200320030015.195806-1-zenczykowski@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 09:34:52AM +0000, Y.b. Lu wrote:
-> > Of course, that is horrible, and I am going to find a way to fix it.
+On Thu, Mar 19, 2020 at 08:00:15PM -0700, Maciej Żenczykowski wrote:
+> From: Maciej Żenczykowski <maze@google.com>
 > 
-> Thanks a lot.
-> Do you think it is ok to move protection into ptp_set_pinfunc() to protect just pin_config accessing?
-> ptp_disable_pinfunc() not touching pin_config could be out of protection.
-> But it seems indeed total ptp_set_pinfunc() should be under protection...
+> Adjust the mode eBPF programs are opened in so 0400 pinned bpf programs
+> work without requiring CAP_DAC_OVERRIDE.
 
-Yes, and I have way to fix that.  I will post a patch soon...
+Unfortunately this is breaking stuff:
 
-> I could modify commit messages to indicate the pin supports both PTP_PF_PEROUT and PTP_PF_EXTTS, and PTP_PF_EXTTS support will be added in the future.
-
-Thanks for explaining.  Since you do have programmable pin, please
-wait for my patch to fix the deadlock.
-
-Thanks,
-Richard
+libxt_bpf.c: In function ‘bpf_obj_get_readonly’:
+libxt_bpf.c:70:6: error: ‘union bpf_attr’ has no member named ‘file_flags’
+   70 |  attr.file_flags = BPF_F_RDONLY;
+      |      ^
+libxt_bpf.c:70:20: error: ‘BPF_F_RDONLY’ undeclared (first use in this function)
+   70 |  attr.file_flags = BPF_F_RDONLY;
+      |                    ^~~~~~~~~~~~
