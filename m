@@ -2,129 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B2E651943F4
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 17:04:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41BF4194409
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 17:09:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728364AbgCZQDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 12:03:34 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:40750 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726296AbgCZQDe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 12:03:34 -0400
-Received: by mail-lf1-f66.google.com with SMTP id j17so5292157lfe.7
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 09:03:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QG3ouz6ORFeqDNmtp4i3YMM1Ofd2sLdAsf2ZZXYAIGw=;
-        b=Me/lmt5lMW143w6fwsQYN5uQAfgZOwmcFm0KQQQnR/S8gXmn7WIH9XfGKw58M/5Nby
-         NQnv4eycMKgNbcqGrgbxnxhmeO0bmvPCE6EilY2uk5P1lBdWn0wpUCK6x6iU9b/Zky4+
-         mxMDUfuBSLonnASGVMCj69ABzCAH0sg6URMlg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QG3ouz6ORFeqDNmtp4i3YMM1Ofd2sLdAsf2ZZXYAIGw=;
-        b=Mwg2ZcTeGrprWzhQK9xIsFA777aKZVLrB3S97B/PBYUE8k8+mxl14ZU0UHf2pg7BEG
-         jekY4aqv8Cnm3R/dFjpKcy18GaB99skPBz3HzdbQTMB65+cLT/cHNdH5CdUwRdmLi8u1
-         OeLNC5pvUuLx0+6RFVg6iS/PMY1H06xG46jzHYismCOgNDmxwq5eZ/fSm0OowU7sO4In
-         zhuChjlGMJDIT/I/rAKwFNu8NDIZ7D0Uk0JHNiqWTB/wjjNTTCjgOwxJ5fzrTN1LE54m
-         VEnwtImeMkafVwsujf8eQWk47TrVPsxOzz5T+/nzawfeTpEKf7gwCvq4PZ+LltWTznrT
-         PwUQ==
-X-Gm-Message-State: ANhLgQ3XhL+2lryx4wVtG7/PAIKtqiOUC6I45ksqVWFyBV/2FE6uXLpL
-        BZwiBNEM31UXCTTYjU6otAjIYARhT34SgFcMWbMqJg==
-X-Google-Smtp-Source: ADFU+vt9We4DhFMwyTGpDy3WfouzGVy7kbBr9jnDvg5LnhtmYydha9ls9iG7MBKacq8GptWr1JizWjErahLfkqDI0d0=
-X-Received: by 2002:a19:ccd3:: with SMTP id c202mr6113167lfg.103.1585238611786;
- Thu, 26 Mar 2020 09:03:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <1585204021-10317-1-git-send-email-vasundhara-v.volam@broadcom.com>
- <1585204021-10317-4-git-send-email-vasundhara-v.volam@broadcom.com>
- <20200326092648.GR11304@nanopsycho.orion> <CAACQVJoA5EpB1CQUHvzDgYS0O7XLZ4vNbVvGALqc8nkf4-+VgA@mail.gmail.com>
- <20200326155429.GZ11304@nanopsycho.orion>
-In-Reply-To: <20200326155429.GZ11304@nanopsycho.orion>
-From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Date:   Thu, 26 Mar 2020 21:33:20 +0530
-Message-ID: <CAACQVJrw5n5pcKP0ZoqqxgooiuR8r4HrP87bNskx2Sn=Bhrx7A@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 3/7] devlink: Add macro for "hw.addr" to
- info_get cb.
+        id S1728490AbgCZQJq convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 26 Mar 2020 12:09:46 -0400
+Received: from mga18.intel.com ([134.134.136.126]:30653 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727056AbgCZQJq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Mar 2020 12:09:46 -0400
+IronPort-SDR: /x788yRyPpKmwMm+iXHS9KASkh6BH6+2XVEFkR71IODONBZFxQHVP81GhV71iuJro0daPaEc7c
+ 2seyWjgPEXRg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2020 09:09:45 -0700
+IronPort-SDR: jaYcGdn61xp/hhx4RqEMo8wU7C7K3/Dted5QbyFNwvH8dEQNKL3DiX7Qw118WEgNo0G9zd2o3Y
+ /To6zdo9P7Gw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,309,1580803200"; 
+   d="scan'208";a="447063075"
+Received: from fmsmsx106.amr.corp.intel.com ([10.18.124.204])
+  by fmsmga005.fm.intel.com with ESMTP; 26 Mar 2020 09:09:45 -0700
+Received: from fmsmsx124.amr.corp.intel.com (10.18.125.39) by
+ FMSMSX106.amr.corp.intel.com (10.18.124.204) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 26 Mar 2020 09:09:45 -0700
+Received: from fmsmsx101.amr.corp.intel.com ([169.254.1.121]) by
+ fmsmsx124.amr.corp.intel.com ([169.254.8.220]) with mapi id 14.03.0439.000;
+ Thu, 26 Mar 2020 09:09:45 -0700
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
 To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: RE: [net-next v2 07/11] devlink: report error once U32_MAX snapshot
+ ids have been used
+Thread-Topic: [net-next v2 07/11] devlink: report error once U32_MAX
+ snapshot ids have been used
+Thread-Index: AQHWAyH0T4xSIo9bakaH3DJ4806VUKha8AOAgAAbI7A=
+Date:   Thu, 26 Mar 2020 16:09:44 +0000
+Message-ID: <02874ECE860811409154E81DA85FBB58B6CA3E5E@fmsmsx101.amr.corp.intel.com>
+References: <20200326035157.2211090-1-jacob.e.keller@intel.com>
+ <20200326035157.2211090-8-jacob.e.keller@intel.com>
+ <20200326073047.GJ11304@nanopsycho.orion>
+In-Reply-To: <20200326073047.GJ11304@nanopsycho.orion>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.107]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 9:24 PM Jiri Pirko <jiri@resnulli.us> wrote:
->
-> Thu, Mar 26, 2020 at 12:02:43PM CET, vasundhara-v.volam@broadcom.com wrote:
-> >On Thu, Mar 26, 2020 at 2:56 PM Jiri Pirko <jiri@resnulli.us> wrote:
-> >>
-> >> Thu, Mar 26, 2020 at 07:27:00AM CET, vasundhara-v.volam@broadcom.com wrote:
-> >> >Add definition and documentation for the new generic info "hw.addr".
-> >> >"hw.addr" displays the hardware address of the interface.
-> >> >
-> >> >Cc: Jiri Pirko <jiri@mellanox.com>
-> >> >Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-> >> >Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-> >> >---
-> >> > Documentation/networking/devlink/devlink-info.rst | 5 +++++
-> >> > include/net/devlink.h                             | 3 +++
-> >> > 2 files changed, 8 insertions(+)
-> >> >
-> >> >diff --git a/Documentation/networking/devlink/devlink-info.rst b/Documentation/networking/devlink/devlink-info.rst
-> >> >index 650e2c0e3..56d13c5 100644
-> >> >--- a/Documentation/networking/devlink/devlink-info.rst
-> >> >+++ b/Documentation/networking/devlink/devlink-info.rst
-> >> >@@ -144,6 +144,11 @@ board.manufacture
-> >> >
-> >> > An identifier of the company or the facility which produced the part.
-> >> >
-> >> >+hw.addr
-> >> >+-------
-> >> >+
-> >> >+Hardware address of the interface.
-> >> >+
-> >> > fw
-> >> > --
-> >> >
-> >> >diff --git a/include/net/devlink.h b/include/net/devlink.h
-> >> >index d51482f..c9383f4 100644
-> >> >--- a/include/net/devlink.h
-> >> >+++ b/include/net/devlink.h
-> >> >@@ -476,6 +476,9 @@ enum devlink_param_generic_id {
-> >> > /* Revision of asic design */
-> >> > #define DEVLINK_INFO_VERSION_GENERIC_ASIC_REV "asic.rev"
-> >> >
-> >> >+/* Hardware address */
-> >> >+#define DEVLINK_INFO_VERSION_GENERIC_HW_ADDR  "hw.addr"
-> >>
-> >> Wait a second. Is this a MAC. I don't understand why MAC would be here.
-> >Yes, this is MAC address. Since, most of the information is displayed
-> >via info_get
-> >as one place. Would like to display MAC address as well under info_get.
->
-> No, I don't want to display mac here. It is a netdevice attribute. Leave
-> it there.
->
-Yes, realised it and sent a v3 patchset already, removing the MAC
-address. Thanks.
->
+
+
+> -----Original Message-----
+> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
+> Behalf Of Jiri Pirko
+> Sent: Thursday, March 26, 2020 12:31 AM
+> To: Keller, Jacob E <jacob.e.keller@intel.com>
+> Cc: netdev@vger.kernel.org; Jakub Kicinski <kuba@kernel.org>
+> Subject: Re: [net-next v2 07/11] devlink: report error once U32_MAX snapshot
+> ids have been used
+> 
+> Thu, Mar 26, 2020 at 04:51:53AM CET, jacob.e.keller@intel.com wrote:
+> >The devlink_snapshot_id_get() function returns a snapshot id. The
+> >snapshot id is a u32, so there is no way to indicate an error code.
 > >
-> >Thanks,
-> >Vasundhara
+> >Indeed, the two current callers of devlink_snapshot_id_get() assume that
+> >a negative value is an error.
+> 
+> I don't see they do.
+> 
+
+You're right, they don't. I was confused when I wrote this because the previous version of this patch did change them to check for error, and then I realized we didn't need that patch and removed it, but forgot to update this.
+
+Can fix this if we need a respin for another reason.
+
+> 
 > >
+> >A future change is going to possibly add additional cases where this
+> >function could fail. Refactor the function to return the snapshot id in
+> >an argument, so that it can return zero or an error value.
 > >
-> >> If not MAC, what is exactly this address about?
-> >>
-> >>
-> >> >+
-> >> > /* Overall FW version */
-> >> > #define DEVLINK_INFO_VERSION_GENERIC_FW               "fw"
-> >> > /* Overall FW interface specification version */
-> >> >--
-> >> >1.8.3.1
-> >> >
+> >This ensures that snapshot ids cannot be confused with error values, and
+> >aids in the future refactor of snapshot id allocation management.
+> >
+> >Because there is no current way to release previously used snapshot ids,
+> >add a simple check ensuring that an error is reported in case the
+> >snapshot_id would over flow.
+> >
+> >Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+> 
+> The code looks good.
+> 
+> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
