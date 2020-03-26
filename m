@@ -2,285 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67F0D193B6E
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 10:03:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E36F193B77
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 10:05:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727750AbgCZJCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 05:02:55 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53450 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726359AbgCZJCz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 05:02:55 -0400
-Received: by mail-wm1-f67.google.com with SMTP id b12so5583610wmj.3
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 02:02:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+0ECwnYSfkluAdOeCKth+5SoxqRZbIi1MX2ConGrTKY=;
-        b=CDdL5ixs1oL+fu2Hnt/42oDMpEjz+YbiW/6HHG0ItzEA96/pUKjysVHttiat+8yiBn
-         EZsQbDqwlzGh+BFQnFlEHmKGwJASXIngFl4+Z4R0Hz+o8hvnCIqzDL6eR2x1dqiHeU0k
-         n2khr9TlwPBMvbjrzSBM7Y6z0w/WoAjfJuTTWusSPtSuMf4hukJ0AkknBkLIgFhm0jo8
-         x2tYT5Hf6T1tTSyPtKL9LsgyuxY1iWam+mLpWPfZq1Vneg14VcvKndZLdqmYguzAByVM
-         cKjvZSHuhRKTW0vGaVxc6i8G5VX062ker9xD7LlFDoiDjU+nWQqFBJB2wHdp/9t4pxWE
-         /9Bg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+0ECwnYSfkluAdOeCKth+5SoxqRZbIi1MX2ConGrTKY=;
-        b=ruyLAPYyD++dg4ltm4YMQ9lM9l69mgluJP2KkMDwMcIZfHVaODdftR/L8nG/x59MqE
-         RVLhAQatfi3ej1ScH0dvMgiHQdV8ig+jqV3z/bqKAU+rVpjM+tfixlNFRUNovpxmFwna
-         kBW4D1EqifS4Ph2uRF3skG76kRQgT2jioEWffHUgIZSxH6di5O2iK6PfQMFNYraOxdA2
-         s9DjZIug6LMxliKudnihYxE8h+7FeZp0konG1MMa8NyrE9HBuAIeQyyt0QqjsJnTL689
-         jf00FEWN77L6ygX2Wdqd89f9YVeTb21oMiC65Sp5nbSmuSXTmZ6ROLcowLxe+nDQEJbX
-         r2SQ==
-X-Gm-Message-State: ANhLgQ1q/xNkX9b54UrPadi4gwoo9MEZtiFBcXHcwJ0ZiJiIOTTvU89y
-        h31DM44FxviuG/U6QYSsaqVga2r/oX0=
-X-Google-Smtp-Source: ADFU+vvRQ/qMweRl0DaO/+R2bRsk0oHr8HL61c9i024X7IghObTJJdjLl1CS8GS1zIOVO1zILuytuQ==
-X-Received: by 2002:a7b:c343:: with SMTP id l3mr2116958wmj.38.1585213372112;
-        Thu, 26 Mar 2020 02:02:52 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id s15sm2660787wrt.16.2020.03.26.02.02.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 02:02:51 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 10:02:50 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [net-next v2 11/11] ice: add a devlink region for dumping NVM
- contents
-Message-ID: <20200326090250.GQ11304@nanopsycho.orion>
-References: <20200326035157.2211090-1-jacob.e.keller@intel.com>
- <20200326035157.2211090-12-jacob.e.keller@intel.com>
+        id S1726338AbgCZJFo convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 26 Mar 2020 05:05:44 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:58687 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726292AbgCZJFo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 05:05:44 -0400
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jHOSL-0006fk-4z; Thu, 26 Mar 2020 10:05:41 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jHOSH-0002UK-45; Thu, 26 Mar 2020 10:05:37 +0100
+Date:   Thu, 26 Mar 2020 10:05:37 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, netdev@vger.kernel.org,
+        Marek Vasut <marex@denx.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>, mkl@pengutronix.de,
+        David Miller <davem@davemloft.net>, kernel@pengutronix.de,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        David Jander <david@protonic.nl>
+Subject: Re: RFC: future of ethtool tunables (Re: [RFC][PATCH 1/2] ethtool:
+ Add BroadRReach Master/Slave PHY tunable)
+Message-ID: <20200326090537.GA23804@pengutronix.de>
+References: <20200325101736.2100-1-marex@denx.de>
+ <20200325164958.GZ31519@unicorn.suse.cz>
+ <20200325215538.GB27427@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20200326035157.2211090-12-jacob.e.keller@intel.com>
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20200325215538.GB27427@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 09:42:04 up 196 days, 21:30, 450 users,  load average: 0.55, 0.47,
+ 0.44
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Mar 26, 2020 at 04:51:57AM CET, jacob.e.keller@intel.com wrote:
->Add a devlink region for exposing the device's Non Volatime Memory flash
->contents.
->
->Support the recently added .snapshot operation, enabling userspace to
->request a snapshot of the NVM contents via DEVLINK_CMD_REGION_NEW.
->
->Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->---
-> Documentation/networking/devlink/ice.rst     | 26 +++++
-> drivers/net/ethernet/intel/ice/ice.h         |  2 +
-> drivers/net/ethernet/intel/ice/ice_devlink.c | 99 ++++++++++++++++++++
-> drivers/net/ethernet/intel/ice/ice_devlink.h |  3 +
-> drivers/net/ethernet/intel/ice/ice_main.c    |  4 +
-> 5 files changed, 134 insertions(+)
->
->diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
->index 37fbbd40a5e5..f3d6a3b50342 100644
->--- a/Documentation/networking/devlink/ice.rst
->+++ b/Documentation/networking/devlink/ice.rst
->@@ -69,3 +69,29 @@ The ``ice`` driver reports the following versions
->       - The version of the DDP package that is active in the device. Note
->         that both the name (as reported by ``fw.app.name``) and version are
->         required to uniquely identify the package.
->+
->+Regions
->+=======
->+
->+The ``ice`` driver enables access to the contents of the Non Volatile Memory
->+flash chip via the ``nvm-flash`` region.
->+
->+Users can request an immediate capture of a snapshot via the
->+``DEVLINK_CMD_REGION_NEW``
->+
->+.. code:: shell
->+
->+    $ devlink region new pci/0000:01:00.0/nvm-flash snapshot 1
->+    $ devlink region dump pci/0000:01:00.0/nvm-flash snapshot 1
->+
->+    $ devlink region dump pci/0000:01:00.0/nvm-flash snapshot 1
->+    0000000000000000 0014 95dc 0014 9514 0035 1670 0034 db30
->+    0000000000000010 0000 0000 ffff ff04 0029 8c00 0028 8cc8
->+    0000000000000020 0016 0bb8 0016 1720 0000 0000 c00f 3ffc
->+    0000000000000030 bada cce5 bada cce5 bada cce5 bada cce5
->+
->+    $ devlink region read pci/0000:01:00.0/nvm-flash snapshot 1 address 0
->+        length 16
-
-Don't wrap the cmdline.
-
-
->+    0000000000000000 0014 95dc 0014 9514 0035 1670 0034 db30
->+
->+    $ devlink region delete pci/0000:01:00.0/nvm-flash snapshot 1
->diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
->index 8ce3afcfeca0..5c11448bfbb3 100644
->--- a/drivers/net/ethernet/intel/ice/ice.h
->+++ b/drivers/net/ethernet/intel/ice/ice.h
->@@ -351,6 +351,8 @@ struct ice_pf {
-> 	/* devlink port data */
-> 	struct devlink_port devlink_port;
+On Wed, Mar 25, 2020 at 10:55:38PM +0100, Andrew Lunn wrote:
+> > What might be useful, on the other hand, would be device specific
+> > tunables: an interface allowing device drivers to define a list of
+> > tunables and their types for each device. It would be a generalization
+> > of private flags. There is, of course, the risk that we could end up
+> > with multiple NIC vendors defining the same parameters, each under
+> > a different name and with slightly different semantics.
+>  
+> Hi Michal
 > 
->+	struct devlink_region *nvm_region;
->+
-> 	/* OS reserved IRQ details */
-> 	struct msix_entry *msix_entries;
-> 	struct ice_res_tracker *irq_tracker;
->diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
->index 27c5034c039a..91edeffd73b1 100644
->--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
->+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
->@@ -318,3 +318,102 @@ void ice_devlink_destroy_port(struct ice_pf *pf)
-> 	devlink_port_type_clear(&pf->devlink_port);
-> 	devlink_port_unregister(&pf->devlink_port);
-> }
->+
->+/**
->+ * ice_devlink_nvm_snapshot - Capture a snapshot of the Shadow RAM contents
->+ * @devlink: the devlink instance
->+ * @extack: extended ACK response structure
->+ * @data: on exit points to snapshot data buffer
->+ *
->+ * This function is called in response to the DEVLINK_CMD_REGION_TRIGGER for
->+ * the shadow-ram devlink region. It captures a snapshot of the shadow ram
->+ * contents. This snapshot can later be viewed via the devlink-region
->+ * interface.
->+ *
->+ * @returns zero on success, and updates the data pointer. Returns a non-zero
->+ * error code on failure.
->+ */
->+static int
->+ice_devlink_nvm_snapshot(struct devlink *devlink, struct netlink_ext_ack *extack,
->+			u8 **data)
->+{
->+	struct ice_pf *pf = devlink_priv(devlink);
->+	struct device *dev = ice_pf_to_dev(pf);
->+	struct ice_hw *hw = &pf->hw;
->+	enum ice_status status;
->+	void *nvm_data;
->+	u32 nvm_size;
->+
->+	nvm_size = hw->nvm.flash_size;
->+	nvm_data = vzalloc(nvm_size);
->+	if (!nvm_data) {
->+		NL_SET_ERR_MSG_MOD(extack, "Out of memory");
-
-Pointless extack message. It is obvious from -ENOMEM. Please remove.
-
-
->+		return -ENOMEM;
->+	}
->+
->+	status = ice_acquire_nvm(hw, ICE_RES_READ);
->+	if (status) {
->+		dev_dbg(dev, "ice_acquire_nvm failed, err %d aq_err %d\n",
->+			status, hw->adminq.sq_last_status);
->+		NL_SET_ERR_MSG_MOD(extack, "Failed to acquire NVM semaphore");
->+		vfree(nvm_data);
->+		return -EIO;
->+	}
->+
->+	status = ice_read_flat_nvm(hw, 0, &nvm_size, nvm_data, false);
->+	if (status) {
->+		dev_dbg(dev, "ice_read_flat_nvm failed after reading %u bytes, err %d aq_err %d\n",
->+			nvm_size, status, hw->adminq.sq_last_status);
->+		NL_SET_ERR_MSG_MOD(extack, "Failed to read NVM contents");
->+		ice_release_nvm(hw);
->+		vfree(nvm_data);
->+		return -EIO;
->+	}
->+
->+	ice_release_nvm(hw);
->+
->+	*data = nvm_data;
->+
->+	return 0;
->+}
->+
->+static const struct devlink_region_ops ice_nvm_region_ops = {
->+	.name = "nvm-flash",
->+	.destructor = vfree,
->+	.snapshot = ice_devlink_nvm_snapshot,
->+};
->+
->+/**
->+ * ice_devlink_init_regions - Initialize devlink regions
->+ * @pf: the PF device structure
->+ *
->+ * Create devlink regions used to enable access to dump the contents of the
->+ * flash memory on the device.
->+ */
->+void ice_devlink_init_regions(struct ice_pf *pf)
->+{
->+	struct devlink *devlink = priv_to_devlink(pf);
->+	struct device *dev = ice_pf_to_dev(pf);
->+	u64 nvm_size;
->+
->+	nvm_size = pf->hw.nvm.flash_size;
->+	pf->nvm_region = devlink_region_create(devlink, &ice_nvm_region_ops, 1,
->+					       nvm_size);
->+	if (IS_ERR(pf->nvm_region)) {
->+		dev_err(dev, "failed to create NVM devlink region, err %ld\n",
->+			PTR_ERR(pf->nvm_region));
->+		pf->nvm_region = NULL;
->+	}
->+}
->+
->+/**
->+ * ice_devlink_destroy_regions - Destroy devlink regions
->+ * @pf: the PF device structure
->+ *
->+ * Remove previously created regions for this PF.
->+ */
->+void ice_devlink_destroy_regions(struct ice_pf *pf)
->+{
->+	if (pf->nvm_region)
->+		devlink_region_destroy(pf->nvm_region);
->+}
->diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.h b/drivers/net/ethernet/intel/ice/ice_devlink.h
->index f94dc93c24c5..6e806a08dc23 100644
->--- a/drivers/net/ethernet/intel/ice/ice_devlink.h
->+++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
->@@ -11,4 +11,7 @@ void ice_devlink_unregister(struct ice_pf *pf);
-> int ice_devlink_create_port(struct ice_pf *pf);
-> void ice_devlink_destroy_port(struct ice_pf *pf);
+> I'm not too happy to let PHY drivers do whatever they want. So far,
+> all PHY tunables have been generic. Any T1 PHY can implement control
+> of master/slave, and there is no reason for each PHY to do it
+> different to any other PHY. Downshift is a generic concept, multiple
+> PHYs have implemented it, and they all implement it the same. Only
+> Marvell currently supports fast link down, but the API is generic
+> enough that other PHYs could implement it, if the hardware supports
+> it.
 > 
->+void ice_devlink_init_regions(struct ice_pf *pf);
->+void ice_devlink_destroy_regions(struct ice_pf *pf);
->+
-> #endif /* _ICE_DEVLINK_H_ */
->diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
->index 359ff8544773..306a4e5b2320 100644
->--- a/drivers/net/ethernet/intel/ice/ice_main.c
->+++ b/drivers/net/ethernet/intel/ice/ice_main.c
->@@ -3276,6 +3276,8 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
-> 		goto err_init_pf_unroll;
-> 	}
+> I don't however mind if it gets a different name, or a different tool,
+> etc.
 > 
->+	ice_devlink_init_regions(pf);
->+
-> 	pf->num_alloc_vsi = hw->func_caps.guar_num_vsi;
-> 	if (!pf->num_alloc_vsi) {
-> 		err = -EIO;
->@@ -3385,6 +3387,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
-> 	devm_kfree(dev, pf->vsi);
-> err_init_pf_unroll:
-> 	ice_deinit_pf(pf);
->+	ice_devlink_destroy_regions(pf);
-> 	ice_deinit_hw(hw);
-> err_exit_unroll:
-> 	ice_devlink_unregister(pf);
->@@ -3427,6 +3430,7 @@ static void ice_remove(struct pci_dev *pdev)
-> 		ice_vsi_free_q_vectors(pf->vsi[i]);
-> 	}
-> 	ice_deinit_pf(pf);
->+	ice_devlink_destroy_regions(pf);
-> 	ice_deinit_hw(&pf->hw);
-> 	ice_devlink_unregister(pf);
-> 
->-- 
->2.24.1
->
+> I will let others comment on NICs. They are a different beast.
+
+IMO, this is not a T1 specific feature. Since T1 lacks the auto
+negotiation functionality, we are forced to use Master/Slave
+configuration in one or other way. But even (non T1) PHYs with autoneg
+available, implement this feature.
+
+We may need to be able to force master or slave mode, at least as
+workaround for existing errata. Here is one example:
+
+-------------------------------------------------------------------------------
+http://ww1.microchip.com/downloads/en/DeviceDoc/80000692D.pdf
+Module 2: Duty cycle variation for optional 125MHz reference output clock
+
+DESCRIPTION
+
+When the device links in the 1000BASE-T slave mode only, the optional
+125MHz reference output clock (CLK125_NDO, Pin 41) has wide duty cycle
+variation.
+
+END USER IMPLICATIONS
+
+The optional CLK125_NDO clock does not meet the RGMII 45/55 percent
+(min/max) duty cycle requirement and there- fore cannot be used directly
+by the MAC side for clocking applications that have setup/hold time
+requirements on rising and falling clock edges (e.g., to clock out RGMII
+transmit data from MAC to PHY (KSZ9031RNX device)).
+
+Work around
+[...]
+Another solution requires the device to always operate in master mode
+(Register 9h, Bits [12:11] = '11') whenever there is 1000BASE-T link-up,
+which is workable only in those applications where the link partner is
+known and can always be configured to slave mode for 1000BASE-T.
+-------------------------------------------------------------------------------
+
+In this example we see, that even on non T1 PHYs we sometimes want to
+force Master or Slave mode. At least for testing or workaround.
+
+The BASE-T1 related example is described in 802.3-2018:
+-------------------------------------------------------------------------------
+45.2.1.185.1 MASTER-SLAVE config value (1.2100.14)
+
+Bit 1.2100.14 is used to select MASTER or SLAVE operation when
+Auto-Negotiation enable bit 7.512.12 is set to zero, or if
+Auto-Negotiation is not implemented. If bit 1.2100.14 is set to one the
+PHY shall operate as MASTER. If bit 1.2100.14 is set to zero the PHY
+shall operate as SLAVE.  This bit shall be ignored when the
+Auto-Negotiation enable bit 7.512.12 is set to one.
+-------------------------------------------------------------------------------
+
+This example shows, that forcing Master or Slave modes is documented
+part of 802.3-2018 specification.
+
+IMO, this feature fits to the already existing LINKMODES_SET interface,
+as forcing of Master/Slave Mode only makes sense of autoneg is not
+implemented or disabled.
+
+LINKMODES_SET/GET:
+
+Request contents:
+  ====================================  ======  ==========================
+  ``ETHTOOL_A_LINKMODES_HEADER``        nested  request header
+  ``ETHTOOL_A_LINKMODES_AUTONEG``       u8      autonegotiation status
+  ``ETHTOOL_A_LINKMODES_OURS``          bitset  advertised link modes
+  ``ETHTOOL_A_LINKMODES_PEER``          bitset  partner link modes
+  ``ETHTOOL_A_LINKMODES_SPEED``         u32     link speed (Mb/s)
+  ``ETHTOOL_A_LINKMODES_DUPLEX``        u8      duplex mode
+  ====================================  ======  ==========================
+
+
+Regards,
+Oleksij & Marc
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
