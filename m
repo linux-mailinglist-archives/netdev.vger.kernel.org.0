@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64197194BAC
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 23:41:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90FA7194BAD
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 23:41:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727736AbgCZWlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 18:41:15 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:40790 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727708AbgCZWlM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 18:41:12 -0400
-Received: by mail-wm1-f67.google.com with SMTP id a81so10024809wmf.5
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 15:41:11 -0700 (PDT)
+        id S1727749AbgCZWlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 18:41:16 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:50588 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727722AbgCZWlO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 18:41:14 -0400
+Received: by mail-wm1-f66.google.com with SMTP id d198so9310829wmd.0
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 15:41:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Sx2clxuTbIqAwT1Jf/4nrCEiE87w5o3flWc3jxp/iSM=;
-        b=T7hatM7mYjH8tCDNxogloHgoRgmqyYZn3YDutYqXpqV2/WJTTJ2Z2yu60wC/6UnE6f
-         JRzXvUKAW2Vog3l/niBNgTy2i7d4Z0dvuw7Ov3aXbO7t1QLv45inQvp4ijMBPHvz8Pzk
-         ITGaaUiQ5jgLmOWcGvgtM71KbZOOZcUTNnN1G55H73Xqy1KixUoUWbscJ/53enwE/XS9
-         61wYVmnotpTBGt4+vdO0WAOcjz6cfbEHPM9FhwxvLyXZpAm7OsfDjGXRYc3AlOGQBx4C
-         hDluV5nQcBF1SLxcJzu4dfvn49vsBlvOnXQ8C8rImjm3MQSJl4S5Shjw5sq5okyA72z7
-         e9og==
+        bh=jLPub5Fn9cx2du/Xv/A+n22ayPb338MqU7QOaBqb8/Q=;
+        b=fVGtKO93MMy8pP9jsrxHgZ6Y3tTfwAz0833TkxFKYzN56s60Ij0Qf6nQLXEM8jpX0F
+         E/vgYRn8XBiorOGCE8Yl4d1fmP6Zj4iBDoY4KLBqzOHqk1u5TIUnPJYB/TmgvMlewarX
+         z2rGPdglA8wy/m/xiJbMrAgcGq/+KTwqZwrvFkiTYK3HWmgSC03zec77CU/Mc99X9DDr
+         Yany7Lf58HxyfACtqMC84NgEINEsPeJoDUTGsg6REZT65BcES7XPuHvyCE25gpzB+BOd
+         C62GsQYyyq2t/Ed1YvR3mYodt3Db0I02IBHjNO7AFAlMwKGREmcRfu9PvPBrfcigXW6c
+         bQYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Sx2clxuTbIqAwT1Jf/4nrCEiE87w5o3flWc3jxp/iSM=;
-        b=FOUV/6peIvKkg2KK5alN7pYHIsrZQBhBudgWY3dpv9qHF21Rd4sEXeEgupq3s5ndQk
-         kgpqjAgtA5VhtEPpFfsWs4PGVpHFYdJVbEvpUde5NYKjPGILpkxP+oqJ1Lu/rDnh45uq
-         ac3cKVIhxlPwEDHCm81lkxi2kq9N1zIZinpk0qjT7QoQUqR58VmLNZnywfLVkX93ehYp
-         aXpZPl7xiotU0FN72rmrljZkqqVEy1Wa6V6YqC/Jpz8leV3Mnkru3NMQfBKMtyE+JyIT
-         ydzm6AU9rc9X7CVI6VIXxmaOPlvu4vmvdC+yIpKCTKVUI4a9dqMK8XcDX32kqO3DyE6t
-         t0UA==
-X-Gm-Message-State: ANhLgQ2e9PrZabjW38S9pWkiBKkAcKEyPFPiP4xQe/G57A+nW1nzE5jA
-        BD+A3Kq6UfDj5dcAh2FEvCYNz53UL26jLQ==
-X-Google-Smtp-Source: ADFU+vsT8j810zGgbPieGONKBIPmP7a1HcswG7DcwKWQ96v2KN771ynvW43lBRdr9Yw7RmBuyoRhBg==
-X-Received: by 2002:a5d:4683:: with SMTP id u3mr688570wrq.248.1585262470925;
-        Thu, 26 Mar 2020 15:41:10 -0700 (PDT)
+        bh=jLPub5Fn9cx2du/Xv/A+n22ayPb338MqU7QOaBqb8/Q=;
+        b=EkqzVo/b7h0VD3yaOkQi4Gx0SZGPuXUcBnCnxk93/sop3vxZMynOmZYMmC0diC3roT
+         cbSzTshKxShyL66nazJmyFFY93c28HKjBiazGWBBgS9Y15qfX86JElplgnVOHjCvYonP
+         LhJq/D1QGtl0da+vKH9uZC/OZpsPwVgIu7VmqH1vaJMaH+DOaGcgwIFltmvfQBx/qLFb
+         Dd5uhQUYfWjkf3qF0oahZc5kJnBuc55j6k38NoIIKuuOtXATKpTwdIlHPN9y35876uDn
+         xnMNtTG0xIsUrACVt2oVLElPRL2X92de9xY1wTogsvqX3fNtGXwU/Vk3geYQ0CqdknZH
+         9dKA==
+X-Gm-Message-State: ANhLgQ1NyRaArA3pi4P6YhkBnZEhj3+tBIFWcf9o0P+URxj277XcWhhb
+        VAWevIUbJdUu+lpruK2zEk4=
+X-Google-Smtp-Source: ADFU+vsYUkinpIb3y3/2eCxNypOGIPDNXBggvGGFwyoNp1r1cvBMNdv/GLwCyMvXWoNVZkzta3Zp8Q==
+X-Received: by 2002:a5d:6441:: with SMTP id d1mr5215900wrw.301.1585262472139;
+        Thu, 26 Mar 2020 15:41:12 -0700 (PDT)
 Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id t81sm5522783wmb.15.2020.03.26.15.41.09
+        by smtp.gmail.com with ESMTPSA id t81sm5522783wmb.15.2020.03.26.15.41.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 15:41:10 -0700 (PDT)
+        Thu, 26 Mar 2020 15:41:11 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         davem@davemloft.net, jakub.kicinski@netronome.com
 Cc:     murali.policharla@broadcom.com, stephen@networkplumber.org,
         jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
         nikolay@cumulusnetworks.com, netdev@vger.kernel.org
-Subject: [PATCH v3 net-next 7/8] net: dsa: vsc73xx: make the MTU configurable
-Date:   Fri, 27 Mar 2020 00:40:39 +0200
-Message-Id: <20200326224040.32014-8-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 8/8] net: dsa: felix: support changing the MTU
+Date:   Fri, 27 Mar 2020 00:40:40 +0200
+Message-Id: <20200326224040.32014-9-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200326224040.32014-1-olteanv@gmail.com>
 References: <20200326224040.32014-1-olteanv@gmail.com>
@@ -62,76 +62,184 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Instead of hardcoding the MTU to the maximum value allowed by the
-hardware, obey the value known by the operating system.
+Changing the MTU for this switch means altering the
+DEV_GMII:MAC_CFG_STATUS:MAC_MAXLEN_CFG field MAX_LEN, which in turn
+limits the size of frames that can be received.
+
+Special accounting needs to be done for the DSA CPU port (NPI port in
+hardware terms). The NPI port configuration needs to be held inside the
+private ocelot structure, since it is now accessed from multiple places.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v3:
-None.
+Now setting the ds->mtu_enforcement_ingress variable to true.
 
 Changes in v2:
 None.
 
- drivers/net/dsa/vitesse-vsc73xx-core.c | 30 +++++++++++++++++---------
- 1 file changed, 20 insertions(+), 10 deletions(-)
+ drivers/net/dsa/ocelot/felix.c     | 19 +++++++++++++
+ drivers/net/ethernet/mscc/ocelot.c | 45 +++++++++++++++++++++++-------
+ include/soc/mscc/ocelot.h          |  7 +++++
+ 3 files changed, 61 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/dsa/vitesse-vsc73xx-core.c b/drivers/net/dsa/vitesse-vsc73xx-core.c
-index 6e21a2a5cf01..19ce4aa0973b 100644
---- a/drivers/net/dsa/vitesse-vsc73xx-core.c
-+++ b/drivers/net/dsa/vitesse-vsc73xx-core.c
-@@ -664,16 +664,6 @@ static void vsc73xx_init_port(struct vsc73xx *vsc, int port)
- 		      VSC73XX_MAC_CFG_TX_EN |
- 		      VSC73XX_MAC_CFG_RX_EN);
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 9f9efb974003..eef9fa812a3c 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -533,6 +533,7 @@ static int felix_setup(struct dsa_switch *ds)
+ 			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
+ 			 ANA_PGID_PGID, PGID_UC);
  
--	/* Max length, we can do up to 9.6 KiB, so allow that.
--	 * According to application not "VSC7398 Jumbo Frames" setting
--	 * up the MTU to 9.6 KB does not affect the performance on standard
--	 * frames, so just enable it. It is clear from the application note
--	 * that "9.6 kilobytes" == 9600 bytes.
--	 */
--	vsc73xx_write(vsc, VSC73XX_BLOCK_MAC,
--		      port,
--		      VSC73XX_MAXLEN, 9600);
--
- 	/* Flow control for the CPU port:
- 	 * Use a zero delay pause frame when pause condition is left
- 	 * Obey pause control frames
-@@ -1030,6 +1020,24 @@ static void vsc73xx_get_ethtool_stats(struct dsa_switch *ds, int port,
- 	}
++	ds->mtu_enforcement_ingress = true;
+ 	/* It looks like the MAC/PCS interrupt register - PM0_IEVENT (0x8040)
+ 	 * isn't instantiated for the Felix PF.
+ 	 * In-band AN may take a few ms to complete, so we need to poll.
+@@ -610,6 +611,22 @@ static bool felix_txtstamp(struct dsa_switch *ds, int port,
+ 	return false;
  }
  
-+static int vsc73xx_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
++static int felix_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
 +{
-+	struct vsc73xx *vsc = ds->priv;
++	struct ocelot *ocelot = ds->priv;
 +
-+	return vsc73xx_write(vsc, VSC73XX_BLOCK_MAC, port,
-+			     VSC73XX_MAXLEN, new_mtu);
++	ocelot_port_set_maxlen(ocelot, port, new_mtu);
++
++	return 0;
 +}
 +
-+/* According to application not "VSC7398 Jumbo Frames" setting
-+ * up the MTU to 9.6 KB does not affect the performance on standard
-+ * frames. It is clear from the application note that
-+ * "9.6 kilobytes" == 9600 bytes.
-+ */
-+static int vsc73xx_get_max_mtu(struct dsa_switch *ds, int port)
++static int felix_get_max_mtu(struct dsa_switch *ds, int port)
 +{
-+	return 9600;
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_get_max_mtu(ocelot, port);
 +}
 +
- static const struct dsa_switch_ops vsc73xx_ds_ops = {
- 	.get_tag_protocol = vsc73xx_get_tag_protocol,
- 	.setup = vsc73xx_setup,
-@@ -1041,6 +1049,8 @@ static const struct dsa_switch_ops vsc73xx_ds_ops = {
- 	.get_sset_count = vsc73xx_get_sset_count,
- 	.port_enable = vsc73xx_port_enable,
- 	.port_disable = vsc73xx_port_disable,
-+	.port_change_mtu = vsc73xx_change_mtu,
-+	.port_max_mtu = vsc73xx_get_max_mtu,
- };
+ static int felix_cls_flower_add(struct dsa_switch *ds, int port,
+ 				struct flow_cls_offload *cls, bool ingress)
+ {
+@@ -665,6 +682,8 @@ static const struct dsa_switch_ops felix_switch_ops = {
+ 	.port_hwtstamp_set	= felix_hwtstamp_set,
+ 	.port_rxtstamp		= felix_rxtstamp,
+ 	.port_txtstamp		= felix_txtstamp,
++	.port_change_mtu	= felix_change_mtu,
++	.port_max_mtu		= felix_get_max_mtu,
+ 	.cls_flower_add		= felix_cls_flower_add,
+ 	.cls_flower_del		= felix_cls_flower_del,
+ 	.cls_flower_stats	= felix_cls_flower_stats,
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 114d6053aa26..b5f925c1b5b2 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1998,13 +1998,25 @@ EXPORT_SYMBOL(ocelot_switchdev_blocking_nb);
  
- static int vsc73xx_gpio_get(struct gpio_chip *chip, unsigned int offset)
+ /* Configure the maximum SDU (L2 payload) on RX to the value specified in @sdu.
+  * The length of VLAN tags is accounted for automatically via DEV_MAC_TAGS_CFG.
++ * In the special case that it's the NPI port that we're configuring, the
++ * length of the tag and optional prefix needs to be accounted for privately,
++ * in order to be able to sustain communication at the requested @sdu.
+  */
+-static void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu)
++void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu)
+ {
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+ 	int maxlen = sdu + ETH_HLEN + ETH_FCS_LEN;
+ 	int atop_wm;
+ 
++	if (port == ocelot->npi) {
++		maxlen += OCELOT_TAG_LEN;
++
++		if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_SHORT)
++			maxlen += OCELOT_SHORT_PREFIX_LEN;
++		else if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_LONG)
++			maxlen += OCELOT_LONG_PREFIX_LEN;
++	}
++
+ 	ocelot_port_writel(ocelot_port, maxlen, DEV_MAC_MAXLEN_CFG);
+ 
+ 	/* Set Pause WM hysteresis
+@@ -2022,6 +2034,24 @@ static void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu)
+ 			 SYS_ATOP, port);
+ 	ocelot_write(ocelot, ocelot_wm_enc(atop_wm), SYS_ATOP_TOT_CFG);
+ }
++EXPORT_SYMBOL(ocelot_port_set_maxlen);
++
++int ocelot_get_max_mtu(struct ocelot *ocelot, int port)
++{
++	int max_mtu = 65535 - ETH_HLEN - ETH_FCS_LEN;
++
++	if (port == ocelot->npi) {
++		max_mtu -= OCELOT_TAG_LEN;
++
++		if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_SHORT)
++			max_mtu -= OCELOT_SHORT_PREFIX_LEN;
++		else if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_LONG)
++			max_mtu -= OCELOT_LONG_PREFIX_LEN;
++	}
++
++	return max_mtu;
++}
++EXPORT_SYMBOL(ocelot_get_max_mtu);
+ 
+ void ocelot_init_port(struct ocelot *ocelot, int port)
+ {
+@@ -2131,6 +2161,10 @@ void ocelot_configure_cpu(struct ocelot *ocelot, int npi,
+ {
+ 	int cpu = ocelot->num_phys_ports;
+ 
++	ocelot->npi = npi;
++	ocelot->inj_prefix = injection;
++	ocelot->xtr_prefix = extraction;
++
+ 	/* The unicast destination PGID for the CPU port module is unused */
+ 	ocelot_write_rix(ocelot, 0, ANA_PGID_PGID, cpu);
+ 	/* Instead set up a multicast destination PGID for traffic copied to
+@@ -2143,19 +2177,10 @@ void ocelot_configure_cpu(struct ocelot *ocelot, int npi,
+ 			 ANA_PORT_PORT_CFG, cpu);
+ 
+ 	if (npi >= 0 && npi < ocelot->num_phys_ports) {
+-		int sdu = ETH_DATA_LEN + OCELOT_TAG_LEN;
+-
+ 		ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK_M |
+ 			     QSYS_EXT_CPU_CFG_EXT_CPU_PORT(npi),
+ 			     QSYS_EXT_CPU_CFG);
+ 
+-		if (injection == OCELOT_TAG_PREFIX_SHORT)
+-			sdu += OCELOT_SHORT_PREFIX_LEN;
+-		else if (injection == OCELOT_TAG_PREFIX_LONG)
+-			sdu += OCELOT_LONG_PREFIX_LEN;
+-
+-		ocelot_port_set_maxlen(ocelot, npi, sdu);
+-
+ 		/* Enable NPI port */
+ 		ocelot_write_rix(ocelot,
+ 				 QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE |
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index db2fb14bd775..23a78d927838 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -522,6 +522,11 @@ struct ocelot {
+ 	 */
+ 	u8				num_phys_ports;
+ 
++	int				npi;
++
++	enum ocelot_tag_prefix		inj_prefix;
++	enum ocelot_tag_prefix		xtr_prefix;
++
+ 	u32				*lags;
+ 
+ 	struct list_head		multicast;
+@@ -616,6 +621,8 @@ int ocelot_hwstamp_set(struct ocelot *ocelot, int port, struct ifreq *ifr);
+ int ocelot_port_add_txtstamp_skb(struct ocelot_port *ocelot_port,
+ 				 struct sk_buff *skb);
+ void ocelot_get_txtstamp(struct ocelot *ocelot);
++void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu);
++int ocelot_get_max_mtu(struct ocelot *ocelot, int port);
+ int ocelot_cls_flower_replace(struct ocelot *ocelot, int port,
+ 			      struct flow_cls_offload *f, bool ingress);
+ int ocelot_cls_flower_destroy(struct ocelot *ocelot, int port,
 -- 
 2.17.1
 
