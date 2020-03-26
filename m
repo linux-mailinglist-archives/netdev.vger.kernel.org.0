@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD39B194354
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 16:38:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31682194356
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 16:38:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728534AbgCZPiq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 11:38:46 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:55987 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727874AbgCZPip (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 11:38:45 -0400
-Received: by mail-io1-f70.google.com with SMTP id k5so5504674ioa.22
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 08:38:45 -0700 (PDT)
+        id S1728550AbgCZPis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 11:38:48 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:43631 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728536AbgCZPir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 11:38:47 -0400
+Received: by mail-il1-f199.google.com with SMTP id o9so5721225ila.10
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 08:38:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
          :from:to:cc;
-        bh=KHPtzcx4FBaIuqDkpN3GS7ntLpHWXUFQhf3Z5vc8rRs=;
-        b=A0gUb3vNANZTzRnS963hiKYPtycDqGW4dbg5pN2jyXski9VdGlF9+RkLZlL7wonGb0
-         vOKfl4lXn8FdEcLAdfRSWJlR1ZidOHkKOnkDHs09R0yTDYzJbj7m8EwzqYLYcfnp2/SY
-         T9vt4LIOXesmUOdCqjDvY333Ye/cKFqoWQK1KF8q1G40jSMgTTWLvZQhBXjxuOo4+LRO
-         Le0+uyHuXg13ARusQtGdXRp+C2r8V4Iu+Dv6PrKGe85/BfFonp1+TQuRfS3D80dhYmIL
-         fEdMPU1pj8AA1iIL+Hiv550qldJZM3gO5WDqL8BPWGRtlykxVofnMm5Na9VtL4RnMWd2
-         6/gw==
-X-Gm-Message-State: ANhLgQ11ZR8mpbqCr4kDmlnv//OkW2S0EqEn+4vH37YiYnr/ttbbpMd3
-        Q5cHRcALjtqaRQtxomxvOLPomp4Z42n0eH47TxJGX088lZTD
-X-Google-Smtp-Source: ADFU+vurHxGYaDYXEXaC3Q9MYGy6mdBu+XsMGmfMevx1OlfBPltRpMc/TMP/u+xZXJahmrOeSgHZoFdnI7R86MEtpFkQXnBA/w4F
+        bh=ulLGLKkQi69pL07J5pB6JTgHf8Ql6af4zbC/fyQGLio=;
+        b=sOonz76+OWDJO7E0U9pm7Im2ilR2YDPWM76ZNlTHzxow60wRwnG2LCaRjM1OHrVifw
+         WniCnmZRPqTxVOFMap6ohQNmXHD2YSwtXFD00igbeC/OGNQZixZ+nTTcXT1Bax1AnO5/
+         k6CLCvDlkpdmDiFE2UAj4H5XJnWIXjtMei/Ugo7mDxK0j/bovnyysJ18jvHb+1GuXhKe
+         Flf3gqhkUMrWgVbGLPToZtLqJ7DSMBeCpWlL+2+J3hj9v9Xev3VqpJt14++gleJ2kbgG
+         SsYGyfUkmZSMfCEs94+h0UJZdbSfEuMPWWyDcYH4BD5DvZ2g2Dq2S2RveeWzcLmi4CDj
+         mfsQ==
+X-Gm-Message-State: ANhLgQ2qQgw8zQT9rZkowRlSTAHsuMGx2hrAeAIWMNEg6LzB/TL1vjYU
+        MmvlP2tgqtmf6siZ9sRQSv8T5QveCnFfGVLgi7kRYhGWZ/Do
+X-Google-Smtp-Source: ADFU+vvhYEgyohzRkU+GPdsgk4urS4eq1PXxWpsA/75dsNvHK/p7fp/lW0/t0kKTsytaTtNhW5AIthp0u9jUNcO7wJ+gACOPRozf
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:398:: with SMTP id y24mr8339241jap.125.1585237124709;
- Thu, 26 Mar 2020 08:38:44 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 08:38:44 -0700
+X-Received: by 2002:a92:6a0f:: with SMTP id f15mr8857122ilc.126.1585237126229;
+ Thu, 26 Mar 2020 08:38:46 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 08:38:46 -0700
 In-Reply-To: <CADG63jDCTdgSxDRsN_9e3fKCAv5VduS5NNKWmqjByZ=4sT+HLQ@mail.gmail.com>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000b401da05a1c3c754@google.com>
+Message-ID: <000000000000cb35d705a1c3c747@google.com>
 Subject: Re: Re: WARNING: refcount bug in sctp_wfree
 From:   syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>
 To:     Qiujun Huang <anenbupt@gmail.com>
@@ -145,3 +145,8 @@ want 2 args (repo, branch), got 10
 >> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
 >> syzbot can test patches for this bug, for details see:
 >> https://goo.gl/tpsmEJ#testing-patches
+>
+> -- 
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/CADG63jDCTdgSxDRsN_9e3fKCAv5VduS5NNKWmqjByZ%3D4sT%2BHLQ%40mail.gmail.com.
