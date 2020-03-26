@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D5AF193B17
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 09:37:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04FEC193B2E
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 09:39:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727695AbgCZIhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 04:37:23 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:38000 "EHLO
+        id S1727689AbgCZIjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 04:39:25 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46974 "EHLO
         mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726346AbgCZIhX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 04:37:23 -0400
-Received: by mail-wr1-f67.google.com with SMTP id s1so6642461wrv.5
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 01:37:21 -0700 (PDT)
+        with ESMTP id S1727639AbgCZIjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 04:39:24 -0400
+Received: by mail-wr1-f67.google.com with SMTP id j17so6564098wru.13
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 01:39:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20150623.gappssmtp.com; s=20150623;
         h=subject:to:cc:references:from:autocrypt:organization:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=pXR82osHIkK+BAujG1JZhhCQ8WhSN81meh6IAg+eIhY=;
-        b=Ub7Ye3VqwM2djDzizU6cSyxA3L3kJlmoDWEL3/sRxrgMsxi5ek3FWL5WuB2NSlh+Id
-         JgrPaNcjtBEDrM5M0SaZWt+201gkW10H+dcn9DxSzqjW5JOy84nF26gdbDAxFwZzCNTN
-         VtAA3u0ovxjRSkfvIgAVjUniM/avIaXnoHRb9XXGJUBLYC2YT2VUFsIYNNOps9OUZMeK
-         WGAAqlRaSMSU639OznxEdrHAr5lliv9tGj6li6m05s4Q88wrQ25TeqnsbXwXBPucnb+k
-         l0aCfXqU3QePgij9m+m119sYDTdRGYNR2xyIbWEHoHx0E/qJm2Po1jKd/oHGfcWYXeCn
-         QUMw==
+        bh=TLKfrWP8AcWMfXeFe+OL6HzlrP4WSBWNABjm4srbTno=;
+        b=J5gCYRRbYEj1hCUaEBVlU8bi9gpdFIkdCjjUKomRB01ovaQLmGoZezSV4UymD5J3Vk
+         UAQxUniYX12deWTkW2AoIfX8E0qqGRlViNFjELQqjswB0Ky5fe73mKF7U2oK3f+87AGk
+         apIJUNtPXDBW+DXgBlYQQ8G2wNlz5goRvUYS2XlnXUNWPg/ZkWNo6JPPdnEam/DLwCQo
+         lcizhqwTuoW7QH+u8TPnsYPhxgo0kuYLCsz+05OmYvB080/4lnQthTrOeNgwUYsfHhuY
+         V82r7rl7iMbh/wAzhsNyWZYchZdm8rEWBKL/b9eIdJLE9vEG7Zgqfl5mTb1K50VXGdJJ
+         UVew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :organization:message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=pXR82osHIkK+BAujG1JZhhCQ8WhSN81meh6IAg+eIhY=;
-        b=RN4ZEPaXqjUaJTKYLcarGKyvQkwUy5Toj2PxzbLqXZxVQfWgMH3QiAR0Pe2Bp4JOtL
-         1MAlzcBcKXw7u8/hg/0AnkhqdviQK1mFqyRFXDOW7G2wO1qYwHrX3IYDqkUAwMSe1zjg
-         LWI+J+xX5pxn5L3LqfVjlLopJDX2Y8Ija4WkhLQPObzbt0lAfSzjAHpaLGqXamLSqINy
-         QB+MnLOmmglsYnSfK6dG7Q5jZOXHQzVHNz2XLp5X15/PIefsZMN8i2OSb4ACteW/d8O5
-         FTFIntasTEgiwWYDHNxssFX74CajmDrvIH17bIhwr1UlVBYC3xFgi1fw0YAG8DjQcAnp
-         kBdg==
-X-Gm-Message-State: ANhLgQ1Y/yfcOE3jmJv/ijC5CrWl234OzmMInbod/2Tb9mxMRSCwhga5
-        H1B9QASgj8OfC/NZnyZlOqNOR7tIKy3zew==
-X-Google-Smtp-Source: ADFU+vsYjTqfEWPknLjNwIub37ZfUBmR6EQVrktciDTTfd+VYo7Gj0t8gLB5S6/mFNn+5Z/4WT4x9A==
-X-Received: by 2002:a5d:574b:: with SMTP id q11mr7894476wrw.417.1585211839977;
-        Thu, 26 Mar 2020 01:37:19 -0700 (PDT)
-Received: from ?IPv6:2a01:e35:2ec0:82b0:5c5f:613e:f775:b6a2? ([2a01:e35:2ec0:82b0:5c5f:613e:f775:b6a2])
-        by smtp.gmail.com with ESMTPSA id b67sm2492273wmh.29.2020.03.26.01.37.17
+        bh=TLKfrWP8AcWMfXeFe+OL6HzlrP4WSBWNABjm4srbTno=;
+        b=nV+S3siOqh/K3xbzjJDVb319ToQhlITT+v2a1cr9OywYp4A+ku443iKGpAG21TN4wn
+         GVaWhFytqaIEEi79Oj0mcN5QoSssW40HRIMssGohW40+kupM6VPkp+cKd5P3qhSQfhjE
+         +0ByQae+Ookr/A/LFMD21M7z+OkL9Lr5GsaT5UFcfzsvBAxOxQFu7QNhtSA1YqACWmcG
+         rE6D/3ZLSuwTBKnLRRa0YCQIyZxHAXm4e8kv8ZyVy0KY9Yl2dhKNusdFakImY01yee/l
+         lUwAv/FZ0RaAsreTD4NeZfoR1kuCcKQNgKQEdTrcxUkb5kc2rsW6P+xjr+hPVKJpyj5H
+         4d/w==
+X-Gm-Message-State: ANhLgQ3Tbm4PVx1WbkPM6+ZTOr1znLZF1kirEhw6Addae7hvIiBazH1+
+        lTcnFvBjPm5yfV9CM/hwFF8KUwLafvgFfA==
+X-Google-Smtp-Source: ADFU+vvzuQ4QxVS/s0ibmVMZp4jdcmJoedPChELBVbuKyTFcPAB+5OcyntAwpr9Tl9sZS9yiTvZRQg==
+X-Received: by 2002:adf:c587:: with SMTP id m7mr8354429wrg.64.1585211961242;
+        Thu, 26 Mar 2020 01:39:21 -0700 (PDT)
+Received: from ?IPv6:2a01:e35:2ec0:82b0:25f2:833f:2a30:1344? ([2a01:e35:2ec0:82b0:25f2:833f:2a30:1344])
+        by smtp.gmail.com with ESMTPSA id l4sm1317884wru.1.2020.03.26.01.39.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Mar 2020 01:37:19 -0700 (PDT)
-Subject: Re: [PATCH 4/4] dt-bindings: Add missing 'additionalProperties:
- false'
+        Thu, 26 Mar 2020 01:39:20 -0700 (PDT)
+Subject: Re: [PATCH 3/4] dt-bindings: Clean-up schema errors due to missing
+ 'addtionalProperties: false'
 To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>,
@@ -78,7 +78,7 @@ Cc:     linux-kernel@vger.kernel.org,
         linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
         netdev@vger.kernel.org
 References: <20200325220542.19189-1-robh@kernel.org>
- <20200325220542.19189-5-robh@kernel.org>
+ <20200325220542.19189-4-robh@kernel.org>
 From:   Neil Armstrong <narmstrong@baylibre.com>
 Autocrypt: addr=narmstrong@baylibre.com; prefer-encrypt=mutual; keydata=
  xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
@@ -130,12 +130,12 @@ Autocrypt: addr=narmstrong@baylibre.com; prefer-encrypt=mutual; keydata=
  zR8QplXA5kogS4kLe/7/JmlDMO8Zgm9vKLHSUeesLOrjdZ59EcjldNNBszRZQgEhwaarfz46
  BSwxi7g3Mu7u5kUByanqHyA=
 Organization: Baylibre
-Message-ID: <88deb8bb-718c-f8ce-885e-dbc122201f16@baylibre.com>
-Date:   Thu, 26 Mar 2020 09:37:16 +0100
+Message-ID: <e60df575-c70d-a194-6c54-32b5ae69a041@baylibre.com>
+Date:   Thu, 26 Mar 2020 09:39:17 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.4.1
 MIME-Version: 1.0
-In-Reply-To: <20200325220542.19189-5-robh@kernel.org>
+In-Reply-To: <20200325220542.19189-4-robh@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -145,155 +145,62 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 25/03/2020 23:05, Rob Herring wrote:
-> Setting 'additionalProperties: false' is frequently omitted, but is
-> important in order to check that there aren't extra undocumented
-> properties in a binding.
+> Numerous schemas are missing 'additionalProperties: false' statements which
+> ensures a binding doesn't have any extra undocumented properties or child
+> nodes. Fixing this reveals various missing properties, so let's fix all
+> those occurrences.
 > 
-> Ideally, we'd just add this automatically and make this the default, but
-> there's some cases where it doesn't work. For example, if a common
-> schema is referenced, then properties in the common schema aren't part
-> of what's considered for 'additionalProperties'. Also, sometimes there
-> are bus specific properties such as 'spi-max-frequency' that go into
-> bus child nodes, but aren't defined in the child node's schema.
-> 
-> So let's stick with the json-schema defined default and add
-> 'additionalProperties: false' where needed. This will be a continual
-> review comment and game of wack-a-mole.
-> 
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Cc: Neil Armstrong <narmstrong@baylibre.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Kevin Hilman <khilman@baylibre.com>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Liam Girdwood <lgirdwood@gmail.com>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Guillaume La Roque <glaroque@baylibre.com>
+> Cc: Zhang Rui <rui.zhang@intel.com>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: linux-clk@vger.kernel.org
+> Cc: linux-gpio@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-iio@vger.kernel.org
+> Cc: linux-media@vger.kernel.org
+> Cc: linux-amlogic@lists.infradead.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
 > Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
->  .../devicetree/bindings/arm/altera/socfpga-clk-manager.yaml    | 2 ++
->  .../bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml       | 2 ++
->  Documentation/devicetree/bindings/arm/msm/qcom,llcc.yaml       | 2 ++
->  Documentation/devicetree/bindings/arm/renesas,prr.yaml         | 2 ++
->  .../devicetree/bindings/arm/samsung/exynos-chipid.yaml         | 2 ++
->  Documentation/devicetree/bindings/arm/samsung/pmu.yaml         | 2 ++
->  .../bindings/arm/samsung/samsung-secure-firmware.yaml          | 2 ++
->  .../devicetree/bindings/arm/stm32/st,stm32-syscon.yaml         | 2 ++
->  Documentation/devicetree/bindings/clock/fsl,plldig.yaml        | 2 ++
->  Documentation/devicetree/bindings/clock/imx8mn-clock.yaml      | 2 ++
->  Documentation/devicetree/bindings/clock/imx8mp-clock.yaml      | 2 ++
->  Documentation/devicetree/bindings/clock/milbeaut-clock.yaml    | 2 ++
->  Documentation/devicetree/bindings/clock/qcom,gcc-apq8064.yaml  | 2 ++
->  Documentation/devicetree/bindings/clock/qcom,gcc-ipq8074.yaml  | 2 ++
->  Documentation/devicetree/bindings/clock/qcom,gcc-msm8996.yaml  | 2 ++
->  Documentation/devicetree/bindings/clock/qcom,gcc-msm8998.yaml  | 2 ++
->  Documentation/devicetree/bindings/clock/qcom,gcc-qcs404.yaml   | 2 ++
->  Documentation/devicetree/bindings/clock/qcom,gcc-sc7180.yaml   | 2 ++
->  Documentation/devicetree/bindings/clock/qcom,gcc-sm8150.yaml   | 2 ++
->  Documentation/devicetree/bindings/clock/qcom,gcc.yaml          | 2 ++
->  Documentation/devicetree/bindings/clock/qcom,mmcc.yaml         | 2 ++
->  .../devicetree/bindings/clock/qcom,msm8998-gpucc.yaml          | 2 ++
->  Documentation/devicetree/bindings/clock/qcom,rpmhcc.yaml       | 2 ++
->  .../devicetree/bindings/clock/qcom,sc7180-dispcc.yaml          | 2 ++
->  Documentation/devicetree/bindings/clock/qcom,sc7180-gpucc.yaml | 2 ++
->  .../devicetree/bindings/clock/qcom,sc7180-videocc.yaml         | 2 ++
->  .../devicetree/bindings/clock/qcom,sdm845-dispcc.yaml          | 2 ++
->  Documentation/devicetree/bindings/clock/qcom,sdm845-gpucc.yaml | 2 ++
->  .../devicetree/bindings/clock/qcom,sdm845-videocc.yaml         | 2 ++
->  .../devicetree/bindings/display/amlogic,meson-vpu.yaml         | 2 ++
->  .../devicetree/bindings/dma/sifive,fu540-c000-pdma.yaml        | 2 ++
->  Documentation/devicetree/bindings/dsp/fsl,dsp.yaml             | 2 ++
->  Documentation/devicetree/bindings/eeprom/at24.yaml             | 2 ++
->  .../firmware/intel,ixp4xx-network-processing-engine.yaml       | 3 +++
->  .../devicetree/bindings/gpio/brcm,xgs-iproc-gpio.yaml          | 2 ++
->  .../devicetree/bindings/gpio/socionext,uniphier-gpio.yaml      | 2 ++
->  Documentation/devicetree/bindings/gpio/xylon,logicvc-gpio.yaml | 2 ++
->  Documentation/devicetree/bindings/gpu/arm,mali-bifrost.yaml    | 2 ++
->  Documentation/devicetree/bindings/gpu/arm,mali-midgard.yaml    | 2 ++
->  Documentation/devicetree/bindings/gpu/arm,mali-utgard.yaml     | 2 ++
->  Documentation/devicetree/bindings/gpu/samsung-rotator.yaml     | 2 ++
->  Documentation/devicetree/bindings/hwmon/adi,adm1177.yaml       | 2 ++
->  Documentation/devicetree/bindings/hwmon/adi,ltc2947.yaml       | 2 ++
->  Documentation/devicetree/bindings/hwmon/pmbus/ti,ucd90320.yaml | 2 ++
->  Documentation/devicetree/bindings/hwmon/ti,tmp513.yaml         | 2 ++
->  Documentation/devicetree/bindings/iio/accel/bosch,bma400.yaml  | 2 ++
->  Documentation/devicetree/bindings/iio/adc/adi,ad7780.yaml      | 2 ++
->  Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml      | 2 ++
->  Documentation/devicetree/bindings/iio/adc/lltc,ltc2496.yaml    | 2 ++
->  .../devicetree/bindings/iio/adc/microchip,mcp3911.yaml         | 2 ++
->  .../devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml        | 2 ++
->  .../devicetree/bindings/iio/chemical/plantower,pms7003.yaml    | 2 ++
->  .../devicetree/bindings/iio/chemical/sensirion,sps30.yaml      | 2 ++
->  Documentation/devicetree/bindings/iio/dac/lltc,ltc1660.yaml    | 2 ++
->  Documentation/devicetree/bindings/iio/light/adux1020.yaml      | 2 ++
->  Documentation/devicetree/bindings/iio/light/bh1750.yaml        | 2 ++
->  Documentation/devicetree/bindings/iio/light/isl29018.yaml      | 2 ++
->  Documentation/devicetree/bindings/iio/light/noa1305.yaml       | 2 ++
->  Documentation/devicetree/bindings/iio/light/stk33xx.yaml       | 2 ++
->  Documentation/devicetree/bindings/iio/light/tsl2583.yaml       | 2 ++
->  Documentation/devicetree/bindings/iio/light/tsl2772.yaml       | 2 ++
->  Documentation/devicetree/bindings/iio/light/veml6030.yaml      | 2 ++
->  .../devicetree/bindings/iio/pressure/asc,dlhl60d.yaml          | 2 ++
->  Documentation/devicetree/bindings/iio/pressure/bmp085.yaml     | 2 ++
->  .../devicetree/bindings/iio/proximity/devantech-srf04.yaml     | 2 ++
->  .../devicetree/bindings/iio/proximity/parallax-ping.yaml       | 2 ++
->  .../devicetree/bindings/iio/temperature/adi,ltc2983.yaml       | 2 ++
->  Documentation/devicetree/bindings/input/gpio-vibrator.yaml     | 2 ++
->  Documentation/devicetree/bindings/input/max77650-onkey.yaml    | 3 +++
->  .../bindings/interrupt-controller/intel,ixp4xx-interrupt.yaml  | 2 ++
->  Documentation/devicetree/bindings/iommu/samsung,sysmmu.yaml    | 2 ++
->  Documentation/devicetree/bindings/leds/leds-max77650.yaml      | 3 +++
->  Documentation/devicetree/bindings/leds/rohm,bd71828-leds.yaml  | 3 +++
->  .../devicetree/bindings/mailbox/amlogic,meson-gxbb-mhu.yaml    | 2 ++
->  Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml   | 2 ++
->  .../devicetree/bindings/media/amlogic,meson-gx-ao-cec.yaml     | 2 ++
->  Documentation/devicetree/bindings/media/renesas,ceu.yaml       | 2 ++
->  Documentation/devicetree/bindings/mfd/max77650.yaml            | 2 ++
->  Documentation/devicetree/bindings/mfd/rohm,bd71828-pmic.yaml   | 2 ++
->  .../bindings/misc/intel,ixp4xx-ahb-queue-manager.yaml          | 2 ++
->  Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml      | 2 ++
->  .../devicetree/bindings/phy/allwinner,sun50i-h6-usb3-phy.yaml  | 2 ++
->  .../bindings/phy/amlogic,meson-g12a-usb3-pcie-phy.yaml         | 2 ++
->  Documentation/devicetree/bindings/phy/intel,lgm-emmc-phy.yaml  | 2 ++
->  .../devicetree/bindings/phy/marvell,mmp3-hsic-phy.yaml         | 2 ++
->  Documentation/devicetree/bindings/phy/ti,phy-j721e-wiz.yaml    | 2 ++
->  .../devicetree/bindings/pinctrl/aspeed,ast2400-pinctrl.yaml    | 2 ++
->  .../devicetree/bindings/pinctrl/aspeed,ast2500-pinctrl.yaml    | 2 ++
->  .../devicetree/bindings/pinctrl/aspeed,ast2600-pinctrl.yaml    | 2 ++
->  .../devicetree/bindings/pinctrl/st,stm32-pinctrl.yaml          | 2 ++
->  .../devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml       | 2 ++
->  .../devicetree/bindings/power/reset/syscon-poweroff.yaml       | 2 ++
->  .../devicetree/bindings/power/reset/syscon-reboot.yaml         | 2 ++
->  .../devicetree/bindings/power/supply/max77650-charger.yaml     | 3 +++
->  Documentation/devicetree/bindings/ptp/ptp-idtcm.yaml           | 2 ++
->  .../devicetree/bindings/regulator/max77650-regulator.yaml      | 3 +++
->  .../devicetree/bindings/reset/amlogic,meson-reset.yaml         | 2 ++
->  .../bindings/reset/brcm,bcm7216-pcie-sata-rescal.yaml          | 2 ++
->  Documentation/devicetree/bindings/rng/amlogic,meson-rng.yaml   | 2 ++
->  Documentation/devicetree/bindings/rng/brcm,bcm2835.yaml        | 2 ++
->  Documentation/devicetree/bindings/rtc/renesas,sh-rtc.yaml      | 2 ++
->  Documentation/devicetree/bindings/rtc/st,stm32-rtc.yaml        | 2 ++
->  .../devicetree/bindings/serial/amlogic,meson-uart.yaml         | 2 ++
->  .../devicetree/bindings/soc/amlogic/amlogic,canvas.yaml        | 2 ++
->  Documentation/devicetree/bindings/sound/adi,adau7118.yaml      | 2 ++
->  Documentation/devicetree/bindings/sound/qcom,wcd934x.yaml      | 2 ++
->  Documentation/devicetree/bindings/sound/renesas,fsi.yaml       | 2 ++
->  Documentation/devicetree/bindings/sound/samsung,odroid.yaml    | 2 ++
->  Documentation/devicetree/bindings/sound/samsung-i2s.yaml       | 2 ++
->  Documentation/devicetree/bindings/sram/qcom,ocmem.yaml         | 2 ++
->  Documentation/devicetree/bindings/thermal/amlogic,thermal.yaml | 2 ++
->  Documentation/devicetree/bindings/timer/arm,arch_timer.yaml    | 2 ++
->  .../devicetree/bindings/timer/arm,arch_timer_mmio.yaml         | 2 ++
->  Documentation/devicetree/bindings/timer/arm,global_timer.yaml  | 2 ++
->  .../devicetree/bindings/timer/intel,ixp4xx-timer.yaml          | 2 ++
->  .../devicetree/bindings/timer/samsung,exynos4210-mct.yaml      | 2 ++
->  Documentation/devicetree/bindings/trivial-devices.yaml         | 2 ++
->  117 files changed, 240 insertions(+)
+>  .../devicetree/bindings/clock/fsl,plldig.yaml |  3 +++
+>  .../gpio/socionext,uniphier-gpio.yaml         |  2 ++
+>  .../bindings/gpu/arm,mali-bifrost.yaml        |  6 ++---
+>  .../bindings/gpu/arm,mali-midgard.yaml        |  3 +++
+>  .../bindings/iio/adc/adi,ad7192.yaml          |  1 -
+>  .../bindings/iio/pressure/bmp085.yaml         |  3 +++
+>  .../media/amlogic,meson-gx-ao-cec.yaml        |  9 +++++---
+>  .../bindings/mfd/rohm,bd71828-pmic.yaml       |  3 +++
+>  .../bindings/net/ti,cpsw-switch.yaml          | 23 ++++++++++++-------
+>  .../regulator/max77650-regulator.yaml         |  2 +-
+>  .../bindings/thermal/amlogic,thermal.yaml     |  2 ++
+>  .../bindings/timer/arm,arch_timer_mmio.yaml   |  2 ++
+>  12 files changed, 43 insertions(+), 16 deletions(-)
 > 
 
 For:
- .../bindings/arm/amlogic/amlogic,meson-gx-ao-secure.yaml       | 2 ++
- .../devicetree/bindings/display/amlogic,meson-vpu.yaml         | 2 ++
- .../devicetree/bindings/mailbox/amlogic,meson-gxbb-mhu.yaml    | 2 ++
- .../devicetree/bindings/media/amlogic,meson-gx-ao-cec.yaml     | 2 ++
- Documentation/devicetree/bindings/media/amlogic,gx-vdec.yaml   | 2 ++
- .../bindings/phy/amlogic,meson-g12a-usb3-pcie-phy.yaml         | 2 ++
- .../devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml       | 2 ++
- .../devicetree/bindings/reset/amlogic,meson-reset.yaml         | 2 ++
- Documentation/devicetree/bindings/rng/amlogic,meson-rng.yaml   | 2 ++
- .../devicetree/bindings/serial/amlogic,meson-uart.yaml         | 2 ++
- .../devicetree/bindings/soc/amlogic/amlogic,canvas.yaml        | 2 ++
- Documentation/devicetree/bindings/thermal/amlogic,thermal.yaml | 2 ++
+  .../bindings/gpu/arm,mali-bifrost.yaml        |  6 ++---
+  .../bindings/gpu/arm,mali-midgard.yaml        |  3 +++
+  .../media/amlogic,meson-gx-ao-cec.yaml        |  9 +++++---
+  .../bindings/thermal/amlogic,thermal.yaml     |  2 ++
+
 
 Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+
