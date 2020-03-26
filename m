@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E24F7194C0E
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 00:16:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 739D9194C11
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 00:17:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727473AbgCZXQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 19:16:46 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:40326 "EHLO
+        id S1727636AbgCZXR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 19:17:29 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:54408 "EHLO
         mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726296AbgCZXQq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 19:16:46 -0400
-Received: by mail-wm1-f66.google.com with SMTP id a81so10256379wmf.5
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 16:16:44 -0700 (PDT)
+        with ESMTP id S1726296AbgCZXR3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 19:17:29 -0400
+Received: by mail-wm1-f66.google.com with SMTP id c81so9482427wmd.4
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 16:17:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=1bhLL/bx39ZhUi9YdzVVuwg/L4wh+uECQIPkRYVRs7U=;
-        b=hxN2GdejIG7dRGHpsnS/Pl/BSbnOX+OULJDPwhlO93UEHfw65cPm2Tusp5nFE2G1Y/
-         diwAAMhtvUIt2UnPDyx6RrO5w/tYXMmugElRyWteW1DqhnHuU2eFG4A27qvIRkvtmTXl
-         eUgo6KH/h3XSlUFbkOollS83APVNXh61pXgZwQu0Cv6/Hx8v6Yq/tF4OugicW5UPc/1F
-         7wPFhsiFbypoGz5D9DCPsgpXNZYIRyxMakbgwgGphT339sGAADK9JRFo7vFlEnpBeTkr
-         KugqlRkbBTLbgZmtT8Jn8y9roAegHvmmtRBoH5ni8wLD9Q80ez6prWSk6qGxt4tHQAMW
-         3ILg==
+        bh=yAKhVb1YzUBHGui+UXDcQ5lr6em61R6ZGELJHhzpNLA=;
+        b=hspjRiVQEXtTcYDkQXrVZAKoFkOYRivpzvcTjw8rJXMnuD3bgyA4kh2jvTaMfFKJcn
+         zzhvxVPGp9t5mTBdMNAyvWk1b0J4NEo+3TZNLQW7m895qXYs0Tp6+gzj1sbYE46qf4pk
+         8OZRopoTKSqQ41hT8tLeuLss4bD5NxOcT7Cgc/iiBoltvOxYbyeAIxROBXagRfs2rpUQ
+         IUmD7/9K6uoSLokBxr+LFiaav6QF1KhiVGPIV3u07vhR9JLH9kTrAMhzt227tiEmO3Un
+         jA4fzqIq33UMNHre33Sa2PLWt9IrBgE2Ko3e0k8LlMMu7DeZ8pGWBG3AUmMHp4XtEB+K
+         Me3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=1bhLL/bx39ZhUi9YdzVVuwg/L4wh+uECQIPkRYVRs7U=;
-        b=DDjo8CUCGcbjbcJu5J3x5KLOgciJJbP249Ypac5RlO2UJSvWPfVeHR6iRc4dudcro9
-         7VBsKkBf7yaFuAUgI5J5S4EcT5i+F+/uv9x6SbuFnrEzQ0rldUSospz9e0PW0bga/CXZ
-         qzOHdk5avj7pkLOr8JtwY8LKKFHD/D3MNjYOEnRncyfxhtzFy1a76viB0Z3iWdYUvRiS
-         2i0nkJACudIsXvGcvTmn1PlVWkQ+WKB702LOZ/oWN1M2neCNmjlLHeexhPHYBMfa7omz
-         GPhjf/QgWBUsdV8GuaL1SuBpR8VVPyrIwNylMdcG/Ijfb8izAFYc45vDVFo4QNT4PwKH
-         6dpg==
-X-Gm-Message-State: ANhLgQ2cLlednBP/yOYnx42CEjDxPz9+u60TWkjhIk6F9KmSBXZpbuli
-        zzxippGw70xsY+fmQFf5fK54gSPp
-X-Google-Smtp-Source: ADFU+vvGq8zNUiX0imSW9N7VXMXjZA9YM5HNT/nJ/7ppMgu8QISnFWYlRDLlrQxw8gCvIjsXtgpDyw==
-X-Received: by 2002:adf:b307:: with SMTP id j7mr12375826wrd.128.1585264603279;
-        Thu, 26 Mar 2020 16:16:43 -0700 (PDT)
+        bh=yAKhVb1YzUBHGui+UXDcQ5lr6em61R6ZGELJHhzpNLA=;
+        b=HzdvI9dWSE0YAVZCQdIh2w6SRpFe6xLBouSjEFs6Pd46fvnoIj8of3lzykQ5KQOxqv
+         m0ur65jthM9foTsNPexbgx92jg5vOlaYtI2VlwLUtw9opoevsLzHOh1vgGK/eO5nSCPt
+         MLA2F2uZ/WPSUDYtXcOhm4ExqQfo2GbHH8lpD3joZhlFoRANPz6HBd1asS+UnE4eOpA9
+         y4su7RqsG65w4FPxc/k27rX9O5NwPOTdny0JLDvyowlIH2M8zMgKCEq2VSEIFdfI1a6p
+         T/E7QW1+XITU+e5g/LLdbIQqCWN9KFwKErWFJEcfhnXV96kn/wrH4hL2xyqjsY31V1xr
+         3qCw==
+X-Gm-Message-State: ANhLgQ1VUOgmqpkmaEva4keK9hKuc5vhkCUwuanf9LmwDV+f7lBInrR+
+        tUAbRaWXfJY2MMC/pTnuo+9XcdOG
+X-Google-Smtp-Source: ADFU+vv2NxgmI9zAhzyPJyc9SGPRf/oYNkQ/IoUdV8OOQ/r40/6N+n+Qo5GEaxEoy/FLRnMcn6UKkQ==
+X-Received: by 2002:a7b:ce96:: with SMTP id q22mr2465894wmj.134.1585264647011;
+        Thu, 26 Mar 2020 16:17:27 -0700 (PDT)
 Received: from [10.230.186.223] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i1sm5503482wrq.89.2020.03.26.16.16.40
+        by smtp.gmail.com with ESMTPSA id m3sm5272028wmm.3.2020.03.26.16.17.23
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Mar 2020 16:16:42 -0700 (PDT)
-Subject: Re: [PATCH v3 net-next 5/8] net: dsa: b53: add MTU configuration
- support
+        Thu, 26 Mar 2020 16:17:26 -0700 (PDT)
+Subject: Re: [PATCH v3 net-next 1/8] net: phy: bcm7xx: add jumbo frame
+ configuration to PHY
 To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
         vivien.didelot@gmail.com, davem@davemloft.net,
         jakub.kicinski@netronome.com
@@ -54,7 +54,7 @@ Cc:     murali.policharla@broadcom.com, stephen@networkplumber.org,
         jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
         nikolay@cumulusnetworks.com, netdev@vger.kernel.org
 References: <20200326224040.32014-1-olteanv@gmail.com>
- <20200326224040.32014-6-olteanv@gmail.com>
+ <20200326224040.32014-2-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -110,12 +110,12 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <ca7e48c2-249a-9066-045f-04708474ef8a@gmail.com>
-Date:   Thu, 26 Mar 2020 16:16:38 -0700
+Message-ID: <0ebbb0f4-099e-fdc2-ab17-26d6311d99fb@gmail.com>
+Date:   Thu, 26 Mar 2020 16:17:22 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200326224040.32014-6-olteanv@gmail.com>
+In-Reply-To: <20200326224040.32014-2-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -129,36 +129,12 @@ X-Mailing-List: netdev@vger.kernel.org
 On 3/26/2020 3:40 PM, Vladimir Oltean wrote:
 > From: Murali Krishna Policharla <murali.policharla@broadcom.com>
 > 
-> It looks like the Broadcomm switches supported by the b53 driver don't
-                            ^= one too many m's, the attempt to acquire
-Qualcomm failed a few years ago :)
-
-> support precise configuration of the MTU, but just a mumbo-jumbo boolean
-> flag. Set that.
-> 
-> Also configure BCM583XX devices to send and receive jumbo frames when
-> ports are configured with 10/100 Mbps speed.
+> The BCM7XX PHY family requires special configuration to pass jumbo
+> frames. Do that during initial PHY setup.
 > 
 > Signed-off-by: Murali Krishna Policharla <murali.policharla@broadcom.com>
+> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-
-[snip]
-
-> +static int b53_change_mtu(struct dsa_switch *ds, int port, int mtu)
-> +{
-> +	struct b53_device *dev = ds->priv;
-> +	bool enable_jumbo;
-> +	bool allow_10_100;
-> +
-> +	if (is5325(dev) || is5365(dev))
-> +		return -EOPNOTSUPP;
-> +
-> +	enable_jumbo = (mtu >= JMS_MIN_SIZE);
-> +	allow_10_100 = (dev->chip_id == BCM58XX_DEVICE_ID);
-
-I believe this was meant to be BCM583XX_DEVICE_ID to be consistent with
-the previous patch version. With that:
 
 Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
