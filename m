@@ -2,150 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F409F193778
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 06:13:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D49E51937BC
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 06:28:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726213AbgCZFN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 01:13:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53424 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725775AbgCZFN0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Mar 2020 01:13:26 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 376C22070A;
-        Thu, 26 Mar 2020 05:13:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585199605;
-        bh=zF+GhN0JedFJh21aHnCOMjRwKvcEl5EiWjUBOM95tCQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pXzzMPf8i5aLRhR7V5cRIx8fOp2dVSZoZB6t+vgEjrzCG5p50dHZDYdITA9gByDoR
-         DEahSo/YBRUvl0qlPiI06jGkTwrr6NPXU6M+3L/9SZlp09vggW9XUzRH+Ll4HPjQoi
-         naZQlFExNqOWeQdg1jYr3JxzrLLM+lJM9Wkl86kU=
-Date:   Wed, 25 Mar 2020 22:13:23 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
- program when attaching XDP
-Message-ID: <20200325221323.00459c8d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
-References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
-        <158462359315.164779.13931660750493121404.stgit@toke.dk>
-        <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN>
-        <875zez76ph.fsf@toke.dk>
-        <20200320103530.2853c573@kicinski-fedora-PC1C0HJN>
-        <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
-        <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
-        <87tv2f48lp.fsf@toke.dk>
-        <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com>
-        <87h7ye3mf3.fsf@toke.dk>
-        <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
-        <87tv2e10ly.fsf@toke.dk>
-        <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
-        <87369wrcyv.fsf@toke.dk>
-        <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
+        id S1726175AbgCZF2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 01:28:24 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:37677 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725775AbgCZF2Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 01:28:24 -0400
+Received: by mail-wr1-f68.google.com with SMTP id w10so6244535wrm.4;
+        Wed, 25 Mar 2020 22:28:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wXHdJQjHOZJU3K+b0MFItSKiPAOIqY5bhyT6MjjRq/M=;
+        b=Vv7DfbitthYmF5lPWT9RA6U8WpBtwMsN5P4F3qMJz7KB9Vp3tcywUBnOrIcgbE3lJH
+         UQTDagMv1sZjlX67yVZHsWm6+SJMSs4Dwk0N8sLeFKe7wvYt4CWYb+Hfr5IiN0G7GL/0
+         bSOw5IJPNlgpJJH8lLTFu5RytbaaiJKm+zjmHzgLQhnGLhkdH1zfcibUnV2w633HwPPV
+         IG7qXv7NlD8/gvePqJizhVqTqBowQNvc0nMl+XXiFTcPwbrX5bmFNQ6IRbzLY480lq79
+         wtqPJqVq7cpAtgJo65JaOjvR8+0xmp7Hhj8QNe72LS9OGvk0m+ltSo3sK1z0kVblfeBz
+         MIJQ==
+X-Gm-Message-State: ANhLgQ1vAacO+sy1qoRvzu0E7cfbr4qsGfoDb/6ejktvjUfbVzgtN7Fx
+        UhZd4K2EC1hDBUU7doAY8/Afo3HgSPwXPGRdtfM=
+X-Google-Smtp-Source: ADFU+vvFi4O3boTduxBlDe29KEFsRsIR5Iv7MipoLYsHjhlTBCfp9wIVM3wXy/0JhYcPZX1akUuHdtI+KDHZQw4/030=
+X-Received: by 2002:adf:fe03:: with SMTP id n3mr7350423wrr.266.1585200502533;
+ Wed, 25 Mar 2020 22:28:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200325055745.10710-1-joe@wand.net.nz> <20200325055745.10710-6-joe@wand.net.nz>
+ <CAEf4BzYXedX7Bsv8jzfawYoRkN8Wu4z3+kGfQ9CWcO4dOJe+bg@mail.gmail.com>
+In-Reply-To: <CAEf4BzYXedX7Bsv8jzfawYoRkN8Wu4z3+kGfQ9CWcO4dOJe+bg@mail.gmail.com>
+From:   Joe Stringer <joe@wand.net.nz>
+Date:   Wed, 25 Mar 2020 22:28:11 -0700
+Message-ID: <CAOftzPhkoZkooOk9SkwLQnZFxM9KGO4M1XpMbzni9TrEKcepjg@mail.gmail.com>
+Subject: Re: [PATCHv2 bpf-next 5/5] selftests: bpf: add test for sk_assign
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Joe Stringer <joe@wand.net.nz>, bpf <bpf@vger.kernel.org>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Martin Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Mar 2020 17:16:13 -0700 Andrii Nakryiko wrote:
-> > >> Well, I wasn't talking about any of those subsystems, I was talking
-> > >> about networking :)  
-> > >
-> > > So it's not "BPF subsystem's relation to the rest of the kernel" from
-> > > your previous email, it's now only "talking about networking"? Since
-> > > when the rest of the kernel is networking?  
-> >
-> > Not really, I would likely argue the same for any other subsystem, I  
-> 
-> And you would like lose that argument :) You already agreed that for
-> tracing this is not the case. BPF is not attached by writing text into
-> ftrace's debugfs entries. Same for cgroups, we don't
-> create/update/write special files in cgroupfs, we have an explicit
-> attachment API in BPF.
-> 
-> BTW, kprobes started out with the same model as XDP has right now. You
-> had to do a bunch of magic writes into various debugfs files to attach
-> BPF program. If user-space application crashed, kprobe stayed
-> attached. This was horrible and led to many problems in real world
-> production uses. So a completely different interface was created,
-> allowing to do it through perf_event_open() and created anonymous
-> inode for BPF program attachment. That allowed crashing program to
-> auto-detach kprobe and not harm production use case.
-> 
-> Now we are coming after cgroup BPF programs, which have similar issues
-> and similar pains in production. cgroup BPF progs actually have extra
-> problems: programs can user-space applications can accidentally
-> replace a critical cgroup program and ruin the day for many folks that
-> have to deal with production breakage after that. Which is why I'm
-> implementing bpf_link with all its properties: to solve real pain and
-> real problem.
+On Wed, Mar 25, 2020 at 7:16 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
 >
-> Now for XDP. It has same flawed model. And even if it seems to you
-> that it's not a big issue, and even if Jakub thinks we are trying to
-> solve non-existing problem, it is a real problem and a real concern
-> from people that have to support XDP in production with many
+> On Tue, Mar 24, 2020 at 10:58 PM Joe Stringer <joe@wand.net.nz> wrote:
+> >
+> > From: Lorenz Bauer <lmb@cloudflare.com>
+> >
+> > Attach a tc direct-action classifier to lo in a fresh network
+> > namespace, and rewrite all connection attempts to localhost:4321
+> > to localhost:1234 (for port tests) and connections to unreachable
+> > IPv4/IPv6 IPs to the local socket (for address tests).
+> >
+> > Keep in mind that both client to server and server to client traffic
+> > passes the classifier.
+> >
+> > Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> > Co-authored-by: Joe Stringer <joe@wand.net.nz>
+> > Signed-off-by: Joe Stringer <joe@wand.net.nz>
+> > ---
 
-More than happy to talk to those folks, and see the tickets.
+<snip>
 
-Toke has actual user space code which needs his extension, and for
-which "ownership" makes no difference as it would just be passed with
-whoever touched the program last.
+> > +static void handle_timeout(int signum)
+> > +{
+> > +       if (signum == SIGALRM)
+> > +               fprintf(stderr, "Timed out while connecting to server\n");
+> > +       kill(0, SIGKILL);
+> > +}
+> > +
+> > +static struct sigaction timeout_action = {
+> > +       .sa_handler = handle_timeout,
+> > +};
+> > +
+> > +static int connect_to_server(const struct sockaddr *addr, socklen_t len)
+> > +{
+> > +       int fd = -1;
+> > +
+> > +       fd = socket(addr->sa_family, SOCK_STREAM, 0);
+> > +       if (CHECK_FAIL(fd == -1))
+> > +               goto out;
+> > +       if (CHECK_FAIL(sigaction(SIGALRM, &timeout_action, NULL)))
+> > +               goto out;
+>
+> no-no-no, we are not doing this. It's part of prog_tests and shouldn't
+> install its own signal handlers and sending asynchronous signals to
+> itself. Please find another way to have a timeout.
 
-> well-meaning developers developing BPF applications independently.
+I realise it didn't clean up after itself. How about signal(SIGALRM,
+SIG_DFL); just like other existing tests do?
 
-There is one single program which can be attached to the XDP hook, 
-the "everybody attaches their program model" does not apply.
+> > +       test__start_subtest("ipv4 addr redir");
+> > +       if (run_test(server, (const struct sockaddr *)&addr4, sizeof(addr4)))
+> > +               goto out;
+> > +
+> > +       test__start_subtest("ipv6 addr redir");
+>
+> test__start_subtest() returns false if subtest is supposed to be
+> skipped. If you ignore that, then test_progs -t and -n filtering won't
+> work properly.
 
-TW agent should just listen on netlink notifications to see if someone
-replaced its program. cgroups have multi-attachment and no notifications
-(although not sure anyone was explicitly asking for links there,
-either).
+Will fix.
 
-In production a no-op XDP program is likely to be attached from the
-moment machine boots, to avoid traffic interruption and the risk of
-something going wrong with the driver when switching between skb to 
-xdp datapath. And then the program is only replaced, not detached.
+> > +       if (run_test(server_v6, (const struct sockaddr *)&addr6, sizeof(addr6)))
+> > +               goto out;
+> > +
+> > +       err = 0;
+> > +out:
+> > +       close(server);
+> > +       close(server_v6);
+> > +       return err;
+> > +}
+> > +
+> > +void test_sk_assign(void)
+> > +{
+> > +       int self_net;
+> > +
+> > +       self_net = open(NS_SELF, O_RDONLY);
+>
+> I'm not familiar with what this does. Can you please explain briefly
+> what are the side effects of this? Asking because of shared test_progs
+> environment worries, of course.
 
-Not to mention the fact that networking applications generally don't
-want to remove their policy from the kernel when they crash :/
+This one is opening an fd to the current program's netns path on the
+filesystem. The intention was to use it to switch back to the current
+netns after the unshare() call elsewhere which switches to a new
+netns. As per the other feedback the bit where it switches back to
+this netns was dropped along the way so I'll fix it up in the next
+revision.
 
-> Now, those were fundamental things, but I'd like to touch on a "nice
-> things we get with that". Having a proper kernel object representing
-> single instance of attached BPF program to some other kernel object
-> allows to build an uniform and consistent API around bpf_link with
-> same semantics. We can do LINK_UPDATE and allow to atomically replace
-> BPF program inside the established bpf_link. It's applicable to all
-> types of BPF program attachment and can be done in a way that ensures
-> no BPF program invocation is skipped while BPF programs are swapped
-> (because at the lowest level it boils down to an atomic pointer swap).
-> Of course not all bpf_links might have this support initially, but
-> we'll establish a lot of common infrastructure which will make it
-> simpler, faster and more reliable to add this functionality.
+> > +SEC("sk_assign_test")
+>
+> Please use "canonical" section name that libbpf recognizes. This
+> woulde be "action/" or "classifier/", right?
 
-XDP replace is already atomic, no packet will be passed without either
-old or new program executed on it.
-
-> And to wrap up. I agree, consistent API is not a goal in itself, as
-> Jakub mentioned. But it is a worthy goal nevertheless, especially if
-> it doesn't cost anything extra. It makes kernel developers lives
-
-Not sure how having two interfaces instead of one makes kernel
-developer's life easier.
+Will fix.
