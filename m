@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6107F1940FF
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:08:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0077919410C
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:13:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727884AbgCZOIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 10:08:38 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:46855 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727738AbgCZOIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:08:38 -0400
-Received: by mail-lj1-f196.google.com with SMTP id v16so6481385ljk.13;
-        Thu, 26 Mar 2020 07:08:36 -0700 (PDT)
+        id S1727897AbgCZONq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 10:13:46 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:38649 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725994AbgCZONq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:13:46 -0400
+Received: by mail-lf1-f67.google.com with SMTP id c5so4954215lfp.5;
+        Thu, 26 Mar 2020 07:13:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R7x3umP2TC8yakU3v+4oGVQPiE6U9RCWnMT+EnTIY9Q=;
-        b=iTYsu7VRBOnAmTI6XomnCN2ybWI9U0tOpz3CxtwfzF1N90UH42tDHCwJXgxhYp922O
-         0C5rMayQrmRHP92FPzizJeJBjG8L1CWc8wgJtlSYLeaAuXYkNInakzfgZN6RP68wPgKH
-         SDw//ZM4grCNLRCTE+bLt99D1OF4xzUlot5a0IOyRMLq+0VCcbWOEmXI4uE4k1sqwulS
-         yzdDpLZ7L8frOMnls9EDRJQ6upX2QbE9qMRxWHKn4l+EaQ/rywfvC84VbDZeRuh3qQPM
-         vAR8ZCM5j6o48D+EWXn8AFt5nhEqwfDPIzYOvz9dENqh7XTomoX+yrY8jWaxqODdwv62
-         Ri7w==
+         :cc:content-transfer-encoding;
+        bh=s4Ip9GlrlXH3w8IgLCzY7e6/JKcdBO3P2fUyUsD1eXA=;
+        b=BsQjkp8OOxXSqy7SW8on2tzh2Uzr/2PIpWcFt1MPoqwG6PXKQH6jE6FjPBCqfjD0oX
+         p2s0g79wOYBv8tpxf6hcvYSeHehtQ+e/gS4jJRACg+Kds4HjEwP0U0v+pLnts/xgAq/S
+         kGzqhseOxN/fzxNmYUDvKKmwwNOkKBwChtzmu8d+zHHrWFfI1rUCELJRBSR250LTzc4H
+         7Voibb8UyrNDg16p51MpRIek6HohF2fRqhEsgOQrSIEsic7nNtBCcjBtHEfdbI4DlitA
+         q2nXQv4fwYGt9rASrhMCykKl9N9byiY5tP42t8RU7xwYpoURvWfdLeA8aHnEPMP0AX9d
+         31oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R7x3umP2TC8yakU3v+4oGVQPiE6U9RCWnMT+EnTIY9Q=;
-        b=UpxBI8Pudli+Q4gL+FRBnN4Fi1lgaGLdQGH4/l4GiG6ZWNSJNt51pbOBgPlT9JeXYP
-         cM9NUEzlIWRmQ8JBbe/1rxjumPJ0eNvGT0SDJ8njBvmy3NPjTJkcj6vdWhYlkcbuIc1C
-         8CSAsgm3COOh6mmGhvGdvqZg8HxOAWRLi2dxgVjVBdZNsImzOKa6GF+QW0cGt0O58g8l
-         2XtgBtje+1PZ8t6DOI50E3GMKeYqAO6cpUUVOCdASW0y6oS/9q72eO+y9SnxgRFWKDC3
-         XOss8zrsOyo2VjZghvDMyY6n4o714maTTnaDC8abj/4kxrM7UJbyaFwueZwivSBMlCDp
-         /A+A==
-X-Gm-Message-State: ANhLgQ30GucujlWoPhJkiJgWYXgMnDSv+/SteNprrkQHuFcS8H0xZvO2
-        kAwnMpo7enzLh3d5Yb7pYHkJcGOXC0mR7Iu2E3Q=
-X-Google-Smtp-Source: APiQypL2ITPgEyKcIB4qHYywBAu/yj01FLJuKbS/ks+hfCR70uE+j52PvH+eao8BB15TBwwsRfuspoEqQ++36yImUnc=
-X-Received: by 2002:a2e:97c2:: with SMTP id m2mr5219178ljj.228.1585231715054;
- Thu, 26 Mar 2020 07:08:35 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=s4Ip9GlrlXH3w8IgLCzY7e6/JKcdBO3P2fUyUsD1eXA=;
+        b=gA/wVBu28uMF2s5hAADQmRuBTSL6wIUUB8QeyQ3PUY/Lc+140a/H1cWoTqMpjX+VEq
+         QQEjzsuCFJrbSyOvW2OytPoLITzmWQdjBe0IBD3TWIugF55B0rzUlkYwft5YlOTL4Ili
+         AylrXvH8uKVksCmaPu6ao5Yu8nlZ8FLfs3mqKWSNUaXjJaR0bJ+BDOJzBQypCLeUBtfc
+         cNK1KX+nPbXgWVe3joYFTbZUlM5Kp5zPdsIPgRj33kVFb5yp4iXM3k04wRhuJPhoGsoL
+         RChMLWmcr+d8W5pvKk3RxKPiQGdqXNrnZQUYLjEG8u78J+f18uXhdBu79IU+m7iQIzul
+         2e2g==
+X-Gm-Message-State: ANhLgQ37asLg25XHxvTwQulZHg6Iw8UgNQQXkDntw2rohQvaxTLl3APh
+        n65X5pK8ivdzURZBUjPjCkzvHLz8hokL9coqAR0=
+X-Google-Smtp-Source: ADFU+vuXVQnmzFtq/yKZPBUP6NFh5YybbICaCkkPvaW9NRrTM5E/pNcrwWWmxW3xLt4zCj74xcSByecrz7Tv/fKcP7A=
+X-Received: by 2002:ac2:4350:: with SMTP id o16mr5202095lfl.136.1585232023288;
+ Thu, 26 Mar 2020 07:13:43 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200320030015.195806-1-zenczykowski@gmail.com> <20200326135959.tqy5i4qkxwcqgp5y@salvia>
-In-Reply-To: <20200326135959.tqy5i4qkxwcqgp5y@salvia>
+References: <20200320030015.195806-1-zenczykowski@gmail.com>
+ <20200326135959.tqy5i4qkxwcqgp5y@salvia> <CAHo-OoyGEPKdU5ZEuY29Zzi4NGzD-QMw7Pb-MTXjdKTj-Kj-Pw@mail.gmail.com>
+In-Reply-To: <CAHo-OoyGEPKdU5ZEuY29Zzi4NGzD-QMw7Pb-MTXjdKTj-Kj-Pw@mail.gmail.com>
 From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Thu, 26 Mar 2020 07:08:24 -0700
-Message-ID: <CAHo-OoyGEPKdU5ZEuY29Zzi4NGzD-QMw7Pb-MTXjdKTj-Kj-Pw@mail.gmail.com>
+Date:   Thu, 26 Mar 2020 07:13:33 -0700
+Message-ID: <CAHo-OozGK7ANfFDBnLv2tZVuhXUw1sCCRVTBc0YT7LvYVXH_ZQ@mail.gmail.com>
 Subject: Re: [PATCH] iptables: open eBPF programs in read only mode
 To:     Pablo Neira Ayuso <pablo@netfilter.org>
 Cc:     Florian Westphal <fw@strlen.de>,
@@ -56,12 +57,46 @@ Cc:     Florian Westphal <fw@strlen.de>,
         Alexei Starovoitov <ast@kernel.org>,
         Willem de Bruijn <willemb@google.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I don't get it.  It builds for me.
+I think your build system's kernel headers are old.
 
-And it doesn't if I insert an intentional syntax error in the same line,
-so I'm definitely compiling exactly that code.
+Linux 4.15-rc1 commit 6e71b04a82248ccf13a94b85cbc674a9fefe53f5
+Author: Chenbo Feng <fengc@google.com>
+Date:   Wed Oct 18 13:00:22 2017 -0700
+
+    bpf: Add file mode configuration into bpf maps
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -218,6 +218,10 @@ enum bpf_attach_type {
+
+ #define BPF_OBJ_NAME_LEN 16U
+
++/* Flags for accessing BPF object */
++#define BPF_F_RDONLY           (1U << 3)
++#define BPF_F_WRONLY           (1U << 4)
++
+ union bpf_attr {
+        struct { /* anonymous struct used by BPF_MAP_CREATE command */
+                __u32   map_type;       /* one of enum bpf_map_type */
+@@ -260,6 +264,7 @@ union bpf_attr {
+        struct { /* anonymous struct used by BPF_OBJ_* commands */
+                __aligned_u64   pathname;
+                __u32           bpf_fd;
++               __u32           file_flags;
+        };
+
+        struct { /* anonymous struct used by BPF_PROG_ATTACH/DETACH command=
+s */
+
+On Thu, Mar 26, 2020 at 7:08 AM Maciej =C5=BBenczykowski
+<zenczykowski@gmail.com> wrote:
+>
+> I don't get it.  It builds for me.
+>
+> And it doesn't if I insert an intentional syntax error in the same line,
+> so I'm definitely compiling exactly that code.
