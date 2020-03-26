@@ -2,77 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46EE2193537
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 02:21:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3089F193542
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 02:28:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727611AbgCZBVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 21:21:20 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:38525 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727556AbgCZBVU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 21:21:20 -0400
-Received: by mail-ed1-f66.google.com with SMTP id e5so5042781edq.5
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 18:21:19 -0700 (PDT)
+        id S1727620AbgCZB2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 21:28:45 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:40226 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727561AbgCZB2o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 21:28:44 -0400
+Received: by mail-qt1-f196.google.com with SMTP id c9so4022837qtw.7;
+        Wed, 25 Mar 2020 18:28:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=13Twtrlp2dqGIuRVL4M357jiT/a8hCEy39HcluUM67M=;
-        b=LYIAJLDPMR/Dd7T/GxLYQvrUa6d8R994z/QwzTIjMiYZzzeSu8QGxLOd0Ti+5zoTg5
-         6wveR/6cxB3e8oTZtaUniuoZgFdEtaUGK5VCI5UpyFYzFxsjb9R5Q++9YqTau+T5wgsI
-         MQgEz0m5OxM+fcO07O2qZGtIbccEntF46RpJE7HTGsztpf7z943OcMdlnnyBEqpYmFM1
-         lhd18zm52ogmm3O2ceLcPxKa9Yy1v2r7xm+wjGISL8wUBslLY7M9nlwZzH1mw/Es0JNr
-         4aP7I85Jez01Y8g925PHo///Qh1WdIPSjPtoVyyEDid8Am0cyaS7BGEQqzVl2WeR1R6M
-         L6CA==
+         :cc;
+        bh=HP9H6Y9QQMu+yC14GoCYfTIho414qSgaXRYIZXGF6BQ=;
+        b=VoXmk5CBF14E1LKLzFQR47ZOPqOKjtnANeVjT6351ITsYmQYArCU1LSYY3+pN0a8tM
+         uwsqfmnxlGQaB1seebAkcKP7JURf4m2t5Nb18J7QFk91azY1BN7FcXikE44JBDIjxgaG
+         uBpP0tb/TVEoUZxT+bDxDrnh9nQjPahm5RkLlfsJqVE8GYIULK0Fp9zU0tR8C/VsGm+D
+         RTkuPMeH0j2WK0eviQb3bvJBEUKjngRzWpRFc5XpotkEVOJS8C6f1bUzp4fmyh2h+4h3
+         +M1nHfI5fAEjzS1fbGjfkBY0IyZBntZad/pQwAxTddleKry+BRQErwWRQU6EwepX5+gv
+         Xk7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=13Twtrlp2dqGIuRVL4M357jiT/a8hCEy39HcluUM67M=;
-        b=GYcNuPRmSaHn4M+FDNC/o9Vcp8W1vydnm/y/u26P3AR71a1FyRB258Tf8FbdSQCTEH
-         OMTDDZd0mIfi+7/TbWz6v2vo0Uzomg+tqL72IORCZXh0z41xZ+OHhIm6pSha4fWPp9M+
-         0qje7Kcopg/nmUD5hIB4SuRSrHfVHA7jB0Cq5wAc8P5jx+0ZwdlnDG9aC3HZSptN5I0b
-         jo5t7INDSQO2YrLfupYn7ONi9gZ8qf5ZDhJlolQO1ood+cK+6CVQVMb+u1iOWjyneL7W
-         tkS6mGCd1V/ZxMxGNuqAm5I3il7eHrEUd/gxbA58Pu+7zJmHuLiaAjh5hL1ic+STN3iv
-         U7+Q==
-X-Gm-Message-State: ANhLgQ32sMncdPhnMfaTjSVGpFSGoNCaq60CXZami8dj9S/zDxJQub0C
-        Yc/vA1I5aFQTBiFz3javvsQpD8vH75Vq3PDBq48=
-X-Google-Smtp-Source: ADFU+vt7SH/E698lSuaoRa8zVelIhpj6rCAAohmAl/4+xHHoVnmN4fcyt4Ie0Kuep+28XK7qJF3BOhzGmB77RSNTFkA=
-X-Received: by 2002:a05:6402:1a5a:: with SMTP id bf26mr5767377edb.42.1585185679113;
- Wed, 25 Mar 2020 18:21:19 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=HP9H6Y9QQMu+yC14GoCYfTIho414qSgaXRYIZXGF6BQ=;
+        b=ZsGlt/APJIyJYQ4pSXb6Mw4mukgBek5zInWmcxT4KQSl6r74b33rStFNzdup4h4hNM
+         bHe+U0WlkwV35OesqA5STG4xyjwpM74mBBkYuYYmgVzIdQQ5LgdsgahZsH7WHZVjU2Ct
+         d1K/2IaFyasdihb+VgDHWzbNSC9I1kG6NtLom2ZLOcc4zbG00J89aG6uPnpT5HQ+E9Np
+         EIuFaJCIvbr7zfsJVWE81MSj8yuBDFX/lk5jv78ptPkPujtPTukPfOtQYrk0qMZ67oq/
+         Cd775EEJUXeHLGM1ycwPR7TSqxegb+frdU38o9ZGAnM7ZsRmTleJk0sarLctv/7gk9tm
+         HT4A==
+X-Gm-Message-State: ANhLgQ17AIGT0a9Hd6nzuTeGxwVpDqcpb7tREEkydW2xx0XO5o+g1brD
+        ugbCx1XddRzwofeOQLBUPOb0yJF8OiX+oa2mKhY=
+X-Google-Smtp-Source: ADFU+vt2xg4F6xst0VzwDB0X1v2ReBRbqD3iYTyWZEePNHWPCdWvK+2mGsRhweo2LYlp1gq15Ojy1kz1pLnLdXyMjKk=
+X-Received: by 2002:ac8:6918:: with SMTP id e24mr5841827qtr.141.1585186122289;
+ Wed, 25 Mar 2020 18:28:42 -0700 (PDT)
 MIME-Version: 1.0
-References: <2786b9598d534abf1f3d11357fa9b5f5@sslemail.net>
- <CA+FuTSf5U_ndpmBisjqLMihx0q+wCrqndDAUT1vF3=1DXJnumw@mail.gmail.com> <25b83b5245104a30977b042a886aa674@inspur.com>
-In-Reply-To: <25b83b5245104a30977b042a886aa674@inspur.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 25 Mar 2020 21:20:41 -0400
-Message-ID: <CAF=yD-LAWc0POejfaB_xRW97BoVdLd6s6kjATyjDFBoK1aP-9Q@mail.gmail.com>
-Subject: =?UTF-8?Q?Re=3A_=5Bvger=2Ekernel=2Eorg=E4=BB=A3=E5=8F=91=5DRe=3A_=5BPATCH_net=2Dnext=5D_net=2F?=
-        =?UTF-8?Q?packet=3A_fix_TPACKET=5FV3_performance_issue_in_case_of_TSO?=
-To:     =?UTF-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
-        <yangyi01@inspur.com>
-Cc:     "yang_y_yi@163.com" <yang_y_yi@163.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "u9012063@gmail.com" <u9012063@gmail.com>
+References: <20200325065746.640559-5-andriin@fb.com> <202003260625.uf6AM8WN%lkp@intel.com>
+In-Reply-To: <202003260625.uf6AM8WN%lkp@intel.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 25 Mar 2020 18:28:31 -0700
+Message-ID: <CAEf4Bzbpm9qC635ViM-kWJB6FMXErCpDgQzbao-xJ1RnaPQXVA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 4/6] bpf: implement bpf_prog replacement for
+ an active bpf_cgroup_link
+To:     kbuild test robot <lkp@intel.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrey Ignatov <rdna@fb.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 25, 2020 at 8:45 PM Yi Yang (=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=
-=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 <yangyi01@inspur.com> wrote:
+On Wed, Mar 25, 2020 at 3:58 PM kbuild test robot <lkp@intel.com> wrote:
 >
-> By the way, even if we used hrtimer, it can't ensure so high performance =
-improvement, the reason is every frame has different size, you can't know h=
-ow many microseconds one frame will be available, early timer firing will b=
-e an unnecessary waste, late timer firing will reduce performance, so I sti=
-ll think the way this patch used is best so far.
+> Hi Andrii,
 >
+> I love your patch! Perhaps something to improve:
+>
+> [auto build test WARNING on bpf-next/master]
+> [cannot apply to bpf/master cgroup/for-next v5.6-rc7 next-20200325]
+> [if your patch is applied to the wrong git tree, please drop us a note to help
+> improve the system. BTW, we also suggest to use '--base' option to specify the
+> base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+>
+> url:    https://github.com/0day-ci/linux/commits/Andrii-Nakryiko/Add-support-for-cgroup-bpf_link/20200326-055942
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+> config: i386-tinyconfig (attached as .config)
+> compiler: gcc-7 (Debian 7.5.0-5) 7.5.0
+> reproduce:
+>         # save the attached .config to linux build tree
+>         make ARCH=i386
+>
+> If you fix the issue, kindly add following tag
+> Reported-by: kbuild test robot <lkp@intel.com>
+>
+> All warnings (new ones prefixed by >>):
+>
+>    In file included from include/linux/cgroup-defs.h:22:0,
+>                     from include/linux/cgroup.h:28,
+>                     from include/linux/memcontrol.h:13,
+>                     from include/linux/swap.h:9,
+>                     from include/linux/suspend.h:5,
+>                     from arch/x86/kernel/asm-offsets.c:13:
+> >> include/linux/bpf-cgroup.h:380:45: warning: 'struct bpf_link' declared inside parameter list will not be visible outside of this definition or declaration
+>     static inline int cgroup_bpf_replace(struct bpf_link *link,
+>                                                 ^~~~~~~~
+> --
+>    In file included from include/linux/cgroup-defs.h:22:0,
+>                     from include/linux/cgroup.h:28,
+>                     from include/linux/memcontrol.h:13,
+>                     from include/linux/swap.h:9,
+>                     from include/linux/suspend.h:5,
+>                     from arch/x86/kernel/asm-offsets.c:13:
+> >> include/linux/bpf-cgroup.h:380:45: warning: 'struct bpf_link' declared inside parameter list will not be visible outside of this definition or declaration
+>     static inline int cgroup_bpf_replace(struct bpf_link *link,
+>                                                 ^~~~~~~~
+>    20 real  6 user  8 sys  71.33% cpu   make prepare
+>
+> vim +380 include/linux/bpf-cgroup.h
+>
+>    379
 
-The key differentiating feature of TPACKET_V3 is the use of blocks to
-efficiently pack packets and amortize wake ups.
+It's a matter of forward declaring struct bpf_link here. Will fix in
+v3, but I'll wait a bit for any feedback before updating.
 
-If you want immediate notification for every packet, why not just use
-TPACKET_V2?
+>  > 380  static inline int cgroup_bpf_replace(struct bpf_link *link,
+>    381                                       struct bpf_prog *old_prog,
+>    382                                       struct bpf_prog *new_prog)
+>    383  {
+>    384          return -EINVAL;
+>    385  }
+>    386
+>
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
