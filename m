@@ -2,85 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6226E19412F
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:22:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 558CC194139
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:24:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727695AbgCZOWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 10:22:32 -0400
-Received: from correo.us.es ([193.147.175.20]:60412 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727815AbgCZOWc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Mar 2020 10:22:32 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 0E65F8141B
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 15:22:30 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 01113DA72F
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 15:22:30 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id DD5FAFC5ED; Thu, 26 Mar 2020 15:22:29 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 12A2CDA72F;
-        Thu, 26 Mar 2020 15:22:28 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 26 Mar 2020 15:22:28 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id E1D5742EF4E0;
-        Thu, 26 Mar 2020 15:22:27 +0100 (CET)
-Date:   Thu, 26 Mar 2020 15:22:27 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Netfilter Development Mailinglist 
-        <netfilter-devel@vger.kernel.org>, Chenbo Feng <fengc@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH] iptables: open eBPF programs in read only mode
-Message-ID: <20200326142227.fclwbiibfjym7l6m@salvia>
-References: <20200320030015.195806-1-zenczykowski@gmail.com>
- <20200326135959.tqy5i4qkxwcqgp5y@salvia>
- <CAHo-OoyGEPKdU5ZEuY29Zzi4NGzD-QMw7Pb-MTXjdKTj-Kj-Pw@mail.gmail.com>
- <CAHo-OozGK7ANfFDBnLv2tZVuhXUw1sCCRVTBc0YT7LvYVXH_ZQ@mail.gmail.com>
- <CAHo-Oow8otp4ruAUpvGYjXN_f3dsbprg_DKOGG6HNhe_Z8X8Vg@mail.gmail.com>
+        id S1727829AbgCZOYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 10:24:48 -0400
+Received: from mail-qk1-f174.google.com ([209.85.222.174]:43095 "EHLO
+        mail-qk1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727768AbgCZOYs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:24:48 -0400
+Received: by mail-qk1-f174.google.com with SMTP id o10so6513814qki.10
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 07:24:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tlapnet.cz; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FawNfbhTNFlqgEKikXkcncuYy5KV1ryJEyorEMU2PEs=;
+        b=d3MhLlHGs6GCAxE2JRYxCCuHw3WTOt16RmM7ERacpBEPNfL8ACswpAat8Igju6+jBn
+         6lJhFtPq5E1AORRIwRyfWACS0NnTjZdV8C9Mqj5wQ/2WAowHVSWcVkfbWgVKJVo+P8Ys
+         H+fnS8j317C6geubV73IpIyrzykHoFS3+pBXj5KFvcRxWEIL6tXHSlaQpehMdIzwFZIo
+         pdE4rY2h2GMHC2qM+vFMMQ6MF4nsdF+lscb8NWYW4EJK0jAclcO9Wk+o90SgK6RVqkdb
+         xxd3vc77TGhWMdISX3Z6ejTwZIbNtPE2ehsv8Ks0zDapeXnLBDBfWlIutH/JCn2YyyeB
+         jaRA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FawNfbhTNFlqgEKikXkcncuYy5KV1ryJEyorEMU2PEs=;
+        b=s8PJXAkDBbbS9ue+cVcXLKqVYf+3eToP9AlMTrCmKIItxR+LJF1xOH49xke/7lgHje
+         c0CwCVkjGaE6/gTE+I5UEmr+Nnq41xrxwXzBcL421F15vJ5Oe1pS+izyxONGwg/LVc6p
+         FNWdBWhxgMtNMpyjA4ksGCNwN4ecx5O4vCH+nTWwvIL1Qag7LBz7Lv9ZICctQZ/YlLlW
+         1EEkRuu3CTb8qB3CHwvHeIGreBKQxY2ptm6ecpWtsxaCM+JOhBvqMLcZqjCpLhRXZgzC
+         atUhK4EFHOqD7oy2kd3i4hqP0ClLEZy7Ocbyhe7UpCvmV2IRGtbSh39L9adTCwJuyew7
+         vOFg==
+X-Gm-Message-State: ANhLgQ3R9bENV9dNBu1dmieOtuIXGJOFvFlSSyokspv0qWueLveCKi5L
+        Nhxz2Olnqox6oB738aTPM9glq7ZBYGfYzrVrhC+CQSepsqm29g==
+X-Google-Smtp-Source: ADFU+vskKO5INSP9emvFx8CHZJHnxWiJj7cKM3C7CBDyZoijoihv1iIwUQLYOHRQAQir8f6J/ZkvEK4MUM0WBhM0buQ=
+X-Received: by 2002:a05:620a:109c:: with SMTP id g28mr8206722qkk.409.1585232686875;
+ Thu, 26 Mar 2020 07:24:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHo-Oow8otp4ruAUpvGYjXN_f3dsbprg_DKOGG6HNhe_Z8X8Vg@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
+ <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
+ <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
+ <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com>
+ <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
+ <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com> <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com>
+In-Reply-To: <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com>
+From:   =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
+Date:   Thu, 26 Mar 2020 15:24:35 +0100
+Message-ID: <CANxWus_tPZ-C2KuaY4xpuLVKXriTQv1jvHygc6o0RFcdM4TX2w@mail.gmail.com>
+Subject: Re: iproute2: tc deletion freezes whole server
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 07:16:16AM -0700, Maciej Żenczykowski wrote:
-> I guess maybe we could wrap it in a
-> 
-> #ifdef BPF_F_RDONLY
-> attr.file_flags = BPF_F_RDONLY;
-> #endif
-> 
-> if we want to continue supporting building against pre-4.15 kernel headers...
+> On Wed, Mar 25, 2020 at 6:43 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > Are you able to test an experimental patch attached in this email?
+>
+> Sure. I'll compile new kernel tomorrow. Thank you for quick patch.
+> I'll let you know as soon as I have anything.
 
-You can probably add a cached copy of this header file to the iptables
-tree via your patch like. This is done in other existing extensions to
-not rely on the available kernel headers.
-
-There is no parity between userspace iptables and kernel version, it
-is good if you make sure this compiles for older kernels are still
-supported.
-
-Thank you.
+I've compiled kernel with the patch you provided and tested it.
+However the problem is not solved. It behaves exactly the same way.
+I'm trying to put some printk into the fq_codel_reset() to test it
+more.
