@@ -2,168 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFC45193EA1
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 13:07:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D55A9193EB5
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 13:17:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728347AbgCZMHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 08:07:03 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:41961 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728330AbgCZMHA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 08:07:00 -0400
-Received: by mail-lj1-f196.google.com with SMTP id n17so6100197lji.8
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 05:06:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6ng3SPX/qfDqukCt5264tLv58cO83BIg+tti6WXKabg=;
-        b=TYEL3eOjSuTud6Kklk3FyPkoJoir24bpThqOqEkNqHlt2FSKObT6IX7AuNyB6iUcun
-         KhMIsvdyM1jVh+yrg/Ic5r+tL0rRqfaCPmI85+EB6I+8G2eBIK9hDKn/iay2YY4SEeky
-         e3vYyF8S3VUzJgqlAY3fAMFn+MDpBbRY25b7A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6ng3SPX/qfDqukCt5264tLv58cO83BIg+tti6WXKabg=;
-        b=GpYHz1CTEu4q3j9U0dFs+qfDIvgMZ7rf6PJNR592vP8oM1jQMMKHp1XUlLnaPjn1Cb
-         JRUmGRlgBlLy/fZKS0otg2gcX6wFw5ps2ba6GvkisW5SUTur2WPPmi3WFsGkA//RD9Mg
-         RPIAtTak+kWttIIL+JFDdpCZO/J3CjHw9JgJ/SIFjl5QWIxKGTpjAFlqk+zEEPHjktlS
-         FqyPBi5wUxpr+1DkU4m+WzRKKpK37SKCIVSRJpp0I5gwaYyfSHNs1hwK+N36eoGP8jMw
-         wyTkq9pjt09jL+CMKkCD6FaDkyvxVBIY4ObKQYiPTLDGVqE3K5R7D0ouz8hs2MUpzzst
-         KxYQ==
-X-Gm-Message-State: AGi0PuazMTO5Y0RGyfeVE2TsKJH5eK83TXtxl4Uz+5aYr2d/hbiWkdDN
-        zJqe4uT9wfDrYGTBQjszKoZRsbL2cyI=
-X-Google-Smtp-Source: APiQypJDgBgfC1rJly6tXY9O3LKm47QK2cg5rXoABsQs8VaLNFHcLWniHoA9gePNLY9aI1HAfZ4Sbg==
-X-Received: by 2002:a2e:9ed5:: with SMTP id h21mr5180834ljk.78.1585224415290;
-        Thu, 26 Mar 2020 05:06:55 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id v9sm1362592lji.11.2020.03.26.05.06.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Mar 2020 05:06:53 -0700 (PDT)
-Subject: Re: [PATCH v2 net-next 10/10] net: bridge: implement
- auto-normalization of MTU for hardware datapath
-To:     Ido Schimmel <idosch@idosch.org>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        murali.policharla@broadcom.com,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-References: <20200325152209.3428-1-olteanv@gmail.com>
- <20200325152209.3428-11-olteanv@gmail.com>
- <20200326101752.GA1362955@splinter>
- <CA+h21hq2K__kY9Pi4-23x7aA+4TPXAV4evfi1tR=0bZRcZDiQA@mail.gmail.com>
- <20200326113542.GA1383155@splinter>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <83375385-7881-53b7-c685-e166c8bdeba4@cumulusnetworks.com>
-Date:   Thu, 26 Mar 2020 14:06:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1728171AbgCZMRQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 08:17:16 -0400
+Received: from mail-eopbgr00063.outbound.protection.outlook.com ([40.107.0.63]:54243
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727841AbgCZMRQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Mar 2020 08:17:16 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=divM5xc/aYJJzXrPLOwLm9HHtGqj7SXDz9+0/p7LV9efhKx3m0OdVgEedK4TU8PrI8dOXwTueEdGRkaJjiB4kG+HfUWFP0maqPVpWmDSOVjTtMKZHHhnj6LjsI5IfkUnQi8Z8coevqw1lvKytdFG1KPNqHXeoxuEq2x9rgaJYinT4f57MX6ERMVd0zgHUZaCvuFaqAvn4yorzgG4MMEBl8Woy2oINJ1y+4F1qmMgFFWOeDqcF+/Gq85uiynnx3rVKfP4hA2t57HeXoAo54FBTVrIiiezYQleQv1LKRZ7/gxGWlEQ0AQ08y7zG0me9B9SlXl7ZBqL0AHr1F3NPKLMPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8kf2msLgn2Y6bPR4XlOADAK5LICYmgcHyBGVHIP7x5s=;
+ b=dOy0NoMAEtKOzxHRMxagPKZZirg5lkZiVY/emtpmBtcsfbykyzxlmsoLKq69j7QEvRdd+VjTlzidvecYvNABtYMWH8Va607LOyxe8C8DH5zu0s2cqZLovAlgcq7bBZIpSwA8RUkOGxA0uyox3IW+0hXO/LOVt6rvHMSGahoie8r6YkUp2UfNAz1nB8p82keSlRuo8wlrylOL9uT0Q32x8DUBVOsBARi9JsaaguAWyIKenruvAHTyedKHloNCx5HJNG9QNic9ouQaCRhQXmoA/6M0gZ4Hhn+7V0rjDuRIa8ER6WWoJGzSH4eY6uvHCwfYyKO/hfwBB8yuI+J9TMzR7w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8kf2msLgn2Y6bPR4XlOADAK5LICYmgcHyBGVHIP7x5s=;
+ b=rWfQwQVZddF3wSfdl44kW9TcZPv21RCGglaHrApx+V3JJUJxt60wecWZZOF30ViR7pt5i2eGPbkd7JHDoEGMJEbdOTQCJaSWIXqL9V6cxNa9uBxDNPo0mLUtXJiDxmeXoYMyB4AwkeMhZiS6fhQRLR9k6aUCEAWRjLAqZajAQk0=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=jgg@mellanox.com; 
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com (52.133.14.15) by
+ VI1PR05MB5853.eurprd05.prod.outlook.com (20.178.125.211) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2856.19; Thu, 26 Mar 2020 12:17:12 +0000
+Received: from VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::18d2:a9ea:519:add3]) by VI1PR05MB4141.eurprd05.prod.outlook.com
+ ([fe80::18d2:a9ea:519:add3%7]) with mapi id 15.20.2856.019; Thu, 26 Mar 2020
+ 12:17:11 +0000
+Date:   Thu, 26 Mar 2020 09:17:05 -0300
+From:   Jason Gunthorpe <jgg@mellanox.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        maxime.coquelin@redhat.com, cunming.liang@intel.com,
+        zhihong.wang@intel.com, rob.miller@broadcom.com,
+        xiao.w.wang@intel.com, lingshan.zhu@intel.com, eperezma@redhat.com,
+        lulu@redhat.com, parav@mellanox.com, kevin.tian@intel.com,
+        stefanha@redhat.com, rdunlap@infradead.org, hch@infradead.org,
+        aadam@redhat.com, jiri@mellanox.com, shahafs@mellanox.com,
+        hanand@xilinx.com, mhabets@solarflare.com, gdawar@xilinx.com,
+        saugatm@xilinx.com, vmireyno@marvell.com,
+        Bie Tiwei <tiwei.bie@intel.com>
+Subject: Re: [PATCH V8 9/9] virtio: Intel IFC VF driver for VDPA
+Message-ID: <20200326121705.GJ13183@mellanox.com>
+References: <20200325082711.1107-1-jasowang@redhat.com>
+ <20200325082711.1107-10-jasowang@redhat.com>
+ <20200325123410.GX13183@mellanox.com>
+ <ed04692d-236c-2eee-4429-6ef4d5d165fe@redhat.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ed04692d-236c-2eee-4429-6ef4d5d165fe@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: BL0PR03CA0012.namprd03.prod.outlook.com
+ (2603:10b6:208:2d::25) To VI1PR05MB4141.eurprd05.prod.outlook.com
+ (2603:10a6:803:44::15)
 MIME-Version: 1.0
-In-Reply-To: <20200326113542.GA1383155@splinter>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.68.57.212) by BL0PR03CA0012.namprd03.prod.outlook.com (2603:10b6:208:2d::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.18 via Frontend Transport; Thu, 26 Mar 2020 12:17:11 +0000
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)     (envelope-from <jgg@mellanox.com>)      id 1jHRRZ-0003kY-Ac; Thu, 26 Mar 2020 09:17:05 -0300
+X-Originating-IP: [142.68.57.212]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: c2efe42e-1115-46e5-11ad-08d7d17f9c92
+X-MS-TrafficTypeDiagnostic: VI1PR05MB5853:|VI1PR05MB5853:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB58537EF3DCA4B72DC49FD733CFCF0@VI1PR05MB5853.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Forefront-PRVS: 0354B4BED2
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4141.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(346002)(39860400002)(396003)(366004)(376002)(26005)(1076003)(478600001)(9786002)(8676002)(81156014)(81166006)(8936002)(186003)(316002)(52116002)(2906002)(9746002)(6916009)(66556008)(66476007)(66946007)(7416002)(4326008)(5660300002)(86362001)(36756003)(33656002)(2616005)(24400500001);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: J2bRjluQP8K2zSNOzjRD6zLaSySAoQ625fEWofB+jXkHnb0wNaZ9FGMhblWNwEVjmD7B7HGHnMAHtdcsSStdSPIADvJbnBZRFf5Zhn71YJe/R/x/u807GKCMNV7zK2ImGoi7NMRFInMutShHITs/mpY2cOoYD5jLzB5nP/hK1tv1fvt2MlUQstO2DpXCaZacqMlE2e4mYWC3xO+ynilMX2lT7n2EqD5nQLvWgG1cTOZEUGCAzIBb+giuWgqR9CKBxy59TpAy+Q/vACPBUgWYEIl42AHHHTdUZOZ/MC7R/+TirmnyLZvDJeHvbYLq1UX+Tb7g1YYajlFQb39f9HGa3HLxj+CA1XbeEezPp9vg48PITqDmqssmQcIr6Uauwyug9dFGcLL6/GpOkfs5SZua/lU9cSs1XOCuo6u2VAQv/PLJIOVSNBR9ROzNp9KYkC9zEGMOCVXQifocHBuD1NImuOLY1JfH5srTvLut17YKC/NBHz9bgmlefRrNhzAuXlht
+X-MS-Exchange-AntiSpam-MessageData: 22bXDp0f+v7oC2C42v83iadYQDV++m0Uc7kZCrLIZgUymmB6R/3apJX68rLdSx6WAYqcpWZCIcOr/5GzMQLqXPbSdU5Ad1nzcN+lbr+UTaK5dyHPvnXlJNvdLfh5NWWVT7W4HWQgNbUOrUTypyPloQ==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2efe42e-1115-46e5-11ad-08d7d17f9c92
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2020 12:17:11.7262
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wVIVZIBRIuuHDoWGv+kAaFVV5Dm6ZEokNNECIl4H4YCwd+h5zzuDnz0cPqEaZxInVLv3p2o6Uzse/1N5WuSK7Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB5853
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26/03/2020 13:35, Ido Schimmel wrote:
-> On Thu, Mar 26, 2020 at 12:25:20PM +0200, Vladimir Oltean wrote:
->> Hi Ido,
->>
->> On Thu, 26 Mar 2020 at 12:17, Ido Schimmel <idosch@idosch.org> wrote:
->>>
->>> Hi Vladimir,
->>>
->>> On Wed, Mar 25, 2020 at 05:22:09PM +0200, Vladimir Oltean wrote:
->>>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
->>>>
->>>> In the initial attempt to add MTU configuration for DSA:
->>>>
->>>> https://patchwork.ozlabs.org/cover/1199868/
->>>>
->>>> Florian raised a concern about the bridge MTU normalization logic (when
->>>> you bridge an interface with MTU 9000 and one with MTU 1500). His
->>>> expectation was that the bridge would automatically change the MTU of
->>>> all its slave ports to the minimum MTU, if those slaves are part of the
->>>> same hardware bridge. However, it doesn't do that, and for good reason,
->>>> I think. What br_mtu_auto_adjust() does is it adjusts the MTU of the
->>>> bridge net device itself, and not that of any slave port.  If it were to
->>>> modify the MTU of the slave ports, the effect would be that the user
->>>> wouldn't be able to increase the MTU of any bridge slave port as long as
->>>> it was part of the bridge, which would be a bit annoying to say the
->>>> least.
->>>>
->>>> The idea behind this behavior is that normal termination from Linux over
->>>> the L2 forwarding domain described by DSA should happen over the bridge
->>>> net device, which _is_ properly limited by the minimum MTU. And
->>>> termination over individual slave device is possible even if those are
->>>> bridged. But that is not "forwarding", so there's no reason to do
->>>> normalization there, since only a single interface sees that packet.
->>>>
->>>> The real problem is with the offloaded data path, where of course, the
->>>> bridge net device MTU is ignored. So a packet received on an interface
->>>> with MTU 9000 would still be forwarded to an interface with MTU 1500.
->>>> And that is exactly what this patch is trying to prevent from happening.
->>>
->>> How is that different from the software data path where the CPU needs to
->>> forward the packet between port A with MTU X and port B with MTU X/2 ?
->>>
->>> I don't really understand what problem you are trying to solve here. It
->>> seems like the user did some misconfiguration and now you're introducing
->>> a policy to mitigate it? If so, it should be something the user can
->>> disable. It also seems like something that can be easily handled by a
->>> user space application. You get netlink notifications for all these
->>> operations.
->>>
->>
->> Actually I think the problem can be better understood if I explain
->> what the switches I'm dealing with look like.
->> None of them really has a 'MTU' register. They perform length-based
->> admission control on RX.
-> 
-> IIUC, by that you mean that these switches only perform length-based
-> filtering on RX, but not on TX?
-> 
->> At this moment in time I don't think anybody wants to introduce an MRU
->> knob in iproute2, so we're adjusting that maximum ingress length
->> through the MTU. But it becomes an inverted problem, since the 'MTU'
->> needs to be controlled for all possible sources of traffic that are
->> going to egress on this port, in order for the real MTU on the port
->> itself to be observed.
-> 
-> Looking at your example from the changelog:
-> 
-> ip link set dev sw0p0 master br0
-> ip link set dev sw0p1 mtu 1400
-> ip link set dev sw0p1 master br0
-> 
-> Without your patch, after these commands sw0p0 has an MTU of 1500 and
-> sw0p1 has an MTU of 1400. Are you saying that a frame with a length of
-> 1450 bytes received on sw0p0 will be able to egress sw0p1 (assuming it
-> should be forwarded there)?
-> 
-> If so, then I think I understand the problem. However, I don't think
-> such code belongs in the bridge driver as this restriction does not
-> apply to all switches. Also, I think that having the kernel change MTU
-> of port A following MTU change of port B is a bit surprising and not
-> intuitive.
-> 
-> I think you should be more explicit about it. Did you consider listening
-> to 'NETDEV_PRECHANGEMTU' notifications in relevant drivers and vetoing
-> unsupported configurations with an appropriate extack message? If you
-> can't veto (in order not to break user space), you can still emit an
-> extack message.
-> 
+On Thu, Mar 26, 2020 at 01:50:53PM +0800, Jason Wang wrote:
 
-+1, this sounds more appropriate IMO
+> > > +	adapter->vdpa.dma_dev = dev;
+> > > +	ret = vdpa_register_device(&adapter->vdpa);
+> > > +	if (ret) {
+> > > +		IFCVF_ERR(adapter->dev, "Failed to register ifcvf to vdpa bus");
+> > > +		goto err_msix;
+> > > +	}
+> > > +
+> > > +	return 0;
+> > > +
+> > > +err_msix:
+> > > +	put_device(&adapter->vdpa.dev);
+> > > +	return ret;
+> > > +err_alloc:
+> > > +	pci_free_irq_vectors(pdev);
+> > > +err_vectors:
+> > > +	pci_release_regions(pdev);
+> > > +err_regions:
+> > > +	pci_disable_device(pdev);
+> > > +err_enable:
+> > > +	return ret;
+> > > +}
+> > I personally don't like seeing goto unwinds with multiple returns, and
+> > here I think it is actually a tiny bug.
+> > 
+> > All touches to the PCI device must stop before the driver core
+> > remove() returns - so these pci function cannot be in the kref put
+> > release function anyhow.
+> 
+> 
+> I'm not sure I get here. IFCVF held refcnt of its PCI parent, so it looks to
+> me it's safe to free PCI resources in vDPA free callback?
 
+The refcnt doesn't prevent the driver core from re-binding the
+pci_device to another driver. Then the refcount put would do a
+pci_disable_device() after another driver has started
+
+For this reason all touches to a struct pci_device must stop before
+remove returns.
+
+Jason
