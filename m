@@ -2,95 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B05221945C6
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 18:48:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 035CF1945C9
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 18:48:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727446AbgCZRr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 13:47:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45828 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726260AbgCZRr6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Mar 2020 13:47:58 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 790462070A;
-        Thu, 26 Mar 2020 17:47:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585244878;
-        bh=NaZQt404XwZx2V7iFbgzg4sZjdQZx3A9dQh/StbeMGI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AYhVNfk8y29mzr7qON4HkZPdo19K0G9oGpCi8R7KruhkiQLhc9slTl8KcKCkZX85E
-         JkkM7MJ0z10nJx5raHfD8LFsCMYEG/Xd0aOzGlOJi+qrhMQFm6UJtb2dihgXozCw0J
-         /DrNNCi6rtX8TsEUCuTI2Gn6RITKBFy69pNnY7RY=
-Date:   Thu, 26 Mar 2020 10:47:55 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
-        <toke@redhat.com>, John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
- program when attaching XDP
-Message-ID: <20200326104755.1ea5ac43@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CACAyw9-FrwgBGjGT1CYrKJuyRJtwn0XUsifF_uR6LpRbcucN+A@mail.gmail.com>
-References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
-        <158462359315.164779.13931660750493121404.stgit@toke.dk>
-        <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN>
-        <875zez76ph.fsf@toke.dk>
-        <20200320103530.2853c573@kicinski-fedora-PC1C0HJN>
-        <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
-        <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
-        <87tv2f48lp.fsf@toke.dk>
-        <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com>
-        <87h7ye3mf3.fsf@toke.dk>
-        <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
-        <87tv2e10ly.fsf@toke.dk>
-        <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
-        <87369wrcyv.fsf@toke.dk>
-        <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
-        <CACAyw9-FrwgBGjGT1CYrKJuyRJtwn0XUsifF_uR6LpRbcucN+A@mail.gmail.com>
+        id S1727851AbgCZRsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 13:48:19 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:37356 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727770AbgCZRsT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 13:48:19 -0400
+Received: by mail-qk1-f194.google.com with SMTP id x3so7675901qki.4
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 10:48:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=UdzathrvJR4jBf7F/I3MbOudIL3YUZaxVWJlak5sKcI=;
+        b=Zq8FyuU39YhoJErv0PWz7r1nc08kY94S4Pdlabi/HURBH1p9dBfba425PKa6v6PJt4
+         XLf5dZyquYrfHb65FM714FJxb8ic4esiZd7TyupZxVLWtDwLCoDccyynFMyHKAXDeanz
+         9hxh9Ql69QhiCe6h73hTyuDc4B6omXS46zWl90iyiGO043QfH9HI1QHjhy87e7PaFooI
+         5pDnjU/yFJCMk/5XqSXOrFNojvlSnIjoMOgYGyTOrl0yMqMYrBxyW2oFAwNAxaeLqJ7D
+         K/TGMi2M7DHzPcD+yotcBKb9oUVF9+rl5iXT6BLiqcV9hIRQftTMcp6Nl05JheKB8kE2
+         tFGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=UdzathrvJR4jBf7F/I3MbOudIL3YUZaxVWJlak5sKcI=;
+        b=BBqmSfPJMHvVvS+cvVI9c32bDz2k1u78zPS3cNSZKRAzfCpDRNGSK9RIVIY2Eqaz3R
+         UXnGwjCrt+NyXWFYBJaop70sxREZKFl6ax16vftZh4dlSSFbnaqDtEK8yUK1+pVB0CFI
+         sc/1dELGAkWnWfFdyZsm1ZoElRc+KRJEXOES/3QInED6z1hcwWORNs0WGbDhrYRmVBL/
+         nlwlaBvVj4U9q+yPJjhi1HiTbVjzyZTOEff1CG59TQEBZYxGNvRtdsIaehyP4IbpMKmK
+         MtAb0yMgh9ofyeUj4D2mwrhxvFtqkMwnHy1zpNVR1ePzu2yXnv3cKZzuqH3Q9xLRP14b
+         ZAlA==
+X-Gm-Message-State: ANhLgQ0PH9KqsA4N11bmpHLen1iLYAO59AndHeJ4JZjILJZT9npobUbO
+        PMp4orfPgFCmzGPcZDMLqIysT9e30j7sH4ImaKEXag==
+X-Google-Smtp-Source: ADFU+vvJ8xbBOuqKCiv4VZmIKjFDD2oxqXeZaKqzly9zC2/bbQwsZwdxkNyXRYptfnRBVx4mUyxlC+TgKOkjCe+cJJk=
+X-Received: by 2002:a37:3c9:: with SMTP id 192mr9514408qkd.330.1585244891403;
+ Thu, 26 Mar 2020 10:48:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200326131721.6404-1-brgl@bgdev.pl> <c71a132d-dc33-0b8a-29e0-9cf93056ef52@gmail.com>
+In-Reply-To: <c71a132d-dc33-0b8a-29e0-9cf93056ef52@gmail.com>
+From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date:   Thu, 26 Mar 2020 18:48:00 +0100
+Message-ID: <CAMpxmJWLbUR5ojGi3vdMw-vrG3ias9yUE+ycrhZ8m=EL-GrreQ@mail.gmail.com>
+Subject: Re: [PATCH] net: core: provide devm_register_netdev()
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Mar 2020 10:04:53 +0000 Lorenz Bauer wrote:
-> On Thu, 26 Mar 2020 at 00:16, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
-> > Those same folks have similar concern with XDP. In the world where
-> > container management installs "root" XDP program which other user
-> > applications can plug into (libxdp use case, right?), it's crucial to
-> > ensure that this root XDP program is not accidentally overwritten by
-> > some well-meaning, but not overly cautious developer experimenting in
-> > his own container with XDP programs. This is where bpf_link ownership
-> > plays a huge role. Tupperware agent (FB's container management agent)
-> > would install root XDP program and will hold onto this bpf_link
-> > without sharing it with other applications. That will guarantee that
-> > the system will be stable and can't be compromised.  
-> 
-> Thanks for the extensive explanation Andrii.
-> 
-> This is what I imagine you're referring to: Tupperware creates a new network
-> namespace ns1 and a veth0<>veth1 pair, moves one of the veth devices
-> (let's says veth1) into ns1 and runs an application in ns1. On which veth
-> would the XDP program go?
-> 
-> The way I understand it, veth1 would have XDP, and the application in ns1 would
-> be prevented from attaching a new program? Maybe you can elaborate on this
-> a little.
+czw., 26 mar 2020 o 18:39 Heiner Kallweit <hkallweit1@gmail.com> napisa=C5=
+=82(a):
+>
+> On 26.03.2020 14:17, Bartosz Golaszewski wrote:
+> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> >
+> > Create a new source file for networking devres helpers and provide
+> > devm_register_netdev() - a managed variant of register_netdev().
+> >
+> > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> > ---
+> > I'm writing a new ethernet driver and I realized there's no devres
+> > variant for register_netdev(). Since this is the only function I need
+> > to get rid of the remove() callback, I thought I'll just go ahead and
+> > add it and send it even before the driver to make it available to other
+> > drivers.
+> >
+>
+> Such a new functionality typically is accepted as part of series adding
+> at least one user only. Therefore best submit it together with the new
+> network driver.
+>
 
-Nope, there is no veths involved. Tupperware mediates the requests 
-from containers to install programs on the physical interface for
-heavy-duty network processing like DDoS protection for the entire
-machine.
+Sure, will do.
+
+> >  .../driver-api/driver-model/devres.rst        |  3 ++
+> >  include/linux/netdevice.h                     |  1 +
+> >  net/core/Makefile                             |  2 +-
+> >  net/core/devres.c                             | 41 +++++++++++++++++++
+> >  4 files changed, 46 insertions(+), 1 deletion(-)
+> >  create mode 100644 net/core/devres.c
+> >
+> > diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documen=
+tation/driver-api/driver-model/devres.rst
+> > index 46c13780994c..11a03b65196e 100644
+> > --- a/Documentation/driver-api/driver-model/devres.rst
+> > +++ b/Documentation/driver-api/driver-model/devres.rst
+> > @@ -372,6 +372,9 @@ MUX
+> >    devm_mux_chip_register()
+> >    devm_mux_control_get()
+> >
+> > +NET
+> > +  devm_register_netdev()
+> > +
+> >  PER-CPU MEM
+> >    devm_alloc_percpu()
+> >    devm_free_percpu()
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index 6c3f7032e8d9..710a7bcfc3dc 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -4196,6 +4196,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_pr=
+iv, const char *name,
+> >                        count)
+> >
+> >  int register_netdev(struct net_device *dev);
+> > +int devm_register_netdev(struct device *dev, struct net_device *ndev);
+> >  void unregister_netdev(struct net_device *dev);
+> >
+> >  /* General hardware address lists handling functions */
+> > diff --git a/net/core/Makefile b/net/core/Makefile
+> > index 3e2c378e5f31..f530894068d2 100644
+> > --- a/net/core/Makefile
+> > +++ b/net/core/Makefile
+> > @@ -8,7 +8,7 @@ obj-y :=3D sock.o request_sock.o skbuff.o datagram.o st=
+ream.o scm.o \
+> >
+> >  obj-$(CONFIG_SYSCTL) +=3D sysctl_net_core.o
+> >
+> > -obj-y                     +=3D dev.o dev_addr_lists.o dst.o netevent.o=
+ \
+> > +obj-y                     +=3D dev.o devres.o dev_addr_lists.o dst.o n=
+etevent.o \
+> >                       neighbour.o rtnetlink.o utils.o link_watch.o filt=
+er.o \
+> >                       sock_diag.o dev_ioctl.o tso.o sock_reuseport.o \
+> >                       fib_notifier.o xdp.o flow_offload.o
+> > diff --git a/net/core/devres.c b/net/core/devres.c
+> > new file mode 100644
+> > index 000000000000..3c080abd1935
+> > --- /dev/null
+> > +++ b/net/core/devres.c
+>
+> Why a new source file and not just add the function to net/core/dev.c?
+>
+
+This is a common approach in most sub-systems to have a dedicated
+devres.c source file for managed helpers. Eventually we could move
+devm_alloc_etherdev() here as well.
+
+>
+> > @@ -0,0 +1,41 @@
+> > +// SPDX-License-Identifier: GPL-2.0-only
+> > +/*
+> > + * Copyright (C) 2020 BayLibre SAS
+> > + * Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> > + */
+> > +
+> > +#include <linux/device.h>
+> > +#include <linux/netdevice.h>
+> > +
+> > +struct netdevice_devres {
+> > +     struct net_device *ndev;
+> > +};
+> > +
+>
+> Adding such a struct isn't strictly needed.
+>
+
+I believe it's better in terms of readability.
+
+> > +static void devm_netdev_release(struct device *dev, void *res)
+> > +{
+> > +     struct netdevice_devres *this =3D res;
+> > +
+> > +     unregister_netdev(this->ndev);
+> > +}
+> > +
+> > +int devm_register_netdev(struct device *dev, struct net_device *ndev)
+> > +{
+>
+> In this function you'd need to consider the dependency on a previous
+> call to devm_alloc_etherdev(). If the netdevice is allocated non-managed,
+> then free_netdev() would be called whilst the netdevice is still
+> registered, what would trigger a BUG_ON(). Therefore devm_register_netdev=
+()
+> should return an error if the netdevice was allocated non-managed.
+> The mentioned scenario would result from a severe programming error
+> of course, but there are less experienced driver authors and the net core
+> should deal gently with wrong API usage.
+>
+
+Thank you for bringing this to my attention, I wasn't aware of that.
+I'll rework this.
+
+Best regards,
+Bartosz
+
+> An example how this could be done you can find in the PCI subsystem,
+> see pcim_release() and related functions like pcim_enable() and
+> pcim_set_mwi().
+>
+> > +     struct netdevice_devres *devres;
+> > +     int ret;
+> > +
+> > +     devres =3D devres_alloc(devm_netdev_release, sizeof(*devres), GFP=
+_KERNEL);
+> > +     if (!devres)
+> > +             return -ENOMEM;
+> > +
+> > +     ret =3D register_netdev(ndev);
+> > +     if (ret) {
+> > +             devres_free(devres);
+> > +             return ret;
+> > +     }
+> > +
+> > +     devres->ndev =3D ndev;
+> > +     devres_add(dev, devres);
+> > +
+> > +     return 0;
+> > +}
+> > +EXPORT_SYMBOL(devm_register_netdev);
+> >
+>
