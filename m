@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B5111940C1
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:02:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 509DA1940C8
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:04:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728142AbgCZOCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 10:02:46 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:38812 "EHLO
+        id S1728194AbgCZOC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 10:02:56 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:60437 "EHLO
         us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728077AbgCZOCm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:02:42 -0400
+        by vger.kernel.org with ESMTP id S1727695AbgCZOCy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:02:54 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585231361;
+        s=mimecast20190719; t=1585231372;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=cQAMj9E7pnEO97gxazN0awVnwRs79iDcGQ6g5ZjNfoc=;
-        b=Z8Cq8PisHlfZkd4yF8WtHErTAtmZAmPb6ms75jWCmG2ilieIkeMATNGJD7RNL+mXK4/TR0
-        NJp3I+pxpoKW29CUMYbPAoD2lMK4Z8yS1bEB1ez9APj5lmYvzy/c2pgHN35yjtT6cSEoKd
-        p4WNx7R832n90e+EtdkPeO1W2pYzY/M=
+        bh=Qv2sf5ZLe8MVzng446R1oQxVfhG/+fRJUSulJ/I8CAY=;
+        b=LA+JEdnZmyY+0TxZTGtHbXun8OIRyMSH2HRpsZO7NIhOfePIv7g9dTTrIFQr3ZIhbJm76W
+        ErqJkAV2niLi0FM/VfpnrP5JEJ8kQ9MoYZrR8yluYBKJHbaf5N7BILWsI5Ux2uqDsAnlol
+        QDM9Pm6tx3Wk/1QnQXYlep3u3Xvmrdg=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-78-TzKs58iZNRmrNGCxYJF2Cw-1; Thu, 26 Mar 2020 10:02:36 -0400
-X-MC-Unique: TzKs58iZNRmrNGCxYJF2Cw-1
+ us-mta-73--arHbIcBN72L2BWl7WU7HA-1; Thu, 26 Mar 2020 10:02:51 -0400
+X-MC-Unique: -arHbIcBN72L2BWl7WU7HA-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 89193100FB30;
-        Thu, 26 Mar 2020 14:02:28 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E842B107ACC7;
+        Thu, 26 Mar 2020 14:02:47 +0000 (UTC)
 Received: from jason-ThinkPad-X1-Carbon-6th.redhat.com (ovpn-12-19.pek2.redhat.com [10.72.12.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B6EDE60C80;
-        Thu, 26 Mar 2020 14:01:59 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 766D460BF3;
+        Thu, 26 Mar 2020 14:02:28 +0000 (UTC)
 From:   Jason Wang <jasowang@redhat.com>
 To:     mst@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
@@ -46,9 +46,9 @@ Cc:     jgg@mellanox.com, maxime.coquelin@redhat.com,
         mhabets@solarflare.com, gdawar@xilinx.com, saugatm@xilinx.com,
         vmireyno@marvell.com, zhangweining@ruijie.com.cn,
         Jason Wang <jasowang@redhat.com>
-Subject: [PATCH V9 1/9] vhost: refine vhost and vringh kconfig
-Date:   Thu, 26 Mar 2020 22:01:17 +0800
-Message-Id: <20200326140125.19794-2-jasowang@redhat.com>
+Subject: [PATCH V9 2/9] vhost: allow per device message handler
+Date:   Thu, 26 Mar 2020 22:01:18 +0800
+Message-Id: <20200326140125.19794-3-jasowang@redhat.com>
 In-Reply-To: <20200326140125.19794-1-jasowang@redhat.com>
 References: <20200326140125.19794-1-jasowang@redhat.com>
 MIME-Version: 1.0
@@ -59,219 +59,125 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, CONFIG_VHOST depends on CONFIG_VIRTUALIZATION. But vhost is
-not necessarily for VM since it's a generic userspace and kernel
-communication protocol. Such dependency may prevent archs without
-virtualization support from using vhost.
-
-To solve this, a dedicated vhost menu is created under drivers so
-CONIFG_VHOST can be decoupled out of CONFIG_VIRTUALIZATION.
-
-While at it, also squash Kconfig.vringh into vhost Kconfig file. This
-avoids the trick of conditional inclusion from VOP or CAIF. Then it
-will be easier to introduce new vringh users and common dependency for
-both vringh and vhost.
+This patch allow device to register its own message handler during
+vhost_dev_init(). vDPA device will use it to implement its own DMA
+mapping logic.
 
 Signed-off-by: Jason Wang <jasowang@redhat.com>
 ---
- arch/arm/kvm/Kconfig         |  2 --
- arch/arm64/kvm/Kconfig       |  2 --
- arch/mips/kvm/Kconfig        |  2 --
- arch/powerpc/kvm/Kconfig     |  2 --
- arch/s390/kvm/Kconfig        |  4 ----
- arch/x86/kvm/Kconfig         |  4 ----
- drivers/Kconfig              |  2 ++
- drivers/misc/mic/Kconfig     |  4 ----
- drivers/net/caif/Kconfig     |  4 ----
- drivers/vhost/Kconfig        | 23 ++++++++++++++---------
- drivers/vhost/Kconfig.vringh |  6 ------
- 11 files changed, 16 insertions(+), 39 deletions(-)
- delete mode 100644 drivers/vhost/Kconfig.vringh
+ drivers/vhost/net.c   |  3 ++-
+ drivers/vhost/scsi.c  |  2 +-
+ drivers/vhost/vhost.c | 12 ++++++++++--
+ drivers/vhost/vhost.h |  6 +++++-
+ drivers/vhost/vsock.c |  2 +-
+ 5 files changed, 19 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/kvm/Kconfig b/arch/arm/kvm/Kconfig
-index f591026347a5..be97393761bf 100644
---- a/arch/arm/kvm/Kconfig
-+++ b/arch/arm/kvm/Kconfig
-@@ -54,6 +54,4 @@ config KVM_ARM_HOST
- 	---help---
- 	  Provides host support for ARM processors.
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index e158159671fa..c8ab8d83b530 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -1324,7 +1324,8 @@ static int vhost_net_open(struct inode *inode, stru=
+ct file *f)
+ 	}
+ 	vhost_dev_init(dev, vqs, VHOST_NET_VQ_MAX,
+ 		       UIO_MAXIOV + VHOST_NET_BATCH,
+-		       VHOST_NET_PKT_WEIGHT, VHOST_NET_WEIGHT);
++		       VHOST_NET_PKT_WEIGHT, VHOST_NET_WEIGHT,
++		       NULL);
 =20
--source "drivers/vhost/Kconfig"
--
- endif # VIRTUALIZATION
-diff --git a/arch/arm64/kvm/Kconfig b/arch/arm64/kvm/Kconfig
-index a475c68cbfec..449386d76441 100644
---- a/arch/arm64/kvm/Kconfig
-+++ b/arch/arm64/kvm/Kconfig
-@@ -64,6 +64,4 @@ config KVM_ARM_PMU
- config KVM_INDIRECT_VECTORS
-        def_bool KVM && (HARDEN_BRANCH_PREDICTOR || HARDEN_EL2_VECTORS)
+ 	vhost_poll_init(n->poll + VHOST_NET_VQ_TX, handle_tx_net, EPOLLOUT, dev=
+);
+ 	vhost_poll_init(n->poll + VHOST_NET_VQ_RX, handle_rx_net, EPOLLIN, dev)=
+;
+diff --git a/drivers/vhost/scsi.c b/drivers/vhost/scsi.c
+index 0b949a14bce3..7653667a8cdc 100644
+--- a/drivers/vhost/scsi.c
++++ b/drivers/vhost/scsi.c
+@@ -1628,7 +1628,7 @@ static int vhost_scsi_open(struct inode *inode, str=
+uct file *f)
+ 		vs->vqs[i].vq.handle_kick =3D vhost_scsi_handle_kick;
+ 	}
+ 	vhost_dev_init(&vs->dev, vqs, VHOST_SCSI_MAX_VQ, UIO_MAXIOV,
+-		       VHOST_SCSI_WEIGHT, 0);
++		       VHOST_SCSI_WEIGHT, 0, NULL);
 =20
--source "drivers/vhost/Kconfig"
--
- endif # VIRTUALIZATION
-diff --git a/arch/mips/kvm/Kconfig b/arch/mips/kvm/Kconfig
-index eac25aef21e0..b91d145aa2d5 100644
---- a/arch/mips/kvm/Kconfig
-+++ b/arch/mips/kvm/Kconfig
-@@ -72,6 +72,4 @@ config KVM_MIPS_DEBUG_COP0_COUNTERS
+ 	vhost_scsi_init_inflight(vs, NULL);
 =20
- 	  If unsure, say N.
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index f44340b41494..8e9e2341e40a 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -457,7 +457,9 @@ static size_t vhost_get_desc_size(struct vhost_virtqu=
+eue *vq,
 =20
--source "drivers/vhost/Kconfig"
--
- endif # VIRTUALIZATION
-diff --git a/arch/powerpc/kvm/Kconfig b/arch/powerpc/kvm/Kconfig
-index 711fca9bc6f0..12885eda324e 100644
---- a/arch/powerpc/kvm/Kconfig
-+++ b/arch/powerpc/kvm/Kconfig
-@@ -204,6 +204,4 @@ config KVM_XIVE
- 	default y
- 	depends on KVM_XICS && PPC_XIVE_NATIVE && KVM_BOOK3S_HV_POSSIBLE
-=20
--source "drivers/vhost/Kconfig"
--
- endif # VIRTUALIZATION
-diff --git a/arch/s390/kvm/Kconfig b/arch/s390/kvm/Kconfig
-index d3db3d7ed077..def3b60f1fe8 100644
---- a/arch/s390/kvm/Kconfig
-+++ b/arch/s390/kvm/Kconfig
-@@ -55,8 +55,4 @@ config KVM_S390_UCONTROL
-=20
- 	  If unsure, say N.
-=20
--# OK, it's a little counter-intuitive to do this, but it puts it neatly =
-under
--# the virtualization menu.
--source "drivers/vhost/Kconfig"
--
- endif # VIRTUALIZATION
-diff --git a/arch/x86/kvm/Kconfig b/arch/x86/kvm/Kconfig
-index 991019d5eee1..0dfe70e17af9 100644
---- a/arch/x86/kvm/Kconfig
-+++ b/arch/x86/kvm/Kconfig
-@@ -94,8 +94,4 @@ config KVM_MMU_AUDIT
- 	 This option adds a R/W kVM module parameter 'mmu_audit', which allows
- 	 auditing of KVM MMU events at runtime.
-=20
--# OK, it's a little counter-intuitive to do this, but it puts it neatly =
-under
--# the virtualization menu.
--source "drivers/vhost/Kconfig"
--
- endif # VIRTUALIZATION
-diff --git a/drivers/Kconfig b/drivers/Kconfig
-index 8befa53f43be..7a6d8b2b68b4 100644
---- a/drivers/Kconfig
-+++ b/drivers/Kconfig
-@@ -138,6 +138,8 @@ source "drivers/virt/Kconfig"
-=20
- source "drivers/virtio/Kconfig"
-=20
-+source "drivers/vhost/Kconfig"
+ void vhost_dev_init(struct vhost_dev *dev,
+ 		    struct vhost_virtqueue **vqs, int nvqs,
+-		    int iov_limit, int weight, int byte_weight)
++		    int iov_limit, int weight, int byte_weight,
++		    int (*msg_handler)(struct vhost_dev *dev,
++				       struct vhost_iotlb_msg *msg))
+ {
+ 	struct vhost_virtqueue *vq;
+ 	int i;
+@@ -473,6 +475,7 @@ void vhost_dev_init(struct vhost_dev *dev,
+ 	dev->iov_limit =3D iov_limit;
+ 	dev->weight =3D weight;
+ 	dev->byte_weight =3D byte_weight;
++	dev->msg_handler =3D msg_handler;
+ 	init_llist_head(&dev->work_list);
+ 	init_waitqueue_head(&dev->wait);
+ 	INIT_LIST_HEAD(&dev->read_list);
+@@ -1178,7 +1181,12 @@ ssize_t vhost_chr_write_iter(struct vhost_dev *dev=
+,
+ 		ret =3D -EINVAL;
+ 		goto done;
+ 	}
+-	if (vhost_process_iotlb_msg(dev, &msg)) {
 +
- source "drivers/hv/Kconfig"
++	if (dev->msg_handler)
++		ret =3D dev->msg_handler(dev, &msg);
++	else
++		ret =3D vhost_process_iotlb_msg(dev, &msg);
++	if (ret) {
+ 		ret =3D -EFAULT;
+ 		goto done;
+ 	}
+diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+index a123fd70847e..f9d1a03dd153 100644
+--- a/drivers/vhost/vhost.h
++++ b/drivers/vhost/vhost.h
+@@ -174,11 +174,15 @@ struct vhost_dev {
+ 	int weight;
+ 	int byte_weight;
+ 	u64 kcov_handle;
++	int (*msg_handler)(struct vhost_dev *dev,
++			   struct vhost_iotlb_msg *msg);
+ };
 =20
- source "drivers/xen/Kconfig"
-diff --git a/drivers/misc/mic/Kconfig b/drivers/misc/mic/Kconfig
-index b6841ba6d922..8f201d019f5a 100644
---- a/drivers/misc/mic/Kconfig
-+++ b/drivers/misc/mic/Kconfig
-@@ -133,8 +133,4 @@ config VOP
- 	  OS and tools for MIC to use with this driver are available from
- 	  <http://software.intel.com/en-us/mic-developer>.
+ bool vhost_exceeds_weight(struct vhost_virtqueue *vq, int pkts, int tota=
+l_len);
+ void vhost_dev_init(struct vhost_dev *, struct vhost_virtqueue **vqs,
+-		    int nvqs, int iov_limit, int weight, int byte_weight);
++		    int nvqs, int iov_limit, int weight, int byte_weight,
++		    int (*msg_handler)(struct vhost_dev *dev,
++				       struct vhost_iotlb_msg *msg));
+ long vhost_dev_set_owner(struct vhost_dev *dev);
+ bool vhost_dev_has_owner(struct vhost_dev *dev);
+ long vhost_dev_check_owner(struct vhost_dev *);
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index c2d7d57e98cf..97669484a3f6 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -621,7 +621,7 @@ static int vhost_vsock_dev_open(struct inode *inode, =
+struct file *file)
 =20
--if VOP
--source "drivers/vhost/Kconfig.vringh"
--endif
--
- endmenu
-diff --git a/drivers/net/caif/Kconfig b/drivers/net/caif/Kconfig
-index e74e2bb61236..9db0570c5beb 100644
---- a/drivers/net/caif/Kconfig
-+++ b/drivers/net/caif/Kconfig
-@@ -58,8 +58,4 @@ config CAIF_VIRTIO
- 	---help---
- 	  The CAIF driver for CAIF over Virtio.
+ 	vhost_dev_init(&vsock->dev, vqs, ARRAY_SIZE(vsock->vqs),
+ 		       UIO_MAXIOV, VHOST_VSOCK_PKT_WEIGHT,
+-		       VHOST_VSOCK_WEIGHT);
++		       VHOST_VSOCK_WEIGHT, NULL);
 =20
--if CAIF_VIRTIO
--source "drivers/vhost/Kconfig.vringh"
--endif
--
- endif # CAIF_DRIVERS
-diff --git a/drivers/vhost/Kconfig b/drivers/vhost/Kconfig
-index 3d03ccbd1adc..4aef10a54cd1 100644
---- a/drivers/vhost/Kconfig
-+++ b/drivers/vhost/Kconfig
-@@ -1,8 +1,20 @@
- # SPDX-License-Identifier: GPL-2.0-only
-+config VHOST_RING
-+	tristate
-+	help
-+	  This option is selected by any driver which needs to access
-+	  the host side of a virtio ring.
-+
-+menuconfig VHOST
-+	tristate "Host kernel accelerator for virtio (VHOST)"
-+	help
-+	  This option is selected by any driver which needs to access
-+	  the core of vhost.
-+if VHOST
-+
- config VHOST_NET
- 	tristate "Host kernel accelerator for virtio net"
- 	depends on NET && EVENTFD && (TUN || !TUN) && (TAP || !TAP)
--	select VHOST
- 	---help---
- 	  This kernel module can be loaded in host kernel to accelerate
- 	  guest networking with virtio_net. Not to be confused with virtio_net
-@@ -14,7 +26,6 @@ config VHOST_NET
- config VHOST_SCSI
- 	tristate "VHOST_SCSI TCM fabric driver"
- 	depends on TARGET_CORE && EVENTFD
--	select VHOST
- 	default n
- 	---help---
- 	Say M here to enable the vhost_scsi TCM fabric module
-@@ -24,7 +35,6 @@ config VHOST_VSOCK
- 	tristate "vhost virtio-vsock driver"
- 	depends on VSOCKETS && EVENTFD
- 	select VIRTIO_VSOCKETS_COMMON
--	select VHOST
- 	default n
- 	---help---
- 	This kernel module can be loaded in the host kernel to provide AF_VSOCK
-@@ -34,12 +44,6 @@ config VHOST_VSOCK
- 	To compile this driver as a module, choose M here: the module will be c=
-alled
- 	vhost_vsock.
-=20
--config VHOST
--	tristate
--	---help---
--	  This option is selected by any driver which needs to access
--	  the core of vhost.
--
- config VHOST_CROSS_ENDIAN_LEGACY
- 	bool "Cross-endian support for vhost"
- 	default n
-@@ -54,3 +58,4 @@ config VHOST_CROSS_ENDIAN_LEGACY
- 	  adds some overhead, it is disabled by default.
-=20
- 	  If unsure, say "N".
-+endif
-diff --git a/drivers/vhost/Kconfig.vringh b/drivers/vhost/Kconfig.vringh
-deleted file mode 100644
-index c1fe36a9b8d4..000000000000
---- a/drivers/vhost/Kconfig.vringh
-+++ /dev/null
-@@ -1,6 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
--config VHOST_RING
--	tristate
--	---help---
--	  This option is selected by any driver which needs to access
--	  the host side of a virtio ring.
+ 	file->private_data =3D vsock;
+ 	spin_lock_init(&vsock->send_pkt_list_lock);
 --=20
 2.20.1
 
