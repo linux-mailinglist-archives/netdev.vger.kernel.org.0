@@ -2,113 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34EF619351C
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 01:49:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6049193533
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 02:16:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727607AbgCZAtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 20:49:04 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:45504 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727554AbgCZAtD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 20:49:03 -0400
-Received: by mail-ed1-f65.google.com with SMTP id u59so4923596edc.12
-        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 17:49:00 -0700 (PDT)
+        id S1727607AbgCZBQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 21:16:57 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:39138 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727539AbgCZBQ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 21:16:56 -0400
+Received: by mail-ed1-f67.google.com with SMTP id a43so5018390edf.6
+        for <netdev@vger.kernel.org>; Wed, 25 Mar 2020 18:16:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1vn1Sw/fzu6eNJMMGOtxWYx8rdQZG6RuWTyJImwOwjw=;
-        b=gsg9KRFjiKn13z89wNraOd9yu6kSBQjeoW6zPP9NN/Nltc/mD0NmoiS7DVpqh6gyfg
-         H3mbVFhSty/CU+ygTwuiD5uT6epMlqVRQ+UHtqqr0r73qhp6xFSm4FPAWC9NJ0732BNW
-         j3l7bvL4Uo28QN1NQyh42iEuFnZ6j+QUQZlEI8NGeS5nWmxqAfe3xIOhgaM2eCfpWldq
-         PPBtrSpQuWgvrMz0lmjIjXXYbtV8ZIc5Yh/glzXrRDnaUJzamTsHdB+ai7V7VNU3LvXP
-         qAaaxFYmeYN7IlKbUmh+4oD9Vu1vG9Ec8HogKG3HdlBPRpZVw6vJWTjZhTVTXcu1GQt1
-         QqAQ==
+        bh=NtOdomNdHvvJrrKi6gic1ppKsbP8qWdyIn1GJVXn9J8=;
+        b=nK4RjuYG6zev9ORw8cq/HudHfF8ybzDHwvvKWoqWma1WEz48OKP1FD9CKlFE2z2kZI
+         YsiftF+sxmCD9/vJzHlkH439tLNWWj//Ar7KJRnsEsiY9wXwZg8oWkjIa8xrx+LzByGz
+         CxIS1PC0I7SMKuW0FagctezbSqiSqUZ2J0VO7/vOi4bS8IWLXqCOoFw6xKO+bE5a3sjB
+         uq7OC4pc0FuoPVVnXTeAvbpczzet3CzQKhko9FrAggmz9nccw4DKiTdAarzdsgdwcnms
+         lExzPX5S+Hthwb5AKdjkBseCA7+Pl/VHaDgI8PmUUQdkjm9HbEmQ2/5wX3Cqr+u/k+q9
+         3vxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1vn1Sw/fzu6eNJMMGOtxWYx8rdQZG6RuWTyJImwOwjw=;
-        b=Z0QSvcipmGvBHpSOXUdINLzi/B9icrSYZKC3xszP1szleCjmDfVgokHy790M/PJCUi
-         P7bjSywzeoi1IrkjlIFm++SNpLHt8iDU7FRD8DaAeKfhgNF41HL836GBeRG99sB2INeR
-         DFvCctauYmBXSy87JnosvFDbAyVzZVSlQPXJZYLWMR0MuPvSNn7VGaJGOPSrk8KoTOlg
-         gzotbVcfChe7xSTv2/SFpyYGUhzCdi6dTlA1TqtVDbj0qgsXNxSJiVffWIRHFR6G2oyT
-         lJceDfy+LyWAJg2QkRs1p7DVC3CBIF0mpF4QMycIN5/eTOEphzcP3V+xQeK6dK64pd2i
-         Fypw==
-X-Gm-Message-State: ANhLgQ1urClh9CG4hBz1qvcIDRu3//+FBf7E9t6aOtL5x8Dc9alRwI64
-        RV/wUWI0kZhG+80PY1CxCQxrdFf6i/Dx38pGRxA=
-X-Google-Smtp-Source: ADFU+vvh/FsscPJsXT9hmcNZUpVqQypPljZtjN7yJ3pWQkDyx7feJ5kcnu4dohwgST6Xi5/Y67YPsfURJ/8FFKrvQ0w=
-X-Received: by 2002:a50:9ea1:: with SMTP id a30mr6016866edf.318.1585183740073;
- Wed, 25 Mar 2020 17:49:00 -0700 (PDT)
+        bh=NtOdomNdHvvJrrKi6gic1ppKsbP8qWdyIn1GJVXn9J8=;
+        b=YsiVoWQkSHNnHK+WwAFTkbyATLdkPHyBhvnkbS8KvVuDNSnuusJxKdMR5jfLUJHjlV
+         LkQlCCoQ+H3nwFr//EaqooWJubXqDIWbh6o6PkjgoX96x/aB1pCLFbSj5wRCGB27eT0t
+         PauV0eWJwBbMcpB4bdV2jFTjfHi3ZKMTRBWZ0q3LHAGfPKJI1CpQE5hWQ0qUpjZhcz3X
+         gyuTvJT4YwT9WZjo4sHv5JWOhwLzkh7m0td2hY1yYBLbYcQbyPhCfcCURwYnmJeM2EJk
+         Q5rWnILTymwMpGUEEnKTUg2JwIatwtEtoIJEaEhJyHcQfkKp6+ybmmJFd3P5Uel+68LT
+         aizA==
+X-Gm-Message-State: ANhLgQ3Fm3WsUkg2sUQ7A3RzNAmZqAddRqrNyFe67GY2bWxa6Z6pnhjK
+        +UUifgwCrwdzOzEitvzFcE0rFzNDYSMYwXnsfKU=
+X-Google-Smtp-Source: ADFU+vsOjTK2rsmzqjrrhiyjwHVArmj0BWqCLAuM2VKVpK59NCdmUEqhh0W9MDOBzDX/VFDBNuFzvCQNKY/AkV69NHo=
+X-Received: by 2002:a05:6402:1a5a:: with SMTP id bf26mr5754474edb.42.1585185414653;
+ Wed, 25 Mar 2020 18:16:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200325152209.3428-1-olteanv@gmail.com> <20200325152209.3428-7-olteanv@gmail.com>
- <2b5e3b75-bf51-3341-824f-f47feb556f67@gmail.com>
-In-Reply-To: <2b5e3b75-bf51-3341-824f-f47feb556f67@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 26 Mar 2020 02:48:49 +0200
-Message-ID: <CA+h21hpDskX_KkCtJCM68=atwO_yJEtWh==DpKX-FnLp-sQczQ@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 06/10] net: dsa: b53: Add MTU configuration support
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        murali.policharla@broadcom.com,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ido Schimmel <idosch@idosch.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        netdev <netdev@vger.kernel.org>
+References: <20200325140845.11840-1-yang_y_yi@163.com> <CA+FuTSf5U_ndpmBisjqLMihx0q+wCrqndDAUT1vF3=1DXJnumw@mail.gmail.com>
+ <8c7c4b8.a0a4.17112280afb.Coremail.yang_y_yi@163.com>
+In-Reply-To: <8c7c4b8.a0a4.17112280afb.Coremail.yang_y_yi@163.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 25 Mar 2020 21:16:16 -0400
+Message-ID: <CAF=yD-KzBEPsLOAG3G1bVu1zGHqJ5fHjwLC2vEtkJpSDu0Oqrg@mail.gmail.com>
+Subject: Re: Re: [PATCH net-next] net/packet: fix TPACKET_V3 performance issue
+ in case of TSO
+To:     yang_y_yi <yang_y_yi@163.com>
+Cc:     Network Development <netdev@vger.kernel.org>, u9012063@gmail.com,
+        yangyi01@inspur.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 26 Mar 2020 at 01:22, Florian Fainelli <f.fainelli@gmail.com> wrote:
+On Wed, Mar 25, 2020 at 10:46 AM yang_y_yi <yang_y_yi@163.com> wrote:
 >
+> Yes, hrtimer is better, but it will change current API semantics.
 >
->
-> On 3/25/2020 8:22 AM, Vladimir Oltean wrote:
-> > From: Murali Krishna Policharla <murali.policharla@broadcom.com>
-> >
-> > Add b53_change_mtu API to configure mtu settings in B53 switch. Enable
-> > jumbo frame support if configured mtu size is for jumbo frame. Also
-> > configure BCM583XX devices to send and receive jumbo frames when ports
-> > are configured with 10/100 Mbps speed.
-> >
-> > Signed-off-by: Murali Krishna Policharla <murali.policharla@broadcom.com>
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
->
-> [snip]
->
-> > @@ -658,6 +659,14 @@ static void b53_enable_cpu_port(struct b53_device *dev, int port)
-> >       b53_brcm_hdr_setup(dev->ds, port);
-> >
-> >       b53_br_egress_floods(dev->ds, port, true, true);
-> > +
-> > +     b53_read32(dev, B53_JUMBO_PAGE, dev->jumbo_pm_reg, &port_mask);
-> > +
-> > +     if (dev->chip_id == BCM583XX_DEVICE_ID)
-> > +             port_mask |= JPM_10_100_JUMBO_EN;
-> > +
-> > +     port_mask |= BIT(port);
-> > +     b53_write32(dev, B53_JUMBO_PAGE, dev->jumbo_pm_reg, port_mask);
->
-> This should eventually be brought into b53_set_jumbo() where we already
-> have existing logic to configure whether to accept jumbo frames and for
-> 10/100M ports, too, not strictly necessary for now though:
->
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-> --
-> Florian
+> req.tp_retire_blk_tov means millisecond, if we change it as microsecond, it will break ABI.
 
-What do you mean should be done? This?
+That can be resolved by adding a new feature flag that reinterprets
+the field in the request.
 
-     if (!is5325(dev) && !is5365(dev))
--        b53_set_jumbo(dev, dev->enable_jumbo, false);
-+        b53_set_jumbo(dev, dev->enable_jumbo, is58xx(dev));
+#define TP_FT_REQ_USEC      0x2
 
-Regards,
--Vladimir
+Please remember to use plain text and don't top paste.
+
+
+
+> At 2020-03-25 22:37:59, "Willem de Bruijn" <willemdebruijn.kernel@gmail.com> wrote:
+> >On Wed, Mar 25, 2020 at 10:10 AM <yang_y_yi@163.com> wrote:
+> >>
+> >> From: Yi Yang <yangyi01@inspur.com>
+> >>
+> >> TPACKET_V3 performance is very very bad in case of TSO, it is even
+> >> worse than non-TSO case. For Linux kernels which set CONFIG_HZ to
+> >> 1000, req.tp_retire_blk_tov = 1 can help improve it a bit, but some
+> >> Linux distributions set CONFIG_HZ to 250, so req.tp_retire_blk_tov = 1
+> >> actually means req.tp_retire_blk_tov = 4, it won't have any help.
+> >>
+> >> This fix patch can fix the aforementioned performance issue, it can
+> >> boost the performance from 3.05Gbps to 16.9Gbps, a very huge
+> >> improvement. It will retire current block as early as possible in
+> >> case of TSO in order that userspace application can consume it
+> >> in time.
+> >>
+> >> Signed-off-by: Yi Yang <yangyi01@inspur.com>
+> >
+> >I'm not convinced that special casing TSO packets is the right solution here.
+> >
+> >We should consider converting TPACKET_V3 to hrtimer and allow usec
+> >resolution block timer.
+> >
+> >Would that solve your issue?
