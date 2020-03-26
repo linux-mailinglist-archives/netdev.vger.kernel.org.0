@@ -2,90 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F4431939A7
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 08:30:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA8A21939AC
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 08:33:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726354AbgCZHau (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 03:30:50 -0400
-Received: from mail-wm1-f42.google.com ([209.85.128.42]:56270 "EHLO
-        mail-wm1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726289AbgCZHau (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 03:30:50 -0400
-Received: by mail-wm1-f42.google.com with SMTP id z5so5340961wml.5
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 00:30:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rKeCuonrWi0YEx5+8ZGW3YnOA8KyjeB0GSNz8ZNZTKg=;
-        b=TQ8GTLPKZAkhoi8It4m0ynRDgKkl26UMfszcrx1Peoy6JQaHappZ6cy+DpdN6D9Zv2
-         1ZnlGMon02rRKwW6Mfpi3UFMNPnycnrvTmwLO0M0CAlM2OqT/erukm/pqeHFtmeEdJD1
-         NPGJLGK9q0aZZ/Gs3Gboy8YY+5ma3qLXa196A9pLCJQWRZSPSHjRse1V5F5lTAAnaQjk
-         NvQAmSZtECyyihY43aWveEjhHzFLog7OnZpSVFhLSYc78kNXs0jZqXrOEJdj7i3ajqFG
-         NlITdanEDyhvymLfJUGPhP3lRaFrT7jsyT3nqE+GtO7YP/uHnN7lZDUPB1cMqrOSD1/z
-         lGsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rKeCuonrWi0YEx5+8ZGW3YnOA8KyjeB0GSNz8ZNZTKg=;
-        b=AwBdBmO13tT3xtK3tNLiEihXwzUPT1ZICW+kKtXrjS/prfZnNnbFgOu6/pkTUJprMv
-         rtahzk6966KRjm1gnR5uObzeYJt1Ga8NlxmOHWYUgwL1VpsMs1Aa0Mfz50IR6MsMRLzD
-         LwXSsbAjvKoVxJppsd8aZvkO2Hu1HUBYfP7nGFjssxei0fOsAEkcBBPGfBwXT9iCuh3d
-         ukE5MZJwIyfimr1rTLKyFUb3tTODEawT4Une9Az5w+isMauaKL4T1oPqq10+B4z6p3L9
-         hXQlDPMfTaicmpNsJILejMf89/gM4q8ehr5sGJo7dZWKlCFOmduGYt1wpHhSSmcwAii4
-         WOfw==
-X-Gm-Message-State: ANhLgQ1NLMiGLbUCMBoGvgo7oSoTzIsGgdfmF0zvHsvrCaLjnACK88dS
-        BMTWhx2b0s8JtZsfeVzb0MZQZA==
-X-Google-Smtp-Source: ADFU+vvCOW4V/6pkPpeuWeRikLCKqJnJr4FdHP0mT9d2LjlT51Nm2zvRtkVNLHpORaQFnCrxdyykHg==
-X-Received: by 2002:a7b:ce81:: with SMTP id q1mr1735346wmj.156.1585207848418;
-        Thu, 26 Mar 2020 00:30:48 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id 61sm2413368wrn.82.2020.03.26.00.30.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 00:30:47 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 08:30:47 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [net-next v2 07/11] devlink: report error once U32_MAX snapshot
- ids have been used
-Message-ID: <20200326073047.GJ11304@nanopsycho.orion>
-References: <20200326035157.2211090-1-jacob.e.keller@intel.com>
- <20200326035157.2211090-8-jacob.e.keller@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200326035157.2211090-8-jacob.e.keller@intel.com>
+        id S1727560AbgCZHdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 03:33:49 -0400
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:53715 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726322AbgCZHdt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 03:33:49 -0400
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R821e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=cambda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0TtfX3XQ_1585208018;
+Received: from localhost(mailfrom:cambda@linux.alibaba.com fp:SMTPD_---0TtfX3XQ_1585208018)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 26 Mar 2020 15:33:38 +0800
+From:   Cambda Zhu <cambda@linux.alibaba.com>
+To:     netdev <netdev@vger.kernel.org>, dev@openvswitch.org
+Cc:     Konstantin Khlebnikov <koct9i@gmail.com>,
+        Dust Li <dust.li@linux.alibaba.com>,
+        Tony Lu <tonylu@linux.alibaba.com>,
+        Cambda Zhu <cambda@linux.alibaba.com>
+Subject: [PATCH net-next] net: Fix typo of SKB_SGO_CB_OFFSET
+Date:   Thu, 26 Mar 2020 15:33:14 +0800
+Message-Id: <20200326073314.55633-1-cambda@linux.alibaba.com>
+X-Mailer: git-send-email 2.16.6
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Mar 26, 2020 at 04:51:53AM CET, jacob.e.keller@intel.com wrote:
->The devlink_snapshot_id_get() function returns a snapshot id. The
->snapshot id is a u32, so there is no way to indicate an error code.
->
->Indeed, the two current callers of devlink_snapshot_id_get() assume that
->a negative value is an error.
+The SKB_SGO_CB_OFFSET should be SKB_GSO_CB_OFFSET which means the
+offset of the GSO in skb cb. This patch fixes the typo.
 
-I don't see they do.
+Fixes: 9207f9d45b0a ("net: preserve IP control block during GSO segmentation")
+Signed-off-by: Cambda Zhu <cambda@linux.alibaba.com>
+---
+ include/linux/skbuff.h     | 4 ++--
+ net/core/dev.c             | 4 ++--
+ net/ipv4/ip_output.c       | 2 +-
+ net/ipv4/udp.c             | 2 +-
+ net/openvswitch/datapath.c | 2 +-
+ net/xfrm/xfrm_output.c     | 4 ++--
+ 6 files changed, 9 insertions(+), 9 deletions(-)
 
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index e59620234415..56ed6eb26680 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -4397,8 +4397,8 @@ struct skb_gso_cb {
+ 	__wsum	csum;
+ 	__u16	csum_start;
+ };
+-#define SKB_SGO_CB_OFFSET	32
+-#define SKB_GSO_CB(skb) ((struct skb_gso_cb *)((skb)->cb + SKB_SGO_CB_OFFSET))
++#define SKB_GSO_CB_OFFSET	32
++#define SKB_GSO_CB(skb) ((struct skb_gso_cb *)((skb)->cb + SKB_GSO_CB_OFFSET))
+ 
+ static inline int skb_tnl_header_len(const struct sk_buff *inner_skb)
+ {
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 500bba8874b0..a38a8b53b916 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3266,7 +3266,7 @@ static inline bool skb_needs_check(struct sk_buff *skb, bool tx_path)
+  *	It may return NULL if the skb requires no segmentation.  This is
+  *	only possible when GSO is used for verifying header integrity.
+  *
+- *	Segmentation preserves SKB_SGO_CB_OFFSET bytes of previous skb cb.
++ *	Segmentation preserves SKB_GSO_CB_OFFSET bytes of previous skb cb.
+  */
+ struct sk_buff *__skb_gso_segment(struct sk_buff *skb,
+ 				  netdev_features_t features, bool tx_path)
+@@ -3295,7 +3295,7 @@ struct sk_buff *__skb_gso_segment(struct sk_buff *skb,
+ 			features &= ~NETIF_F_GSO_PARTIAL;
+ 	}
+ 
+-	BUILD_BUG_ON(SKB_SGO_CB_OFFSET +
++	BUILD_BUG_ON(SKB_GSO_CB_OFFSET +
+ 		     sizeof(*SKB_GSO_CB(skb)) > sizeof(skb->cb));
+ 
+ 	SKB_GSO_CB(skb)->mac_offset = skb_headroom(skb);
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index d84819893db9..6cbb8b7e56b0 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -263,7 +263,7 @@ static int ip_finish_output_gso(struct net *net, struct sock *sk,
+ 	 *    insufficent MTU.
+ 	 */
+ 	features = netif_skb_features(skb);
+-	BUILD_BUG_ON(sizeof(*IPCB(skb)) > SKB_SGO_CB_OFFSET);
++	BUILD_BUG_ON(sizeof(*IPCB(skb)) > SKB_GSO_CB_OFFSET);
+ 	segs = skb_gso_segment(skb, features & ~NETIF_F_GSO_MASK);
+ 	if (IS_ERR_OR_NULL(segs)) {
+ 		kfree_skb(skb);
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 08a41f1e1cd2..05a120df90e4 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -2107,7 +2107,7 @@ static int udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+ 	if (likely(!udp_unexpected_gso(sk, skb)))
+ 		return udp_queue_rcv_one_skb(sk, skb);
+ 
+-	BUILD_BUG_ON(sizeof(struct udp_skb_cb) > SKB_SGO_CB_OFFSET);
++	BUILD_BUG_ON(sizeof(struct udp_skb_cb) > SKB_GSO_CB_OFFSET);
+ 	__skb_push(skb, -skb_mac_offset(skb));
+ 	segs = udp_rcv_segment(sk, skb, true);
+ 	skb_list_walk_safe(segs, skb, next) {
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index 07a7dd185995..d8ae541d22a8 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -305,7 +305,7 @@ static int queue_gso_packets(struct datapath *dp, struct sk_buff *skb,
+ 	struct sk_buff *segs, *nskb;
+ 	int err;
+ 
+-	BUILD_BUG_ON(sizeof(*OVS_CB(skb)) > SKB_SGO_CB_OFFSET);
++	BUILD_BUG_ON(sizeof(*OVS_CB(skb)) > SKB_GSO_CB_OFFSET);
+ 	segs = __skb_gso_segment(skb, NETIF_F_SG, false);
+ 	if (IS_ERR(segs))
+ 		return PTR_ERR(segs);
+diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+index fafc7aba705f..2fd3d990d992 100644
+--- a/net/xfrm/xfrm_output.c
++++ b/net/xfrm/xfrm_output.c
+@@ -535,8 +535,8 @@ static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_buff *skb
+ {
+ 	struct sk_buff *segs, *nskb;
+ 
+-	BUILD_BUG_ON(sizeof(*IPCB(skb)) > SKB_SGO_CB_OFFSET);
+-	BUILD_BUG_ON(sizeof(*IP6CB(skb)) > SKB_SGO_CB_OFFSET);
++	BUILD_BUG_ON(sizeof(*IPCB(skb)) > SKB_GSO_CB_OFFSET);
++	BUILD_BUG_ON(sizeof(*IP6CB(skb)) > SKB_GSO_CB_OFFSET);
+ 	segs = skb_gso_segment(skb, 0);
+ 	kfree_skb(skb);
+ 	if (IS_ERR(segs))
+-- 
+2.16.6
 
->
->A future change is going to possibly add additional cases where this
->function could fail. Refactor the function to return the snapshot id in
->an argument, so that it can return zero or an error value.
->
->This ensures that snapshot ids cannot be confused with error values, and
->aids in the future refactor of snapshot id allocation management.
->
->Because there is no current way to release previously used snapshot ids,
->add a simple check ensuring that an error is reported in case the
->snapshot_id would over flow.
->
->Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-
-The code looks good.
-
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
