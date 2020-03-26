@@ -2,179 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AE52193E1A
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 12:41:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 968F6193E1F
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 12:45:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728132AbgCZLlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 07:41:39 -0400
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:43797 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727994AbgCZLlj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Mar 2020 07:41:39 -0400
-Received: from [192.168.0.2] (ip5f5af065.dynamic.kabel-deutschland.de [95.90.240.101])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 8FCEC206442F6;
-        Thu, 26 Mar 2020 12:41:36 +0100 (CET)
-Subject: Re: [Intel-wired-lan] [PATCH] e1000e: bump up timeout to wait when ME
- un-configure ULP mode
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org,
-        David Miller <davem@davemloft.net>,
-        Rex Tsai <rex.tsai@intel.com>
-References: <20200323191639.48826-1-aaron.ma@canonical.com>
- <EC4F7F0B-90F8-4325-B170-84C65D8BBBB8@canonical.com>
- <2c765c59-556e-266b-4d0d-a4602db94476@intel.com>
- <899895bc-fb88-a97d-a629-b514ceda296d@canonical.com>
- <750ad0ad-816a-5896-de2f-7e034d2a2508@intel.com>
- <f9dc1980-fa8b-7df9-6460-b0944c7ebc43@molgen.mpg.de>
- <60A8493D-811B-4AD5-A8D3-82054B562A8C@canonical.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Message-ID: <3895cb4d-cc9d-238a-0776-a1fd3a490664@molgen.mpg.de>
-Date:   Thu, 26 Mar 2020 12:41:36 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1728065AbgCZLpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 07:45:06 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:32912 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727948AbgCZLpG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 07:45:06 -0400
+Received: by mail-ed1-f66.google.com with SMTP id z65so6474616ede.0
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 04:45:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mnAgrNsl9TtuLNSumAhTp47m7iv21ewR1qWnv6t8I9M=;
+        b=UXyqEZZW/BlvhlBAP/vj7nH3XAnSH2pHHHoWVuHr+uEr9RekFjwsR6WVebQqwtGjgb
+         36FXBn7y89u/fTTLRLz25kDjshEsLMsWwTcqIZQE2a4soMrobMjiyt9cYEiWiXTLiYw0
+         iJIAHlziUZ1JZ3hjTvCvfQUfn6hmXGTJo4CWTUd1PT4EaKiKD9jlLs3N/C+3AGsOho+j
+         fherYFlNreKow19HPyWZ9cbK8EDdBZ0siJSF+lfgQXYSFtZLgEjt6LcAqnaHljjvonMJ
+         YUmAkZs9AEbH4Rk5cC5OW9Mq8n0MDtIgXdkgC1mvp/H7SeX6CnyOBw8EmzkuU8RZWdrW
+         BVGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mnAgrNsl9TtuLNSumAhTp47m7iv21ewR1qWnv6t8I9M=;
+        b=LSFD8QdV3rJ07B7elMqz/K8BjjcTKLiFC8supFOpwb4pP53Oi2VD0Br/v8o9Iyk4zy
+         HBkwaHLRLSbFgikN0hmphJRSj3xsPRMJ7+KkIHuyKGuJHm0WwEnfm0+K5bLjOMQej/6q
+         Bhm7pQZ3jen2VBeZif4xvh3DEbgsNn7KEXimlyxhS6d3yYhp+SiExCYqX+LCvUV08I4y
+         v27oohca7SJingoP5Jkdryz/QsCFIDsymcAyo3a7J+r/p6xA0FkkRvrA692mCtkVT01m
+         HdSQ0D1brzYj/aslkOIsCxwFdX/vF7/UzwKwV7Y1sRJ/BWabBaiiLp+t1LAtay+y/gBu
+         d1lQ==
+X-Gm-Message-State: ANhLgQ2eNPmnubkh706n1UfwMu8I4eVYPvAKugdBXguD2biKz6IzxxO5
+        OVGuW0ItrsfjrPq7tBbltgvWkQe1McIdgJyvKV0=
+X-Google-Smtp-Source: ADFU+vt1UrV41ZlDCTPpWPkf16gCIrOOrMUnqDMR2Y1aPddYfhFthMbru+AkUVqUHpv7ZybIXzDT733nv64ZjxkEzeM=
+X-Received: by 2002:a50:9b07:: with SMTP id o7mr7814062edi.139.1585223102822;
+ Thu, 26 Mar 2020 04:45:02 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <60A8493D-811B-4AD5-A8D3-82054B562A8C@canonical.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20200325152209.3428-1-olteanv@gmail.com> <20200325152209.3428-11-olteanv@gmail.com>
+ <20200326101752.GA1362955@splinter> <CA+h21hq2K__kY9Pi4-23x7aA+4TPXAV4evfi1tR=0bZRcZDiQA@mail.gmail.com>
+ <20200326113542.GA1383155@splinter>
+In-Reply-To: <20200326113542.GA1383155@splinter>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Thu, 26 Mar 2020 13:44:51 +0200
+Message-ID: <CA+h21hqSWKSc-AD0fTA0XXsqmPdF_LCvKrksWEe8DGhdLm=AWQ@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 10/10] net: bridge: implement
+ auto-normalization of MTU for hardware datapath
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        murali.policharla@broadcom.com,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Kai-Heng,
+On Thu, 26 Mar 2020 at 13:35, Ido Schimmel <idosch@idosch.org> wrote:
+>
+> On Thu, Mar 26, 2020 at 12:25:20PM +0200, Vladimir Oltean wrote:
+> > Hi Ido,
+> >
+> > On Thu, 26 Mar 2020 at 12:17, Ido Schimmel <idosch@idosch.org> wrote:
+> > >
+> > > Hi Vladimir,
+> > >
+> > > On Wed, Mar 25, 2020 at 05:22:09PM +0200, Vladimir Oltean wrote:
+> > > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> > > >
+> > > > In the initial attempt to add MTU configuration for DSA:
+> > > >
+> > > > https://patchwork.ozlabs.org/cover/1199868/
+> > > >
+> > > > Florian raised a concern about the bridge MTU normalization logic (when
+> > > > you bridge an interface with MTU 9000 and one with MTU 1500). His
+> > > > expectation was that the bridge would automatically change the MTU of
+> > > > all its slave ports to the minimum MTU, if those slaves are part of the
+> > > > same hardware bridge. However, it doesn't do that, and for good reason,
+> > > > I think. What br_mtu_auto_adjust() does is it adjusts the MTU of the
+> > > > bridge net device itself, and not that of any slave port.  If it were to
+> > > > modify the MTU of the slave ports, the effect would be that the user
+> > > > wouldn't be able to increase the MTU of any bridge slave port as long as
+> > > > it was part of the bridge, which would be a bit annoying to say the
+> > > > least.
+> > > >
+> > > > The idea behind this behavior is that normal termination from Linux over
+> > > > the L2 forwarding domain described by DSA should happen over the bridge
+> > > > net device, which _is_ properly limited by the minimum MTU. And
+> > > > termination over individual slave device is possible even if those are
+> > > > bridged. But that is not "forwarding", so there's no reason to do
+> > > > normalization there, since only a single interface sees that packet.
+> > > >
+> > > > The real problem is with the offloaded data path, where of course, the
+> > > > bridge net device MTU is ignored. So a packet received on an interface
+> > > > with MTU 9000 would still be forwarded to an interface with MTU 1500.
+> > > > And that is exactly what this patch is trying to prevent from happening.
+> > >
+> > > How is that different from the software data path where the CPU needs to
+> > > forward the packet between port A with MTU X and port B with MTU X/2 ?
+> > >
+> > > I don't really understand what problem you are trying to solve here. It
+> > > seems like the user did some misconfiguration and now you're introducing
+> > > a policy to mitigate it? If so, it should be something the user can
+> > > disable. It also seems like something that can be easily handled by a
+> > > user space application. You get netlink notifications for all these
+> > > operations.
+> > >
+> >
+> > Actually I think the problem can be better understood if I explain
+> > what the switches I'm dealing with look like.
+> > None of them really has a 'MTU' register. They perform length-based
+> > admission control on RX.
+>
+> IIUC, by that you mean that these switches only perform length-based
+> filtering on RX, but not on TX?
+>
 
+Yes.
 
-Am 26.03.20 um 12:29 schrieb Kai-Heng Feng:
+> > At this moment in time I don't think anybody wants to introduce an MRU
+> > knob in iproute2, so we're adjusting that maximum ingress length
+> > through the MTU. But it becomes an inverted problem, since the 'MTU'
+> > needs to be controlled for all possible sources of traffic that are
+> > going to egress on this port, in order for the real MTU on the port
+> > itself to be observed.
+>
+> Looking at your example from the changelog:
+>
+> ip link set dev sw0p0 master br0
+> ip link set dev sw0p1 mtu 1400
+> ip link set dev sw0p1 master br0
+>
+> Without your patch, after these commands sw0p0 has an MTU of 1500 and
+> sw0p1 has an MTU of 1400. Are you saying that a frame with a length of
+> 1450 bytes received on sw0p0 will be able to egress sw0p1 (assuming it
+> should be forwarded there)?
+>
 
->> On Mar 25, 2020, at 23:49, Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+Yes.
 
->> Am 25.03.20 um 14:58 schrieb Neftin, Sasha:
->>> On 3/25/2020 08:43, Aaron Ma wrote:
->>
->>>> On 3/25/20 2:36 PM, Neftin, Sasha wrote:
->>>>> On 3/25/2020 06:17, Kai-Heng Feng wrote:
->>
->>>>>>> On Mar 24, 2020, at 03:16, Aaron Ma <aaron.ma@canonical.com> wrote:
->>>>>>>
->>>>>>> ME takes 2+ seconds to un-configure ULP mode done after resume
->>>>>>> from s2idle on some ThinkPad laptops.
->>>>>>> Without enough wait, reset and re-init will fail with error.
->>>>>>
->>>>>> Thanks, this patch solves the issue. We can drop the DMI quirk in
->>>>>> favor of this patch.
->>>>>>
->>>>>>> Fixes: f15bb6dde738cc8fa0 ("e1000e: Add support for S0ix")
->>>>>>> BugLink: https://bugs.launchpad.net/bugs/1865570
->>>>>>> Signed-off-by: Aaron Ma <aaron.ma@canonical.com>
->>>>>>> ---
->>>>>>> drivers/net/ethernet/intel/e1000e/ich8lan.c | 4 ++--
->>>>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
->>>>>>>
->>>>>>> diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c
->>>>>>> b/drivers/net/ethernet/intel/e1000e/ich8lan.c
->>>>>>> index b4135c50e905..147b15a2f8b3 100644
->>>>>>> --- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
->>>>>>> +++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
->>>>>>> @@ -1240,9 +1240,9 @@ static s32 e1000_disable_ulp_lpt_lp(struct
->>>>>>> e1000_hw *hw, bool force)
->>>>>>>               ew32(H2ME, mac_reg);
->>>>>>>           }
->>>>>>>
->>>>>>> -        /* Poll up to 300msec for ME to clear ULP_CFG_DONE. */
->>>>>>> +        /* Poll up to 2.5sec for ME to clear ULP_CFG_DONE. */
->>>>>>>           while (er32(FWSM) & E1000_FWSM_ULP_CFG_DONE) {
->>>>>>> -            if (i++ == 30) {
->>>>>>> +            if (i++ == 250) {
->>>>>>>                   ret_val = -E1000_ERR_PHY;
->>>>>>>                   goto out;
->>>>>>>               }
->>>>>>
->>>>>> The return value was not caught by the caller, so the error ends up
->>>>>> unnoticed.
->>>>>> Maybe let the caller check the return value of
->>>>>> e1000_disable_ulp_lpt_lp()?
->>
->>>>> I a bit confused. In our previous conversation you told ME not running.
->>>>> let me shimming in. Increasing delay won't be solve the problem and just
->>>>> mask it. We need to understand why ME take too much time. What is
->>>>> problem with this specific system?
->>>>> So, basically no ME system should works for you.
->>>>
->>>> Some laptops ME work that's why only reproduce issue on some laptops.
->>>> In this issue i219 is controlled by ME.
->>>
->>> Who can explain - why ME required too much time on this system?
->>> Probably need work with ME/BIOS vendor and understand it.
->>> Delay will just mask the real problem - we need to find root cause.
->>>> Quirk is only for 1 model type. But issue is reproduced by more models.
->>>> So it won't work.
->>
->> (Where is Aaron’s reply? It wasn’t delivered to me yet.)
->>
->> As this is clearly a regression, please revert the commit for now,
->> and then find a way to correctly implement S0ix support. Linux’
->> regression policy demands that as no fix has been found since
->> v5.5-rc1. Changing Intel ME settings, even if it would work around
->> the issue, is not an acceptable solution. Delaying the resume time
->> is also not a solution.
-> 
-> The s0ix patch can reduce power consumption, finally makes S2idle an
-> acceptable sleep method. So I'd say it's a fix, albeit a regression
-> was introduced.
-> 
->> Regarding Intel Management Engine, only Intel knows what it does
->> and what the error is, as the ME firmware is proprietary and
->> closed.
->> 
->> Lastly, there is no way to fully disable the Intel Management
->> Engine. The HAP stuff claims to stop the Intel ME execution, but
->> nobody knows, if it’s successful.
->> 
->> Aaron, Kai-Hang, can you send the revert?
-> 
-> I consider that as an important fix for s2idle, I don't think
-> reverting is appropriate.
+> If so, then I think I understand the problem. However, I don't think
+> such code belongs in the bridge driver as this restriction does not
+> apply to all switches.
 
-If there is a fix with no other regression, I agree. But there has not 
-been one, so please revert. It doesn’t matter if the commit introducing 
-the regression fixes something else. It gets too complicated to decide, 
-which regression is worth it or not. The Linux kernel guarantees its 
-users, they can update any time without breaking user space (in this 
-case suspend/resume).  Please read Linus’ several messages about that. 
-His message [1] exactly addresses your arguments.
+How do Mellanox switches deal with this?
 
-> Yeah, HELL NO!
-> 
-> Guess what? You're wrong. YOU ARE MISSING THE #1 KERNEL RULE.
-> 
-> We do not regress, and we do not regress exactly because your are 100% wrong.
-> 
-> And the reason you state for your opinion is in fact exactly *WHY* you
-> are wrong.
-> 
-> Your "good reasons" are pure and utter garbage.
-> 
-> The whole point of "we do not regress" is so that people can upgrade
-> the kernel and never have to worry about it.
-> 
->> Kernel had a bug which has been fixed
-> 
-> That is *ENTIRELY* immaterial.
-> 
-> Guys, whether something was buggy or not DOES NOT MATTER.
+> Also, I think that having the kernel change MTU
+> of port A following MTU change of port B is a bit surprising and not
+> intuitive.
+>
 
-So, please (also Intel developers), please adhere to this rule, and 
-revert the commit.
+It already changes the MTU of br0, this just goes along the same path.
 
+> I think you should be more explicit about it. Did you consider listening
+> to 'NETDEV_PRECHANGEMTU' notifications in relevant drivers and vetoing
+> unsupported configurations with an appropriate extack message? If you
+> can't veto (in order not to break user space), you can still emit an
+> extack message.
 
-Kind regards,
+I suppose that is an alternative approach. This would be done from the
+DSA core then? But instead of veto, just do the normalization thing.
 
-Paul
-
-
-[1]: https://lkml.org/lkml/2018/8/3/621
+Thanks,
+-Vladimir
