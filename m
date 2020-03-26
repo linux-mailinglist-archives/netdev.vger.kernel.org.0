@@ -2,55 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27EBF19475E
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 20:21:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 931CF19475F
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 20:22:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728528AbgCZTVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 15:21:00 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:34037 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726067AbgCZTVA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 15:21:00 -0400
-Received: by mail-qt1-f194.google.com with SMTP id 10so6497275qtp.1;
-        Thu, 26 Mar 2020 12:20:59 -0700 (PDT)
+        id S1727354AbgCZTWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 15:22:21 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:43749 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726067AbgCZTWU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 15:22:20 -0400
+Received: by mail-lf1-f65.google.com with SMTP id n20so5848507lfl.10;
+        Thu, 26 Mar 2020 12:22:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=HAjvIejxKmNjPK8xaE5pZZ0JnF4kYI7QIVLserAjHe4=;
-        b=Z3LIuYZt+n7S92gF/IP6Km1xRIyvFde9v4VcFkGdnUmtz3xpDoDu9/tNbJsPL2U+Ce
-         +eSGAJx/fn3KnYdf+oA9PnyGzy31ALruOjZF2NfzxdiYzo8CMaYJr3kv8C2xdzG18l1B
-         z3dtkap3c9vm8Na/4qn0qtfnPR/ec7ktm6pFGuCBU1HOe+Bcle+we5hPwmsTPML9a6Jz
-         LHqvF3VkRE5U7ZW/L9y46ixQsQgPCLb8T9L1pRuhls4Tq6XwFvP/dXQxna46NkK50s4Y
-         NuQkKKb5NwIActV26JQ/0wLv62QFmp73ZZtV/pbUB472FsnGDGnAeTqg9AyJPnTkf9rQ
-         uDBQ==
+        bh=dL5Dzf5r8PcP7cDL9x2KnB0YGaWxOuN4eYggn/+YMYw=;
+        b=P/CZJzFVmgT8RV1QRSP3ZzId3qq2amzQePYbx2wD9fyBiIgolK7YuA7j3QVTIQmd7T
+         YUVaWePtO7UZBEJfWfR6YLkojwPm4abhj8UaywXIE78JzMB7UnPna15HMnOZ7meG3WML
+         KejgTfaXgZHcq4U88mvQHW5QOkHMK1MPEo09iWT7D0ozGnfZ6bRfpFJzejlrCWTQ03OU
+         WU/2E78+dvtvGg7q0GmNY+25INuUcaNjBms8EgEAYg/1qHtMY5nza+4f9kE2hkSNWBQm
+         lLgL7E3fVFUBa02UcmEZDKKRzKEIIlgoGsfXKMm/0UP5Frmyc/CSlI1uV9WJQJbMO3or
+         qrBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=HAjvIejxKmNjPK8xaE5pZZ0JnF4kYI7QIVLserAjHe4=;
-        b=dgS0n3A20Iihn2+tg16zlTXjQvt7T/ekaXKHe0u+lbv2qAHBly9Z3CdwSvbOfmHSw8
-         +31fi5w7hOr/Nb0ekRVspbLp4xMRADDTH3SzpvXR68PMAYyu78YCnzVj6cF2Ry1CvYnz
-         pg/MoMkx+GPalmb+qdumxUnVFy9FNnQSZAz3RL7NlBFz1PTyhOe1vsPFRtqPvKsnW8V5
-         Do0tE8Hg0hzs28JcgCRNxdAsliZ8ZOV8KvGN/r27Ql2UdGhEEeovRS/GbHLutQmF0l1o
-         olMld7DXzlSFUOFhUfKpx5tZkK2kHwTsxkkTlhcSml7EFxLrJTddKWlxGM9qas8ID93R
-         9/fA==
-X-Gm-Message-State: ANhLgQ1TEiexfFlZFHhxScJME6Ti+P/a0X/ySfe8T5SqmHcJo4sQQY/x
-        CR6BCqmuK/MOAJuhwHHMG0yOOMvdMDcn7Eq9KlU=
-X-Google-Smtp-Source: ADFU+vuNnjZ2a5OdwG7PjuUrIK6WMCdJ3kwlkxBlXaB89rEhz5miSw3VsBBHuezfVqFhFox1bfdoY04FQHh4nAXlWcs=
-X-Received: by 2002:ac8:6f1b:: with SMTP id g27mr10090888qtv.117.1585250459173;
- Thu, 26 Mar 2020 12:20:59 -0700 (PDT)
+        bh=dL5Dzf5r8PcP7cDL9x2KnB0YGaWxOuN4eYggn/+YMYw=;
+        b=p9829pU2SQlB6yd4orai1OWc19SZ1jXNwGOCSxaSSy58LBeVBEzDsUkc2LqyeZzyjT
+         yvTU26hJ8E7ZdXKQP5mjTaB2KTnBDH0ELBG18QTnnI5Pk2kipteNhnGvvsZpK/HW+Ohq
+         jTROazm1pIi054pT1ry7KhXXEdw+qJQpSVc14vjD0HXYclx4JtHiYf5PXHTXnf3wVgdo
+         9oSseqUo2iHtXvAGPYNtDFSjZAiUG/UYsKT5ng6v0cpKAxUugpJ4Xky+jDfzNbiOWHQ0
+         MOsw+2raLbETvSaS37olVQnaF0xswxFpGVfD+cTfwbdeeBGXwal9nBfEYikAxt0eTJL/
+         m3Fw==
+X-Gm-Message-State: ANhLgQ1VP5vmpzM25WwBhRd+sAx8qnxI7rq1hwV/JmaTNJ6WeZgzipDz
+        0WfTNCCkpSUYUOVDEAZxGjvQq8I0aORuQ61vxJY=
+X-Google-Smtp-Source: ADFU+vuSPxkCKN5ZH3PluGt3oLeOPzOKSdLYrz4OXdcbSr7OdtXMCwx+ritt3LSNUKwerZ1JbwJuODbTkb7zA1/lPmI=
+X-Received: by 2002:ac2:4191:: with SMTP id z17mr6634762lfh.73.1585250537702;
+ Thu, 26 Mar 2020 12:22:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200326151741.125427-1-toke@redhat.com>
-In-Reply-To: <20200326151741.125427-1-toke@redhat.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 26 Mar 2020 12:20:47 -0700
-Message-ID: <CAEf4BzYxJjJygu_ZqJJB03n=ZetxhuUE7eLD9dsbkbvzQ5M08w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: Add bpf_object__rodata getter function
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
+References: <CAHo-OoxMNBTDZW_xqp1X3SGncM-twAySrdnc=ntS7_e2j0YEaA@mail.gmail.com>
+ <20200326142803.239183-1-zenczykowski@gmail.com> <20200326113048.250e7098@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAHo-OoxviTedR+dn5LaaKZtVWXR7bBTDzO23WfcB3kHGr6j48w@mail.gmail.com>
+In-Reply-To: <CAHo-OoxviTedR+dn5LaaKZtVWXR7bBTDzO23WfcB3kHGr6j48w@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 26 Mar 2020 12:22:05 -0700
+Message-ID: <CAADnVQK7bdMe1iygpHjEQL5GRtU0BDK01t5OLgorN-VUZCRHog@mail.gmail.com>
+Subject: Re: [PATCH v2] iptables: open eBPF programs in read only mode
+To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>, Chenbo Feng <fengc@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Willem de Bruijn <willemb@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
@@ -58,86 +66,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 8:18 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@redh=
-at.com> wrote:
+On Thu, Mar 26, 2020 at 11:34 AM Maciej =C5=BBenczykowski
+<zenczykowski@gmail.com> wrote:
 >
-> This adds a new getter function to libbpf to get the rodata area of a bpf
-> object. This is useful if a program wants to modify the rodata before
-> loading the object. Any such modification needs to be done before loading=
-,
-> since libbpf freezes the backing map after populating it (to allow the
-> kernel to do dead code elimination based on its contents).
+> > FWIW the BPF subsystem is about to break uAPI backward-compat and
+> > replace the defines with enums. See commit 1aae4bdd7879 ("bpf: Switch
+> > BPF UAPI #define constants used from BPF program side to enums").
 >
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
-> ---
->  tools/lib/bpf/libbpf.c   | 13 +++++++++++++
->  tools/lib/bpf/libbpf.h   |  1 +
->  tools/lib/bpf/libbpf.map |  1 +
->  3 files changed, 15 insertions(+)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 085e41f9b68e..d3e3bbe12f78 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -1352,6 +1352,19 @@ bpf_object__init_internal_map(struct bpf_object *o=
-bj, enum libbpf_map_type type,
->         return 0;
->  }
->
-> +void *bpf_object__rodata(const struct bpf_object *obj, size_t *size)
+> Shouldn't it do what is normally done in such a case?
+> #define BPF_F_RDONLY BPF_F_RDONLY
 
-We probably don't want to expose this API. It just doesn't scale,
-especially if/when we add support for custom sections names for global
-variables. Also checking for map->mmaped is too restrictive. See how
-BPF skeleton solves this problem and still allows .rodata
-initialization even on kernels that don't support memory-mapping
-global variables.
-
-But basically, why can't you use BPF skeleton? Also, application can
-already find that map by looking at name.
-
-> +{
-> +       struct bpf_map *map;
-> +
-> +       bpf_object__for_each_map(map, obj) {
-> +               if (map->libbpf_type =3D=3D LIBBPF_MAP_RODATA && map->mma=
-ped) {
-> +                       *size =3D map->def.value_size;
-> +                       return map->mmaped;
-> +               }
-> +       }
-> +       return NULL;
-> +}
-> +
->  static int bpf_object__init_global_data_maps(struct bpf_object *obj)
->  {
->         int err;
-> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> index d38d7a629417..d2a9beed7b8a 100644
-> --- a/tools/lib/bpf/libbpf.h
-> +++ b/tools/lib/bpf/libbpf.h
-> @@ -166,6 +166,7 @@ typedef void (*bpf_object_clear_priv_t)(struct bpf_ob=
-ject *, void *);
->  LIBBPF_API int bpf_object__set_priv(struct bpf_object *obj, void *priv,
->                                     bpf_object_clear_priv_t clear_priv);
->  LIBBPF_API void *bpf_object__priv(const struct bpf_object *prog);
-> +LIBBPF_API void *bpf_object__rodata(const struct bpf_object *obj, size_t=
- *size);
->
->  LIBBPF_API int
->  libbpf_prog_type_by_name(const char *name, enum bpf_prog_type *prog_type=
-,
-> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-> index 5129283c0284..a248f4ff3a40 100644
-> --- a/tools/lib/bpf/libbpf.map
-> +++ b/tools/lib/bpf/libbpf.map
-> @@ -243,5 +243,6 @@ LIBBPF_0.0.8 {
->                 bpf_link__pin;
->                 bpf_link__pin_path;
->                 bpf_link__unpin;
-> +               bpf_object__rodata;
->                 bpf_program__set_attach_target;
->  } LIBBPF_0.0.7;
-> --
-> 2.26.0
->
+No. just update the headers.
