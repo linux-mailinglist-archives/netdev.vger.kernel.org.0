@@ -2,146 +2,412 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 11C81193734
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 04:53:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E3967193739
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 05:01:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727787AbgCZDxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 23:53:50 -0400
-Received: from mail-eopbgr80053.outbound.protection.outlook.com ([40.107.8.53]:54754
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727590AbgCZDxu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 23:53:50 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kweFEAaa9hxwXBx79jSGkVEVHmKl3XuHXpBBE1JW1wM/0ywp9NEhcZlGdr/eQI7JWTDwoyjHwDfOAxDMXWvNBCx3fn9PBF/t1eCL73jI8KxfSpcmfzt1FrHsNuWv7a+Gn/R++hNl14tA1nRsIOR5/VFSXCE/NlJA15MyWWr/KNpQbZ2Zv152W7NV6OTRMS6XhxXFcvuRZkBQkE53nUYe4+PxTYQZnzZTt+uiGI+rhPFzYGwbSyRcdSGOKWV4pxItAUtZun8VxWEsa5Ma+jX+NzazLexJuvJVrVDQ21CbrZnb0ylx9WuR8ePzfranrtOeuwmVUVonSEz/Ibs0xZWMmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8kyNGFqGZba4f5kAJgdylGde9+yk1tzoy5+CsMvTXcA=;
- b=K5zqjflQrTqZ6w7V4WOpFFVRIRWcyVxlQcFQWhYrZqOtXtvdI1iuKEkUMSlMwIzY68MPlTHq+7BWOoeFIU5kczIJOjHV64oCi9+HqFgbLoOlgOZdcSOmA1FIhn+dWVq3o9qoMQxtfkiFz6e8lfqRXnOnp3GfAu1bjgnco7UNCq1+Pq+GMCYMMI7ChJVs/1YWuvSkuNsAB6Mca2vVZaUtdDrk9vP+JFEoFFp+LTbs+uOEDc9UIUf1xsLdBe+2E8x3X9fqs9TEDrHalysfknOrUc6mGsjddqNOT4ulXkFBkQsj3MHK0RUYUTazqjesnnTFEodxA8IXROzzmeKLJZZpwA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8kyNGFqGZba4f5kAJgdylGde9+yk1tzoy5+CsMvTXcA=;
- b=H5oEFmN51fmp7pnutPNho5xl9NNZZgJZ+Bfy9ZzZ3S5jWucuJz7glecjGWXoGeir9MnVFCirHVfu4/o5bHCfiRNOJQhreBNoI6GFmadJVZn4MQ/A9JeNssMS/OHSIE3cFjDg5R5zUX/gmUInJUx5+Wd2PbRdVa83jQHstEB6iX4=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB4207.eurprd05.prod.outlook.com (52.133.14.140) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2856.19; Thu, 26 Mar 2020 03:53:44 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2835.023; Thu, 26 Mar 2020
- 03:53:44 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Roi Dayan <roid@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Paul Blakey <paulb@mellanox.com>,
-        Oz Shlomo <ozsh@mellanox.com>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        Majd Dibbiny <majd@mellanox.com>
-CC:     "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/3] net/mlx5: CT: Use rhashtable's ct entries
- instead of a seperate list
-Thread-Topic: [PATCH net-next 3/3] net/mlx5: CT: Use rhashtable's ct entries
- instead of a seperate list
-Thread-Index: AQHWAd6gnXNvk3opWEin1rfALSQP26haQImA
-Date:   Thu, 26 Mar 2020 03:53:43 +0000
-Message-ID: <b24b275716ffecbf1382d4ab063464e18ddf5073.camel@mellanox.com>
-References: <1585055841-14256-1-git-send-email-paulb@mellanox.com>
-         <1585055841-14256-4-git-send-email-paulb@mellanox.com>
-In-Reply-To: <1585055841-14256-4-git-send-email-paulb@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 32ba078e-4014-4e34-aa36-08d7d13947f2
-x-ms-traffictypediagnostic: VI1PR05MB4207:|VI1PR05MB4207:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB4207F1CDD30D46A10702AF78BECF0@VI1PR05MB4207.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3276;
-x-forefront-prvs: 0354B4BED2
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(39860400002)(376002)(136003)(396003)(366004)(346002)(6506007)(478600001)(316002)(110136005)(86362001)(5660300002)(66476007)(76116006)(2906002)(66946007)(66556008)(64756008)(66446008)(91956017)(4326008)(6636002)(71200400001)(6512007)(6486002)(186003)(36756003)(2616005)(8676002)(8936002)(26005)(81156014)(81166006);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: usTfxu7p/Buvk+yEAj6A8aoBNgoj5YHkQq8ZWfKLXYn19ETEkBDSDMYbaqLRqGEmifqOYFaCbgQQnqKXlvV5NtWBYxrFtKp9qyPxEtVwryQBv/hwVHh1/LzpuHWYVSBBV6BYl8lL4jbSoG0y3oAegFIMuQVa4t9gf9PpuGgXuCDpemsEfvBoJxFJTZ0Rm/kMWZ2+ChaMeWaWNMv3NJWNgEK+0EKHiObgUtUCyhsg2DVFOWOEo8cp7E/B98oJqKIzwQlCiM+5rjFFbYIfbNsI81bzalKvpsvAzyPAJEz/DFOW6af3s5rQnAfxBek+yHyjtZUEKHYzeM1tTGYhrvH+ocn2CTysI5yr3ars4tvQbT/6lqYs9X/o685AOZKiUCBekhGgbksJW0YWNPT/q64yYwqKfrxW5IQ81uvOBHMIWOx8Ji/TUvbScyHUEEA6mZhA
-x-ms-exchange-antispam-messagedata: BGA52MmBQJCn+zeDgBtJbhdEx74lZEXh3wIuNgVAOrC67gsjZ5uVznU82SSe4lv3Ub5e+N7lbIy/9YsipLmzGj+ijWzIQWGq6p1bE7yazj4+QPRcr73+kxxL5l/nYZccxeb+cSWlagsfzAoqIUMR9w==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2FB00256819B2F48B333C43BC33CF119@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726163AbgCZEBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 00:01:19 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:41397 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725306AbgCZEBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 00:01:19 -0400
+Received: by mail-qk1-f196.google.com with SMTP id q188so5149967qke.8;
+        Wed, 25 Mar 2020 21:01:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=X9lM4owEmTpuos0AqtQw9EJft8Fa1CHA/b8aSewtgf8=;
+        b=S5DE85h3u+yktZSWWA16OP3mb01FWlGHNHUVMdwc0OWpvz+e8gqDlCWGSPM9uL4Pnd
+         SN8JKguHC6P9wWW9jDkBY5M5edDW3ErOYCjTByc2PEzt8vIiTwiLvVOs3tUVUssQ/YpT
+         nzER/l6LnU+vrD12l5x45idh/X48+ycSUvmgRG03mrDXZvGFeDG8zNkPFWIbtyUXEKr3
+         ZoLI9SLrWXN15zl2twjPhSRcxTXDWHkMAiaD+I3IdtaRXG+eRfNv54XlVjygHB7wOGMK
+         JbaGQuyMDGsvQ4siikFKyCl0ffjVO6A3oNAv/gNI1MNeFS3uQOeu3S9o548mstd8ug55
+         lKUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=X9lM4owEmTpuos0AqtQw9EJft8Fa1CHA/b8aSewtgf8=;
+        b=S0xyINE3fnonYcZ7XInDywyF/3frmoNYhXbxxae9SecwXLk2OSwBWYKgoX33RnM/aW
+         p0n/gMMI2IS9zRugA2FH9kXT4BXlLWyC0A8ncatMvq2vnna66uSpyoqgYk22F7jR+AjN
+         eHlf8kuP+dTB1ubYs17UvgIk55qWU3oTIl0ZdaRZViJEtqU7r0DRRk6FsZOKkq6oZOOE
+         VOlTSrBJj8e4/XLspcSQIYFj5SPTNJK+MkR5K1ApTboGmOrMKMyA8V0rt4z7XQGMYrTW
+         EiPI+fAk/zwrhT7M8Ju7b6mPpO3dSlHQOykaYIZPLXzjwGOY19iy7pWHnk/iJtkvXGI8
+         PQ8Q==
+X-Gm-Message-State: ANhLgQ1TAVeBZJv+iEDpIq9mp1tFjAJA5tgIODg2BRavOvYU9y0Urlbv
+        Ny8Fh0nFx/AgrL5LUW8AiWKwvnRTDJgckw==
+X-Google-Smtp-Source: ADFU+vt5QEqbyWCOrK/BIXJ7qsT+x38Reg/vuxL/1M4D4czxHtxHefcKls4rqnVwQbR7n38+i/97Jg==
+X-Received: by 2002:a37:98c4:: with SMTP id a187mr6116089qke.132.1585195276536;
+        Wed, 25 Mar 2020 21:01:16 -0700 (PDT)
+Received: from localhost.localdomain (pc-215-101-46-190.cm.vtr.net. [190.46.101.215])
+        by smtp.googlemail.com with ESMTPSA id d73sm658373qkg.113.2020.03.25.21.01.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Mar 2020 21:01:15 -0700 (PDT)
+From:   Carlos Neira <cneirabustos@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     yhs@fb.com, quentin@isovalent.com, ebiederm@xmission.com,
+        brouer@redhat.com, bpf@vger.kernel.org, cneirabustos@gmail.com
+Subject: [Fixes ebpf-selftests]: Fold test_current_pid_tgid_new_ns into test_progs
+Date:   Thu, 26 Mar 2020 01:01:05 -0300
+Message-Id: <20200326040105.24297-1-cneirabustos@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 32ba078e-4014-4e34-aa36-08d7d13947f2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Mar 2020 03:53:44.0194
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9QKRNT+i5BGzRPVebp5HAOkfhlW2WEDcEQUeWOG530ROPBJZgYJ2TZrvGhtjxVWipmVo29YruLgi8EhwhKW2TQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4207
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDIwLTAzLTI0IGF0IDE1OjE3ICswMjAwLCBQYXVsIEJsYWtleSB3cm90ZToNCj4g
-Q1QgZW50cmllcyBsaXN0IGlzIG9ubHkgdXNlZCB3aGlsZSBmcmVlaW5nIGEgY3Qgem9uZSBmbG93
-IHRhYmxlIHRvDQo+IGdvIG92ZXIgYWxsIHRoZSBjdCBlbnRyaWVzIG9mZmxvYWRlZCBvbiB0aGF0
-IHpvbmUvdGFibGUsIGFuZCBmbHVzaA0KPiB0aGUgdGFibGUuDQo+IA0KPiBSaGFzaHRhYmxlIGFs
-cmVhZHkgcHJvdmlkZXMgYW4gYXBpIHRvIGdvIG92ZXIgYWxsIHRoZSBpbnNlcnRlZA0KPiBlbnRy
-aWVzLg0KPiBVc2UgaXQgaW5zdGVhZCwgYW5kIHJlbW92ZSB0aGUgbGlzdC4NCj4gDQo+IFNpZ25l
-ZC1vZmYtYnk6IFBhdWwgQmxha2V5IDxwYXVsYkBtZWxsYW5veC5jb20+DQo+IFJldmlld2VkLWJ5
-OiBPeiBTaGxvbW8gPG96c2hAbWVsbGFub3guY29tPg0KDQpBY2tlZC1ieTogU2FlZWQgTWFoYW1l
-ZWQgPHNhZWVkbUBtZWxsYW5veC5jb20+DQoNCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9ldGhlcm5l
-dC9tZWxsYW5veC9tbHg1L2NvcmUvZW4vdGNfY3QuYyB8IDE5ICsrKysrKystLS0tLQ0KPiAtLS0t
-LS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgNyBpbnNlcnRpb25zKCspLCAxMiBkZWxldGlvbnMoLSkN
-Cj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2Nv
-cmUvZW4vdGNfY3QuYw0KPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29y
-ZS9lbi90Y19jdC5jDQo+IGluZGV4IGEyMmFkNmIuLmFmYzhhYzMgMTAwNjQ0DQo+IC0tLSBhL2Ry
-aXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbi90Y19jdC5jDQo+ICsrKyBi
-L2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9lbi90Y19jdC5jDQo+IEBA
-IC02NywxMSArNjcsOSBAQCBzdHJ1Y3QgbWx4NV9jdF9mdCB7DQo+ICAJc3RydWN0IG5mX2Zsb3d0
-YWJsZSAqbmZfZnQ7DQo+ICAJc3RydWN0IG1seDVfdGNfY3RfcHJpdiAqY3RfcHJpdjsNCj4gIAlz
-dHJ1Y3Qgcmhhc2h0YWJsZSBjdF9lbnRyaWVzX2h0Ow0KPiAtCXN0cnVjdCBsaXN0X2hlYWQgY3Rf
-ZW50cmllc19saXN0Ow0KPiAgfTsNCj4gIA0KPiAgc3RydWN0IG1seDVfY3RfZW50cnkgew0KPiAt
-CXN0cnVjdCBsaXN0X2hlYWQgbGlzdDsNCj4gIAl1MTYgem9uZTsNCj4gIAlzdHJ1Y3Qgcmhhc2hf
-aGVhZCBub2RlOw0KPiAgCXN0cnVjdCBmbG93X3J1bGUgKmZsb3dfcnVsZTsNCj4gQEAgLTYxNyw4
-ICs2MTUsNiBAQCBzdHJ1Y3QgbWx4NV9jdF9lbnRyeSB7DQo+ICAJaWYgKGVycikNCj4gIAkJZ290
-byBlcnJfaW5zZXJ0Ow0KPiAgDQo+IC0JbGlzdF9hZGQoJmVudHJ5LT5saXN0LCAmZnQtPmN0X2Vu
-dHJpZXNfbGlzdCk7DQo+IC0NCj4gIAlyZXR1cm4gMDsNCj4gIA0KPiAgZXJyX2luc2VydDoNCj4g
-QEAgLTY0Niw3ICs2NDIsNiBAQCBzdHJ1Y3QgbWx4NV9jdF9lbnRyeSB7DQo+ICAJV0FSTl9PTihy
-aGFzaHRhYmxlX3JlbW92ZV9mYXN0KCZmdC0+Y3RfZW50cmllc19odCwNCj4gIAkJCQkgICAgICAg
-JmVudHJ5LT5ub2RlLA0KPiAgCQkJCSAgICAgICBjdHNfaHRfcGFyYW1zKSk7DQo+IC0JbGlzdF9k
-ZWwoJmVudHJ5LT5saXN0KTsNCj4gIAlrZnJlZShlbnRyeSk7DQo+ICANCj4gIAlyZXR1cm4gMDsN
-Cj4gQEAgLTgxNyw3ICs4MTIsNiBAQCBzdHJ1Y3QgbWx4NV9jdF9lbnRyeSB7DQo+ICAJZnQtPnpv
-bmUgPSB6b25lOw0KPiAgCWZ0LT5uZl9mdCA9IG5mX2Z0Ow0KPiAgCWZ0LT5jdF9wcml2ID0gY3Rf
-cHJpdjsNCj4gLQlJTklUX0xJU1RfSEVBRCgmZnQtPmN0X2VudHJpZXNfbGlzdCk7DQo+ICAJcmVm
-Y291bnRfc2V0KCZmdC0+cmVmY291bnQsIDEpOw0KPiAgDQo+ICAJZXJyID0gcmhhc2h0YWJsZV9p
-bml0KCZmdC0+Y3RfZW50cmllc19odCwgJmN0c19odF9wYXJhbXMpOw0KPiBAQCAtODQ2LDEyICs4
-NDAsMTIgQEAgc3RydWN0IG1seDVfY3RfZW50cnkgew0KPiAgfQ0KPiAgDQo+ICBzdGF0aWMgdm9p
-ZA0KPiAtbWx4NV90Y19jdF9mbHVzaF9mdChzdHJ1Y3QgbWx4NV90Y19jdF9wcml2ICpjdF9wcml2
-LCBzdHJ1Y3QNCj4gbWx4NV9jdF9mdCAqZnQpDQo+ICttbHg1X3RjX2N0X2ZsdXNoX2Z0X2VudHJ5
-KHZvaWQgKnB0ciwgdm9pZCAqYXJnKQ0KPiAgew0KPiAtCXN0cnVjdCBtbHg1X2N0X2VudHJ5ICpl
-bnRyeTsNCj4gKwlzdHJ1Y3QgbWx4NV90Y19jdF9wcml2ICpjdF9wcml2ID0gYXJnOw0KPiArCXN0
-cnVjdCBtbHg1X2N0X2VudHJ5ICplbnRyeSA9IHB0cjsNCj4gIA0KPiAtCWxpc3RfZm9yX2VhY2hf
-ZW50cnkoZW50cnksICZmdC0+Y3RfZW50cmllc19saXN0LCBsaXN0KQ0KPiAtCQltbHg1X3RjX2N0
-X2VudHJ5X2RlbF9ydWxlcyhmdC0+Y3RfcHJpdiwgZW50cnkpOw0KPiArCW1seDVfdGNfY3RfZW50
-cnlfZGVsX3J1bGVzKGN0X3ByaXYsIGVudHJ5KTsNCj4gIH0NCj4gIA0KPiAgc3RhdGljIHZvaWQN
-Cj4gQEAgLTg2Miw5ICs4NTYsMTAgQEAgc3RydWN0IG1seDVfY3RfZW50cnkgew0KPiAgDQo+ICAJ
-bmZfZmxvd190YWJsZV9vZmZsb2FkX2RlbF9jYihmdC0+bmZfZnQsDQo+ICAJCQkJICAgICBtbHg1
-X3RjX2N0X2Jsb2NrX2Zsb3dfb2ZmbG9hZCwNCj4gZnQpOw0KPiAtCW1seDVfdGNfY3RfZmx1c2hf
-ZnQoY3RfcHJpdiwgZnQpOw0KPiAgCXJoYXNodGFibGVfcmVtb3ZlX2Zhc3QoJmN0X3ByaXYtPnpv
-bmVfaHQsICZmdC0+bm9kZSwNCj4gem9uZV9wYXJhbXMpOw0KPiAtCXJoYXNodGFibGVfZGVzdHJv
-eSgmZnQtPmN0X2VudHJpZXNfaHQpOw0KPiArCXJoYXNodGFibGVfZnJlZV9hbmRfZGVzdHJveSgm
-ZnQtPmN0X2VudHJpZXNfaHQsDQo+ICsJCQkJICAgIG1seDVfdGNfY3RfZmx1c2hfZnRfZW50cnks
-DQo+ICsJCQkJICAgIGN0X3ByaXYpOw0KPiAgCWtmcmVlKGZ0KTsNCj4gIH0NCj4gIA0K
+Move tests from test_current_pid_tgid_new_ns into test_progs.
+
+Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+---
+ tools/testing/selftests/bpf/Makefile          |   3 +-
+ .../bpf/prog_tests/ns_current_pid_tgid.c      | 134 ++++++++++++++-
+ .../bpf/test_current_pid_tgid_new_ns.c        | 159 ------------------
+ 3 files changed, 134 insertions(+), 162 deletions(-)
+ delete mode 100644 tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
+
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 7729892e0b04..f04617382b7b 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -33,8 +33,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
+ 	test_sock test_btf test_sockmap get_cgroup_id_user test_socket_cookie \
+ 	test_cgroup_storage \
+ 	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashmap \
+-	test_progs-no_alu32 \
+-	test_current_pid_tgid_new_ns
++	test_progs-no_alu32
+ 
+ # Also test bpf-gcc, if present
+ ifneq ($(BPF_GCC),)
+diff --git a/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c b/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
+index 542240e16564..2fb76c014ae2 100644
+--- a/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
++++ b/tools/testing/selftests/bpf/prog_tests/ns_current_pid_tgid.c
+@@ -1,10 +1,14 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Copyright (c) 2020 Carlos Neira cneirabustos@gmail.com */
++#define _GNU_SOURCE
+ #include <test_progs.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ #include <unistd.h>
+ #include <sys/syscall.h>
++#include <sched.h>
++#include <sys/wait.h>
++#include <sys/mount.h>
+ 
+ struct bss {
+ 	__u64 dev;
+@@ -13,7 +17,7 @@ struct bss {
+ 	__u64 user_pid_tgid;
+ };
+ 
+-void test_ns_current_pid_tgid(void)
++static void test_ns_current_pid_tgid_global_ns(void)
+ {
+ 	const char *probe_name = "raw_tracepoint/sys_enter";
+ 	const char *file = "test_ns_current_pid_tgid.o";
+@@ -86,3 +90,131 @@ void test_ns_current_pid_tgid(void)
+ 	}
+ 	bpf_object__close(obj);
+ }
++
++static void test_ns_current_pid_tgid_new_ns(void)
++{
++	pid_t pid;
++	int duration = 0;
++
++	if (CHECK(unshare(CLONE_NEWPID | CLONE_NEWNS),
++				"unshare CLONE_NEWPID | CLONE_NEWNS",
++				"error errno=%d\n", errno))
++		return;
++
++	pid = fork();
++	if (pid == -1) {
++		perror("Fork() failed\n");
++		return;
++	}
++
++	if (pid > 0) {
++		int status;
++
++		usleep(5);
++		waitpid(pid, &status, 0);
++		return;
++	} else {
++
++		pid = fork();
++		if (pid == -1) {
++			perror("Fork() failed\n");
++			return;
++		}
++
++		if (pid > 0) {
++			int status;
++
++			waitpid(pid, &status, 0);
++			return;
++		} else {
++			if (CHECK(mount("none", "/proc", NULL, MS_PRIVATE|MS_REC, NULL),
++					"Unmounting proc", "Cannot umount proc! errno=%d\n", errno))
++				return;
++
++			if (CHECK(mount("proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, NULL),
++					"Mounting proc", "Cannot mount proc! errno=%d\n", errno))
++				return;
++
++
++			const char *probe_name = "raw_tracepoint/sys_enter";
++			const char *file = "test_ns_current_pid_tgid.o";
++			int err, key = 0, duration = 0;
++			struct bpf_link *link = NULL;
++			struct bpf_program *prog;
++			struct bpf_map *bss_map;
++			struct bpf_object *obj;
++			struct bss bss;
++			struct stat st;
++			__u64 id;
++
++
++			obj = bpf_object__open_file(file, NULL);
++			if (CHECK(IS_ERR(obj), "obj_open", "err %ld\n", PTR_ERR(obj)))
++				return;
++
++			err = bpf_object__load(obj);
++			if (CHECK(err, "obj_load", "err %d errno %d\n", err, errno))
++				goto cleanup;
++
++			bss_map = bpf_object__find_map_by_name(obj, "test_ns_.bss");
++			if (CHECK(!bss_map, "find_bss_map", "failed\n"))
++				goto cleanup;
++
++			prog = bpf_object__find_program_by_title(obj, probe_name);
++			if (CHECK(!prog, "find_prog", "prog '%s' not found\n",
++						probe_name))
++				goto cleanup;
++
++			memset(&bss, 0, sizeof(bss));
++			pid_t tid = syscall(SYS_gettid);
++			pid_t pid = getpid();
++
++			id = (__u64) tid << 32 | pid;
++			bss.user_pid_tgid = id;
++
++			if (CHECK_FAIL(stat("/proc/self/ns/pid", &st))) {
++				perror("Failed to stat /proc/self/ns/pid");
++				goto cleanup;
++			}
++
++			bss.dev = st.st_dev;
++			bss.ino = st.st_ino;
++
++			err = bpf_map_update_elem(bpf_map__fd(bss_map), &key, &bss, 0);
++			if (CHECK(err, "setting_bss", "failed to set bss : %d\n", err))
++				goto cleanup;
++
++			link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
++			if (CHECK(IS_ERR(link), "attach_raw_tp", "err %ld\n",
++						PTR_ERR(link))) {
++				link = NULL;
++				goto cleanup;
++			}
++
++			/* trigger some syscalls */
++			usleep(1);
++
++			err = bpf_map_lookup_elem(bpf_map__fd(bss_map), &key, &bss);
++			if (CHECK(err, "set_bss", "failed to get bss : %d\n", err))
++				goto cleanup;
++
++			if (CHECK(id != bss.pid_tgid, "Compare user pid/tgid vs. bpf pid/tgid",
++						"User pid/tgid %llu BPF pid/tgid %llu\n", id, bss.pid_tgid))
++				goto cleanup;
++cleanup:
++			if (!link) {
++				bpf_link__destroy(link);
++				link = NULL;
++			}
++			bpf_object__close(obj);
++		}
++	}
++}
++
++void test_ns_current_pid_tgid(void)
++{
++	if (test__start_subtest("ns_current_pid_tgid_global_ns"))
++		test_ns_current_pid_tgid_global_ns();
++	if (test__start_subtest("ns_current_pid_tgid_new_ns"))
++		test_ns_current_pid_tgid_new_ns();
++}
+diff --git a/tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c b/tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
+deleted file mode 100644
+index ed253f252cd0..000000000000
+--- a/tools/testing/selftests/bpf/test_current_pid_tgid_new_ns.c
++++ /dev/null
+@@ -1,159 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/* Copyright (c) 2020 Carlos Neira cneirabustos@gmail.com */
+-#define _GNU_SOURCE
+-#include <sys/stat.h>
+-#include <sys/types.h>
+-#include <unistd.h>
+-#include <sys/syscall.h>
+-#include <sched.h>
+-#include <sys/wait.h>
+-#include <sys/mount.h>
+-#include "test_progs.h"
+-
+-#define CHECK_NEWNS(condition, tag, format...) ({		\
+-	int __ret = !!(condition);			\
+-	if (__ret) {					\
+-		printf("%s:FAIL:%s ", __func__, tag);	\
+-		printf(format);				\
+-	} else {					\
+-		printf("%s:PASS:%s\n", __func__, tag);	\
+-	}						\
+-	__ret;						\
+-})
+-
+-struct bss {
+-	__u64 dev;
+-	__u64 ino;
+-	__u64 pid_tgid;
+-	__u64 user_pid_tgid;
+-};
+-
+-int main(int argc, char **argv)
+-{
+-	pid_t pid;
+-	int exit_code = 1;
+-	struct stat st;
+-
+-	printf("Testing bpf_get_ns_current_pid_tgid helper in new ns\n");
+-
+-	if (stat("/proc/self/ns/pid", &st)) {
+-		perror("stat failed on /proc/self/ns/pid ns\n");
+-		printf("%s:FAILED\n", argv[0]);
+-		return exit_code;
+-	}
+-
+-	if (CHECK_NEWNS(unshare(CLONE_NEWPID | CLONE_NEWNS),
+-			"unshare CLONE_NEWPID | CLONE_NEWNS", "error errno=%d\n", errno))
+-		return exit_code;
+-
+-	pid = fork();
+-	if (pid == -1) {
+-		perror("Fork() failed\n");
+-		printf("%s:FAILED\n", argv[0]);
+-		return exit_code;
+-	}
+-
+-	if (pid > 0) {
+-		int status;
+-
+-		usleep(5);
+-		waitpid(pid, &status, 0);
+-		return 0;
+-	} else {
+-
+-		pid = fork();
+-		if (pid == -1) {
+-			perror("Fork() failed\n");
+-			printf("%s:FAILED\n", argv[0]);
+-			return exit_code;
+-		}
+-
+-		if (pid > 0) {
+-			int status;
+-			waitpid(pid, &status, 0);
+-			return 0;
+-		} else {
+-			if (CHECK_NEWNS(mount("none", "/proc", NULL, MS_PRIVATE|MS_REC, NULL),
+-				"Unmounting proc", "Cannot umount proc! errno=%d\n", errno))
+-				return exit_code;
+-
+-			if (CHECK_NEWNS(mount("proc", "/proc", "proc", MS_NOSUID|MS_NOEXEC|MS_NODEV, NULL),
+-				"Mounting proc", "Cannot mount proc! errno=%d\n", errno))
+-				return exit_code;
+-
+-			const char *probe_name = "raw_tracepoint/sys_enter";
+-			const char *file = "test_ns_current_pid_tgid.o";
+-			struct bpf_link *link = NULL;
+-			struct bpf_program *prog;
+-			struct bpf_map *bss_map;
+-			struct bpf_object *obj;
+-			int exit_code = 1;
+-			int err, key = 0;
+-			struct bss bss;
+-			struct stat st;
+-			__u64 id;
+-
+-			obj = bpf_object__open_file(file, NULL);
+-			if (CHECK_NEWNS(IS_ERR(obj), "obj_open", "err %ld\n", PTR_ERR(obj)))
+-				return exit_code;
+-
+-			err = bpf_object__load(obj);
+-			if (CHECK_NEWNS(err, "obj_load", "err %d errno %d\n", err, errno))
+-				goto cleanup;
+-
+-			bss_map = bpf_object__find_map_by_name(obj, "test_ns_.bss");
+-			if (CHECK_NEWNS(!bss_map, "find_bss_map", "failed\n"))
+-				goto cleanup;
+-
+-			prog = bpf_object__find_program_by_title(obj, probe_name);
+-			if (CHECK_NEWNS(!prog, "find_prog", "prog '%s' not found\n",
+-						probe_name))
+-				goto cleanup;
+-
+-			memset(&bss, 0, sizeof(bss));
+-			pid_t tid = syscall(SYS_gettid);
+-			pid_t pid = getpid();
+-
+-			id = (__u64) tid << 32 | pid;
+-			bss.user_pid_tgid = id;
+-
+-			if (CHECK_NEWNS(stat("/proc/self/ns/pid", &st),
+-				"stat new ns", "Failed to stat /proc/self/ns/pid errno=%d\n", errno))
+-				goto cleanup;
+-
+-			bss.dev = st.st_dev;
+-			bss.ino = st.st_ino;
+-
+-			err = bpf_map_update_elem(bpf_map__fd(bss_map), &key, &bss, 0);
+-			if (CHECK_NEWNS(err, "setting_bss", "failed to set bss : %d\n", err))
+-				goto cleanup;
+-
+-			link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
+-			if (CHECK_NEWNS(IS_ERR(link), "attach_raw_tp", "err %ld\n",
+-						PTR_ERR(link))) {
+-				link = NULL;
+-				goto cleanup;
+-			}
+-
+-			/* trigger some syscalls */
+-			usleep(1);
+-
+-			err = bpf_map_lookup_elem(bpf_map__fd(bss_map), &key, &bss);
+-			if (CHECK_NEWNS(err, "set_bss", "failed to get bss : %d\n", err))
+-				goto cleanup;
+-
+-			if (CHECK_NEWNS(id != bss.pid_tgid, "Compare user pid/tgid vs. bpf pid/tgid",
+-						"User pid/tgid %llu BPF pid/tgid %llu\n", id, bss.pid_tgid))
+-				goto cleanup;
+-
+-			exit_code = 0;
+-			printf("%s:PASS\n", argv[0]);
+-cleanup:
+-			if (!link) {
+-				bpf_link__destroy(link);
+-				link = NULL;
+-			}
+-			bpf_object__close(obj);
+-		}
+-	}
+-}
+-- 
+2.20.1
+
