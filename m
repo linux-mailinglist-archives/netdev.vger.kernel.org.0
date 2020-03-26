@@ -2,120 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59E2B194C07
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 00:14:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E24F7194C0E
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 00:16:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727639AbgCZXOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 19:14:32 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:26306 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727347AbgCZXOc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 19:14:32 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 02QN9IBc032498;
-        Thu, 26 Mar 2020 16:14:17 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=113rVbSKXoplpZeuH67Z9X993mY92nW81x0ySNRQcGc=;
- b=FemSma3V/d+vepTYQw55xdRf6I4++iya20tnZVgUxdmJk9QznWopJ6Dpzs1GITwNxJkI
- oMcmZBi2tEL8kDz6Ialg9kzf4kmw5GMxm2i2EPRniKlvjpMxp5lwBWf/3rhxlnmsnY3b
- ttsmkb2bUh3dDNdxwF0lcBb11hqkEIhrx0g= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 2yweknxj3y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 26 Mar 2020 16:14:17 -0700
-Received: from NAM04-BN3-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Thu, 26 Mar 2020 16:14:16 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LDph1IYAI+hXWNh2nK8uFulR2ogo62jF+Fw2cyCmv4rS49MoeMiNr/CKXK//AZ4KT7GaC85o36tjx1BH6l6zwVBP/qQUVvcS3Mb1zng3uB2ulsNwFsp14/83tkWduixEqnnhKjafWW3lE4UKV5DhicF9RGs+WAwCtq/nfZKeFMsUiQg7SRDZw6F2F3iBfwqXFNsLH+KF524AXyMagfI2DjVr7fVbdKtoNQAu7DdSoTe4l9KTlREFui2uzxQPClv6eW20yVPKOuK2MxcoKfmkjMFKhq0NIFynmRtT/4nJ2+2TIkaQrZayaR2xLX3WyrOPSDBCDVr5vWHweudqJbHhHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=113rVbSKXoplpZeuH67Z9X993mY92nW81x0ySNRQcGc=;
- b=ZTCIUCvUDs33BEOep+UIdu7QQOtTxuaxO0ncUD0ESBx61Yh5Oa5mnajNRjhVndXm2z0DKn66HuNHZHlVsFrx2No62kAFMheHaPWXrbJxZSw75BE6u++1wTzZ7HI+zavlfls9VhQcuAvxwLuRpY+orw9RtIgmBc3RcYrr98+gClfvvzg6axk/1CDGhdSB1tVS0/1n6OhCFJxCsBNk3H88iTYtBv/SlstGPEJ1RaQ6wVy9DDxDGbdu8Vsm7P8A951hoqsocFK9pul0XH2szARs+AblXxdsVMii7vafPqbnCyoLwitHJTDBsKEIfXPtXynhINGNsmJZ9aQourIxp6nVow==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=113rVbSKXoplpZeuH67Z9X993mY92nW81x0ySNRQcGc=;
- b=C34WnwXOPqkuGFhIDc6yr1qcGsTVRhdkgq3dT71X1bvlzWfkYmxZr42YYJyBY8MAlFA4cdKXfJum42kpU0RyA5LCHdcONeDSibbhijqHFtYEEeYsFgCL2wfALTqpieQtTxtvfwkFMoJnHS8FMKsxplzMIoTUIkr5UdnsTGV/OCY=
-Received: from MW3PR15MB3883.namprd15.prod.outlook.com (2603:10b6:303:51::22)
- by MW3PR15MB3772.namprd15.prod.outlook.com (2603:10b6:303:4c::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.20; Thu, 26 Mar
- 2020 23:14:14 +0000
-Received: from MW3PR15MB3883.namprd15.prod.outlook.com
- ([fe80::a49b:8546:912f:dd98]) by MW3PR15MB3883.namprd15.prod.outlook.com
- ([fe80::a49b:8546:912f:dd98%5]) with mapi id 15.20.2835.025; Thu, 26 Mar 2020
- 23:14:14 +0000
-Subject: Re: call for bpf progs. Re: [PATCHv2 bpf-next 5/5] selftests: bpf:
- add test for sk_assign
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>
-CC:     Joe Stringer <joe@wand.net.nz>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Martin Lau <kafai@fb.com>
-References: <20200325055745.10710-1-joe@wand.net.nz>
- <20200325055745.10710-6-joe@wand.net.nz>
- <82e8d147-b334-3d29-0312-7b087ac908f3@fb.com>
- <CACAyw99Eeu+=yD8UKazRJcknZi3D5zMJ4n=FVsxXi63DwhdxYA@mail.gmail.com>
- <20200326210719.den5isqxntnoqhmv@ast-mbp>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <ac11345e-3036-4f88-96ab-9cff84b5d9ea@fb.com>
-Date:   Thu, 26 Mar 2020 16:14:10 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:68.0)
- Gecko/20100101 Thunderbird/68.6.0
-In-Reply-To: <20200326210719.den5isqxntnoqhmv@ast-mbp>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1727473AbgCZXQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 19:16:46 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:40326 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726296AbgCZXQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 19:16:46 -0400
+Received: by mail-wm1-f66.google.com with SMTP id a81so10256379wmf.5
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 16:16:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1bhLL/bx39ZhUi9YdzVVuwg/L4wh+uECQIPkRYVRs7U=;
+        b=hxN2GdejIG7dRGHpsnS/Pl/BSbnOX+OULJDPwhlO93UEHfw65cPm2Tusp5nFE2G1Y/
+         diwAAMhtvUIt2UnPDyx6RrO5w/tYXMmugElRyWteW1DqhnHuU2eFG4A27qvIRkvtmTXl
+         eUgo6KH/h3XSlUFbkOollS83APVNXh61pXgZwQu0Cv6/Hx8v6Yq/tF4OugicW5UPc/1F
+         7wPFhsiFbypoGz5D9DCPsgpXNZYIRyxMakbgwgGphT339sGAADK9JRFo7vFlEnpBeTkr
+         KugqlRkbBTLbgZmtT8Jn8y9roAegHvmmtRBoH5ni8wLD9Q80ez6prWSk6qGxt4tHQAMW
+         3ILg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=1bhLL/bx39ZhUi9YdzVVuwg/L4wh+uECQIPkRYVRs7U=;
+        b=DDjo8CUCGcbjbcJu5J3x5KLOgciJJbP249Ypac5RlO2UJSvWPfVeHR6iRc4dudcro9
+         7VBsKkBf7yaFuAUgI5J5S4EcT5i+F+/uv9x6SbuFnrEzQ0rldUSospz9e0PW0bga/CXZ
+         qzOHdk5avj7pkLOr8JtwY8LKKFHD/D3MNjYOEnRncyfxhtzFy1a76viB0Z3iWdYUvRiS
+         2i0nkJACudIsXvGcvTmn1PlVWkQ+WKB702LOZ/oWN1M2neCNmjlLHeexhPHYBMfa7omz
+         GPhjf/QgWBUsdV8GuaL1SuBpR8VVPyrIwNylMdcG/Ijfb8izAFYc45vDVFo4QNT4PwKH
+         6dpg==
+X-Gm-Message-State: ANhLgQ2cLlednBP/yOYnx42CEjDxPz9+u60TWkjhIk6F9KmSBXZpbuli
+        zzxippGw70xsY+fmQFf5fK54gSPp
+X-Google-Smtp-Source: ADFU+vvGq8zNUiX0imSW9N7VXMXjZA9YM5HNT/nJ/7ppMgu8QISnFWYlRDLlrQxw8gCvIjsXtgpDyw==
+X-Received: by 2002:adf:b307:: with SMTP id j7mr12375826wrd.128.1585264603279;
+        Thu, 26 Mar 2020 16:16:43 -0700 (PDT)
+Received: from [10.230.186.223] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id i1sm5503482wrq.89.2020.03.26.16.16.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Mar 2020 16:16:42 -0700 (PDT)
+Subject: Re: [PATCH v3 net-next 5/8] net: dsa: b53: add MTU configuration
+ support
+To:     Vladimir Oltean <olteanv@gmail.com>, andrew@lunn.ch,
+        vivien.didelot@gmail.com, davem@davemloft.net,
+        jakub.kicinski@netronome.com
+Cc:     murali.policharla@broadcom.com, stephen@networkplumber.org,
+        jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
+        nikolay@cumulusnetworks.com, netdev@vger.kernel.org
+References: <20200326224040.32014-1-olteanv@gmail.com>
+ <20200326224040.32014-6-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <ca7e48c2-249a-9066-045f-04708474ef8a@gmail.com>
+Date:   Thu, 26 Mar 2020 16:16:38 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <20200326224040.32014-6-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MW2PR16CA0053.namprd16.prod.outlook.com
- (2603:10b6:907:1::30) To MW3PR15MB3883.namprd15.prod.outlook.com
- (2603:10b6:303:51::22)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from macbook-pro-52.local.dhcp.thefacebook.com (2620:10d:c090:400::5:ab1) by MW2PR16CA0053.namprd16.prod.outlook.com (2603:10b6:907:1::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.19 via Frontend Transport; Thu, 26 Mar 2020 23:14:12 +0000
-X-Originating-IP: [2620:10d:c090:400::5:ab1]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a19c2a09-24a8-4838-7f85-08d7d1db6617
-X-MS-TrafficTypeDiagnostic: MW3PR15MB3772:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MW3PR15MB37729213111D2C5B6D503540D3CF0@MW3PR15MB3772.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Forefront-PRVS: 0354B4BED2
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(396003)(376002)(39860400002)(366004)(136003)(346002)(53546011)(31686004)(6506007)(52116002)(6486002)(66476007)(66946007)(186003)(16526019)(2616005)(5660300002)(110136005)(2906002)(36756003)(4326008)(31696002)(6512007)(54906003)(966005)(316002)(81166006)(478600001)(81156014)(8936002)(66556008)(86362001)(8676002);DIR:OUT;SFP:1102;SCL:1;SRVR:MW3PR15MB3772;H:MW3PR15MB3883.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;
-Received-SPF: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MQLQ8LEWYBHPTGEON/Lsl2d7nKEVrfMuDEoP5UGAfxyv6aXlV824hxUtdKYeEHTgiMu/3+XSvBKeeRyfqzodqLfjjCn9cCGm6H+Clw9bCfNFJQmsWmsdXg+g2P6PubpntHwfLT4vB9OHZ7mKn6Xd1qqWX0Bzh6r4PO9w93mtUSIfoK4LtIbLD/FaC+VbMUbTUfhf2VVjusLR/bcA+0+LmuIU/XuTTSXYTBhTckE73WerqsKde2exEIsIP+v2P0ISUtIAKqWgoNzK3LUdCCm8gRSyD/1X+QHXrNo8T5EABB3eL6HuQ6oR12KD9P+V0YZp+Ke0NoI1dTG97u9aMJDosOZFZCfgfiUm10ZzqZBeSlxVbOH42cV31ignrt2d5+0duDopnOkerxW9vKJio4CH3dd7e8Wr9RxrtcqixigleT0YAfrbg2qAswKbjC8u5nwVUu2YUea5pFAD6ldfYG/RBcQ6xTSCUk/ml9qTNLvB9bNpq+exEP359VF+S+DtJgDDvPwu0aUvAazDywiIxbkceg==
-X-MS-Exchange-AntiSpam-MessageData: /UrYUZrj0MDfobUmk3743IripLYGL2hheU3/AY2Z0yrOOuvLFrjngjE9oLpi+ghkK6nVFNu+4q/0OSF8sdfjebudGiuqORmYQZ1GsV2zMDJT2izy4XSHvf5Bhg45K1k71kfd/NRS2046vYYIK/pNOYTahxlkR/nHM55rGdufLfjPQVHHnIq9fsdrrwr2uZ/Y
-X-MS-Exchange-CrossTenant-Network-Message-Id: a19c2a09-24a8-4838-7f85-08d7d1db6617
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2020 23:14:13.8736
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XxoTOMRKqPjTqjlUz3Mqjwt0xf4xsgjJG6HqaDV4UCrC1vuWthIYMf9vYvueK8Tc
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR15MB3772
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
- definitions=2020-03-26_14:2020-03-26,2020-03-26 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
- lowpriorityscore=0 mlxlogscore=999 spamscore=0 phishscore=0 suspectscore=0
- clxscore=1015 adultscore=0 mlxscore=0 impostorscore=0 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2003260168
-X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -123,68 +126,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 3/26/20 2:07 PM, Alexei Starovoitov wrote:
-> On Thu, Mar 26, 2020 at 10:13:31AM +0000, Lorenz Bauer wrote:
->>>> +
->>>> +     if (ipv4) {
->>>> +             if (tuple->ipv4.dport != bpf_htons(4321))
->>>> +                     return TC_ACT_OK;
->>>> +
->>>> +             ln.ipv4.daddr = bpf_htonl(0x7f000001);
->>>> +             ln.ipv4.dport = bpf_htons(1234);
->>>> +
->>>> +             sk = bpf_skc_lookup_tcp(skb, &ln, sizeof(ln.ipv4),
->>>> +                                     BPF_F_CURRENT_NETNS, 0);
->>>> +     } else {
->>>> +             if (tuple->ipv6.dport != bpf_htons(4321))
->>>> +                     return TC_ACT_OK;
->>>> +
->>>> +             /* Upper parts of daddr are already zero. */
->>>> +             ln.ipv6.daddr[3] = bpf_htonl(0x1);
->>>> +             ln.ipv6.dport = bpf_htons(1234);
->>>> +
->>>> +             sk = bpf_skc_lookup_tcp(skb, &ln, sizeof(ln.ipv6),
->>>> +                                     BPF_F_CURRENT_NETNS, 0);
->>>> +     }
->>>> +
->>>> +     /* We can't do a single skc_lookup_tcp here, because then the compiler
->>>> +      * will likely spill tuple_len to the stack. This makes it lose all
->>>> +      * bounds information in the verifier, which then rejects the call as
->>>> +      * unsafe.
->>>> +      */
->>>
->>> This is a known issue. For scalars, only constant is restored properly
->>> in verifier at this moment. I did some hacking before to enable any
->>> scalars. The fear is this will make pruning performs worse. More
->>> study is needed here.
->>
->> Of topic, but: this is actually one of the most challenging issues for
->> us when writing
->> BPF. It forces us to have very deep call graphs to hopefully avoid clang
->> spilling the constants. Please let me know if I can help in any way.
+On 3/26/2020 3:40 PM, Vladimir Oltean wrote:
+> From: Murali Krishna Policharla <murali.policharla@broadcom.com>
 > 
-> Thanks for bringing this up.
-> Yonghong, please correct me if I'm wrong.
+> It looks like the Broadcomm switches supported by the b53 driver don't
+                            ^= one too many m's, the attempt to acquire
+Qualcomm failed a few years ago :)
 
-Yes. The summary below is correct. For reference, the below bcc issue
-documents some of my investigation:
-   https://github.com/iovisor/bcc/issues/2463
+> support precise configuration of the MTU, but just a mumbo-jumbo boolean
+> flag. Set that.
+> 
+> Also configure BCM583XX devices to send and receive jumbo frames when
+> ports are configured with 10/100 Mbps speed.
+> 
+> Signed-off-by: Murali Krishna Policharla <murali.policharla@broadcom.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
 
-> I think you've experimented with tracking spilled constants. The first issue
-> came with spilling of 4 byte constant. The verifier tracks 8 byte slots and
-> lots of places assume that slot granularity. It's not clear yet how to refactor
-> the verifier. Ideas, help are greatly appreciated.
+[snip]
 
-I cannot remember exactly what I did then. Probably remember the spilled 
-size too. Since the hack is never peer reviewed, maybe my approach has bugs.
+> +static int b53_change_mtu(struct dsa_switch *ds, int port, int mtu)
+> +{
+> +	struct b53_device *dev = ds->priv;
+> +	bool enable_jumbo;
+> +	bool allow_10_100;
+> +
+> +	if (is5325(dev) || is5365(dev))
+> +		return -EOPNOTSUPP;
+> +
+> +	enable_jumbo = (mtu >= JMS_MIN_SIZE);
+> +	allow_10_100 = (dev->chip_id == BCM58XX_DEVICE_ID);
 
-> The second concern was pruning, but iirc the experiments were inconclusive.
-> selftests/bpf only has old fb progs. Hence, I think, the step zero is for
-> everyone to contribute their bpf programs written in C. If we have both
-> cilium and cloudflare progs as selftests it will help a lot to guide such long
-> lasting verifier decisions.
+I believe this was meant to be BCM583XX_DEVICE_ID to be consistent with
+the previous patch version. With that:
 
-Yes, this is inconclusive and I did not do any active investigation here
-since just enhancing the non-const spill won't resolve the above issue.
-But totally agree that if we had an implementation, we should measure
-its impact on verifier speed.
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
