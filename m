@@ -2,44 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B44119354C
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 02:33:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86C31193554
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 02:43:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727593AbgCZBdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 21:33:43 -0400
-Received: from mga18.intel.com ([134.134.136.126]:47403 "EHLO mga18.intel.com"
+        id S1727590AbgCZBnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 21:43:23 -0400
+Received: from mga06.intel.com ([134.134.136.31]:22345 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727574AbgCZBdn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 21:33:43 -0400
-IronPort-SDR: 9q8IdNB0+umKWd/zAe2jZBIp42RJeSEHqIDAomRQDyRU7vlF9p31LUCRP4gvB/W2P84skws8r0
- VqmHaP8b3Z0g==
+        id S1727561AbgCZBnX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Mar 2020 21:43:23 -0400
+IronPort-SDR: +5hlAymmRXcpmsbRq2Ekrdf5FD6TNODrwtxOm81jvYO6eM8VIZ2yLxrrXnx7HVhlbbYClQrvhJ
+ YjsHNImjHnuw==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2020 18:33:42 -0700
-IronPort-SDR: ZR3TOtkEBe1LVRuIJka2du90FDcHundI97zG6fTSAjLDeIC0jthSa6Wh7jEttA3J/PkmMkVd+S
- 86VdukSTplVg==
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2020 18:43:22 -0700
+IronPort-SDR: k6RCk5j3rvup9b3Gd8RUJ8iEphowQFsl6ap+UAJOgwdlFPwGenparml9jB6VtPaEQrNOJ6mbI4
+ 6nn7wJWTFgYg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,306,1580803200"; 
-   d="scan'208";a="282332448"
+   d="scan'208";a="282334013"
 Received: from cdalvizo-mobl1.amr.corp.intel.com (HELO [10.252.133.80]) ([10.252.133.80])
-  by fmsmga002.fm.intel.com with ESMTP; 25 Mar 2020 18:33:41 -0700
-Subject: Re: [PATCH 06/10] devlink: convert snapshot id getter to return an
- error
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@resnulli.us>,
-        Jiri Pirko <jiri@mellanox.com>
+  by fmsmga002.fm.intel.com with ESMTP; 25 Mar 2020 18:43:21 -0700
+Subject: Re: [PATCH] devlink: track snapshot id usage count using an xarray
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
 References: <20200324223445.2077900-1-jacob.e.keller@intel.com>
- <20200324223445.2077900-7-jacob.e.keller@intel.com>
- <20200325110425.6fdf6cb3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20200324223445.2077900-8-jacob.e.keller@intel.com>
+ <20200325160832.GY11304@nanopsycho.orion>
 From:   Jacob Keller <jacob.e.keller@intel.com>
 Organization: Intel Corporation
-Message-ID: <c119488b-1b27-7c65-7e60-a64bdda585c1@intel.com>
-Date:   Wed, 25 Mar 2020 18:33:41 -0700
+Message-ID: <e0b46a11-4174-163b-401b-bdfe1d6e4f5c@intel.com>
+Date:   Wed, 25 Mar 2020 18:43:21 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <20200325110425.6fdf6cb3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200325160832.GY11304@nanopsycho.orion>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -50,46 +48,56 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 3/25/2020 11:04 AM, Jakub Kicinski wrote:
-> On Tue, 24 Mar 2020 15:34:41 -0700 Jacob Keller wrote:
->> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
->> index f7621ccb7b88..f9420b77e5fd 100644
->> --- a/drivers/net/netdevsim/dev.c
->> +++ b/drivers/net/netdevsim/dev.c
->> @@ -45,8 +45,7 @@ static ssize_t nsim_dev_take_snapshot_write(struct file *file,
->>  {
->>  	struct nsim_dev *nsim_dev = file->private_data;
->>  	void *dummy_data;
->> -	int err;
->> -	u32 id;
->> +	int err, id;
->>  
->>  	dummy_data = kmalloc(NSIM_DEV_DUMMY_REGION_SIZE, GFP_KERNEL);
->>  	if (!dummy_data)
->> @@ -55,6 +54,10 @@ static ssize_t nsim_dev_take_snapshot_write(struct file *file,
->>  	get_random_bytes(dummy_data, NSIM_DEV_DUMMY_REGION_SIZE);
->>  
->>  	id = devlink_region_snapshot_id_get(priv_to_devlink(nsim_dev));
->> +	if (id < 0) {
->> +		pr_err("Failed to get snapshot id\n");
->> +		return id;
->> +	}
->>  	err = devlink_region_snapshot_create(nsim_dev->dummy_region,
->>  					     dummy_data, id);
->>  	if (err) {
+On 3/25/2020 9:08 AM, Jiri Pirko wrote:
+> Tue, Mar 24, 2020 at 11:34:42PM CET, jacob.e.keller@intel.com wrote:
+>> +static int __devlink_snapshot_id_increment(struct devlink *devlink, u32 id)
+>> +{
+>> +	unsigned long count;
+>> +	int err;
+>> +	void *p;
+>> +
+>> +	lockdep_assert_held(&devlink->lock);
+>> +
+>> +	p = xa_load(&devlink->snapshot_ids, id);
+>> +	if (!p)
+>> +		return -EEXIST;
 > 
-> Hmm... next patch introduces some ref counting on the ID AFAICT,
-> should there be some form of snapshot_id_put(), once the driver is 
-> done creating the regions it wants?
-> 
-> First what if driver wants to create two snapshots with the same ID but
-> user space manages to delete the first one before second one is created.
-> 
-> Second what if create fails, won't the snapshot ID just stay in XA with
-> count of 0 forever?
+> This is confusing. You should return rather -ENOTEXIST, if it existed :)
+> -EINVAL and WARN_ON. This should never happen
 > 
 
-Ah, yep good catch. I'll add a _put* function and make drivers call this.
+Yea this is confusing. I'll add a WARN_ON, and use EINVAL.
+
+> 
+>> +
+>> +	if (!xa_is_value(p))
+>> +		return -EINVAL;
+>> +
+>> +	count = xa_to_value(p);
+>> +	count++;
+>> +
+>> +	err = xa_err(xa_store(&devlink->snapshot_ids, id, xa_mk_value(count),
+>> +			      GFP_KERNEL));
+> 
+> Just return here and remove err variable.
+
+Yep.
+
+>> -	if (devlink->snapshot_id >= INT_MAX)
+>> -		return -ENOSPC;
+>> +	/* xa_limit_31b ensures the id will be between 0 and INT_MAX */
+> 
+> Well, currently the snapshot_id is u32. Even the netlink attr is u32.
+> I believe we should not limit it here.
+> 
+> Please have this as xa_limit_32b.
+> 
+
+Currently we can't do that. Negative values are used to represent
+errors, and allowing up to u32 would break the get function, because
+large IDs would be interpreted as errors.
+
+I'll clean this up in a patch first before the xarray stuff.
 
 Thanks,
 Jake
