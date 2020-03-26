@@ -2,225 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 035CF1945C9
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 18:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF3701945E5
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 18:55:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727851AbgCZRsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 13:48:19 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:37356 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727770AbgCZRsT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 13:48:19 -0400
-Received: by mail-qk1-f194.google.com with SMTP id x3so7675901qki.4
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 10:48:11 -0700 (PDT)
+        id S1727989AbgCZRzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 13:55:45 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:54377 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726359AbgCZRzp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 13:55:45 -0400
+Received: by mail-wm1-f67.google.com with SMTP id c81so7494480wmd.4;
+        Thu, 26 Mar 2020 10:55:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=UdzathrvJR4jBf7F/I3MbOudIL3YUZaxVWJlak5sKcI=;
-        b=Zq8FyuU39YhoJErv0PWz7r1nc08kY94S4Pdlabi/HURBH1p9dBfba425PKa6v6PJt4
-         XLf5dZyquYrfHb65FM714FJxb8ic4esiZd7TyupZxVLWtDwLCoDccyynFMyHKAXDeanz
-         9hxh9Ql69QhiCe6h73hTyuDc4B6omXS46zWl90iyiGO043QfH9HI1QHjhy87e7PaFooI
-         5pDnjU/yFJCMk/5XqSXOrFNojvlSnIjoMOgYGyTOrl0yMqMYrBxyW2oFAwNAxaeLqJ7D
-         K/TGMi2M7DHzPcD+yotcBKb9oUVF9+rl5iXT6BLiqcV9hIRQftTMcp6Nl05JheKB8kE2
-         tFGg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=8l2oRnDlBMb0gXsLvGjz4aRGCAhqoB1hZgrGjPsa2To=;
+        b=RhQmfK7zxsQz9efFQMf3Mgar0VVI4KEnYZVN24ZrLsHIMhWb+dRvc8+mZqQmF1LwqO
+         DpYAPanXRGJSF+ymGAJZAyu+H1jY+mVs1Ste/CgMEux+jM8JmvEikda59HDUR8CVpYTy
+         q2J9IQh2HJAGqgxWU1EVZ+CRu1rMtU3TiNFOdjeDfwuqMYY+JebAU3yd+x2APX8aeGwK
+         Kn0jY19MNPeLE3h9aLAxZMYOHZMBwUMSOJq9q3lDooQtyaQ5VxqCFHwGwjFEn/IO7WRM
+         qPJgDo5buaIoEj4MUshrYNO2xbk469eB83cRM35NUwBLbzT0t6iA6lx41Z7XBjuFdNGI
+         Ymqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=UdzathrvJR4jBf7F/I3MbOudIL3YUZaxVWJlak5sKcI=;
-        b=BBqmSfPJMHvVvS+cvVI9c32bDz2k1u78zPS3cNSZKRAzfCpDRNGSK9RIVIY2Eqaz3R
-         UXnGwjCrt+NyXWFYBJaop70sxREZKFl6ax16vftZh4dlSSFbnaqDtEK8yUK1+pVB0CFI
-         sc/1dELGAkWnWfFdyZsm1ZoElRc+KRJEXOES/3QInED6z1hcwWORNs0WGbDhrYRmVBL/
-         nlwlaBvVj4U9q+yPJjhi1HiTbVjzyZTOEff1CG59TQEBZYxGNvRtdsIaehyP4IbpMKmK
-         MtAb0yMgh9ofyeUj4D2mwrhxvFtqkMwnHy1zpNVR1ePzu2yXnv3cKZzuqH3Q9xLRP14b
-         ZAlA==
-X-Gm-Message-State: ANhLgQ0PH9KqsA4N11bmpHLen1iLYAO59AndHeJ4JZjILJZT9npobUbO
-        PMp4orfPgFCmzGPcZDMLqIysT9e30j7sH4ImaKEXag==
-X-Google-Smtp-Source: ADFU+vvJ8xbBOuqKCiv4VZmIKjFDD2oxqXeZaKqzly9zC2/bbQwsZwdxkNyXRYptfnRBVx4mUyxlC+TgKOkjCe+cJJk=
-X-Received: by 2002:a37:3c9:: with SMTP id 192mr9514408qkd.330.1585244891403;
- Thu, 26 Mar 2020 10:48:11 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8l2oRnDlBMb0gXsLvGjz4aRGCAhqoB1hZgrGjPsa2To=;
+        b=JEO64nfeATFcSLk2q5aIk/QGRyKqobSuF3J29u/H5vQ+OQjye2ra6jCIyoDDcNBFLJ
+         JKtAjTMOJj2JfgCIuXlmeAdnhXq1aflptYACJ7x4LlDX4pkBb/GJKQssmFfaOZjsn6Fb
+         3powiKcS7gb1SSF8ic0A4XJen+O4cENKFCQ/3W3EloLQ9CMHUBGSSpdtzllvOlQM+8Qr
+         X7r/7PUuaQE+84xbM40XzX7Ywe0lZm1AD/x4hcB0bMqmHfih2rbasDVwwUQiSHo4L+RW
+         Jbg+zp1i4qPtHLNXt0XRv9Vj0PdDvJXjRDZfOz8+d4d9OC17YHHveRdG2Wvc53u0+pd7
+         857Q==
+X-Gm-Message-State: ANhLgQ3kS6DJXvqIIzU9kPQWAckQDJYfqhrtoHvwAnM2CY1xD0+gfKnH
+        I3449745MP1fnJL3xcOw9i4=
+X-Google-Smtp-Source: ADFU+vvQYAns/H4naOtzD0AQEl0lguuS8ZgJ+3MxwcxBvnyytUVJtfuzo3jqR3eODXmd0fraia5JTA==
+X-Received: by 2002:a7b:c1da:: with SMTP id a26mr1177478wmj.91.1585245342367;
+        Thu, 26 Mar 2020 10:55:42 -0700 (PDT)
+Received: from andrea ([86.61.236.197])
+        by smtp.gmail.com with ESMTPSA id w9sm5014104wrk.18.2020.03.26.10.55.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2020 10:55:41 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 18:55:31 +0100
+From:   Andrea Parri <parri.andrea@gmail.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     linux-kernel@vger.kernel.org,
+        "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
+        Michael Kelley <mikelley@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 04/11] hv_netvsc: Disable NAPI before closing the
+ VMBus channel
+Message-ID: <20200326175531.GA20523@andrea>
+References: <20200325225505.23998-1-parri.andrea@gmail.com>
+ <20200325225505.23998-5-parri.andrea@gmail.com>
+ <20200326082636.1d777921@hermes.lan>
 MIME-Version: 1.0
-References: <20200326131721.6404-1-brgl@bgdev.pl> <c71a132d-dc33-0b8a-29e0-9cf93056ef52@gmail.com>
-In-Reply-To: <c71a132d-dc33-0b8a-29e0-9cf93056ef52@gmail.com>
-From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Date:   Thu, 26 Mar 2020 18:48:00 +0100
-Message-ID: <CAMpxmJWLbUR5ojGi3vdMw-vrG3ias9yUE+ycrhZ8m=EL-GrreQ@mail.gmail.com>
-Subject: Re: [PATCH] net: core: provide devm_register_netdev()
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200326082636.1d777921@hermes.lan>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-czw., 26 mar 2020 o 18:39 Heiner Kallweit <hkallweit1@gmail.com> napisa=C5=
-=82(a):
->
-> On 26.03.2020 14:17, Bartosz Golaszewski wrote:
-> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> >
-> > Create a new source file for networking devres helpers and provide
-> > devm_register_netdev() - a managed variant of register_netdev().
-> >
-> > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > ---
-> > I'm writing a new ethernet driver and I realized there's no devres
-> > variant for register_netdev(). Since this is the only function I need
-> > to get rid of the remove() callback, I thought I'll just go ahead and
-> > add it and send it even before the driver to make it available to other
-> > drivers.
-> >
->
-> Such a new functionality typically is accepted as part of series adding
-> at least one user only. Therefore best submit it together with the new
-> network driver.
->
+On Thu, Mar 26, 2020 at 08:26:36AM -0700, Stephen Hemminger wrote:
+> On Wed, 25 Mar 2020 23:54:58 +0100
+> "Andrea Parri (Microsoft)" <parri.andrea@gmail.com> wrote:
+> 
+> > vmbus_chan_sched() might call the netvsc driver callback function that
+> > ends up scheduling NAPI work.  This "work" can access the channel ring
+> > buffer, so we must ensure that any such work is completed and that the
+> > ring buffer is no longer being accessed before freeing the ring buffer
+> > data structure in the channel closure path.  To this end, disable NAPI
+> > before calling vmbus_close() in netvsc_device_remove().
+> > 
+> > Suggested-by: Michael Kelley <mikelley@microsoft.com>
+> > Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: <netdev@vger.kernel.org>
+> 
+> Do you have a test that reproduces this issue?
 
-Sure, will do.
+I don't (or I'm not aware of such a test).
 
-> >  .../driver-api/driver-model/devres.rst        |  3 ++
-> >  include/linux/netdevice.h                     |  1 +
-> >  net/core/Makefile                             |  2 +-
-> >  net/core/devres.c                             | 41 +++++++++++++++++++
-> >  4 files changed, 46 insertions(+), 1 deletion(-)
-> >  create mode 100644 net/core/devres.c
-> >
-> > diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documen=
-tation/driver-api/driver-model/devres.rst
-> > index 46c13780994c..11a03b65196e 100644
-> > --- a/Documentation/driver-api/driver-model/devres.rst
-> > +++ b/Documentation/driver-api/driver-model/devres.rst
-> > @@ -372,6 +372,9 @@ MUX
-> >    devm_mux_chip_register()
-> >    devm_mux_control_get()
-> >
-> > +NET
-> > +  devm_register_netdev()
-> > +
-> >  PER-CPU MEM
-> >    devm_alloc_percpu()
-> >    devm_free_percpu()
-> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> > index 6c3f7032e8d9..710a7bcfc3dc 100644
-> > --- a/include/linux/netdevice.h
-> > +++ b/include/linux/netdevice.h
-> > @@ -4196,6 +4196,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_pr=
-iv, const char *name,
-> >                        count)
-> >
-> >  int register_netdev(struct net_device *dev);
-> > +int devm_register_netdev(struct device *dev, struct net_device *ndev);
-> >  void unregister_netdev(struct net_device *dev);
-> >
-> >  /* General hardware address lists handling functions */
-> > diff --git a/net/core/Makefile b/net/core/Makefile
-> > index 3e2c378e5f31..f530894068d2 100644
-> > --- a/net/core/Makefile
-> > +++ b/net/core/Makefile
-> > @@ -8,7 +8,7 @@ obj-y :=3D sock.o request_sock.o skbuff.o datagram.o st=
-ream.o scm.o \
-> >
-> >  obj-$(CONFIG_SYSCTL) +=3D sysctl_net_core.o
-> >
-> > -obj-y                     +=3D dev.o dev_addr_lists.o dst.o netevent.o=
- \
-> > +obj-y                     +=3D dev.o devres.o dev_addr_lists.o dst.o n=
-etevent.o \
-> >                       neighbour.o rtnetlink.o utils.o link_watch.o filt=
-er.o \
-> >                       sock_diag.o dev_ioctl.o tso.o sock_reuseport.o \
-> >                       fib_notifier.o xdp.o flow_offload.o
-> > diff --git a/net/core/devres.c b/net/core/devres.c
-> > new file mode 100644
-> > index 000000000000..3c080abd1935
-> > --- /dev/null
-> > +++ b/net/core/devres.c
->
-> Why a new source file and not just add the function to net/core/dev.c?
->
 
-This is a common approach in most sub-systems to have a dedicated
-devres.c source file for managed helpers. Eventually we could move
-devm_alloc_etherdev() here as well.
+> 
+> The netvsc device is somewhat unique in that it needs NAPI
+> enabled on the primary channel to interact with the host.
+> Therefore it can't call napi_disable in the normal dev->stop() place.
+> 
+> Acked-by: Stephen Hemminger <stephen@networkplumber.org>
 
->
-> > @@ -0,0 +1,41 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Copyright (C) 2020 BayLibre SAS
-> > + * Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > + */
-> > +
-> > +#include <linux/device.h>
-> > +#include <linux/netdevice.h>
-> > +
-> > +struct netdevice_devres {
-> > +     struct net_device *ndev;
-> > +};
-> > +
->
-> Adding such a struct isn't strictly needed.
->
+Thanks!
 
-I believe it's better in terms of readability.
-
-> > +static void devm_netdev_release(struct device *dev, void *res)
-> > +{
-> > +     struct netdevice_devres *this =3D res;
-> > +
-> > +     unregister_netdev(this->ndev);
-> > +}
-> > +
-> > +int devm_register_netdev(struct device *dev, struct net_device *ndev)
-> > +{
->
-> In this function you'd need to consider the dependency on a previous
-> call to devm_alloc_etherdev(). If the netdevice is allocated non-managed,
-> then free_netdev() would be called whilst the netdevice is still
-> registered, what would trigger a BUG_ON(). Therefore devm_register_netdev=
-()
-> should return an error if the netdevice was allocated non-managed.
-> The mentioned scenario would result from a severe programming error
-> of course, but there are less experienced driver authors and the net core
-> should deal gently with wrong API usage.
->
-
-Thank you for bringing this to my attention, I wasn't aware of that.
-I'll rework this.
-
-Best regards,
-Bartosz
-
-> An example how this could be done you can find in the PCI subsystem,
-> see pcim_release() and related functions like pcim_enable() and
-> pcim_set_mwi().
->
-> > +     struct netdevice_devres *devres;
-> > +     int ret;
-> > +
-> > +     devres =3D devres_alloc(devm_netdev_release, sizeof(*devres), GFP=
-_KERNEL);
-> > +     if (!devres)
-> > +             return -ENOMEM;
-> > +
-> > +     ret =3D register_netdev(ndev);
-> > +     if (ret) {
-> > +             devres_free(devres);
-> > +             return ret;
-> > +     }
-> > +
-> > +     devres->ndev =3D ndev;
-> > +     devres_add(dev, devres);
-> > +
-> > +     return 0;
-> > +}
-> > +EXPORT_SYMBOL(devm_register_netdev);
-> >
->
+  Andrea
