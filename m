@@ -2,128 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 605861941A4
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:37:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED8441941AC
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:38:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727881AbgCZOhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 10:37:19 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:44091 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726270AbgCZOhT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:37:19 -0400
-Received: by mail-wr1-f67.google.com with SMTP id m17so8047046wrw.11
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 07:37:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=W1ReFUAZYhfzenPEIOYllIMZiz7+qwf9R8fsVyzvXbI=;
-        b=hiHtNjrmXfBgjt/CTPrBee8qKXPX5+7MUeYZjnulcAWEeJ7x8DnO1zcRrgetjYWNpV
-         YCyVtlaIRhxVhpHnENYCjXeWb/iTI0ZDTYgPUE9lPQuMnZdE+QUoQ5GPqdtqkkRM1sX8
-         6bnxCiMgsLg1H3W4lwL0mdKHFg9oLUCAWTglUrqAis+egWNG1AqcjqwEatgaV0B1j0P2
-         pPSQIicBOGpmylZSYXR3uaY6xFa6eZw6JnDa3I7FTtuiu21GaUPeAEfrgL75lfj9cDTS
-         6fK+eR4FyDKxMOOpv5Ei+Ol+L+dY2Gh6SebjqH86+TEdY9fj+wLoNeIa2/vIaaws8Egg
-         Ytpg==
+        id S1727732AbgCZOiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 10:38:16 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:34003 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726270AbgCZOiQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:38:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585233495;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ikoFRY4zy3clfc/3+MWqXP9kGHjepx+evrHQxYHj3Qk=;
+        b=WVc13qlSC/lWRbxmt3+5JhDxo2uXAeXIMEmcuwItjVdSZGiNQ6qNDN+x9BH9DWQuBrfilv
+        JrJaJn5XdEKoABxIuixLb8PT9YYdq5aUJ8B/A6rAH77PVTEdMXfO24n9SS8zoFd8rp8Y3U
+        LsPOSXHFb0iRDSCQEPhPoGooe7u/PAw=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-192-E5H3O6bePOyrsPL3RepdAg-1; Thu, 26 Mar 2020 10:38:10 -0400
+X-MC-Unique: E5H3O6bePOyrsPL3RepdAg-1
+Received: by mail-wr1-f72.google.com with SMTP id t25so772516wrb.16
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 07:38:10 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=W1ReFUAZYhfzenPEIOYllIMZiz7+qwf9R8fsVyzvXbI=;
-        b=gbLvU9Krhpwjuj+2ZVKxBEXLVX9Tcn3Y01DRuRGKgKoxwItvE1iDd0c2R0H4nxni4b
-         w8EZfpQ5eNTlnXEEfrE92PLXlcGplq6qp7GZFGA/mogGHDn84J/AuzZfH7bxHFgD493h
-         70i6Y7r45T78UClPeiJqSXXIs9a2Cuoc3yRiUBd3hEbTIemRcPBV0AIuQYeKMhwSh2Up
-         t7TE+3oiOnB+NOHSSG0pb3aitaJ1QgS8xsC4r5Yfn+832ECoPVi2RvqoHJ81+DpJCJYQ
-         kSsDSY6cruSAh8EnQzbTsUdCURUlevUJhmm6ABW29csRFYvbC9QfysD2xmhntpY0D0at
-         X7YQ==
-X-Gm-Message-State: ANhLgQ0eMxRJouyP+Blbv1jGPu/slNlcLfhSfCGnNCSpW7VJV5LScX4U
-        9uNFj1k2T9etcz4VTfiN2tuD6A==
-X-Google-Smtp-Source: ADFU+vuDHaYHC1Phqwl1Xjq4OvZn+RjQyCnXbd7C5KIN8wx2jOtoeL82d79Ptvsdrg2tjrXbx27rsA==
-X-Received: by 2002:adf:9e8c:: with SMTP id a12mr6028400wrf.273.1585233437308;
-        Thu, 26 Mar 2020 07:37:17 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id d124sm3767109wmd.37.2020.03.26.07.37.15
+        bh=ikoFRY4zy3clfc/3+MWqXP9kGHjepx+evrHQxYHj3Qk=;
+        b=t9hdm+lBfvC1sQvcWE0uuVhZJ+Y9xdA2hbP7pyIKaJRjSfuizUiD/D8Xd1MJzG+Sbf
+         CM0FzK/F8BkFhJrLcEZZnCNipxtunIAQuYQ4a3oC5jRP1QiKL6QyRVTzQDWKuP3UrmG6
+         RPJhRW/CQ2VQSE+4mTx7yuSnhX7w0hKk42NjIcciYvKAf8C7kxJ6rdvowOFJYCQQNHHf
+         JnPGWRjmYcOapcfGklUp8t3M+CRNSPhYZJoF5dkh7qFX2No4f0lPZ4J+HFzJRa7qql3J
+         IDS5yDDKVKDfz0azrPW7TFH94pF7jCx2wWpKcGpvhDsCfkc9f3hFOA8/MXr6At8GF8C3
+         IlPw==
+X-Gm-Message-State: ANhLgQ3D2iaeP24TkdoAZ3DAQbjRwV2KRRIi0cylPHdZPHwZ2WS182PU
+        ni4EKmjJ/T+mJSl0gwz4pSHLR1a0Oy67KDYvji08u6Dp1lHq+9uu0wZ0FPYODlIw56bvXGc7kUR
+        nQ9+ctFz9ItTHSmTz
+X-Received: by 2002:a1c:bad5:: with SMTP id k204mr267567wmf.162.1585233489735;
+        Thu, 26 Mar 2020 07:38:09 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vuuNHduat6ExWFOUTYbdGH19R8sR18OUUL+T5p2xxSPMOQC1VKJxZRQmuXvB5l1CjSy9MUgNw==
+X-Received: by 2002:a1c:bad5:: with SMTP id k204mr267553wmf.162.1585233489495;
+        Thu, 26 Mar 2020 07:38:09 -0700 (PDT)
+Received: from pc-3.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
+        by smtp.gmail.com with ESMTPSA id w9sm4278174wrk.18.2020.03.26.07.38.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 07:37:15 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 15:37:14 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, parav@mellanox.com,
-        yuvalav@mellanox.com, jgg@ziepe.ca, saeedm@mellanox.com,
-        leon@kernel.org, andrew.gospodarek@broadcom.com,
-        michael.chan@broadcom.com, moshe@mellanox.com, ayal@mellanox.com,
-        eranbe@mellanox.com, vladbu@mellanox.com, kliteyn@mellanox.com,
-        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
-        tariqt@mellanox.com, oss-drivers@netronome.com,
-        snelson@pensando.io, drivers@pensando.io, aelior@marvell.com,
-        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
-        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
-        jacob.e.keller@intel.com, valex@mellanox.com,
-        linyunsheng@huawei.com, lihong.yang@intel.com,
-        vikas.gupta@broadcom.com, magnus.karlsson@intel.com
-Subject: Re: [RFC] current devlink extension plan for NICs
-Message-ID: <20200326143714.GU11304@nanopsycho.orion>
-References: <20200319192719.GD11304@nanopsycho.orion>
- <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
- <20200320073555.GE11304@nanopsycho.orion>
- <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
- <20200321093525.GJ11304@nanopsycho.orion>
- <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Thu, 26 Mar 2020 07:38:08 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 15:38:06 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Simon Chopin <s.chopin@alphalink.fr>
+Cc:     netdev@vger.kernel.org, Michal Ostrowski <mostrows@earthlink.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH net-next] pppoe: new ioctl to extract per-channel stats
+Message-ID: <20200326143806.GA31979@pc-3.home>
+References: <20200326103230.121447-1-s.chopin@alphalink.fr>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200326103230.121447-1-s.chopin@alphalink.fr>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Mar 23, 2020 at 08:21:23PM CET, kuba@kernel.org wrote:
->> >> >> Note that the PF is merged with physical port representor.
->> >> >> That is due to simpler and flawless transition from legacy mode and back.
->> >> >> The devlink_ports and netdevs for physical ports are staying during
->> >> >> the transition.    
->> >> >
->> >> >When users put an interface under bridge or a bond they have to move 
->> >> >IP addresses etc. onto the bond. Changing mode to "switchdev" is a more
->> >> >destructive operation and there should be no expectation that
->> >> >configuration survives.    
->> >> 
->> >> Yeah, I was saying the same thing when our arch came up with this, but
->> >> I now think it is just fine. It is drivers responsibility to do the
->> >> shift. And the entities representing the uplink port: netdevs and
->> >> devlink_port instances. They can easily stay during the transition. The
->> >> transition only applies to the eswitch and VF entities.  
->> >
->> >If PF is split from the uplink I think the MAC address should stay with
->> >the PF, not the uplink (which becomes just a repr in a Host case).
->> >  
->> >> >The merging of the PF with the physical port representor is flawed.    
->> >> 
->> >> Why?  
->> >
->> >See below.
->> >  
->> >> >People push Qdisc offloads into devlink because of design shortcuts
->> >> >like this.    
->> >> 
->> >> Could you please explain how it is related to "Qdisc offloads"  
->> >
->> >Certain users have designed with constrained PCIe bandwidth in the
->> >server. Meaning NIC needs to do buffering much like a switch would.
->> >So we need to separate the uplink from the PF to attach the Qdisc
->> >offload for configuring details of PCIe queuing.  
->> 
->> Hmm, I'm not sure I understand. Then PF and uplink is the same entity,
->> you can still attach the qdisc to this entity, right? What prevents the
->> same functionality as with the "split"?
->
->The same problem we have with the VF TX rate. We only have Qdisc APIs
->for the TX direction. If we only have one port its TX is the TX onto
->wire. If we split it into MAC/phys and PCIe - the TX of PCI is the RX
->of the host, allowing us to control queuing on the PCIe interface.
+On Thu, Mar 26, 2020 at 11:32:30AM +0100, Simon Chopin wrote:
+> The PPP subsystem uses the abstractions of channels and units, the
+> latter being an aggregate of the former, exported to userspace as a
+> single network interface.  As such, it keeps traffic statistics at the
+> unit level, but there are no statistics on the individual channels,
+> partly because most PPP units only have one channel.
+> 
+> However, it is sometimes useful to have statistics at the channel level,
+> for instance to monitor multilink PPP connections. Such statistics
+> already exist for PPPoL2TP via the PPPIOCGL2TPSTATS ioctl, this patch
+> introduces a very similar mechanism for PPPoE via a new
+> PPPIOCGPPPOESTATS ioctl.
+> 
+I'd rather recomment _not_ using multilink PPP over PPPoE (or L2TP, or
+any form of overlay network). But apart from that, I find the
+description misleading. PPPoE is not a PPP channel, it _transports_ a
+channel. PPPoE might not even be associated with a channel at all,
+like in the PPPOX_RELAY case. In short PPPoE stats aren't channel's
+stats. If the objective it to get channels stats, then this needs to be
+implemented in ppp_generic.c. If what you really want is PPPoE stats,
+then see my comments below.
 
-I see. But is it needed? I mean, this is for the "management pf" on the
-local host. You don't put it into VM. You should only use it for
-slowpath (like arps, OVS, etc). If you want to have traffic from
-localhost that you need to rate limit, you can either create dynamic PF
-or VF or SF for it.
+> @@ -395,6 +405,10 @@ static int pppoe_rcv_core(struct sock *sk, struct sk_buff *skb)
+>  			goto abort_kfree;
+>  	}
+>  
+> +	stats = sk_pppox(po)->sk_user_data;
+> +	atomic_long_inc(&stats->rx_packets);
+> +	atomic_long_add(len, &stats->rx_bytes);
+> +
+>  	return NET_RX_SUCCESS;
+>  
+You probably need to add counter(s) for the error paths too.
+
+> @@ -549,6 +563,8 @@ static int pppoe_create(struct net *net, struct socket *sock, int kern)
+>  	sk->sk_family		= PF_PPPOX;
+>  	sk->sk_protocol		= PX_PROTO_OE;
+>  
+> +	sk->sk_user_data = kzalloc(sizeof(struct pppoe_stats), GFP_KERNEL);
+> +
+Missing error check.
+
+But please don't use ->sk_user_data for that. We have enough problems
+with this pointer, let's not add users that don't actually need it.
+See https://lore.kernel.org/netdev/20180117.142538.1972806008716856078.davem@davemloft.net/
+for some details.
+You can store the counters inside the socket instead.
+
+> @@ -950,6 +993,8 @@ static int __pppoe_xmit(struct sock *sk, struct sk_buff *skb)
+>  			po->pppoe_pa.remote, NULL, data_len);
+>  
+>  	dev_queue_xmit(skb);
+> +	atomic_long_inc(&stats->tx_packets);
+> +	atomic_long_add(data_len, &stats->tx_bytes);
+>  	return 1;
+>  
+Again, you probably need to count errors too.
+
