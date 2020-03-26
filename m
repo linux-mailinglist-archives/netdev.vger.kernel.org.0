@@ -2,151 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31682194356
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 16:38:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D68BF194380
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 16:49:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728550AbgCZPis (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 11:38:48 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:43631 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728536AbgCZPir (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 11:38:47 -0400
-Received: by mail-il1-f199.google.com with SMTP id o9so5721225ila.10
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 08:38:46 -0700 (PDT)
+        id S1727934AbgCZPtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 11:49:05 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:42077 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727847AbgCZPtF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 11:49:05 -0400
+Received: by mail-pf1-f196.google.com with SMTP id 22so2964033pfa.9;
+        Thu, 26 Mar 2020 08:49:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=XdogHB70yOUiucUiIePupFL0wILSpDUbQe5TvHyToYs=;
+        b=sN/Sq28CUY8JO+CJnO1f2L+XUqGi1gD1KWCd0MJKhMIZ8TTJlHd9nUMP9g4+EN+TF0
+         lAsEJ5QcOXtFBnp/hN1+6wsOn+5uk+tMJmnq+VQ3rYv2i+MpUrqPl5LkJ9/ZXPG8hs0Q
+         rAdXppVOEWR8sTcGsjN82W0S32xSl4Z/uI2pcriNgMTTjsGZ5DLNDRmqRnlSgUYr0VrN
+         zTfp9Mb3GXAVqlVhULJ94id6rgtYorR8iujkPiizch/uZL8zQIvykqJC9O8H92o0b4EL
+         szCqZAnENEWJanbfOh8ku1QXkBjIq9vLCZLjlepbwYLkG4rKuvmQJY2hWRS7RyAk6+rX
+         fwiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to:cc;
-        bh=ulLGLKkQi69pL07J5pB6JTgHf8Ql6af4zbC/fyQGLio=;
-        b=sOonz76+OWDJO7E0U9pm7Im2ilR2YDPWM76ZNlTHzxow60wRwnG2LCaRjM1OHrVifw
-         WniCnmZRPqTxVOFMap6ohQNmXHD2YSwtXFD00igbeC/OGNQZixZ+nTTcXT1Bax1AnO5/
-         k6CLCvDlkpdmDiFE2UAj4H5XJnWIXjtMei/Ugo7mDxK0j/bovnyysJ18jvHb+1GuXhKe
-         Flf3gqhkUMrWgVbGLPToZtLqJ7DSMBeCpWlL+2+J3hj9v9Xev3VqpJt14++gleJ2kbgG
-         SsYGyfUkmZSMfCEs94+h0UJZdbSfEuMPWWyDcYH4BD5DvZ2g2Dq2S2RveeWzcLmi4CDj
-         mfsQ==
-X-Gm-Message-State: ANhLgQ2qQgw8zQT9rZkowRlSTAHsuMGx2hrAeAIWMNEg6LzB/TL1vjYU
-        MmvlP2tgqtmf6siZ9sRQSv8T5QveCnFfGVLgi7kRYhGWZ/Do
-X-Google-Smtp-Source: ADFU+vvhYEgyohzRkU+GPdsgk4urS4eq1PXxWpsA/75dsNvHK/p7fp/lW0/t0kKTsytaTtNhW5AIthp0u9jUNcO7wJ+gACOPRozf
-MIME-Version: 1.0
-X-Received: by 2002:a92:6a0f:: with SMTP id f15mr8857122ilc.126.1585237126229;
- Thu, 26 Mar 2020 08:38:46 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 08:38:46 -0700
-In-Reply-To: <CADG63jDCTdgSxDRsN_9e3fKCAv5VduS5NNKWmqjByZ=4sT+HLQ@mail.gmail.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cb35d705a1c3c747@google.com>
-Subject: Re: Re: WARNING: refcount bug in sctp_wfree
-From:   syzbot <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com>
-To:     Qiujun Huang <anenbupt@gmail.com>
-Cc:     anenbupt@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-sctp@vger.kernel.org,
-        marcelo.leitner@gmail.com, netdev@vger.kernel.org,
-        nhorman@tuxdriver.com, syzkaller-bugs@googlegroups.com,
-        vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=XdogHB70yOUiucUiIePupFL0wILSpDUbQe5TvHyToYs=;
+        b=owmK30GnwFir78R3pxFK0UXI4MW0y85oa+Zpb/qNIrErBEVFJ17bY+aFyVmkoX0sJI
+         JH9qzPhbhOPTohqWbMiYNWvh9mDYLLMz52J+g5AzgfntWd+tuVP335vmPpwxC8dVARH0
+         NbUvqzfEVXqghIhbIOzI4JICZ2ZLpLhlfX+0cmyDKFklnRw0b7+AyXoMHe94tmEkOhLv
+         yR3Raqq7CHfjAEbo0jeiU5kYfw+YWMUkLa0ObsJ5e4ie0GlVqtOzdJH3U74KHtyX4LtU
+         r7d7Iu7IUNA4dbsgEXRgJGaimozuav3vDGLybLNTuaMLjXgsWpqjbiWbrimykSJBKf8s
+         vIeQ==
+X-Gm-Message-State: ANhLgQ3bNjFCtB0gaOyR9cXsCOnG8DsEwi3PzRfsaH7+L5sUcUE10dWV
+        ZNmCZ7cTkPT0EnvWNX7NKo+rtTO1ZVc=
+X-Google-Smtp-Source: ADFU+vuJ8UQv8VkxV2PGOhCtnzNP4rjE1R+nDI2c8Tx6RoGaZT7sSWePvHpiYxWncwcoBH5WVAuikA==
+X-Received: by 2002:aa7:9838:: with SMTP id q24mr9814759pfl.135.1585237742516;
+        Thu, 26 Mar 2020 08:49:02 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id i23sm1950578pfq.157.2020.03.26.08.48.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2020 08:49:01 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 08:48:53 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     ecree@solarflare.com, yhs@fb.com, daniel@iogearbox.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Message-ID: <5e7ccee5b56f6_65132acbbe7fc5c425@john-XPS-13-9370.notmuch>
+In-Reply-To: <20200326063336.do6mibb7b5xwofz2@ast-mbp>
+References: <158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower>
+ <158507159511.15666.6943798089263377114.stgit@john-Precision-5820-Tower>
+ <20200326063336.do6mibb7b5xwofz2@ast-mbp>
+Subject: Re: [bpf-next PATCH 07/10] bpf: test_verifier, bpf_get_stack return
+ value add <0
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> #syz test: upstream
+Alexei Starovoitov wrote:
+> On Tue, Mar 24, 2020 at 10:39:55AM -0700, John Fastabend wrote:
+> > diff --git a/tools/testing/selftests/bpf/verifier/bpf_get_stack.c b/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
+> > index f24d50f..24aa6a0 100644
+> > --- a/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
+> > +++ b/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
+> > @@ -7,7 +7,7 @@
+> >  	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
+> >  	BPF_LD_MAP_FD(BPF_REG_1, 0),
+> >  	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_map_lookup_elem),
+> > -	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 28),
+> > +	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 29),
+> >  	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
+> >  	BPF_MOV64_IMM(BPF_REG_9, sizeof(struct test_val)),
+> >  	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
+> > @@ -16,6 +16,7 @@
+> >  	BPF_MOV64_IMM(BPF_REG_4, 256),
+> >  	BPF_EMIT_CALL(BPF_FUNC_get_stack),
+> >  	BPF_MOV64_IMM(BPF_REG_1, 0),
+> > +	BPF_JMP32_REG(BPF_JSLT, BPF_REG_0, BPF_REG_1, 20),
+> >  	BPF_MOV64_REG(BPF_REG_8, BPF_REG_0),
+> >  	BPF_ALU64_IMM(BPF_LSH, BPF_REG_8, 32),
+> >  	BPF_ALU64_IMM(BPF_ARSH, BPF_REG_8, 32),
+> 
+> Yep. The test is wrong.
+> But this is cheating ;)
+> JSLT should be after shifts.
+> 
+> The test should have been written as:
+> diff --git a/tools/testing/selftests/bpf/verifier/bpf_get_stack.c b/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
+> index f24d50f09dbe..be0758c1bfbd 100644
+> --- a/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
+> +++ b/tools/testing/selftests/bpf/verifier/bpf_get_stack.c
+> @@ -19,7 +19,7 @@
+>         BPF_MOV64_REG(BPF_REG_8, BPF_REG_0),
+>         BPF_ALU64_IMM(BPF_LSH, BPF_REG_8, 32),
+>         BPF_ALU64_IMM(BPF_ARSH, BPF_REG_8, 32),
+> -       BPF_JMP_REG(BPF_JSLT, BPF_REG_1, BPF_REG_8, 16),
+> +       BPF_JMP_REG(BPF_JSGT, BPF_REG_1, BPF_REG_8, 16),
+>         BPF_ALU64_REG(BPF_SUB, BPF_REG_9, BPF_REG_8),
+>         BPF_MOV64_REG(BPF_REG_2, BPF_REG_7),
+>         BPF_ALU64_REG(BPF_ADD, BPF_REG_2, BPF_REG_8),
+> 
+> That was the intent of the test.
+> But in such form it won't work with the current patch set,
+> but it should.
+> 
+> More so the patches 1 and 5 make test_progs pass,
+> but test_progs-no_alu32 fails tests 20 and 61.
+> Because clang generates the following:
+> 14: (85) call bpf_get_stack#67
+> 15: (b7) r1 = 0
+> 16: (bf) r8 = r0
+> 17: (67) r8 <<= 32
+> 18: (c7) r8 s>>= 32
+> 19: (6d) if r1 s> r8 goto pc+16
+> 
+> (which is exactly what bpf_get_stack.c test tried to capture)
 
-want 2 args (repo, branch), got 10
+Ah OK well its good we have the pattern captured in verifier tests
+so we don't have to rely yon clang generating it.
 
->
-> On Tue, Mar 10, 2020 at 9:36 AM syzbot
-> <syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com> wrote:
->>
->> Hello,
->>
->> syzbot found the following crash on:
->>
->> HEAD commit:    2c523b34 Linux 5.6-rc5
->> git tree:       upstream
->> console output: https://syzkaller.appspot.com/x/log.txt?x=155a5f29e00000
->> kernel config:  https://syzkaller.appspot.com/x/.config?x=a5295e161cd85b82
->> dashboard link: https://syzkaller.appspot.com/bug?extid=cea71eec5d6de256d54d
->> compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
->> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=164b5181e00000
->> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=166dd70de00000
->>
->> IMPORTANT: if you fix the bug, please add the following tag to the commit:
->> Reported-by: syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
->>
->> ------------[ cut here ]------------
->> refcount_t: underflow; use-after-free.
->> WARNING: CPU: 1 PID: 8668 at lib/refcount.c:28 refcount_warn_saturate+0x15b/0x1a0 lib/refcount.c:28
->> Kernel panic - not syncing: panic_on_warn set ...
->> CPU: 1 PID: 8668 Comm: syz-executor779 Not tainted 5.6.0-rc5-syzkaller #0
->> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->> Call Trace:
->>  __dump_stack lib/dump_stack.c:77 [inline]
->>  dump_stack+0x1e9/0x30e lib/dump_stack.c:118
->>  panic+0x264/0x7a0 kernel/panic.c:221
->>  __warn+0x209/0x210 kernel/panic.c:582
->>  report_bug+0x1ac/0x2d0 lib/bug.c:195
->>  fixup_bug arch/x86/kernel/traps.c:174 [inline]
->>  do_error_trap+0xca/0x1c0 arch/x86/kernel/traps.c:267
->>  do_invalid_op+0x32/0x40 arch/x86/kernel/traps.c:286
->>  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1027
->> RIP: 0010:refcount_warn_saturate+0x15b/0x1a0 lib/refcount.c:28
->> Code: c7 e4 ff d0 88 31 c0 e8 23 20 b3 fd 0f 0b eb 85 e8 8a 4a e0 fd c6 05 ff 70 b1 05 01 48 c7 c7 10 00 d1 88 31 c0 e8 05 20 b3 fd <0f> 0b e9 64 ff ff ff e8 69 4a e0 fd c6 05 df 70 b1 05 01 48 c7 c7
->> RSP: 0018:ffffc90001f577d0 EFLAGS: 00010246
->> RAX: 8c9c9070bbb4e500 RBX: 0000000000000003 RCX: ffff8880938a63c0
->> RDX: 0000000000000000 RSI: 0000000080000000 RDI: 0000000000000000
->> RBP: 0000000000000003 R08: ffffffff815e16e6 R09: fffffbfff15db92a
->> R10: fffffbfff15db92a R11: 0000000000000000 R12: dffffc0000000000
->> R13: ffff88809de82000 R14: ffff8880a89237c0 R15: 1ffff11013be52b0
->>  sctp_wfree+0x3b1/0x710 net/sctp/socket.c:9111
->>  skb_release_head_state+0xfb/0x210 net/core/skbuff.c:651
->>  skb_release_all net/core/skbuff.c:662 [inline]
->>  __kfree_skb+0x22/0x1c0 net/core/skbuff.c:678
->>  sctp_chunk_destroy net/sctp/sm_make_chunk.c:1454 [inline]
->>  sctp_chunk_put+0x17b/0x200 net/sctp/sm_make_chunk.c:1481
->>  __sctp_outq_teardown+0x80a/0x9d0 net/sctp/outqueue.c:257
->>  sctp_association_free+0x21e/0x7c0 net/sctp/associola.c:339
->>  sctp_cmd_delete_tcb net/sctp/sm_sideeffect.c:930 [inline]
->>  sctp_cmd_interpreter net/sctp/sm_sideeffect.c:1318 [inline]
->>  sctp_side_effects net/sctp/sm_sideeffect.c:1185 [inline]
->>  sctp_do_sm+0x3c01/0x5560 net/sctp/sm_sideeffect.c:1156
->>  sctp_primitive_ABORT+0x93/0xc0 net/sctp/primitive.c:104
->>  sctp_close+0x231/0x770 net/sctp/socket.c:1512
->>  inet_release+0x135/0x180 net/ipv4/af_inet.c:427
->>  __sock_release net/socket.c:605 [inline]
->>  sock_close+0xd8/0x260 net/socket.c:1283
->>  __fput+0x2d8/0x730 fs/file_table.c:280
->>  task_work_run+0x176/0x1b0 kernel/task_work.c:113
->>  exit_task_work include/linux/task_work.h:22 [inline]
->>  do_exit+0x5ef/0x1f80 kernel/exit.c:801
->>  do_group_exit+0x15e/0x2c0 kernel/exit.c:899
->>  __do_sys_exit_group+0x13/0x20 kernel/exit.c:910
->>  __se_sys_exit_group+0x10/0x10 kernel/exit.c:908
->>  __x64_sys_exit_group+0x37/0x40 kernel/exit.c:908
->>  do_syscall_64+0xf3/0x1b0 arch/x86/entry/common.c:294
->>  entry_SYSCALL_64_after_hwframe+0x49/0xbe
->> RIP: 0033:0x43ef98
->> Code: Bad RIP value.
->> RSP: 002b:00007ffcc7e7c398 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
->> RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000043ef98
->> RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
->> RBP: 00000000004be7a8 R08: 00000000000000e7 R09: ffffffffffffffd0
->> R10: 000000002059aff8 R11: 0000000000000246 R12: 0000000000000001
->> R13: 00000000006d01a0 R14: 0000000000000000 R15: 0000000000000000
->> Kernel Offset: disabled
->> Rebooting in 86400 seconds..
->>
->>
->> ---
->> This bug is generated by a bot. It may contain errors.
->> See https://goo.gl/tpsmEJ for more information about syzbot.
->> syzbot engineers can be reached at syzkaller@googlegroups.com.
->>
->> syzbot will keep track of this bug report. See:
->> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
->> syzbot can test patches for this bug, for details see:
->> https://goo.gl/tpsmEJ#testing-patches
->
-> -- 
-> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/CADG63jDCTdgSxDRsN_9e3fKCAv5VduS5NNKWmqjByZ%3D4sT%2BHLQ%40mail.gmail.com.
+> 
+> I guess no_alu32 may be passing for you because you have that special
+> clang optimization that replaces <<32 s>>32 with more efficient insn,
+> but not everyone will be using new clang, so we have to teach verifier
+> recognize <<32 s>>32.
+
+Ah dang yes I added that patch to our toolchain because it helps so
+much. But I need to remember to pull from upstream branch for selftests.
+I would prefer we apply that patch upstream but maybe we need to encode
+the old behavior in some more verifier test cases so we avoid breaking
+it like I did here.
+
+> Thankfully with your new infra for s32 it should be easy to do.
+> In scalar_min_max_lsh() we don't need to do dst_reg->smax_value = S64_MAX;
+> When we have _positive_ s32_max_value
+> we can set smax_value = s32_max_value << 32
+> and I think that will be correct.
+> scalar_min_max_arsh() shouldn't need any changes.
+> And the verifier will restore valid smax_value after <<32 s>>32 sequence.
+> And this test will pass (after fixing s/JSLT/JSGT/) and test_progs-no_alu32
+> will do too. wdyt?
+
+Looks correct to me for the specific case of <<32 seeing its common
+enough special case for it makes sense. I'll add a patch for this
+with above explanation.
