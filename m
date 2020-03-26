@@ -2,81 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EF46F1940BC
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:02:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ECE51940DB
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:04:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728049AbgCZOCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 10:02:35 -0400
-Received: from correo.us.es ([193.147.175.20]:51292 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727989AbgCZOCe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Mar 2020 10:02:34 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 74FB611EB91
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 15:02:32 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 680B6DA38D
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 15:02:32 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 4E034DA3A8; Thu, 26 Mar 2020 15:02:32 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 3386FDA38D;
-        Thu, 26 Mar 2020 15:02:30 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 26 Mar 2020 15:02:30 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 0C83C42EF4E0;
-        Thu, 26 Mar 2020 15:02:30 +0100 (CET)
-Date:   Thu, 26 Mar 2020 15:02:29 +0100
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Julian Anastasov <ja@ssi.bg>
-Cc:     Haishuang Yan <yanhaishuang@cmss.chinamobile.com>,
-        Simon Horman <horms@verge.net.au>, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        id S1728345AbgCZOEB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 10:04:01 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:44132 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728304AbgCZOD4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:03:56 -0400
+Received: by mail-pg1-f193.google.com with SMTP id 142so2904706pgf.11;
+        Thu, 26 Mar 2020 07:03:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=17tMX3H9Sdcq+0ONAuGblCc3JhNQf2xB0k0+J4gQv5w=;
+        b=vCtMDfHQ5Cvsc6sUODmXa4WM9QXhZZJsWuKwaH0pkh9ZkNZeQw/5z3AlMs6vGFwHyk
+         +855UUdV5Rr7orSl0aK6F10moKt3nwlL9kJCDqMH7zEn3Sh5R5Oc3gFWZ71nHHIzuNKc
+         yj9puVwQYwsJDVv40DcfzGl8K/s2n8Zj2/xhK/AJndlIr1XSqTQIy7VDvnGRaXfueq0N
+         nX0+5nAqmThDz2w4LrDZwqO+cUVCZDFlNFqaxDY1rzRQIDlB5d10Z+YpyxDyG75uy5So
+         AeyaKePMzJu/myLvJElrCPgdElk+8/1ZNV0eQUc2Q3QShNrelHWxNWgvJVA+itxQMUV+
+         ln9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=17tMX3H9Sdcq+0ONAuGblCc3JhNQf2xB0k0+J4gQv5w=;
+        b=TXgZKcGnmGvq6fqvM0mdhbNGVnStjmrjE7JwmziMElqQOiw6ILJfp/LVrs0Rs/7F4D
+         Ks1UADnP/shhU3QaUyOI5N8Y2GxwP/8vJx/K8Rg6zuhsN7EPDjoePl8V9MslHg5yZX3K
+         lwjWfAigk5pqb3WwPnpvMqadxiSWwhiHf5aB9UHSLSGTfx+Z79KNRMsY8TkKIhoeUCxB
+         DHOEpkPQfaNuhE5bEiNRzQoywfNrDTrSibyc6bkZ8AfXPRmfdBKKToxjQOSTpUt3q+8R
+         pIWCysqv90lF4d19OzHLh4H8BwziOk9qipcC4/H6ssD7OLozcGanKKuLIBufeb7u95rd
+         Wodw==
+X-Gm-Message-State: ANhLgQ35oGszXrXnGK6aYklKOUPxYl1BcOT8qQp4divCj7zzY4hJc49a
+        6Xmjk6VAiX/Rxx0dH6r2lZ8=
+X-Google-Smtp-Source: ADFU+vtdRRGcpFSi9InB6187asoRCJ2tCcZCL55pt1JZiXLIagZ/Fpb5kuHhPGJAztT5ef5nj0jxhw==
+X-Received: by 2002:a62:2b8a:: with SMTP id r132mr9650099pfr.56.1585231435769;
+        Thu, 26 Mar 2020 07:03:55 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id q123sm1853036pfb.54.2020.03.26.07.03.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2020 07:03:55 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 07:03:53 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Tony Lindgren <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        netdev <netdev@vger.kernel.org>, linux-omap@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] ipvs: optimize tunnel dumps for icmp errors
-Message-ID: <20200326140229.emeplg75xszpd7rs@salvia>
-References: <1584278741-13944-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
- <alpine.LFD.2.21.2003181333460.4911@ja.home.ssi.bg>
+Subject: Re: [PATCH net-next v3 01/11] net: ethernet: ti: cpts: use dev_yy()
+ api for logs
+Message-ID: <20200326140353.GB20841@localhost>
+References: <20200320194244.4703-1-grygorii.strashko@ti.com>
+ <20200320194244.4703-2-grygorii.strashko@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.LFD.2.21.2003181333460.4911@ja.home.ssi.bg>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20200320194244.4703-2-grygorii.strashko@ti.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 01:36:32PM +0200, Julian Anastasov wrote:
-> 
-> 	Hello,
-> 
-> On Sun, 15 Mar 2020, Haishuang Yan wrote:
-> 
-> > After strip GRE/UDP tunnel header for icmp errors, it's better to show
-> > "GRE/UDP" instead of "IPIP" in debug message.
-> > 
-> > Signed-off-by: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
-> 
-> 	Looks good to me, thanks!
-> 
-> Acked-by: Julian Anastasov <ja@ssi.bg>
-> 
-> 	Simon, this is for -next kernels...
+On Fri, Mar 20, 2020 at 09:42:34PM +0200, Grygorii Strashko wrote:
+> @@ -150,7 +150,7 @@ static int cpts_fifo_read(struct cpts *cpts, int match)
+>  			break;
+>  
+>  		if (list_empty(&cpts->pool) && cpts_purge_events(cpts)) {
+> -			pr_err("cpts: event pool empty\n");
+> +			dev_info(cpts->dev, "cpts: event pool empty\n");
 
-Simon, if no objection, I'm going to include this in the next nf-next
-pull request.
+You changed err into info.  Was that on purpose?
 
-Thanks.
+The size of the pool is hard coded, but it should be large enough for
+any use case.  If the pool size turns out to be too small at run time,
+then I think the message deserves at least the level of warning.
+
+Thanks,
+Richard
