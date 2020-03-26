@@ -2,196 +2,375 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70F9E1939D5
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 08:51:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A02B91939D7
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 08:51:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726540AbgCZHvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 03:51:04 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53506 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726332AbgCZHvE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 03:51:04 -0400
-Received: by mail-wm1-f67.google.com with SMTP id b12so5398044wmj.3
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 00:51:02 -0700 (PDT)
+        id S1727585AbgCZHvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 03:51:15 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:40761 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726296AbgCZHvP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 03:51:15 -0400
+Received: by mail-lj1-f196.google.com with SMTP id 19so5340032ljj.7
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 00:51:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KS5oerFMWpxDILNBygHWeJcjeNOK7fwUpM2j4e7nKXA=;
-        b=jj1FGUwkGPl6fY+oAKmistsRCeRUNCM8rzlVMMD2vjIW7g8CixNd07KlWNHXpFzZfG
-         9/rLMFlTMnPiaIQvx1uUxIFQDYvyNVyTwfhjR9k/VK6JyXLWxna8eHTGliACSfz6zBzp
-         /VmEPQXkhcp+5oSQzWmZG2sLX0NQKzu8N9RdgRJRgckGMP2JMXlckqpKRR2PCmgO2O/o
-         T3pSHtm7NUq8ZyFvP1fpMsnsyATma1NReTcUQbhHaoP1n1SClrgNcTmDsArNXgrwDycJ
-         Xg1V/M9dU8SpaPQTwmwvKaX49k9kDUv2gbnOgMdlz81CEV3mDpGKdw62veTTU2KjNGrW
-         hkNg==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=pIaH/xBZBKgIbKjMrgA2xfBrqoxN7lk8Hjp+LphLFIA=;
+        b=b/MvfewhJ1E+GbEAOU5M0KlMkCm3WUrolMrLc6vOzPqmJ36paveFu17XBDZoQ0rzJh
+         DMOA3ZG8fq19AOdV+ZfGmm+K/4Kz19k2/UjKO3qe7oxMVyF8fr0LONg5Q9zBEkcVHvgV
+         v99DUuDPCVyqxeH0qjuAmao7tJ2Ocr5EuYqDQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KS5oerFMWpxDILNBygHWeJcjeNOK7fwUpM2j4e7nKXA=;
-        b=hkt2xDkjVAS0KfKsRDWXgWhH1DrgHI50SwhICe7mdwccHkY2LpNfg8KwvXTJKv8zT7
-         8weGpkT93W0ZCOIAzCkQZqP5M/AX0RpV+mM/Cj8xX4GQwb0+1+MSkAq7ZwNm+6GV3p+6
-         CCVyD/pCq2RigMFYYvgeu0alNBWlhJ8PfPfh+s8hQ1DUEER7FY5N1kxKaltdlp0zy4Ho
-         3qE+1s3fC9kJ44W1PV6zXrEVLPB1vEKKQReK7QIbZ/TPhkBz0Ie2YkQ7BAPXHUcjuleg
-         qfncyZa5JF7RijNGu/t0W545RR3rU8XqWUgr+I5PmZrIVWVF2qKJGCP30PA1QpH8I9tL
-         lWMw==
-X-Gm-Message-State: ANhLgQ20Z6cDbLUJwuMKc3GARg0OPIbd+Io5xK0bLCGBJ/u/CBxSjPof
-        99CZ+AN1hzxxKUZI6tHmJjed/A==
-X-Google-Smtp-Source: ADFU+vthOWe4ytSn1NR04Ii+NgOWw1suJti7XYUmKZ+/nsWSnFGf/3L/XCG7gwRl88mo0tUVA1AgqQ==
-X-Received: by 2002:a1c:8090:: with SMTP id b138mr1824659wmd.55.1585209062272;
-        Thu, 26 Mar 2020 00:51:02 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id u17sm1986917wri.45.2020.03.26.00.51.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 00:51:01 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 08:51:01 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [net-next v2 00/11] implement DEVLINK_CMD_REGION_NEW
-Message-ID: <20200326075101.GK11304@nanopsycho.orion>
-References: <20200326035157.2211090-1-jacob.e.keller@intel.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=pIaH/xBZBKgIbKjMrgA2xfBrqoxN7lk8Hjp+LphLFIA=;
+        b=ILxH0TEHs2UMd8UtlEP8oVYiG+bM4hPARh9LYphsW3JH5WohKMOud596hq21GB/qlL
+         G4zC7vtHD4J+LuzPu+RHN1Sz3H3ZE8pYvOn6/yQy8X3RTl7ZfyLz0wSP2zyu+hd+F8sZ
+         KhrTvWAUGqk2VgUKlt3xxcgRUFMViKGTLUCSIzsA6nu4NWNpacly15qpxwDcrBbiTh0G
+         Ob4HWV3+G81PlQpAOd5ZWy6hRrazvAwOlauj25jPxZzXJTxRoZiqadxe5FWGkcB6JYAd
+         /dIQAbDgKm/LF2ai8Jy+xe/WXHB+WphzvRQ5+s//tDgPck3NmuYaBALEuZ3sjq8xh0WD
+         80qg==
+X-Gm-Message-State: ANhLgQ2NAcOEALhvll0A7DHrKMLOMSO3DcuseCmDjR/jW44l1i/Q93Ij
+        vUoNA6SLDsnJepTnPB6vwH1IEEkRwa0b2/HofH3q0g==
+X-Google-Smtp-Source: ADFU+vuoUMVRPrae/wwa7Z8ubT/ocg9JjyJ2LpGaWvYWYPqs+7C6P+h6BemWJw/eqd+XfJpgb0K8LtyvPU9HL4FVMd0=
+X-Received: by 2002:a2e:9b55:: with SMTP id o21mr4243973ljj.74.1585209072593;
+ Thu, 26 Mar 2020 00:51:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200326035157.2211090-1-jacob.e.keller@intel.com>
+References: <20200325070336.1097-1-mcchou@chromium.org> <20200325000332.v2.2.I4e01733fa5b818028dc9188ca91438fc54aa5028@changeid>
+ <32026740-96FE-4377-B5A1-2AEE324880D0@holtmann.org>
+In-Reply-To: <32026740-96FE-4377-B5A1-2AEE324880D0@holtmann.org>
+From:   Miao-chen Chou <mcchou@chromium.org>
+Date:   Thu, 26 Mar 2020 00:51:01 -0700
+Message-ID: <CABmPvSFzmuC0p7QFcXSG+NOfQ4QyDDd55AzaP7QOEsuwBs6j9Q@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] Bluetooth: btusb: Read the supported features of
+ Microsoft vendor extension
+To:     Marcel Holtmann <marcel@holtmann.org>
+Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Alain Michaud <alainm@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Mar 26, 2020 at 04:51:46AM CET, jacob.e.keller@intel.com wrote:
->This is a second revision of the previous series to implement the
->DEVLINK_CMD_REGION_NEW. The series can be viewed on lore.kernel.org at
+On Wed, Mar 25, 2020 at 1:25 AM Marcel Holtmann <marcel@holtmann.org> wrote=
+:
 >
->https://lore.kernel.org/netdev/20200324223445.2077900-1-jacob.e.keller@intel.com/
+> Hi Miao-chen,
 >
->This version includes the suggested cleanups from Jakub and Jiri on the
->list, including the following changes, broken out by the v1 patch title.
+> > This adds a new header to facilitate the opcode and packet structures o=
+f
+> > vendor extension(s). For now, we add only the
+> > HCI_VS_MSFT_Read_Supported_Features command from Microsoft vendor
+> > extension. See https://docs.microsoft.com/en-us/windows-hardware/driver=
+s/
+> > bluetooth/microsoft-defined-bluetooth-hci-commands-and-events#
+> > microsoft-defined-bluetooth-hci-events for more details.
+> > Upon initialization of a hci_dev, we issue a
+> > HCI_VS_MSFT_Read_Supported_Features command to read the supported featu=
+res
+> > of Microsoft vendor extension if the opcode of Microsoft vendor extensi=
+on
+> > is valid. See https://docs.microsoft.com/en-us/windows-hardware/drivers=
+/
+> > bluetooth/microsoft-defined-bluetooth-hci-commands-and-events#
+> > hci_vs_msft_read_supported_features for more details.
+> > This was verified on a device with Intel ThhunderPeak BT controller whe=
+re
+> > the Microsoft vendor extension features are 0x000000000000003f.
+> >
+> > Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
+> > ---
+> >
+> > Changes in v2:
+> > - Issue a HCI_VS_MSFT_Read_Supported_Features command with
+> > __hci_cmd_sync() instead of constructing a request.
+> >
+> > drivers/bluetooth/btusb.c          |  3 ++
+> > include/net/bluetooth/hci_core.h   |  4 ++
+> > include/net/bluetooth/vendor_hci.h | 51 +++++++++++++++++++
+> > net/bluetooth/hci_core.c           | 78 ++++++++++++++++++++++++++++++
+> > 4 files changed, 136 insertions(+)
+> > create mode 100644 include/net/bluetooth/vendor_hci.h
+> >
+> > diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+> > index 4c49f394f174..410d50dbd4e2 100644
+> > --- a/drivers/bluetooth/btusb.c
+> > +++ b/drivers/bluetooth/btusb.c
+> > @@ -3738,6 +3738,9 @@ static int btusb_probe(struct usb_interface *intf=
+,
+> >       hdev->notify =3D btusb_notify;
+> >
+> >       hdev->msft_ext.opcode =3D HCI_OP_NOP;
+> > +     hdev->msft_ext.features =3D 0;
+> > +     hdev->msft_ext.evt_prefix_len =3D 0;
+> > +     hdev->msft_ext.evt_prefix =3D NULL;
 >
->Changes to patches since v1:
+> as noted in the other review, let hci_alloc_dev and hci_free_dev deal wit=
+h this.
+Will address this in v3.
 >
-> * devlink: prepare to support region operations
+> >
+> > #ifdef CONFIG_PM
+> >       err =3D btusb_config_oob_wake(hdev);
+> > diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/h=
+ci_core.h
+> > index 0ec3d9b41d81..f2876c5067a4 100644
+> > --- a/include/net/bluetooth/hci_core.h
+> > +++ b/include/net/bluetooth/hci_core.h
+> > @@ -30,6 +30,7 @@
+> >
+> > #include <net/bluetooth/hci.h>
+> > #include <net/bluetooth/hci_sock.h>
+> > +#include <net/bluetooth/vendor_hci.h>
+> >
+> > /* HCI priority */
+> > #define HCI_PRIO_MAX  7
+> > @@ -246,6 +247,9 @@ struct amp_assoc {
+> >
+> > struct msft_vnd_ext {
+> >       __u16   opcode;
+> > +     __u64   features;
+> > +     __u8    evt_prefix_len;
+> > +     void    *evt_prefix;
+> > };
+> >
+> > struct hci_dev {
+> > diff --git a/include/net/bluetooth/vendor_hci.h b/include/net/bluetooth=
+/vendor_hci.h
+> > new file mode 100644
+> > index 000000000000..89a6795e672c
+> > --- /dev/null
+> > +++ b/include/net/bluetooth/vendor_hci.h
+> > @@ -0,0 +1,51 @@
+> > +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> > +/*
+> > + * BlueZ - Bluetooth protocol stack for Linux
+> > + * Copyright (C) 2020 Google Corporation
+> > + *
+> > + * This program is free software; you can redistribute it and/or modif=
+y
+> > + * it under the terms of the GNU General Public License version 2 as
+> > + * published by the Free Software Foundation;
+> > + *
+> > + * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXP=
+RESS
+> > + * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANT=
+ABILITY,
+> > + * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF THIRD PARTY=
+ RIGHTS.
+> > + * IN NO EVENT SHALL THE COPYRIGHT HOLDER(S) AND AUTHOR(S) BE LIABLE F=
+OR ANY
+> > + * CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES, OR ANY DAM=
+AGES
+> > + * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN =
+AN
+> > + * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OU=
+T OF
+> > + * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+> > + *
+> > + * ALL LIABILITY, INCLUDING LIABILITY FOR INFRINGEMENT OF ANY PATENTS,
+> > + * COPYRIGHTS, TRADEMARKS OR OTHER RIGHTS, RELATING TO USE OF THIS
+> > + * SOFTWARE IS DISCLAIMED.
+> > + */
+> > +
+> > +#ifndef __VENDOR_HCI_H
+> > +#define __VENDOR_HCI_H
+> > +
+> > +#define MSFT_EVT_PREFIX_MAX_LEN                      255
+> > +
+> > +struct msft_cmd_cmp_info {
+> > +     __u8 status;
+> > +     __u8 sub_opcode;
+> > +} __packed;
+> > +
+> > +/* Microsoft Vendor HCI subcommands */
+> > +#define MSFT_OP_READ_SUPPORTED_FEATURES              0x00
+> > +#define MSFT_FEATURE_MASK_RSSI_MONITOR_BREDR_CONN    0x000000000000000=
+1
+> > +#define MSFT_FEATURE_MASK_RSSI_MONITOR_LE_CONN               0x0000000=
+000000002
+> > +#define MSFT_FEATURE_MASK_RSSI_MONITOR_LE_ADV                0x0000000=
+000000004
+> > +#define MSFT_FEATURE_MASK_ADV_MONITOR_LE_ADV         0x000000000000000=
+8
+> > +#define MSFT_FEATURE_MASK_VERIFY_CURVE                       0x0000000=
+000000010
+> > +#define MSFT_FEATURE_MASK_CONCURRENT_ADV_MONITOR     0x000000000000002=
+0
+> > +struct msft_cp_read_supported_features {
+> > +     __u8 sub_opcode;
+> > +} __packed;
+> > +struct msft_rp_read_supported_features {
+> > +     __u64 features;
+> > +     __u8  evt_prefix_len;
+> > +     __u8  evt_prefix[0];
+> > +} __packed;
+> > +
+> > +#endif /* __VENDOR_HCI_H */
 >
->   No changes
+> Lets put this all in net/bluetooth/msft.c for now.
+Will address in v3.
 >
-> * devlink: convert snapshot destructor callback to region op
+> > diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> > index dbd2ad3a26ed..1ea32d10ed08 100644
+> > --- a/net/bluetooth/hci_core.c
+> > +++ b/net/bluetooth/hci_core.c
+> > @@ -1407,6 +1407,76 @@ static void hci_dev_get_bd_addr_from_property(st=
+ruct hci_dev *hdev)
+> >       bacpy(&hdev->public_addr, &ba);
+> > }
+> >
+> > +static void process_msft_vnd_ext_cmd_complete(struct hci_dev *hdev,
+> > +                                           struct sk_buff *skb)
+> > +{
+> > +     struct msft_cmd_cmp_info *info =3D (void *)skb->data;
+> > +     const u8 status =3D info->status;
+> > +     const u16 sub_opcode =3D __le16_to_cpu(info->sub_opcode);
+> > +
+> > +     skb_pull(skb, sizeof(*info));
+> > +
+> > +     if (IS_ERR(skb)) {
+> > +             BT_WARN("%s: Microsoft extension response packet invalid"=
+,
+> > +                     hdev->name);
+> > +             return;
+> > +     }
+> > +
+> > +     if (status) {
+> > +             BT_WARN("%s: Microsoft extension sub command 0x%2.2x fail=
+ed",
+> > +                     hdev->name, sub_opcode);
+> > +             return;
+> > +     }
+> > +
+> > +     BT_DBG("%s: status 0x%2.2x sub opcode 0x%2.2x", hdev->name, statu=
+s,
+> > +            sub_opcode);
+> > +
+> > +     switch (sub_opcode) {
+> > +     case MSFT_OP_READ_SUPPORTED_FEATURES: {
+> > +             struct msft_rp_read_supported_features *rp =3D (void *)sk=
+b->data;
+> > +             u8 prefix_len =3D rp->evt_prefix_len;
+> > +
+> > +             hdev->msft_ext.features =3D __le64_to_cpu(rp->features);
+> > +             hdev->msft_ext.evt_prefix_len =3D prefix_len;
+> > +             hdev->msft_ext.evt_prefix =3D kmalloc(prefix_len, GFP_ATO=
+MIC);
 >
->   No changes
+> Are we really in interrupt context here? I don=E2=80=99t think there is a=
+ need for GFP_ATOMIC.
+Not really, will change this to GFP_KERNEL.
 >
-> * devlink: trivial: fix tab in function documentation
+> > +             if (!hdev->msft_ext.evt_prefix) {
+> > +                     BT_WARN("%s: Microsoft extension invalid event pr=
+efix",
+> > +                             hdev->name);
 >
->   No changes
+> Please start using bt_dev_warn etc.
+Will address in v3.
 >
-> * devlink: add function to take snapshot while locked
+> > +                     return;
+> > +             }
+> > +
+> > +             memcpy(hdev->msft_ext.evt_prefix, rp->evt_prefix, prefix_=
+len);
+> > +             BT_INFO("%s: Microsoft extension features 0x%016llx",
+> > +                     hdev->name, hdev->msft_ext.features);
+> > +             break;
+> > +     }
+> > +     default:
+> > +             BT_WARN("%s: Microsoft extension unknown sub opcode 0x%2.=
+2x",
+> > +                     hdev->name, sub_opcode);
+> > +             break;
+> > +     }
+> > +}
+> > +
+> > +static void read_vendor_extension_features(struct hci_dev *hdev)
+> > +{
+> > +     struct sk_buff *skb;
+> > +     const u16 msft_opcode =3D hdev->msft_ext.opcode;
+> > +
+> > +     if (msft_opcode !=3D  HCI_OP_NOP) {
 >
->   Added Jakub's Reviewed-by tag.
+> I really prefer it this way
 >
-> * <NEW> devlink: use -ENOSPC to indicate no more room for snapshots
+>         if (!something_supported)
+>                 return;
+Will address in v3.
 >
->   New patch added to convert confusing -ENOMEM to -ENOSPC, as suggested by
->   Jiri.
+> > +             struct msft_cp_read_supported_features cp;
+> > +
+> > +             cp.sub_opcode =3D MSFT_OP_READ_SUPPORTED_FEATURES;
+> > +             skb =3D __hci_cmd_sync(hdev, msft_opcode, sizeof(cp), &cp=
+,
+> > +                                  HCI_CMD_TIMEOUT);
+> > +
+> > +             process_msft_vnd_ext_cmd_complete(hdev, skb);
+> > +             if (skb) {
+> > +                     kfree_skb(skb);
+> > +                     skb =3D NULL;
+> > +             }
+> > +     }
+> > +}
+> > +
+> > static int hci_dev_do_open(struct hci_dev *hdev)
+> > {
+> >       int ret =3D 0;
+> > @@ -1554,6 +1624,11 @@ static int hci_dev_do_open(struct hci_dev *hdev)
+> >               }
+> >       }
+> >
+> > +     /* Check features supported by HCI extensions after the init proc=
+edure
+> > +      * completed.
+> > +      */
+> > +     read_vendor_extension_features(hdev);
+> > +
 >
-> * devlink: extract snapshot id allocation to helper function
+>         msft_do_open(hdev);
 >
->   No changes
 >
-> * devlink: convert snapshot id getter to return an error
+> >       /* If the HCI Reset command is clearing all diagnostic settings,
+> >        * then they need to be reprogrammed after the init procedure
+> >        * completed.
+> > @@ -1733,6 +1808,9 @@ int hci_dev_do_close(struct hci_dev *hdev)
+> >                       cancel_delayed_work_sync(&adv_instance->rpa_expir=
+ed_cb);
+> >       }
+> >
+> > +     kfree(hdev->msft_ext.evt_prefix);
+> > +     hdev->msft_ext.evt_prefix =3D NULL;
+> > +
 >
->   Changed title to "devlink: report error once U32_MAX snapshot ids have
->   been used".
+>         msft_do_close(hdev);
 >
->   Refactored this patch to make devlink_region_snapshot_id_get take a
->   pointer to u32, so that the error value and id value are separated. This
->   means that we can remove the INT_MAX limitation on id values.
 >
-> * devlink: track snapshot id usage count using an xarray
+> And let these two function clear, init, free etc. everything except hdev-=
+>msft_ext.opcode
 >
->   Fixed the xa_init to use xa_init_flags with XA_FLAGS_ALLOC, so that
->   xa_alloc can properly be used.
+> That said, I would actually also introduce a wrapper msft_set_opcode(hdev=
+, opcode); so that the driver doesn=E2=80=99t have to know the internal on =
+how that opcode is stored.
 >
->   Changed devlink_region_snapshot_id_get to use an initial count of 1
->   instead of 0. Added a new devlink_region_snapshot_id_put function, used
->   to release this initial count. This closes the race condition and issues
->   caused if the driver either doesn't create a snapshot, or if userspace
->   deletes the first snapshot before others are created.
+> We can also keep the struct msft_ext internal to msft.c and don=E2=80=99t=
+ have to expose the internal details. So all stay confined in net/bluetooth=
+/msft.c.
+Good point. Will add net/bluetooth/msft.c in v3.
 >
->   Used WARN_ON in a few more checks that should not occur, such as if the
->   xarray entry is not a value, or when the id isn't yet in the xarray.
->
->   Removed an unnecessary if (err) { return err; } construction.
->
->   Use xa_limit_32b instead of xa_limit_31b now that we don't return the
->   snapshot id directly.
->
->   Cleanup the label used in __devlink_region_snapshot_create to indicate the
->   failure cause, rather than the cleanup step.
->
->   Removed the unnecessary locking around xa_destroy
->
-> * devlink: implement DEVLINK_CMD_REGION_NEW
->
->   Added a WARN_ON to the check in snapshot_id_insert in case the id already
->   exists.
->
->   Removed an unnecessary "if (err) { return err; }" construction
->
->   Use -ENOSPC instead of -ENOMEM when max_snapshots is reached.
->
->   Cleanup label names to match style of the other labels in the file,
->   naming after the failure cause rather than the cleanup step. Also fix a
->   bug in the label ordering.
->
->   Call the new devlink_region_snapshot_id_put function in the mlx4 and
->   netdevsim drivers.
->
-> * netdevsim: support taking immediate snapshot via devlink
->
->   Create a local devlink pointer instead of calling priv_to_devlink
->   multiple times.
->
->   Removed previous selftest for devlink region new without a snapshot id,
->   as this is no longer supported. Adjusted and verified that the tests pass
->   now.
->
-> * ice: add a devlink region for dumping NVM contents
->
->   Use "dev_err" instead of "dev_warn" for a message about failure to create
->   the devlink region.
-
-Could you please have the changelog per-patch, as I suggested for v1?
-Much easier to review then.
-
-Also, please omit the "no changes" notes.
-
-
->
->Jacob Keller (11):
->  devlink: prepare to support region operations
->  devlink: convert snapshot destructor callback to region op
->  devlink: trivial: fix tab in function documentation
->  devlink: add function to take snapshot while locked
->  devlink: use -ENOSPC to indicate no more room for snapshots
->  devlink: extract snapshot id allocation to helper function
->  devlink: report error once U32_MAX snapshot ids have been used
->  devlink: track snapshot id usage count using an xarray
->  devlink: implement DEVLINK_CMD_REGION_NEW
->  netdevsim: support taking immediate snapshot via devlink
->  ice: add a devlink region for dumping NVM contents
->
-> .../networking/devlink/devlink-region.rst     |   8 +
-> Documentation/networking/devlink/ice.rst      |  26 ++
-> drivers/net/ethernet/intel/ice/ice.h          |   2 +
-> drivers/net/ethernet/intel/ice/ice_devlink.c  |  99 +++++
-> drivers/net/ethernet/intel/ice/ice_devlink.h  |   3 +
-> drivers/net/ethernet/intel/ice/ice_main.c     |   4 +
-> drivers/net/ethernet/mellanox/mlx4/crdump.c   |  36 +-
-> drivers/net/netdevsim/dev.c                   |  46 ++-
-> include/net/devlink.h                         |  33 +-
-> net/core/devlink.c                            | 363 +++++++++++++++---
-> .../drivers/net/netdevsim/devlink.sh          |  10 +
-> 11 files changed, 550 insertions(+), 80 deletions(-)
->
->-- 
->2.24.1
->
+> >       /* Avoid potential lockdep warnings from the *_flush() calls by
+> >        * ensuring the workqueue is empty up front.
+> >        */
+Regards,
+Miao
