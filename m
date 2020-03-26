@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5F0B1938C5
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:39:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 675D31938C6
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:39:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727815AbgCZGjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 02:39:08 -0400
+        id S1727826AbgCZGjL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 02:39:11 -0400
 Received: from mail-eopbgr130079.outbound.protection.outlook.com ([40.107.13.79]:8291
         "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727798AbgCZGjI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Mar 2020 02:39:08 -0400
+        id S1727805AbgCZGjK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Mar 2020 02:39:10 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fwxCh5yecj2U1HHwt3Pu3WDH+1fh6egO1RE2JFWQcP3DVnuRnOdo/ynYmftNqaDs7aZlL81IgVf0NZctmSps2qtnOTPywueVoOPjO49Gm86eKPv9kvCmP8Gam43r+xmiTUPLKNfVSef3xf96lXXO8Q84jod+KkVNOJSLqJ9f6QCoARg8zhT3+ZXD5Bx1jKXxx7uKxjuzkS+UUJZU9nFyfY3KzyOfZLm3w90rhNzu3ORs7dISSTZNgsIy4xjynXsmWiB1wVYnCw8EWOoOgVtfRhE1HT+vcy8TtZ3jjwCHJmquNwKMYuIypOA/zmCtDJIPuf03+rpIo8/u7fSszahMqg==
+ b=Kn9KYWZ9FMSwUBSFyEOGiNHg0DJZLsGdNOESsfTtBt3j0tXZjb7wBQRIJ/HRcFb20H6qn0yiJ6A9tE8YJMDOC1d7oXLGVfL9G0gd8JLf8Q9QoFG7jtndn3tY4tq5AoslzVavNNrti1IgX4wCTTIouaWKt889TTI7NMDuTl29ZgMr/FkOcwbg0eyhgrLfhn1y9cX7ZCQNPCQeSm1tcngtzBHDOn0zqCfkjlnAXdCOahLh7aUADeXEoISgyXqDYvZBAFNgfXKy3LvUrwRbSFHa51YSrGMsHQ0k16CMepavg2ZLAsq+meF+ZUhb/hsO4hEaa2OqUx+k6G403D+WBJZLyw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0dohxoXvLlzC8pv7CnYdFJ/8PTUam/8+S4yyerFT85U=;
- b=kKHY3S8E9xzEbHzehaP6xCWsC4N4S0mkvuq3GmJP45Eo01udpEXIRgWo6J1a4v5/5lDDdV/fSuVnzJCRwkWMEnFTWv6udbkYBjWhJ+YlIDqhYMJi9I6E4Pc2MqSoSCv65aIQEzcfSn4utGCmKKxGoXt2Yp/b/IMjDAh/iZm4ZJcMSlr0jRv6hHkrukkitkflf4LhY/fD48hy0DCwp29LiBRmO65EzK4ULUHZmcHQBU8qZR30salwhN7+JpIDMzNN89xusJEVtSpXICINByOtsQmIHTLjxCNsF9RM0X5Xk0IuVpHBWXIoy9ugrI/mxT+ql/mMZKV6eBAo3chilXK4ig==
+ bh=DEmEZVRluVXwaJ8SZq7hruPiC/70FvrOKy/DMSlnUQQ=;
+ b=RDx6NfjYYhhdEEGUXygz95KfbeAo3z7RG9yORP4p8tCZCD1KvCbRqrX6VnE+MiY+kne2xIy/9AN258jZ2Kzklvfy2V84dUcbzOOUaFBcGHs9sYHFKkpC2FXU4pvd9XJ+9Pp4/3CfL+w+Db+Ow9DULW4LB61AYCDDOYzQoZ9X+mYPU8kp/yqkaHB436FSmrGUBGdeGKc86IR1QJmub9NB6EkCs6b8FOiMXE4OVZtxbXdUhYjpnsClnxD1ByqC5PdGJnfMAaXnEw9vHn3Nz79Go6lPDtMy7+qx38gGgdkdB9NrHGMwJ/zOwwbbRive9jKdJQAeJ4V+9y+jSAXViBA6Ow==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0dohxoXvLlzC8pv7CnYdFJ/8PTUam/8+S4yyerFT85U=;
- b=EIzmgn0ARKiPNkiZ23n5S7RgvdUd/KDktDT+P/XLuiSwPXxI8zkBeouMViTnGZ/Pi3spVC3+1bfSPEZEJxlfx+FK6ddonARDuI3i+gw7yVLh72DFB+mX1CSvomXXMJb/zwhU7Da4Ahicm1UtoTFWrmo2TvJhXI3gicDjKmSivMw=
+ bh=DEmEZVRluVXwaJ8SZq7hruPiC/70FvrOKy/DMSlnUQQ=;
+ b=uChmz50uS2w5dG3P5s3Z53DzhAiHD+89EecIxCCrLisK8mSLVVxb6ljaLGtJLYqQqathxh8RWP615mI7npW/3/lLOTJFgB2xAzc0FYy6+9inCCAb/Xbsac2mNxtzBembfuu9RZ58yxBfANgG7NjT0hfFZkVrg7/Bn7IkNthiizc=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
  VI1PR05MB6479.eurprd05.prod.outlook.com (20.179.25.23) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2835.23; Thu, 26 Mar 2020 06:39:02 +0000
+ 15.20.2835.23; Thu, 26 Mar 2020 06:39:05 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2835.023; Thu, 26 Mar 2020
- 06:39:02 +0000
+ 06:39:05 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, Jiri Pirko <jiri@mellanox.com>,
         Parav Pandit <parav@mellanox.com>,
+        Roi Dayan <roid@mellanox.com>,
+        Bodong Wang <bodong@mellanox.com>,
         Mark Bloch <markb@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 13/16] devlink: Rely on driver eswitch thread safety instead of devlink
-Date:   Wed, 25 Mar 2020 23:38:06 -0700
-Message-Id: <20200326063809.139919-14-saeedm@mellanox.com>
+Subject: [net-next 14/16] net/mlx5: Split eswitch mode check to different helper function
+Date:   Wed, 25 Mar 2020 23:38:07 -0700
+Message-Id: <20200326063809.139919-15-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200326063809.139919-1-saeedm@mellanox.com>
 References: <20200326063809.139919-1-saeedm@mellanox.com>
@@ -56,32 +58,32 @@ X-ClientProxiedBy: BYAPR03CA0020.namprd03.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR03CA0020.namprd03.prod.outlook.com (2603:10b6:a02:a8::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.19 via Frontend Transport; Thu, 26 Mar 2020 06:39:00 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR03CA0020.namprd03.prod.outlook.com (2603:10b6:a02:a8::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.19 via Frontend Transport; Thu, 26 Mar 2020 06:39:02 +0000
 X-Mailer: git-send-email 2.25.1
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 1e94b0f8-e924-4d57-29e3-08d7d1505f54
+X-MS-Office365-Filtering-Correlation-Id: 23070855-be0f-4149-5741-08d7d15060f4
 X-MS-TrafficTypeDiagnostic: VI1PR05MB6479:|VI1PR05MB6479:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB6479DD10D8F4CD413771D0B7BECF0@VI1PR05MB6479.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB6479853251DE83852734FE86BECF0@VI1PR05MB6479.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1751;
 X-Forefront-PRVS: 0354B4BED2
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(39860400002)(366004)(346002)(396003)(376002)(136003)(478600001)(107886003)(52116002)(6512007)(4326008)(86362001)(6486002)(8936002)(54906003)(6506007)(36756003)(1076003)(81156014)(81166006)(2906002)(316002)(8676002)(66946007)(186003)(16526019)(66556008)(66476007)(26005)(5660300002)(2616005)(956004)(54420400002);DIR:OUT;SFP:1101;
 Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: e23v50j5/s/vXmXeL87DcxYIQcIo+BqfKy1KcGou3RTHNDgxAzr0zAAiAm5uQOmUstmhdNhuu8wuB0gZyYVCqDnBiNpgqhAzhRi0bUqgyVTVe6kESbwDzMeIFbmDJtvjkec0eKHnUSclPLDA0kFYXwcLFYqufKUN1jh4Ovs5gRyNsK49C+dkbCS+AJwN3mchi2zs2qfDDlOkHk4HTU2T0Fq2Ifpw4Lio85BwWy+Hf86S2sBDHn67vzXEbTW7iCSIchewGWMk4t2mfbW4TuPPIMQZqvvwknVfjN9R4adoZCCFg71ZZgf/xjKm7iN44ydqlc9ZRCBa98UFvd/qGuUu2UBKD2KMpK/x01cKoZwhGmFXj4dL9FqhjvFbPQyDpc+vtoRefqdCC/uiawBqfabLBijcG6acaD4Aru6DilQ6cBR/YiKR9fUquc5jVLE3rUI+xHRtrF9gijWHvWxLbilp1E5G3Tn4yRMzkFDZxwd/CtNUB5KN5Ion/kdAoYmWZTVZ
-X-MS-Exchange-AntiSpam-MessageData: l3qZKPJElTdKXDbmS7MHYPQhqkeSJJJq9nqvgwI3XJkL4RxgGHAbhUA09dpe93E+Z6hWzxh4xfpj17bEhhMG7bKxUFyV1/lnzlu23XvARnanZoWrsrJXFklcbVK187aOPAiVOs85CppLfd3qtDTumg==
+X-Microsoft-Antispam-Message-Info: G6RKgjN1Mim8/IVAsO4CYbfUYohePKWSjCc/PUwYKqvsoWOks2eijsEqFn93s2oqeyK86zzEnIYBrrrKFRVW8PywZBKP8QVyXA6WJxtDtG4QcqptSjHQdJc41f7srxAttq6SJr1GFn7tjZ8EK2Yp6dy7zbNXouF3o+SHqwSYJ0mJAiDfrl7HlxQaMp3fraC8Acdz3Ib5PoBLVtG/QzzZnRjV61S4nH5luscUD+xPwk+YbsxerXqNs//97Ww295Vx+mMk7R36kZYJGbeA4t9cLe7S8dJPd7IoykCvIkiNdDGDJridmuZW5sJsCA89kpXJgJyyMBZAzT9GdcsrMkc4OYfPVrN6fxqCdlktSTD+Dq+O9TuI0dYVw2ExjvGRbe99x0zeXzYl6DUXxNMtsBo8xn6ZybqqsN9AsR/MRUJ1zWAZpZG6ZIXUGpglLqKxnh93V19bzBAAIwL02X2NTRsn7N4xpTQyY69IPS34l6N6ux7dx2JCQ/BXtyY9gm7VU1w9
+X-MS-Exchange-AntiSpam-MessageData: m5ydh4l+S8zBdi7U13cYkrMeUZDPRnsUWlQUgb3Iu6wwwcIpny+sHBRCbAQy/XshsNLKYWA62dG476Qq8hNdvM8g86y9QVxtoAsXqaOpnIhsCDW3DtoCpo0VzbBTrC2XRFmIohyTma/xitxBZveTMw==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e94b0f8-e924-4d57-29e3-08d7d1505f54
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2020 06:39:02.5473
+X-MS-Exchange-CrossTenant-Network-Message-Id: 23070855-be0f-4149-5741-08d7d15060f4
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2020 06:39:05.2348
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iuP7rsCxjNTvFuxEGHh4XBhXAikGLSlczULmWgMoMaZ6G8/Q91uPcA7jjFmOO5Iz8DYC+fbtnSuhTZywP4Itug==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9YG5W9yAg2fqEiT3Vi2H1gsLnF7DUxB1kWmnWof1gcHUrBKa7Cy4L0pEvmNqpDWE0kdXlJIkPXbcXuhevh9TJw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6479
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -90,70 +92,111 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Parav Pandit <parav@mellanox.com>
 
-devlink_nl_cmd_eswitch_set_doit() doesn't hold devlink->lock mutex while
-invoking driver callback. This is likely due to eswitch mode setting
-involves adding/remove devlink ports, health reporters or
-other devlink objects for a devlink device.
+In order to check eswitch state under a lock, prepare code to split
+capability check and eswitch state check into two helper functions.
 
-So it is driver responsiblity to ensure thread safe eswitch state
-transition happening via either sriov legacy enablement or via devlink
-eswitch set callback.
-
-Therefore, get() callback should also be invoked without holding
-devlink->lock mutex.
-Vendor driver can use same internal lock which it uses during eswitch
-mode set() callback.
-This makes get() and set() implimentation symmetric in devlink core and
-in vendor drivers.
-
-Hence, remove holding devlink->lock mutex during eswitch get() callback.
-
-Failing to do so results into below deadlock scenario when mlx5_core
-driver is improved to handle eswitch mode set critical section invoked
-by devlink and sriov sysfs interface in subsequent patch.
-
-devlink_nl_cmd_eswitch_set_doit()
-   mlx5_eswitch_mode_set()
-     mutex_lock(esw->mode_lock) <- Lock A
-     [...]
-     register_devlink_port()
-       mutex_lock(&devlink->lock); <- lock B
-
-mutex_lock(&devlink->lock); <- lock B
-devlink_nl_cmd_eswitch_get_doit()
-   mlx5_eswitch_mode_get()
-   mutex_lock(esw->mode_lock) <- Lock A
-
-In subsequent patch, mlx5_core driver uses its internal lock during
-get() and set() eswitch callbacks.
-
-Other drivers have been inspected which returns either constant during
-get operations or reads the value from already allocated structure.
-Hence it is safe to remove the lock in get( ) callback and let vendor
-driver handle it.
-
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Reviewed-by: Roi Dayan <roid@mellanox.com>
+Reviewed-by: Bodong Wang <bodong@mellanox.com>
 Reviewed-by: Mark Bloch <markb@mellanox.com>
 Signed-off-by: Parav Pandit <parav@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- net/core/devlink.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 37 +++++++++++++++++--
+ 1 file changed, 33 insertions(+), 4 deletions(-)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 73bb8fbe3393..a9036af7e002 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6187,7 +6187,8 @@ static const struct genl_ops devlink_nl_ops[] = {
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = devlink_nl_cmd_eswitch_get_doit,
- 		.flags = GENL_ADMIN_PERM,
--		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK,
-+		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK |
-+				  DEVLINK_NL_FLAG_NO_LOCK,
- 	},
- 	{
- 		.cmd = DEVLINK_CMD_ESWITCH_SET,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 088fb51123e2..53fcb00ddbac 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -2506,13 +2506,18 @@ static int mlx5_eswitch_check(const struct mlx5_core_dev *dev)
+ 	if(!MLX5_ESWITCH_MANAGER(dev))
+ 		return -EPERM;
+ 
+-	if (dev->priv.eswitch->mode == MLX5_ESWITCH_NONE &&
+-	    !mlx5_core_is_ecpf_esw_manager(dev))
+-		return -EOPNOTSUPP;
+-
+ 	return 0;
+ }
+ 
++static int eswitch_devlink_esw_mode_check(const struct mlx5_eswitch *esw)
++{
++	/* devlink commands in NONE eswitch mode are currently supported only
++	 * on ECPF.
++	 */
++	return (esw->mode == MLX5_ESWITCH_NONE &&
++		!mlx5_core_is_ecpf_esw_manager(esw->dev)) ? -EOPNOTSUPP : 0;
++}
++
+ int mlx5_devlink_eswitch_mode_set(struct devlink *devlink, u16 mode,
+ 				  struct netlink_ext_ack *extack)
+ {
+@@ -2524,6 +2529,10 @@ int mlx5_devlink_eswitch_mode_set(struct devlink *devlink, u16 mode,
+ 	if (err)
+ 		return err;
+ 
++	err = eswitch_devlink_esw_mode_check(dev->priv.eswitch);
++	if (err)
++		return err;
++
+ 	cur_mlx5_mode = dev->priv.eswitch->mode;
+ 
+ 	if (esw_mode_from_devlink(mode, &mlx5_mode))
+@@ -2549,6 +2558,10 @@ int mlx5_devlink_eswitch_mode_get(struct devlink *devlink, u16 *mode)
+ 	if (err)
+ 		return err;
+ 
++	err = eswitch_devlink_esw_mode_check(dev->priv.eswitch);
++	if (err)
++		return err;
++
+ 	return esw_mode_to_devlink(dev->priv.eswitch->mode, mode);
+ }
+ 
+@@ -2564,6 +2577,10 @@ int mlx5_devlink_eswitch_inline_mode_set(struct devlink *devlink, u8 mode,
+ 	if (err)
+ 		return err;
+ 
++	err = eswitch_devlink_esw_mode_check(esw);
++	if (err)
++		return err;
++
+ 	switch (MLX5_CAP_ETH(dev, wqe_inline_mode)) {
+ 	case MLX5_CAP_INLINE_MODE_NOT_REQUIRED:
+ 		if (mode == DEVLINK_ESWITCH_INLINE_MODE_NONE)
+@@ -2618,6 +2635,10 @@ int mlx5_devlink_eswitch_inline_mode_get(struct devlink *devlink, u8 *mode)
+ 	if (err)
+ 		return err;
+ 
++	err = eswitch_devlink_esw_mode_check(esw);
++	if (err)
++		return err;
++
+ 	return esw_inline_mode_to_devlink(esw->offloads.inline_mode, mode);
+ }
+ 
+@@ -2633,6 +2654,10 @@ int mlx5_devlink_eswitch_encap_mode_set(struct devlink *devlink,
+ 	if (err)
+ 		return err;
+ 
++	err = eswitch_devlink_esw_mode_check(esw);
++	if (err)
++		return err;
++
+ 	if (encap != DEVLINK_ESWITCH_ENCAP_MODE_NONE &&
+ 	    (!MLX5_CAP_ESW_FLOWTABLE_FDB(dev, reformat) ||
+ 	     !MLX5_CAP_ESW_FLOWTABLE_FDB(dev, decap)))
+@@ -2682,6 +2707,10 @@ int mlx5_devlink_eswitch_encap_mode_get(struct devlink *devlink,
+ 	if (err)
+ 		return err;
+ 
++	err = eswitch_devlink_esw_mode_check(esw);
++	if (err)
++		return err;
++
+ 	*encap = esw->offloads.encap;
+ 	return 0;
+ }
 -- 
 2.25.1
 
