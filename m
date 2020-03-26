@@ -2,71 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97CD0194112
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:16:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D4BE194119
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:17:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727923AbgCZOQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 10:16:32 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:40868 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727763AbgCZOQb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:16:31 -0400
-Received: by mail-lf1-f66.google.com with SMTP id j17so4946981lfe.7;
-        Thu, 26 Mar 2020 07:16:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/qXdFHUWSCp669/WHwL4HbHxImLf08oY2s3iOgsN6H0=;
-        b=dUX0IAtZBxJ+J3DAZGtKGnr5Mgq0bTaOPZfgbAtlYlpl+UFE2jkKA7nKcto9JJf4KT
-         bwuDGClW12swbjLwDr/4hmqHm8KSiQbgWtJsec+kNoECp3DgRXFm5I20Ln0CY+9lkxgW
-         0toc7oks9qn6p69udG1EmGDxSamOZLTmvcdIVmrZZzd/nTFhYq8JbR/Ac1WalZZy2rAP
-         B8F9et2wKpvoQKSSaPoorGsaC7ApcB2q8t+sj7H7FvHoGfOxZG91FYuYO0YtWn2i5j65
-         R6Ipusj6GoVo/PyX9u1dQAlJhmA/7HJYQ6NZj3cGYfAs1WnKPTvri6M59K1LyNw4wU4S
-         lFYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/qXdFHUWSCp669/WHwL4HbHxImLf08oY2s3iOgsN6H0=;
-        b=SoTkmnKPPFPM4vqPaOrfA0ZEcrSzcqr6SBitrbFRb0Wk8vOgSNBe7TlFQTZtfYIZWW
-         QGhCiORUjmz6mVKYhoRV4YaCnCxvi/ahk32JWO21sSFj5WMJvTgHoryh9AvO2cIQWa7J
-         JAuhr8n7kiyiALZPnirpyWiP+Bu6/Iz7QlQt9PD4Fy1bGameH+diNyGQB8RTLbPy+pU8
-         ACll3kyzynYFDiKeBtdSZt6o6twltuaYbkJ6bM985Y1iW09W2rqT4HHPt8cLrna7Jlaj
-         9n3RoI4ZkKVm6a1HY17wg8osjl8LMU/cLQpqTN7u33N7k08rG9yAyE8cdWTspR8rqPEL
-         Ss7Q==
-X-Gm-Message-State: AGi0PuauthnTTALgUG3amdLNAxyUtTXvHNvcKrDiBRbvMElk119Ueos9
-        84oevVPaNuICCO57aFmhSQercgNeOrcQh2kPOiI=
-X-Google-Smtp-Source: APiQypLyOxIsk9spzm+cIk2VhOAZWI5yynOlWw7ymhbBCElhxdaAqM2EyoMnmg66pbjkoDxjAWjVFzh8MtFIE9XxFY8=
-X-Received: by 2002:ac2:5f52:: with SMTP id 18mr1373825lfz.133.1585232187089;
- Thu, 26 Mar 2020 07:16:27 -0700 (PDT)
+        id S1727847AbgCZORu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 10:17:50 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:59939 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727695AbgCZORu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:17:50 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 61F335C021F;
+        Thu, 26 Mar 2020 10:17:49 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Thu, 26 Mar 2020 10:17:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=9zxaI9XhqCwf8a2xI
+        nJWAx7FO2XISc7YgFkeK96wlqI=; b=VH0cE8O4rE9adKB8Hpuy8zRtC5iyFa9jy
+        5gWq34nXnRyYBpjO+bNnUYAsie46BaQjffQeMjhn8ZTW5+Por2Ffe2LAcAczvE/m
+        aj0q5zZ9j0U00s7Z7SIBJ9lCu8BNsFH8t0f0TZ2KN75o8FGdcKuuuXxNJCPFF3BM
+        DFk1NFM+xcV6NsxAeTDSS21KRqpUVO4ziEJc8IuB/7oYZsdCMbiYH3DIx1loIIuf
+        uTVdGNnlE1ieGrJTZfy/DMSiZsXaCga2QcLRDMeaut4rqnEFbv4KEM1XJYsJR4MJ
+        8Cw6oAm/Nv5DF7qbr2A6paJPB3Z64c7bxcnCEmNgAEPkTaiB8msrQ==
+X-ME-Sender: <xms:jbl8XgK5XlHBpTg5TsSkh6M_Tg1H0LXvI6EtXKpuvafRsdnTf0wj-w>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudehiedgiedtucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeejledrudekuddrudefvddrudeludenucevlhhushhtvghruf
+    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghh
+    rdhorhhg
+X-ME-Proxy: <xmx:jbl8XrD5yTUgd1wd5I_tJfmSAF-zR2RoHM3U8mmdauYJZrFsgR5d2g>
+    <xmx:jbl8XhpQm5kYciXR2fKGCAeBvHCOoN6LmMjtLAyNKG6g6i7LShPO1Q>
+    <xmx:jbl8XkbV5k_ichSuDvVICsz05IHd5ZBl8vjS7gI7xTCF9K8oJlcPzQ>
+    <xmx:jbl8XmnmiAZZSJRtoIbmVO7bmjOCP9rGRnw-rCdxqyrPQgwdF1tcYw>
+Received: from splinter.mtl.com (bzq-79-181-132-191.red.bezeqint.net [79.181.132.191])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1C47F3280059;
+        Thu, 26 Mar 2020 10:17:47 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net] mlxsw: spectrum_mr: Fix list iteration in error path
+Date:   Thu, 26 Mar 2020 16:17:33 +0200
+Message-Id: <20200326141733.1395337-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <20200320030015.195806-1-zenczykowski@gmail.com>
- <20200326135959.tqy5i4qkxwcqgp5y@salvia> <CAHo-OoyGEPKdU5ZEuY29Zzi4NGzD-QMw7Pb-MTXjdKTj-Kj-Pw@mail.gmail.com>
- <CAHo-OozGK7ANfFDBnLv2tZVuhXUw1sCCRVTBc0YT7LvYVXH_ZQ@mail.gmail.com>
-In-Reply-To: <CAHo-OozGK7ANfFDBnLv2tZVuhXUw1sCCRVTBc0YT7LvYVXH_ZQ@mail.gmail.com>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Thu, 26 Mar 2020 07:16:16 -0700
-Message-ID: <CAHo-Oow8otp4ruAUpvGYjXN_f3dsbprg_DKOGG6HNhe_Z8X8Vg@mail.gmail.com>
-Subject: Re: [PATCH] iptables: open eBPF programs in read only mode
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Netfilter Development Mailinglist 
-        <netfilter-devel@vger.kernel.org>, Chenbo Feng <fengc@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I guess maybe we could wrap it in a
+From: Ido Schimmel <idosch@mellanox.com>
 
-#ifdef BPF_F_RDONLY
-attr.file_flags = BPF_F_RDONLY;
-#endif
+list_for_each_entry_from_reverse() iterates backwards over the list from
+the current position, but in the error path we should start from the
+previous position.
 
-if we want to continue supporting building against pre-4.15 kernel headers...
+Fix this by using list_for_each_entry_continue_reverse() instead.
+
+This suppresses the following error from coccinelle:
+
+drivers/net/ethernet/mellanox/mlxsw//spectrum_mr.c:655:34-38: ERROR:
+invalid reference to the index variable of the iterator on line 636
+
+Fixes: c011ec1bbfd6 ("mlxsw: spectrum: Add the multicast routing offloading logic")
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c
+index 54275624718b..336e5ecc68f8 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c
+@@ -637,12 +637,12 @@ static int mlxsw_sp_mr_vif_resolve(struct mlxsw_sp_mr_table *mr_table,
+ 	return 0;
+ 
+ err_erif_unresolve:
+-	list_for_each_entry_from_reverse(erve, &mr_vif->route_evif_list,
+-					 vif_node)
++	list_for_each_entry_continue_reverse(erve, &mr_vif->route_evif_list,
++					     vif_node)
+ 		mlxsw_sp_mr_route_evif_unresolve(mr_table, erve);
+ err_irif_unresolve:
+-	list_for_each_entry_from_reverse(irve, &mr_vif->route_ivif_list,
+-					 vif_node)
++	list_for_each_entry_continue_reverse(irve, &mr_vif->route_ivif_list,
++					     vif_node)
+ 		mlxsw_sp_mr_route_ivif_unresolve(mr_table, irve);
+ 	mr_vif->rif = NULL;
+ 	return err;
+-- 
+2.24.1
+
