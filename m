@@ -2,121 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD0B7194097
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 14:57:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B39F119409F
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 14:59:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727846AbgCZN5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 09:57:22 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:29382 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727834AbgCZN5T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 09:57:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585231038;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uTy9XzunUpSqneSBWA8G2EaCSTiTKP7tCVW6EiON0Oc=;
-        b=NUExir/e/3L3rdcfNi8sREWrjBgGeCDsxh6Iq44GQ+goMcWo/YR/X+pKp8ImbIgqK/SvA1
-        z/B5kD71xoDHbwrv4WS3rKrfrTHbevfMEQ5HW2SMHMY9pK5Pk3hV5qXWaKXj6A2JfNItv0
-        OZeOIqCVbwE3QR9t0iKPJxbzMcddU4E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-154-aLmbfdiSP4iuwWm6Alh4Rw-1; Thu, 26 Mar 2020 09:57:12 -0400
-X-MC-Unique: aLmbfdiSP4iuwWm6Alh4Rw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 82830800D50;
-        Thu, 26 Mar 2020 13:57:09 +0000 (UTC)
-Received: from [10.72.12.19] (ovpn-12-19.pek2.redhat.com [10.72.12.19])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CFE2E60BF3;
-        Thu, 26 Mar 2020 13:56:49 +0000 (UTC)
-Subject: Re: [PATCH V8 9/9] virtio: Intel IFC VF driver for VDPA
-To:     Jason Gunthorpe <jgg@mellanox.com>
-Cc:     mst@redhat.com, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        maxime.coquelin@redhat.com, cunming.liang@intel.com,
-        zhihong.wang@intel.com, rob.miller@broadcom.com,
-        xiao.w.wang@intel.com, lingshan.zhu@intel.com, eperezma@redhat.com,
-        lulu@redhat.com, parav@mellanox.com, kevin.tian@intel.com,
-        stefanha@redhat.com, rdunlap@infradead.org, hch@infradead.org,
-        aadam@redhat.com, jiri@mellanox.com, shahafs@mellanox.com,
-        hanand@xilinx.com, mhabets@solarflare.com, gdawar@xilinx.com,
-        saugatm@xilinx.com, vmireyno@marvell.com,
-        Bie Tiwei <tiwei.bie@intel.com>
-References: <20200325082711.1107-1-jasowang@redhat.com>
- <20200325082711.1107-10-jasowang@redhat.com>
- <20200325123410.GX13183@mellanox.com>
- <ed04692d-236c-2eee-4429-6ef4d5d165fe@redhat.com>
- <20200326121705.GJ13183@mellanox.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <a03edad7-e1c9-ae2f-5843-d63907289a3f@redhat.com>
-Date:   Thu, 26 Mar 2020 21:56:48 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727800AbgCZN7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 09:59:46 -0400
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:34249 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727652AbgCZN7q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 09:59:46 -0400
+Received: by mail-pj1-f66.google.com with SMTP id q16so3377425pje.1;
+        Thu, 26 Mar 2020 06:59:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=79P2l9w6W7WmPQUzQ+lJdPeSs/MsFdNWFgy77EXy/Go=;
+        b=b4z01HGoSxY5I0/OAnoCK6nGMFAC1VJ4jxpk/xkeTi9zg7bhvnhhyw2bpS5KNad8k5
+         jQnuLCuT1XNyCftzpCICXIcXnLmXKtxoQpnET++j7lTEzxTyfYs1tRj39lGjDXBq4AX+
+         ywpMk5sxyBfx6DMCZQ/Xh0sPoi5rXhdEvifSk8t73g3vtI98JDi3YuV8Huwp2fjfExBa
+         bzUovrtfu+EScEwu7UROnDiHu1CD2L8OLseGYJmJZwmhd8cUYmhdoDDTkAQZVQi41m2l
+         jf90ann2F6O5y86kvfilisX7ozjs5RDMEySEOsIG1ysahwREQXizj2Yxylef1jWgzJK8
+         tyrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=79P2l9w6W7WmPQUzQ+lJdPeSs/MsFdNWFgy77EXy/Go=;
+        b=m8IpQ9j3XQ+cs3Mal6Pjuy33gxXu5GCplSVDPO/NhBnZqf0USWLMhOy5sTCLii/idT
+         PncLJ5vpmm4KhsMAvSclvhd5SAYhn+FCCdX4NBPjVx1wH8uZR74uCxM9vq91f/nzWLsL
+         4I9RHc22l+2FCTAU9/3A0vWBt/T2ZVzRpf3rGqfMWY84FFNAJM+ZM6ahRHB0nmGJzY/y
+         qW/Fc7hPHoZ4z3fYx8oqmCDGoKLN6Hz9aBHLpXicF7MB7y0VfitI1F3VwgELCXZqnR+K
+         r5gUxNxerteg4OldXU7LJ6Xvm68TNmEblIxb/2i4nSKgWK0CdkBMIwH6pK3MwBHliG04
+         El5g==
+X-Gm-Message-State: ANhLgQ31Egtv+pyANpWGHu3qSod0SoDd1P2v0oRaaYUSOY8qMliRJEeo
+        5p7khKFXXh2CX2nx0vlgu7lf3AZ2
+X-Google-Smtp-Source: ADFU+vsAZr6eD+eeAF+Sdv+/hG+glh6sOhao9VufpzChwNHCKOnD+wATO0o3BmrDtxASVd0N/wlhMA==
+X-Received: by 2002:a17:90a:2dc2:: with SMTP id q2mr146980pjm.146.1585231183920;
+        Thu, 26 Mar 2020 06:59:43 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id t4sm1772471pfb.156.2020.03.26.06.59.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2020 06:59:43 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 06:59:41 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     "Y.b. Lu" <yangbo.lu@nxp.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: Re: [PATCH 6/6] ptp_ocelot: support 4 programmable pins
+Message-ID: <20200326135941.GA20841@localhost>
+References: <20200320103726.32559-1-yangbo.lu@nxp.com>
+ <20200320103726.32559-7-yangbo.lu@nxp.com>
+ <20200324130733.GA18149@localhost>
+ <AM7PR04MB688500546D0FC4A64F0DA19DF8CE0@AM7PR04MB6885.eurprd04.prod.outlook.com>
+ <20200325134147.GB32284@localhost>
+ <AM7PR04MB68853749A1196B30C917A232F8CF0@AM7PR04MB6885.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20200326121705.GJ13183@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM7PR04MB68853749A1196B30C917A232F8CF0@AM7PR04MB6885.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Mar 26, 2020 at 09:34:52AM +0000, Y.b. Lu wrote:
+> > Of course, that is horrible, and I am going to find a way to fix it.
+> 
+> Thanks a lot.
+> Do you think it is ok to move protection into ptp_set_pinfunc() to protect just pin_config accessing?
+> ptp_disable_pinfunc() not touching pin_config could be out of protection.
+> But it seems indeed total ptp_set_pinfunc() should be under protection...
 
-On 2020/3/26 =E4=B8=8B=E5=8D=888:17, Jason Gunthorpe wrote:
-> On Thu, Mar 26, 2020 at 01:50:53PM +0800, Jason Wang wrote:
->
->>>> +	adapter->vdpa.dma_dev =3D dev;
->>>> +	ret =3D vdpa_register_device(&adapter->vdpa);
->>>> +	if (ret) {
->>>> +		IFCVF_ERR(adapter->dev, "Failed to register ifcvf to vdpa bus");
->>>> +		goto err_msix;
->>>> +	}
->>>> +
->>>> +	return 0;
->>>> +
->>>> +err_msix:
->>>> +	put_device(&adapter->vdpa.dev);
->>>> +	return ret;
->>>> +err_alloc:
->>>> +	pci_free_irq_vectors(pdev);
->>>> +err_vectors:
->>>> +	pci_release_regions(pdev);
->>>> +err_regions:
->>>> +	pci_disable_device(pdev);
->>>> +err_enable:
->>>> +	return ret;
->>>> +}
->>> I personally don't like seeing goto unwinds with multiple returns, an=
-d
->>> here I think it is actually a tiny bug.
->>>
->>> All touches to the PCI device must stop before the driver core
->>> remove() returns - so these pci function cannot be in the kref put
->>> release function anyhow.
->>
->> I'm not sure I get here. IFCVF held refcnt of its PCI parent, so it lo=
-oks to
->> me it's safe to free PCI resources in vDPA free callback?
-> The refcnt doesn't prevent the driver core from re-binding the
-> pci_device to another driver. Then the refcount put would do a
-> pci_disable_device() after another driver has started
->
-> For this reason all touches to a struct pci_device must stop before
-> remove returns.
->
-> Jason
+Yes, and I have way to fix that.  I will post a patch soon...
 
+> I could modify commit messages to indicate the pin supports both PTP_PF_PEROUT and PTP_PF_EXTTS, and PTP_PF_EXTTS support will be added in the future.
 
-Ok, will send a new version shortly.
+Thanks for explaining.  Since you do have programmable pin, please
+wait for my patch to fix the deadlock.
 
-Thanks
-
-
->
-
+Thanks,
+Richard
