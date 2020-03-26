@@ -2,126 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED8441941AC
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:38:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFFA31941B7
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:42:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727732AbgCZOiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 10:38:16 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:34003 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726270AbgCZOiQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:38:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585233495;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ikoFRY4zy3clfc/3+MWqXP9kGHjepx+evrHQxYHj3Qk=;
-        b=WVc13qlSC/lWRbxmt3+5JhDxo2uXAeXIMEmcuwItjVdSZGiNQ6qNDN+x9BH9DWQuBrfilv
-        JrJaJn5XdEKoABxIuixLb8PT9YYdq5aUJ8B/A6rAH77PVTEdMXfO24n9SS8zoFd8rp8Y3U
-        LsPOSXHFb0iRDSCQEPhPoGooe7u/PAw=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-192-E5H3O6bePOyrsPL3RepdAg-1; Thu, 26 Mar 2020 10:38:10 -0400
-X-MC-Unique: E5H3O6bePOyrsPL3RepdAg-1
-Received: by mail-wr1-f72.google.com with SMTP id t25so772516wrb.16
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 07:38:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ikoFRY4zy3clfc/3+MWqXP9kGHjepx+evrHQxYHj3Qk=;
-        b=t9hdm+lBfvC1sQvcWE0uuVhZJ+Y9xdA2hbP7pyIKaJRjSfuizUiD/D8Xd1MJzG+Sbf
-         CM0FzK/F8BkFhJrLcEZZnCNipxtunIAQuYQ4a3oC5jRP1QiKL6QyRVTzQDWKuP3UrmG6
-         RPJhRW/CQ2VQSE+4mTx7yuSnhX7w0hKk42NjIcciYvKAf8C7kxJ6rdvowOFJYCQQNHHf
-         JnPGWRjmYcOapcfGklUp8t3M+CRNSPhYZJoF5dkh7qFX2No4f0lPZ4J+HFzJRa7qql3J
-         IDS5yDDKVKDfz0azrPW7TFH94pF7jCx2wWpKcGpvhDsCfkc9f3hFOA8/MXr6At8GF8C3
-         IlPw==
-X-Gm-Message-State: ANhLgQ3D2iaeP24TkdoAZ3DAQbjRwV2KRRIi0cylPHdZPHwZ2WS182PU
-        ni4EKmjJ/T+mJSl0gwz4pSHLR1a0Oy67KDYvji08u6Dp1lHq+9uu0wZ0FPYODlIw56bvXGc7kUR
-        nQ9+ctFz9ItTHSmTz
-X-Received: by 2002:a1c:bad5:: with SMTP id k204mr267567wmf.162.1585233489735;
-        Thu, 26 Mar 2020 07:38:09 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vuuNHduat6ExWFOUTYbdGH19R8sR18OUUL+T5p2xxSPMOQC1VKJxZRQmuXvB5l1CjSy9MUgNw==
-X-Received: by 2002:a1c:bad5:: with SMTP id k204mr267553wmf.162.1585233489495;
-        Thu, 26 Mar 2020 07:38:09 -0700 (PDT)
-Received: from pc-3.home (2a01cb0585138800b113760e11343d15.ipv6.abo.wanadoo.fr. [2a01:cb05:8513:8800:b113:760e:1134:3d15])
-        by smtp.gmail.com with ESMTPSA id w9sm4278174wrk.18.2020.03.26.07.38.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 07:38:08 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 15:38:06 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Simon Chopin <s.chopin@alphalink.fr>
-Cc:     netdev@vger.kernel.org, Michal Ostrowski <mostrows@earthlink.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [PATCH net-next] pppoe: new ioctl to extract per-channel stats
-Message-ID: <20200326143806.GA31979@pc-3.home>
-References: <20200326103230.121447-1-s.chopin@alphalink.fr>
+        id S1727770AbgCZOmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 10:42:09 -0400
+Received: from mail-eopbgr130052.outbound.protection.outlook.com ([40.107.13.52]:12814
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726270AbgCZOmJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Mar 2020 10:42:09 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RGIdf3jf/UfO/gAuqL8FTCPqq3MF84R2HuycG628AuIiwWzj/OemrMwLU76RvqFVD8eQTAtdI4bgWeE8kY9jC2W8I4AsFGsX4JCJTXuMh5PbhuZtwo+WRqmL56FTs2+iUnqOp7Chgp6K7sGhswYyebAfIBY/EEcAgO26YkdiNHLvLrqv3rExcYDWEQThPWwr+Xm2czEaGPOMlCV2dPe5pBWzEDELc/HCX1SI02wdg4q0zjgq037mQRRfdHxNvLCXEC7HJZW78VGoyWz18ULnDcn8zF3H886FCM0rESSMP5Hxqqotuc7XQRp+oGxpeJ7yTcVc1XHGVT/7ZLaxetRT8A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3hQbROGlvPFRYh5xDKD15lREgpfdls+tFdb2tp9kDR4=;
+ b=DY+nWYaaEE7injX9W8kafrPmBpCia+/KoVOZk5dFtdy7r+BwjX7vVOxmd0MOCzTQEekegZvxFrBZqaB8dGBdDFJX0SdUXZeTPUqFLC9/3BsqJeXnK1JclpnmnIQrAKHYE+UxolWEFVphABcL9x8qTGnanMj6Vg8WqefQ4Pw5QNgAw0aNi/xV4yjpc528f67D78/06ObQar/GKUHbQosWiVmY+bsESVZ+hq8vR7yiSpJJ27ibBFIiMAyrJYDSr7IgDYujuVLYfuvlbzqW2POzlzrZYRYaGc7LSWirbJbLOJmMjJ8ZtuB6qX+NLfbRybWI+x6HW+MKZb1p8JdmxdlbBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3hQbROGlvPFRYh5xDKD15lREgpfdls+tFdb2tp9kDR4=;
+ b=JwtnGjXHsY1VTo7/ooZe2yyAH5QYsCSf7Ch6FT2lpsOa/TPVm/1WqH35L0yyTjkm6R2boxbTy4Sl8CrXjZMuXthVK0f4JBrpnxJTdm5LA3w4QPLYMxnKuaWpqloLdV/ubP6hWgwa6/kdk2TEcV354RWsURY4AR/g4lDhevba8zo=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=yossiku@mellanox.com; 
+Received: from DB6PR05MB4775.eurprd05.prod.outlook.com (10.168.21.32) by
+ DB6PR05MB4534.eurprd05.prod.outlook.com (10.168.24.146) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2835.22; Thu, 26 Mar 2020 14:42:05 +0000
+Received: from DB6PR05MB4775.eurprd05.prod.outlook.com
+ ([fe80::d58:c039:72df:3c2d]) by DB6PR05MB4775.eurprd05.prod.outlook.com
+ ([fe80::d58:c039:72df:3c2d%7]) with mapi id 15.20.2835.025; Thu, 26 Mar 2020
+ 14:42:05 +0000
+Subject: Re: [RFC] Packet pacing (offload) for flow-aggregates and forwarding
+ use-cases
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Cc:     Rony Efraim <ronye@mellanox.com>
+References: <d3d764d5-8eb6-59f9-cd3b-815de0258dbc@mellanox.com>
+ <4d16c8e8-31d2-e3a4-2ff9-de0c9dc12d2e@gmail.com>
+From:   Yossi Kuperman <yossiku@mellanox.com>
+Message-ID: <46bb3497-a3cf-84ce-d0b5-855ecedbac15@mellanox.com>
+Date:   Thu, 26 Mar 2020 16:42:01 +0200
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.6.0
+In-Reply-To: <4d16c8e8-31d2-e3a4-2ff9-de0c9dc12d2e@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-ClientProxiedBy: AM0PR06CA0026.eurprd06.prod.outlook.com
+ (2603:10a6:208:ab::39) To DB6PR05MB4775.eurprd05.prod.outlook.com
+ (2603:10a6:6:4c::32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200326103230.121447-1-s.chopin@alphalink.fr>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from Yossis-MacBook-Pro.local (213.57.108.109) by AM0PR06CA0026.eurprd06.prod.outlook.com (2603:10a6:208:ab::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.20 via Frontend Transport; Thu, 26 Mar 2020 14:42:04 +0000
+X-Originating-IP: [213.57.108.109]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: e5b022fb-5994-42d4-b10b-08d7d193da79
+X-MS-TrafficTypeDiagnostic: DB6PR05MB4534:|DB6PR05MB4534:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DB6PR05MB4534C3AFD3B34656C026A6E1C4CF0@DB6PR05MB4534.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 0354B4BED2
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB6PR05MB4775.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(39860400002)(396003)(366004)(346002)(376002)(31696002)(478600001)(66946007)(5660300002)(107886003)(6486002)(66476007)(66556008)(4326008)(8676002)(6636002)(81166006)(6666004)(81156014)(86362001)(8936002)(6512007)(110136005)(2616005)(36756003)(956004)(26005)(186003)(16526019)(53546011)(6506007)(2906002)(52116002)(316002)(31686004);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VoMbBFHVszrhleyNUVDbfqPzSHYqYusTnrmULAD2U8S32FBwlkD5faFM+lVN+DLUhidm+KSpwtz2ZOwV8qYcwsTbnpYAFudA2BVarBJn5bVm7Epp6ECvLx0JskEmZkgeXcQdo7CzaGqFFQu8IjT+Sq09fxJT3tXA+m8E2ssSn5/SGTYdeM2KTfHbhXh9PgXy+uY7G5VFLxAn24+1e6+c5tAwkIWtiAI7TJ7vjbu63e0ItToAqwR/kt+QRbFkjEi/UbCxYA/ZqQv8AwoW7Iu0llU5mVUSlep7FYZwc57JlgAD0N7bijcRMn1v6Ji8zN0UvFqOFCyBBvbMkN78CyY/KBHf4WjomWALhbgv0DCv0bkHxZRNxlVjPwl52xPRoyHODYX+n3vWuE4ZivW+VVsLlXfCwzS1oWYNXYkV9xRAo1Phh/yidAL6be+MmBrT52b4
+X-MS-Exchange-AntiSpam-MessageData: 8wP9g97jOAyPo/j2IIZB5+qMLzCFrNxqrs0w3uKwGNz85cn7J3k/ESs5v512thNdvLdDbsw1xt99lAh00cwKBbbYspToBgSNtf6CHMfLz0E16WzVicFfU4LOjRtlpGXWultgo4SKlC8Q7NOUz+tkMA==
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e5b022fb-5994-42d4-b10b-08d7d193da79
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2020 14:42:05.3417
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: waZu3+gxQFUBjaqpXXqc51C/oAYnvWLQVxywfOpWH9O/WhuzSvk4uyGzj5U5YbRbvCT+d4IKv1Wjx81B2Zb+VQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR05MB4534
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 11:32:30AM +0100, Simon Chopin wrote:
-> The PPP subsystem uses the abstractions of channels and units, the
-> latter being an aggregate of the former, exported to userspace as a
-> single network interface.  As such, it keeps traffic statistics at the
-> unit level, but there are no statistics on the individual channels,
-> partly because most PPP units only have one channel.
-> 
-> However, it is sometimes useful to have statistics at the channel level,
-> for instance to monitor multilink PPP connections. Such statistics
-> already exist for PPPoL2TP via the PPPIOCGL2TPSTATS ioctl, this patch
-> introduces a very similar mechanism for PPPoE via a new
-> PPPIOCGPPPOESTATS ioctl.
-> 
-I'd rather recomment _not_ using multilink PPP over PPPoE (or L2TP, or
-any form of overlay network). But apart from that, I find the
-description misleading. PPPoE is not a PPP channel, it _transports_ a
-channel. PPPoE might not even be associated with a channel at all,
-like in the PPPOX_RELAY case. In short PPPoE stats aren't channel's
-stats. If the objective it to get channels stats, then this needs to be
-implemented in ppp_generic.c. If what you really want is PPPoE stats,
-then see my comments below.
 
-> @@ -395,6 +405,10 @@ static int pppoe_rcv_core(struct sock *sk, struct sk_buff *skb)
->  			goto abort_kfree;
->  	}
->  
-> +	stats = sk_pppox(po)->sk_user_data;
-> +	atomic_long_inc(&stats->rx_packets);
-> +	atomic_long_add(len, &stats->rx_bytes);
-> +
->  	return NET_RX_SUCCESS;
->  
-You probably need to add counter(s) for the error paths too.
+On 24/03/2020 21:26, Eric Dumazet wrote:
+>
+> On 3/24/20 12:05 PM, Yossi Kuperman wrote:
+>> Hello,
+>>
+>>  
+>>
+>> We would like to support a forwarding use-case in which flows are classified and paced
+>>
+>> according to the selected class. For example, a packet arrives at the ingress hook of interface
+>>
+>> eth0,  performing a sequence of filters and being redirected to interface eth1. Pacing takes
+>>
+>> place at the egress qdisc of eth1.
+>>
+>>  
+>>
+>> FQ queuing discipline is classless and cannot provide such functionality. Each flow is
+>>
+>> paced independently, and different pacing is only configurable via a socket-option—less
+>>
+>> suitable for forwarding  use-case.
+>>
+>>  
+>>
+>> It is worth noting that although this functionality might be implemented by stacking multiple
+>>
+>> queuing disciplines, it will be very difficult to offload to hardware.
+>>
+>>  
+>>
+>> We propose introducing yet another classful qdisc, where the user can specify in advance the
+>>
+>> desired classes (i.e. pacing) and provide filters to classify flows accordingly. Similar to other
+>>
+>> qdiscs, if skb->priority is already set, we can skip the classification; useful for forwarding
+>>
+>> use-case, as the user can set the priority field in ingress. Works nicely with OVS/TC.
+>>
+>>  
+>>
+>> Any thoughts please?
+>>
+> Why not using HTB for this typical use case ?
 
-> @@ -549,6 +563,8 @@ static int pppoe_create(struct net *net, struct socket *sock, int kern)
->  	sk->sk_family		= PF_PPPOX;
->  	sk->sk_protocol		= PX_PROTO_OE;
->  
-> +	sk->sk_user_data = kzalloc(sizeof(struct pppoe_stats), GFP_KERNEL);
-> +
-Missing error check.
 
-But please don't use ->sk_user_data for that. We have enough problems
-with this pointer, let's not add users that don't actually need it.
-See https://lore.kernel.org/netdev/20180117.142538.1972806008716856078.davem@davemloft.net/
-for some details.
-You can store the counters inside the socket instead.
+As far as I understand HTB is meant for rate-limiting, is the implementation fine-grained enough to support pacing
 
-> @@ -950,6 +993,8 @@ static int __pppoe_xmit(struct sock *sk, struct sk_buff *skb)
->  			po->pppoe_pa.remote, NULL, data_len);
->  
->  	dev_queue_xmit(skb);
-> +	atomic_long_inc(&stats->tx_packets);
-> +	atomic_long_add(data_len, &stats->tx_bytes);
->  	return 1;
->  
-Again, you probably need to count errors too.
+as well?
+
 
