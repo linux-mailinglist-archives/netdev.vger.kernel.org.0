@@ -2,103 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5D76193C17
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 10:43:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CC11193C1B
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 10:43:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727833AbgCZJnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 05:43:40 -0400
-Received: from mail-vs1-f74.google.com ([209.85.217.74]:39060 "EHLO
-        mail-vs1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726292AbgCZJnj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 05:43:39 -0400
-Received: by mail-vs1-f74.google.com with SMTP id q26so854719vsr.6
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 02:43:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc
-         :content-transfer-encoding;
-        bh=dmiWJfcFArH3DaEi3dpMdj42oTYOcC0kdTvCmD78p68=;
-        b=aBT1fAQcaANpMHna5XzK0PMInthUCghzt1nyEZxdWdxcSaiim1rr9N3Llc/wzV0vc5
-         D8tJm2/h/oh4yG2A7MO4+g8AQb6dHtnzrOl+ezkof/9RkxxAJDCiOpsDmufnJoX0DEbP
-         UBu4EvDtugcev/4MAFkSdk+ikV/qDDOvVrVS67M2ooYl3KuZbR98m1QdYdxEgWL0Yv8y
-         uxtfdw8ly1Wb4Bcc+L66sh1US7dpglY37ZkKUb1Qclzj/Z7xsEB/i3G0GRRr4eaAWgUE
-         frEa7IC4ukUrh6bPwGAF/G9+t0oFBYKDB0j1FOJzWLYcg66MCe4FEO/geONAEo3rRC5l
-         3eXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc
-         :content-transfer-encoding;
-        bh=dmiWJfcFArH3DaEi3dpMdj42oTYOcC0kdTvCmD78p68=;
-        b=V+eJh5oxv7wu/8wotWYm2e/MD/p76Sm16m+KWkkHjOsbrAC5ymVi8wGfA6e6UYEBy0
-         LIrqSphmuX4d4jh1shP2Y8vykEPk/VNNZ6Eb8J+9JNTbon7o9pZSjKNTzq1XswGHpQlK
-         MuaNYdesDl/gy8cijn/P9jiL4GgE/GLuxHe/Gb1IIHna7PsLGrNurWx/2g+EFVhHJYiP
-         gXRr74omnp4Mzljz9ZVM1b2d4Cyj+jct2mlVNSwlpdN4JcQL1efcgJF7uH1/7nbBt/DW
-         /GuNwXaN7OvAKIerDhnsTAPhm5sh5bGJhsL4v4xs6Bul5Yh9sUoFrybXPTVzOPjJH7bQ
-         oOKg==
-X-Gm-Message-State: ANhLgQ3z6r75L+HpG/2ylL8AAeJUw0Pn57FH6Dbf73NcwrwHetb7yDAg
-        hZ+L2Aa246bR2c8mTCDBDO0LOmZW/5DWujs=
-X-Google-Smtp-Source: ADFU+vvmZ9znUYYQDvEEts1i+c8TTOB7X7IRx7cRu2gQmqW9OmG4lpk2AKD25hPmn+0I3ybKaKLQRNNfB272C1c=
-X-Received: by 2002:a67:2284:: with SMTP id i126mr5910228vsi.223.1585215818327;
- Thu, 26 Mar 2020 02:43:38 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 10:42:52 +0100
-Message-Id: <20200326094252.157914-1-brambonne@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.25.1.696.g5e7596f4ac-goog
-Subject: [RFC PATCH] ipv6: Use dev_addr in stable-privacy address generation
-From:   "=?UTF-8?q?Bram=20Bonn=C3=A9?=" <brambonne@google.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>
-Cc:     netdev@vger.kernel.org,
-        "=?UTF-8?q?Bram=20Bonn=C3=A9?=" <brambonne@google.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Jeffrey Vanderstoep <jeffv@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        id S1727911AbgCZJno (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 05:43:44 -0400
+Received: from mail26.static.mailgun.info ([104.130.122.26]:59974 "EHLO
+        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726318AbgCZJno (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 05:43:44 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1585215823; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=3IlGhUqNJijTIwuRbDcDxuXhaZ7kecPrANGlpvtz3o0=;
+ b=BoGQCLA1T9eMFKA2tEniYhpiCb9fLEGHUDkS6Y6BTKT969NCvmgv25ruf+wFHfgYodMpMryX
+ aTp725Vtc1besphKoY3/I2eFUA5pKmrsqdt+PLsUbq39tHUuXb6BtNaffLdX0o21ShBVAqz9
+ e2FtTfUyy4H8/CrusG5Ne2uSMmo=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e7c7940.7f87b3843ab0-smtp-out-n03;
+ Thu, 26 Mar 2020 09:43:28 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id CDA68C433BA; Thu, 26 Mar 2020 09:43:27 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
+        MISSING_MID,SPF_NONE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C250AC433D2;
+        Thu, 26 Mar 2020 09:43:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C250AC433D2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v2 1/2] rtl8xxxu: add enumeration for channel bandwidth
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20200320063833.1058-2-chiu@endlessm.com>
+References: <20200320063833.1058-2-chiu@endlessm.com>
+To:     Chris Chiu <chiu@endlessm.com>
+Cc:     Jes.Sorensen@gmail.com, davem@davemloft.net,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com
+User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
+Message-Id: <20200326094327.CDA68C433BA@smtp.codeaurora.org>
+Date:   Thu, 26 Mar 2020 09:43:27 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch extends the IN6_ADDR_GEN_MODE_STABLE_PRIVACY address
-generation mode to use the software-defined MAC address (dev_addr)
-rather than the permanent, hardware-defined MAC address (perm_addr) of
-the interface when generating IPv6 link-local addresses.
+Chris Chiu <chiu@endlessm.com> wrote:
 
-This ensures that the IPv6 link-local address changes in line with the
-MAC address when per-network MAC address randomization is used,
-providing the expected privacy guarantees.
+> There's a data field in H2C and C2H commands which is used to
+> carry channel bandwidth information. Add enumeration to make it
+> more descriptive in code.
+> 
+> Signed-off-by: Chris Chiu <chiu@endlessm.com>
 
-When no MAC address randomization is used, dev_addr corresponds to
-perm_addr, and IN6_ADDR_GEN_MODE_STABLE_PRIVACY behaves as before.
+2 patches applied to wireless-drivers-next.git, thanks.
 
-When MAC address randomization is used, this makes the MAC address
-fulfill the role of both the Net_Iface and the (optional) Network_ID
-parameters in RFC7217.
+a66b8b4108f1 rtl8xxxu: add enumeration for channel bandwidth
+0985d3a410ac rtl8xxxu: Feed current txrate information for mac80211
 
-Cc: Lorenzo Colitti <lorenzo@google.com>
-Cc: Jeffrey Vanderstoep <jeffv@google.com>
-Signed-off-by: Bram Bonn=C3=A9 <brambonne@google.com>
----
- net/ipv6/addrconf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+-- 
+https://patchwork.kernel.org/patch/11448459/
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index 5b9de773ce73..cd69a4331246 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -3252,7 +3252,7 @@ static int ipv6_generate_stable_address(struct in6_ad=
-dr *address,
- 	sha_init(digest);
- 	memset(&data, 0, sizeof(data));
- 	memset(workspace, 0, sizeof(workspace));
--	memcpy(data.hwaddr, idev->dev->perm_addr, idev->dev->addr_len);
-+	memcpy(data.hwaddr, idev->dev->dev_addr, idev->dev->addr_len);
- 	data.prefix[0] =3D address->s6_addr32[0];
- 	data.prefix[1] =3D address->s6_addr32[1];
- 	data.secret =3D secret;
---=20
-2.25.1.696.g5e7596f4ac-goog
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
