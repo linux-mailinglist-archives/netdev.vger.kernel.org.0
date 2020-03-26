@@ -2,105 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF3701945E5
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 18:55:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 686DA194664
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 19:17:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727989AbgCZRzp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 13:55:45 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:54377 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726359AbgCZRzp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 13:55:45 -0400
-Received: by mail-wm1-f67.google.com with SMTP id c81so7494480wmd.4;
-        Thu, 26 Mar 2020 10:55:43 -0700 (PDT)
+        id S1728601AbgCZSQc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 14:16:32 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:45122 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728563AbgCZSQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 14:16:31 -0400
+Received: by mail-wr1-f66.google.com with SMTP id t7so9007476wrw.12
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 11:16:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=8l2oRnDlBMb0gXsLvGjz4aRGCAhqoB1hZgrGjPsa2To=;
-        b=RhQmfK7zxsQz9efFQMf3Mgar0VVI4KEnYZVN24ZrLsHIMhWb+dRvc8+mZqQmF1LwqO
-         DpYAPanXRGJSF+ymGAJZAyu+H1jY+mVs1Ste/CgMEux+jM8JmvEikda59HDUR8CVpYTy
-         q2J9IQh2HJAGqgxWU1EVZ+CRu1rMtU3TiNFOdjeDfwuqMYY+JebAU3yd+x2APX8aeGwK
-         Kn0jY19MNPeLE3h9aLAxZMYOHZMBwUMSOJq9q3lDooQtyaQ5VxqCFHwGwjFEn/IO7WRM
-         qPJgDo5buaIoEj4MUshrYNO2xbk469eB83cRM35NUwBLbzT0t6iA6lx41Z7XBjuFdNGI
-         Ymqw==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=c3HUmOFUUolADQEMq4OYXL+THjdw2w1uRLCtLXHaswA=;
+        b=NSQGLjR3eC/fcJQPkRWvUiQq58jrn7PKfEnBnOxA6U6uBEZUNoCCveZnkEhD6gKnmn
+         sXLDH4avrmhAB6IQHTT0ggQOXkvbE0XJZ8QRvIXru9JZkoEeJlkxdoMb67AmH+jtl5vg
+         LnBGNOt1rFmM+GK4bw+2KkCpFIgCK5gD8YN7jPHCrGHG+SKHwirOElgGCCKjbV7hXICX
+         NSYJZct3nbnucvPdSee+/kN/sBKObNpHlZEEDHFAibUeU4sdIac0LBtrqC1YjTME+vH5
+         TcjDdZ91DlYj0IYF0lDPe8U0kmxgurV/0x6BvctZgoArRVZvP43pfpFnoe6xT4M13mmR
+         3b5A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8l2oRnDlBMb0gXsLvGjz4aRGCAhqoB1hZgrGjPsa2To=;
-        b=JEO64nfeATFcSLk2q5aIk/QGRyKqobSuF3J29u/H5vQ+OQjye2ra6jCIyoDDcNBFLJ
-         JKtAjTMOJj2JfgCIuXlmeAdnhXq1aflptYACJ7x4LlDX4pkBb/GJKQssmFfaOZjsn6Fb
-         3powiKcS7gb1SSF8ic0A4XJen+O4cENKFCQ/3W3EloLQ9CMHUBGSSpdtzllvOlQM+8Qr
-         X7r/7PUuaQE+84xbM40XzX7Ywe0lZm1AD/x4hcB0bMqmHfih2rbasDVwwUQiSHo4L+RW
-         Jbg+zp1i4qPtHLNXt0XRv9Vj0PdDvJXjRDZfOz8+d4d9OC17YHHveRdG2Wvc53u0+pd7
-         857Q==
-X-Gm-Message-State: ANhLgQ3kS6DJXvqIIzU9kPQWAckQDJYfqhrtoHvwAnM2CY1xD0+gfKnH
-        I3449745MP1fnJL3xcOw9i4=
-X-Google-Smtp-Source: ADFU+vvQYAns/H4naOtzD0AQEl0lguuS8ZgJ+3MxwcxBvnyytUVJtfuzo3jqR3eODXmd0fraia5JTA==
-X-Received: by 2002:a7b:c1da:: with SMTP id a26mr1177478wmj.91.1585245342367;
-        Thu, 26 Mar 2020 10:55:42 -0700 (PDT)
-Received: from andrea ([86.61.236.197])
-        by smtp.gmail.com with ESMTPSA id w9sm5014104wrk.18.2020.03.26.10.55.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 10:55:41 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 18:55:31 +0100
-From:   Andrea Parri <parri.andrea@gmail.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     linux-kernel@vger.kernel.org,
-        "K . Y . Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, linux-hyperv@vger.kernel.org,
-        Michael Kelley <mikelley@microsoft.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 04/11] hv_netvsc: Disable NAPI before closing the
- VMBus channel
-Message-ID: <20200326175531.GA20523@andrea>
-References: <20200325225505.23998-1-parri.andrea@gmail.com>
- <20200325225505.23998-5-parri.andrea@gmail.com>
- <20200326082636.1d777921@hermes.lan>
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=c3HUmOFUUolADQEMq4OYXL+THjdw2w1uRLCtLXHaswA=;
+        b=iXCQL1eK+YBIWbAibeOX+V6tN6xhzVbdKVh9gtaghRW94EOTMth+z6D20/s/t8CCGS
+         n/tFxcIQL1CAk85cDTZJcxN44Lnjjb4m08X6AybMqPnv8BhoVtWPuX5R61lZxERO+YIv
+         hyBrzl3zLui848UQvlK1WdF1ivkYDoooj3Aek1jPExSqrEbdX8x419gG+rPIZ0YTv/Zn
+         N7tIPOldtWbOrdh+qVS4RyuFF6G8y28fgOmlX3elhcHqtaczJm7YIi66Zm9axTXmETi0
+         WN5kik1MM1deCsi2tW/cn+6+CS7smgxKL8eg3G28rk3thmsjkMROTRu+U6Br2WJ797YY
+         Fk1A==
+X-Gm-Message-State: ANhLgQ2ySyc38zL4+SUhchZk4fTJpsPsMMzOK/b0QH3fQAmFDeISmCzg
+        y50jiDmkF643McDtpr+7PWJ/SKDV
+X-Google-Smtp-Source: ADFU+vvkRlVdJIibD78wHIQMcOxGWoMWlw8OrQW++EmzJ5FXcvfCpSydcND+Qkqc4g9o+oXHfBa1dQ==
+X-Received: by 2002:a5d:550a:: with SMTP id b10mr10691711wrv.163.1585246589806;
+        Thu, 26 Mar 2020 11:16:29 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:d031:3b7b:1a72:8f94? (p200300EA8F296000D0313B7B1A728F94.dip0.t-ipconnect.de. [2003:ea:8f29:6000:d031:3b7b:1a72:8f94])
+        by smtp.googlemail.com with ESMTPSA id t16sm4810340wra.17.2020.03.26.11.16.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Mar 2020 11:16:29 -0700 (PDT)
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] net: phy: don't touch suspended flag if there's no
+ suspend/resume callback
+Message-ID: <313dae57-8c05-a82b-ea87-a0822e9462f0@gmail.com>
+Date:   Thu, 26 Mar 2020 18:58:24 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200326082636.1d777921@hermes.lan>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 08:26:36AM -0700, Stephen Hemminger wrote:
-> On Wed, 25 Mar 2020 23:54:58 +0100
-> "Andrea Parri (Microsoft)" <parri.andrea@gmail.com> wrote:
-> 
-> > vmbus_chan_sched() might call the netvsc driver callback function that
-> > ends up scheduling NAPI work.  This "work" can access the channel ring
-> > buffer, so we must ensure that any such work is completed and that the
-> > ring buffer is no longer being accessed before freeing the ring buffer
-> > data structure in the channel closure path.  To this end, disable NAPI
-> > before calling vmbus_close() in netvsc_device_remove().
-> > 
-> > Suggested-by: Michael Kelley <mikelley@microsoft.com>
-> > Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: <netdev@vger.kernel.org>
-> 
-> Do you have a test that reproduces this issue?
+So far we set phydev->suspended to true in phy_suspend() even if the
+PHY driver doesn't implement the suspend callback. This applies
+accordingly for the resume path. The current behavior doesn't cause
+any issue I'd be aware of, but it's not logical and misleading,
+especially considering the description of the flag:
+"suspended: Set to true if this phy has been suspended successfully"
 
-I don't (or I'm not aware of such a test).
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/phy/phy_device.c | 32 +++++++++++++++-----------------
+ 1 file changed, 15 insertions(+), 17 deletions(-)
 
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 3b8f6b0b4..d6024b678 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -1519,23 +1519,22 @@ EXPORT_SYMBOL(phy_detach);
+ 
+ int phy_suspend(struct phy_device *phydev)
+ {
+-	struct phy_driver *phydrv = to_phy_driver(phydev->mdio.dev.driver);
+-	struct net_device *netdev = phydev->attached_dev;
+ 	struct ethtool_wolinfo wol = { .cmd = ETHTOOL_GWOL };
+-	int ret = 0;
++	struct net_device *netdev = phydev->attached_dev;
++	struct phy_driver *phydrv = phydev->drv;
++	int ret;
+ 
+ 	/* If the device has WOL enabled, we cannot suspend the PHY */
+ 	phy_ethtool_get_wol(phydev, &wol);
+ 	if (wol.wolopts || (netdev && netdev->wol_enabled))
+ 		return -EBUSY;
+ 
+-	if (phydev->drv && phydrv->suspend)
+-		ret = phydrv->suspend(phydev);
+-
+-	if (ret)
+-		return ret;
++	if (!phydrv || !phydrv->suspend)
++		return 0;
+ 
+-	phydev->suspended = true;
++	ret = phydrv->suspend(phydev);
++	if (!ret)
++		phydev->suspended = true;
+ 
+ 	return ret;
+ }
+@@ -1543,18 +1542,17 @@ EXPORT_SYMBOL(phy_suspend);
+ 
+ int __phy_resume(struct phy_device *phydev)
+ {
+-	struct phy_driver *phydrv = to_phy_driver(phydev->mdio.dev.driver);
+-	int ret = 0;
++	struct phy_driver *phydrv = phydev->drv;
++	int ret;
+ 
+ 	WARN_ON(!mutex_is_locked(&phydev->lock));
+ 
+-	if (phydev->drv && phydrv->resume)
+-		ret = phydrv->resume(phydev);
+-
+-	if (ret)
+-		return ret;
++	if (!phydrv || !phydrv->resume)
++		return 0;
+ 
+-	phydev->suspended = false;
++	ret = phydrv->resume(phydev);
++	if (!ret)
++		phydev->suspended = false;
+ 
+ 	return ret;
+ }
+-- 
+2.26.0
 
-> 
-> The netvsc device is somewhat unique in that it needs NAPI
-> enabled on the primary channel to interact with the host.
-> Therefore it can't call napi_disable in the normal dev->stop() place.
-> 
-> Acked-by: Stephen Hemminger <stephen@networkplumber.org>
-
-Thanks!
-
-  Andrea
