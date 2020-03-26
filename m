@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 046D7194970
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 21:47:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9D61194975
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 21:47:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727781AbgCZUrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727795AbgCZUrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 26 Mar 2020 16:47:04 -0400
-Received: from mga05.intel.com ([192.55.52.43]:47906 "EHLO mga05.intel.com"
+Received: from mga05.intel.com ([192.55.52.43]:47908 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727724AbgCZUrD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727726AbgCZUrD (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 26 Mar 2020 16:47:03 -0400
-IronPort-SDR: Iq/YvNqAjVHrWcjykePyQizC+Ely/riHx2bUfnRERFmhjZ8Xh0oWE9GbSN14Y7hOXHCTM0A5SP
- Bp1hG+VS4JAQ==
+IronPort-SDR: sZzJy3D4wOeCJDIWeWgY1OOJormAJCpqSdm3Qddwv5Rvrc6FR5eR2uWqQQAQhGFG3ZExcDGrnM
+ G+FmB8R9nFxw==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2020 13:47:01 -0700
-IronPort-SDR: F1287YxRBe/DM/BxA0byNhW4+GFS+1g68sDH3g30b050m7W9GQPEtEfmJPwmrzfkKMyNky0EMK
- i7eOu2rUoTow==
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2020 13:47:02 -0700
+IronPort-SDR: MksGQUBlR8l6S7uOmOSm60WVcuUeIBye+5tPeL+HW6U7QepY+tpG9PYuuFlH59VSIcNS1fC0Z1
+ sCWqJ5cU9Ouw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,309,1580803200"; 
-   d="scan'208";a="238911681"
+   d="scan'208";a="238911684"
 Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.252.133.119])
-  by fmsmga007.fm.intel.com with ESMTP; 26 Mar 2020 13:47:01 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 26 Mar 2020 13:47:02 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Paolo Abeni <pabeni@redhat.com>, eric.dumazet@gmail.com,
+        Florian Westphal <fw@strlen.de>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next v2 08/17] mptcp: introduce MPTCP retransmission timer
-Date:   Thu, 26 Mar 2020 13:46:31 -0700
-Message-Id: <20200326204640.67336-9-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next v2 09/17] mptcp: implement memory accounting for mptcp rtx queue
+Date:   Thu, 26 Mar 2020 13:46:32 -0700
+Message-Id: <20200326204640.67336-10-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200326204640.67336-1-mathew.j.martineau@linux.intel.com>
 References: <20200326204640.67336-1-mathew.j.martineau@linux.intel.com>
@@ -43,211 +44,144 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-The timer will be used to schedule retransmission. It's
-frequency is based on the current subflow RTO estimation and
-is reset on every una_seq update
+Charge the data on the rtx queue to the master MPTCP socket, too.
+Such memory in uncharged when the data is acked/dequeued.
 
-The timer is clearer for good by __mptcp_clear_xmit()
+Also account mptcp sockets inuse via a protocol specific pcpu
+counter.
 
-Also clean MPTCP rtx queue before each transmission.
-
+Co-developed-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/options.c  |  4 +-
- net/mptcp/protocol.c | 89 +++++++++++++++++++++++++++++++++++++++++++-
- net/mptcp/protocol.h |  2 +
- 3 files changed, 93 insertions(+), 2 deletions(-)
+ net/mptcp/protocol.c | 42 +++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 39 insertions(+), 3 deletions(-)
 
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index b0ff8ad702a3..bd220ee4aac9 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -779,8 +779,10 @@ static void update_una(struct mptcp_sock *msk,
- 		snd_una = old_snd_una;
- 		old_snd_una = atomic64_cmpxchg(&msk->snd_una, snd_una,
- 					       new_snd_una);
--		if (old_snd_una == snd_una)
-+		if (old_snd_una == snd_una) {
-+			mptcp_data_acked((struct sock *)msk);
- 			break;
-+		}
- 	}
- }
- 
 diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index dae5d3152da4..35eae3fdcf04 100644
+index 35eae3fdcf04..3a0c0a89a97d 100644
 --- a/net/mptcp/protocol.c
 +++ b/net/mptcp/protocol.c
-@@ -251,6 +251,46 @@ static void __mptcp_flush_join_list(struct mptcp_sock *msk)
- 	spin_unlock_bh(&msk->join_list_lock);
+@@ -37,6 +37,8 @@ struct mptcp_skb_cb {
+ 
+ #define MPTCP_SKB_CB(__skb)	((struct mptcp_skb_cb *)&((__skb)->cb[0]))
+ 
++static struct percpu_counter mptcp_sockets_allocated;
++
+ /* If msk has an initial subflow socket, and the MP_CAPABLE handshake has not
+  * completed yet or has failed, return the subflow socket.
+  * Otherwise return NULL.
+@@ -333,9 +335,17 @@ static inline bool mptcp_frag_can_collapse_to(const struct mptcp_sock *msk,
+ 		df->data_seq + df->data_len == msk->write_seq;
  }
  
-+static void mptcp_set_timeout(const struct sock *sk, const struct sock *ssk)
+-static void dfrag_clear(struct mptcp_data_frag *dfrag)
++static void dfrag_uncharge(struct sock *sk, int len)
 +{
-+	long tout = ssk && inet_csk(ssk)->icsk_pending ?
-+				      inet_csk(ssk)->icsk_timeout - jiffies : 0;
-+
-+	if (tout <= 0)
-+		tout = mptcp_sk(sk)->timer_ival;
-+	mptcp_sk(sk)->timer_ival = tout > 0 ? tout : TCP_RTO_MIN;
++	sk_mem_uncharge(sk, len);
 +}
 +
-+static bool mptcp_timer_pending(struct sock *sk)
-+{
-+	return timer_pending(&inet_csk(sk)->icsk_retransmit_timer);
-+}
-+
-+static void mptcp_reset_timer(struct sock *sk)
-+{
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+	unsigned long tout;
-+
-+	/* should never be called with mptcp level timer cleared */
-+	tout = READ_ONCE(mptcp_sk(sk)->timer_ival);
-+	if (WARN_ON_ONCE(!tout))
-+		tout = TCP_RTO_MIN;
-+	sk_reset_timer(sk, &icsk->icsk_retransmit_timer, jiffies + tout);
-+}
-+
-+void mptcp_data_acked(struct sock *sk)
-+{
-+	mptcp_reset_timer(sk);
-+}
-+
-+static void mptcp_stop_timer(struct sock *sk)
-+{
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+
-+	sk_stop_timer(sk, &icsk->icsk_retransmit_timer);
-+	mptcp_sk(sk)->timer_ival = 0;
-+}
-+
- static bool mptcp_ext_cache_refill(struct mptcp_sock *msk)
++static void dfrag_clear(struct sock *sk, struct mptcp_data_frag *dfrag)
  {
- 	if (!msk->cached_ext)
-@@ -596,10 +636,15 @@ static int mptcp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		copied += ret;
- 	}
- 
-+	mptcp_set_timeout(sk, ssk);
- 	if (copied) {
- 		ret = copied;
- 		tcp_push(ssk, msg->msg_flags, mss_now, tcp_sk(ssk)->nonagle,
- 			 size_goal);
++	int len = dfrag->data_len + dfrag->overhead;
 +
-+		/* start the timer, if it's not pending */
-+		if (!mptcp_timer_pending(sk))
-+			mptcp_reset_timer(sk);
- 	}
- 
- 	ssk_check_wmem(msk, ssk);
-@@ -787,6 +832,35 @@ static int mptcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 	return copied;
+ 	list_del(&dfrag->list);
++	dfrag_uncharge(sk, len);
+ 	put_page(dfrag->page);
  }
  
-+static void mptcp_retransmit_handler(struct sock *sk)
-+{
-+	struct mptcp_sock *msk = mptcp_sk(sk);
-+
-+	if (atomic64_read(&msk->snd_una) == msk->write_seq)
-+		mptcp_stop_timer(sk);
-+	else
-+		mptcp_reset_timer(sk);
-+}
-+
-+static void mptcp_retransmit_timer(struct timer_list *t)
-+{
-+	struct inet_connection_sock *icsk = from_timer(icsk, t,
-+						       icsk_retransmit_timer);
-+	struct sock *sk = &icsk->icsk_inet.sk;
-+
-+	bh_lock_sock(sk);
-+	if (!sock_owned_by_user(sk)) {
-+		mptcp_retransmit_handler(sk);
-+	} else {
-+		/* delegate our work to tcp_release_cb() */
-+		if (!test_and_set_bit(TCP_WRITE_TIMER_DEFERRED,
-+				      &sk->sk_tsq_flags))
-+			sock_hold(sk);
-+	}
-+	bh_unlock_sock(sk);
-+	sock_put(sk);
-+}
-+
- /* subflow sockets can be either outgoing (connect) or incoming
-  * (accept).
-  *
-@@ -846,6 +920,9 @@ static int __mptcp_init_sock(struct sock *sk)
- 
- 	mptcp_pm_data_init(msk);
- 
-+	/* re-use the csk retrans timer for MPTCP-level retrans */
-+	timer_setup(&msk->sk.icsk_retransmit_timer, mptcp_retransmit_timer, 0);
-+
- 	return 0;
- }
- 
-@@ -867,6 +944,8 @@ static void __mptcp_clear_xmit(struct sock *sk)
+@@ -344,12 +354,18 @@ static void mptcp_clean_una(struct sock *sk)
  	struct mptcp_sock *msk = mptcp_sk(sk);
  	struct mptcp_data_frag *dtmp, *dfrag;
+ 	u64 snd_una = atomic64_read(&msk->snd_una);
++	bool cleaned = false;
  
-+	sk_stop_timer(sk, &msk->sk.icsk_retransmit_timer);
-+
- 	list_for_each_entry_safe(dfrag, dtmp, &msk->rtx_queue, list)
- 		dfrag_clear(dfrag);
- }
-@@ -1155,7 +1234,8 @@ static int mptcp_getsockopt(struct sock *sk, int level, int optname,
- 	return -EOPNOTSUPP;
- }
+ 	list_for_each_entry_safe(dfrag, dtmp, &msk->rtx_queue, list) {
+ 		if (after64(dfrag->data_seq + dfrag->data_len, snd_una))
+ 			break;
  
--#define MPTCP_DEFERRED_ALL TCPF_DELACK_TIMER_DEFERRED
-+#define MPTCP_DEFERRED_ALL (TCPF_DELACK_TIMER_DEFERRED | \
-+			    TCPF_WRITE_TIMER_DEFERRED)
- 
- /* this is very alike tcp_release_cb() but we must handle differently a
-  * different set of events
-@@ -1171,6 +1251,8 @@ static void mptcp_release_cb(struct sock *sk)
- 		nflags = flags & ~MPTCP_DEFERRED_ALL;
- 	} while (cmpxchg(&sk->sk_tsq_flags, flags, nflags) != flags);
- 
-+	sock_release_ownership(sk);
-+
- 	if (flags & TCPF_DELACK_TIMER_DEFERRED) {
- 		struct mptcp_sock *msk = mptcp_sk(sk);
- 		struct sock *ssk;
-@@ -1179,6 +1261,11 @@ static void mptcp_release_cb(struct sock *sk)
- 		if (!ssk || !schedule_work(&msk->work))
- 			__sock_put(sk);
- 	}
-+
-+	if (flags & TCPF_WRITE_TIMER_DEFERRED) {
-+		mptcp_retransmit_handler(sk);
-+		__sock_put(sk);
+-		dfrag_clear(dfrag);
++		dfrag_clear(sk, dfrag);
++		cleaned = true;
 +	}
++
++	if (cleaned) {
++		sk_mem_reclaim_partial(sk);
+ 	}
  }
  
- static int mptcp_get_port(struct sock *sk, unsigned short snum)
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index a1fdb879259a..d222eea11922 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -157,6 +157,7 @@ struct mptcp_sock {
- 	u64		write_seq;
- 	u64		ack_seq;
- 	atomic64_t	snd_una;
-+	unsigned long	timer_ival;
- 	u32		token;
- 	unsigned long	flags;
- 	bool		can_ack;
-@@ -326,6 +327,7 @@ void mptcp_get_options(const struct sk_buff *skb,
- void mptcp_finish_connect(struct sock *sk);
- void mptcp_data_ready(struct sock *sk, struct sock *ssk);
- bool mptcp_finish_join(struct sock *sk);
-+void mptcp_data_acked(struct sock *sk);
+@@ -461,6 +477,9 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
+ 	if (!psize)
+ 		return -EINVAL;
  
- int mptcp_token_new_request(struct request_sock *req);
- void mptcp_token_destroy_request(u32 token);
++	if (!sk_wmem_schedule(sk, psize + dfrag->overhead))
++		return -ENOMEM;
++
+ 	/* tell the TCP stack to delay the push so that we can safely
+ 	 * access the skb after the sendpages call
+ 	 */
+@@ -482,6 +501,11 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
+ 		list_add_tail(&dfrag->list, &msk->rtx_queue);
+ 	}
+ 
++	/* charge data on mptcp rtx queue to the master socket
++	 * Note: we charge such data both to sk and ssk
++	 */
++	sk->sk_forward_alloc -= frag_truesize;
++
+ 	/* if the tail skb extension is still the cached one, collapsing
+ 	 * really happened. Note: we can't check for 'same skb' as the sk_buff
+ 	 * hdr on tail can be transmitted, freed and re-allocated by the
+@@ -933,6 +957,8 @@ static int mptcp_init_sock(struct sock *sk)
+ 	if (ret)
+ 		return ret;
+ 
++	sk_sockets_allocated_inc(sk);
++
+ 	if (!mptcp_is_enabled(sock_net(sk)))
+ 		return -ENOPROTOOPT;
+ 
+@@ -947,7 +973,7 @@ static void __mptcp_clear_xmit(struct sock *sk)
+ 	sk_stop_timer(sk, &msk->sk.icsk_retransmit_timer);
+ 
+ 	list_for_each_entry_safe(dfrag, dtmp, &msk->rtx_queue, list)
+-		dfrag_clear(dfrag);
++		dfrag_clear(sk, dfrag);
+ }
+ 
+ static void mptcp_cancel_work(struct sock *sk)
+@@ -1182,6 +1208,8 @@ static void mptcp_destroy(struct sock *sk)
+ 
+ 	if (msk->cached_ext)
+ 		__skb_ext_put(msk->cached_ext);
++
++	sk_sockets_allocated_dec(sk);
+ }
+ 
+ static int mptcp_setsockopt(struct sock *sk, int level, int optname,
+@@ -1391,7 +1419,12 @@ static struct proto mptcp_prot = {
+ 	.hash		= inet_hash,
+ 	.unhash		= inet_unhash,
+ 	.get_port	= mptcp_get_port,
++	.sockets_allocated	= &mptcp_sockets_allocated,
++	.memory_allocated	= &tcp_memory_allocated,
++	.memory_pressure	= &tcp_memory_pressure,
+ 	.stream_memory_free	= mptcp_memory_free,
++	.sysctl_wmem_offset	= offsetof(struct net, ipv4.sysctl_tcp_wmem),
++	.sysctl_mem	= sysctl_tcp_mem,
+ 	.obj_size	= sizeof(struct mptcp_sock),
+ 	.no_autobind	= true,
+ };
+@@ -1680,6 +1713,9 @@ void mptcp_proto_init(void)
+ {
+ 	mptcp_prot.h.hashinfo = tcp_prot.h.hashinfo;
+ 
++	if (percpu_counter_init(&mptcp_sockets_allocated, 0, GFP_KERNEL))
++		panic("Failed to allocate MPTCP pcpu counter\n");
++
+ 	mptcp_subflow_init();
+ 	mptcp_pm_init();
+ 
 -- 
 2.26.0
 
