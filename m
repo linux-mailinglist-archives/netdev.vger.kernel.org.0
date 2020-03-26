@@ -2,129 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B405C194D92
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 00:54:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C833194D9F
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 00:58:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727699AbgCZXyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 19:54:32 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:38488 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726067AbgCZXyc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 19:54:32 -0400
-Received: by mail-pg1-f196.google.com with SMTP id x7so3705602pgh.5;
-        Thu, 26 Mar 2020 16:54:31 -0700 (PDT)
+        id S1727443AbgCZX6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 19:58:02 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:50825 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726496AbgCZX6C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 19:58:02 -0400
+Received: by mail-wm1-f67.google.com with SMTP id d198so9740183wmd.0
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 16:57:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7CVUJ19v0pY389uYsPOimGpmTd+8zgk3ZoECLlak5lM=;
-        b=INFMJGFcMVQGmxapcKuRntC2Hu7Scihi/K2WIqPinYkE7x1TAkiXXc/d9BNnWaPns4
-         L5Yjl1/AowBiF15atWfviywBhgO0UTCApRKD1MEGRqOaNjJrO5D5tVfDDz4cE2trvw7l
-         bVlE0Rmf+Rh4whilo56Bl9iTZHvA/Je7qZtsq+R12rNvESruWl2DpeWOyGkOP8bTUtJl
-         /o2zXLz1MMGyJ7Kxl3bLSSodp3GyaoJKNprYHm99xSQEbaB3llKIkqNDETYReSsVx9nE
-         FnvPXwu9d7nsGvcDwKRbA8+6i5NN5ibUQbL2vPleW6nU335BCJvH52SJ0grrfZk7KwSi
-         8EvQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=m8XYQnaTarNZQVeFraJd92AjFgRnW69mHSI+l63q6KU=;
+        b=IC06vqGFa8KejCLEjOFcob9Ajs8ZY4i8CGvyu6O1dA62aXdjVimFobGalbyig1K9lS
+         umPVDHPOa33ySN6H0am/C2ID+BtPUDVPHheMgtQi0BbNt+MDfGwJlw5oE3EOZkM31nsU
+         v/aHLb/IaGDn+567X0CxpMlvqfhHIb+YK+QnbVgzqZh/HomzhLOCHsVuxuTXcGIoXn7W
+         HrfDRopwDZ3IZ7ueG9CC8eDJU6WwSXSiIhkvLZrps5j/N5RADWysszdp2pEhjmo/Ca5c
+         BIp22dh+MvwwKAAxyZjO/j5V+QSafFgcAQ8HDAPKqjrLHlV21Rj6Gs+4E4QmVQxdIxgY
+         TEkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7CVUJ19v0pY389uYsPOimGpmTd+8zgk3ZoECLlak5lM=;
-        b=WODTFPEOQnnMYBo9VCxkSA5i0evU3VthziUjDUZg9HUk6iR90FQZScpW/IQHZg/z6p
-         Pr+D5TiiAZGmq4ptlNOjqwfDdh5iUHFowZumTujom0Z15ApS+6iqYrg9CuLa7I+KIS9o
-         wnl1SzQOmmmK/jKI/AjZBKhNC7uL7BJJm+G4e2oe1uaGpRaU/8zGJM/cKRiB0WcXvn2M
-         NB0+m//El3bn13q+8lnbdSmGXB6ZVqHNtec2HhrZmRH0sGL/YoNh40THmareWlau5xUB
-         yIKGCD6Gv/MwyQxM5HbMNs3iX3exjExLe4wMya74QdS2YmT3DNTTxo5tVtJAyGjvshGq
-         8bkg==
-X-Gm-Message-State: ANhLgQ15N5sneQW/xMREsldks7Ms6CIYwaNux0ZMcDi5czpyLJ3LUibf
-        frirDRhqZOvZR3fBpx5MXok=
-X-Google-Smtp-Source: ADFU+vtHItp+nWzngvwdD8m8gR416+z5AIiqRHKH0JSJZuOyBE5OslhJKwILx7T9X+o7ZOXp/Dq6XA==
-X-Received: by 2002:a63:1517:: with SMTP id v23mr10800809pgl.89.1585266871010;
-        Thu, 26 Mar 2020 16:54:31 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:c7d9])
-        by smtp.gmail.com with ESMTPSA id p70sm2417463pjp.47.2020.03.26.16.54.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 16:54:30 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 16:54:26 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jean-Philippe Menil <jpmenil@gmail.com>
-Cc:     yhs@fb.com, kernel-janitors@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] bpf: fix build warning - missing prototype
-Message-ID: <20200326235426.ei6ae2z5ek6uq3tt@ast-mbp>
-References: <7c27e51f-6a64-7374-b705-450cad42146c@fb.com>
- <20200324072231.5780-1-jpmenil@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=m8XYQnaTarNZQVeFraJd92AjFgRnW69mHSI+l63q6KU=;
+        b=ak58KJMDmy2hWoqHi+ZEkr8bmbv6lNyeqa45lb6fnZL+YzC2pVdiX+i4hk4qPhfoKu
+         rr+s7HuJvYcC0vlKmUUoxg7zemcItFuJwDUUPcuuG8hX0VtORD1DZttRjb2lDC4TBwQp
+         djQR1LHgn61s/WYtbs9Wk0slVxwfdSUyAtCXjsWpTLLR1nnfwAxnvByymbXq61L+FKHt
+         wGukirEJEBRK11U4Kl0mbneMmwAxNHF7zIXd0tqZUt0JW74+QCuk7grHXfd26/Sj+azV
+         ih1LhoVixFcYMKg3pyB+Obt4TkREczUMi8Xm9lLKDvqcCv4dTPFWkPAJ7oIcqX49mL5P
+         TnAw==
+X-Gm-Message-State: ANhLgQ3EK1nBWGgJtInoeUj87AaRXCTpJQ5985Tdjn3di/JZ6yhD4PxH
+        1lXsrnqH4n6Sf5PCvd9cpfd75M5A
+X-Google-Smtp-Source: ADFU+vvfwc9DGTXa3q+H0bo7hauU26Jtwx8Xqa0pt5t+4IrlkqP3C/4/EMKFDcAxqiuHDQTF4egadg==
+X-Received: by 2002:a5d:5228:: with SMTP id i8mr12050735wra.156.1585267078830;
+        Thu, 26 Mar 2020 16:57:58 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:d031:3b7b:1a72:8f94? (p200300EA8F296000D0313B7B1A728F94.dip0.t-ipconnect.de. [2003:ea:8f29:6000:d031:3b7b:1a72:8f94])
+        by smtp.googlemail.com with ESMTPSA id e9sm6399208wrw.30.2020.03.26.16.57.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Mar 2020 16:57:58 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: phy: probe PHY drivers synchronously
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <86582ac9-e600-bdb5-3d2e-d2d99ed544f4@gmail.com>
+ <20200326233411.GG3819@lunn.ch>
+ <4a71aee8-370b-2a87-d549-a7fba5a5f873@gmail.com>
+ <20200326234459.GI3819@lunn.ch>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <bbcf7c4c-8226-bfd5-3c97-090884ed50a6@gmail.com>
+Date:   Fri, 27 Mar 2020 00:57:54 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200324072231.5780-1-jpmenil@gmail.com>
+In-Reply-To: <20200326234459.GI3819@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 08:22:31AM +0100, Jean-Philippe Menil wrote:
-> Fix build warnings when building net/bpf/test_run.o with W=1 due
-> to missing prototype for bpf_fentry_test{1..6}.
+On 27.03.2020 00:44, Andrew Lunn wrote:
+>> Default still is sync probing, except you explicitly request async
+>> probing. But I saw some comments that the intention is to promote
+>> async probing for more parallelism in boot process. I want to be
+>> prepared for the case that the default is changed to async probing.
 > 
-> Declare prototypes in order to silence warnings.
+> Right. So this should be in the commit message. This is the real
+> reason you are proposing the change.
 > 
-> Signed-off-by: Jean-Philippe Menil <jpmenil@gmail.com>
-> ---
->  net/bpf/test_run.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> index d555c0d8657d..cdf87fb0b6eb 100644
-> --- a/net/bpf/test_run.c
-> +++ b/net/bpf/test_run.c
-> @@ -113,31 +113,37 @@ static int bpf_test_finish(const union bpf_attr *kattr,
->   * architecture dependent calling conventions. 7+ can be supported in the
->   * future.
->   */
-> +int noinline bpf_fentry_test1(int a);
->  int noinline bpf_fentry_test1(int a)
->  {
->  	return a + 1;
->  }
->  
-> +int noinline bpf_fentry_test2(int a, u64 b);
->  int noinline bpf_fentry_test2(int a, u64 b)
->  {
->  	return a + b;
->  }
->  
-> +int noinline bpf_fentry_test3(char a, int b, u64 c);
->  int noinline bpf_fentry_test3(char a, int b, u64 c)
->  {
->  	return a + b + c;
->  }
->  
-> +int noinline bpf_fentry_test4(void *a, char b, int c, u64 d);
->  int noinline bpf_fentry_test4(void *a, char b, int c, u64 d)
->  {
->  	return (long)a + b + c + d;
->  }
->  
-> +int noinline bpf_fentry_test5(u64 a, void *b, short c, int d, u64 e);
->  int noinline bpf_fentry_test5(u64 a, void *b, short c, int d, u64 e)
->  {
->  	return a + (long)b + c + d + e;
->  }
->  
-> +int noinline bpf_fentry_test6(u64 a, void *b, short c, int d, void *e, u64 f);
->  int noinline bpf_fentry_test6(u64 a, void *b, short c, int d, void *e, u64 f)
+OK, I'll add it to the commit message.
 
-That's a bit too much of "watery water".
-Have you considered
-__diag_push();
-__diag_ignore(GCC, "-Wwhatever specific flag will shut up this warn")
-__diag_pop();
-approach ?
-It will be self documenting as well.
+>        Andrew
+> 
+Heiner
