@@ -2,194 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FF57193E56
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 12:54:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC322193E89
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 13:04:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728172AbgCZLyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 07:54:40 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:39725 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728165AbgCZLyk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 07:54:40 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 826905800DC;
-        Thu, 26 Mar 2020 07:54:39 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 26 Mar 2020 07:54:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=vv/71j
-        l+a2CLiYecoq14uU/0NIJhsJ1SlE/jdtwDdHw=; b=O84MUaQIHuJsHg81JyS7Ae
-        1M/UNVeUZz1Xb9E0jA6WDifbnUJ7fCpBrL0gF7c1ciPb/+KXl+hgnj35KxL+h8aO
-        tTpMprMQyLdu5gpNDXmleFxaPT1tfdN0Uuj4tefMT8sKLmA3fOcm2rxzfxLMyoOX
-        EbKca3spOiH/IWE1Zewshjcf4C6RmvLFIheO5NLioG9237ZaQ9amufvYKjYKeAWV
-        9vhrM9p3M8Ih8cQI5jBCEOuuwZfmExHCw79euiB6UmUwKphy2O94zbL/bUq3h1/a
-        1enJU8cevvdg/W/dqnZ6dlUzk7rIIi8n+6fECmjYBvFt4x/uHq3HsywFvjPtjmZg
-        ==
-X-ME-Sender: <xms:_Zd8XjcJJ7kQXU0TsH81_90OnXImgf3ia85y1Qa8lOcHClRFfcDJ0w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudehiedgfeefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucffohhmrghinh
-    epohiilhgrsghsrdhorhhgnecukfhppeejledrudekuddrudefvddrudeludenucevlhhu
-    shhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesih
-    guohhstghhrdhorhhg
-X-ME-Proxy: <xmx:_Zd8XqqoicqtM0N2zpH9qI5JAZmfwK2EqwBHHglzVe_CNHi403EIQA>
-    <xmx:_Zd8Xn7Ek_dnSdMdcU2wMLhWFxF5iL2QTyAHPEd9r8vg4s1a3c8jaA>
-    <xmx:_Zd8XiDS-q6znUYUErvjQksl9uUpJfjpllFs8S9Lpmn1GjpGuwwXoQ>
-    <xmx:_5d8XiY5fZK00XIsQ20NgjN8HtVNOKOKeoLUaXsyaxEemRgFs3teIg>
-Received: from localhost (bzq-79-181-132-191.red.bezeqint.net [79.181.132.191])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2992E3069945;
-        Thu, 26 Mar 2020 07:54:37 -0400 (EDT)
-Date:   Thu, 26 Mar 2020 13:54:35 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        murali.policharla@broadcom.com,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 net-next 10/10] net: bridge: implement
- auto-normalization of MTU for hardware datapath
-Message-ID: <20200326115435.GA1385597@splinter>
-References: <20200325152209.3428-1-olteanv@gmail.com>
- <20200325152209.3428-11-olteanv@gmail.com>
- <20200326101752.GA1362955@splinter>
- <CA+h21hq2K__kY9Pi4-23x7aA+4TPXAV4evfi1tR=0bZRcZDiQA@mail.gmail.com>
- <20200326113542.GA1383155@splinter>
- <CA+h21hqSWKSc-AD0fTA0XXsqmPdF_LCvKrksWEe8DGhdLm=AWQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hqSWKSc-AD0fTA0XXsqmPdF_LCvKrksWEe8DGhdLm=AWQ@mail.gmail.com>
+        id S1728195AbgCZME0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 08:04:26 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:51266 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727841AbgCZME0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 08:04:26 -0400
+Received: by mail-wm1-f66.google.com with SMTP id c187so6189166wme.1
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 05:04:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=SucbxylAIn30XCM5UTMAf858CfM6JT86REcwyjy4J90=;
+        b=HHklw4rEGcikBGMHfAmxGjXgWcH4FNrIZlHkiXNgRHVwl4RSmmfB2rOtVZ/KpEJV4J
+         8hlK/wFKWkrud/bMzIE2F7/rhCYcyQMHfx+e3rtLm5VGypMJyTeksjtUqeN1R76gFpuG
+         m10TUnTsFQINCfVoJYNwedKPiT5t/9ubY4sak=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=SucbxylAIn30XCM5UTMAf858CfM6JT86REcwyjy4J90=;
+        b=CZ5zWLk6CNqMfYtl3R9kgkKN+2UDVf2bz5/2e0FU+r3fdgG2aCO4UWe0/ZsjqM9Z3K
+         aFgy18GgZsKxcSTDXlkurClSyLYXXKL5R8wYbTQn6ArEsglrI53CTIgkytSmbfrCsKzO
+         Cvz8xZQYUnpspukDUxjqoZheEprD+V3RZ2B1ISE8dvI6GIwZsdEav4smhy6+V7HIdaPo
+         HOordKUZTH54EL7aTVt/gK0TezAE6a0btvfyZh98Ci3ANIrlfqTD9wL886HNKZEvHPxI
+         6l/03h+oDw3xV7gfjn2Q4siJhPaChAdHDEQVqSQRq9mA5xBfPAEHS4JTqtDAa/cUj6QK
+         FUCg==
+X-Gm-Message-State: ANhLgQ1DR6jnEEhd7DMkwKWRNJMthqksaHcIJ33wlOgYBuLM+/Yf+hDR
+        tdt2uIGpNHlbtjqRtbNyYc4ofA==
+X-Google-Smtp-Source: ADFU+vsbwxS4Jj9u6RZlgeQHSSKtI96u9Kl7ZTVyOlbq2aUKQ4pGEi/GZKm0UNS86523Vwj/j1pyxA==
+X-Received: by 2002:a05:600c:2f90:: with SMTP id t16mr238561wmn.66.1585224263937;
+        Thu, 26 Mar 2020 05:04:23 -0700 (PDT)
+Received: from lxpurley1.dhcp.broadcom.net ([192.19.234.250])
+        by smtp.gmail.com with ESMTPSA id k84sm3316637wmk.2.2020.03.26.05.04.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 26 Mar 2020 05:04:22 -0700 (PDT)
+From:   Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: [PATCH v3 net-next 0/5] bnxt_en: Updates to devlink info_get cb
+Date:   Thu, 26 Mar 2020 17:32:33 +0530
+Message-Id: <1585224155-11612-1-git-send-email-vasundhara-v.volam@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 01:44:51PM +0200, Vladimir Oltean wrote:
-> On Thu, 26 Mar 2020 at 13:35, Ido Schimmel <idosch@idosch.org> wrote:
-> >
-> > On Thu, Mar 26, 2020 at 12:25:20PM +0200, Vladimir Oltean wrote:
-> > > Hi Ido,
-> > >
-> > > On Thu, 26 Mar 2020 at 12:17, Ido Schimmel <idosch@idosch.org> wrote:
-> > > >
-> > > > Hi Vladimir,
-> > > >
-> > > > On Wed, Mar 25, 2020 at 05:22:09PM +0200, Vladimir Oltean wrote:
-> > > > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > > >
-> > > > > In the initial attempt to add MTU configuration for DSA:
-> > > > >
-> > > > > https://patchwork.ozlabs.org/cover/1199868/
-> > > > >
-> > > > > Florian raised a concern about the bridge MTU normalization logic (when
-> > > > > you bridge an interface with MTU 9000 and one with MTU 1500). His
-> > > > > expectation was that the bridge would automatically change the MTU of
-> > > > > all its slave ports to the minimum MTU, if those slaves are part of the
-> > > > > same hardware bridge. However, it doesn't do that, and for good reason,
-> > > > > I think. What br_mtu_auto_adjust() does is it adjusts the MTU of the
-> > > > > bridge net device itself, and not that of any slave port.  If it were to
-> > > > > modify the MTU of the slave ports, the effect would be that the user
-> > > > > wouldn't be able to increase the MTU of any bridge slave port as long as
-> > > > > it was part of the bridge, which would be a bit annoying to say the
-> > > > > least.
-> > > > >
-> > > > > The idea behind this behavior is that normal termination from Linux over
-> > > > > the L2 forwarding domain described by DSA should happen over the bridge
-> > > > > net device, which _is_ properly limited by the minimum MTU. And
-> > > > > termination over individual slave device is possible even if those are
-> > > > > bridged. But that is not "forwarding", so there's no reason to do
-> > > > > normalization there, since only a single interface sees that packet.
-> > > > >
-> > > > > The real problem is with the offloaded data path, where of course, the
-> > > > > bridge net device MTU is ignored. So a packet received on an interface
-> > > > > with MTU 9000 would still be forwarded to an interface with MTU 1500.
-> > > > > And that is exactly what this patch is trying to prevent from happening.
-> > > >
-> > > > How is that different from the software data path where the CPU needs to
-> > > > forward the packet between port A with MTU X and port B with MTU X/2 ?
-> > > >
-> > > > I don't really understand what problem you are trying to solve here. It
-> > > > seems like the user did some misconfiguration and now you're introducing
-> > > > a policy to mitigate it? If so, it should be something the user can
-> > > > disable. It also seems like something that can be easily handled by a
-> > > > user space application. You get netlink notifications for all these
-> > > > operations.
-> > > >
-> > >
-> > > Actually I think the problem can be better understood if I explain
-> > > what the switches I'm dealing with look like.
-> > > None of them really has a 'MTU' register. They perform length-based
-> > > admission control on RX.
-> >
-> > IIUC, by that you mean that these switches only perform length-based
-> > filtering on RX, but not on TX?
-> >
-> 
-> Yes.
-> 
-> > > At this moment in time I don't think anybody wants to introduce an MRU
-> > > knob in iproute2, so we're adjusting that maximum ingress length
-> > > through the MTU. But it becomes an inverted problem, since the 'MTU'
-> > > needs to be controlled for all possible sources of traffic that are
-> > > going to egress on this port, in order for the real MTU on the port
-> > > itself to be observed.
-> >
-> > Looking at your example from the changelog:
-> >
-> > ip link set dev sw0p0 master br0
-> > ip link set dev sw0p1 mtu 1400
-> > ip link set dev sw0p1 master br0
-> >
-> > Without your patch, after these commands sw0p0 has an MTU of 1500 and
-> > sw0p1 has an MTU of 1400. Are you saying that a frame with a length of
-> > 1450 bytes received on sw0p0 will be able to egress sw0p1 (assuming it
-> > should be forwarded there)?
-> >
-> 
-> Yes.
-> 
-> > If so, then I think I understand the problem. However, I don't think
-> > such code belongs in the bridge driver as this restriction does not
-> > apply to all switches.
-> 
-> How do Mellanox switches deal with this?
+This series adds support for a generic macro to devlink info_get cb.
+Adds support for fw.api and board.id info to bnxt_en driver info_get cb.
+Also, updates the devlink-info.rst and bnxt.rst documentation accordingly.
 
-Frames will be discarded on the egress of sw0p1.
+---
+v1->v2: Remove ECN dev param, base_mh_addr and serial number info support
+in this series.
+Rename drv.spec macro to fw.api.
+---
+v2->v3: Remove hw.addr info as it is per netdev but not per device info.
+---
 
-> 
-> > Also, I think that having the kernel change MTU
-> > of port A following MTU change of port B is a bit surprising and not
-> > intuitive.
-> >
-> 
-> It already changes the MTU of br0, this just goes along the same path.
+Vasundhara Volam (5):
+  devlink: Add macro for "fw.api" to info_get cb.
+  bnxt_en: Add fw.api version to devlink info_get cb.
+  PCI: Add new PCI_VPD_RO_KEYWORD_SERIALNO macro
+  bnxt_en: Read partno and serialno of the board from VPD
+  bnxt_en: Add partno to devlink info_get cb
 
-Yea, but this is an established behavior already. And it applies
-regardless if the data path is offloaded or not, unlike this change.
+ Documentation/networking/devlink/bnxt.rst         |  6 ++
+ Documentation/networking/devlink/devlink-info.rst |  6 ++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 74 ++++++++++++++++++++++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  5 ++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 13 ++++
+ include/linux/pci.h                               |  1 +
+ include/net/devlink.h                             |  2 +
+ 7 files changed, 106 insertions(+), 1 deletion(-)
 
-> > I think you should be more explicit about it. Did you consider listening
-> > to 'NETDEV_PRECHANGEMTU' notifications in relevant drivers and vetoing
-> > unsupported configurations with an appropriate extack message? If you
-> > can't veto (in order not to break user space), you can still emit an
-> > extack message.
-> 
-> I suppose that is an alternative approach. This would be done from the
-> DSA core then? But instead of veto, just do the normalization thing.
+-- 
+1.8.3.1
 
-Not really my call, but I think the veto is better because you are being
-explicit about it and informing the user with an appropriate message.
-
-> 
-> Thanks,
-> -Vladimir
