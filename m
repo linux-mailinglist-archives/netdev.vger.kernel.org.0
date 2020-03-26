@@ -2,98 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E91C193BC2
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 10:25:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 327C2193BD5
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 10:28:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727800AbgCZJZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 05:25:35 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:33734 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727699AbgCZJZf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 05:25:35 -0400
-Received: by mail-wr1-f65.google.com with SMTP id a25so6854640wrd.0
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 02:25:34 -0700 (PDT)
+        id S1727636AbgCZJ2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 05:28:54 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:37338 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726292AbgCZJ2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 05:28:54 -0400
+Received: by mail-wr1-f66.google.com with SMTP id w10so6841152wrm.4
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 02:28:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4m+GQy7VYH0n5Zaq8PJqqSUE7P/pBzPbT5al6RrlENk=;
-        b=ThYyuZEu+X0Gy47jINIc31DuaXLTq2dPUSR+RyG+3SfzJlFRqPk4ZowMdGWZtf4ijR
-         MXfpm3vprsfa8QTY2XDLpW1PtJu0VNY9Jm4eqiedR/DvG7Iphok3jDltzWpaga0zbxoh
-         DxeSLkuy8x6MImT1NdvGmOkL/31o7+7c57XJKGjrVbCm+PG64D8N5MzD7qSfbwmILz9g
-         rG+Y6vUX1GY610nyj7e0/qII85zDOuJw1Kq+F5fnOrtzQSgm+y/jYZljhVo1bKFilVF7
-         +vjIH6/+O3qJbii3EEHNqA3o7+7x3hesPwbiOIbk94Xx14ym7fjHOgufqs2GAaHx+rTV
-         2cEg==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NZlKLgjrHkiImS8vVe6P9I5dWwV09bL6C8Ho9474AOI=;
+        b=wOVA3Av17CXlfUCGQBENhdB0SpJa9UWK9gen8IPcreY2Da/OJnukCwRb2Dz2508QMa
+         h6yG9V2ih2fkaHiie8CI3HCMNzSq7nyZeWfHGRdksKjZ3GqMZswBBfVcPhw1G0cLHXmk
+         zCfUXLqlkd+DRCS32dQ1l2tGui/PVQ9azYEQ5Leqvw5B5smmcelqtR/r4Pp7urkcaXW3
+         /AmIRZMEE/x0LVhS3Ok/akwXTc5gdT32zpdAg/2D8l0wTAFJwdA4gAuGGK0KIEjvSy/S
+         Q0/BhwEIE1nS4ll7myNDRm03VP8Km4r3/4wlbLzP92PyXTbKOPT7P73t+EwkRHGcA/Zn
+         VTFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4m+GQy7VYH0n5Zaq8PJqqSUE7P/pBzPbT5al6RrlENk=;
-        b=huKlOjfb3aCaCtQYpFWukPqWwDjVjYGLWuBojLvT8sEkd1JmUhOZCXJ7ge+RVsOVb8
-         Zzy3vM2o0schJDQGxPQFUjVXmFQcH0Jza69ucEhPfF5QI7ccj7IqfpMdzvxdB/NtlKxg
-         Y3vRi5rYP1mPRZ2pmEoD5YreQ31SqSPzvUWeYZmGeeICSA8s5em8Tdc5wxH5Mz42HRCm
-         TsXDcLT2L+bN2l1VGwHAbUB6oTqOZxKO8EhxT8LKGUiXkFdwoFdLoimtFHJtrb6p9qB5
-         z/gD7qTn1dhu1sPvn5XxUl+RdxoGRxgyPRWkttIvHGX3i8BYL2oMN746g4kFstOIGqll
-         AIWA==
-X-Gm-Message-State: ANhLgQ3mily1Q/ZCPTMSf4PcXDrWZZPzACnSQu+pG/9vfxd+28UY8H4y
-        b5D7takaBoA0V01ArZh11517ItCmkZJfH8OuBl94yK3H
-X-Google-Smtp-Source: ADFU+vsf5lfDy65TqlzlkgUgHQnyic9bgJhaFiglrdDpqA9Bg2ZjJlcdq35fDwaX17X8aWaHOYylY+m2aeiKb1cliy4=
-X-Received: by 2002:a5d:5447:: with SMTP id w7mr8174169wrv.299.1585214733202;
- Thu, 26 Mar 2020 02:25:33 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NZlKLgjrHkiImS8vVe6P9I5dWwV09bL6C8Ho9474AOI=;
+        b=hx63CDd5Rb7UfaUNGIES3eadmAhqks8Ildjhjo6/rMoIpaAK0k1CfLJotvJRl/FTrZ
+         BcSvd3A7DV6I0Vnie64eVqZsURHfYuIS6QLDGgcMSqSTdDT7ysI9ytbpPJHVakC54BfV
+         Eo+zsDnCjF1MD+wC0xeMlJpdl+F51R6sN7WiBiGYL6ekXnqg8hIhc8bSGARZCFw66E4u
+         EMrVaPEtOm1Z/tbdrfZvoFH2xrHXRgTSSSPmsln6ikov/ppUJ5/D/cQ23CdqdhC4pQFW
+         SRJU1OMhnTyDp1HqKvrkbH+4n9Hx6L+aMfKgiavNjIrqIB8xL1U0ZaNVPBg9xOVoJ6cY
+         aS6g==
+X-Gm-Message-State: ANhLgQ3Xerg4ACCZ34ve7tAflWTz7Qv8LTLmUISyFV8c48hFs/JmglTw
+        At5GMqg0YByKTITgfg0Az9Ot0Q==
+X-Google-Smtp-Source: ADFU+vvCjSes37GkD0wnSCc3gLjbYYbhHIAgGw/udMfNKdIx46Fzqm9iSWWsJ/4HNHBsMoEvWJvIBA==
+X-Received: by 2002:adf:9bc4:: with SMTP id e4mr8282863wrc.341.1585214931982;
+        Thu, 26 Mar 2020 02:28:51 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id i1sm2670313wrq.89.2020.03.26.02.28.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2020 02:28:51 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 10:28:50 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH v2 net-next 1/7] devlink: Add macro for "fw.api" to
+ info_get cb.
+Message-ID: <20200326092850.GS11304@nanopsycho.orion>
+References: <1585204021-10317-1-git-send-email-vasundhara-v.volam@broadcom.com>
+ <1585204021-10317-2-git-send-email-vasundhara-v.volam@broadcom.com>
 MIME-Version: 1.0
-References: <e17fe23a0a5f652866ec623ef0cde1e6ef5dbcf5.1585213585.git.lucien.xin@gmail.com>
-In-Reply-To: <e17fe23a0a5f652866ec623ef0cde1e6ef5dbcf5.1585213585.git.lucien.xin@gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 26 Mar 2020 17:28:44 +0800
-Message-ID: <CADvbK_fOKPMeVynjxBOZc3tRFEcp9xYpyC9j0Hbs9E1sa6R5LQ@mail.gmail.com>
-Subject: Re: [PATCH net] udp: fix a skb extensions leak
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem <davem@davemloft.net>, Paolo Abeni <pabeni@redhat.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1585204021-10317-2-git-send-email-vasundhara-v.volam@broadcom.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CC Steffen Klassert <steffen.klassert@secunet.com>
+Thu, Mar 26, 2020 at 07:26:58AM CET, vasundhara-v.volam@broadcom.com wrote:
+>Add definition and documentation for the new generic info "fw.api".
+>"fw.api" specifies the version of the software interfaces between
+>driver and overall firmware.
+>
+>Cc: Jakub Kicinski <kuba@kernel.org>
+>Cc: Jiri Pirko <jiri@mellanox.com>
+>Cc: Jacob Keller <jacob.e.keller@intel.com>
+>Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+>Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 
-On Thu, Mar 26, 2020 at 5:06 PM Xin Long <lucien.xin@gmail.com> wrote:
->
-> On udp rx path udp_rcv_segment() may do segment where the frag skbs
-> will get the header copied from the head skb in skb_segment_list()
-> by calling __copy_skb_header(), which could overwrite the frag skbs'
-> extensions by __skb_ext_copy() and cause a leak.
->
-> This issue was found after loading esp_offload where a sec path ext
-> is set in the skb.
->
-> On udp tx gso path, it works well as the frag skbs' extensions are
-> not set. So this issue should be fixed on udp's rx path only and
-> release the frag skbs' extensions before going to do segment.
->
-> Reported-by: Xiumei Mu <xmu@redhat.com>
-> Fixes: cf329aa42b66 ("udp: cope with UDP GRO packet misdirection")
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> ---
->  include/net/udp.h | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/include/net/udp.h b/include/net/udp.h
-> index e55d5f7..7bf0ca5 100644
-> --- a/include/net/udp.h
-> +++ b/include/net/udp.h
-> @@ -486,6 +486,10 @@ static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
->         if (skb->pkt_type == PACKET_LOOPBACK)
->                 skb->ip_summed = CHECKSUM_PARTIAL;
->
-> +       if (skb_has_frag_list(skb) && skb_has_extensions(skb))
-> +               skb_walk_frags(skb, segs)
-> +                       skb_ext_put(segs);
-> +
->         /* the GSO CB lays after the UDP one, no need to save and restore any
->          * CB fragment
->          */
-> --
-> 2.1.0
->
+Looks sane to me.
+
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
