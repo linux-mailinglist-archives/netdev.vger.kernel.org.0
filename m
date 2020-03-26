@@ -2,114 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3167F193547
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 02:30:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFB6B193548
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 02:30:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727652AbgCZBaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 21:30:23 -0400
-Received: from mail-il1-f196.google.com ([209.85.166.196]:36544 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727574AbgCZBaW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 21:30:22 -0400
-Received: by mail-il1-f196.google.com with SMTP id p13so3883168ilp.3;
-        Wed, 25 Mar 2020 18:30:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I4cuIyu/omhcY8YXZWH8kJbJw98P2odDZvIJixI3E5g=;
-        b=jaKrd7YeEmGbkjFUbycPVv8pzEL0/SFIVCzSjpQZ96Iuv3hPdGPt1l6mKlf47WBfmE
-         qFeo2ulVWGfETdv9DMIt71jhTXrfBp8/Yu6Y7zqGI6vX0ehO8sPCT0+S+iguxMQqZ6v7
-         eSqk1+fxqRO1qt8tr2AFr+A94Acnluya/W481EEf7o95wi4IsQ8ZCzn0UyU+z8STQ6P4
-         /vvhsy4CCxe0PrVAzMRZFKsSN6KsVQE2akCDV+GGwlCtlFctwI1tKT6M2VGefs9FDKhO
-         Fb1Yr9rSl4rrh4EPdZmie6Nc8dLiknA15Pi9x8JmaRxFBtcjlx/6vm3r+So9s/UrE111
-         mPOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I4cuIyu/omhcY8YXZWH8kJbJw98P2odDZvIJixI3E5g=;
-        b=KMQjxxm/g46zqTmqOCA65UDKW2XFUEaZ6l3+uXjjL8IHIxRaMpBymlb03wpZmeM31v
-         mym3DF78oyadEOVo6cE8n2g3rpGDnyFcAlrwDsWoitNUUmw5xm2T/DAmY/EJoOMdVM45
-         M+DjZig4VoCjJoC6Hdm+g81CyudF2tMe31Njcqe/jWL6BgBsnNscEJiURXQXU36xVPpX
-         PmGJZWWoeZb5SNR3uIuI17Rj34lovFQ5PVIxYJssZ2LR7NsvpQ9abforwRmPW6edJgTA
-         wZfr1VvqnuUOd7CSp2USlbFwYA0YZF5LlvLYv7GEvh3QgzhW9NHR35zDySB//dqKtNGr
-         eTsw==
-X-Gm-Message-State: ANhLgQ2zfAfyDPgSG9l3ZR9mzS84Xe+eHlCnahjL3O0TMLkboBDlhUPK
-        WfyPbfaSsfqy0XL5kb6JG1JAQCiCTWWr1ZCQG1E=
-X-Google-Smtp-Source: ADFU+vvQ1cFsu4Vlqoe+cIiB4q/YXbv5CPv+Ezun8ZBdyo1Ogg/A/M7m+45lL04KZu4gIws0RFKSq0cHZuZuBIGi2l4=
-X-Received: by 2002:a92:83ca:: with SMTP id p71mr5896717ilk.278.1585186221583;
- Wed, 25 Mar 2020 18:30:21 -0700 (PDT)
+        id S1727683AbgCZBah (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 21:30:37 -0400
+Received: from mga14.intel.com ([192.55.52.115]:13096 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727574AbgCZBah (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Mar 2020 21:30:37 -0400
+IronPort-SDR: 9IsRsUCAjfJ/XFnd0Q/dwNMKUnGunmA9/r3XrCWJR0l8MWbsKIf0b5uDRwAJdMfxsY3KwGv/Ol
+ /a+GgCnd7L9Q==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2020 18:30:37 -0700
+IronPort-SDR: 4DGYCrHj9i+nvp3+rQtLQ4XVAEseIo7sGiS0gpQYkH4rpvKvR+AgbEgJ07eCI/6YPHHqVn2tEm
+ I4Q8OEZ/2tSw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,306,1580803200"; 
+   d="scan'208";a="282331754"
+Received: from cdalvizo-mobl1.amr.corp.intel.com (HELO [10.252.133.80]) ([10.252.133.80])
+  by fmsmga002.fm.intel.com with ESMTP; 25 Mar 2020 18:30:36 -0700
+Subject: Re: [PATCH 08/10] devlink: implement DEVLINK_CMD_REGION_NEW
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+References: <20200324223445.2077900-1-jacob.e.keller@intel.com>
+ <20200324223445.2077900-9-jacob.e.keller@intel.com>
+ <20200325164622.GZ11304@nanopsycho.orion>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <fe618551-3108-958a-ca6d-69c2b6fd43a6@intel.com>
+Date:   Wed, 25 Mar 2020 18:30:35 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <20200322090425.6253-1-hqjagain@gmail.com> <20200326001416.GH3756@localhost.localdomain>
-In-Reply-To: <20200326001416.GH3756@localhost.localdomain>
-From:   Qiujun Huang <hqjagain@gmail.com>
-Date:   Thu, 26 Mar 2020 09:30:08 +0800
-Message-ID: <CAJRQjoeWUHj7Ep5ycTxVJVuxmhzrzXx=-rP_h=hCCrBvgTUNEg@mail.gmail.com>
-Subject: Re: [PATCH v4] sctp: fix refcount bug in sctp_wfree
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, vyasevich@gmail.com,
-        nhorman@tuxdriver.com, Jakub Kicinski <kuba@kernel.org>,
-        linux-sctp@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, anenbupt@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200325164622.GZ11304@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 8:14 AM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Sun, Mar 22, 2020 at 05:04:25PM +0800, Qiujun Huang wrote:
-> > sctp_sock_migrate should iterate over the datamsgs to modify
-> > all trunks(skbs) to newsk. For this, out_msg_list is added to
->
-> s/trunks/chunks/
 
-My :p.
 
->
-> > sctp_outq to maintain datamsgs list.
->
-> It is an interesting approach. It speeds up the migration, yes, but it
-> will also use more memory per datamsg, for an operation that, when
-> performed, the socket is usually calm.
->
-> It's also another list to be handled, and I'm not seeing the patch
-> here move the datamsg itself now to the new outq. It would need
-> something along these lines:
+On 3/25/2020 9:46 AM, Jiri Pirko wrote:
+> Tue, Mar 24, 2020 at 11:34:43PM CET, jacob.e.keller@intel.com wrote:
+>> +
+>> +	/* Check to make sure it's empty first */
+>> +	if (xa_load(&devlink->snapshot_ids, id))
+> 
+> How this can happen? The entry was just allocated. WARN_ON.
+> 
 
-Are all the rx chunks in the rx queues?
+Sure, I'll add WARN_ON. I think the return should still be kept, since
+it causes the caller to fail instead of accidentally overwriting the
+snapshot count.
 
-> sctp_sock_migrate()
-> {
-> ...
->         /* Move any messages in the old socket's receive queue that are for the
->          * peeled off association to the new socket's receive queue.
->          */
->         sctp_skb_for_each(skb, &oldsk->sk_receive_queue, tmp) {
->                 event = sctp_skb2event(skb);
-> ...
->                 /* Walk through the pd_lobby, looking for skbs that
->                  * need moved to the new socket.
->                  */
->                 sctp_skb_for_each(skb, &oldsp->pd_lobby, tmp) {
->                         event = sctp_skb2event(skb);
->
-> That said, I don't think it's worth this new list.
+> 
+>> +		return -EBUSY;
+>> +
+>> +	err = xa_err(xa_store(&devlink->snapshot_ids, id, xa_mk_value(0),
+>> +			      GFP_KERNEL));
+> 
+> Just return and avoid err variable.
+> 
 
-About this case:
-datamsg
-                   ->chunk0                       chunk1
-       chunk2
- queue          ->transmitted                 ->retransmit
- ->not in any queue
+Yep, done.
 
-Also need to maintain a datamsg list to record which datamsg is
-processed avoiding repetitive
-processing.
-So, list it to outq. Maybe it will be used sometime.
 
->
->   Marcelo
+>> +
+>> +	if (region->cur_snapshots == region->max_snapshots) {
+>> +		NL_SET_ERR_MSG_MOD(info->extack, "The region has reached the maximum number of stored snapshots");
+>> +		return -ENOMEM;
+> 
+> Maybe ENOBUFS or ENOSPC? ENOMEM seems odd as it is related to memory
+> allocation fails which this is not.
+> 
+
+Hmmm. This actually appears to be duplicated from the snapshot_create
+function which used ENOMEM. Will add a patch to clean that up first.
+
+It seems like we end up duplicating checks from within the
+__devlink_region_snapshot_create merely because we have the extack
+pointer here...
+
+> 
+>> +	}
+>> +
+>> +	snapshot_id = nla_get_u32(info->attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]);
+>> +
+>> +	if (devlink_region_snapshot_get_by_id(region, snapshot_id)) {
+>> +		NL_SET_ERR_MSG_MOD(info->extack, "The requested snapshot id is already in use");
+>> +		return -EEXIST;
+>> +	}
+>> +
+>> +	err = __devlink_snapshot_id_insert(devlink, snapshot_id);
+>> +	if (err) {
+>> +		NL_SET_ERR_MSG_MOD(info->extack, "The requested snapshot id is already in used");
+> 
+> Different message would be appropriate.
+> 
+
+Right. This is the "this shouldn't happen" case from above I think.
+
+> 
+>> +		return err;
+>> +	}
+>> +
+>> +	err = region->ops->snapshot(devlink, info->extack, &data);
+>> +	if (err)
+>> +		goto err_decrement_snapshot_count;
+>> +
+>> +	err = __devlink_region_snapshot_create(region, data, snapshot_id);
+>> +	if (err)
+>> +		goto err_free_snapshot_data;
+>> +
+>> +	return 0;
+>> +
+>> +err_decrement_snapshot_count:
+>> +	__devlink_snapshot_id_decrement(devlink, snapshot_id);
+>> +err_free_snapshot_data:
+> 
+> In devlink the error labers are named according to actions that failed.
+> Please align.
+> 
+
+Sure.
+
+Thanks,
+Jake
