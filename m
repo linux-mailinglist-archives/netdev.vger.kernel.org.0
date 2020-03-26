@@ -2,115 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 663A5193BCD
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 10:26:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E91C193BC2
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 10:25:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727755AbgCZJ0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 05:26:51 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:50657 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727699AbgCZJ0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 05:26:51 -0400
-Received: by mail-wm1-f65.google.com with SMTP id d198so5685942wmd.0
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 02:26:50 -0700 (PDT)
+        id S1727800AbgCZJZf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 05:25:35 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:33734 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727699AbgCZJZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 05:25:35 -0400
+Received: by mail-wr1-f65.google.com with SMTP id a25so6854640wrd.0
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 02:25:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=L84m54ZYjAEDRRGXL/i2LXv4b8FpwS6ZP/nazqJWMxE=;
-        b=Cnj4NCt2Vk0aYifQE92oEvz3k4bMxEsmuEjrsucYbL5UmM/ljxqBVzpWymmX1uofqG
-         9o1Ugb14LR42oyIjSHkrvr8vXXlX18uKqDOjoxfXcz6RHr8ovAZngYuBK3af6Mwu8Cov
-         hDLwoFgllcGbkcFTml1yhBvTFZjpE8+9KPmXsBy9Hpg8X5aKQRoaI8zsATqAWyhoCVuK
-         cLHD1DPAUQ4WCp4gdSThN2HeAR30A7QCRB7Dw6pdYA1nvpyG13xGjRIlZVR5pL7A3g+b
-         K9A9FHK5YUxYtv68Lfl+J8xY+YG8Ez/9xecOTjnB53RwUIZgR+fFSecpvUHqWnykcw4Q
-         zdOA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4m+GQy7VYH0n5Zaq8PJqqSUE7P/pBzPbT5al6RrlENk=;
+        b=ThYyuZEu+X0Gy47jINIc31DuaXLTq2dPUSR+RyG+3SfzJlFRqPk4ZowMdGWZtf4ijR
+         MXfpm3vprsfa8QTY2XDLpW1PtJu0VNY9Jm4eqiedR/DvG7Iphok3jDltzWpaga0zbxoh
+         DxeSLkuy8x6MImT1NdvGmOkL/31o7+7c57XJKGjrVbCm+PG64D8N5MzD7qSfbwmILz9g
+         rG+Y6vUX1GY610nyj7e0/qII85zDOuJw1Kq+F5fnOrtzQSgm+y/jYZljhVo1bKFilVF7
+         +vjIH6/+O3qJbii3EEHNqA3o7+7x3hesPwbiOIbk94Xx14ym7fjHOgufqs2GAaHx+rTV
+         2cEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=L84m54ZYjAEDRRGXL/i2LXv4b8FpwS6ZP/nazqJWMxE=;
-        b=N32b2ddembpwFT8aq0I/QPdumfXPrCJtXGySoTCx1GdR/pgE0i3KOB+aVjzZXeriMd
-         4B7+Ay4eZJgsUXcts5/q5krBOoSv5PH6Zwz3TbIunUwutz/V/05iMQf8ZnHBLFHASBNG
-         7NPAONp9GZ8rdEK9VY6ccEhJvIBJww2i0XAa+EsD19iU3begibjyBzut58rveLH1Dfvi
-         c9WCuJ5JNaxC6TZ+/ke4VQvd93rd5cmnSKWf3RntGjDvVyfsEML3KvdIun1bddCAkCKY
-         Fi0S6xqr+tLAoZwNQ2j1ejND/yVd7XOiPFx3WFvC0R0jJ/GQGgFN5PT6ulR2MNAFR4uT
-         Xh7A==
-X-Gm-Message-State: ANhLgQ0hJdFKEJi9/c8rWxTCwfffnWO3ViHNJCdTnP16iyADrT5mRvrU
-        /GEG6SA8q5kI3USGpnh8y54YQQ==
-X-Google-Smtp-Source: ADFU+vuNNKqYa3zcfCW5J5PJaitV+evvliy+SDcNo5uxtWfnJ8fjSo8p+HaGzfH3D3EiXLSPxUyD3A==
-X-Received: by 2002:a1c:1dd8:: with SMTP id d207mr2265582wmd.90.1585214809657;
-        Thu, 26 Mar 2020 02:26:49 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id 127sm2772450wmd.38.2020.03.26.02.26.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 02:26:48 -0700 (PDT)
-Date:   Thu, 26 Mar 2020 10:26:48 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH v2 net-next 3/7] devlink: Add macro for "hw.addr" to
- info_get cb.
-Message-ID: <20200326092648.GR11304@nanopsycho.orion>
-References: <1585204021-10317-1-git-send-email-vasundhara-v.volam@broadcom.com>
- <1585204021-10317-4-git-send-email-vasundhara-v.volam@broadcom.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4m+GQy7VYH0n5Zaq8PJqqSUE7P/pBzPbT5al6RrlENk=;
+        b=huKlOjfb3aCaCtQYpFWukPqWwDjVjYGLWuBojLvT8sEkd1JmUhOZCXJ7ge+RVsOVb8
+         Zzy3vM2o0schJDQGxPQFUjVXmFQcH0Jza69ucEhPfF5QI7ccj7IqfpMdzvxdB/NtlKxg
+         Y3vRi5rYP1mPRZ2pmEoD5YreQ31SqSPzvUWeYZmGeeICSA8s5em8Tdc5wxH5Mz42HRCm
+         TsXDcLT2L+bN2l1VGwHAbUB6oTqOZxKO8EhxT8LKGUiXkFdwoFdLoimtFHJtrb6p9qB5
+         z/gD7qTn1dhu1sPvn5XxUl+RdxoGRxgyPRWkttIvHGX3i8BYL2oMN746g4kFstOIGqll
+         AIWA==
+X-Gm-Message-State: ANhLgQ3mily1Q/ZCPTMSf4PcXDrWZZPzACnSQu+pG/9vfxd+28UY8H4y
+        b5D7takaBoA0V01ArZh11517ItCmkZJfH8OuBl94yK3H
+X-Google-Smtp-Source: ADFU+vsf5lfDy65TqlzlkgUgHQnyic9bgJhaFiglrdDpqA9Bg2ZjJlcdq35fDwaX17X8aWaHOYylY+m2aeiKb1cliy4=
+X-Received: by 2002:a5d:5447:: with SMTP id w7mr8174169wrv.299.1585214733202;
+ Thu, 26 Mar 2020 02:25:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1585204021-10317-4-git-send-email-vasundhara-v.volam@broadcom.com>
+References: <e17fe23a0a5f652866ec623ef0cde1e6ef5dbcf5.1585213585.git.lucien.xin@gmail.com>
+In-Reply-To: <e17fe23a0a5f652866ec623ef0cde1e6ef5dbcf5.1585213585.git.lucien.xin@gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 26 Mar 2020 17:28:44 +0800
+Message-ID: <CADvbK_fOKPMeVynjxBOZc3tRFEcp9xYpyC9j0Hbs9E1sa6R5LQ@mail.gmail.com>
+Subject: Re: [PATCH net] udp: fix a skb extensions leak
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem <davem@davemloft.net>, Paolo Abeni <pabeni@redhat.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Mar 26, 2020 at 07:27:00AM CET, vasundhara-v.volam@broadcom.com wrote:
->Add definition and documentation for the new generic info "hw.addr".
->"hw.addr" displays the hardware address of the interface.
+CC Steffen Klassert <steffen.klassert@secunet.com>
+
+On Thu, Mar 26, 2020 at 5:06 PM Xin Long <lucien.xin@gmail.com> wrote:
 >
->Cc: Jiri Pirko <jiri@mellanox.com>
->Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
->Signed-off-by: Michael Chan <michael.chan@broadcom.com>
->---
-> Documentation/networking/devlink/devlink-info.rst | 5 +++++
-> include/net/devlink.h                             | 3 +++
-> 2 files changed, 8 insertions(+)
+> On udp rx path udp_rcv_segment() may do segment where the frag skbs
+> will get the header copied from the head skb in skb_segment_list()
+> by calling __copy_skb_header(), which could overwrite the frag skbs'
+> extensions by __skb_ext_copy() and cause a leak.
 >
->diff --git a/Documentation/networking/devlink/devlink-info.rst b/Documentation/networking/devlink/devlink-info.rst
->index 650e2c0e3..56d13c5 100644
->--- a/Documentation/networking/devlink/devlink-info.rst
->+++ b/Documentation/networking/devlink/devlink-info.rst
->@@ -144,6 +144,11 @@ board.manufacture
-> 
-> An identifier of the company or the facility which produced the part.
-> 
->+hw.addr
->+-------
->+
->+Hardware address of the interface.
->+
-> fw
+> This issue was found after loading esp_offload where a sec path ext
+> is set in the skb.
+>
+> On udp tx gso path, it works well as the frag skbs' extensions are
+> not set. So this issue should be fixed on udp's rx path only and
+> release the frag skbs' extensions before going to do segment.
+>
+> Reported-by: Xiumei Mu <xmu@redhat.com>
+> Fixes: cf329aa42b66 ("udp: cope with UDP GRO packet misdirection")
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  include/net/udp.h | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/include/net/udp.h b/include/net/udp.h
+> index e55d5f7..7bf0ca5 100644
+> --- a/include/net/udp.h
+> +++ b/include/net/udp.h
+> @@ -486,6 +486,10 @@ static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
+>         if (skb->pkt_type == PACKET_LOOPBACK)
+>                 skb->ip_summed = CHECKSUM_PARTIAL;
+>
+> +       if (skb_has_frag_list(skb) && skb_has_extensions(skb))
+> +               skb_walk_frags(skb, segs)
+> +                       skb_ext_put(segs);
+> +
+>         /* the GSO CB lays after the UDP one, no need to save and restore any
+>          * CB fragment
+>          */
 > --
-> 
->diff --git a/include/net/devlink.h b/include/net/devlink.h
->index d51482f..c9383f4 100644
->--- a/include/net/devlink.h
->+++ b/include/net/devlink.h
->@@ -476,6 +476,9 @@ enum devlink_param_generic_id {
-> /* Revision of asic design */
-> #define DEVLINK_INFO_VERSION_GENERIC_ASIC_REV	"asic.rev"
-> 
->+/* Hardware address */
->+#define DEVLINK_INFO_VERSION_GENERIC_HW_ADDR	"hw.addr"
-
-Wait a second. Is this a MAC. I don't understand why MAC would be here.
-If not MAC, what is exactly this address about?
-
-
->+
-> /* Overall FW version */
-> #define DEVLINK_INFO_VERSION_GENERIC_FW		"fw"
-> /* Overall FW interface specification version */
->-- 
->1.8.3.1
+> 2.1.0
 >
