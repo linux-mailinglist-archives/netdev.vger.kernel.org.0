@@ -2,102 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86C31193554
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 02:43:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39A0419358D
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 03:04:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727590AbgCZBnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 21:43:23 -0400
-Received: from mga06.intel.com ([134.134.136.31]:22345 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727561AbgCZBnX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 21:43:23 -0400
-IronPort-SDR: +5hlAymmRXcpmsbRq2Ekrdf5FD6TNODrwtxOm81jvYO6eM8VIZ2yLxrrXnx7HVhlbbYClQrvhJ
- YjsHNImjHnuw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2020 18:43:22 -0700
-IronPort-SDR: k6RCk5j3rvup9b3Gd8RUJ8iEphowQFsl6ap+UAJOgwdlFPwGenparml9jB6VtPaEQrNOJ6mbI4
- 6nn7wJWTFgYg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,306,1580803200"; 
-   d="scan'208";a="282334013"
-Received: from cdalvizo-mobl1.amr.corp.intel.com (HELO [10.252.133.80]) ([10.252.133.80])
-  by fmsmga002.fm.intel.com with ESMTP; 25 Mar 2020 18:43:21 -0700
-Subject: Re: [PATCH] devlink: track snapshot id usage count using an xarray
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-References: <20200324223445.2077900-1-jacob.e.keller@intel.com>
- <20200324223445.2077900-8-jacob.e.keller@intel.com>
- <20200325160832.GY11304@nanopsycho.orion>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <e0b46a11-4174-163b-401b-bdfe1d6e4f5c@intel.com>
-Date:   Wed, 25 Mar 2020 18:43:21 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1727644AbgCZCEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 22:04:46 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:40398 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727585AbgCZCEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 Mar 2020 22:04:46 -0400
+Received: by mail-qt1-f196.google.com with SMTP id c9so4079484qtw.7;
+        Wed, 25 Mar 2020 19:04:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N5bkQtuu9iQlJDxT62St8TPUscxkVcdWASODyg/UT1M=;
+        b=O1+xgRCefbQlRiuZuIjkTmB/R+u5wp5fwmODgpsZz56FU9vaePzTpDzQaSX3N2OEmE
+         Oy4l3hCr3va63/2e9oyZ+qOBHWHXDVYXDNzzxGZnOHwOuLr2HZ1UFXoteRs0UsrfHV1+
+         L0gZ2iljcoomb2jJK7/iCXcEBkaYn5J0cFybHAobUOjoxMRX8MOsPyXQ9wr9pdUUTfRK
+         yYa9IfmRhnVoexVTovWx0P61iJgGmltzSAY2UwNFUNN72+f5SnipvP1MwbGgM9uisOz8
+         WwjbRYW5CRCr2B6klKoE5tNHdkscbHFAOcKfNGzM5h2R8XuAyDxSttnCKHz/RyEV5ej1
+         +i1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N5bkQtuu9iQlJDxT62St8TPUscxkVcdWASODyg/UT1M=;
+        b=hTpIole65leilg1KaNxPADG4PNBaO3BSVHnAytr4u0vQWSIZFVTvRYCMT3CY+yW091
+         QIg4T0tnrd2eLcyb2cHCIoRJ/+Vr15Kc8uvo446g+LcaatELStPhS0Fn9cD+zsrdwBPg
+         mtNzuO8la98Q3Bx2NtDG+LRCapU52QNEoXoljl1J02HthYHeQTEIYdwWqHY+DOEtfx5g
+         eKFaGH12EaLIzZErOZ9POyk1g2ZbR/hGZV1gXzzxj3HACOKeJ0EKsxOEbpPP7a12htmB
+         7tg3/mJOqgSeAuvTDRu3Gkpp7xQo0kn/R05hsENEd0nY+PWK4nlg93+bsnWgZ9mdnYEd
+         pqyg==
+X-Gm-Message-State: ANhLgQ22mdJXsJdzI6fzuji/Yw12GAuYDMVkyGWAm6w7VF63RWWjJ7N8
+        Wodbj554hM8gB9fjI2CUmDq7Mo3eBDDFsEGf6Ic=
+X-Google-Smtp-Source: ADFU+vuk7zcNEhOvNiM0X5r+laX6IFK+yyCCAvMF6t4L0Qg0s6LBWnyDc+A6yJObwePEfp9kGgaz4+j5leQc9BaUx3U=
+X-Received: by 2002:ac8:7cb0:: with SMTP id z16mr5878580qtv.59.1585188285039;
+ Wed, 25 Mar 2020 19:04:45 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200325160832.GY11304@nanopsycho.orion>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200325055745.10710-1-joe@wand.net.nz> <20200325055745.10710-6-joe@wand.net.nz>
+In-Reply-To: <20200325055745.10710-6-joe@wand.net.nz>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 25 Mar 2020 19:04:34 -0700
+Message-ID: <CAEf4BzbxWtC9H79ij+hzWU6VDHtEVWy5_FgGh6-X1SZhtXkz3g@mail.gmail.com>
+Subject: Re: [PATCHv2 bpf-next 5/5] selftests: bpf: add test for sk_assign
+To:     Joe Stringer <joe@wand.net.nz>
+Cc:     bpf <bpf@vger.kernel.org>, Lorenz Bauer <lmb@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Martin Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Mar 24, 2020 at 10:58 PM Joe Stringer <joe@wand.net.nz> wrote:
+>
+> From: Lorenz Bauer <lmb@cloudflare.com>
+>
+> Attach a tc direct-action classifier to lo in a fresh network
+> namespace, and rewrite all connection attempts to localhost:4321
+> to localhost:1234 (for port tests) and connections to unreachable
+> IPv4/IPv6 IPs to the local socket (for address tests).
+>
+> Keep in mind that both client to server and server to client traffic
+> passes the classifier.
+>
+> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+> Co-authored-by: Joe Stringer <joe@wand.net.nz>
+> Signed-off-by: Joe Stringer <joe@wand.net.nz>
+> ---
 
+Can you please check that you test fails (instead of getting stuck)
+when there is something wrong with network. We went through this
+exercise with tcp_rtt and sockmap_listen, where a bunch of stuff was
+blocking. This works fine when everything works, but horribly breaks
+when something is not working. Given this is part of test_progs, let's
+please make sure we don't deadlock anywhere.
 
-On 3/25/2020 9:08 AM, Jiri Pirko wrote:
-> Tue, Mar 24, 2020 at 11:34:42PM CET, jacob.e.keller@intel.com wrote:
->> +static int __devlink_snapshot_id_increment(struct devlink *devlink, u32 id)
->> +{
->> +	unsigned long count;
->> +	int err;
->> +	void *p;
->> +
->> +	lockdep_assert_held(&devlink->lock);
->> +
->> +	p = xa_load(&devlink->snapshot_ids, id);
->> +	if (!p)
->> +		return -EEXIST;
-> 
-> This is confusing. You should return rather -ENOTEXIST, if it existed :)
-> -EINVAL and WARN_ON. This should never happen
-> 
+> v2: Rebase onto test_progs infrastructure
+> v1: Initial commit
+> ---
+>  tools/testing/selftests/bpf/Makefile          |   2 +-
+>  .../selftests/bpf/prog_tests/sk_assign.c      | 244 ++++++++++++++++++
+>  .../selftests/bpf/progs/test_sk_assign.c      | 127 +++++++++
+>  3 files changed, 372 insertions(+), 1 deletion(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/sk_assign.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_sk_assign.c
+>
 
-Yea this is confusing. I'll add a WARN_ON, and use EINVAL.
-
-> 
->> +
->> +	if (!xa_is_value(p))
->> +		return -EINVAL;
->> +
->> +	count = xa_to_value(p);
->> +	count++;
->> +
->> +	err = xa_err(xa_store(&devlink->snapshot_ids, id, xa_mk_value(count),
->> +			      GFP_KERNEL));
-> 
-> Just return here and remove err variable.
-
-Yep.
-
->> -	if (devlink->snapshot_id >= INT_MAX)
->> -		return -ENOSPC;
->> +	/* xa_limit_31b ensures the id will be between 0 and INT_MAX */
-> 
-> Well, currently the snapshot_id is u32. Even the netlink attr is u32.
-> I believe we should not limit it here.
-> 
-> Please have this as xa_limit_32b.
-> 
-
-Currently we can't do that. Negative values are used to represent
-errors, and allowing up to u32 would break the get function, because
-large IDs would be interpreted as errors.
-
-I'll clean this up in a patch first before the xarray stuff.
-
-Thanks,
-Jake
+[...]
