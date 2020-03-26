@@ -2,103 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 099E8193742
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 05:18:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCE7719374A
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 05:29:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726210AbgCZERo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 00:17:44 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:43185 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725842AbgCZERo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 00:17:44 -0400
-Received: by mail-qt1-f196.google.com with SMTP id a5so4232795qtw.10;
-        Wed, 25 Mar 2020 21:17:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fHENaFwhjg8MWbs9vsqxRQSS59TKIMR/3p0Xb3bb18k=;
-        b=NXJHsvIyKikoFaqS2xXynvDQ3DC3REU/yyiojhLAa9Vh7tA5nBu+PKWLD+LgkwWUa8
-         I8n30GSrOr04sbs6B/KIlZ68ilysIEh3KpBBo2C3nKrW91Hp+bjbw8flv4tL3AADcPgU
-         4BMYkYee/KRH7/TFWRnvn/nXm5vScqBwfAQUuLIvE2xHDbZPBWPg66w5tUpv8qG3rv0s
-         mbUFnF0rdesdUD7fCBeuGkikL8w+W0dZ6iny2jUAjJNAoyYdWonRjSwEJ5MPp6xtlwD9
-         XgBXrEyXI0u8gMsV5M1mquiPJC+0m21BLJ6OGndGgetRn0oFnXZQB9pM9QW1XaRqxHDy
-         wVNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fHENaFwhjg8MWbs9vsqxRQSS59TKIMR/3p0Xb3bb18k=;
-        b=BEw6rP/KJuyR88pmMVvJtbr/Kwxhje5jNgCmjYSNzud34DhK0bzGRxJqSVdZluAuPj
-         YsKy8OlIGJMzp7HYMRP0WLtxCbIlyPNKkQB55RCOlAaS8Cv4DTP9V7V8St+Ebpu41MUm
-         pMxzU+x3wYkB5pRttzUcQfVAW4TGazqngYLCnOS94ktQhC+DxcWufPXWZgLHaniVcmPj
-         8wTUrzyihOFNUGjtd3+OH7r+MEB7tfRzF8JXIwOZeLWpiTRJXBydsMY/D/n2Cu5RGyd2
-         TWXIqeeOP9M+gKbgTIWNIoujQlfXrWdf8Ddy/ocj8f0wnY7jZO8edpVQ25Z57wph5I9g
-         +Gqg==
-X-Gm-Message-State: ANhLgQ0Gqd76bNwLabPrhxBSADcWy4S5E5pPTIcQxKGV/Qn0cZc58Mgz
-        XB1LDXvt9UXFKztJrjPl+DeuybEmZ4y4G+StMi8=
-X-Google-Smtp-Source: ADFU+vvyvipOj8rsPkAgiIMk18Cbe+Y0jlQySYFKCUfo/wKMOuZawNX+BWxy/hR2o/RxP9Lgicfvigq8Qxfngbcofj0=
-X-Received: by 2002:ac8:1865:: with SMTP id n34mr6031028qtk.93.1585196262155;
- Wed, 25 Mar 2020 21:17:42 -0700 (PDT)
+        id S1726038AbgCZE3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 00:29:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57170 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725775AbgCZE3j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Mar 2020 00:29:39 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3988720772;
+        Thu, 26 Mar 2020 04:29:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585196979;
+        bh=eS8y3+IcKmcxDLjrYiPOzMvU37V0Fcfv9OiyrA7MGoU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pe+Va0Rvc88c9aTpvixJTAD2XP76HtsbLC003Qv2w1Wr8DDACnBxJqDf6E76jyz3k
+         So8+76sLqP6+7Z5BVCart4KM0og8Lsjt/j5lp19P6UKJqK4c7q15qTZy3Q85+NgMkR
+         BAkQlqokp24PO+d4cu1+llCDb3zIOh4LoUmdYTMc=
+Date:   Wed, 25 Mar 2020 21:29:37 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jian Yang <jianyang.kernel@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Willem de Bruijn <willemb@google.com>,
+        Jian Yang <jianyang@google.com>
+Subject: Re: [PATCH net-next] selftests: move timestamping selftests to net
+ folder
+Message-ID: <20200325212937.4c260c04@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200325203207.221383-1-jianyang.kernel@gmail.com>
+References: <20200325203207.221383-1-jianyang.kernel@gmail.com>
 MIME-Version: 1.0
-References: <20200326031613.19372-1-yuehaibing@huawei.com>
-In-Reply-To: <20200326031613.19372-1-yuehaibing@huawei.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 25 Mar 2020 21:17:30 -0700
-Message-ID: <CAEf4BzbeXgvahiDcV+bkMOrgud6-BryPaKUPV+eDQ=TjjqZaLA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: remove unused vairable 'bpf_xdp_link_lops'
-To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Mar 25, 2020 at 8:16 PM YueHaibing <yuehaibing@huawei.com> wrote:
->
-> kernel/bpf/syscall.c:2263:34: warning: 'bpf_xdp_link_lops' defined but not used [-Wunused-const-variable=]
->  static const struct bpf_link_ops bpf_xdp_link_lops;
->                                   ^~~~~~~~~~~~~~~~~
->
-> commit 70ed506c3bbc ("bpf: Introduce pinnable bpf_link abstraction")
-> involded this unused variable, remove it.
->
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
+On Wed, 25 Mar 2020 13:32:07 -0700 Jian Yang wrote:
+> From: Jian Yang <jianyang@google.com>
+> 
+> For historical reasons, there are several timestamping selftest targets
+> in selftests/networking/timestamping. Move them to the standard
+> directory for networking tests: selftests/net.
+> 
+> Signed-off-by: Jian Yang <jianyang@google.com>
+> Acked-by: Willem de Bruijn <willemb@google.com>
 
-Yeah, I noticed this when I was adding bpf_cgroup_link (and replaced
-this declaration with bpf_cgroup_link_lops. But I guess we can fix it
-sooner.
+Acked-by: Jakub Kicinski <kuba@kernel.org>
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-
->  kernel/bpf/syscall.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 85567a6ea5f9..7774e55c9881 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -2252,7 +2252,6 @@ static int bpf_link_release(struct inode *inode, struct file *filp)
->  #ifdef CONFIG_PROC_FS
->  static const struct bpf_link_ops bpf_raw_tp_lops;
->  static const struct bpf_link_ops bpf_tracing_link_lops;
-> -static const struct bpf_link_ops bpf_xdp_link_lops;
->
->  static void bpf_link_show_fdinfo(struct seq_file *m, struct file *filp)
->  {
-> --
-> 2.17.1
->
->
+Thank you!
