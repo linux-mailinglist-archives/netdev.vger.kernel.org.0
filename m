@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 870E01940AD
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:02:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 687651940AF
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:02:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727887AbgCZOBy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 10:01:54 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:56637 "EHLO
+        id S1727909AbgCZOB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 10:01:58 -0400
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:41471 "EHLO
         out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727719AbgCZOBx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:01:53 -0400
+        by vger.kernel.org with ESMTP id S1727792AbgCZOBy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:01:54 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 296645C021B;
-        Thu, 26 Mar 2020 10:01:52 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 9D9505C020E;
+        Thu, 26 Mar 2020 10:01:53 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 26 Mar 2020 10:01:52 -0400
+  by compute4.internal (MEProxy); Thu, 26 Mar 2020 10:01:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=v3g2CdzFokCGY5lXFpwgfSZqItG74unPBRltKBrZo9o=; b=dMy7o8NN
-        D05MFFArBTiXx+V3J77fUMkm38/r0lV18j1Mso5oK0K/2w/kqYV3f7uimKRyjUBl
-        U68HW/ZRmKbOqcymS1VOLv3RMRb21vbU1KeW0h3pY0XaEL9CglhR94HtgRasE1Vu
-        U2nVDj5DhfjwDw7x/njqY4WnuOTemLBFAXlA/zys5BGY2++yK/9FjJlH/qE6aD3r
-        c6ElMwrGyd8Z0iwPqE2XZ7ShyWCG9vjPFH7tduMzdFhP4T9ttvxz/nDTAm5haSwi
-        i7jUw/I+o2bJN/kGDxCOC7KXXjHui0CSpWcq7Q3oKgNM4V2kCv94VP9m/Rm22V0M
-        urGDHBQN0n8+0g==
-X-ME-Sender: <xms:0LV8XulmTwRGKDXBWS-UVnwwtAvvo3S2bxuXfthFs0BOB_NAkV4UMg>
+        fm2; bh=YpyyjxHPrC63BdFNHnt8N4pKZC17WEc9NAwB5D5qIqo=; b=Q+Ui7vPX
+        yK52YHuFD45AhDx9x370khmldiBWHMykeJslLoecxxfsGiTL++tKVSHFdb9JrHRu
+        KP8sRTb8+UdUazve8Md4H1/NITDbWhuZKXX/quYIIHnnf86KWzOAgRBuNeXyKwi3
+        QzChy3iUE5+0EyCUu3Up4CdXmpYO/M4Zv8IQEwiQUlqud+Y+D+R7tBeuLxKoStJO
+        DteseZANmrGcl+bmoG5PrWvs2g5gl7f1cGshzcpQMxLUJvDRXzhu5f7zrfibqehN
+        bHmCvuuvYMkbut42NibjUeA3fkWPQo1rlK35euFqRAbxiaGqexnyHtg9KajliBDX
+        lRzJnKaAZBkizA==
+X-ME-Sender: <xms:0bV8Xk8p5KC7sOqx46cUpVBWivJTUtuLmBKbMHFnT_zWGw__L3HT1w>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudehiedgheelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,21 +35,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudehiedgheelucetufdoteggod
     shgthhdrohhrgheqnecukfhppeejledrudekuddrudefvddrudeludenucevlhhushhtvg
     hrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhs
     tghhrdhorhhg
-X-ME-Proxy: <xmx:0LV8XoxFESmzz36PQipHO7_pw7aVxD0xi3bNZb6PZkyJXckOeKqwuQ>
-    <xmx:0LV8Xk25ruI1rFKQYRjDSn8GcveoJOYfzL5_T-oKXSb-cpkHQZebbA>
-    <xmx:0LV8Xha41bTX4XBZhx64loVbC0-yZCjqxZlcp8OW1ZEyzfyndVHdpg>
-    <xmx:0LV8Xn6Xn7fVjQ0A2g0LrPetum_97vnj5Qg3TrTbSfT40d2tdc4lbA>
+X-ME-Proxy: <xmx:0bV8Xi10oRK_VSDBxiUKQz5D7Yh_kYHg6ool5FkeG-KvEqXg_D4ljQ>
+    <xmx:0bV8XgiXzOZG7EJU8Eoy_NCkFgdaKoUjJypJHfrEdD170Y02ZiW_vg>
+    <xmx:0bV8XucTxhCjWGE9u4xVUjbfRrH_WdraIBeGzrcdCycImHugBf32Jw>
+    <xmx:0bV8Xrt3JpvlxHpqx2yK8q1zwkcdDNWnBObjfgug8kZad9ctURIbLA>
 Received: from splinter.mtl.com (bzq-79-181-132-191.red.bezeqint.net [79.181.132.191])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B8AB93069990;
-        Thu, 26 Mar 2020 10:01:50 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4234A30696D4;
+        Thu, 26 Mar 2020 10:01:52 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         petrm@mellanox.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 1/6] net: flow_offload.h: Fix a comment at flow_action_entry.mangle
-Date:   Thu, 26 Mar 2020 16:01:09 +0200
-Message-Id: <20200326140114.1393972-2-idosch@idosch.org>
+Subject: [PATCH net-next 2/6] mlxsw: core: Rename mlxsw_afa_qos_cmd to mlxsw_afa_qos_switch_prio_cmd
+Date:   Thu, 26 Mar 2020 16:01:10 +0200
+Message-Id: <20200326140114.1393972-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200326140114.1393972-1-idosch@idosch.org>
 References: <20200326140114.1393972-1-idosch@idosch.org>
@@ -62,30 +62,61 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@mellanox.com>
 
-This field references FLOW_ACTION_PACKET_EDIT. Such action does not exist
-though. Instead the field is used for FLOW_ACTION_MANGLE and _ADD.
+The original idea was to reuse this set of actions for ECN rewrite as well,
+but on second look, it's not such a great idea. These two items should each
+have its own command. Rename the existing enum to make it obvious that it
+belongs to switch_prio_cmd.
 
 Signed-off-by: Petr Machata <petrm@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- include/net/flow_offload.h | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../mellanox/mlxsw/core_acl_flex_actions.c         | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-index d06bf8d566ac..ff071eaede17 100644
---- a/include/net/flow_offload.h
-+++ b/include/net/flow_offload.h
-@@ -202,7 +202,8 @@ struct flow_action_entry {
- 			__be16		proto;
- 			u8		prio;
- 		} vlan;
--		struct {				/* FLOW_ACTION_PACKET_EDIT */
-+		struct {				/* FLOW_ACTION_MANGLE */
-+							/* FLOW_ACTION_ADD */
- 			enum flow_action_mangle_base htype;
- 			u32		offset;
- 			u32		mask;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
+index c713bc22da7d..1d0695050cfc 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_acl_flex_actions.c
+@@ -1248,15 +1248,14 @@ EXPORT_SYMBOL(mlxsw_afa_block_append_mirror);
+ #define MLXSW_AFA_QOS_CODE 0x06
+ #define MLXSW_AFA_QOS_SIZE 1
+ 
+-enum mlxsw_afa_qos_cmd {
++enum mlxsw_afa_qos_switch_prio_cmd {
+ 	/* Do nothing */
+-	MLXSW_AFA_QOS_CMD_NOP,
+-	/* Set a field */
+-	MLXSW_AFA_QOS_CMD_SET,
++	MLXSW_AFA_QOS_SWITCH_PRIO_CMD_NOP,
++	/* Set Switch Priority to afa_qos_switch_prio */
++	MLXSW_AFA_QOS_SWITCH_PRIO_CMD_SET,
+ };
+ 
+ /* afa_qos_switch_prio_cmd
+- * Switch Priority command as per mlxsw_afa_qos_cmd.
+  */
+ MLXSW_ITEM32(afa, qos, switch_prio_cmd, 0x08, 14, 2);
+ 
+@@ -1267,7 +1266,8 @@ MLXSW_ITEM32(afa, qos, switch_prio, 0x08, 0, 4);
+ 
+ static inline void
+ mlxsw_afa_qos_switch_prio_pack(char *payload,
+-			       enum mlxsw_afa_qos_cmd prio_cmd, u8 prio)
++			       enum mlxsw_afa_qos_switch_prio_cmd prio_cmd,
++			       u8 prio)
+ {
+ 	mlxsw_afa_qos_switch_prio_cmd_set(payload, prio_cmd);
+ 	mlxsw_afa_qos_switch_prio_set(payload, prio);
+@@ -1285,7 +1285,7 @@ int mlxsw_afa_block_append_qos_switch_prio(struct mlxsw_afa_block *block,
+ 		NL_SET_ERR_MSG_MOD(extack, "Cannot append QOS action");
+ 		return PTR_ERR(act);
+ 	}
+-	mlxsw_afa_qos_switch_prio_pack(act, MLXSW_AFA_QOS_CMD_SET,
++	mlxsw_afa_qos_switch_prio_pack(act, MLXSW_AFA_QOS_SWITCH_PRIO_CMD_SET,
+ 				       prio);
+ 	return 0;
+ }
 -- 
 2.24.1
 
