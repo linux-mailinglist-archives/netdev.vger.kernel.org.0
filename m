@@ -2,91 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FB241945A2
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 18:39:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF4091945A6
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 18:39:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728630AbgCZRi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 13:38:58 -0400
-Received: from mail-ot1-f50.google.com ([209.85.210.50]:47039 "EHLO
-        mail-ot1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727560AbgCZRi5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 13:38:57 -0400
-Received: by mail-ot1-f50.google.com with SMTP id 111so6724315oth.13
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 10:38:57 -0700 (PDT)
+        id S1728638AbgCZRjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 13:39:14 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:33890 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727541AbgCZRjN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 13:39:13 -0400
+Received: by mail-wm1-f67.google.com with SMTP id 26so7986761wmk.1;
+        Thu, 26 Mar 2020 10:39:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=6HTihWpl0pG4DrMUlQfP4f3o1USwEsENfNnrEPDXYHU=;
-        b=FpIUK+P/2CT/M0oc7nKMyz0Tdv7T2NYOUyk5U6utMuLaT/XxpTXz00YfKDucKObd+4
-         astE53xSeMCcClbiNOqkZXGpaJXre7zxHU2ojw6WhnpAHyeFUiZvmq/Sg/Q6YawfOKJF
-         eI94WGAzYS9dZU/jQuQXs/ioWEZ2TRsPCCUieqlZxIK5EsEyuF4EPVx++tpIXmNj/qO/
-         NGduY0+p9wPbMxiGjI8ty1Fub6H6j4jjNkZrLDe2qXUPkEam4ynf5GudgFabzcGiVBVU
-         QrZL0mx5+NzMGmAdzwZBl/Yntwh2/xvwUcgmABBdhDdVC703PTFvexiso8JU3Es8QJma
-         4lUA==
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=HpNuF66K0DwGIA2W7BsAFtvMAN5a4ZcafM59XWZDNzw=;
+        b=kqojkeDOTK2W9h5Sy+09ys68xx80S80Uf/X1IBo3l4i4cH5F4emJ3JeXQtt2Eoq73B
+         WflWJocUIKpX3GAmYD5CxWKnvYr/M3py8QFdHD17ud6saxlThWWEjR6jAg85Spk39ks2
+         4JsXQKtvqsp/JTKtbYNVd4IRE4AL4S6A0ETd/Q/3sZAsLgXXdcgFlUq98c3NV52LKRkD
+         hKDKuP2ro+wD4DmVT1BxbAGE4WrugBwyxjvIy7He9vKCats9jM0OB/kuS+fI8vT0/fkQ
+         rdkLLJiI5t9h89/2GGXQ2e5/g35NPpcSUsjXcQLgr1oyIuPjWHTPtBXXL6kfVZiI+GyB
+         M0YQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=6HTihWpl0pG4DrMUlQfP4f3o1USwEsENfNnrEPDXYHU=;
-        b=a8SFx3A43DDVAXvzAAv/pWYp8OYkICsNnkrNgzi1/J8mXgtQlVH9Qm2vF7VT7aXHgx
-         YmK82ufY1voIpqR5kzXCBFsbCWoHCNy/+P0YslrbNAQiJDxII7SGG8TShXoxOZplxO6f
-         w4GMdFJOabCZdItIKcXsv3Kln10NlrprMGy0b+DNaslAttCam8bYY2DgfubMjrjEaI30
-         E6sj5UnAD8vchUn505v9kntpXdwfOU2Nd2G8Se0IhIdVn3qk0qtc5oQQhik6R/FzFDeu
-         RSZdi3fbG69cOzaL2OC1fU7ZYRBeTIUEoTRSAo51VpZC0zoC7jVAJJ+lhWKVC4HYenc3
-         MFrQ==
-X-Gm-Message-State: ANhLgQ1IInGE4fl8M81vo8Qzh5tpzkiB1pPU3HlDnq6p5jJX7i8DPbwJ
-        mxdZLMTNiy90BRX6iISvD2QAUj73kuHT1gVPpIlUW43yvWI=
-X-Google-Smtp-Source: ADFU+vvyJRRFTilpQs+mPyHeVGB0bEkvV4r1cKco9UekMRP4P8fpGp3AHqLL4RwtO/yJxt70QZR7syZ/47+JNGI6RX8=
-X-Received: by 2002:a05:6820:221:: with SMTP id j1mr6096904oob.12.1585244336793;
- Thu, 26 Mar 2020 10:38:56 -0700 (PDT)
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=HpNuF66K0DwGIA2W7BsAFtvMAN5a4ZcafM59XWZDNzw=;
+        b=eZHBW7oejwa0yx6OEqRRcZRB3omKyS8V+EMu7mbmoG/KYk9ZalKsBiqovnwgBoLgS4
+         ZZ22ucnYr4k1t3CE0eMoEEVBlU4VpXISVGh/1B5nN/BkUAK+AhiwlJG0T2IqOyeOOt1r
+         DURQLI3sICCqEutvbmlul5vtW0Dp9bP50jb2gEBQBtsVrJxmiiULI5seSUb3MNuUkAXh
+         jMSy2GUNy/70GWV7SzshF1p3bXM5H6akqBHlbyuYvyvM4MxL/OdKNDNsjS/W2ltUKI8e
+         JoqsXkyMYeXYbkO0TziLFcyxmAhqWd46UHdadBdLU9HGisKI+z1lJfgrImCSGl1EAk4k
+         uJbg==
+X-Gm-Message-State: ANhLgQ15Bl/aKCf4W1/IC5UkzkzanGv3CQZvjSkMdAUSWsf9EIWrztt/
+        Bdx0Uxa/lSTi3NZmsY9LnZ8=
+X-Google-Smtp-Source: ADFU+vufbLUwN19BQJGQ//UtXe37wcvKBLYq5YbRQfK92fMa0Gl9hLO0BL4sWPG/AcG/ZXgaQjLTSQ==
+X-Received: by 2002:a05:600c:54f:: with SMTP id k15mr1038530wmc.76.1585244351188;
+        Thu, 26 Mar 2020 10:39:11 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f29:6000:d031:3b7b:1a72:8f94? (p200300EA8F296000D0313B7B1A728F94.dip0.t-ipconnect.de. [2003:ea:8f29:6000:d031:3b7b:1a72:8f94])
+        by smtp.googlemail.com with ESMTPSA id b11sm4497416wrq.26.2020.03.26.10.39.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Mar 2020 10:39:10 -0700 (PDT)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH] net: core: provide devm_register_netdev()
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+References: <20200326131721.6404-1-brgl@bgdev.pl>
+Message-ID: <c71a132d-dc33-0b8a-29e0-9cf93056ef52@gmail.com>
+Date:   Thu, 26 Mar 2020 18:39:06 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
- <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
- <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
- <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com>
- <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
- <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com>
- <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com>
- <CANxWus_tPZ-C2KuaY4xpuLVKXriTQv1jvHygc6o0RFcdM4TX2w@mail.gmail.com> <CAM_iQpV0g+yUjrzPdzsm=4t7+ZBt8Y=RTwYJdn9RUqFb1aCE1A@mail.gmail.com>
-In-Reply-To: <CAM_iQpV0g+yUjrzPdzsm=4t7+ZBt8Y=RTwYJdn9RUqFb1aCE1A@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 26 Mar 2020 10:38:45 -0700
-Message-ID: <CAM_iQpWLK8ZKShdsWNQrbhFa2B9V8e+OSNRQ_06zyNmDToq5ew@mail.gmail.com>
-Subject: Re: iproute2: tc deletion freezes whole server
-To:     =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200326131721.6404-1-brgl@bgdev.pl>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 10:07 AM Cong Wang <xiyou.wangcong@gmail.com> wrote=
-:
->
-> On Thu, Mar 26, 2020 at 7:24 AM V=C3=A1clav Zindulka
-> <vaclav.zindulka@tlapnet.cz> wrote:
-> >
-> > > On Wed, Mar 25, 2020 at 6:43 PM Cong Wang <xiyou.wangcong@gmail.com> =
-wrote:
-> > > > Are you able to test an experimental patch attached in this email?
-> > >
-> > > Sure. I'll compile new kernel tomorrow. Thank you for quick patch.
-> > > I'll let you know as soon as I have anything.
-> >
-> > I've compiled kernel with the patch you provided and tested it.
-> > However the problem is not solved. It behaves exactly the same way.
-> > I'm trying to put some printk into the fq_codel_reset() to test it
-> > more.
->
-> Are the stack traces captured by perf any different with unpatched?
+On 26.03.2020 14:17, Bartosz Golaszewski wrote:
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> 
+> Create a new source file for networking devres helpers and provide
+> devm_register_netdev() - a managed variant of register_netdev().
+> 
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> ---
+> I'm writing a new ethernet driver and I realized there's no devres
+> variant for register_netdev(). Since this is the only function I need
+> to get rid of the remove() callback, I thought I'll just go ahead and
+> add it and send it even before the driver to make it available to other
+> drivers.
+> 
 
-Wait, it seems my assumption of refcnt=3D=3D0 is wrong even for deletion,
-in qdisc_graft() the last refcnt is put after dev_deactivate()...
+Such a new functionality typically is accepted as part of series adding
+at least one user only. Therefore best submit it together with the new
+network driver.
 
-Let me think about how we could distinguish this case from other
-reset cases.
+>  .../driver-api/driver-model/devres.rst        |  3 ++
+>  include/linux/netdevice.h                     |  1 +
+>  net/core/Makefile                             |  2 +-
+>  net/core/devres.c                             | 41 +++++++++++++++++++
+>  4 files changed, 46 insertions(+), 1 deletion(-)
+>  create mode 100644 net/core/devres.c
+> 
+> diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
+> index 46c13780994c..11a03b65196e 100644
+> --- a/Documentation/driver-api/driver-model/devres.rst
+> +++ b/Documentation/driver-api/driver-model/devres.rst
+> @@ -372,6 +372,9 @@ MUX
+>    devm_mux_chip_register()
+>    devm_mux_control_get()
+>  
+> +NET
+> +  devm_register_netdev()
+> +
+>  PER-CPU MEM
+>    devm_alloc_percpu()
+>    devm_free_percpu()
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 6c3f7032e8d9..710a7bcfc3dc 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -4196,6 +4196,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+>  			 count)
+>  
+>  int register_netdev(struct net_device *dev);
+> +int devm_register_netdev(struct device *dev, struct net_device *ndev);
+>  void unregister_netdev(struct net_device *dev);
+>  
+>  /* General hardware address lists handling functions */
+> diff --git a/net/core/Makefile b/net/core/Makefile
+> index 3e2c378e5f31..f530894068d2 100644
+> --- a/net/core/Makefile
+> +++ b/net/core/Makefile
+> @@ -8,7 +8,7 @@ obj-y := sock.o request_sock.o skbuff.o datagram.o stream.o scm.o \
+>  
+>  obj-$(CONFIG_SYSCTL) += sysctl_net_core.o
+>  
+> -obj-y		     += dev.o dev_addr_lists.o dst.o netevent.o \
+> +obj-y		     += dev.o devres.o dev_addr_lists.o dst.o netevent.o \
+>  			neighbour.o rtnetlink.o utils.o link_watch.o filter.o \
+>  			sock_diag.o dev_ioctl.o tso.o sock_reuseport.o \
+>  			fib_notifier.o xdp.o flow_offload.o
+> diff --git a/net/core/devres.c b/net/core/devres.c
+> new file mode 100644
+> index 000000000000..3c080abd1935
+> --- /dev/null
+> +++ b/net/core/devres.c
 
-Thanks.
+Why a new source file and not just add the function to net/core/dev.c?
+
+
+> @@ -0,0 +1,41 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2020 BayLibre SAS
+> + * Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> + */
+> +
+> +#include <linux/device.h>
+> +#include <linux/netdevice.h>
+> +
+> +struct netdevice_devres {
+> +	struct net_device *ndev;
+> +};
+> +
+
+Adding such a struct isn't strictly needed.
+
+> +static void devm_netdev_release(struct device *dev, void *res)
+> +{
+> +	struct netdevice_devres *this = res;
+> +
+> +	unregister_netdev(this->ndev);
+> +}
+> +
+> +int devm_register_netdev(struct device *dev, struct net_device *ndev)
+> +{
+
+In this function you'd need to consider the dependency on a previous
+call to devm_alloc_etherdev(). If the netdevice is allocated non-managed,
+then free_netdev() would be called whilst the netdevice is still
+registered, what would trigger a BUG_ON(). Therefore devm_register_netdev()
+should return an error if the netdevice was allocated non-managed.
+The mentioned scenario would result from a severe programming error
+of course, but there are less experienced driver authors and the net core
+should deal gently with wrong API usage.
+
+An example how this could be done you can find in the PCI subsystem,
+see pcim_release() and related functions like pcim_enable() and
+pcim_set_mwi().
+
+> +	struct netdevice_devres *devres;
+> +	int ret;
+> +
+> +	devres = devres_alloc(devm_netdev_release, sizeof(*devres), GFP_KERNEL);
+> +	if (!devres)
+> +		return -ENOMEM;
+> +
+> +	ret = register_netdev(ndev);
+> +	if (ret) {
+> +		devres_free(devres);
+> +		return ret;
+> +	}
+> +
+> +	devres->ndev = ndev;
+> +	devres_add(dev, devres);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(devm_register_netdev);
+> 
+
