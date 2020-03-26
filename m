@@ -2,115 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DC3B19387E
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:20:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82C3F193889
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 07:23:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbgCZGUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 02:20:06 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:33824 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725819AbgCZGUG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:20:06 -0400
-Received: by mail-pl1-f193.google.com with SMTP id a23so1764715plm.1;
-        Wed, 25 Mar 2020 23:20:05 -0700 (PDT)
+        id S1726496AbgCZGXF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 02:23:05 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:35154 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726210AbgCZGXF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 02:23:05 -0400
+Received: by mail-pg1-f194.google.com with SMTP id k5so164498pga.2;
+        Wed, 25 Mar 2020 23:23:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=+ZCGtSDMsBtgLK1oFmDORsD6pY1gZ74q25ptizguQB8=;
-        b=FWSCX9RoaQ5jq6EpMd3LoviH6SdOAHmcEA6PYzCpBwgffZFdIeB6hXOSIs5S3nRHDi
-         JfqyiSr7hdY4WNT4oUI8cbZhkTfI2YCmZM5N0OOxmQlHF5WB79ZDw8fH3YEHP4jdxhgy
-         wtfiXRapmWdPRXd6Nl85MsTfvvNQhed+ysMCJCPgpIHM+gk0DmP+xEQKDPtnlcAAYJtk
-         tquYu0kH+zA+p/xLP7sMYbFsmumvAMse+iiVzkDUA+r2bPkg0fegm+AuwcIqvI70kzPz
-         nA3ob+UM3lCkJ/uAGz2FisDQukuqRCHQdyqoIat4+j2QgLr7gmibzX4E1ZKUE97Cf3I4
-         jjGg==
+        bh=lt7yrnjsGfLWhUnaKSDp8NGgMCEtuDxazSlsfgBqGYU=;
+        b=GOVyjRW+U1nVRRXyOJvyb8y1g3sWhXJMZy05wVSiEZduEbtEu+vsLTFI7AWLfu+LUa
+         bqKyU4C1AoteBb4LhHjl4UpRf0WMMUe69biMuqjkXy/N0p41G4MnVOAiPRqXKxoUjIp9
+         BL8tjX+rsmwKSSgiOkm5LLin7WZVwyzJbBjHfLaiFSmKzHOSjHGh7gjktKZWN1VWwei9
+         YWKTrynogWMd3dzA41BLVJ2DF3UdG7b+l1JwxdqDVTOZ71zBq67ruwvQjDRajlt5k/FF
+         5EnXsNzwk9XUpODyCDjORkEdpDN0xb4hUfWtw+BjGDZrUOX2DyoFKlB1bwGpJWV8nJ7L
+         r3Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=+ZCGtSDMsBtgLK1oFmDORsD6pY1gZ74q25ptizguQB8=;
-        b=WY+yV8smVAm7Tbm0yE0tZYVwLyd8VtamApkJA4ogeU0BneyF9ZhhFWKmq7AeyU2xsm
-         ZeB/Ii8UWwdfR4EfD1Z/owCg/PU0wwsh2Az8QhgzQFM+JYh1r00YmpnSkTL8CDRl/KA1
-         +Rz66N+W7FS/QiL6VY8c3ZNinatJCfTGi9pXnZidgmzGHGphkOFVfDgMu4UjSl/f+wzX
-         Uu4TB2Sq6yy/7cDFgzkohKvNR7Z1tD3HX+TOO+FJ2L/A3/0QotCbpy1Opvmo821Zg34e
-         QVg1VA5Oy/fzIpmwwO2L1KGRAKuXL/QxHeJARn5mwinmGJg0D++J4JWgxQ2kJyDAqpYs
-         A6bQ==
-X-Gm-Message-State: ANhLgQ1He76+/WPwTr3SB3ecrSZw6iHFzx2BUceq5MBBt3Tj2JZ1eNpz
-        rkonTkfSXLxhV3G54B7FPNL2rDqR
-X-Google-Smtp-Source: ADFU+vs1UdS9a2vD4zOQ3PRbjSa5yFDnEIJ1E+cfQP39JTYVv2glbQUBdvBfQLIMKdtF7+Hl0OiSVA==
-X-Received: by 2002:a17:902:ee4b:: with SMTP id 11mr6711091plo.19.1585203604879;
-        Wed, 25 Mar 2020 23:20:04 -0700 (PDT)
+        bh=lt7yrnjsGfLWhUnaKSDp8NGgMCEtuDxazSlsfgBqGYU=;
+        b=JEowKjuppy/uk678ysQyR77md834aFAzAd4z/S0Q+Z+GFlW4GPd8Uf3J1Autd9cFs1
+         q+7/Pl9SdNnGJ+p7BLz0Jh1xayAGRMAgKLVHI4DpFvLxrs39byHkQmKvU7XmFvGUKd1P
+         xejZ0be/gIwVavFzQ4fKIMnrRHL4mvFpEFX5eP5mhgig8AYwLUrLPA0ttxLdgGuc9egZ
+         FaBPXBp22R8XisGLibBnyIAkBxCjeyGbBE0G/RmrOsUT7v+nMYrzkPAcxT4u5S32lSa9
+         gx4ExX+gvyEDjX5jlm8H8tB+TfU1fB+3gPFil4uUZ24V10/YgPpIGKZSwNa4Vleon77s
+         q64Q==
+X-Gm-Message-State: ANhLgQ0pUzK6dVNvw4luspn7+xObFCtEwKYjBhTnPa6vckZ83xSaV613
+        wT1d7XICy+/sSyy4FXTuvrNdjl+3
+X-Google-Smtp-Source: ADFU+vvrAGn6VSiJh5PWCQ+fKV19O+mFsxqWpX0B3uCrugGh2pOTNAyhwnInWVuwf9yhbEAdhnkxVw==
+X-Received: by 2002:a63:705e:: with SMTP id a30mr7122635pgn.128.1585203784031;
+        Wed, 25 Mar 2020 23:23:04 -0700 (PDT)
 Received: from ast-mbp ([2620:10d:c090:400::5:5929])
-        by smtp.gmail.com with ESMTPSA id f15sm785397pfd.215.2020.03.25.23.20.03
+        by smtp.gmail.com with ESMTPSA id i26sm792975pfk.176.2020.03.25.23.23.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2020 23:20:04 -0700 (PDT)
-Date:   Wed, 25 Mar 2020 23:20:01 -0700
+        Wed, 25 Mar 2020 23:23:03 -0700 (PDT)
+Date:   Wed, 25 Mar 2020 23:23:01 -0700
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     John Fastabend <john.fastabend@gmail.com>
 Cc:     ecree@solarflare.com, yhs@fb.com, daniel@iogearbox.net,
         netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [bpf-next PATCH 04/10] bpf: verifier, do explicit ALU32 bounds
- tracking
-Message-ID: <20200326062001.3j6yqyu7jne4gtfl@ast-mbp>
+Subject: Re: [bpf-next PATCH 05/10] bpf: verifier, return value is an int in
+ do_refine_retval_range
+Message-ID: <20200326062301.fvomwkz5grg3b5qb@ast-mbp>
 References: <158507130343.15666.8018068546764556975.stgit@john-Precision-5820-Tower>
- <158507153582.15666.3091405867682349273.stgit@john-Precision-5820-Tower>
+ <158507155667.15666.4189866174878249746.stgit@john-Precision-5820-Tower>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <158507153582.15666.3091405867682349273.stgit@john-Precision-5820-Tower>
+In-Reply-To: <158507155667.15666.4189866174878249746.stgit@john-Precision-5820-Tower>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 10:38:56AM -0700, John Fastabend wrote:
-> -static void __reg_bound_offset32(struct bpf_reg_state *reg)
-> +static void __reg_combine_32_into_64(struct bpf_reg_state *reg)
->  {
-> -	u64 mask = 0xffffFFFF;
-> -	struct tnum range = tnum_range(reg->umin_value & mask,
-> -				       reg->umax_value & mask);
-> -	struct tnum lo32 = tnum_cast(reg->var_off, 4);
-> -	struct tnum hi32 = tnum_lshift(tnum_rshift(reg->var_off, 32), 32);
-> +	/* special case when 64-bit register has upper 32-bit register
-> +	 * zeroed. Typically happens after zext or <<32, >>32 sequence
-> +	 * allowing us to use 32-bit bounds directly,
-> +	 */
-> +	if (tnum_equals_const(tnum_clear_subreg(reg->var_off), 0)) {
-> +		reg->umin_value = reg->u32_min_value;
-> +		reg->umax_value = reg->u32_max_value;
-> +		reg->smin_value = reg->s32_min_value;
-> +		reg->smax_value = reg->s32_max_value;
+On Tue, Mar 24, 2020 at 10:39:16AM -0700, John Fastabend wrote:
+> Mark 32-bit subreg region with max value because do_refine_retval_range()
+> catches functions with int return type (We will assume here that int is
+> a 32-bit type). Marking 64-bit region could be dangerous if upper bits
+> are not zero which could be possible.
+> 
+> Two reasons to pull this out of original patch. First it makes the original
+> fix impossible to backport. And second I've not seen this as being problematic
+> in practice unlike the other case.
+> 
+> Fixes: 849fa50662fbc ("bpf/verifier: refine retval R0 state for bpf_get_stack helper")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>  kernel/bpf/verifier.c |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 6372fa4..3731109 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -4328,7 +4328,7 @@ static void do_refine_retval_range(struct bpf_reg_state *regs, int ret_type,
+>  	     func_id != BPF_FUNC_probe_read_str))
+>  		return;
+>  
+> -	ret_reg->smax_value = meta->msize_max_value;
+> +	ret_reg->s32_max_value = meta->msize_max_value;
 
-Looks like above will not be correct for negative s32_min/max.
-When upper 32-bit are cleared and we're processing jmp32
-we cannot set smax_value to s32_max_value.
-Consider if (w0 s< -5)
-s32_max_value == -5
-which is 0xfffffffb
-but upper 32 are zeros so smax_value should be (u64)0xfffffffb
-and not (s64)-5
-
-We can be fancy and precise with this logic, but I would just use similar
-approach from zext_32_to_64() where the following:
-+       if (reg->s32_min_value > 0)
-+               reg->smin_value = reg->s32_min_value;
-+       else
-+               reg->smin_value = 0;
-+       if (reg->s32_max_value > 0)
-+               reg->smax_value = reg->s32_max_value;
-+       else
-+               reg->smax_value = U32_MAX;
-should work for this case too ?
-
-> +	if (BPF_SRC(insn->code) == BPF_K) {
-> +		pred = is_branch_taken(dst_reg, insn->imm, opcode, is_jmp32);
-> +	} else if (src_reg->type == SCALAR_VALUE && is_jmp32 && tnum_is_const(tnum_subreg(src_reg->var_off))) {
-> +		pred = is_branch_taken(dst_reg, tnum_subreg(src_reg->var_off).value, opcode, is_jmp32);
-> +	} else if (src_reg->type == SCALAR_VALUE && !is_jmp32 && tnum_is_const(src_reg->var_off)) {
-> +		pred = is_branch_taken(dst_reg, src_reg->var_off.value, opcode, is_jmp32);
-> +	}
-
-pls wrap these lines. Way above normal.
-
-The rest is awesome.
+I think this is not correct.
+These two special helpers are invoked via BPF_CALL_x() which has u64 return value.
+So despite having 'int' return in bpf_helper_defs.h the upper 32-bit will be correct.
+I think this patch should do:
+ret_reg->smax_value = meta->msize_max_value;
+ret_reg->s32_max_value = meta->msize_max_value;
