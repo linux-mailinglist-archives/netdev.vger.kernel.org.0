@@ -2,101 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D4BE194119
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:17:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E84B819411C
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 15:18:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727847AbgCZORu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 10:17:50 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:59939 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727695AbgCZORu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:17:50 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 61F335C021F;
-        Thu, 26 Mar 2020 10:17:49 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Thu, 26 Mar 2020 10:17:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=9zxaI9XhqCwf8a2xI
-        nJWAx7FO2XISc7YgFkeK96wlqI=; b=VH0cE8O4rE9adKB8Hpuy8zRtC5iyFa9jy
-        5gWq34nXnRyYBpjO+bNnUYAsie46BaQjffQeMjhn8ZTW5+Por2Ffe2LAcAczvE/m
-        aj0q5zZ9j0U00s7Z7SIBJ9lCu8BNsFH8t0f0TZ2KN75o8FGdcKuuuXxNJCPFF3BM
-        DFk1NFM+xcV6NsxAeTDSS21KRqpUVO4ziEJc8IuB/7oYZsdCMbiYH3DIx1loIIuf
-        uTVdGNnlE1ieGrJTZfy/DMSiZsXaCga2QcLRDMeaut4rqnEFbv4KEM1XJYsJR4MJ
-        8Cw6oAm/Nv5DF7qbr2A6paJPB3Z64c7bxcnCEmNgAEPkTaiB8msrQ==
-X-ME-Sender: <xms:jbl8XgK5XlHBpTg5TsSkh6M_Tg1H0LXvI6EtXKpuvafRsdnTf0wj-w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudehiedgiedtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecukfhppeejledrudekuddrudefvddrudeludenucevlhhushhtvghruf
-    hiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghh
-    rdhorhhg
-X-ME-Proxy: <xmx:jbl8XrD5yTUgd1wd5I_tJfmSAF-zR2RoHM3U8mmdauYJZrFsgR5d2g>
-    <xmx:jbl8XhpQm5kYciXR2fKGCAeBvHCOoN6LmMjtLAyNKG6g6i7LShPO1Q>
-    <xmx:jbl8XkbV5k_ichSuDvVICsz05IHd5ZBl8vjS7gI7xTCF9K8oJlcPzQ>
-    <xmx:jbl8XmnmiAZZSJRtoIbmVO7bmjOCP9rGRnw-rCdxqyrPQgwdF1tcYw>
-Received: from splinter.mtl.com (bzq-79-181-132-191.red.bezeqint.net [79.181.132.191])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 1C47F3280059;
-        Thu, 26 Mar 2020 10:17:47 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jiri@mellanox.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net] mlxsw: spectrum_mr: Fix list iteration in error path
-Date:   Thu, 26 Mar 2020 16:17:33 +0200
-Message-Id: <20200326141733.1395337-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.24.1
+        id S1727938AbgCZOSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 10:18:08 -0400
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:36347 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725994AbgCZOSI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 10:18:08 -0400
+Received: by mail-pj1-f68.google.com with SMTP id nu11so2461827pjb.1;
+        Thu, 26 Mar 2020 07:18:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=BA2bA9PavUC7l7dbOSeDNGiZmDysCoavq5nh0AKiFpY=;
+        b=jyEnc4F39900X3l7jblWNG3p0e4wzQF8tYoEsOLU0HfEZa1i5EVX6jRqFleD+SHmEQ
+         79zOTgjI5TxA/Tc/SybR0T3OkTkDOhVK5PhpF7M4WFfQuh54uPLmUdegVJH1xlH/PjgW
+         4E1gMLyay0W4PkcGASKSNGmPbDG6QyKGzszx04BUSkiI5d9mJxsKPl8bvDPwNkq2hhYW
+         sGRStwwcVZdphe3bKY+zgymraMQGl4WDYs4B+8YIgMlhKtRHEokEp5fb6qAZA/KOx/FS
+         nkKHon4++DPYXUNluZlaz9w3LiCOXuiCgTZ8LB9WFNTwqAAA9LbmHoLvNdfwPFcWTila
+         ZKXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=BA2bA9PavUC7l7dbOSeDNGiZmDysCoavq5nh0AKiFpY=;
+        b=CQFkAxw2Djh9kv8Vr/LAAPrqFymxu+u/G9/TlgxXwS76J5dIMS/WD2qMFIwBv2u4+K
+         11eS161PkvW/mwnPF0juY1sVqgwAIFXJ1qyAxXvuyx/XPltJ20ZGo3JKjaSIDxnYeYmT
+         /fdqwQw9Fhj5SXa5NlucvcBHbLPNb3KZMwqdgwqY8BEFX+gCth9nHDTgYwr2CTZv3pWA
+         yf8DPf7AWy8LlQTZZo3nocOlcGnIy42fcg81gO6zsAoWLsi2xGyHYtn90TeP9xgnKrU4
+         O5HJ851CzGm1ys6HrLdW9rWXImnwHVO2Tu5pyH7rEwUOG7dwoWkKYaaNnmEBOOpHt9FA
+         UClw==
+X-Gm-Message-State: ANhLgQ36PMCKoP561hHQfBnnEhj8jBGbtP24v4AKoAURBire+IudVY9x
+        oyq3Nl4NJ8KB5ghlVpsw+PI=
+X-Google-Smtp-Source: ADFU+vsIwvpB25Rifcmkllw3Yln+dgc/3yaAaaH6TDoiKd25tKlDJPlPSD6wqJHK/AI4Y07gtLiCPQ==
+X-Received: by 2002:a17:902:a986:: with SMTP id bh6mr7751713plb.100.1585232286954;
+        Thu, 26 Mar 2020 07:18:06 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id a3sm1788882pfg.172.2020.03.26.07.18.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2020 07:18:06 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 07:18:04 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Tony Lindgren <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        netdev <netdev@vger.kernel.org>, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 02/11] net: ethernet: ti: cpts: separate hw
+ counter read from timecounter
+Message-ID: <20200326141804.GC20841@localhost>
+References: <20200320194244.4703-1-grygorii.strashko@ti.com>
+ <20200320194244.4703-3-grygorii.strashko@ti.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200320194244.4703-3-grygorii.strashko@ti.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+On Fri, Mar 20, 2020 at 09:42:35PM +0200, Grygorii Strashko wrote:
+> Separate hw counter read from timecounter code:
+> - add CPTS context field to store current HW counter value
+> - move HW timestamp request and FIFO read code out of timecounter code
+> - convert cyc2time on event reception in cpts_fifo_read()
+> - call timecounter_read() in cpts_fifo_read() to update tk->cycle_last
 
-list_for_each_entry_from_reverse() iterates backwards over the list from
-the current position, but in the error path we should start from the
-previous position.
+This comment tells us WHAT the patch does, but does not help because
+we can see that from the patch itself.  Instead, the comment should
+tell us WHY is change is needed.
 
-Fix this by using list_for_each_entry_continue_reverse() instead.
+I was left scratching my head, with the question, what is the purpose
+here?  Maybe the answer is to be found later on in the series.
 
-This suppresses the following error from coccinelle:
+Here is commit message pattern to follow that I learned from tglx:
 
-drivers/net/ethernet/mellanox/mlxsw//spectrum_mr.c:655:34-38: ERROR:
-invalid reference to the index variable of the iterator on line 636
+1. context
+2. problem
+3. solution
 
-Fixes: c011ec1bbfd6 ("mlxsw: spectrum: Add the multicast routing offloading logic")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+For this patch, the sentence, "Separate hw counter read from
+timecounter code" is #3.
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c
-index 54275624718b..336e5ecc68f8 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_mr.c
-@@ -637,12 +637,12 @@ static int mlxsw_sp_mr_vif_resolve(struct mlxsw_sp_mr_table *mr_table,
- 	return 0;
- 
- err_erif_unresolve:
--	list_for_each_entry_from_reverse(erve, &mr_vif->route_evif_list,
--					 vif_node)
-+	list_for_each_entry_continue_reverse(erve, &mr_vif->route_evif_list,
-+					     vif_node)
- 		mlxsw_sp_mr_route_evif_unresolve(mr_table, erve);
- err_irif_unresolve:
--	list_for_each_entry_from_reverse(irve, &mr_vif->route_ivif_list,
--					 vif_node)
-+	list_for_each_entry_continue_reverse(irve, &mr_vif->route_ivif_list,
-+					     vif_node)
- 		mlxsw_sp_mr_route_ivif_unresolve(mr_table, irve);
- 	mr_vif->rif = NULL;
- 	return err;
--- 
-2.24.1
-
+Thanks,
+Richard
