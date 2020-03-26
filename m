@@ -2,255 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C60F7193729
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 04:52:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06001193732
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 04:53:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727729AbgCZDwS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 Mar 2020 23:52:18 -0400
-Received: from mga12.intel.com ([192.55.52.136]:29077 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727717AbgCZDwR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 25 Mar 2020 23:52:17 -0400
-IronPort-SDR: xwOGnW7etTyS0/nSi2JCUFyak/PJE0S+B/C3zE7LxRlZ6/osvJrbEl88Z6gniIN8mI5P1f1G95
- pVWNPWSMYloA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2020 20:52:16 -0700
-IronPort-SDR: CCFAmXpBocjwFlrz/rBjBLeqGbT90njjsJF1+3ycgO/+koxlKb4OFGC/K4kb4pOuquhB4gT117
- yXlDoLDKG12Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,306,1580803200"; 
-   d="scan'208";a="271028129"
-Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.33])
-  by fmsmga004.fm.intel.com with ESMTP; 25 Mar 2020 20:52:14 -0700
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Subject: [net-next v2 11/11] ice: add a devlink region for dumping NVM contents
-Date:   Wed, 25 Mar 2020 20:51:57 -0700
-Message-Id: <20200326035157.2211090-12-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200326035157.2211090-1-jacob.e.keller@intel.com>
-References: <20200326035157.2211090-1-jacob.e.keller@intel.com>
+        id S1727780AbgCZDxB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 Mar 2020 23:53:01 -0400
+Received: from mail-eopbgr30071.outbound.protection.outlook.com ([40.107.3.71]:45798
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727677AbgCZDxB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 25 Mar 2020 23:53:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=V628grPgTlxtTdYSQ7WAUiQyXlR+e5UfSAk0C/YOrt3TXJlE0SN04MjdEqFscvhaKaHwJ2FwmSB1nl21HzzX7aOCFP8tBpO99xYlRxPgBVQ3VaS5AvbfKkXz7wxDPOvIAH+9iaSPr5CvtQFQ66+ysE27jkCWVe9D3HwyVaPV3WGwRWAtpAQ+qylmHuh9VJ93FGZasiGs7ImDJ6jD9sWFlZhg5wv9b+ffPflzPVCeFACt4dLZRLmuHGiErMF2kOAYOBOQ9PiL8h1ILspJ5c52Nnlnditf4VVHJJYP8ymXz559zi0jYC/u7/dOEquGFRGkkSUdT2UhNITcJ5/bLxOaug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4ejPSFhmzAiIORonM1+ZRwUjW2GV7f9/P37KcHBxcX8=;
+ b=KydMyCnaOu4H2Xvkn0o6yzVS8hkaCFtYMqgtrFwLWZ0ecgI/pyMW22v2DaIuVtBz4tNgbybTtke/yZbTK4BDll+ugAQXTGBLSffHYy00mkQAMgS1a6oB4AmvtjNeIPqR/96qBqX0Nor4xBACNRIqbqFkc4V3WtRFuQy2lwLb4vIjp7m+Trve6/nP9yZQr74/M+981YUgtsxdCiYfXvAUrXhhiH+jDT0KPUSZeMSvR8oVCGr4+nrbsopEkmZy7v9IV99aJKrNw1Sv6r2F/5zzikH5Mjb2Pi31UDOO3fQ0ovYZc2VRWPrgWQrMx9rNIRYv70nYtF146jTlueADymgohw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4ejPSFhmzAiIORonM1+ZRwUjW2GV7f9/P37KcHBxcX8=;
+ b=L4H1ZPPXCOXVG7gLpikKcsmzpQ2kvi8we6hI1rKeGjaVrVvohV5wo7vbmYt+nOKXWKnCpdfUUX1GpEColV/E/Zo6sRnXjKq2kKZCtBXAB/hhcI8a6BLmJSuMKhxV6pSfuQVuj6XmUQCvYA8KbXtUeEuHo/Ihfjgv/b9Vnj4ViYY=
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1PR05MB4207.eurprd05.prod.outlook.com (52.133.14.140) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2856.19; Thu, 26 Mar 2020 03:52:57 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2835.023; Thu, 26 Mar 2020
+ 03:52:57 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "wenxu@ucloud.cn" <wenxu@ucloud.cn>
+CC:     Paul Blakey <paulb@mellanox.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v8 0/2] net/mlx5e: add indr block support in the
+ FT mode
+Thread-Topic: [PATCH net-next v8 0/2] net/mlx5e: add indr block support in the
+ FT mode
+Thread-Index: AQHWAp+Y6Z6WzYpFYUeVaCwg72ZzuKhaPs8A
+Date:   Thu, 26 Mar 2020 03:52:57 +0000
+Message-ID: <2fce08ab444fe88078ea5b3cec8f224ef5dd203a.camel@mellanox.com>
+References: <1585138739-8443-1-git-send-email-wenxu@ucloud.cn>
+In-Reply-To: <1585138739-8443-1-git-send-email-wenxu@ucloud.cn>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [73.15.39.150]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 4596a510-e63b-47d5-696b-08d7d1392bae
+x-ms-traffictypediagnostic: VI1PR05MB4207:|VI1PR05MB4207:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB4207693F1F37224F497AC2B5BECF0@VI1PR05MB4207.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-forefront-prvs: 0354B4BED2
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(39860400002)(376002)(136003)(396003)(366004)(346002)(6506007)(478600001)(316002)(966005)(86362001)(5660300002)(66476007)(76116006)(2906002)(54906003)(66946007)(66556008)(64756008)(66446008)(91956017)(4326008)(6916009)(71200400001)(6512007)(6486002)(186003)(36756003)(2616005)(8676002)(8936002)(26005)(81156014)(81166006);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TlvPKct1z1PNGGG062yNy0gpAePRVnvO8pATXxgV86ARrd/ZPHqssNQKzqwQTO3qh3MxrMsEZUe/gkJeQSOZjPCqjaZyWLNKf8HawOAvXP5MXE6FAh50u1pzv7wFCV0XVpldTPrSYmT/DJdkJQp3Z4RqPUw7wgDr1ngTkfuhAP3XWL3gEJ5cIlfbqTIGHi1HDxNAy4ENne4lhS3iHOqu/0ivc/vCrIWO1dnlEjADVcEyg3T1E0T2FnPZEJqvsxOkcqrMnhmlJW5UFFxJxIqJ/efJ6EGY/UN5DJYbYwumx2vQwzwSOYBqyQXseiJvVCAizGLQDSZD25nwBT9gWtXXV+cs6aKcOSGhv421FVwuvVW8SyRfwf3rGOJ+frhhmmO0dyG31D+Vnu+J0JxnfltRj9EhfeCXgHeNBaifSNiG0WpkG+B/KxfzxfNymmif+g5KKYLcrngb5vzs5MlkR3z7w+E4BTHgEZ5Xaennc79D5Io/IVbv2my+VKnat/UDl6MuF+tGxvcSlnwlxSj5tMhmhA==
+x-ms-exchange-antispam-messagedata: 7LUsdqWdLLf4jDz9fE73mHkVpl7J1OqgO5PhHohFOmf/AE+YDzWSjCslBXPOQC8LNryD1c5NiIWxvUnLHxuM9TljaJTJIMHbW/CH67zE6nBKdp5d3rAo4trR2bBJNv2pLw63giV97QjgvQJK0S/Y8w==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <46AD5F76975E5D4A9460CDF4396C8BC9@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4596a510-e63b-47d5-696b-08d7d1392bae
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Mar 2020 03:52:57.0657
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: gd/cqNi2KOdacv8jMdejDGHZIHVTSaOc63YWOnwUYHuT80fjeekVkBnkstk9WrVyD3S8yf/oqJuYI5MEzuIq+g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4207
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a devlink region for exposing the device's Non Volatime Memory flash
-contents.
-
-Support the recently added .snapshot operation, enabling userspace to
-request a snapshot of the NVM contents via DEVLINK_CMD_REGION_NEW.
-
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
----
- Documentation/networking/devlink/ice.rst     | 26 +++++
- drivers/net/ethernet/intel/ice/ice.h         |  2 +
- drivers/net/ethernet/intel/ice/ice_devlink.c | 99 ++++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_devlink.h |  3 +
- drivers/net/ethernet/intel/ice/ice_main.c    |  4 +
- 5 files changed, 134 insertions(+)
-
-diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
-index 37fbbd40a5e5..f3d6a3b50342 100644
---- a/Documentation/networking/devlink/ice.rst
-+++ b/Documentation/networking/devlink/ice.rst
-@@ -69,3 +69,29 @@ The ``ice`` driver reports the following versions
-       - The version of the DDP package that is active in the device. Note
-         that both the name (as reported by ``fw.app.name``) and version are
-         required to uniquely identify the package.
-+
-+Regions
-+=======
-+
-+The ``ice`` driver enables access to the contents of the Non Volatile Memory
-+flash chip via the ``nvm-flash`` region.
-+
-+Users can request an immediate capture of a snapshot via the
-+``DEVLINK_CMD_REGION_NEW``
-+
-+.. code:: shell
-+
-+    $ devlink region new pci/0000:01:00.0/nvm-flash snapshot 1
-+    $ devlink region dump pci/0000:01:00.0/nvm-flash snapshot 1
-+
-+    $ devlink region dump pci/0000:01:00.0/nvm-flash snapshot 1
-+    0000000000000000 0014 95dc 0014 9514 0035 1670 0034 db30
-+    0000000000000010 0000 0000 ffff ff04 0029 8c00 0028 8cc8
-+    0000000000000020 0016 0bb8 0016 1720 0000 0000 c00f 3ffc
-+    0000000000000030 bada cce5 bada cce5 bada cce5 bada cce5
-+
-+    $ devlink region read pci/0000:01:00.0/nvm-flash snapshot 1 address 0
-+        length 16
-+    0000000000000000 0014 95dc 0014 9514 0035 1670 0034 db30
-+
-+    $ devlink region delete pci/0000:01:00.0/nvm-flash snapshot 1
-diff --git a/drivers/net/ethernet/intel/ice/ice.h b/drivers/net/ethernet/intel/ice/ice.h
-index 8ce3afcfeca0..5c11448bfbb3 100644
---- a/drivers/net/ethernet/intel/ice/ice.h
-+++ b/drivers/net/ethernet/intel/ice/ice.h
-@@ -351,6 +351,8 @@ struct ice_pf {
- 	/* devlink port data */
- 	struct devlink_port devlink_port;
- 
-+	struct devlink_region *nvm_region;
-+
- 	/* OS reserved IRQ details */
- 	struct msix_entry *msix_entries;
- 	struct ice_res_tracker *irq_tracker;
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index 27c5034c039a..91edeffd73b1 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -318,3 +318,102 @@ void ice_devlink_destroy_port(struct ice_pf *pf)
- 	devlink_port_type_clear(&pf->devlink_port);
- 	devlink_port_unregister(&pf->devlink_port);
- }
-+
-+/**
-+ * ice_devlink_nvm_snapshot - Capture a snapshot of the Shadow RAM contents
-+ * @devlink: the devlink instance
-+ * @extack: extended ACK response structure
-+ * @data: on exit points to snapshot data buffer
-+ *
-+ * This function is called in response to the DEVLINK_CMD_REGION_TRIGGER for
-+ * the shadow-ram devlink region. It captures a snapshot of the shadow ram
-+ * contents. This snapshot can later be viewed via the devlink-region
-+ * interface.
-+ *
-+ * @returns zero on success, and updates the data pointer. Returns a non-zero
-+ * error code on failure.
-+ */
-+static int
-+ice_devlink_nvm_snapshot(struct devlink *devlink, struct netlink_ext_ack *extack,
-+			u8 **data)
-+{
-+	struct ice_pf *pf = devlink_priv(devlink);
-+	struct device *dev = ice_pf_to_dev(pf);
-+	struct ice_hw *hw = &pf->hw;
-+	enum ice_status status;
-+	void *nvm_data;
-+	u32 nvm_size;
-+
-+	nvm_size = hw->nvm.flash_size;
-+	nvm_data = vzalloc(nvm_size);
-+	if (!nvm_data) {
-+		NL_SET_ERR_MSG_MOD(extack, "Out of memory");
-+		return -ENOMEM;
-+	}
-+
-+	status = ice_acquire_nvm(hw, ICE_RES_READ);
-+	if (status) {
-+		dev_dbg(dev, "ice_acquire_nvm failed, err %d aq_err %d\n",
-+			status, hw->adminq.sq_last_status);
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to acquire NVM semaphore");
-+		vfree(nvm_data);
-+		return -EIO;
-+	}
-+
-+	status = ice_read_flat_nvm(hw, 0, &nvm_size, nvm_data, false);
-+	if (status) {
-+		dev_dbg(dev, "ice_read_flat_nvm failed after reading %u bytes, err %d aq_err %d\n",
-+			nvm_size, status, hw->adminq.sq_last_status);
-+		NL_SET_ERR_MSG_MOD(extack, "Failed to read NVM contents");
-+		ice_release_nvm(hw);
-+		vfree(nvm_data);
-+		return -EIO;
-+	}
-+
-+	ice_release_nvm(hw);
-+
-+	*data = nvm_data;
-+
-+	return 0;
-+}
-+
-+static const struct devlink_region_ops ice_nvm_region_ops = {
-+	.name = "nvm-flash",
-+	.destructor = vfree,
-+	.snapshot = ice_devlink_nvm_snapshot,
-+};
-+
-+/**
-+ * ice_devlink_init_regions - Initialize devlink regions
-+ * @pf: the PF device structure
-+ *
-+ * Create devlink regions used to enable access to dump the contents of the
-+ * flash memory on the device.
-+ */
-+void ice_devlink_init_regions(struct ice_pf *pf)
-+{
-+	struct devlink *devlink = priv_to_devlink(pf);
-+	struct device *dev = ice_pf_to_dev(pf);
-+	u64 nvm_size;
-+
-+	nvm_size = pf->hw.nvm.flash_size;
-+	pf->nvm_region = devlink_region_create(devlink, &ice_nvm_region_ops, 1,
-+					       nvm_size);
-+	if (IS_ERR(pf->nvm_region)) {
-+		dev_err(dev, "failed to create NVM devlink region, err %ld\n",
-+			PTR_ERR(pf->nvm_region));
-+		pf->nvm_region = NULL;
-+	}
-+}
-+
-+/**
-+ * ice_devlink_destroy_regions - Destroy devlink regions
-+ * @pf: the PF device structure
-+ *
-+ * Remove previously created regions for this PF.
-+ */
-+void ice_devlink_destroy_regions(struct ice_pf *pf)
-+{
-+	if (pf->nvm_region)
-+		devlink_region_destroy(pf->nvm_region);
-+}
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.h b/drivers/net/ethernet/intel/ice/ice_devlink.h
-index f94dc93c24c5..6e806a08dc23 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.h
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.h
-@@ -11,4 +11,7 @@ void ice_devlink_unregister(struct ice_pf *pf);
- int ice_devlink_create_port(struct ice_pf *pf);
- void ice_devlink_destroy_port(struct ice_pf *pf);
- 
-+void ice_devlink_init_regions(struct ice_pf *pf);
-+void ice_devlink_destroy_regions(struct ice_pf *pf);
-+
- #endif /* _ICE_DEVLINK_H_ */
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 359ff8544773..306a4e5b2320 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -3276,6 +3276,8 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 		goto err_init_pf_unroll;
- 	}
- 
-+	ice_devlink_init_regions(pf);
-+
- 	pf->num_alloc_vsi = hw->func_caps.guar_num_vsi;
- 	if (!pf->num_alloc_vsi) {
- 		err = -EIO;
-@@ -3385,6 +3387,7 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 	devm_kfree(dev, pf->vsi);
- err_init_pf_unroll:
- 	ice_deinit_pf(pf);
-+	ice_devlink_destroy_regions(pf);
- 	ice_deinit_hw(hw);
- err_exit_unroll:
- 	ice_devlink_unregister(pf);
-@@ -3427,6 +3430,7 @@ static void ice_remove(struct pci_dev *pdev)
- 		ice_vsi_free_q_vectors(pf->vsi[i]);
- 	}
- 	ice_deinit_pf(pf);
-+	ice_devlink_destroy_regions(pf);
- 	ice_deinit_hw(&pf->hw);
- 	ice_devlink_unregister(pf);
- 
--- 
-2.24.1
-
+T24gV2VkLCAyMDIwLTAzLTI1IGF0IDIwOjE4ICswODAwLCB3ZW54dUB1Y2xvdWQuY24gd3JvdGU6
+DQo+IEZyb206IHdlbnh1IDx3ZW54dUB1Y2xvdWQuY24+DQo+IA0KPiBJbmRyIGJsb2NrIHN1cHBv
+cnRlZCBpbiBGVCBtb2RlIGNhbiBvZmZsb2FkIHRoZSB0dW5uZWwgZGV2aWNlIGluIHRoZQ0KPiBm
+bG93dGFibGVzIG9mIG5mdGFibGUuDQo+IA0KDQphcHBsaWVkIHRvIG5ldC1uZXh0LW1seDUNCg0K
+VGhhbmtzICENCg0KDQo+IFRoZSBuZXRmaWx0ZXIgcGF0Y2hlczoNCj4gaHR0cDovL3BhdGNod29y
+ay5vemxhYnMub3JnL2NvdmVyLzEyNDI4MTIvDQo+IA0KPiBUZXN0IHdpdGggbWx4IGRyaXZlciBh
+cyBmb2xsb3dpbmcgd2l0aCBuZnQ6DQo+IA0KPiBpcCBsaW5rIGFkZCB1c2VyMSB0eXBlIHZyZiB0
+YWJsZSAxDQo+IGlwIGwgc2V0IHVzZXIxIHVwIA0KPiBpcCBsIHNldCBkZXYgbWx4X3BmMHZmMCBk
+b3duDQo+IGlwIGwgc2V0IGRldiBtbHhfcGYwdmYwIG1hc3RlciB1c2VyMQ0KPiBpZmNvbmZpZyBt
+bHhfcGYwdmYwIDEwLjAuMC4xLzI0IHVwDQo+IA0KPiBpZmNvbmZpZyBtbHhfcDAgMTcyLjE2OC4x
+NTIuNzUvMjQgdXANCj4gDQo+IGlwIGwgYWRkIGRldiB0dW4xIHR5cGUgZ3JldGFwIGtleSAxMDAw
+DQo+IGlwIGwgc2V0IGRldiB0dW4xIG1hc3RlciB1c2VyMQ0KPiBpZmNvbmZpZyB0dW4xIDEwLjAu
+MS4xLzI0IHVwDQo+IA0KPiBpcCByIHIgMTAuMC4xLjI0MSBlbmNhcCBpcCBpZCAxMDAwIGRzdCAx
+NzIuMTY4LjE1Mi4yNDEga2V5IGRldiB0dW4xDQo+IHRhYmxlIDENCj4gDQo+IG5mdCBhZGQgdGFi
+bGUgZmlyZXdhbGwNCj4gbmZ0IGFkZCBjaGFpbiBmaXJld2FsbCB6b25lcyB7IHR5cGUgZmlsdGVy
+IGhvb2sgcHJlcm91dGluZyBwcmlvcml0eSAtDQo+IDMwMCBcOyB9DQo+IG5mdCBhZGQgcnVsZSBm
+aXJld2FsbCB6b25lcyBjb3VudGVyIGN0IHpvbmUgc2V0IGlpZiBtYXAgeyAidHVuMSIgOiAxLA0K
+PiAibWx4X3BmMHZmMCIgOiAxIH0NCj4gbmZ0IGFkZCBjaGFpbiBmaXJld2FsbCBydWxlLTEwMDAt
+aW5ncmVzcw0KPiBuZnQgYWRkIHJ1bGUgZmlyZXdhbGwgcnVsZS0xMDAwLWluZ3Jlc3MgY3Qgem9u
+ZSAxIGN0IHN0YXRlDQo+IGVzdGFibGlzaGVkLHJlbGF0ZWQgY291bnRlciBhY2NlcHQNCj4gbmZ0
+IGFkZCBydWxlIGZpcmV3YWxsIHJ1bGUtMTAwMC1pbmdyZXNzIGN0IHpvbmUgMSBjdCBzdGF0ZSBp
+bnZhbGlkDQo+IGNvdW50ZXIgZHJvcA0KPiBuZnQgYWRkIHJ1bGUgZmlyZXdhbGwgcnVsZS0xMDAw
+LWluZ3Jlc3MgY3Qgem9uZSAxIHRjcCBkcG9ydCA1MDAxIGN0DQo+IHN0YXRlIG5ldyBjb3VudGVy
+IGFjY2VwdA0KPiBuZnQgYWRkIHJ1bGUgZmlyZXdhbGwgcnVsZS0xMDAwLWluZ3Jlc3MgY3Qgem9u
+ZSAxIHVkcCBkcG9ydCA1MDAxIGN0DQo+IHN0YXRlIG5ldyBjb3VudGVyIGFjY2VwdA0KPiBuZnQg
+YWRkIHJ1bGUgZmlyZXdhbGwgcnVsZS0xMDAwLWluZ3Jlc3MgY3Qgem9uZSAxIHRjcCBkcG9ydCAy
+MiBjdA0KPiBzdGF0ZSBuZXcgY291bnRlciBhY2NlcHQNCj4gbmZ0IGFkZCBydWxlIGZpcmV3YWxs
+IHJ1bGUtMTAwMC1pbmdyZXNzIGN0IHpvbmUgMSBpcCBwcm90b2NvbCBpY21wIGN0DQo+IHN0YXRl
+IG5ldyBjb3VudGVyIGFjY2VwdA0KPiBuZnQgYWRkIHJ1bGUgZmlyZXdhbGwgcnVsZS0xMDAwLWlu
+Z3Jlc3MgY291bnRlciBkcm9wDQo+IG5mdCBhZGQgY2hhaW4gZmlyZXdhbGwgcnVsZXMtYWxsIHsg
+dHlwZSBmaWx0ZXIgaG9vayBwcmVyb3V0aW5nDQo+IHByaW9yaXR5IC0gMTUwIFw7IH0NCj4gbmZ0
+IGFkZCBydWxlIGZpcmV3YWxsIHJ1bGVzLWFsbCBtZXRhIGlpZmtpbmQgInZyZiIgY291bnRlciBh
+Y2NlcHQNCj4gbmZ0IGFkZCBydWxlIGZpcmV3YWxsIHJ1bGVzLWFsbCBpaWYgdm1hcCB7ICJ0dW4x
+IiA6IGp1bXAgcnVsZS0xMDAwLQ0KPiBpbmdyZXNzIH0NCj4gDQo+IG5mdCBhZGQgZmxvd3RhYmxl
+IGZpcmV3YWxsIGZiMSB7IGhvb2sgaW5ncmVzcyBwcmlvcml0eSAyIFw7IGRldmljZXMgPQ0KPiB7
+IHR1bjEsIG1seF9wZjB2ZjAgfSBcOyB9DQo+IG5mdCBhZGQgY2hhaW4gZmlyZXdhbGwgZnRiLWFs
+bCB7dHlwZSBmaWx0ZXIgaG9vayBmb3J3YXJkIHByaW9yaXR5IDANCj4gXDsgcG9saWN5IGFjY2Vw
+dCBcOyB9DQo+IG5mdCBhZGQgcnVsZSBmaXJld2FsbCBmdGItYWxsIGN0IHpvbmUgMSBpcCBwcm90
+b2NvbCB0Y3AgZmxvdyBvZmZsb2FkDQo+IEBmYjENCj4gbmZ0IGFkZCBydWxlIGZpcmV3YWxsIGZ0
+Yi1hbGwgY3Qgem9uZSAxIGlwIHByb3RvY29sIHVkcCBmbG93IG9mZmxvYWQNCj4gQGZiMQ0KPiAN
+Cj4gDQo+IHdlbnh1ICgyKToNCj4gICBuZXQvbWx4NWU6IHJlZmFjdG9yIGluZHIgc2V0dXAgYmxv
+Y2sNCj4gICBuZXQvbWx4NWU6IGFkZCBtbHg1ZV9yZXBfaW5kcl9zZXR1cF9mdF9jYiBzdXBwb3J0
+DQo+IA0KPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9jb3JlL2VuX3JlcC5j
+IHwgOTQNCj4gKysrKysrKysrKysrKysrKysrLS0tLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgNzMg
+aW5zZXJ0aW9ucygrKSwgMjEgZGVsZXRpb25zKC0pDQo+IA0K
