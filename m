@@ -2,64 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD1D41942C4
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 16:14:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3BF71942C6
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 16:14:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727593AbgCZPON (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 11:14:13 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:46916 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726034AbgCZPOM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 11:14:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=v4IaUeg+pKhvBnvQfkCCunvzxm3tcM/XUUe2SYwdsos=; b=b4WFKfXUPbesKCR2bhUsfPTCG
-        HrXDMfNJ2OUyVrkxPgoI87B5ttks7uc5NnBDx64KLGhRj5EyuuSZEK4/MZ0znG4U1r/+nv96cKNZ7
-        VtEI7JK/3o6ANH/f06naxbTfu7ge0/Lp0csj6SpK/GT4zRm94czE9hGClai++b/zYprbNj7Wh0ywO
-        vG44wuUMNfRKsdcX34AX9ELrO4xE5OEvkbsuXGe2yp1QsWQVbidy/rhC57JqntZqGEo5Jdpqt8IR3
-        mK0s9XbBUsOCzVY2rEkPhfQV2uXd2ROUlcP10xn0UupGSPvchG7PTdEH3pk5FvEaBUhUybFBNqZJJ
-        bgVxJx7xw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:41654)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jHUCs-00045f-0U; Thu, 26 Mar 2020 15:14:06 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jHUCq-0003Jr-CU; Thu, 26 Mar 2020 15:14:04 +0000
-Date:   Thu, 26 Mar 2020 15:14:04 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 0/2] split phylink PCS operations and add PCS
- support for dpaa2
-Message-ID: <20200326151404.GB25745@shell.armlinux.org.uk>
-References: <20200317144944.GP25745@shell.armlinux.org.uk>
+        id S1727883AbgCZPOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 11:14:20 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:56529 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727699AbgCZPOU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 11:14:20 -0400
+Received: by mail-il1-f199.google.com with SMTP id 191so5594632ilb.23
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 08:14:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=sMQYIcxP6s383S1Iv/2tUT3HdLMKF9nZyauaAtUzZEM=;
+        b=ktY1vg9v/YuuD5Nr0Dko/s82kR6OkWIElaSs5WEp2Uff1TQHVO0cX5oJgqbxph0xDE
+         X6qVJ/Dy3jGV+bTF2WiKbt/aNz1U0eU/R0JBD84cTnKLG8dWOVDbBGQ2vtWMGcMwm0TG
+         sXGAPVTiLdOlc+JAOMqmJgdQi9TCTxwOuESPkyZVlBZwfiZLN/v4wobI5GzZnyjMPg8t
+         B3qWPx1p5gGeLIpsU6ZhMSM9UMb3lT78jsCRc8EmnPUMDWXGyjj4UX9CpGeBvLDwtJ0W
+         ZKyuVAgSsCp0LyhPhQpg6kS2p1/rkdtF9lmw+KWWPRZzQ8K8b3z4r928sgYS8eJgMlcH
+         7Vtg==
+X-Gm-Message-State: ANhLgQ0CvEakBlp6wmzxPAs+eBQJ6Jc1G7xKkBw3eqfAZ6Fgd4kS0WnX
+        gwx93Gh1Czv2m2KkjlVcGaaX9Q+uSY+UKl5E+DGbTSDnGJ0p
+X-Google-Smtp-Source: ADFU+vuS4lXG57+YM3bVs1vgJ/z/JIV1Uy0m8cbiF4B/9amQkvgycJ+FyjmwTmZl6UYrFWNtSaercpmV9IAuTecdiZbttwsiBwdK
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200317144944.GP25745@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Received: by 2002:a92:c9c9:: with SMTP id k9mr8765625ilq.307.1585235658914;
+ Thu, 26 Mar 2020 08:14:18 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 08:14:18 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000055c12d05a1c3701e@google.com>
+Subject: KASAN: use-after-free Read in ath9k_htc_rx_msg
+From:   syzbot <syzbot+666280b21749af5d36db@syzkaller.appspotmail.com>
+To:     andreyknvl@google.com, ath9k-devel@qca.qualcomm.com,
+        davem@davemloft.net, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series splits the phylink_mac_ops structure so that PCS can be
-supported separately with their own PCS operations, separating them
-from the MAC layer.  This may need adaption later as more users come
-along.
+Hello,
 
- drivers/net/phy/phylink.c | 102 ++++++++++++++++++++++++++++++----------------
- include/linux/phylink.h   |  11 +++++
- 2 files changed, 78 insertions(+), 35 deletions(-)
+syzbot found the following crash on:
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+HEAD commit:    e17994d1 usb: core: kcov: collect coverage from usb comple..
+git tree:       https://github.com/google/kasan.git usb-fuzzer
+console output: https://syzkaller.appspot.com/x/log.txt?x=113938c5e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5d64370c438bc60
+dashboard link: https://syzkaller.appspot.com/bug?extid=666280b21749af5d36db
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13fdc1e5e00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1507178de00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+666280b21749af5d36db@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: use-after-free in __wake_up_common+0x634/0x650 kernel/sched/wait.c:86
+Read of size 8 at addr ffff8881cec10000 by task swapper/1/0
+
+CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.6.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0xef/0x16e lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd3/0x314 mm/kasan/report.c:374
+ __kasan_report.cold+0x37/0x77 mm/kasan/report.c:506
+ kasan_report+0xe/0x20 mm/kasan/common.c:641
+ __wake_up_common+0x634/0x650 kernel/sched/wait.c:86
+ complete+0x51/0x70 kernel/sched/completion.c:36
+ htc_process_conn_rsp drivers/net/wireless/ath/ath9k/htc_hst.c:138 [inline]
+ ath9k_htc_rx_msg+0x7c2/0xaf0 drivers/net/wireless/ath/ath9k/htc_hst.c:443
+ ath9k_hif_usb_reg_in_cb+0x1ba/0x630 drivers/net/wireless/ath/ath9k/hif_usb.c:718
+ __usb_hcd_giveback_urb+0x29a/0x550 drivers/usb/core/hcd.c:1650
+ usb_hcd_giveback_urb+0x368/0x420 drivers/usb/core/hcd.c:1716
+ dummy_timer+0x1258/0x32ae drivers/usb/gadget/udc/dummy_hcd.c:1966
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
