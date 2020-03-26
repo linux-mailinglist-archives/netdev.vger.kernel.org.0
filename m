@@ -2,138 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B547B194443
-	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 17:27:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 600A7194510
+	for <lists+netdev@lfdr.de>; Thu, 26 Mar 2020 18:07:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728456AbgCZQ14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 12:27:56 -0400
-Received: from mail-il1-f194.google.com ([209.85.166.194]:41059 "EHLO
-        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726175AbgCZQ14 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 12:27:56 -0400
-Received: by mail-il1-f194.google.com with SMTP id t6so2322624ilj.8;
-        Thu, 26 Mar 2020 09:27:53 -0700 (PDT)
+        id S1728172AbgCZRHe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 13:07:34 -0400
+Received: from mail-ot1-f49.google.com ([209.85.210.49]:36133 "EHLO
+        mail-ot1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726267AbgCZRHe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 13:07:34 -0400
+Received: by mail-ot1-f49.google.com with SMTP id l23so6633277otf.3
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 10:07:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2MvgnsSQhFJOcyx9F2ihbJOXdLnu/MGIqeeUoB2SLbM=;
-        b=O+HVkvBErHFx61kmKWqwDVr9mM9NwxkP5CgHZkz8KKBG51hrYlwuKP26qg84OHsxVB
-         0Csn9hEqw5zUtxAZ8hXbKJYonAGgMiW0oSwLVoWbnfKE7nmgDQTWRrmKkq0R3soBo1O6
-         YA2xpd7O25TSRoBEZeQ7E95N53qbjw3fE5HCjUUKmtAeNikCAx8lmf4WzXJgNMiGFSJx
-         c4+Rvjrk3GX2GNNId3q5hbOuLfTBkYt3mx/jzzQjOjWhqiNfneAMWR968ENRiKCvdJgC
-         Lt4zrBYpUJM4uD/0sBT0Ucf0edmhAvR21jjC3t8qlxejtaMgYo1HetQF0xoeZiEQ/Df3
-         Sgmw==
+         :cc:content-transfer-encoding;
+        bh=/dIsHmyN42YhqEmk6knYyBtFZRPBUjAoKTwwSH8+zCc=;
+        b=XKYF/jzEHQnCYN82eLJlNsK8mO13O3uQLi+shWrn7BKqm9Tsb6tYn7zJAE92XWuCKm
+         luZ3g6e/tuJtyBOeJTSUPX/CG2p0qz4tmMzLWapFlgwU5FlGtbyXV5bj2F7SHx4lnTgL
+         UE5l6fg0RdLCTuG09BUGP760Mr+lu2J9W0v4SNkYcx2FFKF3mKcoJnHRiPv31EfoVoyK
+         8+nECd9OoHIZ1J3xZPC9mS9TOsAZA/qL1zRIDbreI3enJvC0mxSojZNHzU3Sz/SAQbUG
+         BpkUnOXub557QqVsxj0yB63FENKkZPOZruVM0F+tdBnTmN4pdvrHrk28NPzOu2tcS6PD
+         ROiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2MvgnsSQhFJOcyx9F2ihbJOXdLnu/MGIqeeUoB2SLbM=;
-        b=MNkjxv5kWyr3Pe1Cl//9zeE5kC6LSuxM1nh5bRaOuSeBBVr/vqmMbCsj2KZUXtHdHF
-         YsBnURRnnaoMhi4z++vAqr7EhE9pNcxcjmuEZYGp3X0PIbIThkxWgacIy8m28BpXqVlr
-         DP8UHztCbTQy8iJ8x2u6maFqsLmj19r8izkXyt2PQ3KM+ABOQE42XoEXfoJQnwiFBzI+
-         TS2l/tfu2k3oXmwf4RjNb/xVKFe/ojQjfuy3VuIdS20ZNi5JA5St29peQ22y5BcL6oUi
-         Cd2CXMy5b4fAWsyJRqiQtNSAj40GMkWuclxDy9yQyqtSZjaBVzs5xMOkaZPJ6yCNz2Ip
-         carw==
-X-Gm-Message-State: ANhLgQ0zlqfs3WFGsjO5UaFGySfNHjyxCMqpCdNfy1/KZ3Qyz1H8GLDV
-        9b8FJ9wfXpc515nlRFL5olRAZ4L+DNGRK5P19gQj6u2sw90=
-X-Google-Smtp-Source: ADFU+vs3UUxKJvBojeAzB/v9NDT0zXbWaHLGTU3p4w5iPWYt+V3DgoqWyKdwP6CKCFaA8gpJqDpqts+2JawxmNNR4DE=
-X-Received: by 2002:a92:3955:: with SMTP id g82mr9646493ila.237.1585240073233;
- Thu, 26 Mar 2020 09:27:53 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/dIsHmyN42YhqEmk6knYyBtFZRPBUjAoKTwwSH8+zCc=;
+        b=oDIxxBiZf354vVzwh+2k/wWvSHc6m6kBOiLqPD+3/vsjkVipn1EtkrLLWuwRHfcaOp
+         GoDHnjvo1/4W/wZDoceqBkQDdBP3o9zUIlui7qx2uif1BSrdYsL/LPnRjU+UYTt7plt8
+         UFUIU48bH7s3Zio+6pYgcL294MH78z3AgthCgkCXnmVa+s140TIzU5qjSqhTRl3KWsTn
+         f1fwJ28iN9xWZGLQdxoHJb6EoNTlfab//ThKQALAIIUVUzA8bZWd5nKEw3Fo45sKFBWM
+         WoBKANTVXwp7MgVb17fz8lh/8q/1Ga1mNNXiymAkuI7Fh3xPI0dgePK+/jHj3eb87yFw
+         DCJA==
+X-Gm-Message-State: ANhLgQ3hm3hWsk43yLAg63xN62TBiocO4a07AIqkxWzoPhDE0wT51AUV
+        tiN/hxeM0nTOjIqAYMKp0/E3NfhSfNJasEafyEzRtKOZ
+X-Google-Smtp-Source: ADFU+vvQiMFVNZRi8X4+rDhN8Qcf4LvrIbGMOWeMoP8zvGdZ5rwgNCe+Ui45ynuGiIEueerg/ZSty2RRNmiWbtdpEjU=
+X-Received: by 2002:a05:6830:22e8:: with SMTP id t8mr5698395otc.48.1585242452950;
+ Thu, 26 Mar 2020 10:07:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200326103926.20888-1-kai.heng.feng@canonical.com>
-In-Reply-To: <20200326103926.20888-1-kai.heng.feng@canonical.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 26 Mar 2020 09:27:42 -0700
-Message-ID: <CAKgT0UfFnXcSSsXvxk8+xiZvyzDh+8V-9bCT-z5U+MEVoAVKLw@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH] igb: Use a sperate mutex insead of rtnl_lock()
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "moderated list:INTEL ETHERNET DRIVERS" 
-        <intel-wired-lan@lists.osuosl.org>,
-        "David S. Miller" <davem@davemloft.net>
+References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
+ <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
+ <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
+ <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com>
+ <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
+ <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com>
+ <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com> <CANxWus_tPZ-C2KuaY4xpuLVKXriTQv1jvHygc6o0RFcdM4TX2w@mail.gmail.com>
+In-Reply-To: <CANxWus_tPZ-C2KuaY4xpuLVKXriTQv1jvHygc6o0RFcdM4TX2w@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 26 Mar 2020 10:07:21 -0700
+Message-ID: <CAM_iQpV0g+yUjrzPdzsm=4t7+ZBt8Y=RTwYJdn9RUqFb1aCE1A@mail.gmail.com>
+Subject: Re: iproute2: tc deletion freezes whole server
+To:     =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 3:39 AM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
+On Thu, Mar 26, 2020 at 7:24 AM V=C3=A1clav Zindulka
+<vaclav.zindulka@tlapnet.cz> wrote:
 >
-> Commit 9474933caf21 ("igb: close/suspend race in netif_device_detach")
-> fixed race condition between close and power management ops by using
-> rtnl_lock().
+> > On Wed, Mar 25, 2020 at 6:43 PM Cong Wang <xiyou.wangcong@gmail.com> wr=
+ote:
+> > > Are you able to test an experimental patch attached in this email?
+> >
+> > Sure. I'll compile new kernel tomorrow. Thank you for quick patch.
+> > I'll let you know as soon as I have anything.
 >
-> This fix is a preparation for next patch, to prevent a dead lock under
-> rtnl_lock() when calling runtime resume routine.
->
-> However, we can't use device_lock() in igb_close() because when module
-> is getting removed, the lock is already held for igb_remove(), and
-> igb_close() gets called during unregistering the netdev, hence causing a
-> deadlock. So let's introduce a new mutex so we don't cause a deadlock
-> with driver core or netdev core.
->
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> I've compiled kernel with the patch you provided and tested it.
+> However the problem is not solved. It behaves exactly the same way.
+> I'm trying to put some printk into the fq_codel_reset() to test it
+> more.
 
-So this description doesn't make much sense to me. You describe the
-use of the device_lock() in igb_close() but it isn't used there. In
-addition it seems like you are arbitrarily moving code that was
-wrapped in the rtnl_lock out of it. I'm not entirely sure that is safe
-since there are calls within many of these functions that assume the
-rtnl_lock is held and changing that is likely going to introduce more
-issues.
+Are the stack traces captured by perf any different with unpatched?
 
-
-
-> ---
->  drivers/net/ethernet/intel/igb/igb_main.c | 19 +++++++++++++------
->  1 file changed, 13 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index b46bff8fe056..dc7ed5dd216b 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -288,6 +288,8 @@ static const struct igb_reg_info igb_reg_info_tbl[] = {
->         {}
->  };
->
-> +static DEFINE_MUTEX(igb_mutex);
-> +
->  /* igb_regdump - register printout routine */
->  static void igb_regdump(struct e1000_hw *hw, struct igb_reg_info *reginfo)
->  {
-> @@ -4026,9 +4028,14 @@ static int __igb_close(struct net_device *netdev, bool suspending)
->
->  int igb_close(struct net_device *netdev)
->  {
-> +       int err = 0;
-> +
-> +       mutex_lock(&igb_mutex);
->         if (netif_device_present(netdev) || netdev->dismantle)
-> -               return __igb_close(netdev, false);
-> -       return 0;
-> +               err = __igb_close(netdev, false);
-> +       mutex_unlock(&igb_mutex);
-> +
-> +       return err;
->  }
->
-
-Okay, so I am guessing the problem has something to do with the
-addition of the netdev->dismantle test here and the fact that it is
-bypassing the present check for the hotplug remove case?
-
-So it looks like nobody ever really reviewed commit 888f22931478
-("igb: Free IRQs when device is hotplugged"). What I would recommend
-is reverting it and instead we fix the remaining pieces that need to
-be addressed in igb so it more closely matches what we have in e1000e
-after commit a7023819404a ("e1000e: Use rtnl_lock to prevent race
-conditions between net and pci/pm"). From what I can tell the only
-pieces that are really missing is to update igb_io_error_detected so
-that in addition to igb_down it will call igb_free_irq, and then in
-addition we should be wrapping most of the code in that function with
-an rtnl_lock since it is detaching a device and making modifications
-to it.
+Thanks.
