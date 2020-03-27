@@ -2,123 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 820C9195430
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 10:39:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55B1D195462
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 10:44:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726165AbgC0Jj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 05:39:28 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:39331 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725946AbgC0Jj2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 05:39:28 -0400
-Received: by mail-wr1-f65.google.com with SMTP id p10so10563522wrt.6
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 02:39:27 -0700 (PDT)
+        id S1726515AbgC0Jou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 05:44:50 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:55041 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726115AbgC0Jot (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 05:44:49 -0400
+Received: by mail-wm1-f68.google.com with SMTP id c81so10709496wmd.4
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 02:44:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=48hZS89xmAyHCOE0ApnOj1N48gY8ID4cAQz2E2A0Azc=;
-        b=V9c30TsK8PsLns3yn2l4Ccl/KdXM5UPqHFpGi7i8J3ZV81kcD9uUUfzHYbfEm9sKLs
-         gVJxyQfn8SDERVNyU8JLUkSvQJBdaYkhXIhhf5z0pTzsZVHGPx6sJxTASR0uWM7Qwrt+
-         PTFp9WHx11YuXF8qRqafYbDbTEsX+F5Rfb8Y56FJnXwhKtCia3uRMrCoFSzVV6x05cTP
-         pgIgUlTlZaEwzBo9c+sECtiN7Qit9PZ+kXDS4AOxyoa9VEZmG3jA4X2gUWv8I4l+J/ho
-         3K+FBngDl3yepsX+AqXgE5j8ibNaDg1H9VeHsQjGMmRtDXgcN10Ya8I6SkqXOxpJLaLe
-         mNSQ==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=8lKNlMpFMNvla81GQR795Ns5/lczvRDq/J6TiZHdTj8=;
+        b=g56CaV5+rca4ztT2A1NUAycMuHE0E1v2b7z0MBljTbWuhUU4nTSoevmrhQ3msWZWC2
+         9ttbMiZD2yg/DPe5D+z6OCK87nMPIAWkOr5xcia/TQuKi5Bt2H5SgFdC5BOlE6Z2L2rq
+         /ruLHYR7zdtNNBS6yDVfOI+kTkEipntSSUR0ZXcjo7SO7Mb06Fw2SqS1+n8/T4EvZdEW
+         4T5JT/yyYr6AHdpuOZWNohR4lMVtoTbPR1gq527fBTpVfHHZiFTL35Qm9RIEH1dcnRp+
+         J6Kg0Nsj1QnGO6ZN1/YlWbGM2OzTadxIF35Dh2yoZJ3Z5jwpfmPO/7LsSfdrKhDQPOt0
+         X8WQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=48hZS89xmAyHCOE0ApnOj1N48gY8ID4cAQz2E2A0Azc=;
-        b=LD68ECAtctmPpsU4wj2yqq2kmJdBO1pT9NqlyRlJgNzWgyahgIx7p+8QTKuIaZmrNF
-         Tzo1Gxxo1ORZOZkSDemLXAGYBLqXjKRHlj5FN3rJ6uenkZ57XWd1Y/OkmoUydo87JTDX
-         jAEdN7KxVqCBov8IzIeCAgf5oWaZ29ywfPn8VM2ch1OAwjRfDLKm9rXtoOF/4uR3Oh+Y
-         paOGwmC4laaabZAr/8wdtPlGYyljRfWZk1qJNM7NyGXghBU2KmgZRyf40B9FXA+J4RJv
-         rlknPAEcyTjEDMF0C1SbBcgNzop/0F2Z/NTuZcT7LITuhJSHj4F+lu91X3NU8cM+5Nwz
-         2XfA==
-X-Gm-Message-State: ANhLgQ3ftJ0dJLMLGc51KxDMJmWlUtejS6WpgmyTD31LHCCIj6mK1wPt
-        v4akdISUTLkzpl+hs0lb1zpcA803
-X-Google-Smtp-Source: ADFU+vvsi42vksdqfGi1sFTX56HaSVup10tyXT181KAOtuhQaX8s3Cg2rEN/lMMw72jMgNRJBuyydQ==
-X-Received: by 2002:adf:ec02:: with SMTP id x2mr10656058wrn.365.1585301966262;
-        Fri, 27 Mar 2020 02:39:26 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:9d76:401f:98cb:c084? (p200300EA8F2960009D76401F98CBC084.dip0.t-ipconnect.de. [2003:ea:8f29:6000:9d76:401f:98cb:c084])
-        by smtp.googlemail.com with ESMTPSA id e5sm7231461wru.92.2020.03.27.02.39.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Mar 2020 02:39:25 -0700 (PDT)
-Subject: Re: [PATCH net] r8169: fix multicast tx issue with macvlan interface
-To:     Charles Daymand <charles.daymand@wifirst.fr>,
-        netdev@vger.kernel.org
-References: <20200327090800.27810-1-charles.daymand@wifirst.fr>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <0bab7e0b-7b22-ad0f-2558-25602705e807@gmail.com>
-Date:   Fri, 27 Mar 2020 10:39:17 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8lKNlMpFMNvla81GQR795Ns5/lczvRDq/J6TiZHdTj8=;
+        b=uDhSaD1s2JoxB+hUyS4NTg81E0Ctv3du9L+FdahOjK8gRoLVpq5jHG70K3/oHJ3U74
+         sAxLjac4k/JTL8Um3p2BXy3QmvfNTgJDhhf323QzCwVqnfiqyEODa6wlPdaDxY6BeEw3
+         EI6Dme1PRkvX0CsYY9Net7BH0A8ZvCO3wvVVbaUBhR8xeYlHRwmiFKqsMXZtJvXTFNkW
+         fI8YsQB+uLzQhmQiyQxAW/XmJox2uO8LpFpl/FYzvA0EJ4ScNrGR4BKqhq+Mw5YxU3hq
+         5rqgwtKjCfj1emtkG7aGxL2XGZC7UdOhjAJRQuhYWwEJ6tt5AwtvKN67xhJov5caIeYV
+         ca9g==
+X-Gm-Message-State: ANhLgQ0X/oz4XQZeY15gxlvUID70LUD7gfwLI5171G0li+riNZ3dQ7pl
+        0/Vh+fa9h98/hmKX1vMSExS2eA==
+X-Google-Smtp-Source: ADFU+vsP5UKXTmI3Kp55e6+8L/Q0rKyma3hQFKHdYRyNjR91Yxav8WQf6n1LOqiugv2H11jcnNuaWA==
+X-Received: by 2002:a1c:3dd7:: with SMTP id k206mr4582166wma.147.1585302287759;
+        Fri, 27 Mar 2020 02:44:47 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id k3sm7032610wmf.16.2020.03.27.02.44.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Mar 2020 02:44:47 -0700 (PDT)
+Date:   Fri, 27 Mar 2020 10:44:46 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH v4 net-next 1/6] devlink: Add macro for "fw.mgmt.api" to
+ info_get cb.
+Message-ID: <20200327094446.GL11304@nanopsycho.orion>
+References: <1585301692-25954-1-git-send-email-vasundhara-v.volam@broadcom.com>
+ <1585301692-25954-2-git-send-email-vasundhara-v.volam@broadcom.com>
 MIME-Version: 1.0
-In-Reply-To: <20200327090800.27810-1-charles.daymand@wifirst.fr>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1585301692-25954-2-git-send-email-vasundhara-v.volam@broadcom.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27.03.2020 10:08, Charles Daymand wrote:
-> During kernel upgrade testing on our hardware, we found that macvlan
-> interface were no longer able to send valid multicast packet.
-> 
-> tcpdump run on our hardware was correctly showing our multicast
-> packet but when connecting a laptop to our hardware we didn't see any
-> packets.
-> 
-> Bisecting turned up commit 93681cd7d94f
-> "r8169: enable HW csum and TSO" activates the feature NETIF_F_IP_CSUM
-> which is responsible for the drop of packet in case of macvlan
-> interface. Note that revision RTL_GIGA_MAC_VER_34 was already a specific
-> case since TSO was keep disabled.
-> 
-> Deactivating NETIF_F_IP_CSUM using ethtool is correcting our multicast
-> issue, but we believe that this hardware issue is important enough to
-> keep tx checksum off by default on this revision.
-> 
-> The change is deactivating the default value of NETIF_F_IP_CSUM for this
-> specific revision.
-> 
+Fri, Mar 27, 2020 at 10:34:51AM CET, vasundhara-v.volam@broadcom.com wrote:
+>Add definition and documentation for the new generic info
+>"fw.mgmt.api". This macro specifies the version of the software
+>interfaces between driver and firmware.
+>
+>Cc: Jakub Kicinski <kuba@kernel.org>
+>Cc: Jacob Keller <jacob.e.keller@intel.com>
+>Cc: Jiri Pirko <jiri@mellanox.com>
+>Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+>Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+>---
+>v1->v2: Rename macro to "fw.api" from "drv.spec".
+>---
+>v3->v4: Rename "fw.api" to "fw.mgmt.api", to make it more common
+>across all vendors.
 
-The referenced commit may not be the root cause but just reveal another
-issue that has been existing before. Root cause may be in the net core
-or somewhere else. Did you check with other RTL8168 versions to verify
-that it's indeed a HW issue with this specific chip version?
+Sounds fine.
 
-What you could do: Enable tx checksumming manually (via ethtool) on
-older kernel versions and check whether they are fine or not.
-If an older version is fine, then you can start a new bisect with tx
-checksumming enabled.
-
-And did you capture and analyze traffic to verify that actually the
-checksum is incorrect (and packets discarded therefore on receiving end)?
-
-
-> Fixes: 93681cd7d94f ("r8169: enable HW csum and TSO")
-> Signed-off-by: Charles Daymand <charles.daymand@wifirst.fr>
-> ---
->  net/drivers/net/ethernet/realtek/r8169_main.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/net/drivers/net/ethernet/realtek/r8169_main.c b/net/drivers/net/ethernet/realtek/r8169_main.c
-> index a9bdafd15a35..3b69135fc500 100644
-> --- a/net/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/net/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -5591,6 +5591,9 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->  		dev->vlan_features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
->  		dev->hw_features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
->  		dev->features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
-> +		if (tp->mac_version == RTL_GIGA_MAC_VER_34) {
-> +			dev->features &= ~NETIF_F_IP_CSUM;
-> +		}
->  	}
->  
->  	dev->hw_features |= NETIF_F_RXALL;
-> 
-
+Reviewed-by: Jiri Pirko <jiri@mellanox.com>
