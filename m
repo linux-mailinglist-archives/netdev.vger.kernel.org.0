@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E835195DF3
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 19:53:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D7DE195DFB
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 19:56:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727254AbgC0Sxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 14:53:48 -0400
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:50258 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726738AbgC0Sxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 14:53:47 -0400
-Received: by mail-pj1-f68.google.com with SMTP id v13so4249444pjb.0;
-        Fri, 27 Mar 2020 11:53:47 -0700 (PDT)
+        id S1727335AbgC0S4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 14:56:17 -0400
+Received: from mail-pj1-f51.google.com ([209.85.216.51]:52873 "EHLO
+        mail-pj1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726275AbgC0S4R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 14:56:17 -0400
+Received: by mail-pj1-f51.google.com with SMTP id ng8so4245025pjb.2;
+        Fri, 27 Mar 2020 11:56:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=zz8pZffXcuHzcOzs7yUrmrfernHqa//RXyP98eRdT88=;
-        b=cvMCryScSbQdTRMTKEX6uqFsGst+mTtHrahGUubzKFyKJvqSTCnMdFB915495iRvNv
-         9V0rFw0bvk3/2aOPbokyBaogNTkwE92D3/aFBL7HQNFR/gBl/BEg1zVV4ou+hzGiutxK
-         j20HdyOQw0/5UY0ykVgjh1Hk3/Flzwkaee5qEY+ASi6g4Ez0P4tGXuHwPuoYzZmrS4+Z
-         byUOQL4ad/B+jFLIdA9h2MPrSM0oEgbyOz5tEtt9cLatTSzY8qrF/aUVzGpB7VGZoGzD
-         cQr1PXDp4jvE36Mc1ucKwktqn0HE+8McDCaE2MBWMAK3TjY5XGIlkClOdBCSP1lsg3Us
-         G4UQ==
+        bh=Mc4gnjwv+NorZuWShLTClne9UWocZJwmdrYE9fdLcqs=;
+        b=Re/P2YH7XsvR4J+PRByySEn5OTMEInkf2SrhInM49wks3p/bGpkY4luWBvfcZmOa+M
+         08XTHEldC2fYcprxAF327MyzpxHLD96jmWjpNF0JAYvUJ/Yc2QQqI51kjJrOt4wDMkQR
+         9Fb/DwDiAV8nXY0DqhfUM/vfVhEKwLSX3A1MdIIW7sQzOs9/YGm+uskbewpjPiIdy4v/
+         lCs9B/mIKAwptV3mWlinXD7VR1AXnCHUwtBJYHGv+cBxpLXVuSL98R0mRKuXshOrawdU
+         iA7IyKb3CwcV9VPKspEdXxxrlavSYGzCXNK2OJbfMeiBNKDSvpAEH8gY6ULN8AXyyKvJ
+         K+cw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zz8pZffXcuHzcOzs7yUrmrfernHqa//RXyP98eRdT88=;
-        b=tiJO7QyMVkNhkCOhEXVTt6+0KF0SJcedFTY0WujOVBHW96JWv6MqNiY0beBfhbdlBL
-         uH8wpPrKWZzKJwcQK/qqCg/8QHNE9ztx691kfO4YIDO1XxXJcD5dORvG2Fkk0udBSbf3
-         P267R5WIr2WkgK/aBJwupGXQVQjo4yaT3UnmZmA8ifgQZsuQ/DUcc/4DvOHnYgcmZsm6
-         CZPvaMXF32FHXyXDPRU9Q7CNw4vtZCakNbzETFvxONsDYIIA6loEDUGl+l5vIaMbQOEH
-         14aE2+i4UeV1pDauXNQ3lBvJGJDlO/IG6hzU2No5zQpI92+zbjUVWCGJb4EpTr7aPjBA
-         jUVQ==
-X-Gm-Message-State: ANhLgQ1eIofOO6TLF2subIbmgAWEj2w3XToOujHf0YAnr3dctXK0Tm1U
-        04TNCPrI4T25txBrJooRkkE=
-X-Google-Smtp-Source: ADFU+vtSCkGSJRaZ60+Eh0o5MWVEcjGwR1ddOfdGV7PV5UWlOJnh9wHkb4tMp9KZ38zAT9TJzqGBvA==
-X-Received: by 2002:a17:90a:9e9:: with SMTP id 96mr889366pjo.168.1585335226872;
-        Fri, 27 Mar 2020 11:53:46 -0700 (PDT)
+        bh=Mc4gnjwv+NorZuWShLTClne9UWocZJwmdrYE9fdLcqs=;
+        b=B1YtrWHf5EjHjs2mfwIjwAgvxdOe4EeMqb3RLHqxwnG7RuWZ0uKgWscLyS3tsAQMCp
+         WdB9J7rW7IsT7Kg7jnOSXhWZ6uu7oPzHSiDRbH7NbWIibmbVl/WmywOYLLFhqK7V2+Iw
+         nsP4AHDoQSNCjF9L+G4AvW4hZEoxCNbCn3X/8BC+8iP3pUs1fmD/RDXyxVAg79CJP1za
+         qBkcOJa/NiXe7Fwq7bP0PnPBYlZ6yBd+md93ffXH0AJwlfChUoQIAGWR7rGeph/kH2Nq
+         rnAz+f05YotYeqxfzj3fdxAeI2bSF9Zyedn0aLHUQcDSEt22oOrqaDhSgeSW2a/jxCsk
+         YRDw==
+X-Gm-Message-State: ANhLgQ0vxsqx+hC+rrR2+3tQu52DDb1JJL1YSzivCZ5mbulTHDD9MPNy
+        5yOlOTateKst82iEn73gnkZ2+2n3
+X-Google-Smtp-Source: ADFU+vt1wa+jcH3CbuTaPOaz1kYZpblawTT3hlHlCpr1TeHjUNg/811xk6GEw/fHDs8oWaj9zW8vgQ==
+X-Received: by 2002:a17:90a:fd90:: with SMTP id cx16mr898109pjb.41.1585335375600;
+        Fri, 27 Mar 2020 11:56:15 -0700 (PDT)
 Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id e184sm4626002pfh.219.2020.03.27.11.53.45
+        by smtp.gmail.com with ESMTPSA id x188sm4784948pfx.198.2020.03.27.11.56.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2020 11:53:46 -0700 (PDT)
-Date:   Fri, 27 Mar 2020 11:53:44 -0700
+        Fri, 27 Mar 2020 11:56:15 -0700 (PDT)
+Date:   Fri, 27 Mar 2020 11:56:13 -0700
 From:   Richard Cochran <richardcochran@gmail.com>
 To:     Michal Kubecek <mkubecek@suse.cz>
 Cc:     David Miller <davem@davemloft.net>,
@@ -54,29 +54,39 @@ Cc:     David Miller <davem@davemloft.net>,
         John Linville <linville@tuxdriver.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 11/12] ethtool: add timestamping related
- string sets
-Message-ID: <20200327185344.GA28023@localhost>
+Subject: Re: [PATCH net-next v2 12/12] ethtool: provide timestamping
+ information with TIMESTAMP_GET request
+Message-ID: <20200327185613.GB28023@localhost>
 References: <cover.1585316159.git.mkubecek@suse.cz>
- <9115b20867b6914eec70a58f3ba3b9deef4eb2b0.1585316159.git.mkubecek@suse.cz>
+ <5a3af8d892cafe9d9a2dc367e9ae463691261305.1585316159.git.mkubecek@suse.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9115b20867b6914eec70a58f3ba3b9deef4eb2b0.1585316159.git.mkubecek@suse.cz>
+In-Reply-To: <5a3af8d892cafe9d9a2dc367e9ae463691261305.1585316159.git.mkubecek@suse.cz>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 27, 2020 at 03:08:12PM +0100, Michal Kubecek wrote:
-> +const char ts_tx_type_names[][ETH_GSTRING_LEN] = {
-> +	[HWTSTAMP_TX_OFF]		= "off",
-> +	[HWTSTAMP_TX_ON]		= "on",
-> +	[HWTSTAMP_TX_ONESTEP_SYNC]	= "one-step-sync",
-> +	[HWTSTAMP_TX_ONESTEP_P2P]	= "one-step-p2p",
-> +};
+On Fri, Mar 27, 2020 at 03:08:17PM +0100, Michal Kubecek wrote:
+> +/* TIMESTAMP */
+> +
+> +enum {
+> +	ETHTOOL_A_TIMESTAMP_UNSPEC,
 
-Suggest "onestep-sync" and "onestep-p2p".
+I suggest using ETHTOOL_A_TSINFO_ throughout.  After all, this API
+does not provide time stamps, and we want to avoid confusion.
+
+> +	ETHTOOL_A_TIMESTAMP_HEADER,			/* nest - _A_HEADER_* */
+> +	ETHTOOL_A_TIMESTAMP_TIMESTAMPING,		/* bitset */
+> +	ETHTOOL_A_TIMESTAMP_TX_TYPES,			/* bitset */
+> +	ETHTOOL_A_TIMESTAMP_RX_FILTERS,			/* bitset */
+> +	ETHTOOL_A_TIMESTAMP_PHC_INDEX,			/* u32 */
+> +
+> +	/* add new constants above here */
+> +	__ETHTOOL_A_TIMESTAMP_CNT,
+> +	ETHTOOL_A_TIMESTAMP_MAX = (__ETHTOOL_A_TIMESTAMP_CNT - 1)
+> +};
 
 Acked-by: Richard Cochran <richardcochran@gmail.com>
