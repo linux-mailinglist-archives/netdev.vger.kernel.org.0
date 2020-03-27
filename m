@@ -2,127 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53C80196112
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 23:26:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CE0AE19611D
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 23:27:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728167AbgC0W0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 18:26:14 -0400
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:55761 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727798AbgC0WZD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 18:25:03 -0400
-Received: by mail-pj1-f68.google.com with SMTP id mj6so4435835pjb.5;
-        Fri, 27 Mar 2020 15:25:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6wHgbUU8hfjvU2VSB/Vcj7AG1zPAtkX9XgjHdHGVJro=;
-        b=Qce3fUWKaR+uXGShy3/LzjaJOvH5Kp3QTAZgyrVlrwJmvZLMcSqHRvFcNBpl3XXWsQ
-         UFS0eK1PNpTZ95y9MVNOo7UEFLL44AYPEggKpx7AcTS8qOmuGSfARPU5eaORMpoTh4Za
-         wFiF+jsQbhis54DAESmvj4ZZ4DZnhIyBZeD3TWTWsDZBgePEKzoMtQt2ROi9eAnf9ERY
-         1vk2dN7ARp1afaaL/XuDydf3k5Z55l3L5x62qvJ1z0VQmLOyLBf2AD3LzTGACvjFMGbl
-         POs1i+HXaq+qriMsiNqU9Pfx9DO76miiVCOMnk8dFp7AfKcXdL75WEqeTaV5FNauW7V2
-         kTng==
+        id S1727947AbgC0W0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 18:26:44 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:52760 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727720AbgC0W0o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 18:26:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585348002;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=s39pCd+uzGRntRwMjCABw0JVUciy3MD4An4VVp+JJiE=;
+        b=ct3MmCVEv+vySkJODjwXKiGnzyeNg89AwSCLxOuyolTFRhdHr5iJUtwId600YEqzZJf+Nn
+        /+6P5D+h5HKTodUS4JPjoh2QrySocMX5MqsXcIHQ/d5c4Qki52MLmSsqpu/B+2jSEsC0u4
+        hDCu1OcH4rUhExYwqzpI92UP8thj++c=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-9-pRtGNmdfNFKk-EaLyiNLqA-1; Fri, 27 Mar 2020 18:26:41 -0400
+X-MC-Unique: pRtGNmdfNFKk-EaLyiNLqA-1
+Received: by mail-lf1-f69.google.com with SMTP id j3so4334422lfe.10
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 15:26:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6wHgbUU8hfjvU2VSB/Vcj7AG1zPAtkX9XgjHdHGVJro=;
-        b=ny++DxbpmDAq1b+ar5mTvUpZiths6zVKtjZLq6KJ/dcYATTaN5mDxoh4qXexAMMtPB
-         Lib77Qn1C5/dXdJ5mPFHfJ0mlCpyRFXtyQ6gFg1kleaweGw5plLIxWjyGV9FuF/0dHZo
-         Qvtw7fhmlvNoeh/86JcMTqYWcJPgvzGBKR9VwCmjvloKXegCOgUR3YZdiRr9maDmKbok
-         VV2s+RbAVdMcsp2FIxEo/5UdcPIevOZCjc70G0yLJnR4XuewcpQBRec7vJtJxZ/tSIZ6
-         bKJAdDrxogBYLGsNav42+0C110hEm6MzutKqMQ+daizVSBq/3NBtAk+NNHRDaYZH9122
-         X3eQ==
-X-Gm-Message-State: ANhLgQ2+vuxRM29ngodAsnSjzayhiEGa2eOEFVA6tt18cOX3Wu5ukYd6
-        U19ijW3dpXmo2ddxFhZNhtY=
-X-Google-Smtp-Source: ADFU+vut01tUTrDL1NXVF5paOhvhZ0HknFLlDEsD21TQFWypBUTpPq1UmUZkyIT/R2hu+yA1ifVhhw==
-X-Received: by 2002:a17:90a:f98d:: with SMTP id cq13mr1697182pjb.105.1585347902020;
-        Fri, 27 Mar 2020 15:25:02 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:4ef7])
-        by smtp.gmail.com with ESMTPSA id 74sm4854125pfy.120.2020.03.27.15.25.00
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=s39pCd+uzGRntRwMjCABw0JVUciy3MD4An4VVp+JJiE=;
+        b=mBhW5GtjRN7zGeqdbbnNK7dATPxqjo42kcZrYO66zph9Q3G0+48/BbrXDj9HgZ43Rq
+         uyt8mhUiri7NYOZvjdmyL1VdjMr/kadTdks4OMe+rVakIakqjQzZ2v6N9KFw2FR50mSx
+         PstwNLjvJnDAeUKLHCBUoN5tmNJETPlVH8xm9g0wPhVCYRh+WSaSjzR6Y4LSSuazZ0pn
+         3Q/j3SsdHL8Cor8rjXKPW1tlTDheZVWJYwznPav/gj6kLme8qA3pGiY/zdMW2AyWMnGe
+         pyfx/GYgtLtAm1Zx9yKYN7l7VOreGP+tx1mp7FghRk/bOvuHaQ2AU7y0fmKCeL8WWQ8c
+         Quxw==
+X-Gm-Message-State: AGi0PuZw4HbDLrvZxnusRuZgAo43BQhx1kuDVnrTdaRNw5ulyYPTsbVr
+        A/L5JCYjMkww4dcW8LTN8gJf8o0GEEGA3PYhQCkOcpCm3G637Ghrtt5B1eo9ipZpHkHS3rJo/q2
+        2Z2JkCL7LRG4Zq+dW
+X-Received: by 2002:a19:23d2:: with SMTP id j201mr950648lfj.78.1585347999092;
+        Fri, 27 Mar 2020 15:26:39 -0700 (PDT)
+X-Google-Smtp-Source: APiQypK6xNB1txjhlRNudUTTfUGINcDKA93fU3V5JENt2BjDRGcvU/cMf+gfXhWINyY+glrgrz+Gew==
+X-Received: by 2002:a19:23d2:: with SMTP id j201mr950638lfj.78.1585347998868;
+        Fri, 27 Mar 2020 15:26:38 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id h9sm3138437ljk.96.2020.03.27.15.26.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2020 15:25:01 -0700 (PDT)
-Date:   Fri, 27 Mar 2020 15:24:58 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Joe Stringer <joe@wand.net.nz>, Lorenz Bauer <lmb@cloudflare.com>,
-        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Martin Lau <kafai@fb.com>,
-        john fastabend <john.fastabend@gmail.com>
-Subject: Re: call for bpf progs. Re: [PATCHv2 bpf-next 5/5] selftests: bpf:
- add test for sk_assign
-Message-ID: <20200327222458.2m5zccyctqsk3xzx@ast-mbp>
-References: <20200325055745.10710-1-joe@wand.net.nz>
- <20200325055745.10710-6-joe@wand.net.nz>
- <82e8d147-b334-3d29-0312-7b087ac908f3@fb.com>
- <CACAyw99Eeu+=yD8UKazRJcknZi3D5zMJ4n=FVsxXi63DwhdxYA@mail.gmail.com>
- <20200326210719.den5isqxntnoqhmv@ast-mbp>
- <CAOftzPjyCNGEjBm4k3aKK+=AB-1STDbYbQK5sZbK6gTAo13XuA@mail.gmail.com>
- <c5e50f60-3872-b3ec-7038-737ca08f3077@iogearbox.net>
+        Fri, 27 Mar 2020 15:26:38 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 8459A18158B; Fri, 27 Mar 2020 23:26:37 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH bpf-next v2] libbpf: Add getter for pointer to data area for internal maps
+In-Reply-To: <CAEf4BzbEyYQeLEsw0tzYYHeKi+q7a+vxavya9O3jykwsH3ki9g@mail.gmail.com>
+References: <20200326151741.125427-1-toke@redhat.com> <20200327125818.155522-1-toke@redhat.com> <CAEf4BzbEyYQeLEsw0tzYYHeKi+q7a+vxavya9O3jykwsH3ki9g@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 27 Mar 2020 23:26:37 +0100
+Message-ID: <87tv29l9ia.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c5e50f60-3872-b3ec-7038-737ca08f3077@iogearbox.net>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 27, 2020 at 09:16:52PM +0100, Daniel Borkmann wrote:
-> 
-> Perhaps that would be more useful and always up to date than a copy of the
-> code base that would get stale next day? In the end in this context kernel
-> changes and/or llvm changes might be of interest to check whether anything
-> potentially blows up, so having a self-contained packaging might be useful.
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+
+> On Fri, Mar 27, 2020 at 5:58 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+>>
+>> For internal maps (most notably the maps backing global variables), libb=
+pf
+>> uses an internal mmaped area to store the data after opening the object.
+>> This data is subsequently copied into the kernel map when the object is
+>> loaded.
+>>
+>> This adds a getter for the pointer to that internal data store. This can=
+ be
+>> used to modify the data before it is loaded into the kernel, which is
+>> especially relevant for RODATA, which is frozen on load. This same point=
+er
+>> is already exposed to the auto-generated skeletons, so access to it is
+>> already API; this just adds a way to get at it without pulling in the fu=
+ll
+>> skeleton infrastructure.
+>>
+>> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> ---
+>> v2:
+>>   - Add per-map getter for data area instead of a global rodata getter f=
+or bpf_obj
+>>
+>> tools/lib/bpf/libbpf.c   | 9 +++++++++
+>>  tools/lib/bpf/libbpf.h   | 1 +
+>>  tools/lib/bpf/libbpf.map | 1 +
+>>  3 files changed, 11 insertions(+)
+>>
+>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+>> index 085e41f9b68e..a0055f8908fd 100644
+>> --- a/tools/lib/bpf/libbpf.c
+>> +++ b/tools/lib/bpf/libbpf.c
+>> @@ -6756,6 +6756,15 @@ void *bpf_map__priv(const struct bpf_map *map)
+>>         return map ? map->priv : ERR_PTR(-EINVAL);
+>>  }
+>>
+>> +void *bpf_map__data_area(const struct bpf_map *map, size_t *size)
+>
+> I'm not entirely thrilled about "data_area" name. This is entirely for
+> providing initial value for maps, so maybe something like
+> bpf_map__init_value() or something along those lines?
+>
+> Actually, how about a different API altogether:
+>
+> bpf_map__set_init_value(struct bpf_map *map, void *data, size_t size)?
+>
+> Application will have to prepare data of correct size, which will be
+> copied to libbpf's internal storage. It also doesn't expose any of
+> internal pointer. I don't think extra memcopy is a big deal here.
 > Thoughts?
 
-Right now we have zero cilium progs in selftest :)
-so any number of progs is better than nothing.
+Huh, yeah, that's way better. Why didn't I think of that? Think maybe I
+was too focused on doing this the same way the skeleton code is. I'll
+send a v3 :)
 
-> > Do we just parachute the ~11K LoC of Cilium datapath into the kernel
-> > tree once per cycle? 
+-Toke
 
-I don't think 11k progs updated every kernel release will catch
-much more than basic reduced set.
-selftests/bpf is not a substitute for cilium CI.
-I would prefer .c tests to be developed once and frozen.
-More tests can be added every 6 month or so.
-I think copy-paste is ok-ish too, but would be much better
-to think through about aspects of the code first.
-It worked well for fb xdp/tc progs. I took some of them,
-refactored them to selftest/Makefile and they were kept as-is for
-the last 3 years. While real progs kept being actively changed.
-For example: progs/test_l4lb.c is about 1/10th of the real deal here:
-https://github.com/facebookincubator/katran/tree/master/katran/lib/bpf
-In terms of lines code, number of includes and so on.
-While hacking katran into selftest I tried to capture the _style_ of C code.
-Like:
- bool get_packet_dst(struct real_definition **real,
-                     struct packet_description *pckt,
-                     struct vip_meta *vip_info,
-                     bool is_ipv6)
-I wouldn't have written the prototype this way.
-Passing double pointer as a return value as a first argument is not my style :)
-The style of nested 'if', etc. Those are the things that make clang
-generate specific code patterns that I was trying to preserve in selftests.
-
-Example 2: progs/strobemeta.h is about 1/4 of real thing.
-Yet frozen it was super useful for the work on bounded loops.
-
-Example 3: progs/test_get_stack_rawtp.c is one specific code pattern
-that used in our profiling prog.
-This one was immensely helpful to track down jmp32/alu32 bugs.
-It's the one that we're still fixing (see John's jmp32 work).
-
-and so on.
-selftests/bpf/progs don't need to be full copy-paste. Ideally the capture
-the essence of the progs in the short form.
-
-clang bpf backend and verifier smartness keep changing. So having
-frozen selftests is necessary to see the trend and capture bugs
-in the backend and in the verifier.
