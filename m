@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65A941960A8
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 22:49:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54ACE1960AC
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 22:49:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727787AbgC0VtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 17:49:15 -0400
-Received: from mga01.intel.com ([192.55.52.88]:25804 "EHLO mga01.intel.com"
+        id S1727830AbgC0VtZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 17:49:25 -0400
+Received: from mga01.intel.com ([192.55.52.88]:25805 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727754AbgC0VtN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727766AbgC0VtN (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 27 Mar 2020 17:49:13 -0400
-IronPort-SDR: U9psBYhy/WW+/3VKhC4Jhkp0R9z0Z7A9LJGYB00khpp+2JXvZnQhESxf3+PnNcHZmw57RfeX9q
- zWDeokqZh4Gg==
+IronPort-SDR: Pu6XLAhb3jHOjABFO6vD1k6mq7JLkx+0vJ99WGXDJ6kVx02lXU511bonr60smiURx37me5N60i
+ hfLZGR2OQV3Q==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2020 14:49:10 -0700
-IronPort-SDR: w3iHJp1lwbxtD5kO5jIx73v9agzUXHxX8twm8LgdJ7aLLt7bCvGCHwDtEXIuMBjUS8PSTCdrZt
- yDkEjPFQAmiA==
+IronPort-SDR: wNXERn1YQBxdleUEfsfPWqRg2mjKIyeSfXssdnzy4qpzSCSTDO/6Es1X1ZzpHNmXP0ORmRUBSV
+ SR9eIbz5tqXw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,313,1580803200"; 
-   d="scan'208";a="271713476"
+   d="scan'208";a="271713477"
 Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.7.195])
   by fmsmga004.fm.intel.com with ESMTP; 27 Mar 2020 14:49:10 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, eric.dumazet@gmail.com,
+Cc:     Davide Caratti <dcaratti@redhat.com>, eric.dumazet@gmail.com,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Paolo Abeni <pabeni@redhat.com>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next v3 12/17] mptcp: implement and use MPTCP-level retransmission
-Date:   Fri, 27 Mar 2020 14:48:48 -0700
-Message-Id: <20200327214853.140669-13-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next v3 13/17] mptcp: allow dumping subflow context to userspace
+Date:   Fri, 27 Mar 2020 14:48:49 -0700
+Message-Id: <20200327214853.140669-14-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200327214853.140669-1-mathew.j.martineau@linux.intel.com>
 References: <20200327214853.140669-1-mathew.j.martineau@linux.intel.com>
@@ -41,174 +43,241 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Davide Caratti <dcaratti@redhat.com>
 
-On timeout event, schedule a work queue to do the retransmission.
-Retransmission code closely resembles the sendmsg() implementation and
-re-uses mptcp_sendmsg_frag, providing a dummy msghdr - for flags'
-sake - and peeking the relevant dfrag from the rtx head.
+add ulp-specific diagnostic functions, so that subflow information can be
+dumped to userspace programs like 'ss'.
 
+v2 -> v3:
+- uapi: use bit macros appropriate for userspace
+
+Co-developed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Co-developed-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/protocol.c | 98 ++++++++++++++++++++++++++++++++++++++++++--
- net/mptcp/protocol.h |  1 +
- 2 files changed, 95 insertions(+), 4 deletions(-)
+ MAINTAINERS                    |   1 +
+ include/uapi/linux/inet_diag.h |   1 +
+ include/uapi/linux/mptcp.h     |  35 +++++++++++
+ net/mptcp/Makefile             |   2 +-
+ net/mptcp/diag.c               | 104 +++++++++++++++++++++++++++++++++
+ net/mptcp/protocol.h           |   2 +
+ net/mptcp/subflow.c            |   2 +
+ 7 files changed, 146 insertions(+), 1 deletion(-)
+ create mode 100644 include/uapi/linux/mptcp.h
+ create mode 100644 net/mptcp/diag.c
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index b785d4a3766c..8d2777092390 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -283,6 +283,10 @@ static void mptcp_reset_timer(struct sock *sk)
- void mptcp_data_acked(struct sock *sk)
- {
- 	mptcp_reset_timer(sk);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fbc5ee74ac92..7d0941c2bf49 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11726,6 +11726,7 @@ W:	https://github.com/multipath-tcp/mptcp_net-next/wiki
+ B:	https://github.com/multipath-tcp/mptcp_net-next/issues
+ S:	Maintained
+ F:	include/net/mptcp.h
++F:	include/uapi/linux/mptcp.h
+ F:	net/mptcp/
+ F:	tools/testing/selftests/net/mptcp/
+ 
+diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
+index 75dffd78363a..57cc429a9177 100644
+--- a/include/uapi/linux/inet_diag.h
++++ b/include/uapi/linux/inet_diag.h
+@@ -166,6 +166,7 @@ enum {
+ 	INET_ULP_INFO_UNSPEC,
+ 	INET_ULP_INFO_NAME,
+ 	INET_ULP_INFO_TLS,
++	INET_ULP_INFO_MPTCP,
+ 	__INET_ULP_INFO_MAX,
+ };
+ #define INET_ULP_INFO_MAX (__INET_ULP_INFO_MAX - 1)
+diff --git a/include/uapi/linux/mptcp.h b/include/uapi/linux/mptcp.h
+new file mode 100644
+index 000000000000..c503bd8f2ccd
+--- /dev/null
++++ b/include/uapi/linux/mptcp.h
+@@ -0,0 +1,35 @@
++/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
++#ifndef _UAPI_MPTCP_H
++#define _UAPI_MPTCP_H
 +
-+	if (!sk_stream_is_writeable(sk) &&
-+	    schedule_work(&mptcp_sk(sk)->work))
-+		sock_hold(sk);
- }
++#include <linux/const.h>
++#include <linux/types.h>
++
++#define MPTCP_SUBFLOW_FLAG_MCAP_REM		_BITUL(0)
++#define MPTCP_SUBFLOW_FLAG_MCAP_LOC		_BITUL(1)
++#define MPTCP_SUBFLOW_FLAG_JOIN_REM		_BITUL(2)
++#define MPTCP_SUBFLOW_FLAG_JOIN_LOC		_BITUL(3)
++#define MPTCP_SUBFLOW_FLAG_BKUP_REM		_BITUL(4)
++#define MPTCP_SUBFLOW_FLAG_BKUP_LOC		_BITUL(5)
++#define MPTCP_SUBFLOW_FLAG_FULLY_ESTABLISHED	_BITUL(6)
++#define MPTCP_SUBFLOW_FLAG_CONNECTED		_BITUL(7)
++#define MPTCP_SUBFLOW_FLAG_MAPVALID		_BITUL(8)
++
++enum {
++	MPTCP_SUBFLOW_ATTR_UNSPEC,
++	MPTCP_SUBFLOW_ATTR_TOKEN_REM,
++	MPTCP_SUBFLOW_ATTR_TOKEN_LOC,
++	MPTCP_SUBFLOW_ATTR_RELWRITE_SEQ,
++	MPTCP_SUBFLOW_ATTR_MAP_SEQ,
++	MPTCP_SUBFLOW_ATTR_MAP_SFSEQ,
++	MPTCP_SUBFLOW_ATTR_SSN_OFFSET,
++	MPTCP_SUBFLOW_ATTR_MAP_DATALEN,
++	MPTCP_SUBFLOW_ATTR_FLAGS,
++	MPTCP_SUBFLOW_ATTR_ID_REM,
++	MPTCP_SUBFLOW_ATTR_ID_LOC,
++	MPTCP_SUBFLOW_ATTR_PAD,
++	__MPTCP_SUBFLOW_ATTR_MAX
++};
++
++#define MPTCP_SUBFLOW_ATTR_MAX (__MPTCP_SUBFLOW_ATTR_MAX - 1)
++#endif /* _UAPI_MPTCP_H */
+diff --git a/net/mptcp/Makefile b/net/mptcp/Makefile
+index 2848d723c252..54494cf5bec0 100644
+--- a/net/mptcp/Makefile
++++ b/net/mptcp/Makefile
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_MPTCP) += mptcp.o
  
- static void mptcp_stop_timer(struct sock *sk)
-@@ -900,10 +904,13 @@ static void mptcp_retransmit_handler(struct sock *sk)
- {
- 	struct mptcp_sock *msk = mptcp_sk(sk);
- 
--	if (atomic64_read(&msk->snd_una) == msk->write_seq)
-+	if (atomic64_read(&msk->snd_una) == msk->write_seq) {
- 		mptcp_stop_timer(sk);
--	else
--		mptcp_reset_timer(sk);
-+	} else {
-+		set_bit(MPTCP_WORK_RTX, &msk->flags);
-+		if (schedule_work(&msk->work))
-+			sock_hold(sk);
-+	}
- }
- 
- static void mptcp_retransmit_timer(struct timer_list *t)
-@@ -925,6 +932,37 @@ static void mptcp_retransmit_timer(struct timer_list *t)
- 	sock_put(sk);
- }
- 
-+/* Find an idle subflow.  Return NULL if there is unacked data at tcp
-+ * level.
+-mptcp-y := protocol.o subflow.o options.o token.o crypto.o ctrl.o pm.o
++mptcp-y := protocol.o subflow.o options.o token.o crypto.o ctrl.o pm.o diag.o
+diff --git a/net/mptcp/diag.c b/net/mptcp/diag.c
+new file mode 100644
+index 000000000000..a536586742f2
+--- /dev/null
++++ b/net/mptcp/diag.c
+@@ -0,0 +1,104 @@
++// SPDX-License-Identifier: GPL-2.0
++/* MPTCP socket monitoring support
 + *
-+ * A backup subflow is returned only if that is the only kind available.
++ * Copyright (c) 2019 Red Hat
++ *
++ * Author: Davide Caratti <dcaratti@redhat.com>
 + */
-+static struct sock *mptcp_subflow_get_retrans(const struct mptcp_sock *msk)
++
++#include <linux/kernel.h>
++#include <linux/net.h>
++#include <linux/inet_diag.h>
++#include <net/netlink.h>
++#include <uapi/linux/mptcp.h>
++#include "protocol.h"
++
++static int subflow_get_info(const struct sock *sk, struct sk_buff *skb)
 +{
-+	struct mptcp_subflow_context *subflow;
-+	struct sock *backup = NULL;
++	struct mptcp_subflow_context *sf;
++	struct nlattr *start;
++	u32 flags = 0;
++	int err;
 +
-+	sock_owned_by_me((const struct sock *)msk);
++	start = nla_nest_start_noflag(skb, INET_ULP_INFO_MPTCP);
++	if (!start)
++		return -EMSGSIZE;
 +
-+	mptcp_for_each_subflow(msk, subflow) {
-+		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
-+
-+		/* still data outstanding at TCP level?  Don't retransmit. */
-+		if (!tcp_write_queue_empty(ssk))
-+			return NULL;
-+
-+		if (subflow->backup) {
-+			if (!backup)
-+				backup = ssk;
-+			continue;
-+		}
-+
-+		return ssk;
++	rcu_read_lock();
++	sf = rcu_dereference(inet_csk(sk)->icsk_ulp_data);
++	if (!sf) {
++		err = 0;
++		goto nla_failure;
 +	}
 +
-+	return backup;
++	if (sf->mp_capable)
++		flags |= MPTCP_SUBFLOW_FLAG_MCAP_REM;
++	if (sf->request_mptcp)
++		flags |= MPTCP_SUBFLOW_FLAG_MCAP_LOC;
++	if (sf->mp_join)
++		flags |= MPTCP_SUBFLOW_FLAG_JOIN_REM;
++	if (sf->request_join)
++		flags |= MPTCP_SUBFLOW_FLAG_JOIN_LOC;
++	if (sf->backup)
++		flags |= MPTCP_SUBFLOW_FLAG_BKUP_REM;
++	if (sf->request_bkup)
++		flags |= MPTCP_SUBFLOW_FLAG_BKUP_LOC;
++	if (sf->fully_established)
++		flags |= MPTCP_SUBFLOW_FLAG_FULLY_ESTABLISHED;
++	if (sf->conn_finished)
++		flags |= MPTCP_SUBFLOW_FLAG_CONNECTED;
++	if (sf->map_valid)
++		flags |= MPTCP_SUBFLOW_FLAG_MAPVALID;
++
++	if (nla_put_u32(skb, MPTCP_SUBFLOW_ATTR_TOKEN_REM, sf->remote_token) ||
++	    nla_put_u32(skb, MPTCP_SUBFLOW_ATTR_TOKEN_LOC, sf->token) ||
++	    nla_put_u32(skb, MPTCP_SUBFLOW_ATTR_RELWRITE_SEQ,
++			sf->rel_write_seq) ||
++	    nla_put_u64_64bit(skb, MPTCP_SUBFLOW_ATTR_MAP_SEQ, sf->map_seq,
++			      MPTCP_SUBFLOW_ATTR_PAD) ||
++	    nla_put_u32(skb, MPTCP_SUBFLOW_ATTR_MAP_SFSEQ,
++			sf->map_subflow_seq) ||
++	    nla_put_u32(skb, MPTCP_SUBFLOW_ATTR_SSN_OFFSET, sf->ssn_offset) ||
++	    nla_put_u16(skb, MPTCP_SUBFLOW_ATTR_MAP_DATALEN,
++			sf->map_data_len) ||
++	    nla_put_u32(skb, MPTCP_SUBFLOW_ATTR_FLAGS, flags) ||
++	    nla_put_u8(skb, MPTCP_SUBFLOW_ATTR_ID_REM, sf->remote_id) ||
++	    nla_put_u8(skb, MPTCP_SUBFLOW_ATTR_ID_LOC, sf->local_id)) {
++		err = -EMSGSIZE;
++		goto nla_failure;
++	}
++
++	rcu_read_unlock();
++	nla_nest_end(skb, start);
++	return 0;
++
++nla_failure:
++	rcu_read_unlock();
++	nla_nest_cancel(skb, start);
++	return err;
 +}
 +
- /* subflow sockets can be either outgoing (connect) or incoming
-  * (accept).
-  *
-@@ -958,11 +996,62 @@ static unsigned int mptcp_sync_mss(struct sock *sk, u32 pmtu)
- static void mptcp_worker(struct work_struct *work)
- {
- 	struct mptcp_sock *msk = container_of(work, struct mptcp_sock, work);
--	struct sock *sk = &msk->sk.icsk_inet.sk;
-+	struct sock *ssk, *sk = &msk->sk.icsk_inet.sk;
-+	int orig_len, orig_offset, ret, mss_now = 0, size_goal = 0;
-+	struct mptcp_data_frag *dfrag;
-+	u64 orig_write_seq;
-+	size_t copied = 0;
-+	struct msghdr msg;
-+	long timeo = 0;
- 
- 	lock_sock(sk);
-+	mptcp_clean_una(sk);
- 	__mptcp_flush_join_list(msk);
- 	__mptcp_move_skbs(msk);
++static size_t subflow_get_info_size(const struct sock *sk)
++{
++	size_t size = 0;
 +
-+	if (!test_and_clear_bit(MPTCP_WORK_RTX, &msk->flags))
-+		goto unlock;
++	size += nla_total_size(0) +	/* INET_ULP_INFO_MPTCP */
++		nla_total_size(4) +	/* MPTCP_SUBFLOW_ATTR_TOKEN_REM */
++		nla_total_size(4) +	/* MPTCP_SUBFLOW_ATTR_TOKEN_LOC */
++		nla_total_size(4) +	/* MPTCP_SUBFLOW_ATTR_RELWRITE_SEQ */
++		nla_total_size_64bit(8) +	/* MPTCP_SUBFLOW_ATTR_MAP_SEQ */
++		nla_total_size(4) +	/* MPTCP_SUBFLOW_ATTR_MAP_SFSEQ */
++		nla_total_size(2) +	/* MPTCP_SUBFLOW_ATTR_SSN_OFFSET */
++		nla_total_size(2) +	/* MPTCP_SUBFLOW_ATTR_MAP_DATALEN */
++		nla_total_size(4) +	/* MPTCP_SUBFLOW_ATTR_FLAGS */
++		nla_total_size(1) +	/* MPTCP_SUBFLOW_ATTR_ID_REM */
++		nla_total_size(1) +	/* MPTCP_SUBFLOW_ATTR_ID_LOC */
++		0;
++	return size;
++}
 +
-+	dfrag = mptcp_rtx_head(sk);
-+	if (!dfrag)
-+		goto unlock;
-+
-+	ssk = mptcp_subflow_get_retrans(msk);
-+	if (!ssk)
-+		goto reset_unlock;
-+
-+	lock_sock(ssk);
-+
-+	msg.msg_flags = MSG_DONTWAIT;
-+	orig_len = dfrag->data_len;
-+	orig_offset = dfrag->offset;
-+	orig_write_seq = dfrag->data_seq;
-+	while (dfrag->data_len > 0) {
-+		ret = mptcp_sendmsg_frag(sk, ssk, &msg, dfrag, &timeo, &mss_now,
-+					 &size_goal);
-+		if (ret < 0)
-+			break;
-+
-+		copied += ret;
-+		dfrag->data_len -= ret;
-+		dfrag->offset += ret;
-+	}
-+	if (copied)
-+		tcp_push(ssk, msg.msg_flags, mss_now, tcp_sk(ssk)->nonagle,
-+			 size_goal);
-+
-+	dfrag->data_seq = orig_write_seq;
-+	dfrag->offset = orig_offset;
-+	dfrag->data_len = orig_len;
-+
-+	mptcp_set_timeout(sk, ssk);
-+	release_sock(ssk);
-+
-+reset_unlock:
-+	if (!mptcp_timer_pending(sk))
-+		mptcp_reset_timer(sk);
-+
-+unlock:
- 	release_sock(sk);
- 	sock_put(sk);
- }
-@@ -1124,6 +1213,7 @@ static int mptcp_disconnect(struct sock *sk, int flags)
- 	lock_sock(sk);
- 	__mptcp_clear_xmit(sk);
- 	release_sock(sk);
-+	mptcp_cancel_work(sk);
- 	return tcp_disconnect(sk, flags);
- }
- 
++void mptcp_diag_subflow_init(struct tcp_ulp_ops *ops)
++{
++	ops->get_info = subflow_get_info;
++	ops->get_info_size = subflow_get_info_size;
++}
 diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index f855c954a8ff..e9d4a852c7f1 100644
+index e9d4a852c7f1..0999f74df027 100644
 --- a/net/mptcp/protocol.h
 +++ b/net/mptcp/protocol.h
-@@ -88,6 +88,7 @@
- /* MPTCP socket flags */
- #define MPTCP_DATA_READY	0
- #define MPTCP_SEND_SPACE	1
-+#define MPTCP_WORK_RTX		2
+@@ -408,4 +408,6 @@ static inline bool before64(__u64 seq1, __u64 seq2)
  
- static inline __be32 mptcp_option(u8 subopt, u8 len, u8 nib, u8 field)
- {
+ #define after64(seq2, seq1)	before64(seq1, seq2)
+ 
++void mptcp_diag_subflow_init(struct tcp_ulp_ops *ops);
++
+ #endif /* __MPTCP_PROTOCOL_H */
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index ba636cd84a3c..c051db074708 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -1148,6 +1148,8 @@ void mptcp_subflow_init(void)
+ 	subflow_v6m_specific.net_frag_header_len = 0;
+ #endif
+ 
++	mptcp_diag_subflow_init(&subflow_ulp_ops);
++
+ 	if (tcp_register_ulp(&subflow_ulp_ops) != 0)
+ 		panic("MPTCP: failed to register subflows to ULP\n");
+ }
 -- 
 2.26.0
 
