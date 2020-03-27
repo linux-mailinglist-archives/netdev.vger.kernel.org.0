@@ -2,92 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F3E195B2B
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 17:34:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 70601195B4A
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 17:38:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727820AbgC0QeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 12:34:10 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:43957 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727352AbgC0QeJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 12:34:09 -0400
-Received: by mail-qt1-f194.google.com with SMTP id a5so9036424qtw.10
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 09:34:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=3vviqCu3BeG6uIIUCd43nA6eTJ5KzlQf0ffZzPpsPs4=;
-        b=RBRV3WO801lKB8gQl1he0zYwjDdL4naaopbT1SR4ARbcSV/S7AqLJP9+u03VXASsAz
-         5twpvwZOc8bUNlBpY/g1Ld1nlbi6iTnKCfR1J0npvRlhc83u4kiyUoPw84QZnyIAn+3c
-         uRX/IplJS+dlOmmoNZAnQHSIVb/I1DN5HoDnhb3XVTjcb25C5mxh0ke+sIIbskJP5hD+
-         2VnXLqqf8Hpvq6Th7cKkf5oaykK8tpMRptDwGxpRDEEN2bFAMdhepKgVFtKtNAurbKae
-         bLsAFE3WzzdZSKUdTlNQ6covBJS/GDOnIvIyvDH7pEnahqeaMr0u69uVcmcXkMbJcqXa
-         yK8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3vviqCu3BeG6uIIUCd43nA6eTJ5KzlQf0ffZzPpsPs4=;
-        b=IZTh1shWEmtZh1LgZDbF5OkRTL7aY22c5E5ByDr+4MiEAg/4KY9r0td35xjCr5IzCj
-         XM26MmVmu2eXb9uAdFsHqivTs3KJPPbeXSMFF7yTJz7JB4hnKNRcNjjYV896+hfbPXtw
-         IOrkRZQxmoJQwEzheeR5qNWnAmCc3Op+dtdwAdGfVVi077b1AkzDq89TqjVsB/AnnHwp
-         yUNK1+gFl1y/n2i72lYAiDzU8xIZdNkNzMh7Y6cORR2Pk0Vbn+NLKdFCaTeuD7z09ukk
-         KwaV39UaLKG4UdxnlkqiaLdiZBt2SsU+Z6n50B2NYaEAxPPsNwJDC5Y1aT17Lrbykt1K
-         Ytmg==
-X-Gm-Message-State: ANhLgQ1/7Wsu3s6byNQdulDEYO0BP8R81I3cTIexKuWfkuHyw09aMmyC
-        Et332WApc5st8VxnIbLEz0wIqQ==
-X-Google-Smtp-Source: ADFU+vtWDYI244g1D1/9GAn8KCVhcGD/3cO2b4hDQssj0QNU+Fk5Jj8wwwqNkqug3JExHVABVuG6jw==
-X-Received: by 2002:ac8:7085:: with SMTP id y5mr40941qto.47.1585326847461;
-        Fri, 27 Mar 2020 09:34:07 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id t6sm4138177qkd.60.2020.03.27.09.34.06
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 27 Mar 2020 09:34:06 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jHrvq-0001gp-4j; Fri, 27 Mar 2020 13:34:06 -0300
-Date:   Fri, 27 Mar 2020 13:34:06 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        linux-rdma@vger.kernel.org, Maor Gottlieb <maorg@mellanox.com>,
-        Mark Bloch <markb@mellanox.com>,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>
-Subject: Re: [PATCH rdma-next 0/2] RDMA TX steering support
-Message-ID: <20200327163406.GA6423@ziepe.ca>
-References: <20200324061425.1570190-1-leon@kernel.org>
+        id S1727792AbgC0Qid (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 12:38:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38346 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727740AbgC0Qid (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Mar 2020 12:38:33 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 88E8B206E6;
+        Fri, 27 Mar 2020 16:38:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585327112;
+        bh=deDTuu1jzjGnbi3OJe4c7nZIxvdzsPnwdEoPIN4Iu3s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jLprVHeO0FqbudliDyQijNJeIKcCwAXsRIKOclD81V6rf1a2bbqrksM4/YIN/EWXa
+         yyaAiSUNAl1a5EEBChZL6YiUyaikgMhryHulWOG8SwKHDgAVdM8ZPFzBnsp0AqQ2Yt
+         Hbht/cTZfxWoWJmXgFDKdl5KXIsY00kacnf/efFc=
+Date:   Fri, 27 Mar 2020 09:38:29 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, parav@mellanox.com,
+        yuvalav@mellanox.com, jgg@ziepe.ca, saeedm@mellanox.com,
+        leon@kernel.org, andrew.gospodarek@broadcom.com,
+        michael.chan@broadcom.com, moshe@mellanox.com, ayal@mellanox.com,
+        eranbe@mellanox.com, vladbu@mellanox.com, kliteyn@mellanox.com,
+        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
+        tariqt@mellanox.com, oss-drivers@netronome.com,
+        snelson@pensando.io, drivers@pensando.io, aelior@marvell.com,
+        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
+        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
+        jacob.e.keller@intel.com, valex@mellanox.com,
+        linyunsheng@huawei.com, lihong.yang@intel.com,
+        vikas.gupta@broadcom.com, magnus.karlsson@intel.com
+Subject: Re: [RFC] current devlink extension plan for NICs
+Message-ID: <20200327093829.76140a98@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20200327074736.GJ11304@nanopsycho.orion>
+References: <20200319192719.GD11304@nanopsycho.orion>
+        <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
+        <20200320073555.GE11304@nanopsycho.orion>
+        <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
+        <20200321093525.GJ11304@nanopsycho.orion>
+        <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200326144709.GW11304@nanopsycho.orion>
+        <20200326145146.GX11304@nanopsycho.orion>
+        <20200326133001.1b2694c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200327074736.GJ11304@nanopsycho.orion>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200324061425.1570190-1-leon@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 08:14:23AM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@mellanox.com>
+On Fri, 27 Mar 2020 08:47:36 +0100 Jiri Pirko wrote:
+> >So the queues, interrupts, and other resources are also part 
+> >of the slice then?  
 > 
-> Hi,
+> Yep, that seems to make sense.
 > 
-> Those two patches from Michael extends mlx5_core and mlx5_ib flow
-> steering to support RDMA TX in similar way to already supported
-> RDMA RX.
+> >How do slice parameters like rate apply to NVMe?  
 > 
-> Thanks
+> Not really.
 > 
-> Michael Guralnik (2):
->   net/mlx5: Add support for RDMA TX steering
->   RDMA/mlx5: Add support for RDMA TX flow table
+> >Are ports always ethernet? and slices also cover endpoints with
+> >transport stack offloaded to the NIC?  
+> 
+> devlink_port now can be either "ethernet" or "infiniband". Perhaps,
+> there can be port type "nve" which would contain only some of the
+> config options and would not have a representor "netdev/ibdev" linked.
+> I don't know.
 
-I applied this to for-next, in the unlikely event that the shared
-branch is still required the net/mlx5 commit is
+I honestly find it hard to understand what that slice abstraction is,
+and which things belong to slices and which to PCI ports (or why we even
+have them).
 
-24670b1a316618 net/mlx5: Add support for RDMA TX steering
+With devices like NFP and Mellanox CX3 which have one PCI PF maybe it
+would have made sense to have a slice that covers multiple ports, but
+it seems the proposal is to have port to slice mapping be 1:1. And rate
+in those devices should still be per port not per slice.
 
-Thanks,
-Jason
+But this keeps coming back, and since you guys are doing all the work,
+if you really really need it..
