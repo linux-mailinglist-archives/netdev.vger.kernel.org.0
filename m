@@ -2,165 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C859194E59
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 02:19:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3089194E62
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 02:26:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727772AbgC0BTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 21:19:21 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:38270 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727547AbgC0BTV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 21:19:21 -0400
-Received: by mail-pl1-f193.google.com with SMTP id w3so2843567plz.5;
-        Thu, 26 Mar 2020 18:19:19 -0700 (PDT)
+        id S1727714AbgC0B0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 21:26:11 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:37923 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727122AbgC0B0L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 21:26:11 -0400
+Received: by mail-pf1-f196.google.com with SMTP id c21so3047425pfo.5;
+        Thu, 26 Mar 2020 18:26:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=8RzccpdJs/G4g/YI70Cb7EPmR/Et2mXpJnq1PHg6nSk=;
-        b=kuNIE00hSfe4Qa8d/4Dkb6zmRsWekGmGOLYtU6xT+ys2w9YxVaylami9atibTZ//6U
-         hCo045d/sRdh1jC+pUSbb+cmQb5fXF7VD3WXhfu685urCuH0cvitL7Ebj1D5/VKrmiuB
-         J+bQB+ccBhjMj+XtxEeM+anwRAV+T263V5YbLrcTVTQntq5OhC2I5DtjRBxJJi0ObgTD
-         asj0Ibr0bRSctoetbGOp3G7HaDaRvbYnP1SDIgllBQAcjws0G45y4eWm+2cG5neWUEMQ
-         VAllnvGj4VankHCxYF4F3ZQR87BMH6Q14ThWRZK3C9Q3Ja2m6oN+MWCWiFd17ihbZWH1
-         +O9A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=6Sl9e1fpV3n/PUpys52AurBxrK0AUmZ3suddAnYhqks=;
+        b=BeVatET+VO+W+d6njIuSybcLG2ueAPEpR7q+hJfQpIITnInalrOAqMeQcUOvY7pQp+
+         dg3SWej0qU7JLF6MxUWvKl3fXoUhMzLHyLSXZixz0QwvdN+nB97C4Fpj9uKDv9mZDJME
+         lFOEZ7PjF2pf/K13P2L2bUhh4/kIFmKQdRcsUN22SNYbL/cSc3RpoMY1uWt6BhJTufYw
+         btBwoAjUIJ9O0NoFAW1T9FfJCMI8wja/cMLn7iMMn2k45amz+mGrmLRFJtjosFA7KxHa
+         fLf9OlKbDJJODH6csvWhn9NInOd0IDdMbUgArn6E4nq4XwRKJdgawhmbFNjgj9L4UjoO
+         G37Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=8RzccpdJs/G4g/YI70Cb7EPmR/Et2mXpJnq1PHg6nSk=;
-        b=mzGRPrG2ltSm8GKrUx5fH06eYRXent6vrAdDos1kp7Oqh5zYL8Lbw2NwqnL8QXRnNw
-         cltWFakfRgxfQcelOYINnXkVPHB0GO3O6CCwrvubq/aF58BHH6xmgH1Hz3MUm5t5xbKq
-         nrgSjVlmBZMQJrNZs7FvSi6gO3aojg2PYEoaZDV08aF0+IePDt2i/b+yrnKTaEK/I+i1
-         sDoJwfRk5IGbDl7ovfGbdNL1EBZRiPBns/QWKapDVTOXXaizBFSYQiTz6OMuv/txVICp
-         vSwTBaa8o31Hkxxa9D7ahZnwLYfbHWYQ0RXQIueL1CqXnCeFWT6bFO+7nPBqmjqE7bPd
-         XhZg==
-X-Gm-Message-State: ANhLgQ2ZNJXQ58bnd4KQD99/veqlj08Tp3acGlQicE+SUbXa7NhIGe0E
-        J9BscE3IkzEJnNMnGQkxezs=
-X-Google-Smtp-Source: ADFU+vutGYgWglpq5wY7uxRtBeJgiwazJiQtmeF0fbJ9rqpi474voEdnnWFDmrGj4biq9HgGHe5IIg==
-X-Received: by 2002:a17:90a:208:: with SMTP id c8mr3056837pjc.153.1585271958559;
-        Thu, 26 Mar 2020 18:19:18 -0700 (PDT)
-Received: from localhost ([161.117.239.120])
-        by smtp.gmail.com with ESMTPSA id y7sm2701914pfq.159.2020.03.26.18.19.17
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 26 Mar 2020 18:19:18 -0700 (PDT)
-From:   Qiujun Huang <hqjagain@gmail.com>
-To:     marcelo.leitner@gmail.com, davem@davemloft.net
-Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com, kuba@kernel.org,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, anenbupt@gmail.com,
-        Qiujun Huang <hqjagain@gmail.com>
-Subject: [PATCH v5] sctp: fix refcount bug in sctp_wfree
-Date:   Fri, 27 Mar 2020 09:19:12 +0800
-Message-Id: <20200327011912.19040-1-hqjagain@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=6Sl9e1fpV3n/PUpys52AurBxrK0AUmZ3suddAnYhqks=;
+        b=KvXq473S+T2XVCtmxVRbiuUSlPhDCHUvICgZXfhUAmXOoUDuJeVdxlaoQGqtzqy4/B
+         uNyDSokUfNS2Ow8hAV0mYza3GkpVWm05+fzzpoIpCLxpP75rXILKYKq4XdkC2OPMMxN+
+         oImqvsL25cYyTmxL/HxUSDJ0ZeViHIlRW/oyiv8Gic3BW2fEpL7naUbU7JoFnqhsbUpk
+         Ig1SFAxNDDru10e3c8N/E26mEM8ajX+6eiT6iJpYHVlS5QiRRg38ApZF0vs7NIZJCuj6
+         3vmHq5RNnX1j2fvzg003OGgVL4+GFNJpuXyNl5a2JJK2KkZNjyIdmjuxKkKZWWFrYZEa
+         519g==
+X-Gm-Message-State: ANhLgQ0qi7GTxIgZNUp1OAe0Mn+YhwteB3Ecu7vAMF6yNdNzA7dvd7aK
+        G3ArsbSFfrA90cxBDIXf4ZU=
+X-Google-Smtp-Source: ADFU+vtL88oQlNeFSjMNkmS7nCbdPob1bFnZKbDmOLBXFNOJ2mLvWafcaKDgmiB2Iu82JsgI/qK+hQ==
+X-Received: by 2002:a63:100c:: with SMTP id f12mr11260613pgl.185.1585272369760;
+        Thu, 26 Mar 2020 18:26:09 -0700 (PDT)
+Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id i4sm2549027pjg.4.2020.03.26.18.26.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2020 18:26:09 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 18:26:06 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Tony Lindgren <tony@atomide.com>, Sekhar Nori <nsekhar@ti.com>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        netdev <netdev@vger.kernel.org>, linux-omap@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v3 03/11] net: ethernet: ti: cpts: move tc mult
+ update in cpts_fifo_read()
+Message-ID: <20200327012606.GA9677@localhost>
+References: <20200320194244.4703-1-grygorii.strashko@ti.com>
+ <20200320194244.4703-4-grygorii.strashko@ti.com>
+ <20200326142049.GD20841@localhost>
+ <f91001c9-2b11-53ac-84a7-11e1e94c5dc9@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f91001c9-2b11-53ac-84a7-11e1e94c5dc9@ti.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We should iterate over the datamsgs to modify
-all chunks(skbs) to newsk.
+On Thu, Mar 26, 2020 at 10:18:18PM +0200, Grygorii Strashko wrote:
+> I've been thinking to squash them. What's your opinion.
 
-The following case cause the bug:
-for the trouble SKB, it was in outq->transmitted list
+I favor small, incremental patches.  Just the motivation for the first
+patch was missing, that's all.
 
-sctp_outq_sack
-        sctp_check_transmitted
-                SKB was moved to outq->sacked list
-        then throw away the sack queue
-                SKB was deleted from outq->sacked
-(but it was held by datamsg at sctp_datamsg_to_asoc
-So, sctp_wfree was not called here)
-
-then migrate happened
-
-        sctp_for_each_tx_datachunk(
-        sctp_clear_owner_w);
-        sctp_assoc_migrate();
-        sctp_for_each_tx_datachunk(
-        sctp_set_owner_w);
-SKB was not in the outq, and was not changed to newsk
-
-finally
-
-__sctp_outq_teardown
-        sctp_chunk_put (for another skb)
-                sctp_datamsg_put
-                        __kfree_skb(msg->frag_list)
-                                sctp_wfree (for SKB)
-	SKB->sk was still oldsk (skb->sk != asoc->base.sk).
-
-Reported-and-tested-by:syzbot+cea71eec5d6de256d54d@syzkaller.appspotmail.com
-Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
----
- net/sctp/socket.c | 30 ++++++++++++++++++++++--------
- 1 file changed, 22 insertions(+), 8 deletions(-)
-
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 1b56fc440606..75acbd5d4597 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -147,29 +147,43 @@ static void sctp_clear_owner_w(struct sctp_chunk *chunk)
- 	skb_orphan(chunk->skb);
- }
- 
-+#define traverse_and_process()	\
-+do {				\
-+	msg = chunk->msg;	\
-+	if (msg == prev_msg)	\
-+		continue;	\
-+	list_for_each_entry(c, &msg->chunks, frag_list) {	\
-+		if ((clear && asoc->base.sk == c->skb->sk) ||	\
-+		    (!clear && asoc->base.sk != c->skb->sk))	\
-+		    cb(c);	\
-+	}			\
-+} while (0)
-+
- static void sctp_for_each_tx_datachunk(struct sctp_association *asoc,
-+				       bool clear,
- 				       void (*cb)(struct sctp_chunk *))
- 
- {
-+	struct sctp_datamsg *msg, *prev_msg = NULL;
- 	struct sctp_outq *q = &asoc->outqueue;
-+	struct sctp_chunk *chunk, *c;
- 	struct sctp_transport *t;
--	struct sctp_chunk *chunk;
- 
- 	list_for_each_entry(t, &asoc->peer.transport_addr_list, transports)
- 		list_for_each_entry(chunk, &t->transmitted, transmitted_list)
--			cb(chunk);
-+			traverse_and_process();
- 
- 	list_for_each_entry(chunk, &q->retransmit, transmitted_list)
--		cb(chunk);
-+		traverse_and_process();
- 
- 	list_for_each_entry(chunk, &q->sacked, transmitted_list)
--		cb(chunk);
-+		traverse_and_process();
- 
- 	list_for_each_entry(chunk, &q->abandoned, transmitted_list)
--		cb(chunk);
-+		traverse_and_process();
- 
- 	list_for_each_entry(chunk, &q->out_chunk_list, list)
--		cb(chunk);
-+		traverse_and_process();
- }
- 
- static void sctp_for_each_rx_skb(struct sctp_association *asoc, struct sock *sk,
-@@ -9574,9 +9588,9 @@ static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
- 	 * paths won't try to lock it and then oldsk.
- 	 */
- 	lock_sock_nested(newsk, SINGLE_DEPTH_NESTING);
--	sctp_for_each_tx_datachunk(assoc, sctp_clear_owner_w);
-+	sctp_for_each_tx_datachunk(assoc, true, sctp_clear_owner_w);
- 	sctp_assoc_migrate(assoc, newsk);
--	sctp_for_each_tx_datachunk(assoc, sctp_set_owner_w);
-+	sctp_for_each_tx_datachunk(assoc, false, sctp_set_owner_w);
- 
- 	/* If the association on the newsk is already closed before accept()
- 	 * is called, set RCV_SHUTDOWN flag.
--- 
-2.17.1
-
+Thanks,
+Richard
