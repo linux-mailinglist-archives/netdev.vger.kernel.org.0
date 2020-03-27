@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 818FA1960A7
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 22:49:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D653E1960A9
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 22:49:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727798AbgC0VtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 17:49:17 -0400
-Received: from mga01.intel.com ([192.55.52.88]:25803 "EHLO mga01.intel.com"
+        id S1727803AbgC0VtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 17:49:20 -0400
+Received: from mga01.intel.com ([192.55.52.88]:25804 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727773AbgC0VtO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Mar 2020 17:49:14 -0400
-IronPort-SDR: mGG2+LZV9fuNfybFN3P4xgGvx7DGwtiX46RTUhufYBS/IuOefLygvyMJyse4RRsAyVV883xJll
- CNdrDCx5+bEw==
+        id S1727781AbgC0VtP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Mar 2020 17:49:15 -0400
+IronPort-SDR: h9vBzoTcSiWy+YC4bENGJ89fdNsDBvaFXI48UNq70w9q2kNu4wP1scmPjpx7Kgj1dFZATxalXn
+ 7l8WX+4ozT7g==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2020 14:49:11 -0700
-IronPort-SDR: qMWPd45RqcurWVI2Wx5vxkHI69C3XRW+SCGhM1g4vtryz8urulKVINij7fBEGn0OhgQR02ky4T
- m6idrNEbO+DQ==
+IronPort-SDR: sh1RitBuaS1X5qpQMfHIqcRf2GqJt2h0oyWXG50bfya5fMUEWIhBkHWQOaP7jTtuVPYZ0ttl0U
+ xGVcPKymYg1w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,313,1580803200"; 
-   d="scan'208";a="271713489"
+   d="scan'208";a="271713493"
 Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.7.195])
   by fmsmga004.fm.intel.com with ESMTP; 27 Mar 2020 14:49:11 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Paolo Abeni <pabeni@redhat.com>, eric.dumazet@gmail.com,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next v3 16/17] selftests: add PM netlink functional tests
-Date:   Fri, 27 Mar 2020 14:48:52 -0700
-Message-Id: <20200327214853.140669-17-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next v3 17/17] selftests: add test-cases for MPTCP MP_JOIN
+Date:   Fri, 27 Mar 2020 14:48:53 -0700
+Message-Id: <20200327214853.140669-18-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200327214853.140669-1-mathew.j.martineau@linux.intel.com>
 References: <20200327214853.140669-1-mathew.j.martineau@linux.intel.com>
@@ -43,91 +43,206 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-This introduces basic self-tests for the PM netlink,
-checking the basic APIs and possible exceptional
-values.
+Use the pm netlink to configure the creation of several
+subflows, and verify that via MIB counters.
+
+Update the mptcp_connect program to allow reliable MP_JOIN
+handshake even on small data file
 
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- tools/testing/selftests/net/mptcp/.gitignore  |   1 +
- tools/testing/selftests/net/mptcp/Makefile    |   7 +-
- .../testing/selftests/net/mptcp/pm_netlink.sh | 130 ++++
- tools/testing/selftests/net/mptcp/pm_nl_ctl.c | 616 ++++++++++++++++++
- 4 files changed, 751 insertions(+), 3 deletions(-)
- create mode 100755 tools/testing/selftests/net/mptcp/pm_netlink.sh
- create mode 100644 tools/testing/selftests/net/mptcp/pm_nl_ctl.c
+ tools/testing/selftests/net/mptcp/Makefile    |   2 +-
+ .../selftests/net/mptcp/mptcp_connect.c       |  28 +-
+ .../testing/selftests/net/mptcp/mptcp_join.sh | 357 ++++++++++++++++++
+ 3 files changed, 383 insertions(+), 4 deletions(-)
+ create mode 100755 tools/testing/selftests/net/mptcp/mptcp_join.sh
 
-diff --git a/tools/testing/selftests/net/mptcp/.gitignore b/tools/testing/selftests/net/mptcp/.gitignore
-index d72f07642738..ea13b255a99d 100644
---- a/tools/testing/selftests/net/mptcp/.gitignore
-+++ b/tools/testing/selftests/net/mptcp/.gitignore
-@@ -1,2 +1,3 @@
- mptcp_connect
-+pm_nl_ctl
- *.pcap
 diff --git a/tools/testing/selftests/net/mptcp/Makefile b/tools/testing/selftests/net/mptcp/Makefile
-index ba450e62dc5b..70c831fcaf70 100644
+index 70c831fcaf70..f50976ee7d44 100644
 --- a/tools/testing/selftests/net/mptcp/Makefile
 +++ b/tools/testing/selftests/net/mptcp/Makefile
-@@ -1,12 +1,13 @@
- # SPDX-License-Identifier: GPL-2.0
+@@ -5,7 +5,7 @@ KSFT_KHDR_INSTALL := 1
  
- top_srcdir = ../../../../..
-+KSFT_KHDR_INSTALL := 1
+ CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g  -I$(top_srcdir)/usr/include
  
--CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g
-+CFLAGS =  -Wall -Wl,--no-as-needed -O2 -g  -I$(top_srcdir)/usr/include
+-TEST_PROGS := mptcp_connect.sh pm_netlink.sh
++TEST_PROGS := mptcp_connect.sh pm_netlink.sh mptcp_join.sh
  
--TEST_PROGS := mptcp_connect.sh
-+TEST_PROGS := mptcp_connect.sh pm_netlink.sh
+ TEST_GEN_FILES = mptcp_connect pm_nl_ctl
  
--TEST_GEN_FILES = mptcp_connect
-+TEST_GEN_FILES = mptcp_connect pm_nl_ctl
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_connect.c b/tools/testing/selftests/net/mptcp/mptcp_connect.c
+index 702bab2c12da..cedee5b952ba 100644
+--- a/tools/testing/selftests/net/mptcp/mptcp_connect.c
++++ b/tools/testing/selftests/net/mptcp/mptcp_connect.c
+@@ -51,6 +51,7 @@ static bool tcpulp_audit;
+ static int pf = AF_INET;
+ static int cfg_sndbuf;
+ static int cfg_rcvbuf;
++static bool cfg_join;
  
- TEST_FILES := settings
+ static void die_usage(void)
+ {
+@@ -250,6 +251,7 @@ static int sock_connect_mptcp(const char * const remoteaddr,
  
-diff --git a/tools/testing/selftests/net/mptcp/pm_netlink.sh b/tools/testing/selftests/net/mptcp/pm_netlink.sh
+ static size_t do_rnd_write(const int fd, char *buf, const size_t len)
+ {
++	static bool first = true;
+ 	unsigned int do_w;
+ 	ssize_t bw;
+ 
+@@ -257,10 +259,19 @@ static size_t do_rnd_write(const int fd, char *buf, const size_t len)
+ 	if (do_w == 0 || do_w > len)
+ 		do_w = len;
+ 
++	if (cfg_join && first && do_w > 100)
++		do_w = 100;
++
+ 	bw = write(fd, buf, do_w);
+ 	if (bw < 0)
+ 		perror("write");
+ 
++	/* let the join handshake complete, before going on */
++	if (cfg_join && first) {
++		usleep(200000);
++		first = false;
++	}
++
+ 	return bw;
+ }
+ 
+@@ -385,8 +396,11 @@ static int copyfd_io_poll(int infd, int peerfd, int outfd)
+ 					break;
+ 
+ 				/* ... but we still receive.
+-				 * Close our write side.
++				 * Close our write side, ev. give some time
++				 * for address notification
+ 				 */
++				if (cfg_join)
++					usleep(400000);
+ 				shutdown(peerfd, SHUT_WR);
+ 			} else {
+ 				if (errno == EINTR)
+@@ -403,6 +417,10 @@ static int copyfd_io_poll(int infd, int peerfd, int outfd)
+ 		}
+ 	}
+ 
++	/* leave some time for late join/announce */
++	if (cfg_join)
++		usleep(400000);
++
+ 	close(peerfd);
+ 	return 0;
+ }
+@@ -658,7 +676,7 @@ static void maybe_close(int fd)
+ {
+ 	unsigned int r = rand();
+ 
+-	if (r & 1)
++	if (!cfg_join && (r & 1))
+ 		close(fd);
+ }
+ 
+@@ -794,8 +812,12 @@ static void parse_opts(int argc, char **argv)
+ {
+ 	int c;
+ 
+-	while ((c = getopt(argc, argv, "6lp:s:hut:m:S:R:")) != -1) {
++	while ((c = getopt(argc, argv, "6jlp:s:hut:m:S:R:")) != -1) {
+ 		switch (c) {
++		case 'j':
++			cfg_join = true;
++			cfg_mode = CFG_MODE_POLL;
++			break;
+ 		case 'l':
+ 			listen_mode = true;
+ 			break;
+diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
 new file mode 100755
-index 000000000000..cfc743c47cb2
+index 000000000000..dd42c2f692d0
 --- /dev/null
-+++ b/tools/testing/selftests/net/mptcp/pm_netlink.sh
-@@ -0,0 +1,130 @@
++++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
+@@ -0,0 +1,357 @@
 +#!/bin/bash
 +# SPDX-License-Identifier: GPL-2.0
 +
-+ksft_skip=4
 +ret=0
++sin=""
++sout=""
++cin=""
++cout=""
++ksft_skip=4
++timeout=30
++capture=0
 +
-+usage() {
-+	echo "Usage: $0 [ -h ]"
++TEST_COUNT=0
++
++init()
++{
++	capout=$(mktemp)
++
++	rndh=$(printf %x $sec)-$(mktemp -u XXXXXX)
++
++	ns1="ns1-$rndh"
++	ns2="ns2-$rndh"
++
++	for netns in "$ns1" "$ns2";do
++		ip netns add $netns || exit $ksft_skip
++		ip -net $netns link set lo up
++		ip netns exec $netns sysctl -q net.mptcp.enabled=1
++		ip netns exec $netns sysctl -q net.ipv4.conf.all.rp_filter=0
++		ip netns exec $netns sysctl -q net.ipv4.conf.default.rp_filter=0
++	done
++
++	#  ns1              ns2
++	# ns1eth1    ns2eth1
++	# ns1eth2    ns2eth2
++	# ns1eth3    ns2eth3
++	# ns1eth4    ns2eth4
++
++	for i in `seq 1 4`; do
++		ip link add ns1eth$i netns "$ns1" type veth peer name ns2eth$i netns "$ns2"
++		ip -net "$ns1" addr add 10.0.$i.1/24 dev ns1eth$i
++		ip -net "$ns1" addr add dead:beef:$i::1/64 dev ns1eth$i nodad
++		ip -net "$ns1" link set ns1eth$i up
++
++		ip -net "$ns2" addr add 10.0.$i.2/24 dev ns2eth$i
++		ip -net "$ns2" addr add dead:beef:$i::2/64 dev ns2eth$i nodad
++		ip -net "$ns2" link set ns2eth$i up
++
++		# let $ns2 reach any $ns1 address from any interface
++		ip -net "$ns2" route add default via 10.0.$i.1 dev ns2eth$i metric 10$i
++	done
 +}
 +
++cleanup_partial()
++{
++	rm -f "$capout"
 +
-+while getopts "$optstring" option;do
-+	case "$option" in
-+	"h")
-+		usage $0
-+		exit 0
-+		;;
-+	"?")
-+		usage $0
-+		exit 1
-+		;;
-+	esac
-+done
-+
-+sec=$(date +%s)
-+rndh=$(printf %x $sec)-$(mktemp -u XXXXXX)
-+ns1="ns1-$rndh"
-+err=$(mktemp)
-+ret=0
++	for netns in "$ns1" "$ns2"; do
++		ip netns del $netns
++	done
++}
 +
 +cleanup()
 +{
-+	rm -f $out
-+	ip netns del $ns1
++	rm -f "$cin" "$cout"
++	rm -f "$sin" "$sout"
++	cleanup_partial
 +}
++
++reset()
++{
++	cleanup_partial
++	init
++}
++
++for arg in "$@"; do
++	if [ "$arg" = "-c" ]; then
++		capture=1
++	fi
++done
 +
 +ip -Version > /dev/null 2>&1
 +if [ $? -ne 0 ];then
@@ -135,716 +250,277 @@ index 000000000000..cfc743c47cb2
 +	exit $ksft_skip
 +fi
 +
-+trap cleanup EXIT
 +
-+ip netns add $ns1 || exit $ksft_skip
-+ip -net $ns1 link set lo up
-+ip netns exec $ns1 sysctl -q net.mptcp.enabled=1
-+
-+check()
++check_transfer()
 +{
-+	local cmd="$1"
-+	local expected="$2"
-+	local msg="$3"
-+	local out=`$cmd 2>$err`
-+	local cmd_ret=$?
++	in=$1
++	out=$2
++	what=$3
 +
-+	printf "%-50s %s" "$msg"
-+	if [ $cmd_ret -ne 0 ]; then
-+		echo "[FAIL] command execution '$cmd' stderr "
-+		cat $err
-+		ret=1
-+	elif [ "$out" = "$expected" ]; then
-+		echo "[ OK ]"
-+	else
-+		echo -n "[FAIL] "
-+		echo "expected '$expected' got '$out'"
++	cmp "$in" "$out" > /dev/null 2>&1
++	if [ $? -ne 0 ] ;then
++		echo "[ FAIL ] $what does not match (in, out):"
++		print_file_err "$in"
++		print_file_err "$out"
++
++		return 1
++	fi
++
++	return 0
++}
++
++do_ping()
++{
++	listener_ns="$1"
++	connector_ns="$2"
++	connect_addr="$3"
++
++	ip netns exec ${connector_ns} ping -q -c 1 $connect_addr >/dev/null
++	if [ $? -ne 0 ] ; then
++		echo "$listener_ns -> $connect_addr connectivity [ FAIL ]" 1>&2
 +		ret=1
 +	fi
 +}
 +
-+check "ip netns exec $ns1 ./pm_nl_ctl dump" "" "defaults addr list"
-+check "ip netns exec $ns1 ./pm_nl_ctl limits" "accept 0
-+subflows 0" "defaults limits"
++do_transfer()
++{
++	listener_ns="$1"
++	connector_ns="$2"
++	cl_proto="$3"
++	srv_proto="$4"
++	connect_addr="$5"
 +
-+ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.1
-+ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.2 flags subflow dev lo
-+ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.3 flags signal,backup
-+check "ip netns exec $ns1 ./pm_nl_ctl get 1" "id 1 flags  10.0.1.1 " "simple add/get addr"
++	port=$((10000+$TEST_COUNT))
++	TEST_COUNT=$((TEST_COUNT+1))
 +
-+check "ip netns exec $ns1 ./pm_nl_ctl dump" \
-+"id 1 flags  10.0.1.1 
-+id 2 flags subflow dev lo 10.0.1.2 
-+id 3 flags signal,backup 10.0.1.3 " "dump addrs"
++	:> "$cout"
++	:> "$sout"
++	:> "$capout"
 +
-+ip netns exec $ns1 ./pm_nl_ctl del 2
-+check "ip netns exec $ns1 ./pm_nl_ctl get 2" "" "simple del addr"
-+check "ip netns exec $ns1 ./pm_nl_ctl dump" \
-+"id 1 flags  10.0.1.1 
-+id 3 flags signal,backup 10.0.1.3 " "dump addrs after del"
++	if [ $capture -eq 1 ]; then
++		if [ -z $SUDO_USER ] ; then
++			capuser=""
++		else
++			capuser="-Z $SUDO_USER"
++		fi
 +
-+ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.3
-+check "ip netns exec $ns1 ./pm_nl_ctl get 4" "" "duplicate addr"
++		capfile="mp_join-${listener_ns}.pcap"
 +
-+ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.4 id 10 flags signal
-+check "ip netns exec $ns1 ./pm_nl_ctl get 4" "id 4 flags signal 10.0.1.4 " "id addr increment"
++		echo "Capturing traffic for test $TEST_COUNT into $capfile"
++		ip netns exec ${listener_ns} tcpdump -i any -s 65535 -B 32768 $capuser -w $capfile > "$capout" 2>&1 &
++		cappid=$!
 +
-+for i in `seq 5 9`; do
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.$i flags signal >/dev/null 2>&1
-+done
-+check "ip netns exec $ns1 ./pm_nl_ctl get 9" "id 9 flags signal 10.0.1.9 " "hard addr limit"
-+check "ip netns exec $ns1 ./pm_nl_ctl get 10" "" "above hard addr limit"
++		sleep 1
++	fi
 +
-+for i in `seq 9 256`; do
-+	ip netns exec $ns1 ./pm_nl_ctl del $i
-+	ip netns exec $ns1 ./pm_nl_ctl add 10.0.0.9
-+done
-+check "ip netns exec $ns1 ./pm_nl_ctl dump" "id 1 flags  10.0.1.1 
-+id 3 flags signal,backup 10.0.1.3 
-+id 4 flags signal 10.0.1.4 
-+id 5 flags signal 10.0.1.5 
-+id 6 flags signal 10.0.1.6 
-+id 7 flags signal 10.0.1.7 
-+id 8 flags signal 10.0.1.8 " "id limit"
++	ip netns exec ${listener_ns} ./mptcp_connect -j -t $timeout -l -p $port -s ${srv_proto} 0.0.0.0 < "$sin" > "$sout" &
++	spid=$!
 +
-+ip netns exec $ns1 ./pm_nl_ctl flush
-+check "ip netns exec $ns1 ./pm_nl_ctl dump" "" "flush addrs"
++	sleep 1
 +
-+ip netns exec $ns1 ./pm_nl_ctl limits 9 1
-+check "ip netns exec $ns1 ./pm_nl_ctl limits" "accept 0
-+subflows 0" "rcv addrs above hard limit"
++	ip netns exec ${connector_ns} ./mptcp_connect -j -t $timeout -p $port -s ${cl_proto} $connect_addr < "$cin" > "$cout" &
++	cpid=$!
 +
-+ip netns exec $ns1 ./pm_nl_ctl limits 1 9
-+check "ip netns exec $ns1 ./pm_nl_ctl limits" "accept 0
-+subflows 0" "subflows above hard limit"
++	wait $cpid
++	retc=$?
++	wait $spid
++	rets=$?
 +
-+ip netns exec $ns1 ./pm_nl_ctl limits 8 8
-+check "ip netns exec $ns1 ./pm_nl_ctl limits" "accept 8
-+subflows 8" "set limits"
++	if [ $capture -eq 1 ]; then
++	    sleep 1
++	    kill $cappid
++	fi
++
++	if [ ${rets} -ne 0 ] || [ ${retc} -ne 0 ]; then
++		echo " client exit code $retc, server $rets" 1>&2
++		echo "\nnetns ${listener_ns} socket stat for $port:" 1>&2
++		ip netns exec ${listener_ns} ss -nita 1>&2 -o "sport = :$port"
++		echo "\nnetns ${connector_ns} socket stat for $port:" 1>&2
++		ip netns exec ${connector_ns} ss -nita 1>&2 -o "dport = :$port"
++
++		cat "$capout"
++		return 1
++	fi
++
++	check_transfer $sin $cout "file received by client"
++	retc=$?
++	check_transfer $cin $sout "file received by server"
++	rets=$?
++
++	if [ $retc -eq 0 ] && [ $rets -eq 0 ];then
++		cat "$capout"
++		return 0
++	fi
++
++	cat "$capout"
++	return 1
++}
++
++make_file()
++{
++	name=$1
++	who=$2
++
++	SIZE=1
++
++	dd if=/dev/urandom of="$name" bs=1024 count=$SIZE 2> /dev/null
++	echo -e "\nMPTCP_TEST_FILE_END_MARKER" >> "$name"
++
++	echo "Created $name (size $SIZE KB) containing data sent by $who"
++}
++
++run_tests()
++{
++	listener_ns="$1"
++	connector_ns="$2"
++	connect_addr="$3"
++	lret=0
++
++	do_transfer ${listener_ns} ${connector_ns} MPTCP MPTCP ${connect_addr}
++	lret=$?
++	if [ $lret -ne 0 ]; then
++		ret=$lret
++		return
++	fi
++}
++
++chk_join_nr()
++{
++	local msg="$1"
++	local syn_nr=$2
++	local syn_ack_nr=$3
++	local ack_nr=$4
++	local count
++	local dump_stats
++
++	printf "%-36s %s" "$msg" "syn"
++	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPJoinSynRx | awk '{print $2}'`
++	[ -z "$count" ] && count=0
++	if [ "$count" != "$syn_nr" ]; then
++		echo "[fail] got $count JOIN[s] syn expected $syn_nr"
++		ret=1
++		dump_stats=1
++	else
++		echo -n "[ ok ]"
++	fi
++
++	echo -n " - synack"
++	count=`ip netns exec $ns2 nstat -as | grep MPTcpExtMPJoinSynAckRx | awk '{print $2}'`
++	[ -z "$count" ] && count=0
++	if [ "$count" != "$syn_ack_nr" ]; then
++		echo "[fail] got $count JOIN[s] synack expected $syn_ack_nr"
++		ret=1
++		dump_stats=1
++	else
++		echo -n "[ ok ]"
++	fi
++
++	echo -n " - ack"
++	count=`ip netns exec $ns1 nstat -as | grep MPTcpExtMPJoinAckRx | awk '{print $2}'`
++	[ -z "$count" ] && count=0
++	if [ "$count" != "$ack_nr" ]; then
++		echo "[fail] got $count JOIN[s] ack expected $ack_nr"
++		ret=1
++		dump_stats=1
++	else
++		echo "[ ok ]"
++	fi
++	if [ "${dump_stats}" = 1 ]; then
++		echo Server ns stats
++		ip netns exec $ns1 nstat -as | grep MPTcp
++		echo Client ns stats
++		ip netns exec $ns2 nstat -as | grep MPTcp
++	fi
++}
++
++sin=$(mktemp)
++sout=$(mktemp)
++cin=$(mktemp)
++cout=$(mktemp)
++init
++make_file "$cin" "client"
++make_file "$sin" "server"
++trap cleanup EXIT
++
++run_tests $ns1 $ns2 10.0.1.1
++chk_join_nr "no JOIN" "0" "0" "0"
++
++# subflow limted by client
++reset
++ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
++run_tests $ns1 $ns2 10.0.1.1
++chk_join_nr "single subflow, limited by client" 0 0 0
++
++# subflow limted by server
++reset
++ip netns exec $ns2 ./pm_nl_ctl limits 0 1
++ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
++run_tests $ns1 $ns2 10.0.1.1
++chk_join_nr "single subflow, limited by server" 1 1 0
++
++# subflow
++reset
++ip netns exec $ns1 ./pm_nl_ctl limits 0 1
++ip netns exec $ns2 ./pm_nl_ctl limits 0 1
++ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
++run_tests $ns1 $ns2 10.0.1.1
++chk_join_nr "single subflow" 1 1 1
++
++# multiple subflows
++reset
++ip netns exec $ns1 ./pm_nl_ctl limits 0 2
++ip netns exec $ns2 ./pm_nl_ctl limits 0 2
++ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
++ip netns exec $ns2 ./pm_nl_ctl add 10.0.2.2 flags subflow
++run_tests $ns1 $ns2 10.0.1.1
++chk_join_nr "multiple subflows" 2 2 2
++
++# multiple subflows limited by serverf
++reset
++ip netns exec $ns1 ./pm_nl_ctl limits 0 1
++ip netns exec $ns2 ./pm_nl_ctl limits 0 2
++ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
++ip netns exec $ns2 ./pm_nl_ctl add 10.0.2.2 flags subflow
++run_tests $ns1 $ns2 10.0.1.1
++chk_join_nr "multiple subflows, limited by server" 2 2 1
++
++# add_address, unused
++reset
++ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
++run_tests $ns1 $ns2 10.0.1.1
++chk_join_nr "unused signal address" 0 0 0
++
++# accept and use add_addr
++reset
++ip netns exec $ns1 ./pm_nl_ctl limits 0 1
++ip netns exec $ns2 ./pm_nl_ctl limits 1 1
++ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
++run_tests $ns1 $ns2 10.0.1.1
++chk_join_nr "signal address" 1 1 1
++
++# accept and use add_addr with an additional subflow
++# note: signal address in server ns and local addresses in client ns must
++# belong to different subnets or one of the listed local address could be
++# used for 'add_addr' subflow
++reset
++ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
++ip netns exec $ns1 ./pm_nl_ctl limits 0 2
++ip netns exec $ns2 ./pm_nl_ctl limits 1 2
++ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
++run_tests $ns1 $ns2 10.0.1.1
++chk_join_nr "subflow and signal" 2 2 2
++
++# accept and use add_addr with additional subflows
++reset
++ip netns exec $ns1 ./pm_nl_ctl limits 0 3
++ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
++ip netns exec $ns2 ./pm_nl_ctl limits 1 3
++ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
++ip netns exec $ns2 ./pm_nl_ctl add 10.0.4.2 flags subflow
++run_tests $ns1 $ns2 10.0.1.1
++chk_join_nr "multiple subflows and signal" 3 3 3
 +
 +exit $ret
-diff --git a/tools/testing/selftests/net/mptcp/pm_nl_ctl.c b/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
-new file mode 100644
-index 000000000000..de9209305026
---- /dev/null
-+++ b/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
-@@ -0,0 +1,616 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <errno.h>
-+#include <error.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <string.h>
-+#include <unistd.h>
-+
-+#include <sys/socket.h>
-+#include <sys/types.h>
-+
-+#include <arpa/inet.h>
-+#include <net/if.h>
-+
-+#include <linux/rtnetlink.h>
-+#include <linux/genetlink.h>
-+
-+#include "linux/mptcp.h"
-+
-+#ifndef MPTCP_PM_NAME
-+#define MPTCP_PM_NAME		"mptcp_pm"
-+#endif
-+
-+static void syntax(char *argv[])
-+{
-+	fprintf(stderr, "%s add|get|del|flush|dump|accept [<args>]\n", argv[0]);
-+	fprintf(stderr, "\tadd [flags signal|subflow|backup] [id <nr>] [dev <name>] <ip>\n");
-+	fprintf(stderr, "\tdel <id>\n");
-+	fprintf(stderr, "\tget <id>\n");
-+	fprintf(stderr, "\tflush\n");
-+	fprintf(stderr, "\tdump\n");
-+	fprintf(stderr, "\tlimits [<rcv addr max> <subflow max>]\n");
-+	exit(0);
-+}
-+
-+static int init_genl_req(char *data, int family, int cmd, int version)
-+{
-+	struct nlmsghdr *nh = (void *)data;
-+	struct genlmsghdr *gh;
-+	int off = 0;
-+
-+	nh->nlmsg_type = family;
-+	nh->nlmsg_flags = NLM_F_REQUEST;
-+	nh->nlmsg_len = NLMSG_LENGTH(GENL_HDRLEN);
-+	off += NLMSG_ALIGN(sizeof(*nh));
-+
-+	gh = (void *)(data + off);
-+	gh->cmd = cmd;
-+	gh->version = version;
-+	off += NLMSG_ALIGN(sizeof(*gh));
-+	return off;
-+}
-+
-+static void nl_error(struct nlmsghdr *nh)
-+{
-+	struct nlmsgerr *err = (struct nlmsgerr *)NLMSG_DATA(nh);
-+	int len = nh->nlmsg_len - sizeof(*nh);
-+	uint32_t off;
-+
-+	if (len < sizeof(struct nlmsgerr))
-+		error(1, 0, "netlink error message truncated %d min %ld", len,
-+		      sizeof(struct nlmsgerr));
-+
-+	if (!err->error) {
-+		/* check messages from kernel */
-+		struct rtattr *attrs = (struct rtattr *)NLMSG_DATA(nh);
-+
-+		while (RTA_OK(attrs, len)) {
-+			if (attrs->rta_type == NLMSGERR_ATTR_MSG)
-+				fprintf(stderr, "netlink ext ack msg: %s\n",
-+					(char *)RTA_DATA(attrs));
-+			if (attrs->rta_type == NLMSGERR_ATTR_OFFS) {
-+				memcpy(&off, RTA_DATA(attrs), 4);
-+				fprintf(stderr, "netlink err off %d\n",
-+					(int)off);
-+			}
-+			attrs = RTA_NEXT(attrs, len);
-+		}
-+	} else {
-+		fprintf(stderr, "netlink error %d", err->error);
-+	}
-+}
-+
-+/* do a netlink command and, if max > 0, fetch the reply  */
-+static int do_nl_req(int fd, struct nlmsghdr *nh, int len, int max)
-+{
-+	struct sockaddr_nl nladdr = { .nl_family = AF_NETLINK };
-+	socklen_t addr_len;
-+	void *data = nh;
-+	int rem, ret;
-+	int err = 0;
-+
-+	nh->nlmsg_len = len;
-+	ret = sendto(fd, data, len, 0, (void *)&nladdr, sizeof(nladdr));
-+	if (ret != len)
-+		error(1, errno, "send netlink: %uB != %uB\n", ret, len);
-+	if (max == 0)
-+		return 0;
-+
-+	addr_len = sizeof(nladdr);
-+	rem = ret = recvfrom(fd, data, max, 0, (void *)&nladdr, &addr_len);
-+	if (ret < 0)
-+		error(1, errno, "recv netlink: %uB\n", ret);
-+
-+	/* Beware: the NLMSG_NEXT macro updates the 'rem' argument */
-+	for (; NLMSG_OK(nh, rem); nh = NLMSG_NEXT(nh, rem)) {
-+		if (nh->nlmsg_type == NLMSG_ERROR) {
-+			nl_error(nh);
-+			err = 1;
-+		}
-+	}
-+	if (err)
-+		error(1, 0, "bailing out due to netlink error[s]");
-+	return ret;
-+}
-+
-+static int genl_parse_getfamily(struct nlmsghdr *nlh)
-+{
-+	struct genlmsghdr *ghdr = NLMSG_DATA(nlh);
-+	int len = nlh->nlmsg_len;
-+	struct rtattr *attrs;
-+
-+	if (nlh->nlmsg_type != GENL_ID_CTRL)
-+		error(1, errno, "Not a controller message, len=%d type=0x%x\n",
-+		      nlh->nlmsg_len, nlh->nlmsg_type);
-+
-+	len -= NLMSG_LENGTH(GENL_HDRLEN);
-+
-+	if (len < 0)
-+		error(1, errno, "wrong controller message len %d\n", len);
-+
-+	if (ghdr->cmd != CTRL_CMD_NEWFAMILY)
-+		error(1, errno, "Unknown controller command %d\n", ghdr->cmd);
-+
-+	attrs = (struct rtattr *) ((char *) ghdr + GENL_HDRLEN);
-+	while (RTA_OK(attrs, len)) {
-+		if (attrs->rta_type == CTRL_ATTR_FAMILY_ID)
-+			return *(__u16 *)RTA_DATA(attrs);
-+		attrs = RTA_NEXT(attrs, len);
-+	}
-+
-+	error(1, errno, "can't find CTRL_ATTR_FAMILY_ID attr");
-+	return -1;
-+}
-+
-+static int resolve_mptcp_pm_netlink(int fd)
-+{
-+	char data[NLMSG_ALIGN(sizeof(struct nlmsghdr)) +
-+		  NLMSG_ALIGN(sizeof(struct genlmsghdr)) +
-+		  1024];
-+	struct nlmsghdr *nh;
-+	struct rtattr *rta;
-+	int namelen;
-+	int off = 0;
-+
-+	memset(data, 0, sizeof(data));
-+	nh = (void *)data;
-+	off = init_genl_req(data, GENL_ID_CTRL, CTRL_CMD_GETFAMILY, 0);
-+
-+	rta = (void *)(data + off);
-+	namelen = strlen(MPTCP_PM_NAME) + 1;
-+	rta->rta_type = CTRL_ATTR_FAMILY_NAME;
-+	rta->rta_len = RTA_LENGTH(namelen);
-+	memcpy(RTA_DATA(rta), MPTCP_PM_NAME, namelen);
-+	off += NLMSG_ALIGN(rta->rta_len);
-+
-+	do_nl_req(fd, nh, off, sizeof(data));
-+	return genl_parse_getfamily((void *)data);
-+}
-+
-+int add_addr(int fd, int pm_family, int argc, char *argv[])
-+{
-+	char data[NLMSG_ALIGN(sizeof(struct nlmsghdr)) +
-+		  NLMSG_ALIGN(sizeof(struct genlmsghdr)) +
-+		  1024];
-+	struct rtattr *rta, *nest;
-+	struct nlmsghdr *nh;
-+	u_int16_t family;
-+	u_int32_t flags;
-+	int nest_start;
-+	u_int8_t id;
-+	int off = 0;
-+	int arg;
-+
-+	memset(data, 0, sizeof(data));
-+	nh = (void *)data;
-+	off = init_genl_req(data, pm_family, MPTCP_PM_CMD_ADD_ADDR,
-+			    MPTCP_PM_VER);
-+
-+	if (argc < 3)
-+		syntax(argv);
-+
-+	nest_start = off;
-+	nest = (void *)(data + off);
-+	nest->rta_type = NLA_F_NESTED | MPTCP_PM_ATTR_ADDR;
-+	nest->rta_len = RTA_LENGTH(0);
-+	off += NLMSG_ALIGN(nest->rta_len);
-+
-+	/* addr data */
-+	rta = (void *)(data + off);
-+	if (inet_pton(AF_INET, argv[2], RTA_DATA(rta))) {
-+		family = AF_INET;
-+		rta->rta_type = MPTCP_PM_ADDR_ATTR_ADDR4;
-+		rta->rta_len = RTA_LENGTH(4);
-+	} else if (inet_pton(AF_INET6, argv[2], RTA_DATA(rta))) {
-+		family = AF_INET6;
-+		rta->rta_type = MPTCP_PM_ADDR_ATTR_ADDR6;
-+		rta->rta_len = RTA_LENGTH(16);
-+	} else
-+		error(1, errno, "can't parse ip %s", argv[2]);
-+	off += NLMSG_ALIGN(rta->rta_len);
-+
-+	/* family */
-+	rta = (void *)(data + off);
-+	rta->rta_type = MPTCP_PM_ADDR_ATTR_FAMILY;
-+	rta->rta_len = RTA_LENGTH(2);
-+	memcpy(RTA_DATA(rta), &family, 2);
-+	off += NLMSG_ALIGN(rta->rta_len);
-+
-+	for (arg = 3; arg < argc; arg++) {
-+		if (!strcmp(argv[arg], "flags")) {
-+			char *tok, *str;
-+
-+			/* flags */
-+			flags = 0;
-+			if (++arg >= argc)
-+				error(1, 0, " missing flags value");
-+
-+			/* do not support flag list yet */
-+			for (str = argv[arg]; (tok = strtok(str, ","));
-+			     str = NULL) {
-+				if (!strcmp(tok, "subflow"))
-+					flags |= MPTCP_PM_ADDR_FLAG_SUBFLOW;
-+				else if (!strcmp(tok, "signal"))
-+					flags |= MPTCP_PM_ADDR_FLAG_SIGNAL;
-+				else if (!strcmp(tok, "backup"))
-+					flags |= MPTCP_PM_ADDR_FLAG_BACKUP;
-+				else
-+					error(1, errno,
-+					      "unknown flag %s", argv[arg]);
-+			}
-+
-+			rta = (void *)(data + off);
-+			rta->rta_type = MPTCP_PM_ADDR_ATTR_FLAGS;
-+			rta->rta_len = RTA_LENGTH(4);
-+			memcpy(RTA_DATA(rta), &flags, 4);
-+			off += NLMSG_ALIGN(rta->rta_len);
-+		} else if (!strcmp(argv[arg], "id")) {
-+			if (++arg >= argc)
-+				error(1, 0, " missing id value");
-+
-+			id = atoi(argv[arg]);
-+			rta = (void *)(data + off);
-+			rta->rta_type = MPTCP_PM_ADDR_ATTR_ID;
-+			rta->rta_len = RTA_LENGTH(1);
-+			memcpy(RTA_DATA(rta), &id, 1);
-+			off += NLMSG_ALIGN(rta->rta_len);
-+		} else if (!strcmp(argv[arg], "dev")) {
-+			int32_t ifindex;
-+
-+			if (++arg >= argc)
-+				error(1, 0, " missing dev name");
-+
-+			ifindex = if_nametoindex(argv[arg]);
-+			if (!ifindex)
-+				error(1, errno, "unknown device %s", argv[arg]);
-+
-+			rta = (void *)(data + off);
-+			rta->rta_type = MPTCP_PM_ADDR_ATTR_IF_IDX;
-+			rta->rta_len = RTA_LENGTH(4);
-+			memcpy(RTA_DATA(rta), &ifindex, 4);
-+			off += NLMSG_ALIGN(rta->rta_len);
-+		} else
-+			error(1, 0, "unknown keyword %s", argv[arg]);
-+	}
-+	nest->rta_len = off - nest_start;
-+
-+	do_nl_req(fd, nh, off, 0);
-+	return 0;
-+}
-+
-+int del_addr(int fd, int pm_family, int argc, char *argv[])
-+{
-+	char data[NLMSG_ALIGN(sizeof(struct nlmsghdr)) +
-+		  NLMSG_ALIGN(sizeof(struct genlmsghdr)) +
-+		  1024];
-+	struct rtattr *rta, *nest;
-+	struct nlmsghdr *nh;
-+	int nest_start;
-+	u_int8_t id;
-+	int off = 0;
-+
-+	memset(data, 0, sizeof(data));
-+	nh = (void *)data;
-+	off = init_genl_req(data, pm_family, MPTCP_PM_CMD_DEL_ADDR,
-+			    MPTCP_PM_VER);
-+
-+	/* the only argument is the address id */
-+	if (argc != 3)
-+		syntax(argv);
-+
-+	id = atoi(argv[2]);
-+
-+	nest_start = off;
-+	nest = (void *)(data + off);
-+	nest->rta_type = NLA_F_NESTED | MPTCP_PM_ATTR_ADDR;
-+	nest->rta_len =  RTA_LENGTH(0);
-+	off += NLMSG_ALIGN(nest->rta_len);
-+
-+	/* build a dummy addr with only the ID set */
-+	rta = (void *)(data + off);
-+	rta->rta_type = MPTCP_PM_ADDR_ATTR_ID;
-+	rta->rta_len = RTA_LENGTH(1);
-+	memcpy(RTA_DATA(rta), &id, 1);
-+	off += NLMSG_ALIGN(rta->rta_len);
-+	nest->rta_len = off - nest_start;
-+
-+	do_nl_req(fd, nh, off, 0);
-+	return 0;
-+}
-+
-+static void print_addr(struct rtattr *attrs, int len)
-+{
-+	uint16_t family = 0;
-+	char str[1024];
-+	uint32_t flags;
-+	uint8_t id;
-+
-+	while (RTA_OK(attrs, len)) {
-+		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_FAMILY)
-+			memcpy(&family, RTA_DATA(attrs), 2);
-+		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_ADDR4) {
-+			if (family != AF_INET)
-+				error(1, errno, "wrong IP (v4) for family %d",
-+				      family);
-+			inet_ntop(AF_INET, RTA_DATA(attrs), str, sizeof(str));
-+			printf("%s ", str);
-+		}
-+		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_ADDR6) {
-+			if (family != AF_INET6)
-+				error(1, errno, "wrong IP (v6) for family %d",
-+				      family);
-+			inet_ntop(AF_INET6, RTA_DATA(attrs), str, sizeof(str));
-+			printf("%s ", str);
-+		}
-+		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_ID) {
-+			memcpy(&id, RTA_DATA(attrs), 1);
-+			printf("id %d ", id);
-+		}
-+		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_FLAGS) {
-+			memcpy(&flags, RTA_DATA(attrs), 4);
-+
-+			printf("flags ");
-+			if (flags & MPTCP_PM_ADDR_FLAG_SIGNAL) {
-+				printf("signal");
-+				flags &= ~MPTCP_PM_ADDR_FLAG_SIGNAL;
-+				if (flags)
-+					printf(",");
-+			}
-+
-+			if (flags & MPTCP_PM_ADDR_FLAG_SUBFLOW) {
-+				printf("subflow");
-+				flags &= ~MPTCP_PM_ADDR_FLAG_SUBFLOW;
-+				if (flags)
-+					printf(",");
-+			}
-+
-+			if (flags & MPTCP_PM_ADDR_FLAG_BACKUP) {
-+				printf("backup");
-+				flags &= ~MPTCP_PM_ADDR_FLAG_BACKUP;
-+				if (flags)
-+					printf(",");
-+			}
-+
-+			/* bump unknown flags, if any */
-+			if (flags)
-+				printf("0x%x", flags);
-+			printf(" ");
-+		}
-+		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_IF_IDX) {
-+			char name[IF_NAMESIZE], *ret;
-+			int32_t ifindex;
-+
-+			memcpy(&ifindex, RTA_DATA(attrs), 4);
-+			ret = if_indextoname(ifindex, name);
-+			if (ret)
-+				printf("dev %s ", ret);
-+			else
-+				printf("dev unknown/%d", ifindex);
-+		}
-+
-+		attrs = RTA_NEXT(attrs, len);
-+	}
-+	printf("\n");
-+}
-+
-+static void print_addrs(struct nlmsghdr *nh, int pm_family, int total_len)
-+{
-+	struct rtattr *attrs;
-+
-+	for (; NLMSG_OK(nh, total_len); nh = NLMSG_NEXT(nh, total_len)) {
-+		int len = nh->nlmsg_len;
-+
-+		if (nh->nlmsg_type == NLMSG_DONE)
-+			break;
-+		if (nh->nlmsg_type == NLMSG_ERROR)
-+			nl_error(nh);
-+		if (nh->nlmsg_type != pm_family)
-+			continue;
-+
-+		len -= NLMSG_LENGTH(GENL_HDRLEN);
-+		attrs = (struct rtattr *) ((char *) NLMSG_DATA(nh) +
-+					   GENL_HDRLEN);
-+		while (RTA_OK(attrs, len)) {
-+			if (attrs->rta_type ==
-+			    (MPTCP_PM_ATTR_ADDR | NLA_F_NESTED))
-+				print_addr((void *)RTA_DATA(attrs),
-+					   attrs->rta_len);
-+			attrs = RTA_NEXT(attrs, len);
-+		}
-+	}
-+}
-+
-+int get_addr(int fd, int pm_family, int argc, char *argv[])
-+{
-+	char data[NLMSG_ALIGN(sizeof(struct nlmsghdr)) +
-+		  NLMSG_ALIGN(sizeof(struct genlmsghdr)) +
-+		  1024];
-+	struct rtattr *rta, *nest;
-+	struct nlmsghdr *nh;
-+	int nest_start;
-+	u_int8_t id;
-+	int off = 0;
-+
-+	memset(data, 0, sizeof(data));
-+	nh = (void *)data;
-+	off = init_genl_req(data, pm_family, MPTCP_PM_CMD_GET_ADDR,
-+			    MPTCP_PM_VER);
-+
-+	/* the only argument is the address id */
-+	if (argc != 3)
-+		syntax(argv);
-+
-+	id = atoi(argv[2]);
-+
-+	nest_start = off;
-+	nest = (void *)(data + off);
-+	nest->rta_type = NLA_F_NESTED | MPTCP_PM_ATTR_ADDR;
-+	nest->rta_len =  RTA_LENGTH(0);
-+	off += NLMSG_ALIGN(nest->rta_len);
-+
-+	/* build a dummy addr with only the ID set */
-+	rta = (void *)(data + off);
-+	rta->rta_type = MPTCP_PM_ADDR_ATTR_ID;
-+	rta->rta_len = RTA_LENGTH(1);
-+	memcpy(RTA_DATA(rta), &id, 1);
-+	off += NLMSG_ALIGN(rta->rta_len);
-+	nest->rta_len = off - nest_start;
-+
-+	print_addrs(nh, pm_family, do_nl_req(fd, nh, off, sizeof(data)));
-+	return 0;
-+}
-+
-+int dump_addrs(int fd, int pm_family, int argc, char *argv[])
-+{
-+	char data[NLMSG_ALIGN(sizeof(struct nlmsghdr)) +
-+		  NLMSG_ALIGN(sizeof(struct genlmsghdr)) +
-+		  1024];
-+	pid_t pid = getpid();
-+	struct nlmsghdr *nh;
-+	int off = 0;
-+
-+	memset(data, 0, sizeof(data));
-+	nh = (void *)data;
-+	off = init_genl_req(data, pm_family, MPTCP_PM_CMD_GET_ADDR,
-+			    MPTCP_PM_VER);
-+	nh->nlmsg_flags |= NLM_F_DUMP;
-+	nh->nlmsg_seq = 1;
-+	nh->nlmsg_pid = pid;
-+	nh->nlmsg_len = off;
-+
-+	print_addrs(nh, pm_family, do_nl_req(fd, nh, off, sizeof(data)));
-+	return 0;
-+}
-+
-+int flush_addrs(int fd, int pm_family, int argc, char *argv[])
-+{
-+	char data[NLMSG_ALIGN(sizeof(struct nlmsghdr)) +
-+		  NLMSG_ALIGN(sizeof(struct genlmsghdr)) +
-+		  1024];
-+	struct nlmsghdr *nh;
-+	int off = 0;
-+
-+	memset(data, 0, sizeof(data));
-+	nh = (void *)data;
-+	off = init_genl_req(data, pm_family, MPTCP_PM_CMD_FLUSH_ADDRS,
-+			    MPTCP_PM_VER);
-+
-+	do_nl_req(fd, nh, off, 0);
-+	return 0;
-+}
-+
-+static void print_limits(struct nlmsghdr *nh, int pm_family, int total_len)
-+{
-+	struct rtattr *attrs;
-+	uint32_t max;
-+
-+	for (; NLMSG_OK(nh, total_len); nh = NLMSG_NEXT(nh, total_len)) {
-+		int len = nh->nlmsg_len;
-+
-+		if (nh->nlmsg_type == NLMSG_DONE)
-+			break;
-+		if (nh->nlmsg_type == NLMSG_ERROR)
-+			nl_error(nh);
-+		if (nh->nlmsg_type != pm_family)
-+			continue;
-+
-+		len -= NLMSG_LENGTH(GENL_HDRLEN);
-+		attrs = (struct rtattr *) ((char *) NLMSG_DATA(nh) +
-+					   GENL_HDRLEN);
-+		while (RTA_OK(attrs, len)) {
-+			int type = attrs->rta_type;
-+
-+			if (type != MPTCP_PM_ATTR_RCV_ADD_ADDRS &&
-+			    type != MPTCP_PM_ATTR_SUBFLOWS)
-+				goto next;
-+
-+			memcpy(&max, RTA_DATA(attrs), 4);
-+			printf("%s %u\n", type == MPTCP_PM_ATTR_SUBFLOWS ?
-+					  "subflows" : "accept", max);
-+
-+next:
-+			attrs = RTA_NEXT(attrs, len);
-+		}
-+	}
-+}
-+
-+int get_set_limits(int fd, int pm_family, int argc, char *argv[])
-+{
-+	char data[NLMSG_ALIGN(sizeof(struct nlmsghdr)) +
-+		  NLMSG_ALIGN(sizeof(struct genlmsghdr)) +
-+		  1024];
-+	uint32_t rcv_addr = 0, subflows = 0;
-+	int cmd, len = sizeof(data);
-+	struct nlmsghdr *nh;
-+	int off = 0;
-+
-+	/* limit */
-+	if (argc == 4) {
-+		rcv_addr = atoi(argv[2]);
-+		subflows = atoi(argv[3]);
-+		cmd = MPTCP_PM_CMD_SET_LIMITS;
-+	} else {
-+		cmd = MPTCP_PM_CMD_GET_LIMITS;
-+	}
-+
-+	memset(data, 0, sizeof(data));
-+	nh = (void *)data;
-+	off = init_genl_req(data, pm_family, cmd, MPTCP_PM_VER);
-+
-+	/* limit */
-+	if (cmd == MPTCP_PM_CMD_SET_LIMITS) {
-+		struct rtattr *rta = (void *)(data + off);
-+
-+		rta->rta_type = MPTCP_PM_ATTR_RCV_ADD_ADDRS;
-+		rta->rta_len = RTA_LENGTH(4);
-+		memcpy(RTA_DATA(rta), &rcv_addr, 4);
-+		off += NLMSG_ALIGN(rta->rta_len);
-+
-+		rta = (void *)(data + off);
-+		rta->rta_type = MPTCP_PM_ATTR_SUBFLOWS;
-+		rta->rta_len = RTA_LENGTH(4);
-+		memcpy(RTA_DATA(rta), &subflows, 4);
-+		off += NLMSG_ALIGN(rta->rta_len);
-+
-+		/* do not expect a reply */
-+		len = 0;
-+	}
-+
-+	len = do_nl_req(fd, nh, off, len);
-+	if (cmd == MPTCP_PM_CMD_GET_LIMITS)
-+		print_limits(nh, pm_family, len);
-+	return 0;
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	int fd, pm_family;
-+
-+	if (argc < 2)
-+		syntax(argv);
-+
-+	fd = socket(AF_NETLINK, SOCK_RAW, NETLINK_GENERIC);
-+	if (fd == -1)
-+		error(1, errno, "socket netlink");
-+
-+	pm_family = resolve_mptcp_pm_netlink(fd);
-+
-+	if (!strcmp(argv[1], "add"))
-+		return add_addr(fd, pm_family, argc, argv);
-+	else if (!strcmp(argv[1], "del"))
-+		return del_addr(fd, pm_family, argc, argv);
-+	else if (!strcmp(argv[1], "flush"))
-+		return flush_addrs(fd, pm_family, argc, argv);
-+	else if (!strcmp(argv[1], "get"))
-+		return get_addr(fd, pm_family, argc, argv);
-+	else if (!strcmp(argv[1], "dump"))
-+		return dump_addrs(fd, pm_family, argc, argv);
-+	else if (!strcmp(argv[1], "limits"))
-+		return get_set_limits(fd, pm_family, argc, argv);
-+
-+	fprintf(stderr, "unknown sub-command: %s", argv[1]);
-+	syntax(argv);
-+	return 0;
-+}
 -- 
 2.26.0
 
