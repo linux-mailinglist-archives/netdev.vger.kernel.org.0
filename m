@@ -2,50 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A004A196151
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 23:39:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 46952196157
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 23:41:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727703AbgC0WjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 18:39:04 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:40190 "EHLO
+        id S1727707AbgC0Wle (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 18:41:34 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:40212 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727620AbgC0WjE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 18:39:04 -0400
+        with ESMTP id S1727585AbgC0Wle (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 18:41:34 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5D97E15BB62A8;
-        Fri, 27 Mar 2020 15:39:03 -0700 (PDT)
-Date:   Fri, 27 Mar 2020 15:39:02 -0700 (PDT)
-Message-Id: <20200327.153902.1896503128370913021.davem@davemloft.net>
-To:     jwi@linux.ibm.com
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, ubraun@linux.ibm.com
-Subject: Re: [PATCH net] s390/qeth: support net namespaces for L3 devices
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1CE0A15BB6505;
+        Fri, 27 Mar 2020 15:41:34 -0700 (PDT)
+Date:   Fri, 27 Mar 2020 15:41:33 -0700 (PDT)
+Message-Id: <20200327.154133.281200586896043805.davem@davemloft.net>
+To:     kvalo@codeaurora.org
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: Re: pull-request: wireless-drivers-next-2020-03-27
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200327110042.50797-1-jwi@linux.ibm.com>
-References: <20200327110042.50797-1-jwi@linux.ibm.com>
+In-Reply-To: <20200327110416.4F051C44791@smtp.codeaurora.org>
+References: <20200327110416.4F051C44791@smtp.codeaurora.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 27 Mar 2020 15:39:03 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 27 Mar 2020 15:41:34 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Julian Wiedmann <jwi@linux.ibm.com>
-Date: Fri, 27 Mar 2020 12:00:42 +0100
+From: Kalle Valo <kvalo@codeaurora.org>
+Date: Fri, 27 Mar 2020 11:04:16 +0000 (UTC)
 
-> Enable the L3 driver's IPv4 address notifier to watch for events on qeth
-> devices that have been moved into a net namespace. We need to program
-> those IPs into the HW just as usual, otherwise inbound traffic won't
-> flow.
-> 
-> Fixes: 6133fb1aa137 ("[NETNS]: Disable inetaddr notifiers in namespaces other than initial.")
-> Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+> here's a pull request to net-next tree, more info below. Please let me know if
+> there are any problems.
 
-This looks more like a feature, openning the L3 driver into multiple
-namespaces, rather than a critical fix.
+Pulled, thanks for the merge conflict resolution guidance.
