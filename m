@@ -2,88 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0571194DE3
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 01:13:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB4EE194DED
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 01:15:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727549AbgC0ANt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 20:13:49 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:39050 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726363AbgC0ANs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 20:13:48 -0400
-Received: by mail-lj1-f194.google.com with SMTP id i20so8414405ljn.6
-        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 17:13:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VWL8ZSPmJAiTPJ9JjQW1j0bE8X/JpNZikw6inrx3YQI=;
-        b=NF52MK0PSlUZLDII9gyz0ifyNpp+j4BfKlYt4/XYvcsq/F4CYzlG/eu4r9j94+PpNJ
-         hs97iUKCE+zNoq9ZfdDg26kpdiiEk3q5ik+SmcihoAeyK88CnY534dCGxNjVD5tyECex
-         HKTILpbONOMGNIOIYyRDBDM7Fd7DDehT6OnDk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VWL8ZSPmJAiTPJ9JjQW1j0bE8X/JpNZikw6inrx3YQI=;
-        b=Fm70iGqHQa8ZDeBS8vYGJ66FeQ7w/Qr1HFeIrhidfSpHWwGbER7MQlb0pegbUJ9UQy
-         5rzUtKsVQaX7sYjMibg/yamg7KK4ThMl8l+vixdvrP1mWYnHsJ7Ij6sSoXuVdvAM8ajz
-         Lyu1KjKlvihra/pKdt5e0ta6tzOYUGhx4dJAOUhhpJF/lyMXvzz1MDIQziBXAMjo95VU
-         Fg69RXp2YYVYK027ImcFJnLn/Dcb/tb3BLAD14OA7mk+FdUd/328IVA8bHLnc/5cI1QR
-         XkbtWUOh5TNGWx7i50BJ9bL5jUwojwzZn3tWKR6cJzLvQC0G/f9CIPeY1I0kg5Kb0n0b
-         50Xw==
-X-Gm-Message-State: ANhLgQ1eFQzmBV5//jdE159Yu8smwIfrKZemh2fBtoW3pXeVjKtihB9t
-        +Ce1JkuHNzq+BkV9tIk1dKz8ba4j/3VkxobT4tUmNA==
-X-Google-Smtp-Source: APiQypLZZN1Wtl3gwV5mELpsM2qhhqZ5leW/rlMatp78zM7+LnJ5TdE1codyNmtsIAOipZ4iyk3U+CiOz4xZhRZZUog=
-X-Received: by 2002:a2e:83cf:: with SMTP id s15mr6529050ljh.36.1585268027186;
- Thu, 26 Mar 2020 17:13:47 -0700 (PDT)
+        id S1727593AbgC0AP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 20:15:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60680 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726359AbgC0AP0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Mar 2020 20:15:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=hd1YFsXLbrypTE4jWtW6CeMXVCF7Ic9nihmkXsYCCD4=; b=HsJzc7G0a9knRIHt+lZN7CgY4l
+        aC+6VHmZ1DrIsd2cNn6tl+DhmNGFt+S2AWz76VmXK5u887jBzcJ0q6MVB9qLWQp1v9dgb+3gImGLw
+        ODSDTS3xY3hIR3nIz7Qkzutx3d2BWDQwdbEWhgqe7IURUcbypOz19oFGfNERpenPCmI0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jHceZ-0004we-2F; Fri, 27 Mar 2020 01:15:15 +0100
+Date:   Fri, 27 Mar 2020 01:15:15 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florinel Iordache <florinel.iordache@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk,
+        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+        robh+dt@kernel.org, mark.rutland@arm.com, kuba@kernel.org,
+        corbet@lwn.net, shawnguo@kernel.org, leoyang.li@nxp.com,
+        madalin.bucur@oss.nxp.com, ioana.ciornei@nxp.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/9] net: phy: add kr phy connection type
+Message-ID: <20200327001515.GL3819@lunn.ch>
+References: <1585230682-24417-1-git-send-email-florinel.iordache@nxp.com>
+ <1585230682-24417-4-git-send-email-florinel.iordache@nxp.com>
 MIME-Version: 1.0
-References: <20200326075938.65053-1-mcchou@chromium.org> <20200326005931.v3.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
- <ADF19483-721C-4263-8CA8-CF4587E79BA4@holtmann.org>
-In-Reply-To: <ADF19483-721C-4263-8CA8-CF4587E79BA4@holtmann.org>
-From:   Miao-chen Chou <mcchou@chromium.org>
-Date:   Thu, 26 Mar 2020 17:13:36 -0700
-Message-ID: <CABmPvSG3ML=GDHbM-k1g9-K3rxAYewNwfPrYA96aZE+MQ-KVVg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] Bluetooth: btusb: Indicate Microsoft vendor
- extension for Intel 9460/9560 and 9160/9260
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
-        Alain Michaud <alainm@chromium.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1585230682-24417-4-git-send-email-florinel.iordache@nxp.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 2:01 AM Marcel Holtmann <marcel@holtmann.org> wrote:
->
-> Hi Miao-chen,
->
-> > This adds a bit mask of driver_info for Microsoft vendor extension and
-> > indicates the support for Intel 9460/9560 and 9160/9260. See
-> > https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
-> > microsoft-defined-bluetooth-hci-commands-and-events for more information
-> > about the extension. This was verified with Intel ThunderPeak BT controller
-> > where msft_vnd_ext_opcode is 0xFC1E.
-> >
-> > Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
-> > ---
-> >
-> > Changes in v3:
-> > - Create net/bluetooth/msft.c with struct msft_vnd_ext defined internally
-> > and change the hdev->msft_ext field to void*.
-> > - Define and expose msft_vnd_ext_set_opcode() for btusb use.
-> > - Init hdev->msft_ext in hci_alloc_dev() and deinit it in hci_free_dev().
->
-> so I spent some cycles on thinking about on how we can have this nice and cleanly without putting too much into the core stack or hci_dev. I took your patches and converted them a little bit into how I would do it. Please have a look.
-Thanks for brainstorming the framework. I will address your suggestion
-in v4 shortly.
+On Thu, Mar 26, 2020 at 03:51:16PM +0200, Florinel Iordache wrote:
+> Add support for backplane kr phy connection types currently available
+> (10gbase-kr, 40gbase-kr4) and the required phylink updates (cover all
+> the cases for KR modes which are clause 45 compatible to correctly assign
+> phy_interface and phylink#supported)
+> 
+> Signed-off-by: Florinel Iordache <florinel.iordache@nxp.com>
+> ---
+>  drivers/net/phy/phylink.c | 15 ++++++++++++---
+>  include/linux/phy.h       |  6 +++++-
+>  2 files changed, 17 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> index fed0c59..db1bb87 100644
+> --- a/drivers/net/phy/phylink.c
+> +++ b/drivers/net/phy/phylink.c
+> @@ -4,6 +4,7 @@
+>   * technologies such as SFP cages where the PHY is hot-pluggable.
+>   *
+>   * Copyright (C) 2015 Russell King
+> + * Copyright 2020 NXP
+>   */
+>  #include <linux/ethtool.h>
+>  #include <linux/export.h>
+> @@ -303,7 +304,6 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
+>  			break;
+>  
+>  		case PHY_INTERFACE_MODE_USXGMII:
+> -		case PHY_INTERFACE_MODE_10GKR:
 
-Regards,
-Miao
+We might have a backwards compatibility issue here. If i remember
+correctly, there are some boards out in the wild using
+PHY_INTERFACE_MODE_10GKR not PHY_INTERFACE_MODE_10GBASER.
+
+See e0f909bc3a242296da9ccff78277f26d4883a79d
+
+Russell, what do you say about this?
+
+	 Andrew
