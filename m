@@ -2,36 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E67241960A1
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 22:49:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B6331960B2
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 22:49:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727677AbgC0VtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 17:49:07 -0400
+        id S1727857AbgC0Vtg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 17:49:36 -0400
 Received: from mga01.intel.com ([192.55.52.88]:25803 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726781AbgC0VtH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Mar 2020 17:49:07 -0400
-IronPort-SDR: 9Mi7p5xcX577NPtnQreZLSZGdtDPex5uxVRgBJnBBRpM54Bz5Vt6pzvrjlvdxHRaNZvzg9TUtM
- n5mj9gpQON2A==
+        id S1727473AbgC0VtJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Mar 2020 17:49:09 -0400
+IronPort-SDR: REf9mv6IcBD+/lNDlNkTC0gUQ4IFWJnqo8tzJuy6/0+mYMT0KdLYKi42h+GjiJ6flxtaeJjrmW
+ S6OqHnhCp7lQ==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2020 14:49:07 -0700
-IronPort-SDR: /G17EzBS9fX4BLrYrm50vTw2wysmfqXlSMGjFi6joAO1KNb8i+JiBiGUIG0lZxdHG5IU7S4ynD
- bD4FO0Zk9Mww==
+IronPort-SDR: FM48HsL7TeRp0SAKovcZjHYYePFGdFf8BQj/JNm1ZJq2ZRUGGt8Bjq24k9/ww48KTXC5sHIx1a
+ bBavPvJiF1lQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,313,1580803200"; 
-   d="scan'208";a="271713458"
+   d="scan'208";a="271713460"
 Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.7.195])
   by fmsmga004.fm.intel.com with ESMTP; 27 Mar 2020 14:49:07 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        eric.dumazet@gmail.com
-Subject: [PATCH net-next v3 00/17] Multipath TCP part 3: Multiple subflows and path management
-Date:   Fri, 27 Mar 2020 14:48:36 -0700
-Message-Id: <20200327214853.140669-1-mathew.j.martineau@linux.intel.com>
+Cc:     Peter Krystad <peter.krystad@linux.intel.com>,
+        eric.dumazet@gmail.com,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next v3 01/17] mptcp: Add ADD_ADDR handling
+Date:   Fri, 27 Mar 2020 14:48:37 -0700
+Message-Id: <20200327214853.140669-2-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.26.0
+In-Reply-To: <20200327214853.140669-1-mathew.j.martineau@linux.intel.com>
+References: <20200327214853.140669-1-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -39,110 +44,472 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-v2 -> v3: Remove 'inline' in .c files, fix uapi bit macros, and rebase.
+From: Peter Krystad <peter.krystad@linux.intel.com>
 
-v1 -> v2: Rebase on current net-next, fix for netlink limit setting,
-and update .gitignore for selftest.
+Add handling for sending and receiving the ADD_ADDR, ADD_ADDR6,
+and RM_ADDR suboptions.
 
-This patch set allows more than one TCP subflow to be established and
-used for a multipath TCP connection. Subflows are added to an existing
-connection using the MP_JOIN option during the 3-way handshake. With
-multiple TCP subflows available, sent data is now stored in the MPTCP
-socket so it may be retransmitted on any TCP subflow if there is no
-DATA_ACK before a timeout. If an MPTCP-level timeout occurs, data is
-retransmitted using an available subflow. Storing this sent data
-requires the addition of memory accounting at the MPTCP level, which was
-previously delegated to the single subflow. Incoming DATA_ACKs now free
-data from the MPTCP-level retransmit buffer.
+Co-developed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Co-developed-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Peter Krystad <peter.krystad@linux.intel.com>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+---
+ include/linux/tcp.h  |  20 ++++-
+ include/net/mptcp.h  |   9 ++
+ net/mptcp/crypto.c   |  17 ++--
+ net/mptcp/options.c  | 206 +++++++++++++++++++++++++++++++++++++++++--
+ net/mptcp/protocol.h |  28 +++++-
+ 5 files changed, 262 insertions(+), 18 deletions(-)
 
-IP addresses available for new subflow connections can now be advertised
-and received with the ADD_ADDR option, and the corresponding REMOVE_ADDR
-option likewise advertises that an address is no longer available.
-
-The MPTCP path manager netlink interface has commands to set in-kernel
-limits for the number of concurrent subflows and control the
-advertisement of IP addresses between peers.
-
-To track and debug MPTCP connections there are new MPTCP MIB counters,
-and subflow context can be requested using inet_diag. The MPTCP
-self-tests now validate multiple-subflow operation and the netlink path
-manager interface.
-
-Clone/fetch:
-https://github.com/multipath-tcp/mptcp_net-next.git (tag: netdev-for-5.7-part3-v3)
-
-Browse:
-https://github.com/multipath-tcp/mptcp_net-next/tree/netdev-for-5.7-part3-v3
-
-Thank you for your review. You can find us at mptcp@lists.01.org and
-https://is.gd/mptcp_upstream
-
-
-Davide Caratti (1):
-  mptcp: allow dumping subflow context to userspace
-
-Florian Westphal (2):
-  mptcp: allow partial cleaning of rtx head dfrag
-  mptcp: add and use MIB counter infrastructure
-
-Paolo Abeni (9):
-  mptcp: update per unacked sequence on pkt reception
-  mptcp: queue data for mptcp level retransmission
-  mptcp: introduce MPTCP retransmission timer
-  mptcp: implement memory accounting for mptcp rtx queue
-  mptcp: rework mptcp_sendmsg_frag to accept optional dfrag
-  mptcp: implement and use MPTCP-level retransmission
-  mptcp: add netlink-based PM
-  selftests: add PM netlink functional tests
-  selftests: add test-cases for MPTCP MP_JOIN
-
-Peter Krystad (5):
-  mptcp: Add ADD_ADDR handling
-  mptcp: Add path manager interface
-  mptcp: Add handling of incoming MP_JOIN requests
-  mptcp: Add handling of outgoing MP_JOIN requests
-  mptcp: Implement path manager interface commands
-
- MAINTAINERS                                   |   1 +
- include/linux/tcp.h                           |  26 +-
- include/net/mptcp.h                           |  26 +
- include/net/netns/mib.h                       |   3 +
- include/uapi/linux/inet_diag.h                |   1 +
- include/uapi/linux/mptcp.h                    |  89 ++
- net/ipv4/af_inet.c                            |   4 +
- net/ipv4/proc.c                               |   2 +
- net/ipv4/tcp_minisocks.c                      |   6 +
- net/mptcp/Makefile                            |   3 +-
- net/mptcp/crypto.c                            |  17 +-
- net/mptcp/diag.c                              | 104 +++
- net/mptcp/mib.c                               |  69 ++
- net/mptcp/mib.h                               |  40 +
- net/mptcp/options.c                           | 515 ++++++++++-
- net/mptcp/pm.c                                | 242 +++++
- net/mptcp/pm_netlink.c                        | 857 ++++++++++++++++++
- net/mptcp/protocol.c                          | 588 ++++++++++--
- net/mptcp/protocol.h                          | 187 +++-
- net/mptcp/subflow.c                           | 337 ++++++-
- net/mptcp/token.c                             |  27 +
- tools/testing/selftests/net/mptcp/.gitignore  |   1 +
- tools/testing/selftests/net/mptcp/Makefile    |   7 +-
- .../selftests/net/mptcp/mptcp_connect.c       |  28 +-
- .../testing/selftests/net/mptcp/mptcp_join.sh | 357 ++++++++
- .../testing/selftests/net/mptcp/pm_netlink.sh | 130 +++
- tools/testing/selftests/net/mptcp/pm_nl_ctl.c | 616 +++++++++++++
- 27 files changed, 4158 insertions(+), 125 deletions(-)
- create mode 100644 include/uapi/linux/mptcp.h
- create mode 100644 net/mptcp/diag.c
- create mode 100644 net/mptcp/mib.c
- create mode 100644 net/mptcp/mib.h
- create mode 100644 net/mptcp/pm.c
- create mode 100644 net/mptcp/pm_netlink.c
- create mode 100755 tools/testing/selftests/net/mptcp/mptcp_join.sh
- create mode 100755 tools/testing/selftests/net/mptcp/pm_netlink.sh
- create mode 100644 tools/testing/selftests/net/mptcp/pm_nl_ctl.c
-
-
-base-commit: 5bb7357f45315138f623d08a615d23dd6ac26cf3
+diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+index 3dc964010fef..1225db308957 100644
+--- a/include/linux/tcp.h
++++ b/include/linux/tcp.h
+@@ -86,9 +86,13 @@ struct mptcp_options_received {
+ 	u64	data_seq;
+ 	u32	subflow_seq;
+ 	u16	data_len;
+-	u8	mp_capable : 1,
++	u16	mp_capable : 1,
+ 		mp_join : 1,
+-		dss : 1;
++		dss : 1,
++		add_addr : 1,
++		rm_addr : 1,
++		family : 4,
++		echo : 1;
+ 	u8	use_map:1,
+ 		dsn64:1,
+ 		data_fin:1,
+@@ -96,6 +100,16 @@ struct mptcp_options_received {
+ 		ack64:1,
+ 		mpc_map:1,
+ 		__unused:2;
++	u8	addr_id;
++	u8	rm_id;
++	union {
++		struct in_addr	addr;
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++		struct in6_addr	addr6;
++#endif
++	};
++	u64	ahmac;
++	u16	port;
+ };
+ #endif
+ 
+@@ -131,6 +145,8 @@ static inline void tcp_clear_options(struct tcp_options_received *rx_opt)
+ #if IS_ENABLED(CONFIG_MPTCP)
+ 	rx_opt->mptcp.mp_capable = 0;
+ 	rx_opt->mptcp.mp_join = 0;
++	rx_opt->mptcp.add_addr = 0;
++	rx_opt->mptcp.rm_addr = 0;
+ 	rx_opt->mptcp.dss = 0;
+ #endif
+ }
+diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+index c971d25431ea..0d5ea71dd3d0 100644
+--- a/include/net/mptcp.h
++++ b/include/net/mptcp.h
+@@ -33,6 +33,15 @@ struct mptcp_out_options {
+ 	u16 suboptions;
+ 	u64 sndr_key;
+ 	u64 rcvr_key;
++	union {
++		struct in_addr addr;
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++		struct in6_addr addr6;
++#endif
++	};
++	u8 addr_id;
++	u64 ahmac;
++	u8 rm_id;
+ 	struct mptcp_ext ext_copy;
+ #endif
+ };
+diff --git a/net/mptcp/crypto.c b/net/mptcp/crypto.c
+index 40d1bb18fd60..c151628bd416 100644
+--- a/net/mptcp/crypto.c
++++ b/net/mptcp/crypto.c
+@@ -44,8 +44,7 @@ void mptcp_crypto_key_sha(u64 key, u32 *token, u64 *idsn)
+ 		*idsn = be64_to_cpu(*((__be64 *)&mptcp_hashed_key[6]));
+ }
+ 
+-void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u32 nonce1, u32 nonce2,
+-			   void *hmac)
++void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u8 *msg, int len, void *hmac)
+ {
+ 	u8 input[SHA256_BLOCK_SIZE + SHA256_DIGEST_SIZE];
+ 	__be32 mptcp_hashed_key[SHA256_DIGEST_WORDS];
+@@ -55,6 +54,9 @@ void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u32 nonce1, u32 nonce2,
+ 	u8 key2be[8];
+ 	int i;
+ 
++	if (WARN_ON_ONCE(len > SHA256_DIGEST_SIZE))
++		len = SHA256_DIGEST_SIZE;
++
+ 	put_unaligned_be64(key1, key1be);
+ 	put_unaligned_be64(key2, key2be);
+ 
+@@ -65,11 +67,10 @@ void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u32 nonce1, u32 nonce2,
+ 	for (i = 0; i < 8; i++)
+ 		input[i + 8] ^= key2be[i];
+ 
+-	put_unaligned_be32(nonce1, &input[SHA256_BLOCK_SIZE]);
+-	put_unaligned_be32(nonce2, &input[SHA256_BLOCK_SIZE + 4]);
++	memcpy(&input[SHA256_BLOCK_SIZE], msg, len);
+ 
+ 	sha256_init(&state);
+-	sha256_update(&state, input, SHA256_BLOCK_SIZE + 8);
++	sha256_update(&state, input, SHA256_BLOCK_SIZE + len);
+ 
+ 	/* emit sha256(K1 || msg) on the second input block, so we can
+ 	 * reuse 'input' for the last hashing
+@@ -125,6 +126,7 @@ static int __init test_mptcp_crypto(void)
+ 	char hmac[20], hmac_hex[41];
+ 	u32 nonce1, nonce2;
+ 	u64 key1, key2;
++	u8 msg[8];
+ 	int i, j;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(tests); ++i) {
+@@ -134,7 +136,10 @@ static int __init test_mptcp_crypto(void)
+ 		nonce1 = be32_to_cpu(*((__be32 *)&tests[i].msg[0]));
+ 		nonce2 = be32_to_cpu(*((__be32 *)&tests[i].msg[4]));
+ 
+-		mptcp_crypto_hmac_sha(key1, key2, nonce1, nonce2, hmac);
++		put_unaligned_be32(nonce1, &msg[0]);
++		put_unaligned_be32(nonce2, &msg[4]);
++
++		mptcp_crypto_hmac_sha(key1, key2, msg, 8, hmac);
+ 		for (j = 0; j < 20; ++j)
+ 			sprintf(&hmac_hex[j << 1], "%02x", hmac[j] & 0xff);
+ 		hmac_hex[40] = 0;
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index aea1a62d9999..6c6c18a09a40 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -178,6 +178,71 @@ void mptcp_parse_option(const struct sk_buff *skb, const unsigned char *ptr,
+ 
+ 		break;
+ 
++	case MPTCPOPT_ADD_ADDR:
++		mp_opt->echo = (*ptr++) & MPTCP_ADDR_ECHO;
++		if (!mp_opt->echo) {
++			if (opsize == TCPOLEN_MPTCP_ADD_ADDR ||
++			    opsize == TCPOLEN_MPTCP_ADD_ADDR_PORT)
++				mp_opt->family = MPTCP_ADDR_IPVERSION_4;
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++			else if (opsize == TCPOLEN_MPTCP_ADD_ADDR6 ||
++				 opsize == TCPOLEN_MPTCP_ADD_ADDR6_PORT)
++				mp_opt->family = MPTCP_ADDR_IPVERSION_6;
++#endif
++			else
++				break;
++		} else {
++			if (opsize == TCPOLEN_MPTCP_ADD_ADDR_BASE ||
++			    opsize == TCPOLEN_MPTCP_ADD_ADDR_BASE_PORT)
++				mp_opt->family = MPTCP_ADDR_IPVERSION_4;
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++			else if (opsize == TCPOLEN_MPTCP_ADD_ADDR6_BASE ||
++				 opsize == TCPOLEN_MPTCP_ADD_ADDR6_BASE_PORT)
++				mp_opt->family = MPTCP_ADDR_IPVERSION_6;
++#endif
++			else
++				break;
++		}
++
++		mp_opt->add_addr = 1;
++		mp_opt->port = 0;
++		mp_opt->addr_id = *ptr++;
++		pr_debug("ADD_ADDR: id=%d", mp_opt->addr_id);
++		if (mp_opt->family == MPTCP_ADDR_IPVERSION_4) {
++			memcpy((u8 *)&mp_opt->addr.s_addr, (u8 *)ptr, 4);
++			ptr += 4;
++			if (opsize == TCPOLEN_MPTCP_ADD_ADDR_PORT ||
++			    opsize == TCPOLEN_MPTCP_ADD_ADDR_BASE_PORT) {
++				mp_opt->port = get_unaligned_be16(ptr);
++				ptr += 2;
++			}
++		}
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++		else {
++			memcpy(mp_opt->addr6.s6_addr, (u8 *)ptr, 16);
++			ptr += 16;
++			if (opsize == TCPOLEN_MPTCP_ADD_ADDR6_PORT ||
++			    opsize == TCPOLEN_MPTCP_ADD_ADDR6_BASE_PORT) {
++				mp_opt->port = get_unaligned_be16(ptr);
++				ptr += 2;
++			}
++		}
++#endif
++		if (!mp_opt->echo) {
++			mp_opt->ahmac = get_unaligned_be64(ptr);
++			ptr += 8;
++		}
++		break;
++
++	case MPTCPOPT_RM_ADDR:
++		if (opsize != TCPOLEN_MPTCP_RM_ADDR_BASE)
++			break;
++
++		mp_opt->rm_addr = 1;
++		mp_opt->rm_id = *ptr++;
++		pr_debug("RM_ADDR: id=%d", mp_opt->rm_id);
++		break;
++
+ 	default:
+ 		break;
+ 	}
+@@ -386,6 +451,84 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
+ 	return true;
+ }
+ 
++static u64 add_addr_generate_hmac(u64 key1, u64 key2, u8 addr_id,
++				  struct in_addr *addr)
++{
++	u8 hmac[MPTCP_ADDR_HMAC_LEN];
++	u8 msg[7];
++
++	msg[0] = addr_id;
++	memcpy(&msg[1], &addr->s_addr, 4);
++	msg[5] = 0;
++	msg[6] = 0;
++
++	mptcp_crypto_hmac_sha(key1, key2, msg, 7, hmac);
++
++	return get_unaligned_be64(hmac);
++}
++
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++static u64 add_addr6_generate_hmac(u64 key1, u64 key2, u8 addr_id,
++				   struct in6_addr *addr)
++{
++	u8 hmac[MPTCP_ADDR_HMAC_LEN];
++	u8 msg[19];
++
++	msg[0] = addr_id;
++	memcpy(&msg[1], &addr->s6_addr, 16);
++	msg[17] = 0;
++	msg[18] = 0;
++
++	mptcp_crypto_hmac_sha(key1, key2, msg, 19, hmac);
++
++	return get_unaligned_be64(hmac);
++}
++#endif
++
++static bool mptcp_established_options_addr(struct sock *sk,
++					   unsigned int *size,
++					   unsigned int remaining,
++					   struct mptcp_out_options *opts)
++{
++	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
++	struct mptcp_sock *msk = mptcp_sk(subflow->conn);
++	struct sockaddr_storage saddr;
++	u8 id;
++
++	id = 0;
++	memset(&saddr, 0, sizeof(saddr));
++
++	if (saddr.ss_family == AF_INET) {
++		if (remaining < TCPOLEN_MPTCP_ADD_ADDR)
++			return false;
++		opts->suboptions |= OPTION_MPTCP_ADD_ADDR;
++		opts->addr_id = id;
++		opts->addr = ((struct sockaddr_in *)&saddr)->sin_addr;
++		opts->ahmac = add_addr_generate_hmac(msk->local_key,
++						     msk->remote_key,
++						     opts->addr_id,
++						     &opts->addr);
++		*size = TCPOLEN_MPTCP_ADD_ADDR;
++	}
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++	else if (saddr.ss_family == AF_INET6) {
++		if (remaining < TCPOLEN_MPTCP_ADD_ADDR6)
++			return false;
++		opts->suboptions |= OPTION_MPTCP_ADD_ADDR6;
++		opts->addr_id = id;
++		opts->ahmac = add_addr6_generate_hmac(msk->local_key,
++						      msk->remote_key,
++						      opts->addr_id,
++						      &opts->addr6);
++		opts->addr6 = ((struct sockaddr_in6 *)&saddr)->sin6_addr;
++		*size = TCPOLEN_MPTCP_ADD_ADDR6;
++	}
++#endif
++	pr_debug("addr_id=%d, ahmac=%llu", opts->addr_id, opts->ahmac);
++
++	return true;
++}
++
+ bool mptcp_established_options(struct sock *sk, struct sk_buff *skb,
+ 			       unsigned int *size, unsigned int remaining,
+ 			       struct mptcp_out_options *opts)
+@@ -393,6 +536,8 @@ bool mptcp_established_options(struct sock *sk, struct sk_buff *skb,
+ 	unsigned int opt_size = 0;
+ 	bool ret = false;
+ 
++	opts->suboptions = 0;
++
+ 	if (mptcp_established_options_mp(sk, skb, &opt_size, remaining, opts))
+ 		ret = true;
+ 	else if (mptcp_established_options_dss(sk, skb, &opt_size, remaining,
+@@ -407,6 +552,11 @@ bool mptcp_established_options(struct sock *sk, struct sk_buff *skb,
+ 
+ 	*size += opt_size;
+ 	remaining -= opt_size;
++	if (mptcp_established_options_addr(sk, &opt_size, remaining, opts)) {
++		*size += opt_size;
++		remaining -= opt_size;
++		ret = true;
++	}
+ 
+ 	return ret;
+ }
+@@ -521,10 +671,9 @@ void mptcp_write_options(__be32 *ptr, struct mptcp_out_options *opts)
+ 		else
+ 			len = TCPOLEN_MPTCP_MPC_ACK;
+ 
+-		*ptr++ = htonl((TCPOPT_MPTCP << 24) | (len << 16) |
+-			       (MPTCPOPT_MP_CAPABLE << 12) |
+-			       (MPTCP_SUPPORTED_VERSION << 8) |
+-			       MPTCP_CAP_HMAC_SHA256);
++		*ptr++ = mptcp_option(MPTCPOPT_MP_CAPABLE, len,
++				      MPTCP_SUPPORTED_VERSION,
++				      MPTCP_CAP_HMAC_SHA256);
+ 
+ 		if (!((OPTION_MPTCP_MPC_SYNACK | OPTION_MPTCP_MPC_ACK) &
+ 		    opts->suboptions))
+@@ -546,6 +695,50 @@ void mptcp_write_options(__be32 *ptr, struct mptcp_out_options *opts)
+ 	}
+ 
+ mp_capable_done:
++	if (OPTION_MPTCP_ADD_ADDR & opts->suboptions) {
++		if (opts->ahmac)
++			*ptr++ = mptcp_option(MPTCPOPT_ADD_ADDR,
++					      TCPOLEN_MPTCP_ADD_ADDR, 0,
++					      opts->addr_id);
++		else
++			*ptr++ = mptcp_option(MPTCPOPT_ADD_ADDR,
++					      TCPOLEN_MPTCP_ADD_ADDR_BASE,
++					      MPTCP_ADDR_ECHO,
++					      opts->addr_id);
++		memcpy((u8 *)ptr, (u8 *)&opts->addr.s_addr, 4);
++		ptr += 1;
++		if (opts->ahmac) {
++			put_unaligned_be64(opts->ahmac, ptr);
++			ptr += 2;
++		}
++	}
++
++#if IS_ENABLED(CONFIG_MPTCP_IPV6)
++	if (OPTION_MPTCP_ADD_ADDR6 & opts->suboptions) {
++		if (opts->ahmac)
++			*ptr++ = mptcp_option(MPTCPOPT_ADD_ADDR,
++					      TCPOLEN_MPTCP_ADD_ADDR6, 0,
++					      opts->addr_id);
++		else
++			*ptr++ = mptcp_option(MPTCPOPT_ADD_ADDR,
++					      TCPOLEN_MPTCP_ADD_ADDR6_BASE,
++					      MPTCP_ADDR_ECHO,
++					      opts->addr_id);
++		memcpy((u8 *)ptr, opts->addr6.s6_addr, 16);
++		ptr += 4;
++		if (opts->ahmac) {
++			put_unaligned_be64(opts->ahmac, ptr);
++			ptr += 2;
++		}
++	}
++#endif
++
++	if (OPTION_MPTCP_RM_ADDR & opts->suboptions) {
++		*ptr++ = mptcp_option(MPTCPOPT_RM_ADDR,
++				      TCPOLEN_MPTCP_RM_ADDR_BASE,
++				      0, opts->rm_id);
++	}
++
+ 	if (opts->ext_copy.use_ack || opts->ext_copy.use_map) {
+ 		struct mptcp_ext *mpext = &opts->ext_copy;
+ 		u8 len = TCPOLEN_MPTCP_DSS_BASE;
+@@ -567,10 +760,7 @@ void mptcp_write_options(__be32 *ptr, struct mptcp_out_options *opts)
+ 				flags |= MPTCP_DSS_DATA_FIN;
+ 		}
+ 
+-		*ptr++ = htonl((TCPOPT_MPTCP << 24) |
+-			       (len  << 16) |
+-			       (MPTCPOPT_DSS << 12) |
+-			       (flags));
++		*ptr++ = mptcp_option(MPTCPOPT_DSS, len, 0, flags);
+ 
+ 		if (mpext->use_ack) {
+ 			put_unaligned_be64(mpext->data_ack, ptr);
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index eb3f65264a40..471e013d1c32 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -17,6 +17,9 @@
+ #define OPTION_MPTCP_MPC_SYN	BIT(0)
+ #define OPTION_MPTCP_MPC_SYNACK	BIT(1)
+ #define OPTION_MPTCP_MPC_ACK	BIT(2)
++#define OPTION_MPTCP_ADD_ADDR	BIT(6)
++#define OPTION_MPTCP_ADD_ADDR6	BIT(7)
++#define OPTION_MPTCP_RM_ADDR	BIT(8)
+ 
+ /* MPTCP option subtypes */
+ #define MPTCPOPT_MP_CAPABLE	0
+@@ -39,6 +42,16 @@
+ #define TCPOLEN_MPTCP_DSS_MAP32		10
+ #define TCPOLEN_MPTCP_DSS_MAP64		14
+ #define TCPOLEN_MPTCP_DSS_CHECKSUM	2
++#define TCPOLEN_MPTCP_ADD_ADDR		16
++#define TCPOLEN_MPTCP_ADD_ADDR_PORT	18
++#define TCPOLEN_MPTCP_ADD_ADDR_BASE	8
++#define TCPOLEN_MPTCP_ADD_ADDR_BASE_PORT	10
++#define TCPOLEN_MPTCP_ADD_ADDR6		28
++#define TCPOLEN_MPTCP_ADD_ADDR6_PORT	30
++#define TCPOLEN_MPTCP_ADD_ADDR6_BASE	20
++#define TCPOLEN_MPTCP_ADD_ADDR6_BASE_PORT	22
++#define TCPOLEN_MPTCP_PORT_LEN		2
++#define TCPOLEN_MPTCP_RM_ADDR_BASE	4
+ 
+ /* MPTCP MP_CAPABLE flags */
+ #define MPTCP_VERSION_MASK	(0x0F)
+@@ -55,10 +68,22 @@
+ #define MPTCP_DSS_HAS_ACK	BIT(0)
+ #define MPTCP_DSS_FLAG_MASK	(0x1F)
+ 
++/* MPTCP ADD_ADDR flags */
++#define MPTCP_ADDR_ECHO		BIT(0)
++#define MPTCP_ADDR_HMAC_LEN	20
++#define MPTCP_ADDR_IPVERSION_4	4
++#define MPTCP_ADDR_IPVERSION_6	6
++
+ /* MPTCP socket flags */
+ #define MPTCP_DATA_READY	0
+ #define MPTCP_SEND_SPACE	1
+ 
++static inline __be32 mptcp_option(u8 subopt, u8 len, u8 nib, u8 field)
++{
++	return htonl((TCPOPT_MPTCP << 24) | (len << 16) | (subopt << 12) |
++		     ((nib & 0xF) << 8) | field);
++}
++
+ /* MPTCP connection sock */
+ struct mptcp_sock {
+ 	/* inet_connection_sock must be the first member */
+@@ -219,8 +244,7 @@ static inline void mptcp_crypto_key_gen_sha(u64 *key, u32 *token, u64 *idsn)
+ 	mptcp_crypto_key_sha(*key, token, idsn);
+ }
+ 
+-void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u32 nonce1, u32 nonce2,
+-			   void *hash_out);
++void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u8 *msg, int len, void *hmac);
+ 
+ static inline struct mptcp_ext *mptcp_get_ext(struct sk_buff *skb)
+ {
 -- 
 2.26.0
 
