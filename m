@@ -2,117 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 96DCA195B24
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 17:33:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 411AF195B26
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 17:34:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727606AbgC0Qdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 12:33:41 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:53813 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727354AbgC0Qdl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 12:33:41 -0400
-Received: by mail-wm1-f67.google.com with SMTP id b12so12066728wmj.3
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 09:33:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=r0tlhX3TANvDbVtQSR4GyapuAe3Bh5PdWjICIuTlxJk=;
-        b=J04EPhYFaxCIv6G1osHyEK9EgI8fionzYxxWl1Cv90MWGWG8A23ObcyMLAhTXafBAa
-         xhS9DTyqWQCC29kcwJI4vJL/HwM8P9tUhRFd4jDXM3lH5bsl1Pq3BL3BhLwT+FgcVt1l
-         9KSIRgjVU8yRsNMiELLZWS9BFD0rMDLrInGyMjT27pQ7seQUe35yyPMi2eQ1VRNg5X8n
-         5y7ucyr1j3MwaTwfd8ljGbLJJcipQE9b5JtxEoMpXardFCt7POAVUr9TD1oMYL7Jjhkp
-         gYt//mYfTCU4y2M3pKPqjkeSeTo8JrjOhbjEVyD4dqjV+opaI7xC8GmDINVu2pvi5m3g
-         /f+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=r0tlhX3TANvDbVtQSR4GyapuAe3Bh5PdWjICIuTlxJk=;
-        b=hPSvCxjszh90B45/LGdRfLPnPFkSQ5OtbF6FSttzitND2gacaebfK2+wgYLYF6Zyo+
-         btykoEwW9aqM3yHzXKfnbJ1Ue1CgBp/uELrolbxdo8ZWJdTClalrtwmRNc0yGkX5Ujve
-         yMUT99MhG+6UlD+Il1Z7Z0aG8l0Xg4yZ62Kdj10DoGgrsqIoPfeDcthp6hOhGOahctvi
-         mF2T3DjEnZiwCdfEodAxKJ0Sdo4Qwqf5I++bOWQNXeFnLpmVfBLW8GTsguhyBG3J9Izt
-         q5oUlirzbhLck1rKvq381syxaQxF6V0nuWVP3OvA8zwc62WSGg5AEdEbq2p7FogwQzWd
-         RtGg==
-X-Gm-Message-State: ANhLgQ33S766pnJzxIiRJ+lVDiIf04tgNEYpShmmCMOtQnrgnf4JuyCJ
-        p3QpCTKdr5idsWb70uT6KE9Oad0u
-X-Google-Smtp-Source: ADFU+vuzpxQlJkkhcDd0jXms3xTcZZP+eWObCzhdm0XNw9uxpE3bsuWjxW6v1qO24RBbe5f4g09Vcg==
-X-Received: by 2002:a1c:7e43:: with SMTP id z64mr5930101wmc.45.1585326819978;
-        Fri, 27 Mar 2020 09:33:39 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:9d76:401f:98cb:c084? (p200300EA8F2960009D76401F98CBC084.dip0.t-ipconnect.de. [2003:ea:8f29:6000:9d76:401f:98cb:c084])
-        by smtp.googlemail.com with ESMTPSA id j11sm8903408wrt.14.2020.03.27.09.33.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Mar 2020 09:33:39 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     Chih-Wei Huang <cwhuang@android-x86.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net] r8169: fix PHY driver check on platforms w/o module
- softdeps
-Message-ID: <40373530-6d40-4358-df58-13622a4512c2@gmail.com>
-Date:   Fri, 27 Mar 2020 17:33:32 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1727781AbgC0QeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 12:34:03 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:58490 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727352AbgC0QeC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 12:34:02 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02RGMSEh134501;
+        Fri, 27 Mar 2020 16:33:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2020-01-29; bh=jtn7o2RhFvINwYlF9zAidEwSZ9rhb3VsE2CDhAlOads=;
+ b=ATmBjj0I7w4miIptaUNnsW0Rn/WJOQoompsthfwAI4TxezVefXJe4TUOgLTCiZPK2mdg
+ rYBifw88+pJkeIwBpdSTbNq2rEIAewVB5m9BVFvZITH2GWFRx5fiF0Scj7DnALI6UwTs
+ 7Qd/3G3GBhlqv0nU9TmsCOiRE6/5PMhnzidP4WV/dBPL96aMBSAA0lGweI+xgmexPfj3
+ 7XFTFmJhOl+UdnQ9qTOC2I+zZ/YDuMV3uMGE1lhdP5fuRU1zaOdXMVcX36YbeQ5CqL8+
+ MKrpefzdHpo3vgGrqmlX7ov8/k/ngEXl7HdKKTEg9mMhSOz35JL+SUWeyC/S7JHhTQfm Hg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by userp2120.oracle.com with ESMTP id 3019veb8cb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 27 Mar 2020 16:33:43 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02RGW4jJ121146;
+        Fri, 27 Mar 2020 16:33:43 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3020.oracle.com with ESMTP id 3003gp8xvx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 27 Mar 2020 16:33:42 +0000
+Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 02RGXcUd019210;
+        Fri, 27 Mar 2020 16:33:38 GMT
+Received: from anon-dhcp-153.1015granger.net (/68.61.232.219)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 27 Mar 2020 09:33:38 -0700
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: [PATCH V2] SUNRPC: Fix a potential buffer overflow in
+ 'svc_print_xprts()'
+From:   Chuck Lever <chuck.lever@oracle.com>
+In-Reply-To: <20200327161539.21554-1-christophe.jaillet@wanadoo.fr>
+Date:   Fri, 27 Mar 2020 12:33:36 -0400
+Cc:     Bruce Fields <bfields@fieldses.org>,
+        trond.myklebust@hammerspace.com,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        davem@davemloft.net, kuba@kernel.org, Neil Brown <neilb@suse.de>,
+        Tom Tucker <tom@opengridcomputing.com>, gnb@sgi.com,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <EC65FE50-6CEC-4D97-9011-2A88F63C26D7@oracle.com>
+References: <20200327161539.21554-1-christophe.jaillet@wanadoo.fr>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+X-Mailer: Apple Mail (2.3445.104.11)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9573 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999 bulkscore=0
+ phishscore=0 adultscore=0 spamscore=0 malwarescore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
+ definitions=main-2003270145
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9573 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 impostorscore=0 phishscore=0
+ clxscore=1011 adultscore=0 spamscore=0 malwarescore=0 mlxlogscore=999
+ lowpriorityscore=0 bulkscore=0 priorityscore=1501 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
+ definitions=main-2003270144
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Android/x86 the module loading infrastructure can't deal with
-softdeps. Therefore the check for presence of the Realtek PHY driver
-module fails. mdiobus_register() will try to load the PHY driver
-module, therefore move the check to after this call and explicitly
-check that a dedicated PHY driver is bound to the PHY device.
 
-Fixes: f32593773549 ("r8169: check that Realtek PHY driver module is loaded")
-Reported-by: Chih-Wei Huang <cwhuang@android-x86.org>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
-Please apply fix back to 5.4 only. On 4.19 it would break processing.
----
- drivers/net/ethernet/realtek/r8169_main.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index a9bdafd15..791d99b9e 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -5285,6 +5285,13 @@ static int r8169_mdio_register(struct rtl8169_private *tp)
- 	if (!tp->phydev) {
- 		mdiobus_unregister(new_bus);
- 		return -ENODEV;
-+	} else if (!tp->phydev->drv) {
-+		/* Most chip versions fail with the genphy driver.
-+		 * Therefore ensure that the dedicated PHY driver is loaded.
-+		 */
-+		dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs to be added to initramfs?\n");
-+		mdiobus_unregister(new_bus);
-+		return -EUNATCH;
- 	}
- 
- 	/* PHY will be woken up in rtl_open() */
-@@ -5446,15 +5453,6 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	int chipset, region;
- 	int jumbo_max, rc;
- 
--	/* Some tools for creating an initramfs don't consider softdeps, then
--	 * r8169.ko may be in initramfs, but realtek.ko not. Then the generic
--	 * PHY driver is used that doesn't work with most chip versions.
--	 */
--	if (!driver_find("RTL8201CP Ethernet", &mdio_bus_type)) {
--		dev_err(&pdev->dev, "realtek.ko not loaded, maybe it needs to be added to initramfs?\n");
--		return -ENOENT;
--	}
--
- 	dev = devm_alloc_etherdev(&pdev->dev, sizeof (*tp));
- 	if (!dev)
- 		return -ENOMEM;
--- 
-2.26.0
+> On Mar 27, 2020, at 12:15 PM, Christophe JAILLET =
+<christophe.jaillet@wanadoo.fr> wrote:
+>=20
+> 'maxlen' is the total size of the destination buffer. There is only =
+one
+> caller and this value is 256.
+>=20
+> When we compute the size already used and what we would like to add in
+> the buffer, the trailling NULL character is not taken into account.
+> However, this trailling character will be added by the 'strcat' once =
+we
+> have checked that we have enough place.
+>=20
+> So, there is a off-by-one issue and 1 byte of the stack could be
+> erroneously overwridden.
+>=20
+> Take into account the trailling NULL, when checking if there is enough
+> place in the destination buffer.
+>=20
+>=20
+> While at it, also replace a 'sprintf' by a safer 'snprintf', check for
+> output truncation and avoid a superfluous 'strlen'.
+>=20
+> Fixes: dc9a16e49dbba ("svc: Add /proc/sys/sunrpc/transport files")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> V2: add a doxygen comment to clarify the goal of the function
+>    merge previous 2 patches into a single one
+>    keep strcat for clarity, this function being just a slow path =
+anyway
+>=20
+> Doc being most of the time a matter of taste, please adjust the =
+description
+> as needed.
+
+I've applied this to my local nfsd-5.7 with a very small adjustment
+to the doc-comment. Testing it now. Thanks, all.
+
+
+> ---
+> net/sunrpc/svc_xprt.c | 19 ++++++++++++++-----
+> 1 file changed, 14 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/net/sunrpc/svc_xprt.c b/net/sunrpc/svc_xprt.c
+> index de3c077733a7..e0f61a8c1965 100644
+> --- a/net/sunrpc/svc_xprt.c
+> +++ b/net/sunrpc/svc_xprt.c
+> @@ -104,8 +104,17 @@ void svc_unreg_xprt_class(struct svc_xprt_class =
+*xcl)
+> }
+> EXPORT_SYMBOL_GPL(svc_unreg_xprt_class);
+>=20
+> -/*
+> - * Format the transport list for printing
+> +/**
+> + * svc_print_xprts - Format the transport list for printing
+> + * @buf: target buffer for formatted address
+> + * @maxlen: length of target buffer
+> + *
+> + * Fills in @buf with a string containing a list of transport names, =
+each name
+> + * terminated with '\n'. If the buffer is too small, some entries may =
+be
+> + * missing, but it is guaranteed that the line in the output buffer =
+are
+> + * complete.
+> + *
+> + * Returns positive length of the filled-in string.
+>  */
+> int svc_print_xprts(char *buf, int maxlen)
+> {
+> @@ -118,9 +127,9 @@ int svc_print_xprts(char *buf, int maxlen)
+> 	list_for_each_entry(xcl, &svc_xprt_class_list, xcl_list) {
+> 		int slen;
+>=20
+> -		sprintf(tmpstr, "%s %d\n", xcl->xcl_name, =
+xcl->xcl_max_payload);
+> -		slen =3D strlen(tmpstr);
+> -		if (len + slen > maxlen)
+> +		slen =3D snprintf(tmpstr, sizeof(tmpstr), "%s %d\n",
+> +				xcl->xcl_name, xcl->xcl_max_payload);
+> +		if (slen >=3D sizeof(tmpstr) || len + slen >=3D maxlen)
+> 			break;
+> 		len +=3D slen;
+> 		strcat(buf, tmpstr);
+> --=20
+> 2.20.1
+>=20
+
+--
+Chuck Lever
+
+
 
