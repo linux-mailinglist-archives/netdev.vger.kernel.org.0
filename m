@@ -2,93 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2FB5195321
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 09:43:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76E30195366
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 09:56:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726661AbgC0InJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 04:43:09 -0400
-Received: from mail-vs1-f67.google.com ([209.85.217.67]:44756 "EHLO
-        mail-vs1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725956AbgC0InI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 04:43:08 -0400
-Received: by mail-vs1-f67.google.com with SMTP id e138so5663286vsc.11;
-        Fri, 27 Mar 2020 01:43:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=92v3v9O6F1Q3whXiHw17g/dqUG5CfN1T3QTIoEEIQ7I=;
-        b=p81juotZx1bUgpdZ8gT/wQT4KZ2KZ5jHpKcKYDqJLluurY2AkbcvlxofvjDUeK+Hm2
-         uMijT84QxPlGZXhx5PD13awOZJtygx15wwcn8InHDNhwSdQPlt0iBVgM+7jC/tenVZWo
-         i9CcAzd+UFgSbdUaCTNzqTrY09VXiVhT3OYMWgIsaAiey7ala7gN0Hu1IVHazDRRF/uL
-         um2TPgUL9WxZhuKUKGNhYgYmfN4g+/5P1oqdCo6cF2oPAeEP2+FJLcNNOzKGXOxlsYZD
-         rVuo840bAwmJsxoAqVTc0ZgZyQP/GKfUEzxUM5lunnkN0E+Cl4cglPhs1cus5PQH+0j0
-         gfaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=92v3v9O6F1Q3whXiHw17g/dqUG5CfN1T3QTIoEEIQ7I=;
-        b=oGLzgp1Wh8d6UyPbn3Dk1XRVAkBECJBCt4xCZUwyUQT3S3zq3yrJpjVAt9JhAB3xu6
-         1UsoPzQdK6K7mxduxEBXJPBab6GmcDx/PfQ9O2+I2UkZ3A4KpTN8wkY183KXBQ3MI9hW
-         NZkDfIO7oD+b1gMoF+bnLhBicZF6azzyi8w0JjqDJKpHm/7bi2ZWaaGxBIMnMih0bdtv
-         HXB0apkrUgsIunL1I2/Kxzw1riM+VZA51Tom+4xGh1W+wji+Nc4gKyoLW3pO2jqATbZn
-         nLNNiWXMgSDMSZypyVWxmJ2GOKKeZ6yz+tzSDaNOGj+04EE1XXfoTH/8mYtu+vkFUR3W
-         ZlEw==
-X-Gm-Message-State: ANhLgQ1zn47b8j5HcPpUUUF0QjFxaMoEWFLrDlgJE5MRqABKJxiGaNpZ
-        5yfkHJdI2edoBCxgu/36zaGQYzwRJAe3lX/uzzo=
-X-Google-Smtp-Source: ADFU+vsaaXTxlvmi+j4L1dYa6RpljDs7DpBADmI8karwZkMAv/1NaPX5Jt9jmLZwtSpHb+EgRO9uuM5HEK8Fb1dVevc=
-X-Received: by 2002:a67:2786:: with SMTP id n128mr11373783vsn.21.1585298587138;
- Fri, 27 Mar 2020 01:43:07 -0700 (PDT)
+        id S1726284AbgC0I4z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 04:56:55 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:58479 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726027AbgC0I4y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 04:56:54 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id C39C85C046C;
+        Fri, 27 Mar 2020 04:56:53 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Fri, 27 Mar 2020 04:56:53 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:message-id:mime-version:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=1QXAkC
+        gKQzp5MWt/QbUBbtO4C3mfnwqq8yaRNp9064g=; b=vGuljl774FiT21I976ksbo
+        xNhNSgK3rwpRqYu20M2XaXq1tsjzsi8eAd0N9l6nrlvn2UeYSQCXRUwUdzIdYk+H
+        EhToOL6HCIU8VtSMnXMxRdqvQ11dxcEl8DXY7poPJ7Y1/5AtzsD1hZeUZagZmNdG
+        +aeHCD7oA4oiG3irRP+BtlhfDaaHEuDo/OBVlr8ckvh4xuiTD/Aqp2c59LsxGPhj
+        3FdAi2fu14uaJZUtZ+vY6u1+q8mi4zJGGaeJQNMF4dFqVpaA6abD7T7QqokCibYZ
+        FpFPNT8hN0D0nHfI/roi4WGyyvrXMD4xa6moKN8loG0NRTzal7zBfI4rpCXeZmYw
+        ==
+X-ME-Sender: <xms:1b99Xrf-e2x_e0fWzFfGTdpnp7S_JVdHzNO0caz3BFhAbsqEbmwO_Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudehkedgvdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofggtgfgsehtkeertd
+    ertdejnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucfkphepjeelrddukedurddufedvrdduledunecuvehluhhsthgvrh
+    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
+    hhdrohhrgh
+X-ME-Proxy: <xmx:1b99Xrd7k9T01K9uGEBps7GXu3MH46BkkiPA5jZoIyNyGZYbHWuJ-g>
+    <xmx:1b99XmTlp69KTfyt1rA0_PLueSVUCeCeiKbP2CgPdLEcANN61vnv0Q>
+    <xmx:1b99XhjJ6r0JaGTPOaz2VrjcV_lAPj5XFBSi5oOGYH1H5pFS4k0zfw>
+    <xmx:1b99XjI1d-fp7ATrayFUIfhywKW_jhxGosah9jCnqUvRLGaXrgxsOQ>
+Received: from splinter.mtl.com (bzq-79-181-132-191.red.bezeqint.net [79.181.132.191])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 06038306BD54;
+        Fri, 27 Mar 2020 04:56:51 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jiri@mellanox.com, kuba@kernel.org,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 0/6] mlxsw: Various static checkers fixes
+Date:   Fri, 27 Mar 2020 11:55:19 +0300
+Message-Id: <20200327085525.1906170-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-References: <4473787e1b6bc3cc226067e8d122092a678b63de.camel@marvell.com>
- <aed12dd15ea2981bc9554cfa8b5e273c1342c756.camel@marvell.com> <105f17f25e90a9a58299a7ed644bdd0f36434c87.camel@marvell.com>
-In-Reply-To: <105f17f25e90a9a58299a7ed644bdd0f36434c87.camel@marvell.com>
-From:   Marta Rybczynska <rybczynska@gmail.com>
-Date:   Fri, 27 Mar 2020 09:42:55 +0100
-Message-ID: <CAApg2=ThxqOj8a2uZbRVgXZFjHWHk9g_xY3eseobQWwHLxiREg@mail.gmail.com>
-Subject: Re: [PATCH v2 03/12] task_isolation: userspace hard isolation from kernel
-To:     Alex Belits <abelits@marvell.com>
-Cc:     "frederic@kernel.org" <frederic@kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "mingo@kernel.org" <mingo@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Prasun Kapoor <pkapoor@marvell.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "will@kernel.org" <will@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 8, 2020 at 4:48 AM Alex Belits <abelits@marvell.com> wrote:
-> +/* Enable task_isolation mode for TASK_ISOLATION kernels. */
-> +#define PR_TASK_ISOLATION              48
-> +# define PR_TASK_ISOLATION_ENABLE      (1 << 0)
-> +# define PR_TASK_ISOLATION_SET_SIG(sig)        (((sig) & 0x7f) << 8)
-> +# define PR_TASK_ISOLATION_GET_SIG(bits) (((bits) >> 8) & 0x7f)
-> +
-Thank you for resurrecting this code!
+From: Ido Schimmel <idosch@mellanox.com>
 
-I have a question on the UAPI: the example code is using
-PR_TASK_ISOLATION_USERSIG and it seems to be removed from this
-version.
+Jakub told me he gets some warnings with W=1, so I decided to check with
+sparse, smatch and coccinelle as well. This patch set fixes all the
+issues found. None are actual bugs / regressions and therefore not
+targeted at net.
 
-To enable isolation with SIGUSR1 the task should run:
-prctl(PR_SET_TASK_ISOLATION, PR_TASK_ISOLATION_ENABLE
-    | PR_TASK_ISOLATION_SET_SIG(SIGUSR1), 0, 0, 0);
+Patches #1-#2 add missing kernel-doc comments.
 
-And to disable:
-prctl(PR_SET_TASK_ISOLATION, 0, 0, 0, 0);
+Patch #3 removes dead code.
 
-Is this correct?
-Marta
+Patch #4 reworks the ACL code to avoid defining a static variable in a
+header file.
+
+Patch #5 removes unnecessary conversion to bool that coccinelle warns
+about.
+
+Patch #6 avoids false-positive uninitialized symbol errors emitted by
+smatch.
+
+Ido Schimmel (6):
+  mlxsw: i2c: Add missing field documentation
+  mlxsw: spectrum_router: Add proper function documentation
+  mlxsw: spectrum: Remove unused RIF and FID families
+  mlxsw: core_acl: Avoid defining static variable in header file
+  mlxsw: switchx2: Remove unnecessary conversion to bool
+  mlxsw: spectrum_router: Avoid uninitialized symbol errors
+
+ .../mellanox/mlxsw/core_acl_flex_keys.c       |  50 +++++-
+ .../mellanox/mlxsw/core_acl_flex_keys.h       |  36 +---
+ drivers/net/ethernet/mellanox/mlxsw/i2c.c     |   1 +
+ .../ethernet/mellanox/mlxsw/spectrum_fid.c    | 152 +---------------
+ .../ethernet/mellanox/mlxsw/spectrum_router.c | 164 ++++++------------
+ .../net/ethernet/mellanox/mlxsw/switchx2.c    |   2 +-
+ 6 files changed, 109 insertions(+), 296 deletions(-)
+
+-- 
+2.24.1
+
