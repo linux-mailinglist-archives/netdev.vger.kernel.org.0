@@ -2,87 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E82C1958EB
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 15:26:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C18561958F0
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 15:27:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727242AbgC0O0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 10:26:18 -0400
-Received: from mail-il1-f176.google.com ([209.85.166.176]:39164 "EHLO
-        mail-il1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726742AbgC0O0S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 10:26:18 -0400
-Received: by mail-il1-f176.google.com with SMTP id r5so8899792ilq.6
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 07:26:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Oii4TAjFFw2Hmj832hEAobNWUE/N1jm1qkzOSIs++rA=;
-        b=Xn8tPPrwZbmVuZnlCEKgK6ZkNuOjxusDl0QhKOGO3nmU/qhHvdrxuSipBIJjR/wERO
-         NV6pli5A+K0v7gzUoPcbBBoRwayLR0eGxTrFYBb5bKqVElt+1BgqZbpEFQtE4MWicM+m
-         V69KRADh29CAYJiP5hnpjcwLmVxtbB8zK3FbKtTprliL9RANBA3O9ur5wKvQx62dFAzE
-         B9bpF/iz50+/MsQPPMeWEZIkKSs7syySBZsq1dQGKhG3s9exsKY2eIMi6hM5bFNtjcR2
-         txJxfV9cZZW9gT6U0rL6lZ3SVYBa7jobeY3VloqQRyAOS2E2++abQPwsPNhuerXNGzJx
-         u4tA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Oii4TAjFFw2Hmj832hEAobNWUE/N1jm1qkzOSIs++rA=;
-        b=eH6yHLoMjaWrY8JaXoNybazqrb1hS5B+gJum4Gh1pSd0nDSM36vN5G6U3I/YxGfnBM
-         pdopZEPXeIA9QM8T/nxTFFPxYBcyNJMGUQXJVqxG6ARqEBvvnJuoNZO6D/aBwOF2LsMC
-         e26San9/65vmYI9wHANzrUFLzSnIi3Ve2/by9YTrZNu2X977a8wX1FXtEdS9QYqPf6l7
-         cGq/8u6ta+WULIMVpbGoW5CkdU7Mp7JUcN3T/wQ0NxjahXLGpMswEpMrNnWrPlct0mR3
-         ylXgH5k4qxNA8rpXP2UnMPmgHMFkFC/uTicrZO9XiPf2Uqa2GH78PEckHdLk37ico3XP
-         dIKA==
-X-Gm-Message-State: ANhLgQ3nQuzWEHhr/BdcIkcWCwmhhCEut9EKrhUrgUfZ0rVWRB37XfIP
-        wpY88a/WAotmPBgR7iXfZzbWwg==
-X-Google-Smtp-Source: ADFU+vuGCSzhcUGz0UoOTjCPF0X/6CR8eBY+wR+v1ejFXt9FuheU9eYWGFzfrX8XGUSWJnN1X+Q+hQ==
-X-Received: by 2002:a92:a192:: with SMTP id b18mr13974595ill.199.1585319177493;
-        Fri, 27 Mar 2020 07:26:17 -0700 (PDT)
-Received: from [10.0.0.125] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
-        by smtp.googlemail.com with ESMTPSA id h15sm1581013ior.20.2020.03.27.07.26.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Mar 2020 07:26:17 -0700 (PDT)
-Subject: Re: [PATCHv3 bpf-next 3/5] bpf: Don't refcount LISTEN sockets in
- sk_assign()
-To:     Joe Stringer <joe@wand.net.nz>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        eric.dumazet@gmail.com, lmb@cloudflare.com, kafai@fb.com
-References: <20200327042556.11560-1-joe@wand.net.nz>
- <20200327042556.11560-4-joe@wand.net.nz>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <daf11ebd-e578-10d4-6e4a-00bb396258cf@mojatatu.com>
-Date:   Fri, 27 Mar 2020 10:26:15 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S1727548AbgC0O1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 10:27:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52866 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726656AbgC0O1M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Mar 2020 10:27:12 -0400
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5919E207FF;
+        Fri, 27 Mar 2020 14:27:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585319231;
+        bh=hD4cAlT39Vlqg/WzYLmXW0gi8KZ+OInRbLCxPG4TkAg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=yYtb3fpsxLMABkI77C9j2ZyUBFKQ9iCsDfJVjiNFECx3dLEkGrSU+8nM4dpShZVmy
+         FcY+kR31nfpBBcWnJ2F6rQpYa3F+DgFJZ+jLcyD7FcJVib7y1Ym41WuDpg+UY23w4z
+         issME7/jgpz62D0aCw8aCw7fOAcXeP94f+PbkfXM=
+Received: by mail-qt1-f169.google.com with SMTP id c14so8688108qtp.0;
+        Fri, 27 Mar 2020 07:27:11 -0700 (PDT)
+X-Gm-Message-State: ANhLgQ25goE8IRv1uTg4JtWM4i4K9lz8Ojc658BwqP/W9T0AuheCMZQJ
+        d6i+7ABjM0SlMPQ+ZvomGELym+2t0cVoQBAwjw==
+X-Google-Smtp-Source: ADFU+vuijTQWskgOuHhXvkzKMDdfKJKhsSzMwtt9f7bvO1piVOayuh+2y8tfvMHs6N09tnSJkSCMoyGOatLe8FZ9haA=
+X-Received: by 2002:ac8:18ab:: with SMTP id s40mr14342388qtj.224.1585319230429;
+ Fri, 27 Mar 2020 07:27:10 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200327042556.11560-4-joe@wand.net.nz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+References: <33fa622c263ad40a129dc2b8dd0111b40016bc17.1585316085.git.mchehab+huawei@kernel.org>
+In-Reply-To: <33fa622c263ad40a129dc2b8dd0111b40016bc17.1585316085.git.mchehab+huawei@kernel.org>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Fri, 27 Mar 2020 08:26:58 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLZQN253PDi-HXtP3s5CCg0OzaUK99onC9UjQWeVw3KYw@mail.gmail.com>
+Message-ID: <CAL_JsqLZQN253PDi-HXtP3s5CCg0OzaUK99onC9UjQWeVw3KYw@mail.gmail.com>
+Subject: Re: [PATCH] docs: dt: fix a broken reference for a file converted to json
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Harish Bandi <c-hbandi@codeaurora.org>,
+        Venkata Lakshmi Narayana Gubba <gubbaven@codeaurora.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Rocky Liao <rjliao@codeaurora.org>,
+        Matthias Brugger <mbrugger@suse.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-03-27 12:25 a.m., Joe Stringer wrote:
-> BPF_CALL_1(bpf_sk_release, struct sock *, sk)
->   {
-> -	/* Only full sockets have sk->sk_flags. */
-> -	if (!sk_fullsock(sk) || !sock_flag(sk, SOCK_RCU_FREE))
-> +	if (sk_is_refcounted(sk))
->   		sock_gen_put(sk);
->   	return 0;
->   }
+On Fri, Mar 27, 2020 at 7:34 AM Mauro Carvalho Chehab
+<mchehab+huawei@kernel.org> wrote:
+>
+> Changeset 32ced09d7903 ("dt-bindings: serial: Convert slave-device bindings to json-schema")
+> moved a binding to json and updated the links. Yet, one link
+> was forgotten.
 
+It was not. There's a merge conflict, so I dropped it until after rc1.
 
-Would it make sense to have both the bpf_sk_release and bpf_sk_assign()
-centralized so we dont replicate the functionality in tc? Reduces
-maintainance overhead.
-
-Thanks for working on this!
-
-cheers,
-jamal
+>
+> Update this one too.
+>
+> Fixes: 32ced09d7903 ("dt-bindings: serial: Convert slave-device bindings to json-schema")
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
+> index beca6466d59a..d2202791c1d4 100644
+> --- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
+> +++ b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
+> @@ -29,7 +29,7 @@ Required properties for compatible string qcom,wcn399x-bt:
+>
+>  Optional properties for compatible string qcom,wcn399x-bt:
+>
+> - - max-speed: see Documentation/devicetree/bindings/serial/slave-device.txt
+> + - max-speed: see Documentation/devicetree/bindings/serial/serial.yaml
+>   - firmware-name: specify the name of nvm firmware to load
+>   - clocks: clock provided to the controller
+>
+> --
+> 2.25.1
+>
