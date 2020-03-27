@@ -2,198 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 287A31955B4
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 11:51:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73AB61955DC
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 12:00:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726612AbgC0KvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 06:51:14 -0400
-Received: from mx2.suse.de ([195.135.220.15]:50104 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726284AbgC0KvO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Mar 2020 06:51:14 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 0C805AD1E;
-        Fri, 27 Mar 2020 10:51:12 +0000 (UTC)
-Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 03CC0E009C; Fri, 27 Mar 2020 11:51:09 +0100 (CET)
-Date:   Fri, 27 Mar 2020 11:51:08 +0100
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     netdev@vger.kernel.org
-Cc:     Tariq Toukan <tariqt@mellanox.com>,
-        "John W . Linville" <linville@tuxdriver.com>,
-        Aya Levin <ayal@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>
-Subject: Re: [PATCH V3 ethtool] ethtool: Add support for Low Latency Reed
- Solomon
-Message-ID: <20200327105108.GH31519@unicorn.suse.cz>
-References: <20200326110929.18698-1-tariqt@mellanox.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200326110929.18698-1-tariqt@mellanox.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726439AbgC0LAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 07:00:52 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:38410 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726165AbgC0LAw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 07:00:52 -0400
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02RAcnOT006364
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 07:00:51 -0400
+Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2ywd2v4d4n-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 07:00:51 -0400
+Received: from localhost
+        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Fri, 27 Mar 2020 11:00:43 -0000
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (9.149.109.195)
+        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Fri, 27 Mar 2020 11:00:39 -0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 02RB0iAo54657188
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 27 Mar 2020 11:00:45 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DA4F64204D;
+        Fri, 27 Mar 2020 11:00:44 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 963DF4203F;
+        Fri, 27 Mar 2020 11:00:44 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 27 Mar 2020 11:00:44 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net] s390/qeth: support net namespaces for L3 devices
+Date:   Fri, 27 Mar 2020 12:00:42 +0100
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 20032711-0016-0000-0000-000002F911E5
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20032711-0017-0000-0000-0000335CC2B0
+Message-Id: <20200327110042.50797-1-jwi@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-27_03:2020-03-27,2020-03-27 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 suspectscore=0 spamscore=0 mlxscore=0 adultscore=0
+ priorityscore=1501 malwarescore=0 phishscore=0 mlxlogscore=999 bulkscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003270092
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 01:09:29PM +0200, Tariq Toukan wrote:
-> From: Aya Levin <ayal@mellanox.com>
-> 
-> Introduce a new FEC mode LLRS: Low Latency Reed Solomon, update print
-> and initialization functions accordingly. In addition, update related
-> man page.
-> 
-> Signed-off-by: Aya Levin <ayal@mellanox.com>
-> Reviewed-by: Eran Ben Elisha <eranbe@mellanox.com>
-> Signed-off-by: Tariq Toukan <tariqt@mellanox.com>
-> ---
+Enable the L3 driver's IPv4 address notifier to watch for events on qeth
+devices that have been moved into a net namespace. We need to program
+those IPs into the HW just as usual, otherwise inbound traffic won't
+flow.
 
-Reviewed-by: Michal Kubecek <mkubecek@suse.cz>
+Fixes: 6133fb1aa137 ("[NETNS]: Disable inetaddr notifiers in namespaces other than initial.")
+Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+---
+ drivers/s390/net/qeth_l3_main.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-The kernel counterpart is only in net-next at the moment so that,
-technically, this should wait until after ethtool 5.6 is released.
-On the other hand, having the entry in link_modes array would improve
-compatibility with future kernels so that it would make sense to apply
-this patch now.
+diff --git a/drivers/s390/net/qeth_l3_main.c b/drivers/s390/net/qeth_l3_main.c
+index 82f800d1d7b3..46c212118022 100644
+--- a/drivers/s390/net/qeth_l3_main.c
++++ b/drivers/s390/net/qeth_l3_main.c
+@@ -2204,9 +2204,6 @@ static int qeth_l3_ip_event(struct notifier_block *this,
+ 	struct qeth_ipaddr addr;
+ 	struct qeth_card *card;
+ 
+-	if (dev_net(dev) != &init_net)
+-		return NOTIFY_DONE;
+-
+ 	card = qeth_l3_get_card_from_dev(dev);
+ 	if (!card)
+ 		return NOTIFY_DONE;
+-- 
+2.17.1
 
-Michal
-
->  ethtool.8.in         |  5 +++--
->  ethtool.c            | 14 ++++++++++++--
->  netlink/settings.c   |  2 ++
->  uapi/linux/ethtool.h |  3 +++
->  4 files changed, 20 insertions(+), 4 deletions(-)
-> 
-> v2 -> v3:
-> - Removed dashes from ll-rs / LL-RS
-> - Added missing llrs in .xhelp string
-> 
-> diff --git a/ethtool.8.in b/ethtool.8.in
-> index ba85cfe4f413..08cd01419ce0 100644
-> --- a/ethtool.8.in
-> +++ b/ethtool.8.in
-> @@ -420,7 +420,7 @@ ethtool \- query or control network driver and hardware settings
->  .B ethtool \-\-set\-fec
->  .I devname
->  .B encoding
-> -.BR auto | off | rs | baser \ [...]
-> +.BR auto | off | rs | baser | llrs \ [...]
->  .HP
->  .B ethtool \-Q|\-\-per\-queue
->  .I devname
-> @@ -1228,7 +1228,7 @@ current FEC mode, the driver or firmware must take the link down
->  administratively and report the problem in the system logs for users to correct.
->  .RS 4
->  .TP
-> -.BR encoding\ auto | off | rs | baser \ [...]
-> +.BR encoding\ auto | off | rs | baser | llrs \ [...]
->  
->  Sets the FEC encoding for the device.  Combinations of options are specified as
->  e.g.
-> @@ -1241,6 +1241,7 @@ auto	Use the driver's default encoding
->  off	Turn off FEC
->  RS	Force RS-FEC encoding
->  BaseR	Force BaseR encoding
-> +LLRS	Force LLRS-FEC encoding
->  .TE
->  .RE
->  .TP
-> diff --git a/ethtool.c b/ethtool.c
-> index 1b4e08b6e60f..854d2aa4e501 100644
-> --- a/ethtool.c
-> +++ b/ethtool.c
-> @@ -502,6 +502,7 @@ static void init_global_link_mode_masks(void)
->  		ETHTOOL_LINK_MODE_FEC_NONE_BIT,
->  		ETHTOOL_LINK_MODE_FEC_RS_BIT,
->  		ETHTOOL_LINK_MODE_FEC_BASER_BIT,
-> +		ETHTOOL_LINK_MODE_FEC_LLRS_BIT,
->  	};
->  	unsigned int i;
->  
-> @@ -754,6 +755,12 @@ static void dump_link_caps(const char *prefix, const char *an_prefix,
->  			fprintf(stdout, " RS");
->  			fecreported = 1;
->  		}
-> +		if (ethtool_link_mode_test_bit(ETHTOOL_LINK_MODE_FEC_LLRS_BIT,
-> +					       mask)) {
-> +			fprintf(stdout, " LLRS");
-> +			fecreported = 1;
-> +		}
-> +
->  		if (!fecreported)
->  			fprintf(stdout, " Not reported");
->  		fprintf(stdout, "\n");
-> @@ -1562,6 +1569,8 @@ static void dump_fec(u32 fec)
->  		fprintf(stdout, " BaseR");
->  	if (fec & ETHTOOL_FEC_RS)
->  		fprintf(stdout, " RS");
-> +	if (fec & ETHTOOL_FEC_LLRS)
-> +		fprintf(stdout, " LLRS");
->  }
->  
->  #define N_SOTS 7
-> @@ -5074,7 +5083,8 @@ static int fecmode_str_to_type(const char *str)
->  		return ETHTOOL_FEC_RS;
->  	if (!strcasecmp(str, "baser"))
->  		return ETHTOOL_FEC_BASER;
-> -
-> +	if (!strcasecmp(str, "llrs"))
-> +		return ETHTOOL_FEC_LLRS;
->  	return 0;
->  }
->  
-> @@ -5486,7 +5496,7 @@ static const struct option args[] = {
->  		.opts	= "--set-fec",
->  		.func	= do_sfec,
->  		.help	= "Set FEC settings",
-> -		.xhelp	= "		[ encoding auto|off|rs|baser [...]]\n"
-> +		.xhelp	= "		[ encoding auto|off|rs|baser|llrs [...]]\n"
->  	},
->  	{
->  		.opts	= "-Q|--per-queue",
-> diff --git a/netlink/settings.c b/netlink/settings.c
-> index c8a911d718b9..da821726e1b0 100644
-> --- a/netlink/settings.c
-> +++ b/netlink/settings.c
-> @@ -207,6 +207,8 @@ static const struct link_mode_info link_modes[] = {
->  		{ LM_CLASS_REAL,	400000,	DUPLEX_FULL },
->  	[ETHTOOL_LINK_MODE_400000baseCR8_Full_BIT] =
->  		{ LM_CLASS_REAL,	400000,	DUPLEX_FULL },
-> +	[ETHTOOL_LINK_MODE_FEC_LLRS_BIT] =
-> +		{ LM_CLASS_FEC },
->  };
->  const unsigned int link_modes_count = ARRAY_SIZE(link_modes);
->  
-> diff --git a/uapi/linux/ethtool.h b/uapi/linux/ethtool.h
-> index 16198061d723..d3dcb459195c 100644
-> --- a/uapi/linux/ethtool.h
-> +++ b/uapi/linux/ethtool.h
-> @@ -1328,6 +1328,7 @@ enum ethtool_fec_config_bits {
->  	ETHTOOL_FEC_OFF_BIT,
->  	ETHTOOL_FEC_RS_BIT,
->  	ETHTOOL_FEC_BASER_BIT,
-> +	ETHTOOL_FEC_LLRS_BIT,
->  };
->  
->  #define ETHTOOL_FEC_NONE		(1 << ETHTOOL_FEC_NONE_BIT)
-> @@ -1335,6 +1336,7 @@ enum ethtool_fec_config_bits {
->  #define ETHTOOL_FEC_OFF			(1 << ETHTOOL_FEC_OFF_BIT)
->  #define ETHTOOL_FEC_RS			(1 << ETHTOOL_FEC_RS_BIT)
->  #define ETHTOOL_FEC_BASER		(1 << ETHTOOL_FEC_BASER_BIT)
-> +#define ETHTOOL_FEC_LLRS		(1 << ETHTOOL_FEC_LLRS_BIT)
->  
->  /* CMDs currently supported */
->  #define ETHTOOL_GSET		0x00000001 /* DEPRECATED, Get settings.
-> @@ -1519,6 +1521,7 @@ enum ethtool_link_mode_bit_indices {
->  	ETHTOOL_LINK_MODE_400000baseLR8_ER8_FR8_Full_BIT = 71,
->  	ETHTOOL_LINK_MODE_400000baseDR8_Full_BIT	 = 72,
->  	ETHTOOL_LINK_MODE_400000baseCR8_Full_BIT	 = 73,
-> +	ETHTOOL_LINK_MODE_FEC_LLRS_BIT                   = 74,
->  
->  	/* must be last entry */
->  	__ETHTOOL_LINK_MODE_MASK_NBITS
-> -- 
-> 2.19.1
-> 
