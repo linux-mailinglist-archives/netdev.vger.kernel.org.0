@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C58B1195F5E
+	by mail.lfdr.de (Postfix) with ESMTP id 38632195F5D
 	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 20:56:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727718AbgC0T4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 15:56:03 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:38192 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727611AbgC0T4B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 15:56:01 -0400
-Received: by mail-wm1-f67.google.com with SMTP id f6so7195900wmj.3
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 12:56:01 -0700 (PDT)
+        id S1727770AbgC0T4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 15:56:11 -0400
+Received: from mail-wm1-f52.google.com ([209.85.128.52]:34669 "EHLO
+        mail-wm1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727707AbgC0T4D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 15:56:03 -0400
+Received: by mail-wm1-f52.google.com with SMTP id 26so10918652wmk.1
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 12:56:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=s7tbstuFGEpRCcyGVHhiptgOv8UP+5o42rEmNwNHkhk=;
-        b=Zx3GNUMlgc5kj4E0vpASljMa0b/WJiFdNxg+4M9J52sWissve7c3FhgNFt8pOzl2L1
-         u2zHzRPZraR7PrTFo4tv7mAmOvpp/glVfZUjjti89+XJdY4a33EIQpAJ2rd9YB87o0CE
-         dlccJ4W7j2UWtwMsKdf1Gd4odVLeW72VuLUuvEPREpnXOZJLJYh49jCbHhKDCL9vpKYh
-         zU28Yxl6qcu9SsbohPhn45sBSVVH7jfspMMurPIGXHd2AySCqvlQRg84fHzVHObcmOye
-         nuAzLnefL4xw5wkCiAobNUH+Ho0gzJ3llt8n6vRYIElsOF0Pu9ARoyJElARxjL/ey64p
-         CI7w==
+        bh=WU8fgyt/A2+RKEqo/Lk0bcP7KJgtI0/oic7Yhd6SHe8=;
+        b=gqWHro9VAzg9FuyIQAuY+Q9THjnCFR2RH+t1a/75PBHnEPHAK94ZUx9lbP/5rUgMck
+         F6aK4tGyoYGwEhY7xpBFH0bxZunx1HbCbwITkmNmDVheeeekjzYs+9tljOybmdBqFZq/
+         prbEg3NwebIA/P386Dr9Vy8Yoyt3KxNGBMJW4s3UqD9Gt6bn+ZKoS/0bK0cor8zO66p6
+         VMPdXmkaJBrmUFPI49dlyyk60UVFBLV7x6bPm66iHitxwCLIrxA/JOmnqxcv4gJxgrJy
+         hIO0MV731oSezkaRYhPCcAves0jzfUBdqIEfB4n2rncXEcjztBkby2OlHEHhoiLNNu37
+         ouQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=s7tbstuFGEpRCcyGVHhiptgOv8UP+5o42rEmNwNHkhk=;
-        b=Hc3aL8wG5URfvuhafEiH/O/51otAFOIP2kNhvXUW9UokJkWWU7iO2vpihS0+3DjWdl
-         ZozYbAUdOZST9a3bcCgDzjFvgmRMlMkoh3G5/vRDXEtoDoom96UmL5Sj3j02S8itKTSC
-         Ovi5nLsYefPfs8338F/L+Zyr5wgfSpGUGd1SB8qmCfzbtoAnCG/egQQrPhNpGlZe46WV
-         duS2g+CQvcpX85UfG2pjvMaQAitJlDeuklceY+CkSrSe/FjtR67/2GTKwJt0CKFVgu8C
-         aBXNsETONuH/wyigkgTKeubFiPKfsM2VmStLJ4NTFPmmyd4O5/K4KpzzNxDesqRxyi0i
-         +DKw==
-X-Gm-Message-State: ANhLgQ1NeZ0NfkYddaxQZLHC1ygphx9IBqYW1sV/Oir4D3exqRSe798h
-        1SF6RwWEyt/m0yv1BrSq8Mo=
-X-Google-Smtp-Source: ADFU+vviUT0gYTNBU+BAUd1dM6O7+uoosVx+nCgjaMygyuYU06DHTNy14nJNLqVeUlDvC/a1kFyyxQ==
-X-Received: by 2002:a1c:b4d4:: with SMTP id d203mr373452wmf.85.1585338960515;
-        Fri, 27 Mar 2020 12:56:00 -0700 (PDT)
+        bh=WU8fgyt/A2+RKEqo/Lk0bcP7KJgtI0/oic7Yhd6SHe8=;
+        b=U+PUdrCNltHFxEcK9f9Qh+DXmgl2xn7YPp9TUBt0o8PAhskQ86fT2SzdLwsV96SUZd
+         NB0TXXTC65vZfxPTV6nCHbE7vsIen1/68Jn79qmnIhHrSVs4fPcMZniMw4x/DQdbY8aO
+         EAJPpNd9gSasohXAkhqFeFXs2L/Ny1KlLDPTOR7s9qXIQtRnB1qB3fkfACkcg/gRsPry
+         rQt2xsMoBPrFLJnMDrf12Bh/SG9YHWnYYhFNJsTLgzLs4uU9wV2jk3wMqxpiJbFM1oyw
+         +svBTcW1YEG/lhSd1owkaMk28Lvjmb4lnu6+JFAjK7oxIqqs4sKtVSI9K8YXhnxabs9I
+         Ri9w==
+X-Gm-Message-State: ANhLgQ1mrfTNROq22Q9L7baDgv8OeuXGFETxfzo0Y83Pafdzo6kj9oAC
+        oqm64YG6TybfjxvvewIGfZg1Ihx70AUcPA==
+X-Google-Smtp-Source: ADFU+vuXOr6OkRX/gCnjY4z4ar7DhaWvzVFKGkmwL8ZsoPNP6Y9LUE3ZUurGd0DD4VdGt4QV8XTj0g==
+X-Received: by 2002:a1c:8149:: with SMTP id c70mr358705wmd.123.1585338961819;
+        Fri, 27 Mar 2020 12:56:01 -0700 (PDT)
 Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id z19sm10089479wrg.28.2020.03.27.12.55.59
+        by smtp.gmail.com with ESMTPSA id z19sm10089479wrg.28.2020.03.27.12.56.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2020 12:56:00 -0700 (PDT)
+        Fri, 27 Mar 2020 12:56:01 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         davem@davemloft.net
 Cc:     murali.policharla@broadcom.com, stephen@networkplumber.org,
         jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
         nikolay@cumulusnetworks.com, netdev@vger.kernel.org
-Subject: [PATCH v4 net-next 5/8] net: dsa: b53: add MTU configuration support
-Date:   Fri, 27 Mar 2020 21:55:44 +0200
-Message-Id: <20200327195547.11583-6-olteanv@gmail.com>
+Subject: [PATCH v4 net-next 6/8] net: dsa: sja1105: implement the port MTU callbacks
+Date:   Fri, 27 Mar 2020 21:55:45 +0200
+Message-Id: <20200327195547.11583-7-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200327195547.11583-1-olteanv@gmail.com>
 References: <20200327195547.11583-1-olteanv@gmail.com>
@@ -60,90 +60,158 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Murali Krishna Policharla <murali.policharla@broadcom.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-It looks like the Broadcom switches supported by the b53 driver don't
-support precise configuration of the MTU, but just a mumbo-jumbo boolean
-flag. Set that.
+On this switch, the frame length enforcements are performed by the
+ingress policers. There are 2 types of those: regular L2 (also called
+best-effort) and Virtual Link policers (an ARINC664/AFDX concept for
+defining L2 streams with certain QoS abilities). To avoid future
+confusion, I prefer to call the reset reason "Best-effort policers",
+even though the VL policers are not yet supported.
 
-Also configure BCM583XX devices to send and receive jumbo frames when
-ports are configured with 10/100 Mbps speed.
+We also need to change the setup of the initial static config, such that
+DSA calls to .change_mtu (which are expensive) become no-ops and don't
+reset the switch 5 times.
 
-Signed-off-by: Murali Krishna Policharla <murali.policharla@broadcom.com>
+A driver-level decision is to unconditionally allow single VLAN-tagged
+traffic on all ports. The CPU port must accept an additional VLAN header
+for the DSA tag, which is again a driver-level decision.
+
+The policers actually count bytes not only from the SDU, but also from
+the Ethernet header and FCS, so those need to be accounted for as well.
+
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v4:
-Changed the device id for the allow_10_100 check.
+None.
 
 Changes in v3:
-Using the b53_set_jumbo function that was already there.
+Now setting the ds->mtu_enforcement_ingress variable to true.
 
 Changes in v2:
-Patch is new.
+None.
 
- drivers/net/dsa/b53/b53_common.c | 27 ++++++++++++++++++++++-----
- 1 file changed, 22 insertions(+), 5 deletions(-)
+ drivers/net/dsa/sja1105/sja1105.h      |  1 +
+ drivers/net/dsa/sja1105/sja1105_main.c | 50 +++++++++++++++++++++++---
+ 2 files changed, 47 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index ceafce446317..39ae4ed87d1d 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -699,9 +699,6 @@ int b53_configure_vlan(struct dsa_switch *ds)
- 		b53_write16(dev, B53_VLAN_PAGE,
- 			    B53_VLAN_PORT_DEF_TAG(i), def_vid);
- 
--	if (!is5325(dev) && !is5365(dev))
--		b53_set_jumbo(dev, dev->enable_jumbo, false);
--
- 	return 0;
- }
- EXPORT_SYMBOL(b53_configure_vlan);
-@@ -807,8 +804,6 @@ static int b53_phy_write16(struct dsa_switch *ds, int addr, int reg, u16 val)
- static int b53_reset_switch(struct b53_device *priv)
- {
- 	/* reset vlans */
--	priv->enable_jumbo = false;
--
- 	memset(priv->vlans, 0, sizeof(*priv->vlans) * priv->num_vlans);
- 	memset(priv->ports, 0, sizeof(*priv->ports) * priv->num_ports);
- 
-@@ -2065,6 +2060,26 @@ int b53_set_mac_eee(struct dsa_switch *ds, int port, struct ethtool_eee *e)
- }
- EXPORT_SYMBOL(b53_set_mac_eee);
- 
-+static int b53_change_mtu(struct dsa_switch *ds, int port, int mtu)
-+{
-+	struct b53_device *dev = ds->priv;
-+	bool enable_jumbo;
-+	bool allow_10_100;
-+
-+	if (is5325(dev) || is5365(dev))
-+		return -EOPNOTSUPP;
-+
-+	enable_jumbo = (mtu >= JMS_MIN_SIZE);
-+	allow_10_100 = (dev->chip_id == BCM583XX_DEVICE_ID);
-+
-+	return b53_set_jumbo(dev, enable_jumbo, allow_10_100);
-+}
-+
-+static int b53_get_max_mtu(struct dsa_switch *ds, int port)
-+{
-+	return JMS_MAX_SIZE;
-+}
-+
- static const struct dsa_switch_ops b53_switch_ops = {
- 	.get_tag_protocol	= b53_get_tag_protocol,
- 	.setup			= b53_setup,
-@@ -2102,6 +2117,8 @@ static const struct dsa_switch_ops b53_switch_ops = {
- 	.port_mdb_prepare	= b53_mdb_prepare,
- 	.port_mdb_add		= b53_mdb_add,
- 	.port_mdb_del		= b53_mdb_del,
-+	.port_max_mtu		= b53_get_max_mtu,
-+	.port_change_mtu	= b53_change_mtu,
+diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
+index a358fc89a6db..0e5b739b2fe8 100644
+--- a/drivers/net/dsa/sja1105/sja1105.h
++++ b/drivers/net/dsa/sja1105/sja1105.h
+@@ -126,6 +126,7 @@ enum sja1105_reset_reason {
+ 	SJA1105_RX_HWTSTAMPING,
+ 	SJA1105_AGEING_TIME,
+ 	SJA1105_SCHEDULING,
++	SJA1105_BEST_EFFORT_POLICING,
  };
  
- struct b53_chip_data {
+ int sja1105_static_config_reload(struct sja1105_private *priv,
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index e0c99bb63cdf..763ae1d3bca8 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -519,12 +519,12 @@ static int sja1105_init_avb_params(struct sja1105_private *priv)
+ #define SJA1105_RATE_MBPS(speed) (((speed) * 64000) / 1000)
+ 
+ static void sja1105_setup_policer(struct sja1105_l2_policing_entry *policing,
+-				  int index)
++				  int index, int mtu)
+ {
+ 	policing[index].sharindx = index;
+ 	policing[index].smax = 65535; /* Burst size in bytes */
+ 	policing[index].rate = SJA1105_RATE_MBPS(1000);
+-	policing[index].maxlen = ETH_FRAME_LEN + VLAN_HLEN + ETH_FCS_LEN;
++	policing[index].maxlen = mtu;
+ 	policing[index].partition = 0;
+ }
+ 
+@@ -556,12 +556,16 @@ static int sja1105_init_l2_policing(struct sja1105_private *priv)
+ 	 */
+ 	for (i = 0, k = 0; i < SJA1105_NUM_PORTS; i++) {
+ 		int bcast = (SJA1105_NUM_PORTS * SJA1105_NUM_TC) + i;
++		int mtu = VLAN_ETH_FRAME_LEN + ETH_FCS_LEN;
++
++		if (dsa_is_cpu_port(priv->ds, i))
++			mtu += VLAN_HLEN;
+ 
+ 		for (j = 0; j < SJA1105_NUM_TC; j++, k++)
+-			sja1105_setup_policer(policing, k);
++			sja1105_setup_policer(policing, k, mtu);
+ 
+ 		/* Set up this port's policer for broadcast traffic */
+-		sja1105_setup_policer(policing, bcast);
++		sja1105_setup_policer(policing, bcast, mtu);
+ 	}
+ 	return 0;
+ }
+@@ -1544,6 +1548,7 @@ static const char * const sja1105_reset_reasons[] = {
+ 	[SJA1105_RX_HWTSTAMPING] = "RX timestamping",
+ 	[SJA1105_AGEING_TIME] = "Ageing time",
+ 	[SJA1105_SCHEDULING] = "Time-aware scheduling",
++	[SJA1105_BEST_EFFORT_POLICING] = "Best-effort policing",
+ };
+ 
+ /* For situations where we need to change a setting at runtime that is only
+@@ -1952,6 +1957,8 @@ static int sja1105_setup(struct dsa_switch *ds)
+ 	/* Advertise the 8 egress queues */
+ 	ds->num_tx_queues = SJA1105_NUM_TC;
+ 
++	ds->mtu_enforcement_ingress = true;
++
+ 	/* The DSA/switchdev model brings up switch ports in standalone mode by
+ 	 * default, and that means vlan_filtering is 0 since they're not under
+ 	 * a bridge, so it's safe to set up switch tagging at this time.
+@@ -2120,6 +2127,39 @@ static int sja1105_set_ageing_time(struct dsa_switch *ds,
+ 	return sja1105_static_config_reload(priv, SJA1105_AGEING_TIME);
+ }
+ 
++static int sja1105_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
++{
++	int bcast = (SJA1105_NUM_PORTS * SJA1105_NUM_TC) + port;
++	struct sja1105_l2_policing_entry *policing;
++	struct sja1105_private *priv = ds->priv;
++	int tc;
++
++	new_mtu += VLAN_ETH_HLEN + ETH_FCS_LEN;
++
++	if (dsa_is_cpu_port(ds, port))
++		new_mtu += VLAN_HLEN;
++
++	policing = priv->static_config.tables[BLK_IDX_L2_POLICING].entries;
++
++	/* We set all 9 port policers to the same value, so just checking the
++	 * broadcast one is fine.
++	 */
++	if (policing[bcast].maxlen == new_mtu)
++		return 0;
++
++	for (tc = 0; tc < SJA1105_NUM_TC; tc++)
++		policing[port * SJA1105_NUM_TC + tc].maxlen = new_mtu;
++
++	policing[bcast].maxlen = new_mtu;
++
++	return sja1105_static_config_reload(priv, SJA1105_BEST_EFFORT_POLICING);
++}
++
++static int sja1105_get_max_mtu(struct dsa_switch *ds, int port)
++{
++	return 2043 - VLAN_ETH_HLEN - ETH_FCS_LEN;
++}
++
+ static int sja1105_port_setup_tc(struct dsa_switch *ds, int port,
+ 				 enum tc_setup_type type,
+ 				 void *type_data)
+@@ -2215,6 +2255,8 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.setup			= sja1105_setup,
+ 	.teardown		= sja1105_teardown,
+ 	.set_ageing_time	= sja1105_set_ageing_time,
++	.port_change_mtu	= sja1105_change_mtu,
++	.port_max_mtu		= sja1105_get_max_mtu,
+ 	.phylink_validate	= sja1105_phylink_validate,
+ 	.phylink_mac_link_state	= sja1105_mac_pcs_get_state,
+ 	.phylink_mac_config	= sja1105_mac_config,
 -- 
 2.17.1
 
