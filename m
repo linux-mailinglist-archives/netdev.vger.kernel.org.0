@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FAA71953A4
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 10:12:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22FAA1953AA
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 10:12:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726742AbgC0JMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 05:12:40 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41245 "EHLO
+        id S1727352AbgC0JMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 05:12:49 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:58947 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726450AbgC0JMj (ORCPT
+        with ESMTP id S1726266AbgC0JMj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 05:12:39 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 27 Mar 2020 12:12:36 +0300
 Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02R9CaYf023271;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02R9CaYg023271;
         Fri, 27 Mar 2020 12:12:36 +0300
 From:   Paul Blakey <paulb@mellanox.com>
 To:     Paul Blakey <paulb@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>,
@@ -23,9 +23,9 @@ To:     Paul Blakey <paulb@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>,
         Roi Dayan <roid@mellanox.com>, netdev@vger.kernel.org,
         Saeed Mahameed <saeedm@mellanox.com>
 Cc:     netfilter-devel@vger.kernel.org
-Subject: [PATCH net-next v2 1/3] netfilter: flowtable: Use rw sem as flow block lock
-Date:   Fri, 27 Mar 2020 12:12:29 +0300
-Message-Id: <1585300351-15741-2-git-send-email-paulb@mellanox.com>
+Subject: [PATCH net-next v2 2/3] netfilter: flowtable: Use work entry per offload command
+Date:   Fri, 27 Mar 2020 12:12:30 +0300
+Message-Id: <1585300351-15741-3-git-send-email-paulb@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1585300351-15741-1-git-send-email-paulb@mellanox.com>
 References: <1585300351-15741-1-git-send-email-paulb@mellanox.com>
@@ -34,107 +34,126 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently flow offload threads are synchronized by the flow block mutex.
-Use rw lock instead to increase flow insertion (read) concurrency.
+To allow offload commands to execute in parallel, create workqueue
+for flow table offload, and use a work entry per offload command.
 
 Signed-off-by: Paul Blakey <paulb@mellanox.com>
 Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
 ---
- include/net/netfilter/nf_flow_table.h |  2 +-
- net/netfilter/nf_flow_table_core.c    | 11 +++++------
- net/netfilter/nf_flow_table_offload.c |  4 ++--
- 3 files changed, 8 insertions(+), 9 deletions(-)
+ net/netfilter/nf_flow_table_offload.c | 46 ++++++++++++-----------------------
+ 1 file changed, 15 insertions(+), 31 deletions(-)
 
-diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
-index f523ea8..956193b 100644
---- a/include/net/netfilter/nf_flow_table.h
-+++ b/include/net/netfilter/nf_flow_table.h
-@@ -73,7 +73,7 @@ struct nf_flowtable {
- 	struct delayed_work		gc_work;
- 	unsigned int			flags;
- 	struct flow_block		flow_block;
--	struct mutex			flow_block_lock; /* Guards flow_block */
-+	struct rw_semaphore		flow_block_lock; /* Guards flow_block */
- 	possible_net_t			net;
- };
- 
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index d523c2a..c0cb7949 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -392,7 +392,7 @@ int nf_flow_table_offload_add_cb(struct nf_flowtable *flow_table,
- 	struct flow_block_cb *block_cb;
- 	int err = 0;
- 
--	mutex_lock(&flow_table->flow_block_lock);
-+	down_write(&flow_table->flow_block_lock);
- 	block_cb = flow_block_cb_lookup(block, cb, cb_priv);
- 	if (block_cb) {
- 		err = -EEXIST;
-@@ -408,7 +408,7 @@ int nf_flow_table_offload_add_cb(struct nf_flowtable *flow_table,
- 	list_add_tail(&block_cb->list, &block->cb_list);
- 
- unlock:
--	mutex_unlock(&flow_table->flow_block_lock);
-+	up_write(&flow_table->flow_block_lock);
- 	return err;
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_offload_add_cb);
-@@ -419,13 +419,13 @@ void nf_flow_table_offload_del_cb(struct nf_flowtable *flow_table,
- 	struct flow_block *block = &flow_table->flow_block;
- 	struct flow_block_cb *block_cb;
- 
--	mutex_lock(&flow_table->flow_block_lock);
-+	down_write(&flow_table->flow_block_lock);
- 	block_cb = flow_block_cb_lookup(block, cb, cb_priv);
- 	if (block_cb)
- 		list_del(&block_cb->list);
- 	else
- 		WARN_ON(true);
--	mutex_unlock(&flow_table->flow_block_lock);
-+	up_write(&flow_table->flow_block_lock);
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_offload_del_cb);
- 
-@@ -551,7 +551,7 @@ int nf_flow_table_init(struct nf_flowtable *flowtable)
- 
- 	INIT_DEFERRABLE_WORK(&flowtable->gc_work, nf_flow_offload_work_gc);
- 	flow_block_init(&flowtable->flow_block);
--	mutex_init(&flowtable->flow_block_lock);
-+	init_rwsem(&flowtable->flow_block_lock);
- 
- 	err = rhashtable_init(&flowtable->rhashtable,
- 			      &nf_flow_offload_rhash_params);
-@@ -617,7 +617,6 @@ void nf_flow_table_free(struct nf_flowtable *flow_table)
- 		nf_flow_table_iterate(flow_table, nf_flow_offload_gc_step,
- 				      flow_table);
- 	rhashtable_destroy(&flow_table->rhashtable);
--	mutex_destroy(&flow_table->flow_block_lock);
- }
- EXPORT_SYMBOL_GPL(nf_flow_table_free);
- 
 diff --git a/net/netfilter/nf_flow_table_offload.c b/net/netfilter/nf_flow_table_offload.c
-index 024a916..dbd3685 100644
+index dbd3685..527114a 100644
 --- a/net/netfilter/nf_flow_table_offload.c
 +++ b/net/netfilter/nf_flow_table_offload.c
-@@ -692,7 +692,7 @@ static int nf_flow_offload_tuple(struct nf_flowtable *flowtable,
- 	if (cmd == FLOW_CLS_REPLACE)
- 		cls_flow.rule = flow_rule->rule;
+@@ -12,9 +12,7 @@
+ #include <net/netfilter/nf_conntrack_core.h>
+ #include <net/netfilter/nf_conntrack_tuple.h>
  
--	mutex_lock(&flowtable->flow_block_lock);
-+	down_read(&flowtable->flow_block_lock);
- 	list_for_each_entry(block_cb, block_cb_list, list) {
- 		err = block_cb->cb(TC_SETUP_CLSFLOWER, &cls_flow,
- 				   block_cb->cb_priv);
-@@ -701,7 +701,7 @@ static int nf_flow_offload_tuple(struct nf_flowtable *flowtable,
+-static struct work_struct nf_flow_offload_work;
+-static DEFINE_SPINLOCK(flow_offload_pending_list_lock);
+-static LIST_HEAD(flow_offload_pending_list);
++static struct workqueue_struct *nf_flow_offload_wq;
  
- 		i++;
+ struct flow_offload_work {
+ 	struct list_head	list;
+@@ -22,6 +20,7 @@ struct flow_offload_work {
+ 	int			priority;
+ 	struct nf_flowtable	*flowtable;
+ 	struct flow_offload	*flow;
++	struct work_struct	work;
+ };
+ 
+ #define NF_FLOW_DISSECTOR(__match, __type, __field)	\
+@@ -789,15 +788,10 @@ static void flow_offload_work_stats(struct flow_offload_work *offload)
+ 
+ static void flow_offload_work_handler(struct work_struct *work)
+ {
+-	struct flow_offload_work *offload, *next;
+-	LIST_HEAD(offload_pending_list);
+-
+-	spin_lock_bh(&flow_offload_pending_list_lock);
+-	list_replace_init(&flow_offload_pending_list, &offload_pending_list);
+-	spin_unlock_bh(&flow_offload_pending_list_lock);
++	struct flow_offload_work *offload;
+ 
+-	list_for_each_entry_safe(offload, next, &offload_pending_list, list) {
+-		switch (offload->cmd) {
++	offload = container_of(work, struct flow_offload_work, work);
++	switch (offload->cmd) {
+ 		case FLOW_CLS_REPLACE:
+ 			flow_offload_work_add(offload);
+ 			break;
+@@ -809,19 +803,14 @@ static void flow_offload_work_handler(struct work_struct *work)
+ 			break;
+ 		default:
+ 			WARN_ON_ONCE(1);
+-		}
+-		list_del(&offload->list);
+-		kfree(offload);
  	}
--	mutex_unlock(&flowtable->flow_block_lock);
-+	up_read(&flowtable->flow_block_lock);
++
++	kfree(offload);
+ }
  
- 	if (cmd == FLOW_CLS_STATS)
- 		memcpy(stats, &cls_flow.stats, sizeof(*stats));
+ static void flow_offload_queue_work(struct flow_offload_work *offload)
+ {
+-	spin_lock_bh(&flow_offload_pending_list_lock);
+-	list_add_tail(&offload->list, &flow_offload_pending_list);
+-	spin_unlock_bh(&flow_offload_pending_list_lock);
+-
+-	schedule_work(&nf_flow_offload_work);
++	queue_work(nf_flow_offload_wq, &offload->work);
+ }
+ 
+ static struct flow_offload_work *
+@@ -838,6 +827,7 @@ static void flow_offload_queue_work(struct flow_offload_work *offload)
+ 	offload->flow = flow;
+ 	offload->priority = flowtable->priority;
+ 	offload->flowtable = flowtable;
++	INIT_WORK(&offload->work, flow_offload_work_handler);
+ 
+ 	return offload;
+ }
+@@ -888,7 +878,7 @@ void nf_flow_offload_stats(struct nf_flowtable *flowtable,
+ void nf_flow_table_offload_flush(struct nf_flowtable *flowtable)
+ {
+ 	if (nf_flowtable_hw_offload(flowtable))
+-		flush_work(&nf_flow_offload_work);
++		flush_workqueue(nf_flow_offload_wq);
+ }
+ 
+ static int nf_flow_table_block_setup(struct nf_flowtable *flowtable,
+@@ -1053,7 +1043,10 @@ static void nf_flow_table_indr_block_cb(struct net_device *dev,
+ 
+ int nf_flow_table_offload_init(void)
+ {
+-	INIT_WORK(&nf_flow_offload_work, flow_offload_work_handler);
++	nf_flow_offload_wq  = alloc_workqueue("nf_flow_table_offload",
++					      WQ_UNBOUND | WQ_MEM_RECLAIM, 0);
++	if (!nf_flow_offload_wq)
++		return -ENOMEM;
+ 
+ 	flow_indr_add_block_cb(&block_ing_entry);
+ 
+@@ -1062,15 +1055,6 @@ int nf_flow_table_offload_init(void)
+ 
+ void nf_flow_table_offload_exit(void)
+ {
+-	struct flow_offload_work *offload, *next;
+-	LIST_HEAD(offload_pending_list);
+-
+ 	flow_indr_del_block_cb(&block_ing_entry);
+-
+-	cancel_work_sync(&nf_flow_offload_work);
+-
+-	list_for_each_entry_safe(offload, next, &offload_pending_list, list) {
+-		list_del(&offload->list);
+-		kfree(offload);
+-	}
++	destroy_workqueue(nf_flow_offload_wq);
+ }
 -- 
 1.8.3.1
 
