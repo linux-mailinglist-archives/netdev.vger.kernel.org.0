@@ -2,285 +2,332 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4653D1955F0
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 12:04:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E797B1955F9
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 12:07:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727254AbgC0LEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 07:04:23 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:57392 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726333AbgC0LEW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 07:04:22 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1585307062; h=Date: Message-Id: Cc: To: Subject: From:
- Content-Transfer-Encoding: MIME-Version: Content-Type: Sender;
- bh=Zgz+I9cv0vt1kCHzBek7Brb8xia1rfWioa/XR3pNCEY=; b=fhqK/5lEpfC0MxcqHvrsqTGDXqR5uT8dk6i58pkVWXXPUw0FueUwxUa9h9hwhZr5Sw1tdKy0
- DdZuj9w+qlti8RUWo+HUFLUMllg4Nqlxhm2mOX58cGBuuyWVsppItVCL9gMfOKV8NWmmZxdf
- cd3wgsHD6VsEGeqwZOFs4pJx7Ts=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e7dddb1.7fba31912b58-smtp-out-n01;
- Fri, 27 Mar 2020 11:04:17 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4F051C44791; Fri, 27 Mar 2020 11:04:16 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=0.5 required=2.0 tests=ALL_TRUSTED,MISSING_DATE,
-        MISSING_MID,SPF_NONE autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 21982C43637;
-        Fri, 27 Mar 2020 11:04:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 21982C43637
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1726400AbgC0LHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 07:07:13 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:38983 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726275AbgC0LHM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 07:07:12 -0400
+Received: by mail-ot1-f68.google.com with SMTP id x11so9271898otp.6
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 04:07:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=UwJqxa3yHiX1j+SqcPDEjAVECaEkpX3JEjU0/vOYdyc=;
+        b=pZfraiipYHsq5uZzzZjKsHdm6Exszd2YQpjt1TjmU2s1TItl8P3bQqih4/27rlxhzT
+         qsIQx18aowUMc+xo0+XtIpogHSoJw+cmrSkXt/6dOevm/uLxIT9xDTZlVTY3jTMdgLmq
+         b0YVuNify+zdw2pfHcKyXa6VsHDpnnxHT/uN4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=UwJqxa3yHiX1j+SqcPDEjAVECaEkpX3JEjU0/vOYdyc=;
+        b=XHk0SgEb7VRjZD0nAEZL9aHMfBQfm/732FX6k6RyfbKWyFY40kbg9VpcQTJfFvXnvZ
+         fQCUM7U8TScs2GcjazvHNaGGl8N5lj6Iv4r81fPHYWFrceMohg1qK8jT8GJVKM4HP1Bg
+         MTj9Usex1FykO1ngBBaaQGo39HrZmGhtI5qSMxv8VKqvwR4mhkho6Iv4SOlbwhWwUZ0H
+         YRK2/qRunPt6ksQGipab5+zNVCzaFurNDuXX6ybipMOuaiHAGmL77fFJ6vQXvvvxO06y
+         ZZ8QIivFzmEnRt7OzdEVz+E1LnY0ELAu9jBJy/S8+gERrwb7lpbDY2L3Oxcr1rHwBqVs
+         dFPQ==
+X-Gm-Message-State: ANhLgQ2nHExw9BwAvYwEMyOd21ODcrtPB01LTQRy4OfvCFaqZMiTFt+r
+        Is8BkJr2H1yK0zRisUAk5gbSaoA4NabDuRbI1bcPRA==
+X-Google-Smtp-Source: ADFU+vss2c+b3kfqkP2+WpNQwMyyZ3IkIm4xdrrPCQ2LWF6sMR79AfQB7qGUaSpiNF46NWlTFn2BVCIOhoKzUizgnTg=
+X-Received: by 2002:a9d:6310:: with SMTP id q16mr9095234otk.147.1585307230734;
+ Fri, 27 Mar 2020 04:07:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-From:   Kalle Valo <kvalo@codeaurora.org>
-Subject: pull-request: wireless-drivers-next-2020-03-27
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20200327110416.4F051C44791@smtp.codeaurora.org>
-Date:   Fri, 27 Mar 2020 11:04:16 +0000 (UTC)
+References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
+ <158462359315.164779.13931660750493121404.stgit@toke.dk> <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN>
+ <875zez76ph.fsf@toke.dk> <20200320103530.2853c573@kicinski-fedora-PC1C0HJN>
+ <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
+ <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
+ <87tv2f48lp.fsf@toke.dk> <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com>
+ <87h7ye3mf3.fsf@toke.dk> <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
+ <87tv2e10ly.fsf@toke.dk> <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
+ <87369wrcyv.fsf@toke.dk> <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
+ <87pncznvjy.fsf@toke.dk> <CAEf4BzaPQ6=h8a6Ngz638AtL4LmBLLVMV+_-YLMR=Ls+drd5HQ@mail.gmail.com>
+In-Reply-To: <CAEf4BzaPQ6=h8a6Ngz638AtL4LmBLLVMV+_-YLMR=Ls+drd5HQ@mail.gmail.com>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Fri, 27 Mar 2020 11:06:59 +0000
+Message-ID: <CACAyw98yYE+eOx5OayyN2tNQeNqFXnHdRGSv6DYX7ehfMHt1+g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
+ program when attaching XDP
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrey Ignatov <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, 26 Mar 2020 at 19:06, Andrii Nakryiko <andrii.nakryiko@gmail.com> w=
+rote:
+>
+> On Thu, Mar 26, 2020 at 5:35 AM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
+dhat.com> wrote:
+> >
+> > Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+> >
+> > > Now for XDP. It has same flawed model. And even if it seems to you
+> > > that it's not a big issue, and even if Jakub thinks we are trying to
+> > > solve non-existing problem, it is a real problem and a real concern
+> > > from people that have to support XDP in production with many
+> > > well-meaning developers developing BPF applications independently.
+> > > Copying what you wrote in another thread:
+> > >
+> > >> Setting aside the question of which is the best abstraction to repre=
+sent
+> > >> an attachment, it seems to me that the actual behavioural problem (X=
+DP
+> > >> programs being overridden by mistake) would be solvable by this patc=
+h,
+> > >> assuming well-behaved userspace applications.
+> > >
+> > > ... this is a horrible and unrealistic assumption that we just cannot
+> > > make and accept. However well-behaved userspace applications are, the=
+y
+> > > are written by people that make mistakes. And rather than blissfully
+> > > expect that everything will be fine, we want to have enforcements in
+> > > place that will prevent some buggy application to wreck havoc in
+> > > production.
+> >
+> > Look, I'm not trying to tell you how to managed your internal systems.
+> > I'm just objecting to your assertion that your deployment model is the
+> > only one that can possibly work, and the refusal to consider other
+> > alternatives that comes with it.
+>
+> Your assumption doesn't work for us. Because of that we need something
+> like bpf_link. Existing attachment API doesn't go away and is still
+> supported. Feel free to use existing API. As for EXPECTED_FD API you
+> are adding, it will be up to maintainers to decide, ultimately, I
+> can't block it, even if I wanted to.
+>
+> >
+> > >> You're saying that like we didn't already have the netlink API. We
+> > >> essentially already have (the equivalent of) LINK_CREATE and LINK_QU=
+ERY,
+> > >> this is just adding LINK_UPDATE. It's a straight-forward fix of an
+> > >> existing API; essentially you're saying we should keep the old API i=
+n a
+> > >> crippled state in order to promote your (proposed) new API.
+> > >
+> > > This is the fundamental disagreement that we seem to have. XDP's BPF
+> > > program attachment is not in any way equivalent to bpf_link. So no,
+> > > netlink API currently doesn't have anything that's close to bpf_link.
+> > > Let me try to summarize what bpf_link is and what are its fundamental
+> > > properties regardless of type of BPF programs.
+> >
+> > First of all, thank you for this summary; that is very useful!
+>
+> Sure, you're welcome.
+>
+> >
+> > > 1. bpf_link represents a connection (pairing?) of BPF program and som=
+e
+> > > BPF hook it is attached to. BPF hook could be perf event, cgroup,
+> > > netdev, etc. It's a completely independent object in itself, along th=
+e
+> > > bpf_map and bpf_prog, which has its own lifetime and kernel
+> > > representation. To user-space application it is returned as an
+> > > installed FD, similar to loaded BPF program and BPF map. It is
+> > > important that it's not just a BPF program, because BPF program can b=
+e
+> > > attached to multiple BPF hooks (e.g., same XDP program can be attache=
+d
+> > > to multiple interface; same kprobe handler can be installed multiple
+> > > times), which means that having BPF program FD isn't enough to
+> > > uniquely represent that one specific BPF program attachment and detac=
+h
+> > > it or query it. Having kernel object for this allows to encapsulate
+> > > all these various details of what is attached were and present to
+> > > user-space a single handle (FD) to work with.
+> >
+> > For XDP there is already a unique handle, it's just implicit: Each
+> > netdev can have exactly one XDP program loaded. So I don't really see
+> > how bpf_link adds anything, other than another API for the same thing?
+>
+> I certainly failed to explain things clearly if you are still asking
+> this. See point #2, once you attach bpf_link you can't just replace
+> it. This is what XDP doesn't have right now.
 
-here's a pull request to net-next tree, more info below. Please let me know if
-there are any problems.
+From your description I like bpf_link, because it'll make attachment easier
+to support, and the pinning behaviour also seems nice. I'm really not fusse=
+d
+by netlink vs syscall, whatever.
 
-Kalle
+However, this behaviour concerns me. It's like Windows not
+letting you delete a file while an application has it opened, which just le=
+ads
+to randomly killing programs until you find the right one. It's frustrating
+and counter productive.
 
-The following changes since commit cd556e40fdf3b09e229097021a9148ecb6e7725e:
+You're taking power away from the operator. In your deployment scenario
+this might make sense, but I think it's a really bad model in general. If I=
+ am
+privileged I need to be able to exercise that privilege. This means that if
+there is a netdevice in my network namespace, and I have CAP_NET_ADMIN
+or whatever, I can break the association.
 
-  devlink: expand the devlink-info documentation (2020-03-24 16:47:33 -0700)
+So, to be constructive: I'd prefer bpf_link to replace a netlink attachment=
+ and
+vice versa. If you need to restrict control, use network namespaces
+to hide the devices, instead of hiding the bpffs.
 
-are available in the git repository at:
+>
+> It's a game of picking features/properties in isolation and "we can do
+> this particular thing this different way with what we have". Please,
+> try consider all of it together, it's important. Every single aspect
+> of bpf_link is not that unique, but it's all of them together that
+> matter.
+>
+> >
+> > > 2. Due to having FD associated with bpf_link, it's not possible to
+> > > talk about "owning" bpf_link. If application created link and never
+> > > shared its FD with any other application, it is the sole owner of it.
+> > > But it also means that you can share it, if you need it. Now, once
+> > > application closes FD or app crashes and kernel automatically closes
+> > > that FD, bpf_link refcount is decremented. If it was the last or only
+> > > FD, it will trigger automatica detachment and clean up of that
+> > > particular BPF program attachment. Note, not a clean up of BPF
+> > > program, which can still be attached somewhere else: only that
+> > > particular attachment.
+> >
+> > This behaviour is actually one of my reservations against bpf_link for
+> > XDP: I think that automatically detaching XDP programs when the FD is
+> > closed is very much the wrong behaviour. An XDP program processes
+> > packets, and when loading one I very much expect it to keep doing that
+> > until I explicitly tell it to stop.
+>
+> As you mentioned earlier, "it's not the only one mode". Just like with
+> tracing APIs, you can imagine scripts that would adds their
+> packet-sniffing XDP program temporarily. If they crash, "temporarily"
+> turns into "permanently, but no one knows". This is bad. And again,
+> it's a choice, just with a default to auto-cleanup, because it's safe,
+> even if it requires extra step for applications willing to do
+> permanent XDP attachment.
+>
+> >
+> > > 3. This derives from the concept of ownership of bpf_link. Once
+> > > bpf_link is attached, no other application that doesn't own that
+> > > bpf_link can replace, detach or modify the link. For some cases it
+> > > doesn't matter. E.g., for tracing, all attachment to the same fentry
+> > > trampoline are completely independent. But for other cases this is
+> > > crucial property. E.g., when you attach BPF program in an exclusive
+> > > (single) mode, it means that particular cgroup and any of its childre=
+n
+> > > cgroups can have any more BPF programs attached. This is important fo=
+r
+> > > container management systems to enforce invariants and correct
+> > > functioning of the system. Right now it's very easy to violate that -
+> > > you just go and attach your own BPF program, and previous BPF program
+> > > gets automatically detached without original application that put it
+> > > there knowing about this. Chaos ensues after that and real people hav=
+e
+> > > to deal with this. Which is why existing
+> > > BPF_PROG_ATTACH/BPF_PROG_DETACH API is inadequate and we are adding
+> > > bpf_link support.
+> >
+> > I can totally see how having an option to enforce a policy such as
+> > locking out others from installing cgroup BPF programs is useful. But
+> > such an option is just that: policy. So building this policy in as a
+> > fundamental property of the API seems like a bad idea; that is
+> > effectively enforcing policy in the kernel, isn't it?
+>
+> I hope we won't go into a dictionary definition of what "policy" means
+> here :). For me it's about guarantee that kernel gives to user-space.
+> bpf_link doesn't care about dictating policies. If you don't want this
+> guarantee - don't use bpf_link, use direct program attachment. As
+> simple as that. Policy is implemented by user-space application by
+> using APIs with just the right guarantees.
+>
+> >
+> > > Those same folks have similar concern with XDP. In the world where
+> > > container management installs "root" XDP program which other user
+> > > applications can plug into (libxdp use case, right?), it's crucial to
+> > > ensure that this root XDP program is not accidentally overwritten by
+> > > some well-meaning, but not overly cautious developer experimenting in
+> > > his own container with XDP programs. This is where bpf_link ownership
+> > > plays a huge role. Tupperware agent (FB's container management agent)
+> > > would install root XDP program and will hold onto this bpf_link
+> > > without sharing it with other applications. That will guarantee that
+> > > the system will be stable and can't be compromised.
+> >
+> > See this is where we get into "deployment-model specific territory". I
+> > mean, sure, in the "central management daemon" model, it makes sense
+> > that no other applications can replace the XDP program. But, erm, we
+> > already have a mechanism to ensure that: Just don't grant those
+> > applications CAP_NET_ADMIN? So again, bpf_link doesn't really seem to
+> > add anything other than a different way to do the same thing?
+>
+> Because there are still applications that need CAP_NET_ADMIN in order
+> to function (for other reasons than attaching XDP), so it's impossible
+> to enforce with for everyone.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git tags/wireless-drivers-next-2020-03-27
+I think I'm missing some context. CAP_NET_ADMIN is trusted by definition,
+so trust these applications to not fiddle with XDP? Are there many of these=
+?
+Are they inside a user namespace or something?
 
-for you to fetch changes up to 5988b8ec713270fa29e0535ff3d0ef26a94c8220:
+>
+> >
+> > Additionally, in the case where there is *not* a central management
+> > daemon (i.e., what I'm implementing with libxdp), this would be the flo=
+w
+> > implemented by the library without bpf_link:
+> >
+> > 1. Query kernel for current BPF prog loaded on $IFACE
+> > 2. Sanity-check that this program is a dispatcher program installed by
+> >    libxdp
+> > 3. Create a new dispatcher program with whatever changes we want to do
+> >    (such as adding another component program).
+> > 4. Atomically replace the old program with the new one using the netlin=
+k
+> >    API in this patch series.
+> >
+> > Whereas with bpf_link, it would be:
+> >
+> > 1. Find the pinned bpf_link for $IFACE (e.g., load from
+> >    /sys/fs/bpf/iface-links/$IFNAME).
+>
+> But now you can hide this mount point from containerized
+> root/CAP_NET_ADMIN application, can't you? See the difference? One
+> might think about bpf_link as a fine-grained capability in this sense.
+>
+>
+> > 2. Query kernel for current BPF prog linked to $LINK
+> > 3. Sanity-check that this program is a dispatcher program installed by
+> >    libxdp
+> > 4. Create a new dispatcher program with whatever changes we want to do
+> >    (such as adding another component program).
+> > 5. Atomically replace the old program with the new one using the
+> >    LINK_UPDATE bpf() API.
+> >
+> >
+> > So all this does is add an additional step, and another dependency on
+> > bpffs. And crucially, I really don't see how the "bpf_link is the only
+> > thing that is not fundamentally broken" argument holds up.
+> >
+> > -Toke
+> >
 
-  Merge tag 'iwlwifi-next-for-kalle-2020-03-27' of git://git.kernel.org/pub/scm/linux/kernel/git/iwlwifi/iwlwifi-next (2020-03-27 09:20:48 +0200)
 
-----------------------------------------------------------------
-wireless-drivers-next patches for v5.7
 
-Third set of patches for v5.7. Nothing really special this time,
-business as usual.
+--=20
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
-When pulling this to net-next there's again a conflict in:
-
-drivers/net/wireless/intel/iwlwifi/pcie/drv.c
-
-To solve this drop these three lines from the conflict (the first hunk
-from "HEAD") as the whole AX200 block was moved above in the same
-file:
-
-	IWL_DEV_INFO(0x2723, 0x1653, iwl_ax200_cfg_cc, iwl_ax200_killer_1650w_name),
-	IWL_DEV_INFO(0x2723, 0x1654, iwl_ax200_cfg_cc, iwl_ax200_killer_1650x_name),
-	IWL_DEV_INFO(0x2723, IWL_CFG_ANY, iwl_ax200_cfg_cc, iwl_ax200_name),
-
-And keep all the __IWL_DEV_INFO() entries (the second hunk). In other
-words, take everything from wireless-drivers-next. When running 'git
-diff' after the resolution the output should be empty.
-
-Major changes:
-
-brcmfmac
-
-* add USB autosuspend support
-
-ath11k
-
-* handle RX fragments
-
-* enable PN offload
-
-* add support for HE BSS color
-
-iwlwifi
-
-* support new FW API version
-
-* support for EDCA measurements
-
-* new scan API features
-
-* enable new firmware debugging code
-
-----------------------------------------------------------------
-Avraham Stern (1):
-      iwlwifi: mvm: add support for non EDCA based measurements
-
-Chris Chiu (2):
-      rtl8xxxu: add enumeration for channel bandwidth
-      rtl8xxxu: Feed current txrate information for mac80211
-
-Johannes Berg (6):
-      iwlwifi: pass trans and NVM data to HE capability parsing
-      iwlwifi: mvm: rs-fw: fix some indentation
-      iwlwifi: mvm: enable SF also when we have HE
-      iwlwifi: remove IWL_FW_DBG_DOMAIN macro
-      iwlwifi: pcie: make iwl_pcie_cmdq_reclaim static
-      iwlwifi: mvm: remove newline from rs_pretty_print_rate()
-
-John Crispin (3):
-      ath11k: set queue_len to 4096
-      ath11k: add WMI calls required for handling BSS color
-      ath11k: add handling for BSS color
-
-Kalle Valo (2):
-      Merge ath-next from git://git.kernel.org/.../kvalo/ath.git
-      Merge tag 'iwlwifi-next-for-kalle-2020-03-27' of git://git.kernel.org/.../iwlwifi/iwlwifi-next
-
-Luca Coelho (15):
-      iwlwifi: yoyo: add PCI config space region type
-      iwlwifi: pcie: implement read_config32
-      iwlwifi: remove redundant iwl9560_2ac_cfg struct
-      iwlwifi: move integrated, extra_phy and soc_latency to trans_cfg
-      iwlwifi: remove some unused extern declarations from iwl-config.h
-      iwlwifi: add HW step to new cfg device table
-      iwlwifi: convert all Qu with Jf devices to the new config table
-      iwlwifi: convert QnJ with Jf devices to new config table
-      iwlwifi: remove unnecessary cfg mangling for Qu C and QuZ with Jf
-      iwlwifi: add support for version 2 of SOC_CONFIGURATION_CMD
-      iwlwifi: add trans_cfg for devices with long latency
-      iwlwifi: remove support for QnJ Hr STEP A
-      iwlwifi: remove support for QnJ HR FPGA
-      iwlwifi: yoyo: enable yoyo by default
-      iwlwifi: bump FW API to 53 for 22000 series
-
-Madhan Mohan R (1):
-      brcmfmac: increase max hanger slots from 1K to 3K in fws layer
-
-Manikanta Pubbisetty (3):
-      ath11k: handle RX fragments
-      ath11k: enable PN offload
-      ath11k: dump SRNG stats during FW assert
-
-Pravas Kumar Panda (1):
-      ath11k: Adding proper validation before accessing tx_stats
-
-Raveendran Somu (3):
-      brcmfmac: Fix driver crash on USB control transfer timeout
-      brcmfmac: Fix double freeing in the fmac usb data path
-      brcmfmac: fix the incorrect return value in brcmf_inform_single_bss().
-
-Shahar S Matityahu (2):
-      iwlwifi: mvm: add soc latency support
-      iwlwifi: scan: support scan req cmd ver 14
-
-Sriram R (3):
-      ath11k: Supporting RX ring backpressure HTT event and stats handling
-      ath11k: Configure hash based reo destination ring selection
-      ath11k: Perform per-msdu rx processing
-
-Tova Mussai (1):
-      iwlwifi: scan: support FW APIs with variable number of profiles
-
-Tzu-En Huang (1):
-      rtw88: fix non-increase management packet sequence number
-
-Venkateswara Naralasetty (1):
-      ath11k: fill channel info from rx channel
-
-Wright Feng (1):
-      brcmfmac: add USB autosuspend feature support
-
-Yan-Hsuan Chuang (2):
-      rtw88: add a debugfs entry to dump coex's info
-      rtw88: add a debugfs entry to enable/disable coex mechanism
-
-Yingying Tang (1):
-      ath10k: Fill GCMP MIC length for PMF
-
-YueHaibing (1):
-      hostap: convert to struct proc_ops
-
-rotem saado (1):
-      iwlwifi: yoyo: don't block dumping internal memory when not in SRAM mode
-
- drivers/net/wireless/ath/ath10k/core.h             |    2 +
- drivers/net/wireless/ath/ath10k/htt_tx.c           |   12 +-
- drivers/net/wireless/ath/ath10k/mac.c              |   25 +-
- drivers/net/wireless/ath/ath10k/wmi.c              |   17 +-
- drivers/net/wireless/ath/ath11k/Kconfig            |    1 +
- drivers/net/wireless/ath/ath11k/ahb.c              |   11 +-
- drivers/net/wireless/ath/ath11k/ce.h               |    1 +
- drivers/net/wireless/ath/ath11k/core.h             |    8 +-
- drivers/net/wireless/ath/ath11k/debug.h            |    2 +
- drivers/net/wireless/ath/ath11k/debug_htt_stats.c  |   44 +
- drivers/net/wireless/ath/ath11k/debug_htt_stats.h  |   28 +
- drivers/net/wireless/ath/ath11k/debugfs_sta.c      |    3 +
- drivers/net/wireless/ath/ath11k/dp.c               |   47 +-
- drivers/net/wireless/ath/ath11k/dp.h               |   24 +-
- drivers/net/wireless/ath/ath11k/dp_rx.c            | 1403 ++++++++++++++------
- drivers/net/wireless/ath/ath11k/dp_rx.h            |   12 +-
- drivers/net/wireless/ath/ath11k/dp_tx.c            |    2 +-
- drivers/net/wireless/ath/ath11k/hal.c              |   66 +-
- drivers/net/wireless/ath/ath11k/hal.h              |   23 +-
- drivers/net/wireless/ath/ath11k/hal_rx.c           |   29 +-
- drivers/net/wireless/ath/ath11k/hw.h               |    1 +
- drivers/net/wireless/ath/ath11k/mac.c              |   75 +-
- drivers/net/wireless/ath/ath11k/mac.h              |    1 +
- drivers/net/wireless/ath/ath11k/peer.c             |    3 +
- drivers/net/wireless/ath/ath11k/peer.h             |    9 +
- drivers/net/wireless/ath/ath11k/qmi.c              |    1 +
- drivers/net/wireless/ath/ath11k/rx_desc.h          |    2 +-
- drivers/net/wireless/ath/ath11k/wmi.c              |  113 ++
- drivers/net/wireless/ath/ath11k/wmi.h              |   43 +
- .../broadcom/brcm80211/brcmfmac/cfg80211.c         |    2 +-
- .../broadcom/brcm80211/brcmfmac/fwsignal.c         |    5 +-
- .../net/wireless/broadcom/brcm80211/brcmfmac/usb.c |  127 +-
- drivers/net/wireless/intel/iwlwifi/cfg/22000.c     |  300 ++---
- drivers/net/wireless/intel/iwlwifi/cfg/9000.c      |   32 +-
- .../net/wireless/intel/iwlwifi/fw/api/commands.h   |    9 +-
- .../net/wireless/intel/iwlwifi/fw/api/location.h   |    6 +
- drivers/net/wireless/intel/iwlwifi/fw/api/scan.h   |   83 +-
- drivers/net/wireless/intel/iwlwifi/fw/api/soc.h    |   87 ++
- drivers/net/wireless/intel/iwlwifi/fw/dbg.c        |   47 +-
- drivers/net/wireless/intel/iwlwifi/fw/file.h       |   11 +-
- drivers/net/wireless/intel/iwlwifi/fw/runtime.h    |    2 -
- drivers/net/wireless/intel/iwlwifi/iwl-config.h    |   62 +-
- drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c   |    6 +
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c       |    3 +-
- drivers/net/wireless/intel/iwlwifi/iwl-nvm-parse.c |    8 +-
- drivers/net/wireless/intel/iwlwifi/iwl-trans.h     |    3 +
- drivers/net/wireless/intel/iwlwifi/mvm/d3.c        |    5 +-
- drivers/net/wireless/intel/iwlwifi/mvm/debugfs.c   |    4 +
- .../net/wireless/intel/iwlwifi/mvm/ftm-initiator.c |    9 +
- drivers/net/wireless/intel/iwlwifi/mvm/fw-api.h    |    1 +
- drivers/net/wireless/intel/iwlwifi/mvm/fw.c        |   46 +-
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |   10 +-
- drivers/net/wireless/intel/iwlwifi/mvm/mvm.h       |    7 +
- drivers/net/wireless/intel/iwlwifi/mvm/rs-fw.c     |    3 +-
- drivers/net/wireless/intel/iwlwifi/mvm/rs.c        |    6 +-
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c      |  169 ++-
- drivers/net/wireless/intel/iwlwifi/mvm/sf.c        |    8 +-
- drivers/net/wireless/intel/iwlwifi/pcie/drv.c      |  721 +++++-----
- drivers/net/wireless/intel/iwlwifi/pcie/internal.h |    1 -
- drivers/net/wireless/intel/iwlwifi/pcie/rx.c       |    2 +-
- drivers/net/wireless/intel/iwlwifi/pcie/trans.c    |   10 +-
- drivers/net/wireless/intel/iwlwifi/pcie/tx.c       |    2 +-
- .../net/wireless/intersil/hostap/hostap_download.c |   10 +-
- drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu.h   |   21 +-
- .../net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  |   77 +-
- drivers/net/wireless/realtek/rtw88/coex.c          |  492 +++++++
- drivers/net/wireless/realtek/rtw88/coex.h          |   10 +
- drivers/net/wireless/realtek/rtw88/debug.c         |   62 +
- drivers/net/wireless/realtek/rtw88/main.h          |   21 +
- drivers/net/wireless/realtek/rtw88/rtw8822b.c      |   30 +
- drivers/net/wireless/realtek/rtw88/rtw8822c.c      |   28 +
- drivers/net/wireless/realtek/rtw88/tx.c            |    6 +
- drivers/net/wireless/realtek/rtw88/tx.h            |    6 +
- 73 files changed, 3353 insertions(+), 1215 deletions(-)
- create mode 100644 drivers/net/wireless/intel/iwlwifi/fw/api/soc.h
+www.cloudflare.com
