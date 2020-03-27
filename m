@@ -2,90 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70601195B4A
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 17:38:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D81F195CA2
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 18:25:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727792AbgC0Qid (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 12:38:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38346 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727740AbgC0Qid (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Mar 2020 12:38:33 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 88E8B206E6;
-        Fri, 27 Mar 2020 16:38:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585327112;
-        bh=deDTuu1jzjGnbi3OJe4c7nZIxvdzsPnwdEoPIN4Iu3s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jLprVHeO0FqbudliDyQijNJeIKcCwAXsRIKOclD81V6rf1a2bbqrksM4/YIN/EWXa
-         yyaAiSUNAl1a5EEBChZL6YiUyaikgMhryHulWOG8SwKHDgAVdM8ZPFzBnsp0AqQ2Yt
-         Hbht/cTZfxWoWJmXgFDKdl5KXIsY00kacnf/efFc=
-Date:   Fri, 27 Mar 2020 09:38:29 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, parav@mellanox.com,
-        yuvalav@mellanox.com, jgg@ziepe.ca, saeedm@mellanox.com,
-        leon@kernel.org, andrew.gospodarek@broadcom.com,
-        michael.chan@broadcom.com, moshe@mellanox.com, ayal@mellanox.com,
-        eranbe@mellanox.com, vladbu@mellanox.com, kliteyn@mellanox.com,
-        dchickles@marvell.com, sburla@marvell.com, fmanlunas@marvell.com,
-        tariqt@mellanox.com, oss-drivers@netronome.com,
-        snelson@pensando.io, drivers@pensando.io, aelior@marvell.com,
-        GR-everest-linux-l2@marvell.com, grygorii.strashko@ti.com,
-        mlxsw@mellanox.com, idosch@mellanox.com, markz@mellanox.com,
-        jacob.e.keller@intel.com, valex@mellanox.com,
-        linyunsheng@huawei.com, lihong.yang@intel.com,
-        vikas.gupta@broadcom.com, magnus.karlsson@intel.com
-Subject: Re: [RFC] current devlink extension plan for NICs
-Message-ID: <20200327093829.76140a98@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200327074736.GJ11304@nanopsycho.orion>
-References: <20200319192719.GD11304@nanopsycho.orion>
-        <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
-        <20200320073555.GE11304@nanopsycho.orion>
-        <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
-        <20200321093525.GJ11304@nanopsycho.orion>
-        <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200326144709.GW11304@nanopsycho.orion>
-        <20200326145146.GX11304@nanopsycho.orion>
-        <20200326133001.1b2694c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200327074736.GJ11304@nanopsycho.orion>
+        id S1727719AbgC0RZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 13:25:23 -0400
+Received: from mr7.ht-systems.ru ([78.110.50.178]:62622 "EHLO
+        mr7.ht-systems.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726515AbgC0RZX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 13:25:23 -0400
+X-Greylist: delayed 2354 seconds by postgrey-1.27 at vger.kernel.org; Fri, 27 Mar 2020 13:25:23 EDT
+Received: from [78.110.50.129] (helo=c27-w.ht-systems.ru)
+        by mr5.ht-systems.ru with esmtp (Exim 4.80.1)
+        (envelope-from <srv7983@c27.ht-systems.ru>)
+        id 1jHs7R-0000au-ME
+        for netdev@vger.kernel.org; Fri, 27 Mar 2020 19:46:05 +0300
+Received: by c27-w.ht-systems.ru (Postfix, from userid 7983)
+        id A45D225D7; Fri, 27 Mar 2020 19:46:05 +0300 (MSK)
+To:     netdev@vger.kernel.org
+Subject: =?utf-8?B?0JrQvtC/0LjRjzog5r6z6ZaA6YeR5rKZ5bCI5rOo5a6i5oi25L2T6amX?=
+X-Hosting-User: srv7983
+X-PHP-Script: /storage/home/srv7983/www/libraries/phpmailer/phpmailer.php
+X-PHP-Uri: www.ershova.ru/index.php
+X-PHP-Addr: 103.228.130.86
+Date:   Fri, 27 Mar 2020 19:46:05 +0300
+From:   =?utf-8?B?0KLQsNC90YbQtdCy0LDQu9GM0L3Ri9C5INGB0LDQu9C+0L0g0J7Qu9GM0LM=?=
+         =?utf-8?B?0Lgg0JXRgNGI0L7QstC+0Lk=?= <info@ershova.ru>
+Message-ID: <a1d0fe598d04c16cd530079cd4ca0313@www.ershova.ru>
+X-Priority: 3
+X-Mailer: PHPMailer (phpmailer.sourceforge.net) [version 2.0.4]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 27 Mar 2020 08:47:36 +0100 Jiri Pirko wrote:
-> >So the queues, interrupts, and other resources are also part 
-> >of the slice then?  
-> 
-> Yep, that seems to make sense.
-> 
-> >How do slice parameters like rate apply to NVMe?  
-> 
-> Not really.
-> 
-> >Are ports always ethernet? and slices also cover endpoints with
-> >transport stack offloaded to the NIC?  
-> 
-> devlink_port now can be either "ethernet" or "infiniband". Perhaps,
-> there can be port type "nve" which would contain only some of the
-> config options and would not have a representor "netdev/ibdev" linked.
-> I don't know.
+Копия:
 
-I honestly find it hard to understand what that slice abstraction is,
-and which things belong to slices and which to PCI ports (or why we even
-have them).
+Это сообщение было отправлено через раздел Контакты сайта http://www.ershova.ru/:
+songkehang <netdev@vger.kernel.org>
 
-With devices like NFP and Mellanox CX3 which have one PCI PF maybe it
-would have made sense to have a slice that covers multiple ports, but
-it seems the proposal is to have port to slice mapping be 1:1. And rate
-in those devices should still be per port not per slice.
+特邀您註测领888圜，《澳門线上馆网直营》，闲着也是闲着，www.1641999.com ， ！
 
-But this keeps coming back, and since you guys are doing all the work,
-if you really really need it..
