@@ -2,106 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E4CAB195DDE
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 19:46:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73480195DE0
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 19:46:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727335AbgC0Sq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 14:46:29 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:56992 "EHLO
+        id S1727352AbgC0Sql (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 14:46:41 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:20860 "EHLO
         mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726540AbgC0Sq2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 14:46:28 -0400
+        by vger.kernel.org with ESMTP id S1726540AbgC0Sqk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 14:46:40 -0400
 Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02RIkFs4032290;
-        Fri, 27 Mar 2020 11:46:15 -0700
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02RIkFsR032290;
+        Fri, 27 Mar 2020 11:46:27 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
  subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=JoXqBgFCTidK55eFggkReO7XJ6nHSnLzK4EanHHPdKw=;
- b=RsWGnuz6i+kdhXf3SGO+LgVOg0sza5yDCOqJ3C36KptVrnbRfyv2Cb94OW5b51Ln2uRt
- i5Ct2r+KaeNlGdf8KHg5sOsQdRdRw4KORJ3tbaUlvWXgzRvpILLeUNezILwsbBTNYIJX
- OZ/DfF7DR+kfRd//9ZNNnZBgiySyuBRYyGQ= 
+ mime-version; s=facebook; bh=xXo763gIZmXy3APD25A+mrwTTzIOWbHsTp3HUClDDh4=;
+ b=L9rl+rXxy/cE0chZBEOlTNBh/ekKeUvAaQltFR82lXnwNV5PfIvNUmXVqBBq/fa8Zx89
+ 9Nt7B47CuRVSY1AEIc27Utlq4ZRf51OuI4isNQxnzPZd0ZUgGiZ5TIQk+yBsjTbmkD3X
+ 6PrCEM75xrcUN2Nkyy02KdfcFXjinUTTov8= 
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 3013amn9bc-1
+        by mx0a-00082601.pphosted.com with ESMTP id 3013amn9bc-19
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 27 Mar 2020 11:46:15 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
+        Fri, 27 Mar 2020 11:46:27 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
  by o365-in.thefacebook.com (100.104.36.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1847.3; Fri, 27 Mar 2020 11:45:39 -0700
+ 15.1.1847.3; Fri, 27 Mar 2020 11:46:25 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hHDlEjNGcdqQhezHyLKIsp007prW6PFCLSiO2EWJFfYFAg2Dic17gaRw1R5sVNf+xeUCGEl/bLVf/x0OGHnAaeyZaJD+Z2SnnCoHp2nhdgCbtc4K7YYUNdzgmuQ+v+CVJg6UjLWTlZ9Pes5gW1FGiH8pum5420hMIApdGCsMklHuxTNz4XmN2NSMxKSoXA3WdjkVhm/+v9GOwZk4GFj75JzpMfRTfz7V71gmgNNwcww0A2B7xqLckHw+JrvHf9Cx1PQ0n65ko07PTnadxuItWgDjWD14KMwauoaXWWPTv7SV+1U/rW+O34Nr0ZbtSF7tH2rVAHzYdnIKI3W7txb6zw==
+ b=APe8GFcg6JhIpBY756iIvO7KJSkCUjHxPD+/rihNVHtdF0opuaDsalzg+0dV95T5yUHeKmTAY8sjkri9EWe6eK28r3m6xI1uci0IOIaM94RqOgZJsRCy5270TvsgDDUYvr2IHksbcYFje1e0/ewJEKSdH2unoS+I48j3W4DXwjAIcT+TEGrXQ8vLmtkabdidkxjSCj72hnEoFg1uMRVp5JT+NWxiMwZtkiINM6oPPiqF0cLETl7XLU47IPrKJwKEixx6WAbIhR4ITfjyIqEyGzF+1IcA0jysbBf08vPwr7qz5Havtc9tMdy2L4aPC3DDluauUqYoJ/SLWtrKhvGFhQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JoXqBgFCTidK55eFggkReO7XJ6nHSnLzK4EanHHPdKw=;
- b=UHT4K1+0DNxspwwlHGe7pmN1Jum0xGDLHpYe1zvayE3MVxCEDv6nfmhXH3Jl1seXsz+soog2o2WGxTME0Wa2frHsr+6YvaORGTXjMBn7RTkBRbOsjzGwmzqvxJaxssxq3uU39VB4yr9AHaSii9BO1Kqqbn9r25t/Ql33ATaldutyzKQizaUkUsfTW2qfeugZksw8ucPI70K1E12lCkdR024pK84/QEXYyoq+rn2xASq7CET8yvCuFAZdDwMNH0VdRnhtDaA/+72vVSCy3YdrAuzlRc5Azr6X7klNoZD/85CSsPB9iZzRmYTyoaPQ+a0U8GJh99ILjUf2MxJqinfG3A==
+ bh=xXo763gIZmXy3APD25A+mrwTTzIOWbHsTp3HUClDDh4=;
+ b=nQWxE18gMnoL/VmRhYGEWl1ZbK2laM+QIXu7WMRtBBf7mXrNwUQH67+2jEkFCD4iKkhB2+qLgyWr7LSnBo1yb6oHDO75gWV7YqyHmYfw8xgpfgpZp8vDi4t3UMy7XJxNrzUGHiYI9tEFMlmVwXSG3aoo3Ur2Pa74NQP2PPmmWKBwurCtlncGS+4LarOIp5HCxuh7BGKkvnQ+CykopYrMbMRZDKOg0wc4CQA6iIZSvKxpdyfKEC1P7j7hx09dczyZPfhYP9sOsxkHDdN+2QBs9WiwshtvP5TmI9kNE9vNkc7eefshML7VkFBOJy8524Y3WgsqvthCmEEIN0cgdLd3pw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JoXqBgFCTidK55eFggkReO7XJ6nHSnLzK4EanHHPdKw=;
- b=UYbw+Sndg0BMFfiWu9FciV33jrKX1uin+IxrG9OP9poqwjnkNcxi8M7qvuD/bRmD1NVMg6R+rJrtWiFApVOxWWD7hNUu5BYBMrIj0+G5RcAavVALOLaDa6kRjP5CIc73xFN8c1IBQMx2mZsTPdle2SpOTV1JEh/J4JATVOy3HN8=
+ bh=xXo763gIZmXy3APD25A+mrwTTzIOWbHsTp3HUClDDh4=;
+ b=j78mgYtld/KogGfwsXvZ4mG0vFC/EfzIGffnK3PzMdc50D3qq8o6ludg7KRlqIl4rcxHVXWy2Px9VMErpi3GM0JEUt/R5yB4yJHSo6W5Tl+T2nctYsN4/WwBJ4ypmiLTpqhwKrnQSCweLGydyzEOBydNlWonFqxHEQa062uMHL8=
 Received: from MW2PR1501MB2171.namprd15.prod.outlook.com
- (2603:10b6:302:13::27) by MW2PR1501MB2042.namprd15.prod.outlook.com
- (2603:10b6:302:13::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.20; Fri, 27 Mar
- 2020 18:45:30 +0000
+ (2603:10b6:302:13::27) by MW2PR1501MB2172.namprd15.prod.outlook.com
+ (2603:10b6:302:8::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.18; Fri, 27 Mar
+ 2020 18:46:24 +0000
 Received: from MW2PR1501MB2171.namprd15.prod.outlook.com
  ([fe80::2ca6:83ae:1d87:a7d9]) by MW2PR1501MB2171.namprd15.prod.outlook.com
  ([fe80::2ca6:83ae:1d87:a7d9%7]) with mapi id 15.20.2835.025; Fri, 27 Mar 2020
- 18:45:30 +0000
-Date:   Fri, 27 Mar 2020 11:45:28 -0700
+ 18:46:24 +0000
+Date:   Fri, 27 Mar 2020 11:46:21 -0700
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     Joe Stringer <joe@wand.net.nz>
 CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
         <daniel@iogearbox.net>, <ast@kernel.org>, <eric.dumazet@gmail.com>,
         <lmb@cloudflare.com>
-Subject: Re: [PATCHv3 bpf-next 2/5] net: Track socket refcounts in
- skb_steal_sock()
-Message-ID: <20200327184528.qwr3yzz5z452btm3@kafai-mbp>
+Subject: Re: [PATCHv3 bpf-next 0/5] Add bpf_sk_assign eBPF helper
+Message-ID: <20200327184621.67324727o5rtu42p@kafai-mbp>
 References: <20200327042556.11560-1-joe@wand.net.nz>
- <20200327042556.11560-3-joe@wand.net.nz>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200327042556.11560-3-joe@wand.net.nz>
+In-Reply-To: <20200327042556.11560-1-joe@wand.net.nz>
 User-Agent: NeoMutt/20180716
-X-ClientProxiedBy: MWHPR18CA0039.namprd18.prod.outlook.com
- (2603:10b6:320:31::25) To MW2PR1501MB2171.namprd15.prod.outlook.com
+X-ClientProxiedBy: CO2PR04CA0105.namprd04.prod.outlook.com
+ (2603:10b6:104:6::31) To MW2PR1501MB2171.namprd15.prod.outlook.com
  (2603:10b6:302:13::27)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kafai-mbp (2620:10d:c090:400::5:1c15) by MWHPR18CA0039.namprd18.prod.outlook.com (2603:10b6:320:31::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.19 via Frontend Transport; Fri, 27 Mar 2020 18:45:29 +0000
+Received: from kafai-mbp (2620:10d:c090:400::5:1c15) by CO2PR04CA0105.namprd04.prod.outlook.com (2603:10b6:104:6::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.20 via Frontend Transport; Fri, 27 Mar 2020 18:46:23 +0000
 X-Originating-IP: [2620:10d:c090:400::5:1c15]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1bd18781-6d44-4243-cbd5-08d7d27f061f
-X-MS-TrafficTypeDiagnostic: MW2PR1501MB2042:
-X-Microsoft-Antispam-PRVS: <MW2PR1501MB2042E1C6D415CEC6236FD0E2D5CC0@MW2PR1501MB2042.namprd15.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: afbe3be7-762d-4834-15d5-08d7d27f2617
+X-MS-TrafficTypeDiagnostic: MW2PR1501MB2172:
+X-Microsoft-Antispam-PRVS: <MW2PR1501MB217202758522C359FFDD4308D5CC0@MW2PR1501MB2172.namprd15.prod.outlook.com>
 X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-Forefront-PRVS: 0355F3A3AE
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(376002)(366004)(396003)(39860400002)(136003)(346002)(86362001)(186003)(6496006)(16526019)(478600001)(66946007)(6916009)(4326008)(33716001)(66476007)(66556008)(9686003)(8676002)(8936002)(52116002)(55016002)(4744005)(2906002)(81166006)(5660300002)(81156014)(1076003)(316002);DIR:OUT;SFP:1102;SCL:1;SRVR:MW2PR1501MB2042;H:MW2PR1501MB2171.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(346002)(39860400002)(396003)(136003)(376002)(366004)(66476007)(5660300002)(66946007)(81166006)(81156014)(66556008)(4326008)(8676002)(6496006)(8936002)(2906002)(52116002)(55016002)(1076003)(33716001)(86362001)(9686003)(478600001)(316002)(186003)(6916009)(16526019);DIR:OUT;SFP:1102;SCL:1;SRVR:MW2PR1501MB2172;H:MW2PR1501MB2171.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;
 Received-SPF: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dEF5n8TbSFjv1ZXdVJqJpLKhFGu/NOb2CvRH55eURwHZ33ZKdvOZShL8SUdzYcMf3p3bId1RetvLcAECUb2M1tCY4WHWQkSnmYA4HtTOGJI39XiVsdWRVP+NUWH+//krphk79m8N9srnv8PEUcPoFEB6de5mWD8EVwzJfn0Pm3W4xc6y5ZceJDDkzOiS2zREvhezrk7b/jAdDLCMhOYcNoBaOF2UvgMLfegfgHHGIK56h2f3U4Rdp6Nisn5AkE3XrU8hIVDnijrbzqW9V2t6ie6f2fXeUgEbMsPHbViib5Gn+J5Gx48HTEFQbw2KkGIQLx2tFj6QajHgZXVPynTcVnoNOkpZk1b8TGBSq3oaWWHdebTNNB5+9JTnEcybCPn7OrZOs1Z7lg1kIhXZHWwfqtO1aEUVO4oy5+CHS2HPEn8FzifwvlXIptj117ooIg9j
-X-MS-Exchange-AntiSpam-MessageData: 8UwZjQbTwQsBSdRCaur/69Yi7jsUzUIlh09woriYja72DAQ8jrnOD8BFfFD9YL+vjomuDtwD0agt9vvai8k7UoAqcuQUfuSD96F6QrN15gN40I9xDXZDW1jYV53mRMpvIlPDxlp6ptLyofHiGZ5eYq+WA3hoqxPkXCbBu1DhePZkEZCADEBvJg/eteVt95Wh
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1bd18781-6d44-4243-cbd5-08d7d27f061f
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2020 18:45:30.3979
+X-Microsoft-Antispam-Message-Info: 0/CcfQIVdMmL5JqjJpCm0uqzLJM59TLa0fhh+aVtTOj0FlopZWjRvqllD3HjPj6dmmSIu/JS6lDQ6GSPWuHclc2+uWfWZVczMlcEQuPYO0eIt+BxdUL56Wi9Q97ET+S4EiEvNEaz5IRzBlo9rDVh5VcdmlisP3JuzaudpiTSRM0psZJ9ilEhwl902QDWkRbud68Lrd3YmHhxYrBOJdrN4EiSLqmZII8AIGK63Z2FhOvsUuAocGmmK/xsBhl0Lha0Gok1xAyzIVgQmWEZ6EboMW5oQ9z9KOS0R5NIVoDOPiTzu+WrP7GRcnEIcwgO0xjvKQrFLEfxR9L7KjmYRV9GmoZ/RyM8gBvWu4Vsd6+Nx6Ol/DePVF3lWDp9gyL2vIlXjsYif8Id9uQHGP2OxXbSm9VF0lqQJU/F92ab0RyL3aj6rY8C7PlINlx1NhlGVtoM
+X-MS-Exchange-AntiSpam-MessageData: 919Ns63HqawtpY2XnoVp0czaZAidw4USNccgk8aQe1LtUmdeFUnDqmKY1ltP2HA4+/JbyzW8Zn3VXiO2vw7lbuETBTesqoea2i8dDdSfLuHEUvxolJrxv7AqtCl8F4RZvdJOpiBPqwhyeBUJr0VZZKEbLvJ2yLZ+sUs2Yfi+cPeydhlZ/z/9TUVo26O1lQrR
+X-MS-Exchange-CrossTenant-Network-Message-Id: afbe3be7-762d-4834-15d5-08d7d27f2617
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2020 18:46:24.0719
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bQfX2jekExKXljW5OqUgqWan896cWEqunxbtuli4W+jh0WadyGHHop1/6OshZxeJ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR1501MB2042
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0XUZYkVjalNwuSDaUIDxXOAy5lGVXw6nPxu0/hmnvZ1SJ/upy8A019+k7umk+9y4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR1501MB2172
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
  definitions=2020-03-27_06:2020-03-27,2020-03-27 signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 spamscore=0 clxscore=1015
- mlxscore=0 malwarescore=0 adultscore=0 suspectscore=0 phishscore=0
- bulkscore=0 mlxlogscore=576 priorityscore=1501 impostorscore=0
+ mlxscore=0 malwarescore=0 adultscore=0 suspectscore=2 phishscore=0
+ bulkscore=0 mlxlogscore=999 priorityscore=1501 impostorscore=0
  lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2003020000 definitions=main-2003270156
 X-FB-Internal: deliver
@@ -110,10 +108,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 09:25:53PM -0700, Joe Stringer wrote:
-> Refactor the UDP/TCP handlers slightly to allow skb_steal_sock() to make
-> the determination of whether the socket is reference counted in the case
-> where it is prefetched by earlier logic such as early_demux or
+On Thu, Mar 26, 2020 at 09:25:51PM -0700, Joe Stringer wrote:
+> Introduce a new helper that allows assigning a previously-found socket
+> to the skb as the packet is received towards the stack, to cause the
+> stack to guide the packet towards that socket subject to local routing
+> configuration. The intention is to support TProxy use cases more
+> directly from eBPF programs attached at TC ingress, to simplify and
+> streamline Linux stack configuration in scale environments with Cilium.
+> 
+> Normally in ip{,6}_rcv_core(), the skb will be orphaned, dropping any
+> existing socket reference associated with the skb. Existing tproxy
+> implementations in netfilter get around this restriction by running the
+> tproxy logic after ip_rcv_core() in the PREROUTING table. However, this
+> is not an option for TC-based logic (including eBPF programs attached at
+> TC ingress).
+> 
+> This series introduces the BPF helper bpf_sk_assign() to associate the
+> socket with the skb on the ingress path as the packet is passed up the
+> stack. The initial patch in the series simply takes a reference on the
+> socket to ensure safety, but later patches relax this for listen
+> sockets.
+> 
+> To ensure delivery to the relevant socket, we still consult the routing
+> table, for full examples of how to configure see the tests in patch #5;
+> the simplest form of the route would look like this:
+> 
+>   $ ip route add local default dev lo
+> 
+> This series is laid out as follows:
+> * Patch 1 extends the eBPF API to add sk_assign() and defines a new
+>   socket free function to allow the later paths to understand when the
+>   socket associated with the skb should be kept through receive.
+> * Patches 2-3 optimize the receive path to avoid taking a reference on
+>   listener sockets during receive.
+> * Patches 4-5 extends the selftests with examples of the new
+>   functionality and validation of correct behaviour.
+> 
+> Changes since v2:
+> * Add selftests for UDP socket redirection
+> * Drop the early demux optimization patch (defer for more testing)
+> * Fix check for orphaning after TC act return
+> * Tidy up the tests to clean up properly and be less noisy.
+> 
+> Changes since v1:
+> * Replace the metadata_dst approach with using the skb->destructor to
+>   determine whether the socket has been prefetched. This is much
+>   simpler.
+> * Avoid taking a reference on listener sockets during receive
+> * Restrict assigning sockets across namespaces
+> * Restrict assigning SO_REUSEPORT sockets
+> * Fix cookie usage for socket dst check
+> * Rebase the tests against test_progs infrastructure
+> * Tidy up commit messages
+lgtm.
 
-> dst_sk_prefetch.
-Left over comment from v1?
+Acked-by: Martin KaFai Lau <kafai@fb.com>
