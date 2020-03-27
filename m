@@ -2,273 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A09C19500C
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 05:26:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF377195013
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 05:33:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726612AbgC0E0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 00:26:15 -0400
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:34202 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725942AbgC0E0O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 00:26:14 -0400
-Received: by mail-pj1-f65.google.com with SMTP id q16so3981693pje.1;
-        Thu, 26 Mar 2020 21:26:07 -0700 (PDT)
+        id S1726168AbgC0EdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 00:33:02 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:53486 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725857AbgC0EdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 00:33:02 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02R4VWae018267;
+        Thu, 26 Mar 2020 21:32:58 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=ZsWmBkdOgGMNX+Z0wvHmi5EkFCizwd4qATeuO6nEFvM=;
+ b=tTOnoCNM6R9cyDq9pppppI8M2m+l71gKRIdzpyJAQ2irhqgOGc6zIZysTqWdX+XkltHI
+ LWSfSnhCa3quaMcqLAUn9H3hdP66psa0UN33/zMyg2uF2kwpaOhLHzVHxyRwHUoMtBcg
+ hIpf2Bu3IFoH4d0MmYABlSLy0Upo2ecLGlSVOOZoJY2FqadtprHuHGag1UlN2TWq1PUf
+ ifLsEbf3TbufKdLLmB7gtBWMVu4VFvxB4RoD9BPUJh8qKKjuDasjTyZDxAEfhBUwGXfK
+ KDo8PiGG0AQ4+IMzaO3rM034xcP9BWrXsc240HBs9z5wRFfpjbHIL27YIsDWKRkt6F+I zw== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 300bpcyf4u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 26 Mar 2020 21:32:58 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 26 Mar
+ 2020 21:32:56 -0700
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 26 Mar
+ 2020 21:32:55 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.177)
+ by SC-EXCH04.marvell.com (10.93.176.84) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Thu, 26 Mar 2020 21:32:54 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BO+zuHFPBVOHlOSxRHmxfOZMJrB77c4Fxt1I7CXkexjqt1NGLGVGCsyj4f+u/jWrzGGTnIBCSsdX3I5murt1RxPztVqvkZAAk2DXoDZwO5OijsKe0crqY4a/vb0fzKX3cJrfI9X+7XPOPSqDLlz819GQD9VQYuJct0no9HyivRPiZElCxgO0TECE/HQHzUerOZTA9HrbUzw2O/MVPPlv4a7Q9vEy8omaga5M2ikN9oa+qJTWOptBDPaPVKVWJJ08GFLxAnLqy10mN0f7W9PcdfpSZ/uo++w8C7ztjdM91xVUOPJcAQoeOIHfC0SN+mCSEznqd8E+KgtGQ6Wn29VXJQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZsWmBkdOgGMNX+Z0wvHmi5EkFCizwd4qATeuO6nEFvM=;
+ b=Oi5y4LOx4RVaP08D8KEGewbKE9QslERJZWjm4xJAWB9h775Q/xDEJvt8X/giMIFSLBd+6+GhcY99/6c+dMHnpupWRj7ESYR/T6hNSmfvPdVT9JC3HoPw/SsQdz2l948NsRPMS5SUyEWwr3ewRafbZ7ViHK6yiSpmkpXPXLlhp0H2iiG6kE8fNJT6cJAEXawvg00DuFJklZkxctIuURXo2IIEEUZmGcodMrWPMOq1bm51Ik3nRkACiydzuWZYFHCOA/1nBkg8YhJJcwrXjmkWPiGnV4vDtnb2AnIa+eBmuiOmVqHh2r0dwmQTRx/jTXEz9Dn8DGVmWLRf3u3KtKZ4IQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=nx/iurhlf39+SGl5No5hKwXOjBVSUkaHUrpHSSIIfQU=;
-        b=CIAVyDVrGIzP6Nl4Qh+noFuHEhJj9zSASSn9BAIk8IPTHFxNL6u5WmTjLNgTcNwZEy
-         f5JIrLMl/sYjIINahyspe244xEkUAi+SVeA4mB8W7wYUvpaChoqYQ2nbypUcDEbFpKDm
-         XB+JNLJKMkdGatt2fIx7n0RK5EzM6fLZEzgnMQGjGY8XlLYR5W0PqhHMKI6WWtKzYma7
-         NEKwFWKomgtyxTiUmAoxWIKR+fM/DVCBmikhsyRkAtXePb5/uGAa6mkFDeI52zOKOk9c
-         nV2QkK0Rfhw09xEvhC5PkxunejH8CXBW9CmBaN0Pobhc2p/Sr/0kMb1Pykq+ZhJlgZgr
-         4o2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=nx/iurhlf39+SGl5No5hKwXOjBVSUkaHUrpHSSIIfQU=;
-        b=WwzCusdMjO+0pPjmQNnpMVxbBtzDm8nhQO3v/HBdUj1DnLzL662HU52V0EyVGP7St0
-         uQdRGThdGjMS4ZrvRuJudMg1Pd0lWuEU6fl8guK1SwQ9YV7FI3aMpfpDmPPhl5Y2BOua
-         545Lf4YbvqWboCsNx33yepN8f0sk1zK/0tt0yMXMyHKhoOw/hVybpALGccUp9w+MgFgR
-         QONf2qIu2Tr6WYegAKwiogAVzfGoIw/tRlRvVqtY6H3hfrQr+YtrO5u2KTpEE77y1qpE
-         MiboeupuOMLXLlzhyGzk3V1jNdnDAw0lJgGb2zlV+N7qWUWlzNfx2KRuYegFjo1B99nE
-         KIqA==
-X-Gm-Message-State: ANhLgQ2w83ZfHbBKQ4tfrCy2Wuv+BjQvIULmsl/NvSTLpb7GHhLwfAlu
-        +TM0oXMC1rSrtF2CfHeOXYZ2qvnM
-X-Google-Smtp-Source: ADFU+vs0f5PPzE3NF1kffOAWcwSUrH88laIYXbzil9L+AIKZklZt79rHbwfntjtBPJj7dM4FNDe52g==
-X-Received: by 2002:a17:90a:c257:: with SMTP id d23mr3851644pjx.192.1585283165939;
-        Thu, 26 Mar 2020 21:26:05 -0700 (PDT)
-Received: from localhost.localdomain (c-73-93-5-123.hsd1.ca.comcast.net. [73.93.5.123])
-        by smtp.gmail.com with ESMTPSA id y17sm3004647pfl.104.2020.03.26.21.26.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2020 21:26:05 -0700 (PDT)
-From:   Joe Stringer <joe@wand.net.nz>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        eric.dumazet@gmail.com, lmb@cloudflare.com, kafai@fb.com
-Subject: [PATCHv3 bpf-next 5/5] selftests: bpf: Extend sk_assign tests for UDP
-Date:   Thu, 26 Mar 2020 21:25:56 -0700
-Message-Id: <20200327042556.11560-6-joe@wand.net.nz>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200327042556.11560-1-joe@wand.net.nz>
-References: <20200327042556.11560-1-joe@wand.net.nz>
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZsWmBkdOgGMNX+Z0wvHmi5EkFCizwd4qATeuO6nEFvM=;
+ b=drQJl4bWjen4xgmGE7rPwQqDhnLfdA+E/KFMZ5k9bzuMBV/yQmwPzezmqJuO8AMrq6O7RSGA8VrUWjp/vwe2SaL38OZcAFOe6EDkzA+7sc6gV4e09kd8QxPQzAivTOHqSe4ABT7N2yNYuWS9ICA1DYY8acKqo+GLHCRAFiCb7fE=
+Received: from MN2PR18MB2527.namprd18.prod.outlook.com (2603:10b6:208:103::10)
+ by MN2PR18MB2479.namprd18.prod.outlook.com (2603:10b6:208:106::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2835.22; Fri, 27 Mar
+ 2020 04:32:53 +0000
+Received: from MN2PR18MB2527.namprd18.prod.outlook.com
+ ([fe80::1c1e:d0bc:4cbb:313f]) by MN2PR18MB2527.namprd18.prod.outlook.com
+ ([fe80::1c1e:d0bc:4cbb:313f%5]) with mapi id 15.20.2856.019; Fri, 27 Mar 2020
+ 04:32:52 +0000
+From:   Saurav Kashyap <skashyap@marvell.com>
+To:     David Miller <davem@davemloft.net>
+CC:     "martin.petersen@oracle.com" <martin.petersen@oracle.com>,
+        GR-QLogic-Storage-Upstream <GR-QLogic-Storage-Upstream@marvell.com>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [EXT] Re: [PATCH 5/8] qedf: Add schedule recovery handler.
+Thread-Topic: [EXT] Re: [PATCH 5/8] qedf: Add schedule recovery handler.
+Thread-Index: AQHWAz1ZcI0HmzhzSk6zCagYUxvzdqhbM+2AgACm7hA=
+Date:   Fri, 27 Mar 2020 04:32:52 +0000
+Message-ID: <MN2PR18MB25270CB792DECDD9D2E0CFB0D2CC0@MN2PR18MB2527.namprd18.prod.outlook.com>
+References: <20200326070806.25493-1-skashyap@marvell.com>
+        <20200326070806.25493-6-skashyap@marvell.com>
+ <20200326.113437.734459979907572755.davem@davemloft.net>
+In-Reply-To: <20200326.113437.734459979907572755.davem@davemloft.net>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [114.143.185.87]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c662455c-1100-4969-f587-08d7d207ea12
+x-ms-traffictypediagnostic: MN2PR18MB2479:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MN2PR18MB24793309BAFF3029859E1A60D2CC0@MN2PR18MB2479.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1923;
+x-forefront-prvs: 0355F3A3AE
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(136003)(396003)(346002)(376002)(478600001)(52536014)(66476007)(5660300002)(66946007)(4326008)(66556008)(64756008)(81156014)(55016002)(81166006)(8936002)(8676002)(66446008)(9686003)(86362001)(6916009)(76116006)(26005)(54906003)(186003)(7696005)(33656002)(2906002)(71200400001)(316002)(53546011)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB2479;H:MN2PR18MB2527.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;
+received-spf: None (protection.outlook.com: marvell.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 1h++wTbWDY31ozdTCy8GyOdmUu4THfihiZwdBqV5hhtMiaQI0635StWHMXBO/GwOF0dkxGyeFPR+6GldUlM31IZ7t46xA9f5ufEnRrRGzduw2aclkj6mcR6+piUt/WLKU001N60Sgz3gy8VXry9OzsHvhnMM32b0Q3udrLUgwOVOf55jAVDWy8UNZqVXx+LxEkoXPEUcRaSceiZoDXKT7LZbfd8GFxhRK1AuDUCLuMRTxxiQew+hsT0klJWvRTb5kghKkuKAoqz7yGu35CPdyHIVS/524rwY3aqGpOm8r75YZVmnmviduvS9O3Su/tm6AW1ejfTvZLsn7A+i9kSRNdtpjAa0cKa7pW3u4n5L2rlj+KsCofndZ64YKsFt2Lk8nB/iDJdxdgrlIgS2LJj6OxttULJ0TDspA85IeopKC95pKM1EvVkVE/5cFRWSyxIi
+x-ms-exchange-antispam-messagedata: knQpf+FN2i/CTjlLtNC8OJzBZkynH6e8Ub3+8a0YJb2U/7ITWzflsSg2NDOC+O0p5dOpfYcZoPQw0+XNZNQqUq3YwIUx24hOPsbo/OHuGXuoNcOwg2HnPh7orh7Gp0X5Tr3n/tt93/rqlYzgnbTZRA==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: c662455c-1100-4969-f587-08d7d207ea12
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Mar 2020 04:32:52.9509
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: p1W06TGOmA4mbDVqCsfxWzFQszW44lFEaIqLqn2j7KU7lWgFw+vkVcsI8yYkppi16Wk2cvx0JETyttRkzZg7UA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB2479
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-26_14:2020-03-26,2020-03-26 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for testing UDP sk_assign to the existing tests.
+Hi David,
 
-Signed-off-by: Joe Stringer <joe@wand.net.nz>
----
-v3: Initial version
----
- .../selftests/bpf/prog_tests/sk_assign.c      | 47 +++++++++++--
- .../selftests/bpf/progs/test_sk_assign.c      | 69 +++++++++++++++++--
- 2 files changed, 105 insertions(+), 11 deletions(-)
+> -----Original Message-----
+> From: David Miller <davem@davemloft.net>
+> Sent: Friday, March 27, 2020 12:05 AM
+> To: Saurav Kashyap <skashyap@marvell.com>
+> Cc: martin.petersen@oracle.com; GR-QLogic-Storage-Upstream <GR-QLogic-
+> Storage-Upstream@marvell.com>; linux-scsi@vger.kernel.org;
+> netdev@vger.kernel.org
+> Subject: [EXT] Re: [PATCH 5/8] qedf: Add schedule recovery handler.
+>=20
+> External Email
+>=20
+> ----------------------------------------------------------------------
+> From: Saurav Kashyap <skashyap@marvell.com>
+> Date: Thu, 26 Mar 2020 00:08:03 -0700
+>=20
+> > --- a/drivers/scsi/qedf/qedf_main.c
+> > +++ b/drivers/scsi/qedf/qedf_main.c
+> > @@ -3825,6 +3827,45 @@ static void qedf_shutdown(struct pci_dev
+> *pdev)
+> >  	__qedf_remove(pdev, QEDF_MODE_NORMAL);
+> >  }
+> >
+> > +/*
+> > + * Recovery handler code
+> > + */
+> > +void qedf_schedule_recovery_handler(void *dev)
+>  ...
+> > +void qedf_recovery_handler(struct work_struct *work)
+>=20
+> These two functions are not referenced outside of this file, mark them
+> static.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/sk_assign.c b/tools/testing/selftests/bpf/prog_tests/sk_assign.c
-index 25f17fe7d678..d572e1a2c297 100644
---- a/tools/testing/selftests/bpf/prog_tests/sk_assign.c
-+++ b/tools/testing/selftests/bpf/prog_tests/sk_assign.c
-@@ -69,7 +69,7 @@ start_server(const struct sockaddr *addr, socklen_t len, int type)
- 		goto close_out;
- 	if (CHECK_FAIL(bind(fd, addr, len) == -1))
- 		goto close_out;
--	if (CHECK_FAIL(listen(fd, 128) == -1))
-+	if (type == SOCK_STREAM && CHECK_FAIL(listen(fd, 128) == -1))
- 		goto close_out;
- 
- 	goto out;
-@@ -125,6 +125,20 @@ get_port(int fd)
- 	return port;
- }
- 
-+static ssize_t
-+rcv_msg(int srv_client, int type)
-+{
-+	struct sockaddr_storage ss;
-+	char buf[BUFSIZ];
-+	socklen_t slen;
-+
-+	if (type == SOCK_STREAM)
-+		return read(srv_client, &buf, sizeof(buf));
-+	else
-+		return recvfrom(srv_client, &buf, sizeof(buf), 0,
-+				(struct sockaddr *)&ss, &slen);
-+}
-+
- static int
- run_test(int server_fd, const struct sockaddr *addr, socklen_t len, int type)
- {
-@@ -139,16 +153,20 @@ run_test(int server_fd, const struct sockaddr *addr, socklen_t len, int type)
- 		goto out;
- 	}
- 
--	srv_client = accept(server_fd, NULL, NULL);
--	if (CHECK_FAIL(srv_client == -1)) {
--		perror("Can't accept connection");
--		goto out;
-+	if (type == SOCK_STREAM) {
-+		srv_client = accept(server_fd, NULL, NULL);
-+		if (CHECK_FAIL(srv_client == -1)) {
-+			perror("Can't accept connection");
-+			goto out;
-+		}
-+	} else {
-+		srv_client = server_fd;
- 	}
- 	if (CHECK_FAIL(write(client, buf, sizeof(buf)) != sizeof(buf))) {
- 		perror("Can't write on client");
- 		goto out;
- 	}
--	if (CHECK_FAIL(read(srv_client, &buf, sizeof(buf)) != sizeof(buf))) {
-+	if (CHECK_FAIL(rcv_msg(srv_client, type) != sizeof(buf))) {
- 		perror("Can't read on server");
- 		goto out;
- 	}
-@@ -156,9 +174,20 @@ run_test(int server_fd, const struct sockaddr *addr, socklen_t len, int type)
- 	port = get_port(srv_client);
- 	if (CHECK_FAIL(!port))
- 		goto out;
--	if (CHECK(port != htons(CONNECT_PORT), "Expected", "port %u but got %u",
-+	/* SOCK_STREAM is connected via accept(), so the server's local address
-+	 * will be the CONNECT_PORT rather than the BIND port that corresponds
-+	 * to the listen socket. SOCK_DGRAM on the other hand is connectionless
-+	 * so we can't really do the same check there; the server doesn't ever
-+	 * create a socket with CONNECT_PORT.
-+	 */
-+	if (type == SOCK_STREAM &&
-+	    CHECK(port != htons(CONNECT_PORT), "Expected", "port %u but got %u",
- 		  CONNECT_PORT, ntohs(port)))
- 		goto out;
-+	else if (type == SOCK_DGRAM &&
-+		 CHECK(port != htons(BIND_PORT), "Expected",
-+		       "port %u but got %u", BIND_PORT, ntohs(port)))
-+		goto out;
- 
- 	ret = 0;
- out:
-@@ -230,6 +259,10 @@ void test_sk_assign(void)
- 		TEST("ipv4 tcp addr redir", AF_INET, SOCK_STREAM, true),
- 		TEST("ipv6 tcp port redir", AF_INET6, SOCK_STREAM, false),
- 		TEST("ipv6 tcp addr redir", AF_INET6, SOCK_STREAM, true),
-+		TEST("ipv4 udp port redir", AF_INET, SOCK_DGRAM, false),
-+		TEST("ipv4 udp addr redir", AF_INET, SOCK_DGRAM, true),
-+		TEST("ipv6 udp port redir", AF_INET6, SOCK_DGRAM, false),
-+		TEST("ipv6 udp addr redir", AF_INET6, SOCK_DGRAM, true),
- 	};
- 	int server = -1;
- 	int self_net;
-diff --git a/tools/testing/selftests/bpf/progs/test_sk_assign.c b/tools/testing/selftests/bpf/progs/test_sk_assign.c
-index bde8748799eb..99547dcaac12 100644
---- a/tools/testing/selftests/bpf/progs/test_sk_assign.c
-+++ b/tools/testing/selftests/bpf/progs/test_sk_assign.c
-@@ -21,7 +21,7 @@ char _license[] SEC("license") = "GPL";
- 
- /* Fill 'tuple' with L3 info, and attempt to find L4. On fail, return NULL. */
- static inline struct bpf_sock_tuple *
--get_tuple(struct __sk_buff *skb, bool *ipv4)
-+get_tuple(struct __sk_buff *skb, bool *ipv4, bool *tcp)
- {
- 	void *data_end = (void *)(long)skb->data_end;
- 	void *data = (void *)(long)skb->data;
-@@ -60,12 +60,64 @@ get_tuple(struct __sk_buff *skb, bool *ipv4)
- 		return (struct bpf_sock_tuple *)data;
- 	}
- 
--	if (result + 1 > data_end || proto != IPPROTO_TCP)
-+	if (proto != IPPROTO_TCP && proto != IPPROTO_UDP)
- 		return NULL;
- 
-+	*tcp = (proto == IPPROTO_TCP);
- 	return result;
- }
- 
-+static inline int
-+handle_udp(struct __sk_buff *skb, struct bpf_sock_tuple *tuple, bool ipv4)
-+{
-+	struct bpf_sock_tuple ln = {0};
-+	struct bpf_sock *sk;
-+	size_t tuple_len;
-+	int ret;
-+
-+	tuple_len = ipv4 ? sizeof(tuple->ipv4) : sizeof(tuple->ipv6);
-+	if ((void *)tuple + tuple_len > skb->data_end)
-+		return TC_ACT_SHOT;
-+
-+	sk = bpf_sk_lookup_udp(skb, tuple, tuple_len, BPF_F_CURRENT_NETNS, 0);
-+	if (sk)
-+		goto assign;
-+
-+	if (ipv4) {
-+		if (tuple->ipv4.dport != bpf_htons(4321))
-+			return TC_ACT_OK;
-+
-+		ln.ipv4.daddr = bpf_htonl(0x7f000001);
-+		ln.ipv4.dport = bpf_htons(1234);
-+
-+		sk = bpf_sk_lookup_udp(skb, &ln, sizeof(ln.ipv4),
-+					BPF_F_CURRENT_NETNS, 0);
-+	} else {
-+		if (tuple->ipv6.dport != bpf_htons(4321))
-+			return TC_ACT_OK;
-+
-+		/* Upper parts of daddr are already zero. */
-+		ln.ipv6.daddr[3] = bpf_htonl(0x1);
-+		ln.ipv6.dport = bpf_htons(1234);
-+
-+		sk = bpf_sk_lookup_udp(skb, &ln, sizeof(ln.ipv6),
-+					BPF_F_CURRENT_NETNS, 0);
-+	}
-+
-+	/* workaround: We can't do a single socket lookup here, because then
-+	 * the compiler will likely spill tuple_len to the stack. This makes it
-+	 * lose all bounds information in the verifier, which then rejects the
-+	 * call as unsafe.
-+	 */
-+	if (!sk)
-+		return TC_ACT_SHOT;
-+
-+assign:
-+	ret = bpf_sk_assign(skb, sk, 0);
-+	bpf_sk_release(sk);
-+	return ret;
-+}
-+
- static inline int
- handle_tcp(struct __sk_buff *skb, struct bpf_sock_tuple *tuple, bool ipv4)
- {
-@@ -130,14 +182,23 @@ int bpf_sk_assign_test(struct __sk_buff *skb)
- {
- 	struct bpf_sock_tuple *tuple, ln = {0};
- 	bool ipv4 = false;
-+	bool tcp = false;
- 	int tuple_len;
- 	int ret = 0;
- 
--	tuple = get_tuple(skb, &ipv4);
-+	tuple = get_tuple(skb, &ipv4, &tcp);
- 	if (!tuple)
- 		return TC_ACT_SHOT;
- 
--	ret = handle_tcp(skb, tuple, ipv4);
-+	/* Note that the verifier socket return type for bpf_skc_lookup_tcp()
-+	 * differs from bpf_sk_lookup_udp(), so even though the C-level type is
-+	 * the same here, if we try to share the implementations they will
-+	 * fail to verify because we're crossing pointer types.
-+	 */
-+	if (tcp)
-+		ret = handle_tcp(skb, tuple, ipv4);
-+	else
-+		ret = handle_udp(skb, tuple, ipv4);
- 
- 	return ret == 0 ? TC_ACT_OK : TC_ACT_SHOT;
- }
--- 
-2.20.1
+Thanks for feedback, will wait for other reviews and will submit v2.
 
+Thanks,
+~Saurav
