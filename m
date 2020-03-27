@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F9A3195F57
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 20:55:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 816CE195F58
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 20:56:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727666AbgC0Tzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 15:55:55 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:39666 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726959AbgC0Tzz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 15:55:55 -0400
-Received: by mail-wm1-f68.google.com with SMTP id e9so1857865wme.4
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 12:55:54 -0700 (PDT)
+        id S1727703AbgC0Tz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 15:55:58 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:38182 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726959AbgC0Tz5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 15:55:57 -0400
+Received: by mail-wm1-f67.google.com with SMTP id f6so7195555wmj.3
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 12:55:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=/Mzq3rQkcV1a2ODzkZa7pXB/yVYLXhR/mkJB5f7PvZE=;
-        b=CIL4w2UAU+kGWNu40k82TdNHzaKevIUzQ/l6NntuOW3fA/GVwyj/79G+ydDBqaPxZF
-         SpINpLuR6FNxG737mZPg0sO1eKxhnzhnI5fV9w8Mxp0XvahY8qygwkf6TO9S/ROJ80q0
-         EGvr2G4Au1GjTUDWIx1YsDSmJNFNIDP/XREvgUEuVo2Ibig4Y4lAnDE7ySnVSTCYQ3lM
-         g4OwJt3TwVa0IuVy8bXBTBRskWmFCAGYz6lQWI58nXJdP2Jrk1xDDaWGR3eGqtO9chPc
-         6fYR9sQ6XkTL/bTz3CLYOCN0YeH3vJPhqvyU+FOVsgcIp7+U4RwKf0QN3TnVaHz44TLQ
-         Yjvw==
+        bh=evl7BRZpDrNHmuixs2dkSIeH08KdOdXhz0EIi7BGZ4k=;
+        b=F/WJV4hq7yUy3NYW0cQDfjpADHgxsmdoM01JzphHt3wWzd4q1j9Iy3+YBsh0HJEBZg
+         d+G7K/6G2BnoPxlMxVMtQyu1I8PCy5h7n38o0Aly1hq3bsJZBI5N14UKHoQT4pcwgiMN
+         ZvERHwq7gbF3ZTcTzV2jBUmEOv2La9+OuW0uI09XirnlheZsWnPX0KX+71RZn1sAm2Dl
+         Vm3z2asS1E+jItuy5cCyUExb1RRn60zH33QuB1y1ARUmIpfs7n7Epk4cl3RCKY/FP6mB
+         WDOcmMf7RfA4zX010oTDwiY+/9KEkN7aivXVkQ8Akttxt+vz9ysW1TS/g62vnBNzOpU2
+         +T1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=/Mzq3rQkcV1a2ODzkZa7pXB/yVYLXhR/mkJB5f7PvZE=;
-        b=X7fXhD0RiyT6n/rsCULQyeUd5YcLhTRW0wcE4SB7EAVwn0BqZ9BuAOyyDzGCqqQSCy
-         Eqyi4ENIKNt2VgdhA6dBaX8SIqLj2VWlig9x31tsaVJAarOLCLVcYMR9hdgYqAat5UOV
-         fqrhe+lTcjHqNvHnG5vu8Ie6A80zT5Gs4BmGlQgpRvasHK5L3FTfvilR5ICfa6u1iwsa
-         K0ewcBz7DT/XMQpyaOoyl0tEWbsAXpAxSrfAEslLpjiW4Peax1/z1Wq9iscg6ILanTq2
-         JeGL12qNpwsmZonB7sf21qr1hC3vnlDos+cbWJwA9rJuA58NR2JqySTBcqoU5heyE7iS
-         UVlg==
-X-Gm-Message-State: ANhLgQ0Zi2isj0IRHcLVw9l07PcZoxMCK5QzpQQ5+Bcu8USiG7j+087K
-        0wP4mdmSEThfFRWUWqJb4DA=
-X-Google-Smtp-Source: ADFU+vsfvl7LargwUHlJHFEONPslxR4Tc3UDT1WODExLMHI2RdEDQnwFKIrPB6qjmV8QDzuC80F9hQ==
-X-Received: by 2002:a7b:cd8f:: with SMTP id y15mr312643wmj.106.1585338953659;
-        Fri, 27 Mar 2020 12:55:53 -0700 (PDT)
+        bh=evl7BRZpDrNHmuixs2dkSIeH08KdOdXhz0EIi7BGZ4k=;
+        b=o2tpUt4uwHYnK7eWZteEmZn6PA732T+EJ4R3pY2WJv5R2eLuaHZvpUGNT6TfPTCGNs
+         so5J4psvQV9qq7z7lsZZcn8ULIqe16CPwbC4PCL5W1k3O36em4NjffOpsGsKb6kfJnIA
+         vXwNLGFlUZYiJOvRud+uxFrFWwBG1tFKsEZiY6sVNZHf7nnfX30K9oMzk9Ew/nzSnJRk
+         lL8nsbnBsnxky1XTy0ndLdwF/iQlHJZ38CGXQCbALn/ujZZt34gnlpSTAGH7HkSEbB9+
+         /su+kY6I3PvYRbKN9KcZzsmCJVLSwIFr10X7HOzky4UNAJkTmPMaP3VDJld3VgLtABKs
+         hgcA==
+X-Gm-Message-State: ANhLgQ35kIB8jvtZYFG9dxbB/ELuIfcZEQI8QzHlrmvmdgDVkFOF855o
+        UzYyHtCMQDWl6J5xaAKMOxQ=
+X-Google-Smtp-Source: ADFU+vuRhJSWZn56bWIlMgjTNhAvRQ4Cl7nHB91bw6klqZGiPeu7NGZVu2N4LSu041Do0RL0F6MbmA==
+X-Received: by 2002:a7b:cbcf:: with SMTP id n15mr305883wmi.13.1585338955468;
+        Fri, 27 Mar 2020 12:55:55 -0700 (PDT)
 Received: from localhost.localdomain ([79.115.60.40])
-        by smtp.gmail.com with ESMTPSA id z19sm10089479wrg.28.2020.03.27.12.55.52
+        by smtp.gmail.com with ESMTPSA id z19sm10089479wrg.28.2020.03.27.12.55.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2020 12:55:53 -0700 (PDT)
+        Fri, 27 Mar 2020 12:55:54 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         davem@davemloft.net
 Cc:     murali.policharla@broadcom.com, stephen@networkplumber.org,
         jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
         nikolay@cumulusnetworks.com, netdev@vger.kernel.org
-Subject: [PATCH v4 net-next 1/8] net: phy: bcm7xx: add jumbo frame configuration to PHY
-Date:   Fri, 27 Mar 2020 21:55:40 +0200
-Message-Id: <20200327195547.11583-2-olteanv@gmail.com>
+Subject: [PATCH v4 net-next 2/8] bgmac: configure MTU and add support for frames beyond 8192 byte size
+Date:   Fri, 27 Mar 2020 21:55:41 +0200
+Message-Id: <20200327195547.11583-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200327195547.11583-1-olteanv@gmail.com>
 References: <20200327195547.11583-1-olteanv@gmail.com>
@@ -62,109 +62,88 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Murali Krishna Policharla <murali.policharla@broadcom.com>
 
-The BCM7XX PHY family requires special configuration to pass jumbo
-frames. Do that during initial PHY setup.
+Change DMA descriptor length to handle jumbo frames beyond 8192 bytes.
+Also update jumbo frame max size to include FCS, the DMA packet length
+received includes FCS.
 
 Signed-off-by: Murali Krishna Policharla <murali.policharla@broadcom.com>
-Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+Reviewed-by: Arun Parameswaran <arun.parameswaran@broadcom.com>
+Reviewed-by: Ray Jui <ray.jui@broadcom.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v4:
 None.
 
 Changes in v3:
-Using the bcm54xx_auxctl_read and phy_set_bits helpers.
-Corrected the value of the shadow register from 7 to 0.
+Squashed the entire bgmac implementation in one patch.
 
 Changes in v2:
 Patch is new.
 
- drivers/net/phy/bcm-phy-lib.c | 22 ++++++++++++++++++++++
- drivers/net/phy/bcm-phy-lib.h |  1 +
- drivers/net/phy/bcm7xxx.c     |  4 ++++
- include/linux/brcmphy.h       |  2 ++
- 4 files changed, 29 insertions(+)
+ drivers/net/ethernet/broadcom/bgmac.c | 12 ++++++++++++
+ drivers/net/ethernet/broadcom/bgmac.h |  5 +++--
+ 2 files changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/bcm-phy-lib.c b/drivers/net/phy/bcm-phy-lib.c
-index e0d3310957ff..e77b274a09fd 100644
---- a/drivers/net/phy/bcm-phy-lib.c
-+++ b/drivers/net/phy/bcm-phy-lib.c
-@@ -423,6 +423,28 @@ int bcm_phy_28nm_a0b0_afe_config_init(struct phy_device *phydev)
+diff --git a/drivers/net/ethernet/broadcom/bgmac.c b/drivers/net/ethernet/broadcom/bgmac.c
+index 1bb07a5d82c9..98ec1b8a7d8e 100644
+--- a/drivers/net/ethernet/broadcom/bgmac.c
++++ b/drivers/net/ethernet/broadcom/bgmac.c
+@@ -1248,6 +1248,14 @@ static int bgmac_set_mac_address(struct net_device *net_dev, void *addr)
+ 	return 0;
  }
- EXPORT_SYMBOL_GPL(bcm_phy_28nm_a0b0_afe_config_init);
  
-+int bcm_phy_enable_jumbo(struct phy_device *phydev)
++static int bgmac_change_mtu(struct net_device *net_dev, int mtu)
 +{
-+	int ret;
++	struct bgmac *bgmac = netdev_priv(net_dev);
 +
-+	ret = bcm54xx_auxctl_read(phydev, MII_BCM54XX_AUXCTL_SHDWSEL_AUXCTL);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Enable extended length packet reception */
-+	ret = bcm54xx_auxctl_write(phydev, MII_BCM54XX_AUXCTL_SHDWSEL_AUXCTL,
-+				   ret | MII_BCM54XX_AUXCTL_ACTL_EXT_PKT_LEN);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Enable the elastic FIFO for raising the transmission limit from
-+	 * 4.5KB to 10KB, at the expense of an additional 16 ns in propagation
-+	 * latency.
-+	 */
-+	return phy_set_bits(phydev, MII_BCM54XX_ECR, MII_BCM54XX_ECR_FIFOE);
++	bgmac_write(bgmac, BGMAC_RXMAX_LENGTH, 32 + mtu);
++	return 0;
 +}
-+EXPORT_SYMBOL_GPL(bcm_phy_enable_jumbo);
 +
- MODULE_DESCRIPTION("Broadcom PHY Library");
- MODULE_LICENSE("GPL v2");
- MODULE_AUTHOR("Broadcom Corporation");
-diff --git a/drivers/net/phy/bcm-phy-lib.h b/drivers/net/phy/bcm-phy-lib.h
-index c86fb9d1240c..129df819be8c 100644
---- a/drivers/net/phy/bcm-phy-lib.h
-+++ b/drivers/net/phy/bcm-phy-lib.h
-@@ -65,5 +65,6 @@ void bcm_phy_get_stats(struct phy_device *phydev, u64 *shadow,
- 		       struct ethtool_stats *stats, u64 *data);
- void bcm_phy_r_rc_cal_reset(struct phy_device *phydev);
- int bcm_phy_28nm_a0b0_afe_config_init(struct phy_device *phydev);
-+int bcm_phy_enable_jumbo(struct phy_device *phydev);
+ static const struct net_device_ops bgmac_netdev_ops = {
+ 	.ndo_open		= bgmac_open,
+ 	.ndo_stop		= bgmac_stop,
+@@ -1256,6 +1264,7 @@ static const struct net_device_ops bgmac_netdev_ops = {
+ 	.ndo_set_mac_address	= bgmac_set_mac_address,
+ 	.ndo_validate_addr	= eth_validate_addr,
+ 	.ndo_do_ioctl           = phy_do_ioctl_running,
++	.ndo_change_mtu		= bgmac_change_mtu,
+ };
  
- #endif /* _LINUX_BCM_PHY_LIB_H */
-diff --git a/drivers/net/phy/bcm7xxx.c b/drivers/net/phy/bcm7xxx.c
-index af8eabe7a6d4..692048d86ab1 100644
---- a/drivers/net/phy/bcm7xxx.c
-+++ b/drivers/net/phy/bcm7xxx.c
-@@ -178,6 +178,10 @@ static int bcm7xxx_28nm_config_init(struct phy_device *phydev)
- 		break;
- 	}
+ /**************************************************
+@@ -1530,6 +1539,9 @@ int bgmac_enet_probe(struct bgmac *bgmac)
+ 	net_dev->hw_features = net_dev->features;
+ 	net_dev->vlan_features = net_dev->features;
  
-+	if (ret)
-+		return ret;
++	/* Omit FCS from max MTU size */
++	net_dev->max_mtu = BGMAC_RX_MAX_FRAME_SIZE - ETH_FCS_LEN;
 +
-+	ret =  bcm_phy_enable_jumbo(phydev);
- 	if (ret)
- 		return ret;
+ 	err = register_netdev(bgmac->net_dev);
+ 	if (err) {
+ 		dev_err(bgmac->dev, "Cannot register net device\n");
+diff --git a/drivers/net/ethernet/broadcom/bgmac.h b/drivers/net/ethernet/broadcom/bgmac.h
+index 40d02fec2747..351c598a3ec6 100644
+--- a/drivers/net/ethernet/broadcom/bgmac.h
++++ b/drivers/net/ethernet/broadcom/bgmac.h
+@@ -351,7 +351,7 @@
+ #define BGMAC_DESC_CTL0_IOC			0x20000000	/* IRQ on complete */
+ #define BGMAC_DESC_CTL0_EOF			0x40000000	/* End of frame */
+ #define BGMAC_DESC_CTL0_SOF			0x80000000	/* Start of frame */
+-#define BGMAC_DESC_CTL1_LEN			0x00001FFF
++#define BGMAC_DESC_CTL1_LEN			0x00003FFF
  
-diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
-index b475e7f20d28..6462c5447872 100644
---- a/include/linux/brcmphy.h
-+++ b/include/linux/brcmphy.h
-@@ -79,6 +79,7 @@
- #define MII_BCM54XX_ECR		0x10	/* BCM54xx extended control register */
- #define MII_BCM54XX_ECR_IM	0x1000	/* Interrupt mask */
- #define MII_BCM54XX_ECR_IF	0x0800	/* Interrupt force */
-+#define MII_BCM54XX_ECR_FIFOE	0x0001	/* FIFO elasticity */
- 
- #define MII_BCM54XX_ESR		0x11	/* BCM54xx extended status register */
- #define MII_BCM54XX_ESR_IS	0x1000	/* Interrupt status */
-@@ -119,6 +120,7 @@
- #define MII_BCM54XX_AUXCTL_SHDWSEL_AUXCTL	0x00
- #define MII_BCM54XX_AUXCTL_ACTL_TX_6DB		0x0400
- #define MII_BCM54XX_AUXCTL_ACTL_SMDSP_ENA	0x0800
-+#define MII_BCM54XX_AUXCTL_ACTL_EXT_PKT_LEN	0x4000
- 
- #define MII_BCM54XX_AUXCTL_SHDWSEL_MISC			0x07
- #define MII_BCM54XX_AUXCTL_SHDWSEL_MISC_WIRESPEED_EN	0x0010
+ #define BGMAC_PHY_NOREGS			BRCM_PSEUDO_PHY_ADDR
+ #define BGMAC_PHY_MASK				0x1F
+@@ -366,7 +366,8 @@
+ #define BGMAC_RX_FRAME_OFFSET			30		/* There are 2 unused bytes between header and real data */
+ #define BGMAC_RX_BUF_OFFSET			(NET_SKB_PAD + NET_IP_ALIGN - \
+ 						 BGMAC_RX_FRAME_OFFSET)
+-#define BGMAC_RX_MAX_FRAME_SIZE			1536		/* Copied from b44/tg3 */
++/* Jumbo frame size with FCS */
++#define BGMAC_RX_MAX_FRAME_SIZE			9724
+ #define BGMAC_RX_BUF_SIZE			(BGMAC_RX_FRAME_OFFSET + BGMAC_RX_MAX_FRAME_SIZE)
+ #define BGMAC_RX_ALLOC_SIZE			(SKB_DATA_ALIGN(BGMAC_RX_BUF_SIZE + BGMAC_RX_BUF_OFFSET) + \
+ 						 SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
 -- 
 2.17.1
 
