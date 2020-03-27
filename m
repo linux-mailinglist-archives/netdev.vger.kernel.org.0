@@ -2,141 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E86C195D05
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 18:41:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26425195D17
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 18:44:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727585AbgC0Rlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 13:41:40 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:51830 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726738AbgC0Rlk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 13:41:40 -0400
-Received: by mail-wm1-f68.google.com with SMTP id c187so12334739wme.1
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 10:41:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:references:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=knkgum2YAUAfH0fsZJz8OEZ8ta7hw4tSHvE49zRXFfk=;
-        b=dtxdiT32SaMx9JBTw1mqatsvuwQ7lO4pJm+8SUbtjJRqTgX0Ql1eNpG9oC4MzbyFFZ
-         mRj0TAv7vIAn0K7ksaq/ams80zG+xQK0a8UpmfbcQO9GdHiAQed7cBFhGclzzTHlWvdi
-         LMmdsSa9fZOKJXxac0wxRD+f9CSeT7z/l8duXyp/rmypnAN40JgKvaoccknvrpQQ0xKt
-         8a7qi7LxNK06w6MrTxC27cTJexfMxIxXZXvBL3/6yNzh2SECXvi0NEqaQPA2yG6EHxvp
-         BU++vKjLZ7Pv7mRL4nIfweO1jOydLWtLsVdrsFBjusm0X+j3A4N+IPFz7Jwp9DtC0boV
-         U12A==
+        id S1727706AbgC0RoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 13:44:08 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:35108 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727606AbgC0RoH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 13:44:07 -0400
+Received: by mail-wr1-f66.google.com with SMTP id d5so12486489wrn.2;
+        Fri, 27 Mar 2020 10:44:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=knkgum2YAUAfH0fsZJz8OEZ8ta7hw4tSHvE49zRXFfk=;
-        b=MbcF1+fre2g4SOz0eifrF56gFEDtENZjohT6Jreqo3AOG3UOLFMN7eshqVqbewNgCr
-         xMg46/zwMI+feAe9YFBRqpsqpva40bwz/Da+woMwvD3/bYfaom018xCFVsDnzPdiqFND
-         XX9HVTv8jnErjuITNlHEevbLyBrLsWNYT5udjJdPsQHkkVJX/NHQ+/2vR3ImghrLEs7/
-         U+DwA3UZf3YfTzQ/X2icuRudQu6O9ZYDdLvnOdd7eoLohPh5CjrokhJrtgHmhj6gx34P
-         sdnrIiuXRRm/HhiTK4j3twzjVt89s2QAbfwi/US7VFQknolJGHOmTLGJnYfS/ockpz+8
-         w5Sw==
-X-Gm-Message-State: ANhLgQ3wjxwpTE0P/6ZFU8suML7J0OW+K29o0cZsRUkNS9sXvo6rwGHk
-        j4RFKPfDPhRjcgERcV0sS+M=
-X-Google-Smtp-Source: ADFU+vuubu3x/i4qnc9Idb+nnD5ypqm/nxxxMjbIWPoa78uxD10mgIf1ta7COIfmqcHUPkSfInMwTA==
-X-Received: by 2002:a1c:9a43:: with SMTP id c64mr6230433wme.173.1585330898016;
-        Fri, 27 Mar 2020 10:41:38 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:9d76:401f:98cb:c084? (p200300EA8F2960009D76401F98CBC084.dip0.t-ipconnect.de. [2003:ea:8f29:6000:9d76:401f:98cb:c084])
-        by smtp.googlemail.com with ESMTPSA id o16sm9129451wrs.44.2020.03.27.10.41.37
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 27 Mar 2020 10:41:37 -0700 (PDT)
-Subject: Re: [PATCH net] r8169: fix multicast tx issue with macvlan interface
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Charles Daymand <charles.daymand@wifirst.fr>,
-        netdev@vger.kernel.org, Eric Dumazet <edumazet@google.com>
-References: <20200327090800.27810-1-charles.daymand@wifirst.fr>
- <0bab7e0b-7b22-ad0f-2558-25602705e807@gmail.com>
-Message-ID: <d7a0eca8-15aa-10da-06cc-1eeef3a7a423@gmail.com>
-Date:   Fri, 27 Mar 2020 18:41:31 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OtrLhEEuBQztk/nWFtGztbhVqTqnMNrAnlarWEAa1lA=;
+        b=RoZImjXiH1zSvKpuEOer3TSDOAX5VfnddkmbsQrPsHKhaXQEJCoBh8JBLVXQDrg5uw
+         zjvJH7qMN/gp9iFgBE/9C5Ah7mtYsAm4c7eA36thBlXLtL1pjBA/dbdHsyPknetgjaGC
+         sREMl++IQYAi165WnHIPzZa3UPKHP/ZroA9NWnEJTwevPqbBjuKnzWT1XMOtgqgPJMGA
+         vi57ugr3qvFO5fzN0QQcmiJ0Oqv5IwgLRW5XD8q88DsDp5kzeRYytVwZopojZE2Qk3fn
+         ZykvJiFUy45psUZPN0U8ZfbG0BXegXWBtokccYuV/R/Yvr8ospHqE/M/QVEycYTr3iCr
+         jQXw==
+X-Gm-Message-State: ANhLgQ2Bch2Q40O5KLrsKycEXe6HpG71Pek66kd9HO0hUZ2v0ntrg3wf
+        TJedkhZWFxe3WmSoIpw3PBtrYzNfl/DOsLwNmGQ=
+X-Google-Smtp-Source: ADFU+vulBXbiytEStvxainF3jjJtOL/qEbP2CTLlh0qQU7WSzzuXKbJuIvoFIhE5xTMaxlmP3QWXyNsOumvqlxUwoP8=
+X-Received: by 2002:adf:f0c5:: with SMTP id x5mr512289wro.415.1585331045556;
+ Fri, 27 Mar 2020 10:44:05 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <0bab7e0b-7b22-ad0f-2558-25602705e807@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200327042556.11560-1-joe@wand.net.nz> <9ee7da2e-3675-9bd2-e317-c86cfa284e85@mojatatu.com>
+In-Reply-To: <9ee7da2e-3675-9bd2-e317-c86cfa284e85@mojatatu.com>
+From:   Joe Stringer <joe@wand.net.nz>
+Date:   Fri, 27 Mar 2020 10:43:38 -0700
+Message-ID: <CAOftzPjWtL5a5j3GAJW5SOhWS1Jx43XWSwb7ksTaXC5-sAaw2w@mail.gmail.com>
+Subject: Re: [PATCHv3 bpf-next 0/5] Add bpf_sk_assign eBPF helper
+To:     Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     Joe Stringer <joe@wand.net.nz>, bpf <bpf@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Roman Mashak <mrv@mojatatu.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27.03.2020 10:39, Heiner Kallweit wrote:
-> On 27.03.2020 10:08, Charles Daymand wrote:
->> During kernel upgrade testing on our hardware, we found that macvlan
->> interface were no longer able to send valid multicast packet.
->>
->> tcpdump run on our hardware was correctly showing our multicast
->> packet but when connecting a laptop to our hardware we didn't see any
->> packets.
->>
->> Bisecting turned up commit 93681cd7d94f
->> "r8169: enable HW csum and TSO" activates the feature NETIF_F_IP_CSUM
->> which is responsible for the drop of packet in case of macvlan
->> interface. Note that revision RTL_GIGA_MAC_VER_34 was already a specific
->> case since TSO was keep disabled.
->>
->> Deactivating NETIF_F_IP_CSUM using ethtool is correcting our multicast
->> issue, but we believe that this hardware issue is important enough to
->> keep tx checksum off by default on this revision.
->>
->> The change is deactivating the default value of NETIF_F_IP_CSUM for this
->> specific revision.
->>
-> 
-> The referenced commit may not be the root cause but just reveal another
-> issue that has been existing before. Root cause may be in the net core
-> or somewhere else. Did you check with other RTL8168 versions to verify
-> that it's indeed a HW issue with this specific chip version?
-> 
-> What you could do: Enable tx checksumming manually (via ethtool) on
-> older kernel versions and check whether they are fine or not.
-> If an older version is fine, then you can start a new bisect with tx
-> checksumming enabled.
-> 
-> And did you capture and analyze traffic to verify that actually the
-> checksum is incorrect (and packets discarded therefore on receiving end)?
-> 
-> 
->> Fixes: 93681cd7d94f ("r8169: enable HW csum and TSO")
->> Signed-off-by: Charles Daymand <charles.daymand@wifirst.fr>
->> ---
->>  net/drivers/net/ethernet/realtek/r8169_main.c | 3 +++
->>  1 file changed, 3 insertions(+)
->>
->> diff --git a/net/drivers/net/ethernet/realtek/r8169_main.c b/net/drivers/net/ethernet/realtek/r8169_main.c
->> index a9bdafd15a35..3b69135fc500 100644
->> --- a/net/drivers/net/ethernet/realtek/r8169_main.c
->> +++ b/net/drivers/net/ethernet/realtek/r8169_main.c
->> @@ -5591,6 +5591,9 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->>  		dev->vlan_features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
->>  		dev->hw_features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
->>  		dev->features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
->> +		if (tp->mac_version == RTL_GIGA_MAC_VER_34) {
->> +			dev->features &= ~NETIF_F_IP_CSUM;
->> +		}
->>  	}
->>  
->>  	dev->hw_features |= NETIF_F_RXALL;
->>
-> 
+On Fri, Mar 27, 2020 at 7:14 AM Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>
+> On 2020-03-27 12:25 a.m., Joe Stringer wrote:
+> > Introduce a new helper that allows assigning a previously-found socket
+> > to the skb as the packet is received towards the stack, to cause the
+> > stack to guide the packet towards that socket subject to local routing
+> > configuration. The intention is to support TProxy use cases more
+> > directly from eBPF programs attached at TC ingress, to simplify and
+> > streamline Linux stack configuration in scale environments with Cilium.
+> >
+> > Normally in ip{,6}_rcv_core(), the skb will be orphaned, dropping any
+> > existing socket reference associated with the skb. Existing tproxy
+> > implementations in netfilter get around this restriction by running the
+> > tproxy logic after ip_rcv_core() in the PREROUTING table. However, this
+> > is not an option for TC-based logic (including eBPF programs attached at
+> > TC ingress).
+> >
+> > This series introduces the BPF helper bpf_sk_assign() to associate the
+> > socket with the skb on the ingress path as the packet is passed up the
+> > stack. The initial patch in the series simply takes a reference on the
+> > socket to ensure safety, but later patches relax this for listen
+> > sockets.
+> >
+> > To ensure delivery to the relevant socket, we still consult the routing
+> > table, for full examples of how to configure see the tests in patch #5;
+> > the simplest form of the route would look like this:
+> >
+> >    $ ip route add local default dev lo
+> >
+>
+> Trying to understand so if we can port our tc action (and upstream),
+> we would need to replicate:
+>
+>   bpf_sk_assign() - invoked everytime we succeed finding the sk
+>   bpf_sk_release() - invoked everytime we are done processing the sk
 
-After looking a little bit at the macvlen code I think there might be an
-issue in it, but I'm not sure, therefore let me add Eric (as macvlen doesn't
-seem to have a dedicated maintainer).
+The skb->destructor = sock_pfree() is the balanced other half of
+bpf_sk_assign(), so you shouldn't need to explicitly call
+bpf_sk_release() to handle the refcounting of the assigned socket.
 
-r8169 implements a ndo_features_check callback that disables tx checksumming
-for the chip version in question and small packets (due to a HW issue).
-macvlen uses passthru_features_check() as ndo_features_check callback, this
-seems to indicate to me that the ndo_features_check callback of lowerdev is
-ignored. This could explain the issue you see.
+The `bpf_sk_release()` pairs with BPF socket lookup, so if you already
+have other socket lookup code handling the core tproxy logic (looking
+up established, then looking up listen sockets with different tuple)
+then you're presumably already handling that to avoid leaking
+references.
 
-Would be interesting to see whether it fixes your issue if you let the
-macvlen ndo_features_check call lowerdev's ndo_features_check. Can you try this?
-
-By the way:
-Also the ndo_fix_features callback of lowerdev seems to be ignored.
+I think that looking at the test_sk_assign.c BPF program in patch 4/5
+should give you a good sense for what you'd need in the TC action
+logic.
