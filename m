@@ -2,111 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F00BA195F6E
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 21:10:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74F85195F79
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 21:17:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727541AbgC0UKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 16:10:39 -0400
-Received: from mail-qv1-f67.google.com ([209.85.219.67]:42456 "EHLO
-        mail-qv1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726959AbgC0UKj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 16:10:39 -0400
-Received: by mail-qv1-f67.google.com with SMTP id ca9so5560889qvb.9;
-        Fri, 27 Mar 2020 13:10:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bQPqQaCr2BP7POKzSnMMa5s9klMZOk9k0p4wQFfkjjk=;
-        b=hnAmxmEpH0rPovzE4G4LumprT8MRaxDcSeB3FZHKbdJ5kz9DNk7m9sQk9sOda6j530
-         87vl+Pz6lFfR2IuFUZe3EOQK1Vqz/BESd678YsKlX/EKxAFErPpHD4uk8qrHS0GUD9iL
-         FmrZUFBqe3CmvMr788PaZ1f3KM2ePrnKCcJBbRSdHRT97e/LdNjB7VQI6SiZFy/ZaBAq
-         QtT+u0kRs6SsqnDeRQRWewvhVchA3Ku14BYH9hQO3yC0U+/lnnzXXZnu+LK+/CGz2xcP
-         W1rQaSmq3UiI9kSvImxa4ZffgXcqrjAmN50dR9GXeg6CWUscIVfUZkqGsH2MCEFK2qdP
-         Tb7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bQPqQaCr2BP7POKzSnMMa5s9klMZOk9k0p4wQFfkjjk=;
-        b=ajOUfqBopWpwhpMa5y3enqj2HqbMUNv079PSBchhJ6qmsfgSYzvQsiF5gV1vGum5St
-         jgNv98ovzk6Vw1iPXFJPMcMQ3v7etnXJRll1M1kCu+XvZjH9+tTqZJn4DpXqJVtWNOyk
-         FheGrTcpIxUgWgsWbEO7rj1+ea+dop4R5aonysxtrenNH0P9Qc28zVIoDXKJukutusjS
-         RH8hSq037t+74bNYSmaEyCdivuXDAjVrBwyhY9W9E1r/tP7My0Tm6kv0yd01FfZU9kAC
-         Et905Oh51VIhwGWAJY0Ca35cRcWeLei3ig5JpSYFMzfpwJHVtKRmSqLUltO81RMaO6yb
-         PBtA==
-X-Gm-Message-State: ANhLgQ0wi5I58L9pU+3otQqDNo/FCcojOobsERvtUQNFg16WJBBa0SRW
-        XjyMeAAGal3GNbGXwwJ1BYXWoIqSSjm/aKAu7OY=
-X-Google-Smtp-Source: ADFU+vs4PGPWBjzOxTWt5Rux+QUNCHji6zFL4jKemZj60moj7Ck54oIxLUJC9pJTGjzSEi5G+9sKiiY24YUad59G3ts=
-X-Received: by 2002:a0c:bd2a:: with SMTP id m42mr988319qvg.163.1585339837848;
- Fri, 27 Mar 2020 13:10:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
- <158462359315.164779.13931660750493121404.stgit@toke.dk> <20200319155236.3d8537c5@kicinski-fedora-PC1C0HJN>
- <875zez76ph.fsf@toke.dk> <20200320103530.2853c573@kicinski-fedora-PC1C0HJN>
- <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
- <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
- <87tv2f48lp.fsf@toke.dk> <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com>
- <87h7ye3mf3.fsf@toke.dk> <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
- <87tv2e10ly.fsf@toke.dk> <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
- <87369wrcyv.fsf@toke.dk> <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
- <87pncznvjy.fsf@toke.dk> <CAEf4BzaPQ6=h8a6Ngz638AtL4LmBLLVMV+_-YLMR=Ls+drd5HQ@mail.gmail.com>
- <CACAyw98yYE+eOx5OayyN2tNQeNqFXnHdRGSv6DYX7ehfMHt1+g@mail.gmail.com> <9f0ab343-939b-92e3-c1b8-38a158da10c9@gmail.com>
-In-Reply-To: <9f0ab343-939b-92e3-c1b8-38a158da10c9@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 27 Mar 2020 13:10:26 -0700
-Message-ID: <CAEf4BzYuxS6VEy2S9OOdmXmsg=dXU2svSqpCsNdNzGjn-AHfHg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
- program when attaching XDP
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Lorenz Bauer <lmb@cloudflare.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S1727423AbgC0URB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 16:17:01 -0400
+Received: from www62.your-server.de ([213.133.104.62]:37466 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726959AbgC0URB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 16:17:01 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jHvPR-0006Dt-JP; Fri, 27 Mar 2020 21:16:53 +0100
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jHvPR-000N0M-7Z; Fri, 27 Mar 2020 21:16:53 +0100
+Subject: Re: call for bpf progs. Re: [PATCHv2 bpf-next 5/5] selftests: bpf:
+ add test for sk_assign
+To:     Joe Stringer <joe@wand.net.nz>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Lorenz Bauer <lmb@cloudflare.com>, Yonghong Song <yhs@fb.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Martin Lau <kafai@fb.com>,
+        john fastabend <john.fastabend@gmail.com>
+References: <20200325055745.10710-1-joe@wand.net.nz>
+ <20200325055745.10710-6-joe@wand.net.nz>
+ <82e8d147-b334-3d29-0312-7b087ac908f3@fb.com>
+ <CACAyw99Eeu+=yD8UKazRJcknZi3D5zMJ4n=FVsxXi63DwhdxYA@mail.gmail.com>
+ <20200326210719.den5isqxntnoqhmv@ast-mbp>
+ <CAOftzPjyCNGEjBm4k3aKK+=AB-1STDbYbQK5sZbK6gTAo13XuA@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <c5e50f60-3872-b3ec-7038-737ca08f3077@iogearbox.net>
+Date:   Fri, 27 Mar 2020 21:16:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <CAOftzPjyCNGEjBm4k3aKK+=AB-1STDbYbQK5sZbK6gTAo13XuA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25764/Fri Mar 27 14:11:26 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 27, 2020 at 9:12 AM David Ahern <dsahern@gmail.com> wrote:
->
-> On 3/27/20 5:06 AM, Lorenz Bauer wrote:
-> > However, this behaviour concerns me. It's like Windows not
-> > letting you delete a file while an application has it opened, which just leads
-> > to randomly killing programs until you find the right one. It's frustrating
-> > and counter productive.
-> >
-> > You're taking power away from the operator. In your deployment scenario
-> > this might make sense, but I think it's a really bad model in general. If I am
-> > privileged I need to be able to exercise that privilege. This means that if
-> > there is a netdevice in my network namespace, and I have CAP_NET_ADMIN
-> > or whatever, I can break the association.
-> >
-> > So, to be constructive: I'd prefer bpf_link to replace a netlink attachment and
-> > vice versa. If you need to restrict control, use network namespaces
-> > to hide the devices, instead of hiding the bpffs.
->
-> I had a thought yesterday along similar lines: bpf_link is about
-> ownership and preventing "accidental" deletes. What's the observability
-> wrt to learning who owns a program at a specific attach point and can
-> that ever be hidden.
+On 3/27/20 8:06 PM, Joe Stringer wrote:
+> On Thu, Mar 26, 2020 at 2:07 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+>> The second concern was pruning, but iirc the experiments were inconclusive.
+>> selftests/bpf only has old fb progs. Hence, I think, the step zero is for
+>> everyone to contribute their bpf programs written in C. If we have both
+>> cilium and cloudflare progs as selftests it will help a lot to guide such long
+>> lasting verifier decisions.
+> 
+> How would you like to handle program changes over time for this?
+> 
+> In Cilium community we periodically rebuild bpf-next VM images for
+> testing, and run every pull request against those images[0]. We also
+> test against specific older kernels, currently 4.9 and 4.19. This
+> allows us to get some sense for the impact of upstream changes while
+> developing Cilium features, but unfortunately doesn't allow everyone
+> using kernel selftests to get that feedback at least from the kernel
+> tree. We also have a verifier complexity test script where we compile
+> with the maximum number of features (to ideally generate the most
+> complex programs possible) then attempt to load all of the various
+> programs, and output the complexity count that the kernel reports[1,2]
+> which we can track over time.
+> 
+> However Cilium BPF programs are actively developing and even if we
+> merge these programs into the kernel tree, they will get out-of-date
+> quickly. Up until recently everything was verifying fine compiling
+> with LLVM7 and loading into bpf-next. Over the past month we started
+> noticing new issues not with the existing implementation, but in *new*
+> BPF features. As we increased complexity, our CI started failing
+> against bpf-next[3] while they loaded fine on older kernels. We ended
+> up mitigating by upgrading to LLVM-10. Long story short, there's
+> several moving parts; changing BPF program implementations, changing
+> the compiler toolchain, changing the kernel verifier. So my question
+> is basically, where's the line of responsibility for what the kernel
+> selftests are responsible for vs integration tests? How do we maintain
+> those over time as the BPF programs and compiler changes?
 
-We are talking about adding LINK_QUERY command that will return
-attached BPF program and ifindex or cgroup (or whatever else) that it
-is attached to.
+I wonder whether it would make sense to create test cases which are based
+on our cilium/cilium:latest docker image. Those would be run as part of
+BPF kernel selftests as well as part of our own CI for every PR. I think
+it could be some basic connectivity test, service mapping, etc with a
+bunch of application containers.
 
-If it's about which applications holds open FD to bpf_link, it's the
-same problem as with any other FD, I'm not sure there is a
-well-defined solution to this problem. Using drgn script to get this
-is one possible solution that can be implemented today without
-extending any of kernel APIs.
+One nice thing that just came to mind is that it would actually allow for
+easy testing of latest clang/llvm git by rerunning the test script and
+remapping them as a volume, e.g.:
+
+   docker run -it -v /root/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04/bin/clang:/bin/clang \
+                  -v /root/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-18.04/bin/llc:/bin/llc \
+          cilium/cilium:latest /bin/sh
+
+Perhaps that would be more useful and always up to date than a copy of the
+code base that would get stale next day? In the end in this context kernel
+changes and/or llvm changes might be of interest to check whether anything
+potentially blows up, so having a self-contained packaging might be useful.
+Thoughts?
+
+> Do we just parachute the ~11K LoC of Cilium datapath into the kernel
+> tree once per cycle? Or should Cilium autobuild a verifier-test docker
+> image that kernel testing scripts can pull & run? Or would it be
+> helpful to have a separate GitHub project similar to libbpf that pulls
+> out kernel selftests, Cilium progs, fb progs, cloudflare progs, etc
+> automatically and centralizes a generic suite of BPF verifier
+> integration tests? Some other option?
+> 
+> [0] https://github.com/cilium/packer-ci-build
+> [1] https://github.com/cilium/cilium/blob/master/test/bpf/check-complexity.sh
+> [2] https://github.com/cilium/cilium/blob/master/test/bpf/verifier-test.sh
+> [3] https://github.com/cilium/cilium/issues/10517
+> 
+
