@@ -2,75 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DA06194DBE
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 01:10:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4783C194DC4
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 01:11:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726540AbgC0AKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 20:10:00 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:60594 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726067AbgC0AKA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Mar 2020 20:10:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=yBYMbTP3N65eCrwIwvg899ZnFuGNKY1t8iY9m5afKJc=; b=iXtMRWtgiL7AV4xDShotWCaPE+
-        DHwd44XJmimb6VJXUlj1mtL78RP6hB5Bp+kDKMveJAV2EnCY/oscbfcKtb7OK+S9FPrnInaFyRxru
-        p7+UU3n4iTOY5HqOZWSUD5xeKbu9BvlzqUgQz6A/URTtxReOhj3khInMuyAS0KMSb9TA=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jHcZQ-0004o8-9u; Fri, 27 Mar 2020 01:09:56 +0100
-Date:   Fri, 27 Mar 2020 01:09:56 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] net: phy: probe PHY drivers synchronously
-Message-ID: <20200327000956.GK3819@lunn.ch>
-References: <612b81d5-c4c1-5e20-a667-893eeeef0bf5@gmail.com>
+        id S1727652AbgC0ALe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 20:11:34 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:46159 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726363AbgC0ALe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 20:11:34 -0400
+Received: by mail-lj1-f194.google.com with SMTP id r7so758664ljg.13
+        for <netdev@vger.kernel.org>; Thu, 26 Mar 2020 17:11:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Om0czkdlZ/W7CWzm10Sp8n/DnGjyBb+31UnGPUf/8ao=;
+        b=bdxLoqgsqXEsawKrEEQCjxEEU4SVqGM7oftF1iV9Uv3/ABxpystWJhynlOqOLrU4Hi
+         hx6k8DReGKF6ijQ3b+bSrJfho9k8R8jP3/0xDRIAzQzUadL9wUHkv+yI5J5m8czH9knK
+         d8NtmT64PYlpoxQR0zgJLnadnFbDL9hsxNndQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Om0czkdlZ/W7CWzm10Sp8n/DnGjyBb+31UnGPUf/8ao=;
+        b=mZfnLDiqwytq2wNhsWHrMQWUzhdlkxNHUf9pu214w+xkqYVRi3Cy/HNd3qjzflODMr
+         +ZG4/wVBmqsCABmCyLQd489nwtMQYTqfcHWz7mcrURHQa1ckEZN0X5kNf/29YAw8c914
+         dw4PUI/Hku8MJEeg4a9/mSUGVAaNmn31QVHTWYDRtdSfp550OzjC9wRooSBWDUWpkrsP
+         zlLNgXnkkdtcMuzAFvDziq04qI3ITpUqrQYhfP3Ilb4x1FKfhgrb7NRjS1fgVJJYLxpG
+         b9kHwMHyu1L7/B0Bax7um3Co6ZCLfhQZYFs3wHst8IjhdR7FcyH3og+nXl603aBsQxug
+         LZVg==
+X-Gm-Message-State: ANhLgQ23/SIeRuRNbhDMs3jLRDDysYxlc16zJjL3iHJvO/Xkd++OTLML
+        v6YumfmmIXdL0UI6icruxs9HaGsVNPigyCBdBff2Og==
+X-Google-Smtp-Source: ADFU+vsUOMh8Po1kt6T0m/lsy5OkGbexpu112fy3gnBAGNzZ5mv6hf9SyERLmZOD9NOtJV13YX15ZgAmSTIvz0Xi+fg=
+X-Received: by 2002:a2e:9ad2:: with SMTP id p18mr6574780ljj.15.1585267892097;
+ Thu, 26 Mar 2020 17:11:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <612b81d5-c4c1-5e20-a667-893eeeef0bf5@gmail.com>
+References: <20200326075938.65053-1-mcchou@chromium.org> <20200326005931.v3.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
+ <0cb96a93000c02e4c4816c64492afef10bc76fd9.camel@perches.com>
+In-Reply-To: <0cb96a93000c02e4c4816c64492afef10bc76fd9.camel@perches.com>
+From:   Miao-chen Chou <mcchou@chromium.org>
+Date:   Thu, 26 Mar 2020 17:11:21 -0700
+Message-ID: <CABmPvSGbVqnE82Se=ZfTM=h=WTJaibRfP+0Prvz2yxsDLK7Ukw@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] Bluetooth: btusb: Indicate Microsoft vendor
+ extension for Intel 9460/9560 and 9160/9260
+To:     Joe Perches <joe@perches.com>
+Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Alain Michaud <alainm@chromium.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 27, 2020 at 01:00:22AM +0100, Heiner Kallweit wrote:
-> If we have scenarios like
-> 
-> mdiobus_register()
-> 	-> loads PHY driver module(s)
-> 	-> registers PHY driver(s)
-> 	-> may schedule async probe
-> phydev = mdiobus_get_phy()
-> <phydev action involving PHY driver>
-> 
-> or
-> 
-> phydev = phy_device_create()
-> 	-> loads PHY driver module
-> 	-> registers PHY driver
-> 	-> may schedule async probe
-> <phydev action involving PHY driver>
-> 
-> then we expect the PHY driver to be bound to the phydev when triggering
-> the action. This may not be the case in case of asynchronous probing.
-> Therefore ensure that PHY drivers are probed synchronously.
-> 
-> Default still is sync probing, except async probing is explicitly
-> requested. I saw some comments that the intention is to promote
-> async probing for more parallelism in boot process and want to be
-> prepared for the case that the default is changed to async probing.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-
-    Andrew
+On Thu, Mar 26, 2020 at 1:16 AM Joe Perches <joe@perches.com> wrote:
+>
+> On Thu, 2020-03-26 at 00:59 -0700, Miao-chen Chou wrote:
+> > This adds a bit mask of driver_info for Microsoft vendor extension and
+> > indicates the support for Intel 9460/9560 and 9160/9260. See
+> > https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
+> > microsoft-defined-bluetooth-hci-commands-and-events for more information
+> > about the extension. This was verified with Intel ThunderPeak BT controller
+> > where msft_vnd_ext_opcode is 0xFC1E.
+> []
+> > diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
+> []
+> > @@ -414,6 +414,8 @@ struct hci_dev {
+> >       void                    *smp_data;
+> >       void                    *smp_bredr_data;
+> >
+> > +     void                    *msft_ext;
+>
+> Why should this be a void * and not a msft_vnd_ext * ?
+The intention is to hide msft_vnd_ext from the driver.
