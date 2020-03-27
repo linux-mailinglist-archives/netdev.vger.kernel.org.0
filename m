@@ -2,95 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8318196017
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 21:55:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2233B19601C
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 21:56:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727505AbgC0Uzk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 16:55:40 -0400
-Received: from mga04.intel.com ([192.55.52.120]:47670 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726959AbgC0Uzj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Mar 2020 16:55:39 -0400
-IronPort-SDR: pj4ONNoBoK1uRIFkOzwWZHBp9YIxMOi/i9r857OfuKDOxlVl1n+0dJIkrRUmM2d8SSxQF3zqJg
- hLwk8bUVXwxw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2020 13:55:39 -0700
-IronPort-SDR: k3flTYbZqGZVdcbRW+RC2nIV4x+XM8Qr52zeL9/qKRsvVx+Mq2YKfLmqmO5B1bNXHgysJ0zMEV
- yQQvvewiQQxg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,313,1580803200"; 
-   d="scan'208";a="282966114"
-Received: from jekeller-desk.amr.corp.intel.com ([10.166.241.33])
-  by fmsmga002.fm.intel.com with ESMTP; 27 Mar 2020 13:55:39 -0700
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        Jacob Keller <jacob.e.keller@intel.com>
-Subject: [PATCH net-next] devlink: don't wrap commands in rST shell blocks
-Date:   Fri, 27 Mar 2020 13:55:36 -0700
-Message-Id: <20200327205536.2527859-1-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.24.1
+        id S1727701AbgC0U4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 16:56:33 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:46339 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727495AbgC0U4c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 16:56:32 -0400
+Received: by mail-io1-f66.google.com with SMTP id i3so2116019ioo.13
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 13:56:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gateworks-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=ztGuxpPnwvopwN5V9PVOVG8WbS48IkxJwK5yNOJbS/4=;
+        b=kk4DJRXeua8mYMBDP+GRp9tHtJck3RUJSwFqQrAq8iKRbpQzeCkIHxitXXXMjjardd
+         9HPHPp5glgAKLZjQsOpctpJg3tGx0HoHiVyPnCc7XiAD43XVZwV7kj6Py6xqSD4ZXxcK
+         hFoKn9qs/860vY1JwUPWyGrmZ/Ctn6YMVm67QUmV+4WIyiYqARwFWVtF8fc2kNHCyUQJ
+         QdShJlknFUYwi0mBUC6I6q+5M2O4S0czDl3QIupoIzh+oLQ08IkSmnsEz9ri1f5ZUP0I
+         EaXmswVIEsMnRpVOCo9/IrdNVI2p1mrbrU1H4ll+YRevccoA7Va/xdM6YQ99j4p90DBV
+         TkYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=ztGuxpPnwvopwN5V9PVOVG8WbS48IkxJwK5yNOJbS/4=;
+        b=ZFw8I01FwW4EF9WUh66/TozegQG6+PBdOxDruxFnpOvT4zGqj3uKHukhZ0GmqBMPxt
+         IPrvHZSFovldPwO69uClzNdvod6J73suhcELbkucNLiQ2FoR18s0eHxBg15UruVG/RLW
+         j8dw2TIyuZrBfChnZKzabeyj2yqNuEp5PSIWa9/ZdpRDMhhe5nxJvrHshl2meFcGKL9U
+         YzaKxRfEd5uEtmPdSVX9t1SeeTKy4piLALp+LBhAajg9aWE7w1NEn8htTDUFcZKDnr5O
+         yY+c0KTqxBnlgW4mWoiArr49/DgjWlLHyX/ksIBSQtJV9nibeuiYeQ/CiK7N909JZ4v7
+         k4Cw==
+X-Gm-Message-State: ANhLgQ0uOO4ZVvi6Pg7HxmuOqCrJ2un5eCRcWFyLY5Hj4a3OcgGd45NX
+        OMWwEouDXrzKa/jf472SYuZoepPyAF62vAZlZzFLuk29plI2Mw==
+X-Google-Smtp-Source: ADFU+vseq/HdLAf4EOrqJpck+RxYilPAE2LGU2Kp9kY/klJ+BUbD3xh/tGjfw+LbfOLztQaDQYPf5L1Af64ZI2Vx1CE=
+X-Received: by 2002:a02:304a:: with SMTP id q71mr724974jaq.123.1585342587677;
+ Fri, 27 Mar 2020 13:56:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CALAE=UDvPU-MBX5B7NU1A7WPq1gofUnr8Rf+v81AxHLLcZhMvA@mail.gmail.com>
+In-Reply-To: <CALAE=UDvPU-MBX5B7NU1A7WPq1gofUnr8Rf+v81AxHLLcZhMvA@mail.gmail.com>
+From:   Bobby Jones <rjones@gateworks.com>
+Date:   Fri, 27 Mar 2020 13:56:17 -0700
+Message-ID: <CALAE=UCG52nM8MJx2F+GyEoN7gLs2z6GpJZ27zQ9akUfjRb==Q@mail.gmail.com>
+Subject: Re: Toby MPCI - L201 cellular modem http hang after random MAC
+ address assignment
+To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Allison Randal <allison@lohutok.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Steve Winslow <swinslow@gmail.com>,
+        =?UTF-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-usb@vger.kernel.org, modemmanager-devel@lists.freedesktop.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The devlink-region.rst and ice-region.rst documentation files wrapped
-some lines within shell code blocks due to being longer than 80 lines.
+On Mon, Mar 23, 2020 at 10:21 AM Bobby Jones <rjones@gateworks.com> wrote:
+>
+> Hello net-dev,
+>
+> I'm diagnosing a problem with the Toby MPCI-L201 cellular modem where
+> http operations hang. This is reproducible on the most recent kernel
+> by turning on the rndis_host driver and executing a wget or similar
+> http command. I found I was able to still ping but not transfer any
+> data. After bisecting I've found that commit
+> a5a18bdf7453d505783e40e47ebb84bfdd35f93b introduces this hang.
+>
+> For reference the patch contents are:
+>
+> >     rndis_host: Set valid random MAC on buggy devices
+> >
+> >     Some devices of the same type all export the same, random MAC addre=
+ss. This
+> >     behavior has been seen on the ZTE MF910, MF823 and MF831, and there=
+ are
+> >     probably more devices out there. Fix this by generating a valid ran=
+dom MAC
+> >     address if we read a random MAC from device.
+> >
+> >     Also, changed the memcpy() to ether_addr_copy(), as pointed out by
+> >     checkpatch.
+> >
+> >     Suggested-by: Bj=C3=B8rn Mork <bjorn@mork.no>
+> >     Signed-off-by: Kristian Evensen <kristian.evensen@gmail.com>
+> >     Signed-off-by: David S. Miller <davem@davemloft.net>
+> > diff --git a/drivers/net/usb/rndis_host.c b/drivers/net/usb/rndis_host.=
+c
+> > index 524a47a28120..4f4f71b2966b 100644
+> > --- a/drivers/net/usb/rndis_host.c
+> > +++ b/drivers/net/usb/rndis_host.c
+> > @@ -428,7 +428,11 @@ generic_rndis_bind(struct usbnet *dev, struct usb_=
+interface *intf, int flags)
+> >                 dev_err(&intf->dev, "rndis get ethaddr, %d\n", retval);
+> >                 goto halt_fail_and_release;
+> >         }
+> > -       memcpy(net->dev_addr, bp, ETH_ALEN);
+> > +
+> > +       if (bp[0] & 0x02)
+> > +               eth_hw_addr_random(net);
+> > +       else
+> > +               ether_addr_copy(net->dev_addr, bp);
+> >
+> >         /* set a nonzero filter to enable data transfers */
+> >         memset(u.set, 0, sizeof *u.set);
+>
+> I know that there is some internal routing done by the modem firmware,
+> and I'm assuming that overwriting the MAC address breaks said routing.
+> Can anyone suggest what a proper fix would be?
+>
+> Thanks,
+> Bobby
 
-It was pointed out during review that wrapping these lines shouldn't be
-done. Fix these two rST files and remove the line wrapping on these
-shell command examples.
-
-Reported-by: Jiri Pirko <jiri@resnulli.us>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
----
- Documentation/networking/devlink/devlink-region.rst | 6 ++----
- Documentation/networking/devlink/ice.rst            | 3 +--
- 2 files changed, 3 insertions(+), 6 deletions(-)
-
-diff --git a/Documentation/networking/devlink/devlink-region.rst b/Documentation/networking/devlink/devlink-region.rst
-index 9d2d4c95a5c4..04e04d1ff627 100644
---- a/Documentation/networking/devlink/devlink-region.rst
-+++ b/Documentation/networking/devlink/devlink-region.rst
-@@ -34,8 +34,7 @@ example usage
-     $ devlink region show [ DEV/REGION ]
-     $ devlink region del DEV/REGION snapshot SNAPSHOT_ID
-     $ devlink region dump DEV/REGION [ snapshot SNAPSHOT_ID ]
--    $ devlink region read DEV/REGION [ snapshot SNAPSHOT_ID ]
--            address ADDRESS length length
-+    $ devlink region read DEV/REGION [ snapshot SNAPSHOT_ID ] address ADDRESS length length
- 
-     # Show all of the exposed regions with region sizes:
-     $ devlink region show
-@@ -56,8 +55,7 @@ example usage
-     0000000000000030 bada cce5 bada cce5 bada cce5 bada cce5
- 
-     # Read a specific part of a snapshot:
--    $ devlink region read pci/0000:00:05.0/fw-health snapshot 1 address 0
--            length 16
-+    $ devlink region read pci/0000:00:05.0/fw-health snapshot 1 address 0 length 16
-     0000000000000000 0014 95dc 0014 9514 0035 1670 0034 db30
- 
- As regions are likely very device or driver specific, no generic regions are
-diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
-index f3d6a3b50342..5b58fc4e1268 100644
---- a/Documentation/networking/devlink/ice.rst
-+++ b/Documentation/networking/devlink/ice.rst
-@@ -90,8 +90,7 @@ Users can request an immediate capture of a snapshot via the
-     0000000000000020 0016 0bb8 0016 1720 0000 0000 c00f 3ffc
-     0000000000000030 bada cce5 bada cce5 bada cce5 bada cce5
- 
--    $ devlink region read pci/0000:01:00.0/nvm-flash snapshot 1 address 0
--        length 16
-+    $ devlink region read pci/0000:01:00.0/nvm-flash snapshot 1 address 0 length 16
-     0000000000000000 0014 95dc 0014 9514 0035 1670 0034 db30
- 
-     $ devlink region delete pci/0000:01:00.0/nvm-flash snapshot 1
--- 
-2.24.1
-
+Adding some individuals and lists in hopes for feedback
