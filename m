@@ -2,26 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D4BA194DDD
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 01:12:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 208BC194DDE
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 01:12:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727944AbgC0AMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 20:12:47 -0400
-Received: from mx2.suse.de ([195.135.220.15]:42840 "EHLO mx2.suse.de"
+        id S1727960AbgC0AMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 20:12:51 -0400
+Received: from mx2.suse.de ([195.135.220.15]:42890 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727547AbgC0AMp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 26 Mar 2020 20:12:45 -0400
+        id S1727547AbgC0AMv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 26 Mar 2020 20:12:51 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 643F8B1F3;
-        Fri, 27 Mar 2020 00:12:43 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 69975AE67;
+        Fri, 27 Mar 2020 00:12:48 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 135FDE00A5; Fri, 27 Mar 2020 01:12:43 +0100 (CET)
-Message-Id: <105373960c4afeeea7b51459b9763b0452d6e660.1585267388.git.mkubecek@suse.cz>
+        id 19C6FE00A5; Fri, 27 Mar 2020 01:12:48 +0100 (CET)
+Message-Id: <07daa57b2bdfa0805fa0f02d2c317fa00c105a16.1585267388.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1585267388.git.mkubecek@suse.cz>
 References: <cover.1585267388.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next 11/12] ethtool: add timestamping related string sets
+Subject: [PATCH net-next 12/12] ethtool: provide timestamping information with
+ TIMESTAMP_GET request
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
 Cc:     Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
@@ -29,192 +30,422 @@ Cc:     Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
         John Linville <linville@tuxdriver.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         linux-kernel@vger.kernel.org
-Date:   Fri, 27 Mar 2020 01:12:43 +0100 (CET)
+Date:   Fri, 27 Mar 2020 01:12:48 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add three string sets related to timestamping information:
+Implement TIMESTAMP_GET request to get timestamping information for
+a network device. This is traditionally available via ETHTOOL_GET_TS_INFO
+ioctl request.
 
-  ETH_SS_SOF_TIMESTAMPING: SOF_TIMESTAMPING_* flags
-  ETH_SS_TS_TX_TYPES:      timestamping Tx types
-  ETH_SS_TS_RX_FILTERS:    timestamping Rx filters
-
-These will be used for TIMESTAMP_GET request.
+Move part of ethtool_get_ts_info() into common.c so that ioctl and netlink
+code use the same logic to get timestamping information from the device.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- include/uapi/linux/ethtool.h    |  6 ++++
- include/uapi/linux/net_tstamp.h |  6 ++++
- net/ethtool/common.c            | 49 +++++++++++++++++++++++++++++++++
- net/ethtool/common.h            |  5 ++++
- net/ethtool/strset.c            | 15 ++++++++++
- 5 files changed, 81 insertions(+)
+ Documentation/networking/ethtool-netlink.rst |  30 +++-
+ include/uapi/linux/ethtool_netlink.h         |  17 +++
+ net/ethtool/Makefile                         |   2 +-
+ net/ethtool/common.c                         |  21 +++
+ net/ethtool/common.h                         |   1 +
+ net/ethtool/ioctl.c                          |  23 +--
+ net/ethtool/netlink.c                        |   8 ++
+ net/ethtool/netlink.h                        |   1 +
+ net/ethtool/timestamp.c                      | 143 +++++++++++++++++++
+ 9 files changed, 225 insertions(+), 21 deletions(-)
+ create mode 100644 net/ethtool/timestamp.c
 
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index d586ee5e10a1..92f737f10117 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -596,6 +596,9 @@ struct ethtool_pauseparam {
-  * @ETH_SS_LINK_MODES: link mode names
-  * @ETH_SS_MSG_CLASSES: debug message class names
-  * @ETH_SS_WOL_MODES: wake-on-lan modes
-+ * @ETH_SS_SOF_TIMESTAMPING: SOF_TIMESTAMPING_* flags
-+ * @ETH_SS_TS_TX_TYPES: timestamping Tx types
-+ * @ETH_SS_TS_RX_FILTERS: timestamping Rx filters
-  */
- enum ethtool_stringset {
- 	ETH_SS_TEST		= 0,
-@@ -610,6 +613,9 @@ enum ethtool_stringset {
- 	ETH_SS_LINK_MODES,
- 	ETH_SS_MSG_CLASSES,
- 	ETH_SS_WOL_MODES,
-+	ETH_SS_SOF_TIMESTAMPING,
-+	ETH_SS_TS_TX_TYPES,
-+	ETH_SS_TS_RX_FILTERS,
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
+index f1950a0a6c93..478196b36be6 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -203,6 +203,7 @@ Userspace to kernel:
+   ``ETHTOOL_MSG_PAUSE_SET``             set pause parameters
+   ``ETHTOOL_MSG_EEE_GET``               get EEE settings
+   ``ETHTOOL_MSG_EEE_SET``               set EEE settings
++  ``ETHTOOL_MSG_TIMESTAMP_GET``		get timestamping info
+   ===================================== ================================
+ 
+ Kernel to userspace:
+@@ -233,6 +234,7 @@ Kernel to userspace:
+   ``ETHTOOL_MSG_PAUSE_NTF``             pause parameters
+   ``ETHTOOL_MSG_EEE_GET_REPLY``         EEE settings
+   ``ETHTOOL_MSG_EEE_NTF``               EEE settings
++  ``ETHTOOL_MSG_TIMESTAMP_GET_REPLY``	timestamping info
+   ===================================== =================================
+ 
+ ``GET`` requests are sent by userspace applications to retrieve device
+@@ -928,6 +930,32 @@ but only first 32 can be set at the moment as that is what the ``ethtool_ops``
+ callback supports.
+ 
+ 
++TIMESTAMP_GET
++=============
++
++Gets timestamping information like ``ETHTOOL_GET_TS_INFO`` ioctl request.
++
++Request contents:
++
++  =====================================  ======  ==========================
++  ``ETHTOOL_A_TIMESTAMP_HEADER``         nested  request header
++  =====================================  ======  ==========================
++
++Kernel response contents:
++
++  =====================================  ======  ==========================
++  ``ETHTOOL_A_TIMESTAMP_HEADER``         nested  request header
++  ``ETHTOOL_A_TIMESTAMP_TIMESTAMPING``   bitset  SO_TIMESTAMPING flags
++  ``ETHTOOL_A_TIMESTAMP_TX_TYPES``       bitset  supported Tx types
++  ``ETHTOOL_A_TIMESTAMP_RX_FILTERS``     bitset  supported Rx filters
++  ``ETHTOOL_A_TIMESTAMP_PHC_INDEX``      u32     PTP hw clock index
++  =====================================  ======  ==========================
++
++``ETHTOOL_A_TIMESTAMP_PHC_INDEX`` is absent if there is no associated PHC
++(there is no special value for this case). The bitset attributes are omitted
++if they would be empty (no bit set).
++
++
+ Request translation
+ ===================
+ 
+@@ -1003,7 +1031,7 @@ have their netlink replacement yet.
+   ``ETHTOOL_SET_DUMP``                n/a
+   ``ETHTOOL_GET_DUMP_FLAG``           n/a
+   ``ETHTOOL_GET_DUMP_DATA``           n/a
+-  ``ETHTOOL_GET_TS_INFO``             n/a
++  ``ETHTOOL_GET_TS_INFO``             ``ETHTOOL_MSG_TIMESTAMP_GET``
+   ``ETHTOOL_GMODULEINFO``             n/a
+   ``ETHTOOL_GMODULEEEPROM``           n/a
+   ``ETHTOOL_GEEE``                    ``ETHTOOL_MSG_EEE_GET``
+diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
+index bacdd5363510..3db2732592b3 100644
+--- a/include/uapi/linux/ethtool_netlink.h
++++ b/include/uapi/linux/ethtool_netlink.h
+@@ -38,6 +38,7 @@ enum {
+ 	ETHTOOL_MSG_PAUSE_SET,
+ 	ETHTOOL_MSG_EEE_GET,
+ 	ETHTOOL_MSG_EEE_SET,
++	ETHTOOL_MSG_TIMESTAMP_GET,
  
  	/* add new constants above here */
- 	ETH_SS_COUNT
-diff --git a/include/uapi/linux/net_tstamp.h b/include/uapi/linux/net_tstamp.h
-index f96e650d0af9..7ed0b3d1c00a 100644
---- a/include/uapi/linux/net_tstamp.h
-+++ b/include/uapi/linux/net_tstamp.h
-@@ -98,6 +98,9 @@ enum hwtstamp_tx_types {
- 	 * receive a time stamp via the socket error queue.
- 	 */
- 	HWTSTAMP_TX_ONESTEP_P2P,
-+
-+	/* add new constants above here */
-+	__HWTSTAMP_TX_CNT
+ 	__ETHTOOL_MSG_USER_CNT,
+@@ -72,6 +73,7 @@ enum {
+ 	ETHTOOL_MSG_PAUSE_NTF,
+ 	ETHTOOL_MSG_EEE_GET_REPLY,
+ 	ETHTOOL_MSG_EEE_NTF,
++	ETHTOOL_MSG_TIMESTAMP_GET_REPLY,
+ 
+ 	/* add new constants above here */
+ 	__ETHTOOL_MSG_KERNEL_CNT,
+@@ -386,6 +388,21 @@ enum {
+ 	ETHTOOL_A_EEE_MAX = (__ETHTOOL_A_EEE_CNT - 1)
  };
  
- /* possible values for hwtstamp_config->rx_filter */
-@@ -140,6 +143,9 @@ enum hwtstamp_rx_filters {
- 
- 	/* NTP, UDP, all versions and packet modes */
- 	HWTSTAMP_FILTER_NTP_ALL,
++/* TIMESTAMP */
++
++enum {
++	ETHTOOL_A_TIMESTAMP_UNSPEC,
++	ETHTOOL_A_TIMESTAMP_HEADER,			/* nest - _A_HEADER_* */
++	ETHTOOL_A_TIMESTAMP_TIMESTAMPING,		/* bitset */
++	ETHTOOL_A_TIMESTAMP_TX_TYPES,			/* bitset */
++	ETHTOOL_A_TIMESTAMP_RX_FILTERS,			/* bitset */
++	ETHTOOL_A_TIMESTAMP_PHC_INDEX,			/* u32 */
 +
 +	/* add new constants above here */
-+	__HWTSTAMP_FILTER_CNT
- };
++	__ETHTOOL_A_TIMESTAMP_CNT,
++	ETHTOOL_A_TIMESTAMP_MAX = (__ETHTOOL_A_TIMESTAMP_CNT - 1)
++};
++
+ /* generic netlink info */
+ #define ETHTOOL_GENL_NAME "ethtool"
+ #define ETHTOOL_GENL_VERSION 1
+diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
+index a790f408aa5d..17da981bdea7 100644
+--- a/net/ethtool/Makefile
++++ b/net/ethtool/Makefile
+@@ -6,4 +6,4 @@ obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
  
- /* SCM_TIMESTAMPING_PKTINFO control message */
+ ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o \
+ 		   linkstate.o debug.o wol.o features.o privflags.o rings.o \
+-		   channels.o coalesce.o pause.o eee.o
++		   channels.o coalesce.o pause.o eee.o timestamp.o
 diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index dab047eec943..6faa1e0f99a4 100644
+index 6faa1e0f99a4..9b03ca6c5a6e 100644
 --- a/net/ethtool/common.c
 +++ b/net/ethtool/common.c
-@@ -1,5 +1,7 @@
+@@ -1,6 +1,7 @@
  // SPDX-License-Identifier: GPL-2.0-only
  
-+#include <linux/net_tstamp.h>
-+
+ #include <linux/net_tstamp.h>
++#include <linux/phy.h>
+ 
  #include "common.h"
  
- const char netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN] = {
-@@ -203,6 +205,53 @@ const char wol_mode_names[][ETH_GSTRING_LEN] = {
- };
- static_assert(ARRAY_SIZE(wol_mode_names) == WOL_MODE_COUNT);
- 
-+const char sof_timestamping_names[][ETH_GSTRING_LEN] = {
-+	[const_ilog2(SOF_TIMESTAMPING_TX_HARDWARE)]  = "hardware-transmit",
-+	[const_ilog2(SOF_TIMESTAMPING_TX_SOFTWARE)]  = "software-transmit",
-+	[const_ilog2(SOF_TIMESTAMPING_RX_HARDWARE)]  = "hardware-receive",
-+	[const_ilog2(SOF_TIMESTAMPING_RX_SOFTWARE)]  = "software-receive",
-+	[const_ilog2(SOF_TIMESTAMPING_SOFTWARE)]     = "software-system-clock",
-+	[const_ilog2(SOF_TIMESTAMPING_SYS_HARDWARE)] = "hardware-legacy-clock",
-+	[const_ilog2(SOF_TIMESTAMPING_RAW_HARDWARE)] = "hardware-raw-clock",
-+	[const_ilog2(SOF_TIMESTAMPING_OPT_ID)]       = "option-id",
-+	[const_ilog2(SOF_TIMESTAMPING_TX_SCHED)]     = "sched-transmit",
-+	[const_ilog2(SOF_TIMESTAMPING_TX_ACK)]       = "ack-transmit",
-+	[const_ilog2(SOF_TIMESTAMPING_OPT_CMSG)]     = "option-cmsg",
-+	[const_ilog2(SOF_TIMESTAMPING_OPT_TSONLY)]   = "option-tsonly",
-+	[const_ilog2(SOF_TIMESTAMPING_OPT_STATS)]    = "option-stats",
-+	[const_ilog2(SOF_TIMESTAMPING_OPT_PKTINFO)]  = "option-pktinfo",
-+	[const_ilog2(SOF_TIMESTAMPING_OPT_TX_SWHW)]  = "option-tx-swhw",
-+};
-+static_assert(ARRAY_SIZE(sof_timestamping_names) == __SOF_TIMESTAMPING_CNT);
+@@ -349,3 +350,23 @@ int ethtool_check_ops(const struct ethtool_ops *ops)
+ 	 */
+ 	return 0;
+ }
 +
-+const char ts_tx_type_names[][ETH_GSTRING_LEN] = {
-+	[HWTSTAMP_TX_OFF]		= "off",
-+	[HWTSTAMP_TX_ON]		= "on",
-+	[HWTSTAMP_TX_ONESTEP_SYNC]	= "one-step-sync",
-+	[HWTSTAMP_TX_ONESTEP_P2P]	= "one-step-p2p",
-+};
-+static_assert(ARRAY_SIZE(ts_tx_type_names) == __HWTSTAMP_TX_CNT);
++int __ethtool_get_ts_info(struct net_device *dev, struct ethtool_ts_info *info)
++{
++	const struct ethtool_ops *ops = dev->ethtool_ops;
++	struct phy_device *phydev = dev->phydev;
 +
-+const char ts_rx_filter_names[][ETH_GSTRING_LEN] = {
-+	[HWTSTAMP_FILTER_NONE]			= "none",
-+	[HWTSTAMP_FILTER_ALL]			= "all",
-+	[HWTSTAMP_FILTER_SOME]			= "some",
-+	[HWTSTAMP_FILTER_PTP_V1_L4_EVENT]	= "ptpv1-l4-event",
-+	[HWTSTAMP_FILTER_PTP_V1_L4_SYNC]	= "ptpv1-l4-sync",
-+	[HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ]	= "ptpv1-l4-delay-req",
-+	[HWTSTAMP_FILTER_PTP_V2_L4_EVENT]	= "ptpv2-l4-event",
-+	[HWTSTAMP_FILTER_PTP_V2_L4_SYNC]	= "ptpv2-l4-sync",
-+	[HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ]	= "ptpv2-l4-delay-req",
-+	[HWTSTAMP_FILTER_PTP_V2_L2_EVENT]	= "ptpv2-l2-event",
-+	[HWTSTAMP_FILTER_PTP_V2_L2_SYNC]	= "ptpv2-l2-sync",
-+	[HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ]	= "ptpv2-l2-delay-req",
-+	[HWTSTAMP_FILTER_PTP_V2_EVENT]		= "ptpv2-event",
-+	[HWTSTAMP_FILTER_PTP_V2_SYNC]		= "ptpv2-sync",
-+	[HWTSTAMP_FILTER_PTP_V2_DELAY_REQ]	= "ptpv2-delay-req",
-+	[HWTSTAMP_FILTER_NTP_ALL]		= "ntp-all",
-+};
-+static_assert(ARRAY_SIZE(ts_rx_filter_names) == __HWTSTAMP_FILTER_CNT);
++	memset(info, 0, sizeof(*info));
++	info->cmd = ETHTOOL_GET_TS_INFO;
 +
- /* return false if legacy contained non-0 deprecated fields
-  * maxtxpkt/maxrxpkt. rest of ksettings always updated
-  */
++	if (phy_has_tsinfo(phydev))
++		return phy_ts_info(phydev, info);
++	if (ops->get_ts_info)
++		return ops->get_ts_info(dev, info);
++
++	info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
++				SOF_TIMESTAMPING_SOFTWARE;
++	info->phc_index = -1;
++
++	return 0;
++}
 diff --git a/net/ethtool/common.h b/net/ethtool/common.h
-index 03946e16e623..c54c8d57fd8f 100644
+index c54c8d57fd8f..a62f68ccc43a 100644
 --- a/net/ethtool/common.h
 +++ b/net/ethtool/common.h
-@@ -12,6 +12,8 @@
- #define ETHTOOL_LINK_MODE(speed, type, duplex) \
- 	ETHTOOL_LINK_MODE_ ## speed ## base ## type ## _ ## duplex ## _BIT
+@@ -35,5 +35,6 @@ bool convert_legacy_settings_to_link_ksettings(
+ 	struct ethtool_link_ksettings *link_ksettings,
+ 	const struct ethtool_cmd *legacy_settings);
+ int ethtool_get_max_rxfh_channel(struct net_device *dev, u32 *max);
++int __ethtool_get_ts_info(struct net_device *dev, struct ethtool_ts_info *info);
  
-+#define __SOF_TIMESTAMPING_CNT (const_ilog2(SOF_TIMESTAMPING_LAST) + 1)
-+
- extern const char
- netdev_features_strings[NETDEV_FEATURE_COUNT][ETH_GSTRING_LEN];
- extern const char
-@@ -23,6 +25,9 @@ phy_tunable_strings[__ETHTOOL_PHY_TUNABLE_COUNT][ETH_GSTRING_LEN];
- extern const char link_mode_names[][ETH_GSTRING_LEN];
- extern const char netif_msg_class_names[][ETH_GSTRING_LEN];
- extern const char wol_mode_names[][ETH_GSTRING_LEN];
-+extern const char sof_timestamping_names[][ETH_GSTRING_LEN];
-+extern const char ts_tx_type_names[][ETH_GSTRING_LEN];
-+extern const char ts_rx_filter_names[][ETH_GSTRING_LEN];
+ #endif /* _ETHTOOL_COMMON_H */
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 05a2bf64a96b..89d0b1827aaf 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -2140,32 +2140,17 @@ static int ethtool_get_dump_data(struct net_device *dev,
  
- int __ethtool_get_link(struct net_device *dev);
+ static int ethtool_get_ts_info(struct net_device *dev, void __user *useraddr)
+ {
+-	int err = 0;
+ 	struct ethtool_ts_info info;
+-	const struct ethtool_ops *ops = dev->ethtool_ops;
+-	struct phy_device *phydev = dev->phydev;
+-
+-	memset(&info, 0, sizeof(info));
+-	info.cmd = ETHTOOL_GET_TS_INFO;
+-
+-	if (phy_has_tsinfo(phydev)) {
+-		err = phy_ts_info(phydev, &info);
+-	} else if (ops->get_ts_info) {
+-		err = ops->get_ts_info(dev, &info);
+-	} else {
+-		info.so_timestamping =
+-			SOF_TIMESTAMPING_RX_SOFTWARE |
+-			SOF_TIMESTAMPING_SOFTWARE;
+-		info.phc_index = -1;
+-	}
++	int err;
  
-diff --git a/net/ethtool/strset.c b/net/ethtool/strset.c
-index 8e5911887b4c..95eae5c68a52 100644
---- a/net/ethtool/strset.c
-+++ b/net/ethtool/strset.c
-@@ -60,6 +60,21 @@ static const struct strset_info info_template[] = {
- 		.count		= WOL_MODE_COUNT,
- 		.strings	= wol_mode_names,
++	err = __ethtool_get_ts_info(dev, &info);
+ 	if (err)
+ 		return err;
+ 
+ 	if (copy_to_user(useraddr, &info, sizeof(info)))
+-		err = -EFAULT;
++		return -EFAULT;
+ 
+-	return err;
++	return 0;
+ }
+ 
+ static int __ethtool_get_module_info(struct net_device *dev,
+diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
+index e525c7b8ba4d..25422ff0b87d 100644
+--- a/net/ethtool/netlink.c
++++ b/net/ethtool/netlink.c
+@@ -230,6 +230,7 @@ ethnl_default_requests[__ETHTOOL_MSG_USER_CNT] = {
+ 	[ETHTOOL_MSG_COALESCE_GET]	= &ethnl_coalesce_request_ops,
+ 	[ETHTOOL_MSG_PAUSE_GET]		= &ethnl_pause_request_ops,
+ 	[ETHTOOL_MSG_EEE_GET]		= &ethnl_eee_request_ops,
++	[ETHTOOL_MSG_TIMESTAMP_GET]	= &ethnl_timestamp_request_ops,
+ };
+ 
+ static struct ethnl_dump_ctx *ethnl_dump_context(struct netlink_callback *cb)
+@@ -831,6 +832,13 @@ static const struct genl_ops ethtool_genl_ops[] = {
+ 		.flags	= GENL_UNS_ADMIN_PERM,
+ 		.doit	= ethnl_set_eee,
  	},
-+	[ETH_SS_SOF_TIMESTAMPING] = {
-+		.per_dev	= false,
-+		.count		= __SOF_TIMESTAMPING_CNT,
-+		.strings	= sof_timestamping_names,
-+	},
-+	[ETH_SS_TS_TX_TYPES] = {
-+		.per_dev	= false,
-+		.count		= __HWTSTAMP_TX_CNT,
-+		.strings	= ts_tx_type_names,
-+	},
-+	[ETH_SS_TS_RX_FILTERS] = {
-+		.per_dev	= false,
-+		.count		= __HWTSTAMP_FILTER_CNT,
-+		.strings	= ts_rx_filter_names,
++	{
++		.cmd	= ETHTOOL_MSG_TIMESTAMP_GET,
++		.doit	= ethnl_default_doit,
++		.start	= ethnl_default_start,
++		.dumpit	= ethnl_default_dumpit,
++		.done	= ethnl_default_done,
 +	},
  };
  
- struct strset_req_info {
+ static const struct genl_multicast_group ethtool_nl_mcgrps[] = {
+diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
+index a251957d535e..a8dbb2943940 100644
+--- a/net/ethtool/netlink.h
++++ b/net/ethtool/netlink.h
+@@ -344,6 +344,7 @@ extern const struct ethnl_request_ops ethnl_channels_request_ops;
+ extern const struct ethnl_request_ops ethnl_coalesce_request_ops;
+ extern const struct ethnl_request_ops ethnl_pause_request_ops;
+ extern const struct ethnl_request_ops ethnl_eee_request_ops;
++extern const struct ethnl_request_ops ethnl_timestamp_request_ops;
+ 
+ int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info);
+ int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info);
+diff --git a/net/ethtool/timestamp.c b/net/ethtool/timestamp.c
+new file mode 100644
+index 000000000000..30e6118acdaf
+--- /dev/null
++++ b/net/ethtool/timestamp.c
+@@ -0,0 +1,143 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
++#include <linux/net_tstamp.h>
++
++#include "netlink.h"
++#include "common.h"
++#include "bitset.h"
++
++struct timestamp_req_info {
++	struct ethnl_req_info		base;
++};
++
++struct timestamp_reply_data {
++	struct ethnl_reply_data		base;
++	struct ethtool_ts_info		ts_info;
++};
++
++#define TIMESTAMP_REPDATA(__reply_base) \
++	container_of(__reply_base, struct timestamp_reply_data, base)
++
++static const struct nla_policy
++timestamp_get_policy[ETHTOOL_A_TIMESTAMP_MAX + 1] = {
++	[ETHTOOL_A_TIMESTAMP_UNSPEC]		= { .type = NLA_REJECT },
++	[ETHTOOL_A_TIMESTAMP_HEADER]		= { .type = NLA_NESTED },
++	[ETHTOOL_A_TIMESTAMP_TIMESTAMPING]	= { .type = NLA_REJECT },
++	[ETHTOOL_A_TIMESTAMP_TX_TYPES]		= { .type = NLA_REJECT },
++	[ETHTOOL_A_TIMESTAMP_RX_FILTERS]	= { .type = NLA_REJECT },
++	[ETHTOOL_A_TIMESTAMP_PHC_INDEX]		= { .type = NLA_REJECT },
++};
++
++static int timestamp_prepare_data(const struct ethnl_req_info *req_base,
++				  struct ethnl_reply_data *reply_base,
++				  struct genl_info *info)
++{
++	struct timestamp_reply_data *data = TIMESTAMP_REPDATA(reply_base);
++	struct net_device *dev = reply_base->dev;
++	int ret;
++
++	ret = ethnl_ops_begin(dev);
++	if (ret < 0)
++		return ret;
++	ret = __ethtool_get_ts_info(dev, &data->ts_info);
++	ethnl_ops_complete(dev);
++
++	return ret;
++}
++
++static int timestamp_reply_size(const struct ethnl_req_info *req_base,
++				const struct ethnl_reply_data *reply_base)
++{
++	const struct timestamp_reply_data *data = TIMESTAMP_REPDATA(reply_base);
++	bool compact = req_base->flags & ETHTOOL_FLAG_COMPACT_BITSETS;
++	const struct ethtool_ts_info *ts_info = &data->ts_info;
++	int len = 0;
++	int ret;
++
++	BUILD_BUG_ON(__SOF_TIMESTAMPING_CNT > 32);
++	BUILD_BUG_ON(__HWTSTAMP_TX_CNT > 32);
++	BUILD_BUG_ON(__HWTSTAMP_FILTER_CNT > 32);
++
++	if (ts_info->so_timestamping) {
++		ret = ethnl_bitset32_size(&ts_info->so_timestamping, NULL,
++					  __SOF_TIMESTAMPING_CNT,
++					  sof_timestamping_names, compact);
++		if (ret < 0)
++			return ret;
++		len += ret;	/* _TIMESTAMP_TIMESTAMPING */
++	}
++	if (ts_info->tx_types) {
++		ret = ethnl_bitset32_size(&ts_info->tx_types, NULL,
++					  __HWTSTAMP_TX_CNT,
++					  ts_tx_type_names, compact);
++		if (ret < 0)
++			return ret;
++		len += ret;	/* _TIMESTAMP_TX_TYPES */
++	}
++	if (ts_info->rx_filters) {
++		ret = ethnl_bitset32_size(&ts_info->rx_filters, NULL,
++					  __HWTSTAMP_FILTER_CNT,
++					  ts_rx_filter_names, compact);
++		if (ret < 0)
++			return ret;
++		len += ret;	/* _TIMESTAMP_RX_FILTERS */
++	}
++	if (ts_info->phc_index >= 0)
++		len += nla_total_size(sizeof(u32)); /* _TIMESTAMP_PHC_INDEX */
++
++	return len;
++}
++
++static int timestamp_fill_reply(struct sk_buff *skb,
++				const struct ethnl_req_info *req_base,
++				const struct ethnl_reply_data *reply_base)
++{
++	const struct timestamp_reply_data *data = TIMESTAMP_REPDATA(reply_base);
++	bool compact = req_base->flags & ETHTOOL_FLAG_COMPACT_BITSETS;
++	const struct ethtool_ts_info *ts_info = &data->ts_info;
++	int ret;
++
++	if (ts_info->so_timestamping) {
++		ret = ethnl_put_bitset32(skb, ETHTOOL_A_TIMESTAMP_TIMESTAMPING,
++					 &ts_info->so_timestamping, NULL,
++					 __SOF_TIMESTAMPING_CNT,
++					 sof_timestamping_names, compact);
++		if (ret < 0)
++			return ret;
++	}
++	if (ts_info->tx_types) {
++		ret = ethnl_put_bitset32(skb, ETHTOOL_A_TIMESTAMP_TX_TYPES,
++					 &ts_info->tx_types, NULL,
++					 __HWTSTAMP_TX_CNT,
++					 ts_tx_type_names, compact);
++		if (ret < 0)
++			return ret;
++	}
++	if (ts_info->rx_filters) {
++		ret = ethnl_put_bitset32(skb, ETHTOOL_A_TIMESTAMP_RX_FILTERS,
++					 &ts_info->rx_filters, NULL,
++					 __HWTSTAMP_FILTER_CNT,
++					 ts_rx_filter_names, compact);
++		if (ret < 0)
++			return ret;
++	}
++	if (ts_info->phc_index >= 0 &&
++	    nla_put_u32(skb, ETHTOOL_A_TIMESTAMP_PHC_INDEX, ts_info->phc_index))
++		return -EMSGSIZE;
++
++	return 0;
++}
++
++const struct ethnl_request_ops ethnl_timestamp_request_ops = {
++	.request_cmd		= ETHTOOL_MSG_TIMESTAMP_GET,
++	.reply_cmd		= ETHTOOL_MSG_TIMESTAMP_GET_REPLY,
++	.hdr_attr		= ETHTOOL_A_TIMESTAMP_HEADER,
++	.max_attr		= ETHTOOL_A_TIMESTAMP_MAX,
++	.req_info_size		= sizeof(struct timestamp_req_info),
++	.reply_data_size	= sizeof(struct timestamp_reply_data),
++	.request_policy		= timestamp_get_policy,
++
++	.prepare_data		= timestamp_prepare_data,
++	.reply_size		= timestamp_reply_size,
++	.fill_reply		= timestamp_fill_reply,
++};
 -- 
 2.25.1
 
