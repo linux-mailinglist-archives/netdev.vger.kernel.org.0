@@ -2,91 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14FD31958E3
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 15:22:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E82C1958EB
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 15:26:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727473AbgC0OWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 10:22:54 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34046 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726656AbgC0OWx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Mar 2020 10:22:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=U0es5eCjPHafmknYI44UIritcApZVL6ufHPKfH3LHp8=; b=P04eDa8uV9VPNA/3xDFaHSp7lu
-        PTChCW80xpzV6lIYT1iZfFj2B4jFIt5iRbfawNZSgHYK1l2bIRJQgP0ktBL/Tf9so2gmFp6xazFee
-        kRIRD6dSvVtcDK6pjzZmXw3K7HrUK3rGXWYJ6FAMgSVulG/K0G5QgFVSrtgfn6r4I32s=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jHpsj-0002C9-4p; Fri, 27 Mar 2020 15:22:45 +0100
-Date:   Fri, 27 Mar 2020 15:22:45 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florinel Iordache <florinel.iordache@nxp.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, f.fainelli@gmail.com,
-        hkallweit1@gmail.com, linux@armlinux.org.uk,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        robh+dt@kernel.org, mark.rutland@arm.com, kuba@kernel.org,
-        corbet@lwn.net, shawnguo@kernel.org, leoyang.li@nxp.com,
-        madalin.bucur@oss.nxp.com, ioana.ciornei@nxp.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 6/9] net: phy: add backplane kr driver support
-Message-ID: <20200327142245.GF11004@lunn.ch>
-References: <1585230682-24417-1-git-send-email-florinel.iordache@nxp.com>
- <1585230682-24417-7-git-send-email-florinel.iordache@nxp.com>
+        id S1727242AbgC0O0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 10:26:18 -0400
+Received: from mail-il1-f176.google.com ([209.85.166.176]:39164 "EHLO
+        mail-il1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726742AbgC0O0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 10:26:18 -0400
+Received: by mail-il1-f176.google.com with SMTP id r5so8899792ilq.6
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 07:26:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Oii4TAjFFw2Hmj832hEAobNWUE/N1jm1qkzOSIs++rA=;
+        b=Xn8tPPrwZbmVuZnlCEKgK6ZkNuOjxusDl0QhKOGO3nmU/qhHvdrxuSipBIJjR/wERO
+         NV6pli5A+K0v7gzUoPcbBBoRwayLR0eGxTrFYBb5bKqVElt+1BgqZbpEFQtE4MWicM+m
+         V69KRADh29CAYJiP5hnpjcwLmVxtbB8zK3FbKtTprliL9RANBA3O9ur5wKvQx62dFAzE
+         B9bpF/iz50+/MsQPPMeWEZIkKSs7syySBZsq1dQGKhG3s9exsKY2eIMi6hM5bFNtjcR2
+         txJxfV9cZZW9gT6U0rL6lZ3SVYBa7jobeY3VloqQRyAOS2E2++abQPwsPNhuerXNGzJx
+         u4tA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Oii4TAjFFw2Hmj832hEAobNWUE/N1jm1qkzOSIs++rA=;
+        b=eH6yHLoMjaWrY8JaXoNybazqrb1hS5B+gJum4Gh1pSd0nDSM36vN5G6U3I/YxGfnBM
+         pdopZEPXeIA9QM8T/nxTFFPxYBcyNJMGUQXJVqxG6ARqEBvvnJuoNZO6D/aBwOF2LsMC
+         e26San9/65vmYI9wHANzrUFLzSnIi3Ve2/by9YTrZNu2X977a8wX1FXtEdS9QYqPf6l7
+         cGq/8u6ta+WULIMVpbGoW5CkdU7Mp7JUcN3T/wQ0NxjahXLGpMswEpMrNnWrPlct0mR3
+         ylXgH5k4qxNA8rpXP2UnMPmgHMFkFC/uTicrZO9XiPf2Uqa2GH78PEckHdLk37ico3XP
+         dIKA==
+X-Gm-Message-State: ANhLgQ3nQuzWEHhr/BdcIkcWCwmhhCEut9EKrhUrgUfZ0rVWRB37XfIP
+        wpY88a/WAotmPBgR7iXfZzbWwg==
+X-Google-Smtp-Source: ADFU+vuGCSzhcUGz0UoOTjCPF0X/6CR8eBY+wR+v1ejFXt9FuheU9eYWGFzfrX8XGUSWJnN1X+Q+hQ==
+X-Received: by 2002:a92:a192:: with SMTP id b18mr13974595ill.199.1585319177493;
+        Fri, 27 Mar 2020 07:26:17 -0700 (PDT)
+Received: from [10.0.0.125] (23-233-27-60.cpe.pppoe.ca. [23.233.27.60])
+        by smtp.googlemail.com with ESMTPSA id h15sm1581013ior.20.2020.03.27.07.26.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 27 Mar 2020 07:26:17 -0700 (PDT)
+Subject: Re: [PATCHv3 bpf-next 3/5] bpf: Don't refcount LISTEN sockets in
+ sk_assign()
+To:     Joe Stringer <joe@wand.net.nz>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        eric.dumazet@gmail.com, lmb@cloudflare.com, kafai@fb.com
+References: <20200327042556.11560-1-joe@wand.net.nz>
+ <20200327042556.11560-4-joe@wand.net.nz>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <daf11ebd-e578-10d4-6e4a-00bb396258cf@mojatatu.com>
+Date:   Fri, 27 Mar 2020 10:26:15 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1585230682-24417-7-git-send-email-florinel.iordache@nxp.com>
+In-Reply-To: <20200327042556.11560-4-joe@wand.net.nz>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +/* Backplane custom logging */
-> +#define BPDEV_LOG(name) \
-> +	char log_buffer[LOG_BUFFER_SIZE]; \
-> +	va_list args; va_start(args, msg); \
-> +	vsnprintf(log_buffer, LOG_BUFFER_SIZE - 1, msg, args); \
-> +	if (!bpphy->attached_dev) \
-> +		dev_##name(&bpphy->mdio.dev, log_buffer); \
-> +	else \
-> +		dev_##name(&bpphy->mdio.dev, "%s: %s", \
-> +			netdev_name(bpphy->attached_dev), log_buffer); \
-> +	va_end(args)
+On 2020-03-27 12:25 a.m., Joe Stringer wrote:
+> BPF_CALL_1(bpf_sk_release, struct sock *, sk)
+>   {
+> -	/* Only full sockets have sk->sk_flags. */
+> -	if (!sk_fullsock(sk) || !sock_flag(sk, SOCK_RCU_FREE))
+> +	if (sk_is_refcounted(sk))
+>   		sock_gen_put(sk);
+>   	return 0;
+>   }
 
-> +void bpdev_err(struct phy_device *bpphy, char *msg, ...)
-> +{
-> +	BPDEV_LOG(err);
-> +}
-> +EXPORT_SYMBOL(bpdev_err);
-> +
-> +void bpdev_warn(struct phy_device *bpphy, char *msg, ...)
-> +{
-> +	BPDEV_LOG(warn);
-> +}
-> +EXPORT_SYMBOL(bpdev_warn);
-> +
-> +void bpdev_info(struct phy_device *bpphy, char *msg, ...)
-> +{
-> +	BPDEV_LOG(info);
-> +}
-> +EXPORT_SYMBOL(bpdev_info);
-> +
-> +void bpdev_dbg(struct phy_device *bpphy, char *msg, ...)
-> +{
-> +	BPDEV_LOG(dbg);
-> +}
-> +EXPORT_SYMBOL(bpdev_dbg);
 
-You are currently modelling this as a phydev. So please just use
-phydev_err(), phydev_info(), phydev_dbg() etc.
+Would it make sense to have both the bpf_sk_release and bpf_sk_assign()
+centralized so we dont replicate the functionality in tc? Reduces
+maintainance overhead.
 
-Also, if you look at other PHY code, struct phy_device * is nearly
-always called phydev. Please try to be consistent with the existing
-code base.
+Thanks for working on this!
 
-     Andrew
+cheers,
+jamal
