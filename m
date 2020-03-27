@@ -2,86 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B1D195462
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 10:44:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BAA731954A9
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 10:59:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbgC0Jou (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 05:44:50 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:55041 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726115AbgC0Jot (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 05:44:49 -0400
-Received: by mail-wm1-f68.google.com with SMTP id c81so10709496wmd.4
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 02:44:48 -0700 (PDT)
+        id S1727370AbgC0J7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 05:59:50 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:44813 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726193AbgC0J7t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 05:59:49 -0400
+Received: by mail-lj1-f195.google.com with SMTP id p14so9507515lji.11
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 02:59:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8lKNlMpFMNvla81GQR795Ns5/lczvRDq/J6TiZHdTj8=;
-        b=g56CaV5+rca4ztT2A1NUAycMuHE0E1v2b7z0MBljTbWuhUU4nTSoevmrhQ3msWZWC2
-         9ttbMiZD2yg/DPe5D+z6OCK87nMPIAWkOr5xcia/TQuKi5Bt2H5SgFdC5BOlE6Z2L2rq
-         /ruLHYR7zdtNNBS6yDVfOI+kTkEipntSSUR0ZXcjo7SO7Mb06Fw2SqS1+n8/T4EvZdEW
-         4T5JT/yyYr6AHdpuOZWNohR4lMVtoTbPR1gq527fBTpVfHHZiFTL35Qm9RIEH1dcnRp+
-         J6Kg0Nsj1QnGO6ZN1/YlWbGM2OzTadxIF35Dh2yoZJ3Z5jwpfmPO/7LsSfdrKhDQPOt0
-         X8WQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iT9ew65Ai4POSw9apePAlYbX2sb+iJXvkgJnQxpRw0g=;
+        b=cWW3YcpEyyYutTrNo9KR9HBH3E1bK+HR2Lj5S1ufOBfKm/JNDbVKgSTehtTbK/piG7
+         AKjHnGwyvO2icmwsa3kFw6Zy9abidGdYmBJm7RwikCnCpiGoaqgq5m3bGu0GFONHPovH
+         s0c/WvnYnPEvbNXNyKweaiea++yeq0zcHNyQfUxojaI3SyGLY4+iyWjDQ0x68SaY8Drf
+         JMetNVWiEP6KTRh7NjcfaAuyl0sKbJRnuDYUHwbVm3S17ouQgtixys00HdZ8IS96Ovz4
+         pek6sQ78KGlTRqT5w9MPDkgc2TCFzKlFMmuVNKZoTHdy8naS5UOmiEGTokrk8DVStpkg
+         Jd4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8lKNlMpFMNvla81GQR795Ns5/lczvRDq/J6TiZHdTj8=;
-        b=uDhSaD1s2JoxB+hUyS4NTg81E0Ctv3du9L+FdahOjK8gRoLVpq5jHG70K3/oHJ3U74
-         sAxLjac4k/JTL8Um3p2BXy3QmvfNTgJDhhf323QzCwVqnfiqyEODa6wlPdaDxY6BeEw3
-         EI6Dme1PRkvX0CsYY9Net7BH0A8ZvCO3wvVVbaUBhR8xeYlHRwmiFKqsMXZtJvXTFNkW
-         fI8YsQB+uLzQhmQiyQxAW/XmJox2uO8LpFpl/FYzvA0EJ4ScNrGR4BKqhq+Mw5YxU3hq
-         5rqgwtKjCfj1emtkG7aGxL2XGZC7UdOhjAJRQuhYWwEJ6tt5AwtvKN67xhJov5caIeYV
-         ca9g==
-X-Gm-Message-State: ANhLgQ0X/oz4XQZeY15gxlvUID70LUD7gfwLI5171G0li+riNZ3dQ7pl
-        0/Vh+fa9h98/hmKX1vMSExS2eA==
-X-Google-Smtp-Source: ADFU+vsP5UKXTmI3Kp55e6+8L/Q0rKyma3hQFKHdYRyNjR91Yxav8WQf6n1LOqiugv2H11jcnNuaWA==
-X-Received: by 2002:a1c:3dd7:: with SMTP id k206mr4582166wma.147.1585302287759;
-        Fri, 27 Mar 2020 02:44:47 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id k3sm7032610wmf.16.2020.03.27.02.44.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2020 02:44:47 -0700 (PDT)
-Date:   Fri, 27 Mar 2020 10:44:46 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Subject: Re: [PATCH v4 net-next 1/6] devlink: Add macro for "fw.mgmt.api" to
- info_get cb.
-Message-ID: <20200327094446.GL11304@nanopsycho.orion>
-References: <1585301692-25954-1-git-send-email-vasundhara-v.volam@broadcom.com>
- <1585301692-25954-2-git-send-email-vasundhara-v.volam@broadcom.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iT9ew65Ai4POSw9apePAlYbX2sb+iJXvkgJnQxpRw0g=;
+        b=jgcHj/FB9iTjNZHGObTlajes3HHhPphPaRaQKaYBDcxz+ZwxN/egic09LnICxUizd7
+         BcuzudJ+dtbVqobSacHdcanfjiz/v4FdAak0jxnDC2Yjz7hO5z/67LdXgNAkbgV2XB+Q
+         p+VPTBWnYxzUAC3osm4qIO07rIImdtsqYD/IqXtU60rKfSeJGSqWGH1SKz0Mmjigk6xf
+         DpBZJe3lEwKlWzQSIOkfLqYY/MJadpqP8EhtvwVvgHKYCpboCG5G+ScGBV0zwvnVawYQ
+         Hekq6Qr6HoLgo/tpgMiKKilBkfuBidgnhI2OwMTfYfWu2ETHLp6YH2r3DQNxAr3Xv8Ga
+         kQVg==
+X-Gm-Message-State: AGi0PuZ3zqrIcViyweMW+u8HmCz5/AxsL2cljwqYtsn0ldm5cuEHhNQk
+        c3W2eWZN9df2QckTCOc056Y80xU9161xi/s4BRi3qA==
+X-Google-Smtp-Source: ADFU+vsFTyW5diEMQrZ6oc8ojCeBX7BYjVmipZYNTS3SNNq4tTiZwvSWUqKgPn07Ht2NDQ7OLG9B8uptAVDDcyFhwxQ=
+X-Received: by 2002:a2e:9605:: with SMTP id v5mr7685010ljh.258.1585303186378;
+ Fri, 27 Mar 2020 02:59:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1585301692-25954-2-git-send-email-vasundhara-v.volam@broadcom.com>
+References: <20200325220542.19189-1-robh@kernel.org> <20200325220542.19189-4-robh@kernel.org>
+In-Reply-To: <20200325220542.19189-4-robh@kernel.org>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 27 Mar 2020 10:59:35 +0100
+Message-ID: <CACRpkdbWeKjd6B2mLz3+7LOxSGP9FqSz6YRp_YHx+2qHkJVFCQ@mail.gmail.com>
+Subject: Re: [PATCH 3/4] dt-bindings: Clean-up schema errors due to missing
+ 'addtionalProperties: false'
+To:     Rob Herring <robh@kernel.org>
+Cc:     "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Brian Masney <masneyb@onstation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Guillaume La Roque <glaroque@baylibre.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Zhang Rui <rui.zhang@intel.com>,
+        "open list:DRM PANEL DRIVERS" <dri-devel@lists.freedesktop.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        MSM <linux-arm-msm@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        linux-media@vger.kernel.org,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Mar 27, 2020 at 10:34:51AM CET, vasundhara-v.volam@broadcom.com wrote:
->Add definition and documentation for the new generic info
->"fw.mgmt.api". This macro specifies the version of the software
->interfaces between driver and firmware.
+On Wed, Mar 25, 2020 at 11:05 PM Rob Herring <robh@kernel.org> wrote:
+
+> Numerous schemas are missing 'additionalProperties: false' statements which
+> ensures a binding doesn't have any extra undocumented properties or child
+> nodes. Fixing this reveals various missing properties, so let's fix all
+> those occurrences.
 >
->Cc: Jakub Kicinski <kuba@kernel.org>
->Cc: Jacob Keller <jacob.e.keller@intel.com>
->Cc: Jiri Pirko <jiri@mellanox.com>
->Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
->Signed-off-by: Michael Chan <michael.chan@broadcom.com>
->---
->v1->v2: Rename macro to "fw.api" from "drv.spec".
->---
->v3->v4: Rename "fw.api" to "fw.mgmt.api", to make it more common
->across all vendors.
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Cc: Neil Armstrong <narmstrong@baylibre.com>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Kevin Hilman <khilman@baylibre.com>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Liam Girdwood <lgirdwood@gmail.com>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Guillaume La Roque <glaroque@baylibre.com>
+> Cc: Zhang Rui <rui.zhang@intel.com>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: linux-clk@vger.kernel.org
+> Cc: linux-gpio@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-iio@vger.kernel.org.
+> Cc: linux-media@vger.kernel.org
+> Cc: linux-amlogic@lists.infradead.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
 
-Sounds fine.
+Sorry for errors caused by me,
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Reviewed-by: Jiri Pirko <jiri@mellanox.com>
+Yours,
+Linus Walleij
