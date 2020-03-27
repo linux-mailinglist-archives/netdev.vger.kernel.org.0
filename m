@@ -2,70 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5773A195FA5
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 21:25:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AF13195FDC
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 21:34:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727705AbgC0UZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 16:25:23 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:12414 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726959AbgC0UZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 16:25:22 -0400
-X-UUID: fc4de451caf94de1905136eed59a291e-20200328
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From; bh=Srf3BRn2UUVY4cXD1Kv+sL+AswQnzJsHnmQNVtOozvY=;
-        b=IThb/2dXv2ASi0QKA6TjB9GbJT6/Uy/2tv1gbXF2mWgRPS36RGnKo3uEJn08mZdX08GcoXXyHpqnkY6eXFIvbMAMy937hn5gMM707G9YJ1Dvts3sQjY9ZkX+jNnY7eyHaq+6YzHwYTsOEsERv5aW5Jeftr2JO4C2bU3Qet3fGVM=;
-X-UUID: fc4de451caf94de1905136eed59a291e-20200328
-Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
-        (envelope-from <sean.wang@mediatek.com>)
-        (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-        with ESMTP id 617636089; Sat, 28 Mar 2020 04:25:18 +0800
-Received: from mtkcas09.mediatek.inc (172.21.101.178) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Sat, 28 Mar 2020 04:25:16 +0800
-Received: from mtkswgap22.mediatek.inc (172.21.77.33) by mtkcas09.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Sat, 28 Mar 2020 04:25:15 +0800
-From:   <sean.wang@mediatek.com>
-To:     <netdev@vger.kernel.org>
-CC:     <sean.wang@mediatek.com>, <frank-w@public-files.de>,
-        <landen.chao@mediatek.com>, <andrew@lunn.ch>,
-        <vivien.didelot@gmail.com>, <f.fainelli@gmail.com>,
-        <davem@davemloft.net>, <matthias.bgg@gmail.com>,
-        <linux@armlinux.org.uk>, <linux-mediatek@lists.infradead.org>
-Subject: =?UTF-8?q?Re=3A=20=5BPATCH=20net-next=5D=20net=3A=20dsa=3A=20mt7530=3A=20use=20resolved=20link=20config=20in=20mac=5Flink=5Fup=28=29?=
-Date:   Sat, 28 Mar 2020 04:25:14 +0800
-Message-ID: <1585340714-9932-1-git-send-email-sean.wang@mediatek.com>
-X-Mailer: git-send-email 1.7.9.5
-In-Reply-To: <20200327144412.100913-1-opensource@vdorst.com>
-References: <20200327144412.100913-1-opensource@vdorst.com>
+        id S1727800AbgC0UeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 16:34:11 -0400
+Received: from www62.your-server.de ([213.133.104.62]:39836 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727393AbgC0UeL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 16:34:11 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jHvg6-00089O-S4; Fri, 27 Mar 2020 21:34:06 +0100
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jHvg6-000Lpp-Dh; Fri, 27 Mar 2020 21:34:06 +0100
+Subject: Re: [PATCH v3] bpf: fix build warning - missing prototype
+To:     Jean-Philippe Menil <jpmenil@gmail.com>,
+        alexei.starovoitov@gmail.com
+Cc:     kernel-janitors@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200326235426.ei6ae2z5ek6uq3tt@ast-mbp>
+ <20200327075544.22814-1-jpmenil@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <3164e566-d54e-2254-32c4-d7fee47c37ea@iogearbox.net>
+Date:   Fri, 27 Mar 2020 21:34:05 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-X-MTK:  N
-Content-Transfer-Encoding: base64
+In-Reply-To: <20200327075544.22814-1-jpmenil@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25764/Fri Mar 27 14:11:26 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogU2VhbiBXYW5nIDxzZWFuLndhbmdAbWVkaWF0ZWsuY29tPg0KDQo+Q29udmVydCB0aGUg
-bXQ3NTMwIHN3aXRjaCBkcml2ZXIgdG8gdXNlIHRoZSBmaW5hbGlzZWQgbGluayBwYXJhbWV0ZXJz
-IGluIG1hY19saW5rX3VwKCkgcmF0aGVyIHRoYW4gdGhlIHBhcmFtZXRlcnMgaW4gbWFjX2NvbmZp
-ZygpLg0KPg0KPlNpZ25lZC1vZmYtYnk6IFJlbsOpIHZhbiBEb3JzdCA8b3BlbnNvdXJjZUB2ZG9y
-c3QuY29tPg0KDQpUaGF0IHBhdGNoIHdvcmtzIHdlbGwgd2l0aCBlaXRoZXIgVFJHTUkgb24gUkdN
-SUkgbW9kZSBvbiBNVDc2MjMgcmVmZXJlbmNlIGJvYXJkLg0KDQpUZXN0ZWQtYnk6IFNlYW4gV2Fu
-ZyA8c2Vhbi53YW5nQG1lZGlhdGVrLmNvbT4NCg0KPi0tLQ0KPiBkcml2ZXJzL25ldC9kc2EvbXQ3
-NTMwLmMgfCA1NyArKysrKysrKysrKysrKysrKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+IGRy
-aXZlcnMvbmV0L2RzYS9tdDc1MzAuaCB8ICA0ICsrKw0KPiAyIGZpbGVzIGNoYW5nZWQsIDI4IGlu
-c2VydGlvbnMoKyksIDMzIGRlbGV0aW9ucygtKQ0KPg0KPmRpZmYgLS1naXQgYS9kcml2ZXJzL25l
-dC9kc2EvbXQ3NTMwLmMgYi9kcml2ZXJzL25ldC9kc2EvbXQ3NTMwLmMgaW5kZXggNmU5MWZlMmY0
-YjlhLi5lZjU3NTUyZGIyNjAgMTAwNjQ0DQo+LS0tIGEvZHJpdmVycy9uZXQvZHNhL210NzUzMC5j
-DQo+KysrIGIvZHJpdmVycy9uZXQvZHNhL210NzUzMC5jDQo+QEAgLTU2MywxNyArNTYzLDYgQEAg
-bXQ3NTMwX21pYl9yZXNldChzdHJ1Y3QgZHNhX3N3aXRjaCAqZHMpDQo+IAltdDc1MzBfd3JpdGUo
-cHJpdiwgTVQ3NTMwX01JQl9DQ1IsIENDUl9NSUJfQUNUSVZBVEUpOyAgfQ0KPiANCj4tc3RhdGlj
-IHZvaWQNCj4tbXQ3NTMwX3BvcnRfc2V0X3N0YXR1cyhzdHJ1Y3QgbXQ3NTMwX3ByaXYgKnByaXYs
-IGludCBwb3J0LCBpbnQgZW5hYmxlKSAtew0KPi0JdTMyIG1hc2sgPSBQTUNSX1RYX0VOIHwgUE1D
-Ul9SWF9FTiB8IFBNQ1JfRk9SQ0VfTE5LOw0KPi0NCj4tCWlmIChlbmFibGUpDQo+LQkJbXQ3NTMw
-X3NldChwcml2LCBNVDc1MzBfUE1DUl9QKHBvcnQpLCBtYXNrKTsNCj4tCWVsc2UNCj4tCQltdDc1
-MzBfY2xlYXIocHJpdiwgTVQ3NTMwX1BNQ1JfUChwb3J0KSwgbWFzayk7DQo+LX0NCj4tDQo+
+On 3/27/20 8:55 AM, Jean-Philippe Menil wrote:
+> Fix build warnings when building net/bpf/test_run.o with W=1 due
+> to missing prototype for bpf_fentry_test{1..6}.
+> 
+> Instead of declaring prototypes, turn off warnings with
+> __diag_{push,ignore,pop} as pointed by Alexei.
+> 
+> Signed-off-by: Jean-Philippe Menil <jpmenil@gmail.com>
+
+Looks better, but this doesn't apply cleanly. Please respin to latest bpf-next tree, thanks.
+
+> ---
+>   net/bpf/test_run.c | 5 +++++
+>   1 file changed, 5 insertions(+)
+> 
+> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> index d555c0d8657d..cc1592413fc3 100644
+> --- a/net/bpf/test_run.c
+> +++ b/net/bpf/test_run.c
+> @@ -113,6 +113,9 @@ static int bpf_test_finish(const union bpf_attr *kattr,
+>    * architecture dependent calling conventions. 7+ can be supported in the
+>    * future.
+>    */
+> +__diag_push();
+> +__diag_ignore(GCC, 8, "-Wmissing-prototypes",
+> +	      "Global functions as their definitions will be in vmlinux BTF);
+>   int noinline bpf_fentry_test1(int a)
+>   {
+>   	return a + 1;
+> @@ -143,6 +146,8 @@ int noinline bpf_fentry_test6(u64 a, void *b, short c, int d, void *e, u64 f)
+>   	return a + (long)b + c + d + (long)e + f;
+>   }
+>   
+> +__diag_pop();
+> +
+>   static void *bpf_test_init(const union bpf_attr *kattr, u32 size,
+>   			   u32 headroom, u32 tailroom)
+>   {
+> 
 
