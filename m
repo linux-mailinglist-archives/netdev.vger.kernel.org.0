@@ -2,63 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C7E3195E98
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 20:26:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DBE5195EDF
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 20:37:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727685AbgC0T0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 15:26:49 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:39296 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727349AbgC0T0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 15:26:49 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1jHucp-0001vg-Tu; Fri, 27 Mar 2020 19:26:40 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        John Crispin <john@phrozen.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] ath11k: fix error message to correctly report the command that failed
-Date:   Fri, 27 Mar 2020 19:26:39 +0000
-Message-Id: <20200327192639.363354-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.25.1
+        id S1727423AbgC0Tha (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 15:37:30 -0400
+Received: from mail-qt1-f173.google.com ([209.85.160.173]:37357 "EHLO
+        mail-qt1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726738AbgC0Tha (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 15:37:30 -0400
+Received: by mail-qt1-f173.google.com with SMTP id z24so8381190qtu.4;
+        Fri, 27 Mar 2020 12:37:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=70nBxb9Uu436nVJwwpRBcaOoIGhWBRxDPAZgJU87ffU=;
+        b=UGMykSgv4GjjHpmpN1ZC0aGA9QDNbM+yChrHxlqeb5uWjNGHD1OqURiXgfvax4PuyT
+         PWv+8j7/jQmIFl1RpGS2REiMUZTh2cpFWmzX4FyxxzeCZjLA5vqx55XhicFNNVF4JLpm
+         su7zB1//GDFB6OkEtRTHbQb98iAl5l+63kDff2bQsncwoZYE3U3psa+e9nSHAGRX9EYl
+         BfDTPGQjY5rrUYU9YjFYUDlptEz5Ocle3Fb4lVq2k0dGBqxyf0KjvEvNI9wfhEw25JHo
+         YdweWdjiWXR6GnsaWbGgnQ3Q5y2jlCQikspzlIQMhT3i7F7p9yvNGIdH5TAB086FT6Av
+         aDyQ==
+X-Gm-Message-State: ANhLgQ2ogZWnvyXgoahT8Wklvy1Wp4SJg0zmoqoYJcNdgqSGSecl8LoB
+        GL1dO9inj1uv9Gz2swn4tBvsO5UuZRs74DB4y/U=
+X-Google-Smtp-Source: ADFU+vtDyK9oxrOasceBXDZUGP854ROLOeSvisvOdyG8f9ZNVDGfJlQ0bQLPdT912y3B5ZsI7v0CS1MY4s++p4b9BiY=
+X-Received: by 2002:ac8:4519:: with SMTP id q25mr923260qtn.13.1585337849011;
+ Fri, 27 Mar 2020 12:37:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <20200327042556.11560-1-joe@wand.net.nz> <20200327042556.11560-6-joe@wand.net.nz>
+ <CACAyw9-GOw5tkR8n6p7Kct9-wq4B-9ka-X8R2V8uZv8VWUY5UQ@mail.gmail.com>
+In-Reply-To: <CACAyw9-GOw5tkR8n6p7Kct9-wq4B-9ka-X8R2V8uZv8VWUY5UQ@mail.gmail.com>
+From:   Joe Stringer <joe@wand.net.nz>
+Date:   Fri, 27 Mar 2020 12:37:01 -0700
+Message-ID: <CAOftzPh5NKmmFcQ203ie21-nbxtVB9Zon4hO64CXA+xTH8K6nw@mail.gmail.com>
+Subject: Re: [PATCHv3 bpf-next 5/5] selftests: bpf: Extend sk_assign tests for UDP
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     bpf <bpf@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Fri, Mar 27, 2020 at 3:12 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+>
+> On Fri, 27 Mar 2020 at 04:26, Joe Stringer <joe@wand.net.nz> wrote:
+> >
+> > Add support for testing UDP sk_assign to the existing tests.
+> >
+> > Signed-off-by: Joe Stringer <joe@wand.net.nz>
+>
+> Thanks!
+>
+> Acked-by: Lorenz Bauer <lmb@cloudflare.com>
 
-Currently the error message refers to the command WMI_TWT_DIeABLE_CMDID
-which looks like a cut-n-paste mangled typo. Fix the message to match
-the command WMI_BSS_COLOR_CHANGE_ENABLE_CMDID that failed.
-
-Fixes: 5a032c8d1953 ("ath11k: add WMI calls required for handling BSS color")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/wireless/ath/ath11k/wmi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index e7ce36966d6a..6fec62846279 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -2779,7 +2779,7 @@ int ath11k_wmi_send_bss_color_change_enable_cmd(struct ath11k *ar, u32 vdev_id,
- 	ret = ath11k_wmi_cmd_send(wmi, skb,
- 				  WMI_BSS_COLOR_CHANGE_ENABLE_CMDID);
- 	if (ret) {
--		ath11k_warn(ab, "Failed to send WMI_TWT_DIeABLE_CMDID");
-+		ath11k_warn(ab, "Failed to send WMI_BSS_COLOR_CHANGE_ENABLE_CMDID");
- 		dev_kfree_skb(skb);
- 	}
- 	return ret;
--- 
-2.25.1
-
+Thanks! I assume you meant to ack this on-list but looks like it just
+made it to me individually :-)
