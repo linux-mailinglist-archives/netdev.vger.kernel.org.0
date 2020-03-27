@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E74711960C7
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 23:00:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 263471960C9
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 23:00:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727677AbgC0WAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 18:00:46 -0400
-Received: from mail-qk1-f169.google.com ([209.85.222.169]:43994 "EHLO
-        mail-qk1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726781AbgC0WAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 18:00:46 -0400
-Received: by mail-qk1-f169.google.com with SMTP id o10so12491030qki.10
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 15:00:45 -0700 (PDT)
+        id S1727716AbgC0WAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 18:00:49 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:45316 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727611AbgC0WAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 18:00:48 -0400
+Received: by mail-qt1-f194.google.com with SMTP id t17so9932398qtn.12
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 15:00:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=04qconmLEazi5kRkpGbM2edP1QbpR1jlZYfgCe7OLT0=;
-        b=FWP9JUqZksFgdGUN3gB8r9gM3bHEmvad+T9UZ81m/UQyDjdrGgF2wBGEsDIDFgooyu
-         m4wZXs/G4U7Ummdbxle1ZjFMmYrehjcKVetEZR4pNk+2w4MZk5gQ3QrcXSBacF3ErD37
-         8YM37pE3DL/uqfDgeAgi2rnLV6sufmrs0WlBrw4YWIwZcHl0eGTpvRC6akL5/XsDbKb2
-         vCCIhN0z+pLcy2CjIfCpiLU0HYhavUavdrR4Vo66UVu/b7NTAaGK4qyF96AenYWHlDJz
-         d9lALffWJ8qWFdplwsEGrTo0XAkEkG8QubhHHzkufF3uUbVMBy/UjO0RrEVfkah2Jl9b
-         kbFw==
+        bh=NOcbegi1l7xTihrE+PQU6zO4Dow+M35LYDDeoAcbal4=;
+        b=oHIEyf8BV6rtMa5rypGf1eImZMoa3UNrlklRnooXf42OyZdaEIAxZGonRoIYsWG2HR
+         Wv2EJ44YxEAohuvk5nl0/IsJ3reUr4oScti03lLizHr2h7wTSv6qezuU6N4FLmX+mmUq
+         TMpiw9pchk+1bkJSTmIS6HNIMcdThsuzIqfF+6llDcGnbc6lcnGqZnAnqpXw3RSo86ZI
+         e1Z8RCA36m4GlQxs/rw04zcwsQWh6yo5eEWT1ARYghRNPHyBXjktplKS3UcAt2VkNol/
+         oA8yoXwUqDvpyGKBOSvVO8DX6dK7Pen6/kfr+6IEVNOgYGQ0vZ7cEKjZAPQCwqzNgqqY
+         ujyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=04qconmLEazi5kRkpGbM2edP1QbpR1jlZYfgCe7OLT0=;
-        b=Xgc+2z2GppelryU1+UjkAakJBzUrnLW0D2Jeb1TlZRveIqYPNdd+GSf9cXIANlL/F+
-         dUaRyROCK1leEdIAUP+PIL6mzWKIujusfAJHFrYMAQ0NdIWu/lnYv2xYu+JMsLr9zuKW
-         7fiJQvrrBDsbA146eREqCZKMOxcf9XvOKiCVJHoWaE3VwCMsy3j0X5LUL2Wn8UlSVIah
-         xfhI9GZGgLGcDANMHhVwRnl8fn4KQ9VU2zfuMW8kbu8Af1q5H4p+8uwDoo7X9EyWvlbZ
-         3gi6xbym15KV/b07q0S64+n1ONyLRbaepOMFkHKaFT1SWHTgssz3LB/K3LZ+1TfiPODm
-         3VnQ==
-X-Gm-Message-State: ANhLgQ0X+PyZC3pNfQH01imSkWzfTjt795pClc/UOkDsQ0Hmh3eL29t4
-        xu95tDRR5ScQw3J1NtowH3Y=
-X-Google-Smtp-Source: ADFU+vs4sPgNJoPD1REd6GegN+gVUD7ea7CdZWLfgAs5EOh8fbuTRIumZ13MleGkwaX11/FIKGNiKg==
-X-Received: by 2002:a37:b986:: with SMTP id j128mr1471193qkf.109.1585346445166;
-        Fri, 27 Mar 2020 15:00:45 -0700 (PDT)
+        bh=NOcbegi1l7xTihrE+PQU6zO4Dow+M35LYDDeoAcbal4=;
+        b=E4vUyGUfRXug8wJhypcBHDoHZ/AtOu+Wo6FVhsv53iKjNXPivVUCi4XnX/66qF3hZk
+         UVotto3GZcEIwfgHPyaoAZFSHlGqlhtV/PgLA7w1+HKzfh0NoYl/I23NP+D6mm1gcWdx
+         XUC6rBFeJoOahWqdLJdtUVB4HBkMtTCtCg7EbW15/fcaCC5FPtz6APPkU2k/Ruyv/ew6
+         iEWFSWKJPoLPKTI6fFG6ostBE870SFKA70N1Is+9reBE8r+M/Yza+oZ6a6/ILRc4Hrl+
+         V1LNlPsdPzlHqCMlgcrw6qZKwswQ8k+kiudskXsNZcoZsBX6YZAqZo+C09krjOL/WGmt
+         GVQg==
+X-Gm-Message-State: ANhLgQ2iKSy6u1WdcWhWumaPu4FuDUuahrDOucw2jqw6fjqCLeIYDKZr
+        yfJFTMrNOBoOgxD0hoNny4I=
+X-Google-Smtp-Source: ADFU+vtDj+Vf5yvmv+AZQ6PcXUW8+3Gotgba8dBR6SU1H8SrrwnT4nCsXWiFUo3AGWc8oBAJ1Ybp/g==
+X-Received: by 2002:ac8:5291:: with SMTP id s17mr1472891qtn.156.1585346446569;
+        Fri, 27 Mar 2020 15:00:46 -0700 (PDT)
 Received: from localhost.localdomain ([45.72.142.47])
-        by smtp.gmail.com with ESMTPSA id v20sm5073659qth.10.2020.03.27.15.00.43
+        by smtp.gmail.com with ESMTPSA id v20sm5073659qth.10.2020.03.27.15.00.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2020 15:00:44 -0700 (PDT)
+        Fri, 27 Mar 2020 15:00:46 -0700 (PDT)
 From:   Alexander Aring <alex.aring@gmail.com>
 To:     davem@davemloft.net
 Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
@@ -51,9 +51,9 @@ Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
         kai.beckmann@hs-rm.de, martin.gergeleit@hs-rm.de,
         robert.kaiser@hs-rm.de, netdev@vger.kernel.org,
         Alexander Aring <alex.aring@gmail.com>
-Subject: [PATCHv3 net-next 1/5] include: uapi: linux: add rpl sr header definition
-Date:   Fri, 27 Mar 2020 18:00:18 -0400
-Message-Id: <20200327220022.15220-2-alex.aring@gmail.com>
+Subject: [PATCHv3 net-next 2/5] addrconf: add functionality to check on rpl requirements
+Date:   Fri, 27 Mar 2020 18:00:19 -0400
+Message-Id: <20200327220022.15220-3-alex.aring@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200327220022.15220-1-alex.aring@gmail.com>
 References: <20200327220022.15220-1-alex.aring@gmail.com>
@@ -64,72 +64,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a uapi header for rpl struct definition. The segments
-data can be accessed over rpl_segaddr or rpl_segdata macros. In case of
-compri and compre is zero the segment data is not compressed and can be
-accessed by rpl_segaddr. In the other case the compressed data can be
-accessed by rpl_segdata and interpreted as byte array.
+This patch adds a functionality to addrconf to check on a specific RPL
+address configuration. According to RFC 6554:
+
+To detect loops in the SRH, a router MUST determine if the SRH
+includes multiple addresses assigned to any interface on that
+router. If such addresses appear more than once and are separated by
+at least one address not assigned to that router.
 
 Signed-off-by: Alexander Aring <alex.aring@gmail.com>
 ---
- include/uapi/linux/rpl.h | 48 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
- create mode 100644 include/uapi/linux/rpl.h
+ include/net/addrconf.h |  3 +++
+ net/ipv6/addrconf.c    | 53 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 56 insertions(+)
 
-diff --git a/include/uapi/linux/rpl.h b/include/uapi/linux/rpl.h
-new file mode 100644
-index 000000000000..1dccb55cf8c6
---- /dev/null
-+++ b/include/uapi/linux/rpl.h
-@@ -0,0 +1,48 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+/*
-+ *  IPv6 RPL-SR implementation
+diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+index a088349dd94f..e0eabe58aa8b 100644
+--- a/include/net/addrconf.h
++++ b/include/net/addrconf.h
+@@ -90,6 +90,9 @@ int ipv6_chk_addr_and_flags(struct net *net, const struct in6_addr *addr,
+ int ipv6_chk_home_addr(struct net *net, const struct in6_addr *addr);
+ #endif
+ 
++int ipv6_chk_rpl_srh_loop(struct net *net, const struct in6_addr *segs,
++			  unsigned char nsegs);
++
+ bool ipv6_chk_custom_prefix(const struct in6_addr *addr,
+ 				   const unsigned int prefix_len,
+ 				   struct net_device *dev);
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index 5b9de773ce73..594963a7e1ec 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4398,6 +4398,59 @@ int ipv6_chk_home_addr(struct net *net, const struct in6_addr *addr)
+ }
+ #endif
+ 
++/* RFC6554 has some algorithm to avoid loops in segment routing by
++ * checking if the segments contains any of a local interface address.
 + *
-+ *  Author:
-+ *  (C) 2020 Alexander Aring <alex.aring@gmail.com>
++ * Quote:
++ *
++ * To detect loops in the SRH, a router MUST determine if the SRH
++ * includes multiple addresses assigned to any interface on that router.
++ * If such addresses appear more than once and are separated by at least
++ * one address not assigned to that router.
 + */
++int ipv6_chk_rpl_srh_loop(struct net *net, const struct in6_addr *segs,
++			  unsigned char nsegs)
++{
++	const struct in6_addr *addr;
++	int i, ret = 0, found = 0;
++	struct inet6_ifaddr *ifp;
++	bool separated = false;
++	unsigned int hash;
++	bool hash_found;
 +
-+#ifndef _UAPI_LINUX_RPL_H
-+#define _UAPI_LINUX_RPL_H
++	rcu_read_lock();
++	for (i = 0; i < nsegs; i++) {
++		addr = &segs[i];
++		hash = inet6_addr_hash(net, addr);
 +
-+#include <asm/byteorder.h>
-+#include <linux/types.h>
-+#include <linux/in6.h>
++		hash_found = false;
++		hlist_for_each_entry_rcu(ifp, &inet6_addr_lst[hash], addr_lst) {
++			if (!net_eq(dev_net(ifp->idev->dev), net))
++				continue;
 +
-+/*
-+ * RPL SR Header
-+ */
-+struct ipv6_rpl_sr_hdr {
-+	__u8	nexthdr;
-+	__u8	hdrlen;
-+	__u8	type;
-+	__u8	segments_left;
-+#if defined(__LITTLE_ENDIAN_BITFIELD)
-+	__u32	cmpre:4,
-+		cmpri:4,
-+		reserved:4,
-+		pad:4,
-+		reserved1:16;
-+#elif defined(__BIG_ENDIAN_BITFIELD)
-+	__u32	reserved:20,
-+		pad:4,
-+		cmpri:4,
-+		cmpre:4;
-+#else
-+#error  "Please fix <asm/byteorder.h>"
-+#endif
++			if (ipv6_addr_equal(&ifp->addr, addr)) {
++				hash_found = true;
++				break;
++			}
++		}
 +
-+	union {
-+		struct in6_addr addr[0];
-+		__u8 data[0];
-+	} segments;
-+} __attribute__((packed));
++		if (hash_found) {
++			if (found > 1 && separated) {
++				ret = 1;
++				break;
++			}
 +
-+#define rpl_segaddr	segments.addr
-+#define rpl_segdata	segments.data
++			separated = false;
++			found++;
++		} else {
++			separated = true;
++		}
++	}
++	rcu_read_unlock();
 +
-+#endif
++	return ret;
++}
++
+ /*
+  *	Periodic address status verification
+  */
 -- 
 2.20.1
 
