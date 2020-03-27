@@ -2,95 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A178195805
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 14:30:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB5EA195817
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 14:34:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727612AbgC0NaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 09:30:15 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:35340 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727247AbgC0NaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 09:30:15 -0400
-Received: by mail-il1-f199.google.com with SMTP id t10so8909048ilf.2
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 06:30:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=n4vumiXWDS40eA/9ntKo+unPEO96iPs77sUIyblD6q8=;
-        b=GxBru5T1KgmPvspslS0S9AA7J6/82Cn6myyOkao3prDO/IXR8/nqYEK7dAneS6B06s
-         EcaUEmyifSDOMZ7CWG5Wz0D9baIHQquvlzdCT0ITNW9rqBR4rVye+/eltQN311N5gfel
-         uoNN41qygcONge0qUd3VFRAjFnKkvOEwVcvnsffGxHyxCGj57M/URDbeakdWHRdzASbg
-         TVnMR4UwijlQYdS0oU8StoMieGZpUQPGQEOVWB89+h/IqrOh+PbRU0pRJEHBN03+2v3z
-         Rb2muV7QboJf0bdFDzCud0nYVGxsongaU5FgCcSlDVbnBG3iD3Xip4cU6EXLjvtXlYhz
-         tlFg==
-X-Gm-Message-State: ANhLgQ3dHt6SYAx0yRAReATIluQckeKhsTBtOtaF/fZt3qk/7JOPpbqR
-        xNE8INLI5Cnt5evyObs8DTfifaev/dyQhYfm2QTSZbH2qo4N
-X-Google-Smtp-Source: ADFU+vtsdGZ0mIf4+EJpDoxAfc6IIb4PwKVbgR0RItf2HFkpqESytj6kyz/idIh55iyZQCV/qn/E4spNJ75LiVetgXCIpzopEKJx
+        id S1727393AbgC0Nev (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 09:34:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47836 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726275AbgC0Nev (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Mar 2020 09:34:51 -0400
+Received: from mail.kernel.org (ip5f5ad4d8.dynamic.kabel-deutschland.de [95.90.212.216])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 28EF120658;
+        Fri, 27 Mar 2020 13:34:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585316090;
+        bh=50d7atbbqCu8sVfTjeDFx1DNlGegS0O1DKeZQZ52JP8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=WBUFkK5g/Fd0EJOxssi6MUZ8HPDTne7wpMIkbWcxTeqKQxpHTFrdDUGhYKsfAiNsr
+         DUQJCsqXySsHXU3oZs7SEwrbj4VOHzh+wky1vfgBqQNR+bklIcYFGZZaQRh0o6yd4W
+         xRJC502G1n6dGOTlOIc6cmGye2/plnCxTk7nVWFw=
+Received: from mchehab by mail.kernel.org with local (Exim 4.92.3)
+        (envelope-from <mchehab@kernel.org>)
+        id 1jHp8J-0049th-V8; Fri, 27 Mar 2020 14:34:47 +0100
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Harish Bandi <c-hbandi@codeaurora.org>,
+        Venkata Lakshmi Narayana Gubba <gubbaven@codeaurora.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Rocky Liao <rjliao@codeaurora.org>,
+        Matthias Brugger <mbrugger@suse.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH] docs: dt: fix a broken reference for a file converted to json
+Date:   Fri, 27 Mar 2020 14:34:47 +0100
+Message-Id: <33fa622c263ad40a129dc2b8dd0111b40016bc17.1585316085.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:253:: with SMTP id w19mr12803116jaq.137.1585315814604;
- Fri, 27 Mar 2020 06:30:14 -0700 (PDT)
-Date:   Fri, 27 Mar 2020 06:30:14 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000fc837f05a1d619d5@google.com>
-Subject: INFO: trying to register non-static key in ath9k_htc_rx_msg
-From:   syzbot <syzbot+835e7082fea90ddd153f@syzkaller.appspotmail.com>
-To:     andreyknvl@google.com, ath9k-devel@qca.qualcomm.com,
-        davem@davemloft.net, kvalo@codeaurora.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Changeset 32ced09d7903 ("dt-bindings: serial: Convert slave-device bindings to json-schema")
+moved a binding to json and updated the links. Yet, one link
+was forgotten.
 
-syzbot found the following crash on:
+Update this one too.
 
-HEAD commit:    e17994d1 usb: core: kcov: collect coverage from usb comple..
-git tree:       https://github.com/google/kasan.git usb-fuzzer
-console output: https://syzkaller.appspot.com/x/log.txt?x=1274cdc5e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=5d64370c438bc60
-dashboard link: https://syzkaller.appspot.com/bug?extid=835e7082fea90ddd153f
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1415bba7e00000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12c3316be00000
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+835e7082fea90ddd153f@syzkaller.appspotmail.com
-
-INFO: trying to register non-static key.
-the code is fine but needs lockdep annotation.
-turning off the locking correctness validator.
-CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.6.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0xef/0x16e lib/dump_stack.c:118
- assign_lock_key kernel/locking/lockdep.c:880 [inline]
- register_lock_class+0x1022/0x11d0 kernel/locking/lockdep.c:1189
- __lock_acquire+0xfc/0x3b60 kernel/locking/lockdep.c:3836
- lock_acquire+0x130/0x340 kernel/locking/lockdep.c:4484
- __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
- _raw_spin_lock_irqsave+0x32/0x50 kernel/locking/spinlock.c:159
- complete+0x13/0x70 kernel/sched/completion.c:32
- htc_process_conn_rsp drivers/net/wireless/ath/ath9k/htc_hst.c:138 [inline]
- ath9k_htc_rx_msg+0x7c2/0xaf0 drivers/net/wireless/ath/ath9k/htc_hst.c:443
- ath9k_hif_usb_reg_in_cb+0x1ba/0x630 drivers/net/wireless/ath/ath9k/hif_usb.c:718
- __usb_hcd_giveback_urb+0x29a/0x550 drivers/usb/core/hcd.c:1650
- usb_hcd_giveback_urb+0x368/0x420 drivers/usb/core/hcd.c:1716
-
-
+Fixes: 32ced09d7903 ("dt-bindings: serial: Convert slave-device bindings to json-schema")
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
+index beca6466d59a..d2202791c1d4 100644
+--- a/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
++++ b/Documentation/devicetree/bindings/net/qualcomm-bluetooth.txt
+@@ -29,7 +29,7 @@ Required properties for compatible string qcom,wcn399x-bt:
+ 
+ Optional properties for compatible string qcom,wcn399x-bt:
+ 
+- - max-speed: see Documentation/devicetree/bindings/serial/slave-device.txt
++ - max-speed: see Documentation/devicetree/bindings/serial/serial.yaml
+  - firmware-name: specify the name of nvm firmware to load
+  - clocks: clock provided to the controller
+ 
+-- 
+2.25.1
+
