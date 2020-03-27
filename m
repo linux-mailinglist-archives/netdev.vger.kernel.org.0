@@ -2,187 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA139195F01
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 20:46:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59EC8195F2E
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 20:50:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727751AbgC0TqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 15:46:02 -0400
-Received: from mail-eopbgr150083.outbound.protection.outlook.com ([40.107.15.83]:59582
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727666AbgC0TqC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Mar 2020 15:46:02 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LR7dTUmXJULrrOGhvgdIDDUmrbtm5bbdcyxjpGS3ii47tT08YH72vFXP5P1IfgQulXZgIhA9Mad2MeBFCNTQ2I9nSPuXXCuex7BifbyNMnzF4FVeowVErx15nraEbRMLq4Mz5rCMCS7onzK1RtsDz5yP2mHcRPH3sbI9YXwP8fUsxGbdlGwHys9U9+HTNJ4QWVv5gZcYAgSEgX/reaccWV4vAaZ6Sb1Io/kNrwog32JkGRXeTqkhIxCq+7ZJC5oWtQVkc8vtjKYDSxD7+cFRwtHtFDe4kqCpKS3QX3NivgEGVVdPzSCD7Udg5O+H+YPrWFj5A80VHFLD92OD2Oy+8g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uXAMAcmfoGReXNcSYu4gGwpz30kmnOWRq/aIKMLeY4U=;
- b=eu1rcOXQ0IVVNTEbcdVRs3Mj84h2C1qTaOZI2bEntiGVIAADOzhdrN5SUzaSW7qXpZqO26wdE/0r8O1BrQVv6nMAmC4nw4fqqnJAcuMFxGBtUyapkXmZAztL3hbQ/mWX/YZVUCCONdzdKzKP3BDd5nbRty6cuPd9KKTAxFwHD25R6QAdGE09DA/AhJJwaJABs/w31SBYA/1vcEQ/RESKklKENS4f08n+hWw/DI+ZHZwc1+5ak9W270SAMMKbxECuDoiF4Ya/E7t3V6m3EMfdkJOZ5SbuGdaOjlzhSKZ50+6nebOgCis6ClBnrcGtzH3O7coOtTWN0dbQ/1BXD3+QQQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uXAMAcmfoGReXNcSYu4gGwpz30kmnOWRq/aIKMLeY4U=;
- b=r7feU5OmOekPpVrNWUfa/ytCeVRWdL8JoObpTxo+KDrFdV4ZkvFUPIbaxIDzorR+pB0juNsI3tsphhR2OReSajnUzW82ylgL2BJgJYhoZwT67dBal0Zz24N8t6qeyoTxXqfY6zzouICfDFleLYk6VS+ITG0iQwCCJa/PGHgG+1w=
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1SPR01MB0382.eurprd05.prod.outlook.com (20.178.81.160) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2856.18; Fri, 27 Mar 2020 19:45:54 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::8cea:6c66:19fe:fbc2%7]) with mapi id 15.20.2835.023; Fri, 27 Mar 2020
- 19:45:53 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "sridhar.samudrala@intel.com" <sridhar.samudrala@intel.com>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     Aya Levin <ayal@mellanox.com>,
-        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
-        "sburla@marvell.com" <sburla@marvell.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        Tariq Toukan <tariqt@mellanox.com>,
+        id S1727444AbgC0TuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 15:50:16 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:38926 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726900AbgC0TuQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 15:50:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=4Diu5lIr+Y8QAtBiw+Dz3/YooHGatfTmZ2vBm4LQ+/s=; b=Q51wnMxIIa4T/OYEPdjv9g+Ux
+        Irf8oRVZpjYcxoYoIsTAVcAQkzq3Kz2dmXbqmApEYuKUSymjmLXJVV/k/VgwpyDmzt4kNxSwA1ug5
+        zFMwy3TrsFYnNa2LjO4zVO2jbj+mfm2/XLvE76nlwy9TfzB8ECisRMomTBwasRXTPcS0BPeKUIheX
+        dOXz138VLXNG5SklnCL9ETbgSriEx2+vR+u/ZJ1cOg3u12lXjlwr8yrGxbod0doBdncrmsJmHgpHT
+        0PvqlVXgmQjlnWSCk8nlvw5/3ERGzpBhSJv0RrttufM+R7UnYAqGeHJF1gt41RmfPDDUGVHgNbfuM
+        N1Qh4z+Ew==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:42182)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jHuzS-0002xt-AB; Fri, 27 Mar 2020 19:50:02 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jHuzO-0004Ux-10; Fri, 27 Mar 2020 19:49:58 +0000
+Date:   Fri, 27 Mar 2020 19:49:57 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     Florinel Iordache <florinel.iordache@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        "lihong.yang@intel.com" <lihong.yang@intel.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
-        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        Parav Pandit <parav@mellanox.com>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        Alex Vesker <valex@mellanox.com>,
-        "snelson@pensando.io" <snelson@pensando.io>,
-        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
-        "dchickles@marvell.com" <dchickles@marvell.com>,
-        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>,
-        "aelior@marvell.com" <aelior@marvell.com>,
-        Yuval Avnery <yuvalav@mellanox.com>,
-        "drivers@pensando.io" <drivers@pensando.io>,
-        mlxsw <mlxsw@mellanox.com>,
-        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
-        Yevgeny Kliteynik <kliteyn@mellanox.com>,
-        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>
-Subject: Re: [RFC] current devlink extension plan for NICs
-Thread-Topic: [RFC] current devlink extension plan for NICs
-Thread-Index: AQHV/iRsNnIFGClfDEemm9M/cscIZqhQ1DGAgABD54CAAOeuAIAAzAqAgAPIYYCABGpggIAAAUoAgABegoCAAL1QAIAAlFSAgAAkgwCAAAXeAIAACeyA
-Date:   Fri, 27 Mar 2020 19:45:53 +0000
-Message-ID: <ea8a8434b1db2b692489edfd4abbc2274a77228c.camel@mellanox.com>
-References: <20200319192719.GD11304@nanopsycho.orion>
-         <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
-         <20200320073555.GE11304@nanopsycho.orion>
-         <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
-         <20200321093525.GJ11304@nanopsycho.orion>
-         <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <20200326144709.GW11304@nanopsycho.orion>
-         <20200326145146.GX11304@nanopsycho.orion>
-         <20200326133001.1b2694c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <20200327074736.GJ11304@nanopsycho.orion>
-         <20200327093829.76140a98@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <a02cf0e6-98ad-65c4-0363-8fb9d67d2c9c@intel.com>
-         <20200327121010.3e987488@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200327121010.3e987488@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [73.15.39.150]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: c401d560-ebee-469e-53b4-08d7d287760e
-x-ms-traffictypediagnostic: VI1SPR01MB0382:|VI1SPR01MB0382:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1SPR01MB0382A7534358B2E710F8C302BECC0@VI1SPR01MB0382.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-forefront-prvs: 0355F3A3AE
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(39860400002)(376002)(396003)(366004)(346002)(91956017)(76116006)(66946007)(66476007)(66556008)(64756008)(66446008)(5660300002)(478600001)(6486002)(71200400001)(110136005)(4326008)(54906003)(107886003)(316002)(2616005)(8676002)(6512007)(86362001)(81166006)(2906002)(81156014)(186003)(26005)(8936002)(36756003)(7416002)(6506007)(53546011);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2QKZ9o9w+O+Yz+1CL44JgLNL+Qdl+oz0Suq0dPesqbxwe+TsMTKWw086OCJYRdxcm21goCBvVrDWGmS2luDJJDnpPh3QMlPR46DVeckMWUU+5s0yxRHkopxeQPbFPie0rzRJxH2PQZr3rd1NyGSX77vPl1bURmXnwe2ZG+QpNSgpvKaHqBLQyvUnRyJj8arDytR9xPmtQuD3umwpMxH87fvyc71oqwvtIIiMkN/7ZYtR0+LNnaPy2nayju9inDpm2nTG1eq//LqZyMXz+HL7CLQZ11vNXsb2qPJ+6sqmJ2mDnuETUD7yrM5sk3Fd56QTpxD3HzRankM9Wh3ui285nBBSu53wqBAmjXQ/qzrrrKBnpJ8bY4xI8geHHq8tB3txyD0q8nk+5HyokAT4ZiaUYAXdPYVgONYiCxSKxe9aNFSnxDcjVUu/jBxplZxoKtsy
-x-ms-exchange-antispam-messagedata: IoQ7WNyxb/YA25IABmFFcrJXvlILcyaJi5TsqHsMnh67h4Ms/8+ecfPp03v1tbkG/X90k3UD3LxPm2UzwVF81+hYiIapgNtz6DAEancIbuS79yecUofzz4cmvDyf09TcJb9Hxaan8Jng7fjiFaNX3Q==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6A6CE0ACF755104A8951EB5CC0C208E0@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        Leo Li <leoyang.li@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/9] dt-bindings: net: add backplane dt bindings
+Message-ID: <20200327194957.GR25745@shell.armlinux.org.uk>
+References: <DB8PR04MB68283F0268E43CCB882C236CE0CC0@DB8PR04MB6828.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c401d560-ebee-469e-53b4-08d7d287760e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Mar 2020 19:45:53.5445
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ewgPrcPEya4IzVgXLbYV+vAUkdSsqHyeNvssVk1n9wznlzjhSZJyOfJliINpprboZgmMiiMrdFVbosz1oVqxTA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1SPR01MB0382
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DB8PR04MB68283F0268E43CCB882C236CE0CC0@DB8PR04MB6828.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDIwLTAzLTI3IGF0IDEyOjEwIC0wNzAwLCBKYWt1YiBLaWNpbnNraSB3cm90ZToN
-Cj4gT24gRnJpLCAyNyBNYXIgMjAyMCAxMTo0OToxMCAtMDcwMCBTYW11ZHJhbGEsIFNyaWRoYXIg
-d3JvdGU6DQo+ID4gT24gMy8yNy8yMDIwIDk6MzggQU0sIEpha3ViIEtpY2luc2tpIHdyb3RlOg0K
-PiA+ID4gT24gRnJpLCAyNyBNYXIgMjAyMCAwODo0NzozNiArMDEwMCBKaXJpIFBpcmtvIHdyb3Rl
-OiAgDQo+ID4gPiA+ID4gU28gdGhlIHF1ZXVlcywgaW50ZXJydXB0cywgYW5kIG90aGVyIHJlc291
-cmNlcyBhcmUgYWxzbyBwYXJ0DQo+ID4gPiA+ID4gb2YgdGhlIHNsaWNlIHRoZW4/ICANCj4gPiA+
-ID4gDQo+ID4gPiA+IFllcCwgdGhhdCBzZWVtcyB0byBtYWtlIHNlbnNlLg0KPiA+ID4gPiAgDQo+
-ID4gPiA+ID4gSG93IGRvIHNsaWNlIHBhcmFtZXRlcnMgbGlrZSByYXRlIGFwcGx5IHRvIE5WTWU/
-ICANCj4gPiA+ID4gDQo+ID4gPiA+IE5vdCByZWFsbHkuDQo+ID4gPiA+ICANCj4gPiA+ID4gPiBB
-cmUgcG9ydHMgYWx3YXlzIGV0aGVybmV0PyBhbmQgc2xpY2VzIGFsc28gY292ZXIgZW5kcG9pbnRz
-DQo+ID4gPiA+ID4gd2l0aA0KPiA+ID4gPiA+IHRyYW5zcG9ydCBzdGFjayBvZmZsb2FkZWQgdG8g
-dGhlIE5JQz8gIA0KPiA+ID4gPiANCj4gPiA+ID4gZGV2bGlua19wb3J0IG5vdyBjYW4gYmUgZWl0
-aGVyICJldGhlcm5ldCIgb3IgImluZmluaWJhbmQiLg0KPiA+ID4gPiBQZXJoYXBzLA0KPiA+ID4g
-PiB0aGVyZSBjYW4gYmUgcG9ydCB0eXBlICJudmUiIHdoaWNoIHdvdWxkIGNvbnRhaW4gb25seSBz
-b21lIG9mDQo+ID4gPiA+IHRoZQ0KPiA+ID4gPiBjb25maWcgb3B0aW9ucyBhbmQgd291bGQgbm90
-IGhhdmUgYSByZXByZXNlbnRvciAibmV0ZGV2L2liZGV2Ig0KPiA+ID4gPiBsaW5rZWQuDQo+ID4g
-PiA+IEkgZG9uJ3Qga25vdy4gIA0KPiA+ID4gDQo+ID4gPiBJIGhvbmVzdGx5IGZpbmQgaXQgaGFy
-ZCB0byB1bmRlcnN0YW5kIHdoYXQgdGhhdCBzbGljZSBhYnN0cmFjdGlvbg0KPiA+ID4gaXMsDQo+
-ID4gPiBhbmQgd2hpY2ggdGhpbmdzIGJlbG9uZyB0byBzbGljZXMgYW5kIHdoaWNoIHRvIFBDSSBw
-b3J0cyAob3Igd2h5DQo+ID4gPiB3ZSBldmVuDQo+ID4gPiBoYXZlIHRoZW0pLiAgDQo+ID4gDQo+
-ID4gTG9va3MgbGlrZSBzbGljZSBpcyBhIG5ldyB0ZXJtIGZvciBzdWIgZnVuY3Rpb24gYW5kIHdl
-IGNhbiBjb25zaWRlcg0KPiA+IHRoaXMNCj4gPiBhcyBhIFZNRFEgVlNJKGludGVsIHRlcm1pbm9s
-b2d5KSBvciBldmVuIGEgUXVldWUgZ3JvdXAgb2YgYSBWU0kuDQo+ID4gDQo+ID4gVG9kYXkgd2Ug
-ZXhwb3NlIFZNRFEgVlNJIHZpYSBvZmZsb2FkZWQgTUFDVkxBTi4gVGhpcyBtZWNoYW5pc20NCj4g
-PiBzaG91bGQgDQo+ID4gYWxsb3cgdXMgdG8gZXhwb3NlIGl0IGFzIGEgc2VwYXJhdGUgbmV0ZGV2
-Lg0KPiANCj4gS2luZGEuIExvb2tzIGxpa2Ugd2l0aCB0aGUgbmV3IEFQSXMgeW91IGd1eXMgd2ls
-bCBkZWZpbml0ZWx5IGJlIGFibGUNCj4gdG8NCj4gZXhwb3NlIFZNRFEgYXMgYSBmdWxsKGVyKSBk
-ZXZpY2UsIGFuZCBpZiBtZW1vcnkgc2VydmVzIG1lIHdlbGwgdGhhdCdzDQo+IHdoYXQgeW91IHdh
-bnRlZCBpbml0aWFsbHkuDQo+IA0KDQpWTURRIGlzIGp1c3QgYSBzdGVlcmluZyBiYXNlZCBpc29s
-YXRlZCBzZXQgb2YgcnggdHggcmluZ3MgcG9pbnRlZCBhdCBieQ0KYSBkdW1iIHN0ZWVyaW5nIHJ1
-bGUgaW4gdGhlIEhXIC4uIGkgYW0gbm90IHN1cmUgd2UgY2FuIGp1c3Qgd3JhcCB0aGVtDQppbiB0
-aGVpciBvd24gdmVuZG9yIHNwZWNpZmljIG5ldGRldiBhbmQganVzdCBjYWxsIGl0IGEgc2xpY2Uu
-Lg0KDQpmcm9tIHdoYXQgaSB1bmRlcnN0YW5kLCBhIHJlYWwgc2xpY2UgaXMgYSBmdWxsIGlzb2xh
-dGVkIEhXIHBpcGVsaW5lDQp3aXRoIGl0cyBvd24gSFcgcmVzb3VyY2VzIGFuZCBIVyBiYXNlZCBp
-c29sYXRpb24sIGEgc2xpY2UgcmluZ3MvaHcNCnJlc291cmNlcyBjYW4gbmV2ZXIgYmUgc2hhcmVk
-IGJldHdlZW4gZGlmZmVyZW50IHNsaWNlcywganVzdCBsaWtlIGEgdmYsDQpidXQgd2l0aG91dCB0
-aGUgcGNpZSB2aXJ0dWFsIGZ1bmN0aW9uIGJhY2stZW5kLi4NCg0KV2h5IHdvdWxkIHlvdSBuZWVk
-IGEgZGV2bGluayBzbGljZSBpbnN0YW5jZSBmb3Igc29tZXRoaW5nIHRoYXQgaGFzIG9ubHkNCnJ4
-L3R4IHJpbmdzIGF0dHJpYnV0ZXMgPyBpZiB3ZSBhcmUgZ29pbmcgd2l0aCBzdWNoIGRlc2lnbiwg
-dGhlbiBpIGd1ZXNzDQphIHNpbXBsZSByZG1hIGFwcCB3aXRoIGEgcGFpciBvZiBRUHMgY2FuIGNh
-bGwgaXRzZWxmIGEgc2xpY2UgLi4gDQoNCldlIG5lZWQgYSBjbGVhci1jdXQgZGVmaW5pdGlvbiBv
-ZiB3aGF0IGEgU3ViLWZ1bmN0aW9uIHNsaWNlIGlzLi4gdGhpcw0KUkZDIGRvZXNuJ3Qgc2VlbSB0
-byBhZGRyZXNzIHRoYXQgY2xlYXJseS4NCg0KPiBCdXQgdGhlIHN1Yi1mdW5jdGlvbnMgYXJlIGp1
-c3QgYSBzdWJzZXQgb2Ygc2xpY2VzLCBQRiBhbmQgVkZzIGFsc28NCj4gaGF2ZSBhIHNsaWNlIGFz
-c29jaWF0ZWQgd2l0aCB0aGVtLi4gQW5kIGFsbCB0aG9zZSB0aGluZ3MgaGF2ZSBhIHBvcnQsDQo+
-IHRvby4NCj4gDQoNClBGcy9WRnMsIG1pZ2h0IGhhdmUgbW9yZSB0aGFuIG9uZSBwb3J0IHNvbWV0
-aW1lcyAuLiANCg0KPiA+ID4gV2l0aCBkZXZpY2VzIGxpa2UgTkZQIGFuZCBNZWxsYW5veCBDWDMg
-d2hpY2ggaGF2ZSBvbmUgUENJIFBGDQo+ID4gPiBtYXliZSBpdA0KPiA+ID4gd291bGQgaGF2ZSBt
-YWRlIHNlbnNlIHRvIGhhdmUgYSBzbGljZSB0aGF0IGNvdmVycyBtdWx0aXBsZSBwb3J0cywNCj4g
-PiA+IGJ1dA0KPiA+ID4gaXQgc2VlbXMgdGhlIHByb3Bvc2FsIGlzIHRvIGhhdmUgcG9ydCB0byBz
-bGljZSBtYXBwaW5nIGJlIDE6MS4NCj4gPiA+IEFuZCByYXRlDQo+ID4gPiBpbiB0aG9zZSBkZXZp
-Y2VzIHNob3VsZCBzdGlsbCBiZSBwZXIgcG9ydCBub3QgcGVyIHNsaWNlLg0KPiA+ID4gDQo+ID4g
-PiBCdXQgdGhpcyBrZWVwcyBjb21pbmcgYmFjaywgYW5kIHNpbmNlIHlvdSBndXlzIGFyZSBkb2lu
-ZyBhbGwgdGhlDQo+ID4gPiB3b3JrLA0KPiA+ID4gaWYgeW91IHJlYWxseSByZWFsbHkgbmVlZCBp
-dC4uICANCg==
+On Fri, Mar 27, 2020 at 07:18:56PM +0000, Ioana Ciornei wrote:
+> 
+> > Subject: Re: [PATCH net-next 2/9] dt-bindings: net: add backplane dt
+> > bindings
+> > 
+> > On Fri, Mar 27, 2020 at 03:00:22PM +0000, Florinel Iordache wrote:
+> > > > On Thu, Mar 26, 2020 at 03:51:15PM +0200, Florinel Iordache wrote:
+> > > > > Add ethernet backplane device tree bindings
+> > > >
+> > > > > +  - |
+> > > > > +    /* Backplane configurations for specific setup */
+> > > > > +    &mdio9 {
+> > > > > +        bpphy6: ethernet-phy@0 {
+> > > > > +            compatible = "ethernet-phy-ieee802.3-c45";
+> > > > > +            reg = <0x0>;
+> > > > > +            lane-handle = <&lane_d>; /* use lane D */
+> > > > > +            eq-algorithm = "bee";
+> > > > > +            /* 10G Short cables setup: up to 30 cm cable */
+> > > > > +            eq-init = <0x2 0x5 0x29>;
+> > > > > +            eq-params = <0>;
+> > > > > +        };
+> > > > > +    };
+> > > >
+> > > > So you are modelling this as just another PHY? Does the driver get
+> > > > loaded based on the PHY ID in registers 2 and 3? Does the standard
+> > > > define these IDs or are they vendor specific?
+> > > >
+> > > > Thanks
+> > > >         Andrew
+> > >
+> > > Hi Andrew,
+> > > Thank you all for the feedback.
+> > > I am currently working to address the entire feedback received so far
+> > > for this new Backplane driver.
+> > >
+> > > Yes, we are modelling backplane driver as a phy driver.
+> > 
+> > I think we need to think very carefully about that, and consider whether that
+> > really is a good idea.  phylib is currently built primarily around copper PHYs,
+> > although there are some which also support fiber as well in weird "non-
+> > standard" forms.
+> > 
+> > What worries me is the situation which I've been working on, where we want
+> > access to the PCS PHYs, and we can't have the PCS PHYs represented as a phylib
+> > PHY because we may have a copper PHY behind the PCS PHY, and we want to be
+> > talking to the copper PHY in the first instance (the PCS PHY effectively becomes
+> > a slave to the copper PHY.)
+> > 
+> 
+> We should think about the case when the PCS is the only transceiver on the local
+> board, as is happening in the backplane case, and the Ethernet driver does not
+> support phylink but rather phylib. By suggesting to not register the PCS with
+> phylib,
+
+Please don't, that's completely unnecessary.  phylink wraps itself
+around phylib and offers essentially the same functionality that phylib
+used to - with the added bonus that fixed links can be supported at
+speeds greater than 1G, which is not possible with the phylib-based
+fixed link implementation.
+
+There is no reason for a network driver to choose between interfacing
+to phylink and phylib.
+
+> you're effectively implying that the interface should operate as a fixed-link.
+> This PCS is shared for DPAA1 and DPAA2, and only one of those drivers uses phylink.
+
+That in itself creates a problem.  Is there any reason DPAA1 can't be
+transitioned over to phylink, given that phylink offers everything
+that phylib does?
+
+> > My worry is that we're ending up with conflicting implementations for the same
+> > hardware which may only end up causing problems down the line.
+> > 
+> > Please can you look at my DPAA2 PCS series which has been previously posted to
+> > netdev -
+> 
+> I had a go today with your DPAA2 PCS patches and tried to see how one could
+> extend your approach in order to use it in combination with quad PCSs.
+> 
+> As I mentioned yesterday, in case of QSGMII all the 4 PCSs sit on the first MAC's
+> internal MDIO. This leads to an error in probing the second MAC from the group
+> of 4 since the mdio_device_register() will fail when trying with the same internal
+> MDIO bus the second time.
+> 
+> I cannot see how this limitation can be overcome going forward if we still pass the
+> entire internal MDIO bus as a handle, as you are doing, and not just the specific
+> PCS node as the current patch set is proposing.
+
+I think you're a little confused.  I'm not passing the MDIO bus around,
+I create a MDIO device instead.  All that can be decided upon inside
+dpaa2_pcs_create().
+
+At the moment, that takes a simplistic approach, because I've only
+considered basically SGMII/1000base-X and 10GBASE-R, and nothing else.
+I've even short-cut that, because, although they use different PHY
+blocks (one via clause 22 accesses, the other via clause 45 accesses)
+they are both at address 0.
+
+I've been thinking, however, that mac->pcs wants to not be a single
+mdio device, but several - one for each PCS in the system, which
+would include the appropriate PCS block for QSGMII, no matter which
+MDIO bus it's on.
+
+So, what I'm saying is that _that_ can be changed in order to support
+QSGMII, and I suspect also needs to be changed to support 40G mode
+as well.
+
+> > it's rather difficult to work out who in NXP should be copied, because
+> > that information is not visible to those of us in the community - we only find that
+> > out after someone inside NXP posts patches, and even then the MAINTAINERS
+> > file doesn't seem to get updated.
+> > 
+> > It's also worth mentioning that on other SoCs, such as Marvell SoCs, the serdes
+> > and "PCS" are entirely separate hardware blocks, and the implementation in the
+> > kernel, which works very well, is to use the drivers/phy for the serdes/comphy as
+> > they call it, and the ethernet driver binds to the comphy to control the serdes
+> > settings, whereas the ethernet driver looks after the PCS.  I haven't been able to
+> > look at your code enough yet to work out if that would be possible.
+> > 
+> > I also wonder whether we want a separate class of MDIO device for PCS PHYs,
+> > just as we have things like DSA switches implemented entirely separately from
+> > phylib - they're basically different sub- classes of a mdio device.
+> > 
+> > I think we have around 20 or so weeks to hash this out, since it's clear that the
+> > 10gbase-kr (10GKR) phy interface mode can't be used until we've eliminated it
+> > from existing dts files.
+> > 
+> > > The driver is loaded based on PHY ID in registers 2 and 3 which are
+> > > specified by the standard but it is a vendor specific value:
+> > > 32-Bit identifier composed of the 3rd through 24th bits of the
+> > > Organizationally Unique Identifier (OUI) assigned to the device
+> > > manufacturer by the IEEE, plus a six-bit model number, plus a four-bit
+> > > revision number.
+> > > This is done in the device specific code and not in backplane generic
+> > > driver.
+> > > You can check support for QorIQ devices where qoriq_backplane_driver
+> > > is registered as a phy_driver:
+> > >
+> > > @file: qoriq_backplane.c
+> > > +static struct phy_driver qoriq_backplane_driver[] = {
+> > > +	{
+> > > +	.phy_id		= PCS_PHY_DEVICE_ID,
+> > > +	.name		= QORIQ_BACKPLANE_DRIVER_NAME,
+> > > +	.phy_id_mask	= PCS_PHY_DEVICE_ID_MASK,
+> > > +	.features       = BACKPLANE_FEATURES,
+> > > +	.probe          = qoriq_backplane_probe,
+> > > +	.remove         = backplane_remove,
+> > > +	.config_init    = qoriq_backplane_config_init,
+> > > +	.aneg_done      = backplane_aneg_done,
+> > >
+> > > Here we register the particular phy device ID/mask and driver name
+> > > specific for qoriq devices.
+> > > Also we can use generic routines provided by generic backplane driver
+> > > if they are suitable for particular qoriq device or otherwise we can
+> > > use more specialized specific routines like:
+> > > qoriq_backplane_config_init
+> > >
+> > 
+> > --
+> 
+> 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
