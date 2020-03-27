@@ -2,119 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2629195A9C
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 17:08:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E30B0195AAA
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 17:08:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727541AbgC0QIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 12:08:09 -0400
-Received: from mail-qv1-f65.google.com ([209.85.219.65]:46758 "EHLO
-        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727354AbgC0QIJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 12:08:09 -0400
-Received: by mail-qv1-f65.google.com with SMTP id m2so5113589qvu.13
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 09:08:08 -0700 (PDT)
+        id S1727612AbgC0QI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 12:08:58 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:40487 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727354AbgC0QI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 12:08:57 -0400
+Received: by mail-lj1-f193.google.com with SMTP id 19so10753347ljj.7;
+        Fri, 27 Mar 2020 09:08:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=6d7CjkKwOJ6/75cMo6cG150E0b5j4qklpYgJXNLC6is=;
-        b=fogSYuttuQ89mf6Se0Gm/eq3Q5j806h3/yEOlVqgNWwxtrqnuFK9sCyGiF50X43D0i
-         2lLF30thWJzXcWNWmf0kbr1hhVV+n3fyccKllre7eNb8MD8fYvh9RmlPaXIbQeFdcmvB
-         Mi9E3pkM7fR9QkC/BMKREY0PBhtpSfdlJdh6SUD8LotH2TtS3QGm1V8uz7OBYIKWYckM
-         xcKv1YpvlmtDdteOs/FZ8SadaSHRZfI+kRrxD5mWC73nrj9CJ+HYswX9oacLwBXQ8oU1
-         HWa9+ljzm6eaFPBKpEQDUQT6YKGAvYayaBrzm87Zw2ui98cFQgXsDBeZRFggRc7twVjk
-         yy2A==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=spnkQutFB18IjJxiXOUjvoPj/dKwleF9bt8ULMfxB1Y=;
+        b=pQzJlif3MiB+xaxOktX9paLasGpqWzapgfk2xIE9kLJ3a0ybeI+m2EPYtXR9phWgK1
+         j+UNr5MmCNpz757pMUKQcgtV4to2BuJA4l/M1KkcBOlTeIfFQ3wUNuxJR4a7hvBdDmsF
+         SCtA5K6zihic2AlVuPCYB3IHEoqy2NmbbwpCtU0XzLMQgk+9S3AtQnZqK+cOC6UcJ/G+
+         PdqrwEjrC5w69PR5eFMp6oQsNnnVMzV7+eVgfdlPvCuj7pVsbpMl0feQNXTQy27Ec2/X
+         1CxKoO/HUgJPVlykF4QIlx+MBpmG18fSGWsBnqR09AjPSPVoD1SFKF39cCIu4SqhynS7
+         e9CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=6d7CjkKwOJ6/75cMo6cG150E0b5j4qklpYgJXNLC6is=;
-        b=DycznZb8JY/bWua9VmejL3XDw7u9W2xAGa+c1pSzkUxCSS7BJd+4sSNX6ED9Y2JRbr
-         m6gPqn+NsGYceEWJjDpud0ccdn3y9QpE4t1FEAwg79rSse9hEbM5coTpI9cxG2qL236V
-         QBEVTFPxDSGTgCeSOgnAd5S68P8kQdB6lgKDY6NmA1Qk6nvWTNZ+abUNhKRJAgyS8NqZ
-         YxQFjvgFwQayHsNiSS5LzhBCNh7O+GKbBPFYF4t/C/b41YgrAhzCmst8gvLUPzcTOfRB
-         7ILUtYYqwSBVoNLV1v976/5TQhOMYKMSHql4t7pyCPZPoSE4QJEz/RpyXTAOAZ+wy/5u
-         eyPg==
-X-Gm-Message-State: ANhLgQ3cJvtaQbKxEYMqX+LW+S83z9sBmR5H33DyIZ/6NLE3UBYo2skG
-        9P3FE6GYvRXaMKULrtbVbq1nSUYmFIcDSQ==
-X-Google-Smtp-Source: ADFU+vtNjGH2j2KjqdN1B464a5k7E/2Bo0HG17gxirwAirXD4vOznGQ1x4vOEDCunyE8HVmhnCEadw==
-X-Received: by 2002:a05:6214:1863:: with SMTP id eh3mr14444312qvb.71.1585325287800;
-        Fri, 27 Mar 2020 09:08:07 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
-        by smtp.gmail.com with ESMTPSA id 17sm3945919qkm.105.2020.03.27.09.08.06
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 27 Mar 2020 09:08:06 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1jHrWg-0006Jy-17; Fri, 27 Mar 2020 13:08:06 -0300
-Date:   Fri, 27 Mar 2020 13:08:06 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leonro@mellanox.com>,
-        linux-rdma@vger.kernel.org,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>
-Subject: Re: [PATCH rdma-next v1 0/5] Introduce dynamic UAR allocation mode
-Message-ID: <20200327160806.GA24265@ziepe.ca>
-References: <20200324060143.1569116-1-leon@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=spnkQutFB18IjJxiXOUjvoPj/dKwleF9bt8ULMfxB1Y=;
+        b=uSO4b5Sw649qHw0YBKKXFz4PcRRVQ+iXlEE8gK9Vxoez7noEiLTnDtZN27osAHwth3
+         iz+2rq7WoiUhUT+bRtTm0q7Oq6n15WfG/Za+C2Lyrr/iOKVeHnc30aXsMvxrJAkJSFIy
+         hzsm27DDQtAf+MZTkXozNYbA/VZY7GeKLcfhYgDFIZvNWsrSVB/M21QaJQvnGaBcq6Xk
+         vL5wGc0Nv6PuiC+hGNdQgWaRBM50pjCj7z7pFwahYNcWCvRUOr45sn2kqnTV2+oEfnor
+         iAu3Nqvz/NcfTiDqvuyLjua9C0xsec3YO35kNTA9fMgcs//M87U1ZioivqN6Bw6jwvzR
+         OAPA==
+X-Gm-Message-State: AGi0PuYguJ88VWhTu4sgZekm051Cg5U/o06nYAsEw9VgYzKAkkAJCXNQ
+        N01POg/XmxmN24Nki8ojz7b35TlE9Q2C0rymU7cMxw==
+X-Google-Smtp-Source: APiQypJga1+Zdr53axMFLQR1J8gqplOP1NeXfwltFHQ8tw9f7bjl0DsITKxwAfVTuQxdMofD3tEfOPhyDMqqKtLZGBQ=
+X-Received: by 2002:a2e:988c:: with SMTP id b12mr8986610ljj.138.1585325334923;
+ Fri, 27 Mar 2020 09:08:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200324060143.1569116-1-leon@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20200325055745.10710-1-joe@wand.net.nz> <20200325055745.10710-6-joe@wand.net.nz>
+ <82e8d147-b334-3d29-0312-7b087ac908f3@fb.com> <CACAyw99Eeu+=yD8UKazRJcknZi3D5zMJ4n=FVsxXi63DwhdxYA@mail.gmail.com>
+ <20200326210719.den5isqxntnoqhmv@ast-mbp> <CACAyw9_jv3eJz8eRRBOvWEc4=BM0_tRuQCz_fLKsVLTid7tCDA@mail.gmail.com>
+In-Reply-To: <CACAyw9_jv3eJz8eRRBOvWEc4=BM0_tRuQCz_fLKsVLTid7tCDA@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 27 Mar 2020 09:08:43 -0700
+Message-ID: <CAADnVQKoO18HSTEkUdw9M4_YawdSw_FsDbLjK6jGiPRfiy6K2w@mail.gmail.com>
+Subject: Re: call for bpf progs. Re: [PATCHv2 bpf-next 5/5] selftests: bpf:
+ add test for sk_assign
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Yonghong Song <yhs@fb.com>, Joe Stringer <joe@wand.net.nz>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Martin Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 24, 2020 at 08:01:38AM +0200, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@mellanox.com>
-> 
-> Changelog:
-> v1: * Added patch that moved mlx5_bfreg_info from global header to the mlx5_ib.h
->     * No other changes.
-> v0: * https://lore.kernel.org/linux-rdma/20200318124329.52111-1-leon@kernel.org
-> 
-> ----------------------------------------------------------------------------------
-> 
-> >From Yishai,
-> 
-> This series exposes API to enable a dynamic allocation and management of a
-> UAR which now becomes to be a regular uobject.
-> 
-> Moving to that mode enables allocating a UAR only upon demand and drop the
-> redundant static allocation of UARs upon context creation.
-> 
-> In addition, it allows master and secondary processes that own the same command
-> FD to allocate and manage UARs according to their needs, this can’t be achieved
-> today.
-> 
-> As part of this option, QP & CQ creation flows were adapted to support this
-> dynamic UAR mode once asked by user space.
-> 
-> Once this mode is asked by mlx5 user space driver on a given context, it will
-> be mutual exclusive, means both the static and legacy dynamic modes for using
-> UARs will be blocked.
-> 
-> The legacy modes are supported for backward compatible reasons, looking
-> forward we expect this new mode to be the default.
-> 
-> Thanks
-> 
-> Leon Romanovsky (1):
->   IB/mlx5: Limit the scope of struct mlx5_bfreg_info to mlx5_ib
-> 
-> Yishai Hadas (4):
->   IB/mlx5: Expose UAR object and its alloc/destroy commands
->   IB/mlx5: Extend CQ creation to get uar page index from user space
->   IB/mlx5: Extend QP creation to get uar page index from user space
->   IB/mlx5: Move to fully dynamic UAR mode once user space supports it
+On Fri, Mar 27, 2020 at 3:03 AM Lorenz Bauer <lmb@cloudflare.com> wrote:
+> >
+> > Thanks for bringing this up.
+> > Yonghong, please correct me if I'm wrong.
+> > I think you've experimented with tracking spilled constants. The first issue
+> > came with spilling of 4 byte constant. The verifier tracks 8 byte slots and
+> > lots of places assume that slot granularity. It's not clear yet how to refactor
+> > the verifier. Ideas, help are greatly appreciated.
+> > The second concern was pruning, but iirc the experiments were inconclusive.
+> > selftests/bpf only has old fb progs. Hence, I think, the step zero is for
+> > everyone to contribute their bpf programs written in C. If we have both
+> > cilium and cloudflare progs as selftests it will help a lot to guide such long
+> > lasting verifier decisions.
+>
+> Ok, I'll try to get something sorted out. We have a TC classifier that
+> would be suitable,
+> and I've been meaning to get it open sourced. Does the integration into the
+> test suite have to involve running packets through it, or is compile
+> and load enough?
 
-Applied to for-next, thanks
-
-Jason
+It would be great if you can add it as part of test_progs and run it
+with one or two packets via prog_test_run like all the tests do.
+Thanks!
