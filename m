@@ -2,122 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E8C81953A2
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 10:12:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F2CB1953BE
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 10:22:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726937AbgC0JMk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 05:12:40 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41248 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726454AbgC0JMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 05:12:39 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 27 Mar 2020 12:12:36 +0300
-Received: from reg-r-vrt-019-120.mtr.labs.mlnx (reg-r-vrt-019-120.mtr.labs.mlnx [10.213.19.120])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02R9CaYh023271;
-        Fri, 27 Mar 2020 12:12:36 +0300
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Paul Blakey <paulb@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Majd Dibbiny <majd@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>, netdev@vger.kernel.org,
-        Saeed Mahameed <saeedm@mellanox.com>
-Cc:     netfilter-devel@vger.kernel.org
-Subject: [PATCH net-next v2 3/3] net/mlx5: CT: Use rhashtable's ct entries instead of a seperate list
-Date:   Fri, 27 Mar 2020 12:12:31 +0300
-Message-Id: <1585300351-15741-4-git-send-email-paulb@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1585300351-15741-1-git-send-email-paulb@mellanox.com>
-References: <1585300351-15741-1-git-send-email-paulb@mellanox.com>
+        id S1726540AbgC0JWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 05:22:19 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:12817 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725946AbgC0JWT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 05:22:19 -0400
+IronPort-SDR: e2ZmeRMDbZsA90/bG03CZ2fiOLxCd6/0Is+WTM6N2Evf468u8fOlXTNXjKOORpS1ykA75afUYA
+ yUPpIjqYEFPnWV+SU6RnRERi6tmfeai2YLT75/dPCtd34QFrNH5pPonw/baM8Osu72i/TTAFZI
+ XKEchyh+GFLFfFv2HBMAtS5chmr4YxLC9DFx8/xtAZxVDlg58gnnZKxDLpdr7Onie2+9Rsgo+T
+ E4/WX3IUE8tS5mRhGK/CcN+pth6vHLMR2p/6YwAEGY+sCW4TeDxSbytybvsCyercgEXhqd1ezv
+ r6k=
+X-IronPort-AV: E=Sophos;i="5.72,311,1580799600"; 
+   d="scan'208";a="73728093"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Mar 2020 02:22:18 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 27 Mar 2020 02:22:18 -0700
+Received: from soft-dev3.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Fri, 27 Mar 2020 02:22:15 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <davem@davemloft.net>, <jiri@resnulli.us>, <ivecera@redhat.com>,
+        <kuba@kernel.org>, <roopa@cumulusnetworks.com>,
+        <nikolay@cumulusnetworks.com>, <olteanv@gmail.com>,
+        <andrew@lunn.ch>, <UNGLinuxDriver@microchip.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [RFC net-next v4 0/9] net: bridge: mrp: Add support for Media Redundancy Protocol(MRP)
+Date:   Fri, 27 Mar 2020 10:21:17 +0100
+Message-ID: <20200327092126.15407-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CT entries list is only used while freeing a ct zone flow table to
-go over all the ct entries offloaded on that zone/table, and flush
-the table.
+Media Redundancy Protocol is a data network protocol standardized by
+International Electrotechnical Commission as IEC 62439-2. It allows rings of
+Ethernet switches to overcome any single failure with recovery time faster than
+STP. It is primarily used in Industrial Ethernet applications.
 
-Rhashtable already provides an api to go over all the inserted entries.
-Use it instead, and remove the list.
+Based on the previous RFC[1][2][3], the MRP state machine and all the timers
+were moved to userspace, except for the timers used to generate MRP Test frames.
+In this way the userspace doesn't know and should not know if the HW or the
+kernel will generate the MRP Test frames. The following changes were added to
+the bridge to support the MRP:
+- the existing netlink interface was extended with MRP support,
+- allow to detect when a MRP frame was received on a MRP ring port
+- allow MRP instance to forward/terminate MRP frames
+- generate MRP Test frames in case the HW doesn't have support for this
 
-Signed-off-by: Paul Blakey <paulb@mellanox.com>
-Reviewed-by: Oz Shlomo <ozsh@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+To be able to offload MRP support to HW, the switchdev API  was extend.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index a22ad6b..afc8ac3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -67,11 +67,9 @@ struct mlx5_ct_ft {
- 	struct nf_flowtable *nf_ft;
- 	struct mlx5_tc_ct_priv *ct_priv;
- 	struct rhashtable ct_entries_ht;
--	struct list_head ct_entries_list;
- };
- 
- struct mlx5_ct_entry {
--	struct list_head list;
- 	u16 zone;
- 	struct rhash_head node;
- 	struct flow_rule *flow_rule;
-@@ -617,8 +615,6 @@ struct mlx5_ct_entry {
- 	if (err)
- 		goto err_insert;
- 
--	list_add(&entry->list, &ft->ct_entries_list);
--
- 	return 0;
- 
- err_insert:
-@@ -646,7 +642,6 @@ struct mlx5_ct_entry {
- 	WARN_ON(rhashtable_remove_fast(&ft->ct_entries_ht,
- 				       &entry->node,
- 				       cts_ht_params));
--	list_del(&entry->list);
- 	kfree(entry);
- 
- 	return 0;
-@@ -817,7 +812,6 @@ struct mlx5_ct_entry {
- 	ft->zone = zone;
- 	ft->nf_ft = nf_ft;
- 	ft->ct_priv = ct_priv;
--	INIT_LIST_HEAD(&ft->ct_entries_list);
- 	refcount_set(&ft->refcount, 1);
- 
- 	err = rhashtable_init(&ft->ct_entries_ht, &cts_ht_params);
-@@ -846,12 +840,12 @@ struct mlx5_ct_entry {
- }
- 
- static void
--mlx5_tc_ct_flush_ft(struct mlx5_tc_ct_priv *ct_priv, struct mlx5_ct_ft *ft)
-+mlx5_tc_ct_flush_ft_entry(void *ptr, void *arg)
- {
--	struct mlx5_ct_entry *entry;
-+	struct mlx5_tc_ct_priv *ct_priv = arg;
-+	struct mlx5_ct_entry *entry = ptr;
- 
--	list_for_each_entry(entry, &ft->ct_entries_list, list)
--		mlx5_tc_ct_entry_del_rules(ft->ct_priv, entry);
-+	mlx5_tc_ct_entry_del_rules(ct_priv, entry);
- }
- 
- static void
-@@ -862,9 +856,10 @@ struct mlx5_ct_entry {
- 
- 	nf_flow_table_offload_del_cb(ft->nf_ft,
- 				     mlx5_tc_ct_block_flow_offload, ft);
--	mlx5_tc_ct_flush_ft(ct_priv, ft);
- 	rhashtable_remove_fast(&ct_priv->zone_ht, &ft->node, zone_params);
--	rhashtable_destroy(&ft->ct_entries_ht);
-+	rhashtable_free_and_destroy(&ft->ct_entries_ht,
-+				    mlx5_tc_ct_flush_ft_entry,
-+				    ct_priv);
- 	kfree(ft);
- }
- 
+With these changes the userspace doesn't do the following because already the
+kernel/HW will do:
+- doesn't need to forward/terminate MRP frames
+- doesn't need to generate MRP Test frames
+- doesn't need to detect when the ring is open/closed.
+
+The userspace application that is using the new netlink can be found here[4].
+
+The current implementation both in kernel and userspace supports only 2 roles:
+  MRM - this one is responsible to send MRP_Test and MRP_Topo frames on both
+  ring ports. It needs to process MRP_Test to know if the ring is open or
+  closed. This operation is desired to be offloaded to the HW because it
+  requires to generate and process up to 4000 frames per second. Whenever it
+  detects that the ring is open it sends MRP_Topo frames to notify all MRC about
+  changes in the topology. MRM needs also to process MRP_LinkChange frames,
+  these frames are generated by the MRC. When the ring is open then the state
+  of both ports is to forward frames and when the ring is closed then the
+  secondary port is blocked.
+
+  MRC - this one is responsible to forward MRP frames between the ring ports.
+  In case one of the ring ports gets a link down or up, then MRC will generate
+  a MRP_LinkChange frames. This node should also process MRP_Topo frames and to
+  clear its FDB when it receives this frame.
+
+ Userspace
+               Deamon +----------+ Client
+                +
+                |
+ +--------------|-----------------------------------------+
+  Kernel        |
+                + Netlink
+
+                |                              + Interrupt
+                |                              |
+ +--------------|------------------------------|----------+
+  HW            | Switchdev                    |
+                +                              |
+
+The user interacts using the client (called 'mrp'), the client talks to the
+deamon (called 'mrp_server'), which talks with the kernel using netlink. The
+kernel will try to offload the requests to the HW via switchdev API.
+
+If this will be accepted then in the future the netlink interface can be
+expended with multiple attributes which are required by different roles of the
+MRP. Like Media Redundancy Automanager(MRA), Media Interconnect Manager(MIM) and
+Media Interconnect Client(MIC).
+
+[1] https://www.spinics.net/lists/netdev/msg623647.html
+[2] https://www.spinics.net/lists/netdev/msg624378.html
+[3] https://www.spinics.net/lists/netdev/msg627500.html
+[4] https://github.com/microchip-ung/mrp/tree/patch-v4
+
+-v3:
+  - move MRP state machine in userspace
+  - create generic netlink interface for configuring the HW using switchdev API
+
+-v2:
+  - extend switchdev API to offload to HW
+
+
+
+Horatiu Vultur (9):
+  bridge: uapi: mrp: Add mrp attributes.
+  bridge: mrp: Expose function br_mrp_port_open
+  bridge: mrp: Add MRP interface.
+  bridge: mrp: Implement netlink interface to configure MRP
+  switchdev: mrp: Extend switchdev API to offload MRP
+  bridge: switchdev: mrp Implement MRP API for switchdev
+  bridge: mrp: Connect MRP api with the switchev API
+  bridge: mrp: Integrate MRP into the bridge
+  bridge: mrp: Update Kconfig and Makefile
+
+ include/linux/if_bridge.h       |   1 +
+ include/linux/mrp_bridge.h      |  24 ++
+ include/net/switchdev.h         |  53 ++++
+ include/uapi/linux/if_bridge.h  |  42 +++
+ include/uapi/linux/if_ether.h   |   1 +
+ include/uapi/linux/mrp_bridge.h |  84 ++++++
+ net/bridge/Kconfig              |  12 +
+ net/bridge/Makefile             |   2 +
+ net/bridge/br_device.c          |   3 +
+ net/bridge/br_input.c           |   3 +
+ net/bridge/br_mrp.c             | 514 ++++++++++++++++++++++++++++++++
+ net/bridge/br_mrp_netlink.c     | 176 +++++++++++
+ net/bridge/br_mrp_switchdev.c   | 150 ++++++++++
+ net/bridge/br_netlink.c         |   5 +
+ net/bridge/br_private.h         |  22 ++
+ net/bridge/br_private_mrp.h     |  67 +++++
+ net/bridge/br_stp.c             |   6 +
+ 17 files changed, 1165 insertions(+)
+ create mode 100644 include/linux/mrp_bridge.h
+ create mode 100644 include/uapi/linux/mrp_bridge.h
+ create mode 100644 net/bridge/br_mrp.c
+ create mode 100644 net/bridge/br_mrp_netlink.c
+ create mode 100644 net/bridge/br_mrp_switchdev.c
+ create mode 100644 net/bridge/br_private_mrp.h
+
 -- 
-1.8.3.1
+2.17.1
 
