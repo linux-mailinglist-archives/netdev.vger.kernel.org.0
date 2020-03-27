@@ -2,27 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 647DF195891
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 15:08:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF5F5195894
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 15:08:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727799AbgC0OHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 10:07:51 -0400
-Received: from mx2.suse.de ([195.135.220.15]:40840 "EHLO mx2.suse.de"
+        id S1727833AbgC0OHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 10:07:55 -0400
+Received: from mx2.suse.de ([195.135.220.15]:40890 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726333AbgC0OHu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Mar 2020 10:07:50 -0400
+        id S1726333AbgC0OHy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Mar 2020 10:07:54 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id CA947ADCD;
-        Fri, 27 Mar 2020 14:07:47 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id CD291AD9F;
+        Fri, 27 Mar 2020 14:07:52 +0000 (UTC)
 Received: by unicorn.suse.cz (Postfix, from userid 1000)
-        id 7871CE009C; Fri, 27 Mar 2020 15:07:47 +0100 (CET)
-Message-Id: <97db666d087e47eff7d1a65baf2d16500595b0f0.1585316159.git.mkubecek@suse.cz>
+        id 7EBA3E009C; Fri, 27 Mar 2020 15:07:52 +0100 (CET)
+Message-Id: <d09e76f6ac6861480c3a383c9cbde82373e0d0a8.1585316159.git.mkubecek@suse.cz>
 In-Reply-To: <cover.1585316159.git.mkubecek@suse.cz>
 References: <cover.1585316159.git.mkubecek@suse.cz>
 From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH net-next v2 06/12] ethtool: set pause parameters with
- PAUSE_SET request
+Subject: [PATCH net-next v2 07/12] ethtool: add PAUSE_NTF notification
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
 Cc:     Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
@@ -31,154 +30,107 @@ Cc:     Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
         Johannes Berg <johannes@sipsolutions.net>,
         Richard Cochran <richardcochran@gmail.com>,
         linux-kernel@vger.kernel.org
-Date:   Fri, 27 Mar 2020 15:07:47 +0100 (CET)
+Date:   Fri, 27 Mar 2020 15:07:52 +0100 (CET)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement PAUSE_SET netlink request to set pause parameters of a network
-device. Thease are traditionally set with ETHTOOL_SPAUSEPARAM ioctl
-request.
+Send ETHTOOL_MSG_PAUSE_NTF notification whenever pause parameters of
+a network device are modified using ETHTOOL_MSG_PAUSE_SET netlink message
+or ETHTOOL_SPAUSEPARAM ioctl request.
 
 Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
 ---
- Documentation/networking/ethtool-netlink.rst |  3 +-
- include/uapi/linux/ethtool_netlink.h         |  1 +
- net/ethtool/netlink.c                        |  5 ++
- net/ethtool/netlink.h                        |  1 +
- net/ethtool/pause.c                          | 61 ++++++++++++++++++++
- 5 files changed, 70 insertions(+), 1 deletion(-)
+ Documentation/networking/ethtool-netlink.rst | 1 +
+ include/uapi/linux/ethtool_netlink.h         | 1 +
+ net/ethtool/ioctl.c                          | 6 +++++-
+ net/ethtool/netlink.c                        | 2 ++
+ net/ethtool/pause.c                          | 3 +++
+ 5 files changed, 12 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/networking/ethtool-netlink.rst
-index 43c7baf36b32..dc7b3fe47f37 100644
+index dc7b3fe47f37..0cc9e69cb90d 100644
 --- a/Documentation/networking/ethtool-netlink.rst
 +++ b/Documentation/networking/ethtool-netlink.rst
-@@ -200,6 +200,7 @@ Userspace to kernel:
-   ``ETHTOOL_MSG_COALESCE_GET``          get coalescing parameters
-   ``ETHTOOL_MSG_COALESCE_SET``          set coalescing parameters
-   ``ETHTOOL_MSG_PAUSE_GET``             get pause parameters
-+  ``ETHTOOL_MSG_PAUSE_SET``             set pause parameters
-   ===================================== ================================
+@@ -228,6 +228,7 @@ Kernel to userspace:
+   ``ETHTOOL_MSG_COALESCE_GET_REPLY``    coalescing parameters
+   ``ETHTOOL_MSG_COALESCE_NTF``          coalescing parameters
+   ``ETHTOOL_MSG_PAUSE_GET_REPLY``       pause parameters
++  ``ETHTOOL_MSG_PAUSE_NTF``             pause parameters
+   ===================================== =================================
  
- Kernel to userspace:
-@@ -899,7 +900,7 @@ have their netlink replacement yet.
-   ``ETHTOOL_GRINGPARAM``              ``ETHTOOL_MSG_RINGS_GET``
-   ``ETHTOOL_SRINGPARAM``              ``ETHTOOL_MSG_RINGS_SET``
-   ``ETHTOOL_GPAUSEPARAM``             ``ETHTOOL_MSG_PAUSE_GET``
--  ``ETHTOOL_SPAUSEPARAM``             n/a
-+  ``ETHTOOL_SPAUSEPARAM``             ``ETHTOOL_MSG_PAUSE_SET``
-   ``ETHTOOL_GRXCSUM``                 ``ETHTOOL_MSG_FEATURES_GET``
-   ``ETHTOOL_SRXCSUM``                 ``ETHTOOL_MSG_FEATURES_SET``
-   ``ETHTOOL_GTXCSUM``                 ``ETHTOOL_MSG_FEATURES_GET``
+ ``GET`` requests are sent by userspace applications to retrieve device
 diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-index 1c8d1228f63f..a9a35c7b81d4 100644
+index a9a35c7b81d4..a53d79dd5ad4 100644
 --- a/include/uapi/linux/ethtool_netlink.h
 +++ b/include/uapi/linux/ethtool_netlink.h
-@@ -35,6 +35,7 @@ enum {
- 	ETHTOOL_MSG_COALESCE_GET,
- 	ETHTOOL_MSG_COALESCE_SET,
- 	ETHTOOL_MSG_PAUSE_GET,
-+	ETHTOOL_MSG_PAUSE_SET,
+@@ -67,6 +67,7 @@ enum {
+ 	ETHTOOL_MSG_COALESCE_GET_REPLY,
+ 	ETHTOOL_MSG_COALESCE_NTF,
+ 	ETHTOOL_MSG_PAUSE_GET_REPLY,
++	ETHTOOL_MSG_PAUSE_NTF,
  
  	/* add new constants above here */
- 	__ETHTOOL_MSG_USER_CNT,
+ 	__ETHTOOL_MSG_KERNEL_CNT,
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 198825ebc114..c7a039a6e11e 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -1705,6 +1705,7 @@ static int ethtool_get_pauseparam(struct net_device *dev, void __user *useraddr)
+ static int ethtool_set_pauseparam(struct net_device *dev, void __user *useraddr)
+ {
+ 	struct ethtool_pauseparam pauseparam;
++	int ret;
+ 
+ 	if (!dev->ethtool_ops->set_pauseparam)
+ 		return -EOPNOTSUPP;
+@@ -1712,7 +1713,10 @@ static int ethtool_set_pauseparam(struct net_device *dev, void __user *useraddr)
+ 	if (copy_from_user(&pauseparam, useraddr, sizeof(pauseparam)))
+ 		return -EFAULT;
+ 
+-	return dev->ethtool_ops->set_pauseparam(dev, &pauseparam);
++	ret = dev->ethtool_ops->set_pauseparam(dev, &pauseparam);
++	if (!ret)
++		ethtool_notify(dev, ETHTOOL_MSG_PAUSE_NTF, NULL);
++	return ret;
+ }
+ 
+ static int ethtool_self_test(struct net_device *dev, char __user *useraddr)
 diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-index ca1695de8c9d..1ca30578e642 100644
+index 1ca30578e642..4d492f1b3480 100644
 --- a/net/ethtool/netlink.c
 +++ b/net/ethtool/netlink.c
-@@ -809,6 +809,11 @@ static const struct genl_ops ethtool_genl_ops[] = {
- 		.dumpit	= ethnl_default_dumpit,
- 		.done	= ethnl_default_done,
- 	},
-+	{
-+		.cmd	= ETHTOOL_MSG_PAUSE_SET,
-+		.flags	= GENL_UNS_ADMIN_PERM,
-+		.doit	= ethnl_set_pause,
-+	},
+@@ -546,6 +546,7 @@ ethnl_default_notify_ops[ETHTOOL_MSG_KERNEL_MAX + 1] = {
+ 	[ETHTOOL_MSG_RINGS_NTF]		= &ethnl_rings_request_ops,
+ 	[ETHTOOL_MSG_CHANNELS_NTF]	= &ethnl_channels_request_ops,
+ 	[ETHTOOL_MSG_COALESCE_NTF]	= &ethnl_coalesce_request_ops,
++	[ETHTOOL_MSG_PAUSE_NTF]		= &ethnl_pause_request_ops,
  };
  
- static const struct genl_multicast_group ethtool_nl_mcgrps[] = {
-diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-index e14ac089bfb1..49fee19bc6aa 100644
---- a/net/ethtool/netlink.h
-+++ b/net/ethtool/netlink.h
-@@ -353,5 +353,6 @@ int ethnl_set_privflags(struct sk_buff *skb, struct genl_info *info);
- int ethnl_set_rings(struct sk_buff *skb, struct genl_info *info);
- int ethnl_set_channels(struct sk_buff *skb, struct genl_info *info);
- int ethnl_set_coalesce(struct sk_buff *skb, struct genl_info *info);
-+int ethnl_set_pause(struct sk_buff *skb, struct genl_info *info);
+ /* default notification handler */
+@@ -636,6 +637,7 @@ static const ethnl_notify_handler_t ethnl_notify_handlers[] = {
+ 	[ETHTOOL_MSG_RINGS_NTF]		= ethnl_default_notify,
+ 	[ETHTOOL_MSG_CHANNELS_NTF]	= ethnl_default_notify,
+ 	[ETHTOOL_MSG_COALESCE_NTF]	= ethnl_default_notify,
++	[ETHTOOL_MSG_PAUSE_NTF]		= ethnl_default_notify,
+ };
  
- #endif /* _NET_ETHTOOL_NETLINK_H */
+ void ethtool_notify(struct net_device *dev, unsigned int cmd, const void *data)
 diff --git a/net/ethtool/pause.c b/net/ethtool/pause.c
-index 9feafeb7bb1c..c307b91fdfba 100644
+index c307b91fdfba..7aea35d1e8a5 100644
 --- a/net/ethtool/pause.c
 +++ b/net/ethtool/pause.c
-@@ -79,3 +79,64 @@ const struct ethnl_request_ops ethnl_pause_request_ops = {
- 	.reply_size		= pause_reply_size,
- 	.fill_reply		= pause_fill_reply,
- };
-+
-+/* PAUSE_SET */
-+
-+static const struct nla_policy
-+pause_set_policy[ETHTOOL_A_PAUSE_MAX + 1] = {
-+	[ETHTOOL_A_PAUSE_UNSPEC]		= { .type = NLA_REJECT },
-+	[ETHTOOL_A_PAUSE_HEADER]		= { .type = NLA_NESTED },
-+	[ETHTOOL_A_PAUSE_AUTONEG]		= { .type = NLA_U8 },
-+	[ETHTOOL_A_PAUSE_RX]			= { .type = NLA_U8 },
-+	[ETHTOOL_A_PAUSE_TX]			= { .type = NLA_U8 },
-+};
-+
-+int ethnl_set_pause(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct nlattr *tb[ETHTOOL_A_PAUSE_MAX + 1];
-+	struct ethtool_pauseparam params = {};
-+	struct ethnl_req_info req_info = {};
-+	const struct ethtool_ops *ops;
-+	struct net_device *dev;
-+	bool mod = false;
-+	int ret;
-+
-+	ret = nlmsg_parse(info->nlhdr, GENL_HDRLEN, tb, ETHTOOL_A_PAUSE_MAX,
-+			  pause_set_policy, info->extack);
+@@ -131,6 +131,9 @@ int ethnl_set_pause(struct sk_buff *skb, struct genl_info *info)
+ 		goto out_ops;
+ 
+ 	ret = dev->ethtool_ops->set_pauseparam(dev, &params);
 +	if (ret < 0)
-+		return ret;
-+	ret = ethnl_parse_header_dev_get(&req_info,
-+					 tb[ETHTOOL_A_PAUSE_HEADER],
-+					 genl_info_net(info), info->extack,
-+					 true);
-+	if (ret < 0)
-+		return ret;
-+	dev = req_info.dev;
-+	ops = dev->ethtool_ops;
-+	ret = -EOPNOTSUPP;
-+	if (!ops->get_pauseparam || !ops->set_pauseparam)
-+		goto out_dev;
-+
-+	rtnl_lock();
-+	ret = ethnl_ops_begin(dev);
-+	if (ret < 0)
-+		goto out_rtnl;
-+	ops->get_pauseparam(dev, &params);
-+
-+	ethnl_update_bool32(&params.autoneg, tb[ETHTOOL_A_PAUSE_AUTONEG], &mod);
-+	ethnl_update_bool32(&params.rx_pause, tb[ETHTOOL_A_PAUSE_RX], &mod);
-+	ethnl_update_bool32(&params.tx_pause, tb[ETHTOOL_A_PAUSE_TX], &mod);
-+	ret = 0;
-+	if (!mod)
 +		goto out_ops;
-+
-+	ret = dev->ethtool_ops->set_pauseparam(dev, &params);
-+
-+out_ops:
-+	ethnl_ops_complete(dev);
-+out_rtnl:
-+	rtnl_unlock();
-+out_dev:
-+	dev_put(dev);
-+	return ret;
-+}
++	ethtool_notify(dev, ETHTOOL_MSG_PAUSE_NTF, NULL);
+ 
+ out_ops:
+ 	ethnl_ops_complete(dev);
 -- 
 2.25.1
 
