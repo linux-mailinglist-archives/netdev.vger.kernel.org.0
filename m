@@ -2,57 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A5F91961EF
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 00:31:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C8B7B19621C
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 00:42:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbgC0XbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 19:31:05 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:41186 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726065AbgC0XbE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 19:31:04 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1AB6115BEF9B0;
-        Fri, 27 Mar 2020 16:24:02 -0700 (PDT)
-Date:   Fri, 27 Mar 2020 16:24:00 -0700 (PDT)
-Message-Id: <20200327.162400.1906897622883505835.davem@davemloft.net>
-To:     hkallweit1@gmail.com
-Cc:     nic_swsd@realtek.com, cwhuang@android-x86.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] r8169: fix PHY driver check on platforms w/o
- module softdeps
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <d2a7f1f1-cf74-ab63-3361-6adc0576aa89@gmail.com>
-References: <40373530-6d40-4358-df58-13622a4512c2@gmail.com>
-        <20200327.155753.1558332088898122758.davem@davemloft.net>
-        <d2a7f1f1-cf74-ab63-3361-6adc0576aa89@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1727096AbgC0XmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 19:42:19 -0400
+Received: from mail-il1-f179.google.com ([209.85.166.179]:45692 "EHLO
+        mail-il1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726134AbgC0XmT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 19:42:19 -0400
+Received: by mail-il1-f179.google.com with SMTP id x16so10409714ilp.12
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 16:42:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=gQnNUoa9zwJYUw5zj561pfJl++D5glDXdtIuKEZH7Mw=;
+        b=oOpnZv/a+HE44jVQ5eimZOxUStuEqEgSXd2QVqGqk2tAl+txkM/PMcLfKcbhhYWAoZ
+         uT/riZb+j6voaRu1AOGsM2HA24m8Pb+x6T5HO8iu83uVrDH1Tg85rBzqwoFLYTWo0P8l
+         NTp94qfkrmBbs/7Vxa2UtqKT0iuodb3Dn4RsYaT/BkbZ7/Jra1h0lZZ+nVc8ZW71D9RJ
+         IRIA6TR91ONWoGZbm0S5LMvJx6/OPipVREY9/bLvJuUTUYjN92yhXKzzQxQChdL/8AkB
+         br8LVvHZJGzN/ZULyP0UkNBEamdGB7xYQX57OFbQhI2bX05qCqJMv79KjnUSGCp4KdHH
+         KzCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=gQnNUoa9zwJYUw5zj561pfJl++D5glDXdtIuKEZH7Mw=;
+        b=WMpLQDAl/eQXhkOyI8/yVZskLWkB3Jfgqe127dF3xBbnMfFjehFGNe9h8vKHPBYOQY
+         6XK+kwsakdU5k4XE9ia5JdNP+Db6ZdnN5Cxm2YPRecES0a5hPkyf2B1LJYbwJ327t/5C
+         rzsY87+5ka1B3eIQ2RxmKAhR0/Zlo5G+UG6cuCyrnJDD2v7xVZqjnq8L1LaWrMjl9UmN
+         OE2FfjGlcxwJ4qGqUGIN7ivhkppn/wA3yykcVFqLDmBGH8r8Nl5b1zpCD+BLGwSlYpbS
+         FMFxDSejNyVw8syyrp1GbnWwkG8pjarXRbeIrgQmChXmex3MTlajUjtQxUwhfyqrwhfJ
+         Tohw==
+X-Gm-Message-State: ANhLgQ2HQMMARkMHyAyfKZ0Q9CPTL1ODlW7Ad23SZgJGZh0sZ1/NxTs8
+        fxugIyT95F+6pvVxX8lz64ccg8auifgIeg==
+X-Google-Smtp-Source: ADFU+vv29dL3Fsgs1zqLtcrZooLn2UYUjnU6gAZRlCzTdwyaWErGM5BnOF59fJmMQ5xSJWu2K27lOg==
+X-Received: by 2002:a92:d28a:: with SMTP id p10mr1480338ilp.191.1585352537839;
+        Fri, 27 Mar 2020 16:42:17 -0700 (PDT)
+Received: from [172.22.22.26] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id n5sm1916793iop.23.2020.03.27.16.42.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 27 Mar 2020 16:42:16 -0700 (PDT)
+To:     David Miller <davem@davemloft.net>
+Cc:     Networking <netdev@vger.kernel.org>
+From:   Alex Elder <elder@linaro.org>
+Subject: IPA Driver Maintenance
+Message-ID: <cd3cefcd-1b80-d788-38c0-7d2a03fb6a0d@linaro.org>
+Date:   Fri, 27 Mar 2020 18:42:13 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 27 Mar 2020 16:24:02 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
-Date: Sat, 28 Mar 2020 00:10:57 +0100
+I'd like to know what your preferences and expectations are for
+me maintaining the IPA driver.
 
-> Somehow that change made it to -stable. See e.g. commit
-> 85a19b0e31e256e77fd4124804b9cec10619de5e for 4.19.
+I will review all IPA-related patches and will clearly indicate
+whether I find them acceptable (i.e., Reviewed-by, Signed-off-by,
+or Acked-by... or not).
 
-This is a serious issue in that it seems that the people maintaining
-the older stable release integrate arbitrary patches even if they
-haven't been sent to v5.4 and v5.5
-
-And I don't handle -stable backport submissions that far back anyways.
-
-Therefore, I'm not going ot participate in that ongoing problem, so
-feel free to contact the folks who integrated those changes into
--stable and ask them to revert.
+Do you want me to set up a tree and send you pull requests?
+Should I be watching the netdev patchwork queue?  Or something
+else?
 
 Thanks.
+
+					-Alex
+
