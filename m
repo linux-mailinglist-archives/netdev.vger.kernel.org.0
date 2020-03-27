@@ -2,113 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD9931957EC
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 14:23:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77D6319580B
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 14:30:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727495AbgC0NX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 09:23:29 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33784 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726275AbgC0NX3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Mar 2020 09:23:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=KxLAqRWANV+lRpwj2JfW/z28qcDsnVnMDHMTtllBTdU=; b=B3p2FW7y41USJyD7JbgxxGzYae
-        2wnaFlA/0Ag++03oLARlmo19xECQB4FkGAuOn+ffFTxdNCfMEOFQ0hgilpPt7ye/3abHiSHLT+jfV
-        DJGuWVZm+teNrbR0MpvqUUrFGFGkyvA/AANfjGHsyhLkIEg6hPn9bkoUfxbEwuPBtEJ8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jHox7-0001ab-P3; Fri, 27 Mar 2020 14:23:13 +0100
-Date:   Fri, 27 Mar 2020 14:23:13 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florinel Iordache <florinel.iordache@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        Leo Li <leoyang.li@nxp.com>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [EXT] Re: [PATCH net-next 6/9] net: phy: add backplane kr driver
- support
-Message-ID: <20200327132313.GO3819@lunn.ch>
-References: <1585230682-24417-1-git-send-email-florinel.iordache@nxp.com>
- <1585230682-24417-7-git-send-email-florinel.iordache@nxp.com>
- <20200327010706.GN3819@lunn.ch>
- <AM0PR04MB5443C1142ABE578ACC641FC5FBCC0@AM0PR04MB5443.eurprd04.prod.outlook.com>
+        id S1727733AbgC0Na3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 09:30:29 -0400
+Received: from mail-il1-f199.google.com ([209.85.166.199]:44325 "EHLO
+        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727393AbgC0NaP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 09:30:15 -0400
+Received: by mail-il1-f199.google.com with SMTP id b15so5738479ilh.11
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 06:30:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=HweTU5jj17xC6BlpXQyem62ObeI/pFALQMnTvUhCql4=;
+        b=oQ5djLpJhiKl4XNBZsrys1PSXwVtU2syg5d+KRrorAwXjIYhkYuDaZjsY0OOC+/MxB
+         zK9rlaTmRpAHQpwgRlB/fUfv2aGgmE2Q/G6ZOJixXlu7fZgDXeCQmwr2TruFePc+hx6A
+         fsJSilvyoFqa+cdlXrpeT3/8Z4fmDt8SKBPhSbxLUdweLag9OSfR6n3Ox3jo+9m4K0hV
+         m0BZ2pUV5QbROq1JWF5scjFYE6BjArAJXaTeC/fbRacIGgZ4a26JXxIN/OjTyx7W/mwf
+         unKGqmNYXGXhrm088TK+1XouUwEQm2cBZiabF0Wy+wbCb+rQnO6+JEi9Xnx/FcB8fdpG
+         6Yhg==
+X-Gm-Message-State: ANhLgQ1fgrWquflpIiLgieVknJAeEiwNxIyLRbOw2i/X6SZmOqy5dWh2
+        SaMGT+o1mQAazc8sR/F263q42+lyRcdPrbtnUITPy5GeWmdL
+X-Google-Smtp-Source: ADFU+vvJsJfct4TOYF0rsn4TG7dIp3UoAiUjSETSMIFbPyzhwwX/OW1NnqSw1DEFL3ukg0pGEpIAIM41ykLMvtPXAdnRAyTgXYnT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM0PR04MB5443C1142ABE578ACC641FC5FBCC0@AM0PR04MB5443.eurprd04.prod.outlook.com>
+X-Received: by 2002:a92:8f81:: with SMTP id r1mr13736124ilk.51.1585315814830;
+ Fri, 27 Mar 2020 06:30:14 -0700 (PDT)
+Date:   Fri, 27 Mar 2020 06:30:14 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000002fc05a1d61a68@google.com>
+Subject: KASAN: use-after-free Read in ath9k_wmi_ctrl_rx
+From:   syzbot <syzbot+5d338854440137ea0fef@syzkaller.appspotmail.com>
+To:     andreyknvl@google.com, ath9k-devel@qca.qualcomm.com,
+        davem@davemloft.net, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 27, 2020 at 01:02:17PM +0000, Florinel Iordache wrote:
-> > > +static u32 le_ioread32(void __iomem *reg) {
-> > > +     return ioread32(reg);
-> > > +}
-> > > +
-> > > +static void le_iowrite32(u32 value, void __iomem *reg) {
-> > > +     iowrite32(value, reg);
-> > > +}
-> > > +
-> > > +static u32 be_ioread32(void __iomem *reg) {
-> > > +     return ioread32be(reg);
-> > > +}
-> > > +
-> > > +static void be_iowrite32(u32 value, void __iomem *reg) {
-> > > +     iowrite32be(value, reg);
-> > > +}
-> > 
-> > This is very surprising to me. I've not got my head around the structure of this
-> > code yet, but i'm surprised to see memory mapped access functions in generic
-> > code.
-> > 
-> >        Andrew
-> 
-> Hi Andrew,
-> 
-> This is part of the framework used to automatically setup desired I/O 
-> callbacks for memory access according to device specific endianness 
-> which is specified in the specific device tree (DTS).
-> This approach (explained below) was used to avoid the potential 
-> redundant code related to memory access LE/BE which should be 
-> similar for all devices. 
+Hello,
 
-All devices which are using mmio. I assume the standard does not say
-anything about memory mapped IO. It talks just about MDIO registers.
+syzbot found the following crash on:
 
-I would expect the generic code to just have generic accessors, which
-could work for MMIO, yet more MDIO registers, i2c, spi, etc.
+HEAD commit:    e17994d1 usb: core: kcov: collect coverage from usb comple..
+git tree:       https://github.com/google/kasan.git usb-fuzzer
+console output: https://syzkaller.appspot.com/x/log.txt?x=1253c9d5e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5d64370c438bc60
+dashboard link: https://syzkaller.appspot.com/bug?extid=5d338854440137ea0fef
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17fd135be00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16436be5e00000
 
-So add another support file which adds an MMIO implementation of these
-generic access functions. Any driver which uses MMIO can pull it in.
-The same should be true for the DT binding. Don't assume MMIO in the
-generic binding.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+5d338854440137ea0fef@syzkaller.appspotmail.com
 
-> This portion of code is just preparing these four static IO routines 
-> for specific endianness access LE/BE
+==================================================================
+BUG: KASAN: use-after-free in ath9k_wmi_ctrl_rx+0x416/0x500 drivers/net/wireless/ath/ath9k/wmi.c:215
+Read of size 1 at addr ffff8881cef1417c by task swapper/1/0
 
-Linux has a lot of MMIO accessors. Are you sure there is not one which
-will do the right thing, making use of cpu_le32() or cpu_be32()
-etc. Or are there different variants of the hardware, with some using
-BE registers and some using LE registers? Note, this is all about the
-endianness of the register, not the endianness of the cpu. cpu_le32()
-will be a NOP when the CPU is running LE.
+CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.6.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0xef/0x16e lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd3/0x314 mm/kasan/report.c:374
+ __kasan_report.cold+0x37/0x77 mm/kasan/report.c:506
+ kasan_report+0xe/0x20 mm/kasan/common.c:641
+ ath9k_wmi_ctrl_rx+0x416/0x500 drivers/net/wireless/ath/ath9k/wmi.c:215
+ ath9k_htc_rx_msg+0x2da/0xaf0 drivers/net/wireless/ath/ath9k/htc_hst.c:459
+ ath9k_hif_usb_reg_in_cb+0x1ba/0x630 drivers/net/wireless/ath/ath9k/hif_usb.c:718
+ __usb_hcd_giveback_urb+0x29a/0x550 drivers/usb/core/hcd.c:1650
+ usb_hcd_giveback_urb+0x368/0x420 drivers/usb/core/hcd.c:1716
+ dummy_timer+0x1258/0x32ae drivers/usb/gadget/udc/dummy_hcd.c:1966
+ call_timer_fn+0x195/0x6f0 kernel/time/timer.c:1404
+ expire_timers kernel/time/timer.c:1449 [inline]
+ __run_timers kernel/time/timer.c:1773 [inline]
+ __run_timers kernel/time/timer.c:1740 [inline]
+ run_timer_softirq+0x5f9/0x1500 kernel/time/timer.c:1786
 
-     Andrew
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
