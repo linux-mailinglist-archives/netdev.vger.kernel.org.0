@@ -2,89 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F38591950C1
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 06:42:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 769771950C6
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 06:48:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726742AbgC0Fmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 01:42:38 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33710 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725857AbgC0Fmh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 01:42:37 -0400
-Received: by mail-pf1-f196.google.com with SMTP id j1so3994052pfe.0;
-        Thu, 26 Mar 2020 22:42:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4wG0RN2cqceurx8JJbCkwdHJTX3H2NrTFGH7MZM7fwg=;
-        b=df9+GCRhbWr8zBo94fv09n7M8GP4rAOTXPZOZ4/3ajfVSiT4aSPd3pxh6KWUikgcXF
-         LysJd1g2wCssSLGqFnOuaQ9/K6S5GdeaneGPdFASMxItrYkVFnVpo8EpNyLpE74iN6Yj
-         75HKNKNgpgG1tdFs4k5lHm1ACWROFN0i4T+xWeAaAfLgax79tTuv7YaT1YZe0jKiUz8D
-         56n4fbNRpbBATvAYVYYvwer4IDi5pvooBx0HbJbUjdxNjjHd3912tUHXGdf3hpbvtLCT
-         rx7aIcH6l4shmdECgb/Q1VKSP1v0JDHIWxXZ24ipKSau4ov3uUWGwi91up/nSa4HxWPE
-         EcGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4wG0RN2cqceurx8JJbCkwdHJTX3H2NrTFGH7MZM7fwg=;
-        b=qtTvAwCTxNSTECCVSZMgYI4vWf/Uvc5uB5aZUVYTuFp1mHPWYNLhCh3Pf4SmkIkT/U
-         X+4FkxX1rgO8gaSUawL70yhXRLSWATbeCjQGTe+XWdbit7Eig4FhD/40f65G5uDtMdfP
-         2tuBKaiqZe74bZwj3vq2ziWSxtrh8WKW0bwsx3+MVa/4+uz5j88gTxme6pu2HAWhYZRs
-         rTgHxtlPZ4/BlZ3DpzPUlWntQBZJQq5ncQ3XGie2PJIMKseLL+P1A2aswqjyU4WyNt3c
-         +qJ1xrlJQ0+fUQJwQkYEOUGsWdRUTxDCBtfj6KNIbjhstfe7TB4A2JOed6v4ZngdjxjG
-         XeVw==
-X-Gm-Message-State: ANhLgQ2vVV4xEO/GPADOoLP/JdB3qJp6I0nVw+i1k2EAqdbBl0FzaBlb
-        j/No0kNVOHqwcRjid4A+39M=
-X-Google-Smtp-Source: ADFU+vtCR3XkSpfJHe8WUvyiWOjsZNEKEwpio8c5gW+pTjhFHR1cqDooYAGbN9o5t5lKghsIG+U6tg==
-X-Received: by 2002:a62:a119:: with SMTP id b25mr12772596pff.158.1585287755332;
-        Thu, 26 Mar 2020 22:42:35 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id c190sm3138089pfa.66.2020.03.26.22.42.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 26 Mar 2020 22:42:34 -0700 (PDT)
-Subject: Re: [PATCHv3 bpf-next 0/5] Add bpf_sk_assign eBPF helper
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Joe Stringer <joe@wand.net.nz>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, daniel@iogearbox.net,
-        ast@kernel.org, eric.dumazet@gmail.com, lmb@cloudflare.com,
-        kafai@fb.com
-References: <20200327042556.11560-1-joe@wand.net.nz>
- <20200327050215.vpl62gfvjj7zljdf@ast-mbp>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <3882061d-b7b8-63e7-f6f9-ba108528b83a@gmail.com>
-Date:   Thu, 26 Mar 2020 22:42:33 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200327050215.vpl62gfvjj7zljdf@ast-mbp>
-Content-Type: text/plain; charset=utf-8
+        id S1726193AbgC0FsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 01:48:02 -0400
+Received: from mail-vi1eur05on2084.outbound.protection.outlook.com ([40.107.21.84]:6031
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725857AbgC0FsB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Mar 2020 01:48:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=flGUfK8RhJEQBvoYq6Pl72fdqHlvEj2fl+1/+G+pivaK7cf8xJXRdkRdiLGvyDTVZQXnwmbfEZBf7FAMHE1ytjhT6kGr9K9ObIhPG8tHExXLt622z2h7zqWEEUiUSLYhBz56gKNfUuYESmDph1mn5jC36/CxeEqrCAzC0wn3W7IaRL8pvr6CMT38wDwgAmC9O/jdyHsw0kO2DVaIpfBTkSW9n4WbL9LIhZRhu/w10kvf6pCXCyHq1f2F3Zq3ciqNOmoc6hCsVGwpbDsv5ZoWV+4+u3yOmf7I44qdtDGhXGlhq6J7AdAUagziTrDE1HZ2+k0NgY3t8lZltaUYbytcpg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0LzBWGCPJsGHNkKTKbFDO42rKN/9KhWCwQ9q/Qc9ceE=;
+ b=g77DK8z/MsXEd3Ko0FABqBifPii2NfYfz18V9A8GcKMmnS33/ukneT+qoPPbmDqkvrN+oiBpYxIpJAc0ikp99D+2vjWsNbPjFgb8tGip5r+MNxpi5k2MzyABefyVOWW5QFi93QgTTek7Wvzwr6scaNEGqd4EEvOx99mdiH2jAV8euzOBU74oxBMJOK9Hhy+PEDnLy0L8R/51tPnxafgzUyNF9+J7Jb6PhmX/qL8/qSuq84gcSai+4EPoSJCwkLyBBd5851pLLmIrbcJyi2Hatz69cu2QYZE/ZgOyFfXSXPxBf26MqSdjKE/J0wlXxbr3uMK6tCOIwvNizBp1Yiay5g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0LzBWGCPJsGHNkKTKbFDO42rKN/9KhWCwQ9q/Qc9ceE=;
+ b=AOkUBp756sMU7rWt2Zjj0un8SxK/UDLTRe35OJ5r95qWmS26Dd0/ynL4zUW6oo8aTb3muKwrWmroTA9373QnV4VO7OFlkxvZr7F++uLmBz677z9HyYSsR/MW9d3D373l31hhXDFz3102CL0kU9non+hhrAz/lx3If4BqT3g+3BM=
+Received: from AM7PR04MB6885.eurprd04.prod.outlook.com (10.141.174.88) by
+ AM7PR04MB7189.eurprd04.prod.outlook.com (52.135.56.215) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2856.19; Fri, 27 Mar 2020 05:47:56 +0000
+Received: from AM7PR04MB6885.eurprd04.prod.outlook.com
+ ([fe80::dcc0:6a0:c64b:9f94]) by AM7PR04MB6885.eurprd04.prod.outlook.com
+ ([fe80::dcc0:6a0:c64b:9f94%2]) with mapi id 15.20.2856.019; Fri, 27 Mar 2020
+ 05:47:55 +0000
+From:   "Y.b. Lu" <yangbo.lu@nxp.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH 6/6] ptp_ocelot: support 4 programmable pins
+Thread-Topic: [PATCH 6/6] ptp_ocelot: support 4 programmable pins
+Thread-Index: AQHV/qQWBIiKj5A/T0WD8BjMeGVxRqhXvRSAgADnAvCAALTjgIABSqMQgABMsoCAAQih4A==
+Date:   Fri, 27 Mar 2020 05:47:55 +0000
+Message-ID: <AM7PR04MB6885113954C96DFD69F2C692F8CC0@AM7PR04MB6885.eurprd04.prod.outlook.com>
+References: <20200320103726.32559-1-yangbo.lu@nxp.com>
+ <20200320103726.32559-7-yangbo.lu@nxp.com> <20200324130733.GA18149@localhost>
+ <AM7PR04MB688500546D0FC4A64F0DA19DF8CE0@AM7PR04MB6885.eurprd04.prod.outlook.com>
+ <20200325134147.GB32284@localhost>
+ <AM7PR04MB68853749A1196B30C917A232F8CF0@AM7PR04MB6885.eurprd04.prod.outlook.com>
+ <20200326135941.GA20841@localhost>
+In-Reply-To: <20200326135941.GA20841@localhost>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yangbo.lu@nxp.com; 
+x-originating-ip: [92.121.36.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 4a34ec04-094c-428f-0c99-08d7d2126608
+x-ms-traffictypediagnostic: AM7PR04MB7189:|AM7PR04MB7189:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM7PR04MB7189BE72F4B3BFC2B356298BF8CC0@AM7PR04MB7189.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 0355F3A3AE
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB6885.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(366004)(396003)(39860400002)(376002)(346002)(136003)(86362001)(9686003)(52536014)(33656002)(71200400001)(5660300002)(6506007)(4326008)(55016002)(53546011)(54906003)(2906002)(8676002)(478600001)(186003)(81166006)(8936002)(26005)(316002)(7696005)(64756008)(66556008)(66476007)(76116006)(6916009)(66446008)(66946007)(81156014);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: w5VLmWIMFNNXYJ8HgFSuRshEmZWg6eag6L76cudnzA6l4+w2CdE24dKD7ZoADm3YwR3bhg5egFEJHTmPzEm2uuc6RLApq9xdhkCZdCvfygYC+Qm5or2pGO/FD2+D0YcKgA2s0FQD117bfeQNmQJzutSBjfPkK/k5R70BXl0bTrkYlv/RlkJrKoGZ0s3Xm/zif2vQXu2oD32EKyodhGiPA0vRxf9hvx6lZZ5wKC0YqyikM3SlLnynBRfv2Hp0ED3GSzuLrL+D1JszidOFCG6JGh3+xjlKiBvrYTq40Xx0FvdTksGYIM4iGDYtzxH0LImred5084mfoUVrs4uUhzY6YrYUZDhcrczdes50T6HlMXPFYFfB8dxNfdRKmDxDxZ57EfcNOF6pzgBsqrveyoipx3GCWvbO7HQiKUsMD7bOihobptN5YMlhhReRomoqBiLU
+x-ms-exchange-antispam-messagedata: U1bz0796T4oGc1i0yHNnFEmxmjWFNCK3nsHvSRYT5BuNOQAN8fnv9y85rURXTcyrqGUNRYe2/BSow2iQ/tReBzwAW/A4rtHQwhviKtePB43E9Enf3eSy7hjlFlyYa5BdiUivaY76iY22Ur2/bKsZ1Q==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4a34ec04-094c-428f-0c99-08d7d2126608
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Mar 2020 05:47:55.8465
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: q9MRBNjT36byQ0kX34dm00U6aydomQcAO5JwJ5qxUs+S4hb7aO1LW9Bd9Z8/PWEgX3s3smmKGdnPnuj9yAUStg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR04MB7189
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> -----Original Message-----
+> From: Richard Cochran <richardcochran@gmail.com>
+> Sent: Thursday, March 26, 2020 10:00 PM
+> To: Y.b. Lu <yangbo.lu@nxp.com>
+> Cc: linux-kernel@vger.kernel.org; netdev@vger.kernel.org; David S . Mille=
+r
+> <davem@davemloft.net>; Vladimir Oltean <vladimir.oltean@nxp.com>;
+> Claudiu Manoil <claudiu.manoil@nxp.com>; Andrew Lunn <andrew@lunn.ch>;
+> Vivien Didelot <vivien.didelot@gmail.com>; Florian Fainelli
+> <f.fainelli@gmail.com>; Alexandre Belloni <alexandre.belloni@bootlin.com>=
+;
+> Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+> Subject: Re: [PATCH 6/6] ptp_ocelot: support 4 programmable pins
+>=20
+> On Thu, Mar 26, 2020 at 09:34:52AM +0000, Y.b. Lu wrote:
+> > > Of course, that is horrible, and I am going to find a way to fix it.
+> >
+> > Thanks a lot.
+> > Do you think it is ok to move protection into ptp_set_pinfunc() to prot=
+ect
+> just pin_config accessing?
+> > ptp_disable_pinfunc() not touching pin_config could be out of protectio=
+n.
+> > But it seems indeed total ptp_set_pinfunc() should be under protection.=
+..
+>=20
+> Yes, and I have way to fix that.  I will post a patch soon...
+>=20
+> > I could modify commit messages to indicate the pin supports both
+> PTP_PF_PEROUT and PTP_PF_EXTTS, and PTP_PF_EXTTS support will be added
+> in the future.
+>=20
+> Thanks for explaining.  Since you do have programmable pin, please
+> wait for my patch to fix the deadlock.
 
+Thanks a lot. Will wait your fix-up.
 
-On 3/26/20 10:02 PM, Alexei Starovoitov wrote:
-> On Thu, Mar 26, 2020 at 09:25:51PM -0700, Joe Stringer wrote:
->> Introduce a new helper that allows assigning a previously-found socket
->> to the skb as the packet is received towards the stack, to cause the
->> stack to guide the packet towards that socket subject to local routing
->> configuration. The intention is to support TProxy use cases more
->> directly from eBPF programs attached at TC ingress, to simplify and
->> streamline Linux stack configuration in scale environments with Cilium.
-> 
-> Thanks for the quick respin.
-> It builds. And tests are passing for me.
-> The lack of acks and reviewed-by is a bit concerning for such important feature.
-> 
-> Folks, please be more generous with acks :)
-> so we can apply it with more confidence.
-> 
+Best regards,
+Yangbo Lu
 
-I can review this tomorrow morning, thanks.
+>=20
+> Thanks,
+> Richard
