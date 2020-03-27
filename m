@@ -2,74 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93782194FA3
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 04:24:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F010194FA7
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 04:27:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727612AbgC0DYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 26 Mar 2020 23:24:06 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:50934 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726363AbgC0DYF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 23:24:05 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 48pRz72BwFz1qrGJ;
-        Fri, 27 Mar 2020 04:24:00 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 48pRz43c8fz1qv55;
-        Fri, 27 Mar 2020 04:24:00 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id eY9M2SiyByS0; Fri, 27 Mar 2020 04:23:59 +0100 (CET)
-X-Auth-Info: 5vN8Egy5N5kTK0Zs+jg36LD5YoowDOxsNcUKb2P332Y=
-Received: from [IPv6:::1] (unknown [195.140.253.167])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Fri, 27 Mar 2020 04:23:59 +0100 (CET)
-Subject: Re: [PATCH] net: ks8851-ml: Fix IO operations, again
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, lukas@wunner.de, ynezz@true.cz,
-        yuehaibing@huawei.com
-References: <20200325142547.45393-1-marex@denx.de>
- <20200326.202108.1067673336802728242.davem@davemloft.net>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <53869ef3-0825-55eb-fb89-f5e732b7e7ac@denx.de>
-Date:   Fri, 27 Mar 2020 04:23:58 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200326.202108.1067673336802728242.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S1727705AbgC0D1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 26 Mar 2020 23:27:16 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:58054 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726363AbgC0D1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 26 Mar 2020 23:27:16 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 0591D15CE962A;
+        Thu, 26 Mar 2020 20:27:14 -0700 (PDT)
+Date:   Thu, 26 Mar 2020 20:27:14 -0700 (PDT)
+Message-Id: <20200326.202714.1221436401038064762.davem@davemloft.net>
+To:     cai@lca.pw
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        eric.dumazet@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] ipv4: fix a RCU-list lock in fib_triestat_seq_show
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200325220100.7863-1-cai@lca.pw>
+References: <20200325220100.7863-1-cai@lca.pw>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 26 Mar 2020 20:27:15 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/27/20 4:21 AM, David Miller wrote:
-> From: Marek Vasut <marex@denx.de>
-> Date: Wed, 25 Mar 2020 15:25:47 +0100
-> 
->> This patch reverts 58292104832f ("net: ks8851-ml: Fix 16-bit IO operation")
->> and edacb098ea9c ("net: ks8851-ml: Fix 16-bit data access"), because it
->> turns out these were only necessary due to buggy hardware. This patch adds
->> a check for such a buggy hardware to prevent any such mistakes again.
->>
->> While working further on the KS8851 driver, it came to light that the
->> KS8851-16MLL is capable of switching bus endianness by a hardware strap,
->> EESK pin. If this strap is incorrect, the IO accesses require such endian
->> swapping as is being reverted by this patch. Such swapping also impacts
->> the performance significantly.
->>
->> Hence, in addition to removing it, detect that the hardware is broken,
->> report to user, and fail to bind with such hardware.
->>
->> Fixes: 58292104832f ("net: ks8851-ml: Fix 16-bit IO operation")
->> Fixes: edacb098ea9c ("net: ks8851-ml: Fix 16-bit data access")
->> Signed-off-by: Marek Vasut <marex@denx.de>
-> 
-> Applied, thanks.
+From: Qian Cai <cai@lca.pw>
+Date: Wed, 25 Mar 2020 18:01:00 -0400
 
-Sorry for this mess.
+> fib_triestat_seq_show() calls hlist_for_each_entry_rcu(tb, head,
+> tb_hlist) without rcu_read_lock() will trigger a warning,
+> 
+>  net/ipv4/fib_trie.c:2579 RCU-list traversed in non-reader section!!
+> 
+>  other info that might help us debug this:
+> 
+>  rcu_scheduler_active = 2, debug_locks = 1
+>  1 lock held by proc01/115277:
+>   #0: c0000014507acf00 (&p->lock){+.+.}-{3:3}, at: seq_read+0x58/0x670
+> 
+>  Call Trace:
+>   dump_stack+0xf4/0x164 (unreliable)
+>   lockdep_rcu_suspicious+0x140/0x164
+>   fib_triestat_seq_show+0x750/0x880
+>   seq_read+0x1a0/0x670
+>   proc_reg_read+0x10c/0x1b0
+>   __vfs_read+0x3c/0x70
+>   vfs_read+0xac/0x170
+>   ksys_read+0x7c/0x140
+>   system_call+0x5c/0x68
+> 
+> Fix it by adding a pair of rcu_read_lock/unlock() and use
+> cond_resched_rcu() to avoid the situation where walking of a large
+> number of items  may prevent scheduling for a long time.
+> 
+> Signed-off-by: Qian Cai <cai@lca.pw>
+
+Eric, please review.
