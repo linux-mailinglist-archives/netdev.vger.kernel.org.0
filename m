@@ -2,138 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 953091957BA
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 14:06:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD9931957EC
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 14:23:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727345AbgC0NG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 09:06:28 -0400
-Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:48737 "EHLO
-        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726165AbgC0NG1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 09:06:27 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 831CC83B;
-        Fri, 27 Mar 2020 09:06:26 -0400 (EDT)
-Received: from imap2 ([10.202.2.52])
-  by compute4.internal (MEProxy); Fri, 27 Mar 2020 09:06:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        stressinduktion.org; h=mime-version:message-id:in-reply-to
-        :references:date:from:to:cc:subject:content-type
-        :content-transfer-encoding; s=fm3; bh=dPr6QdQOf4NoboK9rwgoQ5mjpA
-        EquGAswUU8HOhEMiE=; b=lFMpWC5LW003c1d9US5i1rR1GIkaBxyVZnfM8bm+ie
-        K5DCuq/fQMupaFOnZRV60RMLnDZNUdKSZABSApN1elS9Pg5dSvmos7/pgny91X3t
-        ttS+4I8gKhRiF7JX++QKHCpUy67kU+jccwHiJzfATNJFfGvYfc7kjrjiHVqUxQVF
-        iEzlhkDlj5crzQEbE2foLoJady6E269pyZaL4mm+VJF+Oco9GG3XSDuOcIjAFLOK
-        yA90Gz4tG7C4w77BfkQIktJ1n0ifOIA/qd06e4yM3YtSr0v0wa0m+rh/NhWJWFrq
-        Fq++m8YkEGzO0ZdSABrYSx80uix8VG9SOaGovW7SB9wQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm2; bh=dPr6QdQOf4NoboK9rwgoQ5mjpAEquGAswUU8HOhEM
-        iE=; b=uJvABexFJB1/u3vlPaDHdHRjGyDQVtvqsa2K9hfuvTTRJZ/SI6cflNvwu
-        OAI6ztFgqtuhqPXdxRY/cuA8X1cbzMTiT8QjvLz3YxpsIrDFoel66k/b9AKzb2Tl
-        hiii5/IAHh2DEe5MXHhzOT9vuIIpf0AsFt6H/rQbJwqy2rnpCE9T9m76IYnC2Y0U
-        F9IB0O6bJZNnLB9PXPgbzFNIgKHNpr4bN0tPK+UVzOA4bS28fZuTpM0SppFG2yNr
-        3ULnxhwe35yJxhvoBSEzV2fIZiIJWOyNc/iTOTezX08jtihc1ZDevXIt6TebR9ch
-        abnj0EC0G4Ky99OeBzK9JO7eSZiOA==
-X-ME-Sender: <xms:UPp9Xo_H24hTv_6Avjp2MATAKKDkfpl5Nd0mLLSfPeUNKtcevp9OxQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudehledggeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgfgsehtqhertderreejnecuhfhrohhmpedfjfgr
-    nhhnvghsucfhrhgvuggvrhhitgcuufhofigrfdcuoehhrghnnhgvshesshhtrhgvshhsih
-    hnughukhhtihhonhdrohhrgheqnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghm
-    pehmrghilhhfrhhomhephhgrnhhnvghssehsthhrvghsshhinhguuhhkthhiohhnrdhorh
-    hg
-X-ME-Proxy: <xmx:UPp9XpUrS9Zdp0rXl6-Bt0WUGmD4bgfM1T-jPkOmNagtK7sgyf6cWQ>
-    <xmx:UPp9XnA9-fcWW5ePW5hxyBfVf7t9rdtkEGBsFfOtKkg3KMvccWzvBg>
-    <xmx:UPp9Xgm7fQ9lU5yPvRgFulNJTF62Vt8yDXkfbyGyJ4a8EsSfuKsK5g>
-    <xmx:Uvp9XiAxGBbV0NFTglgiuT6I0is3kK804xLg46U7sj0lhj5HWYYoNA>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id CDA67E00C3; Fri, 27 Mar 2020 09:06:24 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.1.7-1021-g152deaf-fmstable-20200319v1
-Mime-Version: 1.0
-Message-Id: <a50808d0-df80-4fbc-a0aa-5a3342067378@www.fastmail.com>
-In-Reply-To: <CABWXKLwamYiLhwUHsb5nZHnyZb4=6RrrdUg3CiX7CZOuVime7g@mail.gmail.com>
-References: <20200326094252.157914-1-brambonne@google.com>
- <20200326.114550.2060060414897819387.davem@davemloft.net>
- <CABWXKLwamYiLhwUHsb5nZHnyZb4=6RrrdUg3CiX7CZOuVime7g@mail.gmail.com>
-Date:   Fri, 27 Mar 2020 14:06:03 +0100
-From:   "Hannes Frederic Sowa" <hannes@stressinduktion.org>
-To:     =?UTF-8?Q?Bram_Bonn=C3=A9?= <brambonne@google.com>,
-        "David Miller" <davem@davemloft.net>
-Cc:     "Alexey Kuznetsov" <kuznet@ms2.inr.ac.ru>,
-        "Hideaki YOSHIFUJI" <yoshfuji@linux-ipv6.org>, kuba@kernel.org,
-        netdev@vger.kernel.org, "Lorenzo Colitti" <lorenzo@google.com>,
-        "Jeffrey Vander Stoep" <jeffv@google.com>
-Subject: =?UTF-8?Q?Re:_[RFC_PATCH]_ipv6:_Use_dev=5Faddr_in_stable-privacy_address?=
- =?UTF-8?Q?_generation?=
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        id S1727495AbgC0NX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 09:23:29 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33784 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726275AbgC0NX3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Mar 2020 09:23:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=KxLAqRWANV+lRpwj2JfW/z28qcDsnVnMDHMTtllBTdU=; b=B3p2FW7y41USJyD7JbgxxGzYae
+        2wnaFlA/0Ag++03oLARlmo19xECQB4FkGAuOn+ffFTxdNCfMEOFQ0hgilpPt7ye/3abHiSHLT+jfV
+        DJGuWVZm+teNrbR0MpvqUUrFGFGkyvA/AANfjGHsyhLkIEg6hPn9bkoUfxbEwuPBtEJ8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jHox7-0001ab-P3; Fri, 27 Mar 2020 14:23:13 +0100
+Date:   Fri, 27 Mar 2020 14:23:13 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florinel Iordache <florinel.iordache@nxp.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        Leo Li <leoyang.li@nxp.com>,
+        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [EXT] Re: [PATCH net-next 6/9] net: phy: add backplane kr driver
+ support
+Message-ID: <20200327132313.GO3819@lunn.ch>
+References: <1585230682-24417-1-git-send-email-florinel.iordache@nxp.com>
+ <1585230682-24417-7-git-send-email-florinel.iordache@nxp.com>
+ <20200327010706.GN3819@lunn.ch>
+ <AM0PR04MB5443C1142ABE578ACC641FC5FBCC0@AM0PR04MB5443.eurprd04.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM0PR04MB5443C1142ABE578ACC641FC5FBCC0@AM0PR04MB5443.eurprd04.prod.outlook.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Fri, Mar 27, 2020 at 01:02:17PM +0000, Florinel Iordache wrote:
+> > > +static u32 le_ioread32(void __iomem *reg) {
+> > > +     return ioread32(reg);
+> > > +}
+> > > +
+> > > +static void le_iowrite32(u32 value, void __iomem *reg) {
+> > > +     iowrite32(value, reg);
+> > > +}
+> > > +
+> > > +static u32 be_ioread32(void __iomem *reg) {
+> > > +     return ioread32be(reg);
+> > > +}
+> > > +
+> > > +static void be_iowrite32(u32 value, void __iomem *reg) {
+> > > +     iowrite32be(value, reg);
+> > > +}
+> > 
+> > This is very surprising to me. I've not got my head around the structure of this
+> > code yet, but i'm surprised to see memory mapped access functions in generic
+> > code.
+> > 
+> >        Andrew
+> 
+> Hi Andrew,
+> 
+> This is part of the framework used to automatically setup desired I/O 
+> callbacks for memory access according to device specific endianness 
+> which is specified in the specific device tree (DTS).
+> This approach (explained below) was used to avoid the potential 
+> redundant code related to memory access LE/BE which should be 
+> similar for all devices. 
 
-On Fri, Mar 27, 2020, at 12:50, Bram Bonn=C3=A9 wrote:
-> On Thu, Mar 26, 2020 at 7:45 PM David Miller <davem@davemloft.net> wro=
-te:
-> > I think the current behavior is intentional in that it's supposed to=
- use
-> > something that is unchanging even across arbitrary administrator cha=
-nges
-> > to the in-use MAC address.
->=20
-> Thank you for your feedback David.
->=20
-> Could you help me understand the use cases where the admin / user
-> chooses to use MAC address randomization, but still wants an IPv6
-> link-local address that remains stable across these networks? My
-> assumption was that the latter would defeat the purpose of the former,=
+All devices which are using mmio. I assume the standard does not say
+anything about memory mapped IO. It talks just about MDIO registers.
 
-> though it's entirely possible that I'm missing something.
+I would expect the generic code to just have generic accessors, which
+could work for MMIO, yet more MDIO registers, i2c, spi, etc.
 
-The main idea behind stable IPv6 identifiers is to eventually replace EU=
-I-48 based generated addresses, because knowledge of the MAC address sho=
-uld never leave the broadcast domain you are in. This leads to tracking =
-of a user moving between different networks (in this case moving between=
- different ipv6 prefixes). It does not necessarily replace the temporary=
- address mode which fully randomizes addresses and is still available to=
- you for use in cases where you don't want to have this compromise. temp=
-_addresses are still a good choice to use.
+So add another support file which adds an MMIO implementation of these
+generic access functions. Any driver which uses MMIO can pull it in.
+The same should be true for the DT binding. Don't assume MMIO in the
+generic binding.
 
-MAC address randomization was mainly introduced to blind the unique iden=
-tifier during wifi probing and association, where no IPv6 traffic is yet=
- visible on unencrypted links. As soon as the encrypted link between you=
-r wifi endpoint and the access point is established, IPv6 addresses are =
-generated and used inside the "encrypted wifi tunnel". This is an orthog=
-onal measure to reduce the exposure of unique identifiers in the closer =
-geographical proximity.
+> This portion of code is just preparing these four static IO routines 
+> for specific endianness access LE/BE
 
-You might want to combine those two features: Not being able to be discl=
-osed in your proximity while having a stable address on your network. If=
- that is not your goal, you can still enable temporary addresses, which =
-will fully randomize your IPv6 addresses and are thus is completely inde=
-pendent of your MAC address. This would meet your concerns above.
+Linux has a lot of MMIO accessors. Are you sure there is not one which
+will do the right thing, making use of cpu_le32() or cpu_be32()
+etc. Or are there different variants of the hardware, with some using
+BE registers and some using LE registers? Note, this is all about the
+endianness of the register, not the endianness of the cpu. cpu_le32()
+will be a NOP when the CPU is running LE.
 
-My additional concern with this patch is that users might already expect=
- a certain way of the generation of stable IPv6 identifiers: even though=
- wpa_supplicant randomizes the mac address, they might already depend on=
- the stable generation of those addresses. If this changes, contact to t=
-hose systems might get lost during upgrade. Though I don't know how seve=
-re this scenario is, I do, in fact, have some IPv6 stable identifiers in=
- my shell history which are wifi endpoints.
-
-If the IPv6 link local address can get discovered on the unencrypted wif=
-i medium, I would be concerned but I don't think that is the case. In ca=
-se of fully unencrypted wifis you can make the above case. It is possibl=
-e to determine if a network endpoint (with the same secret and permanent=
- mac address) shows up again. In this case I would recommend temporary a=
-ddresses.
-
-Bye,
-Hannes
+     Andrew
