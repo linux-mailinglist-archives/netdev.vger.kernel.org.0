@@ -2,172 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C90FA195A75
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 16:59:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2629195A9C
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 17:08:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727751AbgC0P7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 11:59:21 -0400
-Received: from www62.your-server.de ([213.133.104.62]:50956 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727707AbgC0P7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 11:59:17 -0400
-Received: from 98.186.195.178.dynamic.wline.res.cust.swisscom.ch ([178.195.186.98] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jHrO7-0007nm-6w; Fri, 27 Mar 2020 16:59:15 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     alexei.starovoitov@gmail.com
-Cc:     m@lambda.lt, joe@wand.net.nz, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH bpf-next 7/7] bpf: add selftest cases for ctx_or_null argument type
-Date:   Fri, 27 Mar 2020 16:58:56 +0100
-Message-Id: <c74758d07b1b678036465ef7f068a49e9efd3548.1585323121.git.daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <cover.1585323121.git.daniel@iogearbox.net>
-References: <cover.1585323121.git.daniel@iogearbox.net>
+        id S1727541AbgC0QIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 12:08:09 -0400
+Received: from mail-qv1-f65.google.com ([209.85.219.65]:46758 "EHLO
+        mail-qv1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727354AbgC0QIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 12:08:09 -0400
+Received: by mail-qv1-f65.google.com with SMTP id m2so5113589qvu.13
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 09:08:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=6d7CjkKwOJ6/75cMo6cG150E0b5j4qklpYgJXNLC6is=;
+        b=fogSYuttuQ89mf6Se0Gm/eq3Q5j806h3/yEOlVqgNWwxtrqnuFK9sCyGiF50X43D0i
+         2lLF30thWJzXcWNWmf0kbr1hhVV+n3fyccKllre7eNb8MD8fYvh9RmlPaXIbQeFdcmvB
+         Mi9E3pkM7fR9QkC/BMKREY0PBhtpSfdlJdh6SUD8LotH2TtS3QGm1V8uz7OBYIKWYckM
+         xcKv1YpvlmtDdteOs/FZ8SadaSHRZfI+kRrxD5mWC73nrj9CJ+HYswX9oacLwBXQ8oU1
+         HWa9+ljzm6eaFPBKpEQDUQT6YKGAvYayaBrzm87Zw2ui98cFQgXsDBeZRFggRc7twVjk
+         yy2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=6d7CjkKwOJ6/75cMo6cG150E0b5j4qklpYgJXNLC6is=;
+        b=DycznZb8JY/bWua9VmejL3XDw7u9W2xAGa+c1pSzkUxCSS7BJd+4sSNX6ED9Y2JRbr
+         m6gPqn+NsGYceEWJjDpud0ccdn3y9QpE4t1FEAwg79rSse9hEbM5coTpI9cxG2qL236V
+         QBEVTFPxDSGTgCeSOgnAd5S68P8kQdB6lgKDY6NmA1Qk6nvWTNZ+abUNhKRJAgyS8NqZ
+         YxQFjvgFwQayHsNiSS5LzhBCNh7O+GKbBPFYF4t/C/b41YgrAhzCmst8gvLUPzcTOfRB
+         7ILUtYYqwSBVoNLV1v976/5TQhOMYKMSHql4t7pyCPZPoSE4QJEz/RpyXTAOAZ+wy/5u
+         eyPg==
+X-Gm-Message-State: ANhLgQ3cJvtaQbKxEYMqX+LW+S83z9sBmR5H33DyIZ/6NLE3UBYo2skG
+        9P3FE6GYvRXaMKULrtbVbq1nSUYmFIcDSQ==
+X-Google-Smtp-Source: ADFU+vtNjGH2j2KjqdN1B464a5k7E/2Bo0HG17gxirwAirXD4vOznGQ1x4vOEDCunyE8HVmhnCEadw==
+X-Received: by 2002:a05:6214:1863:: with SMTP id eh3mr14444312qvb.71.1585325287800;
+        Fri, 27 Mar 2020 09:08:07 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.57.212])
+        by smtp.gmail.com with ESMTPSA id 17sm3945919qkm.105.2020.03.27.09.08.06
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 27 Mar 2020 09:08:06 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1jHrWg-0006Jy-17; Fri, 27 Mar 2020 13:08:06 -0300
+Date:   Fri, 27 Mar 2020 13:08:06 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Doug Ledford <dledford@redhat.com>,
+        Leon Romanovsky <leonro@mellanox.com>,
+        linux-rdma@vger.kernel.org,
+        Michael Guralnik <michaelgur@mellanox.com>,
+        netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
+        Yishai Hadas <yishaih@mellanox.com>
+Subject: Re: [PATCH rdma-next v1 0/5] Introduce dynamic UAR allocation mode
+Message-ID: <20200327160806.GA24265@ziepe.ca>
+References: <20200324060143.1569116-1-leon@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25764/Fri Mar 27 14:11:26 2020)
+In-Reply-To: <20200324060143.1569116-1-leon@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add various tests to make sure the verifier keeps catching them:
+On Tue, Mar 24, 2020 at 08:01:38AM +0200, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@mellanox.com>
+> 
+> Changelog:
+> v1: * Added patch that moved mlx5_bfreg_info from global header to the mlx5_ib.h
+>     * No other changes.
+> v0: * https://lore.kernel.org/linux-rdma/20200318124329.52111-1-leon@kernel.org
+> 
+> ----------------------------------------------------------------------------------
+> 
+> >From Yishai,
+> 
+> This series exposes API to enable a dynamic allocation and management of a
+> UAR which now becomes to be a regular uobject.
+> 
+> Moving to that mode enables allocating a UAR only upon demand and drop the
+> redundant static allocation of UARs upon context creation.
+> 
+> In addition, it allows master and secondary processes that own the same command
+> FD to allocate and manage UARs according to their needs, this can’t be achieved
+> today.
+> 
+> As part of this option, QP & CQ creation flows were adapted to support this
+> dynamic UAR mode once asked by user space.
+> 
+> Once this mode is asked by mlx5 user space driver on a given context, it will
+> be mutual exclusive, means both the static and legacy dynamic modes for using
+> UARs will be blocked.
+> 
+> The legacy modes are supported for backward compatible reasons, looking
+> forward we expect this new mode to be the default.
+> 
+> Thanks
+> 
+> Leon Romanovsky (1):
+>   IB/mlx5: Limit the scope of struct mlx5_bfreg_info to mlx5_ib
+> 
+> Yishai Hadas (4):
+>   IB/mlx5: Expose UAR object and its alloc/destroy commands
+>   IB/mlx5: Extend CQ creation to get uar page index from user space
+>   IB/mlx5: Extend QP creation to get uar page index from user space
+>   IB/mlx5: Move to fully dynamic UAR mode once user space supports it
 
-  # ./test_verifier
-  [...]
-  #230/p pass ctx or null check, 1: ctx OK
-  #231/p pass ctx or null check, 2: null OK
-  #232/p pass ctx or null check, 3: 1 OK
-  #233/p pass ctx or null check, 4: ctx - const OK
-  #234/p pass ctx or null check, 5: null (connect) OK
-  #235/p pass ctx or null check, 6: null (bind) OK
-  #236/p pass ctx or null check, 7: ctx (bind) OK
-  #237/p pass ctx or null check, 8: null (bind) OK
-  [...]
-  Summary: 1595 PASSED, 0 SKIPPED, 0 FAILED
+Applied to for-next, thanks
 
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
----
- tools/testing/selftests/bpf/verifier/ctx.c | 105 +++++++++++++++++++++
- 1 file changed, 105 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/verifier/ctx.c b/tools/testing/selftests/bpf/verifier/ctx.c
-index 92762c08f5e3..93d6b1641481 100644
---- a/tools/testing/selftests/bpf/verifier/ctx.c
-+++ b/tools/testing/selftests/bpf/verifier/ctx.c
-@@ -91,3 +91,108 @@
- 	.result = REJECT,
- 	.errstr = "variable ctx access var_off=(0x0; 0x4)",
- },
-+{
-+	"pass ctx or null check, 1: ctx",
-+	.insns = {
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
-+			     BPF_FUNC_get_netns_cookie),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
-+	.expected_attach_type = BPF_CGROUP_UDP6_SENDMSG,
-+	.result = ACCEPT,
-+},
-+{
-+	"pass ctx or null check, 2: null",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_1, 0),
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
-+			     BPF_FUNC_get_netns_cookie),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
-+	.expected_attach_type = BPF_CGROUP_UDP6_SENDMSG,
-+	.result = ACCEPT,
-+},
-+{
-+	"pass ctx or null check, 3: 1",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_1, 1),
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
-+			     BPF_FUNC_get_netns_cookie),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
-+	.expected_attach_type = BPF_CGROUP_UDP6_SENDMSG,
-+	.result = REJECT,
-+	.errstr = "R1 type=inv expected=ctx",
-+},
-+{
-+	"pass ctx or null check, 4: ctx - const",
-+	.insns = {
-+		BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -612),
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
-+			     BPF_FUNC_get_netns_cookie),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
-+	.expected_attach_type = BPF_CGROUP_UDP6_SENDMSG,
-+	.result = REJECT,
-+	.errstr = "dereference of modified ctx ptr",
-+},
-+{
-+	"pass ctx or null check, 5: null (connect)",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_1, 0),
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
-+			     BPF_FUNC_get_netns_cookie),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SOCK_ADDR,
-+	.expected_attach_type = BPF_CGROUP_INET4_CONNECT,
-+	.result = ACCEPT,
-+},
-+{
-+	"pass ctx or null check, 6: null (bind)",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_1, 0),
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
-+			     BPF_FUNC_get_netns_cookie),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SOCK,
-+	.expected_attach_type = BPF_CGROUP_INET4_POST_BIND,
-+	.result = ACCEPT,
-+},
-+{
-+	"pass ctx or null check, 7: ctx (bind)",
-+	.insns = {
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
-+			     BPF_FUNC_get_socket_cookie),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SOCK,
-+	.expected_attach_type = BPF_CGROUP_INET4_POST_BIND,
-+	.result = ACCEPT,
-+},
-+{
-+	"pass ctx or null check, 8: null (bind)",
-+	.insns = {
-+		BPF_MOV64_IMM(BPF_REG_1, 0),
-+		BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0,
-+			     BPF_FUNC_get_socket_cookie),
-+		BPF_MOV64_IMM(BPF_REG_0, 0),
-+		BPF_EXIT_INSN(),
-+	},
-+	.prog_type = BPF_PROG_TYPE_CGROUP_SOCK,
-+	.expected_attach_type = BPF_CGROUP_INET4_POST_BIND,
-+	.result = REJECT,
-+	.errstr = "R1 type=inv expected=ctx",
-+},
--- 
-2.21.0
-
+Jason
