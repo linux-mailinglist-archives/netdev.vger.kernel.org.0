@@ -2,147 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F01AC19530E
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 09:36:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28700195318
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 09:42:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726804AbgC0Ign (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 04:36:43 -0400
-Received: from mail-eopbgr1300055.outbound.protection.outlook.com ([40.107.130.55]:1680
-        "EHLO APC01-HK2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726165AbgC0Igm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Mar 2020 04:36:42 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jwi+G7QMiNeKnvoYzHFdJkoKxhVtdtRTmg+yJ2gHFmoHWYbmr9uPVmJxUyPp0J1cUYqY6v/kKcYMHP9xYVmr0ijROL5GAyCVNQXMF5NKngqhreGpb2IK/8czr1opi0WZL93rv4TZSoPH8ugapeiLi+F1ChWustkRhDIM9V/s8IS9XbF0yue4xKE5QXKeKuR8d974xjBXNPH8o30TJwPwhTHNG7Gv5JcuiAq1lRMOkvRStYspKGQC3yNz4PNslTJkTA5FIH+UgHh1NjOd6nijUnOLItLaM7tUXwkQSNSjTOkhzvy7aLx3LGsFzpcTFktmnuXncD2hLqaYcZCFGV+obg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cBE9U5BcmItCF4MOwduLCX0HZ/KF3+NGrWUVYOafdgc=;
- b=EDyWd+IoBFH2YgWCnmAlsQLjqOhK4gIOreEf2KdtUxllJmFJO+dJ3V0bGaAN5+eKtASh6iw2AZwYF4rDyJTPGMAniYNH/ms8rynAgEetxVISeFs/LmvCGQo64MJh+/kASBxSsXwoFWi0sZd5WNkXfRhapHoC+zMPkq2u/IOLqXKdeEMl05WHwfuu1r/g6fKnfxb+INeJwypYETF7Y36p3aWDg/G8yZgWZD0Lc7sJjABIfy1PirDav9mLfxV0yLh9VLfd7Gai/WSVVRQ5fKQnNchLOupbDzVBXJkOHgSYojpPVFc3PjOhWAIvnrELc16J82wdBKgJ20DWL2AP8Bn9yA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oppo.com; dmarc=pass action=none header.from=oppo.com;
- dkim=pass header.d=oppo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oppoglobal.onmicrosoft.com; s=selector1-oppoglobal-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cBE9U5BcmItCF4MOwduLCX0HZ/KF3+NGrWUVYOafdgc=;
- b=KwhDVlztmm5PJ4POuf+psbn2PBfgfbL76jcdr3UteUIat/MZE4dvN4aMkpkjwB6+IU+7OVk2TD9/UDpszd3WIkyxgplUyONnAAJcQD1IY3kmMq7fU1YJz2QhcxVsgbgTWy79X3mGIh0i0xvhBOPRUcEYjMpu1iAvZo+m1DxAc2I=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=chenanqing@oppo.com; 
-Received: from HK0PR02MB2563.apcprd02.prod.outlook.com (52.133.210.11) by
- HK0SPR01MB0008.apcprd02.prod.outlook.com (20.177.30.84) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2856.19; Fri, 27 Mar 2020 08:36:35 +0000
-Received: from HK0PR02MB2563.apcprd02.prod.outlook.com
- ([fe80::4078:fbe4:9043:d61e]) by HK0PR02MB2563.apcprd02.prod.outlook.com
- ([fe80::4078:fbe4:9043:d61e%2]) with mapi id 15.20.2835.023; Fri, 27 Mar 2020
- 08:36:35 +0000
-Date:   Fri, 27 Mar 2020 04:36:32 -0400
-From:   chenanqing@oppo.com
-To:     chenanqing@oppo.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, ceph-devel@vger.kernel.org,
-        kuba@kernel.org, sage@redhat.com, jlayton@kernel.org,
-        idryomov@gmail.com
-Message-ID: <5e7dbb10.ulraq/ljeOm297+z%chenanqing@oppo.com>
-User-Agent: Heirloom mailx 12.5 7/5/10
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: HK2PR0401CA0016.apcprd04.prod.outlook.com
- (2603:1096:202:2::26) To HK0PR02MB2563.apcprd02.prod.outlook.com
- (2603:1096:203:25::11)
+        id S1726360AbgC0ImQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 04:42:16 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38588 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726063AbgC0ImP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Mar 2020 04:42:15 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 69F31B0AE;
+        Fri, 27 Mar 2020 08:42:13 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 96B90E00A5; Fri, 27 Mar 2020 09:42:12 +0100 (CET)
+Date:   Fri, 27 Mar 2020 09:42:12 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Jiri Pirko <jiri@resnulli.us>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        John Linville <linville@tuxdriver.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 11/12] ethtool: add timestamping related string
+ sets
+Message-ID: <20200327084212.GG31519@unicorn.suse.cz>
+References: <105373960c4afeeea7b51459b9763b0452d6e660.1585267388.git.mkubecek@suse.cz>
+ <202003271437.5LMEAGMc%lkp@intel.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from master (58.252.5.69) by HK2PR0401CA0016.apcprd04.prod.outlook.com (2603:1096:202:2::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.19 via Frontend Transport; Fri, 27 Mar 2020 08:36:34 +0000
-X-Originating-IP: [58.252.5.69]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d5a0020f-4a00-40cb-bc7b-08d7d229f5bc
-X-MS-TrafficTypeDiagnostic: HK0SPR01MB0008:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <HK0SPR01MB0008FDC2C20AE3780C3D4141ABCC0@HK0SPR01MB0008.apcprd02.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:513;
-X-Forefront-PRVS: 0355F3A3AE
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK0PR02MB2563.apcprd02.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(366004)(346002)(39860400002)(376002)(396003)(136003)(8936002)(186003)(81166006)(478600001)(81156014)(26005)(52116002)(16526019)(6496006)(316002)(66476007)(9686003)(5660300002)(66556008)(66946007)(86362001)(2616005)(6486002)(2906002)(956004)(36756003)(1670200006)(25626001)(11606004);DIR:OUT;SFP:1101;
-Received-SPF: None (protection.outlook.com: oppo.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9/x1z3n494YqMNnUiMYJV+GA7vi/JcpraGFkEIuF4LtpEKXUA7xdcuN1CVi+ph3YhlOqvlEkr+SNyk8lkiSF7l8YJA6CTbTGUBGEHFiFMMHeqatUFGh93R1J1a6f4oRKeNMtdtALcxa1WbmqVge7gEne4CTvQwtiQzCTEouufoQo7nDclABVV9Qnla/dvTSpAEOGJ9h41EQW/AmrzYhCcd/SJUqjHE4T77/8gcWu8VLjQcM9sZr3mmkCe+/OeY0DgxHsWp09ipJ+CbwnYCUefnX7s7aFpSkIx9ZFNlHCfUHmM8UWCMdmGo2Grv+qdznoRa5UpY4jtmRGiwJq1dkySPzeI/sdNiT3ti3XW86RaGcbAVgsdLtPZGeqXLgndBAYpD+sWvRSrKjI/AnITpFpQKIwyqX/ET3MTOIg2yLXbV2ohMJ8cR/YhcRNlzO8ofxlF3d+6ATekb7XsCMFQYcB+Ixh1v1KzNZSMRbHS/gDTZz1J+SZGOaDHRtNIUabqeGsyl+pyf/++x633guLyw9nA8PiCCxeE4hkaHzWJ6vQLgw=
-X-MS-Exchange-AntiSpam-MessageData: kYwkmZSmduwT27ce7yxZcXhJiIU/9O8Kafe4CuAphANW4SPwYZaAPYHTmGYV+uF8G1+jCFdkSQsAHagBkStFhjTZyTJLOKbrGZfnSe74fbz5cWEbu84sB2WZJ7Wfwy36LrmpPU/ud7Bfh9ktoOrCeA==
-X-OriginatorOrg: oppo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d5a0020f-4a00-40cb-bc7b-08d7d229f5bc
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2020 08:36:35.6342
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f1905eb1-c353-41c5-9516-62b4a54b5ee6
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gXz3zG3tU0ULzNY/N5lLA+XSpr3k/7FW9+ZXtnb5UmvfejGGj8UELxFenYt8gDYTgXf1b7aeYISvdaNoYGLwWA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0SPR01MB0008
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202003271437.5LMEAGMc%lkp@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chen Anqing <chenanqing@oppo.com>
-To: Ilya Dryomov <idryomov@gmail.com>
-Cc: Jeff Layton <jlayton@kernel.org>,
-        Sage Weil <sage@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        ceph-devel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        chenanqing@oppo.com
-Subject: [PATCH] libceph: we should take compound page into account also
-Date: Fri, 27 Mar 2020 04:36:30 -0400
-Message-Id: <20200327083630.36296-1-chenanqing@oppo.com>
-X-Mailer: git-send-email 2.18.2
+On Fri, Mar 27, 2020 at 02:55:36PM +0800, kbuild test robot wrote:
+> Hi Michal,
+> 
+> Thank you for the patch! Perhaps something to improve:
+> 
+> [auto build test WARNING on net-next/master]
+> [also build test WARNING on next-20200326]
+> [cannot apply to net/master linus/master v5.6-rc7]
+> [if your patch is applied to the wrong git tree, please drop us a note to help
+> improve the system. BTW, we also suggest to use '--base' option to specify the
+> base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+> 
+> url:    https://github.com/0day-ci/linux/commits/Michal-Kubecek/ethtool-netlink-interface-part-4/20200327-122420
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 5bb7357f45315138f623d08a615d23dd6ac26cf3
+> config: nds32-defconfig (attached as .config)
+> compiler: nds32le-linux-gcc (GCC) 9.2.0
+> reproduce:
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # save the attached .config to linux build tree
+>         GCC_VERSION=9.2.0 make.cross ARCH=nds32 
+> 
+> If you fix the issue, kindly add following tag
+> Reported-by: kbuild test robot <lkp@intel.com>
+> 
+> All warnings (new ones prefixed by >>):
+> 
+>    net/core/dev_ioctl.c: In function 'net_hwtstamp_validate':
+> >> net/core/dev_ioctl.c:186:2: warning: enumeration value '__HWTSTAMP_TX_CNT' not handled in switch [-Wswitch]
+>      186 |  switch (tx_type) {
+>          |  ^~~~~~
+> >> net/core/dev_ioctl.c:195:2: warning: enumeration value '__HWTSTAMP_FILTER_CNT' not handled in switch [-Wswitch]
+>      195 |  switch (rx_filter) {
+>          |  ^~~~~~
 
-the patch is occur at a real crash,which slab is
-come from a compound page,so we need take the compound page
-into account also.
-fixed commit 7e241f647dc7 ("libceph: fall back to sendmsg for slab pages")'
+(kbuild bot omitted netdev list)
 
-Signed-off-by: Chen Anqing <chenanqing@oppo.com>
----
- net/ceph/messenger.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Something like below (probably with a better comment text) should get
+rid of this warning.
 
-diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
-index f8ca5edc5f2c..e08c1c334cd9 100644
---- a/net/ceph/messenger.c
-+++ b/net/ceph/messenger.c
-@@ -582,7 +582,7 @@ static int ceph_tcp_sendpage(struct socket *sock, struc=
-t page *page,
-         * coalescing neighboring slab objects into a single frag which
-         * triggers one of hardened usercopy checks.
-         */
--       if (page_count(page) >=3D 1 && !PageSlab(page))
-+       if (page_count(page) >=3D 1 && !PageSlab(compound_head(page)))
-                sendpage =3D sock->ops->sendpage;
-        else
-                sendpage =3D sock_no_sendpage;
---
-2.18.2
+Michal
 
-________________________________
-OPPO
 
-=E6=9C=AC=E7=94=B5=E5=AD=90=E9=82=AE=E4=BB=B6=E5=8F=8A=E5=85=B6=E9=99=84=E4=
-=BB=B6=E5=90=AB=E6=9C=89OPPO=E5=85=AC=E5=8F=B8=E7=9A=84=E4=BF=9D=E5=AF=86=
-=E4=BF=A1=E6=81=AF=EF=BC=8C=E4=BB=85=E9=99=90=E4=BA=8E=E9=82=AE=E4=BB=B6=E6=
-=8C=87=E6=98=8E=E7=9A=84=E6=94=B6=E4=BB=B6=E4=BA=BA=E4=BD=BF=E7=94=A8=EF=BC=
-=88=E5=8C=85=E5=90=AB=E4=B8=AA=E4=BA=BA=E5=8F=8A=E7=BE=A4=E7=BB=84=EF=BC=89=
-=E3=80=82=E7=A6=81=E6=AD=A2=E4=BB=BB=E4=BD=95=E4=BA=BA=E5=9C=A8=E6=9C=AA=E7=
-=BB=8F=E6=8E=88=E6=9D=83=E7=9A=84=E6=83=85=E5=86=B5=E4=B8=8B=E4=BB=A5=E4=BB=
-=BB=E4=BD=95=E5=BD=A2=E5=BC=8F=E4=BD=BF=E7=94=A8=E3=80=82=E5=A6=82=E6=9E=9C=
-=E6=82=A8=E9=94=99=E6=94=B6=E4=BA=86=E6=9C=AC=E9=82=AE=E4=BB=B6=EF=BC=8C=E8=
-=AF=B7=E7=AB=8B=E5=8D=B3=E4=BB=A5=E7=94=B5=E5=AD=90=E9=82=AE=E4=BB=B6=E9=80=
-=9A=E7=9F=A5=E5=8F=91=E4=BB=B6=E4=BA=BA=E5=B9=B6=E5=88=A0=E9=99=A4=E6=9C=AC=
-=E9=82=AE=E4=BB=B6=E5=8F=8A=E5=85=B6=E9=99=84=E4=BB=B6=E3=80=82
-
-This e-mail and its attachments contain confidential information from OPPO,=
- which is intended only for the person or entity whose address is listed ab=
-ove. Any use of the information contained herein in any way (including, but=
- not limited to, total or partial disclosure, reproduction, or disseminatio=
-n) by persons other than the intended recipient(s) is prohibited. If you re=
-ceive this e-mail in error, please notify the sender by phone or email imme=
-diately and delete it!
+diff --git a/net/core/dev_ioctl.c b/net/core/dev_ioctl.c
+index dbaebbe573f0..547b587c1950 100644
+--- a/net/core/dev_ioctl.c
++++ b/net/core/dev_ioctl.c
+@@ -190,6 +190,9 @@ static int net_hwtstamp_validate(struct ifreq *ifr)
+ 	case HWTSTAMP_TX_ONESTEP_P2P:
+ 		tx_type_valid = 1;
+ 		break;
++	case __HWTSTAMP_TX_CNT:
++		/* not a real value */
++		break;
+ 	}
+ 
+ 	switch (rx_filter) {
+@@ -211,6 +214,9 @@ static int net_hwtstamp_validate(struct ifreq *ifr)
+ 	case HWTSTAMP_FILTER_NTP_ALL:
+ 		rx_filter_valid = 1;
+ 		break;
++	case __HWTSTAMP_FILTER_CNT:
++		/* not a real value */
++		break;
+ 	}
+ 
+ 	if (!tx_type_valid || !rx_filter_valid)
