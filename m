@@ -2,134 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BD13196020
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 21:58:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C9F2196026
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 21:59:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727444AbgC0U6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 16:58:05 -0400
-Received: from mga02.intel.com ([134.134.136.20]:48686 "EHLO mga02.intel.com"
+        id S1727495AbgC0U7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 16:59:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51872 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727322AbgC0U6F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 27 Mar 2020 16:58:05 -0400
-IronPort-SDR: u3+kVBJ6sQ8n+y+u5xnPiJkL2mpOahcnb1yl1iBOXO9Pu1Gdtv14yqGVyzoYtKuk3NZ6b8hXW5
- oR1V9qEuUaFg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2020 13:58:04 -0700
-IronPort-SDR: N18u+ekGRKSC9+8cSC3YByRl8AyUat8+5/8RL6+xDleJRUhzRefaKXPq4Eo0tto2IZCSOqiFZP
- Jzlu8OFKCGTQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,313,1580803200"; 
-   d="scan'208";a="266328211"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.167.177]) ([10.212.167.177])
-  by orsmga002.jf.intel.com with ESMTP; 27 Mar 2020 13:58:03 -0700
-Subject: Re: [PATCH net-next v3 01/11] devlink: prepare to support region
- operations
-To:     tanhuazhong <tanhuazhong@huawei.com>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>,
-        Jiri Pirko <jiri@mellanox.com>
-References: <20200326183718.2384349-1-jacob.e.keller@intel.com>
- <20200326183718.2384349-2-jacob.e.keller@intel.com>
- <e993d962-0853-c84b-89cc-84699aed6ee2@huawei.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <f670654a-fd17-2dfa-dc58-b55f12fbed4b@intel.com>
-Date:   Fri, 27 Mar 2020 13:58:03 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1727322AbgC0U7b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Mar 2020 16:59:31 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id DAE3F20658;
+        Fri, 27 Mar 2020 20:59:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585342771;
+        bh=uEzsS3oNREwJM8i+8B59WhSwRyezZLTRaLoDPECGNzc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KgjTzZOYQCC1K3iNlFbGHzIWE9oNO38lN5yruAwH7rxTPdxGMbjAFIABRnq6ErDxR
+         5D7JNVinoSuHni6UqxttNbhNDssYze9hq1w0cKMs3QUQ+9PYFx2l8VRDQTFy1KwOKE
+         u889YZgd3NFgXkxJfWX/fjqpb1VwgCRqAbE+DmfY=
+Date:   Fri, 27 Mar 2020 13:59:28 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        Aya Levin <ayal@mellanox.com>,
+        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
+        "sburla@marvell.com" <sburla@marvell.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        "lihong.yang@intel.com" <lihong.yang@intel.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        Parav Pandit <parav@mellanox.com>,
+        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        Alex Vesker <valex@mellanox.com>,
+        "snelson@pensando.io" <snelson@pensando.io>,
+        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "dchickles@marvell.com" <dchickles@marvell.com>,
+        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        "aelior@marvell.com" <aelior@marvell.com>,
+        Yuval Avnery <yuvalav@mellanox.com>,
+        "drivers@pensando.io" <drivers@pensando.io>,
+        mlxsw <mlxsw@mellanox.com>,
+        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
+        Yevgeny Kliteynik <kliteyn@mellanox.com>,
+        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>
+Subject: Re: [RFC] current devlink extension plan for NICs
+Message-ID: <20200327135928.344e45b6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <22e86150-925f-0229-3d54-a7d82d504835@intel.com>
+References: <20200319192719.GD11304@nanopsycho.orion>
+        <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
+        <20200320073555.GE11304@nanopsycho.orion>
+        <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
+        <20200321093525.GJ11304@nanopsycho.orion>
+        <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200326144709.GW11304@nanopsycho.orion>
+        <20200326145146.GX11304@nanopsycho.orion>
+        <20200326133001.1b2694c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200327074736.GJ11304@nanopsycho.orion>
+        <20200327093829.76140a98@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <a02cf0e6-98ad-65c4-0363-8fb9d67d2c9c@intel.com>
+        <20200327121010.3e987488@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <ea8a8434b1db2b692489edfd4abbc2274a77228c.camel@mellanox.com>
+        <22e86150-925f-0229-3d54-a7d82d504835@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <e993d962-0853-c84b-89cc-84699aed6ee2@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 27 Mar 2020 13:47:44 -0700 Samudrala, Sridhar wrote:
+> >> But the sub-functions are just a subset of slices, PF and VFs also
+> >> have a slice associated with them.. And all those things have a port,
+> >> too.
+> >>  
+> > 
+> > PFs/VFs, might have more than one port sometimes ..  
+> 
+> Yes. When the uplink ports are in a LAG, then a PF/VF/slice should be 
+> able to send or receive from more than 1 port.
 
+So that's a little simpler to what I was considering, in mlx4 and older
+nfps we have 1 PCI PF for multi-port devices. There is only one PF with
+multiple BAR regions corresponding to different device ports.
 
-On 3/27/2020 1:16 AM, tanhuazhong wrote:
-> 
-> 
-> On 2020/3/27 2:37, Jacob Keller wrote:
->> Modify the devlink region code in preparation for adding new operations
->> on regions.
->>
->> Create a devlink_region_ops structure, and move the name pointer from
->> within the devlink_region structure into the ops structure (similar to
->> the devlink_health_reporter_ops).
->>
->> This prepares the regions to enable support of additional operations in
->> the future such as requesting snapshots, or accessing the region
->> directly without a snapshot.
->>
->> In order to re-use the constant strings in the mlx4 driver their
->> declaration must be changed to 'const char * const' to ensure the
->> compiler realizes that both the data and the pointer cannot change.
->>
->> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
->> Reviewed-by: Jiri Pirko <jiri@mellanox.com>
->> ---
->> Changes since RFC
->> * Picked up Jiri's Reviewed-by
->>
->>   drivers/net/ethernet/mellanox/mlx4/crdump.c | 16 +++++++++++----
->>   drivers/net/netdevsim/dev.c                 |  6 +++++-
->>   include/net/devlink.h                       | 16 +++++++++++----
->>   net/core/devlink.c                          | 22 ++++++++++-----------
->>   4 files changed, 40 insertions(+), 20 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/mellanox/mlx4/crdump.c b/drivers/net/ethernet/mellanox/mlx4/crdump.c
->> index 64ed725aec28..cc2bf596c74b 100644
->> --- a/drivers/net/ethernet/mellanox/mlx4/crdump.c
->> +++ b/drivers/net/ethernet/mellanox/mlx4/crdump.c
->> @@ -38,8 +38,16 @@
->>   #define CR_ENABLE_BIT_OFFSET		0xF3F04
->>   #define MAX_NUM_OF_DUMPS_TO_STORE	(8)
->>   
->> -static const char *region_cr_space_str = "cr-space";
->> -static const char *region_fw_health_str = "fw-health";
->> +static const char * const region_cr_space_str = "cr-space";
->> +static const char * const region_fw_health_str = "fw-health";
->> +
->> +static const struct devlink_region_ops region_cr_space_ops = {
->> +	.name = region_cr_space_str,
->> +};
->> +
->> +static const struct devlink_region_ops region_fw_health_ops = {
->> +	.name = region_fw_health_str,
->> +};
->>  
-> 
-> 
-> Hi, Jacob.
-> 
-> After pull net-next, I get below compiler errors:
-> drivers/net/ethernet/mellanox//mlx4/crdump.c:45:10: error: initializer 
-> element is not constant
->    .name = region_cr_space_str,
->            ^
-> drivers/net/ethernet/mellanox//mlx4/crdump.c:45:10: note: (near 
-> initialization for ‘region_cr_space_ops.name’)
-> drivers/net/ethernet/mellanox//mlx4/crdump.c:50:10: error: initializer 
-> element is not constant
->    .name = region_fw_health_str,
-> 
-> It seems the value of variables region_cr_space_str and 
-> region_cr_space_str is unknown during compiling phase.
-> 
-> Huazhong.
-> 
-
-Based on some searching, this appears to be something where newer
-versions of GCC and clang can recognize that "const char * const" is
-safe to use as a constant expression, but older compilers cannot.
-
-I'm going to submit a fix that uses a macro so that we avoid this
-breakage on slightly older compilers.
-
-Thanks,
-Jake
+So you can still address fully independently the pipelines for two
+ports, but they are "mapped" in the same PCI PF.
