@@ -2,49 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 338F2195D88
+	by mail.lfdr.de (Postfix) with ESMTP id A9119195D89
 	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 19:22:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727505AbgC0SWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 14:22:24 -0400
-Received: from mail-out.m-online.net ([212.18.0.10]:46506 "EHLO
+        id S1727549AbgC0SWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 14:22:25 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:45777 "EHLO
         mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726738AbgC0SWX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 14:22:23 -0400
+        with ESMTP id S1726540AbgC0SWZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 14:22:25 -0400
 Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 48pqvc3x1rz1rrKs;
-        Fri, 27 Mar 2020 19:22:13 +0100 (CET)
+        by mail-out.m-online.net (Postfix) with ESMTP id 48pqvd4mnDz1qrGV;
+        Fri, 27 Mar 2020 19:22:15 +0100 (CET)
 Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 48pqvT3L67z1qs9p;
-        Fri, 27 Mar 2020 19:22:13 +0100 (CET)
+        by mail.m-online.net (Postfix) with ESMTP id 48pqvW1qkpz1qs9q;
+        Fri, 27 Mar 2020 19:22:15 +0100 (CET)
 X-Virus-Scanned: amavisd-new at mnet-online.de
 Received: from mail.mnet-online.de ([192.168.8.182])
         by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id 11cQMOmB3E_U; Fri, 27 Mar 2020 19:22:12 +0100 (CET)
-X-Auth-Info: 6sSXXMUmM3SdPviHXSOgqqJubWtT5w3Gb/UuiaSF100=
+        with ESMTP id sMTDvatxhxaz; Fri, 27 Mar 2020 19:22:14 +0100 (CET)
+X-Auth-Info: F/DGiF7zw28qtEXz/zk97MLVLdCgxSnYCGOtgwsS8wk=
 Received: from [127.0.0.1] (unknown [195.140.253.167])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Fri, 27 Mar 2020 19:22:12 +0100 (CET)
-Subject: Re: [PATCH V2 08/14] net: ks8851: Use 16-bit writes to program MAC
- address
-To:     Michal Kubecek <mkubecek@suse.cz>
+        Fri, 27 Mar 2020 19:22:14 +0100 (CET)
+Subject: Re: [PATCH V2 00/14] net: ks8851: Unify KS8851 SPI and MLL drivers
+To:     Lukas Wunner <lukas@wunner.de>
 Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
-        YueHaibing <yuehaibing@huawei.com>
+        Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>, Andrew Lunn <andrew@lunn.ch>
 References: <20200325150543.78569-1-marex@denx.de>
- <20200325150543.78569-9-marex@denx.de>
- <20200325165640.GA31519@unicorn.suse.cz>
- <f9f82695-23aa-9835-37f5-7b6ac4d4b387@denx.de>
- <20200325173008.GB31519@unicorn.suse.cz>
+ <20200326190219.zwu2qgu6f6lxbied@wunner.de>
 From:   Marek Vasut <marex@denx.de>
-Message-ID: <86605e3e-cbed-557c-d618-50b318e8c473@denx.de>
-Date:   Fri, 27 Mar 2020 19:16:26 +0100
+Message-ID: <44b7417b-42d6-cb13-89a7-17b75905e75d@denx.de>
+Date:   Fri, 27 Mar 2020 19:18:38 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200325173008.GB31519@unicorn.suse.cz>
+In-Reply-To: <20200326190219.zwu2qgu6f6lxbied@wunner.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -53,79 +49,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/25/20 6:30 PM, Michal Kubecek wrote:
-> On Wed, Mar 25, 2020 at 06:05:30PM +0100, Marek Vasut wrote:
->> On 3/25/20 5:56 PM, Michal Kubecek wrote:
->>> On Wed, Mar 25, 2020 at 04:05:37PM +0100, Marek Vasut wrote:
->>>> On the SPI variant of KS8851, the MAC address can be programmed with
->>>> either 8/16/32-bit writes. To make it easier to support the 16-bit
->>>> parallel option of KS8851 too, switch both the MAC address programming
->>>> and readout to 16-bit operations.
->>>>
->>>> Remove ks8851_wrreg8() as it is not used anywhere anymore.
->>>>
->>>> There should be no functional change.
->>>>
->>>> Signed-off-by: Marek Vasut <marex@denx.de>
->>>> Cc: David S. Miller <davem@davemloft.net>
->>>> Cc: Lukas Wunner <lukas@wunner.de>
->>>> Cc: Petr Stetiar <ynezz@true.cz>
->>>> Cc: YueHaibing <yuehaibing@huawei.com>
->>>> ---
->>>> V2: Get rid of the KS_MAR(i + 1) by adjusting KS_MAR(x) macro
->>>> ---
->>> [...]
->>>> @@ -358,8 +329,12 @@ static int ks8851_write_mac_addr(struct net_device *dev)
->>>>  	 * the first write to the MAC address does not take effect.
->>>>  	 */
->>>>  	ks8851_set_powermode(ks, PMECR_PM_NORMAL);
->>>> -	for (i = 0; i < ETH_ALEN; i++)
->>>> -		ks8851_wrreg8(ks, KS_MAR(i), dev->dev_addr[i]);
->>>> +
->>>> +	for (i = 0; i < ETH_ALEN; i += 2) {
->>>> +		val = (dev->dev_addr[i] << 8) | dev->dev_addr[i + 1];
->>>> +		ks8851_wrreg16(ks, KS_MAR(i), val);
->>>> +	}
->>>> +
->>>>  	if (!netif_running(dev))
->>>>  		ks8851_set_powermode(ks, PMECR_PM_SOFTDOWN);
->>>>  
->>>> @@ -377,12 +352,16 @@ static int ks8851_write_mac_addr(struct net_device *dev)
->>>>  static void ks8851_read_mac_addr(struct net_device *dev)
->>>>  {
->>>>  	struct ks8851_net *ks = netdev_priv(dev);
->>>> +	u16 reg;
->>>>  	int i;
->>>>  
->>>>  	mutex_lock(&ks->lock);
->>>>  
->>>> -	for (i = 0; i < ETH_ALEN; i++)
->>>> -		dev->dev_addr[i] = ks8851_rdreg8(ks, KS_MAR(i));
->>>> +	for (i = 0; i < ETH_ALEN; i += 2) {
->>>> +		reg = ks8851_rdreg16(ks, KS_MAR(i));
->>>> +		dev->dev_addr[i] = reg & 0xff;
->>>> +		dev->dev_addr[i + 1] = reg >> 8;
->>>> +	}
->>>>  
->>>>  	mutex_unlock(&ks->lock);
->>>>  }
->>>
->>> It seems my question from v1 went unnoticed and the inconsistency still
->>> seems to be there so let me ask again: when writing, you put addr[i]
->>> into upper part of the 16-bit value and addr[i+1] into lower but when 
->>> reading, you do the opposite. Is it correct?
+On 3/26/20 8:02 PM, Lukas Wunner wrote:
+> On Wed, Mar 25, 2020 at 04:05:29PM +0100, Marek Vasut wrote:
+>> The KS8851SNL/SNLI and KS8851-16MLL/MLLI/MLLU are very much the same pieces
+>> of silicon, except the former has an SPI interface, while the later has a
+>> parallel bus interface. Thus far, Linux has two separate drivers for each
+>> and they are diverging considerably.
 >>
->> I believe so, and it works at least on the hardware I have here.
->> I need to wait for Lukas to verify that on KS8851 SPI edition tomorrow
->> (that's also why I sent out the V2, so he can test it out)
+>> This series unifies them into a single driver with small SPI and parallel
+>> bus specific parts. The approach here is to first separate out the SPI
+>> specific parts into a separate file, then add parallel bus accessors in
+>> another separate file and then finally remove the old parallel bus driver.
+>> The reason for replacing the old parallel bus driver is because the SPI
+>> bus driver is much higher quality.
 > 
-> That's a bit surprising (and counterintuitive) as it means that if you do
+> With this series, ks8851.ko (SPI variant) failed to compile as a module.
+> I got it working by renaming ks8851.c to ks8851_common.c and applying
+> the following change to the Makefile:
 > 
->   ks8851_wrreg16(ks, a, val);
->   val = ks8851_rdreg16(ks, a);
+> --- a/drivers/net/ethernet/micrel/Makefile
+> +++ b/drivers/net/ethernet/micrel/Makefile
+> @@ -5,6 +5,8 @@
+>  
+>  obj-$(CONFIG_ARM_KS8695_ETHER) += ks8695net.o
+>  obj-$(CONFIG_KS8842) += ks8842.o
+> -obj-$(CONFIG_KS8851) += ks8851.o ks8851_spi.o
+> -obj-$(CONFIG_KS8851_MLL) += ks8851.o ks8851_par.o
+> +obj-$(CONFIG_KS8851) += ks8851.o
+> +ks8851-objs = ks8851_common.o ks8851_spi.o
+> +obj-$(CONFIG_KS8851_MLL) += ks8851_mll.o
+> +ks8851_mll-objs = ks8851_common.o ks8851_par.o
+>  obj-$(CONFIG_KSZ884X_PCI) += ksz884x.o
 > 
-> you read a different value than you wrote. But I know nothing about the
-> hardware (I only noticed the strange inconsistency) so I can't say where
-> does it come from.
+> This series breaks reading the MAC address from an EEPROM attached to
+> the KSZ8851SNLI:
+> The MAC address stored in the EEPROM was c8:3e:a7:99:ef:aa.
+> The MAC address was read as 3e:c8:99:a7:ef:aa with this series.
+> Note: The MAC address starts at the third byte in the EEPROM and is
+> stored as aa:ef:99:a7:3e:c8, i.e. in reverse order.  (I think the
+> spec says something else but it appears to be wrong.)
+> 
+> Assigning a MAC address with "ifconfig eth1 hw ether <mac>" (which I
+> believe ends up calling ks8851_write_mac_addr()) worked fine.
 
-So this really does need fixing.
+I added fixes for those.
+
+> The performance degredation with this series is as follows:
+> 
+> Latency (ping) without this series:
+>   rtt min/avg/max/mdev = 0.982/1.776/3.756/0.027 ms, ipg/ewma 2.001/1.761 ms
+> With this series:
+>   rtt min/avg/max/mdev = 1.084/1.811/3.546/0.040 ms, ipg/ewma 2.020/1.814 ms
+> 
+> Throughput (scp) without this series:
+>   Transferred: sent 369780976, received 66088 bytes, in 202.0 seconds
+>   Bytes per second: sent 1830943.5, received 327.2
+> With this series:
+>   Transferred: sent 369693896, received 67588 bytes, in 210.5 seconds
+>   Bytes per second: sent 1755952.6, received 321.0
+
+Maybe some iperf would be better here ?
+
+> SPI clock is 25 MHz.  The chip would allow up to 40 MHz, but the board
+> layout limits that.
+> 
+> I suspect the performance regression is not only caused by the
+> suboptimal 16 byte instead of 8 byte accesses (and 2x16 byte instead
+> of 32 byte accesses), but also because the accessor functions cannot
+> be inlined.  It would be better if they were included from a header
+> file as static inlines.  The performance regression would then likely
+> disappear.
+
+I did another measurement today and I found out that while RX on the old
+KS8851-MLL driver runs at ~50 Mbit/s , TX runs at ~80 Mbit/s . With this
+new driver, RX still runs at ~50 Mbit/s, but TX runs also at 50 Mbit/s .
+That's real bad. Any ideas how to debug/profile this one ?
+
+> I guess the good news is that it otherwise worked out of the box.
+
+Great
