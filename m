@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E41121960AD
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 22:49:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00E271960A3
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 22:49:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727729AbgC0VtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 17:49:10 -0400
-Received: from mga01.intel.com ([192.55.52.88]:25803 "EHLO mga01.intel.com"
+        id S1727740AbgC0VtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 17:49:11 -0400
+Received: from mga01.intel.com ([192.55.52.88]:25804 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727714AbgC0VtK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727717AbgC0VtK (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 27 Mar 2020 17:49:10 -0400
-IronPort-SDR: YMgccMLtdxUKdxyDVI7pzA1AhPXIsvk2Z92dp52lRzAU2XGuIYx6RmFHyv3A71ZHhsRrBqTml7
- Lf1sr+CxnjEg==
+IronPort-SDR: aOK6IFZ+GLEJG4sBVbNOIy/UjvIXKWjmg8rkgtFF1E/BovVbPiPXesSBb5fi08sYOhBViiQ0yq
+ pm/FVDfxLz/g==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2020 14:49:08 -0700
-IronPort-SDR: qIXAGyxs6WE7BDinx084KiklOkc+gykjfGuFY9O++JNDoi/9uQ0bt9Wzqf7x5tYgxIfeJY7VO4
- IdmbxxptQdlQ==
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Mar 2020 14:49:09 -0700
+IronPort-SDR: ob/DZAMCbXMb/do+228l7KjU+8j2hFc8bXQxBQjXSWQEr8PwWupp+2/3IV1m7SoHyheRVkXPUg
+ irKHwaVvVQFg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,313,1580803200"; 
-   d="scan'208";a="271713465"
+   d="scan'208";a="271713466"
 Received: from mjmartin-nuc02.mjmartin-nuc02 (HELO mjmartin-nuc02.sea.intel.com) ([10.251.7.195])
-  by fmsmga004.fm.intel.com with ESMTP; 27 Mar 2020 14:49:08 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 27 Mar 2020 14:49:09 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     Peter Krystad <peter.krystad@linux.intel.com>,
-        eric.dumazet@gmail.com, Florian Westphal <fw@strlen.de>,
-        Paolo Abeni <pabeni@redhat.com>,
+Cc:     Paolo Abeni <pabeni@redhat.com>, eric.dumazet@gmail.com,
+        Florian Westphal <fw@strlen.de>,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next v3 05/17] mptcp: Implement path manager interface commands
-Date:   Fri, 27 Mar 2020 14:48:41 -0700
-Message-Id: <20200327214853.140669-6-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next v3 06/17] mptcp: update per unacked sequence on pkt reception
+Date:   Fri, 27 Mar 2020 14:48:42 -0700
+Message-Id: <20200327214853.140669-7-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200327214853.140669-1-mathew.j.martineau@linux.intel.com>
 References: <20200327214853.140669-1-mathew.j.martineau@linux.intel.com>
@@ -43,238 +42,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peter Krystad <peter.krystad@linux.intel.com>
+From: Paolo Abeni <pabeni@redhat.com>
 
-Fill in more path manager functionality by adding a worker function and
-modifying the related stub functions to schedule the worker.
+So that we keep per unacked sequence number consistent; since
+we update per msk data, use an atomic64 cmpxchg() to protect
+against concurrent updates from multiple subflows.
+
+Initialize the snd_una at connect()/accept() time.
 
 Co-developed-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Florian Westphal <fw@strlen.de>
-Co-developed-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Peter Krystad <peter.krystad@linux.intel.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/pm.c       | 132 +++++++++++++++++++++++++++++++++++++++++--
- net/mptcp/protocol.c |   1 +
- net/mptcp/protocol.h |   1 +
- 3 files changed, 129 insertions(+), 5 deletions(-)
+ net/mptcp/options.c  | 52 +++++++++++++++++++++++++++++++++++++++-----
+ net/mptcp/protocol.c |  2 ++
+ net/mptcp/protocol.h |  1 +
+ 3 files changed, 49 insertions(+), 6 deletions(-)
 
-diff --git a/net/mptcp/pm.c b/net/mptcp/pm.c
-index ad837da0193d..3aedad58778c 100644
---- a/net/mptcp/pm.c
-+++ b/net/mptcp/pm.c
-@@ -15,7 +15,11 @@ static struct workqueue_struct *pm_wq;
- int mptcp_pm_announce_addr(struct mptcp_sock *msk,
- 			   const struct mptcp_addr_info *addr)
- {
--	return -ENOTSUPP;
-+	pr_debug("msk=%p, local_id=%d", msk, addr->id);
-+
-+	msk->pm.local = *addr;
-+	WRITE_ONCE(msk->pm.addr_signal, true);
-+	return 0;
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index 20ba00865c55..b0ff8ad702a3 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -744,6 +744,46 @@ static bool check_fully_established(struct mptcp_sock *msk, struct sock *sk,
+ 	return true;
  }
  
- int mptcp_pm_remove_addr(struct mptcp_sock *msk, u8 local_id)
-@@ -41,13 +45,58 @@ void mptcp_pm_new_connection(struct mptcp_sock *msk, int server_side)
- 
- bool mptcp_pm_allow_new_subflow(struct mptcp_sock *msk)
- {
--	pr_debug("msk=%p", msk);
--	return false;
-+	struct mptcp_pm_data *pm = &msk->pm;
-+	int ret;
++static u64 expand_ack(u64 old_ack, u64 cur_ack, bool use_64bit)
++{
++	u32 old_ack32, cur_ack32;
 +
-+	pr_debug("msk=%p subflows=%d max=%d allow=%d", msk, pm->subflows,
-+		 pm->subflows_max, READ_ONCE(pm->accept_subflow));
++	if (use_64bit)
++		return cur_ack;
 +
-+	/* try to avoid acquiring the lock below */
-+	if (!READ_ONCE(pm->accept_subflow))
-+		return false;
-+
-+	spin_lock_bh(&pm->lock);
-+	ret = pm->subflows < pm->subflows_max;
-+	if (ret && ++pm->subflows == pm->subflows_max)
-+		WRITE_ONCE(pm->accept_subflow, false);
-+	spin_unlock_bh(&pm->lock);
-+
-+	return ret;
++	old_ack32 = (u32)old_ack;
++	cur_ack32 = (u32)cur_ack;
++	cur_ack = (old_ack & GENMASK_ULL(63, 32)) + cur_ack32;
++	if (unlikely(before(cur_ack32, old_ack32)))
++		return cur_ack + (1LL << 32);
++	return cur_ack;
 +}
 +
-+/* return true if the new status bit is currently cleared, that is, this event
-+ * can be server, eventually by an already scheduled work
-+ */
-+static bool mptcp_pm_schedule_work(struct mptcp_sock *msk,
-+				   enum mptcp_pm_status new_status)
++static void update_una(struct mptcp_sock *msk,
++		       struct mptcp_options_received *mp_opt)
 +{
-+	pr_debug("msk=%p status=%x new=%lx", msk, msk->pm.status,
-+		 BIT(new_status));
-+	if (msk->pm.status & BIT(new_status))
-+		return false;
++	u64 new_snd_una, snd_una, old_snd_una = atomic64_read(&msk->snd_una);
++	u64 write_seq = READ_ONCE(msk->write_seq);
 +
-+	msk->pm.status |= BIT(new_status);
-+	if (queue_work(pm_wq, &msk->pm.work))
-+		sock_hold((struct sock *)msk);
-+	return true;
- }
- 
- void mptcp_pm_fully_established(struct mptcp_sock *msk)
- {
-+	struct mptcp_pm_data *pm = &msk->pm;
++	/* avoid ack expansion on update conflict, to reduce the risk of
++	 * wrongly expanding to a future ack sequence number, which is way
++	 * more dangerous than missing an ack
++	 */
++	new_snd_una = expand_ack(old_snd_una, mp_opt->data_ack, mp_opt->ack64);
 +
- 	pr_debug("msk=%p", msk);
++	/* ACK for data not even sent yet? Ignore. */
++	if (after64(new_snd_una, write_seq))
++		new_snd_una = old_snd_una;
 +
-+	/* try to avoid acquiring the lock below */
-+	if (!READ_ONCE(pm->work_pending))
-+		return;
-+
-+	spin_lock_bh(&pm->lock);
-+
-+	if (READ_ONCE(pm->work_pending))
-+		mptcp_pm_schedule_work(msk, MPTCP_PM_ESTABLISHED);
-+
-+	spin_unlock_bh(&pm->lock);
- }
- 
- void mptcp_pm_connection_closed(struct mptcp_sock *msk)
-@@ -58,7 +107,19 @@ void mptcp_pm_connection_closed(struct mptcp_sock *msk)
- void mptcp_pm_subflow_established(struct mptcp_sock *msk,
- 				  struct mptcp_subflow_context *subflow)
- {
-+	struct mptcp_pm_data *pm = &msk->pm;
-+
- 	pr_debug("msk=%p", msk);
-+
-+	if (!READ_ONCE(pm->work_pending))
-+		return;
-+
-+	spin_lock_bh(&pm->lock);
-+
-+	if (READ_ONCE(pm->work_pending))
-+		mptcp_pm_schedule_work(msk, MPTCP_PM_SUBFLOW_ESTABLISHED);
-+
-+	spin_unlock_bh(&pm->lock);
- }
- 
- void mptcp_pm_subflow_closed(struct mptcp_sock *msk, u8 id)
-@@ -69,7 +130,23 @@ void mptcp_pm_subflow_closed(struct mptcp_sock *msk, u8 id)
- void mptcp_pm_add_addr_received(struct mptcp_sock *msk,
- 				const struct mptcp_addr_info *addr)
- {
--	pr_debug("msk=%p, remote_id=%d", msk, addr->id);
-+	struct mptcp_pm_data *pm = &msk->pm;
-+
-+	pr_debug("msk=%p remote_id=%d accept=%d", msk, addr->id,
-+		 READ_ONCE(pm->accept_addr));
-+
-+	/* avoid acquiring the lock if there is no room for fouther addresses */
-+	if (!READ_ONCE(pm->accept_addr))
-+		return;
-+
-+	spin_lock_bh(&pm->lock);
-+
-+	/* be sure there is something to signal re-checking under PM lock */
-+	if (READ_ONCE(pm->accept_addr) &&
-+	    mptcp_pm_schedule_work(msk, MPTCP_PM_ADD_ADDR_RECEIVED))
-+		pm->remote = *addr;
-+
-+	spin_unlock_bh(&pm->lock);
- }
- 
- /* path manager helpers */
-@@ -77,7 +154,24 @@ void mptcp_pm_add_addr_received(struct mptcp_sock *msk,
- bool mptcp_pm_addr_signal(struct mptcp_sock *msk, unsigned int remaining,
- 			  struct mptcp_addr_info *saddr)
- {
--	return false;
-+	int ret = false;
-+
-+	spin_lock_bh(&msk->pm.lock);
-+
-+	/* double check after the lock is acquired */
-+	if (!mptcp_pm_should_signal(msk))
-+		goto out_unlock;
-+
-+	if (remaining < mptcp_add_addr_len(msk->pm.local.family))
-+		goto out_unlock;
-+
-+	*saddr = msk->pm.local;
-+	WRITE_ONCE(msk->pm.addr_signal, false);
-+	ret = true;
-+
-+out_unlock:
-+	spin_unlock_bh(&msk->pm.lock);
-+	return ret;
- }
- 
- int mptcp_pm_get_local_id(struct mptcp_sock *msk, struct sock_common *skc)
-@@ -87,6 +181,28 @@ int mptcp_pm_get_local_id(struct mptcp_sock *msk, struct sock_common *skc)
- 
- static void pm_worker(struct work_struct *work)
- {
-+	struct mptcp_pm_data *pm = container_of(work, struct mptcp_pm_data,
-+						work);
-+	struct mptcp_sock *msk = container_of(pm, struct mptcp_sock, pm);
-+	struct sock *sk = (struct sock *)msk;
-+
-+	lock_sock(sk);
-+	spin_lock_bh(&msk->pm.lock);
-+
-+	pr_debug("msk=%p status=%x", msk, pm->status);
-+	if (pm->status & BIT(MPTCP_PM_ADD_ADDR_RECEIVED)) {
-+		pm->status &= ~BIT(MPTCP_PM_ADD_ADDR_RECEIVED);
++	while (after64(new_snd_una, old_snd_una)) {
++		snd_una = old_snd_una;
++		old_snd_una = atomic64_cmpxchg(&msk->snd_una, snd_una,
++					       new_snd_una);
++		if (old_snd_una == snd_una)
++			break;
 +	}
-+	if (pm->status & BIT(MPTCP_PM_ESTABLISHED)) {
-+		pm->status &= ~BIT(MPTCP_PM_ESTABLISHED);
-+	}
-+	if (pm->status & BIT(MPTCP_PM_SUBFLOW_ESTABLISHED)) {
-+		pm->status &= ~BIT(MPTCP_PM_SUBFLOW_ESTABLISHED);
-+	}
-+
-+	spin_unlock_bh(&msk->pm.lock);
-+	release_sock(sk);
-+	sock_put(sk);
- }
- 
- void mptcp_pm_data_init(struct mptcp_sock *msk)
-@@ -105,6 +221,12 @@ void mptcp_pm_data_init(struct mptcp_sock *msk)
- 	INIT_WORK(&msk->pm.work, pm_worker);
- }
- 
-+void mptcp_pm_close(struct mptcp_sock *msk)
-+{
-+	if (cancel_work_sync(&msk->pm.work))
-+		sock_put((struct sock *)msk);
 +}
 +
- void mptcp_pm_init(void)
+ static bool add_addr_hmac_valid(struct mptcp_sock *msk,
+ 				struct mptcp_options_received *mp_opt)
  {
- 	pm_wq = alloc_workqueue("pm_wq", WQ_UNBOUND | WQ_MEM_RECLAIM, 8);
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 3d84e0b83c99..5c4560287bd2 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -833,6 +833,7 @@ static void mptcp_close(struct sock *sk, long timeout)
+@@ -805,6 +845,12 @@ void mptcp_incoming_options(struct sock *sk, struct sk_buff *skb,
+ 	if (!mp_opt->dss)
+ 		return;
+ 
++	/* we can't wait for recvmsg() to update the ack_seq, otherwise
++	 * monodirectional flows will stuck
++	 */
++	if (mp_opt->use_ack)
++		update_una(msk, mp_opt);
++
+ 	mpext = skb_ext_add(skb, SKB_EXT_MPTCP);
+ 	if (!mpext)
+ 		return;
+@@ -831,12 +877,6 @@ void mptcp_incoming_options(struct sock *sk, struct sk_buff *skb,
+ 		mpext->use_map = 1;
  	}
  
- 	mptcp_cancel_work(sk);
-+	mptcp_pm_close(msk);
+-	if (mp_opt->use_ack) {
+-		mpext->data_ack = mp_opt->data_ack;
+-		mpext->use_ack = 1;
+-		mpext->ack64 = mp_opt->ack64;
+-	}
+-
+ 	mpext->data_fin = mp_opt->data_fin;
+ }
  
- 	__skb_queue_purge(&sk->sk_receive_queue);
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index 5c4560287bd2..d3197ace2a89 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -906,6 +906,7 @@ struct sock *mptcp_sk_clone(const struct sock *sk, struct request_sock *req)
+ 	}
  
+ 	msk->write_seq = subflow_req->idsn + 1;
++	atomic64_set(&msk->snd_una, msk->write_seq);
+ 	if (subflow_req->remote_key_valid) {
+ 		msk->can_ack = true;
+ 		msk->remote_key = subflow_req->remote_key;
+@@ -1107,6 +1108,7 @@ void mptcp_finish_connect(struct sock *ssk)
+ 	WRITE_ONCE(msk->write_seq, subflow->idsn + 1);
+ 	WRITE_ONCE(msk->ack_seq, ack_seq);
+ 	WRITE_ONCE(msk->can_ack, 1);
++	atomic64_set(&msk->snd_una, msk->write_seq);
+ 
+ 	mptcp_pm_new_connection(msk, 0);
+ }
 diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index df134ac91274..209bdaa43dda 100644
+index 209bdaa43dda..29db05467cc3 100644
 --- a/net/mptcp/protocol.h
 +++ b/net/mptcp/protocol.h
-@@ -330,6 +330,7 @@ void mptcp_crypto_hmac_sha(u64 key1, u64 key2, u8 *msg, int len, void *hmac);
- 
- void mptcp_pm_init(void);
- void mptcp_pm_data_init(struct mptcp_sock *msk);
-+void mptcp_pm_close(struct mptcp_sock *msk);
- void mptcp_pm_new_connection(struct mptcp_sock *msk, int server_side);
- void mptcp_pm_fully_established(struct mptcp_sock *msk);
- bool mptcp_pm_allow_new_subflow(struct mptcp_sock *msk);
+@@ -147,6 +147,7 @@ struct mptcp_sock {
+ 	u64		remote_key;
+ 	u64		write_seq;
+ 	u64		ack_seq;
++	atomic64_t	snd_una;
+ 	u32		token;
+ 	unsigned long	flags;
+ 	bool		can_ack;
 -- 
 2.26.0
 
