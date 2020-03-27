@@ -2,71 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2655A195695
-	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 12:50:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 08AA41956B0
+	for <lists+netdev@lfdr.de>; Fri, 27 Mar 2020 13:02:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727125AbgC0LuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 07:50:21 -0400
-Received: from mail-vs1-f65.google.com ([209.85.217.65]:38487 "EHLO
-        mail-vs1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726165AbgC0LuV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 07:50:21 -0400
-Received: by mail-vs1-f65.google.com with SMTP id x206so5989921vsx.5
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 04:50:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+QYqH1izi7DEZLPMDt4dsGYQrJn+m3Ne0vPWoqpxZ0o=;
-        b=PuC5PkC7fSy+9qKQbhvjXCSaDltDWI8kQ5+wNpdOitrekdpmeK/7FA2/YQr29QI3IP
-         Bh8VbgahV/nKQy3FuJ4m+dvHv0eMyaU428UeojhSAjzBijp70u97SPpV8C0yaXLXHOaS
-         A45wyGCEGS7fZwfv3OOCx6gQGhcHoDTaBdGiA0JMxav21Mzw2jSUDe4if5RMZZRy8dAm
-         3n3jcdDQuSJAoLIHIgEhWZ/uc1EeujFTds5VBeNtgN2fDtBQb8qkfocGQquOyI6loCnt
-         UKICzooBaxc+oq/M/Kk8CdIkcBqIvWSJUMFQDjSBQWexlPCKlgCPYxeAdYKxiMv654e3
-         nbuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+QYqH1izi7DEZLPMDt4dsGYQrJn+m3Ne0vPWoqpxZ0o=;
-        b=LR4tjBVwEqzSFULKD0OtZVGWZJ2kw7X8VYRVwLfL6ZebhggwrUMBhEFVh/gHc8xmfY
-         9mxuUiVTrPM8V8L7NpVjT5yy12PeA5PWsP6fcDFMV86KFDt0eWYytYpCp3GoZhV8iKjq
-         A1uF9/bfuvRPOgnCSnrAh1NX+1Tj3zfEEri4Oe4tc2cvlrlK+vkZ35sEl2qWJW4outP3
-         WhJE/ZU4DLK7tA0ev/OI2zTaawkEm3GzjYwMIGvSq5zehECGbHoB7oW0H41qf7/KuIWb
-         uePrTTYqjC8HXHqRHPAagmCJtXaWuGeInxQWhj9CQwplROm9uz79O2hyOZ4i2ggFmJWr
-         d9/g==
-X-Gm-Message-State: ANhLgQ2eU9+ojj9VhYcwymgSL+STlBDdogBivFHcmOWSP9rhI2zYUnK6
-        ipcrpwZZuMA3ScpRG0vVu4QIg72Ya/oxbQzXblE53g==
-X-Google-Smtp-Source: ADFU+vtOIKCYOE6WM68l+XyEbnfItZ7TuSuqUMlFuh8/Sir2Grv3B726059emGiMrBfvnTGGKxyyrBi4JSdq8ErdlAk=
-X-Received: by 2002:a67:7204:: with SMTP id n4mr11432296vsc.195.1585309819757;
- Fri, 27 Mar 2020 04:50:19 -0700 (PDT)
+        id S1726742AbgC0MCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 08:02:06 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:33052 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726165AbgC0MCG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 08:02:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=0KCyy4fR6uqfv7pQ7Bns3VVcVENtN8zz9qfPJTw1u4U=; b=qrI9PjSf/erLcmWVGVGBLQ3Mq
+        01EOlIAqHOrpOFWwygcxDrNjhTmbFQ9VQX92GkkqsZ+n5l2wtjzpSi+3A50x8bCduK1sO1pVfsB61
+        bHohG0qrEgypXagKGIaLv0ERu47suHhJkWI+wHldYyowaoRWhi5U6MgxJ5vFQXbaWzgeUTXlywCkB
+        hkoRLzdjJ8V8DZ1Nj9hXLvXwZCUIOup90jsHvuaY0ptujc453VdVh54oUfD24NtB2R+AKS4XcLKFH
+        K+xpv5v5M74br+N3dEVjydMvRcwTVQ67AsDpoLwSnjRcDbmfnhY0B1I2/f/x4cJJoQ+7Xx8fuO2fA
+        Q3UM/wpTg==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:37884)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jHngR-0000tb-TR; Fri, 27 Mar 2020 12:01:56 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jHngO-0004Bh-2o; Fri, 27 Mar 2020 12:01:52 +0000
+Date:   Fri, 27 Mar 2020 12:01:52 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florinel Iordache <florinel.iordache@nxp.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+        robh+dt@kernel.org, mark.rutland@arm.com, kuba@kernel.org,
+        corbet@lwn.net, shawnguo@kernel.org, leoyang.li@nxp.com,
+        madalin.bucur@oss.nxp.com, ioana.ciornei@nxp.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/9] net: phy: add kr phy connection type
+Message-ID: <20200327120151.GG25745@shell.armlinux.org.uk>
+References: <1585230682-24417-1-git-send-email-florinel.iordache@nxp.com>
+ <1585230682-24417-4-git-send-email-florinel.iordache@nxp.com>
+ <20200327001515.GL3819@lunn.ch>
 MIME-Version: 1.0
-References: <20200326094252.157914-1-brambonne@google.com> <20200326.114550.2060060414897819387.davem@davemloft.net>
-In-Reply-To: <20200326.114550.2060060414897819387.davem@davemloft.net>
-From:   =?UTF-8?Q?Bram_Bonn=C3=A9?= <brambonne@google.com>
-Date:   Fri, 27 Mar 2020 12:50:07 +0100
-Message-ID: <CABWXKLwamYiLhwUHsb5nZHnyZb4=6RrrdUg3CiX7CZOuVime7g@mail.gmail.com>
-Subject: Re: [RFC PATCH] ipv6: Use dev_addr in stable-privacy address generation
-To:     David Miller <davem@davemloft.net>
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        hannes@stressinduktion.org, netdev@vger.kernel.org,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Jeffrey Vander Stoep <jeffv@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200327001515.GL3819@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 7:45 PM David Miller <davem@davemloft.net> wrote:
-> I think the current behavior is intentional in that it's supposed to use
-> something that is unchanging even across arbitrary administrator changes
-> to the in-use MAC address.
+On Fri, Mar 27, 2020 at 01:15:15AM +0100, Andrew Lunn wrote:
+> On Thu, Mar 26, 2020 at 03:51:16PM +0200, Florinel Iordache wrote:
+> > Add support for backplane kr phy connection types currently available
+> > (10gbase-kr, 40gbase-kr4) and the required phylink updates (cover all
+> > the cases for KR modes which are clause 45 compatible to correctly assign
+> > phy_interface and phylink#supported)
+> > 
+> > Signed-off-by: Florinel Iordache <florinel.iordache@nxp.com>
+> > ---
+> >  drivers/net/phy/phylink.c | 15 ++++++++++++---
+> >  include/linux/phy.h       |  6 +++++-
+> >  2 files changed, 17 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+> > index fed0c59..db1bb87 100644
+> > --- a/drivers/net/phy/phylink.c
+> > +++ b/drivers/net/phy/phylink.c
+> > @@ -4,6 +4,7 @@
+> >   * technologies such as SFP cages where the PHY is hot-pluggable.
+> >   *
+> >   * Copyright (C) 2015 Russell King
+> > + * Copyright 2020 NXP
+> >   */
+> >  #include <linux/ethtool.h>
+> >  #include <linux/export.h>
+> > @@ -303,7 +304,6 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
+> >  			break;
+> >  
+> >  		case PHY_INTERFACE_MODE_USXGMII:
+> > -		case PHY_INTERFACE_MODE_10GKR:
+> 
+> We might have a backwards compatibility issue here. If i remember
+> correctly, there are some boards out in the wild using
+> PHY_INTERFACE_MODE_10GKR not PHY_INTERFACE_MODE_10GBASER.
+> 
+> See e0f909bc3a242296da9ccff78277f26d4883a79d
+> 
+> Russell, what do you say about this?
 
-Thank you for your feedback David.
+Yes, and that's a point that I made when I introduced 10GBASER to
+correct that mistake.  It is way too soon to change this; it will
+definitely cause regressions:
 
-Could you help me understand the use cases where the admin / user
-chooses to use MAC address randomization, but still wants an IPv6
-link-local address that remains stable across these networks? My
-assumption was that the latter would defeat the purpose of the former,
-though it's entirely possible that I'm missing something.
+$ grep 10gbase-kr arch/*/boot/dts -r
+arch/arm64/boot/dts/marvell/cn9131-db.dts:      phy-mode = "10gbase-kr";
+arch/arm64/boot/dts/marvell/armada-8040-mcbin.dts:      phy-mode = "10gbase-kr";
+arch/arm64/boot/dts/marvell/armada-8040-mcbin.dts:      phy-mode = "10gbase-kr";
+arch/arm64/boot/dts/marvell/armada-7040-db.dts:    phy-mode = "10gbase-kr";
+arch/arm64/boot/dts/marvell/armada-8040-mcbin-singleshot.dts:   phy-mode = "10gbase-kr";
+arch/arm64/boot/dts/marvell/armada-8040-mcbin-singleshot.dts:   phy-mode = "10gbase-kr";
+arch/arm64/boot/dts/marvell/armada-8040-clearfog-gt-8k.dts:     phy-mode = "10gbase-kr";
+arch/arm64/boot/dts/marvell/armada-8040-db.dts: phy-mode = "10gbase-kr";
+arch/arm64/boot/dts/marvell/armada-8040-db.dts: phy-mode = "10gbase-kr";
+arch/arm64/boot/dts/marvell/cn9132-db.dts:      phy-mode = "10gbase-kr";
+arch/arm64/boot/dts/marvell/cn9130-db.dts:      phy-mode = "10gbase-kr";
+
+So any change to the existing PHY_INTERFACE_MODE_10GKR will likely
+break all these platforms.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
