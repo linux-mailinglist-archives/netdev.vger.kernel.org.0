@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93FC5196416
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 08:11:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AE0F196412
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 08:11:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbgC1HLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 03:11:24 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:35120 "EHLO huawei.com"
+        id S1726265AbgC1HK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 03:10:59 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:35080 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725810AbgC1HLY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 28 Mar 2020 03:11:24 -0400
+        id S1725810AbgC1HK6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 28 Mar 2020 03:10:58 -0400
 Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 8CC8DB7F545C39E14CDB;
+        by Forcepoint Email with ESMTP id 80EF058DE3AC0FEF6455;
         Sat, 28 Mar 2020 15:10:52 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
@@ -22,11 +22,11 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>
-Subject: [PATCH net 2/4] net: hns3: fix for fraglist SKB headlen not handling correctly
-Date:   Sat, 28 Mar 2020 15:09:56 +0800
-Message-ID: <1585379398-36224-3-git-send-email-tanhuazhong@huawei.com>
+        Guojia Liao <liaoguojia@huawei.com>,
+        Huazhong Tan <tanhuazhong@huawei.com>
+Subject: [PATCH net 3/4] net: hns3: fix RSS config lost after VF reset.
+Date:   Sat, 28 Mar 2020 15:09:57 +0800
+Message-ID: <1585379398-36224-4-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1585379398-36224-1-git-send-email-tanhuazhong@huawei.com>
 References: <1585379398-36224-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,90 +39,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the fraglist SKB headlen is larger than zero, current code
-still handle the fraglist SKB linear data as frag data, which may
-cause TX error.
+From: Guojia Liao <liaoguojia@huawei.com>
 
-This patch adds a new DESC_TYPE_FRAGLIST_SKB type to handle the
-mapping and unmapping of the fraglist SKB linear data buffer.
+Currently, VF's RSS configuration would be set to default
+after VF reset, the the user's one will loss.
 
-Fixes: 8ae10cfb5089 ("net: hns3: support tx-scatter-gather-fraglist feature")
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+To fix it, this patch separates hclgevf_rss_init_hw() into
+two parts, one sets up the default RSS configuration and
+just be called when driver loading, one configures the hardware
+and be called by driver loading or reset.
+
+Fixes: d97b30721301 ("net: hns3: Add RSS tuples support for VF")
+Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h     |  1 +
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 18 +++++++++++++-----
- 2 files changed, 14 insertions(+), 5 deletions(-)
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 52 ++++++++++++----------
+ 1 file changed, 28 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index a3e4081..5587605 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -78,6 +78,7 @@
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 3c58f0b..768240f 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -2124,50 +2124,51 @@ static int hclgevf_config_gro(struct hclgevf_dev *hdev, bool en)
+ 	return ret;
+ }
  
- enum hns_desc_type {
- 	DESC_TYPE_SKB,
-+	DESC_TYPE_FRAGLIST_SKB,
- 	DESC_TYPE_PAGE,
- };
+-static int hclgevf_rss_init_hw(struct hclgevf_dev *hdev)
++static void hclgevf_rss_init_cfg(struct hclgevf_dev *hdev)
+ {
+ 	struct hclgevf_rss_cfg *rss_cfg = &hdev->rss_cfg;
+-	int ret;
++	struct hclgevf_rss_tuple_cfg *tuple_sets;
+ 	u32 i;
  
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-index a7f40aa..6936384 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
-@@ -1107,6 +1107,10 @@ static int hns3_fill_desc(struct hns3_enet_ring *ring, void *priv,
++	rss_cfg->hash_algo = HCLGEVF_RSS_HASH_ALGO_TOEPLITZ;
+ 	rss_cfg->rss_size = hdev->nic.kinfo.rss_size;
+-
++	tuple_sets = &rss_cfg->rss_tuple_sets;
+ 	if (hdev->pdev->revision >= 0x21) {
+ 		rss_cfg->hash_algo = HCLGEVF_RSS_HASH_ALGO_SIMPLE;
+ 		memcpy(rss_cfg->rss_hash_key, hclgevf_hash_key,
+ 		       HCLGEVF_RSS_KEY_SIZE);
+ 
++		tuple_sets->ipv4_tcp_en = HCLGEVF_RSS_INPUT_TUPLE_OTHER;
++		tuple_sets->ipv4_udp_en = HCLGEVF_RSS_INPUT_TUPLE_OTHER;
++		tuple_sets->ipv4_sctp_en = HCLGEVF_RSS_INPUT_TUPLE_SCTP;
++		tuple_sets->ipv4_fragment_en = HCLGEVF_RSS_INPUT_TUPLE_OTHER;
++		tuple_sets->ipv6_tcp_en = HCLGEVF_RSS_INPUT_TUPLE_OTHER;
++		tuple_sets->ipv6_udp_en = HCLGEVF_RSS_INPUT_TUPLE_OTHER;
++		tuple_sets->ipv6_sctp_en = HCLGEVF_RSS_INPUT_TUPLE_SCTP;
++		tuple_sets->ipv6_fragment_en = HCLGEVF_RSS_INPUT_TUPLE_OTHER;
++	}
++
++	/* Initialize RSS indirect table */
++	for (i = 0; i < HCLGEVF_RSS_IND_TBL_SIZE; i++)
++		rss_cfg->rss_indirection_tbl[i] = i % rss_cfg->rss_size;
++}
++
++static int hclgevf_rss_init_hw(struct hclgevf_dev *hdev)
++{
++	struct hclgevf_rss_cfg *rss_cfg = &hdev->rss_cfg;
++	int ret;
++
++	if (hdev->pdev->revision >= 0x21) {
+ 		ret = hclgevf_set_rss_algo_key(hdev, rss_cfg->hash_algo,
+ 					       rss_cfg->rss_hash_key);
+ 		if (ret)
  			return ret;
  
- 		dma = dma_map_single(dev, skb->data, size, DMA_TO_DEVICE);
-+	} else if (type == DESC_TYPE_FRAGLIST_SKB) {
-+		struct sk_buff *skb = (struct sk_buff *)priv;
+-		rss_cfg->rss_tuple_sets.ipv4_tcp_en =
+-					HCLGEVF_RSS_INPUT_TUPLE_OTHER;
+-		rss_cfg->rss_tuple_sets.ipv4_udp_en =
+-					HCLGEVF_RSS_INPUT_TUPLE_OTHER;
+-		rss_cfg->rss_tuple_sets.ipv4_sctp_en =
+-					HCLGEVF_RSS_INPUT_TUPLE_SCTP;
+-		rss_cfg->rss_tuple_sets.ipv4_fragment_en =
+-					HCLGEVF_RSS_INPUT_TUPLE_OTHER;
+-		rss_cfg->rss_tuple_sets.ipv6_tcp_en =
+-					HCLGEVF_RSS_INPUT_TUPLE_OTHER;
+-		rss_cfg->rss_tuple_sets.ipv6_udp_en =
+-					HCLGEVF_RSS_INPUT_TUPLE_OTHER;
+-		rss_cfg->rss_tuple_sets.ipv6_sctp_en =
+-					HCLGEVF_RSS_INPUT_TUPLE_SCTP;
+-		rss_cfg->rss_tuple_sets.ipv6_fragment_en =
+-					HCLGEVF_RSS_INPUT_TUPLE_OTHER;
+-
+ 		ret = hclgevf_set_rss_input_tuple(hdev, rss_cfg);
+ 		if (ret)
+ 			return ret;
+ 	}
+ 
+-	/* Initialize RSS indirect table */
+-	for (i = 0; i < HCLGEVF_RSS_IND_TBL_SIZE; i++)
+-		rss_cfg->rss_indirection_tbl[i] = i % rss_cfg->rss_size;
+-
+ 	ret = hclgevf_set_rss_indir_table(hdev);
+ 	if (ret)
+ 		return ret;
+@@ -2764,6 +2765,7 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
+ 		goto err_config;
+ 
+ 	/* Initialize RSS for this VF */
++	hclgevf_rss_init_cfg(hdev);
+ 	ret = hclgevf_rss_init_hw(hdev);
+ 	if (ret) {
+ 		dev_err(&hdev->pdev->dev,
+@@ -2936,6 +2938,8 @@ static int hclgevf_set_channels(struct hnae3_handle *handle, u32 new_tqps_num,
+ 	for (i = 0; i < HCLGEVF_RSS_IND_TBL_SIZE; i++)
+ 		rss_indir[i] = i % kinfo->rss_size;
+ 
++	hdev->rss_cfg.rss_size = kinfo->rss_size;
 +
-+		dma = dma_map_single(dev, skb->data, size, DMA_TO_DEVICE);
- 	} else {
- 		frag = (skb_frag_t *)priv;
- 		dma = skb_frag_dma_map(dev, frag, 0, size, DMA_TO_DEVICE);
-@@ -1144,8 +1148,9 @@ static int hns3_fill_desc(struct hns3_enet_ring *ring, void *priv,
- 		/* The txbd's baseinfo of DESC_TYPE_PAGE & DESC_TYPE_SKB */
- 		desc_cb->priv = priv;
- 		desc_cb->dma = dma + HNS3_MAX_BD_SIZE * k;
--		desc_cb->type = (type == DESC_TYPE_SKB && !k) ?
--				DESC_TYPE_SKB : DESC_TYPE_PAGE;
-+		desc_cb->type = ((type == DESC_TYPE_FRAGLIST_SKB ||
-+				  type == DESC_TYPE_SKB) && !k) ?
-+				type : DESC_TYPE_PAGE;
- 
- 		/* now, fill the descriptor */
- 		desc->addr = cpu_to_le64(dma + HNS3_MAX_BD_SIZE * k);
-@@ -1354,7 +1359,9 @@ static void hns3_clear_desc(struct hns3_enet_ring *ring, int next_to_use_orig)
- 		ring_ptr_move_bw(ring, next_to_use);
- 
- 		/* unmap the descriptor dma address */
--		if (ring->desc_cb[ring->next_to_use].type == DESC_TYPE_SKB)
-+		if (ring->desc_cb[ring->next_to_use].type == DESC_TYPE_SKB ||
-+		    ring->desc_cb[ring->next_to_use].type ==
-+		    DESC_TYPE_FRAGLIST_SKB)
- 			dma_unmap_single(dev,
- 					 ring->desc_cb[ring->next_to_use].dma,
- 					ring->desc_cb[ring->next_to_use].length,
-@@ -1447,7 +1454,8 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
- 		goto out;
- 
- 	skb_walk_frags(skb, frag_skb) {
--		ret = hns3_fill_skb_to_desc(ring, frag_skb, DESC_TYPE_PAGE);
-+		ret = hns3_fill_skb_to_desc(ring, frag_skb,
-+					    DESC_TYPE_FRAGLIST_SKB);
- 		if (unlikely(ret < 0))
- 			goto fill_err;
- 
-@@ -2356,7 +2364,7 @@ static int hns3_map_buffer(struct hns3_enet_ring *ring, struct hns3_desc_cb *cb)
- static void hns3_unmap_buffer(struct hns3_enet_ring *ring,
- 			      struct hns3_desc_cb *cb)
- {
--	if (cb->type == DESC_TYPE_SKB)
-+	if (cb->type == DESC_TYPE_SKB || cb->type == DESC_TYPE_FRAGLIST_SKB)
- 		dma_unmap_single(ring_to_dev(ring), cb->dma, cb->length,
- 				 ring_to_dma_dir(ring));
- 	else if (cb->length)
+ 	ret = hclgevf_set_rss(handle, rss_indir, NULL, 0);
+ 	if (ret)
+ 		dev_err(&hdev->pdev->dev, "set rss indir table fail, ret=%d\n",
 -- 
 2.7.4
 
