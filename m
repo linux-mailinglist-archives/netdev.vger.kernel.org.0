@@ -2,125 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E26B19625F
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 01:17:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7384D196272
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 01:32:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727026AbgC1ARw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 20:17:52 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:34150 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726134AbgC1ARv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 20:17:51 -0400
-Received: by mail-qt1-f194.google.com with SMTP id 10so10207549qtp.1;
-        Fri, 27 Mar 2020 17:17:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Rd/kZuwDUbwtE932LuCUfDihCMXQyPB1DkgyzbaO5Yc=;
-        b=n2XL+HtH3bcfupmNgd7gkjwsEm/CNr2hug9QzB3oeoH1s2qIP2Nj4z4TO2zzHpXECf
-         0sYXi31ON/Wsb3Eb7TF1PK//WoSF9/DGJm1/bA8iHoFZEahP32OI3QVX2k7A3RKETNSf
-         OpQZEF23A28A50zCkc6vWzeNzeaW2hC9x4rSBVL545iBbY//PtcZd/z2hZtyb2eWOQPN
-         Qh0WhOAn4zxIWz30kMi8UNaio5COQ4f/6LgfK9YeolfgC2VHdWfrmEjcljwllMT2YYct
-         X0CJleU+FejLwRt1pjZyObZdy68D0ST4uFy+m9OgJ72xuYQHuU+ScnxHMwT6eRI/Sgw2
-         hqCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Rd/kZuwDUbwtE932LuCUfDihCMXQyPB1DkgyzbaO5Yc=;
-        b=hv04SG3OwQnFKXApavE3c+jk0qKFYZ+IYoYdlusrvr/XXrW9uKOXwJ3NcCAsKziUDW
-         dAWlfLYKbtpHNBabUlxu5gGIcASNbFYgb+2+AeXTIoYGBVxW2hl9mH/g6VV5ekuGPJmk
-         3dHzNlUuquoIcb5hyStEwV9Fpz1bL9tGWyjmmvYwOXXuEYs3jo3OB6v1lt8QWywtybzj
-         r5laSJ2jUCG2HhRz3vyv90UzhysJsMT7zbTjdIKU/q7CILzNFFcnLWaJE1T82mcy5+L1
-         jRcmotcPByX67yTR6SDna2b7bN/vw5yT3LxCcSD6vfC+zq/cFHT1RbKl6T306D8cWD7G
-         NKgQ==
-X-Gm-Message-State: ANhLgQ3wYaoeJe5SY5kePRxhMlv5zvhTRqSl10SNk1ANx1C5e9X+0tDm
-        BVpIQ1fFxxv5jBnKOoluUYpEtu+d9FVaQScJABI=
-X-Google-Smtp-Source: ADFU+vvxfHvWJhtQbLX9VhZBRB8W6yRBV79Ysr/MtfHtnPW89mUVWq1yCpjXDetm4aYmYHHMxtXMGbwzWR3gUTqa00g=
-X-Received: by 2002:ac8:1865:: with SMTP id n34mr1849063qtk.93.1585354670512;
- Fri, 27 Mar 2020 17:17:50 -0700 (PDT)
+        id S1727020AbgC1AcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 20:32:10 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:48043 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726225AbgC1AcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 20:32:09 -0400
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 48q06F6Zzvz1qrGH;
+        Sat, 28 Mar 2020 01:32:03 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 48q06C6MBtz1qv4G;
+        Sat, 28 Mar 2020 01:32:03 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id mZMb89J5QD8X; Sat, 28 Mar 2020 01:32:02 +0100 (CET)
+X-Auth-Info: sOUuUAvWVq1UQyfVIWu4jeQcHQPn8OZBPuoclTtGlHs=
+Received: from desktop.lan (ip-86-49-35-8.net.upcbroadband.cz [86.49.35.8])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Sat, 28 Mar 2020 01:32:02 +0100 (CET)
+From:   Marek Vasut <marex@denx.de>
+To:     netdev@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Lukas Wunner <lukas@wunner.de>, Petr Stetiar <ynezz@true.cz>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH V3 00/18] net: ks8851: Unify KS8851 SPI and MLL drivers
+Date:   Sat, 28 Mar 2020 01:31:30 +0100
+Message-Id: <20200328003148.498021-1-marex@denx.de>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20200325055745.10710-1-joe@wand.net.nz> <20200325055745.10710-6-joe@wand.net.nz>
- <82e8d147-b334-3d29-0312-7b087ac908f3@fb.com> <CACAyw99Eeu+=yD8UKazRJcknZi3D5zMJ4n=FVsxXi63DwhdxYA@mail.gmail.com>
- <20200326210719.den5isqxntnoqhmv@ast-mbp> <CAOftzPjyCNGEjBm4k3aKK+=AB-1STDbYbQK5sZbK6gTAo13XuA@mail.gmail.com>
-In-Reply-To: <CAOftzPjyCNGEjBm4k3aKK+=AB-1STDbYbQK5sZbK6gTAo13XuA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 27 Mar 2020 17:17:38 -0700
-Message-ID: <CAEf4BzZZfsW-xw8AtmwA4gSBusrBW8M6D4RLqO3SWV_0DQxW8w@mail.gmail.com>
-Subject: Re: call for bpf progs. Re: [PATCHv2 bpf-next 5/5] selftests: bpf:
- add test for sk_assign
-To:     Joe Stringer <joe@wand.net.nz>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>, Yonghong Song <yhs@fb.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Martin Lau <kafai@fb.com>,
-        john fastabend <john.fastabend@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 27, 2020 at 12:07 PM Joe Stringer <joe@wand.net.nz> wrote:
->
-> On Thu, Mar 26, 2020 at 2:07 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> > The second concern was pruning, but iirc the experiments were inconclusive.
-> > selftests/bpf only has old fb progs. Hence, I think, the step zero is for
-> > everyone to contribute their bpf programs written in C. If we have both
-> > cilium and cloudflare progs as selftests it will help a lot to guide such long
-> > lasting verifier decisions.
->
-> How would you like to handle program changes over time for this?
->
-> In Cilium community we periodically rebuild bpf-next VM images for
-> testing, and run every pull request against those images[0]. We also
-> test against specific older kernels, currently 4.9 and 4.19. This
-> allows us to get some sense for the impact of upstream changes while
-> developing Cilium features, but unfortunately doesn't allow everyone
-> using kernel selftests to get that feedback at least from the kernel
-> tree. We also have a verifier complexity test script where we compile
-> with the maximum number of features (to ideally generate the most
-> complex programs possible) then attempt to load all of the various
-> programs, and output the complexity count that the kernel reports[1,2]
-> which we can track over time.
->
-> However Cilium BPF programs are actively developing and even if we
-> merge these programs into the kernel tree, they will get out-of-date
-> quickly. Up until recently everything was verifying fine compiling
-> with LLVM7 and loading into bpf-next. Over the past month we started
-> noticing new issues not with the existing implementation, but in *new*
-> BPF features. As we increased complexity, our CI started failing
-> against bpf-next[3] while they loaded fine on older kernels. We ended
-> up mitigating by upgrading to LLVM-10. Long story short, there's
-> several moving parts; changing BPF program implementations, changing
-> the compiler toolchain, changing the kernel verifier. So my question
-> is basically, where's the line of responsibility for what the kernel
-> selftests are responsible for vs integration tests? How do we maintain
-> those over time as the BPF programs and compiler changes?
+The KS8851SNL/SNLI and KS8851-16MLL/MLLI/MLLU are very much the same pieces
+of silicon, except the former has an SPI interface, while the later has a
+parallel bus interface. Thus far, Linux has two separate drivers for each
+and they are diverging considerably.
 
-Just wanted to point out that libbpf's Github CI has multi-kernel
-testing, so we'll be able to capture regressions on old kernels that
-are caused by libbpf and/or nightly clang (we are currently pulling
-clang-11 from nightly packages). We are also testing against latest
-kernel as well, so if they break, we'll need to fix them. Which is why
-I'd like those programs to be manageable in size and complexity and a
-simple part of test_progs, not in some Docker container :)
+This series unifies them into a single driver with small SPI and parallel
+bus specific parts. The approach here is to first separate out the SPI
+specific parts into a separate file, then add parallel bus accessors in
+another separate file and then finally remove the old parallel bus driver.
+The reason for replacing the old parallel bus driver is because the SPI
+bus driver is much higher quality.
 
->
-> Do we just parachute the ~11K LoC of Cilium datapath into the kernel
-> tree once per cycle? Or should Cilium autobuild a verifier-test docker
-> image that kernel testing scripts can pull & run? Or would it be
-> helpful to have a separate GitHub project similar to libbpf that pulls
-> out kernel selftests, Cilium progs, fb progs, cloudflare progs, etc
-> automatically and centralizes a generic suite of BPF verifier
-> integration tests? Some other option?
->
-> [0] https://github.com/cilium/packer-ci-build
-> [1] https://github.com/cilium/cilium/blob/master/test/bpf/check-complexity.sh
-> [2] https://github.com/cilium/cilium/blob/master/test/bpf/verifier-test.sh
-> [3] https://github.com/cilium/cilium/issues/10517
+NOTE: This series depends on "net: ks8851-ml: Fix IO operations, again"
+
+NOTE: The performance regression on KS8851-16MLL is now fixes, the TX
+      throughput is back to ~75 Mbit/s , RX is still 50 Mbit/s .
+
+Marek Vasut (18):
+  net: ks8851: Factor out spi->dev in probe()/remove()
+  net: ks8851: Rename ndev to netdev in probe
+  net: ks8851: Replace dev_err() with netdev_err() in IRQ handler
+  net: ks8851: Pass device node into ks8851_init_mac()
+  net: ks8851: Use devm_alloc_etherdev()
+  net: ks8851: Use dev_{get,set}_drvdata()
+  net: ks8851: Remove ks8851_rdreg32()
+  net: ks8851: Use 16-bit writes to program MAC address
+  net: ks8851: Use 16-bit read of RXFC register
+  net: ks8851: Factor out bus lock handling
+  net: ks8851: Factor out SKB receive function
+  net: ks8851: Split out SPI specific entries in struct ks8851_net
+  net: ks8851: Split out SPI specific code from probe() and remove()
+  net: ks8851: Factor out TX work flush function
+  net: ks8851: Permit overridding interrupt enable register
+  net: ks8851: Separate SPI operations into separate file
+  net: ks8851: Implement Parallel bus operations
+  net: ks8851: Remove ks8851_mll.c
+
+ drivers/net/ethernet/micrel/Kconfig           |    2 +
+ drivers/net/ethernet/micrel/Makefile          |    2 +
+ drivers/net/ethernet/micrel/ks8851.h          |  142 +-
+ .../micrel/{ks8851.c => ks8851_common.c}      |  688 ++------
+ drivers/net/ethernet/micrel/ks8851_mll.c      | 1393 -----------------
+ drivers/net/ethernet/micrel/ks8851_par.c      |  337 ++++
+ drivers/net/ethernet/micrel/ks8851_spi.c      |  448 ++++++
+ 7 files changed, 1027 insertions(+), 1985 deletions(-)
+ rename drivers/net/ethernet/micrel/{ks8851.c => ks8851_common.c} (60%)
+ delete mode 100644 drivers/net/ethernet/micrel/ks8851_mll.c
+ create mode 100644 drivers/net/ethernet/micrel/ks8851_par.c
+ create mode 100644 drivers/net/ethernet/micrel/ks8851_spi.c
+
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Lukas Wunner <lukas@wunner.de>
+Cc: Petr Stetiar <ynezz@true.cz>
+Cc: YueHaibing <yuehaibing@huawei.com>
+
+-- 
+2.25.1
+
