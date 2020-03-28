@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AE0F196412
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 08:11:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A90F196410
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 08:11:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726265AbgC1HK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 03:10:59 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:35080 "EHLO huawei.com"
+        id S1726156AbgC1HK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 03:10:56 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:35100 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725810AbgC1HK6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 28 Mar 2020 03:10:58 -0400
+        id S1725372AbgC1HK4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 28 Mar 2020 03:10:56 -0400
 Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 80EF058DE3AC0FEF6455;
+        by Forcepoint Email with ESMTP id 870DFD21A1FDC62E4E5C;
         Sat, 28 Mar 2020 15:10:52 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
@@ -22,11 +22,11 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
-        Guojia Liao <liaoguojia@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net 3/4] net: hns3: fix RSS config lost after VF reset.
-Date:   Sat, 28 Mar 2020 15:09:57 +0800
-Message-ID: <1585379398-36224-4-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net 4/4] net: hns3: fix set and get link ksettings issue
+Date:   Sat, 28 Mar 2020 15:09:58 +0800
+Message-ID: <1585379398-36224-5-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1585379398-36224-1-git-send-email-tanhuazhong@huawei.com>
 References: <1585379398-36224-1-git-send-email-tanhuazhong@huawei.com>
@@ -39,120 +39,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guojia Liao <liaoguojia@huawei.com>
+From: Guangbin Huang <huangguangbin2@huawei.com>
 
-Currently, VF's RSS configuration would be set to default
-after VF reset, the the user's one will loss.
+When device is not open, the service task which update the port
+information per second is not running. In this case, the port
+capabilities, including speed ability, autoneg ability, media type,
+may be incorrect. Then get/set link ksetting may fail.
 
-To fix it, this patch separates hclgevf_rss_init_hw() into
-two parts, one sets up the default RSS configuration and
-just be called when driver loading, one configures the hardware
-and be called by driver loading or reset.
+This patch fixes it by updating the port information before getting/
+setting link ksettings when device is not open, and start timer
+task immediately by setting delay time to 0 when device opens.
 
-Fixes: d97b30721301 ("net: hns3: Add RSS tuples support for VF")
-Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
+Fixes: 46a3df9f9718 ("net: hns3: Add HNS3 Acceleration Engine & Compatibility Layer Support")
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 52 ++++++++++++----------
- 1 file changed, 28 insertions(+), 24 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-index 3c58f0b..768240f 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-@@ -2124,50 +2124,51 @@ static int hclgevf_config_gro(struct hclgevf_dev *hdev, bool en)
- 	return ret;
- }
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index b351807..0e03c3a 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -6765,7 +6765,7 @@ static void hclge_set_timer_task(struct hnae3_handle *handle, bool enable)
+ 	struct hclge_dev *hdev = vport->back;
  
--static int hclgevf_rss_init_hw(struct hclgevf_dev *hdev)
-+static void hclgevf_rss_init_cfg(struct hclgevf_dev *hdev)
- {
- 	struct hclgevf_rss_cfg *rss_cfg = &hdev->rss_cfg;
--	int ret;
-+	struct hclgevf_rss_tuple_cfg *tuple_sets;
- 	u32 i;
+ 	if (enable) {
+-		hclge_task_schedule(hdev, round_jiffies_relative(HZ));
++		hclge_task_schedule(hdev, 0);
+ 	} else {
+ 		/* Set the DOWN flag here to disable link updating */
+ 		set_bit(HCLGE_STATE_DOWN, &hdev->state);
+@@ -8979,6 +8979,12 @@ static void hclge_get_media_type(struct hnae3_handle *handle, u8 *media_type,
+ 	struct hclge_vport *vport = hclge_get_vport(handle);
+ 	struct hclge_dev *hdev = vport->back;
  
-+	rss_cfg->hash_algo = HCLGEVF_RSS_HASH_ALGO_TOEPLITZ;
- 	rss_cfg->rss_size = hdev->nic.kinfo.rss_size;
--
-+	tuple_sets = &rss_cfg->rss_tuple_sets;
- 	if (hdev->pdev->revision >= 0x21) {
- 		rss_cfg->hash_algo = HCLGEVF_RSS_HASH_ALGO_SIMPLE;
- 		memcpy(rss_cfg->rss_hash_key, hclgevf_hash_key,
- 		       HCLGEVF_RSS_KEY_SIZE);
- 
-+		tuple_sets->ipv4_tcp_en = HCLGEVF_RSS_INPUT_TUPLE_OTHER;
-+		tuple_sets->ipv4_udp_en = HCLGEVF_RSS_INPUT_TUPLE_OTHER;
-+		tuple_sets->ipv4_sctp_en = HCLGEVF_RSS_INPUT_TUPLE_SCTP;
-+		tuple_sets->ipv4_fragment_en = HCLGEVF_RSS_INPUT_TUPLE_OTHER;
-+		tuple_sets->ipv6_tcp_en = HCLGEVF_RSS_INPUT_TUPLE_OTHER;
-+		tuple_sets->ipv6_udp_en = HCLGEVF_RSS_INPUT_TUPLE_OTHER;
-+		tuple_sets->ipv6_sctp_en = HCLGEVF_RSS_INPUT_TUPLE_SCTP;
-+		tuple_sets->ipv6_fragment_en = HCLGEVF_RSS_INPUT_TUPLE_OTHER;
-+	}
++	/* When nic is down, the service task is not running, doesn't update
++	 * the port information per second. Query the port information before
++	 * return the media type, ensure getting the correct media information.
++	 */
++	hclge_update_port_info(hdev);
 +
-+	/* Initialize RSS indirect table */
-+	for (i = 0; i < HCLGEVF_RSS_IND_TBL_SIZE; i++)
-+		rss_cfg->rss_indirection_tbl[i] = i % rss_cfg->rss_size;
-+}
-+
-+static int hclgevf_rss_init_hw(struct hclgevf_dev *hdev)
-+{
-+	struct hclgevf_rss_cfg *rss_cfg = &hdev->rss_cfg;
-+	int ret;
-+
-+	if (hdev->pdev->revision >= 0x21) {
- 		ret = hclgevf_set_rss_algo_key(hdev, rss_cfg->hash_algo,
- 					       rss_cfg->rss_hash_key);
- 		if (ret)
- 			return ret;
+ 	if (media_type)
+ 		*media_type = hdev->hw.mac.media_type;
  
--		rss_cfg->rss_tuple_sets.ipv4_tcp_en =
--					HCLGEVF_RSS_INPUT_TUPLE_OTHER;
--		rss_cfg->rss_tuple_sets.ipv4_udp_en =
--					HCLGEVF_RSS_INPUT_TUPLE_OTHER;
--		rss_cfg->rss_tuple_sets.ipv4_sctp_en =
--					HCLGEVF_RSS_INPUT_TUPLE_SCTP;
--		rss_cfg->rss_tuple_sets.ipv4_fragment_en =
--					HCLGEVF_RSS_INPUT_TUPLE_OTHER;
--		rss_cfg->rss_tuple_sets.ipv6_tcp_en =
--					HCLGEVF_RSS_INPUT_TUPLE_OTHER;
--		rss_cfg->rss_tuple_sets.ipv6_udp_en =
--					HCLGEVF_RSS_INPUT_TUPLE_OTHER;
--		rss_cfg->rss_tuple_sets.ipv6_sctp_en =
--					HCLGEVF_RSS_INPUT_TUPLE_SCTP;
--		rss_cfg->rss_tuple_sets.ipv6_fragment_en =
--					HCLGEVF_RSS_INPUT_TUPLE_OTHER;
--
- 		ret = hclgevf_set_rss_input_tuple(hdev, rss_cfg);
- 		if (ret)
- 			return ret;
- 	}
- 
--	/* Initialize RSS indirect table */
--	for (i = 0; i < HCLGEVF_RSS_IND_TBL_SIZE; i++)
--		rss_cfg->rss_indirection_tbl[i] = i % rss_cfg->rss_size;
--
- 	ret = hclgevf_set_rss_indir_table(hdev);
- 	if (ret)
- 		return ret;
-@@ -2764,6 +2765,7 @@ static int hclgevf_init_hdev(struct hclgevf_dev *hdev)
- 		goto err_config;
- 
- 	/* Initialize RSS for this VF */
-+	hclgevf_rss_init_cfg(hdev);
- 	ret = hclgevf_rss_init_hw(hdev);
- 	if (ret) {
- 		dev_err(&hdev->pdev->dev,
-@@ -2936,6 +2938,8 @@ static int hclgevf_set_channels(struct hnae3_handle *handle, u32 new_tqps_num,
- 	for (i = 0; i < HCLGEVF_RSS_IND_TBL_SIZE; i++)
- 		rss_indir[i] = i % kinfo->rss_size;
- 
-+	hdev->rss_cfg.rss_size = kinfo->rss_size;
-+
- 	ret = hclgevf_set_rss(handle, rss_indir, NULL, 0);
- 	if (ret)
- 		dev_err(&hdev->pdev->dev, "set rss indir table fail, ret=%d\n",
 -- 
 2.7.4
 
