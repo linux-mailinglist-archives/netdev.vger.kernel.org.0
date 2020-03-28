@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93CB6196418
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 08:11:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BF9D196414
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 08:11:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726912AbgC1HL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 03:11:29 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:35076 "EHLO huawei.com"
+        id S1726342AbgC1HLB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 03:11:01 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:35122 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725372AbgC1HL3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 28 Mar 2020 03:11:29 -0400
+        id S1725372AbgC1HLB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 28 Mar 2020 03:11:01 -0400
 Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 7B2DBC5F8853D19168C9;
+        by Forcepoint Email with ESMTP id 921D39C350A7386A4097;
         Sat, 28 Mar 2020 15:10:52 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.56) by
  DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
@@ -22,11 +22,14 @@ To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
         <linuxarm@huawei.com>, <kuba@kernel.org>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net 0/4] net: hns3: fixes for -net
-Date:   Sat, 28 Mar 2020 15:09:54 +0800
-Message-ID: <1585379398-36224-1-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net 1/4] net: hns3: drop the WQ_MEM_RECLAIM flag when allocating WQ
+Date:   Sat, 28 Mar 2020 15:09:55 +0800
+Message-ID: <1585379398-36224-2-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1585379398-36224-1-git-send-email-tanhuazhong@huawei.com>
+References: <1585379398-36224-1-git-send-email-tanhuazhong@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.69.192.56]
@@ -36,38 +39,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset includes some bugfixes for the HNS3 ethernet driver.
+From: Yunsheng Lin <linyunsheng@huawei.com>
 
-[patch 1] removes flag WQ_MEM_RECLAIM flag when allocating WE,
-since it will cause a warning when the reset task flushes a IB's WQ.
+The WQ in hns3 driver is allocated with WQ_MEM_RECLAIM flag
+in order to guarantee forward progress, which may cause hns3'
+WQ_MEM_RECLAIM WQ flushing infiniband' !WQ_MEM_RECLAIM WQ
+warning:
 
-[patch 2] adds a new DESC_TYPE_FRAGLIST_SKB type to handle the
-linear data of the fraglist SKB, since it is different with the frag
-data.
+[11246.200168] hns3 0000:bd:00.1: Reset done, hclge driver initialization finished.
+[11246.209979] hns3 0000:bd:00.1 eth7: net open
+[11246.227608] ------------[ cut here ]------------
+[11246.237370] workqueue: WQ_MEM_RECLAIM hclge:hclge_service_task [hclge] is flushing !WQ_MEM_RECLAIM infiniband:0x0
+[11246.237391] WARNING: CPU: 50 PID: 2279 at ./kernel/workqueue.c:2605 check_flush_dependency+0xcc/0x140
+[11246.260412] Modules linked in: hclgevf hns_roce_hw_v2 rdma_test(O) hns3 xt_CHECKSUM iptable_mangle xt_conntrack ipt_REJECT nf_reject_ipv4 ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter bpfilter vfio_iommu_type1 vfio_pci vfio_virqfd vfio ib_isert iscsi_target_mod ib_ipoib ib_umad rpcrdma ib_iser libiscsi scsi_transport_iscsi aes_ce_blk crypto_simd cryptd aes_ce_cipher sunrpc nls_iso8859_1 crct10dif_ce ghash_ce sha2_ce sha256_arm64 sha1_ce joydev input_leds hid_generic usbkbd usbmouse sbsa_gwdt usbhid usb_storage hid ses hclge hisi_zip hisi_hpre hisi_sec2 hnae3 hisi_qm ahci hisi_trng_v2 evbug uacce rng_core gpio_dwapb autofs4 hisi_sas_v3_hw megaraid_sas hisi_sas_main libsas scsi_transport_sas [last unloaded: hns_roce_hw_v2]
+[11246.325742] CPU: 50 PID: 2279 Comm: kworker/50:0 Kdump: loaded Tainted: G           O      5.4.0-rc4+ #1
+[11246.335181] Hardware name: Huawei TaiShan 200 (Model 2280)/BC82AMDD, BIOS 2280-V2 CS V3.B140.01 12/18/2019
+[11246.344802] Workqueue: hclge hclge_service_task [hclge]
+[11246.350007] pstate: 60c00009 (nZCv daif +PAN +UAO)
+[11246.354779] pc : check_flush_dependency+0xcc/0x140
+[11246.359549] lr : check_flush_dependency+0xcc/0x140
+[11246.364317] sp : ffff800268a73990
+[11246.367618] x29: ffff800268a73990 x28: 0000000000000001
+[11246.372907] x27: ffffcbe4f5868000 x26: ffffcbe4f5541000
+[11246.378196] x25: 00000000000000b8 x24: ffff002fdd0ff868
+[11246.383483] x23: ffff002fdd0ff800 x22: ffff2027401ba600
+[11246.388770] x21: 0000000000000000 x20: ffff002fdd0ff800
+[11246.394059] x19: ffff202719293b00 x18: ffffcbe4f5541948
+[11246.399347] x17: 000000006f8ad8dd x16: 0000000000000002
+[11246.404634] x15: ffff8002e8a734f7 x14: 6c66207369205d65
+[11246.409922] x13: 676c63685b206b73 x12: 61745f6563697672
+[11246.415208] x11: 65735f65676c6368 x10: 3a65676c6368204d
+[11246.420494] x9 : 49414c4345525f4d x8 : 6e6162696e69666e
+[11246.425782] x7 : 69204d49414c4345 x6 : ffffcbe4f5765145
+[11246.431068] x5 : 0000000000000000 x4 : 0000000000000000
+[11246.436355] x3 : 0000000000000030 x2 : 00000000ffffffff
+[11246.441642] x1 : 3349eb1ac5310100 x0 : 0000000000000000
+[11246.446928] Call trace:
+[11246.449363]  check_flush_dependency+0xcc/0x140
+[11246.453785]  flush_workqueue+0x110/0x410
+[11246.457691]  ib_cache_cleanup_one+0x54/0x468
+[11246.461943]  __ib_unregister_device+0x70/0xa8
+[11246.466279]  ib_unregister_device+0x2c/0x40
+[11246.470455]  hns_roce_exit+0x34/0x198 [hns_roce_hw_v2]
+[11246.475571]  __hns_roce_hw_v2_uninit_instance.isra.56+0x3c/0x58 [hns_roce_hw_v2]
+[11246.482934]  hns_roce_hw_v2_reset_notify+0xd8/0x210 [hns_roce_hw_v2]
+[11246.489261]  hclge_notify_roce_client+0x84/0xe0 [hclge]
+[11246.494464]  hclge_reset_rebuild+0x60/0x730 [hclge]
+[11246.499320]  hclge_reset_service_task+0x400/0x5a0 [hclge]
+[11246.504695]  hclge_service_task+0x54/0x698 [hclge]
+[11246.509464]  process_one_work+0x15c/0x458
+[11246.513454]  worker_thread+0x144/0x520
+[11246.517186]  kthread+0xfc/0x128
+[11246.520314]  ret_from_fork+0x10/0x18
+[11246.523873] ---[ end trace eb980723699c2585 ]---
+[11246.528710] hns3 0000:bd:00.2: Func clear success after reset.
+[11246.528747] hns3 0000:bd:00.0: Func clear success after reset.
+[11246.907710] hns3 0000:bd:00.1 eth7: link up
 
-[patch 3] adds different handings for RSS configuration when load
-or reset.
+According to [1] and [2]:
 
-[patch 4] fixes a link ksetting issue.
+There seems to be no specific guidance about how to handling the
+forward progress guarantee of network device's WQ yet, and other
+network device's WQ seem to be marked with WQ_MEM_RECLAIM without
+a clear reason.
 
-Guangbin Huang (1):
-  net: hns3: fix set and get link ksettings issue
+So this patch removes the WQ_MEM_RECLAIM flag when allocating WQ
+to aviod the above warning.
 
-Guojia Liao (1):
-  net: hns3: fix RSS config lost after VF reset.
+1. https://www.spinics.net/lists/netdev/msg631646.html
+2. https://www.spinics.net/lists/netdev/msg632097.html
 
-Huazhong Tan (1):
-  net: hns3: fix for fraglist SKB headlen not handling correctly
+Fixes: 0ea68902256e ("net: hns3: allocate WQ with WQ_MEM_RECLAIM flag")
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
+Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c   | 2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Yunsheng Lin (1):
-  net: hns3: drop the WQ_MEM_RECLAIM flag when allocating WQ
-
- drivers/net/ethernet/hisilicon/hns3/hnae3.h        |  1 +
- drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 18 ++++++--
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 10 +++-
- .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  | 54 ++++++++++++----------
- 4 files changed, 51 insertions(+), 32 deletions(-)
-
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index d3b0cd7..b351807 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -10666,7 +10666,7 @@ static int hclge_init(void)
+ {
+ 	pr_info("%s is initializing\n", HCLGE_NAME);
+ 
+-	hclge_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, HCLGE_NAME);
++	hclge_wq = alloc_workqueue("%s", 0, 0, HCLGE_NAME);
+ 	if (!hclge_wq) {
+ 		pr_err("%s: failed to create workqueue\n", HCLGE_NAME);
+ 		return -ENOMEM;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+index 0510d85..3c58f0b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
+@@ -3188,7 +3188,7 @@ static int hclgevf_init(void)
+ {
+ 	pr_info("%s is initializing\n", HCLGEVF_NAME);
+ 
+-	hclgevf_wq = alloc_workqueue("%s", WQ_MEM_RECLAIM, 0, HCLGEVF_NAME);
++	hclgevf_wq = alloc_workqueue("%s", 0, 0, HCLGEVF_NAME);
+ 	if (!hclgevf_wq) {
+ 		pr_err("%s: failed to create workqueue\n", HCLGEVF_NAME);
+ 		return -ENOMEM;
 -- 
 2.7.4
 
