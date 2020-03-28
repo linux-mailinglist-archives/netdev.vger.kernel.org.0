@@ -2,103 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CE4519633A
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 03:56:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 000BF19633F
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 04:05:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727144AbgC1C4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 22:56:44 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:42955 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726912AbgC1C4o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 22:56:44 -0400
-Received: by mail-pl1-f193.google.com with SMTP id e1so4199435plt.9;
-        Fri, 27 Mar 2020 19:56:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=iUSk+O+3xLOGBYVi56+XGOta7PA5/KelmCfAVNEpcRw=;
-        b=bHKcHdAFecqc01EzHuwPWgnHIOs6tcaOpLdsOqW652MeZv9eL4KR838N1tbDV1DJR6
-         gWrcMgg589hEP8p+j5XfAG9mk8+iw9L/qVTktVGXM/G3c+i9r6T2QlEax65A2UadMIAV
-         vNa+14Wt99dMHxF3pZWlvRMSfLsYMgo6B667908AkuMX4Xn6n6R9Z/SViGB5K++dOvQL
-         MRH038IrFX+t6WtOeSWzvKsAOZJ74YD0Z2YdcarElvS0wkD+LIhxTEFecaSUYHBgdw6F
-         UHFomT8vEZPLgl1RI7kA/7lIkMw9GIWkmJmVj7VmvGtEYS3NYWV73W1ThRqTndzLdJ6a
-         oWFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iUSk+O+3xLOGBYVi56+XGOta7PA5/KelmCfAVNEpcRw=;
-        b=lo0sRfvBVIVNIWP7alhi7UXkrNv09IrYThbP4X/X4R3f/53L/9YKEYS/PF8hbUyRtl
-         ECuCOyz21cuYF2wASCnnLROAp3dN1UHshMn4kmqcpXIdpLP1uemthHfHJ6zetNcpDM7D
-         m0+yR7uwOdy1qlh0oussYxeKPD7Z/yYUSBxFBF2NGIu6wrZzBia7N6el9QD8fpl0ucOh
-         JHLyFJQzCmBQtrj3qxwPT0TJjP2yFjhxbYXAulqn2O/KycOi88KpOsk3GW3TRmMmMBIT
-         xX+CwUWBH9ew3/WoOjbIz6ruA0MVRmogyh1FkL3VonD2skJDxlVNvyofeqoavYeoVEz3
-         LT5g==
-X-Gm-Message-State: ANhLgQ2bQenVLlrw99D1WfcDPtpzp+/E0IngJbtfEhXT1ylSjZ3fXmRr
-        j3QLxTW4Dun2x4s7dC5f1nU=
-X-Google-Smtp-Source: ADFU+vsg3etIEBb3nOqBZ5a2MI4ugNFHTrXU1YuTFwkZzbKN3x49OOgNgK1KZ168ng+b9AsfbBm8XA==
-X-Received: by 2002:a17:902:b113:: with SMTP id q19mr1998073plr.202.1585364203070;
-        Fri, 27 Mar 2020 19:56:43 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:f1d9])
-        by smtp.gmail.com with ESMTPSA id x11sm4837121pgq.48.2020.03.27.19.56.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2020 19:56:42 -0700 (PDT)
-Date:   Fri, 27 Mar 2020 19:56:39 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     m@lambda.lt, joe@wand.net.nz, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next 3/7] bpf: add netns cookie and enable it for bpf
- cgroup hooks
-Message-ID: <20200328025639.2vbbyh3gksyytyhp@ast-mbp>
-References: <cover.1585323121.git.daniel@iogearbox.net>
- <c47d2346982693a9cf9da0e12690453aded4c788.1585323121.git.daniel@iogearbox.net>
- <20200328014844.xz5s67j2cyvnf7lp@ast-mbp>
- <99b27ef9-d8c5-c00b-2562-1b385ac205d0@iogearbox.net>
+        id S1727118AbgC1DFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 23:05:03 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:49186 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726225AbgC1DFD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 27 Mar 2020 23:05:03 -0400
+Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id E2458E00FEB29AF03126;
+        Sat, 28 Mar 2020 11:04:55 +0800 (CST)
+Received: from localhost (10.173.223.234) by DGGEMS405-HUB.china.huawei.com
+ (10.3.19.205) with Microsoft SMTP Server id 14.3.487.0; Sat, 28 Mar 2020
+ 11:04:47 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <madalin.bucur@nxp.com>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] dpaa_eth: Make dpaa_a050385_wa static
+Date:   Sat, 28 Mar 2020 11:04:15 +0800
+Message-ID: <20200328030415.19044-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <99b27ef9-d8c5-c00b-2562-1b385ac205d0@iogearbox.net>
+Content-Type: text/plain
+X-Originating-IP: [10.173.223.234]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 28, 2020 at 03:16:06AM +0100, Daniel Borkmann wrote:
-> On 3/28/20 2:48 AM, Alexei Starovoitov wrote:
-> > On Fri, Mar 27, 2020 at 04:58:52PM +0100, Daniel Borkmann wrote:
-> > > + *
-> > > + * u64 bpf_get_netns_cookie(void *ctx)
-> > > + * 	Description
-> > > + * 		Retrieve the cookie (generated by the kernel) of the network
-> > > + * 		namespace the input *ctx* is associated with. The network
-> > > + * 		namespace cookie remains stable for its lifetime and provides
-> > > + * 		a global identifier that can be assumed unique. If *ctx* is
-> > > + * 		NULL, then the helper returns the cookie for the initial
-> > > + * 		network namespace. The cookie itself is very similar to that
-> > > + * 		of bpf_get_socket_cookie() helper, but for network namespaces
-> > > + * 		instead of sockets.
-> > 
-> > All new helpers in this patch and few others are missing 'flags' argument.
-> > Yes. It's kinda hard right now to come up with a use case for the flags,
-> > since all helpers look kinda trivial, simple, and single purpose.
-> > But the same thing happened with bpf_send_signal(). It felt that there is no
-> > way to extend it. Yet later we had to add bpf_send_signal_thread() which could
-> > have been handled with flags if they were there. So please add flags to all new
-> > helpers though it might seem redundant.
-> 
-> We have very similar helpers for almost 2yrs now, that is, bpf_get_socket_cookie()
-> and bpf_skb_ancestor_cgroup_id(). Both no extra 'unused flags' arg and they are
-> simple enough to do exactly what we expect them to do, I also haven't seen any
-> reason to extend them further so far (otherwise we have have new ones by now). The
-> two added here are very much analogue to this, so breaking this consistency is
-> super ugly just to add empty flags now. :/ Given the timeframe we have these by now
-> and given they do one simple thing, what is the harm to add a new helper in future
-> iff really needed rather than uglifying with flags now (I would understand it for
-> complex helpers though where we use this practice)? Just recently we added bpf_jiffies64()
-> (5576b991e9c1 ("bpf: Add BPF_FUNC_jiffies64")); no flag either and it has similar
-> simplicity.
+Fix sparse warning:
 
-Fair enough, but I reserve the right to say "I told you so" later ;)
-The series applied. Thanks.
+drivers/net/ethernet/freescale/dpaa/dpaa_eth.c:2065:5:
+ warning: symbol 'dpaa_a050385_wa' was not declared. Should it be static?
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+index 46039d80bb43..2cd1f8efdfa3 100644
+--- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
++++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
+@@ -2062,7 +2062,7 @@ static inline int dpaa_xmit(struct dpaa_priv *priv,
+ }
+ 
+ #ifdef CONFIG_DPAA_ERRATUM_A050385
+-int dpaa_a050385_wa(struct net_device *net_dev, struct sk_buff **s)
++static int dpaa_a050385_wa(struct net_device *net_dev, struct sk_buff **s)
+ {
+ 	struct dpaa_priv *priv = netdev_priv(net_dev);
+ 	struct sk_buff *new_skb, *skb = *s;
+-- 
+2.17.1
+
+
