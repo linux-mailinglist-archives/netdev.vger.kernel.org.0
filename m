@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 742E819686A
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 19:29:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E69219686C
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 19:29:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727125AbgC1S3D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 14:29:03 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:51252 "EHLO
+        id S1727191AbgC1S3G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 14:29:06 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:34747 "EHLO
         us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726937AbgC1S3D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 14:29:03 -0400
+        by vger.kernel.org with ESMTP id S1726937AbgC1S3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 14:29:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585420142;
+        s=mimecast20190719; t=1585420144;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=O1TasnobZysGj1AsegupcFxLIotb9pYqfJEh44oqQH0=;
-        b=CoOfPwsLTF/U8CsaoDAKv5jcIDYFgC/3SzVdXxivs63k7iQh7hBAcTRs4XHzyFaRBOurin
-        vqD8NLzRYDe1S8sWfhDltkbTofO670KvmEII/WyHtnyQ25+buXWdFP4LwLz/Mg7z0kvbEz
-        wEMV1OdWUMaiH2g7NSJc+sYb7BaJCng=
-Received: from mail-lf1-f72.google.com (mail-lf1-f72.google.com
- [209.85.167.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-253-0Ufu7oy_NlmEvoIqtU3c0A-1; Sat, 28 Mar 2020 14:29:00 -0400
-X-MC-Unique: 0Ufu7oy_NlmEvoIqtU3c0A-1
-Received: by mail-lf1-f72.google.com with SMTP id b25so5408041lfi.21
-        for <netdev@vger.kernel.org>; Sat, 28 Mar 2020 11:29:00 -0700 (PDT)
+        bh=hYSqmuaRDZY8LPKqio3R9216Ik7EBk2kKqinMFHjJq0=;
+        b=Y4FQYZuDRrVpbgjnMoVxTevaoMHtnU679cDlfkSUqp8VngK2Gc2U1xsxck6T/g6uCfw7kl
+        NSk8Om6Xf6/uADN3oLFkZWO4Z2oLppUB4Nok/jVrWLQQcq5jDGRHLZFJBdP8QRM6h+aunQ
+        67q7tiF+RTB0fIaFw9V9DBtm6FSWqmM=
+Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
+ [209.85.167.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-305-GAN8H2yCPbK1nAIOzkWb7Q-1; Sat, 28 Mar 2020 14:29:03 -0400
+X-MC-Unique: GAN8H2yCPbK1nAIOzkWb7Q-1
+Received: by mail-lf1-f71.google.com with SMTP id r20so891852lfm.7
+        for <netdev@vger.kernel.org>; Sat, 28 Mar 2020 11:29:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=O1TasnobZysGj1AsegupcFxLIotb9pYqfJEh44oqQH0=;
-        b=cP1hCYcC88LckGaKpYdAjBRghlZfWQX58NwSXaYotVccy0l/djyBoEskxil4pppEvX
-         Ls89ec5ontbyYIPHqAVF1cYIEVPdGNQXcdGQ0Pyo9Ud/EYWXQ8KFzclL0DOAP26BTLaN
-         dcshS7cHiey736jW3KFSHWzhJLcC9/luoMpLo8n2m7Ks1pdSJfdDDkUQrbcdFvpbP9ib
-         0nt8a2MdhDcokLKzliS5kDVMFeeEuwoMqnB0XLX8KLYPTsjTYYo2jHdcXvd/gTAeI16P
-         xwal0+WK2LtNNxH88sbIgXv39jcnuzdbyD0MHbNZO4XxYfN8efP7Ar89KMasGt65WqxQ
-         ctgQ==
-X-Gm-Message-State: AGi0PubFJ40lXQ4ZmvxtAQ2Ce5CnhlWVZAqTW2mBmDCSN/Z2RoIpV8xS
-        /LebP+gIU81fUORS2UEu3AWjnEXuhL0gjYGmxzLgL2pQ57Mie/MNUAq6e6xIfLplsY41OA28+MD
-        TSm/q8YIRZcWYLLJY
-X-Received: by 2002:a05:651c:3cf:: with SMTP id f15mr2718959ljp.184.1585420138633;
-        Sat, 28 Mar 2020 11:28:58 -0700 (PDT)
-X-Google-Smtp-Source: APiQypLHemQGe8LrMZLmWFOUAnSME0fLHHctBC7ZI9YxnkOch5W8BiLdIxjlCMFW9+foOBuJLm6uBg==
-X-Received: by 2002:a05:651c:3cf:: with SMTP id f15mr2718948ljp.184.1585420138357;
-        Sat, 28 Mar 2020 11:28:58 -0700 (PDT)
+        bh=hYSqmuaRDZY8LPKqio3R9216Ik7EBk2kKqinMFHjJq0=;
+        b=X5m6S58BrHnT124IWQr9p/QpMzoMIUrAB8kFBzNSjoE+VsA7ACtCJhR+P9KUInsnwn
+         bfhcAiE9Z8WZNBD6o+AHgHbrMIKCbttbakHGJ/emdL9qaFxNVxXSkitomWTaXxM0quQO
+         I4wKMefq3gUZopFqZJb4HdA2mXYrfdMesANo+Yih0bq3jVVABPuXmofPE4QQAo+L61Tp
+         r6YDlU6WMVXkqg8yyjbuh0ay+GqFGD2vMlimsqMN25epQvodx0aL0qqqaEXk05iihQEw
+         OAdBRx6agIGzJYtCzE1Sn0OVJwA7Khvvbl/cRXZiOkw085ZDzeq8xuXMeK+/Uu4jXAYt
+         7cVg==
+X-Gm-Message-State: AGi0PuZUUv7udsFEyV/HGgejyRcqBA3iN7oDx4NRkbbvwE1gXMoQAQIL
+        iCbS0bu/vGWUCEHuZAHQG5YdpbdwT28+s90UaueGJBWTxt/FJ2R8R32ISQ9FaZfRAVYxylElRmr
+        DJUeyBbMS2YalN8rN
+X-Received: by 2002:a2e:6c03:: with SMTP id h3mr2917846ljc.8.1585420141537;
+        Sat, 28 Mar 2020 11:29:01 -0700 (PDT)
+X-Google-Smtp-Source: APiQypKHOEzeZ7hV+Gj4lYVfq2facxAuNmCjy9eiGYXqZuHCSHupnzBHBoRbDIre8DGJlqob32Z6Bg==
+X-Received: by 2002:a2e:6c03:: with SMTP id h3mr2917838ljc.8.1585420141361;
+        Sat, 28 Mar 2020 11:29:01 -0700 (PDT)
 Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id f6sm1306932lfm.40.2020.03.28.11.28.57
+        by smtp.gmail.com with ESMTPSA id 8sm3543324lfk.64.2020.03.28.11.29.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Mar 2020 11:28:57 -0700 (PDT)
+        Sat, 28 Mar 2020 11:29:00 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 9409C18158B; Sat, 28 Mar 2020 19:28:54 +0100 (CET)
+        id 3CA5318158B; Sat, 28 Mar 2020 19:29:00 +0100 (CET)
 From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     daniel@iogearbox.net, ast@fb.com
 Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         bpf@vger.kernel.org, netdev@vger.kernel.org,
         Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Subject: [PATCH v3 1/2] libbpf: Add setter for initial value for internal maps
-Date:   Sat, 28 Mar 2020 19:28:33 +0100
-Message-Id: <20200328182834.196578-1-toke@redhat.com>
+Subject: [PATCH v3 2/2] selftests: Add test for overriding global data value before load
+Date:   Sat, 28 Mar 2020 19:28:34 +0100
+Message-Id: <20200328182834.196578-2-toke@redhat.com>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200327125818.155522-1-toke@redhat.com>
 References: <20200327125818.155522-1-toke@redhat.com>
@@ -71,74 +71,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For internal maps (most notably the maps backing global variables), libbpf
-uses an internal mmaped area to store the data after opening the object.
-This data is subsequently copied into the kernel map when the object is
-loaded.
-
-This adds a function to set a new value for that data, which can be used to
-before it is loaded into the kernel. This is especially relevant for RODATA
-maps, since those are frozen on load.
+This extends the global_data test to also exercise the new
+bpf_map__set_initial_value() function. The test simply overrides the global
+data section with all zeroes, and checks that the new value makes it into
+the kernel map on load.
 
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
-v3:
-  - Add a setter for the initial value instead of a getter for the pointer to it
-  - Add selftest
-v2:
-  - Add per-map getter for data area instead of a global rodata getter for bpf_obj
+ .../selftests/bpf/prog_tests/global_data.c    | 61 +++++++++++++++++++
+ 1 file changed, 61 insertions(+)
 
- tools/lib/bpf/libbpf.c   | 11 +++++++++++
- tools/lib/bpf/libbpf.h   |  2 ++
- tools/lib/bpf/libbpf.map |  1 +
- 3 files changed, 14 insertions(+)
-
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 085e41f9b68e..f9953a8ffcfa 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -6756,6 +6756,17 @@ void *bpf_map__priv(const struct bpf_map *map)
- 	return map ? map->priv : ERR_PTR(-EINVAL);
+diff --git a/tools/testing/selftests/bpf/prog_tests/global_data.c b/tools/testing/selftests/bpf/prog_tests/global_data.c
+index c680926fce73..f018ce53a8d1 100644
+--- a/tools/testing/selftests/bpf/prog_tests/global_data.c
++++ b/tools/testing/selftests/bpf/prog_tests/global_data.c
+@@ -121,6 +121,65 @@ static void test_global_data_rdonly(struct bpf_object *obj, __u32 duration)
+ 	      "err %d errno %d\n", err, errno);
  }
  
-+int bpf_map__set_initial_value(struct bpf_map *map,
-+			       void *data, size_t size)
++static void test_global_data_set_rdonly(__u32 duration)
 +{
-+	if (!map->mmaped || map->libbpf_type == LIBBPF_MAP_KCONFIG ||
-+	    size != map->def.value_size)
-+		return -EINVAL;
++	const char *file = "./test_global_data.o";
++	int err = -ENOMEM, map_fd, zero = 0;
++	__u8 *buff = NULL, *newval = NULL;
++	struct bpf_program *prog;
++	struct bpf_object *obj;
++	struct bpf_map *map;
++	size_t sz;
 +
-+	memcpy(map->mmaped, data, size);
-+	return 0;
++	obj = bpf_object__open_file(file, NULL);
++	if (CHECK_FAIL(!obj))
++		return;
++	prog = bpf_program__next(NULL, obj);
++	if (CHECK_FAIL(!prog))
++		goto out;
++	err = bpf_program__set_sched_cls(prog);
++	if (CHECK_FAIL(err))
++		goto out;
++
++	map = bpf_object__find_map_by_name(obj, "test_glo.rodata");
++	if (CHECK_FAIL(!map || !bpf_map__is_internal(map)))
++		goto out;
++
++	sz = bpf_map__def(map)->value_size;
++	newval = malloc(sz);
++	if (CHECK_FAIL(!newval))
++		goto out;
++	memset(newval, 0, sz);
++
++	/* wrong size, should fail */
++	err = bpf_map__set_initial_value(map, newval, sz - 1);
++	if (CHECK(!err, "reject set initial value wrong size", "err %d\n", err))
++		goto out;
++
++	err = bpf_map__set_initial_value(map, newval, sz);
++	if (CHECK_FAIL(err))
++		goto out;
++
++	err = bpf_object__load(obj);
++	if (CHECK_FAIL(err))
++		goto out;
++
++	map_fd = bpf_map__fd(map);
++	if (CHECK_FAIL(map_fd < 0))
++		goto out;
++
++	buff = malloc(sz);
++	if (buff)
++		err = bpf_map_lookup_elem(map_fd, &zero, buff);
++	CHECK(!buff || err || memcmp(buff, newval, sz),
++	      "compare .rodata map data override",
++	      "err %d errno %d\n", err, errno);
++out:
++	free(buff);
++	free(newval);
++	bpf_object__close(obj);
 +}
 +
- bool bpf_map__is_offload_neutral(const struct bpf_map *map)
+ void test_global_data(void)
  {
- 	return map->def.type == BPF_MAP_TYPE_PERF_EVENT_ARRAY;
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index d38d7a629417..ee30ed487221 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -407,6 +407,8 @@ typedef void (*bpf_map_clear_priv_t)(struct bpf_map *, void *);
- LIBBPF_API int bpf_map__set_priv(struct bpf_map *map, void *priv,
- 				 bpf_map_clear_priv_t clear_priv);
- LIBBPF_API void *bpf_map__priv(const struct bpf_map *map);
-+LIBBPF_API int bpf_map__set_initial_value(struct bpf_map *map,
-+					  void *data, size_t size);
- LIBBPF_API int bpf_map__reuse_fd(struct bpf_map *map, int fd);
- LIBBPF_API int bpf_map__resize(struct bpf_map *map, __u32 max_entries);
- LIBBPF_API bool bpf_map__is_offload_neutral(const struct bpf_map *map);
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 5129283c0284..f46873b9fe5e 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -243,5 +243,6 @@ LIBBPF_0.0.8 {
- 		bpf_link__pin;
- 		bpf_link__pin_path;
- 		bpf_link__unpin;
-+		bpf_map__set_initial_value;
- 		bpf_program__set_attach_target;
- } LIBBPF_0.0.7;
+ 	const char *file = "./test_global_data.o";
+@@ -144,4 +203,6 @@ void test_global_data(void)
+ 	test_global_data_rdonly(obj, duration);
+ 
+ 	bpf_object__close(obj);
++
++	test_global_data_set_rdonly(duration);
+ }
 -- 
 2.26.0
 
