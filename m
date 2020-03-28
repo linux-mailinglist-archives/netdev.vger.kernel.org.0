@@ -2,235 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA6A61968FD
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 20:43:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D797196900
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 20:54:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726981AbgC1Tn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 15:43:57 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:41791 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725807AbgC1Tn4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 15:43:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585424634;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vpQwKWo/17n/h8b6dDma1QUlo5wTceRnvlY+HtgX2yk=;
-        b=LKqWJnNZK04pRd++I7icFW+/vCGkubKmDBO7oXsH7+aEwsdIKbQqZ7UK9XIJU7YX4/UCEx
-        N8UW8z6yNUq8+b0AIBFajUVyW3ItPV75+dOEKwhqp3Ki4Seem4gE6RrxHLMhMvSvr+V1NI
-        9BTrdJtmhCQY8adudN5/4QpB0kWS1To=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-72-umb0lp4nOVCQCarWl1hzYg-1; Sat, 28 Mar 2020 15:43:52 -0400
-X-MC-Unique: umb0lp4nOVCQCarWl1hzYg-1
-Received: by mail-lj1-f200.google.com with SMTP id w6so1999244ljh.11
-        for <netdev@vger.kernel.org>; Sat, 28 Mar 2020 12:43:52 -0700 (PDT)
+        id S1727247AbgC1Tx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 15:53:58 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:45061 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726981AbgC1Tx5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 15:53:57 -0400
+Received: by mail-oi1-f193.google.com with SMTP id l22so12026239oii.12;
+        Sat, 28 Mar 2020 12:53:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NSGii26mjz2GbRfXuI9GdKWKXO3EKbaZ2YcgLef0z1M=;
+        b=JBcSEl5OaB0xLPzVCwwVB6wAco0wSHH3GuEkqXqb0gzGRn5O1IXFtfGlcwJGnFg2ah
+         KyUnUuicvCP1p0BBGAT5ukyON3xbjdIlWSsz4Kr4G+D9X/qkvoFsE5uy0kOfigQqktnz
+         aQdD0eYs/D/mosgROtjLHBE01yQ65lI1i5xLoYG3wvuQD6Alp57H98LO9jReht6Vdjaf
+         vCXv2SxA+ZVjPT5nqyQXOLRab5bsf3L+I38ILFlxgl0ZY9vKUFlnbq2QkpJJxNiGab9d
+         u6ix93mSsD2QKc0RBwDudqJoBAxrHTip8zkDmI4kEJf7xM3hXPec4GtWZ6Mrx0FTBE8S
+         b7/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=vpQwKWo/17n/h8b6dDma1QUlo5wTceRnvlY+HtgX2yk=;
-        b=lbLE1ih3ny8zay0lmpfbNuHSau4Pc2ZLzbXq41g7YdtX6+eWO1qFI0JgfYWp408jP3
-         QFZu4JeySvkVbKLHQy6a+TK+QXAwbXRyeagYgksE7fJSi60yzf8u9IUKdQ7OHPZmohvG
-         fuOMfmXRDFkZxGYq5y8UseDepI5+lpL6YzgwEW8u/oedv5hwEkSk1YwTbT9XFNA2gBRu
-         zJzzJQ3gHxNpH0QgN596/xsmAfdfMckqcdKu9pV0nMkIHyNzFNMMmpxe6yM3c1xceEmE
-         9Zv9zlji3E4G5RpW4jiK/pCMVgBpfxN+FNvPxb0ONKKzftUlaCOTKqgCpXQW9ED5gsdt
-         EsxQ==
-X-Gm-Message-State: AGi0PubqcduV+0w3qa1sg90tddNf88+prwzC6oznerCTGf5oSzyN1UH9
-        JMu7n4Nx7RkmKejl4NnAD1SbW6Ho2bq8XgKPXRWKIL7yboCxvDKC4lV9Yq8yhcTRBaDqEdMFN4Y
-        hVBB9jRtZwU+rVxyZ
-X-Received: by 2002:a2e:9b55:: with SMTP id o21mr2817491ljj.74.1585424631095;
-        Sat, 28 Mar 2020 12:43:51 -0700 (PDT)
-X-Google-Smtp-Source: APiQypIlYLEYpodnKfESsuUVCWNnOXFm59Wq/ON0ymJXHaGk467Hzv1zJUjvA2uBt9EN0SyioadfSg==
-X-Received: by 2002:a2e:9b55:: with SMTP id o21mr2817473ljj.74.1585424630782;
-        Sat, 28 Mar 2020 12:43:50 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id c13sm4305925ljj.37.2020.03.28.12.43.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Mar 2020 12:43:49 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id C55A318158B; Sat, 28 Mar 2020 20:43:47 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing program when attaching XDP
-In-Reply-To: <CAEf4BzbK_pn6ox6JZLTjb7FYrpWGZrSqCApEY9xbWiFwwLKaGw@mail.gmail.com>
-References: <158462359206.164779.15902346296781033076.stgit@toke.dk>
- <875zez76ph.fsf@toke.dk>
- <20200320103530.2853c573@kicinski-fedora-PC1C0HJN>
- <5e750bd4ebf8d_233f2ab4c81425c4ce@john-XPS-13-9370.notmuch>
- <CAEf4BzbWa8vdyLuzr_nxFM3BtT+hhzjCe9UQF8Y5cN+sVqa72g@mail.gmail.com>
- <87tv2f48lp.fsf@toke.dk>
- <CAEf4BzYutqP0yAy-KyToUNHM6Z-6C-XaEwK25pK123gejG0s9Q@mail.gmail.com>
- <87h7ye3mf3.fsf@toke.dk>
- <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
- <87tv2e10ly.fsf@toke.dk>
- <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
- <87369wrcyv.fsf@toke.dk>
- <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
- <87pncznvjy.fsf@toke.dk>
- <CAEf4BzaPQ6=h8a6Ngz638AtL4LmBLLVMV+_-YLMR=Ls+drd5HQ@mail.gmail.com>
- <87lfnmm35r.fsf@toke.dk>
- <CAEf4Bza7zQ+ii4SH=4gJqQdyCp9pm6qGAsBOwa0MG5AEofC2HQ@mail.gmail.com>
- <87wo75l9yj.fsf@toke.dk>
- <CAEf4Bza8P3yT08NAaqN2EKaaBFumzydbtYQmSvLxZ99=B6_iHw@mail.gmail.com>
- <87o8shl1y4.fsf@toke.dk>
- <CAEf4BzbK_pn6ox6JZLTjb7FYrpWGZrSqCApEY9xbWiFwwLKaGw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sat, 28 Mar 2020 20:43:47 +0100
-Message-ID: <87blogl0y4.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NSGii26mjz2GbRfXuI9GdKWKXO3EKbaZ2YcgLef0z1M=;
+        b=pZZAPxrop9tpujscpk1tZz/vMyIDPz3OrJV7Egxsxr6L7ZMYVA8VwQlSIgnoBKMbyn
+         fMfVjUmbIAgwf9uGD5j1UfvnSiX4sCM+PyFBZxvG0xmVoMfFjiZ1aH7MHEjdtjgdNw9g
+         3SZYIuglAua5gEL6kRHlE1E1QIT+ZksgHRa+veAh7HQfkAQk1oTGqJnmtolQlUjGTkbM
+         JRFgTb4oCLAUADDhbp7XgDJg95Trlf7WeyyNnUUW545/rmokOcUI70OT9gXNv9iU12hE
+         Tp6lO8GXEUpGk5/lnNaSNIfqOLmXls9tDEGUZSt6r2DXwbUgNH5wdy3dQx2kmMsYE1ih
+         SHvg==
+X-Gm-Message-State: ANhLgQ3Bamo/0iL3EYC+6PLtAQRIlcnOg3V10Dt7PAH/329OfcKburlg
+        6IsQHdHf5Obh0n3nvCxBmGPqYVcy3TV50k750GQ=
+X-Google-Smtp-Source: ADFU+vsgokPGvH1o8RU0G0zljPIpDdJwtA6WmoJoFnXBhgdhpNNYd6jwDERiqmPldDZfVApLggznBqxkFFbatWDEf+I=
+X-Received: by 2002:aca:4b56:: with SMTP id y83mr3307244oia.142.1585425235301;
+ Sat, 28 Mar 2020 12:53:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <000000000000742e9e05a10170bc@google.com> <87a74arown.fsf@nanos.tec.linutronix.de>
+ <CAM_iQpV3S0xv5xzSrA5COYa3uyy_TBGpDA9Wcj9Qt_vn1n3jBQ@mail.gmail.com>
+ <87ftdypyec.fsf@nanos.tec.linutronix.de> <CAM_iQpVR8Ve3Jy8bb9VB6RcQ=p22ZTyTqjxJxL11RZmO7rkWeg@mail.gmail.com>
+ <875zeuftwm.fsf@nanos.tec.linutronix.de> <CAM_iQpWkNJ+yQ1g+pdkhJBCZ-CJfUGGpvJqOz1JH7LPVtqbRxg@mail.gmail.com>
+ <20200325185815.GW19865@paulmck-ThinkPad-P72>
+In-Reply-To: <20200325185815.GW19865@paulmck-ThinkPad-P72>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Sat, 28 Mar 2020 12:53:43 -0700
+Message-ID: <CAM_iQpU+1as_RAE64wfq+rWcCb16_amFP3V4rZVFRr29SfwD4Q@mail.gmail.com>
+Subject: Re: WARNING: ODEBUG bug in tcindex_destroy_work (3)
+To:     "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        syzbot <syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
-
-> On Fri, Mar 27, 2020 at 6:10 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@re=
-dhat.com> wrote:
->>
->> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->>
->> > On Fri, Mar 27, 2020 at 3:17 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke=
-@redhat.com> wrote:
->> >>
->> >> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->> >>
->> >> > Please stop dodging. Just like with "rest of the kernel", but really
->> >> > "just networking" from before.
->> >>
->> >> Look, if we can't have this conversation without throwing around
->> >> accusations of bad faith, I think it is best we just take Ed's advice
->> >> and leave it until after the merge window.
->> >>
->> >
->> > Toke, if me pointing out that you are dodging original discussion and
->> > pivoting offends you,
->>
->> It does, because I'm not. See below.
->>
->> > But if you are still with me, let's look at this particular part of
->> > discussion:
->> >
->> >>> >> For XDP there is already a unique handle, it's just implicit: Each
->> >>> >> netdev can have exactly one XDP program loaded. So I don't really=
- see
->> >>> >> how bpf_link adds anything, other than another API for the same t=
-hing?
->> >>> >
->> >>> > I certainly failed to explain things clearly if you are still aski=
-ng
->> >>> > this. See point #2, once you attach bpf_link you can't just replace
->> >>> > it. This is what XDP doesn't have right now.
->> >>>
->> >>> Those are two different things, though. I get that #2 is a new
->> >>> capability provided by bpf_link, I was just saying #1 isn't (for XDP=
-).
->> >>
->> >> bpf_link is combination of those different things... Independently
->> >> they are either impossible or insufficient. I'm not sure how that
->> >> doesn't answer your question:
->> >>
->> >>> So I don't really see
->> >>> how bpf_link adds anything, other than another API for the same thin=
-g?
->> >>
->> >> Please stop dodging. Just like with "rest of the kernel", but really
->> >> "just networking" from before.
->> >
->> > You said "So I don't really see how bpf_link adds anything, other than
->> > another API for the same thing?". I explained that bpf_link is not the
->> > same thing that exists already, thus it's not another API for the same
->> > thing. You picked one property of bpf_link and claimed it's the same
->> > as what XDP has right now. "I get that #2 is a new capability provided
->> > by bpf_link, I was just saying #1 isn't (for XDP)". So should I read
->> > that as if you are agreeing and your original objection is rescinded?
->> > If yes, then good, this part is concluded and I'm sorry if I
->> > misinterpreted your answer.
->>
->> Yes, I do believe that was a misinterpretation. Basically, by my
->> paraphrasing, our argument goes something like this:
->>
->> What you said was: "bpf_link adds three things: 1. unique attachment
->> identifier, 2. auto-detach and 3. preventing others from overriding it".
->>
->> And I replied: "1. already exists for XDP, 2. I don't think is the right
->> behaviour for XDP, and 3. I don't see the point of - hence I don't
->> believe bpf_link adds anything useful for my use case"
->>
->> I was not trying to cherry-pick any of the properties, and I do
->> understand that 2. and 3. are new properties; I just disagree about how
->> useful they are (and thus whether they are worth introducing another API
->> for).
->>
+On Wed, Mar 25, 2020 at 11:58 AM Paul E. McKenney <paulmck@kernel.org> wrote:
 >
-> I appreciate you summarizing. It makes everything clearer. I also
-> don't have much to add after so many rounds.
-
-Right, great, let's leave this here, then :)
-
->> > But if not, then you again are picking one properly and just saying
->> > "but XDP has it" without considering all of bpf_link properties as a
->> > whole. In that case I do think you are arguing not in good faith.
->>
->> I really don't see how you could read my emails and come to that
->> conclusion. But obviously you did, so I'll take that into consideration
->> and see if I can express myself clearer in the future. But know this: I
->> never deliberately argue in bad faith; so even if it seems like I am,
->> please extend me the courtesy of assuming that this is due to either a
->> misunderstanding or an honest difference in opinion. I will try to do
->> the same for you.
+> On Wed, Mar 25, 2020 at 11:36:16AM -0700, Cong Wang wrote:
+> > On Mon, Mar 23, 2020 at 6:01 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+> > >
+> > > Cong Wang <xiyou.wangcong@gmail.com> writes:
+> > > > On Mon, Mar 23, 2020 at 2:14 PM Thomas Gleixner <tglx@linutronix.de> wrote:
+> > > >> > We use an ordered workqueue for tc filters, so these two
+> > > >> > works are executed in the same order as they are queued.
+> > > >>
+> > > >> The workqueue is ordered, but look how the work is queued on the work
+> > > >> queue:
+> > > >>
+> > > >> tcf_queue_work()
+> > > >>   queue_rcu_work()
+> > > >>     call_rcu(&rwork->rcu, rcu_work_rcufn);
+> > > >>
+> > > >> So after the grace period elapses rcu_work_rcufn() queues it in the
+> > > >> actual work queue.
+> > > >>
+> > > >> Now tcindex_destroy() is invoked via tcf_proto_destroy() which can be
+> > > >> invoked from preemtible context. Now assume the following:
+> > > >>
+> > > >> CPU0
+> > > >>   tcf_queue_work()
+> > > >>     tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
+> > > >>
+> > > >> -> Migration
+> > > >>
+> > > >> CPU1
+> > > >>    tcf_queue_work(&p->rwork, tcindex_destroy_work);
+> > > >>
+> > > >> So your RCU callbacks can be placed on different CPUs which obviously
+> > > >> has no ordering guarantee at all. See also:
+> > > >
+> > > > Good catch!
+> > > >
+> > > > I thought about this when I added this ordered workqueue, but it
+> > > > seems I misinterpret max_active, so despite we have max_active==1,
+> > > > more than 1 work could still be queued on different CPU's here.
+> > >
+> > > The workqueue is not the problem. it works perfectly fine. The way how
+> > > the work gets queued is the issue.
+> >
+> > Well, a RCU work is also a work, so the ordered workqueue should
+> > apply to RCU works too, from users' perspective. Users should not
+> > need to learn queue_rcu_work() is actually a call_rcu() which does
+> > not guarantee the ordering for an ordered workqueue.
 >
-> I guess me citing your previous replies and pointing out to
-> inconsistencies (at least from my interpretation of them) should have
-> been a signal ;)
-
-Well, it was my impression that we were making progress on this; which
-is why I got so offended when I suddenly felt myself being accused :/
-
-> But I do assume good faith to the extent possible, which is why we are
-> still here at almost 80 emails in.
-
-Great, thank you! And yeah, those emails did stack up, didn't they? I do
-think we've made some progress, though, miscommunication and all :)
-
->> > Simple as that. I also hope I don't have to go all the way back to
->> > "rest of the kernel", pivoted to "just networking" w.r.t.
->> > subsystem-specific configuration/attachment APIs to explain another
->> > reference.
->>
->> Again, I was not trying to "pivot", or attempting to use rhetorical
->> tricks to "win" or anything like that. I was making an observation about
->> how it's natural that when two subsystems interact, it's quite natural
->> that there will be clashes between their different "traditions". And
->> that how you view the subsystems' relationship with each other obviously
->> affects your opinion of what the right thing to do is in such a
->> situation. I never meant to imply anything concrete about BPF in
->> anything other than a networking context. And again, I don't understand
->> how you could read that out of what I wrote, but I'll take the fact that
->> you did into consideration in the future.
+> And the workqueues might well guarantee the ordering in cases where the
+> pair of RCU callbacks are invoked in a known order.  But that workqueues
+> ordering guarantee does not extend upstream to RCU, nor do I know of a
+> reasonable way to make this happen within the confines of RCU.
 >
-> Because "rest of the kernel" meant "cgroup subsystem" as well, which
-> was clearly not true case w.r.t. BPF. But alright, water under the
-> bridge, let's just not use generalizations too much going forward.
+> If you have ideas, please do not keep them a secret, but please also
+> understand that call_rcu() must meet some pretty severe performance and
+> scalability constraints.
+>
+> I suppose that queue_rcu_work() could track outstanding call_rcu()
+> invocations, and (one way or another) defer the second queue_rcu_work()
+> if a first one is still pending from the current task, but that might not
+> make the common-case user of queue_rcu_work() all that happy.  But perhaps
+> there is a way to restrict these semantics to ordered workqueues.  In that
+> case, one could imagine the second and subsequent too-quick call to
+> queue_rcu_work() using the rcu_head structure's ->next field to queue these
+> too-quick callbacks, and then having rcu_work_rcufn() check for queued
+> too-quick callbacks, queuing the first one.
+>
+> But I must defer to Tejun on this one.
+>
+> And one additional caution...  This would meter out ordered
+> queue_rcu_work() requests at a rate of no faster than one per RCU
+> grace period.  The queue might build up, resulting in long delays.
+> Are you sure that your use case can live with this?
 
-Sure, sounds good.
+I don't know, I guess we might be able to add a call_rcu() takes a cpu
+as a parameter so that all of these call_rcu() callbacks will be queued
+on a same CPU thusly guarantees the ordering. But of course we
+need to figure out which cpu to use. :)
 
--Toke
+Just my two cents.
 
+
+>
+> > > > I don't know how to fix this properly, I think essentially RCU work
+> > > > should be guaranteed the same ordering with regular work. But this
+> > > > seems impossible unless RCU offers some API to achieve that.
+> > >
+> > > I don't think that's possible w/o putting constraints on the flexibility
+> > > of RCU (Paul of course might disagree).
+> > >
+> > > I assume that the filters which hang of tcindex_data::perfect and
+> > > tcindex_data:p must be freed before tcindex_data, right?
+> > >
+> > > Refcounting of tcindex_data should do the trick. I.e. any element which
+> > > you add to a tcindex_data instance takes a refcount and when that is
+> > > destroyed then the rcu/work callback drops a reference which once it
+> > > reaches 0 triggers tcindex_data to be freed.
+> >
+> > Yeah, but the problem is more than just tcindex filter, we have many
+> > places make the same assumption of ordering.
+>
+> But don't you also have a situation where there might be a large group
+> of queue_rcu_work() invocations whose order doesn't matter, followed by a
+> single queue_rcu_work() invocation that must be ordered after the earlier
+> group?  If so, ordering -all- of these invocations might be overkill.
+>
+> Or did I misread your code?
+
+You are right. Previously I thought all non-trivial tc filters would need
+to address this ordering bug, but it turns out probably only tcindex
+needs it, because most of them actually use linked lists. As long as
+we remove the entry from the list before tcf_queue_work(), it is fine
+to free the list head before each entry in the list.
+
+I just sent out a minimal fix using the refcnt.
+
+Thanks!
