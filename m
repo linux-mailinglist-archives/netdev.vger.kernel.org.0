@@ -2,344 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CCAB19644A
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 08:47:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 19FF919647D
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 09:36:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726403AbgC1Hq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 03:46:58 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:34681 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726273AbgC1Hq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 03:46:58 -0400
-Received: by mail-pl1-f195.google.com with SMTP id a23so4422500plm.1
-        for <netdev@vger.kernel.org>; Sat, 28 Mar 2020 00:46:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/0yIJm4VigGIBzJcmlJZgilkaD/1M80KU8ghmsbNvmQ=;
-        b=PRoz1823xcDabkyRmMJELnYjxlhBx1S2BufXvfLNMn66WcUsEH73DAAzl1FJU2CBDu
-         7z05se4WuUF6333k4sBs6X1wvgb3c/HJct5inuEl0Nqux0mgWJSvPlXzBY+lVC787Xr1
-         dGZuLaIxclRM3X3hqDwLjVfXWoCyrXY0+UXfY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/0yIJm4VigGIBzJcmlJZgilkaD/1M80KU8ghmsbNvmQ=;
-        b=m16Aa/q7aK9uwJQ+DUagp06nNEvtzD89yRxnqnsrMhUPBM1MAjywvD4E9cRF4FDI7j
-         c2iGxSbeEy2dVI96Q3U/XGybnwr5m1xQQyiysQwf7QxF5q76RVvDP1mBR5ILUyvN/Vjd
-         81ka0/YqTXFVvU1f9kK2dRGsZEYJZ832b3UzMO3FnImzl3T2OIxcMvgWSr1w7/3I7H8B
-         JXxUaUgR1SeicmKUOc5WxamsR3eQzSpg2YzCFK/Ci48Rrz+G/WP3DLbgUEHTh0lnJTVe
-         QDDQQvkkTnM2y0472uxYdIDZ34jr1obDSm2nFdMMb2rBYCaAb8DkChHfKWe1i3cAl202
-         1VaQ==
-X-Gm-Message-State: ANhLgQ0rob43XS39YAxvcM4FkGmpbJup9T2S53kavLNUMinqZj2R4GPg
-        szGqtXgVRXNtmgU+ecp3wMNEWw==
-X-Google-Smtp-Source: ADFU+vuEqEgJSMWfY2GR/a62CiaPCpQ3wdGtB2W4NKlQhUj81mNyI+d7lDz+mMhnijBq4/dXBUACNQ==
-X-Received: by 2002:a17:90a:ad87:: with SMTP id s7mr3640371pjq.52.1585381616687;
-        Sat, 28 Mar 2020 00:46:56 -0700 (PDT)
-Received: from mcchou0.mtv.corp.google.com ([2620:15c:202:201:b46:ac84:1014:9555])
-        by smtp.gmail.com with ESMTPSA id r59sm5273063pjb.45.2020.03.28.00.46.54
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 28 Mar 2020 00:46:55 -0700 (PDT)
-From:   Miao-chen Chou <mcchou@chromium.org>
-To:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>
-Cc:     Alain Michaud <alainm@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Miao-chen Chou <mcchou@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH v4 2/2] Bluetooth: btusb: Read the supported features of Microsoft vendor extension
-Date:   Sat, 28 Mar 2020 00:46:32 -0700
-Message-Id: <20200328004507.v4.2.Ic59b637deef8e646f6599a80c9a2aa554f919e55@changeid>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200328074632.21907-1-mcchou@chromium.org>
-References: <20200328074632.21907-1-mcchou@chromium.org>
+        id S1726252AbgC1IgX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 04:36:23 -0400
+Received: from unicom146.biz-email.net ([210.51.26.146]:1881 "EHLO
+        unicom146.biz-email.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725937AbgC1IgX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 04:36:23 -0400
+X-Greylist: delayed 108157 seconds by postgrey-1.27 at vger.kernel.org; Sat, 28 Mar 2020 04:36:16 EDT
+Received: from ([60.208.111.195])
+        by unicom146.biz-email.net (Antispam) with ASMTP (SSL) id ULM69725;
+        Sat, 28 Mar 2020 16:36:25 +0800
+Received: from jtjnmail201605.home.langchao.com (10.100.2.5) by
+ jtjnmail201602.home.langchao.com (10.100.2.2) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1591.10; Sat, 28 Mar 2020 16:36:13 +0800
+Received: from jtjnmail201605.home.langchao.com ([fe80::8d20:4cc5:1116:d16e])
+ by jtjnmail201605.home.langchao.com ([fe80::8d20:4cc5:1116:d16e%8]) with mapi
+ id 15.01.1591.008; Sat, 28 Mar 2020 16:36:13 +0800
+From:   =?utf-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
+        <yangyi01@inspur.com>
+To:     "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>
+CC:     "yang_y_yi@163.com" <yang_y_yi@163.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "u9012063@gmail.com" <u9012063@gmail.com>
+Subject: =?utf-8?B?562U5aSNOiBbdmdlci5rZXJuZWwub3Jn5Luj5Y+RXVJlOiBbdmdlci5rZXJu?=
+ =?utf-8?B?ZWwub3Jn5Luj5Y+RXVJlOiBbUEFUQ0ggbmV0LW5leHRdIG5ldC8gcGFja2V0?=
+ =?utf-8?B?OiBmaXggVFBBQ0tFVF9WMyBwZXJmb3JtYW5jZSBpc3N1ZSBpbiBjYXNlIG9m?=
+ =?utf-8?Q?_TSO?=
+Thread-Topic: =?utf-8?B?W3ZnZXIua2VybmVsLm9yZ+S7o+WPkV1SZTogW3ZnZXIua2VybmVsLm9yZw==?=
+ =?utf-8?B?5Luj5Y+RXVJlOiBbUEFUQ0ggbmV0LW5leHRdIG5ldC8gcGFja2V0OiBmaXgg?=
+ =?utf-8?Q?TPACKET=5FV3_performance_issue_in_case_of_TSO?=
+Thread-Index: AQHWA+aSLN6AksYfW02nnu4zyQBP0ahdq27A
+Importance: high
+X-Priority: 1
+Date:   Sat, 28 Mar 2020 08:36:12 +0000
+Message-ID: <de32975979434430b914de00916bee95@inspur.com>
+References: <2786b9598d534abf1f3d11357fa9b5f5@sslemail.net>
+ <CA+FuTSf5U_ndpmBisjqLMihx0q+wCrqndDAUT1vF3=1DXJnumw@mail.gmail.com>
+ <25b83b5245104a30977b042a886aa674@inspur.com>
+ <CAF=yD-LAWc0POejfaB_xRW97BoVdLd6s6kjATyjDFBoK1aP-9Q@mail.gmail.com>
+ <31e6d4edec0146e08cb3603ad6c2be4c@inspur.com>
+ <CA+FuTSfG2J-5pu4kieXHm7d4giv4qXmwXBBHtJf0EcB1=83UOw@mail.gmail.com>
+In-Reply-To: <CA+FuTSfG2J-5pu4kieXHm7d4giv4qXmwXBBHtJf0EcB1=83UOw@mail.gmail.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.100.1.52]
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+        micalg=SHA1; boundary="----=_NextPart_000_0413_01D6051E.FD3E88E0"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This defines opcode and packet structures of Microsoft vendor extension.
-For now, we add only the HCI_VS_MSFT_Read_Supported_Features command. See
-https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
-microsoft-defined-bluetooth-hci-commands-and-events#microsoft-defined-
-bluetooth-hci-events for more details.
-Upon initialization of a hci_dev, we issue a
-HCI_VS_MSFT_Read_Supported_Features command to read the supported features
-of Microsoft vendor extension if the opcode of Microsoft vendor extension
-is valid. See https://docs.microsoft.com/en-us/windows-hardware/drivers/
-bluetooth/microsoft-defined-bluetooth-hci-commands-and-events#
-hci_vs_msft_read_supported_features for more details.
-This was verified on a device with Intel ThunderPeak BT controller where
-the Microsoft vendor extension features are 0x000000000000003f.
+------=_NextPart_000_0413_01D6051E.FD3E88E0
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 
-Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
----
+-----=E9=82=AE=E4=BB=B6=E5=8E=9F=E4=BB=B6-----
+=E5=8F=91=E4=BB=B6=E4=BA=BA: Willem de Bruijn =
+[mailto:willemdebruijn.kernel@gmail.com]=20
+=E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2020=E5=B9=B43=E6=9C=8827=E6=97=A5 =
+11:17
+=E6=94=B6=E4=BB=B6=E4=BA=BA: Yi Yang =
+(=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 =
+<yangyi01@inspur.com>
+=E6=8A=84=E9=80=81: willemdebruijn.kernel@gmail.com; yang_y_yi@163.com; =
+netdev@vger.kernel.org; u9012063@gmail.com
+=E4=B8=BB=E9=A2=98: Re: [vger.kernel.org=E4=BB=A3=E5=8F=91]Re: =
+[vger.kernel.org=E4=BB=A3=E5=8F=91]Re: [PATCH net-next] net/ packet: fix =
+TPACKET_V3 performance issue in case of TSO
 
-Changes in v4:
-- Move MSFT's do_open() and do_close() from net/bluetooth/hci_core.c to
-net/bluetooth/msft.c.
-- Other than msft opcode, define struct msft_data to host the rest of
-information of Microsoft extension and leave a void* pointing to a
-msft_data in struct hci_dev.
+> On Wed, Mar 25, 2020 at 8:45 PM Yi Yang =
+(=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 =
+<yangyi01@inspur.com> wrote:
+> >
+> > By the way, even if we used hrtimer, it can't ensure so high =
+performance improvement, the reason is every frame has different size, =
+you can't know how many microseconds one frame will be available, early =
+timer firing will be an unnecessary waste, late timer firing will reduce =
+performance, so I still think the way this patch used is best so far.
+> >
+>
+> The key differentiating feature of TPACKET_V3 is the use of blocks to =
+efficiently pack packets and amortize wake ups.
+>
+> If you want immediate notification for every packet, why not just use =
+TPACKET_V2?
+>
+> For non-TSO packet, TPACKET_V3 is much better than TPACKET_V2, but for =
+TSO packet, it is bad, we prefer to use TPACKET_V3 for better =
+performance.
 
-Changes in v3:
-- Introduce msft_vnd_ext_do_open() and msft_vnd_ext_do_close().
+At high rate, blocks are retired and userspace is notified as soon as a =
+packet arrives that does not fit and requires dispatching a new block. =
+As such, max throughput is not timer dependent. The timer exists to =
+bound notification latency when packet arrival rate is slow.
 
-Changes in v2:
-- Issue a HCI_VS_MSFT_Read_Supported_Features command with
-__hci_cmd_sync() instead of constructing a request.
+[Yi Yang] Per our iperf3 tcp test with TSO enabled, even if packet size =
+is about 64K and block size is also 64K + 4K (to accommodate tpacket_vX =
+header), we can't see high performance without this patch, I think some =
+small packets before 64K big packets decide what performance it can =
+reach, according to my trace, TCP packet size is increasing from less =
+than 100 to 64K gradually, so it looks like how long this period took =
+decides what performance it can reach. So yes, I don=E2=80=99t think =
+hrtimer can help fix this issue very efficiently. In addition, I also =
+noticed packet size pattern is 1514, 64K, 64K, 64K, 64K, ..., 1514, 64K =
+even if it reaches 64K packet size, maybe that 1514 packet has big =
+impact on performance, I just guess.
 
- include/net/bluetooth/hci_core.h |   1 +
- net/bluetooth/hci_core.c         |   5 ++
- net/bluetooth/hci_event.c        |   5 ++
- net/bluetooth/msft.c             | 126 +++++++++++++++++++++++++++++++
- net/bluetooth/msft.h             |  10 +++
- 5 files changed, 147 insertions(+)
+[Yi Yang]=20
 
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 239cae2d9998..59ddcd3a52cc 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -486,6 +486,7 @@ struct hci_dev {
- 
- #if IS_ENABLED(CONFIG_BT_MSFTEXT)
- 	__u16			msft_opcode;
-+	void			*msft_data;
- #endif
- 
- 	int (*open)(struct hci_dev *hdev);
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index dbd2ad3a26ed..c38707de767a 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -44,6 +44,7 @@
- #include "hci_debugfs.h"
- #include "smp.h"
- #include "leds.h"
-+#include "msft.h"
- 
- static void hci_rx_work(struct work_struct *work);
- static void hci_cmd_work(struct work_struct *work);
-@@ -1563,6 +1564,8 @@ static int hci_dev_do_open(struct hci_dev *hdev)
- 	    hci_dev_test_flag(hdev, HCI_VENDOR_DIAG) && hdev->set_diag)
- 		ret = hdev->set_diag(hdev, true);
- 
-+	msft_do_open(hdev);
-+
- 	clear_bit(HCI_INIT, &hdev->flags);
- 
- 	if (!ret) {
-@@ -1758,6 +1761,8 @@ int hci_dev_do_close(struct hci_dev *hdev)
- 
- 	hci_sock_dev_event(hdev, HCI_DEV_DOWN);
- 
-+	msft_do_close(hdev);
-+
- 	if (hdev->flush)
- 		hdev->flush(hdev);
- 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 20408d386268..42b5871151a6 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -35,6 +35,7 @@
- #include "a2mp.h"
- #include "amp.h"
- #include "smp.h"
-+#include "msft.h"
- 
- #define ZERO_KEY "\x00\x00\x00\x00\x00\x00\x00\x00" \
- 		 "\x00\x00\x00\x00\x00\x00\x00\x00"
-@@ -6144,6 +6145,10 @@ void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb)
- 		hci_num_comp_blocks_evt(hdev, skb);
- 		break;
- 
-+	case HCI_EV_VENDOR:
-+		msft_vendor_evt(hdev, skb);
-+		break;
-+
- 	default:
- 		BT_DBG("%s event 0x%2.2x", hdev->name, event);
- 		break;
-diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-index 7609932c48ca..f76e4c79556e 100644
---- a/net/bluetooth/msft.c
-+++ b/net/bluetooth/msft.c
-@@ -6,6 +6,24 @@
- 
- #include "msft.h"
- 
-+#define MSFT_OP_READ_SUPPORTED_FEATURES		0x00
-+struct msft_cp_read_supported_features {
-+	__u8   sub_opcode;
-+} __packed;
-+struct msft_rp_read_supported_features {
-+	__u8   status;
-+	__u8   sub_opcode;
-+	__le64 features;
-+	__u8   evt_prefix_len;
-+	__u8   evt_prefix[0];
-+} __packed;
-+
-+struct msft_data {
-+	__u64 features;
-+	__u8  evt_prefix_len;
-+	__u8  *evt_prefix;
-+};
-+
- void msft_set_opcode(struct hci_dev *hdev, __u16 opcode)
- {
- 	hdev->msft_opcode = opcode;
-@@ -14,3 +32,111 @@ void msft_set_opcode(struct hci_dev *hdev, __u16 opcode)
- 		    hdev->msft_opcode);
- }
- EXPORT_SYMBOL(msft_set_opcode);
-+
-+static struct msft_data *read_supported_features(struct hci_dev *hdev)
-+{
-+	struct msft_data *msft;
-+	struct msft_cp_read_supported_features cp;
-+	struct msft_rp_read_supported_features *rp;
-+	struct sk_buff *skb;
-+
-+	cp.sub_opcode = MSFT_OP_READ_SUPPORTED_FEATURES;
-+
-+	skb = __hci_cmd_sync(hdev, hdev->msft_opcode, sizeof(cp), &cp,
-+			     HCI_CMD_TIMEOUT);
-+	if (IS_ERR(skb)) {
-+		bt_dev_err(hdev, "Failed to read MSFT supported features (%ld)",
-+			   PTR_ERR(skb));
-+		return NULL;
-+	}
-+
-+	if (skb->len < sizeof(*rp)) {
-+		bt_dev_err(hdev, "MSFT supported features length mismatch");
-+		goto failed;
-+	}
-+
-+	rp = (struct msft_rp_read_supported_features *)skb->data;
-+
-+	if (rp->sub_opcode != MSFT_OP_READ_SUPPORTED_FEATURES)
-+		goto failed;
-+
-+	msft = kzalloc(sizeof(*msft), GFP_KERNEL);
-+	if (!msft)
-+		goto failed;
-+
-+	if (rp->evt_prefix_len > 0) {
-+		msft->evt_prefix = kmemdup(rp->evt_prefix, rp->evt_prefix_len,
-+					   GFP_KERNEL);
-+		if (!msft->evt_prefix)
-+			goto failed;
-+	}
-+
-+	msft->evt_prefix_len = rp->evt_prefix_len;
-+	msft->features = __le64_to_cpu(rp->features);
-+	kfree_skb(skb);
-+
-+	bt_dev_info(hdev, "MSFT supported features %llx", msft->features);
-+	return msft;
-+
-+failed:
-+	kfree_skb(skb);
-+	return NULL;
-+}
-+
-+void msft_do_open(struct hci_dev *hdev)
-+{
-+	if (hdev->msft_opcode == HCI_OP_NOP)
-+		return;
-+
-+	bt_dev_dbg(hdev, "Initialize MSFT extension");
-+	hdev->msft_data = read_supported_features(hdev);
-+}
-+
-+void msft_do_close(struct hci_dev *hdev)
-+{
-+	struct msft_data *msft = hdev->msft_data;
-+
-+	if (!msft)
-+		return;
-+
-+	bt_dev_dbg(hdev, "Cleanup of MSFT extension");
-+
-+	hdev->msft_data = NULL;
-+
-+	kfree(msft->evt_prefix);
-+	kfree(msft);
-+}
-+
-+int msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
-+{
-+	struct msft_data *msft = hdev->msft_data;
-+	u8 event;
-+
-+	if (!msft)
-+		return -ENOSYS;
-+
-+	/* When the extension has defined an event prefix, check that it
-+	 * matches, and otherwise just return.
-+	 */
-+	if (msft->evt_prefix_len > 0) {
-+		if (skb->len < msft->evt_prefix_len)
-+			return -ENOSYS;
-+
-+		if (memcmp(skb->data, msft->evt_prefix, msft->evt_prefix_len))
-+			return -ENOSYS;
-+
-+		skb_pull(skb, msft->evt_prefix_len);
-+	}
-+
-+	/* Every event starts at least with an event code and the rest of
-+	 * the data is variable and depends on the event code. Returns true
-+	 */
-+	if (skb->len < 1)
-+		return -EBADMSG;
-+
-+	event = *skb->data;
-+	skb_pull(skb, 1);
-+
-+	bt_dev_dbg(hdev, "MSFT vendor event %u", event);
-+	return 0;
-+}
-diff --git a/net/bluetooth/msft.h b/net/bluetooth/msft.h
-index 7218ea759dde..6a7d0ac6c66c 100644
---- a/net/bluetooth/msft.h
-+++ b/net/bluetooth/msft.h
-@@ -4,15 +4,25 @@
- #ifndef __MSFT_H
- #define __MSFT_H
- 
-+#include <linux/errno.h>
- #include <net/bluetooth/hci_core.h>
- 
- #if IS_ENABLED(CONFIG_BT_MSFTEXT)
- 
- void msft_set_opcode(struct hci_dev *hdev, __u16 opcode);
-+void msft_do_open(struct hci_dev *hdev);
-+void msft_do_close(struct hci_dev *hdev);
-+int msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb);
- 
- #else
- 
- static inline void msft_set_opcode(struct hci_dev *hdev, __u16 opcode) {}
-+static inline void msft_do_open(struct hci_dev *hdev) {}
-+static inline void msft_do_close(struct hci_dev *hdev) {}
-+static inline int msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
-+{
-+	return -ENOSYS;
-+}
- 
- #endif
- 
--- 
-2.24.1
 
+------=_NextPart_000_0413_01D6051E.FD3E88E0
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+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
+SIb3DQMEAgIAgDAHBgUrDgMCBzAKBggqhkiG9w0DBzAdBgNVHQ4EFgQUwS9Wt2AmUPVKr98VTbaf
+wjdIUXAwHwYDVR0jBBgwFoAUXlkDprRMWGCRTvYetaU5pjLBNWowgdEGA1UdHwSByTCBxjCBw6CB
+wKCBvYaBumxkYXA6Ly8vQ049SU5TUFVSLUNBLENOPUpUQ0EyMDEyLENOPUNEUCxDTj1QdWJsaWMl
+MjBLZXklMjBTZXJ2aWNlcyxDTj1TZXJ2aWNlcyxDTj1Db25maWd1cmF0aW9uLERDPWhvbWUsREM9
+bGFuZ2NoYW8sREM9Y29tP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/YmFzZT9vYmplY3RDbGFz
+cz1jUkxEaXN0cmlidXRpb25Qb2ludDCBxAYIKwYBBQUHAQEEgbcwgbQwgbEGCCsGAQUFBzAChoGk
+bGRhcDovLy9DTj1JTlNQVVItQ0EsQ049QUlBLENOPVB1YmxpYyUyMEtleSUyMFNlcnZpY2VzLENO
+PVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9aG9tZSxEQz1sYW5nY2hhbyxEQz1jb20/Y0FD
+ZXJ0aWZpY2F0ZT9iYXNlP29iamVjdENsYXNzPWNlcnRpZmljYXRpb25BdXRob3JpdHkwQwYDVR0R
+BDwwOqAjBgorBgEEAYI3FAIDoBUME3lhbmd5aTAxQGluc3B1ci5jb22BE3lhbmd5aTAxQGluc3B1
+ci5jb20wDQYJKoZIhvcNAQELBQADggEBAApWKZfwQ5Gbpv3Pg2mJyUz8jhno5OBy2Hdku/euDQfD
+aOOPsUxsvr8ZnWU03E9rwTAHgD9oB10Oe27CNeS6G/kqJubOZt5Emrw9EJBA6NMz4GLZYPmm82ph
+l+1iajL8+U2fINJbqvTlj9Dv0VOzW+952fk9K5JiArDhWskKRLnO31YAESFfUUKaHe54l2u+2+cn
+MeuQyyNOGXu2zT0XicYRUsZBOCisXzLD6I9/LgyBcqWcpLBdRK1JdO/oih2/uznyWUp1pCvpi89r
+SmyUUdbfFd/FN0j8Qok4ZdKwoHNj3oi+vLaN8SHmUNHISOuUZyWcmfVzd7c5ydIDB9nQiHoxggOT
+MIIDjwIBATBwMFkxEzARBgoJkiaJk/IsZAEZFgNjb20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hh
+bzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNVBAMTCUlOU1BVUi1DQQITfgAAPxhfXKY27C7W
+sQAAAAA/GDAJBgUrDgMCGgUAoIIB+DAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3
+DQEJBTEPFw0yMDAzMjgwODM2MTBaMCMGCSqGSIb3DQEJBDEWBBQhVt9fKG0+GbH/y9rnWm8ny5YG
+3DB/BgkrBgEEAYI3EAQxcjBwMFkxEzARBgoJkiaJk/IsZAEZFgNjb20xGDAWBgoJkiaJk/IsZAEZ
+FghsYW5nY2hhbzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNVBAMTCUlOU1BVUi1DQQITfgAA
+PxhfXKY27C7WsQAAAAA/GDCBgQYLKoZIhvcNAQkQAgsxcqBwMFkxEzARBgoJkiaJk/IsZAEZFgNj
+b20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hhbzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNV
+BAMTCUlOU1BVUi1DQQITfgAAPxhfXKY27C7WsQAAAAA/GDCBkwYJKoZIhvcNAQkPMYGFMIGCMAsG
+CWCGSAFlAwQBKjALBglghkgBZQMEARYwCgYIKoZIhvcNAwcwCwYJYIZIAWUDBAECMA4GCCqGSIb3
+DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUrDgMCGjALBglghkgBZQMEAgMwCwYJYIZIAWUDBAIC
+MAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQBDykG/Wl7tuawvxbQKfvN88poTCBLpA8Hc
+4ks+Cy6rDZuLL88TBI6uMsKNVKekMnzppyqIFf0FfPNHjMQv51xsbLk0tve9PHSJL9pEGoihPsY5
+2syE7f2TDhbTdOs2hqI86JCyjPxUFNWLqJr9ZI+Mk2iBEa1iB63HD9wWnXlBK8A9sRCo5IMaYkl6
+KaSKj766EfvJD9ixQT8Hlojna3jGBeW8QJPuMG7l5CnovvZwfph28Lohcmbvvg2upQrLWyMNmvCx
+97yFYDWte+tbUTLXfRvEPNTjDawFmLKWNyHK8h/Tic/NahMhIKZ06jPvYcPJ7QpbKjjdDJIuzrBK
+HwswAAAAAAAA
+
+------=_NextPart_000_0413_01D6051E.FD3E88E0--
