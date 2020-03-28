@@ -2,110 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91DF71964F5
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 11:08:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7437196512
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 11:34:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726195AbgC1KIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 06:08:09 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39925 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725865AbgC1KIJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 06:08:09 -0400
-Received: by mail-wm1-f65.google.com with SMTP id e9so3469133wme.4
-        for <netdev@vger.kernel.org>; Sat, 28 Mar 2020 03:08:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LmXzIdsgOGOrYXNyO5YlJa3HyL+hZye7blb+c0Swzc0=;
-        b=WmDZ7yik0sLkHcczuVaK0qyto4JitTtfPFmIpjBd9wNtV4zoys6/yedhUUNx2tE8as
-         Tw1HQntF4KHvZ0waYrJacDy34yDtBpO8/T0F5EBkCpPHyAJtdQyXly9OexUYuy43H9nC
-         48QMgD9CfF8F4pQmsVTSTGCdqrdPGvYT9cI8NkOLz6Eh2WYyqJD3aLnNz9yBdE7CN7jZ
-         DF2/92YC48LxReVqy/6UTMluKOp/f6CzRHjOkRCptWTqiTAF+EgvaiqmA+vQYYaXq7EZ
-         xlIIZcI9JAYva4gaFMSgvsS8ECZBJ/yTPd7C9E159JELk1kS81hmM5dX3Vy8QNmKJ9ZV
-         UFew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LmXzIdsgOGOrYXNyO5YlJa3HyL+hZye7blb+c0Swzc0=;
-        b=jx1QkDGRgp5EGTYSXjY+KvRjWaoYOyhy0Nc1QeqGBKODFaJU8elIDdGwYJ+376zxgH
-         sfBbI9xee89x57Uxea8ErmMGgh8e7E/KUz3Ulc+xiN4R0ho/V8sQmqWZjjvdC+tPTAa2
-         IvYRENPLEXbHRezWNNc9iRb4kfXU14aOzii/eFZJhOxWjzkjSHIC6qwxgrgNkFB1M/vs
-         6UOZMPXVi5nwn1bHTPIrf4cXwPOpNM98edpov6sONdu4nR+sOD1CyGq4kRJDmEX0tP+9
-         zIZ7nCQRNKYkVLz+9zjx818spQhFiFxGyLGhDuhov+BNNiWSIL3EpUIMqLKX5jb2s4J/
-         SdqA==
-X-Gm-Message-State: ANhLgQ0jlxGT5x06FkYJLLajW7bKNrdeQMtygFRqmi5kb3PgD6Ya9+TX
-        AN4pyDwWTZdKuR718wOcaWly2w==
-X-Google-Smtp-Source: ADFU+vsNR1mrhIcAfevBCNXwc4R7vToBFdkBDFd3MJHvo7dEc9SPf2sPNpROD3ab5FuvnU+PGOlMmg==
-X-Received: by 2002:a7b:c343:: with SMTP id l3mr3320247wmj.38.1585390086574;
-        Sat, 28 Mar 2020 03:08:06 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id w204sm11970180wma.1.2020.03.28.03.08.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Mar 2020 03:08:05 -0700 (PDT)
-Date:   Sat, 28 Mar 2020 11:08:05 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        John Linville <linville@tuxdriver.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 00/12] ethtool netlink interface, part 4
-Message-ID: <20200328100805.GO11304@nanopsycho.orion>
-References: <cover.1585349448.git.mkubecek@suse.cz>
+        id S1726197AbgC1KeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 06:34:15 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:53542 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726156AbgC1KeP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 06:34:15 -0400
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02SAWMQL056763
+        for <netdev@vger.kernel.org>; Sat, 28 Mar 2020 06:34:14 -0400
+Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3022jsadf9-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Sat, 28 Mar 2020 06:34:14 -0400
+Received: from localhost
+        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Sat, 28 Mar 2020 10:34:04 -0000
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
+        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Sat, 28 Mar 2020 10:34:01 -0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 02SAY82i54067410
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 28 Mar 2020 10:34:08 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0B559AE045;
+        Sat, 28 Mar 2020 10:34:08 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CB500AE051;
+        Sat, 28 Mar 2020 10:34:07 +0000 (GMT)
+Received: from [9.145.26.221] (unknown [9.145.26.221])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Sat, 28 Mar 2020 10:34:07 +0000 (GMT)
+Subject: Re: [PATCH net] s390/qeth: support net namespaces for L3 devices
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, ubraun@linux.ibm.com
+References: <20200327110042.50797-1-jwi@linux.ibm.com>
+ <20200327.153902.1896503128370913021.davem@davemloft.net>
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+Date:   Sat, 28 Mar 2020 11:34:07 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1585349448.git.mkubecek@suse.cz>
+In-Reply-To: <20200327.153902.1896503128370913021.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+x-cbid: 20032810-4275-0000-0000-000003B4EDBB
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20032810-4276-0000-0000-000038CA36B1
+Message-Id: <f0db28f1-d1a2-7173-1ac7-123f514768b1@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-28_03:2020-03-27,2020-03-28 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
+ bulkscore=0 phishscore=0 malwarescore=0 priorityscore=1501 suspectscore=0
+ clxscore=1015 mlxlogscore=999 impostorscore=0 lowpriorityscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003280095
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, Mar 28, 2020 at 12:00:58AM CET, mkubecek@suse.cz wrote:
->Implementation of more netlink request types:
->
->  - coalescing (ethtool -c/-C, patches 2-4)
->  - pause parameters (ethtool -a/-A, patches 5-7)
->  - EEE settings (--show-eee / --set-eee, patches 8-10)
->  - timestamping info (-T, patches 11-12)
->
->Patch 1 is a fix for netdev reference leak similar to commit 2f599ec422ad
->("ethtool: fix reference leak in some *_SET handlers") but fixing a code
->
->Changes in v3
->  - change "one-step-*" Tx type names to "onestep-*", (patch 11, suggested
->    by Richard Cochran
->  - use "TSINFO" rather than "TIMESTAMP" for timestamping information
->    constants and adjust symbol names (patch 12, suggested by Richard
->    Cochran)
->
->Changes in v2:
->  - fix compiler warning in net_hwtstamp_validate() (patch 11)
->  - fix follow-up lines alignment (whitespace only, patches 3 and 8)
->which is only in net-next tree at the moment.
->
->Michal Kubecek (12):
->  ethtool: fix reference leak in ethnl_set_privflags()
->  ethtool: provide coalescing parameters with COALESCE_GET request
->  ethtool: set coalescing parameters with COALESCE_SET request
->  ethtool: add COALESCE_NTF notification
->  ethtool: provide pause parameters with PAUSE_GET request
->  ethtool: set pause parameters with PAUSE_SET request
->  ethtool: add PAUSE_NTF notification
->  ethtool: provide EEE settings with EEE_GET request
->  ethtool: set EEE settings with EEE_SET request
->  ethtool: add EEE_NTF notification
->  ethtool: add timestamping related string sets
->  ethtool: provide timestamping information with TSINFO_GET request
+On 27.03.20 23:39, David Miller wrote:
+> From: Julian Wiedmann <jwi@linux.ibm.com>
+> Date: Fri, 27 Mar 2020 12:00:42 +0100
+> 
+>> Enable the L3 driver's IPv4 address notifier to watch for events on qeth
+>> devices that have been moved into a net namespace. We need to program
+>> those IPs into the HW just as usual, otherwise inbound traffic won't
+>> flow.
+>>
+>> Fixes: 6133fb1aa137 ("[NETNS]: Disable inetaddr notifiers in namespaces other than initial.")
+>> Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+> 
+> This looks more like a feature, openning the L3 driver into multiple
+> namespaces, rather than a critical fix.
+> 
 
-FWIW, this looks fine to me.
-set-
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Definitely not 'critical', agreed. It's rather silly though that things
+currently work just fine for IPv6, but not for IPv4.
 
-Thanks Michal!
+Mind queueing this up for net-next then instead? Thanks.
+
