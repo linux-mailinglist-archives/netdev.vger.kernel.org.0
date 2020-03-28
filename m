@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 74387196357
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 04:15:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72B4A196351
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 04:15:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727126AbgC1DO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 23:14:57 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:32886 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726225AbgC1DO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 23:14:57 -0400
-Received: by mail-pl1-f193.google.com with SMTP id g18so4238721plq.0
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 20:14:56 -0700 (PDT)
+        id S1727173AbgC1DO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 23:14:58 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:45897 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727125AbgC1DO6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 23:14:58 -0400
+Received: by mail-pl1-f194.google.com with SMTP id b9so4211576pls.12
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 20:14:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=o0QSa2vxWNEuyBrBvwlcOlK3qCDOoYzKYXOOb+XCgTc=;
-        b=HbPIp1LkXKFK2fYJ5jICW0OzW7jZW7b0Byp8T1ueguH7Fy4aCpAugZz3VapWJwOJR9
-         KEZEhkF132j8+cq946cL12ywVus0VI/A4Mgn33LNpCM1zu9lMND5uOvkGLE+6Y3SNCUB
-         xmx4T5tERbLEJNZXyq1+xK90/iL24DOPiJEOiVO2POIGbnJndfo7FKLG6nj/ZJzfym0q
-         nLpqNrSI+33XnHSUfb+yvhTxcoT4kK7dKErS/U3WH3Ytx1Kn2jubNH9VxGVUUAsp2j09
-         4GzCml2/v2p/TxcsXc46/cJXNk0ytumSxE49iHWAyT0MqWk60ahMIH8fVCGbFAdjeawi
-         eo9Q==
+        bh=oo+fcUD4R29RbLhunzC9hcanAW0dvpquy2WKlMreYu8=;
+        b=Y82a4kle3y0kHrY2O1usVJ6Ft8sz+DSU+AJYe0tpWxWJ6ynvsvga6CC5nZVITpJahp
+         +gakf+T1szeTM8D7NVrdPVSaMGD87BAQXp/DoWfK6HtKYdSekPWgcOU7Q8nRhBx5NrK1
+         KNnTazv19HWHXg3ts/vDjfZYYLJkDf9Y6wrUPT2srfnDUGoCJu2XerPn7QvngzXnZoeX
+         CghxbeycD3Vo8Gx6pDobJj+wQp8gJATGNexlvutN/+E9EBMen+c7QzPpWH4KW5inICNv
+         csRJ0TBN6zvYbQu0Cp1K1dCs3eFFfTFqdYexBtRuzLtbc+gMiBnOab3d7jbASXVfuGPV
+         vlLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=o0QSa2vxWNEuyBrBvwlcOlK3qCDOoYzKYXOOb+XCgTc=;
-        b=GBRQswDVh91FPksFDBTQ4B4weR9YI/9BkXPyhG0s71Va21YvPmdgB7k4XUiVMXpBOm
-         UQ4KKya2CZmqSxnnX0DGK3z8quk+0te2EX9LOaVQmzaYbNHKtOBbyqWlEfP9ssbsT/I5
-         Z5TEy6ivZEJVSl637ZH4Ni6DDj9kerhCv1gilRUaUd4QMwCu9s1L+JY4ECzmS37bSENW
-         zV3agOl1Zku5YkOkzznG/PunyjJjvW9vmD+2ec8dIpk46cG9nAeVhjT1QFxDGag227r4
-         4wf8zkWUiPG30MrcC6itnSCgpA/pVttqwF/m5HEK/fMHaKNTz07n3Mh6WChV7HHKeUz9
-         Zv9w==
-X-Gm-Message-State: ANhLgQ0rdFXGb53XLg8b1iJ3X1hjf/NSXMPNtBGuZlcfnxadHXpQWvvj
-        b9vwshmOZIwibQcu8etK+yezXQ==
-X-Google-Smtp-Source: ADFU+vt0ctckd3zmpvHNlRKnXkAc1ui8icahdrLmKz74v9B00zD92tDxsRSa07Fx5cRnW83AkDHFwg==
-X-Received: by 2002:a17:902:8d85:: with SMTP id v5mr2190638plo.146.1585365296147;
+        bh=oo+fcUD4R29RbLhunzC9hcanAW0dvpquy2WKlMreYu8=;
+        b=CkZ836Ijic0QTc4Fk98SQgaXWIduhQoStxwI/vfAD7LTu3/kDgiJFSiZwQ68iYAe5u
+         IQd7WUTEct1U3/nJ+ws+6BSRnRoMCEXXdAO/bysuafvyt84HYkGx1iLtz9oRaL+PTk8k
+         xxcuEMFG1HebbJ77mgQHVZEBLKqVcW9uCU5HFovu7z3N0dfjY4GNOMwXan4PIYdJy4uW
+         pRy05ssbTj/jjWrD+0RohvvzkjmygDbG3KnIRN9foj8SY3/ke2zj9PZLDz0AxQ+UaWp8
+         X7c8RNuFkJX/GD87IT9BPT7OJ9Dd9sR3w1dljsthG9MxPIq3d38DU6WbHhEyeOu5EkGE
+         3zdw==
+X-Gm-Message-State: ANhLgQ3Ef9zQPykfdPJ8F/tyq2CKiIO/j9NitDZYJoVph0r6MBXX7ZXa
+        7Tcqe7ECMCS0G0AbWY3Yafom4g==
+X-Google-Smtp-Source: ADFU+vscWHRv0s+7TxVJLe1TmLw1oGO4fnPoX7Kh7F5eO+Z3PhSbc1nV6aN33ZA7liu8ktQbVsWzFA==
+X-Received: by 2002:a17:90b:1b05:: with SMTP id nu5mr2718058pjb.110.1585365296918;
         Fri, 27 Mar 2020 20:14:56 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id o65sm5208391pfg.187.2020.03.27.20.14.55
+        by smtp.gmail.com with ESMTPSA id o65sm5208391pfg.187.2020.03.27.20.14.56
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 27 Mar 2020 20:14:55 -0700 (PDT)
+        Fri, 27 Mar 2020 20:14:56 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 2/8] ionic: check for linkup in watchdog
-Date:   Fri, 27 Mar 2020 20:14:42 -0700
-Message-Id: <20200328031448.50794-3-snelson@pensando.io>
+Subject: [PATCH v2 net-next 3/8] ionic: move debugfs add/delete to match alloc/free
+Date:   Fri, 27 Mar 2020 20:14:43 -0700
+Message-Id: <20200328031448.50794-4-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200328031448.50794-1-snelson@pensando.io>
 References: <20200328031448.50794-1-snelson@pensando.io>
@@ -57,61 +57,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a link_status_check to the heartbeat watchdog.
+Move the qcq debugfs add to the queue alloc, and likewise move
+the debugfs delete to the queue free.  The LIF debugfs add
+also needs to be moved, but the del is already in the LIF free.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_dev.c | 6 +++++-
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 +-
- drivers/net/ethernet/pensando/ionic/ionic_lif.h | 1 +
- 3 files changed, 7 insertions(+), 2 deletions(-)
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 20 ++++++++-----------
+ 1 file changed, 8 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.c b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-index 46107de5e6c3..f03a092f370f 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.c
-@@ -14,11 +14,15 @@
- static void ionic_watchdog_cb(struct timer_list *t)
- {
- 	struct ionic *ionic = from_timer(ionic, t, watchdog_timer);
-+	int hb;
- 
- 	mod_timer(&ionic->watchdog_timer,
- 		  round_jiffies(jiffies + ionic->watchdog_period));
- 
--	ionic_heartbeat_check(ionic);
-+	hb = ionic_heartbeat_check(ionic);
-+
-+	if (hb >= 0 && ionic->master_lif)
-+		ionic_link_status_check_request(ionic->master_lif);
- }
- 
- void ionic_init_devinfo(struct ionic *ionic)
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index 3e9c0e9bcad2..ddbff44cda89 100644
+index ddbff44cda89..4ade43219256 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -105,7 +105,7 @@ static void ionic_link_status_check(struct ionic_lif *lif)
- 	clear_bit(IONIC_LIF_F_LINK_CHECK_REQUESTED, lif->state);
+@@ -271,8 +271,6 @@ static void ionic_lif_qcq_deinit(struct ionic_lif *lif, struct ionic_qcq *qcq)
+ 	if (!qcq)
+ 		return;
+ 
+-	ionic_debugfs_del_qcq(qcq);
+-
+ 	if (!(qcq->flags & IONIC_QCQ_F_INITED))
+ 		return;
+ 
+@@ -295,6 +293,8 @@ static void ionic_qcq_free(struct ionic_lif *lif, struct ionic_qcq *qcq)
+ 	if (!qcq)
+ 		return;
+ 
++	ionic_debugfs_del_qcq(qcq);
++
+ 	dma_free_coherent(dev, qcq->total_size, qcq->base, qcq->base_pa);
+ 	qcq->base = NULL;
+ 	qcq->base_pa = 0;
+@@ -509,6 +509,7 @@ static int ionic_qcqs_alloc(struct ionic_lif *lif)
+ 			      0, lif->kern_pid, &lif->adminqcq);
+ 	if (err)
+ 		return err;
++	ionic_debugfs_add_qcq(lif, lif->adminqcq);
+ 
+ 	if (lif->ionic->nnqs_per_lif) {
+ 		flags = IONIC_QCQ_F_NOTIFYQ;
+@@ -519,6 +520,7 @@ static int ionic_qcqs_alloc(struct ionic_lif *lif)
+ 				      0, lif->kern_pid, &lif->notifyqcq);
+ 		if (err)
+ 			goto err_out_free_adminqcq;
++		ionic_debugfs_add_qcq(lif, lif->notifyqcq);
+ 
+ 		/* Let the notifyq ride on the adminq interrupt */
+ 		ionic_link_qcq_interrupts(lif->adminqcq, lif->notifyqcq);
+@@ -616,8 +618,6 @@ static int ionic_lif_txq_init(struct ionic_lif *lif, struct ionic_qcq *qcq)
+ 
+ 	qcq->flags |= IONIC_QCQ_F_INITED;
+ 
+-	ionic_debugfs_add_qcq(lif, qcq);
+-
+ 	return 0;
  }
  
--static void ionic_link_status_check_request(struct ionic_lif *lif)
-+void ionic_link_status_check_request(struct ionic_lif *lif)
- {
- 	struct ionic_deferred_work *work;
+@@ -672,8 +672,6 @@ static int ionic_lif_rxq_init(struct ionic_lif *lif, struct ionic_qcq *qcq)
  
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.h b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-index 7c0c6fef8c0b..8aaa7daf3842 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.h
-@@ -224,6 +224,7 @@ static inline u32 ionic_coal_hw_to_usec(struct ionic *ionic, u32 units)
- 	return (units * div) / mult;
+ 	qcq->flags |= IONIC_QCQ_F_INITED;
+ 
+-	ionic_debugfs_add_qcq(lif, qcq);
+-
+ 	return 0;
  }
  
-+void ionic_link_status_check_request(struct ionic_lif *lif);
- int ionic_lifs_alloc(struct ionic *ionic);
- void ionic_lifs_free(struct ionic *ionic);
- void ionic_lifs_deinit(struct ionic *ionic);
+@@ -1490,6 +1488,7 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
+ 			goto err_out;
+ 
+ 		lif->txqcqs[i].qcq->stats = lif->txqcqs[i].stats;
++		ionic_debugfs_add_qcq(lif, lif->txqcqs[i].qcq);
+ 	}
+ 
+ 	flags = IONIC_QCQ_F_RX_STATS | IONIC_QCQ_F_SG | IONIC_QCQ_F_INTR;
+@@ -1510,6 +1509,7 @@ static int ionic_txrx_alloc(struct ionic_lif *lif)
+ 				     lif->rx_coalesce_hw);
+ 		ionic_link_qcq_interrupts(lif->rxqcqs[i].qcq,
+ 					  lif->txqcqs[i].qcq);
++		ionic_debugfs_add_qcq(lif, lif->rxqcqs[i].qcq);
+ 	}
+ 
+ 	return 0;
+@@ -1974,6 +1974,8 @@ static struct ionic_lif *ionic_lif_alloc(struct ionic *ionic, unsigned int index
+ 		goto err_out_free_netdev;
+ 	}
+ 
++	ionic_debugfs_add_lif(lif);
++
+ 	/* allocate queues */
+ 	err = ionic_qcqs_alloc(lif);
+ 	if (err)
+@@ -2154,8 +2156,6 @@ static int ionic_lif_adminq_init(struct ionic_lif *lif)
+ 
+ 	qcq->flags |= IONIC_QCQ_F_INITED;
+ 
+-	ionic_debugfs_add_qcq(lif, qcq);
+-
+ 	return 0;
+ }
+ 
+@@ -2203,8 +2203,6 @@ static int ionic_lif_notifyq_init(struct ionic_lif *lif)
+ 
+ 	qcq->flags |= IONIC_QCQ_F_INITED;
+ 
+-	ionic_debugfs_add_qcq(lif, qcq);
+-
+ 	return 0;
+ }
+ 
+@@ -2258,8 +2256,6 @@ static int ionic_lif_init(struct ionic_lif *lif)
+ 	int dbpage_num;
+ 	int err;
+ 
+-	ionic_debugfs_add_lif(lif);
+-
+ 	mutex_lock(&lif->ionic->dev_cmd_lock);
+ 	ionic_dev_cmd_lif_init(idev, lif->index, lif->info_pa);
+ 	err = ionic_dev_cmd_wait(lif->ionic, DEVCMD_TIMEOUT);
 -- 
 2.17.1
 
