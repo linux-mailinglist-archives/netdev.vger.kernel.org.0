@@ -2,97 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 88F941965E2
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 12:57:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 464FA196607
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 13:16:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726342AbgC1L5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 07:57:05 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:38867 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726045AbgC1L5F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 07:57:05 -0400
-Received: by mail-lf1-f67.google.com with SMTP id c5so10048030lfp.5;
-        Sat, 28 Mar 2020 04:57:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=vohZ7RYylce7oG+qd7nKsIkPDOq6dSZqCFLWe4oqhRw=;
-        b=Fx7tQ6Zx/Nr3LIGzvw0af6WO8UdeI9QkitOU1hB16V+V2SzaIGLvx6tTDUmrhBiB+D
-         9nv/xcrIVkyNjaDWhL1IAyA6lyZP5vj/R7W9za40FiwFK5CB/lVUQcoyPLh9eOKNu9Zf
-         6Sinv8vNfrvvDVDVpw/HFLap893Nmag8KmDF6MteX1L+SWSoFEDB8rY0B0m5grsCppZy
-         qUFDFsQRqQczoishI/4T29L8Mll8dm4lC+a2v0lBdTDVhLFKgYpIUPqyntkgV0GhXQX6
-         Y4azQoxaxeDUPxOO2rZZqwRUfXZbBoJx1/9OoZnSIhWLzEXbAKe46885zIg7RI9tkC7+
-         cayg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=vohZ7RYylce7oG+qd7nKsIkPDOq6dSZqCFLWe4oqhRw=;
-        b=Zv3GYj/7lIgJH0YHWQAwUejjHyAa+ZvFGtZi6mmWF6wEF8gQG4F0vjqnWKrKoij6ct
-         rKbGihBaacFfbvCm9/+UKtGHCDeTYPzDoAk8KF8VE0+FO2rI5/X7gF5bFxDpbFrdyl5u
-         jR57ZovZ2rFjnNtEhL79iIRmnjS6SQJfv6MvBDq/bcJuIib1S3Ed743+xf2n8wxxax1i
-         aKY3Ief0BEzZgM5mFPhfxYz3miuVM0Ku9Ry0awU26qRRxczZN+eQBm/unLcRYXiUPAzb
-         RHCCe4yNLJdhda+5wL/v7HzOMV4aPRvxXd1qc36FZjcJHgfrKYqdEdQmrh1rqlog7VfH
-         fKMg==
-X-Gm-Message-State: AGi0PubUsD82PZ/Fzd+mF7WvQkMKflbdtpkCY4rk7FR2WCQ9Wof/ShVk
-        G8wePtTHSXE4sN7/FOGDZD8=
-X-Google-Smtp-Source: APiQypLZYuYBOJKIzNJJMdP/KVOg5d8z8nE1cQlOOst4rOmQHNithBgqa92wV4ZbvMgbxZGfEF6YLA==
-X-Received: by 2002:ac2:4858:: with SMTP id 24mr2465051lfy.135.1585396622422;
-        Sat, 28 Mar 2020 04:57:02 -0700 (PDT)
-Received: from laptop ([178.209.50.173])
-        by smtp.gmail.com with ESMTPSA id q1sm1247898lfc.92.2020.03.28.04.56.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 28 Mar 2020 04:57:01 -0700 (PDT)
-Date:   Sat, 28 Mar 2020 14:56:55 +0300
-From:   Fedor Tokarev <ftokarev@gmail.com>
-To:     bfields@fieldses.org, chuck.lever@oracle.com,
-        anna.schumaker@netapp.com, trond.myklebust@hammerspace.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH] net: sunrpc: Fix off-by-one issues in 'rpc_ntop6'
-Message-ID: <20200328115650.GA27729@laptop>
+        id S1726269AbgC1MPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 08:15:39 -0400
+Received: from mga02.intel.com ([134.134.136.20]:28516 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726045AbgC1MPj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 28 Mar 2020 08:15:39 -0400
+IronPort-SDR: 9AXDKXDF1ivEPQZ6T2strQiuWb8YYEnHV1rtsFvt/mJczBsrMgQhhxvjFPqOZyCraOX/tq0QbT
+ Ow319tDz3y9Q==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2020 05:15:38 -0700
+IronPort-SDR: 3tokL2ETUr6Wx66bgsXv10SOXsGVwXSP+zDYysIcBRTZ5pkQYmF2h5WRfDnB+/qSpmNli94kYz
+ tg2mj/0O0l8A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,316,1580803200"; 
+   d="scan'208";a="449300479"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+  by fmsmga006.fm.intel.com with ESMTP; 28 Mar 2020 05:15:37 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+        (envelope-from <lkp@intel.com>)
+        id 1jIANE-0002kU-JV; Sat, 28 Mar 2020 20:15:36 +0800
+Date:   Sat, 28 Mar 2020 20:14:45 +0800
+From:   kbuild test robot <lkp@intel.com>
+To:     Dmitry Bogdanov <dbogdanov@marvell.com>
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>
+Subject: [net-next:master 1995/2057]
+ drivers/net/ethernet/aquantia/atlantic/aq_macsec.c:224:2-3: Unneeded
+ semicolon
+Message-ID: <202003282039.WXQ1A9KZ%lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.5.24 (2015-08-30)
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix off-by-one issues in 'rpc_ntop6':
- - 'snprintf' returns the number of characters which would have been
-   written if enough space had been available, excluding the terminating
-   null byte. Thus, a return value of 'sizeof(scopebuf)' means that the
-   last character was dropped.
- - 'strcat' adds a terminating null byte to the string, thus if len ==
-   buflen, the null byte is written past the end of the buffer.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git master
+head:   1a147b74c2fd4058dea0133cb2471724c3b3de09
+commit: 27736563ce320d3390c2423bc82c54b07f2a3d50 [1995/2057] net: atlantic: MACSec egress offload implementation
 
-Signed-off-by: Fedor Tokarev <ftokarev@gmail.com>
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+coccinelle warnings: (new ones prefixed by >>)
+
+>> drivers/net/ethernet/aquantia/atlantic/aq_macsec.c:224:2-3: Unneeded semicolon
+   drivers/net/ethernet/aquantia/atlantic/aq_macsec.c:240:2-3: Unneeded semicolon
+
+vim +224 drivers/net/ethernet/aquantia/atlantic/aq_macsec.c
+
+   207	
+   208	static u32 aq_sc_idx_max(const enum aq_macsec_sc_sa sc_sa)
+   209	{
+   210		u32 result = 0;
+   211	
+   212		switch (sc_sa) {
+   213		case aq_macsec_sa_sc_4sa_8sc:
+   214			result = 8;
+   215			break;
+   216		case aq_macsec_sa_sc_2sa_16sc:
+   217			result = 16;
+   218			break;
+   219		case aq_macsec_sa_sc_1sa_32sc:
+   220			result = 32;
+   221			break;
+   222		default:
+   223			break;
+ > 224		};
+   225	
+   226		return result;
+   227	}
+   228	
+
 ---
- net/sunrpc/addr.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/sunrpc/addr.c b/net/sunrpc/addr.c
-index 8b4d72b..010dcb8 100644
---- a/net/sunrpc/addr.c
-+++ b/net/sunrpc/addr.c
-@@ -82,11 +82,11 @@ static size_t rpc_ntop6(const struct sockaddr *sap,
- 
- 	rc = snprintf(scopebuf, sizeof(scopebuf), "%c%u",
- 			IPV6_SCOPE_DELIMITER, sin6->sin6_scope_id);
--	if (unlikely((size_t)rc > sizeof(scopebuf)))
-+	if (unlikely((size_t)rc >= sizeof(scopebuf)))
- 		return 0;
- 
- 	len += rc;
--	if (unlikely(len > buflen))
-+	if (unlikely(len >= buflen))
- 		return 0;
- 
- 	strcat(buf, scopebuf);
--- 
-2.7.4
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
