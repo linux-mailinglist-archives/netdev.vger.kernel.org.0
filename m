@@ -2,149 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB79F196899
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 19:37:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06AE21968B9
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 19:55:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727125AbgC1ShG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 14:37:06 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:41967 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725882AbgC1ShF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 14:37:05 -0400
-Received: by mail-qk1-f193.google.com with SMTP id q188so14624925qke.8
-        for <netdev@vger.kernel.org>; Sat, 28 Mar 2020 11:37:04 -0700 (PDT)
+        id S1726751AbgC1SzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 14:55:18 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:42897 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726369AbgC1SzS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 14:55:18 -0400
+Received: by mail-pf1-f196.google.com with SMTP id 22so6321635pfa.9;
+        Sat, 28 Mar 2020 11:55:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=GWFiIvmzPTVIeO2K+0KHEdguA+rtzJojGFxB3fK+bVc=;
-        b=Foi0ctXJn70SeIKGLY+pCATWHzUwd/6sOZdw3BFgnw3rDea6q1W6gm2V+ImziUIjrq
-         xPD9SLkWuoMszRzg68cjMIkZ2fgxl4CNC5NW0Wvd7vma/Phf1t6sNu7auv/buUQjSNF5
-         S1Ie6UsC/zHUXsVOHhgTOjlQyAd0NdGpyeoGVf3syI0oHU7VpLisfp02tl2KVZwcap2d
-         Urhq9gYu7Oc6u1IbnZ3/xoKPoCwfs8n+PB5+9fLGURTA1WOwV7gOLOu6WNKHibobjdJU
-         L43rns/8/SrCo/0GD5KWiG2Ox8Tuqgke4cDXLlexhhR6OgeVHpKeCbP/XFU9lgOi5Ip/
-         v6AQ==
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GdehM0GhlRJiWnbNdIu2FAv6B4zmzhBITibgs44j0QQ=;
+        b=HNbOeP1CGzT+C1ASFMVblZytSsxi8Aypov6PuX3fmJOZRBCSmR0PJWWqiqprUDk8HG
+         NI7lddUmy4nf9rKfz4r2ERs5K58UhAeOWG0SxE5eCBQnM+fNFaQiJd2tOYskMa4yIzN1
+         m0+xETMgFnOq/oqZJoGPtyYw7+ImeL3RMsoWfqXOhdJoDlg2eohgIquOY2YSeicrq/zB
+         tEVrErtaI4J0oiMgO68JMwORAF9of0O9m4uyDsfqQ+rjfaQDvlRRRc2Kvg5J2mCw4x6X
+         sHzNBUfdWR8DyuhWlnHiwYrPykTpQFCtU3iFIQmyOMQYXNAu9aQ7bfGJVNYDtrWFfVkp
+         PSRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GWFiIvmzPTVIeO2K+0KHEdguA+rtzJojGFxB3fK+bVc=;
-        b=r8jgCWNEfEFnwe0PyEJdVcg7te7Z7r3yVVW06wYo5ug9LG83zRM9zdVPrLT8Ru/sBL
-         kcGnSmBsc4nvHKZ8SihZuStO7of2rZwMdxFoshznMqWTVqK9a7P3JO6bAOaoxrq9hq4A
-         WsN3G3U7skYEzrLHJ4ZQNBaxJIiIkCosLVuPcW7GuZV/oboewletENWvT4RhYZccsvx0
-         jJG0geLbENmNDZNDDXuA1woJ6Ge0WFWMWmK2shuiKpUEbCsRjLg6L1oNSfbIdH6F2xn0
-         MCFO6DybPuowFs3GN3xF/5T3NFTSwqft+OzoP7ZgizSUL4njko1SzC7OAfO4RnEFTfuz
-         a5KQ==
-X-Gm-Message-State: ANhLgQ2Oyv6gK47KTcjf6NthQKY0tDjwd6TWFUfS+XLjWjPBgTYvX1fk
-        tVUDFmNKzm88knEkHNDqpk7lJJ3s
-X-Google-Smtp-Source: ADFU+vtukUKqVx+CN2hN638h5bHqaHECKjYF1PCgdiModrNGwoR5n7ldDYzaVHs7mA6aXbVpC96h4w==
-X-Received: by 2002:a37:a612:: with SMTP id p18mr5145652qke.228.1585420623570;
-        Sat, 28 Mar 2020 11:37:03 -0700 (PDT)
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com. [209.85.219.180])
-        by smtp.gmail.com with ESMTPSA id f19sm6580349qtq.78.2020.03.28.11.37.02
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 28 Mar 2020 11:37:02 -0700 (PDT)
-Received: by mail-yb1-f180.google.com with SMTP id p196so6563945ybc.0
-        for <netdev@vger.kernel.org>; Sat, 28 Mar 2020 11:37:02 -0700 (PDT)
-X-Received: by 2002:a25:af0e:: with SMTP id a14mr7452799ybh.53.1585420621552;
- Sat, 28 Mar 2020 11:37:01 -0700 (PDT)
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=GdehM0GhlRJiWnbNdIu2FAv6B4zmzhBITibgs44j0QQ=;
+        b=uEojmG6hdW7m0rPcYBu2lzUFwD6N9eJBBBa9xAlkoPYE69KNXKkPMtlbuthsLP0C6V
+         q20DgPufTYx7nleTc1fDRWOm0KaR0uO4JrkdPUq21godIhP8ZIfxG991gcwcAfqffgZo
+         Wj7p4efqIMe+vVwgwGE8puMWANcIBzIArh14Cr4feEsbgTercsVYZXIbtUkFR1LKwxTO
+         lGFyhJOMwEOBhNweReBnYXLhPyToYsR/7YScgcGh9GtAEfmj+aRS/IKo/ZRF9uBcoM/m
+         hJI/tKOIHqZrUH1CCAcAZ+E9uUE49DOuMu2kbFxW1V6QrFRxyWrtG8rvdONf3DE5O2ja
+         rvdg==
+X-Gm-Message-State: ANhLgQ0VByzbQCeBaxkPXw2bUUw1SaOiqxhFbJfqJDWy4CsmEpI1roR3
+        TG90Cf4v9tINmga8IBmQBL06rDGK
+X-Google-Smtp-Source: ADFU+vtzFOTNFyQyIdPO/EQbFS9Mo6bnKDLVjCGFpiPA3+zJRsh7qu4nH+Byq1SAfTQvxxmquMvXhg==
+X-Received: by 2002:aa7:8bdc:: with SMTP id s28mr5632140pfd.110.1585421715737;
+        Sat, 28 Mar 2020 11:55:15 -0700 (PDT)
+Received: from localhost.localdomain (c-73-93-5-123.hsd1.ca.comcast.net. [73.93.5.123])
+        by smtp.gmail.com with ESMTPSA id d7sm6682022pfo.86.2020.03.28.11.55.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Mar 2020 11:55:14 -0700 (PDT)
+From:   Joe Stringer <joe@wand.net.nz>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        eric.dumazet@gmail.com, lmb@cloudflare.com, kafai@fb.com
+Subject: [PATCHv4 bpf-next 0/5] Add bpf_sk_assign eBPF helper
+Date:   Sat, 28 Mar 2020 11:55:03 -0700
+Message-Id: <20200328185509.20892-1-joe@wand.net.nz>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <2786b9598d534abf1f3d11357fa9b5f5@sslemail.net>
- <CA+FuTSf5U_ndpmBisjqLMihx0q+wCrqndDAUT1vF3=1DXJnumw@mail.gmail.com>
- <25b83b5245104a30977b042a886aa674@inspur.com> <CAF=yD-LAWc0POejfaB_xRW97BoVdLd6s6kjATyjDFBoK1aP-9Q@mail.gmail.com>
- <31e6d4edec0146e08cb3603ad6c2be4c@inspur.com> <CA+FuTSfG2J-5pu4kieXHm7d4giv4qXmwXBBHtJf0EcB1=83UOw@mail.gmail.com>
- <de32975979434430b914de00916bee95@inspur.com>
-In-Reply-To: <de32975979434430b914de00916bee95@inspur.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sat, 28 Mar 2020 14:36:23 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSe6vkWNq03zxP9Cbx4oj38sf1omeajh5fZRywouyADO6g@mail.gmail.com>
-Message-ID: <CA+FuTSe6vkWNq03zxP9Cbx4oj38sf1omeajh5fZRywouyADO6g@mail.gmail.com>
-Subject: =?UTF-8?B?UmU6IFt2Z2VyLmtlcm5lbC5vcmfku6Plj5FdUmU6IFt2Z2VyLmtlcm5lbC5vcmfku6M=?=
-        =?UTF-8?B?5Y+RXVJlOiBbUEFUQ0ggbmV0LW5leHRdIG5ldC8gcGFja2V0OiBmaXggVFBBQ0tFVF9WMyBwZXJmb3Jt?=
-        =?UTF-8?B?YW5jZSBpc3N1ZSBpbiBjYXNlIG9mIFRTTw==?=
-To:     =?UTF-8?B?WWkgWWFuZyAo5p2o54eaKS3kupHmnI3liqHpm4blm6I=?= 
-        <yangyi01@inspur.com>
-Cc:     "willemdebruijn.kernel@gmail.com" <willemdebruijn.kernel@gmail.com>,
-        "yang_y_yi@163.com" <yang_y_yi@163.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "u9012063@gmail.com" <u9012063@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 28, 2020 at 4:37 AM Yi Yang (=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=
-=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 <yangyi01@inspur.com> wrote:
->
->
-> -----=E9=82=AE=E4=BB=B6=E5=8E=9F=E4=BB=B6-----
-> =E5=8F=91=E4=BB=B6=E4=BA=BA: Willem de Bruijn [mailto:willemdebruijn.kern=
-el@gmail.com]
-> =E5=8F=91=E9=80=81=E6=97=B6=E9=97=B4: 2020=E5=B9=B43=E6=9C=8827=E6=97=A5 =
-11:17
-> =E6=94=B6=E4=BB=B6=E4=BA=BA: Yi Yang (=E6=9D=A8=E7=87=9A)-=E4=BA=91=E6=9C=
-=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 <yangyi01@inspur.com>
-> =E6=8A=84=E9=80=81: willemdebruijn.kernel@gmail.com; yang_y_yi@163.com; n=
-etdev@vger.kernel.org; u9012063@gmail.com
-> =E4=B8=BB=E9=A2=98: Re: [vger.kernel.org=E4=BB=A3=E5=8F=91]Re: [vger.kern=
-el.org=E4=BB=A3=E5=8F=91]Re: [PATCH net-next] net/ packet: fix TPACKET_V3 p=
-erformance issue in case of TSO
->
-> > On Wed, Mar 25, 2020 at 8:45 PM Yi Yang (=E6=9D=A8=E7=87=9A)-=E4=BA=91=
-=E6=9C=8D=E5=8A=A1=E9=9B=86=E5=9B=A2 <yangyi01@inspur.com> wrote:
-> > >
-> > > By the way, even if we used hrtimer, it can't ensure so high performa=
-nce improvement, the reason is every frame has different size, you can't kn=
-ow how many microseconds one frame will be available, early timer firing wi=
-ll be an unnecessary waste, late timer firing will reduce performance, so I=
- still think the way this patch used is best so far.
-> > >
-> >
-> > The key differentiating feature of TPACKET_V3 is the use of blocks to e=
-fficiently pack packets and amortize wake ups.
-> >
-> > If you want immediate notification for every packet, why not just use T=
-PACKET_V2?
-> >
-> > For non-TSO packet, TPACKET_V3 is much better than TPACKET_V2, but for =
-TSO packet, it is bad, we prefer to use TPACKET_V3 for better performance.
->
-> At high rate, blocks are retired and userspace is notified as soon as a p=
-acket arrives that does not fit and requires dispatching a new block. As su=
-ch, max throughput is not timer dependent. The timer exists to bound notifi=
-cation latency when packet arrival rate is slow.
->
-> [Yi Yang] Per our iperf3 tcp test with TSO enabled, even if packet size i=
-s about 64K and block size is also 64K + 4K (to accommodate tpacket_vX head=
-er), we can't see high performance without this patch, I think some small p=
-ackets before 64K big packets decide what performance it can reach, accordi=
-ng to my trace, TCP packet size is increasing from less than 100 to 64K gra=
-dually, so it looks like how long this period took decides what performance=
- it can reach. So yes, I don=E2=80=99t think hrtimer can help fix this issu=
-e very efficiently. In addition, I also noticed packet size pattern is 1514=
-, 64K, 64K, 64K, 64K, ..., 1514, 64K even if it reaches 64K packet size, ma=
-ybe that 1514 packet has big impact on performance, I just guess.
+Introduce a new helper that allows assigning a previously-found socket
+to the skb as the packet is received towards the stack, to cause the
+stack to guide the packet towards that socket subject to local routing
+configuration. The intention is to support TProxy use cases more
+directly from eBPF programs attached at TC ingress, to simplify and
+streamline Linux stack configuration in scale environments with Cilium.
 
-Again, the main issue is that the timer does not matter at high rate.
-The 3 Gbps you report corresponds to ~6000 TSO packets, or 167 usec
-inter arrival time. The timer, whether 1 or 4 ms, should never be
-needed.
+Normally in ip{,6}_rcv_core(), the skb will be orphaned, dropping any
+existing socket reference associated with the skb. Existing tproxy
+implementations in netfilter get around this restriction by running the
+tproxy logic after ip_rcv_core() in the PREROUTING table. However, this
+is not an option for TC-based logic (including eBPF programs attached at
+TC ingress).
 
-There are too many unknown variables here. Besides block size, what is
-tp_block_nr? What is the drop rate? Are you certain that you are not
-causing drops by not reading fast enough? What happens when you
-increase tp_block_size or tp_block_nr? It may be worthwhile to pin
-iperf to one (set of) core(s) and the packet socket reader to another.
-Let it busy spin and do minimal processing, just return blocks back to
-the kernel.
+This series introduces the BPF helper bpf_sk_assign() to associate the
+socket with the skb on the ingress path as the packet is passed up the
+stack. The initial patch in the series simply takes a reference on the
+socket to ensure safety, but later patches relax this for listen
+sockets.
 
-If unsure about that, it may be interesting to instrument the kernel
-and count how many block retire operations are from
-prb_retire_rx_blk_timer_expired and how many from tpacket_rcv.
+To ensure delivery to the relevant socket, we still consult the routing
+table, for full examples of how to configure see the tests in patch #5;
+the simplest form of the route would look like this:
 
-Note that do_vnet only changes whether a virtio_net_header is prefixed
-to the data. Having that disabled (the common case) does not stop GSO
-packets from arriving.
+  $ ip route add local default dev lo
+
+This series is laid out as follows:
+* Patch 1 extends the eBPF API to add sk_assign() and defines a new
+  socket free function to allow the later paths to understand when the
+  socket associated with the skb should be kept through receive.
+* Patches 2-3 optimize the receive path to avoid taking a reference on
+  listener sockets during receive.
+* Patches 4-5 extends the selftests with examples of the new
+  functionality and validation of correct behaviour.
+
+Changes since v3:
+* Use sock_gen_put() directly instead of sock_edemux() from sock_pfree()
+* Commit message wording fixups
+* Add acks from Martin, Lorenz
+* Rebase
+
+Changes since v2:
+* Add selftests for UDP socket redirection
+* Drop the early demux optimization patch (defer for more testing)
+* Fix check for orphaning after TC act return
+* Tidy up the tests to clean up properly and be less noisy.
+
+Changes since v1:
+* Replace the metadata_dst approach with using the skb->destructor to
+  determine whether the socket has been prefetched. This is much
+  simpler.
+* Avoid taking a reference on listener sockets during receive
+* Restrict assigning sockets across namespaces
+* Restrict assigning SO_REUSEPORT sockets
+* Fix cookie usage for socket dst check
+* Rebase the tests against test_progs infrastructure
+* Tidy up commit messages
+
+Joe Stringer (4):
+  bpf: Add socket assign support
+  net: Track socket refcounts in skb_steal_sock()
+  bpf: Don't refcount LISTEN sockets in sk_assign()
+  selftests: bpf: Extend sk_assign tests for UDP
+
+Lorenz Bauer (1):
+  selftests: bpf: add test for sk_assign
+
+ include/net/inet6_hashtables.h                |   3 +-
+ include/net/inet_hashtables.h                 |   3 +-
+ include/net/sock.h                            |  42 ++-
+ include/uapi/linux/bpf.h                      |  25 +-
+ net/core/filter.c                             |  35 +-
+ net/core/sock.c                               |  10 +
+ net/ipv4/ip_input.c                           |   3 +-
+ net/ipv4/udp.c                                |   6 +-
+ net/ipv6/ip6_input.c                          |   3 +-
+ net/ipv6/udp.c                                |   9 +-
+ net/sched/act_bpf.c                           |   3 +
+ tools/include/uapi/linux/bpf.h                |  25 +-
+ .../selftests/bpf/prog_tests/sk_assign.c      | 309 ++++++++++++++++++
+ .../selftests/bpf/progs/test_sk_assign.c      | 204 ++++++++++++
+ 14 files changed, 656 insertions(+), 24 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/sk_assign.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_sk_assign.c
+
+-- 
+2.20.1
+
