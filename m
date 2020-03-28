@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D623196354
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 04:15:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BA7F196353
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 04:15:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727247AbgC1DPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 23:15:01 -0400
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:53447 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727125AbgC1DO7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 23:14:59 -0400
-Received: by mail-pj1-f67.google.com with SMTP id l36so4702138pjb.3
-        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 20:14:59 -0700 (PDT)
+        id S1727330AbgC1DPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 23:15:02 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:37621 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726947AbgC1DPB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 23:15:01 -0400
+Received: by mail-pl1-f195.google.com with SMTP id x1so4224206plm.4
+        for <netdev@vger.kernel.org>; Fri, 27 Mar 2020 20:15:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=pensando.io; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ko+uCO19QCVh5AUtwf1Zhv9JBZtt+WU8A4/1xeIWCrA=;
-        b=4IBv1mvUYgRsmKZauEgbcVSVcUBMysUHvV4f3tcHdr9WPcYKoYGK0gpaulJAoNXpFK
-         2fLY0Ce7ahj9yYBT2oAb2Y7BOfNnhqY9e88qugPyE30L3WFrjr85TT8tebboeDnMfu+/
-         39b4Mkf051Ndcd8wA14zfksb2Z3EJLfQ9X1NVDMJeEhvt2C0XI8nJZgiExEpMlgg3ByI
-         NvtMEhrcf0weqj2P2TkVxTUJejYr9Xv4yNYY/clHb/ymEIK9maLYazNly5xHurSSJyHs
-         v/THC+Ilevbt+y93/HgYb5Pll0jFudZ+OGQIemaC0+a/BJbAlI2BcmmaunLwqdQxMe5s
-         SRZw==
+        bh=MgUcrpqNSmqFO0JH+4v3tmB8rfiwibCBHNsCMcSszRo=;
+        b=l2np7HKlbFxVkK3dpSmhVIS0Y5bfDKK8sp7ur/D8Qh3BXopxfaVwA9BIkvrvL6gM4L
+         mKr/EOgyS+nLbxk/jTLPT2nGe/m4rCeWfN4KHHtY5IyzVxBWJYVHBeMtUq/OvKt489u4
+         mhQgGy7+WEGYpdbLCOOS6BRLT0iGIyy/d1to7i/BxhsoOsu6mpT5RTR+SyUXkK7KDSEw
+         MMvfYHFu14MFXZG7TMV9OueIW99oZuuvHw4/XOjJiHkoQ3sDq6+TxCT0y4lc8tOoLWBd
+         50id4PJjv335IiZBRbLDnlgBWLh1psNglKELq3HNZJkTakGQ5/pc8UNGWKVA+95ZOZks
+         Ckgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=ko+uCO19QCVh5AUtwf1Zhv9JBZtt+WU8A4/1xeIWCrA=;
-        b=ElKzdP2F4NJYDQsl+IPJE5DEOGDZHUsKTqFRR0z50+36ySZsNJLRAFnxpsQd9z8fwJ
-         Tp+KZvT6cZYscVPqvyzaUFFeBh+MXyBJfC9IOlVcqCPQBtaTUUJT/yTgs0z6XFnIcUBI
-         1HXtd4bCA+Ef6JDzEsFxBIyvz2cQNn+uEvHnaXG1T2Ef8gKOf9LeSdEREuzmOblv/GYS
-         2wO75qgAaBPwAj08C+VVLCMej0V2t4ttQy1/vK8N+ZEfdSD2s63Lg1mSnr8hQRKli9Jj
-         0KFWLNW5LoSG75EzE98nJgef7wXjjmlRKtirNbYEmLD09/M7ij/5xxpHJyWjgjtKMJ+D
-         BUww==
-X-Gm-Message-State: ANhLgQ1WMIOMXOmGgMjaLj5YoLT6C3mj3eUpMkD0y9yOeQnBd4/FcwxU
-        22UagVYPNxB52P/W/Rz2V7aatw==
-X-Google-Smtp-Source: ADFU+vu/QJWZr0m0tx70bu4Xm+YmqA8HoMpeR85iNNPtRCAEhPq5twCe0QF4nxOODppPAPI7QPAw/w==
-X-Received: by 2002:a17:902:ec03:: with SMTP id l3mr632101pld.73.1585365298796;
-        Fri, 27 Mar 2020 20:14:58 -0700 (PDT)
+        bh=MgUcrpqNSmqFO0JH+4v3tmB8rfiwibCBHNsCMcSszRo=;
+        b=MBRQAml1HtTI1W+CnOQotbFAi8tEKUCVeJ6CcZ2sbRDjdYxJQI3S7Mdv9fKMhxt/7n
+         zONRjj2YKIWS2+xBGGo+zf3IL4/t11vpS/yOuyakl4fx+d/gZgBc44TsZhoJTrFgFFKt
+         oRYM3sqjnU7MisaoB8BumDfQcO9oNzBtaYAUAm20O1CL+qsSW98sCDe0KDFfNqNOogjm
+         XowsUFkXhJpzW2xMhDQLN4mTqIyMPOsUJkuOA/dovOMPiLoFtJpewf8hCSSb8i5lGggp
+         Zr221aAt3WkJNp8HPPe3uCYqe7ZL8BanyqBoOxIpUs6fPgaug7zBaSYzReTia1TCeDmE
+         LNVw==
+X-Gm-Message-State: ANhLgQ1laNqkJidljAnmt2OdzUpkvrEYQpJkoCTIl9yLJhGN+aNX6MDY
+        4cZa+BpRriJtwOPG91yeOZSySw==
+X-Google-Smtp-Source: ADFU+vug+A5Ne07DAd2XwI54uL1GxRZBfT45mnf9vOiuSa3DJf+wt7U1VgvdrJsD5GNEuyIQhHpmog==
+X-Received: by 2002:a17:90a:730b:: with SMTP id m11mr2755115pjk.195.1585365299726;
+        Fri, 27 Mar 2020 20:14:59 -0700 (PDT)
 Received: from driver-dev1.pensando.io ([12.226.153.42])
-        by smtp.gmail.com with ESMTPSA id o65sm5208391pfg.187.2020.03.27.20.14.57
+        by smtp.gmail.com with ESMTPSA id o65sm5208391pfg.187.2020.03.27.20.14.58
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 27 Mar 2020 20:14:58 -0700 (PDT)
+        Fri, 27 Mar 2020 20:14:59 -0700 (PDT)
 From:   Shannon Nelson <snelson@pensando.io>
 To:     davem@davemloft.net, netdev@vger.kernel.org
 Cc:     Shannon Nelson <snelson@pensando.io>
-Subject: [PATCH v2 net-next 5/8] ionic: clean tx queue of unfinished requests
-Date:   Fri, 27 Mar 2020 20:14:45 -0700
-Message-Id: <20200328031448.50794-6-snelson@pensando.io>
+Subject: [PATCH v2 net-next 6/8] ionic: check for queues before deleting
+Date:   Fri, 27 Mar 2020 20:14:46 -0700
+Message-Id: <20200328031448.50794-7-snelson@pensando.io>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200328031448.50794-1-snelson@pensando.io>
 References: <20200328031448.50794-1-snelson@pensando.io>
@@ -57,66 +57,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Clean out tx requests that didn't get finished before
-shutting down the queue.
+Make sure the queue structures exist before trying
+to delete them.  This addresses a couple of error
+recovery issues.
 
 Signed-off-by: Shannon Nelson <snelson@pensando.io>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_lif.c  |  1 +
- drivers/net/ethernet/pensando/ionic/ionic_txrx.c | 16 ++++++++++++++++
- drivers/net/ethernet/pensando/ionic/ionic_txrx.h |  1 +
- 3 files changed, 18 insertions(+)
+ .../net/ethernet/pensando/ionic/ionic_lif.c   | 57 ++++++++++++-------
+ 1 file changed, 38 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index b3f568356824..2804690657fd 100644
+index 2804690657fd..e2281542644b 100644
 --- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
 +++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -1454,6 +1454,7 @@ static void ionic_txrx_deinit(struct ionic_lif *lif)
- 	for (i = 0; i < lif->nxqs; i++) {
- 		ionic_lif_qcq_deinit(lif, lif->txqcqs[i].qcq);
- 		ionic_tx_flush(&lif->txqcqs[i].qcq->cq);
-+		ionic_tx_empty(&lif->txqcqs[i].qcq->q);
+@@ -1437,13 +1437,20 @@ static void ionic_txrx_disable(struct ionic_lif *lif)
+ 	unsigned int i;
+ 	int err;
  
- 		ionic_lif_qcq_deinit(lif, lif->rxqcqs[i].qcq);
- 		ionic_rx_flush(&lif->rxqcqs[i].qcq->cq);
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index 15ff633e81ba..d233b6e77b1e 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -593,6 +593,22 @@ void ionic_tx_flush(struct ionic_cq *cq)
- 				   work_done, 0);
+-	for (i = 0; i < lif->nxqs; i++) {
+-		err = ionic_qcq_disable(lif->txqcqs[i].qcq);
+-		if (err == -ETIMEDOUT)
+-			break;
+-		err = ionic_qcq_disable(lif->rxqcqs[i].qcq);
+-		if (err == -ETIMEDOUT)
+-			break;
++	if (lif->txqcqs) {
++		for (i = 0; i < lif->nxqs; i++) {
++			err = ionic_qcq_disable(lif->txqcqs[i].qcq);
++			if (err == -ETIMEDOUT)
++				break;
++		}
++	}
++
++	if (lif->rxqcqs) {
++		for (i = 0; i < lif->nxqs; i++) {
++			err = ionic_qcq_disable(lif->rxqcqs[i].qcq);
++			if (err == -ETIMEDOUT)
++				break;
++		}
+ 	}
  }
  
-+void ionic_tx_empty(struct ionic_queue *q)
-+{
-+	struct ionic_desc_info *desc_info;
-+	int done = 0;
-+
-+	/* walk the not completed tx entries, if any */
-+	while (q->head != q->tail) {
-+		desc_info = q->tail;
-+		q->tail = desc_info->next;
-+		ionic_tx_clean(q, desc_info, NULL, desc_info->cb_arg);
-+		desc_info->cb = NULL;
-+		desc_info->cb_arg = NULL;
-+		done++;
-+	}
-+}
-+
- static int ionic_tx_tcp_inner_pseudo_csum(struct sk_buff *skb)
+@@ -1451,14 +1458,20 @@ static void ionic_txrx_deinit(struct ionic_lif *lif)
  {
- 	int err;
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.h b/drivers/net/ethernet/pensando/ionic/ionic_txrx.h
-index 53775c62c85a..71973e3c35a6 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.h
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.h
-@@ -9,6 +9,7 @@ void ionic_tx_flush(struct ionic_cq *cq);
+ 	unsigned int i;
  
- void ionic_rx_fill(struct ionic_queue *q);
- void ionic_rx_empty(struct ionic_queue *q);
-+void ionic_tx_empty(struct ionic_queue *q);
- int ionic_rx_napi(struct napi_struct *napi, int budget);
- netdev_tx_t ionic_start_xmit(struct sk_buff *skb, struct net_device *netdev);
+-	for (i = 0; i < lif->nxqs; i++) {
+-		ionic_lif_qcq_deinit(lif, lif->txqcqs[i].qcq);
+-		ionic_tx_flush(&lif->txqcqs[i].qcq->cq);
+-		ionic_tx_empty(&lif->txqcqs[i].qcq->q);
++	if (lif->txqcqs) {
++		for (i = 0; i < lif->nxqs; i++) {
++			ionic_lif_qcq_deinit(lif, lif->txqcqs[i].qcq);
++			ionic_tx_flush(&lif->txqcqs[i].qcq->cq);
++			ionic_tx_empty(&lif->txqcqs[i].qcq->q);
++		}
++	}
+ 
+-		ionic_lif_qcq_deinit(lif, lif->rxqcqs[i].qcq);
+-		ionic_rx_flush(&lif->rxqcqs[i].qcq->cq);
+-		ionic_rx_empty(&lif->rxqcqs[i].qcq->q);
++	if (lif->rxqcqs) {
++		for (i = 0; i < lif->nxqs; i++) {
++			ionic_lif_qcq_deinit(lif, lif->rxqcqs[i].qcq);
++			ionic_rx_flush(&lif->rxqcqs[i].qcq->cq);
++			ionic_rx_empty(&lif->rxqcqs[i].qcq->q);
++		}
+ 	}
+ }
+ 
+@@ -1466,12 +1479,18 @@ static void ionic_txrx_free(struct ionic_lif *lif)
+ {
+ 	unsigned int i;
+ 
+-	for (i = 0; i < lif->nxqs; i++) {
+-		ionic_qcq_free(lif, lif->txqcqs[i].qcq);
+-		lif->txqcqs[i].qcq = NULL;
++	if (lif->txqcqs) {
++		for (i = 0; i < lif->nxqs; i++) {
++			ionic_qcq_free(lif, lif->txqcqs[i].qcq);
++			lif->txqcqs[i].qcq = NULL;
++		}
++	}
+ 
+-		ionic_qcq_free(lif, lif->rxqcqs[i].qcq);
+-		lif->rxqcqs[i].qcq = NULL;
++	if (lif->rxqcqs) {
++		for (i = 0; i < lif->nxqs; i++) {
++			ionic_qcq_free(lif, lif->rxqcqs[i].qcq);
++			lif->rxqcqs[i].qcq = NULL;
++		}
+ 	}
+ }
  
 -- 
 2.17.1
