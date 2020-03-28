@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 044E91962A5
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 01:41:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA82B1962B0
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 01:44:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727026AbgC1Alq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 27 Mar 2020 20:41:46 -0400
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:45046 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726225AbgC1Alq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 20:41:46 -0400
-Received: by mail-qv1-f68.google.com with SMTP id ef12so3830224qvb.11;
-        Fri, 27 Mar 2020 17:41:45 -0700 (PDT)
+        id S1727173AbgC1AoC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 27 Mar 2020 20:44:02 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:45772 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726291AbgC1AoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 27 Mar 2020 20:44:02 -0400
+Received: by mail-qt1-f194.google.com with SMTP id t17so10197889qtn.12;
+        Fri, 27 Mar 2020 17:44:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=hrLvmijGpNOcwCRJI0CRFmncxEONHTsSBYmIlT7k45s=;
-        b=kusI9nyYDUysLuYjjEVco0m+cdAPRoLi/A0HVEqL1GjcyUbDL6rjLGF+L9ufqwh59+
-         Iw9ld3ZzEhwNtUuZrkb9Zqi0UZtJxTh5Il9ZSiwqY9sozdP8C0SHJ6Crve7UoipS+v3H
-         QCHkCMlnsPH/42qZ1Ov6bQvcOwQKZBjfBf0LwUtBX0V+z9KsS7ARcD/ELk9lJShzKIGN
-         b0QHSyfTpmwR3A1mC2HF6Ihe8mso1v+x8OAGHOultZPtZv3tFxlBRXXz2WmzlekdcJck
-         xhftY5x6+77lu8Qr/bXsdYq5plV8GqGGlt1CWnP6UoJtRX2Br4svhD6nvahyTNAiUIV4
-         fp1w==
+        bh=rMJYG1jGgRCPKZLXTMUuXjqqtG+67kIh7sGhCbl7U9M=;
+        b=G+3lX5FmRpA1wH+nvzakwS5bdE0AwrBPM4P20VNOeSNUYxOwYZWgQ/A8LIaaJL1pZ7
+         jEZr397deQ6GmdON0XVE+vXGq/NWRwe16Scqu94SYgJo/hldsnJ3Y2lsiSNqISVWiPVz
+         Qk1m4AtKyd7e5cF24yYR9ae1Ae5lAehOMj5H7A6SE91vV3+ibhHlliODxFU2f3t+8KtH
+         3cA2xs2Dj3hwszfnpOZzngmSTKZrzyG8cbLqmxeGi9GeC93I6rQCDq3X5FShn+gtib0q
+         Kyhdd/DRmI96VW4sQCaSm8cxiJWxwHLkOK7G9EprWEmkeBos+ku7HE3sThZsdAf96Loh
+         Wa/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=hrLvmijGpNOcwCRJI0CRFmncxEONHTsSBYmIlT7k45s=;
-        b=AI2/tIK0uRTUDixhCVuzmuuJW/v/Y99CfIuyn2gHvbGUF0jyg2GpjUcPWVlhJeTBMo
-         8Sm0rVkvDyX/KWlOqRJQ5Vo+M0uIbq4+KH0a4+oioZnILaXzL/0AVlfZXbszdrYKhgiv
-         0V0rWfvrozl0GXPMZltTVZF+r6vogBeYX45KGQxje6jotsb0v/teJBbSLj2i+/IR17ez
-         Qn0kUeGCquy+e2d0CCQcT/ua2uHDncbv1VQzHdpx/U4R7SzBoDDzBfQ7+inYlYzVglTh
-         Z2YE07STXf5put5RCLMqt3xuM9DqveJix7uZgFuH78SLlajkwEMlLPljoJjaN4g6vC5D
-         RzkQ==
-X-Gm-Message-State: ANhLgQ0D0RggXHWR6eTtvabPY+W9gO1ygJcrD0NotkC4pRYUxMPdwY5M
-        DRlu2m857XIla+KsD127LUpptZn7psi3FwF6bFk=
-X-Google-Smtp-Source: ADFU+vswRLpJyHsOXP4Pdodw1Twvgz9gd/IO6zvEPwuAWsAs4/JoTj+TMVd/Ko7rmQrSlWV5TE9sh3B/JSQkljjat34=
-X-Received: by 2002:a0c:8525:: with SMTP id n34mr1957780qva.224.1585356105512;
- Fri, 27 Mar 2020 17:41:45 -0700 (PDT)
+        bh=rMJYG1jGgRCPKZLXTMUuXjqqtG+67kIh7sGhCbl7U9M=;
+        b=BixQy3YE8ugLXTIhTy9cFQgKglpu+sTzhsAmy/XulElg6KN6jJ12XCfkuU8C6xppda
+         xCR8n6nEe5bMVUGGIHlzrMnD7B6WL8XiD+7ewVLfiJvLR9UAI4lPaOgeDoLmLi+2a0Yz
+         IjrM/IRde87PIf/o8kiC7myCFp0exvffSUVA7aElWi3WUQ16AjoO80yUzcqFp7tjA7C4
+         cl1RCI7JYwVkN229lXrCFrxHUgmNlBffeN0F4N5PLaAxg3kFUqbRon4oDqmJgQbSGRup
+         czLxKyJZFZ0zpsE6YM1atwxfd8Zfs0etbnpINxHuki/xEZW+lbLtpSjrAK940wzVZ2wj
+         Ir2A==
+X-Gm-Message-State: ANhLgQ0D2ddis1TauNBE7ythjjd9qqI8Ux0pgFUfB8+WEotdi5thQ2c0
+        FjI0pIbU8kpcSccQdt/1it6eKvwGIp1ozhE9r8E=
+X-Google-Smtp-Source: ADFU+vtk5uxjvtzwWFwM5vCjac79cpbkkuDzWA64WZuMhW1Edx0LYXADmAXTEaCf2nyFaS4AYeC4hW17RfgjeEkRKW4=
+X-Received: by 2002:ac8:7cb0:: with SMTP id z16mr1995320qtv.59.1585356239639;
+ Fri, 27 Mar 2020 17:43:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1585323121.git.daniel@iogearbox.net> <555e1c69db7376c0947007b4951c260e1074efc3.1585323121.git.daniel@iogearbox.net>
-In-Reply-To: <555e1c69db7376c0947007b4951c260e1074efc3.1585323121.git.daniel@iogearbox.net>
+References: <cover.1585323121.git.daniel@iogearbox.net> <d2a7ef42530ad299e3cbb245e6c12374b72145ef.1585323121.git.daniel@iogearbox.net>
+In-Reply-To: <d2a7ef42530ad299e3cbb245e6c12374b72145ef.1585323121.git.daniel@iogearbox.net>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 27 Mar 2020 17:41:34 -0700
-Message-ID: <CAEf4BzY5dd-wXbLziCQJOgikY-qvD+GQC=9HHZGCqmM_R-2mJA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/7] bpf: allow to retrieve cgroup v1 classid
- from v2 hooks
+Date:   Fri, 27 Mar 2020 17:43:48 -0700
+Message-ID: <CAEf4BzZZCM1YcQU=dj6wxBaKHFbLGb1j4NCec4aDUfObk-vhsg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 5/7] bpf: enable bpf cgroup hooks to retrieve
+ cgroup v2 and ancestor id
 To:     Daniel Borkmann <daniel@iogearbox.net>
 Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Martynas Pumputis <m@lambda.lt>,
@@ -59,25 +59,192 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Mar 27, 2020 at 9:00 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Fri, Mar 27, 2020 at 8:59 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
-> Today, Kubernetes is still operating on cgroups v1, however, it is
-> possible to retrieve the task's classid based on 'current' out of
-> connect(), sendmsg(), recvmsg() and bind-related hooks for orchestrators
-> which attach to the root cgroup v2 hook in a mixed env like in case
-> of Cilium, for example, in order to then correlate certain pod traffic
-> and use it as part of the key for BPF map lookups.
+> Enable the bpf_get_current_cgroup_id() helper for connect(), sendmsg(),
+> recvmsg() and bind-related hooks in order to retrieve the cgroup v2
+> context which can then be used as part of the key for BPF map lookups,
+> for example. Given these hooks operate in process context 'current' is
+> always valid and pointing to the app that is performing mentioned
+> syscalls if it's subject to a v2 cgroup. Also with same motivation of
+> commit 7723628101aa ("bpf: Introduce bpf_skb_ancestor_cgroup_id helper")
+> enable retrieval of ancestor from current so the cgroup id can be used
+> for policy lookups which can then forbid connect() / bind(), for example.
 >
-
-Have you tried getting this classid directly from task_struct in your
-BPF program with vmlinux.h and CO-RE? Seems like it should be pretty
-straightforward and not requiring a special BPF handler just for that?
-
 > Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 > ---
->  include/net/cls_cgroup.h |  7 ++++++-
->  net/core/filter.c        | 21 +++++++++++++++++++++
->  2 files changed, 27 insertions(+), 1 deletion(-)
->
 
-[...]
+Same question about just directly getting this from current through CO-RE.
+
+>  include/linux/bpf.h            |  1 +
+>  include/uapi/linux/bpf.h       | 21 ++++++++++++++++++++-
+>  kernel/bpf/core.c              |  1 +
+>  kernel/bpf/helpers.c           | 18 ++++++++++++++++++
+>  net/core/filter.c              | 12 ++++++++++++
+>  tools/include/uapi/linux/bpf.h | 21 ++++++++++++++++++++-
+>  6 files changed, 72 insertions(+), 2 deletions(-)
+>
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 78046c570596..372708eeaecd 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1501,6 +1501,7 @@ extern const struct bpf_func_proto bpf_get_stack_proto;
+>  extern const struct bpf_func_proto bpf_sock_map_update_proto;
+>  extern const struct bpf_func_proto bpf_sock_hash_update_proto;
+>  extern const struct bpf_func_proto bpf_get_current_cgroup_id_proto;
+> +extern const struct bpf_func_proto bpf_get_current_ancestor_cgroup_id_proto;
+>  extern const struct bpf_func_proto bpf_msg_redirect_hash_proto;
+>  extern const struct bpf_func_proto bpf_msg_redirect_map_proto;
+>  extern const struct bpf_func_proto bpf_sk_redirect_hash_proto;
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index bd81c4555206..222ba11966e3 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -2963,6 +2963,24 @@ union bpf_attr {
+>   *             instead of sockets.
+>   *     Return
+>   *             A 8-byte long opaque number.
+> + *
+> + * u64 bpf_get_current_ancestor_cgroup_id(int ancestor_level)
+> + *     Description
+> + *             Return id of cgroup v2 that is ancestor of the cgroup associated
+> + *             with the current task at the *ancestor_level*. The root cgroup
+> + *             is at *ancestor_level* zero and each step down the hierarchy
+> + *             increments the level. If *ancestor_level* == level of cgroup
+> + *             associated with the current task, then return value will be the
+> + *             same as that of **bpf_get_current_cgroup_id**\ ().
+> + *
+> + *             The helper is useful to implement policies based on cgroups
+> + *             that are upper in hierarchy than immediate cgroup associated
+> + *             with the current task.
+> + *
+> + *             The format of returned id and helper limitations are same as in
+> + *             **bpf_get_current_cgroup_id**\ ().
+> + *     Return
+> + *             The id is returned or 0 in case the id could not be retrieved.
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -3087,7 +3105,8 @@ union bpf_attr {
+>         FN(read_branch_records),        \
+>         FN(get_ns_current_pid_tgid),    \
+>         FN(xdp_output),                 \
+> -       FN(get_netns_cookie),
+> +       FN(get_netns_cookie),           \
+> +       FN(get_current_ancestor_cgroup_id),
+>
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> index 914f3463aa41..916f5132a984 100644
+> --- a/kernel/bpf/core.c
+> +++ b/kernel/bpf/core.c
+> @@ -2156,6 +2156,7 @@ const struct bpf_func_proto bpf_get_current_pid_tgid_proto __weak;
+>  const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+>  const struct bpf_func_proto bpf_get_current_comm_proto __weak;
+>  const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
+> +const struct bpf_func_proto bpf_get_current_ancestor_cgroup_id_proto __weak;
+>  const struct bpf_func_proto bpf_get_local_storage_proto __weak;
+>  const struct bpf_func_proto bpf_get_ns_current_pid_tgid_proto __weak;
+>
+> diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> index 01878db15eaf..bafc53ddd350 100644
+> --- a/kernel/bpf/helpers.c
+> +++ b/kernel/bpf/helpers.c
+> @@ -340,6 +340,24 @@ const struct bpf_func_proto bpf_get_current_cgroup_id_proto = {
+>         .ret_type       = RET_INTEGER,
+>  };
+>
+> +BPF_CALL_1(bpf_get_current_ancestor_cgroup_id, int, ancestor_level)
+> +{
+> +       struct cgroup *cgrp = task_dfl_cgroup(current);
+> +       struct cgroup *ancestor;
+> +
+> +       ancestor = cgroup_ancestor(cgrp, ancestor_level);
+> +       if (!ancestor)
+> +               return 0;
+> +       return cgroup_id(ancestor);
+> +}
+> +
+> +const struct bpf_func_proto bpf_get_current_ancestor_cgroup_id_proto = {
+> +       .func           = bpf_get_current_ancestor_cgroup_id,
+> +       .gpl_only       = false,
+> +       .ret_type       = RET_INTEGER,
+> +       .arg1_type      = ARG_ANYTHING,
+> +};
+> +
+>  #ifdef CONFIG_CGROUP_BPF
+>  DECLARE_PER_CPU(struct bpf_cgroup_storage*,
+>                 bpf_cgroup_storage[MAX_BPF_CGROUP_STORAGE_TYPE]);
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 3083c7746ee0..5cec3ac9e3dd 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -6018,6 +6018,12 @@ sock_filter_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>                 return &bpf_get_netns_cookie_sock_proto;
+>         case BPF_FUNC_perf_event_output:
+>                 return &bpf_event_output_data_proto;
+> +#ifdef CONFIG_CGROUPS
+> +       case BPF_FUNC_get_current_cgroup_id:
+> +               return &bpf_get_current_cgroup_id_proto;
+> +       case BPF_FUNC_get_current_ancestor_cgroup_id:
+> +               return &bpf_get_current_ancestor_cgroup_id_proto;
+> +#endif
+>  #ifdef CONFIG_CGROUP_NET_CLASSID
+>         case BPF_FUNC_get_cgroup_classid:
+>                 return &bpf_get_cgroup_classid_curr_proto;
+> @@ -6052,6 +6058,12 @@ sock_addr_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+>                 return &bpf_get_local_storage_proto;
+>         case BPF_FUNC_perf_event_output:
+>                 return &bpf_event_output_data_proto;
+> +#ifdef CONFIG_CGROUPS
+> +       case BPF_FUNC_get_current_cgroup_id:
+> +               return &bpf_get_current_cgroup_id_proto;
+> +       case BPF_FUNC_get_current_ancestor_cgroup_id:
+> +               return &bpf_get_current_ancestor_cgroup_id_proto;
+> +#endif
+>  #ifdef CONFIG_CGROUP_NET_CLASSID
+>         case BPF_FUNC_get_cgroup_classid:
+>                 return &bpf_get_cgroup_classid_curr_proto;
+> diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+> index bd81c4555206..222ba11966e3 100644
+> --- a/tools/include/uapi/linux/bpf.h
+> +++ b/tools/include/uapi/linux/bpf.h
+> @@ -2963,6 +2963,24 @@ union bpf_attr {
+>   *             instead of sockets.
+>   *     Return
+>   *             A 8-byte long opaque number.
+> + *
+> + * u64 bpf_get_current_ancestor_cgroup_id(int ancestor_level)
+> + *     Description
+> + *             Return id of cgroup v2 that is ancestor of the cgroup associated
+> + *             with the current task at the *ancestor_level*. The root cgroup
+> + *             is at *ancestor_level* zero and each step down the hierarchy
+> + *             increments the level. If *ancestor_level* == level of cgroup
+> + *             associated with the current task, then return value will be the
+> + *             same as that of **bpf_get_current_cgroup_id**\ ().
+> + *
+> + *             The helper is useful to implement policies based on cgroups
+> + *             that are upper in hierarchy than immediate cgroup associated
+> + *             with the current task.
+> + *
+> + *             The format of returned id and helper limitations are same as in
+> + *             **bpf_get_current_cgroup_id**\ ().
+> + *     Return
+> + *             The id is returned or 0 in case the id could not be retrieved.
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -3087,7 +3105,8 @@ union bpf_attr {
+>         FN(read_branch_records),        \
+>         FN(get_ns_current_pid_tgid),    \
+>         FN(xdp_output),                 \
+> -       FN(get_netns_cookie),
+> +       FN(get_netns_cookie),           \
+> +       FN(get_current_ancestor_cgroup_id),
+>
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>   * function eBPF program intends to call
+> --
+> 2.21.0
+>
