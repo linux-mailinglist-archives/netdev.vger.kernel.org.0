@@ -2,97 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DCA81967D2
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 18:04:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 55ACD1967F9
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 18:14:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727048AbgC1REl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 13:04:41 -0400
-Received: from mx.sdf.org ([205.166.94.20]:63281 "EHLO mx.sdf.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725807AbgC1REk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 28 Mar 2020 13:04:40 -0400
-Received: from sdf.org (IDENT:lkml@sdf.lonestar.org [205.166.94.16])
-        by mx.sdf.org (8.15.2/8.14.5) with ESMTPS id 02SH47cb023288
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits) verified NO);
-        Sat, 28 Mar 2020 17:04:08 GMT
-Received: (from lkml@localhost)
-        by sdf.org (8.15.2/8.12.8/Submit) id 02SH4767016334;
-        Sat, 28 Mar 2020 17:04:07 GMT
-Message-Id: <202003281704.02SH4767016334@sdf.org>
-From:   George Spelvin <lkml@sdf.org>
-Date:   Wed, 21 Aug 2019 20:30:18 -0400
-Subject: [RFC PATCH v1 18/50] net/ipv6/addrconf.c: Use prandom_u32_max for
- rfc3315 backoff time computation
+        id S1726265AbgC1ROc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 13:14:32 -0400
+Received: from www62.your-server.de ([213.133.104.62]:59022 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725807AbgC1ROc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 13:14:32 -0400
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jIF2Q-0001nu-OY; Sat, 28 Mar 2020 18:14:26 +0100
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jIF2Q-0002jX-Br; Sat, 28 Mar 2020 18:14:26 +0100
+Subject: Re: [PATCH bpf-next] xsk: Init all ring members in xsk_umem__create
+ and xsk_socket__create
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Fletcher Dunn <fletcherd@valvesoftware.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Brandon Gilmore <bgilmore@valvesoftware.com>,
+        Steven Noonan <steven@valvesoftware.com>
+References: <85f12913cde94b19bfcb598344701c38@valvesoftware.com>
+ <CAJ8uoz2M0Xj_maD3jZeZedrUXGNJqvbV_DyC2A8Yh9R6z7gfsg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <ae371400-e37f-bbac-691e-cc50235f1ee0@iogearbox.net>
+Date:   Sat, 28 Mar 2020 18:14:25 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To:     linux-kernel@vger.kernel.org, lkml@sdf.org
-Cc:     Maciej Zenczykowski <maze@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org
+In-Reply-To: <CAJ8uoz2M0Xj_maD3jZeZedrUXGNJqvbV_DyC2A8Yh9R6z7gfsg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25765/Sat Mar 28 14:16:42 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's no need for 64-bit intermediate values and do_div.
+On 3/28/20 10:18 AM, Magnus Karlsson wrote:
+> On Fri, Mar 27, 2020 at 4:40 AM Fletcher Dunn
+> <fletcherd@valvesoftware.com> wrote:
+>>
+>> Fix a sharp edge in xsk_umem__create and xsk_socket__create.  Almost all of
+>> the members of the ring buffer structs are initialized, but the "cached_xxx"
+>> variables are not all initialized.  The caller is required to zero them.
+>> This is needlessly dangerous.  The results if you don't do it can be very bad.
+>> For example, they can cause xsk_prod_nb_free and xsk_cons_nb_avail to return
+>> values greater than the size of the queue.  xsk_ring_cons__peek can return an
+>> index that does not refer to an item that has been queued.
+>>
+>> I have confirmed that without this change, my program misbehaves unless I
+>> memset the ring buffers to zero before calling the function.  Afterwards,
+>> my program works without (or with) the memset.
+> 
+> Thank you Flecther for catching this. Appreciated.
+> 
+> /Magnus
+> 
+> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
-(Actually, the algorithm isn't changing much, except that the old
-code used a scaling factor of 1 million.  prandom_u32_max uses
-a factor of 2^32, making the final division more efficient.)
-
-One thing that concerns me a bit is that the data types are all
-signed.  The old code cast the inputs to unsigned and produced
-strange overflowed results if they were negative, so presumably
-that never happens in practice.
-
-The new code works the same for positive inputs, but produces
-different strange overflowed results if fed negative inputs.
-
-Signed-off-by: George Spelvin <lkml@sdf.org>
-Cc: Maciej Żenczykowski <maze@google.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-Cc: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Cc: netdev@vger.kernel.org
----
- net/ipv6/addrconf.c | 15 +++++++--------
- 1 file changed, 7 insertions(+), 8 deletions(-)
-
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index ec3f472bc5a8f..5172f1f874363 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -103,20 +103,19 @@ static inline u32 cstamp_delta(unsigned long cstamp)
- static inline s32 rfc3315_s14_backoff_init(s32 irt)
- {
- 	/* multiply 'initial retransmission time' by 0.9 .. 1.1 */
--	u64 tmp = (900000 + prandom_u32() % 200001) * (u64)irt;
--	do_div(tmp, 1000000);
--	return (s32)tmp;
-+	s32 range = irt / 5;
-+	return irt - (s32)(range/2) + (s32)prandom_u32_max(range);
- }
- 
- static inline s32 rfc3315_s14_backoff_update(s32 rt, s32 mrt)
- {
- 	/* multiply 'retransmission timeout' by 1.9 .. 2.1 */
--	u64 tmp = (1900000 + prandom_u32() % 200001) * (u64)rt;
--	do_div(tmp, 1000000);
--	if ((s32)tmp > mrt) {
-+	s32 range = rt / 5;
-+	s32 tmp = 2*rt - (s32)(range/2) + (s32)prandom_u32_max(range);
-+	if (tmp > mrt) {
- 		/* multiply 'maximum retransmission time' by 0.9 .. 1.1 */
--		tmp = (900000 + prandom_u32() % 200001) * (u64)mrt;
--		do_div(tmp, 1000000);
-+		range = mrt / 5;
-+		tmp = mrt - (s32)(range/2) + (s32)prandom_u32_max(range);
- 	}
- 	return (s32)tmp;
- }
--- 
-2.26.0
-
+Applied, thanks!
