@@ -2,76 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55ACD1967F9
-	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 18:14:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 332AB196800
+	for <lists+netdev@lfdr.de>; Sat, 28 Mar 2020 18:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726265AbgC1ROc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 13:14:32 -0400
-Received: from www62.your-server.de ([213.133.104.62]:59022 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725807AbgC1ROc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 13:14:32 -0400
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jIF2Q-0001nu-OY; Sat, 28 Mar 2020 18:14:26 +0100
-Received: from [178.195.186.98] (helo=pc-9.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1jIF2Q-0002jX-Br; Sat, 28 Mar 2020 18:14:26 +0100
-Subject: Re: [PATCH bpf-next] xsk: Init all ring members in xsk_umem__create
- and xsk_socket__create
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        Fletcher Dunn <fletcherd@valvesoftware.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
+        id S1726391AbgC1RPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 13:15:45 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:38569 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725807AbgC1RPo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 13:15:44 -0400
+Received: by mail-lj1-f193.google.com with SMTP id w1so13442194ljh.5;
+        Sat, 28 Mar 2020 10:15:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7exri8zrodsXC4FlGnPp6owqK68HPJA0l5YKpA/BVCo=;
+        b=GyR45Q3XZZUq2E9F0kKki+IuMI5yicC5lgNFwERNkQz0Fbzugi5P+Di9eyswpUCE9h
+         Lxb7npOC+cXaYfo52sjglX+12R2iWj2ZoeOAo/z7yG4GgMAY5fyw+HBxQZweqU942ykA
+         lOV7dUJbJaBog3nrK9hiyNFQvaby8WERd+oo3SsmqIQx+nhdXoy7DORUOK6KGZagshkw
+         b2xWNHbsApNpyyIeAZO3PCIQKPddZIalVQzetmBr2Uo/afM830auEmnCgOFiueVtmVRu
+         OlrejOttAYmdpqkkhSoSo3mQrnxHiF/WPZZ8b3zG2PjumORkk8IDdk1is3VOI9wrARHV
+         MCYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7exri8zrodsXC4FlGnPp6owqK68HPJA0l5YKpA/BVCo=;
+        b=J+D/k6BUQM31Yunr/6B8OnTBudeosxjQkkzB75nBV0lUWOogXxuxCFrm0RNR6wjkTI
+         FahRN+hestaEI+AuGrmuwQhIrTLbNj2ahL9KXElDKQAZJXYvtGbArQphEAAliY81GJQ9
+         +Rash7lS6kw9hCCOBURWQvZfoG4uNQnh7LMvwzLNxcwesSvJBxip92puMw8EJED5ISzv
+         K4EiL0q57ZsBnbcAI5DhucQ/9CWZWa3gjxgdsWtMcCizgG3xSszRWrlzFNHeFIqOXPrn
+         cB/c7qLRDHzTpXO9+uD8MLn5zS+xVoGDiOlqkvC4aOVSpJZCwHlBkNqTLXdwH+XBU+D/
+         sJiw==
+X-Gm-Message-State: AGi0PuZd+3wgDOF4LE0AXWpyG4l1ebfllLv2g7vTjK7GXbeV6PPnA7Yr
+        K9ADCwNMfdMHYx56Qe4y1Lu189bMeyHEPwcZyzM=
+X-Google-Smtp-Source: APiQypLRqvVrummPMpgy91IdjOEYjOgFZpq4qdE6UOaQCTLbTnpKGkgQiDGai0RymrhxccmMKhab1dqm2KkwhIGH4UI=
+X-Received: by 2002:a2e:988c:: with SMTP id b12mr2704094ljj.138.1585415741617;
+ Sat, 28 Mar 2020 10:15:41 -0700 (PDT)
+MIME-Version: 1.0
+References: <202003281643.02SGhPH7029961@sdf.org>
+In-Reply-To: <202003281643.02SGhPH7029961@sdf.org>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sat, 28 Mar 2020 10:15:29 -0700
+Message-ID: <CAADnVQLA4GHShQp7=zEgkpvKiUY65Gsr2Mso2ivCnTqPbQtY8g@mail.gmail.com>
+Subject: Re: [RFC PATCH v1 47/50] kernel/bpf/core.c: Use get_random_max32()
+To:     George Spelvin <lkml@sdf.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Brandon Gilmore <bgilmore@valvesoftware.com>,
-        Steven Noonan <steven@valvesoftware.com>
-References: <85f12913cde94b19bfcb598344701c38@valvesoftware.com>
- <CAJ8uoz2M0Xj_maD3jZeZedrUXGNJqvbV_DyC2A8Yh9R6z7gfsg@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <ae371400-e37f-bbac-691e-cc50235f1ee0@iogearbox.net>
-Date:   Sat, 28 Mar 2020 18:14:25 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <CAJ8uoz2M0Xj_maD3jZeZedrUXGNJqvbV_DyC2A8Yh9R6z7gfsg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25765/Sat Mar 28 14:16:42 2020)
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/28/20 10:18 AM, Magnus Karlsson wrote:
-> On Fri, Mar 27, 2020 at 4:40 AM Fletcher Dunn
-> <fletcherd@valvesoftware.com> wrote:
->>
->> Fix a sharp edge in xsk_umem__create and xsk_socket__create.  Almost all of
->> the members of the ring buffer structs are initialized, but the "cached_xxx"
->> variables are not all initialized.  The caller is required to zero them.
->> This is needlessly dangerous.  The results if you don't do it can be very bad.
->> For example, they can cause xsk_prod_nb_free and xsk_cons_nb_avail to return
->> values greater than the size of the queue.  xsk_ring_cons__peek can return an
->> index that does not refer to an item that has been queued.
->>
->> I have confirmed that without this change, my program misbehaves unless I
->> memset the ring buffers to zero before calling the function.  Afterwards,
->> my program works without (or with) the memset.
-> 
-> Thank you Flecther for catching this. Appreciated.
-> 
-> /Magnus
-> 
-> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+On Sat, Mar 28, 2020 at 9:46 AM George Spelvin <lkml@sdf.org> wrote:
+>
+> Smaller, faster, and a smidge more uniform than %.
+>
+> Signed-off-by: George Spelvin <lkml@sdf.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> Cc: Yonghong Song <yhs@fb.com>
+> Cc: Andrii Nakryiko <andriin@fb.com>
+> Cc: bpf@vger.kernel.org
+> Cc: netdev@vger.kernel.org
 
-Applied, thanks!
+If Linus is going to pick up the whole set at once:
+Acked-by: Alexei Starovoitov <ast@kernel.org>
