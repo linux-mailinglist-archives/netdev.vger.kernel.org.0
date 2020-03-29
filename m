@@ -2,170 +2,325 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 89E3A196D88
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 14:49:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BED8196D8F
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 14:56:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728221AbgC2Mte (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 08:49:34 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:44203 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728200AbgC2Mte (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 08:49:34 -0400
-Received: by mail-lf1-f67.google.com with SMTP id j188so11600441lfj.11
-        for <netdev@vger.kernel.org>; Sun, 29 Mar 2020 05:49:31 -0700 (PDT)
+        id S1728150AbgC2M4d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 08:56:33 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:33811 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727951AbgC2M4d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 08:56:33 -0400
+Received: by mail-ed1-f65.google.com with SMTP id i24so17525945eds.1
+        for <netdev@vger.kernel.org>; Sun, 29 Mar 2020 05:56:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=hep468mUU9yjlk0lo8Ll5NEANamiPkdiFkjeWP+RKOo=;
-        b=CyeDmqtM4uJuQfEsdFN2pxNtv24FmO35iNKb9pPGIpeJC8n4rN8U7q15dMWHoZMDO+
-         ywVrdsftEj1zMNJWgoLCkqXyE92t8IRXh/LjHnCsqB8IGlbwr6PA6d1wushJAYORhEZf
-         lm5u0E1xYZc85rd7FFTC3pBUaFsYqoWIPEZY0=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7Y00zfd8DDbnoqXnEtT/BAmJCh4hqgczSvdhA8/Nj/w=;
+        b=uf7zgEGG1qU5KMzcmjxUJyO6Go8sZTyMdCvGiN7k/BejN1/2uYlRQVPXcaBCLUNhMB
+         j8ZUB1Llw7U1i1O5BuLlOlhW1JfZMizY0G9RjxCsqbU+AjbpJkcZuEHnAAWyRkvP4HSI
+         ZZQUFF025J9+gy5CtpGlH7j6Vib6Kr8mtSQpqXNVSbMVYHxIq4Im00jN6dglIs7u58gs
+         +vwdJ8oTjsCEqPkuF+Z+9gYUsqoy4fv3cSbsA5B14QoJxXPvtl9y/x5LKblmoKXmTkUf
+         riX0+kCTb9+B38qUN1rxIq/OREPPgcHloxlpCryxCJhUyj4inQJ6bZwuj6kMoY6eTB4z
+         G+nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hep468mUU9yjlk0lo8Ll5NEANamiPkdiFkjeWP+RKOo=;
-        b=q46YDGnTpxkw9BUr7UpWGVRJ7NfOZ6Tq7nC8g8+N1XyGWpqdSpFTXqqyTtMErfbvob
-         n9v8+l8iZ3Py68Gdexm1xP9IQHTG/qI40Xg+v88Fe2O6JN8radf8nfRIJRmD+BlMtfQI
-         SZUjfL+ZQar+XpUlNlvAJj4mhv3AcVlFfyHtW2s/fbJK8PxSiGxoKIuPYl5OYzC7/dH8
-         GAq08CsK/M/2weWC2gl/xis3SqbVU/Nc6Za3ODVFlbEopSZs7t1Df2uF+ifN9sLxl0If
-         1boumCpQvgxtZUCpLmMjwdUD5KNpvFy+s51++eX6vydDqU+MP6lr1/zWWnUzRhNXlmwC
-         UAIA==
-X-Gm-Message-State: AGi0PuZMbMviUv5uMfvVMnmZNXWVbS7Fv7wD7s6ZS112qRm1S0LT5D0X
-        GEbkxxQN19b7Ou+FCft/jAHqnw==
-X-Google-Smtp-Source: APiQypIChhd1CI++6HYRSgbFJY8jDrKq1kWctdVyV8E9PxZB8J/CiDMMxUXQ3elJ+KxJ7RGBcFPefw==
-X-Received: by 2002:ac2:48b3:: with SMTP id u19mr5166575lfg.84.1585486170611;
-        Sun, 29 Mar 2020 05:49:30 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id n23sm5416058lji.59.2020.03.29.05.49.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 Mar 2020 05:49:29 -0700 (PDT)
-Subject: Re: [PATCH net-next 6/6] net: dsa: sja1105: add broadcast and
- per-traffic class policers
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Ido Schimmel <idosch@idosch.org>
-Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
-        Joergen Andreasen <joergen.andreasen@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "Y.b. Lu" <yangbo.lu@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Po Liu <po.liu@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Li Yang <leoyang.li@nxp.com>
-References: <20200329005202.17926-1-olteanv@gmail.com>
- <20200329005202.17926-7-olteanv@gmail.com>
- <20200329095712.GA2188467@splinter>
- <CA+h21hoybhxhR3KgfRkAaKyPPJPesbGLWDaDp5O_2yTz05y5jQ@mail.gmail.com>
- <CA+h21hoBp6=Zyc3mX3BVguVs0f8Un6-A3pk9YaZKPgs0efTi3g@mail.gmail.com>
- <cd6f4e55-ff5b-5f64-8211-61b4d87b1f0f@cumulusnetworks.com>
-Message-ID: <469feba1-6e3a-712b-e080-681f3addf74c@cumulusnetworks.com>
-Date:   Sun, 29 Mar 2020 15:49:27 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7Y00zfd8DDbnoqXnEtT/BAmJCh4hqgczSvdhA8/Nj/w=;
+        b=gzTuGT50tZl1Yr25X4I1mPnsktLgHwlAsDOlC2wwTWKJoO6OWhx66NHvThr81c7Eqy
+         yxXH+4XGEhxqVIEg5GDDxLMQh+kijecdBmOJHrGrVLbIkAw29WyzuIeH8Pu3Dk9Rv47A
+         Ll6g882ESwXqLXOsZsOHkTIkXy4rPz4H/LdwB2eVd2paSZVQLckb4IGGa+atZciMfuIH
+         CETI1pwXAyEhW5KMjz8upGXI7aKkPo6F96gQprXXO4NnUy9cY9COhLg47YekD7jl+pOa
+         s6NvUDephHWsz02eITvpC/4mXprlamgfxRW4+YH/enTs7WKrn9gMx5QfCNLpy2KhE8HK
+         baTw==
+X-Gm-Message-State: ANhLgQ2Y+pwSgFTklWitzZS877ItX0jltPFoLBJoQ+Fhs0/uRXpi4onq
+        Pxd7XF1YKdkcz5oUbwltZ09w4vNbVJ1Xppc/4ME=
+X-Google-Smtp-Source: ADFU+vtQRf3C+fdMJf47yy7sqdjeyckxhzZiwfrKW65e6ATktdGWdQ/w6Dg+S0trpmrJHjrIlYjSBQct1SBCIRtQoBY=
+X-Received: by 2002:a50:d5da:: with SMTP id g26mr7474061edj.179.1585486589915;
+ Sun, 29 Mar 2020 05:56:29 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <cd6f4e55-ff5b-5f64-8211-61b4d87b1f0f@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <2f3ba828505cb3e8f9dc8a7b6c5a58a51a80cd90.1585445576.git.richardcochran@gmail.com>
+In-Reply-To: <2f3ba828505cb3e8f9dc8a7b6c5a58a51a80cd90.1585445576.git.richardcochran@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sun, 29 Mar 2020 15:56:18 +0300
+Message-ID: <CA+h21hoXhGLE9vsTAqgv8+1UCa_yXsJ5OTGKTR5dOAj_RNFF1w@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/1] ptp: Avoid deadlocks in the programmable pin code.
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Yangbo Lu <yangbo.lu@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/03/2020 15:02, Nikolay Aleksandrov wrote:
-> On 29/03/2020 14:46, Vladimir Oltean wrote:
->> On Sun, 29 Mar 2020 at 14:37, Vladimir Oltean <olteanv@gmail.com> wrote:
->>>
->>> On Sun, 29 Mar 2020 at 12:57, Ido Schimmel <idosch@idosch.org> wrote:
->>>>
->>>> + Nik, Roopa
->>>>
->>>> On Sun, Mar 29, 2020 at 02:52:02AM +0200, Vladimir Oltean wrote:
->>>>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> [snip]
->>>> In the past I was thinking about ways to implement this in Linux. The
->>>> only place in the pipeline where packets are actually classified to
->>>> broadcast / unknown unicast / multicast is at bridge ingress. Therefore,
->>>
->>> Actually I think only 'unknown unicast' is tricky here, and indeed the
->>> bridge driver is the only place in the software datapath that would
->>> know that.
-> 
-> Yep, unknown unicast is hard to pass outside of the bridge, especially at ingress
-> where the bridge hasn't been hit yet. One possible solution is to expose a function
-> from the bridge which can make such a decision at the cost of 1 more fdb hash lookup,
-> but if the packet is going to hit the bridge anyway that cost won't be that high
-> since it will have to do the same. We already have some internal bridge functionality
-> exposed for netfilter, tc and some drivers so it would be in line with that.
-> I haven't looked into how feasible the above is, so I'm open to other ideas (the
-> bridge_slave functions for example, we've discussed such extensions before in other
-> contexts). But I think this can be much simpler if we just expose the unknown unicast
-> information, the mcast/bcast can be decided by the classifier already or with very
-> little change. I think such exposed function can be useful to netfilter as well.
-> 
+Hi Richard,
 
-Of course along with the unknown unicast, we should include unknown multicast.
+On Sun, 29 Mar 2020 at 04:40, Richard Cochran <richardcochran@gmail.com> wrote:
+>
+> The PTP Hardware Clock (PHC) subsystem offers an API for configuring
+> programmable pins.  User space sets or gets the settings using ioctls,
+> and drivers verify dialed settings via a callback.  Drivers may also
+> query pin settings by calling the ptp_find_pin() method.
+>
+> Although the core subsystem protects concurrent access to the pin
+> settings, the implementation places illogical restrictions on how
+> drivers may call ptp_find_pin().  When enabling an auxiliary function
+> via the .enable(on=1) callback, drivers may invoke the pin finding
+> method, but when disabling with .enable(on=0) drivers are not
+> permitted to do so.  With the exception of the mv88e6xxx, all of the
+> PHC drivers do respect this restriction, but still the locking pattern
+> is both confusing and unnecessary.
+>
+> This patch changes the locking implementation to allow PHC drivers to
+> freely call ptp_find_pin() from their .enable() and .verify()
+> callbacks.
+>
+> Signed-off-by: Richard Cochran <richardcochran@gmail.com>
+> Reported-by: Yangbo Lu <yangbo.lu@nxp.com>
+> ---
 
->>> I know very little about frame classification in the Linux network
->>> stack, but would it be possible to introduce a match key in tc-flower
->>> for whether packets have a known destination or not?
->>>
->>>> my thinking was to implement these storm control policers as a
->>>> "bridge_slave" operation. It can then be offloaded to capable drivers
->>>> via the switchdev framework.
->>>>
->>>
->>> I think it would be a bit odd to duplicate tc functionality in the
->>> bridge sysfs. I don't have a better suggestion though.
->>>
->>
->> Not to mention that for hardware like this, to have the same level of
->> flexibility via a switchdev control would mean to duplicate quite a
->> lot of tc functionality. On this 5-port switch I can put a shared
->> broadcast policer on 2 ports (via the ingress_block functionality),
->> and individual policers on the other 3, and the bandwidth budgeting is
->> separate. I can only assume that there are more switches out there
->> that allow this.
->>>>>> I think that if we have this implemented in the Linux bridge, then your
->>>> patch can be used to support the policing of broadcast packets while
->>>> returning an error if user tries to police unknown unicast or multicast
->>>> packets.
->>>
->>> So even if the Linux bridge gains these knobs for flood policers,
->>> still have the dst_mac ff:ff:ff:ff:ff:ff as a valid way to configure
->>> one of those knobs?
->>>
->>>> Or maybe the hardware you are working with supports these types
->>>> as well?
->>>
->>> Nope, on this hardware it's just broadcast, I just checked that. Which
->>> simplifies things quite a bit.
->>>
->>>>
->>>> WDYT?
->>>>
->>>
->>> I don't know.
->>>
->>> Thanks,
->>> -Vladimir
->>
->> -Vladimir
->>
-> 
+I've tested this on top of Yangbo's patch, using this diff:
 
+ drivers/ptp/ptp_ocelot.c | 49 +++++++++++++++++-----------------------
+ 1 file changed, 21 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/ptp/ptp_ocelot.c b/drivers/ptp/ptp_ocelot.c
+index 299928e8691d..7d35ba262278 100644
+--- a/drivers/ptp/ptp_ocelot.c
++++ b/drivers/ptp/ptp_ocelot.c
+@@ -183,11 +183,9 @@ static int ocelot_ptp_enable(struct ptp_clock_info *ptp,
+ {
+     struct ocelot *ocelot = container_of(ptp, struct ocelot, ptp_info);
+     enum ocelot_ptp_pins ptp_pin;
+-    struct timespec64 ts;
+     unsigned long flags;
+     int pin = -1;
+     u32 val;
+-    s64 ns;
+
+     switch (rq->type) {
+     case PTP_CLK_REQ_PEROUT:
+@@ -195,18 +193,6 @@ static int ocelot_ptp_enable(struct ptp_clock_info *ptp,
+         if (rq->perout.flags)
+             return -EOPNOTSUPP;
+
+-        /*
+-         * TODO: support disabling function
+-         * When ptp_disable_pinfunc() is to disable function,
+-         * it has already held pincfg_mux.
+-         * However ptp_find_pin() in .enable() called also needs
+-         * to hold pincfg_mux.
+-         * This causes dead lock. So, just return for function
+-         * disabling, and this needs fix-up.
+-         */
+-        if (!on)
+-            break;
+-
+         pin = ptp_find_pin(ocelot->ptp_clock, PTP_PF_PEROUT,
+                    rq->perout.index);
+         if (pin == 0)
+@@ -220,22 +206,29 @@ static int ocelot_ptp_enable(struct ptp_clock_info *ptp,
+         else
+             return -EINVAL;
+
+-        ts.tv_sec = rq->perout.period.sec;
+-        ts.tv_nsec = rq->perout.period.nsec;
+-        ns = timespec64_to_ns(&ts);
+-        ns = ns >> 1;
+-        if (ns > 0x3fffffff || ns <= 0x6)
+-            return -EINVAL;
+-
+         spin_lock_irqsave(&ocelot->ptp_clock_lock, flags);
+-        ocelot_write_rix(ocelot, ns, PTP_PIN_WF_LOW_PERIOD, ptp_pin);
+-        ocelot_write_rix(ocelot, ns, PTP_PIN_WF_HIGH_PERIOD, ptp_pin);
+-
+-        val = PTP_PIN_CFG_ACTION(PTP_PIN_ACTION_CLOCK);
+-        ocelot_write_rix(ocelot, val, PTP_PIN_CFG, ptp_pin);
++        if (on) {
++            struct timespec64 ts = {
++                .tv_sec = rq->perout.period.sec,
++                .tv_nsec = rq->perout.period.nsec,
++            };
++            s64 ns = timespec64_to_ns(&ts) >> 1;
++
++            if (ns > 0x3fffffff || ns <= 0x6)
++                return -EINVAL;
++
++            ocelot_write_rix(ocelot, ns, PTP_PIN_WF_LOW_PERIOD,
++                     ptp_pin);
++            ocelot_write_rix(ocelot, ns, PTP_PIN_WF_HIGH_PERIOD,
++                     ptp_pin);
++
++            val = PTP_PIN_CFG_ACTION(PTP_PIN_ACTION_CLOCK);
++            ocelot_write_rix(ocelot, val, PTP_PIN_CFG, ptp_pin);
++        } else {
++            val = PTP_PIN_CFG_ACTION(PTP_PIN_ACTION_IDLE);
++            ocelot_write_rix(ocelot, val, PTP_PIN_CFG, ptp_pin);
++        }
+         spin_unlock_irqrestore(&ocelot->ptp_clock_lock, flags);
+-        dev_warn(ocelot->dev,
+-             "Starting periodic signal now! (absolute start time not
+supported)\n");
+         break;
+     default:
+         return -EOPNOTSUPP;
+-- 
+2.17.1
+
+So you can add my
+
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+A few comments below, you may feel free to ignore them.
+
+>  drivers/net/phy/dp83640.c        |  2 +-
+>  drivers/ptp/ptp_chardev.c        |  9 +++++++++
+>  drivers/ptp/ptp_clock.c          | 17 +++++++++++++++--
+>  include/linux/ptp_clock_kernel.h | 19 +++++++++++++++++++
+>  4 files changed, 44 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/net/phy/dp83640.c b/drivers/net/phy/dp83640.c
+> index ac72a324fcd1..415c27310982 100644
+> --- a/drivers/net/phy/dp83640.c
+> +++ b/drivers/net/phy/dp83640.c
+> @@ -628,7 +628,7 @@ static void recalibrate(struct dp83640_clock *clock)
+>         u16 cal_gpio, cfg0, evnt, ptp_trig, trigger, val;
+>
+>         trigger = CAL_TRIGGER;
+> -       cal_gpio = 1 + ptp_find_pin(clock->ptp_clock, PTP_PF_PHYSYNC, 0);
+> +       cal_gpio = 1 + ptp_find_pin_unlocked(clock->ptp_clock, PTP_PF_PHYSYNC, 0);
+>         if (cal_gpio < 1) {
+>                 pr_err("PHY calibration pin not available - PHY is not calibrated.");
+>                 return;
+> diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+> index 9d72ab593f13..93d574faf1fe 100644
+> --- a/drivers/ptp/ptp_chardev.c
+> +++ b/drivers/ptp/ptp_chardev.c
+> @@ -175,7 +175,10 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>                 }
+>                 req.type = PTP_CLK_REQ_EXTTS;
+>                 enable = req.extts.flags & PTP_ENABLE_FEATURE ? 1 : 0;
+> +               if (mutex_lock_interruptible(&ptp->pincfg_mux))
+> +                       return -ERESTARTSYS;
+
+Is there any reason why you're not just propagating the return value
+of mutex_lock_interruptible?
+
+>                 err = ops->enable(ops, &req, enable);
+> +               mutex_unlock(&ptp->pincfg_mux);
+>                 break;
+>
+>         case PTP_PEROUT_REQUEST:
+> @@ -206,7 +209,10 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>                 }
+>                 req.type = PTP_CLK_REQ_PEROUT;
+>                 enable = req.perout.period.sec || req.perout.period.nsec;
+> +               if (mutex_lock_interruptible(&ptp->pincfg_mux))
+> +                       return -ERESTARTSYS;
+>                 err = ops->enable(ops, &req, enable);
+> +               mutex_unlock(&ptp->pincfg_mux);
+>                 break;
+>
+>         case PTP_ENABLE_PPS:
+> @@ -217,7 +223,10 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>                         return -EPERM;
+>                 req.type = PTP_CLK_REQ_PPS;
+>                 enable = arg ? 1 : 0;
+> +               if (mutex_lock_interruptible(&ptp->pincfg_mux))
+> +                       return -ERESTARTSYS;
+>                 err = ops->enable(ops, &req, enable);
+> +               mutex_unlock(&ptp->pincfg_mux);
+>                 break;
+>
+>         case PTP_SYS_OFFSET_PRECISE:
+> diff --git a/drivers/ptp/ptp_clock.c b/drivers/ptp/ptp_clock.c
+> index ac1f2bf9e888..acabbe72e55e 100644
+> --- a/drivers/ptp/ptp_clock.c
+> +++ b/drivers/ptp/ptp_clock.c
+> @@ -348,7 +348,6 @@ int ptp_find_pin(struct ptp_clock *ptp,
+>         struct ptp_pin_desc *pin = NULL;
+>         int i;
+>
+> -       mutex_lock(&ptp->pincfg_mux);
+>         for (i = 0; i < ptp->info->n_pins; i++) {
+>                 if (ptp->info->pin_config[i].func == func &&
+>                     ptp->info->pin_config[i].chan == chan) {
+> @@ -356,12 +355,26 @@ int ptp_find_pin(struct ptp_clock *ptp,
+>                         break;
+>                 }
+>         }
+> -       mutex_unlock(&ptp->pincfg_mux);
+>
+>         return pin ? i : -1;
+>  }
+>  EXPORT_SYMBOL(ptp_find_pin);
+>
+> +int ptp_find_pin_unlocked(struct ptp_clock *ptp,
+> +                         enum ptp_pin_function func, unsigned int chan)
+> +{
+> +       int result;
+> +
+> +       mutex_lock(&ptp->pincfg_mux);
+> +
+> +       result = ptp_find_pin(ptp, func, chan);
+> +
+> +       mutex_unlock(&ptp->pincfg_mux);
+> +
+> +       return result;
+> +}
+> +EXPORT_SYMBOL(ptp_find_pin_unlocked);
+> +
+>  int ptp_schedule_worker(struct ptp_clock *ptp, unsigned long delay)
+>  {
+>         return kthread_mod_delayed_work(ptp->kworker, &ptp->aux_work, delay);
+> diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
+> index c64a1ef87240..114807e7abdd 100644
+> --- a/include/linux/ptp_clock_kernel.h
+> +++ b/include/linux/ptp_clock_kernel.h
+> @@ -223,6 +223,12 @@ extern s32 scaled_ppm_to_ppb(long ppm);
+>  /**
+>   * ptp_find_pin() - obtain the pin index of a given auxiliary function
+>   *
+> + * The caller must hold ptp_clock::pincfg_mux.  Drivers do not have
+> + * access to that mutex as ptp_clock is an opaque type.  However, the
+> + * core code acquires the mutex before invoking the driver's
+> + * ptp_clock_info::enable() callback, and so drivers may call this
+> + * function from that context.
+> + *
+>   * @ptp:    The clock obtained from ptp_clock_register().
+>   * @func:   One of the ptp_pin_function enumerated values.
+>   * @chan:   The particular functional channel to find.
+> @@ -233,6 +239,19 @@ extern s32 scaled_ppm_to_ppb(long ppm);
+>  int ptp_find_pin(struct ptp_clock *ptp,
+>                  enum ptp_pin_function func, unsigned int chan);
+>
+> +/**
+> + * ptp_find_pin_unlocked() - wrapper for ptp_find_pin()
+> + *
+> + * This function aquires the ptp_clock::pincfg_mux mutex before
+
+nit: acquires
+
+
+> + * invoking ptp_find_pin().  Instead of using this function, drivers
+> + * should most likely call ptp_find_pin() directly from their
+> + * ptp_clock_info::enable() method.
+> + *
+> + */
+> +
+> +int ptp_find_pin_unlocked(struct ptp_clock *ptp,
+> +                         enum ptp_pin_function func, unsigned int chan);
+> +
+>  /**
+>   * ptp_schedule_worker() - schedule ptp auxiliary work
+>   *
+> --
+> 2.20.1
+>
+
+Regards,
+-Vladimir
