@@ -2,82 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C1D5196E13
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 17:08:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D02F5196E15
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 17:09:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728280AbgC2PIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 11:08:36 -0400
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:35491 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728087AbgC2PIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 11:08:36 -0400
-Received: by mail-pj1-f67.google.com with SMTP id g9so6190543pjp.0
-        for <netdev@vger.kernel.org>; Sun, 29 Mar 2020 08:08:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5cQuOrqIr84aAT4ooE/xX1JT79FfWfOmlCr6GbSPzG0=;
-        b=YhWHHl0CyU1cuOjOCfpdhPS231QHRHyagCyiWXtLm6QhNPOAi7HsdrSsR+l2L6leyR
-         YS/r1ZnFrmEtNrdybPQpDcF1r+pdZUaISLd9iVT5C1Gh0tTa2tm6Yst4nD/JdMemFa6U
-         1fvxlW4jzwvnW7qf8NRstRPohNsBOOcIxKp1uTWdwtpa0gGQ+Dbc7BDpQ44EyUkM+HKh
-         +GkWc5erjXkv+7JQNM2r+7nTCuyTFXbN49A+bdUxsRCNc2eAiZfL+oLevayvBKwb7SBO
-         xoIClH+2hKiiG1XYHa6tCAIyqSckMxbsqRUul/JqwZtYKsihebNPpXXzfzfvFf525qN5
-         tAXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5cQuOrqIr84aAT4ooE/xX1JT79FfWfOmlCr6GbSPzG0=;
-        b=OquwWbxz/OVRd16Kvi+pq/nMJCLPVXXKNLaUd4K1YmLrsDHxXhvSrJSQVMTIbaY/R7
-         26I2IVGPFx2tNjWDafpCK4Xfr45YflPbMmmFAsg/wmKYZWPKR88HHB0KG4ctAn3r78u6
-         W5LP0Dg4AaONV8zkYj7itvs8aKnTIvNzl12ONCSJLGaJgmqwprWm7VxWbnJ+QLsHH77/
-         vN4jJlRimBbWgUCHd1Qj3fkTT8q/edX4Z4NypfkAUtVs4pAq/CvrSf+cSLM3Sxu7A03l
-         Oo1sO5Q9Mkz6OlUn4wGJfWRgUa9vMUchUduGwxrzABsfvmQWqTbKCQusSLCRGIp1iVd7
-         Q72A==
-X-Gm-Message-State: ANhLgQ3Cm4F8QwUeDLrdGoVzg9/fIiCnznXK5XZhjI/mABtv65SFEN2z
-        YRUBk0vEjnzzNwcAwrOet9M=
-X-Google-Smtp-Source: ADFU+vtY2pEi7w1i1XcS0yY61GqEAMYN6B4L/cgxeDl8IoF1B8Y9jgF6Qkce/0qj5uyT0nCoJHhyGg==
-X-Received: by 2002:a17:902:14b:: with SMTP id 69mr8661201plb.121.1585494513827;
-        Sun, 29 Mar 2020 08:08:33 -0700 (PDT)
-Received: from localhost (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id v123sm8058145pfv.41.2020.03.29.08.08.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 Mar 2020 08:08:33 -0700 (PDT)
-Date:   Sun, 29 Mar 2020 08:08:31 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Yangbo Lu <yangbo.lu@nxp.com>
-Subject: Re: [PATCH net-next 1/1] ptp: Avoid deadlocks in the programmable
- pin code.
-Message-ID: <20200329150831.GB1825@localhost>
-References: <2f3ba828505cb3e8f9dc8a7b6c5a58a51a80cd90.1585445576.git.richardcochran@gmail.com>
- <CA+h21hoXhGLE9vsTAqgv8+1UCa_yXsJ5OTGKTR5dOAj_RNFF1w@mail.gmail.com>
+        id S1728282AbgC2PJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 11:09:02 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37476 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727729AbgC2PJB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 29 Mar 2020 11:09:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=5k91iJvz4PccPOFEwloR/4H/cQNQeGa+coxrPB2qksw=; b=Zv03jrAbvyZvIP06Bvblmgrp7j
+        rFjCPmTRKfXrIKGuFAPmy1CBKTUn/TAswsiP440JH+ZU1JmygnPjq4BHg/yR2/8td0//lNdJ/sxXV
+        BXB2Gu78RT3E4lAWACrxXJx2zIlf7fkR4BpcVOMirmZkaC/JPwkKIzpwso3WZH4vSrGw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jIZYU-0004NO-DC; Sun, 29 Mar 2020 17:08:54 +0200
+Date:   Sun, 29 Mar 2020 17:08:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
+        Fabio Estevam <festevam@gmail.com>,
+        David Jander <david@protonic.nl>,
+        Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH v2] ARM: imx: allow to disable board specific PHY fixups
+Message-ID: <20200329150854.GA31812@lunn.ch>
+References: <20200329110457.4113-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CA+h21hoXhGLE9vsTAqgv8+1UCa_yXsJ5OTGKTR5dOAj_RNFF1w@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200329110457.4113-1-o.rempel@pengutronix.de>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 29, 2020 at 03:56:18PM +0300, Vladimir Oltean wrote:
-> > @@ -175,7 +175,10 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
-> >                 }
-> >                 req.type = PTP_CLK_REQ_EXTTS;
-> >                 enable = req.extts.flags & PTP_ENABLE_FEATURE ? 1 : 0;
-> > +               if (mutex_lock_interruptible(&ptp->pincfg_mux))
-> > +                       return -ERESTARTSYS;
-> 
-> Is there any reason why you're not just propagating the return value
-> of mutex_lock_interruptible?
+On Sun, Mar 29, 2020 at 01:04:57PM +0200, Oleksij Rempel wrote:
 
-Yes, this return code lets the system call be able to be restarted
-after interruption by a signal.
+Hi Oleksij
 
-Thanks,
-Richard
+> +config DEPRECATED_PHY_FIXUPS
+> +	bool "Enable deprecated PHY fixups"
+> +	default y
+> +	---help---
+> +	  In the early days it was common practice to configure PHYs by adding a
+> +	  phy_register_fixup*() in the machine code. This practice turned out to
+> +	  be potentially dangerous, because:
+> +	  - it affects all PHYs in the system
+> +	  - these register changes are usually not preserved during PHY reset
+> +	    or suspend/resume cycle.
+> +	  - it complicates debugging, since these configuration changes were not
+> +	    done by the actual PHY driver.
+> +	  This option allows to disable all fixups which are identified as
+> +	  potentially harmful and give the developers a chance to implement the
+> +	  proper configuration via the device tree (e.g.: phy-mode) and/or the
+> +	  related PHY drivers.
+
+This appears to be an IMX only problem. Everybody else seems to of got
+this right. There is no need to bother everybody with this new
+option. Please put this in arch/arm/mach-mxs/Kconfig and have IMX in
+the name.
+
+Having said that, i'm not sure this is the best solution. You cannot
+build one kernel which runs on all machines. Did you consider some
+sort of DT property to disable these fixup? What other ideas did you
+have before deciding on this solution?
+
+     Andrew
