@@ -2,254 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4211196EF4
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 19:39:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37E2A196F30
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 20:22:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728322AbgC2Rjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 13:39:52 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:26952 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728041AbgC2Rjw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 13:39:52 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02THaIjj017462;
-        Sun, 29 Mar 2020 10:39:50 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-type; s=pfpt0818;
- bh=BSs/SoBLGQ5oZ/kdv5i3xriV49acTMDu2GHBYsGF2Cw=;
- b=pDMr4GbejjPTp3DI/79Aj9loT5dKRfRUseKm6GbuaWu+XKjZ0ydSovuQ5nd6l93ooVEC
- NBquLnUU5uYBOaoZ05LG53VnqPnrcD4BZeQIPfa7uaoVS2E/Q0iuiIPB7fhozxpTqmKT
- i9w6EcYxbxPEjEYWnvjbFxURc5/iTHS4Rk9E+6Z4+T+oq5k7BMX/yDNPQNLszIWhiZIo
- 98BHnvc0Q6wYC+OGvJE3rbkV76DRr8xOyfvGtmdVDIkjB6ev43pU8mCPue5516pJzkbC
- ObLOEoTqlegNYGu6Dk/2vGxiZ4+Kvxj2aupewUDUpnAyNlKgisIaiebGRnK+7JsSgUz6 TQ== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3023xnuv2u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 29 Mar 2020 10:39:49 -0700
-Received: from SC-EXCH03.marvell.com (10.93.176.83) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 29 Mar
- 2020 10:39:48 -0700
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 29 Mar 2020 10:39:48 -0700
-Received: from lb-tlvb-ybason.il.qlogic.org (unknown [10.5.221.176])
-        by maili.marvell.com (Postfix) with ESMTP id 7F8CE3F703F;
-        Sun, 29 Mar 2020 10:39:47 -0700 (PDT)
-From:   Yuval Basson <ybason@marvell.com>
-To:     <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, Michal Kalderon <mkalderon@marvell.com>,
-        "Yuval Bason" <ybason@marvell.com>
-Subject: [PATCH net-next] qed: Fix use after free in qed_chain_free
-Date:   Sun, 29 Mar 2020 20:32:49 +0300
-Message-ID: <20200329173249.16399-1-ybason@marvell.com>
-X-Mailer: git-send-email 2.14.5
+        id S1728494AbgC2SWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 14:22:00 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:36003 "EHLO
+        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727719AbgC2SWA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 14:22:00 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 0D3BB580907;
+        Sun, 29 Mar 2020 14:21:59 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Sun, 29 Mar 2020 14:21:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=11lbQrp0c1TFo3Ep3
+        Esk4AVxO3aIjoZ/RjqSLUSJu2A=; b=BUUa7Q0+Q4JssDn2s1uYmvQ/Z1sNL4pET
+        muGJ30uspVoK2ejmJ9AhToMDK0Y4MlmfEkIl1A7JCEUkyn7xr6+WZMEC22105y+1
+        qlJFCAxCkruzlkWctoR3RzTiLd4SHu0kEmfh/brNtlathamktRg0tmI0uDy1xjO6
+        okRUUDSisBRs58T1xLrcqoOIklxAqWSTaFzPdxyX74TFyg2JMC2oA5FG+0a0o+rz
+        04Yk+9cfrvvrxWZY3EP8TxmuZ6+Ki7kKqxtEbPCqgAAxg4ML5UN9o8uwYFeiVwSc
+        MpkRnqLyo9dARaz5jdxW5VYyZDGgP2M5XkdsFtAXQT3xA2T3DhPdA==
+X-ME-Sender: <xms:ReeAXtfTTxWYTxrs_QIotKr2MO2THrYhrNH7XcdBkMez4Z5A7EzVcA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudeifedguddviecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucfkphepjeelrddukedurddufedvrdduledunecuvehluhhsthgvrh
+    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
+    hhdrohhrgh
+X-ME-Proxy: <xmx:ReeAXhxKqxcfhPPJAhRYGu5pBzSQIisNJ6ssG6ppCM2bLt-EycXBmA>
+    <xmx:ReeAXjRLV4KqA4tqRI5-A3nansaHwh59xwJqIRaMqW_Qa6RBlWQ0Dw>
+    <xmx:ReeAXvmnDvst4FUbEOZp44VwtRxmUsPzcwbsIqcLOrgPbO16dspeHw>
+    <xmx:R-eAXqC0xzlZPsaetuFwtQEFTvQV0eM9lJl5bM5Rfu39XhpLMwGTJA>
+Received: from splinter.mtl.com (bzq-79-181-132-191.red.bezeqint.net [79.181.132.191])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 504093280060;
+        Sun, 29 Mar 2020 14:21:55 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next v2 00/15] Add packet trap policers support
+Date:   Sun, 29 Mar 2020 21:21:04 +0300
+Message-Id: <20200329182119.2207630-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
- definitions=2020-03-29_07:2020-03-27,2020-03-29 signatures=0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The qed_chain data structure was modified in
-commit 1a4a69751f4d ("qed: Chain support for external PBL") to support
-receiving an external pbl (due to iWARP FW requirements).
-The pages pointed to by the pbl are allocated in qed_chain_alloc
-and their virtual address are stored in an virtual addresses array to
-enable accessing and freeing the data. The physical addresses however
-weren't stored and were accessed directly from the external-pbl
-during free.
+From: Ido Schimmel <idosch@mellanox.com>
 
-Destroy-qp flow, leads to freeing the external pbl before the chain is
-freed, when the chain is freed it tries accessing the already freed
-external pbl, leading to a use-after-free. Therefore we need to store
-the physical addresses in additional to the virtual addresses in a
-new data structure.
+Background
+==========
 
-Fixes: 1a4a69751f4d ("qed: Chain support for external PBL")
-Signed-off-by: Michal Kalderon <mkalderon@marvell.com>
-Signed-off-by: Yuval Bason <ybason@marvell.com>
----
- drivers/net/ethernet/qlogic/qed/qed_dev.c | 38 +++++++++++++------------------
- include/linux/qed/qed_chain.h             | 24 +++++++++++--------
- 2 files changed, 31 insertions(+), 31 deletions(-)
+Devices capable of offloading the kernel's datapath and perform
+functions such as bridging and routing must also be able to send (trap)
+specific packets to the kernel (i.e., the CPU) for processing.
 
-diff --git a/drivers/net/ethernet/qlogic/qed/qed_dev.c b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-index 03bdd2e..38a65b9 100644
---- a/drivers/net/ethernet/qlogic/qed/qed_dev.c
-+++ b/drivers/net/ethernet/qlogic/qed/qed_dev.c
-@@ -4691,26 +4691,20 @@ static void qed_chain_free_single(struct qed_dev *cdev,
- 
- static void qed_chain_free_pbl(struct qed_dev *cdev, struct qed_chain *p_chain)
- {
--	void **pp_virt_addr_tbl = p_chain->pbl.pp_virt_addr_tbl;
-+	struct addr_tbl_entry *pp_addr_tbl = p_chain->pbl.pp_addr_tbl;
- 	u32 page_cnt = p_chain->page_cnt, i, pbl_size;
--	u8 *p_pbl_virt = p_chain->pbl_sp.p_virt_table;
- 
--	if (!pp_virt_addr_tbl)
-+	if (!pp_addr_tbl)
- 		return;
- 
--	if (!p_pbl_virt)
--		goto out;
--
- 	for (i = 0; i < page_cnt; i++) {
--		if (!pp_virt_addr_tbl[i])
-+		if (!pp_addr_tbl[i].virt_addr || !pp_addr_tbl[i].dma_map)
- 			break;
- 
- 		dma_free_coherent(&cdev->pdev->dev,
- 				  QED_CHAIN_PAGE_SIZE,
--				  pp_virt_addr_tbl[i],
--				  *(dma_addr_t *)p_pbl_virt);
--
--		p_pbl_virt += QED_CHAIN_PBL_ENTRY_SIZE;
-+				  pp_addr_tbl[i].virt_addr,
-+				  pp_addr_tbl[i].dma_map);
- 	}
- 
- 	pbl_size = page_cnt * QED_CHAIN_PBL_ENTRY_SIZE;
-@@ -4720,9 +4714,9 @@ static void qed_chain_free_pbl(struct qed_dev *cdev, struct qed_chain *p_chain)
- 				  pbl_size,
- 				  p_chain->pbl_sp.p_virt_table,
- 				  p_chain->pbl_sp.p_phys_table);
--out:
--	vfree(p_chain->pbl.pp_virt_addr_tbl);
--	p_chain->pbl.pp_virt_addr_tbl = NULL;
-+
-+	vfree(p_chain->pbl.pp_addr_tbl);
-+	p_chain->pbl.pp_addr_tbl = NULL;
- }
- 
- void qed_chain_free(struct qed_dev *cdev, struct qed_chain *p_chain)
-@@ -4823,19 +4817,19 @@ void qed_chain_free(struct qed_dev *cdev, struct qed_chain *p_chain)
- {
- 	u32 page_cnt = p_chain->page_cnt, size, i;
- 	dma_addr_t p_phys = 0, p_pbl_phys = 0;
--	void **pp_virt_addr_tbl = NULL;
-+	struct addr_tbl_entry *pp_addr_tbl;
- 	u8 *p_pbl_virt = NULL;
- 	void *p_virt = NULL;
- 
--	size = page_cnt * sizeof(*pp_virt_addr_tbl);
--	pp_virt_addr_tbl = vzalloc(size);
--	if (!pp_virt_addr_tbl)
-+	size = page_cnt * sizeof(*pp_addr_tbl);
-+	pp_addr_tbl =  vzalloc(size);
-+	if (!pp_addr_tbl)
- 		return -ENOMEM;
- 
- 	/* The allocation of the PBL table is done with its full size, since it
- 	 * is expected to be successive.
- 	 * qed_chain_init_pbl_mem() is called even in a case of an allocation
--	 * failure, since pp_virt_addr_tbl was previously allocated, and it
-+	 * failure, since tbl was previously allocated, and it
- 	 * should be saved to allow its freeing during the error flow.
- 	 */
- 	size = page_cnt * QED_CHAIN_PBL_ENTRY_SIZE;
-@@ -4849,8 +4843,7 @@ void qed_chain_free(struct qed_dev *cdev, struct qed_chain *p_chain)
- 		p_chain->b_external_pbl = true;
- 	}
- 
--	qed_chain_init_pbl_mem(p_chain, p_pbl_virt, p_pbl_phys,
--			       pp_virt_addr_tbl);
-+	qed_chain_init_pbl_mem(p_chain, p_pbl_virt, p_pbl_phys, pp_addr_tbl);
- 	if (!p_pbl_virt)
- 		return -ENOMEM;
- 
-@@ -4869,7 +4862,8 @@ void qed_chain_free(struct qed_dev *cdev, struct qed_chain *p_chain)
- 		/* Fill the PBL table with the physical address of the page */
- 		*(dma_addr_t *)p_pbl_virt = p_phys;
- 		/* Keep the virtual address of the page */
--		p_chain->pbl.pp_virt_addr_tbl[i] = p_virt;
-+		p_chain->pbl.pp_addr_tbl[i].virt_addr = p_virt;
-+		p_chain->pbl.pp_addr_tbl[i].dma_map = p_phys;
- 
- 		p_pbl_virt += QED_CHAIN_PBL_ENTRY_SIZE;
- 	}
-diff --git a/include/linux/qed/qed_chain.h b/include/linux/qed/qed_chain.h
-index 2dd0a9e..733fad7 100644
---- a/include/linux/qed/qed_chain.h
-+++ b/include/linux/qed/qed_chain.h
-@@ -97,6 +97,11 @@ struct qed_chain_u32 {
- 	u32 cons_idx;
- };
- 
-+struct addr_tbl_entry {
-+	void *virt_addr;
-+	dma_addr_t dma_map;
-+};
-+
- struct qed_chain {
- 	/* fastpath portion of the chain - required for commands such
- 	 * as produce / consume.
-@@ -107,10 +112,11 @@ struct qed_chain {
- 
- 	/* Fastpath portions of the PBL [if exists] */
- 	struct {
--		/* Table for keeping the virtual addresses of the chain pages,
--		 * respectively to the physical addresses in the pbl table.
-+		/* Table for keeping the virtual and physical addresses of the
-+		 * chain pages, respectively to the physical addresses
-+		 * in the pbl table.
- 		 */
--		void **pp_virt_addr_tbl;
-+		struct addr_tbl_entry *pp_addr_tbl;
- 
- 		union {
- 			struct qed_chain_pbl_u16 u16;
-@@ -287,7 +293,7 @@ static inline dma_addr_t qed_chain_get_pbl_phys(struct qed_chain *p_chain)
- 				*(u32 *)page_to_inc = 0;
- 			page_index = *(u32 *)page_to_inc;
- 		}
--		*p_next_elem = p_chain->pbl.pp_virt_addr_tbl[page_index];
-+		*p_next_elem = p_chain->pbl.pp_addr_tbl[page_index].virt_addr;
- 	}
- }
- 
-@@ -537,7 +543,7 @@ static inline void qed_chain_init_params(struct qed_chain *p_chain,
- 
- 	p_chain->pbl_sp.p_phys_table = 0;
- 	p_chain->pbl_sp.p_virt_table = NULL;
--	p_chain->pbl.pp_virt_addr_tbl = NULL;
-+	p_chain->pbl.pp_addr_tbl = NULL;
- }
- 
- /**
-@@ -575,11 +581,11 @@ static inline void qed_chain_init_mem(struct qed_chain *p_chain,
- static inline void qed_chain_init_pbl_mem(struct qed_chain *p_chain,
- 					  void *p_virt_pbl,
- 					  dma_addr_t p_phys_pbl,
--					  void **pp_virt_addr_tbl)
-+					  struct addr_tbl_entry *pp_addr_tbl)
- {
- 	p_chain->pbl_sp.p_phys_table = p_phys_pbl;
- 	p_chain->pbl_sp.p_virt_table = p_virt_pbl;
--	p_chain->pbl.pp_virt_addr_tbl = pp_virt_addr_tbl;
-+	p_chain->pbl.pp_addr_tbl = pp_addr_tbl;
- }
- 
- /**
-@@ -644,7 +650,7 @@ static inline void *qed_chain_get_last_elem(struct qed_chain *p_chain)
- 		break;
- 	case QED_CHAIN_MODE_PBL:
- 		last_page_idx = p_chain->page_cnt - 1;
--		p_virt_addr = p_chain->pbl.pp_virt_addr_tbl[last_page_idx];
-+		p_virt_addr = p_chain->pbl.pp_addr_tbl[last_page_idx].virt_addr;
- 		break;
- 	}
- 	/* p_virt_addr points at this stage to the last page of the chain */
-@@ -716,7 +722,7 @@ static inline void qed_chain_pbl_zero_mem(struct qed_chain *p_chain)
- 	page_cnt = qed_chain_get_page_cnt(p_chain);
- 
- 	for (i = 0; i < page_cnt; i++)
--		memset(p_chain->pbl.pp_virt_addr_tbl[i], 0,
-+		memset(p_chain->pbl.pp_addr_tbl[i].virt_addr, 0,
- 		       QED_CHAIN_PAGE_SIZE);
- }
- 
+For example, a device acting as a multicast-aware bridge must be able to
+trap IGMP membership reports to the kernel for processing by the bridge
+module.
+
+Motivation
+==========
+
+In most cases, the underlying device is capable of handling packet rates
+that are several orders of magnitude higher compared to those that can
+be handled by the CPU.
+
+Therefore, in order to prevent the underlying device from overwhelming
+the CPU, devices usually include packet trap policers that are able to
+police the trapped packets to rates that can be handled by the CPU.
+
+Proposed solution
+=================
+
+This patch set allows capable device drivers to register their supported
+packet trap policers with devlink. User space can then tune the
+parameters of these policers (currently, rate and burst size) and read
+from the device the number of packets that were dropped by the policer,
+if supported.
+
+These packet trap policers can then be bound to existing packet trap
+groups, which are used to aggregate logically related packet traps. As a
+result, trapped packets are policed to rates that can be handled the
+host CPU.
+
+Example usage
+=============
+
+Instantiate netdevsim:
+# echo "10 1" > /sys/bus/netdevsim/new_device
+
+Dump available packet trap policers:
+# devlink trap policer show
+netdevsim/netdevsim10:
+  policer 1 rate 1000 burst 128
+  policer 2 rate 2000 burst 256
+  policer 3 rate 3000 burst 512
+
+Change the parameters of a packet trap policer:
+# devlink trap policer set netdevsim/netdevsim10 policer 3 rate 100 burst 16
+
+Bind a packet trap policer to a packet trap group:
+# devlink trap group set netdevsim/netdevsim10 group acl_drops policer 3
+
+Dump parameters and statistics of a packet trap policer:
+# devlink -s trap policer show netdevsim/netdevsim10 policer 3
+netdevsim/netdevsim10:
+  policer 3 rate 100 burst 16
+    stats:
+        rx:
+          dropped 92
+
+Unbind a packet trap policer from a packet trap group:
+# devlink trap group set netdevsim/netdevsim10 group acl_drops nopolicer
+
+Patch set overview
+==================
+
+Patch #1 adds the core infrastructure in devlink which allows capable
+device drivers to register their supported packet trap policers with
+devlink.
+
+Patch #2 extends the existing devlink-trap documentation.
+
+Patch #3 extends netdevsim to register a few dummy packet trap policers
+with devlink. Used later on to selftests the core infrastructure.
+
+Patches #4-#5 adds infrastructure in devlink to allow binding of packet
+trap policers to packet trap groups.
+
+Patch #6 extends netdevsim to allow such binding.
+
+Patch #7 adds a selftest over netdevsim that verifies the core
+devlink-trap policers functionality.
+
+Patches #8-#14 gradually add devlink-trap policers support in mlxsw.
+
+Patch #15 adds a selftest over mlxsw. All registered packet trap
+policers are verified to handle the configured rate and burst size.
+
+Future plans
+============
+
+* Allow changing default association between packet traps and packet
+  trap groups
+* Add more packet traps. For example, for control packets (e.g., IGMP)
+
+v2 (address comments from Jiri and Jakub):
+* Patch #1: Add 'strict_start_type' in devlink policy
+* Patch #1: Have device drivers provide max/min rate/burst size for each
+  policer. Use them to check validity of user provided parameters
+* Patch #3: Remove check about burst size being a power of 2 and instead
+  add a debugfs knob to fail the operation
+* Patch #3: Provide max/min rate/burst size when registering policers
+  and remove the validity checks from nsim_dev_devlink_trap_policer_set()
+* Patch #5: Check for presence of 'DEVLINK_ATTR_TRAP_POLICER_ID' in
+  devlink_trap_group_set() and bail if not present
+* Patch #5: Add extack error message in case trap group was partially
+  modified
+* Patch #7: Add test case with new 'fail_trap_policer_set' knob
+* Patch #7: Add test case for partially modified trap group
+* Patch #10: Provide max/min rate/burst size when registering policers
+* Patch #11: Remove the max/min validity checks from
+  __mlxsw_sp_trap_policer_set()
+
+Ido Schimmel (15):
+  devlink: Add packet trap policers support
+  Documentation: Add description of packet trap policers
+  netdevsim: Add devlink-trap policer support
+  devlink: Add packet trap group parameters support
+  devlink: Allow setting of packet trap group parameters
+  netdevsim: Add support for setting of packet trap group parameters
+  selftests: netdevsim: Add test cases for devlink-trap policers
+  mlxsw: reg: Extend QPCR register
+  mlxsw: spectrum: Track used packet trap policer IDs
+  mlxsw: spectrum_trap: Prepare policers for registration with devlink
+  mlxsw: spectrum_trap: Add devlink-trap policer support
+  mlxsw: spectrum_trap: Do not initialize dedicated discard policer
+  mlxsw: spectrum_trap: Switch to use correct packet trap group
+  mlxsw: spectrum_trap: Add support for setting of packet trap group
+    parameters
+  selftests: mlxsw: Add test cases for devlink-trap policers
+
+ .../networking/devlink/devlink-trap.rst       |  26 +
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  71 +++
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  14 +
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |  19 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  50 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  17 +
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 336 ++++++++++--
+ .../ethernet/mellanox/mlxsw/spectrum_trap.h   |  24 +
+ drivers/net/netdevsim/dev.c                   | 110 +++-
+ drivers/net/netdevsim/netdevsim.h             |   3 +
+ include/net/devlink.h                         |  90 ++-
+ include/uapi/linux/devlink.h                  |  11 +
+ net/core/devlink.c                            | 515 +++++++++++++++++-
+ .../drivers/net/mlxsw/devlink_trap_policer.sh | 384 +++++++++++++
+ .../drivers/net/netdevsim/devlink_trap.sh     | 116 ++++
+ .../selftests/net/forwarding/devlink_lib.sh   |  43 ++
+ 16 files changed, 1778 insertions(+), 51 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.h
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap_policer.sh
+
 -- 
-1.8.3.1
+2.24.1
 
