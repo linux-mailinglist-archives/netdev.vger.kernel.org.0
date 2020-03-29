@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 869A8196F3D
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 20:22:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FF03196F3E
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 20:22:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728619AbgC2SWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 14:22:34 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:48531 "EHLO
+        id S1728626AbgC2SWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 14:22:38 -0400
+Received: from new2-smtp.messagingengine.com ([66.111.4.224]:52129 "EHLO
         new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728467AbgC2SWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 14:22:34 -0400
+        by vger.kernel.org with ESMTP id S1728467AbgC2SWh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 14:22:37 -0400
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 6814F580907;
-        Sun, 29 Mar 2020 14:22:33 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 51C32580907;
+        Sun, 29 Mar 2020 14:22:36 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Sun, 29 Mar 2020 14:22:33 -0400
+  by compute4.internal (MEProxy); Sun, 29 Mar 2020 14:22:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm2; bh=vhWOO1u91gpQXJGLk8WCPBuscTxslg80c2dcLSCxKeg=; b=ND/EMqt6
-        DlpgG0I8ytu2HPlgZWMKbb4VbelHmXw/A9X8wAAAd4Yz785MXjQ0LubQlhGSPg5w
-        JqfJFCx+G6y9229ELdtpabDyk25DVPQAcqtYT3rUHUJQ/EFNafPZEIM8csevsiMS
-        ejcpsME8CVKqMQlJgFykmuREHRdRMwJz2BJCytkeYl4X6UR8W3wQecYKIskqA0AQ
-        TTrZr9nDjGRoG3xj/dDug2PcnthB2IcgzEJv75LCeQtHPJSwo+POMq/5rLSP6gCj
-        Iw3ZyUHpJAzuTTjlCXdVy4a53QXvFCoasv3jkMZUeIvN+JDZtw76TKFEVJq1W6sr
-        7k1WLX0ObR9spw==
-X-ME-Sender: <xms:aeeAXndTodLKEdR0mONn0vWH0BAJ3WNS2SRfBKDw7aJSBR-j5bFmqw>
+        fm2; bh=JVx9qNvxHRh4FgN0KPugpo0cLHKbmZaAz/VmbLiUfDM=; b=wwpa5xV6
+        nthSkQiCQue/TMLqxaIgQJzVqvKnCZSPaAC9sLPcbdG8VTQ4TwMvfE4kUSK00iKH
+        FxyliLQcViHsqVhixTAUfPcN9mDQX52CbiIBM/ojLhX+jYFSOoakT+hPAFqZizJ6
+        u1pIy66i1+COhvVXIJlTxyqGr3ERxQ8FDvBEtNNb7wVRQzGj7K7LL7AiNCHUljaK
+        uN2vxpBs1wSuVdSKzGWeScJoxz5j0ccUDj3emgt8qVFo7R2p1OWtgJxvn4MaqFBg
+        pTXDgYn0AH824Aj52gW+TdEFwt35u5/G2hKKgH0OQaEJ+Y61PuzRcxHpyzrCIKqS
+        2FaRl9tRlnYQKw==
+X-ME-Sender: <xms:bOeAXs5_khTKTeHBNtGrcb7LUHJIPEpr3zwkDlnOily2iX4DJgQZrQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudeifedguddviecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
     ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
     ohhstghhrdhorhhgqeenucfkphepjeelrddukedurddufedvrdduledunecuvehluhhsth
-    gvrhfuihiivgepuddunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihgu
+    gvrhfuihiivgepudefnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihgu
     ohhstghhrdhorhhg
-X-ME-Proxy: <xmx:aeeAXtamike7eT86aEIzgXHHl1PhBCDAPSrWGmR9ThTqeZDAjM9sHg>
-    <xmx:aeeAXu1bpAaL_kpLVBwpxb1QH8S3acWnv9W6fGOsTgjzcpLiGlFmEg>
-    <xmx:aeeAXmth6OJVhCJJgZM-fbpv24dY3qHStJdCo8-72uZfZhphq3hl_w>
-    <xmx:aeeAXmWnMTbGzn-dDjdIMSsdbAekZIWSA4VPJrzzCPhQOwXKMqn-yA>
+X-ME-Proxy: <xmx:bOeAXnoWZnbBILiRzgvtv07NvJitFds4-zbV6iwULYQDgWnESB30EA>
+    <xmx:bOeAXoYh8zuGZHGCATGXUDyg8-rTD2Ekcz1RajvvnPOVyC3e_QV8Vg>
+    <xmx:bOeAXiGnWyzkdO91XNXiavss5haBRimpxgaZyRBtWI7uWgxBxCctpA>
+    <xmx:bOeAXvRsiqjeomdnimsJdkde4diGxS563tDPfL6_TJqAvH-XBc9e3A>
 Received: from splinter.mtl.com (bzq-79-181-132-191.red.bezeqint.net [79.181.132.191])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D46C43280059;
-        Sun, 29 Mar 2020 14:22:30 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 999663280059;
+        Sun, 29 Mar 2020 14:22:33 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
         roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
         andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 13/15] mlxsw: spectrum_trap: Switch to use correct packet trap group
-Date:   Sun, 29 Mar 2020 21:21:17 +0300
-Message-Id: <20200329182119.2207630-14-idosch@idosch.org>
+Subject: [PATCH net-next v2 14/15] mlxsw: spectrum_trap: Add support for setting of packet trap group parameters
+Date:   Sun, 29 Mar 2020 21:21:18 +0300
+Message-Id: <20200329182119.2207630-15-idosch@idosch.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200329182119.2207630-1-idosch@idosch.org>
 References: <20200329182119.2207630-1-idosch@idosch.org>
@@ -63,127 +63,162 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Some packet traps are currently exposed to user space as being member of
-"l3_drops" trap group, but internally they are member of a different
-group.
-
-Switch these traps to use the correct group so that they are all subject
-to the same policer, as exposed to user space.
-
-Set the trap priority of packets trapped due to loopback error during
-routing to the lowest priority. Such packets are not routed again by the
-kernel and therefore should not mask other traps (e.g., host miss) that
-should be routed.
+Implement support for setting of packet trap group parameters by
+invoking the trap_group_init() callback with the new parameters.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 Reviewed-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlxsw/reg.h     |  2 --
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |  9 ++++----
- .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 23 ++++++++++---------
- 3 files changed, 16 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/core.c    | 14 ++++++++++
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  3 ++
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  3 ++
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  3 ++
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 28 +++++++++++++++----
+ 5 files changed, 46 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/reg.h b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-index 2cfc268fb8bb..9b39b8e70519 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/reg.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/reg.h
-@@ -5537,12 +5537,10 @@ enum mlxsw_reg_htgt_trap_group {
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_PIM,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_MULTICAST,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_ARP,
--	MLXSW_REG_HTGT_TRAP_GROUP_SP_HOST_MISS,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_ROUTER_EXP,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_REMOTE_ROUTE,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_IP2ME,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_DHCP,
--	MLXSW_REG_HTGT_TRAP_GROUP_SP_RPF,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_EVENT,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_IPV6_MLD,
- 	MLXSW_REG_HTGT_TRAP_GROUP_SP_IPV6_ND,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index 6d0590375976..e9ccd333f61d 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -1198,6 +1198,19 @@ mlxsw_devlink_trap_group_init(struct devlink *devlink,
+ 	return mlxsw_driver->trap_group_init(mlxsw_core, group);
+ }
+ 
++static int
++mlxsw_devlink_trap_group_set(struct devlink *devlink,
++			     const struct devlink_trap_group *group,
++			     const struct devlink_trap_policer *policer)
++{
++	struct mlxsw_core *mlxsw_core = devlink_priv(devlink);
++	struct mlxsw_driver *mlxsw_driver = mlxsw_core->driver;
++
++	if (!mlxsw_driver->trap_group_set)
++		return -EOPNOTSUPP;
++	return mlxsw_driver->trap_group_set(mlxsw_core, group, policer);
++}
++
+ static int
+ mlxsw_devlink_trap_policer_init(struct devlink *devlink,
+ 				const struct devlink_trap_policer *policer)
+@@ -1273,6 +1286,7 @@ static const struct devlink_ops mlxsw_devlink_ops = {
+ 	.trap_fini			= mlxsw_devlink_trap_fini,
+ 	.trap_action_set		= mlxsw_devlink_trap_action_set,
+ 	.trap_group_init		= mlxsw_devlink_trap_group_init,
++	.trap_group_set			= mlxsw_devlink_trap_group_set,
+ 	.trap_policer_init		= mlxsw_devlink_trap_policer_init,
+ 	.trap_policer_fini		= mlxsw_devlink_trap_policer_fini,
+ 	.trap_policer_set		= mlxsw_devlink_trap_policer_set,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.h b/drivers/net/ethernet/mellanox/mlxsw/core.h
+index 035629bc035d..22b0dfa7cfae 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.h
+@@ -327,6 +327,9 @@ struct mlxsw_driver {
+ 			       enum devlink_trap_action action);
+ 	int (*trap_group_init)(struct mlxsw_core *mlxsw_core,
+ 			       const struct devlink_trap_group *group);
++	int (*trap_group_set)(struct mlxsw_core *mlxsw_core,
++			      const struct devlink_trap_group *group,
++			      const struct devlink_trap_policer *policer);
+ 	int (*trap_policer_init)(struct mlxsw_core *mlxsw_core,
+ 				 const struct devlink_trap_policer *policer);
+ 	void (*trap_policer_fini)(struct mlxsw_core *mlxsw_core,
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index e8756c921b76..8e4f334695c0 100644
+index 8e4f334695c0..24ca8d5bc564 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -4580,7 +4580,6 @@ static int mlxsw_sp_cpu_policers_set(struct mlxsw_core *mlxsw_core)
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_LLDP:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_OSPF:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_PIM:
--		case MLXSW_REG_HTGT_TRAP_GROUP_SP_RPF:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_LBERROR:
- 			rate = 128;
- 			burst_size = 7;
-@@ -4593,7 +4592,6 @@ static int mlxsw_sp_cpu_policers_set(struct mlxsw_core *mlxsw_core)
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_BGP:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_ARP:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_DHCP:
--		case MLXSW_REG_HTGT_TRAP_GROUP_SP_HOST_MISS:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_ROUTER_EXP:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_REMOTE_ROUTE:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_IPV6_ND:
-@@ -4674,19 +4672,20 @@ static int mlxsw_sp_trap_groups_set(struct mlxsw_core *mlxsw_core)
- 			break;
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_ARP:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_IPV6_ND:
--		case MLXSW_REG_HTGT_TRAP_GROUP_SP_RPF:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_PTP1:
- 			priority = 2;
- 			tc = 2;
- 			break;
--		case MLXSW_REG_HTGT_TRAP_GROUP_SP_HOST_MISS:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_ROUTER_EXP:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_REMOTE_ROUTE:
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_MULTICAST:
--		case MLXSW_REG_HTGT_TRAP_GROUP_SP_LBERROR:
- 			priority = 1;
- 			tc = 1;
- 			break;
-+		case MLXSW_REG_HTGT_TRAP_GROUP_SP_LBERROR:
-+			priority = 0;
-+			tc = 1;
-+			break;
- 		case MLXSW_REG_HTGT_TRAP_GROUP_SP_EVENT:
- 			priority = MLXSW_REG_HTGT_DEFAULT_PRIORITY;
- 			tc = MLXSW_REG_HTGT_DEFAULT_TC;
+@@ -5674,6 +5674,7 @@ static struct mlxsw_driver mlxsw_sp1_driver = {
+ 	.trap_fini			= mlxsw_sp_trap_fini,
+ 	.trap_action_set		= mlxsw_sp_trap_action_set,
+ 	.trap_group_init		= mlxsw_sp_trap_group_init,
++	.trap_group_set			= mlxsw_sp_trap_group_set,
+ 	.trap_policer_init		= mlxsw_sp_trap_policer_init,
+ 	.trap_policer_fini		= mlxsw_sp_trap_policer_fini,
+ 	.trap_policer_set		= mlxsw_sp_trap_policer_set,
+@@ -5712,6 +5713,7 @@ static struct mlxsw_driver mlxsw_sp2_driver = {
+ 	.trap_fini			= mlxsw_sp_trap_fini,
+ 	.trap_action_set		= mlxsw_sp_trap_action_set,
+ 	.trap_group_init		= mlxsw_sp_trap_group_init,
++	.trap_group_set			= mlxsw_sp_trap_group_set,
+ 	.trap_policer_init		= mlxsw_sp_trap_policer_init,
+ 	.trap_policer_fini		= mlxsw_sp_trap_policer_fini,
+ 	.trap_policer_set		= mlxsw_sp_trap_policer_set,
+@@ -5749,6 +5751,7 @@ static struct mlxsw_driver mlxsw_sp3_driver = {
+ 	.trap_fini			= mlxsw_sp_trap_fini,
+ 	.trap_action_set		= mlxsw_sp_trap_action_set,
+ 	.trap_group_init		= mlxsw_sp_trap_group_init,
++	.trap_group_set			= mlxsw_sp_trap_group_set,
+ 	.trap_policer_init		= mlxsw_sp_trap_policer_init,
+ 	.trap_policer_fini		= mlxsw_sp_trap_policer_fini,
+ 	.trap_policer_set		= mlxsw_sp_trap_policer_set,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+index 268d1e04db2f..ee7d3a6bcc38 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
+@@ -1022,6 +1022,9 @@ int mlxsw_sp_trap_action_set(struct mlxsw_core *mlxsw_core,
+ 			     enum devlink_trap_action action);
+ int mlxsw_sp_trap_group_init(struct mlxsw_core *mlxsw_core,
+ 			     const struct devlink_trap_group *group);
++int mlxsw_sp_trap_group_set(struct mlxsw_core *mlxsw_core,
++			    const struct devlink_trap_group *group,
++			    const struct devlink_trap_policer *policer);
+ int
+ mlxsw_sp_trap_policer_init(struct mlxsw_core *mlxsw_core,
+ 			   const struct devlink_trap_policer *policer);
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-index 579f1164ad5d..4a919121191f 100644
+index 4a919121191f..9096ffd89e50 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.c
-@@ -240,23 +240,24 @@ static const struct mlxsw_listener mlxsw_sp_listeners_arr[] = {
- 	MLXSW_SP_RXL_DISCARD(ING_ROUTER_IPV4_SIP_BC, L3_DISCARDS),
- 	MLXSW_SP_RXL_DISCARD(IPV6_MC_DIP_RESERVED_SCOPE, L3_DISCARDS),
- 	MLXSW_SP_RXL_DISCARD(IPV6_MC_DIP_INTERFACE_LOCAL_SCOPE, L3_DISCARDS),
--	MLXSW_SP_RXL_EXCEPTION(MTUERROR, ROUTER_EXP, TRAP_TO_CPU),
--	MLXSW_SP_RXL_EXCEPTION(TTLERROR, ROUTER_EXP, TRAP_TO_CPU),
--	MLXSW_SP_RXL_EXCEPTION(RPF, RPF, TRAP_TO_CPU),
--	MLXSW_SP_RXL_EXCEPTION(RTR_INGRESS1, REMOTE_ROUTE, TRAP_TO_CPU),
--	MLXSW_SP_RXL_EXCEPTION(HOST_MISS_IPV4, HOST_MISS, TRAP_TO_CPU),
--	MLXSW_SP_RXL_EXCEPTION(HOST_MISS_IPV6, HOST_MISS, TRAP_TO_CPU),
--	MLXSW_SP_RXL_EXCEPTION(DISCARD_ROUTER3, REMOTE_ROUTE,
-+	MLXSW_SP_RXL_EXCEPTION(MTUERROR, L3_DISCARDS, TRAP_TO_CPU),
-+	MLXSW_SP_RXL_EXCEPTION(TTLERROR, L3_DISCARDS, TRAP_TO_CPU),
-+	MLXSW_SP_RXL_EXCEPTION(RPF, L3_DISCARDS, TRAP_TO_CPU),
-+	MLXSW_SP_RXL_EXCEPTION(RTR_INGRESS1, L3_DISCARDS, TRAP_TO_CPU),
-+	MLXSW_SP_RXL_EXCEPTION(HOST_MISS_IPV4, L3_DISCARDS, TRAP_TO_CPU),
-+	MLXSW_SP_RXL_EXCEPTION(HOST_MISS_IPV6, L3_DISCARDS, TRAP_TO_CPU),
-+	MLXSW_SP_RXL_EXCEPTION(DISCARD_ROUTER3, L3_DISCARDS,
- 			       TRAP_EXCEPTION_TO_CPU),
--	MLXSW_SP_RXL_EXCEPTION(DISCARD_ROUTER_LPM4, ROUTER_EXP,
-+	MLXSW_SP_RXL_EXCEPTION(DISCARD_ROUTER_LPM4, L3_DISCARDS,
- 			       TRAP_EXCEPTION_TO_CPU),
--	MLXSW_SP_RXL_EXCEPTION(DISCARD_ROUTER_LPM6, ROUTER_EXP,
-+	MLXSW_SP_RXL_EXCEPTION(DISCARD_ROUTER_LPM6, L3_DISCARDS,
- 			       TRAP_EXCEPTION_TO_CPU),
- 	MLXSW_SP_RXL_DISCARD(ROUTER_IRIF_EN, L3_DISCARDS),
- 	MLXSW_SP_RXL_DISCARD(ROUTER_ERIF_EN, L3_DISCARDS),
- 	MLXSW_SP_RXL_DISCARD(NON_ROUTABLE, L3_DISCARDS),
--	MLXSW_SP_RXL_EXCEPTION(DECAP_ECN0, ROUTER_EXP, TRAP_EXCEPTION_TO_CPU),
--	MLXSW_SP_RXL_EXCEPTION(IPIP_DECAP_ERROR, ROUTER_EXP,
-+	MLXSW_SP_RXL_EXCEPTION(DECAP_ECN0, TUNNEL_DISCARDS,
-+			       TRAP_EXCEPTION_TO_CPU),
-+	MLXSW_SP_RXL_EXCEPTION(IPIP_DECAP_ERROR, TUNNEL_DISCARDS,
- 			       TRAP_EXCEPTION_TO_CPU),
- 	MLXSW_SP_RXL_EXCEPTION(DISCARD_DEC_PKT, TUNNEL_DISCARDS,
- 			       TRAP_EXCEPTION_TO_CPU),
+@@ -537,8 +537,10 @@ int mlxsw_sp_trap_action_set(struct mlxsw_core *mlxsw_core,
+ 	return 0;
+ }
+ 
+-int mlxsw_sp_trap_group_init(struct mlxsw_core *mlxsw_core,
+-			     const struct devlink_trap_group *group)
++static int
++__mlxsw_sp_trap_group_init(struct mlxsw_core *mlxsw_core,
++			   const struct devlink_trap_group *group,
++			   u32 policer_id)
+ {
+ 	struct mlxsw_sp *mlxsw_sp = mlxsw_core_driver_priv(mlxsw_core);
+ 	u16 hw_policer_id = MLXSW_REG_HTGT_INVALID_POLICER;
+@@ -570,11 +572,11 @@ int mlxsw_sp_trap_group_init(struct mlxsw_core *mlxsw_core,
+ 		return -EINVAL;
+ 	}
+ 
+-	if (group->init_policer_id) {
++	if (policer_id) {
+ 		struct mlxsw_sp_trap_policer_item *policer_item;
+-		u32 id = group->init_policer_id;
+ 
+-		policer_item = mlxsw_sp_trap_policer_item_lookup(mlxsw_sp, id);
++		policer_item = mlxsw_sp_trap_policer_item_lookup(mlxsw_sp,
++								 policer_id);
+ 		if (WARN_ON(!policer_item))
+ 			return -EINVAL;
+ 		hw_policer_id = policer_item->hw_id;
+@@ -584,6 +586,22 @@ int mlxsw_sp_trap_group_init(struct mlxsw_core *mlxsw_core,
+ 	return mlxsw_reg_write(mlxsw_core, MLXSW_REG(htgt), htgt_pl);
+ }
+ 
++int mlxsw_sp_trap_group_init(struct mlxsw_core *mlxsw_core,
++			     const struct devlink_trap_group *group)
++{
++	return __mlxsw_sp_trap_group_init(mlxsw_core, group,
++					  group->init_policer_id);
++}
++
++int mlxsw_sp_trap_group_set(struct mlxsw_core *mlxsw_core,
++			    const struct devlink_trap_group *group,
++			    const struct devlink_trap_policer *policer)
++{
++	u32 policer_id = policer ? policer->id : 0;
++
++	return __mlxsw_sp_trap_group_init(mlxsw_core, group, policer_id);
++}
++
+ static struct mlxsw_sp_trap_policer_item *
+ mlxsw_sp_trap_policer_item_init(struct mlxsw_sp *mlxsw_sp, u32 id)
+ {
 -- 
 2.24.1
 
