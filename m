@@ -2,366 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78501196E45
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 18:01:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA880196E53
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 18:12:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728282AbgC2QB1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 12:01:27 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:39202 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728190AbgC2QB1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 12:01:27 -0400
+        id S1728350AbgC2QMh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 12:12:37 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:49010 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728209AbgC2QMg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 12:12:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=d8IRLpvjFuNKUXC90MGleyN6XzICoqD5WB4VT+bwKJ0=; b=kg8FTBo8O9ZbxUQTlISvhJGFGg
-        jlE+9sN+mGSaW4jYLTiwVH1gu6e0cW256tUs5e9iy+VITMKPfMWAdJKIjKEX0zi5AtrlDLmPSvYZT
-        pXw1+2toJF+CdY3UHUoGi1af146Vqs70Gea4d9lEPuVc1dfLOLJOHYYup5Z+uvgIaxZOX9U6n8qbu
-        AKCcdnsJRXamZ2mM/7RFidcyBXMadIIiNuMx1rnqT7ir2ojYogj5pnoVxv6hZaPtPYkSpYLggbnhB
-        YQYBY8dFd75Mc3E6A21OO2jOAEkQV2MDqSluzH2XkfQbzMZ6S+alKiCPe5EBVf7CYqlZ64P90ehcj
-        B5pwcDlw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([2001:4d48:ad52:3201:222:68ff:fe15:37dd]:39554 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jIaNE-0005oq-5r; Sun, 29 Mar 2020 17:01:20 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jIaNC-0007lp-7j; Sun, 29 Mar 2020 17:01:18 +0100
-In-Reply-To: <20200329160036.GB25745@shell.armlinux.org.uk>
-References: <20200329160036.GB25745@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 3/3] net: phylink: add separate pcs operations
- structure
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:
+        Subject:Sender:Reply-To:Cc:Content-ID:Content-Description;
+        bh=3aGUFTlDFLNPEPyNqpXzRGp9fSJaJ2O8HpjtLH83Bzc=; b=toUsYu1doW4nFxIJJE0wkgehpy
+        8+pWXT6yv3an/sQQQiVMJwupq1G8M6yulZNNRncItGo1QciGQ+sPJqNj1MEoKE7qGcZ9ZnjqWjp3q
+        5uUS1IPd05dr2ID4F5Aqsoq/DbioJ8xsTjSM01ZmjsQWqgDesaxqv6mGB9pe2NGBSGlFTNS7rcszR
+        7hSNi5Xdju2IC0d6shFHKh8ChqYXxCSG3sTQ5satEZ0Df05HGtPptespIxivYUJGXpXsGmI7ZYeAC
+        +j1xYIr0jJY1aqNYZ9SM1VclC5a5aM0LzuHhux68gAPMbOjikBxS8iXd4SHDWM1+ECgnSh1Pfbo0q
+        J/S3YhJA==;
+Received: from [2601:1c0:6280:3f0::19c2]
+        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1jIaY4-0000MB-5D; Sun, 29 Mar 2020 16:12:32 +0000
+Subject: Re: mmotm 2020-03-28-22-17 uploaded (staging/octeon/)
+To:     akpm@linux-foundation.org, broonie@kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-next@vger.kernel.org, mhocko@suse.cz,
+        mm-commits@vger.kernel.org, sfr@canb.auug.org.au,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Aaro Koskinen <aaro.koskinen@iki.fi>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>
+References: <20200329051805.kfaUSHrn4%akpm@linux-foundation.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+X-Enigmail-Draft-Status: N11100
+Message-ID: <873495e9-d254-cb66-7a83-2517505a2b9b@infradead.org>
+Date:   Sun, 29 Mar 2020 09:12:31 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Disposition: inline
+In-Reply-To: <20200329051805.kfaUSHrn4%akpm@linux-foundation.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jIaNC-0007lp-7j@rmk-PC.armlinux.org.uk>
-Date:   Sun, 29 Mar 2020 17:01:18 +0100
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a separate set of PCS operations, which MAC drivers can use to
-couple phylink with their associated MAC PCS layer.  The PCS
-operations include:
+On 3/28/20 10:18 PM, akpm@linux-foundation.org wrote:
+> The mm-of-the-moment snapshot 2020-03-28-22-17 has been uploaded to
+> 
+>    http://www.ozlabs.org/~akpm/mmotm/
+> 
+> mmotm-readme.txt says
+> 
+> README for mm-of-the-moment:
+> 
+> http://www.ozlabs.org/~akpm/mmotm/
+> 
+> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+> more than once a week.
+> 
+> You will need quilt to apply these patches to the latest Linus release (5.x
+> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+> http://ozlabs.org/~akpm/mmotm/series
 
-- pcs_get_state() - reads the link up/down, resolved speed, duplex
-   and pause from the PCS.
-- pcs_config() - configures the PCS for the specified mode, PHY
-   interface type, and setting the advertisement.
-- pcs_an_restart() - restarts 802.3 in-band negotiation with the
-   link partner
-- pcs_link_up() - informs the PCS that link has come up, and the
-   parameters of the link. Link parameters are used to program the
-   PCS for fixed speed and non-inband modes.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/phylink.c | 77 ++++++++++++++++++++++++----------
- include/linux/phylink.h   | 88 +++++++++++++++++++++++++++++++++++++++
- 2 files changed, 143 insertions(+), 22 deletions(-)
+on i386 or x86_64:
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index e2f30fd4d235..34ca12aec61b 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -41,6 +41,7 @@ struct phylink {
- 	/* private: */
- 	struct net_device *netdev;
- 	const struct phylink_mac_ops *mac_ops;
-+	const struct phylink_pcs_ops *pcs_ops;
- 	struct phylink_config *config;
- 	struct device *dev;
- 	unsigned int old_link_state:1;
-@@ -425,11 +426,32 @@ static void phylink_mac_config_up(struct phylink *pl,
- 		phylink_mac_config(pl, state);
- }
- 
--static void phylink_mac_an_restart(struct phylink *pl)
-+static void phylink_mac_pcs_an_restart(struct phylink *pl)
- {
- 	if (pl->link_config.an_enabled &&
--	    phy_interface_mode_is_8023z(pl->link_config.interface))
--		pl->mac_ops->mac_an_restart(pl->config);
-+	    phy_interface_mode_is_8023z(pl->link_config.interface)) {
-+		if (pl->pcs_ops)
-+			pl->pcs_ops->pcs_an_restart(pl->config);
-+		else
-+			pl->mac_ops->mac_an_restart(pl->config);
-+	}
-+}
-+
-+static void phylink_pcs_config(struct phylink *pl, bool force_restart,
-+			       const struct phylink_link_state *state)
-+{
-+	bool restart = force_restart;
-+
-+	if (pl->pcs_ops && pl->pcs_ops->pcs_config(pl->config,
-+						   pl->cur_link_an_mode,
-+						   state->interface,
-+						   state->advertising))
-+		restart = true;
-+
-+	phylink_mac_config(pl, state);
-+
-+	if (restart)
-+		phylink_mac_pcs_an_restart(pl);
- }
- 
- static void phylink_mac_pcs_get_state(struct phylink *pl,
-@@ -445,7 +467,10 @@ static void phylink_mac_pcs_get_state(struct phylink *pl,
- 	state->an_complete = 0;
- 	state->link = 1;
- 
--	pl->mac_ops->mac_pcs_get_state(pl->config, state);
-+	if (pl->pcs_ops)
-+		pl->pcs_ops->pcs_get_state(pl->config, state);
-+	else
-+		pl->mac_ops->mac_pcs_get_state(pl->config, state);
- }
- 
- /* The fixed state is... fixed except for the link state,
-@@ -463,7 +488,7 @@ static void phylink_get_fixed_state(struct phylink *pl,
- 	phylink_resolve_flow(state);
- }
- 
--static void phylink_mac_initial_config(struct phylink *pl)
-+static void phylink_mac_initial_config(struct phylink *pl, bool force_restart)
- {
- 	struct phylink_link_state link_state;
- 
-@@ -489,7 +514,7 @@ static void phylink_mac_initial_config(struct phylink *pl)
- 	link_state.link = false;
- 
- 	phylink_apply_manual_flow(pl, &link_state);
--	phylink_mac_config(pl, &link_state);
-+	phylink_pcs_config(pl, force_restart, &link_state);
- }
- 
- static const char *phylink_pause_to_str(int pause)
-@@ -506,12 +531,18 @@ static const char *phylink_pause_to_str(int pause)
- 	}
- }
- 
--static void phylink_mac_link_up(struct phylink *pl,
--				struct phylink_link_state link_state)
-+static void phylink_link_up(struct phylink *pl,
-+			    struct phylink_link_state link_state)
- {
- 	struct net_device *ndev = pl->netdev;
- 
- 	pl->cur_interface = link_state.interface;
-+
-+	if (pl->pcs_ops && pl->pcs_ops->pcs_link_up)
-+		pl->pcs_ops->pcs_link_up(pl->config, pl->cur_link_an_mode,
-+					 pl->cur_interface,
-+					 link_state.speed, link_state.duplex);
-+
- 	pl->mac_ops->mac_link_up(pl->config, pl->phydev,
- 				 pl->cur_link_an_mode, pl->cur_interface,
- 				 link_state.speed, link_state.duplex,
-@@ -528,7 +559,7 @@ static void phylink_mac_link_up(struct phylink *pl,
- 		     phylink_pause_to_str(link_state.pause));
- }
- 
--static void phylink_mac_link_down(struct phylink *pl)
-+static void phylink_link_down(struct phylink *pl)
- {
- 	struct net_device *ndev = pl->netdev;
- 
-@@ -597,9 +628,9 @@ static void phylink_resolve(struct work_struct *w)
- 	if (link_changed) {
- 		pl->old_link_state = link_state.link;
- 		if (!link_state.link)
--			phylink_mac_link_down(pl);
-+			phylink_link_down(pl);
- 		else
--			phylink_mac_link_up(pl, link_state);
-+			phylink_link_up(pl, link_state);
- 	}
- 	if (!link_state.link && pl->mac_link_dropped) {
- 		pl->mac_link_dropped = false;
-@@ -746,6 +777,12 @@ struct phylink *phylink_create(struct phylink_config *config,
- }
- EXPORT_SYMBOL_GPL(phylink_create);
- 
-+void phylink_add_pcs(struct phylink *pl, const struct phylink_pcs_ops *ops)
-+{
-+	pl->pcs_ops = ops;
-+}
-+EXPORT_SYMBOL_GPL(phylink_add_pcs);
-+
- /**
-  * phylink_destroy() - cleanup and destroy the phylink instance
-  * @pl: a pointer to a &struct phylink returned from phylink_create()
-@@ -1082,14 +1119,12 @@ void phylink_start(struct phylink *pl)
- 	/* Apply the link configuration to the MAC when starting. This allows
- 	 * a fixed-link to start with the correct parameters, and also
- 	 * ensures that we set the appropriate advertisement for Serdes links.
--	 */
--	phylink_mac_initial_config(pl);
--
--	/* Restart autonegotiation if using 802.3z to ensure that the link
-+	 *
-+	 * Restart autonegotiation if using 802.3z to ensure that the link
- 	 * parameters are properly negotiated.  This is necessary for DSA
- 	 * switches using 802.3z negotiation to ensure they see our modes.
- 	 */
--	phylink_mac_an_restart(pl);
-+	phylink_mac_initial_config(pl, true);
- 
- 	clear_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state);
- 	phylink_run_resolve(pl);
-@@ -1386,8 +1421,7 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
- 			 * advertisement; the only thing we have is the pause
- 			 * modes which can only come from a PHY.
- 			 */
--			phylink_mac_config(pl, &pl->link_config);
--			phylink_mac_an_restart(pl);
-+			phylink_pcs_config(pl, true, &pl->link_config);
- 		}
- 		mutex_unlock(&pl->state_mutex);
- 	}
-@@ -1415,7 +1449,7 @@ int phylink_ethtool_nway_reset(struct phylink *pl)
- 
- 	if (pl->phydev)
- 		ret = phy_restart_aneg(pl->phydev);
--	phylink_mac_an_restart(pl);
-+	phylink_mac_pcs_an_restart(pl);
- 
- 	return ret;
- }
-@@ -1494,8 +1528,7 @@ int phylink_ethtool_set_pauseparam(struct phylink *pl,
- 				   pause->tx_pause);
- 	} else if (!test_bit(PHYLINK_DISABLE_STOPPED,
- 			     &pl->phylink_disable_state)) {
--		phylink_mac_config(pl, &pl->link_config);
--		phylink_mac_an_restart(pl);
-+		phylink_pcs_config(pl, true, &pl->link_config);
- 	}
- 	mutex_unlock(&pl->state_mutex);
- 
-@@ -1901,7 +1934,7 @@ static int phylink_sfp_config(struct phylink *pl, u8 mode,
- 
- 	if (changed && !test_bit(PHYLINK_DISABLE_STOPPED,
- 				 &pl->phylink_disable_state))
--		phylink_mac_initial_config(pl);
-+		phylink_mac_initial_config(pl, false);
- 
- 	return ret;
- }
-diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index 6f6ecf3e0be1..ef779eba8d4e 100644
---- a/include/linux/phylink.h
-+++ b/include/linux/phylink.h
-@@ -270,9 +270,97 @@ void mac_link_up(struct phylink_config *config, struct phy_device *phy,
- 		 int speed, int duplex, bool tx_pause, bool rx_pause);
- #endif
- 
-+/**
-+ * struct phylink_pcs_ops - MAC PCS operations structure.
-+ * @pcs_get_state: read the current MAC PCS link state from the hardware.
-+ * @pcs_config: configure the MAC PCS for the selected mode and state.
-+ * @pcs_an_restart: restart 802.3z BaseX autonegotiation.
-+ * @pcs_link_up: program the PCS for the resolved link configuration
-+ *               (where necessary).
-+ */
-+struct phylink_pcs_ops {
-+	void (*pcs_get_state)(struct phylink_config *config,
-+			      struct phylink_link_state *state);
-+	int (*pcs_config)(struct phylink_config *config, unsigned int mode,
-+			  phy_interface_t interface,
-+			  const unsigned long *advertising);
-+	void (*pcs_an_restart)(struct phylink_config *config);
-+	void (*pcs_link_up)(struct phylink_config *config, unsigned int mode,
-+			    phy_interface_t interface, int speed, int duplex);
-+};
-+
-+#if 0 /* For kernel-doc purposes only. */
-+/**
-+ * pcs_get_state() - Read the current inband link state from the hardware
-+ * @config: a pointer to a &struct phylink_config.
-+ * @state: a pointer to a &struct phylink_link_state.
-+ *
-+ * Read the current inband link state from the MAC PCS, reporting the
-+ * current speed in @state->speed, duplex mode in @state->duplex, pause
-+ * mode in @state->pause using the %MLO_PAUSE_RX and %MLO_PAUSE_TX bits,
-+ * negotiation completion state in @state->an_complete, and link up state
-+ * in @state->link. If possible, @state->lp_advertising should also be
-+ * populated.
-+ *
-+ * When present, this overrides mac_pcs_get_state() in &struct
-+ * phylink_mac_ops.
-+ */
-+void pcs_get_state(struct phylink_config *config,
-+		   struct phylink_link_state *state);
-+
-+/**
-+ * pcs_config() - Configure the PCS mode and advertisement
-+ * @config: a pointer to a &struct phylink_config.
-+ * @mode: one of %MLO_AN_FIXED, %MLO_AN_PHY, %MLO_AN_INBAND.
-+ * @interface: interface mode to be used
-+ * @advertising: adertisement ethtool link mode mask
-+ *
-+ * Configure the PCS for the operating mode, the interface mode, and set
-+ * the advertisement mask.
-+ *
-+ * When operating in %MLO_AN_INBAND, inband should always be enabled,
-+ * otherwise inband should be disabled.
-+ *
-+ * For SGMII, there is no advertisement from the MAC side, the PCS should
-+ * be programmed to acknowledge the inband word from the PHY.
-+ *
-+ * For 1000BASE-X, the advertisement should be programmed into the PCS.
-+ *
-+ * For most 10GBASE-R, there is no advertisement.
-+ */
-+int (*pcs_config)(struct phylink_config *config, unsigned int mode,
-+		  phy_interface_t interface, const unsigned long *advertising);
-+
-+/**
-+ * pcs_an_restart() - restart 802.3z BaseX autonegotiation
-+ * @config: a pointer to a &struct phylink_config.
-+ *
-+ * When PCS ops are present, this overrides mac_an_restart() in &struct
-+ * phylink_mac_ops.
-+ */
-+void (*pcs_an_restart)(struct phylink_config *config);
-+
-+/**
-+ * pcs_link_up() - program the PCS for the resolved link configuration
-+ * @config: a pointer to a &struct phylink_config.
-+ * @mode: link autonegotiation mode
-+ * @interface: link &typedef phy_interface_t mode
-+ * @speed: link speed
-+ * @duplex: link duplex
-+ *
-+ * This call will be made just before mac_link_up() to inform the PCS of
-+ * the resolved link parameters. For example, a PCS operating in SGMII
-+ * mode without in-band AN needs to be manually configured for the link
-+ * and duplex setting. Otherwise, this should be a no-op.
-+ */
-+void (*pcs_link_up)(struct phylink_config *config, unsigned int mode,
-+		    phy_interface_t interface, int speed, int duplex);
-+#endif
-+
- struct phylink *phylink_create(struct phylink_config *, struct fwnode_handle *,
- 			       phy_interface_t iface,
- 			       const struct phylink_mac_ops *ops);
-+void phylink_add_pcs(struct phylink *, const struct phylink_pcs_ops *ops);
- void phylink_destroy(struct phylink *);
- 
- int phylink_connect_phy(struct phylink *, struct phy_device *);
+../drivers/staging/octeon/ethernet-tx.c: In function ‘cvm_oct_xmit’:
+../drivers/staging/octeon/ethernet-tx.c:358:2: error: implicit declaration of function ‘skb_reset_tc’; did you mean ‘skb_reserve’? [-Werror=implicit-function-declaration]
+  skb_reset_tc(skb);
+  ^~~~~~~~~~~~
+
+It looks like this inline function has been removed from
+<net/sch_generic.h>.
+
+
+Looks like it should be this change:
+
+-	skb_reset_tc(skb);
++	skb_reset_redirect(skb);
+
+
 -- 
-2.20.1
-
+~Randy
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
