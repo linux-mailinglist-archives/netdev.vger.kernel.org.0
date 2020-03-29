@@ -2,56 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7331919704D
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 22:33:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C97F197054
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 22:42:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728818AbgC2Udy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 16:33:54 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34612 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727370AbgC2Udy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 16:33:54 -0400
-Received: by mail-wr1-f68.google.com with SMTP id 65so18671784wrl.1
-        for <netdev@vger.kernel.org>; Sun, 29 Mar 2020 13:33:52 -0700 (PDT)
+        id S1728695AbgC2UmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 16:42:16 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:36049 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727370AbgC2UmQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 16:42:16 -0400
+Received: by mail-wm1-f67.google.com with SMTP id g62so19146436wme.1
+        for <netdev@vger.kernel.org>; Sun, 29 Mar 2020 13:42:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9OAqOs9zxKtjhD6oD9psqfOM8QZ8awywUouyp4r15Dg=;
-        b=UoYWAk45M3VL6tNcO1NUcA0hCEWORFKYL2Zfajc9W85ATrZktA4qwEgdhBF2u6Qv8y
-         Ix6FVCdt3xW3GyOx8yVM1kRJ3aGjnt76GzkatsGZz5gWbU5gYhxd+GoFEbcZcpyH7VVK
-         12IXxlFmqka7oxaoWqohjZPasHndRHY5bmOYYyybJYB5h0F2BGS3Auj8MAUQ4Yd8Kxtg
-         0iMfSL3hfSJzVj5LlzLtQ+qTFgeTwN+u+F8xdbE4Zd2qPt4Sw0JmPYszGGSsjV+KOijW
-         QpeQM7zLKZll0DDDnLHXpy5oFiJ+ZB+4lhe5zAvIsYCF7x5O3n8OdcMv3ahlQ4XHMoVV
-         l+pQ==
+        bh=RiiD1dVDmhRcW9Qm0sArPSORcOK3aX6zA938IJ48ru8=;
+        b=S4wTPv6PQnlMBUF/WLXDpVUyx6pQuhYRyCACbqWdBRmFWOBBn6jvyLxYFNX3nleYLy
+         9XKQMOYfpyJPTYesyHhyLEtxe48Ck2rM17wfhOc3dpHRI1IvTvJQL1r91JWDMggTKRu7
+         h/8JtSOTp2dXQxkXKNFQm5OIwmju5IJ3oP3e/sJpdDQ1JFP9AtMorbhETYd1cpwcjUdx
+         hyp5f+X54JScLpZYXeiXQ34kvawDGfmN/Jdf5w4W9k6DOcCC6rUunV9UETiG7MVywUmj
+         /xif3qftowG6r8J4IdFmMDANnyOSdd10eRp4MsKKYA5031eMwXcSKJmRecjArd3ghC9V
+         Dpbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=9OAqOs9zxKtjhD6oD9psqfOM8QZ8awywUouyp4r15Dg=;
-        b=qn62sFW7T6UYVWih/NuNm14wQaZDjXCAuT9GVjOlfVNLFzYDLhws10P6KkeTYI2GVL
-         hR2lmAcSroYnTltB0MPvvC4YlE/Z3YS1Ms2aoAHa6VMhfMU1+oi/WKIKLbZBCCacVsGf
-         MhhsostgYpRG7k953S0E/GxBmxK5TBRv+CH9ycJraql2iTT3uOAUcPN1HWkPDlwFUuQW
-         FNJYmCSD/tIqlEMsUka13Y/3D95Tjfgl1OslBjtwOI5ggUif7ru3gUYEd9Ugpse+i6iq
-         q7gdTmSHi4VIq+LJTxKIgr1v5Oz1EU4ARYMxHsr3HeUkSyjyZKFPVm2wstzGkb+wzPnj
-         2JNA==
-X-Gm-Message-State: ANhLgQ1GaGBSirtDABJV5Xmo2rYI46g1mXC1GrxPfk1j1aa+SdVgumx+
-        dM1S5Ru3EyVC6rIuU/qDtyrO+FLp
-X-Google-Smtp-Source: ADFU+vuwTxfq9SmmyCoOknVXKrS6cTO5dmpuQ8i4Fp1mkyPoVq/UN7pWUhSVya64Ar/W6dvZKk67fw==
-X-Received: by 2002:adf:f589:: with SMTP id f9mr11198041wro.405.1585514031365;
-        Sun, 29 Mar 2020 13:33:51 -0700 (PDT)
+        bh=RiiD1dVDmhRcW9Qm0sArPSORcOK3aX6zA938IJ48ru8=;
+        b=b1LGSRqgHtOJn8vf9dO31CtPE4m52gO+0+UNCbxVJDTh6bLqMO9zQU+ydRfERtGOEn
+         tdAjO50mca3J/ZwZSJOpYUE/e9HwB40vdpd5vZ0Cp6Soayu9MuicnpuTCn4xiVuQo2Iu
+         6PJccuhKvYoB5yH7QajYN1om1MSYMlvBBRvU3+DFwSz8E/vMybi3hRsfsvWbGre6rB+V
+         KbPkjipggjrxXFpjimiwHVwW2MyxvoX3V7P2NULpy3wNQ6wAbqOPnDXBmOG6Irdox+SX
+         cgJ57FmbeC0f2+dq2RgK/FP3IISf7Eyvpg6LDJBkwHIpF3HsAdFe1uo9fyAOLgpCfOsR
+         PhTQ==
+X-Gm-Message-State: ANhLgQ0nA27sDhc/gjgS8CQJNjJ1RHwqz/8wHa7DYepJp81RbOxbvFUc
+        h7SaGAvRCcIHZUc2ECu1zvuE0+ZH
+X-Google-Smtp-Source: ADFU+vtxL4QjtGS96rIvlvZF8ltCK0c7Kd1dY/iP8kj9d+Pus4j6js8jnoeYyfXJkH/UtupmC1uWpQ==
+X-Received: by 2002:a7b:c0c4:: with SMTP id s4mr1696110wmh.135.1585514532093;
+        Sun, 29 Mar 2020 13:42:12 -0700 (PDT)
 Received: from [10.230.3.19] ([192.19.228.250])
-        by smtp.gmail.com with ESMTPSA id z16sm18827399wrr.56.2020.03.29.13.33.49
+        by smtp.gmail.com with ESMTPSA id t126sm19256259wmb.27.2020.03.29.13.42.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 Mar 2020 13:33:50 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 2/3] net: phylink: rename 'ops' to 'mac_ops'
+        Sun, 29 Mar 2020 13:42:11 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/3] net: phylink: add separate pcs operations
+ structure
 To:     Russell King <rmk+kernel@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
 References: <20200329160036.GB25745@shell.armlinux.org.uk>
- <E1jIaN7-0007lh-3p@rmk-PC.armlinux.org.uk>
+ <E1jIaNC-0007lp-7j@rmk-PC.armlinux.org.uk>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -107,15 +108,15 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <cacfd159-4881-5c35-0e63-decac322a9c7@gmail.com>
-Date:   Sun, 29 Mar 2020 13:33:47 -0700
+Message-ID: <ab4164b1-2415-ec81-c235-0d3469dba4af@gmail.com>
+Date:   Sun, 29 Mar 2020 13:42:08 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <E1jIaN7-0007lh-3p@rmk-PC.armlinux.org.uk>
+In-Reply-To: <E1jIaNC-0007lp-7j@rmk-PC.armlinux.org.uk>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -124,25 +125,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 3/29/2020 9:01 AM, Russell King wrote:
-> Rename the bland 'ops' member of struct phylink to be a more
-> descriptive 'mac_ops' - this is necessary as we're about to introduce
-> another set of operations.
+> Add a separate set of PCS operations, which MAC drivers can use to
+> couple phylink with their associated MAC PCS layer.  The PCS
+> operations include:
 > 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> - pcs_get_state() - reads the link up/down, resolved speed, duplex
+>    and pause from the PCS.
+> - pcs_config() - configures the PCS for the specified mode, PHY
+>    interface type, and setting the advertisement.
+> - pcs_an_restart() - restarts 802.3 in-band negotiation with the
+>    link partner
+> - pcs_link_up() - informs the PCS that link has come up, and the
+>    parameters of the link. Link parameters are used to program the
+>    PCS for fixed speed and non-inband modes.
+> 
 > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 > ---
 
-[snip]
+Although your kernel documentation is pretty comprehensive, I am fairly
+sure people are going to get confused about whether they need to
+implement pcs_an_restart vs. mac_an_restart and pcs_get_state vs.
+mac_pcs_get_state (with the possibility of a naming confusion for the
+latter). Maybe some guidelines in the comment as to which one to
+implement could save some support.
 
-> @@ -679,7 +679,7 @@ static int phylink_register_sfp(struct phylink *pl,
->  struct phylink *phylink_create(struct phylink_config *config,
->  			       struct fwnode_handle *fwnode,
->  			       phy_interface_t iface,
-> -			       const struct phylink_mac_ops *ops)
-> +			       const struct phylink_mac_ops *mac_ops)
-
-This function signature in include/linux/phylink.h needs changing to
-reflect the change in the argument, with that:
+Other than that:
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
