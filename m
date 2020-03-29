@@ -2,56 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CBF7196CDD
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 13:10:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 266D3196D11
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 13:38:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728035AbgC2LKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 07:10:51 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:38109 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727875AbgC2LKu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 07:10:50 -0400
-Received: by mail-ed1-f65.google.com with SMTP id e5so17343091edq.5;
-        Sun, 29 Mar 2020 04:10:48 -0700 (PDT)
+        id S1728000AbgC2Lhx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 07:37:53 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:38707 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727772AbgC2Lhw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 07:37:52 -0400
+Received: by mail-ed1-f68.google.com with SMTP id e5so17383061edq.5;
+        Sun, 29 Mar 2020 04:37:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=q/yD6c2PKgnHnFk14kJeOz5sQTjlHMyFhj12xzI5L0o=;
-        b=nCv/zjYj0AUp65ssXNemevbr+jeDmSSwzv4oAtnNOcoHqkNMcQzwvIuXHE6fYpivQb
-         GSrWblRItvs7fcqn4bukBOyHksiwt9kRibYK263UxHKRrX6TTCpeF6UC6jFnrqEjmW33
-         Sw+YFWhYjz6I2Rpi2HOjejms1jXVnCyLWHZalL31bvPmH94hQBVkbKfZFdyH6/sK21Wh
-         swl0rYIuWAnvQJ8/+Gfmo77cnhZqDKGYDR6HBL4J0+tm0P0xORA91IwDrPfifNar55HZ
-         yXFUoCXxglhXpVmbhccVFJ6QJKrWdBsVzRvYMyeBw/QD2Gt1NCttjnzBJDlDF7ZKsq8f
-         YVqA==
+        bh=rd2m1h5mwQG84weV855GRjgt7O/a50O012bSvXI4HKc=;
+        b=OYQtHhtzrEIDPrNu5goWYFfJf4/Ad4RSVktZvf6pWonTe/AqYXQ6sqnSQi675zFM9y
+         pf0LXV23xoIbzDFjwYr4g2dEyBAUC6poIUU9cZilx+0tS1CyqUphDvDvlLjJ4/yAzQyp
+         uegcwceViJeFagRDt8Rihhe5YJtk9jebhInaY0wio0q4rFsqo7ujkkSyeF0bDVqmhD22
+         LAEXlLjoy2T4pFFw2oRd96nFP1lJnQxH0Cn9zNmC4LbsGPcIMU4Im3LxxJhs89eL4tpl
+         LIQfXcL4aVmGXwbx1QMOIM/RPFO6uWPzlr6NaZ4/pQZcBgXm+wDMNk5cUGDIj9FKn9el
+         Hrdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=q/yD6c2PKgnHnFk14kJeOz5sQTjlHMyFhj12xzI5L0o=;
-        b=LOn3I3r5IH99U1ilmptpbHybRNHOrcSWSJE+1Hbn3VtEZ23qoLG3omznw95lMhQY1I
-         7hyQZ3754OhYC14HaTN16FXp8wwe8ztjT/Dqeny6GG3KfWBzYTjF/1k5PAv5DFCgU1iN
-         0re68VkB+uO0X/eFp3f5ve2zhP6VpTUaXfG1XODxA5DPpaBzBNbU6XbMf9i6x7iYdhJY
-         Nrt8sIHAyKhHNFbeEWMPAx2Lhr9uq9HURQOa+fVYLymSvw+c6I/sLF1pfWYNDjEsPF7b
-         XViEPw+fzsEVQ8TxiROYeZGp5YR7rwHQZqVSkBojt9YJxodNekNBoFBJvjIne4SX5tsa
-         VMng==
-X-Gm-Message-State: ANhLgQ07hjKO3rut040H/rxZsGz7jgTRDPYJg20GixAAK9g+DgKceGVe
-        Un+iO+VqL2jpcFkMLgiaUg5ShI+JpQUhwH8v03s=
-X-Google-Smtp-Source: ADFU+vsDm9GauYwVXKaXdiyRF3Jkg1Et1z1n1m9pmfXiLZIsRJTvcvT5vO2BBXUETEC4Y9NJbEsQCvdM+qBdJT7ljro=
-X-Received: by 2002:a17:906:449:: with SMTP id e9mr6493292eja.239.1585480248014;
- Sun, 29 Mar 2020 04:10:48 -0700 (PDT)
+        bh=rd2m1h5mwQG84weV855GRjgt7O/a50O012bSvXI4HKc=;
+        b=lEC/OlXNUx7SRInbwt2raosJKbfkVT2Qo0ZsKPRzDrq6jOr9XmlPExvenDdh1DbidP
+         F7aFCqs6LDlUxxKj1smAwxZUKbAFQEx/2mOQsZFoA1r+r+eEnzBru/yX6nvpefkLsG5p
+         Ge+gA7rz0om9yO99GUjsHgXF7Nf92aWinjykdeGCiCuM3YPbOvSzevJU/1dsOL9kt+Hq
+         K6+eq79vw8gpOxxcXBWFXdQ0QJQ2wMBvk+cqHlp0HNvtLcNRwql7b5B4OvxB/Kpa5Iu5
+         sBH0KCLQRyOpDCZ+1r5vP3eCKfxVpjmMWH/o/g2DMjXos2Ub6DWExpDObizIEPr/5o+J
+         Dkuw==
+X-Gm-Message-State: ANhLgQ2guARqU2UiH5amYMxzlokWF7b44uHrVvjvJuqUC4TFktsmhQNJ
+        /O4Ujbb0RSzITuRZM/RXZSlWTPfumiWSy665Ri4=
+X-Google-Smtp-Source: ADFU+vswB4t69tp4yKERwzcu+UN/5+yhj79bO/f0dCFFr2kjKtyjeSayYctQd0ugFo/7xwYcMDsj/ML39tD8sy41tcc=
+X-Received: by 2002:a50:aca3:: with SMTP id x32mr7185885edc.368.1585481869963;
+ Sun, 29 Mar 2020 04:37:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200329005202.17926-1-olteanv@gmail.com> <20200329005202.17926-5-olteanv@gmail.com>
-In-Reply-To: <20200329005202.17926-5-olteanv@gmail.com>
+References: <20200329005202.17926-1-olteanv@gmail.com> <20200329005202.17926-7-olteanv@gmail.com>
+ <20200329095712.GA2188467@splinter>
+In-Reply-To: <20200329095712.GA2188467@splinter>
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sun, 29 Mar 2020 14:10:36 +0300
-Message-ID: <CA+h21hrBnn5t9ckiyPxeVbkhypCPX4d-pqRm6Gk=1sTm-NdORQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/6] net: dsa: felix: add port policers
-To:     Andrew Lunn <andrew@lunn.ch>,
+Date:   Sun, 29 Mar 2020 14:37:38 +0300
+Message-ID: <CA+h21hoybhxhR3KgfRkAaKyPPJPesbGLWDaDp5O_2yTz05y5jQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 6/6] net: dsa: sja1105: add broadcast and
+ per-traffic class policers
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Ido Schimmel <idosch@idosch.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@resnulli.us>,
         Jakub Kicinski <kuba@kernel.org>,
         netdev <netdev@vger.kernel.org>,
         Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
@@ -72,174 +77,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 29 Mar 2020 at 02:53, Vladimir Oltean <olteanv@gmail.com> wrote:
+On Sun, 29 Mar 2020 at 12:57, Ido Schimmel <idosch@idosch.org> wrote:
 >
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> + Nik, Roopa
 >
-> This patch is a trivial passthrough towards the ocelot library, which
-> support port policers since commit 2c1d029a017f ("net: mscc: ocelot:
-> Implement port policers via tc command").
+> On Sun, Mar 29, 2020 at 02:52:02AM +0200, Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >
+> > This patch adds complete support for manipulating the L2 Policing Tables
+> > from this switch. There are 45 table entries, one entry per each port
+> > and traffic class, and one dedicated entry for broadcast traffic for
+> > each ingress port.
+> >
+> > Policing entries are shareable, and we use this functionality to support
+> > shared block filters.
+> >
+> > We are modeling broadcast policers as simple tc-flower matches on
+> > dst_mac. As for the traffic class policers, the switch only deduces the
+> > traffic class from the VLAN PCP field, so it makes sense to model this
+> > as a tc-flower match on vlan_prio.
+> >
+> > How to limit broadcast traffic coming from all front-panel ports to a
+> > cumulated total of 10 Mbit/s:
+> >
+> > tc qdisc add dev sw0p0 ingress_block 1 clsact
+> > tc qdisc add dev sw0p1 ingress_block 1 clsact
+> > tc qdisc add dev sw0p2 ingress_block 1 clsact
+> > tc qdisc add dev sw0p3 ingress_block 1 clsact
+> > tc filter add block 1 flower skip_sw dst_mac ff:ff:ff:ff:ff:ff \
+> >       action police rate 10mbit burst 64k
+> >
+> > How to limit traffic with VLAN PCP 0 (also includes untagged traffic) to
+> > 100 Mbit/s on port 0 only:
+> >
+> > tc filter add dev sw0p0 ingress protocol 802.1Q flower skip_sw \
+> >       vlan_prio 0 action police rate 100mbit burst 64k
+> >
+> > The broadcast, VLAN PCP and port policers are compatible with one
+> > another (can be installed at the same time on a port).
 >
-> Some data structure conversion between the DSA core and the Ocelot
-> library is necessary, for policer parameters.
+> Hi Vladimir,
 >
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/dsa/ocelot/felix.c            | 24 +++++++++++++++++++++++
->  drivers/net/ethernet/mscc/ocelot_police.c |  3 +++
->  drivers/net/ethernet/mscc/ocelot_police.h | 10 ----------
->  drivers/net/ethernet/mscc/ocelot_tc.c     |  2 +-
->  include/soc/mscc/ocelot.h                 |  8 ++++++++
->  5 files changed, 36 insertions(+), 11 deletions(-)
+> Some switches have a feature called "storm control". It allows one to
+> police incoming BUM traffic.
+
+Yes, I am aware.
+DPAA2 switches have a single (as far as I am aware) knob for 'flood
+policers', and Ocelot has individual 'storm policers' for unknown
+unicast, for multicast, broadcast and for 'learn frames'.
+
+> See this entry from Cumulus Linux
+> documentation:
 >
-> diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-> index eef9fa812a3c..7f7dd6736051 100644
-> --- a/drivers/net/dsa/ocelot/felix.c
-> +++ b/drivers/net/dsa/ocelot/felix.c
-> @@ -14,6 +14,7 @@
->  #include <linux/of_net.h>
->  #include <linux/pci.h>
->  #include <linux/of.h>
-> +#include <net/pkt_sched.h>
->  #include <net/dsa.h>
->  #include "felix.h"
+> https://docs.cumulusnetworks.com/cumulus-linux-40/Layer-2/Spanning-Tree-and-Rapid-Spanning-Tree/#storm-control
 >
-> @@ -651,6 +652,27 @@ static int felix_cls_flower_stats(struct dsa_switch *ds, int port,
->         return ocelot_cls_flower_stats(ocelot, port, cls, ingress);
->  }
->
-> +static int felix_port_policer_add(struct dsa_switch *ds, int port,
-> +                                 struct dsa_mall_policer_tc_entry *policer)
-> +{
-> +       struct ocelot *ocelot = ds->priv;
-> +       struct ocelot_policer pol = {
-> +               .rate = div_u64(policer->rate_bytes_per_sec, 1000) * 8,
-> +               .burst = div_u64(policer->rate_bytes_per_sec *
-> +                                PSCHED_NS2TICKS(policer->burst),
-> +                                PSCHED_TICKS_PER_SEC),
-> +       };
-> +
-> +       return ocelot_port_policer_add(ocelot, port, &pol);
-> +}
-> +
-> +static void felix_port_policer_del(struct dsa_switch *ds, int port)
-> +{
-> +       struct ocelot *ocelot = ds->priv;
-> +
-> +       ocelot_port_policer_del(ocelot, port);
-> +}
-> +
->  static const struct dsa_switch_ops felix_switch_ops = {
->         .get_tag_protocol       = felix_get_tag_protocol,
->         .setup                  = felix_setup,
-> @@ -684,6 +706,8 @@ static const struct dsa_switch_ops felix_switch_ops = {
->         .port_txtstamp          = felix_txtstamp,
->         .port_change_mtu        = felix_change_mtu,
->         .port_max_mtu           = felix_get_max_mtu,
-> +       .port_policer_add       = felix_port_policer_add,
-> +       .port_policer_del       = felix_port_policer_del,
->         .cls_flower_add         = felix_cls_flower_add,
->         .cls_flower_del         = felix_cls_flower_del,
->         .cls_flower_stats       = felix_cls_flower_stats,
-> diff --git a/drivers/net/ethernet/mscc/ocelot_police.c b/drivers/net/ethernet/mscc/ocelot_police.c
-> index 8d25b2706ff0..2e1d8e187332 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_police.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_police.c
-> @@ -4,6 +4,7 @@
->   * Copyright (c) 2019 Microsemi Corporation
->   */
->
-> +#include <soc/mscc/ocelot.h>
->  #include "ocelot_police.h"
->
->  enum mscc_qos_rate_mode {
-> @@ -203,6 +204,7 @@ int ocelot_port_policer_add(struct ocelot *ocelot, int port,
->
->         return 0;
->  }
-> +EXPORT_SYMBOL(ocelot_port_policer_add);
->
->  int ocelot_port_policer_del(struct ocelot *ocelot, int port)
->  {
-> @@ -225,6 +227,7 @@ int ocelot_port_policer_del(struct ocelot *ocelot, int port)
->
->         return 0;
->  }
-> +EXPORT_SYMBOL(ocelot_port_policer_del);
->
->  int ocelot_ace_policer_add(struct ocelot *ocelot, u32 pol_ix,
->                            struct ocelot_policer *pol)
-> diff --git a/drivers/net/ethernet/mscc/ocelot_police.h b/drivers/net/ethernet/mscc/ocelot_police.h
-> index 22025cce0a6a..792abd28010a 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_police.h
-> +++ b/drivers/net/ethernet/mscc/ocelot_police.h
-> @@ -9,16 +9,6 @@
->
->  #include "ocelot.h"
->
-> -struct ocelot_policer {
-> -       u32 rate; /* kilobit per second */
-> -       u32 burst; /* bytes */
-> -};
-> -
-> -int ocelot_port_policer_add(struct ocelot *ocelot, int port,
-> -                           struct ocelot_policer *pol);
-> -
-> -int ocelot_port_policer_del(struct ocelot *ocelot, int port);
-> -
->  int ocelot_ace_policer_add(struct ocelot *ocelot, u32 pol_ix,
->                            struct ocelot_policer *pol);
->
-> diff --git a/drivers/net/ethernet/mscc/ocelot_tc.c b/drivers/net/ethernet/mscc/ocelot_tc.c
-> index 3ff5ef41eccf..d326e231f0ad 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_tc.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_tc.c
-> @@ -4,8 +4,8 @@
->   * Copyright (c) 2019 Microsemi Corporation
->   */
->
-> +#include <soc/mscc/ocelot.h>
->  #include "ocelot_tc.h"
-> -#include "ocelot_police.h"
->  #include "ocelot_ace.h"
->  #include <net/pkt_cls.h>
->
-> diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-> index 3db66638a3b2..ca49f7a114de 100644
-> --- a/include/soc/mscc/ocelot.h
-> +++ b/include/soc/mscc/ocelot.h
-> @@ -555,6 +555,11 @@ struct ocelot {
->         struct ptp_pin_desc             ptp_pins[OCELOT_PTP_PINS_NUM];
->  };
+> In the past I was thinking about ways to implement this in Linux. The
+> only place in the pipeline where packets are actually classified to
+> broadcast / unknown unicast / multicast is at bridge ingress. Therefore,
+
+Actually I think only 'unknown unicast' is tricky here, and indeed the
+bridge driver is the only place in the software datapath that would
+know that.
+I know very little about frame classification in the Linux network
+stack, but would it be possible to introduce a match key in tc-flower
+for whether packets have a known destination or not?
+
+> my thinking was to implement these storm control policers as a
+> "bridge_slave" operation. It can then be offloaded to capable drivers
+> via the switchdev framework.
 >
 
-Oops, it looks like I had Yangbo's patch in my tree, and the ptp_pins
-are messing with this patch's context, causing it to fail to apply
-cleanly:
-https://patchwork.ozlabs.org/patch/1258827/
-I think I need to send a v2 for this. Sorry.
+I think it would be a bit odd to duplicate tc functionality in the
+bridge sysfs. I don't have a better suggestion though.
 
-> +struct ocelot_policer {
-> +       u32 rate; /* kilobit per second */
-> +       u32 burst; /* bytes */
-> +};
-> +
->  #define ocelot_read_ix(ocelot, reg, gi, ri) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
->  #define ocelot_read_gix(ocelot, reg, gi) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi))
->  #define ocelot_read_rix(ocelot, reg, ri) __ocelot_read_ix(ocelot, reg, reg##_RSZ * (ri))
-> @@ -624,6 +629,9 @@ int ocelot_port_add_txtstamp_skb(struct ocelot_port *ocelot_port,
->  void ocelot_get_txtstamp(struct ocelot *ocelot);
->  void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu);
->  int ocelot_get_max_mtu(struct ocelot *ocelot, int port);
-> +int ocelot_port_policer_add(struct ocelot *ocelot, int port,
-> +                           struct ocelot_policer *pol);
-> +int ocelot_port_policer_del(struct ocelot *ocelot, int port);
->  int ocelot_cls_flower_replace(struct ocelot *ocelot, int port,
->                               struct flow_cls_offload *f, bool ingress);
->  int ocelot_cls_flower_destroy(struct ocelot *ocelot, int port,
-> --
-> 2.17.1
+> I think that if we have this implemented in the Linux bridge, then your
+> patch can be used to support the policing of broadcast packets while
+> returning an error if user tries to police unknown unicast or multicast
+> packets.
+
+So even if the Linux bridge gains these knobs for flood policers,
+still have the dst_mac ff:ff:ff:ff:ff:ff as a valid way to configure
+one of those knobs?
+
+> Or maybe the hardware you are working with supports these types
+> as well?
+
+Nope, on this hardware it's just broadcast, I just checked that. Which
+simplifies things quite a bit.
+
 >
+> WDYT?
+>
+
+I don't know.
 
 Thanks,
 -Vladimir
