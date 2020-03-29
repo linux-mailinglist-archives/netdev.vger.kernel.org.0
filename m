@@ -2,55 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3610E196DA6
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 15:24:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D7FE196DA4
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 15:23:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728110AbgC2NYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 09:24:51 -0400
-Received: from sonic316-53.consmr.mail.ne1.yahoo.com ([66.163.187.179]:37592
-        "EHLO sonic316-53.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727903AbgC2NYv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 09:24:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1585488290; bh=VQV+To5S2gWVZyYzSF6aVVNoKJSf7fw7hH7Ff0SULss=; h=Date:From:Reply-To:Subject:References:From:Subject; b=JTKIoRxMoZTAuNAQl6Rnm9gLw1q2jjoYajxJ1dHREY2w5iBNwNHtAZrxe6U/YWNfyIXUHu3ohasNVZSgLKsz0p7/MErv/k5YM6YTp3nQYB59AHUNxCPQ6+nf4NfnA1c3NhtAookc0vH5hIAE2iK1SWt+D/v67yjOCmhyWyN9k/S+6WKM61cxfRd1jEweHHIXhaM4vh8Bai5LCBGEtJtv2VSBr3/uNocTyOspbMBGZEjX1A7o+gwwxwJsGMoHZYKhKIbssoSSpQEExK5VsV+52ux01QJACKQHyW0W94dQ97bMhjtUH55zukn1B4xDhpnb9hWgoi4r6lZH4EFBnYVnfQ==
-X-YMail-OSG: Y1k7R_oVM1lJhQLjeEs3_Jg7N1On.p0VEKnR0eojM72E8gnpyaGTy41StkC7I84
- dG3O.v4LlXy.f3n8zkLXkesKkVR548RYedoeBh_gX6auS.uAO5C_OWFHc4cz_5.mC_dAUUclugSF
- GRS4L_beepVQQ.Unj5LQyk8UBl89csJvpd6ZcwzgwxRThIVTn94JDzOIeNG.5QmA_RjWnhVoOWmv
- ebzj3RBZudo2u_fC7eIMS14zH64pRz2HriXPgEhBgY1r7SAVyxVBoo.p7Q0.HRYKSsTljwnbUAbD
- iB6mJXNpuaP1xHtQmT5Zo_WEVZEMz2EspdMpRYjRUcrkEzBmAG9r6qRpcFpTQhZWqNTp6gF_4QnE
- yujzLARoPa_VPdSaFmWrqN3k7QAdFwQLBYVhgBPuTc9gsVdetTuxcin.MYwHx6BPP3LU9HBwhrFf
- ViaBiQNJ._DRu_w3ed_U1VAyr75LV0YFrfsmJC8HgSlm3RqVEcRRGprb6Jev8BfsTlMMMWCYvy38
- nZdsNuCW9OgmDbLu.Sw.6UVums4ILcgZ3DEszY3_8_u3v1GsoW0eFNtS6D_owRZsuiElQ3utCKye
- 8_Et2gi9Yop0Rld.BkmrwtNvmPw7GQFMPptEKSF..otkwcZ.eQM93FYqqE_d7rhn1Q0e2EX7zpGA
- 910XHYmaxsLFkqBcYquXvqKEeIjOlindlLqNEng37rkYbjQdjGxxzUP1CjYz0QHUHDuivG389I4z
- fzI4ktT3XKZKQE2dTpTgU3q6rU1v6G1CYsi6Md3XKwpnmJ.2jv79qO7KOipFpp2iynvD9ITV0gR1
- DE3xvx9sdep5GadGniETx8cib0PClh_vghQM.b7AO0ia9I3.bGK4wbGmLUjFkGnc5eeNAOnpCd61
- _kPBNK.TQgh83mbsWLY9G_ihT_JDly6gbull_POBOL8S5NRwJYXXomGxTek.LJyTXP5GHEZ4wUqs
- QQ3BbHQVtXAxash7qkDpfAebS25xneWqTYF4t.QLW6hG5tHZKW9dre7ieqSMLaBJpoQygyHXNdRa
- WAV4CpZI.BpReE_nO23jy.s5gmqd9m5QaESVsqUuh0Lhbg9xNlRLp9VuCpfnPsFofL3RFmRF4oUG
- 9mskCeZDliD28BCoqYFBqgRoO0i8BPanuw7Zc1ZdYaAhDmojf6ZeF1V9.Wv.nApi0O73QwPMZHAF
- HaQDNjwTbmwiSu7zMRjblK4izC3LXMYc9X8J4pSRci3lfhmSBxLjqObiZxAS2.eQ.322vikj1oLF
- kBtOjt6r847ty1AUKpP9YgHt_Gz3jYVcP7cKpGxrlkb516FhxI6ZY6NMegLadYASJO8AaoMLjXl_
- wZ_Kgd6yT5k_YbPuAeL1HjGuJMG_3TX4M
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic316.consmr.mail.ne1.yahoo.com with HTTP; Sun, 29 Mar 2020 13:24:50 +0000
-Date:   Sun, 29 Mar 2020 13:22:49 +0000 (UTC)
-From:   Wang Xiu Ying <fgfhfghgfgfgfg@gtxbm.net>
-Reply-To: wying353@yahoo.com
-Message-ID: <591411389.543038.1585488169410@mail.yahoo.com>
-Subject: My proposal
+        id S1728208AbgC2NXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 09:23:24 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:31664 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728114AbgC2NXX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 09:23:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585488202;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2s2BdnMCPGd1g5Zqt0G0Bsb/G6cmPG9iPfUVgjjDP5I=;
+        b=iDMSzMuBkHYsg8FdUe5dCPQGBGU/z/VFNvtjj8/yqaqjvwdm2Y9j2beNjh+Z+b5PvJ5k1V
+        4LWkmYZU8f0+WbFmNS1huoeDeCbF0Ut/VwtBxCRaJrmHVntzuK2DBzQGV8M3m5y1rfZY3l
+        YXWeNglGzE/Xuebkuy3ekPFOG6TmEDc=
+Received: from mail-lj1-f197.google.com (mail-lj1-f197.google.com
+ [209.85.208.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-18--kozBBVUP8uA1kPPAAHUew-1; Sun, 29 Mar 2020 09:23:18 -0400
+X-MC-Unique: -kozBBVUP8uA1kPPAAHUew-1
+Received: by mail-lj1-f197.google.com with SMTP id t12so2204196lji.14
+        for <netdev@vger.kernel.org>; Sun, 29 Mar 2020 06:23:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2s2BdnMCPGd1g5Zqt0G0Bsb/G6cmPG9iPfUVgjjDP5I=;
+        b=olsT+YrC2Vg5ir76G7JF+BDS1N+NK+C0Y4H/RSJk/V6X2d5irK1SBBbLICg9btvM3Y
+         g4vMOzxpdJ4nTddFXX1ROQp30urRfu/yYgoesUVszDJxyihlGy+vCgGHbRTOobiIFnc5
+         AbrdvcW+s7zzN3ckQJ3RqUXElPOZAxKJ+HrOaftHUNvNR8YwqaKO3/2dWvZPc6fyYXAh
+         cyrA5bVPrkELrCWayb5Dn2Z0O1S78mkaNgMIBuW5DLvjmISWC5yRXDIvNr8Iarxm7gCF
+         ViqAmW+cmCUGpwlL5oUFLJysYGQ6kIs1JwQMtMGaeJkkzHmwkMnfV7c+YDlBSUjZ1Olh
+         ZFsQ==
+X-Gm-Message-State: AGi0PuZRBBlROHWCaC0KHuvU7ijgbIgZOAauf7mm4Wggmtu6zdshwAoA
+        06Eb+dz1iGxkCpJu2E4P1jYWwsqs194GqN+WdzsoA93Cw46Z6eykFxpOy20mGAM1NL/0RoCSWWD
+        wFYpckltSqJit7JMq
+X-Received: by 2002:a2e:3a01:: with SMTP id h1mr4602901lja.161.1585488197278;
+        Sun, 29 Mar 2020 06:23:17 -0700 (PDT)
+X-Google-Smtp-Source: APiQypJnAFmndO5nwxNXiRkPpOK0TLlxetboyE0xtvhjvUUI3lHhKU0hHnrqVjWfxXDOOIDZXOC9tw==
+X-Received: by 2002:a2e:3a01:: with SMTP id h1mr4602881lja.161.1585488196682;
+        Sun, 29 Mar 2020 06:23:16 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id y124sm6187788lff.48.2020.03.29.06.23.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 Mar 2020 06:23:16 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id D131F18158B; Sun, 29 Mar 2020 15:23:14 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     daniel@iogearbox.net, ast@fb.com
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Subject: [PATCH v4 1/2] libbpf: Add setter for initial value for internal maps
+Date:   Sun, 29 Mar 2020 15:22:52 +0200
+Message-Id: <20200329132253.232541-1-toke@redhat.com>
+X-Mailer: git-send-email 2.26.0
+In-Reply-To: <20200328182834.196578-1-toke@redhat.com>
+References: <20200328182834.196578-1-toke@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <591411389.543038.1585488169410.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.15555 YMailNodin Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3237.0 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+For internal maps (most notably the maps backing global variables), libbpf
+uses an internal mmaped area to store the data after opening the object.
+This data is subsequently copied into the kernel map when the object is
+loaded.
 
+This adds a function to set a new value for that data, which can be used to
+before it is loaded into the kernel. This is especially relevant for RODATA
+maps, since those are frozen on load.
 
-Good Day,
-I am Wang Xiu Ying, the Director for Credit & Marketing Chong Hing Bank, Hong Kong, Chong Hing Bank Center, 24 Des Voeux Road Central, Hong Kong. I have a business proposal of USD$13,991,674 All confirmable documents to back up the claims will be made availableto you prior to your acceptance and as soon as I receive your return mail.
-Best Regards,
-Wang Xiu Ying
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+v4:
+  - Make void pointer const, check if map was loaded
+  - Reject set if map was already loaded
+  - Split test into its own file
+v3:
+  - Add a setter for the initial value instead of a getter for the pointer to it
+  - Add selftest
+v2:
+  - Add per-map getter for data area instead of a global rodata getter for bpf_obj
+
+ tools/lib/bpf/libbpf.c   | 11 +++++++++++
+ tools/lib/bpf/libbpf.h   |  2 ++
+ tools/lib/bpf/libbpf.map |  1 +
+ 3 files changed, 14 insertions(+)
+
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 62903302935e..7deab98720ee 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -6758,6 +6758,17 @@ void *bpf_map__priv(const struct bpf_map *map)
+ 	return map ? map->priv : ERR_PTR(-EINVAL);
+ }
+ 
++int bpf_map__set_initial_value(struct bpf_map *map,
++			       const void *data, size_t size)
++{
++	if (!map->mmaped || map->libbpf_type == LIBBPF_MAP_KCONFIG ||
++	    size != map->def.value_size || map->fd >= 0)
++		return -EINVAL;
++
++	memcpy(map->mmaped, data, size);
++	return 0;
++}
++
+ bool bpf_map__is_offload_neutral(const struct bpf_map *map)
+ {
+ 	return map->def.type == BPF_MAP_TYPE_PERF_EVENT_ARRAY;
+diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+index bf7a35a9556d..958ae71c116e 100644
+--- a/tools/lib/bpf/libbpf.h
++++ b/tools/lib/bpf/libbpf.h
+@@ -407,6 +407,8 @@ typedef void (*bpf_map_clear_priv_t)(struct bpf_map *, void *);
+ LIBBPF_API int bpf_map__set_priv(struct bpf_map *map, void *priv,
+ 				 bpf_map_clear_priv_t clear_priv);
+ LIBBPF_API void *bpf_map__priv(const struct bpf_map *map);
++LIBBPF_API int bpf_map__set_initial_value(struct bpf_map *map,
++					  const void *data, size_t size);
+ LIBBPF_API int bpf_map__reuse_fd(struct bpf_map *map, int fd);
+ LIBBPF_API int bpf_map__resize(struct bpf_map *map, __u32 max_entries);
+ LIBBPF_API bool bpf_map__is_offload_neutral(const struct bpf_map *map);
+diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+index dcc87db3ca8a..159826b36b38 100644
+--- a/tools/lib/bpf/libbpf.map
++++ b/tools/lib/bpf/libbpf.map
+@@ -243,6 +243,7 @@ LIBBPF_0.0.8 {
+ 		bpf_link__pin;
+ 		bpf_link__pin_path;
+ 		bpf_link__unpin;
++		bpf_map__set_initial_value;
+ 		bpf_program__set_attach_target;
+ 		bpf_set_link_xdp_fd_opts;
+ } LIBBPF_0.0.7;
+-- 
+2.26.0
+
