@@ -2,113 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 581EE196CB6
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 12:54:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24919196CC5
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 13:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727951AbgC2Kyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 06:54:33 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35576 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727639AbgC2Kyd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 06:54:33 -0400
-Received: by mail-wr1-f66.google.com with SMTP id d5so17457300wrn.2
-        for <netdev@vger.kernel.org>; Sun, 29 Mar 2020 03:54:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=subject:from:to:references:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=XTK3qrueWbdi+Lw3QU3crLi0vqzasYPSkkflIrLo0pQ=;
-        b=bxZAhX1MKmAbPRSkkdly9M0GKbPRC3ai24/qDzGudKSERp+QCUPzG2RmiOMyqijrZC
-         Wne6UAErKM3AY4WeQfdkDgq94RcFV9SWcL7+kWRtK8dHrGw9cPfNVebzW4WLVVEIxc1O
-         0DpADV/P8NcZx60LaP1JDx4LFThYwn+HM/keYh9SLOGjRIQyiDHO/aPzX5ddxXX4jUYg
-         WA78zwVhG6JW4960o8pzCMwt94lvshjLGyF6pHr/DeTqye7xTAe6IVusVpfXj/xnDq4l
-         Wqrhr6vaKVX854m32jMedii4MPgTNELS9QSPwrqNfeOWeSWjrc2LaLO35u4ygY5DIgVm
-         yJag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XTK3qrueWbdi+Lw3QU3crLi0vqzasYPSkkflIrLo0pQ=;
-        b=pDrYdBLkbaeg2SfEXcs/Itb9rbChHuhNPaJm2uRoZYGjW/L12xLvs7kanpE9DFkDLh
-         qFi9qCOh9KI6D4aXdHLtLFBqGWTgLFL5xu9ykK4+d66t0h15Y/maZx6WTsMRYSrjspJL
-         cSEPWh+TaifxmC8MwJ5fwAHlsj1yyBxck9mhEFlaChjOiovyUFv9Uuk8lwua149n5kSI
-         h4HRk7z1eAz7aDH/VvbxnvDu0ySSMgek6pc8lQ73zVIiWLOd7L8k3VW10bgewasHe/6P
-         XW+Xs1gcx4w01pp3KmKCXzEq28w7f/foQWxq58y6sXnGXOYADVEdue/Sk9c+U+CGwcyR
-         Nrog==
-X-Gm-Message-State: ANhLgQ1ltq4gOquLF0IrG44hIHUqkONeKbcmHCwzfA6Begbf2Lb8t0RL
-        0pQVhC98kkuvoTR7p4tNylQ=
-X-Google-Smtp-Source: ADFU+vs9BoIUAOIgrgrh6y+tgkGZEB2glf9bkkVLQjDuw5DsJskmTv8RuslB0tbkEO5m9A6l000KvQ==
-X-Received: by 2002:adf:ee52:: with SMTP id w18mr9229446wro.245.1585479271185;
-        Sun, 29 Mar 2020 03:54:31 -0700 (PDT)
-Received: from [10.8.0.2] (host81-135-135-131.range81-135.btcentralplus.com. [81.135.135.131])
-        by smtp.googlemail.com with ESMTPSA id b7sm16496965wrn.67.2020.03.29.03.54.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 Mar 2020 03:54:30 -0700 (PDT)
-Subject: Re: 5.6.0-rc7+ fails to connect to wifi network
-From:   Chris Clayton <chris2553@googlemail.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>, jouni@codeaurora.org,
-        johannes.berg@intel.com
-References: <870207cc-2b47-be26-33b6-ec3971122ab8@googlemail.com>
-Message-ID: <58a4d4b4-a372-9f38-2ceb-8386f8444d61@googlemail.com>
-Date:   Sun, 29 Mar 2020 11:54:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1728083AbgC2LFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 07:05:07 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:44235 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727875AbgC2LFG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 07:05:06 -0400
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jIVkS-0006s2-Qt; Sun, 29 Mar 2020 13:05:00 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1jIVkQ-00015E-4v; Sun, 29 Mar 2020 13:04:58 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
+        Fabio Estevam <festevam@gmail.com>,
+        David Jander <david@protonic.nl>,
+        Russell King <linux@armlinux.org.uk>
+Subject: [PATCH v2] ARM: imx: allow to disable board specific PHY fixups
+Date:   Sun, 29 Mar 2020 13:04:57 +0200
+Message-Id: <20200329110457.4113-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.26.0.rc2
 MIME-Version: 1.0
-In-Reply-To: <870207cc-2b47-be26-33b6-ec3971122ab8@googlemail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+All PHY fixups located in imx and mxs machine code are PHY and/or board
+specific. Never the less, they are applied to all boards independent on
+how related PHY is actually connected. As result:
+- we have boards with wrong PHY defaults which are not overwritten or
+  not properly handled by PHY drivers.
+- Some PHY driver changes was never tested and bugs was never detected
+  due the fixups.
+- Same PHY specific errata was fixed by SoC specific fixup, so the same
+  issues should be investigated again after switching to different SoC
+  on same board.
 
+Since removing this fixups will brake may existing boards, we'll provide a
+Kconfig option which can be used by kernel developers and system integrators.
 
-On 29/03/2020 11:06, Chris Clayton wrote:
-> Hi,
-> 
-> I did a pull from Linus' tree this morning. It included the latest network fixes. Unfortunately, the resultant kernel
-> fails to connect to my home wifi network. 5.4.28 connects fine as does 5.6.0-rc7+ built at the parent commit of the
-> network merge (i.e. commit 906c40438bb669b253d0daeaf5f37a9f78a81b41 - Merge branch 'i2c/for-current' of
-> git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux).
-> 
-> The output from dmesg from the failed boot is attached. I've obfuscated the mac addresses of my BT router and of a
-> wifi-extender.
-> 
-> Let me know if I can provide any additional diagnostics and/or test any patches.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ arch/arm/mach-imx/mach-imx6q.c  |  3 ++-
+ arch/arm/mach-imx/mach-imx6sx.c |  3 ++-
+ arch/arm/mach-imx/mach-imx7d.c  |  3 ++-
+ arch/arm/mach-mxs/mach-mxs.c    |  3 ++-
+ drivers/net/phy/Kconfig         | 16 ++++++++++++++++
+ 5 files changed, 24 insertions(+), 4 deletions(-)
 
-I've bisected this and landed at:
+diff --git a/arch/arm/mach-imx/mach-imx6q.c b/arch/arm/mach-imx/mach-imx6q.c
+index edd26e0ffeec..aabf0d8c23a9 100644
+--- a/arch/arm/mach-imx/mach-imx6q.c
++++ b/arch/arm/mach-imx/mach-imx6q.c
+@@ -162,7 +162,8 @@ static int ar8035_phy_fixup(struct phy_device *dev)
+ 
+ static void __init imx6q_enet_phy_init(void)
+ {
+-	if (IS_BUILTIN(CONFIG_PHYLIB)) {
++	if (IS_BUILTIN(CONFIG_PHYLIB) &&
++	    IS_BUILTIN(CONFIG_DEPRECATED_PHY_FIXUPS)) {
+ 		phy_register_fixup_for_uid(PHY_ID_KSZ9021, MICREL_PHY_ID_MASK,
+ 				ksz9021rn_phy_fixup);
+ 		phy_register_fixup_for_uid(PHY_ID_KSZ9031, MICREL_PHY_ID_MASK,
+diff --git a/arch/arm/mach-imx/mach-imx6sx.c b/arch/arm/mach-imx/mach-imx6sx.c
+index d5310bf307ff..fdd9bef27625 100644
+--- a/arch/arm/mach-imx/mach-imx6sx.c
++++ b/arch/arm/mach-imx/mach-imx6sx.c
+@@ -35,7 +35,8 @@ static int ar8031_phy_fixup(struct phy_device *dev)
+ #define PHY_ID_AR8031   0x004dd074
+ static void __init imx6sx_enet_phy_init(void)
+ {
+-	if (IS_BUILTIN(CONFIG_PHYLIB))
++	if (IS_BUILTIN(CONFIG_PHYLIB) &&
++	    IS_BUILTIN(CONFIG_DEPRECATED_PHY_FIXUPS))
+ 		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffff,
+ 					   ar8031_phy_fixup);
+ }
+diff --git a/arch/arm/mach-imx/mach-imx7d.c b/arch/arm/mach-imx/mach-imx7d.c
+index ebb27592a9f7..1d3d67c247a3 100644
+--- a/arch/arm/mach-imx/mach-imx7d.c
++++ b/arch/arm/mach-imx/mach-imx7d.c
+@@ -49,7 +49,8 @@ static int bcm54220_phy_fixup(struct phy_device *dev)
+ 
+ static void __init imx7d_enet_phy_init(void)
+ {
+-	if (IS_BUILTIN(CONFIG_PHYLIB)) {
++	if (IS_BUILTIN(CONFIG_PHYLIB) &&
++	    IS_BUILTIN(CONFIG_DEPRECATED_PHY_FIXUPS)) {
+ 		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffff,
+ 					   ar8031_phy_fixup);
+ 		phy_register_fixup_for_uid(PHY_ID_BCM54220, 0xffffffff,
+diff --git a/arch/arm/mach-mxs/mach-mxs.c b/arch/arm/mach-mxs/mach-mxs.c
+index c109f47e9cbc..b4b631242080 100644
+--- a/arch/arm/mach-mxs/mach-mxs.c
++++ b/arch/arm/mach-mxs/mach-mxs.c
+@@ -257,7 +257,8 @@ static void __init apx4devkit_init(void)
+ {
+ 	enable_clk_enet_out();
+ 
+-	if (IS_BUILTIN(CONFIG_PHYLIB))
++	if (IS_BUILTIN(CONFIG_PHYLIB) &&
++	    IS_BUILTIN(CONFIG_DEPRECATED_PHY_FIXUPS))
+ 		phy_register_fixup_for_uid(PHY_ID_KSZ8051, MICREL_PHY_ID_MASK,
+ 					   apx4devkit_phy_fixup);
+ }
+diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+index 9dabe03a668c..f54428ddf058 100644
+--- a/drivers/net/phy/Kconfig
++++ b/drivers/net/phy/Kconfig
+@@ -249,6 +249,22 @@ config LED_TRIGGER_PHY
+ 		<Speed in megabits>Mbps OR <Speed in gigabits>Gbps OR link
+ 		for any speed known to the PHY.
+ 
++config DEPRECATED_PHY_FIXUPS
++	bool "Enable deprecated PHY fixups"
++	default y
++	---help---
++	  In the early days it was common practice to configure PHYs by adding a
++	  phy_register_fixup*() in the machine code. This practice turned out to
++	  be potentially dangerous, because:
++	  - it affects all PHYs in the system
++	  - these register changes are usually not preserved during PHY reset
++	    or suspend/resume cycle.
++	  - it complicates debugging, since these configuration changes were not
++	    done by the actual PHY driver.
++	  This option allows to disable all fixups which are identified as
++	  potentially harmful and give the developers a chance to implement the
++	  proper configuration via the device tree (e.g.: phy-mode) and/or the
++	  related PHY drivers.
+ 
+ comment "MII PHY device drivers"
+ 
+-- 
+2.26.0.rc2
 
-ce2e1ca703071723ca2dd94d492a5ab6d15050da is the first bad commit
-commit ce2e1ca703071723ca2dd94d492a5ab6d15050da
-Author: Jouni Malinen <jouni@codeaurora.org>
-Date:   Thu Mar 26 15:51:34 2020 +0100
-
-    mac80211: Check port authorization in the ieee80211_tx_dequeue() case
-
-    mac80211 used to check port authorization in the Data frame enqueue case
-    when going through start_xmit(). However, that authorization status may
-    change while the frame is waiting in a queue. Add a similar check in the
-    dequeue case to avoid sending previously accepted frames after
-    authorization change. This provides additional protection against
-    potential leaking of frames after a station has been disconnected and
-    the keys for it are being removed.
-
-    Cc: stable@vger.kernel.org
-    Signed-off-by: Jouni Malinen <jouni@codeaurora.org>
-    Link: https://lore.kernel.org/r/20200326155133.ced84317ea29.I34d4c47cd8cc8a4042b38a76f16a601fbcbfd9b3@changeid
-    Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-
- net/mac80211/tx.c | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
-
-Jouni and Johannes added to recipients.
-
-> 
-> Please cc me in any reply as I'm not subscribed.
-> 
-> Thanks.
-> 
