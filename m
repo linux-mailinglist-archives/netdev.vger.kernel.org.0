@@ -2,327 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 832BD196D15
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 13:48:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 199D7196D25
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 13:52:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728110AbgC2Lry (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 07:47:54 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:36464 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727951AbgC2Lrx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 07:47:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=TG31+02/fMNgeHN1yRLGK1mOd+xzI1S+WfhasmHsNjs=; b=t95wITIB00ihExQJ1sb4Ne2Z7
-        0NUtlRWOYGX7eD1Ae4m7Y64rB7Vn5AfoI9sCQrnnQOOcuAUqmoklOp3+DfPX0Hsj5hxL8jt3OInKe
-        fhg47U7tXQY4C3fE2UQGOENyy6yXXpgmSKEz8IaYoUJaYUvuTggjoAfi4ogQS/21iO131pmkS6F3a
-        EtORneNZ0LiUUYcUilr09cP8DOIilXO5bZX5b/1rVyxxXhlze6hpTDXoZRQsnmHQ8eckb1ZrD9Ety
-        E6q9xKAtP25OGfJS8mWwmeDaylkoc4edEc6npwNg5IMyXq04wyBCQ6+ASwKRRtoa1An4FexL8mukb
-        S+uZYvTmw==;
-Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:38762)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jIWPo-0004nC-Mt; Sun, 29 Mar 2020 12:47:44 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jIWPl-0006Bx-BS; Sun, 29 Mar 2020 12:47:41 +0100
-Date:   Sun, 29 Mar 2020 12:47:41 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/2] net: phylink: add separate pcs operations
- structure
-Message-ID: <20200329114741.GZ25745@shell.armlinux.org.uk>
-References: <20200326151458.GC25745@shell.armlinux.org.uk>
- <E1jHUEd-0007UX-Pm@rmk-PC.armlinux.org.uk>
- <DB8PR04MB6828E4768064062D959BF4EDE0CF0@DB8PR04MB6828.eurprd04.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DB8PR04MB6828E4768064062D959BF4EDE0CF0@DB8PR04MB6828.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1728141AbgC2LwT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 07:52:19 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44998 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728044AbgC2LwT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 07:52:19 -0400
+Received: by mail-wr1-f65.google.com with SMTP id m17so17450495wrw.11;
+        Sun, 29 Mar 2020 04:52:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=f1hjWQ0VpwwG+vtkKj0P9tGfDlVpUagazi+4VPhlgcc=;
+        b=WJhBdZASkPc2a16jpH2meYRTTE/0QbpY+ClOMtx6kHEDXiPplaaN25hrq/1r6PfOBh
+         Dks+Db3UU7Bat9gvr4/Rf1UBgsXM2NOvzj5VDJeAr6htHXKjIGyzxz2kibbmVr7j4qZ9
+         t4L6oVJdqvObxW/z0ihOVEenX+hJHa6t3lT421xi6FdmL7oWtD0NXiuroX68NNOi67Ud
+         7p7OS0jsfaTri0WQcvTIqFsiBrG2Ed7X4C0J2ZOZ0iB/o7NPFikFi9JjbIYWo+jkMKbI
+         oEm+y0ZAo1ymw3che08X+egbXNxhaLRtRr29qaJuQWc3LavHT4y7xjr30ukorrmlAZ5K
+         NJYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=f1hjWQ0VpwwG+vtkKj0P9tGfDlVpUagazi+4VPhlgcc=;
+        b=aDllgC0Az8qlPzVOdni3r/JPuC9QXvAssN359hVv0b51OK7rVk3x41NxrHdQ+omesZ
+         x0Dmc2PLmehco8yF0f6j0GFCmTd83NDhku+t0lp2z85/6NVtCUvCeC9+0u2+GrvxW111
+         f0ciGH51eWwOPe8afymNCp2Zd0DGtk53E+EZMCzzPvYDkyh+Al9Eo0nf6WZNm002M/gA
+         Y+S7HQzhquNa2ej9YOe/Vz5ryAL1wMI2NXj8iofJGTRjdtYufhgztjz21/q+1xyRWsIR
+         UmxjyFj3UBFmZ44MKJ4du5Ryjjk3f5rJkuEyW8aDcr2kSO9+Ma62hE/iQZjilpTrUYdg
+         AAHA==
+X-Gm-Message-State: ANhLgQ3RloQ7AWwho6iSoLnWTA7rDIKqkd5skp6/ZjPUSBLbZX5GEv3+
+        vMEg+gX19hQnZwyrNfRrl7A=
+X-Google-Smtp-Source: ADFU+vvsYHg0S/NfJXJATtai7aumc5Ci7xZ3WKrLq+Ia1r36SpdRohFwPos7nxdiRLop3mAvM0p3ig==
+X-Received: by 2002:adf:fc51:: with SMTP id e17mr2824269wrs.2.1585482735741;
+        Sun, 29 Mar 2020 04:52:15 -0700 (PDT)
+Received: from localhost.localdomain (5-12-96-237.residential.rdsnet.ro. [5.12.96.237])
+        by smtp.gmail.com with ESMTPSA id 5sm14424108wrs.20.2020.03.29.04.52.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 Mar 2020 04:52:15 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        davem@davemloft.net
+Cc:     jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
+        netdev@vger.kernel.org, xiaoliang.yang_1@nxp.com,
+        linux-kernel@vger.kernel.org, horatiu.vultur@microchip.com,
+        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
+        joergen.andreasen@microchip.com, UNGLinuxDriver@microchip.com,
+        yangbo.lu@nxp.com, alexandru.marginean@nxp.com, po.liu@nxp.com,
+        claudiu.manoil@nxp.com, leoyang.li@nxp.com,
+        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com
+Subject: [PATCH v2 net-next 0/6] Port and flow policers for DSA (SJA1105, Felix/Ocelot)
+Date:   Sun, 29 Mar 2020 14:51:56 +0300
+Message-Id: <20200329115202.16348-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 09:49:02PM +0000, Ioana Ciornei wrote:
-> > Subject: [PATCH net-next 2/2] net: phylink: add separate pcs operations
-> > structure
-> > 
-> > Add a separate set of PCS operations, which MAC drivers can use to couple
-> > phylink with their associated MAC PCS layer.  The PCS operations include:
-> > 
-> > - pcs_get_state() - reads the link up/down, resolved speed, duplex
-> >    and pause from the PCS.
-> > - pcs_config() - configures the PCS for the specified mode, PHY
-> >    interface type, and setting the advertisement.
-> > - pcs_an_restart() - restarts 802.3 in-band negotiation with the
-> >    link partner
-> > - pcs_link_up() - informs the PCS that link has come up, and the
-> >    parameters of the link. Link parameters are used to program the
-> >    PCS for fixed speed and non-inband modes.
-> > 
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > ---
-> 
-> Are the old mac ops going to be removed at some point (after the drivers
-> have been converted to the PCS operations)?
-> I am referring to mac_pcs_get_state() and mac_an_restart().
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-If (and only if) it's possible to convert mvneta and mvpp2 sanely.
-Splitting the PCS makes total sense, but we have to cope with hardware
-where there is no clear demarcation between the PCS and MAC.  DSA also
-has issues, because it's written as a layered driver, which does not
-lend itself to easy gradual conversion of DSA drivers.
+This series adds support for 2 types of policers:
+ - port policers, via tc matchall filter
+ - flow policers, via tc flower filter
+for 2 DSA drivers:
+ - sja1105
+ - felix/ocelot
 
-> Also, what are the rules for what should and shouldn't be done in the
-> new pcs_config() method?
+First we start with ocelot/felix. Prior to this patch, the ocelot core
+library currently only supported:
+- Port policers
+- Flow-based dropping and trapping
+But the felix wrapper could not actually use the port policers due to
+missing linkage and support in the DSA core. So one of the patches
+addresses exactly that limitation by adding the missing support to the
+DSA core. The other patch for felix flow policers (via the VCAP IS2
+engine) is actually in the ocelot library itself, since the linkage with
+the ocelot flower classifier has already been done in an earlier patch
+set.
 
-The pcs_config() method should set the PCS according to the interface
-mode (state->interface) and the advertisement (state->advertising).
-Nothing else should be used. I suppose I should pass those explicitly
-rather than the whole state structure to prevent any mis-use.
+Then with the newly added .port_policer_add and .port_policer_del, we
+can also start supporting the L2 policers on sja1105.
 
-> Maybe a documentation entry for this would help.
+Then, for full functionality of these L2 policers on sja1105, we also
+implement a more limited set of flow-based policing keys for this
+switch, namely for broadcast and VLAN PCP.
 
-Yep.
+Series version 1 was submitted here:
+https://patchwork.ozlabs.org/cover/1263353/
 
-> >  drivers/net/phy/phylink.c | 76 +++++++++++++++++++++++++++------------
-> >  include/linux/phylink.h   | 11 ++++++
-> >  2 files changed, 65 insertions(+), 22 deletions(-)
-> > 
-> > diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c index
-> > a34a3be92dba..abe2cc168f93 100644
-> > --- a/drivers/net/phy/phylink.c
-> > +++ b/drivers/net/phy/phylink.c
-> > @@ -41,6 +41,7 @@ struct phylink {
-> >  	/* private: */
-> >  	struct net_device *netdev;
-> >  	const struct phylink_mac_ops *mac_ops;
-> > +	const struct phylink_pcs_ops *pcs_ops;
-> >  	struct phylink_config *config;
-> >  	struct device *dev;
-> >  	unsigned int old_link_state:1;
-> > @@ -425,11 +426,31 @@ static void phylink_mac_config_up(struct phylink *pl,
-> >  		phylink_mac_config(pl, state);
-> >  }
-> > 
-> > -static void phylink_mac_an_restart(struct phylink *pl)
-> > +static void phylink_mac_pcs_an_restart(struct phylink *pl)
-> >  {
-> >  	if (pl->link_config.an_enabled &&
-> > -	    phy_interface_mode_is_8023z(pl->link_config.interface))
-> > -		pl->mac_ops->mac_an_restart(pl->config);
-> > +	    phy_interface_mode_is_8023z(pl->link_config.interface)) {
-> > +		if (pl->pcs_ops)
-> > +			pl->pcs_ops->pcs_an_restart(pl->config);
-> > +		else
-> > +			pl->mac_ops->mac_an_restart(pl->config);
-> > +	}
-> > +}
-> > +
-> > +static void phylink_pcs_config(struct phylink *pl, bool force_restart,
-> > +			       const struct phylink_link_state *state) {
-> > +	bool restart = force_restart;
-> > +
-> > +	if (pl->pcs_ops && pl->pcs_ops->pcs_config(pl->config,
-> > +						   pl->cur_link_an_mode,
-> > +						   state))
-> > +		restart = true;
-> > +
-> > +	phylink_mac_config(pl, state);
-> > +
-> > +	if (restart)
-> > +		phylink_mac_pcs_an_restart(pl);
-> >  }
-> > 
-> >  static void phylink_mac_pcs_get_state(struct phylink *pl, @@ -445,7 +466,10
-> > @@ static void phylink_mac_pcs_get_state(struct phylink *pl,
-> >  	state->an_complete = 0;
-> >  	state->link = 1;
-> > 
-> > -	pl->mac_ops->mac_pcs_get_state(pl->config, state);
-> > +	if (pl->pcs_ops)
-> > +		pl->pcs_ops->pcs_get_state(pl->config, state);
-> > +	else
-> > +		pl->mac_ops->mac_pcs_get_state(pl->config, state);
-> >  }
-> > 
-> >  /* The fixed state is... fixed except for the link state, @@ -463,7 +487,7 @@
-> > static void phylink_get_fixed_state(struct phylink *pl,
-> >  	phylink_resolve_flow(state);
-> >  }
-> > 
-> > -static void phylink_mac_initial_config(struct phylink *pl)
-> > +static void phylink_mac_initial_config(struct phylink *pl, bool
-> > +force_restart)
-> >  {
-> >  	struct phylink_link_state link_state;
-> > 
-> > @@ -489,7 +513,7 @@ static void phylink_mac_initial_config(struct phylink *pl)
-> >  	link_state.link = false;
-> > 
-> >  	phylink_apply_manual_flow(pl, &link_state);
-> > -	phylink_mac_config(pl, &link_state);
-> > +	phylink_pcs_config(pl, force_restart, &link_state);
-> >  }
-> > 
-> >  static const char *phylink_pause_to_str(int pause) @@ -506,12 +530,18 @@
-> > static const char *phylink_pause_to_str(int pause)
-> >  	}
-> >  }
-> > 
-> > -static void phylink_mac_link_up(struct phylink *pl,
-> > -				struct phylink_link_state link_state)
-> > +static void phylink_link_up(struct phylink *pl,
-> > +			    struct phylink_link_state link_state)
-> >  {
-> >  	struct net_device *ndev = pl->netdev;
-> > 
-> >  	pl->cur_interface = link_state.interface;
-> > +
-> > +	if (pl->pcs_ops && pl->pcs_ops->pcs_link_up)
-> > +		pl->pcs_ops->pcs_link_up(pl->config, pl->cur_link_an_mode,
-> > +					 pl->cur_interface,
-> > +					 link_state.speed, link_state.duplex);
-> > +
-> >  	pl->mac_ops->mac_link_up(pl->config, pl->phydev,
-> >  				 pl->cur_link_an_mode, pl->cur_interface,
-> >  				 link_state.speed, link_state.duplex, @@ -528,7
-> > +558,7 @@ static void phylink_mac_link_up(struct phylink *pl,
-> >  		     phylink_pause_to_str(link_state.pause));
-> >  }
-> > 
-> > -static void phylink_mac_link_down(struct phylink *pl)
-> > +static void phylink_link_down(struct phylink *pl)
-> >  {
-> >  	struct net_device *ndev = pl->netdev;
-> > 
-> > @@ -597,9 +627,9 @@ static void phylink_resolve(struct work_struct *w)
-> >  	if (link_changed) {
-> >  		pl->old_link_state = link_state.link;
-> >  		if (!link_state.link)
-> > -			phylink_mac_link_down(pl);
-> > +			phylink_link_down(pl);
-> >  		else
-> > -			phylink_mac_link_up(pl, link_state);
-> > +			phylink_link_up(pl, link_state);
-> >  	}
-> >  	if (!link_state.link && pl->mac_link_dropped) {
-> >  		pl->mac_link_dropped = false;
-> > @@ -746,6 +776,12 @@ struct phylink *phylink_create(struct phylink_config
-> > *config,  }  EXPORT_SYMBOL_GPL(phylink_create);
-> > 
-> > +void phylink_add_pcs(struct phylink *pl, const struct phylink_pcs_ops
-> > +*ops) {
-> > +	pl->pcs_ops = ops;
-> > +}
-> > +EXPORT_SYMBOL_GPL(phylink_add_pcs);
-> > +
-> >  /**
-> >   * phylink_destroy() - cleanup and destroy the phylink instance
-> >   * @pl: a pointer to a &struct phylink returned from phylink_create() @@ -
-> > 1082,14 +1118,12 @@ void phylink_start(struct phylink *pl)
-> >  	/* Apply the link configuration to the MAC when starting. This allows
-> >  	 * a fixed-link to start with the correct parameters, and also
-> >  	 * ensures that we set the appropriate advertisement for Serdes links.
-> > -	 */
-> > -	phylink_mac_initial_config(pl);
-> > -
-> > -	/* Restart autonegotiation if using 802.3z to ensure that the link
-> > +	 *
-> > +	 * Restart autonegotiation if using 802.3z to ensure that the link
-> >  	 * parameters are properly negotiated.  This is necessary for DSA
-> >  	 * switches using 802.3z negotiation to ensure they see our modes.
-> >  	 */
-> > -	phylink_mac_an_restart(pl);
-> > +	phylink_mac_initial_config(pl, true);
-> > 
-> >  	clear_bit(PHYLINK_DISABLE_STOPPED, &pl->phylink_disable_state);
-> >  	phylink_run_resolve(pl);
-> > @@ -1386,8 +1420,7 @@ int phylink_ethtool_ksettings_set(struct phylink *pl,
-> >  			 * advertisement; the only thing we have is the pause
-> >  			 * modes which can only come from a PHY.
-> >  			 */
-> > -			phylink_mac_config(pl, &pl->link_config);
-> > -			phylink_mac_an_restart(pl);
-> > +			phylink_pcs_config(pl, true, &pl->link_config);
-> >  		}
-> >  		mutex_unlock(&pl->state_mutex);
-> >  	}
-> > @@ -1415,7 +1448,7 @@ int phylink_ethtool_nway_reset(struct phylink *pl)
-> > 
-> >  	if (pl->phydev)
-> >  		ret = phy_restart_aneg(pl->phydev);
-> > -	phylink_mac_an_restart(pl);
-> > +	phylink_mac_pcs_an_restart(pl);
-> > 
-> >  	return ret;
-> >  }
-> > @@ -1494,8 +1527,7 @@ int phylink_ethtool_set_pauseparam(struct phylink
-> > *pl,
-> >  				   pause->tx_pause);
-> >  	} else if (!test_bit(PHYLINK_DISABLE_STOPPED,
-> >  			     &pl->phylink_disable_state)) {
-> > -		phylink_mac_config(pl, &pl->link_config);
-> > -		phylink_mac_an_restart(pl);
-> > +		phylink_pcs_config(pl, true, &pl->link_config);
-> >  	}
-> >  	mutex_unlock(&pl->state_mutex);
-> > 
-> > @@ -1901,7 +1933,7 @@ static int phylink_sfp_config(struct phylink *pl, u8
-> > mode,
-> > 
-> >  	if (changed && !test_bit(PHYLINK_DISABLE_STOPPED,
-> >  				 &pl->phylink_disable_state))
-> > -		phylink_mac_initial_config(pl);
-> > +		phylink_mac_initial_config(pl, false);
-> > 
-> >  	return ret;
-> >  }
-> > diff --git a/include/linux/phylink.h b/include/linux/phylink.h index
-> > 8fa6df3b881b..dc27dd341ebd 100644
-> > --- a/include/linux/phylink.h
-> > +++ b/include/linux/phylink.h
-> > @@ -97,6 +97,16 @@ struct phylink_mac_ops {
-> >  			    bool tx_pause, bool rx_pause);
-> >  };
-> > 
-> > +struct phylink_pcs_ops {
-> > +	void (*pcs_get_state)(struct phylink_config *config,
-> > +			      struct phylink_link_state *state);
-> > +	int (*pcs_config)(struct phylink_config *config, unsigned int mode,
-> > +			  const struct phylink_link_state *state);
-> > +	void (*pcs_an_restart)(struct phylink_config *config);
-> > +	void (*pcs_link_up)(struct phylink_config *config, unsigned int mode,
-> > +			    phy_interface_t interface, int speed, int duplex); };
-> > +
-> >  #if 0 /* For kernel-doc purposes only. */
-> >  /**
-> >   * validate - Validate and update the link configuration @@ -273,6 +283,7 @@
-> > void mac_link_up(struct phylink_config *config, struct phy_device *phy,  struct
-> > phylink *phylink_create(struct phylink_config *, struct fwnode_handle *,
-> >  			       phy_interface_t iface,
-> >  			       const struct phylink_mac_ops *ops);
-> > +void phylink_add_pcs(struct phylink *, const struct phylink_pcs_ops
-> > +*ops);
-> >  void phylink_destroy(struct phylink *);
-> > 
-> >  int phylink_connect_phy(struct phylink *, struct phy_device *);
-> > --
-> > 2.20.1
-> 
+Nothing functional changed in v2, only a rebase.
+
+Vladimir Oltean (5):
+  net: dsa: refactor matchall mirred action to separate function
+  net: dsa: add port policers
+  net: dsa: felix: add port policers
+  net: dsa: sja1105: add configuration of port policers
+  net: dsa: sja1105: add broadcast and per-traffic class policers
+
+Xiaoliang Yang (1):
+  net: mscc: ocelot: add action of police on vcap_is2
+
+ drivers/net/dsa/ocelot/felix.c            |  24 ++
+ drivers/net/dsa/sja1105/Makefile          |   1 +
+ drivers/net/dsa/sja1105/sja1105.h         |  40 +++
+ drivers/net/dsa/sja1105/sja1105_flower.c  | 340 ++++++++++++++++++++++
+ drivers/net/dsa/sja1105/sja1105_main.c    | 136 +++++++--
+ drivers/net/ethernet/mscc/ocelot_ace.c    |  64 +++-
+ drivers/net/ethernet/mscc/ocelot_ace.h    |   4 +
+ drivers/net/ethernet/mscc/ocelot_flower.c |   9 +
+ drivers/net/ethernet/mscc/ocelot_police.c |  27 ++
+ drivers/net/ethernet/mscc/ocelot_police.h |  11 +-
+ drivers/net/ethernet/mscc/ocelot_tc.c     |   2 +-
+ include/net/dsa.h                         |  13 +-
+ include/soc/mscc/ocelot.h                 |   9 +
+ net/dsa/slave.c                           | 145 ++++++---
+ 14 files changed, 742 insertions(+), 83 deletions(-)
+ create mode 100644 drivers/net/dsa/sja1105/sja1105_flower.c
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+2.17.1
+
