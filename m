@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC923196A71
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 01:53:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CED6196A6F
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 01:53:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727907AbgC2AxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 20:53:10 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:40421 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727848AbgC2AxJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 20:53:09 -0400
-Received: by mail-wm1-f65.google.com with SMTP id a81so17165996wmf.5;
-        Sat, 28 Mar 2020 17:53:07 -0700 (PDT)
+        id S1727925AbgC2AxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 20:53:11 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:55144 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727880AbgC2AxK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 20:53:10 -0400
+Received: by mail-wm1-f67.google.com with SMTP id c81so15833958wmd.4;
+        Sat, 28 Mar 2020 17:53:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vnWprFzkK4xaIJG1JaKx5Z1U1u6aWn1Vmi7W7qDzbi4=;
-        b=rqyz3pSR1flqOdNiBwvuxi7H3HwiA/B6uciI/acBKAbPWkr1YF6ENpfOHasuHnM/yf
-         7mPwnPovbJcnqmKTDPvPTFNXaLV5Q0fQld0xnnfkOGuEYs/cLRgQb+aSvBME/f63h2Rd
-         65Pbu3h/rTtzhJpBa8ASs0QDmIr3rNPYyZE8IL7PWd1OA8p9D81bRKFnZLZ3Z1Bm0xO1
-         OwgJutxTgcIdHmezSll5zjlpMOT0pz2t/BSjt+fXXmAy7FbKE9VhD8JPPOruOCcp7Xnh
-         MVaaGFrQAywIdLxMkh1WiDKvndy1zfxQNdKcjijhxxyRLfDzayrVFV0e2rYyV508ssSn
-         EG5A==
+        bh=37kWlgap5I+gvi/hMEL+pJlJvYSPzGhSsylXd5Sbnow=;
+        b=ErqSZhBA9K0vDbpaeVxrEPLHEq7sqtm6ewxAw+OqCkstKt6k0rjgGQDbmMSTvocHC/
+         CseDP+hCyFKp+1yWbrtzygUGZ9zJQ4ME/ig2J8spIdzfwKjJ7IBAsKWJFXSUskMjgfRN
+         iP02jT9f25ifFdq3pJFjKA1LXclqGFBMqGjcVEQV5XDKrQCBwrsosPo0qPYO3Jz0rL0V
+         puFU9hNSdKDjGBJalPLjVWDJH7Kd33IWez81wP54F+xPKZJXtky/tM+lJHEyxM2zOXp+
+         pQD2zCQgOA8O4zFZpWcne9fObNY5vyvML1tU7QK5mn4atDMaJS/e/M66/0TmNgvNsCTI
+         WcVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=vnWprFzkK4xaIJG1JaKx5Z1U1u6aWn1Vmi7W7qDzbi4=;
-        b=gLsxqWVC5Dp+lUPRSS9wYmnpVZDw86VWXyfbPpmzlkV8zWr6vBSfuELr8fZirS12C3
-         4yShrQ0fa0g5KQOyIGgLG2d9u0jTEbW14vciPPy0PUtecFDMte8FBXbih4m70KCkzGWs
-         N+X24+QEXrb2qcAURyQGrc1ye55lsgRB8Y8UzxfesA25MbTb2+2LqheLfLCGNUHtC4KX
-         N9HyWXuBgBHTrZDZ/Fi4Na4KEHS/VlTx+vzPyEbcqMCPw3b01KTGulNsd3z0Ho2O+DEu
-         ZnXbx4ZK42tTHYI88zqrRZpkecBzqbuErRXIcf7eVkPmzCr7bNaqwbrcX0QgajMNd+VM
-         C1cw==
-X-Gm-Message-State: ANhLgQ2Pg85lVg6HgJFK66dIHR2aLb9+dLdaqJ4+L5A6yGEvV4MgPGkV
-        PfXWUnLxG4sKvg8aKgtXoQU=
-X-Google-Smtp-Source: ADFU+vsPWKapCy3MNkfB/BIzs6m1Dq23TLWu2pXOAhb3JhJ+2OX3bzanv+mnIouNIWhXYLyOhy8lcw==
-X-Received: by 2002:a1c:3105:: with SMTP id x5mr6277153wmx.51.1585443186905;
-        Sat, 28 Mar 2020 17:53:06 -0700 (PDT)
+        bh=37kWlgap5I+gvi/hMEL+pJlJvYSPzGhSsylXd5Sbnow=;
+        b=W0JdVGhooZ1PIU8tMu5vRMNocPa0k9h3tKF8+l0VD5IDYhYQOAmDa5EyqZWfXcFLf7
+         8j4fe8C29bkddXc4mbEyfhgrMirRtsBIdATcJuOatWfdv4QaUA0XlgR2/ugRQrjzs+MA
+         aVg0+b97oeKS7M/IySwsCmsLww0jHscQsaBGvmP8xk1zb/aAyxPd9pWzlpLDXZOgQPID
+         mMHew/BFXYvyLT2C+DAhNZPSBAOoFMEiYWv0mYuewaYay/WPDeyqQk/mkWScV4HaLd63
+         q9KuingQxpBl6CLo/K+0DDf8JX/IPB24u6ygeH6YNJXp0OgCWZXcNsD4l7CBIWRapxd3
+         zMkQ==
+X-Gm-Message-State: ANhLgQ2Pmk2CRCZlKs3jOeh07QLrWV+pcKAOW2ba8MplP/48PWcmzTky
+        CH3oMyfDkcIStujQAWWk1c4=
+X-Google-Smtp-Source: ADFU+vsWpSrZo30e1oJdZjK22/pW49qJHly9HhYyt9iNjbXn9DEsj1VpfbTVRvEnhTXe4RQy4rOi4g==
+X-Received: by 2002:a1c:4c1a:: with SMTP id z26mr5933920wmf.94.1585443188397;
+        Sat, 28 Mar 2020 17:53:08 -0700 (PDT)
 Received: from localhost.localdomain (5-12-96-237.residential.rdsnet.ro. [5.12.96.237])
-        by smtp.gmail.com with ESMTPSA id l1sm8292652wme.14.2020.03.28.17.53.05
+        by smtp.gmail.com with ESMTPSA id l1sm8292652wme.14.2020.03.28.17.53.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Mar 2020 17:53:06 -0700 (PDT)
+        Sat, 28 Mar 2020 17:53:07 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         davem@davemloft.net
@@ -53,9 +53,9 @@ Cc:     jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
         joergen.andreasen@microchip.com, UNGLinuxDriver@microchip.com,
         yangbo.lu@nxp.com, alexandru.marginean@nxp.com, po.liu@nxp.com,
         claudiu.manoil@nxp.com, leoyang.li@nxp.com
-Subject: [PATCH net-next 4/6] net: dsa: felix: add port policers
-Date:   Sun, 29 Mar 2020 02:52:00 +0200
-Message-Id: <20200329005202.17926-5-olteanv@gmail.com>
+Subject: [PATCH net-next 5/6] net: dsa: sja1105: add configuration of port policers
+Date:   Sun, 29 Mar 2020 02:52:01 +0200
+Message-Id: <20200329005202.17926-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200329005202.17926-1-olteanv@gmail.com>
 References: <20200329005202.17926-1-olteanv@gmail.com>
@@ -66,160 +66,209 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This patch is a trivial passthrough towards the ocelot library, which
-support port policers since commit 2c1d029a017f ("net: mscc: ocelot:
-Implement port policers via tc command").
-
-Some data structure conversion between the DSA core and the Ocelot
-library is necessary, for policer parameters.
+This adds partial configuration support for the L2 Policing Table. Out
+of the 45 policing entries, only 5 are used (one for each port), in a
+shared manner. All 8 traffic classes, and the broadcast policer, are
+redirected to a common instance which belongs to the ingress port.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix.c            | 24 +++++++++++++++++++++++
- drivers/net/ethernet/mscc/ocelot_police.c |  3 +++
- drivers/net/ethernet/mscc/ocelot_police.h | 10 ----------
- drivers/net/ethernet/mscc/ocelot_tc.c     |  2 +-
- include/soc/mscc/ocelot.h                 |  8 ++++++++
- 5 files changed, 36 insertions(+), 11 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 132 +++++++++++++++++++------
+ 1 file changed, 100 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index eef9fa812a3c..7f7dd6736051 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -14,6 +14,7 @@
- #include <linux/of_net.h>
- #include <linux/pci.h>
- #include <linux/of.h>
-+#include <net/pkt_sched.h>
- #include <net/dsa.h>
- #include "felix.h"
- 
-@@ -651,6 +652,27 @@ static int felix_cls_flower_stats(struct dsa_switch *ds, int port,
- 	return ocelot_cls_flower_stats(ocelot, port, cls, ingress);
- }
- 
-+static int felix_port_policer_add(struct dsa_switch *ds, int port,
-+				  struct dsa_mall_policer_tc_entry *policer)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct ocelot_policer pol = {
-+		.rate = div_u64(policer->rate_bytes_per_sec, 1000) * 8,
-+		.burst = div_u64(policer->rate_bytes_per_sec *
-+				 PSCHED_NS2TICKS(policer->burst),
-+				 PSCHED_TICKS_PER_SEC),
-+	};
-+
-+	return ocelot_port_policer_add(ocelot, port, &pol);
-+}
-+
-+static void felix_port_policer_del(struct dsa_switch *ds, int port)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	ocelot_port_policer_del(ocelot, port);
-+}
-+
- static const struct dsa_switch_ops felix_switch_ops = {
- 	.get_tag_protocol	= felix_get_tag_protocol,
- 	.setup			= felix_setup,
-@@ -684,6 +706,8 @@ static const struct dsa_switch_ops felix_switch_ops = {
- 	.port_txtstamp		= felix_txtstamp,
- 	.port_change_mtu	= felix_change_mtu,
- 	.port_max_mtu		= felix_get_max_mtu,
-+	.port_policer_add	= felix_port_policer_add,
-+	.port_policer_del	= felix_port_policer_del,
- 	.cls_flower_add		= felix_cls_flower_add,
- 	.cls_flower_del		= felix_cls_flower_del,
- 	.cls_flower_stats	= felix_cls_flower_stats,
-diff --git a/drivers/net/ethernet/mscc/ocelot_police.c b/drivers/net/ethernet/mscc/ocelot_police.c
-index 8d25b2706ff0..2e1d8e187332 100644
---- a/drivers/net/ethernet/mscc/ocelot_police.c
-+++ b/drivers/net/ethernet/mscc/ocelot_police.c
-@@ -4,6 +4,7 @@
-  * Copyright (c) 2019 Microsemi Corporation
-  */
- 
-+#include <soc/mscc/ocelot.h>
- #include "ocelot_police.h"
- 
- enum mscc_qos_rate_mode {
-@@ -203,6 +204,7 @@ int ocelot_port_policer_add(struct ocelot *ocelot, int port,
- 
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index 763ae1d3bca8..81d2e5e5ce96 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -516,23 +516,56 @@ static int sja1105_init_avb_params(struct sja1105_private *priv)
  	return 0;
  }
-+EXPORT_SYMBOL(ocelot_port_policer_add);
  
- int ocelot_port_policer_del(struct ocelot *ocelot, int port)
++/* The L2 policing table is 2-stage. The table is looked up for each frame
++ * according to the ingress port, whether it was broadcast or not, and the
++ * classified traffic class (given by VLAN PCP). This portion of the lookup is
++ * fixed, and gives access to the SHARINDX, an indirection register pointing
++ * within the policing table itself, which is used to resolve the policer that
++ * will be used for this frame.
++ *
++ *  Stage 1                              Stage 2
++ * +------------+--------+              +---------------------------------+
++ * |Port 0 TC 0 |SHARINDX|              | Policer 0: Rate, Burst, MTU     |
++ * +------------+--------+              +---------------------------------+
++ * |Port 0 TC 1 |SHARINDX|              | Policer 1: Rate, Burst, MTU     |
++ * +------------+--------+              +---------------------------------+
++ *    ...                               | Policer 2: Rate, Burst, MTU     |
++ * +------------+--------+              +---------------------------------+
++ * |Port 0 TC 7 |SHARINDX|              | Policer 3: Rate, Burst, MTU     |
++ * +------------+--------+              +---------------------------------+
++ * |Port 1 TC 0 |SHARINDX|              | Policer 4: Rate, Burst, MTU     |
++ * +------------+--------+              +---------------------------------+
++ *    ...                               | Policer 5: Rate, Burst, MTU     |
++ * +------------+--------+              +---------------------------------+
++ * |Port 1 TC 7 |SHARINDX|              | Policer 6: Rate, Burst, MTU     |
++ * +------------+--------+              +---------------------------------+
++ *    ...                               | Policer 7: Rate, Burst, MTU     |
++ * +------------+--------+              +---------------------------------+
++ * |Port 4 TC 7 |SHARINDX|                 ...
++ * +------------+--------+
++ * |Port 0 BCAST|SHARINDX|                 ...
++ * +------------+--------+
++ * |Port 1 BCAST|SHARINDX|                 ...
++ * +------------+--------+
++ *    ...                                  ...
++ * +------------+--------+              +---------------------------------+
++ * |Port 4 BCAST|SHARINDX|              | Policer 44: Rate, Burst, MTU    |
++ * +------------+--------+              +---------------------------------+
++ *
++ * In this driver, we shall use policers 0-4 as statically alocated port
++ * (matchall) policers. So we need to make the SHARINDX for all lookups
++ * corresponding to this ingress port (8 VLAN PCP lookups and 1 broadcast
++ * lookup) equal.
++ * The remaining policers (40) shall be dynamically allocated for flower
++ * policers, where the key is either vlan_prio or dst_mac ff:ff:ff:ff:ff:ff.
++ */
+ #define SJA1105_RATE_MBPS(speed) (((speed) * 64000) / 1000)
+ 
+-static void sja1105_setup_policer(struct sja1105_l2_policing_entry *policing,
+-				  int index, int mtu)
+-{
+-	policing[index].sharindx = index;
+-	policing[index].smax = 65535; /* Burst size in bytes */
+-	policing[index].rate = SJA1105_RATE_MBPS(1000);
+-	policing[index].maxlen = mtu;
+-	policing[index].partition = 0;
+-}
+-
+ static int sja1105_init_l2_policing(struct sja1105_private *priv)
  {
-@@ -225,6 +227,7 @@ int ocelot_port_policer_del(struct ocelot *ocelot, int port)
+ 	struct sja1105_l2_policing_entry *policing;
+ 	struct sja1105_table *table;
+-	int i, j, k;
++	int port, tc;
  
+ 	table = &priv->static_config.tables[BLK_IDX_L2_POLICING];
+ 
+@@ -551,22 +584,29 @@ static int sja1105_init_l2_policing(struct sja1105_private *priv)
+ 
+ 	policing = table->entries;
+ 
+-	/* k sweeps through all unicast policers (0-39).
+-	 * bcast sweeps through policers 40-44.
+-	 */
+-	for (i = 0, k = 0; i < SJA1105_NUM_PORTS; i++) {
+-		int bcast = (SJA1105_NUM_PORTS * SJA1105_NUM_TC) + i;
++	/* Setup shared indices for the matchall policers */
++	for (port = 0; port < SJA1105_NUM_PORTS; port++) {
++		int bcast = (SJA1105_NUM_PORTS * SJA1105_NUM_TC) + port;
++
++		for (tc = 0; tc < SJA1105_NUM_TC; tc++)
++			policing[port * SJA1105_NUM_TC + tc].sharindx = port;
++
++		policing[bcast].sharindx = port;
++	}
++
++	/* Setup the matchall policer parameters */
++	for (port = 0; port < SJA1105_NUM_PORTS; port++) {
+ 		int mtu = VLAN_ETH_FRAME_LEN + ETH_FCS_LEN;
+ 
+-		if (dsa_is_cpu_port(priv->ds, i))
++		if (dsa_is_cpu_port(priv->ds, port))
+ 			mtu += VLAN_HLEN;
+ 
+-		for (j = 0; j < SJA1105_NUM_TC; j++, k++)
+-			sja1105_setup_policer(policing, k, mtu);
+-
+-		/* Set up this port's policer for broadcast traffic */
+-		sja1105_setup_policer(policing, bcast, mtu);
++		policing[port].smax = 65535; /* Burst size in bytes */
++		policing[port].rate = SJA1105_RATE_MBPS(1000);
++		policing[port].maxlen = mtu;
++		policing[port].partition = 0;
+ 	}
++
  	return 0;
  }
-+EXPORT_SYMBOL(ocelot_port_policer_del);
  
- int ocelot_ace_policer_add(struct ocelot *ocelot, u32 pol_ix,
- 			   struct ocelot_policer *pol)
-diff --git a/drivers/net/ethernet/mscc/ocelot_police.h b/drivers/net/ethernet/mscc/ocelot_police.h
-index 22025cce0a6a..792abd28010a 100644
---- a/drivers/net/ethernet/mscc/ocelot_police.h
-+++ b/drivers/net/ethernet/mscc/ocelot_police.h
-@@ -9,16 +9,6 @@
+@@ -2129,10 +2169,8 @@ static int sja1105_set_ageing_time(struct dsa_switch *ds,
  
- #include "ocelot.h"
+ static int sja1105_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+ {
+-	int bcast = (SJA1105_NUM_PORTS * SJA1105_NUM_TC) + port;
+ 	struct sja1105_l2_policing_entry *policing;
+ 	struct sja1105_private *priv = ds->priv;
+-	int tc;
  
--struct ocelot_policer {
--	u32 rate; /* kilobit per second */
--	u32 burst; /* bytes */
--};
+ 	new_mtu += VLAN_ETH_HLEN + ETH_FCS_LEN;
+ 
+@@ -2141,16 +2179,10 @@ static int sja1105_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+ 
+ 	policing = priv->static_config.tables[BLK_IDX_L2_POLICING].entries;
+ 
+-	/* We set all 9 port policers to the same value, so just checking the
+-	 * broadcast one is fine.
+-	 */
+-	if (policing[bcast].maxlen == new_mtu)
++	if (policing[port].maxlen == new_mtu)
+ 		return 0;
+ 
+-	for (tc = 0; tc < SJA1105_NUM_TC; tc++)
+-		policing[port * SJA1105_NUM_TC + tc].maxlen = new_mtu;
 -
--int ocelot_port_policer_add(struct ocelot *ocelot, int port,
--			    struct ocelot_policer *pol);
--
--int ocelot_port_policer_del(struct ocelot *ocelot, int port);
--
- int ocelot_ace_policer_add(struct ocelot *ocelot, u32 pol_ix,
- 			   struct ocelot_policer *pol);
+-	policing[bcast].maxlen = new_mtu;
++	policing[port].maxlen = new_mtu;
  
-diff --git a/drivers/net/ethernet/mscc/ocelot_tc.c b/drivers/net/ethernet/mscc/ocelot_tc.c
-index 3ff5ef41eccf..d326e231f0ad 100644
---- a/drivers/net/ethernet/mscc/ocelot_tc.c
-+++ b/drivers/net/ethernet/mscc/ocelot_tc.c
-@@ -4,8 +4,8 @@
-  * Copyright (c) 2019 Microsemi Corporation
-  */
+ 	return sja1105_static_config_reload(priv, SJA1105_BEST_EFFORT_POLICING);
+ }
+@@ -2250,6 +2282,40 @@ static void sja1105_mirror_del(struct dsa_switch *ds, int port,
+ 			     mirror->ingress, false);
+ }
  
-+#include <soc/mscc/ocelot.h>
- #include "ocelot_tc.h"
--#include "ocelot_police.h"
- #include "ocelot_ace.h"
- #include <net/pkt_cls.h>
- 
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 3db66638a3b2..ca49f7a114de 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -555,6 +555,11 @@ struct ocelot {
- 	struct ptp_pin_desc		ptp_pins[OCELOT_PTP_PINS_NUM];
++static int sja1105_port_policer_add(struct dsa_switch *ds, int port,
++				    struct dsa_mall_policer_tc_entry *policer)
++{
++	struct sja1105_l2_policing_entry *policing;
++	struct sja1105_private *priv = ds->priv;
++
++	policing = priv->static_config.tables[BLK_IDX_L2_POLICING].entries;
++
++	/* In hardware, every 8 microseconds the credit level is incremented by
++	 * the value of RATE bytes divided by 64, up to a maximum of SMAX
++	 * bytes.
++	 */
++	policing[port].rate = div_u64(512 * policer->rate_bytes_per_sec,
++				      1000000);
++	policing[port].smax = div_u64(policer->rate_bytes_per_sec *
++				      PSCHED_NS2TICKS(policer->burst),
++				      PSCHED_TICKS_PER_SEC);
++
++	return sja1105_static_config_reload(priv, SJA1105_BEST_EFFORT_POLICING);
++}
++
++static void sja1105_port_policer_del(struct dsa_switch *ds, int port)
++{
++	struct sja1105_l2_policing_entry *policing;
++	struct sja1105_private *priv = ds->priv;
++
++	policing = priv->static_config.tables[BLK_IDX_L2_POLICING].entries;
++
++	policing[port].rate = SJA1105_RATE_MBPS(1000);
++	policing[port].smax = 65535;
++
++	sja1105_static_config_reload(priv, SJA1105_BEST_EFFORT_POLICING);
++}
++
+ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.get_tag_protocol	= sja1105_get_tag_protocol,
+ 	.setup			= sja1105_setup,
+@@ -2288,6 +2354,8 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.port_setup_tc		= sja1105_port_setup_tc,
+ 	.port_mirror_add	= sja1105_mirror_add,
+ 	.port_mirror_del	= sja1105_mirror_del,
++	.port_policer_add	= sja1105_port_policer_add,
++	.port_policer_del	= sja1105_port_policer_del,
  };
  
-+struct ocelot_policer {
-+	u32 rate; /* kilobit per second */
-+	u32 burst; /* bytes */
-+};
-+
- #define ocelot_read_ix(ocelot, reg, gi, ri) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
- #define ocelot_read_gix(ocelot, reg, gi) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi))
- #define ocelot_read_rix(ocelot, reg, ri) __ocelot_read_ix(ocelot, reg, reg##_RSZ * (ri))
-@@ -624,6 +629,9 @@ int ocelot_port_add_txtstamp_skb(struct ocelot_port *ocelot_port,
- void ocelot_get_txtstamp(struct ocelot *ocelot);
- void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu);
- int ocelot_get_max_mtu(struct ocelot *ocelot, int port);
-+int ocelot_port_policer_add(struct ocelot *ocelot, int port,
-+			    struct ocelot_policer *pol);
-+int ocelot_port_policer_del(struct ocelot *ocelot, int port);
- int ocelot_cls_flower_replace(struct ocelot *ocelot, int port,
- 			      struct flow_cls_offload *f, bool ingress);
- int ocelot_cls_flower_destroy(struct ocelot *ocelot, int port,
+ static int sja1105_check_device_id(struct sja1105_private *priv)
 -- 
 2.17.1
 
