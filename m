@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3DD7196CCA
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 13:06:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3227196CCD
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 13:06:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728048AbgC2LGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 07:06:01 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:51310 "EHLO
+        id S1728104AbgC2LGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 07:06:04 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38083 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727965AbgC2LGB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 07:06:01 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from eranbe@mellanox.com)
+        with ESMTP id S1727965AbgC2LGC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 07:06:02 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from eranbe@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 29 Mar 2020 14:05:58 +0300
 Received: from dev-l-vrt-198.mtl.labs.mlnx (dev-l-vrt-198.mtl.labs.mlnx [10.134.198.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02TB5wV7006555;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02TB5wV8006555;
         Sun, 29 Mar 2020 14:05:58 +0300
 From:   Eran Ben Elisha <eranbe@mellanox.com>
 To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
@@ -23,47 +23,58 @@ To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Saeed Mahameed <saeedm@mellanox.com>
 Cc:     Eran Ben Elisha <eranbe@mellanox.com>
-Subject: [PATCH net-next v2 0/3] Devlink health auto attributes refactor
-Date:   Sun, 29 Mar 2020 14:05:52 +0300
-Message-Id: <1585479955-29828-1-git-send-email-eranbe@mellanox.com>
+Subject: [PATCH net-next v2 1/3] netdevsim: Change dummy reporter auto recover default
+Date:   Sun, 29 Mar 2020 14:05:53 +0300
+Message-Id: <1585479955-29828-2-git-send-email-eranbe@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
+In-Reply-To: <1585479955-29828-1-git-send-email-eranbe@mellanox.com>
+References: <1585479955-29828-1-git-send-email-eranbe@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset refactors the auto-recover health reporter flag to be
-explicitly set by the devlink core.
-In addition, add another flag to control auto-dump attribute, also
-to be explicitly set by the devlink core.
+Health reporters should be registered with auto recover set to true.
+Align dummy reporter behaviour with that, as in later patch the option to
+set auto recover behaviour will be removed.
 
-For that, patch 0001 changes the auto-recover default value of 
-netdevsim dummy reporter.
+In addition, align netdevsim selftest to the new default value.
 
-After reporter registration, both flags can be altered be administrator
-only.
+Signed-off-by: Eran Ben Elisha <eranbe@mellanox.com>
+---
+ drivers/net/netdevsim/health.c                           | 2 +-
+ tools/testing/selftests/drivers/net/netdevsim/devlink.sh | 5 +++++
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-Changes since v1:
-- Change default behaviour of netdevsim dummy reporter
-- Move initialization of DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP 
-
-Eran Ben Elisha (3):
-  netdevsim: Change dummy reporter auto recover default
-  devlink: Implicitly set auto recover flag when registering health
-    reporter
-  devlink: Add auto dump flag to health reporter
-
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |  6 ++--
- .../mellanox/mlx5/core/en/reporter_rx.c       |  2 +-
- .../mellanox/mlx5/core/en/reporter_tx.c       |  2 +-
- .../net/ethernet/mellanox/mlx5/core/health.c  |  4 +--
- drivers/net/netdevsim/health.c                |  4 +--
- include/net/devlink.h                         |  3 +-
- include/uapi/linux/devlink.h                  |  2 ++
- net/core/devlink.c                            | 35 +++++++++++++------
- .../drivers/net/netdevsim/devlink.sh          |  5 +++
- 9 files changed, 42 insertions(+), 21 deletions(-)
-
+diff --git a/drivers/net/netdevsim/health.c b/drivers/net/netdevsim/health.c
+index ba8d9ad60feb..9ff345d5524b 100644
+--- a/drivers/net/netdevsim/health.c
++++ b/drivers/net/netdevsim/health.c
+@@ -278,7 +278,7 @@ int nsim_dev_health_init(struct nsim_dev *nsim_dev, struct devlink *devlink)
+ 	health->dummy_reporter =
+ 		devlink_health_reporter_create(devlink,
+ 					       &nsim_dev_dummy_reporter_ops,
+-					       0, false, health);
++					       0, true, health);
+ 	if (IS_ERR(health->dummy_reporter)) {
+ 		err = PTR_ERR(health->dummy_reporter);
+ 		goto err_empty_reporter_destroy;
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+index 32cb2a159c70..9f9741444549 100755
+--- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
++++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+@@ -377,6 +377,11 @@ dummy_reporter_test()
+ {
+ 	RET=0
+ 
++	check_reporter_info dummy healthy 0 0 0 true
++
++	devlink health set $DL_HANDLE reporter dummy auto_recover false
++	check_err $? "Failed to dummy reporter auto_recover option"
++
+ 	check_reporter_info dummy healthy 0 0 0 false
+ 
+ 	local BREAK_MSG="foo bar"
 -- 
 2.17.1
 
