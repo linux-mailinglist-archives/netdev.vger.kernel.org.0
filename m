@@ -2,156 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 24919196CC5
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 13:05:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3DD7196CCA
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 13:06:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728083AbgC2LFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 07:05:07 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:44235 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727875AbgC2LFG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 07:05:06 -0400
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jIVkS-0006s2-Qt; Sun, 29 Mar 2020 13:05:00 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1jIVkQ-00015E-4v; Sun, 29 Mar 2020 13:04:58 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
-        Fabio Estevam <festevam@gmail.com>,
-        David Jander <david@protonic.nl>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH v2] ARM: imx: allow to disable board specific PHY fixups
-Date:   Sun, 29 Mar 2020 13:04:57 +0200
-Message-Id: <20200329110457.4113-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.26.0.rc2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+        id S1728048AbgC2LGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 07:06:01 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:51310 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727965AbgC2LGB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 07:06:01 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from eranbe@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 29 Mar 2020 14:05:58 +0300
+Received: from dev-l-vrt-198.mtl.labs.mlnx (dev-l-vrt-198.mtl.labs.mlnx [10.134.198.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 02TB5wV7006555;
+        Sun, 29 Mar 2020 14:05:58 +0300
+From:   Eran Ben Elisha <eranbe@mellanox.com>
+To:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Cc:     Eran Ben Elisha <eranbe@mellanox.com>
+Subject: [PATCH net-next v2 0/3] Devlink health auto attributes refactor
+Date:   Sun, 29 Mar 2020 14:05:52 +0300
+Message-Id: <1585479955-29828-1-git-send-email-eranbe@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All PHY fixups located in imx and mxs machine code are PHY and/or board
-specific. Never the less, they are applied to all boards independent on
-how related PHY is actually connected. As result:
-- we have boards with wrong PHY defaults which are not overwritten or
-  not properly handled by PHY drivers.
-- Some PHY driver changes was never tested and bugs was never detected
-  due the fixups.
-- Same PHY specific errata was fixed by SoC specific fixup, so the same
-  issues should be investigated again after switching to different SoC
-  on same board.
+This patchset refactors the auto-recover health reporter flag to be
+explicitly set by the devlink core.
+In addition, add another flag to control auto-dump attribute, also
+to be explicitly set by the devlink core.
 
-Since removing this fixups will brake may existing boards, we'll provide a
-Kconfig option which can be used by kernel developers and system integrators.
+For that, patch 0001 changes the auto-recover default value of 
+netdevsim dummy reporter.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- arch/arm/mach-imx/mach-imx6q.c  |  3 ++-
- arch/arm/mach-imx/mach-imx6sx.c |  3 ++-
- arch/arm/mach-imx/mach-imx7d.c  |  3 ++-
- arch/arm/mach-mxs/mach-mxs.c    |  3 ++-
- drivers/net/phy/Kconfig         | 16 ++++++++++++++++
- 5 files changed, 24 insertions(+), 4 deletions(-)
+After reporter registration, both flags can be altered be administrator
+only.
 
-diff --git a/arch/arm/mach-imx/mach-imx6q.c b/arch/arm/mach-imx/mach-imx6q.c
-index edd26e0ffeec..aabf0d8c23a9 100644
---- a/arch/arm/mach-imx/mach-imx6q.c
-+++ b/arch/arm/mach-imx/mach-imx6q.c
-@@ -162,7 +162,8 @@ static int ar8035_phy_fixup(struct phy_device *dev)
- 
- static void __init imx6q_enet_phy_init(void)
- {
--	if (IS_BUILTIN(CONFIG_PHYLIB)) {
-+	if (IS_BUILTIN(CONFIG_PHYLIB) &&
-+	    IS_BUILTIN(CONFIG_DEPRECATED_PHY_FIXUPS)) {
- 		phy_register_fixup_for_uid(PHY_ID_KSZ9021, MICREL_PHY_ID_MASK,
- 				ksz9021rn_phy_fixup);
- 		phy_register_fixup_for_uid(PHY_ID_KSZ9031, MICREL_PHY_ID_MASK,
-diff --git a/arch/arm/mach-imx/mach-imx6sx.c b/arch/arm/mach-imx/mach-imx6sx.c
-index d5310bf307ff..fdd9bef27625 100644
---- a/arch/arm/mach-imx/mach-imx6sx.c
-+++ b/arch/arm/mach-imx/mach-imx6sx.c
-@@ -35,7 +35,8 @@ static int ar8031_phy_fixup(struct phy_device *dev)
- #define PHY_ID_AR8031   0x004dd074
- static void __init imx6sx_enet_phy_init(void)
- {
--	if (IS_BUILTIN(CONFIG_PHYLIB))
-+	if (IS_BUILTIN(CONFIG_PHYLIB) &&
-+	    IS_BUILTIN(CONFIG_DEPRECATED_PHY_FIXUPS))
- 		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffff,
- 					   ar8031_phy_fixup);
- }
-diff --git a/arch/arm/mach-imx/mach-imx7d.c b/arch/arm/mach-imx/mach-imx7d.c
-index ebb27592a9f7..1d3d67c247a3 100644
---- a/arch/arm/mach-imx/mach-imx7d.c
-+++ b/arch/arm/mach-imx/mach-imx7d.c
-@@ -49,7 +49,8 @@ static int bcm54220_phy_fixup(struct phy_device *dev)
- 
- static void __init imx7d_enet_phy_init(void)
- {
--	if (IS_BUILTIN(CONFIG_PHYLIB)) {
-+	if (IS_BUILTIN(CONFIG_PHYLIB) &&
-+	    IS_BUILTIN(CONFIG_DEPRECATED_PHY_FIXUPS)) {
- 		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffff,
- 					   ar8031_phy_fixup);
- 		phy_register_fixup_for_uid(PHY_ID_BCM54220, 0xffffffff,
-diff --git a/arch/arm/mach-mxs/mach-mxs.c b/arch/arm/mach-mxs/mach-mxs.c
-index c109f47e9cbc..b4b631242080 100644
---- a/arch/arm/mach-mxs/mach-mxs.c
-+++ b/arch/arm/mach-mxs/mach-mxs.c
-@@ -257,7 +257,8 @@ static void __init apx4devkit_init(void)
- {
- 	enable_clk_enet_out();
- 
--	if (IS_BUILTIN(CONFIG_PHYLIB))
-+	if (IS_BUILTIN(CONFIG_PHYLIB) &&
-+	    IS_BUILTIN(CONFIG_DEPRECATED_PHY_FIXUPS))
- 		phy_register_fixup_for_uid(PHY_ID_KSZ8051, MICREL_PHY_ID_MASK,
- 					   apx4devkit_phy_fixup);
- }
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 9dabe03a668c..f54428ddf058 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -249,6 +249,22 @@ config LED_TRIGGER_PHY
- 		<Speed in megabits>Mbps OR <Speed in gigabits>Gbps OR link
- 		for any speed known to the PHY.
- 
-+config DEPRECATED_PHY_FIXUPS
-+	bool "Enable deprecated PHY fixups"
-+	default y
-+	---help---
-+	  In the early days it was common practice to configure PHYs by adding a
-+	  phy_register_fixup*() in the machine code. This practice turned out to
-+	  be potentially dangerous, because:
-+	  - it affects all PHYs in the system
-+	  - these register changes are usually not preserved during PHY reset
-+	    or suspend/resume cycle.
-+	  - it complicates debugging, since these configuration changes were not
-+	    done by the actual PHY driver.
-+	  This option allows to disable all fixups which are identified as
-+	  potentially harmful and give the developers a chance to implement the
-+	  proper configuration via the device tree (e.g.: phy-mode) and/or the
-+	  related PHY drivers.
- 
- comment "MII PHY device drivers"
- 
+Changes since v1:
+- Change default behaviour of netdevsim dummy reporter
+- Move initialization of DEVLINK_ATTR_HEALTH_REPORTER_AUTO_DUMP 
+
+Eran Ben Elisha (3):
+  netdevsim: Change dummy reporter auto recover default
+  devlink: Implicitly set auto recover flag when registering health
+    reporter
+  devlink: Add auto dump flag to health reporter
+
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |  6 ++--
+ .../mellanox/mlx5/core/en/reporter_rx.c       |  2 +-
+ .../mellanox/mlx5/core/en/reporter_tx.c       |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/health.c  |  4 +--
+ drivers/net/netdevsim/health.c                |  4 +--
+ include/net/devlink.h                         |  3 +-
+ include/uapi/linux/devlink.h                  |  2 ++
+ net/core/devlink.c                            | 35 +++++++++++++------
+ .../drivers/net/netdevsim/devlink.sh          |  5 +++
+ 9 files changed, 42 insertions(+), 21 deletions(-)
+
 -- 
-2.26.0.rc2
+2.17.1
 
