@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C59D196A74
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 01:53:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B4BF196A72
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 01:53:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727820AbgC2AxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 28 Mar 2020 20:53:06 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:40419 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727620AbgC2AxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 20:53:06 -0400
-Received: by mail-wm1-f67.google.com with SMTP id a81so17165889wmf.5;
-        Sat, 28 Mar 2020 17:53:04 -0700 (PDT)
+        id S1727885AbgC2AxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 28 Mar 2020 20:53:09 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:38142 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727799AbgC2AxH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 28 Mar 2020 20:53:07 -0400
+Received: by mail-wm1-f65.google.com with SMTP id f6so10579095wmj.3;
+        Sat, 28 Mar 2020 17:53:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=YBK8RiOpgGzr1OscuGx7qp2rLPh/wW8dimuyWNZJk5E=;
-        b=sgQcGJDB0rhZIeLJ1pO9ttydCABPZm7wbUvOa1VDtl+XcLIqbPCIstT/DNIXprSy6u
-         5iBrs8TKUHHc6Ha8Sg86BjcgZrYuhO5LuzM7KspjUAyA6vyBL1Dbap1irsL7K4LehAwN
-         sI4laFD28L8DRXjkABI8zN/BHi90SCgDnu6PtaCEd0J3WUfM0r51yNOMVyMwt0Z2jiFQ
-         gADTNHPkLFcQFRnhnXhry5GHLH5BkxsR3/2CWJXlO48Rts5mvHjhWlnJdpmIgo7TfznH
-         db/IEc1MN6EvUy30bCIrCnBqkp94rcaObUSZFc7vAqtbw32S2hLkapQuneEjRyfugzeT
-         htKQ==
+        bh=E7oIGTj6GfoqLrMS12mWuCCLdpEMZGxznqyF5gEoRek=;
+        b=TxISylqW1G6ZK3gDULFg8AYbJnE66axqDcAxM4kwsnZOYBkRJFbgbynD9fWEcwNX0k
+         JrOzKYQnqpE0sET0b6xk9M4FU4ffOjTvP0Yf0gvK36g5xhX6pz7WdiuG8nd21k3vJ4FA
+         aoy1Q0YR10d5avJ0j7LjpSA34mXzCUi70hIclD7o8WauvXo044UEXkCrKoc/Mn/ky5e2
+         nXBeepFqi9fwnXqYU6tBK/BfHS31WUr3wydOstSlyiCiF3iF3uj0dFk+YMs8NSbIukWe
+         AbG5tjLuhk7abCQYgOSMoctnKVrRtHTfiq9TtHqQAeqHvGLnJhNMURTax7rlcmqzGk8X
+         zsww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=YBK8RiOpgGzr1OscuGx7qp2rLPh/wW8dimuyWNZJk5E=;
-        b=bkX1oGshrQjF4wBpp3tOj8gIeau4wdHjf3s4g1CJrkSTGw/N4QJ5Ws6roEl1GR5FsI
-         qsqNXGPHGG17nS9vjHFv6ZDHrQlBoJ0SgYjBUL3jOhmguUcJGodYajl1jsXfRipyyChj
-         FTtk2HhwwsqcRu4xC08Zb0NDGbKepvIrfeO92DIwTyDbdrxcpCmtK6Z8rYBVFPXvUpqC
-         2IGzCKWjO7TIhfBPLxTVzX67v8RxZn42MhwBSEEkVN68GRw7eMN5anv6w0hnzLy5o4Zs
-         bA7C04VCUlEdJg30AYSrRwDfWv9ScnMuL6xVjOjmPiXUYZt2xnpm9oFh2CL0XuWV8h/X
-         VijQ==
-X-Gm-Message-State: ANhLgQ2lkzzcZMzzjANIOqnDW/GH9EUAJwLMAEADLhfgORRxJm0bxuKX
-        AMPmgBZTNsM/Hqu9U2Wy8FqY+WSyEziTp1+D
-X-Google-Smtp-Source: ADFU+vuRYOlu3HH+Xn0GbNrMtH36SYitmTrsrZdfeRry6LeDjttlQkW4gvOzuGkQvTayEC+QUynVPQ==
-X-Received: by 2002:a7b:c3c1:: with SMTP id t1mr5866719wmj.17.1585443184051;
-        Sat, 28 Mar 2020 17:53:04 -0700 (PDT)
+        bh=E7oIGTj6GfoqLrMS12mWuCCLdpEMZGxznqyF5gEoRek=;
+        b=A0sMT5R/rB9mPl/kCsPbY0qxNnXZOL26lpqt2He50ZNW2xgLWlgW+//p+E1sDAI1Cv
+         FMHoYkJ6wiyHgTm+xWYFoOqH4NT8wV7qzyF87p/InyZBSaG58HmySaiKJqfJQOxyc5NM
+         lnikGbh7QJDrJznpxQnGEhhJ2k5Jc2y9mSTU5LT0POp9iqvb31+B5dLib4YplXJ0E50V
+         /6zVrH7SryE1Bly4AV4VoM4b7GsxsO/4nzL9eGc5EZo48IxE83snF1gzjxCfuNUQGcXb
+         Oe3WwJzzT2BNaaDQbV8cwK60FiIi9blGv70odRQPRjXs4B9m+0g1xvK/JbUzQjoM3Yvg
+         vPhA==
+X-Gm-Message-State: ANhLgQ2DBQKoRIoKmk0xzJwNnYGcvTLNsMZNXwSTwjymb0ERaxyPuu41
+        M/HbH+Ad33MABzr9cweWh7UFNXDBNdXuakuR
+X-Google-Smtp-Source: ADFU+vvXnwaJlvYUg7Vt8F3iDIAxYYqw+wTxSEQj/yIpmkjEaxycEwn5nxkgJDxM2xav4oCxCvLcpQ==
+X-Received: by 2002:a1c:dd8b:: with SMTP id u133mr5702479wmg.109.1585443185474;
+        Sat, 28 Mar 2020 17:53:05 -0700 (PDT)
 Received: from localhost.localdomain (5-12-96-237.residential.rdsnet.ro. [5.12.96.237])
-        by smtp.gmail.com with ESMTPSA id l1sm8292652wme.14.2020.03.28.17.53.02
+        by smtp.gmail.com with ESMTPSA id l1sm8292652wme.14.2020.03.28.17.53.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Mar 2020 17:53:03 -0700 (PDT)
+        Sat, 28 Mar 2020 17:53:05 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         davem@davemloft.net
@@ -53,9 +53,9 @@ Cc:     jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
         joergen.andreasen@microchip.com, UNGLinuxDriver@microchip.com,
         yangbo.lu@nxp.com, alexandru.marginean@nxp.com, po.liu@nxp.com,
         claudiu.manoil@nxp.com, leoyang.li@nxp.com
-Subject: [PATCH net-next 2/6] net: dsa: refactor matchall mirred action to separate function
-Date:   Sun, 29 Mar 2020 02:51:58 +0200
-Message-Id: <20200329005202.17926-3-olteanv@gmail.com>
+Subject: [PATCH net-next 3/6] net: dsa: add port policers
+Date:   Sun, 29 Mar 2020 02:51:59 +0200
+Message-Id: <20200329005202.17926-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200329005202.17926-1-olteanv@gmail.com>
 References: <20200329005202.17926-1-olteanv@gmail.com>
@@ -66,124 +66,190 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Make room for other actions for the matchall filter by keeping the
-mirred argument parsing self-contained in its own function.
+The approach taken to pass the port policer methods on to drivers is
+pragmatic. It is similar to the port mirroring implementation (in that
+the DSA core does all of the filter block interaction and only passes
+simple operations for the driver to implement) and dissimilar to how
+flow-based policers are going to be implemented (where the driver has
+full control over the flow_cls_offload data structure).
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-The diff for this patch does not look amazing..
+ include/net/dsa.h | 13 +++++++-
+ net/dsa/slave.c   | 79 +++++++++++++++++++++++++++++++++++++++++++----
+ 2 files changed, 85 insertions(+), 7 deletions(-)
 
- net/dsa/slave.c | 70 ++++++++++++++++++++++++++++---------------------
- 1 file changed, 40 insertions(+), 30 deletions(-)
-
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index aeb411e77b9a..fb3f9222f2a1 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -130,9 +130,10 @@ struct dsa_switch_tree {
+ 	struct list_head rtable;
+ };
+ 
+-/* TC matchall action types, only mirroring for now */
++/* TC matchall action types */
+ enum dsa_port_mall_action_type {
+ 	DSA_PORT_MALL_MIRROR,
++	DSA_PORT_MALL_POLICER,
+ };
+ 
+ /* TC mirroring entry */
+@@ -141,6 +142,12 @@ struct dsa_mall_mirror_tc_entry {
+ 	bool ingress;
+ };
+ 
++/* TC port policer entry */
++struct dsa_mall_policer_tc_entry {
++	s64 burst;
++	u64 rate_bytes_per_sec;
++};
++
+ /* TC matchall entry */
+ struct dsa_mall_tc_entry {
+ 	struct list_head list;
+@@ -148,6 +155,7 @@ struct dsa_mall_tc_entry {
+ 	enum dsa_port_mall_action_type type;
+ 	union {
+ 		struct dsa_mall_mirror_tc_entry mirror;
++		struct dsa_mall_policer_tc_entry policer;
+ 	};
+ };
+ 
+@@ -557,6 +565,9 @@ struct dsa_switch_ops {
+ 				   bool ingress);
+ 	void	(*port_mirror_del)(struct dsa_switch *ds, int port,
+ 				   struct dsa_mall_mirror_tc_entry *mirror);
++	int	(*port_policer_add)(struct dsa_switch *ds, int port,
++				    struct dsa_mall_policer_tc_entry *policer);
++	void	(*port_policer_del)(struct dsa_switch *ds, int port);
+ 	int	(*port_setup_tc)(struct dsa_switch *ds, int port,
+ 				 enum tc_setup_type type, void *type_data);
+ 
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 8ced165a7908..e6040a11bd83 100644
+index e6040a11bd83..9692a726f2ed 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -842,24 +842,27 @@ dsa_slave_mall_tc_entry_find(struct net_device *dev, unsigned long cookie)
- 	return NULL;
- }
- 
--static int dsa_slave_add_cls_matchall(struct net_device *dev,
--				      struct tc_cls_matchall_offload *cls,
--				      bool ingress)
-+static int
-+dsa_slave_add_cls_matchall_mirred(struct net_device *dev,
-+				  struct tc_cls_matchall_offload *cls,
-+				  bool ingress)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 	struct dsa_slave_priv *p = netdev_priv(dev);
-+	struct dsa_mall_mirror_tc_entry *mirror;
- 	struct dsa_mall_tc_entry *mall_tc_entry;
--	__be16 protocol = cls->common.protocol;
- 	struct dsa_switch *ds = dp->ds;
- 	struct flow_action_entry *act;
- 	struct dsa_port *to_dp;
--	int err = -EOPNOTSUPP;
-+	int err;
-+
-+	act = &cls->rule->action.entries[0];
+@@ -859,14 +859,14 @@ dsa_slave_add_cls_matchall_mirred(struct net_device *dev,
+ 	act = &cls->rule->action.entries[0];
  
  	if (!ds->ops->port_mirror_add)
- 		return err;
- 
--	if (!flow_offload_has_one_action(&cls->rule->action))
 -		return err;
-+	if (!act->dev)
-+		return -EINVAL;
++		return -EOPNOTSUPP;
+ 
+ 	if (!act->dev)
+ 		return -EINVAL;
  
  	if (!flow_action_basic_hw_stats_check(&cls->rule->action,
  					      cls->common.extack))
-@@ -867,38 +870,45 @@ static int dsa_slave_add_cls_matchall(struct net_device *dev,
+-		return err;
++		return -EOPNOTSUPP;
  
  	act = &cls->rule->action.entries[0];
  
--	if (act->id == FLOW_ACTION_MIRRED && protocol == htons(ETH_P_ALL)) {
--		struct dsa_mall_mirror_tc_entry *mirror;
-+	if (!dsa_slave_dev_check(act->dev))
-+		return -EOPNOTSUPP;
+@@ -897,6 +897,67 @@ dsa_slave_add_cls_matchall_mirred(struct net_device *dev,
+ 	return err;
+ }
  
--		if (!act->dev)
--			return -EINVAL;
++static int
++dsa_slave_add_cls_matchall_police(struct net_device *dev,
++				  struct tc_cls_matchall_offload *cls,
++				  bool ingress)
++{
++	struct netlink_ext_ack *extack = cls->common.extack;
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_slave_priv *p = netdev_priv(dev);
++	struct dsa_mall_policer_tc_entry *policer;
++	struct dsa_mall_tc_entry *mall_tc_entry;
++	struct dsa_switch *ds = dp->ds;
++	struct flow_action_entry *act;
++	int err;
++
++	if (!ds->ops->port_policer_add) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Policing offload not implemented\n");
++		return -EOPNOTSUPP;
++	}
++
++	if (!ingress) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Only supported on ingress qdisc\n");
++		return -EOPNOTSUPP;
++	}
++
++	if (!flow_action_basic_hw_stats_check(&cls->rule->action,
++					      cls->common.extack))
++		return -EOPNOTSUPP;
++
++	list_for_each_entry(mall_tc_entry, &p->mall_tc_list, list) {
++		if (mall_tc_entry->type == DSA_PORT_MALL_POLICER) {
++			NL_SET_ERR_MSG_MOD(extack,
++					   "Only one port policer allowed\n");
++			return -EEXIST;
++		}
++	}
++
++	act = &cls->rule->action.entries[0];
++
 +	mall_tc_entry = kzalloc(sizeof(*mall_tc_entry), GFP_KERNEL);
 +	if (!mall_tc_entry)
 +		return -ENOMEM;
- 
--		if (!dsa_slave_dev_check(act->dev))
--			return -EOPNOTSUPP;
++
 +	mall_tc_entry->cookie = cls->cookie;
-+	mall_tc_entry->type = DSA_PORT_MALL_MIRROR;
-+	mirror = &mall_tc_entry->mirror;
- 
--		mall_tc_entry = kzalloc(sizeof(*mall_tc_entry), GFP_KERNEL);
--		if (!mall_tc_entry)
--			return -ENOMEM;
-+	to_dp = dsa_slave_to_port(act->dev);
- 
--		mall_tc_entry->cookie = cls->cookie;
--		mall_tc_entry->type = DSA_PORT_MALL_MIRROR;
--		mirror = &mall_tc_entry->mirror;
-+	mirror->to_local_port = to_dp->index;
-+	mirror->ingress = ingress;
- 
--		to_dp = dsa_slave_to_port(act->dev);
-+	err = ds->ops->port_mirror_add(ds, dp->index, mirror, ingress);
++	mall_tc_entry->type = DSA_PORT_MALL_POLICER;
++	policer = &mall_tc_entry->policer;
++	policer->rate_bytes_per_sec = act->police.rate_bytes_ps;
++	policer->burst = act->police.burst;
++
++	err = ds->ops->port_policer_add(ds, dp->index, policer);
 +	if (err) {
 +		kfree(mall_tc_entry);
 +		return err;
 +	}
- 
--		mirror->to_local_port = to_dp->index;
--		mirror->ingress = ingress;
++
 +	list_add_tail(&mall_tc_entry->list, &p->mall_tc_list);
- 
--		err = ds->ops->port_mirror_add(ds, dp->index, mirror, ingress);
--		if (err) {
--			kfree(mall_tc_entry);
--			return err;
--		}
-+	return err;
-+}
- 
--		list_add_tail(&mall_tc_entry->list, &p->mall_tc_list);
--	}
-+static int dsa_slave_add_cls_matchall(struct net_device *dev,
-+				      struct tc_cls_matchall_offload *cls,
-+				      bool ingress)
-+{
-+	int err = -EOPNOTSUPP;
- 
--	return 0;
-+	if (cls->common.protocol == htons(ETH_P_ALL) &&
-+	    flow_offload_has_one_action(&cls->rule->action) &&
-+	    cls->rule->action.entries[0].id == FLOW_ACTION_MIRRED)
-+		err = dsa_slave_add_cls_matchall_mirred(dev, cls, ingress);
 +
 +	return err;
- }
++}
++
+ static int dsa_slave_add_cls_matchall(struct net_device *dev,
+ 				      struct tc_cls_matchall_offload *cls,
+ 				      bool ingress)
+@@ -907,6 +968,9 @@ static int dsa_slave_add_cls_matchall(struct net_device *dev,
+ 	    flow_offload_has_one_action(&cls->rule->action) &&
+ 	    cls->rule->action.entries[0].id == FLOW_ACTION_MIRRED)
+ 		err = dsa_slave_add_cls_matchall_mirred(dev, cls, ingress);
++	else if (flow_offload_has_one_action(&cls->rule->action) &&
++		 cls->rule->action.entries[0].id == FLOW_ACTION_POLICE)
++		err = dsa_slave_add_cls_matchall_police(dev, cls, ingress);
  
- static void dsa_slave_del_cls_matchall(struct net_device *dev,
+ 	return err;
+ }
+@@ -918,9 +982,6 @@ static void dsa_slave_del_cls_matchall(struct net_device *dev,
+ 	struct dsa_mall_tc_entry *mall_tc_entry;
+ 	struct dsa_switch *ds = dp->ds;
+ 
+-	if (!ds->ops->port_mirror_del)
+-		return;
+-
+ 	mall_tc_entry = dsa_slave_mall_tc_entry_find(dev, cls->cookie);
+ 	if (!mall_tc_entry)
+ 		return;
+@@ -929,7 +990,13 @@ static void dsa_slave_del_cls_matchall(struct net_device *dev,
+ 
+ 	switch (mall_tc_entry->type) {
+ 	case DSA_PORT_MALL_MIRROR:
+-		ds->ops->port_mirror_del(ds, dp->index, &mall_tc_entry->mirror);
++		if (ds->ops->port_mirror_del)
++			ds->ops->port_mirror_del(ds, dp->index,
++						 &mall_tc_entry->mirror);
++		break;
++	case DSA_PORT_MALL_POLICER:
++		if (ds->ops->port_policer_del)
++			ds->ops->port_policer_del(ds, dp->index);
+ 		break;
+ 	default:
+ 		WARN_ON(1);
 -- 
 2.17.1
 
