@@ -2,572 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2AC7196D20
-	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 13:52:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8A7E196D2C
+	for <lists+netdev@lfdr.de>; Sun, 29 Mar 2020 14:02:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728224AbgC2Lwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 07:52:32 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:39365 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728201AbgC2Lw2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 07:52:28 -0400
-Received: by mail-wm1-f68.google.com with SMTP id e9so6045306wme.4;
-        Sun, 29 Mar 2020 04:52:26 -0700 (PDT)
+        id S1728110AbgC2MCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 08:02:21 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:42404 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727985AbgC2MCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 08:02:21 -0400
+Received: by mail-lj1-f194.google.com with SMTP id q19so14777220ljp.9
+        for <netdev@vger.kernel.org>; Sun, 29 Mar 2020 05:02:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=5bw6K8Oz8DFFCkLcZUiryoZm/La42TyXetj4D6GWNZk=;
-        b=ohdQGmwZSeKWjdKhLzEoHMI2VKAqrYkDJ0LNmdbf9jz8BOPpYMSVyMokVh3BKqKqI2
-         WpSMZwdb9ldmW1T25qH+SE1pfry445PqMMbNDWsW79GkCtFL9d4EvAmlYdvHaPZNHYnR
-         ZuX0Igm/XWiQyBsfdLcRC+vgsPZsygRAbjmnX0TBSFHZ7QbVvcK4T5hnC2QBF5agjIEg
-         8s0e3Dr5HpSOmhCWFJV6w/YEUtQZiGNfqTUNbGGlhfRy73liN26Fbt/7XuP/MHYMntmp
-         093qlRS/H3aWX6VN+AjlPZToluyNY+0+Wntsp52Mpze1CNBbreJPSvJS8Ar6P94cqDta
-         pwhg==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Cq8VIxSwvwCSuQt3WNmGkXzcdrs0outzKbdn+QVFL8s=;
+        b=C5SDUba+Fkoy2P8Hc0dS+/pcVzsmUR1V/3qsUjGDQcKAG56T6DUtDJZu9YY9ZF0ezZ
+         jwyEZ/VxLc7emmpUOm9NmpFXL1VUTcgnX2CFb5pdV/GhJ6XlGtOMa+NsBF5KLRkbu/NQ
+         X5O9GNW0nyM/erPBbBpkQYzj11e9iTQZG83xs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=5bw6K8Oz8DFFCkLcZUiryoZm/La42TyXetj4D6GWNZk=;
-        b=QgAsNkBCjG6yV+dd2lNvTqrLlKPpR4udG2092VmfHgk5ig0qCkJvQL4a0jazST3IQv
-         J4qYZ1sPlFHNiBbP7pDi3A16D58c3h7PJ6o6ZbEdkQvYiIqNC+NPOLSdmdnUMWoun71c
-         9aBwfpBtaupF119raJYmiUCNpYE9E4fxb0lONVoOfvhjaxZWzB4URtbswh5gyRI8y6w5
-         964ms3VWocZb7HI+Y0db5f7uokeiVLs+/dYr+xOcQZAMb1TJYS3pcNCxPz3jVl/Doj2I
-         L/YESNOVYIsFEyM5BcnERNP8cS2AcVADpMjfczK+2UAu5X0vyOEu/HDE0dDHSFlNDxBf
-         o91w==
-X-Gm-Message-State: ANhLgQ3aldtKSEMjoyEF3vqKUX1t+wGAJBreM8wCsY253fW6p/dKkCOp
-        Kx4ADN7S5pBHuv4ZklH5xqo=
-X-Google-Smtp-Source: ADFU+vtQoEqr2XrCpa6kCDZnKwt/7wzfZUDYupEkuZR2yKAG/hZeZzvEmOe9fIvxCHrduom3BRwhCw==
-X-Received: by 2002:a7b:c091:: with SMTP id r17mr7972396wmh.178.1585482746087;
-        Sun, 29 Mar 2020 04:52:26 -0700 (PDT)
-Received: from localhost.localdomain (5-12-96-237.residential.rdsnet.ro. [5.12.96.237])
-        by smtp.gmail.com with ESMTPSA id 5sm14424108wrs.20.2020.03.29.04.52.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 29 Mar 2020 04:52:25 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        davem@davemloft.net
-Cc:     jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
-        netdev@vger.kernel.org, xiaoliang.yang_1@nxp.com,
-        linux-kernel@vger.kernel.org, horatiu.vultur@microchip.com,
-        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
-        joergen.andreasen@microchip.com, UNGLinuxDriver@microchip.com,
-        yangbo.lu@nxp.com, alexandru.marginean@nxp.com, po.liu@nxp.com,
-        claudiu.manoil@nxp.com, leoyang.li@nxp.com,
-        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com
-Subject: [PATCH v2 net-next 6/6] net: dsa: sja1105: add broadcast and per-traffic class policers
-Date:   Sun, 29 Mar 2020 14:52:02 +0300
-Message-Id: <20200329115202.16348-7-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200329115202.16348-1-olteanv@gmail.com>
-References: <20200329115202.16348-1-olteanv@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Cq8VIxSwvwCSuQt3WNmGkXzcdrs0outzKbdn+QVFL8s=;
+        b=UcaWeveJ3yGUC4FW34k/s7znZfT7bW+57OBot8pD4aJoLPHrPvxR87/IgI2EzkCW/V
+         jj9BQNf430S87AOIOYT689kkkPxaNPvJwHGYYqVt0nnrmRnDqOX7mL2Nr16TvXJUZio/
+         sZrbiVEovKFR/7Wy4DobjR/wa40XLcc8mvc50cRJYSSYMKYA/MaL8kjHjbScl1Lza9q9
+         2bqX7zTMHkcjwpob0qM9nFYH3T3Dqpl5PO7GllGARcrfGqMATTQxCxlALyLn78GRnolx
+         PU9ErzmCq7t3frodCC4V4tVSk7+/FvS3svosj9yC9iPE86JiTIAzszSj2jBVL44zPZ9g
+         tfiw==
+X-Gm-Message-State: AGi0PuZ4Wx6vly1aP8+VMkl13VvGc6N34b3oXDRTMP9xm43FNiBWrPRd
+        nWJGNthyafhjTFIrXnUn7vDm9Q==
+X-Google-Smtp-Source: APiQypI89yqc93TSmOnJWJRnO43OWKFd7LoI5Egh4hYQIX5SifepNeFGxejqT6E5UbsuaJHsMVdoRA==
+X-Received: by 2002:a2e:9586:: with SMTP id w6mr4514883ljh.133.1585483337920;
+        Sun, 29 Mar 2020 05:02:17 -0700 (PDT)
+Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id c13sm5328557ljj.37.2020.03.29.05.02.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 29 Mar 2020 05:02:17 -0700 (PDT)
+Subject: Re: [PATCH net-next 6/6] net: dsa: sja1105: add broadcast and
+ per-traffic class policers
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Ido Schimmel <idosch@idosch.org>
+Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "Allan W. Nielsen" <allan.nielsen@microchip.com>,
+        Joergen Andreasen <joergen.andreasen@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "Y.b. Lu" <yangbo.lu@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Li Yang <leoyang.li@nxp.com>
+References: <20200329005202.17926-1-olteanv@gmail.com>
+ <20200329005202.17926-7-olteanv@gmail.com>
+ <20200329095712.GA2188467@splinter>
+ <CA+h21hoybhxhR3KgfRkAaKyPPJPesbGLWDaDp5O_2yTz05y5jQ@mail.gmail.com>
+ <CA+h21hoBp6=Zyc3mX3BVguVs0f8Un6-A3pk9YaZKPgs0efTi3g@mail.gmail.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <cd6f4e55-ff5b-5f64-8211-61b4d87b1f0f@cumulusnetworks.com>
+Date:   Sun, 29 Mar 2020 15:02:14 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
+MIME-Version: 1.0
+In-Reply-To: <CA+h21hoBp6=Zyc3mX3BVguVs0f8Un6-A3pk9YaZKPgs0efTi3g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 29/03/2020 14:46, Vladimir Oltean wrote:
+> On Sun, 29 Mar 2020 at 14:37, Vladimir Oltean <olteanv@gmail.com> wrote:
+>>
+>> On Sun, 29 Mar 2020 at 12:57, Ido Schimmel <idosch@idosch.org> wrote:
+>>>
+>>> + Nik, Roopa
+>>>
+>>> On Sun, Mar 29, 2020 at 02:52:02AM +0200, Vladimir Oltean wrote:
+>>>> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+[snip]
+>>> In the past I was thinking about ways to implement this in Linux. The
+>>> only place in the pipeline where packets are actually classified to
+>>> broadcast / unknown unicast / multicast is at bridge ingress. Therefore,
+>>
+>> Actually I think only 'unknown unicast' is tricky here, and indeed the
+>> bridge driver is the only place in the software datapath that would
+>> know that.
 
-This patch adds complete support for manipulating the L2 Policing Tables
-from this switch. There are 45 table entries, one entry per each port
-and traffic class, and one dedicated entry for broadcast traffic for
-each ingress port.
+Yep, unknown unicast is hard to pass outside of the bridge, especially at ingress
+where the bridge hasn't been hit yet. One possible solution is to expose a function
+from the bridge which can make such a decision at the cost of 1 more fdb hash lookup,
+but if the packet is going to hit the bridge anyway that cost won't be that high
+since it will have to do the same. We already have some internal bridge functionality
+exposed for netfilter, tc and some drivers so it would be in line with that.
+I haven't looked into how feasible the above is, so I'm open to other ideas (the
+bridge_slave functions for example, we've discussed such extensions before in other
+contexts). But I think this can be much simpler if we just expose the unknown unicast
+information, the mcast/bcast can be decided by the classifier already or with very
+little change. I think such exposed function can be useful to netfilter as well.
 
-Policing entries are shareable, and we use this functionality to support
-shared block filters.
-
-We are modeling broadcast policers as simple tc-flower matches on
-dst_mac. As for the traffic class policers, the switch only deduces the
-traffic class from the VLAN PCP field, so it makes sense to model this
-as a tc-flower match on vlan_prio.
-
-How to limit broadcast traffic coming from all front-panel ports to a
-cumulated total of 10 Mbit/s:
-
-tc qdisc add dev sw0p0 ingress_block 1 clsact
-tc qdisc add dev sw0p1 ingress_block 1 clsact
-tc qdisc add dev sw0p2 ingress_block 1 clsact
-tc qdisc add dev sw0p3 ingress_block 1 clsact
-tc filter add block 1 flower skip_sw dst_mac ff:ff:ff:ff:ff:ff \
-	action police rate 10mbit burst 64k
-
-How to limit traffic with VLAN PCP 0 (also includes untagged traffic) to
-100 Mbit/s on port 0 only:
-
-tc filter add dev sw0p0 ingress protocol 802.1Q flower skip_sw \
-	vlan_prio 0 action police rate 100mbit burst 64k
-
-The broadcast, VLAN PCP and port policers are compatible with one
-another (can be installed at the same time on a port).
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes in v2:
-None.
-
- drivers/net/dsa/sja1105/Makefile         |   1 +
- drivers/net/dsa/sja1105/sja1105.h        |  40 +++
- drivers/net/dsa/sja1105/sja1105_flower.c | 340 +++++++++++++++++++++++
- drivers/net/dsa/sja1105/sja1105_main.c   |   4 +
- 4 files changed, 385 insertions(+)
- create mode 100644 drivers/net/dsa/sja1105/sja1105_flower.c
-
-diff --git a/drivers/net/dsa/sja1105/Makefile b/drivers/net/dsa/sja1105/Makefile
-index 66161e874344..8943d8d66f2b 100644
---- a/drivers/net/dsa/sja1105/Makefile
-+++ b/drivers/net/dsa/sja1105/Makefile
-@@ -4,6 +4,7 @@ obj-$(CONFIG_NET_DSA_SJA1105) += sja1105.o
- sja1105-objs := \
-     sja1105_spi.o \
-     sja1105_main.o \
-+    sja1105_flower.o \
-     sja1105_ethtool.o \
-     sja1105_clocking.o \
-     sja1105_static_config.o \
-diff --git a/drivers/net/dsa/sja1105/sja1105.h b/drivers/net/dsa/sja1105/sja1105.h
-index 0e5b739b2fe8..009abebbdb86 100644
---- a/drivers/net/dsa/sja1105/sja1105.h
-+++ b/drivers/net/dsa/sja1105/sja1105.h
-@@ -19,6 +19,7 @@
-  * The passed parameter is in multiples of 1 ms.
-  */
- #define SJA1105_AGEING_TIME_MS(ms)	((ms) / 10)
-+#define SJA1105_NUM_L2_POLICERS		45
- 
- typedef enum {
- 	SPI_READ = 0,
-@@ -94,6 +95,36 @@ struct sja1105_info {
- 	const char *name;
- };
- 
-+enum sja1105_rule_type {
-+	SJA1105_RULE_BCAST_POLICER,
-+	SJA1105_RULE_TC_POLICER,
-+};
-+
-+struct sja1105_rule {
-+	struct list_head list;
-+	unsigned long cookie;
-+	unsigned long port_mask;
-+	enum sja1105_rule_type type;
-+
-+	union {
-+		/* SJA1105_RULE_BCAST_POLICER */
-+		struct {
-+			int sharindx;
-+		} bcast_pol;
-+
-+		/* SJA1105_RULE_TC_POLICER */
-+		struct {
-+			int sharindx;
-+			int tc;
-+		} tc_pol;
-+	};
-+};
-+
-+struct sja1105_flow_block {
-+	struct list_head rules;
-+	bool l2_policer_used[SJA1105_NUM_L2_POLICERS];
-+};
-+
- struct sja1105_private {
- 	struct sja1105_static_config static_config;
- 	bool rgmii_rx_delay[SJA1105_NUM_PORTS];
-@@ -102,6 +133,7 @@ struct sja1105_private {
- 	struct gpio_desc *reset_gpio;
- 	struct spi_device *spidev;
- 	struct dsa_switch *ds;
-+	struct sja1105_flow_block flow_block;
- 	struct sja1105_port ports[SJA1105_NUM_PORTS];
- 	/* Serializes transmission of management frames so that
- 	 * the switch doesn't confuse them with one another.
-@@ -221,4 +253,12 @@ size_t sja1105pqrs_mac_config_entry_packing(void *buf, void *entry_ptr,
- size_t sja1105pqrs_avb_params_entry_packing(void *buf, void *entry_ptr,
- 					    enum packing_op op);
- 
-+/* From sja1105_flower.c */
-+int sja1105_cls_flower_del(struct dsa_switch *ds, int port,
-+			   struct flow_cls_offload *cls, bool ingress);
-+int sja1105_cls_flower_add(struct dsa_switch *ds, int port,
-+			   struct flow_cls_offload *cls, bool ingress);
-+void sja1105_flower_setup(struct dsa_switch *ds);
-+void sja1105_flower_teardown(struct dsa_switch *ds);
-+
- #endif
-diff --git a/drivers/net/dsa/sja1105/sja1105_flower.c b/drivers/net/dsa/sja1105/sja1105_flower.c
-new file mode 100644
-index 000000000000..5288a722e625
---- /dev/null
-+++ b/drivers/net/dsa/sja1105/sja1105_flower.c
-@@ -0,0 +1,340 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright 2020, NXP Semiconductors
-+ */
-+#include "sja1105.h"
-+
-+static struct sja1105_rule *sja1105_rule_find(struct sja1105_private *priv,
-+					      unsigned long cookie)
-+{
-+	struct sja1105_rule *rule;
-+
-+	list_for_each_entry(rule, &priv->flow_block.rules, list)
-+		if (rule->cookie == cookie)
-+			return rule;
-+
-+	return NULL;
-+}
-+
-+static int sja1105_find_free_l2_policer(struct sja1105_private *priv)
-+{
-+	int i;
-+
-+	for (i = 0; i < SJA1105_NUM_L2_POLICERS; i++)
-+		if (!priv->flow_block.l2_policer_used[i])
-+			return i;
-+
-+	return -1;
-+}
-+
-+static int sja1105_setup_bcast_policer(struct sja1105_private *priv,
-+				       struct netlink_ext_ack *extack,
-+				       unsigned long cookie, int port,
-+				       u64 rate_bytes_per_sec,
-+				       s64 burst)
-+{
-+	struct sja1105_rule *rule = sja1105_rule_find(priv, cookie);
-+	struct sja1105_l2_policing_entry *policing;
-+	bool new_rule = false;
-+	unsigned long p;
-+	int rc;
-+
-+	if (!rule) {
-+		rule = kzalloc(sizeof(*rule), GFP_KERNEL);
-+		if (!rule)
-+			return -ENOMEM;
-+
-+		rule->cookie = cookie;
-+		rule->type = SJA1105_RULE_BCAST_POLICER;
-+		rule->bcast_pol.sharindx = sja1105_find_free_l2_policer(priv);
-+		new_rule = true;
-+	}
-+
-+	if (rule->bcast_pol.sharindx == -1) {
-+		NL_SET_ERR_MSG_MOD(extack, "No more L2 policers free");
-+		rc = -ENOSPC;
-+		goto out;
-+	}
-+
-+	policing = priv->static_config.tables[BLK_IDX_L2_POLICING].entries;
-+
-+	if (policing[(SJA1105_NUM_PORTS * SJA1105_NUM_TC) + port].sharindx != port) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Port already has a broadcast policer");
-+		rc = -EEXIST;
-+		goto out;
-+	}
-+
-+	rule->port_mask |= BIT(port);
-+
-+	/* Make the broadcast policers of all ports attached to this block
-+	 * point to the newly allocated policer
-+	 */
-+	for_each_set_bit(p, &rule->port_mask, SJA1105_NUM_PORTS) {
-+		int bcast = (SJA1105_NUM_PORTS * SJA1105_NUM_TC) + p;
-+
-+		policing[bcast].sharindx = rule->bcast_pol.sharindx;
-+	}
-+
-+	policing[rule->bcast_pol.sharindx].rate = div_u64(rate_bytes_per_sec *
-+							  512, 1000000);
-+	policing[rule->bcast_pol.sharindx].smax = div_u64(rate_bytes_per_sec *
-+							  PSCHED_NS2TICKS(burst),
-+							  PSCHED_TICKS_PER_SEC);
-+	/* TODO: support per-flow MTU */
-+	policing[rule->bcast_pol.sharindx].maxlen = VLAN_ETH_FRAME_LEN +
-+						    ETH_FCS_LEN;
-+
-+	rc = sja1105_static_config_reload(priv, SJA1105_BEST_EFFORT_POLICING);
-+
-+out:
-+	if (rc == 0 && new_rule) {
-+		priv->flow_block.l2_policer_used[rule->bcast_pol.sharindx] = true;
-+		list_add(&rule->list, &priv->flow_block.rules);
-+	} else if (new_rule) {
-+		kfree(rule);
-+	}
-+
-+	return rc;
-+}
-+
-+static int sja1105_setup_tc_policer(struct sja1105_private *priv,
-+				    struct netlink_ext_ack *extack,
-+				    unsigned long cookie, int port, int tc,
-+				    u64 rate_bytes_per_sec,
-+				    s64 burst)
-+{
-+	struct sja1105_rule *rule = sja1105_rule_find(priv, cookie);
-+	struct sja1105_l2_policing_entry *policing;
-+	bool new_rule = false;
-+	unsigned long p;
-+	int rc;
-+
-+	if (!rule) {
-+		rule = kzalloc(sizeof(*rule), GFP_KERNEL);
-+		if (!rule)
-+			return -ENOMEM;
-+
-+		rule->cookie = cookie;
-+		rule->type = SJA1105_RULE_TC_POLICER;
-+		rule->tc_pol.sharindx = sja1105_find_free_l2_policer(priv);
-+		rule->tc_pol.tc = tc;
-+		new_rule = true;
-+	}
-+
-+	if (rule->tc_pol.sharindx == -1) {
-+		NL_SET_ERR_MSG_MOD(extack, "No more L2 policers free");
-+		rc = -ENOSPC;
-+		goto out;
-+	}
-+
-+	policing = priv->static_config.tables[BLK_IDX_L2_POLICING].entries;
-+
-+	if (policing[(port * SJA1105_NUM_TC) + tc].sharindx != port) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Port-TC pair already has an L2 policer");
-+		rc = -EEXIST;
-+		goto out;
-+	}
-+
-+	rule->port_mask |= BIT(port);
-+
-+	/* Make the policers for traffic class @tc of all ports attached to
-+	 * this block point to the newly allocated policer
-+	 */
-+	for_each_set_bit(p, &rule->port_mask, SJA1105_NUM_PORTS) {
-+		int index = (p * SJA1105_NUM_TC) + tc;
-+
-+		policing[index].sharindx = rule->tc_pol.sharindx;
-+	}
-+
-+	policing[rule->tc_pol.sharindx].rate = div_u64(rate_bytes_per_sec *
-+						       512, 1000000);
-+	policing[rule->tc_pol.sharindx].smax = div_u64(rate_bytes_per_sec *
-+						       PSCHED_NS2TICKS(burst),
-+						       PSCHED_TICKS_PER_SEC);
-+	/* TODO: support per-flow MTU */
-+	policing[rule->tc_pol.sharindx].maxlen = VLAN_ETH_FRAME_LEN +
-+						 ETH_FCS_LEN;
-+
-+	rc = sja1105_static_config_reload(priv, SJA1105_BEST_EFFORT_POLICING);
-+
-+out:
-+	if (rc == 0 && new_rule) {
-+		priv->flow_block.l2_policer_used[rule->tc_pol.sharindx] = true;
-+		list_add(&rule->list, &priv->flow_block.rules);
-+	} else if (new_rule) {
-+		kfree(rule);
-+	}
-+
-+	return rc;
-+}
-+
-+static int sja1105_flower_parse_policer(struct sja1105_private *priv, int port,
-+					struct netlink_ext_ack *extack,
-+					struct flow_cls_offload *cls,
-+					u64 rate_bytes_per_sec,
-+					s64 burst)
-+{
-+	struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
-+	struct flow_dissector *dissector = rule->match.dissector;
-+
-+	if (dissector->used_keys &
-+	    ~(BIT(FLOW_DISSECTOR_KEY_BASIC) |
-+	      BIT(FLOW_DISSECTOR_KEY_CONTROL) |
-+	      BIT(FLOW_DISSECTOR_KEY_VLAN) |
-+	      BIT(FLOW_DISSECTOR_KEY_ETH_ADDRS))) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Unsupported keys used");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
-+		struct flow_match_basic match;
-+
-+		flow_rule_match_basic(rule, &match);
-+		if (match.key->n_proto) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Matching on protocol not supported");
-+			return -EOPNOTSUPP;
-+		}
-+	}
-+
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ETH_ADDRS)) {
-+		u8 bcast[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
-+		u8 null[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-+		struct flow_match_eth_addrs match;
-+
-+		flow_rule_match_eth_addrs(rule, &match);
-+
-+		if (!ether_addr_equal_masked(match.key->src, null,
-+					     match.mask->src)) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Matching on source MAC not supported");
-+			return -EOPNOTSUPP;
-+		}
-+
-+		if (!ether_addr_equal_masked(match.key->dst, bcast,
-+					     match.mask->dst)) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Only matching on broadcast DMAC is supported");
-+			return -EOPNOTSUPP;
-+		}
-+
-+		return sja1105_setup_bcast_policer(priv, extack, cls->cookie,
-+						   port, rate_bytes_per_sec,
-+						   burst);
-+	}
-+
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_VLAN)) {
-+		struct flow_match_vlan match;
-+
-+		flow_rule_match_vlan(rule, &match);
-+
-+		if (match.key->vlan_id & match.mask->vlan_id) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Matching on VID is not supported");
-+			return -EOPNOTSUPP;
-+		}
-+
-+		if (match.mask->vlan_priority != 0x7) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Masked matching on PCP is not supported");
-+			return -EOPNOTSUPP;
-+		}
-+
-+		return sja1105_setup_tc_policer(priv, extack, cls->cookie, port,
-+						match.key->vlan_priority,
-+						rate_bytes_per_sec,
-+						burst);
-+	}
-+
-+	NL_SET_ERR_MSG_MOD(extack, "Not matching on any known key");
-+	return -EOPNOTSUPP;
-+}
-+
-+int sja1105_cls_flower_add(struct dsa_switch *ds, int port,
-+			   struct flow_cls_offload *cls, bool ingress)
-+{
-+	struct flow_rule *rule = flow_cls_offload_flow_rule(cls);
-+	struct netlink_ext_ack *extack = cls->common.extack;
-+	struct sja1105_private *priv = ds->priv;
-+	const struct flow_action_entry *act;
-+	int rc = -EOPNOTSUPP, i;
-+
-+	flow_action_for_each(i, act, &rule->action) {
-+		switch (act->id) {
-+		case FLOW_ACTION_POLICE:
-+			rc = sja1105_flower_parse_policer(priv, port, extack, cls,
-+							  act->police.rate_bytes_ps,
-+							  act->police.burst);
-+			break;
-+		default:
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Action not supported");
-+			break;
-+		}
-+	}
-+
-+	return rc;
-+}
-+
-+int sja1105_cls_flower_del(struct dsa_switch *ds, int port,
-+			   struct flow_cls_offload *cls, bool ingress)
-+{
-+	struct sja1105_private *priv = ds->priv;
-+	struct sja1105_rule *rule = sja1105_rule_find(priv, cls->cookie);
-+	struct sja1105_l2_policing_entry *policing;
-+	int old_sharindx;
-+
-+	if (!rule)
-+		return 0;
-+
-+	policing = priv->static_config.tables[BLK_IDX_L2_POLICING].entries;
-+
-+	if (rule->type == SJA1105_RULE_BCAST_POLICER) {
-+		int bcast = (SJA1105_NUM_PORTS * SJA1105_NUM_TC) + port;
-+
-+		old_sharindx = policing[bcast].sharindx;
-+		policing[bcast].sharindx = port;
-+	} else if (rule->type == SJA1105_RULE_TC_POLICER) {
-+		int index = (port * SJA1105_NUM_TC) + rule->tc_pol.tc;
-+
-+		old_sharindx = policing[index].sharindx;
-+		policing[index].sharindx = port;
-+	} else {
-+		return -EINVAL;
-+	}
-+
-+	rule->port_mask &= ~BIT(port);
-+	if (!rule->port_mask) {
-+		priv->flow_block.l2_policer_used[old_sharindx] = false;
-+		list_del(&rule->list);
-+		kfree(rule);
-+	}
-+
-+	return sja1105_static_config_reload(priv, SJA1105_BEST_EFFORT_POLICING);
-+}
-+
-+void sja1105_flower_setup(struct dsa_switch *ds)
-+{
-+	struct sja1105_private *priv = ds->priv;
-+	int port;
-+
-+	INIT_LIST_HEAD(&priv->flow_block.rules);
-+
-+	for (port = 0; port < SJA1105_NUM_PORTS; port++)
-+		priv->flow_block.l2_policer_used[port] = true;
-+}
-+
-+void sja1105_flower_teardown(struct dsa_switch *ds)
-+{
-+	struct sja1105_private *priv = ds->priv;
-+	struct sja1105_rule *rule;
-+	struct list_head *pos, *n;
-+
-+	list_for_each_safe(pos, n, &priv->flow_block.rules) {
-+		rule = list_entry(pos, struct sja1105_rule, list);
-+		list_del(&rule->list);
-+		kfree(rule);
-+	}
-+}
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 81d2e5e5ce96..472f4eb20c49 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2021,6 +2021,7 @@ static void sja1105_teardown(struct dsa_switch *ds)
- 			kthread_destroy_worker(sp->xmit_worker);
- 	}
- 
-+	sja1105_flower_teardown(ds);
- 	sja1105_tas_teardown(ds);
- 	sja1105_ptp_clock_unregister(ds);
- 	sja1105_static_config_free(&priv->static_config);
-@@ -2356,6 +2357,8 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
- 	.port_mirror_del	= sja1105_mirror_del,
- 	.port_policer_add	= sja1105_port_policer_add,
- 	.port_policer_del	= sja1105_port_policer_del,
-+	.cls_flower_add		= sja1105_cls_flower_add,
-+	.cls_flower_del		= sja1105_cls_flower_del,
- };
- 
- static int sja1105_check_device_id(struct sja1105_private *priv)
-@@ -2459,6 +2462,7 @@ static int sja1105_probe(struct spi_device *spi)
- 	mutex_init(&priv->mgmt_lock);
- 
- 	sja1105_tas_setup(ds);
-+	sja1105_flower_setup(ds);
- 
- 	rc = dsa_register_switch(priv->ds);
- 	if (rc)
--- 
-2.17.1
+>> I know very little about frame classification in the Linux network
+>> stack, but would it be possible to introduce a match key in tc-flower
+>> for whether packets have a known destination or not?
+>>
+>>> my thinking was to implement these storm control policers as a
+>>> "bridge_slave" operation. It can then be offloaded to capable drivers
+>>> via the switchdev framework.
+>>>
+>>
+>> I think it would be a bit odd to duplicate tc functionality in the
+>> bridge sysfs. I don't have a better suggestion though.
+>>
+> 
+> Not to mention that for hardware like this, to have the same level of
+> flexibility via a switchdev control would mean to duplicate quite a
+> lot of tc functionality. On this 5-port switch I can put a shared
+> broadcast policer on 2 ports (via the ingress_block functionality),
+> and individual policers on the other 3, and the bandwidth budgeting is
+> separate. I can only assume that there are more switches out there
+> that allow this.
+> 
+>>> I think that if we have this implemented in the Linux bridge, then your
+>>> patch can be used to support the policing of broadcast packets while
+>>> returning an error if user tries to police unknown unicast or multicast
+>>> packets.
+>>
+>> So even if the Linux bridge gains these knobs for flood policers,
+>> still have the dst_mac ff:ff:ff:ff:ff:ff as a valid way to configure
+>> one of those knobs?
+>>
+>>> Or maybe the hardware you are working with supports these types
+>>> as well?
+>>
+>> Nope, on this hardware it's just broadcast, I just checked that. Which
+>> simplifies things quite a bit.
+>>
+>>>
+>>> WDYT?
+>>>
+>>
+>> I don't know.
+>>
+>> Thanks,
+>> -Vladimir
+> 
+> -Vladimir
+> 
 
