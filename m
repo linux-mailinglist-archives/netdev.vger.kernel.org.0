@@ -2,53 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6BFC19748E
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 08:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB3D0197490
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 08:31:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729285AbgC3Gay (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 02:30:54 -0400
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:32050 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728991AbgC3Gax (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 02:30:53 -0400
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02U6PEHp016756;
-        Sun, 29 Mar 2020 23:30:52 -0700
+        id S1729329AbgC3Ga7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 02:30:59 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:52838 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728991AbgC3Ga6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 02:30:58 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02U6UPMZ015736;
+        Sun, 29 Mar 2020 23:30:57 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=a5oZZIn+G33vrAWId3T1hqCZVpNZ/YHbFv9IIwAh4MM=;
- b=qiOcPHvkMD33ujTsYxC+Jo7vDoZmyRXjT/ROrg6lVlpUwlnjWRCNbmzGe9sqsNXb6cgC
- 1u2GEfwf+j55d0PvY/8rMT2pCT/UvI/icxlOlFJfre3WnoDe0egDOtxDO++jiPD9eIZF
- Wv/69Eo+CXEYTuLfs4jqR90+nUD/DCij9TrVVkOxxx2xJPznG8nZqRWKBJbdDxGJOQJ4
- jQO5Hg01bNdfttXbNLy2TDM1Ine9ldfXrVmFTIUeIlxPyNZvuTX/66MZH7X/Lz1Qn+ji
- Z9mudM/jqGq+xwzSiEXT2CTBeqh5ZkJC2CC8ZItNHnVzMblUCjHo2cK1rBzbQ0j3HjBe tg== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3023xnwdan-1
+ content-type; s=pfpt0818; bh=pTZ5Hl51Ej6SUhKKJ3OLZ3SyT4RBg306Yfvbv6Nps+A=;
+ b=UqcxOvi6Bn8VzKThRLR3Tx88bpEx1YrSTCuvCPp40ls0IDUhG0rNdyHNmUd18JhchcOd
+ 08wGFT97Vow9Pj5oTNUJ+hbJ3GpjhO2pxLl6aBHPvzlii0p85zV+7iaidRSnhqjjHVbz
+ BegXTnGtEJ8FGJ90zUoh7hF1ahLa3dVA2qFp5G8ELk/ZL+Y3Z6OZorbdhQ8/9T4CYx3I
+ ZLMF0eaYieB/AO/ETH6J7JSUDjlA27gBF0mH57eUzd3irfp3ioekFFa0PLVYUdntsDuL
+ DTkonVXWAKs1rM7r061JL7JCSbSym8Q0JeWUNEU43jywHdj1DTqLsLzyWe0yBGCDlmix 0Q== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 30263kd1m8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 29 Mar 2020 23:30:52 -0700
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 29 Mar
- 2020 23:30:50 -0700
-Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 29 Mar 2020 23:30:50 -0700
+        Sun, 29 Mar 2020 23:30:57 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 29 Mar
+ 2020 23:30:55 -0700
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 29 Mar
+ 2020 23:30:54 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 29 Mar 2020 23:30:54 -0700
 Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
-        by maili.marvell.com (Postfix) with ESMTP id E30F63F703F;
-        Sun, 29 Mar 2020 23:30:50 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 1BA713F7044;
+        Sun, 29 Mar 2020 23:30:54 -0700 (PDT)
 Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 02U6Uo6H027364;
-        Sun, 29 Mar 2020 23:30:50 -0700
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id 02U6UrPo027368;
+        Sun, 29 Mar 2020 23:30:53 -0700
 Received: (from root@localhost)
-        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 02U6UoNE027363;
-        Sun, 29 Mar 2020 23:30:50 -0700
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id 02U6UrT5027367;
+        Sun, 29 Mar 2020 23:30:53 -0700
 From:   Saurav Kashyap <skashyap@marvell.com>
 To:     <martin.petersen@oracle.com>
 CC:     <GR-QLogic-Storage-Upstream@marvell.com>,
         <linux-scsi@vger.kernel.org>, <jhasan@marvell.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH v2 5/8] qedf: Add schedule recovery handler.
-Date:   Sun, 29 Mar 2020 23:30:31 -0700
-Message-ID: <20200330063034.27309-6-skashyap@marvell.com>
+Subject: [PATCH v2 6/8] qedf: Fix crash when MFW calls for protocol stats while function is still probing.
+Date:   Sun, 29 Mar 2020 23:30:32 -0700
+Message-ID: <20200330063034.27309-7-skashyap@marvell.com>
 X-Mailer: git-send-email 2.12.0
 In-Reply-To: <20200330063034.27309-1-skashyap@marvell.com>
 References: <20200330063034.27309-1-skashyap@marvell.com>
@@ -63,107 +66,121 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Chad Dupuis <cdupuis@marvell.com>
 
-- Add recovery handler, this will be triggered
-  by QED.
+The MFW may make an call to qed and then to qedf for protocol statistics
+while the function is still probing.  If this happens it's possible that
+some members of the struct qedf_ctx may not be fully initialized which can
+result in a NULL pointer dereference or general protection fault.
+
+To prevent this, add a new flag call QEDF_PROBING and set it when the
+__qedf_probe() function is active. Then in the qedf_get_protocol_tlv_data()
+function we can check if the function is still probing and return
+immediantely before any uninitialized structures can be touched.
 
 Signed-off-by: Chad Dupuis <cdupuis@marvell.com>
 Signed-off-by: Saurav Kashyap <skashyap@marvell.com>
 ---
-Changes in v2
- - qedf_schedule_recovery_handler marked as static
- - qedf_recovery_handler marked as static
-
  drivers/scsi/qedf/qedf.h      |  1 +
- drivers/scsi/qedf/qedf_main.c | 43 +++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 44 insertions(+)
+ drivers/scsi/qedf/qedf_main.c | 35 +++++++++++++++++++++++++++++++----
+ 2 files changed, 32 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/scsi/qedf/qedf.h b/drivers/scsi/qedf/qedf.h
-index aaa2ac9..f8a98e5 100644
+index f8a98e5..e163be8 100644
 --- a/drivers/scsi/qedf/qedf.h
 +++ b/drivers/scsi/qedf/qedf.h
-@@ -387,6 +387,7 @@ struct qedf_ctx {
- #define QEDF_IO_WORK_MIN		64
- 	mempool_t *io_mempool;
- 	struct workqueue_struct *dpc_wq;
-+	struct delayed_work recovery_work;
- 	struct delayed_work grcdump_work;
- 	struct delayed_work stag_work;
- 
+@@ -355,6 +355,7 @@ struct qedf_ctx {
+ #define QEDF_GRCDUMP_CAPTURE		4
+ #define QEDF_IN_RECOVERY		5
+ #define QEDF_DBG_STOP_IO		6
++#define QEDF_PROBING			8
+ 	unsigned long flags; /* Miscellaneous state flags */
+ 	int fipvlan_retries;
+ 	u8 num_queues;
 diff --git a/drivers/scsi/qedf/qedf_main.c b/drivers/scsi/qedf/qedf_main.c
-index ba66216..39a66e4 100644
+index 39a66e4..52673b4 100644
 --- a/drivers/scsi/qedf/qedf_main.c
 +++ b/drivers/scsi/qedf/qedf_main.c
-@@ -28,6 +28,8 @@
- static int qedf_probe(struct pci_dev *pdev, const struct pci_device_id *id);
- static void qedf_remove(struct pci_dev *pdev);
- static void qedf_shutdown(struct pci_dev *pdev);
-+static void qedf_schedule_recovery_handler(void *dev);
-+static void qedf_recovery_handler(struct work_struct *work);
+@@ -3198,7 +3198,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ {
+ 	int rc = -EINVAL;
+ 	struct fc_lport *lport;
+-	struct qedf_ctx *qedf;
++	struct qedf_ctx *qedf = NULL;
+ 	struct Scsi_Host *host;
+ 	bool is_vf = false;
+ 	struct qed_ll2_params params;
+@@ -3228,6 +3228,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
  
- /*
-  * Driver module parameters.
-@@ -662,6 +664,7 @@ static u32 qedf_get_login_failures(void *cookie)
- 	{
- 		.link_update = qedf_link_update,
- 		.bw_update = qedf_bw_update,
-+		.schedule_recovery_handler = qedf_schedule_recovery_handler,
- 		.dcbx_aen = qedf_dcbx_handler,
- 		.get_generic_tlv_data = qedf_get_generic_tlv_data,
- 		.get_protocol_tlv_data = qedf_get_protocol_tlv_data,
-@@ -3510,6 +3513,7 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
- 		    qedf->lport->host->host_no);
- 		qedf->dpc_wq = create_workqueue(host_buf);
+ 		/* Initialize qedf_ctx */
+ 		qedf = lport_priv(lport);
++		set_bit(QEDF_PROBING, &qedf->flags);
+ 		qedf->lport = lport;
+ 		qedf->ctlr.lp = lport;
+ 		qedf->pdev = pdev;
+@@ -3252,9 +3253,12 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 	} else {
+ 		/* Init pointers during recovery */
+ 		qedf = pci_get_drvdata(pdev);
++		set_bit(QEDF_PROBING, &qedf->flags);
+ 		lport = qedf->lport;
  	}
-+	INIT_DELAYED_WORK(&qedf->recovery_work, qedf_recovery_handler);
  
- 	/*
- 	 * GRC dump and sysfs parameters are not reaped during the recovery
-@@ -3825,6 +3829,45 @@ static void qedf_shutdown(struct pci_dev *pdev)
- 	__qedf_remove(pdev, QEDF_MODE_NORMAL);
++	QEDF_INFO(&qedf->dbg_ctx, QEDF_LOG_DISC, "Probe started.\n");
++
+ 	host = lport->host;
+ 
+ 	/* Allocate mempool for qedf_io_work structs */
+@@ -3561,6 +3565,10 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ 	else
+ 		fc_fabric_login(lport);
+ 
++	QEDF_INFO(&qedf->dbg_ctx, QEDF_LOG_DISC, "Probe done.\n");
++
++	clear_bit(QEDF_PROBING, &qedf->flags);
++
+ 	/* All good */
+ 	return 0;
+ 
+@@ -3586,6 +3594,11 @@ static int __qedf_probe(struct pci_dev *pdev, int mode)
+ err1:
+ 	scsi_host_put(lport->host);
+ err0:
++	if (qedf) {
++		QEDF_INFO(&qedf->dbg_ctx, QEDF_LOG_DISC, "Probe done.\n");
++
++		clear_bit(QEDF_PROBING, &qedf->flags);
++	}
+ 	return rc;
  }
  
-+/*
-+ * Recovery handler code
-+ */
-+static void qedf_schedule_recovery_handler(void *dev)
-+{
-+	struct qedf_ctx *qedf = dev;
-+
-+	QEDF_ERR(&qedf->dbg_ctx, "Recovery handler scheduled.\n");
-+	schedule_delayed_work(&qedf->recovery_work, 0);
-+}
-+
-+static void qedf_recovery_handler(struct work_struct *work)
-+{
-+	struct qedf_ctx *qedf =
-+	    container_of(work, struct qedf_ctx, recovery_work.work);
-+
-+	if (test_and_set_bit(QEDF_IN_RECOVERY, &qedf->flags))
-+		return;
-+
-+	/*
-+	 * Call common_ops->recovery_prolog to allow the MFW to quiesce
-+	 * any PCI transactions.
-+	 */
-+	qed_ops->common->recovery_prolog(qedf->cdev);
-+
-+	QEDF_ERR(&qedf->dbg_ctx, "Recovery work start.\n");
-+	__qedf_remove(qedf->pdev, QEDF_MODE_RECOVERY);
-+	/*
-+	 * Reset link and dcbx to down state since we will not get a link down
-+	 * event from the MFW but calling __qedf_remove will essentially be a
-+	 * link down event.
-+	 */
-+	atomic_set(&qedf->link_state, QEDF_LINK_DOWN);
-+	atomic_set(&qedf->dcbx, QEDF_DCBX_PENDING);
-+	__qedf_probe(qedf->pdev, QEDF_MODE_RECOVERY);
-+	clear_bit(QEDF_IN_RECOVERY, &qedf->flags);
-+	QEDF_ERR(&qedf->dbg_ctx, "Recovery work complete.\n");
-+}
-+
- /* Generic TLV data callback */
- void qedf_get_generic_tlv_data(void *dev, struct qed_generic_tlvs *data)
+@@ -3735,11 +3748,25 @@ void qedf_get_protocol_tlv_data(void *dev, void *data)
  {
+ 	struct qedf_ctx *qedf = dev;
+ 	struct qed_mfw_tlv_fcoe *fcoe = data;
+-	struct fc_lport *lport = qedf->lport;
+-	struct Scsi_Host *host = lport->host;
+-	struct fc_host_attrs *fc_host = shost_to_fc_host(host);
++	struct fc_lport *lport;
++	struct Scsi_Host *host;
++	struct fc_host_attrs *fc_host;
+ 	struct fc_host_statistics *hst;
+ 
++	if (!qedf) {
++		QEDF_ERR(NULL, "qedf is null.\n");
++		return;
++	}
++
++	if (test_bit(QEDF_PROBING, &qedf->flags)) {
++		QEDF_ERR(&qedf->dbg_ctx, "Function is still probing.\n");
++		return;
++	}
++
++	lport = qedf->lport;
++	host = lport->host;
++	fc_host = shost_to_fc_host(host);
++
+ 	/* Force a refresh of the fc_host stats including offload stats */
+ 	hst = qedf_fc_get_host_stats(host);
+ 
 -- 
 1.8.3.1
 
