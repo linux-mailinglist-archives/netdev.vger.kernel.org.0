@@ -2,81 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFB10198379
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:37:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93869198389
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:41:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726672AbgC3ShC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 14:37:02 -0400
-Received: from mail.bugwerft.de ([46.23.86.59]:54928 "EHLO mail.bugwerft.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726017AbgC3ShC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 14:37:02 -0400
-Received: from [192.168.178.106] (pD95EFBD9.dip0.t-ipconnect.de [217.94.251.217])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 6917029CCD1;
-        Mon, 30 Mar 2020 18:35:03 +0000 (UTC)
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: don't force settings on CPU port
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-References: <20200327195156.1728163-1-daniel@zonque.org>
- <20200327200153.GR3819@lunn.ch>
- <d101df30-5a9e-eac1-94b0-f171dbcd5b88@zonque.org>
- <20200327211821.GT3819@lunn.ch>
- <1bff1da3-8c9d-55c6-3408-3ae1c3943041@zonque.org>
- <20200327235220.GV3819@lunn.ch>
- <64462bcf-6c0c-af4f-19f4-d203daeabec3@zonque.org>
- <20200330134010.GA23477@lunn.ch>
- <7a777bc3-9109-153a-a735-e36718c06db5@zonque.org>
- <20200330182307.GG23477@lunn.ch>
-From:   Daniel Mack <daniel@zonque.org>
-Message-ID: <82d8e785-ec00-d815-3b11-b694aa9f4d50@zonque.org>
-Date:   Mon, 30 Mar 2020 20:37:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <20200330182307.GG23477@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S1726923AbgC3SlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 14:41:06 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:40794 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726085AbgC3SlF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 14:41:05 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4859015C5CEC6;
+        Mon, 30 Mar 2020 11:41:05 -0700 (PDT)
+Date:   Mon, 30 Mar 2020 11:41:04 -0700 (PDT)
+Message-Id: <20200330.114104.1458740005557474727.davem@davemloft.net>
+To:     snelson@pensando.io
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 0/8] ionic support for firmware upgrade
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200328031448.50794-1-snelson@pensando.io>
+References: <20200328031448.50794-1-snelson@pensando.io>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 30 Mar 2020 11:41:05 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/30/20 8:23 PM, Andrew Lunn wrote:
-> On Mon, Mar 30, 2020 at 08:04:08PM +0200, Daniel Mack wrote:
->> Hi Andrew,
->>
->> Thanks for all your input.
->>
->> On 3/30/20 3:40 PM, Andrew Lunn wrote:
->>> On Mon, Mar 30, 2020 at 11:29:27AM +0200, Daniel Mack wrote:
->>>> On 3/28/20 12:52 AM, Andrew Lunn wrote:
->>
->>>>> By explicitly saying there is a PHY for the CPU node, phylink might
->>>>> drive it.
->>>
->>> You want to debug this. Although what you have is unusual, yours is
->>> not the only board. It is something we want to work. And ideally,
->>> there should be something controlling the PHY.
->>
->> I agree, but what I believe is happening here is this. The PHY inside
->> the switch negotiates a link to the 'external' PHY which is forced to
->> 100M maximum speed. That link seems to work fine; the LEDs connected to
->> that external PHY indicate that there is link. However, the internal PHY
->> in the switch does not receive any packets as the MAC connected to it
->> only wants to communicate with 1G.
+From: Shannon Nelson <snelson@pensando.io>
+Date: Fri, 27 Mar 2020 20:14:40 -0700
+
+> The Pensando Distributed Services Card can get firmware upgrades from
+> the off-host centralized management suite, and can be upgraded without a
+> host reboot or driver reload.  This patchset sets up the support for fw
+> upgrade in the Linux driver.
 > 
-> Which is what phylink is all about. phylink will talk to the PHY,
-> figure out what it has negotiated, and then configure the MAC to
-> fit. So you need to debug why this is not happening.
+> When the upgrade begins, the DSC first brings the link down, then stops
+> the firmware.  The driver will notice this and quiesce itself by stopping
+> the queues and releasing DMA resources, then monitoring for firmware to
+> start back up.  When the upgrade is finished the firmware is restarted
+> and link is brought up, and the driver rebuilds the queues and restarts
+> traffic flow.
+> 
+> First we separate the Link state from the netdev state, then reorganize a
+> few things to prepare for partial tear-down of the queues.  Next we fix
+> up the state machine so that we take the Tx and Rx queues down and back
+> up when we get LINK_DOWN and LINK_UP events.  Lastly, we add handling of
+> the FW reset itself by tearing down the lif internals and rebuilding them
+> with the new FW setup.
+> 
+> v2: This changes the design from (ab)using the full .ndo_stop and
+>     .ndo_open routines to getting a better separation between the
+>     alloc and the init functions so that we can keep our resource
+>     allocations as long as possible.
 
-Even when the MAC is *forced* to 1G, which is what the code currently
-does? Sorry for the dumb question, but wich code path would undo these
-settings? Where would you start debugging this?
-
-
-Thanks,
-Daniel
-
-
+Series applied, thank you.
