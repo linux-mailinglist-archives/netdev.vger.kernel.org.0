@@ -2,103 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4278D1980A6
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 18:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6334198097
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 18:10:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728167AbgC3QMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 12:12:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50206 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726017AbgC3QMl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 12:12:41 -0400
-Received: from localhost.localdomain (236.31.169.217.in-addr.arpa [217.169.31.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 41FDD2072E;
-        Mon, 30 Mar 2020 16:12:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585584761;
-        bh=aGvwRHVGkfCwUwyFQ1NwD3TIR1jMPKBWli5lctMi03A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cOyl4qF1nqSnhTT458HYnCkYRTGr0Y0u/itgXt8V2OwSLH82KbyfSX6NAYexbwDrw
-         +IjVNh+I0R5+Gd50deJgpMKJA9R9q27UZu7uWsrTpOtFNXyxXS55fA8cGyb7DaQMaz
-         AziioY8InHhg5w6clw0hKSIYvjiuAmlMrwIpKrt8=
-From:   Will Deacon <will@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@android.com, Will Deacon <will@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jason Wang <jasowang@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [RFC PATCH] tun: Don't put_page() for all negative return values from XDP program
-Date:   Mon, 30 Mar 2020 17:12:34 +0100
-Message-Id: <20200330161234.12777-1-will@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        id S1730158AbgC3QKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 12:10:08 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:37838 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730153AbgC3QKI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 12:10:08 -0400
+Received: by mail-wr1-f66.google.com with SMTP id w10so22440943wrm.4
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 09:10:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4p/FuKYQc7vZhNMiSuFBV3E0MOwLFjQSDsjh0BwAatc=;
+        b=hoSQ41CaNLHQnZZ9tjQoCCNkJ+hUl3R6eCbUaBQr8kzZyaoe9gjXOoae5anfM3IKdY
+         53OjGYNyyKDDmJ9OD2pW3f6Eu2de/IuJ/zmUW3KwfnQaaXu2LXWkyeFWUlmWHS4oh2jH
+         Zt//xFLf0GERK03vUqrFzaeF2U//gSe1y4/wbyy9JcxxCXX3LYETIpJBfP0QAO6xb1NI
+         u4BrbsFEPuccDST/j9fl7iemXz6krS+33vGv8rxrXSFuam/Ol1t7n4xoRcQ0AtUttukX
+         1WLBP01d2L6Dp8cjHln+22fogjAbMS+Bh3TUOe5DQF4FS9SSCVwl9qfZzBYkbE1e2t7d
+         qIGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4p/FuKYQc7vZhNMiSuFBV3E0MOwLFjQSDsjh0BwAatc=;
+        b=ZHezEB36qY+Z0+QUBRpzT+Tr6a3GRkMl35LUQpk2u9aMeOmDpsbtKGD629cAwj5mYm
+         IOMrARbNPFZHQU1JRhY+omfNtBqjAi5pnj8j2lL3Iy3+fq+1nODZM5rbrAICQVcPvobq
+         WhB8BnfRsLsgHEwb/0HAhmaX4LkYuDacriYekBsutCKTBYp8aybvUdj8jJ4FaENbx65l
+         ++2yUSs6WakP6BnVPJF0jLmXrO79wl/XmsSZjluGyWCVVFVSTDYNEtNZzyf3aAdCmYp9
+         36dj1SQCC5uCGHhbMEGa7I6BPcXSEFaEWrxOXa3OddrJZIiiynL1KxelJBst0qafwDTI
+         ipfA==
+X-Gm-Message-State: ANhLgQ0QCPozfqdUhqxsW1zeC4+BnIPg11rV5fxB4QjA8/js0LZCCPdL
+        djnv2LRwn39hKRTd+sEVzSI4VcCOYk/b9PPNU9U=
+X-Google-Smtp-Source: ADFU+vs9vtYAqVmua0YKGsYJZGbJKErNly+DDLyZLnS4JH+iiFpE/f6c+UZWVSL7Tw4UChIzmzUNyCsjBDHqFxj56M4=
+X-Received: by 2002:a5d:5447:: with SMTP id w7mr15480169wrv.299.1585584606828;
+ Mon, 30 Mar 2020 09:10:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <e17fe23a0a5f652866ec623ef0cde1e6ef5dbcf5.1585213585.git.lucien.xin@gmail.com>
+ <20200330082929.GG13121@gauss3.secunet.de>
+In-Reply-To: <20200330082929.GG13121@gauss3.secunet.de>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 31 Mar 2020 00:13:34 +0800
+Message-ID: <CADvbK_egz4aYOHa2+FPL6V+vXcfRGst6zEiUxqskpHc3fOk-oA@mail.gmail.com>
+Subject: Re: [PATCH net] udp: fix a skb extensions leak
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     network dev <netdev@vger.kernel.org>, davem <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Westphal <fw@strlen.de>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When an XDP program is installed, tun_build_skb() grabs a reference to
-the current page fragment page if the program returns XDP_REDIRECT or
-XDP_TX. However, since tun_xdp_act() passes through negative return
-values from the XDP program, it is possible to trigger the error path by
-mistake and accidentally drop a reference to the fragments page without
-taking one, leading to a spurious free. This is believed to be the cause
-of some KASAN use-after-free reports from syzbot [1], although without a
-reproducer it is not possible to confirm whether this patch fixes the
-problem.
+On Mon, Mar 30, 2020 at 4:29 PM Steffen Klassert
+<steffen.klassert@secunet.com> wrote:
+>
+> On Thu, Mar 26, 2020 at 05:06:25PM +0800, Xin Long wrote:
+> > On udp rx path udp_rcv_segment() may do segment where the frag skbs
+> > will get the header copied from the head skb in skb_segment_list()
+> > by calling __copy_skb_header(), which could overwrite the frag skbs'
+> > extensions by __skb_ext_copy() and cause a leak.
+> >
+> > This issue was found after loading esp_offload where a sec path ext
+> > is set in the skb.
+> >
+> > On udp tx gso path, it works well as the frag skbs' extensions are
+> > not set. So this issue should be fixed on udp's rx path only and
+> > release the frag skbs' extensions before going to do segment.
+>
+> Are you sure that this affects only the RX path? What if such
+> a packet is forwarded? Also, I think TCP has the same problem.
+You're right, just confirm it exists on the forwarded path.
+__copy_skb_header() is also called by skb_segment(), but
+I don't have tests to reproduce it on other protocols like TCP.
 
-Ensure that we only drop a reference to the fragments page if the XDP
-transmit or redirect operations actually fail.
-
-[1] https://syzkaller.appspot.com/bug?id=e76a6af1be4acd727ff6bbca669833f98cbf5d95
-
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jason Wang <jasowang@redhat.com>
-CC: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Will Deacon <will@kernel.org>
----
-
-Sending as RFC because I've not been able to confirm that this fixes anything.
-
- drivers/net/tun.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 650c937ed56b..9de9b7d8aedd 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1715,8 +1715,12 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
- 			alloc_frag->offset += buflen;
- 		}
- 		err = tun_xdp_act(tun, xdp_prog, &xdp, act);
--		if (err < 0)
--			goto err_xdp;
-+		if (err < 0) {
-+			if (act == XDP_REDIRECT || act == XDP_TX)
-+				put_page(alloc_frag->page);
-+			goto out;
-+		}
-+
- 		if (err == XDP_REDIRECT)
- 			xdp_do_flush();
- 		if (err != XDP_PASS)
-@@ -1730,8 +1734,6 @@ static struct sk_buff *tun_build_skb(struct tun_struct *tun,
- 
- 	return __tun_build_skb(tfile, alloc_frag, buf, buflen, len, pad);
- 
--err_xdp:
--	put_page(alloc_frag->page);
- out:
- 	rcu_read_unlock();
- 	local_bh_enable();
--- 
-2.26.0.rc2.310.g2932bb562d-goog
-
+>
+> >
+> > Reported-by: Xiumei Mu <xmu@redhat.com>
+> > Fixes: cf329aa42b66 ("udp: cope with UDP GRO packet misdirection")
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > ---
+> >  include/net/udp.h | 4 ++++
+> >  1 file changed, 4 insertions(+)
+> >
+> > diff --git a/include/net/udp.h b/include/net/udp.h
+> > index e55d5f7..7bf0ca5 100644
+> > --- a/include/net/udp.h
+> > +++ b/include/net/udp.h
+> > @@ -486,6 +486,10 @@ static inline struct sk_buff *udp_rcv_segment(struct sock *sk,
+> >       if (skb->pkt_type == PACKET_LOOPBACK)
+> >               skb->ip_summed = CHECKSUM_PARTIAL;
+> >
+> > +     if (skb_has_frag_list(skb) && skb_has_extensions(skb))
+> > +             skb_walk_frags(skb, segs)
+> > +                     skb_ext_put(segs);
+>
+> If a skb in the fraglist has a secpath, it is still valid.
+> So maybe instead of dropping it here and assign the one
+> from the head skb, we could just keep the secpath. But
+> I don't know about other extensions. I've CCed Florian,
+> he might know a bit more about other extensions. Also,
+> it might be good to check if the extensions of the GRO
+> packets are all the same before merging.
+>
+Not sure if we can improve __copy_skb_header() or add
+a new function to copy these members ONLY when nskb's
+are not set.
