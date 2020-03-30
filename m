@@ -2,248 +2,427 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66974197129
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 01:54:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2759197140
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 02:35:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727134AbgC2XyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 19:54:06 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:39810 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726403AbgC2XyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 19:54:06 -0400
-Received: by mail-wr1-f67.google.com with SMTP id p10so19228696wrt.6
-        for <netdev@vger.kernel.org>; Sun, 29 Mar 2020 16:54:05 -0700 (PDT)
+        id S1727857AbgC3Af1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 20:35:27 -0400
+Received: from mail-qv1-f68.google.com ([209.85.219.68]:34964 "EHLO
+        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727720AbgC3Af0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 20:35:26 -0400
+Received: by mail-qv1-f68.google.com with SMTP id q73so8103449qvq.2
+        for <netdev@vger.kernel.org>; Sun, 29 Mar 2020 17:35:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=Vu5oyXPuPNhDz9Bplxz2mQUQZ1VIep0RobrJxEdIsBs=;
-        b=qCeYab/zpREUfU0fXm2X9C7nodCbEajLRj5phg6yLGo7/q3EMshZ0nuhpnHOeqoqR5
-         TMISAs6edBUCGijAiF5qG8UJgDdL68fQGjNm0EM2jp8Ga3lwU4WwAX0IFuU4a3XZGRSH
-         N7VhjSpjl4ay+lqS7zaOJz7ks8IXaCD4vKIBVMYzZ7f6MVfiamicNXSVDiKJOUOaFYXn
-         k5f76ito9i4groX2ZuDdLNohzrB4cs2no1OQIYaaFutDNisOPNyAPs4PckPral+0CV/c
-         7auR5wuqJHPOgIqeQOX8qheKs2yzHhWiHw0JTJDq6igcXvyiJC0z/zHZZQEOOLYDtflV
-         G7sA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bf6Feqic7JMaUgmDVTPsLC8L0ekcKCNpf19a5wcXRkI=;
+        b=nZ1GFUxGaJ2TI0N3mTEqZfFRiqRYghrAsI8qLWGzj2jfbONYG8yEkh5c8/hfUKbIBD
+         E9uGPE6vStqeYy9BrVUgJs4dI9r90Zme3F+OgXu2hKWa7EcD24SPFwS86hspb4OXV4Pk
+         BqLZXY8mX2+4xwSCTad66Lofn3K7Lc/BKGLFOeT9OdRYrPBw9RDKhikck3nB+YZXxQ8M
+         Zwl1IenZzjDmbSYxamYFHhURq+W3BpX7Mn+tU8jT4Yt0Ta7eJ7rjmud7Cztwa9cPpubS
+         rPcFGIjxJipyabLjMyIc6PA514bMYarV011UC4Z0Ll4c+H/Oasf6Q5Q2jJYXJUzodj6O
+         WHOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=Vu5oyXPuPNhDz9Bplxz2mQUQZ1VIep0RobrJxEdIsBs=;
-        b=jFZevVnlc2Ki0gSLbJGzA2AAOz3Gn4zlfXdqywvq7ScKZkrXbjMF2Yzr5aTNhD+tn4
-         oHzb5+HMhLp7CCIR+TdBLrkLZ9k9UQfpvnQhv/K7WGR2W+BF3JaiQcNvAxwBaaPSzzKS
-         0WbDat4fS3P6WlM1V+WX5TFQhj4YY2PFKs29ILRm2Y6jJOhL1I95R4gvwhO/ZQK8ovvz
-         WN5odrZ9oJBaQ/gcKpdWMzk9ZJnGAwb16RKiMdT7/oT4s63fa3cxq9ONiJpOynlbpMPm
-         5yrcGb9q/bY2tEy3LobIaKqST5zGOw6C8yA2FeEUA5cAWdx48sKZ4wn78FFkrI0FTLu2
-         QArA==
-X-Gm-Message-State: ANhLgQ1zGA3u8rmj8PzoRRJWGNhhDDwxvh61rSz8/s9MoDKC1g8adcMl
-        /AHAvtcKDaO92cf3Va8IBy2z2N4K
-X-Google-Smtp-Source: ADFU+vuqW4plaNyPC5lyXlmiWJayKnFZr/ocgoHY92qDLmqNRN7rZXN8mDXeLdRjQ8MW6ButUX/xWg==
-X-Received: by 2002:a5d:5112:: with SMTP id s18mr12154729wrt.306.1585526044133;
-        Sun, 29 Mar 2020 16:54:04 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:186:fda7:a83:def2? (p200300EA8F2960000186FDA70A83DEF2.dip0.t-ipconnect.de. [2003:ea:8f29:6000:186:fda7:a83:def2])
-        by smtp.googlemail.com with ESMTPSA id w9sm21413892wrk.18.2020.03.29.16.54.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 29 Mar 2020 16:54:03 -0700 (PDT)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: factor out rtl8169_tx_map
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <d9511cb2-42a7-eaec-7594-0f326f08efcd@gmail.com>
-Date:   Mon, 30 Mar 2020 01:53:39 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bf6Feqic7JMaUgmDVTPsLC8L0ekcKCNpf19a5wcXRkI=;
+        b=moCrjBn0YYJrjMaYWk3qrY3dDj3e0/HY8epBPSuPmjKpUlEwEQDVvGklwE+hTus9Up
+         YwStzlx+v+ZFpwGNxZ+xiDPGT4YNqeHkrOXGddjgvodnDcX7yEVz238Ez25d3vkXVNNG
+         4tohhzpAl6zfWeS/N9Xw0Nk5f7GHamlMyE/YcoaThXXYWyCT10wAD/VIMWs9pWDavsLY
+         HII93zsa3jHFz+4ZEKFB1frEh8aSemvyQSZWzxC/xGaZsRtUfcqxStmhh8liDgeigX7m
+         FALq/8R1gI6s5QjpB+4xkKwY+M0ryOqy9S1rKpqcDa0E+KYzB0airqQnNSLFfkklxlVy
+         GNXA==
+X-Gm-Message-State: ANhLgQ3kB7ErWNYPEtBY9aLgL9LPllfUUlwFu3x3b9lbTfBRPzn32T1d
+        3Q1n9e/2bPhys7fX4Uhcl9jP5LLNRobOIeIrKIQ=
+X-Google-Smtp-Source: ADFU+vtVAxBuVG+VpviGy3zn5m9aEkeNth4xVC9qScAajzf0GIW5rrpGQKKsHKI4IodoVvYzSyTZ2udexjQpgqXo5Wo=
+X-Received: by 2002:ad4:4829:: with SMTP id h9mr9087759qvy.135.1585528524493;
+ Sun, 29 Mar 2020 17:35:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com> <CAOrHB_BZ2Sqjooc9u1osbrEsbL5w003CL54v_bd3YPcqkjOzjg@mail.gmail.com>
+In-Reply-To: <CAOrHB_BZ2Sqjooc9u1osbrEsbL5w003CL54v_bd3YPcqkjOzjg@mail.gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Mon, 30 Mar 2020 08:34:48 +0800
+Message-ID: <CAMDZJNV1+zA9EGRMDrZDBNxTg3fr+4ZeH7bcLgfVginx3p4Cww@mail.gmail.com>
+Subject: Re: [PATCH net-next v1 1/3] net: openvswitch: expand the meters
+ number supported
+To:     Pravin Shelar <pshelar@ovn.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        ovs dev <dev@openvswitch.org>, Andy Zhou <azhou@ovn.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Factor out mapping the tx skb to a new function rtl8169_tx_map(). This
-allows to remove redundancies, and rtl8169_get_txd_opts1() has only
-one user left, so it can be inlined.
-As a result rtl8169_xmit_frags() is significantly simplified, and in
-rtl8169_start_xmit() the code is simplified and better readable.
-No functional change intended.
+On Mon, Mar 30, 2020 at 12:46 AM Pravin Shelar <pshelar@ovn.org> wrote:
+>
+> On Sat, Mar 28, 2020 at 8:46 AM <xiangxia.m.yue@gmail.com> wrote:
+> >
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >
+> > In kernel datapath of Open vSwitch, there are only 1024
+> > buckets of meter in one dp. If installing more than 1024
+> > (e.g. 8192) meters, it may lead to the performance drop.
+> > But in some case, for example, Open vSwitch used as edge
+> > gateway, there should be 200,000+ at least, meters used for
+> > IP address bandwidth limitation.
+> >
+> > [Open vSwitch userspace datapath has this issue too.]
+> >
+> > For more scalable meter, this patch expands the buckets
+> > when necessary, so we can install more meters in the datapath.
+> >
+> > * Introducing the struct *dp_meter_instance*, it's easy to
+> >   expand meter though change the *ti* point in the struct
+> >   *dp_meter_table*.
+> > * Using kvmalloc_array instead of kmalloc_array.
+> >
+> Thanks for working on this, I have couple of comments.
+>
+> > Cc: Pravin B Shelar <pshelar@ovn.org>
+> > Cc: Andy Zhou <azhou@ovn.org>
+> > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > ---
+> >  net/openvswitch/datapath.h |   2 +-
+> >  net/openvswitch/meter.c    | 168 ++++++++++++++++++++++++++++++-------
+> >  net/openvswitch/meter.h    |  17 +++-
+> >  3 files changed, 153 insertions(+), 34 deletions(-)
+> >
+> > diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
+> > index e239a46c2f94..785105578448 100644
+> > --- a/net/openvswitch/datapath.h
+> > +++ b/net/openvswitch/datapath.h
+> > @@ -82,7 +82,7 @@ struct datapath {
+> >         u32 max_headroom;
+> >
+> >         /* Switch meters. */
+> > -       struct hlist_head *meters;
+> > +       struct dp_meter_table *meters;
+> >  };
+> >
+> >  /**
+> > diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
+> > index 5010d1ddd4bd..98003b201b45 100644
+> > --- a/net/openvswitch/meter.c
+> > +++ b/net/openvswitch/meter.c
+> > @@ -47,40 +47,136 @@ static void ovs_meter_free(struct dp_meter *meter)
+> >         kfree_rcu(meter, rcu);
+> >  }
+> >
+> > -static struct hlist_head *meter_hash_bucket(const struct datapath *dp,
+> > +static struct hlist_head *meter_hash_bucket(struct dp_meter_instance *ti,
+> >                                             u32 meter_id)
+> >  {
+> > -       return &dp->meters[meter_id & (METER_HASH_BUCKETS - 1)];
+> > +       u32 hash = jhash_1word(meter_id, ti->hash_seed);
+> > +
+> I do not see any need to hash meter-id, can you explain it.
+>
+> > +       return &ti->buckets[hash & (ti->n_buckets - 1)];
+> >  }
+> >
+> >  /* Call with ovs_mutex or RCU read lock. */
+> > -static struct dp_meter *lookup_meter(const struct datapath *dp,
+> > +static struct dp_meter *lookup_meter(const struct dp_meter_table *tbl,
+> >                                      u32 meter_id)
+> >  {
+> > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
+> >         struct dp_meter *meter;
+> >         struct hlist_head *head;
+> >
+> > -       head = meter_hash_bucket(dp, meter_id);
+> > -       hlist_for_each_entry_rcu(meter, head, dp_hash_node,
+> > -                               lockdep_ovsl_is_held()) {
+> > +       head = meter_hash_bucket(ti, meter_id);
+> > +       hlist_for_each_entry_rcu(meter, head, hash_node[ti->node_ver],
+> > +                                lockdep_ovsl_is_held()) {
+> >                 if (meter->id == meter_id)
+> >                         return meter;
+> >         }
+> > +
+> This patch is expanding meter table linearly with number meters added
+> to datapath. so I do not see need to have hash table. it can be a
+> simple array. This would also improve lookup efficiency.
+> For hash collision we could find next free slot in array. let me know
+> what do you think about this approach.
+Hi Pravin
+If we use the simple array, when inserting the meter, for hash collision, we can
+find next free slot, but one case, when there are many meters in the array.
+we may find many slot for the free slot.
+And when we lookup the meter, for hash collision, we may find many
+array slots, and
+then find it, or that meter does not exist in the array, In that case,
+there may be a lookup performance
+drop.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 110 ++++++++++------------
- 1 file changed, 50 insertions(+), 60 deletions(-)
+For hash meter-id in meter_hash_bucket, I am not 100% sure it is
+useful. it just update
+hash_seed when expand meters. For performance, we can remove it. Thanks.
+>
+> >         return NULL;
+> >  }
+> >
+> > -static void attach_meter(struct datapath *dp, struct dp_meter *meter)
+> > +static struct dp_meter_instance *dp_meter_instance_alloc(const int size)
+> > +{
+> > +       struct dp_meter_instance *ti;
+> > +       int i;
+> > +
+> > +       ti = kmalloc(sizeof(*ti), GFP_KERNEL);
+> > +       if (!ti)
+> > +               return NULL;
+> > +
+> > +       ti->buckets = kvmalloc_array(size, sizeof(struct hlist_head),
+> > +                                    GFP_KERNEL);
+> > +       if (!ti->buckets) {
+> > +               kfree(ti);
+> > +               return NULL;
+> > +       }
+> > +
+> > +       for (i = 0; i < size; i++)
+> > +               INIT_HLIST_HEAD(&ti->buckets[i]);
+> > +
+> > +       ti->n_buckets = size;
+> > +       ti->node_ver = 0;
+> > +       get_random_bytes(&ti->hash_seed, sizeof(u32));
+> > +
+> > +       return ti;
+> > +}
+> > +
+> > +static void dp_meter_instance_free_rcu(struct rcu_head *rcu)
+> >  {
+> > -       struct hlist_head *head = meter_hash_bucket(dp, meter->id);
+> > +       struct dp_meter_instance *ti;
+> >
+> > -       hlist_add_head_rcu(&meter->dp_hash_node, head);
+> > +       ti = container_of(rcu, struct dp_meter_instance, rcu);
+> > +       kvfree(ti->buckets);
+> > +       kfree(ti);
+> >  }
+> >
+> > -static void detach_meter(struct dp_meter *meter)
+> > +static void dp_meter_instance_insert(struct dp_meter_instance *ti,
+> > +                                    struct dp_meter *meter)
+> > +{
+> > +       struct hlist_head *head = meter_hash_bucket(ti, meter->id);
+> > +
+> > +       hlist_add_head_rcu(&meter->hash_node[ti->node_ver], head);
+> > +}
+> > +
+> > +static void dp_meter_instance_remove(struct dp_meter_instance *ti,
+> > +                                    struct dp_meter *meter)
+> >  {
+> > +       hlist_del_rcu(&meter->hash_node[ti->node_ver]);
+> > +}
+> > +
+> > +static struct dp_meter_instance *
+> > +dp_meter_instance_expand(struct dp_meter_instance *ti)
+> > +{
+> > +       struct dp_meter_instance *new_ti;
+> > +       int i;
+> > +
+> > +       new_ti = dp_meter_instance_alloc(ti->n_buckets * 2);
+> > +       if (!new_ti)
+> > +               return NULL;
+> > +
+> > +       new_ti->node_ver = !ti->node_ver;
+> > +
+> > +       for (i = 0; i < ti->n_buckets; i++) {
+> > +               struct hlist_head *head = &ti->buckets[i];
+> > +               struct dp_meter *meter;
+> > +
+> > +               hlist_for_each_entry_rcu(meter, head, hash_node[ti->node_ver],
+> > +                                        lockdep_ovsl_is_held())
+> > +                       dp_meter_instance_insert(new_ti, meter);
+> > +       }
+> > +
+> > +       return new_ti;
+> > +}
+> > +
+> > +static void attach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
+> > +{
+> > +       struct dp_meter_instance *new_ti;
+> > +       struct dp_meter_instance *ti;
+> > +
+> > +       ti = rcu_dereference_ovsl(tbl->ti);
+> > +       dp_meter_instance_insert(ti, meter);
+> > +
+> > +       /* operate the counter safely, because called with ovs_lock. */
+> > +       tbl->count++;
+> > +
+> > +       if (tbl->count > ti->n_buckets) {
+> > +               new_ti = dp_meter_instance_expand(ti);
+> > +
+>
+>
+> > +               if (new_ti) {
+> > +                       rcu_assign_pointer(tbl->ti, new_ti);
+> > +                       call_rcu(&ti->rcu, dp_meter_instance_free_rcu);
+> > +               }
+> > +       }
+> > +}
+> > +
+> > +static void detach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
+> > +{
+> > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
+> > +
+> >         ASSERT_OVSL();
+> > -       if (meter)
+> > -               hlist_del_rcu(&meter->dp_hash_node);
+> > +       if (meter) {
+> > +               /* operate the counter safely, because called with ovs_lock. */
+> > +               tbl->count--;
+> > +               dp_meter_instance_remove(ti, meter);
+> > +       }
+> >  }
+> >
+> >  static struct sk_buff *
+> > @@ -303,9 +399,9 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, struct genl_info *info)
+> >         meter_id = nla_get_u32(a[OVS_METER_ATTR_ID]);
+> >
+> >         /* Cannot fail after this. */
+> > -       old_meter = lookup_meter(dp, meter_id);
+> > -       detach_meter(old_meter);
+> > -       attach_meter(dp, meter);
+> > +       old_meter = lookup_meter(dp->meters, meter_id);
+> > +       detach_meter(dp->meters, old_meter);
+> > +       attach_meter(dp->meters, meter);
+> >         ovs_unlock();
+> >
+> >         /* Build response with the meter_id and stats from
+> > @@ -365,7 +461,7 @@ static int ovs_meter_cmd_get(struct sk_buff *skb, struct genl_info *info)
+> >         }
+> >
+> >         /* Locate meter, copy stats. */
+> > -       meter = lookup_meter(dp, meter_id);
+> > +       meter = lookup_meter(dp->meters, meter_id);
+> >         if (!meter) {
+> >                 err = -ENOENT;
+> >                 goto exit_unlock;
+> > @@ -416,13 +512,13 @@ static int ovs_meter_cmd_del(struct sk_buff *skb, struct genl_info *info)
+> >                 goto exit_unlock;
+> >         }
+> >
+> > -       old_meter = lookup_meter(dp, meter_id);
+> > +       old_meter = lookup_meter(dp->meters, meter_id);
+> >         if (old_meter) {
+> >                 spin_lock_bh(&old_meter->lock);
+> >                 err = ovs_meter_cmd_reply_stats(reply, meter_id, old_meter);
+> >                 WARN_ON(err);
+> >                 spin_unlock_bh(&old_meter->lock);
+> > -               detach_meter(old_meter);
+> > +               detach_meter(dp->meters, old_meter);
+> >         }
+> >         ovs_unlock();
+> >         ovs_meter_free(old_meter);
+> > @@ -452,7 +548,7 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
+> >         int i, band_exceeded_max = -1;
+> >         u32 band_exceeded_rate = 0;
+> >
+> > -       meter = lookup_meter(dp, meter_id);
+> > +       meter = lookup_meter(dp->meters, meter_id);
+> >         /* Do not drop the packet when there is no meter. */
+> >         if (!meter)
+> >                 return false;
+> > @@ -570,32 +666,44 @@ struct genl_family dp_meter_genl_family __ro_after_init = {
+> >
+> >  int ovs_meters_init(struct datapath *dp)
+> >  {
+> > -       int i;
+> > +       struct dp_meter_instance *ti;
+> > +       struct dp_meter_table *tbl;
+> >
+> > -       dp->meters = kmalloc_array(METER_HASH_BUCKETS,
+> > -                                  sizeof(struct hlist_head), GFP_KERNEL);
+> > +       tbl = kmalloc(sizeof(*tbl), GFP_KERNEL);
+> > +       if (!tbl)
+> > +               return -ENOMEM;
+> >
+> > -       if (!dp->meters)
+> > +       tbl->count = 0;
+> > +
+> > +       ti = dp_meter_instance_alloc(METER_HASH_BUCKETS);
+> > +       if (!ti) {
+> > +               kfree(tbl);
+> >                 return -ENOMEM;
+> > +       }
+> >
+> > -       for (i = 0; i < METER_HASH_BUCKETS; i++)
+> > -               INIT_HLIST_HEAD(&dp->meters[i]);
+> > +       rcu_assign_pointer(tbl->ti, ti);
+> > +       dp->meters = tbl;
+> >
+> >         return 0;
+> >  }
+> >
+> >  void ovs_meters_exit(struct datapath *dp)
+> >  {
+> > +       struct dp_meter_table *tbl = dp->meters;
+> > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
+> >         int i;
+> >
+> > -       for (i = 0; i < METER_HASH_BUCKETS; i++) {
+> > -               struct hlist_head *head = &dp->meters[i];
+> > +       for (i = 0; i < ti->n_buckets; i++) {
+> > +               struct hlist_head *head = &ti->buckets[i];
+> >                 struct dp_meter *meter;
+> >                 struct hlist_node *n;
+> >
+> > -               hlist_for_each_entry_safe(meter, n, head, dp_hash_node)
+> > -                       kfree(meter);
+> > +               hlist_for_each_entry_safe(meter, n, head,
+> > +                                         hash_node[ti->node_ver])
+> > +                       ovs_meter_free(meter);
+> >         }
+> >
+> > -       kfree(dp->meters);
+> > +       kvfree(ti->buckets);
+> > +       kfree(ti);
+> > +       kfree(tbl);
+> >  }
+> > diff --git a/net/openvswitch/meter.h b/net/openvswitch/meter.h
+> > index f645913870bd..bc84796d7d4d 100644
+> > --- a/net/openvswitch/meter.h
+> > +++ b/net/openvswitch/meter.h
+> > @@ -30,9 +30,7 @@ struct dp_meter_band {
+> >  struct dp_meter {
+> >         spinlock_t lock;    /* Per meter lock */
+> >         struct rcu_head rcu;
+> > -       struct hlist_node dp_hash_node; /*Element in datapath->meters
+> > -                                        * hash table.
+> > -                                        */
+> > +       struct hlist_node hash_node[2];
+> >         u32 id;
+> >         u16 kbps:1, keep_stats:1;
+> >         u16 n_bands;
+> > @@ -42,6 +40,19 @@ struct dp_meter {
+> >         struct dp_meter_band bands[];
+> >  };
+> >
+> > +struct dp_meter_instance {
+> > +       struct hlist_head *buckets;
+> > +       struct rcu_head rcu;
+> > +       u32 n_buckets;
+> > +       u32 hash_seed;
+> > +       u8 node_ver;
+> > +};
+> > +
+> > +struct dp_meter_table {
+> > +       struct dp_meter_instance __rcu *ti;
+> > +       u32 count;
+> > +};
+> > +
+> >  extern struct genl_family dp_meter_genl_family;
+> >  int ovs_meters_init(struct datapath *dp);
+> >  void ovs_meters_exit(struct datapath *dp);
+> > --
+> > 2.23.0
+> >
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 5990147c0..55cb5730b 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4040,54 +4040,55 @@ static void rtl8169_tx_timeout(struct net_device *dev, unsigned int txqueue)
- 	rtl_schedule_task(tp, RTL_FLAG_TASK_RESET_PENDING);
- }
- 
--static __le32 rtl8169_get_txd_opts1(u32 opts0, u32 len, unsigned int entry)
-+static int rtl8169_tx_map(struct rtl8169_private *tp, const u32 *opts, u32 len,
-+			  void *addr, unsigned int entry, bool desc_own)
- {
--	u32 status = opts0 | len;
-+	struct TxDesc *txd = tp->TxDescArray + entry;
-+	struct device *d = tp_to_dev(tp);
-+	dma_addr_t mapping;
-+	u32 opts1;
-+	int ret;
-+
-+	mapping = dma_map_single(d, addr, len, DMA_TO_DEVICE);
-+	ret = dma_mapping_error(d, mapping);
-+	if (unlikely(ret)) {
-+		if (net_ratelimit())
-+			netif_err(tp, drv, tp->dev, "Failed to map TX data!\n");
-+		return ret;
-+	}
- 
-+	txd->addr = cpu_to_le64(mapping);
-+	txd->opts2 = cpu_to_le32(opts[1]);
-+
-+	opts1 = opts[0] | len;
- 	if (entry == NUM_TX_DESC - 1)
--		status |= RingEnd;
-+		opts1 |= RingEnd;
-+	if (desc_own)
-+		opts1 |= DescOwn;
-+	txd->opts1 = cpu_to_le32(opts1);
-+
-+	tp->tx_skb[entry].len = len;
- 
--	return cpu_to_le32(status);
-+	return 0;
- }
- 
- static int rtl8169_xmit_frags(struct rtl8169_private *tp, struct sk_buff *skb,
--			      u32 *opts)
-+			      const u32 *opts, unsigned int entry)
- {
- 	struct skb_shared_info *info = skb_shinfo(skb);
--	unsigned int cur_frag, entry;
--	struct TxDesc *uninitialized_var(txd);
--	struct device *d = tp_to_dev(tp);
-+	unsigned int cur_frag;
- 
--	entry = tp->cur_tx;
- 	for (cur_frag = 0; cur_frag < info->nr_frags; cur_frag++) {
- 		const skb_frag_t *frag = info->frags + cur_frag;
--		dma_addr_t mapping;
--		u32 len;
--		void *addr;
-+		void *addr = skb_frag_address(frag);
-+		u32 len = skb_frag_size(frag);
- 
- 		entry = (entry + 1) % NUM_TX_DESC;
- 
--		txd = tp->TxDescArray + entry;
--		len = skb_frag_size(frag);
--		addr = skb_frag_address(frag);
--		mapping = dma_map_single(d, addr, len, DMA_TO_DEVICE);
--		if (unlikely(dma_mapping_error(d, mapping))) {
--			if (net_ratelimit())
--				netif_err(tp, drv, tp->dev,
--					  "Failed to map TX fragments DMA!\n");
-+		if (unlikely(rtl8169_tx_map(tp, opts, len, addr, entry, true)))
- 			goto err_out;
--		}
--
--		txd->opts1 = rtl8169_get_txd_opts1(opts[0], len, entry);
--		txd->opts2 = cpu_to_le32(opts[1]);
--		txd->addr = cpu_to_le64(mapping);
--
--		tp->tx_skb[entry].len = len;
- 	}
- 
--	tp->tx_skb[entry].skb = skb;
--	txd->opts1 |= cpu_to_le32(LastFrag);
--
- 	return 0;
- 
- err_out:
-@@ -4216,52 +4217,41 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
- 	unsigned int frags = skb_shinfo(skb)->nr_frags;
- 	struct rtl8169_private *tp = netdev_priv(dev);
- 	unsigned int entry = tp->cur_tx % NUM_TX_DESC;
--	struct TxDesc *txd = tp->TxDescArray + entry;
--	struct device *d = tp_to_dev(tp);
--	dma_addr_t mapping;
--	u32 opts[2], len;
--	bool stop_queue;
--	bool door_bell;
-+	struct TxDesc *txd_first, *txd_last;
-+	bool stop_queue, door_bell;
-+	u32 opts[2];
-+
-+	txd_first = tp->TxDescArray + entry;
- 
- 	if (unlikely(!rtl_tx_slots_avail(tp, frags))) {
- 		netif_err(tp, drv, dev, "BUG! Tx Ring full when queue awake!\n");
- 		goto err_stop_0;
- 	}
- 
--	if (unlikely(le32_to_cpu(txd->opts1) & DescOwn))
-+	if (unlikely(le32_to_cpu(txd_first->opts1) & DescOwn))
- 		goto err_stop_0;
- 
- 	opts[1] = rtl8169_tx_vlan_tag(skb);
--	opts[0] = DescOwn;
-+	opts[0] = 0;
- 
--	if (rtl_chip_supports_csum_v2(tp)) {
--		if (!rtl8169_tso_csum_v2(tp, skb, opts))
--			goto err_dma_0;
--	} else {
-+	if (!rtl_chip_supports_csum_v2(tp))
- 		rtl8169_tso_csum_v1(skb, opts);
--	}
--
--	len = skb_headlen(skb);
--	mapping = dma_map_single(d, skb->data, len, DMA_TO_DEVICE);
--	if (unlikely(dma_mapping_error(d, mapping))) {
--		if (net_ratelimit())
--			netif_err(tp, drv, dev, "Failed to map TX DMA!\n");
-+	else if (!rtl8169_tso_csum_v2(tp, skb, opts))
- 		goto err_dma_0;
--	}
- 
--	tp->tx_skb[entry].len = len;
--	txd->addr = cpu_to_le64(mapping);
-+	if (unlikely(rtl8169_tx_map(tp, opts, skb_headlen(skb), skb->data,
-+				    entry, false)))
-+		goto err_dma_0;
- 
--	if (!frags) {
--		opts[0] |= FirstFrag | LastFrag;
--		tp->tx_skb[entry].skb = skb;
--	} else {
--		if (rtl8169_xmit_frags(tp, skb, opts))
-+	if (frags) {
-+		if (rtl8169_xmit_frags(tp, skb, opts, entry))
- 			goto err_dma_1;
--		opts[0] |= FirstFrag;
-+		entry = (entry + frags) % NUM_TX_DESC;
- 	}
- 
--	txd->opts2 = cpu_to_le32(opts[1]);
-+	txd_last = tp->TxDescArray + entry;
-+	txd_last->opts1 |= cpu_to_le32(LastFrag);
-+	tp->tx_skb[entry].skb = skb;
- 
- 	skb_tx_timestamp(skb);
- 
-@@ -4270,7 +4260,7 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
- 
- 	door_bell = __netdev_sent_queue(dev, skb->len, netdev_xmit_more());
- 
--	txd->opts1 = rtl8169_get_txd_opts1(opts[0], len, entry);
-+	txd_first->opts1 |= cpu_to_le32(DescOwn | FirstFrag);
- 
- 	/* Force all memory writes to complete before notifying device */
- 	wmb();
+
+
 -- 
-2.26.0
-
+Best regards, Tonghao
