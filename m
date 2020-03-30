@@ -2,83 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFDBD19874E
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 00:23:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B75FC198798
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 00:50:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729437AbgC3WXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 18:23:07 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:38970 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729035AbgC3WXH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 18:23:07 -0400
-Received: by mail-pg1-f195.google.com with SMTP id g32so3318873pgb.6;
-        Mon, 30 Mar 2020 15:23:06 -0700 (PDT)
+        id S1729129AbgC3Wuk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 18:50:40 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:39978 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728876AbgC3Wuk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 18:50:40 -0400
+Received: by mail-lf1-f68.google.com with SMTP id j17so15632683lfe.7;
+        Mon, 30 Mar 2020 15:50:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=BiKAxLOqqm8kt9G/Q7jIDlXTD9R49LyBGIvlpIHtGUk=;
-        b=n1H6m0IcP/NRpqJoT65TmwsjMnLZ6NNhmu9wgguYg1vsX177vLbDMBssdAq95d6QKD
-         if61S88jSC/e+HyL2hg3ikxtDYOfm8JdeDu2Rpsvg8KbYQ51aK6Ecq78Pt/v4n8t3ObB
-         sJgSWAoOjN/rzGZBQkLr+SGu2aZpEV/rUPBO3xTgD4aakVneP+syTRvagyAwnUoRCbA5
-         klRu7gNiPqu3M0k2zamgqnVBzirbjMtAdlD0foYLChZyI7pIT4uF4/eSHK+RgyY2rRAQ
-         5S/VTxRw89DFXq2p5xz0tf/iBPNT/6ABDyZ++/AJ1rdjxIAmipS5//Kv7KU6SVsnqc4q
-         tsJA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sPkC0XX2iBY0yYjGTnxVOP9pK5BC05S2dgxzKmJdJTo=;
+        b=pXuibOOfcPQhiq1oPWkObgd3ZMnVXAQW8uQSnrPw/JWoHBlyBLNDK6gaXLx30b708/
+         cfC3n8Oda3JFxmGQZTecF3aawPmu41X85VwPl0KlzOv8x8/acv6ShqnhlFsaVVprGdWl
+         4VD5YXEwqzJdokpg/gVbawTJxuINwLgu8/tTRqGjBqNbj5gSSZ2FSq00S4lf8SnvCKJ7
+         n3OGtaczbWFBg5+5AuhmlosmRf2JWpL+Ul4did/NMA547Zvcel78l9V6m2DhW9WsQg9D
+         5KHThkZ37OUJmwBiCzMXHvtA+7Qh3S1RWB77kRx2/1+gr5PZ2Y8iJkSoBnfn7/CJivr3
+         upwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BiKAxLOqqm8kt9G/Q7jIDlXTD9R49LyBGIvlpIHtGUk=;
-        b=pHIsTrNWybbeFuT9Hc/cOXLUM6JPdwugMtR5Gar3EAGxSB1w3HASwQhLaBIzqOjK4M
-         z0rbVyW0RM5+uqbkW6iXQQWSg4WEWr9vdaWOn6izSirRsX9xqOBQ/g+gM7MrX/O6tHCh
-         9qaf81W5zN0qlKfkeZ/MIRR2NWatDrgTvuAFMzBje7BsDdBQR9xxxCM3oLVnjM7jYWeH
-         FWafkU/2skdrvjMfeB4qSKiOwYYnwjxX/cchSfQ7Grz6WiHFN6qi9yKmq0TG5ZGK1jog
-         6Eerk6Y9DKAV0jmWcz0S02DVwHhIA9QrVwdl2J1Fnad8T3VvOhB8YstWeT/AfwyQgdzP
-         Fv7A==
-X-Gm-Message-State: ANhLgQ0HRU18q+nPTKv3mUx73gbGr5fsroGKK3VPRFa+jq0HvEGvV6Pp
-        Ho+qoSyTXl3wWMzzJqHQRDY=
-X-Google-Smtp-Source: ADFU+vulXzuZAYYXjvBldJV1/tgm31psAgASpwxS3ocxQk6XszHbfK4Ta5cm5Z+Vy0xkQq2ywAG7nw==
-X-Received: by 2002:a63:8148:: with SMTP id t69mr14370684pgd.187.1585606985764;
-        Mon, 30 Mar 2020 15:23:05 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:3558])
-        by smtp.gmail.com with ESMTPSA id q15sm9480935pfn.89.2020.03.30.15.23.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Mar 2020 15:23:04 -0700 (PDT)
-Date:   Mon, 30 Mar 2020 15:23:02 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     ecree@solarflare.com, yhs@fb.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [bpf-next PATCH v2 2/7] bpf: verifier, do explicit ALU32 bounds
- tracking
-Message-ID: <20200330222302.6fhtedyzxfaqmthl@ast-mbp.dhcp.thefacebook.com>
-References: <158560409224.10843.3588655801186916301.stgit@john-Precision-5820-Tower>
- <158560419880.10843.11448220440809118343.stgit@john-Precision-5820-Tower>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sPkC0XX2iBY0yYjGTnxVOP9pK5BC05S2dgxzKmJdJTo=;
+        b=DzOfMsq87l28Xj5nhoUtNYIwZwf0L0dcMOpF8XmdrjyHFmnkNpvnk5i5nNbn5seacl
+         VgLLv23R4tZqevRHAOcSZiNfYBfeeQDeq7wU5LV2QjfUnvQk5Acuj+MA/+3gyY0/oorm
+         QD+APhIKHWQmPh09ZOMV52G8SHljKdk53vU4azZIL7mp33HrkBUopDBvJwUAMbIzavAD
+         M+Jt4h7NsRC8O3BrhFZCcOgZ46DUIo1ak3oupOxR821zorXFkop7hmVW5C20hU2MJuw7
+         PfmtiLW4UQeF2PwCQh0/C6A/KICaMIFSvFFRe+TsVH1bLCK+XWDHIz6llEBfGIU5wXex
+         bhpw==
+X-Gm-Message-State: AGi0PuZwvqWexOEMF6KQSCShV3IcEN+KT5c+tEHtQo0M9+ASZE6Psnvl
+        FObSijlEjuI2kO5MDHtcW+fPSGgQQ4x+fLocoFo=
+X-Google-Smtp-Source: APiQypKxUPGWoBW3ts7L57YJ6uczfJxRayL8vb/b8LSxkZUaCAugjMtkhd1CegqX9+BxTWZHzjE0lTJr3FBF3lGbolQ=
+X-Received: by 2002:ac2:418b:: with SMTP id z11mr9432593lfh.134.1585608635677;
+ Mon, 30 Mar 2020 15:50:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <158560419880.10843.11448220440809118343.stgit@john-Precision-5820-Tower>
+References: <20200330030001.2312810-1-andriin@fb.com> <c9f52288-5ea8-a117-8a67-84ba48374d3a@gmail.com>
+ <CAEf4BzZpCOCi1QfL0peBRjAOkXRwGEi_DAW4z34Mf3Tv_sbRFw@mail.gmail.com> <662788f9-0a53-72d4-2675-daec893b5b81@gmail.com>
+In-Reply-To: <662788f9-0a53-72d4-2675-daec893b5b81@gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 30 Mar 2020 15:50:24 -0700
+Message-ID: <CAADnVQK8oMZehQVt34=5zgN12VBc2940AWJJK2Ft0cbOi1jDhQ@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 0/4] Add support for cgroup bpf_link
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrey Ignatov <rdna@fb.com>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 02:36:39PM -0700, John Fastabend wrote:
-> +static void __scalar64_min_max_lsh(struct bpf_reg_state *dst_reg,
-> +				   u64 umin_val, u64 umax_val)
-> +{
-> +	/* Special case <<32 because it is a common compiler pattern to zero
-> +	 * upper bits by doing <<32 s>>32. In this case if 32bit bounds are
-> +	 * positive we know this shift will also be positive so we can track
-> +	 * bounds correctly. Otherwise we lose all sign bit information except
-> +	 * what we can pick up from var_off. Perhaps we can generalize this
-> +	 * later to shifts of any length.
-> +	 */
-> +	if (umin_val == 32 && umax_val == 32 && dst_reg->s32_max_value >= 0)
-> +		dst_reg->smax_value = (s64)dst_reg->s32_max_value << 32;
-> +	else
-> +		dst_reg->smax_value = S64_MAX;
+On Mon, Mar 30, 2020 at 1:46 PM David Ahern <dsahern@gmail.com> wrote:
+> release. As it stands it is a half-baked feature.
 
-I fixed up above comment to say 'sign extend' instead of 'zero upper bit' and
-applied.
-Thanks a ton for the awesome work.
+speaking of half-baked.
+I think as it stands (even without link_query) it's already extremely
+useful addition and doesn't take anything away from existing cgroup-bpf
+and doesn't hinder observability. 'bpftool cgroup' works just fine.
+So I've applied the set.
+
+Even if it was half-baked it would still be applie-able.
+Many features are developed over the course of multiple
+kernel releases. Example: your nexthops, mptcp, bpf-lsm.
