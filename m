@@ -2,106 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5A70197638
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 10:11:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C52E719766E
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 10:28:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729580AbgC3ILK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 04:11:10 -0400
-Received: from forwardcorp1j.mail.yandex.net ([5.45.199.163]:53740 "EHLO
-        forwardcorp1j.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726017AbgC3ILK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 04:11:10 -0400
-Received: from mxbackcorp1o.mail.yandex.net (mxbackcorp1o.mail.yandex.net [IPv6:2a02:6b8:0:1a2d::301])
-        by forwardcorp1j.mail.yandex.net (Yandex) with ESMTP id CFD802E14E0;
-        Mon, 30 Mar 2020 11:11:06 +0300 (MSK)
-Received: from sas1-9998cec34266.qloud-c.yandex.net (sas1-9998cec34266.qloud-c.yandex.net [2a02:6b8:c14:3a0e:0:640:9998:cec3])
-        by mxbackcorp1o.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id Wm9i86ubhK-B618eqSt;
-        Mon, 30 Mar 2020 11:11:06 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1585555866; bh=qRMAKErtkt6w2xk6FAv9EehN1RiWmkPG6l7pFPCwH9Y=;
-        h=Message-ID:Subject:To:From:Date:Cc;
-        b=TFCYeGs5ASRBqz8+QWhYAbXGt5E3IkbIMZSOJ0ZdrU1bspuI5MNiV0d3ntXOtXdyO
-         lpQIfhQckUEsN8eHd3lc2Oh8i8pkXTEpY5K4ISVqt6A6dwemILDmzO6gwHrpwhbZeJ
-         GmfTHcbMGkDT83WfoKEiXulanXA+T/HTUyX5H9B4=
-Authentication-Results: mxbackcorp1o.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from unknown (unknown [2a02:6b8:b080:8418::1:9])
-        by sas1-9998cec34266.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id YdzadJbXft-B6WSUWGG;
-        Mon, 30 Mar 2020 11:11:06 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-Date:   Mon, 30 Mar 2020 11:11:01 +0300
-From:   Dmitry Yakunin <zeil@yandex-team.ru>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     khlebnikov@yandex-team.ru
-Subject: [PATCH net] inet_diag: add cgroup id attribute
-Message-ID: <20200330081101.GA16030@yandex-team.ru>
+        id S1729642AbgC3I2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 04:28:35 -0400
+Received: from lelv0142.ext.ti.com ([198.47.23.249]:45284 "EHLO
+        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729594AbgC3I2f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 04:28:35 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 02U8SERF110283;
+        Mon, 30 Mar 2020 03:28:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1585556894;
+        bh=1YfcS38BPhZe/p5W8i5G+38GAG3OkNcS1KKAWP4M02Q=;
+        h=Subject:From:To:CC:References:Date:In-Reply-To;
+        b=Dx268NtKt8MNlm4k8PX37tpHEKSLzyMAmWYnugW6ihPQBOfctEiBLCWkYklM6/8/h
+         DWwzVspu4bdTCGIzHkXMNM5E2n3h3k/azSnILrmah1lW3fxAB8dqNUonZm4d1k5FmW
+         JyGPMDgUB8xzEQNPvm3067KxHIEVykRbugwFnZT4=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 02U8SE8F019493
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 30 Mar 2020 03:28:14 -0500
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Mon, 30
+ Mar 2020 03:28:14 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Mon, 30 Mar 2020 03:28:14 -0500
+Received: from [10.24.69.198] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 02U8S902055047;
+        Mon, 30 Mar 2020 03:28:10 -0500
+Subject: Re: [PATCH net-next v6 00/11] net: ethernet: ti: add networking
+ support for k3 am65x/j721e soc
+From:   Sekhar Nori <nsekhar@ti.com>
+To:     Tero Kristo <t-kristo@ti.com>, Vladimir Oltean <olteanv@gmail.com>,
+        David Miller <davem@davemloft.net>
+CC:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        <peter.ujfalusi@ti.com>, Rob Herring <robh@kernel.org>,
+        netdev <netdev@vger.kernel.org>, <rogerq@ti.com>,
+        <devicetree@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        Murali Karicheri <m-karicheri2@ti.com>, <kishon@ti.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-arm-kernel@lists.infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>
+References: <20200323225254.12759-1-grygorii.strashko@ti.com>
+ <20200326.200136.1601946994817303021.davem@davemloft.net>
+ <CA+h21hr8G24ddEgAbU_TfoNAe0fqUJ0_Uyp54Gxn5cvPrM6u9g@mail.gmail.com>
+ <8f5e981a-193c-0c1e-1e0a-b0380b2e6a9c@ti.com>
+ <2d305c89-601c-5dee-06be-30257a26a392@ti.com>
+Message-ID: <cac3d501-cc36-73c5-eea8-aaa2d10105b0@ti.com>
+Date:   Mon, 30 Mar 2020 13:58:08 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <2d305c89-601c-5dee-06be-30257a26a392@ti.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds cgroup v2 id to common inet diag message attributes.
-This allows investigate sockets on per cgroup basis when
-net_cls/net_prio cgroup not used.
+On 30/03/20 1:06 PM, Sekhar Nori wrote:
+> On 30/03/20 12:45 PM, Tero Kristo wrote:
+>> On 28/03/2020 03:53, Vladimir Oltean wrote:
+>>> Hi David,
+>>>
+>>> On Fri, 27 Mar 2020 at 05:02, David Miller <davem@davemloft.net> wrote:
+>>>>
+>>>> From: Grygorii Strashko <grygorii.strashko@ti.com>
+>>>> Date: Tue, 24 Mar 2020 00:52:43 +0200
+>>>>
+>>>>> This v6 series adds basic networking support support TI K3
+>>>>> AM654x/J721E SoC which
+>>>>> have integrated Gigabit Ethernet MAC (Media Access Controller) into
+>>>>> device MCU
+>>>>> domain and named MCU_CPSW0 (CPSW2G NUSS).
+>>>>   ...
+>>>>
+>>>> Series applied, thank you.
+>>>
+>>> The build is now broken on net-next:
+>>>
+>>> arch/arm64/boot/dts/ti/k3-j721e-mcu-wakeup.dtsi:303.23-309.6: ERROR
+>>> (phandle_references):
+>>> /interconnect@100000/interconnect@28380000/ethernet@46000000/ethernet-ports/port@1:
+>>>
+>>> Reference to non-existent node
+>>> or label "mcu_conf"
+>>>
+>>>    also defined at
+>>> arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts:471.13-474.3
+>>> arch/arm64/boot/dts/ti/k3-j721e-mcu-wakeup.dtsi:303.23-309.6: ERROR
+>>> (phandle_references):
+>>> /interconnect@100000/interconnect@28380000/ethernet@46000000/ethernet-ports/port@1:
+>>>
+>>> Reference to non-existent node
+>>> or label "phy_gmii_sel"
+>>>
+>>>    also defined at
+>>> arch/arm64/boot/dts/ti/k3-j721e-common-proc-board.dts:471.13-474.3
+>>>
+>>> As Grygorii said:
+>>>
+>>> Patches 1-6 are intended for netdev, Patches 7-11 are intended for K3
+>>> Platform
+>>> tree and provided here for testing purposes.
+>>
+>> Yeah, I think you are missing a dependency that was applied via the K3
+>> branch earlier. They are in linux-next now, but I am not so sure how
+>> much that is going to help you.
+>>
+>> You could just drop the DT patches from this merge and let me apply them
+>> via the platform branch.
+> 
+> One other option would be that Dave merges your K3 tag which was sent to
+> ARM SoC to net-next. Its based on v5.6-rc1, has no other dependencies,
+> is already in linux-next, should be immutable and safe to merge. This
+> has the advantage that no rebase is necessary on net-next.
+> 
+> git://git.kernel.org/pub/scm/linux/kernel/git/kristo/linux
+> tags/ti-k3-soc-for-v5.7
 
-Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
-Reviewed-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
----
- include/linux/inet_diag.h      | 6 +++++-
- include/uapi/linux/inet_diag.h | 1 +
- net/ipv4/inet_diag.c           | 7 +++++++
- 3 files changed, 13 insertions(+), 1 deletion(-)
+FWIW, I was able to reproduce the build failure reported by Vladimir on
+net-next, merge Tero's tag (above) cleanly into it, and see that ARM64
+defconfig build on net-next succeeds after the merge.
 
-diff --git a/include/linux/inet_diag.h b/include/linux/inet_diag.h
-index c91cf2d..8bc5e7d 100644
---- a/include/linux/inet_diag.h
-+++ b/include/linux/inet_diag.h
-@@ -66,7 +66,11 @@ static inline size_t inet_diag_msg_attrs_size(void)
- 		+ nla_total_size(1)  /* INET_DIAG_SKV6ONLY */
- #endif
- 		+ nla_total_size(4)  /* INET_DIAG_MARK */
--		+ nla_total_size(4); /* INET_DIAG_CLASS_ID */
-+		+ nla_total_size(4)  /* INET_DIAG_CLASS_ID */
-+#ifdef CONFIG_CGROUPS
-+		+ nla_total_size(8)  /* INET_DIAG_CGROUP_ID */
-+#endif
-+		;
- }
- int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
- 			     struct inet_diag_msg *r, int ext,
-diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
-index a1ff345..dc87ad6 100644
---- a/include/uapi/linux/inet_diag.h
-+++ b/include/uapi/linux/inet_diag.h
-@@ -154,6 +154,7 @@ enum {
- 	INET_DIAG_CLASS_ID,	/* request as INET_DIAG_TCLASS */
- 	INET_DIAG_MD5SIG,
- 	INET_DIAG_ULP_INFO,
-+	INET_DIAG_CGROUP_ID,
- 	__INET_DIAG_MAX,
- };
- 
-diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-index 8c83775..ba0bb14 100644
---- a/net/ipv4/inet_diag.c
-+++ b/net/ipv4/inet_diag.c
-@@ -161,6 +161,13 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
- 			goto errout;
- 	}
- 
-+#ifdef CONFIG_CGROUPS
-+	if (nla_put_u64_64bit(skb, INET_DIAG_CGROUP_ID,
-+			      cgroup_id(sock_cgroup_ptr(&sk->sk_cgrp_data)),
-+			      INET_DIAG_PAD))
-+		goto errout;
-+#endif
-+
- 	r->idiag_uid = from_kuid_munged(user_ns, sock_i_uid(sk));
- 	r->idiag_inode = sock_i_ino(sk);
- 
--- 
-2.7.4
-
+Thanks,
+Sekhar
