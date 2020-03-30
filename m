@@ -2,173 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF44C198489
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 21:36:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1B0A1984A4
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 21:39:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728465AbgC3Tg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 15:36:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34516 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726981AbgC3Tg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 15:36:27 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B7C9D20714;
-        Mon, 30 Mar 2020 19:36:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585596985;
-        bh=LZ5q7SHOhG/rtHYkbrNjLmyajlEHbW9RQvUH67ItjTs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=k+K9tLnen7+Sk+/zW7F7hWKYXgztxgTNXYYhURYoWiVFcvk9h2MDXJPqoS//PGnpo
-         ygJbwqnOFKb6Vbmq/u+nPQYTPIP4N3rzPllJtMIclBK1P62qMQj98nGN8JW/mMq8b3
-         GU1zyAEKgKmEl60nqqzGYT6dD89KOlfiUzfhDVjo=
-Date:   Mon, 30 Mar 2020 12:36:23 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Yuval Avnery <yuvalav@mellanox.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Aya Levin <ayal@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Yevgeny Kliteynik <kliteyn@mellanox.com>,
-        "dchickles@marvell.com" <dchickles@marvell.com>,
-        "sburla@marvell.com" <sburla@marvell.com>,
-        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
-        "snelson@pensando.io" <snelson@pensando.io>,
-        "drivers@pensando.io" <drivers@pensando.io>,
-        "aelior@marvell.com" <aelior@marvell.com>,
-        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>,
-        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
-        Alex Vesker <valex@mellanox.com>,
-        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
-        "lihong.yang@intel.com" <lihong.yang@intel.com>,
-        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>
-Subject: Re: [RFC] current devlink extension plan for NICs
-Message-ID: <20200330123623.634739de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <35e8353f-2bfc-5685-a60e-030cd2d2dd24@mellanox.com>
-References: <20200319192719.GD11304@nanopsycho.orion>
-        <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
-        <20200320073555.GE11304@nanopsycho.orion>
-        <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
-        <20200321093525.GJ11304@nanopsycho.orion>
-        <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200326144709.GW11304@nanopsycho.orion>
-        <20200326145146.GX11304@nanopsycho.orion>
-        <20200326133001.1b2694c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20200327074736.GJ11304@nanopsycho.orion>
-        <20200327093829.76140a98@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <35e8353f-2bfc-5685-a60e-030cd2d2dd24@mellanox.com>
+        id S1728334AbgC3TjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 15:39:09 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:59111 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727714AbgC3TjJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 15:39:09 -0400
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 95F50580542;
+        Mon, 30 Mar 2020 15:39:07 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Mon, 30 Mar 2020 15:39:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=EiveXQopLl4q1QgUC
+        9JozplGpiJrbtzxwqslzTdeiZ0=; b=gXfi98MaH8X+6p6BJVnSFGSGb/dQOn/sS
+        BIqp3FyBG22BZ1lWggawV2sdUG3FMwXyGLcOXCimEBrtVP2tdKY8dRSmVbSId6vu
+        zS687UsezH4Zmqh1wudUnBMSoCjh20GGrwc8tOPW/6VWoBB3rot1v87nUKCDNlxl
+        olrhGshYF0M1+BtK+YmQ5s2uly6553TSXwb18mBMxEIL6B47WORKlNYutvY937B1
+        Y+aGYg6RB88wNCIhTW9y5lQaKbzyqyxkfzZ3/qvxdceCwxuzUjDKq3e8gsIE+xNe
+        lo9LoyIIc5hdxZ8yxA8bVEFKeiJqq68yArYKzrkAzp75DKKbY3+cQ==
+X-ME-Sender: <xms:2UqCXiqjnaW8BcR7LOKwxw8Sr9ZGWtNYqZJMbac02ozTlI4CdJ0WxQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrudeihedgudeflecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertd
+    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucfkphepjeelrddukedurddufedvrdduledunecuvehluhhsthgvrh
+    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgt
+    hhdrohhrgh
+X-ME-Proxy: <xmx:2UqCXsJ-PTBXv1f8SASqE7CS2_uUKZEBSZxe18DKivG5eflQ9ZU4jg>
+    <xmx:2UqCXuOHvTCX0vv9Vi9X5fgPymqeMb3IKMdfMKbSchDhrlOmTZdL9g>
+    <xmx:2UqCXq3T4aAYxzMLHoE1Kxdzwu-Qarawm5IX8K25sMEkBMy47_39CQ>
+    <xmx:20qCXmI0bfIbM3IOEJM9ZecaYLK4WZrhYmROFosFrXrNuT2tz9HNzg>
+Received: from splinter.mtl.com (bzq-79-181-132-191.red.bezeqint.net [79.181.132.191])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3E54A306CA4E;
+        Mon, 30 Mar 2020 15:39:03 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jiri@mellanox.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next v3 00/15] Add packet trap policers support
+Date:   Mon, 30 Mar 2020 22:38:17 +0300
+Message-Id: <20200330193832.2359876-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Mar 2020 07:48:39 +0000 Parav Pandit wrote:
-> On 3/27/2020 10:08 PM, Jakub Kicinski wrote:
-> > On Fri, 27 Mar 2020 08:47:36 +0100 Jiri Pirko wrote:  
-> >>> So the queues, interrupts, and other resources are also part 
-> >>> of the slice then?    
-> >>
-> >> Yep, that seems to make sense.
-> >>  
-> >>> How do slice parameters like rate apply to NVMe?    
-> >>
-> >> Not really.
-> >>  
-> >>> Are ports always ethernet? and slices also cover endpoints with
-> >>> transport stack offloaded to the NIC?    
-> >>
-> >> devlink_port now can be either "ethernet" or "infiniband". Perhaps,
-> >> there can be port type "nve" which would contain only some of the
-> >> config options and would not have a representor "netdev/ibdev" linked.
-> >> I don't know.  
-> > 
-> > I honestly find it hard to understand what that slice abstraction is,
-> > and which things belong to slices and which to PCI ports (or why we even
-> > have them).
-> >   
-> In an alternative, devlink port can be overloaded/retrofit to do all
-> things that slice desires to do.
+From: Ido Schimmel <idosch@mellanox.com>
 
-I wouldn't say retrofitted, in my mind port has always been a port of 
-a device.
+Background
+==========
 
-Jiri explained to me that to Mellanox port is port of a eswitch, not
-port of a device. While to me (/Netronome) it was any way to send or
-receive data to/from the device.
+Devices capable of offloading the kernel's datapath and perform
+functions such as bridging and routing must also be able to send (trap)
+specific packets to the kernel (i.e., the CPU) for processing.
 
-Now I understand why to you nvme doesn't fit the port abstraction.
+For example, a device acting as a multicast-aware bridge must be able to
+trap IGMP membership reports to the kernel for processing by the bridge
+module.
 
-> For that matter representor netdev can be overloaded/extended to do what
-> slice desire to do (instead of devlink port).
+Motivation
+==========
 
-Right, in my mental model representor _is_ a port of the eswitch, so
-repr would not make sense to me.
+In most cases, the underlying device is capable of handling packet rates
+that are several orders of magnitude higher compared to those that can
+be handled by the CPU.
 
-> Can you please explain why you think devlink port should be overloaded
-> instead of netdev or any other kernel object?
-> Do you have an example of such overloaded functionality of a kernel object?
-> Like why macvlan and vlan drivers are not combined to in single driver
-> object? Why teaming and bonding driver are combined in single driver
-> object?...
+Therefore, in order to prevent the underlying device from overwhelming
+the CPU, devices usually include packet trap policers that are able to
+police the trapped packets to rates that can be handled by the CPU.
 
-I think it's not overloading, but the fact that we started with
-different definitions. We (me and you) tried adding the PCIe ports
-around the same time, I guess we should have dug into the details
-right away.
+Proposed solution
+=================
 
-> User should be able to create, configure, deploy, delete a 'portion of
-> the device' with/without eswitch.
+This patch set allows capable device drivers to register their supported
+packet trap policers with devlink. User space can then tune the
+parameters of these policers (currently, rate and burst size) and read
+from the device the number of packets that were dropped by the policer,
+if supported.
 
-Right, to me ports are of the device, not eswitch.
+These packet trap policers can then be bound to existing packet trap
+groups, which are used to aggregate logically related packet traps. As a
+result, trapped packets are policed to rates that can be handled the
+host CPU.
 
-> We shouldn't be starting with restrictive/narrow view of devlink port.
-> 
-> Internally with Jiri and others, we also explored the possibility to
-> have 'mgmtvf', 'mgmtpf',  'mgmtsf' port flavours by overloading port to
-> do all things as that of slice.
-> It wasn't elegant enough. Why not create right object?
+Example usage
+=============
 
-We just need clear definitions of what goes where. We already have
-params etc. hanging off the ports, including irq/sriov stuff. But in
-slice model those don't belong there :S
+Instantiate netdevsim:
+# echo "10 1" > /sys/bus/netdevsim/new_device
 
-In fact very little belongs to the port in that model. So why have
-PCI ports in the first place?
+Dump available packet trap policers:
+# devlink trap policer show
+netdevsim/netdevsim10:
+  policer 1 rate 1000 burst 128
+  policer 2 rate 2000 burst 256
+  policer 3 rate 3000 burst 512
 
-> Additionally devlink port object doesn't go through the same state
-> machine as that what slice has to go through.
-> So its weird that some devlink port has state machine and some doesn't.
+Change the parameters of a packet trap policer:
+# devlink trap policer set netdevsim/netdevsim10 policer 3 rate 100 burst 16
 
-You mean for VFs? I think you can add the states to the API.
+Bind a packet trap policer to a packet trap group:
+# devlink trap group set netdevsim/netdevsim10 group acl_drops policer 3
 
-> > With devices like NFP and Mellanox CX3 which have one PCI PF maybe it
-> > would have made sense to have a slice that covers multiple ports, but
-> > it seems the proposal is to have port to slice mapping be 1:1. And rate
-> > in those devices should still be per port not per slice.
-> >   
-> Slice can have multiple ports. slice object doesn't restrict it. User
-> can always split the port for a device, if device support it.
+Dump parameters and statistics of a packet trap policer:
+# devlink -s trap policer show netdevsim/netdevsim10 policer 3
+netdevsim/netdevsim10:
+  policer 3 rate 100 burst 16
+    stats:
+        rx:
+          dropped 92
 
-Okay, so slices are not 1:1 with ports, then?  Is it any:any?
+Unbind a packet trap policer from a packet trap group:
+# devlink trap group set netdevsim/netdevsim10 group acl_drops nopolicer
 
-> > But this keeps coming back, and since you guys are doing all the work,
-> > if you really really need it..
+Patch set overview
+==================
+
+Patch #1 adds the core infrastructure in devlink which allows capable
+device drivers to register their supported packet trap policers with
+devlink.
+
+Patch #2 extends the existing devlink-trap documentation.
+
+Patch #3 extends netdevsim to register a few dummy packet trap policers
+with devlink. Used later on to selftests the core infrastructure.
+
+Patches #4-#5 adds infrastructure in devlink to allow binding of packet
+trap policers to packet trap groups.
+
+Patch #6 extends netdevsim to allow such binding.
+
+Patch #7 adds a selftest over netdevsim that verifies the core
+devlink-trap policers functionality.
+
+Patches #8-#14 gradually add devlink-trap policers support in mlxsw.
+
+Patch #15 adds a selftest over mlxsw. All registered packet trap
+policers are verified to handle the configured rate and burst size.
+
+Future plans
+============
+
+* Allow changing default association between packet traps and packet
+  trap groups
+* Add more packet traps. For example, for control packets (e.g., IGMP)
+
+v3:
+* Rebase
+
+v2 (address comments from Jiri and Jakub):
+* Patch #1: Add 'strict_start_type' in devlink policy
+* Patch #1: Have device drivers provide max/min rate/burst size for each
+  policer. Use them to check validity of user provided parameters
+* Patch #3: Remove check about burst size being a power of 2 and instead
+  add a debugfs knob to fail the operation
+* Patch #3: Provide max/min rate/burst size when registering policers
+  and remove the validity checks from nsim_dev_devlink_trap_policer_set()
+* Patch #5: Check for presence of 'DEVLINK_ATTR_TRAP_POLICER_ID' in
+  devlink_trap_group_set() and bail if not present
+* Patch #5: Add extack error message in case trap group was partially
+  modified
+* Patch #7: Add test case with new 'fail_trap_policer_set' knob
+* Patch #7: Add test case for partially modified trap group
+* Patch #10: Provide max/min rate/burst size when registering policers
+* Patch #11: Remove the max/min validity checks from
+  __mlxsw_sp_trap_policer_set()
+
+Ido Schimmel (15):
+  devlink: Add packet trap policers support
+  Documentation: Add description of packet trap policers
+  netdevsim: Add devlink-trap policer support
+  devlink: Add packet trap group parameters support
+  devlink: Allow setting of packet trap group parameters
+  netdevsim: Add support for setting of packet trap group parameters
+  selftests: netdevsim: Add test cases for devlink-trap policers
+  mlxsw: reg: Extend QPCR register
+  mlxsw: spectrum: Track used packet trap policer IDs
+  mlxsw: spectrum_trap: Prepare policers for registration with devlink
+  mlxsw: spectrum_trap: Add devlink-trap policer support
+  mlxsw: spectrum_trap: Do not initialize dedicated discard policer
+  mlxsw: spectrum_trap: Switch to use correct packet trap group
+  mlxsw: spectrum_trap: Add support for setting of packet trap group
+    parameters
+  selftests: mlxsw: Add test cases for devlink-trap policers
+
+ .../networking/devlink/devlink-trap.rst       |  26 +
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  71 +++
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  14 +
+ drivers/net/ethernet/mellanox/mlxsw/reg.h     |  19 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    |  50 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  17 +
+ .../ethernet/mellanox/mlxsw/spectrum_trap.c   | 336 ++++++++++--
+ .../ethernet/mellanox/mlxsw/spectrum_trap.h   |  24 +
+ drivers/net/netdevsim/dev.c                   | 110 +++-
+ drivers/net/netdevsim/netdevsim.h             |   3 +
+ include/net/devlink.h                         |  90 ++-
+ include/uapi/linux/devlink.h                  |  11 +
+ net/core/devlink.c                            | 515 +++++++++++++++++-
+ .../drivers/net/mlxsw/devlink_trap_policer.sh | 384 +++++++++++++
+ .../drivers/net/netdevsim/devlink_trap.sh     | 116 ++++
+ .../selftests/net/forwarding/devlink_lib.sh   |  43 ++
+ 16 files changed, 1778 insertions(+), 51 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlxsw/spectrum_trap.h
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/devlink_trap_policer.sh
+
+-- 
+2.24.1
+
