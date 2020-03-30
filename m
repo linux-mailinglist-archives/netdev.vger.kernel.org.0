@@ -2,106 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30683197AF4
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 13:38:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E369E197BA4
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 14:16:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729744AbgC3LiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 07:38:11 -0400
-Received: from forwardcorp1o.mail.yandex.net ([95.108.205.193]:56286 "EHLO
-        forwardcorp1o.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729494AbgC3LiL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 07:38:11 -0400
-Received: from mxbackcorp1g.mail.yandex.net (mxbackcorp1g.mail.yandex.net [IPv6:2a02:6b8:0:1402::301])
-        by forwardcorp1o.mail.yandex.net (Yandex) with ESMTP id 43EC02E0ACC;
-        Mon, 30 Mar 2020 14:38:08 +0300 (MSK)
-Received: from sas2-32987e004045.qloud-c.yandex.net (sas2-32987e004045.qloud-c.yandex.net [2a02:6b8:c08:b889:0:640:3298:7e00])
-        by mxbackcorp1g.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id BnTteJOtrH-c7uWUvWZ;
-        Mon, 30 Mar 2020 14:38:08 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1585568288; bh=sQAkZ4Uo115HMFbpbbPUykkBoIYJtF4Ly0qbX/dsoqg=;
-        h=Message-ID:Subject:To:From:Date:Cc;
-        b=vwnJWlIx8fauBwA0V0kzxOmVJaK6lAC/xJsfwHOrfCvZrGKxJ4iD/avVaQAR4mM0j
-         M+AvIRWM2nCOS73R2h2W02E9PHUFMzDm5QxglkGegI0asVepO3tjHwsU/d/N+RpjOC
-         eAPREGiKuE+iH1wNjlle0CWlQRdhFUgNyCH62P3s=
-Authentication-Results: mxbackcorp1g.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from unknown (unknown [2a02:6b8:b080:8707::1:6])
-        by sas2-32987e004045.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id 0VSYOpt6G5-c7X4qbqM;
-        Mon, 30 Mar 2020 14:38:07 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-Date:   Mon, 30 Mar 2020 14:38:03 +0300
-From:   Dmitry Yakunin <zeil@yandex-team.ru>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     khlebnikov@yandex-team.ru
-Subject: [PATCH v2 net] inet_diag: add cgroup id attribute
-Message-ID: <20200330113803.GA19490@yandex-team.ru>
+        id S1729913AbgC3MQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 08:16:16 -0400
+Received: from mail-ua1-f68.google.com ([209.85.222.68]:40877 "EHLO
+        mail-ua1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729705AbgC3MQP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 08:16:15 -0400
+Received: by mail-ua1-f68.google.com with SMTP id t20so6150150uao.7
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 05:16:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=48W+1OvErjubjjK762DK/7nORfuohREXCfJclOEzgT0=;
+        b=EXgrp/GvML7F2lCxhwp1Y4nsu614aVAfA5ToezVR638S0tDL5N6Ht1pieVDR9gzQke
+         tMwLHNLy3BsoSXAgf9YxmC7rZqi3osJ5FCApD87aMzpT7K8DAOf7tVhl8tTch6xpDY6N
+         a2phLr3a7a9G4cyys7hqiBjWMwwK0uT6LFFy1CQXe3AXFu+crr2aITYDEloczk4kKD7/
+         1palkFvCXLMWCe4yVq8etrEQTlvxtiBCwTyMHU3OU7sRaFHQyqJkhGQ4uZhR4R2OVroS
+         q70wBtFRi0GHQsOqF3kOgYG2OHZpXjIlwVjz0GymN7zVBjacPb8M0KcrpNi8IxpN/nFJ
+         V1vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=48W+1OvErjubjjK762DK/7nORfuohREXCfJclOEzgT0=;
+        b=obzSYqpGYoroi/2cO1HLkA4r+HFkcqTIgEmQqnmyi8BdabiSq6qQItD/iE3qAm642V
+         7zO58tgHtvo0ZGVkXyxRAcsi4nGRJPKLjxjem+AXLPNMtdnPabe3+/aayt+zmyqyflE1
+         dlUyIkb5barWbs0INDL3JK0n7//gbwM/OK5yepZAxe72EADRhcXcS31Ji8xk7Bo+g+b9
+         uwTyIrZJ2ss3kXJu6eHiYPxZmRe1lBadEbwUay6iLp7CmrPshGAGuymhkQhWImk6xeFW
+         1hhTvUDcTAWxjLpk67h31JC6End82IW8FSPcEflDNmN1hLXfYI/C5wlBkkBQx12T25c2
+         65xA==
+X-Gm-Message-State: AGi0PuaOERepJiktsz15Pe/W57R3hq4dCHi6QTGNEqlpoSxCJ6I+w6BF
+        qwWJQdrQtpGiaoDMjCDyjbYwGoby5vpIBvLP3DHqUf3/
+X-Google-Smtp-Source: APiQypJbn+Kf67WB5YlBr4sbU6tmZvJHzbmnbkToCPHIED0FceCjEJ1qgDxrEQJBAre23VOblPhChObFsjm6EeO7jLY=
+X-Received: by 2002:a9f:3381:: with SMTP id p1mr7434600uab.119.1585570571922;
+ Mon, 30 Mar 2020 05:16:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Received: by 2002:ab0:6507:0:0:0:0:0 with HTTP; Mon, 30 Mar 2020 05:16:10
+ -0700 (PDT)
+X-Originating-IP: [5.35.40.234]
+In-Reply-To: <d29338f2-62ef-e33c-a3d8-a9a9d2e3bf63@suse.com>
+References: <1584364176-23346-1-git-send-email-kda@linux-powerpc.org>
+ <f75365c7-a3ca-cf12-b2fc-e48652071795@suse.com> <CAOJe8K3gDJrdKz9zVZNj=N76GygMnPbCKM0-kVfoV53fASAefg@mail.gmail.com>
+ <250783b3-4949-d00a-70e2-dbef1791a6c4@suse.com> <CAOJe8K0fBBi-M+Tdv2kC+ZaNvjx92tzYaU1QX2zr8QOBRLwu3g@mail.gmail.com>
+ <9eb74bee-8434-62aa-8158-bae130353670@suse.com> <CAOJe8K34OS9vq9jWjVE9nrzvF+kdZnyAfGSS5tnJG-obDRwjSg@mail.gmail.com>
+ <d29338f2-62ef-e33c-a3d8-a9a9d2e3bf63@suse.com>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Mon, 30 Mar 2020 15:16:10 +0300
+Message-ID: <CAOJe8K3+ddELP=nac+WRB1d5ccsDQu2UBVY4T2GiFFUfhk0jcQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] xen networking: add basic XDP support for xen-netfront
+To:     =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
+        wei.liu@kernel.org, paul@xen.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds cgroup v2 id to common inet diag message attributes.
-This allows investigate sockets on per cgroup basis when
-net_cls/net_prio cgroup not used.
+On 3/23/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+> On 23.03.20 11:49, Denis Kirjanov wrote:
+>> On 3/23/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+>>> On 23.03.20 11:15, Denis Kirjanov wrote:
+>>>> On 3/18/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+>>>>> On 18.03.20 13:50, Denis Kirjanov wrote:
+>>>>>> On 3/18/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+>>>>>>> On 16.03.20 14:09, Denis Kirjanov wrote:
+>>>>>>>> The patch adds a basic XDP processing to xen-netfront driver.
+>>>>>>>>
+>>>>>>>> We ran an XDP program for an RX response received from netback
+>>>>>>>> driver. Also we request xen-netback to adjust data offset for
+>>>>>>>> bpf_xdp_adjust_head() header space for custom headers.
+>>>>>>>
+>>>>>>> This is in no way a "verbose patch descriprion".
+>>>>>>>
+>>>>>>> I'm missing:
+>>>>>>>
+>>>>>>> - Why are you doing this. "Add XDP support" is not enough, for such
+>>>>>>>       a change I'd like to see some performance numbers to get an
+>>>>>>> idea
+>>>>>>>       of the improvement to expect, or which additional
+>>>>>>> functionality
+>>>>>>>       for the user is available.
+>>>>>> Ok, I'll try to measure  some numbers.
+>>>>>>
+>>>>>>>
+>>>>>>> - A short description for me as a Xen maintainer with only basic
+>>>>>>>       networking know-how, what XDP programs are about (a link to
+>>>>>>> some
+>>>>>>>       more detailed doc is enough, of course) and how the interface
+>>>>>>>       is working (especially for switching between XDP mode and
+>>>>>>> normal
+>>>>>>>       SKB processing).
+>>>>>>
+>>>>>> You can search for the "A practical introduction to XDP" tutorial.
+>>>>>> Actually there is a lot of information available regarding XDP, you
+>>>>>> can easily find it.
+>>>>>>
+>>>>>>>
+>>>>>>> - A proper description of the netfront/netback communication when
+>>>>>>>       enabling or disabling XDP mode (who is doing what, is
+>>>>>>> silencing
+>>>>>>>       of the virtual adapter required, ...).
+>>>>>> Currently we need only a header offset from netback driver so that w=
+e
+>>>>>> can
+>>>>>> put
+>>>>>> custom encapsulation header if required and that's done using xen bu=
+s
+>>>>>> state switching,
+>>>>>> so that:
+>>>>>> - netback tells that it can adjust the header offset
+>>>>>> - netfront part reads it
+>>>>>
+>>>>> Yes, but how is this synchronized with currently running network load=
+?
+>>>>> Assume you are starting without XDP being active and then you are
+>>>>> activating it. How is the synchronization done from which request on
+>>>>> the XDP headroom is available?
+>>>>
+>>>> Hi Jurgen,
+>>>>
+>>>> basically XDP is activated when you've assigned an xdp program to the
+>>>> networking device.
+>>>> Assigning an xdp program means that we have to adjust a pointer which
+>>>> is RCU protected.
+>>>
+>>> This doesn't answer my question.
+>>>
+>>> You have basically two communication channels: the state of the fronten=
+d
+>>> and backend for activation/deactivation of XDP, and the ring pages with
+>>> the rx and tx requests and responses. How is the synchronization betwee=
+n
+>>> those two channels done? So how does the other side know which of the
+>>> packets in flight will then have XDP on or off?
+>>
+>> Right,
+>> that's done in xen-netback using xenbus state:
+>> - in xennet_xdp_set() we call xenbus_switch_state to tell xen-netback to
+>> adjust offset for an RX response.
+>> -xen-netback reads the value from xenstore and adjusts the offset for
+>> xen-netback
+>> in xenvif_rx_data_slot() using vif->xdp_enabled flag.
+>
+> And before that all in-flight requests in the ring pages are being
+> processed and no new requests are guaranteed to be enqueued?
 
-Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
-Reviewed-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
----
- include/linux/inet_diag.h      | 6 +++++-
- include/uapi/linux/inet_diag.h | 1 +
- net/ipv4/inet_diag.c           | 7 +++++++
- 3 files changed, 13 insertions(+), 1 deletion(-)
+Actually I don't see the need to sync these requests since that all we
+have to do is to copy
+data with specified offset:
+with xdp->enabled=3D1: copy with the offset XDP_PACKET_HEADROOM
+with xdd->enabled=3D0: copy without the offset
 
-diff --git a/include/linux/inet_diag.h b/include/linux/inet_diag.h
-index c91cf2d..8bc5e7d 100644
---- a/include/linux/inet_diag.h
-+++ b/include/linux/inet_diag.h
-@@ -66,7 +66,11 @@ static inline size_t inet_diag_msg_attrs_size(void)
- 		+ nla_total_size(1)  /* INET_DIAG_SKV6ONLY */
- #endif
- 		+ nla_total_size(4)  /* INET_DIAG_MARK */
--		+ nla_total_size(4); /* INET_DIAG_CLASS_ID */
-+		+ nla_total_size(4)  /* INET_DIAG_CLASS_ID */
-+#ifdef CONFIG_SOCK_CGROUP_DATA
-+		+ nla_total_size(8)  /* INET_DIAG_CGROUP_ID */
-+#endif
-+		;
- }
- int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
- 			     struct inet_diag_msg *r, int ext,
-diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
-index a1ff345..dc87ad6 100644
---- a/include/uapi/linux/inet_diag.h
-+++ b/include/uapi/linux/inet_diag.h
-@@ -154,6 +154,7 @@ enum {
- 	INET_DIAG_CLASS_ID,	/* request as INET_DIAG_TCLASS */
- 	INET_DIAG_MD5SIG,
- 	INET_DIAG_ULP_INFO,
-+	INET_DIAG_CGROUP_ID,
- 	__INET_DIAG_MAX,
- };
- 
-diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-index 8c83775..ba0bb14 100644
---- a/net/ipv4/inet_diag.c
-+++ b/net/ipv4/inet_diag.c
-@@ -161,6 +161,13 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
- 			goto errout;
- 	}
- 
-+#ifdef CONFIG_SOCK_CGROUP_DATA
-+	if (nla_put_u64_64bit(skb, INET_DIAG_CGROUP_ID,
-+			      cgroup_id(sock_cgroup_ptr(&sk->sk_cgrp_data)),
-+			      INET_DIAG_PAD))
-+		goto errout;
-+#endif
-+
- 	r->idiag_uid = from_kuid_munged(user_ns, sock_i_uid(sk));
- 	r->idiag_inode = sock_i_ino(sk);
- 
--- 
-2.7.4
+Thanks!
 
+>
+>
+> Juergen
+>
