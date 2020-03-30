@@ -2,76 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 598731982E5
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:04:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6508F1982EC
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:04:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726672AbgC3SEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 14:04:11 -0400
-Received: from mail.bugwerft.de ([46.23.86.59]:54614 "EHLO mail.bugwerft.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726385AbgC3SEL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 14:04:11 -0400
-Received: from [192.168.178.106] (pD95EFBD9.dip0.t-ipconnect.de [217.94.251.217])
-        by mail.bugwerft.de (Postfix) with ESMTPSA id 96EBF29C9DA;
-        Mon, 30 Mar 2020 18:02:12 +0000 (UTC)
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: don't force settings on CPU port
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-References: <20200327195156.1728163-1-daniel@zonque.org>
- <20200327200153.GR3819@lunn.ch>
- <d101df30-5a9e-eac1-94b0-f171dbcd5b88@zonque.org>
- <20200327211821.GT3819@lunn.ch>
- <1bff1da3-8c9d-55c6-3408-3ae1c3943041@zonque.org>
- <20200327235220.GV3819@lunn.ch>
- <64462bcf-6c0c-af4f-19f4-d203daeabec3@zonque.org>
- <20200330134010.GA23477@lunn.ch>
-From:   Daniel Mack <daniel@zonque.org>
-Message-ID: <7a777bc3-9109-153a-a735-e36718c06db5@zonque.org>
-Date:   Mon, 30 Mar 2020 20:04:08 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1727815AbgC3SEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 14:04:54 -0400
+Received: from asavdk4.altibox.net ([109.247.116.15]:35158 "EHLO
+        asavdk4.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727255AbgC3SEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 14:04:53 -0400
+Received: from ravnborg.org (unknown [158.248.194.18])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by asavdk4.altibox.net (Postfix) with ESMTPS id 014EC804E5;
+        Mon, 30 Mar 2020 20:04:45 +0200 (CEST)
+Date:   Mon, 30 Mar 2020 20:04:44 +0200
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        dri-devel@lists.freedesktop.org, etnaviv@lists.freedesktop.org,
+        linux-media@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] Update my email address in various drivers
+Message-ID: <20200330180444.GA16073@ravnborg.org>
+References: <E1jIV26-0005X3-RS@rmk-PC.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <20200330134010.GA23477@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1jIV26-0005X3-RS@rmk-PC.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-CMAE-Score: 0
+X-CMAE-Analysis: v=2.3 cv=XpTUx2N9 c=1 sm=1 tr=0
+        a=UWs3HLbX/2nnQ3s7vZ42gw==:117 a=UWs3HLbX/2nnQ3s7vZ42gw==:17
+        a=jpOVt7BSZ2e4Z31A5e1TngXxSK0=:19 a=kj9zAlcOel0A:10 a=PHq6YzTAAAAA:8
+        a=drOt6m5kAAAA:8 a=7gkXJVJtAAAA:8 a=pGLkceISAAAA:8 a=fk1lIlRQAAAA:8
+        a=e5mUnYsNAAAA:8 a=J_AMR1hbAAXD1OJ71a8A:9 a=pLlZParSi1_HdBrb:21
+        a=f4gn02k5W12urO4c:21 a=CjuIK1q_8ugA:10 a=ZKzU8r6zoKMcqsNulkmm:22
+        a=RMMjzBEyIzXRtoq5n5K6:22 a=E9Po1WZjFZOl8hwRPBS3:22
+        a=U75ogvRika4pmaD_UPO0:22 a=Vxmtnl_E_bksehYqCbjh:22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Hi Russell.
 
-Thanks for all your input.
-
-On 3/30/20 3:40 PM, Andrew Lunn wrote:
-> On Mon, Mar 30, 2020 at 11:29:27AM +0200, Daniel Mack wrote:
->> On 3/28/20 12:52 AM, Andrew Lunn wrote:
-
->>> By explicitly saying there is a PHY for the CPU node, phylink might
->>> drive it.
+On Sun, Mar 29, 2020 at 11:19:10AM +0100, Russell King wrote:
+> Globally update my email address in six files scattered through the
+> tree.
 > 
-> You want to debug this. Although what you have is unusual, yours is
-> not the only board. It is something we want to work. And ideally,
-> there should be something controlling the PHY.
+> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> ---
+>  drivers/gpu/drm/armada/armada_drv.c                 | 2 +-
+>  drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c | 2 +-
+>  drivers/gpu/drm/etnaviv/etnaviv_drv.c               | 2 +-
+>  drivers/media/cec/cec-notifier.c                    | 2 +-
+>  drivers/net/phy/swphy.c                             | 2 +-
+>  include/media/cec-notifier.h                        | 2 +-
+>  6 files changed, 6 insertions(+), 6 deletions(-)
 
-I agree, but what I believe is happening here is this. The PHY inside
-the switch negotiates a link to the 'external' PHY which is forced to
-100M maximum speed. That link seems to work fine; the LEDs connected to
-that external PHY indicate that there is link. However, the internal PHY
-in the switch does not receive any packets as the MAC connected to it
-only wants to communicate with 1G.
+This changes all cases of:
+   
+   rmk+kernel@arm.linux.org.uk
 
-Not sure what else could be done other than allowing for reduced speed
-on the MAC as well, which is what my patch is doing. I agree that my
-approach falls short for boards where there is no PHY on the port
-connected to the CPU, but maybe there is some common ground here, and a
-rule can be defined under which circumstances the MAC speed should be
-forced?
+to
 
+  rmk+kernel@armlinux.org.uk or no mail address.
 
-Thanks,
-Daniel
+But I am confused.
 
+The new address does not appear anywhere in MAINTAINERS and is used
+only in three other files.
 
+And there are a few other mail addresses that would reach you.
+But no matter how confused I am the patch looks fine so:
+
+Acked-by: Sam Ravnborg <sam@ravnborg.org>
+
+And if the change is for private reaons then I do not have to know
+anyway so feel free to ignore my confusion.
+
+	Sam
+
+> 
+> diff --git a/drivers/gpu/drm/armada/armada_drv.c b/drivers/gpu/drm/armada/armada_drv.c
+> index 3df2dacf4c94..5a82a12cd105 100644
+> --- a/drivers/gpu/drm/armada/armada_drv.c
+> +++ b/drivers/gpu/drm/armada/armada_drv.c
+> @@ -389,7 +389,7 @@ static void __exit armada_drm_exit(void)
+>  }
+>  module_exit(armada_drm_exit);
+>  
+> -MODULE_AUTHOR("Russell King <rmk+kernel@arm.linux.org.uk>");
+> +MODULE_AUTHOR("Russell King <rmk+kernel@armlinux.org.uk>");
+>  MODULE_DESCRIPTION("Armada DRM Driver");
+>  MODULE_LICENSE("GPL");
+>  MODULE_ALIAS("platform:armada-drm");
+> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
+> index e8e3e9339ff9..f6f55776e43e 100644
+> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
+> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
+> @@ -698,7 +698,7 @@ static struct platform_driver snd_dw_hdmi_driver = {
+>  
+>  module_platform_driver(snd_dw_hdmi_driver);
+>  
+> -MODULE_AUTHOR("Russell King <rmk+kernel@arm.linux.org.uk>");
+> +MODULE_AUTHOR("Russell King <rmk+kernel@armlinux.org.uk>");
+>  MODULE_DESCRIPTION("Synopsis Designware HDMI AHB ALSA interface");
+>  MODULE_LICENSE("GPL v2");
+>  MODULE_ALIAS("platform:" DRIVER_NAME);
+> diff --git a/drivers/gpu/drm/etnaviv/etnaviv_drv.c b/drivers/gpu/drm/etnaviv/etnaviv_drv.c
+> index 1f9c01be40d7..d6798f716b77 100644
+> --- a/drivers/gpu/drm/etnaviv/etnaviv_drv.c
+> +++ b/drivers/gpu/drm/etnaviv/etnaviv_drv.c
+> @@ -739,7 +739,7 @@ static void __exit etnaviv_exit(void)
+>  module_exit(etnaviv_exit);
+>  
+>  MODULE_AUTHOR("Christian Gmeiner <christian.gmeiner@gmail.com>");
+> -MODULE_AUTHOR("Russell King <rmk+kernel@arm.linux.org.uk>");
+> +MODULE_AUTHOR("Russell King <rmk+kernel@armlinux.org.uk>");
+>  MODULE_AUTHOR("Lucas Stach <l.stach@pengutronix.de>");
+>  MODULE_DESCRIPTION("etnaviv DRM Driver");
+>  MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/media/cec/cec-notifier.c b/drivers/media/cec/cec-notifier.c
+> index 7cf42b133dbc..2d4f7dd7cef7 100644
+> --- a/drivers/media/cec/cec-notifier.c
+> +++ b/drivers/media/cec/cec-notifier.c
+> @@ -2,7 +2,7 @@
+>  /*
+>   * cec-notifier.c - notify CEC drivers of physical address changes
+>   *
+> - * Copyright 2016 Russell King <rmk+kernel@arm.linux.org.uk>
+> + * Copyright 2016 Russell King.
+>   * Copyright 2016-2017 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
+>   */
+>  
+> diff --git a/drivers/net/phy/swphy.c b/drivers/net/phy/swphy.c
+> index 53c214a22b95..774814714c82 100644
+> --- a/drivers/net/phy/swphy.c
+> +++ b/drivers/net/phy/swphy.c
+> @@ -2,7 +2,7 @@
+>  /*
+>   * Software PHY emulation
+>   *
+> - * Code taken from fixed_phy.c by Russell King <rmk+kernel@arm.linux.org.uk>
+> + * Code taken from fixed_phy.c by Russell King.
+>   *
+>   * Author: Vitaly Bordug <vbordug@ru.mvista.com>
+>   *         Anton Vorontsov <avorontsov@ru.mvista.com>
+> diff --git a/include/media/cec-notifier.h b/include/media/cec-notifier.h
+> index 985afea1ee36..e2b1b894aae7 100644
+> --- a/include/media/cec-notifier.h
+> +++ b/include/media/cec-notifier.h
+> @@ -2,7 +2,7 @@
+>  /*
+>   * cec-notifier.h - notify CEC drivers of physical address changes
+>   *
+> - * Copyright 2016 Russell King <rmk+kernel@arm.linux.org.uk>
+> + * Copyright 2016 Russell King.
+>   * Copyright 2016-2017 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
+>   */
+>  
+> -- 
+> 2.20.1
+> 
+> _______________________________________________
+> dri-devel mailing list
+> dri-devel@lists.freedesktop.org
+> https://lists.freedesktop.org/mailman/listinfo/dri-devel
