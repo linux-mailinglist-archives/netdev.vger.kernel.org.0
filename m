@@ -2,78 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73EFA198602
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 23:05:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE2F1198644
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 23:18:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728654AbgC3VF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 17:05:27 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:33367 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728317AbgC3VF0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 17:05:26 -0400
-Received: by mail-io1-f68.google.com with SMTP id o127so19420567iof.0;
-        Mon, 30 Mar 2020 14:05:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8tXDSX2PzFc8lPZTxH+CtlfEjScfEVePQ1OA7jnYYW0=;
-        b=tz/q7X5sLJ4aRE9kx+H5YtWeFUvxv5uSS3eWma+QqHiHAi7BMNspEHDdZRAGjPOLKk
-         gWSKjeqWul7MJnnoWYjoyc/5zEPUovmDqiQyqup8fav3sPP3PDNA5oARY14gokKIsgc1
-         sRbD8T074iqJj+XdjLtk8swMK2e510s7gaIK5pb+VtGnVf/pvnDLbS3vkb6N9VFAx8kD
-         6gQZiO95j4xwvFqJE1qhbysKjLk460QPMJFIavuWL4RF0n3KrFfni22JlCgr1+k3a3Br
-         3nqIC/bAQtHktwbfiiAOTixUZlOzOQRkyQDFhrT18DG4jxOSS0otpmEeTqMJmKT4sgy0
-         swsQ==
-X-Gm-Message-State: ANhLgQ2d+sn1xdYIdvbQzXe0x5aReicRgCbP6RPuMd3yDyfVAVxqKLT1
-        vwoS7kbhVFPiwvFOzIrKEQ==
-X-Google-Smtp-Source: ADFU+vsLX1L/PYCfqYAzFfBxs3g5Uc1emhP0yS3eiAGhtCUDnoasD+pUie7FL2kBzWtLetFrY7W+IQ==
-X-Received: by 2002:a6b:d609:: with SMTP id w9mr12335400ioa.41.1585602326068;
-        Mon, 30 Mar 2020 14:05:26 -0700 (PDT)
-Received: from rob-hp-laptop ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id l65sm4314953ioa.1.2020.03.30.14.05.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Mar 2020 14:05:25 -0700 (PDT)
-Received: (nullmailer pid 7500 invoked by uid 1000);
-        Mon, 30 Mar 2020 21:05:23 -0000
-Date:   Mon, 30 Mar 2020 15:05:23 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Dan Murphy <dmurphy@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Benjamin Gaignard <benjamin.gaignard@st.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 04/12] docs: dt: fix references to m_can.txt file
-Message-ID: <20200330210523.GA7429@bogus>
-References: <cover.1584450500.git.mchehab+huawei@kernel.org>
- <db67f9bc93f062179942f1e095a46b572a442b76.1584450500.git.mchehab+huawei@kernel.org>
+        id S1728955AbgC3VSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 17:18:15 -0400
+Received: from lb3-smtp-cloud7.xs4all.net ([194.109.24.31]:56915 "EHLO
+        lb3-smtp-cloud7.xs4all.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728393AbgC3VSO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 17:18:14 -0400
+Received: from xps13.fritz.box ([IPv6:2001:984:543e:1:2701:2dbe:5ad1:8fec])
+        by smtp-cloud7.xs4all.net with ESMTPSA
+        id J1nKjwh1qLu1fJ1nMjGLSF; Mon, 30 Mar 2020 23:18:11 +0200
+Message-ID: <1a57d88410e8354d083ad31e956bb03d1a8e3c0b.camel@tiscali.nl>
+Subject: Re: [GIT] Networking
+From:   Paul Bolle <pebolle@tiscali.nl>
+To:     Linus Torvalds <torvalds@linux-foundation.org>,
+        David Miller <davem@davemloft.net>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>
+Date:   Mon, 30 Mar 2020 23:18:06 +0200
+In-Reply-To: <CAHk-=wjDZTfj3wYm+HKd2tfT8j_unQwhP-t3-91Z-8qqMS=ceQ@mail.gmail.com>
+References: <20200328.183923.1567579026552407300.davem@davemloft.net>
+         <CAHk-=wgoySgT5q9L5E-Bwm_Lsn3w-bzL2SBji51WF8z4bk4SEQ@mail.gmail.com>
+         <20200329.155232.1256733901524676876.davem@davemloft.net>
+         <CAHk-=wjDZTfj3wYm+HKd2tfT8j_unQwhP-t3-91Z-8qqMS=ceQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <db67f9bc93f062179942f1e095a46b572a442b76.1584450500.git.mchehab+huawei@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
+X-CMAE-Envelope: MS4wfIZlByNEyvIoWA/k1045l/pfw74BXnmXCHCoreDdAatMndKRBj12+VtbIyvWU251W6Dsg6olVWwj+3EkLLFzWR9XeYy5twmu+vxuncIpYmhVEIEj+xd8
+ MWTjqGAm3JyRJlwsnG217PgBNlgM7ylSK/6n2i2k8gJhd46AyGeot6Ozv/P4LLFuvuHCeX9sdgxUg++oM4t3af1KjZwUI18VApnck2k7iXctYCZR0+a0NkO+
+ aLhUSpNNoi/TX0cGVkUCpsz2DDJgyFfCPss/zIkAL+Y2wfcWVmqrMbM/EoMPNkrf5pxdm6taFZPwdg2DlCS3yvtqZQIVBJSI97ZZpa+PLWGPjmh2VapETGYH
+ L3YaEwLEuqphytZtl+HXXZkkd6GzEYU3QnAD6ctGyCB6x+RetxYYj9BtoZZjWUoXJ6qKFRBm
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 Mar 2020 14:10:43 +0100, Mauro Carvalho Chehab wrote:
-> This file was converted to json and renamed. Update its
-> references accordingly.
-> 
-> Fixes: 824674b59f72 ("dt-bindings: net: can: Convert M_CAN to json-schema")
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
->  Documentation/devicetree/bindings/net/can/tcan4x5x.txt | 2 +-
->  MAINTAINERS                                            | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
+[Added Johannes.]
 
-Applied, thanks.
+Linus Torvalds schreef op zo 29-03-2020 om 15:54 [-0700]:
+> On Sun, Mar 29, 2020 at 3:52 PM David Miller <davem@davemloft.net> wrote:
+> > Meanwhile, we have a wireless regression, and I'll get the fix for
+> > that to you by the end of today.
+> 
+> Oops. This came in just after I posted the 5.6 release announcement
+> after having said that there didn't seem to be any reason to delay.
 
-Rob
+If this email gets through this should be about "mac80211: fix authentication
+with iwlwifi/mvm". Is that right?
+
+
+Paul Bolle
+
