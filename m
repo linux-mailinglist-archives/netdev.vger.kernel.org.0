@@ -2,56 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0C92198344
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9743D19834B
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:23:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727750AbgC3SVg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 14:21:36 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:40670 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726672AbgC3SVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 14:21:36 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id E600C15C51201;
-        Mon, 30 Mar 2020 11:21:35 -0700 (PDT)
-Date:   Mon, 30 Mar 2020 11:21:35 -0700 (PDT)
-Message-Id: <20200330.112135.482388800634154728.davem@davemloft.net>
-To:     idosch@idosch.org
-Cc:     netdev@vger.kernel.org, jiri@mellanox.com, mlxsw@mellanox.com,
-        idosch@mellanox.com
-Subject: Re: [PATCH net-next] mlxsw: spectrum_ptp: Fix build warnings
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200330180820.2349593-1-idosch@idosch.org>
-References: <20200330180820.2349593-1-idosch@idosch.org>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=iso-8859-7
-Content-Transfer-Encoding: base64
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 30 Mar 2020 11:21:36 -0700 (PDT)
+        id S1728000AbgC3SXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 14:23:13 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39202 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726769AbgC3SXN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 14:23:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=tRXZWFACkrjWHbs9/7+DMImrP7M1Z/RgHuG2NjGyaT4=; b=cSzctKGDzktAnG6Fj+1tRqQO9D
+        S5gajsHfeSC3HlkbfwwX5kf41usOvO1VBoj6haJdXnfViqQZECcxqHzyDs8/9VLEUaK+gf/IDJBgx
+        MaisukI0Ktbm4LzpoF/z9vGvkvLZqWPkyQ/8IuDbVilJc3odSbY2TWjeBuA4DS8iQI0w=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jIz3z-00070l-Py; Mon, 30 Mar 2020 20:23:07 +0200
+Date:   Mon, 30 Mar 2020 20:23:07 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Daniel Mack <daniel@zonque.org>
+Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: don't force settings on CPU port
+Message-ID: <20200330182307.GG23477@lunn.ch>
+References: <20200327195156.1728163-1-daniel@zonque.org>
+ <20200327200153.GR3819@lunn.ch>
+ <d101df30-5a9e-eac1-94b0-f171dbcd5b88@zonque.org>
+ <20200327211821.GT3819@lunn.ch>
+ <1bff1da3-8c9d-55c6-3408-3ae1c3943041@zonque.org>
+ <20200327235220.GV3819@lunn.ch>
+ <64462bcf-6c0c-af4f-19f4-d203daeabec3@zonque.org>
+ <20200330134010.GA23477@lunn.ch>
+ <7a777bc3-9109-153a-a735-e36718c06db5@zonque.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7a777bc3-9109-153a-a735-e36718c06db5@zonque.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSWRvIFNjaGltbWVsIDxpZG9zY2hAaWRvc2NoLm9yZz4NCkRhdGU6IE1vbiwgMzAgTWFy
-IDIwMjAgMjE6MDg6MjAgKzAzMDANCg0KPiBGcm9tOiBJZG8gU2NoaW1tZWwgPGlkb3NjaEBtZWxs
-YW5veC5jb20+DQo+IA0KPiBDaXRlZCBjb21taXQgZXh0ZW5kZWQgdGhlIGVudW1zICdod3RzdGFt
-cF90eF90eXBlcycgYW5kDQo+ICdod3RzdGFtcF9yeF9maWx0ZXJzJyB3aXRoIHZhbHVlcyB0aGF0
-IHdlcmUgbm90IGFjY291bnRlZCBmb3IgaW4gdGhlDQo+IHN3aXRjaCBzdGF0ZW1lbnRzLCByZXN1
-bHRpbmcgaW4gdGhlIGJ1aWxkIHdhcm5pbmdzIGJlbG93Lg0KPiANCj4gRml4IGJ5IGFkZGluZyBh
-IGRlZmF1bHQgY2FzZS4NCj4gDQo+IGRyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seHN3
-L3NwZWN0cnVtX3B0cC5jOiBJbiBmdW5jdGlvbiChbWx4c3dfc3BfcHRwX2dldF9tZXNzYWdlX3R5
-cGVzojoNCj4gZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4c3cvc3BlY3RydW1fcHRw
-LmM6OTE1OjI6IHdhcm5pbmc6IGVudW1lcmF0aW9uIHZhbHVlIKFfX0hXVFNUQU1QX1RYX0NOVKIg
-bm90IGhhbmRsZWQgaW4gc3dpdGNoIFstV3N3aXRjaF0NCj4gICA5MTUgfCAgc3dpdGNoICh0eF90
-eXBlKSB7DQo+ICAgICAgIHwgIF5+fn5+fg0KPiBkcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5v
-eC9tbHhzdy9zcGVjdHJ1bV9wdHAuYzo5Mjc6Mjogd2FybmluZzogZW51bWVyYXRpb24gdmFsdWUg
-oV9fSFdUU1RBTVBfRklMVEVSX0NOVKIgbm90IGhhbmRsZWQgaW4gc3dpdGNoIFstV3N3aXRjaF0N
-Cj4gICA5MjcgfCAgc3dpdGNoIChyeF9maWx0ZXIpIHsNCj4gICAgICAgfCAgXn5+fn5+DQo+IA0K
-PiBGaXhlczogZjc2NTEwYjQ1OGE1ICgiZXRodG9vbDogYWRkIHRpbWVzdGFtcGluZyByZWxhdGVk
-IHN0cmluZyBzZXRzIikNCj4gU2lnbmVkLW9mZi1ieTogSWRvIFNjaGltbWVsIDxpZG9zY2hAbWVs
-bGFub3guY29tPg0KPiBSZXBvcnRlZC1ieTogRGF2aWQgUy4gTWlsbGVyIDxkYXZlbUBkYXZlbWxv
-ZnQubmV0Pg0KDQpBcHBsaWVkLCB0aGFua3MuDQo=
+On Mon, Mar 30, 2020 at 08:04:08PM +0200, Daniel Mack wrote:
+> Hi Andrew,
+> 
+> Thanks for all your input.
+> 
+> On 3/30/20 3:40 PM, Andrew Lunn wrote:
+> > On Mon, Mar 30, 2020 at 11:29:27AM +0200, Daniel Mack wrote:
+> >> On 3/28/20 12:52 AM, Andrew Lunn wrote:
+> 
+> >>> By explicitly saying there is a PHY for the CPU node, phylink might
+> >>> drive it.
+> > 
+> > You want to debug this. Although what you have is unusual, yours is
+> > not the only board. It is something we want to work. And ideally,
+> > there should be something controlling the PHY.
+> 
+> I agree, but what I believe is happening here is this. The PHY inside
+> the switch negotiates a link to the 'external' PHY which is forced to
+> 100M maximum speed. That link seems to work fine; the LEDs connected to
+> that external PHY indicate that there is link. However, the internal PHY
+> in the switch does not receive any packets as the MAC connected to it
+> only wants to communicate with 1G.
+
+Which is what phylink is all about. phylink will talk to the PHY,
+figure out what it has negotiated, and then configure the MAC to
+fit. So you need to debug why this is not happening.
+
+       Andrew
