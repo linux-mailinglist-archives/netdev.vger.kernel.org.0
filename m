@@ -2,63 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EBA41981CC
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 19:01:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4F811981D9
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 19:05:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730228AbgC3RBT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 13:01:19 -0400
-Received: from a.mx.secunet.com ([62.96.220.36]:35820 "EHLO a.mx.secunet.com"
+        id S1730242AbgC3RFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 13:05:16 -0400
+Received: from mga01.intel.com ([192.55.52.88]:10809 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726312AbgC3RBT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 13:01:19 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id AAC6420491;
-        Mon, 30 Mar 2020 19:01:18 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Rank_v2KDCRf; Mon, 30 Mar 2020 19:01:18 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (201.40.53.10.in-addr.arpa [10.53.40.201])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 0B2B0201A0;
-        Mon, 30 Mar 2020 19:01:18 +0200 (CEST)
-Received: from gauss2.secunet.de (10.182.7.193) by cas-essen-01.secunet.de
- (10.53.40.201) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Mon, 30 Mar
- 2020 19:01:17 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 91B2D3180136; Mon, 30 Mar 2020 19:01:17 +0200 (CEST)
-Date:   Mon, 30 Mar 2020 19:01:17 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Xin Long <lucien.xin@gmail.com>
-CC:     network dev <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net] udp: initialize is_flist with 0 in udp_gro_receive
-Message-ID: <20200330170117.GT13121@gauss3.secunet.de>
-References: <6014932c7cdef91c11cdb0dcf73dbf77b65f8638.1585582305.git.lucien.xin@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <6014932c7cdef91c11cdb0dcf73dbf77b65f8638.1585582305.git.lucien.xin@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- cas-essen-01.secunet.de (10.53.40.201)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+        id S1728716AbgC3RFQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 13:05:16 -0400
+IronPort-SDR: fLNpP5044+TaCMRTELqnln2q1e8m6oHow9XIRjpBZyifY5ra2ojMTd3gfJu7HZlWv8kMjSzEU1
+ H9BXvty4Urvw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2020 10:05:16 -0700
+IronPort-SDR: 5/TDhULDr9K4f4azVxRH5osuvGcI9/UOgfezISiV8M41fTzacCl2FrMeWIJyBFfaWGRw0j9mNC
+ ghf7hoytlbfA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,325,1580803200"; 
+   d="scan'208";a="294667145"
+Received: from unknown (HELO climb.png.intel.com) ([10.221.118.165])
+  by FMSMGA003.fm.intel.com with ESMTP; 30 Mar 2020 10:05:13 -0700
+From:   Voon Weifeng <weifeng.voon@intel.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>
+Subject: [net-next,v2, 0/3] Add additional EHL PCI info and PCI ID
+Date:   Tue, 31 Mar 2020 01:05:09 +0800
+Message-Id: <20200330170512.22240-1-weifeng.voon@intel.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 11:31:45PM +0800, Xin Long wrote:
-> Without NAPI_GRO_CB(skb)->is_flist initialized, when the dev doesn't
-> support NETIF_F_GRO_FRAGLIST, is_flist can still be set and fraglist
-> will be used in udp_gro_receive().
-> 
-> So fix it by initializing is_flist with 0 in udp_gro_receive.
-> 
-> Fixes: 9fd1ff5d2ac7 ("udp: Support UDP fraglist GRO/GSO.")
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Thanks Jose Miguel Abreu for the feedback. Summary of v2 patches:
 
-Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
+1/3: As suggested to keep the stmmac_pci.c file simple. So created a new
+     file dwmac-intel.c and moved all the Intel specific PCI device out
+     of stmmac_pci.c.
+
+2/3: Added Intel(R) Programmable Services Engine (Intel(R) PSE) MAC PCI ID
+     and PCI info
+
+3/3: Added EHL 2.5Gbps PCI ID and info
+
+Changes from v1:
+-Added a patch to move all Intel specific PCI device from stmmac_pci.c to
+ a new file named dwmac-intel.c.
+-Combine v1 patch 1/3 and 2/3 into single patch.
+
+Voon Weifeng (3):
+  net: stmmac: create dwmac-intel.c to contain all Intel platform
+  net: stmmac: add EHL PSE0 & PSE1 1Gbps PCI info and PCI ID
+  net: stmmac: add EHL 2.5Gbps PCI info and PCI ID
+
+ drivers/net/ethernet/stmicro/stmmac/Kconfig   |   9 +
+ drivers/net/ethernet/stmicro/stmmac/Makefile  |   1 +
+ .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 592 ++++++++++++++++++
+ .../net/ethernet/stmicro/stmmac/stmmac_pci.c  | 313 ---------
+ 4 files changed, 602 insertions(+), 313 deletions(-)
+ create mode 100644 drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+
+-- 
+2.17.1
 
