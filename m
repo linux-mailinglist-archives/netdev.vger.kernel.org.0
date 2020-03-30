@@ -2,183 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6508F1982EC
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:04:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2D9D1982F1
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:05:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727815AbgC3SEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 14:04:54 -0400
-Received: from asavdk4.altibox.net ([109.247.116.15]:35158 "EHLO
-        asavdk4.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727255AbgC3SEx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 14:04:53 -0400
-Received: from ravnborg.org (unknown [158.248.194.18])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by asavdk4.altibox.net (Postfix) with ESMTPS id 014EC804E5;
-        Mon, 30 Mar 2020 20:04:45 +0200 (CEST)
-Date:   Mon, 30 Mar 2020 20:04:44 +0200
-From:   Sam Ravnborg <sam@ravnborg.org>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        dri-devel@lists.freedesktop.org, etnaviv@lists.freedesktop.org,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] Update my email address in various drivers
-Message-ID: <20200330180444.GA16073@ravnborg.org>
-References: <E1jIV26-0005X3-RS@rmk-PC.armlinux.org.uk>
+        id S1727996AbgC3SFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 14:05:42 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:35530 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727255AbgC3SFl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 14:05:41 -0400
+Received: by mail-wr1-f66.google.com with SMTP id d5so22899816wrn.2
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 11:05:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=eK8x7gAXMov1inBTyCa9T4MtcTyNUJQUaxWPoEq8WPM=;
+        b=WQE+QWOmy+rAqfpi/9XWYmLS7jKwH6IbEwVcxVE/K6tVdNy/4xbN85nlusDSzm757a
+         N8Esq9fl5Qh8a89xDGWWUQzzWddG3vupEw//z1mNposwwR3yEPcMIPJRq7YVVtoKQP+p
+         SKQfYVxP6q6j+vCw/suwHBGl91DNojYqK1BMQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=eK8x7gAXMov1inBTyCa9T4MtcTyNUJQUaxWPoEq8WPM=;
+        b=WQrVAGm/P2yMramfBdbGS01Q5EyQF9Oaq4HiHB0wk5BAekWDmqRfT/k77783ECfMHy
+         7tchWDBBJzPgyxcwn7R4uudOiGOOuD84HB6AmkCapBRrekuQ+yLaktVxeQ3fDACWx42U
+         OUPqQTv2JyMQG56w6lQGpk/LSEe3rGBcLdYjzoZ5XxfNtsSBQjec+++TpXRK2kl9E9PU
+         pPBD8rNzm6oFISs7wigljWCrZRZLpTNXQAdvIDQbTpES754o9CSsDXpAJ+1uejs8dNYY
+         Zkof3+AFTSWWrZ/tXwpxAW09C7YLgCKVfvxpOC3wTNxKmEfiy1y/+YEoIb/wU6iASETs
+         fqRQ==
+X-Gm-Message-State: ANhLgQ3Egc3FlkuC4c16a/4ohsD+hVsiQ8YfbV7olMmO4L2xr7HPHkrR
+        /snTw5sXDJVKLwEvloiKU9ExYw==
+X-Google-Smtp-Source: ADFU+vsG5+POHNwCtn212r3+bWb5NCSQtxsMW+v/nEnnXabDTUyOReQMMj7YdyJUl9iPEcp/c2B64w==
+X-Received: by 2002:adf:e946:: with SMTP id m6mr16493103wrn.187.1585591540289;
+        Mon, 30 Mar 2020 11:05:40 -0700 (PDT)
+Received: from google.com ([2a00:79e0:42:204:8a21:ba0c:bb42:75ec])
+        by smtp.gmail.com with ESMTPSA id l4sm21826103wru.1.2020.03.30.11.05.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Mar 2020 11:05:39 -0700 (PDT)
+From:   KP Singh <kpsingh@chromium.org>
+X-Google-Original-From: KP Singh <kpsingh>
+Date:   Mon, 30 Mar 2020 20:05:38 +0200
+To:     KP Singh <kpsingh@chromium.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: linux-next: Tree for Mar 30 (bpf)
+Message-ID: <20200330180538.GA180081@google.com>
+References: <20200330204307.669bbb4d@canb.auug.org.au>
+ <86f7031a-57c6-5d50-2788-ae0e06a7c138@infradead.org>
+ <d5b4bd95-7ef9-58cb-1955-900e6edb2467@iogearbox.net>
+ <CACYkzJ72Uy9mnenO04OJaKH=Bk4ZENKJb9yw6i+EhJUa+ygngQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <E1jIV26-0005X3-RS@rmk-PC.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-CMAE-Score: 0
-X-CMAE-Analysis: v=2.3 cv=XpTUx2N9 c=1 sm=1 tr=0
-        a=UWs3HLbX/2nnQ3s7vZ42gw==:117 a=UWs3HLbX/2nnQ3s7vZ42gw==:17
-        a=jpOVt7BSZ2e4Z31A5e1TngXxSK0=:19 a=kj9zAlcOel0A:10 a=PHq6YzTAAAAA:8
-        a=drOt6m5kAAAA:8 a=7gkXJVJtAAAA:8 a=pGLkceISAAAA:8 a=fk1lIlRQAAAA:8
-        a=e5mUnYsNAAAA:8 a=J_AMR1hbAAXD1OJ71a8A:9 a=pLlZParSi1_HdBrb:21
-        a=f4gn02k5W12urO4c:21 a=CjuIK1q_8ugA:10 a=ZKzU8r6zoKMcqsNulkmm:22
-        a=RMMjzBEyIzXRtoq5n5K6:22 a=E9Po1WZjFZOl8hwRPBS3:22
-        a=U75ogvRika4pmaD_UPO0:22 a=Vxmtnl_E_bksehYqCbjh:22
+In-Reply-To: <CACYkzJ72Uy9mnenO04OJaKH=Bk4ZENKJb9yw6i+EhJUa+ygngQ@mail.gmail.com>
+User-Agent: Mutt/1.12.2 (2019-09-21)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell.
+On 30-Mar 19:54, KP Singh wrote:
 
-On Sun, Mar 29, 2020 at 11:19:10AM +0100, Russell King wrote:
-> Globally update my email address in six files scattered through the
-> tree.
+So, it looks like bpf_tracing_func_proto is only defined when
+CONFIG_BPF_EVENTS is set:
+
+        obj-$(CONFIG_BPF_EVENTS) += bpf_trace.o
+
+We have a few options:
+
+* Add a __weak symbol for bpf_tracing_func_proto which we have done in
+  the past for similar issues. This however, does not make much sense,
+  as CONFIG_BPF_LSM cannot really do much without its helpers.
+* Make CONFIG_BPF_LSM depend on CONFIG_BPF_EVENTS, this should solve
+  it, but not for this particular Kconfig that was generated. Randy,
+  I am assuming if we add the dependency, this particular Kconfig
+  won't be generated.
+
+I am assuming this patch now needs to be sent for "bpf" and not
+"bpf-next" as the merge window has opened?
+
+- KP
+
+> Thanks for adding me Daniel, taking a look.
 > 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> ---
->  drivers/gpu/drm/armada/armada_drv.c                 | 2 +-
->  drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c | 2 +-
->  drivers/gpu/drm/etnaviv/etnaviv_drv.c               | 2 +-
->  drivers/media/cec/cec-notifier.c                    | 2 +-
->  drivers/net/phy/swphy.c                             | 2 +-
->  include/media/cec-notifier.h                        | 2 +-
->  6 files changed, 6 insertions(+), 6 deletions(-)
-
-This changes all cases of:
-   
-   rmk+kernel@arm.linux.org.uk
-
-to
-
-  rmk+kernel@armlinux.org.uk or no mail address.
-
-But I am confused.
-
-The new address does not appear anywhere in MAINTAINERS and is used
-only in three other files.
-
-And there are a few other mail addresses that would reach you.
-But no matter how confused I am the patch looks fine so:
-
-Acked-by: Sam Ravnborg <sam@ravnborg.org>
-
-And if the change is for private reaons then I do not have to know
-anyway so feel free to ignore my confusion.
-
-	Sam
-
+> - KP
 > 
-> diff --git a/drivers/gpu/drm/armada/armada_drv.c b/drivers/gpu/drm/armada/armada_drv.c
-> index 3df2dacf4c94..5a82a12cd105 100644
-> --- a/drivers/gpu/drm/armada/armada_drv.c
-> +++ b/drivers/gpu/drm/armada/armada_drv.c
-> @@ -389,7 +389,7 @@ static void __exit armada_drm_exit(void)
->  }
->  module_exit(armada_drm_exit);
->  
-> -MODULE_AUTHOR("Russell King <rmk+kernel@arm.linux.org.uk>");
-> +MODULE_AUTHOR("Russell King <rmk+kernel@armlinux.org.uk>");
->  MODULE_DESCRIPTION("Armada DRM Driver");
->  MODULE_LICENSE("GPL");
->  MODULE_ALIAS("platform:armada-drm");
-> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
-> index e8e3e9339ff9..f6f55776e43e 100644
-> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
-> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
-> @@ -698,7 +698,7 @@ static struct platform_driver snd_dw_hdmi_driver = {
->  
->  module_platform_driver(snd_dw_hdmi_driver);
->  
-> -MODULE_AUTHOR("Russell King <rmk+kernel@arm.linux.org.uk>");
-> +MODULE_AUTHOR("Russell King <rmk+kernel@armlinux.org.uk>");
->  MODULE_DESCRIPTION("Synopsis Designware HDMI AHB ALSA interface");
->  MODULE_LICENSE("GPL v2");
->  MODULE_ALIAS("platform:" DRIVER_NAME);
-> diff --git a/drivers/gpu/drm/etnaviv/etnaviv_drv.c b/drivers/gpu/drm/etnaviv/etnaviv_drv.c
-> index 1f9c01be40d7..d6798f716b77 100644
-> --- a/drivers/gpu/drm/etnaviv/etnaviv_drv.c
-> +++ b/drivers/gpu/drm/etnaviv/etnaviv_drv.c
-> @@ -739,7 +739,7 @@ static void __exit etnaviv_exit(void)
->  module_exit(etnaviv_exit);
->  
->  MODULE_AUTHOR("Christian Gmeiner <christian.gmeiner@gmail.com>");
-> -MODULE_AUTHOR("Russell King <rmk+kernel@arm.linux.org.uk>");
-> +MODULE_AUTHOR("Russell King <rmk+kernel@armlinux.org.uk>");
->  MODULE_AUTHOR("Lucas Stach <l.stach@pengutronix.de>");
->  MODULE_DESCRIPTION("etnaviv DRM Driver");
->  MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/media/cec/cec-notifier.c b/drivers/media/cec/cec-notifier.c
-> index 7cf42b133dbc..2d4f7dd7cef7 100644
-> --- a/drivers/media/cec/cec-notifier.c
-> +++ b/drivers/media/cec/cec-notifier.c
-> @@ -2,7 +2,7 @@
->  /*
->   * cec-notifier.c - notify CEC drivers of physical address changes
->   *
-> - * Copyright 2016 Russell King <rmk+kernel@arm.linux.org.uk>
-> + * Copyright 2016 Russell King.
->   * Copyright 2016-2017 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
->   */
->  
-> diff --git a/drivers/net/phy/swphy.c b/drivers/net/phy/swphy.c
-> index 53c214a22b95..774814714c82 100644
-> --- a/drivers/net/phy/swphy.c
-> +++ b/drivers/net/phy/swphy.c
-> @@ -2,7 +2,7 @@
->  /*
->   * Software PHY emulation
->   *
-> - * Code taken from fixed_phy.c by Russell King <rmk+kernel@arm.linux.org.uk>
-> + * Code taken from fixed_phy.c by Russell King.
->   *
->   * Author: Vitaly Bordug <vbordug@ru.mvista.com>
->   *         Anton Vorontsov <avorontsov@ru.mvista.com>
-> diff --git a/include/media/cec-notifier.h b/include/media/cec-notifier.h
-> index 985afea1ee36..e2b1b894aae7 100644
-> --- a/include/media/cec-notifier.h
-> +++ b/include/media/cec-notifier.h
-> @@ -2,7 +2,7 @@
->  /*
->   * cec-notifier.h - notify CEC drivers of physical address changes
->   *
-> - * Copyright 2016 Russell King <rmk+kernel@arm.linux.org.uk>
-> + * Copyright 2016 Russell King.
->   * Copyright 2016-2017 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
->   */
->  
-> -- 
-> 2.20.1
-> 
-> _______________________________________________
-> dri-devel mailing list
-> dri-devel@lists.freedesktop.org
-> https://lists.freedesktop.org/mailman/listinfo/dri-devel
+> On Mon, Mar 30, 2020 at 7:25 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> >
+> > [Cc KP, ptal]
+> >
+> > On 3/30/20 7:15 PM, Randy Dunlap wrote:
+> > > On 3/30/20 2:43 AM, Stephen Rothwell wrote:
+> > >> Hi all,
+> > >>
+> > >> The merge window has opened, so please do not add any material for the
+> > >> next release into your linux-next included trees/branches until after
+> > >> the merge window closes.
+> > >>
+> > >> Changes since 20200327:
+> > >
+> > > (note: linux-next is based on linux 5.6-rc7)
+> > >
+> > >
+> > > on i386:
+> > >
+> > > ld: kernel/bpf/bpf_lsm.o:(.rodata+0x0): undefined reference to `bpf_tracing_func_proto'
+> > >
+> > >
+> > > Full randconfig file is attached.
+> > >
+> >
