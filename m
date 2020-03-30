@@ -2,52 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DF711982DD
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 19:59:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 598731982E5
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:04:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729573AbgC3R7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 13:59:40 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:40366 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726403AbgC3R7k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 13:59:40 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1928015C44B41;
-        Mon, 30 Mar 2020 10:59:40 -0700 (PDT)
-Date:   Mon, 30 Mar 2020 10:59:39 -0700 (PDT)
-Message-Id: <20200330.105939.815343006259131072.davem@davemloft.net>
-To:     steffen.klassert@secunet.com
-Cc:     herbert@gondor.apana.org.au, netdev@vger.kernel.org
-Subject: Re: pull request (net-next): ipsec-next 2020-03-28
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200328112924.676-1-steffen.klassert@secunet.com>
-References: <20200328112924.676-1-steffen.klassert@secunet.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1726672AbgC3SEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 14:04:11 -0400
+Received: from mail.bugwerft.de ([46.23.86.59]:54614 "EHLO mail.bugwerft.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726385AbgC3SEL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 14:04:11 -0400
+Received: from [192.168.178.106] (pD95EFBD9.dip0.t-ipconnect.de [217.94.251.217])
+        by mail.bugwerft.de (Postfix) with ESMTPSA id 96EBF29C9DA;
+        Mon, 30 Mar 2020 18:02:12 +0000 (UTC)
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: don't force settings on CPU port
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+References: <20200327195156.1728163-1-daniel@zonque.org>
+ <20200327200153.GR3819@lunn.ch>
+ <d101df30-5a9e-eac1-94b0-f171dbcd5b88@zonque.org>
+ <20200327211821.GT3819@lunn.ch>
+ <1bff1da3-8c9d-55c6-3408-3ae1c3943041@zonque.org>
+ <20200327235220.GV3819@lunn.ch>
+ <64462bcf-6c0c-af4f-19f4-d203daeabec3@zonque.org>
+ <20200330134010.GA23477@lunn.ch>
+From:   Daniel Mack <daniel@zonque.org>
+Message-ID: <7a777bc3-9109-153a-a735-e36718c06db5@zonque.org>
+Date:   Mon, 30 Mar 2020 20:04:08 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <20200330134010.GA23477@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 30 Mar 2020 10:59:40 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steffen Klassert <steffen.klassert@secunet.com>
-Date: Sat, 28 Mar 2020 12:29:19 +0100
+Hi Andrew,
 
-> 1) Use kmem_cache_zalloc() instead of kmem_cache_alloc()
->    in xfrm_state_alloc(). From Huang Zijiang.
-> 
-> 2) esp_output_fill_trailer() is the same in IPv4 and IPv6,
->    so share this function to avoide code duplcation.
->    From Raed Salem.
-> 
-> 3) Add offload support for esp beet mode.
->    From Xin Long.
-> 
-> Please pull or let me know if there are problems.
+Thanks for all your input.
 
-Pulled, thanks Steffen.
+On 3/30/20 3:40 PM, Andrew Lunn wrote:
+> On Mon, Mar 30, 2020 at 11:29:27AM +0200, Daniel Mack wrote:
+>> On 3/28/20 12:52 AM, Andrew Lunn wrote:
+
+>>> By explicitly saying there is a PHY for the CPU node, phylink might
+>>> drive it.
+> 
+> You want to debug this. Although what you have is unusual, yours is
+> not the only board. It is something we want to work. And ideally,
+> there should be something controlling the PHY.
+
+I agree, but what I believe is happening here is this. The PHY inside
+the switch negotiates a link to the 'external' PHY which is forced to
+100M maximum speed. That link seems to work fine; the LEDs connected to
+that external PHY indicate that there is link. However, the internal PHY
+in the switch does not receive any packets as the MAC connected to it
+only wants to communicate with 1G.
+
+Not sure what else could be done other than allowing for reduced speed
+on the MAC as well, which is what my patch is doing. I agree that my
+approach falls short for boards where there is no PHY on the port
+connected to the CPU, but maybe there is some common ground here, and a
+rule can be defined under which circumstances the MAC speed should be
+forced?
+
+
+Thanks,
+Daniel
+
+
