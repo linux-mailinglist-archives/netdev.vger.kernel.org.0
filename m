@@ -2,49 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED10E197571
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 09:17:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A8FE197572
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 09:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729447AbgC3HR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 03:17:26 -0400
+        id S1729463AbgC3HR3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 03:17:29 -0400
 Received: from mail-eopbgr60043.outbound.protection.outlook.com ([40.107.6.43]:55440
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729378AbgC3HRZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 03:17:25 -0400
+        id S1729373AbgC3HR1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 03:17:27 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FhmNSQgGsesQpWeLKkm1Fn4y8imRUWBMFAH6fWsSpu8H/rqJbXjVAMWi972aZP5SR6NnhsfhTmI83IUYXFYiF/pXjYwfSyXExH6EuCdZQNsSCQ2BthpOieK8LIfnZoZQaiZPn0C2qUkB7bmCYCsWZyww4BbU0TK9iNi7oAvMHa5JoNT/MvonAsfnT1SsgsTOrEkl4A8M3PYCJe7FQJbQ4NWepEVskgLhQ1RUaPaYrGjoQC7quXhuBQGbqVvImvnt4DSjD3NpyWL5mmdV2frfLKsdme/Yre4ssns+H4Gek2KY7brBvu6iG80RUrIvVnj3kMNhXx/2HD6bpyZMJ0Z0Yw==
+ b=Y8SQqOEAfNwf3SpxM92HtgM+Ec2bBKgrO34wkn+8G3se6/Oue1nlow8k3w+arhCOSR5Zp+YEPQ1dgWzCi6RnmdoyKI7eXPBYVvSWQyGbz6bD+0vSmWsLZp1u/t7OHOP+EVvNJ3ebhnv428yZwEwzZG+GW1/mk/cSAqfQ5sOlWWXzA2MNxCy6CxjyItiB/XtdwBCjDDUI02U8NayYvHzf+UyxXFNTt9HGNrMGZ/SMUYO5cqu/UQxuXDSX5yqKHRyXUHMYx7TufVzAAxorOVMTJIBXwpa2TPZZ0mcvTtmna1FnMxZB5CVfvXpGAgyl554i4RcdK33eog7Rfets4DqsVQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a4p4h4bzZM5sfOuNVujcefEYRTWgc4pQScq+9NYgU9g=;
- b=EsrEgbxm1WJez57hdE3R7pmjtL4iTzwALhI9+fwnjrvCo/PBSpikFCHpgmfpMFUhIioJL0TPs37g3VxI0VqJfnxjdf9sE57HMX/TGHOhukdlIORLGI1QzzeggtubOqcJUqMP/UUW+xUFM/PAMlbCYh9vBSDLfRwRgexIaM3fCAUdoUtzFRDZ8AxNDMYpPVl9hzdWaa5ZxKBeS67X2wKMC04IjYsRMyh0DeNQ19WhkaMvs+/IPBz+NDmvGRRLJEElJJVFSTPhLqjz4fW/BDajCeD7QrP8/dhX22nS6Xc5XVAvzoXUyyf+ymWu1ew2c+gH2ElYIE9iTBwRDeAMgOpAlQ==
+ bh=LUkOYmJcVDmfb5Jby64t2SlL5H9/rS1fgISYgzUBLCA=;
+ b=GuU0b7/CsEGciJIUeHqriyqGuZYxLE0hVpLy7I1ZYt8QNV8zDkqb85KR9GENMIMGn19PAlTgKYALutltLbgfhZHcRbyD7wXu74GohlkMh+wOVGq32wti6tzWqiTUcCiPi8bF0oLft4+TYEy7L1G6YW8C5aVqpNtfcDJdS0NRTrnfMGldlOR4ZUhXs4vKnEQWcPse241gOSCaOwq55Xvuy8jOaKha6uMT4qAPIdSLVcz1TPYpqM689TOKf1YaNycbKTyUZVH0+aNhaAIbx77nngcJHoc8NZNtZdepENGZvWJQ6qi3vrDzRQKrrci9bR066Qj7ifdG9aBeZ8NV1NMnxg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a4p4h4bzZM5sfOuNVujcefEYRTWgc4pQScq+9NYgU9g=;
- b=ZBedvmKeViap8lyNBNUJQWSfQHQSmmUKMonir1H/oMJEOQy2zSbkf52o2bo+WBoSaucBX7lAKX0m3ddlhGoEbPypr2ivXkAGenjkzU8MCsjSFI4Lx48cIZfZ9U34IJTf5PbCEUlSRRmit/O4iFM5hRZ4vUMbw3quBBvlYIPAM+A=
+ bh=LUkOYmJcVDmfb5Jby64t2SlL5H9/rS1fgISYgzUBLCA=;
+ b=p/3d+dAVPt8KMRPzKH2ihx6N9IzsuYa8VcODCuIxRv4cChcgaI0tfkpdrxsbL9ifsjGedqF2TQ7BaoSb9j0qgOSRlaPN7GxwHa8iCEAcOe79BuY8KJH53GbW6YzcxrwNBMqEJlqt5yE8GUEhkI1dmer+ynTGLSwCzE8ip4VGQeQ=
 Authentication-Results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
  VI1PR05MB4989.eurprd05.prod.outlook.com (20.177.52.22) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2856.20; Mon, 30 Mar 2020 07:17:21 +0000
+ 15.20.2856.20; Mon, 30 Mar 2020 07:17:23 +0000
 Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
  ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2856.019; Mon, 30 Mar 2020
- 07:17:21 +0000
+ 07:17:23 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Mark Zhang <markz@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 1/4] net/mlx5: Use a separate work queue for fib event handling
-Date:   Mon, 30 Mar 2020 00:16:52 -0700
-Message-Id: <20200330071655.169823-2-saeedm@mellanox.com>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
+        Mark Bloch <markb@mellanox.com>, Roi Dayan <roid@mellanox.com>
+Subject: [net-next 2/4] net/mlx5: E-Switch: Move eswitch chains to a new directory
+Date:   Mon, 30 Mar 2020 00:16:53 -0700
+Message-Id: <20200330071655.169823-3-saeedm@mellanox.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200330071655.169823-1-saeedm@mellanox.com>
 References: <20200330071655.169823-1-saeedm@mellanox.com>
@@ -55,130 +54,170 @@ X-ClientProxiedBy: BYAPR04CA0032.namprd04.prod.outlook.com
  (2603:10a6:803:5e::23)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BYAPR04CA0032.namprd04.prod.outlook.com (2603:10b6:a03:40::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.20 via Frontend Transport; Mon, 30 Mar 2020 07:17:19 +0000
+Received: from smtp.office365.com (73.15.39.150) by BYAPR04CA0032.namprd04.prod.outlook.com (2603:10b6:a03:40::45) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.20 via Frontend Transport; Mon, 30 Mar 2020 07:17:21 +0000
 X-Mailer: git-send-email 2.25.1
 X-Originating-IP: [73.15.39.150]
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 153da801-f0e5-4794-0e59-08d7d47a6327
+X-MS-Office365-Filtering-Correlation-Id: 06cc80e7-56e7-492b-7d35-08d7d47a647e
 X-MS-TrafficTypeDiagnostic: VI1PR05MB4989:|VI1PR05MB4989:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB498914468E67972EB924620EBECB0@VI1PR05MB4989.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <VI1PR05MB49895C122AA9A64AF0CC39E2BECB0@VI1PR05MB4989.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-Forefront-PRVS: 0358535363
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(346002)(366004)(376002)(396003)(39860400002)(136003)(5660300002)(6512007)(8676002)(107886003)(478600001)(81156014)(66476007)(86362001)(66556008)(4326008)(6486002)(66946007)(6506007)(16526019)(6666004)(54906003)(52116002)(1076003)(8936002)(81166006)(186003)(26005)(2906002)(316002)(956004)(2616005)(36756003)(54420400002);DIR:OUT;SFP:1101;
 Received-SPF: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RltNxgzVEgW0HrfERT5ABjp+mmOtjqRVk4TWTgKvgnM7zBIASmYVkYRJ0Byu+mRNAn7Tf/h9GUo9cDENPfnh6mkzmJ5p5CeF5xf5LaNW00cdQbKYXdAPgvTqA9p6muaEc3q7u/ahheK2Fzs9mf3lDffxadPghcxBoxITyd+d7V18hnpYgHzDamTEQNUFI7gyX0F4UgIP8U0ciXk5+60Lo8ZkGyx5fmkIeDU8RuRuoFEi/2BH0ceS5J4LzwiresuvFDgjVyz/E73vgQaogWXHxagCeU7B6vLdvb3HRGhh9GWPdqQQMuufm1cGfSlWe0p8YHuvmbTUFD7JNiP30F3SZKARa/o4rukAhZcylYgXvZGS4hJ8BQo56hBc68CFmH6XAE5SWa+vNOOt4fozhaBcJ+Sa7mtBi1EyhatnzymdjgedBG/nf/FL8Wepac8UprnhDiqL+eJxeKelOWBacBdpzaHAixNX6/ft7UjCEuus89XHf0DlMd3yiPFIbpk8Pw98
-X-MS-Exchange-AntiSpam-MessageData: 2MuyFWINC3PPwmiO0cY1Lt7iMRlucifSTg9ghHIxNXxXIUwH1dR69fY1P1jG/ogD3UYh7qUyj/0idpV1PITw6fBi5lVFjCH5UBviYcD+9MJq7RBKQvFXDZXmErQvKvSECz4cPSrorV2BFUb3FmXMcA==
+X-Microsoft-Antispam-Message-Info: DLx5KLRUT2gsmhlqrJywohqTRpQ9XVloa6uVES+x+g4H/hLV1uF5X7xmPsvSmbQigLDbjSfsJxqD/+Us6fkP2yQ1tiz8kuJ8C5qnTsMhwwRNRegSAowADyfk3DYgLG1EQPbBoEZauoHvnMY+kc8yJFZou1lOIGMLtr2iDn72QrNtFaCm+Zv/raThqtoI2fAV/l9nGpy7l0T/voT35N+XFACIj2he3ElVsdhsS7bSup3E7uTr/humEnSkgPqAyVuXSV2GSSrEcpWfLJhQwzgBB7knD+Hf9OZ15bKolj6yf72VL2X+WiEwTPhvrLcC7FnRZ1zgP/JLj8rLUTXXNIFVzh8nfsoAYiNbPmqvo+iOLumCggUoYWBoAXxO8/kvm+3i3Huk2RvsYKDlxS7IgJw85g5P3Cu1TFt9/evCMYlA4r9EIFWjoT1P4c4QmPFtim8sVLHZsoXeQc6B+1Aopzbtvxx9jgOc3DJ9V/dB3TKoa+i/8z2RrLFFFX1Gt7p4dpCw
+X-MS-Exchange-AntiSpam-MessageData: pyCA6d7fOASTZdMfKEcCkxft1GA9LKOqZ2RzIN/nek1MofHDyYaMU8hKlvMhjoh1/HQyZx2Ye89sduLNKGbqdSPqT5OiXZa1hDYulgRfZelEdZxg9/HWs++DucdbAK4xIiKTmAmHwdB5/dwzMf0qpw==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 153da801-f0e5-4794-0e59-08d7d47a6327
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2020 07:17:21.2516
+X-MS-Exchange-CrossTenant-Network-Message-Id: 06cc80e7-56e7-492b-7d35-08d7d47a647e
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2020 07:17:23.5103
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +jCb5snk/xyQIxdLgOuDjQsuRP4P9NeAcO1AEsyiWe7KAynFFLiEzqnEY+kovD43LQY8OWNPLYPI/ziSLb0ymQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: V/YL7xEUSvUqnNLKSSNe5R1L2H+aozYrJ6eoXviV9qAt55c3GJy3AWde2QiyE8VP3fug1sFnm0IRFi/RpspplA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4989
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mark Zhang <markz@mellanox.com>
+eswitch_offloads_chains.{c,h} were just introduced this kernel release
+cycle, eswitch is in high development demand right now and many
+features are planned to be added to it. eswitch deserves its own
+directory and here we move these new files to there, in preparation for
+upcoming eswitch features and new files.
 
-In VF lag mode when remove the bonding module without bring down the
-bond device first, we could potentially have circular dependency when we
-unload IB devices and also handle fib events:
-1. The bond work starts first;
-2. The "modprobe -rv bonding" process tries to release the bond device,
-   with the "pernet_ops_rwsem" lock hold;
-3. The bond work blocks in unregister_netdevice_notifier() and waits for
-the lock because fib event came right before;
-4. The kernel fib module tries to free all the fib entries by broadcasting
-   the "FIB_EVENT_NH_DEL" event;
-5. Upon the fib event this lag_mp module holds the fib lock and queue a
-   fib work.
-So:
-   bond work -> modprobe task -> kernel fib module -> lag_mp -> bond work
-
-Today we either reload IB devices in roce lag in nic mode or either handle
-fib events in switchdev mode, but a new feature could change that we'll
-need to reload IB devices also in switchdev mode so this is a future proof
-fix as one may not notice this later.
-
-Signed-off-by: Mark Zhang <markz@mellanox.com>
-Reviewed-by: Roi Dayan <roid@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+Reviewed-by: Mark Bloch <markb@mellanox.com>
+Reviewed-by: Roi Dayan <roid@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c | 14 ++++++++++----
- drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h |  1 +
- 2 files changed, 11 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile                | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c              | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c                | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c                 | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/esw/Makefile            | 2 ++
+ .../mlx5/core/{eswitch_offloads_chains.c => esw/chains.c}       | 2 +-
+ .../mlx5/core/{eswitch_offloads_chains.h => esw/chains.h}       | 2 ++
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c      | 2 +-
+ 8 files changed, 10 insertions(+), 6 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/esw/Makefile
+ rename drivers/net/ethernet/mellanox/mlx5/core/{eswitch_offloads_chains.c => esw/chains.c} (99%)
+ rename drivers/net/ethernet/mellanox/mlx5/core/{eswitch_offloads_chains.h => esw/chains.h} (98%)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-index 416676c35b1f..e9089a793632 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-@@ -93,9 +93,8 @@ static void mlx5_lag_set_port_affinity(struct mlx5_lag *ldev,
- static void mlx5_lag_fib_event_flush(struct notifier_block *nb)
- {
- 	struct lag_mp *mp = container_of(nb, struct lag_mp, fib_nb);
--	struct mlx5_lag *ldev = container_of(mp, struct mlx5_lag, lag_mp);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+index 7408ae380d23..6d32915000fc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
++++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+@@ -43,7 +43,7 @@ mlx5_core-$(CONFIG_MLX5_TC_CT)	     += en/tc_ct.o
+ # Core extra
+ #
+ mlx5_core-$(CONFIG_MLX5_ESWITCH)   += eswitch.o eswitch_offloads.o eswitch_offloads_termtbl.o \
+-				      ecpf.o rdma.o eswitch_offloads_chains.o
++				      ecpf.o rdma.o esw/chains.o
+ mlx5_core-$(CONFIG_MLX5_MPFS)      += lib/mpfs.o
+ mlx5_core-$(CONFIG_VXLAN)          += lib/vxlan.o
+ mlx5_core-$(CONFIG_PTP_1588_CLOCK) += lib/clock.o
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+index a22ad6b90847..f4b28eb9d943 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+@@ -13,11 +13,11 @@
+ #include <net/netfilter/nf_flow_table.h>
+ #include <linux/workqueue.h>
  
--	flush_workqueue(ldev->wq);
-+	flush_workqueue(mp->wq);
- }
++#include "esw/chains.h"
+ #include "en/tc_ct.h"
+ #include "en.h"
+ #include "en_tc.h"
+ #include "en_rep.h"
+-#include "eswitch_offloads_chains.h"
  
- struct mlx5_fib_event_work {
-@@ -293,7 +292,7 @@ static int mlx5_lag_fib_event(struct notifier_block *nb,
- 		return NOTIFY_DONE;
- 	}
+ #define MLX5_CT_ZONE_BITS (mlx5e_tc_attr_to_reg_mappings[ZONE_TO_REG].mlen * 8)
+ #define MLX5_CT_ZONE_MASK GENMASK(MLX5_CT_ZONE_BITS - 1, 0)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index d7fa89276ea3..559453b4c6b6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -41,7 +41,7 @@
+ #include <net/ipv6_stubs.h>
  
--	queue_work(ldev->wq, &fib_work->work);
-+	queue_work(mp->wq, &fib_work->work);
+ #include "eswitch.h"
+-#include "eswitch_offloads_chains.h"
++#include "esw/chains.h"
+ #include "en.h"
+ #include "en_rep.h"
+ #include "en_tc.h"
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+index 901b5fa5568f..6474e0a01a54 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
+@@ -51,7 +51,7 @@
+ #include "en_rep.h"
+ #include "en_tc.h"
+ #include "eswitch.h"
+-#include "eswitch_offloads_chains.h"
++#include "esw/chains.h"
+ #include "fs_core.h"
+ #include "en/port.h"
+ #include "en/tc_tun.h"
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/esw/Makefile
+new file mode 100644
+index 000000000000..c78512eed8d7
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0-only
++subdir-ccflags-y += -I$(src)/..
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/chains.c
+similarity index 99%
+rename from drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
+rename to drivers/net/ethernet/mellanox/mlx5/core/esw/chains.c
+index 184cea62254f..029001040737 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/chains.c
+@@ -5,7 +5,7 @@
+ #include <linux/mlx5/mlx5_ifc.h>
+ #include <linux/mlx5/fs.h>
  
- 	return NOTIFY_DONE;
- }
-@@ -306,11 +305,17 @@ int mlx5_lag_mp_init(struct mlx5_lag *ldev)
- 	if (mp->fib_nb.notifier_call)
- 		return 0;
+-#include "eswitch_offloads_chains.h"
++#include "esw/chains.h"
+ #include "en/mapping.h"
+ #include "mlx5_core.h"
+ #include "fs_core.h"
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.h b/drivers/net/ethernet/mellanox/mlx5/core/esw/chains.h
+similarity index 98%
+rename from drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.h
+rename to drivers/net/ethernet/mellanox/mlx5/core/esw/chains.h
+index f3b9ae6798f3..f8c4239846ea 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads_chains.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/chains.h
+@@ -4,6 +4,8 @@
+ #ifndef __ML5_ESW_CHAINS_H__
+ #define __ML5_ESW_CHAINS_H__
  
-+	mp->wq = create_singlethread_workqueue("mlx5_lag_mp");
-+	if (!mp->wq)
-+		return -ENOMEM;
++#include "eswitch.h"
 +
- 	mp->fib_nb.notifier_call = mlx5_lag_fib_event;
- 	err = register_fib_notifier(&init_net, &mp->fib_nb,
- 				    mlx5_lag_fib_event_flush, NULL);
--	if (err)
-+	if (err) {
-+		destroy_workqueue(mp->wq);
- 		mp->fib_nb.notifier_call = NULL;
-+	}
- 
- 	return err;
- }
-@@ -323,5 +328,6 @@ void mlx5_lag_mp_cleanup(struct mlx5_lag *ldev)
- 		return;
- 
- 	unregister_fib_notifier(&init_net, &mp->fib_nb);
-+	destroy_workqueue(mp->wq);
- 	mp->fib_nb.notifier_call = NULL;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h
-index 79be89e9c7a4..258ac7b2964e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.h
-@@ -16,6 +16,7 @@ enum mlx5_lag_port_affinity {
- struct lag_mp {
- 	struct notifier_block     fib_nb;
- 	struct fib_info           *mfi; /* used in tracking fib events */
-+	struct workqueue_struct   *wq;
- };
- 
- #ifdef CONFIG_MLX5_ESWITCH
+ bool
+ mlx5_esw_chains_prios_supported(struct mlx5_eswitch *esw);
+ bool
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 612bc7d1cdcd..f171eb2234b0 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -37,7 +37,7 @@
+ #include <linux/mlx5/fs.h>
+ #include "mlx5_core.h"
+ #include "eswitch.h"
+-#include "eswitch_offloads_chains.h"
++#include "esw/chains.h"
+ #include "rdma.h"
+ #include "en.h"
+ #include "fs_core.h"
 -- 
 2.25.1
 
