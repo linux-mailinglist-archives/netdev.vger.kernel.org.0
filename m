@@ -2,110 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF29D197EA0
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 16:39:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97BE8197EA1
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 16:39:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728180AbgC3OjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 10:39:16 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:37551 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727469AbgC3OjP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 10:39:15 -0400
-Received: by mail-wr1-f68.google.com with SMTP id w10so22010913wrm.4
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 07:39:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9cg405MNSrpJNCO5I+fdNIK6fKBJ4DD0d4o72zOc0ho=;
-        b=loSbGk7/vOeGOy9/LUk/9IDljQnRuV9E+eSU8q/1yRSqCSFZm+Orh7b2t9ehm1AzQi
-         yLua2fJwUYdMobztlXKTdVTBwA6m8TgmgfLspPbOSVe3yGLjMNJRdMzpNVbW0LEatgxd
-         yN7JP3w4yuhFuuCCIsmQcjhR59FALYaXxAtUPeBbKqvxbXW/KLdYFmGPw8gR6Du6/cRJ
-         jmDcWJRvAD02LbR+N2J1bhCujNq63O2ehSaOJqGN6WwzkWCCj6Sbp7Kh6whbxZ+0JbPh
-         U4PbPgem75rW3McL+IRadtmqWsZF1N1ttUzKTxD+mtSKbRrQrG2E1fkIffgXZ00JUOIB
-         a1gQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9cg405MNSrpJNCO5I+fdNIK6fKBJ4DD0d4o72zOc0ho=;
-        b=quVvnZG02dfxUqqgW1oUMsXd3AhPCYoVetPQOJHKCYBqLBuhnElVyotJ9iNQWioVVg
-         Kn6FO/LXOfRfNJ7TmDfWSUZKa60iwYkzmUSf5jN0xl3nZe2BnHIIIEEu7AQP21WrXxnG
-         nhxzaFkk4icQZ6IM+t2t0P9+4xvgj5pzyOmgms9LcBbxj4MLPAE8b2DNGdj5OC93BkJY
-         DqoXFeqWuol/6THHxkv3YylqjV5/vxOJ/NzivycLrZ7F6jhRatKmdWteujDCfr0i4UZL
-         x3cFO/O3j6QnikdDSEefs3p2fSais0E7Q/sY9n5L8NPgIlw8UfRjLF7Hji/dY/byG8cr
-         UI7g==
-X-Gm-Message-State: ANhLgQ1DQSjhoBaOEIWOk/M8Wi8fGYLpM8YhWdJb3VR0B6bldmI9cDER
-        RSHsyJgliUMRCwQUDwgrqSpTUHHT
-X-Google-Smtp-Source: ADFU+vv9KPk2CKvP/AzQz/bZpdOxzXFemTFho+wE5C5wV1i8/fWv7zEIklKNdPTMljvlqHMHeETJFA==
-X-Received: by 2002:a05:6000:a:: with SMTP id h10mr16141303wrx.226.1585579153630;
-        Mon, 30 Mar 2020 07:39:13 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:c854:d136:fc5b:3950? (p200300EA8F296000C854D136FC5B3950.dip0.t-ipconnect.de. [2003:ea:8f29:6000:c854:d136:fc5b:3950])
-        by smtp.googlemail.com with ESMTPSA id l10sm22004898wrq.95.2020.03.30.07.39.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Mar 2020 07:39:13 -0700 (PDT)
-Subject: Re: issue with 85a19b0e31e2 on 4.19 -> revert
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     David Miller <davem@davemloft.net>, nic_swsd@realtek.com,
-        cwhuang@android-x86.org, netdev@vger.kernel.org
-References: <40373530-6d40-4358-df58-13622a4512c2@gmail.com>
- <20200327.155753.1558332088898122758.davem@davemloft.net>
- <d2a7f1f1-cf74-ab63-3361-6adc0576aa89@gmail.com>
- <20200327.162400.1906897622883505835.davem@davemloft.net>
- <05d53fd2-f210-1963-96d1-2dc3d0a3a8c7@gmail.com>
- <20200330143038.GA449036@kroah.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <c8963e4a-2cda-e9f0-eb4d-f6919c58391e@gmail.com>
-Date:   Mon, 30 Mar 2020 16:39:08 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1728397AbgC3Oja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 10:39:30 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:59484 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727183AbgC3Oja (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 10:39:30 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id B5ADD20523;
+        Mon, 30 Mar 2020 16:39:29 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Fx4aNTChbPxE; Mon, 30 Mar 2020 16:39:29 +0200 (CEST)
+Received: from cas-essen-02.secunet.de (202.40.53.10.in-addr.arpa [10.53.40.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 4990C2006F;
+        Mon, 30 Mar 2020 16:39:29 +0200 (CEST)
+Received: from gauss2.secunet.de (10.182.7.193) by cas-essen-02.secunet.de
+ (10.53.40.202) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Mon, 30 Mar
+ 2020 16:39:29 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id D868C3180136; Mon, 30 Mar 2020 16:39:28 +0200 (CEST)
+Date:   Mon, 30 Mar 2020 16:39:28 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Florian Westphal <fw@strlen.de>
+CC:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>, <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net] udp: fix a skb extensions leak
+Message-ID: <20200330143928.GN13121@gauss3.secunet.de>
+References: <e17fe23a0a5f652866ec623ef0cde1e6ef5dbcf5.1585213585.git.lucien.xin@gmail.com>
+ <20200330132759.GA31510@strlen.de>
+ <20200330134531.GK13121@gauss3.secunet.de>
+ <20200330141147.GC23604@breakpoint.cc>
 MIME-Version: 1.0
-In-Reply-To: <20200330143038.GA449036@kroah.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20200330141147.GC23604@breakpoint.cc>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ cas-essen-02.secunet.de (10.53.40.202)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.03.2020 16:30, Greg Kroah-Hartman wrote:
-> On Sat, Mar 28, 2020 at 10:52:19AM +0100, Heiner Kallweit wrote:
->> On 28.03.2020 00:24, David Miller wrote:
->>> From: Heiner Kallweit <hkallweit1@gmail.com>
->>> Date: Sat, 28 Mar 2020 00:10:57 +0100
->>>
->>>> Somehow that change made it to -stable. See e.g. commit
->>>> 85a19b0e31e256e77fd4124804b9cec10619de5e for 4.19.
->>>
->>> This is a serious issue in that it seems that the people maintaining
->>> the older stable release integrate arbitrary patches even if they
->>> haven't been sent to v5.4 and v5.5
->>>
->>> And I don't handle -stable backport submissions that far back anyways.
->>>
->>> Therefore, I'm not going to participate in that ongoing problem, so
->>> feel free to contact the folks who integrated those changes into
->>> -stable and ask them to revert.
->>>
->>> Thanks.
->>>
->> Greg,
->>
->> commit 85a19b0e31e2 ("r8169: check that Realtek PHY driver module is loaded")
->> made it accidentally to 4.19 and causes an issue with Android/x86.
->> Could you please revert it?
+On Mon, Mar 30, 2020 at 04:11:47PM +0200, Florian Westphal wrote:
+> Steffen Klassert <steffen.klassert@secunet.com> wrote:
+> > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > index 621b4479fee1..7e29590482ce 100644
+> > > --- a/net/core/skbuff.c
+> > > +++ b/net/core/skbuff.c
+> > > @@ -3668,6 +3668,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+> > > 
+> > >                 skb_push(nskb, -skb_network_offset(nskb) + offset);
+> > > 
+> > > +               skb_release_head_state(nskb);
+> > >                  __copy_skb_header(nskb, skb);
+> > > 
+> > >                 skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
+> > > 
+> > > AFAICS we not only leak reference of extensions, but also skb->dst and skb->_nfct.
+> > 
+> > Would be nice if we would not need to drop the resources
+> > just to add them back again in the next line. But it is ok
+> > as a quick fix for the bug.
 > 
-> Now reverted.  Should I also drop this from 5.4.y and 5.5.y?
-> 
-Thanks! On 5.4 and 5.5 it's not needed to revert. The following fix from 5.6
-should make it to 5.4 and 5.5 soon.
+> Yes, but are these the same resources?  AFAIU thats not the case, i.e.
+> the skb on fraglist can have different skb->{dst,extension,_nfct} data
+> than the skb head one, and we can't tell if that data is still valid
+> (rerouting for example).
 
-2e8c339b4946 ("r8169: fix PHY driver check on platforms w/o module softdeps")
-
-> thanks,
-> 
-> greg k-h
-> 
-Heiner
+Some are the same, others not. Originally, I used
+a subset of __copy_skb_header here. But decided then
+to use __copy_skb_header to make sure I don't forget
+anything. So this fix is ok for now.
