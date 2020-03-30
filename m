@@ -2,212 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A7212197CB7
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 15:19:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED7D6197CC2
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 15:22:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730356AbgC3NS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 09:18:59 -0400
-Received: from mail-vk1-f194.google.com ([209.85.221.194]:45536 "EHLO
-        mail-vk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730166AbgC3NS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 09:18:59 -0400
-Received: by mail-vk1-f194.google.com with SMTP id b187so4631540vkh.12
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 06:18:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=XwZpLeLtaipuZp19cuI2yuUic0Ig6FMuaAiCXHLwbS0=;
-        b=Y8uGNkbJRMeI5Q5ciI0E70h+TD8j78aOmh3jT0o6oN/G54unchhocb4VFV1n1aUzq+
-         gjQiFCAo35K+fRVXcYKrELxcxzdD3WyeNQPRcI5m+YZ1UcyDutmN6LzowbhvK8GnJCmr
-         8fbqTG816AyZUAWkSNb21l3f+VHBWbc4Qt3HzrvTVFvaEkkTeNsJ2wFp4tu9q7G28jqM
-         Fvf6Uhws4PpbtbA73JeWUVjqAzQzEjxtxprncMBFs2MKsj2Gp25/IMUpmOWhLKe7mo4R
-         gxHriaBUKgO8AKyJFP+IwHhPKU9L3a16aZZfXxfoYf6DQiFYlUCx36UGXSQyL9a9FC1T
-         ziAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=XwZpLeLtaipuZp19cuI2yuUic0Ig6FMuaAiCXHLwbS0=;
-        b=EcZISstummtX1KSDx9iZas2Ckbx8f/ufhDboc1p795KPp4M/gljoJqAfqiVVfM8AW+
-         f0o0I7nYYEfIv5QRd93WOq/qnygQ+WG5FumEn4YHDQsENwVlv20K/ePNybLOjsViFxts
-         tWwjpygLRgokXHUol0hviXMm3OYx1FFOlYbZ5/Kdq90IXCy2h1CZvCw0OISFifiOU9uw
-         eHeKaEl6RpLp98u8wSTVonvTYqlcMVyLXqBVt5H4aqikmIHzuG7LtKZ1oo5n/3oVqw+5
-         TGzS/+xNHS4JvNP2p1PSWqFLw0yF6+EojJEZ9T9h84e1Ua2c85im124sdAYf5Wzww99g
-         kYXQ==
-X-Gm-Message-State: AGi0PuYyOU3pwV9SNcTnfej9iQJWpM/Rc++7UkKOXeAPj3a14M8pNSaH
-        rN7Vif/4G2ti58QVLwUaVpiv2qACy3rouvPd+3Pl6g==
-X-Google-Smtp-Source: APiQypLMFSV+imrA+mJ1GR2URlkGhGdGfIKo4yEEuan55vG0q/lADU1cisCdWcaqvU2Tbk+eKniDKKJc1xx2bJXLHPk=
-X-Received: by 2002:a1f:5003:: with SMTP id e3mr7430294vkb.59.1585574337389;
- Mon, 30 Mar 2020 06:18:57 -0700 (PDT)
+        id S1730272AbgC3NWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 09:22:49 -0400
+Received: from mail-eopbgr50125.outbound.protection.outlook.com ([40.107.5.125]:45354
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729976AbgC3NWt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 09:22:49 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BpBKrILBDTVRiLrZO/dzJ00EYjpWVda1iQs/Q9NOdXHx541X8OAsg5Ulaup31yAJLS+K9bBFMbyywa0eBeOb+uWSMxhJzgB5QDs1NEY8OZgaQG/Ginottf+tPbC8MZReUkiFw/DdYsoSxdkRqeqIdpnoVDy4OAQj5UVixKRRG1GgOg+DWVRMmh29VwJu2+GqBgwLSmXx+AkSu4YG7WbKeXfltNvaUelutZsCQfOwGs+7e76Gt75WTVpH5sFCPvQYQUky3yHL4QAvzrTIXufArvXRCuHxt+jKnAvXuZ4Dlz5b9waUE97rwtJSeOG2vW7h7zDUdOt9nNeqQ4aBdTMRPQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hnsmYwmAS4lxLze6hO74E9+y4r8eKrAkKex5ZWZrdU8=;
+ b=BYbQbq6MHbp2iIi+93mEjjHK6osUfaQwwiemZhsQvd5P4fcnCBBxmXdfu6dD3iI3JkzYsWVutnKXaYgPrwyVedEF+3FKbjftjZWY6S4myVi8pTvN3YHEq9E2Gz26/nCVi18YW+ULtQyQ6qRK1axbXhaRL2jLQBGudx9zsN6w1wV2lIIUCJUEzKFf9qng3PNrcqtsFoX0xPeC159LmnFt0f0JJq3JyqYzYLnObqYyAeb015wfIVdec3WN1cvpPW2SmtKXpvXiOekSDiJTpmSX0vvb4CNMa33FpCJ36BbYcuamNuj4GwQqc1HivEbE2ISVn8kWkQDovW26j0UYwPSKBA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
+ dkim=pass header.d=prevas.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hnsmYwmAS4lxLze6hO74E9+y4r8eKrAkKex5ZWZrdU8=;
+ b=g8VjKeebLfU2m/LrQanI4zDdjRTJ24CqeanH/AV0qawhIgfl3ECM11MCRx5T6L08/Bal0Ovd1kKuhsMFJ4SjVYb5Erg3oFTA2Uz5pDNf4bu27NDS9Bn7Mw9d9S/RPpj0CwJp1ou2u78KyczFZujsrfw8ZEIx9EJZ2TNPPb2Sx/4=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=rasmus.villemoes@prevas.dk; 
+Received: from VI1PR10MB2765.EURPRD10.PROD.OUTLOOK.COM (20.178.126.85) by
+ VI1PR10MB2253.EURPRD10.PROD.OUTLOOK.COM (20.177.62.145) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2856.20; Mon, 30 Mar 2020 13:22:46 +0000
+Received: from VI1PR10MB2765.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::e58f:1097:b71d:32c7]) by VI1PR10MB2765.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::e58f:1097:b71d:32c7%5]) with mapi id 15.20.2856.019; Mon, 30 Mar 2020
+ 13:22:46 +0000
+To:     Network Development <netdev@vger.kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Subject: ingress rate limiting on mv88e6xxx
+Message-ID: <056a0c42-3831-9ecb-a455-637c8ea13516@prevas.dk>
+Date:   Mon, 30 Mar 2020 15:22:44 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM5PR0402CA0015.eurprd04.prod.outlook.com
+ (2603:10a6:203:90::25) To VI1PR10MB2765.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:803:e1::21)
 MIME-Version: 1.0
-Received: by 2002:ab0:6507:0:0:0:0:0 with HTTP; Mon, 30 Mar 2020 06:18:56
- -0700 (PDT)
-X-Originating-IP: [5.35.40.234]
-In-Reply-To: <e8ecb2ff-6241-e79d-047d-19013e480832@suse.com>
-References: <1584364176-23346-1-git-send-email-kda@linux-powerpc.org>
- <f75365c7-a3ca-cf12-b2fc-e48652071795@suse.com> <CAOJe8K3gDJrdKz9zVZNj=N76GygMnPbCKM0-kVfoV53fASAefg@mail.gmail.com>
- <250783b3-4949-d00a-70e2-dbef1791a6c4@suse.com> <CAOJe8K0fBBi-M+Tdv2kC+ZaNvjx92tzYaU1QX2zr8QOBRLwu3g@mail.gmail.com>
- <9eb74bee-8434-62aa-8158-bae130353670@suse.com> <CAOJe8K34OS9vq9jWjVE9nrzvF+kdZnyAfGSS5tnJG-obDRwjSg@mail.gmail.com>
- <d29338f2-62ef-e33c-a3d8-a9a9d2e3bf63@suse.com> <CAOJe8K3+ddELP=nac+WRB1d5ccsDQu2UBVY4T2GiFFUfhk0jcQ@mail.gmail.com>
- <fdac742b-71ae-6945-ccc8-6af5b75446e1@suse.com> <CAOJe8K2X39rEN+Rjvoc3_TYfKwf0h117U=-pbRPAcKZvMPWTmA@mail.gmail.com>
- <e8ecb2ff-6241-e79d-047d-19013e480832@suse.com>
-From:   Denis Kirjanov <kda@linux-powerpc.org>
-Date:   Mon, 30 Mar 2020 16:18:56 +0300
-Message-ID: <CAOJe8K3toNrq_LZNpw9x8-ABEjYE3x9k03j7Z6A6Xuwgv7BLiQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v4] xen networking: add basic XDP support for xen-netfront
-To:     =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
-        wei.liu@kernel.org, paul@xen.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.149] (5.186.116.45) by AM5PR0402CA0015.eurprd04.prod.outlook.com (2603:10a6:203:90::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.19 via Frontend Transport; Mon, 30 Mar 2020 13:22:45 +0000
+X-Originating-IP: [5.186.116.45]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6cb58fd4-89cf-470f-48fe-08d7d4ad6f37
+X-MS-TrafficTypeDiagnostic: VI1PR10MB2253:
+X-Microsoft-Antispam-PRVS: <VI1PR10MB22534BF846CF5707299B9CD393CB0@VI1PR10MB2253.EURPRD10.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 0358535363
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR10MB2765.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFTY:;SFS:(10019020)(396003)(376002)(39850400004)(366004)(346002)(136003)(44832011)(316002)(16576012)(6916009)(956004)(16526019)(186003)(54906003)(2616005)(81156014)(26005)(81166006)(6486002)(31696002)(52116002)(36756003)(478600001)(86362001)(5660300002)(2906002)(4326008)(8676002)(4744005)(31686004)(8936002)(8976002)(66476007)(66556008)(66946007);DIR:OUT;SFP:1102;
+Received-SPF: None (protection.outlook.com: prevas.dk does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vc8zI7/rLsSlC2ZLBIXrh4z1e2FGYHd+SNXvkYFN+pdG6MI72gHr3KIao2OSs69No6E93XxcQscoCgeJCF8buk9R0J4KjhDTZ4tAzuqka2N35FaYYVrwgjtDKn42pcMWG/tBZVFtnt4+FSDesOr83dd+yPeJXU5e6avRunvd1ZXYI7d2H91UaQ+ZCiTZj8I5cl6FTrLpv4yy6PH7DnWBV8hSSF/BTiXE8DDOg5MgJGf52ufgx+MX6RGkv7YvWHmLFF1YCwV+NciO5UIJGxEHDTEx66chQ6vVFYUGzVHr1zjYtu+eaHWrYWbM+5Nuypbl2DWS/keEH2SvEgSH6z3oj9m8xXxyb4NG4zRmrVd1A9fpVzX4QPSaFkNEhInD4kM3sOJIEKMPLBXbML/90ApMAOpDTwjYX6K8bzmTnaDHTuzLxzcGSuxf8V8LCurFOvno
+X-MS-Exchange-AntiSpam-MessageData: 0Nujdj/meaQZ972YoUsSBmL9/IiA5mdD1p3P5yYmHarm8BYq5bLmWzqPJUHTL2+fMlfx5Kc8bGt074NtzlhWzixAakdN9++xDX2i8jhacXESFuFWRCgFz9ytl6OKD5k0J0G9FkjIYxePXIGVCMqQIg==
+X-OriginatorOrg: prevas.dk
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6cb58fd4-89cf-470f-48fe-08d7d4ad6f37
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2020 13:22:45.8878
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8TIazX12cSCXkC0L6hsHtxeVNzhLIr3h2sssF7YAYgqI4gZqhZInQAtvZHDtJuz8LNVwGmVXmmbKmCplSNLBY5FdRlkS7nEoE/V/hxUEetE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB2253
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/30/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
-> On 30.03.20 15:09, Denis Kirjanov wrote:
->> On 3/30/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
->>> On 30.03.20 14:16, Denis Kirjanov wrote:
->>>> On 3/23/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
->>>>> On 23.03.20 11:49, Denis Kirjanov wrote:
->>>>>> On 3/23/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
->>>>>>> On 23.03.20 11:15, Denis Kirjanov wrote:
->>>>>>>> On 3/18/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
->>>>>>>>> On 18.03.20 13:50, Denis Kirjanov wrote:
->>>>>>>>>> On 3/18/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
->>>>>>>>>>> On 16.03.20 14:09, Denis Kirjanov wrote:
->>>>>>>>>>>> The patch adds a basic XDP processing to xen-netfront driver.
->>>>>>>>>>>>
->>>>>>>>>>>> We ran an XDP program for an RX response received from netback
->>>>>>>>>>>> driver. Also we request xen-netback to adjust data offset for
->>>>>>>>>>>> bpf_xdp_adjust_head() header space for custom headers.
->>>>>>>>>>>
->>>>>>>>>>> This is in no way a "verbose patch descriprion".
->>>>>>>>>>>
->>>>>>>>>>> I'm missing:
->>>>>>>>>>>
->>>>>>>>>>> - Why are you doing this. "Add XDP support" is not enough, for
->>>>>>>>>>> such
->>>>>>>>>>>         a change I'd like to see some performance numbers to ge=
-t
->>>>>>>>>>> an
->>>>>>>>>>> idea
->>>>>>>>>>>         of the improvement to expect, or which additional
->>>>>>>>>>> functionality
->>>>>>>>>>>         for the user is available.
->>>>>>>>>> Ok, I'll try to measure  some numbers.
->>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>> - A short description for me as a Xen maintainer with only basi=
-c
->>>>>>>>>>>         networking know-how, what XDP programs are about (a lin=
-k
->>>>>>>>>>> to
->>>>>>>>>>> some
->>>>>>>>>>>         more detailed doc is enough, of course) and how the
->>>>>>>>>>> interface
->>>>>>>>>>>         is working (especially for switching between XDP mode
->>>>>>>>>>> and
->>>>>>>>>>> normal
->>>>>>>>>>>         SKB processing).
->>>>>>>>>>
->>>>>>>>>> You can search for the "A practical introduction to XDP"
->>>>>>>>>> tutorial.
->>>>>>>>>> Actually there is a lot of information available regarding XDP,
->>>>>>>>>> you
->>>>>>>>>> can easily find it.
->>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>> - A proper description of the netfront/netback communication
->>>>>>>>>>> when
->>>>>>>>>>>         enabling or disabling XDP mode (who is doing what, is
->>>>>>>>>>> silencing
->>>>>>>>>>>         of the virtual adapter required, ...).
->>>>>>>>>> Currently we need only a header offset from netback driver so
->>>>>>>>>> that
->>>>>>>>>> we
->>>>>>>>>> can
->>>>>>>>>> put
->>>>>>>>>> custom encapsulation header if required and that's done using xe=
-n
->>>>>>>>>> bus
->>>>>>>>>> state switching,
->>>>>>>>>> so that:
->>>>>>>>>> - netback tells that it can adjust the header offset
->>>>>>>>>> - netfront part reads it
->>>>>>>>>
->>>>>>>>> Yes, but how is this synchronized with currently running network
->>>>>>>>> load?
->>>>>>>>> Assume you are starting without XDP being active and then you are
->>>>>>>>> activating it. How is the synchronization done from which request
->>>>>>>>> on
->>>>>>>>> the XDP headroom is available?
->>>>>>>>
->>>>>>>> Hi Jurgen,
->>>>>>>>
->>>>>>>> basically XDP is activated when you've assigned an xdp program to
->>>>>>>> the
->>>>>>>> networking device.
->>>>>>>> Assigning an xdp program means that we have to adjust a pointer
->>>>>>>> which
->>>>>>>> is RCU protected.
->>>>>>>
->>>>>>> This doesn't answer my question.
->>>>>>>
->>>>>>> You have basically two communication channels: the state of the
->>>>>>> frontend
->>>>>>> and backend for activation/deactivation of XDP, and the ring pages
->>>>>>> with
->>>>>>> the rx and tx requests and responses. How is the synchronization
->>>>>>> between
->>>>>>> those two channels done? So how does the other side know which of
->>>>>>> the
->>>>>>> packets in flight will then have XDP on or off?
->>>>>>
->>>>>> Right,
->>>>>> that's done in xen-netback using xenbus state:
->>>>>> - in xennet_xdp_set() we call xenbus_switch_state to tell xen-netbac=
-k
->>>>>> to
->>>>>> adjust offset for an RX response.
->>>>>> -xen-netback reads the value from xenstore and adjusts the offset fo=
-r
->>>>>> xen-netback
->>>>>> in xenvif_rx_data_slot() using vif->xdp_enabled flag.
->>>>>
->>>>> And before that all in-flight requests in the ring pages are being
->>>>> processed and no new requests are guaranteed to be enqueued?
->>>>
->>>> Actually I don't see the need to sync these requests since that all we
->>>> have to do is to copy
->>>> data with specified offset:
->>>> with xdp->enabled=3D1: copy with the offset XDP_PACKET_HEADROOM
->>>> with xdd->enabled=3D0: copy without the offset
->>>
->>> Isn't that racy?
->>>
->>> In xennet_xdp_set() you set queue->xdp_prog and then you change the
->>> state to Reconfiguring. From the time queue->xdp_prog is set you'll
->>> do the Xdp processing in xennet_get_responses(), even if the response
->>> you are working on doesn't have the headroom you need, as the backend
->>> didn't create it with headroom (it needs some time until it has seen
->>> the new state and could react on it by sending _new_ responses with
->>> headroom).
->>
->> Ah, I see. You mean that we have to wait until XenbusStateReconfigured
->> is set in
->> xen-netfront and only after that it's safe to process packets.
->
-> Right. That is the problem of using a different communication channel
-> for enabling/disabling XDP.
+I'm trying to figure out what the proper way is to expose the ingress
+rate limiting knobs of the mv88e6250 (and related) to userspace. The
+simpest seems to be a set of sysfs files for each port, but I'm assuming
+that's a no-go (?)
 
-Ok, I'll update my patch.
+So what is the right way, and has anyone looked at hooking this up?
 
-Thanks for review!
-
->
->
-> Juergen
->
+Thanks,
+Rasmus
