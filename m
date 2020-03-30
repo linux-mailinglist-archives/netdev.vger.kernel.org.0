@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3C2B197E47
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 16:24:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EF25197E48
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 16:24:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728539AbgC3OY0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 10:24:26 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:44009 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726000AbgC3OY0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 10:24:26 -0400
-Received: by mail-wr1-f67.google.com with SMTP id m11so15993109wrx.10
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 07:24:24 -0700 (PDT)
+        id S1728797AbgC3OY2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 10:24:28 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44973 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726000AbgC3OY2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 10:24:28 -0400
+Received: by mail-wr1-f65.google.com with SMTP id m17so21829120wrw.11
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 07:24:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=R92YWJs6ZUfSUciFXC15gqnX+iY6Oe8tr3zBsBmLO1o=;
-        b=LXSTmu4XJB6THCgffb7Wh5jdNUNfS6AoU1HEvnVHpfGmoCl/Gpk9ef1MhSfJachfku
-         l/pz0ykCpM9na/7NW7aH8sfJmIeDlUxcAD9cqFfqxnQ2idt5T2S6H+i/cnWeETINdOCt
-         YDztfxy0uVdGyHLxrdftP9uiyF2rz0enhoZ+xQCTwGqiAietRCFSRV+Vs9WE/+f4QYXy
-         VA2Vq0z4hP7KS3fZflOE8OHAQkqfCNsFvl+Rw2CMuS1SRmdvPiEwJcUiDTHJs8f/pRUc
-         lt5ICwE1zFQOHUqI+d2NT0FjvOIT65sD2guwZGqnK3eyAViGBJbuCSbk8XZz6IXMGx5c
-         DfCQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=EhYefHey9uPfk3DFQ/3jm1vdYJVN5Kpj0zlBoZ4NBzw=;
+        b=wX1hRieN/xZKXphFgTKe64yuK9o+rCgpphBlswk2qZFCgF3FOoe2tgc+1iZ5Ch27Ve
+         afOPszc7U1v8PlSEhKSrkcIRwaWepY88L9RMCYcaiZ9mjtMWf5QNk/wsKHZzU2ylx3Kv
+         EB63B7cxIWao4iWjrGESxos/0/o1vhCrYib4Dsw3y7KfwS2nQnaH9hAobd8RQqRqgzu7
+         RyRmaufqUETZRXWsmpIOIDf23P8kENoDoFyicppELC2FKU1jpjkuO2ns1fxRVd/NAeL/
+         xP2Dze1PgJpyLTBTTE4S2JkkYsRlav5IA/eR7MCX6nHn364tpXcb72JkqxgDMoKqYQhX
+         6EzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=R92YWJs6ZUfSUciFXC15gqnX+iY6Oe8tr3zBsBmLO1o=;
-        b=Zu847zjlWzHaDpq1nYBT+Pl3yILRWHQ+WyfTdeavJwDOsx1gaGCDZD72KiYIFyNzMh
-         Fo5nVivXT9jq34FRgSY7Ki0eEeBT4QS46LGi9A/uoLm4xEp9Om1FLyT0Ervg0HXRoSVQ
-         MLYVSK1hq+xu4fSFBkTDp002HTHgFMFQJtBXiPSr3YS4Vp0a3G3avWYG13ij11r22ObB
-         HyEOEV42Ekqmp5qLcFeAlZehhfdN7K1+nqayFMlLTgec+Xxc805sDUcZveab4hXEPXYd
-         +WY8lPkC5wbZoNyXmAkdPr9TdLDQM8hALjxzih9hdGricHkPhqub8v1egPnmR+AfZFwl
-         yA3w==
-X-Gm-Message-State: ANhLgQ1ff02VOr8Yd0eYPmXMpA/z8Mr3uVXqvrTozV78OUtxZubkeRoF
-        nApyf7TotRjwz9BkjlhStiXTYddpyZgpZA==
-X-Google-Smtp-Source: ADFU+vv7KfG6cDoJPBzvIgHv+jIPcVdFbw8LRWcROuV/VqOx0I657GZNoPiwVRqznZO9siXcTE60RQ==
-X-Received: by 2002:adf:fe4b:: with SMTP id m11mr14950388wrs.20.1585578263415;
-        Mon, 30 Mar 2020 07:24:23 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=EhYefHey9uPfk3DFQ/3jm1vdYJVN5Kpj0zlBoZ4NBzw=;
+        b=bX/bXrzDL4xZQMI4nx3JZhzYwWbU7Nfp9NiQPiUDB0ngUHvKFQffR3oRr1wlt3p7Zc
+         d6pIJ/vJyybzBvA1Y+k13T3wiJ6+UwjtxqoZyqRjxRbQelSa78vbZ40RS2IcKFzd/vQv
+         /geVFguZEvGV2GeT8/HCXoma7ZDvte78uvNMMemunzT8K0lc+5jx/GLolx+iD01mgX5e
+         ja5MbmiiLEx8+8TUVuRERXwSWs0oiD9Ri9MBfCpNphAJ2M/+CQFSeU+w3GBQHCqXmrgY
+         BtUbSbtipx7y+WN2hNYG8a4r5pXRm7bIX1I5GuXGo3cfiO6pkUik3TUFwT1buWjqthP7
+         qZpQ==
+X-Gm-Message-State: ANhLgQ2/u3GaBCtuTXA4uZGEU0+4kz2fDQqVwKTiMPwoCD/ov6CZXzcN
+        dkuy1CF/zXSj1/JE0kcrfpDefaQTtwWZOw==
+X-Google-Smtp-Source: ADFU+vuVS9XnafD6XDFU33nulXJNMftfAUIOSUQENG/9dNdU5QH43S+EJW46gNquMyNujDyt0lF40Q==
+X-Received: by 2002:adf:d849:: with SMTP id k9mr15043107wrl.108.1585578264756;
+        Mon, 30 Mar 2020 07:24:24 -0700 (PDT)
 Received: from tsr-vdi-mbaerts.nix.tessares.net (static.23.216.130.94.clients.your-server.de. [94.130.216.23])
-        by smtp.gmail.com with ESMTPSA id 98sm22956856wrk.52.2020.03.30.07.24.22
+        by smtp.gmail.com with ESMTPSA id 98sm22956856wrk.52.2020.03.30.07.24.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Mar 2020 07:24:22 -0700 (PDT)
+        Mon, 30 Mar 2020 07:24:23 -0700 (PDT)
 From:   Matthieu Baerts <matthieu.baerts@tessares.net>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
 Cc:     mptcp@lists.01.org,
@@ -51,10 +51,12 @@ Cc:     mptcp@lists.01.org,
         Paolo Abeni <pabeni@redhat.com>,
         Florian Westphal <fw@strlen.de>,
         Matthieu Baerts <matthieu.baerts@tessares.net>
-Subject: [PATCH net-next 0/1] selftests:mptcp: fix failure due to whitespace damage
-Date:   Mon, 30 Mar 2020 16:23:53 +0200
-Message-Id: <20200330142354.563259-1-matthieu.baerts@tessares.net>
+Subject: [PATCH net-next 1/1] selftests:mptcp: fix failure due to whitespace damage
+Date:   Mon, 30 Mar 2020 16:23:54 +0200
+Message-Id: <20200330142354.563259-2-matthieu.baerts@tessares.net>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200330142354.563259-1-matthieu.baerts@tessares.net>
+References: <20200330142354.563259-1-matthieu.baerts@tessares.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -62,31 +64,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David: it seems that some trailing whitespaces were removed by one of
-your scripts when applying eedbc685321b (selftests: add PM netlink
-functional tests).
+'pm_nl_ctl' was adding a trailing whitespace after having printed the
+IP. But at the end, the IP element is currently always the last one.
 
-This causes a self test failure because the expected result in the
-script has been modified.
+The bash script launching 'pm_nl_ctl' had trailing whitespaces in the
+expected result on purpose. But these whitespaces have been removed when
+the patch has been applied upstream. To avoid trailing whitespaces in
+the bash code, 'pm_nl_ctl' and expected results have now been adapted.
 
-We do think that it is best not having trailing whitespaces in the code
-and that's why we are proposing here a new version without them. The
-documentation also ask us not to leave unexepected trailing whitespace
-at the end of lines.
+The MPTCP PM selftest can now pass again.
 
-But we simply want to ask you this question: Is it normal that these
-trailing whitespaces are automatically removed? We understand if it is
-and it would make sense somehow but just in case it is not normal, we
-prefer to raise the question and avoid other people hitting the same
-issue we had :)
-
-Matthieu Baerts (1):
-  selftests:mptcp: fix failure due to whitespace damage
-
+Fixes: eedbc685321b (selftests: add PM netlink functional tests)
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+---
  tools/testing/selftests/net/mptcp/pm_netlink.sh | 12 ++++++------
  tools/testing/selftests/net/mptcp/pm_nl_ctl.c   |  4 ++--
  2 files changed, 8 insertions(+), 8 deletions(-)
 
+diff --git a/tools/testing/selftests/net/mptcp/pm_netlink.sh b/tools/testing/selftests/net/mptcp/pm_netlink.sh
+index 8c7bd722476e..9172746b6cf0 100755
+--- a/tools/testing/selftests/net/mptcp/pm_netlink.sh
++++ b/tools/testing/selftests/net/mptcp/pm_netlink.sh
+@@ -75,29 +75,29 @@ subflows 0" "defaults limits"
+ ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.1
+ ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.2 flags subflow dev lo
+ ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.3 flags signal,backup
+-check "ip netns exec $ns1 ./pm_nl_ctl get 1" "id 1 flags  10.0.1.1 " "simple add/get addr"
++check "ip netns exec $ns1 ./pm_nl_ctl get 1" "id 1 flags  10.0.1.1" "simple add/get addr"
+ 
+ check "ip netns exec $ns1 ./pm_nl_ctl dump" \
+ "id 1 flags  10.0.1.1
+ id 2 flags subflow dev lo 10.0.1.2
+-id 3 flags signal,backup 10.0.1.3 " "dump addrs"
++id 3 flags signal,backup 10.0.1.3" "dump addrs"
+ 
+ ip netns exec $ns1 ./pm_nl_ctl del 2
+ check "ip netns exec $ns1 ./pm_nl_ctl get 2" "" "simple del addr"
+ check "ip netns exec $ns1 ./pm_nl_ctl dump" \
+ "id 1 flags  10.0.1.1
+-id 3 flags signal,backup 10.0.1.3 " "dump addrs after del"
++id 3 flags signal,backup 10.0.1.3" "dump addrs after del"
+ 
+ ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.3
+ check "ip netns exec $ns1 ./pm_nl_ctl get 4" "" "duplicate addr"
+ 
+ ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.4 id 10 flags signal
+-check "ip netns exec $ns1 ./pm_nl_ctl get 4" "id 4 flags signal 10.0.1.4 " "id addr increment"
++check "ip netns exec $ns1 ./pm_nl_ctl get 4" "id 4 flags signal 10.0.1.4" "id addr increment"
+ 
+ for i in `seq 5 9`; do
+ 	ip netns exec $ns1 ./pm_nl_ctl add 10.0.1.$i flags signal >/dev/null 2>&1
+ done
+-check "ip netns exec $ns1 ./pm_nl_ctl get 9" "id 9 flags signal 10.0.1.9 " "hard addr limit"
++check "ip netns exec $ns1 ./pm_nl_ctl get 9" "id 9 flags signal 10.0.1.9" "hard addr limit"
+ check "ip netns exec $ns1 ./pm_nl_ctl get 10" "" "above hard addr limit"
+ 
+ for i in `seq 9 256`; do
+@@ -110,7 +110,7 @@ id 4 flags signal 10.0.1.4
+ id 5 flags signal 10.0.1.5
+ id 6 flags signal 10.0.1.6
+ id 7 flags signal 10.0.1.7
+-id 8 flags signal 10.0.1.8 " "id limit"
++id 8 flags signal 10.0.1.8" "id limit"
+ 
+ ip netns exec $ns1 ./pm_nl_ctl flush
+ check "ip netns exec $ns1 ./pm_nl_ctl dump" "" "flush addrs"
+diff --git a/tools/testing/selftests/net/mptcp/pm_nl_ctl.c b/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
+index de9209305026..b24a2f17d415 100644
+--- a/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
++++ b/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
+@@ -335,14 +335,14 @@ static void print_addr(struct rtattr *attrs, int len)
+ 				error(1, errno, "wrong IP (v4) for family %d",
+ 				      family);
+ 			inet_ntop(AF_INET, RTA_DATA(attrs), str, sizeof(str));
+-			printf("%s ", str);
++			printf("%s", str);
+ 		}
+ 		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_ADDR6) {
+ 			if (family != AF_INET6)
+ 				error(1, errno, "wrong IP (v6) for family %d",
+ 				      family);
+ 			inet_ntop(AF_INET6, RTA_DATA(attrs), str, sizeof(str));
+-			printf("%s ", str);
++			printf("%s", str);
+ 		}
+ 		if (attrs->rta_type == MPTCP_PM_ADDR_ATTR_ID) {
+ 			memcpy(&id, RTA_DATA(attrs), 1);
 -- 
 2.25.1
 
