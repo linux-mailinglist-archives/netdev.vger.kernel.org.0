@@ -2,102 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE1EC198831
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 01:24:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66045198840
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 01:27:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729335AbgC3XYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 19:24:55 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:45617 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728876AbgC3XYz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 19:24:55 -0400
-Received: by mail-oi1-f193.google.com with SMTP id l22so17280884oii.12
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 16:24:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AfGz/WUWOWJUNUddn1vR6gY4zq6NlynuXX3ZTIKVOpE=;
-        b=tN2J9Su/GB8ddEV/gYJVXqNO1Vgq8NJKzoZWKDLLNwAWy0rE3zZbMh3zKYHY890bPi
-         DbKxn1Q4xfUWsp8UCDKWu3XO2Gr5QgDzLII+xda9jHG0+W44eUwBy/GDuWceCwuSncJi
-         IuGMqrTTWjwaGjasQnODpwUDswmcNIRhPcZt3LotOfe2DkMHBkVtAWuJFmYdYxcYcqvP
-         68oNdgIdvVYmb5HYDxDGAYSs8EzGLV2mggfikVGBqeP+1g2zef71idtpAGtl0Nm4msku
-         aOEBUisZYDkWQcFkWikryC7eD+fkuINa9qsV/+VsSwRANpIJ5BHt1mtzFknXkVp1phrw
-         9ycw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AfGz/WUWOWJUNUddn1vR6gY4zq6NlynuXX3ZTIKVOpE=;
-        b=RRGD3dsTSSZNn/3vtEeTG3ptG4sYAQa86PhtO9s79zQ9W99BI8jnqbWJ3+kAl0oCLA
-         PTFKaHzQmaB9PNlyghQPGXNt8D5EeQloCBSX9Ds5S3eBrxLfR+7+O6FAKaKO0SxXT7Wx
-         ReP19ikTezDw7YUmWM9kTQzapRJv0zaVrhB/oJU2eUGczwrN9SKYA+AGY0tOa/njbbuX
-         vERqiY8bmb1B+6fGFZs+k7k00NL04UyzUiUDXDe2kPx+kLEsqc+78e9yetOFiAmbdsdp
-         XV1r6y782JmjhVoFvnkLj+ZtPyqbJEaGrr5ouhQYf79JaBPyg20rNsxFZBCvSNDgvtMc
-         w3pg==
-X-Gm-Message-State: ANhLgQ3NRBeO33nIpT0zOEbDxZlGbmHr0axoFq7ue5So92qk9MaGVL2v
-        +CN92gS/oLAr+mA9ua24kLtrt4BWvgTUmmCRohc=
-X-Google-Smtp-Source: ADFU+vsa2dyd9gvKAERxfd0Gla0wVdKZmQDBGtp3KJH44U4XZBWvAsr8W09nfceI425mS6CMdI4AjivBT5+RhfA1Isg=
-X-Received: by 2002:a05:6808:648:: with SMTP id z8mr366001oih.72.1585610694006;
- Mon, 30 Mar 2020 16:24:54 -0700 (PDT)
+        id S1729146AbgC3X1n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 19:27:43 -0400
+Received: from gateway23.websitewelcome.com ([192.185.49.184]:39835 "EHLO
+        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729060AbgC3X1n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 19:27:43 -0400
+Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
+        by gateway23.websitewelcome.com (Postfix) with ESMTP id 0D3AB64CA2
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 18:27:06 -0500 (CDT)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id J3oAjP6YNVQh0J3oAjc9XK; Mon, 30 Mar 2020 18:27:06 -0500
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Type:MIME-Version:Message-ID:Subject:
+        Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=xhDG3dLN6Yo/RcJTREoCUsHNM+lDjok6pPw8Y/2IHM8=; b=MtlPW6u5+hLcKOUUXlj4aIV1Rj
+        9B0gN5E8BYFgAboLKbVSMJv9CLzUllkbOGoJ5uVeFjdQyFcsKSgmb94YHCEluUiTLdiIvl1Iw9Kh7
+        UEysDtp3D/TKEt7UoawdP5pIKFmEHmuEMtb7KbEw87S5JLEHhtvync+0lQAgbAzrPAvDNlKdr0oTQ
+        eA8UgVSLM4dW4VduF9LpxGAlWDgc4Tm3z3+eEsqipTPVemYbRNIL5Ke+1I5Z0C6OTZU+aRH6MqoX3
+        z4peADMt/7/RUsPjpqton+bGTUBsDpELiYI4qwLsuRc+1PGByVH7+q93N0/n5A3Oy6DSG1aAacQ1n
+        mRKizwoQ==;
+Received: from cablelink-189-218-116-241.hosts.intercable.net ([189.218.116.241]:50684 helo=embeddedor)
+        by gator4166.hostgator.com with esmtpa (Exim 4.92)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1jJ3o8-000bhq-I6; Mon, 30 Mar 2020 18:27:04 -0500
+Date:   Mon, 30 Mar 2020 18:27:02 -0500
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Subject: [PATCH net-next] netdevsim: dev: Fix memory leak in
+ nsim_dev_take_snapshot_write
+Message-ID: <20200330232702.GA3212@embeddedor.com>
 MIME-Version: 1.0
-References: <20200328191259.17145-1-xiyou.wangcong@gmail.com> <20200330213514.GT19865@paulmck-ThinkPad-P72>
-In-Reply-To: <20200330213514.GT19865@paulmck-ThinkPad-P72>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 30 Mar 2020 16:24:42 -0700
-Message-ID: <CAM_iQpUu6524ZyZDBu=nkuhpubyGBTHEJ-HK8qrpCW=EEKGujw@mail.gmail.com>
-Subject: Re: [Patch net] net_sched: add a temporary refcnt for struct tcindex_data
-To:     "Paul E . McKenney" <paulmck@kernel.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzbot <syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.218.116.241
+X-Source-L: No
+X-Exim-ID: 1jJ3o8-000bhq-I6
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: cablelink-189-218-116-241.hosts.intercable.net (embeddedor) [189.218.116.241]:50684
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 5
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 2:35 PM Paul E. McKenney <paulmck@kernel.org> wrote:
->
-> On Sat, Mar 28, 2020 at 12:12:59PM -0700, Cong Wang wrote:
-> > Although we intentionally use an ordered workqueue for all tc
-> > filter works, the ordering is not guaranteed by RCU work,
-> > given that tcf_queue_work() is esstenially a call_rcu().
-> >
-> > This problem is demostrated by Thomas:
-> >
-> >   CPU 0:
-> >     tcf_queue_work()
-> >       tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
-> >
-> >   -> Migration to CPU 1
-> >
-> >   CPU 1:
-> >      tcf_queue_work(&p->rwork, tcindex_destroy_work);
-> >
-> > so the 2nd work could be queued before the 1st one, which leads
-> > to a free-after-free.
-> >
-> > Enforcing this order in RCU work is hard as it requires to change
-> > RCU code too. Fortunately we can workaround this problem in tcindex
-> > filter by taking a temporary refcnt, we only refcnt it right before
-> > we begin to destroy it. This simplifies the code a lot as a full
-> > refcnt requires much more changes in tcindex_set_parms().
-> >
-> > Reported-by: syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com
-> > Fixes: 3d210534cc93 ("net_sched: fix a race condition in tcindex_destroy()")
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > Cc: Paul E. McKenney <paulmck@kernel.org>
-> > Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> > Cc: Jiri Pirko <jiri@resnulli.us>
-> > Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
->
-> Looks plausible, but what did you do to verify that the structures
-> were in fact being freed?  See below for more detail.
+In case memory resources for dummy_data were allocated, release them
+before return.
 
-I ran the syzbot reproducer for about 20 minutes, there was no
-memory leak reported after scanning.
+Addresses-Coverity-ID: 1491997 ("Resource leak")
+Fixes: 7ef19d3b1d5e ("devlink: report error once U32_MAX snapshot ids have been used")
+Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+---
+ drivers/net/netdevsim/dev.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks.
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index 2b727a7001f6..9897e9a0e26f 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -75,6 +75,7 @@ static ssize_t nsim_dev_take_snapshot_write(struct file *file,
+ 	err = devlink_region_snapshot_id_get(devlink, &id);
+ 	if (err) {
+ 		pr_err("Failed to get snapshot id\n");
++		kfree(dummy_data);
+ 		return err;
+ 	}
+ 	err = devlink_region_snapshot_create(nsim_dev->dummy_region,
+-- 
+2.23.0
+
