@@ -2,329 +2,301 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 247601986FD
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 00:09:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D05BC19873C
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 00:17:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730969AbgC3WIv convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 30 Mar 2020 18:08:51 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:36355 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730809AbgC3WIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 18:08:45 -0400
-Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id BA211CECB0;
-        Tue, 31 Mar 2020 00:18:16 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH v4 2/2] Bluetooth: btusb: Read the supported features of
- Microsoft vendor extension
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200328004507.v4.2.Ic59b637deef8e646f6599a80c9a2aa554f919e55@changeid>
-Date:   Tue, 31 Mar 2020 00:08:43 +0200
-Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
-        Alain Michaud <alainm@chromium.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <1FA9284F-C8DD-40A3-81A7-65AC6DE1E3C5@holtmann.org>
-References: <20200328074632.21907-1-mcchou@chromium.org>
- <20200328004507.v4.2.Ic59b637deef8e646f6599a80c9a2aa554f919e55@changeid>
-To:     Miao-chen Chou <mcchou@chromium.org>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
+        id S1729461AbgC3WRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 18:17:34 -0400
+Received: from mail-il1-f195.google.com ([209.85.166.195]:45342 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728980AbgC3WRe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 18:17:34 -0400
+Received: by mail-il1-f195.google.com with SMTP id x16so17499294ilp.12;
+        Mon, 30 Mar 2020 15:17:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=5D3JWTl1QzLG/V+Hra/4SEMj8E+g/+5w/ra3WOml/tY=;
+        b=pYLbESsuq2uRD0IV7MdeOd+251EntAzwn70JRJOYjvfCPI3c2Hk5NT9mqTXl3VSByx
+         RGrKrvrx37ctdzMnzoA+ikJ2C2++lduLHW6jJhNlhmkvkK83SsGOALsbhTKqNDdyngRa
+         yaohb+I8zyUme0uFLIE5Abz/wwBAwr/CC+cYH522NErFU9XXzjc9VBCM29+K4GRDailM
+         ZDZxeO5BYstudgiMPLRVZcITb7h9Rz8LrdcMINVZOm5t5lgXYYcWd0eID8cAy0dm+/ud
+         NWiC/ohxEDqIuj583YGFYAwAERuwDcYzVExfAq86DJU1nSARwj1wbkHf8kCpiKxFOf/W
+         thQw==
+X-Gm-Message-State: ANhLgQ2kFpr1FgEwEwV7LPPC2BPKyMKUGQgselyxxM5IyxEs/4qBD1TG
+        NPAiXQfjofXE5EuwmVzqPg==
+X-Google-Smtp-Source: ADFU+vu+RdYKFetamtyJZ77gVC5CWVXmhc8ENkRdLPahpmm6UCJX0YRLuzxicB8PcFkskdG5xwAueA==
+X-Received: by 2002:a92:798f:: with SMTP id u137mr14150243ilc.231.1585606652756;
+        Mon, 30 Mar 2020 15:17:32 -0700 (PDT)
+Received: from rob-hp-laptop ([64.188.179.250])
+        by smtp.gmail.com with ESMTPSA id 10sm5310473ilb.45.2020.03.30.15.17.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Mar 2020 15:17:32 -0700 (PDT)
+Received: (nullmailer pid 26371 invoked by uid 1000);
+        Mon, 30 Mar 2020 22:17:30 -0000
+Date:   Mon, 30 Mar 2020 16:17:30 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Christophe Roullier <christophe.roullier@st.com>
+Cc:     davem@davemloft.net, mark.rutland@arm.com, mripard@kernel.org,
+        martin.blumenstingl@googlemail.com, alexandru.ardelean@analog.com,
+        narmstrong@baylibre.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@st.com, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCHv2 2/2] dt-bindings: net: dwmac: Convert stm32 dwmac to DT
+ schema
+Message-ID: <20200330221730.GA17878@bogus>
+References: <20200317151706.25810-1-christophe.roullier@st.com>
+ <20200317151706.25810-3-christophe.roullier@st.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200317151706.25810-3-christophe.roullier@st.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Miao-chen,
-
-> This defines opcode and packet structures of Microsoft vendor extension.
-> For now, we add only the HCI_VS_MSFT_Read_Supported_Features command. See
-> https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
-> microsoft-defined-bluetooth-hci-commands-and-events#microsoft-defined-
-> bluetooth-hci-events for more details.
-> Upon initialization of a hci_dev, we issue a
-> HCI_VS_MSFT_Read_Supported_Features command to read the supported features
-> of Microsoft vendor extension if the opcode of Microsoft vendor extension
-> is valid. See https://docs.microsoft.com/en-us/windows-hardware/drivers/
-> bluetooth/microsoft-defined-bluetooth-hci-commands-and-events#
-> hci_vs_msft_read_supported_features for more details.
-> This was verified on a device with Intel ThunderPeak BT controller where
-> the Microsoft vendor extension features are 0x000000000000003f.
+On Tue, Mar 17, 2020 at 04:17:06PM +0100, Christophe Roullier wrote:
+> Convert stm32 dwmac to DT schema.
 > 
-> Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-> 
-> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
+> Signed-off-by: Christophe Roullier <christophe.roullier@st.com>
 > ---
+>  .../devicetree/bindings/net/stm32-dwmac.txt   |  44 -----
+>  .../devicetree/bindings/net/stm32-dwmac.yaml  | 160 ++++++++++++++++++
+>  2 files changed, 160 insertions(+), 44 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/net/stm32-dwmac.txt
+>  create mode 100644 Documentation/devicetree/bindings/net/stm32-dwmac.yaml
 > 
-> Changes in v4:
-> - Move MSFT's do_open() and do_close() from net/bluetooth/hci_core.c to
-> net/bluetooth/msft.c.
-> - Other than msft opcode, define struct msft_data to host the rest of
-> information of Microsoft extension and leave a void* pointing to a
-> msft_data in struct hci_dev.
-> 
-> Changes in v3:
-> - Introduce msft_vnd_ext_do_open() and msft_vnd_ext_do_close().
-> 
-> Changes in v2:
-> - Issue a HCI_VS_MSFT_Read_Supported_Features command with
-> __hci_cmd_sync() instead of constructing a request.
-> 
-> include/net/bluetooth/hci_core.h |   1 +
-> net/bluetooth/hci_core.c         |   5 ++
-> net/bluetooth/hci_event.c        |   5 ++
-> net/bluetooth/msft.c             | 126 +++++++++++++++++++++++++++++++
-> net/bluetooth/msft.h             |  10 +++
-> 5 files changed, 147 insertions(+)
-> 
-> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-> index 239cae2d9998..59ddcd3a52cc 100644
-> --- a/include/net/bluetooth/hci_core.h
-> +++ b/include/net/bluetooth/hci_core.h
-> @@ -486,6 +486,7 @@ struct hci_dev {
-> 
-> #if IS_ENABLED(CONFIG_BT_MSFTEXT)
-> 	__u16			msft_opcode;
-> +	void			*msft_data;
-> #endif
-> 
-> 	int (*open)(struct hci_dev *hdev);
-> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-> index dbd2ad3a26ed..c38707de767a 100644
-> --- a/net/bluetooth/hci_core.c
-> +++ b/net/bluetooth/hci_core.c
-> @@ -44,6 +44,7 @@
-> #include "hci_debugfs.h"
-> #include "smp.h"
-> #include "leds.h"
-> +#include "msft.h"
-> 
-> static void hci_rx_work(struct work_struct *work);
-> static void hci_cmd_work(struct work_struct *work);
-> @@ -1563,6 +1564,8 @@ static int hci_dev_do_open(struct hci_dev *hdev)
-> 	    hci_dev_test_flag(hdev, HCI_VENDOR_DIAG) && hdev->set_diag)
-> 		ret = hdev->set_diag(hdev, true);
-> 
-> +	msft_do_open(hdev);
+> diff --git a/Documentation/devicetree/bindings/net/stm32-dwmac.txt b/Documentation/devicetree/bindings/net/stm32-dwmac.txt
+> deleted file mode 100644
+> index a90eef11dc46..000000000000
+> --- a/Documentation/devicetree/bindings/net/stm32-dwmac.txt
+> +++ /dev/null
+> @@ -1,44 +0,0 @@
+> -STMicroelectronics STM32 / MCU DWMAC glue layer controller
+> -
+> -This file documents platform glue layer for stmmac.
+> -Please see stmmac.txt for the other unchanged properties.
+> -
+> -The device node has following properties.
+> -
+> -Required properties:
+> -- compatible:  For MCU family should be "st,stm32-dwmac" to select glue, and
+> -	       "snps,dwmac-3.50a" to select IP version.
+> -	       For MPU family should be "st,stm32mp1-dwmac" to select
+> -	       glue, and "snps,dwmac-4.20a" to select IP version.
+> -- clocks: Must contain a phandle for each entry in clock-names.
+> -- clock-names: Should be "stmmaceth" for the host clock.
+> -	       Should be "mac-clk-tx" for the MAC TX clock.
+> -	       Should be "mac-clk-rx" for the MAC RX clock.
+> -	       For MPU family need to add also "ethstp" for power mode clock
+> -- interrupt-names: Should contain a list of interrupt names corresponding to
+> -           the interrupts in the interrupts property, if available.
+> -		   Should be "macirq" for the main MAC IRQ
+> -		   Should be "eth_wake_irq" for the IT which wake up system
+> -- st,syscon : Should be phandle/offset pair. The phandle to the syscon node which
+> -	       encompases the glue register, and the offset of the control register.
+> -
+> -Optional properties:
+> -- clock-names:     For MPU family "eth-ck" for PHY without quartz
+> -- st,eth-clk-sel (boolean) : set this property in RGMII PHY when you want to select RCC clock instead of ETH_CLK125.
+> -- st,eth-ref-clk-sel (boolean) :  set this property in RMII mode when you have PHY without crystal 50MHz and want to select RCC clock instead of ETH_REF_CLK.
+> -
+> -Example:
+> -
+> -	ethernet@40028000 {
+> -		compatible = "st,stm32-dwmac", "snps,dwmac-3.50a";
+> -		reg = <0x40028000 0x8000>;
+> -		reg-names = "stmmaceth";
+> -		interrupts = <0 61 0>, <0 62 0>;
+> -		interrupt-names = "macirq", "eth_wake_irq";
+> -		clock-names = "stmmaceth", "mac-clk-tx", "mac-clk-rx";
+> -		clocks = <&rcc 0 25>, <&rcc 0 26>, <&rcc 0 27>;
+> -		st,syscon = <&syscfg 0x4>;
+> -		snps,pbl = <8>;
+> -		snps,mixed-burst;
+> -		dma-ranges;
+> -	};
+> diff --git a/Documentation/devicetree/bindings/net/stm32-dwmac.yaml b/Documentation/devicetree/bindings/net/stm32-dwmac.yaml
+> new file mode 100644
+> index 000000000000..4440216917b3
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/stm32-dwmac.yaml
+> @@ -0,0 +1,160 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +# Copyright 2019 BayLibre, SAS
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/net/stm32-dwmac.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
 > +
-> 	clear_bit(HCI_INIT, &hdev->flags);
-> 
-> 	if (!ret) {
-> @@ -1758,6 +1761,8 @@ int hci_dev_do_close(struct hci_dev *hdev)
-> 
-> 	hci_sock_dev_event(hdev, HCI_DEV_DOWN);
-> 
-> +	msft_do_close(hdev);
+> +title: STMicroelectronics STM32 / MCU DWMAC glue layer controller
 > +
-> 	if (hdev->flush)
-> 		hdev->flush(hdev);
-> 
-> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-> index 20408d386268..42b5871151a6 100644
-> --- a/net/bluetooth/hci_event.c
-> +++ b/net/bluetooth/hci_event.c
-> @@ -35,6 +35,7 @@
-> #include "a2mp.h"
-> #include "amp.h"
-> #include "smp.h"
-> +#include "msft.h"
-> 
-> #define ZERO_KEY "\x00\x00\x00\x00\x00\x00\x00\x00" \
-> 		 "\x00\x00\x00\x00\x00\x00\x00\x00"
-> @@ -6144,6 +6145,10 @@ void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb)
-> 		hci_num_comp_blocks_evt(hdev, skb);
-> 		break;
-> 
-> +	case HCI_EV_VENDOR:
-> +		msft_vendor_evt(hdev, skb);
-> +		break;
+> +maintainers:
+> +  - Alexandre Torgue <alexandre.torgue@st.com>
+> +  - Christophe Roullier <christophe.roullier@st.com>
 > +
-> 	default:
-> 		BT_DBG("%s event 0x%2.2x", hdev->name, event);
-> 		break;
-> diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-> index 7609932c48ca..f76e4c79556e 100644
-> --- a/net/bluetooth/msft.c
-> +++ b/net/bluetooth/msft.c
-> @@ -6,6 +6,24 @@
-> 
-> #include "msft.h"
-> 
-> +#define MSFT_OP_READ_SUPPORTED_FEATURES		0x00
-> +struct msft_cp_read_supported_features {
-> +	__u8   sub_opcode;
-> +} __packed;
-> +struct msft_rp_read_supported_features {
-> +	__u8   status;
-> +	__u8   sub_opcode;
-> +	__le64 features;
-> +	__u8   evt_prefix_len;
-> +	__u8   evt_prefix[0];
-> +} __packed;
+> +description:
+> +  This file documents platform glue layer for stmmac.
 > +
-> +struct msft_data {
-> +	__u64 features;
-> +	__u8  evt_prefix_len;
-> +	__u8  *evt_prefix;
-> +};
+> +# We need a select here so we don't match all nodes with 'snps,dwmac'
+> +select:
+> +  properties:
+> +    compatible:
+> +      contains:
+> +        enum:
+> +          - st,stm32-dwmac
+> +          - st,stm32mp1-dwmac
+> +  required:
+> +    - compatible
 > +
-> void msft_set_opcode(struct hci_dev *hdev, __u16 opcode)
-> {
-> 	hdev->msft_opcode = opcode;
-> @@ -14,3 +32,111 @@ void msft_set_opcode(struct hci_dev *hdev, __u16 opcode)
-> 		    hdev->msft_opcode);
-> }
-> EXPORT_SYMBOL(msft_set_opcode);
-> +
-> +static struct msft_data *read_supported_features(struct hci_dev *hdev)
-> +{
-> +	struct msft_data *msft;
+> +allOf:
+> +  - $ref: "snps,dwmac.yaml#"
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - st,stm32-dwmac
+> +              - st,stm32mp1-dwmac
 
-I used a second parameter, but yes, my initial code was totally flawed with the msft_data access.
+This schema is only applied when these compatibles are present, so you 
+don't need the 'if' and all this can move to the main section.
 
-> +	struct msft_cp_read_supported_features cp;
-> +	struct msft_rp_read_supported_features *rp;
-> +	struct sk_buff *skb;
+> +    then:
+> +      properties:
+> +       clocks:
+> +         minItems: 3
+> +         maxItems: 5
+> +         items:
+> +          - description: GMAC main clock
+> +          - description: MAC TX clock
+> +          - description: MAC RX clock
+> +          - description: For MPU family, used for power mode
+> +          - description: For MPU family, used for PHY without quartz
 > +
-> +	cp.sub_opcode = MSFT_OP_READ_SUPPORTED_FEATURES;
+> +       clock-names:
+> +         minItems: 3
+> +         maxItems: 5
+> +         contains:
+> +          enum:
+> +            - stmmaceth
+> +            - mac-clk-tx
+> +            - mac-clk-rx
+> +            - ethstp
+> +            - eth-ck
 > +
-> +	skb = __hci_cmd_sync(hdev, hdev->msft_opcode, sizeof(cp), &cp,
-> +			     HCI_CMD_TIMEOUT);
-> +	if (IS_ERR(skb)) {
-> +		bt_dev_err(hdev, "Failed to read MSFT supported features (%ld)",
-> +			   PTR_ERR(skb));
-> +		return NULL;
-> +	}
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - items:
+> +          - enum:
+> +              - st,stm32mp1-dwmac
+> +          - const: snps,dwmac-4.20a
+> +      - items:
+> +          - enum:
+> +              - st,stm32-dwmac
+> +          - const: snps,dwmac-4.10a
+> +      - items:
+> +          - enum:
+> +              - st,stm32-dwmac
+> +          - const: snps,dwmac-3.50a
 > +
-> +	if (skb->len < sizeof(*rp)) {
-> +		bt_dev_err(hdev, "MSFT supported features length mismatch");
-> +		goto failed;
-> +	}
+> +  st,syscon:
+> +    allOf:
+> +      - $ref: "/schemas/types.yaml#/definitions/phandle-array"
+> +    description:
+> +      Should be phandle/offset pair. The phandle to the syscon node which
+> +      encompases the glue register, and the offset of the control register
 > +
-> +	rp = (struct msft_rp_read_supported_features *)skb->data;
+> +  st,eth-clk-sel:
+> +    description:
+> +      set this property in RGMII PHY when you want to select RCC clock instead of ETH_CLK125.
+> +    type: boolean
 > +
-> +	if (rp->sub_opcode != MSFT_OP_READ_SUPPORTED_FEATURES)
-> +		goto failed;
+> +  st,eth-ref-clk-sel:
+> +    description:
+> +      set this property in RMII mode when you have PHY without crystal 50MHz and want to
+> +      select RCC clock instead of ETH_REF_CLK.
+> +    type: boolean
 > +
-> +	msft = kzalloc(sizeof(*msft), GFP_KERNEL);
-> +	if (!msft)
-> +		goto failed;
+> +required:
+> +  - compatible
+> +  - clocks
+> +  - clock-names
+> +  - st,syscon
 > +
-> +	if (rp->evt_prefix_len > 0) {
-> +		msft->evt_prefix = kmemdup(rp->evt_prefix, rp->evt_prefix_len,
-> +					   GFP_KERNEL);
-> +		if (!msft->evt_prefix)
-> +			goto failed;
-> +	}
-> +
-> +	msft->evt_prefix_len = rp->evt_prefix_len;
-> +	msft->features = __le64_to_cpu(rp->features);
-> +	kfree_skb(skb);
-> +
-> +	bt_dev_info(hdev, "MSFT supported features %llx", msft->features);
-> +	return msft;
-> +
-> +failed:
-> +	kfree_skb(skb);
-> +	return NULL;
-> +}
-> +
-> +void msft_do_open(struct hci_dev *hdev)
-> +{
-> +	if (hdev->msft_opcode == HCI_OP_NOP)
-> +		return;
-> +
-> +	bt_dev_dbg(hdev, "Initialize MSFT extension");
-> +	hdev->msft_data = read_supported_features(hdev);
-> +}
-> +
-> +void msft_do_close(struct hci_dev *hdev)
-> +{
-> +	struct msft_data *msft = hdev->msft_data;
-> +
-> +	if (!msft)
-> +		return;
-> +
-> +	bt_dev_dbg(hdev, "Cleanup of MSFT extension");
-> +
-> +	hdev->msft_data = NULL;
-> +
-> +	kfree(msft->evt_prefix);
-> +	kfree(msft);
-> +}
-> +
-> +int msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
-> +{
+> +examples:
+> + - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/clock/stm32mp1-clks.h>
+> +    #include <dt-bindings/reset/stm32mp1-resets.h>
+> +    #include <dt-bindings/mfd/stm32h7-rcc.h>
+> +    //Example 1
+> +     ethernet0: ethernet@5800a000 {
+> +       compatible = "st,stm32mp1-dwmac", "snps,dwmac-4.20a";
+> +       reg = <0x5800a000 0x2000>;
+> +       reg-names = "stmmaceth";
+> +       interrupts = <&intc GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>;
+> +       interrupt-names = "macirq";
+> +       clock-names = "stmmaceth",
+> +                     "mac-clk-tx",
+> +                     "mac-clk-rx",
+> +                     "ethstp",
+> +                     "eth-ck";
+> +       clocks = <&rcc ETHMAC>,
+> +                <&rcc ETHTX>,
+> +                <&rcc ETHRX>,
+> +                <&rcc ETHSTP>,
+> +                <&rcc ETHCK_K>;
+> +       st,syscon = <&syscfg 0x4>;
+> +       snps,pbl = <2>;
+> +       snps,axi-config = <&stmmac_axi_config_0>;
+> +       snps,tso;
+> +       status = "disabled";
 
-So this was on purpose void. There is no point in returning any feedback from this function. It either handles the event or it doesn’t. The caller function doesn’t care.
+Don't show status in examples.
 
-> +	struct msft_data *msft = hdev->msft_data;
-> +	u8 event;
-> +
-> +	if (!msft)
-> +		return -ENOSYS;
-> +
-> +	/* When the extension has defined an event prefix, check that it
-> +	 * matches, and otherwise just return.
-> +	 */
-> +	if (msft->evt_prefix_len > 0) {
-> +		if (skb->len < msft->evt_prefix_len)
-> +			return -ENOSYS;
-> +
-> +		if (memcmp(skb->data, msft->evt_prefix, msft->evt_prefix_len))
-> +			return -ENOSYS;
-> +
-> +		skb_pull(skb, msft->evt_prefix_len);
-> +	}
-> +
-> +	/* Every event starts at least with an event code and the rest of
-> +	 * the data is variable and depends on the event code. Returns true
-> +	 */
-> +	if (skb->len < 1)
-> +		return -EBADMSG;
-> +
-> +	event = *skb->data;
-> +	skb_pull(skb, 1);
-> +
-> +	bt_dev_dbg(hdev, "MSFT vendor event %u", event);
-> +	return 0;
-> +}
-> diff --git a/net/bluetooth/msft.h b/net/bluetooth/msft.h
-> index 7218ea759dde..6a7d0ac6c66c 100644
-> --- a/net/bluetooth/msft.h
-> +++ b/net/bluetooth/msft.h
-> @@ -4,15 +4,25 @@
-> #ifndef __MSFT_H
-> #define __MSFT_H
-> 
-> +#include <linux/errno.h>
-> #include <net/bluetooth/hci_core.h>
-> 
-> #if IS_ENABLED(CONFIG_BT_MSFTEXT)
-> 
-> void msft_set_opcode(struct hci_dev *hdev, __u16 opcode);
-> +void msft_do_open(struct hci_dev *hdev);
-> +void msft_do_close(struct hci_dev *hdev);
-> +int msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb);
-> 
-> #else
-> 
-> static inline void msft_set_opcode(struct hci_dev *hdev, __u16 opcode) {}
-> +static inline void msft_do_open(struct hci_dev *hdev) {}
-> +static inline void msft_do_close(struct hci_dev *hdev) {}
-> +static inline int msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
-> +{
-> +	return -ENOSYS;
-> +}
-> 
-> #endif
+> +       phy-mode = "rgmii";
+> +       };
 
-Regards
+Wrong indentation.
 
-Marcel
-
+> +
+> +    //Example 2 (MCU example)
+> +     ethernet1: ethernet@40028000 {
+> +       compatible = "st,stm32-dwmac", "snps,dwmac-3.50a";
+> +       reg = <0x40028000 0x8000>;
+> +       reg-names = "stmmaceth";
+> +       interrupts = <0 61 0>, <0 62 0>;
+> +       interrupt-names = "macirq", "eth_wake_irq";
+> +       clock-names = "stmmaceth", "mac-clk-tx", "mac-clk-rx";
+> +       clocks = <&rcc 0 25>, <&rcc 0 26>, <&rcc 0 27>;
+> +       st,syscon = <&syscfg 0x4>;
+> +       snps,pbl = <8>;
+> +       snps,mixed-burst;
+> +       dma-ranges;
+> +       phy-mode = "mii";
+> +       };
+> +
+> +    //Example 3
+> +     ethernet2: ethernet@40027000 {
+> +       compatible = "st,stm32-dwmac", "snps,dwmac-4.10a";
+> +       reg = <0x40028000 0x8000>;
+> +       reg-names = "stmmaceth";
+> +       interrupts = <61>;
+> +       interrupt-names = "macirq";
+> +       clock-names = "stmmaceth", "mac-clk-tx", "mac-clk-rx";
+> +       clocks = <&rcc 62>, <&rcc 61>, <&rcc 60>;
+> +       st,syscon = <&syscfg 0x4>;
+> +       snps,pbl = <8>;
+> +       status = "disabled";
+> +       phy-mode = "mii";
+> +       };
+> -- 
+> 2.17.1
+> 
