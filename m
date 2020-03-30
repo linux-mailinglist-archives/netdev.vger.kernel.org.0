@@ -2,64 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50E78198339
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:18:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AD7C198341
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:21:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727750AbgC3SSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 14:18:30 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:40640 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726017AbgC3SSa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 14:18:30 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id AFC1415C4F17B;
-        Mon, 30 Mar 2020 11:18:29 -0700 (PDT)
-Date:   Mon, 30 Mar 2020 11:18:28 -0700 (PDT)
-Message-Id: <20200330.111828.1385462054350886425.davem@davemloft.net>
-To:     richardcochran@gmail.com
-Cc:     netdev@vger.kernel.org, yangbo.lu@nxp.com, vladimir.oltean@nxp.com
-Subject: Re: [PATCH net-next V2] ptp: Avoid deadlocks in the programmable
- pin code.
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200329145510.2803-1-richardcochran@gmail.com>
-References: <20200329145510.2803-1-richardcochran@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 30 Mar 2020 11:18:29 -0700 (PDT)
+        id S1727719AbgC3SVQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 14:21:16 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:40436 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726385AbgC3SVQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 14:21:16 -0400
+Received: by mail-il1-f197.google.com with SMTP id g79so17636126ild.7
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 11:21:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=mxdVwodbRk0ry9cYchDSp6TDUK7eyG3uOBp8XYyeWXQ=;
+        b=LdiFLC7S7715NU8qcYqH4GYo+mtC4D8XdLHUXJKXlVNBJ9SHL+RCEWuifbXCTYm5kz
+         KIkynEW+TK3WyE8CG8kx5T4ubajv0nioxqaPOG+AVBOgBbArWdvMdaF1pchqovjos0p2
+         BgrbCjB1i44amAsbkFox+cbUro+NJJXedGHzBCeBv9h9QNl1xKHw6cvQPuwSdtnXrSJO
+         B/Jd2C/OizJHU4Wh99Rw1SHL7PDGf1cfYNSaNAdN5p1POI6X6NEysQIWyUTXaQjnxcxx
+         v7u4CJXBDg0Mes9HjATQaX4vv8v084L19ubCle8nWH0DOVAG8ygwcDSJRnz9uQ68Ky5o
+         cYdA==
+X-Gm-Message-State: ANhLgQ3Jq/zmSWnTXIkKQ4qvzVIEYMgFaAa3kBKsTr22MB2Vnixpxl+m
+        oVHklU0edjz+7fNB30wnCA27m+Qt8Y+2c3k9eO2ENbz/z4dH
+X-Google-Smtp-Source: ADFU+vsIuf/CRCbVNmWwvv47oJ3aX+xLSoAbjEEvYN1cOGPVqg4ocu5AJueeTvpVtrNksrrMv07+chcb+0xTt8sflyPG/O6cBYve
+MIME-Version: 1.0
+X-Received: by 2002:a92:9f13:: with SMTP id u19mr12634271ili.111.1585592475153;
+ Mon, 30 Mar 2020 11:21:15 -0700 (PDT)
+Date:   Mon, 30 Mar 2020 11:21:15 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003d7c1505a2168418@google.com>
+Subject: KASAN: stack-out-of-bounds Write in ath9k_hif_usb_rx_cb
+From:   syzbot <syzbot+d403396d4df67ad0bd5f@syzkaller.appspotmail.com>
+To:     andreyknvl@google.com, ath9k-devel@qca.qualcomm.com,
+        davem@davemloft.net, kvalo@codeaurora.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Richard Cochran <richardcochran@gmail.com>
-Date: Sun, 29 Mar 2020 07:55:10 -0700
+Hello,
 
-> The PTP Hardware Clock (PHC) subsystem offers an API for configuring
-> programmable pins.  User space sets or gets the settings using ioctls,
-> and drivers verify dialed settings via a callback.  Drivers may also
-> query pin settings by calling the ptp_find_pin() method.
-> 
-> Although the core subsystem protects concurrent access to the pin
-> settings, the implementation places illogical restrictions on how
-> drivers may call ptp_find_pin().  When enabling an auxiliary function
-> via the .enable(on=1) callback, drivers may invoke the pin finding
-> method, but when disabling with .enable(on=0) drivers are not
-> permitted to do so.  With the exception of the mv88e6xxx, all of the
-> PHC drivers do respect this restriction, but still the locking pattern
-> is both confusing and unnecessary.
-> 
-> This patch changes the locking implementation to allow PHC drivers to
-> freely call ptp_find_pin() from their .enable() and .verify()
-> callbacks.
-> 
-> Signed-off-by: Richard Cochran <richardcochran@gmail.com>
-> Reported-by: Yangbo Lu <yangbo.lu@nxp.com>
-> Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+syzbot found the following crash on:
 
-I made sure to apply v2 of this even though I just replied to v1
-as if I had applied that one :-)
+HEAD commit:    0fa84af8 Merge tag 'usb-serial-5.7-rc1' of https://git.ker..
+git tree:       https://github.com/google/kasan.git usb-fuzzer
+console output: https://syzkaller.appspot.com/x/log.txt?x=159a0583e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a782c087b1f425c6
+dashboard link: https://syzkaller.appspot.com/bug?extid=d403396d4df67ad0bd5f
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=177a266de00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1579f947e00000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+d403396d4df67ad0bd5f@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: stack-out-of-bounds in ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:626 [inline]
+BUG: KASAN: stack-out-of-bounds in ath9k_hif_usb_rx_cb+0xdf6/0xf70 drivers/net/wireless/ath/ath9k/hif_usb.c:666
+Write of size 8 at addr ffff8881db309a28 by task swapper/1/0
+
+CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.6.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0xef/0x16e lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xd3/0x314 mm/kasan/report.c:374
+ __kasan_report.cold+0x37/0x77 mm/kasan/report.c:506
+ kasan_report+0xe/0x20 mm/kasan/common.c:641
+ ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:626 [inline]
+ ath9k_hif_usb_rx_cb+0xdf6/0xf70 drivers/net/wireless/ath/ath9k/hif_usb.c:666
+ __usb_hcd_giveback_urb+0x1f2/0x470 drivers/usb/core/hcd.c:1648
+ usb_hcd_giveback_urb+0x368/0x420 drivers/usb/core/hcd.c:1713
+ dummy_timer+0x1258/0x32ae drivers/usb/gadget/udc/dummy_hcd.c:1966
+ call_timer_fn+0x195/0x6f0 kernel/time/timer.c:1404
+ expire_timers kernel/time/timer.c:1449 [inline]
+ __run_timers kernel/time/timer.c:1773 [inline]
+ __run_timers kernel/time/timer.c:1740 [inline]
+ run_timer_softirq+0x5f9/0x1500 kernel/time/timer.c:1786
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
