@@ -2,121 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E450019767F
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 10:32:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9A1C197696
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 10:38:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729688AbgC3Ic1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 04:32:27 -0400
-Received: from mail-eopbgr80050.outbound.protection.outlook.com ([40.107.8.50]:15366
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729682AbgC3Ic1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 04:32:27 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AbdZee9dGSFd87dmf4CBtGqzxmcfm4jdOdKZNM0i8GNCVHZXPHRAQDcXKpaOTtgWUDr8mEOghOLL7lYv1bM1PB11rCmueiONtgG1mWCM6/GxMU4YSzyVSzUt9puHpd3NKWWvOEpGY4G+AP2q7FVotrX5X+YpyFMWhvgu34VeW5rKtrAO7TaoqWEy6nBU+LxVpkZkcNyICYmK0UnwtV7q+rRlDUH24DHPYbdWg4E2n3dSYZ+SzKfRzIuFcuhy30R8D9CUSKCCvsF+AtGtst/58D4sYuU1nUlEbAO5f9kDhQfDOqXSQv/ye0CZ9UpvAikufSd9BuTQV++zfBouIspZ3Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VpMTwdxRXpWS7fsiYi+1sJcRINQIu8UzZKBtSLy6nis=;
- b=iiJZPyWygB27ZwuUC46jOxC1cbF2Na9XmE+35ahaOQOS2gLWig8YZQErAYQwzyxGHbHfdgtlnmvSBeevYNRDKtw3fbIOGLt9o8zy7agdmd9hJpGqeojrJFE/jlknBYJ2UDq7Rl5a0edy2d5goCIpPDEyTD4HDhT09Q9n7Y9wW4TrrU4bbIsqw94zzAv8hZpZYrsJ7wBWPNE71wUh8OkcgbL0w3588fQyLHxOubATvP7bYK/Mp6bqf2g48k++DKFxSQz2S9nzBfVcXoDJCxcvFM4Qr22BjKgW4QzDKHEz+GFIFCxMpHEaDQ6+WNWqPhQSQVvd+81FUjZs+TKzh/2IbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VpMTwdxRXpWS7fsiYi+1sJcRINQIu8UzZKBtSLy6nis=;
- b=qB+FaX6lpfDub6dQcZh0Ev1zvaRIi8CK22OXZGL2sS0SC9fJfVwoBbA/PcKX6AIm8iFuWkeLWeFAz/z/5dWvWuAF9vKWOzolZdavRze1HwwCKUFoK4tfGb1VddoK2NzA5XjyEVcOjdtR7hEGyMrCi1kClw3yoxUdO++9HwHlCVU=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=petrm@mellanox.com; 
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com (20.176.168.150) by
- HE1PR05MB3212.eurprd05.prod.outlook.com (10.170.243.10) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2856.20; Mon, 30 Mar 2020 08:32:17 +0000
-Received: from HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::e9a8:7b1c:f82a:865b]) by HE1PR05MB4746.eurprd05.prod.outlook.com
- ([fe80::e9a8:7b1c:f82a:865b%6]) with mapi id 15.20.2856.019; Mon, 30 Mar 2020
- 08:32:17 +0000
-References: <cover.1585331173.git.petrm@mellanox.com> <628ade92d458e62f9471911d3cf8f3b193212eaa.1585331173.git.petrm@mellanox.com> <20200327175123.1930e099@hermes.lan>
-User-agent: mu4e 1.3.3; emacs 26.3
-From:   Petr Machata <petrm@mellanox.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH iproute2-next 1/3] tc: p_ip6: Support pedit of IPv6 dsfield
-In-reply-to: <20200327175123.1930e099@hermes.lan>
-Date:   Mon, 30 Mar 2020 10:32:13 +0200
-Message-ID: <87eetafdki.fsf@mellanox.com>
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR01CA0094.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:10e::35) To HE1PR05MB4746.eurprd05.prod.outlook.com
- (2603:10a6:7:a3::22)
+        id S1729680AbgC3IiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 04:38:12 -0400
+Received: from conssluserg-01.nifty.com ([210.131.2.80]:56073 "EHLO
+        conssluserg-01.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726017AbgC3IiM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 04:38:12 -0400
+X-Greylist: delayed 5280 seconds by postgrey-1.27 at vger.kernel.org; Mon, 30 Mar 2020 04:38:09 EDT
+Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com [209.85.222.47]) (authenticated)
+        by conssluserg-01.nifty.com with ESMTP id 02U8bmN8026273;
+        Mon, 30 Mar 2020 17:37:49 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-01.nifty.com 02U8bmN8026273
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1585557470;
+        bh=PxRmu3HuDIYTqEJxiJ5PqE2LXmQuo3D9zlavzY5jVI4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=brVEPKJScKZunXMPy14SQD8gmdtXfD/Z7CL8ZRWvjqvg8UYOEXDjY45m6LQp+Upry
+         SgIqRIt+Vbfvxsnbg1Sa4ESbah6Ht4e+ygLsb2zMtFxzxi6m+CL+3akLM9W4IRUtrC
+         8IrkWOugyFCF6k+q9DWaJ/RylMYkLVAXmcO1Y053y79in1DJ1SYDKl6QryZcJvymZW
+         zhUI92s1QDExgPzlgqMqS+2VzRW+Hf/0CueUJkv89pUXdRGkEy/yT1U57PQSLpZHL5
+         dpuemg5XzFyFNtnhwxT9TEaThfuk/wESfJfRmQy4YDPJPK/eWz1pRIvn+23Xa8wREx
+         iiOBT5PkS+9Hg==
+X-Nifty-SrcIP: [209.85.222.47]
+Received: by mail-ua1-f47.google.com with SMTP id r47so5951861uad.11;
+        Mon, 30 Mar 2020 01:37:49 -0700 (PDT)
+X-Gm-Message-State: AGi0PuYfI1t4jOABvMJbBeheO5K31RVjKrp+v3PMdlyhGrfyx/pJ5lj8
+        56rX/6bnMc6mi60tJtnMdm1005lbsmAaPgRPoO8=
+X-Google-Smtp-Source: APiQypJeTOypTow5s/orWLiqA+luxDBNhpwR1xE86uZ7tA8NnJnWdBsJgIswlbl89EaZoapGrF/J2WDHqcRU1fH6V1M=
+X-Received: by 2002:a9f:28c5:: with SMTP id d63mr6911883uad.25.1585557468135;
+ Mon, 30 Mar 2020 01:37:48 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from yaviefel (213.220.234.169) by AM0PR01CA0094.eurprd01.prod.exchangelabs.com (2603:10a6:208:10e::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.19 via Frontend Transport; Mon, 30 Mar 2020 08:32:16 +0000
-X-Originating-IP: [213.220.234.169]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: c86ef847-d874-4695-4dab-08d7d484daef
-X-MS-TrafficTypeDiagnostic: HE1PR05MB3212:
-X-Microsoft-Antispam-PRVS: <HE1PR05MB3212BCAC7F6A0DFDD91E0EDEDBCB0@HE1PR05MB3212.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
-X-Forefront-PRVS: 0358535363
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1PR05MB4746.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(39860400002)(376002)(366004)(346002)(136003)(396003)(956004)(316002)(16526019)(186003)(2616005)(81156014)(81166006)(478600001)(26005)(6496006)(6916009)(6486002)(52116002)(36756003)(86362001)(5660300002)(2906002)(4326008)(8676002)(6666004)(8936002)(66556008)(66476007)(66946007);DIR:OUT;SFP:1101;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qQQTNBmctkpBEWZb+1JaqRhU1g6oGNWb04zOBgb9lzZhftnqeU3+5zb8tAZRdipTTUlgVWmj+bU0G4sOgvAN8aght51JchOSkVNn5RReS8bp3R6UHKMe9iIHDC9991A1WoLznI9mIobmmcfh5/J8QTb6ozfJWN5k/w2nlaJ51hMLnhs2S1T0qWVXlmmCpWpTg+DAK2Mcbqe3KAIa+k8sLVCvD/Av4yU31EX1JjrRQfmIhwkyP4rN1U/U09kucfWoJXqPUfUYvDMH5PPytQgGg4rkdU8TW5zF9+Ipp6zxO7AUcZ1tLdVJ8602igDYanAisxn4ffAht/5UR/d+x/5iSqSMOzxeH6zq/jK/aqK/9tZ21pZEu35k3+gcue4hOVYszaL5qWkA+59/fOMnbjW2oFvtnxNbkCkzReDO1BkVyXj388VGMk6bY+NXVrMKoQ3w
-X-MS-Exchange-AntiSpam-MessageData: HzoOZQaj/E1gbDTBVPBIzSLsPakynwDgBUgjaH8VTITz6ugHjlgGwRLCEDVf0Iv/A5Fhkct4XzxkWEos4QlZF4zBhGQYTXyo8SPuDjWhrFiJ8w4QZchHOCMVMARhtAX+0cvcIfQlw0oREYFZ5VZT+Q==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c86ef847-d874-4695-4dab-08d7d484daef
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2020 08:32:17.4169
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8zuYmGxSd5yRSPJ4m2HS2jtDJWYYZEGdvvMH5zp/8How7DYRdiGBJrb2zz8D5nM8FVcN8f8+Re+U1TsgNAaHOA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR05MB3212
+References: <20200325220542.19189-1-robh@kernel.org> <20200325220542.19189-5-robh@kernel.org>
+ <CAK7LNARJn4uugHxcjK+WOWBs0gPVZQsCu4y6M8hkNK1U5FehRA@mail.gmail.com>
+In-Reply-To: <CAK7LNARJn4uugHxcjK+WOWBs0gPVZQsCu4y6M8hkNK1U5FehRA@mail.gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Mon, 30 Mar 2020 17:37:11 +0900
+X-Gmail-Original-Message-ID: <CAK7LNARXj3=1VPWL4kFmGkZuvV=yKb7gVaX2nbeiO54f-zWeHQ@mail.gmail.com>
+Message-ID: <CAK7LNARXj3=1VPWL4kFmGkZuvV=yKb7gVaX2nbeiO54f-zWeHQ@mail.gmail.com>
+Subject: Re: [PATCH 4/4] dt-bindings: Add missing 'additionalProperties: false'
+To:     Rob Herring <robh@kernel.org>
+Cc:     DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Brian Masney <masneyb@onstation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Guillaume La Roque <glaroque@baylibre.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Zhang Rui <rui.zhang@intel.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-amlogic@lists.infradead.org,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-iio@vger.kernel.org,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux PM mailing list <linux-pm@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Rob,
 
-Stephen Hemminger <stephen@networkplumber.org> writes:
+On Mon, Mar 30, 2020 at 4:09 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> On Thu, Mar 26, 2020 at 7:06 AM Rob Herring <robh@kernel.org> wrote:
+> >
+> > Setting 'additionalProperties: false' is frequently omitted, but is
+> > important in order to check that there aren't extra undocumented
+> > properties in a binding.
+> >
+> > Ideally, we'd just add this automatically and make this the default, but
+> > there's some cases where it doesn't work. For example, if a common
+> > schema is referenced, then properties in the common schema aren't part
+> > of what's considered for 'additionalProperties'. Also, sometimes there
+> > are bus specific properties such as 'spi-max-frequency' that go into
+> > bus child nodes, but aren't defined in the child node's schema.
+> >
+> > So let's stick with the json-schema defined default and add
+> > 'additionalProperties: false' where needed. This will be a continual
+> > review comment and game of wack-a-mole.
+> >
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+> > ---
+>
+>
+> >  .../devicetree/bindings/gpio/socionext,uniphier-gpio.yaml      | 2 ++
+>
+>
+> You may have already queue this up, but just in case.
+>
+> Acked-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 
->> diff --git a/tc/p_ip6.c b/tc/p_ip6.c
->> index 7cc7997b..b6fe81f5 100644
->> --- a/tc/p_ip6.c
->> +++ b/tc/p_ip6.c
->> @@ -56,6 +56,22 @@ parse_ip6(int *argc_p, char ***argv_p,
->>  		res = parse_cmd(&argc, &argv, 4, TU32, 0x0007ffff, sel, tkey);
->>  		goto done;
->>  	}
->> +	if (strcmp(*argv, "traffic_class") == 0 ||
->> +	    strcmp(*argv, "tos") == 0 ||
->> +	    strcmp(*argv, "dsfield") == 0) {
->> +		NEXT_ARG();
->> +		tkey->off = 1;
->> +		res = parse_cmd(&argc, &argv, 1, TU32, RU8, sel, tkey);
->> +
->> +		/* Shift the field by 4 bits on success. */
->> +		if (!res) {
->> +			int nkeys = sel->sel.nkeys;
->> +			struct tc_pedit_key *key = &sel->sel.keys[nkeys - 1];
->> +			key->mask = htonl(ntohl(key->mask) << 4 | 0xf);
->> +			key->val = htonl(ntohl(key->val) << 4);
->> +		}
->> +		goto done;
->> +	}
-> Why in the middle of the list?
 
-Because that's the order IPv4 code does them.
 
-> Why three aliases for the same value?
-> Since this is new code choose one and make it match what IPv6 standard
-> calls that field.
+I take back Ack for socionext,uniphier-gpio.yaml
 
-TOS because flower also calls it TOS, even if it's the IPv6 field.
-dsfield, because the IPv4 pedit also accepts this. I'm fine with just
-accepting traffic_class though.
+
+
+Now "make dt_binding_check" produces a new warning.
+
+gpio@55000000: 'interrupt-parent' does not match any of the regexes:
+'pinctrl-[0-9]+'
+
+
+This binding uses 'interrupt-parent'
+without 'interrupts'.
+
+Instead, the mapping of the interrupt numbers
+is specified by the vendor-specific property
+socionext,interrupt-ranges
+
+
+
+I cannot add   "interrupt-parent: true" because
+dt-schema/meta-schemas/interrupts.yaml
+has "interrupt-parent: false".
+
+
+Is there any solution?
+
+
+
+-- 
+Best Regards
+Masahiro Yamada
