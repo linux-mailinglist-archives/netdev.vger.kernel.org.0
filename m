@@ -2,69 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48630197DD2
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 16:05:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C001E197E00
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 16:11:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727745AbgC3OFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 10:05:47 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:50000 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725978AbgC3OFr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 10:05:47 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id C7801625750368B4B8CA;
-        Mon, 30 Mar 2020 22:05:34 +0800 (CST)
-Received: from [127.0.0.1] (10.173.223.234) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.487.0; Mon, 30 Mar 2020
- 22:05:32 +0800
-Subject: Re: [PATCH net-next] xfrm: policy: Remove obsolete WARN while xfrm
- policy inserting
+        id S1728123AbgC3OLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 10:11:50 -0400
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:54842 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725268AbgC3OLt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 10:11:49 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1jIv8l-0004In-78; Mon, 30 Mar 2020 16:11:47 +0200
+Date:   Mon, 30 Mar 2020 16:11:47 +0200
+From:   Florian Westphal <fw@strlen.de>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
-References: <20200327123443.12408-1-yuehaibing@huawei.com>
- <20200328112302.GA13121@gauss3.secunet.de>
-CC:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-From:   Yuehaibing <yuehaibing@huawei.com>
-Message-ID: <1d3596fb-c7e3-16c9-f48f-fe58e9a2569a@huawei.com>
-Date:   Mon, 30 Mar 2020 22:05:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.2.0
+Cc:     Florian Westphal <fw@strlen.de>, Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>, davem@davemloft.net,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net] udp: fix a skb extensions leak
+Message-ID: <20200330141147.GC23604@breakpoint.cc>
+References: <e17fe23a0a5f652866ec623ef0cde1e6ef5dbcf5.1585213585.git.lucien.xin@gmail.com>
+ <20200330132759.GA31510@strlen.de>
+ <20200330134531.GK13121@gauss3.secunet.de>
 MIME-Version: 1.0
-In-Reply-To: <20200328112302.GA13121@gauss3.secunet.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.173.223.234]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200330134531.GK13121@gauss3.secunet.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/3/28 19:23, Steffen Klassert wrote:
-> On Fri, Mar 27, 2020 at 08:34:43PM +0800, YueHaibing wrote:
->> Since commit 7cb8a93968e3 ("xfrm: Allow inserting policies with matching
->> mark and different priorities"), we allow duplicate policies with
->> different priority, this WARN is not needed any more.
+Steffen Klassert <steffen.klassert@secunet.com> wrote:
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index 621b4479fee1..7e29590482ce 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -3668,6 +3668,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+> > 
+> >                 skb_push(nskb, -skb_network_offset(nskb) + offset);
+> > 
+> > +               skb_release_head_state(nskb);
+> >                  __copy_skb_header(nskb, skb);
+> > 
+> >                 skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
+> > 
+> > AFAICS we not only leak reference of extensions, but also skb->dst and skb->_nfct.
 > 
-> Can you please describe a bit more detailed why this warning
-> can't trigger anymore?
+> Would be nice if we would not need to drop the resources
+> just to add them back again in the next line. But it is ok
+> as a quick fix for the bug.
 
-No, this warning is triggered while detect a duplicate entry in the policy list
-
-regardless of the priority. If we insert policy like this:
-
-policy A (mark.v = 3475289, mark.m = 0, priority = 1)	//A is inserted
-policy B (mark.v = 0, mark.m = 0, priority = 0) 	//B is inserted
-policy C (mark.v = 3475289, mark.m = 0, priority = 0)	//C is inserted and B is deleted
-policy D (mark.v = 3475289, mark.m = 0, priority = 1)	
-
-while finding delpol in xfrm_policy_insert_list,
-first round delpol is matched C, whose priority is less than D, so contiue the loop,
-then A is matched， WARN_ON is triggered.  It seems the WARN is useless.
-
-> 
-> Thanks!
-> 
-> 
-
+Yes, but are these the same resources?  AFAIU thats not the case, i.e.
+the skb on fraglist can have different skb->{dst,extension,_nfct} data
+than the skb head one, and we can't tell if that data is still valid
+(rerouting for example).
