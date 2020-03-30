@@ -2,82 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2217F19839B
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:44:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4452219839D
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:45:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727612AbgC3SoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 14:44:19 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:40864 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726385AbgC3SoT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 14:44:19 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C888E15C60D01;
-        Mon, 30 Mar 2020 11:44:17 -0700 (PDT)
-Date:   Mon, 30 Mar 2020 11:44:16 -0700 (PDT)
-Message-Id: <20200330.114416.1872962832740552526.davem@davemloft.net>
-To:     olteanv@gmail.com
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        jiri@resnulli.us, idosch@idosch.org, kuba@kernel.org,
-        netdev@vger.kernel.org, xiaoliang.yang_1@nxp.com,
-        linux-kernel@vger.kernel.org, horatiu.vultur@microchip.com,
-        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
-        joergen.andreasen@microchip.com, UNGLinuxDriver@microchip.com,
-        yangbo.lu@nxp.com, alexandru.marginean@nxp.com, po.liu@nxp.com,
-        claudiu.manoil@nxp.com, leoyang.li@nxp.com,
-        nikolay@cumulusnetworks.com, roopa@cumulusnetworks.com
-Subject: Re: [PATCH v2 net-next 0/6] Port and flow policers for DSA
- (SJA1105, Felix/Ocelot)
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20200329115202.16348-1-olteanv@gmail.com>
-References: <20200329115202.16348-1-olteanv@gmail.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 30 Mar 2020 11:44:18 -0700 (PDT)
+        id S1726923AbgC3SpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 14:45:20 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:39232 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726385AbgC3SpU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 14:45:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=CXPdVTiCp/UQlA1jkwVcGXrb4CsvV02soGOt8kpgYnw=; b=f0UCPHg1Gf1xj0tFDxE3HFlJ2m
+        xKOE3rozjJmI7jBEsw6TNxh8RkcB0DwAt9EmfigF8mElTVo0L9qpKlkve/cgNc5FMYy7+JksQyWkY
+        JSY0zuL5mk/+1yeJAlR5yER8geO9K9DkRCyNzd51ruwxgnaUShK5jdZS0LUjPQI+d+HI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
+        (envelope-from <andrew@lunn.ch>)
+        id 1jIzPR-000790-F5; Mon, 30 Mar 2020 20:45:17 +0200
+Date:   Mon, 30 Mar 2020 20:45:17 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Daniel Mack <daniel@zonque.org>
+Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: mv88e6xxx: don't force settings on CPU port
+Message-ID: <20200330184517.GH23477@lunn.ch>
+References: <20200327200153.GR3819@lunn.ch>
+ <d101df30-5a9e-eac1-94b0-f171dbcd5b88@zonque.org>
+ <20200327211821.GT3819@lunn.ch>
+ <1bff1da3-8c9d-55c6-3408-3ae1c3943041@zonque.org>
+ <20200327235220.GV3819@lunn.ch>
+ <64462bcf-6c0c-af4f-19f4-d203daeabec3@zonque.org>
+ <20200330134010.GA23477@lunn.ch>
+ <7a777bc3-9109-153a-a735-e36718c06db5@zonque.org>
+ <20200330182307.GG23477@lunn.ch>
+ <82d8e785-ec00-d815-3b11-b694aa9f4d50@zonque.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <82d8e785-ec00-d815-3b11-b694aa9f4d50@zonque.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <olteanv@gmail.com>
-Date: Sun, 29 Mar 2020 14:51:56 +0300
+> Even when the MAC is *forced* to 1G, which is what the code currently
+> does? Sorry for the dumb question, but wich code path would undo these
+> settings? Where would you start debugging this?
 
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> This series adds support for 2 types of policers:
->  - port policers, via tc matchall filter
->  - flow policers, via tc flower filter
-> for 2 DSA drivers:
->  - sja1105
->  - felix/ocelot
-> 
-> First we start with ocelot/felix. Prior to this patch, the ocelot core
-> library currently only supported:
-> - Port policers
-> - Flow-based dropping and trapping
-> But the felix wrapper could not actually use the port policers due to
-> missing linkage and support in the DSA core. So one of the patches
-> addresses exactly that limitation by adding the missing support to the
-> DSA core. The other patch for felix flow policers (via the VCAP IS2
-> engine) is actually in the ocelot library itself, since the linkage with
-> the ocelot flower classifier has already been done in an earlier patch
-> set.
-> 
-> Then with the newly added .port_policer_add and .port_policer_del, we
-> can also start supporting the L2 policers on sja1105.
-> 
-> Then, for full functionality of these L2 policers on sja1105, we also
-> implement a more limited set of flow-based policing keys for this
-> switch, namely for broadcast and VLAN PCP.
-> 
-> Series version 1 was submitted here:
-> https://patchwork.ozlabs.org/cover/1263353/
-> 
-> Nothing functional changed in v2, only a rebase.
+You could add #define DEBUG to the top of driver/net/phy/phylink.c.
+You should then see what phylink is up to, including it trying to
+configure the MAC. You can add additional printk to
+mv88e6xxx_mac_link_up(), mv88e6xxx_mac_link_down(),
+mv88e6xxx_mac_config(), etc.
 
-This looks fine to me, series applied, thanks.
+	  Andrew
