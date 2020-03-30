@@ -2,66 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 213B11984DA
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 21:50:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E33B6198484
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 21:34:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727954AbgC3TuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 15:50:02 -0400
-Received: from mail-ed1-f49.google.com ([209.85.208.49]:34749 "EHLO
-        mail-ed1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726017AbgC3TuC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 15:50:02 -0400
-Received: by mail-ed1-f49.google.com with SMTP id o1so4047555edv.1
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 12:50:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=dbNeX14b6bX01VGUEyt0k4bQHAzsM+tUshS+wL0daz4=;
-        b=FRFxqVgXl46HdLVnBh0J3p1lzXeohF+dZ/37H9XIRGf274GARsmBZXnWMUjeWyRdmF
-         VwB2gAds4CHUJrxdCQCp6s9O+WONSjL2gujBRj44ki05RPQz969MMmFtwPH9EW6ybl+9
-         7f5bAH++AexgszrfkP8g5k4YSTi0jF5pC1oLMg07+aaFEKgU9qxIWNtKVVQjIzeDCcjR
-         VtTF+KwpMJOJnvSqe4N8SmB0eWXCmlL2yrxL86TzweRR5haXUHBOeekrFsExchfo7dKc
-         fhkNguh7vVJvOgaYAhMg1zX4eZJCrt49P/ai9I/S0moo3s+qUP7iTskrwmhZ4LNh/O75
-         iWUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=dbNeX14b6bX01VGUEyt0k4bQHAzsM+tUshS+wL0daz4=;
-        b=G3M+RSIcJMylgabQXxv6Qnne4NphN71sHA5+5qniretnEg5kIPEwlTW9AkhUVT/iv4
-         GleaHoEd6SLppjQlfGI0eBt3havKXGm9Qw2NTHOzbBlswD2O6CDlfLI9Ri4U9vAyw7/M
-         2S8DcSEprf9o4FqCS9qqkIDvkjdPLIMBVWWlc+0+U8pyYdXgbNwIG374rVs/cK0L9Gdo
-         PauFyVnvHkszmEwEKEgcOrGZd57iNeWx+BA3VjxJ/Nv6mfIWwDTQzL+XpYKkXvQ/nCZr
-         wObm1A1AfG4fl16pNTUtftV00Je/ZtBo1NAue+XWc9H672yZrL+Du1W/4XtBkw5Kg+e4
-         LInA==
-X-Gm-Message-State: ANhLgQ3jXz7Q7QxoPug7Qb52mWfcW4cnIgu40dGaEw//r0WhmALjoVB3
-        6gwoeUUYgRKpjRbxVVf7S7Ngb7/ZdgNiG1jSVGsP9bEjpqc=
-X-Google-Smtp-Source: ADFU+vuPmJxuFvVzaATH6z2LOJ73EqgQVE09+Knr2XpAssD2CwybCedj9gMz3CQ9mMQ6C/MESux0UVENGfMf0a+ajQA=
-X-Received: by 2002:a50:d614:: with SMTP id x20mr13474740edi.186.1585597800176;
- Mon, 30 Mar 2020 12:50:00 -0700 (PDT)
+        id S1728065AbgC3Teh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 15:34:37 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:57272 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726981AbgC3Teh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 15:34:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=ouCCrxgpC9lrAW88GEI9j87liXixId89uU7gxnry/GA=; b=S/E+w9RAhZJEE41C/xlapLhbD
+        5EwrWK+Ja5MMBJ1Vpvp0su+XGw1Qvgzo0VCBCUqMPv7GrJcasvY9X1ZYHG4H2JWYzVyLUqIVry0BE
+        uT0g/GJCYzNuSBFlwqG8nEBY27219G3gxnummMJRcID00BGsW9rDMASRM/IGPPHxFjAQjbUbWMRjW
+        o+w7y9CT1P5Jd78QCDLja9t6p1QUTqjlKWMcHjLhpsLYbajPriUaDdZeNg5ItMKdcbXA7i5SmRexM
+        Zh0ttMV+3LGxLOtXAwkUkz+BURp96qxjELz3JmGolqQdEQ9uoEvdVqGrFkGjLyaOnkijwJvsBiRME
+        bJYbrb2Rw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43466)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jJ0AU-0003y8-St; Mon, 30 Mar 2020 20:33:55 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jJ0AM-0007Nx-UP; Mon, 30 Mar 2020 20:33:46 +0100
+Date:   Mon, 30 Mar 2020 20:33:46 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Sam Ravnborg <sam@ravnborg.org>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        dri-devel@lists.freedesktop.org, etnaviv@lists.freedesktop.org,
+        linux-media@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] Update my email address in various drivers
+Message-ID: <20200330193346.GI25745@shell.armlinux.org.uk>
+References: <E1jIV26-0005X3-RS@rmk-PC.armlinux.org.uk>
+ <20200330180444.GA16073@ravnborg.org>
 MIME-Version: 1.0
-From:   Vaidas BoQsc <vaidas.boqsc@gmail.com>
-Date:   Mon, 30 Mar 2020 19:49:24 +0300
-Message-ID: <CAB+qc9CWOOTNruMhcAugmjhCne8a-FG9kk8X6ty8-Ss5CpKp5w@mail.gmail.com>
-Subject: A robust correct way to display local ip addresses of the device
- Gautieji x
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200330180444.GA16073@ravnborg.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Are there any ways to output only the local ipv4 (inet) addresses of
-the device using ip command?
+On Mon, Mar 30, 2020 at 08:04:44PM +0200, Sam Ravnborg wrote:
+> Hi Russell.
+> 
+> On Sun, Mar 29, 2020 at 11:19:10AM +0100, Russell King wrote:
+> > Globally update my email address in six files scattered through the
+> > tree.
+> > 
+> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > ---
+> >  drivers/gpu/drm/armada/armada_drv.c                 | 2 +-
+> >  drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c | 2 +-
+> >  drivers/gpu/drm/etnaviv/etnaviv_drv.c               | 2 +-
+> >  drivers/media/cec/cec-notifier.c                    | 2 +-
+> >  drivers/net/phy/swphy.c                             | 2 +-
+> >  include/media/cec-notifier.h                        | 2 +-
+> >  6 files changed, 6 insertions(+), 6 deletions(-)
+> 
+> This changes all cases of:
+>    
+>    rmk+kernel@arm.linux.org.uk
+> 
+> to
+> 
+>   rmk+kernel@armlinux.org.uk or no mail address.
 
-I tired this way and both UNKNOWN, Down are not filtered away. Is my
-usage of syntax incorrect?
+Correct.  This is the address I sign off all my commits with, and this
+is the one I use to associate with authorship because it uses my
+initials.
 
- ip --brief address show up
-lo               UNKNOWN        127.0.0.1/8 ::1/128
-enp7s0           DOWN
-wlp8s0           UP             192.168.0.103/24 fe80::22c:79e4:a646:a7b/64
+> But I am confused.
+> 
+> The new address does not appear anywhere in MAINTAINERS and is used
+> only in three other files.
 
-  Even so, if enp7s0 and lo were filtered, I would still want an
-output of simply 192.168.0.103 from ip command which can't be provided
-without piping into other tools?
+MAINTAINERS lists the addresses I prefer email for the day to day
+maintanence, which is my linux@ accounts.  The above addresses
+also fall into _this_ mailbox too, rather than my rmk@ mailbox.
+So, ultimately all that email comes to the same place.
+
+However, the plain rmk@ address doesn't.
+
+> And there are a few other mail addresses that would reach you.
+> But no matter how confused I am the patch looks fine so:
+> 
+> Acked-by: Sam Ravnborg <sam@ravnborg.org>
+> 
+> And if the change is for private reaons then I do not have to know
+> anyway so feel free to ignore my confusion.
+
+The reason for the change is so I can drop the routing information
+rmk+kernel@arm.linux.org.uk, thereby causing that address to start
+bouncing, rather than being a spam inlet.  Sure, the new one will
+be as well, but the point is that keeping both around indefinitely
+gives a bigger attack surface for spam ingress.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
