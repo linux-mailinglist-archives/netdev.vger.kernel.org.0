@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 87E95197DC2
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 16:01:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E624F197DC5
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 16:01:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727745AbgC3OBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 10:01:38 -0400
+        id S1728490AbgC3OBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 10:01:40 -0400
 Received: from mx1.tq-group.com ([62.157.118.193]:24401 "EHLO mx1.tq-group.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726099AbgC3OBi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 10:01:38 -0400
+        id S1727390AbgC3OBj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 10:01:39 -0400
 X-Greylist: delayed 428 seconds by postgrey-1.27 at vger.kernel.org; Mon, 30 Mar 2020 10:01:37 EDT
-IronPort-SDR: k/cMlrQ310LNtxZ/PBbgfkj3G9s0OFe7JKVwqbNI5a206LhugYvWtpFil4i043OZpgWSW2Qm7e
- 7So3pC8bRw+bBiMCyDunuNXCLksfE+1Uve8gDtwDUoWxdKpP0WCbGDQ2KNwdLUGJw2Uar+vDsN
- Morn2QbsKgWv1QA10KcHiOmELGFGf9F9z2uqrGYSlu/rXYwVXbdYA63ugjuXLWSlnFTCDfPurW
- zBmdcGcwiiKYdtdRNx9RMI3jVZdex7f8r88zmdE9I3c2wfVVflYI3WuVT2+4IDoOG+/4KQyLof
- NFg=
+IronPort-SDR: l6c8d4ufmHTFlol9w4egC0tFWAAggT8Ue4+UFH01FKJta4iAKUZm6LIeBJnE01aierZW+Fuia1
+ HBktNyVeNULwudAqq9EktOfEiEeR9Ib8BwsUzvrLdERymVtAw/adzZZILiR9r5TIrf6/s3x0yh
+ rGRxc6cp2Da0XMdOFP1kQigOH2NLCEv2sgYpoR2XKN4CmZLwDgPPayQSOyHY1Xu0nDU/KINIlo
+ NwnJ0GBEnJTSIlIRYybDMKdK2YZqOEbO2XzCU9wORWE8lXOB5gBs8k+0n8ymwy1i04+Z5vbDti
+ A6Q=
 X-IronPort-AV: E=Sophos;i="5.72,324,1580770800"; 
-   d="scan'208";a="11606916"
+   d="scan'208";a="11606918"
 Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
   by mx1-pgp.tq-group.com with ESMTP; 30 Mar 2020 15:54:28 +0200
 Received: from mx1.tq-group.com ([192.168.6.7])
@@ -29,90 +29,94 @@ X-PGP-Universal: processed;
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
   t=1585576468; x=1617112468;
-  h=from:to:cc:subject:date:message-id;
-  bh=MG3g/7I8r8bIcTVclYiAY0P1thD3kW/rua30GE+/02Y=;
-  b=AZWoPvAdO0lBMGq4fPwBJXOvlCOdwC7ZvN1wg1JxRVw6g+Dbbao/IGLx
-   ARA8vxlsI8hvu0j4FE23kZvtIEAp6pjefwSyg5sunFoD/wS7ZSUoOue/+
-   8ASGdG3Nz+a++OszVOlvBUEWnEx+76hzLH6vwUUOWCiJ7gOG/BjKo4lRo
-   uVsBeKE5cZwqz0Z3caDOJCu7i2R1Hch6nvFysbyv+hvcvKmbU3O9j2MlA
-   Of4EY5LlzrIff/BKoWwfc93oP7++7sD/qA+UPRuCesWvC1LuDPgbYYvXx
-   pRORYa6RikOtDINmCKkrniJKhvxrvAFrpPVDQiUsStQMFZghDWyWG9HjC
-   w==;
-IronPort-SDR: v/DD+d0Grq+WKNTuyZJ84oEobeE86incUxDdycNXkMEac3CbgDSIaVK8EKeirB7ajeva1D7AqZ
- bzQrNhV3YAc/Hj3G/ER1/W5mqYQ9oD7VfwvVcbKOPE3KYEbgmw0pEemxA1ON6g3Q5M5JWPVelS
- g3OZ5uuTFdxOCXjXIOtvgNLS1oNHL0+Uh8IXxq8AbnvAu3ADNN7WEsWvgZ+y34Mg9sCdlr+pkM
- N2+iD2IZgqP2LB9dYAERCXJCCZy8J7P9YRUwDTj9XHZGRR5ORPVCL5+4rNC54hh194gFcvyH/I
- QQs=
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=po89PzaA6MKZBpJ/RTQTIsqag9iwZ1Wmc6kMxkfYtkk=;
+  b=Dcko6Av78DGjCMu57BZG+4QC2ukRKqTff/Vn/tp0KtBTDPBIhG+8GDNE
+   0SWFqRg0RMhKf1Z6EIw/z/pzZBR8HfpdxxoFc8dTnLYFo/q0/LHc+TjJq
+   kM+NCMYxTMOQE5cdfjRiz2v9VzjgyzRIhyyfzuoQ48OlWcYBtE6vs3gIg
+   a+nxgAl+E/Ecz6/C/hOV3oCBWC3/lh/ZtmJDx7Sp/03Yd38pr+l/+cmF8
+   +H6abv1YF76yKXtD3SjV6moeUCY0JFw+xJTgvFZOYRJB/zkmTlsaFPMRB
+   Ryl7en6XiDa+8HW7uYd1W5bCyh+J/GziV78Ol3wOZsIb9xJL0awrKGsn8
+   Q==;
+IronPort-SDR: EeKZZ6vDx2l67ZyrQH8h+LQ2Q63oXjRZ56gxaDTE5ijPrUOkTM7NMFRToneC/heXFFK/zggDOG
+ Iw8eH890PZ2sOSTdZ5nfHlG0G8gEklp+zXgnFFfuS6FOEul7zsebucN/N2Z6zfs1qTFRL3jlpB
+ kCjwo4cgakkQ5XcrzhoLLSAiSWD7cRywGTC3uX87/VVAu9R1p51F2DP4ltsUAox+TN+O7MjdaA
+ BXNjhbDZeGrcBl1AX2b760M6DTZQvPBkdKL8ss4SsQLrayWtKOWvxa+na8+qVL23PU34boG4xD
+ Wa4=
 X-IronPort-AV: E=Sophos;i="5.72,324,1580770800"; 
-   d="scan'208";a="11606915"
+   d="scan'208";a="11606917"
 Received: from vtuxmail01.tq-net.de ([10.115.0.20])
   by mx1.tq-group.com with ESMTP; 30 Mar 2020 15:54:28 +0200
 Received: from schifferm-ubuntu4.tq-net.de (schifferm-ubuntu4.tq-net.de [10.117.49.26])
-        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id C9D86280065;
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPA id EF068280070;
         Mon, 30 Mar 2020 15:54:32 +0200 (CEST)
 From:   Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 To:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
         davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Subject: [PATCH net-next 1/4] net: dsa: allow switch drivers to override default slave PHY addresses
-Date:   Mon, 30 Mar 2020 15:53:42 +0200
-Message-Id: <20200330135345.4361-1-matthias.schiffer@ew.tq-group.com>
+Subject: [PATCH net-next 2/4] net: dsa: mv88e6xxx: account for PHY base address offset in dual chip mode
+Date:   Mon, 30 Mar 2020 15:53:43 +0200
+Message-Id: <20200330135345.4361-2-matthias.schiffer@ew.tq-group.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200330135345.4361-1-matthias.schiffer@ew.tq-group.com>
+References: <20200330135345.4361-1-matthias.schiffer@ew.tq-group.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Avoid having to define a PHY for every physical port when PHY addresses
-are fixed, but port index != PHY address.
+In dual chip mode (6250 family), not only global and port registers are
+shifted by sw_addr, but also the PHY addresses. Account for this in the
+IRQ mapping.
 
 Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 ---
- include/net/dsa.h |  1 +
- net/dsa/slave.c   | 10 ++++++++--
- 2 files changed, 9 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.h    | 1 +
+ drivers/net/dsa/mv88e6xxx/global2.c | 2 +-
+ drivers/net/dsa/mv88e6xxx/smi.c     | 4 ++++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index aeb411e77b9a..8216f3687799 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -391,6 +391,7 @@ struct dsa_switch_ops {
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index e5430cf2ad71..88c148a62366 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -257,6 +257,7 @@ struct mv88e6xxx_chip {
+ 	const struct mv88e6xxx_bus_ops *smi_ops;
+ 	struct mii_bus *bus;
+ 	int sw_addr;
++	unsigned int phy_base_addr;
  
- 	int	(*setup)(struct dsa_switch *ds);
- 	void	(*teardown)(struct dsa_switch *ds);
-+	int	(*get_phy_address)(struct dsa_switch *ds, int port);
- 	u32	(*get_phy_flags)(struct dsa_switch *ds, int port);
+ 	/* Handles automatic disabling and re-enabling of the PHY
+ 	 * polling unit.
+diff --git a/drivers/net/dsa/mv88e6xxx/global2.c b/drivers/net/dsa/mv88e6xxx/global2.c
+index 8fd483020c5b..3c3dfaf16882 100644
+--- a/drivers/net/dsa/mv88e6xxx/global2.c
++++ b/drivers/net/dsa/mv88e6xxx/global2.c
+@@ -1156,7 +1156,7 @@ int mv88e6xxx_g2_irq_mdio_setup(struct mv88e6xxx_chip *chip,
+ 			err = irq;
+ 			goto out;
+ 		}
+-		bus->irq[chip->info->phy_base_addr + phy] = irq;
++		bus->irq[chip->phy_base_addr + phy] = irq;
+ 	}
+ 	return 0;
+ out:
+diff --git a/drivers/net/dsa/mv88e6xxx/smi.c b/drivers/net/dsa/mv88e6xxx/smi.c
+index 282fe08db050..a62d7b8702d5 100644
+--- a/drivers/net/dsa/mv88e6xxx/smi.c
++++ b/drivers/net/dsa/mv88e6xxx/smi.c
+@@ -175,5 +175,9 @@ int mv88e6xxx_smi_init(struct mv88e6xxx_chip *chip,
+ 	chip->bus = bus;
+ 	chip->sw_addr = sw_addr;
  
- 	/*
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 8ced165a7908..1c78f8cae9e9 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1546,7 +1546,7 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
- 	struct dsa_switch *ds = dp->ds;
- 	phy_interface_t mode;
- 	u32 phy_flags = 0;
--	int ret;
-+	int addr, ret;
- 
- 	ret = of_get_phy_mode(port_dn, &mode);
- 	if (ret)
-@@ -1578,7 +1578,13 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
- 		/* We could not connect to a designated PHY or SFP, so try to
- 		 * use the switch internal MDIO bus instead
- 		 */
--		ret = dsa_slave_phy_connect(slave_dev, dp->index);
++	chip->phy_base_addr = chip->info->phy_base_addr;
++	if (chip->info->dual_chip)
++		chip->phy_base_addr += sw_addr;
 +
-+		if (ds->ops->get_phy_address)
-+			addr = ds->ops->get_phy_address(ds, dp->index);
-+		else
-+			addr = dp->index;
-+
-+		ret = dsa_slave_phy_connect(slave_dev, addr);
- 		if (ret) {
- 			netdev_err(slave_dev,
- 				   "failed to connect to port %d: %d\n",
+ 	return 0;
+ }
 -- 
 2.17.1
 
