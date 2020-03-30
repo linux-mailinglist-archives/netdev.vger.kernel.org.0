@@ -2,138 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07AB81984FD
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 21:55:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 747F319852D
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 22:15:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728775AbgC3Tzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 15:55:47 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:44778 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728232AbgC3Tzr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 15:55:47 -0400
-Received: by mail-ed1-f66.google.com with SMTP id i16so21353604edy.11
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 12:55:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dh9JcSi6kj0UWIbirpsquHk1PO2ZTJ6f6wAxTa4W5Zs=;
-        b=DZk2EcadSRy+jmjLIyyvOwCfhNdDlY3wMU3gTOTK1MOXJ9bZhFpym+h6ycl+idnIWn
-         SsmZQJKtl9iTffn/DdsGsPysGCoyWM9UFc0uMIYHqOT2z5sBnbcDqL176yFWOcNWpk/v
-         SL53a/gXGohE1DQca/J8rKY+wKFfgrlpBcJTWgpRRmqX4D4/lPWy9aotUaYsxCYmYiYK
-         OtSNHNlZDTpDF0dFONn3fKYVj/3RoQP8vPxJqI1/s4VGJN+h5iwuRg6I0xGMy9Xnyver
-         +2Vt0W54SbaK/bs9jzOVTjHv/eCoKKiYgbHkxhUe93AIoeTE2uwNruCrN5QeGM0qgjOo
-         zdAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dh9JcSi6kj0UWIbirpsquHk1PO2ZTJ6f6wAxTa4W5Zs=;
-        b=gRoZ7pT9zKJ7VQxLGu9q7RLQceOZKykSDHrgx4Hq+WGihFV2AuvEwW2MyBLvgSvWtM
-         MmlICIHrdGnWRZL74X6KqJ+Kc6EuSC54+SFlNEtqdxNI2uxeBAJDFpZLnQekWsGq8ikQ
-         R7HHi0f2zj+UXwSeo5iT3z5bfFDo/Hfj7eVN0A9zA8iK+4tDNWsM1EG73WC+mhlXpR31
-         Qk5fpi5y0Hbh5wqm1BLV4OaEWZ4ELhL5bkb5LuZq+K3V6M7ZesK2UA+6PgYEWW/pbb5g
-         jqvTtImPwAEx2kTEK9Ra1ghv6Lc/zLUOe5o5kESJDuEKvkoL8EToGz69p3zaWdxm8y0g
-         keBQ==
-X-Gm-Message-State: ANhLgQ2uZWdjv2FIL4/3+Plp0fja9ppzCa5toTIYOLMQLoxcJfWVyyJ/
-        73R2swOVkuKb258kXO3p/orpteHbooW8H3gqwcLv
-X-Google-Smtp-Source: ADFU+vul3dd78FpyQ/P1xT0CAzUKDA49PHsMIvhi1CMzemU48YH7Min2sbynkoDLmBburfXlTyDJdiTLpwO7v8ADPZw=
-X-Received: by 2002:a50:f152:: with SMTP id z18mr12867397edl.31.1585598145722;
- Mon, 30 Mar 2020 12:55:45 -0700 (PDT)
+        id S1728096AbgC3UPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 16:15:21 -0400
+Received: from asavdk4.altibox.net ([109.247.116.15]:44640 "EHLO
+        asavdk4.altibox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727437AbgC3UPV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 16:15:21 -0400
+Received: from ravnborg.org (unknown [158.248.194.18])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by asavdk4.altibox.net (Postfix) with ESMTPS id 3484A804AF;
+        Mon, 30 Mar 2020 22:15:14 +0200 (CEST)
+Date:   Mon, 30 Mar 2020 22:15:12 +0200
+From:   Sam Ravnborg <sam@ravnborg.org>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+        Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        dri-devel@lists.freedesktop.org, etnaviv@lists.freedesktop.org,
+        linux-media@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] Update my email address in various drivers
+Message-ID: <20200330201512.GA23451@ravnborg.org>
+References: <E1jIV26-0005X3-RS@rmk-PC.armlinux.org.uk>
+ <20200330180444.GA16073@ravnborg.org>
+ <20200330193346.GI25745@shell.armlinux.org.uk>
 MIME-Version: 1.0
-References: <20200318215550.es4stkjwnefrfen2@madcap2.tricolour.ca>
- <CAHC9VhSdDDP7Ec-w61NhGxZG5ZiekmrBCAg=Y=VJvEZcgQh46g@mail.gmail.com>
- <20200319220249.jyr6xmwvflya5mks@madcap2.tricolour.ca> <CAHC9VhR84aN72yNB_j61zZgrQV1y6yvrBLNY7jp7BqQiEDL+cw@mail.gmail.com>
- <20200324210152.5uydf3zqi3dwshfu@madcap2.tricolour.ca> <CAHC9VhTQUnVhoN3JXTAQ7ti+nNLfGNVXhT6D-GYJRSpJHCwDRg@mail.gmail.com>
- <20200330134705.jlrkoiqpgjh3rvoh@madcap2.tricolour.ca> <CAHC9VhQTsEMcYAF1CSHrrVn07DR450W9j6sFVfKAQZ0VpheOfw@mail.gmail.com>
- <20200330162156.mzh2tsnovngudlx2@madcap2.tricolour.ca> <CAHC9VhTRzZXJ6yUFL+xZWHNWZFTyiizBK12ntrcSwmgmySbkWw@mail.gmail.com>
- <20200330174937.xalrsiev7q3yxsx2@madcap2.tricolour.ca>
-In-Reply-To: <20200330174937.xalrsiev7q3yxsx2@madcap2.tricolour.ca>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 30 Mar 2020 15:55:36 -0400
-Message-ID: <CAHC9VhR_bKSHDn2WAUgkquu+COwZUanc0RV3GRjMDvpoJ5krjQ@mail.gmail.com>
-Subject: Re: [PATCH ghak90 V8 07/16] audit: add contid support for signalling
- the audit daemon
-To:     Richard Guy Briggs <rgb@redhat.com>
-Cc:     nhorman@tuxdriver.com, linux-api@vger.kernel.org,
-        containers@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
-        linux-audit@redhat.com, netfilter-devel@vger.kernel.org,
-        ebiederm@xmission.com, simo@redhat.com, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200330193346.GI25745@shell.armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-CMAE-Score: 0
+X-CMAE-Analysis: v=2.3 cv=XpTUx2N9 c=1 sm=1 tr=0
+        a=UWs3HLbX/2nnQ3s7vZ42gw==:117 a=UWs3HLbX/2nnQ3s7vZ42gw==:17
+        a=jpOVt7BSZ2e4Z31A5e1TngXxSK0=:19 a=kj9zAlcOel0A:10 a=PHq6YzTAAAAA:8
+        a=drOt6m5kAAAA:8 a=7gkXJVJtAAAA:8 a=IFATEmdhu-ErwIyn04kA:9
+        a=mtL8tZnu2Jrx5SaM:21 a=DNgyL8e6fjdIsIrl:21 a=CjuIK1q_8ugA:10
+        a=ZKzU8r6zoKMcqsNulkmm:22 a=RMMjzBEyIzXRtoq5n5K6:22
+        a=E9Po1WZjFZOl8hwRPBS3:22
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 1:49 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> On 2020-03-30 13:34, Paul Moore wrote:
-> > On Mon, Mar 30, 2020 at 12:22 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > On 2020-03-30 10:26, Paul Moore wrote:
-> > > > On Mon, Mar 30, 2020 at 9:47 AM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > > > On 2020-03-28 23:11, Paul Moore wrote:
-> > > > > > On Tue, Mar 24, 2020 at 5:02 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > > > > > On 2020-03-23 20:16, Paul Moore wrote:
-> > > > > > > > On Thu, Mar 19, 2020 at 6:03 PM Richard Guy Briggs <rgb@redhat.com> wrote:
-> > > > > > > > > On 2020-03-18 18:06, Paul Moore wrote:
+Hi Russell
 
-...
+On Mon, Mar 30, 2020 at 08:33:46PM +0100, Russell King - ARM Linux admin wrote:
+> On Mon, Mar 30, 2020 at 08:04:44PM +0200, Sam Ravnborg wrote:
+> > Hi Russell.
+> > 
+> > On Sun, Mar 29, 2020 at 11:19:10AM +0100, Russell King wrote:
+> > > Globally update my email address in six files scattered through the
+> > > tree.
+> > > 
+> > > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+> > > ---
+> > >  drivers/gpu/drm/armada/armada_drv.c                 | 2 +-
+> > >  drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c | 2 +-
+> > >  drivers/gpu/drm/etnaviv/etnaviv_drv.c               | 2 +-
+> > >  drivers/media/cec/cec-notifier.c                    | 2 +-
+> > >  drivers/net/phy/swphy.c                             | 2 +-
+> > >  include/media/cec-notifier.h                        | 2 +-
+> > >  6 files changed, 6 insertions(+), 6 deletions(-)
+> > 
+> > This changes all cases of:
+> >    
+> >    rmk+kernel@arm.linux.org.uk
+> > 
+> > to
+> > 
+> >   rmk+kernel@armlinux.org.uk or no mail address.
+> 
+> Correct.  This is the address I sign off all my commits with, and this
+> is the one I use to associate with authorship because it uses my
+> initials.
+> 
+> > But I am confused.
+> > 
+> > The new address does not appear anywhere in MAINTAINERS and is used
+> > only in three other files.
+> 
+> MAINTAINERS lists the addresses I prefer email for the day to day
+> maintanence, which is my linux@ accounts.  The above addresses
+> also fall into _this_ mailbox too, rather than my rmk@ mailbox.
+> So, ultimately all that email comes to the same place.
+> 
+> However, the plain rmk@ address doesn't.
+> 
+> > And there are a few other mail addresses that would reach you.
+> > But no matter how confused I am the patch looks fine so:
+> > 
+> > Acked-by: Sam Ravnborg <sam@ravnborg.org>
+> > 
+> > And if the change is for private reaons then I do not have to know
+> > anyway so feel free to ignore my confusion.
+> 
+> The reason for the change is so I can drop the routing information
+> rmk+kernel@arm.linux.org.uk, thereby causing that address to start
+> bouncing, rather than being a spam inlet.  Sure, the new one will
+> be as well, but the point is that keeping both around indefinitely
+> gives a bigger attack surface for spam ingress.
 
-> > > Well, every time a record gets generated, *any* record gets generated,
-> > > we'll need to check for which audit daemons this record is in scope and
-> > > generate a different one for each depending on the content and whether
-> > > or not the content is influenced by the scope.
-> >
-> > That's the problem right there - we don't want to have to generate a
-> > unique record for *each* auditd on *every* record.  That is a recipe
-> > for disaster.
->
-> I don't see how we can get around this.
->
-> We will already have that problem for PIDs in different PID namespaces.
+Thanks for taking your time to explain the background.
 
-As I said below, let's not worry about this for all of the
-known/current audit records, lets just think about how we solve this
-for the ACID related information.
+The patch touches several files outside drivers/gpu/
+so I do not feel confident to apply this to drm-misc-next.
 
-One of the bigger problems with translating namespace info (e.g. PIDs)
-across ACIDs is that an ACID - by definition - has no understanding of
-namespaces (both the concept as well as any given instance).
+	Sam
 
-> We already need to use a different serial number in each auditd/queue,
-> or else we serialize *all* audit events on the machine and either leak
-> information to the nested daemons that there are other events happenning
-> on the machine, or confuse the host daemon because it now thinks that we
-> are losing events due to serial numbers missing because some nested
-> daemon issued an event that was not relevant to the host daemon,
-> consuming a globally serial audit message sequence number.
-
-This isn't really relevant to the ACID lists, but sure.
-
-> > Solving this for all of the known audit records is not something we
-> > need to worry about in depth at the moment (although giving it some
-> > casual thought is not a bad thing), but solving this for the audit
-> > container ID information *is* something we need to worry about right
-> > now.
->
-> If you think that a different nested contid value string per daemon is
-> not acceptable, then we are back to issuing a record that has only *one*
-> contid listed without any nesting information.  This brings us back to
-> the original problem of keeping *all* audit log history since the boot
-> of the machine to be able to track the nesting of any particular contid.
-
-I'm not ruling anything out, except for the "let's just completely
-regenerate every record for each auditd instance".
-
-> What am I missing?  What do you suggest?
-
-I'm missing a solution in this thread, since you are the person
-driving this effort I'm asking you to get creative and present us with
-some solutions. :)
-
-
--- 
-paul moore
-www.paul-moore.com
