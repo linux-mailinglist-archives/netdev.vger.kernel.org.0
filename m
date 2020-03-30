@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31DB71980BA
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 18:16:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF0891980BC
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 18:16:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728604AbgC3QQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 12:16:24 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:45576 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728162AbgC3QQY (ORCPT
+        id S1728760AbgC3QQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 12:16:25 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:39289 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728167AbgC3QQY (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 12:16:24 -0400
-Received: by mail-lj1-f194.google.com with SMTP id t17so18749327ljc.12
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 09:16:22 -0700 (PDT)
+Received: by mail-pg1-f193.google.com with SMTP id g32so2837596pgb.6
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 09:16:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=QpOIR907T/wwW05Dr6k2YR4q9EgvViup03SDjAZ1IS8=;
-        b=dHFrXjAmgcscbhtftarqXEKgpHNJjgzLjsFlYUUJhkt7ypj5szHz/C0tGLKYgz1Vi3
-         aADxpw2+tymWuQokvjIDaWdUsfDelM6zMTWOmVeNExCybqzT3LP7UcC5Mjn0UMj2IUXb
-         nev8nr2pqUrpwP8dKOXZ4YUAjMZ+w6aO7YYIs=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=RepHLtXjOeLCmQxpdp33cqqDhxy59woVYyZ/e1TIakU=;
+        b=JRitrEJ7RwVaXYSAZFyg5zGNSLDyJolPdm0St9y9W5CDs78QenWwSjEvOmzHRjLFWA
+         q0AJ6HGxgOuB2putotDSsIi+qOwk6AMeWOft//s9YlFyS8aI+9mMr6Tcjxv1SRVi67BW
+         GG0QMY/RNxGXcF5qbO6uLRZ/GeVOWqRLt03bzk4GkMmQMxP1p6EuixMmm2T5FtCb3Rq4
+         uCUvs3nZLos5XS+67f9UrXg0jCXFvHKXffy2pOBsHHMBUFMcd4NakHsmlxK8ES95Fcm8
+         uM/1T5LjEaDhiNwJo2sWrKy3x5bTSUr6BH3TgOBoKQMZbfmGZub4DaL+nUD88ZimYM6H
+         Dg4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=QpOIR907T/wwW05Dr6k2YR4q9EgvViup03SDjAZ1IS8=;
-        b=NinIft/3NhNxt/QWmX1mRf0PJZ3p6qm0FDfu3A7kjdtTFcEAIwkhjEmbeZhEDfd+kN
-         mUOBYqbH/AquWmttLeL/odVVlZ6Lt6CIU5VbXVzCxJs93G2p7QIPVf8FInxUIgDJR1Wo
-         Mc5ugKJ8jU4H8GJrhzkfcWaTBHPOJxiPkxVNT+mrbuFwAPHWiLwp/q12ND9EQ8joxGos
-         WR7SSqCbStG9ZqhSWVqf9F6XANLsEbqbcVnEok4jIDYDpqI8IvZDiDEy5SJAehe7xC3B
-         9/vOR8W0XMe9o7kuDOPQ1jeQehpbS4B4LzSbzh3Uuhs8LNNY5llVQ11ZmP/1WyOYiQss
-         L+rw==
-X-Gm-Message-State: AGi0Pub3jNL2ckrGau9PYkww4kvtx7LDCDdw273HtpH3rPmz3PW9gbQ3
-        60UUhRwVEWGwmx04LOKFgBnOsg==
-X-Google-Smtp-Source: APiQypKRHK7B+ad3csMViQHoxs0tbVmW7H4M9/KVXhe2awqHXEc4j2Yy5xoqdIKOM2hWBEJ81tG9sA==
-X-Received: by 2002:a2e:97cd:: with SMTP id m13mr7795367ljj.20.1585584981318;
-        Mon, 30 Mar 2020 09:16:21 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id i20sm476679lja.17.2020.03.30.09.16.18
+        bh=RepHLtXjOeLCmQxpdp33cqqDhxy59woVYyZ/e1TIakU=;
+        b=Zd7tpZVawjgX2uP8GK4KS623weSQQXbTmJZMgxUAl9vA/uSPOta1od+OgJ82468hBF
+         rlLSSrmf3naZoPOqyAbwqzDx3cSp1Czk/S7uQIbKlIVVQbq0dj+1cecFPTnTLD+stuYC
+         QKz+ttmH5iAzY3ku/hn2vUXUHbFmuqXr6hhpa7NRUr/ITSLsmXjJeKdaieAciF5PK5nN
+         HGSWJaTNMfsHZGP1aE8FmFKo0u1kXn5O6FZMBz+Ucs7K5roKjnlFTvjwhETC4MUJCdBz
+         6WQ9TMG53mY8RsYwFIFW2WnhatJN7a3UqfwBp6bU+3ZriFrphQjeXsyiKlcsDH1IByCn
+         akcA==
+X-Gm-Message-State: AGi0PuaFPSWUIWW7J2Q40qQ5A+0q3a9ypaySjW1zI03EZ8J6I+9VPmOV
+        Kfn6zfg/S4AOX8ee9Ur/yy8=
+X-Google-Smtp-Source: APiQypKlP5OZLEriVGkNcPEHHAVSfvnmIEbPIeZI+uerYtB0P8mzbnGLZ0jiTvks4oa8Ysz2p5aSpQ==
+X-Received: by 2002:a63:64c4:: with SMTP id y187mr8418718pgb.36.1585584983349;
+        Mon, 30 Mar 2020 09:16:23 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id z15sm10592982pfg.152.2020.03.30.09.16.21
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Mar 2020 09:16:20 -0700 (PDT)
-Subject: Re: [RFC net-next v4 8/9] bridge: mrp: Integrate MRP into the bridge
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>, davem@davemloft.net,
-        jiri@resnulli.us, ivecera@redhat.com, kuba@kernel.org,
-        roopa@cumulusnetworks.com, olteanv@gmail.com, andrew@lunn.ch,
-        UNGLinuxDriver@microchip.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bridge@lists.linux-foundation.org
-References: <20200327092126.15407-1-horatiu.vultur@microchip.com>
- <20200327092126.15407-9-horatiu.vultur@microchip.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <17d9fb2a-cb48-7bb6-cb79-3876ca3a74b2@cumulusnetworks.com>
-Date:   Mon, 30 Mar 2020 19:16:17 +0300
+        Mon, 30 Mar 2020 09:16:22 -0700 (PDT)
+Subject: Re: [PATCH net] inet_diag: add cgroup id attribute
+To:     Dmitry Yakunin <zeil@yandex-team.ru>, davem@davemloft.net,
+        netdev@vger.kernel.org
+Cc:     khlebnikov@yandex-team.ru
+References: <20200330081101.GA16030@yandex-team.ru>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <95a66a3d-46b3-1955-1b4b-b0d6e1586bde@gmail.com>
+Date:   Mon, 30 Mar 2020 09:16:20 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200327092126.15407-9-horatiu.vultur@microchip.com>
+In-Reply-To: <20200330081101.GA16030@yandex-team.ru>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -65,151 +65,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/03/2020 11:21, Horatiu Vultur wrote:
-> To integrate MRP into the bridge, the bridge needs to do the following:
-> - add new flag(BR_MPP_AWARE) to the net bridge ports, this bit will be set when
->   the port is added to an MRP instance. In this way it knows if the frame was
->   received on MRP ring port
-> - detect if the MRP frame was received on MRP ring port in that case it would be
->   processed otherwise just forward it as usual.
-> - enable parsing of MRP
-> - before whenever the bridge was set up, it would set all the ports in
->   forwarding state. Add an extra check to not set ports in forwarding state if
->   the port is an MRP ring port. The reason of this change is that if the MRP
->   instance initially sets the port in blocked state by setting the bridge up it
->   would overwrite this setting.
+
+
+On 3/30/20 1:11 AM, Dmitry Yakunin wrote:
+> This patch adds cgroup v2 id to common inet diag message attributes.
+> This allows investigate sockets on per cgroup basis when
+> net_cls/net_prio cgroup not used.
 > 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
+> Reviewed-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
 > ---
->  include/linux/if_bridge.h |  1 +
->  net/bridge/br_device.c    |  3 +++
->  net/bridge/br_input.c     |  3 +++
->  net/bridge/br_netlink.c   |  5 +++++
->  net/bridge/br_private.h   | 22 ++++++++++++++++++++++
->  net/bridge/br_stp.c       |  6 ++++++
->  6 files changed, 40 insertions(+)
+>  include/linux/inet_diag.h      | 6 +++++-
+>  include/uapi/linux/inet_diag.h | 1 +
+>  net/ipv4/inet_diag.c           | 7 +++++++
+>  3 files changed, 13 insertions(+), 1 deletion(-)
 > 
-> diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-> index 9e57c4411734..10baa9efdae8 100644
-> --- a/include/linux/if_bridge.h
-> +++ b/include/linux/if_bridge.h
-> @@ -47,6 +47,7 @@ struct br_ip_list {
->  #define BR_BCAST_FLOOD		BIT(14)
->  #define BR_NEIGH_SUPPRESS	BIT(15)
->  #define BR_ISOLATED		BIT(16)
-> +#define BR_MRP_AWARE		BIT(17)
->  
->  #define BR_DEFAULT_AGEING_TIME	(300 * HZ)
->  
-> diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-> index 0e3dbc5f3c34..8ec1362588af 100644
-> --- a/net/bridge/br_device.c
-> +++ b/net/bridge/br_device.c
-> @@ -463,6 +463,9 @@ void br_dev_setup(struct net_device *dev)
->  	spin_lock_init(&br->lock);
->  	INIT_LIST_HEAD(&br->port_list);
->  	INIT_HLIST_HEAD(&br->fdb_list);
-> +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
-> +	INIT_LIST_HEAD(&br->mrp_list);
-> +#endif
->  	spin_lock_init(&br->hash_lock);
->  
->  	br->bridge_id.prio[0] = 0x80;
-> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-> index fcc260840028..d5c34f36f0f4 100644
-> --- a/net/bridge/br_input.c
-> +++ b/net/bridge/br_input.c
-> @@ -342,6 +342,9 @@ rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
->  		}
->  	}
->  
-> +	if (unlikely(br_mrp_process(p, skb)))
-> +		return RX_HANDLER_PASS;
-> +
->  forward:
->  	switch (p->state) {
->  	case BR_STATE_FORWARDING:
-> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-> index 43dab4066f91..77bc96745be6 100644
-> --- a/net/bridge/br_netlink.c
-> +++ b/net/bridge/br_netlink.c
-> @@ -669,6 +669,11 @@ static int br_afspec(struct net_bridge *br,
->  			if (err)
->  				return err;
->  			break;
-> +		case IFLA_BRIDGE_MRP:
-> +			err = br_mrp_parse(br, p, attr, cmd);
-> +			if (err)
-> +				return err;
-> +			break;
->  		}
->  	}
->  
-> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> index 1f97703a52ff..38894f2cf98f 100644
-> --- a/net/bridge/br_private.h
-> +++ b/net/bridge/br_private.h
-> @@ -428,6 +428,10 @@ struct net_bridge {
->  	int offload_fwd_mark;
+> diff --git a/include/linux/inet_diag.h b/include/linux/inet_diag.h
+> index c91cf2d..8bc5e7d 100644
+> --- a/include/linux/inet_diag.h
+> +++ b/include/linux/inet_diag.h
+> @@ -66,7 +66,11 @@ static inline size_t inet_diag_msg_attrs_size(void)
+>  		+ nla_total_size(1)  /* INET_DIAG_SKV6ONLY */
 >  #endif
->  	struct hlist_head		fdb_list;
-> +
-> +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
-> +	struct list_head		__rcu mrp_list;
+>  		+ nla_total_size(4)  /* INET_DIAG_MARK */
+> -		+ nla_total_size(4); /* INET_DIAG_CLASS_ID */
+> +		+ nla_total_size(4)  /* INET_DIAG_CLASS_ID */
+> +#ifdef CONFIG_CGROUPS
+> +		+ nla_total_size(8)  /* INET_DIAG_CGROUP_ID */
+
+
+nla_total_size_64bit(sizeof(u64))
+
+
 > +#endif
+> +		;
+>  }
+>  int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
+>  			     struct inet_diag_msg *r, int ext,
+> diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
+> index a1ff345..dc87ad6 100644
+> --- a/include/uapi/linux/inet_diag.h
+> +++ b/include/uapi/linux/inet_diag.h
+> @@ -154,6 +154,7 @@ enum {
+>  	INET_DIAG_CLASS_ID,	/* request as INET_DIAG_TCLASS */
+>  	INET_DIAG_MD5SIG,
+>  	INET_DIAG_ULP_INFO,
+> +	INET_DIAG_CGROUP_ID,
+>  	__INET_DIAG_MAX,
 >  };
 >  
->  struct br_input_skb_cb {
-> @@ -1304,6 +1308,24 @@ unsigned long br_timer_value(const struct timer_list *timer);
->  extern int (*br_fdb_test_addr_hook)(struct net_device *dev, unsigned char *addr);
->  #endif
+> diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
+> index 8c83775..ba0bb14 100644
+> --- a/net/ipv4/inet_diag.c
+> +++ b/net/ipv4/inet_diag.c
+> @@ -161,6 +161,13 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
+>  			goto errout;
+>  	}
 >  
-> +/* br_mrp.c */
-> +#if IS_ENABLED(CONFIG_BRIDGE_MRP)
-> +int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
-> +		 struct nlattr *attr, int cmd);
-> +int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb);
-> +#else
-> +static inline int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
-> +			       struct nlattr *attr, int cmd)
-> +{
-> +	return -1;
-
-You should return proper error here.
-
-> +}
-> +
-> +static inline int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb)
-> +{
-> +	return -1;
-
-The bridge can't possibly work with MRP disabled with this.
-
-> +}
+> +#ifdef CONFIG_CGROUPS
+> +	if (nla_put_u64_64bit(skb, INET_DIAG_CGROUP_ID,
+> +			      cgroup_id(sock_cgroup_ptr(&sk->sk_cgrp_data)),
+> +			      INET_DIAG_PAD))
+> +		goto errout;
 > +#endif
 > +
->  /* br_netlink.c */
->  extern struct rtnl_link_ops br_link_ops;
->  int br_netlink_init(void);
-> diff --git a/net/bridge/br_stp.c b/net/bridge/br_stp.c
-> index 1f14b8455345..3e88be7aa269 100644
-> --- a/net/bridge/br_stp.c
-> +++ b/net/bridge/br_stp.c
-> @@ -36,6 +36,12 @@ void br_set_state(struct net_bridge_port *p, unsigned int state)
->  	};
->  	int err;
+>  	r->idiag_uid = from_kuid_munged(user_ns, sock_i_uid(sk));
+>  	r->idiag_inode = sock_i_ino(sk);
 >  
-> +	/* Don't change the state of the ports if they are driven by a different
-> +	 * protocol.
-> +	 */
-> +	if (p->flags & BR_MRP_AWARE)
-> +		return;
-> +
-
-Maybe disallow STP type (kernel/user-space/no-stp) changing as well, force it to no-stp.
-
->  	p->state = state;
->  	err = switchdev_port_attr_set(p->dev, &attr);
->  	if (err && err != -EOPNOTSUPP)
 > 
-
