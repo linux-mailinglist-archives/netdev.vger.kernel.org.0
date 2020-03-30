@@ -2,100 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 82500197864
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 12:08:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58CDB1978A8
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 12:16:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728640AbgC3KIy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 06:08:54 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:50680 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728257AbgC3KIx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 06:08:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=uKxUCAA8naXHaUyESFTbDBUPBkSlzaNGfueG/RrQv68=; b=QsrA/r4ImKVHNXWTLdmlNbZ9M
-        R+WTvCT5BWADbtt/e12KDk0e9TUIo7QSf4xyeYopXYanyY+92UyC1q9J3TWIbZehhAzda/OkStsqy
-        smVBIEsMrUKY3IZCpfv/qk04mZi4ZbH3hyGwmTfULiV0Tbu8sRJW4PiLkoiKKq4xK6FKkBfSTPxXf
-        VjklOBqLhM151hqzwkwgjCNQ84+JPdL9h1izH6R0iH8q7hYeOzqvHKgm2AclN7OuvXZHGZYkSkIha
-        Sgkv6ZXfXZwI1HdDcNoXCfaFYY8Snx8pnkgToRyU6FU698yNHB6CjstMjashFAyqdiSgl7sUrfQdW
-        12Uty1bLQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:59868)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jIrLb-0001bc-1S; Mon, 30 Mar 2020 11:08:47 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jIrLY-00071i-Oy; Mon, 30 Mar 2020 11:08:44 +0100
-Date:   Mon, 30 Mar 2020 11:08:44 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2 3/3] net: phylink: add separate pcs
- operations structure
-Message-ID: <20200330100844.GE25745@shell.armlinux.org.uk>
-References: <20200329160036.GB25745@shell.armlinux.org.uk>
- <E1jIaNC-0007lp-7j@rmk-PC.armlinux.org.uk>
- <ab4164b1-2415-ec81-c235-0d3469dba4af@gmail.com>
+        id S1729125AbgC3KQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 06:16:44 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:53612 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728257AbgC3KQn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 06:16:43 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1jIrTD-00028t-B3; Mon, 30 Mar 2020 10:16:39 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] net: ethernet: ti: fix spelling mistake "rundom" -> "random"
+Date:   Mon, 30 Mar 2020 11:16:39 +0100
+Message-Id: <20200330101639.161268-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ab4164b1-2415-ec81-c235-0d3469dba4af@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 29, 2020 at 01:42:08PM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 3/29/2020 9:01 AM, Russell King wrote:
-> > Add a separate set of PCS operations, which MAC drivers can use to
-> > couple phylink with their associated MAC PCS layer.  The PCS
-> > operations include:
-> > 
-> > - pcs_get_state() - reads the link up/down, resolved speed, duplex
-> >    and pause from the PCS.
-> > - pcs_config() - configures the PCS for the specified mode, PHY
-> >    interface type, and setting the advertisement.
-> > - pcs_an_restart() - restarts 802.3 in-band negotiation with the
-> >    link partner
-> > - pcs_link_up() - informs the PCS that link has come up, and the
-> >    parameters of the link. Link parameters are used to program the
-> >    PCS for fixed speed and non-inband modes.
-> > 
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > ---
-> 
-> Although your kernel documentation is pretty comprehensive, I am fairly
-> sure people are going to get confused about whether they need to
-> implement pcs_an_restart vs. mac_an_restart and pcs_get_state vs.
-> mac_pcs_get_state (with the possibility of a naming confusion for the
-> latter). Maybe some guidelines in the comment as to which one to
-> implement could save some support.
+From: Colin Ian King <colin.king@canonical.com>
 
-If one is making use of the PCS operations, then the PCS operations
-are used in preference to the MAC operations in all cases except the
-pcs_config() and pcs_link_up() methods.
+There is a spelling mistake in a dev_err error message. Fix it.
 
-This is already documented with:
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- * When present, this overrides mac_pcs_get_state() in &struct
- * phylink_mac_ops.
-
- * When PCS ops are present, this overrides mac_an_restart() in &struct
- * phylink_mac_ops.
-
-I'm not sure adding more words will help - in my experience, the more
-words that are used, the more people nitpick and mess up.
-
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 97f7385c6741..f71c15c39492 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -1627,7 +1627,7 @@ static int am65_cpsw_nuss_init_slave_ports(struct am65_cpsw_common *common)
+ 							   port->slave.mac_addr) ||
+ 			   !is_valid_ether_addr(port->slave.mac_addr)) {
+ 			random_ether_addr(port->slave.mac_addr);
+-			dev_err(dev, "Use rundom MAC address\n");
++			dev_err(dev, "Use random MAC address\n");
+ 		}
+ 	}
+ 	of_node_put(node);
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+2.25.1
+
