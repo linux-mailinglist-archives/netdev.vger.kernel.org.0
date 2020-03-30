@@ -2,89 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F8AA1974F2
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 09:11:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACA821974F0
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 09:11:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729400AbgC3HLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 03:11:40 -0400
-Received: from ja.ssi.bg ([178.16.129.10]:59798 "EHLO ja.ssi.bg"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728489AbgC3HLk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 03:11:40 -0400
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
-        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 02U7BL0O006642;
-        Mon, 30 Mar 2020 10:11:21 +0300
-Date:   Mon, 30 Mar 2020 10:11:21 +0300 (EEST)
-From:   Julian Anastasov <ja@ssi.bg>
-To:     Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
-cc:     Simon Horman <horms@verge.net.au>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH nf-next] ipvs: fix uninitialized variable warning
-In-Reply-To: <1585538415-27583-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
-Message-ID: <alpine.LFD.2.21.2003301006560.5190@ja.home.ssi.bg>
-References: <1585538415-27583-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
-User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
+        id S1729438AbgC3HLl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 03:11:41 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:49352 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728685AbgC3HLl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 03:11:41 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.93)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1jIoa2-005FIC-6k; Mon, 30 Mar 2020 09:11:30 +0200
+Message-ID: <a87a06a85bbb41bdc98600ac6d05c8e4d56e57be.camel@sipsolutions.net>
+Subject: Re: 5.6.0-rc7+ fails to connect to wifi network
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Chris Clayton <chris2553@googlemail.com>,
+        Jouni Malinen <jouni@codeaurora.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>
+Date:   Mon, 30 Mar 2020 09:11:28 +0200
+In-Reply-To: <2fae533d-8b38-3462-f862-aab60b9bd419@googlemail.com>
+References: <870207cc-2b47-be26-33b6-ec3971122ab8@googlemail.com>
+         <58a4d4b4-a372-9f38-2ceb-8386f8444d61@googlemail.com>
+         <20200329195109.GA10156@jouni.qca.qualcomm.com>
+         <2fae533d-8b38-3462-f862-aab60b9bd419@googlemail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, 2020-03-29 at 20:45 +0000, Chris Clayton wrote:
 
-	Hello,
+> > https://patchwork.kernel.org/patch/11464207/
+> > 
+>   CC [M]  net/mac80211/tx.o
+> In file included from ./include/linux/export.h:43,
+>                  from ./include/linux/linkage.h:7,
+>                  from ./include/linux/kernel.h:8,
+>                  from net/mac80211/tx.c:13:
+> net/mac80211/tx.c: In function 'ieee80211_tx_dequeue':
+> net/mac80211/tx.c:3613:37: error: 'struct ieee80211_hdr' has no member named 'fc'
+>  3613 |   if (unlikely(ieee80211_is_data(hdr->fc) &&
+>       |                                     ^~
+> ./include/linux/compiler.h:78:42: note: in definition of macro 'unlikely'
+>    78 | # define unlikely(x) __builtin_expect(!!(x), 0)
+>       |                                          ^
+> make[2]: *** [scripts/Makefile.build:267: net/mac80211/tx.o] Error 1
+> make[1]: *** [scripts/Makefile.build:505: net/mac80211] Error 2
+> make: *** [Makefile:1683: net] Error 2
+> make: *** Waiting for unfinished jobs....
 
-On Mon, 30 Mar 2020, Haishuang Yan wrote:
+Yeah, sorry. I saw that, and did something wrong in "git commit --amend" 
+so the change didn't get sent out. Or maybe I just forgot something.
 
-> If outer_proto is not set, GCC warning as following:
-> 
-> In file included from net/netfilter/ipvs/ip_vs_core.c:52:
-> net/netfilter/ipvs/ip_vs_core.c: In function 'ip_vs_in_icmp':
-> include/net/ip_vs.h:233:4: warning: 'outer_proto' may be used uninitialized in this function [-Wmaybe-uninitialized]
->  233 |    printk(KERN_DEBUG pr_fmt(msg), ##__VA_ARGS__); \
->      |    ^~~~~~
-> net/netfilter/ipvs/ip_vs_core.c:1666:8: note: 'outer_proto' was declared here
-> 1666 |  char *outer_proto;
->      |        ^~~~~~~~~~~
-> 
-> Fixes: 73348fed35d0 ("ipvs: optimize tunnel dumps for icmp errors")
-> Signed-off-by: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+Sadly it _just_ missed 5.6, but it's here now:
 
-Acked-by: Julian Anastasov <ja@ssi.bg>
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=be8c827f50a0bcd56361b31ada11dc0a3c2fd240
 
-	Hm, my compiler does not report it: gcc version 9.1.1
+My apologies!
 
-> ---
->  net/netfilter/ipvs/ip_vs_core.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
-> index d2ac530..aa6a603 100644
-> --- a/net/netfilter/ipvs/ip_vs_core.c
-> +++ b/net/netfilter/ipvs/ip_vs_core.c
-> @@ -1663,7 +1663,7 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
->  	unsigned int offset, offset2, ihl, verdict;
->  	bool tunnel, new_cp = false;
->  	union nf_inet_addr *raddr;
-> -	char *outer_proto;
-> +	char *outer_proto = "IPIP";
->  
->  	*related = 1;
->  
-> @@ -1723,7 +1723,6 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
->  		if (cih == NULL)
->  			return NF_ACCEPT; /* The packet looks wrong, ignore */
->  		tunnel = true;
-> -		outer_proto = "IPIP";
->  	} else if ((cih->protocol == IPPROTO_UDP ||	/* Can be UDP encap */
->  		    cih->protocol == IPPROTO_GRE) &&	/* Can be GRE encap */
->  		   /* Error for our tunnel must arrive at LOCAL_IN */
-> -- 
-> 1.8.3.1
+johannes
 
-Regards
-
---
-Julian Anastasov <ja@ssi.bg>
