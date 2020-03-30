@@ -2,120 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2D9D1982F1
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:05:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFA201982F9
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:07:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727996AbgC3SFm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 14:05:42 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35530 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727255AbgC3SFl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 14:05:41 -0400
-Received: by mail-wr1-f66.google.com with SMTP id d5so22899816wrn.2
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 11:05:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=eK8x7gAXMov1inBTyCa9T4MtcTyNUJQUaxWPoEq8WPM=;
-        b=WQE+QWOmy+rAqfpi/9XWYmLS7jKwH6IbEwVcxVE/K6tVdNy/4xbN85nlusDSzm757a
-         N8Esq9fl5Qh8a89xDGWWUQzzWddG3vupEw//z1mNposwwR3yEPcMIPJRq7YVVtoKQP+p
-         SKQfYVxP6q6j+vCw/suwHBGl91DNojYqK1BMQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=eK8x7gAXMov1inBTyCa9T4MtcTyNUJQUaxWPoEq8WPM=;
-        b=WQrVAGm/P2yMramfBdbGS01Q5EyQF9Oaq4HiHB0wk5BAekWDmqRfT/k77783ECfMHy
-         7tchWDBBJzPgyxcwn7R4uudOiGOOuD84HB6AmkCapBRrekuQ+yLaktVxeQ3fDACWx42U
-         OUPqQTv2JyMQG56w6lQGpk/LSEe3rGBcLdYjzoZ5XxfNtsSBQjec+++TpXRK2kl9E9PU
-         pPBD8rNzm6oFISs7wigljWCrZRZLpTNXQAdvIDQbTpES754o9CSsDXpAJ+1uejs8dNYY
-         Zkof3+AFTSWWrZ/tXwpxAW09C7YLgCKVfvxpOC3wTNxKmEfiy1y/+YEoIb/wU6iASETs
-         fqRQ==
-X-Gm-Message-State: ANhLgQ3Egc3FlkuC4c16a/4ohsD+hVsiQ8YfbV7olMmO4L2xr7HPHkrR
-        /snTw5sXDJVKLwEvloiKU9ExYw==
-X-Google-Smtp-Source: ADFU+vsG5+POHNwCtn212r3+bWb5NCSQtxsMW+v/nEnnXabDTUyOReQMMj7YdyJUl9iPEcp/c2B64w==
-X-Received: by 2002:adf:e946:: with SMTP id m6mr16493103wrn.187.1585591540289;
-        Mon, 30 Mar 2020 11:05:40 -0700 (PDT)
-Received: from google.com ([2a00:79e0:42:204:8a21:ba0c:bb42:75ec])
-        by smtp.gmail.com with ESMTPSA id l4sm21826103wru.1.2020.03.30.11.05.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Mar 2020 11:05:39 -0700 (PDT)
-From:   KP Singh <kpsingh@chromium.org>
-X-Google-Original-From: KP Singh <kpsingh>
-Date:   Mon, 30 Mar 2020 20:05:38 +0200
-To:     KP Singh <kpsingh@chromium.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: linux-next: Tree for Mar 30 (bpf)
-Message-ID: <20200330180538.GA180081@google.com>
-References: <20200330204307.669bbb4d@canb.auug.org.au>
- <86f7031a-57c6-5d50-2788-ae0e06a7c138@infradead.org>
- <d5b4bd95-7ef9-58cb-1955-900e6edb2467@iogearbox.net>
- <CACYkzJ72Uy9mnenO04OJaKH=Bk4ZENKJb9yw6i+EhJUa+ygngQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACYkzJ72Uy9mnenO04OJaKH=Bk4ZENKJb9yw6i+EhJUa+ygngQ@mail.gmail.com>
-User-Agent: Mutt/1.12.2 (2019-09-21)
+        id S1727390AbgC3SHI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 14:07:08 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:40452 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725268AbgC3SHI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 14:07:08 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4D0A415C45304;
+        Mon, 30 Mar 2020 11:07:06 -0700 (PDT)
+Date:   Mon, 30 Mar 2020 11:07:05 -0700 (PDT)
+Message-Id: <20200330.110705.1840847675396461402.davem@davemloft.net>
+To:     jiri@resnulli.us
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, idosch@mellanox.com,
+        saeedm@mellanox.com, leon@kernel.org, michael.chan@broadcom.com,
+        vishal@chelsio.com, pablo@netfilter.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, paulb@mellanox.com,
+        alexandre.belloni@bootlin.com, ozsh@mellanox.com,
+        roid@mellanox.com, john.hurley@netronome.com,
+        simon.horman@netronome.com, pieter.jansenvanvuuren@netronome.com
+Subject: Re: [patch net-next 0/2] net: sched: expose HW stats types per
+ action used by drivers 
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200328153743.6363-1-jiri@resnulli.us>
+References: <20200328153743.6363-1-jiri@resnulli.us>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 30 Mar 2020 11:07:07 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30-Mar 19:54, KP Singh wrote:
+From: Jiri Pirko <jiri@resnulli.us>
+Date: Sat, 28 Mar 2020 16:37:41 +0100
 
-So, it looks like bpf_tracing_func_proto is only defined when
-CONFIG_BPF_EVENTS is set:
-
-        obj-$(CONFIG_BPF_EVENTS) += bpf_trace.o
-
-We have a few options:
-
-* Add a __weak symbol for bpf_tracing_func_proto which we have done in
-  the past for similar issues. This however, does not make much sense,
-  as CONFIG_BPF_LSM cannot really do much without its helpers.
-* Make CONFIG_BPF_LSM depend on CONFIG_BPF_EVENTS, this should solve
-  it, but not for this particular Kconfig that was generated. Randy,
-  I am assuming if we add the dependency, this particular Kconfig
-  won't be generated.
-
-I am assuming this patch now needs to be sent for "bpf" and not
-"bpf-next" as the merge window has opened?
-
-- KP
-
-> Thanks for adding me Daniel, taking a look.
+> From: Jiri Pirko <jiri@mellanox.com>
 > 
-> - KP
+> The first patch is just adding a helper used by the second patch too.
+> The second patch is exposing HW stats types that are used by drivers.
 > 
-> On Mon, Mar 30, 2020 at 7:25 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> >
-> > [Cc KP, ptal]
-> >
-> > On 3/30/20 7:15 PM, Randy Dunlap wrote:
-> > > On 3/30/20 2:43 AM, Stephen Rothwell wrote:
-> > >> Hi all,
-> > >>
-> > >> The merge window has opened, so please do not add any material for the
-> > >> next release into your linux-next included trees/branches until after
-> > >> the merge window closes.
-> > >>
-> > >> Changes since 20200327:
-> > >
-> > > (note: linux-next is based on linux 5.6-rc7)
-> > >
-> > >
-> > > on i386:
-> > >
-> > > ld: kernel/bpf/bpf_lsm.o:(.rodata+0x0): undefined reference to `bpf_tracing_func_proto'
-> > >
-> > >
-> > > Full randconfig file is attached.
-> > >
-> >
+> Example:
+> 
+> $ tc filter add dev enp3s0np1 ingress proto ip handle 1 pref 1 flower dst_ip 192.168.1.1 action drop
+> $ tc -s filter show dev enp3s0np1 ingress
+> filter protocol ip pref 1 flower chain 0
+> filter protocol ip pref 1 flower chain 0 handle 0x1
+>   eth_type ipv4
+>   dst_ip 192.168.1.1
+>   in_hw in_hw_count 2
+>         action order 1: gact action drop
+>          random type none pass val 0
+>          index 1 ref 1 bind 1 installed 10 sec used 10 sec
+>         Action statistics:
+>         Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+>         backlog 0b 0p requeues 0
+>         used_hw_stats immediate     <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+Series applied, thanks Jiri.
