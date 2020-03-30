@@ -2,134 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 960981974EC
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 09:11:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F8AA1974F2
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 09:11:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729420AbgC3HLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 03:11:07 -0400
-Received: from conssluserg-06.nifty.com ([210.131.2.91]:46507 "EHLO
-        conssluserg-06.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729150AbgC3HLH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 03:11:07 -0400
-Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com [209.85.221.173]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 02U7Av80019091;
-        Mon, 30 Mar 2020 16:10:58 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 02U7Av80019091
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1585552259;
-        bh=hkMe26g7xlvZHHpLSXHK4NtsfOWPZ3tdB27BX4Gdox4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=KcBjhsrL3dR1mZBfET/9TKUG3Daz3RdGt09Vw88Y0YifetOYyh51xxQuPG+592DtH
-         pFD/CO1Uz9mbzrlhLsGxyA9LIeKZxQV5JWMNTr3zAUPp/UNFC9xsfpSFLKmSnqpbVi
-         KvGBO/fpymKKpXGF51W9+pp48ZX3tcSz8n+L0IMq+80fOal/Z3reDXdedCEK2jpq9t
-         ZaAnXDROMrj+BP2GRX1zhtxD+Xkh94NmVI1aUp5NoYk9oPnwKjnxG8FwLUREXbNfCc
-         6kGzkoTJ/wqDKmu97f3h+oWVDyt0bnUTb6G3aaLggK3fY//mDPC7DDsHNA2itSmKHS
-         IRfBEQUPNsiGg==
-X-Nifty-SrcIP: [209.85.221.173]
-Received: by mail-vk1-f173.google.com with SMTP id n128so4386036vke.5;
-        Mon, 30 Mar 2020 00:10:58 -0700 (PDT)
-X-Gm-Message-State: AGi0PuYyqi+Jqqf0vNqIG0UHCnkTbAhwoH+gdkE6en4feAPwTOi1AeBg
-        6SNSy4sbA3RjhYi0kM4uSRxQdCChezoSNPT7Oc4=
-X-Google-Smtp-Source: APiQypLNZL0F1SjmrpxCYWMM92Tc2B289mmJ4nqnInP/lERMnXKF0z9Hs/o7lbsUDIM38rMhrwxOtOM94wAMTS6itNI=
-X-Received: by 2002:a1f:3649:: with SMTP id d70mr6296693vka.12.1585552257254;
- Mon, 30 Mar 2020 00:10:57 -0700 (PDT)
+        id S1729400AbgC3HLk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 03:11:40 -0400
+Received: from ja.ssi.bg ([178.16.129.10]:59798 "EHLO ja.ssi.bg"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728489AbgC3HLk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 03:11:40 -0400
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.15.2/8.15.2) with ESMTP id 02U7BL0O006642;
+        Mon, 30 Mar 2020 10:11:21 +0300
+Date:   Mon, 30 Mar 2020 10:11:21 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+cc:     Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH nf-next] ipvs: fix uninitialized variable warning
+In-Reply-To: <1585538415-27583-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
+Message-ID: <alpine.LFD.2.21.2003301006560.5190@ja.home.ssi.bg>
+References: <1585538415-27583-1-git-send-email-yanhaishuang@cmss.chinamobile.com>
+User-Agent: Alpine 2.21 (LFD 202 2017-01-01)
 MIME-Version: 1.0
-References: <20200325220542.19189-1-robh@kernel.org> <20200325220542.19189-4-robh@kernel.org>
-In-Reply-To: <20200325220542.19189-4-robh@kernel.org>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 30 Mar 2020 16:10:21 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASHkBoOP_uGXLuO-UT1JL-rN3od_L+F4cB0SRPCzQCyKA@mail.gmail.com>
-Message-ID: <CAK7LNASHkBoOP_uGXLuO-UT1JL-rN3od_L+F4cB0SRPCzQCyKA@mail.gmail.com>
-Subject: Re: [PATCH 3/4] dt-bindings: Clean-up schema errors due to missing
- 'addtionalProperties: false'
-To:     Rob Herring <robh@kernel.org>
-Cc:     DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Brian Masney <masneyb@onstation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Guillaume La Roque <glaroque@baylibre.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Zhang Rui <rui.zhang@intel.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-iio@vger.kernel.org,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Linux PM mailing list <linux-pm@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Mar 26, 2020 at 7:06 AM Rob Herring <robh@kernel.org> wrote:
->
-> Numerous schemas are missing 'additionalProperties: false' statements which
-> ensures a binding doesn't have any extra undocumented properties or child
-> nodes. Fixing this reveals various missing properties, so let's fix all
-> those occurrences.
->
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> Cc: Neil Armstrong <narmstrong@baylibre.com>
-> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Liam Girdwood <lgirdwood@gmail.com>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: Guillaume La Roque <glaroque@baylibre.com>
-> Cc: Zhang Rui <rui.zhang@intel.com>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: linux-clk@vger.kernel.org
-> Cc: linux-gpio@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-iio@vger.kernel.org
-> Cc: linux-media@vger.kernel.org
-> Cc: linux-amlogic@lists.infradead.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-pm@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
+
+	Hello,
+
+On Mon, 30 Mar 2020, Haishuang Yan wrote:
+
+> If outer_proto is not set, GCC warning as following:
+> 
+> In file included from net/netfilter/ipvs/ip_vs_core.c:52:
+> net/netfilter/ipvs/ip_vs_core.c: In function 'ip_vs_in_icmp':
+> include/net/ip_vs.h:233:4: warning: 'outer_proto' may be used uninitialized in this function [-Wmaybe-uninitialized]
+>  233 |    printk(KERN_DEBUG pr_fmt(msg), ##__VA_ARGS__); \
+>      |    ^~~~~~
+> net/netfilter/ipvs/ip_vs_core.c:1666:8: note: 'outer_proto' was declared here
+> 1666 |  char *outer_proto;
+>      |        ^~~~~~~~~~~
+> 
+> Fixes: 73348fed35d0 ("ipvs: optimize tunnel dumps for icmp errors")
+> Signed-off-by: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+
+Acked-by: Julian Anastasov <ja@ssi.bg>
+
+	Hm, my compiler does not report it: gcc version 9.1.1
+
 > ---
+>  net/netfilter/ipvs/ip_vs_core.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+> index d2ac530..aa6a603 100644
+> --- a/net/netfilter/ipvs/ip_vs_core.c
+> +++ b/net/netfilter/ipvs/ip_vs_core.c
+> @@ -1663,7 +1663,7 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  	unsigned int offset, offset2, ihl, verdict;
+>  	bool tunnel, new_cp = false;
+>  	union nf_inet_addr *raddr;
+> -	char *outer_proto;
+> +	char *outer_proto = "IPIP";
+>  
+>  	*related = 1;
+>  
+> @@ -1723,7 +1723,6 @@ static int ipvs_gre_decap(struct netns_ipvs *ipvs, struct sk_buff *skb,
+>  		if (cih == NULL)
+>  			return NF_ACCEPT; /* The packet looks wrong, ignore */
+>  		tunnel = true;
+> -		outer_proto = "IPIP";
+>  	} else if ((cih->protocol == IPPROTO_UDP ||	/* Can be UDP encap */
+>  		    cih->protocol == IPPROTO_GRE) &&	/* Can be GRE encap */
+>  		   /* Error for our tunnel must arrive at LOCAL_IN */
+> -- 
+> 1.8.3.1
 
+Regards
 
-
->  .../gpio/socionext,uniphier-gpio.yaml         |  2 ++
-
-
-You may have already queue this up, but just in case.
-
-Acked-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-
-
--- 
-Best Regards
-Masahiro Yamada
+--
+Julian Anastasov <ja@ssi.bg>
