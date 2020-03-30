@@ -2,93 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EDAC19858E
+	by mail.lfdr.de (Postfix) with ESMTP id 849AD19858F
 	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 22:40:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728857AbgC3Ukn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 16:40:43 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:38207 "EHLO
+        id S1729222AbgC3Ukp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 16:40:45 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:33562 "EHLO
         mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728047AbgC3Ukm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 16:40:42 -0400
-Received: by mail-wr1-f66.google.com with SMTP id s1so23312869wrv.5
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 13:40:41 -0700 (PDT)
+        with ESMTP id S1728047AbgC3Uko (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 16:40:44 -0400
+Received: by mail-wr1-f66.google.com with SMTP id a25so23391852wrd.0
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 13:40:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=xFkPu+Dik5qNV/a3s6CZjNNglt5r70lx8LUszE7tMTE=;
-        b=gS2qSmrkE4BBFu4GF7FN3iJQB0RCz2iyYnLkHPBrcPFdYSD7byQ9mfR1PeX8x+6hc4
-         k1jXO1mC4bdQIe1IrKAn2ECO87t8T0oafI3IA8g/1s2nMw1CdfJjNd2+Mx0MW+ipzWRk
-         Jba6Kbqb/BfnCQjdgri2GWzjyY8dcTvmlBFFaqV0Zu06lqRsPVApLYIYRaeT0nTsuKpc
-         xbD5BlnDej2zmqu3rgfHm+5gQVilKJNH81e6vx8OB/+o2TE/cFpI0qpQLXKdlM0I8UeL
-         aeofejhl765JIsOBUOdWot0NnntQlSe1bg6FwE7E3BwEYTRrbw7Oz+EsBCPoCENVYpyI
-         mChQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=R8sj6WVyZB8rITepGXiyyokfdAE916pRlQveHEX+0jU=;
+        b=dwNCqbalJH4kC4ncw3fAc73PkjLK8sPpsJpIU9oogobL9+YoTB09aZ8udF2CoGz5qz
+         qmcDYFfu7uvWC5BKx0Foz/+1F5vPL8ath5R9K034NFR5ys7TBdpMDuFWoD4xjpbtolYe
+         KM6i6ADLvKvJ8coxsTCyiFjPdZ1Kfipnu9vIqZcGtZpf79WHj0vxigWXTDgXokjh1k7R
+         GWWJV4lBKo1GgduN3r3iZkwJuwGhnapaDi81Xi+bpaAcKTU/XEyLXWIeDgOHBhXa7Rf6
+         e6x3wBRCKI5me6XbcNDWbBf/K33EMgxLaLixaZCzSsnK72AHC0GWu4gPpdY+N2/AZyQ3
+         oWcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=xFkPu+Dik5qNV/a3s6CZjNNglt5r70lx8LUszE7tMTE=;
-        b=hEZiYG/LlGOiVePlwsBjn71uK3aZgcLQ4sI6Zons0KVoTol9uuQF5oUrQbOWwfREbl
-         YHu7N4J6QMHBXUruYE+GjAndWRqpdn20vD9dEu2SLBZgZOnP87P0s3/wRu7pWJE9SOiS
-         pufPTBTu1GlRMb6/tF6vK8xnPJC21670SxvnRVGfKEQS6SRumhLIzQ09wwf16jp2rEtV
-         rheyJ4oISkOa0aHwyxrQ80bAvREbkGB2WsbAomYDOi/k8I8LCQIlFyMTrwCRJwQPB/2Q
-         LPblc9/QHQ9M9a7pdWqa2jy0zuLOhmt2x+U81SBHgmVfblTPUGunHxUyiUyo2cdjmaTg
-         Ii8Q==
-X-Gm-Message-State: ANhLgQ2j52vqKCjmWmG5Wc/5CQ4WBhTCh3RcIB4Ib9wfL6Edk8ar8E3f
-        TMpW24qlHx1az4+eL+2AC53E/Cnk
-X-Google-Smtp-Source: ADFU+vt+RFOn55VUjpeuaUOmV5qbPxdlg2Css18/2TmiZlVhVtBHWP/TWruV2xzFP3kwdxYAtuyv9g==
-X-Received: by 2002:adf:fe0f:: with SMTP id n15mr17892517wrr.204.1585600840362;
-        Mon, 30 Mar 2020 13:40:40 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=R8sj6WVyZB8rITepGXiyyokfdAE916pRlQveHEX+0jU=;
+        b=Mjcw488qQWCLwv7408M/jQmHCVZoDFhJaPCNltKI2/H6U3fPgNWxfkYxDAgHCnTe0/
+         Ihpa12HkSZnAEWNZ0/Ob/TGJUgs9EUj5wkVabI1+3k9vtOmG26suFcmqElMTFKNgZFNu
+         NruVLwEyUJsan9z5Dwg4f0Ui4spsiktCESLYY6uhWsukIeYHdGJXwqtIKv2ruKP9rXOA
+         KrkCiMT0KhoENzunV1tBbvB14iSZp+2WnDJJjCabHnaqym2/trOqKHAN399tdfSUqu5f
+         tOe2qDhsm04JM3Y5IPIlfRTs6JxZzKHTVQWAwyj6xGh2H00hMS76crFHzG6vhuJHlHFd
+         ozlA==
+X-Gm-Message-State: ANhLgQ1catg0YhflQCwWWRpzZYVYHdrHMQnFyY8rYvRu3Mjv8lpN/3De
+        7jF/dx8grjDuy04kJwffsvSYFoI3
+X-Google-Smtp-Source: ADFU+vslbKfBv8aC00VjuwhNweinHXSULqOFm93NJhvvyMO2NzEaa7GOEJetS8EU+y8cEyMwCwSffA==
+X-Received: by 2002:a5d:4081:: with SMTP id o1mr17341500wrp.114.1585600842532;
+        Mon, 30 Mar 2020 13:40:42 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o16sm23371109wrs.44.2020.03.30.13.40.38
+        by smtp.gmail.com with ESMTPSA id o16sm23371109wrs.44.2020.03.30.13.40.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Mar 2020 13:40:39 -0700 (PDT)
+        Mon, 30 Mar 2020 13:40:42 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>, andrew@lunn.ch,
         vivien.didelot@gmail.com, davem@davemloft.net, kuba@kernel.org,
         dan.carpenter@oracle.com
-Subject: [PATCH net-next 0/9] net: dsa: b53 & bcm_sf2 updates for 7278
-Date:   Mon, 30 Mar 2020 13:40:23 -0700
-Message-Id: <20200330204032.26313-1-f.fainelli@gmail.com>
+Subject: [PATCH net-next 1/9] net: dsa: bcm_sf2: Fix overflow checks
+Date:   Mon, 30 Mar 2020 13:40:24 -0700
+Message-Id: <20200330204032.26313-2-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200330204032.26313-1-f.fainelli@gmail.com>
+References: <20200330204032.26313-1-f.fainelli@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, Andrew, Vivien,
+Commit f949a12fd697 ("net: dsa: bcm_sf2: fix buffer overflow doing
+set_rxnfc") tried to fix the some user controlled buffer overflows in
+bcm_sf2_cfp_rule_set() and bcm_sf2_cfp_rule_del() but the fix was using
+CFP_NUM_RULES, which while it is correct not to overflow the bitmaps, is
+not representative of what the device actually supports. Correct that by
+using bcm_sf2_cfp_rule_size() instead.
 
-This patch series contains some updates to the b53 and bcm_sf2 drivers
-specifically for the 7278 Ethernet switch.
+The latter subtracts the number of rules by 1, so change the checks from
+greater than or equal to greater than accordingly.
 
-The first patch is technically a bug fix so it should ideally be
-backported to -stable, provided that Dan also agress with my resolution
-on this.
+Fixes: f949a12fd697 ("net: dsa: bcm_sf2: fix buffer overflow doing set_rxnfc")
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/dsa/bcm_sf2_cfp.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-Patches #2 through #4 are minor changes to the core b53 driver to
-restore VLAN configuration upon system resumption as well as deny
-specific bridge/VLAN operations on port 7 with the 7278 which is special
-and does not support VLANs.
-
-Patches #5 through #9 add support for matching VLAN TCI keys/masks to
-the CFP code.
-
-Florian Fainelli (9):
-  net: dsa: bcm_sf2: Fix overflow checks
-  net: dsa: b53: Restore VLAN entries upon (re)configuration
-  net: dsa: b53: Prevent tagged VLAN on port 7 for 7278
-  net: dsa: b53: Deny enslaving port 7 for 7278 into a bridge
-  net: dsa: bcm_sf2: Disable learning for ASP port
-  net: dsa: bcm_sf2: Check earlier for FLOW_EXT and FLOW_MAC_EXT
-  net: dsa: bcm_sf2: Move writing of CFP_DATA(5) into slicing functions
-  net: dsa: bcm_sf2: Add support for matching VLAN TCI
-  net: dsa: bcm_sf2: Support specifying VLAN tag egress rule
-
- drivers/net/dsa/b53/b53_common.c |  29 +++++++
- drivers/net/dsa/bcm_sf2.c        |  10 ++-
- drivers/net/dsa/bcm_sf2_cfp.c    | 139 ++++++++++++++++++++++---------
- 3 files changed, 136 insertions(+), 42 deletions(-)
-
+diff --git a/drivers/net/dsa/bcm_sf2_cfp.c b/drivers/net/dsa/bcm_sf2_cfp.c
+index 1962c8330daa..f9785027c096 100644
+--- a/drivers/net/dsa/bcm_sf2_cfp.c
++++ b/drivers/net/dsa/bcm_sf2_cfp.c
+@@ -882,17 +882,14 @@ static int bcm_sf2_cfp_rule_set(struct dsa_switch *ds, int port,
+ 	     fs->m_ext.data[1]))
+ 		return -EINVAL;
+ 
+-	if (fs->location != RX_CLS_LOC_ANY && fs->location >= CFP_NUM_RULES)
++	if (fs->location != RX_CLS_LOC_ANY &&
++	    fs->location > bcm_sf2_cfp_rule_size(priv))
+ 		return -EINVAL;
+ 
+ 	if (fs->location != RX_CLS_LOC_ANY &&
+ 	    test_bit(fs->location, priv->cfp.used))
+ 		return -EBUSY;
+ 
+-	if (fs->location != RX_CLS_LOC_ANY &&
+-	    fs->location > bcm_sf2_cfp_rule_size(priv))
+-		return -EINVAL;
+-
+ 	ret = bcm_sf2_cfp_rule_cmp(priv, port, fs);
+ 	if (ret == 0)
+ 		return -EEXIST;
+@@ -973,7 +970,7 @@ static int bcm_sf2_cfp_rule_del(struct bcm_sf2_priv *priv, int port, u32 loc)
+ 	struct cfp_rule *rule;
+ 	int ret;
+ 
+-	if (loc >= CFP_NUM_RULES)
++	if (loc > bcm_sf2_cfp_rule_size(priv))
+ 		return -EINVAL;
+ 
+ 	/* Refuse deleting unused rules, and those that are not unique since
 -- 
 2.17.1
 
