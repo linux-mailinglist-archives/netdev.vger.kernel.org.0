@@ -2,174 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 14BC81975F8
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 09:48:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD3A3197602
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 09:52:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729523AbgC3Hso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 03:48:44 -0400
-Received: from mail-eopbgr00082.outbound.protection.outlook.com ([40.107.0.82]:56836
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        id S1729546AbgC3HwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 03:52:20 -0400
+Received: from mail-eopbgr30066.outbound.protection.outlook.com ([40.107.3.66]:57681
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728766AbgC3Hso (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 03:48:44 -0400
+        id S1728766AbgC3HwT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 03:52:19 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CiPXmno6+pXH4W3MDxWP5WQ8YdqEP4Ld+HRm80uA9QFyTpfQqHScPXfaygBK4SR5X3FdzDRyqQpBEbrGmPLrsJZBXzMUyOM3SAbu0FAaCmPd+E4oPCiIoNa+/fgEUH7RTtO/HhoIV5wlMNYB4NBPus16CJ6u4LRDF2XL0+NTDmykcUmdnvgOKDDCwBEaqk+wsODQdYnc8tyGCOnXeeyI5KovB1ijda8bC/dZF2AwwP8RpvjWz3dtHRAgfahCMd6yfae/EmKzMrtx+PHtTaNCDEQPQvrF6P91m7jgQP/9ALaDKYFjq3jcaIEWzM02L33Vw805ZMmyJaUPYFbADsreMQ==
+ b=NLugNphxtPWqqUTjV/ZS+gQ8SBwTQKUKrJTpH3Uugv9V3Q6LL94z2JvoHYXU6aoqDDBqVvgTYPFzTPp1mqgme/vuGJEnjIl1yOqd77VUIceTduqF/cXp8Ae7eJbz15YnRFnUPDAhJ3v3cIkzd9XWWJSLRGmJZC3607qBzYLwBCi5HDnFL3TdygXJCRfe4GZPOyP/cYlt9VWBsDZuqfZeOBL/CKpciSrrv7jHP4YHXpL1XiXs+PwD0JnQwG82q52159YASjaz5c99a/2++xHYLnS7LJgawpkHDOgWbWXOppoFosZGcjTd3l3djtBcTYCACvYUfT+t+RcVHzI8hI8Qmw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bSukeuJX/JRsOSyPpsIavZ2uv6JC4dY5CIIKmp2dp1g=;
- b=d558Zpz9Tgqf1/re8iR3ccw7xtb/HDEFLwJNaE4OOZ1OcP/C6w0Hpo7JhaBGcFjzQPC2Z8loHnEeTOO90G6OFhFZ6NFzNOl6fLego77wSb/3LDfL1ouZIt9tohJrjJvg9n55AIYMuPaIXn2neSxgHWtTWiuLFhg3PPTYTbbjE8+XLOkbP6R8chLGeMbVwMa09xPNW83QRQA0UREAJWe1NUTm8Dkir4Q5x0lm1OIy1Q427OijFSET4F5yn7ZncFRJUHTgTwCAAjnvZQbhAQ87GDWKOT/A0SHBhdAqD17AB7zJqVZly39veAneJyXHudziVdz6rOmf2lYEiUQ4aUzODQ==
+ bh=reEli7mj2SJZ5DivoPlUiZY8DVAkjARajVt4Wc3S7zw=;
+ b=Lc2M7Ypcfv6Qg1R2BPYD0m8NiUXoqLOODlr8B5tUXXHUa+FDQrjng1R+QvWF3Rn5AYghU0iXBOrXV44lUr1hOIftToRfW+1erb+g1wmOAnHrPGanf79kM2HWCodnso2UJwC0QQKvNdUG3SzWx5lqAz+MxzzJwr+L2nQX6ShHF1STD0RrS7HNAL5aTsOiR+jaJEtUJhFOkuKCboucVKo57uFXL4A8Hb+ticBxGrhDyQhtpuTxFoDlVQKF0Ve+3q5vRmU5Qp9kxVsP7oxLdDY6lf12FrBZPwX8s0VhrBAs0QV43Li3qM44HN+D1TKlHCfeCnPfg23kD+/lVdcPaLJ4eA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bSukeuJX/JRsOSyPpsIavZ2uv6JC4dY5CIIKmp2dp1g=;
- b=M3UqsY900NvJQnEEphGXBZNJk2JQYyO5QG7uQhBXC459j9eMowwDZU3BoetlV/GshurNrhwRAiHQW932zjlXpTvUkpMUzDESlY00Pdh1fckWVka3x+LEgm1wXauoUZWHiKUJPlZ0xGJpoM7gi6fGVlcLLZ03JAn9jYUIStgTm/4=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB4897.eurprd05.prod.outlook.com (20.177.42.13) with Microsoft SMTP
+ bh=reEli7mj2SJZ5DivoPlUiZY8DVAkjARajVt4Wc3S7zw=;
+ b=NkU4e3vaDkjOUcHh4arnMPA4uiUTb6o2pLa1SKj2StkIOmXW3l9uEv0ukXgezBzHFSJnYewPas9Qr9bUBj7PyWaYBDPeWLwKnxtG3jki1Yj/Jfwp0M3A3cGV0MBG6CiCFIAoLMnFO65rMkwTr/JnZioVyDA2Il/KaHpJAWDcs5g=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
+ VI1PR05MB3214.eurprd05.prod.outlook.com (10.175.243.161) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2856.19; Mon, 30 Mar 2020 07:48:39 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::8c4:e45b:ecdc:e02b]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::8c4:e45b:ecdc:e02b%7]) with mapi id 15.20.2856.019; Mon, 30 Mar 2020
- 07:48:39 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@resnulli.us>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Yuval Avnery <yuvalav@mellanox.com>,
-        "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
-        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
-        Moshe Shemesh <moshe@mellanox.com>,
-        Aya Levin <ayal@mellanox.com>,
-        Eran Ben Elisha <eranbe@mellanox.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Yevgeny Kliteynik <kliteyn@mellanox.com>,
-        "dchickles@marvell.com" <dchickles@marvell.com>,
-        "sburla@marvell.com" <sburla@marvell.com>,
-        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
-        "snelson@pensando.io" <snelson@pensando.io>,
-        "drivers@pensando.io" <drivers@pensando.io>,
-        "aelior@marvell.com" <aelior@marvell.com>,
-        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
-        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
-        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>,
-        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
-        Alex Vesker <valex@mellanox.com>,
-        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
-        "lihong.yang@intel.com" <lihong.yang@intel.com>,
-        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>
-Subject: Re: [RFC] current devlink extension plan for NICs
-Thread-Topic: [RFC] current devlink extension plan for NICs
-Thread-Index: AQHV/iRsiKU58im38Um7T8fyNtLerKhQ1DGAgABD54CAAOeuAIAAzAqAgAPIYYCABGpggIAAAUoAgABegoCAAL1QAIAAlFSAgAQi9AA=
-Date:   Mon, 30 Mar 2020 07:48:39 +0000
-Message-ID: <35e8353f-2bfc-5685-a60e-030cd2d2dd24@mellanox.com>
-References: <20200319192719.GD11304@nanopsycho.orion>
- <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
- <20200320073555.GE11304@nanopsycho.orion>
- <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
- <20200321093525.GJ11304@nanopsycho.orion>
- <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200326144709.GW11304@nanopsycho.orion>
- <20200326145146.GX11304@nanopsycho.orion>
- <20200326133001.1b2694c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20200327074736.GJ11304@nanopsycho.orion>
- <20200327093829.76140a98@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20200327093829.76140a98@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [49.207.58.93]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: ef05d5c0-5891-4d2c-f490-08d7d47ec29b
-x-ms-traffictypediagnostic: AM0PR05MB4897:|AM0PR05MB4897:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB4897848DC846474FD29AEF71D1CB0@AM0PR05MB4897.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0358535363
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR05MB4866.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(366004)(396003)(376002)(39860400002)(346002)(26005)(6506007)(186003)(55236004)(53546011)(2616005)(36756003)(31686004)(2906002)(7416002)(6512007)(6486002)(8936002)(81156014)(81166006)(66446008)(64756008)(66556008)(4326008)(66476007)(66946007)(54906003)(8676002)(86362001)(76116006)(91956017)(71200400001)(316002)(110136005)(478600001)(5660300002)(31696002);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: XIyTZuQ1lJwmmL20r+GQRDQwXQKO6XttlUkZBTTSE8vzjI7yqCuFg2gP/4Bj+b5jMZ2r5TuDxqr6Pg/LUtalc7IYJaYTLn92Fo1OUlOEIGjbnq2ln6ZEbBqTf1JUTY3Al9f3jQ2H6s5A23/N7bnT2d6C62jjAjwiIBFrMz/h/wmVvrPe7cvhnO9Hsgrk9PHBppCX7XXctN3xSqxrw2zNfn/FrOBIyhgqtzylpLFVtxmrkPT/rGgnXUBeksktC5+hG8NDTbIcfolY+XpYJ3W4yV6IToQy3FY4yHpXaObveLNX6FRyM2dY0U+n9ZLdlmH2hwRYVx/hrBNlT6XFpVD3QWSVK9kwfYWwwjfb0PRlEIf58lBO7VpwVtXozc1WEusRi9nH5HE3loUBR7G3ScpnAlsAqGJTZKdad+dcwHi+KB/wKFrXTbsNE3KxlxmFqSDx
-x-ms-exchange-antispam-messagedata: yOFOD2Me936GU3cvnlO3Oh281/uUuMB10wYSr4Dn2MAxIBMxai4QKg0tkn2ogdTLeSHywhpnIaQOURb5+MvOow6/+8iw7Oh6FyrHuT9zlnNy3dsVYUpTOlY6Q44DjPQZ7Gx0A4WKIBs9ky9lHf7qoQ==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6EA0508687FAFB4094E6CE104A51DD1A@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ 15.20.2856.19; Mon, 30 Mar 2020 07:52:15 +0000
+Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
+ ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2856.019; Mon, 30 Mar 2020
+ 07:52:15 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH net-next] bpf: tcp: Fix unused-function warnings
+Date:   Mon, 30 Mar 2020 00:49:09 -0700
+Message-Id: <20200330074909.174753-1-saeedm@mellanox.com>
+X-Mailer: git-send-email 2.25.1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BY5PR04CA0015.namprd04.prod.outlook.com
+ (2603:10b6:a03:1d0::25) To VI1PR05MB5102.eurprd05.prod.outlook.com
+ (2603:10a6:803:5e::23)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from smtp.office365.com (73.15.39.150) by BY5PR04CA0015.namprd04.prod.outlook.com (2603:10b6:a03:1d0::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.20 via Frontend Transport; Mon, 30 Mar 2020 07:52:13 +0000
+X-Mailer: git-send-email 2.25.1
+X-Originating-IP: [73.15.39.150]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: cb15a3fe-5ff0-4ddf-14e9-08d7d47f4372
+X-MS-TrafficTypeDiagnostic: VI1PR05MB3214:|VI1PR05MB3214:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR05MB32141EB05BCE65D8B4570B1ABECB0@VI1PR05MB3214.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:63;
+X-Forefront-PRVS: 0358535363
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(346002)(366004)(396003)(39860400002)(376002)(6506007)(66946007)(66556008)(86362001)(66476007)(316002)(478600001)(52116002)(54906003)(1076003)(5660300002)(2906002)(6512007)(6486002)(4326008)(6666004)(956004)(186003)(6916009)(36756003)(8676002)(2616005)(81156014)(16526019)(8936002)(26005)(81166006)(54420400002);DIR:OUT;SFP:1101;
+Received-SPF: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +e64T2/kvw/TCwN8boxTtU51lZUTw3zWVdOMS19cKqYCffU9nJedyj76jtkLTdc1WwOfoKdYYoWqfSvPkkqzKxxVxIKU8sGBqS1NJuy3/6HpYmuxP9AsDwag1QhLCZg7M432M68Dud/ttqUaxYSIdlG5Ixe0jVc+1Ev0NVi2bvL21CbW26p5TRY6n88+Idah3+DAUtCEBR89MNsYcciZPmehuEfjnln4a8o4Oo9gcq6KwvZsxpFDdcwrEcR6lxI5nHyEc9eEMDo2zt589Sk0qozWQFIa8cOcMJU9UfSmzPV/lsZAT14Sfs7YbHyzrV1hurSJWjyXw+FGxfUzZSNxwofYWSxDMcqTfZqVVgwvfk36GSSdD7ceRoCxwROQ8Z3eXR9f/Ni8kQ87AjFdz0AzOJIZlxMkna5Xl6ERQWbC/niFVa/b8Xhyqh7X/RvHcHURssfJ7+nlUPcaniCyjGniI69KamowPIawG0efzGdzhmlzWyY96QA/Y19vDnDa9r7h
+X-MS-Exchange-AntiSpam-MessageData: QriBwtMpOeVIE9bWIuFVjbWzZSlk0K0mn+3DXNGN9Z+SxP/6vvH2mLlXsxMSdA6eQwv2Fc3r8vmzWu05oDmiJL8bOF3wta7MUXrgE4U4nh8KBUADYWSox+wffrneGIFYXg2HMooT+5+CP4OPu9eczg==
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef05d5c0-5891-4d2c-f490-08d7d47ec29b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Mar 2020 07:48:39.0503
+X-MS-Exchange-CrossTenant-Network-Message-Id: cb15a3fe-5ff0-4ddf-14e9-08d7d47f4372
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2020 07:52:15.5468
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: OjMZRv5d3R4cKR0dNpdXGqfmbNJijFExEIVSAR0+xXxNJWqVDhswa1I9a4Jb9O4ZEgOX/Oi+lMRoOPZXzi1QKg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB4897
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: e8E6ojp2RkXjTNMnQCKMcIogyxetEgdahcy7aPMZ6UMYlCYyM8PPSsO0cftC1DtdqwCFlqBuTvHckGBQLMxq1A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3214
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgSmFrdWIsDQoNCk9uIDMvMjcvMjAyMCAxMDowOCBQTSwgSmFrdWIgS2ljaW5za2kgd3JvdGU6
-DQo+IE9uIEZyaSwgMjcgTWFyIDIwMjAgMDg6NDc6MzYgKzAxMDAgSmlyaSBQaXJrbyB3cm90ZToN
-Cj4+PiBTbyB0aGUgcXVldWVzLCBpbnRlcnJ1cHRzLCBhbmQgb3RoZXIgcmVzb3VyY2VzIGFyZSBh
-bHNvIHBhcnQgDQo+Pj4gb2YgdGhlIHNsaWNlIHRoZW4/ICANCj4+DQo+PiBZZXAsIHRoYXQgc2Vl
-bXMgdG8gbWFrZSBzZW5zZS4NCj4+DQo+Pj4gSG93IGRvIHNsaWNlIHBhcmFtZXRlcnMgbGlrZSBy
-YXRlIGFwcGx5IHRvIE5WTWU/ICANCj4+DQo+PiBOb3QgcmVhbGx5Lg0KPj4NCj4+PiBBcmUgcG9y
-dHMgYWx3YXlzIGV0aGVybmV0PyBhbmQgc2xpY2VzIGFsc28gY292ZXIgZW5kcG9pbnRzIHdpdGgN
-Cj4+PiB0cmFuc3BvcnQgc3RhY2sgb2ZmbG9hZGVkIHRvIHRoZSBOSUM/ICANCj4+DQo+PiBkZXZs
-aW5rX3BvcnQgbm93IGNhbiBiZSBlaXRoZXIgImV0aGVybmV0IiBvciAiaW5maW5pYmFuZCIuIFBl
-cmhhcHMsDQo+PiB0aGVyZSBjYW4gYmUgcG9ydCB0eXBlICJudmUiIHdoaWNoIHdvdWxkIGNvbnRh
-aW4gb25seSBzb21lIG9mIHRoZQ0KPj4gY29uZmlnIG9wdGlvbnMgYW5kIHdvdWxkIG5vdCBoYXZl
-IGEgcmVwcmVzZW50b3IgIm5ldGRldi9pYmRldiIgbGlua2VkLg0KPj4gSSBkb24ndCBrbm93Lg0K
-PiANCj4gSSBob25lc3RseSBmaW5kIGl0IGhhcmQgdG8gdW5kZXJzdGFuZCB3aGF0IHRoYXQgc2xp
-Y2UgYWJzdHJhY3Rpb24gaXMsDQo+IGFuZCB3aGljaCB0aGluZ3MgYmVsb25nIHRvIHNsaWNlcyBh
-bmQgd2hpY2ggdG8gUENJIHBvcnRzIChvciB3aHkgd2UgZXZlbg0KPiBoYXZlIHRoZW0pLg0KPiAN
-CkluIGFuIGFsdGVybmF0aXZlLCBkZXZsaW5rIHBvcnQgY2FuIGJlIG92ZXJsb2FkZWQvcmV0cm9m
-aXQgdG8gZG8gYWxsDQp0aGluZ3MgdGhhdCBzbGljZSBkZXNpcmVzIHRvIGRvLg0KRm9yIHRoYXQg
-bWF0dGVyIHJlcHJlc2VudG9yIG5ldGRldiBjYW4gYmUgb3ZlcmxvYWRlZC9leHRlbmRlZCB0byBk
-byB3aGF0DQpzbGljZSBkZXNpcmUgdG8gZG8gKGluc3RlYWQgb2YgZGV2bGluayBwb3J0KS4NCg0K
-Q2FuIHlvdSBwbGVhc2UgZXhwbGFpbiB3aHkgeW91IHRoaW5rIGRldmxpbmsgcG9ydCBzaG91bGQg
-YmUgb3ZlcmxvYWRlZA0KaW5zdGVhZCBvZiBuZXRkZXYgb3IgYW55IG90aGVyIGtlcm5lbCBvYmpl
-Y3Q/DQpEbyB5b3UgaGF2ZSBhbiBleGFtcGxlIG9mIHN1Y2ggb3ZlcmxvYWRlZCBmdW5jdGlvbmFs
-aXR5IG9mIGEga2VybmVsIG9iamVjdD8NCkxpa2Ugd2h5IG1hY3ZsYW4gYW5kIHZsYW4gZHJpdmVy
-cyBhcmUgbm90IGNvbWJpbmVkIHRvIGluIHNpbmdsZSBkcml2ZXINCm9iamVjdD8gV2h5IHRlYW1p
-bmcgYW5kIGJvbmRpbmcgZHJpdmVyIGFyZSBjb21iaW5lZCBpbiBzaW5nbGUgZHJpdmVyDQpvYmpl
-Y3Q/Li4uDQoNClVzZXIgc2hvdWxkIGJlIGFibGUgdG8gY3JlYXRlLCBjb25maWd1cmUsIGRlcGxv
-eSwgZGVsZXRlIGEgJ3BvcnRpb24gb2YNCnRoZSBkZXZpY2UnIHdpdGgvd2l0aG91dCBlc3dpdGNo
-Lg0KV2Ugc2hvdWxkbid0IGJlIHN0YXJ0aW5nIHdpdGggcmVzdHJpY3RpdmUvbmFycm93IHZpZXcg
-b2YgZGV2bGluayBwb3J0Lg0KDQpJbnRlcm5hbGx5IHdpdGggSmlyaSBhbmQgb3RoZXJzLCB3ZSBh
-bHNvIGV4cGxvcmVkIHRoZSBwb3NzaWJpbGl0eSB0bw0KaGF2ZSAnbWdtdHZmJywgJ21nbXRwZics
-ICAnbWdtdHNmJyBwb3J0IGZsYXZvdXJzIGJ5IG92ZXJsb2FkaW5nIHBvcnQgdG8NCmRvIGFsbCB0
-aGluZ3MgYXMgdGhhdCBvZiBzbGljZS4NCkl0IHdhc24ndCBlbGVnYW50IGVub3VnaC4gV2h5IG5v
-dCBjcmVhdGUgcmlnaHQgb2JqZWN0Pw0KDQpBZGRpdGlvbmFsbHkgZGV2bGluayBwb3J0IG9iamVj
-dCBkb2Vzbid0IGdvIHRocm91Z2ggdGhlIHNhbWUgc3RhdGUNCm1hY2hpbmUgYXMgdGhhdCB3aGF0
-IHNsaWNlIGhhcyB0byBnbyB0aHJvdWdoLg0KU28gaXRzIHdlaXJkIHRoYXQgc29tZSBkZXZsaW5r
-IHBvcnQgaGFzIHN0YXRlIG1hY2hpbmUgYW5kIHNvbWUgZG9lc24ndC4NCg0KPiBXaXRoIGRldmlj
-ZXMgbGlrZSBORlAgYW5kIE1lbGxhbm94IENYMyB3aGljaCBoYXZlIG9uZSBQQ0kgUEYgbWF5YmUg
-aXQNCj4gd291bGQgaGF2ZSBtYWRlIHNlbnNlIHRvIGhhdmUgYSBzbGljZSB0aGF0IGNvdmVycyBt
-dWx0aXBsZSBwb3J0cywgYnV0DQo+IGl0IHNlZW1zIHRoZSBwcm9wb3NhbCBpcyB0byBoYXZlIHBv
-cnQgdG8gc2xpY2UgbWFwcGluZyBiZSAxOjEuIEFuZCByYXRlDQo+IGluIHRob3NlIGRldmljZXMg
-c2hvdWxkIHN0aWxsIGJlIHBlciBwb3J0IG5vdCBwZXIgc2xpY2UuDQo+IA0KU2xpY2UgY2FuIGhh
-dmUgbXVsdGlwbGUgcG9ydHMuIHNsaWNlIG9iamVjdCBkb2Vzbid0IHJlc3RyaWN0IGl0LiBVc2Vy
-DQpjYW4gYWx3YXlzIHNwbGl0IHRoZSBwb3J0IGZvciBhIGRldmljZSwgaWYgZGV2aWNlIHN1cHBv
-cnQgaXQuDQoNCj4gQnV0IHRoaXMga2VlcHMgY29taW5nIGJhY2ssIGFuZCBzaW5jZSB5b3UgZ3V5
-cyBhcmUgZG9pbmcgYWxsIHRoZSB3b3JrLA0KPiBpZiB5b3UgcmVhbGx5IHJlYWxseSBuZWVkIGl0
-Li4NCj4NCg==
+tcp_bpf_sendpage, tcp_bpf_sendmsg, tcp_bpf_send_verdict and
+tcp_bpf_stream_read are only used when CONFIG_BPF_STREAM_PARSER is ON,
+make sure they are defined under this flag as well.
+
+Fixed compiler warnings:
+
+net/ipv4/tcp_bpf.c:483:12:
+warning: ‘tcp_bpf_sendpage’ defined but not used [-Wunused-function]
+ static int tcp_bpf_sendpage(struct sock *sk, struct page *page, ...
+            ^~~~~~~~~~~~~~~~
+net/ipv4/tcp_bpf.c:395:12:
+warning: ‘tcp_bpf_sendmsg’ defined but not used [-Wunused-function]
+ static int tcp_bpf_sendmsg(struct sock *sk, struct msghdr, ...
+            ^~~~~~~~~~~~~~~
+net/ipv4/tcp_bpf.c:13:13:
+warning: ‘tcp_bpf_stream_read’ defined but not used [-Wunused-function]
+ static bool tcp_bpf_stream_read(const struct sock *sk)
+
+Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Cc: John Fastabend <john.fastabend@gmail.com>
+Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
+---
+ net/ipv4/tcp_bpf.c | 29 +++++++++++++++--------------
+ 1 file changed, 15 insertions(+), 14 deletions(-)
+
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index fe7b4fbc31c1..2a7efc5dab96 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -10,19 +10,6 @@
+ #include <net/inet_common.h>
+ #include <net/tls.h>
+ 
+-static bool tcp_bpf_stream_read(const struct sock *sk)
+-{
+-	struct sk_psock *psock;
+-	bool empty = true;
+-
+-	rcu_read_lock();
+-	psock = sk_psock(sk);
+-	if (likely(psock))
+-		empty = list_empty(&psock->ingress_msg);
+-	rcu_read_unlock();
+-	return !empty;
+-}
+-
+ static int tcp_bpf_wait_data(struct sock *sk, struct sk_psock *psock,
+ 			     int flags, long timeo, int *err)
+ {
+@@ -298,6 +285,21 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
+ }
+ EXPORT_SYMBOL_GPL(tcp_bpf_sendmsg_redir);
+ 
++#ifdef CONFIG_BPF_STREAM_PARSER
++
++static bool tcp_bpf_stream_read(const struct sock *sk)
++{
++	struct sk_psock *psock;
++	bool empty = true;
++
++	rcu_read_lock();
++	psock = sk_psock(sk);
++	if (likely(psock))
++		empty = list_empty(&psock->ingress_msg);
++	rcu_read_unlock();
++	return !empty;
++}
++
+ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
+ 				struct sk_msg *msg, int *copied, int flags)
+ {
+@@ -528,7 +530,6 @@ static int tcp_bpf_sendpage(struct sock *sk, struct page *page, int offset,
+ 	return copied ? copied : err;
+ }
+ 
+-#ifdef CONFIG_BPF_STREAM_PARSER
+ enum {
+ 	TCP_BPF_IPV4,
+ 	TCP_BPF_IPV6,
+-- 
+2.25.1
+
