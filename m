@@ -2,150 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 291E5197C4C
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 14:55:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48EC1197C7B
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 15:09:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730143AbgC3MzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 08:55:05 -0400
-Received: from mx2.suse.de ([195.135.220.15]:51716 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729862AbgC3MzF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 08:55:05 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id C6663ABC2;
-        Mon, 30 Mar 2020 12:55:02 +0000 (UTC)
-Subject: Re: [PATCH net-next v4] xen networking: add basic XDP support for
- xen-netfront
-To:     Denis Kirjanov <kda@linux-powerpc.org>
+        id S1730101AbgC3NJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 09:09:53 -0400
+Received: from mail-vs1-f68.google.com ([209.85.217.68]:44816 "EHLO
+        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730070AbgC3NJx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 09:09:53 -0400
+Received: by mail-vs1-f68.google.com with SMTP id e138so10884984vsc.11
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 06:09:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:in-reply-to:references:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=W3kxTCjH2pPR1QQDH6RmWndnNmrbv4XaGPcFHpITCgo=;
+        b=CKZaiqs4rZGDro59rNLrbLKfgimz7/R//63RNzuNR9oUcWUBdyDG8DR4vRy4fzspxP
+         1CQsPmEy8oitLUXwXKXVVA/FW6cr4J2K1gC1+yc8mL3BVeA3yIWewMxEv7jx/P8eJSHy
+         2x8yTxfYAfdu9/3ku+qzGmXqgAniBdz1sTCT1h4ywL7IDml5GGh5VrgrVCLrZ/pN9v5X
+         8rXnj3/Lusy3MrDo4gh3a9J4ZL4qZh9U4OaqaYHIL4Vea9bpnl6AQCj8DPdq4286WEP4
+         9xQbtPvQszBfZXlzerfKvvcTIqdDc6AH08VuR0s6ZLjkPcNQ7nLNBDGx2X9LpttZF2v0
+         +UXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=W3kxTCjH2pPR1QQDH6RmWndnNmrbv4XaGPcFHpITCgo=;
+        b=XrLxKO1WIQcxAj13Oa8cKn4xLFMYA/471y6i1gHcyH2UUIcQACX5lcV32qPBWC0gZF
+         obc2DDC9NOnLohrzzO6KrmqyeXDY4PEOI6LTC+GE91XckKoWzhZH5A4aC41o91GDzjtk
+         g5o73f7Jsc2PzLazBRuhdKuHNMSmpCeFKARpTMiRPkdDaSYO9jKo43/n2Q/dxCrcj1yd
+         7e4IFyBgwsY2e4w+sgByeY5eu8onrijd+YLoVegi5v0wW7ZYapsfxZaBrbuT1m7RdUtH
+         o/ue0/cpHLgwkX0ftY3BTwnh/ZzhWYci+iplhOw4NtUNWrL0SOb8q/XslPT3vQIzgocb
+         IbiA==
+X-Gm-Message-State: AGi0Pubpl9WMgrcOTGNnRGrzD3vGV8J7YeRLFsHFIT7eeF5D+cEnxZbh
+        zBSITWDi2boYk8PSnnSzdY4w3q++nMoq7+mihP8SKg==
+X-Google-Smtp-Source: APiQypJ+hMA+KXvE/MftB1AQhy2fhNaRzWwV0H5qpPGhMX/yNJIPB1/k+rLCdo0Os16oYcN317v5USwa6WGraFUVAJo=
+X-Received: by 2002:a67:e24c:: with SMTP id w12mr8966097vse.153.1585573790329;
+ Mon, 30 Mar 2020 06:09:50 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:ab0:6507:0:0:0:0:0 with HTTP; Mon, 30 Mar 2020 06:09:49
+ -0700 (PDT)
+X-Originating-IP: [5.35.40.234]
+In-Reply-To: <fdac742b-71ae-6945-ccc8-6af5b75446e1@suse.com>
+References: <1584364176-23346-1-git-send-email-kda@linux-powerpc.org>
+ <f75365c7-a3ca-cf12-b2fc-e48652071795@suse.com> <CAOJe8K3gDJrdKz9zVZNj=N76GygMnPbCKM0-kVfoV53fASAefg@mail.gmail.com>
+ <250783b3-4949-d00a-70e2-dbef1791a6c4@suse.com> <CAOJe8K0fBBi-M+Tdv2kC+ZaNvjx92tzYaU1QX2zr8QOBRLwu3g@mail.gmail.com>
+ <9eb74bee-8434-62aa-8158-bae130353670@suse.com> <CAOJe8K34OS9vq9jWjVE9nrzvF+kdZnyAfGSS5tnJG-obDRwjSg@mail.gmail.com>
+ <d29338f2-62ef-e33c-a3d8-a9a9d2e3bf63@suse.com> <CAOJe8K3+ddELP=nac+WRB1d5ccsDQu2UBVY4T2GiFFUfhk0jcQ@mail.gmail.com>
+ <fdac742b-71ae-6945-ccc8-6af5b75446e1@suse.com>
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+Date:   Mon, 30 Mar 2020 16:09:49 +0300
+Message-ID: <CAOJe8K2X39rEN+Rjvoc3_TYfKwf0h117U=-pbRPAcKZvMPWTmA@mail.gmail.com>
+Subject: Re: [PATCH net-next v4] xen networking: add basic XDP support for xen-netfront
+To:     =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
 Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
         wei.liu@kernel.org, paul@xen.org
-References: <1584364176-23346-1-git-send-email-kda@linux-powerpc.org>
- <f75365c7-a3ca-cf12-b2fc-e48652071795@suse.com>
- <CAOJe8K3gDJrdKz9zVZNj=N76GygMnPbCKM0-kVfoV53fASAefg@mail.gmail.com>
- <250783b3-4949-d00a-70e2-dbef1791a6c4@suse.com>
- <CAOJe8K0fBBi-M+Tdv2kC+ZaNvjx92tzYaU1QX2zr8QOBRLwu3g@mail.gmail.com>
- <9eb74bee-8434-62aa-8158-bae130353670@suse.com>
- <CAOJe8K34OS9vq9jWjVE9nrzvF+kdZnyAfGSS5tnJG-obDRwjSg@mail.gmail.com>
- <d29338f2-62ef-e33c-a3d8-a9a9d2e3bf63@suse.com>
- <CAOJe8K3+ddELP=nac+WRB1d5ccsDQu2UBVY4T2GiFFUfhk0jcQ@mail.gmail.com>
-From:   =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-Message-ID: <fdac742b-71ae-6945-ccc8-6af5b75446e1@suse.com>
-Date:   Mon, 30 Mar 2020 14:55:02 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <CAOJe8K3+ddELP=nac+WRB1d5ccsDQu2UBVY4T2GiFFUfhk0jcQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30.03.20 14:16, Denis Kirjanov wrote:
-> On 3/23/20, Jürgen Groß <jgross@suse.com> wrote:
->> On 23.03.20 11:49, Denis Kirjanov wrote:
->>> On 3/23/20, Jürgen Groß <jgross@suse.com> wrote:
->>>> On 23.03.20 11:15, Denis Kirjanov wrote:
->>>>> On 3/18/20, Jürgen Groß <jgross@suse.com> wrote:
->>>>>> On 18.03.20 13:50, Denis Kirjanov wrote:
->>>>>>> On 3/18/20, Jürgen Groß <jgross@suse.com> wrote:
->>>>>>>> On 16.03.20 14:09, Denis Kirjanov wrote:
->>>>>>>>> The patch adds a basic XDP processing to xen-netfront driver.
+On 3/30/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+> On 30.03.20 14:16, Denis Kirjanov wrote:
+>> On 3/23/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+>>> On 23.03.20 11:49, Denis Kirjanov wrote:
+>>>> On 3/23/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+>>>>> On 23.03.20 11:15, Denis Kirjanov wrote:
+>>>>>> On 3/18/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+>>>>>>> On 18.03.20 13:50, Denis Kirjanov wrote:
+>>>>>>>> On 3/18/20, J=C3=BCrgen Gro=C3=9F <jgross@suse.com> wrote:
+>>>>>>>>> On 16.03.20 14:09, Denis Kirjanov wrote:
+>>>>>>>>>> The patch adds a basic XDP processing to xen-netfront driver.
+>>>>>>>>>>
+>>>>>>>>>> We ran an XDP program for an RX response received from netback
+>>>>>>>>>> driver. Also we request xen-netback to adjust data offset for
+>>>>>>>>>> bpf_xdp_adjust_head() header space for custom headers.
 >>>>>>>>>
->>>>>>>>> We ran an XDP program for an RX response received from netback
->>>>>>>>> driver. Also we request xen-netback to adjust data offset for
->>>>>>>>> bpf_xdp_adjust_head() header space for custom headers.
+>>>>>>>>> This is in no way a "verbose patch descriprion".
+>>>>>>>>>
+>>>>>>>>> I'm missing:
+>>>>>>>>>
+>>>>>>>>> - Why are you doing this. "Add XDP support" is not enough, for
+>>>>>>>>> such
+>>>>>>>>>        a change I'd like to see some performance numbers to get a=
+n
+>>>>>>>>> idea
+>>>>>>>>>        of the improvement to expect, or which additional
+>>>>>>>>> functionality
+>>>>>>>>>        for the user is available.
+>>>>>>>> Ok, I'll try to measure  some numbers.
 >>>>>>>>
->>>>>>>> This is in no way a "verbose patch descriprion".
+>>>>>>>>>
+>>>>>>>>> - A short description for me as a Xen maintainer with only basic
+>>>>>>>>>        networking know-how, what XDP programs are about (a link t=
+o
+>>>>>>>>> some
+>>>>>>>>>        more detailed doc is enough, of course) and how the
+>>>>>>>>> interface
+>>>>>>>>>        is working (especially for switching between XDP mode and
+>>>>>>>>> normal
+>>>>>>>>>        SKB processing).
 >>>>>>>>
->>>>>>>> I'm missing:
+>>>>>>>> You can search for the "A practical introduction to XDP" tutorial.
+>>>>>>>> Actually there is a lot of information available regarding XDP, yo=
+u
+>>>>>>>> can easily find it.
 >>>>>>>>
->>>>>>>> - Why are you doing this. "Add XDP support" is not enough, for such
->>>>>>>>        a change I'd like to see some performance numbers to get an
->>>>>>>> idea
->>>>>>>>        of the improvement to expect, or which additional
->>>>>>>> functionality
->>>>>>>>        for the user is available.
->>>>>>> Ok, I'll try to measure  some numbers.
+>>>>>>>>>
+>>>>>>>>> - A proper description of the netfront/netback communication when
+>>>>>>>>>        enabling or disabling XDP mode (who is doing what, is
+>>>>>>>>> silencing
+>>>>>>>>>        of the virtual adapter required, ...).
+>>>>>>>> Currently we need only a header offset from netback driver so that
+>>>>>>>> we
+>>>>>>>> can
+>>>>>>>> put
+>>>>>>>> custom encapsulation header if required and that's done using xen
+>>>>>>>> bus
+>>>>>>>> state switching,
+>>>>>>>> so that:
+>>>>>>>> - netback tells that it can adjust the header offset
+>>>>>>>> - netfront part reads it
 >>>>>>>
->>>>>>>>
->>>>>>>> - A short description for me as a Xen maintainer with only basic
->>>>>>>>        networking know-how, what XDP programs are about (a link to
->>>>>>>> some
->>>>>>>>        more detailed doc is enough, of course) and how the interface
->>>>>>>>        is working (especially for switching between XDP mode and
->>>>>>>> normal
->>>>>>>>        SKB processing).
->>>>>>>
->>>>>>> You can search for the "A practical introduction to XDP" tutorial.
->>>>>>> Actually there is a lot of information available regarding XDP, you
->>>>>>> can easily find it.
->>>>>>>
->>>>>>>>
->>>>>>>> - A proper description of the netfront/netback communication when
->>>>>>>>        enabling or disabling XDP mode (who is doing what, is
->>>>>>>> silencing
->>>>>>>>        of the virtual adapter required, ...).
->>>>>>> Currently we need only a header offset from netback driver so that we
->>>>>>> can
->>>>>>> put
->>>>>>> custom encapsulation header if required and that's done using xen bus
->>>>>>> state switching,
->>>>>>> so that:
->>>>>>> - netback tells that it can adjust the header offset
->>>>>>> - netfront part reads it
+>>>>>>> Yes, but how is this synchronized with currently running network
+>>>>>>> load?
+>>>>>>> Assume you are starting without XDP being active and then you are
+>>>>>>> activating it. How is the synchronization done from which request o=
+n
+>>>>>>> the XDP headroom is available?
 >>>>>>
->>>>>> Yes, but how is this synchronized with currently running network load?
->>>>>> Assume you are starting without XDP being active and then you are
->>>>>> activating it. How is the synchronization done from which request on
->>>>>> the XDP headroom is available?
+>>>>>> Hi Jurgen,
+>>>>>>
+>>>>>> basically XDP is activated when you've assigned an xdp program to th=
+e
+>>>>>> networking device.
+>>>>>> Assigning an xdp program means that we have to adjust a pointer whic=
+h
+>>>>>> is RCU protected.
 >>>>>
->>>>> Hi Jurgen,
+>>>>> This doesn't answer my question.
 >>>>>
->>>>> basically XDP is activated when you've assigned an xdp program to the
->>>>> networking device.
->>>>> Assigning an xdp program means that we have to adjust a pointer which
->>>>> is RCU protected.
+>>>>> You have basically two communication channels: the state of the
+>>>>> frontend
+>>>>> and backend for activation/deactivation of XDP, and the ring pages
+>>>>> with
+>>>>> the rx and tx requests and responses. How is the synchronization
+>>>>> between
+>>>>> those two channels done? So how does the other side know which of the
+>>>>> packets in flight will then have XDP on or off?
 >>>>
->>>> This doesn't answer my question.
->>>>
->>>> You have basically two communication channels: the state of the frontend
->>>> and backend for activation/deactivation of XDP, and the ring pages with
->>>> the rx and tx requests and responses. How is the synchronization between
->>>> those two channels done? So how does the other side know which of the
->>>> packets in flight will then have XDP on or off?
+>>>> Right,
+>>>> that's done in xen-netback using xenbus state:
+>>>> - in xennet_xdp_set() we call xenbus_switch_state to tell xen-netback
+>>>> to
+>>>> adjust offset for an RX response.
+>>>> -xen-netback reads the value from xenstore and adjusts the offset for
+>>>> xen-netback
+>>>> in xenvif_rx_data_slot() using vif->xdp_enabled flag.
 >>>
->>> Right,
->>> that's done in xen-netback using xenbus state:
->>> - in xennet_xdp_set() we call xenbus_switch_state to tell xen-netback to
->>> adjust offset for an RX response.
->>> -xen-netback reads the value from xenstore and adjusts the offset for
->>> xen-netback
->>> in xenvif_rx_data_slot() using vif->xdp_enabled flag.
+>>> And before that all in-flight requests in the ring pages are being
+>>> processed and no new requests are guaranteed to be enqueued?
 >>
->> And before that all in-flight requests in the ring pages are being
->> processed and no new requests are guaranteed to be enqueued?
-> 
-> Actually I don't see the need to sync these requests since that all we
-> have to do is to copy
-> data with specified offset:
-> with xdp->enabled=1: copy with the offset XDP_PACKET_HEADROOM
-> with xdd->enabled=0: copy without the offset
+>> Actually I don't see the need to sync these requests since that all we
+>> have to do is to copy
+>> data with specified offset:
+>> with xdp->enabled=3D1: copy with the offset XDP_PACKET_HEADROOM
+>> with xdd->enabled=3D0: copy without the offset
+>
+> Isn't that racy?
+>
+> In xennet_xdp_set() you set queue->xdp_prog and then you change the
+> state to Reconfiguring. From the time queue->xdp_prog is set you'll
+> do the Xdp processing in xennet_get_responses(), even if the response
+> you are working on doesn't have the headroom you need, as the backend
+> didn't create it with headroom (it needs some time until it has seen
+> the new state and could react on it by sending _new_ responses with
+> headroom).
 
-Isn't that racy?
+Ah, I see. You mean that we have to wait until XenbusStateReconfigured
+is set in
+xen-netfront and only after that it's safe to process packets.
 
-In xennet_xdp_set() you set queue->xdp_prog and then you change the
-state to Reconfiguring. From the time queue->xdp_prog is set you'll
-do the Xdp processing in xennet_get_responses(), even if the response
-you are working on doesn't have the headroom you need, as the backend
-didn't create it with headroom (it needs some time until it has seen
-the new state and could react on it by sending _new_ responses with
-headroom).
-
-Or am I missing something about Xdp programs?
-
-
-Juergen
+>
+> Or am I missing something about Xdp programs?
+>
+>
+> Juergen
+>
