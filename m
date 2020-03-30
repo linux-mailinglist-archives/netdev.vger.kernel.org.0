@@ -2,138 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA711972A1
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 04:47:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 432731972B0
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 05:00:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729222AbgC3CrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 22:47:05 -0400
-Received: from us-smtp-delivery-74.mimecast.com ([63.128.21.74]:42489 "EHLO
-        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728965AbgC3CrF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 22:47:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1585536423;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JhRKQgYj4kt2ErgAvEa/JDhR6aA1zygUgBsUozFxa0s=;
-        b=hStN2K64k2EeR65TiXrzdCBpaciwrVu4KcCJ/vPuDSvWZoH/V/6gB12U/RXgc7sMQeZYDY
-        mmWYpVcM+0uvkXAJVX4HYuozj3XZLI99Vv4gC97H/p3sdvrNmr0MPVAQw0w53oZU0Eph17
-        c7iDVSDDb50oClyUzPXzFlB8J2SoFGo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-304-MDKfgYK0N4qCpGOTf-DT-A-1; Sun, 29 Mar 2020 22:46:43 -0400
-X-MC-Unique: MDKfgYK0N4qCpGOTf-DT-A-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D40D81902EA8;
-        Mon, 30 Mar 2020 02:46:41 +0000 (UTC)
-Received: from [10.72.12.125] (ovpn-12-125.pek2.redhat.com [10.72.12.125])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 836828F342;
-        Mon, 30 Mar 2020 02:46:36 +0000 (UTC)
-Subject: Re: [vhost:linux-next 8/13] include/linux/vringh.h:18:10: fatal
- error: linux/vhost_iotlb.h: No such file or directory
-To:     kbuild test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>
-References: <202003292026.dP7OOeCi%lkp@intel.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <f1270de5-7a2c-76d2-431c-34364def851a@redhat.com>
-Date:   Mon, 30 Mar 2020 10:46:35 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1729019AbgC3DAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 23:00:10 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:33780 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728202AbgC3DAK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 29 Mar 2020 23:00:10 -0400
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02U2tgZa027465
+        for <netdev@vger.kernel.org>; Sun, 29 Mar 2020 20:00:09 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=x1w7kJTwaILAzFlbawLpJBSDeVPOYok+WbgG5itbqsQ=;
+ b=hB5jLc4kxh15tG/XFj4GRPj+dRBnZnXAq7OfodQG6E9xK7x3Ze21ZQ+sJYhrytMMYgcP
+ HTziCiX54dp7aCvUeqVUSmyJ2vRIZMTJWg87E1QF9UrWeixv+uTbARdUs9lk3lJIi8x2
+ um51En5Ct+aacxsSeegH0fN29RCQLTMXBRM= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 302pqvurmn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Sun, 29 Mar 2020 20:00:09 -0700
+Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1847.3; Sun, 29 Mar 2020 20:00:08 -0700
+Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
+        id C6FEF2EC3214; Sun, 29 Mar 2020 20:00:02 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: devbig012.ftw2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <rdna@fb.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v3 bpf-next 0/4] Add support for cgroup bpf_link
+Date:   Sun, 29 Mar 2020 19:59:57 -0700
+Message-ID: <20200330030001.2312810-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-In-Reply-To: <202003292026.dP7OOeCi%lkp@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-29_10:2020-03-27,2020-03-29 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ impostorscore=0 adultscore=0 priorityscore=1501 bulkscore=0
+ mlxlogscore=997 malwarescore=0 spamscore=0 clxscore=1015 suspectscore=0
+ phishscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003300026
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+bpf_link abstraction itself was formalized in [0] with justifications for why
+its semantics is a good fit for attaching BPF programs of various types. This
+patch set adds bpf_link-based BPF program attachment mechanism for cgroup BPF
+programs.
 
-On 2020/3/29 =E4=B8=8B=E5=8D=888:08, kbuild test robot wrote:
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git l=
-inux-next
-> head:   f44a63f9ebf66a450c101084a35a3ef158ead209
-> commit: c43908b0b9a900bd51f861f4c57b83cfd932f4d2 [8/13] vringh: IOTLB s=
-upport
-> config: arm-em_x270_defconfig (attached as .config)
-> compiler: arm-linux-gnueabi-gcc (GCC) 9.3.0
-> reproduce:
->          wget https://raw.githubusercontent.com/intel/lkp-tests/master/=
-sbin/make.cross -O ~/bin/make.cross
->          chmod +x ~/bin/make.cross
->          git checkout c43908b0b9a900bd51f861f4c57b83cfd932f4d2
+Cgroup BPF link is semantically compatible with current BPF_F_ALLOW_MULTI
+semantics of attaching cgroup BPF programs directly. Thus cgroup bpf_link can
+co-exist with legacy BPF program multi-attachment.
 
+bpf_link is destroyed and automatically detached when the last open FD holding
+the reference to bpf_link is closed. This means that by default, when the
+process that created bpf_link exits, attached BPF program will be
+automatically detached due to bpf_link's clean up code. Cgroup bpf_link, like
+any other bpf_link, can be pinned in BPF FS and by those means survive the
+exit of process that created the link. This is useful in many scenarios to
+provide long-living BPF program attachments. Pinning also means that there
+could be many owners of bpf_link through independent FDs.
 
-I could not find this commit in the above branch.
+Additionally, auto-detachmet of cgroup bpf_link is implemented. When cgroup is
+dying it will automatically detach all active bpf_links. This ensures that
+cgroup clean up is not delayed due to active bpf_link even despite no chance
+for any BPF program to be run for a given cgroup. In that sense it's similar
+to existing behavior of dropping refcnt of attached bpf_prog. But in the case
+of bpf_link, bpf_link is not destroyed and is still available to user as long
+as at least one active FD is still open (or if it's pinned in BPF FS).
 
+There are two main cgroup-specific differences between bpf_link-based and
+direct bpf_prog-based attachment.
 
->          # save the attached .config to linux build tree
->          GCC_VERSION=3D9.3.0 make.cross ARCH=3Darm
+First, as opposed to direct bpf_prog attachment, cgroup itself doesn't "own"
+bpf_link, which makes it possible to auto-clean up attached bpf_link when user
+process abruptly exits without explicitly detaching BPF program. This makes
+for a safe default behavior proven in BPF tracing program types. But bpf_link
+doesn't bump cgroup->bpf.refcnt as well and because of that doesn't prevent
+cgroup from cleaning up its BPF state.
 
+Second, only owners of bpf_link (those who created bpf_link in the first place
+or obtained a new FD by opening bpf_link from BPF FS) can detach and/or update
+it. This makes sure that no other process can accidentally remove/replace BPF
+program.
 
-Try to use commit dc3b0673ae5efb73edab66ec5c2f074272e9a4df.
+This patch set also implements LINK_UPDATE sub-command, which allows to
+replace bpf_link's underlying bpf_prog, similarly to BPF_F_REPLACE flag
+behavior for direct bpf_prog cgroup attachment. Similarly to LINK_CREATE, it
+is supposed to be generic command for different types of bpf_links.
 
-But this command does not work (I remember it used to work):
+  [0] https://lore.kernel.org/bpf/20200228223948.360936-1-andriin@fb.com/
 
-# GCC_VERSION=3D9.3.0 make.cross ARCH=3Darm
-cd: received redirection to=20
-`https://download.01.org/0day-ci/cross-package/'
-lftpget -c=20
-https://download.01.org/0day-ci/cross-package/./gcc-9.3.0-nolibc/x86_64-g=
-cc-9.3.0-nolibc_arm-linux-gnueabihf.tar.xz
-tar Jxf=20
-gcc-9.3.0-nolibc/x86_64-gcc-9.3.0-nolibc_arm-linux-gnueabihf.tar.xz -C=20
-/root/0day
-No cross compiler for arm
-setup_crosstool failed
+v2->v3:
+  - revert back to just MULTI mode (Alexei);
+  - fix tinyconfig compilation warning (kbuild test robot);
 
-
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kbuild test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->     In file included from include/linux/virtio.h:12,
->                      from include/linux/virtio_config.h:7,
->                      from include/uapi/linux/virtio_net.h:30,
->                      from include/linux/virtio_net.h:6,
->                      from net//packet/af_packet.c:82:
->>> include/linux/vringh.h:18:10: fatal error: linux/vhost_iotlb.h: No su=
-ch file or directory
->        18 | #include <linux/vhost_iotlb.h>
->           |          ^~~~~~~~~~~~~~~~~~~~~
->     compilation terminated.
->
-> vim +18 include/linux/vringh.h
->
->    > 18	#include <linux/vhost_iotlb.h>
->      19	#include <asm/barrier.h>
->      20=09
+v1->v2:
+  - implement exclusive and overridable exclusive modes (Andrey Ignatov);
+  - fix build for !CONFIG_CGROUP_BPF build;
+  - add more selftests for non-multi mode and inter-operability;
 
 
-I can hardly believe it can't work.
+Andrii Nakryiko (4):
+  bpf: implement bpf_link-based cgroup BPF program attachment
+  bpf: implement bpf_prog replacement for an active bpf_cgroup_link
+  libbpf: add support for bpf_link-based cgroup attachment
+  selftests/bpf: test FD-based cgroup attachment
 
-I get
+ include/linux/bpf-cgroup.h                    |  41 +-
+ include/linux/bpf.h                           |  10 +-
+ include/uapi/linux/bpf.h                      |  22 +-
+ kernel/bpf/cgroup.c                           | 395 ++++++++++++++----
+ kernel/bpf/syscall.c                          | 113 ++++-
+ kernel/cgroup/cgroup.c                        |  41 +-
+ tools/include/uapi/linux/bpf.h                |  22 +-
+ tools/lib/bpf/bpf.c                           |  34 ++
+ tools/lib/bpf/bpf.h                           |  19 +
+ tools/lib/bpf/libbpf.c                        |  46 ++
+ tools/lib/bpf/libbpf.h                        |   8 +-
+ tools/lib/bpf/libbpf.map                      |   4 +
+ .../selftests/bpf/prog_tests/cgroup_link.c    | 244 +++++++++++
+ .../selftests/bpf/progs/test_cgroup_link.c    |  24 ++
+ 14 files changed, 924 insertions(+), 99 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_link.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_cgroup_link.c
 
-# file include/linux/vringh.h
-include/linux/vringh.h: C source, ASCII text
-
-So this looks like a false positive to me?
-
-Thanks
-
-
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+2.17.1
 
