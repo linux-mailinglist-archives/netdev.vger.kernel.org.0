@@ -2,77 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9743D19834B
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:23:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0867619834D
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 20:23:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728000AbgC3SXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 14:23:13 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39202 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726769AbgC3SXN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 14:23:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=tRXZWFACkrjWHbs9/7+DMImrP7M1Z/RgHuG2NjGyaT4=; b=cSzctKGDzktAnG6Fj+1tRqQO9D
-        S5gajsHfeSC3HlkbfwwX5kf41usOvO1VBoj6haJdXnfViqQZECcxqHzyDs8/9VLEUaK+gf/IDJBgx
-        MaisukI0Ktbm4LzpoF/z9vGvkvLZqWPkyQ/8IuDbVilJc3odSbY2TWjeBuA4DS8iQI0w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.93)
-        (envelope-from <andrew@lunn.ch>)
-        id 1jIz3z-00070l-Py; Mon, 30 Mar 2020 20:23:07 +0200
-Date:   Mon, 30 Mar 2020 20:23:07 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Daniel Mack <daniel@zonque.org>
-Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: don't force settings on CPU port
-Message-ID: <20200330182307.GG23477@lunn.ch>
-References: <20200327195156.1728163-1-daniel@zonque.org>
- <20200327200153.GR3819@lunn.ch>
- <d101df30-5a9e-eac1-94b0-f171dbcd5b88@zonque.org>
- <20200327211821.GT3819@lunn.ch>
- <1bff1da3-8c9d-55c6-3408-3ae1c3943041@zonque.org>
- <20200327235220.GV3819@lunn.ch>
- <64462bcf-6c0c-af4f-19f4-d203daeabec3@zonque.org>
- <20200330134010.GA23477@lunn.ch>
- <7a777bc3-9109-153a-a735-e36718c06db5@zonque.org>
+        id S1727311AbgC3SXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 14:23:50 -0400
+Received: from mail.thelounge.net ([91.118.73.15]:63701 "EHLO
+        mail.thelounge.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726672AbgC3SXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 14:23:50 -0400
+Received: from srv-rhsoft.rhsoft.net  (Authenticated sender: h.reindl@thelounge.net) by mail.thelounge.net (THELOUNGE MTA) with ESMTPSA id 48rgnt2TWgzXMK;
+        Mon, 30 Mar 2020 20:23:46 +0200 (CEST)
+Subject: Re: 5.6: how to enable wireguard in "make menuconfig"
+To:     Randy Dunlap <rdunlap@infradead.org>, netdev@vger.kernel.org
+References: <439d7aec-3052-bbfc-94b9-2f85085e4976@thelounge.net>
+ <e8da71fe-cee8-77ac-ccbc-93478beaf998@infradead.org>
+From:   Reindl Harald <h.reindl@thelounge.net>
+Organization: the lounge interactive design
+Message-ID: <c362619a-4219-ce2b-093f-c3e71b295922@thelounge.net>
+Date:   Mon, 30 Mar 2020 20:23:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7a777bc3-9109-153a-a735-e36718c06db5@zonque.org>
+In-Reply-To: <e8da71fe-cee8-77ac-ccbc-93478beaf998@infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 08:04:08PM +0200, Daniel Mack wrote:
-> Hi Andrew,
-> 
-> Thanks for all your input.
-> 
-> On 3/30/20 3:40 PM, Andrew Lunn wrote:
-> > On Mon, Mar 30, 2020 at 11:29:27AM +0200, Daniel Mack wrote:
-> >> On 3/28/20 12:52 AM, Andrew Lunn wrote:
-> 
-> >>> By explicitly saying there is a PHY for the CPU node, phylink might
-> >>> drive it.
-> > 
-> > You want to debug this. Although what you have is unusual, yours is
-> > not the only board. It is something we want to work. And ideally,
-> > there should be something controlling the PHY.
-> 
-> I agree, but what I believe is happening here is this. The PHY inside
-> the switch negotiates a link to the 'external' PHY which is forced to
-> 100M maximum speed. That link seems to work fine; the LEDs connected to
-> that external PHY indicate that there is link. However, the internal PHY
-> in the switch does not receive any packets as the MAC connected to it
-> only wants to communicate with 1G.
 
-Which is what phylink is all about. phylink will talk to the PHY,
-figure out what it has negotiated, and then configure the MAC to
-fit. So you need to debug why this is not happening.
 
-       Andrew
+Am 30.03.20 um 19:10 schrieb Randy Dunlap:
+> On 3/30/20 1:37 AM, Reindl Harald wrote:
+>> https://i.imgur.com/jcH9Xno.png
+>> https://www.wireguard.com/compilation/
+>>
+>> crypto wise i have in the meantime enabled everything and the same in
+>> "networking options"
+>>
+>> but "IP: WireGuard secure network tunnel" still don#t appear anywhere :-(
+>>
+> 
+> In menuconfig, go to Device Drivers and then
+> Network Device support. It should look like this:
+> 
+>   │ │    --- Network device support                                       │ │  
+>   │ │    [*]   Network core driver support                                │ │  
+>   │ │    < >     Bonding driver support                                   │ │  
+>   │ │    < >     Dummy net driver support                                 │ │  
+>   │ │    < >     WireGuard secure network tunnel
+> 
+> 
+> but it requires Networking support and Network Devices and INET (TCP/IP)
+
+thanks, i figured it out in the meantime
+
+all the howtows with "Address" in [interface] like
+https://wiki.archlinux.org/index.php/WireGuard don't work
+
+figured that also out in my nested Vmware ESXi setup (firewall, clients,
+wan) within Vmware Workstation :-)
+
+seems to work like a charm with "ExecStart=/usr/sbin/ip route add
+172.16.0.0/24 via 10.10.10.1 dev vpn-client" on the lcient side
+
+---------------------------
+
+[Unit]
+Description=VPN Server
+After=network-up.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+PrivateTmp=yes
+ProtectHome=yes
+ProtectSystem=strict
+ReadWritePaths=-/run
+ReadWritePaths=-/tmp
+ReadWritePaths=-/var/tmp
+
+ExecStart=/usr/sbin/ip link add vpn type wireguard
+ExecStart=/usr/sbin/ip addr add 10.10.10.1/255.255.255.0 dev vpn
+ExecStart=/usr/sbin/ip link set dev vpn up
+ExecStart=/usr/bin/wg addconf vpn /etc/wireguard/vpn-server.conf
+
+ExecStop=-/usr/sbin/ip link del vpn
+
+[Install]
+WantedBy=multi-user.target
+
+---------------------------
+
+# HOWTO GENERATE KEYS:
+# umask 077; wg genkey | tee privatekey | wg pubkey > publickey
+# wg genpsk > preshared
+
+[Interface]
+ListenPort = 51000
+PrivateKey = ******
+
+[Peer]
+PublicKey  = +7k1cHdFoo47OfZOsauj0b7gfL/CEIUbgcx4tJK77ls=
+AllowedIPs = 10.10.10.2/32
+
+---------------------------
