@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 081FD1986F2
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 00:06:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 247601986FD
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 00:09:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730950AbgC3WG2 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 30 Mar 2020 18:06:28 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:47326 "EHLO
+        id S1730969AbgC3WIv convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 30 Mar 2020 18:08:51 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:36355 "EHLO
         mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730808AbgC3WG2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 18:06:28 -0400
+        with ESMTP id S1730809AbgC3WIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 18:08:45 -0400
 Received: from marcel-macbook.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 490F6CECA3;
-        Tue, 31 Mar 2020 00:15:59 +0200 (CEST)
+        by mail.holtmann.org (Postfix) with ESMTPSA id BA211CECB0;
+        Tue, 31 Mar 2020 00:18:16 +0200 (CEST)
 Content-Type: text/plain;
         charset=utf-8
 Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH v4 1/2] Bluetooth: btusb: Indicate Microsoft vendor
- extension for Intel 9460/9560 and 9160/9260
+Subject: Re: [PATCH v4 2/2] Bluetooth: btusb: Read the supported features of
+ Microsoft vendor extension
 From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20200328004507.v4.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
-Date:   Tue, 31 Mar 2020 00:06:26 +0200
+In-Reply-To: <20200328004507.v4.2.Ic59b637deef8e646f6599a80c9a2aa554f919e55@changeid>
+Date:   Tue, 31 Mar 2020 00:08:43 +0200
 Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
         Alain Michaud <alainm@chromium.org>,
         Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
@@ -30,9 +30,9 @@ Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Content-Transfer-Encoding: 8BIT
-Message-Id: <9CC14296-9A0E-4257-A388-B2F7C155CCE5@holtmann.org>
+Message-Id: <1FA9284F-C8DD-40A3-81A7-65AC6DE1E3C5@holtmann.org>
 References: <20200328074632.21907-1-mcchou@chromium.org>
- <20200328004507.v4.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
+ <20200328004507.v4.2.Ic59b637deef8e646f6599a80c9a2aa554f919e55@changeid>
 To:     Miao-chen Chou <mcchou@chromium.org>
 X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
@@ -42,14 +42,19 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Miao-chen,
 
-> This adds a bit mask of driver_info for Microsoft vendor extension and
-> indicates the support for Intel 9460/9560 and 9160/9260. See
+> This defines opcode and packet structures of Microsoft vendor extension.
+> For now, we add only the HCI_VS_MSFT_Read_Supported_Features command. See
 > https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
-> microsoft-defined-bluetooth-hci-commands-and-events for more information
-> about the extension. This also add a kernel config, BT_MSFTEXT, and a
-> source file to facilitate Microsoft vendor extension functions.
-> This was verified with Intel ThunderPeak BT controller
-> where msft_vnd_ext_opcode is 0xFC1E.
+> microsoft-defined-bluetooth-hci-commands-and-events#microsoft-defined-
+> bluetooth-hci-events for more details.
+> Upon initialization of a hci_dev, we issue a
+> HCI_VS_MSFT_Read_Supported_Features command to read the supported features
+> of Microsoft vendor extension if the opcode of Microsoft vendor extension
+> is valid. See https://docs.microsoft.com/en-us/windows-hardware/drivers/
+> bluetooth/microsoft-defined-bluetooth-hci-commands-and-events#
+> hci_vs_msft_read_supported_features for more details.
+> This was verified on a device with Intel ThunderPeak BT controller where
+> the Microsoft vendor extension features are 0x000000000000003f.
 > 
 > Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 > 
@@ -57,193 +62,267 @@ Hi Miao-chen,
 > ---
 > 
 > Changes in v4:
-> - Introduce CONFIG_BT_MSFTEXT as a starting point of providing a
-> framework to use Microsoft extension
-> - Create include/net/bluetooth/msft.h and net/bluetooth/msft.c to
-> facilitate functions of Microsoft extension.
+> - Move MSFT's do_open() and do_close() from net/bluetooth/hci_core.c to
+> net/bluetooth/msft.c.
+> - Other than msft opcode, define struct msft_data to host the rest of
+> information of Microsoft extension and leave a void* pointing to a
+> msft_data in struct hci_dev.
 > 
 > Changes in v3:
-> - Create net/bluetooth/msft.c with struct msft_vnd_ext defined internally
-> and change the hdev->msft_ext field to void*.
-> - Define and expose msft_vnd_ext_set_opcode() for btusb use.
-> - Init hdev->msft_ext in hci_alloc_dev() and deinit it in hci_free_dev().
+> - Introduce msft_vnd_ext_do_open() and msft_vnd_ext_do_close().
 > 
 > Changes in v2:
-> - Define struct msft_vnd_ext and add a field of this type to struct
-> hci_dev to facilitate the support of Microsoft vendor extension.
+> - Issue a HCI_VS_MSFT_Read_Supported_Features command with
+> __hci_cmd_sync() instead of constructing a request.
 > 
-> drivers/bluetooth/btusb.c        | 11 +++++++++--
-> include/net/bluetooth/hci_core.h |  4 ++++
-
-so I don’t like the intermixing of core features and drivers unless it is needed. In this case it is not needed since we can first introduce the core support and then enable the driver to use it.
-
-> net/bluetooth/Kconfig            |  9 ++++++++-
-> net/bluetooth/Makefile           |  1 +
-> net/bluetooth/msft.c             | 16 ++++++++++++++++
-> net/bluetooth/msft.h             | 19 +++++++++++++++++++
-> 6 files changed, 57 insertions(+), 3 deletions(-)
-> create mode 100644 net/bluetooth/msft.c
-> create mode 100644 net/bluetooth/msft.h
+> include/net/bluetooth/hci_core.h |   1 +
+> net/bluetooth/hci_core.c         |   5 ++
+> net/bluetooth/hci_event.c        |   5 ++
+> net/bluetooth/msft.c             | 126 +++++++++++++++++++++++++++++++
+> net/bluetooth/msft.h             |  10 +++
+> 5 files changed, 147 insertions(+)
 > 
-> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-> index 3bdec42c9612..0fe47708d3c8 100644
-> --- a/drivers/bluetooth/btusb.c
-> +++ b/drivers/bluetooth/btusb.c
-> @@ -21,6 +21,7 @@
-> #include <net/bluetooth/bluetooth.h>
-> #include <net/bluetooth/hci_core.h>
-> 
-> +#include "../../net/bluetooth/msft.h"
-
-This was my bad. I didn’t realized that drivers need to the set the opcode and not the core. I updated the patches to fix this.
-
-> #include "btintel.h"
-> #include "btbcm.h"
-> #include "btrtl.h"
-> @@ -58,6 +59,7 @@ static struct usb_driver btusb_driver;
-> #define BTUSB_CW6622		0x100000
-> #define BTUSB_MEDIATEK		0x200000
-> #define BTUSB_WIDEBAND_SPEECH	0x400000
-> +#define BTUSB_MSFT_VND_EXT	0x800000
-> 
-> static const struct usb_device_id btusb_table[] = {
-> 	/* Generic Bluetooth USB device */
-> @@ -335,7 +337,8 @@ static const struct usb_device_id blacklist_table[] = {
-> 
-> 	/* Intel Bluetooth devices */
-> 	{ USB_DEVICE(0x8087, 0x0025), .driver_info = BTUSB_INTEL_NEW |
-> -						     BTUSB_WIDEBAND_SPEECH },
-> +						     BTUSB_WIDEBAND_SPEECH |
-> +						     BTUSB_MSFT_VND_EXT },
-> 	{ USB_DEVICE(0x8087, 0x0026), .driver_info = BTUSB_INTEL_NEW |
-> 						     BTUSB_WIDEBAND_SPEECH },
-> 	{ USB_DEVICE(0x8087, 0x0029), .driver_info = BTUSB_INTEL_NEW |
-> @@ -348,7 +351,8 @@ static const struct usb_device_id blacklist_table[] = {
-> 	{ USB_DEVICE(0x8087, 0x0aa7), .driver_info = BTUSB_INTEL |
-> 						     BTUSB_WIDEBAND_SPEECH },
-> 	{ USB_DEVICE(0x8087, 0x0aaa), .driver_info = BTUSB_INTEL_NEW |
-> -						     BTUSB_WIDEBAND_SPEECH },
-> +						     BTUSB_WIDEBAND_SPEECH |
-> +						     BTUSB_MSFT_VND_EXT },
-
-Lets start with ThunderPeak 0x0025 for now. We are looking into enabling this in a more generic fashion, but for now lets just enable one card.
-
-> 
-> 	/* Other Intel Bluetooth devices */
-> 	{ USB_VENDOR_AND_INTERFACE_INFO(0x8087, 0xe0, 0x01, 0x01),
-> @@ -3800,6 +3804,9 @@ static int btusb_probe(struct usb_interface *intf,
-> 		set_bit(HCI_QUIRK_STRICT_DUPLICATE_FILTER, &hdev->quirks);
-> 		set_bit(HCI_QUIRK_SIMULTANEOUS_DISCOVERY, &hdev->quirks);
-> 		set_bit(HCI_QUIRK_NON_PERSISTENT_DIAG, &hdev->quirks);
-> +
-> +		if (id->driver_info & BTUSB_MSFT_VND_EXT)
-> +			msft_set_opcode(hdev, 0xFC1E);
-> 	}
-> 
-> 	if (id->driver_info & BTUSB_MARVELL)
 > diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-> index d4e28773d378..239cae2d9998 100644
+> index 239cae2d9998..59ddcd3a52cc 100644
 > --- a/include/net/bluetooth/hci_core.h
 > +++ b/include/net/bluetooth/hci_core.h
-> @@ -484,6 +484,10 @@ struct hci_dev {
-> 	struct led_trigger	*power_led;
+> @@ -486,6 +486,7 @@ struct hci_dev {
+> 
+> #if IS_ENABLED(CONFIG_BT_MSFTEXT)
+> 	__u16			msft_opcode;
+> +	void			*msft_data;
 > #endif
 > 
-> +#if IS_ENABLED(CONFIG_BT_MSFTEXT)
-> +	__u16			msft_opcode;
-> +#endif
-> +
 > 	int (*open)(struct hci_dev *hdev);
-> 	int (*close)(struct hci_dev *hdev);
-> 	int (*flush)(struct hci_dev *hdev);
-> diff --git a/net/bluetooth/Kconfig b/net/bluetooth/Kconfig
-> index 165148c7c4ce..5929ccb02b39 100644
-> --- a/net/bluetooth/Kconfig
-> +++ b/net/bluetooth/Kconfig
-> @@ -30,7 +30,7 @@ menuconfig BT
-> 		L2CAP (Logical Link Control and Adaptation Protocol)
-> 		SMP (Security Manager Protocol) on LE (Low Energy) links
-> 	     HCI Device drivers (Interface to the hardware)
-> -	     RFCOMM Module (RFCOMM Protocol)  
-> +	     RFCOMM Module (RFCOMM Protocol)
-
-Unrelated changes don’t belong here.
-
-> 	     BNEP Module (Bluetooth Network Encapsulation Protocol)
-> 	     CMTP Module (CAPI Message Transport Protocol)
-> 	     HIDP Module (Human Interface Device Protocol)
-> @@ -93,6 +93,13 @@ config BT_LEDS
-> 	  This option selects a few LED triggers for different
-> 	  Bluetooth events.
-> 
-> +config BT_MSFTEXT
-> +	bool "Enable Microsoft extensions"
-> +	depends on BT
-> +	help
-> +	  This options enables support for the Microsoft defined HCI
-> +	  vendor extensions.
-> +
-> config BT_SELFTEST
-> 	bool "Bluetooth self testing support"
-> 	depends on BT && DEBUG_KERNEL
-> diff --git a/net/bluetooth/Makefile b/net/bluetooth/Makefile
-> index fda41c0b4781..41dd541a44a5 100644
-> --- a/net/bluetooth/Makefile
-> +++ b/net/bluetooth/Makefile
-> @@ -19,5 +19,6 @@ bluetooth-y := af_bluetooth.o hci_core.o hci_conn.o hci_event.o mgmt.o \
-> bluetooth-$(CONFIG_BT_BREDR) += sco.o
-> bluetooth-$(CONFIG_BT_HS) += a2mp.o amp.o
-> bluetooth-$(CONFIG_BT_LEDS) += leds.o
-> +bluetooth-$(CONFIG_BT_MSFTEXT) += msft.o
-> bluetooth-$(CONFIG_BT_DEBUGFS) += hci_debugfs.o
-> bluetooth-$(CONFIG_BT_SELFTEST) += selftest.o
-> diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-> new file mode 100644
-> index 000000000000..7609932c48ca
-> --- /dev/null
-> +++ b/net/bluetooth/msft.c
-> @@ -0,0 +1,16 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/* Copyright (C) 2020 Google Corporation */
-> +
-> +#include <net/bluetooth/bluetooth.h>
-> +#include <net/bluetooth/hci_core.h>
-> +
+> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+> index dbd2ad3a26ed..c38707de767a 100644
+> --- a/net/bluetooth/hci_core.c
+> +++ b/net/bluetooth/hci_core.c
+> @@ -44,6 +44,7 @@
+> #include "hci_debugfs.h"
+> #include "smp.h"
+> #include "leds.h"
 > +#include "msft.h"
+> 
+> static void hci_rx_work(struct work_struct *work);
+> static void hci_cmd_work(struct work_struct *work);
+> @@ -1563,6 +1564,8 @@ static int hci_dev_do_open(struct hci_dev *hdev)
+> 	    hci_dev_test_flag(hdev, HCI_VENDOR_DIAG) && hdev->set_diag)
+> 		ret = hdev->set_diag(hdev, true);
+> 
+> +	msft_do_open(hdev);
 > +
-> +void msft_set_opcode(struct hci_dev *hdev, __u16 opcode)
+> 	clear_bit(HCI_INIT, &hdev->flags);
+> 
+> 	if (!ret) {
+> @@ -1758,6 +1761,8 @@ int hci_dev_do_close(struct hci_dev *hdev)
+> 
+> 	hci_sock_dev_event(hdev, HCI_DEV_DOWN);
+> 
+> +	msft_do_close(hdev);
+> +
+> 	if (hdev->flush)
+> 		hdev->flush(hdev);
+> 
+> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> index 20408d386268..42b5871151a6 100644
+> --- a/net/bluetooth/hci_event.c
+> +++ b/net/bluetooth/hci_event.c
+> @@ -35,6 +35,7 @@
+> #include "a2mp.h"
+> #include "amp.h"
+> #include "smp.h"
+> +#include "msft.h"
+> 
+> #define ZERO_KEY "\x00\x00\x00\x00\x00\x00\x00\x00" \
+> 		 "\x00\x00\x00\x00\x00\x00\x00\x00"
+> @@ -6144,6 +6145,10 @@ void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb)
+> 		hci_num_comp_blocks_evt(hdev, skb);
+> 		break;
+> 
+> +	case HCI_EV_VENDOR:
+> +		msft_vendor_evt(hdev, skb);
+> +		break;
+> +
+> 	default:
+> 		BT_DBG("%s event 0x%2.2x", hdev->name, event);
+> 		break;
+> diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
+> index 7609932c48ca..f76e4c79556e 100644
+> --- a/net/bluetooth/msft.c
+> +++ b/net/bluetooth/msft.c
+> @@ -6,6 +6,24 @@
+> 
+> #include "msft.h"
+> 
+> +#define MSFT_OP_READ_SUPPORTED_FEATURES		0x00
+> +struct msft_cp_read_supported_features {
+> +	__u8   sub_opcode;
+> +} __packed;
+> +struct msft_rp_read_supported_features {
+> +	__u8   status;
+> +	__u8   sub_opcode;
+> +	__le64 features;
+> +	__u8   evt_prefix_len;
+> +	__u8   evt_prefix[0];
+> +} __packed;
+> +
+> +struct msft_data {
+> +	__u64 features;
+> +	__u8  evt_prefix_len;
+> +	__u8  *evt_prefix;
+> +};
+> +
+> void msft_set_opcode(struct hci_dev *hdev, __u16 opcode)
+> {
+> 	hdev->msft_opcode = opcode;
+> @@ -14,3 +32,111 @@ void msft_set_opcode(struct hci_dev *hdev, __u16 opcode)
+> 		    hdev->msft_opcode);
+> }
+> EXPORT_SYMBOL(msft_set_opcode);
+> +
+> +static struct msft_data *read_supported_features(struct hci_dev *hdev)
 > +{
-> +	hdev->msft_opcode = opcode;
+> +	struct msft_data *msft;
+
+I used a second parameter, but yes, my initial code was totally flawed with the msft_data access.
+
+> +	struct msft_cp_read_supported_features cp;
+> +	struct msft_rp_read_supported_features *rp;
+> +	struct sk_buff *skb;
 > +
-> +	bt_dev_info(hdev, "Enabling MSFT extensions with opcode 0x%2.2x",
-> +		    hdev->msft_opcode);
+> +	cp.sub_opcode = MSFT_OP_READ_SUPPORTED_FEATURES;
+> +
+> +	skb = __hci_cmd_sync(hdev, hdev->msft_opcode, sizeof(cp), &cp,
+> +			     HCI_CMD_TIMEOUT);
+> +	if (IS_ERR(skb)) {
+> +		bt_dev_err(hdev, "Failed to read MSFT supported features (%ld)",
+> +			   PTR_ERR(skb));
+> +		return NULL;
+> +	}
+> +
+> +	if (skb->len < sizeof(*rp)) {
+> +		bt_dev_err(hdev, "MSFT supported features length mismatch");
+> +		goto failed;
+> +	}
+> +
+> +	rp = (struct msft_rp_read_supported_features *)skb->data;
+> +
+> +	if (rp->sub_opcode != MSFT_OP_READ_SUPPORTED_FEATURES)
+> +		goto failed;
+> +
+> +	msft = kzalloc(sizeof(*msft), GFP_KERNEL);
+> +	if (!msft)
+> +		goto failed;
+> +
+> +	if (rp->evt_prefix_len > 0) {
+> +		msft->evt_prefix = kmemdup(rp->evt_prefix, rp->evt_prefix_len,
+> +					   GFP_KERNEL);
+> +		if (!msft->evt_prefix)
+> +			goto failed;
+> +	}
+> +
+> +	msft->evt_prefix_len = rp->evt_prefix_len;
+> +	msft->features = __le64_to_cpu(rp->features);
+> +	kfree_skb(skb);
+> +
+> +	bt_dev_info(hdev, "MSFT supported features %llx", msft->features);
+> +	return msft;
+> +
+> +failed:
+> +	kfree_skb(skb);
+> +	return NULL;
 > +}
-> +EXPORT_SYMBOL(msft_set_opcode);
+> +
+> +void msft_do_open(struct hci_dev *hdev)
+> +{
+> +	if (hdev->msft_opcode == HCI_OP_NOP)
+> +		return;
+> +
+> +	bt_dev_dbg(hdev, "Initialize MSFT extension");
+> +	hdev->msft_data = read_supported_features(hdev);
+> +}
+> +
+> +void msft_do_close(struct hci_dev *hdev)
+> +{
+> +	struct msft_data *msft = hdev->msft_data;
+> +
+> +	if (!msft)
+> +		return;
+> +
+> +	bt_dev_dbg(hdev, "Cleanup of MSFT extension");
+> +
+> +	hdev->msft_data = NULL;
+> +
+> +	kfree(msft->evt_prefix);
+> +	kfree(msft);
+> +}
+> +
+> +int msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
+> +{
+
+So this was on purpose void. There is no point in returning any feedback from this function. It either handles the event or it doesn’t. The caller function doesn’t care.
+
+> +	struct msft_data *msft = hdev->msft_data;
+> +	u8 event;
+> +
+> +	if (!msft)
+> +		return -ENOSYS;
+> +
+> +	/* When the extension has defined an event prefix, check that it
+> +	 * matches, and otherwise just return.
+> +	 */
+> +	if (msft->evt_prefix_len > 0) {
+> +		if (skb->len < msft->evt_prefix_len)
+> +			return -ENOSYS;
+> +
+> +		if (memcmp(skb->data, msft->evt_prefix, msft->evt_prefix_len))
+> +			return -ENOSYS;
+> +
+> +		skb_pull(skb, msft->evt_prefix_len);
+> +	}
+> +
+> +	/* Every event starts at least with an event code and the rest of
+> +	 * the data is variable and depends on the event code. Returns true
+> +	 */
+> +	if (skb->len < 1)
+> +		return -EBADMSG;
+> +
+> +	event = *skb->data;
+> +	skb_pull(skb, 1);
+> +
+> +	bt_dev_dbg(hdev, "MSFT vendor event %u", event);
+> +	return 0;
+> +}
 > diff --git a/net/bluetooth/msft.h b/net/bluetooth/msft.h
-> new file mode 100644
-> index 000000000000..7218ea759dde
-> --- /dev/null
+> index 7218ea759dde..6a7d0ac6c66c 100644
+> --- a/net/bluetooth/msft.h
 > +++ b/net/bluetooth/msft.h
-> @@ -0,0 +1,19 @@
-> +/* SPDX-License-Identifier: GPL-2.0-or-later */
-> +/* Copyright (C) 2020 Google Corporation */
-> +
-> +#ifndef __MSFT_H
-> +#define __MSFT_H
-> +
-> +#include <net/bluetooth/hci_core.h>
-> +
-> +#if IS_ENABLED(CONFIG_BT_MSFTEXT)
-> +
-> +void msft_set_opcode(struct hci_dev *hdev, __u16 opcode);
-> +
-> +#else
-> +
-> +static inline void msft_set_opcode(struct hci_dev *hdev, __u16 opcode) {}
-> +
-> +#endif
-> +
-> +#endif /* __MSFT_H*/
+> @@ -4,15 +4,25 @@
+> #ifndef __MSFT_H
+> #define __MSFT_H
+> 
+> +#include <linux/errno.h>
+> #include <net/bluetooth/hci_core.h>
+> 
+> #if IS_ENABLED(CONFIG_BT_MSFTEXT)
+> 
+> void msft_set_opcode(struct hci_dev *hdev, __u16 opcode);
+> +void msft_do_open(struct hci_dev *hdev);
+> +void msft_do_close(struct hci_dev *hdev);
+> +int msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb);
+> 
+> #else
+> 
+> static inline void msft_set_opcode(struct hci_dev *hdev, __u16 opcode) {}
+> +static inline void msft_do_open(struct hci_dev *hdev) {}
+> +static inline void msft_do_close(struct hci_dev *hdev) {}
+> +static inline int msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
+> +{
+> +	return -ENOSYS;
+> +}
+> 
+> #endif
 
 Regards
 
