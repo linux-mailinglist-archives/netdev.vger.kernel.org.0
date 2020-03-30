@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 876AE197147
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 02:37:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4C4A19716D
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 02:38:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728005AbgC3AhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 29 Mar 2020 20:37:24 -0400
-Received: from correo.us.es ([193.147.175.20]:57168 "EHLO mail.us.es"
+        id S1727931AbgC3AiI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 29 Mar 2020 20:38:08 -0400
+Received: from correo.us.es ([193.147.175.20]:57144 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727906AbgC3AhW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727915AbgC3AhW (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sun, 29 Mar 2020 20:37:22 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 97418EF426
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 02:37:20 +0200 (CEST)
+        by mail.us.es (Postfix) with ESMTP id 25BE7EF42E
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 02:37:21 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 88FFC100A44
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 02:37:20 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 14DA1100A59
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 02:37:21 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 7D336100A4E; Mon, 30 Mar 2020 02:37:20 +0200 (CEST)
+        id 0A143100A50; Mon, 30 Mar 2020 02:37:21 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9F886100A45;
+        by antivirus1-rhel7.int (Postfix) with ESMTP id E74FADA736;
         Mon, 30 Mar 2020 02:37:18 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
@@ -32,15 +32,15 @@ Received: from 192.168.1.97 (192.168.1.97)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from salvia.here (unknown [90.77.255.23])
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 70F8542EF42A;
+        by entrada.int (Postfix) with ESMTPA id C18C142EF42A;
         Mon, 30 Mar 2020 02:37:18 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 08/26] netfilter: conntrack: Add missing annotations for nf_conntrack_all_lock() and nf_conntrack_all_unlock()
-Date:   Mon, 30 Mar 2020 02:36:50 +0200
-Message-Id: <20200330003708.54017-9-pablo@netfilter.org>
+Subject: [PATCH 09/26] ipvs: optimize tunnel dumps for icmp errors
+Date:   Mon, 30 Mar 2020 02:36:51 +0200
+Message-Id: <20200330003708.54017-10-pablo@netfilter.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20200330003708.54017-1-pablo@netfilter.org>
 References: <20200330003708.54017-1-pablo@netfilter.org>
@@ -50,45 +50,165 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jules Irenge <jbi.octave@gmail.com>
+From: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
 
-Sparse reports warnings at nf_conntrack_all_lock()
-	and nf_conntrack_all_unlock()
+After strip GRE/UDP tunnel header for icmp errors, it's better to show
+"GRE/UDP" instead of "IPIP" in debug message.
 
-warning: context imbalance in nf_conntrack_all_lock()
-	- wrong count at exit
-warning: context imbalance in nf_conntrack_all_unlock()
-	- unexpected unlock
-
-Add the missing __acquires(&nf_conntrack_locks_all_lock)
-Add missing __releases(&nf_conntrack_locks_all_lock)
-
-Signed-off-by: Jules Irenge <jbi.octave@gmail.com>
+Signed-off-by: Haishuang Yan <yanhaishuang@cmss.chinamobile.com>
+Acked-by: Julian Anastasov <ja@ssi.bg>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_conntrack_core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/netfilter/ipvs/ip_vs_core.c | 46 +++++++++++++++++++++++------------------
+ 1 file changed, 26 insertions(+), 20 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-index a18f8fe728e3..f82d4a802acc 100644
---- a/net/netfilter/nf_conntrack_core.c
-+++ b/net/netfilter/nf_conntrack_core.c
-@@ -143,6 +143,7 @@ static bool nf_conntrack_double_lock(struct net *net, unsigned int h1,
- }
+diff --git a/net/netfilter/ipvs/ip_vs_core.c b/net/netfilter/ipvs/ip_vs_core.c
+index 512259f579d7..d2ac530a9501 100644
+--- a/net/netfilter/ipvs/ip_vs_core.c
++++ b/net/netfilter/ipvs/ip_vs_core.c
+@@ -1661,8 +1661,9 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 	struct ip_vs_protocol *pp;
+ 	struct ip_vs_proto_data *pd;
+ 	unsigned int offset, offset2, ihl, verdict;
+-	bool ipip, new_cp = false;
++	bool tunnel, new_cp = false;
+ 	union nf_inet_addr *raddr;
++	char *outer_proto;
  
- static void nf_conntrack_all_lock(void)
-+	__acquires(&nf_conntrack_locks_all_lock)
- {
- 	int i;
+ 	*related = 1;
  
-@@ -162,6 +163,7 @@ static void nf_conntrack_all_lock(void)
- }
+@@ -1703,8 +1704,8 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 		return NF_ACCEPT; /* The packet looks wrong, ignore */
+ 	raddr = (union nf_inet_addr *)&cih->daddr;
  
- static void nf_conntrack_all_unlock(void)
-+	__releases(&nf_conntrack_locks_all_lock)
- {
- 	/* All prior stores must be complete before we clear
- 	 * 'nf_conntrack_locks_all'. Otherwise nf_conntrack_lock()
+-	/* Special case for errors for IPIP packets */
+-	ipip = false;
++	/* Special case for errors for IPIP/UDP/GRE tunnel packets */
++	tunnel = false;
+ 	if (cih->protocol == IPPROTO_IPIP) {
+ 		struct ip_vs_dest *dest;
+ 
+@@ -1721,7 +1722,8 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 		cih = skb_header_pointer(skb, offset, sizeof(_ciph), &_ciph);
+ 		if (cih == NULL)
+ 			return NF_ACCEPT; /* The packet looks wrong, ignore */
+-		ipip = true;
++		tunnel = true;
++		outer_proto = "IPIP";
+ 	} else if ((cih->protocol == IPPROTO_UDP ||	/* Can be UDP encap */
+ 		    cih->protocol == IPPROTO_GRE) &&	/* Can be GRE encap */
+ 		   /* Error for our tunnel must arrive at LOCAL_IN */
+@@ -1729,16 +1731,19 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 		__u8 iproto;
+ 		int ulen;
+ 
+-		/* Non-first fragment has no UDP header */
++		/* Non-first fragment has no UDP/GRE header */
+ 		if (unlikely(cih->frag_off & htons(IP_OFFSET)))
+ 			return NF_ACCEPT;
+ 		offset2 = offset + cih->ihl * 4;
+-		if (cih->protocol == IPPROTO_UDP)
++		if (cih->protocol == IPPROTO_UDP) {
+ 			ulen = ipvs_udp_decap(ipvs, skb, offset2, AF_INET,
+ 					      raddr, &iproto);
+-		else
++			outer_proto = "UDP";
++		} else {
+ 			ulen = ipvs_gre_decap(ipvs, skb, offset2, AF_INET,
+ 					      raddr, &iproto);
++			outer_proto = "GRE";
++		}
+ 		if (ulen > 0) {
+ 			/* Skip IP and UDP/GRE tunnel headers */
+ 			offset = offset2 + ulen;
+@@ -1747,7 +1752,7 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 						 &_ciph);
+ 			if (cih && cih->version == 4 && cih->ihl >= 5 &&
+ 			    iproto == IPPROTO_IPIP)
+-				ipip = true;
++				tunnel = true;
+ 			else
+ 				return NF_ACCEPT;
+ 		}
+@@ -1767,11 +1772,11 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 		      "Checking incoming ICMP for");
+ 
+ 	offset2 = offset;
+-	ip_vs_fill_iph_skb_icmp(AF_INET, skb, offset, !ipip, &ciph);
++	ip_vs_fill_iph_skb_icmp(AF_INET, skb, offset, !tunnel, &ciph);
+ 	offset = ciph.len;
+ 
+ 	/* The embedded headers contain source and dest in reverse order.
+-	 * For IPIP this is error for request, not for reply.
++	 * For IPIP/UDP/GRE tunnel this is error for request, not for reply.
+ 	 */
+ 	cp = INDIRECT_CALL_1(pp->conn_in_get, ip_vs_conn_in_get_proto,
+ 			     ipvs, AF_INET, skb, &ciph);
+@@ -1779,7 +1784,7 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 	if (!cp) {
+ 		int v;
+ 
+-		if (ipip || !sysctl_schedule_icmp(ipvs))
++		if (tunnel || !sysctl_schedule_icmp(ipvs))
+ 			return NF_ACCEPT;
+ 
+ 		if (!ip_vs_try_to_schedule(ipvs, AF_INET, skb, pd, &v, &cp, &ciph))
+@@ -1797,7 +1802,7 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 		goto out;
+ 	}
+ 
+-	if (ipip) {
++	if (tunnel) {
+ 		__be32 info = ic->un.gateway;
+ 		__u8 type = ic->type;
+ 		__u8 code = ic->code;
+@@ -1809,17 +1814,18 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 			u32 mtu = ntohs(ic->un.frag.mtu);
+ 			__be16 frag_off = cih->frag_off;
+ 
+-			/* Strip outer IP and ICMP, go to IPIP header */
++			/* Strip outer IP and ICMP, go to IPIP/UDP/GRE header */
+ 			if (pskb_pull(skb, ihl + sizeof(_icmph)) == NULL)
+-				goto ignore_ipip;
++				goto ignore_tunnel;
+ 			offset2 -= ihl + sizeof(_icmph);
+ 			skb_reset_network_header(skb);
+-			IP_VS_DBG(12, "ICMP for IPIP %pI4->%pI4: mtu=%u\n",
+-				&ip_hdr(skb)->saddr, &ip_hdr(skb)->daddr, mtu);
++			IP_VS_DBG(12, "ICMP for %s %pI4->%pI4: mtu=%u\n",
++				  outer_proto, &ip_hdr(skb)->saddr,
++				  &ip_hdr(skb)->daddr, mtu);
+ 			ipv4_update_pmtu(skb, ipvs->net, mtu, 0, 0);
+ 			/* Client uses PMTUD? */
+ 			if (!(frag_off & htons(IP_DF)))
+-				goto ignore_ipip;
++				goto ignore_tunnel;
+ 			/* Prefer the resulting PMTU */
+ 			if (dest) {
+ 				struct ip_vs_dest_dst *dest_dst;
+@@ -1832,11 +1838,11 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 				mtu -= sizeof(struct iphdr);
+ 			info = htonl(mtu);
+ 		}
+-		/* Strip outer IP, ICMP and IPIP, go to IP header of
++		/* Strip outer IP, ICMP and IPIP/UDP/GRE, go to IP header of
+ 		 * original request.
+ 		 */
+ 		if (pskb_pull(skb, offset2) == NULL)
+-			goto ignore_ipip;
++			goto ignore_tunnel;
+ 		skb_reset_network_header(skb);
+ 		IP_VS_DBG(12, "Sending ICMP for %pI4->%pI4: t=%u, c=%u, i=%u\n",
+ 			&ip_hdr(skb)->saddr, &ip_hdr(skb)->daddr,
+@@ -1845,7 +1851,7 @@ ip_vs_in_icmp(struct netns_ipvs *ipvs, struct sk_buff *skb, int *related,
+ 		/* ICMP can be shorter but anyways, account it */
+ 		ip_vs_out_stats(cp, skb);
+ 
+-ignore_ipip:
++ignore_tunnel:
+ 		consume_skb(skb);
+ 		verdict = NF_STOLEN;
+ 		goto out;
 -- 
 2.11.0
 
