@@ -2,121 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE30D197BEE
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 14:34:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B95BA197BFB
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 14:36:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730176AbgC3Met (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 08:34:49 -0400
-Received: from forwardcorp1p.mail.yandex.net ([77.88.29.217]:54140 "EHLO
-        forwardcorp1p.mail.yandex.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729972AbgC3Mes (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 08:34:48 -0400
-Received: from mxbackcorp2j.mail.yandex.net (mxbackcorp2j.mail.yandex.net [IPv6:2a02:6b8:0:1619::119])
-        by forwardcorp1p.mail.yandex.net (Yandex) with ESMTP id 8742C2E145B;
-        Mon, 30 Mar 2020 15:34:45 +0300 (MSK)
-Received: from vla5-58875c36c028.qloud-c.yandex.net (vla5-58875c36c028.qloud-c.yandex.net [2a02:6b8:c18:340b:0:640:5887:5c36])
-        by mxbackcorp2j.mail.yandex.net (mxbackcorp/Yandex) with ESMTP id sJNm8W33zB-Yi88MPBg;
-        Mon, 30 Mar 2020 15:34:45 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex-team.ru; s=default;
-        t=1585571685; bh=D5hxrkeuTPe28Dn+5LHGq2bHTkYTYq7ip7aP/kwuLUs=;
-        h=In-Reply-To:Message-ID:From:Date:References:To:Subject:Cc;
-        b=Nc8A4MU+qyUgcau0J2Rhiah8ciSKAmxmltKPrmXaI9XBeSxcDYmzov9lXem7X8JLU
-         DQuJuP0VkM65p/W/+/iyOg1KprQzda/kYVrxTVMN0HKTP8ynGBU1Yuq7QVs7wSQLoY
-         OE9cjBNh+ezy2FrxJfp/ioA7EWBw3KIRhigqwvug=
-Authentication-Results: mxbackcorp2j.mail.yandex.net; dkim=pass header.i=@yandex-team.ru
-Received: from unknown (unknown [2a02:6b8:b080:8617::1:1])
-        by vla5-58875c36c028.qloud-c.yandex.net (smtpcorp/Yandex) with ESMTPSA id 7cEwYPC9vo-YiX8sWrY;
-        Mon, 30 Mar 2020 15:34:44 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-Subject: Re: [PATCH v2 net] inet_diag: add cgroup id attribute
-To:     Dmitry Yakunin <zeil@yandex-team.ru>, davem@davemloft.net,
-        netdev@vger.kernel.org
-References: <20200330113803.GA19490@yandex-team.ru>
-From:   Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
-Cc:     cgroups@vger.kernel.org, bpf@vger.kernel.org
-Message-ID: <e343dd4f-4ac7-90ba-29cd-bb01721ee613@yandex-team.ru>
-Date:   Mon, 30 Mar 2020 15:34:44 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1730210AbgC3Mgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 08:36:50 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:46887 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730206AbgC3Mgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 08:36:49 -0400
+Received: by mail-wr1-f65.google.com with SMTP id j17so21336295wru.13
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 05:36:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=6AzsbaBnXkz3OM6AFQR1SIwxBjyJjyhL1gvcLvlX+dM=;
+        b=ehHIojfLGZbyT9i2WqLm2jRTzwrDiK2QRzCvCZ+a7rHJyHx42Bz8FC7OOdKXzU14nu
+         ZbM6cvcB9TO/QGGc7RjDfafcnGolxGalFgnIM6p7fwFdLYTy0+8uTsI0iWho/f40b08E
+         pPH+O9V9BOKkxeKz4QEY8ixAfnscA3wlWib8rZ/36tfuYb86b3LayJBQWscfVK4S0OOF
+         hJRfPiN/ymMmgp0t1tqUZnxIdUQyyHEmZBWN8mF0/DP/IgMBUKmW7YobxmZE9tFyfUBR
+         0BpuJhwvQVOo5OwTr4pqfyoCTPXejVHOF0qYdO1AkqJjtm+JwVZwyoLQiMAHyeFDc85f
+         TtdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=6AzsbaBnXkz3OM6AFQR1SIwxBjyJjyhL1gvcLvlX+dM=;
+        b=sNhnhNTImnSAh6QO6h7vVN5+YMZtsZkt0yLo/s9iyP7CAmZwfG4GulRc27cGPkGAxt
+         vFETRwtdrfxkj8c16gOC15EhQSvH2sdv4qCNF346UDfO/YdfUK6eMsCw2oS0qzpkhpDA
+         ptmID/6UnF2G4hwKpt+P45lVjobzKJP5cb/Zz06xF1PBDNwcOhmbH5WWYoNAXu45/851
+         HduumYjiz2J94r+PR2pY2W7o2JK/trogv+OXVkBq+nAtvIUvrQbLyKsq0JsRAeVbGMZA
+         IqNsZAIVdktCytoPFhuAi+67hPMtL7PxojhawZjjLhPENPDTAMDZBReqsvcWcnVFCnjD
+         fawA==
+X-Gm-Message-State: ANhLgQ0LymecwK2QavBADIwEaVYX9/6nOim7BO/j6xSnubHOMsUx8Vyq
+        cm2k+frMTQ+WTFdARRbKXtBtLtWwSRZXmjDOlyY=
+X-Google-Smtp-Source: ADFU+vuNAs/43gDfSu7j63t3O8i0zFFoC9ShSO4sC03Zjj8ZOJK3eAKWpOGe30sbt/Pd+WTbxGjzgSWovwnH8JrBGGw=
+X-Received: by 2002:adf:efc2:: with SMTP id i2mr14418929wrp.420.1585571807582;
+ Mon, 30 Mar 2020 05:36:47 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200330113803.GA19490@yandex-team.ru>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-CA
-Content-Transfer-Encoding: 7bit
+Received: by 2002:a05:6000:10d1:0:0:0:0 with HTTP; Mon, 30 Mar 2020 05:36:46
+ -0700 (PDT)
+Reply-To: robertandersonhappy1@gmail.com
+From:   robert <komulaufue@gmail.com>
+Date:   Mon, 30 Mar 2020 05:36:46 -0700
+Message-ID: <CAD9mmad4Rb_huBUq28yXisWFkHC+WSUEZ35OOxXJbU1_uObF=w@mail.gmail.com>
+Subject: ok
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/03/2020 14.38, Dmitry Yakunin wrote:
-> This patch adds cgroup v2 id to common inet diag message attributes.
-> This allows investigate sockets on per cgroup basis when
-> net_cls/net_prio cgroup not used.
-
-After second thought:
-Option CONFIG_SOCK_CGROUP_DATA are not directly enabled in config.
-It's selected by CONFIG_CGROUP_BPF or legacy CGROUP_NET_CLASSID/PRIO.
-
-So, it would be more clear to put this code under ifdef CONFIG_CGROUP_BPF.
-Because it exposes cgroup2 id and has nothing to do with legacy cgroups.
-
-+CC cgroups@vger.kernel.org and bpf@vger.kernel.org
-
-> 
-> Signed-off-by: Dmitry Yakunin <zeil@yandex-team.ru>
-> Reviewed-by: Konstantin Khlebnikov <khlebnikov@yandex-team.ru>
-> ---
->   include/linux/inet_diag.h      | 6 +++++-
->   include/uapi/linux/inet_diag.h | 1 +
->   net/ipv4/inet_diag.c           | 7 +++++++
->   3 files changed, 13 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/inet_diag.h b/include/linux/inet_diag.h
-> index c91cf2d..8bc5e7d 100644
-> --- a/include/linux/inet_diag.h
-> +++ b/include/linux/inet_diag.h
-> @@ -66,7 +66,11 @@ static inline size_t inet_diag_msg_attrs_size(void)
->   		+ nla_total_size(1)  /* INET_DIAG_SKV6ONLY */
->   #endif
->   		+ nla_total_size(4)  /* INET_DIAG_MARK */
-> -		+ nla_total_size(4); /* INET_DIAG_CLASS_ID */
-> +		+ nla_total_size(4)  /* INET_DIAG_CLASS_ID */
-> +#ifdef CONFIG_SOCK_CGROUP_DATA
-> +		+ nla_total_size(8)  /* INET_DIAG_CGROUP_ID */
-> +#endif
-> +		;
->   }
->   int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
->   			     struct inet_diag_msg *r, int ext,
-> diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
-> index a1ff345..dc87ad6 100644
-> --- a/include/uapi/linux/inet_diag.h
-> +++ b/include/uapi/linux/inet_diag.h
-> @@ -154,6 +154,7 @@ enum {
->   	INET_DIAG_CLASS_ID,	/* request as INET_DIAG_TCLASS */
->   	INET_DIAG_MD5SIG,
->   	INET_DIAG_ULP_INFO,
-> +	INET_DIAG_CGROUP_ID,
->   	__INET_DIAG_MAX,
->   };
->   
-> diff --git a/net/ipv4/inet_diag.c b/net/ipv4/inet_diag.c
-> index 8c83775..ba0bb14 100644
-> --- a/net/ipv4/inet_diag.c
-> +++ b/net/ipv4/inet_diag.c
-> @@ -161,6 +161,13 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
->   			goto errout;
->   	}
->   
-> +#ifdef CONFIG_SOCK_CGROUP_DATA
-> +	if (nla_put_u64_64bit(skb, INET_DIAG_CGROUP_ID,
-> +			      cgroup_id(sock_cgroup_ptr(&sk->sk_cgrp_data)),
-> +			      INET_DIAG_PAD))
-> +		goto errout;
-> +#endif
-> +
->   	r->idiag_uid = from_kuid_munged(user_ns, sock_i_uid(sk));
->   	r->idiag_inode = sock_i_ino(sk);
->   
-> 
+Querido amigo,
+Meu nome =C3=A9 Bar.robert anderson Eu sou advogado e particular
+gerente de conta para meu cliente atrasado. No ano de 2015, meu
+cliente pelo nome
+Sr. Carlos, faleceu. A raz=C3=A3o pela qual eu entrei em contato com voc=C3=
+=AA =C3=A9
+porque voc=C3=AA
+tem o mesmo sobrenome do falecido, e posso apresent=C3=A1-lo como
+o benefici=C3=A1rio e parente pr=C3=B3ximo aos meus fundos de clientes
+atrasados, ent=C3=A3o voc=C3=AA vai
+permanecer como seu parente mais pr=C3=B3ximo e reivindicar os fundos.
+deixando para tr=C3=A1s um dinheiro
+heran=C3=A7a de sete milh=C3=B5es quinhentos mil Estados Unidos
+(US $ 7.500.000,00). Meu cliente e amigo =C3=ADntimo falecido cresceu em
+um "lar de beb=C3=AAs sem m=C3=A3e". Ele n=C3=A3o tinha fam=C3=ADlia, nem b=
+enefici=C3=A1rio nem pr=C3=B3ximo
+parentes dos Fundos de heran=C3=A7a deixados para tr=C3=A1s no Banco.
+Voc=C3=AA deve entrar em contato comigo atrav=C3=A9s do meu endere=C3=A7o d=
+e e-mail particular:
+robertandersonhappy1@gmail.com
+Cumprimentos,
+Barra. Robert Anderson
