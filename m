@@ -2,96 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5882D198400
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 21:13:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E673C198416
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 21:22:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727311AbgC3TNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 15:13:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54438 "EHLO mail.kernel.org"
+        id S1728261AbgC3TWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 15:22:00 -0400
+Received: from correo.us.es ([193.147.175.20]:48398 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726672AbgC3TNS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 15:13:18 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 60C2B2072E;
-        Mon, 30 Mar 2020 19:13:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585595598;
-        bh=k9g75cWLnq62Gi6U85TDorD1nKRBDEkWzmujdirngzI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nqZ0yiMRdRrTlNQpXh7wJjt+p9rDdoS6bY/FuBsKXMJEn8VwISWxEU+5tdD21l7k6
-         f8IejKIU4SvRmqfSkG//8icLwnzFSiiheyv367OzGhZ7XN0PPwNmQOoZsROocvgPoS
-         hL7QhLB9PJaCBzNSd5hLIecDfAOr9JrpeRQMv07I=
-Date:   Mon, 30 Mar 2020 12:13:15 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
-        <toke@redhat.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        "Lorenz Bauer" <lmb@cloudflare.com>, Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
- program when attaching XDP
-Message-ID: <20200330121315.38349e95@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <53515939-00bb-174c-bc55-f90eaceac2a3@solarflare.com>
-References: <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
-        <87tv2e10ly.fsf@toke.dk>
-        <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
-        <87369wrcyv.fsf@toke.dk>
-        <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
-        <87pncznvjy.fsf@toke.dk>
-        <20200326195859.u6inotgrm3ubw5bx@ast-mbp>
-        <87imiqm27d.fsf@toke.dk>
-        <20200327230047.ois5esl35s63qorj@ast-mbp>
-        <87lfnll0eh.fsf@toke.dk>
-        <20200328022609.zfupojim7see5cqx@ast-mbp>
-        <87eetcl1e3.fsf@toke.dk>
-        <CAEf4Bzb+GSf8cE_rutiaeZOtAuUick1+RnkCBU=Z+oY_36ArSA@mail.gmail.com>
-        <53515939-00bb-174c-bc55-f90eaceac2a3@solarflare.com>
+        id S1726923AbgC3TV7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 15:21:59 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id B620EFFB78
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 21:21:56 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A2BF7114D73
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 21:21:56 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 16213DA3C2; Mon, 30 Mar 2020 21:21:41 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 99A8F2067E;
+        Mon, 30 Mar 2020 21:21:39 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 30 Mar 2020 21:21:39 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [90.77.255.23])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 6F88D42EF4E0;
+        Mon, 30 Mar 2020 21:21:39 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 00/28] Netfilter/IPVS updates for net-next
+Date:   Mon, 30 Mar 2020 21:21:08 +0200
+Message-Id: <20200330192136.230459-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Mar 2020 16:41:46 +0100 Edward Cree wrote:
-> On 29/03/2020 21:23, Andrii Nakryiko wrote:
-> > But you can't say the same about other XDP applications that do not
-> > use libxdp. So will your library come with a huge warning =20
-> What about a system-wide policy switch to decide whether replacing/
-> =C2=A0removing an XDP program without EXPECTED_FD is allowed?=C2=A0 That =
-way
-> =C2=A0the sysadmin gets to choose whether it's the firewall or the packet
-> =C2=A0analyser that breaks, rather than baking a policy into the design.
-> Then libxdp just needs to say in the README "you might want to turn
-> =C2=A0on this switch".=C2=A0 Or maybe it defaults to on, and the other pr=
-ogram
-> =C2=A0has to talk you into turning it off if it wants to be 'ill-behaved'.
-> Either way, affected users will be driven to the kernel's
-> =C2=A0documentation for the policy switch, where we can tell them whatever
-> =C2=A0we think they need to know.
+Hello David,
 
-I had the same thought. But then again all samples specify IF_NOEXIST
-AFAICS, and users will file bugs for replacing other apps. IMHO it's
-kind of a responsibility of the distro to make sure that apps it packages
-don't break each other.=20
+The following patchset contains Netfilter/IPVS updates for net-next:
 
-The mechanism to be well behaved exists, it's the sad reality of
-backward compatibility that we can't just make it enforced by default
-(IF_NOEXIST vs ALLOW_REPLACE).
+1) Add support to specify a stateful expression in set definitions,
+   this allows users to specify e.g. counters per set elements.
 
-So adding a knob seems perfectly reasonable, but perhaps we should see
-one or two examples of apps actually getting it wrong before adding a
-knob?
+2) Flowtable software counter support.
+
+3) Flowtable hardware offload counter support, from wenxu.
+
+3) Parallelize flowtable hardware offload requests, from Paul Blakey.
+   This includes a patch to add one work entry per offload command.
+
+4) Several patches to rework nf_queue refcount handling, from Florian
+   Westphal.
+
+4) A few fixes for the flowtable tunnel offload: Fix crash if tunneling
+   information is missing and set up indirect flow block as TC_SETUP_FT,
+   patch from wenxu.
+
+5) Stricter netlink attribute sanity check on filters, from Romain Bellan
+   and Florent Fourcot.
+
+5) Annotations to make sparse happy, from Jules Irenge.
+
+6) Improve icmp errors in debugging information, from Haishuang Yan.
+
+7) Fix warning in IPVS icmp error debugging, from Haishuang Yan.
+
+8) Fix endianess issue in tcp extension header, from Sergey Marinkevich.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+Thank you.
+
+----------------------------------------------------------------
+
+The following changes since commit 79e28519ac78dde6d38fe6ea22286af574f5c7db:
+
+  Merge tag 'mlx5-updates-2020-03-17' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux (2020-03-18 19:13:37 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to e19680f8347ec0e335ae90801fbe42d85d7b385a:
+
+  ipvs: fix uninitialized variable warning (2020-03-30 21:17:53 +0200)
+
+----------------------------------------------------------------
+Florian Westphal (4):
+      netfilter: nf_queue: make nf_queue_entry_release_refs static
+      netfilter: nf_queue: place bridge physports into queue_entry struct
+      netfilter: nf_queue: do not release refcouts until nf_reinject is done
+      netfilter: nf_queue: prefer nf_queue_entry_free
+
+Haishuang Yan (2):
+      ipvs: optimize tunnel dumps for icmp errors
+      ipvs: fix uninitialized variable warning
+
+Jules Irenge (2):
+      netfilter: ctnetlink: Add missing annotation for ctnetlink_parse_nat_setup()
+      netfilter: conntrack: Add missing annotations for nf_conntrack_all_lock() and nf_conntrack_all_unlock()
+
+Pablo Neira Ayuso (11):
+      netfilter: nf_tables: move nft_expr_clone() to nf_tables_api.c
+      netfilter: nf_tables: pass context to nft_set_destroy()
+      netfilter: nf_tables: allow to specify stateful expression in set definition
+      netfilter: nf_tables: fix double-free on set expression from the error path
+      netfilter: nf_tables: add nft_set_elem_expr_destroy() and use it
+      netfilter: conntrack: export nf_ct_acct_update()
+      netfilter: nf_tables: add enum nft_flowtable_flags to uapi
+      netfilter: flowtable: add counter support
+      netfilter: nft_set_bitmap: initialize set element extension in lookups
+      netfilter: nft_dynset: validate set expression definition
+      netfilter: nf_tables: skip set types that do not support for expressions
+
+Paul Blakey (2):
+      netfilter: flowtable: Use rw sem as flow block lock
+      netfilter: flowtable: Use work entry per offload command
+
+Qian Cai (1):
+      netfilter: nf_tables: silence a RCU-list warning in nft_table_lookup()
+
+Romain Bellan (1):
+      netfilter: ctnetlink: be more strict when NF_CONNTRACK_MARK is not set
+
+Sergey Marinkevich (1):
+      netfilter: nft_exthdr: fix endianness of tcp option cast
+
+wenxu (4):
+      netfilter: flowtable: fix NULL pointer dereference in tunnel offload support
+      netfilter: flowtable: Fix incorrect tc_setup_type type
+      netfilter: conntrack: add nf_ct_acct_add()
+      netfilter: flowtable: add counter support in HW offload
+
+ include/net/flow_offload.h                |   3 +-
+ include/net/netfilter/nf_conntrack_acct.h |  11 +++
+ include/net/netfilter/nf_flow_table.h     |   5 +-
+ include/net/netfilter/nf_queue.h          |   7 +-
+ include/net/netfilter/nf_tables.h         |   5 ++
+ include/uapi/linux/netfilter/nf_tables.h  |  15 ++++
+ net/core/flow_offload.c                   |   6 +-
+ net/netfilter/ipvs/ip_vs_core.c           |  45 ++++++-----
+ net/netfilter/nf_conntrack_core.c         |  18 +++--
+ net/netfilter/nf_conntrack_netlink.c      |   3 +-
+ net/netfilter/nf_flow_table_core.c        |  11 ++-
+ net/netfilter/nf_flow_table_ip.c          |   7 ++
+ net/netfilter/nf_flow_table_offload.c     |  70 ++++++++---------
+ net/netfilter/nf_queue.c                  |  96 ++++++++++-------------
+ net/netfilter/nf_tables_api.c             | 125 +++++++++++++++++++++++-------
+ net/netfilter/nf_tables_offload.c         |   2 +-
+ net/netfilter/nfnetlink_queue.c           |  10 +--
+ net/netfilter/nft_dynset.c                |  26 ++-----
+ net/netfilter/nft_exthdr.c                |   8 +-
+ net/netfilter/nft_set_bitmap.c            |   3 +
+ net/sched/cls_api.c                       |   2 +-
+ 21 files changed, 280 insertions(+), 198 deletions(-)
