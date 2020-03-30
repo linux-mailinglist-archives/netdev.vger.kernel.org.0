@@ -2,255 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D43E619869A
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 23:35:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 763621986A1
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 23:36:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729019AbgC3VfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 17:35:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34300 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728540AbgC3VfQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 17:35:16 -0400
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BF1E8206CC;
-        Mon, 30 Mar 2020 21:35:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585604114;
-        bh=smx635GZQmL6ODRcoLVRN8tOVcugBxrvfCvamj/YcFE=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=TJKTNGpiOz2YLtjhr6KEI+vsy8rg1euHWh0uznilkVL85CZGX3ublL1sKFTfEy+Xr
-         EK7bYOAH6hFC4dZg15/ZpwyU5WYZwyH9cz5B0egHzKQAuMtym3l6nLVoC0paBnvb5q
-         m/n7qmtrXYMkxZWQfpeRKvbj4XZ8m06GozjHpn9I=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 94E9435229BC; Mon, 30 Mar 2020 14:35:14 -0700 (PDT)
-Date:   Mon, 30 Mar 2020 14:35:14 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [Patch net] net_sched: add a temporary refcnt for struct
- tcindex_data
-Message-ID: <20200330213514.GT19865@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200328191259.17145-1-xiyou.wangcong@gmail.com>
+        id S1729129AbgC3VgP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 17:36:15 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:39561 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728778AbgC3VgP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 17:36:15 -0400
+Received: by mail-pf1-f193.google.com with SMTP id k15so4130515pfh.6;
+        Mon, 30 Mar 2020 14:36:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=6C9Ps4Wgq4kpMvAE3jfBU4O8xK980w/qbm+iImGeZEc=;
+        b=dvGIIskpU25uN803kj01H8RRSqYc0iawZL5jHOwKlNcR3JmHOESAh2O5oauG3h2WU1
+         mzRxeGK+gpMC6xWFXAjf9w8ueJX20QjscBMDt8qZKnGGM0xwJx89K5yhiCP+izbKLI4O
+         FyrEAUlFDWi8N/ek2TBa8M95Uz5Iui048f3BEjvcCwXpsHN87gAoLZGSRlTc8UyxLixh
+         JZ6FzgMvVKdw/IMPK0986kZAobNKe/b4R1hxnrL5bXMLz7jDcurx1ZzFkesoQqXBTOuK
+         F0SEUxXzzaIXfU+ZX0R5tJ1Awz8jdZmNFZp7h7tvMefBIJ+VGDLzPeAJNfB+YFlIi1tM
+         1Tjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=6C9Ps4Wgq4kpMvAE3jfBU4O8xK980w/qbm+iImGeZEc=;
+        b=L4xJgw0yblRoQttCmd1mJiQBot2X6HQYraiHkbg18+LL8SuPpQ/B21knwNZu8/d4x3
+         p8kA523Lh8pLfz0VvJY3kpnp8ONZ8sFhnRxmyHRyOTwsUiJPq0ZzWCSS0b7lHkHIq/gg
+         y4/SfzzSCkBMqlQcOOS7PzIW2iuM6wM8xV2Q/A5HDa3P4HPc2iToKKh+KklVUg/wd/sl
+         G2kaobpP/cSortlquJ0fOXbFn5LGz8RULHtEaqvlSLiXLPPIadDMjCOFicMktHv80t03
+         lrqMfsOMOaBKs4ioy2uEKFCO6QulzjsjqPmGDuaOjzHnYR9pk3eilHgDqvmk5IOjt9/5
+         PQVw==
+X-Gm-Message-State: ANhLgQ06PnMevcFYt03Vzw+KpChkK8LOa9UpCPFuLZihfPsSd3YI4VgO
+        7ewU/VNRGzCZSr6lSVew+AU=
+X-Google-Smtp-Source: ADFU+vvB3owtXBll5S+Ftwoeah3bPeYQjHAzlZ3m123k0zzWZ92leCNqd5N5it4s3Fm/ufS+QWHnJQ==
+X-Received: by 2002:a63:3e87:: with SMTP id l129mr14256385pga.270.1585604172446;
+        Mon, 30 Mar 2020 14:36:12 -0700 (PDT)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id r186sm11069966pfc.181.2020.03.30.14.36.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 30 Mar 2020 14:36:11 -0700 (PDT)
+Subject: [bpf-next PATCH v2 0/7] ALU32 bounds tracking support
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     ecree@solarflare.com, yhs@fb.com, alexei.starovoitov@gmail.com,
+        daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        john.fastabend@gmail.com
+Date:   Mon, 30 Mar 2020 14:35:59 -0700
+Message-ID: <158560409224.10843.3588655801186916301.stgit@john-Precision-5820-Tower>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200328191259.17145-1-xiyou.wangcong@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 28, 2020 at 12:12:59PM -0700, Cong Wang wrote:
-> Although we intentionally use an ordered workqueue for all tc
-> filter works, the ordering is not guaranteed by RCU work,
-> given that tcf_queue_work() is esstenially a call_rcu().
-> 
-> This problem is demostrated by Thomas:
-> 
->   CPU 0:
->     tcf_queue_work()
->       tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
-> 
->   -> Migration to CPU 1
-> 
->   CPU 1:
->      tcf_queue_work(&p->rwork, tcindex_destroy_work);
-> 
-> so the 2nd work could be queued before the 1st one, which leads
-> to a free-after-free.
-> 
-> Enforcing this order in RCU work is hard as it requires to change
-> RCU code too. Fortunately we can workaround this problem in tcindex
-> filter by taking a temporary refcnt, we only refcnt it right before
-> we begin to destroy it. This simplifies the code a lot as a full
-> refcnt requires much more changes in tcindex_set_parms().
-> 
-> Reported-by: syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com
-> Fixes: 3d210534cc93 ("net_sched: fix a race condition in tcindex_destroy()")
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Paul E. McKenney <paulmck@kernel.org>
-> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> Cc: Jiri Pirko <jiri@resnulli.us>
-> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+This series adds ALU32 signed and unsigned min/max bounds.
 
-Looks plausible, but what did you do to verify that the structures
-were in fact being freed?  See below for more detail.
+The origins of this work is to fix do_refine_retval_range() which before
+this series clamps the return value bounds to [0, max]. However, this
+is not correct because its possible these functions may return negative
+errors so the correct bound is [*MIN, max]. Where *MIN is the signed
+and unsigned min values U64_MIN and S64_MIN. And 'max' here is the max
+positive value returned by this routine.
 
-							Thanx, Paul
+Patch 1 changes the do_refine_retval_range() to return the correct bounds
+but this breaks existing programs that were depending on the old incorrect
+bound. To repair these old programs we add ALU32 bounds to properly track
+the return values from these helpers. The ALU32 bounds are needed because
+clang realizes these helepers return 'int' type and will use jmp32 ops
+with the return value.  With current state of things this does little to
+help 64bit bounds and with patch 1 applied will cause many programs to
+fail verifier pass. See patch 5 for trace details on how this happens.
+ 
+Patch 2 does the ALU32 addition it adds the new bounds and populates them
+through the verifier. Design note, initially a var32 was added but as
+pointed out by Alexei and Edward it is not strictly needed so it was
+removed here. This worked out nicely.
 
-> ---
->  net/sched/cls_tcindex.c | 44 +++++++++++++++++++++++++++++++++++------
->  1 file changed, 38 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-> index 9904299424a1..065345832a69 100644
-> --- a/net/sched/cls_tcindex.c
-> +++ b/net/sched/cls_tcindex.c
-> @@ -11,6 +11,7 @@
->  #include <linux/skbuff.h>
->  #include <linux/errno.h>
->  #include <linux/slab.h>
-> +#include <linux/refcount.h>
->  #include <net/act_api.h>
->  #include <net/netlink.h>
->  #include <net/pkt_cls.h>
-> @@ -26,9 +27,12 @@
->  #define DEFAULT_HASH_SIZE	64	/* optimized for diffserv */
->  
->  
-> +struct tcindex_data;
-> +
->  struct tcindex_filter_result {
->  	struct tcf_exts		exts;
->  	struct tcf_result	res;
-> +	struct tcindex_data	*p;
->  	struct rcu_work		rwork;
->  };
->  
-> @@ -49,6 +53,7 @@ struct tcindex_data {
->  	u32 hash;		/* hash table size; 0 if undefined */
->  	u32 alloc_hash;		/* allocated size */
->  	u32 fall_through;	/* 0: only classify if explicit match */
-> +	refcount_t refcnt;	/* a temporary refcnt for perfect hash */
->  	struct rcu_work rwork;
->  };
->  
-> @@ -57,6 +62,20 @@ static inline int tcindex_filter_is_set(struct tcindex_filter_result *r)
->  	return tcf_exts_has_actions(&r->exts) || r->res.classid;
->  }
->  
-> +static void tcindex_data_get(struct tcindex_data *p)
-> +{
-> +	refcount_inc(&p->refcnt);
-> +}
-> +
-> +static void tcindex_data_put(struct tcindex_data *p)
-> +{
-> +	if (refcount_dec_and_test(&p->refcnt)) {
-> +		kfree(p->perfect);
-> +		kfree(p->h);
-> +		kfree(p);
-> +	}
-> +}
-> +
->  static struct tcindex_filter_result *tcindex_lookup(struct tcindex_data *p,
->  						    u16 key)
->  {
-> @@ -141,6 +160,7 @@ static void __tcindex_destroy_rexts(struct tcindex_filter_result *r)
->  {
->  	tcf_exts_destroy(&r->exts);
->  	tcf_exts_put_net(&r->exts);
-> +	tcindex_data_put(r->p);
->  }
->  
->  static void tcindex_destroy_rexts_work(struct work_struct *work)
-> @@ -212,6 +232,8 @@ static int tcindex_delete(struct tcf_proto *tp, void *arg, bool *last,
->  		else
->  			__tcindex_destroy_fexts(f);
->  	} else {
-> +		tcindex_data_get(p);
+Patch 3 notes that the refine return value can now also bound the 32-bit
+subregister allowing better bouinds tracking in these cases.
 
-Good!  You need this one to prevent the counter prematurely reaching zero.
+Patches 4 adds a C test case to test_progs which will cause the verifier
+to fail if new 32bit and do_refine_retval_range() is incorrect.
 
-> +
->  		if (tcf_exts_get_net(&r->exts))
->  			tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
->  		else
-> @@ -228,9 +250,7 @@ static void tcindex_destroy_work(struct work_struct *work)
->  					      struct tcindex_data,
->  					      rwork);
->  
-> -	kfree(p->perfect);
-> -	kfree(p->h);
-> -	kfree(p);
-> +	tcindex_data_put(p);
+Patches 5 and 6 fix test cases that broke after refining the return
+values from helpers. I attempted to be explicit about each failure and
+why we need the change. See patches for details.
 
-But what did you do to verify that the counter actually reaches zero?
+Patch 7 adds some bounds check tests to ensure bounds checking when
+mixing alu32, alu64 and jmp32 ops together.
 
->  }
->  
->  static inline int
-> @@ -248,9 +268,11 @@ static const struct nla_policy tcindex_policy[TCA_TCINDEX_MAX + 1] = {
->  };
->  
->  static int tcindex_filter_result_init(struct tcindex_filter_result *r,
-> +				      struct tcindex_data *p,
->  				      struct net *net)
->  {
->  	memset(r, 0, sizeof(*r));
-> +	r->p = p;
->  	return tcf_exts_init(&r->exts, net, TCA_TCINDEX_ACT,
->  			     TCA_TCINDEX_POLICE);
->  }
-> @@ -290,6 +312,7 @@ static int tcindex_alloc_perfect_hash(struct net *net, struct tcindex_data *cp)
->  				    TCA_TCINDEX_ACT, TCA_TCINDEX_POLICE);
->  		if (err < 0)
->  			goto errout;
-> +		cp->perfect[i].p = cp;
->  	}
->  
->  	return 0;
-> @@ -334,6 +357,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
->  	cp->alloc_hash = p->alloc_hash;
->  	cp->fall_through = p->fall_through;
->  	cp->tp = tp;
-> +	refcount_set(&cp->refcnt, 1); /* Paired with tcindex_destroy_work() */
+Thanks to Alexei, Edward, and Daniel for initial feedback it helped clean
+this up a lot.
 
-The bit about checking that the counter reaches zero is underscored by the
-apparent initialization to the value 1.
+v2:
+  - rebased to bpf-next
+  - fixed tnum equals optimization for combining 32->64bits
+  - updated patch to fix verifier test correctly
+  - updated refine_retval_range to set both s32_*_value and s*_value we
+    need both to get better bounds tracking
 
->  	if (tb[TCA_TCINDEX_HASH])
->  		cp->hash = nla_get_u32(tb[TCA_TCINDEX_HASH]);
-> @@ -366,7 +390,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
->  	}
->  	cp->h = p->h;
->  
-> -	err = tcindex_filter_result_init(&new_filter_result, net);
-> +	err = tcindex_filter_result_init(&new_filter_result, cp, net);
->  	if (err < 0)
->  		goto errout_alloc;
->  	if (old_r)
-> @@ -434,7 +458,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
->  			goto errout_alloc;
->  		f->key = handle;
->  		f->next = NULL;
-> -		err = tcindex_filter_result_init(&f->result, net);
-> +		err = tcindex_filter_result_init(&f->result, cp, net);
->  		if (err < 0) {
->  			kfree(f);
->  			goto errout_alloc;
-> @@ -447,7 +471,7 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
->  	}
->  
->  	if (old_r && old_r != r) {
-> -		err = tcindex_filter_result_init(old_r, net);
-> +		err = tcindex_filter_result_init(old_r, cp, net);
->  		if (err < 0) {
->  			kfree(f);
->  			goto errout_alloc;
-> @@ -571,6 +595,14 @@ static void tcindex_destroy(struct tcf_proto *tp, bool rtnl_held,
->  		for (i = 0; i < p->hash; i++) {
->  			struct tcindex_filter_result *r = p->perfect + i;
->  
-> +			/* tcf_queue_work() does not guarantee the ordering we
-> +			 * want, so we have to take this refcnt temporarily to
-> +			 * ensure 'p' is freed after all tcindex_filter_result
-> +			 * here. Imperfect hash does not need this, because it
-> +			 * uses linked lists rather than an array.
-> +			 */
-> +			tcindex_data_get(p);
-> +
->  			tcf_unbind_filter(tp, &r->res);
->  			if (tcf_exts_get_net(&r->exts))
->  				tcf_queue_work(&r->rwork,
-> -- 
-> 2.21.1
-> 
+---
+
+John Fastabend (7):
+      bpf: verifier, do_refine_retval_range may clamp umin to 0 incorrectly
+      bpf: verifier, do explicit ALU32 bounds tracking
+      bpf: verifier, refine 32bit bound in do_refine_retval_range
+      bpf: test_progs, add test to catch retval refine error handling
+      bpf: test_verifier, bpf_get_stack return value add <0
+      bpf: test_verifier, #65 error message updates for trunc of boundary-cross
+      bpf: test_verifier, add alu32 bounds tracking tests
+
+
+ include/linux/bpf_verifier.h                       |    4 
+ include/linux/limits.h                             |    1 
+ include/linux/tnum.h                               |   12 
+ kernel/bpf/tnum.c                                  |   15 
+ kernel/bpf/verifier.c                              | 1138 +++++++++++++++-----
+ .../selftests/bpf/prog_tests/get_stack_raw_tp.c    |    5 
+ .../selftests/bpf/progs/test_get_stack_rawtp_err.c |   26 
+ tools/testing/selftests/bpf/verifier/bounds.c      |   51 +
+ .../testing/selftests/bpf/verifier/bpf_get_stack.c |    8 
+ 9 files changed, 959 insertions(+), 301 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_get_stack_rawtp_err.c
+
+--
+Signature
