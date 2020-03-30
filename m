@@ -2,81 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABAC91985C4
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 22:45:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96F8E1985CC
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 22:47:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728504AbgC3Ups (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 16:45:48 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:36455 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727328AbgC3Upr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 16:45:47 -0400
-Received: by mail-qt1-f193.google.com with SMTP id m33so16437327qtb.3;
-        Mon, 30 Mar 2020 13:45:46 -0700 (PDT)
+        id S1728618AbgC3UrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 16:47:01 -0400
+Received: from mail-lf1-f51.google.com ([209.85.167.51]:44136 "EHLO
+        mail-lf1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728065AbgC3UrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 16:47:01 -0400
+Received: by mail-lf1-f51.google.com with SMTP id j188so15422591lfj.11;
+        Mon, 30 Mar 2020 13:46:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=FFzlxLM1vgVJfHIOAtCmkgRX5Ovtm5xzqT5SoJ3HlAU=;
-        b=sNCyQM7dq5e5mkE22UbeVpP0svxqdXkfdWCtKGSczYBUKFEf0Y2bQrbN02n1BuFEX8
-         fUbGOA8f09O5WiKJtUx3Go4svlrlY8d/i8BKvDoUjEl2tEkxNJ0qzcdMe9BGaS2bNJ7E
-         u7xFWgVdAndjgi3fGDJg5QGJQQOQVX716szt929ZvVBJ3DYQlxDTAkYIj/bTH4aIffKf
-         0o19URmrIO8AHzcQIVk5/J1MdVD/Mkrtz1O8CUcIM0+oInrtn88AA8e1KcZuUWTzuqrk
-         d8lS/ib6IoCIA+j65xm9sF8O0wX8qSjsNAihz0F0qw0b5qOAhB/R2bIl7KHaza1HHqcY
-         /qzQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=53l9wdyj5G04bO+3AZlnAFgrIS0/NVTKg4yzAGAMqaY=;
+        b=V/47aF0xM3xZql7bm2QzWJlCETMnizFZIlsE2cyCXo9Y77UxXJ4roh64mrFsR0ESmi
+         1eKNcelkCq4Qtp/JMHiz3ceiS92S8xyaoLe2go3hM66+7wkc/N+f7A37TnwjaOnXaTbi
+         B8lk4o+d0YD5InsEoe4Z72wrR7rYTTzag2kgtFV3lUI21cw04X+OcPA7YEB7ZpBgEUqp
+         1uC7B2xM9HkSAHhKWL801qNQYvr2QXpTE1XLVUZljeYJ3NickmEm+9MWzNczwMJLjg/N
+         2/M2n2trFOOwDDKfQIzWkVByHFZ80dRBBmYGu/U3o8GRiYhzffPXPGM6uoW/JBpoq10M
+         O5Gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=FFzlxLM1vgVJfHIOAtCmkgRX5Ovtm5xzqT5SoJ3HlAU=;
-        b=afB+8v53VVqqOp3MwAVEiaSe9aBQb+LGvBY/WwOKy45i3Ncwsx5YscwYcqaCxbx3IK
-         uAP/TAh/28D/v9hteqXsJSWNVA8u9X3nOGiqGQzban/jd3jrjG8rU4SiS9wigNNqjPRh
-         JT0aCNSkOZU7MjkDsu6UHZQDmqo0Jw1kfMSd4FEPGEpGaWh4pXy5yyK43Vaw96vbh/A0
-         HolonIwo1xQhr65kI2ZDefNlwdqqlUelH2I1OpMAW7ZOLDtWPyQ6oCZGrdx4CbWNwkoM
-         XTkNJv28u8O1JvF4w1DwDF17l1kmqJV3DNYA/nvERn9XAXhvfd8GRA5kaA9DNkZ4xCkO
-         eWbQ==
-X-Gm-Message-State: ANhLgQ0V0bi/8X/KOAHjYunxayBGqNsyreXI50gloZPyp8290gieWa7V
-        eC7vSxCM4NapMae/S09xyhk=
-X-Google-Smtp-Source: ADFU+vsb9ztTQllrb6dkhXGA01Im6N8C2YiemiN6F4YGtB3Wv0IFQxE/AXfdzeCasQbYwAdE9lm8Jg==
-X-Received: by 2002:ac8:60a:: with SMTP id d10mr2008212qth.140.1585601146077;
-        Mon, 30 Mar 2020 13:45:46 -0700 (PDT)
-Received: from ?IPv6:2601:282:803:7700:6833:d88e:92a1:cac9? ([2601:282:803:7700:6833:d88e:92a1:cac9])
-        by smtp.googlemail.com with ESMTPSA id l22sm11737843qkj.120.2020.03.30.13.45.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Mar 2020 13:45:45 -0700 (PDT)
-Subject: Re: [PATCH v3 bpf-next 0/4] Add support for cgroup bpf_link
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrey Ignatov <rdna@fb.com>, Kernel Team <kernel-team@fb.com>
-References: <20200330030001.2312810-1-andriin@fb.com>
- <c9f52288-5ea8-a117-8a67-84ba48374d3a@gmail.com>
- <CAEf4BzZpCOCi1QfL0peBRjAOkXRwGEi_DAW4z34Mf3Tv_sbRFw@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <662788f9-0a53-72d4-2675-daec893b5b81@gmail.com>
-Date:   Mon, 30 Mar 2020 14:45:44 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=53l9wdyj5G04bO+3AZlnAFgrIS0/NVTKg4yzAGAMqaY=;
+        b=TJrlvdx56/qKeEmQJs4bA3aqAX35uzg6ekL7/BI1dqLMvqu+7F8FWajeUWlL7fM81u
+         /9FW3j5VcXCVL3Eu+3nRxMmDKYIymil6msELNIbBIxUPc0LgeiMrrI18Uuc0+O8+jMRn
+         jFsiJCQshXfPbeRa6n8pXfuaaQbH8XCudsqQopIWeprNTYyWcGmfAPzFQsyJ2/py8tW3
+         rYNpwQBSAjBMt/ZFdZx6HZFyf5ydEmdv4/lWBQXosc7uGV73RnxIbEVdq1O0t6K7TBUR
+         35pA5Q6W+zLiJyAox0Rn5+OsB9MHk/iTvkvE+W6M3H8DPj3orVHl1Cu0jn7I+zmrSvuF
+         l7Bg==
+X-Gm-Message-State: AGi0Pua4oMGLn+265sinkSIF32Ds+u4wilPN/G4DidBo9ffst/SkWhpe
+        pXNpW65BCGJHKcKbIB2Pc9yMqhOSSK/WjkDHXK0=
+X-Google-Smtp-Source: APiQypJttCyKcL/u+sXRGZSpkqaIFrKDoyRw2ozESFpY3dAaa2CTkatOEWbv/Sl5XPjHLjkWT+w56QZA+hBM3cx8m/w=
+X-Received: by 2002:a19:7e01:: with SMTP id z1mr9021976lfc.196.1585601218336;
+ Mon, 30 Mar 2020 13:46:58 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzZpCOCi1QfL0peBRjAOkXRwGEi_DAW4z34Mf3Tv_sbRFw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200329225342.16317-1-joe@wand.net.nz>
+In-Reply-To: <20200329225342.16317-1-joe@wand.net.nz>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Mon, 30 Mar 2020 13:46:47 -0700
+Message-ID: <CAADnVQJ5nq-pJcH2z-ZddDUU13-eFH_7M0SdGsbjHy5bCw7aOg@mail.gmail.com>
+Subject: Re: [PATCHv5 bpf-next 0/5] Add bpf_sk_assign eBPF helper
+To:     Joe Stringer <joe@wand.net.nz>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/30/20 2:20 PM, Andrii Nakryiko wrote:
->> The observability piece should go in the same release as the feature.
-> You mean LINK_QUERY command I mentioned before? Yes, I'm working on
-> adding it next, regardless if this patch set goes in right now or
-> later.
+On Sun, Mar 29, 2020 at 3:53 PM Joe Stringer <joe@wand.net.nz> wrote:
+>
+> Introduce a new helper that allows assigning a previously-found socket
+> to the skb as the packet is received towards the stack, to cause the
+> stack to guide the packet towards that socket subject to local routing
+> configuration. The intention is to support TProxy use cases more
+> directly from eBPF programs attached at TC ingress, to simplify and
+> streamline Linux stack configuration in scale environments with Cilium.
 
-There was also mention of a "human override" details of which have not
-been discussed. Since the query is not ready either, then the
-create/update should wait so that all of it can be in the same kernel
-release. As it stands it is a half-baked feature.
+Applied.
+Patches 4 and 5 had warnings:
+progs/test_sk_assign.c:79:32: warning: ordered comparison between
+pointer and integer ('void *' and '__u32' (aka 'unsigned int'))
+        if ((void *)tuple + tuple_len > skb->data_end)
+            ~~~~~~~~~~~~~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~
+
+I fixed them up.
