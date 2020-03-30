@@ -2,145 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28969198851
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 01:30:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE1EC198831
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 01:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729283AbgC3Xaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 19:30:30 -0400
-Received: from smtp.uniroma2.it ([160.80.6.16]:43126 "EHLO smtp.uniroma2.it"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728537AbgC3Xa3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 19:30:29 -0400
-X-Greylist: delayed 334 seconds by postgrey-1.27 at vger.kernel.org; Mon, 30 Mar 2020 19:30:27 EDT
-Received: from lubuntu-18.04 ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with SMTP id 02UNNqSq015827;
-        Tue, 31 Mar 2020 01:23:58 +0200
-Date:   Tue, 31 Mar 2020 01:23:48 +0200
-From:   Stefano Salsano <stefano.salsano@uniroma2.it>
-To:     David Miller <davem@davemloft.net>
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        dav.lebrun@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, leon@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, andriin@fb.com, bpf@vger.kernel.org,
-        paolo.lungaroni@cnit.it, ahmed.abdelsalam@gssi.it,
-        stefano.salsano@uniroma2.it
-Subject: Re: [net-next] seg6: add support for optional attributes during
- behavior construction
-Message-Id: <20200331012348.e0b2373bd4a96fecc77686b6@uniroma2.it>
-In-Reply-To: <20200325.193016.1654692564933635575.davem@davemloft.net>
-References: <20200319183641.29608-1-andrea.mayer@uniroma2.it>
-        <20200325.193016.1654692564933635575.davem@davemloft.net>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
-X-Virus-Status: Clean
+        id S1729335AbgC3XYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 19:24:55 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:45617 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728876AbgC3XYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 19:24:55 -0400
+Received: by mail-oi1-f193.google.com with SMTP id l22so17280884oii.12
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 16:24:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AfGz/WUWOWJUNUddn1vR6gY4zq6NlynuXX3ZTIKVOpE=;
+        b=tN2J9Su/GB8ddEV/gYJVXqNO1Vgq8NJKzoZWKDLLNwAWy0rE3zZbMh3zKYHY890bPi
+         DbKxn1Q4xfUWsp8UCDKWu3XO2Gr5QgDzLII+xda9jHG0+W44eUwBy/GDuWceCwuSncJi
+         IuGMqrTTWjwaGjasQnODpwUDswmcNIRhPcZt3LotOfe2DkMHBkVtAWuJFmYdYxcYcqvP
+         68oNdgIdvVYmb5HYDxDGAYSs8EzGLV2mggfikVGBqeP+1g2zef71idtpAGtl0Nm4msku
+         aOEBUisZYDkWQcFkWikryC7eD+fkuINa9qsV/+VsSwRANpIJ5BHt1mtzFknXkVp1phrw
+         9ycw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AfGz/WUWOWJUNUddn1vR6gY4zq6NlynuXX3ZTIKVOpE=;
+        b=RRGD3dsTSSZNn/3vtEeTG3ptG4sYAQa86PhtO9s79zQ9W99BI8jnqbWJ3+kAl0oCLA
+         PTFKaHzQmaB9PNlyghQPGXNt8D5EeQloCBSX9Ds5S3eBrxLfR+7+O6FAKaKO0SxXT7Wx
+         ReP19ikTezDw7YUmWM9kTQzapRJv0zaVrhB/oJU2eUGczwrN9SKYA+AGY0tOa/njbbuX
+         vERqiY8bmb1B+6fGFZs+k7k00NL04UyzUiUDXDe2kPx+kLEsqc+78e9yetOFiAmbdsdp
+         XV1r6y782JmjhVoFvnkLj+ZtPyqbJEaGrr5ouhQYf79JaBPyg20rNsxFZBCvSNDgvtMc
+         w3pg==
+X-Gm-Message-State: ANhLgQ3NRBeO33nIpT0zOEbDxZlGbmHr0axoFq7ue5So92qk9MaGVL2v
+        +CN92gS/oLAr+mA9ua24kLtrt4BWvgTUmmCRohc=
+X-Google-Smtp-Source: ADFU+vsa2dyd9gvKAERxfd0Gla0wVdKZmQDBGtp3KJH44U4XZBWvAsr8W09nfceI425mS6CMdI4AjivBT5+RhfA1Isg=
+X-Received: by 2002:a05:6808:648:: with SMTP id z8mr366001oih.72.1585610694006;
+ Mon, 30 Mar 2020 16:24:54 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200328191259.17145-1-xiyou.wangcong@gmail.com> <20200330213514.GT19865@paulmck-ThinkPad-P72>
+In-Reply-To: <20200330213514.GT19865@paulmck-ThinkPad-P72>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 30 Mar 2020 16:24:42 -0700
+Message-ID: <CAM_iQpUu6524ZyZDBu=nkuhpubyGBTHEJ-HK8qrpCW=EEKGujw@mail.gmail.com>
+Subject: Re: [Patch net] net_sched: add a temporary refcnt for struct tcindex_data
+To:     "Paul E . McKenney" <paulmck@kernel.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot <syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Mar 2020 19:30:16 -0700 (PDT)
-David Miller <davem@davemloft.net> wrote:
+On Mon, Mar 30, 2020 at 2:35 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+>
+> On Sat, Mar 28, 2020 at 12:12:59PM -0700, Cong Wang wrote:
+> > Although we intentionally use an ordered workqueue for all tc
+> > filter works, the ordering is not guaranteed by RCU work,
+> > given that tcf_queue_work() is esstenially a call_rcu().
+> >
+> > This problem is demostrated by Thomas:
+> >
+> >   CPU 0:
+> >     tcf_queue_work()
+> >       tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
+> >
+> >   -> Migration to CPU 1
+> >
+> >   CPU 1:
+> >      tcf_queue_work(&p->rwork, tcindex_destroy_work);
+> >
+> > so the 2nd work could be queued before the 1st one, which leads
+> > to a free-after-free.
+> >
+> > Enforcing this order in RCU work is hard as it requires to change
+> > RCU code too. Fortunately we can workaround this problem in tcindex
+> > filter by taking a temporary refcnt, we only refcnt it right before
+> > we begin to destroy it. This simplifies the code a lot as a full
+> > refcnt requires much more changes in tcindex_set_parms().
+> >
+> > Reported-by: syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com
+> > Fixes: 3d210534cc93 ("net_sched: fix a race condition in tcindex_destroy()")
+> > Cc: Thomas Gleixner <tglx@linutronix.de>
+> > Cc: Paul E. McKenney <paulmck@kernel.org>
+> > Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+> > Cc: Jiri Pirko <jiri@resnulli.us>
+> > Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+>
+> Looks plausible, but what did you do to verify that the structures
+> were in fact being freed?  See below for more detail.
 
-> From: Andrea Mayer <andrea.mayer@uniroma2.it>
-> Date: Thu, 19 Mar 2020 19:36:41 +0100
-> 
-> > Messy code and complicated tricks may arise from this approach.
-> 
-> People taking advantage of this new flexibility will write
-> applications that DO NOT WORK on older kernels.
-> 
-> I think we are therefore stuck with the current optional attribute
-> semantics, sorry.
+I ran the syzbot reproducer for about 20 minutes, there was no
+memory leak reported after scanning.
 
-Dear David,
-
-sorry we have provided this patch without giving enough context. 
-
-We are planning several enhancements to the SRv6 kernel implementation to keep
-it aligned with the IETF standardization evolution and to add important
-features like monitoring (some examples below). So far, the implemented SRv6
-behaviors require few mandatory attributes and the code has been implemented in
-a naive way following this requirement. We believe it is important to overcome
-the limitations of this implementation considering the requirements coming from
-new SRv6 behaviors and features shown in the examples below.
-
-To provide 100% backward compatibility, we are not going to use the proposed
-optional attribute semantic on any of the currently defined attributes, so
-there is no risk to write applications using the existing attributes that will
-not work on older kernels, which is (wisely) your main concern. 
-
-Of course a new application (e.g. iproute2, pyroute) using a new optional
-parameter will not work on older kernels, but simply because the new parameter
-is not supported. It will not work even without our proposed patch.
-
-On the other hand, we think that the solution in the patch is more backward
-compatible. Without the patch, if we define new attributes, old applications
-(e.g. iproute2 scripts) will not work on newer kernels, while with the optional
-attributes approach proposed in the patch they will work with no issues !
-
-In the light of the above clarification, what is your opinion?
-
-Hereafter we list the SRv6 use cases that benefit from the proposed patch. We
-have patches that implement these use cases, do you think that we should submit
-one or two of them to show how we use the optional parameters?
-
-Thank you for your attention!
-Stefano
-
-4 examples of enhancements to SRv6 that require optional parameters
-
-1) Enhancement to End.DX4 behavior to support explicit indication of outgoing
-device: "oif" parameter used as optional in the context of End.DX4 behavior
-
- ip -6 route add 2001:db8::1 encap seg6local action End.DX4 nh4 1.2.3.4 dev eth0
- ip -6 route add 2001:db8::1 encap seg6local action End.DX4 nh4 1.2.3.4 oif eth1 dev eth0
-
-2) Statistics (per behavior counting of packets/bytes/errors) : new "stats"
-parameter used as optional in the context of any behavior
-
- ip -6 route add 2001:db8::1 encap seg6local action End.DT6 table 100 dev eth0
- ip -6 route add 2001:db8::1 encap seg6local action End.DT6 table 100 stats dev eth0
- 
- ip -6 route add 2001:db8::1 encap seg6local action End.DX4 nh4 1.2.3.4 dev eth0
- ip -6 route add 2001:db8::1 encap seg6local action End.DX4 nh4 1.2.3.4 stats dev eth0
- 
- ip -6 route add 2001:db8::1 encap seg6local action End.DX4 nh4 1.2.3.4 oif eth1 dev eth0
- ip -6 route add 2001:db8::1 encap seg6local action End.DX4 nh4 1.2.3.4 oif eth1 stats dev eth0
-
-3) Flavors (as per sec. 4.16 of draft-ietf-spring-srv6-network-programming-14):
-new "flavors" parameter used as optional in the context of End, End.X, End.T
-
- ip -6 route add 2001:db8::1 encap seg6local action End dev eth0
- ip -6 route add 2001:db8::1 encap seg6local action End flavors PSP dev eth0
- ip -6 route add 2001:db8::1 encap seg6local action End flavors USP dev eth0
- ip -6 route add 2001:db8::1 encap seg6local action End flavors USD dev eth0
- ip -6 route add 2001:db8::1 encap seg6local action End flavors PSP,USP,USD dev eth0
- 
- ip -6 route add 2001:db8::1 encap seg6local action End.T table 100 dev eth0
- ip -6 route add 2001:db8::1 encap seg6local action End.T table 100 flavors USP dev eth0
-
-4) micro SID (draft-filsfils-spring-net-pgm-extension-srv6-usid-04): in the
-context of the new behavior uN, new optional parameters "ubl" and "ul"
-
- ip -6 route add 2001:db8::1 encap seg6local action uN dev eth0
- ip -6 route add 2001:db8::1 encap seg6local action uN ubl 32 ul 16 dev eth0
-
-
--- 
-*******************************************************************
-Stefano Salsano
-Professore Associato
-Dipartimento Ingegneria Elettronica
-Universita' di Roma Tor Vergata
-Viale Politecnico, 1 - 00133 Roma - ITALY
-
-http://netgroup.uniroma2.it/Stefano_Salsano/
-
-E-mail  : stefano.salsano@uniroma2.it
-Cell.   : +39 320 4307310
-Office  : (Tel.) +39 06 72597770 (Fax.) +39 06 72597435
-*******************************************************************
+Thanks.
