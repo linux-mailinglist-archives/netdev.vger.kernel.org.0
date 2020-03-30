@@ -2,123 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E33B6198484
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 21:34:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF44C198489
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 21:36:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728065AbgC3Teh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 15:34:37 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:57272 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726981AbgC3Teh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 15:34:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=ouCCrxgpC9lrAW88GEI9j87liXixId89uU7gxnry/GA=; b=S/E+w9RAhZJEE41C/xlapLhbD
-        5EwrWK+Ja5MMBJ1Vpvp0su+XGw1Qvgzo0VCBCUqMPv7GrJcasvY9X1ZYHG4H2JWYzVyLUqIVry0BE
-        uT0g/GJCYzNuSBFlwqG8nEBY27219G3gxnummMJRcID00BGsW9rDMASRM/IGPPHxFjAQjbUbWMRjW
-        o+w7y9CT1P5Jd78QCDLja9t6p1QUTqjlKWMcHjLhpsLYbajPriUaDdZeNg5ItMKdcbXA7i5SmRexM
-        Zh0ttMV+3LGxLOtXAwkUkz+BURp96qxjELz3JmGolqQdEQ9uoEvdVqGrFkGjLyaOnkijwJvsBiRME
-        bJYbrb2Rw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43466)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jJ0AU-0003y8-St; Mon, 30 Mar 2020 20:33:55 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jJ0AM-0007Nx-UP; Mon, 30 Mar 2020 20:33:46 +0100
-Date:   Mon, 30 Mar 2020 20:33:46 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Sam Ravnborg <sam@ravnborg.org>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        dri-devel@lists.freedesktop.org, etnaviv@lists.freedesktop.org,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] Update my email address in various drivers
-Message-ID: <20200330193346.GI25745@shell.armlinux.org.uk>
-References: <E1jIV26-0005X3-RS@rmk-PC.armlinux.org.uk>
- <20200330180444.GA16073@ravnborg.org>
+        id S1728465AbgC3Tg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 15:36:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34516 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726981AbgC3Tg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 15:36:27 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B7C9D20714;
+        Mon, 30 Mar 2020 19:36:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585596985;
+        bh=LZ5q7SHOhG/rtHYkbrNjLmyajlEHbW9RQvUH67ItjTs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=k+K9tLnen7+Sk+/zW7F7hWKYXgztxgTNXYYhURYoWiVFcvk9h2MDXJPqoS//PGnpo
+         ygJbwqnOFKb6Vbmq/u+nPQYTPIP4N3rzPllJtMIclBK1P62qMQj98nGN8JW/mMq8b3
+         GU1zyAEKgKmEl60nqqzGYT6dD89KOlfiUzfhDVjo=
+Date:   Mon, 30 Mar 2020 12:36:23 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Yuval Avnery <yuvalav@mellanox.com>,
+        "jgg@ziepe.ca" <jgg@ziepe.ca>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "andrew.gospodarek@broadcom.com" <andrew.gospodarek@broadcom.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        Moshe Shemesh <moshe@mellanox.com>,
+        Aya Levin <ayal@mellanox.com>,
+        Eran Ben Elisha <eranbe@mellanox.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Yevgeny Kliteynik <kliteyn@mellanox.com>,
+        "dchickles@marvell.com" <dchickles@marvell.com>,
+        "sburla@marvell.com" <sburla@marvell.com>,
+        "fmanlunas@marvell.com" <fmanlunas@marvell.com>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>,
+        "snelson@pensando.io" <snelson@pensando.io>,
+        "drivers@pensando.io" <drivers@pensando.io>,
+        "aelior@marvell.com" <aelior@marvell.com>,
+        "GR-everest-linux-l2@marvell.com" <GR-everest-linux-l2@marvell.com>,
+        "grygorii.strashko@ti.com" <grygorii.strashko@ti.com>,
+        mlxsw <mlxsw@mellanox.com>, Ido Schimmel <idosch@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
+        Alex Vesker <valex@mellanox.com>,
+        "linyunsheng@huawei.com" <linyunsheng@huawei.com>,
+        "lihong.yang@intel.com" <lihong.yang@intel.com>,
+        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>
+Subject: Re: [RFC] current devlink extension plan for NICs
+Message-ID: <20200330123623.634739de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <35e8353f-2bfc-5685-a60e-030cd2d2dd24@mellanox.com>
+References: <20200319192719.GD11304@nanopsycho.orion>
+        <20200319203253.73cca739@kicinski-fedora-PC1C0HJN>
+        <20200320073555.GE11304@nanopsycho.orion>
+        <20200320142508.31ff70f3@kicinski-fedora-PC1C0HJN>
+        <20200321093525.GJ11304@nanopsycho.orion>
+        <20200323122123.2a3ff20f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200326144709.GW11304@nanopsycho.orion>
+        <20200326145146.GX11304@nanopsycho.orion>
+        <20200326133001.1b2694c9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20200327074736.GJ11304@nanopsycho.orion>
+        <20200327093829.76140a98@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <35e8353f-2bfc-5685-a60e-030cd2d2dd24@mellanox.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200330180444.GA16073@ravnborg.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 08:04:44PM +0200, Sam Ravnborg wrote:
-> Hi Russell.
-> 
-> On Sun, Mar 29, 2020 at 11:19:10AM +0100, Russell King wrote:
-> > Globally update my email address in six files scattered through the
-> > tree.
+On Mon, 30 Mar 2020 07:48:39 +0000 Parav Pandit wrote:
+> On 3/27/2020 10:08 PM, Jakub Kicinski wrote:
+> > On Fri, 27 Mar 2020 08:47:36 +0100 Jiri Pirko wrote:  
+> >>> So the queues, interrupts, and other resources are also part 
+> >>> of the slice then?    
+> >>
+> >> Yep, that seems to make sense.
+> >>  
+> >>> How do slice parameters like rate apply to NVMe?    
+> >>
+> >> Not really.
+> >>  
+> >>> Are ports always ethernet? and slices also cover endpoints with
+> >>> transport stack offloaded to the NIC?    
+> >>
+> >> devlink_port now can be either "ethernet" or "infiniband". Perhaps,
+> >> there can be port type "nve" which would contain only some of the
+> >> config options and would not have a representor "netdev/ibdev" linked.
+> >> I don't know.  
 > > 
-> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
-> > ---
-> >  drivers/gpu/drm/armada/armada_drv.c                 | 2 +-
-> >  drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c | 2 +-
-> >  drivers/gpu/drm/etnaviv/etnaviv_drv.c               | 2 +-
-> >  drivers/media/cec/cec-notifier.c                    | 2 +-
-> >  drivers/net/phy/swphy.c                             | 2 +-
-> >  include/media/cec-notifier.h                        | 2 +-
-> >  6 files changed, 6 insertions(+), 6 deletions(-)
+> > I honestly find it hard to understand what that slice abstraction is,
+> > and which things belong to slices and which to PCI ports (or why we even
+> > have them).
+> >   
+> In an alternative, devlink port can be overloaded/retrofit to do all
+> things that slice desires to do.
+
+I wouldn't say retrofitted, in my mind port has always been a port of 
+a device.
+
+Jiri explained to me that to Mellanox port is port of a eswitch, not
+port of a device. While to me (/Netronome) it was any way to send or
+receive data to/from the device.
+
+Now I understand why to you nvme doesn't fit the port abstraction.
+
+> For that matter representor netdev can be overloaded/extended to do what
+> slice desire to do (instead of devlink port).
+
+Right, in my mental model representor _is_ a port of the eswitch, so
+repr would not make sense to me.
+
+> Can you please explain why you think devlink port should be overloaded
+> instead of netdev or any other kernel object?
+> Do you have an example of such overloaded functionality of a kernel object?
+> Like why macvlan and vlan drivers are not combined to in single driver
+> object? Why teaming and bonding driver are combined in single driver
+> object?...
+
+I think it's not overloading, but the fact that we started with
+different definitions. We (me and you) tried adding the PCIe ports
+around the same time, I guess we should have dug into the details
+right away.
+
+> User should be able to create, configure, deploy, delete a 'portion of
+> the device' with/without eswitch.
+
+Right, to me ports are of the device, not eswitch.
+
+> We shouldn't be starting with restrictive/narrow view of devlink port.
 > 
-> This changes all cases of:
->    
->    rmk+kernel@arm.linux.org.uk
-> 
-> to
-> 
->   rmk+kernel@armlinux.org.uk or no mail address.
+> Internally with Jiri and others, we also explored the possibility to
+> have 'mgmtvf', 'mgmtpf',  'mgmtsf' port flavours by overloading port to
+> do all things as that of slice.
+> It wasn't elegant enough. Why not create right object?
 
-Correct.  This is the address I sign off all my commits with, and this
-is the one I use to associate with authorship because it uses my
-initials.
+We just need clear definitions of what goes where. We already have
+params etc. hanging off the ports, including irq/sriov stuff. But in
+slice model those don't belong there :S
 
-> But I am confused.
-> 
-> The new address does not appear anywhere in MAINTAINERS and is used
-> only in three other files.
+In fact very little belongs to the port in that model. So why have
+PCI ports in the first place?
 
-MAINTAINERS lists the addresses I prefer email for the day to day
-maintanence, which is my linux@ accounts.  The above addresses
-also fall into _this_ mailbox too, rather than my rmk@ mailbox.
-So, ultimately all that email comes to the same place.
+> Additionally devlink port object doesn't go through the same state
+> machine as that what slice has to go through.
+> So its weird that some devlink port has state machine and some doesn't.
 
-However, the plain rmk@ address doesn't.
+You mean for VFs? I think you can add the states to the API.
 
-> And there are a few other mail addresses that would reach you.
-> But no matter how confused I am the patch looks fine so:
-> 
-> Acked-by: Sam Ravnborg <sam@ravnborg.org>
-> 
-> And if the change is for private reaons then I do not have to know
-> anyway so feel free to ignore my confusion.
+> > With devices like NFP and Mellanox CX3 which have one PCI PF maybe it
+> > would have made sense to have a slice that covers multiple ports, but
+> > it seems the proposal is to have port to slice mapping be 1:1. And rate
+> > in those devices should still be per port not per slice.
+> >   
+> Slice can have multiple ports. slice object doesn't restrict it. User
+> can always split the port for a device, if device support it.
 
-The reason for the change is so I can drop the routing information
-rmk+kernel@arm.linux.org.uk, thereby causing that address to start
-bouncing, rather than being a spam inlet.  Sure, the new one will
-be as well, but the point is that keeping both around indefinitely
-gives a bigger attack surface for spam ingress.
+Okay, so slices are not 1:1 with ports, then?  Is it any:any?
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+> > But this keeps coming back, and since you guys are doing all the work,
+> > if you really really need it..
