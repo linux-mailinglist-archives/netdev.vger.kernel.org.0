@@ -2,169 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD3A3197602
-	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 09:52:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A64871975FE
+	for <lists+netdev@lfdr.de>; Mon, 30 Mar 2020 09:51:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729546AbgC3HwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 03:52:20 -0400
-Received: from mail-eopbgr30066.outbound.protection.outlook.com ([40.107.3.66]:57681
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728766AbgC3HwT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 03:52:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NLugNphxtPWqqUTjV/ZS+gQ8SBwTQKUKrJTpH3Uugv9V3Q6LL94z2JvoHYXU6aoqDDBqVvgTYPFzTPp1mqgme/vuGJEnjIl1yOqd77VUIceTduqF/cXp8Ae7eJbz15YnRFnUPDAhJ3v3cIkzd9XWWJSLRGmJZC3607qBzYLwBCi5HDnFL3TdygXJCRfe4GZPOyP/cYlt9VWBsDZuqfZeOBL/CKpciSrrv7jHP4YHXpL1XiXs+PwD0JnQwG82q52159YASjaz5c99a/2++xHYLnS7LJgawpkHDOgWbWXOppoFosZGcjTd3l3djtBcTYCACvYUfT+t+RcVHzI8hI8Qmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=reEli7mj2SJZ5DivoPlUiZY8DVAkjARajVt4Wc3S7zw=;
- b=Lc2M7Ypcfv6Qg1R2BPYD0m8NiUXoqLOODlr8B5tUXXHUa+FDQrjng1R+QvWF3Rn5AYghU0iXBOrXV44lUr1hOIftToRfW+1erb+g1wmOAnHrPGanf79kM2HWCodnso2UJwC0QQKvNdUG3SzWx5lqAz+MxzzJwr+L2nQX6ShHF1STD0RrS7HNAL5aTsOiR+jaJEtUJhFOkuKCboucVKo57uFXL4A8Hb+ticBxGrhDyQhtpuTxFoDlVQKF0Ve+3q5vRmU5Qp9kxVsP7oxLdDY6lf12FrBZPwX8s0VhrBAs0QV43Li3qM44HN+D1TKlHCfeCnPfg23kD+/lVdcPaLJ4eA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=reEli7mj2SJZ5DivoPlUiZY8DVAkjARajVt4Wc3S7zw=;
- b=NkU4e3vaDkjOUcHh4arnMPA4uiUTb6o2pLa1SKj2StkIOmXW3l9uEv0ukXgezBzHFSJnYewPas9Qr9bUBj7PyWaYBDPeWLwKnxtG3jki1Yj/Jfwp0M3A3cGV0MBG6CiCFIAoLMnFO65rMkwTr/JnZioVyDA2Il/KaHpJAWDcs5g=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com (20.177.51.151) by
- VI1PR05MB3214.eurprd05.prod.outlook.com (10.175.243.161) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2856.19; Mon, 30 Mar 2020 07:52:15 +0000
-Received: from VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::9d19:a564:b84e:7c19]) by VI1PR05MB5102.eurprd05.prod.outlook.com
- ([fe80::9d19:a564:b84e:7c19%7]) with mapi id 15.20.2856.019; Mon, 30 Mar 2020
- 07:52:15 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@mellanox.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: [PATCH net-next] bpf: tcp: Fix unused-function warnings
-Date:   Mon, 30 Mar 2020 00:49:09 -0700
-Message-Id: <20200330074909.174753-1-saeedm@mellanox.com>
-X-Mailer: git-send-email 2.25.1
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BY5PR04CA0015.namprd04.prod.outlook.com
- (2603:10b6:a03:1d0::25) To VI1PR05MB5102.eurprd05.prod.outlook.com
- (2603:10a6:803:5e::23)
+        id S1729539AbgC3HvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 03:51:10 -0400
+Received: from mail-wm1-f47.google.com ([209.85.128.47]:36108 "EHLO
+        mail-wm1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728766AbgC3HvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 03:51:09 -0400
+Received: by mail-wm1-f47.google.com with SMTP id g62so20771756wme.1;
+        Mon, 30 Mar 2020 00:51:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=D28hmkivPrtN/O6CqDfORJ7ebgvb0TsqZVcNv4tRkIs=;
+        b=W2Ny2ePV9Ja2QJ6GQK6MC7elQP/kdG50R/KXXykuMXMC6oBEUJXKfUPdbw+FKNmsK2
+         gmlDW0rcS3c7deM74ehER9TI/fsTbZsK9a5a1eKxiY3kOgWFsV3MiMcpeDGCDLI8b0Ev
+         LHyuy8OKv9wO98Qea+8X62eeBUze02z/Tealt1d7BwjIAnoP7/fF8lQConZXFVPLqEtT
+         ivydsvTVEAXqFBfhMuJzK8FsMfrEf55cqp9lAAQd3oWZvW7amINbqZyYiILfqDy1zXaY
+         eI7Vp+g4Tc+nXCdQ8THKTKqXjBfWol4OHVKy1Xgf58EOK92iL02gdJaygnGcxAxX8gae
+         dySg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=D28hmkivPrtN/O6CqDfORJ7ebgvb0TsqZVcNv4tRkIs=;
+        b=IHGrIDU8KDY5TN352QQwajsX99QIeHzlwnF+cilUvmo33Fp814tzfEFEq8erpO7PvY
+         Y/DQYYxS3UyX6j49riohstXFkwJ/kH3WmeW7mzrCtvfJfs22gnJB3VJSTkklvPw8V9Cr
+         kZagwG9sY6dbx3pMrJ9lJPTMl3qh9Ar640qS4IUdNfXZTokh7MBZkDd9dIbjAT45QNno
+         9zKTB1jTtyQpXEF51ScJ0xV5WIJQZJZIbHfFjClhhqLqE0lFmRz+scr3eR09RqfzlMoo
+         ioYOdGL3kkxH6fs/2vuLbousHbBZUHQWfaMzt98LVYpCAqfCqJYyXCXCek4iiqTErkuD
+         LkBA==
+X-Gm-Message-State: ANhLgQ0ITYDzvi0Ei28Rd0YNg1pGDUuIIH05QqN+HzDSqWOCET/nX/SO
+        kfk4X17D9AVYvQ8yQyCBQ/fxWcFn05ztdGSLI0BVJ2y0
+X-Google-Smtp-Source: ADFU+vu4YJXTYMM5co0HTqxQQgtJr05IoSoBeW7LatDa0J/GFsOarG1f1culHijFFh6+A4AtT5AENM/NmlQzfaE6t8w=
+X-Received: by 2002:a1c:1bd2:: with SMTP id b201mr12376200wmb.181.1585554667212;
+ Mon, 30 Mar 2020 00:51:07 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from smtp.office365.com (73.15.39.150) by BY5PR04CA0015.namprd04.prod.outlook.com (2603:10b6:a03:1d0::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2856.20 via Frontend Transport; Mon, 30 Mar 2020 07:52:13 +0000
-X-Mailer: git-send-email 2.25.1
-X-Originating-IP: [73.15.39.150]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: cb15a3fe-5ff0-4ddf-14e9-08d7d47f4372
-X-MS-TrafficTypeDiagnostic: VI1PR05MB3214:|VI1PR05MB3214:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR05MB32141EB05BCE65D8B4570B1ABECB0@VI1PR05MB3214.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:63;
-X-Forefront-PRVS: 0358535363
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB5102.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(4636009)(136003)(346002)(366004)(396003)(39860400002)(376002)(6506007)(66946007)(66556008)(86362001)(66476007)(316002)(478600001)(52116002)(54906003)(1076003)(5660300002)(2906002)(6512007)(6486002)(4326008)(6666004)(956004)(186003)(6916009)(36756003)(8676002)(2616005)(81156014)(16526019)(8936002)(26005)(81166006)(54420400002);DIR:OUT;SFP:1101;
-Received-SPF: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +e64T2/kvw/TCwN8boxTtU51lZUTw3zWVdOMS19cKqYCffU9nJedyj76jtkLTdc1WwOfoKdYYoWqfSvPkkqzKxxVxIKU8sGBqS1NJuy3/6HpYmuxP9AsDwag1QhLCZg7M432M68Dud/ttqUaxYSIdlG5Ixe0jVc+1Ev0NVi2bvL21CbW26p5TRY6n88+Idah3+DAUtCEBR89MNsYcciZPmehuEfjnln4a8o4Oo9gcq6KwvZsxpFDdcwrEcR6lxI5nHyEc9eEMDo2zt589Sk0qozWQFIa8cOcMJU9UfSmzPV/lsZAT14Sfs7YbHyzrV1hurSJWjyXw+FGxfUzZSNxwofYWSxDMcqTfZqVVgwvfk36GSSdD7ceRoCxwROQ8Z3eXR9f/Ni8kQ87AjFdz0AzOJIZlxMkna5Xl6ERQWbC/niFVa/b8Xhyqh7X/RvHcHURssfJ7+nlUPcaniCyjGniI69KamowPIawG0efzGdzhmlzWyY96QA/Y19vDnDa9r7h
-X-MS-Exchange-AntiSpam-MessageData: QriBwtMpOeVIE9bWIuFVjbWzZSlk0K0mn+3DXNGN9Z+SxP/6vvH2mLlXsxMSdA6eQwv2Fc3r8vmzWu05oDmiJL8bOF3wta7MUXrgE4U4nh8KBUADYWSox+wffrneGIFYXg2HMooT+5+CP4OPu9eczg==
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cb15a3fe-5ff0-4ddf-14e9-08d7d47f4372
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Mar 2020 07:52:15.5468
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: e8E6ojp2RkXjTNMnQCKMcIogyxetEgdahcy7aPMZ6UMYlCYyM8PPSsO0cftC1DtdqwCFlqBuTvHckGBQLMxq1A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3214
+References: <CAM7-yPTUgdbEeVvpWgGfB_eb==m0HPj8FpM0P+P-E0aBr35mgw@mail.gmail.com>
+In-Reply-To: <CAM7-yPTUgdbEeVvpWgGfB_eb==m0HPj8FpM0P+P-E0aBr35mgw@mail.gmail.com>
+From:   Yun Levi <ppbuk5246@gmail.com>
+Date:   Mon, 30 Mar 2020 16:50:56 +0900
+Message-ID: <CAM7-yPSjawc1EhG--dOEJgEQ--qBuk6THGW1Qp4oHYTtDrjhSQ@mail.gmail.com>
+Subject: Fwd: Some happening when using BIND mount with network namespace.
+To:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: multipart/mixed; boundary="000000000000b6750905a20db61a"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tcp_bpf_sendpage, tcp_bpf_sendmsg, tcp_bpf_send_verdict and
-tcp_bpf_stream_read are only used when CONFIG_BPF_STREAM_PARSER is ON,
-make sure they are defined under this flag as well.
+--000000000000b6750905a20db61a
+Content-Type: text/plain; charset="UTF-8"
 
-Fixed compiler warnings:
+---------- Forwarded message ---------
+From: Yun Levi <ppbuk5246@gmail.com>
+Date: Mon, Mar 30, 2020 at 3:01 PM
+Subject: Some happening when using BIND mount with network namespace.
+To: Alexander Viro <viro@zeniv.linux.org.uk>, David S. Miller
+<davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>, Guillaume
+Nault <gnault@redhat.com>, Nicolas Dichtel
+<nicolas.dichtel@6wind.com>, Eric Dumazet <edumazet@google.com>, David
+Howells <dhowells@redhat.com>, Thomas Gleixner <tglx@linutronix.de>,
+Li RongQing <lirongqing@baidu.com>, Johannes Berg
+<johannes.berg@intel.com>, <linux-fsdevel@vger.kernel.org>,
+<linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 
-net/ipv4/tcp_bpf.c:483:12:
-warning: ‘tcp_bpf_sendpage’ defined but not used [-Wunused-function]
- static int tcp_bpf_sendpage(struct sock *sk, struct page *page, ...
-            ^~~~~~~~~~~~~~~~
-net/ipv4/tcp_bpf.c:395:12:
-warning: ‘tcp_bpf_sendmsg’ defined but not used [-Wunused-function]
- static int tcp_bpf_sendmsg(struct sock *sk, struct msghdr, ...
-            ^~~~~~~~~~~~~~~
-net/ipv4/tcp_bpf.c:13:13:
-warning: ‘tcp_bpf_stream_read’ defined but not used [-Wunused-function]
- static bool tcp_bpf_stream_read(const struct sock *sk)
 
-Fixes: 604326b41a6f ("bpf, sockmap: convert to generic sk_msg interface")
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- net/ipv4/tcp_bpf.c | 29 +++++++++++++++--------------
- 1 file changed, 15 insertions(+), 14 deletions(-)
+Hello. I'm Levi who is the beginner of Linux kernel.
 
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index fe7b4fbc31c1..2a7efc5dab96 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -10,19 +10,6 @@
- #include <net/inet_common.h>
- #include <net/tls.h>
- 
--static bool tcp_bpf_stream_read(const struct sock *sk)
--{
--	struct sk_psock *psock;
--	bool empty = true;
--
--	rcu_read_lock();
--	psock = sk_psock(sk);
--	if (likely(psock))
--		empty = list_empty(&psock->ingress_msg);
--	rcu_read_unlock();
--	return !empty;
--}
--
- static int tcp_bpf_wait_data(struct sock *sk, struct sk_psock *psock,
- 			     int flags, long timeo, int *err)
- {
-@@ -298,6 +285,21 @@ int tcp_bpf_sendmsg_redir(struct sock *sk, struct sk_msg *msg,
- }
- EXPORT_SYMBOL_GPL(tcp_bpf_sendmsg_redir);
- 
-+#ifdef CONFIG_BPF_STREAM_PARSER
-+
-+static bool tcp_bpf_stream_read(const struct sock *sk)
-+{
-+	struct sk_psock *psock;
-+	bool empty = true;
-+
-+	rcu_read_lock();
-+	psock = sk_psock(sk);
-+	if (likely(psock))
-+		empty = list_empty(&psock->ingress_msg);
-+	rcu_read_unlock();
-+	return !empty;
-+}
-+
- static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
- 				struct sk_msg *msg, int *copied, int flags)
- {
-@@ -528,7 +530,6 @@ static int tcp_bpf_sendpage(struct sock *sk, struct page *page, int offset,
- 	return copied ? copied : err;
- }
- 
--#ifdef CONFIG_BPF_STREAM_PARSER
- enum {
- 	TCP_BPF_IPV4,
- 	TCP_BPF_IPV6,
--- 
-2.25.1
+When I use system calls related to network namespace, I got a some
+problem in below scenario.
+That's why I want to distinguish it's prohibit case for using unshare
+and setns system call.
 
+    1. Forking the process.
+    2. [PARENT] Waiting the Child till the end.
+    3. [CHILD] unshare for creating new network namespace
+    4. [CHILD] Bind mount /proc/self/ns/net to some mount point.
+    5. [CHILD] Exit child.
+    6. [PARENT] Try to setns with binded mount point
+
+In my analysis I confirm step 4 to 6 makes problem.
+When we try to bind network namespace, it doesn't increase reference
+count of related network namespace which saved on inode->i_private.
+That's why network namespace made by unshare system call will be free on Step 5.
+
+But on bind mountpoint, it still has network namespace pointer that was freed.
+This makes some memory corruption on kernel when someone require to
+allocate memory and give the pointer which allocated to the network
+namespace made by Step 3.
+That's why I can see the some Kernel Panic when I kill the some process...
+
+So I attach some patch file to fix this problem.
+But I want to distinguish it abnormal usage or not and this patch
+should be applied.
+
+Thank you for reading.
+
+HTH.
+Levi.
+
+--000000000000b6750905a20db61a
+Content-Type: application/octet-stream; 
+	name="fix_netns_dangling_inode2.patch"
+Content-Disposition: attachment; filename="fix_netns_dangling_inode2.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_k8e691tu0>
+X-Attachment-Id: f_k8e691tu0
+
+ZGlmZiAtLWdpdCBhL2ZzL25hbWVzcGFjZS5jIGIvZnMvbmFtZXNwYWNlLmMKaW5kZXggODViNWY3
+YmVhODJlLi44OGViZGUzOTk1OWYgMTAwNjQ0Ci0tLSBhL2ZzL25hbWVzcGFjZS5jCisrKyBiL2Zz
+L25hbWVzcGFjZS5jCkBAIC0zMSw2ICszMSwxMCBAQAogI2luY2x1ZGUgPGxpbnV4L2ZzX2NvbnRl
+eHQuaD4KICNpbmNsdWRlIDxsaW51eC9zaG1lbV9mcy5oPgoKKyNpZmRlZiBDT05GSUdfTkVUX05T
+CisjaW5jbHVkZSA8bmV0L25ldF9uYW1lc3BhY2UuaD4KKyNlbmRpZgorCiAjaW5jbHVkZSAicG5v
+ZGUuaCIKICNpbmNsdWRlICJpbnRlcm5hbC5oIgoKQEAgLTEwMTMsMTIgKzEwMTcsMjUgQEAgdmZz
+X3N1Ym1vdW50KGNvbnN0IHN0cnVjdCBkZW50cnkgKm1vdW50cG9pbnQsIHN0cnVjdCBmaWxlX3N5
+c3RlbV90eXBlICp0eXBlLAogfQogRVhQT1JUX1NZTUJPTF9HUEwodmZzX3N1Ym1vdW50KTsKCisj
+aWZkZWYgQ09ORklHX05FVF9OUworc3RhdGljIGJvb2wgaXNfbmV0X25zX2ZpbGUoc3RydWN0IGRl
+bnRyeSAqZGVudHJ5KQoreworCS8qIElzIHRoaXMgYSBwcm94eSBmb3IgYSBtb3VudCBuYW1lc3Bh
+Y2U/ICovCisJcmV0dXJuIGRlbnRyeS0+ZF9vcCA9PSAmbnNfZGVudHJ5X29wZXJhdGlvbnMgJiYK
+KwkgICAgICAgZGVudHJ5LT5kX2ZzZGF0YSA9PSAmbmV0bnNfb3BlcmF0aW9uczsKK30KKyNlbmRp
+ZgorCiBzdGF0aWMgc3RydWN0IG1vdW50ICpjbG9uZV9tbnQoc3RydWN0IG1vdW50ICpvbGQsIHN0
+cnVjdCBkZW50cnkgKnJvb3QsCiAJCQkJCWludCBmbGFnKQogewogCXN0cnVjdCBzdXBlcl9ibG9j
+ayAqc2IgPSBvbGQtPm1udC5tbnRfc2I7CiAJc3RydWN0IG1vdW50ICptbnQ7CiAJaW50IGVycjsK
+KyNpZmRlZiBDT05GSUdfTkVUX05TCisJc3RydWN0IG5zX2NvbW1vbiAqbnMgPSBOVUxMOworCXN0
+cnVjdCBuZXQgKm5ldCA9IE5VTEw7CisjZW5kaWYKCiAJbW50ID0gYWxsb2NfdmZzbW50KG9sZC0+
+bW50X2Rldm5hbWUpOwogCWlmICghbW50KQpAQCAtMTAzNSw2ICsxMDUyLDIwIEBAIHN0YXRpYyBz
+dHJ1Y3QgbW91bnQgKmNsb25lX21udChzdHJ1Y3QgbW91bnQgKm9sZCwgc3RydWN0IGRlbnRyeSAq
+cm9vdCwKIAkJCWdvdG8gb3V0X2ZyZWU7CiAJfQoKKyNpZmRlZiBDT05GSUdfTkVUX05TCisJaWYg
+KCEoZmxhZyAmIENMX0NPUFlfTU5UX05TX0ZJTEUpICYmIGlzX25ldF9uc19maWxlKHJvb3QpKSB7
+CisJCW5zID0gZ2V0X3Byb2NfbnMoZF9pbm9kZShyb290KSk7CisJCWlmIChucyA9PSBOVUxMIHx8
+IG5zLT5vcHMtPnR5cGUgIT0gQ0xPTkVfTkVXTkVUKSB7CisJCQllcnIgPSAtRUlOVkFMOworCisJ
+CQlnb3RvIG91dF9mcmVlOworCQl9CisKKwkJbmV0ID0gdG9fbmV0X25zKG5zKTsKKwkJbmV0ID0g
+Z2V0X25ldChuZXQpOworCX0KKyNlbmRpZgorCiAJbW50LT5tbnQubW50X2ZsYWdzID0gb2xkLT5t
+bnQubW50X2ZsYWdzOwogCW1udC0+bW50Lm1udF9mbGFncyAmPSB+KE1OVF9XUklURV9IT0xEfE1O
+VF9NQVJLRUR8TU5UX0lOVEVSTkFMKTsKCmRpZmYgLS1naXQgYS9pbmNsdWRlL25ldC9uZXRfbmFt
+ZXNwYWNlLmggYi9pbmNsdWRlL25ldC9uZXRfbmFtZXNwYWNlLmgKaW5kZXggODU0ZDM5ZWYxY2Ez
+Li5kZjNmYjA2NmEwMDIgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbmV0L25ldF9uYW1lc3BhY2UuaAor
+KysgYi9pbmNsdWRlL25ldC9uZXRfbmFtZXNwYWNlLmgKQEAgLTQ2OSw0ICs0NjksMTEgQEAgc3Rh
+dGljIGlubGluZSB2b2lkIGZuaGVfZ2VuaWRfYnVtcChzdHJ1Y3QgbmV0ICpuZXQpCiAJYXRvbWlj
+X2luYygmbmV0LT5mbmhlX2dlbmlkKTsKIH0KCisjaWZkZWYgQ09ORklHX05FVF9OUworc3RhdGlj
+IGlubGluZSBzdHJ1Y3QgbmV0ICp0b19uZXRfbnMoc3RydWN0IG5zX2NvbW1vbiAqbnMpCit7CisJ
+cmV0dXJuIGNvbnRhaW5lcl9vZihucywgc3RydWN0IG5ldCwgbnMpOworfQorI2VuZGlmCisKICNl
+bmRpZiAvKiBfX05FVF9ORVRfTkFNRVNQQUNFX0ggKi8KZGlmZiAtLWdpdCBhL25ldC9jb3JlL25l
+dF9uYW1lc3BhY2UuYyBiL25ldC9jb3JlL25ldF9uYW1lc3BhY2UuYwppbmRleCA3NTdjYzFkMDg0
+ZTcuLmI2NzcxYzIwMTgwNSAxMDA2NDQKLS0tIGEvbmV0L2NvcmUvbmV0X25hbWVzcGFjZS5jCisr
+KyBiL25ldC9jb3JlL25ldF9uYW1lc3BhY2UuYwpAQCAtMTMyOCwxMSArMTMyOCw2IEBAIHN0YXRp
+YyBzdHJ1Y3QgbnNfY29tbW9uICpuZXRuc19nZXQoc3RydWN0IHRhc2tfc3RydWN0ICp0YXNrKQog
+CXJldHVybiBuZXQgPyAmbmV0LT5ucyA6IE5VTEw7CiB9Cgotc3RhdGljIGlubGluZSBzdHJ1Y3Qg
+bmV0ICp0b19uZXRfbnMoc3RydWN0IG5zX2NvbW1vbiAqbnMpCi17Ci0JcmV0dXJuIGNvbnRhaW5l
+cl9vZihucywgc3RydWN0IG5ldCwgbnMpOwotfQotCiBzdGF0aWMgdm9pZCBuZXRuc19wdXQoc3Ry
+dWN0IG5zX2NvbW1vbiAqbnMpCiB7CiAJcHV0X25ldCh0b19uZXRfbnMobnMpKTsK
+--000000000000b6750905a20db61a--
