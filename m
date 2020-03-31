@@ -2,71 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67FD819A162
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 23:56:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E15419A19E
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 00:06:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731466AbgCaV4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 17:56:00 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:33861 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728840AbgCaV4A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 17:56:00 -0400
-Received: by mail-io1-f66.google.com with SMTP id h131so23449837iof.1;
-        Tue, 31 Mar 2020 14:55:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=KLFkL5VmABExnsnu6K0TICgigmo+8J+FeedYQ3KtQo0=;
-        b=eHHut5C/PqbY2gP6xIlqSHGcPMIKxanycWJD+zNPRlewAi1NAF+aU6BM+9OS0+a/3F
-         4ZSa7xCUxIM7wtXvidLGsS71UAgaaIXlyXnShe6Odr0R4fBeDI6QFeZD6xozlutpDhRe
-         hN+VRh0n0Dh3/qOc9UVKDNOo/Z7DUCAsLBn/7Eddg7FcrKh/93Lg5izGYjd7/mCAPg5S
-         qgGxcUboqMzmhai92lEbFYV/V65SBn5OVMSryrc1fWe5PdRumoe5xwKMKIml+XD/iPi+
-         Iw9932mTzz3ZWlpW0jRVw4qMoI3b+dW+60SvGZKOHL1IzF5E6eap7CD3Ikn2hA6afWO6
-         3QPA==
-X-Gm-Message-State: ANhLgQ3HLUzSABaAOQGp6y7dOs+2n5PNsFKZNuaQIe0b3sZ8UNIsFDDM
-        DXutSmioRF3HoHrHawqCUFEkohlnkg==
-X-Google-Smtp-Source: ADFU+vtpkqBye15ILw7rC1GRkMoDqGKOfsqWCDyyfrWUNNrg+7rjxptxkdu6cCEvwak8rmkvb2UfNg==
-X-Received: by 2002:a5d:9142:: with SMTP id y2mr17099533ioq.185.1585691759566;
-        Tue, 31 Mar 2020 14:55:59 -0700 (PDT)
-Received: from rob-hp-laptop ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id o7sm38349ilb.60.2020.03.31.14.55.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Mar 2020 14:55:59 -0700 (PDT)
-Received: (nullmailer pid 9559 invoked by uid 1000);
-        Tue, 31 Mar 2020 21:55:57 -0000
-Date:   Tue, 31 Mar 2020 15:55:57 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Martin Fuzzey <martin.fuzzey@flowbird.group>
-Cc:     Fugang Duan <fugang.duan@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Fabio Estevam <festevam@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH v2 3/4] dt-bindings: fec: document the new gpr property.
-Message-ID: <20200331215557.GA9526@bogus>
-References: <1585159919-11491-1-git-send-email-martin.fuzzey@flowbird.group>
- <1585159919-11491-4-git-send-email-martin.fuzzey@flowbird.group>
+        id S1731255AbgCaWGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 18:06:34 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:60738 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728493AbgCaWGe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 18:06:34 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.137])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id C5664200A3;
+        Tue, 31 Mar 2020 22:06:33 +0000 (UTC)
+Received: from us4-mdac16-32.at1.mdlocal (unknown [10.110.49.216])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id C26C1600A1;
+        Tue, 31 Mar 2020 22:06:33 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.104])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 464A3220075;
+        Tue, 31 Mar 2020 22:06:33 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id ED85CB80065;
+        Tue, 31 Mar 2020 22:06:32 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 31 Mar
+ 2020 23:05:53 +0100
+Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
+ program when attaching XDP
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     David Ahern <dsahern@gmail.com>, Lorenz Bauer <lmb@cloudflare.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        "Andrey Ignatov" <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <87tv2e10ly.fsf@toke.dk>
+ <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
+ <87369wrcyv.fsf@toke.dk>
+ <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
+ <87pncznvjy.fsf@toke.dk>
+ <CAEf4BzaPQ6=h8a6Ngz638AtL4LmBLLVMV+_-YLMR=Ls+drd5HQ@mail.gmail.com>
+ <CACAyw98yYE+eOx5OayyN2tNQeNqFXnHdRGSv6DYX7ehfMHt1+g@mail.gmail.com>
+ <9f0ab343-939b-92e3-c1b8-38a158da10c9@gmail.com>
+ <20200327230253.txq54keztlwsok2s@ast-mbp>
+ <eba2b6df-e2e8-e756-dead-3f1044a061cd@solarflare.com>
+ <20200331034319.lg2tgxxs5eyiqebi@ast-mbp>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <8c55c053-ab95-3657-e271-dd47c1daaf5e@solarflare.com>
+Date:   Tue, 31 Mar 2020 23:05:50 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1585159919-11491-4-git-send-email-martin.fuzzey@flowbird.group>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200331034319.lg2tgxxs5eyiqebi@ast-mbp>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25324.003
+X-TM-AS-Result: No-4.539700-8.000000-10
+X-TMASE-MatchedRID: cgbqQT5W8hfmLzc6AOD8DfHkpkyUphL9SeIjeghh/zNfUCHPns/+Pr63
+        pbm07ZZeSdLL6kjt9I/Gp/huIU6WTMr9HDn98b6SjoyKzEmtrEcIN+xzZWKXEOWE75Fmw3RmEl3
+        R3+Zqra1PMNGJAkPaVAd2m1cUUwTvQd6ggaZlaf6eAiCmPx4NwJwhktVkBBrQFybFQYnP6TwBl3
+        N74/wGv9AtbEEX0MxBxEHRux+uk8ifEzJ5hPndGQElZdLuNhARK//LMAOgyc0E3K+iS0K6C71EK
+        bAUmW4p7QJ7Nr/4NU5sp4ZnnT3PvZ0p9lps94EPd/Hv57tPUOviIkk+eg27pdQ17CngTb9OBKmZ
+        VgZCVnezGTWRXUlrxxtsJUxyzWNSVlxr1FJij9s=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--4.539700-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25324.003
+X-MDID: 1585692393-cft8yebpXU8a
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 Mar 2020 19:11:58 +0100, Martin Fuzzey wrote:
-> This property allows the gpr register bit to be defined
-> for wake on lan support.
-> 
-> Signed-off-by: Martin Fuzzey <martin.fuzzey@flowbird.group>
-> ---
->  Documentation/devicetree/bindings/net/fsl-fec.txt | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+On 31/03/2020 04:43, Alexei Starovoitov wrote:
+> On Mon, Mar 30, 2020 at 04:25:07PM +0100, Edward Cree wrote:
+>> Everything that a human operator can do, so can any program with the
+>>  same capabilities/wheel bits.  Especially as the API that the
+>>  operator-tool uses *will* be open and documented.  The Unix Way does
+>>  not allow unscriptable interfaces, and heavily frowns at any kind of
+>>  distinction between 'humans' and 'programs'.
+> can you share a link on such philosophy?
+It's not quite as explicit about it as I'd like, but
+ http://www.catb.org/esr/writings/taoup/html/ch01s06.html#id2877684
+ is the closest I can find right now.
 
-Acked-by: Rob Herring <robh@kernel.org>
+-ed
