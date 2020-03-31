@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 02F56199F1D
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 21:30:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ECFE199F39
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 21:37:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731394AbgCaTap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 15:30:45 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:41235 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729597AbgCaTap (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 15:30:45 -0400
-Received: by mail-wr1-f67.google.com with SMTP id h9so27497035wrc.8
-        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 12:30:42 -0700 (PDT)
+        id S1727955AbgCaThl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 15:37:41 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:40744 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726290AbgCaThl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 15:37:41 -0400
+Received: by mail-wm1-f65.google.com with SMTP id a81so4243019wmf.5
+        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 12:37:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LFCc24H2YUhmuYiJsJcQK4aHwICdxOpP1ZS4yggcQtE=;
-        b=scjvPERv8ys4HK8mjuseeC49ynhzflMctC28TGOhXvDGT5rRg7vslVYxoZg7pGSAFl
-         qJVDxSyLH/Y1kNbjpiHfw1ObIibplNn1iGu7U1KpcdbDMQ+AtVIQ3bMeBqWAyXez7sjY
-         4yVvnb55XjyuNtWrRTeFAmCK+J8zLipDt1wj+7FFo69l7OuP+CBQgevdELDKpGxB5zLf
-         yzCZ+POKRuCDG5MQ1PyN9+BnrJ9rgEGvk7LlwP6s1RXea/uTmADPEXsS/TWUaxZxYgLJ
-         jDWyfyLrpCobBb5rJIgAhYF3fi+6rVUaaTltHAN07WgzQ19xmzWdHa8ZSelSDPcFUe1e
-         spfg==
+        bh=h4Qt1CwjKZp8tnIeFqPOMyR07Powsmy7g+eXNyd0xVY=;
+        b=bo+0EZx15XkD4guGd6+fBCe5IU/UU5QLjrCmuAPWwpCDfojPHYNoM4OvI1VJnk9pDZ
+         pwoRAUxySWI9yI9BhHfUtW7P4ZscKcxoWOFb/XilKyvp8LCUEybIXr6dXsIQCd6cOm/b
+         1WJ75LhU6qNM/8sQScUr1yJWg9He/U928kLoBhlT3dWCq/gtElnDJXA5fzC5VCAhRWts
+         zay9igjMTQYPqeNfkJW1JSX9ue5QGOFlRNBvRZn6EgmZ8sFgFwcypOBBCpGnATFHV8Gl
+         2DDZvhKHX7C+fPiBmEEnphDqLljqEbfsmM0MVeoYIzyWdflrP/xF1GeKtdHfI9jRNri/
+         n6fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=LFCc24H2YUhmuYiJsJcQK4aHwICdxOpP1ZS4yggcQtE=;
-        b=fYR6fRDsQzjF8DuXCTY5XFRj1n4+6rlWbt3z4OjkJAOs8cGHMhShee7s+kmaXIHgBk
-         ID9DbTtzLXS3duLaSvdfI39N+odzZU4wQb/RWoIu2Jpl/0Yk2K9vgrIocVNGjN2CKU7c
-         j86mRAy+3szwS91/PiQbHlHmiuyQKwQYSauQrENdEo/Mx4n0Kv5PQkuCQh/VPXrVzBsF
-         yv8QjK7A0MC9a+AAN7QlvGoJ+SnMrMS4FJiBLlpNyxtzYANGhEtkI/S1EbnXHc0lG+5y
-         nSSZ5/C3rzJuQIBA2tK2pJVyJ1Y2CWuLUbZKJ+2qLX1mkSytrfPZYQ5V7U41U8+XBJny
-         rsYQ==
-X-Gm-Message-State: ANhLgQ18hIK/q25p9orfAbfekN4KV4cnFwssM+pZy0RN8lA0DQQr5MzF
-        qRZkFYRVMaIfizsR6/cl6v3NQGxb
-X-Google-Smtp-Source: ADFU+vtNaGLn46I1/fG0MpePu149A/9qXSo/uGoyRe3W3vIcyHovuruCAjHRyV/X750ez2izG5cg8Q==
-X-Received: by 2002:adf:bc4a:: with SMTP id a10mr21742755wrh.7.1585683042173;
-        Tue, 31 Mar 2020 12:30:42 -0700 (PDT)
+        bh=h4Qt1CwjKZp8tnIeFqPOMyR07Powsmy7g+eXNyd0xVY=;
+        b=BTB1rhGkyGtopvHZynPXwTWf7KO1yHU0RSbF1Xo7qlDZYog+/XIxQuFIwg8zfP0NRV
+         HCQt9NQ+KJCAS16JSrT5NJXjVqEVkYkDoVOKcwGuBJEOPiCr0Y53+pTHftLyDdUs+2CG
+         zioIllm3niiQn8KbLE8Zt2ZZjLqTbf/fsA7hcB9uIPyy1gXG8nHQNe9u7TqMmDKt51+n
+         EsF5SA0ddUJjIS3VnUvP4QnOnna/IJZSaYI/53uijeT9G//MR0OXoEjQi6DX0+77sqay
+         V4kwPNwv+fnC4AkfhMhW3SKhlm+rCXPQM5Evhx1I7CZ2TZ1luESzqUWlgl/B8JUpwiek
+         w7OA==
+X-Gm-Message-State: AGi0PubTkHJCEs2bEOUtBjV+INcZZDrtbPLWYD8YWZDWZ/LOhWqVuFBs
+        Z3PzK3tSzoXp3aBClpK6YBE=
+X-Google-Smtp-Source: APiQypJVOFzFRoiNtaK9CmoApkjX6zkw8/RLDhOiIgaqgneIt10OGmWbifi087y+42fda1X4IuZD0Q==
+X-Received: by 2002:a05:600c:1403:: with SMTP id g3mr448769wmi.76.1585683458129;
+        Tue, 31 Mar 2020 12:37:38 -0700 (PDT)
 Received: from [10.230.186.223] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z203sm5122516wmg.12.2020.03.31.12.30.40
+        by smtp.gmail.com with ESMTPSA id k3sm5148831wmf.16.2020.03.31.12.37.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Mar 2020 12:30:41 -0700 (PDT)
+        Tue, 31 Mar 2020 12:37:37 -0700 (PDT)
 Subject: Re: [PATCH] net: phy: marvell10g: add firmware load support
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Baruch Siach <baruch@tkos.co.il>,
+To:     Baruch Siach <baruch@tkos.co.il>,
         Russell King <linux@armlinux.org.uk>
 Cc:     netdev@vger.kernel.org, Shmuel Hazan <sh@tkos.co.il>,
-        Andrew Lunn <andrew@lunn.ch>
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
 References: <16e4a15e359012fc485d22c7e413a129029fbd0f.1585676858.git.baruch@tkos.co.il>
- <8f4ecf61-ed50-9de6-f20a-0ade5f3dcb9a@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -108,15 +107,15 @@ Autocrypt: addr=f.fainelli@gmail.com; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <ae83f479-a3cf-30c9-68dc-45e27a5515f2@gmail.com>
-Date:   Tue, 31 Mar 2020 12:30:38 -0700
+Message-ID: <ad024231-40bd-c82f-e6d0-3b1b00c93e9a@gmail.com>
+Date:   Tue, 31 Mar 2020 12:37:34 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Firefox/68.0 Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <8f4ecf61-ed50-9de6-f20a-0ade5f3dcb9a@gmail.com>
+In-Reply-To: <16e4a15e359012fc485d22c7e413a129029fbd0f.1585676858.git.baruch@tkos.co.il>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -124,21 +123,124 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 3/31/2020 11:16 AM, Heiner Kallweit wrote:
-> On 31.03.2020 19:47, Baruch Siach wrote:
->> When Marvell 88X3310 and 88E2110 hardware configuration SPI_CONFIG strap
->> bit is pulled up, the host must load firmware to the PHY after reset.
->> Add support for loading firmware.
->>
->> Firmware files are available from Marvell under NDA.
->>
+On 3/31/2020 10:47 AM, Baruch Siach wrote:
+> When Marvell 88X3310 and 88E2110 hardware configuration SPI_CONFIG strap
+> bit is pulled up, the host must load firmware to the PHY after reset.
+> Add support for loading firmware.
 > 
-> Loading firmware files that are available under NDA only in GPL-licensed
-> code may be problematic. I'd expect firmware files to be available in
-> linux-firmware at least.
-> I'd be interested in how the other phylib maintainers see this.
+> Firmware files are available from Marvell under NDA.
+> 
+> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+> ---
 
-I second that, having the firmware available in linux-firmware is
-necessary for this code to be accepted.
+[snip]
+
+> +static int mv3310_write_firmware(struct phy_device *phydev, const u8 *data,
+> +		unsigned int size)
+> +{
+> +	unsigned int low_byte, high_byte;
+> +	u16 checksum = 0, ram_checksum;
+> +	unsigned int i = 0;
+> +
+> +	while (i < size) {
+> +		low_byte = data[i++];
+> +		high_byte = data[i++];
+> +		checksum += low_byte + high_byte;
+> +		phy_write_mmd(phydev, MDIO_MMD_PCS, MV_PCS_RAM_DATA,
+> +				(high_byte << 8) | low_byte);
+
+If there is an error upon write, there is really no point in continuing
+any further, so you should just break out of the loop and return an
+error. Having to continue and then fail the checksum is going to take an
+awful amount of time.
+
+> +		cond_resched();
+> +	}
+> +
+> +	ram_checksum = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_RAM_CHECKSUM);
+
+Likewise, you need to check for phy_read_mmd() returning < 0.
+
+> +	if (ram_checksum != checksum) {
+> +		dev_err(&phydev->mdio.dev, "firmware checksum failed");
+> +		return -EIO;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void mv3310_report_firmware_rev(struct phy_device *phydev)
+> +{
+> +	int rev1, rev2;
+> +
+> +	rev1 = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_FW_REV1);
+> +	rev2 = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_FW_REV2);
+> +	if (rev1 < 0 || rev2 < 0)
+> +		return;
+> +
+> +	dev_info(&phydev->mdio.dev, "Loaded firmware revision %d.%d.%d.%d",
+> +			(rev1 & 0xff00) >> 8, rev1 & 0x00ff,
+> +			(rev2 & 0xff00) >> 8, rev2 & 0x00ff);
+> +}
+> +
+> +static int mv3310_load_firmware(struct phy_device *phydev)
+> +{
+> +	const struct firmware *fw_entry;
+> +	char *fw_file;
+> +	int ret;
+> +
+> +	switch (phydev->drv->phy_id) {
+> +	case MARVELL_PHY_ID_88X3310:
+> +		fw_file = "mrvl/x3310fw.hdr";
+> +		break;
+> +	case MARVELL_PHY_ID_88E2110:
+> +		fw_file = "mrvl/e21x0fw.hdr";
+> +		break;
+> +	default:
+> +		dev_warn(&phydev->mdio.dev, "unknown firmware file for %s PHY",
+> +				phydev->drv->name);
+> +		return -EINVAL;
+> +	}
+> +
+> +	ret = request_firmware(&fw_entry, fw_file, &phydev->mdio.dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* Firmware size must be larger than header, and even */
+> +	if (fw_entry->size <= MV_FIRMWARE_HEADER_SIZE ||
+> +			(fw_entry->size % 2) != 0) {
+> +		dev_err(&phydev->mdio.dev, "firmware file invalid");
+> +		return -EINVAL;
+> +	}
+
+You need to release the firmware file here. There is also possibly
+another case that you are not covering here, which is that the firmware
+on disk is newer than the firmware *already* loaded in the PHY, this
+should presumably update the running firmware to the latest copy.
+
+Without being able to publish the firmware in linux-firmware though, all
+of this may be moot.
+
+> +
+> +	/* Clear checksum register */
+> +	phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_RAM_CHECKSUM);
+> +
+> +	/* Set firmware load address */
+> +	phy_write_mmd(phydev, MDIO_MMD_PCS, MV_PCS_FW_LOW_WORD, 0);
+> +	phy_write_mmd(phydev, MDIO_MMD_PCS, MV_PCS_FW_HIGH_WORD, 0x0010);
+> +
+> +	ret = mv3310_write_firmware(phydev,
+> +			fw_entry->data + MV_FIRMWARE_HEADER_SIZE,
+> +			fw_entry->size - MV_FIRMWARE_HEADER_SIZE);
+> +	if (ret < 0)
+> +		return ret;
+
+And here too.
+
+> +
+> +	phy_modify_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_BOOT,
+> +			MV_PMA_BOOT_FW_LOADED, MV_PMA_BOOT_FW_LOADED);
+> +
+> +	release_firmware(fw_entry);
 -- 
 Florian
