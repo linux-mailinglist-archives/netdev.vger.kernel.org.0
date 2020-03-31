@@ -2,122 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EAA4198A9C
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 05:43:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66B03198AAC
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 05:54:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729624AbgCaDn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 23:43:26 -0400
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:39445 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727708AbgCaDn0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 23:43:26 -0400
-Received: by mail-pj1-f66.google.com with SMTP id z3so503014pjr.4;
-        Mon, 30 Mar 2020 20:43:25 -0700 (PDT)
+        id S1729795AbgCaDyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 23:54:49 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:33823 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727358AbgCaDyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 23:54:49 -0400
+Received: by mail-qt1-f195.google.com with SMTP id 10so17242503qtp.1;
+        Mon, 30 Mar 2020 20:54:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=YfVLm822WaIxf+LpzAETaD8faJozYcUOEo6HcGMd9Ck=;
-        b=IbNnlW5tJ8EhGyv+0HPUZwBwWgOJeeUqlY1EVaHoiqpFXChUAl8ROBqsakNguEvybj
-         TOm5boQbYilYOkrT/tvMVEhhHXNdK+aDq8QiS7nJqy6zMdfb3oCtYjj2jWYkFGavWmVL
-         SbopXPztqJhd8PhPLBPOSOiIR4UDjlZ4w1BrxqhNoDt5G0qUdWIUuhfG3p0igzjJHKGY
-         K/lDD+fCvfLsY4W1br/4Mbm0lp7sEkcpSdSvldhaj3NSNFlTiFXK1PnNSHXcR+s8VWiv
-         oeulcJq7TemO0XdBCOGcV2VGGFbUIEvgSJEi3CEsZAm+eWAeVdbWflHt+N0Jm8harddB
-         U63A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Vbv4wVL9aDWjgc0l/oEVuiG2/UoearZM1KlxGlj6iTA=;
+        b=Rac8IpO53SrtuYhqn+25V683NUH9Wa/ki/pLGMGIdwo6drOTHxK3XO7YF+sMoZ7sCg
+         IwnRxoH70Ywzw0Crg4jDug+G8e9YECcVYLlmkbZ0gRSdrAfIr0jcVYdF1Xr42TvLcecG
+         lKRw+sVeFwTSo5Adf2R9jF299VIihFtvuXy0Br6firJBdh3zuN7kdxh5VKCYM6opCnG/
+         ezXKBuPdKOXx+eFEu6CON7mns+rvimzbsvvsu207VEr9QwaEML4glZ4y109zfSulWbIt
+         hxC+jYMOEO7s2ZzKPhon4IOrNCFORxtmgOafOpNx5OmNe57AhLYkhZcTk8m+zsPV2zKh
+         BvlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=YfVLm822WaIxf+LpzAETaD8faJozYcUOEo6HcGMd9Ck=;
-        b=ArLc+JHSqyLQhSDZrw0vCNVbc2dcW9hBhWSZAjwervGfe0YI6vUm8NZr++lxNiIk9P
-         GJ+ec7yzvOqW+slWyW0kCaZCLuXqFhVLwO1wrWX0G3WDeuOca2xUAYqYYqPqL5MaotWw
-         5yJR8fImfV07eQsEVAW1fQzv8N7cWGW7gIURlcdrSYbwWGEl5gul9IB75CQ3rVyM1H+Q
-         thlwghA7uJuWu+UnNRsME/yaZwrBcvBbgWHm+Vzd4LzIO+p4qDAAvVhYOqoT+o00QxO/
-         PAjtWbuietJ4KGydzoZP+QCm5g8k49AO7C7cV5Jlzf9Y5+WncBqIvZwrEgBm3quPg8V9
-         lyow==
-X-Gm-Message-State: AGi0Pub46kgvIbYx86Q6eyI64u/yYa14kx9CZrdy1uSNnhuJZEjd/NJk
-        lU5Sj+KIrQ55FpZCDs/aezzF2/WB
-X-Google-Smtp-Source: APiQypKEiATaaHVj8MlS/O5BhQcT8M3/Tb5Cb2mE7NHB4U4zjSd2bjLeeCpvIk+ul3Z3X+qg3iVfBA==
-X-Received: by 2002:a17:90a:757:: with SMTP id s23mr1511702pje.166.1585626205129;
-        Mon, 30 Mar 2020 20:43:25 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:442d])
-        by smtp.gmail.com with ESMTPSA id b2sm768982pjc.6.2020.03.30.20.43.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Mar 2020 20:43:24 -0700 (PDT)
-Date:   Mon, 30 Mar 2020 20:43:19 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     David Ahern <dsahern@gmail.com>, Lorenz Bauer <lmb@cloudflare.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
- program when attaching XDP
-Message-ID: <20200331034319.lg2tgxxs5eyiqebi@ast-mbp>
-References: <87tv2e10ly.fsf@toke.dk>
- <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
- <87369wrcyv.fsf@toke.dk>
- <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
- <87pncznvjy.fsf@toke.dk>
- <CAEf4BzaPQ6=h8a6Ngz638AtL4LmBLLVMV+_-YLMR=Ls+drd5HQ@mail.gmail.com>
- <CACAyw98yYE+eOx5OayyN2tNQeNqFXnHdRGSv6DYX7ehfMHt1+g@mail.gmail.com>
- <9f0ab343-939b-92e3-c1b8-38a158da10c9@gmail.com>
- <20200327230253.txq54keztlwsok2s@ast-mbp>
- <eba2b6df-e2e8-e756-dead-3f1044a061cd@solarflare.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Vbv4wVL9aDWjgc0l/oEVuiG2/UoearZM1KlxGlj6iTA=;
+        b=QPyrLnJrY2YbKOTV+jdaQ5o0O6Ls7onseTOsdrxG3I9kJradK96pp3nQWHia/RN4mz
+         nlI/vI/bDIqACnKSmhxhfhHjwa0Rnj9mX4LHIqmwndvVBXYR9CI+luEitnN/bJ0o7exv
+         zf89+moJRDM2EMswrlVwbMcJ6/ib1zqyeAvpgONB4t8zdSxEc0CJUdcNhUIpYvVg42ok
+         BtBLs1WdOAw2JYdND4Z1qgwJRNNZ31pUlPifEw4WIXoDXDC1vU7CXdzukdyOJNxaiP0W
+         3H2abX0lsiY4kSZYDDckYRUiWG+HIwpPV+9SwGTCnxYt2Gk+9YAdSsbj1op7dVAHt+5P
+         swow==
+X-Gm-Message-State: ANhLgQ3+8oTE/t4kjyk87j3f627Bp7yZxz1jKIAApFCyaqDPB8CiA+Ab
+        HRldOq1nYU6Vrpp/f5ay9KGwJ2a174b8LKYK+as=
+X-Google-Smtp-Source: ADFU+vvfbKGAp2bjhbXi7yk7NBF85fgrF5Ad/c2/4mn0rAKoUsUkAlu1K1H7N3LlURUNm4Ztqm+X/eRRJn7JJgB+9jE=
+X-Received: by 2002:ac8:7cb0:: with SMTP id z16mr3105237qtv.59.1585626886610;
+ Mon, 30 Mar 2020 20:54:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <eba2b6df-e2e8-e756-dead-3f1044a061cd@solarflare.com>
+References: <20200330030001.2312810-1-andriin@fb.com> <c9f52288-5ea8-a117-8a67-84ba48374d3a@gmail.com>
+ <CAEf4BzZpCOCi1QfL0peBRjAOkXRwGEi_DAW4z34Mf3Tv_sbRFw@mail.gmail.com>
+ <662788f9-0a53-72d4-2675-daec893b5b81@gmail.com> <CAADnVQK8oMZehQVt34=5zgN12VBc2940AWJJK2Ft0cbOi1jDhQ@mail.gmail.com>
+ <cdd576be-8075-13a7-98ee-9bc9355a2437@gmail.com> <20200331003222.gdc2qb5rmopphdxl@ast-mbp>
+ <58cea4c7-e832-2632-7f69-5502b06310b2@gmail.com>
+In-Reply-To: <58cea4c7-e832-2632-7f69-5502b06310b2@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 30 Mar 2020 20:54:35 -0700
+Message-ID: <CAEf4BzZSCdtSRw9mj2W5Vv3C-G6iZdMJsZ8WGon11mN3oBiguQ@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 0/4] Add support for cgroup bpf_link
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrey Ignatov <rdna@fb.com>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 04:25:07PM +0100, Edward Cree wrote:
-> On 27/03/2020 23:02, Alexei Starovoitov wrote:
-> > On Fri, Mar 27, 2020 at 10:12:05AM -0600, David Ahern wrote:
-> >> I had a thought yesterday along similar lines: bpf_link is about
-> >> ownership and preventing "accidental" deletes.
-> > The mechanism for "human override" is tbd.
-> Then that's a question you really need to solve, especially if you're
->  going to push bpf_link quite so... forcefully.
-> Everything that a human operator can do, so can any program with the
->  same capabilities/wheel bits.  Especially as the API that the
->  operator-tool uses *will* be open and documented.  The Unix Way does
->  not allow unscriptable interfaces, and heavily frowns at any kind of
->  distinction between 'humans' and 'programs'.
+On Mon, Mar 30, 2020 at 5:57 PM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 3/30/20 6:32 PM, Alexei Starovoitov wrote:
+> >>
+> >> This is not a large feature, and there is no reason for CREATE/UPDATE -
+> >> a mere 4 patch set - to go in without something as essential as the
+> >> QUERY for observability.
+> >
+> > As I said 'bpftool cgroup' covers it. Observability is not reduced in any way.
+>
+> You want a feature where a process can prevent another from installing a
+> program on a cgroup. How do I learn which process is holding the
+> bpf_link reference and preventing me from installing a program? Unless I
+> have missed some recent change that is not currently covered by bpftool
+> cgroup, and there is no way reading kernel code will tell me.
+>
+> ###
+> To quote Lorenz from an earlier response:
+>
+> "However, this behaviour concerns me. It's like Windows not
+> letting you delete a file while an application has it opened, which just
+> leads to randomly killing programs until you find the right one. It's
+> frustrating and counter productive.
+>
+> You're taking power away from the operator. In your deployment scenario
+> this might make sense, but I think it's a really bad model in general.
+> If I am privileged I need to be able to exercise that privilege."
+> ###
+>
+> That is my point. You are restricting what root can do and people will
+> not want to resort to killing random processes trying to find the one
+> holding a reference. This is an essential missing piece and should go in
+> at the same time as this set.
 
-can you share a link on such philosophy?
-I was thinking something like CAPTCHA 'confirm if you're not a robot'
-type of a button.
-So humans doing 'bpftool link show' followed by 'bpftool link del id 123'
-will work as expected, but processes cannot use the same api to
-nuke other processes.
+No need to kill random processes, you can kill only those that hold
+bpf_link FD. You can find them using drgn tool with script like [0].
+It will give you quite a lot of information already, but it should
+also find pinned bpf_links, I haven't added it yet.
 
-> So what will the override look like?  A bpf() syscall with a special
->  BPF_F_IM_A_HUMAN_AND_I_KNOW_WHAT_IM_DOING flag?  ptracing the link
->  owner, so that you can close() its fd?  Something in between?
+Found total 11 bpf_links.
+-------------------------------------------------
+type: tracing
+prog: 'test1' id:223 type:BPF_PROG_TYPE_TRACING
+pids: 449027
+-------------------------------------------------
+type: tracing
+prog: 'test2' id:224 type:BPF_PROG_TYPE_TRACING
+pids: 449027
+-------------------------------------------------
+type: tracing
+prog: 'test3' id:225 type:BPF_PROG_TYPE_TRACING
+pids: 449027
+-------------------------------------------------
+type: tracing
+prog: 'test4' id:226 type:BPF_PROG_TYPE_TRACING
+pids: 449027
+-------------------------------------------------
+type: tracing
+prog: 'test5' id:227 type:BPF_PROG_TYPE_TRACING
+pids: 449027
+-------------------------------------------------
+type: tracing
+prog: 'test6' id:228 type:BPF_PROG_TYPE_TRACING
+pids: 449027
+-------------------------------------------------
+type: raw_tp
+prog: '' id:237 type:BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE
+tp: bpf_test_finish
+pids: 449462
+-------------------------------------------------
+type: cgroup
+prog: 'egress' id:242 type:BPF_PROG_TYPE_CGROUP_SKB
+attach: BPF_CGROUP_INET_EGRESS
+cgroup: /cgroup-test-work-dir/cg1
+pids: 449881
+-------------------------------------------------
+type: cgroup
+prog: 'egress' id:242 type:BPF_PROG_TYPE_CGROUP_SKB
+attach: BPF_CGROUP_INET_EGRESS
+cgroup: /cgroup-test-work-dir/cg1/cg2
+pids: 449881
+-------------------------------------------------
+type: cgroup
+prog: 'egress' id:242 type:BPF_PROG_TYPE_CGROUP_SKB
+attach: BPF_CGROUP_INET_EGRESS
+cgroup: /cgroup-test-work-dir/cg1/cg2/cg3
+pids: 449881
+-------------------------------------------------
+type: cgroup
+prog: 'egress' id:242 type:BPF_PROG_TYPE_CGROUP_SKB
+attach: BPF_CGROUP_INET_EGRESS
+cgroup: /cgroup-test-work-dir/cg1/cg2/cg3/cg4
+pids: 449881
+-------------------------------------------------
 
-not sure yet.
 
-> In any case, the question is orthogonal to the bpf_link vs. netlink
->  issue: the netlink XDP attach could be done with a flag that means
->  "don't allow replacement/removal without EXPECTED_FD".  No?
-
-Nothing to do with netlink, of course. Both XDP and tc bpf hooks
-missing the concept of owner of the attachment.
-For tc it's easier to implement and understand, since it allows
-multi prog. If process A attaches a tc clsbpf prog via bpf_link
-another process B will not be able to nuke it.
+   [0] https://gist.github.com/anakryiko/562dff8e39c619a5ee247bb55aa057c7
