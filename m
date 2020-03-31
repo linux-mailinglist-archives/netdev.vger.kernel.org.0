@@ -2,103 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4827198C02
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 08:00:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25CD9198C0A
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 08:05:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbgCaGAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 02:00:09 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:43242 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbgCaGAI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 02:00:08 -0400
-Received: by mail-ot1-f68.google.com with SMTP id a6so20835432otb.10
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 23:00:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CXXOUsdlGnj26N+iA7SMD6V0EP1D1IvyP4A5rEv/314=;
-        b=oOzu0tpFaFjqEknxZ9sNViabnRjWpZMb0jUT3s423py5e4+kaeYoZmCCwJMBPmk7+W
-         vxSKSmz29o7HmI/rDhRdpHPL8UmccJfzCkNfBpNMoMzcmpJWRMz96Czytex8jnwqfIvm
-         4S95cTAraCBoCD3D0/lGxccEvZr87ZTNYuHezh2AkP1nb6+Zn+CwzouDXI2K7jYzrNO4
-         NrVQDD+cCIBTqH16fS7/Hs257i/INcAE9w9bYQLMDOEClxkKE1fn/agKhQZEA1WM94Tu
-         M0+7Cc9/ESUz6FZ7wHEqpEDYvWWmMjQMAh4TQASLv1uYfzoBEMZUK4PNUugoBdYTxaIK
-         itHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CXXOUsdlGnj26N+iA7SMD6V0EP1D1IvyP4A5rEv/314=;
-        b=aaxe/Kaj+B4YndC926hZrvRtmmmis06h9YysGSJQ/tiAUKvcaxV3jAAk0IXK17S45J
-         nc9YxbmJ7bLx++y1LGVDGh2Azx5Vvnw8I/QCETYr9LPKQhpT3RamUrxBf2S7X0ba5y2e
-         rkpJ8ZV7fHXa8yLPAosVGgD5lI7V4MzNAb38YTMQs0SrDR0af7zx9wmotApyXHFdVawi
-         LI9Jj1rioQn/YzA3ryz0mayFBPnLpdRb3r9jhI/WA4qJ9Df1mA7s3B11mcQ7/hUsV63v
-         RvODfzoTAR1bqdy4X968p4L/fxpLh9lc5af6iXOYHjlxpI/WY/4E2ZD5kjQhxOKRpHBE
-         0aLA==
-X-Gm-Message-State: ANhLgQ3tdUVlPztrfsKuiekAAwkYI3QJKMJSsIsIN/8/+WY9qSveczwP
-        E/GbrkW27CTsgvBU27Wg7kGdHACUhE6XBwR0r3M=
-X-Google-Smtp-Source: ADFU+vv6GkLUwtWZccpAqTJ/L1osIAcGp6aYYTB1J0BYMenKXMeqwOHpeaNC9vBziCwgo/qpM72s0idMh+aobCR7W7s=
-X-Received: by 2002:a05:6830:22e8:: with SMTP id t8mr2213599otc.48.1585634407996;
- Mon, 30 Mar 2020 23:00:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
- <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
- <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
- <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com>
- <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
- <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com>
- <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com>
- <CANxWus_tPZ-C2KuaY4xpuLVKXriTQv1jvHygc6o0RFcdM4TX2w@mail.gmail.com>
- <CAM_iQpV0g+yUjrzPdzsm=4t7+ZBt8Y=RTwYJdn9RUqFb1aCE1A@mail.gmail.com>
- <CAM_iQpWLK8ZKShdsWNQrbhFa2B9V8e+OSNRQ_06zyNmDToq5ew@mail.gmail.com>
- <CANxWus8YFkWPELmau=tbTXYa8ezyMsC5M+vLrNPoqbOcrLo0Cg@mail.gmail.com> <CANxWus9qVhpAr+XJbqmgprkCKFQYkAFHbduPQhU=824YVrq+uw@mail.gmail.com>
-In-Reply-To: <CANxWus9qVhpAr+XJbqmgprkCKFQYkAFHbduPQhU=824YVrq+uw@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Mon, 30 Mar 2020 22:59:56 -0700
-Message-ID: <CAM_iQpV-0f=yX3P=ZD7_-mBvZZn57MGmFxrHqT3U3g+p_mKyJQ@mail.gmail.com>
-Subject: Re: iproute2: tc deletion freezes whole server
-To:     =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        id S1726659AbgCaGFU convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 31 Mar 2020 02:05:20 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:43900 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbgCaGFU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 02:05:20 -0400
+Received: from marcel-macpro.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 62C91CECC4;
+        Tue, 31 Mar 2020 08:14:51 +0200 (CEST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [PATCH v4 1/2] Bluetooth: btusb: Indicate Microsoft vendor
+ extension for Intel 9460/9560 and 9160/9260
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <CABmPvSF=pcffe18iAKgbU8bwFvVDp-NKeAFGw8auKoVd1XAuTQ@mail.gmail.com>
+Date:   Tue, 31 Mar 2020 08:05:18 +0200
+Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
+        Alain Michaud <alainm@chromium.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <852FDEFC-7AD1-4CB9-9C45-BBAB5B2A8D14@holtmann.org>
+References: <20200328074632.21907-1-mcchou@chromium.org>
+ <20200328004507.v4.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
+ <9CC14296-9A0E-4257-A388-B2F7C155CCE5@holtmann.org>
+ <CABmPvSF=pcffe18iAKgbU8bwFvVDp-NKeAFGw8auKoVd1XAuTQ@mail.gmail.com>
+To:     Miao-chen Chou <mcchou@chromium.org>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Mar 28, 2020 at 6:04 AM V=C3=A1clav Zindulka
-<vaclav.zindulka@tlapnet.cz> wrote:
->
-> On Fri, Mar 27, 2020 at 11:35 AM V=C3=A1clav Zindulka
-> <vaclav.zindulka@tlapnet.cz> wrote:
-> >
-> > Your assumption is not totally wrong. I have added some printks into
-> > fq_codel_reset() function. Final passes during deletion are processed
-> > in the if condition you added in the patch - 13706. Yet the rest and
-> > most of them go through regular routine - 1768074. 1024 is value of i
-> > in for loop.
->
-> Ok, so I went through the kernel source a little bit. I've found out
-> that dev_deactivate is called only for interfaces that are up. My bad
-> I forgot that after deactivation of my daemon ifb interfaces are set
-> to down. Nevertheless after setting it up and doing perf record on
-> ifb0 numbers are much lower anyway. 13706 exits through your condition
-> added in patch. 41118 regular exits. I've uploaded perf report here
-> https://github.com/zvalcav/tc-kernel/tree/master/20200328
->
-> I've also tried this on metallic interface on different server which
-> has a link on it. There were 39651 patch exits. And 286412 regular
-> exits. It is more than ifb interface, yet it is way less than sfp+
-> interface and behaves correctly.
+Hi Miao-chen,
 
-Interesting, at the point of dev_deactivate() is called, the refcnt
-should not be zero, it should be at least 1, so my patch should
-not affect dev_deactivate(), it does affect the last qdisc_put()
-after it.
+>>> This adds a bit mask of driver_info for Microsoft vendor extension and
+>>> indicates the support for Intel 9460/9560 and 9160/9260. See
+>>> https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
+>>> microsoft-defined-bluetooth-hci-commands-and-events for more information
+>>> about the extension. This also add a kernel config, BT_MSFTEXT, and a
+>>> source file to facilitate Microsoft vendor extension functions.
+>>> This was verified with Intel ThunderPeak BT controller
+>>> where msft_vnd_ext_opcode is 0xFC1E.
+>>> 
+>>> Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+>>> 
+>>> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
+>>> ---
+>>> 
+>>> Changes in v4:
+>>> - Introduce CONFIG_BT_MSFTEXT as a starting point of providing a
+>>> framework to use Microsoft extension
+>>> - Create include/net/bluetooth/msft.h and net/bluetooth/msft.c to
+>>> facilitate functions of Microsoft extension.
+>>> 
+>>> Changes in v3:
+>>> - Create net/bluetooth/msft.c with struct msft_vnd_ext defined internally
+>>> and change the hdev->msft_ext field to void*.
+>>> - Define and expose msft_vnd_ext_set_opcode() for btusb use.
+>>> - Init hdev->msft_ext in hci_alloc_dev() and deinit it in hci_free_dev().
+>>> 
+>>> Changes in v2:
+>>> - Define struct msft_vnd_ext and add a field of this type to struct
+>>> hci_dev to facilitate the support of Microsoft vendor extension.
+>>> 
+>>> drivers/bluetooth/btusb.c        | 11 +++++++++--
+>>> include/net/bluetooth/hci_core.h |  4 ++++
+>> 
+>> so I don’t like the intermixing of core features and drivers unless it is needed. In this case it is not needed since we can first introduce the core support and then enable the driver to use it.
+> I will make btusb changes as a different commit in v5.
 
-Of course, my intention is indeed to eliminate all of the
-unnecessary memset() in the ->reset() before ->destroy().
-I will provide you a complete patch tomorrow if you can test
-it, which should improve hfsc_reset() too.
+check the series that I posted. I tested them on ThunderPeak and if it also works, we use that as a base and then go from there.
 
-Thanks.
+>> 
+>>> net/bluetooth/Kconfig            |  9 ++++++++-
+>>> net/bluetooth/Makefile           |  1 +
+>>> net/bluetooth/msft.c             | 16 ++++++++++++++++
+>>> net/bluetooth/msft.h             | 19 +++++++++++++++++++
+>>> 6 files changed, 57 insertions(+), 3 deletions(-)
+>>> create mode 100644 net/bluetooth/msft.c
+>>> create mode 100644 net/bluetooth/msft.h
+>>> 
+>>> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+>>> index 3bdec42c9612..0fe47708d3c8 100644
+>>> --- a/drivers/bluetooth/btusb.c
+>>> +++ b/drivers/bluetooth/btusb.c
+>>> @@ -21,6 +21,7 @@
+>>> #include <net/bluetooth/bluetooth.h>
+>>> #include <net/bluetooth/hci_core.h>
+>>> 
+>>> +#include "../../net/bluetooth/msft.h"
+>> 
+>> This was my bad. I didn’t realized that drivers need to the set the opcode and not the core. I updated the patches to fix this.
+> I will move it to include/net/bluetooth/.
+
+I put it in hci_core.h since don’t want to add any extra needed include for driver. They are big enough already and adding more files doesn’t really help.
+
+Regards
+
+Marcel
+
