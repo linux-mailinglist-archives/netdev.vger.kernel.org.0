@@ -2,144 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB02F199D25
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 19:43:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C44BA199D2F
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 19:46:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbgCaRnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 13:43:16 -0400
-Received: from mail-io1-f70.google.com ([209.85.166.70]:45171 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726164AbgCaRnP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 13:43:15 -0400
-Received: by mail-io1-f70.google.com with SMTP id h76so19805130iof.12
-        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 10:43:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=bV9QEiuox3oTe+1g5OR3+ILPLH6kOwEiLYWW7f3FLMI=;
-        b=ft0Vw34wgMiaBZYXWFvqOoFzgLaIK7BRuJQ5LWQMHE+OREsArarbublvCLmyHnk7xw
-         UbKUc315udTNOZYeFUinx8luT3jXe0CRHE0Ax4rN+kfWbUM23Ze2g59FJAfWlSsvirtl
-         t+No1qu/oRziiLSNzTZJ6J9SN0gqDFcYMQPoQ+4t+9IYKt2aSIwtCawHCCtQ1pbgVoWl
-         5ly2YnuXB8ujz6le6xxvoNVbTB8CXiKCyzU7ZskeGneDhTpSAVi40Zy07Fqe7igXt7X5
-         2fRDlW908qjSlcwP3KB0kDPjfVwiBzM9OPMczwn02y7Do+MXBx4vfV/vZTWniBvRHlnc
-         uXUg==
-X-Gm-Message-State: ANhLgQ3xxKeC0voS99YR0v0KSDlA+fnQR75FxWPOTVxA6BCunwGTxfM+
-        4dQ42am5/DbOIPaRtUnLyWJUxYKCvx08InI5n1P6oDHrDTNe
-X-Google-Smtp-Source: ADFU+vsDh4M0VhoHLp+T4aBKgf2nZSTUlLTxVgUMQ3NdfAJtCZoyExQ5CxOXvlxseISdPQw3B+V8nZJlIjTZOk+Wx6vsVYXizn6s
+        id S1726403AbgCaRqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 13:46:55 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:44702 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726164AbgCaRqz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 13:46:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=hgsl8tKtStdN52lFZSXJS3N6XSuojX/8RAOamuZwIUI=; b=SJWJpGYUa1kSNT2lVfHT3hTe2
+        Y6n/kog0bnS8jaeJoOeRCxAGl8HNjgjJYPkkOqyjUY+ko6HtflR75PJnr0hGBPHqa1i1xqyL05Cl8
+        8H3ws13PzI7p+j66CiZc0QdFHQvp9TIcuCAQYEpy/nKwCvs38xy9H2nkWtLLx/F72Khek/Rr0UacZ
+        9C0584nDZwIPmA9ofv+ISr3ltEunHuvKXuTGtqehkYlHITtp0wRCXup5PARWKOoZ3berc0Jz40S8v
+        AVS8TwZZMaaV685Nqfy4mIG5E3kwDlQAwwfPtLBXVZh5zTV9cU6Y5Rn2PsQ2qhNgrcmPBniDQu185
+        5drsCI9UQ==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:60462)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jJKyK-0001Dz-Cb; Tue, 31 Mar 2020 18:46:44 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jJKyG-0008JI-VQ; Tue, 31 Mar 2020 18:46:40 +0100
+Date:   Tue, 31 Mar 2020 18:46:40 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     David Jander <david@protonic.nl>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-kernel@vger.kernel.org, linux-imx@nxp.com,
+        kernel@pengutronix.de, Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v2] ARM: imx: allow to disable board specific PHY fixups
+Message-ID: <20200331174640.GR25745@shell.armlinux.org.uk>
+References: <20200329110457.4113-1-o.rempel@pengutronix.de>
+ <20200329150854.GA31812@lunn.ch>
+ <20200330052611.2bgu7x4nmimf7pru@pengutronix.de>
+ <40209d08-4acb-75c5-1766-6d39bb826ff9@gmail.com>
+ <20200330174114.GG25745@shell.armlinux.org.uk>
+ <20200331104459.6857474e@erd988>
+ <20200331170300.GQ25745@shell.armlinux.org.uk>
+ <20200331171659.yytmgrtday3243fj@pengutronix.de>
 MIME-Version: 1.0
-X-Received: by 2002:a92:498e:: with SMTP id k14mr15572167ilg.160.1585676592777;
- Tue, 31 Mar 2020 10:43:12 -0700 (PDT)
-Date:   Tue, 31 Mar 2020 10:43:12 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000000a8e8605a22a1ae0@google.com>
-Subject: INFO: rcu detected stall in netlink_sendmsg (4)
-From:   syzbot <syzbot+0fb70e87d8e0ac278fe9@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
-        sven@narfation.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200331171659.yytmgrtday3243fj@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, Mar 31, 2020 at 07:16:59PM +0200, Oleksij Rempel wrote:
+> On Tue, Mar 31, 2020 at 06:03:00PM +0100, Russell King - ARM Linux admin wrote:
+> > On Tue, Mar 31, 2020 at 10:44:59AM +0200, David Jander wrote:
+> > > I have checked with the datasheet of the AR8035, and AFAICS, what the code
+> > > does is this:
+> > > 
+> > >  - Disable the SmartEEE feature of the phy. The comment in the code implies
+> > >    that for some reason it doesn't work, but the reason itself is not given.
+> > >    Anyway, disabling SmartEEE should IMHO opinion be controlled by a DT
+> > >    setting. There is no reason to believe this problem is specific to the
+> > >    i.MX6. Besides, it is a feature of the phy, so it seems logical to expose
+> > >    that via the DT. Once that is done, it has no place here.
+> > > 
+> > >  - Set the external clock output to 125MHz. This is needed because the i.MX6
+> > >    needs a 125MHz reference clock input. But it is not a requirement to use
+> > >    this output. It is perfectly fine and possible to design a board that uses
+> > >    an external oscillator for this. It is also possible that an i.MX6 design
+> > >    has such a phy connected to a MAC behind a switch or some other interface.
+> > >    Independent of i.MX6 this setting can also be necessary for other hardware
+> > >    designs, based on different SoC's. In summary, this is a feature of the
+> > >    specific hardware design at hand, and has nothing to do with the i.MX6
+> > >    specifically. This should definitely be exposed through the DT and not be
+> > >    here.
+> > > 
+> > >  - Enable TXC delay. To clarify, the RGMII specification version 1 specified
+> > >    that the RXC and TXC traces should be routed long enough to introduce a
+> > >    certain delay to the clock signal, or the delay should be introduced via
+> > >    other means. In a later version of the spec, a provision was given for MAC
+> > >    or PHY devices to generate this delay internally. The i.MX6 MAC interface
+> > >    is unable to generate the required delay internally, so it has to be taken
+> > >    care of either by the board layout, or by the PHY device. This is the
+> > >    crucial point: The amount of delay set by the PHY delay register depends on
+> > >    the board layout. It should NEVER be hard-coded in SoC setup code. The
+> > >    correct way is to specify it in the DT. Needless to say that this too,
+> > >    isn't i.MX6-specific.
+> > 
+> > Let's say this is simple to do, shall we?
+> > 
+> > So, if I disable the call to ar8031_phy_fixup() from ar8035_phy_fixup(),
+> > and add the following to the imx6qdl-sr-som.dtsi fragment:
+> > 
+> > &fec {
+> > ...
+> >         phy-handle = <&phy>;
+> > 
+> >         mdio {
+> >                 #address-cells = <1>;
+> >                 #size-cells = <0>;
+> > 
+> >                 phy: ethernet-phy@0 {
+> >                         reg = <0>;
+> >                         qca,clk-out-frequency = <125000000>;
+> >                 };
+> >         };
+> > };
+> > 
+> > Note that phy-mode is already RGMII-ID.  This should work, right?
+> > 
+> > The link still comes up, which is good, but the PHY registers for
+> > the clock output are wrong.
+> > 
+> > MMD 3 register 0x8016 contains 0xb282, not 0xb29a which it has
+> > _with_ the quirk - and thus the above clock frequency stated in
+> > DT is not being selected.  Forcing this register to the right
+> > value restores networking.
+> > 
+> > Yes, the PHY driver is being used:
+> > 
+> > Qualcomm Atheros AR8035 2188000.ethernet-1:00: attached PHY driver [Qualcomm Atheros AR8035] (mii_bus:phy_addr=2188000.ethernet-1:00, irq=POLL)
+> > 
+> > So that's not the problem.
+> > 
+> > Adding some debug shows that the phy_device that is being used is
+> > the correct one:
+> > 
+> > Qualcomm Atheros AR8035 2188000.ethernet-1:00: node=/soc/aips-bus@2100000/ethernet@2188000/mdio/ethernet-phy@0
+> > 
+> > and it is correctly parsing the clk-out-frequency property:
+> > 
+> > Qualcomm Atheros AR8035 2188000.ethernet-1:00: cof=0 125000000
+> > 
+> > When we get to attaching the PHY however:
+> > 
+> > Qualcomm Atheros AR8035 2188000.ethernet-1:00: clk_25m_mask=0004 clk_25m_reg=0000
+> > 
+> > which is just wrong.  That's because:
+> > 
+> >                 if (at803x_match_phy_id(phydev, ATH8030_PHY_ID) ||
+> >                     at803x_match_phy_id(phydev, ATH8035_PHY_ID)) {
+> >                         priv->clk_25m_reg &= ~AT8035_CLK_OUT_MASK;
+> >                         priv->clk_25m_mask &= ~AT8035_CLK_OUT_MASK;
+> >                 }
+> > 
+> > is patently untested - those "~" should not be there.  These masks
+> > are one-bits-set for the values that comprise the fields, not
+> > zero-bits-set.
+> > 
+> > So, I see a patch series is going to be necessary to fix the cockup(s)
+> > in the PHY driver before we can do anything with DT files.
+> 
+> I'm glad you found this issues :D I made a patch to fix it last week.
+> And it was a reason to send a patch for disabling _all_ fixups :)
 
-syzbot found the following crash on:
+So I'm wasting my time creating a patch right now, and this patch to
+fix an obvious problem has not been picked up into -net yet, and isn't
+part of the 5.6 kernel.
 
-HEAD commit:    ae661dec Merge branch 'ifla_xdp_expected_fd'
-git tree:       bpf-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=12245647e00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=b5acf5ac38a50651
-dashboard link: https://syzkaller.appspot.com/bug?extid=0fb70e87d8e0ac278fe9
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+Okay, I'll look a this again once 5.7 is out; I've wasted enough time
+on this already.
 
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+0fb70e87d8e0ac278fe9@syzkaller.appspotmail.com
-
-rcu: INFO: rcu_preempt self-detected stall on CPU
-rcu: 	0-....: (1 GPs behind) idle=5c2/1/0x4000000000000002 softirq=376075/376076 fqs=5176 
-	(t=10500 jiffies g=506061 q=176208)
-NMI backtrace for cpu 0
-CPU: 0 PID: 17281 Comm: syz-executor.5 Not tainted 5.6.0-rc5-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x188/0x20d lib/dump_stack.c:118
- nmi_cpu_backtrace.cold+0x70/0xb1 lib/nmi_backtrace.c:101
- nmi_trigger_cpumask_backtrace+0x231/0x27e lib/nmi_backtrace.c:62
- trigger_single_cpu_backtrace include/linux/nmi.h:164 [inline]
- rcu_dump_cpu_stacks+0x169/0x1b3 kernel/rcu/tree_stall.h:254
- print_cpu_stall kernel/rcu/tree_stall.h:475 [inline]
- check_cpu_stall kernel/rcu/tree_stall.h:549 [inline]
- rcu_pending kernel/rcu/tree.c:3030 [inline]
- rcu_sched_clock_irq.cold+0x518/0xc55 kernel/rcu/tree.c:2276
- update_process_times+0x25/0x60 kernel/time/timer.c:1726
- tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:171
- tick_sched_timer+0x4e/0x140 kernel/time/tick-sched.c:1314
- __run_hrtimer kernel/time/hrtimer.c:1517 [inline]
- __hrtimer_run_queues+0x32c/0xdd0 kernel/time/hrtimer.c:1579
- hrtimer_interrupt+0x312/0x770 kernel/time/hrtimer.c:1641
- local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1119 [inline]
- smp_apic_timer_interrupt+0x15b/0x600 arch/x86/kernel/apic/apic.c:1144
- apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
- </IRQ>
-RIP: 0010:arch_local_irq_restore arch/x86/include/asm/paravirt.h:759 [inline]
-RIP: 0010:lock_release+0x45f/0x7c0 kernel/locking/lockdep.c:4505
-Code: 94 08 00 00 00 00 00 00 48 c1 e8 03 80 3c 10 00 0f 85 d0 02 00 00 48 83 3d 6d 1d 1b 08 00 0f 84 71 01 00 00 48 8b 3c 24 57 9d <0f> 1f 44 00 00 48 b8 00 00 00 00 00 fc ff df 48 01 c3 48 c7 03 00
-RSP: 0018:ffffc90003d9ec30 EFLAGS: 00000282 ORIG_RAX: ffffffffffffff13
-RAX: 1ffffffff12e7698 RBX: 1ffff920007b3d89 RCX: 1ffff110098769b9
-RDX: dffffc0000000000 RSI: 1ffff110098769c5 RDI: 0000000000000282
-RBP: ffff88804c3b4540 R08: 0000000000000004 R09: fffffbfff14cc269
-R10: fffffbfff14cc268 R11: ffffffff8a661347 R12: bc95c6993a9665e0
-R13: ffffffff87a36fb1 R14: ffff88804c3b4dd0 R15: 0000000000000003
- __raw_spin_unlock_bh include/linux/spinlock_api_smp.h:174 [inline]
- _raw_spin_unlock_bh+0x12/0x30 kernel/locking/spinlock.c:207
- spin_unlock_bh include/linux/spinlock.h:383 [inline]
- batadv_tt_local_purge_pending_clients+0x2a1/0x3b0 net/batman-adv/translation-table.c:3914
- batadv_tt_local_resize_to_mtu+0x96/0x130 net/batman-adv/translation-table.c:4198
- batadv_update_min_mtu net/batman-adv/hard-interface.c:626 [inline]
- batadv_hardif_activate_interface.part.0.cold+0xc6/0x294 net/batman-adv/hard-interface.c:653
- batadv_hardif_activate_interface net/batman-adv/hard-interface.c:800 [inline]
- batadv_hardif_enable_interface+0x9f2/0xaa0 net/batman-adv/hard-interface.c:792
- batadv_softif_slave_add+0x92/0x150 net/batman-adv/soft-interface.c:859
- do_set_master net/core/rtnetlink.c:2470 [inline]
- do_set_master+0x1d7/0x230 net/core/rtnetlink.c:2443
- do_setlink+0xaa2/0x3680 net/core/rtnetlink.c:2605
- __rtnl_newlink+0xad5/0x1590 net/core/rtnetlink.c:3266
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3391
- rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5454
- netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
- netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
- netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
- netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
- ___sys_sendmsg+0x100/0x170 net/socket.c:2397
- __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
- do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
- entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x45c849
-Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007f043b72fc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 00007f043b7306d4 RCX: 000000000045c849
-RDX: 0000000000000000 RSI: 00000000200001c0 RDI: 0000000000000003
-RBP: 000000000076bf00 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
-R13: 00000000000009f5 R14: 00000000004ccac9 R15: 000000000076bf0c
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
