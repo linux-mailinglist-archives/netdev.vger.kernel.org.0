@@ -2,119 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3642419A0A2
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 23:21:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F42019A14E
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 23:52:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731339AbgCaVVO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 17:21:14 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:35895 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728245AbgCaVVN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 17:21:13 -0400
-Received: by mail-lj1-f193.google.com with SMTP id b1so3005956ljp.3;
-        Tue, 31 Mar 2020 14:21:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CeJAWmi8pyj2Cqo4Z3FIPSvkbNhWN+ArB8lDqJPB0hk=;
-        b=rVzdMzprwCkwuY1yCfod517jm+YgEye9vCggJEu6l+znT4lZw9YR+Smox+DKqXlphn
-         5ZSpctjJMoefuIzzBZ/mOGYF5hhgWJQH59+fgAvRRgD9xwsL3u30uRIRJPUvNbrQ+lIN
-         IO/riXxZ1SzhElkWTVfLHGfmfcfGkvIaKz8f3BlW6DC61uWXl9AcAV1VN2/OcuLJny/t
-         MW76+ptfcRK9hQunQ9nKbkmI9sYq4gqTLyL1cblkyLIx7fvaLK/LC8JjbKpD/APGpHHe
-         fMC+ocx5qLnDdLWtU3IQZ5+R27aFFVHVsbJoV5dq9IuIcjxsIaAEBTSDG8Uvn5vCI9c8
-         eESg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CeJAWmi8pyj2Cqo4Z3FIPSvkbNhWN+ArB8lDqJPB0hk=;
-        b=fj2LNosBMYUnfVBfu0AUbmQ4hZM8y06vQ+Dly1o/lQ3EqQulb7q8WmtCh+kYLF1J7C
-         yRFF/thTW/S3zF4EUGXQRGbXnnAmBksdkAWLs0s0KfbNq2JNLLCWTGjqzQ0SUGJcGWYM
-         bL8yDCPgjCku9aF2HgDvxFeztFhWKH971VX2WBLyiEBmbkZ7fyf2tI8wdXyUL5XzhIMr
-         Agmsh0P3PLdyA08QofLV/ALzXS7hNQngM6fED/DPZM5Zhc8aWWulrPbv9yFmEu3lQOrT
-         tbRxL3xZb8JJegBpNi7DfwbRZlOWvcm6XLNDZUxMve7Vi5L00v/JvI2JnLvLV9ZD7YnQ
-         dzcA==
-X-Gm-Message-State: AGi0PuYQQptYyvK+77val2UZBh3bo6r0D0uJLqZsq2f3U0Akv25O+oh+
-        28j5ygt2XZAPxvfZpX+0uNi+67a85jW+uFXxBIg=
-X-Google-Smtp-Source: APiQypIUhYwGchIZDdDuPTTze9YkwtXeMQxvGpmTlOXCS0dbo7aO9GLfhCJ06OomtWL+YX3Qh3xMQthRJdFZO20wLBs=
-X-Received: by 2002:a2e:a495:: with SMTP id h21mr11322000lji.123.1585689671599;
- Tue, 31 Mar 2020 14:21:11 -0700 (PDT)
+        id S1731343AbgCaVwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 17:52:05 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:47708 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730556AbgCaVwF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 17:52:05 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.137])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A7A4320090;
+        Tue, 31 Mar 2020 21:52:04 +0000 (UTC)
+Received: from us4-mdac16-47.at1.mdlocal (unknown [10.110.50.130])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id A581E6009B;
+        Tue, 31 Mar 2020 21:52:04 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.48.236])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 3A77322007A;
+        Tue, 31 Mar 2020 21:52:04 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D4A9940005A;
+        Tue, 31 Mar 2020 21:52:03 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 31 Mar
+ 2020 22:51:53 +0100
+Subject: Re: [PATCH v3 bpf-next 0/4] Add support for cgroup bpf_link
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        David Ahern <dsahern@gmail.com>
+CC:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrey Ignatov <rdna@fb.com>, Kernel Team <kernel-team@fb.com>
+References: <20200330030001.2312810-1-andriin@fb.com>
+ <c9f52288-5ea8-a117-8a67-84ba48374d3a@gmail.com>
+ <CAEf4BzZpCOCi1QfL0peBRjAOkXRwGEi_DAW4z34Mf3Tv_sbRFw@mail.gmail.com>
+ <662788f9-0a53-72d4-2675-daec893b5b81@gmail.com>
+ <CAADnVQK8oMZehQVt34=5zgN12VBc2940AWJJK2Ft0cbOi1jDhQ@mail.gmail.com>
+ <cdd576be-8075-13a7-98ee-9bc9355a2437@gmail.com>
+ <20200331003222.gdc2qb5rmopphdxl@ast-mbp>
+ <58cea4c7-e832-2632-7f69-5502b06310b2@gmail.com>
+ <CAEf4BzZSCdtSRw9mj2W5Vv3C-G6iZdMJsZ8WGon11mN3oBiguQ@mail.gmail.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <869adb74-5192-563d-0e8a-9cb578b2a601@solarflare.com>
+Date:   Tue, 31 Mar 2020 22:51:49 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20200331163559.132240-1-zenczykowski@gmail.com>
- <nycvar.YFH.7.76.2003312012340.6572@n3.vanv.qr> <20200331181641.anvsbczqh6ymyrrl@salvia>
-In-Reply-To: <20200331181641.anvsbczqh6ymyrrl@salvia>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Date:   Tue, 31 Mar 2020 14:21:00 -0700
-Message-ID: <CAHo-Ooy-5CxfWhHuhWHO5M_wm8mO_ZMZT81qNSSNTyN5OAoJww@mail.gmail.com>
-Subject: Re: [PATCH] netfilter: IDLETIMER target v1 - match Android layout
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Jan Engelhardt <jengelh@inai.de>, Florian Westphal <fw@strlen.de>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Netfilter Development Mailing List 
-        <netfilter-devel@vger.kernel.org>,
-        Manoj Basapathi <manojbm@codeaurora.org>,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAEf4BzZSCdtSRw9mj2W5Vv3C-G6iZdMJsZ8WGon11mN3oBiguQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1020-25324.003
+X-TM-AS-Result: No-5.242800-8.000000-10
+X-TMASE-MatchedRID: wQVy7q402w3ecRzRckOs5/ZvT2zYoYOwC/ExpXrHizzbqdHxGsFfaUIe
+        TQRgIkOGsecL7Oo+mNii+GfFnI6aSlI3mP8aC0PBtKV49RpAH3vnEl/YQBxicAzvg1/q1MH2/DA
+        gb3IhY2dT7eA6AK2wRl+24nCsUSFNo15kJcETr3lq8/xv2Um1avoLR4+zsDTtviI7BBDiM2Lo7o
+        4bTvXunsBRdZrRKwiD3y2w2y6fIOXsxXvKTIGCUg==
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--5.242800-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1020-25324.003
+X-MDID: 1585691524-7orqvsjUOG35
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Right, this is not in 5.6 as it's only in net-next atm as it was only
-merged very recently.
-I mentioned this in the commit message.
+On 31/03/2020 04:54, Andrii Nakryiko wrote:
+> No need to kill random processes, you can kill only those that hold
+> bpf_link FD. You can find them using drgn tool with script like [0].
+For the record, I find the argument "we don't need a query feature,
+ because you can just use a kernel debugger" *utterly* *horrifying*.
+Now, it seems to be moot, because Alexei has given other, better
+ reasons why query doesn't need to land yet; but can we please not
+ ever treat debugging interfaces as a substitute for proper APIs?
 
-I'm not sure what you mean by code that uses this.
-You can checkout aosp source and look there...
-There's the kernel code (that's effectively already linked from the
-commit message), and the iptables userspace changes (
-https://android.googlesource.com/platform/external/iptables/+/refs/heads/ma=
-ster/extensions/libxt_IDLETIMER.c#39
-), and the netd C++/Java layer that uses iptables -j IDLETIMER
---send_nl_msg 1 (
-https://android.googlesource.com/platform/system/netd/+/refs/heads/master/s=
-erver/IdletimerController.cpp#151
-) and the resulting notifications parsing (can't easily find it atm).
-
-If you mean by code that uses this patch... that's impossible as this
-patch doesn't implement a usable feature.
-It just moves the offset.
-
-Could you clarify what you're asking for?
-
-On Tue, Mar 31, 2020 at 11:16 AM Pablo Neira Ayuso <pablo@netfilter.org> wr=
-ote:
->
-> On Tue, Mar 31, 2020 at 08:14:17PM +0200, Jan Engelhardt wrote:
-> >
-> > On Tuesday 2020-03-31 18:35, Maciej =C5=BBenczykowski wrote:
-> > >Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
-> > >---
-> > > include/uapi/linux/netfilter/xt_IDLETIMER.h | 1 +
-> > > 1 file changed, 1 insertion(+)
-> > >
-> > >diff --git a/include/uapi/linux/netfilter/xt_IDLETIMER.h b/include/uap=
-i/linux/netfilter/xt_IDLETIMER.h
-> > >index 434e6506abaa..49ddcdc61c09 100644
-> > >--- a/include/uapi/linux/netfilter/xt_IDLETIMER.h
-> > >+++ b/include/uapi/linux/netfilter/xt_IDLETIMER.h
-> > >@@ -48,6 +48,7 @@ struct idletimer_tg_info_v1 {
-> > >
-> > >     char label[MAX_IDLETIMER_LABEL_SIZE];
-> > >
-> > >+    __u8 send_nl_msg;   /* unused: for compatibility with Android */
-> > >     __u8 timer_type;
-> > >
-> > >     /* for kernel module internal use only */
-> > >--
-> >
-> > This breaks the ABI for law-abiding Linux users (i.e. the GNU/Linux
-> > subgroup of it), which is equally terrible.
-> >
-> > You will have to introduce a IDLETIMER v2.
->
-> IIRC, IDLETIMER v1 is in net-next, scheduled for 5.7-rc, there is no
-> release for this code yet.
+</scream>
+-ed
