@@ -2,112 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25CD9198C0A
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 08:05:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65B1E198C05
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 08:04:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726659AbgCaGFU convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 31 Mar 2020 02:05:20 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:43900 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbgCaGFU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 02:05:20 -0400
-Received: from marcel-macpro.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 62C91CECC4;
-        Tue, 31 Mar 2020 08:14:51 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH v4 1/2] Bluetooth: btusb: Indicate Microsoft vendor
- extension for Intel 9460/9560 and 9160/9260
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <CABmPvSF=pcffe18iAKgbU8bwFvVDp-NKeAFGw8auKoVd1XAuTQ@mail.gmail.com>
-Date:   Tue, 31 Mar 2020 08:05:18 +0200
-Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
-        Alain Michaud <alainm@chromium.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <852FDEFC-7AD1-4CB9-9C45-BBAB5B2A8D14@holtmann.org>
-References: <20200328074632.21907-1-mcchou@chromium.org>
- <20200328004507.v4.1.I0e975833a6789e8acc74be7756cd54afde6ba98c@changeid>
- <9CC14296-9A0E-4257-A388-B2F7C155CCE5@holtmann.org>
- <CABmPvSF=pcffe18iAKgbU8bwFvVDp-NKeAFGw8auKoVd1XAuTQ@mail.gmail.com>
-To:     Miao-chen Chou <mcchou@chromium.org>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
+        id S1726488AbgCaGEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 02:04:12 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:12660 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725809AbgCaGEM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Mar 2020 02:04:12 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id 128B67015BC6416B1C16;
+        Tue, 31 Mar 2020 14:04:05 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 31 Mar 2020 14:04:01 +0800
+From:   Mao Wenan <maowenan@huawei.com>
+To:     <davem@davemloft.net>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <kuba@kernel.org>, <hawk@kernel.org>, <john.fastabend@gmail.com>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <andriin@fb.com>, <jwi@linux.ibm.com>,
+        <toshiaki.makita1@gmail.com>, <jianglidong3@jd.com>,
+        <edumazet@google.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
+Subject: [PATCH net v2] veth: xdp: use head instead of hard_start
+Date:   Tue, 31 Mar 2020 14:06:41 +0800
+Message-ID: <20200331060641.79999-1-maowenan@huawei.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <fb5ab568-9bc8-3145-a8db-3e975ccdf846@gmail.com>
+References: <fb5ab568-9bc8-3145-a8db-3e975ccdf846@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Miao-chen,
+xdp.data_hard_start is equal to first address of
+struct xdp_frame, which is mentioned in
+convert_to_xdp_frame(). But the pointer hard_start
+in veth_xdp_rcv_one() is 32 bytes offset of frame,
+so it should use head instead of hard_start to
+set xdp.data_hard_start. Otherwise, if BPF program
+calls helper_function such as bpf_xdp_adjust_head, it
+will be confused for xdp_frame_end.
 
->>> This adds a bit mask of driver_info for Microsoft vendor extension and
->>> indicates the support for Intel 9460/9560 and 9160/9260. See
->>> https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
->>> microsoft-defined-bluetooth-hci-commands-and-events for more information
->>> about the extension. This also add a kernel config, BT_MSFTEXT, and a
->>> source file to facilitate Microsoft vendor extension functions.
->>> This was verified with Intel ThunderPeak BT controller
->>> where msft_vnd_ext_opcode is 0xFC1E.
->>> 
->>> Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
->>> 
->>> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
->>> ---
->>> 
->>> Changes in v4:
->>> - Introduce CONFIG_BT_MSFTEXT as a starting point of providing a
->>> framework to use Microsoft extension
->>> - Create include/net/bluetooth/msft.h and net/bluetooth/msft.c to
->>> facilitate functions of Microsoft extension.
->>> 
->>> Changes in v3:
->>> - Create net/bluetooth/msft.c with struct msft_vnd_ext defined internally
->>> and change the hdev->msft_ext field to void*.
->>> - Define and expose msft_vnd_ext_set_opcode() for btusb use.
->>> - Init hdev->msft_ext in hci_alloc_dev() and deinit it in hci_free_dev().
->>> 
->>> Changes in v2:
->>> - Define struct msft_vnd_ext and add a field of this type to struct
->>> hci_dev to facilitate the support of Microsoft vendor extension.
->>> 
->>> drivers/bluetooth/btusb.c        | 11 +++++++++--
->>> include/net/bluetooth/hci_core.h |  4 ++++
->> 
->> so I don’t like the intermixing of core features and drivers unless it is needed. In this case it is not needed since we can first introduce the core support and then enable the driver to use it.
-> I will make btusb changes as a different commit in v5.
+Fixes: 9fc8d518d9d5 ("veth: Handle xdp_frames in xdp napi ring")
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
+---
+ v2: add fixes tag, as well as commit log.
+ drivers/net/veth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-check the series that I posted. I tested them on ThunderPeak and if it also works, we use that as a base and then go from there.
-
->> 
->>> net/bluetooth/Kconfig            |  9 ++++++++-
->>> net/bluetooth/Makefile           |  1 +
->>> net/bluetooth/msft.c             | 16 ++++++++++++++++
->>> net/bluetooth/msft.h             | 19 +++++++++++++++++++
->>> 6 files changed, 57 insertions(+), 3 deletions(-)
->>> create mode 100644 net/bluetooth/msft.c
->>> create mode 100644 net/bluetooth/msft.h
->>> 
->>> diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
->>> index 3bdec42c9612..0fe47708d3c8 100644
->>> --- a/drivers/bluetooth/btusb.c
->>> +++ b/drivers/bluetooth/btusb.c
->>> @@ -21,6 +21,7 @@
->>> #include <net/bluetooth/bluetooth.h>
->>> #include <net/bluetooth/hci_core.h>
->>> 
->>> +#include "../../net/bluetooth/msft.h"
->> 
->> This was my bad. I didn’t realized that drivers need to the set the opcode and not the core. I updated the patches to fix this.
-> I will move it to include/net/bluetooth/.
-
-I put it in hci_core.h since don’t want to add any extra needed include for driver. They are big enough already and adding more files doesn’t really help.
-
-Regards
-
-Marcel
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index d4cbb9e8c63f..5ea550884bf8 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -506,7 +506,7 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+ 		struct xdp_buff xdp;
+ 		u32 act;
+ 
+-		xdp.data_hard_start = hard_start;
++		xdp.data_hard_start = head;
+ 		xdp.data = frame->data;
+ 		xdp.data_end = frame->data + frame->len;
+ 		xdp.data_meta = frame->data - frame->metasize;
+-- 
+2.20.1
 
