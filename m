@@ -2,278 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 270CC198C10
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 08:07:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB9AB198C24
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 08:16:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729013AbgCaGG7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 31 Mar 2020 02:06:59 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:45331 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725809AbgCaGG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 02:06:59 -0400
-Received: from marcel-macpro.fritz.box (p4FEFC5A7.dip0.t-ipconnect.de [79.239.197.167])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 5DDE2CECC4;
-        Tue, 31 Mar 2020 08:16:30 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH v4 2/2] Bluetooth: btusb: Read the supported features of
- Microsoft vendor extension
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <CABmPvSF2SMWUs_62jeAse3DbgRgQBiOinKZQuPN7k+MKYL6eDw@mail.gmail.com>
-Date:   Tue, 31 Mar 2020 08:06:57 +0200
-Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
-        Alain Michaud <alainm@chromium.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <E1FC614F-47DD-4455-8D73-A0D95D7E0F26@holtmann.org>
-References: <20200328074632.21907-1-mcchou@chromium.org>
- <20200328004507.v4.2.Ic59b637deef8e646f6599a80c9a2aa554f919e55@changeid>
- <1FA9284F-C8DD-40A3-81A7-65AC6DE1E3C5@holtmann.org>
- <CABmPvSF2SMWUs_62jeAse3DbgRgQBiOinKZQuPN7k+MKYL6eDw@mail.gmail.com>
-To:     Miao-chen Chou <mcchou@chromium.org>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
+        id S1726636AbgCaGQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 02:16:30 -0400
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:34425 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726299AbgCaGQa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 02:16:30 -0400
+Received: by mail-pj1-f66.google.com with SMTP id q16so696490pje.1;
+        Mon, 30 Mar 2020 23:16:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Bwmhd/qMjqfnmk2NrehDvM1RwoFtBpq3lJKU07oCmio=;
+        b=BrlCLFDzmYc+AAViMVJVSU5y9FL+KqUA4BqUSoK609nYetQshxMF/effuwVDgh498L
+         lo1znnTTWkyuHwvouUUPEFNHP9EK8sxou4uRHhA8cyeeReFYXGdElPzZiO06KHP/b7S/
+         ZhXQJAk8N/oGrHQNIV0s39CbjXV91aCJvzFEqqIBq6WUcx+SVkIl08GRQPldoznO1qv4
+         dsRgRmshya91/ZiNoxWK+WKssv7svxOaizzG0KC/mDMFswKy6+QNtWiEk2dNiIu9AkMu
+         ie0ACeXCtfQGMgFi90S0g2QwPeKwf+xLdBHvbT4+3rLpl/bZeAAurnSm9g2x/XzRrL+N
+         bEQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Bwmhd/qMjqfnmk2NrehDvM1RwoFtBpq3lJKU07oCmio=;
+        b=Ml99XNV6+Ckan0T5nVEi155lHrO+hoNf75tNGUEy4wJhw8t9EGkoODxB00jRP8fceP
+         LL1AzAiypdtGRlWHn/8iK5l19aykq8SRidQT6mG+XsWbJWAvjdzTjrvZTnWmdsbjnUHy
+         2wI6V8VUACUp4AJSAYw60x0wHF55inxYKnq9NIMAM+S3wAR7PRrIFdpOKYwZMLYSeGmr
+         8Ueelnf/HpTu7OisciEYyC6TxlMsVrwe8cNH8r71ztCYu40ymj3Kjp5AY1f+tjVV5kuA
+         xDBjDsVHFrOEmHLpaofwCXZE+mrazvgBD1XYTw75Ns0C7C280TxWKfKarSdWsl3zzbqF
+         ewog==
+X-Gm-Message-State: ANhLgQ2mSplLmnMLCI+4OXxWL17AzkxJZ4tSZ6mhcT0zi0LsFjjUAIK9
+        RwEVnKxP6ex+J4fxusd5qxspGDNk
+X-Google-Smtp-Source: ADFU+vuxifUfFthlKQHiaJVcNmCEOiFKoz4dTaCr9rahtDFCWUIJvQ7xy7kDcFwH7wc8FIzdBt2q4Q==
+X-Received: by 2002:a17:902:d695:: with SMTP id v21mr15590318ply.135.1585635388219;
+        Mon, 30 Mar 2020 23:16:28 -0700 (PDT)
+Received: from [192.168.1.18] (i223-218-245-204.s42.a013.ap.plala.or.jp. [223.218.245.204])
+        by smtp.googlemail.com with ESMTPSA id p1sm1037307pjr.40.2020.03.30.23.16.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 30 Mar 2020 23:16:27 -0700 (PDT)
+Subject: Re: [PATCH net v2] veth: xdp: use head instead of hard_start
+To:     Mao Wenan <maowenan@huawei.com>, davem@davemloft.net,
+        ast@kernel.org, daniel@iogearbox.net, kuba@kernel.org,
+        hawk@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        jwi@linux.ibm.com, jianglidong3@jd.com, edumazet@google.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-janitors@vger.kernel.org
+References: <fb5ab568-9bc8-3145-a8db-3e975ccdf846@gmail.com>
+ <20200331060641.79999-1-maowenan@huawei.com>
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+Message-ID: <7a1d55ad-1427-67fe-f204-4d4a0ab2c4b1@gmail.com>
+Date:   Tue, 31 Mar 2020 15:16:22 +0900
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <20200331060641.79999-1-maowenan@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Miao-chen,
+On 2020/03/31 15:06, Mao Wenan wrote:
+> xdp.data_hard_start is equal to first address of
+> struct xdp_frame, which is mentioned in
+> convert_to_xdp_frame(). But the pointer hard_start
+> in veth_xdp_rcv_one() is 32 bytes offset of frame,
+> so it should use head instead of hard_start to
+> set xdp.data_hard_start. Otherwise, if BPF program
+> calls helper_function such as bpf_xdp_adjust_head, it
+> will be confused for xdp_frame_end.
 
->>> This defines opcode and packet structures of Microsoft vendor extension.
->>> For now, we add only the HCI_VS_MSFT_Read_Supported_Features command. See
->>> https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/
->>> microsoft-defined-bluetooth-hci-commands-and-events#microsoft-defined-
->>> bluetooth-hci-events for more details.
->>> Upon initialization of a hci_dev, we issue a
->>> HCI_VS_MSFT_Read_Supported_Features command to read the supported features
->>> of Microsoft vendor extension if the opcode of Microsoft vendor extension
->>> is valid. See https://docs.microsoft.com/en-us/windows-hardware/drivers/
->>> bluetooth/microsoft-defined-bluetooth-hci-commands-and-events#
->>> hci_vs_msft_read_supported_features for more details.
->>> This was verified on a device with Intel ThunderPeak BT controller where
->>> the Microsoft vendor extension features are 0x000000000000003f.
->>> 
->>> Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
->>> 
->>> Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
->>> ---
->>> 
->>> Changes in v4:
->>> - Move MSFT's do_open() and do_close() from net/bluetooth/hci_core.c to
->>> net/bluetooth/msft.c.
->>> - Other than msft opcode, define struct msft_data to host the rest of
->>> information of Microsoft extension and leave a void* pointing to a
->>> msft_data in struct hci_dev.
->>> 
->>> Changes in v3:
->>> - Introduce msft_vnd_ext_do_open() and msft_vnd_ext_do_close().
->>> 
->>> Changes in v2:
->>> - Issue a HCI_VS_MSFT_Read_Supported_Features command with
->>> __hci_cmd_sync() instead of constructing a request.
->>> 
->>> include/net/bluetooth/hci_core.h |   1 +
->>> net/bluetooth/hci_core.c         |   5 ++
->>> net/bluetooth/hci_event.c        |   5 ++
->>> net/bluetooth/msft.c             | 126 +++++++++++++++++++++++++++++++
->>> net/bluetooth/msft.h             |  10 +++
->>> 5 files changed, 147 insertions(+)
->>> 
->>> diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
->>> index 239cae2d9998..59ddcd3a52cc 100644
->>> --- a/include/net/bluetooth/hci_core.h
->>> +++ b/include/net/bluetooth/hci_core.h
->>> @@ -486,6 +486,7 @@ struct hci_dev {
->>> 
->>> #if IS_ENABLED(CONFIG_BT_MSFTEXT)
->>>      __u16                   msft_opcode;
->>> +     void                    *msft_data;
->>> #endif
->>> 
->>>      int (*open)(struct hci_dev *hdev);
->>> diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
->>> index dbd2ad3a26ed..c38707de767a 100644
->>> --- a/net/bluetooth/hci_core.c
->>> +++ b/net/bluetooth/hci_core.c
->>> @@ -44,6 +44,7 @@
->>> #include "hci_debugfs.h"
->>> #include "smp.h"
->>> #include "leds.h"
->>> +#include "msft.h"
->>> 
->>> static void hci_rx_work(struct work_struct *work);
->>> static void hci_cmd_work(struct work_struct *work);
->>> @@ -1563,6 +1564,8 @@ static int hci_dev_do_open(struct hci_dev *hdev)
->>>          hci_dev_test_flag(hdev, HCI_VENDOR_DIAG) && hdev->set_diag)
->>>              ret = hdev->set_diag(hdev, true);
->>> 
->>> +     msft_do_open(hdev);
->>> +
->>>      clear_bit(HCI_INIT, &hdev->flags);
->>> 
->>>      if (!ret) {
->>> @@ -1758,6 +1761,8 @@ int hci_dev_do_close(struct hci_dev *hdev)
->>> 
->>>      hci_sock_dev_event(hdev, HCI_DEV_DOWN);
->>> 
->>> +     msft_do_close(hdev);
->>> +
->>>      if (hdev->flush)
->>>              hdev->flush(hdev);
->>> 
->>> diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
->>> index 20408d386268..42b5871151a6 100644
->>> --- a/net/bluetooth/hci_event.c
->>> +++ b/net/bluetooth/hci_event.c
->>> @@ -35,6 +35,7 @@
->>> #include "a2mp.h"
->>> #include "amp.h"
->>> #include "smp.h"
->>> +#include "msft.h"
->>> 
->>> #define ZERO_KEY "\x00\x00\x00\x00\x00\x00\x00\x00" \
->>>               "\x00\x00\x00\x00\x00\x00\x00\x00"
->>> @@ -6144,6 +6145,10 @@ void hci_event_packet(struct hci_dev *hdev, struct sk_buff *skb)
->>>              hci_num_comp_blocks_evt(hdev, skb);
->>>              break;
->>> 
->>> +     case HCI_EV_VENDOR:
->>> +             msft_vendor_evt(hdev, skb);
->>> +             break;
->>> +
->>>      default:
->>>              BT_DBG("%s event 0x%2.2x", hdev->name, event);
->>>              break;
->>> diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
->>> index 7609932c48ca..f76e4c79556e 100644
->>> --- a/net/bluetooth/msft.c
->>> +++ b/net/bluetooth/msft.c
->>> @@ -6,6 +6,24 @@
->>> 
->>> #include "msft.h"
->>> 
->>> +#define MSFT_OP_READ_SUPPORTED_FEATURES              0x00
->>> +struct msft_cp_read_supported_features {
->>> +     __u8   sub_opcode;
->>> +} __packed;
->>> +struct msft_rp_read_supported_features {
->>> +     __u8   status;
->>> +     __u8   sub_opcode;
->>> +     __le64 features;
->>> +     __u8   evt_prefix_len;
->>> +     __u8   evt_prefix[0];
->>> +} __packed;
->>> +
->>> +struct msft_data {
->>> +     __u64 features;
->>> +     __u8  evt_prefix_len;
->>> +     __u8  *evt_prefix;
->>> +};
->>> +
->>> void msft_set_opcode(struct hci_dev *hdev, __u16 opcode)
->>> {
->>>      hdev->msft_opcode = opcode;
->>> @@ -14,3 +32,111 @@ void msft_set_opcode(struct hci_dev *hdev, __u16 opcode)
->>>                  hdev->msft_opcode);
->>> }
->>> EXPORT_SYMBOL(msft_set_opcode);
->>> +
->>> +static struct msft_data *read_supported_features(struct hci_dev *hdev)
->>> +{
->>> +     struct msft_data *msft;
->> 
->> I used a second parameter, but yes, my initial code was totally flawed with the msft_data access.
-> Ack.
->> 
->>> +     struct msft_cp_read_supported_features cp;
->>> +     struct msft_rp_read_supported_features *rp;
->>> +     struct sk_buff *skb;
->>> +
->>> +     cp.sub_opcode = MSFT_OP_READ_SUPPORTED_FEATURES;
->>> +
->>> +     skb = __hci_cmd_sync(hdev, hdev->msft_opcode, sizeof(cp), &cp,
->>> +                          HCI_CMD_TIMEOUT);
->>> +     if (IS_ERR(skb)) {
->>> +             bt_dev_err(hdev, "Failed to read MSFT supported features (%ld)",
->>> +                        PTR_ERR(skb));
->>> +             return NULL;
->>> +     }
->>> +
->>> +     if (skb->len < sizeof(*rp)) {
->>> +             bt_dev_err(hdev, "MSFT supported features length mismatch");
->>> +             goto failed;
->>> +     }
->>> +
->>> +     rp = (struct msft_rp_read_supported_features *)skb->data;
->>> +
->>> +     if (rp->sub_opcode != MSFT_OP_READ_SUPPORTED_FEATURES)
->>> +             goto failed;
->>> +
->>> +     msft = kzalloc(sizeof(*msft), GFP_KERNEL);
->>> +     if (!msft)
->>> +             goto failed;
->>> +
->>> +     if (rp->evt_prefix_len > 0) {
->>> +             msft->evt_prefix = kmemdup(rp->evt_prefix, rp->evt_prefix_len,
->>> +                                        GFP_KERNEL);
->>> +             if (!msft->evt_prefix)
->>> +                     goto failed;
->>> +     }
->>> +
->>> +     msft->evt_prefix_len = rp->evt_prefix_len;
->>> +     msft->features = __le64_to_cpu(rp->features);
->>> +     kfree_skb(skb);
->>> +
->>> +     bt_dev_info(hdev, "MSFT supported features %llx", msft->features);
->>> +     return msft;
->>> +
->>> +failed:
->>> +     kfree_skb(skb);
->>> +     return NULL;
->>> +}
->>> +
->>> +void msft_do_open(struct hci_dev *hdev)
->>> +{
->>> +     if (hdev->msft_opcode == HCI_OP_NOP)
->>> +             return;
->>> +
->>> +     bt_dev_dbg(hdev, "Initialize MSFT extension");
->>> +     hdev->msft_data = read_supported_features(hdev);
->>> +}
->>> +
->>> +void msft_do_close(struct hci_dev *hdev)
->>> +{
->>> +     struct msft_data *msft = hdev->msft_data;
->>> +
->>> +     if (!msft)
->>> +             return;
->>> +
->>> +     bt_dev_dbg(hdev, "Cleanup of MSFT extension");
->>> +
->>> +     hdev->msft_data = NULL;
->>> +
->>> +     kfree(msft->evt_prefix);
->>> +     kfree(msft);
->>> +}
->>> +
->>> +int msft_vendor_evt(struct hci_dev *hdev, struct sk_buff *skb)
->>> +{
->> 
->> So this was on purpose void. There is no point in returning any feedback from this function. It either handles the event or it doesn’t. The caller function doesn’t care.
-> I was thinking that if there are two extensions, the vendor events
-> should be processed either msft or the other function. Therefore,
-> should we use the return value to determine whether to hand skb to the
-> other function?
+I think you should discuss this more with Jesper before
+submitting v2.
+He does not like this to be included now due to merge conflict risk.
+Basically I agree with him that we don't need to hurry with this fix.
 
-my thinking was that we just hand the vendor events to all functions. Let them deal with the details. I would not over-design this right now. Keep it simple. As long as it is not userspace facing API, we can easily change that when we need it.
+Toshiaki Makita
 
-Regards
-
-Marcel
-
+> 
+> Fixes: 9fc8d518d9d5 ("veth: Handle xdp_frames in xdp napi ring")
+> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> ---
+>   v2: add fixes tag, as well as commit log.
+>   drivers/net/veth.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index d4cbb9e8c63f..5ea550884bf8 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -506,7 +506,7 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+>   		struct xdp_buff xdp;
+>   		u32 act;
+>   
+> -		xdp.data_hard_start = hard_start;
+> +		xdp.data_hard_start = head;
+>   		xdp.data = frame->data;
+>   		xdp.data_end = frame->data + frame->len;
+>   		xdp.data_meta = frame->data - frame->metasize;
+> 
