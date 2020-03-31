@@ -2,160 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EB0B199D14
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 19:40:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB02F199D25
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 19:43:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726411AbgCaRkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 13:40:23 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:37753 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726268AbgCaRkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 13:40:22 -0400
-Received: by mail-pg1-f196.google.com with SMTP id i34so529733pgl.4
-        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 10:40:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4l5ETOgQ0imWwnT/8ipOuClDORxJCjuXyVXWv0vRdoI=;
-        b=iAxPDHZi6j5XJDdwzsv0gC4hIkVTp64vobCnjhVmnUmhWcTudGJ0DxkmaAcflR3Tzk
-         qfmOb+xfqmzYhtVa4SEUkfXVw835Lf7flpWypgLk96zZmJC8Xr2gV2XAvHuqisPiFp8R
-         qUcZdqicxs+h69FdXEIhkQoBsPMr4JyCssTZz9Tk49dv7ReiplqU618mGAtYCZcAdih+
-         q9f1aGerdw1UxcTeN921BXCG7KdLdJZn+0XjBqwoZePxKmWuGFD5qd90dpB475khGY71
-         T2yecrpkGRyBI+6IqqTPfjcAYbLkf1lCQyKsundJ28kLDjjbigtSGI7LSJTxZZ1Nvi16
-         8cQA==
+        id S1726291AbgCaRnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 13:43:16 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:45171 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726164AbgCaRnP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 13:43:15 -0400
+Received: by mail-io1-f70.google.com with SMTP id h76so19805130iof.12
+        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 10:43:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4l5ETOgQ0imWwnT/8ipOuClDORxJCjuXyVXWv0vRdoI=;
-        b=FKrcAE9W5UPVoC4ayiZt+kENTi7gZQ/ny2oozctQy1G1lK7uAY/fmlDhgVMWNCkMvp
-         PUwE7uaiDysXJ2BMTqx4/32iFfWvxxdeELfpZLtALUfhBg7iDB2pzPDTnBmLA4PH8/Sm
-         Z6DOhVXz1e7gof5ilk690xp/TzHRxy8ecwuySbbvX3RTLFEtcxywGwKfM2RquR6lNVI4
-         MhtpMKvE1RsA6ypMe246QzbQdaLeCqfRr6VVevGvtUFn2exz9L+hrGyLM4dFe/CuKHY/
-         eT483CGaK7dT8OS65h6UtQUXw0eOncGFcBpyagzeqp9c5aOB/GImczuKq93SkcZTl0zL
-         iSiQ==
-X-Gm-Message-State: ANhLgQ2vVnRANSSKPf+4xwrYLHL3WTvsdXLCb1VfaHVWR/ZfazNElQNF
-        jtRvmK1NxAC8nVDb5uaemcagNg==
-X-Google-Smtp-Source: ADFU+vtxoE33/QBXRkl1qEOqS7lVO2SAFrcJR/z+5URP14AMuRSyqNIjgdaD0jMgwjNXzGVQSp5kUQ==
-X-Received: by 2002:aa7:880c:: with SMTP id c12mr18142763pfo.77.1585676419418;
-        Tue, 31 Mar 2020 10:40:19 -0700 (PDT)
-Received: from minitux (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
-        by smtp.gmail.com with ESMTPSA id nh14sm2439979pjb.17.2020.03.31.10.40.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Mar 2020 10:40:18 -0700 (PDT)
-Date:   Tue, 31 Mar 2020 10:40:16 -0700
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Cc:     Chris Lew <clew@codeaurora.org>, gregkh@linuxfoundation.org,
-        davem@davemloft.net, smohanad@codeaurora.org, jhugo@codeaurora.org,
-        kvalo@codeaurora.org, hemantk@codeaurora.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3 6/7] net: qrtr: Add MHI transport layer
-Message-ID: <20200331174016.GA254911@minitux>
-References: <20200324061050.14845-1-manivannan.sadhasivam@linaro.org>
- <20200324061050.14845-7-manivannan.sadhasivam@linaro.org>
- <20200324203952.GC119913@minitux>
- <20200325103758.GA7216@Mani-XPS-13-9360>
- <89f3c60c-70fb-23d3-d50f-98d1982b84b9@codeaurora.org>
- <20200330094913.GA2642@Mani-XPS-13-9360>
- <20200330221932.GB215915@minitux>
- <20200331112326.GB21688@Mani-XPS-13-9360>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=bV9QEiuox3oTe+1g5OR3+ILPLH6kOwEiLYWW7f3FLMI=;
+        b=ft0Vw34wgMiaBZYXWFvqOoFzgLaIK7BRuJQ5LWQMHE+OREsArarbublvCLmyHnk7xw
+         UbKUc315udTNOZYeFUinx8luT3jXe0CRHE0Ax4rN+kfWbUM23Ze2g59FJAfWlSsvirtl
+         t+No1qu/oRziiLSNzTZJ6J9SN0gqDFcYMQPoQ+4t+9IYKt2aSIwtCawHCCtQ1pbgVoWl
+         5ly2YnuXB8ujz6le6xxvoNVbTB8CXiKCyzU7ZskeGneDhTpSAVi40Zy07Fqe7igXt7X5
+         2fRDlW908qjSlcwP3KB0kDPjfVwiBzM9OPMczwn02y7Do+MXBx4vfV/vZTWniBvRHlnc
+         uXUg==
+X-Gm-Message-State: ANhLgQ3xxKeC0voS99YR0v0KSDlA+fnQR75FxWPOTVxA6BCunwGTxfM+
+        4dQ42am5/DbOIPaRtUnLyWJUxYKCvx08InI5n1P6oDHrDTNe
+X-Google-Smtp-Source: ADFU+vsDh4M0VhoHLp+T4aBKgf2nZSTUlLTxVgUMQ3NdfAJtCZoyExQ5CxOXvlxseISdPQw3B+V8nZJlIjTZOk+Wx6vsVYXizn6s
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200331112326.GB21688@Mani-XPS-13-9360>
+X-Received: by 2002:a92:498e:: with SMTP id k14mr15572167ilg.160.1585676592777;
+ Tue, 31 Mar 2020 10:43:12 -0700 (PDT)
+Date:   Tue, 31 Mar 2020 10:43:12 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000000a8e8605a22a1ae0@google.com>
+Subject: INFO: rcu detected stall in netlink_sendmsg (4)
+From:   syzbot <syzbot+0fb70e87d8e0ac278fe9@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        mareklindner@neomailbox.ch, netdev@vger.kernel.org,
+        sven@narfation.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 31 Mar 04:23 PDT 2020, Manivannan Sadhasivam wrote:
+Hello,
 
-> Hi Bjorn,
-> 
-> On Mon, Mar 30, 2020 at 03:19:32PM -0700, Bjorn Andersson wrote:
-> > On Mon 30 Mar 02:49 PDT 2020, Manivannan Sadhasivam wrote:
-> > 
-> > > Hi Chris,
-> > > 
-> > > On Thu, Mar 26, 2020 at 03:54:42PM -0700, Chris Lew wrote:
-> > > > 
-> > > > 
-> > > > On 3/25/2020 3:37 AM, Manivannan Sadhasivam wrote:
-> > > > > Hi Bjorn,
-> > > > > 
-> > > > > + Chris Lew
-> > > > > 
-> > > > > On Tue, Mar 24, 2020 at 01:39:52PM -0700, Bjorn Andersson wrote:
-> > > > > > On Mon 23 Mar 23:10 PDT 2020, Manivannan Sadhasivam wrote:
-> > [..]
-> > > > > > > +	spin_lock_irqsave(&qdev->ul_lock, flags);
-> > > > > > > +	list_for_each_entry(pkt, &qdev->ul_pkts, node)
-> > > > > > > +		complete_all(&pkt->done);
-> > > > > 
-> > > > > Chris, shouldn't we require list_del(&pkt->node) here?
-> > > > > 
-> > > > 
-> > > > No this isn't a full cleanup, with the "early notifier" we just unblocked
-> > > > any threads waiting for the ul_callback. Those threads will wake, check
-> > > > in_reset, return an error back to the caller. Any list cleanup will be done
-> > > > in the ul_callbacks that the mhi bus will do for each queued packet right
-> > > > before device remove.
-> > > > 
-> > > > Again to simplify the code, we can probable remove the in_reset handling
-> > > > since it's not required with the current feature set.
-> > > > 
-> > > 
-> > > So since we are not getting status_cb for fatal errors, I think we should just
-> > > remove status_cb, in_reset and timeout code.
-> > > 
-> > 
-> > Looks reasonable.
-> > 
-> > [..]
-> > > > I thought having the client get an error on timeout and resend the packet
-> > > > would be better than silently dropping it. In practice, we've really only
-> > > > seen the timeout or ul_callback errors on unrecoverable errors so I think
-> > > > the timeout handling can definitely be redone.
-> > > > 
-> > > 
-> > > You mean we can just remove the timeout handling part and return after
-> > > kref_put()?
-> > > 
-> > 
-> > If all messages are "generated" by qcom_mhi_qrtr_send() and "released"
-> > in qcom_mhi_qrtr_ul_callback() I don't think you need the refcounting at
-> > all.
-> > 
-> 
-> Hmm, you're right. We can move the packet releasing part to ul_callback now.
-> 
-> > 
-> > Presumably though, it would have been nice to not have to carry a
-> > separate list of packets (and hope that it's in sync with the mhi core)
-> > and instead have the ul callback somehow allow us to derive the skb to
-> > be freed.
-> > 
-> 
-> Yep, MHI stack holds the skb in buf_addr member of mhi_result. So, we can just
-> use below to get the skb in ul_callback:
-> 
-> struct sk_buff *skb = (struct sk_buff *)mhi_res->buf_addr;
-> 
-> This will help us to avoid the use of pkt, ul_pkts list and use the skb directly
-> everywhere. At the same time I think we can also remove the ul_lock which
-> was added to protect the ul_pkts list.
-> 
-> Let me know your opinion, I'll just send a series with this modified QRTR MHI
-> client driver and MHI suspend/resume patches.
-> 
+syzbot found the following crash on:
 
-This looks more robust than having the separate list shadowing the
-internal state of the MHI core.
+HEAD commit:    ae661dec Merge branch 'ifla_xdp_expected_fd'
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=12245647e00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=b5acf5ac38a50651
+dashboard link: https://syzkaller.appspot.com/bug?extid=0fb70e87d8e0ac278fe9
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
-+1
+Unfortunately, I don't have any reproducer for this crash yet.
 
-Thanks,
-Bjorn
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+0fb70e87d8e0ac278fe9@syzkaller.appspotmail.com
+
+rcu: INFO: rcu_preempt self-detected stall on CPU
+rcu: 	0-....: (1 GPs behind) idle=5c2/1/0x4000000000000002 softirq=376075/376076 fqs=5176 
+	(t=10500 jiffies g=506061 q=176208)
+NMI backtrace for cpu 0
+CPU: 0 PID: 17281 Comm: syz-executor.5 Not tainted 5.6.0-rc5-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x188/0x20d lib/dump_stack.c:118
+ nmi_cpu_backtrace.cold+0x70/0xb1 lib/nmi_backtrace.c:101
+ nmi_trigger_cpumask_backtrace+0x231/0x27e lib/nmi_backtrace.c:62
+ trigger_single_cpu_backtrace include/linux/nmi.h:164 [inline]
+ rcu_dump_cpu_stacks+0x169/0x1b3 kernel/rcu/tree_stall.h:254
+ print_cpu_stall kernel/rcu/tree_stall.h:475 [inline]
+ check_cpu_stall kernel/rcu/tree_stall.h:549 [inline]
+ rcu_pending kernel/rcu/tree.c:3030 [inline]
+ rcu_sched_clock_irq.cold+0x518/0xc55 kernel/rcu/tree.c:2276
+ update_process_times+0x25/0x60 kernel/time/timer.c:1726
+ tick_sched_handle+0x9b/0x180 kernel/time/tick-sched.c:171
+ tick_sched_timer+0x4e/0x140 kernel/time/tick-sched.c:1314
+ __run_hrtimer kernel/time/hrtimer.c:1517 [inline]
+ __hrtimer_run_queues+0x32c/0xdd0 kernel/time/hrtimer.c:1579
+ hrtimer_interrupt+0x312/0x770 kernel/time/hrtimer.c:1641
+ local_apic_timer_interrupt arch/x86/kernel/apic/apic.c:1119 [inline]
+ smp_apic_timer_interrupt+0x15b/0x600 arch/x86/kernel/apic/apic.c:1144
+ apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:829
+ </IRQ>
+RIP: 0010:arch_local_irq_restore arch/x86/include/asm/paravirt.h:759 [inline]
+RIP: 0010:lock_release+0x45f/0x7c0 kernel/locking/lockdep.c:4505
+Code: 94 08 00 00 00 00 00 00 48 c1 e8 03 80 3c 10 00 0f 85 d0 02 00 00 48 83 3d 6d 1d 1b 08 00 0f 84 71 01 00 00 48 8b 3c 24 57 9d <0f> 1f 44 00 00 48 b8 00 00 00 00 00 fc ff df 48 01 c3 48 c7 03 00
+RSP: 0018:ffffc90003d9ec30 EFLAGS: 00000282 ORIG_RAX: ffffffffffffff13
+RAX: 1ffffffff12e7698 RBX: 1ffff920007b3d89 RCX: 1ffff110098769b9
+RDX: dffffc0000000000 RSI: 1ffff110098769c5 RDI: 0000000000000282
+RBP: ffff88804c3b4540 R08: 0000000000000004 R09: fffffbfff14cc269
+R10: fffffbfff14cc268 R11: ffffffff8a661347 R12: bc95c6993a9665e0
+R13: ffffffff87a36fb1 R14: ffff88804c3b4dd0 R15: 0000000000000003
+ __raw_spin_unlock_bh include/linux/spinlock_api_smp.h:174 [inline]
+ _raw_spin_unlock_bh+0x12/0x30 kernel/locking/spinlock.c:207
+ spin_unlock_bh include/linux/spinlock.h:383 [inline]
+ batadv_tt_local_purge_pending_clients+0x2a1/0x3b0 net/batman-adv/translation-table.c:3914
+ batadv_tt_local_resize_to_mtu+0x96/0x130 net/batman-adv/translation-table.c:4198
+ batadv_update_min_mtu net/batman-adv/hard-interface.c:626 [inline]
+ batadv_hardif_activate_interface.part.0.cold+0xc6/0x294 net/batman-adv/hard-interface.c:653
+ batadv_hardif_activate_interface net/batman-adv/hard-interface.c:800 [inline]
+ batadv_hardif_enable_interface+0x9f2/0xaa0 net/batman-adv/hard-interface.c:792
+ batadv_softif_slave_add+0x92/0x150 net/batman-adv/soft-interface.c:859
+ do_set_master net/core/rtnetlink.c:2470 [inline]
+ do_set_master+0x1d7/0x230 net/core/rtnetlink.c:2443
+ do_setlink+0xaa2/0x3680 net/core/rtnetlink.c:2605
+ __rtnl_newlink+0xad5/0x1590 net/core/rtnetlink.c:3266
+ rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3391
+ rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5454
+ netlink_rcv_skb+0x15a/0x410 net/netlink/af_netlink.c:2478
+ netlink_unicast_kernel net/netlink/af_netlink.c:1303 [inline]
+ netlink_unicast+0x537/0x740 net/netlink/af_netlink.c:1329
+ netlink_sendmsg+0x882/0xe10 net/netlink/af_netlink.c:1918
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6b9/0x7d0 net/socket.c:2343
+ ___sys_sendmsg+0x100/0x170 net/socket.c:2397
+ __sys_sendmsg+0xec/0x1b0 net/socket.c:2430
+ do_syscall_64+0xf6/0x7d0 arch/x86/entry/common.c:294
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x45c849
+Code: ad b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b b6 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f043b72fc78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007f043b7306d4 RCX: 000000000045c849
+RDX: 0000000000000000 RSI: 00000000200001c0 RDI: 0000000000000003
+RBP: 000000000076bf00 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000ffffffff
+R13: 00000000000009f5 R14: 00000000004ccac9 R15: 000000000076bf0c
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
