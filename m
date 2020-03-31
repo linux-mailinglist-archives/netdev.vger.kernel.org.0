@@ -2,162 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66B03198AAC
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 05:54:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9224A198AB8
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 05:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729795AbgCaDyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 23:54:49 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:33823 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727358AbgCaDyt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 23:54:49 -0400
-Received: by mail-qt1-f195.google.com with SMTP id 10so17242503qtp.1;
-        Mon, 30 Mar 2020 20:54:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Vbv4wVL9aDWjgc0l/oEVuiG2/UoearZM1KlxGlj6iTA=;
-        b=Rac8IpO53SrtuYhqn+25V683NUH9Wa/ki/pLGMGIdwo6drOTHxK3XO7YF+sMoZ7sCg
-         IwnRxoH70Ywzw0Crg4jDug+G8e9YECcVYLlmkbZ0gRSdrAfIr0jcVYdF1Xr42TvLcecG
-         lKRw+sVeFwTSo5Adf2R9jF299VIihFtvuXy0Br6firJBdh3zuN7kdxh5VKCYM6opCnG/
-         ezXKBuPdKOXx+eFEu6CON7mns+rvimzbsvvsu207VEr9QwaEML4glZ4y109zfSulWbIt
-         hxC+jYMOEO7s2ZzKPhon4IOrNCFORxtmgOafOpNx5OmNe57AhLYkhZcTk8m+zsPV2zKh
-         BvlA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Vbv4wVL9aDWjgc0l/oEVuiG2/UoearZM1KlxGlj6iTA=;
-        b=QPyrLnJrY2YbKOTV+jdaQ5o0O6Ls7onseTOsdrxG3I9kJradK96pp3nQWHia/RN4mz
-         nlI/vI/bDIqACnKSmhxhfhHjwa0Rnj9mX4LHIqmwndvVBXYR9CI+luEitnN/bJ0o7exv
-         zf89+moJRDM2EMswrlVwbMcJ6/ib1zqyeAvpgONB4t8zdSxEc0CJUdcNhUIpYvVg42ok
-         BtBLs1WdOAw2JYdND4Z1qgwJRNNZ31pUlPifEw4WIXoDXDC1vU7CXdzukdyOJNxaiP0W
-         3H2abX0lsiY4kSZYDDckYRUiWG+HIwpPV+9SwGTCnxYt2Gk+9YAdSsbj1op7dVAHt+5P
-         swow==
-X-Gm-Message-State: ANhLgQ3+8oTE/t4kjyk87j3f627Bp7yZxz1jKIAApFCyaqDPB8CiA+Ab
-        HRldOq1nYU6Vrpp/f5ay9KGwJ2a174b8LKYK+as=
-X-Google-Smtp-Source: ADFU+vvfbKGAp2bjhbXi7yk7NBF85fgrF5Ad/c2/4mn0rAKoUsUkAlu1K1H7N3LlURUNm4Ztqm+X/eRRJn7JJgB+9jE=
-X-Received: by 2002:ac8:7cb0:: with SMTP id z16mr3105237qtv.59.1585626886610;
- Mon, 30 Mar 2020 20:54:46 -0700 (PDT)
+        id S1729703AbgCaD5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 23:57:04 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:12658 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727358AbgCaD5D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 23:57:03 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 9325F2252625F8F9FCB5;
+        Tue, 31 Mar 2020 11:57:01 +0800 (CST)
+Received: from [127.0.0.1] (10.173.223.60) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Tue, 31 Mar 2020
+ 11:56:58 +0800
+Subject: Re: [PATCH net] veth: xdp: use head instead of hard_start
+To:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Jesper Dangaard Brouer <jbrouer@redhat.com>
+CC:     <davem@davemloft.net>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <kuba@kernel.org>, <hawk@kernel.org>, <john.fastabend@gmail.com>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <andriin@fb.com>, <jwi@linux.ibm.com>, <jianglidong3@jd.com>,
+        <edumazet@google.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <kernel-janitors@vger.kernel.org>
+References: <20200330102631.31286-1-maowenan@huawei.com>
+ <20200330133442.132bde0c@carbon>
+ <3053de4c-cee6-f6fc-efc2-09c6250f3ef2@gmail.com>
+From:   maowenan <maowenan@huawei.com>
+Message-ID: <e7cf1271-2953-a5aa-ab25-c4b4a3843ee1@huawei.com>
+Date:   Tue, 31 Mar 2020 11:56:56 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.0
 MIME-Version: 1.0
-References: <20200330030001.2312810-1-andriin@fb.com> <c9f52288-5ea8-a117-8a67-84ba48374d3a@gmail.com>
- <CAEf4BzZpCOCi1QfL0peBRjAOkXRwGEi_DAW4z34Mf3Tv_sbRFw@mail.gmail.com>
- <662788f9-0a53-72d4-2675-daec893b5b81@gmail.com> <CAADnVQK8oMZehQVt34=5zgN12VBc2940AWJJK2Ft0cbOi1jDhQ@mail.gmail.com>
- <cdd576be-8075-13a7-98ee-9bc9355a2437@gmail.com> <20200331003222.gdc2qb5rmopphdxl@ast-mbp>
- <58cea4c7-e832-2632-7f69-5502b06310b2@gmail.com>
-In-Reply-To: <58cea4c7-e832-2632-7f69-5502b06310b2@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 30 Mar 2020 20:54:35 -0700
-Message-ID: <CAEf4BzZSCdtSRw9mj2W5Vv3C-G6iZdMJsZ8WGon11mN3oBiguQ@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 0/4] Add support for cgroup bpf_link
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrey Ignatov <rdna@fb.com>, Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <3053de4c-cee6-f6fc-efc2-09c6250f3ef2@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.173.223.60]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 5:57 PM David Ahern <dsahern@gmail.com> wrote:
->
-> On 3/30/20 6:32 PM, Alexei Starovoitov wrote:
-> >>
-> >> This is not a large feature, and there is no reason for CREATE/UPDATE -
-> >> a mere 4 patch set - to go in without something as essential as the
-> >> QUERY for observability.
-> >
-> > As I said 'bpftool cgroup' covers it. Observability is not reduced in any way.
->
-> You want a feature where a process can prevent another from installing a
-> program on a cgroup. How do I learn which process is holding the
-> bpf_link reference and preventing me from installing a program? Unless I
-> have missed some recent change that is not currently covered by bpftool
-> cgroup, and there is no way reading kernel code will tell me.
->
-> ###
-> To quote Lorenz from an earlier response:
->
-> "However, this behaviour concerns me. It's like Windows not
-> letting you delete a file while an application has it opened, which just
-> leads to randomly killing programs until you find the right one. It's
-> frustrating and counter productive.
->
-> You're taking power away from the operator. In your deployment scenario
-> this might make sense, but I think it's a really bad model in general.
-> If I am privileged I need to be able to exercise that privilege."
-> ###
->
-> That is my point. You are restricting what root can do and people will
-> not want to resort to killing random processes trying to find the one
-> holding a reference. This is an essential missing piece and should go in
-> at the same time as this set.
+On 2020/3/31 7:35, Toshiaki Makita wrote:
+> Hi Mao & Jesper
+> (Resending with plain text...)
+> 
+> On 2020/03/30 20:34, Jesper Dangaard Brouer wrote:
+>> On Mon, 30 Mar 2020 18:26:31 +0800
+>> Mao Wenan <maowenan@huawei.com> wrote:
+>>
+>>> xdp.data_hard_start is mapped to the first
+>>> address of xdp_frame, but the pointer hard_start
+>>> is the offset(sizeof(struct xdp_frame)) of xdp_frame,
+>>> it should use head instead of hard_start to
+>>> set xdp.data_hard_start. Otherwise, if BPF program
+>>> calls helper_function such as bpf_xdp_adjust_head, it
+>>> will be confused for xdp_frame_end.
+>>
+>> I have noticed this[1] and have a patch in my current patchset for
+>> fixing this.  IMHO is is not so important fix right now, as the effect
+>> is that you currently only lose 32 bytes of headroom.
+>>
+I consider that it is needed because bpf_xdp_adjust_head() just a common helper function,
+veth as one driver application should keep the same as 32 bytes of headroom as other driver.
+And convert_to_xdp_frame set() also store info in top of packet, and set:
+	xdp_frame = xdp->data_hard_start;
 
-No need to kill random processes, you can kill only those that hold
-bpf_link FD. You can find them using drgn tool with script like [0].
-It will give you quite a lot of information already, but it should
-also find pinned bpf_links, I haven't added it yet.
-
-Found total 11 bpf_links.
--------------------------------------------------
-type: tracing
-prog: 'test1' id:223 type:BPF_PROG_TYPE_TRACING
-pids: 449027
--------------------------------------------------
-type: tracing
-prog: 'test2' id:224 type:BPF_PROG_TYPE_TRACING
-pids: 449027
--------------------------------------------------
-type: tracing
-prog: 'test3' id:225 type:BPF_PROG_TYPE_TRACING
-pids: 449027
--------------------------------------------------
-type: tracing
-prog: 'test4' id:226 type:BPF_PROG_TYPE_TRACING
-pids: 449027
--------------------------------------------------
-type: tracing
-prog: 'test5' id:227 type:BPF_PROG_TYPE_TRACING
-pids: 449027
--------------------------------------------------
-type: tracing
-prog: 'test6' id:228 type:BPF_PROG_TYPE_TRACING
-pids: 449027
--------------------------------------------------
-type: raw_tp
-prog: '' id:237 type:BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE
-tp: bpf_test_finish
-pids: 449462
--------------------------------------------------
-type: cgroup
-prog: 'egress' id:242 type:BPF_PROG_TYPE_CGROUP_SKB
-attach: BPF_CGROUP_INET_EGRESS
-cgroup: /cgroup-test-work-dir/cg1
-pids: 449881
--------------------------------------------------
-type: cgroup
-prog: 'egress' id:242 type:BPF_PROG_TYPE_CGROUP_SKB
-attach: BPF_CGROUP_INET_EGRESS
-cgroup: /cgroup-test-work-dir/cg1/cg2
-pids: 449881
--------------------------------------------------
-type: cgroup
-prog: 'egress' id:242 type:BPF_PROG_TYPE_CGROUP_SKB
-attach: BPF_CGROUP_INET_EGRESS
-cgroup: /cgroup-test-work-dir/cg1/cg2/cg3
-pids: 449881
--------------------------------------------------
-type: cgroup
-prog: 'egress' id:242 type:BPF_PROG_TYPE_CGROUP_SKB
-attach: BPF_CGROUP_INET_EGRESS
-cgroup: /cgroup-test-work-dir/cg1/cg2/cg3/cg4
-pids: 449881
--------------------------------------------------
+>> [1] https://lore.kernel.org/netdev/158446621887.702578.17234304084556809684.stgit@firesoul/
+> 
+> You are right, the subtraction is not necessary here.
+I guess you mean that previous subtraction is not necessary ? this line : void *head = hard_start - sizeof(struct xdp_frame); ?
+But in the veth_xdp_rcv_one,below line will use head pointer,
+case XDP_TX:
+                        orig_frame = *frame;
+                        xdp.data_hard_start = head;
 
 
-   [0] https://gist.github.com/anakryiko/562dff8e39c619a5ee247bb55aa057c7
+> Thank you for working on this.
+> 
+> Toshiaki Makita
+> 
+> .
+
+
