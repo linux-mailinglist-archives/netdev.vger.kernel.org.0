@@ -2,156 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F93819A26E
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 01:26:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8034D19A273
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 01:27:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731438AbgCaX0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 19:26:39 -0400
-Received: from haggis.mythic-beasts.com ([46.235.224.141]:33231 "EHLO
-        haggis.mythic-beasts.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731364AbgCaX0j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 19:26:39 -0400
-X-Greylist: delayed 532 seconds by postgrey-1.27 at vger.kernel.org; Tue, 31 Mar 2020 19:26:38 EDT
-Received: from [2001:678:634:203:cf83:32c6:10b8:3403] (port=57814 helo=phosphorus.lan.house.timstallard.me.uk)
-        by haggis.mythic-beasts.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <code@timstallard.me.uk>)
-        id 1jJQ8f-00033v-H7; Wed, 01 Apr 2020 00:17:45 +0100
-From:   Tim Stallard <code@timstallard.me.uk>
-To:     netdev@vger.kernel.org
-Cc:     Tim Stallard <code@timstallard.me.uk>
-Subject: [PATCH net] net: icmp6: add icmp_errors_use_inbound_ifaddr sysctl for IPv6
-Date:   Wed,  1 Apr 2020 00:17:06 +0100
-Message-Id: <20200331231706.14551-1-code@timstallard.me.uk>
-X-Mailer: git-send-email 2.20.1
+        id S1731527AbgCaX15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 19:27:57 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:45282 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731331AbgCaX15 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 19:27:57 -0400
+Received: by mail-qt1-f196.google.com with SMTP id t17so20049100qtn.12
+        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 16:27:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=NTtGtElf4KM6ruolVX5/V+A7L1i8rEuz42hU0f0A9qI=;
+        b=hq8uGl8i1eCthGXF5Hsxz6BwY7Zq7snSNnmTWoO2pbQ40X2ti3lIQS3FhrZh4Why/g
+         7c/qhShSlR5GFQ8IjP2IvRTcmkJ4Vnjj8RUquSSd5az7z63Xogewsea1wL9PcBazUYbE
+         NLYO14069JIvgvyTrb/GGr9xv3GfWlRbDPTQuIPDaojNctiFn5iQf4acyAiiyjEfXVP4
+         0jADpZ7b2KdNTOpymyNJyxwdCzxx8L+5q7EgjpxtwfhO7J8yy9QW/Tf3UXHOgqjhoozO
+         2fGtUfId5Xmk5/Q82ffVE/tbL7TnYFbgU/myEWvZrMSDCxbFGzRCer1DgKweAy5of4WI
+         Wbwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=NTtGtElf4KM6ruolVX5/V+A7L1i8rEuz42hU0f0A9qI=;
+        b=CyneSl31riTrg9iY32tnHHGmAL0Ae2faqDiAw3eD9I8FQF16xX44VpSj3o8YYcdhMp
+         /DJiTMOU3upXzMusayrWpB252ZyHm15LbcHddIDaRBufPUK6zn3nT5xbRjA2OK+8WrPA
+         ljsOACmtfeHxWF9g+erg2x6lKh4t523iplEJqf4VzpVsjjuIoqqHnQtgUsR1df0LVotE
+         77Ft2G4Eybamki2qzOXicJ8IWRJ0tPmUUu0W4cOUn9cLtJ+kFWuYQRB0dyxLt8aDZCsN
+         iJYJtl1rxawy6ZwxX1ZS1CGjpfkIVHouC9DS3xurycgQFfB5hqmnHhjcLwq7cGH2DBOQ
+         4YIg==
+X-Gm-Message-State: ANhLgQ3A/mMSuBxfJ7+ZuPDHMAqMcyB2mm7PlgXU/GvHLNTDpek71zHW
+        1Zz6TaQC7W5u1FkQNkat7l4=
+X-Google-Smtp-Source: ADFU+vtbkHEynbDuDUw0k3RWsNkHqP52KTSGNGrhhNqfNxzK6sl9L446OYwe1wkqmkUijGx9tUIhyA==
+X-Received: by 2002:ac8:568b:: with SMTP id h11mr7650335qta.105.1585697276344;
+        Tue, 31 Mar 2020 16:27:56 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:8cf:804:d878:6008? ([2601:282:803:7700:8cf:804:d878:6008])
+        by smtp.googlemail.com with ESMTPSA id c19sm326292qkk.81.2020.03.31.16.27.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Mar 2020 16:27:55 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v2 0/3] Add devlink-trap policers support
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, stephen@networkplumber.org, jiri@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+References: <20200331084253.2377588-1-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <7d011e0e-14b8-fe7f-7ac5-16cc6e4fc6b0@gmail.com>
+Date:   Tue, 31 Mar 2020 17:27:54 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-BlackCat-Spam-Score: 50
-X-Spam-Status: No, score=5.0
+In-Reply-To: <20200331084253.2377588-1-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For IPv4, normal source address selection is used for ICMP, unless
-icmp_errors_use_inbound_ifaddr is set in which case addresses on
-the ingress interface will be used. For IPv6, equivalent functionality
-exists since commit fac6fce9bdb5 ("net: icmp6: provide input address
-for traceroute6") which enables this behaviour by default.
+On 3/31/20 2:42 AM, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> This patch set adds devlink-trap policers support in iproute2.
+> 
+> Patch #1 adds devlink trap policer set and show commands.
+> 
+> Patch #2 adds ability to bind a policer to a trap group.
+> 
+> Patch #3 adds bash completion for new commands.
+> 
+> See individual commit messages for example usage and output.
+> 
+> v2:
+> * Add patch #3
+> 
+> Ido Schimmel (3):
+>   devlink: Add devlink trap policer set and show commands
+>   devlink: Add ability to bind policer to trap group
+>   bash-completion: devlink: Extend bash-completion for new commands
+> 
+>  bash-completion/devlink    | 131 +++++++++++++++++++++++++-
+>  devlink/devlink.c          | 185 ++++++++++++++++++++++++++++++++++++-
+>  man/man8/devlink-monitor.8 |   2 +-
+>  man/man8/devlink-trap.8    |  52 +++++++++++
+>  4 files changed, 365 insertions(+), 5 deletions(-)
+> 
 
-Scenarios where source address selection is manually influenced are
-broken by this, eg by setting source addresses on routes:
-
-ip -6 addr add 2001:db8:100::1 dev lo
-ip -6 addr add 2001:db8::2/64 dev eth0
-ip -6 route add default via 2001:db8::1 src 2001:db8:100::1
-
-In this scenario, ICMP errors would be sent from 2001:db8::2
-rather than the manually configured 2001:db8:100::1.
-
-In practice, this causes issues with IPv6 path MTU discovery in networks
-where unroutable linknets are used, and packets from these linknets are
-discarded by upstream providers' BCP38 filters, dropping all Packet
-Too Big errors. Traceroutes are also broken in this scenario.
-
-This restores the original behaviour by default, and adds a sysctl
-to enable the modified source address selection for ICMP errors,
-in line with the behaviour for IPv4.
-
-Fixes: fac6fce9bdb5 ("net: icmp6: provide input address for traceroute6")
-Signed-off-by: Tim Stallard <code@timstallard.me.uk>
----
- Documentation/networking/ip-sysctl.txt | 13 +++++++++++++
- include/net/netns/ipv6.h               |  1 +
- net/ipv6/af_inet6.c                    |  1 +
- net/ipv6/icmp.c                        | 12 ++++++++++--
- 4 files changed, 25 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
-index 5f53faff4e25..674e41f2ffa0 100644
---- a/Documentation/networking/ip-sysctl.txt
-+++ b/Documentation/networking/ip-sysctl.txt
-@@ -2014,6 +2014,19 @@ echo_ignore_anycast - BOOLEAN
- 	requests sent to it over the IPv6 protocol destined to anycast address.
- 	Default: 0
- 
-+errors_use_inbound_ifaddr - BOOLEAN
-+
-+	If zero, standard source address selection is used for outgoing ICMP
-+	errors.
-+
-+	If non-zero, the message will be sent with the primary address of
-+	the interface that received the packet that caused the icmp error.
-+	This is the behaviour many network administrators will expect from
-+	a router and it can make debugging complicated network layouts
-+	much easier.
-+
-+	Default: 0
-+
- xfrm6_gc_thresh - INTEGER
- 	(Obsolete since linux-4.14)
- 	The threshold at which we will start garbage collecting for IPv6
-diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
-index 5ec054473d81..cbe2a151c932 100644
---- a/include/net/netns/ipv6.h
-+++ b/include/net/netns/ipv6.h
-@@ -36,6 +36,7 @@ struct netns_sysctl_ipv6 {
- 	int icmpv6_echo_ignore_all;
- 	int icmpv6_echo_ignore_multicast;
- 	int icmpv6_echo_ignore_anycast;
-+	int icmpv6_errors_use_inbound_ifaddr;
- 	DECLARE_BITMAP(icmpv6_ratemask, ICMPV6_MSG_MAX + 1);
- 	unsigned long *icmpv6_ratemask_ptr;
- 	int anycast_src_echo_reply;
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index d727c3b41495..1a9b817e0266 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -875,6 +875,7 @@ static int __net_init inet6_net_init(struct net *net)
- 	net->ipv6.sysctl.icmpv6_echo_ignore_all = 0;
- 	net->ipv6.sysctl.icmpv6_echo_ignore_multicast = 0;
- 	net->ipv6.sysctl.icmpv6_echo_ignore_anycast = 0;
-+	net->ipv6.sysctl.icmpv6_errors_use_inbound_ifaddr = 0;
- 
- 	/* By default, rate limit error messages.
- 	 * Except for pmtu discovery, it would break it.
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index ef408a5090a2..6ac65705f505 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -527,7 +527,7 @@ static void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
- 		saddr = force_saddr;
- 	if (saddr) {
- 		fl6.saddr = *saddr;
--	} else {
-+	} else if (net->ipv6.sysctl.icmpv6_errors_use_inbound_ifaddr) {
- 		/* select a more meaningful saddr from input if */
- 		struct net_device *in_netdev;
- 
-@@ -1158,6 +1158,13 @@ static struct ctl_table ipv6_icmp_table_template[] = {
- 		.mode		= 0644,
- 		.proc_handler = proc_dointvec,
- 	},
-+	{
-+		.procname	= "errors_use_inbound_ifaddr",
-+		.data		= &init_net.ipv6.sysctl.icmpv6_errors_use_inbound_ifaddr,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler = proc_dointvec,
-+	},
- 	{
- 		.procname	= "ratemask",
- 		.data		= &init_net.ipv6.sysctl.icmpv6_ratemask_ptr,
-@@ -1181,7 +1188,8 @@ struct ctl_table * __net_init ipv6_icmp_sysctl_init(struct net *net)
- 		table[1].data = &net->ipv6.sysctl.icmpv6_echo_ignore_all;
- 		table[2].data = &net->ipv6.sysctl.icmpv6_echo_ignore_multicast;
- 		table[3].data = &net->ipv6.sysctl.icmpv6_echo_ignore_anycast;
--		table[4].data = &net->ipv6.sysctl.icmpv6_ratemask_ptr;
-+		table[4].data = &net->ipv6.sysctl.icmpv6_errors_use_inbound_ifaddr;
-+		table[5].data = &net->ipv6.sysctl.icmpv6_ratemask_ptr;
- 	}
- 	return table;
- }
--- 
-2.20.1
-
+applied to iproute2-next. Thanks
