@@ -2,190 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7914199A64
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 17:54:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85ADE199A7F
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 17:57:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730896AbgCaPyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 11:54:02 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:43050 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730105AbgCaPyC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 11:54:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Xbao8KSLFnhUJRMeq0hTDteAoWcuNhiygQmHVbCKMDM=; b=YexFoZsyYEuDb1fxJg7z7vUf7
-        qVgp8yDkyCqRvbgqnPpz4d/Dk6VhnmO40ISGRlv4/aVpY2rjMCG98iBp/dO7f6bjhzwvGrUUKJasj
-        TTg8HXBtITNqM9oEq+GskI5imueF/JW4fAcQZzS5Hq9Z1wZ7GkvwP7jSYba1Z7kAZ/vFrpwehrkan
-        lCRLyoJKkft8YP9hQqoO3I7NtNbOkp3EOhIbkiT+5TaeqvNIRasry/0JaaWrLWsoyzbAfUDx/W7pT
-        wdKnGcS1rBBGf4LhwAcSRx6NaC/4hlLdSL6ecDyKMbyZOZsHNeknedEHJ2IWynIDJbVqv5L5COMNW
-        edNv35deA==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:60426)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jJJD6-0000g4-7a; Tue, 31 Mar 2020 16:53:52 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jJJD4-0008Ex-9p; Tue, 31 Mar 2020 16:53:50 +0100
-Date:   Tue, 31 Mar 2020 16:53:50 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     David Jander <david@protonic.nl>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-kernel@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        linux-imx@nxp.com, kernel@pengutronix.de,
-        Shawn Guo <shawnguo@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v2] ARM: imx: allow to disable board specific PHY fixups
-Message-ID: <20200331155350.GP25745@shell.armlinux.org.uk>
-References: <20200329110457.4113-1-o.rempel@pengutronix.de>
- <20200329150854.GA31812@lunn.ch>
- <20200330052611.2bgu7x4nmimf7pru@pengutronix.de>
- <40209d08-4acb-75c5-1766-6d39bb826ff9@gmail.com>
- <20200330174114.GG25745@shell.armlinux.org.uk>
- <20200331104459.6857474e@erd988>
- <20200331093648.GL25745@shell.armlinux.org.uk>
- <20200331174103.6c8f5a43@erd988>
+        id S1731160AbgCaP5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 11:57:37 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:33620 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730105AbgCaP5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 11:57:37 -0400
+Received: by mail-wm1-f65.google.com with SMTP id z14so2370316wmf.0;
+        Tue, 31 Mar 2020 08:57:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=BNFMjtXJfiHlQMR9l7UbxDk1QF+cJZZU1iswPz9+i6o=;
+        b=RPdMS82ZlLssKw9Dkgko5xZa3ImkwSpdhRLHGtlKqP2Rqt8KqzQXeLhnrRudlAXjCS
+         p7XKRqIbS3gD6+uZx0TJ7Ek8Rn5GTVw/xoFy7zaaZWVESd8tf9ARpGUZlhih/Msi+ciQ
+         q5PCQm3kppwX0Sf1zB+DZGgui/OZ3MZ76tsUItZjF7rn+R/aGWRGECmJIcnUPSu5O8Ye
+         X3h4Tsw4u9RAasU20fcFUWoiD6nxChyG3ZmKTWy7VbHlwop4hXLI16oM5MyM/UAl3/E1
+         lXs/57QVL1ZqrwjeQSAz4r0OrZq9R4MBNMXY21rmjKS7q24rSv0vUaTZjTgOsJsWEdBS
+         ZVTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=BNFMjtXJfiHlQMR9l7UbxDk1QF+cJZZU1iswPz9+i6o=;
+        b=tig3bGh4Wd/LppUVkvDFHOjJSzm/3W8iJaQ+nyMD4Qkw8pPoDbYItfdv3vy2ZbD0NC
+         1GbEnRf16uxexwClBDxObWPBhYUvyOwpASQBnBv0GHqQJ3UbN3NSDDdNEtjcWXntLkN6
+         RRMSInDelZQWjBQ8CBeWXzz5vZdzlQTEhbB3xGVkFSBv/YY4jBsvXiK3phBL9c5RHjIt
+         Gkbmf33BSbLy6dWDZ+5YbxtGE28fMwAckRSNkCvLdiWB/9tQ+3icIuzpVq1cUY+3ouh5
+         wx2rEt9oVavwd+942yhnmFGDRxDoCKFQiMiLXCfkhZ47N6k1Zbx5Ckk+FnMcWIvOvEkE
+         e4ow==
+X-Gm-Message-State: ANhLgQ1VNLylwxoQBCvj5qXeRoed+WiKXndcvx+AmmC9wEneTo37OFMR
+        Au/v8b5ih7Rb2PXdt33EVD4=
+X-Google-Smtp-Source: ADFU+vuUo3iYi1QiNUBgHOWtkUNq0FOy4wwadRDrWpieJWPIzSdppOmeXv8LCWNQciex4ictjFt6CQ==
+X-Received: by 2002:a05:600c:2f90:: with SMTP id t16mr4269086wmn.66.1585670255600;
+        Tue, 31 Mar 2020 08:57:35 -0700 (PDT)
+Received: from [10.230.186.223] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id k9sm28456616wrd.74.2020.03.31.08.57.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Mar 2020 08:57:34 -0700 (PDT)
+Subject: Re: [PATCH] net: dsa: ksz: Select KSZ protocol tag
+To:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     woojung.huh@microchip.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, davem@davemloft.net,
+        Cristian Birsan <cristian.birsan@microchip.com>
+References: <20200331093651.23365-1-codrin.ciubotariu@microchip.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <8455cc8b-a51a-6d39-7e88-7eea2e61524c@gmail.com>
+Date:   Tue, 31 Mar 2020 08:57:31 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Firefox/68.0 Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200331174103.6c8f5a43@erd988>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20200331093651.23365-1-codrin.ciubotariu@microchip.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 31, 2020 at 05:41:03PM +0200, David Jander wrote:
-> 
-> Dear Russell,
-> 
-> On Tue, 31 Mar 2020 10:36:49 +0100
-> Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> 
-> > On Tue, Mar 31, 2020 at 10:44:59AM +0200, David Jander wrote:
-> > > On Mon, 30 Mar 2020 18:41:14 +0100
-> > > Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
-> > >   
-> > > > On Mon, Mar 30, 2020 at 10:33:03AM -0700, Florian Fainelli wrote:  
-> > > > > 
-> > > > > 
-> > > > > On 3/29/2020 10:26 PM, Oleksij Rempel wrote:    
-> > > > > > Hi Andrew,
-> > > > > > 
-> > > > > > On Sun, Mar 29, 2020 at 05:08:54PM +0200, Andrew Lunn wrote:    
-> > > > > >> On Sun, Mar 29, 2020 at 01:04:57PM +0200, Oleksij Rempel wrote:
-> > > > > >>
-> > > > > >> Hi Oleksij
-> > > > > >>    
-> > > > > >>> +config DEPRECATED_PHY_FIXUPS
-> > > > > >>> +	bool "Enable deprecated PHY fixups"
-> > > > > >>> +	default y
-> > > > > >>> +	---help---
-> > > > > >>> +	  In the early days it was common practice to configure PHYs by adding a
-> > > > > >>> +	  phy_register_fixup*() in the machine code. This practice turned out to
-> > > > > >>> +	  be potentially dangerous, because:
-> > > > > >>> +	  - it affects all PHYs in the system
-> > > > > >>> +	  - these register changes are usually not preserved during PHY reset
-> > > > > >>> +	    or suspend/resume cycle.
-> > > > > >>> +	  - it complicates debugging, since these configuration changes were not
-> > > > > >>> +	    done by the actual PHY driver.
-> > > > > >>> +	  This option allows to disable all fixups which are identified as
-> > > > > >>> +	  potentially harmful and give the developers a chance to implement the
-> > > > > >>> +	  proper configuration via the device tree (e.g.: phy-mode) and/or the
-> > > > > >>> +	  related PHY drivers.    
-> > > > > >>
-> > > > > >> This appears to be an IMX only problem. Everybody else seems to of got
-> > > > > >> this right. There is no need to bother everybody with this new
-> > > > > >> option. Please put this in arch/arm/mach-mxs/Kconfig and have IMX in
-> > > > > >> the name.    
-> > > > > > 
-> > > > > > Actually, all fixups seems to do wring thing:
-> > > > > > arch/arm/mach-davinci/board-dm644x-evm.c:915:		phy_register_fixup_for_uid(LXT971_PHY_ID, LXT971_PHY_MASK,
-> > > > > > 
-> > > > > > Increased MII drive strength. Should be probably enabled by the PHY
-> > > > > > driver.
-> > > > > > 
-> > > > > > arch/arm/mach-imx/mach-imx6q.c:167:		phy_register_fixup_for_uid(PHY_ID_KSZ9021, MICREL_PHY_ID_MASK,
-> > > > > > arch/arm/mach-imx/mach-imx6q.c:169:		phy_register_fixup_for_uid(PHY_ID_KSZ9031, MICREL_PHY_ID_MASK,
-> > > > > > arch/arm/mach-imx/mach-imx6q.c:171:		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffef,
-> > > > > > arch/arm/mach-imx/mach-imx6q.c:173:		phy_register_fixup_for_uid(PHY_ID_AR8035, 0xffffffef,    
-> > > > 
-> > > > As far as I'm concerned, the AR8035 fixup is there with good reason.
-> > > > It's not just "random" but is required to make the AR8035 usable with
-> > > > the iMX6 SoCs.  Not because of a board level thing, but because it's
-> > > > required for the AR8035 to be usable with an iMX6 SoC.  
-> > > 
-> > > I have checked with the datasheet of the AR8035, and AFAICS, what the code
-> > > does is this:
-> > > 
-> > >  - Disable the SmartEEE feature of the phy. The comment in the code implies
-> > >    that for some reason it doesn't work, but the reason itself is not given.
-> > >    Anyway, disabling SmartEEE should IMHO opinion be controlled by a DT
-> > >    setting. There is no reason to believe this problem is specific to the
-> > >    i.MX6. Besides, it is a feature of the phy, so it seems logical to expose
-> > >    that via the DT. Once that is done, it has no place here.
-> > > 
-> > >  - Set the external clock output to 125MHz. This is needed because the i.MX6
-> > >    needs a 125MHz reference clock input. But it is not a requirement to use
-> > >    this output. It is perfectly fine and possible to design a board that uses
-> > >    an external oscillator for this. It is also possible that an i.MX6 design
-> > >    has such a phy connected to a MAC behind a switch or some other interface.
-> > >    Independent of i.MX6 this setting can also be necessary for other hardware
-> > >    designs, based on different SoC's. In summary, this is a feature of the
-> > >    specific hardware design at hand, and has nothing to do with the i.MX6
-> > >    specifically. This should definitely be exposed through the DT and not be
-> > >    here.
-> > > 
-> > >  - Enable TXC delay. To clarify, the RGMII specification version 1 specified
-> > >    that the RXC and TXC traces should be routed long enough to introduce a
-> > >    certain delay to the clock signal, or the delay should be introduced via
-> > >    other means. In a later version of the spec, a provision was given for MAC
-> > >    or PHY devices to generate this delay internally. The i.MX6 MAC interface
-> > >    is unable to generate the required delay internally, so it has to be taken
-> > >    care of either by the board layout, or by the PHY device. This is the
-> > >    crucial point: The amount of delay set by the PHY delay register depends on
-> > >    the board layout. It should NEVER be hard-coded in SoC setup code. The
-> > >    correct way is to specify it in the DT. Needless to say that this too,
-> > >    isn't i.MX6-specific.
-> > >   
-> > > > So, having it registered by the iMX6 SoC code is entirely logical and
-> > > > correct.  
-> > > 
-> > > I'm afraid I don't agree. See above. This code really should never have been
-> > > here. It is not i.MX6-specific as I pointed out above, nor is it necessarily
-> > > applicable to all i.MX6 boards that use those phy devices.  
-> > 
-> > Then we will have to agree to disagree, sorry.
-> 
-> Please forgive me if I am appearing a bit stubborn.
-> If it is not too much to ask, I would really like to know where my reasoning
-> is wrong?
-> Maybe you can explain to me how to solve the following real-life conflict that
-> this introduces:
-> 
-> Suppose we have a board with an i.MX6Q and a KSZ9031 connected to it. Suppose
-> I now take a USB stick with a LAN7800 ethernet chip and a KSZ9031 PHY. These
-> USB sticks do exist, and it does not seem unthinkable to me that one would
-> connect them to such an i.MX6 system in order to get a second LAN port.
 
-Thanks.  I've already covered how this can be delt with in some code
-I've posted in this thread.  Therefore, I have nothing further to add
-to this point, apart from pointing out that I've provided a solution
-so as far as I'm concerned, it's entirely solvable, and warrants no
-further argument.
 
-Maybe a discussion about solutions would be appropriate, but merely
-re-raising the same point while ignoring proposed solutions is not
-a productive way forward.
+On 3/31/2020 2:36 AM, Codrin Ciubotariu wrote:
+> KSZ protocol tag is needed by the KSZ DSA drivers.
+> 
+> Fixes: 0b9f9dfbfab4 ("dsa: Allow tag drivers to be built as modules")
+> Tested-by: Cristian Birsan <cristian.birsan@microchip.com>
+> Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
 
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+Florian
