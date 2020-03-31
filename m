@@ -2,75 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 66502199264
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 11:40:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A7F6199302
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 12:00:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730216AbgCaJkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 05:40:02 -0400
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:21755 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726299AbgCaJkC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 05:40:02 -0400
-IronPort-SDR: zCAhpOhSPx8/Vxszb5joggHuxdzoaeF6Cr28gVHhISoHhgnjdEIz4pbo9Ak52hpiG+rfqSZ9kG
- q8d/wo/uIu6Y4XP3JdztNCjPNcbaBXtya2OS8pYtW+3xuSoqpl15ljbQ8dhk9Rv4bXPVeuI2hl
- 09reSlBQh+08fCL9+b6N0AyKSd2DkQklOydUOu1bbLEL4FobeCfn6jcG0fS3YT203y/7xE+Mle
- ygqFIydrJyfjuHKWUEfaEanJRKxZ9ATZdgWsdfcqtjDkPosw5DmrnEgDLxNDP/BQvL2dovrK+Q
- fUQ=
-X-IronPort-AV: E=Sophos;i="5.72,327,1580799600"; 
-   d="scan'208";a="70857365"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 31 Mar 2020 02:40:02 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 31 Mar 2020 02:40:01 -0700
-Received: from rob-ult-m19940.microchip.com (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Tue, 31 Mar 2020 02:40:02 -0700
-From:   Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <antoine.tenart@bootlin.com>, <andrew@lunn.ch>,
-        <f.fainelli@gmail.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        Cristian Birsan <cristian.birsan@microchip.com>
-Subject: [PATCH] net: macb: Fix handling of fixed-link node
-Date:   Tue, 31 Mar 2020 12:39:35 +0300
-Message-ID: <20200331093935.23542-1-codrin.ciubotariu@microchip.com>
-X-Mailer: git-send-email 2.20.1
+        id S1730419AbgCaKAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 06:00:38 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:38742 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730153AbgCaKAi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 06:00:38 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1jJDh8-0002Tv-TZ; Tue, 31 Mar 2020 10:00:31 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] bpf: Test_verifier: fix spelling mistake "arithmatic" -> "arithmetic"
+Date:   Tue, 31 Mar 2020 11:00:30 +0100
+Message-Id: <20200331100030.41372-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fixed-link nodes are treated as PHY nodes by of_mdiobus_child_is_phy().
-We must check if the interface is a fixed-link before looking up for PHY
-nodes.
+From: Colin Ian King <colin.king@canonical.com>
 
-Fixes: 7897b071ac3b ("net: macb: convert to phylink")
-Tested-by: Cristian Birsan <cristian.birsan@microchip.com>
-Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+There are a couple of spelling mistakes in two literal strings, fix them.
+
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ tools/testing/selftests/bpf/verifier/bounds.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 2c28da1737fe..b3a51935e8e0 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -724,6 +724,9 @@ static int macb_mdiobus_register(struct macb *bp)
+diff --git a/tools/testing/selftests/bpf/verifier/bounds.c b/tools/testing/selftests/bpf/verifier/bounds.c
+index 4d0d09574bf4..a253a064e6e0 100644
+--- a/tools/testing/selftests/bpf/verifier/bounds.c
++++ b/tools/testing/selftests/bpf/verifier/bounds.c
+@@ -501,7 +501,7 @@
+ 	.result = REJECT
+ },
  {
- 	struct device_node *child, *np = bp->pdev->dev.of_node;
- 
-+	if (of_phy_is_fixed_link(np))
-+		return mdiobus_register(bp->mii_bus);
-+
- 	/* Only create the PHY from the device tree if at least one PHY is
- 	 * described. Otherwise scan the entire MDIO bus. We do this to support
- 	 * old device tree that did not follow the best practices and did not
+-	"bounds check mixed 32bit and 64bit arithmatic. test1",
++	"bounds check mixed 32bit and 64bit arithmetic. test1",
+ 	.insns = {
+ 	BPF_MOV64_IMM(BPF_REG_0, 0),
+ 	BPF_MOV64_IMM(BPF_REG_1, -1),
+@@ -520,7 +520,7 @@
+ 	.result = ACCEPT
+ },
+ {
+-	"bounds check mixed 32bit and 64bit arithmatic. test2",
++	"bounds check mixed 32bit and 64bit arithmetic. test2",
+ 	.insns = {
+ 	BPF_MOV64_IMM(BPF_REG_0, 0),
+ 	BPF_MOV64_IMM(BPF_REG_1, -1),
 -- 
-2.20.1
+2.25.1
 
