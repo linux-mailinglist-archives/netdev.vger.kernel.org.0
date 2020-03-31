@@ -2,212 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BB1219A215
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 00:49:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F93819A26E
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 01:26:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731476AbgCaWtB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 18:49:01 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:37456 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731424AbgCaWs6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 18:48:58 -0400
-Received: by mail-lj1-f196.google.com with SMTP id r24so23807731ljd.4
-        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 15:48:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=7EgE3rQUBwKB+OsNaorPCoGcvdaSTA93aqDrB6D4TEc=;
-        b=gkLrXlWeXFOSVICast5Vdl5R5P3IOcA/C6dTpriALza9D4E6Y6Qd652tVMYoj2pY3P
-         DN47bRyHES/yPSQOm7K3SMnISIFaCOSoghFeabV7lMExqinTjNSHkz7tKMQ+H19tgYzl
-         A9372xTpCD9MIMVGWYWT+F5jGZWz+Fs2zGfe2w+2SUu/Il1cptPCYi0tM/+XZRpAIR3D
-         xJ4G3wavpa1cE53/NVAoTG99j8pRrrnlsWvC0aUIASE8vWsF6GaozXk/FWJKf698GgGJ
-         kffciFjXKMUs3pCMAGQDP4ubtD5jtjSITiT14urXLT87awxyqjDtvVLgtoSMrntQJLEB
-         9oKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7EgE3rQUBwKB+OsNaorPCoGcvdaSTA93aqDrB6D4TEc=;
-        b=nMyRbTvoDTenEOkD6q4kNXghrP0DiywPQmgJlDzlQZrhuCvykhxL0ktEKFBaZsSUMn
-         pmpGTBPNZ2+yyS6+SYp/CS/+qg5W1BjZKk+UD5qgQLj30CjE3GIol1/C3UtY/9s00AJc
-         4B7JrZ/o5EZ0u1iKz1V+IyCcqRbw3W69Rmb3g8WWkk5k2IOCluZpPigeLgMQUAaJ2XDT
-         nd3dDW155kY8UumEthdeK7xAaLpp8oWu++i/17P6b+zs3DO44PDWThPlJnlRkAb6nsSe
-         rCNxMrA3hbbPIiWJjuXJ9dyKGeizUpodvS8+WH8teOpUwM0BjhsWZeJEylaw91chKjup
-         o19g==
-X-Gm-Message-State: AGi0PuY+cF5bmDGyL5eyKAEM9qxtPbr/SEzZuf+bo6jk3ITfm6DzuHfk
-        jK6JOsYHiapc6pZ6dWpn4EuVST+wWMDDFaiinSAaoA==
-X-Google-Smtp-Source: APiQypJ+B+qhItODgJVwcNmLxHZLIAdDTta58U7ToLrZU85bMoPFj8kp5unGdwCGxs81XDXJ/rJlN0fJg9AFRYY2PLs=
-X-Received: by 2002:a2e:8015:: with SMTP id j21mr10850819ljg.165.1585694933444;
- Tue, 31 Mar 2020 15:48:53 -0700 (PDT)
+        id S1731438AbgCaX0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 19:26:39 -0400
+Received: from haggis.mythic-beasts.com ([46.235.224.141]:33231 "EHLO
+        haggis.mythic-beasts.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731364AbgCaX0j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 19:26:39 -0400
+X-Greylist: delayed 532 seconds by postgrey-1.27 at vger.kernel.org; Tue, 31 Mar 2020 19:26:38 EDT
+Received: from [2001:678:634:203:cf83:32c6:10b8:3403] (port=57814 helo=phosphorus.lan.house.timstallard.me.uk)
+        by haggis.mythic-beasts.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <code@timstallard.me.uk>)
+        id 1jJQ8f-00033v-H7; Wed, 01 Apr 2020 00:17:45 +0100
+From:   Tim Stallard <code@timstallard.me.uk>
+To:     netdev@vger.kernel.org
+Cc:     Tim Stallard <code@timstallard.me.uk>
+Subject: [PATCH net] net: icmp6: add icmp_errors_use_inbound_ifaddr sysctl for IPv6
+Date:   Wed,  1 Apr 2020 00:17:06 +0100
+Message-Id: <20200331231706.14551-1-code@timstallard.me.uk>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20200331141450.035873853@linuxfoundation.org>
-In-Reply-To: <20200331141450.035873853@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 1 Apr 2020 04:18:41 +0530
-Message-ID: <CA+G9fYuU-5o5DG1VSQuCPx=TSs61-1jBekdGb5yvMRz4ur3BQg@mail.gmail.com>
-Subject: Re: [PATCH 5.5 000/171] 5.5.14-rc2 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     open list <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        Ben Hutchings <ben.hutchings@codethink.co.uk>,
-        lkft-triage@lists.linaro.org,
-        linux- stable <stable@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        john.fastabend@gmail.com, komachi.yoshiki@gmail.com,
-        Andrii Nakryiko <andriin@fb.com>, lukenels@cs.washington.edu,
-        Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-BlackCat-Spam-Score: 50
+X-Spam-Status: No, score=5.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 31 Mar 2020 at 21:02, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.5.14 release.
-> There are 171 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 02 Apr 2020 14:12:02 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.5.14-rc2.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.5.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+For IPv4, normal source address selection is used for ICMP, unless
+icmp_errors_use_inbound_ifaddr is set in which case addresses on
+the ingress interface will be used. For IPv6, equivalent functionality
+exists since commit fac6fce9bdb5 ("net: icmp6: provide input address
+for traceroute6") which enables this behaviour by default.
 
+Scenarios where source address selection is manually influenced are
+broken by this, eg by setting source addresses on routes:
 
-Results from Linaro=E2=80=99s test farm.
-Regressions on x86_64 and i386.
+ip -6 addr add 2001:db8:100::1 dev lo
+ip -6 addr add 2001:db8::2/64 dev eth0
+ip -6 route add default via 2001:db8::1 src 2001:db8:100::1
 
-selftests bpf test_verifier reports as failed.
-This test PASSED on v5.5.13
+In this scenario, ICMP errors would be sent from 2001:db8::2
+rather than the manually configured 2001:db8:100::1.
 
-#554/p jgt32: range bound deduction, reg op imm FAIL
-Failed to load prog 'Success'!
-R8 unbounded memory access, make sure to bounds check any array access
-into a map
-verification time 141 usec
-stack depth 8
-processed 16 insns (limit 1000000) max_states_per_insn 0 total_states
-1 peak_states 1 mark_read 1
-#555/p jgt32: range bound deduction, reg1 op reg2, reg1 unknown FAIL
-Failed to load prog 'Success'!
-R8 unbounded memory access, make sure to bounds check any array access
-into a map
-verification time 94 usec
-stack depth 8
-processed 17 insns (limit 1000000) max_states_per_insn 0 total_states
-1 peak_states 1 mark_read 1
-#556/p jle32: range bound deduction, reg1 op reg2, reg2 unknown FAIL
-Failed to load prog 'Success'!
-R8 unbounded memory access, make sure to bounds check any array access
-into a map
-verification time 68 usec
-stack depth 8
-processed 17 insns (limit 1000000) max_states_per_insn 0 total_states
-1 peak_states 1 mark_read 1
+In practice, this causes issues with IPv6 path MTU discovery in networks
+where unroutable linknets are used, and packets from these linknets are
+discarded by upstream providers' BCP38 filters, dropping all Packet
+Too Big errors. Traceroutes are also broken in this scenario.
 
+This restores the original behaviour by default, and adds a sysctl
+to enable the modified source address selection for ICMP errors,
+in line with the behaviour for IPv4.
 
-Summary
-------------------------------------------------------------------------
+Fixes: fac6fce9bdb5 ("net: icmp6: provide input address for traceroute6")
+Signed-off-by: Tim Stallard <code@timstallard.me.uk>
+---
+ Documentation/networking/ip-sysctl.txt | 13 +++++++++++++
+ include/net/netns/ipv6.h               |  1 +
+ net/ipv6/af_inet6.c                    |  1 +
+ net/ipv6/icmp.c                        | 12 ++++++++++--
+ 4 files changed, 25 insertions(+), 2 deletions(-)
 
-kernel: 5.5.14-rc2
-git repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stab=
-le-rc.git
-git branch: linux-5.5.y
-git commit: b487728d5e18490b0e551a6518d0647ae641ca3a
-git describe: v5.5.13-172-gb487728d5e18
-Test details: https://qa-reports.linaro.org/lkft/linux-stable-rc-5.5-oe/bui=
-ld/v5.5.13-172-gb487728d5e18
+diff --git a/Documentation/networking/ip-sysctl.txt b/Documentation/networking/ip-sysctl.txt
+index 5f53faff4e25..674e41f2ffa0 100644
+--- a/Documentation/networking/ip-sysctl.txt
++++ b/Documentation/networking/ip-sysctl.txt
+@@ -2014,6 +2014,19 @@ echo_ignore_anycast - BOOLEAN
+ 	requests sent to it over the IPv6 protocol destined to anycast address.
+ 	Default: 0
+ 
++errors_use_inbound_ifaddr - BOOLEAN
++
++	If zero, standard source address selection is used for outgoing ICMP
++	errors.
++
++	If non-zero, the message will be sent with the primary address of
++	the interface that received the packet that caused the icmp error.
++	This is the behaviour many network administrators will expect from
++	a router and it can make debugging complicated network layouts
++	much easier.
++
++	Default: 0
++
+ xfrm6_gc_thresh - INTEGER
+ 	(Obsolete since linux-4.14)
+ 	The threshold at which we will start garbage collecting for IPv6
+diff --git a/include/net/netns/ipv6.h b/include/net/netns/ipv6.h
+index 5ec054473d81..cbe2a151c932 100644
+--- a/include/net/netns/ipv6.h
++++ b/include/net/netns/ipv6.h
+@@ -36,6 +36,7 @@ struct netns_sysctl_ipv6 {
+ 	int icmpv6_echo_ignore_all;
+ 	int icmpv6_echo_ignore_multicast;
+ 	int icmpv6_echo_ignore_anycast;
++	int icmpv6_errors_use_inbound_ifaddr;
+ 	DECLARE_BITMAP(icmpv6_ratemask, ICMPV6_MSG_MAX + 1);
+ 	unsigned long *icmpv6_ratemask_ptr;
+ 	int anycast_src_echo_reply;
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index d727c3b41495..1a9b817e0266 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -875,6 +875,7 @@ static int __net_init inet6_net_init(struct net *net)
+ 	net->ipv6.sysctl.icmpv6_echo_ignore_all = 0;
+ 	net->ipv6.sysctl.icmpv6_echo_ignore_multicast = 0;
+ 	net->ipv6.sysctl.icmpv6_echo_ignore_anycast = 0;
++	net->ipv6.sysctl.icmpv6_errors_use_inbound_ifaddr = 0;
+ 
+ 	/* By default, rate limit error messages.
+ 	 * Except for pmtu discovery, it would break it.
+diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+index ef408a5090a2..6ac65705f505 100644
+--- a/net/ipv6/icmp.c
++++ b/net/ipv6/icmp.c
+@@ -527,7 +527,7 @@ static void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+ 		saddr = force_saddr;
+ 	if (saddr) {
+ 		fl6.saddr = *saddr;
+-	} else {
++	} else if (net->ipv6.sysctl.icmpv6_errors_use_inbound_ifaddr) {
+ 		/* select a more meaningful saddr from input if */
+ 		struct net_device *in_netdev;
+ 
+@@ -1158,6 +1158,13 @@ static struct ctl_table ipv6_icmp_table_template[] = {
+ 		.mode		= 0644,
+ 		.proc_handler = proc_dointvec,
+ 	},
++	{
++		.procname	= "errors_use_inbound_ifaddr",
++		.data		= &init_net.ipv6.sysctl.icmpv6_errors_use_inbound_ifaddr,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler = proc_dointvec,
++	},
+ 	{
+ 		.procname	= "ratemask",
+ 		.data		= &init_net.ipv6.sysctl.icmpv6_ratemask_ptr,
+@@ -1181,7 +1188,8 @@ struct ctl_table * __net_init ipv6_icmp_sysctl_init(struct net *net)
+ 		table[1].data = &net->ipv6.sysctl.icmpv6_echo_ignore_all;
+ 		table[2].data = &net->ipv6.sysctl.icmpv6_echo_ignore_multicast;
+ 		table[3].data = &net->ipv6.sysctl.icmpv6_echo_ignore_anycast;
+-		table[4].data = &net->ipv6.sysctl.icmpv6_ratemask_ptr;
++		table[4].data = &net->ipv6.sysctl.icmpv6_errors_use_inbound_ifaddr;
++		table[5].data = &net->ipv6.sysctl.icmpv6_ratemask_ptr;
+ 	}
+ 	return table;
+ }
+-- 
+2.20.1
 
-Regressions (compared to build v5.5.13)
-  x86_64:
-  qemu_x86_64:
-     kselftest: bpf_test_verifier - FAILED
-    # Summary 1577 PASSED, 0 SKIPPED, 3 FAILED
-
-No fixes (compared to build v5.5.13)
-
-Ran 27293 total tests in the following environments and test suites.
-
-Environments
---------------
-- dragonboard-410c
-- hi6220-hikey
-- i386
-- juno-r2
-- juno-r2-compat
-- juno-r2-kasan
-- nxp-ls2088
-- qemu_arm
-- qemu_arm64
-- qemu_i386
-- qemu_x86_64
-- x15
-- x86
-- x86-kasan
-
-Test Suites
------------
-* build
-* install-android-platform-tools-r2600
-* install-android-platform-tools-r2800
-* kselftest
-* libgpiod
-* libhugetlbfs
-* linux-log-parser
-* ltp-cap_bounds-tests
-* ltp-commands-tests
-* ltp-containers-tests
-* ltp-cpuhotplug-tests
-* ltp-crypto-tests
-* ltp-dio-tests
-* ltp-fcntl-locktests-tests
-* ltp-filecaps-tests
-* ltp-fs-tests
-* ltp-fs_bind-tests
-* ltp-fs_perms_simple-tests
-* ltp-fsx-tests
-* ltp-hugetlb-tests
-* ltp-io-tests
-* ltp-ipc-tests
-* ltp-math-tests
-* ltp-mm-tests
-* ltp-nptl-tests
-* ltp-pty-tests
-* ltp-sched-tests
-* ltp-securebits-tests
-* perf
-* v4l2-compliance
-* ltp-syscalls-tests
-* kvm-unit-tests
-* ltp-cve-tests
-* ltp-open-posix-tests
-* network-basic-tests
-* spectre-meltdown-checker-test
-* kselftest-vsyscall-mode-native
-* kselftest-vsyscall-mode-none
-
-ref:
-https://lkft.validation.linaro.org/scheduler/job/1327830#L3067
-https://lkft.validation.linaro.org/scheduler/job/1327830#L3067
-https://lkft.validation.linaro.org/scheduler/job/1328415#L1656
-
---=20
-Linaro LKFT
-https://lkft.linaro.org
