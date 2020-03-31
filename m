@@ -2,237 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3A751997CF
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 15:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B2921997D1
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 15:49:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730974AbgCaNsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 09:48:47 -0400
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:37847 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730442AbgCaNsq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 09:48:46 -0400
-Received: by mail-qv1-f68.google.com with SMTP id n1so10855405qvz.4
-        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 06:48:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=wifirst-fr.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=Tknx72E0/1bZfRE6ZqA5Gs1n1+8464Xg9NTXUSlpPcs=;
-        b=xnpVOfvgn6JtmIgDJV14LaF0wEKcAIxM0p2C06XngRlABdmZKFtbgu/9ztX67OwYcg
-         Q8Q2lDHnXBt7mxMBitmwIpXYkWb4TNU4razeTyr6ME1Y0jeEx5Y9cx+uiTnTr9Roy8iY
-         R8OGlQgYH+DAGp9LiPRJRHSvnBe1jaLJu1kgE0Lr8SmCfsWPm54JBytkiyNHXDxjKVxE
-         3xDKBHto3douGwT/1bQhxKHVBabxJTik9HtgJK9ZqLauTJGVeFL8p9ANzpgi5O8nPhCV
-         868aYglVJyE5ZZYn8U/mpHU5Y1tJOCOFZJSr8opmjx1ne4jWsIcwGmLZa6gQwCh11vxF
-         XbmA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=Tknx72E0/1bZfRE6ZqA5Gs1n1+8464Xg9NTXUSlpPcs=;
-        b=Z278u9cpUWzwTuDNQEP8LpL1KP56qLSLjE5xY+tpxNKmrEHYu2n0P1GZhAXTQ3YgwX
-         g12hr2EDnMGiuGI8j9No6AwGPGQ1HjWYOOETBonRZQ8qrxdsYu8dMJKiS4+3KLhyE3d8
-         yy36PXIJfEnBn6Xrn1et6WZIT3qXenhrSoxX2A7c0yj74SiXfwov8X+YLRH5md0sqkvd
-         97vUldzUxBP5SMody8+9eco66ewWXzw6u8Z2Oc++/7PcyQEUKdvrB6AMR9aCWCRd4SF3
-         9QTEG/5h1k3VvWd0wd6AvUjCySiP4kWsbtpnQhKXAggcgpRngzc4AfmJVKTuqRzEi3x+
-         /XGw==
-X-Gm-Message-State: ANhLgQ1S4jGXN/GSWS4SwoaM2XBfF4zYTN+XFN1YnFA66fPTuqxntHJ+
-        q89fGJRB+tUpeqKcWPNHrTyEuqcigfhya07wG9N4HRT0
-X-Google-Smtp-Source: ADFU+vs3qDJxALIoQqZQhV1fBNpT9j/jniKW2ruk7jppKy/dsWuyS9LVOJWerx6GTUPhxHKeHosIHpvuYaLp8NrA76s=
-X-Received: by 2002:a05:6214:2c4:: with SMTP id g4mr16875950qvu.65.1585662524350;
- Tue, 31 Mar 2020 06:48:44 -0700 (PDT)
+        id S1731000AbgCaNtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 09:49:10 -0400
+Received: from www62.your-server.de ([213.133.104.62]:39328 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730755AbgCaNtK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 09:49:10 -0400
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jJHGC-0003aX-Gy; Tue, 31 Mar 2020 15:48:56 +0200
+Received: from [178.195.186.98] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1jJHGC-000Lvi-00; Tue, 31 Mar 2020 15:48:56 +0200
+Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
+ program when attaching XDP
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Andrey Ignatov <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        dsahern@gmail.com
+References: <CAEf4BzY+JsmxCfjMVizLWYU05VS6DiwKE=e564Egu1jMba6fXQ@mail.gmail.com>
+ <87tv2e10ly.fsf@toke.dk>
+ <CAEf4BzY1bs5WRsvr5UbfqV9UKnwxmCUa9NQ6FWirT2uREaj7_g@mail.gmail.com>
+ <87369wrcyv.fsf@toke.dk>
+ <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
+ <87pncznvjy.fsf@toke.dk> <20200326195859.u6inotgrm3ubw5bx@ast-mbp>
+ <87imiqm27d.fsf@toke.dk> <20200327230047.ois5esl35s63qorj@ast-mbp>
+ <87lfnll0eh.fsf@toke.dk> <20200328022609.zfupojim7see5cqx@ast-mbp>
+ <87eetcl1e3.fsf@toke.dk>
+ <CAEf4Bzb+GSf8cE_rutiaeZOtAuUick1+RnkCBU=Z+oY_36ArSA@mail.gmail.com>
+ <87y2rihruq.fsf@toke.dk>
+ <CAEf4Bza4vKbjkj8kBkrVmayFr2j_nvrORF_YkCoVKibB=SmSYQ@mail.gmail.com>
+ <87pncsj0hv.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <86f95d7a-1659-a092-91a2-abe5d58ceda8@iogearbox.net>
+Date:   Tue, 31 Mar 2020 15:48:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20200327090800.27810-1-charles.daymand@wifirst.fr>
- <0bab7e0b-7b22-ad0f-2558-25602705e807@gmail.com> <d7a0eca8-15aa-10da-06cc-1eeef3a7a423@gmail.com>
- <CANn89iKA8k3GyxCKCJRacB42qcFqUDsiRhFOZxOQ7JCED0ChyQ@mail.gmail.com>
- <42f81a4a-24fc-f1fb-11db-ea90a692f249@gmail.com> <CANn89i+A=Mu=9LMscd2Daqej+uVLc3E6w33MZzTwpe2v+k89Mw@mail.gmail.com>
- <CAFJtzm03QpjGRs70tth26BdUFN_o8zsJOccbnA58ma+2uwiGcg@mail.gmail.com>
-In-Reply-To: <CAFJtzm03QpjGRs70tth26BdUFN_o8zsJOccbnA58ma+2uwiGcg@mail.gmail.com>
-From:   Charles DAYMAND <charles.daymand@wifirst.fr>
-Date:   Tue, 31 Mar 2020 15:48:33 +0200
-Message-ID: <CAFJtzm3pwAXKOxYLi+-EgCXYxA90UCGvRvn=qW=HD9AKzoheSQ@mail.gmail.com>
-Subject: Re: [PATCH net] r8169: fix multicast tx issue with macvlan interface
-To:     netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <87pncsj0hv.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25768/Tue Mar 31 15:08:38 2020)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-We tested to enable tx checksumming manually (via ethtool) on a kernel
-4.19.0-5-amd64 which is the oldest kernel compatible with our software
-and we observed exactly the same issue.
-For information when connecting a laptop directly to the interface we
-can't see any multicast packet when tx checksumming is enabled on
-tcpdump.
-Our network is composed of a cisco switch and we can still see the
-multicast counters correctly increasing even when we have the issue.
+On 3/31/20 12:13 PM, Toke Høiland-Jørgensen wrote:
+> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+> 
+>>>> So you install your libxdp-based firewalls and are happy. Then you
+>>>> decide to install this awesome packet analyzer, which doesn't know
+>>>> about libxdp yet. Suddenly, you get all packets analyzer, but no more
+>>>> firewall, until users somehow notices that it's gone. Or firewall
+>>>> periodically checks that it's still runinng. Both not great, IMO, but
+>>>> might be acceptable for some users, I guess. But imagine all the
+>>>> confusion for user, especially if he doesn't give a damn about XDP and
+>>>> other buzzwords, but only needs a reliable firewall :)
+>>>
+>>> Yes, whereas if the firewall is using bpf_link, then the packet analyser
+>>> will be locked out and can't do its thing. Either way you end up with a
+>>> broken application; it's just moving the breakage. In the case of
+>>
+>> Hm... In one case firewall installation reported success and stopped
+>> working afterwards with no notification and user having no clue. In
+>> another, packet analyzer refused to start and reported error to user.
+>> Let's agree to disagree that those are not at all equivalent. To me
+>> silent failure is so much worse, than application failing to start in
+>> the first place.
 
-I also confirm that when not using macvlan but the real interface
-there is no issue on the multicast packets, they are correctly sent
-and received.
-I have a stupid question, if the IP checksum was bad on the multicast
-packet, would the receiver NIC drop the packet or would it be seen by
-tcpdump by the receiver ?
+I sort of agree with both of you that either case is not great. The silent
+override we currently have is not great since it can be evicted at any time
+but also bpf_link to lock-out other programs at XDP layer is not great either
+since there is also huge potential to break existing programs. It's probably
+best to discuss on an actual proposal to see the concrete semantics, but my
+concerns, assuming I didn't misunderstand or got confused on something along
+the way (if so, please let me know), currently are:
 
-Le ven. 27 mars 2020 =C3=A0 20:43, Eric Dumazet <edumazet@google.com> a =C3=
-=A9crit :
->
-> On Fri, Mar 27, 2020 at 12:17 PM Heiner Kallweit <hkallweit1@gmail.com> w=
-rote:
-> >
-> > On 27.03.2020 19:52, Eric Dumazet wrote:
-> > > On Fri, Mar 27, 2020 at 10:41 AM Heiner Kallweit <hkallweit1@gmail.co=
-m> wrote:
-> > >>
-> > >> On 27.03.2020 10:39, Heiner Kallweit wrote:
-> > >>> On 27.03.2020 10:08, Charles Daymand wrote:
-> > >>>> During kernel upgrade testing on our hardware, we found that macvl=
-an
-> > >>>> interface were no longer able to send valid multicast packet.
-> > >>>>
-> > >>>> tcpdump run on our hardware was correctly showing our multicast
-> > >>>> packet but when connecting a laptop to our hardware we didn't see =
-any
-> > >>>> packets.
-> > >>>>
-> > >>>> Bisecting turned up commit 93681cd7d94f
-> > >>>> "r8169: enable HW csum and TSO" activates the feature NETIF_F_IP_C=
-SUM
-> > >>>> which is responsible for the drop of packet in case of macvlan
-> > >>>> interface. Note that revision RTL_GIGA_MAC_VER_34 was already a sp=
-ecific
-> > >>>> case since TSO was keep disabled.
-> > >>>>
-> > >>>> Deactivating NETIF_F_IP_CSUM using ethtool is correcting our multi=
-cast
-> > >>>> issue, but we believe that this hardware issue is important enough=
- to
-> > >>>> keep tx checksum off by default on this revision.
-> > >>>>
-> > >>>> The change is deactivating the default value of NETIF_F_IP_CSUM fo=
-r this
-> > >>>> specific revision.
-> > >>>>
-> > >>>
-> > >>> The referenced commit may not be the root cause but just reveal ano=
-ther
-> > >>> issue that has been existing before. Root cause may be in the net c=
-ore
-> > >>> or somewhere else. Did you check with other RTL8168 versions to ver=
-ify
-> > >>> that it's indeed a HW issue with this specific chip version?
-> > >>>
-> > >>> What you could do: Enable tx checksumming manually (via ethtool) on
-> > >>> older kernel versions and check whether they are fine or not.
-> > >>> If an older version is fine, then you can start a new bisect with t=
-x
-> > >>> checksumming enabled.
-> > >>>
-> > >>> And did you capture and analyze traffic to verify that actually the
-> > >>> checksum is incorrect (and packets discarded therefore on receiving=
- end)?
-> > >>>
-> > >>>
-> > >>>> Fixes: 93681cd7d94f ("r8169: enable HW csum and TSO")
-> > >>>> Signed-off-by: Charles Daymand <charles.daymand@wifirst.fr>
-> > >>>> ---
-> > >>>>  net/drivers/net/ethernet/realtek/r8169_main.c | 3 +++
-> > >>>>  1 file changed, 3 insertions(+)
-> > >>>>
-> > >>>> diff --git a/net/drivers/net/ethernet/realtek/r8169_main.c b/net/d=
-rivers/net/ethernet/realtek/r8169_main.c
-> > >>>> index a9bdafd15a35..3b69135fc500 100644
-> > >>>> --- a/net/drivers/net/ethernet/realtek/r8169_main.c
-> > >>>> +++ b/net/drivers/net/ethernet/realtek/r8169_main.c
-> > >>>> @@ -5591,6 +5591,9 @@ static int rtl_init_one(struct pci_dev *pdev=
-, const struct pci_device_id *ent)
-> > >>>>              dev->vlan_features &=3D ~(NETIF_F_ALL_TSO | NETIF_F_S=
-G);
-> > >>>>              dev->hw_features &=3D ~(NETIF_F_ALL_TSO | NETIF_F_SG)=
-;
-> > >>>>              dev->features &=3D ~(NETIF_F_ALL_TSO | NETIF_F_SG);
-> > >>>> +            if (tp->mac_version =3D=3D RTL_GIGA_MAC_VER_34) {
-> > >>>> +                    dev->features &=3D ~NETIF_F_IP_CSUM;
-> > >>>> +            }
-> > >>>>      }
-> > >>>>
-> > >>>>      dev->hw_features |=3D NETIF_F_RXALL;
-> > >>>>
-> > >>>
-> > >>
-> > >> After looking a little bit at the macvlen code I think there might b=
-e an
-> > >> issue in it, but I'm not sure, therefore let me add Eric (as macvlen=
- doesn't
-> > >> seem to have a dedicated maintainer).
-> > >>
-> > >> r8169 implements a ndo_features_check callback that disables tx chec=
-ksumming
-> > >> for the chip version in question and small packets (due to a HW issu=
-e).
-> > >> macvlen uses passthru_features_check() as ndo_features_check callbac=
-k, this
-> > >> seems to indicate to me that the ndo_features_check callback of lowe=
-rdev is
-> > >> ignored. This could explain the issue you see.
-> > >>
-> > >
-> > > macvlan_queue_xmit() calls dev_queue_xmit_accel() after switching skb=
-->dev,
-> > > so the second __dev_queue_xmit() should eventually call the real_dev
-> > > ndo_features_check()
-> > >
-> > Thanks, Eric. There's a second path in macvlan_queue_xmit() calling
-> > dev_forward_skb(vlan->lowerdev, skb). Does what you said apply also the=
-re?
->
-> This path wont send packets to the physical NIC, packets are injected
-> back via dev_forward_skb()
->
-> >
-> > Still I find it strange that a tx hw checksumming issue should affect m=
-ulticasts
-> > only. Also the chip version in question is quite common and I would exp=
-ect
-> > others to have hit the same issue.
-> > Maybe best would be to re-test on the affected system w/o involving mac=
-vlen.
-> >
-> > >
-> > >
-> > >> Would be interesting to see whether it fixes your issue if you let t=
-he
-> > >> macvlen ndo_features_check call lowerdev's ndo_features_check. Can y=
-ou try this?
-> > >>
-> > >> By the way:
-> > >> Also the ndo_fix_features callback of lowerdev seems to be ignored.
-> >
+  - System service XYZ starts to use XDP with bpf_link one day. Somehow this
+    application gets shipped by default on mainstream distros and starts up
+    during init, then effectively locking out everyone else that used to use
+    the hook today "just fine" given they owned / orchestrated the underlying
+    networking on the host namespace for the nodes they manage (and for that
+    it worked before). Now such latter app somehow needs to work around this
+    breakage by undoing the damage that XYZ did in order to be able to operate
+    again. There was mentioned 'human override'. I presume whatever it will be,
+    it will also be done by applications when they don't have another choice.
+    Otherwise we need to go and tell users that XDP is now only _entirely_
+    reserved for system service XYZ if you run distro ABC, but not for everyone
+    else anymore; what answer is there to this? From a PoV where one owns the
+    entire distro and ecosystem, this is fine, but where this is not the case
+    as in the rest of the world having to rely on mainstream distros, what is
+    the answer to users (and especially "those that don't give a damn about XDP,
+    but just want to get stuff to work" that used to work before, even if we
+    think silent override is broken)? If the answer is to just 'shrug' and tell
+    'sorry that's the new way it is right now', then apps will try to use whatever
+    'human override' there is, and we're back to square one. To provide a
+    concrete example: if Cilium was configured to load some of its programs on
+    XDP hook, it currently replaces whatever it was there before. The assumption
+    is, that in the scenario we're in, we can orchestrate the hostns networking
+    just fine on K8s nodes since there is just one CNI plugin taking care of that
+    (and that generally also holds true for the other hooks we're using today).
+    Now, while we could switch to bpf_link as well and implement it in iproute2
+    for this specific case, what if someone else starting up earlier and locks
+    our stuff out? How would we work around it?
 
+  - Assuming we have XDP with bpf_link in place with the above, now applications
+    are forced to start using bpf_link in order to not be locked out by others
+    using bpf_link as otherwise their application would break. So they need to
+    support the "old" way of attaching programs as we have today for older
+    kernels and need to support the bpf_link attachment for newer kernels since
+    they cannot rely on the old / existing API anymore. There is also a world
+    outside of C/C++ and thus libbpf / lib{xdp,dispatcher} or whatever, so the
+    whole rest of the ecosystem is forced to implement it as well due to breakage
+    concerns, understandable, but quite a burden.
 
+  - Equally, in case of Toke's implementation for the cmpxchg-like mechanism in
+    XDP itself, what happens if an application uses this API and assuming the
+    library would return the error to the application using it if the expected
+    program is not attached? Then the application would go for a forceful override
+    with the existing API today or would it voluntarily bail out and refusing to
+    work if some other non-cooperating application was loaded in the meantime?
+    What is the cmpxchg-like mechanism then solving realistically? (And again,
+    please keep all in mind we cannot force the entire world to use one single
+    library to rule 'em all, there are plenty of other language runtimes out in
+    the wild that cannot just import C/C++.)
 
---=20
+Thoughts?
 
-Charles Daymand
-
-D=C3=A9veloppeur infrastructure
-
-26 rue de Berri 75008 Paris
-
-Assistance d=C3=A9di=C3=A9e responsable de site - 01 70 70 46 70
-Assistance utilisateur - 01 70 70 46 26
-
-
-
---=20
-
-Charles Daymand
-
-D=C3=A9veloppeur infrastructure
-
-26 rue de Berri 75008 Paris
-
-Assistance d=C3=A9di=C3=A9e responsable de site - 01 70 70 46 70
-Assistance utilisateur - 01 70 70 46 26
+Thanks,
+Daniel
