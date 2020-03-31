@@ -2,94 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0244199841
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 16:17:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E431199869
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 16:26:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730562AbgCaORo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 10:17:44 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:41768 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730358AbgCaORo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 10:17:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=DooYIDJnk5/IiNfzdRn65t2HRLP4Ukapo3LCSrFIgQg=; b=r/WJNPoUBDyPf7GXRlmkSvILOJ
-        v3MoKAMIqpJawICanwzY7/AgCn6LecKhFEIsTbB80d53L3Rkfa4zaRgzpPvAZ9fN+I5wgnIBFOXJZ
-        w+aYrPJ58FRcq7f/a22J45swhcI1GAGIp/nAiNojYAo8WoxF5LzXU0or8fsCoEKD7qc746LHKdDrj
-        qNoSnh1f6GpXh63/tFt2uDZFe6GQBbEt6PXg53irtw5FVntzbjFSsaRPFzEo/9bG0jIgEx0KbmrCh
-        gd8O9CWfqfTylxSIXrGpE/CClYNEmp5wB1POo6tIHPC+cOFjNE1ZNpl5htIaPbBtzR7cBGOT+r7g8
-        QzY3+JPA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:38500 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jJHhx-0000EA-Mg; Tue, 31 Mar 2020 15:17:37 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1jJHhw-0004UO-OJ; Tue, 31 Mar 2020 15:17:36 +0100
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>, ioana.ciornei@nxp.com,
-        olteanv@gmail.com, Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next] net: dsa: fix oops while probing Marvell DSA
- switches
+        id S1731115AbgCaO0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 10:26:42 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:8435 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731108AbgCaO0m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 10:26:42 -0400
+Received: from [10.193.177.223] (shahjada-abul.asicdesigners.com [10.193.177.223] (may be forged))
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 02VEQW5I030762;
+        Tue, 31 Mar 2020 07:26:33 -0700
+Subject: Re: [PATCH net-next] cxgb4/chcr: nic-tls stats in ethtool
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, borisp@mellanox.com,
+        secdev@chelsio.com
+References: <20200321112336.8771-1-rohitm@chelsio.com>
+ <20200322135725.6cdc37a8@kicinski-fedora-PC1C0HJN>
+From:   rohit maheshwari <rohitm@chelsio.com>
+Message-ID: <cad731af-19c0-f16c-0c43-332de5d3dee0@chelsio.com>
+Date:   Tue, 31 Mar 2020 19:56:31 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.2.1
 MIME-Version: 1.0
-Content-Disposition: inline
+In-Reply-To: <20200322135725.6cdc37a8@kicinski-fedora-PC1C0HJN>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1jJHhw-0004UO-OJ@rmk-PC.armlinux.org.uk>
-Date:   Tue, 31 Mar 2020 15:17:36 +0100
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix an oops in dsa_port_phylink_mac_change() caused by a combination
-of a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA
-ports unless needed") and the net-dsa-improve-serdes-integration
-series of patches 65b7a2c8e369 ("Merge branch
-'net-dsa-improve-serdes-integration'").
 
-Unable to handle kernel NULL pointer dereference at virtual address 00000124
-pgd = c0004000
-[00000124] *pgd=00000000
-Internal error: Oops: 805 [#1] SMP ARM
-Modules linked in: tag_edsa spi_nor mtd xhci_plat_hcd mv88e6xxx(+) xhci_hcd armada_thermal marvell_cesa dsa_core ehci_orion libdes phy_armada38x_comphy at24 mcp3021 sfp evbug spi_orion sff mdio_i2c
-CPU: 1 PID: 214 Comm: irq/55-mv88e6xx Not tainted 5.6.0+ #470
-Hardware name: Marvell Armada 380/385 (Device Tree)
-PC is at phylink_mac_change+0x10/0x88
-LR is at mv88e6352_serdes_irq_status+0x74/0x94 [mv88e6xxx]
+On 23/03/20 2:27 AM, Jakub Kicinski wrote:
+> On Sat, 21 Mar 2020 16:53:36 +0530 Rohit Maheshwari wrote:
+>> Included nic tls statistics in ethtool stats.
+>>
+>> Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
+>> ---
+>>   .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    | 57 +++++++++++++++++++
+>>   1 file changed, 57 insertions(+)
+>>
+>> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
+>> index 398ade42476c..4998f1d1e218 100644
+>> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
+>> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
+>> @@ -134,6 +134,28 @@ static char loopback_stats_strings[][ETH_GSTRING_LEN] = {
+>>   	"bg3_frames_trunc       ",
+>>   };
+>>   
+>> +#ifdef CONFIG_CHELSIO_TLS_DEVICE
+>> +struct chcr_tls_stats {
+>> +	u64 tx_tls_encrypted_packets;
+>> +	u64 tx_tls_encrypted_bytes;
+>> +	u64 tx_tls_ctx;
+>> +	u64 tx_tls_ooo;
+>> +	u64 tx_tls_skip_no_sync_data;
+>> +	u64 tx_tls_drop_no_sync_data;
+>> +	u64 tx_tls_drop_bypass_req;
+> I don't understand why you need to have a structure for this, and then
+> you memset it to 0, unnecessarily, but I guess that's just a matter of
+> taste.
+Yeah, this memset is pure stupidity, I'll remove it and this new
+structure as well. Thanks for the suggestion.
+>> +};
+>> +
+>> +static char chcr_tls_stats_strings[][ETH_GSTRING_LEN] = {
+>> +	"tx_tls_encrypted_pkts  ",
+>> +	"tx_tls_encrypted_bytes ",
+>> +	"tx_tls_ctx             ",
+>> +	"tx_tls_ooo             ",
+>> +	"tx_tls_skip_nosync_data",
+>> +	"tx_tls_drop_nosync_data",
+>> +	"tx_tls_drop_bypass_req ",
+> These, however, are not correct - please remove the spaces at the end,
+> otherwise your names are different than for other vendors. And there is
+> an underscore in the middle of "no_sync".
+>
+> When you're told to adhere to API recommendation, please adhere to it
+> exactly.
+These spaces are used for alignment, so the statistics will be readable
+for end user. As far as I understood, these are minimum set of TLS
+related statistics, with or without space it will remain same for end
+user. Please let me know if I am interpreting it wrong.
+  However I agree about the no_sync, I'll change it in my
+next patch.
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
-This problem only exists when the above patch and series are merged
-together.
-
- net/dsa/slave.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 84dda24b7231..92a8131651cf 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1245,7 +1245,8 @@ void dsa_port_phylink_mac_change(struct dsa_switch *ds, int port, bool up)
- {
- 	const struct dsa_port *dp = dsa_to_port(ds, port);
- 
--	phylink_mac_change(dp->pl, up);
-+	if (dp->pl)
-+		phylink_mac_change(dp->pl, up);
- }
- EXPORT_SYMBOL_GPL(dsa_port_phylink_mac_change);
- 
--- 
-2.20.1
 
