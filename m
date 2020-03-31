@@ -2,147 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3E14198EC7
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 10:45:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C61F198ED6
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 10:50:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730279AbgCaIpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 04:45:02 -0400
-Received: from protonic.xs4all.nl ([83.163.252.89]:57658 "EHLO protonic.nl"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726636AbgCaIpC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 31 Mar 2020 04:45:02 -0400
-Received: from erd988 (erd988.prtnl [192.168.224.30])
-        by sparta.prtnl (Postfix) with ESMTP id 7038644A024D;
-        Tue, 31 Mar 2020 10:45:00 +0200 (CEST)
-Date:   Tue, 31 Mar 2020 10:44:59 +0200
-From:   David Jander <david@protonic.nl>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-kernel@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        linux-imx@nxp.com, kernel@pengutronix.de,
-        Shawn Guo <shawnguo@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v2] ARM: imx: allow to disable board specific PHY fixups
-Message-ID: <20200331104459.6857474e@erd988>
-In-Reply-To: <20200330174114.GG25745@shell.armlinux.org.uk>
-References: <20200329110457.4113-1-o.rempel@pengutronix.de>
-        <20200329150854.GA31812@lunn.ch>
-        <20200330052611.2bgu7x4nmimf7pru@pengutronix.de>
-        <40209d08-4acb-75c5-1766-6d39bb826ff9@gmail.com>
-        <20200330174114.GG25745@shell.armlinux.org.uk>
-Organization: Protonic Holland
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1729795AbgCaIug (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 04:50:36 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:37808 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726488AbgCaIug (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 04:50:36 -0400
+Received: by mail-wr1-f65.google.com with SMTP id w10so24914844wrm.4
+        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 01:50:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C2nhPxDmxWsjX9bCBYan5+jZgdzRTpV5NKuGedwR/nU=;
+        b=xtr9Uy/Lw2OrQRgRjyPhbXgsED5Tjp/mBHDHsLQPyJoLMZsk0ykDOBUm+UlB4Z3mDX
+         CxckeZUvXJIEF43QHCuGUC+Fmi1UZLF5jdmOUrOXaDxyc2NO9IjwKwht9qbzm0FVaOHS
+         xt7Kz5ZEyjVfRzATnTD0nbAcudDn+8E1TcdJxsaz5/i8Ju8ytGXw3o7/DbGbcNczlzBj
+         06r6e2EUybzBeJ+kICaNjKsdZKjymMN45S0DlkSzt8Kn9BKfqAxHkGMmpmcCueyR9wC8
+         Og7savI/ch2LncskCPXditPJ6zDT69r0A8OXnJ5+WYtL7s3KaF4wd0Ueur/YcxvwTPXJ
+         /soA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=C2nhPxDmxWsjX9bCBYan5+jZgdzRTpV5NKuGedwR/nU=;
+        b=J+q3FZvMRaw7lEknDJfYLVVHafKjMALnfpTaVCF3ioOKi2vMLHsd3gOkb6MQ75ky1n
+         zxL8U8DCgwJJOvROJhjLSICK4PWKK6iTfxtIAWc6cprL35eIM+yFGwOMdbOHIwSKRGQ+
+         grR+NZGtAhLirhckC6H34g20eXas4UAxu9iA3FlBCA/SZ/n0F/mFTIio1Ew9pcvgtYqI
+         Xsh5K/3v1hZEQbmHM84g1XFDhMyVAZ4JrXrKYy1TvKTS6Yg9jDIg8xjTzwwd/YO3gAiq
+         e7NkYRapyR7Ofwi0sJRVA+d24/5I6dOGd5kjCK/1c3P+9uCFygVRWqm6dFfbpRQSzOcc
+         wE0A==
+X-Gm-Message-State: ANhLgQ1O8gWqvY5+/KMeD1eS4b4B7PX6BdXC6FYm9N+mkTX3/R+5WuAn
+        pkfwyYUr31tCX+PnM8e4Z7CzuSbmjbs=
+X-Google-Smtp-Source: ADFU+vu7pfivpCM5JH9gHEG7wA52D587JvYqiGOJfrK6l9pVNkDxVFmT/rxFD9L3ET2GNz7k3/dcAw==
+X-Received: by 2002:adf:efcd:: with SMTP id i13mr18963304wrp.355.1585644632468;
+        Tue, 31 Mar 2020 01:50:32 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id y200sm3014530wmc.20.2020.03.31.01.50.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Mar 2020 01:50:31 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, stephen@networkplumber.org, davem@davemloft.net,
+        kuba@kernel.org, idosch@mellanox.com, saeedm@mellanox.com,
+        leon@kernel.org, michael.chan@broadcom.com, vishal@chelsio.com,
+        pablo@netfilter.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        paulb@mellanox.com, alexandre.belloni@bootlin.com,
+        ozsh@mellanox.com, roid@mellanox.com, john.hurley@netronome.com,
+        simon.horman@netronome.com, pieter.jansenvanvuuren@netronome.com
+Subject: [patch iproute2/net-next v2] tc: show used HW stats types
+Date:   Tue, 31 Mar 2020 10:50:31 +0200
+Message-Id: <20200331085031.10454-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 30 Mar 2020 18:41:14 +0100
-Russell King - ARM Linux admin <linux@armlinux.org.uk> wrote:
+From: Jiri Pirko <jiri@mellanox.com>
 
-> On Mon, Mar 30, 2020 at 10:33:03AM -0700, Florian Fainelli wrote:
-> > 
-> > 
-> > On 3/29/2020 10:26 PM, Oleksij Rempel wrote:  
-> > > Hi Andrew,
-> > > 
-> > > On Sun, Mar 29, 2020 at 05:08:54PM +0200, Andrew Lunn wrote:  
-> > >> On Sun, Mar 29, 2020 at 01:04:57PM +0200, Oleksij Rempel wrote:
-> > >>
-> > >> Hi Oleksij
-> > >>  
-> > >>> +config DEPRECATED_PHY_FIXUPS
-> > >>> +	bool "Enable deprecated PHY fixups"
-> > >>> +	default y
-> > >>> +	---help---
-> > >>> +	  In the early days it was common practice to configure PHYs by adding a
-> > >>> +	  phy_register_fixup*() in the machine code. This practice turned out to
-> > >>> +	  be potentially dangerous, because:
-> > >>> +	  - it affects all PHYs in the system
-> > >>> +	  - these register changes are usually not preserved during PHY reset
-> > >>> +	    or suspend/resume cycle.
-> > >>> +	  - it complicates debugging, since these configuration changes were not
-> > >>> +	    done by the actual PHY driver.
-> > >>> +	  This option allows to disable all fixups which are identified as
-> > >>> +	  potentially harmful and give the developers a chance to implement the
-> > >>> +	  proper configuration via the device tree (e.g.: phy-mode) and/or the
-> > >>> +	  related PHY drivers.  
-> > >>
-> > >> This appears to be an IMX only problem. Everybody else seems to of got
-> > >> this right. There is no need to bother everybody with this new
-> > >> option. Please put this in arch/arm/mach-mxs/Kconfig and have IMX in
-> > >> the name.  
-> > > 
-> > > Actually, all fixups seems to do wring thing:
-> > > arch/arm/mach-davinci/board-dm644x-evm.c:915:		phy_register_fixup_for_uid(LXT971_PHY_ID, LXT971_PHY_MASK,
-> > > 
-> > > Increased MII drive strength. Should be probably enabled by the PHY
-> > > driver.
-> > > 
-> > > arch/arm/mach-imx/mach-imx6q.c:167:		phy_register_fixup_for_uid(PHY_ID_KSZ9021, MICREL_PHY_ID_MASK,
-> > > arch/arm/mach-imx/mach-imx6q.c:169:		phy_register_fixup_for_uid(PHY_ID_KSZ9031, MICREL_PHY_ID_MASK,
-> > > arch/arm/mach-imx/mach-imx6q.c:171:		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffef,
-> > > arch/arm/mach-imx/mach-imx6q.c:173:		phy_register_fixup_for_uid(PHY_ID_AR8035, 0xffffffef,  
-> 
-> As far as I'm concerned, the AR8035 fixup is there with good reason.
-> It's not just "random" but is required to make the AR8035 usable with
-> the iMX6 SoCs.  Not because of a board level thing, but because it's
-> required for the AR8035 to be usable with an iMX6 SoC.
+If kernel provides the attribute, show the used HW stats types.
 
-I have checked with the datasheet of the AR8035, and AFAICS, what the code
-does is this:
+Example:
 
- - Disable the SmartEEE feature of the phy. The comment in the code implies
-   that for some reason it doesn't work, but the reason itself is not given.
-   Anyway, disabling SmartEEE should IMHO opinion be controlled by a DT
-   setting. There is no reason to believe this problem is specific to the
-   i.MX6. Besides, it is a feature of the phy, so it seems logical to expose
-   that via the DT. Once that is done, it has no place here.
+$ tc filter add dev enp3s0np1 ingress proto ip handle 1 pref 1 flower dst_ip 192.168.1.1 action drop
+$ tc -s filter show dev enp3s0np1 ingress
+filter protocol ip pref 1 flower chain 0
+filter protocol ip pref 1 flower chain 0 handle 0x1
+  eth_type ipv4
+  dst_ip 192.168.1.1
+  in_hw in_hw_count 2
+        action order 1: gact action drop
+         random type none pass val 0
+         index 1 ref 1 bind 1 installed 10 sec used 10 sec
+        Action statistics:
+        Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
+        backlog 0b 0p requeues 0
+        used_hw_stats immediate     <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
- - Set the external clock output to 125MHz. This is needed because the i.MX6
-   needs a 125MHz reference clock input. But it is not a requirement to use
-   this output. It is perfectly fine and possible to design a board that uses
-   an external oscillator for this. It is also possible that an i.MX6 design
-   has such a phy connected to a MAC behind a switch or some other interface.
-   Independent of i.MX6 this setting can also be necessary for other hardware
-   designs, based on different SoC's. In summary, this is a feature of the
-   specific hardware design at hand, and has nothing to do with the i.MX6
-   specifically. This should definitely be exposed through the DT and not be
-   here.
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+---
+v1->v2:
+- fix output then hw_stats is not "any" - add \n
+---
+ include/uapi/linux/pkt_cls.h |  1 +
+ tc/m_action.c                | 10 +++++++---
+ 2 files changed, 8 insertions(+), 3 deletions(-)
 
- - Enable TXC delay. To clarify, the RGMII specification version 1 specified
-   that the RXC and TXC traces should be routed long enough to introduce a
-   certain delay to the clock signal, or the delay should be introduced via
-   other means. In a later version of the spec, a provision was given for MAC
-   or PHY devices to generate this delay internally. The i.MX6 MAC interface
-   is unable to generate the required delay internally, so it has to be taken
-   care of either by the board layout, or by the PHY device. This is the
-   crucial point: The amount of delay set by the PHY delay register depends on
-   the board layout. It should NEVER be hard-coded in SoC setup code. The
-   correct way is to specify it in the DT. Needless to say that this too,
-   isn't i.MX6-specific.
-
-> So, having it registered by the iMX6 SoC code is entirely logical and
-> correct.
-
-I'm afraid I don't agree. See above. This code really should never have been
-here. It is not i.MX6-specific as I pointed out above, nor is it necessarily
-applicable to all i.MX6 boards that use those phy devices.
-
-> That's likely true of the AR8031 situation as well.
-> 
-> I can't speak for any of the others.
-
-Best regards,
-
+diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
+index 6fcf7307e534..9f06d29cab70 100644
+--- a/include/uapi/linux/pkt_cls.h
++++ b/include/uapi/linux/pkt_cls.h
+@@ -18,6 +18,7 @@ enum {
+ 	TCA_ACT_COOKIE,
+ 	TCA_ACT_FLAGS,
+ 	TCA_ACT_HW_STATS,
++	TCA_ACT_USED_HW_STATS,
+ 	__TCA_ACT_MAX
+ };
+ 
+diff --git a/tc/m_action.c b/tc/m_action.c
+index 2c4b5df6e05c..108329db29d0 100644
+--- a/tc/m_action.c
++++ b/tc/m_action.c
+@@ -159,7 +159,7 @@ static const struct hw_stats_item {
+ 	{ "disabled", 0 }, /* no bit set */
+ };
+ 
+-static void print_hw_stats(const struct rtattr *arg)
++static void print_hw_stats(const struct rtattr *arg, bool print_used)
+ {
+ 	struct nla_bitfield32 *hw_stats_bf = RTA_DATA(arg);
+ 	__u8 hw_stats;
+@@ -167,7 +167,7 @@ static void print_hw_stats(const struct rtattr *arg)
+ 
+ 	hw_stats = hw_stats_bf->value & hw_stats_bf->selector;
+ 	print_string(PRINT_FP, NULL, "\t", NULL);
+-	open_json_array(PRINT_ANY, "hw_stats");
++	open_json_array(PRINT_ANY, print_used ? "used_hw_stats" : "hw_stats");
+ 
+ 	for (i = 0; i < ARRAY_SIZE(hw_stats_items); i++) {
+ 		const struct hw_stats_item *item;
+@@ -177,6 +177,7 @@ static void print_hw_stats(const struct rtattr *arg)
+ 			print_string(PRINT_ANY, NULL, " %s", item->str);
+ 	}
+ 	close_json_array(PRINT_JSON, NULL);
++	print_string(PRINT_FP, NULL, "%s", _SL_);
+ }
+ 
+ static int parse_hw_stats(const char *str, struct nlmsghdr *n)
+@@ -399,7 +400,10 @@ static int tc_print_one_action(FILE *f, struct rtattr *arg)
+ 		print_string(PRINT_FP, NULL, "%s", _SL_);
+ 	}
+ 	if (tb[TCA_ACT_HW_STATS])
+-		print_hw_stats(tb[TCA_ACT_HW_STATS]);
++		print_hw_stats(tb[TCA_ACT_HW_STATS], false);
++
++	if (tb[TCA_ACT_USED_HW_STATS])
++		print_hw_stats(tb[TCA_ACT_USED_HW_STATS], true);
+ 
+ 	return 0;
+ }
 -- 
-David Jander
-Protonic Holland.
+2.21.1
 
