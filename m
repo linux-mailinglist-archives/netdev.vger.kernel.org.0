@@ -2,110 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 01386198BE2
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 07:45:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4827198C02
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 08:00:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbgCaFpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 01:45:33 -0400
-Received: from mail-pj1-f65.google.com ([209.85.216.65]:50809 "EHLO
-        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726174AbgCaFpd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 01:45:33 -0400
-Received: by mail-pj1-f65.google.com with SMTP id v13so616056pjb.0;
-        Mon, 30 Mar 2020 22:45:32 -0700 (PDT)
+        id S1726303AbgCaGAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 02:00:09 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:43242 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725809AbgCaGAI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 02:00:08 -0400
+Received: by mail-ot1-f68.google.com with SMTP id a6so20835432otb.10
+        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 23:00:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=oL8fdk5mmpy0zmnky2aGWkiNBKFYGLoSDb7pzpaDNLo=;
-        b=ODsZ4sF438MvrtLkHMrrZgBbY43hri6jMW/Sdhh9vmrxK+6Pg2qTC8+ZQxpdjjmWJk
-         Fbp79/MAAJvo8TMXZaprKXWvUuDslgw4oNDC0pUVt7P5PBvVd9QPunjtzoThaj/O0Hhp
-         fU2onB+CbGECL4WJ7NPn8Wkmmo2v8wbnt+BIYlG3YMK235kU6Tn741s0jCckLEUhoKRb
-         mLnIBMjAjoIo2PYL/7t7sxeQhGU5kMb8/Nq2aXNrKXdAUfSayT3X5GccNWG7RMBDrM/n
-         LIir+CwLhewCdyq5zJZ8RGkF5MP5vcm1d2FMoq5AThqHGVCjFLpUn7s6rM1OhL/ZlyEu
-         jY+Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=CXXOUsdlGnj26N+iA7SMD6V0EP1D1IvyP4A5rEv/314=;
+        b=oOzu0tpFaFjqEknxZ9sNViabnRjWpZMb0jUT3s423py5e4+kaeYoZmCCwJMBPmk7+W
+         vxSKSmz29o7HmI/rDhRdpHPL8UmccJfzCkNfBpNMoMzcmpJWRMz96Czytex8jnwqfIvm
+         4S95cTAraCBoCD3D0/lGxccEvZr87ZTNYuHezh2AkP1nb6+Zn+CwzouDXI2K7jYzrNO4
+         NrVQDD+cCIBTqH16fS7/Hs257i/INcAE9w9bYQLMDOEClxkKE1fn/agKhQZEA1WM94Tu
+         M0+7Cc9/ESUz6FZ7wHEqpEDYvWWmMjQMAh4TQASLv1uYfzoBEMZUK4PNUugoBdYTxaIK
+         itHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oL8fdk5mmpy0zmnky2aGWkiNBKFYGLoSDb7pzpaDNLo=;
-        b=Vi97JUWb0U6lekvPph5PsM7PbU4sTXXhnZWUP7OluqvUxseoYo/5WxVkfPaEpe/Mec
-         +fpwCdPYGriPx3QM8ZuXSxqJJcM1Ddxq72q17iFDbblL2dLFZ5i8oo5sJLitwOjPNkjd
-         JA9TOW0V75If/vs47F5Og0LB3vlYV2g4q8jezqCYw001M6es87iz3qywWrWTQ5Tjai1X
-         Pmd5+copYMcFhacZTs+pFG9F2t43brbetXOnHNuMpYfkIN6H6qL02IuJ0wN0UiAaHxrS
-         iXyErVlopzA3sNebPuAsolk0zBVTeDUSQpJGsjxp6/h4LNHWLGqA/CQGhxCraBPIXpa+
-         Fp0g==
-X-Gm-Message-State: AGi0Pua1Y7/tRWP1msr3ux7Af3W/oKz/GGKNhTBEBcy7zBL9x7dYAWA8
-        1RS4xnxLIGAaZdmG1OFzXK9Kh4UW
-X-Google-Smtp-Source: APiQypLLeEdSNbs4zQs0IqSLAtMS4fvatpo1+pwvHzXfxKmH0M08lHhvQxuld+WQiQZFjAs/J1EjIA==
-X-Received: by 2002:a17:90a:a111:: with SMTP id s17mr1974434pjp.129.1585633532000;
-        Mon, 30 Mar 2020 22:45:32 -0700 (PDT)
-Received: from [192.168.1.18] (i223-218-245-204.s42.a013.ap.plala.or.jp. [223.218.245.204])
-        by smtp.googlemail.com with ESMTPSA id i14sm10912717pgh.47.2020.03.30.22.45.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 30 Mar 2020 22:45:31 -0700 (PDT)
-Subject: Re: [PATCH net] veth: xdp: use head instead of hard_start
-To:     maowenan <maowenan@huawei.com>,
-        Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
-        jwi@linux.ibm.com, jianglidong3@jd.com, edumazet@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <20200330102631.31286-1-maowenan@huawei.com>
- <20200330133442.132bde0c@carbon>
- <3053de4c-cee6-f6fc-efc2-09c6250f3ef2@gmail.com>
- <e7cf1271-2953-a5aa-ab25-c4b4a3843ee1@huawei.com>
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-Message-ID: <fb5ab568-9bc8-3145-a8db-3e975ccdf846@gmail.com>
-Date:   Tue, 31 Mar 2020 14:45:26 +0900
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=CXXOUsdlGnj26N+iA7SMD6V0EP1D1IvyP4A5rEv/314=;
+        b=aaxe/Kaj+B4YndC926hZrvRtmmmis06h9YysGSJQ/tiAUKvcaxV3jAAk0IXK17S45J
+         nc9YxbmJ7bLx++y1LGVDGh2Azx5Vvnw8I/QCETYr9LPKQhpT3RamUrxBf2S7X0ba5y2e
+         rkpJ8ZV7fHXa8yLPAosVGgD5lI7V4MzNAb38YTMQs0SrDR0af7zx9wmotApyXHFdVawi
+         LI9Jj1rioQn/YzA3ryz0mayFBPnLpdRb3r9jhI/WA4qJ9Df1mA7s3B11mcQ7/hUsV63v
+         RvODfzoTAR1bqdy4X968p4L/fxpLh9lc5af6iXOYHjlxpI/WY/4E2ZD5kjQhxOKRpHBE
+         0aLA==
+X-Gm-Message-State: ANhLgQ3tdUVlPztrfsKuiekAAwkYI3QJKMJSsIsIN/8/+WY9qSveczwP
+        E/GbrkW27CTsgvBU27Wg7kGdHACUhE6XBwR0r3M=
+X-Google-Smtp-Source: ADFU+vv6GkLUwtWZccpAqTJ/L1osIAcGp6aYYTB1J0BYMenKXMeqwOHpeaNC9vBziCwgo/qpM72s0idMh+aobCR7W7s=
+X-Received: by 2002:a05:6830:22e8:: with SMTP id t8mr2213599otc.48.1585634407996;
+ Mon, 30 Mar 2020 23:00:07 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <e7cf1271-2953-a5aa-ab25-c4b4a3843ee1@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <CANxWus8WiqQZBZF9aWF_wc-57OJcEb-MoPS5zup+JFY_oLwHGA@mail.gmail.com>
+ <CAM_iQpUPvcyxoW9=z4pY6rMfeAJNAbh21km4fUTSredm1rP+0Q@mail.gmail.com>
+ <CANxWus9HZhN=K5oFH-qSO43vJ39Yn9YhyviNm5DLkWVnkoSeQQ@mail.gmail.com>
+ <CAM_iQpWaK9t7patdFaS_BCdckM-nuocv7m1eiGwbO-jdLVNBMw@mail.gmail.com>
+ <CANxWus9yWwUq9YKE=d5T-6UutewFO01XFnvn=KHcevUmz27W0A@mail.gmail.com>
+ <CAM_iQpW8xSpTQP7+XKORS0zLTWBtPwmD1OsVE9tC2YnhLotU3A@mail.gmail.com>
+ <CANxWus-koY-AHzqbdG6DaVaDYj4aWztj8m+8ntYLvEQ0iM_yDw@mail.gmail.com>
+ <CANxWus_tPZ-C2KuaY4xpuLVKXriTQv1jvHygc6o0RFcdM4TX2w@mail.gmail.com>
+ <CAM_iQpV0g+yUjrzPdzsm=4t7+ZBt8Y=RTwYJdn9RUqFb1aCE1A@mail.gmail.com>
+ <CAM_iQpWLK8ZKShdsWNQrbhFa2B9V8e+OSNRQ_06zyNmDToq5ew@mail.gmail.com>
+ <CANxWus8YFkWPELmau=tbTXYa8ezyMsC5M+vLrNPoqbOcrLo0Cg@mail.gmail.com> <CANxWus9qVhpAr+XJbqmgprkCKFQYkAFHbduPQhU=824YVrq+uw@mail.gmail.com>
+In-Reply-To: <CANxWus9qVhpAr+XJbqmgprkCKFQYkAFHbduPQhU=824YVrq+uw@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Mon, 30 Mar 2020 22:59:56 -0700
+Message-ID: <CAM_iQpV-0f=yX3P=ZD7_-mBvZZn57MGmFxrHqT3U3g+p_mKyJQ@mail.gmail.com>
+Subject: Re: iproute2: tc deletion freezes whole server
+To:     =?UTF-8?Q?V=C3=A1clav_Zindulka?= <vaclav.zindulka@tlapnet.cz>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/03/31 12:56, maowenan wrote:
-> On 2020/3/31 7:35, Toshiaki Makita wrote:
->> Hi Mao & Jesper
->> (Resending with plain text...)
->>
->> On 2020/03/30 20:34, Jesper Dangaard Brouer wrote:
->>> On Mon, 30 Mar 2020 18:26:31 +0800
->>> Mao Wenan <maowenan@huawei.com> wrote:
->>>
->>>> xdp.data_hard_start is mapped to the first
->>>> address of xdp_frame, but the pointer hard_start
->>>> is the offset(sizeof(struct xdp_frame)) of xdp_frame,
->>>> it should use head instead of hard_start to
->>>> set xdp.data_hard_start. Otherwise, if BPF program
->>>> calls helper_function such as bpf_xdp_adjust_head, it
->>>> will be confused for xdp_frame_end.
->>>
->>> I have noticed this[1] and have a patch in my current patchset for
->>> fixing this.  IMHO is is not so important fix right now, as the effect
->>> is that you currently only lose 32 bytes of headroom.
->>>
-> I consider that it is needed because bpf_xdp_adjust_head() just a common helper function,
-> veth as one driver application should keep the same as 32 bytes of headroom as other driver.
-> And convert_to_xdp_frame set() also store info in top of packet, and set:
-> 	xdp_frame = xdp->data_hard_start;
-> 
->>> [1] https://lore.kernel.org/netdev/158446621887.702578.17234304084556809684.stgit@firesoul/
->>
->> You are right, the subtraction is not necessary here.
-> I guess you mean that previous subtraction is not necessary ? this line : void *head = hard_start - sizeof(struct xdp_frame); ?
+On Sat, Mar 28, 2020 at 6:04 AM V=C3=A1clav Zindulka
+<vaclav.zindulka@tlapnet.cz> wrote:
+>
+> On Fri, Mar 27, 2020 at 11:35 AM V=C3=A1clav Zindulka
+> <vaclav.zindulka@tlapnet.cz> wrote:
+> >
+> > Your assumption is not totally wrong. I have added some printks into
+> > fq_codel_reset() function. Final passes during deletion are processed
+> > in the if condition you added in the patch - 13706. Yet the rest and
+> > most of them go through regular routine - 1768074. 1024 is value of i
+> > in for loop.
+>
+> Ok, so I went through the kernel source a little bit. I've found out
+> that dev_deactivate is called only for interfaces that are up. My bad
+> I forgot that after deactivation of my daemon ifb interfaces are set
+> to down. Nevertheless after setting it up and doing perf record on
+> ifb0 numbers are much lower anyway. 13706 exits through your condition
+> added in patch. 41118 regular exits. I've uploaded perf report here
+> https://github.com/zvalcav/tc-kernel/tree/master/20200328
+>
+> I've also tried this on metallic interface on different server which
+> has a link on it. There were 39651 patch exits. And 286412 regular
+> exits. It is more than ifb interface, yet it is way less than sfp+
+> interface and behaves correctly.
 
-No I just mean subtraction of headroom is not necessary, and I noticed this 
-description was confusing. Sorry about that.
-You can use "head" for data_hard_start.
+Interesting, at the point of dev_deactivate() is called, the refcnt
+should not be zero, it should be at least 1, so my patch should
+not affect dev_deactivate(), it does affect the last qdisc_put()
+after it.
 
-Toshiaki Makita
+Of course, my intention is indeed to eliminate all of the
+unnecessary memset() in the ->reset() before ->destroy().
+I will provide you a complete patch tomorrow if you can test
+it, which should improve hfsc_reset() too.
+
+Thanks.
