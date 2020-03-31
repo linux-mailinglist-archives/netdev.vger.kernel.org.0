@@ -2,98 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84D3E1994A7
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 13:03:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C32B19952D
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 13:14:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730561AbgCaLDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 07:03:30 -0400
-Received: from mail27.static.mailgun.info ([104.130.122.27]:55695 "EHLO
-        mail27.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730521AbgCaLD3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 07:03:29 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1585652609; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=2rsGgE6kxJOfKICJK2M5MN0aGFpCfcgS/HPOQr3wV6w=; b=XfuXT2rKl+XRGked58Rr5s/LYaelhWxDN0Nwd8K4LbDEOT0AunpyuP9wPKq1rT47fOd4fTiP
- wpEfKa7WcdO0qR+7i6Ytz30sge0epbYzk4aMs+Aen5kJh/ncuT4N/AFeeoRjUEVHDMhTpEFc
- ORK4N82gRfmiJKc4J5bt+bRgdvc=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e83237e.7facd3ebe148-smtp-out-n02;
- Tue, 31 Mar 2020 11:03:26 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id B8195C433BA; Tue, 31 Mar 2020 11:03:26 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=ham autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 837BCC433D2;
-        Tue, 31 Mar 2020 11:03:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 837BCC433D2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Qiujun Huang <hqjagain@gmail.com>
-Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net,
+        id S1730602AbgCaLOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 07:14:24 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:33806 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729483AbgCaLOY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 07:14:24 -0400
+Received: by mail-pl1-f194.google.com with SMTP id a23so8013177plm.1;
+        Tue, 31 Mar 2020 04:14:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jfqMPesgkN+7mncezSXPSHTqvyq0LT20OfMYu4n26Qs=;
+        b=NgGfU5Bb0Rwj7vg/+L4i+PgKT83GpLY5DNG51ZYfn6BWifbVGFEMdbVM2N5hfx+uGB
+         99wPJ3vXyH3XPvndMvodXVZyDYTZDivtL/bPEMqKpfskoNq/ZDfNEJdL1llJg5bTcT5M
+         JNEubbr7xlJeJDqYzy1/gRrYb1fh/QDq8Dn9xBSpekTv7CqdqvExHNt9EMGMHp/t6/EP
+         K1eNhG3Dh2Mgdaf7lG+RofH39lslahCSTiisl8yCRQ6o9vSUhjyPGcHes2nEI1CLrAly
+         OLUYewtOK5N5vqyWo2HM+/BaXNiUEyCbUCWHVgIqfinrdYh0UUbsH/rorUet37iiXfky
+         oPBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jfqMPesgkN+7mncezSXPSHTqvyq0LT20OfMYu4n26Qs=;
+        b=rGXZZZT/0FxJaKccLneA7adnDBT7mJrdJmOYUp+BOrQBDpkPYx5lMn8G9mA3yV+GjC
+         UPpfM9I88+fgp4DIScrV7vMaK2Lqjm6wMp9MEkzDMdXKebHfoPzpEgveRnNPnZMcNno7
+         c+LbzvoJX3WfSvKdr7nQjlkSI3pmzApOQBuJLhsiQ+gRpcv7r/XM3YiJhT8fjtLWnxSg
+         zf9goCyPtap451qLxqpWZelzijOj0tM0Cqpn5OA0VW/OQeuCW997S931n9+A8ESZHRYa
+         bGSFWhfapuMSoIZtEWDn6Kgqy/gDsSPurVNGwoHgOocZcd3PSPcMGCv8GcCRF1mvAjKe
+         B2HQ==
+X-Gm-Message-State: AGi0PuZ2arh0Py4Gw4MDf7cir34d6Nt1rEKvfd0x6UE3NswGaWNkxROh
+        vsfNt3HKhfUuKpXsTQ3A4Fc=
+X-Google-Smtp-Source: APiQypJ06shRWMde4lJ/waxgyBPfa/BC6ceOEQ3+6imjtew7/jwC9nYpB/5sWJJn+B8wZkll5ynyyA==
+X-Received: by 2002:a17:90a:254f:: with SMTP id j73mr3195083pje.11.1585653262666;
+        Tue, 31 Mar 2020 04:14:22 -0700 (PDT)
+Received: from localhost (194.99.30.125.dy.iij4u.or.jp. [125.30.99.194])
+        by smtp.gmail.com with ESMTPSA id c190sm12241067pfa.66.2020.03.31.04.14.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Mar 2020 04:14:21 -0700 (PDT)
+From:   Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+X-Google-Original-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
+Date:   Tue, 31 Mar 2020 20:14:18 +0900
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Jouni Malinen <jouni@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, anenbupt@gmail.com
-Subject: Re: [PATCH] ath9k: fix stack-out-of-bounds Write in ath9k_hif_usb_rx_cb
-References: <1585625296-31013-1-git-send-email-hqjagain@gmail.com>
-Date:   Tue, 31 Mar 2020 14:03:22 +0300
-In-Reply-To: <1585625296-31013-1-git-send-email-hqjagain@gmail.com> (Qiujun
-        Huang's message of "Tue, 31 Mar 2020 11:28:16 +0800")
-Message-ID: <87bloc23d1.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        linux-kernel@vger.kernel.org
+Subject: Re: [linux-next] bisected: first bad commit: mac80211: Check port
+ authorization in the ieee80211_tx_dequeue() case
+Message-ID: <20200331111418.GB502@jagdpanzerIV.localdomain>
+References: <20200331092125.GA502@jagdpanzerIV.localdomain>
+ <52358d231e26dcb27b710c22f7993e0d331796ec.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <52358d231e26dcb27b710c22f7993e0d331796ec.camel@sipsolutions.net>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Qiujun Huang <hqjagain@gmail.com> writes:
+On (20/03/31 11:30), Johannes Berg wrote:
+> On Tue, 2020-03-31 at 18:21 +0900, Sergey Senozhatsky wrote:
+> > Hello,
+> > 
+> > Commit "mac80211: Check port authorization in the ieee80211_tx_dequeue()
+> > case" breaks wifi on my laptop:
+> > 
+> > 	kernel: wlp2s0: authentication with XXXXXXXXXXXXXX timed out
+> > 
+> > It just never connects to the network.
+> 
+> Yes, my bad. Sorry about that.
+> 
 
-> Add barrier to accessing the stack array skb_pool.
->
-> Reported-by: syzbot+d403396d4df67ad0bd5f@syzkaller.appspotmail.com
-> Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
-> ---
->  drivers/net/wireless/ath/ath9k/hif_usb.c | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-> index dd0c323..c4a2b72 100644
-> --- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-> +++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-> @@ -612,6 +612,11 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
->  			hif_dev->remain_skb = nskb;
->  			spin_unlock(&hif_dev->rx_lock);
->  		} else {
-> +			if (pool_index == MAX_PKT_NUM_IN_TRANSFER) {
-> +				dev_err(&hif_dev->udev->dev,
-> +					"ath9k_htc: over RX MAX_PKT_NUM\n");
-> +				goto err;
-> +			}
+No worries.
 
-What about 'pool_index >= MAX_PKT_NUM_IN_TRANSFER' just to be on the
-safe side? Ah, but then error handling won't work:
+> Fix just narrowly missed the release and is on the way:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=be8c827f50a0bcd56361b31ada11dc0a3c2fd240
 
-err:
-	for (i = 0; i < pool_index; i++) {
-		RX_STAT_ADD(skb_completed_bytes, skb_pool[i]->len);
-		ath9k_htc_rx_msg(hif_dev->htc_handle, skb_pool[i],
-				 skb_pool[i]->len, USB_WLAN_RX_PIPE);
-		RX_STAT_INC(skb_completed);
-	}
+Good to know!
 
-Maybe that should use 'min(pool_index, MAX_PKT_NUM_IN_TRANSFER - 1)' or
-something? Or maybe it's just overengineerin, dunno.
-
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+	-ss
