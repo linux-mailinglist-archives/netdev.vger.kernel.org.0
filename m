@@ -2,135 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85ADE199A7F
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 17:57:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 029DA199AE5
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 18:07:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731160AbgCaP5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 11:57:37 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:33620 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730105AbgCaP5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 11:57:37 -0400
-Received: by mail-wm1-f65.google.com with SMTP id z14so2370316wmf.0;
-        Tue, 31 Mar 2020 08:57:36 -0700 (PDT)
+        id S1731124AbgCaQHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 12:07:11 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:33139 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730366AbgCaQHL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 12:07:11 -0400
+Received: by mail-pg1-f194.google.com with SMTP id d17so10547622pgo.0;
+        Tue, 31 Mar 2020 09:07:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=BNFMjtXJfiHlQMR9l7UbxDk1QF+cJZZU1iswPz9+i6o=;
-        b=RPdMS82ZlLssKw9Dkgko5xZa3ImkwSpdhRLHGtlKqP2Rqt8KqzQXeLhnrRudlAXjCS
-         p7XKRqIbS3gD6+uZx0TJ7Ek8Rn5GTVw/xoFy7zaaZWVESd8tf9ARpGUZlhih/Msi+ciQ
-         q5PCQm3kppwX0Sf1zB+DZGgui/OZ3MZ76tsUItZjF7rn+R/aGWRGECmJIcnUPSu5O8Ye
-         X3h4Tsw4u9RAasU20fcFUWoiD6nxChyG3ZmKTWy7VbHlwop4hXLI16oM5MyM/UAl3/E1
-         lXs/57QVL1ZqrwjeQSAz4r0OrZq9R4MBNMXY21rmjKS7q24rSv0vUaTZjTgOsJsWEdBS
-         ZVTA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=b1X+kWvTaoc1/8sKIH9Urvg+efjSevl6Sn9xX+k+tdk=;
+        b=E7QP6+nEWaQ3piARVTGv7PrQ3KlmEtoVc+b+4iGu/u4TGouhnhdh2fRTlpC05P6KLf
+         XzoLMuQuFyazLq0QkvzB9raa7zRAwG/07oTtiVyAI7N/sz5tE0fjflijVUn7AYm9JTrl
+         hYR5t2Z0xpbccNY/FEuTZhhBDLY5794BTIB6/xn1Z6QbZsEjdKaoUPVfJq2v0XKRa5Lu
+         vE26toe7X0qGplsHI+/LjDEQwo5Xya0zPxAuiS4I2rjs4X3YPmcIQ8gziJLfVqLgk++J
+         cqLv3KL7+GxXzyTgowPgwQy2dx14TMeqLHJ4rj9auNpahVQMYBjrqaa9+L6wXGpx1kOK
+         LGPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=BNFMjtXJfiHlQMR9l7UbxDk1QF+cJZZU1iswPz9+i6o=;
-        b=tig3bGh4Wd/LppUVkvDFHOjJSzm/3W8iJaQ+nyMD4Qkw8pPoDbYItfdv3vy2ZbD0NC
-         1GbEnRf16uxexwClBDxObWPBhYUvyOwpASQBnBv0GHqQJ3UbN3NSDDdNEtjcWXntLkN6
-         RRMSInDelZQWjBQ8CBeWXzz5vZdzlQTEhbB3xGVkFSBv/YY4jBsvXiK3phBL9c5RHjIt
-         Gkbmf33BSbLy6dWDZ+5YbxtGE28fMwAckRSNkCvLdiWB/9tQ+3icIuzpVq1cUY+3ouh5
-         wx2rEt9oVavwd+942yhnmFGDRxDoCKFQiMiLXCfkhZ47N6k1Zbx5Ckk+FnMcWIvOvEkE
-         e4ow==
-X-Gm-Message-State: ANhLgQ1VNLylwxoQBCvj5qXeRoed+WiKXndcvx+AmmC9wEneTo37OFMR
-        Au/v8b5ih7Rb2PXdt33EVD4=
-X-Google-Smtp-Source: ADFU+vuUo3iYi1QiNUBgHOWtkUNq0FOy4wwadRDrWpieJWPIzSdppOmeXv8LCWNQciex4ictjFt6CQ==
-X-Received: by 2002:a05:600c:2f90:: with SMTP id t16mr4269086wmn.66.1585670255600;
-        Tue, 31 Mar 2020 08:57:35 -0700 (PDT)
-Received: from [10.230.186.223] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id k9sm28456616wrd.74.2020.03.31.08.57.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Mar 2020 08:57:34 -0700 (PDT)
-Subject: Re: [PATCH] net: dsa: ksz: Select KSZ protocol tag
-To:     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     woojung.huh@microchip.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, davem@davemloft.net,
-        Cristian Birsan <cristian.birsan@microchip.com>
-References: <20200331093651.23365-1-codrin.ciubotariu@microchip.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <8455cc8b-a51a-6d39-7e88-7eea2e61524c@gmail.com>
-Date:   Tue, 31 Mar 2020 08:57:31 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Firefox/68.0 Thunderbird/68.6.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=b1X+kWvTaoc1/8sKIH9Urvg+efjSevl6Sn9xX+k+tdk=;
+        b=pxba0ow81XxCgQIMwIITx8KmH86ojvakKFSx72HvMjvgxFkjiH4JOGwIsAF80vAQMA
+         JgHebxw6f/aH6fmN1EZ5SGR+wMbjeTNsVGRMQTltPfV0bznuuYKkm9kNUgzTEY3Hiihy
+         j/3OfJp3przgdWvCeNmAjUFcNYN0lTYO7KJ+4hl/5TQmO31eg1sJGqw6V1KwxJilTjrd
+         W9H6GS6M7Qmq1hk9ccgpMF8zwLD2uALMK91mWsusVDVKJntFffh1RGPc0mD20Sk7CRxH
+         RbCVd4pRY8+f0jpezXkYdN25OBwYoHoz8imZ4NBWd8s2hIeYCKJsfppQmQXxTnsdMwNf
+         KhQg==
+X-Gm-Message-State: AGi0PubKudS6thWZISpK+8oLDuVopEG1ey38rhqEO5JmZ09OAB5s+zco
+        SNwyM2UJrMhrJS0/xxu+Z4s=
+X-Google-Smtp-Source: APiQypJ/yTO4LiP72ogFNw4xPxdl9op8Gz7lBGkcJE/KhfT3rIhzZOPCqgd0mpZM/YN8hYlgbvbXWA==
+X-Received: by 2002:a63:7159:: with SMTP id b25mr4722166pgn.72.1585670829465;
+        Tue, 31 Mar 2020 09:07:09 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:0:c786:d9fd:ab91:6283])
+        by smtp.gmail.com with ESMTPSA id t63sm11887819pgc.85.2020.03.31.09.07.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Mar 2020 09:07:08 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>, Chenbo Feng <fengc@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Subject: [PATCH v3] iptables: open eBPF programs in read only mode
+Date:   Tue, 31 Mar 2020 09:07:03 -0700
+Message-Id: <20200331160703.56842-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.26.0.rc2.310.g2932bb562d-goog
+In-Reply-To: <20200320030015.195806-1-zenczykowski@gmail.com>
+References: <20200320030015.195806-1-zenczykowski@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20200331093651.23365-1-codrin.ciubotariu@microchip.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Maciej Żenczykowski <maze@google.com>
 
+Adjust the mode eBPF programs are opened in so 0400 pinned bpf programs
+work without requiring CAP_DAC_OVERRIDE.
 
-On 3/31/2020 2:36 AM, Codrin Ciubotariu wrote:
-> KSZ protocol tag is needed by the KSZ DSA drivers.
-> 
-> Fixes: 0b9f9dfbfab4 ("dsa: Allow tag drivers to be built as modules")
-> Tested-by: Cristian Birsan <cristian.birsan@microchip.com>
-> Signed-off-by: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+This matches Linux 5.2's:
+  commit e547ff3f803e779a3898f1f48447b29f43c54085
+  Author: Chenbo Feng <fengc@google.com>
+  Date:   Tue May 14 19:42:57 2019 -0700
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+    bpf: relax inode permission check for retrieving bpf program
+
+    For iptable module to load a bpf program from a pinned location, it
+    only retrieve a loaded program and cannot change the program content so
+    requiring a write permission for it might not be necessary.
+    Also when adding or removing an unrelated iptable rule, it might need to
+    flush and reload the xt_bpf related rules as well and triggers the inode
+    permission check. It might be better to remove the write premission
+    check for the inode so we won't need to grant write access to all the
+    processes that flush and restore iptables rules.
+
+  kernel/bpf/inode.c:
+  - int ret = inode_permission(inode, MAY_READ | MAY_WRITE);
+  + int ret = inode_permission(inode, MAY_READ);
+
+In practice, AFAICT, the xt_bpf match .fd field isn't even used by new
+kernels, but I believe it might be needed for compatibility with old ones
+(though I'm pretty sure table modifications on them will outright fail).
+
+Test: builds, passes Android test suite (albeit on an older iptables base),
+  git grep bpf_obj_get - finds no other users
+Cc: Chenbo Feng <fengc@google.com>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Willem de Bruijn <willemb@google.com>
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+---
+ extensions/libxt_bpf.c | 25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
+
+diff --git a/extensions/libxt_bpf.c b/extensions/libxt_bpf.c
+index 92958247..4aea477a 100644
+--- a/extensions/libxt_bpf.c
++++ b/extensions/libxt_bpf.c
+@@ -61,14 +61,25 @@ static const struct xt_option_entry bpf_opts_v1[] = {
+ 	XTOPT_TABLEEND,
+ };
+ 
+-static int bpf_obj_get(const char *filepath)
++static int bpf_obj_get_readonly(const char *filepath)
+ {
+ #if defined HAVE_LINUX_BPF_H && defined __NR_bpf && defined BPF_FS_MAGIC
+-	union bpf_attr attr;
+-
+-	memset(&attr, 0, sizeof(attr));
+-	attr.pathname = (__u64) filepath;
+-
++	// union bpf_attr includes this in an anonymous struct, but the
++	// file_flags field and the BPF_F_RDONLY constant are only present
++	// in Linux 4.15+ kernel headers (include/uapi/linux/bpf.h)
++	struct {   // this part of union bpf_attr is for BPF_OBJ_* commands
++		__aligned_u64	pathname;
++		__u32		bpf_fd;
++		__u32		file_flags;
++	} attr = {
++		.pathname = (__u64)filepath,
++		.file_flags = (1U << 3),   // BPF_F_RDONLY
++	};
++	int fd = syscall(__NR_bpf, BPF_OBJ_GET, &attr, sizeof(attr));
++	if (fd >= 0) return fd;
++
++	// on any error fallback to default R/W access for pre-4.15-rc1 kernels
++	attr.file_flags = 0;
+ 	return syscall(__NR_bpf, BPF_OBJ_GET, &attr, sizeof(attr));
+ #else
+ 	xtables_error(OTHER_PROBLEM,
+@@ -125,7 +136,7 @@ static void bpf_parse_string(struct sock_filter *pc, __u16 *lenp, __u16 len_max,
+ static void bpf_parse_obj_pinned(struct xt_bpf_info_v1 *bi,
+ 				 const char *filepath)
+ {
+-	bi->fd = bpf_obj_get(filepath);
++	bi->fd = bpf_obj_get_readonly(filepath);
+ 	if (bi->fd < 0)
+ 		xtables_error(PARAMETER_PROBLEM,
+ 			      "bpf: failed to get bpf object");
 -- 
-Florian
+2.26.0.rc2.310.g2932bb562d-goog
+
