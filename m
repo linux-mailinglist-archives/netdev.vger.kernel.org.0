@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D77B198A29
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 04:52:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE1ED198A2D
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 04:54:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729562AbgCaCwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 22:52:50 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:40238 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727655AbgCaCwu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 22:52:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:
-        Subject:Sender:Reply-To:Content-ID:Content-Description;
-        bh=vwCf88W8uI6kfyG9YNKfcw+W9JvoHdjdDO+HJg3PNl8=; b=sn1cOMq2OvxDWuQvY1sqwfGIqY
-        2peckD9Zh838ABaFcldXtRD0MvqgMI5wFlWDh5MpEkZrCxIzwAvgRqVR3idX4v+4yAd5r5V2n7Wze
-        mChwjmY/4fxP9FxzcZGwP9uiNuicvD/s3MYA4oAAOJD5EREB1cWYqvWthJHKgi3JcARtYvP+P7Hhy
-        mE7uz5mWVsIhsEDu+zwAV6mQ/Z64i6OAkhmQcrx20Nk/2L3WkHrx4aBMwumcOIt1MMssnRx517Pu7
-        yfOYQzNX1tlRlWtaOQh5t0hiPzGi2U0N2vvub8ZB37jN5sn8siFm18w2X6+FXi2CO6P78UosmjAFL
-        w1Wiv9yw==;
-Received: from [2601:1c0:6280:3f0:897c:6038:c71d:ecac]
-        by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jJ71F-0003W5-Or; Tue, 31 Mar 2020 02:52:49 +0000
-Subject: Re: [PATCH] vhost: make CONFIG_VHOST depend on CONFIG_EVENTFD
-To:     Jason Wang <jasowang@redhat.com>, mst@redhat.com
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200331022902.12229-1-jasowang@redhat.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <5646e48a-b1af-6253-bc17-667ab9419fd3@infradead.org>
-Date:   Mon, 30 Mar 2020 19:52:48 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <20200331022902.12229-1-jasowang@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S1729684AbgCaCyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 22:54:03 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:45860 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729567AbgCaCyD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 22:54:03 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 1214A15D15827;
+        Mon, 30 Mar 2020 19:54:02 -0700 (PDT)
+Date:   Mon, 30 Mar 2020 19:54:00 -0700 (PDT)
+Message-Id: <20200330.195400.784625163425445502.davem@davemloft.net>
+To:     ast@kernel.org
+Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: Re: pull-request: bpf-next 2020-03-30
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20200331012815.3258314-1-ast@kernel.org>
+References: <20200331012815.3258314-1-ast@kernel.org>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 30 Mar 2020 19:54:02 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 3/30/20 7:29 PM, Jason Wang wrote:
-> After commit ec9d8449a99b ("vhost: refine vhost and vringh kconfig"),
-> CONFIG_VHOST could be enabled independently. This means we need make
-> CONFIG_VHOST depend on CONFIG_EVENTFD, otherwise we break compiling
-> without CONFIG_EVENTFD.
+From: Alexei Starovoitov <ast@kernel.org>
+Date: Mon, 30 Mar 2020 18:28:15 -0700
+
+> The following pull-request contains BPF updates for your *net-next* tree.
 > 
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Fixes: ec9d8449a99b ("vhost: refine vhost and vringh kconfig")
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  drivers/vhost/Kconfig | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+> We've added 73 non-merge commits during the last 14 day(s) which contain
+> a total of 107 files changed, 6086 insertions(+), 1728 deletions(-).
+> 
+> The main changes are:
+ ...
+> Please consider pulling these changes from:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
 
-Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
+Pulled, there was a minor merge conflict in the cgroup changes, which I
+resolved like this:
 
-thanks.
-
--- 
-~Randy
-
+@@@ -305,10 -418,9 +421,9 @@@ int __cgroup_bpf_attach(struct cgroup *
+        u32 saved_flags = (flags & (BPF_F_ALLOW_OVERRIDE | BPF_F_ALLOW_MULTI));
+        struct list_head *progs = &cgrp->bpf.progs[type];
+        struct bpf_prog *old_prog = NULL;
+ -      struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE],
+ -              *old_storage[MAX_BPF_CGROUP_STORAGE_TYPE] = {NULL};
+ +      struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE] = {};
+ +      struct bpf_cgroup_storage *old_storage[MAX_BPF_CGROUP_STORAGE_TYPE] = {};
+-       struct bpf_prog_list *pl, *replace_pl = NULL;
+-       enum bpf_cgroup_storage_type stype;
++       struct bpf_prog_list *pl;
