@@ -2,97 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4A211988F7
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 02:38:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1ADC1988F9
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 02:40:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729640AbgCaAii (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 20:38:38 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:44013 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729372AbgCaAii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 20:38:38 -0400
-Received: by mail-pl1-f196.google.com with SMTP id v23so7431356ply.10;
-        Mon, 30 Mar 2020 17:38:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+WIg18odYCSh3MbJQvov8y3l/e6uIQfx3wUGGy/3rtg=;
-        b=EuefBLq52IV3IGZnWyxgtYs8Okz0wZEHDKJ4XicCDxi96ZvkeNaVOqVIRwUPEnZrCQ
-         rqYI7U1yIf/If+8s6JunpJaT1h/uSS6yRGHrW6tFciKhB3kqukUU4XiqskzFCz6DW6Ho
-         o23yVQhQo3JDq3maF23tmc99d3yy6pUGilUdVWar+gpVOcDs3GQ9ZuvHsivvKpL7zXvL
-         ZswpCVtuzRsa5cQrJ4jOzufbYyjsSRIU7YMrIoeWczVTOaY5i/5GL1IC/6+QfnvHTb6e
-         gS1cbP2lRf6BKxOlbBfihv1Uj43HjDklOAgjsFNXpiXG8KIuBfPJU5HHQe5NaQFJxpi0
-         IceQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+WIg18odYCSh3MbJQvov8y3l/e6uIQfx3wUGGy/3rtg=;
-        b=OcUH9tsATtI9Wi8Q/kWPtjCzFnxZ3iJ4NOn+7Xu2byUSa5AZTpPxvoA03wbSnEOvxY
-         zmUmJzTwy9RTxmvouWYiYqqlJi3pSTQ/Zn3IhKk6M1afkewKjLVxJ42hjIp/DCRDhBRE
-         8f798KPKFOSblYBaXcerVdPEwpp/CGoVw7yEoUh1yO35QZ0gPoWfGssw2K9fpfCglJnt
-         PhOsFqmkbgtgwBapjF5NJnHWJdzHVz5SAK9qbgPzyUc3j3HqmtvWruIWXvwS6jiCgHWJ
-         4a1uf4nJhEGOe0K5n/GU1045Kk80hInlAxpDv6lreD5591NRGVv4so/MOqPpyigjHbrb
-         +C/A==
-X-Gm-Message-State: AGi0Pubf9YRPq5K5KzI2FMx89cTovwdKoiw8/WcBdpCKEWqu9OVAOX77
-        G4H+b7EcYd2B+Ma1bnZLYjc=
-X-Google-Smtp-Source: APiQypLavlSpVay52TQP75yPO7l+XdDdm2k8l2Puvv5/oE6wdv2bQZaABDA1m9Jxvl/bY+lzmrT/TQ==
-X-Received: by 2002:a17:902:7046:: with SMTP id h6mr9813349plt.250.1585615116816;
-        Mon, 30 Mar 2020 17:38:36 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:3558])
-        by smtp.gmail.com with ESMTPSA id b25sm10960877pfd.185.2020.03.30.17.38.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Mar 2020 17:38:35 -0700 (PDT)
-Date:   Mon, 30 Mar 2020 17:38:33 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrey Ignatov <rdna@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@fb.com, daniel@iogearbox.net,
-        andrii.nakryiko@gmail.com, kernel-team@fb.com
-Subject: Re: [PATCH v3 bpf-next 1/4] bpf: implement bpf_link-based cgroup BPF
- program attachment
-Message-ID: <20200331003833.2cimhnn5scfroyv7@ast-mbp>
-References: <20200330030001.2312810-1-andriin@fb.com>
- <20200330030001.2312810-2-andriin@fb.com>
- <20200331000513.GA54465@rdna-mbp.dhcp.thefacebook.com>
+        id S1729521AbgCaAkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 20:40:12 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:40017 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729239AbgCaAkM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 30 Mar 2020 20:40:12 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 48rr884mm6z9sPF;
+        Tue, 31 Mar 2020 11:40:08 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1585615209;
+        bh=CZHucFrAv9QIXDiBJFkwfGx5RP0BlhVTNHzwpPTiY40=;
+        h=Date:From:To:Cc:Subject:From;
+        b=YhR6C9GL0MICjk4NnoKYYDDPR1PVJ33Fub/BdpQWkd1Afc+/aylNSgxj82g7WUaJE
+         otkHHtvjFArGGw3vFhOS5GVvqiOshcO3+XFHDN0OoT7JXuFxAz7B54V8NRdO60IKqN
+         hfUrY+0oAosHcsL4JIfwYlGYrQxS0TS2zaiwYMB4dfX9vPbD4divQ+sOw95D9Z5NVp
+         TlwbRB1kKualxddrQ+14pe/H0wcHvqmQIw1t//ONaKaRv8jh8Bk+grcFDH4M+OQw/J
+         PlwOXN3K98Kqv1XzclpnCXzJOx8Rc3OJ4lhtDjmDtNthWU/Jpdr1yZz5GQDZZeiZ3C
+         gDo5UVdVE5DKw==
+Date:   Tue, 31 Mar 2020 11:40:05 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: linux-next: manual merge of the bpf-next tree with Linus' tree
+Message-ID: <20200331114005.5e2fc6f7@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200331000513.GA54465@rdna-mbp.dhcp.thefacebook.com>
+Content-Type: multipart/signed; boundary="Sig_/sqxK=G7/Qf4pX0OPiXg.akr";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 05:05:13PM -0700, Andrey Ignatov wrote:
-> >  
-> > +#define BPF_LINK_CREATE_LAST_FIELD link_create.flags
-> > +static int link_create(union bpf_attr *attr)
-> > +{
-> 
-> From what I see this function does not check any capability whether the
-> existing bpf_prog_attach() checks for CAP_NET_ADMIN.
+--Sig_/sqxK=G7/Qf4pX0OPiXg.akr
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Great catch! It's a bug.
-I fixed it up.
+Hi all,
 
-> This is pretty importnant difference but I don't see it clarified in the
-> commit message or discussed (or I missed it?).
-> 
-> Having a way to attach cgroup bpf prog by non-priv users is actually
-> helpful in some use-cases, e.g. systemd required patching in the past to
-> make it work with user (non-priv) sessions, see [0].
-> 
-> But in other cases it's also useful to limit the ability to attach
-> programs to a cgroup while using bpf_link so that only the thing that
-> controls cgroup setup can attach but not any non-priv process running in
-> that cgroup. How is this use-case covered in BPF_LINK_CREATE?
-> 
-> 
-> [0] https://github.com/systemd/systemd/pull/12745
+Today's linux-next merge of the bpf-next tree got a conflict in:
 
-yeah. we need to resurrect the discussion around CAP_BPF.
+  kernel/bpf/cgroup.c
 
-PS
-pls trim your replies.
+between commit:
+
+  62039c30c19d ("bpf: Initialize storage pointers to NULL to prevent freein=
+g garbage pointer")
+
+from Linus' tree and commits:
+
+  00c4eddf7ee5 ("bpf: Factor out cgroup storages operations")
+  72ae26452e77 ("bpf: Implement bpf_link-based cgroup BPF program attachmen=
+t")
+
+from the bpf-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc kernel/bpf/cgroup.c
+index 4f1472409ef8,80676fc00d81..000000000000
+--- a/kernel/bpf/cgroup.c
++++ b/kernel/bpf/cgroup.c
+@@@ -305,10 -418,9 +421,9 @@@ int __cgroup_bpf_attach(struct cgroup *
+  	u32 saved_flags =3D (flags & (BPF_F_ALLOW_OVERRIDE | BPF_F_ALLOW_MULTI));
+  	struct list_head *progs =3D &cgrp->bpf.progs[type];
+  	struct bpf_prog *old_prog =3D NULL;
+ -	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE],
+ -		*old_storage[MAX_BPF_CGROUP_STORAGE_TYPE] =3D {NULL};
+ +	struct bpf_cgroup_storage *storage[MAX_BPF_CGROUP_STORAGE_TYPE] =3D {};
+ +	struct bpf_cgroup_storage *old_storage[MAX_BPF_CGROUP_STORAGE_TYPE] =3D =
+{};
+- 	struct bpf_prog_list *pl, *replace_pl =3D NULL;
+- 	enum bpf_cgroup_storage_type stype;
++ 	struct bpf_prog_list *pl;
+  	int err;
+ =20
+  	if (((flags & BPF_F_ALLOW_OVERRIDE) && (flags & BPF_F_ALLOW_MULTI)) ||
+
+--Sig_/sqxK=G7/Qf4pX0OPiXg.akr
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl6CkWUACgkQAVBC80lX
+0GxM3gf9GxcJFEsjTQK4z5pYlqFBXgzWg1PIbiU7FSICpoAUgMQSegW5h8/465ve
+aD01gwgYY/eEV9K4ompqdpy4f5rK+tDX6pQ4m9lJPJax578rTYjOtUPd71HmcCDI
+VbtqQj+M8zd0Og5Z0yh373nhRYMnJ/A9HBauewgBzeEuut2eZ7BObIKdLteLHW62
+zXvnUo9A6LP/f+BQZrLSv/nJOoRQ8u4l2pT52RH5YRLqO8FCrhYykPNz+UqsVqXI
+8yEaryMtlr3wBRQBL284tKJlCRDC2Ewge+LkMQiVQIi8/3WF1uulHEv5BgxbtPeP
+/xM7vWJ7q5HEmHXZ3mmZyx2wu7wi2A==
+=Kf7A
+-----END PGP SIGNATURE-----
+
+--Sig_/sqxK=G7/Qf4pX0OPiXg.akr--
