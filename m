@@ -2,92 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E431199869
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 16:26:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 070571998B9
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 16:39:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731115AbgCaO0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 10:26:42 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:8435 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731108AbgCaO0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 10:26:42 -0400
-Received: from [10.193.177.223] (shahjada-abul.asicdesigners.com [10.193.177.223] (may be forged))
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 02VEQW5I030762;
-        Tue, 31 Mar 2020 07:26:33 -0700
-Subject: Re: [PATCH net-next] cxgb4/chcr: nic-tls stats in ethtool
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, borisp@mellanox.com,
-        secdev@chelsio.com
-References: <20200321112336.8771-1-rohitm@chelsio.com>
- <20200322135725.6cdc37a8@kicinski-fedora-PC1C0HJN>
-From:   rohit maheshwari <rohitm@chelsio.com>
-Message-ID: <cad731af-19c0-f16c-0c43-332de5d3dee0@chelsio.com>
-Date:   Tue, 31 Mar 2020 19:56:31 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.2.1
+        id S1731132AbgCaOjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 10:39:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52704 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726194AbgCaOjN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Mar 2020 10:39:13 -0400
+Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B4A0F214D8;
+        Tue, 31 Mar 2020 14:39:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585665552;
+        bh=VQTYjDLJpBPL64v+KHcwfSavLEUmQ5VPbYuKeDQvfh4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=w9kKXD8z4sqI86PU33XbHmfq5R7o1rl1Yc6oUOAz42cwHppv6UAYyiBVNzHr/8rGq
+         fiuijzJ4syHgX49+YFivKcsWhdJV6fv/bOG69I3vdo0Lq1npTDVuNQt+ItarZp4b9G
+         a/bP28cpaoxY9yg7N1tSpyTZfOjD00o0nNDF4FO0=
+Received: by mail-qk1-f175.google.com with SMTP id l25so23220051qki.7;
+        Tue, 31 Mar 2020 07:39:12 -0700 (PDT)
+X-Gm-Message-State: ANhLgQ1Yn4A9Q6+UE+Fanv4lnS9wOsS2mOqlYHd34dkABj36/5Rng+QK
+        5l9WpzStfcaqEjMA1sRPag/9oA3L9MsbAp5F3A==
+X-Google-Smtp-Source: ADFU+vs96kIPVk/bUhQUvXuwHTzxBhEjf4smiGd+iZOn7jyc5rfIytLi140jinW+le6E+iSeEnGKe3qbfJEIB3it89g=
+X-Received: by 2002:a37:aa92:: with SMTP id t140mr4802134qke.119.1585665551704;
+ Tue, 31 Mar 2020 07:39:11 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200322135725.6cdc37a8@kicinski-fedora-PC1C0HJN>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20200325220542.19189-1-robh@kernel.org> <20200325220542.19189-5-robh@kernel.org>
+ <CAK7LNARJn4uugHxcjK+WOWBs0gPVZQsCu4y6M8hkNK1U5FehRA@mail.gmail.com> <CAK7LNARXj3=1VPWL4kFmGkZuvV=yKb7gVaX2nbeiO54f-zWeHQ@mail.gmail.com>
+In-Reply-To: <CAK7LNARXj3=1VPWL4kFmGkZuvV=yKb7gVaX2nbeiO54f-zWeHQ@mail.gmail.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Tue, 31 Mar 2020 08:39:00 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLDL6mVZ3Bb3f6eObF9SNwy6WK_srX5=m=NCN8Jq+-R+g@mail.gmail.com>
+Message-ID: <CAL_JsqLDL6mVZ3Bb3f6eObF9SNwy6WK_srX5=m=NCN8Jq+-R+g@mail.gmail.com>
+Subject: Re: [PATCH 4/4] dt-bindings: Add missing 'additionalProperties: false'
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Brian Masney <masneyb@onstation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Guillaume La Roque <glaroque@baylibre.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mark Brown <broonie@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Zhang Rui <rui.zhang@intel.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        Linux PM mailing list <linux-pm@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 23/03/20 2:27 AM, Jakub Kicinski wrote:
-> On Sat, 21 Mar 2020 16:53:36 +0530 Rohit Maheshwari wrote:
->> Included nic tls statistics in ethtool stats.
->>
->> Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
->> ---
->>   .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    | 57 +++++++++++++++++++
->>   1 file changed, 57 insertions(+)
->>
->> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
->> index 398ade42476c..4998f1d1e218 100644
->> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
->> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ethtool.c
->> @@ -134,6 +134,28 @@ static char loopback_stats_strings[][ETH_GSTRING_LEN] = {
->>   	"bg3_frames_trunc       ",
->>   };
->>   
->> +#ifdef CONFIG_CHELSIO_TLS_DEVICE
->> +struct chcr_tls_stats {
->> +	u64 tx_tls_encrypted_packets;
->> +	u64 tx_tls_encrypted_bytes;
->> +	u64 tx_tls_ctx;
->> +	u64 tx_tls_ooo;
->> +	u64 tx_tls_skip_no_sync_data;
->> +	u64 tx_tls_drop_no_sync_data;
->> +	u64 tx_tls_drop_bypass_req;
-> I don't understand why you need to have a structure for this, and then
-> you memset it to 0, unnecessarily, but I guess that's just a matter of
-> taste.
-Yeah, this memset is pure stupidity, I'll remove it and this new
-structure as well. Thanks for the suggestion.
->> +};
->> +
->> +static char chcr_tls_stats_strings[][ETH_GSTRING_LEN] = {
->> +	"tx_tls_encrypted_pkts  ",
->> +	"tx_tls_encrypted_bytes ",
->> +	"tx_tls_ctx             ",
->> +	"tx_tls_ooo             ",
->> +	"tx_tls_skip_nosync_data",
->> +	"tx_tls_drop_nosync_data",
->> +	"tx_tls_drop_bypass_req ",
-> These, however, are not correct - please remove the spaces at the end,
-> otherwise your names are different than for other vendors. And there is
-> an underscore in the middle of "no_sync".
+On Mon, Mar 30, 2020 at 2:38 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
 >
-> When you're told to adhere to API recommendation, please adhere to it
-> exactly.
-These spaces are used for alignment, so the statistics will be readable
-for end user. As far as I understood, these are minimum set of TLS
-related statistics, with or without space it will remain same for end
-user. Please let me know if I am interpreting it wrong.
-  However I agree about the no_sync, I'll change it in my
-next patch.
+> Hi Rob,
+>
+> On Mon, Mar 30, 2020 at 4:09 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+> >
+> > On Thu, Mar 26, 2020 at 7:06 AM Rob Herring <robh@kernel.org> wrote:
+> > >
+> > > Setting 'additionalProperties: false' is frequently omitted, but is
+> > > important in order to check that there aren't extra undocumented
+> > > properties in a binding.
+> > >
+> > > Ideally, we'd just add this automatically and make this the default, but
+> > > there's some cases where it doesn't work. For example, if a common
+> > > schema is referenced, then properties in the common schema aren't part
+> > > of what's considered for 'additionalProperties'. Also, sometimes there
+> > > are bus specific properties such as 'spi-max-frequency' that go into
+> > > bus child nodes, but aren't defined in the child node's schema.
+> > >
+> > > So let's stick with the json-schema defined default and add
+> > > 'additionalProperties: false' where needed. This will be a continual
+> > > review comment and game of wack-a-mole.
+> > >
+> > > Signed-off-by: Rob Herring <robh@kernel.org>
+> > > ---
+> >
+> >
+> > >  .../devicetree/bindings/gpio/socionext,uniphier-gpio.yaml      | 2 ++
+> >
+> >
+> > You may have already queue this up, but just in case.
+> >
+> > Acked-by: Masahiro Yamada <yamada.masahiro@socionext.com>
+>
+>
+>
+> I take back Ack for socionext,uniphier-gpio.yaml
+>
+>
+>
+> Now "make dt_binding_check" produces a new warning.
+>
+> gpio@55000000: 'interrupt-parent' does not match any of the regexes:
+> 'pinctrl-[0-9]+'
+>
+>
+> This binding uses 'interrupt-parent'
+> without 'interrupts'.
+>
+> Instead, the mapping of the interrupt numbers
+> is specified by the vendor-specific property
+> socionext,interrupt-ranges
+>
+>
+>
+> I cannot add   "interrupt-parent: true" because
+> dt-schema/meta-schemas/interrupts.yaml
+> has "interrupt-parent: false".
+>
+>
+> Is there any solution?
 
+I'd meant to just drop socionext,uniphier-gpio.yaml.
 
+Rob
