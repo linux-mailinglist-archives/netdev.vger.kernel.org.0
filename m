@@ -2,227 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A321199DA5
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 20:03:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B39CF199DD8
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 20:13:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726282AbgCaSD4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 14:03:56 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:44958 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725947AbgCaSD4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 14:03:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=qa+YDP2xDTq6o3HyU/XQDUue7cik9lSvDQsGqqEQ5fk=; b=NwYojf0g8W13OpdSzYqGcE7MQ
-        VPaIT4x+5lyTKITntiICp0nSaVQmfxcVnuGDpAyok0w7WL9kpuei7cLNMSZ4WIorsB+nibE9G1EQX
-        bXVACVz77w4h4bRoHL77n3dmmIH7Emn1oMO0RGiAB/czfQ8lwiktExg9sMPYlhNJ5zqpKVIKqKD5M
-        mJKfzkxfqmCVOK0inHUSfbPJr4tRFKzADEGnlLZMU2HSdlDvN/4wxE8jX3WlZoQkaubGywG6boaUv
-        RaFt/wTr5qaoJtciKkSH9/tdYEJPC/DJFEBLmeHZzP5GDU3JYJSdHrtHmn8Ql2dfo6dkrA1Z6IdVF
-        1Jya0ADQg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:43898)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jJLEp-0001Js-T1; Tue, 31 Mar 2020 19:03:48 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jJLEo-0008KD-QQ; Tue, 31 Mar 2020 19:03:46 +0100
-Date:   Tue, 31 Mar 2020 19:03:46 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Baruch Siach <baruch@tkos.co.il>
-Cc:     netdev@vger.kernel.org, Shmuel Hazan <sh@tkos.co.il>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH] net: phy: marvell10g: add firmware load support
-Message-ID: <20200331180346.GS25745@shell.armlinux.org.uk>
-References: <16e4a15e359012fc485d22c7e413a129029fbd0f.1585676858.git.baruch@tkos.co.il>
+        id S1726548AbgCaSNY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 14:13:24 -0400
+Received: from correo.us.es ([193.147.175.20]:58534 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726000AbgCaSNY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Mar 2020 14:13:24 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 9D5571C4381
+        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 20:13:22 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 8EB53100A5A
+        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 20:13:22 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 836DF100A52; Tue, 31 Mar 2020 20:13:22 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A073A100A41;
+        Tue, 31 Mar 2020 20:13:20 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 31 Mar 2020 20:13:20 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 7BBC64301DE0;
+        Tue, 31 Mar 2020 20:13:20 +0200 (CEST)
+Date:   Tue, 31 Mar 2020 20:13:20 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Linux Network Development Mailing List 
+        <netdev@vger.kernel.org>,
+        Netfilter Development Mailing List 
+        <netfilter-devel@vger.kernel.org>,
+        Manoj Basapathi <manojbm@codeaurora.org>,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Subject: Re: [PATCH] netfilter: IDLETIMER target v1 - match Android layout
+Message-ID: <20200331181320.w5rwnpqizg555wpm@salvia>
+References: <20200331163559.132240-1-zenczykowski@gmail.com>
+ <20200331163904.ilucynm3brvgfezw@salvia>
+ <CANP3RGf5Y=-GX=b=jWURaBdDvey0zb-_MkXj6W+TWtRvM4C3sw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <16e4a15e359012fc485d22c7e413a129029fbd0f.1585676858.git.baruch@tkos.co.il>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CANP3RGf5Y=-GX=b=jWURaBdDvey0zb-_MkXj6W+TWtRvM4C3sw@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 31, 2020 at 08:47:38PM +0300, Baruch Siach wrote:
-> When Marvell 88X3310 and 88E2110 hardware configuration SPI_CONFIG strap
-> bit is pulled up, the host must load firmware to the PHY after reset.
-> Add support for loading firmware.
-> 
-> Firmware files are available from Marvell under NDA.
+On Tue, Mar 31, 2020 at 09:41:39AM -0700, Maciej Żenczykowski wrote:
+> By client code do you mean code for the iptables userspace binary?
 
-As I understand it, the firmware for the different revisions of the
-88x3310 are different, so I think the current derivation of filenames
-is not correct.
-
-Is this code theoretical, or has it been tested on such a system?  As
-far as I'm aware, all the 3310 systems out there so far have been
-strapped to boot the firmware from SPI.
-
-> 
-> Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-> ---
->  drivers/net/phy/marvell10g.c | 114 +++++++++++++++++++++++++++++++++++
->  1 file changed, 114 insertions(+)
-> 
-> diff --git a/drivers/net/phy/marvell10g.c b/drivers/net/phy/marvell10g.c
-> index 64c9f3bba2cd..9572426ba1c6 100644
-> --- a/drivers/net/phy/marvell10g.c
-> +++ b/drivers/net/phy/marvell10g.c
-> @@ -27,13 +27,28 @@
->  #include <linux/marvell_phy.h>
->  #include <linux/phy.h>
->  #include <linux/sfp.h>
-> +#include <linux/firmware.h>
-> +#include <linux/delay.h>
->  
->  #define MV_PHY_ALASKA_NBT_QUIRK_MASK	0xfffffffe
->  #define MV_PHY_ALASKA_NBT_QUIRK_REV	(MARVELL_PHY_ID_88X3310 | 0xa)
->  
-> +#define MV_FIRMWARE_HEADER_SIZE		32
-> +
->  enum {
->  	MV_PMA_BOOT		= 0xc050,
->  	MV_PMA_BOOT_FATAL	= BIT(0),
-> +	MV_PMA_BOOT_PROGRESS_MASK = 0x0006,
-> +	MV_PMA_BOOT_WAITING	= 0x0002,
-> +	MV_PMA_BOOT_FW_LOADED	= BIT(6),
-> +
-> +	MV_PCS_FW_LOW_WORD	= 0xd0f0,
-> +	MV_PCS_FW_HIGH_WORD	= 0xd0f1,
-> +	MV_PCS_RAM_DATA		= 0xd0f2,
-> +	MV_PCS_RAM_CHECKSUM	= 0xd0f3,
-> +
-> +	MV_PMA_FW_REV1		= 0xc011,
-> +	MV_PMA_FW_REV2		= 0xc012,
->  
->  	MV_PCS_BASE_T		= 0x0000,
->  	MV_PCS_BASE_R		= 0x1000,
-> @@ -223,6 +238,99 @@ static int mv3310_sfp_insert(void *upstream, const struct sfp_eeprom_id *id)
->  	return 0;
->  }
->  
-> +static int mv3310_write_firmware(struct phy_device *phydev, const u8 *data,
-> +		unsigned int size)
-> +{
-> +	unsigned int low_byte, high_byte;
-> +	u16 checksum = 0, ram_checksum;
-> +	unsigned int i = 0;
-> +
-> +	while (i < size) {
-> +		low_byte = data[i++];
-> +		high_byte = data[i++];
-> +		checksum += low_byte + high_byte;
-> +		phy_write_mmd(phydev, MDIO_MMD_PCS, MV_PCS_RAM_DATA,
-> +				(high_byte << 8) | low_byte);
-> +		cond_resched();
-> +	}
-> +
-> +	ram_checksum = phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_RAM_CHECKSUM);
-> +	if (ram_checksum != checksum) {
-> +		dev_err(&phydev->mdio.dev, "firmware checksum failed");
-> +		return -EIO;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void mv3310_report_firmware_rev(struct phy_device *phydev)
-> +{
-> +	int rev1, rev2;
-> +
-> +	rev1 = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_FW_REV1);
-> +	rev2 = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_FW_REV2);
-> +	if (rev1 < 0 || rev2 < 0)
-> +		return;
-> +
-> +	dev_info(&phydev->mdio.dev, "Loaded firmware revision %d.%d.%d.%d",
-> +			(rev1 & 0xff00) >> 8, rev1 & 0x00ff,
-> +			(rev2 & 0xff00) >> 8, rev2 & 0x00ff);
-> +}
-> +
-> +static int mv3310_load_firmware(struct phy_device *phydev)
-> +{
-> +	const struct firmware *fw_entry;
-> +	char *fw_file;
-> +	int ret;
-> +
-> +	switch (phydev->drv->phy_id) {
-> +	case MARVELL_PHY_ID_88X3310:
-> +		fw_file = "mrvl/x3310fw.hdr";
-> +		break;
-> +	case MARVELL_PHY_ID_88E2110:
-> +		fw_file = "mrvl/e21x0fw.hdr";
-> +		break;
-> +	default:
-> +		dev_warn(&phydev->mdio.dev, "unknown firmware file for %s PHY",
-> +				phydev->drv->name);
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = request_firmware(&fw_entry, fw_file, &phydev->mdio.dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Firmware size must be larger than header, and even */
-> +	if (fw_entry->size <= MV_FIRMWARE_HEADER_SIZE ||
-> +			(fw_entry->size % 2) != 0) {
-> +		dev_err(&phydev->mdio.dev, "firmware file invalid");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* Clear checksum register */
-> +	phy_read_mmd(phydev, MDIO_MMD_PCS, MV_PCS_RAM_CHECKSUM);
-> +
-> +	/* Set firmware load address */
-> +	phy_write_mmd(phydev, MDIO_MMD_PCS, MV_PCS_FW_LOW_WORD, 0);
-> +	phy_write_mmd(phydev, MDIO_MMD_PCS, MV_PCS_FW_HIGH_WORD, 0x0010);
-> +
-> +	ret = mv3310_write_firmware(phydev,
-> +			fw_entry->data + MV_FIRMWARE_HEADER_SIZE,
-> +			fw_entry->size - MV_FIRMWARE_HEADER_SIZE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	phy_modify_mmd(phydev, MDIO_MMD_PMAPMD, MV_PMA_BOOT,
-> +			MV_PMA_BOOT_FW_LOADED, MV_PMA_BOOT_FW_LOADED);
-> +
-> +	release_firmware(fw_entry);
-> +
-> +	msleep(100);
-> +	mv3310_report_firmware_rev(phydev);
-> +
-> +	return 0;
-> +}
-> +
->  static const struct sfp_upstream_ops mv3310_sfp_ops = {
->  	.attach = phy_sfp_attach,
->  	.detach = phy_sfp_detach,
-> @@ -249,6 +357,12 @@ static int mv3310_probe(struct phy_device *phydev)
->  		return -ENODEV;
->  	}
->  
-> +	if ((ret & MV_PMA_BOOT_PROGRESS_MASK) == MV_PMA_BOOT_WAITING) {
-> +		ret = mv3310_load_firmware(phydev);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
->  	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
->  	if (!priv)
->  		return -ENOMEM;
-> -- 
-> 2.25.1
-> 
-> 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+Code that uses this, please.
