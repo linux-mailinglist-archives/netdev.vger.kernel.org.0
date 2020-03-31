@@ -2,134 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2E6A199745
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 15:20:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A83EC199772
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 15:30:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730865AbgCaNUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 09:20:43 -0400
-Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:48087 "EHLO
-        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730770AbgCaNUn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 09:20:43 -0400
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id D05AF865;
-        Tue, 31 Mar 2020 09:20:41 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Tue, 31 Mar 2020 09:20:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bernat.ch; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=fm3; bh=+m9kLwvcfTu3aKY4OxGv4fbaUm
-        RKsZVZamUC1QyjImc=; b=mRvtU2+r7UF4ttEs9vGbN01+1XmHl6q0Z8Vu3j3wv+
-        yrYLPyQyNLFeCZ1SWQC9TpUaCA1luUvzapGxJK7v/8u2xdRcYqjSmsdSeAflCBgw
-        u/Bdw7TqrttYCv0vRaV4yT8U4GANIbiiXh3nCMpTu6Oj8LcZLeutZ6HBcTFqhQi2
-        o3MwDyDSrPxLrYKZGJ0Cg0BBRYUujRENnyfBHYTWtZrdgtnCe5PIL8O4MWNUPZ9Q
-        BJZuAqb/5h0IcxyQ5AuzIXCOqmeH2IhqVTUZI6B0i4DBl8NPUoKItzjsXBddEVQb
-        MVZKjLY50vRXSLwKJ6FJEzHyPeW8GsOOAUOsieYeAOGw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=+m9kLwvcfTu3aKY4O
-        xGv4fbaUmRKsZVZamUC1QyjImc=; b=PS4mqnpNZyAOPuZicmf3bdK8l749d8Qg/
-        imKr2JXa1QqT1x4VZytevpQt3xaY/UF9hJ+DgzQ5OF0CFsTaaTvnxIwS4g5lO+kX
-        kd9q31rnfHMUGO7ekGwDQBkGN9pHGquFJCjj2rOyJ3SIHKBmV9ow18IC8rr1qKIS
-        Eokqof3Ze9ONj2n3ZK+q644KOwDOupoKT8WpCQ2cMTIRrPbp8FkscTZbXMZtuEIM
-        SXzkvGReis08czl3pU3vQbUduWO2S8MRg/VUM6PK1DadD28wAYq6mb8KFJjaXcee
-        ZDLQejHHq5MJWywZwcAh+LPyjlf1gRcX/4cFYSYZWXWXuLeklCyaw==
-X-ME-Sender: <xms:qEODXlj4dG3upsjk6kgHTdSrdrxc2lFRgtQcU9mHze2Ih8sEhTUARg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrtddtgdeftdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepgghinhgtvghnthcu
-    uegvrhhnrghtuceovhhinhgtvghnthessggvrhhnrghtrdgthheqnecukfhppeekiedrvd
-    egvddrgedruddtgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhl
-    fhhrohhmpegsvghrnhgrtheslhhufhhfhidrtgig
-X-ME-Proxy: <xmx:qEODXlPBJ4OyYihuPy8nKNr1nQoOQlvLgp0ozknO97Vlw7b_N5xptw>
-    <xmx:qEODXkM9ONZbY31kohaPAyz55XMs5LgPgkLqcnG0gIceuUvX2IUg5Q>
-    <xmx:qEODXqgFWB4jFJdoMy1x71Jic8-xpY6mXSZFc_AIN4LXT9UYsMdFFA>
-    <xmx:qUODXuqHRs-QudVc1QDP1k62ODiWCVRFw10IJJDy7Zvm9hT1JwAWzg>
-Received: from neo.luffy.cx (lfbn-idf1-1-575-104.w86-242.abo.wanadoo.fr [86.242.4.104])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6BC20306CB54;
-        Tue, 31 Mar 2020 09:20:40 -0400 (EDT)
-Received: by neo.luffy.cx (Postfix, from userid 500)
-        id 0E5189B3; Tue, 31 Mar 2020 15:20:39 +0200 (CEST)
-From:   Vincent Bernat <vincent@bernat.ch>
-To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        David Ahern <dsahern@gmail.com>
-Cc:     Vincent Bernat <vincent@bernat.ch>
-Subject: [PATCH net-next v2] net: core: enable SO_BINDTODEVICE for non-root users
-Date:   Tue, 31 Mar 2020 15:20:10 +0200
-Message-Id: <20200331132009.1306283-1-vincent@bernat.ch>
-X-Mailer: git-send-email 2.26.0
+        id S1730720AbgCaNag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 09:30:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44106 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730216AbgCaNaf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 31 Mar 2020 09:30:35 -0400
+Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EAD6F2071A;
+        Tue, 31 Mar 2020 13:30:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1585661435;
+        bh=uO/NKypA7LUmisthzrVdqB5I23GNQdepGZzQUNrR5Ic=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=pZYzaAH90sGaV9/3hpdSAshsRx3TBBdPDpYQpJZZMrKJ/EKxu5YknRgmf/1UCGhTp
+         +t3E6HnMAI4xry2UmZF2oUKimQR4b0W3IKU5Mo8tMsCJRNBvAjs9e46ygI4bR0qUEg
+         ZJ3CwKbifMUDZS9HX7CCFJ5HWsotXl0FalDB+NVQ=
+Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
+        id BAFBC352040B; Tue, 31 Mar 2020 06:30:34 -0700 (PDT)
+Date:   Tue, 31 Mar 2020 06:30:34 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot <syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [Patch net] net_sched: add a temporary refcnt for struct
+ tcindex_data
+Message-ID: <20200331133034.GJ19865@paulmck-ThinkPad-P72>
+Reply-To: paulmck@kernel.org
+References: <20200328191259.17145-1-xiyou.wangcong@gmail.com>
+ <20200330213514.GT19865@paulmck-ThinkPad-P72>
+ <CAM_iQpUu6524ZyZDBu=nkuhpubyGBTHEJ-HK8qrpCW=EEKGujw@mail.gmail.com>
+ <20200331023009.GI19865@paulmck-ThinkPad-P72>
+ <CAM_iQpVrERPYoNNK+hywxLONEv3mF7f0Y37uMQ0gqVeR8E8kPQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAM_iQpVrERPYoNNK+hywxLONEv3mF7f0Y37uMQ0gqVeR8E8kPQ@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, SO_BINDTODEVICE requires CAP_NET_RAW. This change allows a
-non-root user to bind a socket to an interface if it is not already
-bound. This is useful to allow an application to bind itself to a
-specific VRF for outgoing or incoming connections. Currently, an
-application wanting to manage connections through several VRF need to
-be privileged.
+On Mon, Mar 30, 2020 at 07:54:09PM -0700, Cong Wang wrote:
+> On Mon, Mar 30, 2020 at 7:30 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+> >
+> > On Mon, Mar 30, 2020 at 04:24:42PM -0700, Cong Wang wrote:
+> > > On Mon, Mar 30, 2020 at 2:35 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+> > > >
+> > > > On Sat, Mar 28, 2020 at 12:12:59PM -0700, Cong Wang wrote:
+> > > > > Although we intentionally use an ordered workqueue for all tc
+> > > > > filter works, the ordering is not guaranteed by RCU work,
+> > > > > given that tcf_queue_work() is esstenially a call_rcu().
+> > > > >
+> > > > > This problem is demostrated by Thomas:
+> > > > >
+> > > > >   CPU 0:
+> > > > >     tcf_queue_work()
+> > > > >       tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
+> > > > >
+> > > > >   -> Migration to CPU 1
+> > > > >
+> > > > >   CPU 1:
+> > > > >      tcf_queue_work(&p->rwork, tcindex_destroy_work);
+> > > > >
+> > > > > so the 2nd work could be queued before the 1st one, which leads
+> > > > > to a free-after-free.
+> > > > >
+> > > > > Enforcing this order in RCU work is hard as it requires to change
+> > > > > RCU code too. Fortunately we can workaround this problem in tcindex
+> > > > > filter by taking a temporary refcnt, we only refcnt it right before
+> > > > > we begin to destroy it. This simplifies the code a lot as a full
+> > > > > refcnt requires much more changes in tcindex_set_parms().
+> > > > >
+> > > > > Reported-by: syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com
+> > > > > Fixes: 3d210534cc93 ("net_sched: fix a race condition in tcindex_destroy()")
+> > > > > Cc: Thomas Gleixner <tglx@linutronix.de>
+> > > > > Cc: Paul E. McKenney <paulmck@kernel.org>
+> > > > > Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+> > > > > Cc: Jiri Pirko <jiri@resnulli.us>
+> > > > > Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> > > >
+> > > > Looks plausible, but what did you do to verify that the structures
+> > > > were in fact being freed?  See below for more detail.
+> > >
+> > > I ran the syzbot reproducer for about 20 minutes, there was no
+> > > memory leak reported after scanning.
+> >
+> > And if you (say) set the initial reference count to two instead of one,
+> > there is a memory leak reported, correct?
+> 
+> No, I didn't do an A/B test. I just added a printk right before the kfree(),
+> if it helps to convince you, here is one portion of the kernel log:
+> 
+> [   39.159298] a.out (703) used greatest stack depth: 11624 bytes left
+> [   39.166365] a.out (701) used greatest stack depth: 11352 bytes left
+> [   39.453257] freeing struct tcindex_data.
+> [   39.573554] freeing struct tcindex_data.
+> [   39.681540] freeing struct tcindex_data.
+> [   39.781158] freeing struct tcindex_data.
+> [   39.877726] freeing struct tcindex_data.
+> [   39.985515] freeing struct tcindex_data.
+> [   40.097687] freeing struct tcindex_data.
+> [   40.213691] freeing struct tcindex_data.
+> [   40.271465] device bridge_slave_1 left promiscuous mode
+> [   40.274078] bridge0: port 2(bridge_slave_1) entered disabled state
+> [   40.297258] device bridge_slave_0 left promiscuous mode
+> [   40.299377] bridge0: port 1(bridge_slave_0) entered disabled state
+> [   40.733355] device hsr_slave_0 left promiscuous mode
+> [   40.749322] device hsr_slave_1 left promiscuous mode
+> [   40.784220] team0 (unregistering): Port device team_slave_1 removed
+> [   40.792641] team0 (unregistering): Port device team_slave_0 removed
+> [   40.806302] bond0 (unregistering): (slave bond_slave_1): Releasing
+> backup interface
+> [   40.836972] bond0 (unregistering): (slave bond_slave_0): Releasing
+> backup interface
+> [   40.931688] bond0 (unregistering): Released all slaves
+> [   44.149970] freeing struct tcindex_data.
+> [   44.159568] freeing struct tcindex_data.
+> [   44.172786] freeing struct tcindex_data.
+> [   44.813214] freeing struct tcindex_data.
+> [   44.821857] freeing struct tcindex_data.
+> [   44.825064] freeing struct tcindex_data.
+> [   44.826889] freeing struct tcindex_data.
+> [   45.294254] freeing struct tcindex_data.
+> [   45.297980] freeing struct tcindex_data.
+> [   45.300623] freeing struct tcindex_data.
+> 
+> And no memory leak of course:
+> 
+> [root@localhost tmp]# echo scan > /sys/kernel/debug/kmemleak
+> [root@localhost tmp]# echo scan > /sys/kernel/debug/kmemleak
+> [root@localhost tmp]# cat /sys/kernel/debug/kmemleak
 
-Previously, IP_UNICAST_IF and IPV6_UNICAST_IF were added for
-Wine (76e21053b5bf3 and c4062dfc425e9) specifically for use by
-non-root processes. However, they are restricted to sendmsg() and not
-usable with TCP. Allowing SO_BINDTODEVICE would allow TCP clients to
-get the same privilege. As for TCP servers, outside the VRF use case,
-SO_BINDTODEVICE would only further restrict connections a server could
-accept.
+Much more convincing, thank you!
 
-When an application is restricted to a VRF (with `ip vrf exec`), the
-socket is bound to an interface at creation and therefore, a
-non-privileged call to SO_BINDTODEVICE to escape the VRF fails.
+Feel free to add:
 
-When an application bound a socket to SO_BINDTODEVICE and transmit it
-to a non-privileged process through a Unix socket, a tentative to
-change the bound device also fails.
+Reviewed-by: Paul E. McKenney <paulmck@kernel.org>
 
-Before:
-
-    >>> import socket
-    >>> s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    >>> s.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE, b"dummy0")
-    Traceback (most recent call last):
-      File "<stdin>", line 1, in <module>
-    PermissionError: [Errno 1] Operation not permitted
-
-After:
-
-    >>> import socket
-    >>> s=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    >>> s.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE, b"dummy0")
-    >>> s.setsockopt(socket.SOL_SOCKET, socket.SO_BINDTODEVICE, b"dummy0")
-    Traceback (most recent call last):
-      File "<stdin>", line 1, in <module>
-    PermissionError: [Errno 1] Operation not permitted
-
-Signed-off-by: Vincent Bernat <vincent@bernat.ch>
----
- net/core/sock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/core/sock.c b/net/core/sock.c
-index da32d9b6d09f..ce1d8dce9b7a 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -574,7 +574,7 @@ static int sock_setbindtodevice_locked(struct sock *sk, int ifindex)
- 
- 	/* Sorry... */
- 	ret = -EPERM;
--	if (!ns_capable(net->user_ns, CAP_NET_RAW))
-+	if (sk->sk_bound_dev_if && !ns_capable(net->user_ns, CAP_NET_RAW))
- 		goto out;
- 
- 	ret = -EINVAL;
--- 
-2.26.0
-
+							Thanx, Paul
