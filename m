@@ -2,212 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E5478199820
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 16:07:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EE95199826
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 16:08:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730857AbgCaOH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 10:07:27 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:34586 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730216AbgCaOH0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 10:07:26 -0400
-Received: by mail-wr1-f67.google.com with SMTP id 65so26161967wrl.1
-        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 07:07:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lQ/tKkC2aOUwK7USx/Fsg24eHECPJ0VIbQFCZ/N4n1k=;
-        b=TWt42Cl0WjBRovhnqOv0mP6yvjrKDbi6c3J4YbHnBrkW9kUVQHsL1TnrpHZrc+km7o
-         +MeJg7cgQdybJunKRpvTjTTGTxdlYWodeYNJL6xkK8eWvu797LXTG+z1BgvJRNh796iI
-         Q+rLVbepk8r6lECRCIxxAqz3CsPEsIuM9xFwgxXnM23WtO/WNHMtoAyH/+bNPJ9QvNRl
-         7PdWN5zzdr3qFwNYH0w2Xf+zgYEsokaxELiuwM6qqWZeQXc3JVg0G0KQffwL4weyyxMi
-         M/4Vg9Dd4aV+oGNXibcmeFh3bIToefBPGlzg/VS52ejQ4I0YxH6MuTaSHARw/rHzSjAm
-         Nqfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lQ/tKkC2aOUwK7USx/Fsg24eHECPJ0VIbQFCZ/N4n1k=;
-        b=PWdyj6gnhePxlXinRyD3fBgD9TTDwQYF31GmrI9PpBgATSj5CW1VjsuGd824/rbdA1
-         vLkd5/rxCoAqOjtiKMtMvnVOVhemj+R301eNTf5OCPNqL5Rdkbzldm8ejOkPfptPy9Dl
-         5NcuvJwZiivroki+cVEd0aB1Y9tNrqSgLQwxILPo0C9wXxwS1FHBu8F8tIXihdlNHFeH
-         z/0B/dlESciPRsNC8Wqk29f6KnNY+5KsuuBnXq5C+FFiYScc+kQfRoWbsbPxmxOa1NSk
-         yvcV7myDdlp7wWDkzSXOrlFIn1qv1ah7YFYGEonj2J3ZIYJr2y9AewCygnfsyYzginRA
-         5kSw==
-X-Gm-Message-State: ANhLgQ3o+twiYimvuMRKpZH05f06XleQjWY5MxZcQ5S5IxKeiGxNe0IR
-        40MyolqWeZzPmFkEYwBDg+8zpCAc
-X-Google-Smtp-Source: ADFU+vvJ5zWjd+f2pR6rtVbOZyEPIAIZTNPT6edjRXVgdtxWZpoj75jZakehbS/naKUzmUOkLvqupw==
-X-Received: by 2002:adf:9e08:: with SMTP id u8mr20720531wre.155.1585663644553;
-        Tue, 31 Mar 2020 07:07:24 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f29:6000:8036:1536:684b:1ebf? (p200300EA8F29600080361536684B1EBF.dip0.t-ipconnect.de. [2003:ea:8f29:6000:8036:1536:684b:1ebf])
-        by smtp.googlemail.com with ESMTPSA id m5sm3923443wmg.13.2020.03.31.07.07.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 31 Mar 2020 07:07:23 -0700 (PDT)
-Subject: Re: [PATCH net] r8169: fix multicast tx issue with macvlan interface
-To:     Charles DAYMAND <charles.daymand@wifirst.fr>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>
-References: <20200327090800.27810-1-charles.daymand@wifirst.fr>
- <0bab7e0b-7b22-ad0f-2558-25602705e807@gmail.com>
- <d7a0eca8-15aa-10da-06cc-1eeef3a7a423@gmail.com>
- <CANn89iKA8k3GyxCKCJRacB42qcFqUDsiRhFOZxOQ7JCED0ChyQ@mail.gmail.com>
- <42f81a4a-24fc-f1fb-11db-ea90a692f249@gmail.com>
- <CANn89i+A=Mu=9LMscd2Daqej+uVLc3E6w33MZzTwpe2v+k89Mw@mail.gmail.com>
- <CAFJtzm03QpjGRs70tth26BdUFN_o8zsJOccbnA58ma+2uwiGcg@mail.gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <c02274b9-1ba0-d5e9-848f-5d6761df20f4@gmail.com>
-Date:   Tue, 31 Mar 2020 16:07:17 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        id S1731001AbgCaOIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 10:08:31 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:41646 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730919AbgCaOIb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 10:08:31 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=lnFeysFtcRPhC/sTyWfEszSCpKMDIewp19ccyBmKsdA=; b=RZOoQka7jEA84B6SJiEmjaPtj
+        D6aoIqSlNCoCKBfIuscCJZpPhpNmoQMrqTNzwDSqzSZIlAyC/sSHaCtU82LFQGLTi8Zfdw24PLXCU
+        YZpWF61vVHZ3gUq0Oik2MqZoPUUYPnmI8Gt81Sb5y02FwziyVxxdQ5+cGgL15hHVNhQVg7LaLKptx
+        g3UowzFw3YsBdyxGjPuHV4vi2CV10DhKr+t3dcLlacReivnjqyBxEGvfCb5Ba+2Nlh6LJSVuZMDM0
+        OO0QtZ+WBQJuI0ri804Yl4fnL3wF/SPi68gRtFrNQEp9OX+i1sNwRO/ecFs57DfOmUWJSTs5ZkXdu
+        PmCWH+o7Q==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:60398)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jJHYy-0000Bx-Mp; Tue, 31 Mar 2020 15:08:20 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jJHYp-0008Aa-Eb; Tue, 31 Mar 2020 15:08:11 +0100
+Date:   Tue, 31 Mar 2020 15:08:11 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-kernel@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        linux-imx@nxp.com, kernel@pengutronix.de,
+        David Jander <david@protonic.nl>,
+        Shawn Guo <shawnguo@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        mkl@pengutronix.de
+Subject: Re: [PATCH v2] ARM: imx: allow to disable board specific PHY fixups
+Message-ID: <20200331140811.GN25745@shell.armlinux.org.uk>
+References: <20200329110457.4113-1-o.rempel@pengutronix.de>
+ <20200329150854.GA31812@lunn.ch>
+ <20200330052611.2bgu7x4nmimf7pru@pengutronix.de>
+ <40209d08-4acb-75c5-1766-6d39bb826ff9@gmail.com>
+ <20200330174114.GG25745@shell.armlinux.org.uk>
+ <20200331134520.GA5756@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <CAFJtzm03QpjGRs70tth26BdUFN_o8zsJOccbnA58ma+2uwiGcg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200331134520.GA5756@pengutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for further testing! The good news from my perspective is that the issue doesn't occur
-w/o macvlen, therefore it doesn't seem to be a r8169 network driver issue.
+On Tue, Mar 31, 2020 at 03:45:20PM +0200, Oleksij Rempel wrote:
+> Hi Russell,
+> 
+> On Mon, Mar 30, 2020 at 06:41:14PM +0100, Russell King - ARM Linux admin wrote:
+> > On Mon, Mar 30, 2020 at 10:33:03AM -0700, Florian Fainelli wrote:
+> > > 
+> > > 
+> > > On 3/29/2020 10:26 PM, Oleksij Rempel wrote:
+> > > > Hi Andrew,
+> > > > 
+> > > > On Sun, Mar 29, 2020 at 05:08:54PM +0200, Andrew Lunn wrote:
+> > > >> On Sun, Mar 29, 2020 at 01:04:57PM +0200, Oleksij Rempel wrote:
+> > > >>
+> > > >> Hi Oleksij
+> > > >>
+> > > >>> +config DEPRECATED_PHY_FIXUPS
+> > > >>> +	bool "Enable deprecated PHY fixups"
+> > > >>> +	default y
+> > > >>> +	---help---
+> > > >>> +	  In the early days it was common practice to configure PHYs by adding a
+> > > >>> +	  phy_register_fixup*() in the machine code. This practice turned out to
+> > > >>> +	  be potentially dangerous, because:
+> > > >>> +	  - it affects all PHYs in the system
+> > > >>> +	  - these register changes are usually not preserved during PHY reset
+> > > >>> +	    or suspend/resume cycle.
+> > > >>> +	  - it complicates debugging, since these configuration changes were not
+> > > >>> +	    done by the actual PHY driver.
+> > > >>> +	  This option allows to disable all fixups which are identified as
+> > > >>> +	  potentially harmful and give the developers a chance to implement the
+> > > >>> +	  proper configuration via the device tree (e.g.: phy-mode) and/or the
+> > > >>> +	  related PHY drivers.
+> > > >>
+> > > >> This appears to be an IMX only problem. Everybody else seems to of got
+> > > >> this right. There is no need to bother everybody with this new
+> > > >> option. Please put this in arch/arm/mach-mxs/Kconfig and have IMX in
+> > > >> the name.
+> > > > 
+> > > > Actually, all fixups seems to do wring thing:
+> > > > arch/arm/mach-davinci/board-dm644x-evm.c:915:		phy_register_fixup_for_uid(LXT971_PHY_ID, LXT971_PHY_MASK,
+> > > > 
+> > > > Increased MII drive strength. Should be probably enabled by the PHY
+> > > > driver.
+> > > > 
+> > > > arch/arm/mach-imx/mach-imx6q.c:167:		phy_register_fixup_for_uid(PHY_ID_KSZ9021, MICREL_PHY_ID_MASK,
+> > > > arch/arm/mach-imx/mach-imx6q.c:169:		phy_register_fixup_for_uid(PHY_ID_KSZ9031, MICREL_PHY_ID_MASK,
+> > > > arch/arm/mach-imx/mach-imx6q.c:171:		phy_register_fixup_for_uid(PHY_ID_AR8031, 0xffffffef,
+> > > > arch/arm/mach-imx/mach-imx6q.c:173:		phy_register_fixup_for_uid(PHY_ID_AR8035, 0xffffffef,
+> > 
+> > As far as I'm concerned, the AR8035 fixup is there with good reason.
+> > It's not just "random" but is required to make the AR8035 usable with
+> > the iMX6 SoCs.  Not because of a board level thing, but because it's
+> > required for the AR8035 to be usable with an iMX6 SoC.
+> > 
+> > So, having it registered by the iMX6 SoC code is entirely logical and
+> > correct.
+> > 
+> > That's likely true of the AR8031 situation as well.
+> > 
+> > I can't speak for any of the others.
+> 
+> OK, let's analyze it step by step:
+> --------------------------------------------------------------------------------
+> arch/arm/mach-imx/mach-imx6q.c
+> 
+> The AR8035 fixup is doing following configurations:
+> - disable SmartEEE with following description:
+>   /* Ar803x phy SmartEEE feature cause link status generates glitch,
+>    * which cause ethernet link down/up issue, so disable SmartEEE
+> 
+> - enable clock output from PHY, configures it to 125Mhz and configures
+>   clock skew. See the comment provided in the source code:
+>   * Enable 125MHz clock from CLK_25M on the AR8031.  This
+>   * is fed in to the IMX6 on the ENET_REF_CLK (V22) pad.
+>   * Also, introduce a tx clock delay.
+>   *
+>   * This is the same as is the AR8031 fixup.
+> 
+> - powers on the PHY. Probably to make sure the clock output will run
+>   before FEC is probed to avoid clock glitches.
+> 
+> The AR8031 fixup only enables clock output of PHY, configures it to
+> 125Mhz, and configures clock skew. The PHY not powered and although it
+> supports SmartEEE, it's not disabled. Let's assume the fixup author did
+> the correct configuration and SmartEEE is working without problems.
 
-W/o knowing tcpdump in detail I think it switches the NIC to promiscuous mode, means
-it should see all packets, incl. the ones with checksum errors.
-Maybe you can mirror the port to which the problematic system is connected and
-analyze the traffic. Or for whatever reason the switch doesn't forward the multicast
-packets to your notebook.
+I'm not arguing as a random third party.  I am the fixup author.
 
-Heiner
+SmartEEE on the Atheros PHYs is enabled by default in the hardware,
+and is a non-IEEE 802.3 approved hack to try to provide lower power
+utilisation.  However, it has been observed to cause ethernet
+corruption on SolidRun boards when connected to _some_ switches.
+It appears that the combination of Atheros SmartEEE and some switches
+introduces this problem.  This has been looked at by _three_ different
+people.
 
+The way SmartEEE works is very different from IEEE 802.3 EEE. The EEE
+is terminated at the PHY, and the Ethernet controller is supposed to
+know nothing about it.  If the link is in low power mode, then if the
+MAC wants to start transmitting, the PHY has to buffer the packet,
+wake the link up, and then pass the packet on.  There are configurable
+delays in the AR8035, and we've tried adjusting those with no success.
 
-On 31.03.2020 15:44, Charles DAYMAND wrote:
-> Hello,
-> We tested to enable tx checksumming manually (via ethtool) on a kernel 4.19.0-5-amd64 which is the oldest kernel compatible with our software and we observed exactly the same issue.
-> For information when connecting a laptop directly to the interface we can't see any multicast packet when tx checksumming is enabled on tcpdump.
-> Our network is composed of a cisco switch and we can still see the multicast counters correctly increasing even when we have the issue.
-> 
-> I also confirm that when not using macvlan but the real interface there is no issue on the multicast packets, they are correctly sent and received.
-> I have a stupid question, if the IP checksum was bad on the multicast packet, would the receiver NIC drop the packet or would it be seen by tcpdump by the receiver ?
-> 
-> Le ven. 27 mars 2020 à 20:43, Eric Dumazet <edumazet@google.com <mailto:edumazet@google.com>> a écrit :
-> 
->     On Fri, Mar 27, 2020 at 12:17 PM Heiner Kallweit <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> wrote:
->     >
->     > On 27.03.2020 19:52, Eric Dumazet wrote:
->     > > On Fri, Mar 27, 2020 at 10:41 AM Heiner Kallweit <hkallweit1@gmail.com <mailto:hkallweit1@gmail.com>> wrote:
->     > >>
->     > >> On 27.03.2020 10:39, Heiner Kallweit wrote:
->     > >>> On 27.03.2020 10:08, Charles Daymand wrote:
->     > >>>> During kernel upgrade testing on our hardware, we found that macvlan
->     > >>>> interface were no longer able to send valid multicast packet.
->     > >>>>
->     > >>>> tcpdump run on our hardware was correctly showing our multicast
->     > >>>> packet but when connecting a laptop to our hardware we didn't see any
->     > >>>> packets.
->     > >>>>
->     > >>>> Bisecting turned up commit 93681cd7d94f
->     > >>>> "r8169: enable HW csum and TSO" activates the feature NETIF_F_IP_CSUM
->     > >>>> which is responsible for the drop of packet in case of macvlan
->     > >>>> interface. Note that revision RTL_GIGA_MAC_VER_34 was already a specific
->     > >>>> case since TSO was keep disabled.
->     > >>>>
->     > >>>> Deactivating NETIF_F_IP_CSUM using ethtool is correcting our multicast
->     > >>>> issue, but we believe that this hardware issue is important enough to
->     > >>>> keep tx checksum off by default on this revision.
->     > >>>>
->     > >>>> The change is deactivating the default value of NETIF_F_IP_CSUM for this
->     > >>>> specific revision.
->     > >>>>
->     > >>>
->     > >>> The referenced commit may not be the root cause but just reveal another
->     > >>> issue that has been existing before. Root cause may be in the net core
->     > >>> or somewhere else. Did you check with other RTL8168 versions to verify
->     > >>> that it's indeed a HW issue with this specific chip version?
->     > >>>
->     > >>> What you could do: Enable tx checksumming manually (via ethtool) on
->     > >>> older kernel versions and check whether they are fine or not.
->     > >>> If an older version is fine, then you can start a new bisect with tx
->     > >>> checksumming enabled.
->     > >>>
->     > >>> And did you capture and analyze traffic to verify that actually the
->     > >>> checksum is incorrect (and packets discarded therefore on receiving end)?
->     > >>>
->     > >>>
->     > >>>> Fixes: 93681cd7d94f ("r8169: enable HW csum and TSO")
->     > >>>> Signed-off-by: Charles Daymand <charles.daymand@wifirst.fr <mailto:charles.daymand@wifirst.fr>>
->     > >>>> ---
->     > >>>>  net/drivers/net/ethernet/realtek/r8169_main.c | 3 +++
->     > >>>>  1 file changed, 3 insertions(+)
->     > >>>>
->     > >>>> diff --git a/net/drivers/net/ethernet/realtek/r8169_main.c b/net/drivers/net/ethernet/realtek/r8169_main.c
->     > >>>> index a9bdafd15a35..3b69135fc500 100644
->     > >>>> --- a/net/drivers/net/ethernet/realtek/r8169_main.c
->     > >>>> +++ b/net/drivers/net/ethernet/realtek/r8169_main.c
->     > >>>> @@ -5591,6 +5591,9 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
->     > >>>>              dev->vlan_features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
->     > >>>>              dev->hw_features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
->     > >>>>              dev->features &= ~(NETIF_F_ALL_TSO | NETIF_F_SG);
->     > >>>> +            if (tp->mac_version == RTL_GIGA_MAC_VER_34) {
->     > >>>> +                    dev->features &= ~NETIF_F_IP_CSUM;
->     > >>>> +            }
->     > >>>>      }
->     > >>>>
->     > >>>>      dev->hw_features |= NETIF_F_RXALL;
->     > >>>>
->     > >>>
->     > >>
->     > >> After looking a little bit at the macvlen code I think there might be an
->     > >> issue in it, but I'm not sure, therefore let me add Eric (as macvlen doesn't
->     > >> seem to have a dedicated maintainer).
->     > >>
->     > >> r8169 implements a ndo_features_check callback that disables tx checksumming
->     > >> for the chip version in question and small packets (due to a HW issue).
->     > >> macvlen uses passthru_features_check() as ndo_features_check callback, this
->     > >> seems to indicate to me that the ndo_features_check callback of lowerdev is
->     > >> ignored. This could explain the issue you see.
->     > >>
->     > >
->     > > macvlan_queue_xmit() calls dev_queue_xmit_accel() after switching skb->dev,
->     > > so the second __dev_queue_xmit() should eventually call the real_dev
->     > > ndo_features_check()
->     > >
->     > Thanks, Eric. There's a second path in macvlan_queue_xmit() calling
->     > dev_forward_skb(vlan->lowerdev, skb). Does what you said apply also there?
-> 
->     This path wont send packets to the physical NIC, packets are injected
->     back via dev_forward_skb()
-> 
->     >
->     > Still I find it strange that a tx hw checksumming issue should affect multicasts
->     > only. Also the chip version in question is quite common and I would expect
->     > others to have hit the same issue.
->     > Maybe best would be to re-test on the affected system w/o involving macvlen.
->     >
->     > >
->     > >
->     > >> Would be interesting to see whether it fixes your issue if you let the
->     > >> macvlen ndo_features_check call lowerdev's ndo_features_check. Can you try this?
->     > >>
->     > >> By the way:
->     > >> Also the ndo_fix_features callback of lowerdev seems to be ignored.
->     >
-> 
-> 
-> 
-> -- 
-> 
-> logo wifirst <http://www.wifirst.fr/en> 	
-> 
-> Charles Daymand
-> 
-> Développeur infrastructure
-> 
-> 26 rue de Berri 75008 Paris
-> 
-> Assistance dédiée responsable de site - 01 70 70 46 70
-> Assistance utilisateur - 01 70 70 46 26
-> 
+This has nothing to do with anything at board level as far as anyone
+can work out.
 
+So, it seems entirely reasonable that the same problem would afflict
+other iMX6 designs using the AR8035.  Indeed, it already does - the
+SolidRun platforms have been through several different design
+iterations, including different board layouts, and they _all_ exhibit
+the same issue wrt SmartEEE using any of the iMX6 SoCs.
+
+There is no published information from the manufacturer that suggests
+that this is an Errata - if there were, then SolidRun being one of
+their customers would have had that information.
+
+Didn't bother to read the rest of the email, too long.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
