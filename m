@@ -2,163 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DD0A199C72
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 19:03:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBB0F199C76
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 19:03:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731371AbgCaRDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 13:03:14 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:44200 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730216AbgCaRDO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 13:03:14 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Yp40Y2DCbP2hyounIEGsR0vBBWXR1/GHlHEP6SbSYmE=; b=19zHJfz5KTn93xMOlPsGUqQu4
-        J6Rlikkne2Fsa5AGx8zzagOGReqTe4MMgVdtOoKx0NzNhZlr1gGekDzd81bNA9cFZ4m6J33kTXWJB
-        EzNgBv8GMf8H1vjkcda0doXk9Ds62AtLm5AiffIHUixwo+00mo8Ryzdx/kbGczoQYxe6q2nRQ6a43
-        fRlIcSe44KYHRjrLtRyV4nL58tOV2y5G+lvHubJqRxGU3eqvTjdkhZwHdexjFrGLCbV+uiYEAZqSI
-        8VnktUYN8PGdWZaHz3mt5DKem82F/Q2Hy75KonmSgbDiM03jrqVcMsuYidqoZk44OcLkVnYR414ze
-        cgV7HqW5Q==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:60452)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1jJKI2-00013O-RU; Tue, 31 Mar 2020 18:03:03 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1jJKI0-0008HE-Il; Tue, 31 Mar 2020 18:03:00 +0100
-Date:   Tue, 31 Mar 2020 18:03:00 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     David Jander <david@protonic.nl>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-kernel@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        linux-imx@nxp.com, kernel@pengutronix.de,
-        Shawn Guo <shawnguo@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH v2] ARM: imx: allow to disable board specific PHY fixups
-Message-ID: <20200331170300.GQ25745@shell.armlinux.org.uk>
-References: <20200329110457.4113-1-o.rempel@pengutronix.de>
- <20200329150854.GA31812@lunn.ch>
- <20200330052611.2bgu7x4nmimf7pru@pengutronix.de>
- <40209d08-4acb-75c5-1766-6d39bb826ff9@gmail.com>
- <20200330174114.GG25745@shell.armlinux.org.uk>
- <20200331104459.6857474e@erd988>
+        id S1731402AbgCaRDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 13:03:32 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:44094 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730556AbgCaRDc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 13:03:32 -0400
+Received: by mail-qk1-f194.google.com with SMTP id j4so23743911qkc.11;
+        Tue, 31 Mar 2020 10:03:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Sq4gr9JUKKq/v76iqvBt96WTykM4z0Gss+MWdW1HRnY=;
+        b=TyAYh3WCpBrli1WidS3iwzzsBK+f7U1rhNGtsmnvE8W71Ivsbkh5bP4zQLaxWYJird
+         U9QHCEIcnhVwav45B4pbttstN3P6LoCPSPkMQaiGnqW4TOIOd3H1jP4jEIMNCyWFe95k
+         SFucYoxqX3+l+EWIMVIZUqRuC23Krk2qmJPR0LtXBCZdFol8YoozByYBtOugptuDvDZA
+         fDgZzkKbtmBCCfXPnsYyb4E81/+upAIXZgwqw7Hm+HDDFBoU3FFcjUqGnxSklw71Pyww
+         yWX2F7r+SAnhLX+AGCe8L1ZN/Fg4BTWgmpQjFcCuSfUnJCi67yrN0iUSzV0s5hlacY+x
+         AEnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Sq4gr9JUKKq/v76iqvBt96WTykM4z0Gss+MWdW1HRnY=;
+        b=EImr2Rzr3D1sEohRQZBil/X1lrsGUPsmp4JD5WmG5PB7sme7cUvY11jjkpEKH+dYbg
+         nK2vI+CAS2WheCE59RVodkiPOO8lw7wh0GKG/GpIrxq5pA94HiEUZhMnuX3gfg2QrSzE
+         mid3SU5CBTAQDkEbyF0r3Q98JUttWSAxj7unU4FatNslmbMzGJkAXo6xlwgEZxfTOTgE
+         8YO22BBRaZ/GY4KI89WQRA73hWJO7XKPdpjLa+FmdNXPBHi6JJzTL1KDNzjZVYBLfkp0
+         +XfQnFsLbDqebkIXCaONzwvh7Qei7TDlcXRDpNOndjqRRmptB7PpsF5KAwvu31xfF0ue
+         Cq4w==
+X-Gm-Message-State: ANhLgQ2E9xuHrxKTBvVfgpwNKpzRXNgN2PYRuuirwPLBle/8/oFQu2Np
+        29w2Z/41r0t48RrzKW6il06e4A64Ruqp6+QXE+Q=
+X-Google-Smtp-Source: ADFU+vsEqLJc+z/4xaLJGMr2nw6nVaa/DqtJ0D5nNUgUcVuGkAxVGBDiO8sMeAagloNERsQUIi48W8hOvRORMC3v0L4=
+X-Received: by 2002:a37:b786:: with SMTP id h128mr5135248qkf.92.1585674209827;
+ Tue, 31 Mar 2020 10:03:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200331104459.6857474e@erd988>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20200330030001.2312810-1-andriin@fb.com> <c9f52288-5ea8-a117-8a67-84ba48374d3a@gmail.com>
+ <CAEf4BzZpCOCi1QfL0peBRjAOkXRwGEi_DAW4z34Mf3Tv_sbRFw@mail.gmail.com>
+ <662788f9-0a53-72d4-2675-daec893b5b81@gmail.com> <CAADnVQK8oMZehQVt34=5zgN12VBc2940AWJJK2Ft0cbOi1jDhQ@mail.gmail.com>
+ <cdd576be-8075-13a7-98ee-9bc9355a2437@gmail.com> <20200331003222.gdc2qb5rmopphdxl@ast-mbp>
+ <58cea4c7-e832-2632-7f69-5502b06310b2@gmail.com> <CAEf4BzZSCdtSRw9mj2W5Vv3C-G6iZdMJsZ8WGon11mN3oBiguQ@mail.gmail.com>
+ <61442da0-6162-b786-7917-67e6fcb74ce8@gmail.com>
+In-Reply-To: <61442da0-6162-b786-7917-67e6fcb74ce8@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 31 Mar 2020 10:03:18 -0700
+Message-ID: <CAEf4Bza8aDurkXeDzpJqodkqck-y_-tH_gsRzUjeeNZ=OBVJuQ@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 0/4] Add support for cgroup bpf_link
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrey Ignatov <rdna@fb.com>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Mar 31, 2020 at 10:44:59AM +0200, David Jander wrote:
-> I have checked with the datasheet of the AR8035, and AFAICS, what the code
-> does is this:
-> 
->  - Disable the SmartEEE feature of the phy. The comment in the code implies
->    that for some reason it doesn't work, but the reason itself is not given.
->    Anyway, disabling SmartEEE should IMHO opinion be controlled by a DT
->    setting. There is no reason to believe this problem is specific to the
->    i.MX6. Besides, it is a feature of the phy, so it seems logical to expose
->    that via the DT. Once that is done, it has no place here.
-> 
->  - Set the external clock output to 125MHz. This is needed because the i.MX6
->    needs a 125MHz reference clock input. But it is not a requirement to use
->    this output. It is perfectly fine and possible to design a board that uses
->    an external oscillator for this. It is also possible that an i.MX6 design
->    has such a phy connected to a MAC behind a switch or some other interface.
->    Independent of i.MX6 this setting can also be necessary for other hardware
->    designs, based on different SoC's. In summary, this is a feature of the
->    specific hardware design at hand, and has nothing to do with the i.MX6
->    specifically. This should definitely be exposed through the DT and not be
->    here.
-> 
->  - Enable TXC delay. To clarify, the RGMII specification version 1 specified
->    that the RXC and TXC traces should be routed long enough to introduce a
->    certain delay to the clock signal, or the delay should be introduced via
->    other means. In a later version of the spec, a provision was given for MAC
->    or PHY devices to generate this delay internally. The i.MX6 MAC interface
->    is unable to generate the required delay internally, so it has to be taken
->    care of either by the board layout, or by the PHY device. This is the
->    crucial point: The amount of delay set by the PHY delay register depends on
->    the board layout. It should NEVER be hard-coded in SoC setup code. The
->    correct way is to specify it in the DT. Needless to say that this too,
->    isn't i.MX6-specific.
+On Tue, Mar 31, 2020 at 9:54 AM David Ahern <dsahern@gmail.com> wrote:
+>
+> On 3/30/20 9:54 PM, Andrii Nakryiko wrote:
+> >
+> >    [0] https://gist.github.com/anakryiko/562dff8e39c619a5ee247bb55aa057c7
+>
+> #!/usr/bin/env drgn
+>
+> where do I find drgn? Google search is not turning up anything relevant.
 
-Let's say this is simple to do, shall we?
+Right, sorry, there were announcements and discussions about drgn on
+mailing list before, so I wrongly assumed people are aware. It's here:
 
-So, if I disable the call to ar8031_phy_fixup() from ar8035_phy_fixup(),
-and add the following to the imx6qdl-sr-som.dtsi fragment:
+https://github.com/osandov/drgn
 
-&fec {
-...
-        phy-handle = <&phy>;
+There is another BPF-related tool, that shows freplace'ed BPF
+programs, attached to original program (which I stole some parts of
+for my script, thanks Andrey Ignatov!):
 
-        mdio {
-                #address-cells = <1>;
-                #size-cells = <0>;
-
-                phy: ethernet-phy@0 {
-                        reg = <0>;
-                        qca,clk-out-frequency = <125000000>;
-                };
-        };
-};
-
-Note that phy-mode is already RGMII-ID.  This should work, right?
-
-The link still comes up, which is good, but the PHY registers for
-the clock output are wrong.
-
-MMD 3 register 0x8016 contains 0xb282, not 0xb29a which it has
-_with_ the quirk - and thus the above clock frequency stated in
-DT is not being selected.  Forcing this register to the right
-value restores networking.
-
-Yes, the PHY driver is being used:
-
-Qualcomm Atheros AR8035 2188000.ethernet-1:00: attached PHY driver [Qualcomm Atheros AR8035] (mii_bus:phy_addr=2188000.ethernet-1:00, irq=POLL)
-
-So that's not the problem.
-
-Adding some debug shows that the phy_device that is being used is
-the correct one:
-
-Qualcomm Atheros AR8035 2188000.ethernet-1:00: node=/soc/aips-bus@2100000/ethernet@2188000/mdio/ethernet-phy@0
-
-and it is correctly parsing the clk-out-frequency property:
-
-Qualcomm Atheros AR8035 2188000.ethernet-1:00: cof=0 125000000
-
-When we get to attaching the PHY however:
-
-Qualcomm Atheros AR8035 2188000.ethernet-1:00: clk_25m_mask=0004 clk_25m_reg=0000
-
-which is just wrong.  That's because:
-
-                if (at803x_match_phy_id(phydev, ATH8030_PHY_ID) ||
-                    at803x_match_phy_id(phydev, ATH8035_PHY_ID)) {
-                        priv->clk_25m_reg &= ~AT8035_CLK_OUT_MASK;
-                        priv->clk_25m_mask &= ~AT8035_CLK_OUT_MASK;
-                }
-
-is patently untested - those "~" should not be there.  These masks
-are one-bits-set for the values that comprise the fields, not
-zero-bits-set.
-
-So, I see a patch series is going to be necessary to fix the cockup(s)
-in the PHY driver before we can do anything with DT files.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
+https://github.com/osandov/drgn/blob/master/tools/bpf_inspect.py
