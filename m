@@ -2,332 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BD111997E3
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 15:52:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3199419980D
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 16:03:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731144AbgCaNwe convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 31 Mar 2020 09:52:34 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([146.101.78.151]:20595 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731120AbgCaNwd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 09:52:33 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-143-aaKZBYIcPiSJ7fCHXFRLoQ-2; Tue, 31 Mar 2020 14:52:28 +0100
-X-MC-Unique: aaKZBYIcPiSJ7fCHXFRLoQ-2
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Tue, 31 Mar 2020 14:52:25 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 31 Mar 2020 14:52:25 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [RFC PATCH 10/12] net/socket: Use iovec_import() instead of
- import_iovec().
-Thread-Topic: [RFC PATCH 10/12] net/socket: Use iovec_import() instead of
- import_iovec().
-Thread-Index: AdYHY26Pn/zazxI4TBqBFviolCOniA==
-Date:   Tue, 31 Mar 2020 13:52:25 +0000
-Message-ID: <b433aca086ad4a7ba36f7559e3ccc458@AcuMS.aculab.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1731000AbgCaODc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 10:03:32 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:33852 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1730760AbgCaODc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 10:03:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585663411;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=q1HhUZIT2eXWaur2lhwyirTrp2FNrCuPmxOJW0kwlcg=;
+        b=h97VAV76J4Ycxw8/+INJEEDRbcJ/k6qDhOxu/x0Rp+QThfbSW3YpQMwBEgiE5Mi4+nIwpe
+        GKrWAbrN+knP6a8nhRtsjxZto5Zbln8uQybLPShGIjhyMClI5USZauVNoVraMtPZABC9Pl
+        sUY0lcPcO8kQ14cP43DTuKPLpJbVD8c=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-200-EI0a5oCZOSqTbJxxP7cZRQ-1; Tue, 31 Mar 2020 10:03:29 -0400
+X-MC-Unique: EI0a5oCZOSqTbJxxP7cZRQ-1
+Received: by mail-wr1-f70.google.com with SMTP id k11so39435wrm.19
+        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 07:03:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=q1HhUZIT2eXWaur2lhwyirTrp2FNrCuPmxOJW0kwlcg=;
+        b=YLRlEbW0glA7lHhIGgxuWGs2iCijRlYCCoI5sZbiR1MDSrUv0GVJuxl2u/ZNN+nEwf
+         HT2DUXMPCmoIiNbj37ChcuLeA9RmlrIYiFbHRmIXtUwIzmdyyxfXKbKuFmQorVnXkXIq
+         tBLqbhB1wUBDmbtAcCFILaG2/d+VK9H19cEdyKxIwD72rYrK/Yt4TpGx24NkyFN55z18
+         8M7LbQN3W0qwhaGtVcRw6rf+7W2LR7jAmTyr2RW8Zxc0VfMzk9Sfg69BrMYDhu4GJwsS
+         nYb/Mg0iclkBGcmthz4g6TeVJnO/wEHa9sSpahZfqOJX8PHVJMA/tKPRWh+lWgW/254H
+         RDvA==
+X-Gm-Message-State: ANhLgQ0Glz1xIqFCvO6cweOa0eV1O5Hjo4mZKREAxTpKAI6Qq5loMXsP
+        mjbJplxt+6HEbCo5wwXsIU8gNCmPhnvmXB5vTbya8ZuKkJ/Ysjfpk9V2XYfb3x1b55BkZEIz8wW
+        +YPhUn1F5iDmb7DNN
+X-Received: by 2002:a1c:2203:: with SMTP id i3mr3685873wmi.25.1585663408664;
+        Tue, 31 Mar 2020 07:03:28 -0700 (PDT)
+X-Google-Smtp-Source: ADFU+vulRkkpxXMxZEng5aERNo4jJ/g5cD0Vhw5jYc5ZRlaSa1jWBjmSh3+3XcGa4A4n7qFMJ8cR0g==
+X-Received: by 2002:a1c:2203:: with SMTP id i3mr3685803wmi.25.1585663407800;
+        Tue, 31 Mar 2020 07:03:27 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
+        by smtp.gmail.com with ESMTPSA id r17sm26682436wrx.46.2020.03.31.07.03.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Mar 2020 07:03:20 -0700 (PDT)
+Date:   Tue, 31 Mar 2020 10:03:12 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     Jason Wang <jasowang@redhat.com>, Tiwei Bie <tiwei.bie@intel.com>,
+        Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vhost: vdpa: remove unnecessary null check
+Message-ID: <20200331100122-mutt-send-email-mst@kernel.org>
+References: <20200330235040.GA9997@embeddedor>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200330235040.GA9997@embeddedor>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Mar 30, 2020 at 06:50:40PM -0500, Gustavo A. R. Silva wrote:
+> container_of is never null, so this null check is
+> unnecessary.
+> 
+> Addresses-Coverity-ID: 1492006 ("Logically dead code")
+> Fixes: 20453a45fb06 ("vhost: introduce vDPA-based backend")
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
 
-Signed-off-by: David Laight <david.laight@aculab.com>
----
- include/linux/socket.h | 14 +++++-----
- include/net/compat.h   |  4 +--
- net/compat.c           | 21 +++++++-------
- net/socket.c           | 74 ++++++++++++++++++++++----------------------------
- 4 files changed, 51 insertions(+), 62 deletions(-)
+Yes weird. Was the point to test i_cdev? Tiwei?
 
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index 15f3412..458bcf4 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -384,13 +384,13 @@ extern long __sys_recvmsg_sock(struct socket *sock, struct msghdr *msg,
- 			       struct user_msghdr __user *umsg,
- 			       struct sockaddr __user *uaddr,
- 			       unsigned int flags);
--extern int sendmsg_copy_msghdr(struct msghdr *msg,
--			       struct user_msghdr __user *umsg, unsigned flags,
--			       struct iovec **iov);
--extern int recvmsg_copy_msghdr(struct msghdr *msg,
--			       struct user_msghdr __user *umsg, unsigned flags,
--			       struct sockaddr __user **uaddr,
--			       struct iovec **iov);
-+struct iovec *sendmsg_copy_msghdr(struct msghdr *msg,
-+				  struct user_msghdr __user *umsg, unsigned flags,
-+				  struct iovec_cache *cache);
-+struct iovec *recvmsg_copy_msghdr(struct msghdr *msg,
-+				  struct user_msghdr __user *umsg, unsigned flags,
-+				  struct sockaddr __user **uaddr,
-+				  struct iovec_cache *cache);
- 
- /* helpers which do the actual work for syscalls */
- extern int __sys_recvfrom(int fd, void __user *ubuf, size_t size,
-diff --git a/include/net/compat.h b/include/net/compat.h
-index f277653..00094fb 100644
---- a/include/net/compat.h
-+++ b/include/net/compat.h
-@@ -38,8 +38,8 @@ struct compat_cmsghdr {
- #define compat_mmsghdr	mmsghdr
- #endif /* defined(CONFIG_COMPAT) */
- 
--int get_compat_msghdr(struct msghdr *, struct compat_msghdr __user *,
--		      struct sockaddr __user **, struct iovec **);
-+struct iovec *get_compat_msghdr(struct msghdr *, struct compat_msghdr __user *,
-+				struct sockaddr __user **, struct iovec_cache *);
- struct sock_fprog __user *get_compat_bpf_fprog(char __user *optval);
- int put_cmsg_compat(struct msghdr*, int, int, int, void *);
- 
-diff --git a/net/compat.c b/net/compat.c
-index 47d99c7..96bf01f 100644
---- a/net/compat.c
-+++ b/net/compat.c
-@@ -33,16 +33,16 @@
- #include <linux/uaccess.h>
- #include <net/compat.h>
- 
--int get_compat_msghdr(struct msghdr *kmsg,
--		      struct compat_msghdr __user *umsg,
--		      struct sockaddr __user **save_addr,
--		      struct iovec **iov)
-+struct iovec *get_compat_msghdr(struct msghdr *kmsg,
-+				struct compat_msghdr __user *umsg,
-+				struct sockaddr __user **save_addr,
-+				struct iovec_cache *cache)
- {
- 	struct compat_msghdr msg;
- 	ssize_t err;
- 
- 	if (copy_from_user(&msg, umsg, sizeof(*umsg)))
--		return -EFAULT;
-+		return ERR_PTR(-EFAULT);
- 
- 	kmsg->msg_flags = msg.msg_flags;
- 	kmsg->msg_namelen = msg.msg_namelen;
-@@ -51,7 +51,7 @@ int get_compat_msghdr(struct msghdr *kmsg,
- 		kmsg->msg_namelen = 0;
- 
- 	if (kmsg->msg_namelen < 0)
--		return -EINVAL;
-+		return ERR_PTR(-EINVAL);
- 
- 	if (kmsg->msg_namelen > sizeof(struct sockaddr_storage))
- 		kmsg->msg_namelen = sizeof(struct sockaddr_storage);
-@@ -68,7 +68,7 @@ int get_compat_msghdr(struct msghdr *kmsg,
- 						  kmsg->msg_namelen,
- 						  kmsg->msg_name);
- 			if (err < 0)
--				return err;
-+				return ERR_PTR(err);
- 		}
- 	} else {
- 		kmsg->msg_name = NULL;
-@@ -76,14 +76,13 @@ int get_compat_msghdr(struct msghdr *kmsg,
- 	}
- 
- 	if (msg.msg_iovlen > UIO_MAXIOV)
--		return -EMSGSIZE;
-+		return ERR_PTR(-EMSGSIZE);
- 
- 	kmsg->msg_iocb = NULL;
- 
--	err = compat_import_iovec(save_addr ? READ : WRITE,
-+	return compat_iovec_import(save_addr ? READ : WRITE,
- 				   compat_ptr(msg.msg_iov), msg.msg_iovlen,
--				   UIO_FASTIOV, iov, &kmsg->msg_iter);
--	return err < 0 ? err : 0;
-+				   cache, &kmsg->msg_iter);
- }
- 
- /* Bleech... */
-diff --git a/net/socket.c b/net/socket.c
-index 2eecf15..7431cf4 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -2228,16 +2228,16 @@ struct used_address {
- 	unsigned int name_len;
- };
- 
--static int copy_msghdr_from_user(struct msghdr *kmsg,
--				 struct user_msghdr __user *umsg,
--				 struct sockaddr __user **save_addr,
--				 struct iovec **iov)
-+static struct iovec *copy_msghdr_from_user(struct msghdr *kmsg,
-+					   struct user_msghdr __user *umsg,
-+					   struct sockaddr __user **save_addr,
-+					   struct iovec_cache *cache)
- {
- 	struct user_msghdr msg;
- 	ssize_t err;
- 
- 	if (copy_from_user(&msg, umsg, sizeof(*umsg)))
--		return -EFAULT;
-+		return ERR_PTR(-EFAULT);
- 
- 	kmsg->msg_control = (void __force *)msg.msg_control;
- 	kmsg->msg_controllen = msg.msg_controllen;
-@@ -2248,7 +2248,7 @@ static int copy_msghdr_from_user(struct msghdr *kmsg,
- 		kmsg->msg_namelen = 0;
- 
- 	if (kmsg->msg_namelen < 0)
--		return -EINVAL;
-+		return ERR_PTR(-EINVAL);
- 
- 	if (kmsg->msg_namelen > sizeof(struct sockaddr_storage))
- 		kmsg->msg_namelen = sizeof(struct sockaddr_storage);
-@@ -2262,7 +2262,7 @@ static int copy_msghdr_from_user(struct msghdr *kmsg,
- 						  kmsg->msg_namelen,
- 						  kmsg->msg_name);
- 			if (err < 0)
--				return err;
-+				return ERR_PTR(err);
- 		}
- 	} else {
- 		kmsg->msg_name = NULL;
-@@ -2270,14 +2270,13 @@ static int copy_msghdr_from_user(struct msghdr *kmsg,
- 	}
- 
- 	if (msg.msg_iovlen > UIO_MAXIOV)
--		return -EMSGSIZE;
-+		return ERR_PTR(-EMSGSIZE);
- 
- 	kmsg->msg_iocb = NULL;
- 
--	err = import_iovec(save_addr ? READ : WRITE,
-+	return iovec_import(save_addr ? READ : WRITE,
- 			    msg.msg_iov, msg.msg_iovlen,
--			    UIO_FASTIOV, iov, &kmsg->msg_iter);
--	return err < 0 ? err : 0;
-+			    cache, &kmsg->msg_iter);
- }
- 
- static int ____sys_sendmsg(struct socket *sock, struct msghdr *msg_sys,
-@@ -2361,24 +2360,18 @@ static int ____sys_sendmsg(struct socket *sock, struct msghdr *msg_sys,
- 	return err;
- }
- 
--int sendmsg_copy_msghdr(struct msghdr *msg,
--			struct user_msghdr __user *umsg, unsigned flags,
--			struct iovec **iov)
-+struct iovec *sendmsg_copy_msghdr(struct msghdr *msg,
-+				  struct user_msghdr __user *umsg,
-+				  unsigned flags, struct iovec_cache *cache)
- {
--	int err;
--
- 	if (flags & MSG_CMSG_COMPAT) {
- 		struct compat_msghdr __user *msg_compat;
- 
- 		msg_compat = (struct compat_msghdr __user *) umsg;
--		err = get_compat_msghdr(msg, msg_compat, NULL, iov);
-+		return get_compat_msghdr(msg, msg_compat, NULL, cache);
- 	} else {
--		err = copy_msghdr_from_user(msg, umsg, NULL, iov);
-+		return copy_msghdr_from_user(msg, umsg, NULL, cache);
- 	}
--	if (err < 0)
--		return err;
--
--	return 0;
- }
- 
- static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
-@@ -2386,15 +2379,16 @@ static int ___sys_sendmsg(struct socket *sock, struct user_msghdr __user *msg,
- 			 struct used_address *used_address,
- 			 unsigned int allowed_msghdr_flags)
- {
-+	struct iovec_cache cache;
-+	struct iovec *iov;
- 	struct sockaddr_storage address;
--	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
- 	ssize_t err;
- 
- 	msg_sys->msg_name = &address;
- 
--	err = sendmsg_copy_msghdr(msg_sys, msg, flags, &iov);
--	if (err < 0)
--		return err;
-+	iov = sendmsg_copy_msghdr(msg_sys, msg, flags, &cache);
-+	if (IS_ERR(iov))
-+		return PTR_ERR(iov);
- 
- 	err = ____sys_sendmsg(sock, msg_sys, flags, used_address,
- 				allowed_msghdr_flags);
-@@ -2518,25 +2512,20 @@ int __sys_sendmmsg(int fd, struct mmsghdr __user *mmsg, unsigned int vlen,
- 	return __sys_sendmmsg(fd, mmsg, vlen, flags, true);
- }
- 
--int recvmsg_copy_msghdr(struct msghdr *msg,
--			struct user_msghdr __user *umsg, unsigned flags,
--			struct sockaddr __user **uaddr,
--			struct iovec **iov)
-+struct iovec *recvmsg_copy_msghdr(struct msghdr *msg,
-+				  struct user_msghdr __user *umsg,
-+				  unsigned flags,
-+				  struct sockaddr __user **uaddr,
-+				  struct iovec_cache *cache)
- {
--	ssize_t err;
--
- 	if (MSG_CMSG_COMPAT & flags) {
- 		struct compat_msghdr __user *msg_compat;
- 
- 		msg_compat = (struct compat_msghdr __user *) umsg;
--		err = get_compat_msghdr(msg, msg_compat, uaddr, iov);
-+		return get_compat_msghdr(msg, msg_compat, uaddr, cache);
- 	} else {
--		err = copy_msghdr_from_user(msg, umsg, uaddr, iov);
-+		return copy_msghdr_from_user(msg, umsg, uaddr, cache);
- 	}
--	if (err < 0)
--		return err;
--
--	return 0;
- }
- 
- static int ____sys_recvmsg(struct socket *sock, struct msghdr *msg_sys,
-@@ -2598,14 +2587,15 @@ static int ____sys_recvmsg(struct socket *sock, struct msghdr *msg_sys,
- static int ___sys_recvmsg(struct socket *sock, struct user_msghdr __user *msg,
- 			 struct msghdr *msg_sys, unsigned int flags, int nosec)
- {
--	struct iovec iovstack[UIO_FASTIOV], *iov = iovstack;
-+	struct iovec_cache cache;
-+	struct iovec *iov;
- 	/* user mode address pointers */
- 	struct sockaddr __user *uaddr;
- 	ssize_t err;
- 
--	err = recvmsg_copy_msghdr(msg_sys, msg, flags, &uaddr, &iov);
--	if (err < 0)
--		return err;
-+	iov = recvmsg_copy_msghdr(msg_sys, msg, flags, &uaddr, &cache);
-+	if (IS_ERR(iov))
-+		return PTR_ERR(iov);
- 
- 	err = ____sys_recvmsg(sock, msg_sys, msg, uaddr, flags, nosec);
- 	kfree(iov);
--- 
-1.8.1.2
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+> ---
+>  drivers/vhost/vdpa.c | 2 --
+>  1 file changed, 2 deletions(-)
+> 
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 421f02a8530a..3d2cb811757a 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -678,8 +678,6 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+>  	int nvqs, i, r, opened;
+>  
+>  	v = container_of(inode->i_cdev, struct vhost_vdpa, cdev);
+> -	if (!v)
+> -		return -ENODEV;
+>  
+>  	opened = atomic_cmpxchg(&v->opened, 0, 1);
+>  	if (opened)
+> -- 
+> 2.26.0
 
