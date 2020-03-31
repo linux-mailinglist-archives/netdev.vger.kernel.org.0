@@ -2,418 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56A92198ABA
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 05:57:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 015A6198AC7
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 06:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729745AbgCaD5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 23:57:42 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:56091 "EHLO
-        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727358AbgCaD5l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 23:57:41 -0400
-Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com [209.85.217.48])
-        (Authenticated sender: pshelar@ovn.org)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 81CED240007
-        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 03:57:39 +0000 (UTC)
-Received: by mail-vs1-f48.google.com with SMTP id u11so12625348vsg.2
-        for <netdev@vger.kernel.org>; Mon, 30 Mar 2020 20:57:39 -0700 (PDT)
-X-Gm-Message-State: AGi0PuboAbXVYRJjUpoPMEkELA2373q8evDEYOM9TgK+Ob+X5jCX5Qsf
-        QLjXlVsAEgl6768/qgHQGQ/Dm1yBQbHhb2W3/s0=
-X-Google-Smtp-Source: APiQypI8L+ydMOeurIBAaTwrOhzgV++Hdf2BaJ4d/4KRSPXGD2aHm4gMd60/IOF2G+QsCysxB76388pajbq4VAB1trU=
-X-Received: by 2002:a67:d086:: with SMTP id s6mr10580450vsi.93.1585627057724;
- Mon, 30 Mar 2020 20:57:37 -0700 (PDT)
+        id S1726055AbgCaEBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 00:01:20 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:42682 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725535AbgCaEBU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 00:01:20 -0400
+Received: by mail-pl1-f194.google.com with SMTP id e1so7610229plt.9;
+        Mon, 30 Mar 2020 21:01:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ZC40A9tEmS88Wu0yKU/oWRDpI8/iuziLQhjXOXknsZk=;
+        b=JgUFsIUjbfIkAlxs3hY7f+QKxydbNeTiol7uGLKg9iy4LfFT2M6+/niYLybGdgVB33
+         wZAXhblLwHTsaosDJ15L/FJ0tixBAqlANlZtYdEqPtxTks8uKBd6WMYTb6sS0vh+8z34
+         NWbBGRvFbreGivgyIEZxTsV+d03vkTZ5nHl4dKUhTUv86CZy7rVC+4sltRO0uq0/KtUp
+         wrpT5FEMeP02pJRjUYbE94JzcPoDlfCJAlGikjP39cnMLtuCkTLZBWQu9tMiPO7yMuhp
+         o89LMK/d1ksRLRH9zeA4AJCx/yeV01j3xAooUNiMVZ67jQ3q9hkF3SnEkR0lpPtw2c4E
+         fNXA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ZC40A9tEmS88Wu0yKU/oWRDpI8/iuziLQhjXOXknsZk=;
+        b=FdrLOv7UqCHks5Vp0GmqQBOgsj3Ey3McOIfoJy82+7YJsU76zk5bBCVwZhNiNtezou
+         yTFk6U361mTWxL0p2mYzpJhNAlR+X120617PfJRiOsgXLIz79rVAKxyBva0KZuQV+m/O
+         ntUYSiCD3e/2BcQHHhveVIVDFLlO51RTofU0cRSqTXvLWl1Emv0xRB5FAF59iQo1KWaw
+         AlMth+TzmGIO53lNSsNKmlyyb7p/L07jafagfQ1zCFHPs6hhN/mNO6wnwbCNbEOgrkGw
+         iNRSMq3Vi5PoVwifbDZFK0MChw1qE3B0jynhpn33XNjgqHykLeS620HzFGHWe6uY1bGT
+         tzMg==
+X-Gm-Message-State: AGi0PuaAhKzYxDsqytQuENkUL9gXtSHzbjjIWMk2agtF3QErIwLzAEvo
+        PVvIndV/4buCu4Cx1BjS+cM=
+X-Google-Smtp-Source: APiQypIWbWU9dMgpUlPMRxl5SaMkLzutbTmTwADpif49tnuLVu1GJtORUIpPp6AURxHwQoWTiamWjw==
+X-Received: by 2002:a17:90a:3547:: with SMTP id q65mr1643566pjb.118.1585627278751;
+        Mon, 30 Mar 2020 21:01:18 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:442d])
+        by smtp.gmail.com with ESMTPSA id b25sm11307737pfp.201.2020.03.30.21.01.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Mar 2020 21:01:17 -0700 (PDT)
+Date:   Mon, 30 Mar 2020 21:01:12 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Andrey Ignatov <rdna@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 1/4] xdp: Support specifying expected existing
+ program when attaching XDP
+Message-ID: <20200331040112.5tvvubsf6ij4eupb@ast-mbp>
+References: <CAEf4BzZKvuPz8NZODYnn4DOcjPnj5caVeOHTP9_D3=wL0nVFfw@mail.gmail.com>
+ <87pncznvjy.fsf@toke.dk>
+ <20200326195859.u6inotgrm3ubw5bx@ast-mbp>
+ <87imiqm27d.fsf@toke.dk>
+ <20200327230047.ois5esl35s63qorj@ast-mbp>
+ <87lfnll0eh.fsf@toke.dk>
+ <20200328022609.zfupojim7see5cqx@ast-mbp>
+ <87eetcl1e3.fsf@toke.dk>
+ <CAEf4Bzb+GSf8cE_rutiaeZOtAuUick1+RnkCBU=Z+oY_36ArSA@mail.gmail.com>
+ <53515939-00bb-174c-bc55-f90eaceac2a3@solarflare.com>
 MIME-Version: 1.0
-References: <1584969039-74113-1-git-send-email-xiangxia.m.yue@gmail.com>
- <CAOrHB_BZ2Sqjooc9u1osbrEsbL5w003CL54v_bd3YPcqkjOzjg@mail.gmail.com> <CAMDZJNV1+zA9EGRMDrZDBNxTg3fr+4ZeH7bcLgfVginx3p4Cww@mail.gmail.com>
-In-Reply-To: <CAMDZJNV1+zA9EGRMDrZDBNxTg3fr+4ZeH7bcLgfVginx3p4Cww@mail.gmail.com>
-From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Mon, 30 Mar 2020 20:57:26 -0700
-X-Gmail-Original-Message-ID: <CAOrHB_Bw1cUANoKe_1ZeGQkVVX6rj5YPTzzcNUjv3_KKRWehdQ@mail.gmail.com>
-Message-ID: <CAOrHB_Bw1cUANoKe_1ZeGQkVVX6rj5YPTzzcNUjv3_KKRWehdQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v1 1/3] net: openvswitch: expand the meters
- number supported
-To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        ovs dev <dev@openvswitch.org>, Andy Zhou <azhou@ovn.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <53515939-00bb-174c-bc55-f90eaceac2a3@solarflare.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Mar 29, 2020 at 5:35 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
->
-> On Mon, Mar 30, 2020 at 12:46 AM Pravin Shelar <pshelar@ovn.org> wrote:
-> >
-> > On Sat, Mar 28, 2020 at 8:46 AM <xiangxia.m.yue@gmail.com> wrote:
-> > >
-> > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > >
-> > > In kernel datapath of Open vSwitch, there are only 1024
-> > > buckets of meter in one dp. If installing more than 1024
-> > > (e.g. 8192) meters, it may lead to the performance drop.
-> > > But in some case, for example, Open vSwitch used as edge
-> > > gateway, there should be 200,000+ at least, meters used for
-> > > IP address bandwidth limitation.
-> > >
-> > > [Open vSwitch userspace datapath has this issue too.]
-> > >
-> > > For more scalable meter, this patch expands the buckets
-> > > when necessary, so we can install more meters in the datapath.
-> > >
-> > > * Introducing the struct *dp_meter_instance*, it's easy to
-> > >   expand meter though change the *ti* point in the struct
-> > >   *dp_meter_table*.
-> > > * Using kvmalloc_array instead of kmalloc_array.
-> > >
-> > Thanks for working on this, I have couple of comments.
-> >
-> > > Cc: Pravin B Shelar <pshelar@ovn.org>
-> > > Cc: Andy Zhou <azhou@ovn.org>
-> > > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-> > > ---
-> > >  net/openvswitch/datapath.h |   2 +-
-> > >  net/openvswitch/meter.c    | 168 ++++++++++++++++++++++++++++++-------
-> > >  net/openvswitch/meter.h    |  17 +++-
-> > >  3 files changed, 153 insertions(+), 34 deletions(-)
-> > >
-> > > diff --git a/net/openvswitch/datapath.h b/net/openvswitch/datapath.h
-> > > index e239a46c2f94..785105578448 100644
-> > > --- a/net/openvswitch/datapath.h
-> > > +++ b/net/openvswitch/datapath.h
-> > > @@ -82,7 +82,7 @@ struct datapath {
-> > >         u32 max_headroom;
-> > >
-> > >         /* Switch meters. */
-> > > -       struct hlist_head *meters;
-> > > +       struct dp_meter_table *meters;
-> > >  };
-> > >
-> > >  /**
-> > > diff --git a/net/openvswitch/meter.c b/net/openvswitch/meter.c
-> > > index 5010d1ddd4bd..98003b201b45 100644
-> > > --- a/net/openvswitch/meter.c
-> > > +++ b/net/openvswitch/meter.c
-> > > @@ -47,40 +47,136 @@ static void ovs_meter_free(struct dp_meter *meter)
-> > >         kfree_rcu(meter, rcu);
-> > >  }
-> > >
-> > > -static struct hlist_head *meter_hash_bucket(const struct datapath *dp,
-> > > +static struct hlist_head *meter_hash_bucket(struct dp_meter_instance *ti,
-> > >                                             u32 meter_id)
-> > >  {
-> > > -       return &dp->meters[meter_id & (METER_HASH_BUCKETS - 1)];
-> > > +       u32 hash = jhash_1word(meter_id, ti->hash_seed);
-> > > +
-> > I do not see any need to hash meter-id, can you explain it.
-> >
-> > > +       return &ti->buckets[hash & (ti->n_buckets - 1)];
-> > >  }
-> > >
-> > >  /* Call with ovs_mutex or RCU read lock. */
-> > > -static struct dp_meter *lookup_meter(const struct datapath *dp,
-> > > +static struct dp_meter *lookup_meter(const struct dp_meter_table *tbl,
-> > >                                      u32 meter_id)
-> > >  {
-> > > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
-> > >         struct dp_meter *meter;
-> > >         struct hlist_head *head;
-> > >
-> > > -       head = meter_hash_bucket(dp, meter_id);
-> > > -       hlist_for_each_entry_rcu(meter, head, dp_hash_node,
-> > > -                               lockdep_ovsl_is_held()) {
-> > > +       head = meter_hash_bucket(ti, meter_id);
-> > > +       hlist_for_each_entry_rcu(meter, head, hash_node[ti->node_ver],
-> > > +                                lockdep_ovsl_is_held()) {
-> > >                 if (meter->id == meter_id)
-> > >                         return meter;
-> > >         }
-> > > +
-> > This patch is expanding meter table linearly with number meters added
-> > to datapath. so I do not see need to have hash table. it can be a
-> > simple array. This would also improve lookup efficiency.
-> > For hash collision we could find next free slot in array. let me know
-> > what do you think about this approach.
-> Hi Pravin
-> If we use the simple array, when inserting the meter, for hash collision, we can
-> find next free slot, but one case, when there are many meters in the array.
-> we may find many slot for the free slot.
-> And when we lookup the meter, for hash collision, we may find many
-> array slots, and
-> then find it, or that meter does not exist in the array, In that case,
-> there may be a lookup performance
-> drop.
->
-I was thinking that users can insure that there are no hash collision,
-but time complexity of negative case is expensive. so I am fine with
-the hash table.
+On Mon, Mar 30, 2020 at 04:41:46PM +0100, Edward Cree wrote:
+> On 29/03/2020 21:23, Andrii Nakryiko wrote:
+> > But you can't say the same about other XDP applications that do not
+> > use libxdp. So will your library come with a huge warning
+> What about a system-wide policy switch to decide whether replacing/
+>  removing an XDP program without EXPECTED_FD is allowed?  That way
+>  the sysadmin gets to choose whether it's the firewall or the packet
+>  analyser that breaks, rather than baking a policy into the design.
+> Then libxdp just needs to say in the README "you might want to turn
+>  on this switch".  Or maybe it defaults to on, and the other program
+>  has to talk you into turning it off if it wants to be 'ill-behaved'.
 
-> For hash meter-id in meter_hash_bucket, I am not 100% sure it is
-> useful. it just update
-> hash_seed when expand meters. For performance, we can remove it. Thanks.
-ok.
+yeah. something like this can work for xdp only, but
+it won't work for tc, since ownership is missing.
+It looks like such policy knob will bere-inventing bpf_link for
+one specific xdp case only because xdp has one program per attachment.
 
-> > >         return NULL;
-> > >  }
-> > >
-> > > -static void attach_meter(struct datapath *dp, struct dp_meter *meter)
-> > > +static struct dp_meter_instance *dp_meter_instance_alloc(const int size)
-> > > +{
-> > > +       struct dp_meter_instance *ti;
-> > > +       int i;
-> > > +
-> > > +       ti = kmalloc(sizeof(*ti), GFP_KERNEL);
-> > > +       if (!ti)
-> > > +               return NULL;
-> > > +
-> > > +       ti->buckets = kvmalloc_array(size, sizeof(struct hlist_head),
-> > > +                                    GFP_KERNEL);
-> > > +       if (!ti->buckets) {
-> > > +               kfree(ti);
-> > > +               return NULL;
-> > > +       }
-> > > +
-> > > +       for (i = 0; i < size; i++)
-> > > +               INIT_HLIST_HEAD(&ti->buckets[i]);
-> > > +
-> > > +       ti->n_buckets = size;
-> > > +       ti->node_ver = 0;
-> > > +       get_random_bytes(&ti->hash_seed, sizeof(u32));
-> > > +
-> > > +       return ti;
-> > > +}
-> > > +
-> > > +static void dp_meter_instance_free_rcu(struct rcu_head *rcu)
-> > >  {
-> > > -       struct hlist_head *head = meter_hash_bucket(dp, meter->id);
-> > > +       struct dp_meter_instance *ti;
-> > >
-> > > -       hlist_add_head_rcu(&meter->dp_hash_node, head);
-> > > +       ti = container_of(rcu, struct dp_meter_instance, rcu);
-> > > +       kvfree(ti->buckets);
-> > > +       kfree(ti);
-> > >  }
-> > >
-> > > -static void detach_meter(struct dp_meter *meter)
-> > > +static void dp_meter_instance_insert(struct dp_meter_instance *ti,
-> > > +                                    struct dp_meter *meter)
-> > > +{
-> > > +       struct hlist_head *head = meter_hash_bucket(ti, meter->id);
-> > > +
-> > > +       hlist_add_head_rcu(&meter->hash_node[ti->node_ver], head);
-> > > +}
-> > > +
-> > > +static void dp_meter_instance_remove(struct dp_meter_instance *ti,
-> > > +                                    struct dp_meter *meter)
-> > >  {
-> > > +       hlist_del_rcu(&meter->hash_node[ti->node_ver]);
-> > > +}
-> > > +
-> > > +static struct dp_meter_instance *
-> > > +dp_meter_instance_expand(struct dp_meter_instance *ti)
-> > > +{
-> > > +       struct dp_meter_instance *new_ti;
-> > > +       int i;
-> > > +
-> > > +       new_ti = dp_meter_instance_alloc(ti->n_buckets * 2);
-> > > +       if (!new_ti)
-> > > +               return NULL;
-> > > +
-> > > +       new_ti->node_ver = !ti->node_ver;
-> > > +
-> > > +       for (i = 0; i < ti->n_buckets; i++) {
-> > > +               struct hlist_head *head = &ti->buckets[i];
-> > > +               struct dp_meter *meter;
-> > > +
-> > > +               hlist_for_each_entry_rcu(meter, head, hash_node[ti->node_ver],
-> > > +                                        lockdep_ovsl_is_held())
-> > > +                       dp_meter_instance_insert(new_ti, meter);
-> > > +       }
-> > > +
-> > > +       return new_ti;
-> > > +}
-> > > +
-> > > +static void attach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
-> > > +{
-> > > +       struct dp_meter_instance *new_ti;
-> > > +       struct dp_meter_instance *ti;
-> > > +
-> > > +       ti = rcu_dereference_ovsl(tbl->ti);
-> > > +       dp_meter_instance_insert(ti, meter);
-> > > +
-> > > +       /* operate the counter safely, because called with ovs_lock. */
-> > > +       tbl->count++;
-> > > +
-> > > +       if (tbl->count > ti->n_buckets) {
-> > > +               new_ti = dp_meter_instance_expand(ti);
-> > > +
-> >
-> >
-> > > +               if (new_ti) {
-> > > +                       rcu_assign_pointer(tbl->ti, new_ti);
-> > > +                       call_rcu(&ti->rcu, dp_meter_instance_free_rcu);
-> > > +               }
-> > > +       }
-> > > +}
-> > > +
-> > > +static void detach_meter(struct dp_meter_table *tbl, struct dp_meter *meter)
-> > > +{
-> > > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
-> > > +
-> > >         ASSERT_OVSL();
-> > > -       if (meter)
-> > > -               hlist_del_rcu(&meter->dp_hash_node);
-> > > +       if (meter) {
-> > > +               /* operate the counter safely, because called with ovs_lock. */
-> > > +               tbl->count--;
-> > > +               dp_meter_instance_remove(ti, meter);
-> > > +       }
-> > >  }
-> > >
-> > >  static struct sk_buff *
-> > > @@ -303,9 +399,9 @@ static int ovs_meter_cmd_set(struct sk_buff *skb, struct genl_info *info)
-> > >         meter_id = nla_get_u32(a[OVS_METER_ATTR_ID]);
-> > >
-> > >         /* Cannot fail after this. */
-> > > -       old_meter = lookup_meter(dp, meter_id);
-> > > -       detach_meter(old_meter);
-> > > -       attach_meter(dp, meter);
-> > > +       old_meter = lookup_meter(dp->meters, meter_id);
-> > > +       detach_meter(dp->meters, old_meter);
-> > > +       attach_meter(dp->meters, meter);
-> > >         ovs_unlock();
-> > >
-> > >         /* Build response with the meter_id and stats from
-> > > @@ -365,7 +461,7 @@ static int ovs_meter_cmd_get(struct sk_buff *skb, struct genl_info *info)
-> > >         }
-> > >
-> > >         /* Locate meter, copy stats. */
-> > > -       meter = lookup_meter(dp, meter_id);
-> > > +       meter = lookup_meter(dp->meters, meter_id);
-> > >         if (!meter) {
-> > >                 err = -ENOENT;
-> > >                 goto exit_unlock;
-> > > @@ -416,13 +512,13 @@ static int ovs_meter_cmd_del(struct sk_buff *skb, struct genl_info *info)
-> > >                 goto exit_unlock;
-> > >         }
-> > >
-> > > -       old_meter = lookup_meter(dp, meter_id);
-> > > +       old_meter = lookup_meter(dp->meters, meter_id);
-> > >         if (old_meter) {
-> > >                 spin_lock_bh(&old_meter->lock);
-> > >                 err = ovs_meter_cmd_reply_stats(reply, meter_id, old_meter);
-> > >                 WARN_ON(err);
-> > >                 spin_unlock_bh(&old_meter->lock);
-> > > -               detach_meter(old_meter);
-> > > +               detach_meter(dp->meters, old_meter);
-> > >         }
-> > >         ovs_unlock();
-> > >         ovs_meter_free(old_meter);
-> > > @@ -452,7 +548,7 @@ bool ovs_meter_execute(struct datapath *dp, struct sk_buff *skb,
-> > >         int i, band_exceeded_max = -1;
-> > >         u32 band_exceeded_rate = 0;
-> > >
-> > > -       meter = lookup_meter(dp, meter_id);
-> > > +       meter = lookup_meter(dp->meters, meter_id);
-> > >         /* Do not drop the packet when there is no meter. */
-> > >         if (!meter)
-> > >                 return false;
-> > > @@ -570,32 +666,44 @@ struct genl_family dp_meter_genl_family __ro_after_init = {
-> > >
-> > >  int ovs_meters_init(struct datapath *dp)
-> > >  {
-> > > -       int i;
-> > > +       struct dp_meter_instance *ti;
-> > > +       struct dp_meter_table *tbl;
-> > >
-> > > -       dp->meters = kmalloc_array(METER_HASH_BUCKETS,
-> > > -                                  sizeof(struct hlist_head), GFP_KERNEL);
-> > > +       tbl = kmalloc(sizeof(*tbl), GFP_KERNEL);
-> > > +       if (!tbl)
-> > > +               return -ENOMEM;
-> > >
-> > > -       if (!dp->meters)
-> > > +       tbl->count = 0;
-> > > +
-> > > +       ti = dp_meter_instance_alloc(METER_HASH_BUCKETS);
-> > > +       if (!ti) {
-> > > +               kfree(tbl);
-> > >                 return -ENOMEM;
-> > > +       }
-> > >
-> > > -       for (i = 0; i < METER_HASH_BUCKETS; i++)
-> > > -               INIT_HLIST_HEAD(&dp->meters[i]);
-> > > +       rcu_assign_pointer(tbl->ti, ti);
-> > > +       dp->meters = tbl;
-> > >
-> > >         return 0;
-> > >  }
-> > >
-> > >  void ovs_meters_exit(struct datapath *dp)
-> > >  {
-> > > +       struct dp_meter_table *tbl = dp->meters;
-> > > +       struct dp_meter_instance *ti = rcu_dereference_ovsl(tbl->ti);
-> > >         int i;
-> > >
-> > > -       for (i = 0; i < METER_HASH_BUCKETS; i++) {
-> > > -               struct hlist_head *head = &dp->meters[i];
-> > > +       for (i = 0; i < ti->n_buckets; i++) {
-> > > +               struct hlist_head *head = &ti->buckets[i];
-> > >                 struct dp_meter *meter;
-> > >                 struct hlist_node *n;
-> > >
-> > > -               hlist_for_each_entry_safe(meter, n, head, dp_hash_node)
-> > > -                       kfree(meter);
-> > > +               hlist_for_each_entry_safe(meter, n, head,
-> > > +                                         hash_node[ti->node_ver])
-> > > +                       ovs_meter_free(meter);
-> > >         }
-> > >
-> > > -       kfree(dp->meters);
-> > > +       kvfree(ti->buckets);
-> > > +       kfree(ti);
-> > > +       kfree(tbl);
-> > >  }
-> > > diff --git a/net/openvswitch/meter.h b/net/openvswitch/meter.h
-> > > index f645913870bd..bc84796d7d4d 100644
-> > > --- a/net/openvswitch/meter.h
-> > > +++ b/net/openvswitch/meter.h
-> > > @@ -30,9 +30,7 @@ struct dp_meter_band {
-> > >  struct dp_meter {
-> > >         spinlock_t lock;    /* Per meter lock */
-> > >         struct rcu_head rcu;
-> > > -       struct hlist_node dp_hash_node; /*Element in datapath->meters
-> > > -                                        * hash table.
-> > > -                                        */
-> > > +       struct hlist_node hash_node[2];
-> > >         u32 id;
-> > >         u16 kbps:1, keep_stats:1;
-> > >         u16 n_bands;
-> > > @@ -42,6 +40,19 @@ struct dp_meter {
-> > >         struct dp_meter_band bands[];
-> > >  };
-> > >
-> > > +struct dp_meter_instance {
-> > > +       struct hlist_head *buckets;
-> > > +       struct rcu_head rcu;
-> > > +       u32 n_buckets;
-> > > +       u32 hash_seed;
-> > > +       u8 node_ver;
-> > > +};
-> > > +
-> > > +struct dp_meter_table {
-> > > +       struct dp_meter_instance __rcu *ti;
-> > > +       u32 count;
-> > > +};
-> > > +
-> > >  extern struct genl_family dp_meter_genl_family;
-> > >  int ovs_meters_init(struct datapath *dp);
-> > >  void ovs_meters_exit(struct datapath *dp);
-> > > --
-> > > 2.23.0
-> > >
->
->
->
-> --
-> Best regards, Tonghao
+Imagine it was easy to come up with sensible policy and allow
+multiple progs in xdp hook.
+How would you implement such policy knob?
+processA attaches prog XDP_A. processB attaches prog XDP-B.
+Unless they start tagging their indivdual programs with BTF tags
+(as Toke is planning to do) there is no way to tell them apart.
+Then processA can iterate all progs in a hook, finds its prog
+based on tag and tell kernel: "find and replace an xdp prog with old_fd
+with new_fd on this ifindex".
+Kinda works, but it doesn't stop processB to accidently detach prog XDP_A
+that was installed by processA.
+
+The kernel job is to share the system resources. Like memory, cpu time.
+The hook is such resource too. The owner concept part of bpf_link
+allows such sharing.
+
+> Either way, affected users will be driven to the kernel's
+>  documentation for the policy switch, where we can tell them whatever
+>  we think they need to know.
+
+In the data center there are no users. Few months back I described it
+the single user system. A bunch of processes are competing for resources.
+They can be all root, or all nobody, or containers with userns.
+Neither user id nor caps can be such separator among processes for
+the job of sharing bpf hook.
+The tc/xdp/cgroup/tracing bpf attachment points need to be safely
+shared among N root processes that are not cooperating with each other.
+For tc, cgroup, tracing the problem is solved with bpf_link, since
+they all allow multi prog.
+XDP is the hardest, since it does single prog only.
+That's what we're trying to solve with libdispatcher.
+I think if it goes well it can become part of the kernel and kernel
+will do multi prog XDP attach. And all hooks will be symmetrical.
+But looking at the size of this thread and still lots of misunderstanding
+about basic concept like bpf_link I'm not hopeful that libdispatcher
+will ever become part of the kernel.
