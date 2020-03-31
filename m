@@ -2,102 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB332198963
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 03:06:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25E11198977
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 03:18:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729373AbgCaBG1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 21:06:27 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:40645 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729129AbgCaBG1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 21:06:27 -0400
-Received: by mail-qk1-f196.google.com with SMTP id l25so21382812qki.7;
-        Mon, 30 Mar 2020 18:06:26 -0700 (PDT)
+        id S1729429AbgCaBSA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 21:18:00 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:46615 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729129AbgCaBSA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 21:18:00 -0400
+Received: by mail-pf1-f195.google.com with SMTP id q3so9493133pff.13;
+        Mon, 30 Mar 2020 18:17:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tVKVtW6MtTH0mX5V06UkVCiPRQRgx7w8m+rc4TistTI=;
-        b=eaAUJVkj3w0MHX1Rin7M81B1S8HRhjAPtRolU420NkHU0mnPDye5oe9uAqftNCTkIn
-         S3sY3g7Su98zvr3v3QuHiUtjimxKyRBML4S95qM+wvmaU3+0bg4q2P/YnPI9/cn/56oe
-         mEi4v2eJ5/Sm9+7SxgduwQZbk01dLfuTpKhh0pklS5odDr22Zvo/CcXV/HA2F4Kv/WGe
-         3o8O/Qu/N9vXGLx3TcZ8L55KnylUl6+15gp+W5c92qOOITSrpdA+JEC6VjdIUUmvvjPG
-         X1ZK0CWWA026n2HnIJgD3DrKsgpoVhv02CEY6YoyWdXU5wxJEPVPx2Cdspzvk2AE5FgQ
-         iJ1g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=DSaOJ3abayD3uGemvDsixWnPIKpqupYRWw3fhQo7n4s=;
+        b=dYOMM7Vj6fU+DQoy+rs2zDpNXacWuFjsZN4+ECwqTvDikH0cbcAymLZIrEuvXvjd5u
+         sVipVQ5LLJYPaecxrU2InmhZ+KdyOZ3gXew90hMU5U7ER4azlnpncbpb8saQcX+lv+D2
+         BI7Tbb5l6xsr7LVY6SP2ZzzCq+u182CsAzK7f4wg5uTZNfsb2qJG1EenGuIV30VeVSEW
+         oHQwXqGbjl+TyP9n3lCMY7TBknYbVkkKx9UxstpC9t7SuZg1GZEcZbEnsKGTnlWSjEXn
+         Y8XEqzQ7A2MV6eGK8M8hJsI8GyThC4Vr5zc1eN11yr653EkSZhWVT51QsQrFsTgRNF5W
+         APrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tVKVtW6MtTH0mX5V06UkVCiPRQRgx7w8m+rc4TistTI=;
-        b=X0mg98Zzd0pI39GKrlJAuzvds6Q2ryrBsOo+lVHPkhvAkLZpelOMHLFjiLU7o2ps+q
-         IuTaKIQTzmnKJPINDtd3aFL5T1RwSNzOomdJEMqTkpXWsZ50M15yT3/9bnKSyU7Nzhe8
-         PaMen6fyh455zYJVjp4Iz4MnuwLkFK2LbtkK7C4oyxWKaul7dBWiyOvE6LHsvHCs+4+J
-         NdUCA0ddOXZ95ea43J8zUtzxEZhMD5IpX1J4O+fX2ghYP9qoll41xZQ30RxRjeMsDf88
-         Cd3xu2t/Lj4iPD2mPpCh+xITmjo3R1NCCtCCRKeKEMMObIx94pyTq3eVnFmkJqteumms
-         N3IQ==
-X-Gm-Message-State: ANhLgQ1CVGYU0v/GeZV09HIMcC3zc6mRU3/BhZ0RG8etHmrSBLXRIjpy
-        C1CVL5N24f2FLPR3FANB8cu0jddU+/fcrO3Yf7a1lOpc
-X-Google-Smtp-Source: ADFU+vsx+Lo4aJZgnxs9hF+iWH25KIXT9sBLw1YJJR6HRbyliKqXh2CPRJT6lENyFfDiAPMbqH6DElqwxI0zhldcvKo=
-X-Received: by 2002:a37:992:: with SMTP id 140mr2089291qkj.36.1585616785898;
- Mon, 30 Mar 2020 18:06:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200330030001.2312810-1-andriin@fb.com> <20200330030001.2312810-2-andriin@fb.com>
- <20200331000513.GA54465@rdna-mbp.dhcp.thefacebook.com> <20200331003833.2cimhnn5scfroyv7@ast-mbp>
-In-Reply-To: <20200331003833.2cimhnn5scfroyv7@ast-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 30 Mar 2020 18:06:14 -0700
-Message-ID: <CAEf4BzZ2-a+m_wV2sffKMQ1Zi7wREvV=mkBmQC4ExQsi9zpbww@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 1/4] bpf: implement bpf_link-based cgroup BPF
- program attachment
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrey Ignatov <rdna@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=DSaOJ3abayD3uGemvDsixWnPIKpqupYRWw3fhQo7n4s=;
+        b=t6O3H/9ag8291djowV99O6WQu2EzO4xChWHLTK3oBHa8gLhCK85FKOM4SVo8tUZDzg
+         KVpfPZhoxqVSyymfRWgJd3aATHiShCWkHcu0z9dcnNwJQXD9pivbjlOYB0LQgcqmyHHQ
+         umqVMel/5e0f4ZcQp9BfkXiJxEExVcY1wP25+X/FYf1qrUw8/HeEqrFSEq6I4TCJTiO+
+         wOvYIm9O/ryJMNREfaSIMHRlq5oJsuYLZMLMy0r5QbpjA69q+N5+XTbDpC2sUDvchO4Q
+         aR3AAgp/SE/vfs6iBzJscAOSBSK7PtzId/f+CyvnrgaBWRozgAOIjZiNn0XwIztB3lvj
+         gGUg==
+X-Gm-Message-State: ANhLgQ3Y+28/igEDnwkyOQUEegg5BZOYg+3Vr2cb9wwVNe5KcEWOdejR
+        sQF9SVXXQHcu/Py+qdvJixhvCYjN
+X-Google-Smtp-Source: ADFU+vvMlpryZZFebgAPAsMNe1n+/3VmOc33RWh8F4BpGhMGQmZFY8xCOHrMnaR9VPamYB2CMzSgnQ==
+X-Received: by 2002:a62:834c:: with SMTP id h73mr15849495pfe.59.1585617479048;
+        Mon, 30 Mar 2020 18:17:59 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:3558])
+        by smtp.gmail.com with ESMTPSA id s22sm97462pfh.18.2020.03.30.18.17.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 30 Mar 2020 18:17:57 -0700 (PDT)
+Date:   Mon, 30 Mar 2020 18:17:53 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@fb.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        Andrey Ignatov <rdna@fb.com>, Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH v3 bpf-next 0/4] Add support for cgroup bpf_link
+Message-ID: <20200331011753.qxo3pq6ldqm43bo7@ast-mbp>
+References: <20200330030001.2312810-1-andriin@fb.com>
+ <c9f52288-5ea8-a117-8a67-84ba48374d3a@gmail.com>
+ <CAEf4BzZpCOCi1QfL0peBRjAOkXRwGEi_DAW4z34Mf3Tv_sbRFw@mail.gmail.com>
+ <662788f9-0a53-72d4-2675-daec893b5b81@gmail.com>
+ <CAADnVQK8oMZehQVt34=5zgN12VBc2940AWJJK2Ft0cbOi1jDhQ@mail.gmail.com>
+ <cdd576be-8075-13a7-98ee-9bc9355a2437@gmail.com>
+ <20200331003222.gdc2qb5rmopphdxl@ast-mbp>
+ <58cea4c7-e832-2632-7f69-5502b06310b2@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <58cea4c7-e832-2632-7f69-5502b06310b2@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 5:38 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Mon, Mar 30, 2020 at 05:05:13PM -0700, Andrey Ignatov wrote:
-> > >
-> > > +#define BPF_LINK_CREATE_LAST_FIELD link_create.flags
-> > > +static int link_create(union bpf_attr *attr)
-> > > +{
-> >
-> > From what I see this function does not check any capability whether the
-> > existing bpf_prog_attach() checks for CAP_NET_ADMIN.
->
-> Great catch! It's a bug.
-> I fixed it up.
+On Mon, Mar 30, 2020 at 06:57:44PM -0600, David Ahern wrote:
+> On 3/30/20 6:32 PM, Alexei Starovoitov wrote:
+> >>
+> >> This is not a large feature, and there is no reason for CREATE/UPDATE -
+> >> a mere 4 patch set - to go in without something as essential as the
+> >> QUERY for observability.
+> > 
+> > As I said 'bpftool cgroup' covers it. Observability is not reduced in any way.
+> 
+> You want a feature where a process can prevent another from installing a
+> program on a cgroup. How do I learn which process is holding the
+> bpf_link reference and preventing me from installing a program? Unless I
+> have missed some recent change that is not currently covered by bpftool
+> cgroup, and there is no way reading kernel code will tell me.
 
-Thanks!
+No. That's not the case at all. You misunderstood the concept.
 
->
-> > This is pretty importnant difference but I don't see it clarified in the
-> > commit message or discussed (or I missed it?).
+> That is my point. You are restricting what root can do and people will
+> not want to resort to killing random processes trying to find the one
+> holding a reference. 
 
-Yeah, not intentional, thanks for catching!
+Not true either.
+bpf_link = old attach with allow_multi (but with extra safety for owner)
+The only thing bpf_link protects is the owner of the link from other
+processes of nuking that link.
+It does _not_ prevent other processes attaching their own cgroup-bpf progs
+either via old interface or via bpf_link.
 
-> >
-> > Having a way to attach cgroup bpf prog by non-priv users is actually
-> > helpful in some use-cases, e.g. systemd required patching in the past to
-> > make it work with user (non-priv) sessions, see [0].
-> >
-> > But in other cases it's also useful to limit the ability to attach
-> > programs to a cgroup while using bpf_link so that only the thing that
-> > controls cgroup setup can attach but not any non-priv process running in
-> > that cgroup. How is this use-case covered in BPF_LINK_CREATE?
-> >
-> >
-> > [0] https://github.com/systemd/systemd/pull/12745
->
-> yeah. we need to resurrect the discussion around CAP_BPF.
->
-> PS
-> pls trim your replies.
+It will be different for xdp where only one prog is allowed per xdp hook.
+There it will prevent other xdp progs. And there link_queury and
+"human override" will be necessary.
