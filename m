@@ -2,136 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D806199309
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 12:03:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9E0719932C
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 12:11:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730263AbgCaKDH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 31 Mar 2020 06:03:07 -0400
-Received: from zimbra.alphalink.fr ([217.15.80.77]:40458 "EHLO
-        zimbra.alphalink.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729997AbgCaKDH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 06:03:07 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail-2-cbv2.admin.alphalink.fr (Postfix) with ESMTP id ACA0C2B520DD;
-        Tue, 31 Mar 2020 12:03:04 +0200 (CEST)
-Received: from zimbra.alphalink.fr ([127.0.0.1])
-        by localhost (mail-2-cbv2.admin.alphalink.fr [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id QsJh6RC0iwS9; Tue, 31 Mar 2020 12:03:02 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-        by mail-2-cbv2.admin.alphalink.fr (Postfix) with ESMTP id B92B02B52068;
-        Tue, 31 Mar 2020 12:03:02 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mail-2-cbv2.admin.alphalink.fr
-Received: from zimbra.alphalink.fr ([127.0.0.1])
-        by localhost (mail-2-cbv2.admin.alphalink.fr [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 0Nc3ZhpU5m_N; Tue, 31 Mar 2020 12:03:02 +0200 (CEST)
-Received: from Simons-MacBook-Pro.local (94-84-15-217.reverse.alphalink.fr [217.15.84.94])
-        by mail-2-cbv2.admin.alphalink.fr (Postfix) with ESMTPSA id 2B0662B520DE;
-        Tue, 31 Mar 2020 12:03:02 +0200 (CEST)
-Subject: Re: [PATCH net-next] pppoe: new ioctl to extract per-channel stats
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Networking <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Guillaume Nault <gnault@redhat.com>
-References: <20200326103230.121447-1-s.chopin@alphalink.fr>
- <CAK8P3a2THNOTcx=XMxXRH3RaNYBhsE7gMNx91M8p8D8qUdB-7A@mail.gmail.com>
- <c70371c2-7783-b66a-3108-dbbda383673d@alphalink.fr>
- <CAK8P3a2oWT2yob76QQHDm0z7z6xcVoRDEejj7ro4heQYyWGQ3A@mail.gmail.com>
-From:   Simon Chopin <s.chopin@alphalink.fr>
-Message-ID: <ce76fc46-74d4-e809-aebd-8c1d44782d86@alphalink.fr>
-Date:   Tue, 31 Mar 2020 12:03:01 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.6.0
+        id S1730341AbgCaKLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 06:11:02 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:41998 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729997AbgCaKLC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 06:11:02 -0400
+Received: by mail-pf1-f195.google.com with SMTP id 22so10113577pfa.9;
+        Tue, 31 Mar 2020 03:11:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=csmtkrkkAbdjV6T9mGVCcadIQKTYqskGmkUxceMKIBU=;
+        b=R6Jg645Ekhoa+9H2sclU0mGXjw1I9gI37D5bmWOunwlXVWOR25umHenRIYpp5VvaVd
+         zcA3dD5WcrTkmIDeWIXG9cRVYfS5MAOSg++iD5npWGxhH00bZ51t6HNM1V7+bU7v+V4d
+         BlPpwQJam7d4Mx/9G0XPi0bcWuHY8VnFLLN84cKY8psXRhG/Ua7XxQjr/n/vdE8l6/ev
+         urf1CVBCnex1NW02kG5+dhF15YKk5S7U23r8N5LZ762KzSgInxbV03Xov0coy+lNMP9V
+         3vNTmOzRYrFDvE85WSzLBozbxDKMP3YoXBbU1vMatIQuEOzahWXSCShJPIpDcrEpUsqW
+         jUWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=csmtkrkkAbdjV6T9mGVCcadIQKTYqskGmkUxceMKIBU=;
+        b=r1aURfMTSoHPORz32+A44OBA2smnm70TzBt9rrdWD9A2wmWH/DnBn5HAzedANxYiQg
+         2MklWS5iX37sddPy4+r+r9Ij6RrOFTzC+BA4kHILelLmcZ930cZ6WzgUwqulTCftf06q
+         xyyyzkXbBMka/EsUgV5UO6EfMW6iL70wC4gBwFkLOFurvPL24sV81JvCHrG1rta9XUuO
+         fuMsmcHK2LFDK9L1B1Q9m+i7/wWD5PnOaDTI+QYYpr9x3lF9siBOU8khGoUepO9KxQCX
+         d0o0bP8v570tQnL8aAvtKJySrQQS87GbYOh4SPHF2mkugw+/gA5mG2b+lwmtDM/BoWHm
+         rqeA==
+X-Gm-Message-State: AGi0PuZih71Vdpx169ii4NIlSzZu5XP4tTz5Ss1LZwdndF1EViLCaSaE
+        9PNYJ0ANdbrPt6UyAhqZz0VR1ndfVa8=
+X-Google-Smtp-Source: APiQypKiHHBSPaH2cLzNzRTC2404m7jq5F7xMao/oPIuL6IzPYmJYJXDbFSpcE6XHhJFs9EXH2dnSg==
+X-Received: by 2002:a63:f117:: with SMTP id f23mr3325427pgi.44.1585649460961;
+        Tue, 31 Mar 2020 03:11:00 -0700 (PDT)
+Received: from btopel-mobl.ger.intel.com ([192.55.55.43])
+        by smtp.gmail.com with ESMTPSA id ck3sm1535258pjb.44.2020.03.31.03.10.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Mar 2020 03:11:00 -0700 (PDT)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        linux-riscv@lists.infradead.org, Damien.LeMoal@wdc.com,
+        hch@infradead.org, kbuild test robot <lkp@intel.com>
+Subject: [PATCH bpf] riscv: remove BPF JIT for nommu builds
+Date:   Tue, 31 Mar 2020 12:10:46 +0200
+Message-Id: <20200331101046.23252-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a2oWT2yob76QQHDm0z7z6xcVoRDEejj7ro4heQYyWGQ3A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: fr
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Arnd,
+The BPF JIT fails to build for kernels configured to !MMU. Without an
+MMU, the BPF JIT does not make much sense, therefore this patch
+disables the JIT for nommu builds.
 
-Le 26/03/2020 à 15:31, Arnd Bergmann a écrit :
-> On Thu, Mar 26, 2020 at 2:48 PM Simon Chopin <s.chopin@alphalink.fr> wrote:
->> Le 26/03/2020 à 11:42, Arnd Bergmann a écrit :
->>> The patch looks fine from from an interface design perspective,
->>> but I wonder if you could use a definition that matches the
->>> structure layout and command number for PPPIOCGL2TPSTATS
->>> exactly, rather than a "very similar mechanism" with a subset
->>> of the fields. You would clearly have to pass down a number of
->>> zero fields, but the implementation could be abstracted at a
->>> higher level later.
->>>
->>>       Arnd
->>
->> This sounds like a good idea, indeed. Is what follows what you had in mind ?
->> I'm not too sure about keeping the chan_priv field in this form, my knowledge
->> of alignment issues being relatively superficial. As I understand it, the matching
->> fields in l2tp_ioc_stats should always be packed to 8 bytes as they fall on natural
->> boundaries, but I might be wrong ?
->>
->> diff --git a/include/uapi/linux/ppp-ioctl.h b/include/uapi/linux/ppp-ioctl.h
->> index a0abc68eceb5..803cbe374fb2 100644
->> --- a/include/uapi/linux/ppp-ioctl.h
->> +++ b/include/uapi/linux/ppp-ioctl.h
->> @@ -79,14 +79,21 @@ struct pppol2tp_ioc_stats {
->>         __aligned_u64   rx_errors;
->>  };
->>
->> -/* For PPPIOCGPPPOESTATS */
->> -struct pppoe_ioc_stats {
->> +struct pppchan_ioc_stats {
->> +       __u8            chan_priv[8];
->>         __aligned_u64   tx_packets;
->>         __aligned_u64   tx_bytes;
->> +       __aligned_u64   tx_errors;
->>         __aligned_u64   rx_packets;
->>         __aligned_u64   rx_bytes;
->> +       __aligned_u64   rx_seq_discards;
->> +       __aligned_u64   rx_oos_packets;
->> +       __aligned_u64   rx_errors;
->>  };
->>
->> +_Static_assert(sizeof(struct pppol2tp_ioc_stats) == sizeof(struct pppchan_ioc_stats), "same size");
->> +_Static_assert((size_t)&((struct pppol2tp_ioc_stats *)0)->tx_packets == (size_t)&((struct pppchan_ioc_stats *)0)->tx_packets, "same offset");
-> 
-> Conceptually this is what I had in mind, but implementation-wise, I'd suggest
-> only having a single structure definition, possibly with a #define like
-> 
-> #define pppoe_ioc_stats pppchan_ioc_stats
-I'm assuming that'd be #define pppol2tp_stats pppchan_ioc_stats ?
-> When having two struct definitions, I'd be slightly worried about
-> the bitfield causing implementation-defined structure layout,
-> so it seems better to only have one definition, even when you cannot
-> avoid the bitfield that maybe should not have been used.
->
->>  /*
->>   * Ioctl definitions.
->>   */
->> @@ -123,7 +130,7 @@ struct pppoe_ioc_stats {
->>  #define PPPIOCATTCHAN  _IOW('t', 56, int)      /* attach to ppp channel */
->>  #define PPPIOCGCHAN    _IOR('t', 55, int)      /* get ppp channel number */
->>  #define PPPIOCGL2TPSTATS _IOR('t', 54, struct pppol2tp_ioc_stats)
->> -#define PPPIOCGPPPOESTATS _IOR('t', 53, struct pppoe_ioc_stats)
->> +#define PPPIOCGCHANSTATS _IOR('t', 54, struct pppchan_ioc_stats)
-> 
-> here I'd do
-> 
-> #define PPPIOCGCHANSTATS _IOR('t', 54, struct pppchan_ioc_stats)
-> #define PPPIOCGL2TPSTATS PPPIOCGCHANSTATS
+This was reported by the kbuild test robot:
 
-Thank you for your feedback. I'm probably going to implement a more
-generic version at the generic PPP channel instead, though, as,
-as noted by Guillaume, those statistics are not for the PPP channel
-but for the layer underneath.
+   All errors (new ones prefixed by >>):
 
-However, I'd like to be sure I understand your proposal here :
-we'd use a generic pppchan_ioc_stats struct that would be identical
-to the current pppol2tp_ioc_stats, including the 3 L2TP-specific fields,
-so that we'd retain ABI and API compatibility, and we would simply
-#define the current API to the new one?
+      arch/riscv/net/bpf_jit_comp64.c: In function 'bpf_jit_alloc_exec':
+   >> arch/riscv/net/bpf_jit_comp64.c:1094:47: error: 'BPF_JIT_REGION_START' undeclared (first use in this function)
+       1094 |  return __vmalloc_node_range(size, PAGE_SIZE, BPF_JIT_REGION_START,
+            |                                               ^~~~~~~~~~~~~~~~~~~~
+      arch/riscv/net/bpf_jit_comp64.c:1094:47: note: each undeclared identifier is reported only once for each function it appears in
+   >> arch/riscv/net/bpf_jit_comp64.c:1095:9: error: 'BPF_JIT_REGION_END' undeclared (first use in this function)
+       1095 |         BPF_JIT_REGION_END, GFP_KERNEL,
+            |         ^~~~~~~~~~~~~~~~~~
+      arch/riscv/net/bpf_jit_comp64.c:1098:1: warning: control reaches end of non-void function [-Wreturn-type]
+       1098 | }
+            | ^
 
-Cheers,
-Simon
+Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: Björn Töpel <bjorn.topel@gmail.com>
+---
+ arch/riscv/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+index 8672e77a5b7a..bd35ac72fe24 100644
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -55,7 +55,7 @@ config RISCV
+ 	select ARCH_HAS_PTE_SPECIAL
+ 	select ARCH_HAS_MMIOWB
+ 	select ARCH_HAS_DEBUG_VIRTUAL
+-	select HAVE_EBPF_JIT
++	select HAVE_EBPF_JIT if MMU
+ 	select EDAC_SUPPORT
+ 	select ARCH_HAS_GIGANTIC_PAGE
+ 	select ARCH_WANT_HUGE_PMD_SHARE if 64BIT
+-- 
+2.20.1
+
