@@ -2,92 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C32B19952D
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 13:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0BC4199542
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 13:21:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730602AbgCaLOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 07:14:24 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:33806 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729483AbgCaLOY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 07:14:24 -0400
-Received: by mail-pl1-f194.google.com with SMTP id a23so8013177plm.1;
-        Tue, 31 Mar 2020 04:14:23 -0700 (PDT)
+        id S1730534AbgCaLVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 07:21:54 -0400
+Received: from mail-il1-f193.google.com ([209.85.166.193]:45815 "EHLO
+        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729925AbgCaLVx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 07:21:53 -0400
+Received: by mail-il1-f193.google.com with SMTP id x16so19018129ilp.12;
+        Tue, 31 Mar 2020 04:21:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jfqMPesgkN+7mncezSXPSHTqvyq0LT20OfMYu4n26Qs=;
-        b=NgGfU5Bb0Rwj7vg/+L4i+PgKT83GpLY5DNG51ZYfn6BWifbVGFEMdbVM2N5hfx+uGB
-         99wPJ3vXyH3XPvndMvodXVZyDYTZDivtL/bPEMqKpfskoNq/ZDfNEJdL1llJg5bTcT5M
-         JNEubbr7xlJeJDqYzy1/gRrYb1fh/QDq8Dn9xBSpekTv7CqdqvExHNt9EMGMHp/t6/EP
-         K1eNhG3Dh2Mgdaf7lG+RofH39lslahCSTiisl8yCRQ6o9vSUhjyPGcHes2nEI1CLrAly
-         OLUYewtOK5N5vqyWo2HM+/BaXNiUEyCbUCWHVgIqfinrdYh0UUbsH/rorUet37iiXfky
-         oPBw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qKDkpoJr7FT+xSnuAXXrL+5r38BtzQdjQKiZus21QDE=;
+        b=De49afrrOSEAE6d16LJHXttNzo3rRRZMfRBePwOMyj6Zz8IeO3du2R+ksJfiwpNOgJ
+         +FMHm16y/a02jaI0SjMRzbLs4Hk/ImJqEw1Fjp/7iWYUUIeySx1NRiCNoJ6I8QzcicqI
+         H60p/wDBGYpXAaJbqmWxOOQBELIx4/B5vxEVKM906pmwdKz1VJ+GG4ho79Lc/wZ3LBaC
+         JTFN7N8DQw6Uaku8DXQBvqoF1VEPVFyS77tGIVgO4uik3bG6kVAhEWVT3VHnzxUtFSjN
+         MdGyJwksUJ+5kPD2YxdZcqodMgVnKQ98zGRCbwy0Iv3/M9usgBxoqmkdv6FFR6lox/4X
+         +Fxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jfqMPesgkN+7mncezSXPSHTqvyq0LT20OfMYu4n26Qs=;
-        b=rGXZZZT/0FxJaKccLneA7adnDBT7mJrdJmOYUp+BOrQBDpkPYx5lMn8G9mA3yV+GjC
-         UPpfM9I88+fgp4DIScrV7vMaK2Lqjm6wMp9MEkzDMdXKebHfoPzpEgveRnNPnZMcNno7
-         c+LbzvoJX3WfSvKdr7nQjlkSI3pmzApOQBuJLhsiQ+gRpcv7r/XM3YiJhT8fjtLWnxSg
-         zf9goCyPtap451qLxqpWZelzijOj0tM0Cqpn5OA0VW/OQeuCW997S931n9+A8ESZHRYa
-         bGSFWhfapuMSoIZtEWDn6Kgqy/gDsSPurVNGwoHgOocZcd3PSPcMGCv8GcCRF1mvAjKe
-         B2HQ==
-X-Gm-Message-State: AGi0PuZ2arh0Py4Gw4MDf7cir34d6Nt1rEKvfd0x6UE3NswGaWNkxROh
-        vsfNt3HKhfUuKpXsTQ3A4Fc=
-X-Google-Smtp-Source: APiQypJ06shRWMde4lJ/waxgyBPfa/BC6ceOEQ3+6imjtew7/jwC9nYpB/5sWJJn+B8wZkll5ynyyA==
-X-Received: by 2002:a17:90a:254f:: with SMTP id j73mr3195083pje.11.1585653262666;
-        Tue, 31 Mar 2020 04:14:22 -0700 (PDT)
-Received: from localhost (194.99.30.125.dy.iij4u.or.jp. [125.30.99.194])
-        by smtp.gmail.com with ESMTPSA id c190sm12241067pfa.66.2020.03.31.04.14.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Mar 2020 04:14:21 -0700 (PDT)
-From:   Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
-X-Google-Original-From: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Date:   Tue, 31 Mar 2020 20:14:18 +0900
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Jouni Malinen <jouni@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [linux-next] bisected: first bad commit: mac80211: Check port
- authorization in the ieee80211_tx_dequeue() case
-Message-ID: <20200331111418.GB502@jagdpanzerIV.localdomain>
-References: <20200331092125.GA502@jagdpanzerIV.localdomain>
- <52358d231e26dcb27b710c22f7993e0d331796ec.camel@sipsolutions.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qKDkpoJr7FT+xSnuAXXrL+5r38BtzQdjQKiZus21QDE=;
+        b=QV8CehD8oh5qWr13qVhrOI/jeOq7K7OaomY38Mk20IAj59jQC9aZygLSkMsuVr2KEw
+         3pRap9W0Em1gDtS4rmjXGf3o65IVhHQogx4nCAOPl+z8ftubx8the8q/gaxUbe3QHYD5
+         vbAakQCzqBrmL8gysoGIooIR29ZtILSnaOwSU28BJ3o22QOhw/XAujmz/v3ikJTuY/h9
+         morF7qsAOIqQ2xeWwS5IuxxrDR2a9i02Y6X/3DPc6BaoaPdyZsd2M7X/gjhtdpNPtCyi
+         6dacQrdgowSXfn5CUJn6LraKZ0Dei6uCvc9slZUb6didjoRyaq0Tns1ARRajw98JbazH
+         Tx+w==
+X-Gm-Message-State: ANhLgQ2M8lhL/RkUIdZPduWhBPC0/CDoOCsgoiNIi32q+yun0dsyZ2jL
+        STrsPFDK9uyzPie0gQdOhjV94OE32DNiTsD78q3o1GlLF0w=
+X-Google-Smtp-Source: ADFU+vtGPEg8G50KWWMKJaz5WV8TmjAedD99biDTTwbWYJRszva9IlMSkgggoXwqdJIdIsnLOfH3Qr5QTA18gJEf7ok=
+X-Received: by 2002:a92:77c2:: with SMTP id s185mr15455250ilc.297.1585653711555;
+ Tue, 31 Mar 2020 04:21:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <52358d231e26dcb27b710c22f7993e0d331796ec.camel@sipsolutions.net>
+References: <1585625296-31013-1-git-send-email-hqjagain@gmail.com> <87bloc23d1.fsf@kamboji.qca.qualcomm.com>
+In-Reply-To: <87bloc23d1.fsf@kamboji.qca.qualcomm.com>
+From:   Qiujun Huang <hqjagain@gmail.com>
+Date:   Tue, 31 Mar 2020 19:21:33 +0800
+Message-ID: <CAJRQjofn+kMqueK+CuoJgdV-_Y6ChM2cCaGKOBJ=uVBDPpYKxA@mail.gmail.com>
+Subject: Re: [PATCH] ath9k: fix stack-out-of-bounds Write in ath9k_hif_usb_rx_cb
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     ath9k-devel@qca.qualcomm.com,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, anenbupt@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On (20/03/31 11:30), Johannes Berg wrote:
-> On Tue, 2020-03-31 at 18:21 +0900, Sergey Senozhatsky wrote:
-> > Hello,
-> > 
-> > Commit "mac80211: Check port authorization in the ieee80211_tx_dequeue()
-> > case" breaks wifi on my laptop:
-> > 
-> > 	kernel: wlp2s0: authentication with XXXXXXXXXXXXXX timed out
-> > 
-> > It just never connects to the network.
-> 
-> Yes, my bad. Sorry about that.
-> 
+On Tue, Mar 31, 2020 at 7:03 PM Kalle Valo <kvalo@codeaurora.org> wrote:
+>
+> Qiujun Huang <hqjagain@gmail.com> writes:
+>
+> > Add barrier to accessing the stack array skb_pool.
+> >
+> > Reported-by: syzbot+d403396d4df67ad0bd5f@syzkaller.appspotmail.com
+> > Signed-off-by: Qiujun Huang <hqjagain@gmail.com>
+> > ---
+> >  drivers/net/wireless/ath/ath9k/hif_usb.c | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> >
+> > diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
+> > index dd0c323..c4a2b72 100644
+> > --- a/drivers/net/wireless/ath/ath9k/hif_usb.c
+> > +++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
+> > @@ -612,6 +612,11 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
+> >                       hif_dev->remain_skb = nskb;
+> >                       spin_unlock(&hif_dev->rx_lock);
+> >               } else {
+> > +                     if (pool_index == MAX_PKT_NUM_IN_TRANSFER) {
+> > +                             dev_err(&hif_dev->udev->dev,
+> > +                                     "ath9k_htc: over RX MAX_PKT_NUM\n");
+> > +                             goto err;
+> > +                     }
+>
+> What about 'pool_index >= MAX_PKT_NUM_IN_TRANSFER' just to be on the
+> safe side? Ah, but then error handling won't work:
 
-No worries.
+Get that.
 
-> Fix just narrowly missed the release and is on the way:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=be8c827f50a0bcd56361b31ada11dc0a3c2fd240
+>
+> err:
+>         for (i = 0; i < pool_index; i++) {
+>                 RX_STAT_ADD(skb_completed_bytes, skb_pool[i]->len);
+>                 ath9k_htc_rx_msg(hif_dev->htc_handle, skb_pool[i],
+>                                  skb_pool[i]->len, USB_WLAN_RX_PIPE);
+>                 RX_STAT_INC(skb_completed);
+>         }
+>
+> Maybe that should use 'min(pool_index, MAX_PKT_NUM_IN_TRANSFER - 1)' or
+> something? Or maybe it's just overengineerin, dunno.
 
-Good to know!
+I will take a deeper look, thanks.
 
-	-ss
+>
+> --
+> https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
