@@ -2,106 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1727519A209
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 00:44:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2B4119A20C
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 00:44:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731362AbgCaWo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 18:44:26 -0400
-Received: from mail26.static.mailgun.info ([104.130.122.26]:39759 "EHLO
-        mail26.static.mailgun.info" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727955AbgCaWo0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 18:44:26 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1585694665; h=Content-Transfer-Encoding: MIME-Version:
- Message-Id: Date: Subject: Cc: To: From: Sender;
- bh=6PyO/V46ozkSCZoOi/+d24kO4jXebE7KSXxe4djHrrs=; b=a2PmdiNMWXdSBCnbT/decXLfMVF2oiva/2K7fyjD+ihDjZJOSSGP1F2HttZnUpyE2k5N/neT
- wWLtvl3+dis8jOQAv7U34jlCuWs5jKQgxXtIJdoCBgSVjlwIBFMD2bOGfjFANCGfJ5lTPZLn
- qVbLRZGcyxGxqt6r5bAMMwPKUf4=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e83c7c4.7f444aaf55a8-smtp-out-n01;
- Tue, 31 Mar 2020 22:44:20 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 4495CC433BA; Tue, 31 Mar 2020 22:44:19 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,SPF_NONE
-        autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from subashab-lnx.qualcomm.com (unknown [129.46.15.92])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: subashab)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id CA632C433F2;
-        Tue, 31 Mar 2020 22:44:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org CA632C433F2
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none smtp.mailfrom=subashab@codeaurora.org
-From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
-To:     ap420073@gmail.com, davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        Alex Elder <elder@linaro.org>,
-        Sean Tranchetti <stranche@codeaurora.org>
-Subject: [PATCH net] net: qualcomm: rmnet: Allow configuration updates to existing devices
-Date:   Tue, 31 Mar 2020 16:43:48 -0600
-Message-Id: <20200331224348.12539-1-subashab@codeaurora.org>
-X-Mailer: git-send-email 2.26.0
+        id S1731476AbgCaWor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 18:44:47 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:46261 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727955AbgCaWor (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 18:44:47 -0400
+Received: by mail-qk1-f194.google.com with SMTP id u4so24978441qkj.13;
+        Tue, 31 Mar 2020 15:44:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=/AU0lA6PkuOvFJOWA8GHKBdsC2ZkjBjZg3pc7o84R4Q=;
+        b=trRWj+ISh59YDvidnlqJY/yn2YIDW24L1vB7wSm0EfLvy7lpWrGLtsa99jG2pQvOBt
+         pr/hjs/5DQhbaXbu/eI2CCIgVEwZAZcDnXyK7pa6hT1V7M9fnrTNdGd9AuEr8+JkxETT
+         1eM3Y8VRpYdaD5p86bKwABu+OfqzSCha0+o7xs9XHpOdIqlr2lTrOeY9vfbCXOD4tL9k
+         eOM1gZHwP3nOOt1GnPh/IuTh4sBkauF1PU2gCvkOrR4H8wXPnTo1T5QfS10bql1E/Ntt
+         lWuKW4HluvGpn3ZQhkauL9ZXPFru41YBAP73Vhd4i8ppvbSZXwT0OSyOhJkUGZiQJQ52
+         FB/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=/AU0lA6PkuOvFJOWA8GHKBdsC2ZkjBjZg3pc7o84R4Q=;
+        b=VQu3aZ3V7DHvOr1EvFJ+QkvEPmvZjNHLQRLc8WNKwSCl+IO1BK6DF+v0stqyvfzdLP
+         asw0zckwnclLELkOcZoprcDsPJ9V7SmVgnhEkfFvoU4cBJoY4MkdmZalez5VVFdLjMuq
+         N2THBfJy3h86+63SAyr4Pi3EVA46FG5YCxfwiuyR7uCgKHxPWyohc7M0lJIr67vdhLeb
+         JcPCXlnoYoR8wT2Yc7z7vxbYLQmzmb9XBxiYCf4+XrUSEl6Td9Vtzuz0i9BcUywyLcq4
+         cM+XN8IiXAf08FwMEAPgWpGPBMOCXsLFGwWrnNjnqP2bvNZtMFsd2rz9At/iQl4LGFcC
+         InYg==
+X-Gm-Message-State: ANhLgQ3VmzBqLzQr06QUxNg7aEmV5E2ifYoz/V6uom7WLt60OFtpS0pu
+        D25UwF+XDc5RLeItBcnV65o=
+X-Google-Smtp-Source: ADFU+vtwUb/xk7oS4IPL0ItYDJtc1w04KvyjY57g2ACo4GCkeIRATUQt5eIk6F2VRc7xKrQ+ha8e/w==
+X-Received: by 2002:a37:6d3:: with SMTP id 202mr7291136qkg.267.1585694685906;
+        Tue, 31 Mar 2020 15:44:45 -0700 (PDT)
+Received: from ?IPv6:2601:282:803:7700:8cf:804:d878:6008? ([2601:282:803:7700:8cf:804:d878:6008])
+        by smtp.googlemail.com with ESMTPSA id f14sm203284qtp.55.2020.03.31.15.44.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 31 Mar 2020 15:44:45 -0700 (PDT)
+Subject: Re: [PATCH v3 bpf-next 0/4] Add support for cgroup bpf_link
+To:     Edward Cree <ecree@solarflare.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrey Ignatov <rdna@fb.com>, Kernel Team <kernel-team@fb.com>
+References: <20200330030001.2312810-1-andriin@fb.com>
+ <c9f52288-5ea8-a117-8a67-84ba48374d3a@gmail.com>
+ <CAEf4BzZpCOCi1QfL0peBRjAOkXRwGEi_DAW4z34Mf3Tv_sbRFw@mail.gmail.com>
+ <662788f9-0a53-72d4-2675-daec893b5b81@gmail.com>
+ <CAADnVQK8oMZehQVt34=5zgN12VBc2940AWJJK2Ft0cbOi1jDhQ@mail.gmail.com>
+ <cdd576be-8075-13a7-98ee-9bc9355a2437@gmail.com>
+ <20200331003222.gdc2qb5rmopphdxl@ast-mbp>
+ <58cea4c7-e832-2632-7f69-5502b06310b2@gmail.com>
+ <CAEf4BzZSCdtSRw9mj2W5Vv3C-G6iZdMJsZ8WGon11mN3oBiguQ@mail.gmail.com>
+ <869adb74-5192-563d-0e8a-9cb578b2a601@solarflare.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <b5526d61-9af9-1f10-bf20-38cf8a2f10fd@gmail.com>
+Date:   Tue, 31 Mar 2020 16:44:43 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.6.0
 MIME-Version: 1.0
+In-Reply-To: <869adb74-5192-563d-0e8a-9cb578b2a601@solarflare.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This allows the changelink operation to succeed if the mux_id was
-specified as an argument. Note that the mux_id must match the
-existing mux_id of the rmnet device or should be an unused mux_id.
+On 3/31/20 3:51 PM, Edward Cree wrote:
+> On 31/03/2020 04:54, Andrii Nakryiko wrote:
+>> No need to kill random processes, you can kill only those that hold
+>> bpf_link FD. You can find them using drgn tool with script like [0].
+> For the record, I find the argument "we don't need a query feature,
+>  because you can just use a kernel debugger" *utterly* *horrifying*.
+> Now, it seems to be moot, because Alexei has given other, better
+>  reasons why query doesn't need to land yet; but can we please not
+>  ever treat debugging interfaces as a substitute for proper APIs?
+> 
+> </scream>
+> -ed
+> 
 
-Fixes: 1dc49e9d164c ("net: rmnet: do not allow to change mux id if mux id is duplicated")
-Reported-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Sean Tranchetti <stranche@codeaurora.org>
-Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
----
- .../ethernet/qualcomm/rmnet/rmnet_config.c    | 21 ++++++++++++-------
- 1 file changed, 13 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-index fbf4cbcf1a65..06332984399d 100644
---- a/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-+++ b/drivers/net/ethernet/qualcomm/rmnet/rmnet_config.c
-@@ -294,19 +294,24 @@ static int rmnet_changelink(struct net_device *dev, struct nlattr *tb[],
- 
- 	if (data[IFLA_RMNET_MUX_ID]) {
- 		mux_id = nla_get_u16(data[IFLA_RMNET_MUX_ID]);
--		if (rmnet_get_endpoint(port, mux_id)) {
--			NL_SET_ERR_MSG_MOD(extack, "MUX ID already exists");
--			return -EINVAL;
--		}
- 		ep = rmnet_get_endpoint(port, priv->mux_id);
- 		if (!ep)
- 			return -ENODEV;
- 
--		hlist_del_init_rcu(&ep->hlnode);
--		hlist_add_head_rcu(&ep->hlnode, &port->muxed_ep[mux_id]);
-+		if (mux_id != priv->mux_id) {
-+			if (rmnet_get_endpoint(port, mux_id)) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "MUX ID already exists");
-+				return -EINVAL;
-+			}
- 
--		ep->mux_id = mux_id;
--		priv->mux_id = mux_id;
-+			hlist_del_init_rcu(&ep->hlnode);
-+			hlist_add_head_rcu(&ep->hlnode,
-+					   &port->muxed_ep[mux_id]);
-+
-+			ep->mux_id = mux_id;
-+			priv->mux_id = mux_id;
-+		}
- 	}
- 
- 	if (data[IFLA_RMNET_FLAGS]) {
--- 
-2.26.0
+just about to send the same intent. Dev packages and processing
+/proc/kcore is not a proper observability API for production systems.
