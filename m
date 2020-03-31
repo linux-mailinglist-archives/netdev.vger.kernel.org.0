@@ -2,88 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3B50199C5C
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 19:00:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DD0A199C72
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 19:03:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730589AbgCaRAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 31 Mar 2020 13:00:47 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:39100 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730149AbgCaRAq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 13:00:46 -0400
-Received: by mail-qk1-f193.google.com with SMTP id b62so23817135qkf.6
-        for <netdev@vger.kernel.org>; Tue, 31 Mar 2020 10:00:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=sKmalB8mEbfeA+ItF9L3+zgLke+ptnCpTfwDhEC9Nd0=;
-        b=GGcokJqD3HPJ4ZlpU+fi1kXj43D47Q0TUyze20FJgHb5duGu0bVy1pTDMDSXElQfnI
-         izbzBGiisAizJZHJZ08o3hbTKs3WCWQXf+7W3waEGGfUQyoVzjkt+1Dhcl3fKSuub7/L
-         bKDTwTkHUPd+qM4DEQrWt/qqIZarP7oP+OYE3gEx/Lg7Q3cDc1Dg09FyYc1NPBnZ09UG
-         l15j/HmQYRELDJMuRF1xnBH0Hl2fG5CtOSGv33X0DZXYyYnSX+jnhdsf5/tiuSh5bRXD
-         zhSjKt/GfuCT31EuR6qcBe+yGsgCMvZ2LxqVat7wKSaigG+Vwwt2tyqALqdR15u0f8v9
-         X2Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=sKmalB8mEbfeA+ItF9L3+zgLke+ptnCpTfwDhEC9Nd0=;
-        b=NdsXR6qcEYj/fh66km0Dll0RpAoZIY/yJ7EEUwpuICLcbRZ+JRnl0r4HpC4rNfh4i/
-         IiOG3QLG0qpdMTZD7o7Ozy/S1rI9O5lgEVbPQ+3by4Vi9zMHO+hioFVncb4Jn6HqT9P0
-         wtjfDKBJJrlqBggCwjzyWPaju2B57+WaSd7lNdzFpGu0N1Ku8czDp3LQO4Yhly/PzQdM
-         LWe6QhwI3PUHDUsZA9G8jJrSk9aM1RwkuvrVrKE+r8q6hYesv7mZExX1POYoZ3FzaJsk
-         C/5Z/Oil9uqPk3uHBoCWF/bXbCKoWu06gKyf3q9heYw3qLyUNDF/Za7gDKk8OCCpK7kC
-         WHTg==
-X-Gm-Message-State: ANhLgQ1zU87fV+7Cz5wNCYZmNoN6LKnmPNsdQ8yOFULKGD7zRsM0sZe9
-        SNY1GAFfVW7LVkUrvTdHfDdcdJ9yv2I=
-X-Google-Smtp-Source: ADFU+vuqFbpaLxb1ab2SiMualK+BCK0TzmNr5n+aBggtLZVT7by3M7s85I1eTE4CorOK58BdWsZhAg==
-X-Received: by 2002:a37:68d2:: with SMTP id d201mr6149842qkc.231.1585674044927;
-        Tue, 31 Mar 2020 10:00:44 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id x37sm14140737qtc.90.2020.03.31.10.00.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Mar 2020 10:00:43 -0700 (PDT)
-Date:   Tue, 31 Mar 2020 13:00:42 -0400
-Message-ID: <20200331130042.GB1403168@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>, David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>, ioana.ciornei@nxp.com,
-        olteanv@gmail.com, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: fix oops while probing Marvell DSA
- switches
-In-Reply-To: <E1jJHhw-0004UO-OJ@rmk-PC.armlinux.org.uk>
-References: <E1jJHhw-0004UO-OJ@rmk-PC.armlinux.org.uk>
+        id S1731371AbgCaRDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 31 Mar 2020 13:03:14 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:44200 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730216AbgCaRDO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 31 Mar 2020 13:03:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Yp40Y2DCbP2hyounIEGsR0vBBWXR1/GHlHEP6SbSYmE=; b=19zHJfz5KTn93xMOlPsGUqQu4
+        J6Rlikkne2Fsa5AGx8zzagOGReqTe4MMgVdtOoKx0NzNhZlr1gGekDzd81bNA9cFZ4m6J33kTXWJB
+        EzNgBv8GMf8H1vjkcda0doXk9Ds62AtLm5AiffIHUixwo+00mo8Ryzdx/kbGczoQYxe6q2nRQ6a43
+        fRlIcSe44KYHRjrLtRyV4nL58tOV2y5G+lvHubJqRxGU3eqvTjdkhZwHdexjFrGLCbV+uiYEAZqSI
+        8VnktUYN8PGdWZaHz3mt5DKem82F/Q2Hy75KonmSgbDiM03jrqVcMsuYidqoZk44OcLkVnYR414ze
+        cgV7HqW5Q==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:60452)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1jJKI2-00013O-RU; Tue, 31 Mar 2020 18:03:03 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1jJKI0-0008HE-Il; Tue, 31 Mar 2020 18:03:00 +0100
+Date:   Tue, 31 Mar 2020 18:03:00 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     David Jander <david@protonic.nl>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-kernel@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
+        linux-imx@nxp.com, kernel@pengutronix.de,
+        Shawn Guo <shawnguo@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v2] ARM: imx: allow to disable board specific PHY fixups
+Message-ID: <20200331170300.GQ25745@shell.armlinux.org.uk>
+References: <20200329110457.4113-1-o.rempel@pengutronix.de>
+ <20200329150854.GA31812@lunn.ch>
+ <20200330052611.2bgu7x4nmimf7pru@pengutronix.de>
+ <40209d08-4acb-75c5-1766-6d39bb826ff9@gmail.com>
+ <20200330174114.GG25745@shell.armlinux.org.uk>
+ <20200331104459.6857474e@erd988>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200331104459.6857474e@erd988>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 31 Mar 2020 15:17:36 +0100, Russell King <rmk+kernel@armlinux.org.uk> wrote:
-> Fix an oops in dsa_port_phylink_mac_change() caused by a combination
-> of a20f997010c4 ("net: dsa: Don't instantiate phylink for CPU/DSA
-> ports unless needed") and the net-dsa-improve-serdes-integration
-> series of patches 65b7a2c8e369 ("Merge branch
-> 'net-dsa-improve-serdes-integration'").
+On Tue, Mar 31, 2020 at 10:44:59AM +0200, David Jander wrote:
+> I have checked with the datasheet of the AR8035, and AFAICS, what the code
+> does is this:
 > 
-> Unable to handle kernel NULL pointer dereference at virtual address 00000124
-> pgd = c0004000
-> [00000124] *pgd=00000000
-> Internal error: Oops: 805 [#1] SMP ARM
-> Modules linked in: tag_edsa spi_nor mtd xhci_plat_hcd mv88e6xxx(+) xhci_hcd armada_thermal marvell_cesa dsa_core ehci_orion libdes phy_armada38x_comphy at24 mcp3021 sfp evbug spi_orion sff mdio_i2c
-> CPU: 1 PID: 214 Comm: irq/55-mv88e6xx Not tainted 5.6.0+ #470
-> Hardware name: Marvell Armada 380/385 (Device Tree)
-> PC is at phylink_mac_change+0x10/0x88
-> LR is at mv88e6352_serdes_irq_status+0x74/0x94 [mv88e6xxx]
+>  - Disable the SmartEEE feature of the phy. The comment in the code implies
+>    that for some reason it doesn't work, but the reason itself is not given.
+>    Anyway, disabling SmartEEE should IMHO opinion be controlled by a DT
+>    setting. There is no reason to believe this problem is specific to the
+>    i.MX6. Besides, it is a feature of the phy, so it seems logical to expose
+>    that via the DT. Once that is done, it has no place here.
 > 
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+>  - Set the external clock output to 125MHz. This is needed because the i.MX6
+>    needs a 125MHz reference clock input. But it is not a requirement to use
+>    this output. It is perfectly fine and possible to design a board that uses
+>    an external oscillator for this. It is also possible that an i.MX6 design
+>    has such a phy connected to a MAC behind a switch or some other interface.
+>    Independent of i.MX6 this setting can also be necessary for other hardware
+>    designs, based on different SoC's. In summary, this is a feature of the
+>    specific hardware design at hand, and has nothing to do with the i.MX6
+>    specifically. This should definitely be exposed through the DT and not be
+>    here.
+> 
+>  - Enable TXC delay. To clarify, the RGMII specification version 1 specified
+>    that the RXC and TXC traces should be routed long enough to introduce a
+>    certain delay to the clock signal, or the delay should be introduced via
+>    other means. In a later version of the spec, a provision was given for MAC
+>    or PHY devices to generate this delay internally. The i.MX6 MAC interface
+>    is unable to generate the required delay internally, so it has to be taken
+>    care of either by the board layout, or by the PHY device. This is the
+>    crucial point: The amount of delay set by the PHY delay register depends on
+>    the board layout. It should NEVER be hard-coded in SoC setup code. The
+>    correct way is to specify it in the DT. Needless to say that this too,
+>    isn't i.MX6-specific.
 
-Reviewed-by: Vivien Didelot <vivien.didelot@gmail.com>
+Let's say this is simple to do, shall we?
+
+So, if I disable the call to ar8031_phy_fixup() from ar8035_phy_fixup(),
+and add the following to the imx6qdl-sr-som.dtsi fragment:
+
+&fec {
+...
+        phy-handle = <&phy>;
+
+        mdio {
+                #address-cells = <1>;
+                #size-cells = <0>;
+
+                phy: ethernet-phy@0 {
+                        reg = <0>;
+                        qca,clk-out-frequency = <125000000>;
+                };
+        };
+};
+
+Note that phy-mode is already RGMII-ID.  This should work, right?
+
+The link still comes up, which is good, but the PHY registers for
+the clock output are wrong.
+
+MMD 3 register 0x8016 contains 0xb282, not 0xb29a which it has
+_with_ the quirk - and thus the above clock frequency stated in
+DT is not being selected.  Forcing this register to the right
+value restores networking.
+
+Yes, the PHY driver is being used:
+
+Qualcomm Atheros AR8035 2188000.ethernet-1:00: attached PHY driver [Qualcomm Atheros AR8035] (mii_bus:phy_addr=2188000.ethernet-1:00, irq=POLL)
+
+So that's not the problem.
+
+Adding some debug shows that the phy_device that is being used is
+the correct one:
+
+Qualcomm Atheros AR8035 2188000.ethernet-1:00: node=/soc/aips-bus@2100000/ethernet@2188000/mdio/ethernet-phy@0
+
+and it is correctly parsing the clk-out-frequency property:
+
+Qualcomm Atheros AR8035 2188000.ethernet-1:00: cof=0 125000000
+
+When we get to attaching the PHY however:
+
+Qualcomm Atheros AR8035 2188000.ethernet-1:00: clk_25m_mask=0004 clk_25m_reg=0000
+
+which is just wrong.  That's because:
+
+                if (at803x_match_phy_id(phydev, ATH8030_PHY_ID) ||
+                    at803x_match_phy_id(phydev, ATH8035_PHY_ID)) {
+                        priv->clk_25m_reg &= ~AT8035_CLK_OUT_MASK;
+                        priv->clk_25m_mask &= ~AT8035_CLK_OUT_MASK;
+                }
+
+is patently untested - those "~" should not be there.  These masks
+are one-bits-set for the values that comprise the fields, not
+zero-bits-set.
+
+So, I see a patch series is going to be necessary to fix the cockup(s)
+in the PHY driver before we can do anything with DT files.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 10.2Mbps down 587kbps up
