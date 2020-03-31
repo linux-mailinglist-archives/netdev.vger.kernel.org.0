@@ -2,97 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A25531989FB
-	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 04:30:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1E5B198A01
+	for <lists+netdev@lfdr.de>; Tue, 31 Mar 2020 04:36:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729567AbgCaCaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 30 Mar 2020 22:30:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47224 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727358AbgCaCaK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 30 Mar 2020 22:30:10 -0400
-Received: from paulmck-ThinkPad-P72.home (50-39-105-78.bvtn.or.frontiernet.net [50.39.105.78])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1729142AbgCaCgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 30 Mar 2020 22:36:13 -0400
+Received: from us-smtp-delivery-74.mimecast.com ([216.205.24.74]:46423 "EHLO
+        us-smtp-delivery-74.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727614AbgCaCgM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 30 Mar 2020 22:36:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585622171;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Nhe1R9fcd9sn8sBUTkjUECHmGPeTRwWPtrkYv9HeUA4=;
+        b=cptWrn+cGBELuAIkrgUXdDX/JkSnhvMTYzJQQOgWfXxEQDDTn6D0Gcdni1KDcGZnhe1gPQ
+        am9UnVqxE9i9Oj+x8mb108AyaSrJIKlDgHwyZ/x3PPZpYQmEUgq1dr9D7ywft8/fQu1SGj
+        W0s0UzsHcuGhquRm7UIEQTFpOicNahM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-157-htrLS0PsNj2cJicau63YfA-1; Mon, 30 Mar 2020 22:36:09 -0400
+X-MC-Unique: htrLS0PsNj2cJicau63YfA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3D07020714;
-        Tue, 31 Mar 2020 02:30:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585621810;
-        bh=FD8CgPWAQX9TSNL4nh1PkXKlh/qf4FGMjtfo2zUOUoI=;
-        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
-        b=Oe4+x0x65ZcAipe2HBifzbL8TaluBoCtbDYWCEIzAvG2VgnqueZS1FQWVkrjubsIx
-         oreJSJsfQiWQe8EMHfq3ArGIBdxKwsDTYHDaV3bAgivsKoAMrSx6usGD+Zy83S5dQI
-         rbl7ve2asZ1iImrYpi0fd4s6+e7v8IEAAy1BhNLc=
-Received: by paulmck-ThinkPad-P72.home (Postfix, from userid 1000)
-        id 097F03523148; Mon, 30 Mar 2020 19:30:10 -0700 (PDT)
-Date:   Mon, 30 Mar 2020 19:30:10 -0700
-From:   "Paul E. McKenney" <paulmck@kernel.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzbot <syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [Patch net] net_sched: add a temporary refcnt for struct
- tcindex_data
-Message-ID: <20200331023009.GI19865@paulmck-ThinkPad-P72>
-Reply-To: paulmck@kernel.org
-References: <20200328191259.17145-1-xiyou.wangcong@gmail.com>
- <20200330213514.GT19865@paulmck-ThinkPad-P72>
- <CAM_iQpUu6524ZyZDBu=nkuhpubyGBTHEJ-HK8qrpCW=EEKGujw@mail.gmail.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E29BA800D5B;
+        Tue, 31 Mar 2020 02:36:07 +0000 (UTC)
+Received: from [10.72.12.115] (ovpn-12-115.pek2.redhat.com [10.72.12.115])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 82F3F5C1C5;
+        Tue, 31 Mar 2020 02:35:58 +0000 (UTC)
+Subject: Re: [PATCH] vhost: vdpa: remove unnecessary null check
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Tiwei Bie <tiwei.bie@intel.com>,
+        =?UTF-8?Q?Eugenio_P=c3=a9rez?= <eperezma@redhat.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200330235040.GA9997@embeddedor>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <32ae2f4c-de7c-050b-85a2-489b6813fd5f@redhat.com>
+Date:   Tue, 31 Mar 2020 10:35:56 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAM_iQpUu6524ZyZDBu=nkuhpubyGBTHEJ-HK8qrpCW=EEKGujw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20200330235040.GA9997@embeddedor>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Mar 30, 2020 at 04:24:42PM -0700, Cong Wang wrote:
-> On Mon, Mar 30, 2020 at 2:35 PM Paul E. McKenney <paulmck@kernel.org> wrote:
-> >
-> > On Sat, Mar 28, 2020 at 12:12:59PM -0700, Cong Wang wrote:
-> > > Although we intentionally use an ordered workqueue for all tc
-> > > filter works, the ordering is not guaranteed by RCU work,
-> > > given that tcf_queue_work() is esstenially a call_rcu().
-> > >
-> > > This problem is demostrated by Thomas:
-> > >
-> > >   CPU 0:
-> > >     tcf_queue_work()
-> > >       tcf_queue_work(&r->rwork, tcindex_destroy_rexts_work);
-> > >
-> > >   -> Migration to CPU 1
-> > >
-> > >   CPU 1:
-> > >      tcf_queue_work(&p->rwork, tcindex_destroy_work);
-> > >
-> > > so the 2nd work could be queued before the 1st one, which leads
-> > > to a free-after-free.
-> > >
-> > > Enforcing this order in RCU work is hard as it requires to change
-> > > RCU code too. Fortunately we can workaround this problem in tcindex
-> > > filter by taking a temporary refcnt, we only refcnt it right before
-> > > we begin to destroy it. This simplifies the code a lot as a full
-> > > refcnt requires much more changes in tcindex_set_parms().
-> > >
-> > > Reported-by: syzbot+46f513c3033d592409d2@syzkaller.appspotmail.com
-> > > Fixes: 3d210534cc93 ("net_sched: fix a race condition in tcindex_destroy()")
-> > > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > > Cc: Paul E. McKenney <paulmck@kernel.org>
-> > > Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> > > Cc: Jiri Pirko <jiri@resnulli.us>
-> > > Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-> >
-> > Looks plausible, but what did you do to verify that the structures
-> > were in fact being freed?  See below for more detail.
-> 
-> I ran the syzbot reproducer for about 20 minutes, there was no
-> memory leak reported after scanning.
 
-And if you (say) set the initial reference count to two instead of one,
-there is a memory leak reported, correct?
+On 2020/3/31 =E4=B8=8A=E5=8D=887:50, Gustavo A. R. Silva wrote:
+> container_of is never null, so this null check is
+> unnecessary.
+>
+> Addresses-Coverity-ID: 1492006 ("Logically dead code")
+> Fixes: 20453a45fb06 ("vhost: introduce vDPA-based backend")
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> ---
+>   drivers/vhost/vdpa.c | 2 --
+>   1 file changed, 2 deletions(-)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 421f02a8530a..3d2cb811757a 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -678,8 +678,6 @@ static int vhost_vdpa_open(struct inode *inode, str=
+uct file *filep)
+>   	int nvqs, i, r, opened;
+>  =20
+>   	v =3D container_of(inode->i_cdev, struct vhost_vdpa, cdev);
+> -	if (!v)
+> -		return -ENODEV;
+>  =20
+>   	opened =3D atomic_cmpxchg(&v->opened, 0, 1);
+>   	if (opened)
 
-							Thanx, Paul
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
+Thanks
+
