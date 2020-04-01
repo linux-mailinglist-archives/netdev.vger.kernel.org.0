@@ -2,266 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33C5819ADA0
-	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 16:18:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DAE119ADA4
+	for <lists+netdev@lfdr.de>; Wed,  1 Apr 2020 16:18:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732880AbgDAORy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 1 Apr 2020 10:17:54 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:26188 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732205AbgDAORy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 10:17:54 -0400
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 031EHLwk010045;
-        Wed, 1 Apr 2020 16:17:34 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=STMicroelectronics;
- bh=Z6VNMqTZ2uwRu8WKkNLiLmvYTadoYga3ntG3YOu/TiU=;
- b=axZXezGT3396UNnC/EOneTFB4Ge+MsYYlB6WJYBw23fMIBAMstAdfT5iosNkfoeWrmiG
- QjiVjJU3hWbDM+udH6oMluKvd6ANYjoRN5Ep0qtF3yLSKjb4FRctObHLpUrzACjiX6j/
- xB7anIR2pyKMRB2LJEoK8ufv/H57M24T//zkoM/cohpHmJPMzjCU3QxdSx2zKW3lTcp2
- 1qs9hBrYaFLVS3Uel2Hk3AqwX1q8m3L40579XlELlncXsvIuy1YVzRI+AtBUDOTWiqpn
- Rh8DqbHZUf8R5jzG1lFpvVykUHWDlKGkMaqPo1Mn9l1iQOsyAFN0oKxSWXR0EuPhmEsL CQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 301vkdx483-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 01 Apr 2020 16:17:34 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C603910002A;
-        Wed,  1 Apr 2020 16:17:30 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag3node2.st.com [10.75.127.8])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id AE0A32B0D50;
-        Wed,  1 Apr 2020 16:17:30 +0200 (CEST)
-Received: from lmecxl0912.tpe.st.com (10.75.127.49) by SFHDAG3NODE2.st.com
- (10.75.127.8) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Wed, 1 Apr
- 2020 16:17:23 +0200
-Subject: Re: [PATCHv2 1/1] net: ethernet: stmmac: simplify phy modes
- management for stm32
-To:     Christophe Roullier <christophe.roullier@st.com>,
-        <robh@kernel.org>, <davem@davemloft.net>, <joabreu@synopsys.com>,
-        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
-        <peppe.cavallaro@st.com>
-CC:     <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <andrew@lunn.ch>
-References: <20200316090907.18488-1-christophe.roullier@st.com>
-From:   Alexandre Torgue <alexandre.torgue@st.com>
-Message-ID: <cb0a5dd3-02da-7d60-7069-a8ee080ad239@st.com>
-Date:   Wed, 1 Apr 2020 16:17:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+        id S1732205AbgDAOSP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 1 Apr 2020 10:18:15 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:35108 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1732911AbgDAOSO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 1 Apr 2020 10:18:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1585750691;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=koigHvjQZC19eKDd8fYYKD1byFLtuNk9rFfv+MSme6o=;
+        b=Qt3Iy2y0FUVVrw1OuBt/ndUioHleMKP01GPQmVuUXclFzfiO+Y0IyxYufyQqOfHgPSKek3
+        yX1Xa0UwZdUMaX3+q+c5Axdd8bezyqS4uhVivs0KevoVUAkP8k+V9xM9KyFwukDLr/NPNo
+        UoRS4uojGQYIDKKaCCtvNeWCWiYEeFU=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-300-tqK2SkVsNiu2IUiI02DsHw-1; Wed, 01 Apr 2020 10:18:10 -0400
+X-MC-Unique: tqK2SkVsNiu2IUiI02DsHw-1
+Received: by mail-wr1-f69.google.com with SMTP id v17so10566037wro.21
+        for <netdev@vger.kernel.org>; Wed, 01 Apr 2020 07:18:10 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=koigHvjQZC19eKDd8fYYKD1byFLtuNk9rFfv+MSme6o=;
+        b=oXvI9cmxURcZI6Wr/XEVTYrZ7otMIl0j7ya56Tzm4k1arh9pUj6iPxY6qj13xYPcpz
+         V09b1ZChEE202yH5zm8WUDsA5khRnJ6ysz+bAjcENe1Ii33AO5sYGESinjjuUvBrNrPk
+         ULIr8zU2RzfGYTf5+Rx/uZJyMiMEPGHNce5j06djeKxJrcFA2wDpFaWxFZQl6YlBpNzk
+         wldZTV4+08BCXhuGQoLW6/unnOh+L/hUS2ONZvI2Ot3QaU91NQyYsGwBEoa6G80Jto84
+         xGU0Ijy0GtQzsceX/nXeQjH06Qa80jPWt8s5THZMl7JOMF0E4UOcepU4/VozDMBlyjut
+         pTSw==
+X-Gm-Message-State: AGi0PuaDVM13j4R5wHh1wQmJvDyo1a1WFn7ir+psWGPrCx7hPCacPCh1
+        RN2uwpeKQltS/HpYLpvbJFxYR5d8LiczOxS2CTzkoho4MdgVn5k15eJJVLcnycE3fEOsXmVY0JI
+        f9TMGIwo0dttU4aQB
+X-Received: by 2002:a05:600c:2949:: with SMTP id n9mr4854310wmd.129.1585750687901;
+        Wed, 01 Apr 2020 07:18:07 -0700 (PDT)
+X-Google-Smtp-Source: APiQypIDbSLF7skcDOxwD6+QUFmg2lPeWzSgOX1pVJzAYBHdhN6pMa1uaSvkuWaE5DTOSSwxR6SXXw==
+X-Received: by 2002:a05:600c:2949:: with SMTP id n9mr4854274wmd.129.1585750687676;
+        Wed, 01 Apr 2020 07:18:07 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-51-222.red.bezeqint.net. [79.176.51.222])
+        by smtp.gmail.com with ESMTPSA id r5sm2901223wmr.15.2020.04.01.07.18.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 01 Apr 2020 07:18:07 -0700 (PDT)
+Date:   Wed, 1 Apr 2020 10:18:03 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Christian Borntraeger <borntraeger@de.ibm.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        jgg@mellanox.com, maxime.coquelin@redhat.com,
+        cunming.liang@intel.com, zhihong.wang@intel.com,
+        rob.miller@broadcom.com, xiao.w.wang@intel.com,
+        lingshan.zhu@intel.com, eperezma@redhat.com, lulu@redhat.com,
+        parav@mellanox.com, kevin.tian@intel.com, stefanha@redhat.com,
+        rdunlap@infradead.org, hch@infradead.org, aadam@redhat.com,
+        jiri@mellanox.com, shahafs@mellanox.com, hanand@xilinx.com,
+        mhabets@solarflare.com, gdawar@xilinx.com, saugatm@xilinx.com,
+        vmireyno@marvell.com, zhangweining@ruijie.com.cn
+Subject: Re: [PATCH V9 1/9] vhost: refine vhost and vringh kconfig
+Message-ID: <20200401101634-mutt-send-email-mst@kernel.org>
+References: <20200326140125.19794-1-jasowang@redhat.com>
+ <20200326140125.19794-2-jasowang@redhat.com>
+ <fde312a4-56bd-f11f-799f-8aa952008012@de.ibm.com>
+ <41ee1f6a-3124-d44b-bf34-0f26604f9514@redhat.com>
+ <4726da4c-11ec-3b6e-1218-6d6d365d5038@de.ibm.com>
+ <39b96e3a-9f4e-6e1d-e988-8c4bcfb55879@de.ibm.com>
+ <c423c5b1-7817-7417-d7af-e07bef6368e7@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20200316090907.18488-1-christophe.roullier@st.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.49]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG3NODE2.st.com
- (10.75.127.8)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-01_01:2020-03-31,2020-03-31 signatures=0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c423c5b1-7817-7417-d7af-e07bef6368e7@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Christophe
-
-On 3/16/20 10:09 AM, Christophe Roullier wrote:
-> No new feature, just to simplify stm32 part to be easier to use.
-> Add by default all Ethernet clocks in DT, and activate or not in function
-> of phy mode, clock frequency, if property "st,ext-phyclk" is set or not.
-> Keep backward compatibility
-> -----------------------------------------------------------------------
-> |PHY_MODE | Normal | PHY wo crystal|   PHY wo crystal   |  No 125Mhz  |
-> |         |        |      25MHz    |        50MHz       |  from PHY   |
-> -----------------------------------------------------------------------
-> |  MII    |	 -    |     eth-ck    |       n/a          |	    n/a  |
-> |         |        | st,ext-phyclk |                    |             |
-> -----------------------------------------------------------------------
-> |  GMII   |	 -    |     eth-ck    |       n/a          |	    n/a  |
-> |         |        | st,ext-phyclk |                    |             |
-> -----------------------------------------------------------------------
-> | RGMII   |	 -    |     eth-ck    |       n/a          |      eth-ck  |
-> |         |        | st,ext-phyclk |                    |st,eth-clk-sel|
-> |         |        |               |                    |       or     |
-> |         |        |               |                    | st,ext-phyclk|
-> ------------------------------------------------------------------------
-> | RMII    |	 -    |     eth-ck    |      eth-ck        |	     n/a  |
-> |         |        | st,ext-phyclk | st,eth-ref-clk-sel |              |
-> |         |        |               | or st,ext-phyclk   |              |
-> ------------------------------------------------------------------------
+On Wed, Apr 01, 2020 at 10:13:29PM +0800, Jason Wang wrote:
 > 
-> Signed-off-by: Christophe Roullier <christophe.roullier@st.com>
+> On 2020/4/1 下午9:02, Christian Borntraeger wrote:
+> > 
+> > On 01.04.20 14:56, Christian Borntraeger wrote:
+> > > On 01.04.20 14:50, Jason Wang wrote:
+> > > > On 2020/4/1 下午7:21, Christian Borntraeger wrote:
+> > > > > On 26.03.20 15:01, Jason Wang wrote:
+> > > > > > Currently, CONFIG_VHOST depends on CONFIG_VIRTUALIZATION. But vhost is
+> > > > > > not necessarily for VM since it's a generic userspace and kernel
+> > > > > > communication protocol. Such dependency may prevent archs without
+> > > > > > virtualization support from using vhost.
+> > > > > > 
+> > > > > > To solve this, a dedicated vhost menu is created under drivers so
+> > > > > > CONIFG_VHOST can be decoupled out of CONFIG_VIRTUALIZATION.
+> > > > > FWIW, this now results in vhost not being build with defconfig kernels (in todays
+> > > > > linux-next).
+> > > > > 
+> > > > Hi Christian:
+> > > > 
+> > > > Did you meet it even with this commit https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=a4be40cbcedba9b5b714f3c95182e8a45176e42d?
+> > > I simply used linux-next. The defconfig does NOT contain CONFIG_VHOST and therefore CONFIG_VHOST_NET and friends
+> > > can not be selected.
+> > > 
+> > > $ git checkout next-20200401
+> > > $ make defconfig
+> > >    HOSTCC  scripts/basic/fixdep
+> > >    HOSTCC  scripts/kconfig/conf.o
+> > >    HOSTCC  scripts/kconfig/confdata.o
+> > >    HOSTCC  scripts/kconfig/expr.o
+> > >    LEX     scripts/kconfig/lexer.lex.c
+> > >    YACC    scripts/kconfig/parser.tab.[ch]
+> > >    HOSTCC  scripts/kconfig/lexer.lex.o
+> > >    HOSTCC  scripts/kconfig/parser.tab.o
+> > >    HOSTCC  scripts/kconfig/preprocess.o
+> > >    HOSTCC  scripts/kconfig/symbol.o
+> > >    HOSTCC  scripts/kconfig/util.o
+> > >    HOSTLD  scripts/kconfig/conf
+> > > *** Default configuration is based on 'x86_64_defconfig'
+> > > #
+> > > # configuration written to .config
+> > > #
+> > > 
+> > > $ grep VHOST .config
+> > > # CONFIG_VHOST is not set
+> > > 
+> > > > If yes, what's your build config looks like?
+> > > > 
+> > > > Thanks
+> > This was x86. Not sure if that did work before.
+> > On s390 this is definitely a regression as the defconfig files
+> > for s390 do select VHOST_NET
+> > 
+> > grep VHOST arch/s390/configs/*
+> > arch/s390/configs/debug_defconfig:CONFIG_VHOST_NET=m
+> > arch/s390/configs/debug_defconfig:CONFIG_VHOST_VSOCK=m
+> > arch/s390/configs/defconfig:CONFIG_VHOST_NET=m
+> > arch/s390/configs/defconfig:CONFIG_VHOST_VSOCK=m
+> > 
+> > and this worked with 5.6, but does not work with next. Just adding
+> > CONFIG_VHOST=m to the defconfig solves the issue, something like
 > 
-> ---
-
-Acked-by: Alexandre TORGUE <alexandre.torgue@st.com>
-
-
->   .../net/ethernet/stmicro/stmmac/dwmac-stm32.c | 74 +++++++++++--------
->   1 file changed, 44 insertions(+), 30 deletions(-)
 > 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
-> index b2dc99289687..5d4df4c5254e 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-stm32.c
-> @@ -29,6 +29,11 @@
->   #define SYSCFG_PMCR_ETH_CLK_SEL		BIT(16)
->   #define SYSCFG_PMCR_ETH_REF_CLK_SEL	BIT(17)
->   
-> +/* CLOCK feed to PHY*/
-> +#define ETH_CK_F_25M	25000000
-> +#define ETH_CK_F_50M	50000000
-> +#define ETH_CK_F_125M	125000000
-> +
->   /*  Ethernet PHY interface selection in register SYSCFG Configuration
->    *------------------------------------------
->    * src	 |BIT(23)| BIT(22)| BIT(21)|BIT(20)|
-> @@ -58,33 +63,20 @@
->    *|         |        |      25MHz    |        50MHz       |                  |
->    * ---------------------------------------------------------------------------
->    *|  MII    |	 -   |     eth-ck    |	      n/a	  |	  n/a        |
-> - *|         |        |		     |                    |		     |
-> + *|         |        | st,ext-phyclk |                    |		     |
->    * ---------------------------------------------------------------------------
->    *|  GMII   |	 -   |     eth-ck    |	      n/a	  |	  n/a        |
-> - *|         |        |               |                    |		     |
-> + *|         |        | st,ext-phyclk |                    |		     |
->    * ---------------------------------------------------------------------------
-> - *| RGMII   |	 -   |     eth-ck    |	      n/a	  |  eth-ck (no pin) |
-> - *|         |        |               |                    |  st,eth-clk-sel  |
-> + *| RGMII   |	 -   |     eth-ck    |	      n/a	  |      eth-ck      |
-> + *|         |        | st,ext-phyclk |                    | st,eth-clk-sel or|
-> + *|         |        |               |                    | st,ext-phyclk    |
->    * ---------------------------------------------------------------------------
->    *| RMII    |	 -   |     eth-ck    |	    eth-ck        |	  n/a        |
-> - *|         |        |		     | st,eth-ref-clk-sel |		     |
-> + *|         |        | st,ext-phyclk | st,eth-ref-clk-sel |		     |
-> + *|         |        |               | or st,ext-phyclk   |		     |
->    * ---------------------------------------------------------------------------
->    *
-> - * BIT(17) : set this bit in RMII mode when you have PHY without crystal 50MHz
-> - * BIT(16) : set this bit in GMII/RGMII PHY when you do not want use 125Mhz
-> - * from PHY
-> - *-----------------------------------------------------
-> - * src	 |         BIT(17)       |       BIT(16)      |
-> - *-----------------------------------------------------
-> - * MII   |           n/a	 |         n/a        |
-> - *-----------------------------------------------------
-> - * GMII  |           n/a         |   st,eth-clk-sel   |
-> - *-----------------------------------------------------
-> - * RGMII |           n/a         |   st,eth-clk-sel   |
-> - *-----------------------------------------------------
-> - * RMII  |   st,eth-ref-clk-sel	 |         n/a        |
-> - *-----------------------------------------------------
-> - *
->    */
->   
->   struct stm32_dwmac {
-> @@ -93,6 +85,8 @@ struct stm32_dwmac {
->   	struct clk *clk_eth_ck;
->   	struct clk *clk_ethstp;
->   	struct clk *syscfg_clk;
-> +	int ext_phyclk;
-> +	int enable_eth_ck;
->   	int eth_clk_sel_reg;
->   	int eth_ref_clk_sel_reg;
->   	int irq_pwr_wakeup;
-> @@ -155,14 +149,17 @@ static int stm32mp1_clk_prepare(struct stm32_dwmac *dwmac, bool prepare)
->   		ret = clk_prepare_enable(dwmac->syscfg_clk);
->   		if (ret)
->   			return ret;
-> -		ret = clk_prepare_enable(dwmac->clk_eth_ck);
-> -		if (ret) {
-> -			clk_disable_unprepare(dwmac->syscfg_clk);
-> -			return ret;
-> +		if (dwmac->enable_eth_ck) {
-> +			ret = clk_prepare_enable(dwmac->clk_eth_ck);
-> +			if (ret) {
-> +				clk_disable_unprepare(dwmac->syscfg_clk);
-> +				return ret;
-> +			}
->   		}
->   	} else {
->   		clk_disable_unprepare(dwmac->syscfg_clk);
-> -		clk_disable_unprepare(dwmac->clk_eth_ck);
-> +		if (dwmac->enable_eth_ck)
-> +			clk_disable_unprepare(dwmac->clk_eth_ck);
->   	}
->   	return ret;
->   }
-> @@ -170,24 +167,34 @@ static int stm32mp1_clk_prepare(struct stm32_dwmac *dwmac, bool prepare)
->   static int stm32mp1_set_mode(struct plat_stmmacenet_data *plat_dat)
->   {
->   	struct stm32_dwmac *dwmac = plat_dat->bsp_priv;
-> -	u32 reg = dwmac->mode_reg;
-> +	u32 reg = dwmac->mode_reg, clk_rate;
->   	int val;
->   
-> +	clk_rate = clk_get_rate(dwmac->clk_eth_ck);
-> +	dwmac->enable_eth_ck = false;
->   	switch (plat_dat->interface) {
->   	case PHY_INTERFACE_MODE_MII:
-> +		if (clk_rate == ETH_CK_F_25M && dwmac->ext_phyclk)
-> +			dwmac->enable_eth_ck = true;
->   		val = SYSCFG_PMCR_ETH_SEL_MII;
->   		pr_debug("SYSCFG init : PHY_INTERFACE_MODE_MII\n");
->   		break;
->   	case PHY_INTERFACE_MODE_GMII:
->   		val = SYSCFG_PMCR_ETH_SEL_GMII;
-> -		if (dwmac->eth_clk_sel_reg)
-> +		if (clk_rate == ETH_CK_F_25M &&
-> +		    (dwmac->eth_clk_sel_reg || dwmac->ext_phyclk)) {
-> +			dwmac->enable_eth_ck = true;
->   			val |= SYSCFG_PMCR_ETH_CLK_SEL;
-> +		}
->   		pr_debug("SYSCFG init : PHY_INTERFACE_MODE_GMII\n");
->   		break;
->   	case PHY_INTERFACE_MODE_RMII:
->   		val = SYSCFG_PMCR_ETH_SEL_RMII;
-> -		if (dwmac->eth_ref_clk_sel_reg)
-> +		if ((clk_rate == ETH_CK_F_25M || clk_rate == ETH_CK_F_50M) &&
-> +		    (dwmac->eth_ref_clk_sel_reg || dwmac->ext_phyclk)) {
-> +			dwmac->enable_eth_ck = true;
->   			val |= SYSCFG_PMCR_ETH_REF_CLK_SEL;
-> +		}
->   		pr_debug("SYSCFG init : PHY_INTERFACE_MODE_RMII\n");
->   		break;
->   	case PHY_INTERFACE_MODE_RGMII:
-> @@ -195,8 +202,11 @@ static int stm32mp1_set_mode(struct plat_stmmacenet_data *plat_dat)
->   	case PHY_INTERFACE_MODE_RGMII_RXID:
->   	case PHY_INTERFACE_MODE_RGMII_TXID:
->   		val = SYSCFG_PMCR_ETH_SEL_RGMII;
-> -		if (dwmac->eth_clk_sel_reg)
-> +		if ((clk_rate == ETH_CK_F_25M || clk_rate == ETH_CK_F_125M) &&
-> +		    (dwmac->eth_clk_sel_reg || dwmac->ext_phyclk)) {
-> +			dwmac->enable_eth_ck = true;
->   			val |= SYSCFG_PMCR_ETH_CLK_SEL;
-> +		}
->   		pr_debug("SYSCFG init : PHY_INTERFACE_MODE_RGMII\n");
->   		break;
->   	default:
-> @@ -294,6 +304,9 @@ static int stm32mp1_parse_data(struct stm32_dwmac *dwmac,
->   	struct device_node *np = dev->of_node;
->   	int err = 0;
->   
-> +	/* Ethernet PHY have no crystal */
-> +	dwmac->ext_phyclk = of_property_read_bool(np, "st,ext-phyclk");
-> +
->   	/* Gigabit Ethernet 125MHz clock selection. */
->   	dwmac->eth_clk_sel_reg = of_property_read_bool(np, "st,eth-clk-sel");
->   
-> @@ -431,7 +444,8 @@ static int stm32mp1_suspend(struct stm32_dwmac *dwmac)
->   
->   	clk_disable_unprepare(dwmac->clk_tx);
->   	clk_disable_unprepare(dwmac->syscfg_clk);
-> -	clk_disable_unprepare(dwmac->clk_eth_ck);
-> +	if (dwmac->enable_eth_ck)
-> +		clk_disable_unprepare(dwmac->clk_eth_ck);
->   
->   	return ret;
->   }
+> Right, I think we probably need
 > 
+> 1) add CONFIG_VHOST=m to all defconfigs that enables
+> CONFIG_VHOST_NET/VSOCK/SCSI.
+> 
+> or
+> 
+> 2) don't use menuconfig for CONFIG_VHOST, let NET/SCSI/VDPA just select it.
+> 
+> Thanks
+
+I think I prefer 2, but does it auto-select VHOST_IOTLB then?
+Generally what was the reason to drop select VHOST from devices?
+
+
+> 
+> > 
+> > ---
+> >   arch/s390/configs/debug_defconfig | 5 +++--
+> >   arch/s390/configs/defconfig       | 5 +++--
+> >   2 files changed, 6 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/arch/s390/configs/debug_defconfig b/arch/s390/configs/debug_defconfig
+> > index 46038bc58c9e..0b83274341ce 100644
+> > --- a/arch/s390/configs/debug_defconfig
+> > +++ b/arch/s390/configs/debug_defconfig
+> > @@ -57,8 +57,6 @@ CONFIG_PROTECTED_VIRTUALIZATION_GUEST=y
+> >   CONFIG_CMM=m
+> >   CONFIG_APPLDATA_BASE=y
+> >   CONFIG_KVM=m
+> > -CONFIG_VHOST_NET=m
+> > -CONFIG_VHOST_VSOCK=m
+> >   CONFIG_OPROFILE=m
+> >   CONFIG_KPROBES=y
+> >   CONFIG_JUMP_LABEL=y
+> > @@ -561,6 +559,9 @@ CONFIG_VFIO_MDEV_DEVICE=m
+> >   CONFIG_VIRTIO_PCI=m
+> >   CONFIG_VIRTIO_BALLOON=m
+> >   CONFIG_VIRTIO_INPUT=y
+> > +CONFIG_VHOST=m
+> > +CONFIG_VHOST_NET=m
+> > +CONFIG_VHOST_VSOCK=m
+> >   CONFIG_S390_CCW_IOMMU=y
+> >   CONFIG_S390_AP_IOMMU=y
+> >   CONFIG_EXT4_FS=y
+> > diff --git a/arch/s390/configs/defconfig b/arch/s390/configs/defconfig
+> > index 7cd0648c1f4e..39e69c4e8cf7 100644
+> > --- a/arch/s390/configs/defconfig
+> > +++ b/arch/s390/configs/defconfig
+> > @@ -57,8 +57,6 @@ CONFIG_PROTECTED_VIRTUALIZATION_GUEST=y
+> >   CONFIG_CMM=m
+> >   CONFIG_APPLDATA_BASE=y
+> >   CONFIG_KVM=m
+> > -CONFIG_VHOST_NET=m
+> > -CONFIG_VHOST_VSOCK=m
+> >   CONFIG_OPROFILE=m
+> >   CONFIG_KPROBES=y
+> >   CONFIG_JUMP_LABEL=y
+> > @@ -557,6 +555,9 @@ CONFIG_VFIO_MDEV_DEVICE=m
+> >   CONFIG_VIRTIO_PCI=m
+> >   CONFIG_VIRTIO_BALLOON=m
+> >   CONFIG_VIRTIO_INPUT=y
+> > +CONFIG_VHOST=m
+> > +CONFIG_VHOST_NET=m
+> > +CONFIG_VHOST_VSOCK=m
+> >   CONFIG_S390_CCW_IOMMU=y
+> >   CONFIG_S390_AP_IOMMU=y
+> >   CONFIG_EXT4_FS=y
+
